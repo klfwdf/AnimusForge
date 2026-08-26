@@ -22,6 +22,8 @@ internal sealed class LocalPolicyFiefData
 	public string NameText { get; set; }
 
 	public string TypeText { get; set; }
+
+	public bool IsSelected { get; set; }
 }
 
 internal sealed class LocalPolicyComposeData
@@ -31,6 +33,18 @@ internal sealed class LocalPolicyComposeData
 	public bool CanPublish { get; set; }
 
 	public string BlockReason { get; set; }
+
+	public string InitialPolicyName { get; set; }
+
+	public string InitialPolicyContent { get; set; }
+
+	public string InitialDurationText { get; set; }
+
+	public string TitleText { get; set; }
+
+	public string PublishText { get; set; }
+
+	public bool RequireExplicitDuration { get; set; }
 
 	public List<LocalPolicyFiefData> Fiefs { get; set; } = new List<LocalPolicyFiefData>();
 }
@@ -184,6 +198,7 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 	private readonly Action _onCancel;
 	private readonly bool _externalCanPublish;
 	private readonly string _externalBlockReason;
+	private readonly bool _requireExplicitDuration;
 	private string _policyName;
 	private string _policyContent;
 	private string _durationText;
@@ -202,7 +217,8 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		_onCancel = onCancel;
 		_externalCanPublish = data.CanPublish;
 		_externalBlockReason = data.BlockReason ?? "";
-		TitleText = "发布地方政策";
+		_requireExplicitDuration = data.RequireExplicitDuration;
+		TitleText = string.IsNullOrWhiteSpace(data.TitleText) ? "发布地方政策" : data.TitleText;
 		ScopeTitleText = "选择作用封地";
 		SelectAllText = "全选";
 		ClearText = "清空";
@@ -210,7 +226,7 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		ContentLabelText = "政策内容 / AI编写原文";
 		DurationLabelText = "效果持续天数（留空为永久）";
 		DateText = string.IsNullOrWhiteSpace(data.DateText) ? "未知日期" : data.DateText;
-		PublishText = "发布地方政策";
+		PublishText = string.IsNullOrWhiteSpace(data.PublishText) ? "发布地方政策" : data.PublishText;
 		AutoDraftText = "AI编写";
 		CancelText = "取消";
 		FiefItems = new MBBindingList<LocalPolicyFiefItemVM>();
@@ -218,9 +234,9 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		{
 			if (fief != null) FiefItems.Add(new LocalPolicyFiefItemVM(fief, RefreshCanPublish));
 		}
-		PolicyName = "";
-		PolicyContent = "";
-		DurationText = "";
+		PolicyName = data.InitialPolicyName ?? "";
+		PolicyContent = data.InitialPolicyContent ?? "";
+		DurationText = data.InitialDurationText ?? "";
 		RefreshCanPublish();
 	}
 
@@ -387,14 +403,17 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 	private void RefreshCanPublish()
 	{
 		SelectedCount = FiefItems?.Count(x => x.IsSelected) ?? 0;
-		bool durationValid = string.IsNullOrWhiteSpace(DurationText) || (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int days) && days > 0);
+		bool durationValid = (!_requireExplicitDuration || !string.IsNullOrWhiteSpace(DurationText))
+			&& (string.IsNullOrWhiteSpace(DurationText) || (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int days) && days > 0));
 		CanPublish = !_isAutoDrafting && _externalCanPublish && SelectedCount > 0 && !string.IsNullOrWhiteSpace(PolicyName) && !string.IsNullOrWhiteSpace(PolicyContent) && durationValid;
 		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && SelectedCount > 0 && !string.IsNullOrWhiteSpace(PolicyContent) && durationValid;
 		if (!_externalCanPublish) StatusText = string.IsNullOrWhiteSpace(_externalBlockReason) ? "当前不能发布地方政策。" : _externalBlockReason;
 		else if (SelectedCount <= 0) StatusText = "请至少选择一个玩家家族拥有的城镇或城堡。";
 		else if (string.IsNullOrWhiteSpace(PolicyName)) StatusText = "请填写政策名。";
 		else if (string.IsNullOrWhiteSpace(PolicyContent)) StatusText = "请填写政策内容。";
-		else if (!durationValid) StatusText = "持续天数必须留空或填写正整数。";
+		else if (!durationValid) StatusText = _requireExplicitDuration && string.IsNullOrWhiteSpace(DurationText)
+			? "旧记录无法确认原持续时间，请明确填写正整数天数。"
+			: "持续天数必须留空或填写正整数。";
 		else StatusText = "已选择 " + SelectedCount.ToString(CultureInfo.InvariantCulture) + " 个封地；作用范围由所选封地自动确定。";
 	}
 }
@@ -409,6 +428,7 @@ internal sealed class LocalPolicyFiefItemVM : ViewModel
 		FiefId = data?.FiefId ?? "";
 		NameText = data?.NameText ?? "未知封地";
 		TypeText = data?.TypeText ?? "封地";
+		_isSelected = data?.IsSelected == true;
 	}
 	[DataSourceProperty] public string FiefId { get; set; }
 	[DataSourceProperty] public string NameText { get; set; }
@@ -445,6 +465,7 @@ internal sealed class LocalPolicyHistoryRecordData
 	public string RenewalText { get; set; }
 	public bool CanRenew { get; set; }
 	public bool CanAbolish { get; set; }
+	public bool CanReReview { get; set; }
 }
 
 internal sealed class LocalPolicyHistoryPopup
@@ -455,21 +476,21 @@ internal sealed class LocalPolicyHistoryPopup
 	private readonly LocalPolicyHistoryPopupVM _dataSource;
 	private readonly Action _onClose;
 	private bool _isClosed;
-	private LocalPolicyHistoryPopup(ScreenBase screen, LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
+	private LocalPolicyHistoryPopup(ScreenBase screen, LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new LocalPolicyHistoryPopupVM(data, id => { Close(true); onRenew?.Invoke(id); }, id => { Close(true); onAbolish?.Invoke(id); }, HandleClose);
+		_dataSource = new LocalPolicyHistoryPopupVM(data, id => { Close(true); onRenew?.Invoke(id); }, id => { Close(true); onAbolish?.Invoke(id); }, id => { Close(true); onReReview?.Invoke(id); }, HandleClose);
 		_layer = new GauntletLayer("LocalPolicyHistoryPopup", 4110, false);
 	}
-	public static bool Show(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
+	public static bool Show(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose)
 	{
 		ScreenBase screen = ScreenManager.TopScreen;
 		if (screen == null) return false;
 		try
 		{
 			_activePopup?.Close(true);
-			LocalPolicyHistoryPopup popup = new LocalPolicyHistoryPopup(screen, data ?? new LocalPolicyHistoryData(), onRenew, onAbolish, onClose);
+			LocalPolicyHistoryPopup popup = new LocalPolicyHistoryPopup(screen, data ?? new LocalPolicyHistoryData(), onRenew, onAbolish, onReReview, onClose);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -506,6 +527,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 {
 	private readonly Action<string> _onRenew;
 	private readonly Action<string> _onAbolish;
+	private readonly Action<string> _onReReview;
 	private readonly Action _onClose;
 	private readonly List<LocalPolicyHistoryRecordData> _allRecords;
 	private LocalPolicyHistoryRecordItemVM _selected;
@@ -515,6 +537,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	private bool _isVassalTabSelected;
 	private bool _canRenew;
 	private bool _canAbolish;
+	private bool _canReReview;
 	private string _emptyStateText = "";
 	private string _policyNameText = "";
 	private string _statusText = "";
@@ -526,9 +549,9 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	private string _costText = "";
 	private string _cycleText = "";
 	private string _renewalText = "";
-	public LocalPolicyHistoryPopupVM(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action onClose)
+	public LocalPolicyHistoryPopupVM(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose)
 	{
-		_onRenew = onRenew; _onAbolish = onAbolish; _onClose = onClose;
+		_onRenew = onRenew; _onAbolish = onAbolish; _onReReview = onReReview; _onClose = onClose;
 		_allRecords = (data?.Records ?? new List<LocalPolicyHistoryRecordData>()).Where(x => x != null).ToList();
 		RecordItems = new MBBindingList<LocalPolicyHistoryRecordItemVM>();
 		TitleText = "政策记录";
@@ -537,6 +560,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		VassalTabText = "附庸国政策";
 		RenewText = "延长效果";
 		AbolishText = "停止政策";
+		ReReviewText = "重新评议";
 		CloseText = "返回政策菜单";
 		bool showVassalFirst = !_allRecords.Any(x => !string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase))
 			&& _allRecords.Any(x => string.Equals(x.ScopeKind ?? "", "vassal", StringComparison.OrdinalIgnoreCase));
@@ -549,6 +573,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	[DataSourceProperty] public string VassalTabText { get; set; }
 	[DataSourceProperty] public string RenewText { get; set; }
 	[DataSourceProperty] public string AbolishText { get; set; }
+	[DataSourceProperty] public string ReReviewText { get; set; }
 	[DataSourceProperty] public string CloseText { get; set; }
 	[DataSourceProperty] public MBBindingList<LocalPolicyHistoryRecordItemVM> RecordItems { get; set; }
 	[DataSourceProperty] public bool HasRecords { get => _hasRecords; set { if (value != _hasRecords) { _hasRecords = value; OnPropertyChangedWithValue(value, nameof(HasRecords)); } } }
@@ -557,6 +582,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	[DataSourceProperty] public bool IsVassalTabSelected { get => _isVassalTabSelected; set { if (value != _isVassalTabSelected) { _isVassalTabSelected = value; OnPropertyChangedWithValue(value, nameof(IsVassalTabSelected)); } } }
 	[DataSourceProperty] public bool CanRenew { get => _canRenew; set { if (value != _canRenew) { _canRenew = value; OnPropertyChangedWithValue(value, nameof(CanRenew)); } } }
 	[DataSourceProperty] public bool CanAbolish { get => _canAbolish; set { if (value != _canAbolish) { _canAbolish = value; OnPropertyChangedWithValue(value, nameof(CanAbolish)); } } }
+	[DataSourceProperty] public bool CanReReview { get => _canReReview; set { if (value != _canReReview) { _canReReview = value; OnPropertyChangedWithValue(value, nameof(CanReReview)); } } }
 	[DataSourceProperty] public string PolicyNameText { get => _policyNameText; set { _policyNameText = value; OnPropertyChangedWithValue(value, nameof(PolicyNameText)); } }
 	[DataSourceProperty] public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChangedWithValue(value, nameof(StatusText)); } }
 	[DataSourceProperty] public string TargetText { get => _targetText; set { _targetText = value; OnPropertyChangedWithValue(value, nameof(TargetText)); } }
@@ -575,7 +601,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		item.IsSelected = true;
 		PolicyNameText = item.PolicyNameText; StatusText = item.StatusText; TargetText = item.TargetText; RemainingText = item.RemainingText;
 		ContentText = item.ContentText; FeedbackText = item.FeedbackText; EffectText = item.EffectText; CostText = item.CostText; CycleText = item.CycleText; RenewalText = item.RenewalText;
-		CanRenew = item.CanRenew; CanAbolish = item.CanAbolish;
+		CanRenew = item.CanRenew; CanAbolish = item.CanAbolish; CanReReview = item.CanReReview;
 	}
 	private void ShowScope(bool showVassal)
 	{
@@ -599,13 +625,14 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		{
 			PolicyNameText = ""; StatusText = ""; TargetText = ""; RemainingText = "";
 			ContentText = ""; FeedbackText = ""; EffectText = ""; CostText = ""; CycleText = ""; RenewalText = "";
-			CanRenew = false; CanAbolish = false;
+			CanRenew = false; CanAbolish = false; CanReReview = false;
 		}
 	}
 	public void ExecuteShowLocalPolicies() => ShowScope(false);
 	public void ExecuteShowVassalPolicies() => ShowScope(true);
 	public void ExecuteRenew() { if (CanRenew && _selected != null) _onRenew?.Invoke(_selected.RecordId); }
 	public void ExecuteAbolish() { if (CanAbolish && _selected != null) _onAbolish?.Invoke(_selected.RecordId); }
+	public void ExecuteReReview() { if (CanReReview && _selected != null) _onReReview?.Invoke(_selected.RecordId); }
 	public void ExecuteClose() => _onClose?.Invoke();
 }
 
@@ -617,7 +644,7 @@ internal sealed class LocalPolicyHistoryRecordItemVM : ViewModel
 	{
 		_onSelect = onSelect; ScopeKind = data?.ScopeKind ?? "local"; RecordId = data?.RecordId ?? ""; DateText = data?.DateText ?? ""; PolicyNameText = data?.PolicyNameText ?? ""; StatusText = data?.StatusText ?? "";
 		TargetText = data?.TargetText ?? ""; RemainingText = data?.RemainingText ?? ""; ContentText = data?.ContentText ?? ""; FeedbackText = data?.FeedbackText ?? "";
-		EffectText = data?.EffectText ?? ""; CostText = data?.CostText ?? ""; CycleText = data?.CycleText ?? ""; RenewalText = data?.RenewalText ?? ""; CanRenew = data?.CanRenew == true; CanAbolish = data?.CanAbolish == true;
+		EffectText = data?.EffectText ?? ""; CostText = data?.CostText ?? ""; CycleText = data?.CycleText ?? ""; RenewalText = data?.RenewalText ?? ""; CanRenew = data?.CanRenew == true; CanAbolish = data?.CanAbolish == true; CanReReview = data?.CanReReview == true;
 	}
 	[DataSourceProperty] public string ScopeKind { get; set; }
 	[DataSourceProperty] public string RecordId { get; set; }
@@ -634,6 +661,7 @@ internal sealed class LocalPolicyHistoryRecordItemVM : ViewModel
 	[DataSourceProperty] public string RenewalText { get; set; }
 	[DataSourceProperty] public bool CanRenew { get; set; }
 	[DataSourceProperty] public bool CanAbolish { get; set; }
+	[DataSourceProperty] public bool CanReReview { get; set; }
 	[DataSourceProperty] public bool IsSelected { get => _isSelected; set { if (value != _isSelected) { _isSelected = value; OnPropertyChangedWithValue(value, nameof(IsSelected)); } } }
 	public void ExecuteSelect() => _onSelect?.Invoke(this);
 }

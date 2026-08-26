@@ -17,7 +17,7 @@ namespace AnimusForge;
 
 public sealed class AnimusForgeWorldEventInboxEntry
 {
-	public int Version { get; set; } = 1;
+	public int Version { get; set; } = 2;
 	public string EventId { get; set; }
 	public string EventKind { get; set; }
 	public string EventType { get; set; }
@@ -33,6 +33,8 @@ public sealed class AnimusForgeWorldEventInboxEntry
 	public string KingdomName { get; set; }
 	public string ActorHeroId { get; set; }
 	public string ActorHeroName { get; set; }
+	public string PolicyRecordId { get; set; }
+	public bool IsPlayerPolicy { get; set; }
 	public int Day { get; set; }
 	public string GameDate { get; set; }
 	public long CreatedUtcTicks { get; set; }
@@ -187,19 +189,26 @@ public sealed class AnimusForgeWorldEventInboxPopup
 	private readonly GauntletLayer _layer;
 	private readonly AnimusForgeWorldEventInboxPopupVM _dataSource;
 	private readonly Action _onClose;
+	private readonly Action<string> _onReReview;
 	private bool _isClosed;
 
-	private AnimusForgeWorldEventInboxPopup(ScreenBase screen, WorldEventInboxPopupData data, Action onClose)
+	private AnimusForgeWorldEventInboxPopup(ScreenBase screen, WorldEventInboxPopupData data, Action<string> onReReview, Action onClose)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new AnimusForgeWorldEventInboxPopupVM(data, HandleCloseRequested);
+		_onReReview = onReReview;
+		_dataSource = new AnimusForgeWorldEventInboxPopupVM(data, HandleReReviewRequested, HandleCloseRequested);
 		_layer = new GauntletLayer("AnimusForgeWorldEventInboxPopup", 4100, false);
 	}
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
 	public static bool Show(WorldEventInboxPopupData data, Action onClose = null)
+	{
+		return Show(data, null, onClose);
+	}
+
+	public static bool Show(WorldEventInboxPopupData data, Action<string> onReReview, Action onClose)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -209,7 +218,7 @@ public sealed class AnimusForgeWorldEventInboxPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			AnimusForgeWorldEventInboxPopup popup = new AnimusForgeWorldEventInboxPopup(topScreen, data ?? new WorldEventInboxPopupData(), onClose);
+			AnimusForgeWorldEventInboxPopup popup = new AnimusForgeWorldEventInboxPopup(topScreen, data ?? new WorldEventInboxPopupData(), onReReview, onClose);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -282,6 +291,12 @@ public sealed class AnimusForgeWorldEventInboxPopup
 		_onClose?.Invoke();
 	}
 
+	private void HandleReReviewRequested(string recordId)
+	{
+		Close(silent: true);
+		_onReReview?.Invoke(recordId ?? string.Empty);
+	}
+
 	private void Close(bool silent)
 	{
 		if (_isClosed)
@@ -320,6 +335,7 @@ public sealed class AnimusForgeWorldEventInboxPopup
 public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 {
 	private readonly Action _onClose;
+	private readonly Action<string> _onReReview;
 	private string _titleText;
 	private string _subtitleText;
 	private string _emptyStateText;
@@ -334,6 +350,9 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	private string _selectedRecordImpactSectionTitleText;
 	private string _selectedRecordImpactText;
 	private string _selectedRecordUnreadMarkerText;
+	private string _selectedRecordReReviewText;
+	private string _selectedRecordReReviewDisabledReasonText;
+	private string _selectedRecordPolicyRecordId;
 	private float _selectedRecordTitleHeight;
 	private float _selectedRecordMetaTop;
 	private float _selectedRecordDividerTop;
@@ -345,12 +364,16 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	private bool _showSelectedCountryEmptyState;
 	private bool _hasSelectedRecordPolicyName;
 	private bool _hasSelectedRecordImpact;
+	private bool _showSelectedRecordReReview;
+	private bool _canReReviewSelectedRecord;
+	private bool _showSelectedRecordReReviewDisabledReason;
 	private MBBindingList<WorldEventCountryItemVM> _countryItems;
 	private MBBindingList<WorldEventRecordItemVM> _recordItems;
 
-	public AnimusForgeWorldEventInboxPopupVM(WorldEventInboxPopupData data, Action onClose)
+	public AnimusForgeWorldEventInboxPopupVM(WorldEventInboxPopupData data, Action<string> onReReview, Action onClose)
 	{
 		_onClose = onClose;
+		_onReReview = onReReview;
 		WorldEventInboxPopupData source = data ?? new WorldEventInboxPopupData();
 		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "世界事件" : source.TitleText.Trim();
 		SubtitleText = string.IsNullOrWhiteSpace(source.SubtitleText) ? "只读查看 NPC 统治者政策、民众反馈和世界事件。" : source.SubtitleText.Trim();
@@ -412,6 +435,10 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	[DataSourceProperty]
 	public string SelectedRecordUnreadMarkerText { get => _selectedRecordUnreadMarkerText; set { if (value != _selectedRecordUnreadMarkerText) { _selectedRecordUnreadMarkerText = value; OnPropertyChangedWithValue(value, nameof(SelectedRecordUnreadMarkerText)); } } }
 	[DataSourceProperty]
+	public string SelectedRecordReReviewText { get => _selectedRecordReReviewText; set { if (value != _selectedRecordReReviewText) { _selectedRecordReReviewText = value; OnPropertyChangedWithValue(value, nameof(SelectedRecordReReviewText)); } } }
+	[DataSourceProperty]
+	public string SelectedRecordReReviewDisabledReasonText { get => _selectedRecordReReviewDisabledReasonText; set { if (value != _selectedRecordReReviewDisabledReasonText) { _selectedRecordReReviewDisabledReasonText = value; OnPropertyChangedWithValue(value, nameof(SelectedRecordReReviewDisabledReasonText)); } } }
+	[DataSourceProperty]
 	public float SelectedRecordTitleHeight { get => _selectedRecordTitleHeight; set { if (Math.Abs(value - _selectedRecordTitleHeight) > 0.01f) { _selectedRecordTitleHeight = value; OnPropertyChangedWithValue(value, nameof(SelectedRecordTitleHeight)); } } }
 	[DataSourceProperty]
 	public float SelectedRecordMetaTop { get => _selectedRecordMetaTop; set { if (Math.Abs(value - _selectedRecordMetaTop) > 0.01f) { _selectedRecordMetaTop = value; OnPropertyChangedWithValue(value, nameof(SelectedRecordMetaTop)); } } }
@@ -433,6 +460,12 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	public bool HasSelectedRecordPolicyName { get => _hasSelectedRecordPolicyName; set { if (value != _hasSelectedRecordPolicyName) { _hasSelectedRecordPolicyName = value; OnPropertyChangedWithValue(value, nameof(HasSelectedRecordPolicyName)); } } }
 	[DataSourceProperty]
 	public bool HasSelectedRecordImpact { get => _hasSelectedRecordImpact; set { if (value != _hasSelectedRecordImpact) { _hasSelectedRecordImpact = value; OnPropertyChangedWithValue(value, nameof(HasSelectedRecordImpact)); } } }
+	[DataSourceProperty]
+	public bool ShowSelectedRecordReReview { get => _showSelectedRecordReReview; set { if (value != _showSelectedRecordReReview) { _showSelectedRecordReReview = value; OnPropertyChangedWithValue(value, nameof(ShowSelectedRecordReReview)); } } }
+	[DataSourceProperty]
+	public bool CanReReviewSelectedRecord { get => _canReReviewSelectedRecord; set { if (value != _canReReviewSelectedRecord) { _canReReviewSelectedRecord = value; OnPropertyChangedWithValue(value, nameof(CanReReviewSelectedRecord)); } } }
+	[DataSourceProperty]
+	public bool ShowSelectedRecordReReviewDisabledReason { get => _showSelectedRecordReReviewDisabledReason; set { if (value != _showSelectedRecordReReviewDisabledReason) { _showSelectedRecordReReviewDisabledReason = value; OnPropertyChangedWithValue(value, nameof(ShowSelectedRecordReReviewDisabledReason)); } } }
 	[DataSourceProperty]
 	public MBBindingList<WorldEventCountryItemVM> CountryItems { get => _countryItems; set { if (value != _countryItems) { _countryItems = value; OnPropertyChangedWithValue(value, nameof(CountryItems)); } } }
 	[DataSourceProperty]
@@ -516,6 +549,14 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		SelectedRecordUnreadMarkerText = selected.UnreadMarkerText;
 		HasSelectedRecordPolicyName = selected.HasPolicyName;
 		HasSelectedRecordImpact = selected.HasImpact;
+		_selectedRecordPolicyRecordId = selected.PolicyRecordId;
+		SelectedRecordReReviewText = selected.ReReviewText;
+		SelectedRecordReReviewDisabledReasonText = selected.ReReviewDisabledReasonText;
+		ShowSelectedRecordReReview = selected.ShowReReview;
+		CanReReviewSelectedRecord = selected.CanReReview;
+		ShowSelectedRecordReReviewDisabledReason = selected.ShowReReview
+			&& !selected.CanReReview
+			&& !string.IsNullOrWhiteSpace(selected.ReReviewDisabledReasonText);
 	}
 
 	private void ClearSelectedRecord()
@@ -529,9 +570,15 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		SelectedRecordImpactSectionTitleText = "";
 		SelectedRecordImpactText = "";
 		SelectedRecordUnreadMarkerText = "";
+		_selectedRecordPolicyRecordId = "";
+		SelectedRecordReReviewText = "重新评议政策";
+		SelectedRecordReReviewDisabledReasonText = "";
 		UpdateSelectedRecordHeaderLayout("");
 		HasSelectedRecordPolicyName = false;
 		HasSelectedRecordImpact = false;
+		ShowSelectedRecordReReview = false;
+		CanReReviewSelectedRecord = false;
+		ShowSelectedRecordReReviewDisabledReason = false;
 	}
 
 	private void UpdateSelectedRecordHeaderLayout(string title)
@@ -548,6 +595,16 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	public void ExecuteClose()
 	{
 		_onClose?.Invoke();
+	}
+
+	public void ExecuteReReview()
+	{
+		if (ShowSelectedRecordReReview
+			&& CanReReviewSelectedRecord
+			&& !string.IsNullOrWhiteSpace(_selectedRecordPolicyRecordId))
+		{
+			_onReReview?.Invoke(_selectedRecordPolicyRecordId);
+		}
 	}
 }
 
@@ -653,6 +710,11 @@ public sealed class WorldEventRecordItemVM : ViewModel
 		_isUnread = data.IsUnread;
 		HasPolicyName = data.HasPolicyName;
 		HasImpact = data.HasImpact;
+		PolicyRecordId = data.PolicyRecordId ?? "";
+		ShowReReview = data.ShowReReview;
+		CanReReview = data.CanReReview;
+		ReReviewText = string.IsNullOrWhiteSpace(data.ReReviewText) ? "重新评议政策" : data.ReReviewText.Trim();
+		ReReviewDisabledReasonText = data.ReReviewDisabledReasonText ?? "";
 	}
 
 	public int Index { get; }
@@ -711,6 +773,11 @@ public sealed class WorldEventRecordItemVM : ViewModel
 	public bool HasPolicyName { get; }
 	[DataSourceProperty]
 	public bool HasImpact { get; }
+	public string PolicyRecordId { get; }
+	public bool ShowReReview { get; }
+	public bool CanReReview { get; }
+	public string ReReviewText { get; }
+	public string ReReviewDisabledReasonText { get; }
 	[DataSourceProperty]
 	public bool IsSelected
 	{
@@ -773,7 +840,12 @@ public sealed class WorldEventRecordData
 	public string ImpactSectionTitleText = "";
 	public string ImpactText = "";
 	public string UnreadMarkerText = "";
+	public string PolicyRecordId = "";
+	public string ReReviewText = "重新评议政策";
+	public string ReReviewDisabledReasonText = "";
 	public bool IsUnread;
 	public bool HasPolicyName;
 	public bool HasImpact;
+	public bool ShowReReview;
+	public bool CanReReview;
 }

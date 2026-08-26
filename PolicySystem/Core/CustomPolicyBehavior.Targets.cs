@@ -458,14 +458,32 @@ public sealed partial class CustomPolicyBehavior
 			handles,
 			injectedModules,
 			targetResolver,
-			request?.IssuerKingdomId);
+			request?.IssuerKingdomId,
+			Clan.PlayerClan?.StringId,
+			CreatePlayerPolicyTargetDefaultHandleClassifier(request));
 	}
 
 	private static PolicyTargetHandleDirectory BuildPolicyTargetHandleDirectory(
 		IReadOnlyList<PolicyTargetHandleSaveData> handles,
 		IReadOnlyList<IPolicyEffectModule> injectedModules,
 		PolicyEffectTargetResolver targetResolver,
-		string issuerKingdomId)
+		string issuerKingdomId,
+		string actorClanId)
+		=> BuildPolicyTargetHandleDirectory(
+			handles,
+			injectedModules,
+			targetResolver,
+			issuerKingdomId,
+			actorClanId,
+			null);
+
+	private static PolicyTargetHandleDirectory BuildPolicyTargetHandleDirectory(
+		IReadOnlyList<PolicyTargetHandleSaveData> handles,
+		IReadOnlyList<IPolicyEffectModule> injectedModules,
+		PolicyEffectTargetResolver targetResolver,
+		string issuerKingdomId,
+		string actorClanId,
+		PolicyEffectTargetDefaultHandleClassifier defaultHandleClassifier)
 	{
 		List<PolicyTargetHandleDirectoryCandidate> candidates = (handles
 			?? Array.Empty<PolicyTargetHandleSaveData>())
@@ -480,8 +498,91 @@ public sealed partial class CustomPolicyBehavior
 			candidates,
 			injectedModules,
 			targetResolver,
-			issuerKingdomId);
+			issuerKingdomId,
+			actorClanId,
+			defaultHandleClassifier);
 	}
+
+	private static PolicyEffectTargetDefaultHandleClassifier CreatePlayerPolicyTargetDefaultHandleClassifier(
+		PolicyDraftRequest request)
+	{
+		bool suppressSelectableDefaults = ShouldSuppressPlayerPolicySelectableDefaultTargets(request);
+		return (handle, entry, module, resolved) => IsPlayerPolicyDefaultTargetHandle(
+			request,
+			handle,
+			entry,
+			module,
+			suppressSelectableDefaults);
+	}
+
+	private static bool IsPlayerPolicyDefaultTargetHandle(
+		PolicyDraftRequest request,
+		string handle,
+		PolicyTargetHandleDirectoryEntry entry,
+		IPolicyEffectModule module)
+		=> IsPlayerPolicyDefaultTargetHandle(
+			request,
+			handle,
+			entry,
+			module,
+			ShouldSuppressPlayerPolicySelectableDefaultTargets(request));
+
+	private static bool IsPlayerPolicyDefaultTargetHandle(
+		PolicyDraftRequest request,
+		string handle,
+		PolicyTargetHandleDirectoryEntry entry,
+		IPolicyEffectModule module,
+		bool suppressSelectableDefaults)
+	{
+		if (module?.Descriptor == null || string.IsNullOrWhiteSpace(handle))
+		{
+			return false;
+		}
+		if (module.Descriptor.TargetBinding == PolicyEffectTargetBindingKind.IssuerKingdom)
+		{
+			return IsDirectoryEntryKingdom(entry, request?.IssuerKingdomId);
+		}
+		if (suppressSelectableDefaults)
+		{
+			// A deterministically exposed foreign target makes the policy scope ambiguous
+			// until the effect stage reads the actual measure. Keeping K0 as the default
+			// here biases every compatible module back to the publishing kingdom, even
+			// when the policy explicitly acts on K1/K2. Leave all authorized handles as
+			// subsets so the effect stage must bind each consequence from the source text.
+			return false;
+		}
+		if (IsLocalPolicyRequest(request))
+		{
+			return string.Equals(handle, "S", StringComparison.Ordinal);
+		}
+		if (IsHeroOnlyPolicyEffectModule(module))
+		{
+			return false;
+		}
+		return ModuleAllowsPolicyEffectSelector(module, PolicyEffectTargetKind.Kingdom)
+			&& string.Equals(handle, "K0", StringComparison.Ordinal);
+	}
+
+	private static bool ShouldSuppressPlayerPolicySelectableDefaultTargets(PolicyDraftRequest request)
+		=> !IsVassalPolicyRequest(request)
+			&& EnsurePlayerPolicyTargetAuthorization(request).ExplicitCrossKingdomIds.Count > 0;
+
+	private static bool ModuleAllowsPolicyEffectSelector(IPolicyEffectModule module, PolicyEffectTargetKind selectorKind)
+		=> module?.Descriptor?.AllowedSelectorKinds?.Contains(selectorKind) == true;
+
+	private static bool IsHeroOnlyPolicyEffectModule(IPolicyEffectModule module)
+	{
+		IReadOnlyCollection<PolicyEffectTargetKind> targetKinds = module?.Descriptor?.TargetKinds;
+		return targetKinds != null
+			&& targetKinds.Count == 1
+			&& targetKinds.Contains(PolicyEffectTargetKind.Hero);
+	}
+
+	private static bool IsDirectoryEntryKingdom(PolicyTargetHandleDirectoryEntry entry, string kingdomId)
+		=> entry != null
+			&& !string.IsNullOrWhiteSpace(kingdomId)
+			&& string.Equals(entry.Kind ?? string.Empty, PolicyTargetKindKingdom, StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(entry.EntityId ?? string.Empty, kingdomId, StringComparison.OrdinalIgnoreCase);
 
 	private static PolicyTargetHandleDirectoryEntry BuildPolicyTargetHandleDirectoryEntry(PolicyTargetHandleSaveData handle)
 	{
@@ -524,9 +625,17 @@ public sealed partial class CustomPolicyBehavior
 			.Any(handle => string.Equals(handle.Kind, PolicyTargetKindPlan, StringComparison.OrdinalIgnoreCase));
 		string rule = "【目标句柄选择规则】\n"
 			+ "目标句柄只由本阶段根据政策原文、实际注入能力及本次合法目录决定；第一次通用评议中的范围结论不具授权效力。"
-			+ "目录中的句柄都只是候选。先按原文确定每个实际采用效果真正结算的对象，再选择该能力允许且语义等价的句柄。"
+			+ "目录中的 allowedTargetHandles 是授权全集，但不是平级偏好；每个能力若有 defaultTargetHandle，且原文没有明确要求更小范围、指定人物/家族/领地/外国对象，必须选择该默认句柄。"
+			+ "allowedSubsetTargetHandles 只在原文明确需要细分或直接结算到点名对象时替换默认；defaultTargetHandle 为空的能力若没有明确 subset 接收者则不要输出。"
+			+ "王国、地方、附庸国和统治者政策的发布地由系统锁定；普通政策默认只能影响发布地王国内部的王国、家族、领地或英雄子集。"
+			+ "若政策原文点名外国、外国家族、外国领地、外国英雄或明确敌国/盟国关系，目录可列出这些外国句柄供选择；只有当它们是实际结算对象时才选择，若只是参考、比较、报告或经验来源则不要选择。"
 			+ "仅作为发布者、执行者、联系人、报告对象、政策启动费或维护费承担人出现，不等于可执行效果目标。"
 			+ "不得回填玩家本人、玩家家族、玩家王国或任何目录外对象，也不得把缺失锚点改写为其他可用目标。";
+		if (ShouldSuppressPlayerPolicySelectableDefaultTargets(request))
+		{
+			rule += "本次政策已由确定性证据暴露外国目标，因此可选择能力不预设 defaultTargetHandle；K0 与目录中的合法外国句柄均为无预设优先级候选。"
+				+ "原文明确存在某项效果时，不得仅因 defaultTargetHandle 为空而省略，必须按实际结算对象从 allowedSubsetTargetHandles 选择；只有无法根据原文判定接收者时才省略。";
+		}
 		if (hasSelector)
 		{
 			rule += "X* 仅用于旧请求兼容；只能在目录实际出现且语义完全一致时使用。";
@@ -534,6 +643,12 @@ public sealed partial class CustomPolicyBehavior
 		if (hasPlan)
 		{
 			rule += "P* 是由政策原文中的明确实体、关系、组合、排除、排序、方向、距离或指标条件确定性解析形成的 TargetPlan。若政策效果范围与 P* 摘要一致，可原样选择；不得自行改写、拼接或扩展该计划。";
+		}
+		if (string.Equals(request?.ScopeKind, PolicyScopeKingdom, StringComparison.OrdinalIgnoreCase))
+		{
+			rule += "【普通全国跨国完整性】只要最终选择了任何外国实际结算效果，就必须同时为发布王国 K0 选择至少一项有真实因果依据且目录授权的效果；不得只结算外国一侧。"
+				+ "同一资源转移导致两端变化时，两端必须归入同一个 linked 机制；若属于不同的直接或紧邻一阶后果，可以分别使用 independent。"
+				+ "不得为了凑齐两侧而机械复制数值、简单取反、强行对称或虚构效果；每一侧的方向、强度和载荷仍须依据政策原文与第一次评议独立判断。";
 		}
 		return rule;
 	}
@@ -577,8 +692,9 @@ public sealed partial class CustomPolicyBehavior
 				return string.Equals(target.Key, "S", StringComparison.OrdinalIgnoreCase);
 			}
 			return entityId.Length > 0
-				&& string.Equals(kingdomId, request.PlayerKingdomId ?? string.Empty, StringComparison.OrdinalIgnoreCase)
-				&& authorization.EntityKeys.Contains(BuildPlayerPolicyEntityAuthorizationKey(target.Kind, entityId));
+				&& authorization.EntityKeys.Contains(BuildPlayerPolicyEntityAuthorizationKey(target.Kind, entityId))
+				&& (string.Equals(kingdomId, request.PlayerKingdomId ?? string.Empty, StringComparison.OrdinalIgnoreCase)
+					|| authorization.ExplicitCrossKingdomIds.Contains(kingdomId));
 		}
 		if (!string.Equals(target.Kind, PolicyTargetKindKingdom, StringComparison.OrdinalIgnoreCase)
 			|| entityId.Length == 0
@@ -626,8 +742,8 @@ public sealed partial class CustomPolicyBehavior
 			&& !string.IsNullOrWhiteSpace(request.IssuerKingdomId)
 			&& !string.Equals(request.IssuerKingdomId, targetKingdomId, StringComparison.OrdinalIgnoreCase))
 		{
-			authorization.KingdomIds.Add(request.IssuerKingdomId);
 			authorization.AllowedKingdomReferenceIds.Add(request.IssuerKingdomId);
+			AddPlayerPolicyExecutableCrossKingdom(authorization, targetKingdomId, request.IssuerKingdomId);
 		}
 
 		foreach (string sourceId in request.SelectedFiefIds ?? new List<string>())
@@ -657,13 +773,20 @@ public sealed partial class CustomPolicyBehavior
 					string ownerKingdomId = (entity.OwnerKingdomId ?? string.Empty).Trim();
 					if (ownerKingdomId.Length > 0)
 					{
-						authorization.KingdomIds.Add(ownerKingdomId);
 						authorization.AllowedKingdomReferenceIds.Add(ownerKingdomId);
+						if (string.Equals(ownerKingdomId, targetKingdomId, StringComparison.OrdinalIgnoreCase))
+						{
+							authorization.KingdomIds.Add(ownerKingdomId);
+						}
+						else
+						{
+							AddPlayerPolicyExecutableCrossKingdom(authorization, targetKingdomId, ownerKingdomId);
+						}
 					}
 					AddPlayerPolicyEntityReference(authorization, entity.Kind, entity.EntityId);
 				}
 			}
-			AddStrictPolicyKingdomAliasEvidence(query, authorization);
+			AddStrictPolicyKingdomAliasEvidence(query, targetKingdomId, authorization);
 			AddExplicitPolicyRelationKingdoms(query, targetKingdomId, snapshot, authorization);
 		}
 
@@ -709,7 +832,14 @@ public sealed partial class CustomPolicyBehavior
 					}
 					foreach (string id in branch.NamedKingdomIds.Concat(new[] { branch.AnchorKingdomId }))
 					{
-						if (!string.IsNullOrWhiteSpace(id)) authorization.AllowedKingdomReferenceIds.Add(id);
+						if (!string.IsNullOrWhiteSpace(id))
+						{
+							authorization.AllowedKingdomReferenceIds.Add(id);
+							if (!string.Equals(id, targetKingdomId, StringComparison.OrdinalIgnoreCase))
+							{
+								AddPlayerPolicyExecutableCrossKingdom(authorization, targetKingdomId, id);
+							}
+						}
 					}
 				}
 			}
@@ -820,8 +950,26 @@ public sealed partial class CustomPolicyBehavior
 		return ((kind ?? string.Empty).Trim().ToLowerInvariant()) + "\n" + ((entityId ?? string.Empty).Trim().ToLowerInvariant());
 	}
 
+	private static void AddPlayerPolicyExecutableCrossKingdom(
+		PlayerPolicyTargetAuthorization authorization,
+		string targetKingdomId,
+		string kingdomId)
+	{
+		string id = (kingdomId ?? string.Empty).Trim();
+		if (authorization == null
+			|| id.Length == 0
+			|| string.Equals(id, targetKingdomId ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		authorization.KingdomIds.Add(id);
+		authorization.ExplicitCrossKingdomIds.Add(id);
+		authorization.AllowedKingdomReferenceIds.Add(id);
+	}
+
 	private static void AddStrictPolicyKingdomAliasEvidence(
 		string query,
+		string targetKingdomId,
 		PlayerPolicyTargetAuthorization authorization)
 	{
 		try
@@ -840,8 +988,16 @@ public sealed partial class CustomPolicyBehavior
 					.ToList();
 				if (owners.Count == 1 && query.IndexOf(group.Key, StringComparison.OrdinalIgnoreCase) >= 0)
 				{
-					authorization.KingdomIds.Add(owners[0].StringId);
-					authorization.AllowedKingdomReferenceIds.Add(owners[0].StringId);
+					string kingdomId = owners[0].StringId;
+					authorization.AllowedKingdomReferenceIds.Add(kingdomId);
+					if (string.Equals(kingdomId, targetKingdomId ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+					{
+						authorization.KingdomIds.Add(kingdomId);
+					}
+					else
+					{
+						AddPlayerPolicyExecutableCrossKingdom(authorization, targetKingdomId, kingdomId);
+					}
 				}
 			}
 		}
@@ -873,8 +1029,7 @@ public sealed partial class CustomPolicyBehavior
 				: string.Empty;
 			if (other.Length > 0)
 			{
-				authorization.KingdomIds.Add(other);
-				authorization.AllowedKingdomReferenceIds.Add(other);
+				AddPlayerPolicyExecutableCrossKingdom(authorization, anchorKingdomId, other);
 			}
 		}
 	}
@@ -1291,6 +1446,7 @@ public sealed partial class CustomPolicyBehavior
 		}
 		int index = result.Count;
 		PlayerPolicyTargetAuthorization objectiveEvidence = new PlayerPolicyTargetAuthorization();
+		string targetKingdomId = targetKingdom?.StringId ?? string.Empty;
 		foreach (string kind in new[]
 		{
 			PolicyTargetEntityKinds.Kingdom,
@@ -1306,12 +1462,20 @@ public sealed partial class CustomPolicyBehavior
 			{
 				if (!string.IsNullOrWhiteSpace(entity.OwnerKingdomId))
 				{
-					objectiveEvidence.KingdomIds.Add(entity.OwnerKingdomId);
+					objectiveEvidence.AllowedKingdomReferenceIds.Add(entity.OwnerKingdomId);
+					if (string.Equals(entity.OwnerKingdomId, targetKingdomId, StringComparison.OrdinalIgnoreCase))
+					{
+						objectiveEvidence.KingdomIds.Add(entity.OwnerKingdomId);
+					}
+					else
+					{
+						AddPlayerPolicyExecutableCrossKingdom(objectiveEvidence, targetKingdomId, entity.OwnerKingdomId);
+					}
 				}
 			}
 		}
-		AddStrictPolicyKingdomAliasEvidence(policyText, objectiveEvidence);
-		AddExplicitPolicyRelationKingdoms(policyText, targetKingdom?.StringId ?? string.Empty, snapshot, objectiveEvidence);
+		AddStrictPolicyKingdomAliasEvidence(policyText, targetKingdomId, objectiveEvidence);
+		AddExplicitPolicyRelationKingdoms(policyText, targetKingdomId, snapshot, objectiveEvidence);
 		try
 		{
 			foreach (Kingdom kingdom in (Kingdom.All ?? Enumerable.Empty<Kingdom>())

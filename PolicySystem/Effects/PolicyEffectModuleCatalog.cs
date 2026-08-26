@@ -879,7 +879,11 @@ internal static class PolicyEffectModuleCatalog
 						|| runtimeModule.Descriptor.TargetProjection != sourceModule.Descriptor.TargetProjection
 						|| runtimeModule.Descriptor.TargetRefresh != sourceModule.Descriptor.TargetRefresh
 						|| runtimeModule.Descriptor.AllowIndependentClanTargets
-							!= sourceModule.Descriptor.AllowIndependentClanTargets)
+							!= sourceModule.Descriptor.AllowIndependentClanTargets
+						|| runtimeModule.Descriptor.AllowCrossKingdomTargets
+							!= sourceModule.Descriptor.AllowCrossKingdomTargets
+						|| runtimeModule.Descriptor.ExcludeActorClanTargets
+							!= sourceModule.Descriptor.ExcludeActorClanTargets)
 					{
 						throw new InvalidOperationException(
 							"Composite policy effect module declares an invalid runtime descendant: "
@@ -963,12 +967,25 @@ internal static class PolicyEffectModuleCatalog
 		{
 			throw new InvalidOperationException("独立家族目标能力要求 Clan target: " + id);
 		}
+		if (descriptor.ExcludeActorClanTargets
+			&& !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan))
+		{
+			throw new InvalidOperationException("排除发布者家族目标要求 Clan target: " + id);
+		}
 		if (descriptor.TargetProjection == PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader
 			&& (!descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Settlement)
 				|| !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Hero)))
 		{
 			throw new InvalidOperationException(
 				"SettlementOwnerClanLeader 投影要求 Settlement selector 和 Hero target: " + id);
+		}
+		if (descriptor.TargetProjection == PolicyEffectTargetProjectionKind.PrimaryFiefAndBoundSettlements
+			&& (!descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Settlement)
+				|| descriptor.TargetKinds.Count != 1
+				|| !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Settlement)))
+		{
+			throw new InvalidOperationException(
+				"PrimaryFiefAndBoundSettlements 投影要求 Settlement selector 和唯一 Settlement target: " + id);
 		}
 		if (descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Village))
 		{
@@ -1137,6 +1154,12 @@ internal static class PolicyEffectModuleCatalog
 			case PolicyEffectHook.ArmyFormationScore:
 				executionKind = PolicyEffectExecutionKind.ModelModifier;
 				targetKind = PolicyEffectTargetKind.Clan;
+				aggregation = PolicyEffectAggregationKind.Additive;
+				valueUnit = PolicyEffectValueUnit.RelativePercent;
+				break;
+			case PolicyEffectHook.VolunteerProductionProbability:
+				executionKind = PolicyEffectExecutionKind.ModelModifier;
+				targetKind = PolicyEffectTargetKind.Settlement;
 				aggregation = PolicyEffectAggregationKind.Additive;
 				valueUnit = PolicyEffectValueUnit.RelativePercent;
 				break;

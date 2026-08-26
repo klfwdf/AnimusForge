@@ -21,10 +21,10 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom, PolicyEffectTargetKind.Hero },
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
 		cueTerms: new[] { "关系", "好感", "领主态度", "贵族支持", "得罪领主", "赢得拥护" },
-		retrievalText: "政策发布者与目标家族领袖的关系、好感、态度、支持或敌意；在政策通过后的下一个游戏日对每位唯一家族领袖结算一次。",
-		catalogSummary: "发布者与目标家族领袖的一次性关系变化",
-		mainInstruction: "政策若会让受影响地区或目标王国的领主更支持或更反感政策发布者，请给出一次性关系变化。正数改善关系，负数恶化关系；效果在政策通过后的下一个游戏日结算一次。玩家政策的发布者固定为发布时玩家，统治者政策固定为通过政策的统治者。",
-		postprocessRule: "value 必须是有限数字，最终按整数关系点结算。目标按家族去重，每个当前家族领袖只结算一次；发布者本人、已灭亡家族及无有效领袖目标跳过。正向变化保留原版外交模型加成和随机取整，关系仍受原版 -100～100 限制。",
+		retrievalText: "政策发布者与除发布者所属家族外的目标家族领袖之间的关系、好感、态度、支持或敌意；在政策通过后的下一个游戏日对每位唯一家族领袖结算一次。",
+		catalogSummary: "发布者与其他家族领袖的一次性关系变化",
+		mainInstruction: "政策若会让受影响地区或目标王国中除发布者所属家族外的领主更支持或更反感政策发布者，请给出一次性关系变化。正数改善关系，负数恶化关系；效果在政策通过后的下一个游戏日结算一次。玩家政策的发布者固定为发布时玩家，统治者政策固定为通过政策的统治者。",
+		postprocessRule: "value 必须是有限数字，最终按整数关系点结算。目标按家族去重，每个当前家族领袖只结算一次；发布者所属家族整体、已灭亡家族及无有效领袖目标跳过。正向变化保留原版外交模型加成和随机取整，关系仍受原版 -100～100 限制。",
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
 		family: PolicyEffectFamily.Governance,
 		executionKind: PolicyEffectExecutionKind.ScheduledOnce,
@@ -39,8 +39,10 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		promptVisible: true,
 		displayGroup: "clanLeaderRelationOnce",
 		playerDisplayName: "家族领袖关系",
-		editableUnderstandingPrompt: "家族领袖关系反映受影响地区或目标王国的领主对政策发布者的支持或反感。政策让这些领主直接受益、受损、受辱、获誉、受压迫或卷入利益冲突时，领袖关系就是一次性后果；发布者本人和没有有效领袖的家族不计入。",
-		editableEvaluationPrompt: "关系改善为正、恶化为负，并按整数关系点判断。变化在政策通过后的下一游戏日发生，每个当前家族领袖只结算一次，强度应与受益、受损、荣誉、压迫和利益冲突程度相称，关系仍受游戏原有上下限约束。");
+		editableUnderstandingPrompt: "家族领袖关系反映受影响地区或目标王国的其他领主对政策发布者的支持或反感。政策让这些领主直接受益、受损、受辱、获誉、受压迫或卷入利益冲突时，领袖关系就是一次性后果；发布者所属家族整体和没有有效领袖的家族不计入。",
+		editableEvaluationPrompt: "关系改善为正、恶化为负，并按整数关系点判断。变化在政策通过后的下一游戏日发生，发布者所属家族整体不计入，其他每个当前家族领袖只结算一次。轻微礼遇、不便或有限利益通常为每位领袖 ±1 到 ±3；明确受益、受损、荣誉肯定或政治冒犯为 ±4 到 ±8；重大特权、沉重损失、公开羞辱、强力压迫或显著利益冲突为 ±9 到 ±15；救命之恩、严重背叛、系统性迫害或足以改变阵营立场的事件为 ±16 到 ±30。不得因为目标家族数量多或该效果只结算一次而把每位领袖的变化均摊到 1 点；也不得只凭华丽措辞给高值。强度应由每位领袖实际承受的受益、损失、荣誉、压迫和政治风险决定，关系仍受游戏原有上下限约束。",
+		excludeActorClanTargets: true,
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

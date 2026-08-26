@@ -89,7 +89,12 @@ public static class KingdomAgendaCustomPolicyBehavior
 		List<PostprocessRuleEntry> result = new List<PostprocessRuleEntry>();
 		if (!IsEligibleTargetForExternal(ruler, out string failureReason))
 		{
-			Logger.Log("KingdomAgendaCustomPolicy", "[PostprocessRules] eligible=false ruler=" + SafeHeroId(ruler) + " reason=" + (failureReason ?? ""));
+			PolicySystemLog.Lifecycle("Agenda", "postprocess-rule-eligibility", "ineligible", new PolicyLogContext
+			{
+				TargetHash = PolicySystemLog.HashSensitive(SafeHeroId(ruler)),
+				MessageChars = failureReason?.Length ?? 0,
+				MessageHash = PolicySystemLog.HashSensitive(failureReason)
+			});
 			return result;
 		}
 
@@ -106,8 +111,12 @@ public static class KingdomAgendaCustomPolicyBehavior
 				Description = (rule.Description ?? "").Trim()
 			});
 		}
-		Logger.Log("KingdomAgendaCustomPolicy", "[PostprocessRules] eligible=true ruler=" + SafeHeroId(ruler)
-			+ " kingdom=" + SafeKingdomId(kingdom) + " rules=" + result.Count);
+		PolicySystemLog.Lifecycle("Agenda", "postprocess-rule-eligibility", "eligible", new PolicyLogContext
+		{
+			TargetHash = PolicySystemLog.HashSensitive(SafeHeroId(ruler) + "|" + SafeKingdomId(kingdom)),
+			TargetCount = 1,
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal) { ["rules"] = result.Count }
+		});
 		return result;
 	}
 

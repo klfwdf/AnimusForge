@@ -343,10 +343,30 @@ internal sealed class PolicyEffectTarget
 	public string Scope { get; set; } = string.Empty;
 }
 
+[JsonConverter(typeof(StringEnumConverter), true)]
+internal enum PolicyEffectTargetJurisdictionKind
+{
+	LegacyCompiled,
+	Domestic,
+	CrossKingdom
+}
+
 internal sealed class PolicyEffectCanonicalTargetSet
 {
 	[JsonProperty("structureVersion")]
 	public int StructureVersion { get; set; } = 1;
+
+	[JsonProperty("jurisdictionKind", DefaultValueHandling = DefaultValueHandling.Ignore)]
+	public PolicyEffectTargetJurisdictionKind JurisdictionKind { get; set; }
+		= PolicyEffectTargetJurisdictionKind.LegacyCompiled;
+
+	[JsonProperty("authorizedCrossKingdomIds", NullValueHandling = NullValueHandling.Ignore)]
+	public List<string> AuthorizedCrossKingdomIds { get; set; } = new List<string>();
+
+	public bool ShouldSerializeAuthorizedCrossKingdomIds()
+	{
+		return AuthorizedCrossKingdomIds != null && AuthorizedCrossKingdomIds.Count > 0;
+	}
 
 	[JsonProperty("selectorHandles")]
 	public List<string> SelectorHandles { get; set; } = new List<string>();

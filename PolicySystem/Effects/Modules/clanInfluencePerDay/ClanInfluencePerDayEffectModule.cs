@@ -35,7 +35,8 @@ internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModul
 		supportsRollback: true,
 		supportsIdempotency: true,
 		promptVisible: false,
-		displayGroup: "clanInfluence");
+		displayGroup: "clanInfluence",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

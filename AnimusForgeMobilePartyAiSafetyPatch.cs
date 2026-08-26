@@ -43,6 +43,7 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			PatchPartyDiplomaticHandler(harmony);
 			PatchChangeShipOwnerAction(harmony);
 			PatchNavalShipTradeOwnerChanged(harmony);
+			PatchNavalBanditSafeZone(harmony);
 		}
 		catch (Exception ex)
 		{
@@ -365,6 +366,26 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		return __exception;
 	}
 
+	public static Exception NavalBanditSafeZoneFinalizer(Exception __exception, ref bool __result, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		if (!(__exception is NullReferenceException))
+		{
+			return __exception;
+		}
+		__result = false;
+		LogGuard(
+			"naval_safe_zone_null_suppressed",
+			null,
+			"NavalDLC closest entrance or map-distance state unavailable",
+			__exception,
+			__originalMethod);
+		return null;
+	}
+
 	private static void PatchPartyHourlyAiTick(Harmony harmony)
 	{
 		Type type = AccessTools.TypeByName("TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiPartyThinkBehavior");
@@ -492,6 +513,19 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		}
 		harmony.Patch(target, finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(NavalShipTradeOwnerChangedFinalizer)));
 		Logger.Log(LogSource, "NavalDLC ShipTradeCampaignBehavior.OnShipOwnerChanged guard applied.");
+	}
+
+	private static void PatchNavalBanditSafeZone(Harmony harmony)
+	{
+		Type type = AccessTools.TypeByName("NavalDLC.GameComponents.NavalDLCBanditDensityModel");
+		MethodInfo target = type == null ? null : AccessTools.Method(type, "IsPositionInsideNavalSafeZone");
+		if (target == null)
+		{
+			Logger.Log(LogSource, "NavalDLC NavalDLCBanditDensityModel.IsPositionInsideNavalSafeZone not found; naval safe-zone guard skipped.");
+			return;
+		}
+		harmony.Patch(target, finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(NavalBanditSafeZoneFinalizer)));
+		Logger.Log(LogSource, "NavalDLC NavalDLCBanditDensityModel.IsPositionInsideNavalSafeZone guard applied.");
 	}
 
 	private static MobileParty ExtractParty(object[] args)

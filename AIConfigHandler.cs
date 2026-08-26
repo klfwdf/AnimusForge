@@ -5468,7 +5468,6 @@ public static class AIConfigHandler
 					break;
 				}
 			}
-			PreferDirectDiplomacyTopicOverAgenda(list3);
 			if (list3.Count <= 0)
 			{
 				snapshot = null;
@@ -5603,7 +5602,6 @@ public static class AIConfigHandler
 					break;
 				}
 			}
-			PreferDirectDiplomacyTopicOverAgenda(ruleIds);
 			if (ruleIds.Count <= 0)
 			{
 				error = "rule_ids_empty";
@@ -6411,11 +6409,6 @@ public static class AIConfigHandler
 					}
 				}
 			}
-			if (IsWorldDiplomacyTakeoverEnabledForTopicRouting()
-				&& list.Any(hit => string.Equals(hit?.RuleId, "diplomacy", StringComparison.OrdinalIgnoreCase)))
-			{
-				list.RemoveAll(hit => string.Equals(hit?.RuleId, "kingdom_agenda", StringComparison.OrdinalIgnoreCase));
-			}
 			list = (from x in list
 				orderby x.Priority descending, x.Score descending
 				select x).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
@@ -6432,17 +6425,6 @@ public static class AIConfigHandler
 		{
 		}
 		return list;
-	}
-
-	private static void PreferDirectDiplomacyTopicOverAgenda(List<string> ruleIds)
-	{
-		if (ruleIds == null
-			|| !IsWorldDiplomacyTakeoverEnabledForTopicRouting()
-			|| !ruleIds.Any(id => string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)))
-		{
-			return;
-		}
-		ruleIds.RemoveAll(id => string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> excludedRuleIds)

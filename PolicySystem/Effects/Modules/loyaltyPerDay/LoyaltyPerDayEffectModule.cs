@@ -31,7 +31,8 @@ internal sealed class LoyaltyPerDayEffectModule : NumericPolicyEffectModuleBase<
 		payloadSchemaVersion: 1,
 		playerDisplayName: "城镇忠诚",
 		editableUnderstandingPrompt: "忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响。政策直接持续作用于城镇民心、政治认同或反抗情绪时，忠诚度就是直接后果；经济繁荣本身不能代替政治认同。",
-		editableEvaluationPrompt: "按每座受影响城镇的每日实际变化判断，不先计算整个持续期再除以天数。轻微影响为 ±0.1 到 ±0.4；普通安抚、税负、公平感、文化待遇或自治调整为 ±0.4 到 ±1.2；重大改革、强力压迫、重税减免、广泛赈济、荣誉优待或明显歧视为 ±2 到 ±6；极端暴政、重大救民、严重背叛、系统性迫害或接近叛乱级刺激为 ±4 到 ±12。");
+		editableEvaluationPrompt: "按每座受影响城镇的每日实际变化判断，不先计算整个持续期再除以天数。轻微影响为 ±0.1 到 ±0.4；普通安抚、税负、公平感、文化待遇或自治调整为 ±0.4 到 ±1.2；重大改革、强力压迫、重税减免、广泛赈济、荣誉优待或明显歧视为 ±2 到 ±6；极端暴政、重大救民、严重背叛、系统性迫害或接近叛乱级刺激为 ±4 到 ±12。",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

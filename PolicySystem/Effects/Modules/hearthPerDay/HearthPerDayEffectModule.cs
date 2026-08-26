@@ -31,7 +31,8 @@ internal sealed class HearthPerDayEffectModule : NumericPolicyEffectModuleBase<H
 		payloadSchemaVersion: 1,
 		playerDisplayName: "村庄户数",
 		editableUnderstandingPrompt: "村庄户数代表人口和劳力，主要受劳动力、安全、徭役、安置、迁徙、逃亡、开垦、屠掠和灾荒影响。政策通过这些途径持续改变相关城镇或城堡附属村庄的人口时，户数就是直接后果。",
-		editableEvaluationPrompt: "按每个受影响村庄的每日变化判断。轻微影响为 ±0.1 到 ±0.5；普通徭役、安置、劳力恢复或迁徙为 ±0.5 到 ±1.5；强力移民、战乱逃亡、重税压迫或大规模劳役为 ±2 到 ±4；全国人口扶持、屠掠、灾荒或强制迁徙为 ±4 到 ±7；极端人口变化或灾难为 ±7 到 ±10。");
+		editableEvaluationPrompt: "按每个受影响村庄的每日变化判断。轻微影响为 ±0.1 到 ±0.5；普通徭役、安置、劳力恢复或迁徙为 ±0.5 到 ±1.5；强力移民、战乱逃亡、重税压迫或大规模劳役为 ±2 到 ±4；全国人口扶持、屠掠、灾荒或强制迁徙为 ±4 到 ±7；极端人口变化或灾难为 ±7 到 ±10。",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -48,7 +48,8 @@ internal sealed class SoldierTroopXpPerDayEffectModule
 		playerDisplayName: "士兵精锐化",
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.FrozenCanonicalIds,
-		allowIndependentClanTargets: true);
+		allowIndependentClanTargets: true,
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

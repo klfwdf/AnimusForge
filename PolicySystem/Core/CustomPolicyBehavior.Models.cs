@@ -183,6 +183,14 @@ public sealed partial class CustomPolicyBehavior
 		public string PlayerPayloadJson { get; set; }
 
 		public bool PlayerStewardXpAwarded { get; set; }
+
+		public string ReReviewRootRecordId { get; set; }
+
+		public string ReReviewSourceRecordId { get; set; }
+
+		public string SupersedesRecordId { get; set; }
+
+		public bool ReReviewReplacementCommitted { get; set; }
 	}
 
 	private sealed class PendingPlayerPolicyAgendaSaveData
@@ -214,6 +222,8 @@ public sealed partial class CustomPolicyBehavior
 
 		public HashSet<string> KingdomIds { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+		public HashSet<string> ExplicitCrossKingdomIds { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		public HashSet<string> EntityKeys { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public HashSet<string> PlanSignatures { get; } = new HashSet<string>(StringComparer.Ordinal);
@@ -232,6 +242,14 @@ public sealed partial class CustomPolicyBehavior
 		public PolicyGenerationSettingsSnapshot GenerationSettings;
 
 		public string RequestId;
+
+		public string ReReviewRootRecordId { get; set; }
+
+		public string ReReviewSourceRecordId { get; set; }
+
+		public string SupersedesRecordId { get; set; }
+
+		public bool ReReviewReplacementCommitted { get; set; }
 
 		public string ScopeKind = PolicyScopeKingdom;
 
@@ -350,6 +368,31 @@ public sealed partial class CustomPolicyBehavior
 
 		[JsonIgnore]
 		public PolicyHistoryRetrievalResult PolicyHistoryRetrieval;
+	}
+
+	private sealed class PolicyReReviewContext
+	{
+		public string ScopeKind { get; set; } = PolicyScopeKingdom;
+
+		public string SourceRecordId { get; set; } = string.Empty;
+
+		public string RootRecordId { get; set; } = string.Empty;
+
+		public string SupersedesRecordId { get; set; } = string.Empty;
+
+		public string PolicyName { get; set; } = string.Empty;
+
+		public string PolicyContent { get; set; } = string.Empty;
+
+		public bool DurationKnown { get; set; }
+
+		public bool IsPermanentEffect { get; set; }
+
+		public int DurationDays { get; set; }
+
+		public string SelectedTargetId { get; set; } = string.Empty;
+
+		public List<string> SelectedFiefIds { get; set; } = new List<string>();
 	}
 
 	private sealed class PolicyPromptContextBundle
@@ -832,6 +875,14 @@ public sealed partial class CustomPolicyBehavior
 
 		public string RecordId { get; set; }
 
+		public string ReReviewRootRecordId { get; set; }
+
+		public string ReReviewSourceRecordId { get; set; }
+
+		public string SupersedesRecordId { get; set; }
+
+		public bool ReReviewReplacementCommitted { get; set; }
+
 		public string ActiveEffectId { get; set; }
 
 		public string ExternalTransactionId { get; set; }
@@ -1035,6 +1086,7 @@ public sealed partial class CustomPolicyBehavior
 		IncompleteLinkedMechanism,
 		UnknownOrUnauthorizedTargetHandle,
 		UnauthorizedModuleTargetPair,
+		MissingIssuerKingdomEffect,
 		CompilationOrSafety
 	}
 

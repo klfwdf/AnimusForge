@@ -621,12 +621,17 @@ internal static class WorldDiplomacyPolicyContext
 	private static void AppendTargetSetHash(ref ulong hash, PolicyEffectCanonicalTargetSet targetSet)
 	{
 		AppendHash(ref hash, targetSet?.StructureVersion.ToString(CultureInfo.InvariantCulture));
+		AppendHash(ref hash, targetSet?.JurisdictionKind.ToString());
+		AppendHashValues(ref hash, targetSet?.AuthorizedCrossKingdomIds);
 		AppendHashValues(ref hash, targetSet?.SelectorHandles);
+		AppendHashValues(ref hash, targetSet?.SelectorIds);
+		AppendHashValues(ref hash, targetSet?.TargetPlans?.Select(plan => plan?.NormalizedSignature ?? string.Empty));
 		AppendHashValues(ref hash, targetSet?.SettlementIds);
 		AppendHashValues(ref hash, targetSet?.TownIds);
 		AppendHashValues(ref hash, targetSet?.VillageIds);
 		AppendHashValues(ref hash, targetSet?.ClanIds);
 		AppendHashValues(ref hash, targetSet?.KingdomIds);
+		AppendHashValues(ref hash, targetSet?.HeroIds);
 		AppendHashValues(ref hash, targetSet?.ParentSettlementIds);
 		AppendHash(ref hash, targetSet?.FollowCurrentRulingClan == true ? "1" : "0");
 	}

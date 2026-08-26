@@ -414,6 +414,16 @@ internal sealed partial class BannerlordPolicyEffectGameBridge : IPolicyEffectGa
 			// Treat it as a skipped target rather than applying to an invalid clan.
 			return true;
 		}
+		Clan actorClan = actor.Clan;
+		if (actorClan != null
+			&& (ReferenceEquals(actorClan, targetClan)
+				|| string.Equals(
+					(actorClan.StringId ?? string.Empty).Trim(),
+					(targetClan.StringId ?? string.Empty).Trim(),
+					StringComparison.OrdinalIgnoreCase)))
+		{
+			return true;
+		}
 		Hero target = targetClan.Leader;
 		if (target == null || target.IsDead || target.IsDisabled || ReferenceEquals(actor, target))
 		{
@@ -899,9 +909,39 @@ internal static class PolicyEffectActivationCoordinator
 				Attempt = 1,
 				RuntimeState = GetModuleRuntimeState(normalizedSave)
 			};
+			PolicySystemLog.Lifecycle("Effect", "one-shot-start", "started", new PolicyLogContext
+			{
+				TransactionId = normalizedSave.InstanceId + ":one-shot",
+				PolicyId = normalizedSave.PolicyId,
+				MechanismId = normalizedSave.MechanismId,
+				ModuleId = normalizedSave.ModuleId,
+				InstanceId = normalizedSave.InstanceId,
+				Attempt = context.Attempt,
+				IdempotencyHash = context.IdempotencyKey,
+				CampaignDay = float.IsNaN(campaignDay) || float.IsInfinity(campaignDay)
+					? null
+					: (int?)Math.Floor(campaignDay),
+				StateBefore = normalizedSave.LifecycleState.ToString(),
+				StateAfter = "executing"
+			});
 			PolicyEffectExecutionResult execution = oneShot.ApplyOnce(context);
 			if (execution?.Success != true || execution.Receipt == null)
 			{
+				PolicySystemLog.Lifecycle("Effect", "one-shot-complete", "failed", new PolicyLogContext
+				{
+					TransactionId = normalizedSave.InstanceId + ":one-shot",
+					PolicyId = normalizedSave.PolicyId,
+					MechanismId = normalizedSave.MechanismId,
+					ModuleId = normalizedSave.ModuleId,
+					InstanceId = normalizedSave.InstanceId,
+					Attempt = context.Attempt,
+					IdempotencyHash = context.IdempotencyKey,
+					ErrorKind = "OneShotExecutionFailure",
+					MessageChars = execution?.Error?.Length ?? 0,
+					MessageHash = PolicySystemLog.HashSensitive(execution?.Error),
+					StateBefore = "executing",
+					StateAfter = "failed"
+				});
 				error = "one-shot apply failed: " + module.Id + " / " + (execution?.Error ?? "missing receipt");
 				RollbackAppliedOneShots(transaction, gameBridge, campaignDay, out string rollbackError);
 				if (!string.IsNullOrWhiteSpace(rollbackError))
@@ -916,6 +956,19 @@ internal static class PolicyEffectActivationCoordinator
 			normalizedSave.LifecycleState = PolicyEffectLifecycleState.Completed;
 			transaction.Instances.Add(normalizedSave);
 			transaction.Receipts.Add(execution.Receipt);
+			PolicySystemLog.Lifecycle("Effect", "one-shot-complete", "success", new PolicyLogContext
+			{
+				TransactionId = normalizedSave.InstanceId + ":one-shot",
+				PolicyId = normalizedSave.PolicyId,
+				MechanismId = normalizedSave.MechanismId,
+				ModuleId = normalizedSave.ModuleId,
+				InstanceId = normalizedSave.InstanceId,
+				ReceiptId = execution.Receipt.ReceiptId,
+				Attempt = context.Attempt,
+				IdempotencyHash = context.IdempotencyKey,
+				StateBefore = "executing",
+				StateAfter = normalizedSave.LifecycleState.ToString()
+			});
 			if (execution.Status == PolicyEffectExecutionStatus.Applied)
 			{
 				transaction.AppliedOneShots.Add(prepared);
@@ -1218,6 +1271,19 @@ internal static class PolicyEffectActivationCoordinator
 			}
 			PolicyEffectExecutionReceipt receipt = transaction.Receipts.LastOrDefault(
 				item => string.Equals(item?.InstanceId, prepared.Instance.InstanceId, StringComparison.Ordinal));
+			PolicySystemLog.Lifecycle("Effect", "rollback-start", "started", new PolicyLogContext
+			{
+				TransactionId = prepared.Instance.InstanceId + ":rollback",
+				PolicyId = prepared.Instance.PolicyId,
+				MechanismId = prepared.Instance.MechanismId,
+				ModuleId = module.Id,
+				InstanceId = prepared.Instance.InstanceId,
+				ReceiptId = receipt?.ReceiptId,
+				Attempt = 1,
+				IdempotencyHash = prepared.IdempotencyKey,
+				StateBefore = "applied",
+				StateAfter = "rollingBack"
+			});
 			PolicyEffectExecutionResult rollback = oneShot.RollbackOnce(new PolicyEffectExecutionContext
 			{
 				PreparedInstance = prepared,
@@ -1231,6 +1297,23 @@ internal static class PolicyEffectActivationCoordinator
 			{
 				failures.Add(module.Id + ": " + (rollback?.Error ?? "rollback failed"));
 			}
+			PolicySystemLog.Lifecycle("Effect", rollback?.Success == true ? "rollback-complete" : "rollback-failed",
+				rollback?.Success == true ? "success" : "failed", new PolicyLogContext
+				{
+					TransactionId = prepared.Instance.InstanceId + ":rollback",
+					PolicyId = prepared.Instance.PolicyId,
+					MechanismId = prepared.Instance.MechanismId,
+					ModuleId = module.Id,
+					InstanceId = prepared.Instance.InstanceId,
+					ReceiptId = receipt?.ReceiptId,
+					Attempt = 1,
+					IdempotencyHash = prepared.IdempotencyKey,
+					ErrorKind = rollback?.Success == true ? null : "OneShotRollbackFailure",
+					MessageChars = rollback?.Error?.Length ?? 0,
+					MessageHash = PolicySystemLog.HashSensitive(rollback?.Error),
+					StateBefore = "rollingBack",
+					StateAfter = rollback?.Success == true ? "rolledBack" : "rollbackPending"
+				});
 		}
 		error = string.Join("; ", failures);
 		return failures.Count == 0;
@@ -1375,6 +1458,17 @@ internal static class PolicyEffectActivationCoordinator
 		{
 			return true;
 		}
+		PolicyEffectInstanceSaveData firstDueInstance = due[0].Instance;
+		PolicySystemLog.Lifecycle("Effect", "scheduled-start", "started", new PolicyLogContext
+		{
+			TransactionId = (firstDueInstance?.PolicyId ?? "policy") + ":scheduled:" + campaignDay.ToString(CultureInfo.InvariantCulture),
+			PolicyId = firstDueInstance?.PolicyId,
+			CampaignDay = campaignDay,
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["dueInstances"] = due.Count
+			}
+		});
 
 		List<PolicyEffectScheduledExecutionLeg> completedThisCall = new List<PolicyEffectScheduledExecutionLeg>();
 		IEnumerable<IGrouping<string, PolicyEffectScheduledExecutionLeg>> groups = due.GroupBy(
@@ -2140,6 +2234,19 @@ internal static class PolicyEffectActivationCoordinator
 				continue;
 			}
 			PolicyEffectExecutionResult compensation;
+			PolicySystemLog.Lifecycle("Effect", "compensation-start", "started", new PolicyLogContext
+			{
+				TransactionId = leg.Instance.InstanceId + ":scheduled-compensation:" + campaignDay.ToString(CultureInfo.InvariantCulture),
+				PolicyId = leg.Instance.PolicyId,
+				MechanismId = leg.Instance.MechanismId,
+				ModuleId = leg.Instance.ModuleId,
+				InstanceId = leg.Instance.InstanceId,
+				ReceiptId = leg.Receipt.ReceiptId,
+				Attempt = 1,
+				CampaignDay = campaignDay,
+				StateBefore = "applied",
+				StateAfter = "compensating"
+			});
 			try
 			{
 				compensation = scheduled.CompensateScheduledOnce(new PolicyEffectExecutionContext
@@ -2168,6 +2275,22 @@ internal static class PolicyEffectActivationCoordinator
 				string failure = FirstNonEmpty(compensation?.Error, "scheduled compensation failed");
 				MarkScheduledCompensationPending(leg, receipts, campaignDay, failure);
 				failures.Add(leg.Module.Id + ": " + failure);
+				PolicySystemLog.Lifecycle("Effect", "compensation-failed", "failed", new PolicyLogContext
+				{
+					TransactionId = leg.Instance.InstanceId + ":scheduled-compensation:" + campaignDay.ToString(CultureInfo.InvariantCulture),
+					PolicyId = leg.Instance.PolicyId,
+					MechanismId = leg.Instance.MechanismId,
+					ModuleId = leg.Instance.ModuleId,
+					InstanceId = leg.Instance.InstanceId,
+					ReceiptId = leg.Receipt.ReceiptId,
+					Attempt = 1,
+					CampaignDay = campaignDay,
+					ErrorKind = "ScheduledCompensationFailure",
+					MessageChars = failure.Length,
+					MessageHash = PolicySystemLog.HashSensitive(failure),
+					StateBefore = "compensating",
+					StateAfter = "compensationPending"
+				});
 				continue;
 			}
 			RemoveReceipt(receipts, leg.Receipt);
@@ -2179,6 +2302,19 @@ internal static class PolicyEffectActivationCoordinator
 			progress["compensatedDay"] = campaignDay;
 			ClearScheduledCompensationPending(progress);
 			progress.Remove("completedDay");
+			PolicySystemLog.Lifecycle("Effect", "compensation-complete", "success", new PolicyLogContext
+			{
+				TransactionId = leg.Instance.InstanceId + ":scheduled-compensation:" + campaignDay.ToString(CultureInfo.InvariantCulture),
+				PolicyId = leg.Instance.PolicyId,
+				MechanismId = leg.Instance.MechanismId,
+				ModuleId = leg.Instance.ModuleId,
+				InstanceId = leg.Instance.InstanceId,
+				ReceiptId = leg.Receipt.ReceiptId,
+				Attempt = 1,
+				CampaignDay = campaignDay,
+				StateBefore = "compensating",
+				StateAfter = leg.Instance.LifecycleState.ToString()
+			});
 		}
 		error = string.Join("; ", failures);
 		return failures.Count == 0;
@@ -2550,6 +2686,29 @@ internal static class PolicyEffectActivationCoordinator
 			}
 			lifecycle[stateKey] = eventState;
 			stateChanged = true;
+			if (eventKind == PolicyEffectLifecycleEventKind.Expired
+				|| eventKind == PolicyEffectLifecycleEventKind.Abolished)
+			{
+				PolicySystemLog.Lifecycle("Effect", "instance-ended",
+					result != null && (result.Success || result.Status == PolicyEffectExecutionStatus.Skipped)
+						? "success" : "failed", new PolicyLogContext
+					{
+						TransactionId = normalizedEventKey,
+						PolicyId = instance.PolicyId,
+						MechanismId = instance.MechanismId,
+						ModuleId = instance.ModuleId,
+						InstanceId = instance.InstanceId,
+						Attempt = 1,
+						IdempotencyHash = idempotencyKey,
+						CampaignDay = float.IsNaN(campaignDay) || float.IsInfinity(campaignDay)
+							? null
+							: (int?)Math.Floor(campaignDay),
+						ErrorKind = result != null && (result.Success || result.Status == PolicyEffectExecutionStatus.Skipped)
+							? null : "LifecycleEndFailure",
+						StateBefore = instance.LifecycleState.ToString(),
+						StateAfter = eventKind.ToString()
+					});
+			}
 		}
 		error = string.Join("; ", failures);
 		return failures.Count == 0;
@@ -2873,6 +3032,8 @@ internal static class PolicyEffectActivationCoordinator
 		return new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = source.StructureVersion,
+			JurisdictionKind = source.JurisdictionKind,
+			AuthorizedCrossKingdomIds = new List<string>(source.AuthorizedCrossKingdomIds ?? new List<string>()),
 			SelectorHandles = new List<string>(source.SelectorHandles ?? new List<string>()),
 			SelectorIds = new List<string>(source.SelectorIds ?? new List<string>()),
 			TargetPlans = (source.TargetPlans ?? new List<PolicyTargetPlanSaveData>())
