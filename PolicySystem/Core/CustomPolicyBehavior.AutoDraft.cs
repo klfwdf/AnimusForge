@@ -25,9 +25,10 @@ public sealed partial class CustomPolicyBehavior
 			return;
 		}
 		string normalizedDescription = NormalizePolicyContent(input.PlayerDescription);
-		if (string.IsNullOrWhiteSpace(normalizedDescription))
+		string normalizedPolicyName = NormalizePolicyName(input.ExistingPolicyName);
+		if (!PlayerPolicyAutoDraftInputContract.HasInput(normalizedPolicyName, normalizedDescription))
 		{
-			DeliverPlayerPolicyAutoDraftResult(onCompleted, PlayerPolicyAutoDraftResult.Failed("请先描述你想要的政策。"));
+			DeliverPlayerPolicyAutoDraftResult(onCompleted, PlayerPolicyAutoDraftResult.Failed("请先填写政策标题或政策内容。"));
 			return;
 		}
 		if (_generationInProgress)

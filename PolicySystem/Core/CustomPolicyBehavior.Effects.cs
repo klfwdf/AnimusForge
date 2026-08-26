@@ -7471,23 +7471,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static PolicyEffectCanonicalTargetSet NormalizePolicyEffectCanonicalTargetSet(PolicyEffectCanonicalTargetSet targetSet)
 	{
-		return new PolicyEffectCanonicalTargetSet
-		{
-			StructureVersion = Math.Max(1, targetSet?.StructureVersion ?? 1),
-			JurisdictionKind = targetSet?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
-			AuthorizedCrossKingdomIds = NormalizeIdList(targetSet?.AuthorizedCrossKingdomIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			SelectorHandles = NormalizeIdList(targetSet?.SelectorHandles).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			SelectorIds = NormalizeIdList(targetSet?.SelectorIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(targetSet?.TargetPlans),
-			SettlementIds = NormalizeIdList(targetSet?.SettlementIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			TownIds = NormalizeIdList(targetSet?.TownIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			VillageIds = NormalizeIdList(targetSet?.VillageIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			ClanIds = NormalizeIdList(targetSet?.ClanIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			KingdomIds = NormalizeIdList(targetSet?.KingdomIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			HeroIds = NormalizeIdList(targetSet?.HeroIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			ParentSettlementIds = NormalizeIdList(targetSet?.ParentSettlementIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
-			FollowCurrentRulingClan = targetSet?.FollowCurrentRulingClan == true
-		};
+		return PolicyEffectBundleContract.NormalizeTargetSet(targetSet);
 	}
 
 	private static bool HasAnyPolicyEffectCanonicalTarget(PolicyEffectCanonicalTargetSet targetSet)
@@ -7503,47 +7487,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static bool HasPolicyEffectCanonicalTargetsForModule(IPolicyEffectModule module, PolicyEffectCanonicalTargetSet targetSet)
 	{
-		if (module?.Descriptor?.TargetKinds == null || targetSet == null)
-		{
-			return false;
-		}
-		if (module.Descriptor.ExcludeActorClanTargets
-			&& module.Descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan)
-			&& (targetSet.ClanIds?.Count ?? 0) == 0)
-		{
-			return false;
-		}
-		foreach (PolicyEffectTargetKind targetKind in module.Descriptor.TargetKinds)
-		{
-			switch (targetKind)
-			{
-				case PolicyEffectTargetKind.Settlement: if ((targetSet.SettlementIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Town: if ((targetSet.TownIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Village: if ((targetSet.VillageIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Clan: if ((targetSet.ClanIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Kingdom: if ((targetSet.KingdomIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Hero: if ((targetSet.HeroIds?.Count ?? 0) > 0) return true; break;
-			}
-		}
-		return module.Descriptor.ExecutionKind != PolicyEffectExecutionKind.OneShot
-			&& PolicyTargetPlanResolver.NormalizePlans(targetSet.TargetPlans).Count > 0;
-	}
-
-	private static string BuildPolicyEffectCanonicalTargetSignature(PolicyEffectCanonicalTargetSet targetSet)
-	{
-		PolicyEffectCanonicalTargetSet normalized = NormalizePolicyEffectCanonicalTargetSet(targetSet);
-		return "X=" + string.Join(",", normalized.SelectorIds)
-			+ "|J=" + normalized.JurisdictionKind
-			+ "|AK=" + string.Join(",", normalized.AuthorizedCrossKingdomIds)
-			+ "|TP=" + string.Join(",", normalized.TargetPlans.Select(plan => plan.NormalizedSignature))
-			+ "|S=" + string.Join(",", normalized.SettlementIds)
-			+ "|T=" + string.Join(",", normalized.TownIds)
-			+ "|V=" + string.Join(",", normalized.VillageIds)
-			+ "|C=" + string.Join(",", normalized.ClanIds)
-			+ "|K=" + string.Join(",", normalized.KingdomIds)
-			+ "|H=" + string.Join(",", normalized.HeroIds)
-			+ "|P=" + string.Join(",", normalized.ParentSettlementIds)
-			+ "|R=" + (normalized.FollowCurrentRulingClan ? "1" : "0");
+		return PolicyEffectBundleContract.HasTargetsForModule(module, targetSet);
 	}
 
 	private static bool TryCreatePolicyEffectTargetShellPreparedInstance(
@@ -7621,23 +7565,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static PolicyEffectExecutionReceipt ClonePolicyEffectExecutionReceipt(PolicyEffectExecutionReceipt receipt)
 	{
-		return receipt == null
-			? null
-			: new PolicyEffectExecutionReceipt
-			{
-				ReceiptId = receipt.ReceiptId ?? string.Empty,
-				InstanceId = receipt.InstanceId ?? string.Empty,
-				PolicyId = receipt.PolicyId ?? string.Empty,
-				ModuleId = receipt.ModuleId ?? string.Empty,
-				TargetSet = NormalizePolicyEffectCanonicalTargetSet(receipt.TargetSet),
-				Status = receipt.Status,
-				RequestedValue = receipt.RequestedValue,
-				AppliedValue = receipt.AppliedValue,
-				RequestedPayload = receipt.RequestedPayload?.DeepClone(),
-				AppliedPayload = receipt.AppliedPayload?.DeepClone(),
-				CampaignDay = receipt.CampaignDay,
-				Message = receipt.Message ?? string.Empty
-			};
+		return PolicyEffectBundleContract.CloneReceipt(receipt);
 	}
 
 	private static List<PolicyEffectExecutionReceipt> ClonePolicyEffectExecutionReceipts(
@@ -7654,169 +7582,26 @@ public sealed partial class CustomPolicyBehavior
 		out List<PolicyEffectInstanceSaveData> instances,
 		out string error)
 	{
-		// Publication/renewal cold path only: collapse display shells before Prepare/OneShot so
-		// a multi-target wire still consumes one logical instance and executes exactly once.
-		instances = new List<PolicyEffectInstanceSaveData>();
-		error = string.Empty;
-		Dictionary<string, PolicyEffectInstanceSaveData> byInstanceId
-			= new Dictionary<string, PolicyEffectInstanceSaveData>(StringComparer.Ordinal);
-		foreach (PolicyEffectInstanceSaveData shell in shellInstances ?? Enumerable.Empty<PolicyEffectInstanceSaveData>())
-		{
-			if (shell == null)
-			{
-				continue;
-			}
-			string instanceId = (shell.InstanceId ?? string.Empty).Trim();
-			if (instanceId.Length <= 0)
-			{
-				error = "policy effect 目标壳缺少 instanceId";
-				return false;
-			}
-			if (!byInstanceId.TryGetValue(instanceId, out PolicyEffectInstanceSaveData aggregate))
-			{
-				aggregate = ClonePolicyEffectSaveData(shell);
-				aggregate.InstanceId = instanceId;
-				byInstanceId.Add(instanceId, aggregate);
-				instances.Add(aggregate);
-				continue;
-			}
-			if (!AreCompatiblePolicyEffectShellInstances(aggregate, shell))
-			{
-				error = "同一 policy effect instanceId 的目标壳数据不一致: " + instanceId;
-				return false;
-			}
-			aggregate.TargetSet = MergePolicyEffectCanonicalTargetSets(aggregate.TargetSet, shell.TargetSet);
-			aggregate.ActorHeroId = FirstNonEmpty(aggregate.ActorHeroId, shell.ActorHeroId);
-			if (aggregate.ExecutionReceipt != null)
-			{
-				aggregate.ExecutionReceipt.TargetSet = MergePolicyEffectCanonicalTargetSets(
-					aggregate.ExecutionReceipt.TargetSet,
-					shell.ExecutionReceipt?.TargetSet);
-			}
-		}
-		return true;
-	}
-
-	private static bool AreCompatiblePolicyEffectShellInstances(
-		PolicyEffectInstanceSaveData left,
-		PolicyEffectInstanceSaveData right)
-	{
-		return left != null
-			&& right != null
-			&& left.MechanismContractVersion == right.MechanismContractVersion
-			&& string.Equals(left.MechanismContractHash ?? string.Empty, right.MechanismContractHash ?? string.Empty,
-				StringComparison.Ordinal)
-			&& (left.ExpectedMechanismLegIds ?? new List<string>()).SequenceEqual(
-				right.ExpectedMechanismLegIds ?? new List<string>(), StringComparer.Ordinal)
-			&& left.EffectPlanVersion == right.EffectPlanVersion
-			&& string.Equals(left.MechanismId ?? string.Empty, right.MechanismId ?? string.Empty, StringComparison.Ordinal)
-			&& left.MechanismKind == right.MechanismKind
-			&& left.MechanismRole == right.MechanismRole
-			&& left.SourceOmitted == right.SourceOmitted
-			&& left.DestinationOmitted == right.DestinationOmitted
-			&& string.Equals(left.InstanceId ?? string.Empty, right.InstanceId ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.PolicyId ?? string.Empty, right.PolicyId ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.ModuleId ?? string.Empty, right.ModuleId ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.SourceModuleId ?? string.Empty, right.SourceModuleId ?? string.Empty, StringComparison.Ordinal)
-			&& AreCompatiblePolicyEffectActorIds(left.ActorHeroId, right.ActorHeroId)
-			&& left.PayloadSchemaVersion == right.PayloadSchemaVersion
-			&& PolicyEffectTokensEqual(left.Payload, right.Payload)
-			&& left.LifecycleState == right.LifecycleState
-			&& left.StateSchemaVersion == right.StateSchemaVersion
-			&& PolicyEffectTokensEqual(left.RuntimeState, right.RuntimeState)
-			&& AreCompatiblePolicyEffectShellReceipts(left.ExecutionReceipt, right.ExecutionReceipt)
-			&& left.StartDay.Equals(right.StartDay)
-			&& left.EndDay.Equals(right.EndDay)
-			&& string.Equals(left.SourceScope ?? string.Empty, right.SourceScope ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.Reason ?? string.Empty, right.Reason ?? string.Empty, StringComparison.Ordinal);
-	}
-
-	private static bool AreCompatiblePolicyEffectActorIds(string left, string right)
-	{
-		string normalizedLeft = (left ?? string.Empty).Trim();
-		string normalizedRight = (right ?? string.Empty).Trim();
-		return normalizedLeft.Length == 0
-			|| normalizedRight.Length == 0
-			|| string.Equals(normalizedLeft, normalizedRight, StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool AreCompatiblePolicyEffectShellReceipts(
-		PolicyEffectExecutionReceipt left,
-		PolicyEffectExecutionReceipt right)
-	{
-		if (left == null || right == null)
-		{
-			return left == null && right == null;
-		}
-		return string.Equals(left.ReceiptId ?? string.Empty, right.ReceiptId ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.InstanceId ?? string.Empty, right.InstanceId ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.PolicyId ?? string.Empty, right.PolicyId ?? string.Empty, StringComparison.Ordinal)
-			&& string.Equals(left.ModuleId ?? string.Empty, right.ModuleId ?? string.Empty, StringComparison.Ordinal)
-			&& left.Status == right.Status
-			&& left.RequestedValue.Equals(right.RequestedValue)
-			&& left.AppliedValue.Equals(right.AppliedValue)
-			&& PolicyEffectTokensEqual(left.RequestedPayload, right.RequestedPayload)
-			&& PolicyEffectTokensEqual(left.AppliedPayload, right.AppliedPayload)
-			&& left.CampaignDay.Equals(right.CampaignDay)
-			&& string.Equals(left.Message ?? string.Empty, right.Message ?? string.Empty, StringComparison.Ordinal);
-	}
-
-	private static bool PolicyEffectTokensEqual(JToken left, JToken right)
-	{
-		return ReferenceEquals(left, right)
-			|| (left != null && right != null && JToken.DeepEquals(left, right));
+		return PolicyEffectBundleContract.TryCoalesceShellInstances(shellInstances, out instances, out error);
 	}
 
 	private static PolicyEffectCanonicalTargetSet MergePolicyEffectCanonicalTargetSets(
 		PolicyEffectCanonicalTargetSet left,
 		PolicyEffectCanonicalTargetSet right)
 	{
-		return NormalizePolicyEffectCanonicalTargetSet(new PolicyEffectCanonicalTargetSet
-		{
-			StructureVersion = Math.Max(left?.StructureVersion ?? 1, right?.StructureVersion ?? 1),
-			JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
-				left?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
-				right?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled),
-			AuthorizedCrossKingdomIds = (left?.AuthorizedCrossKingdomIds ?? new List<string>())
-				.Concat(right?.AuthorizedCrossKingdomIds ?? new List<string>()).ToList(),
-			SelectorHandles = (left?.SelectorHandles ?? new List<string>())
-				.Concat(right?.SelectorHandles ?? new List<string>()).ToList(),
-			SelectorIds = (left?.SelectorIds ?? new List<string>())
-				.Concat(right?.SelectorIds ?? new List<string>()).ToList(),
-			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(
-				(left?.TargetPlans ?? new List<PolicyTargetPlanSaveData>())
-					.Concat(right?.TargetPlans ?? new List<PolicyTargetPlanSaveData>())),
-			SettlementIds = (left?.SettlementIds ?? new List<string>())
-				.Concat(right?.SettlementIds ?? new List<string>()).ToList(),
-			TownIds = (left?.TownIds ?? new List<string>())
-				.Concat(right?.TownIds ?? new List<string>()).ToList(),
-			VillageIds = (left?.VillageIds ?? new List<string>())
-				.Concat(right?.VillageIds ?? new List<string>()).ToList(),
-			ClanIds = (left?.ClanIds ?? new List<string>())
-				.Concat(right?.ClanIds ?? new List<string>()).ToList(),
-			KingdomIds = (left?.KingdomIds ?? new List<string>())
-				.Concat(right?.KingdomIds ?? new List<string>()).ToList(),
-			HeroIds = (left?.HeroIds ?? new List<string>())
-				.Concat(right?.HeroIds ?? new List<string>()).ToList(),
-			ParentSettlementIds = (left?.ParentSettlementIds ?? new List<string>())
-				.Concat(right?.ParentSettlementIds ?? new List<string>()).ToList(),
-			FollowCurrentRulingClan = left?.FollowCurrentRulingClan == true
-				|| right?.FollowCurrentRulingClan == true
-		});
+		return PolicyEffectBundleContract.MergeTargetSets(left, right);
+	}
+
+	private static bool PolicyEffectTokensEqual(JToken left, JToken right)
+	{
+		return PolicyEffectBundleContract.TokensEqual(left, right);
 	}
 
 	private static bool AreSamePolicyEffectCanonicalTargetSets(
 		PolicyEffectCanonicalTargetSet left,
 		PolicyEffectCanonicalTargetSet right)
 	{
-		PolicyEffectCanonicalTargetSet normalizedLeft = NormalizePolicyEffectCanonicalTargetSet(left);
-		PolicyEffectCanonicalTargetSet normalizedRight = NormalizePolicyEffectCanonicalTargetSet(right);
-		return string.Equals(
-			BuildPolicyEffectCanonicalTargetSignature(normalizedLeft),
-			BuildPolicyEffectCanonicalTargetSignature(normalizedRight),
-			StringComparison.Ordinal)
-			&& normalizedLeft.SelectorHandles.SequenceEqual(normalizedRight.SelectorHandles, StringComparer.Ordinal)
-			&& normalizedLeft.SelectorIds.SequenceEqual(normalizedRight.SelectorIds, StringComparer.Ordinal);
+		return PolicyEffectBundleContract.AreSameTargetSets(left, right);
 	}
 
 	private static void SynchronizeOwnedPolicyEffectProgress(
@@ -7885,36 +7670,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static PolicyEffectInstanceSaveData ClonePolicyEffectSaveData(PolicyEffectInstanceSaveData instance)
 	{
-		return instance == null
-			? null
-			: new PolicyEffectInstanceSaveData
-			{
-				MechanismContractVersion = instance.MechanismContractVersion,
-				MechanismContractHash = instance.MechanismContractHash ?? string.Empty,
-				ExpectedMechanismLegIds = new List<string>(instance.ExpectedMechanismLegIds ?? new List<string>()),
-				EffectPlanVersion = instance.EffectPlanVersion,
-				MechanismId = instance.MechanismId ?? string.Empty,
-				MechanismKind = instance.MechanismKind,
-				MechanismRole = instance.MechanismRole,
-				SourceOmitted = instance.SourceOmitted,
-				DestinationOmitted = instance.DestinationOmitted,
-				InstanceId = instance.InstanceId ?? string.Empty,
-				PolicyId = instance.PolicyId ?? string.Empty,
-				ActorHeroId = instance.ActorHeroId ?? string.Empty,
-				ModuleId = instance.ModuleId ?? string.Empty,
-				SourceModuleId = instance.SourceModuleId ?? string.Empty,
-				PayloadSchemaVersion = instance.PayloadSchemaVersion,
-				Payload = instance.Payload?.DeepClone(),
-				TargetSet = NormalizePolicyEffectCanonicalTargetSet(instance.TargetSet),
-				LifecycleState = instance.LifecycleState,
-				StateSchemaVersion = instance.StateSchemaVersion,
-				RuntimeState = instance.RuntimeState?.DeepClone(),
-				ExecutionReceipt = ClonePolicyEffectExecutionReceipt(instance.ExecutionReceipt),
-				StartDay = instance.StartDay,
-				EndDay = instance.EndDay,
-				SourceScope = instance.SourceScope ?? string.Empty,
-				Reason = instance.Reason ?? string.Empty
-			};
+		return PolicyEffectBundleContract.CloneInstance(instance);
 	}
 
 	private static List<PolicyEffectInstanceSaveData> ClonePolicyEffectSaveDataList(

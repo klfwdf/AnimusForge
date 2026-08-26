@@ -5857,7 +5857,6 @@ public sealed partial class NpcRulerPolicyBehavior
 			failureReason = "政策发布王国不存在或已灭亡";
 			return false;
 		}
-		string actorClanId = ResolveNpcPolicyActorClanId(policy.RulerHeroId, issuer);
 		HashSet<float> canonicalDurations = new HashSet<float>();
 		foreach (NpcRulerPolicyEffectDto shell in shells)
 		{
@@ -5865,13 +5864,10 @@ public sealed partial class NpcRulerPolicyBehavior
 			foreach (PolicyEffectInstanceSaveData instance in shell.ModuleEffects.Where(item => item?.LifecycleState == PolicyEffectLifecycleState.Prepared))
 			{
 				string instanceId = (instance.InstanceId ?? string.Empty).Trim();
-				List<string> instanceTargetIds = NormalizeNpcPolicyIds(instance.TargetSet?.KingdomIds);
 				float rawDuration = instance.EndDay - instance.StartDay;
 				if (instanceId.Length == 0
 					|| !string.Equals((instance.PolicyId ?? string.Empty).Trim(), policy.PolicyId.Trim(), StringComparison.Ordinal)
 					|| shellTargetId.Length == 0
-					|| instanceTargetIds.Count == 0
-					|| !instanceTargetIds.Contains(shellTargetId, StringComparer.OrdinalIgnoreCase)
 					|| shell.DurationDays <= 0
 					|| float.IsNaN(rawDuration)
 					|| float.IsInfinity(rawDuration)
@@ -5903,54 +5899,10 @@ public sealed partial class NpcRulerPolicyBehavior
 			totalPayloadBytes += payloadBytes;
 		}
 		int canonicalDurationDays = (int)Math.Ceiling(canonicalDurations.First());
-		string policyText = ((policy.PolicyName ?? string.Empty) + " " + (policy.PolicyContent ?? string.Empty)).Trim();
-		Dictionary<string, PolicyEffectCanonicalTargetSet> expandedTargets = new Dictionary<string, PolicyEffectCanonicalTargetSet>(StringComparer.OrdinalIgnoreCase);
-		foreach (string targetId in prepared
-			.SelectMany(instance => NormalizeNpcPolicyIds(instance.TargetSet?.KingdomIds))
-			.Distinct(StringComparer.OrdinalIgnoreCase))
-		{
-			Kingdom target = ResolveNpcPolicyKingdomById(targetId);
-			if (target == null || target.IsEliminated)
-			{
-				failureReason = "政策目标王国不存在或已灭亡: " + targetId;
-				return false;
-			}
-			if (!policy.IsPlayerPolicy && target != issuer
-				&& !BuildNpcPolicyKingdomMentionCandidates(target).Any(candidate => !string.IsNullOrWhiteSpace(candidate)
-					&& policyText.IndexOf(candidate, StringComparison.OrdinalIgnoreCase) >= 0))
-			{
-				failureReason = "跨国效果失效：政策未明确提及目标国 " + targetId;
-				return false;
-			}
-			List<Settlement> settlements = GetKingdomSettlements(target);
-			expandedTargets[targetId] = BuildNpcKingdomTargetSet(target, settlements);
-		}
 		List<PolicyEffectInstanceSaveData> bundleInstances = new List<PolicyEffectInstanceSaveData>(prepared.Count);
 		foreach (PolicyEffectInstanceSaveData instance in prepared)
 		{
 			string moduleId = (instance.ModuleId ?? string.Empty).Trim();
-			List<string> instanceTargetIds = NormalizeNpcPolicyIds(instance.TargetSet?.KingdomIds);
-			if (instanceTargetIds.Count == 0)
-			{
-				failureReason = "政策效果 bundle 的逻辑实例缺少目标王国: " + (instance.InstanceId ?? string.Empty);
-				return false;
-			}
-			bool hasTargetPlan = PolicyTargetPlanResolver.NormalizePlans(instance.TargetSet?.TargetPlans).Count > 0;
-			PolicyEffectCanonicalTargetSet expandedTargetSet = hasTargetPlan
-				? CloneNpcPolicyEffectTargetSet(instance.TargetSet)
-				: null;
-			IEnumerable<string> targetIdsToExpand = hasTargetPlan
-				? Enumerable.Empty<string>()
-				: instanceTargetIds;
-			foreach (string targetId in targetIdsToExpand)
-			{
-				if (!expandedTargets.TryGetValue(targetId, out PolicyEffectCanonicalTargetSet targetSet))
-				{
-					failureReason = "政策效果 bundle 无法展开目标王国: " + targetId;
-					return false;
-				}
-				expandedTargetSet = MergeNpcPolicyEffectTargetSets(expandedTargetSet, targetSet);
-			}
 			if (!PolicyEffectModuleCatalog.TryGet(moduleId, out IPolicyEffectModule module))
 			{
 				failureReason = "政策效果 bundle 包含未知模块: " + moduleId;
@@ -5962,38 +5914,16 @@ public sealed partial class NpcRulerPolicyBehavior
 				failureReason = "政策效果 bundle 包含作用域不兼容模块: " + moduleId;
 				return false;
 			}
-			expandedTargetSet = PolicyEffectCompiler.ApplyActorClanTargetExclusion(
-				module,
-				actorClanId,
-				expandedTargetSet);
-			if (!PolicyEffectTargetJurisdiction.TryApply(
-				expandedTargetSet,
-				module,
-				policyTargetKingdom.StringId ?? policy.KingdomId ?? string.Empty,
-				issuer.StringId ?? string.Empty,
-				instance.TargetSet?.AuthorizedCrossKingdomIds,
-				preserveLegacyCrossKingdoms: false,
-				failOnUnauthorized: true,
-				out expandedTargetSet,
-				out string jurisdictionError))
-			{
-				failureReason = "政策效果 bundle 目标越过管辖边界: " + moduleId + " / " + jurisdictionError;
-				return false;
-			}
-			if ((!hasTargetPlan || module.Descriptor.ExcludeActorClanTargets)
-				&& !HasNpcModuleTarget(module, expandedTargetSet))
-			{
-				failureReason = "政策效果 bundle 的目标王国没有模块可执行目标: " + moduleId;
-				return false;
-			}
 			if (!PolicyEffectModuleCatalog.TryDeserializePayload(module.Id, instance.Payload, instance.PayloadSchemaVersion, out var _, out failureReason))
 			{
 				failureReason = "政策效果 bundle payload 无效: " + moduleId + " / " + failureReason;
 				return false;
 			}
-			bundleInstances.Add(CloneNpcModuleEffectForBundle(instance, expandedTargetSet));
+			bundleInstances.Add(CloneNpcModuleEffectForBundle(instance, instance.TargetSet));
 		}
 		HashSet<string> instanceIds = new HashSet<string>(bundleInstances.Select(instance => instance.InstanceId), StringComparer.Ordinal);
+		Dictionary<string, PolicyEffectInstanceSaveData> bundleInstanceById = bundleInstances
+			.ToDictionary(instance => instance.InstanceId, StringComparer.Ordinal);
 		Dictionary<string, PolicyEffectExecutionReceipt> receiptByInstanceId
 			= new Dictionary<string, PolicyEffectExecutionReceipt>(StringComparer.Ordinal);
 		foreach (PolicyEffectExecutionReceipt receipt in policy.ExecutionReceipts ?? new List<PolicyEffectExecutionReceipt>())
@@ -6012,8 +5942,7 @@ public sealed partial class NpcRulerPolicyBehavior
 				}
 				continue;
 			}
-			PolicyEffectInstanceSaveData bundleInstance = bundleInstances.First(item =>
-				string.Equals(item.InstanceId, instanceId, StringComparison.Ordinal));
+			PolicyEffectInstanceSaveData bundleInstance = bundleInstanceById[instanceId];
 			PolicyEffectExecutionReceipt canonicalReceipt = CloneNpcPolicyEffectReceipt(receipt);
 			canonicalReceipt.TargetSet = CloneNpcPolicyEffectTargetSet(bundleInstance.TargetSet);
 			receiptByInstanceId.Add(instanceId, canonicalReceipt);
@@ -6074,40 +6003,6 @@ public sealed partial class NpcRulerPolicyBehavior
 			KingdomIds = string.IsNullOrWhiteSpace(kingdomId) ? new List<string>() : new List<string> { kingdomId },
 			ParentSettlementIds = NormalizeNpcPolicyIds(normalized.Where(settlement => settlement.Town != null).Select(settlement => settlement.StringId))
 		};
-	}
-
-	private static bool HasNpcModuleTarget(IPolicyEffectModule module, PolicyEffectCanonicalTargetSet targetSet)
-	{
-		foreach (PolicyEffectTargetKind kind in module?.Descriptor?.TargetKinds ?? Array.Empty<PolicyEffectTargetKind>())
-		{
-			switch (kind)
-			{
-				case PolicyEffectTargetKind.Settlement: if ((targetSet?.SettlementIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Town: if ((targetSet?.TownIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Village: if ((targetSet?.VillageIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Clan: if ((targetSet?.ClanIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Kingdom: if ((targetSet?.KingdomIds?.Count ?? 0) > 0) return true; break;
-				case PolicyEffectTargetKind.Hero: if ((targetSet?.HeroIds?.Count ?? 0) > 0) return true; break;
-			}
-		}
-		return false;
-	}
-
-	private static string ResolveNpcPolicyActorClanId(string actorHeroId, Kingdom issuer)
-	{
-		try
-		{
-			Hero actor = Hero.Find((actorHeroId ?? string.Empty).Trim());
-			string actorClanId = (actor?.Clan?.StringId ?? string.Empty).Trim();
-			if (actorClanId.Length > 0)
-			{
-				return actorClanId;
-			}
-		}
-		catch
-		{
-		}
-		return ((issuer?.Leader?.Clan ?? issuer?.RulingClan)?.StringId ?? string.Empty).Trim();
 	}
 
 	private static PolicyEffectInstanceSaveData CloneNpcModuleEffectForBundle(
@@ -6251,19 +6146,15 @@ public sealed partial class NpcRulerPolicyBehavior
 		}
 		Dictionary<string, PolicyEffectInstanceSaveData> persistedByInstanceId = persistedCanonical
 			.ToDictionary(instance => instance.InstanceId.Trim(), StringComparer.Ordinal);
-		Kingdom issuer = ResolveNpcPolicyKingdomById(FirstNonEmpty(record.IssuerKingdomId, record.KingdomId));
-		string actorClanId = ResolveNpcPolicyActorClanId(record.RulerHeroId, issuer);
 		foreach (NpcRulerPolicyEffectDto shell in shells)
 		{
 			string shellTargetId = (shell.TargetKingdomId ?? string.Empty).Trim();
 			foreach (PolicyEffectInstanceSaveData instance in shell.ModuleEffects.Where(item => item != null))
 			{
 				string instanceId = (instance.InstanceId ?? string.Empty).Trim();
-				List<string> shellTargetIds = NormalizeNpcPolicyIds(instance.TargetSet?.KingdomIds);
-				if (instanceId.Length == 0 || shellTargetId.Length == 0 || shellTargetIds.Count == 0
-					|| !shellTargetIds.Contains(shellTargetId, StringComparer.OrdinalIgnoreCase))
+				if (instanceId.Length == 0 || shellTargetId.Length == 0)
 				{
-					failureReason = "NPC policy effect shell target ownership is invalid";
+					failureReason = "NPC policy effect shell identity is invalid";
 					return false;
 				}
 			}
@@ -6287,7 +6178,6 @@ public sealed partial class NpcRulerPolicyBehavior
 				failureReason = "NPC policy effect snapshot contains an unowned instance";
 				return false;
 			}
-			List<string> kingdomIds = NormalizeNpcPolicyIds(instance.TargetSet?.KingdomIds);
 			List<PolicyTargetPlanSaveData> canonicalTargetPlans
 				= PolicyTargetPlanResolver.NormalizePlans(instance.TargetSet?.TargetPlans);
 			List<PolicyTargetPlanSaveData> persistedTargetPlans
@@ -6314,9 +6204,8 @@ public sealed partial class NpcRulerPolicyBehavior
 				(persisted.SourceScope ?? string.Empty).Trim(),
 				PolicyEffectScopes.Kingdom,
 				StringComparison.OrdinalIgnoreCase);
-			bool kingdomIdsMissing = !hasTargetPlan && kingdomIds.Count == 0;
-			bool kingdomIdsMismatch = !hasTargetPlan
-				&& !NpcPolicyIdSetsEqual(kingdomIds, persisted.TargetSet?.KingdomIds);
+			bool canonicalTargetSetMismatch = !hasTargetPlan
+				&& !PolicyEffectBundleContract.AreSameTargetSets(instance.TargetSet, persisted.TargetSet);
 			bool targetPlanCountMismatch = canonicalTargetPlans.Count != persistedTargetPlans.Count;
 			bool targetPlanSignatureMismatch = !canonicalTargetPlans.Select(plan => plan.NormalizedSignature).SequenceEqual(
 				persistedTargetPlans.Select(plan => plan.NormalizedSignature),
@@ -6325,14 +6214,10 @@ public sealed partial class NpcRulerPolicyBehavior
 				instance.TargetSet?.SelectorHandles,
 				persisted.TargetSet?.SelectorHandles);
 			bool moduleFound = PolicyEffectModuleCatalog.TryGet(instance.ModuleId, out IPolicyEffectModule module);
-			PolicyEffectCanonicalTargetSet validationTargetSet = moduleFound
-				? PolicyEffectCompiler.ApplyActorClanTargetExclusion(module, actorClanId, instance.TargetSet)
-				: instance.TargetSet;
 			bool moduleScopeMismatch = moduleFound
 				&& !PolicyEffectModuleCatalog.IsAllowedForScope(module, PolicyEffectScopes.Kingdom);
 			bool moduleTargetMissing = moduleFound
-				&& (!hasTargetPlan || module.Descriptor.ExcludeActorClanTargets)
-				&& !HasNpcModuleTarget(module, validationTargetSet);
+				&& !PolicyEffectBundleContract.HasTargetsForModule(module, instance.TargetSet);
 			bool payloadInvalid = moduleFound
 				&& !PolicyEffectModuleCatalog.TryDeserializePayload(
 					module.Id,
@@ -6346,8 +6231,7 @@ public sealed partial class NpcRulerPolicyBehavior
 				|| moduleMismatch
 				|| canonicalScopeMismatch
 				|| persistedScopeMismatch
-				|| kingdomIdsMissing
-				|| kingdomIdsMismatch
+				|| canonicalTargetSetMismatch
 				|| targetPlanCountMismatch
 				|| targetPlanSignatureMismatch
 				|| selectorHandlesMismatch
@@ -6363,8 +6247,7 @@ public sealed partial class NpcRulerPolicyBehavior
 				if (moduleMismatch) mismatches.Add("module-id");
 				if (canonicalScopeMismatch) mismatches.Add("canonical-source-scope");
 				if (persistedScopeMismatch) mismatches.Add("persisted-source-scope");
-				if (kingdomIdsMissing) mismatches.Add("canonical-kingdom-ids-empty");
-				if (kingdomIdsMismatch) mismatches.Add("kingdom-ids");
+				if (canonicalTargetSetMismatch) mismatches.Add("canonical-target-set");
 				if (targetPlanCountMismatch) mismatches.Add("target-plan-count");
 				if (targetPlanSignatureMismatch) mismatches.Add("target-plan-signature");
 				if (selectorHandlesMismatch) mismatches.Add("selector-handles");
@@ -6376,41 +6259,12 @@ public sealed partial class NpcRulerPolicyBehavior
 					+ " instance=" + Limit(instanceId, 80)
 					+ " canonicalModule=" + Limit(instance.ModuleId, 80)
 					+ " persistedModule=" + Limit(persisted.ModuleId, 80)
-					+ " canonicalKingdoms=" + Limit(string.Join("|", kingdomIds), 160)
+					+ " canonicalKingdoms=" + Limit(string.Join("|", NormalizeNpcPolicyIds(instance.TargetSet?.KingdomIds)), 160)
 					+ " persistedKingdoms=" + Limit(string.Join("|", NormalizeNpcPolicyIds(persisted.TargetSet?.KingdomIds)), 160)
 					+ " canonicalPlans=" + Limit(string.Join("|", canonicalTargetPlans.Select(plan => plan.NormalizedSignature)), 240)
 					+ " persistedPlans=" + Limit(string.Join("|", persistedTargetPlans.Select(plan => plan.NormalizedSignature)), 240)
 					+ " canonicalSelectors=" + Limit(string.Join("|", NormalizeNpcPolicyIds(instance.TargetSet?.SelectorHandles)), 160)
 					+ " persistedSelectors=" + Limit(string.Join("|", NormalizeNpcPolicyIds(persisted.TargetSet?.SelectorHandles)), 160);
-				return false;
-			}
-			PolicyEffectCanonicalTargetSet expectedExpandedTargetSet = null;
-			foreach (string kingdomId in kingdomIds)
-			{
-				Kingdom target = ResolveNpcPolicyKingdomById(kingdomId);
-				if (target == null || target.IsEliminated)
-				{
-					failureReason = "NPC policy effect snapshot target kingdom is unavailable: " + kingdomId;
-					return false;
-				}
-				if (hasTargetPlan)
-				{
-					continue;
-				}
-				PolicyEffectCanonicalTargetSet targetExpansion = PolicyEffectCompiler.ApplyActorClanTargetExclusion(
-					module,
-					actorClanId,
-					BuildNpcKingdomTargetSet(target, GetKingdomSettlements(target)));
-				if (!HasNpcModuleTarget(module, targetExpansion))
-				{
-					failureReason = "NPC policy effect snapshot target has no executable module target: " + kingdomId;
-					return false;
-				}
-				expectedExpandedTargetSet = MergeNpcPolicyEffectTargetSets(expectedExpandedTargetSet, targetExpansion);
-			}
-			if (!hasTargetPlan && !NpcPolicyTargetSetContains(validationTargetSet, expectedExpandedTargetSet))
-			{
-				failureReason = "NPC policy effect snapshot lost expanded targets for one or more kingdoms";
 				return false;
 			}
 		}
@@ -6487,27 +6341,6 @@ public sealed partial class NpcRulerPolicyBehavior
 		List<string> normalizedRight = NormalizeNpcPolicyIds(right);
 		return normalizedLeft.Count == normalizedRight.Count
 			&& normalizedLeft.SequenceEqual(normalizedRight, StringComparer.OrdinalIgnoreCase);
-	}
-
-	private static bool NpcPolicyTargetSetContains(
-		PolicyEffectCanonicalTargetSet actual,
-		PolicyEffectCanonicalTargetSet expected)
-	{
-		return actual != null
-			&& expected != null
-			&& NpcPolicyIdSetContains(actual.SettlementIds, expected.SettlementIds)
-			&& NpcPolicyIdSetContains(actual.TownIds, expected.TownIds)
-			&& NpcPolicyIdSetContains(actual.VillageIds, expected.VillageIds)
-			&& NpcPolicyIdSetContains(actual.ClanIds, expected.ClanIds)
-			&& NpcPolicyIdSetContains(actual.KingdomIds, expected.KingdomIds)
-			&& NpcPolicyIdSetContains(actual.HeroIds, expected.HeroIds)
-			&& NpcPolicyIdSetContains(actual.ParentSettlementIds, expected.ParentSettlementIds);
-	}
-
-	private static bool NpcPolicyIdSetContains(IEnumerable<string> actual, IEnumerable<string> expected)
-	{
-		HashSet<string> actualIds = new HashSet<string>(NormalizeNpcPolicyIds(actual), StringComparer.OrdinalIgnoreCase);
-		return NormalizeNpcPolicyIds(expected).All(actualIds.Contains);
 	}
 
 	private static bool IsTerminalNpcPolicyEffectState(PolicyEffectLifecycleState state)

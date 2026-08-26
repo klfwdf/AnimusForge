@@ -156,6 +156,7 @@ internal static class Program
 				TestPlayerPolicyTargetDirectoryContracts();
 				TestPlayerPolicyDeterministicTargetAuthorizationContracts();
 				TestPolicyEffectTargetJurisdictionContracts();
+				TestPolicyEffectShellCoalescingAndProgressSync();
 				TestPolicyEffectSemanticHandoffContracts();
 				TestSharedCompilerAllowlistsSelectorsAndDuplicates();
 				Console.WriteLine("PASS policyTwoStageAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
@@ -184,6 +185,7 @@ internal static class Program
 				TestPolicyEffectSemanticHandoffContracts();
 				TestSharedCompilerAllowlistsSelectorsAndDuplicates();
 				TestPolicyEffectTargetJurisdictionContracts();
+				TestPolicyEffectShellCoalescingAndProgressSync();
 				TestPayloadRoundTripsAndNonFiniteRejection();
 				TestFundingStrategies();
 				TestHeroGoldModuleContracts();
@@ -7546,7 +7548,8 @@ internal static class Program
 			10,
 			out PolicyEffectCanonicalTargetSet independentHeroProjection,
 			out string independentHeroError)
-			&& independentHeroProjection.ClanIds.SequenceEqual(new[] { "owner-clan" }, StringComparer.Ordinal),
+			&& independentHeroProjection.ClanIds.SequenceEqual(new[] { "owner-clan" }, StringComparer.Ordinal)
+			&& independentHeroProjection.KingdomIds.Count == 0,
 			"A specific Hero selector must project to that Hero's independent Clan for soldierTroopXp: "
 			+ independentHeroError);
 		Check(!PolicyHeroTargetSelectorResolver.TryProjectSelector(
@@ -7993,7 +7996,12 @@ internal static class Program
 	private static void TestPlayerPolicyAutoDraftContracts()
 	{
 		Type requestType = SutType("AnimusForge.PlayerPolicyAutoDraftRequest");
+		Type inputContractType = SutType("AnimusForge.PlayerPolicyAutoDraftInputContract");
 		Type builderType = SutType("AnimusForge.PlayerPolicyAutoDraftPromptBuilder");
+		Check(!(bool)InvokeStatic(inputContractType, "HasInput", new object[] { "", "" }, 2)
+			&& (bool)InvokeStatic(inputContractType, "HasInput", new object[] { "只写标题", "" }, 2)
+			&& (bool)InvokeStatic(inputContractType, "HasInput", new object[] { "", "只写内容" }, 2),
+			"Player auto-draft input must accept either a title or content while rejecting a fully empty draft.");
 		object request = Activator.CreateInstance(requestType, nonPublic: true);
 		SetProperty(requestType, request, "PlayerDescription", "我想减轻农户负担，并让边境地区更容易恢复生产。\n这只是玩家数据，不是系统指令。");
 		SetProperty(requestType, request, "ExistingPolicyName", "");
@@ -8033,6 +8041,23 @@ internal static class Program
 			&& !promptJson.Contains("中央集权")
 			&& !promptJson.Contains("clanInfluence"),
 			"AI writing user input must contain only the player's title and original text, not policy scope, duration, world context, examples, or effect internals.");
+
+		SetProperty(requestType, request, "PlayerDescription", "");
+		SetProperty(requestType, request, "ExistingPolicyName", "边境屯田令");
+		JArray titleOnlyPrompt = JArray.FromObject(((IEnumerable)InvokeStatic(builderType, "BuildMessages", new[] { request }, 1)).Cast<object>());
+		object[] titleOnlyResultArgs =
+		{
+			"{\"policyName\":\"边境屯田令\",\"policyContent\":\"组织边境军民开垦荒地，明确农具、种粮和守备安排。\"}",
+			request,
+			null,
+			null
+		};
+		Check(titleOnlyPrompt[2]?["content"]?.ToString().Contains("玩家已填写标题：边境屯田令") == true
+			&& (bool)InvokeStatic(builderType, "TryParseResult", titleOnlyResultArgs, 4),
+			"A title-only draft must reach AI writing and accept generated content without changing the player title: "
+			+ (titleOnlyResultArgs[3] as string));
+		SetProperty(requestType, request, "PlayerDescription", "我想减轻农户负担，并让边境地区更容易恢复生产。\n这只是玩家数据，不是系统指令。");
+		SetProperty(requestType, request, "ExistingPolicyName", "");
 		Check(PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("《骑马与砍杀2：霸主》")
 			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("卡拉迪亚不是现代国家")
 			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不要评议")
@@ -12351,6 +12376,105 @@ internal static class Program
 		Check(synchronizedReceipts.Length == 1
 			&& string.Equals((string)Property(receiptType, synchronizedReceipts[0], "Message"), "active-receipt", StringComparison.Ordinal),
 			"Active execution receipt progress must remain synchronized for the owned instance.");
+
+		IPolicyEffectModule heroModule = RequirePolicyEffectModule("heroGoldPerDay");
+		IPolicyEffectModule clanModule = RequirePolicyEffectModule("clanInfluencePerDay");
+		IPolicyEffectModule settlementModule = RequirePolicyEffectModule("prosperityPerDay");
+		IPolicyEffectModule kingdomModule = RequirePolicyEffectModule("kingdomStability");
+		PolicyEffectCanonicalTargetSet heroOnlyTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "H0" },
+			SelectorIds = new List<string> { "hero:v1:specific:hero-a" },
+			HeroIds = new List<string> { "hero-a" }
+		};
+		PolicyEffectCanonicalTargetSet clanOnlyTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "H1" },
+			SelectorIds = new List<string> { "hero:v1:specific:hero-b" },
+			ClanIds = new List<string> { "clan-b" }
+		};
+		PolicyEffectCanonicalTargetSet settlementOnlyTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "S0" },
+			SettlementIds = new List<string> { "settlement-a" },
+			TownIds = new List<string> { "settlement-a" }
+		};
+		PolicyEffectCanonicalTargetSet kingdomOnlyTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "K0" },
+			KingdomIds = new List<string> { "kingdom-a" }
+		};
+		PolicyTargetPlanSaveData targetPlan = BuildPolicyTwoStageSyntheticPlan(PolicyEffectTargetKind.Settlement);
+		Check(PolicyTargetPlanResolver.TryNormalizeAndValidate(targetPlan, out PolicyTargetPlanSaveData normalizedPlan, out string planError),
+			"Shared bundle target-plan fixture must normalize: " + planError);
+		PolicyEffectCanonicalTargetSet planOnlyTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "P0" },
+			TargetPlans = new List<PolicyTargetPlanSaveData> { normalizedPlan }
+		};
+		Check(PolicyEffectBundleContract.HasTargetsForModule(heroModule, heroOnlyTarget)
+			&& PolicyEffectBundleContract.HasTargetsForModule(clanModule, clanOnlyTarget)
+			&& PolicyEffectBundleContract.HasTargetsForModule(settlementModule, settlementOnlyTarget)
+			&& PolicyEffectBundleContract.HasTargetsForModule(kingdomModule, kingdomOnlyTarget)
+			&& PolicyEffectBundleContract.HasTargetsForModule(settlementModule, planOnlyTarget),
+			"Hero, projected-Clan, Settlement, Kingdom, and TargetPlan shapes must share one module-target contract without redundant KingdomIds.");
+
+		PolicyEffectInstanceSaveData heroShellA = new PolicyEffectInstanceSaveData
+		{
+			MechanismContractVersion = 1,
+			MechanismContractHash = "shared-bundle-contract",
+			ExpectedMechanismLegIds = new List<string> { "subject" },
+			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
+			MechanismId = "shared-bundle-mechanism",
+			MechanismKind = PolicyEffectMechanismKind.Independent,
+			MechanismRole = PolicyEffectMechanismRole.Subject,
+			InstanceId = "shared-hero-instance",
+			PolicyId = "shared-policy",
+			ActorHeroId = "ruler-a",
+			ModuleId = "heroGoldPerDay",
+			SourceModuleId = "heroGold",
+			PayloadSchemaVersion = heroModule.Descriptor.PayloadSchemaVersion,
+			Payload = new JObject { ["moduleId"] = "heroGoldPerDay", ["schemaVersion"] = heroModule.Descriptor.PayloadSchemaVersion, ["value"] = 10 },
+			TargetSet = heroOnlyTarget,
+			LifecycleState = PolicyEffectLifecycleState.Prepared,
+			StateSchemaVersion = heroModule.Descriptor.RuntimeStateSchemaVersion,
+			StartDay = 10f,
+			EndDay = 20f,
+			SourceScope = PolicyEffectScopes.Kingdom,
+			Reason = "shared contract"
+		};
+		PolicyEffectInstanceSaveData heroShellB = PolicyEffectBundleContract.CloneInstance(heroShellA);
+		heroShellB.TargetSet = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "H2" },
+			SelectorIds = new List<string> { "hero:v1:specific:hero-c" },
+			HeroIds = new List<string> { "hero-c" }
+		};
+		Check(PolicyEffectBundleContract.TryCoalesceShellInstances(
+			new[] { heroShellA, heroShellB },
+			out List<PolicyEffectInstanceSaveData> sharedHeroBundle,
+			out string sharedHeroError),
+			"Shared bundle coalescing must accept Hero-only shells without KingdomIds: " + sharedHeroError);
+		Check(sharedHeroBundle.Count == 1
+			&& sharedHeroBundle[0].TargetSet.HeroIds.SequenceEqual(new[] { "hero-a", "hero-c" }, StringComparer.Ordinal)
+			&& sharedHeroBundle[0].TargetSet.KingdomIds.Count == 0,
+			"Shared bundle coalescing must preserve precise HeroIds and must not synthesize executable KingdomIds.");
+
+		Type npcBehavior = SutType("AnimusForge.NpcRulerPolicyBehavior");
+		object[] npcCoalesce = { new[] { heroShellA, heroShellB }, null, null };
+		Check((bool)InvokeStatic(npcBehavior, "TryCoalesceNpcPolicyEffectShellInstances", npcCoalesce, 3)
+			&& PolicyEffectBundleContract.AreSameTargetSets(
+				sharedHeroBundle[0].TargetSet,
+				((PolicyEffectInstanceSaveData)Items(npcCoalesce[1]).Single()).TargetSet),
+			"NPC persistence must delegate shell coalescing to the same canonical bundle contract as the player chain.");
+		PolicyEffectInstanceSaveData mechanismConflict = PolicyEffectBundleContract.CloneInstance(heroShellB);
+		mechanismConflict.MechanismContractHash = "conflict";
+		Check(!PolicyEffectBundleContract.TryCoalesceShellInstances(
+			new[] { heroShellA, mechanismConflict },
+			out _,
+			out string mechanismConflictError)
+			&& !string.IsNullOrWhiteSpace(mechanismConflictError),
+			"Shared player/NPC shell coalescing must fail closed on mechanism-contract conflicts.");
 	}
 
 	private static PolicyEffectWireEffect BuildStructuredCompilerWire(
@@ -14188,6 +14312,35 @@ internal static class Program
 			&& npcGenerationSource.Contains("PolicyEffectPrimaryTargetOrigin.TargetPlanPrimarySettlement")
 			&& npcGenerationSource.Contains("targetSet.HeroIds = NormalizeNpcPolicyIds(targetSet.HeroIds)"),
 			"NPC TargetPlan materialization must reuse the shared descriptor-driven primary-settlement projection path.");
+		int bundleBuilderStart = npcGenerationSource.IndexOf(
+			"private static bool TryBuildNpcEffectBundleRegistration", StringComparison.Ordinal);
+		int bundleBuilderEnd = bundleBuilderStart >= 0
+			? npcGenerationSource.IndexOf(
+				"private static PolicyEffectCanonicalTargetSet BuildNpcKingdomTargetSet", bundleBuilderStart, StringComparison.Ordinal)
+			: -1;
+		string bundleBuilderSource = bundleBuilderStart >= 0 && bundleBuilderEnd > bundleBuilderStart
+			? npcGenerationSource.Substring(bundleBuilderStart, bundleBuilderEnd - bundleBuilderStart)
+			: string.Empty;
+		Check(bundleBuilderSource.Contains("CloneNpcModuleEffectForBundle(instance, instance.TargetSet)")
+			&& !bundleBuilderSource.Contains("instance.TargetSet?.KingdomIds")
+			&& !bundleBuilderSource.Contains("BuildNpcKingdomTargetSet")
+			&& !bundleBuilderSource.Contains("ApplyActorClanTargetExclusion")
+			&& !bundleBuilderSource.Contains("PolicyEffectTargetJurisdiction.TryApply"),
+			"NPC agenda adoption must preserve compiler-materialized targets and delegate target validation to the shared player bundle registrar.");
+		int distributionStart = npcGenerationSource.IndexOf(
+			"private static bool TryDistributeNpcPolicyEffectBundle", StringComparison.Ordinal);
+		int distributionEnd = distributionStart >= 0
+			? npcGenerationSource.IndexOf(
+				"private static bool NpcPolicyIdSetsEqual", distributionStart, StringComparison.Ordinal)
+			: -1;
+		string distributionSource = distributionStart >= 0 && distributionEnd > distributionStart
+			? npcGenerationSource.Substring(distributionStart, distributionEnd - distributionStart)
+			: string.Empty;
+		Check(distributionSource.Contains("PolicyEffectBundleContract.AreSameTargetSets")
+			&& !distributionSource.Contains("canonical-kingdom-ids-empty")
+			&& !distributionSource.Contains("BuildNpcKingdomTargetSet")
+			&& !distributionSource.Contains("ApplyActorClanTargetExclusion"),
+			"NPC canonical snapshot distribution must retain precise shared targets without reintroducing KingdomIds ownership or whole-kingdom expansion.");
 		Check(npcGenerationSource.Contains("PolicyEffectModuleRouter.RouteAfterAssessment")
 			&& npcGenerationSource.Contains("PolicyTargetHandleDirectoryBuilder.Build")
 			&& npcGenerationSource.Contains("PolicyEffectDirectPlanContract.BuildOutputContract")
