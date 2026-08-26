@@ -287,6 +287,13 @@ internal static class Program
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-visible-effect-descriptions-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestPlayerVisibleEffectDescriptions();
+				Console.WriteLine("PASS policyVisibleEffectDescriptionAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-prompt-management-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				TestPlayerPolicyAutoDraftContracts();
@@ -3704,6 +3711,15 @@ internal static class Program
 			&& npcLines.All(line => !line.StartsWith("【测试王国】", StringComparison.Ordinal)
 				&& !ContainsAsciiLetter(line)),
 			"Non-player ruler policy publication must use the same concrete-target display path as player policies. actual=" + npcPublication);
+
+		string canonicalNpcKingdomHandle = Convert.ToString(InvokeStatic(
+			SutType("AnimusForge.NpcRulerPolicyBehavior"),
+			"BuildNpcKingdomSelectorHandle",
+			new object[] { "display-kingdom" },
+			1), CultureInfo.InvariantCulture) ?? string.Empty;
+		Check(string.Equals(canonicalNpcKingdomHandle, "K:display-kingdom", StringComparison.Ordinal),
+			"New NPC kingdom canonical target sets must use the shared typed K selector convention. actual="
+			+ canonicalNpcKingdomHandle);
 	}
 
 	private static PolicyEffectInstanceSaveData BuildPlayerVisibleEffectInstance(
@@ -13850,7 +13866,12 @@ internal static class Program
 		MethodInfo nextSequence = policyLog.GetMethod("NextSequence", All);
 		MethodInfo buildEventJson = policyLog.GetMethod("BuildEventJson", All);
 		MethodInfo buildLegacyContext = policyLog.GetMethod("BuildLegacyContext", All);
+		MethodInfo shouldEmitRelease = policyLog.GetMethod("ShouldEmitRelease", All);
 		Type contextType = SutType("AnimusForge.PolicyLogContext");
+		HashSet<string> releaseStages = new HashSet<string>(
+			Items(policyLog.GetField("ReleaseStages", All)?.GetValue(null))
+				.Select(value => value?.ToString() ?? string.Empty),
+			StringComparer.OrdinalIgnoreCase);
 		Check(fileName != null
 			&& string.Equals(Convert.ToString(fileName.GetRawConstantValue()), "PolicySystem.txt", StringComparison.Ordinal)
 			&& policyLog.GetField("TransactionFileName", All) == null,
@@ -13860,8 +13881,28 @@ internal static class Program
 			&& nextSequence != null
 			&& buildEventJson != null
 			&& buildLegacyContext != null
+			&& shouldEmitRelease != null
 			&& contextType != null,
 			"PolicySystem logging must expose the compatible transaction writer plus the structured lifecycle serializer/context.");
+		Check(new[]
+		{
+			"generation-complete", "published", "adopted", "abolished", "commit-complete",
+			"active-bundle-created", "renewal-committed", "abolition-complete", "expiry-complete",
+			"save-summary", "load-summary", "load-normalized"
+		}.All(releaseStages.Contains)
+			&& !releaseStages.Contains("generation-start")
+			&& !releaseStages.Contains("daily-start")
+			&& !releaseStages.Contains("daily-complete")
+			&& !releaseStages.Contains("receipt-created")
+			&& !releaseStages.Contains("llm-stage-usage"),
+			"Release policy logging must retain outcomes and save/load summaries while suppressing detailed and recurring success stages.");
+		Check((bool)shouldEmitRelease.Invoke(null, new object[] { "generation-complete", false, false })
+			&& (bool)shouldEmitRelease.Invoke(null, new object[] { "daily-complete", true, false })
+			&& (bool)shouldEmitRelease.Invoke(null, new object[] { "daily-complete", false, true })
+			&& !(bool)shouldEmitRelease.Invoke(null, new object[] { "generation-start", false, false })
+			&& !(bool)shouldEmitRelease.Invoke(null, new object[] { "daily-start", false, false })
+			&& !(bool)shouldEmitRelease.Invoke(null, new object[] { "daily-complete", false, false }),
+			"Release filter must always retain summaries, failures, and warnings while dropping detailed recurring successes.");
 		long[] concurrentSequences = new long[128];
 		Parallel.For(0, concurrentSequences.Length, index =>
 		{
@@ -13968,6 +14009,12 @@ internal static class Program
 			&& llmSource.IndexOf("raw_sample=", StringComparison.Ordinal) < 0
 			&& llmSource.IndexOf("response_body=", StringComparison.Ordinal) < 0,
 			"Policy API logging must not retain request/response or raw parse samples.");
+		string policyLogSource = File.ReadAllText(Path.Combine(policyRoot, "Core", "PolicySystemLog.cs"), Encoding.UTF8);
+		Check(policyLogSource.Contains("Logger.IsVerboseModLogicEnabled")
+			&& policyLogSource.Contains("ContainsOperationalWarningMarker")
+			&& policyLogSource.Contains("if (!ShouldEmit(normalizedStage, failed, warning))")
+			&& policyLogSource.Contains("if (!ShouldEmit(normalizedStage, failure, warning))"),
+			"Policy logging must keep failures/warnings, gate detailed events centrally, and restore them through the existing verbose-log switch.");
 	}
 
 	private static void TestNpcLegacyMigrations()

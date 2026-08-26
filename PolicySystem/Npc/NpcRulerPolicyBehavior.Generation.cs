@@ -4142,7 +4142,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			}
 			resolved = new PolicyEffectResolvedTarget
 			{
-				Handle = canonicalHandle,
+				Handle = BuildNpcKingdomSelectorHandle(allowedTarget.KingdomId),
 				SelectorKind = PolicyEffectTargetKind.Kingdom,
 				CanonicalTargetSet = BuildNpcKingdomTargetSet(targetKingdom, GetKingdomSettlements(targetKingdom))
 			};
@@ -5991,7 +5991,9 @@ public sealed partial class NpcRulerPolicyBehavior
 		return new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = 1,
-			SelectorHandles = string.IsNullOrWhiteSpace(kingdomId) ? new List<string>() : new List<string> { kingdomId },
+			SelectorHandles = string.IsNullOrWhiteSpace(kingdomId)
+				? new List<string>()
+				: new List<string> { BuildNpcKingdomSelectorHandle(kingdomId) },
 			SettlementIds = NormalizeNpcPolicyIds(normalized.Select(settlement => settlement.StringId)),
 			TownIds = NormalizeNpcPolicyIds(normalized.Where(settlement => settlement.Town != null).Select(settlement => settlement.StringId)),
 			VillageIds = NormalizeNpcPolicyIds(normalized.Where(settlement => settlement.Village != null).Select(settlement => settlement.StringId)),
@@ -6003,6 +6005,12 @@ public sealed partial class NpcRulerPolicyBehavior
 			KingdomIds = string.IsNullOrWhiteSpace(kingdomId) ? new List<string>() : new List<string> { kingdomId },
 			ParentSettlementIds = NormalizeNpcPolicyIds(normalized.Where(settlement => settlement.Town != null).Select(settlement => settlement.StringId))
 		};
+	}
+
+	private static string BuildNpcKingdomSelectorHandle(string kingdomId)
+	{
+		string normalizedKingdomId = (kingdomId ?? string.Empty).Trim();
+		return normalizedKingdomId.Length == 0 ? string.Empty : "K:" + normalizedKingdomId;
 	}
 
 	private static PolicyEffectInstanceSaveData CloneNpcModuleEffectForBundle(

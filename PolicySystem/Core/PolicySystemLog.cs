@@ -74,8 +74,8 @@ internal static class PolicySystemLog
 	private static long _sequence = DateTime.UtcNow.Ticks;
 	private static bool _sessionStarted;
 
-	// WriteRuntime remains filtered because several runtime adapters call it from recurring
-	// maintenance paths. Explicit Write/Lifecycle calls are event boundaries and always emit.
+	// Detailed stages remain available when verbose mod-logic logging is enabled. WriteRuntime
+	// also uses this set as an upper bound because several adapters call it from recurring paths.
 	private static readonly HashSet<string> LifecycleStages = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 	{
 		"session-start",
@@ -187,6 +187,25 @@ internal static class PolicySystemLog
 		"runtime-target-structure-refresh"
 	};
 
+	// Default release logging keeps only user-visible policy outcomes and low-frequency save/load
+	// summaries. Failures and operational warnings bypass this allowlist; verbose logging restores
+	// the complete structured lifecycle above.
+	private static readonly HashSet<string> ReleaseStages = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+	{
+		"generation-complete",
+		"published",
+		"adopted",
+		"abolished",
+		"commit-complete",
+		"active-bundle-created",
+		"renewal-committed",
+		"abolition-complete",
+		"expiry-complete",
+		"save-summary",
+		"load-summary",
+		"load-normalized"
+	};
+
 	internal static void Write(string category, string stage, string message, string detail = null)
 	{
 		WriteLegacy(category, stage, message, detail, filterRuntimeStage: false);
@@ -200,9 +219,20 @@ internal static class PolicySystemLog
 
 	internal static void Lifecycle(string category, string stage, string result, PolicyLogContext context = null)
 	{
+		string normalizedStage = Clean(stage, "log");
 		string normalizedResult = Clean(result, "event");
-		bool failed = ContainsFailureMarker(normalizedResult) || ContainsFailureMarker(stage);
-		Emit(category, stage, normalizedResult, "lifecycle", failed ? "error" : "info", context);
+		bool failed = ContainsFailureMarker(normalizedResult)
+			|| ContainsFailureMarker(normalizedStage)
+			|| ContainsFailureMarker(context?.ErrorKind);
+		bool warning = !failed && (ContainsOperationalWarningMarker(normalizedResult)
+			|| ContainsOperationalWarningMarker(normalizedStage)
+			|| ContainsOperationalWarningMarker(context?.ErrorKind));
+		if (!ShouldEmit(normalizedStage, failed, warning))
+		{
+			return;
+		}
+		Emit(category, normalizedStage, normalizedResult, "lifecycle",
+			failed ? "error" : warning ? "warning" : "info", context);
 	}
 
 	internal static string HashSensitive(string value)
@@ -262,6 +292,15 @@ internal static class PolicySystemLog
 		string stateBefore = null,
 		string stateAfter = null)
 	{
+		string normalizedStage = Clean(stage, "transaction");
+		bool failed = IsFailureResult(result, errorKind) || ContainsFailureMarker(normalizedStage);
+		bool warning = !failed && (ContainsOperationalWarningMarker(result)
+			|| ContainsOperationalWarningMarker(errorKind)
+			|| ContainsOperationalWarningMarker(normalizedStage));
+		if (!ShouldEmit(normalizedStage, failed, warning))
+		{
+			return;
+		}
 		PolicyLogContext context = new PolicyLogContext
 		{
 			TransactionId = transactionId,
@@ -277,7 +316,8 @@ internal static class PolicySystemLog
 			ExecutionReceiptHash = StableHash(executionReceipt)
 		};
 		ApplyLegacyFields(context, costReceipt);
-		Emit("Transaction", stage, result, "transaction", IsFailureResult(result, errorKind) ? "error" : "info", context);
+		Emit("Transaction", normalizedStage, result, "transaction",
+			failed ? "error" : warning ? "warning" : "info", context);
 	}
 
 	internal static void DiagnosticFailure(string category, string stage, string message, string detail)
@@ -289,12 +329,32 @@ internal static class PolicySystemLog
 	{
 		string normalizedStage = Clean(stage, "log");
 		bool failure = ContainsFailureMarker(normalizedStage) || ContainsFailureMarker(message);
-		if (filterRuntimeStage && !LifecycleStages.Contains(normalizedStage) && !failure)
+		bool warning = !failure && (ContainsOperationalWarningMarker(normalizedStage)
+			|| ContainsOperationalWarningMarker(message));
+		if (filterRuntimeStage && !LifecycleStages.Contains(normalizedStage) && !failure && !warning)
 		{
 			return;
 		}
-		Emit(category, normalizedStage, failure ? "failed" : "event", failure ? "failure" : "lifecycle",
-			failure ? "error" : "info", BuildLegacyContext(message, failure ? detail : null));
+		if (!ShouldEmit(normalizedStage, failure, warning))
+		{
+			return;
+		}
+		Emit(category, normalizedStage, failure ? "failed" : warning ? "warning" : "event",
+			failure ? "failure" : "lifecycle", failure ? "error" : warning ? "warning" : "info",
+			BuildLegacyContext(message, failure || warning ? detail : null));
+	}
+
+	private static bool ShouldEmit(string stage, bool failure, bool warning)
+	{
+		return ShouldEmitRelease(stage, failure, warning)
+			|| Logger.IsVerboseModLogicEnabled;
+	}
+
+	private static bool ShouldEmitRelease(string stage, bool failure, bool warning)
+	{
+		return failure
+			|| warning
+			|| ReleaseStages.Contains(Clean(stage, "log"));
 	}
 
 	private static void Emit(string category, string stage, string result, string kind, string severity, PolicyLogContext context)
@@ -563,6 +623,25 @@ internal static class PolicySystemLog
 			|| text.IndexOf("失败", StringComparison.Ordinal) >= 0
 			|| text.IndexOf("异常", StringComparison.Ordinal) >= 0
 			|| text.IndexOf("错误", StringComparison.Ordinal) >= 0;
+	}
+
+	private static bool ContainsOperationalWarningMarker(string value)
+	{
+		string text = value ?? string.Empty;
+		return text.IndexOf("warn", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("reject", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("quarantin", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("mismatch", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("stale", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("retry", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("suspend", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("defer", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("ambiguous", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("incomplete", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("not-committed", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("警告", StringComparison.Ordinal) >= 0
+			|| text.IndexOf("拒绝", StringComparison.Ordinal) >= 0
+			|| text.IndexOf("隔离", StringComparison.Ordinal) >= 0;
 	}
 
 	private static string FirstToken(string message)
