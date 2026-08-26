@@ -922,7 +922,17 @@ namespace AnimusForge.XihaiAction
                 BattleSpeechReplyPromptSnapshotV2 prompt = request.PromptSnapshot;
                 if (prompt.CombinedRequest)
                 {
-                    if (!BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+                    bool parsed = prompt.CombatSpeechMode
+                        ? BattleSpeechFrameworkV2.TryParseCombatNpcSpeechOutput(
+                            response,
+                            prompt.MinimumChars,
+                            prompt.MaximumChars,
+                            prompt.AudienceReplyCount,
+                            prompt.AudienceReplyMinimumChars,
+                            prompt.AudienceReplyMaximumChars,
+                            out combined,
+                            out string combinedError)
+                        : BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
                             response,
                             prompt.MinimumChars,
                             prompt.MaximumChars,
@@ -931,7 +941,8 @@ namespace AnimusForge.XihaiAction
                             prompt.AudienceReplyMinimumChars,
                             prompt.AudienceReplyMaximumChars,
                             out combined,
-                            out string combinedError))
+                            out combinedError);
+                    if (!parsed)
                     {
                         string safeBody = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                             BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(response),
@@ -950,9 +961,31 @@ namespace AnimusForge.XihaiAction
                                     prompt.AudienceReplyMaximumChars)));
                         SceneActionsLog.Warning(
                             "BATTLE_SPEECH_INPUT",
-                            "Combined NPC speech protocol was invalid; fields failed closed. " +
+                            (prompt.CombatSpeechMode
+                                ? "Combat NPC speech protocol was invalid; text fields failed closed. "
+                                : "Combined NPC speech protocol was invalid; fields failed closed. ") +
                             (combinedError ?? "unknown") +
                             "; fallbackReason=" + (fallbackReason ?? "none"));
+                    }
+                    combined = BattleSpeechFrameworkV2.ApplyPoliticalAllegianceGuard(
+                        combined,
+                        prompt.BattlefieldFacts,
+                        prompt.MinimumChars,
+                        prompt.MaximumChars,
+                        prompt.AudienceReplyMinimumChars,
+                        prompt.AudienceReplyMaximumChars,
+                        out bool politicalSpeechReplaced,
+                        out int politicalRepliesReplaced);
+                    if (politicalSpeechReplaced || politicalRepliesReplaced > 0)
+                    {
+                        SceneActionsLog.Warning(
+                            "BATTLE_SPEECH_INPUT",
+                            "Political allegiance mismatch repaired without another AF request. " +
+                            "Agent=" + request.SpeakerAgentIndex +
+                            " SpeechReplaced=" + politicalSpeechReplaced +
+                            " RepliesReplaced=" + politicalRepliesReplaced +
+                            " FriendlyFaction=" +
+                            (prompt.BattlefieldFacts?.FriendlyFactionName ?? "unknown"));
                     }
                     response = combined.SpeechText;
                 }

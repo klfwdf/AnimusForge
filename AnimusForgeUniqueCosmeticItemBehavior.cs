@@ -6,6 +6,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace AnimusForge;
 
@@ -66,13 +67,23 @@ public sealed class AnimusForgeUniqueCosmeticItemBehavior : CampaignBehaviorBase
 				return;
 			}
 
-			Settlement target = (Settlement.All ?? Enumerable.Empty<Settlement>())
-				.Where(settlement => settlement != null && settlement.IsActive && settlement.Town != null)
+			List<Settlement> candidates = (Settlement.All ?? Enumerable.Empty<Settlement>())
+				.Where(settlement => settlement != null && settlement.IsActive && settlement.IsTown)
 				.OrderBy(settlement => settlement.StringId ?? string.Empty, StringComparer.Ordinal)
-				.FirstOrDefault();
-			if (target?.ItemRoster == null)
+				.ToList();
+			if (candidates.Count == 0)
 			{
 				Logger.Log("UniqueItem", "[WARN] singleton spawn deferred: no active town was available.");
+				return;
+			}
+
+			Settlement target = candidates[MBRandom.RandomInt(candidates.Count)];
+			if (target.ItemRoster == null)
+			{
+				Logger.Log(
+					"UniqueItem",
+					"[WARN] singleton spawn deferred: selected town had no item roster. settlement=" +
+					(target.StringId ?? string.Empty));
 				return;
 			}
 

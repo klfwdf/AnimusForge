@@ -18,8 +18,10 @@ namespace AnimusForge.XihaiAction
         private readonly Dictionary<string, ActionIndexCache> _speechOpeningActions =
             new Dictionary<string, ActionIndexCache>(StringComparer.Ordinal);
         private const string SpeechOpeningActionId = "act_af_speech_nacisword1";
-        private const double AdvanceAudienceCleanupSettleSeconds = 0.12d;
-        private const double AdvanceAudienceCleanupTimeoutSeconds = 0.75d;
+        private const double AdvanceAudienceCleanupSettleSeconds = 0.4d;
+        private const double AdvanceAudienceCleanupTimeoutSeconds = 1.5d;
+        private const float AdvanceAudienceFadeSeconds = 0.35f;
+        private const float AdvanceAudienceChannelWeightEpsilon = 0.02f;
         private bool _closed = true;
         private bool _mcmDisabled;
 
@@ -101,14 +103,35 @@ namespace AnimusForge.XihaiAction
                 Mission,
                 affectedAgent,
                 affectorAgent);
+            BattleSpeechEnemyProximityCache.MarkCombatStartedFromConflict(
+                Mission,
+                affectedAgent,
+                affectorAgent);
             if (_active != null &&
-                (ReferenceEquals(_active.Speaker, affectedAgent) ||
-                 ReferenceEquals(_active.Speaker, affectorAgent)))
+                BattleSpeechEnemyProximityCache.IsCombatStarted(Mission))
             {
-                // A hit/attack must not cancel an in-combat speech.  Mark the
-                // performance in-place and remove every presentation channel
-                // owned by this speech; the speaker remains free to fight.
+                // Any actual enemy contact converts the whole Mission to the
+                // text-only combat speech path, not just hits involving the
+                // current speaker.
                 EnterCombatPerformanceMode(_active, "AgentHit");
+            }
+        }
+
+        public override void OnAgentRemoved(
+            Agent affectedAgent,
+            Agent affectorAgent,
+            AgentState agentState,
+            KillingBlow blow)
+        {
+            BattleSpeechEnemyProximityCache.MarkCombatStartedFromConflict(
+                Mission,
+                affectedAgent,
+                affectorAgent);
+            base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
+            if (_active != null &&
+                BattleSpeechEnemyProximityCache.IsCombatStarted(Mission))
+            {
+                EnterCombatPerformanceMode(_active, "AgentRemoved");
             }
         }
 
@@ -125,6 +148,8 @@ namespace AnimusForge.XihaiAction
                 speech.Snapshot.EndsAtMissionTime - speech.Snapshot.StartedAtMissionTime);
             BattleSpeechPerformanceSettingsV1 settings =
                 CreateEffectivePerformanceSettings();
+            bool combatSpeechMode = speech.CombatSpeechMode ||
+                                    BattleSpeechEnemyProximityCache.IsCombatStarted(Mission);
             Agent[] frozenAudience = FilterFrozenAudience(
                 speech.FrozenAudience,
                 speech.Speaker);
@@ -136,13 +161,34 @@ namespace AnimusForge.XihaiAction
                 duration,
                 frozenAudience.Length,
                 settings);
-            List<RuntimeCue> cues = plan.SpeakerCues
-                .Select(cue => new RuntimeCue(cue, false))
-                .Concat(plan.AudienceCues.Select(cue => new RuntimeCue(cue, true)))
-                .OrderBy(cue => cue.Cue.OffsetSeconds)
-                .ThenBy(cue => cue.IsAudience ? 1 : 0)
-                .ThenBy(cue => cue.Cue.AudienceOrdinal)
-                .ToList();
+            List<RuntimeCue> cues = combatSpeechMode
+                ? new List<RuntimeCue>()
+                : plan.SpeakerCues
+                    .Select(cue => new RuntimeCue(cue, false))
+                    .Concat(plan.AudienceCues.Select(cue => new RuntimeCue(cue, true)))
+                    .OrderBy(cue => cue.Cue.OffsetSeconds)
+                    .ThenBy(cue => cue.IsAudience ? 1 : 0)
+                    .ThenBy(cue => cue.Cue.AudienceOrdinal)
+                    .ToList();
+            int[] voiceAudienceOrdinals = combatSpeechMode ||
+                                          !BattleSpeechRuntimeHost.StageSettings
+                                              .AudienceVoicesEnabled
+                ? Array.Empty<int>()
+                : SelectVoiceAudienceOrdinals(
+                    plan.AudienceCues,
+                    BattleSpeechRuntimeHost.StageSettings.AudienceVoiceCount);
+            string[] audienceReplies = (speech.AudienceReplies ?? Array.Empty<string>())
+                .Take(BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount)
+                .ToArray();
+            int[] replyAudienceOrdinals =
+                BattleSpeechPerformancePlannerV1.SelectAudienceResponseOrdinals(
+                        speech.Snapshot.SessionId,
+                        combatSpeechMode
+                            ? Array.Empty<BattleSpeechPerformanceCueV1>()
+                            : plan.AudienceCues,
+                        frozenAudience.Length,
+                        audienceReplies.Length)
+                    .ToArray();
             _active = new ActivePerformance
             {
                 OwnerToken = speech.Snapshot.SessionId,
@@ -155,31 +201,29 @@ namespace AnimusForge.XihaiAction
                 SpeechEndsAtMissionTime = speech.Snapshot.EndsAtMissionTime,
                 Tactic = speech.Tactic,
                 TacticDecisionProvided = speech.TacticDecisionProvided,
-                CombatSpeechMode = speech.CombatSpeechMode,
-                TailEndsAtMissionTime = speech.Snapshot.StartedAtMissionTime +
-                                        plan.TailEndOffsetSeconds,
+                CombatSpeechMode = combatSpeechMode,
+                TailEndsAtMissionTime = combatSpeechMode
+                    ? speech.Snapshot.EndsAtMissionTime
+                    : speech.Snapshot.StartedAtMissionTime + plan.TailEndOffsetSeconds,
                 LastAudiencePresentationAtMissionTime =
                     speech.Snapshot.StartedAtMissionTime,
                 Cues = cues,
                 Settings = settings,
-                VoiceAudienceOrdinals = SelectVoiceAudienceOrdinals(
-                    speech.Snapshot.SessionId,
-                    frozenAudience.Length,
-                    BattleSpeechRuntimeHost.StageSettings.AudienceVoiceCount),
-                AudienceReplies = (speech.AudienceReplies ?? Array.Empty<string>())
-                    .Take(BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount)
-                    .ToArray(),
-                ReplyAudienceOrdinals = SelectAudienceOrdinals(
-                    speech.Snapshot.SessionId,
-                    frozenAudience.Length,
-                    Math.Min(
-                        speech.AudienceReplies?.Length ?? 0,
-                        BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount),
-                        "reply"),
+                VoiceAudienceOrdinals = voiceAudienceOrdinals,
+                VoiceAudienceOrdinalSet = new HashSet<int>(voiceAudienceOrdinals),
+                AudienceReplies = audienceReplies,
+                ReplyAudienceOrdinals = replyAudienceOrdinals,
+                ReplyIndexByAudienceOrdinal = replyAudienceOrdinals
+                    .Select((ordinal, index) => new { ordinal, index })
+                    .ToDictionary(value => value.ordinal, value => value.index),
+                CueAudienceOrdinals = new HashSet<int>(
+                    plan.AudienceCues.Select(cue => cue.AudienceOrdinal)),
                 OwnedActionIndices = ResolvePerformanceActionIndices(cues),
-                FirstVisualWaveTarget = Math.Min(
-                    BattleSpeechRuntimeHost.StageSettings.VisualWaveSize,
-                    plan.AudienceCues.Count(cue => cue.OffsetSeconds >= duration))
+                FirstVisualWaveTarget = combatSpeechMode
+                    ? 0
+                    : Math.Min(
+                        BattleSpeechRuntimeHost.StageSettings.VisualWaveSize,
+                        plan.AudienceCues.Count(cue => cue.OffsetSeconds >= duration))
             };
             TryPlaySpeechOpeningGesture(_active);
             BattleSpeechRuntimeHost.MarkPerformanceStarted(speech.Mission);
@@ -202,11 +246,6 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             _active.Completed = true;
-            if (BattleSpeechRuntimeHost.StageSettings.TacticalAdvanceEnabled &&
-                !_active.CombatSpeechMode)
-            {
-                TryHoldSpeakerAtSpeechLine(_active);
-            }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH_PERFORMANCE",
                 "Session=" + _active.OwnerToken.ToString("N") +
@@ -242,6 +281,29 @@ namespace AnimusForge.XihaiAction
             return true;
         }
 
+        internal bool TryCancelForNewSpeechRequest(
+            Mission mission,
+            Guid newSessionId)
+        {
+            if (_closed || _active == null || mission == null ||
+                !ReferenceEquals(Mission, mission) ||
+                !ReferenceEquals(Mission.Current, mission) ||
+                _active.OwnerToken == newSessionId)
+            {
+                return false;
+            }
+            Guid previousSessionId = _active.OwnerToken;
+            CancelActive(
+                "Replaced immediately by a newer battle speech request. NewSession=" +
+                newSessionId.ToString("N"));
+            SceneActionsLog.Info(
+                "BATTLE_SPEECH_PERFORMANCE",
+                "Session=" + previousSessionId.ToString("N") +
+                " State=CancelledAtNewRequest NewSession=" +
+                newSessionId.ToString("N"));
+            return true;
+        }
+
         protected override void OnEndMission()
         {
             Close("OnEndMission");
@@ -270,6 +332,7 @@ namespace AnimusForge.XihaiAction
             }
             _mcmDisabled = false;
             performance.CombatSpeechMode = true;
+            performance.CueAudienceOrdinals.Clear();
             int releasedAudience = ReleaseOwnedAudiencePerformanceChannels(performance);
             ReleaseHeldSpeaker(performance);
             CancelTrustedPlaybackOnce(
@@ -295,8 +358,10 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             if (!performance.CombatSpeechMode &&
-                HasNearbyEnemyThrottled(performance.Speaker))
+                (BattleSpeechEnemyProximityCache.IsCombatStarted(Mission) ||
+                 HasNearbyEnemyThrottled(performance.Speaker)))
             {
+                BattleSpeechEnemyProximityCache.MarkCombatStarted(Mission);
                 EnterCombatPerformanceMode(performance, "EnemyNearby");
             }
 
@@ -352,6 +417,7 @@ namespace AnimusForge.XihaiAction
                 }
                 if (runtimeCue.IsAudience && !finalAudienceCue && performance.Completed)
                 {
+                    MarkAudienceCueResolvedForReply(performance, runtimeCue);
                     performance.NextCueIndex++;
                     continue;
                 }
@@ -372,6 +438,7 @@ namespace AnimusForge.XihaiAction
                             " SpeakerGesture=Skipped Mounted=" +
                             (actor?.MountAgent != null));
                     }
+                    MarkAudienceCueResolvedForReply(performance, runtimeCue);
                     performance.NextCueIndex++;
                     continue;
                 }
@@ -395,11 +462,48 @@ namespace AnimusForge.XihaiAction
                             "Session=" + performance.OwnerToken.ToString("N") +
                             " Cue=" + runtimeCue.Cue.IntentKey +
                             " State=Dropped Reason=Trusted queue remained unavailable past the tail deadline.");
+                        MarkAudienceCueResolvedForReply(performance, runtimeCue);
                     }
                     break;
                 }
                 performance.NextCueIndex++;
                 submittedThisTick++;
+                if (runtimeCue.IsAudience &&
+                    string.Equals(
+                        runtimeCue.Cue.IntentKey,
+                        SceneActionFrameworkV4.Cheer,
+                        StringComparison.Ordinal))
+                {
+                    int audienceOrdinal = runtimeCue.Cue.AudienceOrdinal;
+                    performance.ResolvedCueAudienceOrdinals.Add(audienceOrdinal);
+                    if (performance.VoiceAudienceOrdinalSet.Contains(audienceOrdinal) &&
+                        performance.VoicedAudienceOrdinals.Add(audienceOrdinal))
+                    {
+                        bool voicePlayed = CanPlayAudienceVoice(actor) &&
+                                           TryPlayAudienceVoice(actor, audienceOrdinal);
+                        SceneActionsLog.Info(
+                            "BATTLE_SPEECH_VOICE",
+                            "Session=" + performance.OwnerToken.ToString("N") +
+                            " State=SyncedWithCheer Agent=" + (actor?.Index ?? -1) +
+                            " AudienceOrdinal=" + audienceOrdinal +
+                            " Played=" + voicePlayed +
+                            " Voiced=" + performance.VoicedAudienceOrdinals.Count +
+                            "/" + performance.VoiceAudienceOrdinals.Length);
+                    }
+                    if (BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled &&
+                        performance.ReplyIndexByAudienceOrdinal.TryGetValue(
+                            audienceOrdinal,
+                            out int replyIndex))
+                    {
+                        TryPresentAudienceReply(
+                            performance,
+                            actor,
+                            replyIndex,
+                            now,
+                            "SyncedWithCheer",
+                            out _);
+                    }
+                }
                 if (finalAudienceCue)
                 {
                     performance.FinalAudienceSubmitted++;
@@ -651,53 +755,85 @@ namespace AnimusForge.XihaiAction
         }
 
         private static int[] SelectVoiceAudienceOrdinals(
-            Guid sessionId,
-            int audienceCount,
+            IReadOnlyList<BattleSpeechPerformanceCueV1> audienceCues,
             int maximumVoices)
         {
-            return SelectAudienceOrdinals(
-                sessionId,
-                audienceCount,
-                maximumVoices,
-                "voice");
-        }
-
-        private static int[] SelectAudienceOrdinals(
-            Guid sessionId,
-            int audienceCount,
-            int maximumActors,
-            string channel)
-        {
-            if (sessionId == Guid.Empty || maximumActors <= 0 || audienceCount <= 0)
+            if (maximumVoices <= 0 || audienceCues == null || audienceCues.Count == 0)
             {
                 return Array.Empty<int>();
             }
-            return Enumerable.Range(0, audienceCount)
-                .Select(ordinal => new
-                {
-                    Ordinal = ordinal,
-                    Hash = StableSelectionHash(
-                        sessionId.ToString("N") + ":" + channel + ":" + ordinal)
-                })
-                .OrderBy(value => value.Hash)
-                .ThenBy(value => value.Ordinal)
-                .Take(maximumActors)
-                .Select(value => value.Ordinal)
+            // Audience cue order is already deterministic and randomized by the
+            // performance planner. Taking it chronologically guarantees that
+            // long speeches assign some voices to their mid-speech cheer cues
+            // before filling the remaining voice budget from the closing waves.
+            return audienceCues
+                .OrderBy(cue => cue.OffsetSeconds)
+                .ThenBy(cue => cue.AudienceOrdinal)
+                .Select(cue => cue.AudienceOrdinal)
+                .Distinct()
+                .Take(maximumVoices)
                 .ToArray();
         }
 
-        private static uint StableSelectionHash(string value)
+        private static void MarkAudienceCueResolvedForReply(
+            ActivePerformance performance,
+            RuntimeCue runtimeCue)
         {
-            unchecked
+            if (performance == null || runtimeCue == null || !runtimeCue.IsAudience ||
+                !string.Equals(
+                    runtimeCue.Cue.IntentKey,
+                    SceneActionFrameworkV4.Cheer,
+                    StringComparison.Ordinal))
             {
-                uint hash = 2166136261;
-                foreach (char character in value ?? string.Empty)
-                {
-                    hash ^= character;
-                    hash *= 16777619;
-                }
-                return hash;
+                return;
             }
+            performance.ResolvedCueAudienceOrdinals.Add(runtimeCue.Cue.AudienceOrdinal);
+        }
+
+        private bool TryPresentAudienceReply(
+            ActivePerformance performance,
+            Agent actor,
+            int replyIndex,
+            double now,
+            string state,
+            out float visualDuration)
+        {
+            visualDuration = 0f;
+            if (performance == null || replyIndex < 0 ||
+                replyIndex >= performance.AudienceReplies.Length ||
+                performance.PresentedReplyIndices.Contains(replyIndex))
+            {
+                return false;
+            }
+            string replyError = null;
+            bool played = CanPlayAudienceVoice(actor) &&
+                          AfCompatV130.TryShowAudienceReply(
+                              actor,
+                              performance.AudienceReplies[replyIndex],
+                              !performance.CombatSpeechMode,
+                              out visualDuration,
+                              out replyError);
+            if (!played)
+            {
+                SceneActionsLog.Warning(
+                    "BATTLE_SPEECH_REPLY",
+                    "Session=" + performance.OwnerToken.ToString("N") +
+                    " Agent=" + (actor?.Index ?? -1) +
+                    " ReplyIndex=" + replyIndex +
+                    " State=Skipped Source=" + (state ?? "Unknown") +
+                    " Reason=" + (replyError ?? "Actor unavailable."));
+                return false;
+            }
+
+            performance.PresentedReplyIndices.Add(replyIndex);
+            MarkAudiencePresentation(performance, now, Math.Min(3f, visualDuration));
+            SceneActionsLog.Info(
+                "BATTLE_SPEECH_REPLY",
+                "Session=" + performance.OwnerToken.ToString("N") +
+                " Agent=" + actor.Index +
+                " ReplyIndex=" + replyIndex +
+                " State=" + (state ?? "Presented"));
+            return true;
         }
 
         private void TryOpenAudienceResponse(ActivePerformance performance, double now)
@@ -731,7 +867,6 @@ namespace AnimusForge.XihaiAction
             }
             performance.ResponseOpened = true;
             performance.NextReplyAtMissionTime = now;
-            performance.NextVoiceAtMissionTime = now;
             performance.TailEndsAtMissionTime = Math.Max(
                 performance.TailEndsAtMissionTime,
                 now + performance.Settings.PerformanceTailSeconds);
@@ -776,138 +911,120 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             BattleSpeechStageSettingsV2 stage = BattleSpeechRuntimeHost.StageSettings;
+            while (performance.NextReplyIndex < performance.ReplyAudienceOrdinals.Length &&
+                   performance.PresentedReplyIndices.Contains(performance.NextReplyIndex))
+            {
+                performance.NextReplyIndex++;
+                performance.ReplyWaveRemaining = 0;
+            }
             bool repliesDone = !stage.AudienceRepliesEnabled ||
                                performance.NextReplyIndex >=
                                performance.ReplyAudienceOrdinals.Length;
             if (!repliesDone && now >= performance.NextReplyAtMissionTime)
             {
-                int remaining = performance.ReplyAudienceOrdinals.Length -
-                                performance.NextReplyIndex;
-                if (performance.ReplyWaveRemaining <= 0)
+                int nextOrdinal = performance.ReplyAudienceOrdinals[
+                    performance.NextReplyIndex];
+                bool waitingForScheduledCheer = !performance.CombatSpeechMode &&
+                                                performance.CueAudienceOrdinals.Contains(
+                                                    nextOrdinal) &&
+                                                !performance.ResolvedCueAudienceOrdinals.Contains(
+                                                    nextOrdinal);
+                if (!waitingForScheduledCheer)
                 {
-                    performance.ReplyWaveRemaining =
-                        BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
-                            performance.OwnerToken,
-                            performance.ReplyWaveIndex,
-                            stage.AudienceReplyWaveSize,
-                            remaining);
-                }
-                int waveSize = performance.ReplyWaveRemaining;
-                int submissionsThisTick = Math.Min(
-                    waveSize,
-                    stage.MaximumAudienceReplySubmissionsPerTick);
-                float longestVisualDuration = 0f;
-                int playedThisWave = 0;
-                for (int waveOffset = 0;
-                     waveOffset < submissionsThisTick;
-                     waveOffset++)
-                {
-                    int replyIndex = performance.NextReplyIndex++;
-                    performance.ReplyWaveRemaining--;
-                    int ordinal = performance.ReplyAudienceOrdinals[replyIndex];
-                    Agent actor = ResolveAudienceActor(performance, ordinal);
-                    string reply = replyIndex < performance.AudienceReplies.Length
-                        ? performance.AudienceReplies[replyIndex]
-                        : string.Empty;
-                    float visualDuration = 0f;
-                    string replyError = null;
-                    bool played = CanPlayAudienceVoice(actor) &&
-                                  AfCompatV130.TryShowAudienceReply(
-                                      actor,
-                                      reply,
-                                      !performance.CombatSpeechMode,
-                                      out visualDuration,
-                                      out replyError);
-                    longestVisualDuration = Math.Max(
-                        longestVisualDuration,
-                        Math.Min(3f, visualDuration));
-                    if (!played)
+                    int remaining = performance.ReplyAudienceOrdinals.Length -
+                                    performance.NextReplyIndex;
+                    if (performance.ReplyWaveRemaining <= 0)
                     {
-                        SceneActionsLog.Warning(
+                        performance.ReplyWaveRemaining =
+                            BattleSpeechFrameworkV2.ResolveAudienceReplyWaveSize(
+                                performance.OwnerToken,
+                                performance.ReplyWaveIndex,
+                                stage.AudienceReplyWaveSize,
+                                remaining);
+                    }
+                    int waveSize = performance.ReplyWaveRemaining;
+                    int submissionsThisTick = Math.Min(
+                        waveSize,
+                        stage.MaximumAudienceReplySubmissionsPerTick);
+                    float longestVisualDuration = 0f;
+                    int playedThisWave = 0;
+                    int attemptedThisTick = 0;
+                    while (attemptedThisTick < submissionsThisTick &&
+                           performance.NextReplyIndex <
+                           performance.ReplyAudienceOrdinals.Length)
+                    {
+                        int replyIndex = performance.NextReplyIndex;
+                        if (performance.PresentedReplyIndices.Contains(replyIndex))
+                        {
+                            performance.NextReplyIndex++;
+                            performance.ReplyWaveRemaining = 0;
+                            continue;
+                        }
+                        int ordinal = performance.ReplyAudienceOrdinals[replyIndex];
+                        if (!performance.CombatSpeechMode &&
+                            performance.CueAudienceOrdinals.Contains(ordinal) &&
+                            !performance.ResolvedCueAudienceOrdinals.Contains(ordinal))
+                        {
+                            break;
+                        }
+                        performance.NextReplyIndex++;
+                        performance.ReplyWaveRemaining--;
+                        attemptedThisTick++;
+                        Agent actor = ResolveAudienceActor(performance, ordinal);
+                        bool played = TryPresentAudienceReply(
+                            performance,
+                            actor,
+                            replyIndex,
+                            now,
+                            "FallbackWave",
+                            out float visualDuration);
+                        longestVisualDuration = Math.Max(
+                            longestVisualDuration,
+                            Math.Min(3f, visualDuration));
+                        if (played)
+                        {
+                            playedThisWave++;
+                        }
+                    }
+                    if (attemptedThisTick > 0)
+                    {
+                        bool waveCompleted = performance.ReplyWaveRemaining <= 0;
+                        double randomDelay = waveCompleted
+                            ? BattleSpeechFrameworkV2.ResolveAudienceReplyWaveDelaySeconds(
+                                performance.OwnerToken,
+                                performance.ReplyWaveIndex++,
+                                stage.AudienceReplyMinimumIntervalSeconds,
+                                stage.AudienceReplyMaximumIntervalSeconds)
+                            : 0.01d;
+                        performance.NextReplyAtMissionTime = now +
+                            (waveCompleted ? randomDelay : 0.01d);
+                        if (playedThisWave > 0)
+                        {
+                            MarkAudiencePresentation(
+                                performance,
+                                now,
+                                longestVisualDuration);
+                        }
+                        performance.TailEndsAtMissionTime = Math.Max(
+                            performance.TailEndsAtMissionTime,
+                            performance.NextReplyAtMissionTime +
+                            performance.Settings.PerformanceTailSeconds);
+                        SceneActionsLog.Info(
                             "BATTLE_SPEECH_REPLY",
                             "Session=" + performance.OwnerToken.ToString("N") +
-                            " Agent=" + (actor?.Index ?? -1) +
-                            " State=Skipped Reason=" +
-                            (replyError ?? "Actor unavailable."));
+                            " WaveSize=" + waveSize +
+                            " SubmittedThisTick=" + attemptedThisTick +
+                            " WaveCompleted=" + waveCompleted +
+                            " Played=" + playedThisWave +
+                            " NextDelay=" + randomDelay.ToString("F2"));
                     }
-                    else
-                    {
-                        playedThisWave++;
-                    }
-                }
-                bool waveCompleted = performance.ReplyWaveRemaining <= 0;
-                double randomDelay = waveCompleted
-                    ? BattleSpeechFrameworkV2.ResolveAudienceReplyWaveDelaySeconds(
-                        performance.OwnerToken,
-                        performance.ReplyWaveIndex++,
-                        stage.AudienceReplyMinimumIntervalSeconds,
-                        stage.AudienceReplyMaximumIntervalSeconds)
-                    : 0.01d;
-                performance.NextReplyAtMissionTime = now + Math.Max(
-                    waveCompleted ? randomDelay : 0.01d,
-                    longestVisualDuration);
-                if (playedThisWave > 0)
-                {
-                    MarkAudiencePresentation(
-                        performance,
-                        now,
-                        longestVisualDuration);
-                }
-                performance.TailEndsAtMissionTime = Math.Max(
-                    performance.TailEndsAtMissionTime,
-                    performance.NextReplyAtMissionTime +
-                    performance.Settings.PerformanceTailSeconds);
-                SceneActionsLog.Info(
-                    "BATTLE_SPEECH_REPLY",
-                    "Session=" + performance.OwnerToken.ToString("N") +
-                    " WaveSize=" + waveSize +
-                    " SubmittedThisTick=" + submissionsThisTick +
-                    " WaveCompleted=" + waveCompleted +
-                    " Played=" + playedThisWave +
-                    " NextDelay=" + randomDelay.ToString("F2"));
-            }
-
-            // Native battle cries are an independent response channel. They
-            // start with the first audience reply wave instead of waiting for
-            // every spoken reply to finish.
-            if (BattleSpeechFrameworkV2.ShouldPlayAudienceVoices(
-                    performance.CombatSpeechMode,
-                    stage.AudienceVoicesEnabled) &&
-                now >= performance.NextVoiceAtMissionTime &&
-                performance.NextVoiceIndex < performance.VoiceAudienceOrdinals.Length)
-            {
-                int played = 0;
-                int attempted = 0;
-                while (played < stage.AudienceVoiceWaveSize &&
-                       performance.NextVoiceIndex < performance.VoiceAudienceOrdinals.Length)
-                {
-                    int ordinal = performance.VoiceAudienceOrdinals[
-                        performance.NextVoiceIndex++];
-                    Agent actor = ResolveAudienceActor(performance, ordinal);
-                    attempted++;
-                    if (CanPlayAudienceVoice(actor) &&
-                        TryPlayAudienceVoice(actor, performance.NextVoiceIndex))
-                    {
-                        played++;
-                    }
-                }
-                SceneActionsLog.Info(
-                    "BATTLE_SPEECH_VOICE",
-                    "Session=" + performance.OwnerToken.ToString("N") +
-                    " WavePlayed=" + played +
-                    " Attempted=" + attempted +
-                    " Remaining=" +
-                    (performance.VoiceAudienceOrdinals.Length -
-                     performance.NextVoiceIndex));
-                performance.NextVoiceAtMissionTime = now +
-                    stage.AudienceVoiceWaveIntervalSeconds;
-                if (played > 0)
-                {
-                    MarkAudiencePresentation(performance, now);
                 }
             }
 
-            // Written replies and battle cries may overlap the speech. The
+            // Written replies may overlap each other. Native battle cries are
+            // emitted only when the same soldier's cheer cue is submitted, so
+            // audio and animation cannot drift into separate end-of-speech waves.
+            // The
             // command gesture and Advance order remain a strict completion
             // boundary so an unfinished speech can never move the formations.
             if (!performance.Completed)
@@ -1001,12 +1118,11 @@ namespace AnimusForge.XihaiAction
                 if (!performance.AudienceCleanupRequested)
                 {
                     performance.AudienceCleanupRequested = true;
-                    performance.AudienceCleanupReadyAtMissionTime =
-                        now + AdvanceAudienceCleanupSettleSeconds;
+                    performance.AudienceCleanupReadyAtMissionTime = 0d;
                     performance.AudienceCleanupDeadlineMissionTime =
                         now + AdvanceAudienceCleanupTimeoutSeconds;
                     performance.AudienceCleanupReleasedChannels +=
-                        ReleaseOwnedAudiencePerformanceChannels(performance);
+                        FadeOutOwnedAudiencePerformanceChannels(performance);
                     CancelTrustedPlaybackOnce(
                         performance,
                         "Advance preflight; audience presentation is ending.");
@@ -1020,9 +1136,14 @@ namespace AnimusForge.XihaiAction
                     return;
                 }
 
-                performance.AudienceCleanupReleasedChannels +=
-                    ReleaseOwnedAudiencePerformanceChannels(performance);
                 bool audienceClear = AreOwnedAudienceChannelsClear(performance);
+                if (!audienceClear)
+                {
+                    // Start the settle window only after the final owned action
+                    // actually disappears. This leaves a continuous recovery
+                    // window for the skeleton/root pose before formation AI moves.
+                    performance.AudienceCleanupReadyAtMissionTime = 0d;
+                }
                 if (!audienceClear &&
                     now < performance.AudienceCleanupDeadlineMissionTime)
                 {
@@ -1038,6 +1159,11 @@ namespace AnimusForge.XihaiAction
                         " State=AdvanceSuppressed Reason=Audience action channel did not settle before timeout; " +
                         "floating transition risk was blocked.");
                     return;
+                }
+                if (performance.AudienceCleanupReadyAtMissionTime <= 0d)
+                {
+                    performance.AudienceCleanupReadyAtMissionTime =
+                        now + AdvanceAudienceCleanupSettleSeconds;
                 }
                 if (now < performance.AudienceCleanupReadyAtMissionTime)
                 {
@@ -1084,6 +1210,13 @@ namespace AnimusForge.XihaiAction
                     ActionIndexCache current = actor.GetCurrentAction(1);
                     if (ownedActions.Any(action => action != ActionIndexCache.act_none &&
                                                    action == current))
+                    {
+                        return false;
+                    }
+                    if (current == ActionIndexCache.act_none &&
+                        performance.AudienceFadeAgentIndices.Contains(actor.Index) &&
+                        actor.GetActionChannelWeight(1) >
+                        AdvanceAudienceChannelWeightEpsilon)
                     {
                         return false;
                     }
@@ -1247,89 +1380,6 @@ namespace AnimusForge.XihaiAction
                 " RestoredSelection=" + previousSelection.Length);
         }
 
-        private void TryHoldSpeakerAtSpeechLine(ActivePerformance performance)
-        {
-            Agent speaker = performance?.Speaker;
-            if (speaker == null || ReferenceEquals(speaker, Mission.MainAgent) ||
-                !speaker.IsActive() || Mission.Scene == null)
-            {
-                return;
-            }
-            Agent[] audience = performance.Audience ?? Array.Empty<Agent>();
-            Agent[] activeAudience = audience
-                .Where(agent => agent != null && agent.IsActive() &&
-                                ReferenceEquals(agent.Mission, Mission))
-                .ToArray();
-            if (activeAudience.Length == 0)
-            {
-                return;
-            }
-            Vec2 center = new Vec2(
-                activeAudience.Average(agent => agent.Position.x),
-                activeAudience.Average(agent => agent.Position.y));
-            Vec2 facing = center - speaker.Position.AsVec2;
-            if (facing.LengthSquared < 0.01f)
-            {
-                return;
-            }
-            facing = facing.Normalized();
-            try
-            {
-                TaleWorlds.Library.Vec3 lookDirection =
-                    new TaleWorlds.Library.Vec3(facing);
-                speaker.SetLookAgent(null);
-                speaker.LookDirection = lookDirection;
-                TaleWorlds.Engine.WorldPosition position =
-                    new TaleWorlds.Engine.WorldPosition(Mission.Scene, speaker.Position);
-                speaker.ClearTargetFrame();
-                speaker.SetScriptedPositionAndDirection(
-                    ref position,
-                    facing.RotationInRadians,
-                    addHumanLikeDelay: false,
-                    Agent.AIScriptedFrameFlags.NoAttack |
-                    Agent.AIScriptedFrameFlags.DoNotRun);
-                performance.SpeakerHoldOwned = true;
-                Agent mount = speaker.MountAgent;
-                if (mount != null && mount.IsActive() &&
-                    ReferenceEquals(mount.Mission, Mission))
-                {
-                    try
-                    {
-                        mount.SetLookAgent(null);
-                        mount.LookDirection = lookDirection;
-                        Vec2 movementDirection = facing;
-                        mount.SetMovementDirection(in movementDirection);
-                        mount.ClearTargetFrame();
-                        TaleWorlds.Engine.WorldPosition mountPosition =
-                            new TaleWorlds.Engine.WorldPosition(Mission.Scene, mount.Position);
-                        mount.SetScriptedPositionAndDirection(
-                            ref mountPosition,
-                            facing.RotationInRadians,
-                            addHumanLikeDelay: false);
-                        performance.SpeakerHoldMount = mount;
-                    }
-                    catch (Exception mountError)
-                    {
-                        SceneActionsLog.Error(
-                            "BATTLE_SPEECH_STAGE",
-                            "Unable to hold the mount for the closing command; rider hold remains active.",
-                            mountError);
-                    }
-                }
-                SceneActionsLog.Info(
-                    "BATTLE_SPEECH_STAGE",
-                    "Session=" + performance.OwnerToken.ToString("N") +
-                    " State=HeldForCommand FacingAudience=" + facing);
-            }
-            catch (Exception ex)
-            {
-                SceneActionsLog.Error(
-                    "BATTLE_SPEECH_STAGE",
-                    "Unable to hold the speaker for the closing command.",
-                    ex);
-            }
-        }
-
         private static void ReleaseHeldSpeaker(ActivePerformance performance)
         {
             if (performance == null)
@@ -1339,7 +1389,7 @@ namespace AnimusForge.XihaiAction
             if (performance.SpeechOpeningAccepted && performance.Speaker != null &&
                 performance.Speaker.IsActive())
             {
-                SceneActionChannelOwner.TryReleaseOwnedChannelWithContext(
+                SceneActionChannelOwner.TryReleaseOwnedChannelImmediatelyWithContext(
                     performance.Speaker,
                     1,
                     ownershipAccepted: true,
@@ -1351,7 +1401,7 @@ namespace AnimusForge.XihaiAction
             if (performance.ClosingCommandAccepted && performance.Speaker != null &&
                 performance.Speaker.IsActive())
             {
-                SceneActionChannelOwner.TryReleaseOwnedChannelWithContext(
+                SceneActionChannelOwner.TryReleaseOwnedChannelImmediatelyWithContext(
                     performance.Speaker,
                     1,
                     ownershipAccepted: true,
@@ -1360,41 +1410,6 @@ namespace AnimusForge.XihaiAction
                 performance.ClosingCommandAccepted = false;
                 performance.ClosingCommandAction = ActionIndexCache.act_none;
             }
-            if (!performance.SpeakerHoldOwned)
-            {
-                return;
-            }
-            try
-            {
-                if (performance.Speaker != null && performance.Speaker.IsActive())
-                {
-                    performance.Speaker.DisableScriptedMovement();
-                }
-            }
-            catch (Exception ex)
-            {
-                SceneActionsLog.Error(
-                    "BATTLE_SPEECH_STAGE",
-                    "Unable to release the closing-command speaker hold.",
-                    ex);
-            }
-            try
-            {
-                if (performance.SpeakerHoldMount != null &&
-                    performance.SpeakerHoldMount.IsActive())
-                {
-                    performance.SpeakerHoldMount.DisableScriptedMovement();
-                }
-            }
-            catch (Exception ex)
-            {
-                SceneActionsLog.Error(
-                    "BATTLE_SPEECH_STAGE",
-                    "Unable to release the closing-command mount hold.",
-                    ex);
-            }
-            performance.SpeakerHoldOwned = false;
-            performance.SpeakerHoldMount = null;
         }
 
         private static bool ResponseWorkCompleted(ActivePerformance performance)
@@ -1403,16 +1418,11 @@ namespace AnimusForge.XihaiAction
             {
                 return true;
             }
-            bool voicesDone = !BattleSpeechFrameworkV2.ShouldPlayAudienceVoices(
-                                  performance.CombatSpeechMode,
-                                  BattleSpeechRuntimeHost.StageSettings.AudienceVoicesEnabled) ||
-                              performance.NextVoiceIndex >=
-                              performance.VoiceAudienceOrdinals.Length;
             bool repliesDone = !BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled ||
                                performance.NextReplyIndex >=
                                performance.ReplyAudienceOrdinals.Length;
             bool tacticDone = performance.AdvanceResolved;
-            return repliesDone && voicesDone && tacticDone;
+            return repliesDone && tacticDone;
         }
 
         private bool HasNearbyEnemyThrottled(Agent speaker)
@@ -1500,6 +1510,52 @@ namespace AnimusForge.XihaiAction
             return ReleaseOwnedPerformanceChannels(performance, includeSpeaker: false);
         }
 
+        private static int FadeOutOwnedAudiencePerformanceChannels(
+            ActivePerformance performance)
+        {
+            if (performance == null || performance.OwnedActionIndices.Count == 0)
+            {
+                return 0;
+            }
+            int released = 0;
+            ActionIndexCache[] ownedActions = performance.OwnedActionIndices.ToArray();
+            foreach (Agent actor in (performance.Audience ?? Array.Empty<Agent>())
+                         .Where(agent => agent != null)
+                         .GroupBy(agent => agent.Index)
+                         .Select(group => group.First()))
+            {
+                if (!actor.IsActive() || !ReferenceEquals(actor.Mission, performance.Mission))
+                {
+                    continue;
+                }
+                try
+                {
+                    ActionIndexCache current = actor.GetCurrentAction(1);
+                    if (!ownedActions.Any(action => action != ActionIndexCache.act_none &&
+                                                    action == current))
+                    {
+                        continue;
+                    }
+                    if (SceneActionChannelOwner.TryFadeOutOwnedChannelWithContext(
+                            actor,
+                            1,
+                            ownershipAccepted: true,
+                            fadeSeconds: AdvanceAudienceFadeSeconds,
+                            diagnosticContext: "BattleSpeechPerformance audience advance fade",
+                            ownedActions))
+                    {
+                        performance.AudienceFadeAgentIndices.Add(actor.Index);
+                        released++;
+                    }
+                }
+                catch
+                {
+                    // A disappearing agent is already safe to skip.
+                }
+            }
+            return released;
+        }
+
         private static int ReleaseOwnedPerformanceChannels(
             ActivePerformance performance)
         {
@@ -1536,7 +1592,7 @@ namespace AnimusForge.XihaiAction
                     {
                         continue;
                     }
-                    if (SceneActionChannelOwner.TryReleaseOwnedChannelWithContext(
+                    if (SceneActionChannelOwner.TryReleaseOwnedChannelImmediatelyWithContext(
                             actor,
                             1,
                             ownershipAccepted: true,
@@ -1601,7 +1657,6 @@ namespace AnimusForge.XihaiAction
             CancelActive(reason);
             BattleSpeechRuntimeHost.UnbindPerformanceEffect(this);
             BattleSpeechRuntimeHost.MarkPerformanceEnded(Mission);
-            BattleSpeechEnemyProximityCache.Reset(Mission);
             _closed = true;
             _registration?.Dispose();
             _registration = null;
@@ -1672,13 +1727,23 @@ namespace AnimusForge.XihaiAction
             public bool CombatSpeechMode;
             public BattleSpeechPerformanceSettingsV1 Settings;
             public int[] VoiceAudienceOrdinals = Array.Empty<int>();
+            public HashSet<int> VoiceAudienceOrdinalSet { get; set; } =
+                new HashSet<int>();
+            public HashSet<int> VoicedAudienceOrdinals { get; } =
+                new HashSet<int>();
             public string[] AudienceReplies = Array.Empty<string>();
             public int[] ReplyAudienceOrdinals = Array.Empty<int>();
+            public Dictionary<int, int> ReplyIndexByAudienceOrdinal { get; set; } =
+                new Dictionary<int, int>();
+            public HashSet<int> CueAudienceOrdinals { get; set; } =
+                new HashSet<int>();
+            public HashSet<int> ResolvedCueAudienceOrdinals { get; } =
+                new HashSet<int>();
+            public HashSet<int> PresentedReplyIndices { get; } =
+                new HashSet<int>();
             public int FirstVisualWaveTarget;
             public int FinalAudienceSubmitted;
             public bool ResponseOpened;
-            public int NextVoiceIndex;
-            public double NextVoiceAtMissionTime;
             public int NextReplyIndex;
             public int ReplyWaveIndex;
             public int ReplyWaveRemaining;
@@ -1695,8 +1760,8 @@ namespace AnimusForge.XihaiAction
             public double AudienceCleanupReadyAtMissionTime;
             public double AudienceCleanupDeadlineMissionTime;
             public int AudienceCleanupReleasedChannels;
-            public bool SpeakerHoldOwned;
-            public Agent SpeakerHoldMount;
+            public HashSet<int> AudienceFadeAgentIndices { get; } =
+                new HashSet<int>();
             public bool SpeakerGestureSkippedLogged;
             public bool SpeakerCueSuppressedByOpeningLogged;
             public ActionIndexCache SpeechOpeningAction = ActionIndexCache.act_none;

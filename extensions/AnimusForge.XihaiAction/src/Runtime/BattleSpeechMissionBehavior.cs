@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SceneActions.Core;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -116,15 +118,20 @@ namespace AnimusForge.XihaiAction
                 Mission,
                 affectedAgent,
                 affectorAgent);
-            if (_active != null &&
-                (ReferenceEquals(_active.Speaker, affectedAgent) ||
-                 ReferenceEquals(_active.Speaker, affectorAgent)))
+            bool combatStarted = BattleSpeechEnemyProximityCache
+                .MarkCombatStartedFromConflict(Mission, affectedAgent, affectorAgent);
+            if (combatStarted)
             {
-                // Being hit or attacking is precisely the supported
-                // in-combat speech case.  Keep the speech session alive,
-                // release any staging control, and let the performance layer
-                // suppress only presentation/Advance work that is unsafe
-                // while the speaker is fighting.
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_STAGE",
+                    "Mission combat mode latched by opposing-agent hit.");
+            }
+            if (_active != null &&
+                BattleSpeechEnemyProximityCache.IsCombatStarted(Mission))
+            {
+                // Any real opposing-agent hit locks this Mission into the
+                // text-only combat speech channel, even when the selected
+                // speaker is standing behind the active melee.
                 EnterCombatSpeechMode(_active);
             }
         }
@@ -135,6 +142,14 @@ namespace AnimusForge.XihaiAction
             AgentState agentState,
             KillingBlow blow)
         {
+            bool combatStarted = BattleSpeechEnemyProximityCache
+                .MarkCombatStartedFromConflict(Mission, affectedAgent, affectorAgent);
+            if (combatStarted)
+            {
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_STAGE",
+                    "Mission combat mode latched by opposing-agent removal.");
+            }
             RecordBattlefieldRemoval(affectedAgent);
             base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
             BattleSpeechEnemyProximityCache.Invalidate(
@@ -144,6 +159,11 @@ namespace AnimusForge.XihaiAction
             if (_active != null && ReferenceEquals(_active.Speaker, affectedAgent))
             {
                 CancelActive("The speaker left the Mission.");
+            }
+            else if (_active != null &&
+                     BattleSpeechEnemyProximityCache.IsCombatStarted(Mission))
+            {
+                EnterCombatSpeechMode(_active);
             }
         }
 
@@ -364,8 +384,16 @@ namespace AnimusForge.XihaiAction
                 ? CaptureBattlefieldFacts(speaker, phase, speakerInCombat)
                 : null;
             bool combatSpeechMode = speakerInCombat ||
+                                     BattleSpeechEnemyProximityCache.IsCombatStarted(Mission) ||
                                      (battlefieldFacts?.EnemyNearby ??
                                       HasNearbyEnemyThrottled(speaker));
+            if (combatSpeechMode &&
+                BattleSpeechEnemyProximityCache.MarkCombatStarted(Mission))
+            {
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_STAGE",
+                    "Mission combat mode latched when the speech session started.");
+            }
 
             Agent[] audience = FreezeAudience(speaker);
             if (audience.Length < BattleSpeechRuntimeHost.Settings.MinimumAudience)
@@ -391,6 +419,9 @@ namespace AnimusForge.XihaiAction
                 ExpiresAtMissionTime = now + timeoutSeconds,
                 CombatSpeechMode = combatSpeechMode
             };
+            BattleSpeechRuntimeHost.TryCancelPerformanceForNewSpeechRequest(
+                Mission,
+                _active.SessionId);
             InitializeV2Stage(_active);
             if (speakerKind == BattleSpeechSpeakerKindV1.Npc)
             {
@@ -408,7 +439,8 @@ namespace AnimusForge.XihaiAction
                             BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
                             audience.Length)
                         : 0,
-                    battlefieldFacts);
+                    battlefieldFacts,
+                    combatSpeechMode: combatSpeechMode);
             }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH",
@@ -577,11 +609,14 @@ namespace AnimusForge.XihaiAction
                     BattleSpeechRuntimeHost.Settings);
             BattleSpeechSessionSnapshotV1 snapshot = Snapshot(session);
             BattleSpeechApiV1.PublishStarted(snapshot, RuntimeContext(session, snapshot));
-            Notify(
-                SceneActionsText.BattleSpeechStarted(
-                    session.Speaker.Name,
-                    session.Audience.Length),
-                Colors.Green);
+            if (!session.CombatSpeechMode)
+            {
+                Notify(
+                    SceneActionsText.BattleSpeechStarted(
+                        session.Speaker.Name,
+                        session.Audience.Length),
+                    Colors.Green);
+            }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH",
                 "Session=" + session.SessionId.ToString("N") +
@@ -600,9 +635,11 @@ namespace AnimusForge.XihaiAction
                 return;
             }
             if (!_active.CombatSpeechMode &&
-                (IsSpeakerInCombatAction(_active.Speaker) ||
+                (BattleSpeechEnemyProximityCache.IsCombatStarted(Mission) ||
+                 IsSpeakerInCombatAction(_active.Speaker) ||
                  HasNearbyEnemyThrottled(_active.Speaker)))
             {
+                BattleSpeechEnemyProximityCache.MarkCombatStarted(Mission);
                 EnterCombatSpeechMode(_active);
             }
             if (!IsActiveSpeechPhaseOpen())
@@ -693,35 +730,11 @@ namespace AnimusForge.XihaiAction
             Agent primaryTarget,
             IReadOnlyList<Agent> framedTargets)
         {
-            if (!IsEligibleSpeaker(primaryTarget) ||
-                (player != null && ReferenceEquals(primaryTarget, player)))
-            {
-                return false;
-            }
-
-            if (framedTargets == null || framedTargets.Count == 0)
-            {
-                return true;
-            }
-
-            foreach (Agent target in framedTargets)
-            {
-                // Stale selection entries are harmless after the menu has been
-                // opened; the primary target above is always checked live.
-                if (target == null || !target.IsActive())
-                {
-                    continue;
-                }
-                if (!ReferenceEquals(target.Mission, Mission) ||
-                    target.Team == null ||
-                    !target.Team.IsValid ||
-                    Mission.PlayerTeam == null ||
-                    target.Team.Side != Mission.PlayerTeam.Side)
-                {
-                    return false;
-                }
-            }
-            return true;
+            // The Y menu freezes one actual primary speaker. Other framed
+            // agents may include enemies, mounts, or stale selection entries;
+            // they must not veto an otherwise valid allied primary target.
+            return IsEligibleSpeaker(primaryTarget) &&
+                   (player == null || !ReferenceEquals(primaryTarget, player));
         }
 
         private static bool IsSpeakerInCombatAction(Agent speaker)
@@ -797,7 +810,8 @@ namespace AnimusForge.XihaiAction
                 speaker,
                 out int friendlyActive,
                 out int enemyActive,
-                out bool enemyNearby);
+                out bool enemyNearby,
+                out string[] enemyFactionNames);
 
             if (!_battlefieldBaselineInitialized && friendlyActive + enemyActive > 0)
             {
@@ -826,6 +840,15 @@ namespace AnimusForge.XihaiAction
                     _battlefieldEnemyRemoved,
                     Math.Max(0, _battlefieldBaselineEnemyCount - enemyActive))
                 : -1;
+            string friendlyFactionName = ResolvePlayerPoliticalFactionName();
+            string speakerFactionName = ResolveAgentPoliticalFactionName(speaker);
+            if (string.IsNullOrWhiteSpace(speakerFactionName) &&
+                speaker?.Team != null && Mission.PlayerTeam != null &&
+                speaker.Team.Side == Mission.PlayerTeam.Side)
+            {
+                speakerFactionName = friendlyFactionName;
+            }
+            string speakerCultureName = ResolveAgentCultureName(speaker);
             return new BattleSpeechBattlefieldFactsV1(
                 friendlyActive,
                 enemyActive,
@@ -834,7 +857,11 @@ namespace AnimusForge.XihaiAction
                 enemyNearby,
                 speakerInCombat,
                 battleType,
-                phaseText);
+                phaseText,
+                friendlyFactionName,
+                speakerFactionName,
+                speakerCultureName,
+                enemyFactionNames);
         }
 
         private void EnsureBattlefieldBaseline()
@@ -848,6 +875,7 @@ namespace AnimusForge.XihaiAction
                 null,
                 out int friendlyActive,
                 out int enemyActive,
+                out _,
                 out _);
             if (friendlyActive + enemyActive <= 0)
             {
@@ -862,16 +890,19 @@ namespace AnimusForge.XihaiAction
             Agent speaker,
             out int friendlyActive,
             out int enemyActive,
-            out bool enemyNearby)
+            out bool enemyNearby,
+            out string[] enemyFactionNames)
         {
             friendlyActive = 0;
             enemyActive = 0;
             enemyNearby = false;
+            HashSet<string> enemyFactions = new HashSet<string>(StringComparer.Ordinal);
             float radius = Math.Max(
                 0f,
                 BattleSpeechRuntimeHost.Settings?.EnemyInterruptRadiusMeters ?? 10f);
             float radiusSquared = radius * radius;
-            bool canCheckNearby = speaker != null && speaker.IsActive();
+            bool canCheckNearby = !BattleSpeechEnemyProximityCache.IsCombatStarted(Mission) &&
+                                  speaker != null && speaker.IsActive();
             Vec2 speakerPosition = canCheckNearby
                 ? speaker.Position.AsVec2
                 : default(Vec2);
@@ -898,6 +929,14 @@ namespace AnimusForge.XihaiAction
                     else
                     {
                         enemyActive++;
+                        if (enemyFactions.Count < 4)
+                        {
+                            string enemyFactionName = ResolveAgentPoliticalFactionName(agent);
+                            if (!string.IsNullOrWhiteSpace(enemyFactionName))
+                            {
+                                enemyFactions.Add(enemyFactionName);
+                            }
+                        }
                         if (canCheckNearby && !enemyNearby &&
                             agent.Position.AsVec2.DistanceSquared(speakerPosition) <=
                             radiusSquared)
@@ -906,6 +945,76 @@ namespace AnimusForge.XihaiAction
                         }
                     }
                 }
+            }
+            enemyFactionNames = enemyFactions
+                .OrderBy(value => value, StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        private static string ResolvePlayerPoliticalFactionName()
+        {
+            try
+            {
+                IFaction faction = Hero.MainHero?.Clan?.Kingdom ??
+                                   MobileParty.MainParty?.MapFaction ??
+                                   Hero.MainHero?.MapFaction ??
+                                   Clan.PlayerClan?.Kingdom ??
+                                   Clan.PlayerClan?.MapFaction;
+                return ResolveFactionName(faction);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static string ResolveAgentPoliticalFactionName(Agent agent)
+        {
+            try
+            {
+                PartyBase party = agent?.Origin?.BattleCombatant as PartyBase;
+                IFaction faction = party?.MapFaction ??
+                                   party?.MobileParty?.MapFaction ??
+                                   party?.Owner?.MapFaction;
+                return ResolveFactionName(faction);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static string ResolveAgentCultureName(Agent agent)
+        {
+            try
+            {
+                CharacterObject character = agent?.Character as CharacterObject;
+                return (character?.Culture?.Name?.ToString() ?? string.Empty)
+                    .Replace("\r", " ")
+                    .Replace("\n", " ")
+                    .Trim();
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static string ResolveFactionName(IFaction faction)
+        {
+            try
+            {
+                string name = (faction?.Name?.ToString() ?? string.Empty)
+                    .Replace("\r", " ")
+                    .Replace("\n", " ")
+                    .Trim();
+                return string.IsNullOrWhiteSpace(name)
+                    ? (faction?.StringId ?? string.Empty).Trim()
+                    : name;
+            }
+            catch
+            {
+                return string.Empty;
             }
         }
 
@@ -1092,7 +1201,6 @@ namespace AnimusForge.XihaiAction
             public double StartedAtMissionTime;
             public double EndsAtMissionTime;
             public bool ScriptedMovementOwned;
-            public bool MountFacingUnavailable;
             public bool SpeakerAiPauseCaptured;
             public bool SpeakerWasAiPaused;
             public bool SpeakerAiPauseChanged;
@@ -1100,17 +1208,10 @@ namespace AnimusForge.XihaiAction
             public Vec3 LastMovementProgressPosition;
             public double LastMovementProgressMissionTime;
             public Vec3 SpeechLineCenter;
-            public Vec2 SpeechLineDirection;
-            public Vec2 AudienceFacingDirection;
             public double MovementDeadlineMissionTime;
             public double NextMovementReassertMissionTime;
             public int MovementReassertCount;
             public bool ReachedSpeechLine;
-            public bool SpeechLineFacingAnchored;
-            public double NextAudienceFacingRefreshMissionTime;
-            public bool AudienceFacingRefreshFailed;
-            public Vec2 LastAppliedAudienceFacingDirection;
-            public bool HasAppliedAudienceFacing;
             public bool DeferredReplayRequested;
             public bool PlanClassificationPending;
             public bool PlanClassificationCompleted;

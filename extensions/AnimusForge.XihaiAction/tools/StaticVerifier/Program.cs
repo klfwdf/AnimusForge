@@ -1704,13 +1704,16 @@ internal static class Program
         MethodInfo openingGesturePlaying = performanceBehavior.GetMethod(
             "IsSpeechOpeningGesturePlaying",
             BindingFlags.Static | BindingFlags.NonPublic);
-        MethodInfo audienceRelease = performanceBehavior.GetMethod(
-            "ReleaseOwnedAudiencePerformanceChannels",
+        MethodInfo audienceFade = performanceBehavior.GetMethod(
+            "FadeOutOwnedAudiencePerformanceChannels",
             BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo audienceClear = performanceBehavior.GetMethod("AreOwnedAudienceChannelsClear", BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo filterFrozenAudience = performanceBehavior.GetMethod(
             "FilterFrozenAudience",
             BindingFlags.Instance | BindingFlags.NonPublic);
+        MethodInfo tryPlayAudienceVoice = performanceBehavior.GetMethod(
+            "TryPlayAudienceVoice",
+            BindingFlags.Static | BindingFlags.NonPublic);
         Require(runtimeEffect.IsAssignableFrom(performanceBehavior),
             "battle speech performance behavior does not implement the exact-reference runtime effect");
         Require(performanceBehavior.GetMethod(
@@ -1721,10 +1724,8 @@ internal static class Program
                     BindingFlags.Instance | BindingFlags.NonPublic) != null &&
                 performanceBehavior.GetMethod(
                     "TryHoldSpeakerAtSpeechLine",
-                    BindingFlags.Instance | BindingFlags.NonPublic) != null &&
-                performanceBehavior.GetMethod(
-                    "TryPlayAudienceVoice",
-                    BindingFlags.Static | BindingFlags.NonPublic) != null &&
+                    BindingFlags.Instance | BindingFlags.NonPublic) == null &&
+                tryPlayAudienceVoice != null &&
                 performanceBehavior.GetMethod(
                     "CanPlaySpeakerGesture",
                     BindingFlags.Instance | BindingFlags.NonPublic) != null &&
@@ -1740,19 +1741,30 @@ internal static class Program
                         "OnSpeechStarted",
                         BindingFlags.Instance | BindingFlags.Public),
                     filterFrozenAudience) &&
-                audienceRelease != null &&
+                audienceFade != null &&
                 audienceClear != null &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
                         "ProgressAudienceVoicesAndTactic",
                         BindingFlags.Instance | BindingFlags.NonPublic),
-                    audienceRelease) &&
+                    audienceFade) &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
                         "ProgressAudienceVoicesAndTactic",
                         BindingFlags.Instance | BindingFlags.NonPublic),
                     audienceClear),
-            "battle speech visual budget, Native voice, or Advance stages are missing");
+            "battle speech visual budget, Native voice, channel-1 fade barrier, or Advance stages are missing");
+        Require(MethodBodyReferences(
+                    performanceBehavior.GetMethod(
+                        "Progress",
+                        BindingFlags.Instance | BindingFlags.NonPublic),
+                    tryPlayAudienceVoice) &&
+                !MethodBodyReferences(
+                    performanceBehavior.GetMethod(
+                        "ProgressAudienceVoicesAndTactic",
+                        BindingFlags.Instance | BindingFlags.NonPublic),
+                    tryPlayAudienceVoice),
+            "native battle cries are not synchronized directly with cheer cues");
         Require(openingGesture != null && openingGesturePlaying != null &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
@@ -1780,8 +1792,11 @@ internal static class Program
                     BindingFlags.Instance | BindingFlags.NonPublic) != null &&
                 speechBehavior.GetMethod(
                     "ApplySpeakerAndMountFacing",
-                    BindingFlags.Static | BindingFlags.NonPublic) != null,
-            "battle speech speaker movement ownership entrypoints are missing");
+                    BindingFlags.Static | BindingFlags.NonPublic) == null &&
+                speechBehavior.GetMethod(
+                    "RefreshAudienceFacing",
+                    BindingFlags.Instance | BindingFlags.NonPublic) == null,
+            "battle speech movement ownership or no-forced-facing contract drifted");
 
         Assembly gameAssembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
             value.GetName().Name == "TaleWorlds.MountAndBlade");
@@ -1791,6 +1806,7 @@ internal static class Program
             true,
             false);
         Require(agent.GetMethod("MakeVoice", BindingFlags.Instance | BindingFlags.Public) != null &&
+                agent.GetMethod("SetScriptedPosition", BindingFlags.Instance | BindingFlags.Public) != null &&
                 agent.GetMethod("SetIsAIPaused", BindingFlags.Instance | BindingFlags.Public) != null &&
                 agent.GetMethod("ClearTargetFrame", BindingFlags.Instance | BindingFlags.Public) != null &&
                 agent.GetMethod("DisableScriptedMovement", BindingFlags.Instance | BindingFlags.Public) != null &&

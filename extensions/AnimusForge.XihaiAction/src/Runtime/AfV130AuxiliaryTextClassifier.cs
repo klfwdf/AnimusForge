@@ -81,9 +81,9 @@ namespace AnimusForge.XihaiAction
             "动作描写可能藏在普通正文，不要求星号。实际身体动作、演讲语气和修辞可选择 explain、point、command、promise、rage 等合适演讲手势；否定、引用、假设和库外动作不能虚构为白名单动作。\n" +
             "战术命令是否真正执行由演讲会话的MCM和运行时安全规则冻结；你只判断正文是否明确提出立即推进、冲锋或开战。\n" +
             "若 allowAdvance=false，必须输出 TACTIC NONE；若 allowAdvance=true，只有正文明确提出立即推进、冲锋或开战时才输出 TACTIC ADVANCE，否则输出 NONE。\n" +
-            "audienceReplyCount 冻结需要多少名不同士兵作简短口头回应；" +
-            "audienceReplyMinimumChars 和 audienceReplyMaximumChars 冻结每条回应的字数范围。" +
-            "大于0时生成恰好该数量的不同短句，只能是听众刚听完演讲后的直接反应，不写姓名、动作、旁白、星号、尖括号或竖线。" +
+            "audienceReplyCount 是期望生成的不同士兵短句数量上限；" +
+            "audienceReplyMinimumChars 和 audienceReplyMaximumChars 是每条回应的建议字数范围。" +
+            "大于0时尽量生成该数量的不同短句，略短、略长或数量不足都不要补写废话；只能是听众刚听完演讲后的直接反应，不写姓名、动作、旁白、星号、尖括号或竖线。" +
             "每条必须像不同的人在现场说话：老兵沉着、新兵紧张但振作、粗犷者短促、谨慎者可迟疑、" +
             "狂热者可激昂；要回应正文里的具体细节，禁止把所有人写成同一个口号池。避免反复使用‘为了胜利’、" +
             "‘为了家园’、‘听候您的号令’、‘全军向前’、‘我们必胜’、‘绝不后退’，不要称呼玩家为您、大人或领主。" +
