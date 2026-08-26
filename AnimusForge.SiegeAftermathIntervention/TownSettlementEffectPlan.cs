@@ -2,6 +2,13 @@ using System;
 
 namespace AnimusForge.SiegeAftermathIntervention;
 
+public enum TownNotableEffectScope
+{
+    SettlementOnly = 0,
+    SettlementAndBoundVillages = 1,
+    BoundVillagesOnly = 2,
+}
+
 public sealed class TownSettlementEffectPlan
 {
     public TownSettlementEffectPlan(
@@ -12,10 +19,10 @@ public sealed class TownSettlementEffectPlan
         string boundVillagePublicTrustReason = "",
         int notableRelationDelta = 0,
         string notableRelationReason = "",
-        bool includeBoundVillageNotableRelations = false,
+        TownNotableEffectScope notableRelationScope = TownNotableEffectScope.SettlementOnly,
         int notableTrustDelta = 0,
         string notableTrustReason = "",
-        bool includeBoundVillageNotableTrust = false,
+        TownNotableEffectScope notableTrustScope = TownNotableEffectScope.SettlementOnly,
         float loyaltyDelta = 0f,
         float securityDelta = 0f,
         float foodStockDelta = 0f,
@@ -29,10 +36,10 @@ public sealed class TownSettlementEffectPlan
         BoundVillagePublicTrustReason = boundVillagePublicTrustReason;
         NotableRelationDelta = notableRelationDelta;
         NotableRelationReason = notableRelationReason;
-        IncludeBoundVillageNotableRelations = includeBoundVillageNotableRelations;
+        NotableRelationScope = notableRelationScope;
         NotableTrustDelta = notableTrustDelta;
         NotableTrustReason = notableTrustReason;
-        IncludeBoundVillageNotableTrust = includeBoundVillageNotableTrust;
+        NotableTrustScope = notableTrustScope;
         LoyaltyDelta = loyaltyDelta;
         SecurityDelta = securityDelta;
         FoodStockDelta = foodStockDelta;
@@ -54,13 +61,13 @@ public sealed class TownSettlementEffectPlan
 
     public string NotableRelationReason { get; }
 
-    public bool IncludeBoundVillageNotableRelations { get; }
+    public TownNotableEffectScope NotableRelationScope { get; }
 
     public int NotableTrustDelta { get; }
 
     public string NotableTrustReason { get; }
 
-    public bool IncludeBoundVillageNotableTrust { get; }
+    public TownNotableEffectScope NotableTrustScope { get; }
 
     public float LoyaltyDelta { get; }
 
@@ -96,10 +103,10 @@ public sealed class TownSettlementEffectPlan
             TownPlunderConsequenceDelta.BoundVillagePublicTrustReason,
             delta.NotableRelationDelta,
             TownPlunderConsequenceDelta.NotableRelationReason,
-            includeBoundVillageNotableRelations: true,
+            notableRelationScope: TownNotableEffectScope.SettlementAndBoundVillages,
             delta.NotableTrustDelta,
             TownPlunderConsequenceDelta.NotableTrustReason,
-            includeBoundVillageNotableTrust: true);
+            notableTrustScope: TownNotableEffectScope.SettlementAndBoundVillages);
     }
 
     public static TownSettlementEffectPlan FromMassacreDelta(TownMassacreConsequenceDelta delta)
@@ -115,12 +122,12 @@ public sealed class TownSettlementEffectPlan
             TownMassacreConsequenceDelta.SettlementPublicTrustReason,
             delta.BoundVillagePublicTrustDelta,
             TownMassacreConsequenceDelta.BoundVillagePublicTrustReason,
-            delta.NotableRelationDelta,
+            notableRelationDelta: 0,
             TownMassacreConsequenceDelta.NotableRelationReason,
-            includeBoundVillageNotableRelations: true,
+            notableRelationScope: TownNotableEffectScope.SettlementOnly,
             delta.NotableTrustDelta,
             TownMassacreConsequenceDelta.NotableTrustReason,
-            includeBoundVillageNotableTrust: true);
+            notableTrustScope: TownNotableEffectScope.SettlementAndBoundVillages);
     }
 
     public static TownSettlementEffectPlan FromFinalOutcome(SiegeSettlementOutcomeProfile profile)
@@ -138,10 +145,10 @@ public sealed class TownSettlementEffectPlan
             profile.BoundVillagePublicTrustReason,
             profile.NotableRelationDelta,
             profile.NotableRelationReason,
-            includeBoundVillageNotableRelations: true,
+            notableRelationScope: TownNotableEffectScope.SettlementAndBoundVillages,
             profile.NotableTrustDelta,
             profile.NotableTrustReason,
-            includeBoundVillageNotableTrust: true);
+            notableTrustScope: TownNotableEffectScope.SettlementAndBoundVillages);
     }
 
     public static TownSettlementEffectPlan Empty(string key)

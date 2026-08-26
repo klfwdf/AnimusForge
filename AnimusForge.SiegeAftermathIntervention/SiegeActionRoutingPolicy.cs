@@ -58,10 +58,6 @@ public static class SiegeActionRoutingPolicy
             && !canApplyCivilianRobberyAction;
         bool hasMercyTrackAction = kinds.Any(SiegeInterventionActionRules.IsMercyTrack);
         bool canApplyMercyTrack = !containsDestructiveAction && !destructiveOutcomeLocked;
-        bool hasReliefAction = kinds.Contains(SiegeInterventionActionKind.Relief);
-        bool hasSoldierPositiveCapCandidate = kinds.Contains(SiegeInterventionActionKind.Inspire)
-            || kinds.Contains(SiegeInterventionActionKind.RallyOath);
-
         return new SiegeActionRoutingDecision(
             containsDestructiveAction,
             containsSoldierMediatedDestructiveAction,
@@ -71,8 +67,6 @@ public static class SiegeActionRoutingPolicy
             shouldPromptSoldierForCivilianRobbery,
             shouldPromptSoldierDestructiveInquiry: containsSoldierMediatedDestructiveAction && !canApplySoldierMediatedDestructiveAction,
             hasMercyTrackAction,
-            canApplyMercyTrack,
-            shouldDowngradeSoldierReliefToMercy: targetIsAlliedSoldier && hasReliefAction && !hasSharedReliefPool,
-            shouldCapSoldierPositiveToRelief: targetIsAlliedSoldier && canApplyMercyTrack && hasSharedReliefPool && hasSoldierPositiveCapCandidate);
+            canApplyMercyTrack);
     }
 }

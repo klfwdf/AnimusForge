@@ -15,7 +15,9 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         bool replyIsDirectPlayerResponse,
         bool massacreActive = false,
         bool colonizationAvailable = true,
-        bool constructiveCultureChangeAvailable = false)
+        bool constructiveCultureChangeAvailable = false,
+        bool isAmbientReaction = false,
+        SiegeInterventionActionKind ambientReactionToAction = SiegeInterventionActionKind.Unknown)
     {
         DestructiveLocked = destructiveLocked;
         SoldierAppeasementRequired = soldierAppeasementRequired;
@@ -26,6 +28,8 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
         MassacreActive = massacreActive;
         ColonizationAvailable = colonizationAvailable;
         ConstructiveCultureChangeAvailable = constructiveCultureChangeAvailable;
+        IsAmbientReaction = isAmbientReaction;
+        AmbientReactionToAction = ambientReactionToAction;
     }
 
     public bool DestructiveLocked { get; }
@@ -45,4 +49,8 @@ public readonly struct SiegePostprocessRuleEligibilityFacts
     public bool ColonizationAvailable { get; }
 
     public bool ConstructiveCultureChangeAvailable { get; }
+
+    public bool IsAmbientReaction { get; }
+
+    public SiegeInterventionActionKind AmbientReactionToAction { get; }
 }
