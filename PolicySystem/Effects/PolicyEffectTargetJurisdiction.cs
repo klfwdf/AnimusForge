@@ -340,31 +340,7 @@ internal static class PolicyEffectTargetJurisdiction
 
 	private static PolicyEffectCanonicalTargetSet Normalize(PolicyEffectCanonicalTargetSet targetSet)
 	{
-		return new PolicyEffectCanonicalTargetSet
-		{
-			StructureVersion = Math.Max(1, targetSet?.StructureVersion ?? 1),
-			JurisdictionKind = NormalizeKind(targetSet?.JurisdictionKind),
-			AuthorizedCrossKingdomIds = NormalizeIds(targetSet?.AuthorizedCrossKingdomIds),
-			SelectorHandles = NormalizeIds(targetSet?.SelectorHandles),
-			SelectorIds = NormalizeIds(targetSet?.SelectorIds),
-			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(targetSet?.TargetPlans),
-			SettlementIds = NormalizeIds(targetSet?.SettlementIds),
-			TownIds = NormalizeIds(targetSet?.TownIds),
-			VillageIds = NormalizeIds(targetSet?.VillageIds),
-			ClanIds = NormalizeIds(targetSet?.ClanIds),
-			KingdomIds = NormalizeIds(targetSet?.KingdomIds),
-			HeroIds = NormalizeIds(targetSet?.HeroIds),
-			ParentSettlementIds = NormalizeIds(targetSet?.ParentSettlementIds),
-			FollowCurrentRulingClan = targetSet?.FollowCurrentRulingClan == true
-		};
-	}
-
-	private static PolicyEffectTargetJurisdictionKind NormalizeKind(PolicyEffectTargetJurisdictionKind? kind)
-	{
-		return kind == PolicyEffectTargetJurisdictionKind.Domestic
-			|| kind == PolicyEffectTargetJurisdictionKind.CrossKingdom
-			? kind.Value
-			: PolicyEffectTargetJurisdictionKind.LegacyCompiled;
+		return PolicyEffectBundleContract.NormalizeTargetSet(targetSet);
 	}
 
 	private static string ResolveSettlementOwnerKingdomId(string settlementId)

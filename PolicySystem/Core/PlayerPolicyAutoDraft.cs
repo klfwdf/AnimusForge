@@ -41,6 +41,14 @@ public sealed class PlayerPolicyAutoDraftRequest
 	public string HistoryPrompt { get; set; } = "";
 }
 
+internal static class PlayerPolicyAutoDraftInputContract
+{
+	internal static bool HasInput(string policyName, string policyContent)
+	{
+		return !string.IsNullOrWhiteSpace(policyName) || !string.IsNullOrWhiteSpace(policyContent);
+	}
+}
+
 public sealed class PlayerPolicyAutoDraftResult
 {
 	public bool Success { get; set; }

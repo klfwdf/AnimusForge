@@ -620,9 +620,9 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		RefreshCanPublish();
 		if (!CanAutoDraft)
 		{
-			if (string.IsNullOrWhiteSpace(PolicyContent))
+			if (!PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent))
 			{
-				StatusText = "请先在政策内容中描述你想要的政策。";
+				StatusText = "请先填写政策标题或政策内容。";
 			}
 			return;
 		}
@@ -715,16 +715,22 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			&& (string.IsNullOrWhiteSpace(DurationText)
 				|| (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int durationDays) && durationDays > 0));
 		CanPublish = !_isAutoDrafting && _externalCanPublish && hasName && hasContent && hasTarget && durationValid;
-		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && hasContent && hasTarget && durationValid;
+		CanAutoDraft = !_isAutoDrafting && _externalCanPublish
+			&& PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent)
+			&& hasTarget && durationValid;
 		if (_externalCanPublish)
 		{
-			if (!hasName)
+			if (!hasName && !hasContent)
 			{
-				StatusText = "请先填写政策名。";
+				StatusText = "请填写政策标题或政策内容后使用AI编写。";
+			}
+			else if (!hasName)
+			{
+				StatusText = "可点击AI编写补全政策标题和正文。";
 			}
 			else if (!hasContent)
 			{
-				StatusText = "请先填写政策内容。";
+				StatusText = "可点击AI编写，根据政策标题补全正文。";
 			}
 			else if (!hasTarget)
 			{

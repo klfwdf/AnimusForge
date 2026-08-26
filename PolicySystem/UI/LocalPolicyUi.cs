@@ -340,7 +340,7 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		RefreshCanPublish();
 		if (!CanAutoDraft)
 		{
-			if (string.IsNullOrWhiteSpace(PolicyContent)) StatusText = "请先在政策内容中描述你想要的政策。";
+			if (!PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent)) StatusText = "请先填写政策标题或政策内容。";
 			return;
 		}
 		PlayerPolicyAutoDraftRequest request = new PlayerPolicyAutoDraftRequest
@@ -406,11 +406,15 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		bool durationValid = (!_requireExplicitDuration || !string.IsNullOrWhiteSpace(DurationText))
 			&& (string.IsNullOrWhiteSpace(DurationText) || (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int days) && days > 0));
 		CanPublish = !_isAutoDrafting && _externalCanPublish && SelectedCount > 0 && !string.IsNullOrWhiteSpace(PolicyName) && !string.IsNullOrWhiteSpace(PolicyContent) && durationValid;
-		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && SelectedCount > 0 && !string.IsNullOrWhiteSpace(PolicyContent) && durationValid;
+		bool hasName = !string.IsNullOrWhiteSpace(PolicyName);
+		bool hasContent = !string.IsNullOrWhiteSpace(PolicyContent);
+		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && SelectedCount > 0
+			&& PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent) && durationValid;
 		if (!_externalCanPublish) StatusText = string.IsNullOrWhiteSpace(_externalBlockReason) ? "当前不能发布地方政策。" : _externalBlockReason;
 		else if (SelectedCount <= 0) StatusText = "请至少选择一个玩家家族拥有的城镇或城堡。";
-		else if (string.IsNullOrWhiteSpace(PolicyName)) StatusText = "请填写政策名。";
-		else if (string.IsNullOrWhiteSpace(PolicyContent)) StatusText = "请填写政策内容。";
+		else if (!hasName && !hasContent) StatusText = "请填写政策标题或政策内容后使用AI编写。";
+		else if (!hasName) StatusText = "可点击AI编写补全政策标题和正文。";
+		else if (!hasContent) StatusText = "可点击AI编写，根据政策标题补全正文。";
 		else if (!durationValid) StatusText = _requireExplicitDuration && string.IsNullOrWhiteSpace(DurationText)
 			? "旧记录无法确认原持续时间，请明确填写正整数天数。"
 			: "持续天数必须留空或填写正整数。";

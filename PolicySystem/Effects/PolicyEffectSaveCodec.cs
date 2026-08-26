@@ -3372,70 +3372,13 @@ internal static class PolicyEffectSaveCodec
 		PolicyEffectCanonicalTargetSet left,
 		PolicyEffectCanonicalTargetSet right)
 	{
-		return NormalizeCanonicalTargetSet(new PolicyEffectCanonicalTargetSet
-		{
-			StructureVersion = Math.Max(left?.StructureVersion ?? 1, right?.StructureVersion ?? 1),
-			JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
-				left?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
-				right?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled),
-			AuthorizedCrossKingdomIds = (left?.AuthorizedCrossKingdomIds ?? new List<string>())
-				.Concat(right?.AuthorizedCrossKingdomIds ?? new List<string>()).ToList(),
-			SelectorHandles = (left?.SelectorHandles ?? new List<string>())
-				.Concat(right?.SelectorHandles ?? new List<string>()).ToList(),
-			SelectorIds = (left?.SelectorIds ?? new List<string>())
-				.Concat(right?.SelectorIds ?? new List<string>()).ToList(),
-			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(
-				(left?.TargetPlans ?? new List<PolicyTargetPlanSaveData>())
-					.Concat(right?.TargetPlans ?? new List<PolicyTargetPlanSaveData>())),
-			SettlementIds = (left?.SettlementIds ?? new List<string>())
-				.Concat(right?.SettlementIds ?? new List<string>()).ToList(),
-			TownIds = (left?.TownIds ?? new List<string>())
-				.Concat(right?.TownIds ?? new List<string>()).ToList(),
-			VillageIds = (left?.VillageIds ?? new List<string>())
-				.Concat(right?.VillageIds ?? new List<string>()).ToList(),
-			ClanIds = (left?.ClanIds ?? new List<string>())
-				.Concat(right?.ClanIds ?? new List<string>()).ToList(),
-			KingdomIds = (left?.KingdomIds ?? new List<string>())
-				.Concat(right?.KingdomIds ?? new List<string>()).ToList(),
-			HeroIds = (left?.HeroIds ?? new List<string>())
-				.Concat(right?.HeroIds ?? new List<string>()).ToList(),
-			ParentSettlementIds = (left?.ParentSettlementIds ?? new List<string>())
-				.Concat(right?.ParentSettlementIds ?? new List<string>()).ToList(),
-			FollowCurrentRulingClan = left?.FollowCurrentRulingClan == true
-				|| right?.FollowCurrentRulingClan == true
-		});
+		return PolicyEffectBundleContract.MergeTargetSets(left, right);
 	}
 
 	private static PolicyEffectCanonicalTargetSet NormalizeCanonicalTargetSet(
 		PolicyEffectCanonicalTargetSet targetSet)
 	{
-		return new PolicyEffectCanonicalTargetSet
-		{
-			StructureVersion = Math.Max(1, targetSet?.StructureVersion ?? 1),
-			JurisdictionKind = targetSet?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
-			AuthorizedCrossKingdomIds = NormalizeTargetIds(targetSet?.AuthorizedCrossKingdomIds),
-			SelectorHandles = NormalizeTargetIds(targetSet?.SelectorHandles),
-			SelectorIds = NormalizeTargetIds(targetSet?.SelectorIds),
-			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(targetSet?.TargetPlans),
-			SettlementIds = NormalizeTargetIds(targetSet?.SettlementIds),
-			TownIds = NormalizeTargetIds(targetSet?.TownIds),
-			VillageIds = NormalizeTargetIds(targetSet?.VillageIds),
-			ClanIds = NormalizeTargetIds(targetSet?.ClanIds),
-			KingdomIds = NormalizeTargetIds(targetSet?.KingdomIds),
-			HeroIds = NormalizeTargetIds(targetSet?.HeroIds),
-			ParentSettlementIds = NormalizeTargetIds(targetSet?.ParentSettlementIds),
-			FollowCurrentRulingClan = targetSet?.FollowCurrentRulingClan == true
-		};
-	}
-
-	private static List<string> NormalizeTargetIds(IEnumerable<string> values)
-	{
-		return (values ?? Enumerable.Empty<string>())
-			.Select(value => (value ?? string.Empty).Trim())
-			.Where(value => value.Length > 0)
-			.Distinct(StringComparer.OrdinalIgnoreCase)
-			.OrderBy(value => value, StringComparer.Ordinal)
-			.ToList();
+		return PolicyEffectBundleContract.NormalizeTargetSet(targetSet);
 	}
 
 	private static IEnumerable<JObject> EnumerateAuthoritativeEffectContainers(JObject root)

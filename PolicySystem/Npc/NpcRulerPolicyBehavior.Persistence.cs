@@ -1128,186 +1128,41 @@ public sealed partial class NpcRulerPolicyBehavior
 		out List<PolicyEffectInstanceSaveData> canonicalInstances,
 		out string failureReason)
 	{
-		// Save/load/activation cold path only. Display shells remain separate, while this
-		// canonical view enforces one payload/state/receipt per stable logical InstanceId.
-		canonicalInstances = new List<PolicyEffectInstanceSaveData>();
-		failureReason = string.Empty;
-		Dictionary<string, PolicyEffectInstanceSaveData> byInstanceId
-			= new Dictionary<string, PolicyEffectInstanceSaveData>(StringComparer.Ordinal);
-		foreach (PolicyEffectInstanceSaveData shell in shellInstances ?? Enumerable.Empty<PolicyEffectInstanceSaveData>())
-		{
-			if (shell == null)
-			{
-				continue;
-			}
-			string instanceId = (shell.InstanceId ?? string.Empty).Trim();
-			if (instanceId.Length == 0 || !IsFiniteNpcPolicyFloat(shell.StartDay) || !IsFiniteNpcPolicyFloat(shell.EndDay))
-			{
-				failureReason = "NPC policy effect shell has an invalid instance id or duration";
-				return false;
-			}
-			if (!byInstanceId.TryGetValue(instanceId, out PolicyEffectInstanceSaveData aggregate))
-			{
-				aggregate = CloneNpcPolicyEffectInstance(shell, shell.TargetSet);
-				aggregate.InstanceId = instanceId;
-				aggregate.TargetSet = MergeNpcPolicyEffectTargetSets(null, shell.TargetSet);
-				if (aggregate.ExecutionReceipt != null)
-				{
-					aggregate.ExecutionReceipt.TargetSet = MergeNpcPolicyEffectTargetSets(
-						null,
-						shell.ExecutionReceipt?.TargetSet);
-				}
-				byInstanceId.Add(instanceId, aggregate);
-				canonicalInstances.Add(aggregate);
-				continue;
-			}
-			if (!AreCompatibleNpcPolicyEffectShellInstances(aggregate, shell))
-			{
-				failureReason = "NPC policy effect shells conflict for InstanceId: " + instanceId;
-				return false;
-			}
-			if (string.IsNullOrWhiteSpace(aggregate.ActorHeroId) && !string.IsNullOrWhiteSpace(shell.ActorHeroId))
-			{
-				aggregate.ActorHeroId = shell.ActorHeroId.Trim();
-			}
-			aggregate.TargetSet = MergeNpcPolicyEffectTargetSets(aggregate.TargetSet, shell.TargetSet);
-			if (aggregate.ExecutionReceipt != null)
-			{
-				aggregate.ExecutionReceipt.TargetSet = MergeNpcPolicyEffectTargetSets(
-					aggregate.ExecutionReceipt.TargetSet,
-					shell.ExecutionReceipt?.TargetSet);
-			}
-		}
-		return true;
+		return PolicyEffectBundleContract.TryCoalesceShellInstances(
+			shellInstances,
+			out canonicalInstances,
+			out failureReason);
 	}
 
 	private static bool AreCompatibleNpcPolicyEffectShellInstances(
 		PolicyEffectInstanceSaveData left,
 		PolicyEffectInstanceSaveData right)
 	{
-		return left != null
-			&& right != null
-			&& left.EffectPlanVersion == right.EffectPlanVersion
-			&& string.Equals((left.MechanismId ?? string.Empty).Trim(), (right.MechanismId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& left.MechanismKind == right.MechanismKind
-			&& left.MechanismRole == right.MechanismRole
-			&& left.SourceOmitted == right.SourceOmitted
-			&& left.DestinationOmitted == right.DestinationOmitted
-			&& string.Equals((left.InstanceId ?? string.Empty).Trim(), (right.InstanceId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& string.Equals((left.PolicyId ?? string.Empty).Trim(), (right.PolicyId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& (string.IsNullOrWhiteSpace(left.ActorHeroId)
-				|| string.IsNullOrWhiteSpace(right.ActorHeroId)
-				|| string.Equals(left.ActorHeroId.Trim(), right.ActorHeroId.Trim(), StringComparison.OrdinalIgnoreCase))
-			&& string.Equals((left.ModuleId ?? string.Empty).Trim(), (right.ModuleId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& string.Equals((left.SourceModuleId ?? string.Empty).Trim(), (right.SourceModuleId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& left.PayloadSchemaVersion == right.PayloadSchemaVersion
-			&& NpcPolicyEffectTokensEqual(left.Payload, right.Payload)
-			&& left.LifecycleState == right.LifecycleState
-			&& left.StateSchemaVersion == right.StateSchemaVersion
-			&& NpcPolicyEffectTokensEqual(left.RuntimeState, right.RuntimeState)
-			&& AreCompatibleNpcPolicyEffectReceipts(left.ExecutionReceipt, right.ExecutionReceipt)
-			&& left.StartDay.Equals(right.StartDay)
-			&& left.EndDay.Equals(right.EndDay)
-			&& string.Equals((left.SourceScope ?? string.Empty).Trim(), (right.SourceScope ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase)
-			&& string.Equals(left.Reason ?? string.Empty, right.Reason ?? string.Empty, StringComparison.Ordinal);
+		return PolicyEffectBundleContract.AreCompatibleShellInstances(left, right);
 	}
 
 	private static bool AreCompatibleNpcPolicyEffectReceipts(
 		PolicyEffectExecutionReceipt left,
 		PolicyEffectExecutionReceipt right)
 	{
-		if (left == null || right == null)
-		{
-			return left == null && right == null;
-		}
-		return string.Equals((left.ReceiptId ?? string.Empty).Trim(), (right.ReceiptId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& string.Equals((left.InstanceId ?? string.Empty).Trim(), (right.InstanceId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& string.Equals((left.PolicyId ?? string.Empty).Trim(), (right.PolicyId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& string.Equals((left.ModuleId ?? string.Empty).Trim(), (right.ModuleId ?? string.Empty).Trim(), StringComparison.Ordinal)
-			&& left.Status == right.Status
-			&& left.RequestedValue.Equals(right.RequestedValue)
-			&& left.AppliedValue.Equals(right.AppliedValue)
-			&& NpcPolicyEffectTokensEqual(left.RequestedPayload, right.RequestedPayload)
-			&& NpcPolicyEffectTokensEqual(left.AppliedPayload, right.AppliedPayload)
-			&& left.CampaignDay.Equals(right.CampaignDay)
-			&& string.Equals(left.Message ?? string.Empty, right.Message ?? string.Empty, StringComparison.Ordinal);
-	}
-
-	private static bool NpcPolicyEffectTokensEqual(JToken left, JToken right)
-	{
-		return ReferenceEquals(left, right)
-			|| (left != null && right != null && JToken.DeepEquals(left, right));
-	}
-
-	private static bool IsFiniteNpcPolicyFloat(float value)
-	{
-		return !float.IsNaN(value) && !float.IsInfinity(value);
+		return PolicyEffectBundleContract.AreCompatibleReceipts(left, right);
 	}
 
 	private static PolicyEffectCanonicalTargetSet MergeNpcPolicyEffectTargetSets(
 		PolicyEffectCanonicalTargetSet left,
 		PolicyEffectCanonicalTargetSet right)
 	{
-		return new PolicyEffectCanonicalTargetSet
-		{
-			StructureVersion = Math.Max(1, Math.Max(left?.StructureVersion ?? 1, right?.StructureVersion ?? 1)),
-			JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
-				left?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
-				right?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled),
-			AuthorizedCrossKingdomIds = NormalizeNpcPolicyIds((left?.AuthorizedCrossKingdomIds ?? new List<string>())
-				.Concat(right?.AuthorizedCrossKingdomIds ?? new List<string>())),
-			SelectorHandles = NormalizeNpcPolicyIds((left?.SelectorHandles ?? new List<string>())
-				.Concat(right?.SelectorHandles ?? new List<string>())),
-			SelectorIds = NormalizeNpcPolicyIds((left?.SelectorIds ?? new List<string>())
-				.Concat(right?.SelectorIds ?? new List<string>())),
-			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(
-				(left?.TargetPlans ?? new List<PolicyTargetPlanSaveData>())
-					.Concat(right?.TargetPlans ?? new List<PolicyTargetPlanSaveData>())),
-			SettlementIds = NormalizeNpcPolicyIds((left?.SettlementIds ?? new List<string>())
-				.Concat(right?.SettlementIds ?? new List<string>())),
-			TownIds = NormalizeNpcPolicyIds((left?.TownIds ?? new List<string>())
-				.Concat(right?.TownIds ?? new List<string>())),
-			VillageIds = NormalizeNpcPolicyIds((left?.VillageIds ?? new List<string>())
-				.Concat(right?.VillageIds ?? new List<string>())),
-			ClanIds = NormalizeNpcPolicyIds((left?.ClanIds ?? new List<string>())
-				.Concat(right?.ClanIds ?? new List<string>())),
-			KingdomIds = NormalizeNpcPolicyIds((left?.KingdomIds ?? new List<string>())
-				.Concat(right?.KingdomIds ?? new List<string>())),
-			HeroIds = NormalizeNpcPolicyIds((left?.HeroIds ?? new List<string>())
-				.Concat(right?.HeroIds ?? new List<string>())),
-			ParentSettlementIds = NormalizeNpcPolicyIds((left?.ParentSettlementIds ?? new List<string>())
-				.Concat(right?.ParentSettlementIds ?? new List<string>())),
-			FollowCurrentRulingClan = (left?.FollowCurrentRulingClan ?? false)
-				|| (right?.FollowCurrentRulingClan ?? false)
-		};
+		return PolicyEffectBundleContract.MergeTargetSets(left, right);
 	}
 
 	private static PolicyEffectCanonicalTargetSet CloneNpcPolicyEffectTargetSet(PolicyEffectCanonicalTargetSet source)
 	{
-		return MergeNpcPolicyEffectTargetSets(null, source);
+		return PolicyEffectBundleContract.NormalizeTargetSet(source);
 	}
 
 	private static PolicyEffectExecutionReceipt CloneNpcPolicyEffectReceipt(PolicyEffectExecutionReceipt source)
 	{
-		if (source == null)
-		{
-			return null;
-		}
-		return new PolicyEffectExecutionReceipt
-		{
-			ReceiptId = source.ReceiptId ?? string.Empty,
-			InstanceId = source.InstanceId ?? string.Empty,
-			PolicyId = source.PolicyId ?? string.Empty,
-			ModuleId = source.ModuleId ?? string.Empty,
-			TargetSet = CloneNpcPolicyEffectTargetSet(source.TargetSet),
-			Status = source.Status,
-			RequestedValue = source.RequestedValue,
-			AppliedValue = source.AppliedValue,
-			RequestedPayload = source.RequestedPayload?.DeepClone(),
-			AppliedPayload = source.AppliedPayload?.DeepClone(),
-			CampaignDay = source.CampaignDay,
-			Message = source.Message ?? string.Empty
-		};
+		return PolicyEffectBundleContract.CloneReceipt(source);
 	}
 
 	private static PolicyEffectInstanceSaveData CloneNpcPolicyEffectInstance(
