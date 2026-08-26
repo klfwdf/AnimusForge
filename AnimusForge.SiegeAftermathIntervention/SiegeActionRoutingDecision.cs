@@ -14,9 +14,7 @@ public sealed class SiegeActionRoutingDecision
         bool shouldPromptSoldierForCivilianRobbery,
         bool shouldPromptSoldierDestructiveInquiry,
         bool hasMercyTrackAction,
-        bool canApplyMercyTrack,
-        bool shouldDowngradeSoldierReliefToMercy,
-        bool shouldCapSoldierPositiveToRelief)
+        bool canApplyMercyTrack)
     {
         ContainsDestructiveAction = containsDestructiveAction;
         ContainsSoldierMediatedDestructiveAction = containsSoldierMediatedDestructiveAction;
@@ -27,8 +25,6 @@ public sealed class SiegeActionRoutingDecision
         ShouldPromptSoldierDestructiveInquiry = shouldPromptSoldierDestructiveInquiry;
         HasMercyTrackAction = hasMercyTrackAction;
         CanApplyMercyTrack = canApplyMercyTrack;
-        ShouldDowngradeSoldierReliefToMercy = shouldDowngradeSoldierReliefToMercy;
-        ShouldCapSoldierPositiveToRelief = shouldCapSoldierPositiveToRelief;
     }
 
     public bool ContainsDestructiveAction { get; }
@@ -49,7 +45,4 @@ public sealed class SiegeActionRoutingDecision
 
     public bool CanApplyMercyTrack { get; }
 
-    public bool ShouldDowngradeSoldierReliefToMercy { get; }
-
-    public bool ShouldCapSoldierPositiveToRelief { get; }
 }

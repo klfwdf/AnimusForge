@@ -110,6 +110,19 @@ public static class SiegePostprocessTagNormalizer
             }
         }
 
+        if (!selectedTownKind.HasValue && matchedCastleKinds.Count == 0)
+        {
+            foreach (TownAmbientReactionActionKind kind in TownAmbientReactionTagCatalog.ExtractKinds(text))
+            {
+                if (TownAmbientReactionTagCatalog.TryGetCanonicalTag(kind, out string canonicalTag)
+                    && allowed.Contains(canonicalTag))
+                {
+                    Add(canonicalTag);
+                    break;
+                }
+            }
+        }
+
 
         string mood = string.Empty;
         foreach (Match moodMatch in MoodTagRegex.Matches(text))
