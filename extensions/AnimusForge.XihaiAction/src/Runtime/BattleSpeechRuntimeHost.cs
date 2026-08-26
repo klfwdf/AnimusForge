@@ -25,6 +25,9 @@ namespace AnimusForge.XihaiAction
         private static bool _initialized;
         private static bool _sourceConfigurationValid;
         private static bool _sourcePerformanceConfigurationValid;
+        private const double McmRefreshIntervalSeconds = 1d;
+        private static double _nextMcmRefreshMissionTime;
+        private static bool _mcmRefreshWarningLogged;
 
         public static BattleSpeechSettingsV1 Settings { get; private set; }
         public static bool ConfigurationValid { get; private set; }
@@ -35,6 +38,37 @@ namespace AnimusForge.XihaiAction
         public static bool IsInitialized
         {
             get { lock (Sync) return _initialized; }
+        }
+
+        /// <summary>
+        /// BattleSpeech's own runtime gates.  These intentionally do not consult
+        /// SceneActionsRuntimeHost.Settings: ordinary natural-language action
+        /// playback is a separate subsystem.
+        /// </summary>
+        internal static bool IsSpeechEnabled
+        {
+            get
+            {
+                lock (Sync)
+                {
+                    return _initialized && ConfigurationValid && Settings != null &&
+                           Settings.Enabled;
+                }
+            }
+        }
+
+        internal static bool IsPerformanceEnabled
+        {
+            get
+            {
+                lock (Sync)
+                {
+                    return _initialized && ConfigurationValid &&
+                           PerformanceConfigurationValid && Settings != null &&
+                           Settings.Enabled && PerformanceSettings != null &&
+                           PerformanceSettings.Enabled;
+                }
+            }
         }
 
         public static void Initialize(string moduleRoot)
@@ -85,6 +119,8 @@ namespace AnimusForge.XihaiAction
                 ConfigurationValid = valid;
                 PerformanceConfigurationValid = performanceValid;
                 _initialized = true;
+                _nextMcmRefreshMissionTime = 0d;
+                _mcmRefreshWarningLogged = false;
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH",
                     "Framework V1 initialized. Enabled=" + Settings.Enabled + ". " + reason);
@@ -97,6 +133,12 @@ namespace AnimusForge.XihaiAction
 
         internal static bool RefreshMcmOverrides(out string error)
         {
+            BattleSpeechMissionBehavior sessionToDisable = null;
+            BattleSpeechPerformanceMissionBehavior performanceToDisable = null;
+            bool wasSpeechEnabled;
+            bool wasPerformanceEnabled;
+            bool speechEnabled;
+            bool performanceEnabled;
             lock (Sync)
             {
                 error = null;
@@ -111,6 +153,9 @@ namespace AnimusForge.XihaiAction
                     error = "Battle speech source configuration is invalid.";
                     return false;
                 }
+                wasSpeechEnabled = ConfigurationValid && Settings.Enabled;
+                wasPerformanceEnabled = PerformanceConfigurationValid &&
+                                        PerformanceSettings.Enabled;
                 if (!SceneActionsMcmSettings.TryApplyBattleSpeech(
                         Settings,
                         PerformanceSettings,
@@ -124,11 +169,66 @@ namespace AnimusForge.XihaiAction
                     ConfigurationValid = false;
                     PerformanceConfigurationValid = false;
                     error = "MCM runtime override is invalid: " + mcmError;
-                    return false;
+                    speechEnabled = false;
+                    performanceEnabled = false;
                 }
-                ConfigurationValid = true;
-                PerformanceConfigurationValid = true;
-                return true;
+                else
+                {
+                    ConfigurationValid = true;
+                    PerformanceConfigurationValid = true;
+                    speechEnabled = Settings.Enabled;
+                    performanceEnabled = PerformanceSettings.Enabled;
+                }
+
+                if (wasSpeechEnabled && !speechEnabled)
+                {
+                    sessionToDisable = _activeSession;
+                }
+                if (wasPerformanceEnabled && !performanceEnabled)
+                {
+                    performanceToDisable = _performanceEffect;
+                }
+            }
+
+            // Mission objects are never called while holding the host lock: their
+            // cleanup paths call back into this host to clear claims/owners.
+            sessionToDisable?.DisableFromHost(
+                "BattleSpeech disabled in MCM; active speech was cancelled.");
+            performanceToDisable?.DisableFromHost(
+                "BattleSpeech presentation disabled in MCM; active reactions were cleared.");
+            return string.IsNullOrEmpty(error);
+        }
+
+        internal static void RefreshMcmOverridesIfDue(double missionTime)
+        {
+            lock (Sync)
+            {
+                if (!_initialized || double.IsNaN(missionTime) ||
+                    missionTime < _nextMcmRefreshMissionTime)
+                {
+                    return;
+                }
+                _nextMcmRefreshMissionTime = missionTime + McmRefreshIntervalSeconds;
+            }
+
+            if (!RefreshMcmOverrides(out string error))
+            {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    lock (Sync)
+                    {
+                        if (!_mcmRefreshWarningLogged)
+                        {
+                            _mcmRefreshWarningLogged = true;
+                            SceneActionsLog.Warning("BATTLE_SPEECH_MCM", error);
+                        }
+                    }
+                }
+                return;
+            }
+            lock (Sync)
+            {
+                _mcmRefreshWarningLogged = false;
             }
         }
 
@@ -146,6 +246,8 @@ namespace AnimusForge.XihaiAction
                 _initialized = false;
                 _sourceConfigurationValid = false;
                 _sourcePerformanceConfigurationValid = false;
+                _nextMcmRefreshMissionTime = 0d;
+                _mcmRefreshWarningLogged = false;
             }
             session?.CloseFromHost("Battle speech host shutdown.");
         }
@@ -159,6 +261,10 @@ namespace AnimusForge.XihaiAction
                 if (ReferenceEquals(_activeSession, session)) return;
                 previous = _activeSession;
                 _activeSession = session;
+                // Mission.CurrentTime is local to the active Mission.  A
+                // previous long Mission must not delay MCM polling in this one.
+                _nextMcmRefreshMissionTime = 0d;
+                _mcmRefreshWarningLogged = false;
             }
             previous?.CloseFromHost("Replaced by a newer Mission session.");
         }
@@ -248,7 +354,8 @@ namespace AnimusForge.XihaiAction
         {
             lock (Sync)
             {
-                if (!_initialized || Settings == null || !Settings.TKeyEnabled)
+                if (!_initialized || !ConfigurationValid || Settings == null ||
+                    !Settings.Enabled || !Settings.TKeyEnabled)
                 {
                     return false;
                 }
@@ -606,7 +713,8 @@ namespace AnimusForge.XihaiAction
             string requestText,
             double expiresAtMissionTime,
             bool combinedRequest = false,
-            int audienceReplyCount = 0)
+            int audienceReplyCount = 0,
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts = null)
         {
             if (sessionId == Guid.Empty || mission == null || speaker == null)
             {
@@ -626,6 +734,7 @@ namespace AnimusForge.XihaiAction
                     ExpiresAtMissionTime = expiresAtMissionTime,
                     CombinedRequest = combinedRequest,
                     AudienceReplyCount = Math.Max(0, audienceReplyCount),
+                    BattlefieldFacts = battlefieldFacts,
                     RecentSpeechTexts = GetRecentSpeechTextsUnsafe(mission, speaker.Index),
                     RegenerationAttempts = 0
                 };
@@ -733,7 +842,8 @@ namespace AnimusForge.XihaiAction
                     snapshot.AudienceReplyMinimumChars,
                     snapshot.AudienceReplyMaximumChars,
                     snapshot.RecentSpeechTexts,
-                    snapshot.RegenerationAttempts);
+                    snapshot.RegenerationAttempts,
+                    snapshot.BattlefieldFacts);
             }
             else
             {
@@ -741,7 +851,8 @@ namespace AnimusForge.XihaiAction
                     snapshot.MinimumChars,
                     snapshot.MaximumChars,
                     snapshot.RecentSpeechTexts,
-                    snapshot.RegenerationAttempts);
+                    snapshot.RegenerationAttempts,
+                    snapshot.BattlefieldFacts);
             }
             return true;
         }
@@ -1023,7 +1134,8 @@ namespace AnimusForge.XihaiAction
                         StageSettings.AudienceReplyMinimumChars,
                         StageSettings.AudienceReplyMaximumChars,
                         _replyClaim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
-                        _replyClaim.RegenerationAttempts);
+                        _replyClaim.RegenerationAttempts,
+                        _replyClaim.BattlefieldFacts);
                 }
             }
             if (!snapshot.CombinedRequest)
@@ -1236,10 +1348,44 @@ namespace AnimusForge.XihaiAction
             {
                 return content;
             }
-            return BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
-                content,
+            string playerName = speaker.Mission?.MainAgent?.Name;
+            if (string.IsNullOrWhiteSpace(playerName))
+            {
+                playerName = Agent.Main?.Name;
+            }
+            string contentForNormalization = content;
+            bool playerNameSanitized = false;
+            if (!string.IsNullOrWhiteSpace(playerName) &&
+                contentForNormalization.IndexOf(playerName, StringComparison.Ordinal) >= 0)
+            {
+                contentForNormalization = contentForNormalization.Replace(
+                    playerName,
+                    "前方的友军领主");
+                playerNameSanitized = true;
+            }
+            string normalized = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+                contentForNormalization,
                 snapshot.MinimumChars,
-                snapshot.MaximumChars);
+                snapshot.MaximumChars,
+                out string fallbackReason);
+            if (playerNameSanitized)
+            {
+                SceneActionsLog.Warning(
+                    "BATTLE_SPEECH_INPUT",
+                    "SpeechSource=AF PlayerNameSanitized Session=" +
+                    _replyClaim.SessionId.ToString("N") +
+                    " Agent=" + speaker.Index);
+            }
+            if (!string.IsNullOrEmpty(fallbackReason))
+            {
+                SceneActionsLog.Warning(
+                    "BATTLE_SPEECH_INPUT",
+                    "SpeechSource=LocalFallback Session=" +
+                    _replyClaim.SessionId.ToString("N") +
+                    " Agent=" + speaker.Index +
+                    " Reason=" + fallbackReason);
+            }
+            return normalized;
         }
 
         private static BattleSpeechReplyPromptSnapshotV2 CreateReplyPromptSnapshotUnsafe(
@@ -1262,7 +1408,8 @@ namespace AnimusForge.XihaiAction
                 StageSettings.AudienceReplyMinimumChars,
                 StageSettings.AudienceReplyMaximumChars,
                 claim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
-                claim.RegenerationAttempts);
+                claim.RegenerationAttempts,
+                claim.BattlefieldFacts);
         }
 
         internal static bool TryTakeDeferredNpcReply(
@@ -1351,7 +1498,8 @@ namespace AnimusForge.XihaiAction
             int audienceReplyMinimumChars,
             int audienceReplyMaximumChars,
             string[] recentSpeechTexts,
-            int regenerationAttempts)
+            int regenerationAttempts,
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts)
         {
             SessionId = sessionId;
             Mission = mission;
@@ -1368,6 +1516,7 @@ namespace AnimusForge.XihaiAction
             AudienceReplyMaximumChars = audienceReplyMaximumChars;
             RecentSpeechTexts = (recentSpeechTexts ?? Array.Empty<string>()).ToArray();
             RegenerationAttempts = Math.Max(0, regenerationAttempts);
+            BattlefieldFacts = battlefieldFacts;
         }
 
         public Guid SessionId { get; }
@@ -1383,6 +1532,7 @@ namespace AnimusForge.XihaiAction
         public int AudienceReplyMaximumChars { get; }
         public string[] RecentSpeechTexts { get; }
         public int RegenerationAttempts { get; }
+        public BattleSpeechBattlefieldFactsV1 BattlefieldFacts { get; }
     }
 
     internal sealed class BattleSpeechPromptScopeV2
@@ -1447,6 +1597,7 @@ namespace AnimusForge.XihaiAction
         public double ExpiresAtMissionTime;
         public bool CombinedRequest;
         public int AudienceReplyCount;
+        public BattleSpeechBattlefieldFactsV1 BattlefieldFacts;
         public string[] RecentSpeechTexts;
         public int RegenerationAttempts;
         public BattleSpeechReplyPromptSnapshotV2 PromptSnapshot;

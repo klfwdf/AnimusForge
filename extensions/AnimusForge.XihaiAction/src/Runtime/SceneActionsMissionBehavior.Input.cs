@@ -13,6 +13,14 @@ namespace AnimusForge.XihaiAction
             SceneActionSettings settings = SceneActionsRuntimeHost.Settings;
             if (!SceneActionInputRouter.IsEnabled(settings, captured.InputSource))
             {
+                // A bridge callback can race the low-frequency MCM transition
+                // after it has been accepted into _inbound.  Complete the gate
+                // here instead of silently leaving the request id in the
+                // Mission ledger until TTL cleanup; this path still leaves AF's
+                // ordinary text response untouched.
+                FinishNoAction(
+                    captured.EventId,
+                    "SceneActions input source is disabled in MCM.");
                 return;
             }
             if (!ReferenceEquals(captured.SourceMission, Mission))

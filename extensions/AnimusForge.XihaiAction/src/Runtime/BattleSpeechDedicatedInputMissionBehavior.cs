@@ -33,7 +33,11 @@ namespace AnimusForge.XihaiAction
             int epoch = session.ConversationEpoch;
             Mission mission = Mission;
             double submittedAt = mission?.CurrentTime ?? 0d;
-            CancellationToken lifetimeToken = _v2LifetimeCancellation.Token;
+            // The request-scoped token is cancelled both when this Mission is
+            // closed and when BattleSpeech is disabled in MCM; unlike creating
+            // a throwaway linked source here, it has no per-request disposal
+            // leak.
+            CancellationToken lifetimeToken = _v2RequestCancellation.Token;
             if (!AfCompatV130.TryStartDedicatedNpcSpeechRequest(
                     mission,
                     sessionId,

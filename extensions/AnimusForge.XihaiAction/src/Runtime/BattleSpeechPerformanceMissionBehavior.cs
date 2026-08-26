@@ -18,7 +18,10 @@ namespace AnimusForge.XihaiAction
         private readonly Dictionary<string, ActionIndexCache> _speechOpeningActions =
             new Dictionary<string, ActionIndexCache>(StringComparer.Ordinal);
         private const string SpeechOpeningActionId = "act_af_speech_nacisword1";
+        private const double AdvanceAudienceCleanupSettleSeconds = 0.12d;
+        private const double AdvanceAudienceCleanupTimeoutSeconds = 0.75d;
         private bool _closed = true;
+        private bool _mcmDisabled;
 
         public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
         internal bool IsSessionActive => !_closed;
@@ -29,15 +32,14 @@ namespace AnimusForge.XihaiAction
             if (!BattleSpeechRuntimeHost.IsInitialized ||
                 !BattleSpeechRuntimeHost.ConfigurationValid ||
                 BattleSpeechRuntimeHost.Settings == null ||
-                !BattleSpeechRuntimeHost.Settings.Enabled ||
                 !BattleSpeechRuntimeHost.PerformanceConfigurationValid ||
-                BattleSpeechRuntimeHost.PerformanceSettings == null ||
-                !BattleSpeechRuntimeHost.PerformanceSettings.Enabled)
+                BattleSpeechRuntimeHost.PerformanceSettings == null)
             {
                 return;
             }
             _registration = BattleSpeechApiV1.RegisterRuntimeEffect(this);
             _closed = false;
+            _mcmDisabled = !BattleSpeechRuntimeHost.IsPerformanceEnabled;
             BattleSpeechRuntimeHost.BindPerformanceEffect(this);
             SceneActionsLog.Info(
                 "BATTLE_SPEECH_PERFORMANCE",
@@ -47,7 +49,24 @@ namespace AnimusForge.XihaiAction
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
-            if (_closed || _active == null || !ReferenceEquals(Mission.Current, Mission))
+            if (_closed || !ReferenceEquals(Mission.Current, Mission))
+            {
+                return;
+            }
+            if (!BattleSpeechRuntimeHost.IsPerformanceEnabled)
+            {
+                DisableFromHost(
+                    "BattleSpeech presentation disabled in MCM; active reactions were discarded.");
+                return;
+            }
+            if (_mcmDisabled)
+            {
+                _mcmDisabled = false;
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_MCM",
+                    "BattleSpeech performance re-enabled for the active Mission.");
+            }
+            if (_active == null)
             {
                 return;
             }
@@ -95,7 +114,8 @@ namespace AnimusForge.XihaiAction
 
         public void OnSpeechStarted(BattleSpeechRuntimeContextV1 speech)
         {
-            if (_closed || speech == null || !ReferenceEquals(speech.Mission, Mission))
+            if (_closed || !BattleSpeechRuntimeHost.IsPerformanceEnabled ||
+                speech == null || !ReferenceEquals(speech.Mission, Mission))
             {
                 return;
             }
@@ -138,6 +158,8 @@ namespace AnimusForge.XihaiAction
                 CombatSpeechMode = speech.CombatSpeechMode,
                 TailEndsAtMissionTime = speech.Snapshot.StartedAtMissionTime +
                                         plan.TailEndOffsetSeconds,
+                LastAudiencePresentationAtMissionTime =
+                    speech.Snapshot.StartedAtMissionTime,
                 Cues = cues,
                 Settings = settings,
                 VoiceAudienceOrdinals = SelectVoiceAudienceOrdinals(
@@ -246,6 +268,7 @@ namespace AnimusForge.XihaiAction
             {
                 return;
             }
+            _mcmDisabled = false;
             performance.CombatSpeechMode = true;
             int releasedAudience = ReleaseOwnedAudiencePerformanceChannels(performance);
             ReleaseHeldSpeaker(performance);
@@ -380,6 +403,10 @@ namespace AnimusForge.XihaiAction
                 if (finalAudienceCue)
                 {
                     performance.FinalAudienceSubmitted++;
+                }
+                if (runtimeCue.IsAudience)
+                {
+                    MarkAudiencePresentation(performance, now);
                 }
                 performance.TailEndsAtMissionTime = Math.Max(
                     performance.TailEndsAtMissionTime,
@@ -679,13 +706,26 @@ namespace AnimusForge.XihaiAction
             {
                 return;
             }
+            BattleSpeechStageSettingsV2 stage = BattleSpeechRuntimeHost.StageSettings;
+            double responseStartAt = performance.StartedAtMissionTime +
+                                     Math.Max(
+                                         0.5d,
+                                         stage?.AudienceResponseStartDelaySeconds ?? 3d);
+            if (now < responseStartAt)
+            {
+                return;
+            }
             bool allVisualCuesProcessed = performance.NextCueIndex >= performance.Cues.Count;
             if (!BattleSpeechFrameworkV2.ShouldOpenAudienceResponse(
                     performance.Completed,
                     performance.FinalAudienceSubmitted,
                     performance.FirstVisualWaveTarget,
                     allVisualCuesProcessed,
-                    allowDuringSpeech: true))
+                    // A 60-160 character speech is normally longer than the
+                    // MCM delay by itself.  Do not open the audience channel
+                    // while the body is still being presented; the delay is
+                    // the minimum gate, not permission to talk over it.
+                    allowDuringSpeech: false))
             {
                 return;
             }
@@ -701,7 +741,30 @@ namespace AnimusForge.XihaiAction
                 " State=Opened VoiceCandidates=" +
                 performance.VoiceAudienceOrdinals.Length +
                 " SpokenReplyCandidates=" + performance.ReplyAudienceOrdinals.Length +
-                " FinalVisualSubmitted=" + performance.FinalAudienceSubmitted);
+                " FinalVisualSubmitted=" + performance.FinalAudienceSubmitted +
+                " StartDelay=" + (now - performance.StartedAtMissionTime).ToString("F2"));
+        }
+
+        private static void MarkAudiencePresentation(
+            ActivePerformance performance,
+            double now,
+            float visualDurationSeconds = 0f)
+        {
+            if (performance == null)
+            {
+                return;
+            }
+            BattleSpeechStageSettingsV2 stage = BattleSpeechRuntimeHost.StageSettings;
+            double configuredHold = Math.Max(
+                0.5d,
+                stage?.AudienceFinalReactionHoldSeconds ?? 2.5d);
+            double visualHold = Math.Max(0d, visualDurationSeconds);
+            performance.LastAudiencePresentationAtMissionTime = Math.Max(
+                performance.LastAudiencePresentationAtMissionTime,
+                now + Math.Max(configuredHold, visualHold));
+            performance.TailEndsAtMissionTime = Math.Max(
+                performance.TailEndsAtMissionTime,
+                performance.LastAudiencePresentationAtMissionTime);
         }
 
         private void ProgressAudienceVoicesAndTactic(
@@ -783,6 +846,13 @@ namespace AnimusForge.XihaiAction
                 performance.NextReplyAtMissionTime = now + Math.Max(
                     waveCompleted ? randomDelay : 0.01d,
                     longestVisualDuration);
+                if (playedThisWave > 0)
+                {
+                    MarkAudiencePresentation(
+                        performance,
+                        now,
+                        longestVisualDuration);
+                }
                 performance.TailEndsAtMissionTime = Math.Max(
                     performance.TailEndsAtMissionTime,
                     performance.NextReplyAtMissionTime +
@@ -831,6 +901,10 @@ namespace AnimusForge.XihaiAction
                      performance.NextVoiceIndex));
                 performance.NextVoiceAtMissionTime = now +
                     stage.AudienceVoiceWaveIntervalSeconds;
+                if (played > 0)
+                {
+                    MarkAudiencePresentation(performance, now);
+                }
             }
 
             // Written replies and battle cries may overlap the speech. The
@@ -901,9 +975,10 @@ namespace AnimusForge.XihaiAction
                 {
                     performance.OwnedActionIndices.Add(performance.ClosingCommandAction);
                 }
-                performance.AdvanceAtMissionTime = now +
-                    BattleSpeechFrameworkV2.ResolveClosingCommandDelaySeconds(
-                        stage.TacticalAdvanceDelaySeconds);
+                performance.AdvanceAtMissionTime = Math.Max(
+                    now + BattleSpeechFrameworkV2.ResolveClosingCommandDelaySeconds(
+                        stage.TacticalAdvanceDelaySeconds),
+                    performance.LastAudiencePresentationAtMissionTime);
                 performance.TailEndsAtMissionTime = Math.Max(
                     performance.TailEndsAtMissionTime,
                     performance.AdvanceAtMissionTime +
@@ -912,34 +987,115 @@ namespace AnimusForge.XihaiAction
                     "BATTLE_SPEECH_TACTIC",
                     "Session=" + performance.OwnerToken.ToString("N") +
                     " State=CommandSubmitted Action=" + actionId + " AdvanceAt=" +
-                    performance.AdvanceAtMissionTime.ToString("F2"));
+                    performance.AdvanceAtMissionTime.ToString("F2") +
+                    " AudienceHoldUntil=" +
+                    performance.LastAudiencePresentationAtMissionTime.ToString("F2"));
                 return;
             }
             if (now >= performance.AdvanceAtMissionTime)
             {
+                // Clear the audience presentation before changing formation AI.
+                // A direct Advance on the same tick as a full-body gesture can
+                // leave the animation root-motion state active for one or more
+                // frames, producing the observed floating/walking transition.
+                if (!performance.AudienceCleanupRequested)
+                {
+                    performance.AudienceCleanupRequested = true;
+                    performance.AudienceCleanupReadyAtMissionTime =
+                        now + AdvanceAudienceCleanupSettleSeconds;
+                    performance.AudienceCleanupDeadlineMissionTime =
+                        now + AdvanceAudienceCleanupTimeoutSeconds;
+                    performance.AudienceCleanupReleasedChannels +=
+                        ReleaseOwnedAudiencePerformanceChannels(performance);
+                    CancelTrustedPlaybackOnce(
+                        performance,
+                        "Advance preflight; audience presentation is ending.");
+                    SceneActionsLog.Info(
+                        "BATTLE_SPEECH_TACTIC",
+                        "Session=" + performance.OwnerToken.ToString("N") +
+                        " State=AdvanceCleanupRequested ReleasedChannels=" +
+                        performance.AudienceCleanupReleasedChannels +
+                        " ReadyAt=" +
+                        performance.AudienceCleanupReadyAtMissionTime.ToString("F2"));
+                    return;
+                }
+
+                performance.AudienceCleanupReleasedChannels +=
+                    ReleaseOwnedAudiencePerformanceChannels(performance);
+                bool audienceClear = AreOwnedAudienceChannelsClear(performance);
+                if (!audienceClear &&
+                    now < performance.AudienceCleanupDeadlineMissionTime)
+                {
+                    return;
+                }
+                if (!audienceClear)
+                {
+                    performance.AdvanceResolved = true;
+                    ReleaseHeldSpeaker(performance);
+                    SceneActionsLog.Warning(
+                        "BATTLE_SPEECH_TACTIC",
+                        "Session=" + performance.OwnerToken.ToString("N") +
+                        " State=AdvanceSuppressed Reason=Audience action channel did not settle before timeout; " +
+                        "floating transition risk was blocked.");
+                    return;
+                }
+                if (now < performance.AudienceCleanupReadyAtMissionTime)
+                {
+                    return;
+                }
+
                 performance.AdvanceResolved = true;
+                // Release the speaker hold before changing formation AI so the
+                // command animation and scripted position cannot overlap the
+                // first movement frame either.
+                ReleaseHeldSpeaker(performance);
                 ApplyPlayerTeamAdvance(performance);
-                // The audience gestures are a presentation tail, not a movement
-                // order.  Once Advance is issued they must be released immediately;
-                // waiting for FinishTail keeps cheer/greet/agree on channel 1 while
-                // the formations are already supposed to be moving.
-                int releasedAudience = ReleaseOwnedAudiencePerformanceChannels(
-                    performance);
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH_PERFORMANCE",
                     "Session=" + performance.OwnerToken.ToString("N") +
-                    " State=AudienceActionsClearedAfterAdvance ReleasedChannels=" +
-                    releasedAudience);
-                // The performance tick can run before SceneActionsMissionBehavior
-                // drains its trusted queue.  Cancel the owner at the same boundary
-                // so a queued cheer cannot be applied again after it was cleared.
-                CancelTrustedPlaybackOnce(
-                    performance,
-                    "Advance issued; audience presentation ended.");
-                ReleaseHeldSpeaker(performance);
+                    " State=AudienceActionsClearedBeforeAdvance ReleasedChannels=" +
+                    performance.AudienceCleanupReleasedChannels);
+
             }
         }
 
+        private static bool AreOwnedAudienceChannelsClear(ActivePerformance performance)
+        {
+            if (performance == null)
+            {
+                return true;
+            }
+            ActionIndexCache[] ownedActions = performance.OwnedActionIndices.ToArray();
+            if (ownedActions.Length == 0)
+            {
+                return true;
+            }
+            foreach (Agent actor in (performance.Audience ?? Array.Empty<Agent>())
+                         .Where(agent => agent != null)
+                         .GroupBy(agent => agent.Index)
+                         .Select(group => group.First()))
+            {
+                if (!actor.IsActive() || !ReferenceEquals(actor.Mission, performance.Mission))
+                {
+                    continue;
+                }
+                try
+                {
+                    ActionIndexCache current = actor.GetCurrentAction(1);
+                    if (ownedActions.Any(action => action != ActionIndexCache.act_none &&
+                                                   action == current))
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    // A disappearing or engine-invalid agent is not allowed to
+                    // hold the whole formation at the Advance barrier.
+                }
+            }
+            return true;
+        }
         private static bool TryPlayAudienceVoice(Agent actor, int ordinal)
         {
             try
@@ -1454,6 +1610,36 @@ namespace AnimusForge.XihaiAction
                 "Mission performance effect closed. " + reason);
         }
 
+        /// <summary>
+        /// Clears the active presentation while retaining the registered Mission
+        /// behavior.  This is deliberately distinct from Close(), which is only
+        /// for Mission teardown and disposes the API registration.
+        /// </summary>
+        internal void DisableFromHost(string reason)
+        {
+            if (_closed)
+            {
+                return;
+            }
+            bool transitioned = !_mcmDisabled;
+            _mcmDisabled = true;
+            if (_active != null)
+            {
+                CancelActive(reason ?? "BattleSpeech presentation disabled.");
+            }
+            else
+            {
+                BattleSpeechRuntimeHost.MarkPerformanceEnded(Mission);
+            }
+            if (transitioned)
+            {
+                SceneActionsLog.Info(
+                    "BATTLE_SPEECH_MCM",
+                    "BattleSpeech performance disabled without closing Mission behavior. Reason=" +
+                    (reason ?? string.Empty));
+            }
+        }
+
         private sealed class RuntimeCue
         {
             public RuntimeCue(BattleSpeechPerformanceCueV1 cue, bool isAudience)
@@ -1479,6 +1665,7 @@ namespace AnimusForge.XihaiAction
             public double StartedAtMissionTime;
             public double SpeechEndsAtMissionTime;
             public double TailEndsAtMissionTime;
+            public double LastAudiencePresentationAtMissionTime;
             public bool Completed;
             public BattleSpeechTacticV2 Tactic;
             public bool TacticDecisionProvided;
@@ -1504,6 +1691,10 @@ namespace AnimusForge.XihaiAction
             public bool TrustedPlaybackCancelled;
             public double NextCommandSubmitAtMissionTime;
             public double CommandSubmitDeadlineMissionTime;
+            public bool AudienceCleanupRequested;
+            public double AudienceCleanupReadyAtMissionTime;
+            public double AudienceCleanupDeadlineMissionTime;
+            public int AudienceCleanupReleasedChannels;
             public bool SpeakerHoldOwned;
             public Agent SpeakerHoldMount;
             public bool SpeakerGestureSkippedLogged;

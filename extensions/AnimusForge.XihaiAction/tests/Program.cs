@@ -3719,11 +3719,52 @@ internal static class Program
         True(prompt.Contains("不要统一写成‘全军前进’"));
         True(prompt.Contains("不得为了凑字重复同一句、同一短语"));
         True(prompt.Contains("不得强制套用固定称呼"));
+        True(prompt.Contains("一段连续口语"));
+        True(prompt.Contains("最多使用两个事实"));
+        True(prompt.Contains("玩家姓名"));
         True(!prompt.Contains("合格示例"));
         True(!prompt.Contains("握紧兵刃"));
         True(prompt.Contains("正文长度必须为20至60个可见字符"));
         True(prompt.Contains("演讲内容最终优先级"));
         True(prompt.Contains("PlayerCustomPromptRule"));
+        BattleSpeechBattlefieldFactsV1 facts = new BattleSpeechBattlefieldFactsV1(
+            65,
+            40,
+            12,
+            30,
+            false,
+            false,
+            "野战",
+            "战斗阶段");
+        string factsBlock = facts.ToPromptBlock();
+        True(factsBlock.Contains("我方当前有效人类约65人"));
+        True(factsBlock.Contains("敌方当前有效人类约40人"));
+        True(factsBlock.Contains("本模组记录的战斗中减员"));
+        True(factsBlock.Contains("程序事实，不是预先给出的主题结论"));
+        True(!factsBlock.Contains("主风格：鼓舞"));
+        string factsPrompt = BattleSpeechFrameworkV2.BuildNpcSpeechPromptInstruction(
+            20,
+            60,
+            null,
+            0,
+            facts);
+        True(factsPrompt.Contains("当前战场事实快照"));
+        True(factsPrompt.Contains("我方当前有效人类约65人"));
+        True(factsPrompt.Contains("明确要求悲壮、鼓舞、冷静、坚定、愤怒或嘲讽等文风，优先遵守"));
+        True(!factsPrompt.Contains("THEME"));
+        True(!factsPrompt.Contains("TONE"));
+        BattleSpeechBattlefieldFactsV1 unknownFacts = new BattleSpeechBattlefieldFactsV1(
+            -1,
+            -1,
+            -1,
+            -1,
+            true,
+            true,
+            "野战",
+            "战斗阶段");
+        string unknownFactsBlock = unknownFacts.ToPromptBlock();
+        True(!unknownFactsBlock.Contains("约-1人"));
+        True(unknownFactsBlock.Contains("敌人是否已接近演讲者：是"));
         string combinedPrompt = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
             20,
             60,
@@ -3783,6 +3824,53 @@ internal static class Program
         Equal(30, repaired.Length);
         True(!repaired.Contains("大人") && !repaired.Contains("玩家"));
         True(!repaired.Contains("握紧兵刃，守住阵线，握紧兵刃"));
+        string thirdPersonTitle =
+            "兄弟们，看看加尼密诺斯大人骑着马守在前方，先看清敌旗再稳住阵线！";
+        Equal(
+            thirdPersonTitle,
+            BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+                thirdPersonTitle,
+                20,
+                60));
+        string directTitle = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "大人，请听我把前方的敌情说完，再决定是否推进。",
+            20,
+            60,
+            out string directTitleReason);
+        Equal("direct_player_address", directTitleReason);
+        True(!directTitle.Contains("大人"));
+        string playerNameFiltered = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "兄弟们，别看加尼密诺斯，先看前方的敌旗，稳住你们的队形！",
+            20,
+            60,
+            new[] { "加尼密诺斯" },
+            out string playerNameReason);
+        Equal("player_name", playerNameReason);
+        True(!playerNameFiltered.Contains("加尼密诺斯"));
+        string metaFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "下面是10段可用于测试的阵前演讲正文。第一段：兄弟们，稳住阵线，听我号令！",
+            20,
+            60,
+            out string metaFallbackReason);
+        Equal("meta_or_test_text", metaFallbackReason);
+        True(!metaFallback.Contains("下面是"));
+        string scenicFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
+            "弟兄们，看看这平原上的晨光，还有身后的俘虏和旗帜。大家打起精神，继续行军！",
+            20,
+            160,
+            out string scenicFallbackReason);
+        Equal("scenic_opening", scenicFallbackReason);
+        True(!scenicFallback.Contains("看看这平原上的晨光"));
+        IReadOnlyList<string> localFallbackVariants =
+            BattleSpeechFrameworkV2.GetLocalFallbackSpeechVariants();
+        Equal(6, localFallbackVariants.Count);
+        Equal(6, localFallbackVariants.Distinct(StringComparer.Ordinal).Count());
+        foreach (string variant in localFallbackVariants)
+        {
+            True(variant.Length >= 60 && variant.Length <= 160);
+            True(!variant.Contains("玩家"));
+            True(!variant.Contains("下面是"));
+        }
         for (int exactLength = 6; exactLength <= 30; exactLength++)
         {
             string boundedFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
