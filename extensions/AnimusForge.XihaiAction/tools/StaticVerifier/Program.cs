@@ -21,6 +21,10 @@ internal static class Program
     private static float? _fakeOverrideTemperature;
     private static int _passed;
     private static int _failed;
+    private static string _verificationModuleRoot;
+    private static Assembly _moduleAssembly;
+    private static Assembly _coreAssembly;
+    private static bool _unifiedModuleLayout;
 
     private static int Main(string[] args)
     {
@@ -31,7 +35,9 @@ internal static class Program
         }
         string moduleRoot = Path.GetFullPath(args[0]);
         string gameRoot = Path.GetFullPath(args[1]);
+        _verificationModuleRoot = moduleRoot;
         ConfigureResolver(moduleRoot, gameRoot);
+        _unifiedModuleLayout = IsUnifiedModuleLayout(moduleRoot);
 
         Run("deployed module paths exist", () => VerifyPaths(moduleRoot, gameRoot));
         Run("Native V4 declarations and audited action-set mappings exist exactly once",
@@ -63,6 +69,10 @@ internal static class Program
     private static void ConfigureResolver(string moduleRoot, string gameRoot)
     {
         AddDirectory(Path.Combine(moduleRoot, "bin", "Win64_Shipping_Client"));
+        AddDirectory(Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "versions", "1.3"));
+        AddDirectory(Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "versions", "1.4"));
         AddDirectory(Path.Combine(gameRoot, "bin", "Win64_Shipping_Client"));
         string modulesRoot = Path.Combine(gameRoot, "Modules");
         if (Directory.Exists(modulesRoot))
@@ -82,6 +92,110 @@ internal static class Program
             }
         }
         AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+    }
+
+    private static bool IsUnifiedModuleLayout(string moduleRoot)
+    {
+        return File.Exists(GetUnifiedImplementationPath(moduleRoot, "1.3")) ||
+               File.Exists(GetUnifiedImplementationPath(moduleRoot, "1.4")) ||
+               File.Exists(Path.Combine(
+                   moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.Bootstrap.dll"));
+    }
+
+    private static string GetUnifiedImplementationPath(string moduleRoot, string version)
+    {
+        return Path.Combine(
+            moduleRoot,
+            "bin",
+            "Win64_Shipping_Client",
+            "versions",
+            version,
+            "AnimusForge.dll");
+    }
+
+    private static string GetModuleAssemblyPath(string moduleRoot)
+    {
+        string legacy = Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.XihaiAction.dll");
+        if (File.Exists(legacy))
+        {
+            return legacy;
+        }
+
+        string unified14 = GetUnifiedImplementationPath(moduleRoot, "1.4");
+        if (File.Exists(unified14))
+        {
+            return unified14;
+        }
+        string unified13 = GetUnifiedImplementationPath(moduleRoot, "1.3");
+        if (File.Exists(unified13))
+        {
+            return unified13;
+        }
+
+        string rootAssembly = Path.Combine(
+            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.dll");
+        return rootAssembly;
+    }
+
+    private static Assembly GetModuleAssembly(string moduleRoot = null)
+    {
+        if (_moduleAssembly != null)
+        {
+            return _moduleAssembly;
+        }
+        string root = moduleRoot ?? _verificationModuleRoot;
+        string path = GetModuleAssemblyPath(root);
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException("SceneActions implementation assembly is missing.", path);
+        }
+        _moduleAssembly = Assembly.LoadFrom(path);
+        return _moduleAssembly;
+    }
+
+    private static Assembly GetCoreAssembly(string moduleRoot = null)
+    {
+        if (_coreAssembly != null)
+        {
+            return _coreAssembly;
+        }
+        string root = moduleRoot ?? _verificationModuleRoot;
+        string standaloneCore = Path.Combine(
+            root, "bin", "Win64_Shipping_Client", "AnimusForge.SceneActions.Core.dll");
+        _coreAssembly = File.Exists(standaloneCore)
+            ? Assembly.LoadFrom(standaloneCore)
+            : GetModuleAssembly(root);
+        return _coreAssembly;
+    }
+
+    private static Type GetModuleType(string fullName, bool throwOnError = true)
+    {
+        Assembly module = GetModuleAssembly();
+        Type type = module.GetType(fullName, false, false);
+        if (type == null && _unifiedModuleLayout &&
+            fullName.StartsWith("AnimusForge.XihaiAction.", StringComparison.Ordinal))
+        {
+            // The integrated build keeps the extension namespace, so this is
+            // primarily a diagnostic guard for a future namespace flattening.
+            type = module.GetType(
+                "AnimusForge." + fullName.Substring("AnimusForge.XihaiAction.".Length),
+                false,
+                false);
+        }
+        if (type == null && throwOnError)
+        {
+            throw new InvalidOperationException(
+                "Module type is missing: " + fullName + " in " + module.FullName);
+        }
+        return type;
+    }
+
+    private static Type GetSubModuleType(Assembly module)
+    {
+        return module.GetType("AnimusForge.XihaiAction.SubModule", false, false) ??
+               module.GetType("AnimusForge.SubModule", false, false) ??
+               module.GetType("AnimusForge.Bootstrap.BootstrapSubModule", false, false);
     }
 
     private static void AddDirectory(string path)
@@ -128,12 +242,20 @@ internal static class Program
     {
         Require(Directory.Exists(moduleRoot), "module root missing");
         Require(File.Exists(Path.Combine(moduleRoot, "SubModule.xml")), "SubModule.xml missing");
-        Require(File.Exists(Path.Combine(
-            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.XihaiAction.dll")),
-            "main DLL missing");
-        Require(File.Exists(Path.Combine(
-            moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.SceneActions.Core.dll")),
-            "Core DLL missing");
+        Require(File.Exists(GetModuleAssemblyPath(moduleRoot)),
+            "SceneActions implementation DLL missing");
+        if (!_unifiedModuleLayout)
+        {
+            Require(File.Exists(Path.Combine(
+                moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.SceneActions.Core.dll")),
+                "Core DLL missing");
+        }
+        else
+        {
+            Require(File.Exists(Path.Combine(
+                moduleRoot, "bin", "Win64_Shipping_Client", "AnimusForge.Bootstrap.dll")),
+                "unified Bootstrap DLL missing");
+        }
         Require(File.Exists(Path.Combine(
             moduleRoot, "ModuleData", "SceneActions", "settings.v2.json")),
             "V2 settings file missing");
@@ -345,15 +467,18 @@ internal static class Program
 
     private static void VerifyModuleAssembly(string moduleRoot, string gameRoot)
     {
-        string assemblyPath = Path.Combine(
-            moduleRoot,
-            "bin",
-            "Win64_Shipping_Client",
-            "AnimusForge.XihaiAction.dll");
-        Assembly assembly = Assembly.LoadFrom(assemblyPath);
-        Require(assembly.GetName().Version == new Version(1, 1, 0, 0),
-            "assembly version is not 1.1.0.0");
-        Require(assembly.GetType("AnimusForge.XihaiAction.SubModule", false) != null,
+        Assembly assembly = GetModuleAssembly(moduleRoot);
+        if (!_unifiedModuleLayout)
+        {
+            Require(assembly.GetName().Version == new Version(1, 1, 0, 0),
+                "standalone assembly version is not 1.1.0.0");
+        }
+        else
+        {
+            Require(assembly.GetName().Version != null,
+                "integrated implementation assembly has no assembly identity version");
+        }
+        Require(GetSubModuleType(assembly) != null,
             "SubModule entry type missing");
         Type api = assembly.GetType("AnimusForge.XihaiAction.SceneActionsApiV1", false);
         Require(api != null && api.IsPublic, "SceneActionsApiV1 is not public");
@@ -622,11 +747,7 @@ internal static class Program
                     BindingFlags.Instance | BindingFlags.NonPublic) != null,
             "owned-playback stop or real weapon-control runtime is missing");
 
-        Assembly coreAssembly = Assembly.LoadFrom(Path.Combine(
-            moduleRoot,
-            "bin",
-            "Win64_Shipping_Client",
-            "AnimusForge.SceneActions.Core.dll"));
+        Assembly coreAssembly = GetCoreAssembly(moduleRoot);
         Type controls = coreAssembly.GetType(
             "AnimusForge.SceneActions.Core.SceneActionRuntimeControlsV1",
             true,
@@ -750,12 +871,9 @@ internal static class Program
                 behaviorPosition < afterPosition,
             "Bannerlord Mission lifecycle order drifted");
 
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Type subModule = module.GetType(
-            "AnimusForge.XihaiAction.SubModule",
-            true,
-            false);
+        Assembly module = GetModuleAssembly(moduleRoot);
+        Type subModule = GetSubModuleType(module);
+        Require(subModule != null, "SceneActions SubModule entry type is missing");
         Type missionBehavior = module.GetType(
             "AnimusForge.XihaiAction.SceneActionsMissionBehavior",
             true,
@@ -763,6 +881,13 @@ internal static class Program
         MethodInfo preHook = subModule.GetMethod(
             "OnBeforeMissionBehaviorInitialize",
             BindingFlags.Instance | BindingFlags.Public);
+        Type integrationBoundary = module.GetType(
+            "AnimusForge.SceneActionsIntegrationBoundary",
+            false,
+            false);
+        MethodInfo boundaryRegistration = integrationBoundary?.GetMethod(
+            "RegisterBeforeMissionInitialization",
+            BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo postHook = subModule.GetMethod(
             "OnMissionBehaviorInitialize",
             BindingFlags.Instance | BindingFlags.Public);
@@ -776,7 +901,9 @@ internal static class Program
             "IsSessionActive",
             BindingFlags.Instance | BindingFlags.NonPublic);
         Require(preHook != null && preHook.DeclaringType == subModule &&
-                MethodBodyReferences(preHook, addMissionBehavior),
+                (MethodBodyReferences(preHook, addMissionBehavior) ||
+                 (_unifiedModuleLayout && boundaryRegistration != null &&
+                  MethodBodyReferences(preHook, boundaryRegistration))),
             "SceneActions behavior is not registered by the pre-initialization hook");
         Require(postHook != null && postHook.DeclaringType == subModule &&
                 !MethodBodyReferences(postHook, addMissionBehavior),
@@ -787,8 +914,7 @@ internal static class Program
 
     private static void VerifySettingsLoader(string moduleRoot)
     {
-        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly assembly = GetModuleAssembly(moduleRoot);
         Type loader = assembly.GetType(
             "AnimusForge.XihaiAction.RuntimeSettingsLoader",
             true,
@@ -1091,13 +1217,8 @@ internal static class Program
 
     private static void VerifyBattleSpeechContract(string moduleRoot)
     {
-        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Assembly coreAssembly = Assembly.LoadFrom(Path.Combine(
-            moduleRoot,
-            "bin",
-            "Win64_Shipping_Client",
-            "AnimusForge.SceneActions.Core.dll"));
+        Assembly assembly = GetModuleAssembly(moduleRoot);
+        Assembly coreAssembly = GetCoreAssembly(moduleRoot);
         Type framework = coreAssembly.GetType(
             "AnimusForge.SceneActions.Core.BattleSpeechFrameworkV1",
             true,
@@ -1448,10 +1569,8 @@ internal static class Program
 
     private static void VerifyBattleSpeechPerformance(string moduleRoot, string gameRoot)
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
-        Assembly core = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.SceneActions.Core");
+        Assembly module = GetModuleAssembly(moduleRoot);
+        Assembly core = GetCoreAssembly(moduleRoot);
         Type planner = core.GetType(
             "AnimusForge.SceneActions.Core.BattleSpeechPerformancePlannerV1",
             true,
@@ -1588,6 +1707,7 @@ internal static class Program
         MethodInfo audienceRelease = performanceBehavior.GetMethod(
             "ReleaseOwnedAudiencePerformanceChannels",
             BindingFlags.Static | BindingFlags.NonPublic);
+        MethodInfo audienceClear = performanceBehavior.GetMethod("AreOwnedAudienceChannelsClear", BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo filterFrozenAudience = performanceBehavior.GetMethod(
             "FilterFrozenAudience",
             BindingFlags.Instance | BindingFlags.NonPublic);
@@ -1621,11 +1741,17 @@ internal static class Program
                         BindingFlags.Instance | BindingFlags.Public),
                     filterFrozenAudience) &&
                 audienceRelease != null &&
+                audienceClear != null &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
                         "ProgressAudienceVoicesAndTactic",
                         BindingFlags.Instance | BindingFlags.NonPublic),
-                    audienceRelease),
+                    audienceRelease) &&
+                MethodBodyReferences(
+                    performanceBehavior.GetMethod(
+                        "ProgressAudienceVoicesAndTactic",
+                        BindingFlags.Instance | BindingFlags.NonPublic),
+                    audienceClear),
             "battle speech visual budget, Native voice, or Advance stages are missing");
         Require(openingGesture != null && openingGesturePlaying != null &&
                 MethodBodyReferences(
@@ -1714,17 +1840,27 @@ internal static class Program
                 MethodBodyReferences(missionTick, drainOneShots),
             "trusted battle speech requests are not drained on the Mission thread");
 
-        Type subModule = module.GetType("AnimusForge.XihaiAction.SubModule", true, false);
+        Type subModule = GetSubModuleType(module);
+        Require(subModule != null, "battle speech SubModule entry type is missing");
         MethodInfo beforeInitialize = subModule.GetMethod(
             "OnBeforeMissionBehaviorInitialize",
             BindingFlags.Instance | BindingFlags.Public);
+        Type integrationBoundary = module.GetType(
+            "AnimusForge.SceneActionsIntegrationBoundary",
+            false,
+            false);
+        MethodInfo boundaryRegistration = integrationBoundary?.GetMethod(
+            "RegisterBeforeMissionInitialization",
+            BindingFlags.Static | BindingFlags.NonPublic);
         ConstructorInfo performanceConstructor = performanceBehavior.GetConstructor(
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             null,
             Type.EmptyTypes,
             null);
         Require(performanceConstructor != null &&
-                MethodBodyReferences(beforeInitialize, performanceConstructor),
+                (MethodBodyReferences(beforeInitialize, performanceConstructor) ||
+                 (_unifiedModuleLayout && boundaryRegistration != null &&
+                  MethodBodyReferences(boundaryRegistration, performanceConstructor))),
             "battle speech performance behavior is not registered before Mission initialization");
 
         Dictionary<string, string> expectedMappings = new Dictionary<string, string>(
@@ -1779,24 +1915,32 @@ internal static class Program
             Path.Combine(moduleRoot, "SubModule.xml"),
             LoadOptions.None);
         XElement root = subModule.Root;
-        Require((string)root?.Element("Version")?.Attribute("value") == "v1.1.0",
-            "SubModule product version is not v1.1.0");
+        string productVersion = (string)root?.Element("Version")?.Attribute("value");
+        Require(_unifiedModuleLayout
+                ? !string.IsNullOrWhiteSpace(productVersion) &&
+                  productVersion.StartsWith("v1.3.", StringComparison.Ordinal)
+                : productVersion == "v1.1.0",
+            _unifiedModuleLayout
+                ? "unified SubModule product version is not a v1.3.x AF version"
+                : "SubModule product version is not v1.1.0");
         HashSet<string> dependencies = new HashSet<string>(
             root?.Element("DependedModules")?.Elements("DependedModule")
                 .Select(value => (string)value.Attribute("Id")) ?? Array.Empty<string>(),
             StringComparer.Ordinal);
-        foreach (string dependency in new[]
-        {
-            "Bannerlord.ButterLib", "Bannerlord.UIExtenderEx", "Bannerlord.MBOptionScreen",
-            "AnimusForge"
-        })
+        string[] requiredDependencies = _unifiedModuleLayout
+            ? new[] { "Bannerlord.ButterLib", "Bannerlord.UIExtenderEx", "Bannerlord.MBOptionScreen" }
+            : new[]
+            {
+                "Bannerlord.ButterLib", "Bannerlord.UIExtenderEx", "Bannerlord.MBOptionScreen",
+                "AnimusForge"
+            };
+        foreach (string dependency in requiredDependencies)
         {
             Require(dependencies.Contains(dependency),
                 "MCM/AF module dependency missing: " + dependency);
         }
 
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly(moduleRoot);
         Type bridge = module.GetType(
             "AnimusForge.XihaiAction.SceneActionsMcmSettings",
             true,
@@ -1876,8 +2020,20 @@ internal static class Program
         }), "the 27 compatibility action fields must stay serialized but hidden from MCM");
         PropertyInfo naturalLanguageSwitch = settings.GetProperty(
             "NaturalLanguageReplyActionsEnabled");
+        PropertyInfo battleSpeechSwitch = settings.GetProperty("BattleSpeechEnabled");
+        PropertyInfo tKeyBattleSpeechSwitch = settings.GetProperty("TKeyBattleSpeechEnabled");
         Require(naturalLanguageSwitch != null &&
+                battleSpeechSwitch != null &&
+                tKeyBattleSpeechSwitch != null &&
                 naturalLanguageSwitch.CustomAttributes.Any(attribute =>
+                    attribute.AttributeType.Name.StartsWith(
+                        "SettingPropertyBool",
+                        StringComparison.Ordinal)) &&
+                battleSpeechSwitch.CustomAttributes.Any(attribute =>
+                    attribute.AttributeType.Name.StartsWith(
+                        "SettingPropertyBool",
+                        StringComparison.Ordinal)) &&
+                tKeyBattleSpeechSwitch.CustomAttributes.Any(attribute =>
                     attribute.AttributeType.Name.StartsWith(
                         "SettingPropertyBool",
                         StringComparison.Ordinal)) &&
@@ -1889,7 +2045,7 @@ internal static class Program
                             "SettingProperty",
                             StringComparison.Ordinal));
                 }),
-            "MCM natural-language section must expose only its single unified switch");
+            "MCM natural-language and battle-speech switches are not independently exposed");
         Require(new[]
                 {
                     "PacingEnabled", "MountedPacingEnabled", "InfantryPacingEnabled",
@@ -1912,6 +2068,8 @@ internal static class Program
                  settings.GetProperty("AudienceReplyMaximumChars") != null &&
                 settings.GetProperty("AudienceReplyMinimumIntervalSeconds") != null &&
                 settings.GetProperty("AudienceReplyMaximumIntervalSeconds") != null &&
+                settings.GetProperty("AudienceResponseStartDelaySeconds") != null &&
+                settings.GetProperty("AudienceFinalReactionHoldSeconds") != null &&
                 settings.GetProperty("AudienceReplyIntervalSeconds") != null &&
                 settings.GetProperty("TacticalAdvanceEnabled") != null,
             "MCM battle-speech staging controls or hidden pacing compatibility fields drifted");
@@ -1951,10 +2109,11 @@ internal static class Program
             "SAX_MCM_AudienceReplies_Hint", "SAX_MCM_AudienceReplyCount_Hint",
             "SAX_MCM_AudienceReplyWaveSize_Hint", "SAX_MCM_AudienceReplyMinimumChars_Hint",
             "SAX_MCM_AudienceReplyMaximumChars_Hint", "SAX_MCM_AudienceReplyMinInterval_Hint",
-            "SAX_MCM_AudienceReplyMaxInterval_Hint", "SAX_MCM_Advance_Hint",
+            "SAX_MCM_AudienceReplyMaxInterval_Hint", "SAX_MCM_AudienceResponseStartDelay_Hint",
+            "SAX_MCM_AudienceFinalReactionHold_Hint", "SAX_MCM_Advance_Hint",
             "SAX_MCM_AdvanceDelay_Hint", "SAX_MCM_Notifications_Hint", "SAX_MCM_Diagnostics_Hint"
         };
-        Require(englishMcmIds.Count == 108 && englishMcmIds.SetEquals(chineseMcmIds) &&
+        Require(englishMcmIds.Count == 112 && englishMcmIds.SetEquals(chineseMcmIds) &&
                 englishSceneActionsTitle != null && englishSceneActionsTitle.StartsWith("18.", StringComparison.Ordinal) &&
                 chineseSceneActionsTitle != null && chineseSceneActionsTitle.StartsWith("18.", StringComparison.Ordinal) &&
                 localizedHintIds.All(englishMcmIds.Contains) &&
@@ -1975,14 +2134,15 @@ internal static class Program
                 englishMcmIds.Contains("SAX_MCM_AudienceReplyMaximumChars") &&
                 englishMcmIds.Contains("SAX_MCM_AudienceReplyMinInterval") &&
                 englishMcmIds.Contains("SAX_MCM_AudienceReplyMaxInterval") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceResponseStartDelay") &&
+                englishMcmIds.Contains("SAX_MCM_AudienceFinalReactionHold") &&
                 englishMcmIds.Contains("SAX_MCM_Advance"),
             "MCM English/Simplified-Chinese localized option keys are incomplete");
     }
 
     private static void VerifyCompositionRoot(string moduleRoot)
     {
-        Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly assembly = GetModuleAssembly(moduleRoot);
         Type host = assembly.GetType(
             "AnimusForge.XihaiAction.SceneActionsRuntimeHost",
             true,
@@ -2588,8 +2748,7 @@ internal static class Program
 
     private static void VerifyCompatPatchInstallation()
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly();
         Type compat = module.GetType(
             "AnimusForge.XihaiAction.AfCompatV130",
             true,
@@ -2663,8 +2822,7 @@ internal static class Program
 
     private static void VerifyClassifierProviderOffline()
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly();
         Type providerType = module.GetType(
             "AnimusForge.XihaiAction.AfV130AuxiliaryTextClassifier",
             true,
@@ -2808,8 +2966,7 @@ internal static class Program
 
     private static void VerifyConsentClassifierProviderOffline()
     {
-        Assembly module = AppDomain.CurrentDomain.GetAssemblies().First(value =>
-            value.GetName().Name == "AnimusForge.XihaiAction");
+        Assembly module = GetModuleAssembly();
         Type providerType = module.GetType(
             "AnimusForge.XihaiAction.AfV130AuxiliaryTextClassifier",
             true,

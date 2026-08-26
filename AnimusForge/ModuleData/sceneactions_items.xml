@@ -47,16 +47,16 @@
 
   <Item
     id="af_xihai_daimao_head"
-    name="呆猫cos"
+    name="呆喵"
     mesh="daimaohead"
-    is_merchandise="true"
+    is_merchandise="false"
     subtype="head_armor"
     weight="0.8"
     appearance="1"
     Type="HeadArmor">
     <ItemComponent>
       <Armor
-        head_armor="28"
+        head_armor="100"
         has_gender_variations="false"
         hair_cover_type="all"
         beard_cover_type="none"

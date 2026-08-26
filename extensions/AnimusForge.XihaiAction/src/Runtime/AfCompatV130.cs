@@ -23,6 +23,7 @@ namespace AnimusForge.XihaiAction
         private static MethodInfo _recordPlayerMessageMethod;
         private static MethodInfo _queuedNpcReplyMethod;
         private static MethodInfo _shownNpcReplyMethod;
+        private static MethodInfo _battleSpeechMessageFeedMethod;
         private static MethodInfo _replyPromptMethod;
         private static MethodInfo _strictSceneMessagesSystemPromptMethod;
         private static MethodInfo _playerCustomPromptRuleBlockMethod;
@@ -284,6 +285,12 @@ namespace AnimusForge.XihaiAction
                     return false;
                 }
                 _shownNpcReplyMethod = shownCandidates[0];
+                _battleSpeechMessageFeedMethod = behaviorType.GetMethod(
+                    "PublishBattleSpeechMessageFeed",
+                    instanceFlags,
+                    null,
+                    new[] { _npcDataPacketType, typeof(Agent), typeof(string) },
+                    null);
                 _shownVisualDurationField = _shownNpcReplyMethod.ReturnType.GetField(
                     "VisualDurationSeconds",
                     instanceFlags);
@@ -929,7 +936,8 @@ namespace AnimusForge.XihaiAction
                         string safeBody = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                             BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(response),
                             prompt.MinimumChars,
-                            prompt.MaximumChars);
+                            prompt.MaximumChars,
+                            out string fallbackReason);
                         combined = new BattleSpeechCombinedNpcResponseV2(
                             safeBody,
                             new BattleSpeechPlanDecisionV2(
@@ -943,7 +951,8 @@ namespace AnimusForge.XihaiAction
                         SceneActionsLog.Warning(
                             "BATTLE_SPEECH_INPUT",
                             "Combined NPC speech protocol was invalid; fields failed closed. " +
-                            (combinedError ?? "unknown"));
+                            (combinedError ?? "unknown") +
+                            "; fallbackReason=" + (fallbackReason ?? "none"));
                     }
                     response = combined.SpeechText;
                 }
@@ -1397,6 +1406,31 @@ namespace AnimusForge.XihaiAction
                 {
                     error = "AF replay returned no playback result.";
                     return false;
+                }
+                if (_battleSpeechMessageFeedMethod != null)
+                {
+                    try
+                    {
+                        _battleSpeechMessageFeedMethod.Invoke(
+                            deferred.Behavior,
+                            new object[]
+                            {
+                                deferred.NpcPacket,
+                                deferred.Speaker,
+                                deferred.Content
+                            });
+                        SceneActionsLog.Info(
+                            "BATTLE_SPEECH_COMPAT",
+                            "Published battle-speech body to AF message feed immediately. Agent=" +
+                            deferred.Speaker.Index);
+                    }
+                    catch (Exception feedException)
+                    {
+                        SceneActionsLog.Warning(
+                            "BATTLE_SPEECH_COMPAT",
+                            "Immediate battle-speech message-feed publication failed; normal AF feed retained. " +
+                            feedException.GetBaseException().Message);
+                    }
                 }
                 return true;
             }

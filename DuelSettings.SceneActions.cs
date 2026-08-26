@@ -5,8 +5,8 @@ namespace AnimusForge;
 
 /// <summary>
 /// SceneActions and battle-speech settings are part of the AF settings page.
-/// The XihaiAction runtime reads a cached snapshot of this partial class; it no
-/// longer registers a second MCM global-settings type.
+/// The XihaiAction runtime reads this single MCM object through its cached
+/// reflection bridge; it no longer registers a second MCM global-settings type.
 /// </summary>
 public partial class DuelSettings
 {
@@ -21,10 +21,10 @@ public partial class DuelSettings
 	private const string SceneActionsSafetyGroup = SceneActionsSpeechGroup + "/{=SAX_MCM_Group_Safety}安全与诊断";
 
 	[SettingPropertyBool(
-		"{=SAX_MCM_NaturalReplyActions}自然语言回复动作与演讲",
+		"{=SAX_MCM_NaturalReplyActions}自然语言回复动作",
 		Order = 0,
 		RequireRestart = false,
-		HintText = "{=SAX_MCM_NaturalReplyActions_Hint}统一控制自然语言动作和阵前演讲。关闭后隐藏并停用本组下的演讲、听众回应和安全选项；不会改变 AF 的其他对话功能。")]
+		HintText = "{=SAX_MCM_NaturalReplyActions_Hint}只控制普通 AF 对话和场景喊话回复中的自然语言动作解析与播放。关闭后保留普通文字回复，不影响独立的阵前演讲子系统。")]
 	[SettingPropertyGroup(SceneActionsGeneralGroup, GroupOrder = 180)]
 	public bool NaturalLanguageReplyActionsEnabled { get; set; } = true;
 
@@ -214,6 +214,20 @@ public partial class DuelSettings
 		HintText = "{=SAX_MCM_AudienceReplyMaxInterval_Hint}连续文字回应波次的随机间隔上限；必须不小于最小随机间隔。")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public float AudienceReplyMaximumIntervalSeconds { get; set; } = 0.5f;
+
+	[SettingPropertyFloatingInteger(
+		"{=SAX_MCM_AudienceResponseStartDelay}听众回应开始延迟",
+		0.5f, 12f, "0.0 s", Order = 8, RequireRestart = false,
+		HintText = "{=SAX_MCM_AudienceResponseStartDelay_Hint}正文完成后仍至少等待多久才开始士兵文字回应和原生战吼；正文未完成时不会插入听众回应。")]
+	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
+	public float AudienceResponseStartDelaySeconds { get; set; } = 3f;
+
+	[SettingPropertyFloatingInteger(
+		"{=SAX_MCM_AudienceFinalReactionHold}结尾听众动作保持时间",
+		0.5f, 8f, "0.0 s", Order = 9, RequireRestart = false,
+		HintText = "{=SAX_MCM_AudienceFinalReactionHold_Hint}最后一批欢呼或回应提交后，至少保持多久才允许清理动作并执行 Advance；用于避免欢呼抽搐。")]
+	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
+	public float AudienceFinalReactionHoldSeconds { get; set; } = 2.5f;
 
 	public float AudienceReplyIntervalSeconds { get; set; } = 1.1f;
 

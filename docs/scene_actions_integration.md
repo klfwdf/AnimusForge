@@ -12,8 +12,11 @@
   behavior，并在初始化后核验会话状态。
 - MCM、严格 JSON、双语文本、动作 XML 与 TPAC 由单一 `Modules/AnimusForge`
   发布。独立运行时只保留在 `extensions` 中作为源码边界和测试基线。
-- MCM 可见标题为“自然语言动作与阵前演讲”；自然语言玩家/NPC动作、AF闭集兜底和
-  演讲自然语义统一由一个“自然语言回复动作”开关控制，旧零散字段仅保留兼容读取。
+- MCM 可见标题为“自然语言动作与阵前演讲”；其中“自然语言回复动作”只控制普通
+  AF 对话/场景喊话回复的动作解析与播放，“启用阵前演讲”独立控制 T/Y 演讲、听众
+  回应、战吼和演讲后发令。旧零散字段仅保留兼容读取，两个子系统不会互相关停。
+- `af_xihai_daimao_head` 为一次性呆喵装备：非商品 XML + 会话启动一次性种子，
+  通过存档字段关闭后续生成，不使用每日或 Mission Tick 扫描。
 - `RuntimeIntegrationEnabled` 为 `true`。游戏中不得再启用
   `AnimusForge_XihaiAction`，否则会重复处理同一轮喊话。
 
@@ -34,9 +37,12 @@
    `PostprocessRules`/`ActionPostprocessPrompts.json`，不得泄露进主回复 prompt。
    场景喊话和面对面自由对话共享同一解析器；信使没有 Mission Agent，必须由
    显式 chain gate 排除动作执行，但历史和 AFEF 事实结构仍与其他渠道一致。
-4. 玩家本地明确命令继续走确定性解析，不调用模型。每条 NPC 回复最多复用一次
+4. 阵前 NPC 演讲只在 Claim 创建时读取一次当前 Mission 的战场事实快照，并把
+   同侧/敌侧有效人数、减员记录、近敌状态、战斗类型和阶段作为普通提示词上下文交给 AF；
+   不新增主题协议、不额外调用 AF，也不在 Mission Tick 中持续扫描或替 AF 预先决定文风。
+5. 玩家本地明确命令继续走确定性解析，不调用模型。每条 NPC 回复最多复用一次
    已有后处理结果；禁止在 Mission Tick 中发网络请求、全量扫描 Agent 或重复反射。
-5. 把配置、本地化、动作 XML 和 TPAC 合并到单一 `Modules/AnimusForge` 资源布局。
+6. 把配置、本地化、动作 XML 和 TPAC 合并到单一 `Modules/AnimusForge` 资源布局。
    `SubModule.xml` 仍只加载 `AnimusForge.Bootstrap.dll`，不得恢复独立模块或第二个
    实现 DLL。
 

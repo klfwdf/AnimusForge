@@ -3570,6 +3570,29 @@ public class ShoutBehavior : CampaignBehaviorBase
 		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime);
 	}
 
+	// BattleSpeech publishes its body immediately in the AF message feed. The
+	// normal scene-shout path waits for TTS completion, which is appropriate for
+	// ordinary replies but makes a long battle speech appear to be missing from
+	// the lower-left feed while its world bubble is already visible.
+	internal void PublishBattleSpeechMessageFeed(NpcDataPacket npc, Agent liveAgent, string content)
+	{
+		if (!CanAgentParticipateInSceneSpeech(liveAgent) || liveAgent.Index < 0)
+		{
+			return;
+		}
+		string text = SanitizeSceneSpeechText(content);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		string speakerLabel = GetSceneNpcHistoryNameForPrompt(npc);
+		ClearPendingSceneDialogueFeedForAgent(liveAgent.Index);
+		RecordSceneDialogueToMessageFeed(
+			speakerLabel,
+			text,
+			new Color(1f, 0.8f, 0.2f));
+	}
+
 	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
 	{
 		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
