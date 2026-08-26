@@ -251,7 +251,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool IsCulturalRepopulationCommitted => ActiveTownColonization.IsCommitted;
 	private static bool _reliefChoiceApplied;
 	private static int _inspirationLevelApplied;
-	private static bool _soldierAppeasementCheckDone;
 	private static bool _soldierAppeasementRequired;
 	private static bool _soldierAppeasementApplied;
 	private static bool _soldierAppeasementMoralePenaltyApplied;
@@ -2595,18 +2594,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void MaybeTriggerSoldierAppeasementNeed(string outcomeName)
+	private static void RegisterTownSoldierDiscontent(string outcomeName, int speakerAgentIndex)
 	{
 		try
 		{
-			if (_soldierAppeasementCheckDone || _soldierAppeasementRequired || _massacreStarted || IsCulturalRepopulationOutcome)
+			if (_soldierAppeasementRequired && !_soldierAppeasementApplied)
 			{
-				return;
-			}
-			_soldierAppeasementCheckDone = true;
-			if (MBRandom.RandomFloat >= 0.5f)
-			{
-				Logger.Log("SiegeAiIntervention", "Soldier appeasement not required this run. Outcome=" + (outcomeName ?? "N/A"));
 				return;
 			}
 			_soldierAppeasementRequired = true;
@@ -2615,34 +2608,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
 			RecordInterventionMemory(soldierProfile.NeedMemoryTitle, soldierProfile.BuildNeedMemoryText(outcomeName));
 			InformationManager.DisplayMessage(new InformationMessage(soldierProfile.NeedMessageText, Color.FromUint(soldierProfile.NeedMessageColor)));
+			GcczDiagnosticLog.Log("SoldierAppeasement", "semanticDiscontent outcome=" + (outcomeName ?? "N/A")
+				+ " speakerAgent=" + speakerAgentIndex
+				+ " pending=true");
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "MaybeTriggerSoldierAppeasementNeed failed: " + ex.Message);
-		}
-	}
-
-
-	private static void ForceTriggerSoldierAppeasementNeed(string outcomeName)
-	{
-		try
-		{
-			if (_soldierAppeasementRequired || _massacreStarted || IsCulturalRepopulationOutcome)
-			{
-				return;
-			}
-			_soldierAppeasementCheckDone = true;
-			_soldierAppeasementRequired = true;
-			_soldierAppeasementApplied = false;
-			_soldierAppeasementMoralePenaltyApplied = false;
-			SiegeSoldierAppeasementProfile soldierProfile = new SiegeSoldierAppeasementProfile();
-			RecordInterventionMemory(soldierProfile.NeedMemoryTitle, soldierProfile.BuildNeedMemoryText(outcomeName));
-			InformationManager.DisplayMessage(new InformationMessage(soldierProfile.NeedMessageText, Color.FromUint(soldierProfile.NeedMessageColor)));
-			GcczDiagnosticLog.Log("SoldierAppeasement", "forcedSoldierAppeasement outcome=" + (outcomeName ?? "N/A"));
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "ForceTriggerSoldierAppeasementNeed failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "RegisterTownSoldierDiscontent failed: " + ex.Message);
 		}
 	}
 
@@ -2680,7 +2652,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (aftermath != SiegeAftermathAction.SiegeAftermath.ShowMercy || !_soldierAppeasementRequired || _soldierAppeasementApplied || _soldierAppeasementMoralePenaltyApplied)
+			if (!_soldierAppeasementRequired || _soldierAppeasementApplied || _soldierAppeasementMoralePenaltyApplied)
 			{
 				return;
 			}
@@ -3149,7 +3121,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return castleIdentity;
 			}
 			string identity = SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(playerName, ordinaryAlliedSoldier, civilian);
-			identity = AppendRuntimeContext(TownDialogueRoleContextProfile.Build(dialogueRole), identity);
+			identity = AppendRuntimeContext(
+				TownPromptComposer.BuildRoleContext(
+					dialogueRole,
+					ordinaryAlliedSoldier,
+					resolved != null && (resolved.IsSoldier || IsGuardOrSoldier(resolved)),
+					civilian,
+					GcczTownPromptResourceProvider.GetCatalog()),
+				identity);
 			if (_setsOwnedSettlementIncidentContext)
 			{
 				string settlementName = string.IsNullOrWhiteSpace(_activeSettlementName) ? ResolveCurrentSettlement()?.Name?.ToString() : _activeSettlementName;
@@ -3385,20 +3364,42 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					+ " tags=" + string.Join(",", castleRules.Select(rule => rule?.Tag ?? string.Empty)));
 				return castleRules;
 			}
-			List<PostprocessRuleEntry> configured = AIConfigHandler.GetGuardrailRulePostprocessRules(SiegePostprocessRuleCatalog.RuleId) ?? new List<PostprocessRuleEntry>();
-			List<PostprocessRuleEntry> rules = configured.Count > 0 ? configured : BuildFallbackSiegeInterventionPostprocessRules();
 			bool destructiveLocked = HasDestructiveOutcomeLocked();
 			Agent townAgent = TryGetAgent(targetAgentIndex);
 			CharacterObject townCharacter = townAgent?.Character as CharacterObject;
 			Hero townHero = townCharacter?.HeroObject;
 			bool townAlliedSoldier = IsRuntimeAlliedSoldierAgent(townAgent, townCharacter, townHero);
 			TownDialogueRole townDialogueRole = ResolveTownDialogueRole(townAgent, townCharacter, townHero, townAlliedSoldier);
+			bool isAmbientReaction = TownAmbientReactionContextProfile.TryParse(
+				playerText,
+				out SiegeInterventionActionKind ambientReactionToAction,
+				out TownAmbientReactionAudience ambientReactionAudience);
+			TownAmbientReactionAudience expectedAudience = TownDialogueAuthorityPolicy.ResolveAmbientAudience(
+				townDialogueRole,
+				townAlliedSoldier);
+			if (isAmbientReaction && ambientReactionAudience != expectedAudience)
+			{
+				GcczDiagnosticLog.Log("TownAmbientReaction", "rejected audience mismatch targetAgent=" + targetAgentIndex
+					+ " expected=" + expectedAudience
+					+ " actual=" + ambientReactionAudience);
+				return new List<PostprocessRuleEntry>();
+			}
 			TownConstructiveCultureChangeDecision cultureChangeDecision = EvaluateConstructiveCultureChange(
 				ResolveCurrentSettlement(),
 				townDialogueRole,
 				townAlliedSoldier,
 				replyIsDirectPlayerResponse,
 				out _);
+			bool constructiveCultureChangeAvailable = cultureChangeDecision.CanApply;
+			if (isAmbientReaction)
+			{
+				constructiveCultureChangeAvailable = EvaluateConstructiveCultureChange(
+					ResolveCurrentSettlement(),
+					TownDialogueRole.PlayerCompanion,
+					isAlliedSoldier: false,
+					replyIsDirectPlayerResponse: true,
+					out _).CanApply;
+			}
 			var eligibilityFacts = new SiegePostprocessRuleEligibilityFacts(
 				destructiveLocked,
 				_soldierAppeasementRequired,
@@ -3408,7 +3409,23 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				replyIsDirectPlayerResponse,
 				massacreActive: _massacreStarted && !_massacreVictoryReached,
 				colonizationAvailable: ActiveTownColonization.State == TownColonizationState.None,
-				constructiveCultureChangeAvailable: cultureChangeDecision.CanApply);
+				constructiveCultureChangeAvailable: constructiveCultureChangeAvailable,
+				isAmbientReaction: isAmbientReaction,
+				ambientReactionToAction: ambientReactionToAction);
+			List<PostprocessRuleEntry> rules;
+			if (isAmbientReaction)
+			{
+				rules = TownAmbientReactionRuleCatalog.GetAvailableRules(
+					eligibilityFacts,
+					GcczTownPromptResourceProvider.GetCatalog())
+					.Select(rule => new PostprocessRuleEntry { Tag = rule.Tag, Description = rule.Description })
+					.ToList();
+			}
+			else
+			{
+				List<PostprocessRuleEntry> configured = AIConfigHandler.GetGuardrailRulePostprocessRules(SiegePostprocessRuleCatalog.RuleId) ?? new List<PostprocessRuleEntry>();
+				rules = configured.Count > 0 ? configured : BuildFallbackSiegeInterventionPostprocessRules();
+			}
 			List<PostprocessRuleEntry> filtered = new List<PostprocessRuleEntry>();
 			foreach (PostprocessRuleEntry rule in rules)
 			{
@@ -3496,6 +3513,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			bool civilian = IsCivilianForIntervention(character);
 			TownDialogueRole dialogueRole = ResolveTownDialogueRole(agent, character, character?.HeroObject, alliedSoldier);
+			bool isAmbientReaction = TownAmbientReactionContextProfile.TryParse(
+				playerText,
+				out SiegeInterventionActionKind ambientReactionToAction,
+				out TownAmbientReactionAudience ambientReactionAudience);
 			bool ordinaryAlliedSoldier = TownDialogueRoleClassifier.CanExecuteAlliedSoldierOrders(dialogueRole, alliedSoldier);
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
 			string currentOutcome = SiegePostprocessOutcomeTextBuilder.Build(
@@ -3535,7 +3556,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				replyIsDirectPlayerResponse: replyIsDirectPlayerResponse,
 				sharedReliefPoolDescription: DescribeSharedCivilianReliefPoolForContext(),
 				civilianGatherContext: gatherContext,
-				interventionMemoryContext: memoryContext);
+				interventionMemoryContext: memoryContext,
+				isAmbientReaction: isAmbientReaction,
+				ambientReactionToAction: ambientReactionToAction,
+				ambientReactionAudience: ambientReactionAudience);
 			return SiegePostprocessContextBuilder.Build(facts, GcczTownPromptResourceProvider.GetCatalog());
 		}
 		catch
@@ -3614,9 +3638,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		actionHandled = false;
 		IReadOnlyList<SiegeInterventionActionKind> inputActionKinds = SiegeActionTagCatalog.ExtractKinds(text);
+		IReadOnlyList<TownAmbientReactionActionKind> ambientActionKinds = TownAmbientReactionTagCatalog.ExtractKinds(text);
 		bool hasTownTag = inputActionKinds.Count > 0;
+		bool hasAmbientTag = ambientActionKinds.Count > 0;
 		bool hasCastleTag = !string.IsNullOrWhiteSpace(text) && AnyCastleActionTagRegex.IsMatch(text);
-		if (!hasTownTag && !hasCastleTag)
+		if (!hasTownTag && !hasAmbientTag && !hasCastleTag)
 		{
 			return false;
 		}
@@ -3636,6 +3662,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (ResolveCurrentSettlement()?.IsCastle == true)
 			{
+				if (hasAmbientTag)
+				{
+					text = StripSiegeTags(text);
+					return true;
+				}
 				return TryProcessCastleAiActionTags(
 					targetHero,
 					targetCharacter,
@@ -3651,6 +3682,18 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				text = StripSiegeTags(text);
 				GcczDiagnosticLog.Log("CastleAction", "stripped castle tag outside castle stage targetAgent=" + targetAgentIndex);
 				return true;
+			}
+			if (hasAmbientTag)
+			{
+				return TryProcessTownAmbientReactionTags(
+					targetHero,
+					targetCharacter,
+					targetAgentIndex,
+					ambientActionKinds,
+					ref text,
+					out actionHandled,
+					replyIsDirectPlayerResponse,
+					playerText);
 			}
 			if (inputActionKinds.Count != 1)
 			{
@@ -3673,6 +3716,18 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool hasSharedReliefPool = HasSharedCivilianReliefPool();
 			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
 			SiegeInterventionActionKind selectedAction = inputActionKinds[0];
+			if (SiegeInterventionActionRules.IsMercyTrack(selectedAction)
+				&& !TownDialogueAuthorityPolicy.CanEmitPositiveSettlementOutcome(
+					targetDialogueRole,
+					targetIsAlliedSoldier,
+					selectedAction))
+			{
+				GcczDiagnosticLog.Log("TownAction", "rejected positive outcome role=" + targetDialogueRole
+					+ " action=" + selectedAction
+					+ " targetAgent=" + targetAgentIndex);
+				text = StripSiegeTags(text);
+				return true;
+			}
 			bool massacreStopWasEligible = _massacreStarted && !_massacreVictoryReached;
 			SiegeActionRoutingDecision actionRouting = SiegeActionRoutingPolicy.Evaluate(
 				selectedAction,
@@ -3693,14 +3748,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				TryPromptSoldierDestructiveInquiry(targetAgent, targetAgentIndex, SiegeDestructiveInquiryProfile.CivilianRobberyReason);
 				actionHandled = true;
 			}
-			if (actionRouting.ShouldDowngradeSoldierReliefToMercy)
-			{
-				selectedAction = SiegeInterventionActionKind.Mercy;
-			}
-			if (actionRouting.ShouldCapSoldierPositiveToRelief)
-			{
-				selectedAction = SiegeInterventionActionKind.Relief;
-			}
 			if (!canApplyMercyTrack && !containsDestructiveTag && actionRouting.HasMercyTrackAction)
 			{
 				actionHandled |= TryBlockMercyTrackAfterDestructive(SiegePostprocessActionEffectProfile.BlockedMercyTrackActionName);
@@ -3711,7 +3758,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				actionHandled |= handled;
 				if (handled)
 				{
-					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.AppeaseSoldiers, targetAgentIndex, targetAgentIndex, includeCivilians: false, includeSoldiers: true);
+					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.AppeaseSoldiers, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 			}
 			if (selectedAction == SiegeInterventionActionKind.GatherCivilians)
@@ -3771,7 +3818,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				actionHandled |= handled;
 				if (handled)
 				{
-					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.CivilianRobbery, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: false);
+					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.CivilianRobbery, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
 				}
 				TryPromptSoldierDestructiveInquiry(targetAgent, targetAgentIndex, SiegeDestructiveInquiryProfile.CivilianRobberyReason);
 			}
@@ -3848,6 +3895,83 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("SiegeAiIntervention", "TryProcessAiActionTags failed: " + ex.Message);
 			text = StripSiegeTags(text);
 			return actionHandled;
+		}
+	}
+
+	private static bool TryProcessTownAmbientReactionTags(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		IReadOnlyList<TownAmbientReactionActionKind> ambientActionKinds,
+		ref string text,
+		out bool actionHandled,
+		bool replyIsDirectPlayerResponse,
+		string playerText)
+	{
+		actionHandled = false;
+		try
+		{
+			if (replyIsDirectPlayerResponse
+				|| ambientActionKinds == null
+				|| ambientActionKinds.Count != 1
+				|| !TownAmbientReactionContextProfile.TryParse(
+					playerText,
+					out SiegeInterventionActionKind reactedAction,
+					out TownAmbientReactionAudience markerAudience))
+			{
+				text = StripSiegeTags(text);
+				return true;
+			}
+
+			Agent agent = TryGetAgent(targetAgentIndex);
+			CharacterObject character = targetCharacter ?? (agent?.Character as CharacterObject) ?? targetHero?.CharacterObject;
+			Hero hero = targetHero ?? character?.HeroObject;
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, hero);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, character, hero, alliedSoldier);
+			TownAmbientReactionAudience actualAudience = TownDialogueAuthorityPolicy.ResolveAmbientAudience(role, alliedSoldier);
+			TownAmbientReactionActionKind ambientKind = ambientActionKinds[0];
+			if (actualAudience == TownAmbientReactionAudience.None || actualAudience != markerAudience)
+			{
+				GcczDiagnosticLog.Log("TownAmbientReaction", "rejected runtime audience role=" + role
+					+ " expected=" + markerAudience
+					+ " actual=" + actualAudience
+					+ " targetAgent=" + targetAgentIndex);
+				text = StripSiegeTags(text);
+				return true;
+			}
+
+			if (ambientKind == TownAmbientReactionActionKind.SoldierDiscontent)
+			{
+				if (TownDialogueAuthorityPolicy.CanExpressSoldierDiscontent(role, alliedSoldier))
+				{
+					TownPromptTextCatalog promptText = GcczTownPromptResourceProvider.GetCatalog();
+					RegisterTownSoldierDiscontent(promptText.GetSuggestionActionLabel(reactedAction), targetAgentIndex);
+					actionHandled = true;
+				}
+			}
+			else if (TownAmbientReactionTagCatalog.TryGetSuggestedAction(ambientKind, out SiegeInterventionActionKind suggestedAction))
+			{
+				TownPromptTextCatalog promptText = GcczTownPromptResourceProvider.GetCatalog();
+				string speakerName = agent?.Name?.ToString() ?? character?.Name?.ToString() ?? SiegePostprocessContextBuilder.DefaultSpeakerName;
+				InformationManager.DisplayMessage(new InformationMessage(
+					promptText.BuildSuggestionNotice(speakerName, suggestedAction),
+					Color.FromUint(TownAmbientReactionTagCatalog.SuggestionMessageColor)));
+				GcczDiagnosticLog.Log("TownSuggestion", "speakerAgent=" + targetAgentIndex
+					+ " role=" + role
+					+ " reactedAction=" + reactedAction
+					+ " suggestedAction=" + suggestedAction
+					+ " mutated=false");
+				actionHandled = true;
+			}
+
+			text = StripSiegeTags(text);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryProcessTownAmbientReactionTags failed: " + ex.Message);
+			text = StripSiegeTags(text);
+			return true;
 		}
 	}
 
@@ -4736,7 +4860,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					persistHeroPrivateHistory: true,
 					suppressStare: true,
 					postSpeechLeaveSeconds: -1f,
-					runSiegeReactionPostprocess: true))
+					runSiegeReactionPostprocess: true,
+					onCompleted: generated => CompleteCastleSoldierReactionForExternal(
+						allied.Index,
+						generated ? "generated" : "generation_failed")))
 				{
 					CompleteCastleSoldierReactionForExternal(allied.Index, "trigger_failed");
 				}
@@ -5199,13 +5326,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string eventId = ResolveAmbientResponseEventId(action, directAgentIndex, focusAgentIndex);
-			int availableCount = CountAmbientReactionCandidates(action, directAgentIndex, focusAgentIndex, includeCivilians, includeSoldiers);
-			int civilianCount = includeCivilians ? TryTriggerAmbientReactionAudience(action, false, directAgentIndex, focusAgentIndex, eventId, availableCount) : 0;
-			int soldierCount = includeSoldiers ? TryTriggerAmbientReactionAudience(action, true, directAgentIndex, focusAgentIndex, eventId, availableCount) : 0;
+			string baseEventId = ResolveAmbientResponseEventId(action, directAgentIndex, focusAgentIndex);
+			string civilianEventId = TownAmbientReactionContextProfile.BuildAudienceEventId(baseEventId, TownAmbientReactionAudience.Civilian);
+			string alliedEventId = TownAmbientReactionContextProfile.BuildAudienceEventId(baseEventId, TownAmbientReactionAudience.Allied);
+			int civilianAvailable = includeCivilians
+				? CountAmbientReactionCandidates(action, directAgentIndex, focusAgentIndex, TownAmbientReactionAudience.Civilian)
+				: 0;
+			int alliedAvailable = includeSoldiers
+				? CountAmbientReactionCandidates(action, directAgentIndex, focusAgentIndex, TownAmbientReactionAudience.Allied)
+				: 0;
+			int civilianCount = includeCivilians ? TryTriggerAmbientReactionAudience(action, false, directAgentIndex, focusAgentIndex, civilianEventId, civilianAvailable) : 0;
+			int soldierCount = includeSoldiers ? TryTriggerAmbientReactionAudience(action, true, directAgentIndex, focusAgentIndex, alliedEventId, alliedAvailable) : 0;
 			if (civilianCount > 0 || soldierCount > 0)
 			{
-				Logger.Log("SiegeAiIntervention", "Queued staggered ambient reactions. Event=" + eventId + ", Action=" + action + ", Civilians=" + civilianCount + ", Soldiers=" + soldierCount + ", DirectAgent=" + directAgentIndex);
+				Logger.Log("SiegeAiIntervention", "Queued staggered ambient reactions. Event=" + baseEventId + ", Action=" + action + ", Civilians=" + civilianCount + "/" + civilianAvailable + ", Allied=" + soldierCount + "/" + alliedAvailable + ", DirectAgent=" + directAgentIndex);
 			}
 		}
 		catch (Exception ex)
@@ -5374,15 +5508,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (alliedSoldier)
-			{
-				return IsInterventionAlliedSoldierForExternal(agent, requireActive: true);
-			}
-			if (action == SiegeInterventionActionKind.Massacre || action == SiegeInterventionActionKind.CulturalRepopulation)
-			{
-				return IsMassacreTargetAgent(agent, includeHeroes: true);
-			}
-			return IsEligibleCivilianAgent(agent, includeHeroes: true);
+			CharacterObject character = agent.Character as CharacterObject;
+			Hero hero = character?.HeroObject;
+			bool runtimeAlliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, hero);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, character, hero, runtimeAlliedSoldier);
+			TownAmbientReactionAudience expectedAudience = alliedSoldier
+				? TownAmbientReactionAudience.Allied
+				: TownAmbientReactionAudience.Civilian;
+			return TownDialogueAuthorityPolicy.ResolveAmbientAudience(role, runtimeAlliedSoldier) == expectedAudience;
 		}
 		catch
 		{
@@ -5398,13 +5531,27 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string factText = SiegeAmbientReactionProfile.BuildFact(
+			CharacterObject character = agent.Character as CharacterObject;
+			Hero hero = character?.HeroObject;
+			bool runtimeAlliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, hero);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, character, hero, runtimeAlliedSoldier);
+			string factText = TownPromptComposer.BuildAmbientReactionFact(
 				action,
-				alliedSoldier,
-				DoesAmbientSpeakerCultureMatchSettlement(agent),
+				role,
+				runtimeAlliedSoldier,
+				character != null && (character.IsSoldier || IsGuardOrSoldier(character)),
+				IsCivilianForIntervention(character),
 				_activeSettlementName,
-				focusName);
-			return ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, agent.Index, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: -1f);
+				focusName,
+				GcczTownPromptResourceProvider.GetCatalog());
+			return !string.IsNullOrWhiteSpace(factText)
+				&& ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(
+					factText,
+					agent.Index,
+					persistHeroPrivateHistory: true,
+					suppressStare: true,
+					postSpeechLeaveSeconds: -1f,
+					runSiegeReactionPostprocess: true);
 		}
 		catch (Exception ex)
 		{
@@ -7640,7 +7787,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_reliefChoiceApplied = true;
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(reliefProfile.SoldierAppeasementReason).ActionLabel);
 			Settlement settlement = ResolveCurrentSettlement();
 			ApplyTownSettlementEffectPlan(
 				settlement,
@@ -7687,7 +7833,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Settlement settlement = ResolveCurrentSettlement();
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(civicProfile.SoldierAppeasementReason).ActionLabel);
 			ApplyCivicChoiceSettlementEffects(settlement, civicProfile, SiegeSettlementEffectProfile.InspirationSettlementPublicTrustReason, SiegeSettlementEffectProfile.InspirationBoundVillagePublicTrustReason);
 			ApplySharedCivilianReliefPoolEffects(settlement, civicProfile.SharedPoolEffectReason);
 			BeginCivicPositiveBuff(settlement, civicProfile);
@@ -7727,7 +7872,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Settlement settlement = ResolveCurrentSettlement();
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(civicProfile.SoldierAppeasementReason).ActionLabel);
 			ApplyCivicChoiceSettlementEffects(settlement, civicProfile, SiegeSettlementEffectProfile.RallyOathSettlementPublicTrustReason, SiegeSettlementEffectProfile.RallyOathBoundVillagePublicTrustReason);
 			ApplySharedCivilianReliefPoolEffects(settlement, civicProfile.SharedPoolEffectReason);
 			BeginCivicPositiveBuff(settlement, civicProfile);
@@ -7760,7 +7904,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			StopReversiblePlunderForMercyTrack(mercyProfile.StopPlunderReason);
 			_activeMode = InterventionMode.MercyRelief;
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
-			MaybeTriggerSoldierAppeasementNeed(GetTownActionPresentation(mercyProfile.SoldierAppeasementReason).ActionLabel);
 			ApplySharedCivilianReliefPoolEffects(ResolveCurrentSettlement(), mercyProfile.SharedPoolEffectReason);
 			ShowOutcomeMessageOnce(mercyProfile.MessageKey, mercyProfile.MessageColor);
 			RecordTownActionMemory(mercyProfile.MessageKey, repeat: false);
@@ -7789,17 +7932,20 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		SiegeInterventionActionKind action,
 		int directAgentIndex,
 		int focusAgentIndex,
-		bool includeCivilians,
-		bool includeSoldiers)
+		TownAmbientReactionAudience audience)
 	{
 		Mission mission = Mission.Current;
 		if (mission?.Agents == null)
 		{
 			return 0;
 		}
-		return mission.Agents.Count(agent =>
-			(includeCivilians && IsAmbientReactionCandidate(agent, action, false, directAgentIndex, focusAgentIndex))
-			|| (includeSoldiers && IsAmbientReactionCandidate(agent, action, true, directAgentIndex, focusAgentIndex)));
+		bool alliedAudience = audience == TownAmbientReactionAudience.Allied;
+		return mission.Agents.Count(agent => IsAmbientReactionCandidate(
+			agent,
+			action,
+			alliedAudience,
+			directAgentIndex,
+			focusAgentIndex));
 	}
 
 	private static bool EnsurePlunderOperationLedger(Mission mission)
@@ -10559,6 +10705,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				|| agent.State == AgentState.Killed || agent.State == AgentState.Unconscious
 				|| !IsRuntimeAlliedSoldierAgent(agent, character, hero))
 			{
+				return false;
+			}
+			TownDialogueRole dialogueRole = ResolveTownDialogueRole(agent, character, hero, isAlliedSoldier: true);
+			if (!TownDialogueAuthorityPolicy.MustObeyDirectPlayerCommand(dialogueRole, isAlliedSoldier: true))
+			{
+				GcczDiagnosticLog.Log("TownAction", "rejected non-soldier execution role=" + dialogueRole
+					+ " targetAgent=" + agent.Index);
 				return false;
 			}
 			bool alreadyRegistered = AlliedAgentIndexes.Contains(agent.Index);
@@ -15405,7 +15558,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static string StripSiegeTags(string text)
 	{
-		string stripped = SiegeActionTagCatalog.StripRecognizedTags(text);
+		string stripped = TownAmbientReactionTagCatalog.StripRecognizedTags(
+			SiegeActionTagCatalog.StripRecognizedTags(text));
 		return AnyCastleActionTagRegex.Replace(stripped, "").Trim();
 	}
 
@@ -15509,7 +15663,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		ActiveTownColonization.Reset();
 		_reliefChoiceApplied = false;
 		_inspirationLevelApplied = 0;
-		_soldierAppeasementCheckDone = false;
 		_soldierAppeasementRequired = false;
 		_soldierAppeasementApplied = false;
 		_soldierAppeasementMoralePenaltyApplied = false;

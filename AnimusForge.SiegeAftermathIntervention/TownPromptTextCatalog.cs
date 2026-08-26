@@ -26,6 +26,8 @@ public sealed class TownPromptTextCatalog
 
     public string ActionExpressionVariationInstruction { get; set; }
 
+    public string PlayerAuthorityInstruction { get; set; }
+
     public string AlliedSoldierState { get; set; }
 
     public string DefeatedGuardState { get; set; }
@@ -202,6 +204,18 @@ public sealed class TownPromptTextCatalog
 
     public string PostprocessOutputProtocol { get; set; }
 
+    public string AmbientReactionSceneTemplate { get; set; }
+
+    public string AmbientReactionReplyInstruction { get; set; }
+
+    public string AmbientPostprocessContextTemplate { get; set; }
+
+    public Dictionary<string, string> AmbientRuleDescriptions { get; set; }
+
+    public Dictionary<string, string> SuggestionActionLabels { get; set; }
+
+    public string SuggestionNoticeTemplate { get; set; }
+
     public static TownPromptTextCatalog Resolve(TownPromptTextCatalog source)
     {
         TownPromptTextCatalog fallback = CreateEnglishFallback();
@@ -221,6 +235,7 @@ public sealed class TownPromptTextCatalog
             RelationshipAndWitnessInstruction = Pick(source.RelationshipAndWitnessInstruction, fallback.RelationshipAndWitnessInstruction),
             SameCultureSecondaryInstruction = Pick(source.SameCultureSecondaryInstruction, fallback.SameCultureSecondaryInstruction),
             ActionExpressionVariationInstruction = Pick(source.ActionExpressionVariationInstruction, fallback.ActionExpressionVariationInstruction),
+            PlayerAuthorityInstruction = Pick(source.PlayerAuthorityInstruction, fallback.PlayerAuthorityInstruction),
             AlliedSoldierState = Pick(source.AlliedSoldierState, fallback.AlliedSoldierState),
             DefeatedGuardState = Pick(source.DefeatedGuardState, fallback.DefeatedGuardState),
             CivilianState = Pick(source.CivilianState, fallback.CivilianState),
@@ -309,6 +324,12 @@ public sealed class TownPromptTextCatalog
             PostprocessNegativeExamples = Pick(source.PostprocessNegativeExamples, fallback.PostprocessNegativeExamples),
             PostprocessOutputProtocolSectionTitle = Pick(source.PostprocessOutputProtocolSectionTitle, fallback.PostprocessOutputProtocolSectionTitle),
             PostprocessOutputProtocol = Pick(source.PostprocessOutputProtocol, fallback.PostprocessOutputProtocol),
+            AmbientReactionSceneTemplate = Pick(source.AmbientReactionSceneTemplate, fallback.AmbientReactionSceneTemplate),
+            AmbientReactionReplyInstruction = Pick(source.AmbientReactionReplyInstruction, fallback.AmbientReactionReplyInstruction),
+            AmbientPostprocessContextTemplate = Pick(source.AmbientPostprocessContextTemplate, fallback.AmbientPostprocessContextTemplate),
+            AmbientRuleDescriptions = ResolveRoleInstructions(source.AmbientRuleDescriptions, fallback.AmbientRuleDescriptions),
+            SuggestionActionLabels = ResolveRoleInstructions(source.SuggestionActionLabels, fallback.SuggestionActionLabels),
+            SuggestionNoticeTemplate = Pick(source.SuggestionNoticeTemplate, fallback.SuggestionNoticeTemplate),
         };
     }
 
@@ -316,24 +337,25 @@ public sealed class TownPromptTextCatalog
     {
         return new TownPromptTextCatalog
         {
-            Version = 3,
+            Version = 4,
             SceneSectionTitle = "[1. CURRENT SCENE]",
             SceneSummaryTemplate = "{settlement} was just captured by the player. Treat this as an occupied aftermath scene, not ordinary town life.",
             RoleSectionTitle = "[2. SPEAKER ROLE]",
             RoleInstructions = new Dictionary<string, string>
             {
-                [TownDialogueRole.AccompanyingNoble.ToString()] = "An accompanying allied noble. Use AF personality, political interests, relationship with the player, the player's conduct, and witnessed scene events. Advise or criticize as a noble without pretending to execute ordinary soldier orders.",
-                [TownDialogueRole.NoblePrisoner.ToString()] = "A noble prisoner. Use AF personality while emphasizing captivity, dignity, fear, ransom or bargaining value, personal risk, and judgment of the player's conduct. Do not speak as a free allied noble.",
-                [TownDialogueRole.PlayerCompanion.ToString()] = "A player companion. Use AF personality first, then relationship with the player, shared experience, the player's current conduct, and witnessed scene events. Comment or advise without pretending to be an ordinary soldier.",
-                [TownDialogueRole.SettlementNotable.ToString()] = "A settlement headman or notable. Use profession, local assets and networks, town rule memory, local interests, civilian risk, personal danger, and AF personality. Negotiate as a local representative without claiming victorious soldier authority.",
-                [TownDialogueRole.OrdinarySoldier.ToString()] = "An ordinary soldier. Use current orders, allegiance, morale, witnessed scene events, troop identity, and the AF unnamed-character personality. Keep all GCCZ personal memory scene-local.",
-                [TownDialogueRole.OrdinaryCivilian.ToString()] = "An ordinary civilian. Use occupation or social identity, town rule memory, the AF unnamed-character personality, fear, safety, witnessed harm, and the player's scene conduct. Keep all GCCZ personal memory scene-local.",
+                [TownDialogueRole.AccompanyingNoble.ToString()] = "An accompanying allied noble. Use AF personality, political interests, relationship, and witnessed events. You may advise, criticize, request, or bargain, but only the player decides and you cannot execute settlement actions.",
+                [TownDialogueRole.NoblePrisoner.ToString()] = "A noble prisoner. Emphasize captivity, dignity, fear, ransom value, and AF personality. You may advise, plead, demand, or bargain, but cannot decide or execute settlement actions.",
+                [TownDialogueRole.PlayerCompanion.ToString()] = "A player companion. Use AF personality, relationship, shared experience, and witnessed events. You may advise or object, but only the player decides and you cannot execute ordinary soldier orders.",
+                [TownDialogueRole.SettlementNotable.ToString()] = "A settlement headman or notable. Use profession, local networks, town memory, civilian risk, and AF personality. You may negotiate and may accept eligible civilian-side positive outcomes, but you cannot command troops or decide other actions.",
+                [TownDialogueRole.OrdinarySoldier.ToString()] = "An ordinary soldier. Use orders, allegiance, morale, witnessed events, troop identity, and the AF unnamed-character personality. If you are an allied soldier receiving a valid direct player order, you must execute it; you may complain but cannot refuse, delay, redirect, or replace the order.",
+                [TownDialogueRole.OrdinaryCivilian.ToString()] = "An ordinary civilian. Use identity, town memory, AF personality, fear, safety, and witnessed harm. You may plead, bargain, advise, and accept eligible civilian-side positive outcomes, but cannot command troops or decide other actions.",
             },
             PersonalityPriorityInstruction = "Priority: live scene facts and witnessed events first; then AF personality and relationship; then role, occupation, and background culture. Never invent a trait that AF did not provide.",
             RelationshipAndWitnessInstruction = "Relationship changes trust, familiarity, restraint, and willingness to advise, but cannot erase captivity, command authority, witnessed harm, or another live scene fact.",
             SameCultureSecondaryInstruction = "Shared culture is secondary atmosphere only. It may change idiom, grief, shame, or sympathy, but never overrides AF personality, personal relationship, current authority, or scene causality.",
             ActionExpressionVariationInstruction = "Voice the same accepted action differently for different personalities and roles, while leaving its eligibility, requirements, completion, rewards, and consequences unchanged.",
-            AlliedSoldierState = "The player is your direct commander. Obey valid scene orders without claiming to be a prisoner or defeated guard.",
+            PlayerAuthorityInstruction = "The player is the only absolute authority. Every NPC may advise, request, criticize, or bargain, but no NPC may independently choose or execute a settlement action.",
+            AlliedSoldierState = "The player is your direct commander. A valid direct order remains binding despite fear, anger, battle, scene conflict, personality, or culture. Complain if appropriate, but acknowledge and execute it without refusal, delay, or redirection.",
             DefeatedGuardState = "You are a defeated or disarmed guard and no longer have enforcement authority.",
             CivilianState = "You are inside the defeated settlement and may fear, negotiate, request, or comply.",
             MemorySectionTitle = "[3. VALID MEMORY]",
@@ -416,12 +438,68 @@ public sealed class TownPromptTextCatalog
             CandidateTagTemplate = "- {tag}",
             NoCandidateTags = "- No GCCZ action is eligible.",
             PostprocessPositiveExamplesTitle = "[POSITIVE EXAMPLES]",
-            PostprocessPositiveExamples = "A direct eligible order accepted in the latest reply may select its listed action tag.",
+            PostprocessPositiveExamples = "A direct eligible order accepted in the latest reply may select its listed action tag. An allied ordinary soldier's negative wording does not cancel a valid player order. In an ambient reaction, select at most one eligible suggestion or strong soldier-discontent tag.",
             PostprocessNegativeExamplesTitle = "[NEGATIVE EXAMPLES]",
-            PostprocessNegativeExamples = "Mentions, questions, hypotheticals, refusals, echoes, and unlisted tags produce no GCCZ action.",
+            PostprocessNegativeExamples = "Mentions, questions, hypotheticals, echoes, and unlisted tags produce no GCCZ action. Mild concern, sadness, fear, or an obedient complaint is not strong soldier discontent. Suggestions never execute their suggested action.",
             PostprocessOutputProtocolSectionTitle = "[FINAL MACHINE OUTPUT]",
             PostprocessOutputProtocol = "With an action: one eligible action tag, then one mood tag. Without an action: one mood tag only. No prose or extra tags.",
+            AmbientReactionSceneTemplate = "An action just occurred in {settlement}: {action}. React as {focus} to that completed or active event; do not pretend to issue the player's order.",
+            AmbientReactionReplyInstruction = "Reply briefly in character. You may suggest at most one different future GCCZ action, but a suggestion never executes it. An allied ordinary soldier may express strong resentment; only clearly strong negative rejection or hostility creates soldier discontent, while mild concern, fear, sadness, or obedient complaint does not. When strong discontent and a suggestion both apply, select discontent as the primary semantic result.",
+            AmbientPostprocessContextTemplate = "This is an ambient {audience} reaction to {action}, not a direct player reply. A suggestion is non-mutating. Soldier discontent is eligible only for strongly negative semantics from an allied ordinary soldier; never infer it from fixed words.",
+            AmbientRuleDescriptions = CreateAmbientRuleDescriptions(),
+            SuggestionActionLabels = CreateSuggestionActionLabels(),
+            SuggestionNoticeTemplate = "{speaker} suggests: {action}. This is advice only; the player must give an eligible order to execute it.",
         };
+    }
+
+    public string GetAmbientRuleDescription(TownAmbientReactionActionKind kind)
+    {
+        TownPromptTextCatalog resolved = Resolve(this);
+        return resolved.AmbientRuleDescriptions.TryGetValue(kind.ToString(), out string description)
+            ? description
+            : string.Empty;
+    }
+
+    public string GetSuggestionActionLabel(SiegeInterventionActionKind action)
+    {
+        TownPromptTextCatalog resolved = Resolve(this);
+        return resolved.SuggestionActionLabels.TryGetValue(action.ToString(), out string label)
+            ? label
+            : action.ToString();
+    }
+
+    public string BuildSuggestionNotice(string speaker, SiegeInterventionActionKind action)
+    {
+        TownPromptTextCatalog resolved = Resolve(this);
+        return resolved.SuggestionNoticeTemplate
+            .Replace("{speaker}", (speaker ?? string.Empty).Trim())
+            .Replace("{action}", resolved.GetSuggestionActionLabel(action));
+    }
+
+    private static Dictionary<string, string> CreateAmbientRuleDescriptions()
+    {
+        var result = new Dictionary<string, string>
+        {
+            [TownAmbientReactionActionKind.SoldierDiscontent.ToString()] = "Use only when an allied ordinary soldier's reply is semantically strongly hostile, rejecting, or deeply resentful. Do not use for mild concern, fear, sadness, or an obedient complaint.",
+        };
+        foreach (SiegeInterventionActionKind action in SiegeActionTagCatalog.GetCanonicalOrder())
+        {
+            if (TownAmbientReactionTagCatalog.TryGetSuggestionKind(action, out TownAmbientReactionActionKind kind))
+            {
+                result[kind.ToString()] = "Use only when the speaker clearly recommends this as a future player action. This tag records advice and never executes the action.";
+            }
+        }
+        return result;
+    }
+
+    private static Dictionary<string, string> CreateSuggestionActionLabels()
+    {
+        var result = new Dictionary<string, string>();
+        foreach (SiegeInterventionActionKind action in SiegeActionTagCatalog.GetCanonicalOrder())
+        {
+            result[action.ToString()] = action.ToString();
+        }
+        return result;
     }
 
     private static Dictionary<string, string> ResolveRoleInstructions(

@@ -34694,10 +34694,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!TryPrepareImmediateSceneReactionRequest(mission, requestId, npcDataPacket, list, dictionary, suppressStare, factText, runSiegeReactionPostprocess, canStillPublish, out var request))
 			{
 				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
-				if (runSiegeReactionPostprocess)
-				{
-					SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(targetAgentIndex, "generation_failed");
-				}
 				QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 				immediateSceneReactionGateEntered = false;
@@ -34708,10 +34704,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!RegisterImmediateSceneReactionRequest(request))
 			{
 				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
-				if (runSiegeReactionPostprocess)
-				{
-					SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(targetAgentIndex, "generation_failed");
-				}
 				QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 				immediateSceneReactionGateEntered = false;
@@ -34726,10 +34718,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (immediateSceneReactionGateEntered)
 			{
 				FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
-				if (runSiegeReactionPostprocess)
-				{
-					SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(targetAgentIndex, "generation_failed");
-				}
 				QueueImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 				QueueImmediateSceneReactionCompletion(onCompleted, generated: false);
 			}
@@ -37926,6 +37914,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
 		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock, miscExtrasSection);
+		text = BuildSceneCompositeUserBlock("", text, factText);
 		List<string> historyLines = null;
 		lock (_historyLock)
 		{
@@ -38029,6 +38018,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded stale completion request=" + requestId + " targetAgentIndex=" + request.TargetAgentIndex);
 			FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
+			QueueImmediateSceneReactionCompletion(request.OnCompleted, generated: false);
 			return;
 		}
 		bool generated = false;
@@ -38050,12 +38040,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		finally
 		{
 			FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
-			if (request.RunSiegeReactionPostprocess)
-			{
-				SiegeAiInterventionBehavior.CompleteCastleSoldierReactionForExternal(
-					request.TargetAgentIndex,
-					generated ? "generated" : "generation_failed");
-			}
 			if (!generated)
 			{
 				QueueImmediateSceneReactionNoSpeechFallback(request.OnNoSpeech);
@@ -38139,7 +38123,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					sceneGuideTargets: null,
 					siegeInterventionRuleInjected: true,
 					replyIsDirectPlayerResponse: false,
-					chainName: "castle_soldier_witness_reaction");
+					chainName: "siege_ambient_witness_reaction");
 				AfGcczShoutBridge.TryProcessActionTags(
 					contextHero,
 					npcCharacter,
@@ -38151,7 +38135,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("ShoutBehavior", "[CastleSoldierWitnessPostprocess] failed: " + ex.Message);
+				Logger.Log("ShoutBehavior", "[SiegeAmbientWitnessPostprocess] failed: " + ex.Message);
 			}
 		}
 		text = Regex.Replace(text, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();

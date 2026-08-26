@@ -361,6 +361,23 @@ foreach ($runtimeFile in Get-ChildItem -LiteralPath $FusedRoot -File -Filter "Si
 $missionEndFinallyPattern = 'private\s+void\s+OnMissionEnded\s*\([^)]*\)\s*\{.*?finally\s*\{.*?EndInterventionSceneScope\("mission_ended"\)'
 Assert-Condition ([System.Text.RegularExpressions.Regex]::IsMatch($mainRuntimeText, $missionEndFinallyPattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)) "OnMissionEnded must clear GCCZ scene scope from a finally block."
 
+$townAuthorityAndReactionEvidence = @(
+    'TownDialogueAuthorityPolicy.CanEmitPositiveSettlementOutcome(',
+    'TownDialogueAuthorityPolicy.MustObeyDirectPlayerCommand(',
+    'TownAmbientReactionContextProfile.BuildAudienceEventId(baseEventId, TownAmbientReactionAudience.Civilian)',
+    'TownAmbientReactionContextProfile.BuildAudienceEventId(baseEventId, TownAmbientReactionAudience.Allied)',
+    'TownPromptComposer.BuildAmbientReactionFact(',
+    'runSiegeReactionPostprocess: true',
+    'RegisterTownSoldierDiscontent('
+)
+foreach ($snippet in $townAuthorityAndReactionEvidence) {
+    Assert-Condition ($mainRuntimeText.Contains($snippet)) "Missing town authority or semantic reaction evidence: $snippet"
+}
+Assert-Condition (-not $mainRuntimeText.Contains('MaybeTriggerSoldierAppeasementNeed')) "Random town appeasement trigger path must not remain."
+Assert-Condition (-not $mainRuntimeText.Contains('ForceTriggerSoldierAppeasementNeed')) "Forced legacy town appeasement trigger path must not remain."
+$shoutBehaviorText = [System.IO.File]::ReadAllText((Join-Path $FusedRoot 'ShoutBehavior.cs'))
+Assert-Condition (-not $shoutBehaviorText.Contains('CompleteCastleSoldierReactionForExternal')) "Generic immediate-reaction completion must not hardcode castle cleanup."
+
 # --- SETS urban-capture legacy contract (Slice A snapshot; handoff 2026-08-25) ---
 $setsBehaviorPath = Join-Path $FusedRoot "SettlementEntryTroopSelectionBehavior.cs"
 Assert-Condition (Test-Path -LiteralPath $setsBehaviorPath -PathType Leaf) "Missing SETS behavior file: $setsBehaviorPath"
@@ -434,4 +451,6 @@ Write-Output "Direct aftermath  : one explicit flow state and adapter"
 Write-Output "Encounter finish  : one explicit completion state"
 Write-Output "Scene control     : one mission-scoped state"
 Write-Output "Event lifecycle   : campaign-owned listeners and mission-finally cleanup"
+Write-Output "Town authority    : player-only decisions and allied ordinary-soldier execution"
+Write-Output "Town reactions    : independent side budgets, semantic discontent, non-mutating suggestions"
 Write-Output "SETS contract     : frozen limits, entry patch, exit block, ownership route, reflection fields"
