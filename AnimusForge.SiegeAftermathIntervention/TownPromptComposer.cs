@@ -25,31 +25,10 @@ public static class TownPromptComposer
             text.SceneSectionTitle,
             ApplyTemplate(text.SceneSummaryTemplate, "settlement", NormalizeSettlementName(facts.SettlementName)));
 
-        string roleInstruction = text.RoleInstructions.TryGetValue(role.ToString(), out string configuredRoleInstruction)
-            ? configuredRoleInstruction
-            : text.RoleInstructions[TownDialogueRoleClassifier.SafeFallbackRole.ToString()];
-        var roleLines = new List<string>
-        {
-            TownDialogueRoleContextProfile.Build(role),
-            roleInstruction,
-            text.PersonalityPriorityInstruction,
-            text.RelationshipAndWitnessInstruction,
-            text.SameCultureSecondaryInstruction,
-            text.ActionExpressionVariationInstruction,
-        };
-        if (facts.IsAlliedSoldier)
-        {
-            roleLines.Add(text.AlliedSoldierState);
-        }
-        else if (facts.IsGuardOrSoldier)
-        {
-            roleLines.Add(text.DefeatedGuardState);
-        }
-        else if (facts.IsCivilian)
-        {
-            roleLines.Add(text.CivilianState);
-        }
-        AppendSection(prompt, text.RoleSectionTitle, roleLines);
+        AppendSection(
+            prompt,
+            text.RoleSectionTitle,
+            BuildRoleContextLines(role, facts.IsAlliedSoldier, facts.IsGuardOrSoldier, facts.IsCivilian, text));
 
         var memoryLines = new List<string>
         {
@@ -114,6 +93,50 @@ public static class TownPromptComposer
         return prompt.ToString().Trim();
     }
 
+    public static string BuildRoleContext(
+        TownDialogueRole role,
+        bool isAlliedSoldier,
+        bool isGuardOrSoldier,
+        bool isCivilian,
+        TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        return string.Join(
+            Environment.NewLine,
+            BuildRoleContextLines(role, isAlliedSoldier, isGuardOrSoldier, isCivilian, text));
+    }
+
+    public static string BuildAmbientReactionFact(
+        SiegeInterventionActionKind action,
+        TownDialogueRole role,
+        bool isAlliedSoldier,
+        bool isGuardOrSoldier,
+        bool isCivilian,
+        string settlementName,
+        string speakerFocus,
+        TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        TownAmbientReactionAudience audience = TownDialogueAuthorityPolicy.ResolveAmbientAudience(role, isAlliedSoldier);
+        if (audience == TownAmbientReactionAudience.None)
+        {
+            return string.Empty;
+        }
+
+        string scene = ApplyTemplate(text.AmbientReactionSceneTemplate, "settlement", NormalizeSettlementName(settlementName));
+        scene = ApplyTemplate(scene, "action", text.GetSuggestionActionLabel(action));
+        scene = ApplyTemplate(scene, "focus", string.IsNullOrWhiteSpace(speakerFocus) ? role.ToString() : speakerFocus.Trim());
+        return string.Join(
+            Environment.NewLine,
+            new[]
+            {
+                TownAmbientReactionContextProfile.BuildMarker(action, audience),
+                scene,
+                BuildRoleContext(role, isAlliedSoldier, isGuardOrSoldier, isCivilian, text),
+                text.AmbientReactionReplyInstruction,
+            });
+    }
+
     public static string BuildPostprocessContext(
         SiegePostprocessContextFacts facts,
         TownPromptTextCatalog textCatalog)
@@ -154,6 +177,12 @@ public static class TownPromptComposer
             prompt,
             text.StateSectionTitle,
             new[] { state, text.PostprocessSharedReliefRule, text.PostprocessTransitionRule });
+        if (facts.IsAmbientReaction)
+        {
+            string ambient = ApplyTemplate(text.AmbientPostprocessContextTemplate, "audience", facts.AmbientReactionAudience.ToString());
+            ambient = ApplyTemplate(ambient, "action", text.GetSuggestionActionLabel(facts.AmbientReactionToAction));
+            AppendSection(prompt, text.ReplyRequirementsSectionTitle, ambient);
+        }
         return prompt.ToString().Trim();
     }
 
@@ -333,6 +362,42 @@ public static class TownPromptComposer
     private static void AppendSection(StringBuilder prompt, string title, string content)
     {
         AppendSection(prompt, title, new[] { content });
+    }
+
+    private static IReadOnlyList<string> BuildRoleContextLines(
+        TownDialogueRole role,
+        bool isAlliedSoldier,
+        bool isGuardOrSoldier,
+        bool isCivilian,
+        TownPromptTextCatalog text)
+    {
+        role = TownDialogueRoleClassifier.NormalizeForRuntime(role);
+        string roleInstruction = text.RoleInstructions.TryGetValue(role.ToString(), out string configuredRoleInstruction)
+            ? configuredRoleInstruction
+            : text.RoleInstructions[TownDialogueRoleClassifier.SafeFallbackRole.ToString()];
+        var roleLines = new List<string>
+        {
+            TownDialogueRoleContextProfile.Build(role),
+            roleInstruction,
+            text.PlayerAuthorityInstruction,
+            text.PersonalityPriorityInstruction,
+            text.RelationshipAndWitnessInstruction,
+            text.SameCultureSecondaryInstruction,
+            text.ActionExpressionVariationInstruction,
+        };
+        if (isAlliedSoldier)
+        {
+            roleLines.Add(text.AlliedSoldierState);
+        }
+        else if (isGuardOrSoldier)
+        {
+            roleLines.Add(text.DefeatedGuardState);
+        }
+        else if (isCivilian)
+        {
+            roleLines.Add(text.CivilianState);
+        }
+        return roleLines;
     }
 
     private static void AppendSection(StringBuilder prompt, string title, IEnumerable<string> lines)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AnimusForge.SiegeAftermathIntervention;
@@ -18,6 +19,26 @@ public static class SiegePostprocessRuleFilter
             return false;
         }
 
+        IReadOnlyList<TownAmbientReactionActionKind> ambientKinds = TownAmbientReactionTagCatalog.ExtractKinds(tag.Trim());
+        if (ambientKinds.Count > 0)
+        {
+            if (!facts.IsAmbientReaction || facts.ReplyIsDirectPlayerResponse || ambientKinds.Count != 1)
+            {
+                return false;
+            }
+
+            TownAmbientReactionActionKind ambientKind = ambientKinds[0];
+            if (ambientKind == TownAmbientReactionActionKind.SoldierDiscontent)
+            {
+                return TownDialogueAuthorityPolicy.CanExpressSoldierDiscontent(facts.DialogueRole, facts.IsAlliedSoldier);
+            }
+
+            return TownDialogueAuthorityPolicy.CanOfferSuggestion(facts.DialogueRole, facts.IsAlliedSoldier)
+                && TownAmbientReactionTagCatalog.TryGetSuggestedAction(ambientKind, out SiegeInterventionActionKind suggestedAction)
+                && suggestedAction != facts.AmbientReactionToAction
+                && TownAmbientReactionRuleCatalog.IsSuggestionAvailable(suggestedAction, facts);
+        }
+
         var kinds = SiegeActionTagCatalog.ExtractKinds(tag.Trim());
         if (kinds.Count == 0)
         {
@@ -33,6 +54,18 @@ public static class SiegePostprocessRuleFilter
         if (facts.DestructiveLocked && mercyTrackTag)
         {
             return false;
+        }
+
+        foreach (SiegeInterventionActionKind kind in kinds)
+        {
+            if (SiegeInterventionActionRules.IsMercyTrack(kind)
+                && !TownDialogueAuthorityPolicy.CanEmitPositiveSettlementOutcome(
+                    facts.DialogueRole,
+                    facts.IsAlliedSoldier,
+                    kind))
+            {
+                return false;
+            }
         }
 
         bool stopMassacreTag = kinds.Contains(SiegeInterventionActionKind.StopMassacre);

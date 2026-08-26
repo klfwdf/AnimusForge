@@ -237,6 +237,19 @@
 - [x] 诊断日志只记录事件标识、配置上限、允许/拒绝数量和拒绝原因，不记录完整提示词或玩家原文。
 - [x] 回归测试覆盖有限 1/N、无限、零对象、重复说话者、重复标签、重复命中、回应不再触发回应、队列上限、退出重置和非 GCCZ 隔离。
 
+### 4.15 Player authority, two-sided reactions, and semantic soldier discontent
+
+- [x] The player is the only absolute settlement authority. NPC roles may advise, request, object, or bargain, but suggestions never mutate state.
+- [x] A valid direct player order to an allied ordinary soldier remains executable regardless of complaint, personality, culture, combat, or scene conflict. Companions and nobles cannot impersonate the executing soldier role.
+- [x] Mercy may be accepted by either side. Relief, Inspire, and RallyOath positive outcomes are restricted to settlement notables/headmen and ordinary civilians.
+- [x] All six town dialogue roles receive role-specific authority instructions and may emit one eligible non-mutating suggestion after witnessing an action.
+- [x] Every handled town action opens independent allied-side and civilian-side response budgets. Each side receives up to the MCM response limit; unlimited mode still preserves one speaker per event, queue limits, deduplication, and exit cleanup.
+- [x] The former random town morale roll is removed. Only a semantically strong hostile, rejecting, or deeply resentful allied ordinary-soldier reaction may emit the soldier-discontent tag.
+- [x] Mild concern, sadness, fear, or an obedient complaint does not create soldier discontent. No dialogue keyword matcher is used.
+- [x] The first pending discontent opens the existing 20-morale appeasement consequence without stacking. Appeasement before scene exit prevents the penalty; a later distinct strongly negative event may reopen one pending consequence.
+- [x] Core tests cover role authority, positive-action speaker eligibility, ambient tag parsing, suggestion non-mutation, discontent eligibility, independent per-side MCM budgets, and localized prompt composition.
+- [ ] In-game validation: verify natural six-role suggestions, two-sided response counts, strong-versus-mild soldier sentiment, appeasement, and one-time exit morale settlement with the configured model.
+
 ## 5. 代码隔离与重构结构
 
 - [x] GCCZ 主体保持单一事实源，NEW-10 不复制第二套业务规则。

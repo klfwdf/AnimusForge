@@ -16,7 +16,10 @@ public readonly struct SiegePostprocessContextFacts
         bool replyIsDirectPlayerResponse,
         string sharedReliefPoolDescription,
         string civilianGatherContext,
-        string interventionMemoryContext)
+        string interventionMemoryContext,
+        bool isAmbientReaction = false,
+        SiegeInterventionActionKind ambientReactionToAction = SiegeInterventionActionKind.Unknown,
+        TownAmbientReactionAudience ambientReactionAudience = TownAmbientReactionAudience.None)
     {
         SettlementName = settlementName ?? string.Empty;
         CurrentOutcome = currentOutcome ?? string.Empty;
@@ -29,6 +32,9 @@ public readonly struct SiegePostprocessContextFacts
         SharedReliefPoolDescription = sharedReliefPoolDescription ?? string.Empty;
         CivilianGatherContext = civilianGatherContext ?? string.Empty;
         InterventionMemoryContext = interventionMemoryContext ?? string.Empty;
+        IsAmbientReaction = isAmbientReaction;
+        AmbientReactionToAction = ambientReactionToAction;
+        AmbientReactionAudience = ambientReactionAudience;
     }
 
     public string SettlementName { get; }
@@ -52,4 +58,10 @@ public readonly struct SiegePostprocessContextFacts
     public string CivilianGatherContext { get; }
 
     public string InterventionMemoryContext { get; }
+
+    public bool IsAmbientReaction { get; }
+
+    public SiegeInterventionActionKind AmbientReactionToAction { get; }
+
+    public TownAmbientReactionAudience AmbientReactionAudience { get; }
 }
