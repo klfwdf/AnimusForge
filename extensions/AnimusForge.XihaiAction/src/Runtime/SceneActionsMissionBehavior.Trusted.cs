@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SceneActions.Core;
 using TaleWorlds.MountAndBlade;
@@ -173,14 +174,35 @@ namespace AnimusForge.XihaiAction
                 ExpiresAtMissionTime = request.SubmittedAtMissionTime +
                     (SceneActionsRuntimeHost.Settings.RequestTtlMs / 1000d)
             };
+            IReadOnlyList<string> actionIds = selected.Variant.ActionIds;
+            if (string.Equals(
+                    request.DiagnosticSource,
+                    "battle-speech-audience",
+                    StringComparison.Ordinal) &&
+                string.Equals(
+                    request.IntentKey,
+                    SceneActionFrameworkV4.Cheer,
+                    StringComparison.Ordinal))
+            {
+                string[] standardCheerActions = actionIds
+                    .Where(actionId => actionId != null &&
+                                       actionId.StartsWith(
+                                           "act_cheer_",
+                                           StringComparison.Ordinal))
+                    .ToArray();
+                if (standardCheerActions.Length > 0)
+                {
+                    actionIds = standardCheerActions;
+                }
+            }
             int variantIndex = selected.Definition.Mode == ActionMode.RandomGroup
                 ? DeterministicSelector.PickIndex(
                     request.RequestId.ToString("N"),
                     handle.StableId,
                     0,
-                    selected.Variant.ActionIds.Count)
+                    actionIds.Count)
                 : 0;
-            plan.FrozenActionId = selected.Variant.ActionIds[variantIndex];
+            plan.FrozenActionId = actionIds[variantIndex];
             if (!_scheduler.TryEnqueue(now, plan, out long sequence))
             {
                 FinishPlan(plan, ExecutionResultCode.QueueFull, "Trusted scheduler enqueue failed.");

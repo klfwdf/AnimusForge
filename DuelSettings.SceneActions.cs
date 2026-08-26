@@ -46,16 +46,16 @@ public partial class DuelSettings
 	public bool TKeyBattleSpeechEnabled { get; set; } = true;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_ReplyMin}演讲正文最少字数",
+		"{=SAX_MCM_ReplyMin}演讲正文建议最少字数",
 		6, 160, "0", Order = 2, RequireRestart = false,
-		HintText = "{=SAX_MCM_ReplyMin_Hint}限制 AF 生成的阵前演讲正文长度；实际显示与生成使用同一份快照。必须不大于最多字数。")]
+		HintText = "{=SAX_MCM_ReplyMin_Hint}给 AF 的正文长度建议下限；略短的合法正文仍会原样使用，不会因此回退。必须不大于建议最多字数。")]
 	[SettingPropertyGroup(SceneActionsSpeechGroup)]
 	public int ReplyMinimumChars { get; set; } = 60;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_ReplyMax}演讲正文最多字数",
+		"{=SAX_MCM_ReplyMax}演讲正文建议最多字数",
 		6, 160, "0", Order = 3, RequireRestart = false,
-		HintText = "{=SAX_MCM_ReplyMax_Hint}限制 AF 生成的阵前演讲正文长度；超过此上限的结果会被拒绝并按失败关闭处理。")]
+		HintText = "{=SAX_MCM_ReplyMax_Hint}给 AF 的正文长度建议上限；超过建议的合法正文仍会原样使用，不截断、不回退。")]
 	[SettingPropertyGroup(SceneActionsSpeechGroup)]
 	public int ReplyMaximumChars { get; set; } = 160;
 
@@ -64,7 +64,7 @@ public partial class DuelSettings
 		Order = 0,
 		RequireRestart = false,
 		IsToggle = true,
-		HintText = "{=SAX_MCM_NpcPositioning_Hint}NPC 演讲时先走到己方阵线前方并转向士兵；关闭后保留原地演讲，不使用脚本移动。")]
+		HintText = "{=SAX_MCM_NpcPositioning_Hint}NPC 演讲时只走到己方阵线前方；不会强制改变步行者、骑手或坐骑的自然朝向。关闭后保留原地演讲，不使用脚本移动。")]
 	[SettingPropertyGroup(SceneActionsStageGroup, GroupOrder = 182)]
 	public bool NpcPositioningEnabled { get; set; } = true;
 
@@ -142,18 +142,11 @@ public partial class DuelSettings
 	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup)]
 	public int AudienceVoiceCount { get; set; } = 22;
 
-	[SettingPropertyInteger(
-		"{=SAX_MCM_VoiceWave}每波战吼人数",
-		1, 8, "0", Order = 2, RequireRestart = false,
-		HintText = "{=SAX_MCM_VoiceWave_Hint}每一波同时触发的原生战吼人数；越小越自然，也越分散性能峰值。")]
-	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup)]
+	// Legacy profile fields retained for compatibility. Battle cries now fire
+	// on the same actor and Tick as each cheer cue, so visual wave scheduling
+	// owns batching and cadence.
 	public int AudienceVoiceWaveSize { get; set; } = 3;
 
-	[SettingPropertyFloatingInteger(
-		"{=SAX_MCM_VoiceInterval}战吼波次间隔",
-		0.05f, 1f, "0.00 s", Order = 3, RequireRestart = false,
-		HintText = "{=SAX_MCM_VoiceInterval_Hint}战吼批次之间的间隔；不影响士兵文字回应的随机间隔。")]
-	[SettingPropertyGroup(SceneActionsAudienceVoiceGroup)]
 	public float AudienceVoiceWaveIntervalSeconds { get; set; } = 0.18f;
 
 	[SettingPropertyBool(
@@ -185,16 +178,16 @@ public partial class DuelSettings
 	public int MaximumAudienceReplySubmissionsPerTick { get; set; } = 8;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_AudienceReplyMinimumChars}士兵回应最少字数",
+		"{=SAX_MCM_AudienceReplyMinimumChars}士兵回应建议最少字数",
 		4, 80, "0", Order = 4, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyMinimumChars_Hint}每条士兵文字回应的最少字数；只影响回应生成与显示，不影响演讲正文。")]
+		HintText = "{=SAX_MCM_AudienceReplyMinimumChars_Hint}给 AF 的单条士兵回应长度建议下限；略短的合法回应仍会原样显示。")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int AudienceReplyMinimumChars { get; set; } = 8;
 
 	[SettingPropertyInteger(
-		"{=SAX_MCM_AudienceReplyMaximumChars}士兵回应最多字数",
+		"{=SAX_MCM_AudienceReplyMaximumChars}士兵回应建议最多字数",
 		4, 80, "0", Order = 5, RequireRestart = false,
-		HintText = "{=SAX_MCM_AudienceReplyMaximumChars_Hint}每条士兵文字回应的最多字数；建议保持简短，避免多人同时显示造成阅读和性能压力。")]
+		HintText = "{=SAX_MCM_AudienceReplyMaximumChars_Hint}给 AF 的单条士兵回应长度建议上限；超过建议的合法回应仍会原样显示。建议保持简短，避免多人同时显示造成阅读压力。")]
 	[SettingPropertyGroup(SceneActionsAudienceReplyGroup)]
 	public int AudienceReplyMaximumChars { get; set; } = 24;
 

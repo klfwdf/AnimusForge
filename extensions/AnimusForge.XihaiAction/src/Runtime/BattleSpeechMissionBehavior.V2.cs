@@ -17,9 +17,6 @@ namespace AnimusForge.XihaiAction
         private const double MovementReassertIntervalSeconds = 0.25d;
         private const double MovementStallReassertDelaySeconds = 1.25d;
         private const float MovementProgressEpsilonMeters = 0.08f;
-        private const float FacingCorrectionDotThreshold = 0.94f;
-        private const float FacingRefreshDotThreshold = 0.985f;
-        private const double FacingRefreshIntervalSeconds = 1.0d;
         private const double PlanClassificationPlaybackBudgetSeconds = 1d;
 
         private readonly ConcurrentQueue<BattleSpeechTriggerCompletionV2>
@@ -300,11 +297,15 @@ namespace AnimusForge.XihaiAction
                         BattleSpeechRuntimeHost.StageSettings.AudienceRepliesEnabled,
                         BattleSpeechRuntimeHost.StageSettings.AudienceReplyCount,
                         session.Audience?.Length ?? 0);
-                    bool modelRepliesMatchFrozenCount =
-                        decision.AudienceReplies.Count == maximumReplies;
-                    if (modelRepliesMatchFrozenCount && maximumReplies > 0)
+                    int acceptedModelReplyCount = Math.Min(
+                        maximumReplies,
+                        decision.AudienceReplies.Count);
+                    bool modelRepliesAccepted = maximumReplies == 0 ||
+                                                acceptedModelReplyCount > 0;
+                    if (acceptedModelReplyCount > 0)
                     {
                         session.AudienceReplies = decision.AudienceReplies
+                            .Take(acceptedModelReplyCount)
                             .ToArray();
                     }
                     session.Tactic = BattleSpeechTacticV2.None;
@@ -314,7 +315,7 @@ namespace AnimusForge.XihaiAction
                         " Actions=" + (session.ActionProgram?.ProtocolExpression ?? "NONE") +
                         " Tactic=" + session.Tactic +
                         " AudienceReplies=" + session.AudienceReplies.Length +
-                        (modelRepliesMatchFrozenCount ? " Source=AF" : " Source=LocalFallback"));
+                        (modelRepliesAccepted ? " Source=AF" : " Source=LocalFallback"));
                 }
                 else
                 {
@@ -425,16 +426,12 @@ namespace AnimusForge.XihaiAction
                 !BattleSpeechRuntimeHost.StageSettings.NpcPositioningEnabled ||
                 !TryBuildSpeechLine(
                     session.Speaker,
-                    out Vec3 center,
-                    out Vec2 lineDirection,
-                    out Vec2 audienceFacing))
+                    out Vec3 center))
             {
                 session.ReachedSpeechLine = true;
                 return;
             }
             session.SpeechLineCenter = center;
-            session.SpeechLineDirection = lineDirection;
-            session.AudienceFacingDirection = audienceFacing;
             session.MovementStartPosition = session.Speaker.Position;
             session.LastMovementProgressPosition = session.Speaker.Position;
             session.LastMovementProgressMissionTime = Mission.CurrentTime;
@@ -442,7 +439,7 @@ namespace AnimusForge.XihaiAction
                 BattleSpeechRuntimeHost.StageSettings.MovementTimeoutSeconds;
             session.NextMovementReassertMissionTime = Mission.CurrentTime +
                 MovementReassertIntervalSeconds;
-            if (TrySetScriptedSpeechPosition(session, center, faceAudience: false))
+            if (TrySetScriptedSpeechPosition(session, center))
             {
                 session.ScriptedMovementOwned = true;
                 SceneActionsLog.Info(
@@ -470,9 +467,11 @@ namespace AnimusForge.XihaiAction
             // presentation, battle cries and Advance; do not keep polling
             // the shared proximity cache for the remainder of this session.
             if (!session.CombatSpeechMode &&
-                (IsSpeakerInCombatAction(session.Speaker) ||
+                (BattleSpeechEnemyProximityCache.IsCombatStarted(Mission) ||
+                 IsSpeakerInCombatAction(session.Speaker) ||
                  HasNearbyEnemyThrottled(session.Speaker)))
             {
+                BattleSpeechEnemyProximityCache.MarkCombatStarted(Mission);
                 EnterCombatSpeechMode(session);
             }
             if (session.SpeakerKind != BattleSpeechSpeakerKindV1.Npc)
@@ -507,8 +506,7 @@ namespace AnimusForge.XihaiAction
                                 MovementReassertIntervalSeconds;
                         if (TrySetScriptedSpeechPosition(
                                 session,
-                                session.SpeechLineCenter,
-                                faceAudience: false))
+                                session.SpeechLineCenter))
                             {
                                 session.MovementReassertCount++;
                                 session.LastMovementProgressMissionTime = now;
@@ -521,8 +519,6 @@ namespace AnimusForge.XihaiAction
                 {
                     AnchorTimedOutSpeakerAtCurrentPosition(session);
                 }
-                RefreshAudienceFacing(session, now, true);
-                TryAnchorSpeakerFacing(session, session.Speaker.Position);
                 if (session.PlanClassificationPending &&
                     session.PlanClassificationPlaybackDeadlineMissionTime <= 0d)
                 {
@@ -560,10 +556,6 @@ namespace AnimusForge.XihaiAction
             {
                 return false;
             }
-            if (session.State == BattleSpeechSessionStateV1.Speaking)
-            {
-                RefreshAudienceFacing(session, now, false);
-            }
             return true;
         }
 
@@ -584,6 +576,13 @@ namespace AnimusForge.XihaiAction
             {
                 return true;
             }
+            if (session.CombatSpeechMode)
+            {
+                // Combat speech is a text-only channel: retain the NPC bubble,
+                // but do not start AF TTS/lip-sync while the battle is active.
+                deferred.AllowTts = false;
+                deferred.AttachTtsToSceneAgent = false;
+            }
             session.DeferredReplayRequested = true;
             if (!AfCompatV130.TryReplayDeferredReply(deferred, out string error))
             {
@@ -598,112 +597,11 @@ namespace AnimusForge.XihaiAction
             return true;
         }
 
-        private void RefreshAudienceFacing(
-            ActiveBattleSpeechSessionV1 session,
-            double now,
-            bool force)
-        {
-            const double refreshIntervalSeconds = FacingRefreshIntervalSeconds;
-            if (session.AudienceFacingRefreshFailed ||
-                (!force && now < session.NextAudienceFacingRefreshMissionTime))
-            {
-                return;
-            }
-            session.NextAudienceFacingRefreshMissionTime = now + refreshIntervalSeconds;
-
-            Agent[] audience = session.Audience;
-            if (audience == null || audience.Length == 0)
-            {
-                return;
-            }
-            float x = 0f;
-            float y = 0f;
-            int count = 0;
-            foreach (Agent soldier in audience)
-            {
-                if (soldier == null || !soldier.IsActive() ||
-                    !ReferenceEquals(soldier.Mission, Mission))
-                {
-                    continue;
-                }
-                x += soldier.Position.x;
-                y += soldier.Position.y;
-                count++;
-            }
-            if (count == 0)
-            {
-                return;
-            }
-
-            Vec2 facing = new Vec2(
-                (x / count) - session.Speaker.Position.x,
-                (y / count) - session.Speaker.Position.y);
-            if (facing.LengthSquared < 0.01f)
-            {
-                return;
-            }
-            Vec2 desiredFacing = facing.Normalized();
-            session.AudienceFacingDirection = desiredFacing;
-            Vec2 currentFacing = session.Speaker.LookDirection.AsVec2;
-            bool currentFacingAligned = currentFacing.LengthSquared > 0.01f &&
-                Vec2.DotProduct(currentFacing.Normalized(), desiredFacing) >=
-                FacingCorrectionDotThreshold;
-            bool desiredFacingChanged = !session.HasAppliedAudienceFacing ||
-                Vec2.DotProduct(
-                    session.LastAppliedAudienceFacingDirection,
-                    desiredFacing) < FacingRefreshDotThreshold;
-            if (currentFacingAligned && !desiredFacingChanged)
-            {
-                return;
-            }
-            try
-            {
-                ApplySpeakerAndMountFacing(session);
-                session.LastAppliedAudienceFacingDirection = desiredFacing;
-                session.HasAppliedAudienceFacing = true;
-            }
-            catch (Exception ex)
-            {
-                session.AudienceFacingRefreshFailed = true;
-                SceneActionsLog.Error(
-                    "BATTLE_SPEECH_STAGE",
-                    "Unable to keep the speaker facing the audience.",
-                    ex);
-            }
-        }
-
-        private void TryAnchorSpeakerFacing(
-            ActiveBattleSpeechSessionV1 session,
-            Vec3 position)
-        {
-            if (!session.ScriptedMovementOwned)
-            {
-                return;
-            }
-            if (!session.SpeechLineFacingAnchored &&
-                TrySetScriptedSpeechPosition(session, position, faceAudience: true))
-            {
-                session.SpeechLineFacingAnchored = true;
-            }
-            // The movement target is installed once when the speaker arrives.
-            // Never reinstall it while speaking: repeated scripted-position
-            // refreshes make mounted agents visibly blink and restart movement.
-            RefreshAudienceFacing(session, Mission.CurrentTime, true);
-            SceneActionsLog.Info(
-                "BATTLE_SPEECH_STAGE",
-                "Session=" + session.SessionId.ToString("N") +
-                " State=FacingAudience Direction=" + session.AudienceFacingDirection);
-        }
-
         private bool TryBuildSpeechLine(
             Agent speaker,
-            out Vec3 center,
-            out Vec2 lineDirection,
-            out Vec2 audienceFacing)
+            out Vec3 center)
         {
             center = speaker?.Position ?? Vec3.Zero;
-            lineDirection = Vec2.Side;
-            audienceFacing = Vec2.Forward;
             Agent[] soldiers = Mission.PlayerTeam?.ActiveAgents
                 .Where(agent => agent != null && agent.IsActive() && agent.IsHuman &&
                                 !ReferenceEquals(agent, speaker))
@@ -753,11 +651,6 @@ namespace AnimusForge.XihaiAction
             {
                 return false;
             }
-            lineDirection = new Vec2(-forward.y, forward.x).Normalized();
-            Vec2 towardAudience = centroid - center.AsVec2;
-            audienceFacing = towardAudience.LengthSquared > 0.01f
-                ? towardAudience.Normalized()
-                : -forward;
             return true;
         }
 
@@ -783,8 +676,7 @@ namespace AnimusForge.XihaiAction
 
         private bool TrySetScriptedSpeechPosition(
             ActiveBattleSpeechSessionV1 session,
-            Vec3 target,
-            bool faceAudience)
+            Vec3 target)
         {
             try
             {
@@ -798,26 +690,10 @@ namespace AnimusForge.XihaiAction
                     session.Speaker.SetIsAIPaused(false);
                     session.SpeakerAiPauseChanged = true;
                 }
-                // Clear a combat AI target before installing our scripted frame.
-                // Otherwise the engine can reacquire the enemy between ticks and
-                // turn the speaker away from the frozen audience.
-                session.Speaker.ClearTargetFrame();
-                session.Speaker.SetLookAgent(null);
                 session.Speaker.SetMaximumSpeedLimit(-1f, isMultiplier: false);
-                Vec2 scriptedFacing = session.AudienceFacingDirection;
-                if (!faceAudience)
-                {
-                    Vec2 travelDirection = target.AsVec2 -
-                                           session.Speaker.Position.AsVec2;
-                    if (travelDirection.LengthSquared > 0.01f)
-                    {
-                        scriptedFacing = travelDirection.Normalized();
-                    }
-                }
                 WorldPosition position = new WorldPosition(Mission.Scene, target);
-                session.Speaker.SetScriptedPositionAndDirection(
+                session.Speaker.SetScriptedPosition(
                     ref position,
-                    scriptedFacing.RotationInRadians,
                     addHumanLikeDelay: false,
                     Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
                 return true;
@@ -841,13 +717,9 @@ namespace AnimusForge.XihaiAction
                 current = projected;
             }
             session.SpeechLineCenter = current;
-            if (!TrySetScriptedSpeechPosition(session, current, faceAudience: true))
+            if (!TrySetScriptedSpeechPosition(session, current))
             {
                 ReleaseOwnedScriptedMovement(session);
-            }
-            else
-            {
-                session.SpeechLineFacingAnchored = true;
             }
         }
 
@@ -948,37 +820,6 @@ namespace AnimusForge.XihaiAction
             }
             session.ScriptedMovementOwned = false;
             session.SpeakerAiPauseChanged = false;
-        }
-
-        private static void ApplySpeakerAndMountFacing(
-            ActiveBattleSpeechSessionV1 session)
-        {
-            Vec3 lookDirection = new Vec3(session.AudienceFacingDirection);
-            session.Speaker.ClearTargetFrame();
-            session.Speaker.SetLookAgent(null);
-            session.Speaker.LookDirection = lookDirection;
-            Agent mount = session.Speaker.MountAgent;
-            if (session.MountFacingUnavailable || mount == null || !mount.IsActive() ||
-                !ReferenceEquals(mount.Mission, session.Speaker.Mission))
-            {
-                return;
-            }
-            try
-            {
-                mount.ClearTargetFrame();
-                mount.SetLookAgent(null);
-                mount.LookDirection = lookDirection;
-                Vec2 movementDirection = session.AudienceFacingDirection;
-                mount.SetMovementDirection(in movementDirection);
-            }
-            catch (Exception ex)
-            {
-                session.MountFacingUnavailable = true;
-                SceneActionsLog.Error(
-                    "BATTLE_SPEECH_STAGE",
-                    "Mount facing failed; rider facing remains active.",
-                    ex);
-            }
         }
 
         private string[] GetEnabledOneShotIntentKeys()
