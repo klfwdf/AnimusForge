@@ -14,8 +14,10 @@ namespace AnimusForge.XihaiAction
     /// does not inherit AttributeGlobalSettings and has no MCM attributes, so
     /// only AnimusForge.DuelSettings is registered by MCM.  Reflection keeps
     /// the standalone XihaiAction build independent from the AF assembly.
-    /// Reflection metadata is cached and this bridge runs only at initialization
-    /// or an explicit MCM refresh, never from Mission Tick.
+    /// Reflection metadata is cached.  The bridge is sampled at initialization,
+    /// Mission setup, on AF configuration-change callbacks, and at most once per
+    /// second while a Mission is active; it is never queried from a per-request
+    /// or per-agent hot path.
     /// </summary>
     internal static class SceneActionsMcmSettings
     {
@@ -49,6 +51,7 @@ namespace AnimusForge.XihaiAction
         };
 
         private static bool _accessorSearched;
+        private static int _accessorAssemblyCount = -1;
         private static MethodInfo _getSettingsMethod;
         private static readonly Dictionary<string, PropertyInfo> Properties =
             new Dictionary<string, PropertyInfo>(StringComparer.Ordinal);
@@ -61,7 +64,9 @@ namespace AnimusForge.XihaiAction
                 return false;
             }
             bool naturalLanguageEnabled = current.NaturalLanguageReplyActionsEnabled;
-            settings.Enabled = true;
+            // This is the SceneActions subsystem gate only. BattleSpeech has
+            // its own settings object and must never be disabled from here.
+            settings.Enabled = naturalLanguageEnabled;
             settings.PlayerSceneShoutEnabled = naturalLanguageEnabled;
             settings.NpcSceneShoutReplyEnabled = naturalLanguageEnabled;
             settings.AiClassifierEnabled = naturalLanguageEnabled;
@@ -91,15 +96,20 @@ namespace AnimusForge.XihaiAction
                 return false;
             }
             speech.Enabled = current.BattleSpeechEnabled;
-            speech.TKeyEnabled = current.TKeyBattleSpeechEnabled;
             speech.EnemyInterruptRadiusMeters = current.EnemyInterruptRadiusMeters;
             speech.ScreenNotifications = current.ScreenNotifications;
             speech.MaximumAudienceReplySubmissionsPerTick = current.MaximumAudienceReplySubmissionsPerTick;
             performance.Enabled = speech.Enabled;
-            bool naturalLanguageEnabled = current.NaturalLanguageReplyActionsEnabled;
-            stage.NaturalTriggerEnabled = naturalLanguageEnabled;
-            stage.TriggerClassifierEnabled = naturalLanguageEnabled;
-            stage.SemanticClassifierEnabled = naturalLanguageEnabled;
+            bool speechEnabled = current.BattleSpeechEnabled;
+            // Natural-language reply actions and BattleSpeech are independent
+            // subsystems. The stage switches belong to BattleSpeech.
+            speech.TKeyEnabled = speechEnabled && current.TKeyBattleSpeechEnabled;
+            stage.NaturalTriggerEnabled = speechEnabled &&
+                speech.TKeyEnabled && current.NaturalSpeechTriggerEnabled;
+            stage.TriggerClassifierEnabled = speechEnabled &&
+                current.SpeechTriggerClassifierEnabled;
+            stage.SemanticClassifierEnabled = speechEnabled &&
+                current.SpeechSemanticClassifierEnabled;
             stage.ReplyMinimumChars = current.ReplyMinimumChars;
             stage.ReplyMaximumChars = current.ReplyMaximumChars;
             stage.NpcPositioningEnabled = current.NpcPositioningEnabled;
@@ -125,6 +135,8 @@ namespace AnimusForge.XihaiAction
             stage.AudienceReplyMaximumChars = current.AudienceReplyMaximumChars;
             stage.AudienceReplyMinimumIntervalSeconds = current.AudienceReplyMinimumIntervalSeconds;
             stage.AudienceReplyMaximumIntervalSeconds = current.AudienceReplyMaximumIntervalSeconds;
+            stage.AudienceResponseStartDelaySeconds = current.AudienceResponseStartDelaySeconds;
+            stage.AudienceFinalReactionHoldSeconds = current.AudienceFinalReactionHoldSeconds;
             stage.AudienceReplyIntervalSeconds = current.AudienceReplyIntervalSeconds;
             stage.TacticalAdvanceEnabled = current.TacticalAdvanceEnabled;
             stage.TacticalAdvanceDelaySeconds = current.TacticalAdvanceDelaySeconds;
@@ -155,6 +167,9 @@ namespace AnimusForge.XihaiAction
                 NaturalLanguageReplyActionsEnabled = Read(settings, "NaturalLanguageReplyActionsEnabled", true),
                 BattleSpeechEnabled = Read(settings, "BattleSpeechEnabled", true),
                 TKeyBattleSpeechEnabled = Read(settings, "TKeyBattleSpeechEnabled", true),
+                NaturalSpeechTriggerEnabled = Read(settings, "NaturalSpeechTriggerEnabled", true),
+                SpeechTriggerClassifierEnabled = Read(settings, "SpeechTriggerClassifierEnabled", true),
+                SpeechSemanticClassifierEnabled = Read(settings, "SpeechSemanticClassifierEnabled", true),
                 ReplyMinimumChars = Read(settings, "ReplyMinimumChars", 60),
                 ReplyMaximumChars = Read(settings, "ReplyMaximumChars", 160),
                 NpcPositioningEnabled = Read(settings, "NpcPositioningEnabled", true),
@@ -189,6 +204,8 @@ namespace AnimusForge.XihaiAction
                 AudienceReplyMaximumChars = Read(settings, "AudienceReplyMaximumChars", 24),
                 AudienceReplyMinimumIntervalSeconds = Read(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f),
                 AudienceReplyMaximumIntervalSeconds = Read(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f),
+                AudienceResponseStartDelaySeconds = Read(settings, "AudienceResponseStartDelaySeconds", 3f),
+                AudienceFinalReactionHoldSeconds = Read(settings, "AudienceFinalReactionHoldSeconds", 2.5f),
                 AudienceReplyIntervalSeconds = Read(settings, "AudienceReplyIntervalSeconds", 1.1f),
                 TacticalAdvanceEnabled = Read(settings, "TacticalAdvanceEnabled", true),
                 TacticalAdvanceDelaySeconds = Read(settings, "TacticalAdvanceDelaySeconds", 1.8f),
@@ -249,12 +266,20 @@ namespace AnimusForge.XihaiAction
 
         private static void EnsureAccessorLocked()
         {
-            if (_accessorSearched)
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            if (_accessorSearched && _accessorAssemblyCount == assemblies.Length)
             {
                 return;
             }
-            _accessorSearched = true;
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            // AF can load the integrated DuelSettings assembly after the
+            // extension's bootstrap callback.  Cache a miss, but retry once
+            // when the assembly set changes instead of permanently freezing
+            // the MCM bridge in its startup state.
+            _accessorAssemblyCount = assemblies.Length;
+            _accessorSearched = false;
+            _getSettingsMethod = null;
+            Properties.Clear();
+            foreach (Assembly assembly in assemblies)
             {
                 Type type = assembly.GetType(DuelSettingsTypeName, false);
                 if (type == null)
@@ -271,6 +296,7 @@ namespace AnimusForge.XihaiAction
                 {
                     Properties[property.Name] = property;
                 }
+                _accessorSearched = true;
                 return;
             }
         }
@@ -461,6 +487,18 @@ namespace AnimusForge.XihaiAction
                 Write(settings, "TacticalAdvanceDelaySeconds", 1.8f);
                 changed = true;
             }
+            if (Read(settings, "AudienceResponseStartDelaySeconds", 3f) < 0.5f ||
+                Read(settings, "AudienceResponseStartDelaySeconds", 3f) > 12f)
+            {
+                Write(settings, "AudienceResponseStartDelaySeconds", 3f);
+                changed = true;
+            }
+            if (Read(settings, "AudienceFinalReactionHoldSeconds", 2.5f) < 0.5f ||
+                Read(settings, "AudienceFinalReactionHoldSeconds", 2.5f) > 8f)
+            {
+                Write(settings, "AudienceFinalReactionHoldSeconds", 2.5f);
+                changed = true;
+            }
             if (!migrateToCurrentDefaults &&
                 Math.Abs(Read(settings, "AudienceReplyMinimumIntervalSeconds", 0.2f) - 0.1f) < 0.0001f &&
                 Math.Abs(Read(settings, "AudienceReplyMaximumIntervalSeconds", 0.5f) - 0.5f) < 0.0001f &&
@@ -505,6 +543,9 @@ namespace AnimusForge.XihaiAction
             public bool NaturalLanguageReplyActionsEnabled;
             public bool BattleSpeechEnabled;
             public bool TKeyBattleSpeechEnabled;
+            public bool NaturalSpeechTriggerEnabled;
+            public bool SpeechTriggerClassifierEnabled;
+            public bool SpeechSemanticClassifierEnabled;
             public int ReplyMinimumChars;
             public int ReplyMaximumChars;
             public bool NpcPositioningEnabled;
@@ -527,6 +568,8 @@ namespace AnimusForge.XihaiAction
             public int AudienceReplyMaximumChars;
             public float AudienceReplyMinimumIntervalSeconds;
             public float AudienceReplyMaximumIntervalSeconds;
+            public float AudienceResponseStartDelaySeconds;
+            public float AudienceFinalReactionHoldSeconds;
             public float AudienceReplyIntervalSeconds;
             public bool TacticalAdvanceEnabled;
             public float TacticalAdvanceDelaySeconds;
