@@ -88,6 +88,22 @@ internal static class PolicyEffectSaveCodec
 
 	internal const int MaxInstancesPerPolicy = 24;
 	private const int MaxJsonDepth = 64;
+	private static readonly string[] LegacyStoppedEffectShapeProperties =
+	{
+		"prosperityDailyDeltaPerTown",
+		"foodDailyDeltaPerTown",
+		"hearthDailyDeltaPerVillage",
+		"loyaltyDailyDeltaPerTown",
+		"securityDailyDeltaPerTown",
+		"militiaDailyDeltaPerTown",
+		"townTaxPercent",
+		"constructionPowerDailyDelta",
+		"constructionSpeedPercent",
+		"kingdomStabilityDailyDelta",
+		"volunteerProductionPercent",
+		"volunteerUpgradeRatePercent",
+		"clanInfluenceDailyDelta"
+	};
 
 	private static readonly JsonSerializerSettings SafeSettings = new JsonSerializerSettings
 	{
@@ -99,6 +115,90 @@ internal static class PolicyEffectSaveCodec
 		NullValueHandling = NullValueHandling.Include,
 		MaxDepth = MaxJsonDepth
 	};
+
+	internal static bool IsLegacyStoppedActiveV5Shape(JObject source)
+	{
+		return source != null
+			&& ReadInt(source, "Version", 0) == 5
+			&& source.GetValue("ModuleEffects", StringComparison.OrdinalIgnoreCase) == null
+			&& HasLegacyStoppedEffectShape(source);
+	}
+
+	internal static bool IsLegacyStoppedNpcPolicyShape(JObject source)
+	{
+		int version = ReadInt(source, "Version", 1);
+		return source != null
+			&& version >= 1
+			&& version < 6
+			&& !HasModuleEffectShape(source)
+			&& HasLegacyStoppedEffectShape(source);
+	}
+
+	internal static bool TryNormalizeLegacyStoppedDynamicPolicy(
+		JObject source,
+		out JObject normalized,
+		out string error)
+	{
+		normalized = null;
+		error = string.Empty;
+		if (source == null || ReadInt(source, "Version", 0) != 1)
+		{
+			return false;
+		}
+		if (ContainsTypeMetadata(source))
+		{
+			error = "旧 DynamicPolicy 存档不得包含 $type 元数据";
+			return false;
+		}
+		normalized = (JObject)source.DeepClone();
+		normalized["Version"] = 4;
+		normalized["Status"] = "abolished";
+		normalized["CommitState"] = "ended";
+		normalized["ActiveEffectId"] = string.Empty;
+		normalized["RequiresEffectBundle"] = false;
+		normalized["NaturalExpiryAgendaRejected"] = false;
+		normalized["PlayerPayloadJson"] = string.Empty;
+		return true;
+	}
+
+	internal static bool TryNormalizeLegacyStoppedLocalPolicy(
+		JObject source,
+		out JObject normalized,
+		out string error)
+	{
+		normalized = null;
+		error = string.Empty;
+		if (source == null
+			|| ReadInt(source, "Version", 0) != 4
+			|| HasModuleEffectShape(source)
+			|| !HasLegacyStoppedEffectShape(source))
+		{
+			return false;
+		}
+		if (ContainsTypeMetadata(source))
+		{
+			error = "旧 LocalPolicy 存档不得包含 $type 元数据";
+			return false;
+		}
+		normalized = (JObject)source.DeepClone();
+		normalized["Version"] = 6;
+		normalized["Status"] = "abolished";
+		normalized["EffectStatus"] = "abolished";
+		normalized["EndReason"] = "旧政策系统升级后停止，可重新评议";
+		normalized["ActiveEffectId"] = string.Empty;
+		normalized["RemainingDays"] = 0;
+		normalized["Effects"] = new JArray();
+		normalized["DailyMaintenanceGoldCost"] = 0;
+		normalized["TotalMaintenancePaidGold"] = 0;
+		normalized["MaintenanceFunded"] = true;
+		normalized["LastMaintenanceSettlementDay"] = -1;
+		normalized["LastEffectProcessedDay"] = -1;
+		normalized["ExternalLastAttemptDay"] = -1;
+		normalized["ExternalInputsCaptured"] = false;
+		normalized["ExternalPublicationCost"] = 0;
+		normalized["ExternalQualityDelta"] = 0;
+		return true;
+	}
 
 	internal static bool TrySerialize(PolicyEffectSaveEnvelope envelope, out string json, out string error)
 	{
@@ -635,6 +735,10 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (descriptor?.ValueUnit == PolicyEffectValueUnit.RelativePercent)
 		{
+			if (descriptor.Hook == PolicyEffectHook.VolunteerProductionProbability)
+			{
+				return "相对原版每日判定频率 " + signed + "%";
+			}
 			return "相对原版候选分数 " + signed + "%";
 		}
 		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce)
@@ -3271,6 +3375,11 @@ internal static class PolicyEffectSaveCodec
 		return NormalizeCanonicalTargetSet(new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = Math.Max(left?.StructureVersion ?? 1, right?.StructureVersion ?? 1),
+			JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
+				left?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
+				right?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled),
+			AuthorizedCrossKingdomIds = (left?.AuthorizedCrossKingdomIds ?? new List<string>())
+				.Concat(right?.AuthorizedCrossKingdomIds ?? new List<string>()).ToList(),
 			SelectorHandles = (left?.SelectorHandles ?? new List<string>())
 				.Concat(right?.SelectorHandles ?? new List<string>()).ToList(),
 			SelectorIds = (left?.SelectorIds ?? new List<string>())
@@ -3303,6 +3412,8 @@ internal static class PolicyEffectSaveCodec
 		return new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = Math.Max(1, targetSet?.StructureVersion ?? 1),
+			JurisdictionKind = targetSet?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
+			AuthorizedCrossKingdomIds = NormalizeTargetIds(targetSet?.AuthorizedCrossKingdomIds),
 			SelectorHandles = NormalizeTargetIds(targetSet?.SelectorHandles),
 			SelectorIds = NormalizeTargetIds(targetSet?.SelectorIds),
 			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(targetSet?.TargetPlans),
@@ -3376,6 +3487,37 @@ internal static class PolicyEffectSaveCodec
 			}
 		}
 		return false;
+	}
+
+	private static bool HasLegacyStoppedEffectShape(JObject source)
+	{
+		if (source == null)
+		{
+			return false;
+		}
+		if (LegacyStoppedEffectShapeProperties.Any(propertyName =>
+			source.GetValue(propertyName, StringComparison.OrdinalIgnoreCase) != null))
+		{
+			return true;
+		}
+		return (source.GetValue("Effects", StringComparison.OrdinalIgnoreCase) as JArray)
+			?.OfType<JObject>()
+			.Any(HasLegacyStoppedEffectShape) == true;
+	}
+
+	private static bool HasModuleEffectShape(JObject source)
+	{
+		if (source == null)
+		{
+			return false;
+		}
+		if (source.GetValue("ModuleEffects", StringComparison.OrdinalIgnoreCase) != null)
+		{
+			return true;
+		}
+		return (source.GetValue("Effects", StringComparison.OrdinalIgnoreCase) as JArray)
+			?.OfType<JObject>()
+			.Any(HasModuleEffectShape) == true;
 	}
 
 	private static bool TryCloneVersioned(

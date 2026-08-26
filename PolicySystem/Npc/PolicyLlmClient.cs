@@ -70,13 +70,10 @@ internal static class PolicyLlmClient
 
 		public string ResponseBody { get; private set; }
 
-		public string RequestBodyForTokenStats { get; private set; }
-
-		public NpcPolicyHttpExchange(HttpResponseMessage response, string responseBody, string requestBodyForTokenStats)
+		public NpcPolicyHttpExchange(HttpResponseMessage response, string responseBody)
 		{
 			Response = response;
 			ResponseBody = responseBody ?? "";
-			RequestBodyForTokenStats = requestBodyForTokenStats ?? "";
 		}
 
 		public void Dispose()
@@ -212,13 +209,18 @@ internal static class PolicyLlmClient
 
 	public static bool TryResolveNpcPolicyProfile(out PolicyApiExecutionProfile profile, out string errorMessage)
 	{
-		return TryResolvePolicyApiConfig(
+		if (!TryResolvePolicyApiConfig(
 			DuelSettings.GetNpcRulerPolicyApiSourceForExternal(),
 			DuelSettings.GetNpcRulerPolicyFollowSelectedApiTokensForExternal(),
 			DuelSettings.GetNpcRulerPolicyCustomMaxTokensForExternal(),
 			null,
 			out profile,
-			out errorMessage);
+			out errorMessage))
+		{
+			return false;
+		}
+		profile.UseJsonObjectResponse = LlmApiCompat.IsOfficialDeepSeekUrl(profile.EffectiveApiUrl);
+		return true;
 	}
 
 	// 保留非政策调用方的既有“事件/叛乱 API，缺失时回退主 API”入口；不启用政策专用 Token/温度兼容降级。
@@ -268,11 +270,12 @@ internal static class PolicyLlmClient
 			int requestMaxTokens = Math.Max(1, Math.Min(profile.MaxTokens, capabilities.MaxTokensOverride ?? profile.MaxTokens));
 			JObject body = BuildCompatibleChatRequestBody(profile, frozenMessages, requestMaxTokens, capabilities, out string thinkingMode);
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(profile.EffectiveApiUrl, body);
-		Log(source, BuildRequestStartLog(profile.ResolvedRoute, profile.ModelName, requestMaxTokens, thinkingMode, profile.EffectiveApiUrl)
+			Log(source, BuildRequestStartLog(profile.ResolvedRoute, profile.ModelName, requestMaxTokens, thinkingMode)
 				+ " tokenField=" + GetTokenParameterLogName(capabilities.TokenParameterMode)
 				+ " responseFormat=" + (profile.UseJsonObjectResponse ? "json_object" : "default")
 				+ " temperature=" + (capabilities.OmitTemperature ? "omitted" : profile.Temperature.ToString(CultureInfo.InvariantCulture))
 				+ " attempt=" + attempt.ToString(CultureInfo.InvariantCulture) + "/" + attempts.ToString(CultureInfo.InvariantCulture));
+			Stopwatch requestStopwatch = Stopwatch.StartNew();
 			NpcPolicyHttpExchange exchange = await SendAndReadNpcPolicyExchangeAsync(
 				profile.EffectiveApiUrl,
 				profile.ApiKey,
@@ -285,18 +288,35 @@ internal static class PolicyLlmClient
 				cancellationToken);
 			if (exchange == null)
 			{
+				requestStopwatch.Stop();
 				finalResult = result;
-				return finalResult;
+				cancellationToken.ThrowIfCancellationRequested();
+				if (!result.IsTimeout)
+				{
+					LogPolicyApiMetrics(source, profile.ResolvedRoute, profile.ModelName, result, attempt, requestStopwatch.ElapsedMilliseconds);
+					return finalResult;
+				}
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, (source ?? "NpcPolicy") + "_api_after_timeout"))
+				{
+					result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+					LogPolicyApiMetrics(source, profile.ResolvedRoute, profile.ModelName, result, attempt, requestStopwatch.ElapsedMilliseconds);
+					return finalResult;
+				}
 			}
-			try
+			else
 			{
-				result = CompleteApiCallResult(exchange, result, frozenMessages, profile.ResolvedRoute, profile.ModelName, thinkingMode, capabilities.OmitThinkingControls, source);
-			}
-			finally
-			{
-				exchange.Dispose();
+				try
+				{
+					result = CompleteApiCallResult(exchange, result, profile.ResolvedRoute, thinkingMode, capabilities.OmitThinkingControls, source);
+				}
+				finally
+				{
+					exchange.Dispose();
+				}
 			}
 			result.AttemptsUsed = attempt;
+			requestStopwatch.Stop();
+			LogPolicyApiMetrics(source, profile.ResolvedRoute, profile.ModelName, result, attempt, requestStopwatch.ElapsedMilliseconds);
 			finalResult = result;
 			if (result.Success)
 			{
@@ -372,7 +392,7 @@ internal static class PolicyLlmClient
 				return null;
 			}
 			keepResponse = true;
-			return new NpcPolicyHttpExchange(response, responseBody, jsonBody);
+			return new NpcPolicyHttpExchange(response, responseBody);
 		}
 		finally
 		{
@@ -383,7 +403,7 @@ internal static class PolicyLlmClient
 		}
 	}
 
-	private static NpcPolicyApiCallResult CompleteApiCallResult(NpcPolicyHttpExchange exchange, NpcPolicyApiCallResult result, JArray messages, string resolvedRoute, string modelName, string thinkingMode, bool thinkingRetriedPlain, string source)
+	private static NpcPolicyApiCallResult CompleteApiCallResult(NpcPolicyHttpExchange exchange, NpcPolicyApiCallResult result, string resolvedRoute, string thinkingMode, bool thinkingRetriedPlain, string source)
 	{
 		HttpResponseMessage response = exchange.Response;
 		string responseBody = exchange.ResponseBody ?? "";
@@ -392,7 +412,6 @@ internal static class PolicyLlmClient
 		if (!response.IsSuccessStatusCode)
 		{
 			ApplyHttpFailureDetails(result, response, responseBody);
-			RecordHttpErrorTokenStatsSafe(messages, resolvedRoute, modelName, response, responseBody, result, thinkingRetriedPlain, exchange.RequestBodyForTokenStats);
 			return result;
 		}
 		string content = "";
@@ -406,7 +425,13 @@ internal static class PolicyLlmClient
 		}
 		catch (Exception ex)
 		{
-			Log(source, "[HTTP] NPC policy response parse failed: " + ex.Message + " route=" + resolvedRoute + " thinking_retry_plain=" + (thinkingRetriedPlain ? "true" : "false") + " raw=" + TrimForLog(responseBody));
+			PolicySystemLog.Failure(ResolvePolicyLogCategory(source), "generation-api-parse-failed", ex, new PolicyLogContext
+			{
+				Route = resolvedRoute,
+				ThinkingFallback = thinkingRetriedPlain,
+				DetailChars = responseBody?.Length ?? 0,
+				DetailHash = PolicySystemLog.HashSensitive(responseBody)
+			});
 			try
 			{
 				content = LlmApiCompat.ExtractAssistantText(responseBody);
@@ -418,7 +443,6 @@ internal static class PolicyLlmClient
 		}
 		result.Content = (content ?? "").Trim();
 		ApplyFinishReasonStatus(result, source, resolvedRoute, thinkingRetriedPlain);
-		RecordHttpSuccessTokenStatsSafe(messages, resolvedRoute, modelName, thinkingMode, thinkingRetriedPlain, result.Content, responseBody, exchange.RequestBodyForTokenStats);
 		return result;
 	}
 
@@ -679,7 +703,7 @@ internal static class PolicyLlmClient
 	private static bool IsTransientPolicyFailure(NpcPolicyApiCallResult result)
 	{
 		int statusCode = result?.StatusCode ?? 0;
-		return statusCode == 408 || statusCode == 429 || statusCode >= 500;
+		return (result?.IsTimeout ?? false) || statusCode == 408 || statusCode == 429 || statusCode >= 500;
 	}
 
 	private static string GetTokenParameterLogName(PolicyTokenParameterMode mode)
@@ -735,57 +759,89 @@ internal static class PolicyLlmClient
 		return (source ?? "NpcPolicy") + "_" + (stage ?? "api");
 	}
 
-	private static string BuildRequestStartLog(string resolvedRoute, string modelName, int maxTokens, string thinkingMode, string effectiveApiUrl)
+	private static string BuildRequestStartLog(string resolvedRoute, string modelName, int maxTokens, string thinkingMode)
 	{
 		return "[HTTP] NPC policy request route=" + resolvedRoute
 			+ " model=" + modelName
 			+ " maxTokens=" + maxTokens.ToString(CultureInfo.InvariantCulture)
-			+ " thinking=" + thinkingMode
-			+ " url=" + effectiveApiUrl;
+			+ " thinking=" + thinkingMode;
 	}
 
-	private static void RecordHttpErrorTokenStatsSafe(JArray messages, string resolvedRoute, string modelName, HttpResponseMessage response, string responseBody, NpcPolicyApiCallResult result, bool thinkingRetriedPlain, string requestBodyForTokenStats)
+	private static void LogPolicyApiMetrics(
+		string source,
+		string resolvedRoute,
+		string modelName,
+		NpcPolicyApiCallResult result,
+		int attempt,
+		long durationMilliseconds)
 	{
-		try
+		result ??= new NpcPolicyApiCallResult();
+		Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.Ordinal);
+		if (result.PromptCacheHitTokens.HasValue)
 		{
-			Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(messages), 0, messages, BuildHttpErrorTokenStatsText(resolvedRoute, modelName, response, responseBody, result, thinkingRetriedPlain), "npc_policy_api_http_error", requestBodyForTokenStats);
+			counts["promptCacheHitTokens"] = Math.Max(0, result.PromptCacheHitTokens.Value);
 		}
-		catch
+		if (result.PromptCacheMissTokens.HasValue)
 		{
+			counts["promptCacheMissTokens"] = Math.Max(0, result.PromptCacheMissTokens.Value);
 		}
+		if (result.RetryAfterSeconds.HasValue)
+		{
+			counts["retryAfterSeconds"] = Math.Max(0, result.RetryAfterSeconds.Value);
+		}
+		PolicySystemLog.Lifecycle(
+			ResolvePolicyLogCategory(source),
+			"generation-api-complete",
+			result.Success ? "success" : result.IsTimeout ? "timeout" : "failed",
+			new PolicyLogContext
+			{
+				Route = resolvedRoute,
+				Model = modelName,
+				Attempt = Math.Max(1, attempt),
+				InputTokens = result.PromptTokens,
+				OutputTokens = result.CompletionTokens,
+				HttpStatus = result.StatusCode,
+				DurationMs = Math.Max(0L, durationMilliseconds),
+				TimedOut = result.IsTimeout,
+				Retried = attempt > 1,
+				ThinkingFallback = result.ThinkingRetryPlain,
+				ErrorKind = ResolvePolicyApiErrorKind(result),
+				Counts = counts.Count > 0 ? counts : null
+			});
 	}
 
-	private static void RecordHttpSuccessTokenStatsSafe(JArray messages, string resolvedRoute, string modelName, string thinkingMode, bool thinkingRetriedPlain, string content, string responseBody, string requestBodyForTokenStats)
+	private static string ResolvePolicyLogCategory(string source)
 	{
-		try
-		{
-			Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(messages), Logger.EstimateTokens(content), messages, BuildHttpSuccessTokenStatsText(resolvedRoute, modelName, thinkingMode, thinkingRetriedPlain, content, responseBody), "npc_policy_api", requestBodyForTokenStats);
-		}
-		catch
-		{
-		}
+		return (source ?? string.Empty).StartsWith("Player", StringComparison.OrdinalIgnoreCase) ? "Player" : "Npc";
 	}
 
-	private static string BuildHttpErrorTokenStatsText(string resolvedRoute, string modelName, HttpResponseMessage response, string responseBody, NpcPolicyApiCallResult result, bool thinkingRetriedPlain)
+	private static string ResolvePolicyApiErrorKind(NpcPolicyApiCallResult result)
 	{
-		return "[NPC POLICY API HTTP ERROR]\nroute=" + resolvedRoute
-			+ "\nmodel=" + modelName
-			+ "\nstatus=" + ((int)response.StatusCode).ToString(CultureInfo.InvariantCulture) + " " + (response.ReasonPhrase ?? "")
-			+ "\nretry_after_seconds=" + (result?.RetryAfterSeconds?.ToString(CultureInfo.InvariantCulture) ?? "")
-			+ "\nretry_after_seconds_raw=" + (result?.RetryAfterSecondsRaw?.ToString(CultureInfo.InvariantCulture) ?? "")
-			+ "\nretry_after_capped=" + ((result?.RetryAfterSecondsCapped ?? false) ? "true" : "false")
-			+ "\nthinking_retry_plain=" + (thinkingRetriedPlain ? "true" : "false")
-			+ "\nresponse_body=\n" + (responseBody ?? "");
-	}
-
-	private static string BuildHttpSuccessTokenStatsText(string resolvedRoute, string modelName, string thinkingMode, bool thinkingRetriedPlain, string content, string responseBody)
-	{
-		return "[NPC POLICY API HTTP]\nroute=" + resolvedRoute
-			+ "\nmodel=" + modelName
-			+ "\ncontrol_mode=" + thinkingMode
-			+ "\nthinking_retry_plain=" + (thinkingRetriedPlain ? "true" : "false")
-			+ "\nai_response=\n" + (content ?? "")
-			+ "\nraw_response_sample=\n" + TrimForLog(responseBody);
+		if (result == null || result.Success)
+		{
+			return null;
+		}
+		if (result.IsTimeout)
+		{
+			return "Timeout";
+		}
+		if (result.IsAuthFailure)
+		{
+			return "Authentication";
+		}
+		if (result.IsQuotaLimit)
+		{
+			return "Quota";
+		}
+		if (result.IsRateLimit || result.IsRequestsPerMinuteLimit)
+		{
+			return "RateLimit";
+		}
+		if (result.IsOutputTruncated)
+		{
+			return "OutputTruncated";
+		}
+		return result.StatusCode.HasValue ? "Http" : "Transport";
 	}
 
 	private static async Task<HttpResponseMessage> SendNpcPolicyRequestWithHardTimeoutAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, NpcPolicyApiCallResult result, CancellationToken cancellationToken)
@@ -1213,39 +1269,26 @@ internal static class PolicyLlmClient
 
 internal static class NpcPolicyStructuredParseLogger
 {
-	private const int SampleChars = 1200;
-
 	internal static void LogFailure(string logSource, string kind, string batchId, string route, int attempts, string reason, string raw, string extracted)
 	{
-		string message = kind + "-parse-failed"
-			+ " batchId=" + CleanField(batchId)
-			+ " route=" + CleanField(route)
-			+ " attempts=" + Math.Max(0, attempts).ToString(CultureInfo.InvariantCulture)
-			+ " reason=" + CleanField(reason)
-			+ " raw_sample=" + OneLine(Clip(raw))
-			+ " extracted_sample=" + OneLine(Clip(extracted));
-		PolicySystemLog.Failure("Npc", kind + "-parse-failed", message,
-			"raw_sample:\n" + Clip(raw) + "\n\nextracted_sample:\n" + Clip(extracted));
-	}
-
-	private static string CleanField(string text)
-	{
-		return OneLine(text).Trim();
-	}
-
-	private static string OneLine(string text)
-	{
-		return (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", "\\n").Trim();
-	}
-
-	private static string Clip(string text)
-	{
-		text = (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
-		if (text.Length <= SampleChars)
-		{
-			return text;
-		}
-		return text.Substring(0, SampleChars) + "...";
+		string rawHash = PolicySystemLog.HashSensitive(raw);
+		string extractedHash = PolicySystemLog.HashSensitive(extracted);
+		long detailChars = (long)(raw?.Length ?? 0) + (extracted?.Length ?? 0);
+		PolicySystemLog.Lifecycle(
+			(logSource ?? string.Empty).StartsWith("Player", StringComparison.OrdinalIgnoreCase) ? "Player" : "Npc",
+			(kind ?? "structured") + "-parse-failed",
+			"failed",
+			new PolicyLogContext
+			{
+				BatchId = batchId,
+				Route = route,
+				Attempt = Math.Max(0, attempts),
+				ErrorKind = "StructuredParse",
+				MessageChars = reason?.Length ?? 0,
+				MessageHash = PolicySystemLog.HashSensitive(reason),
+				DetailChars = (int)Math.Min(int.MaxValue, detailChars),
+				DetailHash = PolicySystemLog.HashSensitive(rawHash + "|" + extractedHash)
+			});
 	}
 }
 

@@ -1135,7 +1135,7 @@ public static partial class TroopInspectionBehavior
 			foreach (TroopRosterElement item in SnapshotRoster(roster))
 			{
 				CharacterObject character = item.Character;
-				if (character == null || !character.IsHero || character.IsPlayerCharacter || item.Number <= 0)
+				if (character == null || !character.IsHero || item.Number <= 0)
 				{
 					continue;
 				}

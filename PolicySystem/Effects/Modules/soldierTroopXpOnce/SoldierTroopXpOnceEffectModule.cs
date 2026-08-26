@@ -58,7 +58,8 @@ internal sealed class SoldierTroopXpOnceEffectModule
 		editableEvaluationPrompt: "value 是每名合格普通士兵的一次性原版经验，范围 1～5000；不按家族、队伍、封地或士兵数量摊薄，不直接升级。",
 		targetProjection: PolicyEffectTargetProjectionKind.None,
 		targetRefresh: PolicyEffectTargetRefreshKind.FrozenCanonicalIds,
-		allowIndependentClanTargets: true);
+		allowIndependentClanTargets: true,
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -96,6 +96,8 @@
                       <Children>
                         <ButtonWidget IsEnabled="@CanAbolish" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="52" Brush="Popup.Cancel.Button" Command.Click="ExecuteAbolish" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@AbolishText" /></Children></ButtonWidget>
                         <Widget WidthSizePolicy="Fixed" SuggestedWidth="14" />
+						<ButtonWidget IsEnabled="@CanReReview" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="52" Brush="Popup.Done.Button" Command.Click="ExecuteReReview" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@ReReviewText" /></Children></ButtonWidget>
+						<Widget WidthSizePolicy="Fixed" SuggestedWidth="14" />
                         <ButtonWidget IsEnabled="@CanRenew" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="52" Brush="Popup.Done.Button" Command.Click="ExecuteRenew" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@RenewText" /></Children></ButtonWidget>
                       </Children>
                     </ListPanel>

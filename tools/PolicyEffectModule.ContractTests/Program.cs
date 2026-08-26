@@ -42,6 +42,7 @@ internal static class Program
 		"heroGold",
 		"soldierTroopXp",
 		"kingdomStability",
+		"volunteerProductionGrowthPct",
 		"armyFormationTendencyPct",
 		"kingdomVillageRaidBan"
 	};
@@ -114,6 +115,13 @@ internal static class Program
 			{
 				return 0;
 			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-log-contract-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestPolicySystemStructuredLogContracts();
+				Console.WriteLine("PASS policyLogAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-history-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				Type behavior = SutType("AnimusForge.NpcRulerPolicyBehavior");
@@ -143,17 +151,30 @@ internal static class Program
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-two-stage-contract-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				TestPlayerPolicyDirectTwoStageContracts();
+				TestPlayerPolicySemanticRepairContracts();
+				TestPolicyLlmRetryAndJsonModeContracts();
 				TestPlayerPolicyTargetDirectoryContracts();
 				TestPlayerPolicyDeterministicTargetAuthorizationContracts();
+				TestPolicyEffectTargetJurisdictionContracts();
 				TestPolicyEffectSemanticHandoffContracts();
 				TestSharedCompilerAllowlistsSelectorsAndDuplicates();
 				Console.WriteLine("PASS policyTwoStageAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-target-jurisdiction-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestPolicyEffectTargetJurisdictionContracts();
+				Console.WriteLine("PASS policyTargetJurisdictionAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-all-modules-contract-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				TestCatalogAndLegacyIds();
+				TestClanLeaderRelationActorClanTargetContracts();
+				TestVolunteerProductionGrowthModuleContracts();
+				TestVolunteerProductionBannerlordApi();
 				TestArmyFormationTendencyModuleContracts();
 				TestArmyFormationBannerlordApi();
 				TestKingdomVillageRaidBanModuleContracts();
@@ -162,6 +183,7 @@ internal static class Program
 				TestAllPromptVisibleModulesSyntheticCompileContracts();
 				TestPolicyEffectSemanticHandoffContracts();
 				TestSharedCompilerAllowlistsSelectorsAndDuplicates();
+				TestPolicyEffectTargetJurisdictionContracts();
 				TestPayloadRoundTripsAndNonFiniteRejection();
 				TestFundingStrategies();
 				TestHeroGoldModuleContracts();
@@ -169,6 +191,7 @@ internal static class Program
 				TestHeroGoldExecutionContracts();
 				TestLocalPolicySettlementOwnerGoldContracts();
 				TestSoldierTroopXpModuleContracts();
+				TestClanLeaderRelationScheduledModuleAndCasContracts();
 				Console.WriteLine("PASS policyAllModulesAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " modules=" + ExpectedPromptVisibleModuleIds.Length.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
@@ -181,6 +204,16 @@ internal static class Program
 				TestKingdomVillageRaidBanModuleContracts();
 				TestKingdomVillageRaidBanBannerlordApi();
 				Console.WriteLine("PASS kingdomVillageRaidBanAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--volunteer-production-growth-contract-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestCatalogAndLegacyIds();
+				TestPolicyEffectRetrievalSettingsContracts();
+				TestVolunteerProductionGrowthModuleContracts();
+				TestVolunteerProductionBannerlordApi();
+				Console.WriteLine("PASS volunteerProductionGrowthAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
@@ -298,6 +331,7 @@ internal static class Program
 			{
 				TestActivePolicyEffectRecoverySyncDataContracts();
 				TestPolicyApprovalResultSequenceContracts();
+				TestPlayerPolicyCompletionIsolationContracts();
 				TestNpcPolicyPresentationOutboxContracts();
 				Console.WriteLine("PASS policyLifecycleRecoveryAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
@@ -305,6 +339,8 @@ internal static class Program
 			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--player-policy-ui-contracts-only", StringComparison.OrdinalIgnoreCase)))
 			{
+				TestNpcLegacyMigrations();
+				TestPolicyReReviewContracts();
 				TestPlayerPolicyPermanentDurationContract();
 				TestPolicyResultRetryPopupContract();
 				TestNpcSuggestedPolicyAgendaFlowContracts();
@@ -344,6 +380,9 @@ internal static class Program
 			TestLocalPolicyCanonicalPublicationGate();
 			TestLocalPolicyPromptAndEmptyApplicationContracts();
 			TestStructuredDummyModuleContractAndPayload();
+			TestClanLeaderRelationActorClanTargetContracts();
+			TestVolunteerProductionGrowthModuleContracts();
+			TestVolunteerProductionBannerlordApi();
 			TestKingdomVillageRaidBanModuleContracts();
 			TestKingdomVillageRaidBanBannerlordApi();
 			TestInfluenceCompositeCompilerContracts();
@@ -358,14 +397,18 @@ internal static class Program
 			TestSharedCompilerNpcNeutralParity();
 			TestPolicyEffectPlanWireNormalizerContracts();
 			TestPolicyEffectSemanticHandoffContracts();
+			TestPlayerPolicySemanticRepairContracts();
+			TestPolicyLlmRetryAndJsonModeContracts();
 			TestPlayerPolicyTargetDirectoryContracts();
 			TestPlayerPolicyDeterministicTargetAuthorizationContracts();
+			TestPolicyEffectTargetJurisdictionContracts();
 			TestPlayerPolicyExecutableCostProjectionContract();
 			TestLocalPolicySettlementOwnerGoldContracts();
 			TestPolicyEffectShellCoalescingAndProgressSync();
 			TestPayloadRoundTripsAndNonFiniteRejection();
 			TestFundingStrategies();
 			TestPlayerPolicyPermanentDurationContract();
+			TestPolicyReReviewContracts();
 			TestPolicyResultRetryPopupContract();
 			TestNpcSuggestedPolicyAgendaFlowContracts();
 			TestPlayerVassalPolicyAttributionContracts();
@@ -391,6 +434,7 @@ internal static class Program
 			TestPendingCompensationSurvivesTrimAndScheduler();
 			TestActivePolicyEffectRecoverySyncDataContracts();
 			TestPolicyApprovalResultSequenceContracts();
+			TestPlayerPolicyCompletionIsolationContracts();
 			TestNpcPolicyPresentationOutboxContracts();
 			TestPlayerPolicyAgendaAutoSubmissionContract();
 			TestClanInfluenceVanillaDisplayBridgeContract();
@@ -855,6 +899,409 @@ internal static class Program
 			"armyFormationTendencyPct must remain one Clan-targeted relative-percent model modifier.");
 	}
 
+	private static void TestClanLeaderRelationActorClanTargetContracts()
+	{
+		Check(PolicyEffectModuleCatalog.TryGet("clanLeaderRelationOnce", out IPolicyEffectModule relation),
+			"clanLeaderRelationOnce must remain registered for actor-clan exclusion contracts.");
+		Check(relation.Descriptor.ExcludeActorClanTargets
+			&& relation.Descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan),
+			"clanLeaderRelationOnce alone must opt into actor-clan target exclusion through Clan targets.");
+
+		PolicyEffectCanonicalTargetSet unfiltered = new PolicyEffectCanonicalTargetSet
+		{
+			KingdomIds = new List<string> { "issuer-kingdom" },
+			ClanIds = new List<string> { "actor-clan", "other-clan-b", "other-clan-a" }
+		};
+		PolicyEffectCanonicalTargetSet filtered = PolicyEffectCompiler.ApplyActorClanTargetExclusion(
+			relation,
+			"actor-clan",
+			unfiltered);
+		Check(filtered.ClanIds.SequenceEqual(new[] { "other-clan-a", "other-clan-b" }, StringComparer.Ordinal)
+			&& unfiltered.ClanIds.Contains("actor-clan", StringComparer.OrdinalIgnoreCase),
+			"Actor-clan filtering must be a read-only linear projection that retains only other clans.");
+		Check(PolicyEffectModuleCatalog.TryGet("clanInfluence", out IPolicyEffectModule influence)
+			&& PolicyEffectCompiler.ApplyActorClanTargetExclusion(
+				influence,
+				"actor-clan",
+				new PolicyEffectCanonicalTargetSet { ClanIds = new List<string> { "actor-clan" } })
+				.ClanIds.SequenceEqual(new[] { "actor-clan" }, StringComparer.Ordinal),
+			"Actor-clan exclusion must not globally remove valid self-clan targets from clanInfluence.");
+
+		PolicyEffectTargetResolver resolver = delegate(
+			string handle,
+			IPolicyEffectModule module,
+			out PolicyEffectResolvedTarget resolved,
+			out string error)
+		{
+			_ = module;
+			string normalized = (handle ?? string.Empty).Trim();
+			List<string> clanIds;
+			PolicyEffectTargetKind selectorKind;
+			switch (normalized)
+			{
+				case "K_ALL":
+					selectorKind = PolicyEffectTargetKind.Kingdom;
+					clanIds = new List<string> { "actor-clan", "other-clan-a", "other-clan-b" };
+					break;
+				case "C_ALL":
+					selectorKind = PolicyEffectTargetKind.Clan;
+					clanIds = new List<string> { "actor-clan", "other-clan-a", "other-clan-b" };
+					break;
+				case "C_OTHER":
+					selectorKind = PolicyEffectTargetKind.Clan;
+					clanIds = new List<string> { "other-clan-a", "other-clan-b" };
+					break;
+				case "C_PUBLISHER":
+					selectorKind = PolicyEffectTargetKind.Clan;
+					clanIds = new List<string> { "actor-clan" };
+					break;
+				default:
+					resolved = null;
+					error = "unknown handle";
+					return false;
+			}
+			resolved = new PolicyEffectResolvedTarget
+			{
+				Handle = normalized,
+				SelectorKind = selectorKind,
+				CanonicalTargetSet = new PolicyEffectCanonicalTargetSet
+				{
+					SelectorHandles = new List<string> { normalized },
+					KingdomIds = new List<string> { "issuer-kingdom" },
+					ClanIds = clanIds
+				}
+			};
+			error = string.Empty;
+			return true;
+		};
+		string[] handles = { "K_ALL", "C_ALL", "C_OTHER", "C_PUBLISHER" };
+		PolicyTargetHandleDirectory directory = PolicyTargetHandleDirectoryBuilder.Build(
+			handles.Select(handle => new PolicyTargetHandleDirectoryCandidate
+			{
+				Handle = handle,
+				Entry = new PolicyTargetHandleDirectoryEntry { Kind = "contract", SelectorId = handle }
+			}).ToArray(),
+			new[] { relation },
+			resolver,
+			"issuer-kingdom",
+			"actor-clan",
+			(handle, entry, module, resolved) => string.Equals(handle, "K_ALL", StringComparison.Ordinal));
+		Check(directory.Capabilities.TryGetValue(relation.Id, out PolicyEffectCapabilityDirectoryEntry capability)
+			&& capability.AllowedTargetHandles.Count == 3
+			&& string.Equals(capability.DefaultTargetHandle, "K_ALL", StringComparison.Ordinal)
+			&& capability.AllowedSubsetTargetHandles.SequenceEqual(new[] { "C_ALL", "C_OTHER" }, StringComparer.Ordinal)
+			&& capability.AllowedTargetHandles.Contains("K_ALL", StringComparer.Ordinal)
+			&& capability.AllowedTargetHandles.Contains("C_ALL", StringComparer.Ordinal)
+			&& capability.AllowedTargetHandles.Contains("C_OTHER", StringComparer.Ordinal)
+			&& !capability.AllowedTargetHandles.Contains("C_PUBLISHER", StringComparer.Ordinal)
+			&& !directory.Targets.ContainsKey("C_PUBLISHER"),
+			"Relation target directories must normalize all/other-clan selectors and reject publisher-only handles.");
+
+		PolicyEffectCompilerRequest request = new PolicyEffectCompilerRequest
+		{
+			Scope = PolicyEffectScopes.Kingdom,
+			PolicyId = "relation-actor-clan-filter",
+			ActorHeroId = "actor-hero",
+			ActorClanId = "actor-clan",
+			IssuerKingdomId = "issuer-kingdom",
+			StartDay = 10f,
+			EndDay = 20f,
+			Funding = new PolicyEffectFundingContext { GoldScale = 1f, InfluenceScale = 1f },
+			CandidateModuleIds = new[] { relation.Id },
+			DetailedModuleIds = new[] { relation.Id }
+		};
+		PolicyEffectWireEffect BuildWire(string handle) => new PolicyEffectWireEffect
+		{
+			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
+			MechanismId = "M0",
+			MechanismKind = PolicyEffectMechanismKind.Independent,
+			MechanismRole = PolicyEffectMechanismRole.Subject,
+			ModuleId = relation.Id,
+			TargetHandles = new List<string> { handle },
+			Payload = new JObject { ["value"] = 5f },
+			Reason = "actor clan exclusion contract"
+		};
+		PolicyEffectInstanceIdFactory idFactory = (ordinal, moduleId, targetSet) =>
+			"relation-actor-clan-filter:" + ordinal.ToString(CultureInfo.InvariantCulture);
+		Check(PolicyEffectCompiler.TryCompile(
+				new[] { BuildWire("K_ALL") },
+				request,
+				resolver,
+				idFactory,
+				out PolicyEffectCompilerResult compiled,
+				out string compileError)
+			&& compiled.Effects.Single().SaveData.TargetSet.ClanIds
+				.SequenceEqual(new[] { "other-clan-a", "other-clan-b" }, StringComparer.Ordinal)
+			&& compiled.Effects.Single().PreparedInstance.Instance.TargetSet.ClanIds
+				.SequenceEqual(new[] { "other-clan-a", "other-clan-b" }, StringComparer.Ordinal),
+			"Compiler must freeze only the two external clans from a Kingdom target: " + compileError);
+		Check(!PolicyEffectCompiler.TryCompile(
+				new[] { BuildWire("C_PUBLISHER") },
+				request,
+				resolver,
+				idFactory,
+				out _,
+				out string publisherOnlyError)
+			&& !string.IsNullOrWhiteSpace(publisherOnlyError),
+			"Forged publisher-only relation wires must fail closed after target filtering.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		JObject packagedPrompt = JObject.Parse(File.ReadAllText(Path.Combine(
+			repositoryRoot,
+			"AnimusForge",
+			"CustomPrompts",
+			"Policy",
+			"Effects",
+			"clanLeaderRelationOnce.json"), Encoding.UTF8));
+		Check(relation.Descriptor.EditableUnderstandingPrompt.Contains("发布者所属家族整体")
+			&& relation.Descriptor.PostprocessRule.Contains("发布者所属家族整体")
+			&& string.Equals(
+				(string)packagedPrompt["UnderstandingPrompt"],
+				relation.Descriptor.EditableUnderstandingPrompt,
+				StringComparison.Ordinal)
+			&& string.Equals(
+				(string)packagedPrompt["EvaluationPrompt"],
+				relation.Descriptor.EditableEvaluationPrompt,
+				StringComparison.Ordinal),
+			"Relation descriptor, built-in fallback, and packaged prompt must share whole-publisher-clan semantics.");
+
+		string bridgeSource = File.ReadAllText(Path.Combine(
+			repositoryRoot,
+			"PolicySystem",
+			"Core",
+			"PolicyEffectExecutionCoordinator.cs"), Encoding.UTF8);
+		string managementSource = File.ReadAllText(Path.Combine(
+			repositoryRoot,
+			"PolicySystem",
+			"Core",
+			"CustomPolicyBehavior.Management.cs"), Encoding.UTF8);
+		Check(bridgeSource.Contains("Clan actorClan = actor.Clan")
+			&& bridgeSource.Contains("ReferenceEquals(actorClan, targetClan)")
+			&& bridgeSource.IndexOf("ReferenceEquals(actorClan, targetClan)", StringComparison.Ordinal)
+				< bridgeSource.IndexOf("ChangeRelationAction.ApplyRelationChangeBetweenHeroes", StringComparison.Ordinal),
+			"The production bridge must skip actor-clan targets before invoking ChangeRelationAction.");
+		Check(managementSource.Contains("BuildPlayerVisibleTargetSet")
+			&& managementSource.Contains("PolicyEffectCompiler.ApplyActorClanTargetExclusion(module, actorClanId, instance.TargetSet)"),
+			"Old saved relation summaries must use the shared actor-clan target filter without rewriting persistence.");
+	}
+
+	private static void TestVolunteerProductionGrowthModuleContracts()
+	{
+		IPolicyEffectModule module = RequirePolicyEffectModule("volunteerProductionGrowthPct");
+		PolicyEffectModuleDescriptor descriptor = module.Descriptor;
+		Check(descriptor.Order == 145
+			&& descriptor.ExecutionKind == PolicyEffectExecutionKind.ModelModifier
+			&& descriptor.Hook == PolicyEffectHook.VolunteerProductionProbability
+			&& descriptor.Aggregation == PolicyEffectAggregationKind.Additive
+			&& descriptor.ValueUnit == PolicyEffectValueUnit.RelativePercent
+			&& descriptor.FundingMode == PolicyEffectFundingMode.InheritPolicy
+			&& descriptor.FundingStrategy == PolicyEffectFundingStrategy.Linear
+			&& descriptor.TargetProjection == PolicyEffectTargetProjectionKind.PrimaryFiefAndBoundSettlements
+			&& descriptor.TargetRefresh == PolicyEffectTargetRefreshKind.Dynamic
+			&& descriptor.TargetKinds.SequenceEqual(new[] { PolicyEffectTargetKind.Settlement })
+			&& module is IModelModifierPolicyEffectModule,
+			"Volunteer production/growth must be one dynamic Settlement-targeted relative-percent model modifier.");
+		Check(descriptor.AllowedScopes.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(
+			new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal }
+				.OrderBy(value => value, StringComparer.Ordinal))
+			&& descriptor.AllowedSelectorKinds.OrderBy(value => value).SequenceEqual(
+				new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom }
+					.OrderBy(value => value))
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerKingdom)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerLocal)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.NpcRulerKingdom)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerVassal),
+			"Volunteer production/growth must be selectable from all three policy scopes and all four retrieval contexts.");
+
+		Check(PolicyEffectModuleCatalog.TryNormalizePayload(
+			module.Id,
+			new JObject { ["value"] = 20f },
+			PolicyEffectScopes.Local,
+			out PolicyEffectPayload normalizedPayload,
+			out string normalizeError)
+			&& normalizedPayload is NumericPolicyEffectPayload numeric
+			&& Math.Abs(numeric.Value - 20f) < 0.0001f,
+			"Volunteer production/growth +20 payload must normalize: " + normalizeError);
+		Check(PolicyEffectModuleCatalog.TryNormalizePayload(
+			module.Id,
+			new JObject { ["value"] = 500f },
+			PolicyEffectScopes.Kingdom,
+			out _,
+			out _)
+			&& !PolicyEffectModuleCatalog.TryNormalizePayload(
+				module.Id,
+				new JObject { ["value"] = float.NaN },
+				PolicyEffectScopes.Kingdom,
+				out _,
+				out _)
+			&& !PolicyEffectModuleCatalog.TryNormalizePayload(
+				module.Id,
+				new JObject { ["value"] = 20f, ["unexpected"] = true },
+				PolicyEffectScopes.Kingdom,
+				out _,
+				out _),
+			"Volunteer production/growth must preserve the old finite-number behavior without adding a positive hard cap, while rejecting non-finite and unknown fields.");
+		Check(module.TryApplyFunding(
+			normalizedPayload,
+			new PolicyEffectFundingContext { GoldScale = 0.5f, InfluenceScale = 0.75f },
+			out PolicyEffectPayload fundedPayload,
+			out string fundingError)
+			&& fundedPayload is NumericPolicyEffectPayload fundedNumeric
+			&& Math.Abs(fundedNumeric.Value - 10f) < 0.0001f,
+			"Volunteer production/growth must linearly inherit the lower policy funding fraction: " + fundingError);
+
+		PolicyEffectCanonicalTargetSet targetSet = new PolicyEffectCanonicalTargetSet
+		{
+			SettlementIds = new List<string> { "volunteer-primary", "volunteer-bound-village" },
+			ParentSettlementIds = new List<string> { "volunteer-primary" }
+		};
+		PolicyEffectPreparedInstance prepared = new PolicyEffectPreparedInstance
+		{
+			Descriptor = descriptor,
+			IdempotencyKey = "volunteer-growth-prepared",
+			Instance = new PolicyEffectInstance
+			{
+				InstanceId = "volunteer-growth-prepared",
+				PolicyId = "volunteer-growth-policy",
+				ModuleId = module.Id,
+				SourceModuleId = module.Id,
+				SourceScope = PolicyEffectScopes.Local,
+				Payload = normalizedPayload,
+				TargetSet = targetSet
+			}
+		};
+		IReadOnlyList<PolicyEffectModelContribution> modelContributions =
+			((IModelModifierPolicyEffectModule)module).BuildModelContributions(prepared);
+		Check(modelContributions.Count == 2
+			&& modelContributions.All(item => item.Hook == PolicyEffectHook.VolunteerProductionProbability
+				&& item.TargetKind == PolicyEffectTargetKind.Settlement
+				&& Math.Abs(item.Value - 20f) < 0.0001f)
+			&& modelContributions.Select(item => item.TargetId).OrderBy(value => value, StringComparer.Ordinal)
+				.SequenceEqual(new[] { "volunteer-bound-village", "volunteer-primary" }, StringComparer.Ordinal),
+			"Volunteer production/growth must index the primary fief and bound villages as exact Settlement IDs.");
+
+		PolicyEffectRuntimeContribution Contribution(
+			string instanceId,
+			float value,
+			PolicyEffectAggregationKind aggregation = PolicyEffectAggregationKind.Additive)
+			=> new PolicyEffectRuntimeContribution(
+				instanceId,
+				"volunteer-growth-policy-" + instanceId,
+				module.Id,
+				"志愿兵政策",
+				PolicyEffectHook.VolunteerProductionProbability,
+				PolicyEffectTargetKind.Settlement,
+				"volunteer-primary",
+				aggregation,
+				value);
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVolunteerProductionAdjustedProbability(
+			0.1f,
+			new[] { Contribution("plus-20", 20f) }) - 0.12f) < 0.0001f,
+			"+20 must multiply the vanilla volunteer probability by 120%, not add 20 probability points.");
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVolunteerProductionAdjustedProbability(
+			0.1f,
+			new[] { Contribution("plus-20", 20f), Contribution("plus-30", 30f) }) - 0.15f) < 0.0001f,
+			"Multiple volunteer policy percentages must add before applying the old relative multiplier formula.");
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVolunteerProductionAdjustedProbability(
+			0.1f,
+			new[] { Contribution("minus-100", -100f) })) < 0.0001f
+			&& Math.Abs(CustomPolicyBehavior.CalculatePolicyVolunteerProductionAdjustedProbability(
+				0.25f,
+				new[] { Contribution("plus-500", 500f) }) - 1f) < 0.0001f,
+			"Volunteer policy probability must retain the old zero-multiplier floor and final [0,1] clamp.");
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVolunteerProductionAdjustedProbability(
+			0.1f,
+			new[] { Contribution("wrong-aggregation", 50f, PolicyEffectAggregationKind.PercentPoints) }) - 0.1f) < 0.0001f,
+			"Volunteer runtime scaling must ignore contributions with an incompatible aggregation contract.");
+
+		PolicyEffectInstanceSaveData displayInstance = BuildPlayerVisibleEffectInstance(
+			"display-volunteer-growth",
+			"M-volunteer",
+			module.Id,
+			20f,
+			targetSet);
+		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
+		Check(display.Count == 1
+			&& display[0].Contains("志愿兵补充与成长：相对原版每日判定频率 +20%")
+			&& display[0].IndexOf("招募池刷新", StringComparison.Ordinal) < 0,
+			"Volunteer player text must expose the abstract supplement/growth result and relative-frequency semantics.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
+		Check(File.Exists(promptPath), "Volunteer production/growth prompt JSON is missing: " + promptPath);
+		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
+		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
+			&& string.Equals(prompt.Value<string>("ModuleId"), module.Id, StringComparison.Ordinal)
+			&& string.Equals(prompt.Value<string>("UnderstandingPrompt"), descriptor.EditableUnderstandingPrompt, StringComparison.Ordinal)
+			&& string.Equals(prompt.Value<string>("EvaluationPrompt"), descriptor.EditableEvaluationPrompt, StringComparison.Ordinal)
+			&& descriptor.MainInstruction.Contains("同一个数值")
+			&& descriptor.MainInstruction.Contains("不给领主队伍或驻军士兵经验")
+			&& !descriptor.PlayerDisplayName.Contains("招募池刷新"),
+			"Volunteer prompt, fallback, one-value rule, and soldier-XP boundary must remain aligned.");
+		IPolicyEffectModule soldierXp = RequirePolicyEffectModule("soldierTroopXp");
+		Check(soldierXp.Descriptor.EditableUnderstandingPrompt.Contains("尚未招募的要人志愿兵槽位")
+			&& soldierXp.Descriptor.MainInstruction.Contains("志愿兵补充与成长"),
+			"soldierTroopXp must explicitly exclude pre-recruitment volunteer slots unless the policy separately grants fielded-troop XP.");
+
+		string behaviorSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Effects.cs"),
+			Encoding.UTF8);
+		int postfixStart = behaviorSource.IndexOf("Patch_PolicyVolunteerProductionProbability_Postfix", StringComparison.Ordinal);
+		int calculatorStart = behaviorSource.IndexOf("CalculatePolicyVolunteerProductionAdjustedProbability", postfixStart + 1, StringComparison.Ordinal);
+		string postfixSource = postfixStart >= 0 && calculatorStart > postfixStart
+			? behaviorSource.Substring(postfixStart, calculatorStart - postfixStart)
+			: string.Empty;
+		Check(postfixSource.Contains("PolicyEffectRuntimeIndex") == false
+			&& postfixSource.Contains("GetContributions")
+			&& postfixSource.IndexOf("VolunteerTypes[index]", StringComparison.Ordinal) < 0,
+			"Volunteer postfix must use the cached exact-target lookup and must not branch on empty versus occupied slots.");
+		Check(behaviorSource.Contains("PrimaryFiefAndBoundSettlements")
+			&& behaviorSource.Contains("GetBoundVillageSettlements(primary)"),
+			"The dedicated target projection must materialize the primary fief and its bound villages without changing global Settlement projection.");
+	}
+
+	private static void TestVolunteerProductionBannerlordApi()
+	{
+		Type volunteerModelType = typeof(TaleWorlds.CampaignSystem.ComponentInterfaces.VolunteerModel);
+		Type settlementType = typeof(TaleWorlds.CampaignSystem.Settlements.Settlement);
+		MethodInfo target = volunteerModelType.GetMethod(
+			"GetDailyVolunteerProductionProbability",
+			All,
+			null,
+			new[] { typeof(TaleWorlds.CampaignSystem.Hero), typeof(int), settlementType },
+			null);
+		Check(target != null
+			&& target.ReturnType == typeof(float)
+			&& target.GetParameters().Select(parameter => parameter.ParameterType).SequenceEqual(
+				new[] { typeof(TaleWorlds.CampaignSystem.Hero), typeof(int), settlementType }),
+			"Bannerlord VolunteerModel.GetDailyVolunteerProductionProbability must retain Hero,int,Settlement -> float in both supported API builds.");
+
+		MethodInfo postfix = typeof(CustomPolicyBehavior).GetMethod("Patch_PolicyVolunteerProductionProbability_Postfix", All);
+		ParameterInfo[] postfixParameters = postfix?.GetParameters();
+		Check(postfix != null
+			&& postfix.ReturnType == typeof(void)
+			&& postfixParameters?.Length == 4
+			&& postfixParameters[0].ParameterType == typeof(TaleWorlds.CampaignSystem.Hero)
+			&& postfixParameters[1].ParameterType == typeof(int)
+			&& postfixParameters[2].ParameterType == settlementType
+			&& postfixParameters[3].ParameterType.IsByRef
+			&& postfixParameters[3].ParameterType.GetElementType() == typeof(float),
+			"Volunteer Harmony postfix must bind Hero,int,Settlement and ref float result exactly.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string behaviorSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Effects.cs"),
+			Encoding.UTF8);
+		string gcczSource = File.ReadAllText(Path.Combine(repositoryRoot, "GcczVolunteerRecruitmentRatePatch.cs"), Encoding.UTF8);
+		Check(behaviorSource.Contains("new Harmony(\"com.AnimusForge.custompolicy.settlementmodels\")")
+			&& behaviorSource.Contains("Campaign.Current.Models.VolunteerModel, \"GetDailyVolunteerProductionProbability\""),
+			"Volunteer policy must reuse the established policy settlement-model Harmony owner.");
+		Check(gcczSource.Contains("priority = Priority.Last")
+			&& gcczSource.Contains("after = new[] { \"com.AnimusForge.custompolicy.settlementmodels\" }")
+			&& gcczSource.Contains("hero.VolunteerTypes[index] != null"),
+			"GCCZ must remain after the policy postfix and continue applying only to empty volunteer slots.");
+	}
+
 	private static void TestArmyFormationTendencyModuleContracts()
 	{
 		IPolicyEffectModule module = RequirePolicyEffectModule("armyFormationTendencyPct");
@@ -1139,9 +1586,13 @@ internal static class Program
 			},
 			new[] { module },
 			resolver,
-			"issuer-kingdom");
+			"issuer-kingdom",
+			string.Empty,
+			(handle, entry, currentModule, resolved) => string.Equals(entry?.EntityId, "issuer-kingdom", StringComparison.Ordinal));
 		Check(directory.Capabilities.TryGetValue(module.Id, out PolicyEffectCapabilityDirectoryEntry capability)
 			&& capability.AllowedTargetHandles.SequenceEqual(new[] { "K0" }, StringComparer.Ordinal)
+			&& string.Equals(capability.DefaultTargetHandle, "K0", StringComparison.Ordinal)
+			&& capability.AllowedSubsetTargetHandles.Count == 0
 			&& directory.Targets.Count == 1
 			&& directory.Targets.ContainsKey("K0"),
 			"Issuer-bound target directory must expose only the publisher Kingdom handle.");
@@ -1241,7 +1692,9 @@ internal static class Program
 			&& string.Equals(prompt.Value<string>("ModuleId"), module.Id, StringComparison.Ordinal)
 			&& prompt.Value<string>("UnderstandingPrompt")?.Contains("发布者所属王国") == true
 			&& prompt.Value<string>("UnderstandingPrompt")?.Contains("全局护盾") == true
-			&& prompt.Value<string>("EvaluationPrompt")?.Contains("不输出强度") == true,
+			&& prompt.Value<string>("EvaluationPrompt")?.Contains("不判断强度或概率") == true
+			&& prompt.Value<string>("EvaluationPrompt")?.Contains("{}") == false
+			&& descriptor.PostprocessRule.Contains("payload 必须严格为 {}"),
 			"Village raid ban prompt must preserve issuer-only, non-shield, and non-stacking semantics.");
 	}
 
@@ -1503,8 +1956,10 @@ internal static class Program
 			.SequenceEqual(new[] { "soldierTroopXpOnce", "soldierTroopXpPerDay" }, StringComparer.Ordinal),
 			"soldierTroopXp must declare exactly its once and daily runtime descendants.");
 		Check(composite.Descriptor.CueTerms.Contains("精锐化")
-			&& composite.Descriptor.EditableEvaluationPrompt.IndexOf("daily=60", StringComparison.Ordinal) >= 0
+			&& composite.Descriptor.EditableEvaluationPrompt.IndexOf("每日60已属极强", StringComparison.Ordinal) >= 0
 			&& composite.Descriptor.EditableEvaluationPrompt.IndexOf("1700", StringComparison.Ordinal) >= 0
+			&& composite.Descriptor.EditableUnderstandingPrompt.IndexOf("onceDelta", StringComparison.OrdinalIgnoreCase) < 0
+			&& composite.Descriptor.EditableUnderstandingPrompt.IndexOf("dailyDelta", StringComparison.OrdinalIgnoreCase) < 0
 			&& composite.Descriptor.EditableUnderstandingPrompt.IndexOf("语义腿", StringComparison.Ordinal) < 0
 			&& composite.Descriptor.EditableUnderstandingPrompt.IndexOf("assignment", StringComparison.OrdinalIgnoreCase) < 0
 			&& composite.Descriptor.EditableUnderstandingPrompt.IndexOf("effectIntents", StringComparison.OrdinalIgnoreCase) < 0
@@ -2968,13 +3423,37 @@ internal static class Program
 		Check(publicationLines.Count == 2
 			&& publicationLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal)
 				&& line.IndexOf("城镇繁荣变化：每日 +5", StringComparison.Ordinal) >= 0)
-			&& publicationLines.Any(line => line.StartsWith("目标：1 个王国｜", StringComparison.Ordinal)
+			&& publicationLines.Any(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal)
 				&& line.IndexOf("王国稳定度：下一游戏日一次 +4", StringComparison.Ordinal) >= 0)
 			&& publicationLines.All(line => line.EndsWith("｜期限：持续 12 天", StringComparison.Ordinal)
 				&& !line.StartsWith("测试王国｜", StringComparison.Ordinal)
 				&& !ContainsAsciiLetter(line)),
 			"Player publication popup must identify each effect's concrete target, cadence, sign, and duration. actual="
 			+ string.Join(" | ", publicationLines));
+
+		PolicyEffectInstanceSaveData kingdomTownProjection = BuildPlayerVisibleEffectInstance(
+			"display-kingdom-town-projection",
+			"M1K",
+			"prosperityPerDay",
+			2f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "K:display-kingdom" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				SettlementIds = new List<string> { "display-town-a", "display-town-b" },
+				TownIds = new List<string> { "display-town-a", "display-town-b" }
+			});
+		List<string> mergedKingdomProjectionLines = Items(InvokeStatic(
+			playerBehavior,
+			"BuildPlayerVisibleEffectLines",
+			new object[] { "测试王国", new[] { stability, kingdomTownProjection }, 12 },
+			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
+		Check(mergedKingdomProjectionLines.Count == 2
+			&& mergedKingdomProjectionLines.All(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal))
+			&& mergedKingdomProjectionLines.Any(line => line.Contains("王国稳定度"))
+			&& mergedKingdomProjectionLines.Any(line => line.Contains("城镇繁荣变化")),
+			"Different module projections from the same bare K selector must group and display by semantic kingdom instead of expanded towns/clans. actual="
+			+ string.Join(" | ", mergedKingdomProjectionLines));
 
 		PolicyEffectInstanceSaveData clanTroopXp = BuildPlayerVisibleEffectInstance(
 			"display-clan-troop-xp",
@@ -2997,6 +3476,176 @@ internal static class Program
 			"Clan-canonical effects must identify their frozen Clan target instead of the source settlement. actual="
 			+ string.Join(" | ", clanPublicationLines));
 
+		PolicyEffectInstanceSaveData explicitHeroProjection = BuildPlayerVisibleEffectInstance(
+			"display-explicit-hero",
+			"M4H",
+			"heroGoldNextDayOnce",
+			100f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "H0" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				HeroIds = new List<string> { "display-hero" }
+			});
+		PolicyEffectInstanceSaveData explicitPlanProjection = BuildPlayerVisibleEffectInstance(
+			"display-explicit-plan",
+			"M4P",
+			"prosperityPerDay",
+			1f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "P0" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				TownIds = new List<string> { "display-plan-town" },
+				TargetPlans = new List<PolicyTargetPlanSaveData>
+				{
+					BuildPolicyTwoStageSyntheticPlan(PolicyEffectTargetKind.Town)
+				}
+			});
+		List<string> explicitSubsetLines = Items(InvokeStatic(
+			playerBehavior,
+			"BuildPlayerVisibleEffectLines",
+			new object[] { "测试王国", new[] { explicitHeroProjection, explicitPlanProjection }, 8 },
+			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
+		Check(explicitSubsetLines.Count == 2
+			&& explicitSubsetLines.Any(line => line.StartsWith("目标：1 位人物｜", StringComparison.Ordinal))
+			&& explicitSubsetLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
+			&& explicitSubsetLines.All(line => !line.StartsWith("目标王国：", StringComparison.Ordinal)),
+			"Explicit H/P subset selectors must remain concrete and must not masquerade as whole-kingdom targets. actual="
+			+ string.Join(" | ", explicitSubsetLines));
+
+		PolicyEffectInstanceSaveData wholeKingdomClanProjection = BuildPlayerVisibleEffectInstance(
+			"display-whole-kingdom-clans",
+			"M5",
+			"clanInfluencePerDay",
+			1f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "K:display-kingdom" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				ClanIds = new List<string> { "display-clan-a", "display-clan-b", "display-clan-c" }
+			});
+		PolicyEffectInstanceSaveData roleLordClanProjection = BuildPlayerVisibleEffectInstance(
+			"display-role-lord-clans",
+			"M6",
+			"clanInfluencePerDay",
+			2f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorIds = new List<string> { "hero:v1:role:lords:display-kingdom" },
+				ClanIds = new List<string> { "display-clan-a", "display-clan-b", "display-clan-c" }
+			});
+		PolicyEffectInstanceSaveData explicitClanProjection = BuildPlayerVisibleEffectInstance(
+			"display-explicit-clan",
+			"M7",
+			"clanInfluencePerDay",
+			3f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "C:display-clan-a" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				ClanIds = new List<string> { "display-clan-a" }
+			});
+		PolicyEffectInstanceSaveData rulerClanProjection = BuildPlayerVisibleEffectInstance(
+			"display-ruler-clan",
+			"M8",
+			"clanInfluencePerDay",
+			4f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "R:display-kingdom" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				ClanIds = new List<string> { "display-ruler-clan" }
+			});
+		List<string> lordTargetLines = Items(InvokeStatic(
+			playerBehavior,
+			"BuildPlayerVisibleEffectLines",
+			new object[]
+			{
+				"测试王国",
+				new[]
+				{
+					wholeKingdomClanProjection,
+					roleLordClanProjection,
+					explicitClanProjection,
+					rulerClanProjection
+				},
+				10
+			},
+			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
+		Check(lordTargetLines.Count == 4
+			&& lordTargetLines.Count(line => line.StartsWith("目标王国：测试王国全体领主｜", StringComparison.Ordinal)) == 2,
+			"Kingdom handles and role/lords selectors projected to ClanIds must retain whole-kingdom lord semantics. actual="
+			+ string.Join(" | ", lordTargetLines));
+		Check(lordTargetLines.Count(line => line.StartsWith("目标：1 个家族｜", StringComparison.Ordinal)) == 2
+			&& lordTargetLines.Count(line => line.IndexOf("全体领主", StringComparison.Ordinal) >= 0) == 2,
+			"Explicit C/R clan selectors must remain concrete clan targets instead of collapsing to all kingdom lords. actual="
+			+ string.Join(" | ", lordTargetLines));
+		PolicyEffectInstanceSaveData actorClanExcludedKingdomProjection = BuildPlayerVisibleEffectInstance(
+			"display-actor-clan-excluded-kingdom",
+			"M9",
+			"clanLeaderRelationOnce",
+			6f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "K:display-kingdom" },
+				KingdomIds = new List<string> { "display-kingdom" },
+				ClanIds = new List<string> { "display-clan-a", "display-clan-b", "display-clan-c" }
+			});
+		PolicyEffectInstanceSaveData actorClanExcludedRoleProjection = BuildPlayerVisibleEffectInstance(
+			"display-actor-clan-excluded-role",
+			"M10",
+			"clanLeaderRelationOnce",
+			7f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorIds = new List<string> { "hero:v1:role:lords:display-kingdom" },
+				ClanIds = new List<string> { "display-clan-a", "display-clan-b", "display-clan-c" }
+			});
+		List<string> actorClanExcludedLines = Items(InvokeStatic(
+			playerBehavior,
+			"BuildPlayerVisibleEffectLines",
+			new object[]
+			{
+				"测试王国",
+				new[] { actorClanExcludedKingdomProjection, actorClanExcludedRoleProjection },
+				10
+			},
+			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
+		Check(actorClanExcludedLines.Count == 2
+			&& actorClanExcludedLines.Count(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal)) == 1
+			&& actorClanExcludedLines.Count(line => line.StartsWith("目标：3 个家族｜", StringComparison.Ordinal)) == 1
+			&& actorClanExcludedLines.All(line => line.IndexOf("全体领主", StringComparison.Ordinal) < 0),
+			"A bare K selector must keep kingdom semantics even when a module excludes the actor clan, while role/lords remains a concrete subset. actual="
+			+ string.Join(" | ", actorClanExcludedLines));
+		PolicyEffectInstanceSaveData multiKingdomClanProjection = BuildPlayerVisibleEffectInstance(
+			"display-multi-kingdom-clans",
+			"M11",
+			"clanInfluencePerDay",
+			5f,
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "K0", "K1", "K2", "K3" },
+				KingdomIds = new List<string>
+				{
+					"display-kingdom-a",
+					"display-kingdom-b",
+					"display-kingdom-c",
+					"display-kingdom-d"
+				},
+				ClanIds = new List<string> { "display-clan-a", "display-clan-b", "display-clan-c" }
+			});
+		List<string> multiKingdomLines = Items(InvokeStatic(
+			playerBehavior,
+			"BuildPlayerVisibleEffectLines",
+			new object[] { "测试王国", new[] { multiKingdomClanProjection }, 10 },
+			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
+		Check(multiKingdomLines.Count == 1
+			&& multiKingdomLines[0].StartsWith("目标王国：4 个王国的全体领主｜", StringComparison.Ordinal)
+			&& multiKingdomLines[0].IndexOf("display-kingdom", StringComparison.OrdinalIgnoreCase) < 0,
+			"Multi-kingdom lord labels must remain bounded and must not enumerate internal target identifiers. actual="
+			+ string.Join(" | ", multiKingdomLines));
+
 		Type recordType = SutType("AnimusForge.CustomPolicyBehavior+PolicyRecordSaveData");
 		Type recordEffectType = SutType("AnimusForge.CustomPolicyBehavior+PolicyRecordEffectSaveData");
 		object record = Activator.CreateInstance(recordType, nonPublic: true);
@@ -3012,7 +3661,7 @@ internal static class Program
 		string[] nationalLines = nationalHistory.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 		Check(nationalLines.Length == 2
 			&& nationalLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& nationalLines.Any(line => line.StartsWith("目标：1 个王国｜", StringComparison.Ordinal))
+			&& nationalLines.Any(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal))
 			&& nationalLines.All(line => !ContainsAsciiLetter(line)),
 			"Player national-policy history must keep logical modules on independent Chinese lines. actual=" + nationalHistory);
 
@@ -3030,7 +3679,7 @@ internal static class Program
 		string[] localLines = localHistory.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 		Check(localLines.Length == 2
 			&& localLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& localLines.Any(line => line.StartsWith("目标：1 个王国｜", StringComparison.Ordinal))
+			&& localLines.Any(line => line.StartsWith("目标王国：测试封地｜", StringComparison.Ordinal))
 			&& localLines.All(line => !ContainsAsciiLetter(line)),
 			"Player local-policy history must keep logical modules on independent Chinese lines. actual=" + localHistory);
 
@@ -3049,7 +3698,7 @@ internal static class Program
 		string[] npcLines = npcPublication.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 		Check(npcLines.Length == 2
 			&& npcLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& npcLines.Any(line => line.StartsWith("目标：1 个王国｜", StringComparison.Ordinal))
+			&& npcLines.Any(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal))
 			&& npcLines.All(line => !line.StartsWith("【测试王国】", StringComparison.Ordinal)
 				&& !ContainsAsciiLetter(line)),
 			"Non-player ruler policy publication must use the same concrete-target display path as player policies. actual=" + npcPublication);
@@ -4294,10 +4943,10 @@ internal static class Program
 		handles.Add(lordHandle);
 		SetField(requestType, request, "TargetHandles", handles);
 		SetField(requestType, request, "EffectTargetDirectory", TokenToObject(JObject.Parse(
-			"{\"structureVersion\":2,\"targets\":{\"H0\":{\"kind\":\"hero\","
+			"{\"structureVersion\":3,\"targets\":{\"H0\":{\"kind\":\"hero\","
 			+ "\"description\":\"本国当前有效领主\",\"selectorId\":\"hero:v1:role:lords:k1\"}},"
-			+ "\"capabilities\":{\"heroGold\":{\"allowedTargetHandles\":[\"H0\"]},"
-			+ "\"soldierTroopXp\":{\"allowedTargetHandles\":[\"H0\"]}}}"), directoryType));
+			+ "\"capabilities\":{\"heroGold\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"H0\"],\"allowedTargetHandles\":[\"H0\"]},"
+			+ "\"soldierTroopXp\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"H0\"],\"allowedTargetHandles\":[\"H0\"]}}}"), directoryType));
 
 		object assessment = Activator.CreateInstance(assessmentType, nonPublic: true);
 		SetProperty(assessmentType, assessment, "PublicFeedback", "军营欢迎加薪，酒馆里也有人担心长期财政压力。");
@@ -4350,6 +4999,9 @@ internal static class Program
 			&& mainPrompt.Contains("同一措施可合理一阶推出的不同机械后果")
 			&& mainPrompt.Contains("不要只写最显眼的一项"),
 			"Stage one must preserve numeric intent and enumerate distinct first-order mechanical consequences without module coupling.");
+		Check(mainPrompt.Contains("本阶段不决定后续可执行能力、具体目标或最终执行值")
+			&& !mainPrompt.Contains("永久影响应明显弱于同类有限影响"),
+			"Stage one may describe permanent-policy accumulation and execution conditions but must not pre-weaken stage-two values.");
 
 		Check(effectPrompt.Contains(heroGold.Id)
 			&& effectPrompt.Contains(troopXp.Id)
@@ -4359,9 +5011,9 @@ internal static class Program
 			&& effectPrompt.Contains("unsupported")
 			&& effectPrompt.Contains("mechanismId")
 			&& effectPrompt.Contains("targetHandles")
-			&& effectUserPrompt.Contains("\"structureVersion\":2")
+			&& effectUserPrompt.Contains("\"structureVersion\":3")
 			&& effectUserPrompt.Contains("\"H0\":{\"kind\":\"hero\"")
-			&& effectUserPrompt.Contains("\"soldierTroopXp\":{\"allowedTargetHandles\":[\"H0\"]}")
+			&& effectUserPrompt.Contains("\"soldierTroopXp\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"H0\"],\"allowedTargetHandles\":[\"H0\"]}")
 			&& effectPrompt.Contains("每日给本国领主发放三百第纳尔")
 			&& effectPrompt.Contains("军营欢迎加薪")
 			&& effectPrompt.Contains("FULL_IMPACT_TAIL_MARKER")
@@ -4378,7 +5030,9 @@ internal static class Program
 			&& effectPrompt.Contains("同一笔投入")
 			&& effectPrompt.Contains("不算重复计算")
 			&& effectPrompt.Contains("这不是最低效果数量要求")
-			&& effectPrompt.Contains("不得无理由选择象征性或最低档数值")
+			&& effectPrompt.Contains("制度设计质量、实际执行能力、政策影响强度和财政成本不得混为同一尺度")
+			&& effectPrompt.Contains("低财政成本不得自动削弱")
+			&& effectPrompt.Contains("不得仅因目标多、覆盖广、持续久、永久生效或财政成本较低而落在象征性或最低档")
 			&& !effectPrompt.Contains("不得为了覆盖自然语言后果而硬映射")
 			&& !effectPrompt.Contains("第一次通用评议只帮助理解影响与数值意图，不构成执行授权"),
 			"Stage two must receive only the injected details, full policy, stage-one review and legal targets, then emit a direct EffectPlan.");
@@ -4655,6 +5309,345 @@ internal static class Program
 			"narrativeOnly and unsupported must remain successful publications without creating an active effect bundle.");
 	}
 
+	private static void TestPlayerPolicySemanticRepairContracts()
+	{
+		Type behaviorType = SutType("AnimusForge.CustomPolicyBehavior");
+		Type requestType = behaviorType.GetNestedType("PolicyDraftRequest", All);
+		Type assessmentType = behaviorType.GetNestedType("PolicyMainAssessmentResult", All);
+		Type handleType = behaviorType.GetNestedType("PolicyTargetHandleSaveData", All);
+		Type directoryType = SutType("AnimusForge.PolicyTargets.PolicyTargetHandleDirectory");
+		Check(requestType != null && assessmentType != null && handleType != null && directoryType != null,
+			"Player semantic repair requires the production request, assessment, target and directory contracts.");
+		Check(behaviorType.GetField("PlayerPolicyApiTextOverrideForTests", All) != null,
+			"Player semantic repair orchestration must expose the text-only sequential API override used by contract tests.");
+
+		object request = Activator.CreateInstance(requestType, nonPublic: true);
+		SetField(requestType, request, "RequestId", "player-semantic-repair-contract");
+		SetField(requestType, request, "ScopeKind", PolicyEffectScopes.Kingdom);
+		SetField(requestType, request, "PolicyName", "王国秩序修复令");
+		SetField(requestType, request, "PolicyContent", "在三十天内温和改善王国稳定。避免重复结算。");
+		SetField(requestType, request, "PlayerKingdomId", "k1");
+		SetField(requestType, request, "PlayerKingdomName", "测试王国");
+		SetField(requestType, request, "IssuerKingdomId", "k1");
+		SetField(requestType, request, "ManualDurationDays", 30);
+		SetField(requestType, request, "UseAiEvaluatedCost", false);
+
+		JObject validMain = new JObject
+		{
+			["publicFeedback"] = "民众支持逐步恢复秩序。",
+			["impactSummary"] = "王国稳定将获得温和改善。",
+			["numericIntent"] = "王国稳定提高一点。",
+			["policyContentDigest"] = "三十天稳定修复。",
+			["feedbackDigest"] = "民众总体支持。",
+			["authoritarianWeight"] = 0.2,
+			["oligarchicWeight"] = 0.1,
+			["egalitarianWeight"] = 0.3,
+			["effectDurationMode"] = "finite",
+			["durationDays"] = 30
+		};
+		string invalidMain = new JObject
+		{
+			["publicFeedback"] = "缺少合同字段"
+		}.ToString(Formatting.None);
+		object[] rejectedMain = { invalidMain, request, null, null, null };
+		Check(!(bool)InvokeStatic(behaviorType, "TryParseMainAssessmentResult", rejectedMain, 5)
+			&& string.Equals(rejectedMain[3]?.ToString(), "contract_validation_failed", StringComparison.Ordinal)
+			&& !string.IsNullOrWhiteSpace(rejectedMain[4]?.ToString()),
+			"The first invalid player main response must expose a bounded deterministic diagnostic for the single repair turn.");
+		List<object> originalMessages = new List<object>
+		{
+			new JObject { ["role"] = "system", ["content"] = "frozen player main contract" },
+			new JObject { ["role"] = "user", ["content"] = "frozen policy input" }
+		};
+		IEnumerable repairedMessagesRaw = (IEnumerable)InvokeStatic(
+			behaviorType,
+			"BuildPlayerPolicyMainRepairMessages",
+			new object[] { originalMessages, invalidMain, rejectedMain[4]?.ToString() },
+			3);
+		JArray repairedMessages = JArray.FromObject(repairedMessagesRaw.Cast<object>());
+		Check(repairedMessages.Count == 4
+			&& JToken.DeepEquals(repairedMessages[0], JToken.FromObject(originalMessages[0]))
+			&& JToken.DeepEquals(repairedMessages[1], JToken.FromObject(originalMessages[1]))
+			&& string.Equals(repairedMessages[2]?["role"]?.ToString(), "assistant", StringComparison.Ordinal)
+			&& string.Equals(repairedMessages[2]?["content"]?.ToString(), invalidMain, StringComparison.Ordinal)
+			&& string.Equals(repairedMessages[3]?["role"]?.ToString(), "user", StringComparison.Ordinal)
+			&& repairedMessages[3]?["content"]?.ToString().Contains("唯一一次结构化纠错机会") == true
+			&& repairedMessages[3]?["content"]?.ToString().Contains("不得增加未知字段") == true,
+			"Player main repair must append exactly one constrained assistant/user turn without changing the frozen prompt.");
+		object[] acceptedMain = { validMain.ToString(Formatting.None), request, null, null, null };
+		Check((bool)InvokeStatic(behaviorType, "TryParseMainAssessmentResult", acceptedMain, 5)
+			&& acceptedMain[2] != null
+			&& string.IsNullOrWhiteSpace(acceptedMain[3]?.ToString())
+			&& string.IsNullOrWhiteSpace(acceptedMain[4]?.ToString()),
+			"A corrected player main response must pass the same strict production parser used by the first attempt.");
+
+		IList handles = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(handleType));
+		object kingdomHandle = BuildLocalPolicyGateHandle(handleType, "K0", "kingdom");
+		SetProperty(handleType, kingdomHandle, "EntityId", "k1");
+		SetProperty(handleType, kingdomHandle, "KingdomId", "k1");
+		SetProperty(handleType, kingdomHandle, "KingdomName", "测试王国");
+		handles.Add(kingdomHandle);
+		SetField(requestType, request, "TargetHandles", handles);
+		SetField(requestType, request, "SelectedEffectModuleIds", new List<string> { "kingdomStability" });
+		SetField(requestType, request, "CandidateEffectModuleIds", new List<string> { "kingdomStability" });
+		SetField(requestType, request, "EffectTargetDirectory", TokenToObject(JObject.Parse(
+			"{\"structureVersion\":3,\"targets\":{\"K0\":{\"kind\":\"kingdom\",\"description\":\"测试王国\",\"entityId\":\"k1\"}},"
+			+ "\"capabilities\":{\"kingdomStability\":{\"defaultTargetHandle\":\"K0\",\"allowedSubsetTargetHandles\":[],\"allowedTargetHandles\":[\"K0\"]}}}"), directoryType));
+		object assessment = acceptedMain[2];
+		string executableEffectPlan = new JObject
+		{
+			["effectPlanVersion"] = 1,
+			["disposition"] = "executable",
+			["reason"] = "政策直接改善王国稳定。",
+			["effects"] = new JArray
+			{
+				new JObject
+				{
+					["mechanismId"] = "M0", ["mechanismKind"] = "independent", ["role"] = "subject",
+					["moduleId"] = "kingdomStability", ["targetHandles"] = new JArray("K0"),
+					["payload"] = new JObject { ["value"] = 1.0 }, ["reason"] = "温和提高稳定。"
+				}
+			}
+		}.ToString(Formatting.None);
+		string validEffectPlan = new JObject
+		{
+			["effectPlanVersion"] = 1,
+			["disposition"] = "narrativeOnly",
+			["reason"] = "合同测试只验证修复后的完整生产解析，不在无 Campaign 进程中创建运行时效果。",
+			["effects"] = new JArray()
+		}.ToString(Formatting.None);
+		object[] malformedEffect = { request, assessment, "{", null, null, null };
+		Check(!(bool)InvokeStatic(behaviorType, "TryBuildFinalPolicyPostprocess", malformedEffect, 6)
+			&& string.Equals(malformedEffect[5]?.ToString(), "InvalidStructure", StringComparison.Ordinal),
+			"A malformed first player EffectPlan must be classified for one effect-only semantic repair.");
+		object[] repairedEffect = { request, assessment, validEffectPlan, null, null, null };
+		Check((bool)InvokeStatic(behaviorType, "TryBuildFinalPolicyPostprocess", repairedEffect, 6)
+			&& repairedEffect[3] != null,
+			"A corrected player EffectPlan must pass the complete production parser, authorization and compiler path: "
+			+ repairedEffect[4]);
+
+		JObject overlap = JObject.Parse(executableEffectPlan);
+		JObject duplicateLeg = (JObject)overlap["effects"][0].DeepClone();
+		duplicateLeg["mechanismId"] = "M1";
+		((JArray)overlap["effects"]).Add(duplicateLeg);
+		object[] overlapRepairScope = { overlap.ToString(Formatting.None), executableEffectPlan, null };
+		Check((bool)InvokeStatic(
+			SutType("AnimusForge.PolicyEffects.PolicyEffectRepairPromptBuilder"),
+			"TryValidateNoScopeExpansion",
+			overlapRepairScope,
+			3),
+			"An overlap repair may remove the duplicate leg while retaining the frozen module/target scope: "
+			+ overlapRepairScope[2]);
+
+		foreach (Tuple<string, string, string> invalidScope in new[]
+		{
+			Tuple.Create("unauthorized-target", "kingdomStability", "Z9"),
+			Tuple.Create("unauthorized-module", "foodPerDay", "K0")
+		})
+		{
+			JObject invalidPlan = JObject.Parse(executableEffectPlan);
+			invalidPlan["effects"][0]["moduleId"] = invalidScope.Item2;
+			invalidPlan["effects"][0]["targetHandles"] = new JArray(invalidScope.Item3);
+			object[] invalidPlanResult = { request, assessment, invalidPlan.ToString(Formatting.None), null, null, null };
+			Check(!(bool)InvokeStatic(behaviorType, "TryBuildFinalPolicyPostprocess", invalidPlanResult, 6),
+				"An unauthorized player EffectPlan must fail before publication: " + invalidScope.Item1);
+			object[] scopeRepair = { invalidPlan.ToString(Formatting.None), executableEffectPlan, null };
+			Check(!(bool)InvokeStatic(
+				SutType("AnimusForge.PolicyEffects.PolicyEffectRepairPromptBuilder"),
+				"TryValidateNoScopeExpansion",
+				scopeRepair,
+				3),
+				"A repair must not replace an unauthorized first-attempt module/target with newly introduced scope: "
+				+ invalidScope.Item1);
+		}
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string generationSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Generation.cs"), Encoding.UTF8);
+		Check(generationSource.Contains("PlayerPolicyMainRepair")
+			&& generationSource.Contains("PlayerPolicyEffectPostprocessRepair")
+			&& generationSource.Contains("TryValidateNoScopeExpansion(")
+			&& generationSource.Contains("semantic-repair-start")
+			&& generationSource.Contains("semantic-repair-complete")
+			&& generationSource.Contains("semantic-repair-failed"),
+			"Player orchestration must wire both single semantic repair stages to bounded diagnostics and no-scope validation.");
+		TestPlayerSemanticRepairApiOverrideContract(validMain.ToString(Formatting.None));
+	}
+
+	private static void TestPlayerSemanticRepairApiOverrideContract(string validMain)
+	{
+		if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(OnnxRuntimeDirectoryEnvironmentVariable)))
+		{
+			return;
+		}
+		Type behaviorType = SutType("AnimusForge.CustomPolicyBehavior");
+		Type requestType = behaviorType.GetNestedType("PolicyDraftRequest", All);
+		Type settingsType = behaviorType.GetNestedType("PolicyGenerationSettingsSnapshot", All);
+		Type promptContextType = behaviorType.GetNestedType("PolicyPromptContextBundle", All);
+		Type handleType = behaviorType.GetNestedType("PolicyTargetHandleSaveData", All);
+		Type profileType = SutType("AnimusForge.PolicyApiExecutionProfile");
+		Type resultType = behaviorType.GetNestedType("PolicyGenerationResult", All);
+		FieldInfo overrideField = behaviorType.GetField("PlayerPolicyApiTextOverrideForTests", All);
+		Check(requestType != null && settingsType != null && promptContextType != null && handleType != null
+			&& profileType != null && resultType != null && overrideField != null,
+			"Player end-to-end semantic repair contract requires the production snapshot and sequential API hook.");
+
+		Func<string, object> buildRequest = requestId =>
+		{
+			object request = Activator.CreateInstance(requestType, nonPublic: true);
+			SetField(requestType, request, "RequestId", requestId);
+			SetField(requestType, request, "ScopeKind", PolicyEffectScopes.Kingdom);
+			SetField(requestType, request, "IssuerKingdomId", "k1");
+			SetField(requestType, request, "PlayerKingdomId", "k1");
+			SetField(requestType, request, "PlayerKingdomName", "测试王国");
+			object settings = Activator.CreateInstance(settingsType, nonPublic: true);
+			object profile = Activator.CreateInstance(profileType, nonPublic: true);
+			SetField(profileType, profile, "EffectiveApiUrl", "https://api.deepseek.com/chat/completions");
+			SetField(profileType, profile, "ApiKey", "contract-placeholder-not-sent");
+			SetField(profileType, profile, "ModelName", "deepseek-chat");
+			SetField(profileType, profile, "MaxTokens", 2000);
+			SetField(profileType, profile, "ResolvedRoute", "contract-override");
+			SetField(settingsType, settings, "ApiProfile", profile);
+			SetField(settingsType, settings, "RuntimeGeneration", Convert.ToInt64(Property(
+				SutType("AnimusForge.SaveRuntimeGuard"), null, "CurrentGeneration"), CultureInfo.InvariantCulture));
+			SetField(settingsType, settings, "ScopeKind", PolicyEffectScopes.Kingdom);
+			SetField(settingsType, settings, "IssuerKingdomId", "k1");
+			SetField(settingsType, settings, "TargetKingdomId", "k1");
+			SetField(settingsType, settings, "PolicyName", "王国秩序修复令");
+			SetField(settingsType, settings, "PolicyContent", "在三十天内温和改善王国稳定。避免重复结算。");
+			SetField(settingsType, settings, "DateText", "contract-day");
+			object promptContext = Activator.CreateInstance(promptContextType, nonPublic: true);
+			SetField(promptContextType, promptContext, "PolicyRuleContext", "严格按冻结政策生成。" );
+			SetField(promptContextType, promptContext, "WorldContextCompact", "测试王国当前需要恢复稳定。" );
+			SetField(promptContextType, promptContext, "WorldContextFull", "测试王国当前需要恢复稳定。" );
+			SetField(settingsType, settings, "PromptContext", promptContext);
+			SetField(settingsType, settings, "ManualDurationDays", 30);
+			SetField(settingsType, settings, "PublicFeedbackTargetChars", 240);
+			SetField(settingsType, settings, "ConfiguredDetailCount", 1);
+			SetField(settingsType, settings, "EffectiveDetailCount", 1);
+			SetField(settingsType, settings, "EffectPostprocessMaxTokens", 1200);
+			SetField(settingsType, settings, "RetrievalContext", PolicyEffectRetrievalContext.PlayerKingdom);
+			SetField(settingsType, settings, "EnabledModuleIds", new List<string> { "kingdomStability" });
+			IList initialHandles = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(handleType));
+			object kingdomHandle = BuildLocalPolicyGateHandle(handleType, "K0", "kingdom");
+			SetProperty(handleType, kingdomHandle, "EntityId", "k1");
+			SetProperty(handleType, kingdomHandle, "KingdomId", "k1");
+			SetProperty(handleType, kingdomHandle, "KingdomName", "测试王国");
+			initialHandles.Add(kingdomHandle);
+			SetField(settingsType, settings, "InitialTargetHandles", initialHandles);
+			SetField(requestType, request, "GenerationSettings", settings);
+			return request;
+		};
+		string invalidMain = "{\"publicFeedback\":\"missing contract fields\"}";
+		Func<object, Func<string, string, long, Task<string>>, object> execute = (request, fake) =>
+		{
+			overrideField.SetValue(null, fake);
+			try
+			{
+				Task task = (Task)InvokeInstance(
+					behaviorType,
+					Activator.CreateInstance(behaviorType),
+					"GeneratePolicyResultAsync",
+					new[] { request },
+					1);
+				task.GetAwaiter().GetResult();
+				return task.GetType().GetProperty("Result", All)?.GetValue(task, null);
+			}
+			finally
+			{
+				overrideField.SetValue(null, null);
+			}
+		};
+
+		List<string> mainRepairSources = new List<string>();
+		object mainRepairResult = execute(buildRequest("player-main-repair-success"), (prompt, source, generation) =>
+		{
+			mainRepairSources.Add(source ?? string.Empty);
+			return Task.FromResult(string.Equals(source, "PlayerPolicyMain", StringComparison.Ordinal)
+				? invalidMain
+				: string.Equals(source, "PlayerPolicyMainRepair", StringComparison.Ordinal)
+					? validMain
+					: "{}");
+		});
+		Check(mainRepairSources.SequenceEqual(new[] { "PlayerPolicyMain", "PlayerPolicyMainRepair" }, StringComparer.Ordinal)
+			&& resultType.GetField("MainAssessment", All).GetValue(mainRepairResult) != null,
+			"Player main must repair one invalid response, then continue to the no-Campaign target boundary without repeating history or the main stage. actual="
+			+ string.Join(",", mainRepairSources)
+			+ " error=" + (resultType.GetField("Error", All).GetValue(mainRepairResult)?.ToString() ?? string.Empty));
+
+		List<string> repeatedMainFailureSources = new List<string>();
+		object repeatedMainFailure = execute(buildRequest("player-main-repair-failed"), (prompt, source, generation) =>
+		{
+			repeatedMainFailureSources.Add(source ?? string.Empty);
+			return Task.FromResult(invalidMain);
+		});
+		Check(repeatedMainFailureSources.SequenceEqual(new[] { "PlayerPolicyMain", "PlayerPolicyMainRepair" }, StringComparer.Ordinal)
+			&& resultType.GetField("MainAssessment", All).GetValue(repeatedMainFailure) == null
+			&& !string.IsNullOrWhiteSpace(resultType.GetField("Error", All).GetValue(repeatedMainFailure)?.ToString()),
+			"Two invalid player main responses must stop after the one semantic repair and never request an EffectPlan.");
+	}
+
+	private static void TestPolicyLlmRetryAndJsonModeContracts()
+	{
+		Type clientType = SutType("AnimusForge.PolicyLlmClient");
+		Type resultType = SutType("AnimusForge.NpcPolicyApiCallResult");
+		Check((bool)InvokeStatic(clientType, "IsAuthenticationFailureResponse",
+			new object[] { (System.Net.HttpStatusCode)401, "invalid api key" }, 2),
+			"Authentication failures must remain classified for immediate retry stop.");
+		Check((bool)InvokeStatic(clientType, "IsQuotaLimitResponseBody",
+			new object[] { "insufficient balance: quota exhausted" }, 1),
+			"Quota/balance exhaustion must remain classified for immediate retry stop.");
+
+		object truncated = Activator.CreateInstance(resultType);
+		SetField(resultType, truncated, "FinishReason", "length");
+		SetField(resultType, truncated, "Content", "{}");
+		InvokeStatic(clientType, "ApplyFinishReasonStatus",
+			new object[] { truncated, "contract", "contract-route", false }, 4);
+		Check((bool)resultType.GetField("IsOutputTruncated", All).GetValue(truncated)
+			&& !(bool)resultType.GetField("Success", All).GetValue(truncated),
+			"finish_reason=length must remain a fast-stop output-truncation result rather than enter transport retry.");
+
+		Type profileType = SutType("AnimusForge.PolicyApiExecutionProfile");
+		object jsonProfile = Activator.CreateInstance(profileType);
+		SetField(profileType, jsonProfile, "UseJsonObjectResponse", true);
+		SetField(profileType, jsonProfile, "ModelName", "deepseek-chat");
+		SetField(profileType, jsonProfile, "Temperature", 0.2f);
+		Type capabilitiesType = clientType.GetNestedType("PolicyRequestCapabilities", All);
+		object capabilities = Activator.CreateInstance(capabilitiesType, nonPublic: true);
+		object[] bodyArguments =
+		{
+			jsonProfile,
+			new JArray(new JObject { ["role"] = "system", ["content"] = "return JSON" }),
+			800,
+			capabilities,
+			null
+		};
+		JObject jsonBody = (JObject)InvokeStatic(clientType, "BuildCompatibleChatRequestBody", bodyArguments, 5);
+		Check(string.Equals(jsonBody["response_format"]?["type"]?.ToString(), "json_object", StringComparison.Ordinal),
+			"A JSON-enabled NPC policy profile must emit the same json_object response format as the player path.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string clientSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Npc", "PolicyLlmClient.cs"), Encoding.UTF8);
+		string generationSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Generation.cs"), Encoding.UTF8);
+		int npcProfileIndex = clientSource.IndexOf("public static bool TryResolveNpcPolicyProfile", StringComparison.Ordinal);
+		string npcProfileSource = npcProfileIndex < 0
+			? string.Empty
+			: clientSource.Substring(npcProfileIndex, Math.Min(900, clientSource.Length - npcProfileIndex));
+		Check(npcProfileSource.Contains("LlmApiCompat.IsOfficialDeepSeekUrl(profile.EffectiveApiUrl)")
+			&& LlmApiCompat.IsOfficialDeepSeekUrl("https://api.deepseek.com/chat/completions")
+			&& !LlmApiCompat.IsOfficialDeepSeekUrl("https://example.invalid/v1/chat/completions"),
+			"NPC json_object mode must be enabled only for the confirmed official DeepSeek route.");
+		int playerCallIndex = generationSource.IndexOf("private static async Task<string> CallPlayerPolicyApiOrThrowAsync", StringComparison.Ordinal);
+		string playerCallSource = playerCallIndex < 0
+			? string.Empty
+			: generationSource.Substring(playerCallIndex, Math.Min(2600, generationSource.Length - playerCallIndex));
+		Check(playerCallSource.Contains("CallPolicyApiWithRetriesAsync(")
+			&& playerCallSource.Contains("\n\t\t\t\t3,"),
+			"Player policy transport must use the shared bounded three-attempt retry helper.");
+	}
+
 	private static void TestPlayerPolicyTargetDirectoryContracts()
 	{
 		Type behaviorType = SutType("AnimusForge.CustomPolicyBehavior");
@@ -4669,6 +5662,45 @@ internal static class Program
 		Check(requestType != null && assessmentType != null && handleType != null && effectType != null
 			&& directoryType != null && entryType != null && capabilityEntryType != null && validationKindType != null,
 			"Player stage-two execution directory must expose versioned target, capability and validation contracts.");
+		IPolicyEffectModule sharedFoodForDefaults = RequirePolicyEffectModule("foodPerDay");
+		IPolicyEffectModule sharedHeroGoldForDefaults = RequirePolicyEffectModule("heroGold");
+		IPolicyEffectModule sharedRaidBanForDefaults = RequirePolicyEffectModule("kingdomVillageRaidBan");
+		object localDefaultRequest = Activator.CreateInstance(requestType, nonPublic: true);
+		SetField(requestType, localDefaultRequest, "ScopeKind", PolicyEffectScopes.Local);
+		SetField(requestType, localDefaultRequest, "IssuerKingdomId", "issuer-kingdom");
+		object kingdomDefaultRequest = Activator.CreateInstance(requestType, nonPublic: true);
+		SetField(requestType, kingdomDefaultRequest, "ScopeKind", PolicyEffectScopes.Kingdom);
+		SetField(requestType, kingdomDefaultRequest, "IssuerKingdomId", "issuer-kingdom");
+		object vassalDefaultRequest = Activator.CreateInstance(requestType, nonPublic: true);
+		SetField(requestType, vassalDefaultRequest, "ScopeKind", PolicyEffectScopes.Vassal);
+		SetField(requestType, vassalDefaultRequest, "IssuerKingdomId", "issuer-kingdom");
+		object sourceDefaultEntry = Activator.CreateInstance(entryType);
+		SetProperty(entryType, sourceDefaultEntry, "Kind", "source");
+		object homeKingdomDefaultEntry = Activator.CreateInstance(entryType);
+		SetProperty(entryType, homeKingdomDefaultEntry, "Kind", "kingdom");
+		SetProperty(entryType, homeKingdomDefaultEntry, "EntityId", "home-kingdom");
+		object issuerKingdomDefaultEntry = Activator.CreateInstance(entryType);
+		SetProperty(entryType, issuerKingdomDefaultEntry, "Kind", "kingdom");
+		SetProperty(entryType, issuerKingdomDefaultEntry, "EntityId", "issuer-kingdom");
+		object heroDefaultEntry = Activator.CreateInstance(entryType);
+		SetProperty(entryType, heroDefaultEntry, "Kind", "hero");
+		Check((bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { localDefaultRequest, "S", sourceDefaultEntry, sharedFoodForDefaults }, 4)
+			&& (bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { localDefaultRequest, "S", sourceDefaultEntry, sharedHeroGoldForDefaults }, 4)
+			&& (bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { kingdomDefaultRequest, "K0", homeKingdomDefaultEntry, sharedFoodForDefaults }, 4)
+			&& (bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { vassalDefaultRequest, "K0", homeKingdomDefaultEntry, sharedFoodForDefaults }, 4)
+			&& !(bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { vassalDefaultRequest, "K1", issuerKingdomDefaultEntry, sharedFoodForDefaults }, 4)
+			&& !(bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { kingdomDefaultRequest, "H0", heroDefaultEntry, sharedHeroGoldForDefaults }, 4)
+			&& (bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { kingdomDefaultRequest, "K1", issuerKingdomDefaultEntry, sharedRaidBanForDefaults }, 4)
+			&& !(bool)InvokeStatic(behaviorType, "IsPlayerPolicyDefaultTargetHandle",
+				new object[] { kingdomDefaultRequest, "K0", homeKingdomDefaultEntry, sharedRaidBanForDefaults }, 4),
+			"Player capability default-target classifier must lock local S, kingdom/vassal K0, hero-only omission, and issuer-bound targets.");
 
 		object request = Activator.CreateInstance(requestType, nonPublic: true);
 		SetField(requestType, request, "RequestId", "player-target-directory-contract");
@@ -4706,7 +5738,7 @@ internal static class Program
 		handles.Add(unauthorized);
 		SetField(requestType, request, "TargetHandles", handles);
 		object executionDirectory = TokenToObject(JObject.Parse(
-			"{\"structureVersion\":2,\"targets\":{"
+			"{\"structureVersion\":3,\"targets\":{"
 			+ "\"S\":{\"kind\":\"source\",\"description\":\"当前发布地\"},"
 			+ "\"C0\":{\"kind\":\"clan\",\"description\":\"当前家族领地\"},"
 			+ "\"K0\":{\"kind\":\"kingdom\",\"description\":\"当前王国\"},"
@@ -4715,11 +5747,11 @@ internal static class Program
 			+ "\"X0\":{\"kind\":\"selector\",\"description\":\"其他当前封地\","
 			+ "\"selectorId\":\"currentKingdomPrimaryFiefsExceptPlayerClan\"}},"
 			+ "\"capabilities\":{"
-			+ "\"foodPerDay\":{\"allowedTargetHandles\":[\"S\"]},"
-			+ "\"clanInfluence\":{\"allowedTargetHandles\":[\"C0\"]},"
-			+ "\"taxIncomePct\":{\"allowedTargetHandles\":[\"K0\"]},"
-			+ "\"soldierTroopXp\":{\"allowedTargetHandles\":[\"S\",\"C0\",\"K0\",\"H0\",\"X0\"]},"
-			+ "\"loyaltyPerDay\":{\"allowedTargetHandles\":[\"X0\"]}}}"), directoryType);
+			+ "\"foodPerDay\":{\"defaultTargetHandle\":\"S\",\"allowedSubsetTargetHandles\":[],\"allowedTargetHandles\":[\"S\"]},"
+			+ "\"clanInfluence\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"C0\"],\"allowedTargetHandles\":[\"C0\"]},"
+			+ "\"taxIncomePct\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"K0\"],\"allowedTargetHandles\":[\"K0\"]},"
+			+ "\"soldierTroopXp\":{\"defaultTargetHandle\":\"S\",\"allowedSubsetTargetHandles\":[\"C0\",\"K0\",\"H0\",\"X0\"],\"allowedTargetHandles\":[\"S\",\"C0\",\"K0\",\"H0\",\"X0\"]},"
+			+ "\"loyaltyPerDay\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"X0\"],\"allowedTargetHandles\":[\"X0\"]}}}"), directoryType);
 		SetField(requestType, request, "EffectTargetDirectory", executionDirectory);
 
 		object assessment = Activator.CreateInstance(assessmentType, nonPublic: true);
@@ -4749,7 +5781,7 @@ internal static class Program
 		JObject directoryToken = JObject.Parse(directoryJson);
 		JObject targetMap = directoryToken["targets"] as JObject;
 		JObject capabilityMap = directoryToken["capabilities"] as JObject;
-		Check(directoryToken.Value<int>("structureVersion") == 2
+		Check(directoryToken.Value<int>("structureVersion") == 3
 			&& targetMap != null
 			&& capabilityMap != null
 			&& targetMap.Properties().Select(property => property.Name)
@@ -4770,7 +5802,12 @@ internal static class Program
 			&& !allPrompt.Contains("hearthPerDay")
 			&& capabilityMap.Properties().All(property =>
 				property.Value is JObject entry
-				&& entry.Properties().Select(item => item.Name).SequenceEqual(new[] { "allowedTargetHandles" }))
+				&& entry.Properties().Select(item => item.Name).SequenceEqual(new[] { "defaultTargetHandle", "allowedSubsetTargetHandles", "allowedTargetHandles" }))
+			&& string.Equals(capabilityMap["foodPerDay"]?["defaultTargetHandle"]?.ToString(), "S", StringComparison.Ordinal)
+			&& !(capabilityMap["foodPerDay"]?["allowedSubsetTargetHandles"]?.Values<string>() ?? Array.Empty<string>()).Any()
+			&& string.Equals(capabilityMap["soldierTroopXp"]?["defaultTargetHandle"]?.ToString(), "S", StringComparison.Ordinal)
+			&& (capabilityMap["soldierTroopXp"]?["allowedSubsetTargetHandles"]?.Values<string>() ?? Array.Empty<string>())
+				.SequenceEqual(new[] { "C0", "K0", "H0", "X0" }, StringComparer.Ordinal)
 			&& directoryJson.IndexOf("moduleId", StringComparison.OrdinalIgnoreCase) < 0
 			&& directoryJson.IndexOf("payload", StringComparison.OrdinalIgnoreCase) < 0,
 			"Capability details, target pairs and payload rules must derive from the execution directory,"
@@ -4866,6 +5903,123 @@ internal static class Program
 		Check(incompatibleSummary.ToString().Contains("能力与目标句柄组合不兼容")
 			&& incompatibleSummary.ToString().IndexOf("联动来源或去向不完整", StringComparison.Ordinal) < 0,
 			"Module-target incompatibility must use its own accurate user-facing error category.");
+		PolicyTargetHandleDirectory crossCoverageDirectory = new PolicyTargetHandleDirectory();
+		crossCoverageDirectory.Targets["K0"] = new PolicyTargetHandleDirectoryEntry { Kind = "kingdom" };
+		crossCoverageDirectory.Targets["P0"] = new PolicyTargetHandleDirectoryEntry { Kind = "plan" };
+		crossCoverageDirectory.Targets["K9"] = new PolicyTargetHandleDirectoryEntry { Kind = "kingdom" };
+		crossCoverageDirectory.Capabilities["foodPerDay"] = new PolicyEffectCapabilityDirectoryEntry
+		{
+			AllowedTargetHandles = new List<string> { "K0", "P0", "K9" },
+			JurisdictionByTargetHandle = new Dictionary<string, PolicyEffectTargetJurisdictionKind>(StringComparer.Ordinal)
+			{
+				["K0"] = PolicyEffectTargetJurisdictionKind.Domestic,
+				["P0"] = PolicyEffectTargetJurisdictionKind.CrossKingdom,
+				["K9"] = PolicyEffectTargetJurisdictionKind.Domestic
+			}
+		};
+		IList BuildCoverageEffects(params Tuple<string, string>[] pairs)
+		{
+			IList values = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(effectType));
+			foreach (Tuple<string, string> pair in pairs)
+			{
+				object value = Activator.CreateInstance(effectType, nonPublic: true);
+				SetProperty(effectType, value, "ModuleId", pair.Item1);
+				SetProperty(effectType, value, "TargetHandles", new List<string> { pair.Item2 });
+				values.Add(value);
+			}
+			return values;
+		}
+		object[] foreignOnlyCoverage =
+		{
+			PolicyEffectScopes.Kingdom,
+			crossCoverageDirectory,
+			BuildCoverageEffects(Tuple.Create("foodPerDay", "P0")),
+			0,
+			0,
+			null,
+			null,
+			null
+		};
+		Check(!(bool)InvokeStatic(
+				behaviorType,
+				"TryValidatePlayerPolicyCrossKingdomCoverage",
+				foreignOnlyCoverage,
+				8)
+			&& Convert.ToInt32(foreignOnlyCoverage[3], CultureInfo.InvariantCulture) == 1
+			&& Convert.ToInt32(foreignOnlyCoverage[4], CultureInfo.InvariantCulture) == 0
+			&& string.Equals(foreignOnlyCoverage[6]?.ToString(), "MissingIssuerKingdomEffect", StringComparison.Ordinal)
+			&& !string.IsNullOrWhiteSpace(foreignOnlyCoverage[5]?.ToString()),
+			"A nationwide plan with a canonical foreign P0 effect but no K0 effect must use the dedicated bilateral-coverage failure.");
+		object missingIssuerSummary = InvokeStatic(
+			behaviorType,
+			"BuildPlayerPolicyEffectFailureSummary",
+			new[] { foreignOnlyCoverage[6] },
+			1);
+		Check(missingIssuerSummary.ToString().Contains("遗漏了发布王国一侧"),
+			"Missing issuer-side coverage must have an accurate player-facing rejection summary.");
+
+		object[] bilateralCoverage =
+		{
+			PolicyEffectScopes.Kingdom,
+			crossCoverageDirectory,
+			BuildCoverageEffects(
+				Tuple.Create("foodPerDay", "P0"),
+				Tuple.Create("foodPerDay", "K0")),
+			0,
+			0,
+			null,
+			null,
+			null
+		};
+		Check((bool)InvokeStatic(
+				behaviorType,
+				"TryValidatePlayerPolicyCrossKingdomCoverage",
+				bilateralCoverage,
+				8)
+			&& Convert.ToInt32(bilateralCoverage[3], CultureInfo.InvariantCulture) == 1
+			&& Convert.ToInt32(bilateralCoverage[4], CultureInfo.InvariantCulture) == 1
+			&& string.Equals(bilateralCoverage[6]?.ToString(), "None", StringComparison.Ordinal),
+			"A legal K0 plus canonical foreign effect set must satisfy nationwide bilateral coverage.");
+
+		foreach (string unaffectedScope in new[] { PolicyEffectScopes.Local, PolicyEffectScopes.Vassal })
+		{
+			object[] unaffectedCoverage =
+			{
+				unaffectedScope,
+				crossCoverageDirectory,
+				BuildCoverageEffects(Tuple.Create("foodPerDay", "P0")),
+				0,
+				0,
+				null,
+				null,
+				null
+			};
+			Check((bool)InvokeStatic(
+					behaviorType,
+					"TryValidatePlayerPolicyCrossKingdomCoverage",
+					unaffectedCoverage,
+					8),
+				"Local and vassal policies must retain their existing target rules: " + unaffectedScope);
+		}
+		object[] domesticSelectorCoverage =
+		{
+			PolicyEffectScopes.Kingdom,
+			crossCoverageDirectory,
+			BuildCoverageEffects(Tuple.Create("foodPerDay", "K9")),
+			0,
+			0,
+			null,
+			null,
+			null
+		};
+		Check((bool)InvokeStatic(
+				behaviorType,
+				"TryValidatePlayerPolicyCrossKingdomCoverage",
+				domesticSelectorCoverage,
+				8)
+			&& Convert.ToInt32(domesticSelectorCoverage[3], CultureInfo.InvariantCulture) == 0,
+			"Foreign coverage must be identified from cached canonical jurisdiction, not guessed from K/P handle prefixes or unused foreign candidates.");
+
 		string pipeSuffixedPlan = "{\"effectPlanVersion\":1,\"disposition\":\"executable\","
 			+ "\"reason\":\"contract\",\"effects\":[{\"mechanismId\":\"M0\","
 			+ "\"mechanismKind\":\"independent\",\"role\":\"subject\",\"moduleId\":\"notInjected\","
@@ -4964,10 +6118,10 @@ internal static class Program
 		object builtMatrix = InvokeStatic(
 			behaviorType,
 			"BuildPolicyTargetHandleDirectory",
-			new object[] { matrixHandles, matrixModules, matrixResolver, "issuer_contract" },
-			4);
+			new object[] { matrixHandles, matrixModules, matrixResolver, "issuer_contract", "actor_contract" },
+			5);
 		JObject builtMatrixToken = JObject.FromObject(builtMatrix);
-		Check(builtMatrixToken.Value<int>("structureVersion") == 2
+		Check(builtMatrixToken.Value<int>("structureVersion") == 3
 			&& builtMatrixToken["targets"]?["L0"] != null
 			&& builtMatrixToken["targets"]?["K0"] != null
 			&& builtMatrixToken["targets"]?["H0"] != null
@@ -4976,7 +6130,13 @@ internal static class Program
 			&& builtMatrixToken["targets"]?["P0"] != null
 			&& builtMatrixToken["capabilities"]?["taxIncomePct"]?["allowedTargetHandles"]?.Values<string>()
 				.SequenceEqual(new[] { "L0", "K0", "X0" }, StringComparer.Ordinal) == true
+			&& string.Equals(builtMatrixToken["capabilities"]?["taxIncomePct"]?["defaultTargetHandle"]?.ToString(), string.Empty, StringComparison.Ordinal)
+			&& builtMatrixToken["capabilities"]?["taxIncomePct"]?["allowedSubsetTargetHandles"]?.Values<string>()
+				.SequenceEqual(new[] { "L0", "K0", "X0" }, StringComparer.Ordinal) == true
 			&& builtMatrixToken["capabilities"]?["soldierTroopXp"]?["allowedTargetHandles"]?.Values<string>()
+				.SequenceEqual(new[] { "L0", "H0", "C0", "K0", "X0", "P0" }, StringComparer.Ordinal) == true
+			&& string.Equals(builtMatrixToken["capabilities"]?["soldierTroopXp"]?["defaultTargetHandle"]?.ToString(), string.Empty, StringComparison.Ordinal)
+			&& builtMatrixToken["capabilities"]?["soldierTroopXp"]?["allowedSubsetTargetHandles"]?.Values<string>()
 				.SequenceEqual(new[] { "L0", "H0", "C0", "K0", "X0", "P0" }, StringComparer.Ordinal) == true
 			&& builtMatrixToken["capabilities"]?["hearthPerDay"] == null,
 			"Settlement, Hero, Kingdom, Selector and Plan handles must use the same generic matrix builder;"
@@ -5032,7 +6192,7 @@ internal static class Program
 		SetField(requestType, zeroCapabilityRequest, "ManualDurationDays", 12);
 		SetField(requestType, zeroCapabilityRequest, "SelectedEffectModuleIds", new List<string> { "hearthPerDay" });
 		SetField(requestType, zeroCapabilityRequest, "EffectTargetDirectory", TokenToObject(
-			JObject.Parse("{\"structureVersion\":2,\"targets\":{},\"capabilities\":{}}"), directoryType));
+			JObject.Parse("{\"structureVersion\":3,\"targets\":{},\"capabilities\":{}}"), directoryType));
 		JArray zeroMessages = JArray.FromObject(
 			((IEnumerable)InvokeStatic(
 				behaviorType,
@@ -5162,19 +6322,60 @@ internal static class Program
 			&& !IsAllowed(BuildRequest("苍穹帝国应推行农业改革。"), south)
 			&& !IsAllowed(BuildRequest("苍穹帝国应推行农业改革。"), west),
 			"The player's full XX帝国 name must not authorize north/south/west empire targets.");
-		Check(IsAllowed(BuildRequest("对北帝国征收边境税。"), north)
-			&& !IsAllowed(BuildRequest("对北帝国征收边境税。"), south)
-			&& !IsAllowed(BuildRequest("对北帝国征收边境税。"), west),
-			"An explicit full 北帝国 mention must authorize only the northern empire.");
-		Check(IsAllowed(BuildRequest("对 empire_s 实施贸易限制。"), south)
-			&& !IsAllowed(BuildRequest("对 empire_s 实施贸易限制。"), north),
-			"Stable IDs must use identifier boundaries so empire cannot match empire_s.");
+		Check(IsAllowed(BuildRequest("研究北帝国的税制经验。"), north)
+			&& !IsAllowed(BuildRequest("研究北帝国的税制经验。"), south)
+			&& !IsAllowed(BuildRequest("研究北帝国的税制经验。"), west)
+			&& IsAllowed(BuildRequest("对外国北帝国征收边境税。"), north)
+			&& !IsAllowed(BuildRequest("对外国北帝国征收边境税。"), south)
+			&& !IsAllowed(BuildRequest("对外国北帝国征收边境税。"), west),
+			"A unique foreign kingdom mention must expose exactly that foreign kingdom as an AI-selectable target handle.");
+		Check(IsAllowed(BuildRequest("制裁 empire_s 的贸易。"), south)
+			&& !IsAllowed(BuildRequest("制裁 empire_s 的贸易。"), north),
+			"Stable IDs must use identifier boundaries so empire cannot match empire_s under cross-kingdom target authorization.");
 		Check(!IsAllowed(BuildRequest("对联邦实施贸易限制。"), north)
 			&& !IsAllowed(BuildRequest("对联邦实施贸易限制。"), south),
 			"A shared ambiguous alias must authorize no foreign kingdom.");
-		Check(IsAllowed(BuildRequest("限制卢孔的领地收入。"), north)
-			&& IsAllowed(BuildRequest("限制北境城的贸易。"), north),
-			"Unique ruler or settlement evidence must authorize its owning foreign kingdom.");
+		Check(IsAllowed(BuildRequest("记录卢孔的领地收入。"), north)
+			&& IsAllowed(BuildRequest("对外国卢孔的领地收入实施限制。"), north)
+			&& IsAllowed(BuildRequest("对外国北境城的贸易实施限制。"), north),
+			"Unique foreign ruler or settlement evidence must expose its owner kingdom as an AI-selectable target handle.");
+
+		Check(PolicyEffectModuleCatalog.TryGet("foodPerDay", out IPolicyEffectModule foodModule),
+			"The foreign-target default contract requires the registered foodPerDay module.");
+		PolicyTargetHandleDirectoryEntry currentKingdomEntry = new PolicyTargetHandleDirectoryEntry
+		{
+			Kind = "kingdom",
+			EntityId = "player_empire",
+			Description = "苍穹帝国"
+		};
+		PolicyTargetHandleDirectoryEntry foreignKingdomEntry = new PolicyTargetHandleDirectoryEntry
+		{
+			Kind = "kingdom",
+			EntityId = "empire",
+			Description = "北帝国"
+		};
+		bool IsDefaultTarget(object request, string handle, PolicyTargetHandleDirectoryEntry entry)
+		{
+			return (bool)InvokeStatic(
+				behaviorType,
+				"IsPlayerPolicyDefaultTargetHandle",
+				new object[] { request, handle, entry, foodModule },
+				4);
+		}
+		Check(IsDefaultTarget(BuildRequest("推行农业改革。"), "K0", currentKingdomEntry),
+			"A purely domestic kingdom policy must retain K0 as its capability default target.");
+		object namedForeignRequest = BuildRequest("对北帝国实施粮食封锁。");
+		Check(!IsDefaultTarget(namedForeignRequest, "K0", currentKingdomEntry)
+			&& !IsDefaultTarget(namedForeignRequest, "K2", foreignKingdomEntry),
+			"Once a foreign kingdom is deterministically exposed, no capability target may default to K0;"
+			+ " the effect stage must choose the domestic or foreign authorized handle from the policy text.");
+		string namedForeignSelectionRule = Convert.ToString(InvokeStatic(
+			behaviorType,
+			"BuildPolicyTargetSelectionPromptRule",
+			new[] { namedForeignRequest },
+			1), CultureInfo.InvariantCulture) ?? string.Empty;
+		Check(namedForeignSelectionRule.Contains("不得仅因 defaultTargetHandle 为空而省略"),
+			"A foreign-capable policy prompt must require semantic target selection instead of dropping an effect merely because K0 has no default priority.");
 
 		object currentLords = BuildHandle(
 			"H0", "hero", string.Empty, "player_empire", "hero:v1:role:lords:player_empire");
@@ -5185,8 +6386,9 @@ internal static class Program
 		Check(!IsAllowed(BuildRequest("推行常设军队训练制度。", "local"), currentLords),
 			"Local policies must not widen to the current kingdom's all-lords group.");
 		Check(!IsAllowed(BuildRequest("苍穹帝国推行常设军队训练制度。"), northLords)
-			&& IsAllowed(BuildRequest("北帝国所有领主接受常设训练。"), northLords),
-			"A foreign hero role group must require both an authorized kingdom and an explicit role cue.");
+			&& IsAllowed(BuildRequest("北帝国所有领主接受常设训练。"), northLords)
+			&& IsAllowed(BuildRequest("外国北帝国所有领主接受常设训练。"), northLords),
+			"A foreign hero role group must require an authorized mentioned kingdom and an explicit role cue.");
 
 		Type planType = SutType("AnimusForge.PolicyTargets.PolicyTargetPlanSaveData");
 		object BuildPlanHandle(string key, string json)
@@ -5230,6 +6432,10 @@ internal static class Program
 		Check(!IsAllowed(BuildRequest("只在发布地推行政策。", "local"), forgedDirectClan)
 			&& IsAllowed(BuildRequest("只调整苍穹家族的影响力。", "local"), forgedDirectClan),
 			"A direct local entity handle must not bypass objective entity evidence.");
+		object foreignLocalSettlement = BuildHandle("L99", "settlement", "north_city", "empire");
+		Check(IsAllowed(BuildRequest("北境城周边开设贸易办事处。", "local"), foreignLocalSettlement)
+			&& !IsAllowed(BuildRequest("北帝国周边开设贸易办事处。", "local"), foreignLocalSettlement),
+			"A local policy may expose a directly mentioned foreign local entity, but a kingdom-only mention must not authorize forged lower-level targets.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string generationSource = File.ReadAllText(Path.Combine(
@@ -5255,6 +6461,231 @@ internal static class Program
 			repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Generation.cs"), Encoding.UTF8);
 		Check(npcGenerationSource.Contains("PolicyTargetPlanRouter.TryRoute"),
 			"The NPC policy target router must remain connected to its existing route.");
+	}
+
+	private static void TestPolicyEffectTargetJurisdictionContracts()
+	{
+		JurisdictionDummyModule domesticModule = new JurisdictionDummyModule(
+			"contractDummy.jurisdiction.domestic",
+			allowCrossKingdomTargets: false);
+		JurisdictionDummyModule crossModule = new JurisdictionDummyModule(
+			"contractDummy.jurisdiction.cross",
+			allowCrossKingdomTargets: true);
+		Check(!StructuredDummyEffectModule.DescriptorForContractTests.AllowCrossKingdomTargets
+			&& !domesticModule.Descriptor.AllowCrossKingdomTargets
+			&& crossModule.Descriptor.AllowCrossKingdomTargets,
+			"Policy effect modules must default to domestic jurisdiction and opt into cross-kingdom targets explicitly.");
+		PolicyEffectCanonicalTargetSet legacyTargetSet = JsonConvert.DeserializeObject<PolicyEffectCanonicalTargetSet>(
+			"{\"structureVersion\":1,\"kingdomIds\":[\"home-kingdom\"]}");
+		Check(legacyTargetSet != null
+			&& legacyTargetSet.JurisdictionKind == PolicyEffectTargetJurisdictionKind.LegacyCompiled
+			&& legacyTargetSet.AuthorizedCrossKingdomIds != null
+			&& legacyTargetSet.AuthorizedCrossKingdomIds.Count == 0,
+			"Legacy saved canonical target sets without jurisdiction fields must deserialize as LegacyCompiled with no cross authorization.");
+		PolicyEffectInstanceSaveData jurisdictionSave = new PolicyEffectInstanceSaveData
+		{
+			InstanceId = "jurisdiction-save-normalize",
+			PolicyId = "jurisdiction-save-policy",
+			ModuleId = "kingdomVillageRaidBan",
+			SourceModuleId = "kingdomVillageRaidBan",
+			PayloadSchemaVersion = 1,
+			Payload = new JObject(),
+			TargetSet = new PolicyEffectCanonicalTargetSet
+			{
+				JurisdictionKind = PolicyEffectTargetJurisdictionKind.CrossKingdom,
+				AuthorizedCrossKingdomIds = new List<string> { "foreign-kingdom", "foreign-kingdom" },
+				KingdomIds = new List<string> { "foreign-kingdom" }
+			},
+			LifecycleState = PolicyEffectLifecycleState.Active,
+			StateSchemaVersion = 1,
+			StartDay = 10f,
+			EndDay = 20f,
+			SourceScope = PolicyEffectScopes.Kingdom
+		};
+		Check(PolicyEffectSaveCodec.TryNormalizeInstance(
+				jurisdictionSave,
+				out PolicyEffectNormalizedInstance jurisdictionNormalized,
+				out string jurisdictionNormalizeError)
+			&& jurisdictionNormalized != null
+			&& jurisdictionSave.TargetSet.JurisdictionKind == PolicyEffectTargetJurisdictionKind.CrossKingdom
+			&& jurisdictionSave.TargetSet.AuthorizedCrossKingdomIds.SequenceEqual(new[] { "foreign-kingdom" }, StringComparer.Ordinal),
+			"Save normalization must preserve and de-duplicate persisted jurisdiction metadata even when the module is inert: "
+			+ jurisdictionNormalizeError);
+
+		bool ResolveJurisdictionModule(string moduleId, out IPolicyEffectModule module)
+		{
+			string normalized = (moduleId ?? string.Empty).Trim();
+			if (string.Equals(normalized, domesticModule.Id, StringComparison.Ordinal))
+			{
+				module = domesticModule;
+				return true;
+			}
+			if (string.Equals(normalized, crossModule.Id, StringComparison.Ordinal))
+			{
+				module = crossModule;
+				return true;
+			}
+			module = null;
+			return false;
+		}
+
+		PolicyEffectTargetResolver targetResolver = delegate(
+			string handle,
+			IPolicyEffectModule module,
+			out PolicyEffectResolvedTarget resolved,
+			out string error)
+		{
+			_ = module;
+			string normalized = (handle ?? string.Empty).Trim();
+			string kingdomId;
+			if (string.Equals(normalized, "K_HOME", StringComparison.Ordinal))
+			{
+				kingdomId = "home-kingdom";
+			}
+			else if (string.Equals(normalized, "K_FOREIGN", StringComparison.Ordinal))
+			{
+				kingdomId = "foreign-kingdom";
+			}
+			else
+			{
+				resolved = null;
+				error = "unknown jurisdiction target";
+				return false;
+			}
+			resolved = new PolicyEffectResolvedTarget
+			{
+				Handle = normalized,
+				SelectorKind = PolicyEffectTargetKind.Kingdom,
+				CanonicalTargetSet = new PolicyEffectCanonicalTargetSet
+				{
+					SelectorHandles = new List<string> { normalized },
+					KingdomIds = new List<string> { kingdomId }
+				}
+			};
+			error = string.Empty;
+			return true;
+		};
+
+		PolicyEffectCompilerRequest BuildRequest(
+			JurisdictionDummyModule module,
+			params string[] authorizedCrossKingdomIds)
+		{
+			return new PolicyEffectCompilerRequest
+			{
+				Scope = PolicyEffectScopes.Kingdom,
+				PolicyId = "jurisdiction-contract-" + module.Id,
+				ActorHeroId = "home-ruler",
+				ActorClanId = "home-clan",
+				IssuerKingdomId = "home-kingdom",
+				TargetKingdomId = "home-kingdom",
+				AuthorizedCrossKingdomIds = authorizedCrossKingdomIds ?? Array.Empty<string>(),
+				StartDay = 10f,
+				EndDay = 20f,
+				Funding = new PolicyEffectFundingContext { GoldScale = 1f, InfluenceScale = 1f },
+				CandidateModuleIds = new[] { module.Id },
+				DetailedModuleIds = new[] { module.Id },
+				MaxInstances = 12,
+				MaxCompiledInstances = 12,
+				MaxPayloadBytes = 4 * 1024,
+				MaxTotalPayloadBytes = 32 * 1024,
+				ModuleResolver = ResolveJurisdictionModule
+			};
+		}
+
+		PolicyEffectWireEffect BuildWire(JurisdictionDummyModule module, string handle)
+		{
+			return new PolicyEffectWireEffect
+			{
+				EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
+				MechanismId = "M0",
+				MechanismKind = PolicyEffectMechanismKind.Independent,
+				MechanismRole = PolicyEffectMechanismRole.Subject,
+				ModuleId = module.Id,
+				TargetHandles = new List<string> { handle },
+				Payload = new JObject { ["value"] = 1f },
+				Reason = "jurisdiction contract"
+			};
+		}
+
+		PolicyEffectInstanceIdFactory idFactory = (ordinal, moduleId, targetSet) =>
+			"jurisdiction-contract:" + moduleId + ":" + ordinal.ToString(CultureInfo.InvariantCulture);
+
+		Check(PolicyEffectCompiler.TryCompile(
+				new[] { BuildWire(domesticModule, "K_HOME") },
+				BuildRequest(domesticModule),
+				targetResolver,
+				idFactory,
+				out PolicyEffectCompilerResult domesticResult,
+				out string domesticError)
+			&& domesticResult.Effects.Count == 1
+			&& domesticResult.Effects[0].SaveData.TargetSet.JurisdictionKind
+				== PolicyEffectTargetJurisdictionKind.Domestic
+			&& domesticResult.Effects[0].SaveData.TargetSet.AuthorizedCrossKingdomIds.Count == 0,
+			"A normal kingdom policy must compile as Domestic and persist no cross-kingdom authorization: "
+			+ domesticError);
+		Check(!PolicyEffectCompiler.TryCompile(
+				new[] { BuildWire(domesticModule, "K_FOREIGN") },
+				BuildRequest(domesticModule),
+				targetResolver,
+				idFactory,
+				out PolicyEffectCompilerResult domesticForeignResult,
+				out string domesticForeignError)
+			&& HasNoCompiledEffects(domesticForeignResult)
+			&& domesticForeignError.IndexOf("target jurisdiction", StringComparison.OrdinalIgnoreCase) >= 0,
+			"A normal domestic module must reject a foreign kingdom target.");
+		Check(!PolicyEffectCompiler.TryCompile(
+				new[] { BuildWire(crossModule, "K_FOREIGN") },
+				BuildRequest(crossModule),
+				targetResolver,
+				idFactory,
+				out PolicyEffectCompilerResult ungrantedCrossResult,
+				out string ungrantedCrossError)
+			&& HasNoCompiledEffects(ungrantedCrossResult)
+			&& ungrantedCrossError.IndexOf("target jurisdiction", StringComparison.OrdinalIgnoreCase) >= 0,
+			"A cross-capable module must still reject a foreign target without explicit request authorization.");
+		Check(PolicyEffectCompiler.TryCompile(
+				new[] { BuildWire(crossModule, "K_FOREIGN") },
+				BuildRequest(crossModule, "foreign-kingdom"),
+				targetResolver,
+				idFactory,
+				out PolicyEffectCompilerResult grantedCrossResult,
+				out string grantedCrossError)
+			&& grantedCrossResult.Effects.Count == 1
+			&& grantedCrossResult.Effects[0].SaveData.TargetSet.JurisdictionKind
+				== PolicyEffectTargetJurisdictionKind.CrossKingdom
+			&& grantedCrossResult.Effects[0].SaveData.TargetSet.AuthorizedCrossKingdomIds
+				.SequenceEqual(new[] { "foreign-kingdom" }, StringComparer.Ordinal),
+			"Only module opt-in plus explicit foreign-kingdom authorization may compile and persist a CrossKingdom target: "
+			+ grantedCrossError);
+
+		Check(!PolicyEffectTargetJurisdiction.TryAuthorizeExplicitKingdomTargets(
+				domesticModule,
+				new PolicyEffectCanonicalTargetSet
+				{
+					JurisdictionKind = PolicyEffectTargetJurisdictionKind.CrossKingdom,
+					AuthorizedCrossKingdomIds = new List<string> { "foreign-kingdom" }
+				},
+				"home-kingdom",
+				"home-kingdom",
+				new[] { "foreign-kingdom" },
+				out _,
+				out string domesticMarkerError)
+			&& domesticMarkerError.IndexOf("未开放跨国", StringComparison.Ordinal) >= 0,
+			"A forged CrossKingdom marker must fail when the module descriptor has not opted in.");
+		Check(!PolicyEffectTargetJurisdiction.TryAuthorizeExplicitKingdomTargets(
+				crossModule,
+				new PolicyEffectCanonicalTargetSet
+				{
+					JurisdictionKind = PolicyEffectTargetJurisdictionKind.CrossKingdom,
+					AuthorizedCrossKingdomIds = new List<string> { "foreign-kingdom" }
+				},
+				"home-kingdom",
+				"home-kingdom",
+				new[] { "other-kingdom" },
+				out _,
+				out string staleMarkerError)
+			&& staleMarkerError.IndexOf("未被当前政策请求授权", StringComparison.Ordinal) >= 0,
+			"A forged or stale CrossKingdom marker must be bounded by the current request authorization set.");
 	}
 
 	private static void TestPolicyTwoStageHighSuccessContracts()
@@ -6066,17 +7497,45 @@ internal static class Program
 		string playerEffectStable = (string)behavior.GetField("PlayerPolicyEffectStableSystemPrefix", All).GetRawConstantValue();
 		Check(playerMainStable.IndexOf("ONNX", StringComparison.OrdinalIgnoreCase) < 0
 			&& playerMainStable.IndexOf("mechanism", StringComparison.OrdinalIgnoreCase) < 0
+			&& playerMainStable.IndexOf("moduleId", StringComparison.OrdinalIgnoreCase) < 0
+			&& playerMainStable.IndexOf("targetHandles", StringComparison.OrdinalIgnoreCase) < 0
+			&& playerMainStable.IndexOf("payload", StringComparison.OrdinalIgnoreCase) < 0
+			&& playerMainStable.Contains("多个国家或参与方")
+			&& playerMainStable.Contains("分别保留各方直接或紧邻一阶后果")
+			&& playerMainStable.Contains("本阶段不决定后续可执行能力、具体目标或最终执行值")
 			&& playerEffectStable.Contains("政策原文确定目标、对象、方向与资源承诺")
 			&& playerEffectStable.Contains("正式判断证据"),
-			"Player stage one must not receive an ONNX mechanism hint; stage two judges shape only after seeing real contracts.");
+			"Player stage one must remain a generic multi-party bridge without module, handle, payload or final-effect decisions; stage two remains authoritative.");
 		Check(behavior.GetMethod("TryValidatePolicyEffectMechanismHint", All) == null,
 			"Player publication must not retain an ONNX mechanism-hint hard rejection gate.");
 		string targetRule = (string)InvokeStatic(behavior, "BuildPolicyTargetSelectionPromptRule", new[] { request }, 1);
 		Check(targetRule.Contains("实际注入能力及本次合法目录")
 			&& targetRule.Contains("不得回填玩家本人、玩家家族、玩家王国")
+			&& targetRule.IndexOf("普通全国跨国完整性", StringComparison.Ordinal) < 0
 			&& !targetRule.Contains("领主金币")
 			&& !targetRule.Contains("heroGold"),
 			"Target guidance must stay descriptor-driven and contain no heroGold or troop-XP special case.");
+		object kingdomRequest = Activator.CreateInstance(requestType, nonPublic: true);
+		SetField(requestType, kingdomRequest, "ScopeKind", PolicyEffectScopes.Kingdom);
+		string kingdomTargetRule = (string)InvokeStatic(
+			behavior,
+			"BuildPolicyTargetSelectionPromptRule",
+			new[] { kingdomRequest },
+			1);
+		object vassalRequest = Activator.CreateInstance(requestType, nonPublic: true);
+		SetField(requestType, vassalRequest, "ScopeKind", PolicyEffectScopes.Vassal);
+		string vassalTargetRule = (string)InvokeStatic(
+			behavior,
+			"BuildPolicyTargetSelectionPromptRule",
+			new[] { vassalRequest },
+			1);
+		Check(kingdomTargetRule.Contains("普通全国跨国完整性")
+			&& kingdomTargetRule.Contains("发布王国 K0")
+			&& kingdomTargetRule.Contains("同一个 linked 机制")
+			&& kingdomTargetRule.Contains("不同的直接或紧邻一阶后果，可以分别使用 independent")
+			&& kingdomTargetRule.Contains("不得为了凑齐两侧而机械复制数值、简单取反、强行对称")
+			&& vassalTargetRule.IndexOf("普通全国跨国完整性", StringComparison.Ordinal) < 0,
+			"Only ordinary nationwide stage-two prompts may require a causal K0 side for selected foreign effects.");
 
 		TaleWorlds.CampaignSystem.Hero ownerLeader = CreateUninitializedPolicyOwnerHero("owner-leader");
 		TaleWorlds.CampaignSystem.Clan ownerClan = CreateUninitializedPolicyOwnerClan("owner-clan", ownerLeader);
@@ -6471,6 +7930,64 @@ internal static class Program
 		Check(!(bool)InvokeStatic(builder, "TryValidateNoScopeExpansion", unreadableRejectedScope, 3)
 			&& (unreadableRejectedScope[2] as string)?.Contains("could not be established") == true,
 			"Effect repair must fail closed when the rejected output has no deterministic module/target scope baseline.");
+
+		PolicyEffectRepairScopeAllowance issuerCompletion = new PolicyEffectRepairScopeAllowance
+		{
+			RequireOriginalPairs = true,
+			CompletionTargetHandle = "K0"
+		};
+		issuerCompletion.AllowAddedPair("taxIncomePct", "K0");
+		JArray issuerRepairMessages = (JArray)InvokeStatic(builder, "BuildRepairMessages", new object[]
+		{
+			original,
+			frozenRejected,
+			"MissingIssuerKingdomEffect",
+			"role",
+			issuerCompletion
+		}, 5);
+		string issuerRepairInstruction = issuerRepairMessages.Last?["content"]?.ToString() ?? string.Empty;
+		Check(issuerRepairInstruction.Contains("exactly K0")
+			&& issuerRepairInstruction.Contains("Preserve every moduleId-targetHandles pair")
+			&& issuerRepairInstruction.Contains("Do not copy, negate, mirror, or invent values")
+			&& issuerRepairInstruction.IndexOf("taxIncomePct", StringComparison.Ordinal) < 0,
+			"Issuer-side completion instructions must be generic, K0-bounded and free of module examples.");
+
+		string issuerCompleted = "{\"effectPlanVersion\":1,\"effects\":["
+			+ "{\"moduleId\":\"foodPerDay\",\"targetHandles\":[\"P0\"]},"
+			+ "{\"moduleId\":\"taxIncomePct\",\"targetHandles\":[\"K0\"]}]}";
+		object[] allowedIssuerCompletion = { frozenRejected, issuerCompleted, issuerCompletion, null };
+		Check((bool)InvokeStatic(builder, "TryValidateNoScopeExpansion", allowedIssuerCompletion, 4)
+			&& string.IsNullOrWhiteSpace(allowedIssuerCompletion[3] as string),
+			"The constrained repair may add only an explicitly authorized module+K0 pair while retaining the foreign pair.");
+		object[] newForeignTarget =
+		{
+			frozenRejected,
+			issuerCompleted.Replace("[\"K0\"]", "[\"K0\",\"K2\"]"),
+			issuerCompletion,
+			null
+		};
+		Check(!(bool)InvokeStatic(builder, "TryValidateNoScopeExpansion", newForeignTarget, 4),
+			"The K0 completion allowance must reject every newly introduced foreign or non-K0 target.");
+		object[] unauthorizedK0Pair =
+		{
+			frozenRejected,
+			issuerCompleted.Replace("taxIncomePct", "loyaltyPerDay"),
+			issuerCompletion,
+			null
+		};
+		Check(!(bool)InvokeStatic(builder, "TryValidateNoScopeExpansion", unauthorizedK0Pair, 4)
+			&& (unauthorizedK0Pair[3] as string)?.Contains("moduleId") == true,
+			"The K0 completion allowance must reject a module that was not authorized for K0 by the frozen directory.");
+		object[] removedForeignPair =
+		{
+			frozenRejected,
+			"{\"effectPlanVersion\":1,\"effects\":[{\"moduleId\":\"taxIncomePct\",\"targetHandles\":[\"K0\"]}]}",
+			issuerCompletion,
+			null
+		};
+		Check(!(bool)InvokeStatic(builder, "TryValidateNoScopeExpansion", removedForeignPair, 4)
+			&& (removedForeignPair[3] as string)?.Contains("removed frozen") == true,
+			"Issuer-side repair must not replace or remove the originally selected foreign effects.");
 	}
 
 	private static void TestPlayerPolicyAutoDraftContracts()
@@ -6516,18 +8033,21 @@ internal static class Program
 			&& !promptJson.Contains("中央集权")
 			&& !promptJson.Contains("clanInfluence"),
 			"AI writing user input must contain only the player's title and original text, not policy scope, duration, world context, examples, or effect internals.");
-		Check(PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("通用中文扩写工具")
+		Check(PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("《骑马与砍杀2：霸主》")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("卡拉迪亚不是现代国家")
 			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不要评议")
 			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不要因为内容简短")
-			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("执行渠道")
-			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("受益对象")
-			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("直接预期结果")
-			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("企业宣传式空话")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不要替后续政策评议")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("由谁执行")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("必要的钱粮、人手和命令如何组织")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("各方直接预期结果")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不能只写其中一端")
 			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不得添加不相干目标、相反立场")
+			&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不得擅自扩大或缩小作用范围")
 			&& IsSafePlayerVisiblePolicyText(PolicyEffectPromptService.DefaultAutoDraftPrompt)
 			&& !PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("policyName")
 			&& !PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("policyContent"),
-			"The editable default must define only natural-language expansion behavior; transport fields belong to the immutable layer.");
+			"The editable default must define setting-aware natural-language drafting behavior; transport fields belong to the immutable layer.");
 
 		object[] validArgs =
 		{
@@ -6939,6 +8459,9 @@ internal static class Program
 				&& !Directory.EnumerateFiles(effectDirectory, firstId + ".json.tmp-*", SearchOption.TopDirectoryOnly).Any(),
 				"An atomic replacement failure must preserve the original bytes and clean its temporary file.");
 
+			string previousAutoDraftGenericExpansion = (string)typeof(PolicyEffectPromptService)
+				.GetField("PreviousDefaultAutoDraftPromptGenericExpansion", All)
+				.GetRawConstantValue();
 			string previousAutoDraftDefault = (string)typeof(PolicyEffectPromptService)
 				.GetField("PreviousDefaultAutoDraftPromptWithEditableTransport", All)
 				.GetRawConstantValue();
@@ -6951,6 +8474,20 @@ internal static class Program
 			string previousCommonBeforeReasonableInference = (string)typeof(PolicyEffectPromptService)
 				.GetField("PreviousDefaultCommonEvaluationPromptBeforeReasonableInference", All)
 				.GetRawConstantValue();
+			File.WriteAllText(autoDraftPath, new JObject
+			{
+				["Version"] = 1,
+				["Text"] = previousAutoDraftGenericExpansion
+			}.ToString(Formatting.Indented), new UTF8Encoding(false));
+			File.WriteAllText(commonPath, new JObject
+			{
+				["Version"] = 1,
+				["CommonEvaluationPrompt"] = previousCommonBeforeReasonableInference
+			}.ToString(Formatting.Indented), new UTF8Encoding(false));
+			PolicyEffectPromptService.ReloadForContractTests();
+			Check(string.Equals(PolicyEffectPromptService.GetAutoDraftPrompt(), PolicyEffectPromptService.DefaultAutoDraftPrompt, StringComparison.Ordinal)
+				&& string.Equals(PolicyEffectPromptService.GetCommonEvaluationPrompt(), PolicyEffectPromptService.DefaultCommonEvaluationPrompt, StringComparison.Ordinal),
+				"The immediately previous generic auto-draft default must migrate to the setting-aware default without rewriting custom variants.");
 			File.WriteAllText(autoDraftPath, new JObject
 			{
 				["Version"] = 1,
@@ -6985,7 +8522,8 @@ internal static class Program
 				"Smart writing must persist and read its dedicated prompt independently.");
 			Check(PolicyEffectPromptService.TrySaveAutoDraftPrompt("", out saveError)
 				&& string.Equals(PolicyEffectPromptService.GetAutoDraftPrompt(), PolicyEffectPromptService.DefaultAutoDraftPrompt, StringComparison.Ordinal)
-				&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("通用中文扩写工具")
+				&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("《骑马与砍杀2：霸主》")
+				&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("卡拉迪亚不是现代国家")
 				&& PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("不要评议")
 				&& IsSafePlayerVisiblePolicyText(PolicyEffectPromptService.DefaultAutoDraftPrompt)
 				&& !PolicyEffectPromptService.DefaultAutoDraftPrompt.Contains("policyName")
@@ -7392,6 +8930,10 @@ internal static class Program
 		{
 			probeCapabilities[moduleId] = new JObject
 			{
+				["defaultTargetHandle"] = string.Empty,
+				["allowedSubsetTargetHandles"] = new JArray(
+					"P:npc:kingdom_west:clans:publisher",
+					"P:npc:kingdom_west:clans:others"),
 				["allowedTargetHandles"] = new JArray(
 					"P:npc:kingdom_west:clans:publisher",
 					"P:npc:kingdom_west:clans:others")
@@ -7399,7 +8941,7 @@ internal static class Program
 		}
 		SetField(kingdomContextType, kingdomContext, "EffectTargetDirectory", TokenToObject(new JObject
 		{
-			["structureVersion"] = 2,
+			["structureVersion"] = 3,
 			["targets"] = new JObject
 			{
 				["P:npc:kingdom_west:clans:publisher"] = new JObject
@@ -9332,6 +10874,30 @@ internal static class Program
 				&& Convert.ToInt32(Property(metricBranch.GetType(), metricBranch, "Limit"), CultureInfo.InvariantCulture) == routeCase.Limit,
 				"Unexpected Hearth/Militia TargetPlan shape for '" + routeCase.Query + "'.");
 		}
+		object deterministicKingdomSemanticContext = Activator.CreateInstance(semanticContextType, nonPublic: true);
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "Scope", "kingdom");
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "TargetKingdomId", "k1");
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "IssuerKingdomId", "k1");
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "PlayerClanId", "player");
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "ProposerClanId", "player");
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "SourceSettlementIds", Array.Empty<string>());
+		SetProperty(semanticContextType, deterministicKingdomSemanticContext, "Snapshot", snapshot);
+		const string namedForeignRelationCuePolicy = "派遣税吏进入敌国k2王国境内所有城镇和城堡征税，所得充实本国财政";
+		object[] namedForeignRelationCueArguments = { namedForeignRelationCuePolicy, deterministicKingdomSemanticContext, null, null };
+		Check((bool)InvokeStatic(routerType, "TryRoute", namedForeignRelationCueArguments, 4),
+			"A named foreign kingdom must override generic enemy/domestic prose cues before relation conflict validation: "
+			+ namedForeignRelationCueArguments[3]);
+		object[] namedForeignRelationCueCandidates = Items(namedForeignRelationCueArguments[2]).ToArray();
+		Check(namedForeignRelationCueCandidates.Length == 1,
+			"A single named foreign kingdom with enemy/domestic prose cues must produce one bounded TargetPlan candidate.");
+		object namedForeignRelationCuePlan = Property(namedForeignRelationCueCandidates[0].GetType(), namedForeignRelationCueCandidates[0], "Plan");
+		object namedForeignRelationCueBranch = Items(Property(planType, namedForeignRelationCuePlan, "Branches")).Single();
+		Check(string.Equals(Property(branchType, namedForeignRelationCueBranch, "Universe").ToString(), "PrimaryFiefs", StringComparison.Ordinal)
+			&& string.Equals(Property(branchType, namedForeignRelationCueBranch, "EntityType").ToString(), "PrimaryFief", StringComparison.Ordinal)
+			&& string.Equals(Property(branchType, namedForeignRelationCueBranch, "Relation").ToString(), "Specific", StringComparison.Ordinal)
+			&& ReadStringPropertyValues(namedForeignRelationCueBranch, "NamedKingdomIds").SequenceEqual(new[] { "k2" }, StringComparer.Ordinal)
+			&& string.Equals(Property(branchType, namedForeignRelationCueBranch, "Cardinality").ToString(), "All", StringComparison.Ordinal),
+			"A named foreign kingdom with prose relation cues must remain Specific(k2)/PrimaryFief/All.");
 		object[] routeArguments = { "去其他地方抢税收", semanticContext, null, null };
 		bool routeSucceeded = (bool)InvokeStatic(routerType, "TryRoute", routeArguments, 4);
 		object[] routedCandidates = Items(routeArguments[2]).ToArray();
@@ -9749,8 +11315,8 @@ internal static class Program
 		SetField(requestType, request, "TargetHandles", handles);
 		SetField(requestType, request, "SemanticTargetSnapshot", snapshot);
 		SetField(requestType, request, "EffectTargetDirectory", TokenToObject(JObject.Parse(
-			"{\"structureVersion\":2,\"targets\":{\"P1\":{\"kind\":\"plan\",\"description\":\"other clan\"}},"
-			+ "\"capabilities\":{\"clanInfluence\":{\"allowedTargetHandles\":[\"P1\"]}}}"), directoryType));
+			"{\"structureVersion\":3,\"targets\":{\"P1\":{\"kind\":\"plan\",\"description\":\"other clan\"}},"
+			+ "\"capabilities\":{\"clanInfluence\":{\"defaultTargetHandle\":\"\",\"allowedSubsetTargetHandles\":[\"P1\"],\"allowedTargetHandles\":[\"P1\"]}}}"), directoryType));
 		string serializedRequest = JsonConvert.SerializeObject(request);
 		object roundTripRequest = JsonConvert.DeserializeObject(serializedRequest, requestType);
 		Check(requestType.GetField("SemanticTargetSnapshot", All).GetValue(roundTripRequest) == null,
@@ -10317,12 +11883,12 @@ internal static class Program
 		handles.Add(selector);
 		SetField(requestType, request, "TargetHandles", handles);
 		SetField(requestType, request, "EffectTargetDirectory", TokenToObject(JObject.Parse(
-			"{\"structureVersion\":2,\"targets\":{"
+			"{\"structureVersion\":3,\"targets\":{"
 			+ "\"S\":{\"kind\":\"source\",\"description\":\"publication source\"},"
 			+ "\"X0\":{\"kind\":\"selector\","
 			+ "\"description\":\"all other primary fiefs；当前7处城镇/城堡；descriptor=从当前王国全部城市和城堡中明确排除玩家家族\","
 			+ "\"selectorId\":\"currentKingdomPrimaryFiefsExceptPlayerClan\",\"currentSettlementCount\":7}},"
-			+ "\"capabilities\":{\"foodPerDay\":{\"allowedTargetHandles\":[\"S\",\"X0\"]}}}"), directoryType));
+			+ "\"capabilities\":{\"foodPerDay\":{\"defaultTargetHandle\":\"S\",\"allowedSubsetTargetHandles\":[\"X0\"],\"allowedTargetHandles\":[\"S\",\"X0\"]}}}"), directoryType));
 
 		IEnumerable messages = (IEnumerable)InvokeStatic(
 			behaviorType,
@@ -11171,16 +12737,18 @@ internal static class Program
 			detailedIncludesDummy: false);
 		permanentVassalRequest.IsPermanentEffect = true;
 		permanentVassalRequest.EndDay = 0f;
-		permanentVassalRequest.CandidateModuleIds = new List<string> { "armyFormationTendencyPct" };
-		permanentVassalRequest.DetailedModuleIds = new List<string> { "armyFormationTendencyPct" };
+		permanentVassalRequest.TargetKingdomId = "kingdom-permanent-vassal";
+		permanentVassalRequest.IssuerKingdomId = "kingdom-permanent-issuer";
+		permanentVassalRequest.CandidateModuleIds = new List<string> { "kingdomStability" };
+		permanentVassalRequest.DetailedModuleIds = new List<string> { "kingdomStability" };
 		PolicyEffectWireEffect permanentVassalWire = new PolicyEffectWireEffect
 		{
 			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
 			MechanismId = "vassal_permanent",
 			MechanismKind = PolicyEffectMechanismKind.Independent,
 			MechanismRole = PolicyEffectMechanismRole.Subject,
-			ModuleId = "armyFormationTendencyPct",
-			TargetHandles = new List<string> { "C:permanent-vassal" },
+			ModuleId = "kingdomStability",
+			TargetHandles = new List<string> { "K:permanent-vassal" },
 			Payload = new JObject { ["value"] = 5f },
 			Reason = "permanent vassal runtime contract"
 		};
@@ -11262,7 +12830,8 @@ internal static class Program
 			RecordId = "vassal-permanent-record",
 			PolicyName = "Permanent vassal contract",
 			SubmittedDay = 1,
-			TargetKingdomId = "vassal-contract",
+			IssuerKingdomId = "kingdom-permanent-issuer",
+			TargetKingdomId = "kingdom-permanent-vassal",
 			TargetKingdomName = "Vassal Contract",
 			DurationDays = 0,
 			IsPermanentEffect = true,
@@ -11279,6 +12848,74 @@ internal static class Program
 			&& activePermanentBundle.Value<int>("RemainingDays") == 0
 			&& activePermanentBundle["ModuleEffects"].Values<JObject>().All(effect => effect.Value<float>("EndDay") == 0f),
 			"The registered permanent vassal bundle and all runtime instances must retain the permanent zero-duration contract.");
+
+		PolicyEffectCompilerRequest orderedCrossVassalRequest = BuildCompilerRequest(
+			"player-vassal-order",
+			PolicyEffectScopes.Vassal,
+			new PolicyEffectFundingContext { GoldScale = 1f, InfluenceScale = 1f },
+			candidateIncludesDummy: false,
+			detailedIncludesDummy: false);
+		orderedCrossVassalRequest.TargetKingdomId = "kingdom-vassal-order";
+		orderedCrossVassalRequest.IssuerKingdomId = "kingdom-issuer-order";
+		orderedCrossVassalRequest.AuthorizedCrossKingdomIds = new[] { "kingdom-issuer-order" };
+		orderedCrossVassalRequest.CandidateModuleIds = new List<string> { "kingdomStability" };
+		orderedCrossVassalRequest.DetailedModuleIds = new List<string> { "kingdomStability" };
+		PolicyEffectWireEffect issuerFirstWire = new PolicyEffectWireEffect
+		{
+			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
+			MechanismId = "issuer_first",
+			MechanismKind = PolicyEffectMechanismKind.Independent,
+			MechanismRole = PolicyEffectMechanismRole.Subject,
+			ModuleId = "kingdomStability",
+			TargetHandles = new List<string> { "K:issuer-order" },
+			Payload = new JObject { ["value"] = 3f },
+			Reason = "issuer consequence deliberately appears first"
+		};
+		PolicyEffectWireEffect vassalSecondWire = new PolicyEffectWireEffect
+		{
+			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
+			MechanismId = "vassal_second",
+			MechanismKind = PolicyEffectMechanismKind.Independent,
+			MechanismRole = PolicyEffectMechanismRole.Subject,
+			ModuleId = "kingdomStability",
+			TargetHandles = new List<string> { "K:vassal-order" },
+			Payload = new JObject { ["value"] = 4f },
+			Reason = "vassal consequence deliberately appears second"
+		};
+		Check(TryCompileForContract(
+			new[] { issuerFirstWire, vassalSecondWire },
+			orderedCrossVassalRequest,
+			"vassal-order",
+			out PolicyEffectCompilerResult orderedCrossVassalCompilation,
+			out string orderedCrossVassalError),
+			"A vassal policy may compile authorized effects for both the suzerain and vassal: " + orderedCrossVassalError);
+		PolicyEffectBundleRegistration orderedCrossVassalBundle = new PolicyEffectBundleRegistration
+		{
+			ScopeKind = PolicyEffectScopes.Vassal,
+			EffectId = "vassal-order-active",
+			RecordId = "vassal-order-record",
+			IssuerKingdomId = "kingdom-issuer-order",
+			PolicyName = "Ordered bilateral vassal policy",
+			SubmittedDay = 10,
+			TargetKingdomId = "kingdom-vassal-order",
+			TargetKingdomName = "Vassal Order",
+			DurationDays = 9,
+			MaintenanceFunded = true,
+			ModuleEffects = orderedCrossVassalCompilation.Effects.Select(effect => effect.SaveData).ToList()
+		};
+		object[] orderedRegistrationArguments = { orderedCrossVassalBundle, null, null };
+		Check((bool)InvokeInstance(behavior, behaviorInstance, "TryRegisterPolicyEffectBundleInternal", orderedRegistrationArguments, 3),
+			"A bilateral vassal bundle must register when its publication boundary remains the selected vassal: "
+			+ Convert.ToString(orderedRegistrationArguments[2], CultureInfo.InvariantCulture));
+		JObject orderedActiveBundle = JObject.Parse(activeEffects["vassal-order-active"]);
+		Check(string.Equals(orderedActiveBundle.Value<string>("TargetKingdomId"), "kingdom-vassal-order", StringComparison.Ordinal)
+			&& string.Equals(orderedActiveBundle.Value<string>("IssuerKingdomId"), "kingdom-issuer-order", StringComparison.Ordinal),
+			"The persisted vassal bundle root must be the selected vassal, independently of EffectPlan ordering.");
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string effectSource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Effects.cs"), Encoding.UTF8);
+		Check(effectSource.Contains("TargetKingdomId = FirstNonEmpty(request?.PlayerKingdomId, source?.KingdomId)"),
+			"Vassal activation must derive the bundle publication boundary from the request, never from the first AI-ordered effect shell.");
 		InvokeInstance(behavior, behaviorInstance, "RecordSuccessfulVassalPolicy",
 			new object[] { vassal, result, "feedback", effects, "vassal-permanent-record" }, 5);
 		IDictionary localRecords = (IDictionary)behavior.GetField("_localPolicyRecords", All).GetValue(behaviorInstance);
@@ -11500,6 +13137,38 @@ internal static class Program
 			&& weeklySnapshot.IndexOf("生效对象：附庸王国", StringComparison.Ordinal) >= 0
 			&& weeklySnapshot.IndexOf("不是附庸统治者自行颁布", StringComparison.Ordinal) >= 0,
 			"Weekly material text must not attribute a player-issued vassal policy to the target ruler.");
+
+		NpcRulerPolicyEffectDto weeklyShell = new NpcRulerPolicyEffectDto
+		{
+			TargetKingdomId = record.KingdomId,
+			TargetKingdomName = record.KingdomName,
+			DurationDays = 30,
+			RemainingDays = 30,
+			ModuleEffects = new List<PolicyEffectInstanceSaveData>
+			{
+				BuildPlayerVisibleEffectInstance(
+					"weekly-instance-0", "M0", "kingdomStabilityNextDayOnce", 1f,
+					new PolicyEffectCanonicalTargetSet { KingdomIds = new List<string> { record.KingdomId } }),
+				BuildPlayerVisibleEffectInstance(
+					"weekly-instance-1", "M1", "kingdomStabilityOnce", 1f,
+					new PolicyEffectCanonicalTargetSet { KingdomIds = new List<string> { record.KingdomId } })
+			}
+		};
+		int activeExecutableCount = Convert.ToInt32(InvokeStatic(
+			npcBehaviorType,
+			"CountActiveExecutablePolicyEffectInstances",
+			new object[] { new List<NpcRulerPolicyEffectDto> { weeklyShell } },
+			1), CultureInfo.InvariantCulture);
+		Check(activeExecutableCount == 2,
+			"Weekly effects= must count active executable ModuleEffects, not the one outer effect shell.");
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string weeklySource = File.ReadAllText(Path.Combine(
+			repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Persistence.cs"), Encoding.UTF8);
+		Check(weeklySource.Contains("List<NpcRulerPolicyEffectDto> relevantEffects = isIssuer ? effects : recipient.Value;")
+			&& weeklySource.Contains("route=\" + (isIssuer ? \"issuer\" : \"affected\")")
+			&& weeklySource.Contains("effects=\" + activeExecutableEffects")
+			&& weeklySource.Contains("effectShells=\" + relevantEffects.Count"),
+			"Weekly issuer/affected routes must use the same module-instance count while retaining an explicit shell count.");
 	}
 
 	private static void TestPlayerPolicyDualGoldCostContract()
@@ -12045,26 +13714,136 @@ internal static class Program
 			&& string.Equals(TokenString(finalizedVassalRecord, "ExternalCommitState"), "externalCommittedReconciled", StringComparison.Ordinal)
 			&& TokenInt(finalizedVassalRecord, "ExternalIndependenceActual") == 31,
 			"Observed external mutation must close the rollbackPending reconciliation lane without erasing authoritative external state.");
+		TestPolicySystemStructuredLogContracts();
+	}
+
+	private static void TestPolicySystemStructuredLogContracts()
+	{
 		Type policyLog = SutType("AnimusForge.PolicySystemLog");
+		FieldInfo fileName = policyLog.GetField("FileName", All);
 		MethodInfo transactionWriter = policyLog.GetMethod("Transaction", All);
-		HashSet<string> transactionStages = new HashSet<string>(
-			Items(policyLog.GetField("LifecycleStages", All).GetValue(null))
-				.Select(value => Convert.ToString(value, CultureInfo.InvariantCulture)),
-			StringComparer.Ordinal);
+		MethodInfo lifecycleWriter = policyLog.GetMethod("Lifecycle", All);
+		MethodInfo nextSequence = policyLog.GetMethod("NextSequence", All);
+		MethodInfo buildEventJson = policyLog.GetMethod("BuildEventJson", All);
+		MethodInfo buildLegacyContext = policyLog.GetMethod("BuildLegacyContext", All);
+		Type contextType = SutType("AnimusForge.PolicyLogContext");
+		Check(fileName != null
+			&& string.Equals(Convert.ToString(fileName.GetRawConstantValue()), "PolicySystem.txt", StringComparison.Ordinal)
+			&& policyLog.GetField("TransactionFileName", All) == null,
+			"PolicySystem logging must have exactly one source-level file target: PolicySystem.txt.");
 		Check(transactionWriter != null
-			&& string.Equals(Convert.ToString(policyLog.GetField("TransactionFileName", All).GetRawConstantValue()),
-				"PolicySystemTransactions.jsonl", StringComparison.Ordinal)
-			&& new[]
-			{
-				"prepared", "bundlePersisted", "costCommitted", "effectsCommitted", "externalCommitted",
-				"active", "suspended", "compensationPending", "compensationCompleted", "ended"
-			}.All(transactionStages.Contains)
-			&& transactionWriter.GetParameters().Select(parameter => parameter.Name).SequenceEqual(new[]
-			{
-				"transactionId", "recordId", "effectId", "mechanismId", "stage", "result", "errorKind",
-				"targetHash", "targetCount", "costReceipt", "executionReceipt", "stateBefore", "stateAfter"
-			}, StringComparer.Ordinal),
-			"Policy transaction logging must expose the complete low-frequency JSONL state/order contract.");
+			&& lifecycleWriter != null
+			&& nextSequence != null
+			&& buildEventJson != null
+			&& buildLegacyContext != null
+			&& contextType != null,
+			"PolicySystem logging must expose the compatible transaction writer plus the structured lifecycle serializer/context.");
+		long[] concurrentSequences = new long[128];
+		Parallel.For(0, concurrentSequences.Length, index =>
+		{
+			concurrentSequences[index] = Convert.ToInt64(nextSequence.Invoke(null, null), CultureInfo.InvariantCulture);
+		});
+		long[] orderedSequences = concurrentSequences.OrderBy(value => value).ToArray();
+		Check(orderedSequences.Distinct().Count() == orderedSequences.Length
+			&& orderedSequences.Zip(orderedSequences.Skip(1), (left, right) => right - left).All(delta => delta == 1L),
+			"Concurrent policy log sequence allocation must remain unique and contiguous.");
+		Check(transactionWriter.GetParameters().Select(parameter => parameter.Name).SequenceEqual(new[]
+		{
+			"transactionId", "recordId", "effectId", "mechanismId", "stage", "result", "errorKind",
+			"targetHash", "targetCount", "costReceipt", "executionReceipt", "stateBefore", "stateAfter"
+		}, StringComparer.Ordinal),
+			"Policy transaction writer must retain its existing call contract while changing only the sink.");
+
+		object context = Activator.CreateInstance(contextType, nonPublic: true);
+		SetField(contextType, context, "RequestId", "request-contract");
+		SetField(contextType, context, "Version", "1.2.3.4");
+		SetField(contextType, context, "GenerationId", "request-contract");
+		SetField(contextType, context, "TransactionId", "transaction-contract");
+		SetField(contextType, context, "RecordId", "record-contract");
+		SetField(contextType, context, "EffectId", "effect-contract");
+		SetField(contextType, context, "MechanismId", "mechanism-contract");
+		SetField(contextType, context, "InstanceId", "instance-contract");
+		SetField(contextType, context, "ReceiptId", "receipt-contract");
+		SetField(contextType, context, "Attempt", (int?)2);
+		SetField(contextType, context, "TargetHash", "target-hash-contract");
+		SetField(contextType, context, "TargetCount", (int?)3);
+		SetField(contextType, context, "Gold", (long?)120L);
+		SetField(contextType, context, "Influence", (double?)4.5d);
+		SetField(contextType, context, "Route", "https://private.example/v1/chat/completions");
+		string json = Convert.ToString(buildEventJson.Invoke(null, new object[]
+		{
+			"Player", "commit-complete", "success", "lifecycle", "info", context,
+			42L, new DateTime(2026, 8, 25, 1, 2, 3, DateTimeKind.Utc)
+		}), CultureInfo.InvariantCulture);
+		JObject parsed = JObject.Parse(json);
+		Check(!json.Contains("\r") && !json.Contains("\n")
+			&& TokenInt(parsed, "schema") == 1
+			&& TokenInt(parsed, "sequence") == 42
+			&& TokenString(parsed, "stage") == "commit-complete"
+			&& TokenString(parsed, "version") == "1.2.3.4"
+			&& TokenString(parsed, "requestId") == "request-contract"
+			&& TokenString(parsed, "generationId") == "request-contract"
+			&& TokenString(parsed, "transactionId") == "transaction-contract"
+			&& TokenString(parsed, "recordId") == "record-contract"
+			&& TokenString(parsed, "effectId") == "effect-contract"
+			&& TokenString(parsed, "instanceId") == "instance-contract"
+			&& TokenString(parsed, "receiptId") == "receipt-contract"
+			&& TokenInt(parsed, "attempt") == 2
+			&& TokenInt(parsed, "targetCount") == 3
+			&& json.IndexOf("private.example", StringComparison.OrdinalIgnoreCase) < 0,
+			"Policy lifecycle events must be independently parseable one-line JSON with the complete correlation chain.");
+
+		const string sensitive = "Bearer secret-key https://private.example prompt player-private response-body";
+		object legacyContext = buildLegacyContext.Invoke(null, new object[] { sensitive, "raw response\n" + sensitive });
+		string redactedJson = Convert.ToString(buildEventJson.Invoke(null, new object[]
+		{
+			"Npc", "generation-api-parse-failed", "failed", "failure", "error", legacyContext,
+			43L, new DateTime(2026, 8, 25, 1, 2, 4, DateTimeKind.Utc)
+		}), CultureInfo.InvariantCulture);
+		JObject redacted = JObject.Parse(redactedJson);
+		Check(redactedJson.IndexOf("secret-key", StringComparison.OrdinalIgnoreCase) < 0
+			&& redactedJson.IndexOf("private.example", StringComparison.OrdinalIgnoreCase) < 0
+			&& redactedJson.IndexOf("player-private", StringComparison.OrdinalIgnoreCase) < 0
+			&& TokenInt(redacted, "messageChars") == sensitive.Length
+			&& !string.IsNullOrWhiteSpace(TokenString(redacted, "messageHash"))
+			&& !string.IsNullOrWhiteSpace(TokenString(redacted, "detailHash")),
+			"Legacy policy log text must be represented only by bounded metadata and stable hashes.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string policyRoot = Path.Combine(repositoryRoot, "PolicySystem");
+		string[] policySources = Directory.GetFiles(policyRoot, "*.cs", SearchOption.AllDirectories);
+		string combinedPolicySource = string.Join("\n", policySources.Select(path => File.ReadAllText(path, Encoding.UTF8)));
+		foreach (string requiredStage in new[]
+		{
+			"generation-start", "generation-complete", "generation-failed", "generation-stale-discarded",
+			"pending-created", "agenda-submitted", "agenda-approved", "agenda-rejected",
+			"commit-start", "commit-step", "commit-complete", "commit-failed",
+			"cost-committed", "cost-refunded", "active-bundle-created", "instance-created", "instance-ended",
+			"one-shot-start", "one-shot-complete", "scheduled-start", "scheduled-complete",
+			"daily-start", "daily-complete", "receipt-created", "compensation-start", "compensation-complete",
+			"rollback-start", "rollback-complete", "save-summary", "load-summary", "load-normalized",
+			"renewal-start", "renewal-committed", "abolition-start", "abolition-complete", "expiry-complete"
+		})
+		{
+			Check(combinedPolicySource.Contains("\"" + requiredStage + "\""),
+				"Policy lifecycle stage is missing from source: " + requiredStage);
+		}
+		Check(combinedPolicySource.IndexOf("PolicySystemTransactions.jsonl", StringComparison.Ordinal) < 0,
+			"PolicySystem source must stop appending the legacy transaction JSONL file.");
+		foreach (string sourcePath in policySources.Where(path => !path.EndsWith("PolicySystemLog.cs", StringComparison.OrdinalIgnoreCase)))
+		{
+			string source = File.ReadAllText(sourcePath, Encoding.UTF8);
+			Check(source.IndexOf("Logger.Log(", StringComparison.Ordinal) < 0
+				&& source.IndexOf("Logger.RecordTokenStats", StringComparison.Ordinal) < 0
+				&& source.IndexOf("Logger.LogToFile(", StringComparison.Ordinal) < 0,
+				"PolicySystem source must not bypass the single PolicySystemLog sink: " + sourcePath);
+		}
+		string llmSource = File.ReadAllText(Path.Combine(policyRoot, "Npc", "PolicyLlmClient.cs"), Encoding.UTF8);
+		Check(llmSource.IndexOf("BuildHttpErrorTokenStatsText", StringComparison.Ordinal) < 0
+			&& llmSource.IndexOf("BuildHttpSuccessTokenStatsText", StringComparison.Ordinal) < 0
+			&& llmSource.IndexOf("raw_sample=", StringComparison.Ordinal) < 0
+			&& llmSource.IndexOf("response_body=", StringComparison.Ordinal) < 0,
+			"Policy API logging must not retain request/response or raw parse samples.");
 	}
 
 	private static void TestNpcLegacyMigrations()
@@ -12085,17 +13864,177 @@ internal static class Program
 			object record = deserialize.Invoke(null, new object[] { json });
 			Check(record != null, "NPC v" + version + " legacy record must deserialize.");
 			Check(Convert.ToInt32(Property(record.GetType(), record, "Version"), CultureInfo.InvariantCulture) == 6,
-				"NPC v" + version + " must migrate to v6.");
+				"NPC v" + version + " must normalize to the current v6 envelope.");
+			Check(string.Equals(Convert.ToString(Property(record.GetType(), record, "AgendaStatus"), CultureInfo.InvariantCulture), "abolished", StringComparison.Ordinal),
+				"NPC v" + version + " fixed-field policy must be stopped instead of executing legacy effects.");
 			object effect = Items(Property(record.GetType(), record, "Effects")).Single();
 			object[] moduleEffects = Items(Property(effect.GetType(), effect, "ModuleEffects")).ToArray();
-			Check(HasTypedModule(moduleEffects, "prosperityPerDay"), "NPC v" + version + " prosperity must migrate.");
-			Check(HasTypedModule(moduleEffects, "kingdomStabilityOnce"), "NPC v" + version + " stability must migrate.");
-			object stability = moduleEffects.Single(item =>
-				string.Equals((string)Property(item.GetType(), item, "ModuleId"), "kingdomStabilityOnce", StringComparison.Ordinal));
-			object receipt = Property(stability.GetType(), stability, "ExecutionReceipt");
-			Check(receipt != null && string.Equals((string)Property(receipt.GetType(), receipt, "Message"), "legacyAssumedCompleted", StringComparison.Ordinal),
-				"NPC v" + version + " stability must be assumed completed, not replayed.");
+			Check(moduleEffects.Length == 0
+				&& Convert.ToBoolean(Property(effect.GetType(), effect, "IsEnded"), CultureInfo.InvariantCulture)
+				&& Convert.ToInt32(Property(effect.GetType(), effect, "RemainingDays"), CultureInfo.InvariantCulture) == 0,
+				"NPC v" + version + " fixed-field effects must become inert ended history rows.");
 		}
+	}
+
+	private static void TestPolicyReReviewContracts()
+	{
+		Type codec = SutType("AnimusForge.PolicyEffects.PolicyEffectSaveCodec");
+		MethodInfo legacyActiveShape = codec.GetMethod("IsLegacyStoppedActiveV5Shape", All);
+		Check(legacyActiveShape != null,
+			"Save codec must expose a shape-first legacy Active v5 stop discriminator.");
+		JObject legacyActive = JObject.Parse(
+			"{\"Version\":5,\"EffectId\":\"legacy-active\",\"RecordId\":\"legacy-record\"," +
+			"\"prosperityDailyDeltaPerTown\":1,\"volunteerProductionPercent\":0,\"clanInfluenceDailyDelta\":0}");
+		JObject modularActive = JObject.Parse(
+			"{\"Version\":5,\"EffectId\":\"module-active\",\"RecordId\":\"module-record\",\"ModuleEffects\":[]}");
+		Check((bool)legacyActiveShape.Invoke(null, new object[] { legacyActive })
+			&& !(bool)legacyActiveShape.Invoke(null, new object[] { modularActive }),
+			"Legacy Active v5 detection must use fixed-field shape and must not stop modular v5 rows.");
+
+		MethodInfo stopDynamic = codec.GetMethod("TryNormalizeLegacyStoppedDynamicPolicy", All);
+		object[] dynamicArgs =
+		{
+			JObject.Parse("{\"Version\":1,\"PolicyObjectId\":\"af_policy:legacy\",\"RecordId\":\"legacy-record\"," +
+				"\"Source\":\"player\",\"OwnerKingdomId\":\"k1\",\"PolicyName\":\"旧政策\"," +
+				"\"PolicyContent\":\"这是必须保留的完整旧政策正文。\",\"Status\":\"active\"," +
+				"\"PlayerPayloadJson\":\"{bad legacy payload}\"}"),
+			null,
+			null
+		};
+		Check(stopDynamic != null && (bool)stopDynamic.Invoke(null, dynamicArgs),
+			"Legacy Dynamic v1 must have a dedicated stopped-history normalization path.");
+		JObject stoppedDynamic = (JObject)dynamicArgs[1];
+		Check(TokenInt(stoppedDynamic, "Version") == 4
+			&& string.Equals(TokenString(stoppedDynamic, "Status"), "abolished", StringComparison.Ordinal)
+			&& string.Equals(TokenString(stoppedDynamic, "CommitState"), "ended", StringComparison.Ordinal)
+			&& string.Equals(TokenString(stoppedDynamic, "PolicyContent"), "这是必须保留的完整旧政策正文。", StringComparison.Ordinal)
+			&& string.IsNullOrWhiteSpace(TokenString(stoppedDynamic, "PlayerPayloadJson")),
+			"Stopped Dynamic normalization must preserve the published text and discard incompatible execution payloads.");
+
+		MethodInfo stopLocal = codec.GetMethod("TryNormalizeLegacyStoppedLocalPolicy", All);
+		object[] localArgs =
+		{
+			JObject.Parse("{\"Version\":4,\"RecordId\":\"legacy-local\",\"ScopeKind\":\"local\"," +
+				"\"PolicyName\":\"旧地方政策\",\"PolicyContent\":\"地方政策完整正文\",\"Status\":\"active\"," +
+				"\"OriginalDurationDays\":20,\"OriginalTargetFiefIds\":[\"town-a\"]," +
+				"\"prosperityDailyDeltaPerTown\":2,\"Effects\":[{\"prosperityDailyDeltaPerTown\":2}]}"),
+			null,
+			null
+		};
+		Check(stopLocal != null && (bool)stopLocal.Invoke(null, localArgs),
+			"Legacy Local v4 must have a dedicated stopped-history normalization path.");
+		JObject stoppedLocal = (JObject)localArgs[1];
+		Check(TokenInt(stoppedLocal, "Version") == 6
+			&& string.Equals(TokenString(stoppedLocal, "Status"), "abolished", StringComparison.Ordinal)
+			&& string.Equals(TokenString(stoppedLocal, "EffectStatus"), "abolished", StringComparison.Ordinal)
+			&& string.Equals(TokenString(stoppedLocal, "PolicyContent"), "地方政策完整正文", StringComparison.Ordinal)
+			&& TokenArray(stoppedLocal, "Effects").Length == 0,
+			"Stopped Local normalization must preserve reusable text/targets while removing legacy runtime effects.");
+
+		Type requestType = SutType("AnimusForge.CustomPolicyBehavior+PolicyDraftRequest");
+		Type dynamicType = SutType("AnimusForge.CustomPolicyBehavior+DynamicPolicySaveData");
+		Type localType = SutType("AnimusForge.CustomPolicyBehavior+LocalPolicyRecordSaveData");
+		Type npcType = SutType("AnimusForge.NpcRulerPolicyRecord");
+		foreach (Type type in new[] { requestType, dynamicType, localType, npcType })
+		{
+			foreach (string propertyName in new[]
+			{
+				"ReReviewRootRecordId", "ReReviewSourceRecordId", "SupersedesRecordId", "ReReviewReplacementCommitted"
+			})
+			{
+				Check(type.GetProperty(propertyName, All) != null,
+					type.FullName + " must persist re-review lineage field " + propertyName + ".");
+			}
+		}
+
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Check(behavior.GetMethod("TryBuildPolicyReReviewContext", All) != null
+			&& behavior.GetMethod("FinalizePolicyReReviewReplacement", All) != null
+			&& behavior.GetMethod("ReconcilePolicyReReviewReplacementsAfterLoad", All) != null,
+			"Policy behavior must provide template resolution, post-commit replacement, and reload reconciliation.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string kingdomUi = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "UI", "KingdomPolicyUi.cs"), Encoding.UTF8);
+		string localUi = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "UI", "LocalPolicyUi.cs"), Encoding.UTF8);
+		string kingdomPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CustomPolicyHistoryPopup.xml"), Encoding.UTF8);
+		string localPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "LocalPolicyHistoryPopup.xml"), Encoding.UTF8);
+		Check(kingdomUi.Contains("ExecuteReReview") && kingdomUi.Contains("CanReReview")
+			&& localUi.Contains("ExecuteReReview") && localUi.Contains("CanReReview")
+			&& kingdomPrefab.Contains("Command.Click=\"ExecuteReReview\"")
+			&& localPrefab.Contains("Command.Click=\"ExecuteReReview\""),
+			"Kingdom, local, and vassal history UI must expose enabled re-review commands.");
+
+		string worldInboxSource = File.ReadAllText(Path.Combine(repositoryRoot, "WorldEvents", "WorldEventInbox.cs"), Encoding.UTF8);
+		string worldDiplomacySource = File.ReadAllText(Path.Combine(repositoryRoot, "WorldDiplomacyBehavior.cs"), Encoding.UTF8);
+		string policyGenerationSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Generation.cs"), Encoding.UTF8);
+		string policyManagementSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Management.cs"), Encoding.UTF8);
+		string terminalSource = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForgeTerminalBehavior.cs"), Encoding.UTF8);
+		string worldInboxPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "AnimusForgeWorldEventInboxPopup.xml"), Encoding.UTF8);
+		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive()")
+			&& worldInboxPrefab.Contains("Command.Click=\"ExecuteReReview\"")
+			&& worldInboxPrefab.Contains("IsVisible=\"@ShowSelectedRecordReReview\"")
+			&& worldInboxPrefab.Contains("IsEnabled=\"@CanReReviewSelectedRecord\""),
+			"The real royal-announcement route and prefab must expose the kingdom policy re-review command.");
+		Check(worldInboxSource.Contains("PolicyRecordId")
+			&& worldInboxSource.Contains("IsPlayerPolicy")
+			&& policyGenerationSource.Contains("PolicyRecordId = record.PolicyId")
+			&& policyGenerationSource.Contains("IsPlayerPolicy = record.IsPlayerPolicy"),
+			"New policy announcements must persist an explicit player-policy record association.");
+		Check(worldDiplomacySource.Contains("entry.Version >= 2")
+			&& worldDiplomacySource.Contains("legacyPrefix = \"npc_ruler_policy:\"")
+			&& worldDiplomacySource.Contains("TryGetKingdomPolicyReReviewAvailabilityForExternal")
+			&& policyManagementSource.Contains("OpenComposePopup(context, returnToSource)"),
+			"Legacy announcement IDs must be an old-version-only candidate and must pass authoritative policy eligibility before re-review opens with the correct return route.");
+
+		Type inboxEntryType = SutType("AnimusForge.AnimusForgeWorldEventInboxEntry");
+		object inboxEntry = Activator.CreateInstance(inboxEntryType);
+		Check(Convert.ToInt32(Property(inboxEntryType, inboxEntry, "Version"), CultureInfo.InvariantCulture) == 2
+			&& inboxEntryType.GetProperty("PolicyRecordId", All) != null
+			&& inboxEntryType.GetProperty("IsPlayerPolicy", All) != null,
+			"World-event inbox v2 must expose additive policy identity fields while old JSON remains readable.");
+
+		Type recordDataType = SutType("AnimusForge.WorldEventRecordData");
+		Type countryDataType = SutType("AnimusForge.WorldEventCountryData");
+		Type popupDataType = SutType("AnimusForge.WorldEventInboxPopupData");
+		Type popupVmType = SutType("AnimusForge.AnimusForgeWorldEventInboxPopupVM");
+		object recordData = Activator.CreateInstance(recordDataType);
+		SetField(recordDataType, recordData, "EventId", "npc_ruler_policy:player-policy-record");
+		SetField(recordDataType, recordData, "PolicyRecordId", "player-policy-record");
+		SetField(recordDataType, recordData, "TitleText", "玩家王国政策");
+		SetField(recordDataType, recordData, "ShowReReview", true);
+		SetField(recordDataType, recordData, "CanReReview", true);
+		object countryData = Activator.CreateInstance(countryDataType);
+		SetField(countryDataType, countryData, "KingdomName", "Player Kingdom");
+		((IList)countryDataType.GetField("Records", All).GetValue(countryData)).Add(recordData);
+		object popupData = Activator.CreateInstance(popupDataType);
+		((IList)popupDataType.GetField("Countries", All).GetValue(popupData)).Add(countryData);
+		string selectedReReviewRecordId = string.Empty;
+		object popupVm = Activator.CreateInstance(
+			popupVmType,
+			new object[]
+			{
+				popupData,
+				new Action<string>(recordId => selectedReReviewRecordId = recordId),
+				new Action(() => { })
+			});
+		InvokeInstance(popupVmType, popupVm, "ExecuteReReview", Array.Empty<object>(), 0);
+		Check(string.Equals(selectedReReviewRecordId, "player-policy-record", StringComparison.Ordinal),
+			"The selected royal-announcement VM record must pass its explicit policy record ID to the re-review callback.");
+
+		SetField(recordDataType, recordData, "ShowReReview", false);
+		SetField(recordDataType, recordData, "CanReReview", false);
+		selectedReReviewRecordId = string.Empty;
+		object nonPolicyPopupVm = Activator.CreateInstance(
+			popupVmType,
+			new object[]
+			{
+				popupData,
+				new Action<string>(recordId => selectedReReviewRecordId = recordId),
+				new Action(() => { })
+			});
+		InvokeInstance(popupVmType, nonPolicyPopupVm, "ExecuteReReview", Array.Empty<object>(), 0);
+		Check(string.IsNullOrWhiteSpace(selectedReReviewRecordId),
+			"A non-policy announcement must never invoke the kingdom policy re-review callback.");
 	}
 
 	private static void TestNpcUnifiedMultiTargetCanonicalization()
@@ -12298,6 +14237,31 @@ internal static class Program
 		SetField(kingdomContextType, kingdomContext, "RulerHeroId", "hero_west");
 		SetField(kingdomContextType, kingdomContext, "RulerName", "Ruler West");
 		SetField(kingdomContextType, kingdomContext, "EnemyPolicyMemory", "NPC_ENEMY_HISTORY_PROMPT_MARKER");
+		Type npcDirectoryEntryType = SutType("AnimusForge.PolicyTargets.PolicyTargetHandleDirectoryEntry");
+		IPolicyEffectModule npcFoodForDefaults = RequirePolicyEffectModule("foodPerDay");
+		IPolicyEffectModule npcHeroGoldForDefaults = RequirePolicyEffectModule("heroGold");
+		IPolicyEffectModule npcRaidBanForDefaults = RequirePolicyEffectModule("kingdomVillageRaidBan");
+		object npcHomeKingdomEntry = Activator.CreateInstance(npcDirectoryEntryType);
+		SetProperty(npcDirectoryEntryType, npcHomeKingdomEntry, "Kind", "kingdom");
+		SetProperty(npcDirectoryEntryType, npcHomeKingdomEntry, "EntityId", "kingdom_west");
+		object npcForeignKingdomEntry = Activator.CreateInstance(npcDirectoryEntryType);
+		SetProperty(npcDirectoryEntryType, npcForeignKingdomEntry, "Kind", "kingdom");
+		SetProperty(npcDirectoryEntryType, npcForeignKingdomEntry, "EntityId", "kingdom_east");
+		object npcHeroEntry = Activator.CreateInstance(npcDirectoryEntryType);
+		SetProperty(npcDirectoryEntryType, npcHeroEntry, "Kind", "hero");
+		Check((bool)InvokeStatic(behavior, "IsNpcPolicyDefaultTargetHandle",
+				new object[] { kingdomContext, npcHomeKingdomEntry, npcFoodForDefaults }, 3)
+			&& !(bool)InvokeStatic(behavior, "IsNpcPolicyDefaultTargetHandle",
+				new object[] { kingdomContext, npcForeignKingdomEntry, npcFoodForDefaults }, 3)
+			&& !(bool)InvokeStatic(behavior, "IsNpcPolicyDefaultTargetHandle",
+				new object[] { kingdomContext, npcHeroEntry, npcHeroGoldForDefaults }, 3)
+			&& !(bool)InvokeStatic(behavior, "IsNpcPolicyDefaultTargetHandle",
+				new object[] { kingdomContext, npcHomeKingdomEntry, npcHeroGoldForDefaults }, 3)
+			&& (bool)InvokeStatic(behavior, "IsNpcPolicyDefaultTargetHandle",
+				new object[] { kingdomContext, npcHomeKingdomEntry, npcRaidBanForDefaults }, 3)
+			&& !(bool)InvokeStatic(behavior, "IsNpcPolicyDefaultTargetHandle",
+				new object[] { kingdomContext, npcForeignKingdomEntry, npcRaidBanForDefaults }, 3),
+			"NPC capability default-target classifier must default to the frozen ruler kingdom and leave hero-only or foreign targets as subsets.");
 		object selfTarget = Activator.CreateInstance(allowedTargetType, nonPublic: true);
 		SetField(allowedTargetType, selfTarget, "KingdomId", "kingdom_west");
 		SetField(allowedTargetType, selfTarget, "KingdomName", "Kingdom West");
@@ -12392,7 +14356,7 @@ internal static class Program
 		Type directoryType = SutType("AnimusForge.PolicyTargets.PolicyTargetHandleDirectory");
 		JObject directoryJson = new JObject
 		{
-			["structureVersion"] = 2,
+			["structureVersion"] = 3,
 			["targets"] = new JObject
 			{
 				["kingdom_west"] = new JObject
@@ -12414,6 +14378,8 @@ internal static class Program
 			{
 				["foodPerDay"] = new JObject
 				{
+					["defaultTargetHandle"] = "kingdom_west",
+					["allowedSubsetTargetHandles"] = new JArray("P0"),
 					["allowedTargetHandles"] = new JArray("kingdom_west", "P0")
 				}
 			}
@@ -12467,6 +14433,48 @@ internal static class Program
 		object[] rejectDraftPrefix = { "Here is the requested JSON:\n" + draftJson, context, null, null };
 		Check(!(bool)InvokeStatic(behavior, "TryParseNpcPolicyDraftResponse", rejectDraftPrefix, 4),
 			"NPC stage one must reject explanatory text outside the JSON contract.");
+		JObject wrongIdentityDraft = JObject.Parse(draftJson);
+		wrongIdentityDraft["policy"]["kingdomId"] = "kingdom_east";
+		wrongIdentityDraft["policy"]["kingdomName"] = "Kingdom East";
+		wrongIdentityDraft["policy"]["rulerHeroId"] = "hero_east";
+		wrongIdentityDraft["policy"]["rulerName"] = "Ruler East";
+		object[] rejectWrongIdentity = { wrongIdentityDraft.ToString(Formatting.None), context, null, null };
+		Check(!(bool)InvokeStatic(behavior, "TryParseNpcPolicyDraftResponse", rejectWrongIdentity, 4)
+			&& rejectWrongIdentity[3]?.ToString().IndexOf("身份", StringComparison.OrdinalIgnoreCase) >= 0,
+			"NPC draft validation must reject a model-selected kingdom/ruler outside the frozen single target.");
+		JArray draftRepairMessages = (JArray)InvokeStatic(
+			behavior,
+			"BuildNpcPolicyDraftRepairMessages",
+			new object[]
+			{
+				draftPromptText,
+				wrongIdentityDraft.ToString(Formatting.None),
+				rejectWrongIdentity[3]?.ToString(),
+				kingdomContext
+			},
+			4);
+		Check(draftRepairMessages.Count == 3
+			&& string.Equals(draftRepairMessages[1]?["role"]?.ToString(), "assistant", StringComparison.Ordinal)
+			&& draftRepairMessages[1]?["content"]?.ToString().Contains("kingdom_east") == true
+			&& string.Equals(draftRepairMessages[2]?["role"]?.ToString(), "user", StringComparison.Ordinal)
+			&& draftRepairMessages[2]?["content"]?.ToString().Contains("\"kingdomId\":\"kingdom_west\"") == true
+			&& draftRepairMessages[2]?["content"]?.ToString().Contains("\"rulerHeroId\":\"hero_west\"") == true
+			&& draftRepairMessages[2]?["content"]?.ToString().Contains("only constrained repair attempt") == true,
+			"NPC draft repair must preserve the rejected output as untrusted assistant data and freeze the one legal kingdom/ruler identity.");
+		Check(string.Equals(
+			(string)InvokeStatic(behavior, "ClassifyNpcPolicySemanticRepairError",
+				new object[] { "draft", rejectWrongIdentity[3]?.ToString() }, 2),
+			"identity_mismatch",
+			StringComparison.Ordinal),
+			"Wrong NPC kingdom/ruler responses must use the stable identity_mismatch repair diagnostic.");
+		TestNpcDraftSemanticRepairOrchestrationContract(
+			behavior,
+			contextType,
+			context,
+			kingdomContext,
+			draftPrompt,
+			draftJson,
+			wrongIdentityDraft.ToString(Formatting.None));
 
 		string directEffectPlanJson = new JObject
 		{
@@ -12490,6 +14498,13 @@ internal static class Program
 		object[] parsePlan = { directEffectPlanJson, 30, null, null };
 		Check((bool)InvokeStatic(behavior, "TryParseNpcPolicyEffectPlanResponse", parsePlan, 4),
 			"NPC stage two must parse the same direct EffectPlan wire shape as the player path: " + parsePlan[3]);
+		TestNpcEffectSemanticRepairOrchestrationContract(
+			behavior,
+			context,
+			kingdomContext,
+			parseDraft[2],
+			effectHistoryPrompt,
+			directEffectPlanJson);
 		JObject pHandlePlan = JObject.Parse(directEffectPlanJson);
 		pHandlePlan["effects"][0]["targetHandles"] = new JArray("P0");
 		object[] parsePHandlePlan = { pHandlePlan.ToString(Formatting.None), 30, null, null };
@@ -13297,6 +15312,160 @@ internal static class Program
 			.ToList() ?? new List<string>();
 	}
 
+	private static void TestNpcDraftSemanticRepairOrchestrationContract(
+		Type behavior,
+		Type contextType,
+		object context,
+		object target,
+		object draftPrompt,
+		string validDraft,
+		string wrongIdentityDraft)
+	{
+		FieldInfo overrideField = behavior.GetField("NpcPolicyApiTextOverrideForTests", All);
+		FieldInfo embeddingOverrideField = behavior.GetField("NpcPolicyQueryEmbeddingOverrideForTests", All);
+		Type jobType = behavior.GetNestedType("NpcPolicyGenerationJob", All);
+		Type resultType = behavior.GetNestedType("NpcPolicyGenerationResult", All);
+		Check(overrideField != null && embeddingOverrideField != null && jobType != null && resultType != null,
+			"NPC draft repair orchestration requires the production API/embedding hooks and job/result contracts.");
+		long runtimeGeneration = Convert.ToInt64(Property(
+			SutType("AnimusForge.SaveRuntimeGuard"), null, "CurrentGeneration"), CultureInfo.InvariantCulture);
+		object behaviorInstance = Activator.CreateInstance(behavior);
+		Func<object> buildJob = () =>
+		{
+			object job = Activator.CreateInstance(jobType, nonPublic: true);
+			SetField(jobType, job, "JobId", "npc-draft-repair-contract");
+			SetField(jobType, job, "BatchId", "npc-draft-repair-contract");
+			SetField(jobType, job, "Context", context);
+			SetField(jobType, job, "RuntimeGeneration", runtimeGeneration);
+			SetField(jobType, job, "HardTimeoutMilliseconds", 1000);
+			return job;
+		};
+		embeddingOverrideField.SetValue(null, new Func<string, float[]>(query => new[] { 1f }));
+		try
+		{
+			List<string> sources = new List<string>();
+			overrideField.SetValue(null, new Func<string, string, long, Task<string>>((prompt, source, generation) =>
+			{
+				sources.Add(source ?? string.Empty);
+				return Task.FromResult(sources.Count == 1 ? wrongIdentityDraft : validDraft);
+			}));
+			object repairedJob = buildJob();
+			object repairedResult = Activator.CreateInstance(resultType, nonPublic: true);
+			Task repairedTask = (Task)InvokeInstance(
+				behavior,
+				behaviorInstance,
+				"GenerateNpcPolicyDraftWithSemanticRepairAsync",
+				new[] { repairedJob, repairedResult, target, draftPrompt },
+				4);
+			repairedTask.GetAwaiter().GetResult();
+			object repairedDraft = repairedTask.GetType().GetProperty("Result", All)?.GetValue(repairedTask, null);
+			Check(repairedDraft != null
+				&& sources.SequenceEqual(new[] { "NpcRulerPolicyDraft", "NpcRulerPolicyDraftRepair" }, StringComparer.Ordinal),
+				"A wrong NPC kingdom/ruler must receive exactly one constrained draft repair and accept the corrected frozen identity.");
+
+			sources.Clear();
+			overrideField.SetValue(null, new Func<string, string, long, Task<string>>((prompt, source, generation) =>
+			{
+				sources.Add(source ?? string.Empty);
+				return Task.FromResult(wrongIdentityDraft);
+			}));
+			object rejectedJob = buildJob();
+			object rejectedResult = Activator.CreateInstance(resultType, nonPublic: true);
+			Task rejectedTask = (Task)InvokeInstance(
+				behavior,
+				behaviorInstance,
+				"GenerateNpcPolicyDraftWithSemanticRepairAsync",
+				new[] { rejectedJob, rejectedResult, target, draftPrompt },
+				4);
+			rejectedTask.GetAwaiter().GetResult();
+			object rejectedDraft = rejectedTask.GetType().GetProperty("Result", All)?.GetValue(rejectedTask, null);
+			Check(rejectedDraft == null
+				&& sources.SequenceEqual(new[] { "NpcRulerPolicyDraft", "NpcRulerPolicyDraftRepair" }, StringComparer.Ordinal),
+				"A second wrong NPC identity must fail closed after one repair and must not proceed to the effect stage.");
+
+			sources.Clear();
+			object staleJob = buildJob();
+			overrideField.SetValue(null, new Func<string, string, long, Task<string>>((prompt, source, generation) =>
+			{
+				sources.Add(source ?? string.Empty);
+				SetField(jobType, staleJob, "Version", 1);
+				return Task.FromResult(validDraft);
+			}));
+			Task staleTask = (Task)InvokeInstance(
+				behavior,
+				behaviorInstance,
+				"ProcessPolicyGenerationJobAsync",
+				new[] { staleJob },
+				1);
+			staleTask.GetAwaiter().GetResult();
+			Check(sources.SequenceEqual(new[] { "NpcRulerPolicyDraft" }, StringComparer.Ordinal),
+				"A generation that becomes stale after the accepted NPC draft must not send an EffectPlan request.");
+		}
+		finally
+		{
+			overrideField.SetValue(null, null);
+			embeddingOverrideField.SetValue(null, null);
+		}
+	}
+
+	private static void TestNpcEffectSemanticRepairOrchestrationContract(
+		Type behavior,
+		object context,
+		object target,
+		object draft,
+		object effectPrompt,
+		string validEffectPlan)
+	{
+		FieldInfo overrideField = behavior.GetField("NpcPolicyApiTextOverrideForTests", All);
+		FieldInfo embeddingOverrideField = behavior.GetField("NpcPolicyQueryEmbeddingOverrideForTests", All);
+		Type jobType = behavior.GetNestedType("NpcPolicyGenerationJob", All);
+		Type resultType = behavior.GetNestedType("NpcPolicyGenerationResult", All);
+		Check(overrideField != null && embeddingOverrideField != null && jobType != null && resultType != null,
+			"NPC effect repair orchestration requires the production API/embedding hooks and job/result contracts.");
+		List<string> sources = new List<string>();
+		overrideField.SetValue(null, new Func<string, string, long, Task<string>>((prompt, source, generation) =>
+		{
+			sources.Add(source ?? string.Empty);
+			return Task.FromResult(sources.Count == 1 ? "{" : validEffectPlan);
+		}));
+		embeddingOverrideField.SetValue(null, new Func<string, float[]>(query => new[] { 1f }));
+		try
+		{
+			object job = Activator.CreateInstance(jobType, nonPublic: true);
+			SetField(jobType, job, "JobId", "npc-effect-repair-contract");
+			SetField(jobType, job, "BatchId", "npc-effect-repair-contract");
+			SetField(jobType, job, "Context", context);
+			SetField(jobType, job, "RuntimeGeneration", Convert.ToInt64(Property(
+				SutType("AnimusForge.SaveRuntimeGuard"), null, "CurrentGeneration"), CultureInfo.InvariantCulture));
+			SetField(jobType, job, "HardTimeoutMilliseconds", 1000);
+			object result = Activator.CreateInstance(resultType, nonPublic: true);
+			object behaviorInstance = Activator.CreateInstance(behavior);
+			Task effectTask = (Task)InvokeInstance(
+				behavior,
+				behaviorInstance,
+				"GenerateNpcPolicyEffectsWithSemanticRepairAsync",
+				new[] { job, result, target, draft, effectPrompt },
+				5);
+			effectTask.GetAwaiter().GetResult();
+			Check(sources.SequenceEqual(new[]
+			{
+				"NpcRulerPolicyEffectPostprocess",
+				"NpcRulerPolicyEffectPostprocessRepair"
+			}, StringComparer.Ordinal),
+				"A malformed NPC EffectPlan must receive exactly one effect-only repair and never a third semantic attempt.");
+			string finalError = resultType.GetField("Error", All).GetValue(result)?.ToString() ?? string.Empty;
+			Check(finalError.IndexOf("target-kingdom-unavailable", StringComparison.OrdinalIgnoreCase) >= 0
+				|| finalError.IndexOf("repair rejected", StringComparison.OrdinalIgnoreCase) >= 0,
+				"The corrected NPC EffectPlan must pass strict JSON parsing and reach the expected no-Campaign target boundary: "
+				+ finalError);
+		}
+		finally
+		{
+			overrideField.SetValue(null, null);
+			embeddingOverrideField.SetValue(null, null);
+		}
+	}
+
 	private static void TestNpcTwoStageApiCallOverrideContract(Type behavior, Type contextType, object context)
 	{
 		if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(OnnxRuntimeDirectoryEnvironmentVariable)))
@@ -13309,8 +15478,21 @@ internal static class Program
 			"NPC two-stage orchestration must expose an internal text-only API override for contract tests.");
 		Check(embeddingOverrideField != null,
 			"NPC two-stage orchestration must expose an internal query-embedding counter hook for contract tests.");
+		object orchestrationTarget = Items(contextType.GetField("Kingdoms", All).GetValue(context)).Single();
+		FieldInfo allowedTargetsField = orchestrationTarget.GetType().GetField("AllowedEffectTargets", All);
+		IList orchestrationAllowedTargets = (IList)allowedTargetsField.GetValue(orchestrationTarget);
+		for (int targetIndex = orchestrationAllowedTargets.Count - 1; targetIndex >= 0; targetIndex--)
+		{
+			object allowedTarget = orchestrationAllowedTargets[targetIndex];
+			string planHandle = allowedTarget?.GetType().GetField("PlanHandle", All)?.GetValue(allowedTarget)?.ToString() ?? string.Empty;
+			if (!string.IsNullOrWhiteSpace(planHandle))
+			{
+				orchestrationAllowedTargets.RemoveAt(targetIndex);
+			}
+		}
 		List<string> sources = new List<string>();
 		List<string> prompts = new List<string>();
+		string generationError = string.Empty;
 		int queryEmbeddingCount = 0;
 		string routingQuery = "Granary Reform\nKingdom West funds granaries.";
 		int expectedQueryEmbeddingCount = PolicyEffectModuleRouter.BuildQueryIntents(
@@ -13331,12 +15513,22 @@ internal static class Program
 				["durationDays"] = 30
 			}
 		}.ToString(Formatting.None);
+		JObject wrongDraft = JObject.Parse(draftResponse);
+		wrongDraft["policy"]["kingdomId"] = "kingdom_east";
+		wrongDraft["policy"]["kingdomName"] = "Kingdom East";
+		wrongDraft["policy"]["rulerHeroId"] = "hero_east";
+		wrongDraft["policy"]["rulerName"] = "Ruler East";
+		string wrongDraftResponse = wrongDraft.ToString(Formatting.None);
 		string effectResponse = "{\"effectPlanVersion\":1,\"disposition\":\"unsupported\",\"reason\":\"fixture rejection\",\"effects\":[]}";
 		Func<string, string, long, Task<string>> fake = (prompt, source, generation) =>
 		{
 			prompts.Add(prompt ?? string.Empty);
 			sources.Add(source ?? string.Empty);
-			return Task.FromResult(sources.Count == 1 ? draftResponse : effectResponse);
+			return Task.FromResult(string.Equals(source, "NpcRulerPolicyDraft", StringComparison.Ordinal)
+				? wrongDraftResponse
+				: string.Equals(source, "NpcRulerPolicyDraftRepair", StringComparison.Ordinal)
+					? draftResponse
+					: effectResponse);
 		};
 		overrideField.SetValue(null, fake);
 		Func<string, float[]> queryEmbedding = query =>
@@ -13362,33 +15554,51 @@ internal static class Program
 			object behaviorInstance = Activator.CreateInstance(behavior);
 			Task task = (Task)InvokeInstance(behavior, behaviorInstance, "ProcessPolicyGenerationJobAsync", new[] { job }, 1);
 			task.GetAwaiter().GetResult();
+			object pendingCommit = Items(behavior.GetField("_pendingPolicyCommits", All).GetValue(behaviorInstance)).LastOrDefault();
+			object generationResult = pendingCommit?.GetType().GetField("GenerationResult", All)?.GetValue(pendingCommit);
+			generationError = generationResult?.GetType().GetField("Error", All)?.GetValue(generationResult)?.ToString() ?? string.Empty;
 		}
 		finally
 		{
 			overrideField.SetValue(null, null);
 			embeddingOverrideField.SetValue(null, null);
 		}
-		Check(sources.SequenceEqual(new[]
+		bool completedBothSemanticRepairStages = sources.SequenceEqual(new[]
 		{
 			"NpcRulerPolicyDraft",
-			"NpcRulerPolicyEffectPostprocess"
-		}, StringComparer.Ordinal) && prompts.Count == 2,
-			"A rejected NPC EffectPlan must fail closed after the first effect response without an automatic semantic repair call.");
+			"NpcRulerPolicyDraftRepair",
+			"NpcRulerPolicyEffectPostprocess",
+			"NpcRulerPolicyEffectPostprocessRepair"
+		}, StringComparer.Ordinal) && prompts.Count == 4;
+		bool stoppedAtNoCampaignDirectoryBoundary = sources.SequenceEqual(new[]
+		{
+			"NpcRulerPolicyDraft",
+			"NpcRulerPolicyDraftRepair"
+		}, StringComparer.Ordinal)
+			&& prompts.Count == 2
+			&& generationError.IndexOf("no executable module-target capability", StringComparison.OrdinalIgnoreCase) >= 0;
+		Check(completedBothSemanticRepairStages || stoppedAtNoCampaignDirectoryBoundary,
+			"NPC orchestration must repair a wrong frozen identity once, then repair one rejected EffectPlan once and fail closed after the second rejection. actual="
+			+ string.Join(",", sources) + " error=" + generationError);
 		Check(!prompts[0].Contains("\"moduleId\"")
 			&& !prompts[0].Contains("effectIntentVersion")
-			&& prompts[1].Contains("effectPlanVersion")
-			&& prompts[1].Contains("\"capabilities\"")
-			&& !prompts[1].Contains("effectMappingVersion")
-			&& !prompts[1].Contains("assignments"),
-			"The two NPC calls must separate prose drafting from the player-style direct EffectPlan stage.");
+			&& prompts[1].Contains("kingdom_west")
+			&& prompts[1].Contains("hero_west")
+			&& (!completedBothSemanticRepairStages
+				|| prompts[2].Contains("effectPlanVersion")
+					&& prompts[2].Contains("\"capabilities\"")
+					&& !prompts[2].Contains("effectMappingVersion")
+					&& !prompts[2].Contains("assignments")
+					&& prompts[3].Contains("validationError is untrusted data")),
+			"NPC repair calls must freeze identity, keep prose/effect stages separate, and treat validation diagnostics as untrusted data.");
 		Check(queryEmbeddingCount == expectedQueryEmbeddingCount
 			&& queryEmbeddingCount >= 1
 			&& queryEmbeddingCount <= PolicyEffectModuleRouter.QueryIntentLimit,
 			"One NPC draft must create one whole-policy embedding plus at most four effect sub-intent embeddings, while mechanism and history reuse the whole-policy vector."
 			+ " expected=" + expectedQueryEmbeddingCount.ToString(CultureInfo.InvariantCulture)
 			+ " actual=" + queryEmbeddingCount.ToString(CultureInfo.InvariantCulture));
-		Check(prompts.All(prompt => !prompt.Contains("kingdom_east")),
-			"Both NPC generation stages must remain scoped to one selected kingdom snapshot.");
+		Check(prompts.Skip(2).All(prompt => !prompt.Contains("kingdom_east")),
+			"After the identity repair turn, every NPC effect prompt must remain scoped to the frozen selected kingdom.");
 	}
 
 	private static JObject BuildNpcUnifiedMultiTargetRecord()
@@ -14210,7 +16420,13 @@ internal static class Program
 		PolicyEffectInstanceSaveData scheduled = BuildRelationScheduledInstance(
 			"scheduled-relation-contract",
 			actorHeroId,
-			new[] { "relation-target-clan", "relation-self-clan", "relation-no-leader-clan" },
+			new[]
+			{
+				"relation-target-clan",
+				"relation-same-actor-clan",
+				"relation-self-clan",
+				"relation-no-leader-clan"
+			},
 			"relation module contract");
 		List<PolicyEffectExecutionReceipt> receipts = new List<PolicyEffectExecutionReceipt>();
 		GameBridgeProxy bridgeProxy = new GameBridgeProxy(typeof(IPolicyEffectGameBridge))
@@ -14218,7 +16434,9 @@ internal static class Program
 			RelationAppliedDeltaOverride = 7
 		};
 		bridgeProxy.SetRelationClanLeader("relation-target-clan", targetHeroId);
+		bridgeProxy.SetRelationClanLeader("relation-same-actor-clan", "relation-same-clan-leader");
 		bridgeProxy.SetRelationClanLeader("relation-self-clan", actorHeroId);
+		bridgeProxy.SetRelationHeroClan(actorHeroId, "relation-same-actor-clan");
 		bridgeProxy.SetHeroRelation(actorHeroId, targetHeroId, 20);
 		IPolicyEffectGameBridge bridge = (IPolicyEffectGameBridge)bridgeProxy.GetTransparentProxy();
 
@@ -14233,15 +16451,15 @@ internal static class Program
 			&& scheduled.LifecycleState == PolicyEffectLifecycleState.Completed
 			&& receipts.Count == 1
 			&& appliedReceipt?.Status == PolicyEffectExecutionStatus.Applied
-			&& bridgeProxy.RelationCallCount == 3
+			&& bridgeProxy.RelationCallCount == 4
 			&& bridgeProxy.ReadHeroRelation(actorHeroId, targetHeroId) == 27,
-			"clanLeaderRelationOnce must apply one valid leader and skip self/no-leader targets without failing the transaction.");
+			"clanLeaderRelationOnce must apply one external leader and skip same-clan/self/no-leader targets without failing the transaction.");
 		Check(appliedReceipt.RequestedValue == 5f
 			&& appliedReceipt.AppliedValue == 7f
 			&& string.Equals((string)appliedReceipt.RequestedPayload?["actorHeroId"], actorHeroId, StringComparison.Ordinal)
-			&& (int?)appliedReceipt.AppliedPayload?["skippedTargets"] == 2
+			&& (int?)appliedReceipt.AppliedPayload?["skippedTargets"] == 3
 			&& appliedTargets?.Count == 1,
-			"Relation receipt must retain the frozen actor, requested value, vanilla-adjusted actual value, and skipped count.");
+			"Relation receipt must retain the frozen non-leader actor, requested value, vanilla-adjusted actual value, and skipped count.");
 		JObject appliedTarget = appliedTargets?[0] as JObject;
 		Check(string.Equals((string)appliedTarget?["clanId"], "relation-target-clan", StringComparison.Ordinal)
 			&& string.Equals((string)appliedTarget?["heroId"], targetHeroId, StringComparison.Ordinal)
@@ -15449,6 +17667,129 @@ internal static class Program
 			"Player policy agenda submission must not show a second player confirmation/cancel inquiry.");
 	}
 
+	private static void TestPlayerPolicyCompletionIsolationContracts()
+	{
+		Type behaviorType = SutType("AnimusForge.CustomPolicyBehavior");
+		Type requestType = behaviorType.GetNestedType("PolicyDraftRequest", All);
+		Type settingsType = behaviorType.GetNestedType("PolicyGenerationSettingsSnapshot", All);
+		Check(requestType != null && settingsType != null,
+			"Player policy completion isolation requires the frozen request/settings contracts.");
+		object request = Activator.CreateInstance(requestType, nonPublic: true);
+		object settings = Activator.CreateInstance(settingsType, nonPublic: true);
+		long currentGeneration = Convert.ToInt64(Property(
+			SutType("AnimusForge.SaveRuntimeGuard"), null, "CurrentGeneration"), CultureInfo.InvariantCulture);
+		SetField(settingsType, settings, "RuntimeGeneration", currentGeneration);
+		SetField(requestType, request, "GenerationSettings", settings);
+		SetField(requestType, request, "RequestId", "player-completion-isolation-contract");
+		Check((bool)InvokeStatic(
+			behaviorType,
+			"IsCurrentPlayerPolicyGenerationCompletion",
+			new[] { request },
+			1),
+			"A completion carrying the current frozen runtime generation must remain eligible for the existing completion path.");
+
+		long staleGeneration = currentGeneration == long.MaxValue ? currentGeneration - 1L : currentGeneration + 1L;
+		SetField(settingsType, settings, "RuntimeGeneration", staleGeneration);
+		Check(!(bool)InvokeStatic(
+			behaviorType,
+			"IsCurrentPlayerPolicyGenerationCompletion",
+			new[] { request },
+			1),
+			"A completion from a different runtime generation must be rejected before touching current campaign state.");
+
+		object behavior = Activator.CreateInstance(behaviorType);
+		SetField(behaviorType, behavior, "_generationInProgress", true);
+		SetField(behaviorType, behavior, "_policyWaitPopupShown", true);
+		SetField(behaviorType, behavior, "_waitTimeLocked", true);
+		IDictionary dynamicPolicies = (IDictionary)behaviorType.GetField("_dynamicPolicyRegistry", All).GetValue(behavior);
+		IDictionary activeEffects = (IDictionary)behaviorType.GetField("_activePolicyEffects", All).GetValue(behavior);
+		IDictionary localRecords = (IDictionary)behaviorType.GetField("_localPolicyRecords", All).GetValue(behavior);
+		int dynamicCount = dynamicPolicies.Count;
+		int activeCount = activeEffects.Count;
+		int localCount = localRecords.Count;
+		InvokeInstance(
+			behaviorType,
+			behavior,
+			"CompletePolicyGeneration",
+			new object[] { request, null },
+			2);
+		Check((bool)behaviorType.GetField("_generationInProgress", All).GetValue(behavior)
+			&& (bool)behaviorType.GetField("_policyWaitPopupShown", All).GetValue(behavior)
+			&& (bool)behaviorType.GetField("_waitTimeLocked", All).GetValue(behavior)
+			&& dynamicPolicies.Count == dynamicCount
+			&& activeEffects.Count == activeCount
+			&& localRecords.Count == localCount,
+			"A stale completion must not close a newer wait state or mutate policy/effect/record stores.");
+
+		int attemptedSteps = 0;
+		InvokeStatic(
+			behaviorType,
+			"RunPolicyPostCommitStep",
+			new object[]
+			{
+				"Contract",
+				"post-commit-failed",
+				"post-commit-contract",
+				"throwing-step",
+				new Action(() =>
+				{
+					attemptedSteps++;
+					throw new InvalidOperationException("contract post-commit failure");
+				})
+			},
+			5);
+		InvokeStatic(
+			behaviorType,
+			"RunPolicyPostCommitStep",
+			new object[]
+			{
+				"Contract",
+				"post-commit-failed",
+				"post-commit-contract",
+				"following-step",
+				new Action(() => attemptedSteps++)
+			},
+			5);
+		Check(attemptedSteps == 2,
+			"A failed post-commit action must be isolated so the next independent post-commit action can still run.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string generationSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Generation.cs"),
+			Encoding.UTF8);
+		int completionStart = generationSource.IndexOf(
+			"private void CompletePolicyGeneration(PolicyDraftRequest request, PolicyGenerationResult result)",
+			StringComparison.Ordinal);
+		int completionEnd = generationSource.IndexOf("private void SubmitPlayerPolicyAgenda(", completionStart, StringComparison.Ordinal);
+		Check(completionStart >= 0 && completionEnd > completionStart,
+			"Player policy completion source boundaries are missing.");
+		string completionSource = generationSource.Substring(completionStart, completionEnd - completionStart);
+		int generationGuardIndex = completionSource.IndexOf("if (!IsCurrentPlayerPolicyGenerationCompletion(request))", StringComparison.Ordinal);
+		int waitMutationIndex = completionSource.IndexOf("EndPolicyWaitPause(\"completed\", request);", StringComparison.Ordinal);
+		int progressMutationIndex = completionSource.IndexOf("_generationInProgress = false;", StringComparison.Ordinal);
+		Check(generationGuardIndex >= 0
+			&& waitMutationIndex > generationGuardIndex
+			&& progressMutationIndex > generationGuardIndex,
+			"The stale-generation guard must run before wait-state or generation-state mutation.");
+
+		int localStart = generationSource.IndexOf(
+			"private void CompleteLocalPolicyGeneration(PolicyDraftRequest request, PolicyGenerationResult result)",
+			StringComparison.Ordinal);
+		int localEnd = generationSource.IndexOf("private void CompleteVassalPolicyGeneration(", localStart, StringComparison.Ordinal);
+		Check(localStart >= 0 && localEnd > localStart,
+			"Local policy completion source boundaries are missing.");
+		string localSource = generationSource.Substring(localStart, localEnd - localStart);
+		int paymentIndex = localSource.IndexOf("DeductPublishCost(request, costReceipt);", StringComparison.Ordinal);
+		string localPostCommitSource = paymentIndex < 0 ? string.Empty : localSource.Substring(paymentIndex);
+		foreach (string stage in new[] { "replacement", "lifecycle-memory", "trim-records", "success-popup", "published-log" })
+		{
+			Check(localPostCommitSource.IndexOf(
+				"RunLocalPolicyPostCommitStep(recordId, \"" + stage + "\"",
+				StringComparison.Ordinal) >= 0,
+				"Local policy post-commit stage must be isolated after payment: " + stage);
+		}
+	}
+
 	private static void TestClanInfluenceVanillaDisplayBridgeContract()
 	{
 		Type behaviorType = SutType("AnimusForge.CustomPolicyBehavior");
@@ -16467,6 +18808,8 @@ internal static class Program
 		private readonly Dictionary<string, int> _stabilityByKingdom = new Dictionary<string, int>(StringComparer.Ordinal);
 		private readonly Dictionary<string, string> _relationLeaderByClan =
 			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, string> _relationClanByHero =
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		private readonly Dictionary<string, int> _relationByHeroPair =
 			new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		private readonly HashSet<string> _skippedRelationActors =
@@ -16536,6 +18879,22 @@ internal static class Program
 			_relationByHeroPair[RelationKey(actorHeroId, targetHeroId)] = value;
 		}
 
+		internal void SetRelationHeroClan(string heroId, string clanId)
+		{
+			string normalizedHeroId = (heroId ?? string.Empty).Trim();
+			string normalizedClanId = (clanId ?? string.Empty).Trim();
+			if (normalizedHeroId.Length <= 0)
+			{
+				return;
+			}
+			if (normalizedClanId.Length <= 0)
+			{
+				_relationClanByHero.Remove(normalizedHeroId);
+				return;
+			}
+			_relationClanByHero[normalizedHeroId] = normalizedClanId;
+		}
+
 		internal int ReadHeroRelation(string actorHeroId, string targetHeroId)
 		{
 			return _relationByHeroPair.TryGetValue(RelationKey(actorHeroId, targetHeroId), out int value)
@@ -16567,6 +18926,8 @@ internal static class Program
 				string reason = Convert.ToString(call.Args[3], CultureInfo.InvariantCulture) ?? string.Empty;
 				RelationCallCount++;
 				if (_skippedRelationActors.Contains(actorHeroId)
+					|| (_relationClanByHero.TryGetValue(actorHeroId, out string actorClanId)
+						&& string.Equals(actorClanId, targetClanId, StringComparison.OrdinalIgnoreCase))
 					|| !_relationLeaderByClan.TryGetValue(targetClanId, out string targetHeroId)
 					|| string.IsNullOrWhiteSpace(targetHeroId)
 					|| string.Equals(actorHeroId, targetHeroId, StringComparison.OrdinalIgnoreCase))
@@ -17208,6 +19569,50 @@ internal sealed class NumericFundingDummyModule : NumericPolicyEffectModuleBase<
 	public override PolicyEffectModuleDescriptor Descriptor => _descriptor;
 
 	public IReadOnlyList<PolicyEffectModelContribution> BuildModelContributions(PolicyEffectPreparedInstance preparedInstance)
+	{
+		return Array.Empty<PolicyEffectModelContribution>();
+	}
+}
+
+internal sealed class JurisdictionDummyPayload : NumericPolicyEffectPayload
+{
+}
+
+internal sealed class JurisdictionDummyModule
+	: NumericPolicyEffectModuleBase<JurisdictionDummyPayload>, IModelModifierPolicyEffectModule
+{
+	private readonly PolicyEffectModuleDescriptor _descriptor;
+
+	internal JurisdictionDummyModule(string id, bool allowCrossKingdomTargets)
+	{
+		_descriptor = new PolicyEffectModuleDescriptor(
+			id: id,
+			order: allowCrossKingdomTargets ? 13001 : 13000,
+			legacyIds: Array.Empty<string>(),
+			allowedScopes: new[] { PolicyEffectScopes.Kingdom },
+			allowedSelectorKinds: new[] { PolicyEffectTargetKind.Kingdom },
+			targetKinds: new[] { PolicyEffectTargetKind.Kingdom },
+			cueTerms: new[] { "jurisdiction contract" },
+			retrievalText: "Contract-only jurisdiction module.",
+			catalogSummary: "Contract-only jurisdiction",
+			mainInstruction: "Emit a numeric jurisdiction payload.",
+			postprocessRule: "The payload must include a finite value.",
+			payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
+			family: PolicyEffectFamily.Governance,
+			executionKind: PolicyEffectExecutionKind.ModelModifier,
+			hook: PolicyEffectHook.KingdomVillageRaidBlock,
+			aggregation: PolicyEffectAggregationKind.Additive,
+			valueUnit: PolicyEffectValueUnit.PointsPerDay,
+			fundingMode: PolicyEffectFundingMode.InheritPolicy,
+			fundingStrategy: PolicyEffectFundingStrategy.Linear,
+			payloadSchemaVersion: 1,
+			allowCrossKingdomTargets: allowCrossKingdomTargets);
+	}
+
+	public override PolicyEffectModuleDescriptor Descriptor => _descriptor;
+
+	public IReadOnlyList<PolicyEffectModelContribution> BuildModelContributions(
+		PolicyEffectPreparedInstance preparedInstance)
 	{
 		return Array.Empty<PolicyEffectModelContribution>();
 	}

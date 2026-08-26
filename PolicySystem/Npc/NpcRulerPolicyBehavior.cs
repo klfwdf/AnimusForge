@@ -138,7 +138,16 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			dataStore.SyncData(SaveKeyLastGeneratedDay, ref lastGeneratedDay);
 			dataStore.SyncData(SaveKeyLastGeneratedHour, ref lastGeneratedHour);
 			dataStore.SyncData(SaveKeyLastPolicyCheckDay, ref lastPolicyCheckDay);
-			Log("save-write records=" + _policyRecords.Count.ToString(CultureInfo.InvariantCulture) + " lastGeneratedDay=" + lastGeneratedDay.ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + lastGeneratedHour.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture));
+			PolicySystemLog.Lifecycle("Npc", "save-summary", "success", new PolicyLogContext
+			{
+				CampaignDay = lastPolicyCheckDay,
+				Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+				{
+					["records"] = _policyRecords.Count,
+					["lastGeneratedDay"] = lastGeneratedDay,
+					["lastGeneratedHour"] = lastGeneratedHour
+				}
+			});
 			return;
 		}
 		ClearPolicyTransientRuntimeForLoadedSave("sync-load", incrementVersion: true);
@@ -175,7 +184,16 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			_lastGeneratedHour = _lastGeneratedDay * 24;
 		}
 		TrimPolicyRecords();
-		Log("save-read records=" + _policyRecords.Count.ToString(CultureInfo.InvariantCulture) + " lastGeneratedDay=" + _lastGeneratedDay.ToString(CultureInfo.InvariantCulture) + " lastGeneratedHour=" + _lastGeneratedHour.ToString(CultureInfo.InvariantCulture) + " lastPolicyCheckDay=" + _lastPolicyCheckDay.ToString(CultureInfo.InvariantCulture));
+		PolicySystemLog.Lifecycle("Npc", "load-summary", "success", new PolicyLogContext
+		{
+			CampaignDay = _lastPolicyCheckDay,
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["records"] = _policyRecords.Count,
+				["lastGeneratedDay"] = _lastGeneratedDay,
+				["lastGeneratedHour"] = _lastGeneratedHour
+			}
+		});
 	}
 
 	public static List<NpcRulerPolicyRecord> GetRecentPolicyRecordsForExternal(string kingdomId = null, int maxCount = 20)
@@ -261,6 +279,20 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		{
 			record = null;
 			Log("player-policy-snapshot-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	public static bool MarkPlayerPolicyReReviewCommittedForExternal(string policyId)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>())
+				?.MarkPlayerPolicyReReviewCommittedInternal(policyId) == true;
+		}
+		catch (Exception ex)
+		{
+			Log("player-policy-rereview-commit-mark-failed policy=" + (policyId ?? string.Empty) + " error=" + ex.Message);
 			return false;
 		}
 	}
@@ -442,8 +474,22 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		record.ApprovalCommitIsRenewal = isRenewal;
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
 		EnqueueApprovedAgendaCommit(record, isRenewal);
-		Log("policy-agenda-approved policy=" + id + " kingdom=" + (record.KingdomId ?? "")
-			+ " renewal=" + isRenewal.ToString(CultureInfo.InvariantCulture));
+		PolicySystemLog.Lifecycle("Npc", "agenda-approved", "pending-commit", new PolicyLogContext
+		{
+			GenerationId = record.BatchId,
+			BatchId = record.BatchId,
+			TransactionId = id + ":commit",
+			PolicyId = id,
+			RecordId = record.PolicyId,
+			TargetHash = record.KingdomId,
+			TargetCount = 1,
+			StateBefore = currentStatus,
+			StateAfter = pendingStatus,
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["renewal"] = isRenewal ? 1 : 0
+			}
+		});
 		return true;
 	}
 
@@ -575,7 +621,18 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			effect.IsEnded = true;
 		}
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
-		Log("policy-agenda-rejected policy=" + id + " reason=" + (reason ?? ""));
+		PolicySystemLog.Lifecycle("Npc", "agenda-rejected", "rejected", new PolicyLogContext
+		{
+			GenerationId = record.BatchId,
+			BatchId = record.BatchId,
+			TransactionId = id + ":commit",
+			PolicyId = id,
+			RecordId = record.PolicyId,
+			StateBefore = raw == null ? null : "pending",
+			StateAfter = AgendaStatusRejected,
+			MessageChars = reason?.Length ?? 0,
+			MessageHash = PolicySystemLog.HashSensitive(reason)
+		});
 	}
 
 	private void UpdatePolicyAgendaStatusInternal(string policyId, string status)
@@ -943,6 +1000,23 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		record = snapshot;
+		return true;
+	}
+
+	private bool MarkPlayerPolicyReReviewCommittedInternal(string policyId)
+	{
+		string id = (policyId ?? string.Empty).Trim();
+		if (id.Length == 0 || !_policyRecords.TryGetValue(id, out string raw))
+		{
+			return false;
+		}
+		NpcRulerPolicyRecord record = DeserializeRecord(raw);
+		if (record?.IsPlayerPolicy != true)
+		{
+			return false;
+		}
+		record.ReReviewReplacementCommitted = true;
+		_policyRecords[id] = JsonConvert.SerializeObject(record);
 		return true;
 	}
 

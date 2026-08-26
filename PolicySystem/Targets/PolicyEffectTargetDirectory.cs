@@ -8,7 +8,7 @@ namespace AnimusForge.PolicyTargets;
 
 internal static class PolicyTargetHandleDirectoryContract
 {
-	internal const int CurrentVersion = 2;
+	internal const int CurrentVersion = 3;
 }
 
 internal sealed class PolicyTargetHandleDirectory
@@ -27,8 +27,18 @@ internal sealed class PolicyTargetHandleDirectory
 
 internal sealed class PolicyEffectCapabilityDirectoryEntry
 {
-	[JsonProperty("allowedTargetHandles", Order = 1)]
+	[JsonProperty("defaultTargetHandle", Order = 1)]
+	public string DefaultTargetHandle { get; set; } = string.Empty;
+
+	[JsonProperty("allowedSubsetTargetHandles", Order = 2)]
+	public List<string> AllowedSubsetTargetHandles { get; set; } = new List<string>();
+
+	[JsonProperty("allowedTargetHandles", Order = 3)]
 	public List<string> AllowedTargetHandles { get; set; } = new List<string>();
+
+	[JsonIgnore]
+	public Dictionary<string, PolicyEffectTargetJurisdictionKind> JurisdictionByTargetHandle { get; set; } =
+		new Dictionary<string, PolicyEffectTargetJurisdictionKind>(StringComparer.Ordinal);
 }
 
 internal sealed class PolicyTargetHandleDirectoryEntry
@@ -62,13 +72,21 @@ internal sealed class PolicyTargetHandleDirectoryCandidate
 	internal PolicyTargetHandleDirectoryEntry Entry { get; set; }
 }
 
+internal delegate bool PolicyEffectTargetDefaultHandleClassifier(
+	string handle,
+	PolicyTargetHandleDirectoryEntry entry,
+	IPolicyEffectModule module,
+	PolicyEffectResolvedTarget resolved);
+
 internal static class PolicyTargetHandleDirectoryBuilder
 {
 	internal static PolicyTargetHandleDirectory Build(
 		IReadOnlyList<PolicyTargetHandleDirectoryCandidate> candidates,
 		IReadOnlyList<IPolicyEffectModule> injectedModules,
 		PolicyEffectTargetResolver targetResolver,
-		string issuerKingdomId = "")
+		string issuerKingdomId = "",
+		string actorClanId = "",
+		PolicyEffectTargetDefaultHandleClassifier defaultHandleClassifier = null)
 	{
 		PolicyTargetHandleDirectory directory = new PolicyTargetHandleDirectory();
 		if (targetResolver == null)
@@ -100,11 +118,27 @@ internal static class PolicyTargetHandleDirectoryBuilder
 			foreach (string handle in entryByHandle.Keys)
 			{
 				if (!targetResolver(handle, module, out PolicyEffectResolvedTarget resolved, out _)
-					|| !PolicyEffectCompiler.IsResolvedTargetAuthorizedForModule(module, resolved, issuerKingdomId))
+					|| !PolicyEffectCompiler.IsResolvedTargetAuthorizedForModule(
+						module,
+						PolicyEffectCompiler.ApplyActorClanTargetExclusion(module, actorClanId, resolved),
+						issuerKingdomId))
 				{
 					continue;
 				}
 				capability.AllowedTargetHandles.Add(handle);
+				capability.JurisdictionByTargetHandle[handle] =
+					resolved?.CanonicalTargetSet?.JurisdictionKind
+					?? PolicyEffectTargetJurisdictionKind.LegacyCompiled;
+				if (defaultHandleClassifier != null
+					&& capability.DefaultTargetHandle.Length == 0
+					&& defaultHandleClassifier(handle, entryByHandle[handle], module, resolved))
+				{
+					capability.DefaultTargetHandle = handle;
+				}
+				else
+				{
+					capability.AllowedSubsetTargetHandles.Add(handle);
+				}
 				referencedHandles.Add(handle);
 			}
 			if (capability.AllowedTargetHandles.Count > 0)
@@ -143,7 +177,11 @@ internal static class PolicyEffectDirectPlanContract
 			+ "executable 的每个 effect 必须且只能包含 mechanismId、mechanismKind、role、moduleId、targetHandles、payload、reason。"
 			+ "mechanismKind 只能是 independent 或 linked；independent 必须使用 role=subject。"
 			+ "linked 必须在同一 mechanismId 下包含至少两条真实可执行资源流转腿，并同时包含 source 与 destination/beneficiary；不得输出 cost。"
-			+ "moduleId 只能取执行目录 capabilities 映射的属性名；targetHandles 只能精确复制该 moduleId 的 allowedTargetHandles，并且必须同时存在于 targets 映射中；不得拼接 kind、description 或任何附加字符；payload 必须符合该 ID 的详细契约。"
+			+ "moduleId 只能取执行目录 capabilities 映射的属性名；targetHandles 只能精确复制该 moduleId 的 allowedTargetHandles，并且必须同时存在于 targets 映射中；不得拼接 kind、description 或任何附加字符。"
+			+ "每个 capability 的 defaultTargetHandle 是该模块在当前政策类型下的默认结算范围；若非空且原文没有明确要求更小范围、指定人物/家族/领地/外国对象，必须选择该默认句柄。"
+			+ "allowedSubsetTargetHandles 只用于原文明确要求细分或直接结算到点名对象时替换默认；defaultTargetHandle 为空的模块只有在原文明确指定 subset 对象时才可输出，否则应省略该模块。"
+			+ "不得把参考、比较、报告、经验来源、背景材料中的外国候选当作执行目标；不得把地方政策默认扩大到发布地之外；不得把附庸政策的 K1 自动当作受影响方；heroGold 无明确人物接收者时不得输出。"
+			+ "payload 必须符合该 ID 的详细契约。"
 			+ targetCountRule
 			+ "每个句柄代表完整 canonical target set；载荷数值按每个 canonical target 和能力自身执行频率独立解释，不按目标数或期限乘除。"
 			+ "输出形状：{\"effectPlanVersion\":1,\"disposition\":\"executable\",\"reason\":\"...\",\"effects\":[{\"mechanismId\":\"M0\",\"mechanismKind\":\"independent\",\"role\":\"subject\",\"moduleId\":\"...\",\"targetHandles\":[\"...\"],\"payload\":{},\"reason\":\"...\"}]}";

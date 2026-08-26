@@ -31,7 +31,8 @@ internal sealed class ConstructionPerDayEffectModule : NumericPolicyEffectModule
 		payloadSchemaVersion: 1,
 		playerDisplayName: "设施建造力",
 		editableUnderstandingPrompt: "设施建造力只受明确的设施修建或修缮、工匠、劳力、建材、工程运输、施工组织、停工和工程破坏影响。发展、繁荣、补贴、免税、增税、一般财政投入以及对执行方式的合理补全，都不能自行解释成建设措施。",
-		editableEvaluationPrompt: "按每座受影响城镇或城堡每日直接增加或减少的固定建造力判断，不按百分比换算。小规模为 ±20 到 ±60；持续扩充工程资源为 +60 到 +150；全国重大建设为 +300 到 +1000。极端动员、巨额专项投入或玩家明确要求极端强度，且执行路径与资源承诺足够清楚时，可以达到这一范围的 2 到 4 倍，超过 +1000 仍可成立。只有政策直接造成施工受阻、劳力流失、建材短缺或工程体系破坏时，才使用相称负数。");
+		editableEvaluationPrompt: "按每座受影响城镇或城堡每日直接增加或减少的固定建造力判断，不按百分比换算。小规模为 ±20 到 ±60；持续扩充工程资源为 +60 到 +150；全国重大建设为 +300 到 +1000。极端动员、巨额专项投入或玩家明确要求极端强度，且执行路径与资源承诺足够清楚时，可以达到这一范围的 2 到 4 倍，超过 +1000 仍可成立。只有政策直接造成施工受阻、劳力流失、建材短缺或工程体系破坏时，才使用相称负数。",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

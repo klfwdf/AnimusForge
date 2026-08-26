@@ -31,7 +31,8 @@ internal sealed class SecurityPerDayEffectModule : NumericPolicyEffectModuleBase
 		payloadSchemaVersion: 1,
 		playerDisplayName: "城镇治安",
 		editableUnderstandingPrompt: "治安度主要受匪患、巡逻、执法、公正、腐败、军管、镇压和地方秩序影响。政策通过这些途径持续改变地方安全时，治安度就是直接后果。",
-		editableEvaluationPrompt: "按每座受影响城镇的每日变化判断。轻微影响为 ±0.1 到 ±0.3；普通巡逻、执法、腐败整顿或匪患变化为 ±0.3 到 ±0.7；强力治安运动、军管、边境混乱或匪患爆发为 ±0.8 到 ±1.5；严重失序或高压镇压为 ±1.5 到 ±2.5；超过 ±2.5 只用于短期极端内乱、血腥镇压或大规模匪患。");
+		editableEvaluationPrompt: "按每座受影响城镇的每日变化判断。轻微影响为 ±0.1 到 ±0.3；普通巡逻、执法、腐败整顿或匪患变化为 ±0.3 到 ±0.7；强力治安运动、军管、边境混乱或匪患爆发为 ±0.8 到 ±1.5；严重失序或高压镇压为 ±1.5 到 ±2.5；超过 ±2.5 只用于短期极端内乱、血腥镇压或大规模匪患。",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -31,7 +31,8 @@ internal sealed class TaxIncomePctEffectModule : NumericPolicyEffectModuleBase<T
 		payloadSchemaVersion: 1,
 		playerDisplayName: "城镇与城堡税收",
 		editableUnderstandingPrompt: "城镇与城堡主税收表示目标领地所属氏族最终收到的原版主税收收入变化，不是当地百姓被抽取的税额。只有正文明确涉及领地、城镇、城堡或税制时才使用：提高所有者留存税率、征收效率或让其获得其他地区上缴会增加收入；减税、免税，或把税款截留、转交、上缴给另一方会减少收入。泛称提高领主、统治者或其他职业人物收入但未提领地或税制时，不属于城镇与城堡主税收。税款从一方转给另一方时，应分别体现付出方与受益方；村庄独立收入、关税和单纯繁荣变化不属于这一效果。",
-		editableEvaluationPrompt: "按相对原版最终主税收收入的百分比点判断，增收为正、减收为负。普通税制调整为 ±5% 到 ±15%；明显调整为 ±15% 到 ±35%；全国重大税制为 ±20% 到 ±60%。只调整特定人群、行业、地区、时段、税种或部分税额时，按实际覆盖范围给出相称比例；只有明确取消作用范围内全部城镇与城堡主税收时，才接近 -100%。");
+		editableEvaluationPrompt: "按相对原版最终主税收收入的百分比点判断，增收为正、减收为负。普通税制调整为 ±5% 到 ±15%；明显调整为 ±15% 到 ±35%；全国重大税制为 ±20% 到 ±60%。只调整特定人群、行业、地区、时段、税种或部分税额时，按实际覆盖范围给出相称比例；只有明确取消作用范围内全部城镇与城堡主税收时，才接近 -100%。",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

@@ -29,7 +29,13 @@ internal sealed class PolicyEffectCompilerRequest
 
 	internal string ActorHeroId { get; set; } = string.Empty;
 
+	internal string ActorClanId { get; set; } = string.Empty;
+
 	internal string IssuerKingdomId { get; set; } = string.Empty;
+
+	internal string TargetKingdomId { get; set; } = string.Empty;
+
+	internal IReadOnlyCollection<string> AuthorizedCrossKingdomIds { get; set; } = Array.Empty<string>();
 
 	internal float StartDay { get; set; }
 
@@ -299,6 +305,7 @@ internal static class PolicyEffectCompiler
 					error = "Module " + module.Id + " does not allow target handle " + handle + ": " + (targetError ?? string.Empty);
 					return false;
 				}
+				resolved = ApplyActorClanTargetExclusion(module, request.ActorClanId, resolved);
 				if (!IsResolvedTargetAuthorizedForModule(module, resolved, request.IssuerKingdomId))
 				{
 					error = !IsSelectorAuthorizedForModule(module, resolved)
@@ -310,7 +317,7 @@ internal static class PolicyEffectCompiler
 				MergeCanonicalTargetSet(targetSet, resolved.CanonicalTargetSet);
 				AddUnique(targetSet.SelectorHandles, FirstNonEmpty(resolved.Handle, handle));
 			}
-			targetSet = NormalizeCanonicalTargetSet(targetSet);
+			targetSet = ApplyActorClanTargetExclusion(module, request.ActorClanId, targetSet);
 			if (targetSet.TargetPlans.Count > 0
 				&& handles.Any(handle => !IsTargetPlanHandle(handle)))
 			{
@@ -320,6 +327,18 @@ internal static class PolicyEffectCompiler
 			if (!HasTargetForModule(module, targetSet))
 			{
 				error = "Module " + module.Id + " has no executable target in its canonical target set.";
+				return false;
+			}
+			if (!PolicyEffectTargetJurisdiction.TryAuthorizeExplicitKingdomTargets(
+				module,
+				targetSet,
+				request.TargetKingdomId,
+				request.IssuerKingdomId,
+				request.AuthorizedCrossKingdomIds,
+				out targetSet,
+				out string jurisdictionError))
+			{
+				error = "Module " + module.Id + " target jurisdiction is invalid: " + jurisdictionError;
 				return false;
 			}
 
@@ -454,7 +473,15 @@ internal static class PolicyEffectCompiler
 		foreach (PolicyEffectPendingWireEffect item in pending.OrderBy(value => value.WireIndex))
 		{
 			IPolicyEffectModule module = item.Module;
-			PolicyEffectCanonicalTargetSet targetSet = NormalizeCanonicalTargetSet(item.TargetSet);
+			PolicyEffectCanonicalTargetSet targetSet = ApplyActorClanTargetExclusion(
+				module,
+				request.ActorClanId,
+				item.TargetSet);
+			if (!HasTargetForModule(module, targetSet))
+			{
+				error = "Module " + module.Id + " has no executable target in its canonical target set.";
+				return false;
+			}
 			string duplicateKey = module.Id + "\u001f" + item.MechanismId + "\u001f" + item.MechanismRole
 				+ "\u001f" + BuildCanonicalTargetSignature(targetSet);
 			string instanceId = (instanceIdFactory(item.InstanceOrdinal, module.Id, targetSet) ?? string.Empty).Trim();
@@ -503,7 +530,29 @@ internal static class PolicyEffectCompiler
 			runtime.MechanismRole = item.MechanismRole;
 			runtime.SourceOmitted = item.SourceOmitted;
 			runtime.DestinationOmitted = item.DestinationOmitted;
-			PolicyEffectCanonicalTargetSet preparedTargetSet = NormalizeCanonicalTargetSet(runtime.TargetSet ?? targetSet);
+			PolicyEffectCanonicalTargetSet preparedTargetSet = ApplyActorClanTargetExclusion(
+				module,
+				request.ActorClanId,
+				runtime.TargetSet ?? targetSet);
+			if (!HasTargetForModule(module, preparedTargetSet))
+			{
+				error = "Module " + module.Id + " prepare produced no executable target.";
+				return false;
+			}
+			if (!PolicyEffectTargetJurisdiction.TryAuthorizeExplicitKingdomTargets(
+				module,
+				preparedTargetSet,
+				request.TargetKingdomId,
+				request.IssuerKingdomId,
+				request.AuthorizedCrossKingdomIds,
+				out preparedTargetSet,
+				out string preparedJurisdictionError))
+			{
+				error = "Module " + module.Id + " prepare produced invalid target jurisdiction: "
+					+ preparedJurisdictionError;
+				return false;
+			}
+			runtime.TargetSet = preparedTargetSet;
 			PolicyEffectInstanceSaveData saveData = new PolicyEffectInstanceSaveData
 			{
 				EffectPlanVersion = item.EffectPlanVersion,
@@ -1125,6 +1174,10 @@ internal static class PolicyEffectCompiler
 			return;
 		}
 		destination.StructureVersion = Math.Max(destination.StructureVersion, source.StructureVersion);
+		destination.JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
+			destination.JurisdictionKind,
+			source.JurisdictionKind);
+		MergeIds(destination.AuthorizedCrossKingdomIds, source.AuthorizedCrossKingdomIds);
 		MergeIds(destination.SelectorHandles, source.SelectorHandles);
 		MergeIds(destination.SelectorIds, source.SelectorIds);
 		destination.TargetPlans = PolicyTargetPlanResolver.NormalizePlans(
@@ -1162,6 +1215,8 @@ internal static class PolicyEffectCompiler
 		return new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = Math.Max(1, targetSet?.StructureVersion ?? 1),
+			JurisdictionKind = targetSet?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
+			AuthorizedCrossKingdomIds = NormalizeIds(targetSet?.AuthorizedCrossKingdomIds),
 			SelectorHandles = NormalizeIds(targetSet?.SelectorHandles),
 			SelectorIds = NormalizeIds(targetSet?.SelectorIds),
 			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(targetSet?.TargetPlans),
@@ -1174,6 +1229,46 @@ internal static class PolicyEffectCompiler
 			ParentSettlementIds = NormalizeIds(targetSet?.ParentSettlementIds),
 			FollowCurrentRulingClan = targetSet?.FollowCurrentRulingClan == true
 		};
+	}
+
+	internal static PolicyEffectResolvedTarget ApplyActorClanTargetExclusion(
+		IPolicyEffectModule module,
+		string actorClanId,
+		PolicyEffectResolvedTarget resolved)
+	{
+		if (resolved == null)
+		{
+			return null;
+		}
+		return new PolicyEffectResolvedTarget
+		{
+			Handle = resolved.Handle,
+			SelectorKind = resolved.SelectorKind,
+			CanonicalTargetSet = ApplyActorClanTargetExclusion(
+				module,
+				actorClanId,
+				resolved.CanonicalTargetSet)
+		};
+	}
+
+	internal static PolicyEffectCanonicalTargetSet ApplyActorClanTargetExclusion(
+		IPolicyEffectModule module,
+		string actorClanId,
+		PolicyEffectCanonicalTargetSet targetSet)
+	{
+		PolicyEffectCanonicalTargetSet filtered = NormalizeCanonicalTargetSet(targetSet);
+		string normalizedActorClanId = (actorClanId ?? string.Empty).Trim();
+		if (module?.Descriptor?.ExcludeActorClanTargets == true
+			&& normalizedActorClanId.Length > 0)
+		{
+			filtered.ClanIds = filtered.ClanIds
+				.Where(clanId => !string.Equals(
+					clanId,
+					normalizedActorClanId,
+					StringComparison.OrdinalIgnoreCase))
+				.ToList();
+		}
+		return filtered;
 	}
 
 	private static List<string> NormalizeIds(IEnumerable<string> values)
@@ -1227,6 +1322,12 @@ internal static class PolicyEffectCompiler
 
 	private static bool HasTargetForModule(IPolicyEffectModule module, PolicyEffectCanonicalTargetSet targetSet)
 	{
+		if (module?.Descriptor?.ExcludeActorClanTargets == true
+			&& module.Descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan)
+			&& (targetSet?.ClanIds?.Count ?? 0) == 0)
+		{
+			return false;
+		}
 		foreach (PolicyEffectTargetKind kind in module?.Descriptor?.TargetKinds ?? Array.Empty<PolicyEffectTargetKind>())
 		{
 			switch (kind)
@@ -1323,6 +1424,8 @@ internal static class PolicyEffectCompiler
 	{
 		PolicyEffectCanonicalTargetSet normalized = NormalizeCanonicalTargetSet(targetSet);
 		return "X=" + string.Join(",", normalized.SelectorIds)
+			+ "|J=" + normalized.JurisdictionKind
+			+ "|AK=" + string.Join(",", normalized.AuthorizedCrossKingdomIds)
 			+ "|TP=" + string.Join(",", normalized.TargetPlans.Select(plan => plan.NormalizedSignature))
 			+ "|S=" + string.Join(",", normalized.SettlementIds)
 			+ "|T=" + string.Join(",", normalized.TownIds)

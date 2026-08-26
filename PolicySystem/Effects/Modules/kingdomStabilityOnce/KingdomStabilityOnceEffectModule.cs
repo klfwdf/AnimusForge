@@ -38,7 +38,8 @@ internal sealed class KingdomStabilityOnceEffectModule : NumericPolicyEffectModu
 		supportsRollback: true,
 		supportsIdempotency: true,
 		promptVisible: false,
-		displayGroup: "kingdomStability");
+		displayGroup: "kingdomStability",
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

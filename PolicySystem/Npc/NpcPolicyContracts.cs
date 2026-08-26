@@ -29,6 +29,14 @@ public sealed class NpcRulerPolicyRecord
 	[JsonProperty("policyId")]
 	public string PolicyId { get; set; }
 
+	public string ReReviewRootRecordId { get; set; }
+
+	public string ReReviewSourceRecordId { get; set; }
+
+	public string SupersedesRecordId { get; set; }
+
+	public bool ReReviewReplacementCommitted { get; set; }
+
 	[JsonProperty("policyObjectId")]
 	public string PolicyObjectId { get; set; }
 

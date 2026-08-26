@@ -467,6 +467,8 @@ public sealed partial class CustomPolicyBehavior
 		ApplyPolicyClanPoliticsModelPatchesOnce();
 		ApplyPolicyArmyFormationPatchesOnce();
 		ApplyPolicyVillageRaidBanPatchesOnce();
+		RemoveLegacyStoppedDynamicPolicyMembershipAfterLoad();
+		ReconcilePolicyReReviewReplacementsAfterLoad();
 		EnsureDynamicPoliciesRegistered(reconcilePending: false);
 		ReconcileEliminatedKingdomPoliciesAfterLoad();
 	}
@@ -894,6 +896,8 @@ public sealed partial class CustomPolicyBehavior
 		ApplyPolicyArmyFormationPatchesOnce();
 		ApplyPolicyVillageRaidBanPatchesOnce();
 		ReconcilePendingVassalExternalCommits();
+		RemoveLegacyStoppedDynamicPolicyMembershipAfterLoad();
+		ReconcilePolicyReReviewReplacementsAfterLoad();
 		EnsureDynamicPoliciesRegistered(reconcilePending: true);
 	}
 
@@ -1723,6 +1727,20 @@ public sealed partial class CustomPolicyBehavior
 			{
 				if (active)
 				{
+					PolicySystemLog.Lifecycle(
+						string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase) ? "Npc" : "Player",
+						"agenda-approved",
+						"approved",
+						new PolicyLogContext
+						{
+							TransactionId = data.RecordId + ":adoption",
+							PolicyId = data.PolicyObjectId,
+							RecordId = data.RecordId,
+							TargetHash = data.OwnerKingdomId,
+							TargetCount = 1,
+							StateBefore = DynamicPolicyStatusPending,
+							StateAfter = "approved"
+						});
 					if (string.Equals(data.Source, "player", StringComparison.OrdinalIgnoreCase))
 					{
 						BeginPolicyApprovalResultSequence(data.PolicyObjectId);
@@ -1888,7 +1906,24 @@ public sealed partial class CustomPolicyBehavior
 				+ " stillQueued=" + stillQueued + " reason=" + failureReason);
 			return false;
 		}
-		PolicySystemLog.Write("Agenda", "submitted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " kingdom=" + data.OwnerKingdomId + " reviewDays=" + reviewDays.ToString("0.#", CultureInfo.InvariantCulture));
+		PolicySystemLog.Lifecycle(
+			string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase) ? "Npc" : "Player",
+			"agenda-submitted",
+			"pending",
+			new PolicyLogContext
+			{
+				TransactionId = data.RecordId + ":adoption",
+				PolicyId = data.PolicyObjectId,
+				RecordId = data.RecordId,
+				TargetHash = data.OwnerKingdomId,
+				TargetCount = 1,
+				StateBefore = "generated",
+				StateAfter = DynamicPolicyStatusPending,
+				Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+				{
+					["reviewTenthsOfDay"] = Math.Max(0, (int)Math.Round(reviewDays * 10f))
+				}
+			});
 		return true;
 	}
 
@@ -1978,6 +2013,13 @@ public sealed partial class CustomPolicyBehavior
 		data.Status = DynamicPolicyStatusActive;
 		data.CommitState = PolicyCommitStateActive;
 		StoreDynamicPolicy(data);
+		if (string.Equals(data.Source, "player", StringComparison.OrdinalIgnoreCase)
+			&& !FinalizePolicyReReviewReplacement(data.RecordId))
+		{
+			PolicySystemLog.Failure("ReReview", "kingdom-replacement-reconciliation-pending",
+				"新王国政策已通过并原子提交，但旧谱系停止步骤将依靠读档对账重试。",
+				"recordId=" + (data.RecordId ?? string.Empty));
+		}
 		PolicySystemLog.Transaction(data.RecordId + ":adoption", data.RecordId, data.ActiveEffectId, string.Empty,
 			"active", "success", stateBefore: PolicyCommitStateCommitPending, stateAfter: PolicyCommitStateActive);
 		PolicySystemLog.Write("Agenda", "adopted", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId);
@@ -2154,7 +2196,20 @@ public sealed partial class CustomPolicyBehavior
 			NpcRulerPolicyBehavior.OnPolicyAgendaRejectedForExternal(data.RecordId, reason);
 		}
 		TryUnregisterDynamicPolicyObject(data, policy);
-		PolicySystemLog.Write("Agenda", "adoption-rejected", "recordId=" + data.RecordId + " policy=" + data.PolicyObjectId + " reason=" + (reason ?? ""));
+		PolicySystemLog.Lifecycle(
+			string.Equals(data.Source, "npc", StringComparison.OrdinalIgnoreCase) ? "Npc" : "Player",
+			"agenda-rejected",
+			"rejected",
+			new PolicyLogContext
+			{
+				TransactionId = data.RecordId + ":adoption",
+				PolicyId = data.PolicyObjectId,
+				RecordId = data.RecordId,
+				StateBefore = DynamicPolicyStatusPending,
+				StateAfter = DynamicPolicyStatusRejected,
+				MessageChars = reason?.Length ?? 0,
+				MessageHash = PolicySystemLog.HashSensitive(reason)
+			});
 	}
 
 	private bool TryBuildApprovedPlayerPolicyPostprocessFromPending(
@@ -2801,6 +2856,7 @@ public sealed partial class CustomPolicyBehavior
 	private bool CompleteApprovedPlayerPolicy(DynamicPolicySaveData data, bool isRenewal = false)
 	{
 		string recordId = data?.RecordId ?? string.Empty;
+		string transactionId = recordId + ":adoption";
 		string previousHistoryJson = null;
 		bool hadPreviousHistory = !string.IsNullOrWhiteSpace(recordId)
 			&& _policyRecordHistory.TryGetValue(recordId, out previousHistoryJson);
@@ -2818,12 +2874,32 @@ public sealed partial class CustomPolicyBehavior
 		string feedback = string.Empty;
 		bool hasTimedEffect = false;
 		bool committed = false;
+		PolicySystemLog.Lifecycle("Player", "commit-start", "started", new PolicyLogContext
+		{
+			TransactionId = transactionId,
+			PolicyId = data?.PolicyObjectId,
+			RecordId = recordId,
+			StateBefore = data?.Status,
+			StateAfter = PolicyCommitStateCommitPending,
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["renewal"] = isRenewal ? 1 : 0
+			}
+		});
 		try
 		{
 			data.CommitState = PolicyCommitStateCommitPending;
 			StoreDynamicPolicy(data);
-			PolicySystemLog.Transaction(recordId + ":adoption", recordId, data.ActiveEffectId, string.Empty,
+			PolicySystemLog.Transaction(transactionId, recordId, data.ActiveEffectId, string.Empty,
 				"prepared", "success", stateBefore: data.Status, stateAfter: data.CommitState);
+			PolicySystemLog.Lifecycle("Player", "commit-step", "prepared", new PolicyLogContext
+			{
+				TransactionId = transactionId,
+				PolicyId = data.PolicyObjectId,
+				RecordId = recordId,
+				StateBefore = data.Status,
+				StateAfter = data.CommitState
+			});
 			PendingPlayerPolicyAgendaSaveData pending = JsonConvert.DeserializeObject<PendingPlayerPolicyAgendaSaveData>(data.PlayerPayloadJson ?? "");
 			request = pending?.Request;
 			PolicyMainAssessmentResult assessment = pending?.Assessment;
@@ -2906,7 +2982,7 @@ public sealed partial class CustomPolicyBehavior
 				}
 				// Payment is the final throwable business write. Crossing this line commits the policy.
 				DeductPublishCost(request, costReceipt);
-				PolicySystemLog.Transaction(recordId + ":adoption", recordId, activeEffectId, string.Empty,
+				PolicySystemLog.Transaction(transactionId, recordId, activeEffectId, string.Empty,
 					"costCommitted", "success", costReceipt: "gold=" + request.GoldCost.ToString(CultureInfo.InvariantCulture));
 			}
 			else
@@ -2917,8 +2993,19 @@ public sealed partial class CustomPolicyBehavior
 				request.InfluenceCost = 0f;
 			}
 			committed = true;
-			PolicySystemLog.Transaction(recordId + ":adoption", recordId, activeEffectId, string.Empty,
+			PolicySystemLog.Transaction(transactionId, recordId, activeEffectId, string.Empty,
 				"effectsCommitted", "success", stateBefore: PolicyCommitStateCommitPending, stateAfter: PolicyCommitStateActive);
+			PolicySystemLog.Lifecycle("Player", "commit-complete", "success", new PolicyLogContext
+			{
+				TransactionId = transactionId,
+				PolicyId = data.PolicyObjectId,
+				RecordId = recordId,
+				EffectId = activeEffectId,
+				StateBefore = PolicyCommitStateCommitPending,
+				StateAfter = PolicyCommitStateActive,
+				Gold = request?.GoldCost,
+				Influence = request?.InfluenceCost
+			});
 		}
 		catch (Exception ex)
 		{
@@ -2987,6 +3074,19 @@ public sealed partial class CustomPolicyBehavior
 			}
 			try
 			{
+				PolicySystemLog.Failure("Player", "commit-failed", ex, new PolicyLogContext
+				{
+					TransactionId = transactionId,
+					PolicyId = data?.PolicyObjectId,
+					RecordId = recordId,
+					EffectId = activeEffectId,
+					StateBefore = PolicyCommitStateCommitPending,
+					StateAfter = PolicyCommitStateFailed,
+					Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+					{
+						["rollbackFailures"] = rollbackFailures.Count
+					}
+				});
 				PolicySystemLog.Write("Agenda", "player-adoption-commit-failed", "recordId=" + recordId + " " + ex
 					+ (rollbackFailures.Count == 0 ? string.Empty : " rollback=" + string.Join(" | ", rollbackFailures)));
 			}
@@ -3057,23 +3157,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static void RunApprovedPlayerPolicyPostCommitStep(string recordId, string stage, Action action)
 	{
-		try
-		{
-			action?.Invoke();
-		}
-		catch (Exception ex)
-		{
-			try
-			{
-				PolicySystemLog.Write("Agenda", "player-adoption-post-commit-failed",
-					"recordId=" + (recordId ?? string.Empty)
-					+ " stage=" + (stage ?? string.Empty)
-					+ " error=" + ex);
-			}
-			catch
-			{
-			}
-		}
+		RunPolicyPostCommitStep("Agenda", "player-adoption-post-commit-failed", recordId, stage, action);
 	}
 
 	private void TryAwardPlayerPolicyStewardXp(DynamicPolicySaveData data, PolicyDraftRequest request, PolicyApplicationResult application)
@@ -3569,6 +3653,66 @@ public sealed partial class CustomPolicyBehavior
 		}
 	}
 
+	private void RemoveLegacyStoppedDynamicPolicyMembershipAfterLoad()
+	{
+		foreach (string policyObjectId in _legacyStoppedDynamicPolicyIds.ToList())
+		{
+			if (!TryGetDynamicPolicyData(policyObjectId, out DynamicPolicySaveData data))
+			{
+				continue;
+			}
+			Kingdom owner = ResolveKingdomByIdOrName(data.OwnerKingdomId, string.Empty);
+			if (owner == null)
+			{
+				continue;
+			}
+			foreach (KingdomPolicyDecision decision in FindDynamicPolicyDecisions(owner, policyObjectId).ToList())
+			{
+				owner.RemoveDecision(decision);
+			}
+			PolicyObject active = owner.ActivePolicies?.FirstOrDefault(policy => policy != null
+				&& string.Equals(policy.StringId ?? string.Empty, policyObjectId, StringComparison.OrdinalIgnoreCase));
+			if (active != null)
+			{
+				owner.RemovePolicy(active);
+			}
+			PolicySystemLog.Write("Save", "legacy-policy-stopped-after-load",
+				"recordId=" + (data.RecordId ?? string.Empty)
+				+ " policyObjectId=" + policyObjectId
+				+ " owner=" + (owner.StringId ?? string.Empty));
+		}
+	}
+
+	private void MarkLegacyStoppedPolicyHistoryAfterLoad()
+	{
+		foreach (string recordId in _legacyStoppedPolicyRecordIds)
+		{
+			if (!_policyRecordHistory.TryGetValue(recordId, out string raw))
+			{
+				continue;
+			}
+			try
+			{
+				PolicyRecordSaveData record = JsonConvert.DeserializeObject<PolicyRecordSaveData>(raw ?? string.Empty);
+				if (record?.Effects == null)
+				{
+					continue;
+				}
+				foreach (PolicyRecordEffectSaveData effect in record.Effects.Where(value => value != null))
+				{
+					effect.RemainingDays = 0;
+					effect.IsEnded = true;
+					effect.EndReason = "旧政策系统升级后停止，可重新评议";
+				}
+				_policyRecordHistory[record.RecordId] = JsonConvert.SerializeObject(record);
+			}
+			catch (Exception ex)
+			{
+				PolicyDebugLog("legacy-history-stop-failed", "recordId=" + recordId + " error=" + ex.Message);
+			}
+		}
+	}
+
 	public override void SyncData(IDataStore dataStore)
 	{
 		if (dataStore == null)
@@ -3588,6 +3732,16 @@ public sealed partial class CustomPolicyBehavior
 			dataStore.SyncData(SaveKeyActivePolicyEffects, ref activeEffectsStore);
 			Dictionary<string, string> dynamicPolicyStore = CampaignSaveChunkHelper.FlattenStringDictionary(_dynamicPolicyRegistry, SaveKeyDynamicPolicyRegistry, "DynamicPolicyRegistry");
 			dataStore.SyncData(SaveKeyDynamicPolicyRegistry, ref dynamicPolicyStore);
+			PolicySystemLog.Lifecycle("Player", "save-summary", "success", new PolicyLogContext
+			{
+				Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+				{
+					["history"] = _policyRecordHistory.Count,
+					["local"] = _localPolicyRecords.Count,
+					["active"] = _activePolicyEffects.Count,
+					["dynamic"] = _dynamicPolicyRegistry.Count
+				}
+			});
 			return;
 		}
 		ResetTransientPolicyGenerationStateAfterLoad();
@@ -3599,6 +3753,8 @@ public sealed partial class CustomPolicyBehavior
 		ResetActivePolicyEffectRuntimeIndex();
 		_dynamicPolicyRegistry.Clear();
 		_quarantinedDynamicPolicyIds.Clear();
+		_legacyStoppedDynamicPolicyIds.Clear();
+		_legacyStoppedPolicyRecordIds.Clear();
 		PolicyEffectMigrationBatchSummary moduleMigrationSummary = new PolicyEffectMigrationBatchSummary();
 		Dictionary<string, string> storedHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(SaveKeyPolicyRecordHistory, ref storedHistory);
@@ -3651,6 +3807,27 @@ public sealed partial class CustomPolicyBehavior
 			{
 				string migrationError = string.Empty;
 				JObject rawRecord = JObject.Parse(value);
+				if (PolicyEffectSaveCodec.TryNormalizeLegacyStoppedLocalPolicy(
+					rawRecord,
+					out JObject stoppedLegacyObject,
+					out migrationError))
+				{
+					LocalPolicyRecordSaveData stoppedLegacy = NormalizeLocalPolicyRecord(
+						stoppedLegacyObject.ToObject<LocalPolicyRecordSaveData>());
+					if (stoppedLegacy != null && !string.IsNullOrWhiteSpace(stoppedLegacy.RecordId))
+					{
+						moduleMigrationSummary.RecordsVisited++;
+						moduleMigrationSummary.RecordsChanged++;
+						_localPolicyRecords[key] = JsonConvert.SerializeObject(stoppedLegacy);
+						continue;
+					}
+					migrationError = "停止归一化后的旧地方政策记录缺少 recordId";
+				}
+				else if (!string.IsNullOrWhiteSpace(migrationError))
+				{
+					PolicyDebugLog("local-save-load-skip", "legacy local policy stop normalization failed key=" + key + " error=" + migrationError);
+					continue;
+				}
 				if (PolicyEffectSaveCodec.TryNormalizeLocalV1ToV6(
 					rawRecord,
 					out JObject normalizedObject,
@@ -3688,6 +3865,16 @@ public sealed partial class CustomPolicyBehavior
 			{
 				string migrationError = string.Empty;
 				JObject rawRecord = JObject.Parse(value);
+				if (PolicyEffectSaveCodec.IsLegacyStoppedActiveV5Shape(rawRecord))
+				{
+					moduleMigrationSummary.RecordsVisited++;
+					moduleMigrationSummary.RecordsChanged++;
+					PolicySystemLog.Write("Save", "legacy-active-effect-stopped-after-load",
+						"recordId=" + (((string)rawRecord.GetValue("RecordId", StringComparison.OrdinalIgnoreCase) ?? string.Empty).Trim())
+						+ " effectId=" + (((string)rawRecord.GetValue("EffectId", StringComparison.OrdinalIgnoreCase) ?? key).Trim()));
+					_legacyStoppedPolicyRecordIds.Add(((string)rawRecord.GetValue("RecordId", StringComparison.OrdinalIgnoreCase) ?? string.Empty).Trim());
+					continue;
+				}
 				if (PolicyEffectSaveCodec.TryNormalizeActiveV4ToV8(
 					rawRecord,
 					out JObject normalizedObject,
@@ -3731,6 +3918,31 @@ public sealed partial class CustomPolicyBehavior
 			{
 				string migrationError = string.Empty;
 				JObject rawRecord = JObject.Parse(value);
+				if (PolicyEffectSaveCodec.TryNormalizeLegacyStoppedDynamicPolicy(
+					rawRecord,
+					out JObject stoppedLegacyObject,
+					out migrationError))
+				{
+					DynamicPolicySaveData stoppedLegacy = stoppedLegacyObject.ToObject<DynamicPolicySaveData>();
+					if (stoppedLegacy != null
+						&& IsDynamicPolicyId(stoppedLegacy.PolicyObjectId)
+						&& string.Equals(stoppedLegacy.PolicyObjectId, key, StringComparison.OrdinalIgnoreCase))
+					{
+						moduleMigrationSummary.RecordsVisited++;
+						moduleMigrationSummary.RecordsChanged++;
+						_dynamicPolicyRegistry[stoppedLegacy.PolicyObjectId] = JsonConvert.SerializeObject(stoppedLegacy);
+						_legacyStoppedDynamicPolicyIds.Add(stoppedLegacy.PolicyObjectId);
+						_legacyStoppedPolicyRecordIds.Add(stoppedLegacy.RecordId ?? string.Empty);
+						continue;
+					}
+					migrationError = "停止归一化后的旧动态政策记录缺少合法 policyObjectId 或存储键不匹配";
+				}
+				else if (!string.IsNullOrWhiteSpace(migrationError))
+				{
+					PolicyDebugLog("dynamic-policy-load-skip", "legacy dynamic policy stop normalization failed key=" + key + " error=" + migrationError);
+					QuarantineDynamicPolicy(key, value, "legacy stop normalization: " + migrationError);
+					continue;
+				}
 				if (PolicyEffectSaveCodec.TryNormalizeDynamicV1ToV4(
 					rawRecord,
 					out JObject normalizedObject,
@@ -3757,14 +3969,44 @@ public sealed partial class CustomPolicyBehavior
 				QuarantineDynamicPolicy(key, value, "load parse: " + ex.Message);
 			}
 		}
+		_legacyStoppedPolicyRecordIds.Remove(string.Empty);
+		MarkLegacyStoppedPolicyHistoryAfterLoad();
 		ReconcileDynamicPolicyEffectBindingsAfterLoad();
 		RebuildActivePolicyEffectRuntimeIndex();
+		PolicySystemLog.Lifecycle("Player", "load-normalized",
+			moduleMigrationSummary.Warnings.Count == 0 ? "success" : "warnings", new PolicyLogContext
+			{
+				Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+				{
+					["recordsVisited"] = moduleMigrationSummary.RecordsVisited,
+					["recordsChanged"] = moduleMigrationSummary.RecordsChanged,
+					["instancesCreated"] = moduleMigrationSummary.InstancesCreated,
+					["executableInstances"] = moduleMigrationSummary.ExecutableInstances,
+					["inertInstances"] = moduleMigrationSummary.InertInstances,
+					["warnings"] = moduleMigrationSummary.Warnings.Count
+				}
+			});
 		PolicySystemLog.WriteModuleLifecycle(
 			"Save",
 			"*",
 			migration: moduleMigrationSummary.ToString(),
 			index: "active=" + _activePolicyEffects.Count.ToString(CultureInfo.InvariantCulture)
 				+ ", contributions=" + _policyEffectRuntimeIndex.ContributionCount.ToString(CultureInfo.InvariantCulture));
+		PolicySystemLog.Lifecycle("Player", "load-summary", "success", new PolicyLogContext
+		{
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["history"] = _policyRecordHistory.Count,
+				["local"] = _localPolicyRecords.Count,
+				["active"] = _activePolicyEffects.Count,
+				["dynamic"] = _dynamicPolicyRegistry.Count,
+				["quarantinedActive"] = _quarantinedActivePolicyEffectIds.Count,
+				["quarantinedDynamic"] = _quarantinedDynamicPolicyIds.Count,
+				["migrationVisited"] = moduleMigrationSummary.RecordsVisited,
+				["migrationChanged"] = moduleMigrationSummary.RecordsChanged,
+				["migrationWarnings"] = moduleMigrationSummary.Warnings.Count
+			}
+		});
 	}
 
 	private void ResetTransientPolicyGenerationStateAfterLoad()
@@ -3833,6 +4075,10 @@ public sealed partial class CustomPolicyBehavior
 		{
 			Version = 6,
 			PolicyId = recordId,
+			ReReviewRootRecordId = request.ReReviewRootRecordId ?? string.Empty,
+			ReReviewSourceRecordId = request.ReReviewSourceRecordId ?? string.Empty,
+			SupersedesRecordId = request.SupersedesRecordId ?? string.Empty,
+			ReReviewReplacementCommitted = request.ReReviewReplacementCommitted,
 			PolicyObjectId = IsVassalPolicyRequest(request) ? "af_vassal_policy:" + recordId : DynamicPolicyIdPrefix + recordId,
 			AgendaStatus = DynamicPolicyStatusActive,
 			BatchId = IsVassalPolicyRequest(request) ? "player_vassal" : "player",

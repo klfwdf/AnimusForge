@@ -24,6 +24,16 @@ public sealed class PolicyComposeTargetData
 	public bool IsSelected;
 }
 
+public sealed class PolicyComposePrefillData
+{
+	public string PolicyName { get; set; } = string.Empty;
+	public string PolicyContent { get; set; } = string.Empty;
+	public string DurationText { get; set; } = string.Empty;
+	public string PublishText { get; set; } = string.Empty;
+	public bool RequireExplicitDuration { get; set; }
+	public bool RequireExplicitTargetSelection { get; set; }
+}
+
 public sealed class CustomPolicyComposePopup
 {
 	private static CustomPolicyComposePopup _activePopup;
@@ -75,17 +85,17 @@ public sealed class CustomPolicyComposePopup
 		}
 	}
 
-	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action<PlayerPolicyAutoDraftRequest, Action<PlayerPolicyAutoDraftResult>> onAutoDraft, Action onCancel)
+	private CustomPolicyComposePopup(ScreenBase screen, string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action<PlayerPolicyAutoDraftRequest, Action<PlayerPolicyAutoDraftResult>> onAutoDraft, Action onCancel, PolicyComposePrefillData prefill)
 	{
 		_screen = screen;
 		_onPublish = onPublish;
 		_onAutoDraft = onAutoDraft;
 		_onCancel = onCancel;
-		_dataSource = new CustomPolicyComposePopupVM(titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, targets, HandlePublishRequested, HandleAutoDraftRequested, HandleCancelRequested);
+		_dataSource = new CustomPolicyComposePopupVM(titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, targets, HandlePublishRequested, HandleAutoDraftRequested, HandleCancelRequested, prefill);
 		_layer = new GauntletLayer("CustomPolicyComposePopup", 4000, false);
 	}
 
-	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action<PlayerPolicyAutoDraftRequest, Action<PlayerPolicyAutoDraftResult>> onAutoDraft, Action onCancel)
+	public static bool Show(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action<PlayerPolicyAutoDraftRequest, Action<PlayerPolicyAutoDraftResult>> onAutoDraft, Action onCancel, PolicyComposePrefillData prefill = null)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -95,7 +105,7 @@ public sealed class CustomPolicyComposePopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			CustomPolicyComposePopup popup = new CustomPolicyComposePopup(topScreen, titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, targets, onPublish, onAutoDraft, onCancel);
+			CustomPolicyComposePopup popup = new CustomPolicyComposePopup(topScreen, titleText, nameLabelText, contentLabelText, dateText, canPublish, blockReason, targets, onPublish, onAutoDraft, onCancel, prefill);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -255,6 +265,10 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 
 	private bool _externalCanPublish;
 
+	private readonly bool _requireExplicitDuration;
+
+	private readonly bool _requireExplicitTargetSelection;
+
 	private string _titleText;
 
 	private string _nameLabelText;
@@ -293,26 +307,28 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 
 	private MBBindingList<PolicyComposeTargetItemVM> _targetItems;
 
-	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action<PlayerPolicyAutoDraftRequest> onAutoDraft, Action onCancel)
+	public CustomPolicyComposePopupVM(string titleText, string nameLabelText, string contentLabelText, string dateText, bool canPublish, string blockReason, List<PolicyComposeTargetData> targets, Action<string, string, string, string, string> onPublish, Action<PlayerPolicyAutoDraftRequest> onAutoDraft, Action onCancel, PolicyComposePrefillData prefill = null)
 	{
 		_onPublish = onPublish;
 		_onAutoDraft = onAutoDraft;
 		_onCancel = onCancel;
 		_externalCanPublish = canPublish;
+		_requireExplicitDuration = prefill?.RequireExplicitDuration == true;
+		_requireExplicitTargetSelection = prefill?.RequireExplicitTargetSelection == true;
 		TitleText = string.IsNullOrWhiteSpace(titleText) ? "发布王国政策" : titleText;
 		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? "政策名" : nameLabelText;
 		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? "政策内容" : contentLabelText;
 		DurationLabelText = "效果持续天数（留空为永久）";
 		DateText = string.IsNullOrWhiteSpace(dateText) ? "未知日期" : dateText;
-		PolicyName = "";
-		PolicyContent = "";
-		DurationText = "";
-		PublishText = "发布王国政策";
+		PolicyName = prefill?.PolicyName ?? "";
+		PolicyContent = prefill?.PolicyContent ?? "";
+		DurationText = prefill?.DurationText ?? "";
+		PublishText = string.IsNullOrWhiteSpace(prefill?.PublishText) ? "发布王国政策" : prefill.PublishText;
 		AutoDraftText = "AI编写";
 		CancelText = "取消";
 		TargetItems = new MBBindingList<PolicyComposeTargetItemVM>();
 		List<PolicyComposeTargetData> availableTargets = (targets ?? new List<PolicyComposeTargetData>()).Where(x => x != null).ToList();
-		if (availableTargets.Count == 0)
+		if (availableTargets.Count == 0 && !_requireExplicitTargetSelection)
 		{
 			availableTargets.Add(new PolicyComposeTargetData { TargetId = "", ScopeKind = "kingdom", DisplayText = "玩家王国", IsSelected = true });
 		}
@@ -321,8 +337,11 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			PolicyComposeTargetData target = availableTargets[i];
 			TargetItems.Add(new PolicyComposeTargetItemVM(target, SelectTarget));
 		}
-		PolicyComposeTargetItemVM selected = TargetItems.FirstOrDefault(x => x.IsSelected) ?? TargetItems.FirstOrDefault();
-		SelectTarget(selected);
+		PolicyComposeTargetItemVM selected = TargetItems.FirstOrDefault(x => x.IsSelected);
+		if (selected != null || !_requireExplicitTargetSelection)
+		{
+			SelectTarget(selected ?? TargetItems.FirstOrDefault());
+		}
 		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? "填写政策名和政策内容后即可发布。" : blockReason;
 		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? "当前不能发布政策。" : blockReason);
 		RefreshCanPublish();
@@ -691,10 +710,12 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 	{
 		bool hasName = !string.IsNullOrWhiteSpace(PolicyName);
 		bool hasContent = !string.IsNullOrWhiteSpace(PolicyContent);
-		bool durationValid = string.IsNullOrWhiteSpace(DurationText)
-			|| (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int durationDays) && durationDays > 0);
-		CanPublish = !_isAutoDrafting && _externalCanPublish && hasName && hasContent && durationValid;
-		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && hasContent && durationValid;
+		bool hasTarget = !_requireExplicitTargetSelection || !string.IsNullOrWhiteSpace(SelectedTargetId);
+		bool durationValid = (!_requireExplicitDuration || !string.IsNullOrWhiteSpace(DurationText))
+			&& (string.IsNullOrWhiteSpace(DurationText)
+				|| (int.TryParse(DurationText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int durationDays) && durationDays > 0));
+		CanPublish = !_isAutoDrafting && _externalCanPublish && hasName && hasContent && hasTarget && durationValid;
+		CanAutoDraft = !_isAutoDrafting && _externalCanPublish && hasContent && hasTarget && durationValid;
 		if (_externalCanPublish)
 		{
 			if (!hasName)
@@ -705,9 +726,15 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			{
 				StatusText = "请先填写政策内容。";
 			}
+			else if (!hasTarget)
+			{
+				StatusText = "原目标当前无效，请明确重新选择一个当前可用目标。";
+			}
 			else if (!durationValid)
 			{
-				StatusText = "持续天数必须留空或填写正整数。";
+				StatusText = _requireExplicitDuration && string.IsNullOrWhiteSpace(DurationText)
+					? "旧记录无法确认原持续时间，请明确填写正整数天数。"
+					: "持续天数必须留空或填写正整数。";
 			}
 			else
 			{
@@ -759,6 +786,12 @@ public sealed class PolicyHistoryData
 
 public sealed class PolicyHistoryRecordData
 {
+	public string RecordId { get; set; }
+
+	public bool CanReReview { get; set; }
+
+	public string ReReviewText { get; set; } = "重新评议";
+
 	public string DateText { get; set; }
 
 	public string PolicyNameText { get; set; }
@@ -1131,17 +1164,20 @@ public sealed class CustomPolicyHistoryPopup
 
 	private readonly Action _onClose;
 
+	private readonly Action<string> _onReReview;
+
 	private bool _isClosed;
 
-	private CustomPolicyHistoryPopup(ScreenBase screen, PolicyHistoryData data, Action onClose)
+	private CustomPolicyHistoryPopup(ScreenBase screen, PolicyHistoryData data, Action<string> onReReview, Action onClose)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new CustomPolicyHistoryPopupVM(data, HandleCloseRequested);
+		_onReReview = onReReview;
+		_dataSource = new CustomPolicyHistoryPopupVM(data, HandleReReviewRequested, HandleCloseRequested);
 		_layer = new GauntletLayer("CustomPolicyHistoryPopup", 4100, false);
 	}
 
-	public static bool Show(PolicyHistoryData data, Action onClose = null)
+	public static bool Show(PolicyHistoryData data, Action<string> onReReview, Action onClose = null)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -1151,7 +1187,7 @@ public sealed class CustomPolicyHistoryPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			CustomPolicyHistoryPopup popup = new CustomPolicyHistoryPopup(topScreen, data ?? new PolicyHistoryData(), onClose);
+			CustomPolicyHistoryPopup popup = new CustomPolicyHistoryPopup(topScreen, data ?? new PolicyHistoryData(), onReReview, onClose);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -1163,6 +1199,11 @@ public sealed class CustomPolicyHistoryPopup
 			_activePopup = null;
 			return false;
 		}
+	}
+
+	public static bool Show(PolicyHistoryData data, Action onClose = null)
+	{
+		return Show(data, null, onClose);
 	}
 
 	private void Open()
@@ -1185,6 +1226,12 @@ public sealed class CustomPolicyHistoryPopup
 	{
 		Close(silent: true);
 		_onClose?.Invoke();
+	}
+
+	private void HandleReReviewRequested(string recordId)
+	{
+		Close(silent: true);
+		_onReReview?.Invoke(recordId ?? string.Empty);
 	}
 
 	private void Close(bool silent)
@@ -1225,6 +1272,8 @@ public sealed class CustomPolicyHistoryPopup
 public sealed class CustomPolicyHistoryPopupVM : ViewModel
 {
 	private readonly Action _onClose;
+
+	private readonly Action<string> _onReReview;
 
 	private string _titleText;
 
@@ -1338,8 +1387,9 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 		}
 	}
 
-	public CustomPolicyHistoryPopupVM(PolicyHistoryData data, Action onClose)
+	public CustomPolicyHistoryPopupVM(PolicyHistoryData data, Action<string> onReReview, Action onClose)
 	{
+		_onReReview = onReReview;
 		_onClose = onClose;
 		PolicyHistoryData source = data ?? new PolicyHistoryData();
 		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "政策记录" : source.TitleText.Trim();
@@ -1353,7 +1403,7 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 			{
 				if (record != null)
 				{
-					RecordItems.Add(new CustomPolicyHistoryRecordItemVM(record));
+					RecordItems.Add(new CustomPolicyHistoryRecordItemVM(record, _onReReview));
 				}
 			}
 		}
@@ -1369,6 +1419,14 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 
 public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 {
+	private readonly Action<string> _onReReview;
+
+	[DataSourceProperty] public string RecordId { get; set; }
+
+	[DataSourceProperty] public bool CanReReview { get; set; }
+
+	[DataSourceProperty] public string ReReviewText { get; set; }
+
 	private string _dateText;
 
 	private string _policyNameText;
@@ -1513,8 +1571,12 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 		}
 	}
 
-	public CustomPolicyHistoryRecordItemVM(PolicyHistoryRecordData record)
+	public CustomPolicyHistoryRecordItemVM(PolicyHistoryRecordData record, Action<string> onReReview)
 	{
+		_onReReview = onReReview;
+		RecordId = record?.RecordId ?? string.Empty;
+		CanReReview = record?.CanReReview == true;
+		ReReviewText = string.IsNullOrWhiteSpace(record?.ReReviewText) ? "重新评议" : record.ReReviewText.Trim();
 		DateText = (record?.DateText ?? "未知日期").Trim();
 		PolicyNameText = (record?.PolicyNameText ?? "未命名政策").Trim();
 		CostText = (record?.CostText ?? "").Trim();
@@ -1524,5 +1586,13 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 		FeedbackSummaryText = (record?.FeedbackSummaryText ?? "").Trim();
 		ImpactSectionTitleText = string.IsNullOrWhiteSpace(record?.ImpactSectionTitleText) ? "【每日影响】" : record.ImpactSectionTitleText.Trim();
 		ImpactSummaryText = (record?.ImpactSummaryText ?? "").Trim();
+	}
+
+	public void ExecuteReReview()
+	{
+		if (CanReReview)
+		{
+			_onReReview?.Invoke(RecordId ?? string.Empty);
+		}
 	}
 }

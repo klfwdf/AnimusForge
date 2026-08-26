@@ -60,7 +60,8 @@ internal enum PolicyEffectHook
 	KingdomStabilityOnActivation,
 	DailyScheduler,
 	ArmyFormationScore,
-	KingdomVillageRaidBlock
+	KingdomVillageRaidBlock,
+	VolunteerProductionProbability
 }
 
 internal enum PolicyEffectAggregationKind
@@ -95,7 +96,8 @@ internal enum PolicyEffectTargetKind
 internal enum PolicyEffectTargetProjectionKind
 {
 	None,
-	SettlementOwnerClanLeader
+	SettlementOwnerClanLeader,
+	PrimaryFiefAndBoundSettlements
 }
 
 internal enum PolicyEffectTargetRefreshKind
@@ -171,7 +173,9 @@ internal sealed class PolicyEffectModuleDescriptor
 		PolicyEffectTargetProjectionKind targetProjection = PolicyEffectTargetProjectionKind.None,
 		PolicyEffectTargetRefreshKind targetRefresh = PolicyEffectTargetRefreshKind.Dynamic,
 		bool allowIndependentClanTargets = false,
-		PolicyEffectTargetBindingKind targetBinding = PolicyEffectTargetBindingKind.Selectable)
+		PolicyEffectTargetBindingKind targetBinding = PolicyEffectTargetBindingKind.Selectable,
+		bool excludeActorClanTargets = false,
+		bool allowCrossKingdomTargets = false)
 		: this(
 			id,
 			order,
@@ -208,7 +212,9 @@ internal sealed class PolicyEffectModuleDescriptor
 			targetProjection,
 			targetRefresh,
 			allowIndependentClanTargets,
-			targetBinding)
+			targetBinding,
+			excludeActorClanTargets,
+			allowCrossKingdomTargets)
 	{
 	}
 
@@ -248,7 +254,9 @@ internal sealed class PolicyEffectModuleDescriptor
 		PolicyEffectTargetProjectionKind targetProjection = PolicyEffectTargetProjectionKind.None,
 		PolicyEffectTargetRefreshKind targetRefresh = PolicyEffectTargetRefreshKind.Dynamic,
 		bool allowIndependentClanTargets = false,
-		PolicyEffectTargetBindingKind targetBinding = PolicyEffectTargetBindingKind.Selectable)
+		PolicyEffectTargetBindingKind targetBinding = PolicyEffectTargetBindingKind.Selectable,
+		bool excludeActorClanTargets = false,
+		bool allowCrossKingdomTargets = false)
 	{
 		Id = id;
 		Order = order;
@@ -296,6 +304,8 @@ internal sealed class PolicyEffectModuleDescriptor
 		TargetRefresh = targetRefresh;
 		AllowIndependentClanTargets = allowIndependentClanTargets;
 		TargetBinding = targetBinding;
+		ExcludeActorClanTargets = excludeActorClanTargets;
+		AllowCrossKingdomTargets = allowCrossKingdomTargets;
 	}
 
 	internal string Id { get; }
@@ -319,6 +329,10 @@ internal sealed class PolicyEffectModuleDescriptor
 	internal bool AllowIndependentClanTargets { get; }
 
 	internal PolicyEffectTargetBindingKind TargetBinding { get; }
+
+	internal bool ExcludeActorClanTargets { get; }
+
+	internal bool AllowCrossKingdomTargets { get; }
 
 	internal IReadOnlyCollection<string> CueTerms { get; }
 

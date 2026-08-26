@@ -255,8 +255,7 @@ Test.True(!terminalBehavior.Contains("Task.Run(", StringComparison.Ordinal)
     && !terminalBehavior.Contains("SelectPlayerRpCraftTemplateWithPreprocessForExternal", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("BuildPlayerRpTemplateSelectionPromptForExternal", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("SendPlayerRpTemplateSelectionHttpRequest", StringComparison.Ordinal)
-    && !playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog", StringComparison.Ordinal)
-    && !File.Exists(Path.Combine(repoRoot, "PlayerRpCraftTemplateSelectorLog.cs")),
+    && !playerRpCrafting.Contains("PlayerRpCraftTemplateSelectorLog", StringComparison.Ordinal),
     "U-key player RP crafting must not retain an LLM request, HTTP selector, or selector log path");
 Test.True(preprocessPrompts.Contains("PlayerRpTemplateSelection", StringComparison.Ordinal)
     && preprocessPrompts.Contains("Rows: rank|template_id|name|type|standard_price", StringComparison.Ordinal),

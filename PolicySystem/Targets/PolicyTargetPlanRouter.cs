@@ -895,6 +895,16 @@ internal static class PolicyTargetPlanRouter
 		bool clanFiefCue = ContainsAny(normalizedQuery, "家族封地", "家族领地", "氏族封地", "氏族领地", "贵族封地", "贵族领地");
 		bool isLocalScope = string.Equals(context.Scope, "local", StringComparison.OrdinalIgnoreCase);
 		NormalizeExplicitTypeCues(explicitAtomIds, clanFiefCue, typeCueQuery);
+		if (includedSettlements.Count > 0 || includedClans.Count > 0 || includedKingdoms.Count > 0)
+		{
+			// Exact runtime-verified entity names are stronger than generic relation
+			// words in the same policy prose. Phrases such as “敌国南帝国境内”
+			// and “充实本国财政” must not be rejected before the named scope is bound.
+			explicitAtomIds.Remove("relation_domestic");
+			explicitAtomIds.Remove("relation_enemy");
+			explicitAtomIds.Remove("relation_ally");
+			explicitAtomIds.Remove("relation_foreign");
+		}
 		if (!TryValidateExplicitAtomGroups(explicitAtomIds, out error))
 		{
 			if (error.IndexOf(" type ", StringComparison.Ordinal) >= 0)

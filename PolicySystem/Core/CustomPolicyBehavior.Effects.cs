@@ -248,6 +248,21 @@ public sealed partial class CustomPolicyBehavior
 					+ module.Id + " / " + targetPlanError;
 				return false;
 			}
+			if (!PolicyEffectTargetJurisdiction.TryApply(
+				targetSet,
+				module,
+				registration.TargetKingdomId,
+				registration.IssuerKingdomId,
+				targetSet.AuthorizedCrossKingdomIds,
+				preserveLegacyCrossKingdoms: false,
+				failOnUnauthorized: true,
+				out targetSet,
+				out string targetJurisdictionError))
+			{
+				failureReason = "policy effect bundle target jurisdiction failed: "
+					+ module.Id + " / " + targetJurisdictionError;
+				return false;
+			}
 			if (!HasPolicyEffectCanonicalTargetsForModule(module, targetSet))
 			{
 				failureReason = "policy effect bundle 缺少规范目标集合: " + module.Id;
@@ -392,12 +407,6 @@ public sealed partial class CustomPolicyBehavior
 				+ (string.IsNullOrWhiteSpace(rollbackError) ? string.Empty : "; rollback=" + rollbackError);
 			return false;
 		}
-		PolicySystemLog.Write("Effect", "active-bundle-created", "recordId=" + activeEffect.RecordId
-			+ " effectId=" + effectId
-			+ " scope=" + scope
-			+ " moduleInstances=" + normalizedInstances.Count.ToString(CultureInfo.InvariantCulture)
-			+ " receipts=" + receipts.Count.ToString(CultureInfo.InvariantCulture)
-			+ " duration=" + activeEffect.TotalDurationDays.ToString(CultureInfo.InvariantCulture));
 		string persistedLifecycleState = normalizedInstances.Any(instance =>
 			instance?.LifecycleState == PolicyEffectLifecycleState.Suspended)
 			? "suspended"
@@ -405,6 +414,70 @@ public sealed partial class CustomPolicyBehavior
 		string persistedTargetHash = BuildPolicyEffectTargetFingerprint(
 			normalizedInstances,
 			out int persistedTargetCount);
+		string persistedTargetSummary = BuildPolicyEffectTargetSetLogSummary(
+			normalizedInstances.Select(instance => instance?.TargetSet));
+		PolicySystemLog.Lifecycle("Effect", "active-bundle-created", "success", new PolicyLogContext
+		{
+			TransactionId = effectId,
+			PolicyId = normalizedInstances.FirstOrDefault()?.PolicyId,
+			RecordId = activeEffect.RecordId,
+			EffectId = effectId,
+			TargetHash = persistedTargetHash,
+			TargetCount = persistedTargetCount,
+			TargetKingdomId = activeEffect.TargetKingdomId,
+			TargetKingdomName = activeEffect.TargetKingdomName,
+			TargetName = activeEffect.TargetLabel,
+			TargetSummary = persistedTargetSummary,
+			StateBefore = "prepared",
+			StateAfter = persistedLifecycleState,
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["moduleInstances"] = normalizedInstances.Count,
+				["receipts"] = receipts.Count,
+				["durationDays"] = activeEffect.TotalDurationDays
+			}
+		});
+		foreach (PolicyEffectInstanceSaveData instance in normalizedInstances)
+		{
+			if (instance == null)
+			{
+				continue;
+			}
+			PolicySystemLog.Lifecycle("Effect", "instance-created", instance.LifecycleState.ToString(), new PolicyLogContext
+			{
+				TransactionId = effectId,
+				PolicyId = instance.PolicyId,
+				RecordId = activeEffect.RecordId,
+				EffectId = effectId,
+				MechanismId = instance.MechanismId,
+				ModuleId = instance.ModuleId,
+				InstanceId = instance.InstanceId,
+				TargetHash = persistedTargetHash,
+				TargetCount = persistedTargetCount,
+				TargetSummary = BuildPolicyEffectTargetSetLogSummary(instance.TargetSet),
+				StateAfter = instance.LifecycleState.ToString()
+			});
+		}
+		foreach (PolicyEffectExecutionReceipt receipt in receipts)
+		{
+			if (receipt == null)
+			{
+				continue;
+			}
+			PolicySystemLog.Lifecycle("Effect", "receipt-created", receipt.Status.ToString(), new PolicyLogContext
+			{
+				TransactionId = effectId,
+				PolicyId = receipt.PolicyId,
+				RecordId = activeEffect.RecordId,
+				EffectId = effectId,
+				ModuleId = receipt.ModuleId,
+				InstanceId = receipt.InstanceId,
+				ReceiptId = receipt.ReceiptId,
+				CampaignDay = float.IsNaN(receipt.CampaignDay) || float.IsInfinity(receipt.CampaignDay)
+					? null
+					: (int?)Math.Floor(receipt.CampaignDay)
+			});
+		}
 		PolicySystemLog.Transaction(
 			effectId,
 			activeEffect.RecordId,
@@ -453,8 +526,9 @@ public sealed partial class CustomPolicyBehavior
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.SettlementTaxModel, "CalculateTownTax", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyTownTax_Postfix));
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.BuildingConstructionModel, "CalculateDailyConstructionPower", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyConstructionPower_Postfix));
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.BuildingConstructionModel, "CalculateDailyConstructionPowerWithoutBoost", new Type[1] { typeof(Town) }, nameof(Patch_PolicyConstructionPowerWithoutBoost_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.VolunteerModel, "GetDailyVolunteerProductionProbability", new Type[3] { typeof(Hero), typeof(int), typeof(Settlement) }, nameof(Patch_PolicyVolunteerProductionProbability_Postfix));
 			_policySettlementModelPatchesApplied = true;
-			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement change calculations and tooltips");
+			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement and volunteer calculations and tooltips");
 		}
 		catch (Exception ex)
 		{
@@ -912,6 +986,55 @@ public sealed partial class CustomPolicyBehavior
 		{
 			AddActivePolicySettlementEffects(settlement, PolicyEffectHook.SettlementMilitiaDaily, includeDescriptions, ref __result);
 		}
+	}
+
+	private static void Patch_PolicyVolunteerProductionProbability_Postfix(
+		Hero hero,
+		int index,
+		Settlement settlement,
+		ref float __result)
+	{
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		if (behavior == null
+			|| hero?.VolunteerTypes == null
+			|| index < 0
+			|| index >= hero.VolunteerTypes.Length
+			|| settlement == null
+			|| string.IsNullOrWhiteSpace(settlement.StringId))
+		{
+			return;
+		}
+		IReadOnlyList<PolicyEffectRuntimeContribution> contributions =
+			behavior._policyEffectRuntimeIndex.GetContributions(
+				PolicyEffectHook.VolunteerProductionProbability,
+				PolicyEffectTargetKind.Settlement,
+				settlement.StringId);
+		__result = CalculatePolicyVolunteerProductionAdjustedProbability(__result, contributions);
+	}
+
+	internal static float CalculatePolicyVolunteerProductionAdjustedProbability(
+		float originalProbability,
+		IReadOnlyList<PolicyEffectRuntimeContribution> contributions)
+	{
+		double totalPercent = 0d;
+		for (int contributionIndex = 0; contributionIndex < (contributions?.Count ?? 0); contributionIndex++)
+		{
+			PolicyEffectRuntimeContribution contribution = contributions[contributionIndex];
+			if (contribution == null
+				|| contribution.Aggregation != PolicyEffectAggregationKind.Additive)
+			{
+				continue;
+			}
+			totalPercent += contribution.Value;
+		}
+		if (double.IsNaN(totalPercent)
+			|| double.IsInfinity(totalPercent)
+			|| Math.Abs(totalPercent) <= 0.0001d)
+		{
+			return originalProbability;
+		}
+		double adjusted = (double)originalProbability * Math.Max(0d, 1d + totalPercent / 100d);
+		return (float)Math.Max(0d, Math.Min(1d, adjusted));
 	}
 
 	private static void AddActivePolicySettlementEffects(
@@ -2600,6 +2723,8 @@ public sealed partial class CustomPolicyBehavior
 			PolicyEffectCanonicalTargetSet refreshed = new PolicyEffectCanonicalTargetSet
 			{
 				StructureVersion = current.StructureVersion,
+				JurisdictionKind = current.JurisdictionKind,
+				AuthorizedCrossKingdomIds = new List<string>(current.AuthorizedCrossKingdomIds ?? new List<string>()),
 				SelectorHandles = new List<string>(current.SelectorHandles),
 				SelectorIds = new List<string>(current.SelectorIds),
 				ClanIds = refreshedClanIds,
@@ -2629,6 +2754,16 @@ public sealed partial class CustomPolicyBehavior
 				refreshed.HeroIds.Clear();
 			}
 			refreshed = NormalizePolicyEffectCanonicalTargetSet(refreshed);
+			PolicyEffectTargetJurisdiction.TryApply(
+				refreshed,
+				refreshModule,
+				targetKingdom?.StringId ?? activeEffect.TargetKingdomId,
+				activeEffect.IssuerKingdomId,
+				current.AuthorizedCrossKingdomIds,
+				preserveLegacyCrossKingdoms: true,
+				failOnUnauthorized: false,
+				out refreshed,
+				out _);
 			bool instanceChanged = !AreSamePolicyEffectCanonicalTargetSets(current, refreshed);
 			if (instanceChanged)
 			{
@@ -2680,6 +2815,8 @@ public sealed partial class CustomPolicyBehavior
 		materialized = new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = current.StructureVersion,
+			JurisdictionKind = current.JurisdictionKind,
+			AuthorizedCrossKingdomIds = new List<string>(current.AuthorizedCrossKingdomIds ?? new List<string>()),
 			SelectorHandles = new List<string>(current.SelectorHandles),
 			SelectorIds = new List<string>(current.SelectorIds),
 			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(current.TargetPlans),
@@ -2731,6 +2868,19 @@ public sealed partial class CustomPolicyBehavior
 			}
 		}
 		materialized = NormalizePolicyEffectCanonicalTargetSet(materialized);
+		if (!PolicyEffectTargetJurisdiction.TryApply(
+			materialized,
+			module,
+			targetKingdomId,
+			issuerKingdomId,
+			current.AuthorizedCrossKingdomIds,
+			preserveLegacyCrossKingdoms: false,
+			failOnUnauthorized: true,
+			out materialized,
+			out error))
+		{
+			return false;
+		}
 		return true;
 	}
 
@@ -2790,6 +2940,8 @@ public sealed partial class CustomPolicyBehavior
 			PolicyEffectCanonicalTargetSet materialized = new PolicyEffectCanonicalTargetSet
 			{
 				StructureVersion = current.StructureVersion,
+				JurisdictionKind = current.JurisdictionKind,
+				AuthorizedCrossKingdomIds = new List<string>(current.AuthorizedCrossKingdomIds ?? new List<string>()),
 				SelectorHandles = new List<string>(current.SelectorHandles),
 				SelectorIds = new List<string>(current.SelectorIds),
 				TargetPlans = PolicyTargetPlanResolver.NormalizePlans(current.TargetPlans),
@@ -2851,6 +3003,19 @@ public sealed partial class CustomPolicyBehavior
 			}
 
 			refreshed = NormalizePolicyEffectCanonicalTargetSet(materialized);
+			if (!PolicyEffectTargetJurisdiction.TryApply(
+				refreshed,
+				module,
+				activeEffect?.TargetKingdomId,
+				activeEffect?.IssuerKingdomId,
+				current.AuthorizedCrossKingdomIds,
+				preserveLegacyCrossKingdoms: true,
+				failOnUnauthorized: false,
+				out refreshed,
+				out _))
+			{
+				refreshed = NormalizePolicyEffectCanonicalTargetSet(materialized);
+			}
 			PolicyEffectLifecycleState desiredState = ClassifyPolicyTargetPlanLifecycle(
 				resolutionSucceeded: true,
 				PolicyTargetPlanResolutionFailureKind.None,
@@ -3137,6 +3302,8 @@ public sealed partial class CustomPolicyBehavior
 			PolicyEffectCanonicalTargetSet refreshed = new PolicyEffectCanonicalTargetSet
 			{
 				StructureVersion = current.StructureVersion,
+				JurisdictionKind = current.JurisdictionKind,
+				AuthorizedCrossKingdomIds = new List<string>(current.AuthorizedCrossKingdomIds ?? new List<string>()),
 				SelectorHandles = new List<string>(current.SelectorHandles),
 				SelectorIds = new List<string>(current.SelectorIds),
 				ClanIds = refreshedClanIds,
@@ -3166,6 +3333,16 @@ public sealed partial class CustomPolicyBehavior
 				refreshed.HeroIds.Clear();
 			}
 			refreshed = NormalizePolicyEffectCanonicalTargetSet(refreshed);
+			PolicyEffectTargetJurisdiction.TryApply(
+				refreshed,
+				refreshModule,
+				targetKingdom?.StringId ?? activeEffect.TargetKingdomId,
+				activeEffect.IssuerKingdomId,
+				current.AuthorizedCrossKingdomIds,
+				preserveLegacyCrossKingdoms: true,
+				failOnUnauthorized: false,
+				out refreshed,
+				out _);
 			if (!AreSamePolicyEffectCanonicalTargetSets(current, refreshed))
 			{
 				refreshed.StructureVersion = current.StructureVersion >= int.MaxValue
@@ -3818,6 +3995,15 @@ public sealed partial class CustomPolicyBehavior
 				{
 					MarkPolicyRecordEffectEnded(activeEffect, "持续时间已结束");
 				}
+				PolicySystemLog.Lifecycle("Effect", "expiry-complete", "success", new PolicyLogContext
+				{
+					TransactionId = (activeEffect.EffectId ?? key) + ":expiry",
+					RecordId = activeEffect.RecordId,
+					EffectId = activeEffect.EffectId ?? key,
+					CampaignDay = currentDay,
+					StateBefore = "active",
+					StateAfter = "ended"
+				});
 				PolicySystemLog.Transaction(
 					(activeEffect.EffectId ?? key) + ":ended",
 					activeEffect.RecordId,
@@ -3877,6 +4063,15 @@ public sealed partial class CustomPolicyBehavior
 					{
 						MarkPolicyRecordEffectEnded(activeEffect, "效果期限结束", queueNaturalExpiry: false);
 					}
+					PolicySystemLog.Lifecycle("Effect", "expiry-complete", "success", new PolicyLogContext
+					{
+						TransactionId = (activeEffect.EffectId ?? key) + ":expiry",
+						RecordId = activeEffect.RecordId,
+						EffectId = activeEffect.EffectId ?? key,
+						CampaignDay = currentDay,
+						StateBefore = "active-unfunded",
+						StateAfter = "ended"
+					});
 					RemoveActivePolicyEffect(key);
 				}
 				else
@@ -4027,6 +4222,11 @@ public sealed partial class CustomPolicyBehavior
 			{
 				RefreshActivePolicyEffectRuntimeIndex(activeEffect);
 			}
+			string scheduledPolicyId = activeEffect.ModuleEffects != null && activeEffect.ModuleEffects.Count > 0
+				? activeEffect.ModuleEffects[0]?.PolicyId
+				: null;
+			string scheduledTransactionId = FirstNonEmpty(scheduledPolicyId, activeEffect.EffectId, key)
+				+ ":scheduled:" + currentDay.ToString(CultureInfo.InvariantCulture);
 			if (!PolicyEffectActivationCoordinator.TryExecuteScheduledOnce(
 				activeEffect.ModuleEffects,
 				activeEffect.ExecutionReceipts,
@@ -4060,6 +4260,18 @@ public sealed partial class CustomPolicyBehavior
 				PolicySystemLog.Failure("Effect", "scheduled-once-failed", scheduledError,
 					"effectId=" + (activeEffect.EffectId ?? key)
 					+ " day=" + currentDay.ToString(CultureInfo.InvariantCulture));
+				PolicySystemLog.Lifecycle("Effect", "scheduled-complete", "failed", new PolicyLogContext
+				{
+					TransactionId = scheduledTransactionId,
+					RecordId = activeEffect.RecordId,
+					EffectId = activeEffect.EffectId ?? key,
+					CampaignDay = currentDay,
+					ErrorKind = "ScheduledExecutionFailure",
+					MessageChars = scheduledError?.Length ?? 0,
+					MessageHash = PolicySystemLog.HashSensitive(scheduledError),
+					StateBefore = "active",
+					StateAfter = "retryable"
+				});
 				CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 				continue;
 			}
@@ -4092,9 +4304,41 @@ public sealed partial class CustomPolicyBehavior
 						+ " day=" + currentDay.ToString(CultureInfo.InvariantCulture)
 						+ " compensated=" + compensationSucceeded.ToString(CultureInfo.InvariantCulture)
 						+ " recoveryPersisted=" + recoveryPersisted.ToString(CultureInfo.InvariantCulture));
+					PolicySystemLog.Lifecycle("Effect", "scheduled-complete", "failed", new PolicyLogContext
+					{
+						TransactionId = scheduledTransactionId,
+						RecordId = activeEffect.RecordId,
+						EffectId = activeEffect.EffectId ?? key,
+						CampaignDay = currentDay,
+						ErrorKind = "ScheduledPersistenceFailure",
+						ExceptionType = persistException.GetType().FullName,
+						HResult = persistException.HResult,
+						MessageChars = persistException.Message?.Length ?? 0,
+						MessageHash = PolicySystemLog.HashSensitive(persistException.Message),
+						StateBefore = "executed",
+						StateAfter = compensationSucceeded ? "compensated" : "compensationPending",
+						Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+						{
+							["recoveryPersisted"] = recoveryPersisted ? 1 : 0
+						}
+					});
 					CompleteActivePolicyEffectWork(work, currentDay, requeueIfStillDue: false);
 					continue;
 				}
+			}
+			if (scheduledCompletedInstanceIds != null && scheduledCompletedInstanceIds.Count > 0)
+			{
+				PolicySystemLog.Lifecycle("Effect", "scheduled-complete", "success", new PolicyLogContext
+				{
+					TransactionId = scheduledTransactionId,
+					RecordId = activeEffect.RecordId,
+					EffectId = activeEffect.EffectId ?? key,
+					CampaignDay = currentDay,
+					Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+					{
+						["completedInstances"] = scheduledCompletedInstanceIds.Count
+					}
+				});
 			}
 			if (pending == null)
 			{
@@ -4102,6 +4346,15 @@ public sealed partial class CustomPolicyBehavior
 					? CreatePendingLocalPolicyApplication(activeEffect, currentDay)
 					: CreatePendingActivePolicyApplication(targetKingdom, activeEffect, currentDay);
 				FreezePendingNonSettlementDailyEntries(activeEffect, activeEffect.PendingApplication);
+				PolicySystemLog.Lifecycle("Effect", "daily-start", "started", new PolicyLogContext
+				{
+					TransactionId = (activeEffect.EffectId ?? key) + ":daily:" + currentDay.ToString(CultureInfo.InvariantCulture),
+					RecordId = activeEffect.RecordId,
+					EffectId = activeEffect.EffectId ?? key,
+					CampaignDay = currentDay,
+					StateBefore = "active",
+					StateAfter = "dailyPending"
+				});
 				PersistActivePolicyEffect(key, activeEffect, structureChanged: false);
 				return;
 			}
@@ -4233,6 +4486,15 @@ public sealed partial class CustomPolicyBehavior
 			UpdatePlayerPolicyMaintenanceRecord(activeEffect);
 			if (ended)
 			{
+				PolicySystemLog.Lifecycle("Effect", "expiry-complete", "success", new PolicyLogContext
+				{
+					TransactionId = (activeEffect.EffectId ?? key) + ":expiry",
+					RecordId = activeEffect.RecordId,
+					EffectId = activeEffect.EffectId ?? key,
+					CampaignDay = pending.Day,
+					StateBefore = "active",
+					StateAfter = "ended"
+				});
 				PolicySystemLog.Transaction(
 					(activeEffect.EffectId ?? key) + ":ended",
 					activeEffect.RecordId,
@@ -5024,13 +5286,26 @@ public sealed partial class CustomPolicyBehavior
 			.Count(instance => instance?.LifecycleState == PolicyEffectLifecycleState.Failed
 				&& PolicyEffectModuleCatalog.TryGet(instance.ModuleId, out IPolicyEffectModule module)
 				&& module.Descriptor.ExecutionKind == PolicyEffectExecutionKind.DailyMutation);
-		PolicySystemLog.Write("Effect", "daily-modules-complete", "effectId=" + (activeEffect.EffectId ?? string.Empty)
-			+ " day=" + campaignDay.ToString(CultureInfo.InvariantCulture)
-			+ " targetExecutions=" + plan.TargetExecutionCount.ToString(CultureInfo.InvariantCulture)
-			+ " failedInstances=" + failedInstances.ToString(CultureInfo.InvariantCulture));
 		string targetHash = BuildPolicyEffectTargetFingerprint(
 			activeEffect.ModuleEffects,
 			out int targetCount);
+		PolicySystemLog.Lifecycle("Effect", "daily-complete", failedInstances == 0 ? "success" : "failed", new PolicyLogContext
+		{
+			TransactionId = (activeEffect.EffectId ?? string.Empty) + ":daily:" + campaignDay.ToString(CultureInfo.InvariantCulture),
+			RecordId = activeEffect.RecordId,
+			EffectId = activeEffect.EffectId,
+			CampaignDay = campaignDay,
+			TargetHash = targetHash,
+			TargetCount = targetCount,
+			StateBefore = "active",
+			StateAfter = failedInstances == 0 ? "active" : "failed",
+			ErrorKind = failedInstances == 0 ? null : "DailyExecutionFailure",
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["targetExecutions"] = plan.TargetExecutionCount,
+				["failedInstances"] = failedInstances
+			}
+		});
 		PolicySystemLog.Transaction(
 			(activeEffect.EffectId ?? string.Empty) + ":daily:" + campaignDay.ToString(CultureInfo.InvariantCulture),
 			activeEffect.RecordId,
@@ -5102,6 +5377,16 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return;
 		}
+		PolicySystemLog.Lifecycle("Effect", "rollback-start", "started", new PolicyLogContext
+		{
+			TransactionId = (effectId ?? string.Empty) + ":rollback",
+			RecordId = activeEffect.RecordId,
+			EffectId = activeEffect.EffectId ?? effectId,
+			CampaignDay = campaignDay,
+			Attempt = 1,
+			StateBefore = "compensationPending",
+			StateAfter = "rollingBack"
+		});
 		bool rolledBack = PolicyEffectActivationCoordinator.TryRollbackSavedOneShots(
 			activeEffect.ModuleEffects,
 			activeEffect.ExecutionReceipts,
@@ -5122,8 +5407,16 @@ public sealed partial class CustomPolicyBehavior
 				return;
 			}
 			RemoveActivePolicyEffect(effectId);
-			PolicySystemLog.Write("Effect", "rollback-pending-complete", "effectId=" + (effectId ?? string.Empty)
-				+ " day=" + campaignDay.ToString(CultureInfo.InvariantCulture));
+			PolicySystemLog.Lifecycle("Effect", "rollback-complete", "success", new PolicyLogContext
+			{
+				TransactionId = (effectId ?? string.Empty) + ":rollback",
+				RecordId = activeEffect.RecordId,
+				EffectId = activeEffect.EffectId ?? effectId,
+				CampaignDay = campaignDay,
+				Attempt = 1,
+				StateBefore = "rollingBack",
+				StateAfter = "ended"
+			});
 			PolicySystemLog.Transaction(
 				(effectId ?? string.Empty) + ":rollback",
 				activeEffect.RecordId,
@@ -5137,9 +5430,19 @@ public sealed partial class CustomPolicyBehavior
 		}
 		activeEffect.LastAppliedDay = campaignDay;
 		PersistActivePolicyEffect(effectId, activeEffect, structureChanged: false);
-		PolicySystemLog.Write("Effect", "rollback-pending-retry-failed", "effectId=" + (effectId ?? string.Empty)
-			+ " day=" + campaignDay.ToString(CultureInfo.InvariantCulture)
-			+ " error=" + (rollbackError ?? string.Empty));
+		PolicySystemLog.Lifecycle("Effect", "rollback-failed", "failed", new PolicyLogContext
+		{
+			TransactionId = (effectId ?? string.Empty) + ":rollback",
+			RecordId = activeEffect.RecordId,
+			EffectId = activeEffect.EffectId ?? effectId,
+			CampaignDay = campaignDay,
+			Attempt = 1,
+			ErrorKind = "OneShotRollbackFailure",
+			MessageChars = rollbackError?.Length ?? 0,
+			MessageHash = PolicySystemLog.HashSensitive(rollbackError),
+			StateBefore = "rollingBack",
+			StateAfter = "compensationPending"
+		});
 		PolicySystemLog.Transaction(
 			(effectId ?? string.Empty) + ":rollback",
 			activeEffect.RecordId,
@@ -5231,10 +5534,17 @@ public sealed partial class CustomPolicyBehavior
 			out failureReason);
 		if (stateChanged || !success)
 		{
-			PolicySystemLog.Write("Effect", "lifecycle-dispatched", "effectId=" + (activeEffect.EffectId ?? string.Empty)
-				+ " event=" + eventKind
-				+ " success=" + success.ToString(CultureInfo.InvariantCulture)
-				+ (string.IsNullOrWhiteSpace(failureReason) ? string.Empty : " error=" + failureReason));
+			PolicySystemLog.Lifecycle("Effect", "lifecycle-dispatched", success ? "success" : "failed", new PolicyLogContext
+			{
+				TransactionId = eventKey,
+				RecordId = activeEffect.RecordId,
+				EffectId = activeEffect.EffectId,
+				CampaignDay = GetCurrentCampaignDay(),
+				StateAfter = eventKind.ToString(),
+				ErrorKind = success ? null : "LifecycleDispatch",
+				MessageChars = failureReason?.Length ?? 0,
+				MessageHash = PolicySystemLog.HashSensitive(failureReason)
+			});
 		}
 		return success;
 	}
@@ -5416,8 +5726,10 @@ public sealed partial class CustomPolicyBehavior
 			PolicyName = request?.PolicyName ?? string.Empty,
 			DateText = request?.DateText ?? string.Empty,
 			SubmittedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
-			TargetKingdomId = source?.KingdomId ?? string.Empty,
-			TargetKingdomName = source?.KingdomName ?? string.Empty,
+			TargetKingdomId = FirstNonEmpty(request?.PlayerKingdomId, source?.KingdomId),
+			TargetKingdomName = IsLocalPolicyRequest(request)
+				? source?.KingdomName ?? string.Empty
+				: FirstNonEmpty(request?.PlayerKingdomName, source?.KingdomName),
 			TargetHandle = source?.TargetHandle ?? string.Empty,
 			TargetLabel = FirstNonEmpty(source?.TargetLabel, source?.KingdomName),
 			LocalTargetScope = NormalizeLocalPolicyTargetScope(source?.LocalTargetScope),
@@ -5575,6 +5887,10 @@ public sealed partial class CustomPolicyBehavior
 			Version = 6,
 			ScopeKind = PolicyScopeLocal,
 			RecordId = recordId,
+			ReReviewRootRecordId = request?.ReReviewRootRecordId ?? string.Empty,
+			ReReviewSourceRecordId = request?.ReReviewSourceRecordId ?? string.Empty,
+			SupersedesRecordId = request?.SupersedesRecordId ?? string.Empty,
+			ReReviewReplacementCommitted = false,
 			ActiveEffectId = sourceEffect?.EffectId ?? "",
 			SubmittedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
 			CreatedUtcTicks = DateTime.UtcNow.Ticks,
@@ -5633,6 +5949,10 @@ public sealed partial class CustomPolicyBehavior
 			Version = 6,
 			ScopeKind = PolicyScopeVassal,
 			RecordId = recordId,
+			ReReviewRootRecordId = request?.ReReviewRootRecordId ?? string.Empty,
+			ReReviewSourceRecordId = request?.ReReviewSourceRecordId ?? string.Empty,
+			SupersedesRecordId = request?.SupersedesRecordId ?? string.Empty,
+			ReReviewReplacementCommitted = false,
 			ActiveEffectId = sourceEffect?.EffectId ?? "",
 			SubmittedDay = Math.Max(0, request?.SubmittedDay ?? GetCurrentCampaignDay()),
 			CreatedUtcTicks = DateTime.UtcNow.Ticks,
@@ -6222,6 +6542,20 @@ public sealed partial class CustomPolicyBehavior
 			{
 				return false;
 			}
+			PlayerPolicyTargetAuthorization authorization = EnsurePlayerPolicyTargetAuthorization(request);
+			if (!PolicyEffectTargetJurisdiction.TryApply(
+				canonicalTargetSet,
+				module,
+				request?.PlayerKingdomId,
+				request?.IssuerKingdomId,
+				authorization.ExplicitCrossKingdomIds,
+				preserveLegacyCrossKingdoms: false,
+				failOnUnauthorized: true,
+				out canonicalTargetSet,
+				out targetError))
+			{
+				return false;
+			}
 			resolved = new PolicyEffectResolvedTarget
 			{
 				Handle = targetHandle,
@@ -6400,11 +6734,15 @@ public sealed partial class CustomPolicyBehavior
 		}
 		string policyId = (request?.RequestId ?? string.Empty).Trim();
 		float startDay = Math.Max(0, request?.SubmittedDay ?? 0);
+		PlayerPolicyTargetAuthorization targetAuthorization = EnsurePlayerPolicyTargetAuthorization(request);
 		PolicyEffectCompilerRequest compilerRequest = new PolicyEffectCompilerRequest
 		{
 			PolicyId = policyId,
 			ActorHeroId = Hero.MainHero?.StringId ?? string.Empty,
+			ActorClanId = Clan.PlayerClan?.StringId ?? string.Empty,
 			IssuerKingdomId = request?.IssuerKingdomId ?? string.Empty,
+			TargetKingdomId = request?.PlayerKingdomId ?? string.Empty,
+			AuthorizedCrossKingdomIds = targetAuthorization.ExplicitCrossKingdomIds.ToArray(),
 			StartDay = startDay,
 			EndDay = isPermanentPlayerEffect ? 0f : startDay + durationDays,
 			IsPermanentEffect = isPermanentPlayerEffect,
@@ -6458,6 +6796,24 @@ public sealed partial class CustomPolicyBehavior
 					item.Module,
 					out string shellTargetError);
 				if (!string.IsNullOrWhiteSpace(shellTargetError))
+				{
+					error = shellTargetError;
+					return false;
+				}
+				shellTargetSet = PolicyEffectCompiler.ApplyActorClanTargetExclusion(
+					item.Module,
+					compilerRequest.ActorClanId,
+					shellTargetSet);
+				if (!PolicyEffectTargetJurisdiction.TryApply(
+					shellTargetSet,
+					item.Module,
+					request?.PlayerKingdomId,
+					request?.IssuerKingdomId,
+					targetAuthorization.ExplicitCrossKingdomIds,
+					preserveLegacyCrossKingdoms: false,
+					failOnUnauthorized: true,
+					out shellTargetSet,
+					out shellTargetError))
 				{
 					error = shellTargetError;
 					return false;
@@ -6818,10 +7174,28 @@ public sealed partial class CustomPolicyBehavior
 					resolved.AddRange(ResolvePolicyEffectSettlementsById(planPrimaryIds)
 						.Select(ResolvePrimaryPolicyFief)
 						.Where(primary => primary != null));
-					PolicySystemLog.Write("Player", "target-plan-resolved",
-						"signature=" + (target.TargetPlan?.NormalizedSignature ?? string.Empty)
+					string resolvedMessage = "signature=" + (target.TargetPlan?.NormalizedSignature ?? string.Empty)
 						+ " primaryCount=" + planPrimaryIds.Count.ToString(CultureInfo.InvariantCulture)
-						+ " temporarilyEmpty=" + (planResolution.IsTemporarilyEmpty ? "true" : "false"));
+						+ " temporarilyEmpty=" + (planResolution.IsTemporarilyEmpty ? "true" : "false");
+					PolicyEffectCanonicalTargetSet planTargetSet = new PolicyEffectCanonicalTargetSet
+					{
+						ParentSettlementIds = planPrimaryIds.ToList(),
+						ClanIds = (planResolution.ClanIds ?? Array.Empty<string>()).ToList(),
+						KingdomIds = (planResolution.KingdomIds ?? Array.Empty<string>()).ToList(),
+						TargetPlans = target.TargetPlan == null
+							? new List<PolicyTargetPlanSaveData>()
+							: new List<PolicyTargetPlanSaveData> { target.TargetPlan }
+					};
+					PolicyLogContext resolvedContext = BuildPolicyLogContext(request);
+					resolvedContext.TargetKind = PolicyTargetKindPlan;
+					resolvedContext.TargetKeys = target.Key;
+					resolvedContext.TargetCount = planPrimaryIds.Count;
+					resolvedContext.PlanSignature = target.TargetPlan?.NormalizedSignature;
+					resolvedContext.TargetSummary = "temporarilyEmpty=" + (planResolution.IsTemporarilyEmpty ? "true" : "false")
+						+ "; " + BuildPolicyEffectTargetSetLogSummary(planTargetSet);
+					resolvedContext.MessageChars = resolvedMessage.Length;
+					resolvedContext.MessageHash = PolicySystemLog.HashSensitive(resolvedMessage);
+					PolicySystemLog.Lifecycle("Player", "target-plan-resolved", "event", resolvedContext);
 				}
 				else
 				{
@@ -6881,6 +7255,13 @@ public sealed partial class CustomPolicyBehavior
 		if (legacyProjection || targetKinds.Contains(PolicyEffectTargetKind.Settlement))
 		{
 			AddUniquePolicyEffectId(targetSet.SettlementIds, primaryId);
+		}
+		if (module?.Descriptor?.TargetProjection == PolicyEffectTargetProjectionKind.PrimaryFiefAndBoundSettlements)
+		{
+			foreach (Settlement village in GetBoundVillageSettlements(primary))
+			{
+				AddUniquePolicyEffectId(targetSet.SettlementIds, (village?.StringId ?? string.Empty).Trim());
+			}
 		}
 		if (legacyProjection || targetKinds.Contains(PolicyEffectTargetKind.Town))
 		{
@@ -7093,6 +7474,8 @@ public sealed partial class CustomPolicyBehavior
 		return new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = Math.Max(1, targetSet?.StructureVersion ?? 1),
+			JurisdictionKind = targetSet?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
+			AuthorizedCrossKingdomIds = NormalizeIdList(targetSet?.AuthorizedCrossKingdomIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
 			SelectorHandles = NormalizeIdList(targetSet?.SelectorHandles).OrderBy(value => value, StringComparer.Ordinal).ToList(),
 			SelectorIds = NormalizeIdList(targetSet?.SelectorIds).OrderBy(value => value, StringComparer.Ordinal).ToList(),
 			TargetPlans = PolicyTargetPlanResolver.NormalizePlans(targetSet?.TargetPlans),
@@ -7124,6 +7507,12 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return false;
 		}
+		if (module.Descriptor.ExcludeActorClanTargets
+			&& module.Descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan)
+			&& (targetSet.ClanIds?.Count ?? 0) == 0)
+		{
+			return false;
+		}
 		foreach (PolicyEffectTargetKind targetKind in module.Descriptor.TargetKinds)
 		{
 			switch (targetKind)
@@ -7144,6 +7533,8 @@ public sealed partial class CustomPolicyBehavior
 	{
 		PolicyEffectCanonicalTargetSet normalized = NormalizePolicyEffectCanonicalTargetSet(targetSet);
 		return "X=" + string.Join(",", normalized.SelectorIds)
+			+ "|J=" + normalized.JurisdictionKind
+			+ "|AK=" + string.Join(",", normalized.AuthorizedCrossKingdomIds)
 			+ "|TP=" + string.Join(",", normalized.TargetPlans.Select(plan => plan.NormalizedSignature))
 			+ "|S=" + string.Join(",", normalized.SettlementIds)
 			+ "|T=" + string.Join(",", normalized.TownIds)
@@ -7383,6 +7774,11 @@ public sealed partial class CustomPolicyBehavior
 		return NormalizePolicyEffectCanonicalTargetSet(new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = Math.Max(left?.StructureVersion ?? 1, right?.StructureVersion ?? 1),
+			JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
+				left?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
+				right?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled),
+			AuthorizedCrossKingdomIds = (left?.AuthorizedCrossKingdomIds ?? new List<string>())
+				.Concat(right?.AuthorizedCrossKingdomIds ?? new List<string>()).ToList(),
 			SelectorHandles = (left?.SelectorHandles ?? new List<string>())
 				.Concat(right?.SelectorHandles ?? new List<string>()).ToList(),
 			SelectorIds = (left?.SelectorIds ?? new List<string>())

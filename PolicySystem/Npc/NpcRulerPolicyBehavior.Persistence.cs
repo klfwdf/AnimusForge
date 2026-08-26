@@ -165,16 +165,57 @@ public sealed partial class NpcRulerPolicyBehavior
 			}
 			string snapshot = BuildUnifiedPolicyWeeklySnapshot(policy, attribution, targetName, effectSummary);
 			string materialLabel = attribution.IsPlayerVassalPolicy ? "玩家附庸政策" : "统治者政策";
+			int activeExecutableEffects = CountActiveExecutablePolicyEffectInstances(relevantEffects);
 			MyBehavior.RecordPolicySystemWeeklyMaterialForExternal(attribution.MaterialKind, materialLabel + " - " + targetName + " / " + policyName, snapshot,
 				"unified_policy:" + policy.PolicyId + ":weekly:" + NormalizeKeyPart(targetId), targetId, recipients.Count > 1 || !isIssuer,
 				policy.RulerHeroId ?? "", attribution.IssuerKingdomId ?? "", Math.Max(0, policy.Day), policy.GameDate ?? "");
-			PolicySystemLog.Write("Weekly", "material-recorded", "policyId=" + policy.PolicyId
+			string logMessage = "policyId=" + policy.PolicyId
 				+ " issuer=" + issuerId
 				+ " target=" + targetId
 				+ " route=" + (isIssuer ? "issuer" : "affected")
-				+ " effects=" + relevantEffects.Count.ToString(CultureInfo.InvariantCulture)
-				+ " chars=" + snapshot.Length.ToString(CultureInfo.InvariantCulture));
+				+ " effects=" + activeExecutableEffects.ToString(CultureInfo.InvariantCulture)
+				+ " effectShells=" + relevantEffects.Count.ToString(CultureInfo.InvariantCulture)
+				+ " chars=" + snapshot.Length.ToString(CultureInfo.InvariantCulture);
+			PolicySystemLog.Lifecycle("Weekly", "material-recorded", "event", new PolicyLogContext
+			{
+				PolicyId = policy.PolicyId,
+				IssuerKingdomId = issuerId,
+				IssuerKingdomName = attribution.IssuerKingdomName,
+				TargetKingdomId = targetId,
+				TargetKingdomName = targetName,
+				TargetName = targetName,
+				Route = isIssuer ? "issuer" : "affected",
+				MessageChars = logMessage.Length,
+				MessageHash = PolicySystemLog.HashSensitive(logMessage),
+				Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+				{
+					["effects"] = activeExecutableEffects,
+					["effectShells"] = relevantEffects.Count,
+					["chars"] = snapshot.Length
+				}
+			});
 		}
+	}
+
+	private static int CountActiveExecutablePolicyEffectInstances(IEnumerable<NpcRulerPolicyEffectDto> effects)
+	{
+		float currentDay = Math.Max(0, GetCurrentCampaignDay());
+		int count = 0;
+		foreach (NpcRulerPolicyEffectDto effect in effects ?? Enumerable.Empty<NpcRulerPolicyEffectDto>())
+		{
+			foreach (PolicyEffectInstanceSaveData instance in effect?.ModuleEffects ?? Enumerable.Empty<PolicyEffectInstanceSaveData>())
+			{
+				if (instance != null
+					&& instance.LifecycleState == PolicyEffectLifecycleState.Active
+					&& (instance.EndDay <= 0f || instance.EndDay > currentDay)
+					&& PolicyEffectModuleCatalog.TryGet(instance.ModuleId, out IPolicyEffectModule module)
+					&& PolicyEffectModuleCatalog.IsAllowedForScope(module, PolicyEffectScopes.Kingdom))
+				{
+					count++;
+				}
+			}
+		}
+		return count;
 	}
 
 	private static UnifiedPolicyWeeklyAttribution ResolveUnifiedPolicyWeeklyAttribution(NpcRulerPolicyRecord policy)
@@ -719,8 +760,25 @@ public sealed partial class NpcRulerPolicyBehavior
 			return;
 		}
 		string message = summary.BuildMessage();
-		if (summary.RecordsLoaded != summary.RecordsVisited || summary.InstancesRejected > 0
-			|| summary.DuplicateInstancesRejected > 0 || summary.ReceiptsRejected > 0)
+		bool hasRejectedItems = summary.RecordsLoaded != summary.RecordsVisited || summary.InstancesRejected > 0
+			|| summary.DuplicateInstancesRejected > 0 || summary.ReceiptsRejected > 0;
+		PolicySystemLog.Lifecycle("Npc", "load-normalized", hasRejectedItems ? "warnings" : "success", new PolicyLogContext
+		{
+			Counts = new Dictionary<string, int>(StringComparer.Ordinal)
+			{
+				["recordsVisited"] = summary.RecordsVisited,
+				["recordsLoaded"] = summary.RecordsLoaded,
+				["instancesVisited"] = summary.InstancesVisited,
+				["knownInstances"] = summary.KnownInstancesNormalized,
+				["unknownInstances"] = summary.UnknownInstancesPreserved,
+				["legacyInstances"] = summary.LegacyInstancesImported,
+				["instancesRejected"] = summary.InstancesRejected,
+				["duplicateInstancesRejected"] = summary.DuplicateInstancesRejected,
+				["receiptsRejected"] = summary.ReceiptsRejected,
+				["warnings"] = summary.Warnings.Count
+			}
+		});
+		if (hasRejectedItems)
 		{
 			PolicySystemLog.Failure("Npc", "save-normalization-rejected", message, string.Join("\n", summary.Warnings));
 			return;
@@ -746,6 +804,23 @@ public sealed partial class NpcRulerPolicyBehavior
 		if (record == null)
 		{
 			return null;
+		}
+		if (rawObject != null && PolicyEffectSaveCodec.IsLegacyStoppedNpcPolicyShape(rawObject))
+		{
+			record.Version = 6;
+			record.AgendaStatus = AgendaStatusAbolished;
+			record.Effects ??= new List<NpcRulerPolicyEffectDto>();
+			foreach (NpcRulerPolicyEffectDto effect in record.Effects.Where(value => value != null))
+			{
+				effect.ModuleEffects = new List<PolicyEffectInstanceSaveData>();
+				effect.EffectId = string.Empty;
+				effect.IsEnded = true;
+				effect.RemainingDays = 0;
+			}
+			record.ExecutionReceipts = new List<PolicyEffectExecutionReceipt>();
+			summary?.AddWarning("policy=" + (record.PolicyId ?? string.Empty)
+				+ " legacy fixed-field effects stopped; published text retained for re-review");
+			return record;
 		}
 		int sourceVersion = record.Version;
 		if (sourceVersion < 6
@@ -1176,6 +1251,11 @@ public sealed partial class NpcRulerPolicyBehavior
 		return new PolicyEffectCanonicalTargetSet
 		{
 			StructureVersion = Math.Max(1, Math.Max(left?.StructureVersion ?? 1, right?.StructureVersion ?? 1)),
+			JurisdictionKind = PolicyEffectTargetJurisdiction.MergeKind(
+				left?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled,
+				right?.JurisdictionKind ?? PolicyEffectTargetJurisdictionKind.LegacyCompiled),
+			AuthorizedCrossKingdomIds = NormalizeNpcPolicyIds((left?.AuthorizedCrossKingdomIds ?? new List<string>())
+				.Concat(right?.AuthorizedCrossKingdomIds ?? new List<string>())),
 			SelectorHandles = NormalizeNpcPolicyIds((left?.SelectorHandles ?? new List<string>())
 				.Concat(right?.SelectorHandles ?? new List<string>())),
 			SelectorIds = NormalizeNpcPolicyIds((left?.SelectorIds ?? new List<string>())
@@ -1861,6 +1941,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		public string KingdomId;
 		public string KingdomName;
 		public bool IsIssuer;
+		public bool IsExplicitCrossKingdomTarget;
 		public bool IsAtWar;
 		public string PublisherClanId;
 		public string AllClansHandle;

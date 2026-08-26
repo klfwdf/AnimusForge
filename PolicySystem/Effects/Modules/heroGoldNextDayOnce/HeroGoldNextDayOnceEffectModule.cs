@@ -36,7 +36,8 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		supportsIdempotency: true,
 		promptVisible: false,
 		displayGroup: "heroGold",
-		targetProjection: PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader);
+		targetProjection: PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader,
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 

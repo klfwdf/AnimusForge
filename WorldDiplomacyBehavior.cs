@@ -358,7 +358,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return AnimusForgeWorldEventInboxPopup.Show(behavior.BuildRoyalAnnouncementArchiveData(), onClose);
+			Action returnToArchive = () => ShowRoyalAnnouncementArchive(onClose);
+			return AnimusForgeWorldEventInboxPopup.Show(
+				behavior.BuildRoyalAnnouncementArchiveData(),
+				recordId => CustomPolicyBehavior.OpenKingdomPolicyReReviewFromWorldArchive(recordId, returnToArchive),
+				onClose);
 		}
 		catch (Exception ex)
 		{
@@ -10976,6 +10980,11 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			string kingdomId = FirstNonEmpty(entry.KingdomId, "policy_unknown");
 			WorldEventCountryData group = GetOrCreateArchiveGroup(groups, kingdomId, FirstNonEmpty(entry.KingdomName, "未知国家"));
 			string date = FirstNonEmpty(entry.GameDate, entry.Day > 0 ? "第" + entry.Day.ToString(CultureInfo.InvariantCulture) + "天" : "未知日期");
+			bool showReReview = TryResolveWorldEventPolicyReReview(
+				entry,
+				out string policyRecordId,
+				out bool canReReview,
+				out string reReviewDisabledReason);
 			group.Records.Add(new WorldEventRecordData
 			{
 				EventId = entry.EventId ?? "",
@@ -10991,9 +11000,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 				ImpactText = entry.ImpactText ?? "",
 				IndexMetaText = date + "  ·  " + FirstNonEmpty(entry.KindLabel, "自定义政策"),
 				UnreadMarkerText = entry.IsRead ? "" : "新",
+				PolicyRecordId = policyRecordId,
+				ReReviewText = "重新评议政策",
+				ReReviewDisabledReasonText = reReviewDisabledReason,
 				IsUnread = !entry.IsRead,
 				HasPolicyName = false,
-				HasImpact = !string.IsNullOrWhiteSpace(entry.ImpactText)
+				HasImpact = !string.IsNullOrWhiteSpace(entry.ImpactText),
+				ShowReReview = showReReview,
+				CanReReview = canReReview
 			});
 		}
 		foreach (WorldDiplomacyDocument document in _storage.Documents
@@ -11091,6 +11105,54 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		data.SelectedCountryIndex = Math.Max(0, data.Countries.FindIndex(x => x.Records.Count > 0));
 		return data;
+	}
+
+	private static bool TryResolveWorldEventPolicyReReview(
+		AnimusForgeWorldEventInboxEntry entry,
+		out string recordId,
+		out bool canReReview,
+		out string disabledReason)
+	{
+		recordId = string.Empty;
+		canReReview = false;
+		disabledReason = string.Empty;
+		if (entry == null)
+		{
+			return false;
+		}
+
+		string candidateId = (entry.PolicyRecordId ?? string.Empty).Trim();
+		if (entry.Version >= 2)
+		{
+			if (!entry.IsPlayerPolicy || candidateId.Length == 0)
+			{
+				return false;
+			}
+		}
+		else if (candidateId.Length == 0)
+		{
+			const string legacyPrefix = "npc_ruler_policy:";
+			string eventId = (entry.EventId ?? string.Empty).Trim();
+			if (!eventId.StartsWith(legacyPrefix, StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+			candidateId = eventId.Substring(legacyPrefix.Length).Trim();
+		}
+
+		if (candidateId.Length == 0
+			|| !CustomPolicyBehavior.TryGetKingdomPolicyReReviewAvailabilityForExternal(
+				candidateId,
+				out canReReview,
+				out disabledReason))
+		{
+			canReReview = false;
+			disabledReason = string.Empty;
+			return false;
+		}
+
+		recordId = candidateId;
+		return true;
 	}
 
 	private static WorldEventCountryData GetOrCreateArchiveGroup(Dictionary<string, WorldEventCountryData> groups, string id, string name)

@@ -44,7 +44,8 @@ internal sealed class ArmyFormationTendencyPctEffectModule
 		playerDisplayName: "军团组建倾向",
 		editableUnderstandingPrompt: "军团组建倾向表示政策让目标家族领主在已经满足原版组军资格时，更愿意或更不愿意选择组建军团，而不是选择其他 AI 行为。它只缩放原版已经产生且标记为 WillGatherArmy 的候选分数，不给予影响力，不制造可召集成员，不绕过和平、食物、队伍规模、非雇佣兵、未加入现有军团等原版条件，也不解散已经存在的军团。泛称增强军力、提高影响力、扩充部队或改善军团战力，但没有改变领主主动组军决策倾向时，不属于这一效果。",
 		editableEvaluationPrompt: "按相对原版合格组军候选分数的百分比变化判断，不按绝对概率判断。轻微鼓励或限制通常为 ±10% 到 ±25%；明确鼓励、职责要求或一般制度性推动建议约 +50%；强力军团动员约 +75% 到 +100%；接近强制但仍保留原版资格与 AI 竞争时可到 +150%，+200% 已是总强度上限。抑制性政策按同一尺度给负值，-100% 会让目标家族的新组军候选归零。多个生效政策先相加，运行时总倍率限制在 0 到 3 倍。+100% 很强，不应当作普通默认值。"
-	);
+	,
+		allowCrossKingdomTargets: true);
 
 	public override PolicyEffectModuleDescriptor Descriptor => ModuleDescriptor;
 
