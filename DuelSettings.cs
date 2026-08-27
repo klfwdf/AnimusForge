@@ -704,6 +704,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 		public string EventAndRebellionSelected { get; set; } = "";
 
+		public List<string> TownAmbientAiOptions { get; set; } = new List<string>();
+
+		public string TownAmbientAiSelected { get; set; } = "";
+
 		public string SavedAtUtc { get; set; } = "";
 	}
 
@@ -725,6 +729,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private List<string> _eventAndRebellionApiModelOptions = new List<string>();
 
+	private List<string> _townAmbientAiModelOptions = new List<string>();
+
 	private Dropdown<string> _mainApiModelDropdown = Dropdown<string>.Empty;
 
 	private Dropdown<string> _auxiliaryApiModelDropdown = Dropdown<string>.Empty;
@@ -732,6 +738,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private Dropdown<string> _actionPostprocessApiModelDropdown = Dropdown<string>.Empty;
 
 	private Dropdown<string> _eventAndRebellionApiModelDropdown = Dropdown<string>.Empty;
+
+	private Dropdown<string> _townAmbientAiModelDropdown = Dropdown<string>.Empty;
 
 	private Dropdown<string> _shoutInputUiBackgroundDropdown = BuildShoutInputUiBackgroundDropdown(ShoutInputUiBackgroundBlack);
 
@@ -5090,6 +5098,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			MergeCachedDropdownState(_auxiliaryApiModelOptions, _auxiliaryApiModelDropdown, modelDropdownCacheSnapshot.AuxiliaryOptions, modelDropdownCacheSnapshot.AuxiliarySelected, AuxiliaryModelName, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out _auxiliaryApiModelDropdown);
 			MergeCachedDropdownState(_actionPostprocessApiModelOptions, _actionPostprocessApiModelDropdown, modelDropdownCacheSnapshot.ActionPostprocessOptions, modelDropdownCacheSnapshot.ActionPostprocessSelected, ActionPostprocessModelName, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out _actionPostprocessApiModelDropdown);
 			MergeCachedDropdownState(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, modelDropdownCacheSnapshot.EventAndRebellionOptions, modelDropdownCacheSnapshot.EventAndRebellionSelected, EventAndRebellionModelName, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out _eventAndRebellionApiModelDropdown);
+			MergeCachedDropdownState(_townAmbientAiModelOptions, _townAmbientAiModelDropdown, modelDropdownCacheSnapshot.TownAmbientAiOptions, modelDropdownCacheSnapshot.TownAmbientAiSelected, TownAmbientAiModelName, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out _townAmbientAiModelDropdown);
 			TrySyncManualModelWithSelectedOption();
 			_modelDropdownCacheHydrated = true;
 			_modelDropdownCacheLastWriteUtcTicks = num;
@@ -5126,6 +5135,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				ActionPostprocessSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_actionPostprocessApiModelDropdown), ActionPostprocessModelName, "", preserveBlankSelection: false),
 				EventAndRebellionOptions = CopyNormalizedModelOptions(_eventAndRebellionApiModelOptions),
 				EventAndRebellionSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_eventAndRebellionApiModelDropdown), EventAndRebellionModelName, "", preserveBlankSelection: false),
+				TownAmbientAiOptions = CopyNormalizedModelOptions(_townAmbientAiModelOptions),
+				TownAmbientAiSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_townAmbientAiModelDropdown), TownAmbientAiModelName, "", preserveBlankSelection: false),
 				SavedAtUtc = DateTime.UtcNow.ToString("o")
 			};
 			string contents = JsonConvert.SerializeObject(modelDropdownCacheSnapshot, Formatting.Indented);
@@ -6189,6 +6200,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					text6 = GetEventAndRebellionSelectedModelOption();
 				}
+				else if (string.Equals(text, "环境 AI", StringComparison.Ordinal))
+				{
+					text6 = GetTownAmbientAiSelectedModelOption();
+				}
 				if (IsManualModelOption(text6))
 				{
 					string text7 = "";
@@ -6439,6 +6454,41 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		FetchEventAndRebellionModelList = delegate
 		{
 			StartFetchModelList("事件/叛乱API", EventAndRebellionApiUrl, EventAndRebellionApiKey, ApplyEventAndRebellionModelList);
+		};
+		FetchTownAmbientAiModelList = delegate
+		{
+			StartFetchModelList("环境 AI", TownAmbientAiApiUrl, TownAmbientAiApiKey, ApplyTownAmbientAiModelList);
+		};
+		TestTownAmbientAiConnection = delegate
+		{
+			LlmRetryPrompt.CaptureMainThreadContext();
+			Task.Run(async delegate
+			{
+				try
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[环境 AI] 正在测试你填写的独立接口；测试请求会消耗少量 Token。", Color.FromUint(4294967040u)));
+					TownAmbientAiResult result = await TownAmbientAiClient.TestConnectionAsync().ConfigureAwait(false);
+					if (result != null && result.Success)
+					{
+						InformationManager.DisplayMessage(new InformationMessage(string.Format("[环境 AI] 连接成功。本次约使用输入 {0} + 输出 {1} Token。", result.InputTokens, result.OutputTokens), Color.FromUint(4278255360u)));
+						Logger.Log("DuelSettings", "环境 AI 独立接口测试成功 inputTokens=" + result.InputTokens + " outputTokens=" + result.OutputTokens);
+					}
+					else
+					{
+						string failure = result?.Error ?? "未知错误";
+						if (result != null && (result.InputTokens > 0 || result.OutputTokens > 0))
+						{
+							failure += string.Format("\n\n本次请求已计入约 {0} 输入 + {1} 输出 Token。", result.InputTokens, result.OutputTokens);
+						}
+						ShowLlmFailurePopup("环境 AI 接口测试失败", failure, result?.ModelReply, result?.RawResponse);
+					}
+				}
+				catch (Exception ex)
+				{
+					ShowLlmFailurePopup("环境 AI 接口测试异常", ex.Message);
+					Logger.Log("DuelSettings", "环境 AI 独立接口测试异常: " + ex.Message);
+				}
+			});
 		};
 		TestConnection = delegate
 		{
