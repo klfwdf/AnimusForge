@@ -1,146 +1,142 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
-/// <summary>
-/// Pure post-mission completion plan for one SETS capture operation.
-/// The runtime applies each true step through the existing effect adapters,
-/// consulting the ledger so every step runs at most once.
-/// </summary>
-public sealed class SetsUrbanCaptureCompletionPlan
+/// <summary>The single next side effect a completion pump may execute (handoff 8.4).</summary>
+public enum SetsUrbanCaptureNextAction
 {
-    public static readonly SetsUrbanCaptureCompletionPlan DoNothing = new SetsUrbanCaptureCompletionPlan(
-        transferOwnership: false,
-        openNativeMenu: false,
-        openOwnedIncidentMenu: false,
-        grantVillageReward: false,
-        rejectionReason: "no_pending_capture");
+    None = 0,
+    CommitOwnership = 1,
+    PrepareNativeAftermathContext = 2,
+    OpenNativeMenu = 3,
+    Complete = 4,
+    Suspend = 5
+}
 
-    private SetsUrbanCaptureCompletionPlan(
-        bool transferOwnership,
-        bool openNativeMenu,
-        bool openOwnedIncidentMenu,
-        bool grantVillageReward,
-        string rejectionReason)
+/// <summary>Structured outcome of one runtime side-effect attempt.</summary>
+public enum SetsUrbanCaptureActionOutcome
+{
+    /// <summary>The side effect was applied by this call.</summary>
+    Succeeded = 0,
+
+    /// <summary>The world already shows the desired result; commit and advance without re-applying.</summary>
+    AlreadyApplied = 1,
+
+    /// <summary>Transient failure; the pump may retry within the bounded retry budget.</summary>
+    Retryable = 2,
+
+    /// <summary>Permanent failure; the session must suspend, never silently continue.</summary>
+    Failed = 3
+}
+
+/// <summary>
+/// Pure single-step completion planner: exactly one action per pump cycle,
+/// strictly ordered ownership → native context → menu → complete. Derived from
+/// context + state + ledger; fails closed with a named reason.
+/// </summary>
+public static class SetsUrbanCaptureCompletionPlanner
+{
+    public const int MaxRetriesPerAction = 5;
+
+    public static SetsUrbanCaptureNextAction ResolveNextAction(
+        SetsUrbanCaptureContext context,
+        SetsUrbanCaptureState state,
+        SetsUrbanCaptureLedger ledger,
+        bool nativeContextPrepared,
+        out string rejectionReason)
     {
-        TransferOwnership = transferOwnership;
-        OpenNativeMenu = openNativeMenu;
-        OpenOwnedIncidentMenu = openOwnedIncidentMenu;
-        GrantVillageReward = grantVillageReward;
-        RejectionReason = rejectionReason ?? "";
-    }
+        rejectionReason = "";
 
-    /// <summary>Transfer settlement ownership to the player clan (hostile town/castle only).</summary>
-    public bool TransferOwnership { get; }
+        if (context == null || ledger == null || !context.IsValid)
+        {
+            rejectionReason = "invalid_context";
+            return SetsUrbanCaptureNextAction.None;
+        }
 
-    /// <summary>Open the native settlement-taken menu (menu_settlement_taken).</summary>
-    public bool OpenNativeMenu { get; }
+        if (state == SetsUrbanCaptureState.Suspended)
+        {
+            rejectionReason = "suspended";
+            return SetsUrbanCaptureNextAction.None;
+        }
 
-    /// <summary>Open the SETS owned/attached incident menu; ownership untouched.</summary>
-    public bool OpenOwnedIncidentMenu { get; }
+        if (state == SetsUrbanCaptureState.Completed || ledger.CompletionCommitted)
+        {
+            rejectionReason = "already_completed";
+            return SetsUrbanCaptureNextAction.None;
+        }
 
-    /// <summary>Grant the village militia-victory loot reward.</summary>
-    public bool GrantVillageReward { get; }
+        if (!SetsUrbanCapturePolicy.IsRestoredCombinationValid(state, ledger))
+        {
+            // Impossible combination: freeze rather than guess (S-06).
+            return SetsUrbanCaptureNextAction.Suspend;
+        }
 
-    /// <summary>Why the plan is empty, for diagnostics. Empty string when the plan has work.</summary>
-    public string RejectionReason { get; }
+        switch (state)
+        {
+            case SetsUrbanCaptureState.AwaitingMap:
+                if (!ledger.VictoryCommitted)
+                {
+                    rejectionReason = "victory_not_committed";
+                    return SetsUrbanCaptureNextAction.None;
+                }
 
-    public bool HasWork
-    {
-        get { return TransferOwnership || OpenNativeMenu || OpenOwnedIncidentMenu || GrantVillageReward; }
+                return SetsUrbanCaptureNextAction.CommitOwnership;
+
+            case SetsUrbanCaptureState.OwnershipCommitted:
+                if (!nativeContextPrepared)
+                {
+                    return SetsUrbanCaptureNextAction.PrepareNativeAftermathContext;
+                }
+
+                return SetsUrbanCaptureNextAction.OpenNativeMenu;
+
+            case SetsUrbanCaptureState.NativeMenuOpened:
+                return SetsUrbanCaptureNextAction.Complete;
+
+            default:
+                rejectionReason = "not_awaiting_completion";
+                return SetsUrbanCaptureNextAction.None;
+        }
     }
 
     /// <summary>
-    /// Derive the completion plan from context, state, and ledger.
-    /// Fail closed: an invalid or mismatched operation produces DoNothing rather
-    /// than guessing, and an owned/attached incident can never produce a transfer.
+    /// Bounded retry decision (S-09): a retryable failure past the cap suspends.
     /// </summary>
-    public static SetsUrbanCaptureCompletionPlan Resolve(
-        SetsUrbanCaptureContext context,
-        SetsUrbanCaptureState state,
-        SetsUrbanCaptureLedger ledger)
+    public static bool ShouldSuspendAfterRetry(int retryCountForCurrentAction)
     {
-        if (context == null || ledger == null || !context.IsValid)
-        {
-            return Rejected("invalid_context");
-        }
-
-        if (state != SetsUrbanCaptureState.AwaitingMap && state != SetsUrbanCaptureState.OwnershipCommitted)
-        {
-            return Rejected("not_awaiting_completion");
-        }
-
-        if (ledger.CompletionCommitted)
-        {
-            return Rejected("already_completed");
-        }
-
-        if (context.IsOwnedOrAttachedIncident)
-        {
-            if (ledger.MenuCommitted)
-            {
-                return Rejected("owned_incident_menu_already_opened");
-            }
-
-            return new SetsUrbanCaptureCompletionPlan(
-                transferOwnership: false,
-                openNativeMenu: false,
-                openOwnedIncidentMenu: true,
-                grantVillageReward: false,
-                rejectionReason: "");
-        }
-
-        if (!context.IsHostileCapture)
-        {
-            return Rejected("unknown_ownership_classification");
-        }
-
-        if (!ledger.VictoryCommitted)
-        {
-            return Rejected("victory_not_committed");
-        }
-
-        if (SetsSettlementEntryProfile.UsesVillageLootResolution(context.SceneKind))
-        {
-            if (ledger.VillageRewardCommitted)
-            {
-                return Rejected("village_reward_already_granted");
-            }
-
-            return new SetsUrbanCaptureCompletionPlan(
-                transferOwnership: false,
-                openNativeMenu: false,
-                openOwnedIncidentMenu: false,
-                grantVillageReward: true,
-                rejectionReason: "");
-        }
-
-        if (!SetsSettlementEntryProfile.UsesNativeSiegeVictoryMenu(context.SceneKind))
-        {
-            return Rejected("unsupported_scene_kind");
-        }
-
-        bool needOwnership = !ledger.OwnershipCommitted;
-        bool needMenu = !ledger.MenuCommitted;
-        if (!needOwnership && !needMenu)
-        {
-            return Rejected("ownership_and_menu_already_committed");
-        }
-
-        // A retry after a committed ownership transfer must only open the menu.
-        return new SetsUrbanCaptureCompletionPlan(
-            transferOwnership: needOwnership,
-            openNativeMenu: needMenu,
-            openOwnedIncidentMenu: false,
-            grantVillageReward: false,
-            rejectionReason: "");
+        return retryCountForCurrentAction >= MaxRetriesPerAction;
     }
 
-    private static SetsUrbanCaptureCompletionPlan Rejected(string reason)
+    /// <summary>Map an action outcome to the event the session should apply, or null-equivalent None.</summary>
+    public static SetsUrbanCaptureEvent? ResolveEventForOutcome(
+        SetsUrbanCaptureNextAction action,
+        SetsUrbanCaptureActionOutcome outcome)
     {
-        return new SetsUrbanCaptureCompletionPlan(
-            transferOwnership: false,
-            openNativeMenu: false,
-            openOwnedIncidentMenu: false,
-            grantVillageReward: false,
-            rejectionReason: reason);
+        if (outcome == SetsUrbanCaptureActionOutcome.Retryable)
+        {
+            return null;
+        }
+
+        if (outcome == SetsUrbanCaptureActionOutcome.Failed)
+        {
+            return SetsUrbanCaptureEvent.Suspend;
+        }
+
+        // Succeeded or AlreadyApplied advance the machine identically; the ledger
+        // commit is what guarantees the side effect never repeats.
+        switch (action)
+        {
+            case SetsUrbanCaptureNextAction.CommitOwnership:
+                return SetsUrbanCaptureEvent.CommitOwnership;
+            case SetsUrbanCaptureNextAction.OpenNativeMenu:
+                return SetsUrbanCaptureEvent.OpenNativeMenu;
+            case SetsUrbanCaptureNextAction.Complete:
+                return SetsUrbanCaptureEvent.Complete;
+            case SetsUrbanCaptureNextAction.Suspend:
+                return SetsUrbanCaptureEvent.Suspend;
+            case SetsUrbanCaptureNextAction.PrepareNativeAftermathContext:
+                // Context preparation is not a state transition; the pump records it locally.
+                return null;
+            default:
+                return null;
+        }
     }
 }

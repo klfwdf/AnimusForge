@@ -1,9 +1,10 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Explicit lifecycle states for one SETS settlement-entry capture operation.
-/// The hostile urban path and the owned/attached incident path diverge before
-/// any ownership side effect and must never cross back.
+/// Explicit lifecycle states for one SETS hostile urban-capture operation
+/// (enemy town or castle only). Owned/attached settlement incidents use
+/// SetsOwnedSettlementIncidentProfile and villages use the village reward
+/// path; neither creates a capture session.
 /// </summary>
 public enum SetsUrbanCaptureState
 {
@@ -18,26 +19,27 @@ public enum SetsUrbanCaptureState
     /// <summary>Hostile conflict started from a valid hit; defenders and reserves engaged.</summary>
     ConflictActive = 3,
 
-    /// <summary>Owned or ruler-attached settlement incident triggered. Never leads to ownership transfer.</summary>
-    IncidentTriggered = 4,
-
     /// <summary>All objective defenders defeated and reserves exhausted; exactly one victory commit.</summary>
-    VictoryReached = 5,
+    VictoryReached = 4,
 
-    /// <summary>Mission ended after victory or incident; waiting for MapState before campaign side effects.</summary>
-    AwaitingMap = 6,
+    /// <summary>Mission ended after committed victory; waiting for MapState before campaign side effects.</summary>
+    AwaitingMap = 5,
 
-    /// <summary>Hostile capture only: settlement ownership transferred to the player clan exactly once.</summary>
-    OwnershipCommitted = 7,
+    /// <summary>Settlement ownership transferred to the player clan exactly once.</summary>
+    OwnershipCommitted = 6,
 
-    /// <summary>Native settlement-taken menu opened exactly once (hostile town/castle path).</summary>
-    MenuOpened = 8,
+    /// <summary>Native settlement-taken menu opened exactly once.</summary>
+    NativeMenuOpened = 7,
 
-    /// <summary>Owned-incident menu opened (owned/attached path; ownership untouched).</summary>
-    OwnedIncidentMenuOpened = 9,
+    /// <summary>Terminal: aftermath handed to GCCZ/native flow.</summary>
+    Completed = 8,
 
-    /// <summary>Terminal: aftermath handed to GCCZ/native flow or village reward granted.</summary>
-    Completed = 10
+    /// <summary>
+    /// Terminal-until-operator-review: live world no longer matches the operation
+    /// (third-party owner, missing clan, illegal restored combination, retry cap).
+    /// No further campaign side effects are permitted from this state.
+    /// </summary>
+    Suspended = 9
 }
 
 /// <summary>Events that drive <see cref="SetsUrbanCaptureState"/> transitions.</summary>
@@ -46,30 +48,18 @@ public enum SetsUrbanCaptureEvent
     PrepareEntry = 0,
     StartMission = 1,
     StartConflict = 2,
-    TriggerOwnedIncident = 3,
-    ReachVictory = 4,
-    EndMission = 5,
-    CommitOwnership = 6,
-    OpenNativeMenu = 7,
-    OpenOwnedIncidentMenu = 8,
-    GrantVillageReward = 9,
-    Complete = 10,
+    ReachVictory = 3,
+    EndMission = 4,
+    CommitOwnership = 5,
+    OpenNativeMenu = 6,
+    Complete = 7,
 
-    /// <summary>Abandon without side effects (expired pending entry, normal exit without conflict, corrupt record).</summary>
-    Abort = 11
-}
+    /// <summary>
+    /// Abandon without side effects. Legal only before any campaign side effect
+    /// (before VictoryReached); later stages must recover or suspend instead.
+    /// </summary>
+    Abort = 8,
 
-/// <summary>How the target settlement relates to the player before entry.</summary>
-public enum SetsUrbanCaptureOwnershipClassification
-{
-    Unknown = 0,
-
-    /// <summary>Enemy or otherwise non-owned settlement; victory may transfer ownership.</summary>
-    Hostile = 1,
-
-    /// <summary>Player-clan settlement; incidents never transfer ownership.</summary>
-    PlayerOwned = 2,
-
-    /// <summary>Settlement of another clan attached to the player's rule; incidents never transfer ownership.</summary>
-    RulerAttached = 3
+    /// <summary>Force the session into Suspended after unrecoverable drift or retry exhaustion.</summary>
+    Suspend = 9
 }
