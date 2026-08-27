@@ -647,7 +647,6 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new NpcRulerPolicyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeWorldEventBehavior());
 			campaignGameStarter.AddBehavior(new WorldMessageTimelineMenuBehavior());
-			ExpeditionParade.ExpeditionParadeBootstrap.AddCampaignBehaviors(campaignGameStarter);
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
