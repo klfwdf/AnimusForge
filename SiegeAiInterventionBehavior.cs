@@ -309,6 +309,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<string, int> SharedCivilianReliefItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Dictionary<string, ItemObject> SharedCivilianReliefItemObjects = new Dictionary<string, ItemObject>(StringComparer.OrdinalIgnoreCase);
 	private static readonly TownSceneMemorySession InterventionSceneMemory = new TownSceneMemorySession(SiegeInterventionMemoryContextBuilder.MaxMemoryEvents);
+	private static readonly TownOrdinarySpeakerVoiceSession OrdinarySpeakerVoices = new TownOrdinarySpeakerVoiceSession();
+	private static int _ordinarySpeakerVoiceGeneration;
 	private static readonly TownOperationLedger ActiveTownOperationLedger = new TownOperationLedger();
 	private static readonly TownColonizationStateMachine ActiveTownColonization = new TownColonizationStateMachine();
 	private static readonly TownEncounterCompletionState EncounterCompletion = new TownEncounterCompletionState();
@@ -1951,6 +1953,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ResetAftermathRuntimeGuards("pending_mission_missing_settlement_scope");
 			return;
 		}
+		OrdinarySpeakerVoices.Begin(sceneSettlementId);
+		_ordinarySpeakerVoiceGeneration++;
 		GcczDiagnosticLog.Log("Mission", "started settlement=" + (_activeSettlementId ?? "N/A")
 			+ " mode=" + _activeMode
 			+ " location=" + (_activeInterventionLocationId ?? "N/A"));
@@ -2130,6 +2134,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static void EndInterventionSceneScope(string reason)
 	{
 		bool memoryCleared = InterventionSceneMemory.EndScene();
+		OrdinarySpeakerVoices.EndScene();
 		ClearInterventionSceneTransientState();
 		if (memoryCleared)
 		{
@@ -3142,6 +3147,202 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool ShouldUseCompactOrdinaryReactionForExternal(
+		Hero hero,
+		CharacterObject character,
+		int agentIndex)
+	{
+		return TryBuildOrdinarySpeakerVoiceFacts(
+			hero,
+			character,
+			agentIndex,
+			string.Empty,
+			string.Empty,
+			string.Empty,
+			out _);
+	}
+
+	internal static string BuildCompactOrdinaryReactionIdentityOverrideForExternal(
+		Hero hero,
+		CharacterObject character,
+		int agentIndex)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission())
+			{
+				return string.Empty;
+			}
+
+			Settlement settlement = ResolveCurrentSettlement();
+			if (settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return string.Empty;
+			}
+
+			Agent agent = TryGetAgent(agentIndex);
+			CharacterObject resolved = character ?? (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
+			Hero resolvedHero = hero ?? resolved?.HeroObject;
+			if (resolvedHero != null)
+			{
+				return string.Empty;
+			}
+
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, null);
+			bool civilian = IsCivilianForIntervention(resolved);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, resolved, null, alliedSoldier);
+			if (role != TownDialogueRole.OrdinaryCivilian && role != TownDialogueRole.OrdinarySoldier)
+			{
+				return string.Empty;
+			}
+
+			return SiegeRuntimePromptProfile.BuildCompactImmediateReactionIdentityOverride(
+				ResolvePlayerCharacterNameForContext(),
+				alliedSoldier,
+				civilian,
+				GcczTownPromptResourceProvider.GetCatalog());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Build compact ordinary town identity failed: " + ex.Message);
+			return string.Empty;
+		}
+	}
+
+	internal static string BuildOrdinarySpeakerVoiceContextForExternal(
+		Hero hero,
+		CharacterObject character,
+		int agentIndex,
+		string speakerKey,
+		string sourcePersonality,
+		string sourceBackground)
+	{
+		try
+		{
+			if (!TryBuildOrdinarySpeakerVoiceFacts(
+				hero,
+				character,
+				agentIndex,
+				speakerKey,
+				sourcePersonality,
+				sourceBackground,
+				out TownOrdinarySpeakerVoiceFacts facts))
+			{
+				return string.Empty;
+			}
+
+			return OrdinarySpeakerVoices.BuildPromptContext(
+				facts,
+				GcczTownPromptResourceProvider.GetCatalog());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Build ordinary town speaker voice failed: " + ex.Message);
+			return string.Empty;
+		}
+	}
+
+	internal static bool RecordOrdinarySpeakerUtteranceForExternal(
+		Hero hero,
+		CharacterObject character,
+		int agentIndex,
+		string speakerKey,
+		string utterance)
+	{
+		try
+		{
+			if (!TryBuildOrdinarySpeakerVoiceFacts(
+				hero,
+				character,
+				agentIndex,
+				speakerKey,
+				string.Empty,
+				string.Empty,
+				out TownOrdinarySpeakerVoiceFacts facts))
+			{
+				return false;
+			}
+
+			return OrdinarySpeakerVoices.RecordUtterance(
+				facts.SettlementId,
+				facts.SpeakerKey,
+				facts.Role,
+				utterance);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Record ordinary town speaker utterance failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryBuildOrdinarySpeakerVoiceFacts(
+		Hero hero,
+		CharacterObject character,
+		int agentIndex,
+		string speakerKey,
+		string sourcePersonality,
+		string sourceBackground,
+		out TownOrdinarySpeakerVoiceFacts facts)
+	{
+		facts = null;
+		if (!IsActiveInCurrentMission())
+		{
+			return false;
+		}
+
+		Settlement settlement = ResolveCurrentSettlement();
+		if (settlement?.IsTown != true || settlement.IsCastle)
+		{
+			return false;
+		}
+
+		Agent agent = TryGetAgent(agentIndex);
+		CharacterObject resolvedCharacter = character ?? (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
+		Hero resolvedHero = hero ?? resolvedCharacter?.HeroObject;
+		if (resolvedHero != null)
+		{
+			return false;
+		}
+
+		bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolvedCharacter, null);
+		TownDialogueRole role = ResolveTownDialogueRole(agent, resolvedCharacter, null, alliedSoldier);
+		if (role != TownDialogueRole.OrdinaryCivilian && role != TownDialogueRole.OrdinarySoldier)
+		{
+			return false;
+		}
+
+		string resolvedSpeakerKey = BuildOrdinarySpeakerVoiceKey(
+			resolvedCharacter,
+			agent,
+			agentIndex,
+			speakerKey);
+		facts = new TownOrdinarySpeakerVoiceFacts(
+			settlement.StringId,
+			resolvedSpeakerKey,
+			role,
+			sourcePersonality,
+			sourceBackground);
+		return true;
+	}
+
+	private static string BuildOrdinarySpeakerVoiceKey(
+		CharacterObject character,
+		Agent agent,
+		int agentIndex,
+		string speakerKey)
+	{
+		return (character?.StringId ?? "unknown")
+			+ "|"
+			+ ((speakerKey ?? string.Empty).Trim())
+			+ "|agent:"
+			+ agentIndex
+			+ "|scene:"
+			+ _ordinarySpeakerVoiceGeneration
+			+ "|name:"
+			+ (agent?.Name?.ToString() ?? string.Empty).Trim();
+	}
+
 	private static TownConstructiveCultureChangeDecision EvaluateConstructiveCultureChange(
 		Settlement settlement,
 		TownDialogueRole dialogueRole,
@@ -3565,6 +3766,121 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return "";
+		}
+	}
+
+	internal static string BuildCompactAmbientPostprocessContextForExternal(
+		int targetAgentIndex,
+		string eventContext)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (!IsActiveInCurrentMission() || settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return string.Empty;
+			}
+
+			Agent agent = TryGetAgent(targetAgentIndex);
+			CharacterObject character = agent?.Character as CharacterObject;
+			if (character?.HeroObject != null)
+			{
+				return string.Empty;
+			}
+
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, null);
+			bool civilian = IsCivilianForIntervention(character);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, character, null, alliedSoldier);
+			if (role != TownDialogueRole.OrdinaryCivilian && role != TownDialogueRole.OrdinarySoldier)
+			{
+				return string.Empty;
+			}
+
+			if (!TownAmbientReactionContextProfile.TryParse(
+				eventContext,
+				out SiegeInterventionActionKind action,
+				out TownAmbientReactionAudience audience))
+			{
+				return string.Empty;
+			}
+
+			TownAmbientReactionAudience expectedAudience = TownDialogueAuthorityPolicy.ResolveAmbientAudience(role, alliedSoldier);
+			if (audience != expectedAudience)
+			{
+				return string.Empty;
+			}
+
+			TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+			string ambient = (text.AmbientPostprocessContextTemplate ?? string.Empty)
+				.Replace("{audience}", audience.ToString())
+				.Replace("{action}", text.GetSuggestionActionLabel(action));
+			string compactIdentity = alliedSoldier
+				? text.CompactAmbientAlliedSoldierIdentity
+				: (civilian ? text.CompactAmbientCivilianIdentity : text.CompactAmbientOtherIdentity);
+			return TownDialogueRoleContextProfile.Build(role)
+				+ Environment.NewLine
+				+ compactIdentity
+				+ Environment.NewLine
+				+ ambient;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Build compact town ambient postprocess context failed: " + ex.Message);
+			return string.Empty;
+		}
+	}
+
+	internal static string BuildCompactAmbientReactionFactForExternal(
+		int targetAgentIndex,
+		string eventContext)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentSettlement();
+			if (!IsActiveInCurrentMission() || settlement?.IsTown != true || settlement.IsCastle)
+			{
+				return string.Empty;
+			}
+
+			Agent agent = TryGetAgent(targetAgentIndex);
+			CharacterObject character = agent?.Character as CharacterObject;
+			if (character?.HeroObject != null)
+			{
+				return string.Empty;
+			}
+
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, null);
+			TownDialogueRole role = ResolveTownDialogueRole(agent, character, null, alliedSoldier);
+			if (role != TownDialogueRole.OrdinaryCivilian && role != TownDialogueRole.OrdinarySoldier)
+			{
+				return string.Empty;
+			}
+
+			if (!TownAmbientReactionContextProfile.TryParse(
+				eventContext,
+				out SiegeInterventionActionKind action,
+				out TownAmbientReactionAudience audience))
+			{
+				return string.Empty;
+			}
+
+			TownAmbientReactionAudience expectedAudience = TownDialogueAuthorityPolicy.ResolveAmbientAudience(role, alliedSoldier);
+			if (audience != expectedAudience)
+			{
+				return string.Empty;
+			}
+
+			return TownPromptComposer.BuildCompactAmbientReactionFact(
+				action,
+				audience,
+				settlement.Name?.ToString() ?? _activeSettlementName,
+				agent?.Name?.ToString() ?? role.ToString(),
+				GcczTownPromptResourceProvider.GetCatalog());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Build compact ordinary town reaction fact failed: " + ex.Message);
+			return string.Empty;
 		}
 	}
 
@@ -15643,6 +15959,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static void ResetSessionCounters()
 	{
 		TownEntryPresentation.Reset();
+		OrdinarySpeakerVoices.Reset();
 		_alliedTroopsAutoSummoned = false;
 		_nextControlTickTime = 0f;
 		_nextPlunderTickTime = 0f;

@@ -378,6 +378,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public List<object> Messages;
 
 		public int MaxTokens;
+
+		public float Temperature = 0.35f;
+
+		public bool UsesCompactTownOrdinaryChain;
 	}
 
 	private sealed class SceneSummonPromptTarget
@@ -7123,6 +7127,11 @@ private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc,
 {
 	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var stableIntro, out var _);
+	string ordinaryVoiceContext = AfGcczShoutBridge.BuildOrdinarySpeakerVoiceContext(hero, npc);
+	if (!string.IsNullOrWhiteSpace(ordinaryVoiceContext))
+	{
+		stableIntro = BuildSceneCompositeUserBlock("", stableIntro, ordinaryVoiceContext);
+	}
 	string selfActionFact = BuildSceneAgentSelfActionFactForPrompt(npc, hero);
 	if (!string.IsNullOrWhiteSpace(selfActionFact))
 	{
@@ -7187,6 +7196,11 @@ private static string BuildSceneSystemTopPromptIntroForGroup(IEnumerable<NpcData
 			}
 			string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, npcs, includeInventorySummary: false, includeTradePricing: false, partyTransferTopicSelected: partyTransferTopicSelected);
 			SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var intro, out var _);
+			string ordinaryVoiceContext = AfGcczShoutBridge.BuildOrdinarySpeakerVoiceContext(hero, npc);
+			if (!string.IsNullOrWhiteSpace(ordinaryVoiceContext))
+			{
+				intro = BuildSceneCompositeUserBlock("", intro, ordinaryVoiceContext);
+			}
 			if (string.IsNullOrWhiteSpace(intro))
 			{
 				continue;
@@ -24705,6 +24719,117 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
+	private static string TryRunCompactTownOrdinaryAmbientPostprocess(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		string eventContext,
+		string replyText)
+	{
+		string dialogue = StripActionTagsForSceneSpeech(replyText ?? string.Empty);
+		if (!AfGcczShoutBridge.ShouldUseCompactOrdinaryReaction(targetHero, targetCharacter, targetAgentIndex)
+			|| !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
+		{
+			return EnsureScenePostprocessFallbackMood(dialogue);
+		}
+
+		List<PostprocessRuleEntry> rules = AfGcczShoutBridge.BuildPostprocessRules(
+			true,
+			targetAgentIndex,
+			false,
+			eventContext) ?? new List<PostprocessRuleEntry>();
+		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+		string candidateRules = BuildCompactTownAmbientRuleText(rules, text);
+		string moodRules = BuildPostprocessRuleTextForScene(AIConfigHandler.ActionPostprocessMoodRules);
+		string runtimeContext = AfGcczShoutBridge.BuildCompactAmbientPostprocessContext(
+			targetAgentIndex,
+			eventContext);
+		string systemPrompt = (text.CompactAmbientPostprocessSystemPrompt ?? string.Empty).Trim();
+		string userPrompt = text.CompactAmbientPostprocessUserTemplate ?? string.Empty;
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "runtime_context", runtimeContext);
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "candidate_rules", candidateRules);
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "mood_rules", moodRules);
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "reply", dialogue);
+		userPrompt = BuildSceneCompositeUserBlock(
+			string.Empty,
+			userPrompt,
+			text.CompactAmbientPostprocessContract);
+
+		int estimatedInputTokens = Logger.EstimateTokens(systemPrompt)
+			+ Logger.EstimateTokens(userPrompt)
+			+ 10;
+		Logger.Log(
+			"ShoutBehavior",
+			"[CompactTownAmbientPostprocess] targetAgentIndex=" + targetAgentIndex
+			+ " ruleCount=" + rules.Count
+			+ " estimatedInputTokens=" + estimatedInputTokens);
+		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(
+			systemPrompt,
+			userPrompt,
+			256,
+			0f,
+			out string rawTags,
+			out string error))
+		{
+			Logger.Log("ShoutBehavior", "[CompactTownAmbientPostprocess] request failed: " + (error ?? string.Empty));
+			return EnsureScenePostprocessFallbackMood(dialogue);
+		}
+
+		string normalized = AfGcczShoutBridge.NormalizePostprocessTags(true, rawTags, rules);
+		normalized = AfGcczShoutBridge.ValidateTownPostprocessDecision(normalized);
+		if (string.IsNullOrWhiteSpace(normalized))
+		{
+			normalized = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		Logger.Log(
+			"ShoutBehavior",
+			"[CompactTownAmbientPostprocess] completed targetAgentIndex=" + targetAgentIndex
+			+ " normalized=" + (normalized ?? string.Empty).Replace("\r", string.Empty).Replace("\n", "|"));
+		return (dialogue + "\n" + normalized).Trim();
+	}
+
+	private static string BuildCompactTownAmbientRuleText(
+		IEnumerable<PostprocessRuleEntry> entries,
+		TownPromptTextCatalog text)
+	{
+		StringBuilder result = new StringBuilder();
+		foreach (PostprocessRuleEntry entry in entries ?? Enumerable.Empty<PostprocessRuleEntry>())
+		{
+			string tag = (entry?.Tag ?? string.Empty).Trim();
+			if (tag.Length == 0)
+			{
+				continue;
+			}
+
+			result.Append(tag);
+			IReadOnlyList<TownAmbientReactionActionKind> kinds = TownAmbientReactionTagCatalog.ExtractKinds(tag);
+			if (kinds.Count == 1
+				&& TownAmbientReactionTagCatalog.TryGetSuggestedAction(
+					kinds[0],
+					out SiegeInterventionActionKind suggestedAction))
+			{
+				result.Append(": ").Append(text.GetSuggestionActionLabel(suggestedAction));
+			}
+			else if (!string.IsNullOrWhiteSpace(entry.Description))
+			{
+				result.Append(": ").Append(entry.Description.Trim());
+			}
+			result.AppendLine();
+		}
+		return result.ToString().TrimEnd();
+	}
+
+	private static string EnsureScenePostprocessFallbackMood(string dialogue)
+	{
+		string normalizedDialogue = (dialogue ?? string.Empty).Trim();
+		if (Regex.Matches(normalizedDialogue, "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count > 0
+			|| string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+		{
+			return normalizedDialogue;
+		}
+		return (normalizedDialogue + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+	}
+
 	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
@@ -28771,6 +28896,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			RemoveExpiredSingleUseSceneNpcFacts(_publicConversationHistory);
 		}
 		NpcDataPacket speakerNpc = nearbyData?.FirstOrDefault((NpcDataPacket x) => x != null && x.AgentIndex == speakerAgentIndex) ?? ResolveSceneNpcDataForSharedHistory(speakerAgentIndex, speakerName);
+		AfGcczShoutBridge.RecordOrdinarySpeakerUtterance(speakerNpc, response);
 		AppendSceneEventToNativeSharedHistory(speakerNpc, text, response, "npc", eventSequence);
 		FlushPendingHeroHistoryExtraFactAfterSceneReply();
 	}
@@ -34683,7 +34809,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				immediateSceneReactionGateEntered = false;
 				return false;
 			}
-			StartImmediateSceneReactionBackgroundRequest(request.RequestId, request.TargetAgentIndex, request.Messages, request.MaxTokens);
+			StartImmediateSceneReactionBackgroundRequest(request.RequestId, request.TargetAgentIndex, request.Messages, request.MaxTokens, request.Temperature);
 			immediateSceneReactionGateEntered = false;
 			return true;
 		}
@@ -37866,6 +37992,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		PopulateImmediateSceneReactionPersonaOnMainThread(targetNpc, contextHero);
 		DuelSettings settings = DuelSettings.GetSettings();
 		GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
+		bool useCompactTownOrdinaryChain = runSiegeReactionPostprocess
+			&& AfGcczShoutBridge.ShouldUseCompactOrdinaryReaction(contextHero, npcCharacter, targetNpc.AgentIndex);
+		if (useCompactTownOrdinaryChain)
+		{
+			return TryPrepareCompactTownOrdinaryReactionRequest(
+				sourceMission,
+				requestId,
+				targetNpc,
+				allNpcData,
+				suppressStare,
+				factText,
+				canStillPublish,
+				contextHero,
+				npcCharacter,
+				minTokens,
+				maxTokens,
+				out request);
+		}
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
 		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
 		StringBuilder stringBuilder = new StringBuilder();
@@ -37889,14 +38033,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
 		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock, miscExtrasSection);
 		text = BuildSceneCompositeUserBlock("", text, factText);
-		List<string> historyLines = null;
-		lock (_historyLock)
-		{
-			if (_publicConversationHistory.Count > 0)
-			{
-				historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), useNpcNameAddress: false);
-			}
-		}
 		string persistedHeroHistory = BuildPersistedHeroHistoryContext(targetNpc.AgentIndex, "", resolvedHeroes);
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
@@ -37921,12 +38057,89 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			RunSiegeReactionPostprocess = runSiegeReactionPostprocess,
 			CanStillPublish = canStillPublish,
 			Messages = new List<object>(messages),
-			MaxTokens = maxTokens
+			MaxTokens = maxTokens,
+			Temperature = 0.35f,
+			UsesCompactTownOrdinaryChain = false
 		};
 		return true;
 	}
 
-	private void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens)
+	private bool TryPrepareCompactTownOrdinaryReactionRequest(
+		Mission sourceMission,
+		long requestId,
+		NpcDataPacket targetNpc,
+		List<NpcDataPacket> allNpcData,
+		bool suppressStare,
+		string factText,
+		Func<bool> canStillPublish,
+		Hero contextHero,
+		CharacterObject npcCharacter,
+		int minTokens,
+		int maxTokens,
+		out ImmediateSceneReactionRequest request)
+	{
+		request = null;
+		TownPromptTextCatalog text = GcczTownPromptResourceProvider.GetCatalog();
+		string identity = (AfGcczShoutBridge.BuildCompactOrdinaryReactionIdentityOverride(
+			contextHero,
+			npcCharacter,
+			targetNpc.AgentIndex) ?? string.Empty).Trim();
+		string voice = (AfGcczShoutBridge.BuildOrdinarySpeakerVoiceContext(contextHero, targetNpc) ?? string.Empty).Trim();
+		string compactFact = (AfGcczShoutBridge.BuildCompactAmbientReactionFact(
+			targetNpc.AgentIndex,
+			factText) ?? string.Empty).Trim();
+		if (string.IsNullOrWhiteSpace(compactFact))
+		{
+			compactFact = (factText ?? string.Empty).Trim();
+		}
+		string systemPrompt = (text.CompactAmbientSystemPrompt ?? string.Empty).Trim();
+		string userPrompt = text.CompactAmbientUserTemplate ?? string.Empty;
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "identity", identity);
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "voice", voice);
+		userPrompt = ApplyCompactPromptTemplate(userPrompt, "fact", compactFact);
+		userPrompt = ApplyCompactPromptTemplate(
+			userPrompt,
+			"length_instruction",
+			BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens));
+
+		List<object> messages = new List<object>
+		{
+			CreateChatMessage("system", systemPrompt),
+			CreateChatMessage("user", userPrompt.Trim()),
+		};
+		request = new ImmediateSceneReactionRequest
+		{
+			RequestId = requestId,
+			RuntimeGeneration = SaveRuntimeGuard.CurrentGeneration,
+			SceneHistorySessionId = Volatile.Read(ref _sceneHistorySessionId),
+			SourceMission = sourceMission,
+			TargetAgentIndex = targetNpc.AgentIndex,
+			TargetNpc = targetNpc,
+			AllNpcData = allNpcData,
+			SuppressStare = suppressStare,
+			FactText = factText ?? string.Empty,
+			RunSiegeReactionPostprocess = true,
+			CanStillPublish = canStillPublish,
+			Messages = messages,
+			MaxTokens = maxTokens,
+			Temperature = TownOrdinarySpeakerVoiceSession.RecommendedReplyTemperature,
+			UsesCompactTownOrdinaryChain = true
+		};
+		Logger.Log(
+			"ShoutBehavior",
+			"[ImmediateSceneReaction] compact_town_ordinary request=" + requestId
+			+ " targetAgentIndex=" + targetNpc.AgentIndex
+			+ " estimatedInputTokens=" + Logger.EstimateTokensFromMessages(messages)
+			+ " maxOutputTokens=" + maxTokens);
+		return true;
+	}
+
+	private static string ApplyCompactPromptTemplate(string template, string key, string value)
+	{
+		return (template ?? string.Empty).Replace("{" + key + "}", value ?? string.Empty);
+	}
+
+	private void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens, float temperature)
 	{
 		if (requestId <= 0L || targetAgentIndex < 0 || messages == null || messages.Count == 0)
 		{
@@ -37942,7 +38155,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string error = "";
 				try
 				{
-					requestSucceeded = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out response, out error);
+					requestSucceeded = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, temperature, out response, out error);
 					if (!requestSucceeded)
 					{
 						Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + (error ?? ""));
@@ -38066,7 +38279,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			try
 			{
-				text = TryRunSceneUnifiedActionPostprocess(
+				text = request.UsesCompactTownOrdinaryChain
+					? TryRunCompactTownOrdinaryAmbientPostprocess(
+						contextHero,
+						npcCharacter,
+						request.TargetAgentIndex,
+						request.FactText ?? string.Empty,
+						text)
+					: TryRunSceneUnifiedActionPostprocess(
 					contextHero,
 					npcCharacter,
 					request.TargetAgentIndex,

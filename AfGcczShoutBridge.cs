@@ -308,6 +308,13 @@ internal static class AfGcczShoutBridge
 			: SiegeAiInterventionBehavior.BuildRuntimePostprocessContextForExternal(targetAgentIndex, replyIsDirectPlayerResponse, playerText);
 	}
 
+	internal static string BuildCompactAmbientPostprocessContext(int targetAgentIndex, string eventContext)
+	{
+		return IsTownOrCastleAftermathActive()
+			? SiegeAiInterventionBehavior.BuildCompactAmbientPostprocessContextForExternal(targetAgentIndex, eventContext)
+			: string.Empty;
+	}
+
 	internal static string AppendTownPostprocessDecisionContract(
 		string userPrompt,
 		bool useTownContract,
@@ -344,6 +351,71 @@ internal static class AfGcczShoutBridge
 		return IsTownOrCastleAftermathActive()
 			? SiegeAiInterventionBehavior.BuildImmediateReactionIdentityOverrideForExternal(targetHero, targetCharacter, targetAgentIndex)
 			: string.Empty;
+	}
+
+	internal static bool ShouldUseCompactOrdinaryReaction(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex)
+	{
+		return IsTownOrCastleAftermathActive()
+			&& SiegeAiInterventionBehavior.ShouldUseCompactOrdinaryReactionForExternal(
+				targetHero,
+				targetCharacter,
+				targetAgentIndex);
+	}
+
+	internal static string BuildCompactOrdinaryReactionIdentityOverride(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex)
+	{
+		return IsTownOrCastleAftermathActive()
+			? SiegeAiInterventionBehavior.BuildCompactOrdinaryReactionIdentityOverrideForExternal(
+				targetHero,
+				targetCharacter,
+				targetAgentIndex)
+			: string.Empty;
+	}
+
+	internal static string BuildCompactAmbientReactionFact(int targetAgentIndex, string eventContext)
+	{
+		return IsTownOrCastleAftermathActive()
+			? SiegeAiInterventionBehavior.BuildCompactAmbientReactionFactForExternal(
+				targetAgentIndex,
+				eventContext)
+			: string.Empty;
+	}
+
+	internal static string BuildOrdinarySpeakerVoiceContext(Hero targetHero, NpcDataPacket npc)
+	{
+		if (npc == null || !IsTownOrCastleAftermathActive())
+		{
+			return string.Empty;
+		}
+
+		return SiegeAiInterventionBehavior.BuildOrdinarySpeakerVoiceContextForExternal(
+			targetHero,
+			targetHero?.CharacterObject,
+			npc.AgentIndex,
+			npc.UnnamedKey ?? npc.TroopId,
+			npc.PersonalityDesc,
+			npc.BackgroundDesc);
+	}
+
+	internal static bool RecordOrdinarySpeakerUtterance(NpcDataPacket npc, string utterance)
+	{
+		if (npc == null || !IsTownOrCastleAftermathActive())
+		{
+			return false;
+		}
+
+		return SiegeAiInterventionBehavior.RecordOrdinarySpeakerUtteranceForExternal(
+			null,
+			null,
+			npc.AgentIndex,
+			npc.UnnamedKey ?? npc.TroopId,
+			utterance);
 	}
 
 	internal static bool ShouldUsePersistentPersonalMemory(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
