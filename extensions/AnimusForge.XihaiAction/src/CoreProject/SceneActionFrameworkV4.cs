@@ -150,7 +150,7 @@ namespace AnimusForge.SceneActions.Core
                         },
                         new[]
                         {
-                            "招手示意同伴跟上", "朝同伴招手示意跟上",
+                            "招手示意跟上", "招手示意同伴跟上", "朝同伴招手示意跟上",
                             "向队伍招手让他们跟上", "回头招手示意队伍跟随",
                             "挥手示意众人跟上", "作出跟上手势", "做出跟上手势",
                             "beckoned his companions to follow",
@@ -183,7 +183,8 @@ namespace AnimusForge.SceneActions.Core
                         },
                         new[]
                         {
-                            "用手指划过喉前", "手指从喉前划过", "抬手在脖子前横划",
+                            "用手指划过喉前", "用手指在喉前划过", "用手指在喉前缓缓划过",
+                            "手指从喉前划过", "抬手在脖子前横划",
                             "做出割喉手势", "作出割喉手势", "比出抹脖子动作",
                             "用拇指划过喉前", "made a throat-cutting gesture",
                             "drew a finger across his throat", "drew one finger across his throat",
@@ -245,6 +246,69 @@ namespace AnimusForge.SceneActions.Core
         public static bool CanOverlayKneel(string intentKey)
         {
             return KneelOverlayKeys.Contains(intentKey ?? string.Empty);
+        }
+
+        /// <summary>
+        /// Verifies an AI-selected NPC reply program against the actual current
+        /// reply text.  The classifier may infer one contextual emotion, but it
+        /// must not invent an entity action such as kneel, salute, point, or
+        /// command merely because that key is present in the allow-list.
+        /// </summary>
+        public static bool ValidateNpcClassifierProgramEvidence(
+            string currentReplyText,
+            ActionProgramV4 program,
+            out string reason)
+        {
+            reason = null;
+            if (program == null)
+            {
+                reason = "NPC classifier returned no action program.";
+                return false;
+            }
+
+            string evidenceText = CommandParser.Normalize(currentReplyText ?? string.Empty);
+            HashSet<string> resolvedSpecialActions = new HashSet<string>(
+                ResolveNaturalActionDescription(evidenceText),
+                StringComparer.Ordinal);
+            foreach (string intentKey in program.Steps.SelectMany(step => step.IntentKeys))
+            {
+                if (IsContextInferableNpcEmotion(intentKey))
+                {
+                    continue;
+                }
+                bool hasEvidence = IsSpecialEvidenceAction(intentKey)
+                    ? resolvedSpecialActions.Contains(intentKey)
+                    : SceneActionFrameworkV1.ContainsPhysicalActionEvidence(
+                        intentKey,
+                        evidenceText);
+                if (hasEvidence)
+                {
+                    continue;
+                }
+
+                reason = "NPC classifier selected " + intentKey +
+                         " without current-reply performed-action evidence.";
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsSpecialEvidenceAction(string intentKey)
+        {
+            return string.Equals(intentKey, Kneel, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, StandUp, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, Xihai, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, Respect, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, DeepBow, StringComparison.Ordinal);
+        }
+
+        private static bool IsContextInferableNpcEmotion(string intentKey)
+        {
+            return string.Equals(intentKey, Fear, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, Rage, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, Disappointed, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, Laugh, StringComparison.Ordinal) ||
+                   string.Equals(intentKey, Unsure, StringComparison.Ordinal);
         }
 
         public static IReadOnlyList<string> ResolveNpcReplyDescription(string text)
@@ -563,6 +627,15 @@ namespace AnimusForge.SceneActions.Core
                         if (start < 0)
                         {
                             break;
+                        }
+                        if (string.Equals(entry.IntentKey, Xihai, StringComparison.Ordinal) &&
+                            SceneActionFrameworkV1.IsXihaiEquipmentMention(
+                                normalized,
+                                start,
+                                cue.Length))
+                        {
+                            searchFrom = start + Math.Max(1, cue.Length);
+                            continue;
                         }
                         matches.Add(new CueSpan(entry.IntentKey, start, cue.Length));
                         searchFrom = start + Math.Max(1, cue.Length);

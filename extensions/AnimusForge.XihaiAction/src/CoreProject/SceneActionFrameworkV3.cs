@@ -463,6 +463,15 @@ namespace AnimusForge.SceneActions.Core
                         {
                             break;
                         }
+                        if (string.Equals(entry.IntentKey, Xihai, StringComparison.Ordinal) &&
+                            SceneActionFrameworkV1.IsXihaiEquipmentMention(
+                                normalized,
+                                start,
+                                cue.Length))
+                        {
+                            searchFrom = start + Math.Max(1, cue.Length);
+                            continue;
+                        }
                         matches.Add(new CueSpan(entry.IntentKey, start, cue.Length));
                         searchFrom = start + Math.Max(1, cue.Length);
                     }

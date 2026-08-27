@@ -6,6 +6,10 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCivilianAssemblyProfile
 {
+    // Compatibility contract for the native-town population intervention.
+    // Keep these names stable while the ambient-town layer adds its own scene
+    // capacity settings below; the intervention behavior still consumes the
+    // prosperity-weighted population profile.
     public const int MinDesiredCivilianCount = 100;
 
     public const int MaxDesiredCivilianCount = 200;

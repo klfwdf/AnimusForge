@@ -19,9 +19,19 @@ public sealed class AnimusForgeUniqueCosmeticItemBehavior : CampaignBehaviorBase
 {
 	public const string UniqueItemId = "af_xihai_daimao_head";
 
+	private static readonly HashSet<string> LegacyXihaiItemIds =
+		new HashSet<string>(StringComparer.Ordinal)
+		{
+			"af_xihai_naci_hat",
+			"af_xihai_naci_clothes",
+			"af_xihai_naci_shoes"
+		};
+
 	private bool _spawnResolved;
 
 	private string _spawnSettlementId = string.Empty;
+
+	private bool _legacyCleanupCompleted;
 
 	public override void RegisterEvents()
 	{
@@ -32,11 +42,122 @@ public sealed class AnimusForgeUniqueCosmeticItemBehavior : CampaignBehaviorBase
 	{
 		dataStore.SyncData("_af_daimao_singleton_spawn_resolved_v1", ref _spawnResolved);
 		dataStore.SyncData("_af_daimao_singleton_spawn_settlement_v1", ref _spawnSettlementId);
+		dataStore.SyncData("_af_xihai_legacy_equipment_cleanup_v1", ref _legacyCleanupCompleted);
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+		TryRemoveLegacyXihaiEquipment();
 		TrySeedOnce();
+	}
+
+	private void TryRemoveLegacyXihaiEquipment()
+	{
+		if (_legacyCleanupCompleted)
+		{
+			return;
+		}
+
+		try
+		{
+			int removedRosterItems = 0;
+			int removedRosterStacks = 0;
+			int clearedHeroSlots = 0;
+
+			foreach (MobileParty party in (MobileParty.All ?? Enumerable.Empty<MobileParty>()))
+			{
+				RemoveLegacyItemsFromRoster(
+					party?.ItemRoster,
+					ref removedRosterItems,
+					ref removedRosterStacks);
+			}
+
+			foreach (Settlement settlement in (Settlement.All ?? Enumerable.Empty<Settlement>()))
+			{
+				RemoveLegacyItemsFromRoster(
+					settlement?.ItemRoster,
+					ref removedRosterItems,
+					ref removedRosterStacks);
+			}
+
+			foreach (Hero hero in (Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>()))
+			{
+				if (hero == null)
+				{
+					continue;
+				}
+				clearedHeroSlots += ClearLegacyEquipmentSlots(hero.BattleEquipment);
+				clearedHeroSlots += ClearLegacyEquipmentSlots(hero.CivilianEquipment);
+				clearedHeroSlots += ClearLegacyEquipmentSlots(hero.StealthEquipment);
+			}
+
+			_legacyCleanupCompleted = true;
+			Logger.Log(
+				"UniqueItem",
+				"[INFO] legacy Xihai equipment cleanup completed. " +
+				"removedItems=" + removedRosterItems +
+				" removedStacks=" + removedRosterStacks +
+				" clearedHeroSlots=" + clearedHeroSlots);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(
+				"UniqueItem",
+				"[WARN] legacy Xihai equipment cleanup failed; will retry next session: " +
+				ex.Message);
+		}
+	}
+
+	private static void RemoveLegacyItemsFromRoster(
+		ItemRoster roster,
+		ref int removedItems,
+		ref int removedStacks)
+	{
+		if (roster == null)
+		{
+			return;
+		}
+
+		for (int index = roster.Count - 1; index >= 0; index--)
+		{
+			ItemRosterElement element = roster.GetElementCopyAtIndex(index);
+			if (!IsLegacyXihaiItem(element.EquipmentElement.Item) || element.Amount <= 0)
+			{
+				continue;
+			}
+
+			roster.AddToCounts(element.EquipmentElement, -element.Amount);
+			removedItems += element.Amount;
+			removedStacks++;
+		}
+	}
+
+	private static int ClearLegacyEquipmentSlots(Equipment equipment)
+	{
+		if (equipment == null)
+		{
+			return 0;
+		}
+
+		int cleared = 0;
+		for (int index = 0; index < Equipment.EquipmentSlotLength; index++)
+		{
+			EquipmentElement element = equipment[index];
+			if (!IsLegacyXihaiItem(element.Item) &&
+				!IsLegacyXihaiItem(element.CosmeticItem))
+			{
+				continue;
+			}
+
+			equipment[index] = EquipmentElement.Invalid;
+			cleared++;
+		}
+		return cleared;
+	}
+
+	private static bool IsLegacyXihaiItem(ItemObject item)
+	{
+		return item != null && LegacyXihaiItemIds.Contains(item.StringId);
 	}
 
 	private void TrySeedOnce()
