@@ -14,7 +14,7 @@ public static class SiegeCastlePrisonerAllocationProfile
         RegexOptions.Compiled);
 
     private static readonly Regex ArabicBareCountRegex = new Regex(
-        @"(?<!\d)(?<count>\d{1,4})(?!\d)(?!\s*(?:队|号|组))",
+        @"(?<!\d)(?<count>\d{1,4})(?!\d)\s*(?:战俘|俘虏|士兵|降兵|降卒|人质)",
         RegexOptions.Compiled);
 
     private static readonly Regex ChineseCountRegex = new Regex(
@@ -58,11 +58,7 @@ public static class SiegeCastlePrisonerAllocationProfile
                 explicitCount > available ? "explicit_clamped" : "explicit_count");
         }
 
-        double roll = double.IsNaN(randomRoll) || double.IsInfinity(randomRoll)
-            ? 0d
-            : Math.Max(0d, Math.Min(0.999999d, randomRoll));
-        int randomCount = 1 + (int)Math.Floor(roll * available);
-        return new SiegeCastlePrisonerQuantityDecision(randomCount, false, false, reset, "random_unspecified_count");
+        return new SiegeCastlePrisonerQuantityDecision(available, false, true, reset, "default_all_unspecified_count");
     }
 
     public static bool IsPlanResetRequested(string playerText)
