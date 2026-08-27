@@ -99,6 +99,8 @@ internal static class Program
         Run("Player natural descriptions fail closed", TestPlayerNaturalLanguageSafety);
         Run("Unknown starred descriptions request explicit AI fallback", TestExplicitAiFallbackRouting);
         Run("Natural-language safety hardening blocks bypasses", TestNaturalLanguageSafetyHardening);
+        Run("Xihai equipment mentions do not trigger the salute action",
+            TestXihaiEquipmentMentionSafety);
         Run("Stage-text and full-width star do not force", TestStageTextDoesNotForce);
         Run("NPC paired stage directions cover all eight logical actions", TestNpcReplyMatrix);
         Run("NPC Markdown-bold stage directions resolve like single-star directions",
@@ -107,6 +109,8 @@ internal static class Program
         Run("Every natural-language cue maps to one declared action", TestNaturalCueContract);
         Run("NPC non-performed natural language stays blocked", TestNpcNaturalLanguageSafety);
         Run("NPC stage directions fail closed on ambiguity", TestNpcReplySafety);
+        Run("NPC classifier programs require current-reply evidence for entity actions",
+            TestNpcClassifierEvidenceGate);
         Run("Player and NPC star grammars stay separated", TestStarGrammarSeparation);
         Run("ExactCommand is whole-text only", TestExactCommand);
         Run("Raw act id is rejected", TestRawActionIdRejected);
@@ -1900,6 +1904,36 @@ internal static class Program
         True(!ordinaryNpc.AiFallbackRequested);
     }
 
+    private static void TestXihaiEquipmentMentionSafety()
+    {
+        CommandParser parser = CreateV4Parser();
+        foreach (string text in new[]
+        {
+            "他穿着西海军装。",
+            "他戴着西海军帽。",
+            "西海军靴已经磨损了。",
+            "他穿着西海战衣。"
+        })
+        {
+            True(!SceneActionFrameworkV4.ResolveNaturalActionDescription(text)
+                .Contains(SceneActionFrameworkV4.Xihai, StringComparer.Ordinal));
+            True(!SceneActionFrameworkV4.ResolveNaturalActionReferences(text)
+                .Contains(SceneActionFrameworkV4.Xihai, StringComparer.Ordinal));
+            Equal(ParseStatus.NoAction, parser.ParseNpcReplyText("*" + text + "*").Status);
+        }
+
+        True(!SceneActionFrameworkV4.ResolveNaturalActionDescription(
+                "他只是提到西海礼的历史。")
+            .Contains(SceneActionFrameworkV4.Xihai, StringComparer.Ordinal));
+
+        True(SceneActionFrameworkV4.ResolveNaturalActionDescription(
+                "他忽然摆出了西海的架势。")
+            .Contains(SceneActionFrameworkV4.Xihai, StringComparer.Ordinal));
+        True(SceneActionFrameworkV4.ResolveNaturalActionDescription(
+                "他将右臂向前斜上方伸直约四十五度。")
+            .Contains(SceneActionFrameworkV4.Xihai, StringComparer.Ordinal));
+    }
+
     private static void TestNaturalLanguageSafetyHardening()
     {
         CommandParser parser = CreateParser();
@@ -2169,6 +2203,95 @@ internal static class Program
             parser.ParseNpcReplyText("*act_af_xihai*").Status);
         Equal(ParseStatus.NoAction,
             parser.ParseNpcReplyText("普通回复，没有动作描写。").Status);
+    }
+
+    private static void TestNpcClassifierEvidenceGate()
+    {
+        ActionProgramV4 kneel = ActionProgramV4.FromSingle(SceneActionFrameworkV4.Kneel);
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他低头看着被铁链锁住的双手，长长地叹息了一声，随后抬起头。*",
+            kneel,
+            out _));
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他蹲下捡起地上的武器，然后站了起来。*",
+            kneel,
+            out _));
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他只是重复了一遍‘跪下’这个词，自己没有动作。*",
+            kneel,
+            out _));
+        True(SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他双膝着地，低头等待裁决。*",
+            kneel,
+            out _));
+
+        ActionProgramV4 point = ActionProgramV4.FromSingle(SceneActionFrameworkV4.Point);
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他的目光落在城门上。*",
+            point,
+            out _));
+        True(SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他抬手指向城门。*",
+            point,
+            out _));
+
+        ActionProgramV4 command = ActionProgramV4.FromSingle(SceneActionFrameworkV4.Command);
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "前进！",
+            command,
+            out _));
+        True(SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他挥臂向整支队伍发号施令。*",
+            command,
+            out _));
+
+        ActionProgramV4 followMe = ActionProgramV4.FromSingle(SceneActionFrameworkV4.FollowMe);
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "跟我来。",
+            followMe,
+            out _));
+        True(SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他向队伍招手让他们跟上。*",
+            followMe,
+            out _));
+
+        ActionProgramV4 cutThroat = ActionProgramV4.FromSingle(
+            SceneActionFrameworkV4.CutThroat);
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "我要割断你的喉咙。",
+            cutThroat,
+            out _));
+        True(SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他用手指在喉前缓缓划过，作出割喉威胁。*",
+            cutThroat,
+            out _));
+
+        ActionProgramV4 surrender = ActionProgramV4.FromSingle(
+            SceneActionFrameworkV4.Surrender);
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "我投降。",
+            surrender,
+            out _));
+
+        ActionProgramV4 emotion = ActionProgramV4.FromSingle(
+            SceneActionFrameworkV4.Disappointed);
+        True(SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他低头看着锁链，叹息了一声。*",
+            emotion,
+            out _));
+
+        ActionProgramV4 mixed = new ActionProgramV4(new[]
+        {
+            new ActionProgramStepV4(new[]
+            {
+                SceneActionFrameworkV4.Kneel,
+                SceneActionFrameworkV4.Fear
+            })
+        });
+        True(!SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+            "*他脸色发白，指尖微微发颤。*",
+            mixed,
+            out _));
     }
 
     private static void TestStarGrammarSeparation()

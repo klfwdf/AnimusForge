@@ -2914,7 +2914,13 @@ internal static class Program
                 systemPrompt.Contains("follow_me（招手跟上）") &&
                 systemPrompt.Contains("cut_throat（割喉手势）") &&
                 systemPrompt.Contains("fear（害怕）") &&
-                systemPrompt.Contains("允许根据本轮完整语境推断") &&
+                systemPrompt.Contains("先区分实体动作和隐含情绪") &&
+                systemPrompt.Contains("实体动作必须有当前回复中该NPC已经做出或正在做出的可见身体证据") &&
+                systemPrompt.Contains("低头、抬头、闭眼、沉思、叹息、苦笑") &&
+                systemPrompt.Contains("‘蹲下’不是本动作库的跪下") &&
+                systemPrompt.Contains("他说跪下") &&
+                systemPrompt.Contains("stand_up 也必须是当前NPC从本模块拥有的跪姿中实际起身") &&
+                systemPrompt.Contains("目光落在某处不等于 point") &&
                 systemPrompt.Contains("强作镇定") &&
                 systemPrompt.Contains("可独立于库外动作") &&
                 systemPrompt.Contains("命令、要求或示意别人执行动作") &&
