@@ -2,26 +2,46 @@ using System;
 
 namespace AnimusForge.SiegeAftermathIntervention;
 
+/// <summary>Recovery decision for a restored capture operation checked against live world state.</summary>
+public enum SetsUrbanCaptureRecoveryDecision
+{
+    /// <summary>Record is unusable and produced no side effects; drop it silently.</summary>
+    Abandon = 0,
+
+    /// <summary>Live world still matches; continue from the last verified stage.</summary>
+    Continue = 1,
+
+    /// <summary>Owner already the player clan with victory committed; treat ownership stage as done.</summary>
+    ContinueOwnershipAlreadyApplied = 2,
+
+    /// <summary>Live world moved on (third-party owner, missing clan); freeze without side effects.</summary>
+    Suspend = 3
+}
+
 /// <summary>
-/// Immutable identity of one SETS settlement-entry capture operation.
-/// Holds stable campaign ids only; live Bannerlord objects stay in the runtime adapter.
+/// Immutable identity of one SETS hostile urban-capture operation.
+/// Construction fails closed: only hostile enemy towns and castles qualify.
+/// Owned/attached incidents and villages never build a context.
 /// </summary>
 public sealed class SetsUrbanCaptureContext
 {
-    public SetsUrbanCaptureContext(
+    public const int CurrentSchemaVersion = 1;
+
+    private SetsUrbanCaptureContext(
         string operationId,
         string settlementId,
         SetsSettlementSceneKind sceneKind,
-        SetsUrbanCaptureOwnershipClassification ownershipClassification,
         string previousOwnerClanId,
+        string playerClanId,
         int selectedFollowerCount)
     {
-        OperationId = Normalize(operationId);
-        SettlementId = Normalize(settlementId);
+        OperationId = operationId;
+        SettlementId = settlementId;
         SceneKind = sceneKind;
-        OwnershipClassification = ownershipClassification;
-        PreviousOwnerClanId = Normalize(previousOwnerClanId);
-        SelectedFollowerCount = selectedFollowerCount < 0 ? 0 : selectedFollowerCount;
+        PreviousOwnerClanId = previousOwnerClanId;
+        PlayerClanId = playerClanId;
+        SelectedFollowerCount = selectedFollowerCount;
+        SchemaVersion = CurrentSchemaVersion;
     }
 
     /// <summary>Unique id for this capture operation; commits and retries dedupe against it.</summary>
@@ -29,14 +49,63 @@ public sealed class SetsUrbanCaptureContext
 
     public string SettlementId { get; }
 
+    /// <summary>Town or Castle only.</summary>
     public SetsSettlementSceneKind SceneKind { get; }
 
-    public SetsUrbanCaptureOwnershipClassification OwnershipClassification { get; }
-
-    /// <summary>Owner clan id captured before any transfer, for later relation handling. May be empty.</summary>
+    /// <summary>Owner clan id captured before any transfer, for relation handling and recovery checks.</summary>
     public string PreviousOwnerClanId { get; }
 
+    /// <summary>The player clan expected to receive ownership. Never empty.</summary>
+    public string PlayerClanId { get; }
+
     public int SelectedFollowerCount { get; }
+
+    public int SchemaVersion { get; }
+
+    /// <summary>
+    /// Build a hostile capture context, or null when the facts do not describe a
+    /// legal hostile town/castle capture. Callers must treat null as "no session".
+    /// Rejected: non-town/castle scenes, missing ids, and player-owned targets.
+    /// </summary>
+    public static SetsUrbanCaptureContext TryCreateHostile(
+        string operationId,
+        string settlementId,
+        SetsSettlementSceneKind sceneKind,
+        string previousOwnerClanId,
+        string playerClanId,
+        int selectedFollowerCount)
+    {
+        string normalizedOperationId = Normalize(operationId);
+        string normalizedSettlementId = Normalize(settlementId);
+        string normalizedPreviousOwner = Normalize(previousOwnerClanId);
+        string normalizedPlayerClan = Normalize(playerClanId);
+
+        if (normalizedOperationId.Length == 0
+            || normalizedSettlementId.Length == 0
+            || normalizedPlayerClan.Length == 0)
+        {
+            return null;
+        }
+
+        if (sceneKind != SetsSettlementSceneKind.Town && sceneKind != SetsSettlementSceneKind.Castle)
+        {
+            return null;
+        }
+
+        // A settlement the player already owns can never be a hostile capture target.
+        if (string.Equals(normalizedPreviousOwner, normalizedPlayerClan, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return new SetsUrbanCaptureContext(
+            normalizedOperationId,
+            normalizedSettlementId,
+            sceneKind,
+            normalizedPreviousOwner,
+            normalizedPlayerClan,
+            selectedFollowerCount < 0 ? 0 : selectedFollowerCount);
+    }
 
     public bool IsValid
     {
@@ -44,47 +113,55 @@ public sealed class SetsUrbanCaptureContext
         {
             return OperationId.Length > 0
                 && SettlementId.Length > 0
-                && SetsSettlementEntryProfile.IsSupported(SceneKind)
-                && OwnershipClassification != SetsUrbanCaptureOwnershipClassification.Unknown;
+                && PlayerClanId.Length > 0
+                && (SceneKind == SetsSettlementSceneKind.Town || SceneKind == SetsSettlementSceneKind.Castle)
+                && !string.Equals(PreviousOwnerClanId, PlayerClanId, StringComparison.Ordinal);
         }
     }
 
-    public bool IsHostileCapture
-    {
-        get { return OwnershipClassification == SetsUrbanCaptureOwnershipClassification.Hostile; }
-    }
-
-    public bool IsOwnedOrAttachedIncident
-    {
-        get
-        {
-            return OwnershipClassification == SetsUrbanCaptureOwnershipClassification.PlayerOwned
-                || OwnershipClassification == SetsUrbanCaptureOwnershipClassification.RulerAttached;
-        }
-    }
-
-    /// <summary>A loaded or retried record may resume only when its identity still agrees with live state.</summary>
-    public bool MatchesLiveState(string liveSettlementId, string liveOwnerClanId, bool ownershipAlreadyCommitted)
+    /// <summary>
+    /// Recovery table for a restored record (handoff section 8.2). Fail closed:
+    /// anything other than an exact expected owner or a provably completed
+    /// transfer suspends or abandons rather than guessing.
+    /// </summary>
+    public SetsUrbanCaptureRecoveryDecision ResolveRecovery(
+        bool settlementExists,
+        string liveOwnerClanId,
+        bool livePlayerClanExists,
+        string livePlayerClanId,
+        bool victoryCommitted)
     {
         if (!IsValid)
         {
-            return false;
+            return SetsUrbanCaptureRecoveryDecision.Abandon;
         }
 
-        if (!string.Equals(SettlementId, Normalize(liveSettlementId), StringComparison.Ordinal))
+        if (!settlementExists)
         {
-            return false;
+            return SetsUrbanCaptureRecoveryDecision.Abandon;
         }
 
-        if (ownershipAlreadyCommitted)
+        if (!livePlayerClanExists
+            || !string.Equals(Normalize(livePlayerClanId), PlayerClanId, StringComparison.Ordinal))
         {
-            // After a committed transfer the live owner is expected to differ from the previous owner.
-            return true;
+            return SetsUrbanCaptureRecoveryDecision.Suspend;
         }
 
-        // Before transfer, a changed owner means the world moved on; fail closed.
-        return PreviousOwnerClanId.Length == 0
-            || string.Equals(PreviousOwnerClanId, Normalize(liveOwnerClanId), StringComparison.Ordinal);
+        string normalizedLiveOwner = Normalize(liveOwnerClanId);
+        if (string.Equals(normalizedLiveOwner, PreviousOwnerClanId, StringComparison.Ordinal))
+        {
+            return SetsUrbanCaptureRecoveryDecision.Continue;
+        }
+
+        if (string.Equals(normalizedLiveOwner, PlayerClanId, StringComparison.Ordinal))
+        {
+            return victoryCommitted
+                ? SetsUrbanCaptureRecoveryDecision.ContinueOwnershipAlreadyApplied
+                : SetsUrbanCaptureRecoveryDecision.Suspend;
+        }
+
+        // Third-party owner: the world moved on. Never continue the capture.
+        return SetsUrbanCaptureRecoveryDecision.Suspend;
     }
 
     private static string Normalize(string value)
