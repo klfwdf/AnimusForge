@@ -2456,6 +2456,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly bool _activateVillageAftermath;
 		private readonly TroopRoster _selectedRoster;
 		private readonly TroopRoster _survivingRoster;
+		private readonly SetsUrbanCaptureSession _shadowCaptureSession;
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
@@ -2542,6 +2543,72 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_selectedRoster = CloneRoster(entry?.SelectedRoster, _limit);
 			_survivingRoster = CloneRoster(_selectedRoster, int.MaxValue);
 			_remainingDefenderReserve = _defenderConflictEnabled ? BuildCurrentDefenderReserve(_settlementId, _sceneKind) : new List<DefenderReserveEntry>();
+			_shadowCaptureSession = CreateShadowCaptureSession(entry);
+		}
+
+		/// <summary>
+		/// Shadow-mode capture session (2026-08-28 handoff action 8): built only for
+		/// hostile town/castle entries, mirrors the legacy boolean decisions, and
+		/// logs divergence. It drives no behavior yet; owned settlements, villages,
+		/// and unknown scenes get null and are untouched by design.
+		/// </summary>
+		private SetsUrbanCaptureSession CreateShadowCaptureSession(PendingMissionEntry entry)
+		{
+			try
+			{
+				if (!_defenderConflictEnabled
+					|| (_sceneKind != SetsSettlementSceneKind.Town && _sceneKind != SetsSettlementSceneKind.Castle))
+				{
+					return null;
+				}
+				Settlement settlement = Settlement.Find(_settlementId);
+				string previousOwnerClanId = settlement?.OwnerClan?.StringId ?? "";
+				string playerClanId = Clan.PlayerClan?.StringId ?? "";
+				string operationId = _settlementId + "@" + Math.Max(0L, (long)CampaignTime.Now.ToHours) + "-" + Environment.TickCount;
+				SetsUrbanCaptureContext context = SetsUrbanCaptureContext.TryCreateHostile(
+					operationId,
+					_settlementId,
+					_sceneKind,
+					previousOwnerClanId,
+					playerClanId,
+					_selectedRoster?.TotalManCount ?? 0);
+				if (context == null)
+				{
+					SettlementEntryTroopSelectionLog.Log("SETS shadow session refused (context invalid). settlement=" + _settlementId + ", scene=" + _sceneKind + ", prevOwner=" + previousOwnerClanId + ", playerClan=" + playerClanId);
+					return null;
+				}
+				var session = new SetsUrbanCaptureSession(context);
+				session.TryApply(SetsUrbanCaptureEvent.PrepareEntry);
+				session.TryApply(SetsUrbanCaptureEvent.StartMission);
+				SettlementEntryTroopSelectionLog.Log("SETS shadow session created. " + session.DescribeForLog());
+				return session;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("SETS shadow session creation failed (legacy flow unaffected). error=" + ex.Message);
+				return null;
+			}
+		}
+
+		/// <summary>Apply a shadow event and log when the session disagrees with the legacy decision.</summary>
+		private void ShadowApply(SetsUrbanCaptureEvent captureEvent, bool legacyAllowed, string site)
+		{
+			try
+			{
+				if (_shadowCaptureSession == null)
+				{
+					return;
+				}
+				bool shadowAllowed = _shadowCaptureSession.TryApply(captureEvent);
+				if (shadowAllowed != legacyAllowed)
+				{
+					SettlementEntryTroopSelectionLog.Log("SETS shadow DIVERGENCE at " + site + ": legacy=" + legacyAllowed + ", shadow=" + shadowAllowed + ", " + _shadowCaptureSession.DescribeForLog());
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("SETS shadow apply failed (legacy flow unaffected). site=" + site + ", error=" + ex.Message);
+			}
 		}
 
 		internal SetsSettlementSceneKind SceneKind => _sceneKind;
@@ -3047,6 +3114,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		protected override void OnEndMission()
 		{
+			ShadowApply(SetsUrbanCaptureEvent.EndMission, legacyAllowed: true, site: "OnEndMission");
 			CancelPendingSettlementCivilianGather("mission_end", clearExternalRequest: true);
 			EndSettlementCivilianGatherRuntime(_settlementCivilianGatherRuntimeGeneration);
 			EndOwnedSettlementMassacreForMissionClose();
@@ -3209,6 +3277,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				_conflictActive = true;
+				ShadowApply(SetsUrbanCaptureEvent.StartConflict, legacyAllowed: true, site: "StartConflict");
 				SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
 					Settlement.CurrentSettlement?.MapFaction,
 					"sets_internal_riot_start");
@@ -6288,13 +6357,38 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
 		{
 			Agent main = Agent.Main ?? base.Mission?.MainAgent;
-			if (_defenderConflictEnabled && _conflictActive && !_victoryReached && main != null && main.IsActive())
+			bool legacyBlocked = _defenderConflictEnabled && _conflictActive && !_victoryReached && main != null && main.IsActive();
+			CompareShadowExitBlock(legacyBlocked);
+			if (legacyBlocked)
 			{
 				canPlayerLeave = false;
 				return new InquiryData("【SETS内部暴乱】", SetsSettlementEntryProfile.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
 			}
 			canPlayerLeave = true;
 			return null;
+		}
+
+		/// <summary>Shadow-compare the exit-block policy against the legacy boolean decision.</summary>
+		private void CompareShadowExitBlock(bool legacyBlocked)
+		{
+			try
+			{
+				if (_shadowCaptureSession == null)
+				{
+					return;
+				}
+				int liveEnemies = CountLiveTrackedEnemies();
+				bool reserveExhausted = !HasRemainingDefenderReserve();
+				bool shadowBlocked = SetsUrbanCapturePolicy.ShouldBlockExit(_shadowCaptureSession.State, liveEnemies, reserveExhausted);
+				if (shadowBlocked != legacyBlocked)
+				{
+					SettlementEntryTroopSelectionLog.Log("SETS shadow DIVERGENCE at ExitBlock: legacy=" + legacyBlocked + ", shadow=" + shadowBlocked + ", liveEnemies=" + liveEnemies + ", reserveExhausted=" + reserveExhausted + ", " + _shadowCaptureSession.DescribeForLog());
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("SETS shadow exit-block compare failed (legacy flow unaffected). error=" + ex.Message);
+			}
 		}
 
 		internal bool ShouldBypassNativeEndMissionGuards()
@@ -6311,6 +6405,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_victoryReached = true;
 			_victoryReachedTime = base.Mission?.CurrentTime ?? 0f;
 			_conflictActive = false;
+			ShadowApply(SetsUrbanCaptureEvent.ReachVictory, legacyAllowed: true, site: "ReachVictory");
+			_shadowCaptureSession?.Ledger.TryCommitVictory();
 			ClearSetsUsableProtectionState("sets_victory");
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
