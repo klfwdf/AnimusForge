@@ -137,6 +137,35 @@ public static class TownPromptComposer
             });
     }
 
+    public static string BuildCompactAmbientReactionFact(
+        SiegeInterventionActionKind action,
+        TownAmbientReactionAudience audience,
+        string settlementName,
+        string speakerFocus,
+        TownPromptTextCatalog textCatalog)
+    {
+        if (audience == TownAmbientReactionAudience.None)
+        {
+            return string.Empty;
+        }
+
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        string scene = ApplyTemplate(text.AmbientReactionSceneTemplate, "settlement", NormalizeSettlementName(settlementName));
+        scene = ApplyTemplate(scene, "action", text.GetSuggestionActionLabel(action));
+        scene = ApplyTemplate(
+            scene,
+            "focus",
+            string.IsNullOrWhiteSpace(speakerFocus) ? audience.ToString() : speakerFocus.Trim());
+        return string.Join(
+            Environment.NewLine,
+            new[]
+            {
+                TownAmbientReactionContextProfile.BuildMarker(action, audience),
+                scene,
+                text.AmbientReactionReplyInstruction,
+            });
+    }
+
     public static string BuildPostprocessContext(
         SiegePostprocessContextFacts facts,
         TownPromptTextCatalog textCatalog)

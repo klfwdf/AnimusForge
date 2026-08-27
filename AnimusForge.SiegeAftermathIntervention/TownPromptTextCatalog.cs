@@ -216,6 +216,36 @@ public sealed class TownPromptTextCatalog
 
     public string SuggestionNoticeTemplate { get; set; }
 
+    public string SpeakerVoiceSectionTitle { get; set; }
+
+    public string SpeakerVoiceSourceTemplate { get; set; }
+
+    public string SpeakerVoiceProfileTemplate { get; set; }
+
+    public string SpeakerVoiceRecentTemplate { get; set; }
+
+    public string SpeakerVoiceInstruction { get; set; }
+
+    public Dictionary<string, string> SpeakerVoiceFragments { get; set; }
+
+    public string CompactAmbientSystemPrompt { get; set; }
+
+    public string CompactAmbientIdentityTemplate { get; set; }
+
+    public string CompactAmbientAlliedSoldierIdentity { get; set; }
+
+    public string CompactAmbientCivilianIdentity { get; set; }
+
+    public string CompactAmbientOtherIdentity { get; set; }
+
+    public string CompactAmbientUserTemplate { get; set; }
+
+    public string CompactAmbientPostprocessSystemPrompt { get; set; }
+
+    public string CompactAmbientPostprocessUserTemplate { get; set; }
+
+    public string CompactAmbientPostprocessContract { get; set; }
+
     public static TownPromptTextCatalog Resolve(TownPromptTextCatalog source)
     {
         TownPromptTextCatalog fallback = CreateEnglishFallback();
@@ -330,6 +360,21 @@ public sealed class TownPromptTextCatalog
             AmbientRuleDescriptions = ResolveRoleInstructions(source.AmbientRuleDescriptions, fallback.AmbientRuleDescriptions),
             SuggestionActionLabels = ResolveRoleInstructions(source.SuggestionActionLabels, fallback.SuggestionActionLabels),
             SuggestionNoticeTemplate = Pick(source.SuggestionNoticeTemplate, fallback.SuggestionNoticeTemplate),
+            SpeakerVoiceSectionTitle = Pick(source.SpeakerVoiceSectionTitle, fallback.SpeakerVoiceSectionTitle),
+            SpeakerVoiceSourceTemplate = Pick(source.SpeakerVoiceSourceTemplate, fallback.SpeakerVoiceSourceTemplate),
+            SpeakerVoiceProfileTemplate = Pick(source.SpeakerVoiceProfileTemplate, fallback.SpeakerVoiceProfileTemplate),
+            SpeakerVoiceRecentTemplate = Pick(source.SpeakerVoiceRecentTemplate, fallback.SpeakerVoiceRecentTemplate),
+            SpeakerVoiceInstruction = Pick(source.SpeakerVoiceInstruction, fallback.SpeakerVoiceInstruction),
+            SpeakerVoiceFragments = ResolveRoleInstructions(source.SpeakerVoiceFragments, fallback.SpeakerVoiceFragments),
+            CompactAmbientSystemPrompt = Pick(source.CompactAmbientSystemPrompt, fallback.CompactAmbientSystemPrompt),
+            CompactAmbientIdentityTemplate = Pick(source.CompactAmbientIdentityTemplate, fallback.CompactAmbientIdentityTemplate),
+            CompactAmbientAlliedSoldierIdentity = Pick(source.CompactAmbientAlliedSoldierIdentity, fallback.CompactAmbientAlliedSoldierIdentity),
+            CompactAmbientCivilianIdentity = Pick(source.CompactAmbientCivilianIdentity, fallback.CompactAmbientCivilianIdentity),
+            CompactAmbientOtherIdentity = Pick(source.CompactAmbientOtherIdentity, fallback.CompactAmbientOtherIdentity),
+            CompactAmbientUserTemplate = Pick(source.CompactAmbientUserTemplate, fallback.CompactAmbientUserTemplate),
+            CompactAmbientPostprocessSystemPrompt = Pick(source.CompactAmbientPostprocessSystemPrompt, fallback.CompactAmbientPostprocessSystemPrompt),
+            CompactAmbientPostprocessUserTemplate = Pick(source.CompactAmbientPostprocessUserTemplate, fallback.CompactAmbientPostprocessUserTemplate),
+            CompactAmbientPostprocessContract = Pick(source.CompactAmbientPostprocessContract, fallback.CompactAmbientPostprocessContract),
         };
     }
 
@@ -337,7 +382,7 @@ public sealed class TownPromptTextCatalog
     {
         return new TownPromptTextCatalog
         {
-            Version = 4,
+            Version = 5,
             SceneSectionTitle = "[1. CURRENT SCENE]",
             SceneSummaryTemplate = "{settlement} was just captured by the player. Treat this as an occupied aftermath scene, not ordinary town life.",
             RoleSectionTitle = "[2. SPEAKER ROLE]",
@@ -449,6 +494,57 @@ public sealed class TownPromptTextCatalog
             AmbientRuleDescriptions = CreateAmbientRuleDescriptions(),
             SuggestionActionLabels = CreateSuggestionActionLabels(),
             SuggestionNoticeTemplate = "{speaker} suggests: {action}. This is advice only; the player must give an eligible order to execute it.",
+            SpeakerVoiceSectionTitle = "[SCENE-LOCAL VOICE]",
+            SpeakerVoiceSourceTemplate = "Existing AF unnamed-character persona: {personality}. Background anchor: {background}.",
+            SpeakerVoiceProfileTemplate = "Voice profile for {role}: temperament={temperament}; cadence={rhythm}; immediate concern={concern}.",
+            SpeakerVoiceRecentTemplate = "Avoid repeating these recent lines or their sentence pattern: {recent}",
+            SpeakerVoiceInstruction = "Keep the same scene-local voice while varying vocabulary, opening, sentence rhythm, emotional intensity, and concrete concern. Do not invent a biography. A soldier may complain but cannot refuse a valid player order.",
+            SpeakerVoiceFragments = CreateSpeakerVoiceFragments(),
+            CompactAmbientSystemPrompt = "Write one brief in-character reaction for an ordinary NPC in the active GCCZ town aftermath. Follow the supplied role, live event, scene-local voice, and player-authority rules. Output dialogue only. Do not output tags, rules, narration, or analysis.",
+            CompactAmbientIdentityTemplate = "[GCCZ TOWN SHORT-REACTION IDENTITY] This is a post-capture town aftermath, not peaceful daily life. Player {player} is the victorious leader, sole decision-maker, and source of commands for the occupying force. {speaker_identity}",
+            CompactAmbientAlliedSoldierIdentity = "You are an allied ordinary soldier brought into town by the player. A valid direct order must be obeyed; you may complain but cannot refuse.",
+            CompactAmbientCivilianIdentity = "You are an ordinary civilian in the defeated town. Respond from concerns about survival, property, order, and local interests.",
+            CompactAmbientOtherIdentity = "You are an ordinary person at the town aftermath. Do not issue orders as the player.",
+            CompactAmbientUserTemplate = "{identity}\n{voice}\n[LIVE EVENT]\n{fact}\n[OUTPUT]\n{length_instruction}",
+            CompactAmbientPostprocessSystemPrompt = "Classify one ordinary NPC ambient reaction in the active GCCZ town aftermath. Use semantic meaning rather than keyword matching. Select at most one eligible primary action and one mood. Suggestions never execute settlement actions. An allied soldier's obedient complaint is not refusal.",
+            CompactAmbientPostprocessUserTemplate = "{runtime_context}\n[ELIGIBLE PRIMARY RULES]\n{candidate_rules}\n[MOOD RULES]\n{mood_rules}\n[LATEST NPC REPLY]\n{reply}",
+            CompactAmbientPostprocessContract = "[DECISION] Read the complete latest reply. Select one suggestion only when the NPC clearly recommends that future action. Select soldier discontent only for clearly strong hostility, rejection, or deep resentment from an allied ordinary soldier. Negative example: an obedient complaint is mood only. Positive example: explicit deep hatred toward the commander may select discontent. [FINAL OUTPUT] With a primary action, output exactly one eligible primary tag on line one and one mood tag on line two. Without a primary action, output one mood tag only. Never explain or invent a tag.",
+        };
+    }
+
+    private static Dictionary<string, string> CreateSpeakerVoiceFragments()
+    {
+        return new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase)
+        {
+            ["civilian_temperament_cautious"] = "cautious and watchful",
+            ["civilian_temperament_practical"] = "practical and calculating",
+            ["civilian_temperament_defiant"] = "quietly defiant",
+            ["civilian_temperament_compassionate"] = "compassionate toward nearby families",
+            ["civilian_temperament_suspicious"] = "suspicious of every promise",
+            ["civilian_temperament_resigned"] = "weary and resigned",
+            ["soldier_temperament_disciplined"] = "disciplined and restrained",
+            ["soldier_temperament_hotheaded"] = "hotheaded but obedient",
+            ["soldier_temperament_wary"] = "battle-wary and alert",
+            ["soldier_temperament_mercenary"] = "concerned with material reward",
+            ["soldier_temperament_zealous"] = "fervent and severe",
+            ["soldier_temperament_stoic"] = "stoic and economical with words",
+            ["rhythm_terse"] = "short clipped sentences",
+            ["rhythm_hesitant"] = "hesitant starts and cautious pauses",
+            ["rhythm_plainspoken"] = "plain direct wording",
+            ["rhythm_indirect"] = "indirect hints before the main point",
+            ["rhythm_vivid"] = "one concrete image from the scene",
+            ["rhythm_formal"] = "formal respectful phrasing",
+            ["civilian_concern_family"] = "family members and dependants",
+            ["civilian_concern_livelihood"] = "food, work, and tomorrow's livelihood",
+            ["civilian_concern_property"] = "home, tools, and remaining property",
+            ["civilian_concern_safety"] = "immediate personal safety",
+            ["civilian_concern_local_order"] = "whether local order will survive",
+            ["soldier_concern_discipline"] = "discipline and clear orders",
+            ["soldier_concern_reward"] = "pay and the promised share",
+            ["soldier_concern_honor"] = "honor and how the victory is remembered",
+            ["soldier_concern_comrades"] = "the burden carried by comrades",
+            ["soldier_concern_faith"] = "omens, faith, and moral consequence",
+            ["soldier_concern_occupation_order"] = "holding the captured streets securely",
         };
     }
 

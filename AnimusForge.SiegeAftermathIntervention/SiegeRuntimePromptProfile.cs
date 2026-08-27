@@ -49,6 +49,25 @@ public static class SiegeRuntimePromptProfile
             + speakerIdentity;
     }
 
+    public static string BuildCompactImmediateReactionIdentityOverride(
+        string playerName,
+        bool alliedSoldier,
+        bool civilian,
+        TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = TownPromptTextCatalog.Resolve(textCatalog);
+        string normalizedPlayerName = NormalizePlayerName(playerName);
+        string speakerIdentity = alliedSoldier
+            ? text.CompactAmbientAlliedSoldierIdentity
+            : (civilian
+                ? text.CompactAmbientCivilianIdentity
+                : text.CompactAmbientOtherIdentity);
+        return (text.CompactAmbientIdentityTemplate ?? string.Empty)
+            .Replace("{player}", normalizedPlayerName)
+            .Replace("{speaker_identity}", speakerIdentity ?? string.Empty)
+            .Trim();
+    }
+
     private static string NormalizePlayerName(string playerName)
     {
         return string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
