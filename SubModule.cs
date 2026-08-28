@@ -658,6 +658,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new VillageAftermathBehavior());
 			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());
 			campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());
+			campaignGameStarter.AddBehavior(new NoblePrisonerExecutionOrderBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new DiplomacyBehavior());

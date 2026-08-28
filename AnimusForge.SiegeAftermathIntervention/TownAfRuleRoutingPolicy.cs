@@ -79,10 +79,26 @@ public static class TownAfRuleRoutingPolicy
 
     public static bool IsAllowed(TownAfDialoguePhase phase, string ruleId)
     {
+        return IsAllowed(phase, ruleId, isEscortedNoblePrisoner: false);
+    }
+
+    public static bool IsAllowed(
+        TownAfDialoguePhase phase,
+        string ruleId,
+        bool isEscortedNoblePrisoner)
+    {
         string normalizedRuleId = Normalize(ruleId);
         if (normalizedRuleId.Length == 0)
         {
             return false;
+        }
+
+        // Escorted noble prisoners are full AF conversation participants. Runtime
+        // handlers still validate every action against live eligibility; this
+        // exception only prevents the GCCZ stage router from hiding AF features.
+        if (isEscortedNoblePrisoner)
+        {
+            return true;
         }
 
         if (phase == TownAfDialoguePhase.Inactive)
@@ -104,8 +120,19 @@ public static class TownAfRuleRoutingPolicy
         TownAfDialoguePhase phase,
         IEnumerable<string> availableRuleIds)
     {
+        return BuildExcludedRuleIds(
+            phase,
+            availableRuleIds,
+            isEscortedNoblePrisoner: false);
+    }
+
+    public static IReadOnlyList<string> BuildExcludedRuleIds(
+        TownAfDialoguePhase phase,
+        IEnumerable<string> availableRuleIds,
+        bool isEscortedNoblePrisoner)
+    {
         var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        if (phase == TownAfDialoguePhase.Inactive)
+        if (phase == TownAfDialoguePhase.Inactive || isEscortedNoblePrisoner)
         {
             return Array.Empty<string>();
         }

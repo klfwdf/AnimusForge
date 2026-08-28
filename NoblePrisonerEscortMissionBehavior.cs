@@ -82,10 +82,17 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow killingBlow)
 	{
 		base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, killingBlow);
+		NoblePrisonerExecutionRuntime.OnAgentRemoved(affectedAgent, affectorAgent, agentState);
 		if (affectedAgent != null && _agents.Remove(affectedAgent.Index))
 		{
 			NoblePrisonerEscortBehavior.UnregisterEscortedAgent(affectedAgent, "agent_removed_" + agentState);
 		}
+	}
+
+	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+	{
+		base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
+		NoblePrisonerExecutionRuntime.OnAgentHit(affectedAgent, affectorAgent);
 	}
 
 	protected override void OnEndMission()
@@ -213,6 +220,11 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 				continue;
 			}
 			if (runtime.CombatDespawnStarted)
+			{
+				continue;
+			}
+			if (NoblePrisonerExecutionRuntime.ControlsAgent(agent)
+				|| DuelBehavior.ControlsAgentForExternal(agent))
 			{
 				continue;
 			}
