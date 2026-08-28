@@ -4684,7 +4684,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (allocation.Count <= 0)
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【城堡处置】当前没有未分配的普通战俘；若要推翻旧安排，请明确说反悔、改判或全部重来。",
+				"【城堡处置】当前没有未分配的普通战俘；若要推翻旧安排，请明确说反悔、全部重来或推翻之前安排。",
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 			return false;
 		}
@@ -4763,11 +4763,19 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (SiegeCastleActionKindProfile.IsRecruitment(action))
 		{
 			int freeSlots = Math.Max(0, (PartyBase.MainParty?.PartySizeLimit ?? 0) - (PartyBase.MainParty?.NumberOfAllMembers ?? 0));
-			if (stagedCount > freeSlots)
+			int totalStagedRecruitCount = CastleAftermathDispositionSessionBridge
+				.GetDeferredAllocations()
+				.Where(item => SiegeCastleActionKindProfile.IsRecruitment(item.Action))
+				.Sum(item => item.Roster?.TotalManCount ?? 0);
+			int previouslyStagedRecruitCount = Math.Max(0, totalStagedRecruitCount - stagedCount);
+			string capacityWarning = SiegeCastlePrisonerDispositionProfile.BuildStagedRecruitCapacityWarning(
+				freeSlots,
+				previouslyStagedRecruitCount,
+				stagedCount);
+			if (!string.IsNullOrEmpty(capacityWarning))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					"【城堡处置】注意：主队当前仅有 " + freeSlots + " 个空余编制，离场时最多收编 "
-					+ freeSlots + " 人，超出部分将继续保持俘虏身份。",
+					capacityWarning,
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 			}
 		}
@@ -4826,7 +4834,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				SiegeCastleActionKind.RepairCastleLaborForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_repair_castle_forced_exit"),
 				SiegeCastleActionKind.InstructorPrisonersVoluntary => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_instructor_voluntary_exit"),
 				SiegeCastleActionKind.InstructorPrisonersForced => CastleAftermathActionRuntimeBridge.ResolveRegularPrisonersForSettlementEffect(allocation.Roster, "castle_instructor_forced_exit"),
-				_ => CastleAftermathActionApplyResult.Failed("unsupported_deferred_terminal_action", CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount)
+				_ => CastleAftermathActionApplyResult.Failed(
+					SiegeCastlePrisonerDispositionProfile.UnsupportedDeferredTerminalActionReason,
+					CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount)
 			};
 
 			if (!result.Succeeded || result.AffectedCount <= 0)
@@ -4835,7 +4845,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					+ ", Requested=" + allocation.Roster.TotalManCount + ", Reason=" + result.ReasonCode);
 				InformationManager.DisplayMessage(new InformationMessage(
 					"【城堡处置】离场结算失败：分组“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
-					+ "”（" + allocation.Roster.TotalManCount + " 人）无人生效，原因：" + DescribeCastleDeferredFailureReason(result.ReasonCode)
+					+ "”（" + allocation.Roster.TotalManCount + " 人）无人生效，原因："
+					+ SiegeCastlePrisonerDispositionProfile.DescribeDeferredFailureReason(result.ReasonCode)
 					+ "。这些战俘继续保持俘虏身份。",
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 				continue;
@@ -4876,17 +4887,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("CastleAftermath", "Finalized staged castle regular-prisoner group. " + outcome);
 			GcczDiagnosticLog.Log("CastleOutcome", "deferredFinal " + outcome);
 		}
-	}
-
-	private static string DescribeCastleDeferredFailureReason(string reasonCode)
-	{
-		return (reasonCode ?? string.Empty).Trim() switch
-		{
-			SiegeCastlePrisonerDispositionProfile.PartyCapacityFullReason => "主队编制已满",
-			SiegeCastlePrisonerDispositionProfile.RosterUnavailableReason => "俘虏或部队名册不可用",
-			SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason => "名册中已无匹配的普通战俘",
-			_ => "结算未生效（" + (string.IsNullOrWhiteSpace(reasonCode) ? "未知原因" : reasonCode) + "）"
-		};
 	}
 
 	private static bool ApplyCastleLordTerminalInterface(

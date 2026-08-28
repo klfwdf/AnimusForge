@@ -216,7 +216,7 @@ internal static class CastleAftermathActionRuntimeBridge
 				return CastleAftermathActionApplyResult.Completed(
 					0,
 					CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-					"no_sellable_regular_prisoners");
+					SiegeCastlePrisonerDispositionProfile.NoSellableRegularPrisonersReason);
 			}
 
 			SellPrisonersAction.ApplyForSelectedPrisoners(PartyBase.MainParty, null, resolved);
@@ -368,7 +368,9 @@ internal static class CastleAftermathActionRuntimeBridge
 			return CastleAftermathActionApplyResult.Completed(
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				"removed_for_" + source);
+				affected > 0
+					? SiegeCastlePrisonerDispositionProfile.RemovedForReasonPrefix + source
+					: SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
 		}
 		catch (Exception ex)
 		{

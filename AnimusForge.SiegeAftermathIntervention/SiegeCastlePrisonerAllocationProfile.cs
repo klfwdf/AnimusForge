@@ -28,7 +28,7 @@ public static class SiegeCastlePrisonerAllocationProfile
 
     private static readonly string[] ResetKeywords =
     {
-        "反悔", "改判", "重新安排", "重新处置", "全部重来", "推翻之前", "取消之前", "不算之前"
+        "反悔", "重新安排", "重新处置", "全部重来", "推翻之前", "取消之前", "不算之前"
     };
 
     public static SiegeCastlePrisonerQuantityDecision Resolve(
