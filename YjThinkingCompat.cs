@@ -10,6 +10,7 @@ namespace AnimusForge;
 internal static class YjThinkingCompat
 {
 	private const string YjHost = "yjapi.manqiaotechnology.com";
+	private const string Gemini37FlashHighModelPrefix = "gemini-3.7-flash-high";
 
 	public static bool IsYjGeminiEndpoint(string apiUrl, string modelName)
 	{
@@ -36,6 +37,11 @@ internal static class YjThinkingCompat
 		return text.StartsWith("gemini-", StringComparison.OrdinalIgnoreCase);
 	}
 
+	private static bool IsGemini37FlashHigh(string modelName)
+	{
+		return (modelName ?? string.Empty).Trim().StartsWith(Gemini37FlashHighModelPrefix, StringComparison.OrdinalIgnoreCase);
+	}
+
 	public static bool TryApply(JObject payload, string apiUrl, string modelName, bool thinkingEnabled, string effort, out string thinkingMode)
 	{
 		thinkingMode = "plain";
@@ -45,6 +51,18 @@ internal static class YjThinkingCompat
 		}
 
 		string selectedEffort = NormalizeEffort(effort);
+		if (IsGemini37FlashHigh(modelName)
+			&& (!thinkingEnabled
+				|| string.Equals(selectedEffort, DuelSettings.ReasoningEffortNone, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(selectedEffort, DuelSettings.ReasoningEffortMinimal, StringComparison.OrdinalIgnoreCase)))
+		{
+			// 3.7-flash-high 会拒绝 none/minimal；关闭思考时也不发送伪造的 disabled 字段，直接走纯请求。
+			payload.Remove("thinking");
+			payload.Remove("output_config");
+			payload.Remove("reasoning_effort");
+			thinkingMode = "yj_plain_unsupported_" + selectedEffort;
+			return true;
+		}
 		if (!thinkingEnabled || string.Equals(selectedEffort, DuelSettings.ReasoningEffortNone, StringComparison.OrdinalIgnoreCase))
 		{
 			selectedEffort = DuelSettings.ReasoningEffortNone;
