@@ -9539,22 +9539,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		MaintainSetsAgentCombatReadiness(agent);
 	}
 
-	internal static void MaintainSetsIndependentHeroArmedCombatReadyForExternal(Agent agent)
-	{
-		Hero hero = (agent?.Character as CharacterObject)?.HeroObject;
-		if (agent == null
-			|| !agent.IsHuman
-			|| !agent.IsActive()
-			|| !SettlementEntryTroopSelectionBehavior.IsActiveSetsEntryMissionForExternal(Mission.Current)
-			|| hero == null
-			|| !SceneTauntBehavior.IsPlayerMainPartyHero(hero))
-		{
-			return;
-		}
-		TryAlarmAgent(agent);
-		MaintainSetsAgentCombatReadiness(agent);
-	}
-
 	private static void MaintainSetsAgentCombatReadiness(Agent agent)
 	{
 		if (agent == null || !agent.IsHuman || !agent.IsActive())
@@ -9617,11 +9601,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (characterObject == null)
 			{
 				return false;
-			}
-			if (SettlementEntryTroopSelectionBehavior.IsActiveSetsEntryMissionForExternal(Mission.Current)
-				&& SceneTauntBehavior.IsPlayerMainPartyHero(characterObject.HeroObject))
-			{
-				return true;
 			}
 			switch (characterObject.Occupation)
 			{

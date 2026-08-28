@@ -61,44 +61,23 @@ public static class SetsSettlementEntryProfile
             || kind == SetsSettlementSceneKind.Village;
     }
 
-    /// <summary>
-    /// Regular troops remain selectable in every profile. In a foreign-settlement
-    /// profile, a non-player hero is selectable only when the hero belongs to the
-    /// player clan or is a player companion.
-    /// </summary>
-    public static bool IsConfigurableFollower(
-        bool isHero,
-        bool isPlayerCharacter,
-        bool isOtherSettlementProfile,
-        bool isPlayerClanMember,
-        bool isPlayerCompanion)
+    /// <summary>Only regular troops belong in either configurable entry roster.</summary>
+    public static bool IsConfigurableRegularFollower(bool isHero)
     {
-        if (isPlayerCharacter)
-        {
-            return false;
-        }
-
-        if (!isHero)
-        {
-            return true;
-        }
-
-        return isOtherSettlementProfile && (isPlayerClanMember || isPlayerCompanion);
+        return !isHero;
     }
 
     /// <summary>
-    /// Unselected player heroes already present in a foreign settlement may join
-    /// the fight as AI support, but must stay outside the player's command team.
+    /// A main-party companion or player-clan hero already present in a foreign
+    /// settlement joins the player's command team when the conflict starts.
     /// </summary>
-    public static bool ShouldJoinForeignConflictAsIndependentHero(
-        bool isSelectedFollower,
+    public static bool ShouldJoinForeignConflictAsCommandableHero(
         bool isMainPartyMember,
         bool isPlayerClanMember,
         bool isPlayerCompanion,
         bool isPrisoner)
     {
-        return !isSelectedFollower
-            && isMainPartyMember
+        return isMainPartyMember
             && !isPrisoner
             && (isPlayerClanMember || isPlayerCompanion);
     }
@@ -224,7 +203,7 @@ public static class SetsSettlementEntryProfile
 
     public static string BuildConflictStartedMessage(SetsSettlementSceneKind kind)
     {
-        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波）。选中的随行者等待你的指挥，散落的同伴与家族成员会自行助战。";
+        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波）。选中的两名随行士兵与现场同伴、家族成员已加入玩家编队，等待你的指挥。";
     }
 
     public static string BuildReserveWaveMessage(SetsSettlementSceneKind kind, string phaseKind, int waveNumber, int maxActiveWaves)
