@@ -6734,12 +6734,17 @@ public sealed partial class CustomPolicyBehavior
 		}
 		string policyId = (request?.RequestId ?? string.Empty).Trim();
 		float startDay = Math.Max(0, request?.SubmittedDay ?? 0);
+		string actorClanId = (request?.ProposerClanId ?? string.Empty).Trim();
+		if (actorClanId.Length == 0 && Campaign.Current != null)
+		{
+			actorClanId = Clan.PlayerClan?.StringId ?? string.Empty;
+		}
 		PlayerPolicyTargetAuthorization targetAuthorization = EnsurePlayerPolicyTargetAuthorization(request);
 		PolicyEffectCompilerRequest compilerRequest = new PolicyEffectCompilerRequest
 		{
 			PolicyId = policyId,
 			ActorHeroId = Hero.MainHero?.StringId ?? string.Empty,
-			ActorClanId = Campaign.Current != null ? Clan.PlayerClan?.StringId ?? string.Empty : string.Empty,
+			ActorClanId = actorClanId,
 			IssuerKingdomId = request?.IssuerKingdomId ?? string.Empty,
 			TargetKingdomId = request?.PlayerKingdomId ?? string.Empty,
 			AuthorizedCrossKingdomIds = targetAuthorization.ExplicitCrossKingdomIds.ToArray(),
