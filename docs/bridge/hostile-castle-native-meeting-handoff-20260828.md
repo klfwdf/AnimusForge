@@ -76,5 +76,10 @@ private static readonly bool HostileCastleNativeMeetingEnabled = false;
 ## 构建与发布状态
 
 - 必须使用 `一键编译覆盖推送/build_single_module.ps1` 同时构建 1.3、1.4 和 Bootstrap。
-- 本 HANDOFF 对应的构建验证结果将在提交前补入。
+- 会面直接开放增量已在上一个通过统一构建的会面基线 `cef30f2b` 上做隔离验证：
+  - 1.3 实现：引用版本 `v1.3.15.110062`，0 警告、0 错误，SHA-256 `3B5A2A9E4B7B7D8FEBA8CCDF75771327B9CC68BEAB691FD00884D2289EA92FE4`。
+  - 1.4 实现：引用版本 `v1.4.6.115628`，0 警告、0 错误，SHA-256 `1D364357CB4263CC7493665948DED938E1BF5BB511F207761184B841DC64D506`。
+  - Bootstrap：0 警告、0 错误，SHA-256 `B6252ECDE377CCB75BA38D5A3E06807931539CBC278E1CC99122655A3C72202B`。
+- 当前集成分支同时有另一批未完成的 SETS 跟随者/敌对会面改动。干净 `aa030c78` 基线的统一构建会因 `SettlementEntryTroopSelectionBehavior` 引用尚未一同提交的 `SceneTauntMissionBehavior.EnsureSetsIndependentHeroArmedCombatReadyForExternal` 而失败；该错误不在本次会面改动文件中。
+- 制作组打包前，必须先将上述 SETS 配套改动完整提交，再对最终发布提交重跑一次统一构建；不要把“会面增量隔离构建通过”误解为当前整个集成分支已可直接发布。
 - 本次代码修改不自动覆盖游戏模块；覆盖前仍需确认游戏进程已退出并备份 DLL/PDB/ModuleData。
