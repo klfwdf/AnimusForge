@@ -2255,11 +2255,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (character == null || character.IsNotTransferableInPartyScreen)
+			if (character == null)
 			{
 				return false;
 			}
 			Hero hero = character.HeroObject;
+			if (hero == null && character.IsNotTransferableInPartyScreen)
+			{
+				return false;
+			}
 			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
 			return SetsSettlementEntryProfile.IsConfigurableFollower(
 				isHero: character.IsHero || hero != null,
@@ -3639,6 +3643,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				agent.SetTeam(supportTeam, true);
 			}
+			ShoutBehavior.TryForceStopSceneFollowForExternal(agent.Index, "sets_independent_hero_support");
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator;
+			navigator?.ClearTarget();
+			DailyBehaviorGroup dailyGroup = navigator?.GetBehaviorGroup<DailyBehaviorGroup>();
+			dailyGroup?.DisableScriptedBehavior();
+			dailyGroup?.DisableAllBehaviors();
 			Formation formation = supportTeam.GetFormation(ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
 			if (formation != null)
 			{
@@ -6648,8 +6659,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			TryRemoveFromRoster(MobileParty.MainParty?.MemberRoster, character, 1);
 			TryRemoveFromRoster(_survivingRoster, character, 1);
+			if (character.IsHero || character.HeroObject != null)
+			{
+				SettlementEntryTroopSelectionLog.Log("Selected hero casualty left to native hero lifecycle. troop=" + SafeCharacterId(character));
+				return;
+			}
+			TryRemoveFromRoster(MobileParty.MainParty?.MemberRoster, character, 1);
 			SettlementEntryTroopSelectionLog.Log("Allied casualty removed from main party. troop=" + SafeCharacterId(character));
 		}
 
