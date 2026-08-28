@@ -224,7 +224,7 @@ public static class SetsSettlementEntryProfile
 
     public static string BuildConflictStartedMessage(SetsSettlementSceneKind kind)
     {
-        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波），随行士兵等待你的指挥。";
+        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波）。选中的随行者等待你的指挥，散落的同伴与家族成员会自行助战。";
     }
 
     public static string BuildReserveWaveMessage(SetsSettlementSceneKind kind, string phaseKind, int waveNumber, int maxActiveWaves)
