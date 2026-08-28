@@ -9,9 +9,11 @@ namespace AnimusForge;
 
 public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 {
+	private static readonly bool HostileCastleNativeMeetingEnabled = true;
+
 	private static readonly TextObject CastleRequestMeetingDisabledText = new TextObject("AnimusForge 已禁用城堡中的“请求与某人会面”。");
 
-	private static string _lastExperimentalGuardFailureSettlementId;
+	private static string _lastHostileCastleGuardFailureSettlementId;
 
 	private readonly SettlementAccessModel _inner;
 
@@ -62,7 +64,7 @@ public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 
 	private static bool CanSafelyEnableHostileCastleRequestMeeting(Settlement settlement)
 	{
-		if (!DuelSettings.IsHostileCastleNativeMeetingEnabled() || !IsHostileCastleForMainHero(settlement))
+		if (!HostileCastleNativeMeetingEnabled || !IsHostileCastleForMainHero(settlement))
 		{
 			return false;
 		}
@@ -72,21 +74,21 @@ public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 			if (!guardArmed)
 			{
 				string settlementId = settlement?.StringId ?? "null";
-				if (!string.Equals(_lastExperimentalGuardFailureSettlementId, settlementId, StringComparison.Ordinal))
+				if (!string.Equals(_lastHostileCastleGuardFailureSettlementId, settlementId, StringComparison.Ordinal))
 				{
-					_lastExperimentalGuardFailureSettlementId = settlementId;
-					Logger.Log("SettlementAccess", "Experimental hostile castle request meeting failed closed because the native meeting guard could not be armed. Settlement=" + settlementId);
+					_lastHostileCastleGuardFailureSettlementId = settlementId;
+					Logger.Log("SettlementAccess", "Hostile castle request meeting failed closed because the native meeting guard could not be armed. Settlement=" + settlementId);
 				}
 			}
 			else
 			{
-				_lastExperimentalGuardFailureSettlementId = null;
+				_lastHostileCastleGuardFailureSettlementId = null;
 			}
 			return guardArmed;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SettlementAccess", "Experimental hostile castle request meeting failed closed: " + ex.Message);
+			Logger.Log("SettlementAccess", "Hostile castle request meeting failed closed: " + ex.Message);
 			return false;
 		}
 	}
