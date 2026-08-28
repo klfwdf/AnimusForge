@@ -456,6 +456,55 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool IsActiveSetsUrbanConflictMissionForExternal(Mission mission)
+	{
+		try
+		{
+			if (!IsActiveSetsEntryMissionForExternal(mission))
+			{
+				return false;
+			}
+			SettlementEntryTroopSelectionMissionLogic logic = mission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic != null
+				&& (logic.SceneKind == SetsSettlementSceneKind.Town
+					|| logic.SceneKind == SetsSettlementSceneKind.Castle);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsActiveSetsEntryMissionForExternal(Mission mission)
+	{
+		try
+		{
+			return IsSetsEntryMissionActive(mission)
+				&& mission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static List<Agent> GetTrackedSetsUrbanFollowerAgentsForExternal(Mission mission)
+	{
+		try
+		{
+			if (!IsActiveSetsUrbanConflictMissionForExternal(mission))
+			{
+				return new List<Agent>();
+			}
+			SettlementEntryTroopSelectionMissionLogic logic = mission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			return logic?.GetLiveSelectedFollowerAgentsForExternal() ?? new List<Agent>();
+		}
+		catch
+		{
+			return new List<Agent>();
+		}
+	}
+
 	internal static bool IsOwnedOrAttachedSettlementMassacreActiveForExternal(Mission mission)
 	{
 		try
@@ -2478,8 +2527,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly SetsUrbanCaptureSession _shadowCaptureSession;
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
+		private readonly Dictionary<int, Agent> _alliedAgentsByIndex = new Dictionary<int, Agent>();
 		private readonly HashSet<int> _independentHeroSupportAgentIndexes = new HashSet<int>();
+		private readonly Dictionary<int, Agent> _independentHeroSupportAgentsByIndex = new Dictionary<int, Agent>();
 		private readonly HashSet<int> _enemyAgentIndexes = new HashSet<int>();
+		private readonly Dictionary<int, Agent> _enemyAgentsByIndex = new Dictionary<int, Agent>();
 		private readonly HashSet<int> _gatheredSettlementCivilianAgentIndexes = new HashSet<int>();
 		private readonly Queue<int> _pendingSettlementCivilianGatherAgentIndexes = new Queue<int>();
 		private readonly HashSet<int> _ownedSettlementFleeingCivilianAgentIndexes = new HashSet<int>();
@@ -2633,6 +2685,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 
 		internal SetsSettlementSceneKind SceneKind => _sceneKind;
+
+		internal List<Agent> GetLiveSelectedFollowerAgentsForExternal()
+		{
+			return _alliedAgentsByIndex.Values
+				.Where(agent => agent != null && agent.IsHuman && agent.IsActive())
+				.ToList();
+		}
 
 		internal bool IsDefenderConflictCombatActive()
 		{
@@ -3000,6 +3059,21 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
+		public override void OnAgentBuild(Agent agent, Banner banner)
+		{
+			base.OnAgentBuild(agent, banner);
+			if (agent == null
+				|| !_defenderConflictEnabled
+				|| !_conflictActive
+				|| _victoryReached
+				|| !IsActiveSetsEntryConflictRuntime()
+				|| !IsIndependentHeroSupportCandidate(agent))
+			{
+				return;
+			}
+			_independentHeroSupportAgentsByIndex[agent.Index] = agent;
+		}
+
 		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 		{
 			base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
@@ -3096,7 +3170,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_lastProtectedFollowerHealth.Remove(affectedAgent.Index);
 			_recentProtectedFollowerFriendlyFireHits.Remove(affectedAgent.Index);
+			_alliedAgentsByIndex.Remove(affectedAgent.Index);
 			_independentHeroSupportAgentIndexes.Remove(affectedAgent.Index);
+			_independentHeroSupportAgentsByIndex.Remove(affectedAgent.Index);
+			_enemyAgentsByIndex.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
 			_gatheredSettlementCivilianAgentIndexes.Remove(affectedAgent.Index);
@@ -3166,6 +3243,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			ClearAllSharedEnemyWallRescueState();
 			ClearSetsUsableProtectionState("sets_mission_end");
 			ClearSetsSelectedFollowerState("sets_mission_end");
+			_alliedAgentsByIndex.Clear();
+			_independentHeroSupportAgentsByIndex.Clear();
+			_enemyAgentsByIndex.Clear();
 			base.OnEndMission();
 		}
 
@@ -3456,6 +3536,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 			_enemyAgentIndexes.Add(agent.Index);
+			_enemyAgentsByIndex[agent.Index] = agent;
 			if (victoryObjective)
 			{
 				_victoryObjectiveEnemyAgentIndexes.Add(agent.Index);
@@ -3467,6 +3548,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
+				bool activeSetsEntry = IsActiveSetsEntryConflictRuntime();
 				if (_playerTeam != null && _enemyTeam != null)
 				{
 					_playerTeam.SetIsEnemyOf(_enemyTeam, true);
@@ -3477,13 +3559,17 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_independentHeroSupportTeam.SetIsEnemyOf(_enemyTeam, true);
 					_enemyTeam.SetIsEnemyOf(_independentHeroSupportTeam, true);
 				}
-				foreach (Agent agent in base.Mission.Agents)
+				foreach (Agent agent in _independentHeroSupportAgentsByIndex.Values.ToList())
 				{
 					if (agent == null || !agent.IsHuman || !agent.IsActive())
 					{
 						continue;
 					}
-					if (TryMaintainIndependentHeroSupportAgent(agent))
+					TryMaintainIndependentHeroSupportAgent(agent, activeSetsEntry);
+				}
+				foreach (Agent agent in _alliedAgentsByIndex.Values.ToList())
+				{
+					if (agent == null || !agent.IsHuman || !agent.IsActive())
 					{
 						continue;
 					}
@@ -3496,12 +3582,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 						if (_conflictActive && _alliedAgentIndexes.Contains(agent.Index))
 						{
 							agent.SetWatchState(Agent.WatchState.Alarmed);
-							SceneTauntMissionBehavior.EnsureSetsFollowerArmedCombatReadyForExternal(agent);
+							SceneTauntMissionBehavior.MaintainSetsFollowerArmedCombatReadyForExternal(agent);
 							if (agent.Formation == null)
 							{
 								AssignAgentToFormation(agent, _playerTeam, ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
 							}
 						}
+					}
+				}
+				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
+				{
+					if (agent == null || !agent.IsHuman || !agent.IsActive())
+					{
 						continue;
 					}
 					if (_enemyAgentIndexes.Contains(agent.Index) && _enemyTeam != null && agent.Team != _enemyTeam)
@@ -3521,9 +3613,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			int readied = 0;
 			try
 			{
+				bool activeSetsEntry = IsActiveSetsEntryConflictRuntime();
+				if (!activeSetsEntry)
+				{
+					return 0;
+				}
 				foreach (Agent agent in base.Mission?.Agents?.ToList() ?? new List<Agent>())
 				{
-					if (TryMaintainIndependentHeroSupportAgent(agent))
+					if (TryMaintainIndependentHeroSupportAgent(agent, activeSetsEntry))
 					{
 						readied++;
 					}
@@ -3536,9 +3633,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return readied;
 		}
 
-		private bool TryMaintainIndependentHeroSupportAgent(Agent agent)
+		private bool TryMaintainIndependentHeroSupportAgent(Agent agent, bool activeSetsEntry)
 		{
-			if (!_defenderConflictEnabled || !_conflictActive || _victoryReached || !IsIndependentHeroSupportCandidate(agent))
+			if (!activeSetsEntry
+				|| !_defenderConflictEnabled
+				|| !_conflictActive
+				|| _victoryReached
+				|| !IsIndependentHeroSupportCandidate(agent))
 			{
 				return false;
 			}
@@ -3550,7 +3651,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return false;
 				}
 				bool firstRegistration = _independentHeroSupportAgentIndexes.Add(agent.Index);
-				PrepareIndependentHeroSupportAgent(agent, supportTeam);
+				_independentHeroSupportAgentsByIndex[agent.Index] = agent;
+				if (firstRegistration || agent.Team != supportTeam)
+				{
+					InitializeIndependentHeroSupportAgent(agent, supportTeam);
+				}
+				else
+				{
+					MaintainIndependentHeroSupportAgent(agent, supportTeam);
+				}
 				if (firstRegistration)
 				{
 					SettlementEntryTroopSelectionLog.Log("Registered unselected player hero as independent SETS support. agent=" + agent.Index + ", hero=" + SafeCharacterId(agent.Character as CharacterObject) + ", commandable=false");
@@ -3562,6 +3671,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				SettlementEntryTroopSelectionLog.Log("Maintain independent player hero support failed. agent=" + agent?.Index + ", error=" + ex.Message);
 				return false;
 			}
+		}
+
+		private bool IsActiveSetsEntryConflictRuntime()
+		{
+			return IsSetsEntryMissionActive(base.Mission);
 		}
 
 		private bool IsIndependentHeroSupportCandidate(Agent agent)
@@ -3633,7 +3747,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private static void PrepareIndependentHeroSupportAgent(Agent agent, Team supportTeam)
+		private static void InitializeIndependentHeroSupportAgent(Agent agent, Team supportTeam)
 		{
 			if (agent == null || supportTeam == null || !agent.IsActive())
 			{
@@ -3650,28 +3764,55 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			DailyBehaviorGroup dailyGroup = navigator?.GetBehaviorGroup<DailyBehaviorGroup>();
 			dailyGroup?.DisableScriptedBehavior();
 			dailyGroup?.DisableAllBehaviors();
+			ConfigureIndependentHeroSupportFormation(agent, supportTeam, initializeOrders: true);
+			agent.SetIsAIPaused(false);
+			agent.DisableScriptedMovement();
+			agent.ClearTargetFrame();
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+			AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+			SceneTauntMissionBehavior.MaintainSetsIndependentHeroArmedCombatReadyForExternal(agent);
+		}
+
+		private static void MaintainIndependentHeroSupportAgent(Agent agent, Team supportTeam)
+		{
+			if (agent == null || supportTeam == null || !agent.IsActive())
+			{
+				return;
+			}
+			if (agent.Team != supportTeam)
+			{
+				InitializeIndependentHeroSupportAgent(agent, supportTeam);
+				return;
+			}
+			ConfigureIndependentHeroSupportFormation(agent, supportTeam, initializeOrders: false);
+			agent.SetIsAIPaused(false);
+			AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+			SceneTauntMissionBehavior.MaintainSetsIndependentHeroArmedCombatReadyForExternal(agent);
+		}
+
+		private static void ConfigureIndependentHeroSupportFormation(Agent agent, Team supportTeam, bool initializeOrders)
+		{
 			Formation formation = supportTeam.GetFormation(ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
 			if (formation != null)
 			{
 				if (agent.Formation != formation)
 				{
 					agent.Formation = formation;
+					agent.TryAttachToFormation();
+					agent.SetShouldCatchUpWithFormation(false);
 				}
-				agent.TryAttachToFormation();
-				agent.SetShouldCatchUpWithFormation(false);
-				formation.SetControlledByAI(true, false);
-				formation.SetMovementOrder(MovementOrder.MovementOrderCharge);
-				formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
-				formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+				if (initializeOrders)
+				{
+					formation.SetControlledByAI(true, false);
+					formation.SetMovementOrder(MovementOrder.MovementOrderCharge);
+					formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+					formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+				}
 			}
-			agent.SetIsAIPaused(false);
-			agent.DisableScriptedMovement();
-			agent.ClearTargetFrame();
-			agent.ResetEnemyCaches();
-			agent.InvalidateTargetAgent();
-			AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
-			agent.SetWatchState(Agent.WatchState.Alarmed);
-			SceneTauntMissionBehavior.EnsureSetsIndependentHeroArmedCombatReadyForExternal(agent);
 		}
 
 		private void ReleaseIndependentHeroSupportAfterVictory()
@@ -3683,7 +3824,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					_independentHeroSupportTeam.SetIsEnemyOf(_enemyTeam, false);
 					_enemyTeam.SetIsEnemyOf(_independentHeroSupportTeam, false);
 				}
-				foreach (Agent agent in base.Mission?.Agents?.ToList() ?? new List<Agent>())
+				foreach (Agent agent in _independentHeroSupportAgentsByIndex.Values.ToList())
 				{
 					if (agent == null || !_independentHeroSupportAgentIndexes.Contains(agent.Index) || !agent.IsActive())
 					{
@@ -3726,7 +3867,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					return 0;
 				}
-				foreach (Agent agent in base.Mission.Agents)
+				foreach (Agent agent in _alliedAgentsByIndex.Values.ToList())
 				{
 					if (agent == null
 						|| !agent.IsHuman
@@ -3745,7 +3886,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
 					agent.SetWatchState(Agent.WatchState.Alarmed);
 				}
-				readied = EnsurePlayerEntryFollowersArmedCombatReady();
+				readied = MaintainPlayerEntryFollowersArmedCombatReady();
 			}
 			catch (Exception ex)
 			{
@@ -3754,22 +3895,22 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return readied;
 		}
 
-		private int EnsurePlayerEntryFollowersArmedCombatReady()
+		private int MaintainPlayerEntryFollowersArmedCombatReady()
 		{
 			int readied = 0;
 			try
 			{
-				if (base.Mission?.Agents == null)
+				if (_alliedAgentsByIndex.Count == 0)
 				{
 					return 0;
 				}
-				foreach (Agent agent in base.Mission.Agents)
+				foreach (Agent agent in _alliedAgentsByIndex.Values.ToList())
 				{
-					if (agent == null || !agent.IsHuman || !agent.IsActive() || !_alliedAgentIndexes.Contains(agent.Index))
+					if (agent == null || !agent.IsHuman || !agent.IsActive())
 					{
 						continue;
 					}
-					SceneTauntMissionBehavior.EnsureSetsFollowerArmedCombatReadyForExternal(agent);
+					SceneTauntMissionBehavior.MaintainSetsFollowerArmedCombatReadyForExternal(agent);
 					readied++;
 				}
 			}
@@ -3785,7 +3926,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			int count = 0;
 			try
 			{
-				foreach (Agent agent in base.Mission.Agents)
+				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
 				{
 					if (IsLiveTrackedEnemy(agent))
 					{
@@ -3826,7 +3967,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return 0;
 				}
 				List<int> nonObjectiveTrackedEnemies = new List<int>();
-				foreach (Agent agent in mission.Agents)
+				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
 				{
 					if (agent == null
 						|| !agent.IsHuman
@@ -3846,6 +3987,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				{
 					int agentIndex = nonObjectiveTrackedEnemies[i];
 					_enemyAgentIndexes.Remove(agentIndex);
+					_enemyAgentsByIndex.Remove(agentIndex);
 					_victoryObjectiveEnemyAgentIndexes.Remove(agentIndex);
 					_spawnedDefenderReserveAgentIndexes.Remove(agentIndex);
 					_defenderReserveAgentSourceRosters.Remove(agentIndex);
@@ -4027,7 +4169,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_ownedSettlementMassacreCompleted = false;
 				_ownedSettlementMassacreActive = true;
 				fightHandler.StartCustomFight(playerSide, targets, dropWeapons: false, isItemUseDisabled: false, OnOwnedSettlementMassacreFightEnded, float.Epsilon);
-				EnsurePlayerEntryFollowersArmedCombatReady();
+				MaintainPlayerEntryFollowersArmedCombatReady();
 				MaintainOwnedSettlementMassacre(force: true);
 				InformationManager.DisplayMessage(new InformationMessage(
 					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count),
@@ -4157,7 +4299,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				KeepPlayerEntryFollowersCommandable(refreshFormation: false);
-				EnsurePlayerEntryFollowersArmedCombatReady();
+				MaintainPlayerEntryFollowersArmedCombatReady();
 				int fleeing = 0;
 				foreach (Agent target in mission.Agents.ToList())
 				{
@@ -4533,7 +4675,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				foreach (Agent agent in base.Mission.Agents)
+				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
 				{
 					if (IsLiveTrackedEnemy(agent))
 					{
@@ -5141,7 +5283,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				List<Agent> enemies = new List<Agent>();
-				foreach (Agent agent in mission.Agents)
+				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
 				{
 					if (IsLiveTrackedCombatEnemy(agent))
 					{
@@ -5158,6 +5300,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					}
 					NeutralizeEnemyAgent(agent, neutralTeam);
 					_enemyAgentIndexes.Remove(agent.Index);
+					_enemyAgentsByIndex.Remove(agent.Index);
 					_victoryObjectiveEnemyAgentIndexes.Remove(agent.Index);
 					_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 					_defenderReserveAgentSourceRosters.Remove(agent.Index);
@@ -5302,7 +5445,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return 0;
 				}
 				HashSet<int> activeWaves = new HashSet<int>();
-				foreach (Agent agent in base.Mission.Agents)
+				foreach (Agent agent in _enemyAgentsByIndex.Values.ToList())
 				{
 					if (IsLiveTrackedEnemy(agent) && _defenderReserveAgentWaveNumbers.TryGetValue(agent.Index, out int waveNumber) && waveNumber > 0)
 					{
@@ -6064,7 +6207,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			_independentHeroSupportAgentIndexes.Remove(agent.Index);
+			_independentHeroSupportAgentsByIndex.Remove(agent.Index);
 			_alliedAgentIndexes.Add(agent.Index);
+			_alliedAgentsByIndex[agent.Index] = agent;
 			RegisterSetsSelectedFollowerAgent(agent, source);
 			CacheProtectedFollowerHealth(agent);
 			AssignAgentToFormation(agent, team, formationClass, refreshOrders: false, markPlayerCommandable: false);
@@ -6195,6 +6340,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					if (asEnemy)
 					{
 						_enemyAgentIndexes.Add(spawnedAgent.Index);
+						_enemyAgentsByIndex[spawnedAgent.Index] = spawnedAgent;
 						_victoryObjectiveEnemyAgentIndexes.Add(spawnedAgent.Index);
 						_spawnedDefenderReserveAgentIndexes.Add(spawnedAgent.Index);
 						if (defenderEntry?.SourceRoster != null)
@@ -6457,7 +6603,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				bool suppressHostility = mission.CurrentTime <= _protectedFollowerHostilitySuppressionUntil;
-				foreach (Agent agent in mission.Agents)
+				foreach (Agent agent in _alliedAgentsByIndex.Values.ToList())
 				{
 					if (agent == null || !agent.IsHuman || !agent.IsActive() || !IsProtectedFollowerAgent(agent))
 					{
@@ -6489,6 +6635,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					agent.SetTeam(_playerTeam, true);
 				}
 				_enemyAgentIndexes.Remove(agent.Index);
+				_enemyAgentsByIndex.Remove(agent.Index);
 				_victoryObjectiveEnemyAgentIndexes.Remove(agent.Index);
 				_spawnedDefenderReserveAgentIndexes.Remove(agent.Index);
 				_defenderReserveAgentSourceRosters.Remove(agent.Index);
@@ -6561,7 +6708,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				int cleared = 0;
-				foreach (Agent agent in mission.Agents)
+				foreach (Agent agent in _alliedAgentsByIndex.Values.ToList())
 				{
 					if (agent == null || !agent.IsHuman || !agent.IsActive() || !IsProtectedFollowerAgent(agent))
 					{
@@ -6908,7 +7055,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				&& (agent == Agent.Main
 					|| _alliedAgentIndexes.Contains(agent.Index)
 					|| NoblePrisonerEscortBehavior.IsEscortedAgent(agent)
-					|| SceneTauntBehavior.IsPlayerMainPartyHero(hero));
+					|| (IsActiveSetsEntryConflictRuntime()
+						&& SceneTauntBehavior.IsPlayerMainPartyHero(hero)));
 		}
 
 		private bool IsNativeAlleyFightActive()

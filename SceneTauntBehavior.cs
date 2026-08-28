@@ -22,6 +22,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
@@ -5564,9 +5565,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			List<Agent> list = CollectPlayerSideAgents();
 			List<Agent> list2 = CollectOpponentSideAgents(agent);
 			List<Agent> list3 = flag4 ? new List<Agent>() : CollectGuardAgents(list, list2);
-			bool selectedFollowerArmedSupport = SetsCityConflictPolicy.ShouldEscalateForSelectedFollowerSupport(
-				settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
-				hasSelectedEntryFollower: list.Any(IsSetsSelectedEntryFollower));
+			bool selectedFollowerArmedSupport = IsActiveSetsUrbanConflictRuntime()
+				&& SetsCityConflictPolicy.ShouldEscalateForSelectedFollowerSupport(
+					settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
+					hasSelectedEntryFollower: list.Any(IsSetsSelectedEntryFollower));
 			LogPerfElapsed("startConflict.collectSides", sectionStart, $"player={list.Count} opponents={list2.Count} guards={list3.Count}");
 			if (flag)
 			{
@@ -6074,13 +6076,19 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 			bool flag4 = IsAgentCarryingRealWeapon(agent);
 			bool flag5 = IsSettlementCriminalConflictTarget(hero, characterObject);
-			bool flag6 = IsCurrentSettlementControlledByPlayer();
+			bool flag6 = IsActiveSetsUrbanPlayerControlledConflictRuntime();
 			string factText;
 			if (flag6)
 			{
 				factText = flag2 || flag3
-					? "经过交流，你和" + text + "在他的领地内彻底爆发冲突；你拔出武器反击，而他的随行士兵和其他本地守卫开始保护他"
-					: "经过交流，你和" + text + "在他的领地内爆发冲突；他的随行士兵拔出武器支援他，你被迫应战";
+					? BuildSetsConflictLocalizedText(
+						"sets_owned_target_supported_armed_fact",
+						"After talking, you and {PLAYER} erupted into open conflict in {PLAYER}'s domain. You drew your weapon to fight back, while {PLAYER}'s escort and other local guards moved to protect {PLAYER}.",
+						text)
+					: BuildSetsConflictLocalizedText(
+						"sets_owned_target_armed_fact",
+						"After talking, you and {PLAYER} came into conflict in {PLAYER}'s domain. {PLAYER}'s escort drew weapons in support, forcing you to fight.",
+						text);
 			}
 			else if (flag3)
 			{
@@ -6148,9 +6156,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		bool flag2 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 		bool flag3 = SceneTauntBehavior.IsSoldierSceneTauntTarget(characterObject);
 		bool flag4 = IsSettlementCriminalConflictTarget(hero, characterObject);
-		if (IsCurrentSettlementControlledByPlayer())
+		if (IsActiveSetsUrbanPlayerControlledConflictRuntime())
 		{
-			return text + "在自己的领地内与人爆发了持械冲突；冲突对象进行反击，其他本地守卫和随行士兵保护领主";
+			return BuildSetsConflictLocalizedText(
+				"sets_owned_guard_reaction_fact",
+				"{PLAYER} entered an armed conflict in their own domain. The opponent fought back, while other local guards and the escort protected their lord.",
+				text);
 		}
 		if (_openedFromVerbalTaunt)
 		{
@@ -7045,6 +7056,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static SetsOwnedSettlementAttackRouting ResolveOwnedSettlementAttackRouting(Agent targetAgent)
 	{
+		if (!IsActiveSetsUrbanConflictRuntime())
+		{
+			return IsSettlementCriminalConflictTargetForExternal(targetAgent)
+				? SetsOwnedSettlementAttackRouting.ExistingFlow
+				: SetsOwnedSettlementAttackRouting.PassiveSurrender;
+		}
 		return SetsCityConflictPolicy.ResolveOwnedAttackRouting(
 			settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
 			isSettlementAuthority: IsAuthorityPhysicalAttackTargetForExternal(targetAgent),
@@ -7066,6 +7083,36 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static bool IsActiveSetsUrbanConflictRuntime()
+	{
+		return SettlementEntryTroopSelectionBehavior.IsActiveSetsUrbanConflictMissionForExternal(Mission.Current);
+	}
+
+	private static bool IsActiveSetsUrbanPlayerControlledConflictRuntime()
+	{
+		return IsActiveSetsUrbanConflictRuntime() && IsCurrentSettlementControlledByPlayer();
+	}
+
+	private static string BuildSetsConflictLocalizedText(string id, string englishFallback, string playerName = null)
+	{
+		try
+		{
+			TextObject text = new TextObject("{=" + (id ?? "") + "}" + (englishFallback ?? ""));
+			if (!string.IsNullOrWhiteSpace(playerName))
+			{
+				text.SetTextVariable("PLAYER", playerName.Trim());
+			}
+			return text.ToString();
+		}
+		catch
+		{
+			string fallback = englishFallback ?? "";
+			return string.IsNullOrWhiteSpace(playerName)
+				? fallback
+				: fallback.Replace("{PLAYER}", playerName.Trim());
 		}
 	}
 
@@ -7390,7 +7437,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			var agents = Mission.Current?.Agents;
-			bool settlementControlledByPlayer = IsCurrentSettlementControlledByPlayer();
+			bool settlementControlledByPlayer = IsActiveSetsUrbanPlayerControlledConflictRuntime();
 			if (agents == null)
 			{
 				return list;
@@ -7461,6 +7508,16 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		bool isTargetEscort,
 		bool armedConflict)
 	{
+		if (!IsActiveSetsUrbanConflictRuntime())
+		{
+			if ((agent != null && agent == activeTarget) || isTargetEscort)
+			{
+				return SetsCityConflictSide.Opponent;
+			}
+			return armedConflict && IsAuthorityPhysicalAttackTargetForExternal(agent)
+				? SetsCityConflictSide.Opponent
+				: SetsCityConflictSide.None;
+		}
 		return SetsCityConflictPolicy.ResolveSide(
 			settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
 			isSelectedEntryFollower: IsSetsSelectedEntryFollower(agent),
@@ -8015,12 +8072,16 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			Mission mission = Mission.Current;
-			if (!_conflictActive || !_armedConflict || mission?.Agents == null || mission.CurrentTime < _nextSetsFollowerArmedReadinessMissionTime)
+			if (!_conflictActive
+				|| !_armedConflict
+				|| mission == null
+				|| !IsActiveSetsUrbanConflictRuntime()
+				|| mission.CurrentTime < _nextSetsFollowerArmedReadinessMissionTime)
 			{
 				return;
 			}
-			_nextSetsFollowerArmedReadinessMissionTime = mission.CurrentTime + 0.5f;
-			foreach (Agent agent in mission.Agents)
+			_nextSetsFollowerArmedReadinessMissionTime = mission.CurrentTime + 1f;
+			foreach (Agent agent in SettlementEntryTroopSelectionBehavior.GetTrackedSetsUrbanFollowerAgentsForExternal(mission))
 			{
 				if (!SetsCityConflictPolicy.ShouldEnsureArmedReadiness(
 						isSelectedEntryFollower: IsSetsSelectedEntryFollower(agent),
@@ -8030,7 +8091,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					continue;
 				}
 				TryRestoreWeaponsAfterUnarmedConflict(agent);
-				EnsureSetsFollowerArmedCombatReadyForExternal(agent);
+				MaintainSetsFollowerArmedCombatReadyForExternal(agent);
 			}
 		}
 		catch (Exception ex)
@@ -8252,9 +8313,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_openedAsUnarmedBrawl = false;
 		if (!suppressAnnouncement)
 		{
-			AnimusForgeQuickInfo.Show(IsCurrentSettlementControlledByPlayer()
-				? "持械冲突爆发，你的随行士兵和本地守卫开始保护你。"
-				: "持械冲突爆发，守卫开始敌视你和你的同伴。");
+			AnimusForgeQuickInfo.Show(IsActiveSetsUrbanPlayerControlledConflictRuntime()
+				? BuildSetsConflictLocalizedText(
+					"sets_owned_armed_conflict_notice",
+					"Armed conflict has broken out. Your escort and the local guards are moving to protect you.")
+				: BuildSetsConflictLocalizedText(
+					"sets_foreign_armed_conflict_notice",
+					"Armed conflict has broken out. The guards are now hostile to you and your companions."));
 		}
 		Logger.Log("SceneTaunt", $"Escalated scene conflict to armed combat. Reason={reason}, Target={_activeTargetName}, PlayerGuards={playerGuardAdds}, OpponentGuards={opponentGuardAdds}");
 		LogPerfPoint("escalate.end", $"reason={reason ?? "N/A"} elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
@@ -8966,7 +9031,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			if (IsCurrentSettlementControlledByPlayer())
+			if (IsActiveSetsUrbanPlayerControlledConflictRuntime())
 			{
 				return false;
 			}
@@ -9425,7 +9490,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			TryWieldFirstCarriedRealWeapon(agent);
 		}
-		if (!IsAgentCarryingRealWeapon(agent))
+		if (!IsAgentCarryingUsableCombatLoadout(agent))
 		{
 			TryGiveFallbackSoldierWeapon(agent);
 		}
@@ -9460,52 +9525,55 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	internal static void EnsureSetsFollowerArmedCombatReadyForExternal(Agent agent)
+	internal static void MaintainSetsFollowerArmedCombatReadyForExternal(Agent agent)
 	{
-		if (agent == null || !agent.IsHuman || !agent.IsActive() || !IsSetsSelectedEntryFollower(agent))
+		if (agent == null
+			|| !agent.IsHuman
+			|| !agent.IsActive()
+			|| !SettlementEntryTroopSelectionBehavior.IsActiveSetsEntryMissionForExternal(Mission.Current)
+			|| !IsSetsSelectedEntryFollower(agent))
 		{
 			return;
 		}
-		try
-		{
-			agent.ResetEnemyCaches();
-			agent.InvalidateTargetAgent();
-			agent.InvalidateAIWeaponSelections();
-		}
-		catch
-		{
-		}
 		TryAlarmAgent(agent);
-		TryArmAgent(agent);
+		MaintainSetsAgentCombatReadiness(agent);
 	}
 
-	internal static void EnsureSetsIndependentHeroArmedCombatReadyForExternal(Agent agent)
+	internal static void MaintainSetsIndependentHeroArmedCombatReadyForExternal(Agent agent)
 	{
 		Hero hero = (agent?.Character as CharacterObject)?.HeroObject;
 		if (agent == null
 			|| !agent.IsHuman
 			|| !agent.IsActive()
+			|| !SettlementEntryTroopSelectionBehavior.IsActiveSetsEntryMissionForExternal(Mission.Current)
 			|| hero == null
 			|| !SceneTauntBehavior.IsPlayerMainPartyHero(hero))
 		{
 			return;
 		}
-		try
-		{
-			agent.ResetEnemyCaches();
-			agent.InvalidateTargetAgent();
-			agent.InvalidateAIWeaponSelections();
-		}
-		catch
-		{
-		}
 		TryAlarmAgent(agent);
-		TryArmAgent(agent);
+		MaintainSetsAgentCombatReadiness(agent);
+	}
+
+	private static void MaintainSetsAgentCombatReadiness(Agent agent)
+	{
+		if (agent == null || !agent.IsHuman || !agent.IsActive())
+		{
+			return;
+		}
+		if (!IsAgentCarryingUsableCombatLoadout(agent))
+		{
+			TryGiveFallbackSoldierWeapon(agent);
+		}
+		if (!IsAgentUsingRealWeapon(agent))
+		{
+			TryWieldFirstCarriedRealWeapon(agent);
+		}
 	}
 
 	private static void TryGiveFallbackSoldierWeapon(Agent agent)
 	{
-		if (!ShouldReceiveFallbackSoldierWeapon(agent))
+		if (!ShouldReceiveFallbackSoldierWeapon(agent) || IsAgentCarryingUsableCombatLoadout(agent))
 		{
 			return;
 		}
@@ -9540,7 +9608,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			if (IsSetsSelectedEntryFollower(agent))
+			if (SettlementEntryTroopSelectionBehavior.IsActiveSetsEntryMissionForExternal(Mission.Current)
+				&& IsSetsSelectedEntryFollower(agent))
 			{
 				return true;
 			}
@@ -9549,7 +9618,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			if (SceneTauntBehavior.IsPlayerMainPartyHero(characterObject.HeroObject))
+			if (SettlementEntryTroopSelectionBehavior.IsActiveSetsEntryMissionForExternal(Mission.Current)
+				&& SceneTauntBehavior.IsPlayerMainPartyHero(characterObject.HeroObject))
 			{
 				return true;
 			}
@@ -9587,7 +9657,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					return equipmentIndex2;
 				}
 			}
-			return EquipmentIndex.Weapon3;
+			return EquipmentIndex.None;
 		}
 		catch
 		{
@@ -9644,7 +9714,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			WeaponComponentData currentUsageItem = missionWeapon.CurrentUsageItem;
-			return currentUsageItem != null && !currentUsageItem.IsShield;
+			return !missionWeapon.IsEmpty && IsRealCombatWeaponUsage(currentUsageItem);
 		}
 		catch
 		{
@@ -9656,7 +9726,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			return attackerWeapon != null && !attackerWeapon.IsShield && attackerWeapon.WeaponClass != WeaponClass.Undefined;
+			return IsRealCombatWeaponUsage(attackerWeapon);
 		}
 		catch
 		{
@@ -9673,13 +9743,105 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			WeaponComponentData primaryWeapon = item.PrimaryWeapon;
-			return primaryWeapon != null && !primaryWeapon.IsShield && item.Type != ItemObject.ItemTypeEnum.Shield;
+			return item.Weapons?.Any(IsRealCombatWeaponUsage) == true;
 		}
 		catch
 		{
 			return false;
 		}
+	}
+
+	private static bool IsAgentCarryingUsableMeleeWeapon(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+			{
+				MissionWeapon weapon = agent.Equipment[slot];
+				if (!weapon.IsEmpty && weapon.Item?.Weapons?.Any(IsUsableMeleeWeaponUsage) == true)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsAgentCarryingUsableCombatLoadout(Agent agent)
+	{
+		if (IsAgentCarryingUsableMeleeWeapon(agent))
+		{
+			return true;
+		}
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			HashSet<WeaponClass> requiredAmmoClasses = new HashSet<WeaponClass>();
+			HashSet<WeaponClass> availableAmmoClasses = new HashSet<WeaponClass>();
+			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+			{
+				MissionWeapon weapon = agent.Equipment[slot];
+				if (weapon.IsEmpty || weapon.Item?.Weapons == null)
+				{
+					continue;
+				}
+				foreach (WeaponComponentData usage in weapon.Item.Weapons)
+				{
+					if (usage == null || usage.IsShield)
+					{
+						continue;
+					}
+					if (usage.IsAmmo)
+					{
+						if (weapon.Amount > 0)
+						{
+							availableAmmoClasses.Add(usage.WeaponClass);
+						}
+						continue;
+					}
+					if (!usage.IsRangedWeapon)
+					{
+						continue;
+					}
+					if (usage.IsConsumable && weapon.Amount > 0)
+					{
+						return true;
+					}
+					if (usage.AmmoClass != WeaponClass.Undefined)
+					{
+						requiredAmmoClasses.Add(usage.AmmoClass);
+					}
+				}
+			}
+			return requiredAmmoClasses.Any(availableAmmoClasses.Contains);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsRealCombatWeaponUsage(WeaponComponentData usage)
+	{
+		return usage != null
+			&& !usage.IsShield
+			&& !usage.IsAmmo
+			&& (usage.IsMeleeWeapon || usage.IsRangedWeapon);
+	}
+
+	private static bool IsUsableMeleeWeaponUsage(WeaponComponentData usage)
+	{
+		return IsRealCombatWeaponUsage(usage) && usage.IsMeleeWeapon;
 	}
 
 	private static void AddUniqueAgent(List<Agent> agents, Agent agent)
