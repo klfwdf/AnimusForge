@@ -8,6 +8,9 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SetsSettlementEntryProfile
 {
+    /// <summary>Foreign settlements allow exactly two explicitly selected followers.</summary>
+    public const int OtherSettlementSelectedFollowerLimit = 2;
+
     public const string TownSceneKind = "town";
 
     public const string CastleSceneKind = "castle";
@@ -58,9 +61,46 @@ public static class SetsSettlementEntryProfile
             || kind == SetsSettlementSceneKind.Village;
     }
 
-    public static bool IsConfigurableRegularFollower(bool isHero)
+    /// <summary>
+    /// Regular troops remain selectable in every profile. In a foreign-settlement
+    /// profile, a non-player hero is selectable only when the hero belongs to the
+    /// player clan or is a player companion.
+    /// </summary>
+    public static bool IsConfigurableFollower(
+        bool isHero,
+        bool isPlayerCharacter,
+        bool isOtherSettlementProfile,
+        bool isPlayerClanMember,
+        bool isPlayerCompanion)
     {
-        return !isHero;
+        if (isPlayerCharacter)
+        {
+            return false;
+        }
+
+        if (!isHero)
+        {
+            return true;
+        }
+
+        return isOtherSettlementProfile && (isPlayerClanMember || isPlayerCompanion);
+    }
+
+    /// <summary>
+    /// Unselected player heroes already present in a foreign settlement may join
+    /// the fight as AI support, but must stay outside the player's command team.
+    /// </summary>
+    public static bool ShouldJoinForeignConflictAsIndependentHero(
+        bool isSelectedFollower,
+        bool isMainPartyMember,
+        bool isPlayerClanMember,
+        bool isPlayerCompanion,
+        bool isPrisoner)
+    {
+        return !isSelectedFollower
+            && isMainPartyMember
+            && !isPrisoner
+            && (isPlayerClanMember || isPlayerCompanion);
     }
 
     public static bool ShouldTriggerSameKingdomVassalRebellion(
