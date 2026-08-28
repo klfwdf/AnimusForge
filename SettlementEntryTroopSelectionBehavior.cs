@@ -6004,10 +6004,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			Team team,
 			FormationClass formationClass,
 			Vec3 position,
-			string source,
-			out Agent adoptedAgent)
+			string source)
 		{
-			adoptedAgent = null;
 			Hero hero = character?.HeroObject;
 			Mission mission = base.Mission;
 			if (hero == null || mission?.Agents == null)
@@ -6016,7 +6014,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				adoptedAgent = mission.Agents.FirstOrDefault(agent =>
+				Agent adoptedAgent = mission.Agents.FirstOrDefault(agent =>
 					agent != null
 					&& agent != Agent.Main
 					&& agent.IsHuman
@@ -6035,7 +6033,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				SettlementEntryTroopSelectionLog.Log("Adopt selected SETS hero failed. hero=" + SafeCharacterId(character) + ", source=" + (source ?? "N/A") + ", error=" + ex.Message);
-				adoptedAgent = null;
 				return false;
 			}
 		}
@@ -6156,7 +6153,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					{
 						position.z = mission.Scene.GetGroundHeightAtPosition(position);
 					}
-					if (!asEnemy && TryAdoptExistingSelectedHero(troop, team, formationClass, position, source, out Agent adoptedAgent))
+					if (!asEnemy && TryAdoptExistingSelectedHero(troop, team, formationClass, position, source))
 					{
 						spawned++;
 						spawnedCharacters?.Add(troop);
