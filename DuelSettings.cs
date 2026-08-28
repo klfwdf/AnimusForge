@@ -559,6 +559,30 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultActionPostprocessHistoryEntryLimit = 100;
 
+	public const int NobleGatheringNpcIntervalMinDays = 7;
+
+	public const int NobleGatheringNpcIntervalMaxDays = 120;
+
+	public const int DefaultNobleGatheringNpcIntervalDays = 21;
+
+	public const int NobleGatheringDurationMinDays = 1;
+
+	public const int NobleGatheringDurationMaxDays = 14;
+
+	public const int DefaultNobleGatheringDurationDays = 5;
+
+	public const int NobleGatheringCostMinimum = 0;
+
+	public const int NobleGatheringCostMaximum = 500000;
+
+	public const int DefaultNobleGatheringCost = 50000;
+
+	public const int NobleGatheringInvitedClanRelationRewardMinimum = 0;
+
+	public const int NobleGatheringInvitedClanRelationRewardMaximum = 20;
+
+	public const int DefaultNobleGatheringInvitedClanRelationReward = 5;
+
 	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMin = 64;
 
 	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMax = 900;
@@ -2140,7 +2164,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。关闭后恢复原版王国外交决议。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
-	public bool EnableWorldDiplomacy { get; set; } = false;
+	public bool EnableWorldDiplomacy { get; set; } = true;
 
 	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效。开局时结束王国之间已有的战争，让之后的战争与和平主要由AI外交推动。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
@@ -2241,6 +2265,42 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyButton("恢复默认AI外交偏好", -1, true, "", Content = "恢复默认", Order = 18, RequireRestart = false, HintText = "弹出确认后，将自定义偏好恢复为模组默认内容。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
+
+	[SettingPropertyBool("启用宴会功能", Order = 0, RequireRestart = false, HintText = "宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool EnableNobleGathering { get; set; } = true;
+
+	[SettingPropertyBool("启用NPC自动举办宴会", Order = 1, RequireRestart = false, HintText = "开启后，符合条件的 NPC 会按王国自动举办宴会。关闭后不再自动创建 NPC 宴会，但玩家仍可主动举办。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool EnableNpcAutomaticNobleGatherings { get; set; } = true;
+
+	[SettingPropertyBool("允许NPC邀请玩家", Order = 2, RequireRestart = false, HintText = "开启后，NPC 宴会可以邀请玩家并派信使送信。关闭后只阻止新邀请，已经发出的玩家邀请仍然有效。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool AllowNpcNobleGatheringPlayerInvitations { get; set; } = true;
+
+	[SettingPropertyBool("显示宾客抵达提示", Order = 3, RequireRestart = false, HintText = "控制玩家举办宴会时宾客抵达后的左下角彩色消息。关闭后只隐藏提示，不影响抵达判定、宴会状态或奖励。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool ShowNobleGatheringGuestArrivalMessages { get; set; } = true;
+
+	[SettingPropertyInteger("NPC宴会间隔（天）", NobleGatheringNpcIntervalMinDays, NobleGatheringNpcIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一王国两次自动宴会排期之间的游戏天数，默认 21 天。按王国分别计算；修改后用于下一次重新排期。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NpcNobleGatheringIntervalDays { get; set; } = DefaultNobleGatheringNpcIntervalDays;
+
+	[SettingPropertyBool("NPC可以邀请总督", Order = 5, RequireRestart = false, HintText = "只影响 NPC 自动生成的宾客名单。关闭时 NPC 不会邀请正在治理定居点的总督；玩家举办宴会时仍可自由邀请总督。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool AllowNpcNobleGatheringGovernorInvitations { get; set; } = false;
+
+	[SettingPropertyInteger("宴会持续天数", NobleGatheringDurationMinDays, NobleGatheringDurationMaxDays, "0", Order = 6, RequireRestart = false, HintText = "玩家与 NPC 宴会共用，默认 5 天。修改只影响之后新创建的宴会，已经开始的宴会保持原结束日期。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NobleGatheringDurationDays { get; set; } = DefaultNobleGatheringDurationDays;
+
+	[SettingPropertyInteger("宴会举办费用", NobleGatheringCostMinimum, NobleGatheringCostMaximum, "0", Order = 7, RequireRestart = false, HintText = "玩家与 NPC 主人共用，费用从实际主人身上扣除。默认 50000 第纳尔；设为 0 表示免费。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NobleGatheringCost { get; set; } = DefaultNobleGatheringCost;
+
+	[SettingPropertyInteger("每个受邀家族关系奖励", NobleGatheringInvitedClanRelationRewardMinimum, NobleGatheringInvitedClanRelationRewardMaximum, "0", Order = 8, RequireRestart = false, HintText = "玩家与 NPC 宴会共用；主人和每个受邀家族领袖每场只结算一次。默认 5；设为 0 表示不增加关系。修改只影响之后新创建的宴会。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NobleGatheringInvitedClanRelationReward { get; set; } = DefaultNobleGatheringInvitedClanRelationReward;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]

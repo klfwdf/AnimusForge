@@ -276,7 +276,7 @@ namespace AnimusForge
 						harmony.Patch(
 							isSingleClanDecisionMethod,
 							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecision_IsSingleClanDecision_Prefix)));
-						Logger.Log("VoteDeal", "[Harmony] Interactive single-clan bilateral agenda patch applied.");
+						Logger.Log("VoteDeal", "[Harmony] Interactive single-clan player agenda patch applied.");
 					}
 					else
 					{
@@ -1310,30 +1310,31 @@ namespace AnimusForge
 		}
 
 		// Vanilla auto-resolves one-clan decisions and picks the outcome sponsored by
-		// the player clan. A bilateral counterpart uses that clan only as a technical
-		// proposer, so keep this one case interactive and leave every other decision vanilla.
+		// the player clan. That shortcut bypasses AnimusForge's agenda vote/final-ruling
+		// flow, so keep pending player-kingdom agendas interactive. Redundant single-clan
+		// fief decisions are normalized separately because they have no real choice.
 		private static bool Patch_KingdomDecision_IsSingleClanDecision_Prefix(
 			KingdomDecision __instance,
 			ref bool __result)
 		{
 			try
 			{
-				if (!RequiresInteractiveSingleClanBilateralVote(__instance)) return true;
+				if (!RequiresInteractiveSingleClanAgendaVote(__instance)) return true;
 
 				__result = false;
 				Logger.Log(
 					"VoteDeal",
-					$"[BilateralDiplomacy] Single-clan counterpart kept interactive: kingdom={__instance.Kingdom?.StringId}, decision={GetSafeDecisionTitle(__instance)}");
+					$"[SingleClanAgenda] Pending agenda kept interactive: kingdom={__instance.Kingdom?.StringId}, decision={GetSafeDecisionTitle(__instance)}");
 				return false;
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Single-clan interactive check failed: {ex.Message}");
+				Logger.Log("VoteDeal", $"[SingleClanAgenda] Interactive check failed: {ex.Message}");
 				return true;
 			}
 		}
 
-		private static bool RequiresInteractiveSingleClanBilateralVote(KingdomDecision decision)
+		private static bool RequiresInteractiveSingleClanAgendaVote(KingdomDecision decision)
 		{
 			if (decision == null || decision.IsEnforced) return false;
 
@@ -1341,7 +1342,7 @@ namespace AnimusForge
 			if (playerKingdom == null || decision.Kingdom != playerKingdom) return false;
 			if (playerKingdom.RulingClan != Clan.PlayerClan || playerKingdom.Clans.Count != 1) return false;
 			if (!decision.IsPlayerParticipant) return false;
-			if (!IsBilateralDiplomacyCounterpartAgenda(decision)) return false;
+			if (TryGetRedundantSingleClanFiefAgenda(playerKingdom, decision, out _, out _)) return false;
 
 			return IsDecisionPendingInKingdom(decision, playerKingdom);
 		}

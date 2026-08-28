@@ -34343,7 +34343,9 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main, bool streamResponse = true, bool forceThinkingDisabled = false)
 	{
+		const int streamIdleTimeoutMilliseconds = 300000;
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		Stopwatch requestLifetime = Stopwatch.StartNew();
 		ApiCallResult apiCallResult = new ApiCallResult();
 		Action<string> apiLog = delegate(string message)
 		{
@@ -34530,28 +34532,84 @@ public class MyBehavior : CampaignBehaviorBase
 						return apiCallResult;
 					}
 					using StreamReader reader = new StreamReader(stream);
+					int streamReadTimeoutTriggered = 0;
+					int scheduledStreamTimeoutKind = 0;
+					using System.Threading.Timer streamReadTimer = new System.Threading.Timer(delegate
+					{
+						Interlocked.Exchange(ref streamReadTimeoutTriggered, 1);
+						try
+						{
+							stream.Dispose();
+						}
+						catch
+						{
+						}
+						try
+						{
+							response.Dispose();
+						}
+						catch
+						{
+						}
+					}, null, Timeout.Infinite, Timeout.Infinite);
 					StringBuilder fullContent = new StringBuilder();
 					StringBuilder rawStreamSample = new StringBuilder();
 					Exception streamParseException = null;
 					while (true)
 					{
-						string text;
-						string line = (text = await reader.ReadLineAsync());
+						long remainingTotalMilliseconds = (long)DuelSettings.LlmRequestTimeoutMilliseconds - (long)requestLifetime.Elapsed.TotalMilliseconds;
+						if (remainingTotalMilliseconds <= 0L)
+						{
+							throw new TimeoutException("API流式响应读取超过总时限 " + DuelSettings.LlmRequestTimeoutMilliseconds + "ms。");
+						}
+						int readTimeoutMilliseconds = (int)Math.Max(1L, Math.Min(streamIdleTimeoutMilliseconds, remainingTotalMilliseconds));
+						Interlocked.Exchange(ref scheduledStreamTimeoutKind, (remainingTotalMilliseconds <= streamIdleTimeoutMilliseconds) ? 2 : 1);
+						streamReadTimer.Change(readTimeoutMilliseconds, Timeout.Infinite);
+						string line;
+						try
+						{
+							line = await reader.ReadLineAsync();
+						}
+						catch (Exception ex)
+						{
+							if (Volatile.Read(ref streamReadTimeoutTriggered) != 0)
+							{
+								string timeoutDescription = (Volatile.Read(ref scheduledStreamTimeoutKind) == 2) ? ("总时限 " + DuelSettings.LlmRequestTimeoutMilliseconds + "ms") : ("连续 " + streamIdleTimeoutMilliseconds + "ms 未收到新数据");
+								throw new TimeoutException("API流式响应读取超时：" + timeoutDescription + "。", ex);
+							}
+							throw;
+						}
+						streamReadTimer.Change(Timeout.Infinite, Timeout.Infinite);
+						if (Volatile.Read(ref streamReadTimeoutTriggered) != 0)
+						{
+							string timeoutDescription2 = (Volatile.Read(ref scheduledStreamTimeoutKind) == 2) ? ("总时限 " + DuelSettings.LlmRequestTimeoutMilliseconds + "ms") : ("连续 " + streamIdleTimeoutMilliseconds + "ms 未收到新数据");
+							throw new TimeoutException("API流式响应读取超时：" + timeoutDescription2 + "。");
+						}
 						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_stream_read:" + eventLogSource))
 						{
 							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
 							return apiCallResult;
 						}
-						if (text == null)
+						if (line == null)
 						{
 							break;
 						}
-						if (!string.IsNullOrWhiteSpace(line) && !(line == "data: [DONE]") && line.StartsWith("data: "))
+						string trimmedLine = line.Trim();
+						if (!string.IsNullOrWhiteSpace(trimmedLine) && trimmedLine.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
 						{
-							rawStreamSample.AppendLine(line);
+							string data = trimmedLine.Substring(5).Trim();
+							if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase))
+							{
+								apiLog("[HTTP] 已收到流式结束标记 [DONE]。");
+								break;
+							}
+							if (string.IsNullOrWhiteSpace(data))
+							{
+								continue;
+							}
+							rawStreamSample.AppendLine("data: " + data);
 							try
 							{
-								string data = line.Substring(6).Trim();
 								JObject json = JObject.Parse(data);
 								string delta = ExtractUniversalStreamDelta(json);
 								if (!string.IsNullOrEmpty(delta))
