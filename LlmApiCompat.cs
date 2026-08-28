@@ -34,6 +34,19 @@ public static class LlmApiCompat
 		return text.IndexOf("/anthropic", StringComparison.OrdinalIgnoreCase) >= 0 || text.EndsWith("/v1/messages", StringComparison.OrdinalIgnoreCase);
 	}
 
+	public static bool IsOfficialDeepSeekUrl(string apiUrl)
+	{
+		try
+		{
+			return Uri.TryCreate((apiUrl ?? string.Empty).Trim(), UriKind.Absolute, out Uri uri)
+				&& string.Equals(uri.Host, "api.deepseek.com", StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static string GetEffectiveChatApiUrl(string rawUrl)
 	{
 		string text = (rawUrl ?? "").Trim();
@@ -194,11 +207,42 @@ public static class LlmApiCompat
 		AppendIfNotEmpty(stringBuilder, ExtractContentTokenText(json["content"]));
 		AppendIfNotEmpty(stringBuilder, json.SelectToken("output_text")?.ToString());
 		AppendIfNotEmpty(stringBuilder, json.SelectToken("text")?.ToString());
+		AppendIfNotEmpty(stringBuilder, ExtractResponseOutputText(json["output"]));
+		AppendIfNotEmpty(stringBuilder, ExtractResponseOutputText(json["response"]));
 		if (stringBuilder.Length > 0)
 		{
 			return stringBuilder.ToString();
 		}
 		return ExtractGeminiCandidateText(json.SelectToken("candidates[0]"));
+	}
+
+	private static string ExtractResponseOutputText(JToken output)
+	{
+		if (output == null)
+		{
+			return "";
+		}
+		if (output.Type == JTokenType.String)
+		{
+			return output.ToString();
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (output is JArray array)
+		{
+			foreach (JToken item in array)
+			{
+				AppendIfNotEmpty(stringBuilder, ExtractContentTokenText(item?["content"]));
+				AppendIfNotEmpty(stringBuilder, item?["output_text"]?.ToString());
+				AppendIfNotEmpty(stringBuilder, item?["text"]?.ToString());
+			}
+		}
+		else
+		{
+			AppendIfNotEmpty(stringBuilder, ExtractContentTokenText(output["content"]));
+			AppendIfNotEmpty(stringBuilder, output["output_text"]?.ToString());
+			AppendIfNotEmpty(stringBuilder, output["text"]?.ToString());
+		}
+		return stringBuilder.ToString();
 	}
 
 	public static string ExtractReasoningText(JObject json)
@@ -583,6 +627,8 @@ public static class LlmApiCompat
 		}
 		return item["text"]?.ToString()
 			?? item["content"]?.ToString()
+			?? item["value"]?.ToString()
+			?? item["output_text"]?.ToString()
 			?? item.SelectToken("text.value")?.ToString()
 			?? "";
 	}

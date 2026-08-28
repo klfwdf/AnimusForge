@@ -73,6 +73,8 @@ public sealed class WorldEntityPromptContext
 
 	public string PostprocessPromptBlock = "";
 
+	public List<string> ExplicitMentionedKingdomIds = new List<string>();
+
 	public int MatchCount;
 
 	public bool HasContent
@@ -407,6 +409,11 @@ public static class WorldEntityRetrievalService
 					}
 				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
+				result.ExplicitMentionedKingdomIds = kingdoms
+					.Where(match => match?.Value != null && !string.IsNullOrWhiteSpace(match.Value.StringId))
+					.Select(match => match.Value.StringId.Trim())
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.ToList();
 				stageSw.Restart();
 				ApplyGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, contextHero, ref heroes, ref settlements, ref clans, ref kingdoms);
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));

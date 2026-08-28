@@ -13,6 +13,49 @@ namespace AnimusForge.XihaiAction
     internal static class BattleSpeechEnemyProximityCache
     {
         private static readonly List<Entry> Entries = new List<Entry>();
+        private static readonly List<Mission> CombatStartedMissions = new List<Mission>();
+
+        internal static bool IsCombatStarted(Mission mission)
+        {
+            if (mission == null)
+            {
+                return false;
+            }
+            for (int index = 0; index < CombatStartedMissions.Count; index++)
+            {
+                if (ReferenceEquals(CombatStartedMissions[index], mission))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal static bool MarkCombatStarted(Mission mission)
+        {
+            if (mission == null || IsCombatStarted(mission))
+            {
+                return false;
+            }
+            CombatStartedMissions.Add(mission);
+            return true;
+        }
+
+        internal static bool MarkCombatStartedFromConflict(
+            Mission mission,
+            Agent affectedAgent,
+            Agent affectorAgent)
+        {
+            if (mission == null || affectedAgent?.Team == null || affectorAgent?.Team == null ||
+                !affectedAgent.Team.IsValid || !affectorAgent.Team.IsValid ||
+                affectedAgent.Team.Side == affectorAgent.Team.Side ||
+                !ReferenceEquals(affectedAgent.Mission, mission) ||
+                !ReferenceEquals(affectorAgent.Mission, mission))
+            {
+                return false;
+            }
+            return MarkCombatStarted(mission);
+        }
 
         internal static bool HasNearbyEnemy(
             Mission mission,
@@ -86,6 +129,13 @@ namespace AnimusForge.XihaiAction
                 if (ReferenceEquals(Entries[index].Mission, mission))
                 {
                     Entries.RemoveAt(index);
+                }
+            }
+            for (int index = CombatStartedMissions.Count - 1; index >= 0; index--)
+            {
+                if (ReferenceEquals(CombatStartedMissions[index], mission))
+                {
+                    CombatStartedMissions.RemoveAt(index);
                 }
             }
         }

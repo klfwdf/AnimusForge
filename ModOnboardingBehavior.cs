@@ -692,6 +692,37 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void ApplyYjGeminiPresetThinkingDefaults(DuelSettings settings, ApiSetupTarget target, string modelName)
+	{
+		if (settings == null || !YjThinkingCompat.IsYjGeminiEndpoint(GetApiUrlForTarget(settings, target), modelName))
+		{
+			return;
+		}
+		string normalizedModel = (modelName ?? string.Empty).Trim();
+		bool isGemini37FlashHigh = normalizedModel.StartsWith("gemini-3.7-flash-high", StringComparison.OrdinalIgnoreCase);
+		bool thinkingEnabled = true;
+		string effort = isGemini37FlashHigh ? DuelSettings.ReasoningEffortHigh : DuelSettings.ReasoningEffortMinimal;
+		switch (target)
+		{
+		case ApiSetupTarget.Auxiliary:
+			settings.AuxiliaryApiThinkingEnabled = thinkingEnabled;
+			settings.SetAuxiliaryApiReasoningEffortForExternal(effort);
+			break;
+		case ApiSetupTarget.ActionPostprocess:
+			settings.ActionPostprocessApiThinkingEnabled = thinkingEnabled;
+			settings.SetActionPostprocessApiReasoningEffortForExternal(effort);
+			break;
+		case ApiSetupTarget.EventAndRebellion:
+			settings.EventAndRebellionApiThinkingEnabled = thinkingEnabled;
+			settings.SetEventAndRebellionApiReasoningEffortForExternal(effort);
+			break;
+		default:
+			settings.MainApiThinkingEnabled = thinkingEnabled;
+			settings.SetMainApiReasoningEffortForExternal(effort);
+			break;
+		}
+	}
+
 	private void ReopenCurrentApiEntry(bool ignoreSuppress = true)
 	{
 		if (IsYjApiSetupActive())
@@ -2715,6 +2746,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				else
 				{
 					SetModelNameForTarget(settings, _currentApiSetupTarget, text2);
+					if (IsYjApiSetupActive())
+					{
+						ApplyYjGeminiPresetThinkingDefaults(settings, _currentApiSetupTarget, text2);
+					}
 					TryPersistMcmSettings(settings);
 					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
 					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
@@ -2755,6 +2790,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				else
 				{
 					SetModelNameForTarget(settings, _currentApiSetupTarget, text2);
+					if (IsYjApiSetupActive())
+					{
+						ApplyYjGeminiPresetThinkingDefaults(settings, _currentApiSetupTarget, text2);
+					}
 					TryPersistMcmSettings(settings);
 					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
 					BeginValidateMcmApiAndContinue(returnToModelSelection: true);

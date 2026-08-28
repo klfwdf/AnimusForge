@@ -312,6 +312,20 @@ namespace AnimusForge.XihaiAction
                 commandText);
         }
 
+        internal static bool TryCancelPerformanceForNewSpeechRequest(
+            Mission mission,
+            Guid newSessionId)
+        {
+            BattleSpeechPerformanceMissionBehavior effect;
+            lock (Sync)
+            {
+                effect = _performanceEffect;
+            }
+            return effect != null && effect.TryCancelForNewSpeechRequest(
+                mission,
+                newSessionId);
+        }
+
         internal static void MarkPerformanceStarted(Mission mission)
         {
             lock (Sync)
@@ -714,7 +728,8 @@ namespace AnimusForge.XihaiAction
             double expiresAtMissionTime,
             bool combinedRequest = false,
             int audienceReplyCount = 0,
-            BattleSpeechBattlefieldFactsV1 battlefieldFacts = null)
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts = null,
+            bool combatSpeechMode = false)
         {
             if (sessionId == Guid.Empty || mission == null || speaker == null)
             {
@@ -735,6 +750,7 @@ namespace AnimusForge.XihaiAction
                     CombinedRequest = combinedRequest,
                     AudienceReplyCount = Math.Max(0, audienceReplyCount),
                     BattlefieldFacts = battlefieldFacts,
+                    CombatSpeechMode = combatSpeechMode,
                     RecentSpeechTexts = GetRecentSpeechTextsUnsafe(mission, speaker.Index),
                     RegenerationAttempts = 0
                 };
@@ -834,16 +850,26 @@ namespace AnimusForge.XihaiAction
             }
             if (snapshot.CombinedRequest)
             {
-                instruction = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
-                    snapshot.MinimumChars,
-                    snapshot.MaximumChars,
-                    snapshot.AllowedIntentKeys,
-                    snapshot.AudienceReplyCount,
-                    snapshot.AudienceReplyMinimumChars,
-                    snapshot.AudienceReplyMaximumChars,
-                    snapshot.RecentSpeechTexts,
-                    snapshot.RegenerationAttempts,
-                    snapshot.BattlefieldFacts);
+                instruction = snapshot.CombatSpeechMode
+                    ? BattleSpeechFrameworkV2.BuildCombatNpcSpeechPromptInstruction(
+                        snapshot.MinimumChars,
+                        snapshot.MaximumChars,
+                        snapshot.AudienceReplyCount,
+                        snapshot.AudienceReplyMinimumChars,
+                        snapshot.AudienceReplyMaximumChars,
+                        snapshot.RecentSpeechTexts,
+                        snapshot.RegenerationAttempts,
+                        snapshot.BattlefieldFacts)
+                    : BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
+                        snapshot.MinimumChars,
+                        snapshot.MaximumChars,
+                        snapshot.AllowedIntentKeys,
+                        snapshot.AudienceReplyCount,
+                        snapshot.AudienceReplyMinimumChars,
+                        snapshot.AudienceReplyMaximumChars,
+                        snapshot.RecentSpeechTexts,
+                        snapshot.RegenerationAttempts,
+                        snapshot.BattlefieldFacts);
             }
             else
             {
@@ -1135,7 +1161,8 @@ namespace AnimusForge.XihaiAction
                         StageSettings.AudienceReplyMaximumChars,
                         _replyClaim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
                         _replyClaim.RegenerationAttempts,
-                        _replyClaim.BattlefieldFacts);
+                        _replyClaim.BattlefieldFacts,
+                        _replyClaim.CombatSpeechMode);
                 }
             }
             if (!snapshot.CombinedRequest)
@@ -1409,7 +1436,8 @@ namespace AnimusForge.XihaiAction
                 StageSettings.AudienceReplyMaximumChars,
                 claim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
                 claim.RegenerationAttempts,
-                claim.BattlefieldFacts);
+                claim.BattlefieldFacts,
+                claim.CombatSpeechMode);
         }
 
         internal static bool TryTakeDeferredNpcReply(
@@ -1499,7 +1527,8 @@ namespace AnimusForge.XihaiAction
             int audienceReplyMaximumChars,
             string[] recentSpeechTexts,
             int regenerationAttempts,
-            BattleSpeechBattlefieldFactsV1 battlefieldFacts)
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts,
+            bool combatSpeechMode)
         {
             SessionId = sessionId;
             Mission = mission;
@@ -1517,6 +1546,7 @@ namespace AnimusForge.XihaiAction
             RecentSpeechTexts = (recentSpeechTexts ?? Array.Empty<string>()).ToArray();
             RegenerationAttempts = Math.Max(0, regenerationAttempts);
             BattlefieldFacts = battlefieldFacts;
+            CombatSpeechMode = combatSpeechMode;
         }
 
         public Guid SessionId { get; }
@@ -1533,6 +1563,7 @@ namespace AnimusForge.XihaiAction
         public string[] RecentSpeechTexts { get; }
         public int RegenerationAttempts { get; }
         public BattleSpeechBattlefieldFactsV1 BattlefieldFacts { get; }
+        public bool CombatSpeechMode { get; }
     }
 
     internal sealed class BattleSpeechPromptScopeV2
@@ -1598,6 +1629,7 @@ namespace AnimusForge.XihaiAction
         public bool CombinedRequest;
         public int AudienceReplyCount;
         public BattleSpeechBattlefieldFactsV1 BattlefieldFacts;
+        public bool CombatSpeechMode;
         public string[] RecentSpeechTexts;
         public int RegenerationAttempts;
         public BattleSpeechReplyPromptSnapshotV2 PromptSnapshot;

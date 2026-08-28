@@ -32,6 +32,56 @@ namespace AnimusForge.XihaiAction
             string diagnosticContext,
             params ActionIndexCache[] ownedActions)
         {
+            return TryReleaseOwnedChannelCore(
+                agent,
+                channel,
+                ownershipAccepted,
+                diagnosticContext,
+                0.1f,
+                ownedActions);
+        }
+
+        public static bool TryReleaseOwnedChannelImmediatelyWithContext(
+            Agent agent,
+            int channel,
+            bool ownershipAccepted,
+            string diagnosticContext,
+            params ActionIndexCache[] ownedActions)
+        {
+            return TryReleaseOwnedChannelCore(
+                agent,
+                channel,
+                ownershipAccepted,
+                diagnosticContext,
+                0f,
+                ownedActions);
+        }
+
+        public static bool TryFadeOutOwnedChannelWithContext(
+            Agent agent,
+            int channel,
+            bool ownershipAccepted,
+            float fadeSeconds,
+            string diagnosticContext,
+            params ActionIndexCache[] ownedActions)
+        {
+            return TryReleaseOwnedChannelCore(
+                agent,
+                channel,
+                ownershipAccepted,
+                diagnosticContext,
+                Math.Max(0.05f, fadeSeconds),
+                ownedActions);
+        }
+
+        private static bool TryReleaseOwnedChannelCore(
+            Agent agent,
+            int channel,
+            bool ownershipAccepted,
+            string diagnosticContext,
+            float blendInPeriod,
+            params ActionIndexCache[] ownedActions)
+        {
             if (!ownershipAccepted)
             {
                 return true;
@@ -60,7 +110,7 @@ namespace AnimusForge.XihaiAction
                     additionalFlags: 0,
                     blendWithNextActionFactor: 0f,
                     actionSpeed: 1f,
-                    blendInPeriod: 0.1f);
+                    blendInPeriod: blendInPeriod);
                 if (!released)
                 {
                     SceneActionsLog.Warning(
@@ -76,7 +126,7 @@ namespace AnimusForge.XihaiAction
                         (diagnosticContext ?? "SceneActionChannelOwner") +
                         " released channel=" + channel +
                         " currentAction=" + current +
-                        " forced=true");
+                        " forced=true immediate=" + (blendInPeriod <= 0f));
                 }
                 return released;
             }

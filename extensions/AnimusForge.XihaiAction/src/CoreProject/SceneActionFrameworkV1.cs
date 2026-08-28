@@ -771,6 +771,16 @@ namespace AnimusForge.SceneActions.Core
             "接过"
         };
 
+        // “西海” is also used as the name of the legacy uniform set.  Keep the
+        // short action alias for explicit stage descriptions, but do not treat
+        // an immediately following clothing/equipment noun as a performed
+        // salute (for example, “他穿着西海军装”).
+        private static readonly string[] XihaiEquipmentContinuations =
+        {
+            "军装", "军服", "战衣", "制服", "服饰", "衣服", "衣物", "衣甲",
+            "套装", "装备", "盔甲", "军帽", "帽子", "军靴", "靴子", "鞋子", "鞋"
+        };
+
         private static readonly Regex XihaiDegreeGesturePattern = new Regex(
             "(?:(?:抬起|举起|伸出|伸直)(?:了)?(?:手臂|右臂|右手|手)|" +
             "(?:高抬|抬高|举高|斜举)(?:了)?(?:右臂|右手)|" +
@@ -816,7 +826,7 @@ namespace AnimusForge.SceneActions.Core
                 if (string.Equals(entry.IntentKey, Xihai, StringComparison.Ordinal))
                 {
                     matched = entry.NpcReplyAliases.Any(cue =>
-                                  ContainsPerformedCue(
+                                  ContainsPerformedXihaiCue(
                                       normalized,
                                       CommandParser.Normalize(cue))) ||
                               ContainsPerformedStructuralXihaiCue(normalized);
@@ -866,6 +876,12 @@ namespace AnimusForge.SceneActions.Core
                         {
                             break;
                         }
+                        if (string.Equals(entry.IntentKey, Xihai, StringComparison.Ordinal) &&
+                            IsXihaiEquipmentMention(normalized, index, cue.Length))
+                        {
+                            searchFrom = index + Math.Max(1, cue.Length);
+                            continue;
+                        }
                         if (!string.Equals(
                                 entry.IntentKey,
                                 Respect,
@@ -901,6 +917,63 @@ namespace AnimusForge.SceneActions.Core
                 segmentStart = index + 1;
             }
             return false;
+        }
+
+        private static bool ContainsPerformedXihaiCue(string text, string cue)
+        {
+            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(cue))
+            {
+                return false;
+            }
+
+            int searchFrom = 0;
+            while (searchFrom <= text.Length - cue.Length)
+            {
+                int index = IndexOfCue(text, cue, searchFrom);
+                if (index < 0)
+                {
+                    return false;
+                }
+                if (!IsXihaiEquipmentMention(text, index, cue.Length) &&
+                    !IsCueSuppressed(text, index, cue.Length))
+                {
+                    return true;
+                }
+                searchFrom = index + Math.Max(1, cue.Length);
+            }
+            return false;
+        }
+
+        internal static bool IsXihaiEquipmentMention(
+            string normalizedText,
+            int cueIndex,
+            int cueLength)
+        {
+            if (string.IsNullOrEmpty(normalizedText) ||
+                cueIndex < 0 ||
+                cueLength != 2 ||
+                cueIndex + cueLength > normalizedText.Length ||
+                !string.Equals(
+                    normalizedText.Substring(cueIndex, cueLength),
+                    "西海",
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            int continuationStart = cueIndex + cueLength;
+            if (continuationStart < normalizedText.Length &&
+                normalizedText[continuationStart] == '的')
+            {
+                continuationStart++;
+            }
+
+            return XihaiEquipmentContinuations.Any(noun =>
+                continuationStart + noun.Length <= normalizedText.Length &&
+                string.Equals(
+                    normalizedText.Substring(continuationStart, noun.Length),
+                    noun,
+                    StringComparison.Ordinal));
         }
 
         public static bool IsLogicalIntent(string intentKey)

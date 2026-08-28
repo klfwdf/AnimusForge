@@ -1,0 +1,2615 @@
+{
+  "schema_version": 1,
+  "collected_utc": "2026-08-08T13:43:28.4616660Z",
+  "implementation_version": "1.4",
+  "source": {
+    "game_root": "D:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+    "spclans_sha256": "318afe49eb3a7e4b7b92877da58c69af5571925b31e13c0a3851ba995e47b070",
+    "lords_sha256": "dd2747bccadc0ed0c2fee1debf38e8a36825b053e497f14d301de030f153abd5",
+    "settlements_sha256": "e92bb2079526dcc4a125b6a7ae21b76240e5176d143aca98d083be9ce8c32524"
+  },
+  "models": {
+    "embedding_sha256": "69b353bb2aa2d09ab606ddbbc35437b03c843615a6bff28216a37fee7309c2aa",
+    "reranker_sha256": "15b9a8c3da82eddf263df571281166e00e9308fe19d077084b642ebfcaf06d2b"
+  },
+  "rules": {
+    "entity_recall_limit": 10,
+    "minimum_logit_margin": 0.08,
+    "fuzzy_named_cases": 48,
+    "unnamed_negative_queries_per_kingdom": 4,
+    "api_calls": 0
+  },
+  "calibration": [
+    {
+      "kind": "clan",
+      "case_count": 16,
+      "dense_recall_count": 16,
+      "retrieval_recall_count": 16,
+      "top1_count": 16,
+      "min_positive": 0.000292,
+      "max_unnamed_negative": null,
+      "unnamed_false_activation_count": 0,
+      "margin_logit": null,
+      "min_top1_gap_logit": 2.235983,
+      "configured_threshold": 0.0001,
+      "passed": true
+    },
+    {
+      "kind": "ruler",
+      "case_count": 8,
+      "dense_recall_count": 8,
+      "retrieval_recall_count": 8,
+      "top1_count": 8,
+      "min_positive": 0.001414,
+      "max_unnamed_negative": null,
+      "unnamed_false_activation_count": 0,
+      "margin_logit": null,
+      "min_top1_gap_logit": 999.0,
+      "configured_threshold": 0.0002,
+      "passed": true
+    },
+    {
+      "kind": "settlement",
+      "case_count": 24,
+      "dense_recall_count": 23,
+      "retrieval_recall_count": 24,
+      "top1_count": 24,
+      "min_positive": 7.6E-05,
+      "max_unnamed_negative": null,
+      "unnamed_false_activation_count": 0,
+      "margin_logit": null,
+      "min_top1_gap_logit": 1.776804,
+      "configured_threshold": 5E-05,
+      "passed": true
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "clan_clan_aserai_1",
+      "kind": "clan",
+      "kingdom": "aserai",
+      "query": "免除胡延家族全部领地的赋税",
+      "source_name": "巴努·胡勒延",
+      "fuzzy_name": "胡延",
+      "expected_doc_id": "clan:clan_aserai_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_aserai_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_A1_2",
+          "kind": "settlement",
+          "name": "法纳卜",
+          "score": 0.082268
+        },
+        {
+          "doc_id": "settlement:town_A1",
+          "kind": "settlement",
+          "name": "古亚兹",
+          "score": 0.035637
+        },
+        {
+          "doc_id": "settlement:village_A6_3",
+          "kind": "settlement",
+          "name": "贾哈西姆",
+          "score": 0.034345
+        },
+        {
+          "doc_id": "settlement:village_A1_2",
+          "kind": "settlement",
+          "name": "巴格",
+          "score": 0.034204
+        },
+        {
+          "doc_id": "settlement:village_A1_1",
+          "kind": "settlement",
+          "name": "塔舍巴",
+          "score": 0.027977
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_aserai_3",
+      "kind": "clan",
+      "kingdom": "aserai",
+      "query": "免除吉德家族全部领地的赋税",
+      "source_name": "巴努·吉勒德",
+      "fuzzy_name": "吉德",
+      "expected_doc_id": "clan:clan_aserai_3",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 2,
+      "selected_doc_id": "clan:clan_aserai_3",
+      "top1": true,
+      "gap_logit": 2.235983,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_A2_2",
+          "kind": "settlement",
+          "name": "阿斯麦特",
+          "score": 0.014558
+        },
+        {
+          "doc_id": "settlement:town_A5",
+          "kind": "settlement",
+          "name": "胡比亚",
+          "score": 0.012992
+        },
+        {
+          "doc_id": "settlement:castle_village_A2_1",
+          "kind": "settlement",
+          "name": "萨赫勒",
+          "score": 0.007541
+        },
+        {
+          "doc_id": "clan:clan_aserai_3",
+          "kind": "clan",
+          "name": "巴努·吉勒德",
+          "score": 0.003519
+        },
+        {
+          "doc_id": "settlement:village_A5_1",
+          "kind": "settlement",
+          "name": "马赫卢勒",
+          "score": 0.002902
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_3_1",
+      "kind": "ruler",
+      "kingdom": "aserai",
+      "query": "由温德领主及其家族承担军费",
+      "source_name": "温吉德",
+      "fuzzy_name": "温德",
+      "expected_doc_id": "ruler:lord_3_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_3_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_aserai_1",
+          "kind": "clan",
+          "name": "巴努·胡勒延",
+          "score": 0.011239
+        },
+        {
+          "doc_id": "ruler:lord_3_1",
+          "kind": "ruler",
+          "name": "温吉德",
+          "score": 0.002098
+        },
+        {
+          "doc_id": "clan:clan_aserai_3",
+          "kind": "clan",
+          "name": "巴努·吉勒德",
+          "score": 0.00038
+        },
+        {
+          "doc_id": "ruler:lord_3_16",
+          "kind": "ruler",
+          "name": "苏鲁克",
+          "score": 7.2E-05
+        },
+        {
+          "doc_id": "ruler:lord_3_19",
+          "kind": "ruler",
+          "name": "奥赞",
+          "score": 6.3E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_A1",
+      "kind": "settlement",
+      "kingdom": "aserai",
+      "query": "修缮古兹的城墙与粮仓",
+      "source_name": "古亚兹",
+      "fuzzy_name": "古兹",
+      "expected_doc_id": "settlement:town_A1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_A1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_A1",
+          "kind": "settlement",
+          "name": "古亚兹",
+          "score": 0.037611
+        },
+        {
+          "doc_id": "settlement:castle_village_A5_2",
+          "kind": "settlement",
+          "name": "侯纳卜",
+          "score": 0.002272
+        },
+        {
+          "doc_id": "settlement:castle_village_A7_2",
+          "kind": "settlement",
+          "name": "本盖兹",
+          "score": 0.001481
+        },
+        {
+          "doc_id": "settlement:town_A3",
+          "kind": "settlement",
+          "name": "以亚基斯",
+          "score": 0.00109
+        },
+        {
+          "doc_id": "settlement:village_A3_1",
+          "kind": "settlement",
+          "name": "阿卜巴",
+          "score": 0.00105
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_A1",
+      "kind": "settlement",
+      "kingdom": "aserai",
+      "query": "加强突比斯堡的驻防",
+      "source_name": "突比力斯堡",
+      "fuzzy_name": "突比斯堡",
+      "expected_doc_id": "settlement:castle_A1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_A1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_A1_1",
+          "kind": "settlement",
+          "name": "突比力斯",
+          "score": 0.006837
+        },
+        {
+          "doc_id": "settlement:castle_A1",
+          "kind": "settlement",
+          "name": "突比力斯堡",
+          "score": 0.003137
+        },
+        {
+          "doc_id": "settlement:castle_village_A8_2",
+          "kind": "settlement",
+          "name": "库加",
+          "score": 6.1E-05
+        },
+        {
+          "doc_id": "settlement:castle_A2",
+          "kind": "settlement",
+          "name": "萨赫勒堡",
+          "score": 4E-05
+        },
+        {
+          "doc_id": "settlement:castle_A7",
+          "kind": "settlement",
+          "name": "乌格巴堡",
+          "score": 3.8E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_A1_1",
+      "kind": "settlement",
+      "kingdom": "aserai",
+      "query": "改善突比斯村的农田与户数",
+      "source_name": "突比力斯",
+      "fuzzy_name": "突比斯",
+      "expected_doc_id": "settlement:castle_village_A1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_A1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_A1_1",
+          "kind": "settlement",
+          "name": "突比力斯",
+          "score": 0.008532
+        },
+        {
+          "doc_id": "settlement:village_A4_4",
+          "kind": "settlement",
+          "name": "多加",
+          "score": 0.001133
+        },
+        {
+          "doc_id": "settlement:village_A8_2",
+          "kind": "settlement",
+          "name": "阿卜甘",
+          "score": 0.000564
+        },
+        {
+          "doc_id": "settlement:village_A6_1",
+          "kind": "settlement",
+          "name": "米贾伊特",
+          "score": 0.000532
+        },
+        {
+          "doc_id": "settlement:village_A8_1",
+          "kind": "settlement",
+          "name": "艾兹贝特·纳胡勒",
+          "score": 0.000272
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_battania_1",
+      "kind": "clan",
+      "kingdom": "battania",
+      "query": "免除格鲁多克家族全部领地的赋税",
+      "source_name": "芬·格鲁芬多克",
+      "fuzzy_name": "格鲁多克",
+      "expected_doc_id": "clan:clan_battania_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_battania_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:village_B1_3",
+          "kind": "settlement",
+          "name": "贝格洛米艾",
+          "score": 0.005877
+        },
+        {
+          "doc_id": "clan:clan_battania_1",
+          "kind": "clan",
+          "name": "芬·格鲁芬多克",
+          "score": 0.002704
+        },
+        {
+          "doc_id": "settlement:village_B1_2",
+          "kind": "settlement",
+          "name": "埃贝雷斯",
+          "score": 0.002338
+        },
+        {
+          "doc_id": "settlement:castle_village_B5_2",
+          "kind": "settlement",
+          "name": "克莱格·班",
+          "score": 0.001756
+        },
+        {
+          "doc_id": "settlement:village_B1_1",
+          "kind": "settlement",
+          "name": "达尔门格斯",
+          "score": 0.001662
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_battania_2",
+      "kind": "clan",
+      "kingdom": "battania",
+      "query": "免除登尔家族全部领地的赋税",
+      "source_name": "芬·登吉尔",
+      "fuzzy_name": "登尔",
+      "expected_doc_id": "clan:clan_battania_2",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_battania_2",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_battania_2",
+          "kind": "clan",
+          "name": "芬·登吉尔",
+          "score": 0.000689
+        },
+        {
+          "doc_id": "settlement:town_B2",
+          "kind": "settlement",
+          "name": "邓格拉尼斯",
+          "score": 0.000649
+        },
+        {
+          "doc_id": "settlement:castle_village_B7_2",
+          "kind": "settlement",
+          "name": "伊姆拉赫",
+          "score": 0.000608
+        },
+        {
+          "doc_id": "settlement:castle_village_B7_1",
+          "kind": "settlement",
+          "name": "阿斯特",
+          "score": 0.000323
+        },
+        {
+          "doc_id": "settlement:village_B2_3",
+          "kind": "settlement",
+          "name": "莫里希格",
+          "score": 0.000285
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_5_1",
+      "kind": "ruler",
+      "kingdom": "battania",
+      "query": "由卡拉格领主及其家族承担军费",
+      "source_name": "卡拉多格",
+      "fuzzy_name": "卡拉格",
+      "expected_doc_id": "ruler:lord_5_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_5_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_battania_1",
+          "kind": "clan",
+          "name": "芬·格鲁芬多克",
+          "score": 0.007231
+        },
+        {
+          "doc_id": "ruler:lord_5_1",
+          "kind": "ruler",
+          "name": "卡拉多格",
+          "score": 0.002065
+        },
+        {
+          "doc_id": "ruler:lord_5_14",
+          "kind": "ruler",
+          "name": "卢伊汉",
+          "score": 4.4E-05
+        },
+        {
+          "doc_id": "clan:clan_battania_4",
+          "kind": "clan",
+          "name": "芬·潘拉克",
+          "score": 4E-05
+        },
+        {
+          "doc_id": "settlement:castle_village_B6_1",
+          "kind": "settlement",
+          "name": "弗林托格",
+          "score": 3.8E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_B1",
+      "kind": "settlement",
+      "kingdom": "battania",
+      "query": "修缮马鲁斯的城墙与粮仓",
+      "source_name": "马鲁纳斯",
+      "fuzzy_name": "马鲁斯",
+      "expected_doc_id": "settlement:town_B1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_B1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_B1",
+          "kind": "settlement",
+          "name": "马鲁纳斯",
+          "score": 7.6E-05
+        },
+        {
+          "doc_id": "settlement:town_B2",
+          "kind": "settlement",
+          "name": "邓格拉尼斯",
+          "score": 3.8E-05
+        },
+        {
+          "doc_id": "settlement:castle_B3",
+          "kind": "settlement",
+          "name": "德鲁伊莫尔堡",
+          "score": 3.7E-05
+        },
+        {
+          "doc_id": "settlement:village_B5_2",
+          "kind": "settlement",
+          "name": "盖恩塞斯",
+          "score": 3.7E-05
+        },
+        {
+          "doc_id": "settlement:village_B1_2",
+          "kind": "settlement",
+          "name": "埃贝雷斯",
+          "score": 3.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_B1",
+      "kind": "settlement",
+      "kingdom": "battania",
+      "query": "加强科梅堡的驻防",
+      "source_name": "阿布·科梅尔堡",
+      "fuzzy_name": "科梅堡",
+      "expected_doc_id": "settlement:castle_B1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_B1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_B1",
+          "kind": "settlement",
+          "name": "阿布·科梅尔堡",
+          "score": 0.000816
+        },
+        {
+          "doc_id": "settlement:castle_village_B1_1",
+          "kind": "settlement",
+          "name": "阿布·科梅尔",
+          "score": 0.00018
+        },
+        {
+          "doc_id": "settlement:castle_B7",
+          "kind": "settlement",
+          "name": "阿斯特堡",
+          "score": 3.7E-05
+        },
+        {
+          "doc_id": "settlement:castle_B3",
+          "kind": "settlement",
+          "name": "德鲁伊莫尔堡",
+          "score": 3.7E-05
+        },
+        {
+          "doc_id": "settlement:castle_B2",
+          "kind": "settlement",
+          "name": "拉诺克·亨堡",
+          "score": 3.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_B1_1",
+      "kind": "settlement",
+      "kingdom": "battania",
+      "query": "改善科尔村的农田与户数",
+      "source_name": "阿布·科梅尔",
+      "fuzzy_name": "科尔",
+      "expected_doc_id": "settlement:castle_village_B1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_B1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_B1_1",
+          "kind": "settlement",
+          "name": "阿布·科梅尔",
+          "score": 0.000128
+        },
+        {
+          "doc_id": "settlement:castle_village_B7_1",
+          "kind": "settlement",
+          "name": "阿斯特",
+          "score": 6.5E-05
+        },
+        {
+          "doc_id": "settlement:village_B5_1",
+          "kind": "settlement",
+          "name": "杜恩",
+          "score": 5.7E-05
+        },
+        {
+          "doc_id": "settlement:village_B2_1",
+          "kind": "settlement",
+          "name": "迪安托格麦尔",
+          "score": 4.9E-05
+        },
+        {
+          "doc_id": "settlement:village_B1_3",
+          "kind": "settlement",
+          "name": "贝格洛米艾",
+          "score": 4.5E-05
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_empire_north_1",
+      "kind": "clan",
+      "kingdom": "empire",
+      "query": "免除俄斯科斯家族全部领地的赋税",
+      "source_name": "俄斯提科斯",
+      "fuzzy_name": "俄斯科斯",
+      "expected_doc_id": "clan:clan_empire_north_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_empire_north_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EN9_1",
+          "kind": "settlement",
+          "name": "墨卡罗维亚",
+          "score": 0.071292
+        },
+        {
+          "doc_id": "settlement:village_EN2_1",
+          "kind": "settlement",
+          "name": "阿罗塞亚",
+          "score": 0.055841
+        },
+        {
+          "doc_id": "settlement:village_EN4_4",
+          "kind": "settlement",
+          "name": "赫塔尼亚",
+          "score": 0.025236
+        },
+        {
+          "doc_id": "clan:clan_empire_north_1",
+          "kind": "clan",
+          "name": "俄斯提科斯",
+          "score": 0.022752
+        },
+        {
+          "doc_id": "settlement:town_EN2",
+          "kind": "settlement",
+          "name": "狄亚特马",
+          "score": 0.021688
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_empire_north_2",
+      "kind": "clan",
+      "kingdom": "empire",
+      "query": "免除阿耳洛斯家族全部领地的赋税",
+      "source_name": "阿耳戈洛斯",
+      "fuzzy_name": "阿耳洛斯",
+      "expected_doc_id": "clan:clan_empire_north_2",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_empire_north_2",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EN6_2",
+          "kind": "settlement",
+          "name": "珀塔米斯",
+          "score": 0.036331
+        },
+        {
+          "doc_id": "settlement:castle_village_EN6_1",
+          "kind": "settlement",
+          "name": "阿塔科尼亚",
+          "score": 0.030252
+        },
+        {
+          "doc_id": "settlement:village_EN1_1",
+          "kind": "settlement",
+          "name": "马拉忒亚",
+          "score": 0.023266
+        },
+        {
+          "doc_id": "settlement:village_EN1_3",
+          "kind": "settlement",
+          "name": "居摩斯",
+          "score": 0.018819
+        },
+        {
+          "doc_id": "settlement:village_EN1_2",
+          "kind": "settlement",
+          "name": "斯塔堤摩斯",
+          "score": 0.015786
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_1_3",
+      "kind": "ruler",
+      "kingdom": "empire",
+      "query": "由曼忒斯领主及其家族承担军费",
+      "source_name": "曼忒俄斯",
+      "fuzzy_name": "曼忒斯",
+      "expected_doc_id": "ruler:lord_1_3",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_1_3",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_empire_north_2",
+          "kind": "clan",
+          "name": "阿耳戈洛斯",
+          "score": 0.029382
+        },
+        {
+          "doc_id": "ruler:lord_1_3",
+          "kind": "ruler",
+          "name": "曼忒俄斯",
+          "score": 0.006121
+        },
+        {
+          "doc_id": "clan:clan_empire_north_7",
+          "kind": "clan",
+          "name": "法伦忒斯",
+          "score": 0.002955
+        },
+        {
+          "doc_id": "ruler:lord_1_58",
+          "kind": "ruler",
+          "name": "塔叙诺耳",
+          "score": 0.000542
+        },
+        {
+          "doc_id": "clan:clan_empire_north_9",
+          "kind": "clan",
+          "name": "塞拉庇得斯",
+          "score": 0.000508
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_EN1",
+      "kind": "settlement",
+      "kingdom": "empire",
+      "query": "修缮厄庇克忒亚的城墙与粮仓",
+      "source_name": "厄庇克洛忒亚",
+      "fuzzy_name": "厄庇克忒亚",
+      "expected_doc_id": "settlement:town_EN1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_EN1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_EN1",
+          "kind": "settlement",
+          "name": "厄庇克洛忒亚",
+          "score": 0.002523
+        },
+        {
+          "doc_id": "settlement:village_EN1_1",
+          "kind": "settlement",
+          "name": "马拉忒亚",
+          "score": 0.000157
+        },
+        {
+          "doc_id": "settlement:castle_village_EN7_1",
+          "kind": "settlement",
+          "name": "厄毗诺萨",
+          "score": 0.000138
+        },
+        {
+          "doc_id": "settlement:village_EN3_1",
+          "kind": "settlement",
+          "name": "厄诺伊萨",
+          "score": 5.9E-05
+        },
+        {
+          "doc_id": "settlement:castle_EN7",
+          "kind": "settlement",
+          "name": "厄毗诺萨堡",
+          "score": 4.4E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_EN1",
+      "kind": "settlement",
+      "kingdom": "empire",
+      "query": "加强瓦拉斯堡的驻防",
+      "source_name": "瓦拉戈斯堡",
+      "fuzzy_name": "瓦拉斯堡",
+      "expected_doc_id": "settlement:castle_EN1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_EN1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EN1_1",
+          "kind": "settlement",
+          "name": "瓦拉戈斯",
+          "score": 0.00026
+        },
+        {
+          "doc_id": "settlement:castle_EN1",
+          "kind": "settlement",
+          "name": "瓦拉戈斯堡",
+          "score": 0.000198
+        },
+        {
+          "doc_id": "settlement:castle_village_EN5_2",
+          "kind": "settlement",
+          "name": "马珊加拉",
+          "score": 0.000118
+        },
+        {
+          "doc_id": "settlement:castle_EN8",
+          "kind": "settlement",
+          "name": "叙拉托斯堡",
+          "score": 4.2E-05
+        },
+        {
+          "doc_id": "settlement:castle_EN7",
+          "kind": "settlement",
+          "name": "厄毗诺萨堡",
+          "score": 3.8E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_EN1_1",
+      "kind": "settlement",
+      "kingdom": "empire",
+      "query": "改善瓦拉斯村的农田与户数",
+      "source_name": "瓦拉戈斯",
+      "fuzzy_name": "瓦拉斯",
+      "expected_doc_id": "settlement:castle_village_EN1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_EN1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EN1_1",
+          "kind": "settlement",
+          "name": "瓦拉戈斯",
+          "score": 0.000882
+        },
+        {
+          "doc_id": "settlement:castle_village_EN8_2",
+          "kind": "settlement",
+          "name": "特美摩斯",
+          "score": 0.000608
+        },
+        {
+          "doc_id": "settlement:castle_village_EN6_2",
+          "kind": "settlement",
+          "name": "珀塔米斯",
+          "score": 0.000365
+        },
+        {
+          "doc_id": "settlement:castle_village_EN8_1",
+          "kind": "settlement",
+          "name": "叙拉托斯",
+          "score": 0.000358
+        },
+        {
+          "doc_id": "settlement:village_EN1_3",
+          "kind": "settlement",
+          "name": "居摩斯",
+          "score": 0.00021
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_empire_south_1",
+      "kind": "clan",
+      "kingdom": "empire_s",
+      "query": "免除珀特斯家族全部领地的赋税",
+      "source_name": "珀特洛斯",
+      "fuzzy_name": "珀特斯",
+      "expected_doc_id": "clan:clan_empire_south_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_empire_south_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_ES4",
+          "kind": "settlement",
+          "name": "吕卡隆",
+          "score": 0.009666
+        },
+        {
+          "doc_id": "settlement:castle_village_ES6_1",
+          "kind": "settlement",
+          "name": "塞斯塔代姆",
+          "score": 0.007845
+        },
+        {
+          "doc_id": "settlement:town_ES5",
+          "kind": "settlement",
+          "name": "俄尼拉",
+          "score": 0.003522
+        },
+        {
+          "doc_id": "settlement:castle_ES6",
+          "kind": "settlement",
+          "name": "塞斯塔代姆堡",
+          "score": 0.002437
+        },
+        {
+          "doc_id": "clan:clan_empire_south_1",
+          "kind": "clan",
+          "name": "珀特洛斯",
+          "score": 0.002421
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_empire_south_2",
+      "kind": "clan",
+      "kingdom": "empire_s",
+      "query": "免除列奥尼得斯家族全部领地的赋税",
+      "source_name": "列奥尼帕得斯",
+      "fuzzy_name": "列奥尼得斯",
+      "expected_doc_id": "clan:clan_empire_south_2",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_empire_south_2",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:village_ES3_1",
+          "kind": "settlement",
+          "name": "卡诺洛斯",
+          "score": 0.013995
+        },
+        {
+          "doc_id": "settlement:village_ES3_2",
+          "kind": "settlement",
+          "name": "特维亚",
+          "score": 0.011379
+        },
+        {
+          "doc_id": "clan:clan_empire_south_2",
+          "kind": "clan",
+          "name": "列奥尼帕得斯",
+          "score": 0.011185
+        },
+        {
+          "doc_id": "settlement:village_ES3_3",
+          "kind": "settlement",
+          "name": "泽斯特亚",
+          "score": 0.006972
+        },
+        {
+          "doc_id": "settlement:town_ES3",
+          "kind": "settlement",
+          "name": "波罗斯",
+          "score": 0.006848
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_1_14",
+      "kind": "ruler",
+      "kingdom": "empire_s",
+      "query": "由拉娅领主及其家族承担军费",
+      "source_name": "拉盖娅",
+      "fuzzy_name": "拉娅",
+      "expected_doc_id": "ruler:lord_1_14",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_1_14",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_empire_south_1",
+          "kind": "clan",
+          "name": "珀特洛斯",
+          "score": 0.00903
+        },
+        {
+          "doc_id": "ruler:lord_1_14",
+          "kind": "ruler",
+          "name": "拉盖娅",
+          "score": 0.002958
+        },
+        {
+          "doc_id": "clan:clan_empire_south_7",
+          "kind": "clan",
+          "name": "奥隆诺斯",
+          "score": 0.00049
+        },
+        {
+          "doc_id": "ruler:lord_1_15",
+          "kind": "ruler",
+          "name": "法戎",
+          "score": 0.000304
+        },
+        {
+          "doc_id": "clan:clan_empire_south_5",
+          "kind": "clan",
+          "name": "尤利俄斯",
+          "score": 0.00024
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_ES1",
+      "kind": "settlement",
+      "kingdom": "empire_s",
+      "query": "修缮达努提卡的城墙与粮仓",
+      "source_name": "达努斯提卡",
+      "fuzzy_name": "达努提卡",
+      "expected_doc_id": "settlement:town_ES1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_ES1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_ES1",
+          "kind": "settlement",
+          "name": "达努斯提卡",
+          "score": 0.001846
+        },
+        {
+          "doc_id": "settlement:castle_village_ES1_2",
+          "kind": "settlement",
+          "name": "恺拉",
+          "score": 0.000349
+        },
+        {
+          "doc_id": "settlement:village_ES2_3",
+          "kind": "settlement",
+          "name": "阿瓦吕普斯",
+          "score": 0.000111
+        },
+        {
+          "doc_id": "settlement:castle_village_ES4_2",
+          "kind": "settlement",
+          "name": "厄忒弥萨",
+          "score": 9.7E-05
+        },
+        {
+          "doc_id": "settlement:village_ES6_2",
+          "kind": "settlement",
+          "name": "斯珀提亚",
+          "score": 7.1E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_ES1",
+      "kind": "settlement",
+      "kingdom": "empire_s",
+      "query": "加强俄德萨堡的驻防",
+      "source_name": "俄德律萨堡",
+      "fuzzy_name": "俄德萨堡",
+      "expected_doc_id": "settlement:castle_ES1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_ES1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_ES1_1",
+          "kind": "settlement",
+          "name": "俄德律萨",
+          "score": 0.000704
+        },
+        {
+          "doc_id": "settlement:castle_ES1",
+          "kind": "settlement",
+          "name": "俄德律萨堡",
+          "score": 0.000385
+        },
+        {
+          "doc_id": "settlement:castle_ES8",
+          "kind": "settlement",
+          "name": "卡诺普西斯堡",
+          "score": 3.7E-05
+        },
+        {
+          "doc_id": "settlement:castle_ES6",
+          "kind": "settlement",
+          "name": "塞斯塔代姆堡",
+          "score": 3.7E-05
+        },
+        {
+          "doc_id": "settlement:village_ES6_1",
+          "kind": "settlement",
+          "name": "萨尔丹尼斯",
+          "score": 3.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_ES1_1",
+      "kind": "settlement",
+      "kingdom": "empire_s",
+      "query": "改善俄德萨村的农田与户数",
+      "source_name": "俄德律萨",
+      "fuzzy_name": "俄德萨",
+      "expected_doc_id": "settlement:castle_village_ES1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_ES1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_ES1_1",
+          "kind": "settlement",
+          "name": "俄德律萨",
+          "score": 0.002958
+        },
+        {
+          "doc_id": "settlement:village_ES2_4",
+          "kind": "settlement",
+          "name": "阿利西翁",
+          "score": 0.000302
+        },
+        {
+          "doc_id": "settlement:village_ES7_2",
+          "kind": "settlement",
+          "name": "瓦耳戈尼斯",
+          "score": 0.000297
+        },
+        {
+          "doc_id": "settlement:village_ES7_1",
+          "kind": "settlement",
+          "name": "索泰",
+          "score": 0.000296
+        },
+        {
+          "doc_id": "settlement:castle_village_ES3_2",
+          "kind": "settlement",
+          "name": "萨戈利那",
+          "score": 0.000275
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_empire_west_1",
+      "kind": "clan",
+      "kingdom": "empire_w",
+      "query": "免除科穆斯家族全部领地的赋税",
+      "source_name": "科穆诺斯",
+      "fuzzy_name": "科穆斯",
+      "expected_doc_id": "clan:clan_empire_west_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_empire_west_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EW3_2",
+          "kind": "settlement",
+          "name": "塔耳库提斯",
+          "score": 0.020124
+        },
+        {
+          "doc_id": "settlement:village_EW2_2",
+          "kind": "settlement",
+          "name": "涅俄科律斯",
+          "score": 0.00846
+        },
+        {
+          "doc_id": "settlement:village_EW2_4",
+          "kind": "settlement",
+          "name": "泽俄科律斯",
+          "score": 0.008214
+        },
+        {
+          "doc_id": "settlement:village_EW3_2",
+          "kind": "settlement",
+          "name": "埃戈斯卡",
+          "score": 0.007841
+        },
+        {
+          "doc_id": "settlement:village_EW3_3",
+          "kind": "settlement",
+          "name": "得拉狄俄斯",
+          "score": 0.006792
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_empire_west_2",
+      "kind": "clan",
+      "kingdom": "empire_w",
+      "query": "免除瓦斯家族全部领地的赋税",
+      "source_name": "瓦罗斯",
+      "fuzzy_name": "瓦斯",
+      "expected_doc_id": "clan:clan_empire_west_2",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_empire_west_2",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EW1_2",
+          "kind": "settlement",
+          "name": "吕西亚",
+          "score": 0.005536
+        },
+        {
+          "doc_id": "settlement:castle_village_EW8_2",
+          "kind": "settlement",
+          "name": "瓦忒亚",
+          "score": 0.002637
+        },
+        {
+          "doc_id": "settlement:castle_village_EW1_1",
+          "kind": "settlement",
+          "name": "加隆托",
+          "score": 0.001072
+        },
+        {
+          "doc_id": "settlement:village_EW4_3",
+          "kind": "settlement",
+          "name": "维尼拉",
+          "score": 0.000459
+        },
+        {
+          "doc_id": "settlement:village_EW4_4",
+          "kind": "settlement",
+          "name": "伽伦戈利亚",
+          "score": 0.000385
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_1_7",
+      "kind": "ruler",
+      "kingdom": "empire_w",
+      "query": "由加里斯领主及其家族承担军费",
+      "source_name": "加里俄斯",
+      "fuzzy_name": "加里斯",
+      "expected_doc_id": "ruler:lord_1_7",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_1_7",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_empire_west_1",
+          "kind": "clan",
+          "name": "科穆诺斯",
+          "score": 0.00475
+        },
+        {
+          "doc_id": "ruler:lord_1_7",
+          "kind": "ruler",
+          "name": "加里俄斯",
+          "score": 0.001414
+        },
+        {
+          "doc_id": "clan:clan_empire_west_6",
+          "kind": "clan",
+          "name": "索拉多斯",
+          "score": 0.000156
+        },
+        {
+          "doc_id": "clan:clan_empire_west_5",
+          "kind": "clan",
+          "name": "罗那利翁",
+          "score": 0.000148
+        },
+        {
+          "doc_id": "clan:clan_empire_west_2",
+          "kind": "clan",
+          "name": "瓦罗斯",
+          "score": 0.000115
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_EW1",
+      "kind": "settlement",
+      "kingdom": "empire_w",
+      "query": "修缮拉塔的城墙与粮仓",
+      "source_name": "拉革塔",
+      "fuzzy_name": "拉塔",
+      "expected_doc_id": "settlement:town_EW1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_EW1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_EW1",
+          "kind": "settlement",
+          "name": "拉革塔",
+          "score": 0.00368
+        },
+        {
+          "doc_id": "settlement:castle_village_EW2_2",
+          "kind": "settlement",
+          "name": "柏耳贡",
+          "score": 0.00055
+        },
+        {
+          "doc_id": "settlement:castle_village_EW3_2",
+          "kind": "settlement",
+          "name": "塔耳库提斯",
+          "score": 0.000433
+        },
+        {
+          "doc_id": "settlement:castle_village_EW8_2",
+          "kind": "settlement",
+          "name": "瓦忒亚",
+          "score": 0.00035
+        },
+        {
+          "doc_id": "settlement:castle_village_EW8_1",
+          "kind": "settlement",
+          "name": "革耳塞戈斯",
+          "score": 0.000207
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_EW1",
+      "kind": "settlement",
+      "kingdom": "empire_w",
+      "query": "加强加隆堡的驻防",
+      "source_name": "加隆托堡",
+      "fuzzy_name": "加隆堡",
+      "expected_doc_id": "settlement:castle_EW1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_EW1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_EW1",
+          "kind": "settlement",
+          "name": "加隆托堡",
+          "score": 0.000995
+        },
+        {
+          "doc_id": "settlement:castle_village_EW1_1",
+          "kind": "settlement",
+          "name": "加隆托",
+          "score": 0.000788
+        },
+        {
+          "doc_id": "settlement:castle_EW5",
+          "kind": "settlement",
+          "name": "维戎堡",
+          "score": 6.1E-05
+        },
+        {
+          "doc_id": "settlement:castle_EW4",
+          "kind": "settlement",
+          "name": "色雷刻托堡",
+          "score": 3.9E-05
+        },
+        {
+          "doc_id": "ruler:lord_1_7",
+          "kind": "ruler",
+          "name": "加里俄斯",
+          "score": 3.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_EW1_1",
+      "kind": "settlement",
+      "kingdom": "empire_w",
+      "query": "改善加托村的农田与户数",
+      "source_name": "加隆托",
+      "fuzzy_name": "加托",
+      "expected_doc_id": "settlement:castle_village_EW1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_EW1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_EW1_1",
+          "kind": "settlement",
+          "name": "加隆托",
+          "score": 0.002897
+        },
+        {
+          "doc_id": "settlement:castle_village_EW4_1",
+          "kind": "settlement",
+          "name": "色雷刻托",
+          "score": 0.00251
+        },
+        {
+          "doc_id": "settlement:castle_village_EW8_1",
+          "kind": "settlement",
+          "name": "革耳塞戈斯",
+          "score": 0.000638
+        },
+        {
+          "doc_id": "settlement:village_EW1_2",
+          "kind": "settlement",
+          "name": "蒙托斯",
+          "score": 0.000144
+        },
+        {
+          "doc_id": "settlement:village_EW3_2",
+          "kind": "settlement",
+          "name": "埃戈斯卡",
+          "score": 6.7E-05
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_khuzait_1",
+      "kind": "clan",
+      "kingdom": "khuzait",
+      "query": "免除兀儿乃特家族全部领地的赋税",
+      "source_name": "兀儿浑乃特",
+      "fuzzy_name": "兀儿乃特",
+      "expected_doc_id": "clan:clan_khuzait_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_khuzait_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:village_K3_3",
+          "kind": "settlement",
+          "name": "马津",
+          "score": 0.13124
+        },
+        {
+          "doc_id": "settlement:village_K5_2",
+          "kind": "settlement",
+          "name": "奥胡坦",
+          "score": 0.085472
+        },
+        {
+          "doc_id": "settlement:village_K3_2",
+          "kind": "settlement",
+          "name": "哈内希",
+          "score": 0.083447
+        },
+        {
+          "doc_id": "settlement:town_K5",
+          "kind": "settlement",
+          "name": "柴坎",
+          "score": 0.059407
+        },
+        {
+          "doc_id": "settlement:town_K3",
+          "kind": "settlement",
+          "name": "马凯布",
+          "score": 0.050272
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_khuzait_2",
+      "kind": "clan",
+      "kingdom": "khuzait",
+      "query": "免除库特家族全部领地的赋税",
+      "source_name": "库吉特",
+      "fuzzy_name": "库特",
+      "expected_doc_id": "clan:clan_khuzait_2",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_khuzait_2",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:village_K1_1",
+          "kind": "settlement",
+          "name": "菲斯纳尔",
+          "score": 0.037099
+        },
+        {
+          "doc_id": "ruler:lord_6_4",
+          "kind": "ruler",
+          "name": "墨速宜",
+          "score": 0.020613
+        },
+        {
+          "doc_id": "settlement:town_K6",
+          "kind": "settlement",
+          "name": "奥多赫",
+          "score": 0.018183
+        },
+        {
+          "doc_id": "clan:clan_khuzait_2",
+          "kind": "clan",
+          "name": "库吉特",
+          "score": 0.016936
+        },
+        {
+          "doc_id": "settlement:village_K4_3",
+          "kind": "settlement",
+          "name": "米万占",
+          "score": 0.01376
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_6_1",
+      "kind": "ruler",
+      "kingdom": "khuzait",
+      "query": "由蒙格领主及其家族承担军费",
+      "source_name": "蒙楚格",
+      "fuzzy_name": "蒙格",
+      "expected_doc_id": "ruler:lord_6_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_6_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_khuzait_1",
+          "kind": "clan",
+          "name": "兀儿浑乃特",
+          "score": 0.031636
+        },
+        {
+          "doc_id": "ruler:lord_6_1",
+          "kind": "ruler",
+          "name": "蒙楚格",
+          "score": 0.009947
+        },
+        {
+          "doc_id": "ruler:lord_6_4",
+          "kind": "ruler",
+          "name": "墨速宜",
+          "score": 0.005415
+        },
+        {
+          "doc_id": "clan:clan_khuzait_3",
+          "kind": "clan",
+          "name": "阿契特",
+          "score": 0.001402
+        },
+        {
+          "doc_id": "ruler:lord_6_19",
+          "kind": "ruler",
+          "name": "合努占",
+          "score": 0.000948
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_K1",
+      "kind": "settlement",
+      "kingdom": "khuzait",
+      "query": "修缮巴尔罕的城墙与粮仓",
+      "source_name": "巴尔塔罕",
+      "fuzzy_name": "巴尔罕",
+      "expected_doc_id": "settlement:town_K1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_K1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_K1",
+          "kind": "settlement",
+          "name": "巴尔塔罕",
+          "score": 0.002641
+        },
+        {
+          "doc_id": "settlement:castle_village_K9_2",
+          "kind": "settlement",
+          "name": "帕亚木",
+          "score": 0.000971
+        },
+        {
+          "doc_id": "settlement:castle_village_K6_2",
+          "kind": "settlement",
+          "name": "喀拉哈力",
+          "score": 0.000817
+        },
+        {
+          "doc_id": "settlement:castle_village_K9_1",
+          "kind": "settlement",
+          "name": "开撒尔",
+          "score": 0.000739
+        },
+        {
+          "doc_id": "settlement:castle_village_K6_1",
+          "kind": "settlement",
+          "name": "迪纳尔",
+          "score": 0.000562
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_K1",
+      "kind": "settlement",
+      "kingdom": "khuzait",
+      "query": "加强乌赛堡的驻防",
+      "source_name": "乌赛克堡",
+      "fuzzy_name": "乌赛堡",
+      "expected_doc_id": "settlement:castle_K1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_K1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_K1",
+          "kind": "settlement",
+          "name": "乌赛克堡",
+          "score": 0.022734
+        },
+        {
+          "doc_id": "settlement:castle_village_K1_1",
+          "kind": "settlement",
+          "name": "乌赛克",
+          "score": 0.017879
+        },
+        {
+          "doc_id": "settlement:castle_K3",
+          "kind": "settlement",
+          "name": "哈坤堡",
+          "score": 0.003735
+        },
+        {
+          "doc_id": "settlement:castle_K5",
+          "kind": "settlement",
+          "name": "希木利堡",
+          "score": 0.000672
+        },
+        {
+          "doc_id": "settlement:castle_K2",
+          "kind": "settlement",
+          "name": "阿契赛尔堡",
+          "score": 0.000655
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_K1_1",
+      "kind": "settlement",
+      "kingdom": "khuzait",
+      "query": "改善乌克村的农田与户数",
+      "source_name": "乌赛克",
+      "fuzzy_name": "乌克",
+      "expected_doc_id": "settlement:castle_village_K1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_K1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_K1_1",
+          "kind": "settlement",
+          "name": "乌赛克",
+          "score": 0.041092
+        },
+        {
+          "doc_id": "settlement:village_K4_3",
+          "kind": "settlement",
+          "name": "米万占",
+          "score": 0.012339
+        },
+        {
+          "doc_id": "settlement:village_K1_2",
+          "kind": "settlement",
+          "name": "乌兰",
+          "score": 0.008396
+        },
+        {
+          "doc_id": "settlement:village_K6_2",
+          "kind": "settlement",
+          "name": "努丘克",
+          "score": 0.005464
+        },
+        {
+          "doc_id": "settlement:village_K2_2",
+          "kind": "settlement",
+          "name": "Tismil",
+          "score": 0.004163
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_sturgia_1",
+      "kind": "clan",
+      "kingdom": "sturgia",
+      "query": "免除贡达夫家族全部领地的赋税",
+      "source_name": "贡达罗夫",
+      "fuzzy_name": "贡达夫",
+      "expected_doc_id": "clan:clan_sturgia_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_sturgia_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_S2_2",
+          "kind": "settlement",
+          "name": "福林",
+          "score": 0.095365
+        },
+        {
+          "doc_id": "settlement:village_S2_1",
+          "kind": "settlement",
+          "name": "萨夫纳",
+          "score": 0.067341
+        },
+        {
+          "doc_id": "settlement:village_S1_1",
+          "kind": "settlement",
+          "name": "罗多巴斯",
+          "score": 0.049524
+        },
+        {
+          "doc_id": "settlement:village_S2_2",
+          "kind": "settlement",
+          "name": "马拉布罗特",
+          "score": 0.03396
+        },
+        {
+          "doc_id": "settlement:village_S1_3",
+          "kind": "settlement",
+          "name": "卡格雷夫",
+          "score": 0.023478
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_sturgia_2",
+      "kind": "clan",
+      "kingdom": "sturgia",
+      "query": "免除库夫家族全部领地的赋税",
+      "source_name": "库洛夫",
+      "fuzzy_name": "库夫",
+      "expected_doc_id": "clan:clan_sturgia_2",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_sturgia_2",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:village_S3_2",
+          "kind": "settlement",
+          "name": "斯科林",
+          "score": 0.023296
+        },
+        {
+          "doc_id": "settlement:village_S3_1",
+          "kind": "settlement",
+          "name": "乔诺巴斯",
+          "score": 0.016575
+        },
+        {
+          "doc_id": "settlement:town_S3",
+          "kind": "settlement",
+          "name": "奥莫尔",
+          "score": 0.003651
+        },
+        {
+          "doc_id": "settlement:castle_village_S5_2",
+          "kind": "settlement",
+          "name": "费赫",
+          "score": 0.002345
+        },
+        {
+          "doc_id": "settlement:village_S1_3",
+          "kind": "settlement",
+          "name": "卡格雷夫",
+          "score": 0.000819
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_2_1",
+      "kind": "ruler",
+      "kingdom": "sturgia",
+      "query": "由朗德领主及其家族承担军费",
+      "source_name": "朗瓦德",
+      "fuzzy_name": "朗德",
+      "expected_doc_id": "ruler:lord_2_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_2_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_sturgia_1",
+          "kind": "clan",
+          "name": "贡达罗夫",
+          "score": 0.019369
+        },
+        {
+          "doc_id": "ruler:lord_2_1",
+          "kind": "ruler",
+          "name": "朗瓦德",
+          "score": 0.005989
+        },
+        {
+          "doc_id": "ruler:lord_2_18",
+          "kind": "ruler",
+          "name": "法芬",
+          "score": 0.001221
+        },
+        {
+          "doc_id": "ruler:lord_2_16",
+          "kind": "ruler",
+          "name": "约里格",
+          "score": 0.000722
+        },
+        {
+          "doc_id": "ruler:lord_2_3",
+          "kind": "ruler",
+          "name": "奥列克",
+          "score": 0.00071
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_S1",
+      "kind": "settlement",
+      "kingdom": "sturgia",
+      "query": "修缮瓦尔格的城墙与粮仓",
+      "source_name": "瓦尔切格",
+      "fuzzy_name": "瓦尔格",
+      "expected_doc_id": "settlement:town_S1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_S1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:town_S1",
+          "kind": "settlement",
+          "name": "瓦尔切格",
+          "score": 0.011403
+        },
+        {
+          "doc_id": "settlement:castle_village_S7_2",
+          "kind": "settlement",
+          "name": "阿洛夫",
+          "score": 0.003489
+        },
+        {
+          "doc_id": "settlement:castle_village_S4_2",
+          "kind": "settlement",
+          "name": "伊斯米尔科格",
+          "score": 0.002102
+        },
+        {
+          "doc_id": "settlement:town_S4",
+          "kind": "settlement",
+          "name": "瓦尔诺瓦波尔",
+          "score": 0.001596
+        },
+        {
+          "doc_id": "settlement:castle_village_S7_1",
+          "kind": "settlement",
+          "name": "乌里克斯卡拉",
+          "score": 0.001595
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_S1",
+      "kind": "settlement",
+      "kingdom": "sturgia",
+      "query": "加强乌斯科堡的驻防",
+      "source_name": "乌斯托科堡",
+      "fuzzy_name": "乌斯科堡",
+      "expected_doc_id": "settlement:castle_S1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_S1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_S1_1",
+          "kind": "settlement",
+          "name": "乌斯托科",
+          "score": 0.009212
+        },
+        {
+          "doc_id": "settlement:castle_S1",
+          "kind": "settlement",
+          "name": "乌斯托科堡",
+          "score": 0.004069
+        },
+        {
+          "doc_id": "settlement:castle_village_S6_1",
+          "kind": "settlement",
+          "name": "塔科尔",
+          "score": 0.00033
+        },
+        {
+          "doc_id": "settlement:castle_village_S6_2",
+          "kind": "settlement",
+          "name": "德沃鲁斯塔",
+          "score": 0.000292
+        },
+        {
+          "doc_id": "settlement:castle_S5",
+          "kind": "settlement",
+          "name": "奥夫堡",
+          "score": 9.1E-05
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_S1_1",
+      "kind": "settlement",
+      "kingdom": "sturgia",
+      "query": "改善乌斯科村的农田与户数",
+      "source_name": "乌斯托科",
+      "fuzzy_name": "乌斯科",
+      "expected_doc_id": "settlement:castle_village_S1_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": true,
+      "guarded_candidate_count": 2,
+      "selected_doc_id": "settlement:castle_village_S1_1",
+      "top1": true,
+      "gap_logit": 1.776804,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_S1_1",
+          "kind": "settlement",
+          "name": "乌斯托科",
+          "score": 0.008539
+        },
+        {
+          "doc_id": "settlement:village_S3_2",
+          "kind": "settlement",
+          "name": "斯科林",
+          "score": 0.001455
+        },
+        {
+          "doc_id": "settlement:village_S4_1",
+          "kind": "settlement",
+          "name": "博乔瓦戈卡",
+          "score": 0.000815
+        },
+        {
+          "doc_id": "settlement:village_S1_1",
+          "kind": "settlement",
+          "name": "罗多巴斯",
+          "score": 0.000755
+        },
+        {
+          "doc_id": "settlement:castle_village_S7_1",
+          "kind": "settlement",
+          "name": "乌里克斯卡拉",
+          "score": 0.000713
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_vlandia_1",
+      "kind": "clan",
+      "kingdom": "vlandia",
+      "query": "免除梅克家族全部领地的赋税",
+      "source_name": "戴·梅罗克",
+      "fuzzy_name": "梅克",
+      "expected_doc_id": "clan:clan_vlandia_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_vlandia_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_V7_2",
+          "kind": "settlement",
+          "name": "罗德唐",
+          "score": 0.005652
+        },
+        {
+          "doc_id": "settlement:castle_village_V5_2",
+          "kind": "settlement",
+          "name": "西岚达克",
+          "score": 0.005138
+        },
+        {
+          "doc_id": "settlement:village_V5_2",
+          "kind": "settlement",
+          "name": "梅罗克",
+          "score": 0.004902
+        },
+        {
+          "doc_id": "settlement:village_V1_2",
+          "kind": "settlement",
+          "name": "Etirfurd",
+          "score": 0.001123
+        },
+        {
+          "doc_id": "clan:clan_vlandia_1",
+          "kind": "clan",
+          "name": "戴·梅罗克",
+          "score": 0.000979
+        }
+      ]
+    },
+    {
+      "case_id": "clan_clan_vlandia_10",
+      "kind": "clan",
+      "kingdom": "vlandia",
+      "query": "免除佛坎家族全部领地的赋税",
+      "source_name": "戴·佛尔坎",
+      "fuzzy_name": "佛坎",
+      "expected_doc_id": "clan:clan_vlandia_10",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "clan:clan_vlandia_10",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_V4_1",
+          "kind": "settlement",
+          "name": "奥曼法德",
+          "score": 0.012358
+        },
+        {
+          "doc_id": "clan:clan_vlandia_10",
+          "kind": "clan",
+          "name": "戴·佛尔坎",
+          "score": 0.004875
+        },
+        {
+          "doc_id": "settlement:castle_V4",
+          "kind": "settlement",
+          "name": "奥曼法德堡",
+          "score": 0.001474
+        },
+        {
+          "doc_id": "settlement:castle_village_V2_2",
+          "kind": "settlement",
+          "name": "费顿",
+          "score": 0.000916
+        },
+        {
+          "doc_id": "settlement:village_V3_4",
+          "kind": "settlement",
+          "name": "帕利松",
+          "score": 0.00059
+        }
+      ]
+    },
+    {
+      "case_id": "ruler_lord_4_1",
+      "kind": "ruler",
+      "kingdom": "vlandia",
+      "query": "由德尔领主及其家族承担军费",
+      "source_name": "德泰尔",
+      "fuzzy_name": "德尔",
+      "expected_doc_id": "ruler:lord_4_1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "ruler:lord_4_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "clan:clan_vlandia_1",
+          "kind": "clan",
+          "name": "戴·梅罗克",
+          "score": 0.006278
+        },
+        {
+          "doc_id": "ruler:lord_4_1",
+          "kind": "ruler",
+          "name": "德泰尔",
+          "score": 0.002704
+        },
+        {
+          "doc_id": "clan:clan_vlandia_9",
+          "kind": "clan",
+          "name": "戴·热兰",
+          "score": 0.000388
+        },
+        {
+          "doc_id": "clan:clan_vlandia_2",
+          "kind": "clan",
+          "name": "戴·提哈",
+          "score": 0.000227
+        },
+        {
+          "doc_id": "ruler:lord_4_16",
+          "kind": "ruler",
+          "name": "因加泰尔",
+          "score": 0.00021
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_town_V1",
+      "kind": "settlement",
+      "kingdom": "vlandia",
+      "query": "修缮萨特的城墙与粮仓",
+      "source_name": "萨哥特",
+      "fuzzy_name": "萨特",
+      "expected_doc_id": "settlement:town_V1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:town_V1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:village_V7_1",
+          "kind": "settlement",
+          "name": "萨万特",
+          "score": 0.004135
+        },
+        {
+          "doc_id": "settlement:castle_village_V3_1",
+          "kind": "settlement",
+          "name": "德拉庞",
+          "score": 0.001221
+        },
+        {
+          "doc_id": "settlement:castle_village_V6_2",
+          "kind": "settlement",
+          "name": "德里亚特",
+          "score": 0.000455
+        },
+        {
+          "doc_id": "settlement:town_V1",
+          "kind": "settlement",
+          "name": "萨哥特",
+          "score": 0.00028
+        },
+        {
+          "doc_id": "settlement:town_V3",
+          "kind": "settlement",
+          "name": "帕拉汶德",
+          "score": 0.000265
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_V1",
+      "kind": "settlement",
+      "kingdom": "vlandia",
+      "query": "加强于桑堡的驻防",
+      "source_name": "于桑克堡",
+      "fuzzy_name": "于桑堡",
+      "expected_doc_id": "settlement:castle_V1",
+      "dense_recalled": true,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_V1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_V1_1",
+          "kind": "settlement",
+          "name": "于桑克",
+          "score": 0.00477
+        },
+        {
+          "doc_id": "settlement:castle_V1",
+          "kind": "settlement",
+          "name": "于桑克堡",
+          "score": 0.003831
+        },
+        {
+          "doc_id": "settlement:castle_village_V8_1",
+          "kind": "settlement",
+          "name": "韦雷克桑",
+          "score": 0.000582
+        },
+        {
+          "doc_id": "settlement:castle_V8",
+          "kind": "settlement",
+          "name": "韦雷克桑堡",
+          "score": 0.000382
+        },
+        {
+          "doc_id": "settlement:castle_village_V2_1",
+          "kind": "settlement",
+          "name": "翁加尔",
+          "score": 0.000127
+        }
+      ]
+    },
+    {
+      "case_id": "settlement_castle_village_V1_1",
+      "kind": "settlement",
+      "kingdom": "vlandia",
+      "query": "改善于克村的农田与户数",
+      "source_name": "于桑克",
+      "fuzzy_name": "于克",
+      "expected_doc_id": "settlement:castle_village_V1_1",
+      "dense_recalled": false,
+      "approximate_promoted": true,
+      "retrieval_recalled": true,
+      "raw_top1": false,
+      "guarded_candidate_count": 1,
+      "selected_doc_id": "settlement:castle_village_V1_1",
+      "top1": true,
+      "gap_logit": 999.0,
+      "ranked": [
+        {
+          "doc_id": "settlement:castle_village_V5_2",
+          "kind": "settlement",
+          "name": "西岚达克",
+          "score": 0.001209
+        },
+        {
+          "doc_id": "settlement:castle_village_V1_1",
+          "kind": "settlement",
+          "name": "于桑克",
+          "score": 0.000768
+        },
+        {
+          "doc_id": "settlement:village_V8_2",
+          "kind": "settlement",
+          "name": "卡南克",
+          "score": 0.000763
+        },
+        {
+          "doc_id": "settlement:village_V1_1",
+          "kind": "settlement",
+          "name": "卡利奥克",
+          "score": 0.00062
+        },
+        {
+          "doc_id": "settlement:village_V5_1",
+          "kind": "settlement",
+          "name": "菲尔贝克",
+          "score": 0.000454
+        }
+      ]
+    }
+  ],
+  "unnamed_negatives": [
+    {
+      "kingdom": "aserai",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "aserai",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "aserai",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "aserai",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "battania",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "battania",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "battania",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "battania",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_s",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_s",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_s",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_s",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_w",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_w",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_w",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "empire_w",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "khuzait",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "khuzait",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "khuzait",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "khuzait",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "sturgia",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "sturgia",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "sturgia",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "sturgia",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "vlandia",
+      "query": "向本国最富有家族的领地征税",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "vlandia",
+      "query": "增援边境粮仓城市并提高粮食储备",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "vlandia",
+      "query": "发展本国经济并改善人民生活",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    },
+    {
+      "kingdom": "vlandia",
+      "query": "召集各家族商议新的全国税制",
+      "guarded_count": 0,
+      "max_by_kind": {}
+    }
+  ],
+  "passed": true
+}

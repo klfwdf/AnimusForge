@@ -147,6 +147,61 @@ namespace AnimusForge.SceneActions.Core
                    Array.IndexOf(TrustedOneShotIntentKeys, intentKey) >= 0;
         }
 
+        public static IReadOnlyList<int> SelectAudienceResponseOrdinals(
+            Guid sessionId,
+            IReadOnlyList<BattleSpeechPerformanceCueV1> audienceCues,
+            int audienceCount,
+            int maximumResponders)
+        {
+            if (sessionId == Guid.Empty || audienceCount <= 0 || maximumResponders <= 0)
+            {
+                return Array.Empty<int>();
+            }
+
+            int boundedCount = Math.Min(audienceCount, maximumResponders);
+            List<int> result = new List<int>(boundedCount);
+            HashSet<int> selected = new HashSet<int>();
+
+            foreach (BattleSpeechPerformanceCueV1 cue in
+                     (audienceCues ?? Array.Empty<BattleSpeechPerformanceCueV1>())
+                     .OrderBy(value => value.OffsetSeconds)
+                     .ThenBy(value => value.AudienceOrdinal))
+            {
+                if (result.Count >= boundedCount)
+                {
+                    break;
+                }
+                if (cue.AudienceOrdinal < 0 || cue.AudienceOrdinal >= audienceCount ||
+                    !selected.Add(cue.AudienceOrdinal))
+                {
+                    continue;
+                }
+                result.Add(cue.AudienceOrdinal);
+            }
+
+            if (result.Count < boundedCount)
+            {
+                foreach (int ordinal in Enumerable.Range(0, audienceCount)
+                             .Where(ordinal => !selected.Contains(ordinal))
+                             .Select(ordinal => new
+                             {
+                                 Ordinal = ordinal,
+                                 Hash = StableHash(
+                                     sessionId.ToString("N") +
+                                     ":audience-reply-fallback:" + ordinal)
+                             })
+                             .OrderBy(value => value.Hash)
+                             .ThenBy(value => value.Ordinal)
+                             .Take(boundedCount - result.Count)
+                             .Select(value => value.Ordinal))
+                {
+                    result.Add(ordinal);
+                }
+            }
+
+            return new ReadOnlyCollection<int>(result);
+        }
+
         public static BattleSpeechPerformancePlanV1 Create(
             Guid sessionId,
             string speechText,
@@ -397,16 +452,12 @@ namespace AnimusForge.SceneActions.Core
             List<BattleSpeechPerformanceCueV1> result = new List<BattleSpeechPerformanceCueV1>();
             for (int index = 0; index < ordinals.Length; index++)
             {
-                uint hash = StableHash(sessionId.ToString("N") + ":reaction:" + ordinals[index]);
                 if (index < midCount)
                 {
-                    string intent = hash % 4 == 0
-                        ? SceneActionFrameworkV4.Greet
-                        : SceneActionFrameworkV4.Agree;
                     float offset = Math.Max(1f, duration * 0.48f) +
                                    (index * settings.AudienceMemberStaggerSeconds);
                     result.Add(new BattleSpeechPerformanceCueV1(
-                        intent,
+                        SceneActionFrameworkV4.Cheer,
                         Math.Min(duration - 0.75f, offset),
                         ordinals[index]));
                     continue;
@@ -415,17 +466,11 @@ namespace AnimusForge.SceneActions.Core
                 int finalIndex = index - midCount;
                 int waveIndex = finalIndex / settings.AudienceWaveSize;
                 int memberIndex = finalIndex % settings.AudienceWaveSize;
-                uint selector = hash % 10;
-                string finalIntent = selector < 7
-                    ? SceneActionFrameworkV4.Cheer
-                    : selector < 9
-                        ? SceneActionFrameworkV4.Greet
-                        : SceneActionFrameworkV4.Agree;
                 float finalOffset = duration + settings.AudienceFinalDelaySeconds +
                                     (waveIndex * settings.AudienceWaveIntervalSeconds) +
                                     (memberIndex * settings.AudienceMemberStaggerSeconds);
                 result.Add(new BattleSpeechPerformanceCueV1(
-                    finalIntent,
+                    SceneActionFrameworkV4.Cheer,
                     finalOffset,
                     ordinals[index]));
             }

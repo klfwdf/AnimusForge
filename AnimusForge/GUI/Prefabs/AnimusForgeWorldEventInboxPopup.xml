@@ -144,11 +144,22 @@
                   </Children>
                 </Widget>
 
-                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="250" SuggestedHeight="56" HorizontalAlignment="Center" VerticalAlignment="Bottom" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+                <RichTextWidget IsVisible="@ShowSelectedRecordReReviewDisabledReason" WidthSizePolicy="Fixed" SuggestedWidth="820" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="60" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Text="@SelectedRecordReReviewDisabledReasonText" />
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="56" HorizontalAlignment="Center" VerticalAlignment="Bottom" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@CloseText" />
+                    <ButtonWidget IsVisible="@ShowSelectedRecordReReview" IsEnabled="@CanReReviewSelectedRecord" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="250" SuggestedHeight="56" Brush="Popup.Done.Button" Command.Click="ExecuteReReview" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@SelectedRecordReReviewText" />
+                      </Children>
+                    </ButtonWidget>
+                    <Widget IsVisible="@ShowSelectedRecordReReview" WidthSizePolicy="Fixed" SuggestedWidth="22" HeightSizePolicy="StretchToParent" />
+                    <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="250" SuggestedHeight="56" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@CloseText" />
+                      </Children>
+                    </ButtonWidget>
                   </Children>
-                </ButtonWidget>
+                </ListPanel>
               </Children>
             </Widget>
           </Children>

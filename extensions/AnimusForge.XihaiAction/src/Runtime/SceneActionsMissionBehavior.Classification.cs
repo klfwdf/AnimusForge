@@ -94,6 +94,25 @@ namespace AnimusForge.XihaiAction
                         decision.Error ?? "Classifier selected a key outside the frozen allow-list.");
                     continue;
                 }
+                if (pending.Captured.InputSource == SceneInputSource.NpcSceneShoutReply &&
+                    !SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+                        pending.ClassifierText,
+                        decision.ProgramV4,
+                        out string evidenceError))
+                {
+                    SceneActionsLog.Warning(
+                        "CLASSIFIER",
+                        "NPC classifier action rejected because current reply lacked " +
+                        "performed-action evidence. RequestId=" +
+                        completion.RequestId.ToString("N") +
+                        " Program=" + decision.ProgramV4.ProtocolExpression +
+                        " Reason=" + (evidenceError ?? "unknown"));
+                    FinishAcceptedRequestWithoutTargets(
+                        completion.RequestId,
+                        ExecutionResultCode.InvalidClassifierOutput,
+                        evidenceError);
+                    continue;
+                }
                 ParseDecision targetedDecision = ParseDecision.MatchProgramV4(
                     decision.ProgramV4,
                     pending.TargetOverride,
@@ -202,6 +221,7 @@ namespace AnimusForge.XihaiAction
             PendingClassification pending = new PendingClassification
             {
                 Captured = captured,
+                ClassifierText = fallback.ClassifierText ?? string.Empty,
                 AllowedIntentKeys = allowed,
                 TargetOverride = fallback.TargetOverride,
                 FallbackToConsent = fallbackToConsent,

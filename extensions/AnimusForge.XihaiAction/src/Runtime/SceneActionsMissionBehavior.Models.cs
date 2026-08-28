@@ -171,6 +171,7 @@ namespace AnimusForge.XihaiAction
         private sealed class PendingClassification
         {
             public CapturedSceneActionEvent Captured { get; set; }
+            public string ClassifierText { get; set; }
             public List<string> AllowedIntentKeys { get; set; }
             public TargetMode? TargetOverride { get; set; }
             public bool FallbackToConsent { get; set; }

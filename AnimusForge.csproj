@@ -111,11 +111,14 @@
     <Compile Remove="阅兵\**\*.cs" />
     <Compile Remove="111\**\*.cs" />
     <Compile Remove="tools\**\*.cs" />
+    <Compile Remove="dist\**\*.cs" />
     <Compile Remove="extensions\AnimusForge.XihaiAction\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*.cs" />
     <Compile Remove="AnimusForge.Bootstrap\**\*.cs" />
     <Compile Remove="FUYONG\**\*.cs" />
+    <Compile Remove="analysis\**\*.cs" />
+    <Compile Remove="TrueAutoBlock\**\*.cs" />
     <Compile Remove="_codex_tmp\**\*.cs" />
     <Compile Remove="tmp\**\*.cs" />
     <Compile Remove="handoff\**\*.cs" />
@@ -128,6 +131,8 @@
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
     <EmbeddedResource Remove="AnimusForge.Bootstrap\**\*" />
     <EmbeddedResource Remove="FUYONG\**\*" />
+    <EmbeddedResource Remove="analysis\**\*" />
+    <EmbeddedResource Remove="TrueAutoBlock\**\*" />
     <EmbeddedResource Remove="_codex_tmp\**\*" />
     <EmbeddedResource Remove="tmp\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
@@ -139,6 +144,8 @@
     <None Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
     <None Remove="AnimusForge.Bootstrap\**\*" />
     <None Remove="FUYONG\**\*" />
+    <None Remove="analysis\**\*" />
+    <None Remove="TrueAutoBlock\**\*" />
     <None Remove="_codex_tmp\**\*" />
     <None Remove="tmp\**\*" />
   </ItemGroup>

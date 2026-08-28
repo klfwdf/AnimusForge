@@ -93,6 +93,8 @@
                   <Children>
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="52" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@CancelText" /></Children></ButtonWidget>
                     <Widget WidthSizePolicy="Fixed" SuggestedWidth="24" />
+                    <ButtonWidget IsEnabled="@CanAutoDraft" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="52" Brush="Popup.Cancel.Button" Command.Click="ExecuteAutoDraft" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@AutoDraftText" /></Children></ButtonWidget>
+                    <Widget WidthSizePolicy="Fixed" SuggestedWidth="24" />
                     <ButtonWidget IsEnabled="@CanPublish" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="52" Brush="Popup.Done.Button" Command.Click="ExecutePublish" UpdateChildrenStates="true" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@PublishText" /></Children></ButtonWidget>
                   </Children>
                 </ListPanel>

@@ -236,6 +236,15 @@ if (!parsedAgendaTopics.Contains("kingdom_agenda", StringComparer.OrdinalIgnoreC
     throw new InvalidOperationException("KINGDOM_AGENDA did not map back to the unified agenda topic.");
 }
 
+var parsedAgendaDiplomacyTopics = service.ParseTopics("{\"rule_codes\":[\"KINGDOM_AGENDA\",\"DIPLOMACY\",\"NPC_RECENT\",\"NOBLE_PRESSURE\"],\"mentioned_entities\":{\"entities\":[]}}", catalog.Rules);
+var aiConfigHandlerSource = File.ReadAllText(Path.Combine(repoRoot, "AIConfigHandler.cs"));
+if (!parsedAgendaDiplomacyTopics.Contains("kingdom_agenda", StringComparer.OrdinalIgnoreCase) ||
+    !parsedAgendaDiplomacyTopics.Contains("diplomacy", StringComparer.OrdinalIgnoreCase) ||
+    aiConfigHandlerSource.Contains("PreferDirectDiplomacyTopicOverAgenda(", StringComparison.Ordinal))
+{
+    throw new InvalidOperationException("KINGDOM_AGENDA and DIPLOMACY must remain independent when both topics are selected.");
+}
+
 var invalidPreprocessResponses = new[]
 {
     "2,13",
