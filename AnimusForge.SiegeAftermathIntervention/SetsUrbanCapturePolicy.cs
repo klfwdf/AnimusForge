@@ -105,15 +105,18 @@ public static class SetsUrbanCapturePolicy
         }
     }
 
-    /// <summary>TAB exit stays blocked while a hostile conflict is undecided.</summary>
+    /// <summary>
+    /// TAB exit stays blocked until the conflict has explicitly reached victory.
+    /// Defender counts decide whether victory may be raised; they must not open a
+    /// one-tick exit window before the ReachVictory event is committed.
+    /// </summary>
     public static bool ShouldBlockExit(SetsUrbanCaptureState state, int liveObjectiveDefenders, bool reserveExhausted)
     {
-        if (state != SetsUrbanCaptureState.ConflictActive)
-        {
-            return false;
-        }
-
-        return liveObjectiveDefenders > 0 || !reserveExhausted;
+        // Keep the existing signature so runtime diagnostics can report the same
+        // inputs as IsVictoryReady without conflating readiness with state.
+        _ = liveObjectiveDefenders;
+        _ = reserveExhausted;
+        return state == SetsUrbanCaptureState.ConflictActive;
     }
 
     /// <summary>Victory requires no live objective defenders and every reserve source exhausted.</summary>

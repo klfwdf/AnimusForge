@@ -6358,7 +6358,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 		private void SettleAlliedCasualty(Agent affectedAgent)
 		{
-			if (!_settledCasualtyAgentIndexes.Add(affectedAgent.Index))
+			if (!TryRecordAlliedCasualtyOnce(affectedAgent.Index))
 			{
 				return;
 			}
@@ -6372,13 +6372,27 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SettlementEntryTroopSelectionLog.Log("Allied casualty removed from main party. troop=" + SafeCharacterId(character));
 		}
 
+		private bool TryRecordAlliedCasualtyOnce(int agentIndex)
+		{
+			if (_shadowCaptureSession != null && !_shadowCaptureSession.IsSuspended)
+			{
+				bool recorded = _shadowCaptureSession.Ledger.TryRecordAlliedCasualty(agentIndex);
+				if (recorded)
+				{
+					_settledCasualtyAgentIndexes.Add(agentIndex);
+				}
+				return recorded;
+			}
+			return _settledCasualtyAgentIndexes.Add(agentIndex);
+		}
+
 		private void SettleDefenderReserveDefeat(Agent affectedAgent, string source)
 		{
 			if (!_conflictFeaturesEnabled)
 			{
 				return;
 			}
-			if (!_settledDefenderReserveAgentIndexes.Add(affectedAgent.Index))
+			if (!TryRecordDefenderCasualtyOnce(affectedAgent.Index))
 			{
 				return;
 			}
@@ -6400,12 +6414,26 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			SettlementEntryTroopSelectionLog.LogVerbose("Defender reserve defeat removed. troop=" + SafeCharacterId(character) + ", source=" + source);
 		}
 
+		private bool TryRecordDefenderCasualtyOnce(int agentIndex)
+		{
+			if (_shadowCaptureSession != null && !_shadowCaptureSession.IsSuspended)
+			{
+				bool recorded = _shadowCaptureSession.Ledger.TryRecordDefenderCasualty(agentIndex);
+				if (recorded)
+				{
+					_settledDefenderReserveAgentIndexes.Add(agentIndex);
+				}
+				return recorded;
+			}
+			return _settledDefenderReserveAgentIndexes.Add(agentIndex);
+		}
+
 		public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
 		{
 			Agent main = Agent.Main ?? base.Mission?.MainAgent;
 			bool legacyBlocked = _defenderConflictEnabled && _conflictActive && !_victoryReached && main != null && main.IsActive();
-			CompareShadowExitBlock(legacyBlocked);
-			if (legacyBlocked)
+			bool exitBlocked = ResolveGuardedCaptureExitBlock(legacyBlocked);
+			if (exitBlocked)
 			{
 				canPlayerLeave = false;
 				return new InquiryData("【SETS内部暴乱】", SetsSettlementEntryProfile.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
@@ -6414,26 +6442,33 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return null;
 		}
 
-		/// <summary>Shadow-compare the exit-block policy against the legacy boolean decision.</summary>
-		private void CompareShadowExitBlock(bool legacyBlocked)
+		/// <summary>
+		/// Use the session decision only while it agrees with the proven legacy guard.
+		/// Any missing/suspended session, divergence, or exception fails closed to the
+		/// legacy result instead of changing live mission behavior.
+		/// </summary>
+		private bool ResolveGuardedCaptureExitBlock(bool legacyBlocked)
 		{
 			try
 			{
-				if (_shadowCaptureSession == null)
+				if (_shadowCaptureSession == null || _shadowCaptureSession.IsSuspended)
 				{
-					return;
+					return legacyBlocked;
 				}
 				int liveEnemies = CountLiveTrackedEnemies();
 				bool reserveExhausted = !HasRemainingDefenderReserve();
-				bool shadowBlocked = SetsUrbanCapturePolicy.ShouldBlockExit(_shadowCaptureSession.State, liveEnemies, reserveExhausted);
-				if (shadowBlocked != legacyBlocked)
+				bool sessionBlocked = SetsUrbanCapturePolicy.ShouldBlockExit(_shadowCaptureSession.State, liveEnemies, reserveExhausted);
+				if (sessionBlocked != legacyBlocked)
 				{
-					SettlementEntryTroopSelectionLog.Log("SETS shadow DIVERGENCE at ExitBlock: legacy=" + legacyBlocked + ", shadow=" + shadowBlocked + ", liveEnemies=" + liveEnemies + ", reserveExhausted=" + reserveExhausted + ", " + _shadowCaptureSession.DescribeForLog());
+					SettlementEntryTroopSelectionLog.Log("SETS guarded-authority DIVERGENCE at ExitBlock: legacy=" + legacyBlocked + ", session=" + sessionBlocked + ", fallback=legacy, liveEnemies=" + liveEnemies + ", reserveExhausted=" + reserveExhausted + ", " + _shadowCaptureSession.DescribeForLog());
+					return legacyBlocked;
 				}
+				return sessionBlocked;
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("SETS shadow exit-block compare failed (legacy flow unaffected). error=" + ex.Message);
+				SettlementEntryTroopSelectionLog.Log("SETS guarded-authority exit-block failed; fallback=legacy. error=" + ex.Message);
+				return legacyBlocked;
 			}
 		}
 
