@@ -7,6 +7,8 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge.PolicyEffects;
 
+internal delegate string PolicyEffectOwnerKingdomResolver(PolicyEffectTargetKind targetKind, string targetId);
+
 internal static class PolicyEffectTargetJurisdiction
 {
 	internal static bool TryApply(
@@ -17,6 +19,31 @@ internal static class PolicyEffectTargetJurisdiction
 		IReadOnlyCollection<string> authorizedCrossKingdomIds,
 		bool preserveLegacyCrossKingdoms,
 		bool failOnUnauthorized,
+		out PolicyEffectCanonicalTargetSet targetSet,
+		out string error)
+	{
+		return TryApply(
+			source,
+			module,
+			targetKingdomId,
+			issuerKingdomId,
+			authorizedCrossKingdomIds,
+			preserveLegacyCrossKingdoms,
+			failOnUnauthorized,
+			ownerKingdomResolver: null,
+			out targetSet,
+			out error);
+	}
+
+	internal static bool TryApply(
+		PolicyEffectCanonicalTargetSet source,
+		IPolicyEffectModule module,
+		string targetKingdomId,
+		string issuerKingdomId,
+		IReadOnlyCollection<string> authorizedCrossKingdomIds,
+		bool preserveLegacyCrossKingdoms,
+		bool failOnUnauthorized,
+		PolicyEffectOwnerKingdomResolver ownerKingdomResolver,
 		out PolicyEffectCanonicalTargetSet targetSet,
 		out string error)
 	{
@@ -47,7 +74,7 @@ internal static class PolicyEffectTargetJurisdiction
 			&& source.JurisdictionKind == PolicyEffectTargetJurisdictionKind.LegacyCompiled
 			&& module.Descriptor.AllowCrossKingdomTargets)
 		{
-			foreach (string kingdomId in CollectReferencedForeignKingdomIds(source, homeKingdomId))
+			foreach (string kingdomId in CollectReferencedForeignKingdomIds(source, homeKingdomId, ownerKingdomResolver))
 			{
 				allowedCrossKingdomIds.Add(kingdomId);
 			}
@@ -67,7 +94,7 @@ internal static class PolicyEffectTargetJurisdiction
 		targetSet.SettlementIds = FilterIds(
 			targetSet.SettlementIds,
 			PolicyEffectTargetKind.Settlement,
-			ResolveSettlementOwnerKingdomId,
+			id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Settlement, id, ownerKingdomResolver),
 			homeKingdomId,
 			allowedCrossKingdomIds,
 			moduleAllowsCross,
@@ -76,7 +103,7 @@ internal static class PolicyEffectTargetJurisdiction
 		targetSet.TownIds = FilterIds(
 			targetSet.TownIds,
 			PolicyEffectTargetKind.Town,
-			ResolveSettlementOwnerKingdomId,
+			id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Town, id, ownerKingdomResolver),
 			homeKingdomId,
 			allowedCrossKingdomIds,
 			moduleAllowsCross,
@@ -85,7 +112,7 @@ internal static class PolicyEffectTargetJurisdiction
 		targetSet.VillageIds = FilterIds(
 			targetSet.VillageIds,
 			PolicyEffectTargetKind.Village,
-			ResolveSettlementOwnerKingdomId,
+			id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Village, id, ownerKingdomResolver),
 			homeKingdomId,
 			allowedCrossKingdomIds,
 			moduleAllowsCross,
@@ -94,7 +121,7 @@ internal static class PolicyEffectTargetJurisdiction
 		targetSet.ParentSettlementIds = FilterIds(
 			targetSet.ParentSettlementIds,
 			PolicyEffectTargetKind.Settlement,
-			ResolveSettlementOwnerKingdomId,
+			id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Settlement, id, ownerKingdomResolver),
 			homeKingdomId,
 			allowedCrossKingdomIds,
 			moduleAllowsCross,
@@ -103,7 +130,7 @@ internal static class PolicyEffectTargetJurisdiction
 		targetSet.ClanIds = FilterIds(
 			targetSet.ClanIds,
 			PolicyEffectTargetKind.Clan,
-			ResolveClanOwnerKingdomId,
+			id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Clan, id, ownerKingdomResolver),
 			homeKingdomId,
 			allowedCrossKingdomIds,
 			moduleAllowsCross,
@@ -112,14 +139,14 @@ internal static class PolicyEffectTargetJurisdiction
 		targetSet.HeroIds = FilterIds(
 			targetSet.HeroIds,
 			PolicyEffectTargetKind.Hero,
-			ResolveHeroOwnerKingdomId,
+			id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Hero, id, ownerKingdomResolver),
 			homeKingdomId,
 			allowedCrossKingdomIds,
 			moduleAllowsCross,
 			allowKingdomlessTarget: false,
 			rejected);
 
-		List<string> usedCrossKingdomIds = NormalizeIds(CollectReferencedForeignKingdomIds(targetSet, homeKingdomId));
+		List<string> usedCrossKingdomIds = NormalizeIds(CollectReferencedForeignKingdomIds(targetSet, homeKingdomId, ownerKingdomResolver));
 		targetSet.JurisdictionKind = usedCrossKingdomIds.Count > 0
 			? PolicyEffectTargetJurisdictionKind.CrossKingdom
 			: PolicyEffectTargetJurisdictionKind.Domestic;
@@ -304,7 +331,8 @@ internal static class PolicyEffectTargetJurisdiction
 
 	private static IEnumerable<string> CollectReferencedForeignKingdomIds(
 		PolicyEffectCanonicalTargetSet targetSet,
-		string homeKingdomId)
+		string homeKingdomId,
+		PolicyEffectOwnerKingdomResolver ownerKingdomResolver = null)
 	{
 		foreach (string kingdomId in NormalizeIds(targetSet?.KingdomIds))
 		{
@@ -313,12 +341,18 @@ internal static class PolicyEffectTargetJurisdiction
 				yield return kingdomId;
 			}
 		}
-		foreach (string kingdomId in NormalizeIds(targetSet?.SettlementIds).Select(ResolveSettlementOwnerKingdomId)
-			.Concat(NormalizeIds(targetSet?.TownIds).Select(ResolveSettlementOwnerKingdomId))
-			.Concat(NormalizeIds(targetSet?.VillageIds).Select(ResolveSettlementOwnerKingdomId))
-			.Concat(NormalizeIds(targetSet?.ParentSettlementIds).Select(ResolveSettlementOwnerKingdomId))
-			.Concat(NormalizeIds(targetSet?.ClanIds).Select(ResolveClanOwnerKingdomId))
-			.Concat(NormalizeIds(targetSet?.HeroIds).Select(ResolveHeroOwnerKingdomId)))
+		foreach (string kingdomId in NormalizeIds(targetSet?.SettlementIds)
+			.Select(id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Settlement, id, ownerKingdomResolver))
+			.Concat(NormalizeIds(targetSet?.TownIds)
+				.Select(id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Town, id, ownerKingdomResolver)))
+			.Concat(NormalizeIds(targetSet?.VillageIds)
+				.Select(id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Village, id, ownerKingdomResolver)))
+			.Concat(NormalizeIds(targetSet?.ParentSettlementIds)
+				.Select(id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Settlement, id, ownerKingdomResolver)))
+			.Concat(NormalizeIds(targetSet?.ClanIds)
+				.Select(id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Clan, id, ownerKingdomResolver)))
+			.Concat(NormalizeIds(targetSet?.HeroIds)
+				.Select(id => ResolveOwnerKingdomId(PolicyEffectTargetKind.Hero, id, ownerKingdomResolver))))
 		{
 			string normalized = NormalizeId(kingdomId);
 			if (normalized.Length > 0 && !SameId(normalized, homeKingdomId))
@@ -341,6 +375,38 @@ internal static class PolicyEffectTargetJurisdiction
 	private static PolicyEffectCanonicalTargetSet Normalize(PolicyEffectCanonicalTargetSet targetSet)
 	{
 		return PolicyEffectBundleContract.NormalizeTargetSet(targetSet);
+	}
+
+	private static string ResolveOwnerKingdomId(
+		PolicyEffectTargetKind targetKind,
+		string targetId,
+		PolicyEffectOwnerKingdomResolver ownerKingdomResolver)
+	{
+		if (ownerKingdomResolver != null)
+		{
+			try
+			{
+				string resolved = NormalizeId(ownerKingdomResolver(targetKind, targetId));
+				if (resolved.Length > 0)
+				{
+					return resolved;
+				}
+			}
+			catch
+			{
+			}
+		}
+		switch (targetKind)
+		{
+			case PolicyEffectTargetKind.Kingdom:
+				return NormalizeId(targetId);
+			case PolicyEffectTargetKind.Clan:
+				return ResolveClanOwnerKingdomId(targetId);
+			case PolicyEffectTargetKind.Hero:
+				return ResolveHeroOwnerKingdomId(targetId);
+			default:
+				return ResolveSettlementOwnerKingdomId(targetId);
+		}
 	}
 
 	private static string ResolveSettlementOwnerKingdomId(string settlementId)
