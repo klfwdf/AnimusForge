@@ -66,8 +66,8 @@
     <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="Enable battle-speech recognition from T-key scene shout" />
     <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="When enabled, T-key scene-shout text can enter the battle-speech channel. Y-key speech entries still require the main battle-speech switch and an eligible battle phase." />
     <string id="SAX_MCM_BattleSpeechEnabled" text="Enable battle speech" />
-    <string id="SAX_MCM_ReplyMin" text="Battle speech minimum characters (6-160)" />
-    <string id="SAX_MCM_ReplyMax" text="Battle speech maximum characters (6-160)" />
+    <string id="SAX_MCM_ReplyMin" text="Suggested battle speech minimum characters (6-160)" />
+    <string id="SAX_MCM_ReplyMax" text="Suggested battle speech maximum characters (6-160)" />
     <string id="SAX_MCM_NpcPositioning" text="Move NPC to the front line" />
     <string id="SAX_MCM_FrontDistance" text="Distance in front of troops" />
     <string id="SAX_MCM_ArrivalRadius" text="Arrival radius" />
@@ -86,8 +86,8 @@
     <string id="SAX_MCM_AudienceReplyWaveSize" text="Maximum soldiers replying together" />
     <string id="SAX_MCM_AudienceReplyTickBudget" text="Maximum spoken replies submitted per tick" />
     <string id="SAX_MCM_AudienceReplyTickBudget_Hint" text="Hard Mission-tick budget for spoken soldier reply bridge calls; independent from the logical wave size." />
-    <string id="SAX_MCM_AudienceReplyMinimumChars" text="Minimum spoken reply characters" />
-    <string id="SAX_MCM_AudienceReplyMaximumChars" text="Maximum spoken reply characters" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="Suggested minimum spoken reply characters" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="Suggested maximum spoken reply characters" />
     <string id="SAX_MCM_AudienceReplyMinInterval" text="Minimum random reply wave interval" />
     <string id="SAX_MCM_AudienceReplyMaxInterval" text="Maximum random reply wave interval" />
     <string id="SAX_MCM_AudienceResponseStartDelay" text="Audience response start delay" />
@@ -99,9 +99,9 @@
     <string id="SAX_MCM_Notifications" text="Screen notifications" />
     <string id="SAX_MCM_Diagnostics" text="Detailed diagnostics" />
     <string id="SAX_MCM_BattleSpeechEnabled_Hint" text="Master switch for battle speech. Disabling it hides T-key routing, speech length, staging, audience response, and post-speech order options." />
-    <string id="SAX_MCM_ReplyMin_Hint" text="Minimum AF-generated battle-speech body length. Generation and display share the same frozen snapshot. Must not exceed the maximum." />
-    <string id="SAX_MCM_ReplyMax_Hint" text="Maximum AF-generated battle-speech body length. Results beyond this limit are rejected fail-closed." />
-    <string id="SAX_MCM_NpcPositioning_Hint" text="Moves an NPC speaker in front of the friendly line and turns them toward the soldiers. Disabling keeps the speaker in place and takes no scripted movement control." />
+    <string id="SAX_MCM_ReplyMin_Hint" text="Suggested lower bound sent to AF. A valid shorter speech is still used unchanged and does not trigger fallback. Must not exceed the suggested maximum." />
+    <string id="SAX_MCM_ReplyMax_Hint" text="Suggested upper bound sent to AF. A valid longer speech is still used unchanged, without truncation or fallback." />
+    <string id="SAX_MCM_NpcPositioning_Hint" text="Moves an NPC speaker in front of the friendly line without forcing the natural facing of an infantry speaker, rider, or mount. Disabling keeps the speaker in place and takes no scripted movement control." />
     <string id="SAX_MCM_FrontDistance_Hint" text="Distance the NPC moves forward from the friendly line center. Used only while speaker staging is enabled." />
     <string id="SAX_MCM_ArrivalRadius_Hint" text="The NPC is considered in position inside this radius. This affects only staging arrival detection." />
     <string id="SAX_MCM_MoveTimeout_Hint" text="Maximum staging wait. On timeout the NPC safely speaks from the current position; no teleport and no duplicate request." />
@@ -116,8 +116,8 @@
     <string id="SAX_MCM_AudienceReplies_Hint" text="Lets multiple soldiers answer the speech with short lines. Disabling hides reply count, waves, length, and interval options." />
     <string id="SAX_MCM_AudienceReplyCount_Hint" text="Maximum soldiers generating written replies for this speech. Each selected soldier is submitted only once." />
     <string id="SAX_MCM_AudienceReplyWaveSize_Hint" text="Maximum written replies in one logical wave. Independent from the per-Mission-tick submission budget." />
-    <string id="SAX_MCM_AudienceReplyMinimumChars_Hint" text="Minimum length of each soldier reply. Does not affect the battle-speech body." />
-    <string id="SAX_MCM_AudienceReplyMaximumChars_Hint" text="Maximum length of each soldier reply. Keep replies short to reduce reading and performance pressure when many soldiers answer." />
+    <string id="SAX_MCM_AudienceReplyMinimumChars_Hint" text="Suggested lower bound sent to AF for each soldier reply. A valid shorter reply is still displayed unchanged." />
+    <string id="SAX_MCM_AudienceReplyMaximumChars_Hint" text="Suggested upper bound sent to AF for each soldier reply. A valid longer reply is still displayed unchanged; shorter replies remain easier to read in a crowd." />
     <string id="SAX_MCM_AudienceReplyMinInterval_Hint" text="Lower bound of the random delay between written-reply waves. Works with the per-tick budget to limit request spikes." />
     <string id="SAX_MCM_AudienceReplyMaxInterval_Hint" text="Upper bound of the random delay between written-reply waves. Must not be below the minimum interval." />
     <string id="SAX_MCM_AudienceResponseStartDelay_Hint" text="Minimum delay after the speech body finishes before written soldier replies and native battle cries begin. Audience reactions never interrupt an unfinished speech." />

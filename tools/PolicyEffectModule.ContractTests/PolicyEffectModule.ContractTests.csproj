@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>10.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AnimusForge.csproj" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath Condition="'$(VersionedDepsDir)' != '' and Exists('$(VersionedDepsDir)\Newtonsoft.Json.dll')">$(VersionedDepsDir)\Newtonsoft.Json.dll</HintPath>
+      <HintPath Condition="'$(VersionedDepsDir)' == '' or !Exists('$(VersionedDepsDir)\Newtonsoft.Json.dll')">$(BannerlordRoot)\bin\Win64_Shipping_Client\Newtonsoft.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath Condition="'$(VersionedDepsDir)' != '' and Exists('$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll')">$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll</HintPath>
+      <HintPath Condition="'$(VersionedDepsDir)' == '' or !Exists('$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll')">$(BannerlordRoot)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath Condition="'$(VersionedDepsDir)' != '' and Exists('$(VersionedDepsDir)\TaleWorlds.Library.dll')">$(VersionedDepsDir)\TaleWorlds.Library.dll</HintPath>
+      <HintPath Condition="'$(VersionedDepsDir)' == '' or !Exists('$(VersionedDepsDir)\TaleWorlds.Library.dll')">$(BannerlordRoot)\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Core">
+      <HintPath Condition="'$(VersionedDepsDir)' != '' and Exists('$(VersionedDepsDir)\TaleWorlds.Core.dll')">$(VersionedDepsDir)\TaleWorlds.Core.dll</HintPath>
+      <HintPath Condition="'$(VersionedDepsDir)' == '' or !Exists('$(VersionedDepsDir)\TaleWorlds.Core.dll')">$(BannerlordRoot)\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath Condition="'$(VersionedDepsDir)' != '' and Exists('$(VersionedDepsDir)\TaleWorlds.ObjectSystem.dll')">$(VersionedDepsDir)\TaleWorlds.ObjectSystem.dll</HintPath>
+      <HintPath Condition="'$(VersionedDepsDir)' == '' or !Exists('$(VersionedDepsDir)\TaleWorlds.ObjectSystem.dll')">$(BannerlordRoot)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

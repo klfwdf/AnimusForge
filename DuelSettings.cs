@@ -17,6 +17,7 @@ using MCM.Abstractions.Base.Global;
 using MCM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AnimusForge.PolicyEffects;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.Library;
 
@@ -33,6 +34,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static bool _duelRenownDefaultMigrationChecked;
 
 	private static bool _worldDiplomacyCompressionDefaultsMigrationChecked;
+
+	private static int _playerPolicyEffectModuleDetailCountClampNoticeConsumed;
 
 	private const string LogCleanupDefaultMigrationId = "v0.8.9-force-log-cleanup-3-days";
 
@@ -304,8 +307,26 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string DefaultVassalPolicyIndependencePromptParagraph = "当输出结构要求评估附庸国政策时，vassalIndependenceDelta 表示目标附庸国因政策好坏产生的一次性独立度修正，范围 -15 到 +15：政策让附庸国明显受益、受到尊重或认可宗主时使用负数；造成压迫、损害、羞辱或不满时使用正数；没有清楚因果时为 0。vassalIndependenceReason 用一句短句说明直接原因。代码会另行随机增加 5—10 点发布费用，不得把这笔随机费用重复计入修正。";
 
-	private static readonly string DefaultCustomPolicyEvaluatorPrompt = PreviousDefaultCustomPolicyEvaluatorPromptBeforeVassalIndependence
+	private static readonly string PreviousDefaultCustomPolicyEvaluatorPromptBeforeEffectModuleRouting = PreviousDefaultCustomPolicyEvaluatorPromptBeforeVassalIndependence
 		+ "\n\n" + DefaultVassalPolicyIndependencePromptParagraph;
+
+	private static readonly string PreviousDefaultCustomPolicyEvaluatorPromptBeforeNaturalEditableLayer = PreviousDefaultCustomPolicyEvaluatorPromptWithSeparatedBuiltIns
+		+ "\n\n最高原则：政策必须落地。政策名称与正文共同表示目标、范围、力度和资源承诺。不要因为政策幼稚、激进、荒唐、理想化、财政紧张、执行阻力大或现实上不完美，就拒绝生成政策结果。若目标或投入明确而执行细节省略，应按卡拉迪亚条件补全最直接、可行的执行办法；补全只能服务原目标，不得改变政策方向或捏造已经发生的事实。"
+		+ "\n\n判断时依次确定政策目标、受益者与受损者、覆盖范围、执行阻力和持续时间，再补全必要执行方式，并让完整消耗、民众反馈与实际后果来自同一套方案。政策正文或玩家自定义提示中明确的金额、倍率、强弱、范围、持续时间和参考尺度必须保留为紧凑 numericIntent 定标约束；这里不要直接生成最终效果字段或模块 ID。"
+		+ "\n\n第纳尔购买力按骑砍世界判断：几千适合公告、巡查和小型地方行动；一万至五万适合普通王国级协调、短期补贴、粮食调运、训练或整顿；五万至十五万适合较大改革、战争动员和多地工程；十五万至五十万适合重大国家工程、全面赈济或大规模迁徙；五十万至一百万属于全国重大投资、长期大型工程或广泛人口物资调动。政策明确声明投入某个金额时，完整执行成本应包含并通常采用该金额；金额决定可执行规模，但不与某一效果数值机械线性换算。"
+		+ "\n\n" + DefaultCustomPolicyGoldCostPromptParagraph
+		+ "\n\ndurationDays 表示这套措施实际维持的游戏天数。短期公告、巡查或临时补贴通常 7 到 15 天；普通政策通常 15 到 30 天；较大改革、军事整顿或税制调整通常 30 到 60 天；全国长期改革通常 60 到 120 天；超过 120 天只用于长期国策、迁徙、战争总动员或灾难级后果。"
+		+ "\n\n民众反馈要像政策发布后在街市、村庄、酒馆、军营、贵族厅堂和商路中自然传播的议论与余波，而不是公告摘要或系统说明。让不同人群表达具体的支持、担忧、抱怨、观望或流言，不要编造上下文没有支持的具体人物、定居点或他国事实。"
+		+ "\n\n" + DefaultVassalPolicyIndependencePromptParagraph;
+
+	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策名称、政策正文、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、持续时间、总体后果和执行消耗。"
+		+ "\n\n最高原则：政策必须落地。政策名称与正文共同表示目标、范围、力度和资源承诺。不要因为政策幼稚、激进、荒唐、理想化、财政紧张、执行阻力大或现实上不完美，就拒绝生成政策结果。若目标或投入明确而执行细节省略，应按卡拉迪亚条件补全最直接、可行的执行办法，再据此评估；不得把已经承诺执行的政策解释成“没有实际措施”。补全只能服务原目标，不得改变政策方向或捏造已经发生的事实。好政策可以产生收益与代价；坏政策可以产生混乱、反噬或行政空转。只有确实仅有象征意义、或合理补全后仍没有可落地影响的政策，才可以没有实际后果；不要为了凑数强行制造变化。"
+		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的中世纪社会。政策消耗不应按现代国家预算估算，也不要把“全国政策”自动理解成从零购买整个王国所有物资。很多政策实际依靠命令、协调、征发、税制调整、宣传、巡逻、监督、地方摊派、贵族配合或短期补贴来执行。"
+		+ "\n\n判断时依次确定政策目标、受益者与受损者、覆盖范围和持续时间；再补全必要的执行方式；随后用同一套执行方案同时评估完整消耗和实际后果；最后检查消耗、后果与政策强度是否一致。不得一边按声明金额收取全部第纳尔，一边又以“没有实际措施”为由只给象征性结果。"
+		+ "\n\n政策持续时间应与执行方式相称。短期公告、巡查、临时补贴通常 7 到 15 天；普通政策通常 15 到 30 天；较大改革、军事整顿、税制调整通常 30 到 60 天；全国级长期改革通常 60 到 120 天；超过 120 天只用于长期国策、制度改革、迁徙、战争总动员或灾难级后果。玩家明确指定的持续时间必须优先保留。"
+		+ "\n\n第纳尔购买力必须按骑砍世界理解：\n- 1 到 3000 第纳尔：小规模公告、监察、宴赏、短期巡查、地方宣传、象征性补贴。\n- 3000 到 15000 第纳尔：一座城镇或数个村庄可见的治理行动，例如增派巡逻、修补仓储、短期赈济、临时运输、雇佣书记员。\n- 15000 到 50000 第纳尔：普通王国级政策的常见完整执行成本，可覆盖多地行政协调、数周补贴、粮食调运、训练或秩序整顿。\n- 50000 到 150000 第纳尔：较大规模全国改革、战争时期动员、持续粮饷、多个定居点工程或强力秩序行动。\n- 150000 到 500000 第纳尔：非常重大的国家工程、长期军事化、全面赈济、大规模迁徙、要塞级建设或灾难级处置。\n- 500000 到 1000000 第纳尔：全国重大投资、全面经济振兴、长期大型工程、全国军备重建、长期供养大军或大范围人口与物资调动，购买力极强，应产生相称的强烈后果。\n- 超过 1000000 第纳尔：只用于政策明确承诺的更高投入，或国家存亡级长期行动；金额一旦明确，就按实际承诺和相应购买力评估，不得反向压低后果。"
+		+ "\n\n评估第纳尔消耗时，要按政策本身的规模、执行阻力、覆盖范围和持续时间估算，但不要因为“这是王国政策”就自动给出天价。普通政策应优先落在几千到五万之间，重大政策再进入十几万；这是限制自行估出天价，不是削弱政策明确承诺的投入。政策明确声明“投入”或“出资”某个金额时，完整执行成本应包含并通常采用该金额，同时把资金安排到与目标相符的补贴、采购、运输、雇佣、生产扶持或地方执行中。成本和后果必须来自同一执行方案：巨额实际投入应产生相称的可落地影响；若只能产生象征性影响，就只能计算公告与行政成本。第纳尔决定可执行规模，但不与某一项结果机械换算。"
+		+ "\n\n民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望、嘲笑、恐惧或流言，比如粮价、税吏、征役、士兵口粮、村庄劳力、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。附庸政策还应判断它让目标国家感到受益和受尊重，还是受到压迫、损害或羞辱。";
 
 	private const string LeakedCustomPolicyPoliticalWeightsPromptSuffix = "同时根据政策内容评估原版政策投票使用的三项政治取向：authoritarianWeight 表示君主集权取向，oligarchicWeight 表示大氏族和贵族议政取向，egalitarianWeight 表示平民、地方自治和广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -481,11 +502,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const string PreviousDefaultNpcRulerPolicyStabilityPromptParagraph = "王国稳定度表示国家根本政治结构是否仍被承认，而不是一般的不满、税负、征兵、粮食、忠诚或治安变化。绝大多数政策的稳定度变化为 0。只有王位继承、统治合法性、全国封臣契约、国家分裂、内战或统一存续在 1—3 天内被直接改变时，稳定度变化才是 +1 或 -1。";
 
-	private static readonly string DefaultNpcRulerPolicyPrompt = (PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent
+	private static readonly string PreviousDefaultNpcRulerPolicyPromptBeforeNaturalEditableLayer = (PreviousDefaultNpcRulerPolicyPromptBeforeTaxIntent
 		+ "\n\n" + PreviousDefaultPolicyTownTaxIntentPromptParagraphBeforePlayerTargetRouting
 		+ "\n\n" + PreviousDefaultPolicyConstructionSpeedPromptParagraphBeforePlayerAmountScale)
 		.Replace(PreviousDefaultNpcRulerPolicyNumericPromptParagraph, DefaultNpcRulerPolicyNumericPromptParagraph)
 		.Replace(PreviousDefaultNpcRulerPolicyStabilityPromptParagraph, DefaultPolicyStabilityOneTimePromptParagraph);
+
+	private const string DefaultNpcRulerPolicyPrompt = "目标快照描述了王国此刻的真实世界。人物、国家、战争、外交和领地归属属于既定事实；传闻、误解和未证实的信息仍保持其不确定性。"
+		+ "\n\n统治者政策是统治者性格、政治目标、权力基础和现实处境共同形成的一项实际决定。不同统治者面对相似局势时，会因为在意的利益、能够依靠的力量和愿意承受的代价不同而作出不同选择。政策正文适合在游戏界面直接阅读，语言自然、直白，篇幅约 60—100 个中文字符；创意核心和摘要是简短完整的一句话。"
+		+ "\n\n同期世界现象是同一时期发生的一项独立变化。它可以与政策有关，也可以无关；可以是真实事件、社会误读或尚未证实的流传。它为当前世界增加一项清楚的新变化，但不产生政策数值效果。正文约 50—100 个中文字符，标题和摘要简短清楚。"
+		+ "\n\n政策持续时间应与措施性质相称：临时征调、紧急赈济或镇压等猛烈措施通常持续 7—21 天；普通政策通常持续 30—60 天；重大改革、长期建设、税制或军制调整通常持续 60—120 天；长期国策可以持续 120—240 天。";
 
 	private const string LeakedNpcPolicyPoliticalWeightsPromptSuffix = "每项政策还必须根据正文评估原版政策投票使用的 authoritarianWeight、oligarchicWeight、egalitarianWeight，分别表示君主集权、大氏族贵族议政、平民与地方广泛参与取向。三项范围均为 -1 到 1，不得全部为 0。";
 
@@ -517,12 +543,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private const int DefaultNpcRulerPolicyIntervalHours = DefaultNpcRulerPolicyIntervalDays * 24;
 
-	private const int NpcRulerPolicyMaxKingdomsPerRequestMin = 1;
-
-	private const int NpcRulerPolicyMaxKingdomsPerRequestMax = 6;
-
-	private const int DefaultNpcRulerPolicyMaxKingdomsPerRequest = 1;
-
 	public const int DefaultShoutMinTokens = 40;
 
 	public const int DefaultShoutMaxTokens = 200;
@@ -538,6 +558,30 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public const int ActionPostprocessHistoryEntryLimitMax = 100;
 
 	public const int DefaultActionPostprocessHistoryEntryLimit = 100;
+
+	public const int NobleGatheringNpcIntervalMinDays = 7;
+
+	public const int NobleGatheringNpcIntervalMaxDays = 120;
+
+	public const int DefaultNobleGatheringNpcIntervalDays = 21;
+
+	public const int NobleGatheringDurationMinDays = 1;
+
+	public const int NobleGatheringDurationMaxDays = 14;
+
+	public const int DefaultNobleGatheringDurationDays = 5;
+
+	public const int NobleGatheringCostMinimum = 0;
+
+	public const int NobleGatheringCostMaximum = 500000;
+
+	public const int DefaultNobleGatheringCost = 50000;
+
+	public const int NobleGatheringInvitedClanRelationRewardMinimum = 0;
+
+	public const int NobleGatheringInvitedClanRelationRewardMaximum = 20;
+
+	public const int DefaultNobleGatheringInvitedClanRelationReward = 5;
 
 	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMin = 64;
 
@@ -568,6 +612,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
 	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
+
+	private const string PolicyPromptSubfolderName = "Policy";
 
 	private const string PlayerCustomPromptRuleJsonFileName = "PlayerCustomPromptRule.json";
 
@@ -682,6 +728,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 		public string EventAndRebellionSelected { get; set; } = "";
 
+		public List<string> TownAmbientAiOptions { get; set; } = new List<string>();
+
+		public string TownAmbientAiSelected { get; set; } = "";
+
 		public string SavedAtUtc { get; set; } = "";
 	}
 
@@ -703,6 +753,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private List<string> _eventAndRebellionApiModelOptions = new List<string>();
 
+	private List<string> _townAmbientAiModelOptions = new List<string>();
+
 	private Dropdown<string> _mainApiModelDropdown = Dropdown<string>.Empty;
 
 	private Dropdown<string> _auxiliaryApiModelDropdown = Dropdown<string>.Empty;
@@ -711,15 +763,17 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private Dropdown<string> _eventAndRebellionApiModelDropdown = Dropdown<string>.Empty;
 
+	private Dropdown<string> _townAmbientAiModelDropdown = Dropdown<string>.Empty;
+
 	private Dropdown<string> _shoutInputUiBackgroundDropdown = BuildShoutInputUiBackgroundDropdown(ShoutInputUiBackgroundBlack);
 
 	private Dropdown<string> _logCleanupIntervalDropdown = BuildLogCleanupIntervalDropdown(LogCleanupEvery3Days);
 
-	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortMax);
+	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortLow);
 
-	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
+	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortLow);
 
-	private Dropdown<string> _actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortMax);
+	private Dropdown<string> _actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortLow);
 
 	private Dropdown<string> _eventAndRebellionApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
 
@@ -755,6 +809,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const string ReasoningEffortLow = "low";
 
+	public const string ReasoningEffortNone = "none";
+
+	public const string ReasoningEffortMinimal = "minimal";
+
 	public const string ReasoningEffortMedium = "medium";
 
 	public const string ReasoningEffortHigh = "high";
@@ -774,6 +832,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public const int PolicyApiMaxTokensMaximum = 100000;
 
 	public const int DefaultPolicyApiMaxTokens = 12000;
+
+	public const int PlayerPolicyEffectPostprocessMaxTokensMinimum = 512;
+
+	public const int PlayerPolicyEffectPostprocessMaxTokensMaximum = 12000;
+
+	public const int DefaultPlayerPolicyEffectPostprocessMaxTokens = 5000;
+
+	public const int PlayerPolicyEffectModuleDetailCountMinimum = 1;
+
+	public const int PlayerPolicyEffectModuleDetailCountMaximum = 30;
+
+	public const int PlayerPolicyEffectModuleEffectiveDetailCountMaximum = 8;
+
+	public const int DefaultPlayerPolicyEffectModuleDetailCount = 6;
 
 	public const string PolicyApiSourceMain = "main";
 
@@ -869,9 +941,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public bool MainApiThinkingEnabled { get; set; } = true;
 
-	public string MainApiReasoningEffort { get; set; } = ReasoningEffortMax;
+	public string MainApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 low/medium/high/xhigh/max；兼容映射：low、medium 会按 high 发送，xhigh 会按 max 发送。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public Dropdown<string> MainApiReasoningEffortDropdown
 	{
@@ -1640,9 +1712,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
-	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortHigh;
+	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 low/medium/high/xhigh/max；兼容映射：low、medium 会按 high 发送，xhigh 会按 max 发送。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
@@ -1713,11 +1785,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
-	public bool ActionPostprocessApiThinkingEnabled { get; set; } = true;
+	public bool ActionPostprocessApiThinkingEnabled { get; set; } = false;
 
-	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortMax;
+	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 low/medium/high/xhigh/max；兼容映射：low、medium 会按 high 发送，xhigh 会按 max 发送。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
@@ -1796,7 +1868,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 low/medium/high/xhigh/max；兼容映射：low、medium 会按 high 发送，xhigh 会按 max 发送。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{
@@ -1985,8 +2057,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _customPolicyEvaluatorPrompt = NormalizeCustomPolicyEvaluatorPromptText(value);
 	}
 
-	[SettingPropertyButton("玩家政策评判提示词（全国/地方共用）", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "全国政策与地方政策共用这一份完整基础评判提示词。地方政策会在此基础上动态追加所选封地、地方作用域和王国稳定度为 0 等强制规则。")]
-	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action EditCustomPolicyEvaluatorPrompt { get; set; }
 
 	private string _npcRulerPolicyPrompt = LoadNpcRulerPolicyPromptFromDiskOrDefault();
@@ -1997,9 +2067,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _npcRulerPolicyPrompt = NormalizeNpcRulerPolicyPromptText(value);
 	}
 
-	[SettingPropertyButton("NPC统治者政策提示词", -1, true, "", Content = "打开编辑器", Order = 1, RequireRestart = false, HintText = "决定 NPC 统治者政策、同期现象、数值尺度和持续时间的生成方式。可以完整改写；输出格式、合法作用目标和数值落地安全仍由模组保证。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public Action EditNpcRulerPolicyPrompt { get; set; }
+
+	[SettingPropertyButton("政策提示词管理", -1, true, "", Content = "打开管理器", Order = 0, RequireRestart = false, HintText = "统一编辑玩家AI编写、玩家政策评议、NPC 统治者政策，以及当前可用政策效果的理解与判定要求。")]
+	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	public Action EditPolicyPrompts { get; set; }
+
+	[SettingPropertyButton("政策效果模块管理", -1, true, "", Content = "打开管理器", Order = 1, RequireRestart = false, HintText = "分别设置玩家政策、地方政策、NPC 统治者政策和附庸国政策可检索的效果模块。只影响保存后新发起的政策。")]
+	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	public Action ManagePolicyEffectModules { get; set; }
 
 	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 9, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑各套提示词 JSON。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
@@ -2021,9 +2097,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
 
-	[SettingPropertyDropdown("API来源", Order = 0, RequireRestart = false, HintText = "复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。")]
+	[SettingPropertyDropdown("政策评议接口", Order = 0, RequireRestart = false, HintText = "复用所选链路现有的 URL、Key、模型和地址解析规则；所选配置不完整时自动回退主 API。明确选择前处理时不受常规前处理 API 开关影响。")]
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public Dropdown<string> PlayerPolicyApiSourceDropdown { get; set; } = BuildPolicyApiSourceDropdown(0);
+
+	[SettingPropertyDropdown("AI编写接口", Order = 1, RequireRestart = false, HintText = "只决定AI编写使用主链路、前处理或后处理；默认前处理。所选配置不完整时自动回退主接口，不影响政策评议接口。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public Dropdown<string> PlayerPolicyAutoDraftApiSourceDropdown { get; set; } = BuildPlayerPolicyAutoDraftApiSourceDropdown(1);
 
 	[SettingPropertyInteger("固定第纳尔消耗", 0, 500000, "0", Order = 2, RequireRestart = false, HintText = "仅在关闭“由AI评估政策消耗”后生效。玩家政策成功发布时扣除相应第纳尔；默认 50000，设置为 0 表示免费。")]
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
@@ -2044,6 +2124,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public int PlayerPolicyCustomMaxTokens { get; set; } = DefaultPolicyApiMaxTokens;
 
+	[SettingPropertyInteger("效果解析最大输出Tokens", PlayerPolicyEffectPostprocessMaxTokensMinimum, PlayerPolicyEffectPostprocessMaxTokensMaximum, "0", Order = 6, RequireRestart = false, HintText = "玩家政策第二阶段效果 JSON 的最大输出 Tokens。默认 5000；实际值不会超过上方玩家政策当前生效的 Token 上限。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public int PlayerPolicyEffectPostprocessMaxTokens { get; set; } = DefaultPlayerPolicyEffectPostprocessMaxTokens;
+
+	[SettingPropertyInteger("效果模块详规数量", PlayerPolicyEffectModuleDetailCountMinimum, PlayerPolicyEffectModuleDetailCountMaximum, "0", Order = 7, RequireRestart = false, HintText = "兼容旧配置，保存值仍可为 1—30，默认 6；最终最多向第二阶段注入 8 个详规，超过 8 的设置按 8 执行。该设置不限制 ONNX 内部候选池。数值越高，提示词和 Token 消耗越大。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public int PlayerPolicyEffectModuleDetailCount { get; set; } = DefaultPlayerPolicyEffectModuleDetailCount;
+
 	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
@@ -2056,9 +2144,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public int NpcRulerPolicyCheckIntervalDays { get; set; } = DefaultNpcRulerPolicyCheckIntervalDays;
 
-	[SettingPropertyInteger("单次生成政策数", NpcRulerPolicyMaxKingdomsPerRequestMin, NpcRulerPolicyMaxKingdomsPerRequestMax, "0", Order = 3, RequireRestart = false, HintText = "每次检查最多为多少个符合条件的 NPC 王国各生成 1 项政策。默认 1 项，可在 1—6 项之间调整；每项政策仍会附带自己的同期事件。")]
-	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
-	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
+	[Obsolete("NPC ruler policy generation is fixed to one policy per check.")]
+	public int NpcRulerPolicyMaxKingdomsPerRequest { get; set; } = 1;
 
 	[SettingPropertyInteger("同一王国政策冷却（天）", NpcRulerPolicyIntervalMinDays, NpcRulerPolicyIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一 NPC 王国两次政策草案之间至少间隔多少个游戏日。默认 7 天，可在 1—30 天之间调整；待审、通过和否决的正常草案均参与冷却。玩家发布或续约附庸国政策不受冷却限制，但会从当天起按此天数压制目标附庸国的 NPC 统治者政策。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
@@ -2077,7 +2164,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。关闭后恢复原版王国外交决议。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
-	public bool EnableWorldDiplomacy { get; set; } = false;
+	public bool EnableWorldDiplomacy { get; set; } = true;
 
 	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效。开局时结束王国之间已有的战争，让之后的战争与和平主要由AI外交推动。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
@@ -2178,6 +2265,42 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyButton("恢复默认AI外交偏好", -1, true, "", Content = "恢复默认", Order = 18, RequireRestart = false, HintText = "弹出确认后，将自定义偏好恢复为模组默认内容。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
+
+	[SettingPropertyBool("启用宴会功能", Order = 0, RequireRestart = false, HintText = "宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool EnableNobleGathering { get; set; } = true;
+
+	[SettingPropertyBool("启用NPC自动举办宴会", Order = 1, RequireRestart = false, HintText = "开启后，符合条件的 NPC 会按王国自动举办宴会。关闭后不再自动创建 NPC 宴会，但玩家仍可主动举办。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool EnableNpcAutomaticNobleGatherings { get; set; } = true;
+
+	[SettingPropertyBool("允许NPC邀请玩家", Order = 2, RequireRestart = false, HintText = "开启后，NPC 宴会可以邀请玩家并派信使送信。关闭后只阻止新邀请，已经发出的玩家邀请仍然有效。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool AllowNpcNobleGatheringPlayerInvitations { get; set; } = true;
+
+	[SettingPropertyBool("显示宾客抵达提示", Order = 3, RequireRestart = false, HintText = "控制玩家举办宴会时宾客抵达后的左下角彩色消息。关闭后只隐藏提示，不影响抵达判定、宴会状态或奖励。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool ShowNobleGatheringGuestArrivalMessages { get; set; } = true;
+
+	[SettingPropertyInteger("NPC宴会间隔（天）", NobleGatheringNpcIntervalMinDays, NobleGatheringNpcIntervalMaxDays, "0", Order = 4, RequireRestart = false, HintText = "同一王国两次自动宴会排期之间的游戏天数，默认 21 天。按王国分别计算；修改后用于下一次重新排期。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NpcNobleGatheringIntervalDays { get; set; } = DefaultNobleGatheringNpcIntervalDays;
+
+	[SettingPropertyBool("NPC可以邀请总督", Order = 5, RequireRestart = false, HintText = "只影响 NPC 自动生成的宾客名单。关闭时 NPC 不会邀请正在治理定居点的总督；玩家举办宴会时仍可自由邀请总督。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public bool AllowNpcNobleGatheringGovernorInvitations { get; set; } = false;
+
+	[SettingPropertyInteger("宴会持续天数", NobleGatheringDurationMinDays, NobleGatheringDurationMaxDays, "0", Order = 6, RequireRestart = false, HintText = "玩家与 NPC 宴会共用，默认 5 天。修改只影响之后新创建的宴会，已经开始的宴会保持原结束日期。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NobleGatheringDurationDays { get; set; } = DefaultNobleGatheringDurationDays;
+
+	[SettingPropertyInteger("宴会举办费用", NobleGatheringCostMinimum, NobleGatheringCostMaximum, "0", Order = 7, RequireRestart = false, HintText = "玩家与 NPC 主人共用，费用从实际主人身上扣除。默认 50000 第纳尔；设为 0 表示免费。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NobleGatheringCost { get; set; } = DefaultNobleGatheringCost;
+
+	[SettingPropertyInteger("每个受邀家族关系奖励", NobleGatheringInvitedClanRelationRewardMinimum, NobleGatheringInvitedClanRelationRewardMaximum, "0", Order = 8, RequireRestart = false, HintText = "玩家与 NPC 宴会共用；主人和每个受邀家族领袖每场只结算一次。默认 5；设为 0 表示不增加关系。修改只影响之后新创建的宴会。")]
+	[SettingPropertyGroup("18. 宴会功能", GroupOrder = 180)]
+	public int NobleGatheringInvitedClanRelationReward { get; set; } = DefaultNobleGatheringInvitedClanRelationReward;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
@@ -2535,6 +2658,59 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
+	public static string GetPlayerPolicyAutoDraftApiSourceForExternal()
+	{
+		try
+		{
+			return ReadPlayerPolicyAutoDraftApiSourceSelection(GetSettings()?.PlayerPolicyAutoDraftApiSourceDropdown);
+		}
+		catch
+		{
+			return PolicyApiSourceAuxiliary;
+		}
+	}
+
+	public static string GetPlayerPolicyAutoDraftPromptForExternal()
+	{
+		return PolicyEffects.PolicyEffectPromptService.GetAutoDraftPrompt();
+	}
+
+	internal static void ResolvePolicyApiThinkingForExternal(
+		string requestedSource,
+		string resolvedRoute,
+		out bool thinkingEnabled,
+		out string reasoningEffort)
+	{
+		DuelSettings settings = GetSettings();
+		string route = (resolvedRoute ?? string.Empty).Trim();
+		string source = (requestedSource ?? string.Empty).Trim().ToLowerInvariant();
+		if (string.Equals(route, "main", StringComparison.OrdinalIgnoreCase)
+			|| route.EndsWith("_fallback_main", StringComparison.OrdinalIgnoreCase)
+			|| route.EndsWith("_partial_fallback_main", StringComparison.OrdinalIgnoreCase))
+		{
+			source = PolicyApiSourceMain;
+		}
+		switch (source)
+		{
+		case PolicyApiSourceAuxiliary:
+			thinkingEnabled = settings?.AuxiliaryApiThinkingEnabled ?? false;
+			reasoningEffort = settings?.GetAuxiliaryApiReasoningEffort() ?? ReasoningEffortHigh;
+			break;
+		case PolicyApiSourceActionPostprocess:
+			thinkingEnabled = settings?.ActionPostprocessApiThinkingEnabled ?? true;
+			reasoningEffort = settings?.GetActionPostprocessApiReasoningEffort() ?? ReasoningEffortMax;
+			break;
+		case PolicyApiSourceEventAndRebellion:
+			thinkingEnabled = settings?.EventAndRebellionApiThinkingEnabled ?? false;
+			reasoningEffort = settings?.GetEventAndRebellionApiReasoningEffort() ?? ReasoningEffortHigh;
+			break;
+		default:
+			thinkingEnabled = settings?.MainApiThinkingEnabled ?? true;
+			reasoningEffort = settings?.GetMainApiReasoningEffort() ?? ReasoningEffortMax;
+			break;
+		}
+	}
+
 	public static bool GetPlayerPolicyFollowSelectedApiTokensForExternal()
 	{
 		try
@@ -2557,6 +2733,60 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return DefaultPolicyApiMaxTokens;
 		}
+	}
+
+	public static int GetPlayerPolicyEffectPostprocessMaxTokensForExternal()
+	{
+		try
+		{
+			int value = GetSettings()?.PlayerPolicyEffectPostprocessMaxTokens ?? DefaultPlayerPolicyEffectPostprocessMaxTokens;
+			return Math.Max(PlayerPolicyEffectPostprocessMaxTokensMinimum, Math.Min(PlayerPolicyEffectPostprocessMaxTokensMaximum, value));
+		}
+		catch
+		{
+			return DefaultPlayerPolicyEffectPostprocessMaxTokens;
+		}
+	}
+
+	public static int GetPlayerPolicyEffectModuleDetailCountForExternal()
+	{
+		try
+		{
+			int value = GetSettings()?.PlayerPolicyEffectModuleDetailCount ?? DefaultPlayerPolicyEffectModuleDetailCount;
+			return Math.Max(PlayerPolicyEffectModuleDetailCountMinimum, Math.Min(PlayerPolicyEffectModuleDetailCountMaximum, value));
+		}
+		catch
+		{
+			return DefaultPlayerPolicyEffectModuleDetailCount;
+		}
+	}
+
+	public static int GetEffectivePlayerPolicyEffectModuleDetailCountForExternal()
+	{
+		return GetEffectivePlayerPolicyEffectModuleDetailCountForExternal(out _, out _);
+	}
+
+	public static int GetEffectivePlayerPolicyEffectModuleDetailCountForExternal(out int configuredValue, out bool wasClamped)
+	{
+		configuredValue = GetPlayerPolicyEffectModuleDetailCountForExternal();
+		int effectiveValue = Math.Min(PlayerPolicyEffectModuleEffectiveDetailCountMaximum, configuredValue);
+		wasClamped = effectiveValue != configuredValue;
+		return effectiveValue;
+	}
+
+	public static bool TryConsumePlayerPolicyEffectModuleDetailCountClampNoticeForExternal(out string message)
+	{
+		int effectiveValue = GetEffectivePlayerPolicyEffectModuleDetailCountForExternal(out int configuredValue, out bool wasClamped);
+		if (!wasClamped
+			|| System.Threading.Interlocked.Exchange(ref _playerPolicyEffectModuleDetailCountClampNoticeConsumed, 1) != 0)
+		{
+			message = "";
+			return false;
+		}
+		message = "效果模块详规数量配置为 " + configuredValue.ToString(CultureInfo.InvariantCulture)
+			+ "，稳定路由本次按 " + effectiveValue.ToString(CultureInfo.InvariantCulture)
+			+ " 执行；原 MCM 保存值未修改。";
+		return true;
 	}
 
 	public static string GetNpcRulerPolicyApiSourceForExternal()
@@ -2777,14 +3007,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public static int GetNpcRulerPolicyMaxKingdomsPerRequestForExternal()
 	{
-		try
-		{
-			return ClampNpcRulerPolicyMaxKingdomsPerRequest(GetSettings()?.NpcRulerPolicyMaxKingdomsPerRequest ?? DefaultNpcRulerPolicyMaxKingdomsPerRequest);
-		}
-		catch
-		{
-			return DefaultNpcRulerPolicyMaxKingdomsPerRequest;
-		}
+		return 1;
 	}
 
 	public static string GetNpcRulerPolicyPromptForExternal()
@@ -2847,15 +3070,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			value = DefaultNpcRulerPolicyIntervalHours;
 		}
 		return Math.Max(NpcRulerPolicyIntervalMinHours, Math.Min(NpcRulerPolicyIntervalMaxHours, value));
-	}
-
-	private static int ClampNpcRulerPolicyMaxKingdomsPerRequest(int value)
-	{
-		if (value <= 0)
-		{
-			value = DefaultNpcRulerPolicyMaxKingdomsPerRequest;
-		}
-		return Math.Max(NpcRulerPolicyMaxKingdomsPerRequestMin, Math.Min(NpcRulerPolicyMaxKingdomsPerRequestMax, value));
 	}
 
 	public static bool IsPeaceSceneConflictEnabled()
@@ -3081,7 +3295,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = CustomPolicyEvaluatorPrompt ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这是全国政策与地方政策共用的完整基础评判提示词。", "地方政策会在这段内容之后动态追加所选封地、实时数值、地方作用域和稳定度为 0 等强制规则；输出 JSON 契约仍由模组保证。留空保存会恢复默认内容。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑玩家政策评判提示词", "这是全国政策与地方政策共用的主评议提示词。", "效果模块明细由 ONNX 按政策另行选择；这里适合调整成本、期限、民众反馈文风和强度偏好。明确的金额、倍率、范围或数值约束会经 numericIntent 传给效果后处理；输出 JSON 契约仍由模组保证。留空保存会恢复默认内容。", initialText, delegate(string input)
 			{
 				SaveCustomPolicyEvaluatorPromptFromEditor(input);
 			}, null, "保存", "返回");
@@ -3455,7 +3669,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	private void SaveCustomPolicyEvaluatorPromptFromEditor(string input)
+	internal void SaveCustomPolicyEvaluatorPromptFromEditor(string input)
 	{
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		CustomPolicyEvaluatorPrompt = text;
@@ -3500,7 +3714,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	private void SaveNpcRulerPolicyPromptFromEditor(string input)
+	internal void SaveNpcRulerPolicyPromptFromEditor(string input)
 	{
 		string text = NormalizeNpcRulerPolicyPromptText(input);
 		NpcRulerPolicyPrompt = text;
@@ -3737,6 +3951,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizePromptLineEndings(input);
 		text = RemoveBuiltInPoliticalWeightsPromptLeak(text, DefaultCustomPolicyEvaluatorPrompt, LeakedCustomPolicyPoliticalWeightsPromptSuffix);
+		text = RemoveBuiltInPoliticalWeightsPromptLeak(text, PreviousDefaultCustomPolicyEvaluatorPromptBeforeEffectModuleRouting, LeakedCustomPolicyPoliticalWeightsPromptSuffix);
 		return LimitCustomPromptText(MigrateLegacyCustomPolicyEvaluatorPromptPrefix(text).Trim(), CustomPolicyEvaluatorPromptJsonFileName);
 	}
 
@@ -3824,6 +4039,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		string text = LimitCustomPromptText(NormalizePromptLineEndings(input), NpcRulerPolicyPromptJsonFileName);
 		text = RemoveBuiltInPoliticalWeightsPromptLeak(text, DefaultNpcRulerPolicyPrompt, LeakedNpcPolicyPoliticalWeightsPromptSuffix);
 		if (string.IsNullOrWhiteSpace(text)
+			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeNaturalEditableLayer, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptForMigration, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptWithTechnicalContract, StringComparison.Ordinal)
 			|| string.Equals(text, PreviousDefaultNpcRulerPolicyPromptBeforeDerivedEvent, StringComparison.Ordinal)
@@ -3914,6 +4130,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		string currentWording = NormalizePolicyHearthWordingForBuiltInComparison(text);
 		return string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeNaturalEditableLayer)), StringComparison.Ordinal)
+			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeEffectModuleRouting)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeVassalIndependence)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeSparseEffects)), StringComparison.Ordinal)
 			|| string.Equals(currentWording, NormalizePolicyHearthWordingForBuiltInComparison(NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeConstructionSpeed)), StringComparison.Ordinal)
@@ -4035,12 +4253,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static bool TryPersistCustomPolicyEvaluatorPromptFile(string text)
 	{
-		return TryPersistCustomPromptTextFile(CustomPolicyEvaluatorPromptJsonFileName, NormalizeCustomPolicyEvaluatorPromptText(text));
+		return TryPersistPolicyPromptTextFile(CustomPolicyEvaluatorPromptJsonFileName, NormalizeCustomPolicyEvaluatorPromptText(text));
 	}
 
 	private static bool TryPersistNpcRulerPolicyPromptFile(string text)
 	{
-		return TryPersistCustomPromptTextFile(NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText(text));
+		return TryPersistPolicyPromptTextFile(NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText(text));
 	}
 
 	private static bool TryPersistWorldDiplomacyPromptFile(string text)
@@ -4192,11 +4410,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					store.MajorActionCompressionWritingRequirements = majorActionCompressionRequirements;
 				}
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), NormalizeCustomPolicyEvaluatorPromptText, store.CustomPolicyEvaluatorPrompt, out string customPolicyPrompt))
+				if (TryReadCustomPromptTextJsonFile(GetPolicyPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), NormalizeCustomPolicyEvaluatorPromptText, store.CustomPolicyEvaluatorPrompt, out string customPolicyPrompt))
 				{
 					store.CustomPolicyEvaluatorPrompt = customPolicyPrompt;
 				}
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), NormalizeNpcRulerPolicyPromptText, store.NpcRulerPolicyPrompt, out string npcRulerPolicyPrompt))
+				if (TryReadCustomPromptTextJsonFile(GetPolicyPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), NormalizeNpcRulerPolicyPromptText, store.NpcRulerPolicyPrompt, out string npcRulerPolicyPrompt))
 				{
 					store.NpcRulerPolicyPrompt = npcRulerPolicyPrompt;
 				}
@@ -4284,6 +4502,33 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
+	private static bool TryPersistPolicyPromptTextFile(string fileName, string text)
+	{
+		try
+		{
+			string directory = GetCustomPromptTextStoreDirectory();
+			if (string.IsNullOrWhiteSpace(directory))
+			{
+				return false;
+			}
+			lock (CustomPromptTextStoreFileLock)
+			{
+				EnsureCustomPromptTextStoreFilesUnlocked(directory, BuildInitialCustomPromptTextStore());
+				WriteCustomPromptTextJsonFileUnlocked(GetPolicyPromptTextFilePath(directory, fileName), text);
+				_customPromptTextStoreFolderHydrated = false;
+				_customPromptTextStoreFolderFingerprint = 0L;
+				_customPromptTextStoreCached = null;
+				_customPromptTextStoreNextRefreshTimestamp = 0L;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogPlayerCustomPromptRuleWarning("持久化政策提示词 JSON 失败: " + ex.Message);
+			return false;
+		}
+	}
+
 	private static void EnsureCustomPromptTextStoreFilesUnlocked(string directory, CustomPromptTextStoreJson initialStore)
 	{
 		if (string.IsNullOrWhiteSpace(directory))
@@ -4294,6 +4539,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			Directory.CreateDirectory(directory);
 		}
+		MigrateLegacyPolicyPromptFilesUnlocked(directory);
 		CustomPromptTextStoreJson normalized = NormalizeCustomPromptTextStore(initialStore);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, PlayerCustomPromptRuleJsonFileName), normalized.PlayerCustomPromptRule);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), normalized.KingdomRebellionSystemPrompt);
@@ -4302,9 +4548,39 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, DailyMemoryCompressionWritingRequirementsJsonFileName), normalized.DailyMemoryCompressionWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, MemoryOverviewCompressionWritingRequirementsJsonFileName), normalized.MemoryOverviewCompressionWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, MajorActionCompressionWritingRequirementsJsonFileName), normalized.MajorActionCompressionWritingRequirements);
-		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), normalized.CustomPolicyEvaluatorPrompt);
-		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), normalized.NpcRulerPolicyPrompt);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetPolicyPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), normalized.CustomPolicyEvaluatorPrompt);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetPolicyPromptTextFilePath(directory, NpcRulerPolicyPromptJsonFileName), normalized.NpcRulerPolicyPrompt);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, WorldDiplomacyPromptJsonFileName), normalized.WorldDiplomacyPrompt);
+	}
+
+	private static void MigrateLegacyPolicyPromptFilesUnlocked(string customPromptDirectory)
+	{
+		string[] fileNames = new string[]
+		{
+			CustomPolicyEvaluatorPromptJsonFileName,
+			NpcRulerPolicyPromptJsonFileName
+		};
+		for (int i = 0; i < fileNames.Length; i++)
+		{
+			try
+			{
+				string legacyPath = GetCustomPromptTextFilePath(customPromptDirectory, fileNames[i]);
+				string policyPath = GetPolicyPromptTextFilePath(customPromptDirectory, fileNames[i]);
+				if (!File.Exists(policyPath) && File.Exists(legacyPath))
+				{
+					string policyDirectory = Path.GetDirectoryName(policyPath);
+					if (!string.IsNullOrWhiteSpace(policyDirectory))
+					{
+						Directory.CreateDirectory(policyDirectory);
+					}
+					File.Copy(legacyPath, policyPath, overwrite: false);
+				}
+			}
+			catch (Exception ex)
+			{
+				LogPlayerCustomPromptRuleWarning("迁移旧政策提示词文件失败: " + fileNames[i] + " - " + ex.Message);
+			}
+		}
 	}
 
 	private static void WriteCustomPromptTextJsonFileIfMissingUnlocked(string path, string text)
@@ -4702,7 +4978,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				};
 				for (int i = 0; i < fileNames.Length; i++)
 				{
-					string path = GetCustomPromptTextFilePath(directory, fileNames[i]);
+					string path = IsPolicyPromptFileName(fileNames[i])
+						? GetPolicyPromptTextFilePath(directory, fileNames[i])
+						: GetCustomPromptTextFilePath(directory, fileNames[i]);
 					if (!File.Exists(path))
 					{
 						hash = hash * 31L;
@@ -4736,6 +5014,34 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return "";
 		}
+	}
+
+	internal static string GetCustomPromptTextStoreDirectoryForPolicyPrompts()
+	{
+		return BuildPolicyPromptSubdirectory(GetCustomPromptTextStoreDirectory());
+	}
+
+	internal static string BuildPolicyPromptSubdirectoryForContractTests(string customPromptDirectory)
+	{
+		return BuildPolicyPromptSubdirectory(customPromptDirectory);
+	}
+
+	private static string BuildPolicyPromptSubdirectory(string customPromptDirectory)
+	{
+		return string.IsNullOrWhiteSpace(customPromptDirectory)
+			? string.Empty
+			: Path.Combine(customPromptDirectory, PolicyPromptSubfolderName);
+	}
+
+	private static string GetPolicyPromptTextFilePath(string customPromptDirectory, string fileName)
+	{
+		return GetCustomPromptTextFilePath(BuildPolicyPromptSubdirectory(customPromptDirectory), fileName);
+	}
+
+	private static bool IsPolicyPromptFileName(string fileName)
+	{
+		return string.Equals(fileName, CustomPolicyEvaluatorPromptJsonFileName, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(fileName, NpcRulerPolicyPromptJsonFileName, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static string GetLegacyCustomPromptTextStorePath()
@@ -4856,6 +5162,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			MergeCachedDropdownState(_auxiliaryApiModelOptions, _auxiliaryApiModelDropdown, modelDropdownCacheSnapshot.AuxiliaryOptions, modelDropdownCacheSnapshot.AuxiliarySelected, AuxiliaryModelName, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out _auxiliaryApiModelDropdown);
 			MergeCachedDropdownState(_actionPostprocessApiModelOptions, _actionPostprocessApiModelDropdown, modelDropdownCacheSnapshot.ActionPostprocessOptions, modelDropdownCacheSnapshot.ActionPostprocessSelected, ActionPostprocessModelName, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out _actionPostprocessApiModelDropdown);
 			MergeCachedDropdownState(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, modelDropdownCacheSnapshot.EventAndRebellionOptions, modelDropdownCacheSnapshot.EventAndRebellionSelected, EventAndRebellionModelName, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out _eventAndRebellionApiModelDropdown);
+			MergeCachedDropdownState(_townAmbientAiModelOptions, _townAmbientAiModelDropdown, modelDropdownCacheSnapshot.TownAmbientAiOptions, modelDropdownCacheSnapshot.TownAmbientAiSelected, TownAmbientAiModelName, "", preserveBlankSelection: false, out _townAmbientAiModelOptions, out _townAmbientAiModelDropdown);
 			TrySyncManualModelWithSelectedOption();
 			_modelDropdownCacheHydrated = true;
 			_modelDropdownCacheLastWriteUtcTicks = num;
@@ -4892,6 +5199,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				ActionPostprocessSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_actionPostprocessApiModelDropdown), ActionPostprocessModelName, "", preserveBlankSelection: false),
 				EventAndRebellionOptions = CopyNormalizedModelOptions(_eventAndRebellionApiModelOptions),
 				EventAndRebellionSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_eventAndRebellionApiModelDropdown), EventAndRebellionModelName, "", preserveBlankSelection: false),
+				TownAmbientAiOptions = CopyNormalizedModelOptions(_townAmbientAiModelOptions),
+				TownAmbientAiSelected = ResolveSelectedOptionForSnapshot(ReadSelectedModelOption(_townAmbientAiModelDropdown), TownAmbientAiModelName, "", preserveBlankSelection: false),
 				SavedAtUtc = DateTime.UtcNow.ToString("o")
 			};
 			string contents = JsonConvert.SerializeObject(modelDropdownCacheSnapshot, Formatting.Indented);
@@ -5203,6 +5512,58 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return new List<string> { "主链路", "前处理", "后处理", "周报" };
 	}
 
+	private static List<string> BuildPlayerPolicyAutoDraftApiSourceOptions()
+	{
+		return new List<string> { "主链路", "前处理", "后处理" };
+	}
+
+	private static Dropdown<string> BuildPlayerPolicyAutoDraftApiSourceDropdown(int selectedIndex)
+	{
+		List<string> options = BuildPlayerPolicyAutoDraftApiSourceOptions();
+		if (selectedIndex < 0 || selectedIndex >= options.Count)
+		{
+			selectedIndex = 1;
+		}
+		return new Dropdown<string>(options, selectedIndex);
+	}
+
+	private static string ReadPlayerPolicyAutoDraftApiSourceSelection(Dropdown<string> dropdown)
+	{
+		int selectedIndex = dropdown?.SelectedIndex ?? 1;
+		switch (selectedIndex)
+		{
+		case 0:
+			return PolicyApiSourceMain;
+		case 2:
+			return PolicyApiSourceActionPostprocess;
+		default:
+			return PolicyApiSourceAuxiliary;
+		}
+	}
+
+	internal static IReadOnlyList<string> BuildPlayerPolicyAutoDraftApiSourceOptionsForContractTests()
+	{
+		return BuildPlayerPolicyAutoDraftApiSourceOptions();
+	}
+
+	internal static string ReadPlayerPolicyAutoDraftApiSourceSelectionForContractTests(int? selectedIndex)
+	{
+		if (!selectedIndex.HasValue || selectedIndex.Value < 0 || selectedIndex.Value > 2)
+		{
+			return PolicyApiSourceAuxiliary;
+		}
+		return selectedIndex.Value == 0
+			? PolicyApiSourceMain
+			: selectedIndex.Value == 2
+				? PolicyApiSourceActionPostprocess
+				: PolicyApiSourceAuxiliary;
+	}
+
+	internal static string ReadPlayerPolicyApiSourceSelectionForContractTests(int selectedIndex)
+	{
+		return ReadPolicyApiSourceSelection(BuildPolicyApiSourceDropdown(selectedIndex), 0);
+	}
+
 	private static Dropdown<string> BuildPolicyApiSourceDropdown(int selectedIndex)
 	{
 		List<string> options = BuildPolicyApiSourceOptions();
@@ -5376,7 +5737,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			ReasoningEffortMedium,
 			ReasoningEffortHigh,
 			ReasoningEffortXHigh,
-			ReasoningEffortMax
+			ReasoningEffortMax,
+			ReasoningEffortMinimal
 		};
 	}
 
@@ -5415,11 +5777,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return options[selectedIndex];
 	}
 
-	private static string NormalizeReasoningEffortSelection(string effort)
+	public static string NormalizeReasoningEffortSelection(string effort)
 	{
 		string text = (effort ?? "").Trim().ToLowerInvariant();
 		switch (text)
 		{
+		case ReasoningEffortNone:
+		case ReasoningEffortMinimal:
 		case ReasoningEffortLow:
 		case ReasoningEffortMedium:
 		case ReasoningEffortHigh:
@@ -5445,6 +5809,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public static string ResolveThinkingControlFormat(string apiUrl, string modelName)
 	{
+		if (YjThinkingCompat.IsYjGeminiEndpoint(apiUrl, modelName))
+		{
+			return "yj";
+		}
 		string source = ((apiUrl ?? "") + " " + (modelName ?? "")).Trim();
 		if (source.IndexOf("anthropic", StringComparison.OrdinalIgnoreCase) >= 0 || source.IndexOf("claude", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
@@ -5472,12 +5840,27 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return false;
 		}
+		if (YjThinkingCompat.TryApply(payload, apiUrl, modelName, thinkingEnabled, effort, out thinkingMode))
+		{
+			return true;
+		}
 		string format = ResolveThinkingControlFormat(apiUrl, modelName);
 		if (format == "plain")
 		{
 			return false;
 		}
 		string normalizedEffort = NormalizeReasoningEffortForRequest(effort);
+		if (string.Equals(NormalizeReasoningEffortSelection(effort), ReasoningEffortNone, StringComparison.OrdinalIgnoreCase))
+		{
+			payload["thinking"] = new JObject
+			{
+				["type"] = "disabled"
+			};
+			payload.Remove("reasoning_effort");
+			payload.Remove("output_config");
+			thinkingMode = format + "_thinking_disabled";
+			return true;
+		}
 		payload["thinking"] = new JObject
 		{
 			["type"] = thinkingEnabled ? "enabled" : "disabled"
@@ -5903,6 +6286,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					text6 = GetEventAndRebellionSelectedModelOption();
 				}
+				else if (string.Equals(text, "环境 AI", StringComparison.Ordinal))
+				{
+					text6 = GetTownAmbientAiSelectedModelOption();
+				}
 				if (IsManualModelOption(text6))
 				{
 					string text7 = "";
@@ -6041,6 +6428,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			OpenNpcRulerPolicyPromptEditor();
 		};
+		EditPolicyPrompts = delegate
+		{
+			PolicyPromptEditorUi.Open(this);
+		};
+		ManagePolicyEffectModules = delegate
+		{
+			PolicyEffectModuleManagerUi.Open();
+		};
 		EditWorldDiplomacyPrompt = delegate
 		{
 			OpenWorldDiplomacyPromptEditor();
@@ -6145,6 +6540,41 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		FetchEventAndRebellionModelList = delegate
 		{
 			StartFetchModelList("事件/叛乱API", EventAndRebellionApiUrl, EventAndRebellionApiKey, ApplyEventAndRebellionModelList);
+		};
+		FetchTownAmbientAiModelList = delegate
+		{
+			StartFetchModelList("环境 AI", TownAmbientAiApiUrl, TownAmbientAiApiKey, ApplyTownAmbientAiModelList);
+		};
+		TestTownAmbientAiConnection = delegate
+		{
+			LlmRetryPrompt.CaptureMainThreadContext();
+			Task.Run(async delegate
+			{
+				try
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[环境 AI] 正在测试你填写的独立接口；测试请求会消耗少量 Token。", Color.FromUint(4294967040u)));
+					TownAmbientAiResult result = await TownAmbientAiClient.TestConnectionAsync().ConfigureAwait(false);
+					if (result != null && result.Success)
+					{
+						InformationManager.DisplayMessage(new InformationMessage(string.Format("[环境 AI] 连接成功。本次约使用输入 {0} + 输出 {1} Token。", result.InputTokens, result.OutputTokens), Color.FromUint(4278255360u)));
+						Logger.Log("DuelSettings", "环境 AI 独立接口测试成功 inputTokens=" + result.InputTokens + " outputTokens=" + result.OutputTokens);
+					}
+					else
+					{
+						string failure = result?.Error ?? "未知错误";
+						if (result != null && (result.InputTokens > 0 || result.OutputTokens > 0))
+						{
+							failure += string.Format("\n\n本次请求已计入约 {0} 输入 + {1} 输出 Token。", result.InputTokens, result.OutputTokens);
+						}
+						ShowLlmFailurePopup("环境 AI 接口测试失败", failure, result?.ModelReply, result?.RawResponse);
+					}
+				}
+				catch (Exception ex)
+				{
+					ShowLlmFailurePopup("环境 AI 接口测试异常", ex.Message);
+					Logger.Log("DuelSettings", "环境 AI 独立接口测试异常: " + ex.Message);
+				}
+			});
 		};
 		TestConnection = delegate
 		{

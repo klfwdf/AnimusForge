@@ -2507,10 +2507,30 @@ public static class ShoutUtils
 			{
 				npcDataPacket.RoleDesc = "士兵";
 			}
+			else
+			{
+				// Scene civilians all use UnnamedRank=commoner.  Preserve the
+				// actual occupation so ambient dialogue can distinguish a horse
+				// trader, merchant and blacksmith instead of treating them all as
+				// interchangeable villagers.
+				npcDataPacket.RoleDesc = ResolveUnnamedRoleDescription(characterObject);
+			}
 			if (!npcDataPacket.IsHero)
 			{
 				npcDataPacket.UnnamedKey = GetUnnamedKey(agent);
 				npcDataPacket.TroopId = (characterObject.StringId ?? "").ToLower();
+				try
+				{
+					var locationCharacter = CampaignMission.Current?.Location?.GetLocationCharacter(agent.Origin);
+					string specialTargetTag = locationCharacter?.SpecialTargetTag ?? "";
+					if (!string.IsNullOrWhiteSpace(specialTargetTag))
+					{
+						npcDataPacket.TroopId = (npcDataPacket.TroopId + " " + specialTargetTag).Trim().ToLowerInvariant();
+					}
+				}
+				catch
+				{
+				}
 				npcDataPacket.UnnamedRank = (characterObject.IsSoldier ? "soldier" : "commoner");
 				if (TryGetUnnamedNpcPersona(agent, out var personality2, out var background2))
 				{
@@ -2528,6 +2548,57 @@ public static class ShoutUtils
 		npcDataPacket.CultureId = ResolveSceneCultureIdWithSettlementFallback(npcDataPacket.CultureId, agent, null);
 		EnsurePromptNameFields(npcDataPacket);
 		return npcDataPacket;
+	}
+
+	private static string ResolveUnnamedRoleDescription(CharacterObject characterObject)
+	{
+		if (characterObject == null)
+		{
+			return "平民";
+		}
+		try
+		{
+			switch (characterObject.Occupation)
+			{
+			case Occupation.Weaponsmith:
+				return "武器匠";
+			case Occupation.Blacksmith:
+				return "铁匠";
+			case Occupation.Armorer:
+				return "盔甲匠";
+			case Occupation.HorseTrader:
+				return "马商";
+			case Occupation.GoodsTrader:
+			case Occupation.Merchant:
+			case Occupation.Artisan:
+			case Occupation.ShopWorker:
+				return "商贩";
+			case Occupation.Tavernkeeper:
+			case Occupation.TavernWench:
+			case Occupation.TavernGameHost:
+				return "酒馆人员";
+			case Occupation.Musician:
+				return "乐师";
+			case Occupation.RansomBroker:
+				return "赎金经纪人";
+			case Occupation.Headman:
+				return "村长";
+			case Occupation.Preacher:
+				return "传教士";
+			case Occupation.GangLeader:
+				return "帮派头目";
+			case Occupation.RuralNotable:
+				return "乡绅";
+			case Occupation.ShipWright:
+				return "船坊工人";
+			default:
+				return "平民";
+			}
+		}
+		catch
+		{
+			return "平民";
+		}
 	}
 
 	public static void EnsurePromptNameFields(NpcDataPacket npc)

@@ -106,6 +106,8 @@ internal sealed class NobleGatheringRecord
 
 	public bool WeeklyStartMaterialRecorded { get; set; }
 
+	public int InvitedClanRelationReward { get; set; } = -1;
+
 	public List<string> RelationRewardedClanIds { get; set; } = new List<string>();
 
 	public List<NobleGatheringInviteeRecord> Invitees { get; set; } = new List<NobleGatheringInviteeRecord>();
@@ -136,11 +138,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string SaveKeyGatherings = "_afNobleGatherings_v1";
 	private const string SaveKeyPlayerHostCooldowns = "_afNobleGatheringPlayerHostCooldowns_v1";
 	private const string SaveKeyNpcKingdomHostDays = "_afNobleGatheringNpcKingdomHostDays_v1";
-	private const int GatheringCost = 50000;
-	private const int GatheringDurationDays = 5;
 	private const int PlayerHostCooldownDays = 10;
-	private const int NpcKingdomHostIntervalMinDays = 18;
-	private const int NpcKingdomHostIntervalMaxDays = 24;
 	private const float ArrivalDistance = 3.0f;
 	private const string StateActive = "Active";
 	private const string StateFinished = "Finished";
@@ -241,6 +239,69 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			Instrument = instrument;
 			Action = ActionIndexCache.Create(instrument?.StandingAction);
 			ActionSpeed = actionSpeed;
+		}
+	}
+
+	private readonly struct NobleGatheringOptions
+	{
+		public readonly bool Enabled;
+
+		public readonly bool EnableNpcAutomaticGatherings;
+
+		public readonly bool AllowNpcPlayerInvitations;
+
+		public readonly bool ShowGuestArrivalMessages;
+
+		public readonly bool AllowNpcGovernorInvitations;
+
+		public readonly int NpcIntervalDays;
+
+		public readonly int DurationDays;
+
+		public readonly int Cost;
+
+		public readonly int InvitedClanRelationReward;
+
+		private NobleGatheringOptions(DuelSettings settings)
+		{
+			Enabled = settings?.EnableNobleGathering ?? true;
+			EnableNpcAutomaticGatherings = settings?.EnableNpcAutomaticNobleGatherings ?? true;
+			AllowNpcPlayerInvitations = settings?.AllowNpcNobleGatheringPlayerInvitations ?? true;
+			ShowGuestArrivalMessages = settings?.ShowNobleGatheringGuestArrivalMessages ?? true;
+			AllowNpcGovernorInvitations = settings?.AllowNpcNobleGatheringGovernorInvitations ?? false;
+			NpcIntervalDays = Clamp(
+				settings?.NpcNobleGatheringIntervalDays ?? DuelSettings.DefaultNobleGatheringNpcIntervalDays,
+				DuelSettings.NobleGatheringNpcIntervalMinDays,
+				DuelSettings.NobleGatheringNpcIntervalMaxDays);
+			DurationDays = Clamp(
+				settings?.NobleGatheringDurationDays ?? DuelSettings.DefaultNobleGatheringDurationDays,
+				DuelSettings.NobleGatheringDurationMinDays,
+				DuelSettings.NobleGatheringDurationMaxDays);
+			Cost = Clamp(
+				settings?.NobleGatheringCost ?? DuelSettings.DefaultNobleGatheringCost,
+				DuelSettings.NobleGatheringCostMinimum,
+				DuelSettings.NobleGatheringCostMaximum);
+			InvitedClanRelationReward = Clamp(
+				settings?.NobleGatheringInvitedClanRelationReward ?? DuelSettings.DefaultNobleGatheringInvitedClanRelationReward,
+				DuelSettings.NobleGatheringInvitedClanRelationRewardMinimum,
+				DuelSettings.NobleGatheringInvitedClanRelationRewardMaximum);
+		}
+
+		public static NobleGatheringOptions Capture()
+		{
+			try
+			{
+				return new NobleGatheringOptions(DuelSettings.GetSettings());
+			}
+			catch
+			{
+				return new NobleGatheringOptions(null);
+			}
+		}
+
+		private static int Clamp(int value, int minimum, int maximum)
+		{
+			return Math.Max(minimum, Math.Min(maximum, value));
 		}
 	}
 
@@ -1288,34 +1349,42 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		Hero forcedVisitHero = ResolvePendingFeastHallVisitHero(settlement);
-		HashSet<string> requiredHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (!string.IsNullOrWhiteSpace(record.HostHeroId))
+		HashSet<string> inviteeHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (record.Invitees != null)
 		{
-			requiredHeroIds.Add(record.HostHeroId);
-		}
-		foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
-		{
-			if (!string.IsNullOrWhiteSpace(invitee?.HeroId))
+			foreach (NobleGatheringInviteeRecord invitee in record.Invitees)
 			{
-				requiredHeroIds.Add(invitee.HeroId);
+				if (!string.IsNullOrWhiteSpace(invitee?.HeroId))
+				{
+					inviteeHeroIds.Add(invitee.HeroId);
+				}
 			}
 		}
-		if (!string.IsNullOrWhiteSpace(forcedVisitHero?.StringId))
+		HashSet<LocationCharacter> keep = new HashSet<LocationCharacter>();
+		LocationCharacter forcedVisitCharacter = nobles.FirstOrDefault(character => character?.Character?.HeroObject == forcedVisitHero);
+		if (forcedVisitCharacter != null)
 		{
-			requiredHeroIds.Add(forcedVisitHero.StringId);
+			keep.Add(forcedVisitCharacter);
 		}
-		HashSet<LocationCharacter> keep = new HashSet<LocationCharacter>(nobles
-			.Where(character => requiredHeroIds.Contains(character?.Character?.HeroObject?.StringId ?? "")));
+		LocationCharacter hostCharacter = nobles.FirstOrDefault(character => string.Equals(
+			character?.Character?.HeroObject?.StringId ?? "",
+			record.HostHeroId ?? "",
+			StringComparison.OrdinalIgnoreCase));
+		if (hostCharacter != null)
+		{
+			keep.Add(hostCharacter);
+		}
 		int remainingSlots = Math.Max(0, FeastHallVisibleNobleLimit - keep.Count);
 		foreach (LocationCharacter character in nobles
 			.Where(character => !keep.Contains(character))
-			.OrderBy(character => GetFeastHallNobleDisplayPriority(character?.Character?.HeroObject, record, settlement, forcedVisitHero))
+			.OrderBy(character => GetFeastHallNobleDisplayPriority(character?.Character?.HeroObject, record, settlement, forcedVisitHero, inviteeHeroIds))
 			.ThenByDescending(character => GetFeastHallNobleImportance(character?.Character?.HeroObject))
-			.ThenBy(character => GetHeroName(character?.Character?.HeroObject))
+			.ThenBy(character => character?.Character?.HeroObject?.StringId ?? "", StringComparer.OrdinalIgnoreCase)
 			.Take(remainingSlots))
 		{
 			keep.Add(character);
 		}
+		int hiddenCount = 0;
 		foreach (LocationCharacter character in nobles)
 		{
 			if (keep.Contains(character))
@@ -1327,12 +1396,18 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				location.RemoveLocationCharacter(character);
 				_hiddenFeastHallNobleCharacters.Add(character);
 				_hiddenFeastHallNobleLocation = location;
+				hiddenCount++;
 			}
 			catch (Exception ex)
 			{
 				Log("hide feast hall noble failed hero=" + (character?.Character?.HeroObject?.StringId ?? "") + " error=" + ex.Message);
 			}
 		}
+		Log("feast hall noble limit settlement=" + (settlement.StringId ?? "")
+			+ " total=" + nobles.Count
+			+ " visible=" + keep.Count
+			+ " hidden=" + hiddenCount
+			+ " limit=" + FeastHallVisibleNobleLimit);
 	}
 
 	private void RestoreHiddenFeastHallNobles()
@@ -1383,7 +1458,12 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			&& (hero.IsLord || hero.Occupation == Occupation.Lord);
 	}
 
-	private static int GetFeastHallNobleDisplayPriority(Hero hero, NobleGatheringRecord record, Settlement settlement, Hero forcedVisitHero)
+	private static int GetFeastHallNobleDisplayPriority(
+		Hero hero,
+		NobleGatheringRecord record,
+		Settlement settlement,
+		Hero forcedVisitHero,
+		HashSet<string> inviteeHeroIds)
 	{
 		if (hero == null)
 		{
@@ -1397,19 +1477,19 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			return 10;
 		}
-		if (IsKingdomLeaderForFeast(hero, record, settlement))
+		if (inviteeHeroIds?.Contains(hero.StringId ?? "") == true)
 		{
 			return 20;
 		}
-		if (hero.Clan?.Leader == hero || hero.IsClanLeader)
+		if (IsKingdomLeaderForFeast(hero, record, settlement))
 		{
 			return 30;
 		}
-		if (hero.GovernorOf != null)
+		if (hero.Clan?.Leader == hero || hero.IsClanLeader)
 		{
 			return 40;
 		}
-		if (record?.Invitees?.Any(invitee => string.Equals(invitee?.HeroId ?? "", hero.StringId ?? "", StringComparison.OrdinalIgnoreCase)) == true)
+		if (hero.GovernorOf != null)
 		{
 			return 50;
 		}
@@ -1757,12 +1837,20 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	private bool IsGovernorGatheringDialogueAvailable()
 	{
+		if (!NobleGatheringOptions.Capture().Enabled)
+		{
+			return false;
+		}
 		Hero governor = ResolveConversationHero();
 		return TryResolveGovernorOwnedSettlement(governor, out _, out _);
 	}
 
 	private bool IsCompanionGatheringDialogueAvailable()
 	{
+		if (!NobleGatheringOptions.Capture().Enabled)
+		{
+			return false;
+		}
 		Hero companion = ResolveConversationHero();
 		return companion != null
 			&& companion != Hero.MainHero
@@ -1800,6 +1888,11 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	private void OpenPlayerGatheringFlow(Hero requester, Settlement suggestedSettlement)
 	{
+		if (!NobleGatheringOptions.Capture().Enabled)
+		{
+			ShowMessage("宴会功能已在 MCM 中关闭。");
+			return;
+		}
 		if (requester != null && requester.GovernorOf != null && !TryResolveGovernorOwnedSettlement(requester, out suggestedSettlement, out string reject))
 		{
 			ShowMessage(reject);
@@ -1986,6 +2079,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	private void ShowPlayerGatheringConfirm(Settlement settlement, List<string> heroIds)
 	{
+		NobleGatheringOptions options = NobleGatheringOptions.Capture();
 		List<string> currentHeroIds = NormalizeHeroIds(heroIds);
 		List<Hero> heroes = currentHeroIds.Select(ResolveHeroById).Where(x => x != null).ToList();
 		if (heroes.Count == 0)
@@ -1995,8 +2089,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		string body = "举办地：" + GetSettlementName(settlement)
-			+ "\n费用：" + GatheringCost + " 第纳尔"
-			+ "\n持续：" + GatheringDurationDays + " 天"
+			+ "\n费用：" + options.Cost + " 第纳尔"
+			+ "\n持续：" + options.DurationDays + " 天"
 			+ "\n宾客：" + heroes.Count + " 人"
 			+ "\n\n确认后将扣款并向宾客下达前往举办地的宴会邀请。";
 		InformationManager.ShowInquiry(new InquiryData(
@@ -2027,7 +2121,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		status = "";
 		Hero host = Hero.MainHero;
-		if (!CanPlayerHostAtSettlement(host, settlement, out status))
+		NobleGatheringOptions options = NobleGatheringOptions.Capture();
+		if (!CanPlayerHostAtSettlement(host, settlement, options, out status))
 		{
 			return false;
 		}
@@ -2041,7 +2136,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			status = "宴会未召开：没有可赴宴的宾客。";
 			return false;
 		}
-		host.ChangeHeroGold(-GatheringCost);
+		host.ChangeHeroGold(-options.Cost);
 		double now = NowDay();
 		_playerHostCooldowns[PlayerHostCooldownKey] = now + PlayerHostCooldownDays;
 		NobleGatheringRecord record = new NobleGatheringRecord
@@ -2054,9 +2149,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			State = StateActive,
 			CreatedDay = now,
 			StartDay = now,
-			EndDay = now + GatheringDurationDays,
+			EndDay = now + options.DurationDays,
 			IsPlayerHosted = true,
-			PlayerInvitationStatus = ""
+			PlayerInvitationStatus = "",
+			InvitedClanRelationReward = options.InvitedClanRelationReward
 		};
 		foreach (Hero hero in safeInvitees)
 		{
@@ -2075,7 +2171,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		ApplyInvitedClanRelationRewards(record, host);
 		IssueTravelCommands(record);
 		RecordGatheringStartedWeeklyMaterial(record);
-		status = "宴会已发出邀请：" + GetSettlementName(settlement) + "，宾客 " + safeInvitees.Count + " 人，持续 " + GatheringDurationDays + " 天";
+		status = "宴会已发出邀请：" + GetSettlementName(settlement) + "，宾客 " + safeInvitees.Count + " 人，持续 " + options.DurationDays + " 天";
 		Log("player gathering created id=" + record.Id + " settlement=" + settlement.StringId + " invitees=" + safeInvitees.Count);
 		return true;
 	}
@@ -2096,8 +2192,16 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			NobleGatheringOptions options = NobleGatheringOptions.Capture();
 			RepairTrackedTemporaryGatheringParties("hourly");
-			ProcessActiveGatherings();
+			if (options.Enabled)
+			{
+				ProcessActiveGatherings(options);
+			}
+			else
+			{
+				CancelActiveGatheringsBecauseDisabled();
+			}
 			ProcessTemporaryPartyReturnsAndOrphans();
 			ProcessSettlementTravelReturnsAndOrphans();
 		}
@@ -2107,7 +2211,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ProcessActiveGatherings()
+	private void ProcessActiveGatherings(NobleGatheringOptions options)
 	{
 		double now = NowDay();
 		foreach (NobleGatheringRecord record in _gatherings.Values.ToList())
@@ -2135,8 +2239,24 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			IssueTravelCommands(record);
 			ProcessActiveTemporaryParties(record, settlement);
 			ApplyInvitedClanRelationRewards(record, host);
-			UpdateArrivalsAndRewards(record, settlement, host);
+			UpdateArrivalsAndRewards(record, settlement, host, options.ShowGuestArrivalMessages);
 			UpdatePlayerAttendanceReward(record, settlement, host);
+		}
+	}
+
+	private void CancelActiveGatheringsBecauseDisabled()
+	{
+		List<NobleGatheringRecord> activeRecords = _gatherings.Values
+			.Where(record => record != null && string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase))
+			.ToList();
+		foreach (NobleGatheringRecord record in activeRecords)
+		{
+			CompleteGathering(record, StateCancelled, "宴会功能已在 MCM 中关闭。", showMessage: false);
+		}
+		if (activeRecords.Count > 0)
+		{
+			DisplayGatheringMessage("宴会功能已关闭，正在进行的宴会已经取消，主人和宾客将陆续返程。", new Color(0.8f, 0.95f, 1f));
+			Log("cancelled active gatherings because disabled count=" + activeRecords.Count);
 		}
 	}
 
@@ -2253,7 +2373,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void UpdateArrivalsAndRewards(NobleGatheringRecord record, Settlement settlement, Hero host)
+	private void UpdateArrivalsAndRewards(NobleGatheringRecord record, Settlement settlement, Hero host, bool showGuestArrivalMessages)
 	{
 		foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
 		{
@@ -2276,7 +2396,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			invitee.ArrivalDay = NowDay();
 			RegisterFeastAttendee(hero, record);
 			RecordNotableGatheringAttendanceWeeklyMaterial(record, hero);
-			if (record.IsPlayerHosted)
+			if (record.IsPlayerHosted && showGuestArrivalMessages)
 			{
 				DisplayGatheringMessage(GetHeroName(hero) + "已抵达" + GetSettlementName(settlement) + "参加宴会。", new Color(0.4f, 1f, 0.4f));
 			}
@@ -2333,16 +2453,21 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		int relationReward = GetRecordInvitedClanRelationReward(record);
+		if (relationReward <= 0)
+		{
+			return true;
+		}
 		try
 		{
 			if (record.IsPlayerHosted)
 			{
-				ChangeRelationAction.ApplyPlayerRelation(leader, 5, affectRelatives: false, showQuickNotification: true);
+				ChangeRelationAction.ApplyPlayerRelation(leader, relationReward, affectRelatives: false, showQuickNotification: true);
 				relationChanged = true;
 			}
 			else if (host != null && host != Hero.MainHero)
 			{
-				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(host, leader, 5, showQuickNotification: false);
+				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(host, leader, relationReward, showQuickNotification: false);
 				relationChanged = true;
 			}
 			return true;
@@ -2412,7 +2537,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		CompleteGathering(record, StateCancelled, reason);
 	}
 
-	private void CompleteGathering(NobleGatheringRecord record, string finalState, string reason)
+	private void CompleteGathering(NobleGatheringRecord record, string finalState, string reason, bool showMessage = true)
 	{
 		if (record == null || !string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase))
 		{
@@ -2462,7 +2587,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			RecordGatheringCancelledWeeklyMaterial(record, reason);
 		}
-		DisplayGatheringMessage(BuildGatheringEndMessage(record, reason), new Color(0.8f, 0.95f, 1f));
+		if (showMessage)
+		{
+			DisplayGatheringMessage(BuildGatheringEndMessage(record, reason), new Color(0.8f, 0.95f, 1f));
+		}
 		Log("complete gathering id=" + record.Id + " state=" + record.State + " reason=" + reason);
 	}
 
@@ -2549,6 +2677,17 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private bool TryCreateNpcHostedGathering(bool force, out string status)
 	{
 		status = "";
+		NobleGatheringOptions options = NobleGatheringOptions.Capture();
+		if (!options.Enabled)
+		{
+			status = "noble_gathering_disabled";
+			return false;
+		}
+		if (!force && !options.EnableNpcAutomaticGatherings)
+		{
+			status = "npc_automatic_gathering_disabled";
+			return false;
+		}
 		double now = NowDay();
 		IEnumerable<Kingdom> kingdomSource = Kingdom.All == null ? Enumerable.Empty<Kingdom>() : Kingdom.All;
 		List<Kingdom> kingdoms = kingdomSource
@@ -2568,7 +2707,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				if (!_npcKingdomNextHostDays.TryGetValue(kingdomId, out double nextEligibleDay))
 				{
-					_npcKingdomNextHostDays[kingdomId] = now + GetNextNpcKingdomHostIntervalDays();
+					_npcKingdomNextHostDays[kingdomId] = now + options.NpcIntervalDays;
 					continue;
 				}
 				if (now < nextEligibleDay)
@@ -2576,7 +2715,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 					continue;
 				}
 			}
-			if (!TryCreateNpcHostedGatheringForKingdom(kingdom, out string kingdomStatus))
+			if (!TryCreateNpcHostedGatheringForKingdom(kingdom, options, out string kingdomStatus))
 			{
 				if (!string.IsNullOrWhiteSpace(kingdomStatus))
 				{
@@ -2585,7 +2724,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				continue;
 			}
 			createdAny = true;
-			_npcKingdomNextHostDays[kingdomId] = now + GetNextNpcKingdomHostIntervalDays();
+			_npcKingdomNextHostDays[kingdomId] = now + options.NpcIntervalDays;
 			results.Add(kingdomStatus);
 			if (force)
 			{
@@ -2596,7 +2735,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		return createdAny;
 	}
 
-	private bool TryCreateNpcHostedGatheringForKingdom(Kingdom kingdom, out string status)
+	private bool TryCreateNpcHostedGatheringForKingdom(Kingdom kingdom, NobleGatheringOptions options, out string status)
 	{
 		status = "";
 		if (kingdom == null || kingdom.IsEliminated || !IsKingdomMostlyPeaceful(kingdom))
@@ -2605,7 +2744,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return false;
 		}
 		List<Hero> possibleHosts = Hero.AllAliveHeroes
-			.Where(hero => hero != null && hero != Hero.MainHero && hero.IsClanLeader && hero.Clan != null && !hero.IsPrisoner && hero.Gold >= GatheringCost)
+			.Where(hero => hero != null && hero != Hero.MainHero && hero.IsClanLeader && hero.Clan != null && !hero.IsPrisoner && hero.Gold >= options.Cost)
 			.Where(hero => hero.Clan.Kingdom == kingdom && !hero.Clan.IsEliminated && !hero.Clan.IsMinorFaction && !hero.Clan.IsBanditFaction)
 			.Where(hero => IsHeroEligibleForGatheringInvitation(hero, out _))
 			.Where(hero => !HasActiveGatheringForHost(hero))
@@ -2618,7 +2757,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			List<Hero> invitees = PickNpcInvitees(host, settlement);
+			List<Hero> invitees = PickNpcInvitees(host, settlement, options);
 			if (invitees.Count < 2)
 			{
 				continue;
@@ -2634,9 +2773,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				State = StateActive,
 				CreatedDay = now,
 				StartDay = now,
-				EndDay = now + GatheringDurationDays,
+				EndDay = now + options.DurationDays,
 				IsPlayerHosted = false,
-				PlayerInvitationStatus = invitees.Contains(Hero.MainHero) ? PlayerInvitationInvited : ""
+				PlayerInvitationStatus = invitees.Contains(Hero.MainHero) ? PlayerInvitationInvited : "",
+				InvitedClanRelationReward = options.InvitedClanRelationReward
 			};
 			foreach (Hero hero in invitees)
 			{
@@ -2660,7 +2800,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				Log("npc gathering skipped because host travel could not be issued id=" + record.Id + " host=" + host.StringId);
 				continue;
 			}
-			host.ChangeHeroGold(-GatheringCost);
+			host.ChangeHeroGold(-options.Cost);
 			_gatherings[record.Id] = record;
 			RegisterFeastAttendee(host, record);
 			ApplyInvitedClanRelationRewards(record, host);
@@ -2674,11 +2814,6 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		status = "no_valid_npc_host";
 		return false;
-	}
-
-	private static int GetNextNpcKingdomHostIntervalDays()
-	{
-		return MBRandom.RandomInt(NpcKingdomHostIntervalMinDays, NpcKingdomHostIntervalMaxDays + 1);
 	}
 
 	private void TrySendPlayerInvitationCourier(NobleGatheringRecord record)
@@ -3876,6 +4011,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero)
 	{
+		if (!NobleGatheringOptions.Capture().Enabled)
+		{
+			return new List<PostprocessRuleEntry>();
+		}
 		return (AIConfigHandler.GetGuardrailRulePostprocessRules("noble_gathering") ?? new List<PostprocessRuleEntry>())
 			.Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.Tag))
 			.Select(rule => new PostprocessRuleEntry
@@ -3890,6 +4029,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!NobleGatheringOptions.Capture().Enabled)
+			{
+				return "";
+			}
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("【贵族宴会可用ID】");
 			sb.AppendLine("输出格式：");
@@ -3990,7 +4133,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			if (host == null || settlement == null) return "";
 			double now = NowDay();
 			int dayNumber = Math.Max(1, (int)Math.Ceiling(now - gathering.StartDay) + 1);
-			int totalDays = GatheringDurationDays;
+			int totalDays = GetRecordDurationDays(gathering);
 			string role;
 			if (string.Equals(heroId, gathering.HostHeroId, StringComparison.OrdinalIgnoreCase))
 				role = "主办方";
@@ -4685,7 +4828,17 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 
 	private bool CanPlayerHostAtSettlement(Hero host, Settlement settlement, out string reason)
 	{
+		return CanPlayerHostAtSettlement(host, settlement, NobleGatheringOptions.Capture(), out reason);
+	}
+
+	private bool CanPlayerHostAtSettlement(Hero host, Settlement settlement, NobleGatheringOptions options, out string reason)
+	{
 		reason = "";
+		if (!options.Enabled)
+		{
+			reason = "宴会无法召开：宴会功能已在 MCM 中关闭。";
+			return false;
+		}
 		if (host == null || settlement == null || settlement.Town == null)
 		{
 			reason = "宴会无法召开：必须选择有效城镇或城堡。";
@@ -4706,9 +4859,9 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			reason = "宴会无法召开：该定居点正在被围攻。";
 			return false;
 		}
-		if (host.Gold < GatheringCost)
+		if (host.Gold < options.Cost)
 		{
-			reason = "宴会无法召开：你需要 " + GatheringCost + " 第纳尔。";
+			reason = "宴会无法召开：你需要 " + options.Cost + " 第纳尔。";
 			return false;
 		}
 		double now = NowDay();
@@ -5006,21 +5159,27 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		return settlement != null;
 	}
 
-	private List<Hero> PickNpcInvitees(Hero host, Settlement settlement)
+	private List<Hero> PickNpcInvitees(Hero host, Settlement settlement, NobleGatheringOptions options)
 	{
 		Kingdom kingdom = host?.Clan?.Kingdom;
-		// NPC hosts must not pull governors away from their settlements. Player-hosted
-		// gatherings use a separate candidate path and intentionally keep governors eligible.
+		// This governor switch only affects NPC-generated guest lists. Player-hosted
+		// gatherings use a separate candidate path and always keep governors eligible.
 		List<Hero> result = Hero.AllAliveHeroes
 			.Where(hero => hero != null && hero != host && hero.Occupation == Occupation.Lord && hero.Clan?.Kingdom == kingdom)
-			.Where(hero => hero.GovernorOf == null)
+			.Where(hero => hero != Hero.MainHero || options.AllowNpcPlayerInvitations)
+			.Where(hero => hero == Hero.MainHero || options.AllowNpcGovernorInvitations || hero.GovernorOf == null)
 			.Where(hero => hero == Hero.MainHero || IsHeroEligibleForGatheringInvitation(hero, out _))
 			.Where(hero => hero == Hero.MainHero || ShouldNpcConsiderInviting(host, hero))
 			.OrderByDescending(hero => hero == Hero.MainHero ? host.GetRelation(hero) : host.GetRelation(hero))
 			.ThenBy(_ => MBRandom.RandomFloat)
 			.Take(16)
 			.ToList();
-		if (kingdom == Clan.PlayerClan?.Kingdom && Hero.MainHero != null && Hero.MainHero != host && Hero.MainHero.GovernorOf == null && !result.Contains(Hero.MainHero) && host.GetRelation(Hero.MainHero) >= 10)
+		if (options.AllowNpcPlayerInvitations
+			&& kingdom == Clan.PlayerClan?.Kingdom
+			&& Hero.MainHero != null
+			&& Hero.MainHero != host
+			&& !result.Contains(Hero.MainHero)
+			&& host.GetRelation(Hero.MainHero) >= 10)
 		{
 			result.Insert(0, Hero.MainHero);
 		}
@@ -5287,7 +5446,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			.Append("（").Append(GetWeeklyNobleRole(host)).Append("）在")
 			.Append(GetSettlementName(settlement))
 			.Append("举办了一场贵族宴会，宴会计划持续")
-			.Append(GatheringDurationDays)
+			.Append(GetRecordDurationDays(record))
 			.Append("天。");
 		if (notableGuests.Count > 0)
 		{
@@ -5488,6 +5647,28 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		return string.IsNullOrWhiteSpace(text) ? "" : " 原因：" + text;
 	}
 
+	private static int GetRecordDurationDays(NobleGatheringRecord record)
+	{
+		double duration = (record?.EndDay ?? 0.0) - (record?.StartDay ?? 0.0);
+		if (double.IsNaN(duration) || double.IsInfinity(duration) || duration <= 0.0)
+		{
+			return DuelSettings.DefaultNobleGatheringDurationDays;
+		}
+		return Math.Max(1, (int)Math.Ceiling(duration));
+	}
+
+	private static int GetRecordInvitedClanRelationReward(NobleGatheringRecord record)
+	{
+		int reward = record?.InvitedClanRelationReward ?? -1;
+		if (reward < 0)
+		{
+			reward = DuelSettings.DefaultNobleGatheringInvitedClanRelationReward;
+		}
+		return Math.Max(
+			DuelSettings.NobleGatheringInvitedClanRelationRewardMinimum,
+			Math.Min(DuelSettings.NobleGatheringInvitedClanRelationRewardMaximum, reward));
+	}
+
 	private static void NormalizeRecord(NobleGatheringRecord record)
 	{
 		if (record == null)
@@ -5528,6 +5709,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		record.HostTemporaryPartyPhase = (record.HostTemporaryPartyPhase ?? "").Trim();
 		record.CrisisDecisionLevel = Math.Max(CrisisDecisionNone, Math.Min(CrisisDecisionSiege, record.CrisisDecisionLevel));
 		record.EndReason = (record.EndReason ?? "").Trim();
+		record.InvitedClanRelationReward = GetRecordInvitedClanRelationReward(record);
 		record.RelationRewardedClanIds = (record.RelationRewardedClanIds ?? new List<string>())
 			.Where(id => !string.IsNullOrWhiteSpace(id))
 			.Select(id => id.Trim())

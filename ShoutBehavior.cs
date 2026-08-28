@@ -2662,6 +2662,40 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
+	/// <summary>
+	/// Shared visual-only entry point for data-driven town chatter. Ambient lines use
+	/// the same participation guards and floating-text layer as scene speech, without
+	/// making an AI request.
+	/// </summary>
+	internal static bool TryShowPassiveNpcBubbleForExternal(Agent liveAgent, string content, float typingDurationSeconds = -1f)
+	{
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null)
+			{
+				Logger.LogImmediate("TownAmbient", "bubble_failed reason=current_instance_null");
+				return false;
+			}
+			FloatingTextMissionView floatingTextView = instance._floatingTextView;
+			if (floatingTextView == null || !floatingTextView.IsBubbleReady())
+			{
+				Logger.LogImmediate("TownAmbient", "bubble_failed reason=floating_text_not_ready view=" + (floatingTextView != null));
+				return false;
+			}
+			bool shown = instance.TryShowNpcBubble(liveAgent, content, typingDurationSeconds);
+			if (!shown)
+			{
+				Logger.LogImmediate("TownAmbient", "bubble_failed reason=agent_guard agent=" + (liveAgent?.Index.ToString() ?? "null"));
+			}
+			return shown;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private void TryTriggerPendingProactiveSceneOpening()
 	{
 		try
@@ -10886,6 +10920,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		Logger.LogImmediate("TownAmbient", "shout_mission_started scene=" + (currentMission.SceneName ?? "") + " agents=" + (currentMission.Agents?.Count ?? 0));
 		lock (_historyLock)
 		{
 			_npcConversationHistory.Clear();
@@ -10935,6 +10970,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start");
 		currentMission.AddMissionBehavior(new ShoutMissionBehavior(this));
 		currentMission.AddMissionBehavior(new FloatingTextMissionView());
+		currentMission.AddMissionBehavior(new TownAmbientDialogueMissionBehavior());
+		Logger.LogImmediate("TownAmbient", "mission_behaviors_attached scene=" + (currentMission.SceneName ?? ""));
+		try
+		{
+			Settlement ambientSettlement = Settlement.CurrentSettlement;
+			Location ambientLocation = CampaignMission.Current?.Location;
+			if (DuelSettings.GetTownAmbientDialogueDensity() > 0
+				&& ambientSettlement?.IsTown == true
+				&& ambientLocation != null
+				&& currentMission.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
+			{
+				currentMission.AddMissionBehavior(new InterventionNativeTownCivilianPopulationMissionBehavior(ambientSettlement.StringId, regularTownMultiplierMode: true));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("TownAmbient", "regular town population behavior was not attached: " + ex.Message);
+		}
 		SubscribeTtsPlaybackEvents();
 		try
 		{
@@ -19246,14 +19299,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (!TryPrepareShoutTarget(out var primaryDataPacket))
 		{
-			// The vanilla Y menu requires a framed NPC. Keep a small fallback for
-			// battle speech so the player can still address the whole allied line
-			// when no NPC is framed; this must never replace the vanilla menu when
-			// a normal shout target exists.
-			if (BattleSpeechRuntimeHost.CanOpenSpeechMenu(Mission.Current))
-			{
-				TriggerBattleSpeechMenu();
-			}
 			return;
 		}
 		string text = primaryDataPacket?.Name ?? "附近的人";
@@ -19266,9 +19311,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			battleSpeechPrimaryTarget = ResolvePrimaryAgentForShoutTargetingContext(
 				_activeShoutTargetingContext,
 				battleSpeechFramedTargets);
-			battleSpeechPrimaryTarget ??= battleSpeechFramedTargets.FirstOrDefault(
-				agent => agent != null && agent.IsActive());
 		}
+		bool npcSpeechTargetAllowed = battleSpeechMenu &&
+			IsPlayerSideBattleSpeechTarget(
+				Mission.Current,
+				Agent.Main,
+				battleSpeechPrimaryTarget);
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
 			new InquiryElement("normal", "交流", null, isEnabled: true, ""),
@@ -19290,12 +19338,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				null,
 				isEnabled: Agent.Main != null && Agent.Main.IsActive(),
 				"你亲自面向己方士兵发表演讲。"));
-			inquiryElements.Add(new InquiryElement(
-				"battle_speech_npc",
-				"他人演讲",
-				null,
-				isEnabled: battleSpeechPrimaryTarget != null && battleSpeechPrimaryTarget.IsActive(),
-				"让当前框选的主目标走到阵前并面向己方士兵演讲。"));
+			if (npcSpeechTargetAllowed)
+			{
+				inquiryElements.Add(new InquiryElement(
+					"battle_speech_npc",
+					"他人演讲",
+					null,
+					isEnabled: true,
+					"让当前框选的己方主目标发表演讲。"));
+			}
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
@@ -19380,123 +19431,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void TriggerBattleSpeechMenu()
-	{
-		Mission mission = Mission.Current;
-		List<Agent> framedTargets = GetAgentsForShoutTargetingContext(_activeShoutTargetingContext) ?? new List<Agent>();
-		Agent primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(_activeShoutTargetingContext, framedTargets);
-		primaryTarget ??= framedTargets.FirstOrDefault(agent => agent != null && agent.IsActive());
-		Agent player = Agent.Main;
-		bool npcSpeechTargetAllowed = IsPlayerSideBattleSpeechTarget(
-			mission,
-			player,
-			primaryTarget,
-			framedTargets);
-		List<InquiryElement> inquiryElements = new List<InquiryElement>
-		{
-			new InquiryElement(
-				"battle_speech_player",
-				"演讲",
-				null,
-				isEnabled: player != null && player.IsActive(),
-				"你亲自面向己方士兵发表演讲。"),
-			new InquiryElement(
-				"battle_speech_npc",
-				"他人演讲",
-				null,
-				isEnabled: npcSpeechTargetAllowed,
-				npcSpeechTargetAllowed
-					? "让当前框选的己方士兵走到阵前并面向己方士兵演讲。"
-					: "仅能让当前框选的己方士兵演讲；敌方或混合框选不可用。")
-		};
-		string targetName = primaryTarget?.Name?.ToString() ?? "未选择目标";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			"阵前演讲",
-			"选择演讲方式。当前主目标：" + targetName +
-			"\n此处输入直接进入演讲专用通道，不经过普通场景喊话解析。",
-			inquiryElements,
-			isExitShown: true,
-			1,
-			1,
-			"确定",
-			"取消",
-			delegate(List<InquiryElement> selected)
-			{
-				string identifier = selected != null && selected.Count > 0
-					? (selected[0]?.Identifier ?? "").ToString()
-					: string.Empty;
-				bool npcSpeech = string.Equals(
-					identifier,
-					"battle_speech_npc",
-					StringComparison.Ordinal);
-				if (!npcSpeech && !string.Equals(
-					identifier,
-					"battle_speech_player",
-					StringComparison.Ordinal))
-				{
-					AfCompatV130.CompleteDedicatedSpeechMenuInput();
-					return;
-				}
-				bool opened = BattleSpeechRuntimeHost.TryOpenSpeechInputFromShoutMenu(
-					mission,
-					npcSpeech,
-					player,
-					primaryTarget,
-					framedTargets,
-					_sceneConversationEpoch);
-				if (!opened)
-				{
-					InformationManager.DisplayMessage(new InformationMessage(
-						"演讲输入框无法打开，已返回普通场景状态。",
-						new Color(1f, 0.5f, 0.3f)));
-					AfCompatV130.CompleteDedicatedSpeechMenuInput();
-				}
-			},
-			delegate
-			{
-				AfCompatV130.CompleteDedicatedSpeechMenuInput();
-			},
-			"",
-			isSeachAvailable: false);
-		AfCompatV130.BeginDedicatedSpeechMenuInput();
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
-	}
-
 	private static bool IsPlayerSideBattleSpeechTarget(
 		Mission mission,
 		Agent player,
-		Agent primaryTarget,
-		IReadOnlyList<Agent> framedTargets)
+		Agent primaryTarget)
 	{
 		if (mission?.PlayerTeam == null ||
 			player == null ||
 			primaryTarget == null ||
 			!primaryTarget.IsActive() ||
+			!primaryTarget.IsHuman ||
 			ReferenceEquals(primaryTarget, player) ||
+			!ReferenceEquals(primaryTarget.Mission, mission) ||
 			primaryTarget.Team == null ||
 			!primaryTarget.Team.IsValid ||
 			primaryTarget.Team.Side != mission.PlayerTeam.Side)
 		{
 			return false;
-		}
-
-		if (framedTargets == null)
-		{
-			return true;
-		}
-		foreach (Agent target in framedTargets)
-		{
-			if (target == null || !target.IsActive())
-			{
-				continue;
-			}
-			if (!ReferenceEquals(target.Mission, mission) ||
-				target.Team == null ||
-				!target.Team.IsValid ||
-				target.Team.Side != mission.PlayerTeam.Side)
-			{
-				return false;
-			}
 		}
 		return true;
 	}

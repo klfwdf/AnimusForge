@@ -11,9 +11,14 @@
               <Children>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="104" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.3" Color="#000000FF">
                   <Children>
-                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Center" MarginLeft="32" MarginRight="32" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Center" MarginLeft="88" MarginRight="88" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
                   </Children>
                 </Widget>
+                <ButtonWidget IsVisible="@ShowDismissButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="54" SuggestedHeight="54" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="14" MarginRight="14" Brush="Popup.Cancel.Button" Command.Click="ExecuteDismiss" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="25" Text="X" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="14" VerticalAlignment="Top" MarginTop="112" Sprite="StdAssets\Popup\divider" />
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="16" MarginTop="146" MarginBottom="86">
                   <Children>
@@ -41,9 +46,14 @@
                 </Widget>
                 <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="58" HorizontalAlignment="Center" VerticalAlignment="Bottom" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <Children>
-                    <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="58" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+                    <ButtonWidget IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="58" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@CloseText" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget IsVisible="@ShowRetryButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="260" SuggestedHeight="58" Brush="Popup.Done.Button" Command.Click="ExecuteRetry" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@RetryText" />
                       </Children>
                     </ButtonWidget>
                   </Children>

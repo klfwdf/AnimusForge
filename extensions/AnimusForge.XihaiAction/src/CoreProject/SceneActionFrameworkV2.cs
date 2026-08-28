@@ -205,10 +205,38 @@ namespace AnimusForge.SceneActions.Core
             List<string> references = new List<string>();
             foreach (SceneActionContractEntryV2 entry in Entries)
             {
-                if (entry.NaturalLanguageAliases.Any(alias =>
-                        SceneActionFrameworkV1.IndexOfCue(
+                bool matched = false;
+                foreach (string alias in entry.NaturalLanguageAliases)
+                {
+                    string normalizedAlias = CommandParser.Normalize(alias);
+                    int searchFrom = 0;
+                    while (searchFrom <= normalized.Length - normalizedAlias.Length)
+                    {
+                        int index = SceneActionFrameworkV1.IndexOfCue(
                             normalized,
-                            CommandParser.Normalize(alias)) >= 0))
+                            normalizedAlias,
+                            searchFrom);
+                        if (index < 0)
+                        {
+                            break;
+                        }
+                        if (!string.Equals(entry.IntentKey, Xihai, StringComparison.Ordinal) ||
+                            !SceneActionFrameworkV1.IsXihaiEquipmentMention(
+                                normalized,
+                                index,
+                                normalizedAlias.Length))
+                        {
+                            matched = true;
+                            break;
+                        }
+                        searchFrom = index + Math.Max(1, normalizedAlias.Length);
+                    }
+                    if (matched)
+                    {
+                        break;
+                    }
+                }
+                if (matched)
                 {
                     references.Add(entry.IntentKey);
                 }

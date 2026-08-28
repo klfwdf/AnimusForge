@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "player_policy_effect_scope_matrix_5000",
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "request_count": 9,
+    "retry_count": 0,
+    "max_tokens": 5000,
+    "temperature": 0.25,
+    "json_object_response_format": true,
+    "thinking_type": "disabled",
+    "api_key_recorded": false
+  },
+  "results": [
+    {
+      "case_id": "local-other-settlement",
+      "scope": "local",
+      "success": false,
+      "expectation_pass": false,
+      "elapsed_ms": 5358.6,
+      "error": "Exception calling \"GetResult\" with \"0\" argument(s): \"The SSL connection could not be established, see inner exception.\""
+    },
+    {
+      "case_id": "local-clan-fiefs-relief",
+      "scope": "local",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 2589.4,
+      "finish_reason": "stop",
+      "prompt_tokens": 1351,
+      "completion_tokens": 95,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 1351,
+      "parse_error": "",
+      "selected_modules": [
+        "taxIncomePct",
+        "loyaltyPerDay",
+        "prosperityPerDay",
+        "securityPerDay"
+      ],
+      "pairs": [
+        {
+          "target": "C0",
+          "module": "taxIncomePct",
+          "value": -20.0
+        },
+        {
+          "target": "C0",
+          "module": "loyaltyPerDay",
+          "value": 1.5
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "local-source-crackdown",
+      "scope": "local",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 3017.8,
+      "finish_reason": "stop",
+      "prompt_tokens": 1482,
+      "completion_tokens": 121,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 1482,
+      "parse_error": "",
+      "selected_modules": [
+        "taxIncomePct",
+        "militiaPerDay",
+        "securityPerDay",
+        "loyaltyPerDay",
+        "prosperityPerDay"
+      ],
+      "pairs": [
+        {
+          "target": "S",
+          "module": "taxIncomePct",
+          "value": 25.0
+        },
+        {
+          "target": "S",
+          "module": "militiaPerDay",
+          "value": 3.0
+        },
+        {
+          "target": "S",
+          "module": "securityPerDay",
+          "value": 0.5
+        },
+        {
+          "target": "S",
+          "module": "loyaltyPerDay",
+          "value": -0.8
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "kingdom-foreign-aid",
+      "scope": "kingdom",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 2613.1,
+      "finish_reason": "stop",
+      "prompt_tokens": 1357,
+      "completion_tokens": 63,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 1357,
+      "parse_error": "",
+      "selected_modules": [
+        "foodPerDay",
+        "constructionPerDay",
+        "prosperityPerDay",
+        "loyaltyPerDay"
+      ],
+      "pairs": [
+        {
+          "target": "K1",
+          "module": "foodPerDay",
+          "value": 8.0
+        },
+        {
+          "target": "K1",
+          "module": "constructionPerDay",
+          "value": 150.0
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "kingdom-foreign-sanctions",
+      "scope": "kingdom",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 1949.8,
+      "finish_reason": "stop",
+      "prompt_tokens": 1366,
+      "completion_tokens": 84,
+      "cache_hit_tokens": 384,
+      "cache_miss_tokens": 982,
+      "parse_error": "",
+      "selected_modules": [
+        "taxIncomePct",
+        "foodPerDay",
+        "prosperityPerDay",
+        "securityPerDay"
+      ],
+      "pairs": [
+        {
+          "target": "K1",
+          "module": "taxIncomePct",
+          "value": -20.0
+        },
+        {
+          "target": "K1",
+          "module": "foodPerDay",
+          "value": -6.0
+        },
+        {
+          "target": "K1",
+          "module": "prosperityPerDay",
+          "value": -5.0
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "kingdom-bilateral-development",
+      "scope": "kingdom",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 1837.3,
+      "finish_reason": "stop",
+      "prompt_tokens": 1360,
+      "completion_tokens": 95,
+      "cache_hit_tokens": 384,
+      "cache_miss_tokens": 976,
+      "parse_error": "",
+      "selected_modules": [
+        "prosperityPerDay",
+        "taxIncomePct",
+        "constructionPerDay",
+        "foodPerDay"
+      ],
+      "pairs": [
+        {
+          "target": "K0",
+          "module": "prosperityPerDay",
+          "value": 3.0
+        },
+        {
+          "target": "K0",
+          "module": "taxIncomePct",
+          "value": 15.0
+        },
+        {
+          "target": "K1",
+          "module": "prosperityPerDay",
+          "value": 3.0
+        },
+        {
+          "target": "K1",
+          "module": "taxIncomePct",
+          "value": 15.0
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "kingdom-foreign-tax-transfer",
+      "scope": "kingdom",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 2376.3,
+      "finish_reason": "stop",
+      "prompt_tokens": 1360,
+      "completion_tokens": 95,
+      "cache_hit_tokens": 384,
+      "cache_miss_tokens": 976,
+      "parse_error": "",
+      "selected_modules": [
+        "taxIncomePct",
+        "prosperityPerDay",
+        "loyaltyPerDay",
+        "kingdomStabilityOnce"
+      ],
+      "pairs": [
+        {
+          "target": "K1",
+          "module": "taxIncomePct",
+          "value": -15.0
+        },
+        {
+          "target": "K0",
+          "module": "taxIncomePct",
+          "value": 15.0
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "kingdom-million-development",
+      "scope": "kingdom",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 2146.0,
+      "finish_reason": "stop",
+      "prompt_tokens": 1379,
+      "completion_tokens": 118,
+      "cache_hit_tokens": 384,
+      "cache_miss_tokens": 995,
+      "parse_error": "",
+      "selected_modules": [
+        "constructionPerDay",
+        "foodPerDay",
+        "prosperityPerDay",
+        "loyaltyPerDay"
+      ],
+      "pairs": [
+        {
+          "target": "K0",
+          "module": "constructionPerDay",
+          "value": 800.0
+        },
+        {
+          "target": "K0",
+          "module": "foodPerDay",
+          "value": 30.0
+        },
+        {
+          "target": "K0",
+          "module": "prosperityPerDay",
+          "value": 30.0
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    },
+    {
+      "case_id": "vassal-tax-transfer",
+      "scope": "vassal",
+      "success": true,
+      "expectation_pass": true,
+      "http_status": 200,
+      "elapsed_ms": 2283.8,
+      "finish_reason": "stop",
+      "prompt_tokens": 1363,
+      "completion_tokens": 91,
+      "cache_hit_tokens": 512,
+      "cache_miss_tokens": 851,
+      "parse_error": "",
+      "selected_modules": [
+        "taxIncomePct",
+        "prosperityPerDay",
+        "loyaltyPerDay",
+        "kingdomStabilityOnce"
+      ],
+      "pairs": [
+        {
+          "target": "K0",
+          "module": "taxIncomePct",
+          "value": -10.0
+        },
+        {
+          "target": "K1",
+          "module": "taxIncomePct",
+          "value": 10.0
+        }
+      ],
+      "missing_required": [],
+      "forbidden_target_hits": [],
+      "validation_errors": []
+    }
+  ]
+}

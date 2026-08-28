@@ -19,6 +19,12 @@ $FlavorKey = "AnimusForge.BuildFlavor"
 $ApiKey = "AnimusForge.BannerlordApi"
 $Flavor13 = "ANIMUSFORGE_BANNERLORD_API_1_3"
 $Flavor14 = "ANIMUSFORGE_BANNERLORD_API_1_4"
+$LegacyRootPolicyPromptFileNames = @(
+    "CustomPolicyEvaluatorPrompt.json",
+    "NpcRulerPolicyPrompt.json",
+    "PlayerPolicyAutoDraftPrompt.json",
+    "PolicyEffectPrompts.v1.json"
+)
 $PrivateRuntimeDlls = @(
     "Microsoft.ML.OnnxRuntime.dll",
     "onnxruntime.dll",
@@ -155,6 +161,57 @@ function Invoke-Robocopy {
         $detailText = if ($details.Count -gt 0) { "`n$($details -join "`n")" } else { "" }
         throw "robocopy failed for '$SourceDir' -> '$TargetDir' with exit code $exitCode.$detailText"
     }
+}
+
+function Merge-InstalledCustomPromptsIntoStaging {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string]$TargetModuleDir,
+        [Parameter(Mandatory = $true)][string]$StagingModuleDir
+    )
+
+    $targetCustomPrompts = Join-Path $TargetModuleDir "CustomPrompts"
+    if (-not (Test-Path -LiteralPath $targetCustomPrompts -PathType Container)) {
+        return
+    }
+
+    $stagingCustomPrompts = Join-Path $StagingModuleDir "CustomPrompts"
+    Assert-PathUnderRoot -Path $stagingCustomPrompts -Root $StagingModuleDir
+    Assert-NotReparsePoint -Path $targetCustomPrompts
+    Assert-NotReparsePoint -Path $stagingCustomPrompts
+    Invoke-Robocopy -SourceDir $targetCustomPrompts -TargetDir $stagingCustomPrompts -ExtraArguments @(
+        "/MIR",
+        "/COPY:DAT",
+        "/DCOPY:DAT"
+    )
+
+    $targetEffectPrompts = Join-Path $targetCustomPrompts "Policy\Effects"
+    if (Test-Path -LiteralPath $targetEffectPrompts -PathType Container) {
+        Write-Host "Preserved CustomPrompts: installed split policy prompts and all non-policy prompts"
+        return
+    }
+
+    foreach ($fileName in $LegacyRootPolicyPromptFileNames) {
+        $legacyPromptPath = Join-Path $stagingCustomPrompts $fileName
+        Assert-PathUnderRoot -Path $legacyPromptPath -Root $StagingModuleDir
+        if (Test-Path -LiteralPath $legacyPromptPath -PathType Leaf) {
+            Remove-Item -LiteralPath $legacyPromptPath -Force
+        }
+    }
+
+    $sourcePolicyPrompts = Join-Path $SourceModuleDir "CustomPrompts\Policy"
+    $sourceEffectPrompts = Join-Path $sourcePolicyPrompts "Effects"
+    if (-not (Test-Path -LiteralPath $sourceEffectPrompts -PathType Container)) {
+        throw "Source split policy prompts are missing: $sourceEffectPrompts"
+    }
+    $stagingPolicyPrompts = Join-Path $stagingCustomPrompts "Policy"
+    Assert-PathUnderRoot -Path $stagingPolicyPrompts -Root $StagingModuleDir
+    Invoke-Robocopy -SourceDir $sourcePolicyPrompts -TargetDir $stagingPolicyPrompts -ExtraArguments @(
+        "/MIR",
+        "/COPY:DAT",
+        "/DCOPY:DAT"
+    )
+    Write-Host "Policy prompts: replaced legacy root files with split defaults; preserved all non-policy prompts"
 }
 
 function Reset-ProjectStageDirectory {
@@ -734,6 +791,7 @@ try {
         (Join-Path $sourceModuleDir "bin")
     )
     Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $stagingModuleDir -ExtraArguments $sourceCopyArguments
+    Merge-InstalledCustomPromptsIntoStaging -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir -StagingModuleDir $stagingModuleDir
     Set-SingleModuleIdentity -ModuleDir $stagingModuleDir
 
     $stagingBinDir = Join-Path $stagingModuleDir "bin\Win64_Shipping_Client"

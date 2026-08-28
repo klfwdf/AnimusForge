@@ -127,9 +127,9 @@ public static class WorldMessageTimelineUi
 		}
 		try
 		{
-			long currentSequence = CustomPolicyBehavior.GetPublishedPolicyArtifactCurrentSequenceForExternal();
+			long currentSequence = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentSequence();
 			long afterSequence = Math.Max(0L, currentSequence - MaxPolicySourceEntries);
-			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> source = CustomPolicyBehavior.GetPublishedPolicyArtifactLedgerForExternal(afterSequence, MaxPolicySourceEntries);
+			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> source = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts(afterSequence, MaxPolicySourceEntries);
 			foreach (PublishedPolicyArtifactLedgerEntry artifact in source ?? Array.Empty<PublishedPolicyArtifactLedgerEntry>())
 			{
 				if (artifact == null)

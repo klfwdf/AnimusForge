@@ -53,6 +53,11 @@
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" MarginBottom="14" Sprite="StdAssets\Popup\divider" />
                                         <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="6" Brush="Popup.Title.Text" Brush.FontSize="22" Brush.FontColor="#DDBB73FF" Text="@ImpactSectionTitleText" />
                                         <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="18" Brush="Popup.Description.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@ImpactSummaryText" />
+										<ButtonWidget IsEnabled="@CanReReview" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="190" SuggestedHeight="48" HorizontalAlignment="Right" MarginTop="18" Brush="Popup.Done.Button" Command.Click="ExecuteReReview" UpdateChildrenStates="true" DoNotPassEventsToChildren="true">
+										  <Children>
+											<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Text="@ReReviewText" />
+										  </Children>
+										</ButtonWidget>
                                       </Children>
                                     </ListPanel>
                                   </Children>

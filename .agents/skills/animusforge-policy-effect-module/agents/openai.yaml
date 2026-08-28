@@ -1,0 +1,4 @@
+interface:
+  display_name: "AnimusForge Policy Effect Module"
+  short_description: "Build modular MCM-routed AnimusForge policy effects"
+  default_prompt: "Use $animusforge-policy-effect-module to add or review an AnimusForge policy effect module without widening core boundaries."

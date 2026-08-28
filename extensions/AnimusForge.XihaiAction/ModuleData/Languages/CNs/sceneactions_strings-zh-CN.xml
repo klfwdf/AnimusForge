@@ -66,8 +66,8 @@
     <string id="SAX_MCM_BattleSpeechEnabled" text="启用阵前演讲" />
     <string id="SAX_MCM_TKeyBattleSpeechEnabled" text="启用 T 键场景喊话中的演讲识别" />
     <string id="SAX_MCM_TKeyBattleSpeechEnabled_Hint" text="开启后，T 键场景喊话的内容可以进入演讲通道；Y 键演讲选项仍只在总开关开启且当前阶段允许演讲时显示。" />
-    <string id="SAX_MCM_ReplyMin" text="演讲正文最少字数（6-160）" />
-    <string id="SAX_MCM_ReplyMax" text="演讲正文最多字数（6-160）" />
+    <string id="SAX_MCM_ReplyMin" text="演讲正文建议最少字数（6-160）" />
+    <string id="SAX_MCM_ReplyMax" text="演讲正文建议最多字数（6-160）" />
     <string id="SAX_MCM_NpcPositioning" text="NPC 移动到阵线前方" />
     <string id="SAX_MCM_FrontDistance" text="距士兵阵线前移距离" />
     <string id="SAX_MCM_ArrivalRadius" text="到位判定半径" />
@@ -86,8 +86,8 @@
     <string id="SAX_MCM_AudienceReplyWaveSize" text="每波最多同时回复的士兵人数" />
     <string id="SAX_MCM_AudienceReplyTickBudget" text="每个 Tick 最多提交的口头回复" />
     <string id="SAX_MCM_AudienceReplyTickBudget_Hint" text="士兵口头回复桥接调用的单 Tick 硬上限，与逻辑波次大小独立。" />
-    <string id="SAX_MCM_AudienceReplyMinimumChars" text="士兵口头回复最少字数" />
-    <string id="SAX_MCM_AudienceReplyMaximumChars" text="士兵口头回复最多字数" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars" text="士兵口头回复建议最少字数" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars" text="士兵口头回复建议最多字数" />
     <string id="SAX_MCM_AudienceReplyMinInterval" text="回复波次最短随机间隔" />
     <string id="SAX_MCM_AudienceReplyMaxInterval" text="回复波次最长随机间隔" />
     <string id="SAX_MCM_AudienceResponseStartDelay" text="听众回应开始延迟" />
@@ -99,9 +99,9 @@
     <string id="SAX_MCM_Notifications" text="屏幕通知" />
     <string id="SAX_MCM_Diagnostics" text="详细诊断日志" />
     <string id="SAX_MCM_BattleSpeechEnabled_Hint" text="阵前演讲总开关。关闭后隐藏本组的 T 键演讲、正文长度、站位、听众回应和演讲后发令设置。" />
-    <string id="SAX_MCM_ReplyMin_Hint" text="限制 AF 生成的阵前演讲正文长度；实际显示与生成使用同一份快照。必须不大于最多字数。" />
-    <string id="SAX_MCM_ReplyMax_Hint" text="限制 AF 生成的阵前演讲正文长度；超过此上限的结果会被拒绝并按失败关闭处理。" />
-    <string id="SAX_MCM_NpcPositioning_Hint" text="NPC 演讲时先走到己方阵线前方并转向士兵；关闭后保留原地演讲，不使用脚本移动。" />
+    <string id="SAX_MCM_ReplyMin_Hint" text="给 AF 的正文长度建议下限；略短的合法正文仍会原样使用，不会因此回退。必须不大于建议最多字数。" />
+    <string id="SAX_MCM_ReplyMax_Hint" text="给 AF 的正文长度建议上限；超过建议的合法正文仍会原样使用，不截断、不回退。" />
+    <string id="SAX_MCM_NpcPositioning_Hint" text="NPC 演讲时只走到己方阵线前方；不会强制改变步行者、骑手或坐骑的自然朝向。关闭后保留原地演讲，不使用脚本移动。" />
     <string id="SAX_MCM_FrontDistance_Hint" text="NPC 相对己方阵线中心向前移动的距离；只在“演讲者走到阵前”开启时生效。" />
     <string id="SAX_MCM_ArrivalRadius_Hint" text="NPC 与目标站位相距不超过此半径即视为到位；只影响站位移动判定。" />
     <string id="SAX_MCM_MoveTimeout_Hint" text="NPC 走向阵前的最长等待时间；超时会在当前位置安全开讲，不传送、不重复请求。" />
@@ -116,8 +116,8 @@
     <string id="SAX_MCM_AudienceReplies_Hint" text="启用后让多名士兵用短句回应演讲；关闭后隐藏文字回应人数、批次、字数和间隔。" />
     <string id="SAX_MCM_AudienceReplyCount_Hint" text="本场最多生成文字回应的士兵数量；每个士兵只提交一次请求。" />
     <string id="SAX_MCM_AudienceReplyWaveSize_Hint" text="同一批最多提交的文字回应人数；是逻辑波次大小，不等于每 Tick 提交预算。" />
-    <string id="SAX_MCM_AudienceReplyMinimumChars_Hint" text="每条士兵文字回应的最少字数；只影响回应生成与显示，不影响演讲正文。" />
-    <string id="SAX_MCM_AudienceReplyMaximumChars_Hint" text="每条士兵文字回应的最多字数；建议保持简短，避免多人同时显示造成阅读和性能压力。" />
+    <string id="SAX_MCM_AudienceReplyMinimumChars_Hint" text="给 AF 的单条士兵回应长度建议下限；略短的合法回应仍会原样显示。" />
+    <string id="SAX_MCM_AudienceReplyMaximumChars_Hint" text="给 AF 的单条士兵回应长度建议上限；超过建议的合法回应仍会原样显示。建议保持简短，避免多人同时显示造成阅读压力。" />
     <string id="SAX_MCM_AudienceReplyMinInterval_Hint" text="连续文字回应波次的随机间隔下限；与每 Tick 提交预算共同限制请求峰值。" />
     <string id="SAX_MCM_AudienceReplyMaxInterval_Hint" text="连续文字回应波次的随机间隔上限；必须不小于最小随机间隔。" />
     <string id="SAX_MCM_AudienceResponseStartDelay_Hint" text="演讲正文完成后至少再等待多久才开始士兵文字回应和原生战吼；正文未完成时不会插入听众回应。" />

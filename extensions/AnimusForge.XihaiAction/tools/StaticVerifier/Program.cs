@@ -1704,13 +1704,16 @@ internal static class Program
         MethodInfo openingGesturePlaying = performanceBehavior.GetMethod(
             "IsSpeechOpeningGesturePlaying",
             BindingFlags.Static | BindingFlags.NonPublic);
-        MethodInfo audienceRelease = performanceBehavior.GetMethod(
-            "ReleaseOwnedAudiencePerformanceChannels",
+        MethodInfo audienceFade = performanceBehavior.GetMethod(
+            "FadeOutOwnedAudiencePerformanceChannels",
             BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo audienceClear = performanceBehavior.GetMethod("AreOwnedAudienceChannelsClear", BindingFlags.Static | BindingFlags.NonPublic);
         MethodInfo filterFrozenAudience = performanceBehavior.GetMethod(
             "FilterFrozenAudience",
             BindingFlags.Instance | BindingFlags.NonPublic);
+        MethodInfo tryPlayAudienceVoice = performanceBehavior.GetMethod(
+            "TryPlayAudienceVoice",
+            BindingFlags.Static | BindingFlags.NonPublic);
         Require(runtimeEffect.IsAssignableFrom(performanceBehavior),
             "battle speech performance behavior does not implement the exact-reference runtime effect");
         Require(performanceBehavior.GetMethod(
@@ -1721,10 +1724,8 @@ internal static class Program
                     BindingFlags.Instance | BindingFlags.NonPublic) != null &&
                 performanceBehavior.GetMethod(
                     "TryHoldSpeakerAtSpeechLine",
-                    BindingFlags.Instance | BindingFlags.NonPublic) != null &&
-                performanceBehavior.GetMethod(
-                    "TryPlayAudienceVoice",
-                    BindingFlags.Static | BindingFlags.NonPublic) != null &&
+                    BindingFlags.Instance | BindingFlags.NonPublic) == null &&
+                tryPlayAudienceVoice != null &&
                 performanceBehavior.GetMethod(
                     "CanPlaySpeakerGesture",
                     BindingFlags.Instance | BindingFlags.NonPublic) != null &&
@@ -1740,19 +1741,30 @@ internal static class Program
                         "OnSpeechStarted",
                         BindingFlags.Instance | BindingFlags.Public),
                     filterFrozenAudience) &&
-                audienceRelease != null &&
+                audienceFade != null &&
                 audienceClear != null &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
                         "ProgressAudienceVoicesAndTactic",
                         BindingFlags.Instance | BindingFlags.NonPublic),
-                    audienceRelease) &&
+                    audienceFade) &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
                         "ProgressAudienceVoicesAndTactic",
                         BindingFlags.Instance | BindingFlags.NonPublic),
                     audienceClear),
-            "battle speech visual budget, Native voice, or Advance stages are missing");
+            "battle speech visual budget, Native voice, channel-1 fade barrier, or Advance stages are missing");
+        Require(MethodBodyReferences(
+                    performanceBehavior.GetMethod(
+                        "Progress",
+                        BindingFlags.Instance | BindingFlags.NonPublic),
+                    tryPlayAudienceVoice) &&
+                !MethodBodyReferences(
+                    performanceBehavior.GetMethod(
+                        "ProgressAudienceVoicesAndTactic",
+                        BindingFlags.Instance | BindingFlags.NonPublic),
+                    tryPlayAudienceVoice),
+            "native battle cries are not synchronized directly with cheer cues");
         Require(openingGesture != null && openingGesturePlaying != null &&
                 MethodBodyReferences(
                     performanceBehavior.GetMethod(
@@ -1780,8 +1792,11 @@ internal static class Program
                     BindingFlags.Instance | BindingFlags.NonPublic) != null &&
                 speechBehavior.GetMethod(
                     "ApplySpeakerAndMountFacing",
-                    BindingFlags.Static | BindingFlags.NonPublic) != null,
-            "battle speech speaker movement ownership entrypoints are missing");
+                    BindingFlags.Static | BindingFlags.NonPublic) == null &&
+                speechBehavior.GetMethod(
+                    "RefreshAudienceFacing",
+                    BindingFlags.Instance | BindingFlags.NonPublic) == null,
+            "battle speech movement ownership or no-forced-facing contract drifted");
 
         Assembly gameAssembly = AppDomain.CurrentDomain.GetAssemblies().First(value =>
             value.GetName().Name == "TaleWorlds.MountAndBlade");
@@ -1791,6 +1806,7 @@ internal static class Program
             true,
             false);
         Require(agent.GetMethod("MakeVoice", BindingFlags.Instance | BindingFlags.Public) != null &&
+                agent.GetMethod("SetScriptedPosition", BindingFlags.Instance | BindingFlags.Public) != null &&
                 agent.GetMethod("SetIsAIPaused", BindingFlags.Instance | BindingFlags.Public) != null &&
                 agent.GetMethod("ClearTargetFrame", BindingFlags.Instance | BindingFlags.Public) != null &&
                 agent.GetMethod("DisableScriptedMovement", BindingFlags.Instance | BindingFlags.Public) != null &&
@@ -2898,7 +2914,13 @@ internal static class Program
                 systemPrompt.Contains("follow_me（招手跟上）") &&
                 systemPrompt.Contains("cut_throat（割喉手势）") &&
                 systemPrompt.Contains("fear（害怕）") &&
-                systemPrompt.Contains("允许根据本轮完整语境推断") &&
+                systemPrompt.Contains("先区分实体动作和隐含情绪") &&
+                systemPrompt.Contains("实体动作必须有当前回复中该NPC已经做出或正在做出的可见身体证据") &&
+                systemPrompt.Contains("低头、抬头、闭眼、沉思、叹息、苦笑") &&
+                systemPrompt.Contains("‘蹲下’不是本动作库的跪下") &&
+                systemPrompt.Contains("他说跪下") &&
+                systemPrompt.Contains("stand_up 也必须是当前NPC从本模块拥有的跪姿中实际起身") &&
+                systemPrompt.Contains("目光落在某处不等于 point") &&
                 systemPrompt.Contains("强作镇定") &&
                 systemPrompt.Contains("可独立于库外动作") &&
                 systemPrompt.Contains("命令、要求或示意别人执行动作") &&

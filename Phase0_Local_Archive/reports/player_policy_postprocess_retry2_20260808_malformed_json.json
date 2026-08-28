@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "executed_local_date": "2026-08-08",
+  "test": "user_authorized_postprocess_retry2",
+  "policy": {
+    "name": "百万发展基金",
+    "text": "我出一百万为了王国发展。",
+    "scope": "kingdom",
+    "target_handles": [
+      "K0"
+    ]
+  },
+  "api": {
+    "host": "api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "transport": "curl-schannel-http1.1-tls1.2-via-env-proxy",
+    "max_tokens": 1000,
+    "json_object_response_format": true,
+    "api_key_recorded": false
+  },
+  "request": {
+    "attempt_count": 1,
+    "retry_count": 0,
+    "reached_http": true,
+    "response_envelope_parsed": true,
+    "assistant_content_nonempty": true,
+    "assistant_json_parsed": false,
+    "result": "malformed_or_truncated_json",
+    "error": "JSONDecodeError: Unterminated string starting at line 1 column 18"
+  },
+  "harness_difference": {
+    "production_payload_has": "thinking.type=disabled",
+    "retry2_payload_had": "no thinking field",
+    "implication": "This call does not prove that the production 1000-token postprocess budget is insufficient. The model may have used output budget for reasoning because the smoke payload omitted the production thinking-disable control."
+  },
+  "usage": "not persisted before JSON parse failure",
+  "partial_effect_committed": false
+}
