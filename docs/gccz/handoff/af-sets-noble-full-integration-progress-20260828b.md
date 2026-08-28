@@ -138,3 +138,180 @@ In Git Bash: always write `-p:X`, never `/p:X` (path-mangled). Use `git -C <repo
 - Noble captive escort work (handoff §9) — not touched.
 - Harmony dispatcher unification (handoff §11), shared dialogue/command UI (handoff §12) — not touched.
 - Any actual behavior switch-over — the session is shadow-only; legacy code still drives 100% of live behavior.
+
+---
+
+# 2026-08-28 Addendum C — 玩家反馈驱动的 SETS / 城内冲突运行时修复
+
+本节记录 `703ab8f`（GCCZ）与 `88c9f3f1`（NEW-10）实际落地的代码。它修复的是 **SETS 随行士兵与 AF 城内冲突之间的运行时接线**；它没有把上一节的 hostile capture 状态机从 shadow 切成 authority，也没有开始俘虏贵族随行重构。三件事必须继续分开验收。
+
+## 1. 玩家反馈与已确认根因
+
+| 玩家现象 | 实际运行路径 | 已确认根因 |
+|---|---|---|
+| 随行士兵空手、不拔武器 | `SceneTauntMissionBehavior.EscalateToArmedConflict`、SETS `ReadyPlayerEntryFollowersForConflict` | SETS 只切队伍、编队、警戒，没有保证恢复被徒手冲突缓存的装备并实际持握；fallback sword 只认 `Guard/PrisonGuard/Soldier` occupation，普通 SETS 选中兵种可能永远拿不到 fallback。 |
+| 挑衅后自己的 SETS 随从也变敌人 | `CollectEscortedFollowers` → `CollectOpponentSideAgents` → `StartCustomFight` | 目标护卫探测没有排除 SETS 选中随从；同一 Agent 已在 player list 后仍可能再次进入 opponent list。 |
+| 同一士兵可能同时处于双方集合 | `AddAgentToFightSide` | 旧方法只向目标 `HashSet` 添加，从不从相反集合移除，也不拒绝把 player-side Agent 再加到 opponent side。 |
+| 自己地盘挑衅后全城都打玩家 | `EscalateToArmedConflict`、`TryJoinArmedBystanderToConflict` | 旧逻辑把 `_guardAgentIndices` 全部无条件加到 opponent side，并把附近所有持械旁观者继续吸入 opponent side。 |
+| 直接打士兵，士兵只抱头/投降，不反击 | SETS `OnAgentHit` 先于 SceneTaunt 决策，随后 `StartOwnedSettlementIncident` → `MaintainOwnedSettlementIncidentPanic` | SETS 抢先吞掉自有地盘所有物理攻击；SceneTaunt 的 passive target 又没有排除 `Guard/PrisonGuard/Soldier/Lord`，因此战斗人员也进入 hands-up/panic 路径。 |
+| 国王进入封臣领地时本国人仍把玩家当外敌 | SETS `IsOwnEntrySettlement` 与 SceneTaunt `OwnerClan == PlayerClan` | 两个系统的“自己地盘”定义不一致。SETS 认“玩家直辖 + 玩家是国王时的本国封臣领地”，SceneTaunt 只认玩家直辖。 |
+
+这些都来自当前 live caller，而不是注释或旧文档推测。
+
+## 2. 新增纯策略（双仓库镜像）
+
+新增：
+
+- `G:\AFMOD\GCCZ\src\AnimusForge.SiegeAftermathIntervention\SetsCityConflictPolicy.cs`
+- `G:\AFMOD\NEW-10\AnimusForge.SiegeAftermathIntervention\SetsCityConflictPolicy.cs`
+- SHA256：`BF381FDA66F68719C8BC3B5214F4541C19F50FB022A8D204C9A2A37E641C9369`
+
+策略只接受布尔事实，不引用 Bannerlord 类型：
+
+1. `ResolveSide(...)` 每次只返回一个 `SetsCityConflictSide`。
+2. SETS selected follower 的优先级最高，任何 escort detector 都不能把它偷到 opponent side。
+3. 当前冲突对象与其真实护卫进入 opponent side。
+4. 武装冲突中，玩家统治权定居点的其他守卫/士兵进入 player side；外部定居点守卫仍进入 opponent side。
+5. `ResolveOwnedAttackRouting(...)` 将自有/统治权地盘的直接攻击分为：
+   - 普通居民：`PassiveSurrender`；
+   - `Guard/PrisonGuard/Soldier/Lord`：`ArmedConflict`；
+   - gangster/bandit/alley：`ExistingFlow`，继续原生犯罪冲突链。
+6. 自己地盘存在 SETS 选中随从时，语言冲突直接升级为 armed support，避免士兵被当作徒手斗殴者剥掉武器。
+
+## 3. NEW-10 运行时接线
+
+### 3.1 阵营唯一性
+
+`SceneTauntBehavior.cs` 现在有三层防线：
+
+- `IsPlayerAlignedConflictAgent` 统一识别 MainAgent、SETS 选中随从、玩家保护目标、主队英雄和原版 accompanying follower。
+- `CollectEscortedFollowers` 在运行 escort detector 前排除上述玩家侧成员，并使用 `SetsCityConflictPolicy.ResolveSide` 再确认。
+- `NormalizeInitialConflictSides` 在 `StartCustomFight` 前删除双方交集；如果 active target 不再存在于 opponent side，则拒绝开启含糊冲突。
+- `AddAgentToFightSide` 不再盲加：
+  - SETS follower 的 opponent 请求会被重定向到 player side；
+  - player-side Agent 不允许再转入 opponent side；
+  - 若从 opponent side 转入 player side，必须先从 `MissionFightHandler` opponent 列表真实移除；失败则拒绝继续，避免 HashSet 与引擎内部列表分裂。
+
+### 3.2 自己地盘守卫归属
+
+“玩家统治权定居点”现在统一复用 SETS 的 `IsOwnEntrySettlement` 定义，通过 `IsPlayerAuthoritySettlementForExternal` 暴露给 SceneTaunt：
+
+- 玩家 Clan 直辖城：是。
+- 玩家为 Kingdom ruler 时，本国其他 Clan 封地：是。
+- 普通封臣进入同国其他 Clan 封地：否，保持既有犯罪/敌对规则。
+
+武装升级时：
+
+- active target 始终是 opponent，即使 target 本身是本地士兵；
+- target 的真实私人护卫是 opponent；
+- 其他本地 `Guard/PrisonGuard/Soldier` 是 player side；
+- 普通居民保持 fight 外部，不再因为“附近且持械”被全局吸入敌方；
+- hostile settlement 的守卫归属完全保持原逻辑，仍是 opponent。
+
+跨 location 的 armed carryover 也按同一规则处理：玩家统治权地盘不会在换场景后把全体本地权威重新拉成敌军。
+
+### 3.3 直接攻击分流
+
+SETS `ShouldHandlePhysicalAttack` 不再吞掉全部自有地盘攻击：
+
+| 目标 | 现在由谁处理 | 预期行为 |
+|---|---|---|
+| 普通居民/普通 notable | SETS owned incident / SceneTaunt passive | hands-up、逃跑、后续 SETS/GCCZ 自有地盘处置保持不变。 |
+| Guard / PrisonGuard / Soldier / Lord | SceneTaunt custom fight | 被打目标真实反击；SETS 随从与其他本地守卫保护玩家；使用真实伤害/武装冲突链。 |
+| Gangster / Bandit / Alley member | 原生 criminal/alley flow | 不被 SETS passive 或新阵营策略劫持。 |
+| SETS follower / 玩家保护成员 | 不可作为 opponent target | 保留友伤保护与玩家侧身份。 |
+
+### 3.4 随从武器保证
+
+武装准备现在按以下顺序执行：
+
+1. 从 `_cachedUnarmedConflictEquipment` 恢复武器。
+2. 清除敌我缓存、目标缓存和 AI weapon selection。
+3. `WieldInitialWeapons`。
+4. 如果仍未持握，逐槽寻找第一件真实武器并强制持握。
+5. 如果压根没有真实武器，SETS selected follower 也允许领取 fallback sword（不再受 occupation 限制）。
+6. armed conflict 期间每 0.5 秒对 player-side SETS follower 重试一次；SETS hostile defender conflict 的 1 秒维护 tick 与 owned massacre tick 也会重新保证武装状态。
+
+该维护只对 `selected follower + player side + armed conflict` 生效，不会在和平逛城时强制拔刀，也不会持续干预玩家本人手动收刀。
+
+## 4. 明确保留的旧行为
+
+- 普通自有地盘居民被直接攻击时仍可投降/逃跑；本次只把真正战斗人员从 passive path 分出去。
+- 外部/敌对定居点的守卫仍会在持械冲突中攻击玩家。
+- Alley/gangster/bandit 继续走原生犯罪冲突。
+- hostile SETS capture 的新 9-state core 仍是 shadow-only；`_conflictActive/_victoryReached/PendingSettlementVictoryMenuEntry` 仍是 live authority。
+- Noble captive escort 尚未开始；本次没有伪装成“SETS + noble 已完全融入 AF”。
+
+## 5. 测试、Verifier 与构建
+
+新增 `TestSetsCityConflictPolicy`，覆盖：
+
+- selected follower 即使被 escort detector 命中也必须是 player side；
+- 被直接攻击的本地士兵必须是 opponent；
+- 其他本地守卫必须保护玩家；
+- 外部守卫必须敌对；
+- 普通居民不进入全局 armed fight；
+- authority direct hit → armed；普通居民 → passive；criminal → existing native；
+- selected follower 只在 player-side armed conflict 获得武装维护；
+- 自己地盘带 SETS follower 的语言冲突升级为 armed support，外部地盘不改写既有升级规则。
+
+Verifier 新增纯策略存在性、镜像、运行时桥、双边互斥、随从武装、统治权判定和旁观者不全局敌对检查。
+
+本节落地后已执行：
+
+- GCCZ standalone tests：全部通过。
+- `verify_gccz_town_refactor.ps1`：通过；core source files = `182`。
+- NEW-10 Bannerlord API 1.3：0 warning / 0 error。
+- NEW-10 Bannerlord API 1.4：0 warning / 0 error。
+- Bootstrap：0 warning / 0 error。
+- unified stage：成功，输出 `G:\AFMOD\NEW-10\bin\Debug\single_module_stage\AnimusForge`。
+- Stage mode 明确未修改游戏目录。
+- `git diff --check`：通过；无 conflict marker。
+- 新纯策略双仓库 SHA256：一致。
+
+**仍未验证：真实游戏任务。** 编译、纯测试和字符串 verifier 不能证明 Bannerlord AI 最终会实际拔刀、寻敌、挥砍，也不能证明具体第三方 scene template 没有额外 Team/AI override。
+
+## 6. 必须执行的实机矩阵
+
+每项都从新进场景开始，不要复用上一场冲突残留：
+
+1. **玩家直辖城，直接空手打本地士兵**
+   - 被打士兵应拔刀/反击；
+   - SETS 随从应拔武器并站 player side；
+   - 其他本地守卫应保护玩家；
+   - 普通居民不应全部变红名敌军。
+2. **玩家直辖城，语言挑衅普通 NPC，带 3–5 名 SETS 随从**
+   - conflict 应升级为 armed support；
+   - selected followers 不得空手；
+   - active target 仍是 opponent，不得被本地归属规则吞掉。
+3. **玩家为国王，进入本国封臣领地重复 1/2**
+   - 结果应与玩家直辖城一致；这是本次“本族人也打我”口径修复的关键用例。
+4. **普通封臣进入同国另一封臣领地**
+   - 不应获得国王统治权保护；维持既有守卫敌对/犯罪后果。
+5. **外部/敌对城镇回归测试**
+   - 守卫仍敌对；SETS hostile capture 波次、TAB 阻断、胜利条件不得改变。
+6. **Alley gangster/bandit**
+   - 必须继续进入 native criminal/alley fight，不能进入 owned passive 或本地守卫保护分支。
+7. **普通居民直接受击**
+   - 仍可 hands-up/逃跑并产生 owned incident；不得因本次修复全部改成战士。
+8. **武器恢复压力测试**
+   - 先进入徒手冲突，再触发武装升级；确认 SETS follower 原装备恢复；
+   - 用一个原始装备无可用武器的普通兵测试 fallback sword；
+   - 查看 `SceneTaunt`/SETS 日志是否出现 side reassignment rejection、weapon readiness exception 或 shadow divergence。
+
+## 7. 提交与回滚
+
+- GCCZ code commit：`703ab8f` — `fix: define SETS city conflict allegiance policy`
+- NEW-10 runtime commit：`88c9f3f1` — `fix: arm SETS followers and preserve player-side guards`
+- 双仓库回滚标签：`backup/pre-sets-city-conflict-runtime-fix-20260828`
+  - GCCZ tag target：`354afe3c010c4ed1b1b376801790e6e09d409fee`
+  - NEW-10 tag target：`c4c3328d910faf3c6faad4b79a260966035368cc`
+
+安全回滚优先 `git revert 703ab8f` / `git revert 88c9f3f1`，不要 hard reset。NEW-10 当前 `ahead 10, behind 17`；未为本次修复 pull/rebase，也不要在未审计远端 17 个提交前直接合并。
+
+## 8. 下一阶段边界
+
+1. 先完成上面的实机矩阵并保存日志；失败时按“武器恢复 → Agent 双边 → Team 敌对关系 → MissionFightHandler 内部列表 → AI target”顺序回查，不要先扩大重构面。
+2. 实机通过后，才开始 hostile capture Slice B：让 9-state session 从 shadow comparison 逐点接管 conflict/victory/exit/ownership/menu decision，并在每删一个 legacy decision 后单独构建和实测。
+3. Noble captive escort 应在 Slice B 稳定后进入共享 participant registry/lease 方案；不要把贵族俘虏塞入 SETS 的 selected follower HashSet，也不要复用本地守卫 allegiance 规则冒充 noble escort 归属。
+4. 当前 C: 仅约 `2.82 GB` 空闲。继续全量构建或并行工具前需要关注磁盘，避免再次出现 `No space left on device`。
