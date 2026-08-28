@@ -1,4 +1,5 @@
 using System;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -9,6 +10,8 @@ namespace AnimusForge;
 public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 {
 	private static readonly TextObject CastleRequestMeetingDisabledText = new TextObject("AnimusForge 已禁用城堡中的“请求与某人会面”。");
+
+	private static string _lastExperimentalGuardFailureSettlementId;
 
 	private readonly SettlementAccessModel _inner;
 
@@ -47,11 +50,66 @@ public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 		bool result = _inner.IsRequestMeetingOptionAvailable(settlement, out disableOption, out disabledText);
 		if (result && !disableOption && ShouldDisableCastleRequestMeeting(settlement))
 		{
-			disableOption = true;
-			disabledText = CastleRequestMeetingDisabledText;
-			Logger.Log("SettlementAccess", "Disabled castle request meeting option. Settlement=" + (settlement?.StringId ?? "null"));
+			if (!CanSafelyEnableHostileCastleRequestMeeting(settlement))
+			{
+				disableOption = true;
+				disabledText = CastleRequestMeetingDisabledText;
+				Logger.Log("SettlementAccess", "Disabled castle request meeting option. Settlement=" + (settlement?.StringId ?? "null"));
+			}
 		}
 		return result;
+	}
+
+	private static bool CanSafelyEnableHostileCastleRequestMeeting(Settlement settlement)
+	{
+		if (!DuelSettings.IsHostileCastleNativeMeetingEnabled() || !IsHostileCastleForMainHero(settlement))
+		{
+			return false;
+		}
+		try
+		{
+			bool guardArmed = LordEncounterBehavior.IsNativeSettlementRequestMeetingContext();
+			if (!guardArmed)
+			{
+				string settlementId = settlement?.StringId ?? "null";
+				if (!string.Equals(_lastExperimentalGuardFailureSettlementId, settlementId, StringComparison.Ordinal))
+				{
+					_lastExperimentalGuardFailureSettlementId = settlementId;
+					Logger.Log("SettlementAccess", "Experimental hostile castle request meeting failed closed because the native meeting guard could not be armed. Settlement=" + settlementId);
+				}
+			}
+			else
+			{
+				_lastExperimentalGuardFailureSettlementId = null;
+			}
+			return guardArmed;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SettlementAccess", "Experimental hostile castle request meeting failed closed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsHostileCastleForMainHero(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.IsCastle != true)
+			{
+				return false;
+			}
+			IFaction playerFaction = Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.MapFaction;
+			IFaction settlementFaction = settlement.MapFaction ?? settlement.OwnerClan?.MapFaction;
+			return playerFaction != null
+				&& settlementFaction != null
+				&& FactionManager.IsAtWarAgainstFaction(settlementFaction, playerFaction);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SettlementAccess", "Failed to evaluate hostile castle request meeting guard: " + ex.Message);
+			return false;
+		}
 	}
 
 	private static bool ShouldDisableCastleRequestMeeting(Settlement settlement)
