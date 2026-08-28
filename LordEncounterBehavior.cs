@@ -322,12 +322,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+		ClearNativeSettlementRequestMeetingContext("session_launched");
 		AddGameMenus(starter);
 		AddConversationOptions(starter);
 	}
 
 	private void OnMissionEnded(IMission mission)
 	{
+		ClearNativeSettlementRequestMeetingContext("mission_ended");
 		bool flag = false;
 		bool flag12 = false;
 		bool flag13 = false;

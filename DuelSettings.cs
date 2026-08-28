@@ -1221,6 +1221,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = true;
 
+	[SettingPropertyBool("【实验】启用敌对城堡原版会面", Order = 3, RequireRestart = false, HintText = "默认关闭。开启后，仅当玩家正与敌对城堡发生聚落遭遇，并且 AnimusForge 已成功启用原版会面保护上下文时，恢复城门现场的“请求与某人会面”。任一安全检查失败都会继续保持禁用；敌对城镇、大地图远程 Parley 和普通领主遭遇不受此开关影响。保存后请重新进入城门菜单生效，建议测试时同时开启详细调试日志。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableHostileCastleNativeMeeting { get; set; } = false;
+
 	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableModLogicLog { get; set; } = true;
@@ -2292,6 +2296,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			return GetSettings()?.DisableBuiltInSceneReplyFormatPrompt ?? false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsHostileCastleNativeMeetingEnabled()
+	{
+		try
+		{
+			return GetSettings()?.EnableHostileCastleNativeMeeting ?? false;
 		}
 		catch
 		{
