@@ -9,7 +9,7 @@ public static class SiegeCastlePostprocessRuleCatalog
 {
     private const string AiSemanticContract = "【AF原生AI语义候选】本标签只是当前角色与状态下可用的能力；必须由AI结合完整玩家输入、NPC本轮直接回复和上下文决定是否输出，不得按固定关键词命中。";
 
-    private const string RevisableStageContract = "标签触发后只为本轮选中的数量与兵种登记暂定去向，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才逐组执行名册、金币与地方副作用。玩家未说明数量时由运行时随机选取，未说明兵种时随机选兵；说‘其余/剩下/全部’时使用当前未分配者。玩家同一句以明确数量和‘其余/剩下’划分多个去向时，可按分组顺序输出多个不同的普通战俘处置标签。明确说反悔、改判或全部重来时才清空幸存者旧计划，NPC必须记住前后变化。";
+    private const string RevisableStageContract = "标签触发后只为本轮选中的数量与兵种登记暂定去向，尚存战俘不会立即从场景或俘虏名册消失；玩家离场时才逐组执行名册、金币与地方副作用。玩家未说明数量时由运行时随机选取，未说明兵种时随机选兵；说‘其余/剩下/全部’时使用当前未分配者。玩家同一句以明确数量和‘其余/剩下’划分多个去向时，可按分组顺序输出多个不同的普通战俘处置标签。明确说反悔、全部重来或推翻之前安排时才清空幸存者旧计划；单独说‘改判为某处置’只登记当前新分组，不得清空其他分组，NPC必须记住前后变化。";
 
     private static readonly SiegePostprocessRuleDefinition SoldierDiscontentRule = Rule(
         SiegeCastleActionTagCatalog.SoldierDiscontentTag,
@@ -93,7 +93,7 @@ public static class SiegeCastlePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition SlaughterRule = Rule(
         SiegeCastleActionTagCatalog.SlaughterPrisonersTag,
-        "【普通战俘群体现行命令·高风险】只有玩家明确命令或明确同意本说话者此前提议时输出。命令会覆盖先前暂定处置，把尚存普通战俘转为敌对目标，由编队1的己方士兵在场景内实际攻击并杀死；死亡后才从名册扣除，绝不直接刷没。若玩家随后改判，停止攻击幸存者；已实际死亡者不可复活，新处置仅作用于幸存者。自动包含一次接收军械。退出仍只调用一次原版宽恕，再补齐城堡繁荣与忠诚至原版毁坏强度；领主不包含。");
+        "【普通战俘群体现行命令·高风险】只有玩家明确命令或明确同意本说话者此前提议时输出。命令会覆盖先前暂定处置，把尚存普通战俘转为敌对目标，由编队1的己方士兵在场景内实际攻击并杀死；死亡后才从名册扣除，绝不直接刷没。若玩家明确反悔或推翻屠戮命令，停止攻击幸存者；已实际死亡者不可复活，新处置仅作用于幸存者。自动包含一次接收军械。退出仍只调用一次原版宽恕，再补齐城堡繁荣与忠诚至原版毁坏强度；领主不包含。");
 
     private static readonly SiegePostprocessRuleDefinition AppeaseRule = Rule(
         SiegeCastleActionTagCatalog.AppeaseSoldiersTag,

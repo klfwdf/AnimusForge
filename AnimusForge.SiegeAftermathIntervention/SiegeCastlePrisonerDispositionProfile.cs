@@ -13,6 +13,12 @@ public static class SiegeCastlePrisonerDispositionProfile
 
     public const string NoMatchingRegularPrisonersReason = "no_matching_regular_prisoners";
 
+    public const string NoSellableRegularPrisonersReason = "no_sellable_regular_prisoners";
+
+    public const string UnsupportedDeferredTerminalActionReason = "unsupported_deferred_terminal_action";
+
+    public const string RemovedForReasonPrefix = "removed_for_";
+
     public const string RecruitedReason = "recruited";
 
     public const string SlaughteredReason = "slaughtered";
@@ -26,6 +32,59 @@ public static class SiegeCastlePrisonerDispositionProfile
     public static int ResolveRecruitCount(int availablePrisoners, int freePartySlots)
     {
         return Math.Min(Math.Max(0, availablePrisoners), Math.Max(0, freePartySlots));
+    }
+
+    public static int ResolveRemainingStagedRecruitCapacity(int currentFreePartySlots, int previouslyStagedRecruitCount)
+    {
+        return Math.Max(0, Math.Max(0, currentFreePartySlots) - Math.Max(0, previouslyStagedRecruitCount));
+    }
+
+    public static string BuildStagedRecruitCapacityWarning(
+        int currentFreePartySlots,
+        int previouslyStagedRecruitCount,
+        int currentGroupCount)
+    {
+        int freeSlots = Math.Max(0, currentFreePartySlots);
+        int previousCount = Math.Max(0, previouslyStagedRecruitCount);
+        int groupCount = Math.Max(0, currentGroupCount);
+        int remainingCapacity = ResolveRemainingStagedRecruitCapacity(freeSlots, previousCount);
+        if (groupCount <= remainingCapacity)
+        {
+            return string.Empty;
+        }
+
+        string previousPlan = previousCount > 0 ? "此前收编组已计划 " + previousCount + " 人，" : string.Empty;
+        return "【城堡处置】注意：按主队当前 " + freeSlots + " 个空余编制和暂存组执行顺序，"
+            + previousPlan + "本组离场时预计最多再收编 "
+            + remainingCapacity + " 人；超出部分将继续保持俘虏身份。";
+    }
+
+    public static string DescribeDeferredFailureReason(string reasonCode)
+    {
+        string normalized = (reasonCode ?? string.Empty).Trim();
+        switch (normalized)
+        {
+            case PartyCapacityFullReason:
+                return "主队编制已满";
+            case RosterUnavailableReason:
+                return "俘虏或部队名册不可用";
+            case NoMatchingRegularPrisonersReason:
+                return "名册中已无该分组可处理的普通战俘";
+            case NoSellableRegularPrisonersReason:
+                return "名册中已无该分组可出售的普通战俘";
+            case UnsupportedDeferredTerminalActionReason:
+                return "该暂存处置当前不受离场结算支持";
+        }
+
+        if (normalized.StartsWith(RemovedForReasonPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return "名册中已无该分组可处理的普通战俘";
+        }
+        if (IsExceptionReason(normalized))
+        {
+            return "结算执行时发生异常，详情已写入日志";
+        }
+        return "结算未生效，详情已写入日志";
     }
 
     public static int ResolveTransferredWounded(int stackCount, int stackWounded, int transferredCount)
