@@ -7,13 +7,19 @@ using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Core;
 
 namespace AnimusForge;
 
 public static class Patch_Conversation_Start_Intercept
 {
+	private static volatile bool _nativeConversationMissionArmPatchReady;
+
+	internal static bool IsNativeConversationMissionArmPatchReady => _nativeConversationMissionArmPatchReady;
+
 	public static void ManualPatch(Harmony harmony)
 	{
+		TryPatchNativeConversationMissionArm(harmony);
 		try
 		{
 			MethodInfo prefix = AccessTools.Method(typeof(Patch_Conversation_Start_Intercept), "Prefix");
@@ -34,6 +40,66 @@ public static class Patch_Conversation_Start_Intercept
 		catch (Exception ex)
 		{
 			Logger.LogTrace("System", "❌ 手动注册 Patch_Conversation_Start_Intercept 失败: " + ex.Message);
+		}
+	}
+
+	public static void PrefixOpenConversationMission(object[] __args)
+	{
+		try
+		{
+			if (__args == null || __args.Length < 2 || !(__args[1] is ConversationCharacterData conversationPartnerData))
+			{
+				return;
+			}
+			Hero target = conversationPartnerData.Character?.HeroObject;
+			if (LordEncounterBehavior.ArmNativeSettlementMeetingForMissionStart(target))
+			{
+				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Armed the exact native settlement conversation mission before CampaignMission.OpenConversationMission.");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Patch_Conversation_Start_Intercept", "Failed to arm native settlement conversation mission: " + ex.Message);
+		}
+	}
+
+	private static void TryPatchNativeConversationMissionArm(Harmony harmony)
+	{
+		_nativeConversationMissionArmPatchReady = false;
+		try
+		{
+			MethodInfo target = null;
+			foreach (MethodInfo method in AccessTools.GetDeclaredMethods(typeof(CampaignMission)))
+			{
+				ParameterInfo[] parameters = method.GetParameters();
+				if (method.IsStatic
+					&& method.Name == "OpenConversationMission"
+					&& method.ReturnType == typeof(IMission)
+					&& parameters.Length == 5
+					&& parameters[0].ParameterType == typeof(ConversationCharacterData)
+					&& parameters[1].ParameterType == typeof(ConversationCharacterData)
+					&& parameters[2].ParameterType == typeof(string)
+					&& parameters[3].ParameterType == typeof(string)
+					&& parameters[4].ParameterType == typeof(bool))
+				{
+					target = method;
+					break;
+				}
+			}
+			MethodInfo prefix = AccessTools.Method(typeof(Patch_Conversation_Start_Intercept), nameof(PrefixOpenConversationMission));
+			if (target == null || prefix == null)
+			{
+				Logger.LogTrace("System", "Native settlement conversation mission arm patch failed closed because CampaignMission.OpenConversationMission was not found.");
+				return;
+			}
+			harmony.Patch(target, new HarmonyMethod(prefix));
+			_nativeConversationMissionArmPatchReady = true;
+			Logger.LogTrace("System", "Native settlement conversation mission arm patch installed.");
+		}
+		catch (Exception ex)
+		{
+			_nativeConversationMissionArmPatchReady = false;
+			Logger.LogTrace("System", "Native settlement conversation mission arm patch failed closed: " + ex.Message);
 		}
 	}
 
