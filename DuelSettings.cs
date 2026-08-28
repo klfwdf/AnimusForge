@@ -747,9 +747,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortLow);
 
-	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortNone);
+	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortLow);
 
-	private Dropdown<string> _actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortNone);
+	private Dropdown<string> _actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortLow);
 
 	private Dropdown<string> _eventAndRebellionApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
 
@@ -919,7 +919,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public string MainApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 none/minimal/low/medium/high/xhigh/max。YJ Gemini 使用原值发送；其他兼容接口保留原有映射。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public Dropdown<string> MainApiReasoningEffortDropdown
 	{
@@ -1688,9 +1688,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
-	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortNone;
+	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 none/minimal/low/medium/high/xhigh/max。YJ Gemini 使用原值发送；其他兼容接口保留原有映射。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public Dropdown<string> AuxiliaryApiReasoningEffortDropdown
 	{
@@ -1761,11 +1761,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
-	public bool ActionPostprocessApiThinkingEnabled { get; set; } = true;
+	public bool ActionPostprocessApiThinkingEnabled { get; set; } = false;
 
-	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortNone;
+	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortLow;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 none/minimal/low/medium/high/xhigh/max。YJ Gemini 使用原值发送；其他兼容接口保留原有映射。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Dropdown<string> ActionPostprocessApiReasoningEffortDropdown
 	{
@@ -1844,7 +1844,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
-	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 none/minimal/low/medium/high/xhigh/max。YJ Gemini 使用原值发送；其他兼容接口保留原有映射。")]
+	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 minimal/low/medium/high/xhigh/max。关闭“开启思维链”即可关闭思考；YJ Gemini 使用原值发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Dropdown<string> EventAndRebellionApiReasoningEffortDropdown
 	{
@@ -5678,7 +5678,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			ReasoningEffortHigh,
 			ReasoningEffortXHigh,
 			ReasoningEffortMax,
-			ReasoningEffortNone,
 			ReasoningEffortMinimal
 		};
 	}
