@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AnimusForge.SiegeAftermathIntervention;
 using HarmonyLib;
 using SandBox;
 using SandBox.BoardGames.MissionLogics;
@@ -2426,6 +2427,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool _armedConflict;
 
+	private float _nextSetsFollowerArmedReadinessMissionTime;
+
 	private bool _sceneAttackReleaseSuppressed;
 
 	private bool _playerAttackReleasePrimed;
@@ -2692,6 +2695,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		TryMaintainHostileUnarmedOpponentsFleeing();
 		LogPerfElapsed("tick.TryMaintainHostileUnarmedOpponentsFleeing", sectionStart, $"dt={dt:0.####}");
 		TryMaintainMainAgentArmedPresence();
+		TryMaintainSetsSelectedFollowerArmedReadiness();
 		sectionStart = StartPerfTimer();
 		TryMaintainArmedBystanderReactions();
 		LogPerfElapsed("tick.TryMaintainArmedBystanderReactions", sectionStart, $"dt={dt:0.####}");
@@ -3082,7 +3086,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			Settlement settlement = GetCurrentSettlementForOwnedSettlementPassiveAttack();
-			if (settlement == null || Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
+			if (settlement == null || !SettlementEntryTroopSelectionBehavior.IsPlayerAuthoritySettlementForExternal(settlement))
 			{
 				return false;
 			}
@@ -3229,15 +3233,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return false;
 		}
-		CharacterObject characterObject = targetAgent.Character as CharacterObject;
 		if (IsPlayerProtectedSceneAttackAgent(targetAgent))
 		{
 			return false;
 		}
-		// Every damageable town/village target needs a hostile-team conversion first. This passive
-		// branch handles ordinary NPCs; gangsters/bandits are excluded so the existing criminal
-		// conflict flow can do the required team conversion and preserve its normal consequences.
-		return !IsSettlementCriminalConflictTarget(characterObject?.HeroObject, characterObject);
+		return ResolveOwnedSettlementAttackRouting(targetAgent) == SetsOwnedSettlementAttackRouting.PassiveSurrender;
 	}
 
 	private void PrimeOwnedSettlementPassiveAttackTarget(Agent targetAgent, string reason)
@@ -5467,7 +5467,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		Agent agent = ResolveTargetAgent(targetHero, targetCharacter, targetAgentIndex);
-		return agent != null && agent.IsHuman && agent.IsActive() && !IsSetsSelectedEntryFollower(agent);
+		return agent != null && agent.IsHuman && agent.IsActive() && !IsPlayerAlignedConflictAgent(agent);
 	}
 
 	private bool ShouldPrioritizeUnarmedVillageBrawlOverSets(Agent attacker, Agent target, bool attackerUsedRealWeapon)
@@ -5564,13 +5564,29 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			List<Agent> list = CollectPlayerSideAgents();
 			List<Agent> list2 = CollectOpponentSideAgents(agent);
 			List<Agent> list3 = flag4 ? new List<Agent>() : CollectGuardAgents(list, list2);
+			bool selectedFollowerArmedSupport = SetsCityConflictPolicy.ShouldEscalateForSelectedFollowerSupport(
+				settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
+				hasSelectedEntryFollower: list.Any(IsSetsSelectedEntryFollower));
 			LogPerfElapsed("startConflict.collectSides", sectionStart, $"player={list.Count} opponents={list2.Count} guards={list3.Count}");
 			if (flag)
 			{
 				foreach (Agent item in list3)
 				{
-					AddUniqueAgent(list2, item);
+					SetsCityConflictSide guardSide = ResolveCityConflictSide(item, agent, isTargetEscort: false, armedConflict: true);
+					if (guardSide == SetsCityConflictSide.Player)
+					{
+						AddUniqueAgent(list, item);
+					}
+					else if (guardSide == SetsCityConflictSide.Opponent)
+					{
+						AddUniqueAgent(list2, item);
+					}
 				}
+			}
+			if (!NormalizeInitialConflictSides(list, list2, agent))
+			{
+				Logger.Log("SceneTaunt", $"Rejected conflict with ambiguous or missing active opponent. Target={agent.Name}, TargetIndex={agent.Index}");
+				return false;
 			}
 			_conflictActive = true;
 			_armedConflict = false;
@@ -5602,7 +5618,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			foreach (Agent item4 in list3)
 			{
 				_guardAgentIndices.Add(item4.Index);
-				RegisterSceneGoldEligibleAgent(item4, "start_conflict_guard");
+				if (!list.Contains(item4))
+				{
+					RegisterSceneGoldEligibleAgent(item4, "start_conflict_guard");
+				}
 			}
 			sectionStart = StartPerfTimer();
 			_fightHandler.StartCustomFight(list, list2, dropWeapons: false, isItemUseDisabled: false, OnConflictFinished, float.Epsilon);
@@ -5626,6 +5645,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			else if (flag)
 			{
 				EscalateToArmedConflict("player_already_wielding", flag6);
+			}
+			else if (selectedFollowerArmedSupport)
+			{
+				EscalateToArmedConflict("sets_owned_settlement_follower_support", flag6);
 			}
 			else
 			{
@@ -6051,8 +6074,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 			bool flag4 = IsAgentCarryingRealWeapon(agent);
 			bool flag5 = IsSettlementCriminalConflictTarget(hero, characterObject);
+			bool flag6 = IsCurrentSettlementControlledByPlayer();
 			string factText;
-			if (flag3)
+			if (flag6)
+			{
+				factText = flag2 || flag3
+					? "经过交流，你和" + text + "在他的领地内彻底爆发冲突；你拔出武器反击，而他的随行士兵和其他本地守卫开始保护他"
+					: "经过交流，你和" + text + "在他的领地内爆发冲突；他的随行士兵拔出武器支援他，你被迫应战";
+			}
+			else if (flag3)
 			{
 				factText = "经过交流，你和" + text + "彻底撕破了脸，你身边的士兵立刻拔出武器开始围剿他";
 			}
@@ -6118,6 +6148,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		bool flag2 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 		bool flag3 = SceneTauntBehavior.IsSoldierSceneTauntTarget(characterObject);
 		bool flag4 = IsSettlementCriminalConflictTarget(hero, characterObject);
+		if (IsCurrentSettlementControlledByPlayer())
+		{
+			return text + "在自己的领地内与人爆发了持械冲突；冲突对象进行反击，其他本地守卫和随行士兵保护领主";
+		}
 		if (_openedFromVerbalTaunt)
 		{
 			if (flag2 || flag3)
@@ -6970,6 +7004,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	internal static bool IsAuthorityPhysicalAttackTargetForExternal(Agent targetAgent)
+	{
+		CharacterObject targetCharacter = targetAgent?.Character as CharacterObject;
+		return IsAuthorityPhysicalAttackTarget(targetCharacter?.HeroObject, targetCharacter);
+	}
+
 	private static bool IsSettlementCriminalConflictTarget(Hero targetHero, CharacterObject targetCharacter)
 	{
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
@@ -6993,6 +7033,38 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		case Occupation.Bandit:
 			return true;
 		default:
+			return false;
+		}
+	}
+
+	internal static bool IsSettlementCriminalConflictTargetForExternal(Agent targetAgent)
+	{
+		CharacterObject targetCharacter = targetAgent?.Character as CharacterObject;
+		return IsSettlementCriminalConflictTarget(targetCharacter?.HeroObject, targetCharacter);
+	}
+
+	private static SetsOwnedSettlementAttackRouting ResolveOwnedSettlementAttackRouting(Agent targetAgent)
+	{
+		return SetsCityConflictPolicy.ResolveOwnedAttackRouting(
+			settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
+			isSettlementAuthority: IsAuthorityPhysicalAttackTargetForExternal(targetAgent),
+			isCriminalConflictTarget: IsSettlementCriminalConflictTargetForExternal(targetAgent));
+	}
+
+	internal static bool ShouldUseOwnedSettlementPassiveAttackForExternal(Agent targetAgent)
+	{
+		return ResolveOwnedSettlementAttackRouting(targetAgent) == SetsOwnedSettlementAttackRouting.PassiveSurrender;
+	}
+
+	private static bool IsCurrentSettlementControlledByPlayer()
+	{
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			return SettlementEntryTroopSelectionBehavior.IsPlayerAuthoritySettlementForExternal(settlement);
+		}
+		catch
+		{
 			return false;
 		}
 	}
@@ -7168,37 +7240,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				foreach (Agent agent in agents)
 				{
-					if (agent == null || !agent.IsHuman || !agent.IsActive())
-					{
-						continue;
-					}
-					if (agent == Agent.Main)
+					if (IsPlayerAlignedConflictAgent(agent))
 					{
 						AddUniqueAgent(list, agent);
-						continue;
-					}
-					if (IsSetsSelectedEntryFollower(agent))
-					{
-						AddUniqueAgent(list, agent);
-						continue;
-					}
-					Hero hero = (agent.Character as CharacterObject)?.HeroObject;
-					if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
-					{
-						AddUniqueAgent(list, agent);
-						continue;
-					}
-					try
-					{
-						LocationCharacter locationCharacter = LocationComplex.Current?.FindCharacter(agent);
-						AccompanyingCharacter accompanyingCharacter = PlayerEncounter.LocationEncounter?.GetAccompanyingCharacter(locationCharacter);
-						if (accompanyingCharacter != null && accompanyingCharacter.IsFollowingPlayerAtMissionStart)
-						{
-							AddUniqueAgent(list, agent);
-						}
-					}
-					catch
-					{
 					}
 				}
 			}
@@ -7213,6 +7257,33 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return list;
 	}
 
+	private static bool IsPlayerAlignedConflictAgent(Agent agent)
+	{
+		try
+		{
+			if (agent == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return false;
+			}
+			if (agent == Agent.Main || IsSetsSelectedEntryFollower(agent) || IsPlayerProtectedSceneAttackAgent(agent))
+			{
+				return true;
+			}
+			Hero hero = (agent.Character as CharacterObject)?.HeroObject;
+			if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
+			{
+				return true;
+			}
+			LocationCharacter locationCharacter = LocationComplex.Current?.FindCharacter(agent);
+			AccompanyingCharacter accompanyingCharacter = PlayerEncounter.LocationEncounter?.GetAccompanyingCharacter(locationCharacter);
+			return accompanyingCharacter != null && accompanyingCharacter.IsFollowingPlayerAtMissionStart;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private List<Agent> CollectOpponentSideAgents(Agent targetAgent)
 	{
 		List<Agent> list = new List<Agent>();
@@ -7222,6 +7293,19 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			AddUniqueAgent(list, escortedFollower);
 		}
 		return list;
+	}
+
+	private static bool NormalizeInitialConflictSides(List<Agent> playerSideAgents, List<Agent> opponentSideAgents, Agent activeTarget)
+	{
+		if (playerSideAgents == null || opponentSideAgents == null || activeTarget == null)
+		{
+			return false;
+		}
+		HashSet<int> playerIndices = new HashSet<int>(playerSideAgents
+			.Where(agent => agent != null)
+			.Select(agent => agent.Index));
+		opponentSideAgents.RemoveAll(agent => agent == null || playerIndices.Contains(agent.Index));
+		return opponentSideAgents.Any(agent => agent == activeTarget);
 	}
 
 	private List<Agent> CollectEscortedFollowers(Agent targetAgent)
@@ -7240,11 +7324,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			foreach (Agent agent in agents)
 			{
-				if (agent == null || agent == targetAgent || !agent.IsHuman || !agent.IsActive())
+				if (agent == null || agent == targetAgent || !agent.IsHuman || !agent.IsActive() || IsPlayerAlignedConflictAgent(agent))
 				{
 					continue;
 				}
-				if (EscortAgentBehavior.CheckIfAgentIsEscortedBy(agent, targetAgent))
+				if (EscortAgentBehavior.CheckIfAgentIsEscortedBy(agent, targetAgent)
+					&& ResolveCityConflictSide(agent, targetAgent, isTargetEscort: true, armedConflict: _armedConflict) == SetsCityConflictSide.Opponent)
 				{
 					AddUniqueAgent(list, agent);
 				}
@@ -7305,6 +7390,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			var agents = Mission.Current?.Agents;
+			bool settlementControlledByPlayer = IsCurrentSettlementControlledByPlayer();
 			if (agents == null)
 			{
 				return list;
@@ -7319,6 +7405,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				Hero hero = characterObject?.HeroObject;
 				if (!IsCarryoverAuthorityOpponent(hero, characterObject))
 				{
+					continue;
+				}
+				if (settlementControlledByPlayer)
+				{
+					if (IsGuardLikeCharacter(characterObject))
+					{
+						AddUniqueAgent(playerSideAgents, agent);
+						AddUniqueAgent(guardAgents, agent);
+					}
 					continue;
 				}
 				AddUniqueAgent(list, agent);
@@ -7358,6 +7453,21 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		default:
 			return false;
 		}
+	}
+
+	private static SetsCityConflictSide ResolveCityConflictSide(
+		Agent agent,
+		Agent activeTarget,
+		bool isTargetEscort,
+		bool armedConflict)
+	{
+		return SetsCityConflictPolicy.ResolveSide(
+			settlementControlledByPlayer: IsCurrentSettlementControlledByPlayer(),
+			isSelectedEntryFollower: IsSetsSelectedEntryFollower(agent),
+			isActiveTarget: agent != null && agent == activeTarget,
+			isTargetEscort: isTargetEscort,
+			isSettlementAuthority: IsAuthorityPhysicalAttackTargetForExternal(agent),
+			armedConflict: armedConflict);
 	}
 
 	private void TryActivateSettlementArmedCarryover()
@@ -7457,6 +7567,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				}
 			}
 			LogPerfElapsed("carryover.armConflictAgents", sectionStart, $"processed={conflictAgents}");
+			TryMaintainSetsSelectedFollowerArmedReadiness();
 			sectionStart = StartPerfTimer();
 			ForceAllNonPlayerSceneAgentsMortal();
 			LogPerfElapsed("carryover.forceAllMortal", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
@@ -7899,6 +8010,35 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	private void TryMaintainSetsSelectedFollowerArmedReadiness()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (!_conflictActive || !_armedConflict || mission?.Agents == null || mission.CurrentTime < _nextSetsFollowerArmedReadinessMissionTime)
+			{
+				return;
+			}
+			_nextSetsFollowerArmedReadinessMissionTime = mission.CurrentTime + 0.5f;
+			foreach (Agent agent in mission.Agents)
+			{
+				if (!SetsCityConflictPolicy.ShouldEnsureArmedReadiness(
+						isSelectedEntryFollower: IsSetsSelectedEntryFollower(agent),
+						side: _playerAgentIndices.Contains(agent?.Index ?? -1) ? SetsCityConflictSide.Player : SetsCityConflictSide.None,
+						armedConflict: true))
+				{
+					continue;
+				}
+				TryRestoreWeaponsAfterUnarmedConflict(agent);
+				EnsureSetsFollowerArmedCombatReadyForExternal(agent);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Maintaining SETS follower armed readiness failed: " + ex.Message);
+		}
+	}
+
 	private void TryStripWeaponsForUnarmedConflict(Agent agent)
 	{
 		try
@@ -8049,17 +8189,28 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		SceneTauntBehavior.MarkArmedCarryoverForCurrentSettlement(reason);
 		_blockedAiWeaponAgentIndices.Clear();
 		long sectionStart = StartPerfTimer();
-		int guardAdds = 0;
+		int playerGuardAdds = 0;
+		int opponentGuardAdds = 0;
+		Agent activeTarget = Mission.Current?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == _activeTargetAgentIndex);
 		foreach (int guardAgentIndex in _guardAgentIndices.ToList())
 		{
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent x) => x != null && x.Index == guardAgentIndex);
 			if (agent != null && agent.IsActive())
 			{
-				AddAgentToFightSide(agent, isPlayerSide: false);
-				guardAdds++;
+				SetsCityConflictSide guardSide = ResolveCityConflictSide(agent, activeTarget, isTargetEscort: false, armedConflict: true);
+				if (guardSide == SetsCityConflictSide.Player)
+				{
+					AddAgentToFightSide(agent, isPlayerSide: true);
+					playerGuardAdds++;
+				}
+				else if (guardSide == SetsCityConflictSide.Opponent)
+				{
+					AddAgentToFightSide(agent, isPlayerSide: false);
+					opponentGuardAdds++;
+				}
 			}
 		}
-		LogPerfElapsed("escalate.addGuards", sectionStart, $"guardAdds={guardAdds} guardIndexCount={_guardAgentIndices.Count}");
+		LogPerfElapsed("escalate.addGuards", sectionStart, $"playerGuardAdds={playerGuardAdds} opponentGuardAdds={opponentGuardAdds} guardIndexCount={_guardAgentIndices.Count}");
 		sectionStart = StartPerfTimer();
 		int conflictAgents = 0;
 		foreach (Agent agent2 in EnumerateConflictAgents(includeGuards: true))
@@ -8074,6 +8225,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			TryArmAgent(agent2);
 		}
 		LogPerfElapsed("escalate.armConflictAgents", sectionStart, $"processed={conflictAgents}");
+		TryMaintainSetsSelectedFollowerArmedReadiness();
 		sectionStart = StartPerfTimer();
 		TryConvertUnarmedCivilianOpponentsToFleeingBystanders();
 		LogPerfElapsed("escalate.convertUnarmedOpponents", sectionStart);
@@ -8100,9 +8252,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_openedAsUnarmedBrawl = false;
 		if (!suppressAnnouncement)
 		{
-			AnimusForgeQuickInfo.Show("持械冲突爆发，守卫开始敌视你和你的同伴。");
+			AnimusForgeQuickInfo.Show(IsCurrentSettlementControlledByPlayer()
+				? "持械冲突爆发，你的随行士兵和本地守卫开始保护你。"
+				: "持械冲突爆发，守卫开始敌视你和你的同伴。");
 		}
-		Logger.Log("SceneTaunt", $"Escalated scene conflict to armed combat. Reason={reason}, Target={_activeTargetName}, Guards={_guardAgentIndices.Count}");
+		Logger.Log("SceneTaunt", $"Escalated scene conflict to armed combat. Reason={reason}, Target={_activeTargetName}, PlayerGuards={playerGuardAdds}, OpponentGuards={opponentGuardAdds}");
 		LogPerfPoint("escalate.end", $"reason={reason ?? "N/A"} elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 	}
 
@@ -8309,6 +8463,35 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
+			if (!isPlayerSide && IsSetsSelectedEntryFollower(agent))
+			{
+				Logger.Log("SceneTaunt", $"Redirected SETS selected follower away from opponent side. Agent={agent.Name}, AgentIndex={agent.Index}");
+				isPlayerSide = true;
+			}
+			if (isPlayerSide)
+			{
+				if (_opponentAgentIndices.Contains(agent.Index) && !TryRemoveAgentFromOpponentFightSide(agent))
+				{
+					Logger.Log("SceneTaunt", $"Rejected ambiguous side reassignment because opponent removal failed. Agent={agent.Name}, AgentIndex={agent.Index}");
+					return;
+				}
+				if (_playerAgentIndices.Contains(agent.Index))
+				{
+					return;
+				}
+			}
+			else
+			{
+				if (_playerAgentIndices.Contains(agent.Index))
+				{
+					Logger.Log("SceneTaunt", $"Rejected attempt to move player-side agent to opponent side. Agent={agent.Name}, AgentIndex={agent.Index}");
+					return;
+				}
+				if (_opponentAgentIndices.Contains(agent.Index))
+				{
+					return;
+				}
+			}
 			ReleaseArmedBystanderWatcher(agent);
 			Team team = agent.Team;
 			_fightHandler.AddAgentToSide(agent, isPlayerSide);
@@ -8317,10 +8500,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (isPlayerSide)
 			{
 				_playerAgentIndices.Add(agent.Index);
+				_opponentAgentIndices.Remove(agent.Index);
+				_sceneGoldEligibleAgentIndices.Remove(agent.Index);
 			}
 			else
 			{
 				_opponentAgentIndices.Add(agent.Index);
+				_playerAgentIndices.Remove(agent.Index);
 				RegisterSceneGoldEligibleAgent(agent, "add_to_opponent_side");
 			}
 		}
@@ -8780,6 +8966,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsCurrentSettlementControlledByPlayer())
+			{
+				return false;
+			}
 			if (SceneTauntBehavior.IsChildSceneProtectedTarget(agent.Character as CharacterObject))
 			{
 				return false;
@@ -9233,6 +9423,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		if (!IsAgentUsingRealWeapon(agent))
 		{
+			TryWieldFirstCarriedRealWeapon(agent);
+		}
+		if (!IsAgentCarryingRealWeapon(agent))
+		{
 			TryGiveFallbackSoldierWeapon(agent);
 		}
 		try
@@ -9242,6 +9436,47 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+	}
+
+	private static void TryWieldFirstCarriedRealWeapon(Agent agent)
+	{
+		try
+		{
+			for (EquipmentIndex slot = EquipmentIndex.WeaponItemBeginSlot; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+			{
+				if (!IsMissionWeaponRealWeapon(agent.Equipment[slot]))
+				{
+					continue;
+				}
+				agent.TryToWieldWeaponInSlot(slot, Agent.WeaponWieldActionType.Instant, false);
+				if (IsAgentUsingRealWeapon(agent))
+				{
+					return;
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	internal static void EnsureSetsFollowerArmedCombatReadyForExternal(Agent agent)
+	{
+		if (agent == null || !agent.IsHuman || !agent.IsActive() || !IsSetsSelectedEntryFollower(agent))
+		{
+			return;
+		}
+		try
+		{
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+		}
+		catch
+		{
+		}
+		TryAlarmAgent(agent);
+		TryArmAgent(agent);
 	}
 
 	private static void TryGiveFallbackSoldierWeapon(Agent agent)
@@ -9280,6 +9515,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (agent == null || !agent.IsActive() || agent.IsMount)
 			{
 				return false;
+			}
+			if (IsSetsSelectedEntryFollower(agent))
+			{
+				return true;
 			}
 			CharacterObject characterObject = agent.Character as CharacterObject;
 			if (characterObject == null)
@@ -9465,6 +9704,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		RestoreAllCachedWeapons();
 		_conflictActive = false;
 		_armedConflict = false;
+		_nextSetsFollowerArmedReadinessMissionTime = 0f;
 		_baseConsequencesApplied = false;
 		_appliedCrimeRatingAmount = 0f;
 		_activeTargetKey = "";

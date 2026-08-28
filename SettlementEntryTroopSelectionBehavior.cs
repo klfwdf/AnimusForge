@@ -2292,6 +2292,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool IsPlayerAuthoritySettlementForExternal(Settlement settlement)
+	{
+		return IsOwnEntrySettlement(settlement);
+	}
+
 	private static bool TryFindRosterElement(TroopRoster roster, CharacterObject character, out TroopRosterElement element)
 	{
 		if (roster != null && character != null)
@@ -3005,7 +3010,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			if (_conflictFeaturesEnabled && _isOwnSettlement)
 			{
-				if (!_ownedSettlementIncidentTriggered && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentTarget(affectedAgent))
+				if (!_ownedSettlementIncidentTriggered
+					&& IsPlayerSideAgent(affectorAgent)
+					&& !IsPlayerSideAgent(affectedAgent)
+					&& ShouldHandlePhysicalAttack(
+						affectorAgent,
+						affectedAgent,
+						SceneTauntMissionBehavior.IsMissionWeaponRealWeaponForExternal(in attackerWeapon)))
 				{
 					StartOwnedSettlementIncident("player_side_hit_owned_settlement", affectedAgent);
 				}
@@ -3049,7 +3060,12 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentTarget(affectedAgent))
+			if (IsPlayerSideAgent(affectorAgent)
+				&& !IsPlayerSideAgent(affectedAgent)
+				&& ShouldHandlePhysicalAttack(
+					affectorAgent,
+					affectedAgent,
+					SceneTauntMissionBehavior.IsWeaponComponentRealWeaponForExternal(attackerWeapon)))
 			{
 				StartOwnedSettlementIncident("player_side_score_hit_owned_settlement", affectedAgent);
 			}
@@ -3238,7 +3254,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			if (_isOwnSettlement)
 			{
-				return IsOwnedSettlementIncidentTarget(target);
+				return IsOwnedSettlementIncidentTarget(target)
+					&& SceneTauntMissionBehavior.ShouldUseOwnedSettlementPassiveAttackForExternal(target);
 			}
 			if (_victoryReached)
 			{
@@ -3452,6 +3469,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 						if (_conflictActive && _alliedAgentIndexes.Contains(agent.Index))
 						{
 							agent.SetWatchState(Agent.WatchState.Alarmed);
+							SceneTauntMissionBehavior.EnsureSetsFollowerArmedCombatReadyForExternal(agent);
 							if (agent.Formation == null)
 							{
 								AssignAgentToFormation(agent, _playerTeam, ResolveSetsFollowerFormationClass(agent.Character as CharacterObject));
@@ -3516,12 +3534,38 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					agent.InvalidateTargetAgent();
 					AgentSetAutomaticTargetSelectionMethod?.Invoke(agent, new object[] { true });
 					agent.SetWatchState(Agent.WatchState.Alarmed);
+				}
+				readied = EnsurePlayerEntryFollowersArmedCombatReady();
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("ReadyPlayerEntryFollowersForConflict failed. error=" + ex.Message);
+			}
+			return readied;
+		}
+
+		private int EnsurePlayerEntryFollowersArmedCombatReady()
+		{
+			int readied = 0;
+			try
+			{
+				if (base.Mission?.Agents == null)
+				{
+					return 0;
+				}
+				foreach (Agent agent in base.Mission.Agents)
+				{
+					if (agent == null || !agent.IsHuman || !agent.IsActive() || !_alliedAgentIndexes.Contains(agent.Index))
+					{
+						continue;
+					}
+					SceneTauntMissionBehavior.EnsureSetsFollowerArmedCombatReadyForExternal(agent);
 					readied++;
 				}
 			}
 			catch (Exception ex)
 			{
-				SettlementEntryTroopSelectionLog.Log("ReadyPlayerEntryFollowersForConflict failed. error=" + ex.Message);
+				SettlementEntryTroopSelectionLog.Log("Ensure player entry followers armed combat ready failed. error=" + ex.Message);
 			}
 			return readied;
 		}
@@ -3773,6 +3817,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_ownedSettlementMassacreCompleted = false;
 				_ownedSettlementMassacreActive = true;
 				fightHandler.StartCustomFight(playerSide, targets, dropWeapons: false, isItemUseDisabled: false, OnOwnedSettlementMassacreFightEnded, float.Epsilon);
+				EnsurePlayerEntryFollowersArmedCombatReady();
 				MaintainOwnedSettlementMassacre(force: true);
 				InformationManager.DisplayMessage(new InformationMessage(
 					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count),
@@ -3902,6 +3947,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					return;
 				}
 				KeepPlayerEntryFollowersCommandable(refreshFormation: false);
+				EnsurePlayerEntryFollowersArmedCombatReady();
 				int fleeing = 0;
 				foreach (Agent target in mission.Agents.ToList())
 				{
