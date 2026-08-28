@@ -6739,7 +6739,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			PolicyId = policyId,
 			ActorHeroId = Hero.MainHero?.StringId ?? string.Empty,
-			ActorClanId = Clan.PlayerClan?.StringId ?? string.Empty,
+			ActorClanId = Campaign.Current != null ? Clan.PlayerClan?.StringId ?? string.Empty : string.Empty,
 			IssuerKingdomId = request?.IssuerKingdomId ?? string.Empty,
 			TargetKingdomId = request?.PlayerKingdomId ?? string.Empty,
 			AuthorizedCrossKingdomIds = targetAuthorization.ExplicitCrossKingdomIds.ToArray(),
