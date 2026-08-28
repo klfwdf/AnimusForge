@@ -71,6 +71,9 @@ internal static class NoblePrisonerExecutionRuntime
 
 	private static PendingExecution _pending;
 	private static int _nextToken;
+	private static Mission _isolationTeamMission;
+	private static Team _isolationActorTeam;
+	private static Team _isolationPrisonerTeam;
 
 	internal static bool ControlsAgent(Agent agent)
 	{
@@ -236,6 +239,9 @@ internal static class NoblePrisonerExecutionRuntime
 			Abort(_pending, source ?? "reset", false, true);
 		}
 		_nextToken = 0;
+		_isolationTeamMission = null;
+		_isolationActorTeam = null;
+		_isolationPrisonerTeam = null;
 	}
 
 	private static PendingExecution CreatePending(
@@ -348,9 +354,7 @@ internal static class NoblePrisonerExecutionRuntime
 			{
 				pending.Mission.SetMissionMode(MissionMode.Battle, atStart: false);
 			}
-			pending.ActorTeam = pending.Mission.Teams.Add(BattleSideEnum.Attacker, 0xFF305080u, 0xFF305080u, null, false, false);
-			pending.PrisonerTeam = pending.Mission.Teams.Add(BattleSideEnum.Defender, 0xFF7A2020u, 0xFF7A2020u, null, false, false);
-			if (pending.ActorTeam == null || pending.PrisonerTeam == null || pending.ActorTeam == pending.PrisonerTeam)
+			if (!TryGetIsolationTeams(pending.Mission, out pending.ActorTeam, out pending.PrisonerTeam))
 			{
 				reason = "execution_team_setup_failed";
 				return false;
@@ -373,6 +377,29 @@ internal static class NoblePrisonerExecutionRuntime
 			NoblePrisonerEscortLog.Log("Begin consented execution failed: " + ex);
 			return false;
 		}
+	}
+
+	private static bool TryGetIsolationTeams(Mission mission, out Team actorTeam, out Team prisonerTeam)
+	{
+		actorTeam = null;
+		prisonerTeam = null;
+		if (mission == null || mission.IsMissionEnding)
+		{
+			return false;
+		}
+		if (!ReferenceEquals(_isolationTeamMission, mission)
+			|| _isolationActorTeam == null
+			|| _isolationPrisonerTeam == null
+			|| !mission.Teams.Contains(_isolationActorTeam)
+			|| !mission.Teams.Contains(_isolationPrisonerTeam))
+		{
+			_isolationTeamMission = mission;
+			_isolationActorTeam = mission.Teams.Add(BattleSideEnum.Attacker, 0xFF305080u, 0xFF305080u, null, false, false);
+			_isolationPrisonerTeam = mission.Teams.Add(BattleSideEnum.Defender, 0xFF7A2020u, 0xFF7A2020u, null, false, false);
+		}
+		actorTeam = _isolationActorTeam;
+		prisonerTeam = _isolationPrisonerTeam;
+		return actorTeam != null && prisonerTeam != null && actorTeam != prisonerTeam;
 	}
 
 	private static void TickAttack(PendingExecution pending)
