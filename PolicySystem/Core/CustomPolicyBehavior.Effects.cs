@@ -6551,6 +6551,10 @@ public sealed partial class CustomPolicyBehavior
 				authorization.ExplicitCrossKingdomIds,
 				preserveLegacyCrossKingdoms: false,
 				failOnUnauthorized: true,
+				ownerKingdomResolver: (targetKind, targetId) => ResolvePolicyEffectOwnerKingdomIdFromSnapshot(
+					request?.SemanticTargetSnapshot,
+					targetKind,
+					targetId),
 				out canonicalTargetSet,
 				out targetError))
 			{
@@ -6564,6 +6568,32 @@ public sealed partial class CustomPolicyBehavior
 			};
 			return true;
 		};
+	}
+
+	private static string ResolvePolicyEffectOwnerKingdomIdFromSnapshot(
+		PolicyTargetWorldSnapshot snapshot,
+		PolicyEffectTargetKind targetKind,
+		string targetId)
+	{
+		string normalizedId = (targetId ?? string.Empty).Trim();
+		if (normalizedId.Length == 0)
+		{
+			return string.Empty;
+		}
+		if (targetKind == PolicyEffectTargetKind.Kingdom)
+		{
+			return normalizedId;
+		}
+		string expectedEntityKind = targetKind == PolicyEffectTargetKind.Clan
+			? PolicyTargetEntityKinds.Clan
+			: targetKind == PolicyEffectTargetKind.Hero
+				? PolicyTargetEntityKinds.Ruler
+				: PolicyTargetEntityKinds.Settlement;
+		PolicyTargetEntitySnapshot entity = (snapshot?.Entities ?? Array.Empty<PolicyTargetEntitySnapshot>())
+			.FirstOrDefault(candidate => candidate != null
+				&& string.Equals(candidate.EntityId ?? string.Empty, normalizedId, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(candidate.Kind ?? string.Empty, expectedEntityKind, StringComparison.OrdinalIgnoreCase));
+		return (entity?.OwnerKingdomId ?? string.Empty).Trim();
 	}
 
 	private static bool TryCompileSparsePolicyEffects(
@@ -6817,6 +6847,10 @@ public sealed partial class CustomPolicyBehavior
 					targetAuthorization.ExplicitCrossKingdomIds,
 					preserveLegacyCrossKingdoms: false,
 					failOnUnauthorized: true,
+					ownerKingdomResolver: (targetKind, targetId) => ResolvePolicyEffectOwnerKingdomIdFromSnapshot(
+						request?.SemanticTargetSnapshot,
+						targetKind,
+						targetId),
 					out shellTargetSet,
 					out shellTargetError))
 				{
