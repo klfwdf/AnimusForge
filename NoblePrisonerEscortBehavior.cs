@@ -40,22 +40,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 	private static readonly Regex ExecuteActionTagRegex = new Regex(
 		@"\[ACTION:NOBLE_PRISONER_EXECUTE\]",
 		RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	private static readonly string[] ExecutionIntentTerms =
-	{
-		"处决", "行刑", "斩首", "砍头", "杀了", "杀掉", "杀死", "execute", "execution", "behead", "kill"
-	};
-	private static readonly string[] ExecutionNegationTerms =
-	{
-		"不要处决", "别处决", "不准处决", "不许处决", "不要行刑", "取消处决",
-		"不要杀", "别杀", "不准杀", "不许杀", "饶了", "放过",
-		"do not execute", "don't execute", "do not kill", "don't kill", "spare"
-	};
-	private static readonly string[] DuelIntentTerms =
-	{
-		"决斗", "单挑", "比武", "比试", "切磋", "较量", "挑战你", "分个胜负",
-		"duel", "single combat", "challenge you", "fight me", "one on one", "one-on-one"
-	};
-
 	private static TroopRoster _townAftermathProfile;
 	private static TroopRoster _settlementEntryProfile;
 	private static TroopRoster _lordsHallProfile;
@@ -132,6 +116,22 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			&& _activeMission != null
 			&& Mission.Current == _activeMission
 			&& EscortedAgents.ContainsKey(agentIndex);
+	}
+
+	internal static IEnumerable<Hero> GetEscortedHeroesForExecution()
+	{
+		return EscortedAgents.Values
+			.Where(record => record?.Hero != null && record.Agent != null && record.Agent.IsActive())
+			.Select(record => record.Hero)
+			.ToList();
+	}
+
+	internal static bool TryGetEscortedAgentForHero(Hero hero, out Agent agent)
+	{
+		agent = EscortedAgents.Values
+			.FirstOrDefault(record => record?.Hero == hero && record.Agent != null && record.Agent.IsActive())
+			?.Agent;
+		return agent != null;
 	}
 
 	internal static bool IsMeetingCombatDespawningAgent(Agent agent)
@@ -425,27 +425,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		}
 		NoblePrisonerEscortLog.Log("Queued scene execution confirmation. hero=" + SafeHeroId(hero) + ", agent=" + agentIndex);
 		return true;
-	}
-
-	internal static bool AllowsGenericDuelForPlayerInput(int agentIndex, string playerText)
-	{
-		if (!IsEscortedAgent(agentIndex))
-		{
-			return true;
-		}
-		string text = (playerText ?? string.Empty).Trim();
-		return text.Length > 0
-			&& !ContainsExecutionIntentForDuelConflict(text)
-			&& DuelIntentTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
-	}
-
-	internal static void LogBlockedAutonomousDuel(int agentIndex, string source)
-	{
-		NoblePrisonerEscortLog.Log(
-			"Blocked autonomous duel for escorted prisoner. agent="
-			+ agentIndex
-			+ ", source="
-			+ (source ?? "unknown"));
 	}
 
 	internal static void RegisterEscortedAgent(Mission mission, NoblePrisonerEscortMode mode, Hero hero, Agent agent)
@@ -804,14 +783,6 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			result.Add(roster.GetElementCopyAtIndex(i));
 		}
 		return result;
-	}
-
-	private static bool ContainsExecutionIntentForDuelConflict(string playerText)
-	{
-		string text = (playerText ?? string.Empty).Trim();
-		return text.Length > 0
-			&& !ExecutionNegationTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
-			&& ExecutionIntentTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
 	}
 
 	private static bool HasAnyConfiguredProfile()

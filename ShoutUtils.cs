@@ -2953,11 +2953,6 @@ public static class ShoutUtils
 			{
 				return false;
 			}
-			if (!NoblePrisonerEscortBehavior.AllowsGenericDuelForPlayerInput(npcData.AgentIndex, playerText))
-			{
-				NoblePrisonerEscortBehavior.LogBlockedAutonomousDuel(npcData.AgentIndex, "final_action_dispatch");
-				return false;
-			}
 			return true;
 		}
 		return false;

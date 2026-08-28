@@ -34,18 +34,38 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldUseExclusivePreprocessRuleRouting()
 	{
+		return ShouldUseExclusivePreprocessRuleRouting(-1);
+	}
+
+	internal static bool ShouldUseExclusivePreprocessRuleRouting(int targetAgentIndex)
+	{
+		if (NoblePrisonerEscortBehavior.IsEscortedAgent(targetAgentIndex))
+		{
+			return false;
+		}
 		return IsTownOrCastleAftermathActive()
 			&& GetTownDialoguePhase() != TownAfDialoguePhase.NormalOccupation;
 	}
 
 	internal static bool ShouldUseExclusivePostprocessRuleRouting()
 	{
-		return ShouldUseExclusivePreprocessRuleRouting();
+		return ShouldUseExclusivePreprocessRuleRouting(
+			AIConfigHandler.GetGuardrailRuntimeTargetAgentIndexForExternal());
+	}
+
+	internal static bool ShouldUseExclusivePostprocessRuleRouting(int targetAgentIndex)
+	{
+		return ShouldUseExclusivePreprocessRuleRouting(targetAgentIndex);
 	}
 
 	internal static bool ShouldBypassPreprocessForActiveScene()
 	{
 		return ShouldUseExclusivePreprocessRuleRouting();
+	}
+
+	internal static bool ShouldBypassPreprocessForActiveScene(int targetAgentIndex)
+	{
+		return ShouldUseExclusivePreprocessRuleRouting(targetAgentIndex);
 	}
 
 	internal static bool IsExclusivePreprocessRuleId(string ruleId)
@@ -55,15 +75,25 @@ internal static class AfGcczShoutBridge
 
 	internal static List<string> BuildRuntimePreprocessRuleExclusions(IEnumerable<string> ruleIds)
 	{
+		return BuildRuntimePreprocessRuleExclusions(ruleIds, -1);
+	}
+
+	internal static List<string> BuildRuntimePreprocessRuleExclusions(IEnumerable<string> ruleIds, int targetAgentIndex)
+	{
 		if (!IsTownOrCastleAftermathActive())
 		{
 			return new List<string>();
 		}
 
+		bool isEscortedNoblePrisoner = NoblePrisonerEscortBehavior.IsEscortedAgent(targetAgentIndex);
 		TownAfDialoguePhase phase = GetTownDialoguePhase();
 		if (phase == TownAfDialoguePhase.NormalOccupation)
 		{
-			return TownAfRuleRoutingPolicy.BuildExcludedRuleIds(phase, ruleIds).ToList();
+			return TownAfRuleRoutingPolicy.BuildExcludedRuleIds(phase, ruleIds, isEscortedNoblePrisoner).ToList();
+		}
+		if (isEscortedNoblePrisoner)
+		{
+			return new List<string>();
 		}
 
 		var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -84,12 +114,19 @@ internal static class AfGcczShoutBridge
 
 	internal static void AddRuntimePreprocessRuleExclusions(HashSet<string> excludedRuleIds)
 	{
+		AddRuntimePreprocessRuleExclusions(excludedRuleIds, -1);
+	}
+
+	internal static void AddRuntimePreprocessRuleExclusions(HashSet<string> excludedRuleIds, int targetAgentIndex)
+	{
 		if (excludedRuleIds == null || !IsTownOrCastleAftermathActive())
 		{
 			return;
 		}
 		excludedRuleIds.Remove(RuleId);
-		foreach (string ruleId in BuildRuntimePreprocessRuleExclusions(AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal()))
+		foreach (string ruleId in BuildRuntimePreprocessRuleExclusions(
+			AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal(),
+			targetAgentIndex))
 		{
 			string id = (ruleId ?? string.Empty).Trim();
 			if (!string.IsNullOrWhiteSpace(id))
@@ -101,6 +138,13 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldAllowAfRuleForCurrentStage(string ruleId)
 	{
+		return ShouldAllowAfRuleForCurrentStage(
+			ruleId,
+			AIConfigHandler.GetGuardrailRuntimeTargetAgentIndexForExternal());
+	}
+
+	internal static bool ShouldAllowAfRuleForCurrentStage(string ruleId, int targetAgentIndex)
+	{
 		if (!IsTownOrCastleAftermathActive())
 		{
 			return true;
@@ -111,7 +155,10 @@ internal static class AfGcczShoutBridge
 		{
 			phase = TownAfDialoguePhase.AtrocityCombat;
 		}
-		return TownAfRuleRoutingPolicy.IsAllowed(phase, ruleId);
+		return TownAfRuleRoutingPolicy.IsAllowed(
+			phase,
+			ruleId,
+			NoblePrisonerEscortBehavior.IsEscortedAgent(targetAgentIndex));
 	}
 
 	internal static bool ShouldUseTownPostprocessDecisionContract()

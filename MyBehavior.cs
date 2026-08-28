@@ -30834,9 +30834,9 @@ public class MyBehavior : CampaignBehaviorBase
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet);
+		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet, targetAgentIndex);
 		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
-		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene())
+		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex))
 		{
 			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
 			return result;
@@ -31074,7 +31074,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
 		bool isQualified = num >= num2;
 		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
-		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene();
+		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex);
 		bool allowRulePreprocess = !suppressDynamicRuleAndLore && !bypassRulePreprocess;
 		if (bypassRulePreprocess)
 		{

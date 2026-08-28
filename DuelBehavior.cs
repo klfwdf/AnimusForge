@@ -1824,6 +1824,21 @@ public class DuelBehavior : CampaignBehaviorBase
 		PatchHarmonyClass(harmony, typeof(WildernessDuelGameMenuOptionConsequenceSafePatch));
 	}
 
+	internal static bool ControlsAgentForExternal(Agent agent)
+	{
+		try
+		{
+			return agent != null
+				&& Instance != null
+				&& Instance._isDuelActive
+				&& Instance.IsCurrentDuelTargetAgent(agent);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static void PatchHarmonyClass(Harmony harmony, Type patchType)
 	{
 		try

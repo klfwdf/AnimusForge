@@ -7266,6 +7266,18 @@ public static class AIConfigHandler
 		}
 	}
 
+	internal static int GetGuardrailRuntimeTargetAgentIndexForExternal()
+	{
+		try
+		{
+			return _guardrailRuntimeTargetAgentIndex.Value;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
 	private static string ApplyRuntimeTemplate(string template, Dictionary<string, string> tokens)
 	{
 		string text = template ?? "";
