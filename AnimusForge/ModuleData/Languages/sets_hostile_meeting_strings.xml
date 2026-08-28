@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="sets_owned_target_supported_armed_fact" text="After talking, you and {PLAYER} erupted into open conflict in {PLAYER}'s domain. You drew your weapon to fight back, while {PLAYER}'s escort and other local guards moved to protect {PLAYER}." />
+    <string id="sets_owned_target_armed_fact" text="After talking, you and {PLAYER} came into conflict in {PLAYER}'s domain. {PLAYER}'s escort drew weapons in support, forcing you to fight." />
+    <string id="sets_owned_guard_reaction_fact" text="{PLAYER} entered an armed conflict in their own domain. The opponent fought back, while other local guards and the escort protected their lord." />
+    <string id="sets_owned_armed_conflict_notice" text="Armed conflict has broken out. Your escort and the local guards are moving to protect you." />
+    <string id="sets_foreign_armed_conflict_notice" text="Armed conflict has broken out. The guards are now hostile to you and your companions." />
+    <string id="af_hostile_castle_native_meeting_disabled_reason" text="AnimusForge has disabled &quot;Request a meeting with someone&quot; at castles." />
+  </strings>
+</base>

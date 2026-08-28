@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="sets_owned_target_supported_armed_fact" text="经过交流，你和{PLAYER}在他的领地内彻底爆发冲突；你拔出武器反击，而他的随行士兵和其他本地守卫开始保护他" />
+    <string id="sets_owned_target_armed_fact" text="经过交流，你和{PLAYER}在他的领地内爆发冲突；他的随行士兵拔出武器支援他，你被迫应战" />
+    <string id="sets_owned_guard_reaction_fact" text="{PLAYER}在自己的领地内与人爆发了持械冲突；冲突对象进行反击，其他本地守卫和随行士兵保护领主" />
+    <string id="sets_owned_armed_conflict_notice" text="持械冲突爆发，你的随行士兵和本地守卫开始保护你。" />
+    <string id="sets_foreign_armed_conflict_notice" text="持械冲突爆发，守卫开始敌视你和你的同伴。" />
+    <string id="af_hostile_castle_native_meeting_disabled_reason" text="AnimusForge 已禁用城堡中的“请求与某人会面”。" />
+  </strings>
+</base>
