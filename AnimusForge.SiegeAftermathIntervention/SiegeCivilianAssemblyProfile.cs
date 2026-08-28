@@ -1,12 +1,21 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
-/// Dependency-free runtime parameters for GCCZ civilian assembly layout and scene capacity.
+/// Dependency-free runtime parameters for GCCZ native civilian assembly counts and layout.
 /// AF adapters still own scene capacity checks, formation slot projection, and mission side effects.
 /// </summary>
 public static class SiegeCivilianAssemblyProfile
 {
-    public const int TownSceneCap = 200;
+    public const int MinDesiredCivilianCount = 100;
+
+    public const int MaxDesiredCivilianCount = 200;
+
+    public const int TownSceneCap = MaxDesiredCivilianCount;
+
+    // Villages have fewer navigation points and a much smaller native crowd.
+    // Keep their cap separate so prosperity can make a village feel alive
+    // without turning it into a second town.
+    public const int VillageSceneCap = 100;
 
     public const int SceneTotalAgentSoftCap = 320;
 
@@ -23,4 +32,14 @@ public static class SiegeCivilianAssemblyProfile
     public const string MissionAfterStartSource = "mission_after_start";
 
     public const string ControlTickSource = "control_tick";
+
+    public const string NativeTownMaxPopulationSource = "native_town_max_population";
+
+    public const float NativeTownPopulationRetrySeconds = 4f;
+
+    public const float NativeTownPopulationProsperityForMaxCount = 8000f;
+
+    public const int NativeTownPopulationRandomBand = 30;
+
+    public const int NativeTownPopulationMaxSpawnAttempts = MaxDesiredCivilianCount * 2;
 }
