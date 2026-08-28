@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Helpers;
+using SandBox.Conversation.MissionLogics;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.BarterSystem.Barterables;
@@ -224,6 +225,24 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static Settlement _nativeSettlementRequestMeetingSettlement;
 
 	private static string _nativeSettlementRequestMeetingMenuId;
+
+	private sealed class NativeSettlementMeetingMissionToken
+	{
+		internal NativeSettlementMeetingMissionToken(Settlement settlement, Hero targetHero)
+		{
+			Settlement = settlement;
+			TargetHero = targetHero;
+		}
+
+		internal Settlement Settlement { get; }
+
+		internal Hero TargetHero { get; }
+
+	}
+
+	private static readonly object NativeSettlementMeetingMissionTokenSync = new object();
+
+	private static NativeSettlementMeetingMissionToken _nativeSettlementMeetingMissionToken;
 
 	private static readonly Regex MeetingTauntWarnTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_WARN\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -1361,6 +1380,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsNativeSettlementRequestMeetingContext(Hero target = null)
 	{
+		if (!EndMissionInternalSafePatch.IsNativeMeetingProtectionReady)
+		{
+			ClearNativeSettlementRequestMeetingContext("protected_cleanup_not_ready");
+			return false;
+		}
 		try
 		{
 			string menuId = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
@@ -1404,6 +1428,104 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		if (_nativeSettlementRequestMeetingSettlement != null)
 		{
 			return IsHostileSettlementForMainHero(_nativeSettlementRequestMeetingSettlement, target);
+		}
+		return true;
+	}
+
+	internal static bool ArmNativeSettlementMeetingForMissionStart(Hero target)
+	{
+		if (target == null || !EndMissionInternalSafePatch.IsNativeMeetingProtectionReady)
+		{
+			return false;
+		}
+		string menuId;
+		try
+		{
+			menuId = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+		}
+		catch
+		{
+			return false;
+		}
+		if (!IsNativeSettlementRequestMeetingMenu(menuId)
+			|| !TryGetNativeSettlementRequestMeetingSettlement(target, out Settlement settlement)
+			|| !settlement.IsCastle
+			|| !IsHostileSettlementForMainHero(settlement, target)
+			|| !IsNativeSettlementRequestMeetingContext(target))
+		{
+			return false;
+		}
+		lock (NativeSettlementMeetingMissionTokenSync)
+		{
+			_nativeSettlementMeetingMissionToken = new NativeSettlementMeetingMissionToken(settlement, target);
+		}
+		Logger.Log("LordEncounter", "Armed one-shot native settlement meeting mission token. Settlement=" + (settlement.StringId ?? "N/A") + ", Target=" + (target.StringId ?? "N/A"));
+		return true;
+	}
+
+	private static NativeSettlementMeetingMissionToken TakeNativeSettlementMeetingMissionToken()
+	{
+		lock (NativeSettlementMeetingMissionTokenSync)
+		{
+			NativeSettlementMeetingMissionToken token = _nativeSettlementMeetingMissionToken;
+			_nativeSettlementMeetingMissionToken = null;
+			return token;
+		}
+	}
+
+	private static void ClearNativeSettlementMeetingMissionToken()
+	{
+		lock (NativeSettlementMeetingMissionTokenSync)
+		{
+			_nativeSettlementMeetingMissionToken = null;
+		}
+	}
+
+	private static bool IsExpectedNativeSettlementMeetingMission(Mission mission, NativeSettlementMeetingMissionToken token, out string failureReason)
+	{
+		failureReason = null;
+		if (mission == null || token?.Settlement == null || token.TargetHero == null)
+		{
+			failureReason = "missing_expected_context";
+			return false;
+		}
+		if (!IsHostileSettlementForMainHero(token.Settlement, token.TargetHero))
+		{
+			failureReason = "settlement_no_longer_hostile";
+			return false;
+		}
+		ConversationMissionLogic conversationLogic;
+		try
+		{
+			conversationLogic = mission.GetMissionBehavior<ConversationMissionLogic>();
+		}
+		catch
+		{
+			conversationLogic = null;
+		}
+		if (conversationLogic == null)
+		{
+			failureReason = "mission_is_not_conversation";
+			return false;
+		}
+		Hero actualTarget = null;
+		try
+		{
+			actualTarget = conversationLogic.OtherSideConversationData.Character?.HeroObject;
+		}
+		catch
+		{
+			actualTarget = null;
+		}
+		if (actualTarget != token.TargetHero)
+		{
+			failureReason = "conversation_target_mismatch";
+			return false;
+		}
+		if (TryGetNativeSettlementRequestMeetingSettlement(actualTarget, out Settlement currentSettlement) && currentSettlement != token.Settlement)
+		{
+			failureReason = "settlement_mismatch";
+			return false;
 		}
 		return true;
 	}
@@ -1649,6 +1771,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void ClearNativeSettlementRequestMeetingContext(string reason)
 	{
+		ClearNativeSettlementMeetingMissionToken();
 		if (!_nativeSettlementRequestMeetingContextActive)
 		{
 			return;
@@ -4299,7 +4422,28 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (MeetingBattleRuntime.IsMeetingActive && mission is Mission mission2)
+			if (!(mission is Mission mission2))
+			{
+				return;
+			}
+			NativeSettlementMeetingMissionToken nativeMeetingToken = TakeNativeSettlementMeetingMissionToken();
+			if (nativeMeetingToken != null)
+			{
+				if (!IsExpectedNativeSettlementMeetingMission(mission2, nativeMeetingToken, out string failureReason))
+				{
+					ClearNativeSettlementRequestMeetingContext("native_expected_mission_rejected_" + (failureReason ?? "unknown"));
+				}
+				else if (!EndMissionInternalSafePatch.TryRegisterProtectedMission(mission2, EndMissionInternalSafePatch.ProtectedMissionKind.NativeHostileCastleMeeting, "native_hostile_castle_meeting_started"))
+				{
+					ClearNativeSettlementRequestMeetingContext("native_mission_cleanup_protection_unavailable");
+				}
+				else
+				{
+					Logger.Log("LordEncounter", "Consumed one-shot native settlement meeting token and registered the exact conversation mission.");
+					return;
+				}
+			}
+			if (MeetingBattleRuntime.IsMeetingActive)
 			{
 				bool flag = false;
 				try
@@ -4316,8 +4460,16 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				}
 				if (flag)
 				{
+					if (mission2.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null)
+					{
+						EndMissionInternalSafePatch.TryRegisterProtectedMission(mission2, EndMissionInternalSafePatch.ProtectedMissionKind.AnimusForgeMeeting, "af_meeting_mission_started");
+					}
 					SuppressCustomEncounterMenuUntilBackOnMap("meeting_battle_mission_started");
 				}
+			}
+			else if (DuelBehavior.IsAnimusForgeIndependentDuelMission(mission2))
+			{
+				EndMissionInternalSafePatch.TryRegisterProtectedMission(mission2, EndMissionInternalSafePatch.ProtectedMissionKind.AnimusForgeDuel, "af_duel_mission_started");
 			}
 		}
 		catch (Exception ex)
@@ -8303,6 +8455,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				AnimusForgeQuickInfo.Show(GetTargetLowHealthMeetingBlockedMessage(target), target.CharacterObject);
 				return;
 			}
+			if (args == null)
+			{
+				Logger.Log("LordEncounter", "StartMeeting aborted because menu args are null.");
+				return;
+			}
 			SetTarget(target);
 			ClearMeetingPlayerReleaseAuthorization("start_meeting");
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("start_meeting");
@@ -8342,15 +8499,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			MeetingBattleRuntime.BeginMeeting(target);
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
 			SaveMainPartyPosition();
-			if (args == null)
-			{
-				Logger.Log("LordEncounter", "StartMeeting aborted because menu args are null.");
-				_meetingStartedForProactiveRequest = false;
-				_meetingStartedForProactiveRequestHero = null;
-				_meetingStartedFromCustomEncounterMenu = false;
-				_meetingStartedFromCustomEncounterMenuHero = null;
-				return;
-			}
 			DisableMeetingSpawnOverride();
 			Logger.Log("LordEncounter", "Meeting requested: redirecting to native encounter attack consequence.");
 			SuppressCustomEncounterMenuUntilBackOnMap("start_meeting_battle");

@@ -11,7 +11,7 @@ public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 {
 	private static readonly bool HostileCastleNativeMeetingEnabled = true;
 
-	private static readonly TextObject CastleRequestMeetingDisabledText = new TextObject("AnimusForge 已禁用城堡中的“请求与某人会面”。");
+	private static readonly TextObject CastleRequestMeetingDisabledText = new TextObject("{=af_hostile_castle_native_meeting_disabled_reason}AnimusForge has disabled \"Request a meeting with someone\" at castles.");
 
 	private static string _lastHostileCastleGuardFailureSettlementId;
 
@@ -70,6 +70,27 @@ public sealed class AnimusForgeSettlementAccessModel : SettlementAccessModel
 		}
 		try
 		{
+			EndMissionInternalSafePatch.EnsurePatched();
+			if (!EndMissionInternalSafePatch.IsNativeMeetingProtectionReady)
+			{
+				string settlementId = settlement?.StringId ?? "null";
+				if (!string.Equals(_lastHostileCastleGuardFailureSettlementId, settlementId, StringComparison.Ordinal))
+				{
+					_lastHostileCastleGuardFailureSettlementId = settlementId;
+					Logger.Log("SettlementAccess", "Hostile castle request meeting failed closed because protected mission cleanup is unavailable. Settlement=" + settlementId);
+				}
+				return false;
+			}
+			if (!Patch_Conversation_Start_Intercept.IsNativeConversationMissionArmPatchReady)
+			{
+				string settlementId = settlement?.StringId ?? "null";
+				if (!string.Equals(_lastHostileCastleGuardFailureSettlementId, settlementId, StringComparison.Ordinal))
+				{
+					_lastHostileCastleGuardFailureSettlementId = settlementId;
+					Logger.Log("SettlementAccess", "Hostile castle request meeting failed closed because the native conversation mission arm patch is unavailable. Settlement=" + settlementId);
+				}
+				return false;
+			}
 			bool guardArmed = LordEncounterBehavior.IsNativeSettlementRequestMeetingContext();
 			if (!guardArmed)
 			{
