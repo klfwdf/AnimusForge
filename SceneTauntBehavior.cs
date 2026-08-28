@@ -9479,6 +9479,30 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		TryArmAgent(agent);
 	}
 
+	internal static void EnsureSetsIndependentHeroArmedCombatReadyForExternal(Agent agent)
+	{
+		Hero hero = (agent?.Character as CharacterObject)?.HeroObject;
+		if (agent == null
+			|| !agent.IsHuman
+			|| !agent.IsActive()
+			|| hero == null
+			|| !SceneTauntBehavior.IsPlayerMainPartyHero(hero))
+		{
+			return;
+		}
+		try
+		{
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+		}
+		catch
+		{
+		}
+		TryAlarmAgent(agent);
+		TryArmAgent(agent);
+	}
+
 	private static void TryGiveFallbackSoldierWeapon(Agent agent)
 	{
 		if (!ShouldReceiveFallbackSoldierWeapon(agent))
@@ -9524,6 +9548,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (characterObject == null)
 			{
 				return false;
+			}
+			if (SceneTauntBehavior.IsPlayerMainPartyHero(characterObject.HeroObject))
+			{
+				return true;
 			}
 			switch (characterObject.Occupation)
 			{
