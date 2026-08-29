@@ -9,14 +9,17 @@
 - 当前分支：`refactor/prepare-af-restructure`
 - 基线 HEAD：`d4cb1467376c6e923f4295dcefc7878c11dbc7c1`
 - 基线父提交：`96a1c60f1877813a9fb3440ddad068d6e92afa1e`（policy 功能基线）
+- 当前工作 HEAD：`6f8ed40aca1832163366adbe1afa402a28c89fef`（准备文档/skill 已推送分支）
 - 当前阶段：阶段 0，重构准备与基线
-- 当前任务：建立可共享的 skill、基线和重构台账
+- 当前任务：阶段 0 收尾：构建依赖闭包与逐文件 owner matrix
 - 当前负责人：待由后续 handoff 指定
-- 旧存档目标：必须兼容；至少保持现有程序集身份、序列化类型和 SyncData key，必要变更必须提供迁移与证据
 - 物理程序集策略：暂不拆分为多个玩法 DLL；先在单一 `AnimusForge.dll` 内完成逻辑模块化
+- 旧存档目标：必须兼容；至少保持现有程序集身份、序列化类型和 SyncData key，必要变更必须提供迁移与证据
 - 游戏基线策略：保留可复现的测试记录，但不要求现在由用户立刻完成全量手测；优先记录关键功能和重构前后对比结果
 - BannerlordRoot：`E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord`
-- 当前已安装模块目录：`E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`（默认不覆盖）
+- 已安装模块目录：`E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`
+- 主要游戏内测试版本：Bannerlord `v1.4.7.117484`
+- 1.4 构建引用要求：按 `1.4.x` API 线管理；每个开发者可以使用自己的合法 1.4.x 安装，但构建记录必须写明精确 `BuildInfo`，共享验收使用固定代表性 overlay
 - 最后更新：2026-08-30
 - 状态：IN PROGRESS
 
@@ -35,8 +38,10 @@
 - [x] 创建基线报告
 - [x] 创建本公共重构台账
 - [ ] 审阅 skill、基线报告和本台账
-- [ ] 完成当前仓库只读结构盘点
-- [ ] 确认代表性存档和游戏内基线方案
+- [x] 完成当前仓库只读结构盘点
+- [x] 确认代表性存档和游戏内基线方案
+- [x] 形成第一版功能—owner—依赖—风险重构地图（见 `docs/animusforge-refactor-map.md`）
+- [x] 完成第一版逐文件 owner matrix（见 `docs/animusforge-owner-matrix.md`）
 - [ ] 记录可运行的 1.3.x、1.4.x、Bootstrap 构建结果
 
 ### 阶段 1：仓库边界与可重复性 — TODO
@@ -155,9 +160,7 @@
 
 | 时间 | 任务 | 范围 | 风险 | 验证 | 状态 |
 |---|---|---|---|---|---|
-| 2026-08-30 | 只读运行入口/领域初步盘点 | `SubModule.cs`、Bootstrap、Campaign/Mission/Harmony/Tick、目标 owner | 不改源码；需保留注册顺序和调度面 | Agent 审计完成；构建因默认 F: 路径不存在失败 | IN PROGRESS |
-
-## 最新交接
+| 2026-08-30 | 第一版重构地图完成 | `docs/animusforge-refactor-map.md`：运行链、owner、持久化、交互、风险、顺序 | 不移动源码；目标仍为单一 `AnimusForge.dll`、旧存档兼容 | 3 个只读审计结果合并；构建仍被依赖闭包阻塞 | VERIFY |
 
 - 最新 handoff：`docs/handoffs/2026-08-30-refactor-preparation.md`
 - 下一位接手者先读取：`CLAUDE.md`、`.claude/skills/animusforge-maintainer/SKILL.md`、本文件、baseline 和最新 handoff。

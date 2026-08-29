@@ -16,7 +16,9 @@
 - 已创建公共重构台账：`docs/animusforge-refactoring-and-repository-reorganization-plan.md`。
 - 已创建起点基线：`docs/animusforge-baseline-2026-08-30.md`。
 - 已完成有限的只读结构盘点。
-- 已确认 `SubModule.cs` 是当前组合根瓶颈：同时负责生命周期组合、Harmony 注册、CampaignBehavior/模型注册、每帧调度和关闭协调。
+- 已完成第一版重构地图：`docs/animusforge-refactor-map.md`，涵盖运行链、组合根、目标 owner、持久化、交互管线、风险和推荐顺序。
+- 已完成仓库边界、功能域和持久化审计；审计结论已合并到 `docs/animusforge-refactor-map.md`。
+- 已完成第一版逐文件 owner matrix：`docs/animusforge-owner-matrix.md`，涵盖运行、交互、持久化、Policy、World、Siege、Mission、Social、Knowledge、UI、工具和参考树。
 - 已确认 Bootstrap 已是清晰的独立边界；`SceneActionsIntegrationBoundary` 是现有的薄适配器边界范例。
 - 已确认后续 owner map 至少应区分 Host/Composition、Conversation/AI、World Simulation、Settlement/Siege、Mission/Combat、Policy、Progression/Social、UI/Diagnostics 与 Compatibility/Safety；这些目前只是逻辑所有权，不代表立即拆 DLL。
 
@@ -24,18 +26,20 @@
 
 - 开始准备时 `AnimusForge/SubModule.xml` 已有用户修改：版本 `v1.3.7` → `v1.3.7.2`，且末尾换行变化。本次没有回滚或覆盖它。
 - 尚未运行任何构建、打包、部署或游戏测试；相关状态必须保持 `NOT-RUN`。
-- 已尝试使用统一构建脚本进行 stage-only 基线构建，但由于当前机器不存在默认的 `F:` 盘 Bannerlord 路径，在脚本路径解析处失败；这不是 C# 编译失败。
+- 已使用用户提供的 Bannerlord 根目录 `E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord` 重试统一 stage 构建：脚本识别到 1.4 `v1.4.6.115628` 和 1.3 `v1.3.15.110062`，但因实际游戏目录和 AF 源码运行目录缺少 `0Harmony.dll`，在编译前失败；这不是 C# 编译错误，也没有部署。
+- 用户已确认主要游戏内基线版本为 Bannerlord 1.4，采用 `1.4.x` 兼容目标，并确认存在可备份的代表性存档。
+- 已从实际游戏 `TaleWorlds.Library.dll` 读取到代表性版本 `v1.4.7.117484`；仓库 `.tmp\build_check\1.4` 是 `v1.4.6.115628`。不同开发者可使用不同 1.4.x 补丁，但每次构建需记录精确版本，共享验收再指定固定 overlay。
+- 后续构建需准备 1.4.x 目标线的完整依赖闭包：当前构建曾因默认路径缺少 `0Harmony.dll`/`MCMv5.dll` 停止。
 - 不要把临时 ZIP 解压目录 `D:\APP\QQ\document\.af-skill-inspect\` 当作源码目标；skill 已从原 ZIP 安装到项目内。
 - 不要修改现有一键编译/覆盖/推送流程。
 
 ## 下一步建议
 
-1. 审阅 skill、基线和主重构台账。
-2. 继续只读盘点源码、模块数据、脚本、工具、原版参考树、构建产物和用户数据边界。
-3. 确认代表性存档与游戏内测试计划。
-4. 按现有统一脚本运行并记录 1.3、1.4、Bootstrap 构建（如果环境和权限允许）。
-5. 形成第一版“现有功能 → 当前文件/入口 → 目标模块 → 依赖 → 风险”矩阵。
-6. 只有准备/清理 gate 完成后，才开始第一条可回退的代码迁移切片。
+1. 处理构建依赖闭包：确认与 `1.4.x` 目标线匹配的 `0Harmony.dll`、`MCMv5.dll`、UIExtender 和 MBOptionScreen 引用；必要时以本机 1.4.7 为代表性 overlay，但不修改构建脚本。
+2. 根据 `docs/animusforge-refactor-map.md` 补充逐文件 owner matrix。
+3. 备份一个代表性旧存档到仓库外，并记录最小 1.4.x 游戏基线场景；不要求立刻全量手测。
+4. 等阶段 0/仓库 gate 审阅完成后，再为 `SubModule.cs` 组合边界建立第一条可回退代码切片。
+
 
 ## 接手规则
 
