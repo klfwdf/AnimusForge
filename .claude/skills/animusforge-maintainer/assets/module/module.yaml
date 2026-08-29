@@ -1,0 +1,29 @@
+# Copy into one AF.Module.* project and replace every __PLACEHOLDER__.
+id: af.module.__MODULE_ID__
+kind: module
+version: 0.1.0
+contractVersion: 1
+entryType: __ENTRY_TYPE__
+owner:
+  team: __TEAM__
+  maintainers:
+    - __MAINTAINER__
+profiles:
+  - developer
+requiredModules:
+  - id: af.foundation.runtime
+    version: ">=1.0.0 <2.0.0"
+optionalModules: []
+requiresCapabilities: []
+providesCapabilities: []
+persistence:
+  namespace: __PERSISTENCE_NAMESPACE__
+  schemaVersion: 1
+lifecycle:
+  activation: save-load-boundary
+  harmonyPatches: false
+  runtimeUnload: unsupported
+compatibility:
+  bannerlord:
+    - "1.3"
+    - "1.4"

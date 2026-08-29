@@ -1,0 +1,8 @@
+# Optional UI metadata understood by Codex-compatible skill hosts.
+# Claude Code can safely ignore this file and uses SKILL.md as the shared authority.
+interface:
+  display_name: "AnimusForge Maintainer"
+  short_description: "维护已确认 AFmod 的模块、双版本、存档与执行账本"
+  default_prompt: "Use $animusforge-maintainer only for verified AnimusForge/AFmod work: reconcile the execution ledger first, preserve Bootstrap and 1.3/1.4 compatibility, keep foundation/module/bridge ownership explicit, validate the changed surface, and record evidence in the ledger."
+policy:
+  allow_implicit_invocation: true
