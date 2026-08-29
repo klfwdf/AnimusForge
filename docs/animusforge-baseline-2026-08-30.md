@@ -41,7 +41,10 @@
 - 1.4 实现：NOT-RUN（本基线阶段尚未运行）。
 - Bootstrap：NOT-RUN（本基线阶段尚未运行）。
 - 完整 stage/package/deploy：NOT-RUN。
-- 原因：本阶段只建立文档和 skill，尚未执行构建或部署；不能把未运行当作通过。
+- 已使用用户提供的实际 Bannerlord 根目录重试统一 stage 构建：已确认已安装游戏的 `TaleWorlds.Library.dll` 内嵌版本为 `v1.4.7.117484`；仓库 `.tmp\build_check\1.4` 目前是 `v1.4.6.115628`。
+- 兼容目标按 Bannerlord `1.4.x` API 线管理，不把单个补丁版本号当作整个重构的唯一目标；但每次可复现构建仍必须记录实际引用的精确 `BuildInfo`，当前机器的代表性 1.4 引用应优先更新为与已安装游戏一致的 `v1.4.7.117484`。
+- 统一构建曾成功识别仓库 1.3 引用 `v1.3.15.110062`，但当前 1.4 overlay 是 1.4.6，不能冒充 1.4.7 验证；此外实际游戏目录和 AF 源码运行目录没有 `0Harmony.dll`，默认 MCMv5 路径也不存在。
+- 构建失败原因不是 C# 编译错误；当前需要准备/确认与目标 API 线匹配的引用和外部依赖闭包。不同开发者可以使用各自合法的 1.4.x 安装，但必须在基线/构建记录中写明精确版本；共享验收则应使用一套固定的代表性引用 overlay。没有部署到游戏目录。
 
 ## 功能和存档状态
 
@@ -58,7 +61,9 @@
 - Git 索引约有 21,399 个 tracked files；其中约 17,039 个 `.cs`，约 3,331 个 `.json`，约 75 个 `docs/**` 文件（统计包含仓库现有的原版参考源码等内容）。
 - 当前根项目仍是一个主要 `AnimusForge.csproj`，并包含大量根级 C# 文件和按功能分组的子目录。
 - 已识别的 AF 运行/领域热点包括：`MyBehavior.cs`、`ShoutBehavior.cs`、`RewardSystemBehavior.cs`、`DuelBehavior.cs`、`DiplomacyBehavior.cs`、`WorldMapPartyCommandBehavior.cs`、`CourierDeliveryBehavior.cs`、`KnowledgeLibraryBehavior.cs`、`PolicySystem/`、Siege/Aftermath、场景/伤害、UI/百科和对话历史相关代码。
-- 这些名称只构成初步盘点线索；在形成最终 owner map 前必须逐项读取调用关系和持久化边界。
+- 第一版重构地图：`docs/animusforge-refactor-map.md`。
+- 第一版逐文件 owner matrix：`docs/animusforge-owner-matrix.md`。
+- 这些文档是导航和审计结果，不是大规模移动源码的授权；最终迁移前仍需以实际调用、存档、线程、资源和双 API 证据复核。
 
 ## 仓库保护边界
 
