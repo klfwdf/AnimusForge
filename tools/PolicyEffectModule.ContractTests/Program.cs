@@ -43,8 +43,10 @@ internal static class Program
 		"soldierTroopXp",
 		"kingdomStability",
 		"volunteerProductionGrowthPct",
+		"villageProductionPct",
 		"armyFormationTendencyPct",
-		"kingdomVillageRaidBan"
+		"kingdomVillageRaidBan",
+		"partySizeLimit"
 	};
 
 	private static readonly string[] LegacyMigratedModuleIds =
@@ -69,7 +71,9 @@ internal static class Program
 		"heroGoldPerDay",
 		"soldierTroopXpOnce",
 		"soldierTroopXpPerDay",
-		"kingdomStabilityNextDayOnce"
+		"kingdomStabilityNextDayOnce",
+		"partySizeLimitClanLeader",
+		"partySizeLimitClanLords"
 	};
 
 	private static readonly IReadOnlyDictionary<string, string> LegacyIds = new Dictionary<string, string>(StringComparer.Ordinal)
@@ -176,8 +180,12 @@ internal static class Program
 				TestClanLeaderRelationActorClanTargetContracts();
 				TestVolunteerProductionGrowthModuleContracts();
 				TestVolunteerProductionBannerlordApi();
+				TestVillageProductionModuleContracts();
+				TestVillageProductionBannerlordApi();
 				TestArmyFormationTendencyModuleContracts();
 				TestArmyFormationBannerlordApi();
+				TestPartySizeLimitModuleContracts();
+				TestPartySizeLimitBannerlordApi();
 				TestKingdomVillageRaidBanModuleContracts();
 				TestKingdomVillageRaidBanBannerlordApi();
 				TestPlayerPolicyDirectTwoStageContracts();
@@ -219,6 +227,16 @@ internal static class Program
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--village-production-contract-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestCatalogAndLegacyIds();
+				TestPolicyEffectRetrievalSettingsContracts();
+				TestVillageProductionModuleContracts();
+				TestVillageProductionBannerlordApi();
+				Console.WriteLine("PASS villageProductionAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--army-formation-contract-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				TestCatalogAndLegacyIds();
@@ -226,6 +244,16 @@ internal static class Program
 				TestArmyFormationTendencyModuleContracts();
 				TestArmyFormationBannerlordApi();
 				Console.WriteLine("PASS armyFormationAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--party-size-limit-contract-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestCatalogAndLegacyIds();
+				TestPolicyEffectRetrievalSettingsContracts();
+				TestPartySizeLimitModuleContracts();
+				TestPartySizeLimitBannerlordApi();
+				Console.WriteLine("PASS partySizeLimitAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
@@ -392,6 +420,10 @@ internal static class Program
 			TestClanLeaderRelationActorClanTargetContracts();
 			TestVolunteerProductionGrowthModuleContracts();
 			TestVolunteerProductionBannerlordApi();
+			TestVillageProductionModuleContracts();
+			TestVillageProductionBannerlordApi();
+			TestPartySizeLimitModuleContracts();
+			TestPartySizeLimitBannerlordApi();
 			TestKingdomVillageRaidBanModuleContracts();
 			TestKingdomVillageRaidBanBannerlordApi();
 			TestInfluenceCompositeCompilerContracts();
@@ -1311,6 +1343,245 @@ internal static class Program
 			"GCCZ must remain after the policy postfix and continue applying only to empty volunteer slots.");
 	}
 
+	private static void TestVillageProductionModuleContracts()
+	{
+		IPolicyEffectModule module = RequirePolicyEffectModule("villageProductionPct");
+		PolicyEffectModuleDescriptor descriptor = module.Descriptor;
+		Check(descriptor.Order == 146
+			&& descriptor.ExecutionKind == PolicyEffectExecutionKind.ModelModifier
+			&& descriptor.Hook == PolicyEffectHook.VillageGoodsProduction
+			&& descriptor.Aggregation == PolicyEffectAggregationKind.Additive
+			&& descriptor.ValueUnit == PolicyEffectValueUnit.RelativePercent
+			&& descriptor.FundingMode == PolicyEffectFundingMode.InheritPolicy
+			&& descriptor.FundingStrategy == PolicyEffectFundingStrategy.Linear
+			&& descriptor.TargetProjection == PolicyEffectTargetProjectionKind.None
+			&& descriptor.TargetRefresh == PolicyEffectTargetRefreshKind.Dynamic
+			&& descriptor.TargetKinds.SequenceEqual(new[] { PolicyEffectTargetKind.Village })
+			&& descriptor.AllowCrossKingdomTargets
+			&& module is IModelModifierPolicyEffectModule,
+			"Village production must be one dynamic Village-targeted relative-percent model modifier.");
+		Check(descriptor.AllowedScopes.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(
+			new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal }
+				.OrderBy(value => value, StringComparer.Ordinal))
+			&& descriptor.AllowedSelectorKinds.OrderBy(value => value).SequenceEqual(
+				new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom }
+					.OrderBy(value => value))
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerKingdom)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerLocal)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.NpcRulerKingdom)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(module, PolicyEffectRetrievalContext.PlayerVassal),
+			"Village production must be selectable from all three policy scopes and all four retrieval contexts.");
+
+		Check(PolicyEffectModuleCatalog.TryNormalizePayload(
+			module.Id,
+			new JObject { ["value"] = 20f },
+			PolicyEffectScopes.Local,
+			out PolicyEffectPayload normalizedPayload,
+			out string normalizeError)
+			&& normalizedPayload is NumericPolicyEffectPayload numeric
+			&& Math.Abs(numeric.Value - 20f) < 0.0001f,
+			"Village production +20 payload must normalize: " + normalizeError);
+		Check(PolicyEffectModuleCatalog.TryNormalizePayload(
+			module.Id,
+			new JObject { ["value"] = 500f },
+			PolicyEffectScopes.Kingdom,
+			out _,
+			out _)
+			&& !PolicyEffectModuleCatalog.TryNormalizePayload(
+				module.Id,
+				new JObject { ["value"] = float.NaN },
+				PolicyEffectScopes.Kingdom,
+				out _,
+				out _)
+			&& !PolicyEffectModuleCatalog.TryNormalizePayload(
+				module.Id,
+				new JObject { ["value"] = 20f, ["unexpected"] = true },
+				PolicyEffectScopes.Kingdom,
+				out _,
+				out _),
+			"Village production must allow finite values without a positive hard cap while rejecting non-finite and unknown fields.");
+		Check(module.TryApplyFunding(
+			normalizedPayload,
+			new PolicyEffectFundingContext { GoldScale = 0.5f, InfluenceScale = 0.75f },
+			out PolicyEffectPayload fundedPayload,
+			out string fundingError)
+			&& fundedPayload is NumericPolicyEffectPayload fundedNumeric
+			&& Math.Abs(fundedNumeric.Value - 10f) < 0.0001f,
+			"Village production must linearly inherit the lower policy funding fraction: " + fundingError);
+
+		PolicyEffectCanonicalTargetSet targetSet = new PolicyEffectCanonicalTargetSet
+		{
+			ParentSettlementIds = new List<string> { "village-production-primary" },
+			VillageIds = new List<string> { "village-production-a", "village-production-b" }
+		};
+		PolicyEffectPreparedInstance prepared = new PolicyEffectPreparedInstance
+		{
+			Descriptor = descriptor,
+			IdempotencyKey = "village-production-prepared",
+			Instance = new PolicyEffectInstance
+			{
+				InstanceId = "village-production-prepared",
+				PolicyId = "village-production-policy",
+				ModuleId = module.Id,
+				SourceModuleId = module.Id,
+				SourceScope = PolicyEffectScopes.Local,
+				Payload = normalizedPayload,
+				TargetSet = targetSet
+			}
+		};
+		IReadOnlyList<PolicyEffectModelContribution> modelContributions =
+			((IModelModifierPolicyEffectModule)module).BuildModelContributions(prepared);
+		Check(modelContributions.Count == 2
+			&& modelContributions.All(item => item.Hook == PolicyEffectHook.VillageGoodsProduction
+				&& item.TargetKind == PolicyEffectTargetKind.Village
+				&& Math.Abs(item.Value - 20f) < 0.0001f)
+			&& modelContributions.Select(item => item.TargetId).OrderBy(value => value, StringComparer.Ordinal)
+				.SequenceEqual(new[] { "village-production-a", "village-production-b" }, StringComparer.Ordinal),
+			"Village production must index only the deterministically expanded administrative Village IDs.");
+
+		PolicyEffectRuntimeContribution Contribution(
+			string instanceId,
+			float value,
+			PolicyEffectAggregationKind aggregation = PolicyEffectAggregationKind.Additive)
+			=> new PolicyEffectRuntimeContribution(
+				instanceId,
+				"village-production-policy-" + instanceId,
+				module.Id,
+				"村庄生产政策",
+				PolicyEffectHook.VillageGoodsProduction,
+				PolicyEffectTargetKind.Village,
+				"village-production-a",
+				aggregation,
+				value);
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVillageProductionAdjustedAmount(
+			10f,
+			new[] { Contribution("plus-20", 20f) }) - 12f) < 0.0001f,
+			"+20 must multiply the current village production result by 120%.");
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVillageProductionAdjustedAmount(
+			10f,
+			new[] { Contribution("plus-20", 20f), Contribution("plus-30", 30f) }) - 15f) < 0.0001f,
+			"Multiple village production policy percentages must add before scaling the result.");
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVillageProductionAdjustedAmount(
+			10f,
+			new[] { Contribution("minus-100", -100f) })) < 0.0001f
+			&& Math.Abs(CustomPolicyBehavior.CalculatePolicyVillageProductionAdjustedAmount(
+				10f,
+				new[] { Contribution("minus-150", -150f) })) < 0.0001f,
+			"-100 percent and lower stacked village production totals must floor the multiplier at zero.");
+		Check(Math.Abs(CustomPolicyBehavior.CalculatePolicyVillageProductionAdjustedAmount(
+			10f,
+			new[] { Contribution("wrong-aggregation", 50f, PolicyEffectAggregationKind.PercentPoints) }) - 10f) < 0.0001f,
+			"Village production runtime scaling must ignore incompatible aggregation contracts.");
+		float explainedFactorDelta = CustomPolicyBehavior.CalculatePolicyVillageProductionExplainedFactorDelta(
+			10f,
+			15f,
+			18f);
+		Check(Math.Abs(explainedFactorDelta - 0.3f) < 0.0001f
+			&& Math.Abs(10f * (1f + 0.5f + explainedFactorDelta) - 18f) < 0.0001f,
+			"Explained village production must scale the final result without reapplying existing vanilla factors to an additive delta.");
+		PolicyEffectInstanceSaveData displayInstance = BuildPlayerVisibleEffectInstance(
+			"display-village-production",
+			"M-village-production",
+			module.Id,
+			20f,
+			targetSet);
+		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
+		Check(display.Count == 1
+			&& display[0].Contains("村庄商品产量：相对原版村庄商品产量 +20%")
+			&& display[0].IndexOf("候选分数", StringComparison.Ordinal) < 0,
+			"Village production player text must expose relative original-production semantics.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
+		Check(File.Exists(promptPath), "Village production prompt JSON is missing: " + promptPath);
+		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
+		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
+			&& string.Equals(prompt.Value<string>("ModuleId"), module.Id, StringComparison.Ordinal)
+			&& string.Equals(prompt.Value<string>("UnderstandingPrompt"), descriptor.EditableUnderstandingPrompt, StringComparison.Ordinal)
+			&& string.Equals(prompt.Value<string>("EvaluationPrompt"), descriptor.EditableEvaluationPrompt, StringComparison.Ordinal)
+			&& descriptor.MainInstruction.Contains("马匹")
+			&& descriptor.MainInstruction.Contains("谷物、奶酪、黄油")
+			&& descriptor.MainInstruction.Contains("TradeBound")
+			&& descriptor.MainInstruction.Contains("不改变工坊生产速度或建筑建造力"),
+			"Village production prompt and fallback must align on horses, generic food, logistics and excluded mechanics.");
+
+		string behaviorSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Effects.cs"),
+			Encoding.UTF8);
+		Check(behaviorSource.Contains("targetKinds.Contains(PolicyEffectTargetKind.Village)")
+			&& behaviorSource.Contains("GetBoundVillageSettlements(primary)")
+			&& behaviorSource.Contains("AddUniquePolicyEffectId(targetSet.VillageIds, villageId)"),
+			"Village targets must reuse the administrative bound-village expansion instead of TradeBound market projection.");
+	}
+
+	private static void TestVillageProductionBannerlordApi()
+	{
+		Type modelType = typeof(TaleWorlds.CampaignSystem.ComponentInterfaces.VillageProductionCalculatorModel);
+		Type villageType = typeof(TaleWorlds.CampaignSystem.Settlements.Village);
+		Type itemType = typeof(TaleWorlds.Core.ItemObject);
+		Type explainedNumberType = typeof(TaleWorlds.CampaignSystem.ExplainedNumber);
+		MethodInfo dailyProduction = modelType.GetMethod(
+			"CalculateDailyProductionAmount",
+			All,
+			null,
+			new[] { villageType, itemType },
+			null);
+		MethodInfo dailyFoodProduction = modelType.GetMethod(
+			"CalculateDailyFoodProductionAmount",
+			All,
+			null,
+			new[] { villageType },
+			null);
+		Check(dailyProduction != null
+			&& dailyProduction.ReturnType == explainedNumberType
+			&& dailyProduction.GetParameters().Select(parameter => parameter.ParameterType)
+				.SequenceEqual(new[] { villageType, itemType })
+			&& dailyFoodProduction != null
+			&& dailyFoodProduction.ReturnType == typeof(float)
+			&& dailyFoodProduction.GetParameters().Select(parameter => parameter.ParameterType)
+				.SequenceEqual(new[] { villageType }),
+			"Bannerlord VillageProductionCalculatorModel signatures must match in both supported API builds.");
+
+		MethodInfo productionPostfix = typeof(CustomPolicyBehavior).GetMethod("Patch_PolicyVillageProductionAmount_Postfix", All);
+		ParameterInfo[] productionParameters = productionPostfix?.GetParameters();
+		MethodInfo foodPostfix = typeof(CustomPolicyBehavior).GetMethod("Patch_PolicyVillageFoodProductionAmount_Postfix", All);
+		ParameterInfo[] foodParameters = foodPostfix?.GetParameters();
+		Check(productionPostfix != null
+			&& productionPostfix.ReturnType == typeof(void)
+			&& productionParameters?.Length == 3
+			&& productionParameters[0].ParameterType == villageType
+			&& productionParameters[1].ParameterType == itemType
+			&& productionParameters[2].ParameterType.IsByRef
+			&& productionParameters[2].ParameterType.GetElementType() == explainedNumberType
+			&& foodPostfix != null
+			&& foodPostfix.ReturnType == typeof(void)
+			&& foodParameters?.Length == 2
+			&& foodParameters[0].ParameterType == villageType
+			&& foodParameters[1].ParameterType.IsByRef
+			&& foodParameters[1].ParameterType.GetElementType() == typeof(float),
+			"Village production Harmony postfixes must bind both production methods exactly.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string behaviorSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Effects.cs"),
+			Encoding.UTF8);
+		Check(behaviorSource.Contains("Campaign.Current.Models.VillageProductionCalculatorModel, \"CalculateDailyProductionAmount\"")
+			&& behaviorSource.Contains("Campaign.Current.Models.VillageProductionCalculatorModel, \"CalculateDailyFoodProductionAmount\""),
+			"Village production policy must patch both methods on the active model through the established policy Harmony owner.");
+		int productionStart = behaviorSource.IndexOf("private static void Patch_PolicyVillageProductionAmount_Postfix(", StringComparison.Ordinal);
+		int foodStart = behaviorSource.IndexOf("private static void Patch_PolicyVillageFoodProductionAmount_Postfix(", StringComparison.Ordinal);
+		string productionSource = productionStart >= 0 && foodStart > productionStart
+			? behaviorSource.Substring(productionStart, foodStart - productionStart)
+			: string.Empty;
+		Check(productionSource.Contains("GetContributions")
+			&& productionSource.Contains("PolicyEffectTargetKind.Village")
+			&& productionSource.IndexOf("Settlement.All", StringComparison.Ordinal) < 0
+			&& productionSource.IndexOf("HasHorseComponent", StringComparison.Ordinal) < 0
+			&& productionSource.IndexOf("ItemCategory", StringComparison.Ordinal) < 0
+			&& productionSource.IndexOf("item.", StringComparison.Ordinal) < 0,
+			"Village type-product postfix must use exact cached Village lookup and must not exclude horses or any item category.");
+	}
+
 	private static void TestArmyFormationTendencyModuleContracts()
 	{
 		IPolicyEffectModule module = RequirePolicyEffectModule("armyFormationTendencyPct");
@@ -1472,6 +1743,416 @@ internal static class Program
 			new[] { "ApplyPolicyArmyFormationPatchesOnce();" },
 			StringSplitOptions.None).Length - 1 == 2,
 			"Army formation patch installation must remain wired exactly once in each load/session lifecycle path.");
+	}
+
+	private static void TestPartySizeLimitModuleContracts()
+	{
+		IPolicyEffectModule source = RequirePolicyEffectModule("partySizeLimit");
+		IPolicyEffectModule leaderChild = RequirePolicyEffectModule("partySizeLimitClanLeader");
+		IPolicyEffectModule lordsChild = RequirePolicyEffectModule("partySizeLimitClanLords");
+		PolicyEffectModuleDescriptor descriptor = source.Descriptor;
+		Check(descriptor.Order == 170
+			&& descriptor.ExecutionKind == PolicyEffectExecutionKind.Composite
+			&& descriptor.Hook == PolicyEffectHook.PartyMemberSizeLimit
+			&& descriptor.Aggregation == PolicyEffectAggregationKind.Additive
+			&& descriptor.ValueUnit == PolicyEffectValueUnit.PartySizePoints
+			&& descriptor.FundingMode == PolicyEffectFundingMode.InheritPolicy
+			&& descriptor.FundingStrategy == PolicyEffectFundingStrategy.Custom
+			&& descriptor.TargetProjection == PolicyEffectTargetProjectionKind.None
+			&& descriptor.TargetRefresh == PolicyEffectTargetRefreshKind.Dynamic
+			&& descriptor.AllowIndependentClanTargets
+			&& descriptor.AllowCrossKingdomTargets
+			&& descriptor.TargetKinds.SequenceEqual(new[] { PolicyEffectTargetKind.Clan })
+			&& descriptor.AllowedSelectorKinds.OrderBy(value => value).SequenceEqual(
+				new[]
+				{
+					PolicyEffectTargetKind.Settlement,
+					PolicyEffectTargetKind.Clan,
+					PolicyEffectTargetKind.Kingdom,
+					PolicyEffectTargetKind.Hero
+				}
+					.OrderBy(value => value))
+			&& source is IPolicyEffectCompositeModule,
+			"partySizeLimit must be one dynamic Clan-targeted compile-time composite.");
+		Check(PolicyEffectModuleRetrievalSettings.IsContextSupported(source, PolicyEffectRetrievalContext.PlayerKingdom)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(source, PolicyEffectRetrievalContext.PlayerLocal)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(source, PolicyEffectRetrievalContext.NpcRulerKingdom)
+			&& PolicyEffectModuleRetrievalSettings.IsContextSupported(source, PolicyEffectRetrievalContext.PlayerVassal),
+			"partySizeLimit must be selectable in every supported policy retrieval context.");
+
+		Check(((IPolicyEffectCompositeModule)source).RuntimeModuleIds.SequenceEqual(
+			new[] { "partySizeLimitClanLeader", "partySizeLimitClanLords" },
+			StringComparer.Ordinal)
+			&& PolicyEffectModuleCatalog.IsAuthorizedRuntimeModule(source.Id, leaderChild.Id)
+			&& PolicyEffectModuleCatalog.IsAuthorizedRuntimeModule(source.Id, lordsChild.Id)
+			&& !leaderChild.Descriptor.PromptVisible
+			&& !lordsChild.Descriptor.PromptVisible
+			&& leaderChild.Descriptor.Order == 171
+			&& lordsChild.Descriptor.Order == 172
+			&& leaderChild.Descriptor.ExecutionKind == PolicyEffectExecutionKind.ModelModifier
+			&& lordsChild.Descriptor.ExecutionKind == PolicyEffectExecutionKind.ModelModifier
+			&& leaderChild.Descriptor.Hook == PolicyEffectHook.PartyMemberSizeLimit
+			&& lordsChild.Descriptor.Hook == PolicyEffectHook.PartyMemberSizeLimit
+			&& leaderChild.Descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Settlement)
+			&& lordsChild.Descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Settlement)
+			&& leaderChild.Descriptor.TargetRefresh == PolicyEffectTargetRefreshKind.Dynamic
+			&& lordsChild.Descriptor.TargetRefresh == PolicyEffectTargetRefreshKind.Dynamic,
+			"partySizeLimit runtime descendants must remain hidden, authorized and dynamically Clan-targeted.");
+
+		Check(source.TryNormalizePayload(
+			new JObject { ["value"] = 40 },
+			PolicyEffectScopes.Kingdom,
+			out PolicyEffectPayload normalized,
+			out string normalizeError)
+			&& normalized is PolicyEffectPayload<int> integral
+			&& integral.Value == 40,
+			"partySizeLimit integer payload must normalize: " + normalizeError);
+		Check(source.TryNormalizePayload(new JObject { ["value"] = -100 }, PolicyEffectScopes.Local, out _, out _)
+			&& source.TryNormalizePayload(new JObject { ["value"] = 100 }, PolicyEffectScopes.Vassal, out _, out _)
+			&& !source.TryNormalizePayload(new JObject { ["value"] = -101 }, PolicyEffectScopes.Kingdom, out _, out _)
+			&& !source.TryNormalizePayload(new JObject { ["value"] = 101 }, PolicyEffectScopes.Kingdom, out _, out _)
+			&& !source.TryNormalizePayload(new JObject { ["value"] = 1.5 }, PolicyEffectScopes.Kingdom, out _, out _)
+			&& !source.TryNormalizePayload(new JObject { ["value"] = 40, ["unexpected"] = true }, PolicyEffectScopes.Kingdom, out _, out _),
+			"partySizeLimit must reject out-of-range, fractional and unknown-field payloads.");
+		string fundingError = string.Empty;
+		Check(source.TryNormalizePayload(new JObject { ["value"] = 41 }, PolicyEffectScopes.Kingdom, out PolicyEffectPayload fundingSource, out _)
+			&& source.TryApplyFunding(
+				fundingSource,
+				new PolicyEffectFundingContext { GoldScale = 0.5f, InfluenceScale = 0.75f },
+				out PolicyEffectPayload funded,
+				out fundingError)
+			&& funded is PolicyEffectPayload<int> fundedIntegral
+			&& fundedIntegral.Value == 21,
+			"partySizeLimit funding must round the lower inherited scale away from zero: " + fundingError);
+		Check(source.TryNormalizePayload(new JObject { ["value"] = -41 }, PolicyEffectScopes.Kingdom, out PolicyEffectPayload negative, out _)
+			&& source.TryApplyFunding(
+				negative,
+				new PolicyEffectFundingContext { GoldScale = 0.5f, InfluenceScale = 0.75f },
+				out PolicyEffectPayload negativeFunded,
+				out _)
+			&& negativeFunded is PolicyEffectPayload<int> negativeIntegral
+			&& negativeIntegral.Value == -21,
+			"Negative party-size funding must use the same away-from-zero rounding.");
+
+		IPolicyEffectCompositeModule composite = (IPolicyEffectCompositeModule)source;
+		PolicyEffectCompileContext Context(PolicyEffectCanonicalTargetSet targetSet) => new PolicyEffectCompileContext
+		{
+			Module = source,
+			SourceModuleId = source.Id,
+			SourceScope = PolicyEffectScopes.Kingdom,
+			TargetSet = targetSet
+		};
+		bool Expand(
+			PolicyEffectCanonicalTargetSet targetSet,
+			PolicyEffectPayload payload,
+			out IReadOnlyList<PolicyEffectCompositeChild> children,
+			out string error)
+			=> composite.TryExpand(Context(targetSet), payload, out children, out error);
+
+		PolicyEffectCanonicalTargetSet rulerTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "R1" },
+			ClanIds = new List<string> { "ruling-clan" },
+			FollowCurrentRulingClan = true
+		};
+		Check(Expand(rulerTarget, normalized, out IReadOnlyList<PolicyEffectCompositeChild> rulerChildren, out string rulerError)
+			&& rulerChildren.Count == 1
+			&& string.Equals(rulerChildren[0].ModuleId, leaderChild.Id, StringComparison.Ordinal),
+			"Dynamic ruler target must expand only to the clan-leader runtime module: " + rulerError);
+		PolicyEffectCanonicalTargetSet heroRulerTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorIds = new List<string> { "hero:v1:role:ruler:test-kingdom" },
+			ClanIds = new List<string> { "ruling-clan" }
+		};
+		Check(Expand(heroRulerTarget, normalized, out IReadOnlyList<PolicyEffectCompositeChild> heroRulerChildren, out _)
+			&& heroRulerChildren.Count == 1
+			&& string.Equals(heroRulerChildren[0].ModuleId, leaderChild.Id, StringComparison.Ordinal),
+			"Hero ruler role must also select only the leader runtime descendant.");
+
+		PolicyEffectCanonicalTargetSet clanTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "C1" },
+			ClanIds = new List<string> { "one-clan" }
+		};
+		PolicyEffectCanonicalTargetSet localSourceTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "S" },
+			ParentSettlementIds = new List<string> { "source-castle" },
+			ClanIds = new List<string> { "source-owner-clan" }
+		};
+		PolicyEffectCanonicalTargetSet kingdomTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorHandles = new List<string> { "K1" },
+			KingdomIds = new List<string> { "test-kingdom" },
+			ClanIds = new List<string> { "ruling-clan", "vassal-clan", "mercenary-clan" }
+		};
+		PolicyEffectCanonicalTargetSet heroLordsTarget = new PolicyEffectCanonicalTargetSet
+		{
+			SelectorIds = new List<string> { "hero:v1:role:lords:test-kingdom" },
+			ClanIds = new List<string> { "ruling-clan", "vassal-clan", "mercenary-clan" }
+		};
+		Check(Expand(clanTarget, normalized, out IReadOnlyList<PolicyEffectCompositeChild> clanChildren, out _)
+			&& clanChildren.Count == 1
+			&& string.Equals(clanChildren[0].ModuleId, lordsChild.Id, StringComparison.Ordinal)
+			&& Expand(localSourceTarget, normalized, out IReadOnlyList<PolicyEffectCompositeChild> localChildren, out _)
+			&& localChildren.Count == 1
+			&& string.Equals(localChildren[0].ModuleId, lordsChild.Id, StringComparison.Ordinal)
+			&& Expand(kingdomTarget, normalized, out IReadOnlyList<PolicyEffectCompositeChild> kingdomChildren, out _)
+			&& kingdomChildren.Count == 1
+			&& string.Equals(kingdomChildren[0].ModuleId, lordsChild.Id, StringComparison.Ordinal)
+			&& kingdomTarget.ClanIds.Contains("mercenary-clan", StringComparer.Ordinal)
+			&& Expand(heroLordsTarget, normalized, out IReadOnlyList<PolicyEffectCompositeChild> heroLordsChildren, out _)
+			&& heroLordsChildren.Count == 1
+			&& string.Equals(heroLordsChildren[0].ModuleId, lordsChild.Id, StringComparison.Ordinal),
+			"Local Settlement owner-Clan, Clan, Kingdom and Hero lords targets must each expand once to the all-lords descendant, including materialized mercenary clans.");
+
+		PolicyEffectCompilerRequest localCompilerRequest = new PolicyEffectCompilerRequest
+		{
+			Scope = PolicyEffectScopes.Local,
+			PolicyId = "party-size-local-source",
+			ActorHeroId = "source-owner-leader",
+			ActorClanId = "source-owner-clan",
+			IssuerKingdomId = "test-kingdom",
+			TargetKingdomId = "test-kingdom",
+			StartDay = 10f,
+			EndDay = 20f,
+			Funding = new PolicyEffectFundingContext { GoldScale = 1f, InfluenceScale = 1f },
+			CandidateModuleIds = new[] { source.Id },
+			DetailedModuleIds = new[] { source.Id }
+		};
+		PolicyEffectTargetResolver localSourceResolver = (
+			string handle,
+			IPolicyEffectModule currentModule,
+			out PolicyEffectResolvedTarget resolved,
+			out string resolveError) =>
+		{
+			resolveError = string.Empty;
+			if (!string.Equals(handle, "S", StringComparison.Ordinal)
+				|| currentModule?.Descriptor?.AllowedSelectorKinds?.Contains(PolicyEffectTargetKind.Settlement) != true)
+			{
+				resolved = null;
+				resolveError = "local source Settlement is not authorized";
+				return false;
+			}
+			resolved = new PolicyEffectResolvedTarget
+			{
+				Handle = "S",
+				SelectorKind = PolicyEffectTargetKind.Settlement,
+				CanonicalTargetSet = localSourceTarget
+			};
+			return true;
+		};
+		PolicyEffectWireEffect localSourceWire = new PolicyEffectWireEffect
+		{
+			EffectPlanVersion = PolicyEffectPlanVersions.CurrentVersion,
+			MechanismId = "M0",
+			MechanismKind = PolicyEffectMechanismKind.Independent,
+			MechanismRole = PolicyEffectMechanismRole.Subject,
+			ModuleId = source.Id,
+			TargetHandles = new List<string> { "S" },
+			Payload = new JObject { ["value"] = 40 },
+			Reason = "地方领主亲卫扩编"
+		};
+		Check(PolicyEffectCompiler.TryCompile(
+			new[] { localSourceWire },
+			localCompilerRequest,
+			localSourceResolver,
+			(ordinal, moduleId, targetSet) => "party-size-local:" + ordinal.ToString(CultureInfo.InvariantCulture),
+			out PolicyEffectCompilerResult localCompiled,
+			out string localCompileError)
+			&& localCompiled.Effects.Count == 1
+			&& string.Equals(localCompiled.Effects[0].SaveData.ModuleId, lordsChild.Id, StringComparison.Ordinal)
+			&& localCompiled.Effects[0].SaveData.TargetSet.ClanIds.SequenceEqual(
+				new[] { "source-owner-clan" }, StringComparer.Ordinal),
+			"Local source S must compile through its owner Clan into the all-lords runtime descendant: " + localCompileError);
+		Check(!Expand(
+			new PolicyEffectCanonicalTargetSet
+			{
+				SelectorHandles = new List<string> { "R1", "C1" },
+				ClanIds = new List<string> { "ruling-clan", "other-clan" },
+				FollowCurrentRulingClan = true
+			},
+			normalized,
+			out _,
+			out _)
+			&& !Expand(
+				new PolicyEffectCanonicalTargetSet
+				{
+					SelectorIds = new List<string> { "hero:v1:role:clan-leaders:test-kingdom" },
+					ClanIds = new List<string> { "ruling-clan" }
+				},
+				normalized,
+				out _,
+				out _),
+			"partySizeLimit must fail closed for mixed ruler/broad targets and unsupported Hero roles.");
+		Check(source.TryNormalizePayload(new JObject { ["value"] = 0 }, PolicyEffectScopes.Kingdom, out PolicyEffectPayload zero, out _)
+			&& Expand(clanTarget, zero, out IReadOnlyList<PolicyEffectCompositeChild> zeroChildren, out _)
+			&& zeroChildren.Count == 0,
+			"Funding-reduced zero party-size effects must emit no runtime child.");
+
+		Check(lordsChild.TryNormalizePayload(
+			new JObject { ["value"] = 40 },
+			PolicyEffectScopes.Kingdom,
+			out PolicyEffectPayload childPayload,
+			out string childError),
+			"The all-lords child payload must accept the funded integer: " + childError);
+		PolicyEffectPreparedInstance preparedChild = new PolicyEffectPreparedInstance
+		{
+			Descriptor = lordsChild.Descriptor,
+			IdempotencyKey = "party-size-child",
+			Instance = new PolicyEffectInstance
+			{
+				InstanceId = "party-size-child",
+				PolicyId = "party-size-policy",
+				ModuleId = lordsChild.Id,
+				SourceModuleId = source.Id,
+				SourceScope = PolicyEffectScopes.Kingdom,
+				Payload = childPayload,
+				TargetSet = kingdomTarget
+			}
+		};
+		IReadOnlyList<PolicyEffectModelContribution> modelContributions =
+			((IModelModifierPolicyEffectModule)lordsChild).BuildModelContributions(preparedChild);
+		Check(modelContributions.Count == 3
+			&& modelContributions.All(item => item.Hook == PolicyEffectHook.PartyMemberSizeLimit
+				&& item.TargetKind == PolicyEffectTargetKind.Clan
+				&& Math.Abs(item.Value - 40f) < 0.0001f),
+			"The all-lords child must index one contribution per compiler-materialized Clan ID.");
+
+		PolicyEffectRuntimeContribution Contribution(
+			string moduleId,
+			float value,
+			PolicyEffectAggregationKind aggregation = PolicyEffectAggregationKind.Additive)
+			=> new PolicyEffectRuntimeContribution(
+				"party-size-runtime-" + moduleId + "-" + value.ToString("R", CultureInfo.InvariantCulture),
+				"party-size-policy",
+				moduleId,
+				"领主编制改革",
+				PolicyEffectHook.PartyMemberSizeLimit,
+				PolicyEffectTargetKind.Clan,
+				"one-clan",
+				aggregation,
+				value);
+		Check(CustomPolicyBehavior.CalculatePolicyPartySizeAdjustedLimit(
+			100,
+			new[] { Contribution(lordsChild.Id, 40f), Contribution(lordsChild.Id, -10f) },
+			isClanLeader: false) == 130
+			&& CustomPolicyBehavior.CalculatePolicyPartySizeAdjustedLimit(
+				100,
+				new[] { Contribution(leaderChild.Id, 40f) },
+				isClanLeader: false) == 100
+			&& CustomPolicyBehavior.CalculatePolicyPartySizeAdjustedLimit(
+				100,
+				new[] { Contribution(leaderChild.Id, 40f), Contribution(lordsChild.Id, 10f) },
+				isClanLeader: true) == 150
+			&& CustomPolicyBehavior.CalculatePolicyPartySizeAdjustedLimit(
+				20,
+				new[] { Contribution(lordsChild.Id, -100f) },
+				isClanLeader: false) == 1
+			&& CustomPolicyBehavior.CalculatePolicyPartySizeAdjustedLimit(
+				100,
+				new[] { Contribution(lordsChild.Id, 40f, PolicyEffectAggregationKind.PercentPoints) },
+				isClanLeader: false) == 100,
+			"Party-size runtime math must stack additively, gate leader-only contributions, floor at one and ignore incompatible entries.");
+
+		PolicyEffectInstanceSaveData displayInstance = BuildPlayerVisibleEffectInstance(
+			"display-party-size",
+			"M-party-size",
+			lordsChild.Id,
+			40f,
+			kingdomTarget);
+		displayInstance.SourceModuleId = source.Id;
+		displayInstance.Payload["value"] = new JValue(40);
+		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
+		Check(display.Count == 1 && display[0].Contains("领主部队上限：+40"),
+			"Hidden party-size descendants must render as one visible source capability.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", source.Id + ".json");
+		Check(File.Exists(promptPath), "partySizeLimit prompt JSON is missing: " + promptPath);
+		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
+		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
+			&& string.Equals(prompt.Value<string>("ModuleId"), source.Id, StringComparison.Ordinal)
+			&& string.Equals(prompt.Value<string>("UnderstandingPrompt"), descriptor.EditableUnderstandingPrompt, StringComparison.Ordinal)
+			&& string.Equals(prompt.Value<string>("EvaluationPrompt"), descriptor.EditableEvaluationPrompt, StringComparison.Ordinal)
+			&& prompt.Value<string>("UnderstandingPrompt")?.Contains("发布地当前所有者家族") == true
+			&& prompt.Value<string>("UnderstandingPrompt")?.Contains("佣兵家族") == true
+			&& prompt.Value<string>("UnderstandingPrompt")?.Contains("信使") == true,
+			"partySizeLimit prompt and fallback must align on dynamic ruler, mercenary and exclusion semantics.");
+	}
+
+	private static void TestPartySizeLimitBannerlordApi()
+	{
+		Type partyBaseType = typeof(TaleWorlds.CampaignSystem.Party.PartyBase);
+		Type explainedNumberType = typeof(TaleWorlds.CampaignSystem.ExplainedNumber);
+		PropertyInfo sizeLimit = partyBaseType.GetProperty("PartySizeLimit", All);
+		PropertyInfo explainer = partyBaseType.GetProperty("PartySizeLimitExplainer", All);
+		Check(sizeLimit?.PropertyType == typeof(int)
+			&& sizeLimit.GetGetMethod(true) != null
+			&& explainer?.PropertyType == explainedNumberType
+			&& explainer.GetGetMethod(true) != null,
+			"Bannerlord PartyBase party-size getters must match both supported API builds.");
+
+		Type modelType = typeof(TaleWorlds.CampaignSystem.ComponentInterfaces.PartySizeLimitModel);
+		MethodInfo assumed = modelType.GetMethod(
+			"GetAssumedPartySizeForLordParty",
+			All,
+			null,
+			new[]
+			{
+				typeof(TaleWorlds.CampaignSystem.Hero),
+				typeof(TaleWorlds.CampaignSystem.IFaction),
+				typeof(TaleWorlds.CampaignSystem.Clan)
+			},
+			null);
+		Check(assumed != null && assumed.ReturnType == typeof(int),
+			"PartySizeLimitModel.GetAssumedPartySizeForLordParty signature must match both supported APIs.");
+
+		MethodInfo sizePostfix = typeof(CustomPolicyBehavior).GetMethod("Patch_PolicyPartySizeLimit_Postfix", All);
+		MethodInfo explainerPostfix = typeof(CustomPolicyBehavior).GetMethod("Patch_PolicyPartySizeLimitExplainer_Postfix", All);
+		MethodInfo assumedPostfix = typeof(CustomPolicyBehavior).GetMethod("Patch_PolicyAssumedLordPartySize_Postfix", All);
+		Check(sizePostfix?.ReturnType == typeof(void)
+			&& sizePostfix.GetParameters().Length == 2
+			&& sizePostfix.GetParameters()[0].ParameterType == partyBaseType
+			&& sizePostfix.GetParameters()[1].ParameterType == typeof(int).MakeByRefType()
+			&& explainerPostfix?.ReturnType == typeof(void)
+			&& explainerPostfix.GetParameters().Length == 2
+			&& explainerPostfix.GetParameters()[0].ParameterType == partyBaseType
+			&& explainerPostfix.GetParameters()[1].ParameterType == explainedNumberType.MakeByRefType()
+			&& assumedPostfix?.ReturnType == typeof(void)
+			&& assumedPostfix.GetParameters().Select(parameter => parameter.ParameterType).SequenceEqual(
+				new[]
+				{
+					typeof(TaleWorlds.CampaignSystem.Hero),
+					typeof(TaleWorlds.CampaignSystem.IFaction),
+					typeof(TaleWorlds.CampaignSystem.Clan),
+					typeof(int).MakeByRefType()
+				}),
+			"Party-size Harmony postfixes must bind the two PartyBase getters and assumed lord-party method exactly.");
+		Check(typeof(CustomPolicyBehavior).GetMethod("ApplyPolicyPartySizeLimitPatchesOnce", All) != null
+			&& typeof(CustomPolicyBehavior).GetField("_policyPartySizeLimitPatchesApplied", All) != null,
+			"Party-size Harmony installer contract is missing.");
+
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string lifecycleSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Lifecycle.cs"),
+			Encoding.UTF8);
+		Check(lifecycleSource.Split(
+			new[] { "ApplyPolicyPartySizeLimitPatchesOnce();" },
+			StringSplitOptions.None).Length - 1 == 2,
+			"Party-size patch installation must remain wired once in each load/session lifecycle path.");
+		string patchSource = File.ReadAllText(
+			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.PartySizeLimit.cs"),
+			Encoding.UTF8);
+		Check(patchSource.Contains("_policyEffectRuntimeIndex.GetContributions(")
+			&& patchSource.Contains("PolicyEffectTargetKind.Clan")
+			&& patchSource.Contains("party.IsLordParty")
+			&& patchSource.Contains("party.LordPartyComponent")
+			&& patchSource.Contains("CourierDeliveryBehavior.IsCourierParty")
+			&& patchSource.IndexOf("Clan.All", StringComparison.Ordinal) < 0
+			&& patchSource.IndexOf("MobileParty.All", StringComparison.Ordinal) < 0
+			&& patchSource.IndexOf("GetPartyMemberSizeLimit", StringComparison.Ordinal) < 0,
+			"Party-size hot paths must use one indexed Clan lookup, strict lord eligibility and no world scan or duplicate model patch.");
 	}
 
 	private static void TestKingdomVillageRaidBanModuleContracts()
@@ -3960,6 +4641,26 @@ internal static class Program
 					&& !PolicyEffectModuleCatalog.TryNormalizePayload(id,
 						new JObject { ["value"] = excessiveValue }, scope, out _, out _),
 					"Clan soldier XP payload must reject fractional, non-positive, and excessive values.");
+				continue;
+			}
+			if (string.Equals(id, "partySizeLimit", StringComparison.Ordinal)
+				|| string.Equals(id, "partySizeLimitClanLeader", StringComparison.Ordinal)
+				|| string.Equals(id, "partySizeLimitClanLords", StringComparison.Ordinal))
+			{
+				object[] partySizeNormalize = { id, new JObject { ["value"] = 40 }, scope, null, null };
+				Check((bool)InvokeStatic(catalog, "TryNormalizePayload", partySizeNormalize, 5),
+					"Integer party-size payload must normalize: " + partySizeNormalize[4]);
+				object normalizedPartySizePayload = partySizeNormalize[3];
+				object[] partySizeRoundTrip = { id, TokenFromObject(normalizedPartySizePayload), schemaVersion, null, null };
+				Check((bool)InvokeStatic(catalog, "TryDeserializePayload", partySizeRoundTrip, 5),
+					"Integer party-size payload must round-trip: " + partySizeRoundTrip[4]);
+				Check(!PolicyEffectModuleCatalog.TryNormalizePayload(id,
+					new JObject { ["value"] = 1.5 }, scope, out _, out _)
+					&& !PolicyEffectModuleCatalog.TryNormalizePayload(id,
+						new JObject { ["value"] = -201 }, scope, out _, out _)
+					&& !PolicyEffectModuleCatalog.TryNormalizePayload(id,
+						new JObject { ["value"] = 201 }, scope, out _, out _),
+					"Party-size payload must reject fractional and out-of-range values.");
 				continue;
 			}
 			if (string.Equals(id, "kingdomVillageRaidBan", StringComparison.Ordinal))
@@ -7074,7 +7775,9 @@ internal static class Program
 						? new JObject { ["onceDelta"] = 300, ["dailyDelta"] = 20 }
 						: string.Equals(moduleId, "kingdomVillageRaidBan", StringComparison.Ordinal)
 							? new JObject()
-							: new JObject { ["value"] = 1f };
+							: string.Equals(moduleId, "partySizeLimit", StringComparison.Ordinal)
+								? new JObject { ["value"] = 1 }
+								: new JObject { ["value"] = 1f };
 			string syntheticHandle = string.Equals(moduleId, "heroGold", StringComparison.Ordinal)
 				|| string.Equals(moduleId, "soldierTroopXp", StringComparison.Ordinal)
 					? "H0"

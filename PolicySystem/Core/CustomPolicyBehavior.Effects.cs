@@ -527,8 +527,10 @@ public sealed partial class CustomPolicyBehavior
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.BuildingConstructionModel, "CalculateDailyConstructionPower", new Type[2] { typeof(Town), typeof(bool) }, nameof(Patch_PolicyConstructionPower_Postfix));
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.BuildingConstructionModel, "CalculateDailyConstructionPowerWithoutBoost", new Type[1] { typeof(Town) }, nameof(Patch_PolicyConstructionPowerWithoutBoost_Postfix));
 			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.VolunteerModel, "GetDailyVolunteerProductionProbability", new Type[3] { typeof(Hero), typeof(int), typeof(Settlement) }, nameof(Patch_PolicyVolunteerProductionProbability_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.VillageProductionCalculatorModel, "CalculateDailyProductionAmount", new Type[2] { typeof(Village), typeof(ItemObject) }, nameof(Patch_PolicyVillageProductionAmount_Postfix));
+			PatchPolicySettlementModelMethod(harmony, Campaign.Current.Models.VillageProductionCalculatorModel, "CalculateDailyFoodProductionAmount", new Type[1] { typeof(Village) }, nameof(Patch_PolicyVillageFoodProductionAmount_Postfix));
 			_policySettlementModelPatchesApplied = true;
-			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement and volunteer calculations and tooltips");
+			PolicySystemLog.Write("Effect", "settlement-model-patches-applied", "AF policy effects now participate in vanilla settlement, village production and volunteer calculations and tooltips");
 		}
 		catch (Exception ex)
 		{
@@ -1035,6 +1037,118 @@ public sealed partial class CustomPolicyBehavior
 		}
 		double adjusted = (double)originalProbability * Math.Max(0d, 1d + totalPercent / 100d);
 		return (float)Math.Max(0d, Math.Min(1d, adjusted));
+	}
+
+	private static void Patch_PolicyVillageProductionAmount_Postfix(
+		Village village,
+		ItemObject item,
+		ref ExplainedNumber __result)
+	{
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		string villageId = village?.Settlement?.StringId;
+		if (behavior == null || string.IsNullOrWhiteSpace(villageId))
+		{
+			return;
+		}
+		IReadOnlyList<PolicyEffectRuntimeContribution> contributions =
+			behavior._policyEffectRuntimeIndex.GetContributions(
+				PolicyEffectHook.VillageGoodsProduction,
+				PolicyEffectTargetKind.Village,
+				villageId);
+		float originalAmount = __result.ResultNumber;
+		float adjustedAmount = CalculatePolicyVillageProductionAdjustedAmount(originalAmount, contributions);
+		ApplyPolicyVillageProductionAdjustedExplainedNumber(adjustedAmount, ref __result);
+	}
+
+	private static void Patch_PolicyVillageFoodProductionAmount_Postfix(
+		Village village,
+		ref float __result)
+	{
+		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
+		string villageId = village?.Settlement?.StringId;
+		if (behavior == null || string.IsNullOrWhiteSpace(villageId))
+		{
+			return;
+		}
+		IReadOnlyList<PolicyEffectRuntimeContribution> contributions =
+			behavior._policyEffectRuntimeIndex.GetContributions(
+				PolicyEffectHook.VillageGoodsProduction,
+				PolicyEffectTargetKind.Village,
+				villageId);
+		__result = CalculatePolicyVillageProductionAdjustedAmount(__result, contributions);
+	}
+
+	internal static float CalculatePolicyVillageProductionAdjustedAmount(
+		float originalAmount,
+		IReadOnlyList<PolicyEffectRuntimeContribution> contributions)
+	{
+		if (float.IsNaN(originalAmount) || float.IsInfinity(originalAmount))
+		{
+			return originalAmount;
+		}
+		double totalPercent = 0d;
+		bool hasCompatibleContribution = false;
+		for (int contributionIndex = 0; contributionIndex < (contributions?.Count ?? 0); contributionIndex++)
+		{
+			PolicyEffectRuntimeContribution contribution = contributions[contributionIndex];
+			if (contribution == null
+				|| contribution.Aggregation != PolicyEffectAggregationKind.Additive
+				|| float.IsNaN(contribution.Value)
+				|| float.IsInfinity(contribution.Value))
+			{
+				continue;
+			}
+			totalPercent += contribution.Value;
+			hasCompatibleContribution = true;
+		}
+		if (!hasCompatibleContribution
+			|| double.IsNaN(totalPercent)
+			|| double.IsInfinity(totalPercent)
+			|| Math.Abs(totalPercent) <= 0.0001d)
+		{
+			return originalAmount;
+		}
+		double adjusted = (double)originalAmount * Math.Max(0d, 1d + totalPercent / 100d);
+		if (double.IsNaN(adjusted))
+		{
+			return originalAmount;
+		}
+		return (float)Math.Max(0d, Math.Min(float.MaxValue, adjusted));
+	}
+
+	internal static void ApplyPolicyVillageProductionAdjustedExplainedNumber(
+		float adjustedAmount,
+		ref ExplainedNumber result)
+	{
+		float factorDelta = CalculatePolicyVillageProductionExplainedFactorDelta(
+			result.BaseNumber,
+			result.ResultNumber,
+			adjustedAmount);
+		if (Math.Abs(factorDelta) > 0.0001f)
+		{
+			result.AddFactor(factorDelta);
+		}
+	}
+
+	internal static float CalculatePolicyVillageProductionExplainedFactorDelta(
+		float baseAmount,
+		float originalAmount,
+		float adjustedAmount)
+	{
+		if (float.IsNaN(adjustedAmount)
+			|| float.IsInfinity(adjustedAmount)
+			|| float.IsNaN(originalAmount)
+			|| float.IsInfinity(originalAmount)
+			|| float.IsNaN(baseAmount)
+			|| float.IsInfinity(baseAmount)
+			|| Math.Abs(baseAmount) <= 0.0001f)
+		{
+			return 0f;
+		}
+		float factorDelta = (adjustedAmount - originalAmount) / baseAmount;
+		return float.IsNaN(factorDelta) || float.IsInfinity(factorDelta)
+			? 0f
+			: factorDelta;
 	}
 
 	private static void AddActivePolicySettlementEffects(

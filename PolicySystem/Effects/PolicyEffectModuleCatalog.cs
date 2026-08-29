@@ -1163,6 +1163,25 @@ internal static class PolicyEffectModuleCatalog
 				aggregation = PolicyEffectAggregationKind.Additive;
 				valueUnit = PolicyEffectValueUnit.RelativePercent;
 				break;
+			case PolicyEffectHook.VillageGoodsProduction:
+				executionKind = PolicyEffectExecutionKind.ModelModifier;
+				targetKind = PolicyEffectTargetKind.Village;
+				aggregation = PolicyEffectAggregationKind.Additive;
+				valueUnit = PolicyEffectValueUnit.RelativePercent;
+				break;
+			case PolicyEffectHook.PartyMemberSizeLimit:
+				if (descriptor.ExecutionKind != PolicyEffectExecutionKind.ModelModifier
+					&& descriptor.ExecutionKind != PolicyEffectExecutionKind.Composite)
+				{
+					throw new InvalidOperationException(
+						"PartyMemberSizeLimit only supports model modifiers and their compile-time composite source: "
+						+ descriptor.Id);
+				}
+				executionKind = descriptor.ExecutionKind;
+				targetKind = PolicyEffectTargetKind.Clan;
+				aggregation = PolicyEffectAggregationKind.Additive;
+				valueUnit = PolicyEffectValueUnit.PartySizePoints;
+				break;
 			case PolicyEffectHook.KingdomVillageRaidBlock:
 				executionKind = PolicyEffectExecutionKind.ModelModifier;
 				targetKind = PolicyEffectTargetKind.Kingdom;
