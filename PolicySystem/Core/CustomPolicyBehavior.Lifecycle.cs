@@ -466,6 +466,7 @@ public sealed partial class CustomPolicyBehavior
 		ApplyPolicyFinanceModelPatchesOnce();
 		ApplyPolicyClanPoliticsModelPatchesOnce();
 		ApplyPolicyArmyFormationPatchesOnce();
+		ApplyPolicyPartySizeLimitPatchesOnce();
 		ApplyPolicyVillageRaidBanPatchesOnce();
 		RemoveLegacyStoppedDynamicPolicyMembershipAfterLoad();
 		ReconcilePolicyReReviewReplacementsAfterLoad();
@@ -894,6 +895,7 @@ public sealed partial class CustomPolicyBehavior
 		ApplyPolicyFinanceModelPatchesOnce();
 		ApplyPolicyClanPoliticsModelPatchesOnce();
 		ApplyPolicyArmyFormationPatchesOnce();
+		ApplyPolicyPartySizeLimitPatchesOnce();
 		ApplyPolicyVillageRaidBanPatchesOnce();
 		ReconcilePendingVassalExternalCommits();
 		RemoveLegacyStoppedDynamicPolicyMembershipAfterLoad();

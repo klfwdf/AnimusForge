@@ -685,6 +685,14 @@ internal static class PolicyEffectSaveCodec
 			}
 			return "士兵精锐化：" + (parts.Count > 0 ? string.Join("；", parts) : "无变化");
 		}
+		if (string.Equals(displayGroup, "partySizeLimit", StringComparison.Ordinal))
+		{
+			float value = SumNumericPayloadValues(
+				instances,
+				"partySizeLimitClanLeader",
+				"partySizeLimitClanLords");
+			return "领主部队上限：" + FormatSignedPlayerVisibleNumber(value);
+		}
 		if (string.Equals(displayGroup, "kingdomStability", StringComparison.Ordinal))
 		{
 			float value = SumNumericPayloadValues(
@@ -739,7 +747,15 @@ internal static class PolicyEffectSaveCodec
 			{
 				return "相对原版每日判定频率 " + signed + "%";
 			}
+			if (descriptor.Hook == PolicyEffectHook.VillageGoodsProduction)
+			{
+				return "相对原版村庄商品产量 " + signed + "%";
+			}
 			return "相对原版候选分数 " + signed + "%";
+		}
+		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PartySizePoints)
+		{
+			return "原版部队上限 " + signed;
 		}
 		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce)
 		{

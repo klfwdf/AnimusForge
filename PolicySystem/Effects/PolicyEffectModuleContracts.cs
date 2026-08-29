@@ -61,7 +61,9 @@ internal enum PolicyEffectHook
 	DailyScheduler,
 	ArmyFormationScore,
 	KingdomVillageRaidBlock,
-	VolunteerProductionProbability
+	VolunteerProductionProbability,
+	VillageGoodsProduction,
+	PartyMemberSizeLimit
 }
 
 internal enum PolicyEffectAggregationKind
@@ -80,7 +82,8 @@ internal enum PolicyEffectValueUnit
 	GoldOnce,
 	GoldPerDay,
 	RelativePercent,
-	BooleanFlag
+	BooleanFlag,
+	PartySizePoints
 }
 
 internal enum PolicyEffectTargetKind
