@@ -1,0 +1,34 @@
+# Copy into one AF.Bridge.* project and replace every __PLACEHOLDER__.
+id: af.bridge.__BRIDGE_ID__
+kind: bridge
+version: 0.1.0
+contractVersion: 1
+entryType: __ENTRY_TYPE__
+owner:
+  team: __JOINT_TEAM__
+  maintainers:
+    - __MODULE_A_MAINTAINER__
+    - __MODULE_B_MAINTAINER__
+profiles:
+  - developer
+requiredModules:
+  - id: af.module.__MODULE_A__
+    version: ">=0.1.0 <1.0.0"
+  - id: af.module.__MODULE_B__
+    version: ">=0.1.0 <1.0.0"
+optionalModules: []
+requiresCapabilities:
+  - __MODULE_A_CAPABILITY__
+  - __MODULE_B_CAPABILITY__
+providesCapabilities: []
+persistence:
+  namespace: __BRIDGE_NAMESPACE__
+  schemaVersion: 1
+lifecycle:
+  activation: save-load-boundary
+  harmonyPatches: false
+  runtimeUnload: unsupported
+compatibility:
+  bannerlord:
+    - "1.3"
+    - "1.4"
