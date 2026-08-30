@@ -6,7 +6,7 @@
 - 当前准备分支已推送提交：`23449caf0c6d1e38235d752f8fa1b0975dce17a5`（重构地图与 owner matrix）
 - 当前状态：IN PROGRESS（阶段 4 Persistence/Profile/Config 与阶段 5 Conversation 统一管线 VERIFY；阶段 6 Memory/AFEF、Action 协议和 Economy/Reward/Debt contract VERIFY；真实 HTTP/游戏内验收和默认切换未完成）
 - 最近验证：InteractionPipeline `39 cases PASS`、Persistence/Profile/Config runner、阶段 2/3 runners、1.3/1.4/Bootstrap 和 project-local unified stage 均 PASS；未部署到游戏目录。
-- 当前任务：在真实初始化 Campaign/Mission Host 可用时验证 live Economy、三渠道主线程 commit、旧存档和 AFEF；生产回放与 owner/state fixture 已完成，默认路径保持不变。
+- 当前任务：在真实初始化 Campaign/Mission Host 可用时验证 live Economy、三渠道主线程 commit、旧存档和 AFEF；生产回放、owner/state fixture 和 Host readiness 已完成，默认路径保持不变。
 
 ## 阶段 7 继续进度
 
@@ -603,3 +603,9 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 新增 tools/LiveHostReadinessAudit/live_host_readiness_audit.py 与 README，检查游戏可执行文件、project-local 1.3/1.4/Bootstrap stage、安装模块、SubModule Bootstrap 声明、游戏进程和标准存档目录；不启动、不部署、不读取存档内容。
 - 验证：liveHostReadiness gameRoot=1 exe=1 stage=1 bootstrap=1 implementation13=1 implementation14=1 installedModule=1 gameRunning=0 saveDirs=1 noDeployment=1 PASS。
 - 当前真实 live host 尚未运行；installedMatchesStage=false 是预期安全状态，表示没有把 stage 部署到游戏目录。下一步需在授权的游戏测试窗口执行部署/启动/回滚和 live Economy、旧存档、AFEF 验收。
+
+## 本轮补充状态（2026-08-30，推送网络阻塞）
+
+- Host readiness 审计本地通过；游戏未运行，project-local stage 齐全，未部署。
+- 本地提交 f0236514 已创建，但三次非强制 push 均因 GitHub HTTPS 443 连接重置/无法连接失败；origin/refactor/prepare-af-restructure 目前仍为 cfbf1e73。
+- 网络恢复后只需执行 git push origin HEAD:refactor/prepare-af-restructure，不要 force push。
