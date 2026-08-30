@@ -519,3 +519,11 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 验证：Configured Gateway replay（`success=1 streaming=1 thinkingPlainRetry=1 retryable5xx=1 cancellation=1 credentialBoundary=1`）、Configured validation、Knowledge/RAG、Primary Gateway 均 PASS；1.4 direct 与 1.3/1.4/Bootstrap unified stage 均 `0 warning / 0 error`。
 - 本轮未部署游戏目录；真实 provider、游戏内 host/commit、旧存档和 XihaiAction runtime 独立编译仍 `NOT-RUN`。
 - 下一项准确任务：为已初始化 host 接入可控 provider，验证真实生成、主线程 commit 与 legacy fallback。
+
+
+## 本轮完成（2026-08-30，生产三渠道等价可控 Host fixture 验证）
+
+- 新增 `tools/ProductionConfiguredHostReplayTests/`，直接加载 project-local 1.4 production stage，并使用真实 `LegacyConfiguredChatGateway`、`LegacyChannelInteractionFacade` 与 `DetachedInteractionHost`；loopback provider 不使用 fake Gateway。
+- 回放通过：`productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1`。
+- 已验证三 channel 的 provider 主/后处理请求、commit/history 角色边界、失败回退和取消不提交；真实 Bannerlord Host、live Agent/Hero、ActionPlan 游戏执行、AFEF、旧存档仍 `NOT-RUN`。
+- 未部署游戏目录；下一项准确任务：Economy/Reward/Debt 主线程 replay port 与 ActionPlan 真实域校验。

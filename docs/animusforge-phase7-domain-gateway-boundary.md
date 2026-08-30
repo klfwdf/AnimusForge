@@ -234,3 +234,20 @@ Knowledge/RAG、Primary Gateway replay 及 1.4 direct/1.3/1.4/Bootstrap unified 
 均通过。默认三渠道仍未切换；真实 provider、游戏内 host、旧存档和 Universal
 legacy wrapper 的实机调用仍为 `NOT-RUN`。下一项是为已初始化 host 接入可控 provider，
 验证真实生成、主线程 commit 与 legacy fallback。
+
+
+## Production configured Host equivalent fixture (2026-08-30)
+
+`tools/ProductionConfiguredHostReplayTests` 直接加载 project-local 1.4 stage 中的
+生产 `AnimusForge.dll`，不使用 fake `ILlmGateway`，而是通过 loopback provider
+实例化 `LegacyConfiguredChatGateway`、`LegacyChannelInteractionFacade` 和
+`DetachedInteractionHost`。NativeConversation、SceneShout、Courier 三种
+channel identity 都完成 main/postprocess 请求、主线程 commit/history、provider
+failure fallback 和 caller cancellation 回放。
+
+成功路径确认每个 channel 只写入 `user → assistant` 历史，失败和取消不提交；
+所有 HTTP 请求的 Authorization 只由 gateway credential resolver 在发送边界提供。
+该 fixture 证明生产程序集和 Host 生命周期可以在等价可控环境闭环，但不等同
+真实 Bannerlord campaign/mission host：live Agent/Hero、动作执行、AFEF、旧存档
+和游戏内三渠道仍为 `NOT-RUN`。下一项按计划进入 Economy/Reward/Debt 主线程
+replay port 与 ActionPlan 当前状态复核。
