@@ -1,12 +1,12 @@
 # Handoff：AF 重构准备阶段
 
 - 日期：2026-08-30
-- 当前分支：`codex/af-full-llm-refactor`（canonical worktree：`F:\AF测试重构`）
+- 当前分支：`refactor/prepare-af-restructure`（canonical worktree：`F:\AF测试重构`）
 - 基线 HEAD：`d4cb1467376c6e923f4295dcefc7878c11dbc7c1`（包含已单独推送的模块版本提交）
 - 当前准备分支已推送提交：`23449caf0c6d1e38235d752f8fa1b0975dce17a5`（重构地图与 owner matrix）
 - 当前状态：IN PROGRESS（阶段 4 Persistence/Profile/Config 与阶段 5 Conversation 统一管线 VERIFY；阶段 6 Memory/AFEF、Action 协议和 Economy/Reward/Debt contract VERIFY；真实 HTTP/游戏内验收和默认切换未完成）
 - 最近验证：InteractionPipeline `39 cases PASS`、Persistence/Profile/Config runner、阶段 2/3 runners、1.3/1.4/Bootstrap 和 project-local unified stage 均 PASS；未部署到游戏目录。
-- 当前任务：在已初始化 host 中验证 Native/SceneShout/Courier opt-in 的真实生成与主线程 commit；AI 错误分析、XihaiAction、World Diplomacy cancellation 和 Dedicated TTS 本地回放切片已完成，真实游戏内回放仍待后续。默认路径保持不变。
+- 当前任务：在真实初始化 Campaign/Mission Host 可用时验证 live Economy、三渠道主线程 commit、旧存档和 AFEF；生产回放与 owner/state fixture 已完成，默认路径保持不变。
 
 ## 阶段 7 继续进度
 

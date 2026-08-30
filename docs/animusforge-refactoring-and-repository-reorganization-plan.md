@@ -11,7 +11,7 @@
 - 基线父提交：`96a1c60f1877813a9fb3440ddad068d6e92afa1e`（policy 功能基线）
 - 当前工作 HEAD：`2ada463d`（`refactor: add merchant economy replay owner`；已推送到 `origin/refactor/prepare-af-restructure`）
 - 当前阶段：阶段 7 ACTIVE，继续接入领域 LLM；本轮完成 Economy/Reward/Debt Merchant CharacterObject/Settlement owner adapter 与 fail-closed 验证，阶段 4/5/6 契约与回放验证保持通过（阶段 1 清理 HOLD；阶段 3 设计已完成；阶段 0 基线详细记录按用户决定跳过）
-- 当前任务：为三渠道 ActionPlan commit 接入统一 Economy-aware executor，先完成 Hero/Party/Merchant owner 的 capability 路由、confirmed facts 回写和纯/生产回放；真实游戏内动作、旧存档和 AFEF 仍未验证
+- 当前任务：在真实初始化 Campaign/Mission Host 可用时，验证 live Economy、三渠道主线程 commit、confirmed facts、旧存档和 AFEF；纯 contract、生产 1.4 回放和状态 fixture 已完成
 - 当前负责人：Codex 重构会话
 - 物理程序集策略：暂不拆分为多个玩法 DLL；先在单一 `AnimusForge.dll` 内完成逻辑模块化
 - 旧存档目标：必须兼容；至少保持现有程序集身份、序列化类型和 SyncData key，必要变更必须提供迁移与证据
@@ -22,7 +22,7 @@
 - 1.4 构建引用要求：按 `1.4.x` API 线管理；每个开发者可以使用自己的合法 1.4.x 安装，但构建记录必须写明精确 `BuildInfo`，共享验收使用固定代表性 overlay
 - 最后更新：2026-08-30（Economy/Reward/Debt Merchant owner adapter）
 - 状态：IN PROGRESS
-- 最近验证：EconomyRewardDebtPort contract、ProductionEconomyOwner（Hero/Party/Merchant factory）回放、Production configured Host、Configured Gateway/Validation、Knowledge/RAG、Primary Gateway 均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`，未部署。
+- 最近验证：Economy-aware executor、owner/state fixture、Production 1.4 commit、World Diplomacy intent-boundary、三渠道 host 和 Gateway 回放均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`，未部署。
 - 依赖记录：实际外部模块路径已解析；当前机器游戏 BuildInfo 为 `v1.4.8.119303`，可复现 1.4 overlay 为 `v1.4.6.115628`。
 - 阶段 1 阻塞：用户已决定先保持仓库现状；1.3.x/1.4.x 游戏源码参考仓库保留在 tracked reference plane，其他未决对象也不做清理，许可证/第三方 provenance 继续作为待确认项。
 
