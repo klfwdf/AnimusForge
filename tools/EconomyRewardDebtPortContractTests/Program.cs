@@ -40,6 +40,33 @@ EconomyRewardDebtReplayResult Applied() => new EconomyRewardDebtReplayResult(
     EconomyRewardDebtReplayStatus.Applied, 1,
     new[] { new FactRecord("economy.reward", "npc-1", "gold applied") }, "");
 
+LegacyActionTagParser parser = new LegacyActionTagParser();
+ActionPlan parsedActionPlan = parser.Parse(
+    "[AD:120:30:P:late payment]",
+    new PostprocessContext(
+        new[] { "economy" },
+        new[] { "AD" },
+        new CapabilitySet(new[] { EconomyRewardDebtCapabilityIds.DebtCreate })));
+EconomyRewardDebtReplayPlan parsedDebtPlan = new LegacyEconomyRewardDebtAdapter().Plan(
+    parsedActionPlan,
+    new CapabilitySet(new[] { EconomyRewardDebtCapabilityIds.DebtCreate }));
+AssertTrue(parsedDebtPlan.Actions.Count == 1
+    && parsedDebtPlan.Actions[0].DueDaysToken == "30"
+    && parsedDebtPlan.Actions[0].NoteToken == "late payment",
+    "debt due days/note were not preserved from the legacy tag");
+ActionPlan singleArgumentGold = parser.Parse(
+    "[ACTION:GIVE_GOLD:75]",
+    new PostprocessContext(
+        new[] { "economy" },
+        new[] { "ACTION:GIVE_GOLD" },
+        new CapabilitySet(new[] { EconomyRewardDebtCapabilityIds.GiveGold })));
+EconomyRewardDebtReplayPlan singleArgumentGoldPlan = new LegacyEconomyRewardDebtAdapter().Plan(
+    singleArgumentGold,
+    new CapabilitySet(new[] { EconomyRewardDebtCapabilityIds.GiveGold }));
+AssertTrue(singleArgumentGoldPlan.Actions.Count == 1
+    && singleArgumentGoldPlan.Actions[0].AmountToken == "75",
+    "single-argument legacy GIVE_GOLD was not preserved");
+
 int callbackCalls = 0;
 LegacyEconomyRewardDebtMainThreadPort port = new LegacyEconomyRewardDebtMainThreadPort(
     () => true,
@@ -78,4 +105,4 @@ LegacyEconomyRewardDebtMainThreadPort badCount = new LegacyEconomyRewardDebtMain
 EconomyRewardDebtReplayResult countResult = badCount.Replay(Plan(), Snapshot());
 AssertTrue(countResult.Status == EconomyRewardDebtReplayStatus.Failed && countResult.ErrorCode == "economy.applied_count_invalid", "invalid applied count was not rejected");
 
-Console.WriteLine("PASS economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1");
+Console.WriteLine("PASS economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 debtMetadata=1 singleArgumentGold=1");
