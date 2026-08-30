@@ -24,8 +24,9 @@
   当前 Economy 域不适用的动作，都返回明确 `exclusionReasons`；不会从排除项
   生成 confirmed AFEF。
 - `IEconomyRewardDebtMainThreadPort` 是执行端口：实际 Hero、库存、债务、
-  settlement 资格解析和既有领域调用必须在主线程重新校验后完成。当前切片不
-  提供生产执行实现，因此不改变默认三渠道。
+  settlement 资格解析和既有领域调用必须在主线程重新校验后完成。当前已增加
+  `RewardSystemBehavior.CreateEconomyRewardDebtMainThreadPortForExternal()`，
+  为 Hero→玩家路径提供生产 owner adapter；非 Hero/商人/部队路径仍 fail-closed。
 
 ## 保持不变
 
@@ -72,3 +73,22 @@
 目标过期、capability fail-closed、非经济排除、无适用动作、领域异常和计数
 校验，全部通过；1.4 production implementation 编译通过。尚未完成
 `RewardSystemBehavior` 生产回调接线、真实资产/债务/定居点校验和游戏内动作验收。
+
+
+## RewardSystemBehavior Hero owner adapter (2026-08-30)
+
+`RewardSystemBehavior.EconomyReplay.cs` 增加生产 factory 与 Hero→玩家 replay
+owner。factory 只在存在 live `RewardSystemBehavior` owner 时创建
+`LegacyEconomyRewardDebtMainThreadPort`，并由 `TWParallel.IsMainThread()`、
+当前 `Hero.Find(subjectId)` 和 `Hero.MainHero` 做边界校验。
+
+Hero owner 复用现有 RewardSystem 的金币/物品转移、RP 物品生成、债务创建/解除
+和固定资产转移方法；只在实际方法返回成功后生成 `FactRecord`。`ACTION:GIVE_GOLD`
+单参数旧写法、债务期限和备注也已在 planner contract 中保留。非 Hero、商人、
+部队和真实游戏对象不存在时不执行任何变更。
+
+验证：Economy port contract 与 production owner factory replay 均 PASS；Debug
+unified stage 的 1.3、1.4、Bootstrap 均 `0 warning / 0 error`。真实 Bannerlord
+Campaign/Mission、live inventory/debt/settlement、三渠道 ActionPlan 游戏内执行、
+旧存档和 AFEF 实机写入仍为 `NOT-RUN`。下一项是补齐非 Hero/商人/部队 owner adapter，
+再接入三渠道 commit 的 Economy capability。

@@ -76,6 +76,12 @@ public sealed class LegacyEconomyRewardDebtAdapter : IEconomyRewardDebtReplayPla
             case "ACTION:GIVE_GOLD":
             {
                 string amount = GetFirst(request, "amount", "arg0", "arg1");
+                if (string.IsNullOrWhiteSpace(amount))
+                {
+                    // Legacy prompt files also use [ACTION:GIVE_GOLD:amount],
+                    // where the parser stores the single amount in TargetId.
+                    amount = request.TargetId;
+                }
                 if (!IsPositiveInteger(amount))
                 {
                     reason = "economy.give_gold.invalid_amount";
@@ -116,7 +122,8 @@ public sealed class LegacyEconomyRewardDebtAdapter : IEconomyRewardDebtReplayPla
                 action = new EconomyRewardDebtAction(
                     EconomyRewardDebtActionKind.DebtCreate, tag, request.TargetId,
                     string.Empty, string.Empty, amount, string.Empty, string.Empty,
-                    debtorKind, EconomyRewardDebtCapabilityIds.DebtCreate);
+                    debtorKind, EconomyRewardDebtCapabilityIds.DebtCreate,
+                    days, Get(request, "arg2"));
                 return true;
             }
             case "ADP":

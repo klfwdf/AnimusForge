@@ -46,7 +46,9 @@ public sealed class EconomyRewardDebtAction
         string debtId,
         string settlementToken,
         string directionToken,
-        string capabilityId)
+        string capabilityId,
+        string dueDaysToken = "",
+        string noteToken = "")
     {
         Kind = kind;
         SourceTag = ContractGuard.Required(sourceTag, nameof(sourceTag));
@@ -58,6 +60,8 @@ public sealed class EconomyRewardDebtAction
         SettlementToken = settlementToken ?? string.Empty;
         DirectionToken = directionToken ?? string.Empty;
         CapabilityId = ContractGuard.Required(capabilityId, nameof(capabilityId));
+        DueDaysToken = dueDaysToken ?? string.Empty;
+        NoteToken = noteToken ?? string.Empty;
     }
 
     public EconomyRewardDebtActionKind Kind { get; }
@@ -70,6 +74,8 @@ public sealed class EconomyRewardDebtAction
     public string SettlementToken { get; }
     public string DirectionToken { get; }
     public string CapabilityId { get; }
+    public string DueDaysToken { get; }
+    public string NoteToken { get; }
 }
 
 public sealed class EconomyRewardDebtReplayPlan

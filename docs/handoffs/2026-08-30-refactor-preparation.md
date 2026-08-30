@@ -536,3 +536,12 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 验证结果：`economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 PASS`；1.4 production implementation compile `0 warning / 0 error`。
 - 重要限制：尚未接入 `RewardSystemBehavior` 的实际回调，尚未解析 live Hero/item/debt/settlement，真实经济动作和游戏内验收仍为 `NOT-RUN`。
 - 下一项准确任务：实现并验证 RewardSystemBehavior domain-owner callback adapter；保持旧 `ApplyRewardTags` 为唯一实际游戏状态修改 authority。
+
+
+## 本轮完成（2026-08-30，Economy/Reward/Debt Hero owner adapter）
+
+- 新增 `RewardSystemBehavior.EconomyReplay.cs`，把 `LegacyEconomyRewardDebtMainThreadPort` 接入现有 `RewardSystemBehavior` Hero→玩家 owner；复用现有金币、物品、RP 物品、债务和固定资产方法，不复制第二套领域规则。
+- `LegacyEconomyRewardDebtAdapter` 补齐旧 `[ACTION:GIVE_GOLD:金额]` 单参数写法；Economy action contract 保留 AD 债务期限与备注。
+- 验证：`economyRewardDebtPort ... debtMetadata=1 singleArgumentGold=1 PASS`；`productionEconomyOwnerReplay factoryFailClosed=1 productionType=1 noCampaignMutation=1 PASS`；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`。
+- 当前限制：真实 Campaign/Mission、live inventory/debt/settlement、非 Hero/商人/部队 owner、三渠道 ActionPlan 游戏内执行、旧存档和 AFEF 实机写入仍 `NOT-RUN`。
+- 下一项准确任务：补齐非 Hero/商人/部队 domain-owner adapter，并接入三渠道 commit 的 Economy capability。

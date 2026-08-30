@@ -9,6 +9,7 @@
     <Compile Include="..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
+    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" Link="Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" />
   </ItemGroup>
