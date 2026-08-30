@@ -527,3 +527,12 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 回放通过：`productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1`。
 - 已验证三 channel 的 provider 主/后处理请求、commit/history 角色边界、失败回退和取消不提交；真实 Bannerlord Host、live Agent/Hero、ActionPlan 游戏执行、AFEF、旧存档仍 `NOT-RUN`。
 - 未部署游戏目录；下一项准确任务：Economy/Reward/Debt 主线程 replay port 与 ActionPlan 真实域校验。
+
+
+## 本轮完成（2026-08-30，Economy/Reward/Debt 主线程 replay port contract）
+
+- 新增 `Refactor/Adapters/LegacyEconomyRewardDebtMainThreadPort.cs`，为 `IEconomyRewardDebtMainThreadPort` 提供主线程、目标快照、capability 排除、领域异常和结果计数的 fail-closed boundary。
+- 新增 `tools/EconomyRewardDebtPortContractTests/`；覆盖 valid、not-main-thread、stale target、capability fail-closed、non-economy exclusion、no applicable action、domain exception 和 applied-count validation。
+- 验证结果：`economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 PASS`；1.4 production implementation compile `0 warning / 0 error`。
+- 重要限制：尚未接入 `RewardSystemBehavior` 的实际回调，尚未解析 live Hero/item/debt/settlement，真实经济动作和游戏内验收仍为 `NOT-RUN`。
+- 下一项准确任务：实现并验证 RewardSystemBehavior domain-owner callback adapter；保持旧 `ApplyRewardTags` 为唯一实际游戏状态修改 authority。
