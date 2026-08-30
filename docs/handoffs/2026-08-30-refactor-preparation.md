@@ -591,3 +591,9 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 新增 docs/fixtures/phase7-economy-aware-commit/economy-owner-state-cases.json 与 tools/EconomyOwnerStateFixtureContractTests.py，固化 Hero、Party、Merchant、Courier-Hero 和 fail-closed 状态边界；fixture 只包含字符串/ID/状态，不创建或修改 Bannerlord 对象。
 - 验证：economyOwnerStateFixture cases=7 eligible=4 rejected=3 stringOnly=1 hero=1 party=1 merchant=1 courierHero=1 failClosed=1 PASS。
 - 下一项准确任务：在真实初始化 Campaign/Mission host 可用时，验证 live inventory/market/debt、三渠道主线程 commit、confirmed facts、旧存档和 AFEF；当前不得把纯 fixture 视为游戏内验收。
+
+## 本轮完成（2026-08-30，World Diplomacy intent-boundary smoke test 同步）
+
+- 将 smoke test 对 queued LLM job 截断信号的旧 api.IsOutputTruncated 断言同步为共享 Gateway metadata.IsOutputTruncated；生产代码保持不变。
+- 验证：World diplomacy intent-boundary smoke tests passed: 1168；此前 WorldDiplomacy Gateway、compression、result-settlement、Economy-aware、InteractionPipeline 与生产回放继续通过。
+- 当前限制：真实 Campaign/Mission、live Economy、旧存档和 AFEF 仍 NOT-RUN。
