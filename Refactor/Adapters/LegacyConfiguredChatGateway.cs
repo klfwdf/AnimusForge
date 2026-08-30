@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -31,6 +33,38 @@ public sealed class ConfiguredChatValidationExchange
     public LlmGenerateResult Result { get; }
 }
 
+
+/// <summary>
+/// Adapter-local diagnostics for a configured chat generation. Response bodies
+/// are retained only for the legacy caller that owns user-facing diagnostics;
+/// they never enter the shared immutable LLM contract or save data.
+/// </summary>
+public sealed class ConfiguredChatGenerationExchange
+{
+    public ConfiguredChatGenerationExchange(
+        int statusCode,
+        string responseBody,
+        string rawStreamSample,
+        string requestBody,
+        string controlMode,
+        LlmGenerateResult result)
+    {
+        StatusCode = statusCode;
+        ResponseBody = responseBody ?? string.Empty;
+        RawStreamSample = rawStreamSample ?? string.Empty;
+        RequestBody = requestBody ?? string.Empty;
+        ControlMode = controlMode ?? string.Empty;
+        Result = result ?? throw new ArgumentNullException(nameof(result));
+    }
+
+    public int StatusCode { get; }
+    public string ResponseBody { get; }
+    public string RawStreamSample { get; }
+    public string RequestBody { get; }
+    public string ControlMode { get; }
+    public LlmGenerateResult Result { get; }
+}
+
 /// <summary>
 /// Shared OpenAI-compatible transport for legacy optional/domain clients.
 /// Credentials are resolved by a caller-owned delegate at the send boundary;
@@ -38,7 +72,7 @@ public sealed class ConfiguredChatValidationExchange
 /// centralizes auth, timeout, cancellation and assistant-text extraction while
 /// leaving each domain's prompt and response validation in its owner.
 /// </summary>
-public sealed class LegacyConfiguredChatGateway : ILlmGateway
+public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGateway
 {
     private readonly Func<LlmProviderSnapshot, string> _credentialResolver;
     private readonly float? _temperature;
@@ -75,6 +109,42 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
         LlmGenerateRequest request,
         CancellationToken cancellationToken)
     {
+        ConfiguredChatGenerationExchange exchange = await GenerateExchangeAsync(
+            request,
+            streamResponse: false,
+            onDelta: null,
+            cancellationToken).ConfigureAwait(false);
+        return exchange.Result;
+    }
+
+    /// <summary>
+    /// Configured-chat streaming capability. Delta callbacks are observational;
+    /// the returned result remains the authoritative complete response.
+    /// </summary>
+    public async Task<LlmGenerateResult> GenerateStreamAsync(
+        LlmGenerateRequest request,
+        Action<string> onDelta,
+        CancellationToken cancellationToken)
+    {
+        ConfiguredChatGenerationExchange exchange = await GenerateExchangeAsync(
+            request,
+            streamResponse: true,
+            onDelta,
+            cancellationToken).ConfigureAwait(false);
+        return exchange.Result;
+    }
+
+    /// <summary>
+    /// Adapter-local generation entry used by legacy owners that still need
+    /// response diagnostics and the prepared request body for token accounting.
+    /// The public contract result remains string/status/metadata only.
+    /// </summary>
+    public async Task<ConfiguredChatGenerationExchange> GenerateExchangeAsync(
+        LlmGenerateRequest request,
+        bool streamResponse,
+        Action<string> onDelta,
+        CancellationToken cancellationToken)
+    {
         if (request == null)
         {
             throw new ArgumentNullException(nameof(request));
@@ -86,7 +156,13 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
         string apiKey = _credentialResolver(provider) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(model) || string.IsNullOrWhiteSpace(apiKey))
         {
-            return new LlmGenerateResult(LlmResultStatus.NonRetryableFailure, string.Empty, 0, 0, "provider_configuration_incomplete");
+            return CreateExchange(
+                0,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                "plain",
+                new LlmGenerateResult(LlmResultStatus.NonRetryableFailure, string.Empty, 0, 0, "provider_configuration_incomplete"));
         }
 
         DuelSettings settings = _useConfiguredMaxTokens || _useConfiguredTemperature
@@ -95,21 +171,105 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
         int maxTokens = _useConfiguredMaxTokens
             ? Math.Max(16, settings?.GetAuxiliaryApiMaxTokens() ?? request.Prompt.MaxTokens)
             : Math.Max(16, request.Prompt.MaxTokens);
-        JObject payload = new JObject
-        {
-            ["model"] = model,
-            ["messages"] = JArray.FromObject(ToJsonMessages(request.Prompt)),
-            ["stream"] = false,
-            ["max_tokens"] = maxTokens
-        };
         float? effectiveTemperature = _temperature;
         if (!effectiveTemperature.HasValue && _useConfiguredTemperature && settings != null)
         {
             effectiveTemperature = settings.GetAuxiliaryApiTemperature();
         }
-        if (effectiveTemperature.HasValue)
+
+        JObject payload = BuildPayload(
+            request.Prompt,
+            model,
+            endpoint,
+            maxTokens,
+            effectiveTemperature,
+            streamResponse,
+            out string controlMode);
+        string body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
+        using (CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken))
         {
-            payload["temperature"] = Math.Max(0f, Math.Min(1.5f, effectiveTemperature.Value));
+            try
+            {
+                GatewayExchange exchange = await SendOnceAsync(
+                    endpoint,
+                    apiKey,
+                    body,
+                    streamResponse,
+                    onDelta,
+                    timeout.Token).ConfigureAwait(false);
+                if (_retryWithoutThinkingOnBadRequest
+                    && exchange.StatusCode == 400
+                    && !_disableThinking
+                    && DuelSettings.ResolveThinkingControlFormat(endpoint, model) != "plain"
+                    && AIConfigHandler.LooksLikeAuxiliaryThinkingControlErrorForExternal(exchange.ResponseBody))
+                {
+                    DuelSettings.RemoveThinkingControls(payload);
+                    body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
+                    exchange = await SendOnceAsync(
+                        endpoint,
+                        apiKey,
+                        body,
+                        streamResponse,
+                        onDelta,
+                        timeout.Token).ConfigureAwait(false);
+                    controlMode = controlMode + "_retry_plain";
+                }
+
+                return CreateExchange(
+                    exchange.StatusCode,
+                    exchange.ResponseBody,
+                    exchange.RawStreamSample,
+                    body,
+                    controlMode,
+                    exchange.Result);
+            }
+            catch (OperationCanceledException)
+            {
+                return CreateExchange(
+                    0,
+                    string.Empty,
+                    string.Empty,
+                    body,
+                    controlMode,
+                    new LlmGenerateResult(LlmResultStatus.Cancelled, string.Empty, 0, 0, "cancelled"));
+            }
+            catch (Exception exception)
+            {
+                return CreateExchange(
+                    0,
+                    string.Empty,
+                    string.Empty,
+                    body,
+                    controlMode,
+                    new LlmGenerateResult(
+                        LlmResultStatus.NonRetryableFailure,
+                        string.Empty,
+                        0,
+                        0,
+                        "configured_gateway_" + exception.GetType().Name));
+            }
+        }
+    }
+
+    private JObject BuildPayload(
+        PromptPackage prompt,
+        string model,
+        string endpoint,
+        int maxTokens,
+        float? temperature,
+        bool streamResponse,
+        out string controlMode)
+    {
+        JObject payload = new JObject
+        {
+            ["model"] = model,
+            ["messages"] = JArray.FromObject(ToJsonMessages(prompt)),
+            ["stream"] = streamResponse,
+            ["max_tokens"] = Math.Max(16, maxTokens)
+        };
+        if (temperature.HasValue)
+        {
+            payload["temperature"] = Math.Max(0f, Math.Min(1.5f, temperature.Value));
         }
         if (_disableThinking)
         {
@@ -119,7 +279,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
                 model,
                 thinkingEnabled: false,
                 DuelSettings.ReasoningEffortLow,
-                out _);
+                out controlMode);
         }
         else
         {
@@ -129,39 +289,26 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
                 model,
                 _thinkingEnabled,
                 _reasoningEffort,
-                out _);
+                out controlMode);
         }
+        return payload;
+    }
 
-        string body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
-        using CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
-        try
-        {
-            GatewayExchange exchange = await SendOnceAsync(endpoint, apiKey, body, timeout.Token).ConfigureAwait(false);
-            if (_retryWithoutThinkingOnBadRequest &&
-                exchange.StatusCode == 400 &&
-                !_disableThinking &&
-                DuelSettings.ResolveThinkingControlFormat(endpoint, model) != "plain" &&
-                AIConfigHandler.LooksLikeAuxiliaryThinkingControlErrorForExternal(exchange.ResponseBody))
-            {
-                DuelSettings.RemoveThinkingControls(payload);
-                body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
-                exchange = await SendOnceAsync(endpoint, apiKey, body, timeout.Token).ConfigureAwait(false);
-            }
-            return exchange.Result;
-        }
-        catch (OperationCanceledException)
-        {
-            return new LlmGenerateResult(LlmResultStatus.Cancelled, string.Empty, 0, 0, "cancelled");
-        }
-        catch (Exception exception)
-        {
-            return new LlmGenerateResult(
-                LlmResultStatus.NonRetryableFailure,
-                string.Empty,
-                0,
-                0,
-                "configured_gateway_" + exception.GetType().Name);
-        }
+    private static ConfiguredChatGenerationExchange CreateExchange(
+        int statusCode,
+        string responseBody,
+        string rawStreamSample,
+        string requestBody,
+        string controlMode,
+        LlmGenerateResult result)
+    {
+        return new ConfiguredChatGenerationExchange(
+            statusCode,
+            responseBody,
+            rawStreamSample,
+            requestBody,
+            controlMode,
+            result);
     }
 
     /// <summary>
@@ -290,6 +437,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
     {
         public int StatusCode { get; set; }
         public string ResponseBody { get; set; }
+        public string RawStreamSample { get; set; }
         public LlmGenerateResult Result { get; set; }
     }
 
@@ -299,17 +447,37 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
         string body,
         CancellationToken cancellationToken)
     {
+        return await SendOnceAsync(
+            endpoint,
+            apiKey,
+            body,
+            streamResponse: false,
+            onDelta: null,
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<GatewayExchange> SendOnceAsync(
+        string endpoint,
+        string apiKey,
+        string body,
+        bool streamResponse,
+        Action<string> onDelta,
+        CancellationToken cancellationToken)
+    {
         using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint))
         {
             LlmApiCompat.ApplyAuthenticationHeaders(request, endpoint, apiKey);
             request.Content = new StringContent(body, Encoding.UTF8, "application/json");
+            HttpCompletionOption completion = streamResponse
+                ? HttpCompletionOption.ResponseHeadersRead
+                : HttpCompletionOption.ResponseContentRead;
             using (HttpResponseMessage response = await DuelSettings.GlobalClient
-                .SendAsync(request, cancellationToken).ConfigureAwait(false))
+                .SendAsync(request, completion, cancellationToken).ConfigureAwait(false))
             {
-                string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 int statusCode = (int)response.StatusCode;
                 if (!response.IsSuccessStatusCode)
                 {
+                    string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     return new GatewayExchange
                     {
                         StatusCode = statusCode,
@@ -327,29 +495,151 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway
                             new LlmGenerateMetadata(
                                 statusCode: statusCode,
                                 isRateLimit: statusCode == 429,
-                                isAuthFailure: statusCode == 401 || statusCode == 403))
+                                isAuthFailure: statusCode == 401 || statusCode == 403,
+                                isTimeout: statusCode == 408,
+                                retryAfterSeconds: TryGetRetryAfterSeconds(response)))
                     };
                 }
 
-                string rawText;
-                try
+                if (!streamResponse)
                 {
-                    rawText = (LlmApiCompat.ExtractAssistantText(JObject.Parse(responseBody)) ?? string.Empty).Trim();
+                    string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    string rawText = ExtractAssistantText(responseBody);
+                    return new GatewayExchange
+                    {
+                        StatusCode = statusCode,
+                        ResponseBody = responseBody ?? string.Empty,
+                        Result = string.IsNullOrWhiteSpace(rawText)
+                            ? new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response", new LlmGenerateMetadata(statusCode: statusCode))
+                            : new LlmGenerateResult(LlmResultStatus.Succeeded, rawText, 0, 0, string.Empty, new LlmGenerateMetadata(statusCode: statusCode))
+                    };
                 }
-                catch
+
+                StringBuilder fullContent = new StringBuilder();
+                StringBuilder rawStreamSample = new StringBuilder();
+                bool parseFailure = false;
+                using (Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    rawText = (LlmApiCompat.ExtractAssistantText(responseBody) ?? string.Empty).Trim();
+                    while (true)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        string line = await reader.ReadLineAsync().ConfigureAwait(false);
+                        if (line == null)
+                        {
+                            break;
+                        }
+                        string trimmed = line.Trim();
+                        if (!trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+                        string data = trimmed.Substring(5).Trim();
+                        if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase))
+                        {
+                            break;
+                        }
+                        if (string.IsNullOrWhiteSpace(data))
+                        {
+                            continue;
+                        }
+                        AppendBounded(rawStreamSample, "data: " + data, 12000);
+                        try
+                        {
+                            JObject json = JObject.Parse(data);
+                            string delta = LlmApiCompat.ExtractStreamDeltaText(json) ?? string.Empty;
+                            if (!string.IsNullOrEmpty(delta))
+                            {
+                                fullContent.Append(delta);
+                                try
+                                {
+                                    onDelta?.Invoke(delta);
+                                }
+                                catch
+                                {
+                                    // Delta observers are non-authoritative.
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            parseFailure = true;
+                        }
+                    }
                 }
+
+                string raw = fullContent.ToString();
+                LlmGenerateResult result = string.IsNullOrWhiteSpace(raw)
+                    ? new LlmGenerateResult(
+                        parseFailure ? LlmResultStatus.InvalidResponse : LlmResultStatus.EmptyResponse,
+                        string.Empty,
+                        0,
+                        0,
+                        parseFailure ? "stream_parse_failed" : "empty_response",
+                        new LlmGenerateMetadata(statusCode: statusCode))
+                    : new LlmGenerateResult(
+                        LlmResultStatus.Succeeded,
+                        raw,
+                        0,
+                        0,
+                        string.Empty,
+                        new LlmGenerateMetadata(statusCode: statusCode));
                 return new GatewayExchange
                 {
                     StatusCode = statusCode,
-                    ResponseBody = responseBody ?? string.Empty,
-                    Result = string.IsNullOrWhiteSpace(rawText)
-                        ? new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response", new LlmGenerateMetadata(statusCode: statusCode))
-                        : new LlmGenerateResult(LlmResultStatus.Succeeded, rawText, 0, 0, string.Empty, new LlmGenerateMetadata(statusCode: statusCode))
+                    RawStreamSample = rawStreamSample.ToString(),
+                    Result = result
                 };
             }
         }
+    }
+
+    private static string ExtractAssistantText(string responseBody)
+    {
+        try
+        {
+            return (LlmApiCompat.ExtractAssistantText(JObject.Parse(responseBody ?? string.Empty)) ?? string.Empty).Trim();
+        }
+        catch
+        {
+            return (LlmApiCompat.ExtractAssistantText(responseBody ?? string.Empty) ?? string.Empty).Trim();
+        }
+    }
+
+    private static void AppendBounded(StringBuilder builder, string value, int maxChars)
+    {
+        if (builder == null || string.IsNullOrEmpty(value) || builder.Length >= maxChars)
+        {
+            return;
+        }
+        int remaining = maxChars - builder.Length;
+        builder.Append(value.Length <= remaining ? value : value.Substring(0, remaining));
+        builder.AppendLine();
+    }
+
+    private static int? TryGetRetryAfterSeconds(HttpResponseMessage response)
+    {
+        try
+        {
+            if (response?.Headers?.RetryAfter?.Delta != null)
+            {
+                return Math.Max(0, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));
+            }
+            if (response?.Headers != null && response.Headers.TryGetValues("Retry-After", out IEnumerable<string> values))
+            {
+                foreach (string value in values)
+                {
+                    if (int.TryParse((value ?? string.Empty).Trim(), out int seconds))
+                    {
+                        return Math.Max(0, seconds);
+                    }
+                }
+            }
+        }
+        catch
+        {
+        }
+        return null;
     }
 
     private static IReadOnlyList<object> ToJsonMessages(PromptPackage prompt)

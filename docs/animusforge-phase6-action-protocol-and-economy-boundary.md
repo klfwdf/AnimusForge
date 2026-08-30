@@ -24,7 +24,7 @@
 
 - 标签扫描只在一次交互的后处理/commit 边界执行；线性扫描输入，受最大动作数
   64 限制，不进入 Tick，不做全局对象扫描。
-- `InteractionPipelineContractTests`：`39 cases PASS`。
+- `InteractionPipelineContractTests`：`40 cases PASS`。
 - `GiveAssetTagCodec.StressTests`：`80557 assertions PASS`，20,000 fuzz，25,000
   pressure tags，耗时约 19 ms。
 - 1.3、1.4、Bootstrap 统一 stage：均 `0 warning / 0 error`。

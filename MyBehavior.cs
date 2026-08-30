@@ -34571,9 +34571,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main, bool streamResponse = true, bool forceThinkingDisabled = false)
 	{
-		const int streamIdleTimeoutMilliseconds = 300000;
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		Stopwatch requestLifetime = Stopwatch.StartNew();
 		ApiCallResult apiCallResult = new ApiCallResult();
 		Action<string> apiLog = delegate(string message)
 		{
@@ -34589,315 +34587,155 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
-			if (!TryResolveUniversalApiConfig(settings, route, out var effectiveApiUrl, out var apiKey, out var modelName, out var resolvedRoute, out var errorMessage))
+			if (!TryResolveUniversalApiConfig(settings, route, out string effectiveApiUrl, out string apiKey, out string modelName, out string resolvedRoute, out string errorMessage))
 			{
 				apiCallResult.ErrorMessage = errorMessage;
 				return apiCallResult;
 			}
+
 			int maxTokens = ResolveUniversalMaxTokens(settings, resolvedRoute);
-			JObject body = new JObject
-			{
-				["model"] = modelName,
-				["messages"] = new JArray
+			float temperature = ResolveUniversalApiTemperature(settings, resolvedRoute);
+			ResolveUniversalThinkingSettings(settings, resolvedRoute, out bool thinkingEnabled, out string reasoningEffort);
+			PromptPackage prompt = new PromptPackage(
+				new[]
 				{
-					new JObject
-					{
-						["role"] = "system",
-						["content"] = sys
-					},
-					new JObject
-					{
-						["role"] = "user",
-						["content"] = user
-					}
+					new PromptMessage("system", sys ?? string.Empty),
+					new PromptMessage("user", user ?? string.Empty)
 				},
-				["max_tokens"] = maxTokens,
-				["stream"] = streamResponse,
-				["temperature"] = ResolveUniversalApiTemperature(settings, resolvedRoute)
-			};
-			ResolveUniversalThinkingSettings(settings, resolvedRoute, out var thinkingEnabled, out var effort);
-			if (forceThinkingDisabled)
+				maxTokens,
+				modelName);
+#if BANNERLORD_1_4_OR_GREATER
+			string apiLine = "1.4";
+#else
+			string apiLine = "1.3";
+#endif
+			TraceContext trace = new TraceContext(
+				"af-universal-" + runtimeGeneration.ToString(CultureInfo.InvariantCulture) + "-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+				runtimeGeneration,
+				runtimeGeneration,
+				"universal-" + (resolvedRoute ?? "main"),
+				apiLine);
+			LlmProviderSnapshot provider = new LlmProviderSnapshot(
+				resolvedRoute,
+				effectiveApiUrl,
+				modelName,
+				DuelSettings.LlmRequestTimeoutMilliseconds,
+				maxTokens);
+			LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(
+				_ => apiKey,
+				temperature: temperature,
+				disableThinking: forceThinkingDisabled,
+				retryWithoutThinkingOnBadRequest: true,
+				thinkingEnabled: thinkingEnabled,
+				reasoningEffort: reasoningEffort);
+
+			apiLog("[Gateway] route=" + resolvedRoute
+				+ " model=" + modelName
+				+ " stream=" + streamResponse
+				+ " temperature=" + temperature.ToString("0.00", CultureInfo.InvariantCulture)
+				+ " thinking=" + (forceThinkingDisabled ? "disabled" : (thinkingEnabled ? reasoningEffort : "disabled"))
+				+ " systemChars=" + (sys ?? string.Empty).Length.ToString(CultureInfo.InvariantCulture)
+				+ " userChars=" + (user ?? string.Empty).Length.ToString(CultureInfo.InvariantCulture));
+
+			ConfiguredChatGenerationExchange exchange = await gateway.GenerateExchangeAsync(
+				new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+				streamResponse,
+				onDelta: null,
+				CancellationToken.None).ConfigureAwait(false);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_gateway_response:" + (eventLogSource ?? resolvedRoute)))
 			{
-				thinkingEnabled = false;
+				apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				return apiCallResult;
 			}
-			DuelSettings.ApplyThinkingControls(body, effectiveApiUrl, modelName, thinkingEnabled, effort, out var thinkingMode);
-			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, body);
-			string requestBodyForTokenStats = jsonBody;
-			JArray tokenStatsMessages = body["messages"] as JArray;
-			bool skipTokenStatsLog = logToEventLogs && string.Equals((eventLogSource ?? "").Trim(), "EventWeeklyReport", StringComparison.OrdinalIgnoreCase);
-			StringBuilder httpLog = new StringBuilder();
-			httpLog.AppendLine("[HTTP] 请求发送到:");
-			httpLog.AppendLine("  Url: " + effectiveApiUrl);
-			string rawConfiguredApiUrl = ((resolvedRoute == "event_rebellion_dedicated") ? (settings.EventAndRebellionApiUrl ?? "") : (settings.ApiUrl ?? ""));
-			if (!string.Equals(effectiveApiUrl, (rawConfiguredApiUrl ?? "").Trim(), StringComparison.Ordinal))
+
+			LlmGenerateResult generated = exchange?.Result;
+			LlmGenerateMetadata metadata = generated?.Metadata ?? LlmGenerateMetadata.Empty;
+			string responseBody = exchange?.ResponseBody ?? string.Empty;
+			if (string.IsNullOrWhiteSpace(responseBody))
 			{
-				httpLog.AppendLine("  Note: 已自动补全 /v1/chat/completions 尾缀");
+				responseBody = exchange?.RawStreamSample ?? string.Empty;
 			}
-			httpLog.AppendLine("  Route: " + resolvedRoute);
-			httpLog.AppendLine("  Model: " + modelName);
-			httpLog.AppendLine("  MaxTokens: " + maxTokens + ", Stream: " + streamResponse + ", Temperature: " + ((float)body["temperature"]).ToString("0.00") + ", Thinking: " + thinkingMode);
-			httpLog.AppendLine("  SystemPrompt:");
-			httpLog.AppendLine(sys);
-			httpLog.AppendLine("  UserInput:");
-			httpLog.AppendLine(user);
-			apiLog(httpLog.ToString());
-			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+			apiCallResult.StatusCode = exchange != null && exchange.StatusCode > 0
+				? exchange.StatusCode
+				: metadata.StatusCode;
+			apiCallResult.ResponseBody = responseBody;
+			apiCallResult.RetryAfterSeconds = metadata.RetryAfterSeconds;
+			apiCallResult.IsQuotaLimit = apiCallResult.StatusCode == 429 && IsQuotaLimitResponseBody(responseBody);
+			apiCallResult.IsRequestsPerMinuteLimit = apiCallResult.StatusCode == 429
+				&& !apiCallResult.IsQuotaLimit
+				&& IsRequestsPerMinuteLimitResponseBody(responseBody);
+			apiCallResult.IsRateLimit = metadata.IsRateLimit
+				|| apiCallResult.IsRequestsPerMinuteLimit
+				|| (!apiCallResult.IsQuotaLimit && IsGenericRateLimitResponseBody(responseBody));
+			apiCallResult.Success = generated?.Status == LlmResultStatus.Succeeded;
+			apiCallResult.Content = CleanAIResponse(generated?.RawText ?? string.Empty);
+			if (!apiCallResult.Success)
+			{
+				if (apiCallResult.StatusCode.HasValue)
+				{
+					apiCallResult.ErrorMessage = BuildApiCallFailureMessage(
+						(HttpStatusCode)apiCallResult.StatusCode.Value,
+						responseBody,
+						apiCallResult.RetryAfterSeconds,
+						apiCallResult.IsRateLimit,
+						apiCallResult.IsRequestsPerMinuteLimit,
+						apiCallResult.IsQuotaLimit);
+				}
+				else
+				{
+					apiCallResult.ErrorMessage = generated?.ErrorCode ?? "configured_gateway_failure";
+				}
+			}
+			else if (string.IsNullOrWhiteSpace(apiCallResult.Content))
+			{
+				apiCallResult.Success = false;
+				apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(
+					"API 已响应，但没有解析出模型回复。",
+					apiCallResult.Content,
+					responseBody);
+			}
+
+			JArray tokenStatsMessages = null;
 			try
 			{
-				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
-				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
-				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_response:" + eventLogSource))
-				{
-					apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-					response.Dispose();
-					return apiCallResult;
-				}
-				try
-				{
-					string statusLine = (int)response.StatusCode + " " + response.ReasonPhrase;
-					apiLog("[HTTP] 响应状态: " + statusLine);
-					if (!response.IsSuccessStatusCode)
-					{
-						string text = await response.Content.ReadAsStringAsync();
-						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_error_body:" + eventLogSource))
-						{
-							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-							return apiCallResult;
-						}
-						if (response.StatusCode == HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeUniversalThinkingControlError(text))
-						{
-							apiLog("[HTTP] 思维链参数被接口拒绝，改用无思维链控制参数重试。");
-							response.Dispose();
-							JObject retryBody = JObject.Parse(jsonBody);
-							DuelSettings.RemoveThinkingControls(retryBody);
-							string retryJsonBody = retryBody.ToString(Formatting.None);
-							requestBodyForTokenStats = retryJsonBody;
-							using HttpRequestMessage retryRequest = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-							LlmApiCompat.ApplyAuthenticationHeaders(retryRequest, effectiveApiUrl, apiKey);
-							retryRequest.Content = (HttpContent)new StringContent(retryJsonBody, Encoding.UTF8, "application/json");
-							response = await DuelSettings.GlobalClient.SendAsync(retryRequest, (HttpCompletionOption)1);
-							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_retry_response:" + eventLogSource))
-							{
-								apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-								response.Dispose();
-								return apiCallResult;
-							}
-							thinkingMode += "_retry_plain";
-							apiLog("[HTTP] 重试响应状态: " + (int)response.StatusCode + " " + response.ReasonPhrase);
-							text = response.IsSuccessStatusCode ? "" : await response.Content.ReadAsStringAsync();
-							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_retry_body:" + eventLogSource))
-							{
-								apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-								return apiCallResult;
-							}
-						}
-						if (!response.IsSuccessStatusCode)
-						{
-							apiCallResult.StatusCode = (int)response.StatusCode;
-							apiCallResult.ResponseBody = text ?? "";
-							apiCallResult.RetryAfterSeconds = TryGetRetryAfterSeconds(response);
-							apiCallResult.IsQuotaLimit = response.StatusCode == (HttpStatusCode)429 && IsQuotaLimitResponseBody(text);
-							apiCallResult.IsRequestsPerMinuteLimit = response.StatusCode == (HttpStatusCode)429 && !apiCallResult.IsQuotaLimit && (IsRequestsPerMinuteLimitResponseBody(text) || HasRequestsPerMinuteRateLimitHeaders(response));
-							apiCallResult.IsRateLimit = response.StatusCode == (HttpStatusCode)429 || apiCallResult.IsRequestsPerMinuteLimit || (!apiCallResult.IsQuotaLimit && IsGenericRateLimitResponseBody(text));
-							apiCallResult.ErrorMessage = BuildApiCallFailureMessage(response.StatusCode, text, apiCallResult.RetryAfterSeconds, apiCallResult.IsRateLimit, apiCallResult.IsRequestsPerMinuteLimit, apiCallResult.IsQuotaLimit);
-							if (!skipTokenStatsLog)
-							{
-								Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), 0, tokenStatsMessages, "[UNIVERSAL API HTTP ERROR]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\nstatus=" + (int)response.StatusCode + " " + (response.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), "universal_api_http_error", requestBodyForTokenStats);
-							}
-							return apiCallResult;
-						}
-					}
-					if (!streamResponse)
-					{
-						string responseBody = await response.Content.ReadAsStringAsync();
-						apiCallResult.ResponseBody = responseBody ?? "";
-						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_non_stream_body:" + eventLogSource))
-						{
-							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-							return apiCallResult;
-						}
-						string nonStreamRaw = "";
-						Exception responseParseException = null;
-						try
-						{
-							nonStreamRaw = ExtractUniversalNonStreamContent(JObject.Parse(responseBody));
-						}
-						catch (Exception parseEx)
-						{
-							responseParseException = parseEx;
-							apiLog("[HTTP] 非流式响应解析异常: " + parseEx + "\n原始响应=\n" + TrimUniversalApiRawForLog(responseBody));
-						}
-						apiLog("[HTTP] 非流式解析内容=\n" + nonStreamRaw);
-						if (string.IsNullOrWhiteSpace(nonStreamRaw))
-						{
-							apiLog("[HTTP] 非流式解析为空，原始响应=\n" + TrimUniversalApiRawForLog(responseBody));
-						}
-						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_non_stream_complete:" + eventLogSource))
-						{
-							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-							return apiCallResult;
-						}
-						apiCallResult.Content = CleanAIResponse(nonStreamRaw);
-						if (responseParseException != null || string.IsNullOrWhiteSpace(apiCallResult.Content))
-						{
-							string reason = responseParseException == null ? "API响应解析失败：未解析出模型回复。" : ("API响应解析失败：" + responseParseException.Message);
-							apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(reason, apiCallResult.Content, apiCallResult.ResponseBody);
-							return apiCallResult;
-						}
-						apiCallResult.Success = true;
-						if (!skipTokenStatsLog)
-						{
-							Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(responseBody), "universal_api", requestBodyForTokenStats);
-						}
-						return apiCallResult;
-					}
-					using Stream stream = await response.Content.ReadAsStreamAsync();
-					if (stream == null)
-					{
-						apiLog("[HTTP] 响应流为空。");
-						apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail("响应流为空", "");
-						return apiCallResult;
-					}
-					using StreamReader reader = new StreamReader(stream);
-					int streamReadTimeoutTriggered = 0;
-					int scheduledStreamTimeoutKind = 0;
-					using System.Threading.Timer streamReadTimer = new System.Threading.Timer(delegate
-					{
-						Interlocked.Exchange(ref streamReadTimeoutTriggered, 1);
-						try
-						{
-							stream.Dispose();
-						}
-						catch
-						{
-						}
-						try
-						{
-							response.Dispose();
-						}
-						catch
-						{
-						}
-					}, null, Timeout.Infinite, Timeout.Infinite);
-					StringBuilder fullContent = new StringBuilder();
-					StringBuilder rawStreamSample = new StringBuilder();
-					Exception streamParseException = null;
-					while (true)
-					{
-						long remainingTotalMilliseconds = (long)DuelSettings.LlmRequestTimeoutMilliseconds - (long)requestLifetime.Elapsed.TotalMilliseconds;
-						if (remainingTotalMilliseconds <= 0L)
-						{
-							throw new TimeoutException("API流式响应读取超过总时限 " + DuelSettings.LlmRequestTimeoutMilliseconds + "ms。");
-						}
-						int readTimeoutMilliseconds = (int)Math.Max(1L, Math.Min(streamIdleTimeoutMilliseconds, remainingTotalMilliseconds));
-						Interlocked.Exchange(ref scheduledStreamTimeoutKind, (remainingTotalMilliseconds <= streamIdleTimeoutMilliseconds) ? 2 : 1);
-						streamReadTimer.Change(readTimeoutMilliseconds, Timeout.Infinite);
-						string line;
-						try
-						{
-							line = await reader.ReadLineAsync();
-						}
-						catch (Exception ex)
-						{
-							if (Volatile.Read(ref streamReadTimeoutTriggered) != 0)
-							{
-								string timeoutDescription = (Volatile.Read(ref scheduledStreamTimeoutKind) == 2) ? ("总时限 " + DuelSettings.LlmRequestTimeoutMilliseconds + "ms") : ("连续 " + streamIdleTimeoutMilliseconds + "ms 未收到新数据");
-								throw new TimeoutException("API流式响应读取超时：" + timeoutDescription + "。", ex);
-							}
-							throw;
-						}
-						streamReadTimer.Change(Timeout.Infinite, Timeout.Infinite);
-						if (Volatile.Read(ref streamReadTimeoutTriggered) != 0)
-						{
-							string timeoutDescription2 = (Volatile.Read(ref scheduledStreamTimeoutKind) == 2) ? ("总时限 " + DuelSettings.LlmRequestTimeoutMilliseconds + "ms") : ("连续 " + streamIdleTimeoutMilliseconds + "ms 未收到新数据");
-							throw new TimeoutException("API流式响应读取超时：" + timeoutDescription2 + "。");
-						}
-						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_stream_read:" + eventLogSource))
-						{
-							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-							return apiCallResult;
-						}
-						if (line == null)
-						{
-							break;
-						}
-						string trimmedLine = line.Trim();
-						if (!string.IsNullOrWhiteSpace(trimmedLine) && trimmedLine.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-						{
-							string data = trimmedLine.Substring(5).Trim();
-							if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase))
-							{
-								apiLog("[HTTP] 已收到流式结束标记 [DONE]。");
-								break;
-							}
-							if (string.IsNullOrWhiteSpace(data))
-							{
-								continue;
-							}
-							rawStreamSample.AppendLine("data: " + data);
-							try
-							{
-								JObject json = JObject.Parse(data);
-								string delta = ExtractUniversalStreamDelta(json);
-								if (!string.IsNullOrEmpty(delta))
-								{
-									fullContent.Append(delta);
-								}
-								else if (fullContent.Length == 0 && !IsUniversalStreamNonContentChunk(json))
-								{
-									apiLog("[HTTP] 流片段未解析出正文，原始片段=\n" + TrimUniversalApiRawForLog(data));
-								}
-							}
-							catch (Exception ex)
-							{
-								Exception parseEx = ex;
-								streamParseException = parseEx;
-								apiLog("[HTTP] 流解析异常: " + parseEx + "\n原始行=\n" + TrimUniversalApiRawForLog(line));
-							}
-						}
-					}
-					string raw = fullContent.ToString();
-					apiCallResult.ResponseBody = rawStreamSample.ToString().TrimEnd();
-					apiLog("[HTTP] 流式解析内容=\n" + raw);
-					if (string.IsNullOrWhiteSpace(raw))
-					{
-						apiLog("[HTTP] 流式解析为空，原始响应片段样本=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()));
-					}
-					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_stream_complete:" + eventLogSource))
-					{
-						apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-						return apiCallResult;
-					}
-					apiCallResult.Content = CleanAIResponse(raw);
-					if (string.IsNullOrWhiteSpace(apiCallResult.Content))
-					{
-						string reason = streamParseException == null ? "API流式响应解析失败：未解析出模型回复。" : ("API流式响应解析失败：" + streamParseException.Message);
-						apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(reason, apiCallResult.Content, apiCallResult.ResponseBody);
-						return apiCallResult;
-					}
-					apiCallResult.Success = true;
-					if (!skipTokenStatsLog)
-					{
-						Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()), "universal_api", requestBodyForTokenStats);
-					}
-					return apiCallResult;
-				}
-				finally
-				{
-					((IDisposable)response)?.Dispose();
-				}
+				tokenStatsMessages = JObject.Parse(exchange?.RequestBody ?? string.Empty)["messages"] as JArray;
 			}
-			finally
+			catch
 			{
-				((IDisposable)request)?.Dispose();
+				tokenStatsMessages = new JArray
+				{
+					new JObject { ["role"] = "system", ["content"] = sys ?? string.Empty },
+					new JObject { ["role"] = "user", ["content"] = user ?? string.Empty }
+				};
 			}
+			if (apiCallResult.Success && tokenStatsMessages != null)
+			{
+				bool skipTokenStatsLog = logToEventLogs
+					&& string.Equals((eventLogSource ?? string.Empty).Trim(), "EventWeeklyReport", StringComparison.OrdinalIgnoreCase);
+				if (!skipTokenStatsLog)
+				{
+					Logger.RecordTokenStats(
+						Logger.EstimateTokensFromMessages(tokenStatsMessages),
+						Logger.EstimateTokens(apiCallResult.Content),
+						tokenStatsMessages,
+						"[UNIVERSAL API GATEWAY]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + (exchange?.ControlMode ?? string.Empty) + "\nai_response=\n" + apiCallResult.Content + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(responseBody),
+						"universal_api",
+						exchange?.RequestBody ?? string.Empty);
+				}
+			}
+			apiLog("[Gateway] status=" + (apiCallResult.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown")
+				+ " success=" + apiCallResult.Success
+				+ " error=" + (apiCallResult.ErrorMessage ?? string.Empty)
+				+ " contentChars=" + (apiCallResult.Content ?? string.Empty).Length.ToString(CultureInfo.InvariantCulture));
+			return apiCallResult;
 		}
-		catch (Exception ex)
+		catch (Exception exception)
 		{
-			Exception ex2 = ex;
-			apiLog("[ERROR] CallUniversalApi 异常: " + ex2.ToString());
-			apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(ex2.Message, apiCallResult.Content, apiCallResult.ResponseBody);
+			apiLog("[ERROR] CallUniversalApi Gateway 异常: " + exception);
+			apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(
+				exception.Message,
+				apiCallResult.Content,
+				apiCallResult.ResponseBody);
 			return apiCallResult;
 		}
 	}

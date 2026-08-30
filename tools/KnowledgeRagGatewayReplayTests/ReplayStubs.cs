@@ -28,6 +28,19 @@ internal static class LlmApiCompat
         => request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
     public static string ExtractAssistantText(JObject response) => response?["choices"]?[0]?["message"]?["content"]?.ToString() ?? string.Empty;
     public static string ExtractAssistantText(string response) => ExtractAssistantText(JObject.Parse(response ?? "{}"));
+
+    public static string ExtractStreamDeltaText(JObject response)
+    {
+        if (response == null)
+        {
+            return string.Empty;
+        }
+        return response.SelectToken("choices[0].delta.content")?.ToString()
+            ?? response.SelectToken("choices[0].message.content")?.ToString()
+            ?? response.SelectToken("delta.content")?.ToString()
+            ?? response.SelectToken("content")?.ToString()
+            ?? string.Empty;
+    }
 }
 
 public static class AIConfigHandler
