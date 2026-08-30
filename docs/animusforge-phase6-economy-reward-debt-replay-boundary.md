@@ -26,7 +26,9 @@
 - `IEconomyRewardDebtMainThreadPort` 是执行端口：实际 Hero、库存、债务、
   settlement 资格解析和既有领域调用必须在主线程重新校验后完成。当前已增加
   `RewardSystemBehavior.CreateEconomyRewardDebtMainThreadPortForExternal()`，
-  为 Hero→玩家路径提供生产 owner adapter；非 Hero/商人/部队路径仍 fail-closed。
+  为 Hero→玩家路径提供生产 owner adapter；本轮另增加
+  `CreatePartyEconomyRewardDebtMainThreadPortForExternal()`，支持 PartyBase
+  金币/物品/RP 物品转移，商人和部队债务/固定资产仍 fail-closed。
 
 ## 保持不变
 
@@ -92,3 +94,24 @@ unified stage 的 1.3、1.4、Bootstrap 均 `0 warning / 0 error`。真实 Banne
 Campaign/Mission、live inventory/debt/settlement、三渠道 ActionPlan 游戏内执行、
 旧存档和 AFEF 实机写入仍为 `NOT-RUN`。下一项是补齐非 Hero/商人/部队 owner adapter，
 再接入三渠道 commit 的 Economy capability。
+
+
+## PartyBase reward owner adapter (2026-08-30)
+
+`RewardSystemBehavior.EconomyPartyReplay.cs` 增加 PartyBase→玩家的生产
+owner adapter。Party 与 `BasicCharacterObject` 必须由渠道 owner 在 capture
+边界提供；commit 时再次检查 expected subject、`MobileParty.IsActive`、
+`Hero.MainHero` 和主线程，然后复用现有 `TransferGoldFromParty`、
+`TransferItemFromParty`、`BuildPartyRewardItemResolutionContext` 和
+`GenerateRpAssetToPlayer`。
+
+该切片只授权既有部队奖励金币/普通物品/RP 物品能力；DebtCreate、DebtResolve
+和 SettlementTransfer 不会被误解释为部队动作。部分成功返回明确
+`economy.party_partial_replay`，只有实际 transfer/generation 返回正数量时才
+产生 `FactRecord`。
+
+验证：1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`；
+`ProductionEconomyOwnerReplay` 的 Party factory 在无 live Campaign/Party 时
+`partyFactoryFailClosed=1`；Economy contract 继续 PASS。真实 PartyBase、库存、
+游戏内 ActionPlan、旧存档和 AFEＦ 写入仍为 `NOT-RUN`。下一项是商人
+CharacterObject/Settlement owner adapter。

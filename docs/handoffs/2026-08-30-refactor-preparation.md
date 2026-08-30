@@ -545,3 +545,12 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 验证：`economyRewardDebtPort ... debtMetadata=1 singleArgumentGold=1 PASS`；`productionEconomyOwnerReplay factoryFailClosed=1 productionType=1 noCampaignMutation=1 PASS`；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`。
 - 当前限制：真实 Campaign/Mission、live inventory/debt/settlement、非 Hero/商人/部队 owner、三渠道 ActionPlan 游戏内执行、旧存档和 AFEF 实机写入仍 `NOT-RUN`。
 - 下一项准确任务：补齐非 Hero/商人/部队 domain-owner adapter，并接入三渠道 commit 的 Economy capability。
+
+
+## 本轮完成（2026-08-30，Economy/Reward/Debt PartyBase owner adapter）
+
+- 新增 `RewardSystemBehavior.EconomyPartyReplay.cs`，支持 PartyBase→玩家的金币、普通物品和 RP 物品 replay；复用现有 Party reward owner，不复制第二套库存/数量规则。
+- Party factory 在 capture 时接收 PartyBase/BasicCharacterObject/expected subject，commit 时复核主线程、subject 和 `MobileParty.IsActive`；Debt/SettlementTransfer 对 Party 路径明确 fail-closed。
+- 验证：`productionEconomyOwnerReplay factoryFailClosed=1 partyFactoryFailClosed=1 productionType=1 noCampaignMutation=1 PASS`；Economy contract `... debtMetadata=1 singleArgumentGold=1 PASS`；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`。
+- 当前限制：真实 PartyBase/inventory、商人 CharacterObject/Settlement、三渠道 Economy ActionPlan 游戏内执行、旧存档和 AFEF 实机写入仍 `NOT-RUN`。
+- 下一项准确任务：实现商人 CharacterObject/Settlement owner adapter，并补齐商人金币/物品/债务回放。
