@@ -434,6 +434,17 @@ public interface IActionPlanExecutor
     InteractionStatus ValidateAndExecute(ActionPlan actionPlan, GameInteractionSnapshot currentSnapshot);
 }
 
+/// <summary>
+/// Optional receipt exposed by an action executor after a successful main
+/// thread execution. Domain owners use this to return facts that were
+/// confirmed by actual game state; callers must not synthesize them from a
+/// detached ActionPlan.
+/// </summary>
+public interface IActionPlanExecutionReceipt
+{
+    IReadOnlyList<FactRecord> ConfirmedFacts { get; }
+}
+
 public interface IRuleSelector
 {
     RuleSelection Select(GameInteractionSnapshot snapshot);

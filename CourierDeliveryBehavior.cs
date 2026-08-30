@@ -359,10 +359,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return null;
 		}
 		IReadOnlyList<string> allowedTagFamilies = LegacyActionTagCatalog.DefaultAllowedTagFamilies;
+		CourierSession session = instance.GetSessionById(sessionId);
+		Hero recipient = session == null ? null : instance.ResolveRecipient(session);
+		IEconomyRewardDebtMainThreadPort economyPort = recipient == null
+			? null
+			: RewardSystemBehavior.CreateEconomyRewardDebtMainThreadPortForExternal();
 		return new LegacyNativeActionPlanExecutor(
 			(actionPlan, snapshot) => instance.ExecuteCourierActionPlanForExternal(actionPlan, snapshot, sessionId),
 			maxActions,
-			allowedTagFamilies);
+			allowedTagFamilies,
+			economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
+			economyPort,
+			economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
 	}
 
 	public static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal()

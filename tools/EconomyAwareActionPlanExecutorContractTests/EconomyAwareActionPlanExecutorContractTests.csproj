@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
+    <Compile Include="..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
+    <Compile Include="..\..\Refactor\Contracts\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
+    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
+    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
+    <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
+    <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" Link="Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" />
+    <Compile Include="..\..\Refactor\Adapters\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />
+    <Compile Include="..\..\Refactor\Runtime\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
+    <Compile Include="..\..\Refactor\Runtime\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
+  </ItemGroup>
+</Project>
