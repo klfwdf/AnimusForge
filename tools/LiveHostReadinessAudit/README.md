@@ -1,6 +1,6 @@
 # Live Host Readiness Audit
 
-`live_host_readiness_audit.py` 是只读启动前审计，不启动 Bannerlord、不部署模块、不修改游戏目录、不读取存档内容。
+`live_host_readiness_audit.py` 是只读状态审计，不启动 Bannerlord、不部署模块、不修改游戏目录、不读取存档内容。
 
 检查内容：
 
@@ -16,4 +16,4 @@
 python .\tools\LiveHostReadinessAudit\live_host_readiness_audit.py
 ```
 
-`installedMatchesStage=false` 不表示代码失败，只表示本轮没有把 project-local stage 部署到游戏目录；这是当前安全边界。只有明确授权 live 测试后，才允许另行执行部署和启动步骤。
+`installedMatchesStage=true` 表示安装模块与当前 project-local stage 的 Bootstrap 内容一致，可以进入 live 测试准备；false 表示尚未部署或版本不一致。工具本身永远不执行部署和启动。
