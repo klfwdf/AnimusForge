@@ -1,0 +1,15 @@
+{
+  "catalogId":"phase3-foundation-runtime-design",
+  "schemaVersion":1,
+  "mode":"design-only",
+  "contracts":[
+    {"id":"af.foundation.main-thread.dispatch-request","family":"DTO","version":1,"owner":"Foundation","fields":["RequestId","OwnerModuleId","RuntimeGeneration","TraceId","WorkKind","MaxWorkItems","BudgetMilliseconds","QueueBound","RequiresStateRevalidation","CancellationEpoch","Source"],"threadBoundary":"NoGameAccess","persistenceImpact":"None","allowedApiLines":["1.3","1.4"]},
+    {"id":"af.foundation.main-thread.dispatch-result","family":"DTO","version":1,"owner":"Foundation","fields":["RequestId","Status","ProcessedCount","RemainingCount","ElapsedMilliseconds","RuntimeGeneration","TraceId","ReasonCode"],"threadBoundary":"MainThreadApply","persistenceImpact":"None","allowedApiLines":["1.3","1.4"]},
+    {"id":"af.foundation.background.snapshot-request","family":"DTO","version":1,"owner":"Foundation","fields":["RequestId","OwnerModuleId","RuntimeGeneration","SnapshotSchemaVersion","SnapshotKind","ImmutablePayloadHash","PayloadItemCount","PayloadCharCount","CancellationEpoch","TimeoutMilliseconds","TraceId"],"threadBoundary":"BackgroundSnapshotOnly","persistenceImpact":"None","allowedApiLines":["1.3","1.4"]},
+    {"id":"af.foundation.background.operation-result","family":"DTO","version":1,"owner":"Foundation","fields":["RequestId","Status","RuntimeGeneration","ResultSchemaVersion","ResultCode","ResultItemCount","ResultCharCount","RequiresMainThreadApply","TraceId","ReasonCode"],"threadBoundary":"MainThreadApply","persistenceImpact":"None","allowedApiLines":["1.3","1.4"]},
+    {"id":"af.foundation.diagnostics.record","family":"DTO","version":1,"owner":"Foundation","fields":["TraceId","ModuleId","BridgeId","RuntimeGeneration","SaveGeneration","ProfileId","ApiLine","Stage","Status","ElapsedMilliseconds","QueueDepth","DroppedCount","ErrorCode","BoundedSummary","FirstOccurrence","RepeatCount"],"threadBoundary":"NoGameAccess","persistenceImpact":"None","allowedApiLines":["1.3","1.4"]},
+    {"id":"af.foundation.safe-mode.resolution","family":"DTO","version":1,"owner":"Foundation","fields":["RequestedProfileId","SelectedProfileId","State","IncludedModuleIds","ExcludedModuleIds","PreservedPersistenceNamespaces","FallbackId","ReasonCode","TraceId"],"threadBoundary":"NoGameAccess","persistenceImpact":"ReadsExisting","allowedApiLines":["1.3","1.4"]}
+  ],
+  "rules":{"maxContracts":64,"maxFieldsPerContract":32,"maxTextLength":240,"maxIssues":32,"runtimeFrequency":"0","publicPayloadAllowsLiveObjects":false,"publicPayloadAllowsDelegates":false,"publicPayloadAllowsRawDictionary":false},
+  "states":["Discovered","Disabled","Blocked","Starting","Active","Degraded","Failed","RestartRequired"]
+}

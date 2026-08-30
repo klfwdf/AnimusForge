@@ -1,0 +1,49 @@
+fixture_id: expected-results
+results:
+  valid-courier-context:
+    state: Accepted
+    issues: []
+    next: LlmGatewayRequest
+    action_rules_injected: true
+    save_write: DeferredToMainThread
+  valid-action-result:
+    state: Applied
+    issues: []
+    facts_are_confirmed: true
+    save_identity_changed: false
+  live-object-input:
+    state: Invalid
+    issue_code: LiveObjectNotAllowed
+    severity: Error
+  missing-postprocess-rules:
+    state: Invalid
+    issue_code: PostprocessRuleClosureViolation
+    severity: Error
+  wrong-role:
+    state: Invalid
+    issue_code: InvalidHistoryRole
+    severity: Error
+  unconfirmed-fact:
+    state: Invalid
+    issue_code: FactConfirmationRequired
+    severity: Error
+  stale-generation:
+    state: Expired
+    issue_code: StaleGeneration
+    severity: Info
+  unknown-action-target:
+    state: Invalid
+    issue_code: TargetIdentityRequired
+    severity: Error
+  background-apply:
+    state: Invalid
+    issue_code: MainThreadApplyRequired
+    severity: Error
+  oversized-text:
+    state: Invalid
+    issue_code: BoundedTextLimitExceeded
+    severity: Error
+  optional-memory-provider:
+    state: Degraded
+    issue_code: OptionalProviderMissing
+    severity: Warning

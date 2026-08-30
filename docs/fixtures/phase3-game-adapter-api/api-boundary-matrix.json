@@ -1,0 +1,22 @@
+{
+  "fixtureId":"phase3-game-adapter-api-boundary",
+  "schemaVersion":1,
+  "mode":"design-only",
+  "limits":{"maxCases":32,"maxMessageLength":240},
+  "cases":[
+    {"id":"api-13-supported","apiLine":"1.3","capability":"mobile-party.trade-agreement","helper":"BannerlordApiCompat.HasTradeAgreement","expected":{"status":"Supported","fallback":"false-on-error","reflectionCached":true}},
+    {"id":"api-14-supported","apiLine":"1.4","capability":"mobile-party.ai-model.port-patrol","helper":"CourierMobilePartyAIModel","expected":{"status":"Supported","fallback":"none","reflectionCached":false}},
+    {"id":"api-13-missing-14-feature","apiLine":"1.3","capability":"mobile-party.ai-model.port-patrol","expected":{"status":"Unsupported","fallback":"capability-absent","guessApiLine":false}},
+    {"id":"restart-3-args","apiLine":"1.3","capability":"encounter.restart","helper":"PlayerEncounterCompat.RestartPlayerEncounter","memberShape":"3-args","expected":{"status":"Supported","directNativeCall":false}},
+    {"id":"restart-4-args","apiLine":"1.4","capability":"encounter.restart","helper":"PlayerEncounterCompat.RestartPlayerEncounter","memberShape":"4-args","expected":{"status":"Supported","directNativeCall":false}},
+    {"id":"spawn-signature","apiLine":"1.3|1.4","capability":"mission.spawn-inspection-troop","helper":"BannerlordApiCompat.SpawnInspectionTroop","expected":{"status":"VersionAdapter","wrongSignatureCall":false}},
+    {"id":"rewards-signature","apiLine":"1.3|1.4","capability":"battle-rewards.prefix","helper":"MilitaryExerciseBattleRewardsZeroPatch","expected":{"status":"VersionAdapter","patchOtherLine":false}},
+    {"id":"missing-member","apiLine":"1.4","capability":"unknown.member","expected":{"status":"Unsupported","boundedFailure":true,"fallback":"native"}},
+    {"id":"api-marker-mismatch","apiLine":"1.4","capability":"assembly.api-marker","assemblyMarker":"1.3","expected":{"status":"Blocked","loadOtherImplementation":false}},
+    {"id":"unknown-version","apiLine":"unknown","capability":"bootstrap.api-line","expected":{"status":"Blocked","guessApiLine":false}},
+    {"id":"cached-reflection","apiLine":"1.3|1.4","capability":"reflection.cache","expected":{"status":"Supported","resolvePerCall":false}},
+    {"id":"main-thread-apply","apiLine":"1.3|1.4","capability":"agent.combat-target","thread":"background-result","expected":{"status":"MainThreadApplyRequired","backgroundLiveMutation":false}},
+    {"id":"package-boundary","apiLine":"1.3|1.4","capability":"unified.module.output","expected":{"status":"Valid","subModuleImplementationDeclarations":0,"bootstrapDeclarations":1}},
+    {"id":"dual-build","apiLine":"1.3|1.4","capability":"implementation-selection","expected":{"status":"Valid","implementations":2,"loadedAtRuntime":1}}
+  ]
+}

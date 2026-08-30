@@ -1,0 +1,15 @@
+{
+  "fixtureId": "bridge-composition-expected-results",
+  "requiredCases": {
+    "settlement-siege": ["A-settlement-siege-alone", "B-conversation-scene-alone", "A-plus-B-without-bridge", "A-plus-B-plus-bridge", "bridge-failure-stale-generation"],
+    "policy-diplomacy": ["A-policy-system-alone", "B-diplomacy-world-alone", "A-plus-B-without-bridge", "A-plus-B-plus-bridge", "bridge-failure-incompatible-version"]
+  },
+  "invariants": [
+    "Bridge absence does not disable A or B",
+    "No implicit cross-domain action without Bridge",
+    "Only confirmed Applied result can publish a world/AFEF fact",
+    "Stale or incompatible Bridge result has no cross-domain side effect",
+    "Policy receipt/state remains owned by PolicySystem when notification Bridge fails",
+    "Settlement/Mission/Agent mutation remains main-thread only"
+  ]
+}

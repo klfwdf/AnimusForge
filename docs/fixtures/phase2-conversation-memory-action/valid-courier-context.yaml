@@ -1,0 +1,20 @@
+fixture_id: valid-courier-context
+contract: ConversationContextSnapshot
+schema_version: 1
+channel: Courier
+participant_ids: [hero_1]
+conversation_generation: 42
+user_text: "请把这封信交给领主"
+visible_history:
+  - role: user
+    text: "请把这封信交给领主"
+memory_view:
+  - fact_id: fact_001
+    text: "双方已约定在城门会面"
+    confirmed: true
+eligible_rule_ids: [courier_delivery]
+postprocess_rule_ids: [courier_delivery]
+profile_id: default
+api_line: 1.4
+thread_boundary: BackgroundSnapshotOnly
+live_objects: []

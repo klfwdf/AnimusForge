@@ -1,0 +1,30 @@
+{
+  "catalogId": "phase3-af-contracts-design",
+  "schemaVersion": 1,
+  "mode": "design-only",
+  "contracts": [
+    {"id":"af.contracts.capability.reference","family":"Capability","version":1,"owner":"Foundation","status":"DesignOnly","fields":["CapabilityId","Version","ContractVersion","ProviderModuleId","Scope","Profile"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"NoGameAccess","persistenceImpact":"None"},
+    {"id":"af.contracts.capability.required","family":"Capability","version":1,"owner":"Foundation","status":"DesignOnly","fields":["CapabilityId","MinVersion","MaxVersion","Required","FallbackId"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"NoGameAccess","persistenceImpact":"None"},
+    {"id":"af.contracts.conversation.context","family":"DTO","version":1,"owner":"Conversation.AI","status":"DesignOnly","fields":["Channel","ParticipantIds","ConversationGeneration","VisibleHistory","MemoryView","EligibleRuleIds","PostprocessRuleIds","ProfileId","ApiLine"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"BackgroundSnapshotOnly","persistenceImpact":"ReadsExisting"},
+    {"id":"af.contracts.memory.exchange","family":"DTO","version":1,"owner":"Memory.Persistence","status":"DesignOnly","fields":["Channel","ParticipantId","Role","Text","ConversationGeneration","ConfirmedFacts","Source"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"MainThreadApply","persistenceImpact":"LegacyCompatibilityRequired"},
+    {"id":"af.contracts.action.authorized-plan","family":"DTO","version":1,"owner":"Conversation.Action","status":"DesignOnly","fields":["ActionId","TargetIdentity","Parameters","SourceChannel","ConversationGeneration","RequiredRuleId","ExpectedStateFingerprint","ContractVersion"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"MainThreadApply","persistenceImpact":"None"},
+    {"id":"af.contracts.action.execution-result","family":"DTO","version":1,"owner":"Action.Runtime","status":"DesignOnly","fields":["Status","ActionId","TargetIdentity","ReasonCode","ConfirmedFacts","ConversationGeneration","ReceiptId"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"MainThreadApply","persistenceImpact":"None"},
+    {"id":"af.contracts.policy.receipt","family":"DTO","version":1,"owner":"Policy","status":"DesignOnly","fields":["ReceiptId","ModuleId","TargetPlanHandles","ExecutionStatus","IdempotencyKey","RuntimeStateSchemaVersion"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"MainThreadApply","persistenceImpact":"ReadsExisting"},
+    {"id":"af.contracts.settlement.action-result","family":"DTO","version":1,"owner":"Settlement.Siege","status":"DesignOnly","fields":["ActionId","SettlementId","TargetIdentity","Status","ReasonCode","MainThreadApplied","ConfirmedFacts"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"MainThreadApply","persistenceImpact":"None"},
+    {"id":"af.contracts.diplomacy.resolution","family":"DTO","version":1,"owner":"World.Diplomacy","status":"DesignOnly","fields":["OutcomeId","InitiatorId","TargetId","OutcomeKind","PolicyReceiptId","ChangedDiplomaticState","MechanicalResult","Confirmed"],"allowedApiLines":["1.3","1.4"],"threadBoundary":"MainThreadApply","persistenceImpact":"ReadsExisting"}
+  ],
+  "events": [
+    {"id":"af.event.action.execution-completed","version":1,"owner":"Action.Runtime","payloadContract":"af.contracts.action.execution-result","immutable":true,"confirmedOnly":false},
+    {"id":"af.event.memory.fact-recorded","version":1,"owner":"Memory.Persistence","payloadContract":"af.contracts.memory.exchange","immutable":true,"confirmedOnly":true},
+    {"id":"af.event.world.diplomacy-resolved","version":1,"owner":"World.Diplomacy","payloadContract":"af.contracts.diplomacy.resolution","immutable":true,"confirmedOnly":true}
+  ],
+  "capabilities": [
+    {"id":"main-thread.dispatch","provider":"af.foundation.runtime","version":1,"contractVersion":1},
+    {"id":"conversation.action-authority","provider":"af.module.conversation","version":1,"contractVersion":1},
+    {"id":"settlement.siege.actions","provider":"af.module.siege-aftermath","version":1,"contractVersion":1},
+    {"id":"policy.effect.execution","provider":"af.module.policy-effects","version":1,"contractVersion":1},
+    {"id":"world.diplomacy.events","provider":"af.module.world-diplomacy","version":1,"contractVersion":1},
+    {"id":"diagnostics.health","provider":"af.foundation.runtime","version":1,"contractVersion":1}
+  ],
+  "rules": {"maxContracts":64,"maxEvents":32,"maxFieldsPerContract":32,"maxTextLength":240,"publicPayloadAllowsLiveObjects":false,"publicPayloadAllowsRawDictionary":false,"runtimeFrequency":"0"}
+}

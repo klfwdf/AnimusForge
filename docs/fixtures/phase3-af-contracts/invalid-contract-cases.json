@@ -1,0 +1,23 @@
+{
+  "fixtureId":"phase3-af-contracts-invalid-cases",
+  "cases":[
+    {"id":"duplicate-contract-id","mutation":"duplicate af.contracts.conversation.context","expected":{"state":"Invalid","code":"ContractIdNotUnique"}},
+    {"id":"duplicate-capability-id","mutation":"duplicate main-thread.dispatch","expected":{"state":"Invalid","code":"CapabilityIdNotUnique"}},
+    {"id":"missing-owner","mutation":"owner empty","expected":{"state":"Invalid","code":"MissingOwner"}},
+    {"id":"contract-version-zero","mutation":"version 0","expected":{"state":"Invalid","code":"InvalidContractVersion"}},
+    {"id":"unknown-api-line","mutation":"allowedApiLines contains 1.2","expected":{"state":"Invalid","code":"UnsupportedApiLine"}},
+    {"id":"live-object-field","mutation":"fields contains Mission","expected":{"state":"Invalid","code":"LiveObjectFieldForbidden"}},
+    {"id":"raw-dictionary-field","mutation":"fields contains Dictionary<string,object>","expected":{"state":"Invalid","code":"RawDictionaryForbidden"}},
+    {"id":"dynamic-field","mutation":"fields contains object or dynamic","expected":{"state":"Invalid","code":"UntypedFieldForbidden"}},
+    {"id":"mutable-event","mutation":"event immutable=false","expected":{"state":"Invalid","code":"MutableEventForbidden"}},
+    {"id":"event-payload-missing","mutation":"event payloadContract unknown","expected":{"state":"Invalid","code":"EventPayloadMissing"}},
+    {"id":"required-version-incompatible","mutation":"consumer maxVersion lower than provider version","expected":{"state":"Blocked","code":"ContractVersionIncompatible"}},
+    {"id":"optional-provider-missing","mutation":"optional capability unavailable with fallback","expected":{"state":"Degraded","code":"OptionalCapabilityMissing"}},
+    {"id":"confirmed-without-receipt","mutation":"Confirmed=true without applied receipt","expected":{"state":"Invalid","code":"ConfirmationEvidenceMissing"}},
+    {"id":"persistence-identity-mutation","mutation":"contract changes SyncData key or save type","expected":{"state":"Invalid","code":"PersistenceIdentityMutation"}},
+    {"id":"live-target-as-dto","mutation":"TargetIdentity contains Agent instance","expected":{"state":"Invalid","code":"LiveTargetForbidden"}},
+    {"id":"unbounded-text","mutation":"field text length exceeds 240","expected":{"state":"Invalid","code":"BoundedFieldLimitExceeded"}},
+    {"id":"stale-event","mutation":"event generation older than current runtime generation","expected":{"state":"Expired","code":"StaleGeneration"}},
+    {"id":"safe-mode-gameplay-event","mutation":"safe-mode emits gameplay Bridge event","expected":{"state":"Blocked","code":"SafeModeGameplayForbidden"}}
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "fixtureId":"phase3-foundation-runtime-invalid-cases",
+  "cases":[
+    {"id":"live-game-field","mutation":"field Game","expected":{"state":"Invalid","code":"LiveObjectForbidden"}},
+    {"id":"live-mission-field","mutation":"field Mission","expected":{"state":"Invalid","code":"LiveObjectForbidden"}},
+    {"id":"delegate-field","mutation":"field Action delegate","expected":{"state":"Invalid","code":"DelegateForbidden"}},
+    {"id":"raw-dictionary-field","mutation":"field Dictionary<string,object>","expected":{"state":"Invalid","code":"RawDictionaryForbidden"}},
+    {"id":"unbounded-payload","mutation":"PayloadCharCount above declared maximum","expected":{"state":"Invalid","code":"BoundedFieldLimitExceeded"}},
+    {"id":"unbounded-queue","mutation":"QueueBound absent or unlimited","expected":{"state":"Invalid","code":"QueueBoundRequired"}},
+    {"id":"missing-generation","mutation":"RuntimeGeneration absent","expected":{"state":"Invalid","code":"GenerationRequired"}},
+    {"id":"missing-revalidation","mutation":"RequiresStateRevalidation=false","expected":{"state":"Invalid","code":"StateRevalidationRequired"}},
+    {"id":"background-live-apply","mutation":"background result mutates game directly","expected":{"state":"Invalid","code":"MainThreadApplyRequired"}},
+    {"id":"stale-success","mutation":"stale result status Completed","expected":{"state":"Expired","code":"StaleGeneration"}},
+    {"id":"cancel-as-failure","mutation":"cancelled result reported as Failed","expected":{"state":"Invalid","code":"CancellationStatusCollapsed"}},
+    {"id":"safe-mode-gameplay","mutation":"SafeMode includes gameplay module","expected":{"state":"Blocked","code":"SafeModeGameplayForbidden"}},
+    {"id":"safe-mode-delete-data","mutation":"SafeMode deletes unknown namespace","expected":{"state":"Invalid","code":"SafeModeDataDeletionForbidden"}},
+    {"id":"toggle-harmony","mutation":"runtime-toggle-safe with Harmony contribution","expected":{"state":"RestartRequired","code":"LifecycleClaimConflict"}},
+    {"id":"unbounded-diagnostic","mutation":"diagnostic message above 240 or issues above 32","expected":{"state":"Invalid","code":"DiagnosticOutputUnbounded"}},
+    {"id":"unknown-health-state","mutation":"health state not in closed set","expected":{"state":"Invalid","code":"HealthStateUnknown"}}
+  ]
+}

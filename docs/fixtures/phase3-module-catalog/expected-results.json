@@ -1,0 +1,14 @@
+{
+  "fixtureId": "phase3-module-catalog-expected-results",
+  "validCatalog": {"state":"Valid","modules":8,"profiles":3,"healthStates":8,"maxIssues":32,"maxMessageLength":240},
+  "requiredInvalidStates": {"optional-provider-missing":"Degraded","required-provider-missing":"Blocked","runtime-toggle-harmony":"RestartRequired","bridge-failure":"Failed"},
+  "requiredInvalidCount": 16,
+  "invariants": [
+    "required dependencies are profile-closed",
+    "safe-mode contains no gameplay module or bridge",
+    "bridge has two peers and a separate persistence namespace",
+    "persistence namespaces are unique",
+    "entryType Pending is design-only and not executable",
+    "health output is bounded"
+  ]
+}
