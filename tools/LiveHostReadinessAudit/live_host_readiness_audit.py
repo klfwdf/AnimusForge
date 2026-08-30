@@ -89,8 +89,8 @@ def main() -> int:
         "gameRunning": process_running(),
         "saveDirectoryCount": len(saves),
         "saveDirectories": [str(path) for path in saves],
-        "deploymentPerformed": False,
-        "nextAction": "launch only after explicit live-game test authorization; do not treat stage as deployed",
+        "deploymentState": "matches-project-stage" if installed_matches_stage else "different-or-unavailable",
+        "nextAction": "live-game test can start when the game is launched" if installed_matches_stage else "deploy the verified project-local stage before live testing",
     }
     required = ["gameRoot", "bannerlordExe", "projectStage", "stageBootstrap", "stage13", "stage14", "installedModule", "submoduleLoadsBootstrap"]
     status = "PASS" if all(result[key] for key in required) else "FAIL"
@@ -101,7 +101,7 @@ def main() -> int:
         f"stage={int(result['projectStage'])} bootstrap={int(result['stageBootstrap'])} "
         f"implementation13={int(result['stage13'])} implementation14={int(result['stage14'])} "
         f"installedModule={int(result['installedModule'])} gameRunning={int(result['gameRunning'])} "
-        f"saveDirs={result['saveDirectoryCount']} noDeployment={int(not result['deploymentPerformed'])}"
+        f"saveDirs={result['saveDirectoryCount']} installedMatchesStage={int(result['installedMatchesStage'])}"
     )
     return 0 if status == "PASS" else 1
 
