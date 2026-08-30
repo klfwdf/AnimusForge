@@ -150,3 +150,9 @@ Merchant 三类 owner 接入三渠道 commit 的 Economy capability，并补真�
 - 直接加载 project-local 1.4 AnimusForge.dll，回放 mixed Economy/non-Economy 与 economy-only ActionPlan；确认 planner、main-thread port、legacy callback 和 confirmed facts receipt 的调用边界。
 - 验证：productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 productionAssembly=1 PASS。
 - 该回放仍不等同于真实 Campaign/Mission/live inventory 或游戏内存档验证；默认三渠道未切换，未部署。
+
+## 本轮完成（2026-08-30，Economy owner/state fixture）
+
+- 固化 owner/state 边界 fixture，覆盖 Hero、Party、Merchant、Courier-Hero、inactive/stale/missing-settlement/unknown-owner；所有跨 detached 边界字段均限制为字符串、ID 或状态。
+- 验证：economyOwnerStateFixture cases=7 eligible=4 rejected=3 stringOnly=1 hero=1 party=1 merchant=1 courierHero=1 failClosed=1 PASS。
+- 真实 Campaign/Mission、live inventory/market/debt、旧存档和 AFEF 仍为 NOT-RUN；下一项为真实 host 的游戏内验收。
