@@ -2370,9 +2370,9 @@ internal static class Program
             "private void TryStartNextLlmJob()",
             "private static bool HasCurrentCanonicalPromptContract(");
         Test.True(requestCompletionBridge.Contains(
-                "result.IsOutputTruncated = api?.IsOutputTruncated == true;",
+                "result.IsOutputTruncated = metadata.IsOutputTruncated;",
                 StringComparison.Ordinal),
-            "the API truncation signal must survive transfer into the queued LLM job result");
+            "the shared Gateway metadata truncation signal must survive transfer into the queued LLM job result");
         string llmJobResultDto = ExtractSection(
             source,
             "private sealed class LlmJobResult",
