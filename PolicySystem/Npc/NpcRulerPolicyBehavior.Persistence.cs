@@ -1844,6 +1844,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		public int MaxTokens;
 		public int HardTimeoutMilliseconds;
 		public long CreatedUtcTicks;
+		// Runtime-only; deliberately excluded from save serialization.
+		public CancellationTokenSource CancellationSource;
 	}
 
 	private sealed class NpcPolicyGenerationResult

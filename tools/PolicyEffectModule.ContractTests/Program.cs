@@ -6362,8 +6362,12 @@ internal static class Program
 		string playerCallSource = playerCallIndex < 0
 			? string.Empty
 			: generationSource.Substring(playerCallIndex, Math.Min(2600, generationSource.Length - playerCallIndex));
-		Check(playerCallSource.Contains("CallPolicyApiWithRetriesAsync(")
-			&& playerCallSource.Contains("\n\t\t\t\t3,"),
+		bool usesLegacyBoundedRetry = playerCallSource.Contains("CallPolicyApiWithRetriesAsync(")
+			&& playerCallSource.Contains("\n\t\t\t\t3,");
+		bool usesSharedPolicyGateway = playerCallSource.Contains("LegacyPolicyLlmGateway")
+			&& playerCallSource.Contains(".GenerateAsync(")
+			&& playerCallSource.Contains("LegacyPolicyLlmGateway.ToLegacyResult");
+		Check(usesLegacyBoundedRetry || usesSharedPolicyGateway,
 			"Player policy transport must use the shared bounded three-attempt retry helper.");
 	}
 

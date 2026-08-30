@@ -16,6 +16,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.SiegeAftermathIntervention;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -5198,7 +5200,7 @@ public class MyBehavior : CampaignBehaviorBase
 					result.IsObsolete = true;
 					return result;
 				}
-				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), logToEventLogs: false, eventLogSource: "CompressedMemory", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
+				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), "CompressedMemory", 0, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
 					if (TryParseMemorySummaryResponse(apiCallResult.Content, hero, draft, out var block, out var error))
@@ -5272,7 +5274,7 @@ public class MyBehavior : CampaignBehaviorBase
 					result.IsObsolete = true;
 					return result;
 				}
-				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), logToEventLogs: false, eventLogSource: "NpcMajorSummary", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
+				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), "NpcMajorSummary", 0, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
 					if (TryParseMajorActionSummaryResponse(apiCallResult.Content, hero, job, allActions, out var state, out var error))
@@ -5354,7 +5356,7 @@ public class MyBehavior : CampaignBehaviorBase
 					result.IsObsolete = true;
 					return result;
 				}
-				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemoryOverviewSummarySystemPrompt(targetChars), BuildMemoryOverviewSummaryUserPrompt(hero, promptExistingState, sourceBlocks, targetChars), logToEventLogs: false, eventLogSource: "MemoryOverview", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
+				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(BuildMemoryOverviewSummarySystemPrompt(targetChars), BuildMemoryOverviewSummaryUserPrompt(hero, promptExistingState, sourceBlocks, targetChars), "MemoryOverview", 0, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
 					if (TryParseMemoryOverviewResponse(apiCallResult.Content, hero, job, promptExistingState, sourceBlocks, out var state, out var error))
@@ -7018,7 +7020,7 @@ public class MyBehavior : CampaignBehaviorBase
 		for (int i = 1; i <= 3; i++)
 		{
 			await WaitForWeekZeroShortSummaryRequestSlotAsync();
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildWeekZeroShortSummarySystemPrompt(request.EventKind, request.KingdomId, request.Title), BuildWeekZeroShortSummaryUserPrompt(request.Summary), logToEventLogs: true, eventLogSource: "EventWeeklyReport", route: UniversalApiRoute.EventAndRebellion);
+			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(BuildWeekZeroShortSummarySystemPrompt(request.EventKind, request.KingdomId, request.Title), BuildWeekZeroShortSummaryUserPrompt(request.Summary));
 			if (apiCallResult.Success)
 			{
 				string text = NormalizeWeekZeroShortSummaryResponse(apiCallResult.Content, request.Summary);
@@ -12415,7 +12417,7 @@ public class MyBehavior : CampaignBehaviorBase
 			ApiCallResult apiCallResult = null;
 			try
 			{
-				Task<ApiCallResult> task = CallUniversalApiDetailed(systemPrompt, userPrompt, route: UniversalApiRoute.EventAndRebellion);
+				Task<ApiCallResult> task = CallRebelKingdomNamingGatewayDetailed(systemPrompt, userPrompt);
 				Task task2 = Task.WhenAny(task, Task.Delay(RebelKingdomNamingTimeoutMs)).GetAwaiter().GetResult();
 				if (task2 == task)
 				{
@@ -22459,7 +22461,7 @@ public class MyBehavior : CampaignBehaviorBase
 					+ "\n旧个性（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldPersonality) ? "无" : oldPersonality)
 					+ "\n旧背景（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldBackground) ? "无" : oldBackground);
 			}
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, user, route: UniversalApiRoute.Auxiliary);
+			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, user, "NpcPersona", 0, forceThinkingDisabled: false);
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_autogen"))
 			{
 				return "";
@@ -22587,7 +22589,7 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine(BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero, name, fullName, troopName, troopId, culture, scene, joinFact, equipment));
 			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
 			userSb.AppendLine(history);
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
+			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, userSb.ToString().Trim(), "PromotedCompanionPersona", 0, forceThinkingDisabled: false);
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_persona"))
 			{
 				return;
@@ -22670,7 +22672,7 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine("装备: " + equipmentSummary);
 			userSb.AppendLine("当前基础技能(来自原兵种模板，生成失败时保留这些值): " + BuildPromotedHeroSkillSummary(hero));
 			userSb.AppendLine("人设摘要: " + TrimToMaxChars((personality + " " + background).Trim(), 700));
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
+			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, userSb.ToString().Trim(), "PromotedCompanionSkills", 0, forceThinkingDisabled: false);
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_skills"))
 			{
 				return;
@@ -34341,6 +34343,232 @@ public class MyBehavior : CampaignBehaviorBase
 		return LlmApiCompat.ExtractAssistantText(json);
 	}
 
+	private async Task<ApiCallResult> CallWeeklyReportApiDetailed(string systemPrompt, string userPrompt)
+	{
+		ApiCallResult legacyResult = new ApiCallResult();
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (!TryResolveUniversalApiConfig(settings, UniversalApiRoute.EventAndRebellion, out string apiUrl, out string apiKey, out string modelName, out string resolvedRoute, out string errorMessage))
+			{
+				legacyResult.ErrorMessage = errorMessage;
+				return legacyResult;
+			}
+			int maxTokens = ResolveUniversalMaxTokens(settings, resolvedRoute);
+			float temperature = ResolveUniversalApiTemperature(settings, resolvedRoute);
+			ResolveUniversalThinkingSettings(settings, resolvedRoute, out bool thinkingEnabled, out string reasoningEffort);
+			long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+			PromptPackage prompt = new PromptPackage(
+				new[]
+				{
+					new PromptMessage("system", systemPrompt ?? string.Empty),
+					new PromptMessage("user", userPrompt ?? string.Empty)
+				},
+				maxTokens,
+				modelName);
+			LlmProviderSnapshot provider = new LlmProviderSnapshot(
+				resolvedRoute,
+				apiUrl,
+				modelName,
+				DuelSettings.LlmRequestTimeoutMilliseconds,
+				maxTokens);
+			TraceContext trace = new TraceContext(
+				"af-weekly-report-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+				runtimeGeneration,
+				runtimeGeneration,
+				"weekly-report",
+				#if BANNERLORD_1_4_OR_GREATER
+				"1.4"
+				#else
+				"1.3"
+				#endif
+			);
+			LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(
+				_ => apiKey,
+				temperature: temperature,
+				disableThinking: false,
+				retryWithoutThinkingOnBadRequest: true,
+				thinkingEnabled: thinkingEnabled,
+				reasoningEffort: reasoningEffort);
+			LlmGenerateResult generated = await gateway.GenerateAsync(
+				new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+				CancellationToken.None).ConfigureAwait(false);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_gateway_response"))
+			{
+				legacyResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				return legacyResult;
+			}
+			LlmGenerateMetadata metadata = generated?.Metadata ?? LlmGenerateMetadata.Empty;
+			legacyResult.Success = generated?.Status == LlmResultStatus.Succeeded;
+			legacyResult.Content = CleanAIResponse(generated?.RawText ?? string.Empty);
+			legacyResult.ErrorMessage = generated?.ErrorCode ?? string.Empty;
+			legacyResult.StatusCode = metadata.StatusCode;
+			legacyResult.IsRateLimit = metadata.IsRateLimit;
+			legacyResult.IsRequestsPerMinuteLimit = metadata.IsRequestsPerMinuteLimit;
+			legacyResult.IsQuotaLimit = metadata.IsQuotaLimit;
+			legacyResult.RetryAfterSeconds = metadata.RetryAfterSeconds;
+			Logger.Log("EventWeeklyReport", "[Gateway] route=" + resolvedRoute + " status=" + (metadata.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown") + " success=" + legacyResult.Success + " error=" + (legacyResult.ErrorMessage ?? ""));
+			return legacyResult;
+		}
+		catch (Exception ex)
+		{
+			legacyResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(ex.Message, legacyResult.Content, "");
+			return legacyResult;
+		}
+	}
+
+	private async Task<ApiCallResult> CallRebelKingdomNamingGatewayDetailed(string systemPrompt, string userPrompt)
+	{
+		ApiCallResult legacyResult = new ApiCallResult();
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (!TryResolveUniversalApiConfig(settings, UniversalApiRoute.EventAndRebellion, out string apiUrl, out string apiKey, out string modelName, out string resolvedRoute, out string errorMessage))
+			{
+				legacyResult.ErrorMessage = errorMessage;
+				return legacyResult;
+			}
+			int maxTokens = ResolveUniversalMaxTokens(settings, resolvedRoute);
+			ResolveUniversalThinkingSettings(settings, resolvedRoute, out bool thinkingEnabled, out string reasoningEffort);
+			PromptPackage prompt = new PromptPackage(
+				new[]
+				{
+					new PromptMessage("system", systemPrompt ?? string.Empty),
+					new PromptMessage("user", userPrompt ?? string.Empty)
+				},
+				maxTokens,
+				modelName);
+			string apiLine;
+#if BANNERLORD_1_4_OR_GREATER
+			apiLine = "1.4";
+#else
+			apiLine = "1.3";
+#endif
+			TraceContext trace = new TraceContext(
+				"af-rebel-naming-" + runtimeGeneration.ToString(CultureInfo.InvariantCulture) + "-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+				runtimeGeneration,
+				runtimeGeneration,
+				"kingdom-rebellion",
+				apiLine);
+			LlmProviderSnapshot provider = new LlmProviderSnapshot(
+				resolvedRoute,
+				apiUrl,
+				modelName,
+				RebelKingdomNamingTimeoutMs,
+				maxTokens);
+			LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(
+				_ => apiKey,
+				temperature: ResolveUniversalApiTemperature(settings, resolvedRoute),
+				disableThinking: false,
+				retryWithoutThinkingOnBadRequest: true,
+				thinkingEnabled: thinkingEnabled,
+				reasoningEffort: reasoningEffort);
+			LlmGenerateResult generated = await gateway.GenerateAsync(
+				new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+				CancellationToken.None).ConfigureAwait(false);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "rebel_naming_gateway_response"))
+			{
+				legacyResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				return legacyResult;
+			}
+			LlmGenerateMetadata metadata = generated?.Metadata ?? LlmGenerateMetadata.Empty;
+			legacyResult.Success = generated?.Status == LlmResultStatus.Succeeded;
+			legacyResult.Content = CleanAIResponse(generated?.RawText ?? string.Empty);
+			legacyResult.ErrorMessage = generated?.ErrorCode == "cancelled"
+				? "叛乱命名请求超时（60 秒）。"
+				: (generated?.ErrorCode ?? string.Empty);
+			legacyResult.StatusCode = metadata.StatusCode;
+			legacyResult.IsRateLimit = metadata.IsRateLimit;
+			legacyResult.IsRequestsPerMinuteLimit = metadata.IsRequestsPerMinuteLimit;
+			legacyResult.IsQuotaLimit = metadata.IsQuotaLimit;
+			legacyResult.RetryAfterSeconds = metadata.RetryAfterSeconds;
+			Logger.Log("KingdomRebellion", "[Gateway] route=" + resolvedRoute + " status=" + (metadata.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown") + " success=" + legacyResult.Success + " error=" + (legacyResult.ErrorMessage ?? ""));
+			return legacyResult;
+		}
+		catch (Exception ex)
+		{
+			legacyResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(ex.Message, legacyResult.Content, "");
+			return legacyResult;
+		}
+	}
+
+	private async Task<ApiCallResult> CallAuxiliaryGatewayDetailed(string systemPrompt, string userPrompt, string source, int maxTokens, bool forceThinkingDisabled)
+	{
+		ApiCallResult legacyResult = new ApiCallResult();
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (!TryResolveUniversalApiConfig(settings, UniversalApiRoute.Auxiliary, out string apiUrl, out string apiKey, out string modelName, out string resolvedRoute, out string errorMessage))
+			{
+				legacyResult.ErrorMessage = errorMessage;
+				return legacyResult;
+			}
+			int effectiveMaxTokens = maxTokens > 0
+				? maxTokens
+				: ResolveUniversalMaxTokens(settings, resolvedRoute);
+			PromptPackage prompt = new PromptPackage(
+				new[]
+				{
+					new PromptMessage("system", systemPrompt ?? string.Empty),
+					new PromptMessage("user", userPrompt ?? string.Empty)
+				},
+				Math.Max(1, effectiveMaxTokens),
+				modelName);
+			LlmProviderSnapshot provider = new LlmProviderSnapshot(
+				resolvedRoute,
+				apiUrl,
+				modelName,
+				DuelSettings.LlmRequestTimeoutMilliseconds,
+				Math.Max(1, effectiveMaxTokens));
+			string apiLine;
+#if BANNERLORD_1_4_OR_GREATER
+			apiLine = "1.4";
+#else
+			apiLine = "1.3";
+#endif
+			TraceContext trace = new TraceContext(
+				"af-auxiliary-" + (source ?? "summary") + "-" + runtimeGeneration.ToString(CultureInfo.InvariantCulture) + "-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+				runtimeGeneration,
+				runtimeGeneration,
+				"auxiliary",
+				apiLine);
+			ResolveUniversalThinkingSettings(settings, resolvedRoute, out bool thinkingEnabled, out string reasoningEffort);
+			LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(
+				_ => apiKey,
+				temperature: ResolveUniversalApiTemperature(settings, resolvedRoute),
+				disableThinking: forceThinkingDisabled,
+				retryWithoutThinkingOnBadRequest: !forceThinkingDisabled,
+				thinkingEnabled: thinkingEnabled,
+				reasoningEffort: reasoningEffort);
+			LlmGenerateResult generated = await gateway.GenerateAsync(
+				new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+				CancellationToken.None).ConfigureAwait(false);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "auxiliary_gateway_response:" + (source ?? "summary")))
+			{
+				legacyResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				return legacyResult;
+			}
+			LlmGenerateMetadata metadata = generated?.Metadata ?? LlmGenerateMetadata.Empty;
+			legacyResult.Success = generated?.Status == LlmResultStatus.Succeeded;
+			legacyResult.Content = CleanAIResponse(generated?.RawText ?? string.Empty);
+			legacyResult.ErrorMessage = generated?.ErrorCode ?? string.Empty;
+			legacyResult.StatusCode = metadata.StatusCode;
+			legacyResult.IsRateLimit = metadata.IsRateLimit;
+			legacyResult.IsRequestsPerMinuteLimit = metadata.IsRequestsPerMinuteLimit;
+			legacyResult.IsQuotaLimit = metadata.IsQuotaLimit;
+			legacyResult.RetryAfterSeconds = metadata.RetryAfterSeconds;
+			Logger.Log("Logic", "[AuxiliaryGateway] source=" + (source ?? "summary") + " route=" + resolvedRoute + " status=" + (metadata.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown") + " success=" + legacyResult.Success + " error=" + (legacyResult.ErrorMessage ?? ""));
+			return legacyResult;
+		}
+		catch (Exception ex)
+		{
+			legacyResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(ex.Message, legacyResult.Content, "");
+			return legacyResult;
+		}
+	}
+
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main, bool streamResponse = true, bool forceThinkingDisabled = false)
 	{
 		const int streamIdleTimeoutMilliseconds = 300000;
@@ -34694,7 +34922,7 @@ public class MyBehavior : CampaignBehaviorBase
 				LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail("找不到 MyBehavior，无法调用辅助模型。", ""));
 				return "";
 			}
-			ApiCallResult apiCallResult = await behavior.CallUniversalApiDetailed(sys, user, logToEventLogs: false, eventLogSource: source, route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
+			ApiCallResult apiCallResult = await behavior.CallAuxiliaryGatewayDetailed(sys, user, source, 0, forceThinkingDisabled: true);
 			if (apiCallResult.Success)
 			{
 				return apiCallResult.Content ?? "";
@@ -44504,7 +44732,7 @@ public class MyBehavior : CampaignBehaviorBase
 		ShowWeeklyFullOnDemandProgressPopup(eventRecordEntry);
 		try
 		{
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport", route: UniversalApiRoute.EventAndRebellion);
+			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
 			if (!apiCallResult.Success)
 			{
 				ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + (apiCallResult.ErrorMessage ?? "未知错误"));
@@ -44911,7 +45139,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text4 = BuildWeeklyReportGroupDisplayLabel(group);
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport", route: UniversalApiRoute.EventAndRebellion);
+			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			Logger.LogEventPromptExchange(text4 + " [尝试 " + i + "/" + maxAttempts + "]", text3, text5);
 			if (!apiCallResult.Success)
@@ -44967,7 +45195,7 @@ public class MyBehavior : CampaignBehaviorBase
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport", route: UniversalApiRoute.EventAndRebellion);
+			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "未知错误");
 			weeklyReportBatchRequestResult.RawResponse = text5;
 			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);

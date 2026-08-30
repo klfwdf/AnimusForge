@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -34,6 +35,8 @@ using TaleWorlds.ScreenSystem;
 using BannerlordEngineTexture = TaleWorlds.Engine.Texture;
 using BannerlordUiSprite = TaleWorlds.TwoDimension.Sprite;
 using BannerlordUiTexture = TaleWorlds.TwoDimension.Texture;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge;
 
@@ -2339,24 +2342,35 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			};
 			try
 			{
-				WorldDiplomacyApiCallResult api = await WorldDiplomacyLlmClient.CallMessagesWithRetriesAsync(
+				PromptPackage sharedPrompt = LegacyWorldDiplomacyLlmGateway.BuildPromptPackage(
 					requestMessages,
 					Math.Max(256, job.MaxTokens),
-					requestTimeoutMilliseconds,
-					Source,
+					"world-diplomacy");
+				TraceContext trace = new TraceContext(
+					"world-diplomacy-" + (job.JobId ?? "request"),
 					generation,
-					maxAttempts: 2);
-				result.Success = api?.Success == true;
-				result.Content = api?.Content ?? "";
-				result.Error = api?.ErrorMessage ?? "";
-				result.IsServiceFailure = api == null || api.IsTimeout || api.IsRateLimit || api.IsQuotaLimit || api.IsAuthFailure;
-				result.IsOutputTruncated = api?.IsOutputTruncated == true;
-				result.PromptTokens = api?.PromptTokens;
-				result.CompletionTokens = api?.CompletionTokens;
-				result.PromptCacheHitTokens = api?.PromptCacheHitTokens;
-				result.PromptCacheMissTokens = api?.PromptCacheMissTokens;
-				result.PromptCacheCreationTokens = api?.PromptCacheCreationTokens;
-				result.PromptUncachedTokens = api?.PromptUncachedTokens;
+					0,
+					"single-player",
+					"shared");
+				LlmGenerateResult generated = await new LegacyWorldDiplomacyLlmGateway().GenerateAsync(
+					new LlmGenerateRequest(
+						trace,
+						new LlmProviderSnapshot("world-diplomacy", "legacy://world-diplomacy", "world-diplomacy", requestTimeoutMilliseconds, Math.Max(256, job.MaxTokens)),
+						sharedPrompt,
+						InteractionStage.MainReply),
+					CancellationToken.None).ConfigureAwait(false);
+				LlmGenerateMetadata metadata = generated.Metadata ?? LlmGenerateMetadata.Empty;
+				result.Success = generated.Status == LlmResultStatus.Succeeded;
+				result.Content = generated.RawText ?? "";
+				result.Error = generated.Status == LlmResultStatus.Succeeded ? "" : (generated.ErrorCode ?? "world_diplomacy_gateway_failure");
+				result.IsServiceFailure = metadata.IsTimeout || metadata.IsRateLimit || metadata.IsQuotaLimit || metadata.IsAuthFailure || generated.Status != LlmResultStatus.Succeeded;
+				result.IsOutputTruncated = metadata.IsOutputTruncated;
+				result.PromptTokens = generated.PromptTokens;
+				result.CompletionTokens = generated.CompletionTokens;
+				result.PromptCacheHitTokens = metadata.PromptCacheHitTokens;
+				result.PromptCacheMissTokens = metadata.PromptCacheMissTokens;
+				result.PromptCacheCreationTokens = metadata.PromptCacheCreationTokens;
+				result.PromptUncachedTokens = metadata.PromptUncachedTokens;
 			}
 			catch (Exception ex)
 			{

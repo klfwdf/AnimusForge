@@ -224,14 +224,14 @@ internal static class PolicyLlmClient
 	}
 
 	// 保留非政策调用方的既有“事件/叛乱 API，缺失时回退主 API”入口；不启用政策专用 Token/温度兼容降级。
-	public static Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts)
+	public static Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts, CancellationToken cancellationToken = default)
 	{
 		if (!TryResolvePolicyApiConfig(DuelSettings.PolicyApiSourceEventAndRebellion, true, maxTokens, null, out PolicyApiExecutionProfile profile, out string errorMessage))
 		{
 			return Task.FromResult(new NpcPolicyApiCallResult { ErrorMessage = errorMessage });
 		}
 		profile.MaxTokens = Math.Max(1, maxTokens);
-		return CallPolicyApiWithRetriesAsync(BuildMessageArray(systemPrompt), profile, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts, default, enablePolicyCompatibility: false);
+		return CallPolicyApiWithRetriesAsync(BuildMessageArray(systemPrompt), profile, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts, cancellationToken, enablePolicyCompatibility: false);
 	}
 
 	public static Task<NpcPolicyApiCallResult> CallPolicyApiWithRetriesAsync(string systemPrompt, PolicyApiExecutionProfile profile, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = DefaultMaxAttempts, CancellationToken cancellationToken = default)
@@ -1299,8 +1299,8 @@ internal static class NpcPolicyLlmClient
 		return PolicyLlmClient.IsConfiguredForLegacyEventApi(out errorMessage);
 	}
 
-	public static Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = 3)
+	public static Task<NpcPolicyApiCallResult> CallEventAndRebellionApiWithRetriesAsync(string systemPrompt, int maxTokens, int hardTimeoutMilliseconds, string source, long runtimeGeneration, int maxAttempts = 3, CancellationToken cancellationToken = default)
 	{
-		return PolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(systemPrompt, maxTokens, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts);
+		return PolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(systemPrompt, maxTokens, hardTimeoutMilliseconds, source, runtimeGeneration, maxAttempts, cancellationToken);
 	}
 }

@@ -1,0 +1,114 @@
+{
+  "fixtureVersion": 1,
+  "kind": "legacy-first-safe-mode-migration-cases",
+  "assemblyIdentity": "AnimusForge",
+  "knownRepresentativeBindings": {
+    "_AnimusForge_setup_done_v1": "bool",
+    "_dialogueHistory_v2": "Dictionary<string, string>",
+    "_setsOwnSettlementEntryProfile_v1": "TroopRoster",
+    "_rewardPublicTrust_v1": "Dictionary<string, int>",
+    "_af_memoryOverviewStates_v1": "Dictionary<string, string>"
+  },
+  "unknownRecord": {
+    "key": "future_module_unknown_v1",
+    "type": "opaque-json",
+    "valueKind": "unknown"
+  },
+  "cases": [
+    {
+      "id": "valid-legacy-records-publish",
+      "records": [
+        {
+          "key": "_AnimusForge_setup_done_v1",
+          "type": "bool",
+          "valueKind": "scalar"
+        },
+        {
+          "key": "_dialogueHistory_v2",
+          "type": "Dictionary<string, string>",
+          "valueKind": "dictionary"
+        },
+        {
+          "key": "future_module_unknown_v1",
+          "type": "opaque-json",
+          "valueKind": "unknown"
+        }
+      ],
+      "expected": "publish-known-and-preserve-unknown"
+    },
+    {
+      "id": "missing-optional-key-does-not-invent-data",
+      "records": [
+        {
+          "key": "_AnimusForge_setup_done_v1",
+          "type": "bool",
+          "valueKind": "scalar"
+        }
+      ],
+      "expected": "publish-with-missing-key-untouched"
+    },
+    {
+      "id": "type-mismatch-retains-legacy",
+      "records": [
+        {
+          "key": "_dialogueHistory_v2",
+          "type": "List<string>",
+          "valueKind": "wrong-type"
+        },
+        {
+          "key": "future_module_unknown_v1",
+          "type": "opaque-json",
+          "valueKind": "unknown"
+        }
+      ],
+      "expected": "no-publish-retain-legacy"
+    },
+    {
+      "id": "safe-mode-unknown-retention",
+      "safeMode": true,
+      "records": [
+        {
+          "key": "future_module_unknown_v1",
+          "type": "opaque-json",
+          "valueKind": "unknown"
+        }
+      ],
+      "expected": "unknown-visible-without-business-instantiation"
+    },
+    {
+      "id": "chunk-missing-fails-closed",
+      "chunk": {
+        "baseKey": "_af_memorySummaryQueue_v1",
+        "count": 3,
+        "chunks": [
+          "a",
+          "b",
+          null
+        ]
+      },
+      "expected": "no-publish-retain-legacy"
+    },
+    {
+      "id": "idempotent-second-pass",
+      "records": [
+        {
+          "key": "_rewardPublicTrust_v1",
+          "type": "Dictionary<string, int>",
+          "valueKind": "dictionary"
+        },
+        {
+          "key": "future_module_unknown_v1",
+          "type": "opaque-json",
+          "valueKind": "unknown"
+        }
+      ],
+      "expected": "same-output-on-second-pass"
+    }
+  ],
+  "policy": {
+    "readMode": "legacy-first",
+    "publishMode": "single-point-after-validation",
+    "deleteLegacyKeys": false,
+    "preserveUnknownData": true
+  }
+}

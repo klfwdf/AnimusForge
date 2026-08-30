@@ -20,6 +20,144 @@ public static class ShoutNetwork
 {
 	private const int DefaultPrimaryMaxTokens = DuelSettings.DefaultGeneralApiMaxTokens;
 
+#if DEBUG
+	private static readonly object StreamingTransportOverrideLock = new object();
+	private static Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _streamingTransportOverride;
+	private static readonly object NonStreamingTransportOverrideLock = new object();
+	private static Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _nonStreamingTransportOverride;
+
+	/// <summary>
+	/// Installs a scoped, opt-in HTTP sender for local SSE replay. The override
+	/// is available only in Debug builds and affects the streaming send point
+	/// exclusively; ShoutNetwork still owns SSE parsing, filtering, retries,
+	/// stale checks and callbacks. It must not be used by the normal game path.
+	/// </summary>
+	public static IDisposable PushStreamingTransportOverrideForExternal(
+		Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sender)
+	{
+		if (sender == null)
+		{
+			throw new ArgumentNullException(nameof(sender));
+		}
+		lock (StreamingTransportOverrideLock)
+		{
+			if (_streamingTransportOverride != null)
+			{
+				throw new InvalidOperationException("ShoutNetwork streaming transport override is already active.");
+			}
+			_streamingTransportOverride = sender;
+		}
+		return new StreamingTransportOverrideScope(sender);
+	}
+
+	private sealed class StreamingTransportOverrideScope : IDisposable
+	{
+		private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _sender;
+		private int _disposed;
+
+		public StreamingTransportOverrideScope(
+			Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sender)
+		{
+			_sender = sender;
+		}
+
+		public void Dispose()
+		{
+			if (Interlocked.Exchange(ref _disposed, 1) != 0)
+			{
+				return;
+			}
+			lock (StreamingTransportOverrideLock)
+			{
+				if (ReferenceEquals(_streamingTransportOverride, _sender))
+				{
+					_streamingTransportOverride = null;
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Installs a scoped, opt-in HTTP sender for local non-streaming replay.
+	/// The override affects only the primary non-streaming send point; request
+	/// construction, thinking fallback, response parsing, stale checks and
+	/// legacy error text remain owned by ShoutNetwork. It is available only in
+	/// Debug builds and must not be used by the normal game path.
+	/// </summary>
+	public static IDisposable PushNonStreamingTransportOverrideForExternal(
+		Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sender)
+	{
+		if (sender == null)
+		{
+			throw new ArgumentNullException(nameof(sender));
+		}
+		lock (NonStreamingTransportOverrideLock)
+		{
+			if (_nonStreamingTransportOverride != null)
+			{
+				throw new InvalidOperationException("ShoutNetwork non-streaming transport override is already active.");
+			}
+			_nonStreamingTransportOverride = sender;
+		}
+		return new NonStreamingTransportOverrideScope(sender);
+	}
+
+	private sealed class NonStreamingTransportOverrideScope : IDisposable
+	{
+		private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _sender;
+		private int _disposed;
+
+		public NonStreamingTransportOverrideScope(
+			Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sender)
+		{
+			_sender = sender;
+		}
+
+		public void Dispose()
+		{
+			if (Interlocked.Exchange(ref _disposed, 1) != 0)
+			{
+				return;
+			}
+			lock (NonStreamingTransportOverrideLock)
+			{
+				if (ReferenceEquals(_nonStreamingTransportOverride, _sender))
+				{
+					_nonStreamingTransportOverride = null;
+				}
+			}
+		}
+	}
+#endif
+
+	private static Task<HttpResponseMessage> SendPrimaryNonStreamingRequestAsync(
+		HttpRequestMessage request,
+		CancellationToken cancellationToken)
+	{
+#if DEBUG
+		Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sender = Volatile.Read(ref _nonStreamingTransportOverride);
+		if (sender != null)
+		{
+			return sender(request, cancellationToken);
+		}
+#endif
+		return DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
+	}
+
+	private static Task<HttpResponseMessage> SendPrimaryStreamingRequestAsync(
+		HttpRequestMessage request,
+		CancellationToken cancellationToken)
+	{
+#if DEBUG
+		Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sender = Volatile.Read(ref _streamingTransportOverride);
+		if (sender != null)
+		{
+			return sender(request, cancellationToken);
+		}
+#endif
+		return DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1, cancellationToken);
+	}
+
 	private sealed class PlayerReferenceStreamFilter
 	{
 		private string _pending = "";
@@ -820,7 +958,7 @@ public static class ShoutNetwork
 				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
-				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
+				HttpResponseMessage response = await SendPrimaryNonStreamingRequestAsync(request, cancellationToken);
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
 				{
@@ -850,7 +988,7 @@ public static class ShoutNetwork
 					LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, effectiveApiUrl, settings.ApiKey);
 					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
 					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
-					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage, cancellationToken);
+					response = await SendPrimaryNonStreamingRequestAsync(httpRequestMessage, cancellationToken);
 					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
 					{
@@ -1085,7 +1223,7 @@ public static class ShoutNetwork
 						request.Headers.ConnectionClose = true;
 						request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 						FreezeWatchdog.Mark("PrimaryChat.stream.send_begin", "attempt=" + attempt + " model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
-						HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1, cancellationToken);
+						HttpResponseMessage response = await SendPrimaryStreamingRequestAsync(request, cancellationToken);
 						FreezeWatchdog.Mark("PrimaryChat.stream.response", "attempt=" + attempt + " status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_response"))
 						{

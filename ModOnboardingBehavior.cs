@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Adapters;
 using MCM.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1934,12 +1936,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				["stream"] = false
 			};
 			ApplyApiValidationRequestControls(requestPayload, target.Target, effectiveApiUrl, target.ModelName);
-			using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, target.ApiKey);
-			request.Content = new StringContent(LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload), Encoding.UTF8, "application/json");
-			using HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
-			string responseBody = await response.Content.ReadAsStringAsync();
-			if (response.IsSuccessStatusCode)
+			ConfiguredChatValidationExchange exchange = await SendOnboardingChatValidationAsync(
+				"onboarding_combined_validation_" + target.Target.ToString(),
+				effectiveApiUrl,
+				target.ModelName,
+				target.ApiKey,
+				requestPayload,
+				cancellationToken);
+			if (exchange.Result.Status == LlmResultStatus.Cancelled)
+			{
+				throw new OperationCanceledException(cancellationToken);
+			}
+			string responseBody = exchange.ResponseBody;
+			if (exchange.IsSuccessStatusCode)
 			{
 				try
 				{
@@ -1961,8 +1970,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					return result;
 				}
 			}
-			result.FailureHint = BuildApiValidationFailureHint(response.StatusCode, responseBody);
-			result.Message = target.DisplayName + "连接测试失败。\n" + BuildApiValidationFailureMessage(effectiveApiUrl, target.ModelName, response.StatusCode, responseBody);
+			if (!exchange.HasStatusCode)
+			{
+				result.FailureHint = "通常是网络异常、证书或代理设置异常，或者 " + target.DisplayName + " 的 Base URL 填写不正确。";
+				result.Message = target.DisplayName + "连接测试失败：" + (exchange.ErrorMessage ?? "未知错误");
+				return result;
+			}
+			HttpStatusCode statusCode = (HttpStatusCode)exchange.StatusCode;
+			result.FailureHint = BuildApiValidationFailureHint(statusCode, responseBody);
+			result.Message = target.DisplayName + "连接测试失败。\n" + BuildApiValidationFailureMessage(effectiveApiUrl, target.ModelName, statusCode, responseBody);
 			return result;
 		}
 		catch (OperationCanceledException)
@@ -2343,18 +2359,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				cancellationTokenSource = new CancellationTokenSource();
 				_baseUrlValidationCancellation = cancellationTokenSource;
-				string modelsApiUrl = BuildModelsApiUrl(validatedBaseUrl);
-				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
-				using HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
-				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
-				if (CanUseBaseUrlStatusCode(httpResponseMessage.StatusCode))
+				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().ProbeBaseUrlAsync(validatedBaseUrl, cancellationTokenSource.Token);
+				string text2 = exchange.ResponseBody;
+				if (exchange.Cancelled)
+				{
+					throw new OperationCanceledException(cancellationTokenSource.Token);
+				}
+				if (exchange.HasStatusCode && CanUseBaseUrlStatusCode((HttpStatusCode)exchange.StatusCode))
 				{
 					flag = true;
 					message = "Base URL 检查通过，可以继续填写 API Key。";
 				}
+				else if (exchange.HasStatusCode)
+				{
+					message = BuildBaseUrlValidationFailureMessage((HttpStatusCode)exchange.StatusCode, text2);
+				}
 				else
 				{
-					message = BuildBaseUrlValidationFailureMessage(httpResponseMessage.StatusCode, text2);
+					message = "Base URL 检查失败：" + (exchange.ErrorMessage ?? "未知错误");
 				}
 			}
 			catch (OperationCanceledException)
@@ -2565,12 +2587,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				cancellationTokenSource = new CancellationTokenSource();
 				_modelFetchCancellation = cancellationTokenSource;
-				string modelsApiUrl = BuildModelsApiUrl(apiUrl);
-				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
-				LlmApiCompat.ApplyAuthenticationHeaders(request, modelsApiUrl, apiKey);
-				using HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
-				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
-				if (httpResponseMessage.IsSuccessStatusCode)
+				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(apiUrl, apiKey, cancellationTokenSource.Token);
+				string text2 = exchange.ResponseBody;
+				if (exchange.Cancelled)
+				{
+					throw new OperationCanceledException(cancellationTokenSource.Token);
+				}
+				if (exchange.IsSuccessStatusCode)
 				{
 					list = ExtractModelNamesFromResponse(text2);
 					if (list.Count > 0)
@@ -2583,9 +2606,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						text = LlmRetryPrompt.BuildFailureDetail("接口已返回响应，但没有识别出可用模型列表。你也可以手动输入模型名称。", "", text2);
 					}
 				}
+				else if (exchange.HasStatusCode)
+				{
+					text = BuildModelFetchFailureMessage((HttpStatusCode)exchange.StatusCode, text2);
+				}
 				else
 				{
-					text = BuildModelFetchFailureMessage(httpResponseMessage.StatusCode, text2);
+					text = "拉取模型列表失败：" + (exchange.ErrorMessage ?? "未知错误");
 				}
 			}
 			catch (OperationCanceledException)
@@ -2890,13 +2917,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					["stream"] = false
 				};
 				ApplyApiValidationRequestControls(requestPayload, validationTarget, effectiveApiUrl, modelName);
-				string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
-				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
-				request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-				using HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
-				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
-				if (httpResponseMessage.IsSuccessStatusCode)
+				ConfiguredChatValidationExchange exchange = await SendOnboardingChatValidationAsync(
+					"onboarding_mcm_validation_" + validationTarget.ToString(),
+					effectiveApiUrl,
+					modelName,
+					apiKey,
+					requestPayload,
+					cancellationTokenSource.Token);
+				if (exchange.Result.Status == LlmResultStatus.Cancelled)
+				{
+					throw new OperationCanceledException(cancellationTokenSource.Token);
+				}
+				string text2 = exchange.ResponseBody;
+				if (exchange.IsSuccessStatusCode)
 				{
 					try
 					{
@@ -2919,10 +2952,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						text = LlmRetryPrompt.BuildFailureDetail("MCM 中的" + CurrentApiDisplayName() + "回复解析失败：" + ex.Message, "", text2);
 					}
 				}
+				else if (exchange.HasStatusCode)
+				{
+					HttpStatusCode statusCode = (HttpStatusCode)exchange.StatusCode;
+					failureHint = BuildApiValidationFailureHint(statusCode, text2);
+					text = BuildApiValidationFailureMessage(effectiveApiUrl, modelName, statusCode, text2);
+				}
 				else
 				{
-					failureHint = BuildApiValidationFailureHint(httpResponseMessage.StatusCode, text2);
-					text = BuildApiValidationFailureMessage(effectiveApiUrl, modelName, httpResponseMessage.StatusCode, text2);
+					failureHint = "通常是网络异常、证书或代理设置异常，或者 Base URL 填写不正确。";
+					text = "MCM 中的" + CurrentApiDisplayName() + "连接测试失败：" + (exchange.ErrorMessage ?? "未知错误");
 				}
 			}
 			catch (OperationCanceledException)
@@ -3493,6 +3532,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		default:
 			return "请优先检查 Base URL、API Key、模型名称和当前网络环境是否正确。";
 		}
+	}
+
+	private static Task<ConfiguredChatValidationExchange> SendOnboardingChatValidationAsync(string providerId, string endpoint, string model, string apiKey, JObject payload, CancellationToken cancellationToken)
+	{
+		int maxTokens = payload?["max_tokens"]?.Value<int>() ?? 256;
+		LlmProviderSnapshot provider = new LlmProviderSnapshot(
+			providerId,
+			(endpoint ?? "").Trim(),
+			(model ?? "").Trim(),
+			DuelSettings.LlmRequestTimeoutMilliseconds,
+			Math.Max(1, maxTokens));
+		LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(_ => apiKey ?? "", disableThinking: true);
+		return gateway.SendValidationAsync(provider, payload, cancellationToken);
 	}
 
 	private static string BuildModelsApiUrl(string rawUrl)

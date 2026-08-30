@@ -17,6 +17,8 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge;
 
@@ -927,18 +929,37 @@ public static class ShoutUtils
 			}
 			List<object> messages = new List<object>
 			{
-				new
+				new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
 				{
-					role = "system",
-					content = sys
+					["role"] = "system",
+					["content"] = sys
 				},
-				new
+				new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
 				{
-					role = "user",
-					content = user
+					["role"] = "user",
+					["content"] = user
 				}
 			};
-			string rawResp = ((await ShoutNetwork.CallApiWithMessages(messages, 5000)) ?? "").Trim();
+			PromptPackage prompt = LegacyPromptPackageAdapter.FromLegacyMessages(messages, 5000, "legacy-main");
+			TraceContext trace = new TraceContext(
+				"unnamed-persona-" + (k ?? "request"),
+				0,
+				0,
+				"single-player",
+				"shared");
+			LlmGenerateResult generated = await new LegacyShoutNetworkGateway().GenerateAsync(
+				new LlmGenerateRequest(
+					trace,
+					new LlmProviderSnapshot("legacy-main", "legacy://shout-network", "legacy-main", 0, 5000),
+					prompt,
+					InteractionStage.MainReply),
+				default).ConfigureAwait(false);
+			if (generated.Status != LlmResultStatus.Succeeded)
+			{
+				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", "统一 LLM Gateway 请求失败：" + (generated.ErrorCode ?? "unknown"));
+				return;
+			}
+			string rawResp = (generated.RawText ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(rawResp))
 			{
 				LlmRetryPrompt.ShowFailurePopup("无名NPC人设生成失败", LlmRetryPrompt.BuildFailureDetail("模型回复为空，无法生成人设。", ""));

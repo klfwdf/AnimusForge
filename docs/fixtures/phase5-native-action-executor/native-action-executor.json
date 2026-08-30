@@ -1,0 +1,22 @@
+{
+  "name": "native-action-executor",
+  "status": "contract-fixture",
+  "rawPostprocess": "NPC 已同意 [ACTION:DUEL] [ACTION:MOOD:NEUTRAL]",
+  "authorizedTagFamilies": [
+    "ACTION:DUEL",
+    "ACTION:MOOD"
+  ],
+  "expected": {
+    "exactPlan": "executed",
+    "extraRawAction": "rejected",
+    "hostException": "rejected"
+  },
+  "runtimeNotProven": [
+    "Bannerlord main-thread dispatch",
+    "ApplyNativeConversationGameActionsCore domain side effects",
+    "AFEF persistence",
+    "legacy save loading",
+    "real network",
+    "in-game Native conversation"
+  ]
+}

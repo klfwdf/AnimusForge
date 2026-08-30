@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge;
 
@@ -141,8 +143,16 @@ public static class TownAmbientAiClient
 		}
 		object[] messages =
 		{
-			new { role = "system", content = "你是接口连通性测试助手。只回复两个汉字：正常。" },
-			new { role = "user", content = "测试环境AI接口。" }
+			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+			{
+				["role"] = "system",
+				["content"] = "你是接口连通性测试助手。只回复两个汉字：正常。"
+			},
+			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+			{
+				["role"] = "user",
+				["content"] = "测试环境AI接口。"
+			}
 		};
 		TownAmbientAiResult result = await SendAsync(messages, 96, 0, "town_ambient_ai_test").ConfigureAwait(false);
 		RecordStandaloneTestUsage(result);
@@ -170,8 +180,16 @@ public static class TownAmbientAiClient
 			speakerList);
 		return new object[]
 		{
-			new { role = "system", content = system },
-			new { role = "user", content = user }
+			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+			{
+				["role"] = "system",
+				["content"] = system
+			},
+			new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+			{
+				["role"] = "user",
+				["content"] = user
+			}
 		};
 	}
 
@@ -283,53 +301,34 @@ public static class TownAmbientAiClient
 			return new TownAmbientAiResult { Error = "环境 AI 配置不完整。" };
 		}
 
-		JObject payload = new JObject
-		{
-			["model"] = model,
-			["messages"] = JArray.FromObject(messages),
-			["stream"] = false,
-			["temperature"] = 0.75f,
-			["max_tokens"] = Math.Max(16, maxOutputTokens)
-		};
-		// Ambient replies are short, strict-format lines.  Disable model reasoning
-		// when this provider/model family supports the shared control, otherwise a
-		// small output limit can be consumed entirely by hidden thinking tokens.
-		DuelSettings.ApplyThinkingControls(payload, apiUrl, model, thinkingEnabled: false, DuelSettings.ReasoningEffortLow, out _);
-		string requestBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
 		Logger.RecordMessageDump("town_ambient_ai_request", messages, mode);
 		try
 		{
-			using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(request, apiUrl, apiKey);
-			request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-			using CancellationTokenSource timeout = new CancellationTokenSource(TimeSpan.FromSeconds(45));
-			using HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, timeout.Token).ConfigureAwait(false);
-			string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-			if (!response.IsSuccessStatusCode)
+			List<object> stableMessages = messages?.ToList() ?? new List<object>();
+			PromptPackage prompt = LegacyPromptPackageAdapter.FromLegacyMessages(stableMessages, maxOutputTokens, model);
+			TraceContext trace = new TraceContext(
+				"town-ambient-" + (mode ?? "request"),
+				0,
+				0,
+				"town-ambient",
+				"shared");
+			LlmProviderSnapshot provider = new LlmProviderSnapshot("town-ambient", apiUrl, model, 45000, maxOutputTokens);
+			LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(_ => apiKey, temperature: 0.75f);
+			LlmGenerateResult generated = await gateway.GenerateAsync(
+				new LlmGenerateRequest(
+					trace,
+					provider,
+					prompt,
+					InteractionStage.MainReply),
+				CancellationToken.None).ConfigureAwait(false);
+			if (generated.Status != LlmResultStatus.Succeeded)
 			{
-				Logger.Log("TownAmbientAI", "request_failed status=" + (int)response.StatusCode + " model=" + model);
-				return new TownAmbientAiResult
-				{
-					Error = "HTTP " + (int)response.StatusCode + " " + response.ReasonPhrase,
-					RawResponse = TruncateDiagnosticText(responseBody)
-				};
+				return new TownAmbientAiResult { Error = generated.ErrorCode };
 			}
-
-			JObject envelope = JObject.Parse(responseBody);
-			string content = LlmApiCompat.ExtractAssistantText(envelope).Trim();
-			int inputTokens = ReadUsageToken(envelope, "prompt_tokens", "input_tokens");
-			int outputTokens = ReadUsageToken(envelope, "completion_tokens", "output_tokens");
-			if (inputTokens <= 0) inputTokens = Logger.EstimateTokensFromMessages(messages);
-			if (outputTokens <= 0)
-			{
-				int totalTokens = ReadUsageToken(envelope, "total_tokens", "total_tokens");
-				if (totalTokens > inputTokens)
-				{
-					outputTokens = totalTokens - inputTokens;
-				}
-			}
-			if (outputTokens <= 0) outputTokens = Logger.EstimateTokens(content);
-			Logger.RecordTokenStats(inputTokens, outputTokens, messages, content, mode, requestBody);
+			string content = generated.RawText.Trim();
+			int inputTokens = Logger.EstimateTokensFromMessages(stableMessages);
+			int outputTokens = Logger.EstimateTokens(content);
+			Logger.RecordTokenStats(inputTokens, outputTokens, stableMessages, content, mode, "shared_gateway");
 			if (expectedReplies <= 0)
 			{
 				if (string.IsNullOrWhiteSpace(content))
@@ -339,7 +338,7 @@ public static class TownAmbientAiClient
 						Error = "接口返回成功，但没有可读的模型正文。若模型只返回推理，请提高最大输出 Tokens。",
 						InputTokens = inputTokens,
 						OutputTokens = outputTokens,
-						RawResponse = TruncateDiagnosticText(responseBody)
+						RawResponse = TruncateDiagnosticText(content)
 					};
 				}
 				return new TownAmbientAiResult
@@ -361,7 +360,7 @@ public static class TownAmbientAiClient
 					InputTokens = inputTokens,
 					OutputTokens = outputTokens,
 					ModelReply = TruncateDiagnosticText(content),
-					RawResponse = TruncateDiagnosticText(responseBody)
+					RawResponse = TruncateDiagnosticText(content)
 				};
 			}
 			return new TownAmbientAiResult

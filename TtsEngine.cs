@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge;
 
@@ -834,113 +836,33 @@ internal sealed class TtsEngine : IDisposable
 
 	private byte[] CallVolcV1Api(string apiUrl, string token, string appId, string resourceId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson)
 	{
-		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Expected O, but got Unknown
-		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d1: Expected O, but got Unknown
-		string requestId = "";
 		try
 		{
-			string text2 = NormalizeExtraParam(extraParamJson);
-			if (text2 == null)
+			TtsSynthesisRequest request = new TtsSynthesisRequest(
+				apiUrl,
+				appId,
+				resourceId,
+				voiceType,
+				text,
+				encoding,
+				sampleRate,
+				speedRatio,
+				loudnessRatio,
+				extraParamJson);
+			TtsSynthesisResult result = new LegacyVolcTtsGateway(_httpClient)
+				.SynthesizeAsync(request, token, CancellationToken.None)
+				.GetAwaiter()
+				.GetResult();
+			if (!result.Success)
 			{
-				Logger.Log("TtsEngine", "[ERROR] extra_param JSON 无效");
+				Logger.Log("TtsEngine", "[ERROR] 火山 V1 Gateway failure: " + (result.ErrorCode ?? "unknown"));
 				return null;
 			}
-			requestId = Guid.NewGuid().ToString();
-				JObject jObject = new JObject
-				{
-					["app"] = new JObject
-					{
-						["appid"] = appId,
-						["token"] = "token",
-					["cluster"] = "volcano_tts"
-				},
-				["user"] = new JObject { ["uid"] = "animusforge" },
-				["audio"] = new JObject
-				{
-					["voice_type"] = voiceType,
-					["encoding"] = encoding,
-					["speed_ratio"] = Math.Round(speedRatio, 2),
-					["rate"] = sampleRate,
-					["loudness_ratio"] = Math.Round(loudnessRatio, 2)
-				},
-					["request"] = new JObject
-					{
-						["reqid"] = requestId,
-						["text"] = text ?? "",
-						["operation"] = "query",
-						["extra_param"] = text2
-					}
-				};
-			string text3 = jObject.ToString(Formatting.None);
-			HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				try
-				{
-					val.Content = (HttpContent)new StringContent(text3, Encoding.UTF8, "application/json");
-					((HttpHeaders)val.Headers).TryAddWithoutValidation("Authorization", "Bearer;" + token.Trim());
-					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-App-Id", (appId ?? "").Trim());
-					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-App-Key", (appId ?? "").Trim());
-					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-Access-Key", (token ?? "").Trim());
-					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-Resource-Id", (resourceId ?? "").Trim());
-					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-Request-Id", requestId);
-					HttpResponseMessage result = _httpClient.SendAsync(val).GetAwaiter().GetResult();
-					string text4 = result.Content.ReadAsStringAsync().GetAwaiter().GetResult() ?? "";
-				if (!result.IsSuccessStatusCode)
-				{
-					Logger.Log("TtsEngine", $"[ERROR] 火山 V1 HTTP {(int)result.StatusCode}: {text4.Substring(0, Math.Min(200, text4.Length))}");
-					return null;
-				}
-				JObject jObject2;
-				try
-				{
-					jObject2 = JObject.Parse(text4);
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("TtsEngine", "[ERROR] 火山 V1 返回解析失败: " + ex.Message);
-					return null;
-				}
-				int result2 = -1;
-				try
-				{
-					result2 = ((jObject2["code"] != null) ? jObject2["code"].Value<int>() : (-1));
-				}
-				catch
-				{
-					int.TryParse((jObject2["code"] != null) ? jObject2["code"].ToString() : "", out result2);
-				}
-				string arg = ((jObject2["message"] != null) ? jObject2["message"].ToString() : "");
-				if (result2 != 3000)
-				{
-					Logger.Log("TtsEngine", $"[ERROR] 火山 V1 返回异常: code={result2}, message={arg}");
-					return null;
-				}
-				string text5 = ((jObject2["data"] != null) ? jObject2["data"].ToString() : "");
-				if (string.IsNullOrWhiteSpace(text5))
-				{
-					Logger.Log("TtsEngine", "[WARN] 火山 V1 成功但 data 为空");
-					return null;
-				}
-				try
-				{
-					return Convert.FromBase64String(text5.Trim());
-				}
-				catch (Exception ex2)
-				{
-					Logger.Log("TtsEngine", "[ERROR] 火山 V1 data(base64) 解码失败: " + ex2.Message);
-					return null;
-				}
-			}
-			finally
-			{
-				((IDisposable)val)?.Dispose();
-			}
+			return result.AudioBytes;
 		}
-		catch (Exception ex3)
+		catch (Exception exception)
 		{
-			Exception ex4 = ((ex3 is AggregateException aggregateException) ? (aggregateException.Flatten().InnerException ?? ex3) : ex3);
-			Logger.Log("TtsEngine", $"[ERROR] 火山 V1 API 调用失败: reqid={requestId}, {ex4.GetType().Name}: {ex4.Message}");
+			Logger.Log("TtsEngine", "[ERROR] 火山 V1 Gateway invocation failed: " + exception.GetType().Name + ": " + exception.Message);
 			return null;
 		}
 	}

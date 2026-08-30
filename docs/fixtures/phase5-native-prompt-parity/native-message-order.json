@@ -1,0 +1,29 @@
+{
+  "fixtureId": "native-final-blocks-v1",
+  "mode": "diagnostic-only",
+  "channel": "NativeConversation",
+  "defaultRouting": "legacy",
+  "main": {
+    "source": "BuildStrictSceneMessagesForNpc final output",
+    "sections": ["system", "prefix-user-sections", "legacy-history", "suffix-user-sections"],
+    "appendCurrentPlayerInput": false,
+    "requiredParity": "same role/content sequence"
+  },
+  "postprocess": {
+    "source": "BuildActionPostprocessSystemPrompt + BuildSceneActionPostprocessUserPrompt final output",
+    "sections": ["system", "user"],
+    "appendLatestVisibleReply": false,
+    "requiredParity": "same system/user content"
+  },
+  "atomicBundle": {
+    "required": true,
+    "mainAndPostprocessCapturedTogether": true
+  },
+  "safety": {
+    "actionTagsInMain": false,
+    "liveGameObjectsInDetachedSections": false,
+    "credentialsInDiagnosticLog": false,
+    "defaultPathSwitched": false,
+    "fallback": "unchanged legacy Native request"
+  }
+}
