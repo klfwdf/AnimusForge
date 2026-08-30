@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "purpose": "Deterministic owner/state boundary fixtures for Economy-aware ActionPlan commit. These cases do not create or mutate Bannerlord objects.",
+  "allowedOwnerKinds": ["hero", "party", "merchant"],
+  "stringOnlyFields": ["channel", "sessionId", "subjectId", "ownerKind", "settlementId", "displayName", "actionKind", "capabilityId", "status", "reason"],
+  "cases": [
+    {
+      "id": "native-hero-reward",
+      "channel": "NativeConversation",
+      "sessionId": "fixture-native-hero",
+      "subjectId": "hero.npc.1",
+      "ownerKind": "hero",
+      "settlementId": "",
+      "active": true,
+      "capabilities": ["economy.reward.give_gold", "economy.reward.give_asset", "economy.debt.create", "economy.debt.resolve", "economy.settlement.transfer"],
+      "actions": ["GiveGold", "GiveAsset", "DebtCreate", "DebtResolve", "SettlementTransfer"],
+      "expected": {"ownerRoute": "hero", "factory": "CreateEconomyRewardDebtMainThreadPortForExternal", "status": "eligible"}
+    },
+    {
+      "id": "scene-party-reward",
+      "channel": "SceneShout",
+      "sessionId": "fixture-scene-party",
+      "subjectId": "party.wilderness.7",
+      "ownerKind": "party",
+      "settlementId": "",
+      "active": true,
+      "capabilities": ["economy.reward.give_gold", "economy.reward.give_asset"],
+      "actions": ["GiveGold", "GiveAsset"],
+      "expected": {"ownerRoute": "party", "factory": "CreatePartyEconomyRewardDebtMainThreadPortForExternal", "status": "eligible"}
+    },
+    {
+      "id": "native-merchant-market",
+      "channel": "NativeConversation",
+      "sessionId": "fixture-native-merchant",
+      "subjectId": "character.merchant.2",
+      "ownerKind": "merchant",
+      "settlementId": "town.B1",
+      "active": true,
+      "capabilities": ["economy.reward.give_gold", "economy.reward.give_asset", "economy.debt.create", "economy.debt.resolve"],
+      "actions": ["GiveGold", "GiveAsset", "DebtCreate", "DebtResolve"],
+      "expected": {"ownerRoute": "merchant", "factory": "CreateMerchantEconomyRewardDebtMainThreadPortForExternal", "status": "eligible"}
+    },
+    {
+      "id": "courier-hero-reward",
+      "channel": "Courier",
+      "sessionId": "fixture-courier-hero",
+      "subjectId": "hero.courier.recipient",
+      "ownerKind": "hero",
+      "settlementId": "",
+      "active": true,
+      "capabilities": ["economy.reward.give_gold", "economy.reward.give_asset", "economy.debt.create", "economy.debt.resolve", "economy.settlement.transfer"],
+      "actions": ["GiveGold", "DebtResolve"],
+      "expected": {"ownerRoute": "hero", "factory": "CreateEconomyRewardDebtMainThreadPortForExternal", "status": "eligible"}
+    },
+    {
+      "id": "party-inactive-fail-closed",
+      "channel": "SceneShout",
+      "sessionId": "fixture-scene-party-inactive",
+      "subjectId": "party.wilderness.8",
+      "ownerKind": "party",
+      "settlementId": "",
+      "active": false,
+      "capabilities": ["economy.reward.give_gold"],
+      "actions": ["GiveGold"],
+      "expected": {"ownerRoute": "party", "factory": "CreatePartyEconomyRewardDebtMainThreadPortForExternal", "status": "rejected", "reason": "economy.party_missing_or_inactive"}
+    },
+    {
+      "id": "merchant-missing-settlement-fail-closed",
+      "channel": "NativeConversation",
+      "sessionId": "fixture-native-merchant-missing-settlement",
+      "subjectId": "character.merchant.3",
+      "ownerKind": "merchant",
+      "settlementId": "",
+      "active": true,
+      "capabilities": ["economy.reward.give_gold"],
+      "actions": ["GiveGold"],
+      "expected": {"ownerRoute": "none", "factory": "none", "status": "rejected", "reason": "economy.merchant_missing_or_invalid"}
+    },
+    {
+      "id": "unknown-owner-fail-closed",
+      "channel": "Courier",
+      "sessionId": "fixture-unknown-owner",
+      "subjectId": "object.unknown.1",
+      "ownerKind": "unknown",
+      "settlementId": "",
+      "active": true,
+      "capabilities": ["economy.reward.give_gold"],
+      "actions": ["GiveGold"],
+      "expected": {"ownerRoute": "none", "factory": "none", "status": "rejected", "reason": "economy.owner_unresolved"}
+    }
+  ]
+}

@@ -585,3 +585,9 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 直接加载 project-local 1.4 AnimusForge.dll，验证 mixed Economy/non-Economy 与 economy-only ActionPlan 路由、owner receipt 和生产程序集类型。
 - 结果：productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 productionAssembly=1 PASS。
 - 下一项仍是补真实状态 fixture，并在初始化 host 可用时进行 live commit 验收；默认三渠道未切换。
+
+## 本轮完成（2026-08-30，Economy owner/state fixture）
+
+- 新增 docs/fixtures/phase7-economy-aware-commit/economy-owner-state-cases.json 与 tools/EconomyOwnerStateFixtureContractTests.py，固化 Hero、Party、Merchant、Courier-Hero 和 fail-closed 状态边界；fixture 只包含字符串/ID/状态，不创建或修改 Bannerlord 对象。
+- 验证：economyOwnerStateFixture cases=7 eligible=4 rejected=3 stringOnly=1 hero=1 party=1 merchant=1 courierHero=1 failClosed=1 PASS。
+- 下一项准确任务：在真实初始化 Campaign/Mission host 可用时，验证 live inventory/market/debt、三渠道主线程 commit、confirmed facts、旧存档和 AFEF；当前不得把纯 fixture 视为游戏内验收。
