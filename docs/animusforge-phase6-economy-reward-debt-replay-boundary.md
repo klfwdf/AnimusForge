@@ -53,3 +53,22 @@
 
 删除本切片的 contract/adapter/test include 和本文件即可；它没有替换旧入口，
 旧路径无需回滚。构建/覆盖/推送脚本和游戏目录未修改。
+
+
+## Main-thread replay port contract (2026-08-30)
+
+新增 `LegacyEconomyRewardDebtMainThreadPort`，实现
+`IEconomyRewardDebtMainThreadPort` 的 fail-closed 边界。它只负责确认主线程、
+快照目标仍有效、计划是否含有阻断性 capability/参数排除、空计划、领域回调
+异常和 `AppliedCount` 合法性；实际 Hero、物品、债务、定居点解析与 Campaign
+变更仍必须由 `RewardSystemBehavior` 或对应领域 owner 回调完成。
+
+因此本切片没有复制或替换 `ApplyRewardTags`，也没有把 detached worker 结果
+直接当成游戏事实。非经济动作的 `economy.action_not_applicable` 排除不会阻断
+同一 ActionPlan 中的有效经济动作；能力缺失、经济参数非法、主线程/目标失效
+和领域异常都会明确拒绝。
+
+验证：`tools/EconomyRewardDebtPortContractTests` 覆盖有效 replay、非主线程、
+目标过期、capability fail-closed、非经济排除、无适用动作、领域异常和计数
+校验，全部通过；1.4 production implementation 编译通过。尚未完成
+`RewardSystemBehavior` 生产回调接线、真实资产/债务/定居点校验和游戏内动作验收。

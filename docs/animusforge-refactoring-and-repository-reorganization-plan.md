@@ -10,8 +10,8 @@
 - 基线 HEAD：`d4cb1467376c6e923f4295dcefc7878c11dbc7c1`
 - 基线父提交：`96a1c60f1877813a9fb3440ddad068d6e92afa1e`（policy 功能基线）
 - 当前工作 HEAD：本轮最终提交（提交消息：`refactor: continue full LLM migration and compatibility verification`；SHA 以 Git HEAD 为准）
-- 当前阶段：阶段 7 ACTIVE，继续接入领域 LLM；本轮已完成生产三渠道等价可控 Host fixture 的 provider/commit/fallback/cancellation 验证，阶段 4/5/6 契约与回放验证保持通过（阶段 1 清理 HOLD；阶段 3 设计已完成；阶段 0 基线详细记录按用户决定跳过）
-- 当前任务：下一项为 Economy/Reward/Debt 的主线程 replay port 与 ActionPlan 真实域校验；三渠道等价可控 Host fixture 已通过，但真实 Bannerlord Host、旧存档和游戏内动作仍未验证
+- 当前阶段：阶段 7 ACTIVE，继续接入领域 LLM；本轮完成 Economy/Reward/Debt 主线程 replay port contract 与 fail-closed 验证，阶段 4/5/6 既有契约与回放验证保持通过（阶段 1 清理 HOLD；阶段 3 设计已完成；阶段 0 基线详细记录按用户决定跳过）
+- 当前任务：下一项为把 Economy/Reward/Debt 主线程 replay port 接入现有 RewardSystemBehavior domain owner；本轮仅完成 fail-closed contract boundary，真实资产/债务/定居点执行仍未验证
 - 当前负责人：Codex 重构会话
 - 物理程序集策略：暂不拆分为多个玩法 DLL；先在单一 `AnimusForge.dll` 内完成逻辑模块化
 - 旧存档目标：必须兼容；至少保持现有程序集身份、序列化类型和 SyncData key，必要变更必须提供迁移与证据
@@ -20,9 +20,9 @@
 - 已安装模块目录：`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`
 - 主要游戏内测试版本：Bannerlord `v1.4.8.119303`（本机当前安装）
 - 1.4 构建引用要求：按 `1.4.x` API 线管理；每个开发者可以使用自己的合法 1.4.x 安装，但构建记录必须写明精确 `BuildInfo`，共享验收使用固定代表性 overlay
-- 最后更新：2026-08-30（生产三渠道等价可控 Host fixture 验证）
+- 最后更新：2026-08-30（Economy/Reward/Debt 主线程 replay port contract）
 - 状态：IN PROGRESS
-- 最近验证：ProductionConfiguredHostReplay 三渠道 host fixture PASS；Configured Gateway/Validation、Knowledge/RAG、Primary Gateway 回放 PASS；1.4 主实现与 1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`，未部署。
+- 最近验证：EconomyRewardDebtPort contract PASS；Production configured Host、Configured Gateway/Validation、Knowledge/RAG、Primary Gateway 回放 PASS；1.4 主实现与 1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`，未部署。
 - 依赖记录：实际外部模块路径已解析；当前机器游戏 BuildInfo 为 `v1.4.8.119303`，可复现 1.4 overlay 为 `v1.4.6.115628`。
 - 阶段 1 阻塞：用户已决定先保持仓库现状；1.3.x/1.4.x 游戏源码参考仓库保留在 tracked reference plane，其他未决对象也不做清理，许可证/第三方 provenance 继续作为待确认项。
 
@@ -299,3 +299,4 @@
 | 2026-08-30 | 阶段 8 本轮最终审查与回原重构分支推送（当前切片） | 已完成 staged 文件、凭据/私有路径、程序集/模块身份、SyncData key/type、构建/测试证据审查，并创建本轮提交；待将当前工作树无强制推送到 `origin/refactor/prepare-af-restructure`，本地项目目录为 `F:\AF测试重构` | 不 force push、不部署游戏目录、不修改构建/覆盖/推送脚本，不改变默认三渠道切换；真实旧存档/游戏 host/XihaiAction runtime build 的 NOT-RUN 风险保留在提交记录 | 本轮全量相关回归、Debug/Release unified stage、staged diff 审查均完成；剩余为 remote fast-forward 验证 | COMMITTED |
 | 2026-08-30 | 阶段 7 configured-chat 流式 Gateway 与 Universal 遗留路径收敛（本轮） | `Refactor/Adapters/LegacyConfiguredChatGateway.cs`、`MyBehavior.cs`、`tools/ConfiguredChatGatewayReplayTests/`、`tools/ConfiguredChatValidationReplayTests/`、`tools/KnowledgeRagGatewayReplayTests/`；新增 adapter-local generation diagnostics 与通用 SSE 流式解析，保留 thinking plain retry、取消、错误状态、响应采样和凭据发送边界；`CallUniversalApiDetailed` 改由 shared Gateway 承接 | 不切换默认 Scene/Native/Courier；不改变 Prompt/Action/Memory/AFEF、SyncData/key/type、程序集身份、三版本发布结构或构建/部署脚本；ResponseBody/RequestBody 仅留在 legacy caller/adapter 诊断边界 | `configuredGatewayReplay success=1 streaming=1 thinkingPlainRetry=1 retryable5xx=1 cancellation=1 credentialBoundary=1`；Configured validation、Knowledge/RAG、Primary Gateway replay PASS；1.4 direct、1.3/1.4/Bootstrap Debug unified stage 各 `0 warning / 0 error`；真实 provider、游戏内 host、旧存档仍 `NOT-RUN`；未部署 | VERIFY |
 | 2026-08-30 | 阶段 7 生产三渠道等价可控 Host provider/commit/fallback 验证（本轮） | `tools/ProductionConfiguredHostReplayTests/`；直接加载 project-local 1.4 implementation，使用生产 `LegacyConfiguredChatGateway`、`LegacyChannelInteractionFacade` 和 `DetachedInteractionHost`，以 loopback provider 验证 Native/SceneShout/Courier 的 main/postprocess、commit/history、credential、provider failure fallback 和 cancellation | 等价可控 Host fixture，不代表真实 Bannerlord campaign/mission host；不切换默认三渠道、不执行真实游戏动作、不改变 SyncData/key/type、程序集或部署流程 | `productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1`；1.4 production stage 已加载；真实游戏 Host、live Agent/Hero、旧存档和游戏内 ActionPlan 仍 `NOT-RUN` | VERIFY |
+| 2026-08-30 | 阶段 6 Economy/Reward/Debt 主线程 replay port contract（本轮） | `Refactor/Adapters/LegacyEconomyRewardDebtMainThreadPort.cs`、`tools/EconomyRewardDebtPortContractTests/`；建立主线程、目标快照、capability 排除、领域异常和 applied count fail-closed 边界，实际变更仍回调现有 domain owner | 仅完成 contract boundary，未接入 `RewardSystemBehavior`、未解析 live Hero/item/debt/settlement，不改变默认三渠道、SyncData/key/type、程序集或部署流程 | `economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 PASS`；1.4 production compile PASS；真实经济动作、旧存档和游戏内验收仍 `NOT-RUN` | VERIFY |
