@@ -43,6 +43,25 @@ await using (ReplayServer success = await ReplayServer.StartAsync((_, _) =>
     AssertTrue(success.Requests[0].Body.Contains("replay-model", StringComparison.Ordinal), "model was not sent");
 }
 
+await using (ReplayServer streaming = await ReplayServer.StartAsync((_, _) =>
+    (200, "data: {\"choices\":[{\"delta\":{\"content\":\"stream \"}}]}\n\n"
+        + "data: {\"choices\":[{\"delta\":{\"content\":\"reply\"}}]}\n\n"
+        + "data: [DONE]\n\n")))
+{
+    List<string> deltas = new List<string>();
+    LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(_ => "secret", disableThinking: true);
+    ConfiguredChatGenerationExchange exchange = await gateway.GenerateExchangeAsync(
+        BuildRequest(streaming.Url),
+        streamResponse: true,
+        onDelta: deltas.Add,
+        CancellationToken.None);
+    AssertTrue(exchange.Result.Status == LlmResultStatus.Succeeded, "streaming replay did not succeed");
+    AssertTrue(exchange.Result.RawText == "stream reply", "streaming replay final text was duplicated or incomplete: " + exchange.Result.RawText);
+    AssertTrue(deltas.SequenceEqual(new[] { "stream ", "reply" }), "streaming delta sequence mismatch: " + string.Join("|", deltas));
+    AssertTrue(exchange.RawStreamSample.Contains("[DONE]", StringComparison.Ordinal) == false, "stream sample should not include terminal marker");
+    AssertTrue(streaming.Requests.Count == 1 && streaming.Requests[0].Body.Contains("\"stream\":true", StringComparison.Ordinal), "streaming request did not set stream=true");
+}
+
 await using (ReplayServer thinkingRetry = await ReplayServer.StartAsync((index, _) => index == 1
     ? (400, "thinking unsupported; reject this control")
     : (200, "{\"choices\":[{\"message\":{\"content\":\"plain retry ok\"}}]}")))
@@ -80,7 +99,7 @@ await using (ReplayServer slow = await ReplayServer.StartAsync(async (_, _) =>
     AssertTrue(result.Status == LlmResultStatus.Cancelled && result.ErrorCode == "cancelled", "cancellation replay was not isolated");
 }
 
-Console.WriteLine("PASS configuredGatewayReplay success=1 thinkingPlainRetry=1 retryable5xx=1 cancellation=1 credentialBoundary=1");
+Console.WriteLine("PASS configuredGatewayReplay success=1 streaming=1 thinkingPlainRetry=1 retryable5xx=1 cancellation=1 credentialBoundary=1");
 
 internal sealed class ReplayServer : IAsyncDisposable
 {

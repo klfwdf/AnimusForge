@@ -55,6 +55,19 @@ internal static class LlmApiCompat
     }
 
     public static string ExtractAssistantText(string response) => ExtractAssistantText(JObject.Parse(response ?? "{}"));
+
+    public static string ExtractStreamDeltaText(JObject response)
+    {
+        if (response == null)
+        {
+            return string.Empty;
+        }
+        return response.SelectToken("choices[0].delta.content")?.ToString()
+            ?? response.SelectToken("choices[0].message.content")?.ToString()
+            ?? response.SelectToken("delta.content")?.ToString()
+            ?? response.SelectToken("content")?.ToString()
+            ?? string.Empty;
+    }
 }
 
 public static class AIConfigHandler

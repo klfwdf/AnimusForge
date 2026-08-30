@@ -510,3 +510,12 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 已创建本轮提交：`refactor: continue full LLM migration and compatibility verification`；下一步将无强制推送到 `origin/refactor/prepare-af-restructure`。
 - 本地项目目录为 `F:\AF测试重构`；仓库目标仍为原重构分支，不建立独立远程分支。
 - 不 force push、不部署游戏目录、不修改构建/覆盖/推送脚本；真实旧存档、游戏 Host、XihaiAction runtime 独立编译仍为 `NOT-RUN`。
+
+
+## 本轮完成（2026-08-30，configured-chat 流式 Gateway 与 Universal 遗留路径收敛）
+
+- `LegacyConfiguredChatGateway` 新增通用 SSE 流式 transport、delta/final 分离和 adapter-local generation diagnostics；保留 credential、thinking plain retry、取消、HTTP 错误和 response sampling 边界。
+- `MyBehavior.CallUniversalApiDetailed` 已收敛到 shared configured Gateway；旧 `ApiCallResult`、stale、限流、token 统计和失败详情映射保留，不切换默认三渠道。
+- 验证：Configured Gateway replay（`success=1 streaming=1 thinkingPlainRetry=1 retryable5xx=1 cancellation=1 credentialBoundary=1`）、Configured validation、Knowledge/RAG、Primary Gateway 均 PASS；1.4 direct 与 1.3/1.4/Bootstrap unified stage 均 `0 warning / 0 error`。
+- 本轮未部署游戏目录；真实 provider、游戏内 host/commit、旧存档和 XihaiAction runtime 独立编译仍 `NOT-RUN`。
+- 下一项准确任务：为已初始化 host 接入可控 provider，验证真实生成、主线程 commit 与 legacy fallback。

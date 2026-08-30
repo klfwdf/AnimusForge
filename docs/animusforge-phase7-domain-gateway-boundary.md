@@ -214,3 +214,23 @@ plain retry；Memory 摘要则继续 force-thinking-disabled，二者不共享�
 回放结果：`productionCourierHostReplay courierPorts=1 replyMain=1 replyPostprocess=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1`。真实 Bannerlord host、旧存档和游戏内 Courier 回放仍为 `NOT-RUN`；默认 Courier 状态机未切换。
 
 下一项：审查剩余 `MyBehavior.CallUniversalApiDetailed` 与 auxiliary/event 入口，确认 shared Gateway 覆盖和 owner 边界。
+
+
+## Configured Chat Gateway streaming and Universal legacy path (2026-08-30)
+
+`LegacyConfiguredChatGateway` 现在同时提供非流式和通用 SSE 流式能力。流式
+transport 只把增量作为观察回调，`LlmGenerateResult.RawText` 仍是唯一权威的
+最终文本；`ConfiguredChatGenerationExchange` 只在 adapter/legacy caller 边界保留
+状态码、响应采样、请求体和 control mode，不进入公共 contract、存档或普通日志。
+
+`MyBehavior.CallUniversalApiDetailed` 已改为构造不可变 `PromptPackage`、
+`LlmProviderSnapshot` 和 `TraceContext` 后调用该 Gateway，保留原 `ApiCallResult`
+映射、stale generation、限流标记、错误详情和 token 统计。旧方法没有生产调用点，
+但现在即使被历史包装重新使用，也不会恢复第二套直接 HTTP/SSE transport。
+
+验证：`ConfiguredChatGatewayReplayTests` 覆盖非流式成功、流式 delta/final parity、
+thinking plain retry、5xx、取消和 credential boundary；Configured validation、
+Knowledge/RAG、Primary Gateway replay 及 1.4 direct/1.3/1.4/Bootstrap unified stage
+均通过。默认三渠道仍未切换；真实 provider、游戏内 host、旧存档和 Universal
+legacy wrapper 的实机调用仍为 `NOT-RUN`。下一项是为已初始化 host 接入可控 provider，
+验证真实生成、主线程 commit 与 legacy fallback。
