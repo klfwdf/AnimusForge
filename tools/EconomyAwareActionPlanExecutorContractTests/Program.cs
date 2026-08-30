@@ -1,0 +1,187 @@
+using System;
+using System.Collections.Generic;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
+
+static void AssertTrue(bool value, string message)
+{
+    if (!value) throw new InvalidOperationException(message);
+}
+
+static GameInteractionSnapshot Snapshot(string subject = "npc-1")
+{
+    return new GameInteractionSnapshot(
+        new InteractionIdentity("economy-aware-session", InteractionChannel.NativeConversation, subject),
+        new TraceContext("economy-aware-trace", 4, 9, "single-player", "1.4"),
+        "player input",
+        "town-1",
+        12,
+        8,
+        Array.Empty<InteractionCandidate>(),
+        Array.Empty<string>(),
+        new Dictionary<string, string>());
+}
+
+static ActionPlan Parse(string raw)
+{
+    LegacyActionTagParser parser = new LegacyActionTagParser();
+    return parser.Parse(
+        raw,
+        new PostprocessContext(
+            new[] { "economy", "duel" },
+            LegacyActionTagCatalog.DefaultAllowedTagFamilies,
+            new CapabilitySet(new[] { "action.parse" })));
+}
+
+static LegacyNativeActionPlanExecutor BuildExecutor(
+    Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> legacyExecute,
+    Func<EconomyRewardDebtReplayPlan, GameInteractionSnapshot, EconomyRewardDebtReplayResult> replay,
+    CapabilitySet capabilities = null)
+{
+    LegacyEconomyRewardDebtMainThreadPort port = new LegacyEconomyRewardDebtMainThreadPort(
+        () => true,
+        _ => true,
+        replay);
+    return new LegacyNativeActionPlanExecutor(
+        legacyExecute,
+        allowedTagFamilies: LegacyActionTagCatalog.DefaultAllowedTagFamilies,
+        economyPlanner: new LegacyEconomyRewardDebtAdapter(),
+        economyPort: port,
+        economyCapabilities: capabilities ?? LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
+}
+
+static EconomyRewardDebtReplayResult Applied(int count = 1)
+{
+    return new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.Applied,
+        count,
+        new[] { new FactRecord("economy.confirmed", "npc-1", "gold applied") },
+        string.Empty);
+}
+
+int economyCalls = 0;
+int legacyCalls = 0;
+ActionPlan delegatedPlan = null;
+LegacyNativeActionPlanExecutor executor = BuildExecutor(
+    (plan, snapshot) =>
+    {
+        legacyCalls++;
+        delegatedPlan = plan;
+        return InteractionStatus.Executed;
+    },
+    (plan, snapshot) =>
+    {
+        economyCalls++;
+        AssertTrue(plan.Actions.Count == 1, "mixed plan economy count mismatch");
+        return Applied();
+    });
+
+ActionPlan mixed = Parse("reply [ACTION:GIVE_GOLD:25] [ACTION:DUEL:npc-1]");
+InteractionStatus mixedStatus = executor.ValidateAndExecute(mixed, Snapshot());
+AssertTrue(mixedStatus == InteractionStatus.Executed, "mixed economy plan was not executed");
+AssertTrue(economyCalls == 1 && legacyCalls == 1, "mixed plan dispatch count mismatch");
+AssertTrue(delegatedPlan != null && delegatedPlan.Actions.Count == 1
+    && delegatedPlan.Actions[0].Tag == "ACTION:DUEL",
+    "legacy executor received an economy action");
+AssertTrue(delegatedPlan.RawPostprocessId.IndexOf("GIVE_GOLD", StringComparison.OrdinalIgnoreCase) < 0
+    && delegatedPlan.RawPostprocessId.IndexOf("ACTION:DUEL", StringComparison.OrdinalIgnoreCase) >= 0,
+    "economy tag was not removed from delegated raw text");
+AssertTrue(executor.ConfirmedFacts.Count == 1, "owner confirmed facts were not exposed");
+
+int committedFacts = 0;
+RecordingMemory memory = new RecordingMemory(() => committedFacts++);
+LegacyNativeActionPlanExecutor commitExecutor = BuildExecutor(
+    (plan, snapshot) => InteractionStatus.Executed,
+    (plan, snapshot) => Applied());
+InteractionEnvelope envelope = new InteractionEnvelope(Snapshot(), Array.Empty<PromptMessage>());
+InteractionResult result = new InteractionResult(
+    InteractionStatus.Succeeded,
+    "visible reply",
+    mixed,
+    Array.Empty<FactRecord>(),
+    string.Empty);
+InteractionCommitResult commit = new InteractionResultCommitter().Commit(
+    envelope,
+    result,
+    commitExecutor,
+    memory);
+AssertTrue(commit.Status == InteractionStatus.Executed && commit.HistoryWritten, "commit result mismatch");
+AssertTrue(committedFacts == 1 && memory.LastFacts.Count == 1, "owner facts were not merged into memory commit");
+
+int economyOnlyLegacyCalls = 0;
+LegacyNativeActionPlanExecutor economyOnly = BuildExecutor(
+    (plan, snapshot) => { economyOnlyLegacyCalls++; return InteractionStatus.Executed; },
+    (plan, snapshot) => Applied());
+InteractionStatus economyOnlyStatus = economyOnly.ValidateAndExecute(
+    Parse("reply [ACTION:GIVE_GOLD:30]"),
+    Snapshot());
+AssertTrue(economyOnlyStatus == InteractionStatus.Executed && economyOnlyLegacyCalls == 0,
+    "economy-only plan was delegated to the legacy executor");
+
+int missingCapabilityLegacyCalls = 0;
+LegacyNativeActionPlanExecutor missingCapability = BuildExecutor(
+    (plan, snapshot) => { missingCapabilityLegacyCalls++; return InteractionStatus.Executed; },
+    (plan, snapshot) => Applied(),
+    new CapabilitySet(Array.Empty<string>()));
+AssertTrue(missingCapability.ValidateAndExecute(Parse("[ACTION:GIVE_GOLD:31]"), Snapshot())
+    == InteractionStatus.RejectedByValidation
+    && missingCapabilityLegacyCalls == 0,
+    "missing economy capability was not fail-closed");
+
+int invalidLegacyCalls = 0;
+LegacyNativeActionPlanExecutor invalidEconomy = BuildExecutor(
+    (plan, snapshot) => { invalidLegacyCalls++; return InteractionStatus.Executed; },
+    (plan, snapshot) => Applied());
+AssertTrue(invalidEconomy.ValidateAndExecute(Parse("[ACTION:GIVE_GOLD:not-a-number]"), Snapshot())
+    == InteractionStatus.RejectedByValidation
+    && invalidLegacyCalls == 0,
+    "invalid economy syntax was not fail-closed");
+
+ActionPlan tampered = Parse("[ACTION:GIVE_GOLD:25] [ACTION:DUEL:npc-1]");
+tampered = new ActionPlan(tampered.Actions, tampered.RawPostprocessId + " [ACTION:DUEL:other]");
+LegacyNativeActionPlanExecutor tamperExecutor = BuildExecutor(
+    (plan, snapshot) => InteractionStatus.Executed,
+    (plan, snapshot) => Applied());
+AssertTrue(tamperExecutor.ValidateAndExecute(tampered, Snapshot())
+    == InteractionStatus.RejectedByValidation,
+    "raw ActionPlan tampering was accepted");
+
+string richTextRaw = "[ACTION:GIVE_ASSET:Silver [ROT]:1] [ACTION:DUEL:npc-1]";
+string filteredRichText = LegacyActionTagParser.RemoveProtocolTags(
+    richTextRaw,
+    LegacyEconomyRewardDebtAdapter.IsEconomyActionTag);
+AssertTrue(filteredRichText.IndexOf("[ROT]", StringComparison.Ordinal) < 0
+    && filteredRichText.IndexOf("ACTION:DUEL", StringComparison.OrdinalIgnoreCase) >= 0,
+    "balanced economy tag filtering broke nested RichText or retained economy tag");
+
+Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
+
+sealed class RecordingMemory : IInteractionMemory, IInteractionMemoryBatchCommitter
+{
+    private readonly Action _onCommit;
+
+    public RecordingMemory(Action onCommit)
+    {
+        _onCommit = onCommit;
+    }
+
+    public List<FactRecord> LastFacts { get; } = new List<FactRecord>();
+
+    public IReadOnlyList<PromptMessage> Read(string subjectId, int maxItems)
+    {
+        return Array.Empty<PromptMessage>();
+    }
+
+    public void Append(string subjectId, PromptMessage message, IEnumerable<FactRecord> confirmedFacts)
+    {
+        LastFacts.AddRange(confirmedFacts ?? Array.Empty<FactRecord>());
+    }
+
+    public MemoryCommitResult Commit(InteractionMemoryCommit commit)
+    {
+        LastFacts.AddRange(commit.ConfirmedFacts);
+        _onCommit();
+        return new MemoryCommitResult(MemoryCommitStatus.Applied);
+    }
+}

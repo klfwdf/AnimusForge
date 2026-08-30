@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Adapters;
@@ -106,6 +107,56 @@ public sealed class LegacyActionTagParser : IActionPostprocessor
     }
 
     /// <summary>
+    /// Removes only recognized protocol candidates selected by the caller.
+    /// Balanced scanning is shared with Parse so RichText such as [ROT] inside
+    /// a GIVE_ASSET token is preserved and duplicate tags remain ordered.
+    /// </summary>
+    public static string RemoveProtocolTags(string rawText, Func<string, bool> shouldRemove)
+    {
+        string raw = rawText ?? string.Empty;
+        if (raw.Length == 0 || shouldRemove == null)
+        {
+            return raw;
+        }
+
+        StringBuilder result = new StringBuilder(raw.Length);
+        int cursor = 0;
+        foreach (ProtocolTagSpan span in ExtractCandidateSpans(raw))
+        {
+            string normalizedTag = NormalizeCandidateTag(span.Value);
+            bool remove;
+            try
+            {
+                remove = shouldRemove(normalizedTag);
+            }
+            catch
+            {
+                remove = false;
+            }
+            if (!remove)
+            {
+                continue;
+            }
+
+            if (span.Start > cursor)
+            {
+                result.Append(raw, cursor, span.Start - cursor);
+            }
+            cursor = span.Start + span.Length;
+        }
+
+        if (cursor == 0)
+        {
+            return raw;
+        }
+        if (cursor < raw.Length)
+        {
+            result.Append(raw, cursor, raw.Length - cursor);
+        }
+        return result.ToString();
+    }
+
+    /// <summary>
     /// Extracts balanced protocol tags instead of using a simple closing
     /// bracket regex. Existing GIVE_ASSET tokens may contain RichText such as
     /// <c>[ROT]</c>; treating that inner pair as the end of the outer action
@@ -114,6 +165,11 @@ public sealed class LegacyActionTagParser : IActionPostprocessor
     /// so one broken tag cannot consume the next valid tag.
     /// </summary>
     private static IEnumerable<string> ExtractCandidates(string text)
+    {
+        return ExtractCandidateSpans(text).Select(span => span.Value);
+    }
+
+    private static IEnumerable<ProtocolTagSpan> ExtractCandidateSpans(string text)
     {
         string raw = text ?? string.Empty;
         int candidateStart = -1;
@@ -159,12 +215,28 @@ public sealed class LegacyActionTagParser : IActionPostprocessor
             }
 
             string candidate = raw.Substring(candidateStart, i - candidateStart + 1);
+            int candidateLength = i - candidateStart + 1;
+            int candidateStartOffset = candidateStart;
             candidateStart = -1;
             if (IsProtocolCandidate(candidate))
             {
-                yield return candidate;
+                yield return new ProtocolTagSpan(candidateStartOffset, candidateLength, candidate);
             }
         }
+    }
+
+    private struct ProtocolTagSpan
+    {
+        public ProtocolTagSpan(int candidateStart, int candidateLength, string value)
+        {
+            Start = candidateStart;
+            Length = candidateLength;
+            Value = value ?? string.Empty;
+        }
+
+        public int Start { get; }
+        public int Length { get; }
+        public string Value { get; }
     }
 
     private static bool IsProtocolCandidate(string candidate)

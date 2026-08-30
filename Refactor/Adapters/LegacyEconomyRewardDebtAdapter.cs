@@ -13,6 +13,39 @@ namespace AnimusForge.Refactor.Adapters;
 /// </summary>
 public sealed class LegacyEconomyRewardDebtAdapter : IEconomyRewardDebtReplayPlanner
 {
+    public static bool IsEconomyAction(ActionRequest request)
+    {
+        return request != null && IsEconomyActionTag(request.Tag);
+    }
+
+    public static bool IsEconomyActionTag(string tag)
+    {
+        switch ((tag ?? string.Empty).Trim().ToUpperInvariant())
+        {
+            case "ACTION:GIVE_ASSET":
+            case "ACTION:GIVE_GOLD":
+            case "ACTION:GIVE_ITEM":
+            case "ACTION:SETTLEMENT_TRANSFER":
+            case "AD":
+            case "ADP":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static CapabilitySet CreateAllCapabilities()
+    {
+        return new CapabilitySet(new[]
+        {
+            EconomyRewardDebtCapabilityIds.GiveAsset,
+            EconomyRewardDebtCapabilityIds.GiveGold,
+            EconomyRewardDebtCapabilityIds.DebtCreate,
+            EconomyRewardDebtCapabilityIds.DebtResolve,
+            EconomyRewardDebtCapabilityIds.SettlementTransfer
+        });
+    }
+
     public EconomyRewardDebtReplayPlan Plan(ActionPlan actionPlan, CapabilitySet capabilities)
     {
         List<EconomyRewardDebtAction> actions = new List<EconomyRewardDebtAction>();

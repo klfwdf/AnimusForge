@@ -563,3 +563,19 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 验证：`productionEconomyOwnerReplay factoryFailClosed=1 partyFactoryFailClosed=1 merchantFactoryFailClosed=1 productionType=1 noCampaignMutation=1 PASS`；Economy port contract PASS；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`。
 - 当前限制：真实商人/Settlement.CurrentSettlement、市场库存/资金/债务、三类 owner 接入三渠道 commit、游戏内 ActionPlan、旧存档和 AFEF 实机写入仍 `NOT-RUN`。
 - 下一项准确任务：把 Hero/Party/Merchant 三类 owner 接入三渠道 commit 的 Economy capability，并补真实状态 fixture。
+
+## 本轮 active task（2026-08-30，三渠道 Economy-aware ActionPlan commit 接入）
+
+- 先登记再改生产 C#：在 LegacyNativeActionPlanExecutor / InteractionResultCommitter 边界接入 LegacyEconomyRewardDebtAdapter 与 owner-specific IEconomyRewardDebtMainThreadPort，让 Hero/Party/Merchant 三类 owner 能由 Native、SceneShout、Courier 的 detached commit 统一调用。
+- 处理规则：主线程、当前目标、capability、原始 ActionPlan 完整性和应用数量必须 fail-closed；Economy tags 只能由 Economy owner 执行一次，剩余非 Economy tags 继续交给既有 channel executor；owner confirmed facts 只有在实际应用后并入 memory commit。
+- 非目标：不切换默认三渠道，不改变旧 action authority、程序集身份、模块 ID、SyncData key/type、存档类型、构建/覆盖/推送脚本或游戏目录；真实 Campaign/Mission、live inventory/debt、旧存档和 AFEF 仍 NOT-RUN。
+- 验收：新增纯 contract fixture；生产 1.4 stage 回放 Native/Scene/Courier 的 Economy/non-Economy 路由、拒绝/回退和 confirmed facts；通过后每轮提交并推送原 `refactor/prepare-af-restructure`。
+
+## 本轮完成（2026-08-30，三渠道 Economy-aware ActionPlan commit 接入）
+
+- LegacyNativeActionPlanExecutor 现在可选接入 Economy planner 与 owner-specific main-thread port；Native、SceneShout、Courier opt-in executor 已建立对应 owner 路由。Economy tags 先由 Economy owner replay，剩余非 Economy tags 才交给原 channel callback，避免同一标签双执行。
+- 新增 IActionPlanExecutionReceipt；InteractionResultCommitter 只在 action 成功后把 owner confirmed facts 合并进 memory commit；增加 balanced protocol tag filter，保留 nested RichText 处理。
+- 新增 EconomyAwareActionPlanExecutorContractTests，验证 mixed/economy-only 路由、receipt、capability/语法/raw plan 篡改 fail-closed 和 nested RichText。
+- 验证：economyAwareExecutor mixed=1 receipt=1 economyOnly=1 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1 PASS；Economy port、InteractionPipeline 40 cases、ProductionConfiguredHost、ProductionCourierHost、ProductionOptInEntry、ProductionEconomyOwner 均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 0 warning / 0 error，未部署。
+- 限制：这仍是可控/等价 host 与生产 factory 验证，不代表真实 Campaign/Mission、live inventory/market/debt、游戏内 ActionPlan、旧存档或 AFEF 实机验证；默认三渠道仍未切换。
+- 下一项准确任务：补真实状态 fixture，并在初始化 host 可用时做三渠道 live commit 验收。

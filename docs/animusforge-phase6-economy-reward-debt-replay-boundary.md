@@ -137,3 +137,10 @@ expected subject。
 继续 PASS。真实商人角色、Settlement.CurrentSettlement、市场库存/资金、市场
 债务、游戏内 ActionPlan、旧存档和 AFEF 仍为 `NOT-RUN`。下一项是把 Hero/Party/
 Merchant 三类 owner 接入三渠道 commit 的 Economy capability，并补真实状态 fixture。
+
+## 本轮完成（2026-08-30，三渠道 Economy-aware ActionPlan commit 接入）
+
+- ActionPlan executor 可选接入 Economy planner/port：Hero、Party、Merchant owner 由各 channel 在主线程 commit 边界选择；Economy action 不再交给旧 channel callback 重复执行，非 Economy action 保持原 authority。
+- InteractionResultCommitter 消费 IActionPlanExecutionReceipt 的 confirmed facts；新增 balanced RemoveProtocolTags 工具和纯 contract fixture。
+- 验证：Economy-aware executor contract、Economy port、InteractionPipeline、ProductionConfiguredHost、ProductionCourierHost、ProductionOptInEntry、ProductionEconomyOwner 均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 0 warning / 0 error。
+- 真实游戏 host、live economy state、旧存档和 AFEF 仍为 NOT-RUN；默认三渠道未切换。下一项是补真实状态 fixture 与 live commit 验收。

@@ -88,6 +88,11 @@ public sealed class InteractionResultCommitter
         }
 
         IEnumerable<FactRecord> facts = result.ConfirmedFacts ?? Array.Empty<FactRecord>();
+        if (actionExecutor is IActionPlanExecutionReceipt executionReceipt
+            && executionReceipt.ConfirmedFacts != null)
+        {
+            facts = facts.Concat(executionReceipt.ConfirmedFacts);
+        }
         try
         {
             MemoryCommitResult memoryResult = CommitMemory(

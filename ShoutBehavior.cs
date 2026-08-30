@@ -16407,6 +16407,40 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return new LegacyNativeConversationOptInRunner(facade);
 	}
 
+	private static IEconomyRewardDebtMainThreadPort CreateEconomyReplayPortForExternal(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		string displayName)
+	{
+		Hero resolvedHero = targetHero ?? targetCharacter?.HeroObject;
+		string expectedSubjectId = resolvedHero?.StringId
+			?? targetCharacter?.StringId
+			?? (targetAgentIndex >= 0 ? "agent:" + targetAgentIndex : string.Empty);
+		if (resolvedHero != null)
+		{
+			return RewardSystemBehavior.CreateEconomyRewardDebtMainThreadPortForExternal();
+		}
+		if (TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, targetAgentIndex, out PartyBase party))
+		{
+			return RewardSystemBehavior.CreatePartyEconomyRewardDebtMainThreadPortForExternal(
+				party,
+				targetCharacter,
+				expectedSubjectId,
+				displayName);
+		}
+		Settlement settlement = Settlement.CurrentSettlement;
+		if (targetCharacter != null && settlement != null)
+		{
+			return RewardSystemBehavior.CreateMerchantEconomyRewardDebtMainThreadPortForExternal(
+				targetCharacter,
+				settlement,
+				expectedSubjectId,
+				displayName);
+		}
+		return null;
+	}
+
 	/// <summary>
 	/// Creates the real Native ActionPlan executor for an opt-in turn. The
 	/// current target and its interaction-boundary prompt targets are captured
@@ -16464,6 +16498,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			: null;
 		ConversationManager expectedConversationManager = Campaign.Current?.ConversationManager;
 		int expectedConversationToken = expectedConversationManager?.ActiveToken ?? int.MinValue;
+		IEconomyRewardDebtMainThreadPort economyPort = CreateEconomyReplayPortForExternal(targetHero, targetCharacter, targetAgentIndex, npcName);
 
 		return new LegacyNativeActionPlanExecutor((actionPlan, snapshot) =>
 		{
@@ -16486,7 +16521,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return actionResult != null && !actionResult.ResponseDiscarded
 				? InteractionStatus.Executed
 				: InteractionStatus.RejectedByValidation;
-		}, allowedTagFamilies: LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+		},
+			allowedTagFamilies: LegacyActionTagCatalog.DefaultAllowedTagFamilies,
+			economyPlanner: economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
+			economyPort: economyPort,
+			economyCapabilities: economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
 	}
 
 	/// <summary>
@@ -16709,6 +16748,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return null;
 		}
 		IReadOnlyList<string> allowedTagFamilies = LegacyActionTagCatalog.DefaultAllowedTagFamilies;
+		Agent capturedAgent = Mission.Current?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == targetAgentIndex);
+		CharacterObject capturedCharacter = capturedAgent?.Character as CharacterObject;
+		Hero capturedHero = capturedCharacter?.HeroObject;
+		IEconomyRewardDebtMainThreadPort economyPort = CreateEconomyReplayPortForExternal(
+			capturedHero,
+			capturedCharacter,
+			targetAgentIndex,
+			capturedCharacter?.Name?.ToString());
 		return new LegacyNativeActionPlanExecutor((actionPlan, snapshot) =>
 		{
 			if (!IsBannerlordMainThreadForNativeActions()
@@ -16764,7 +16811,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				consumed = true;
 			}
 			return consumed ? InteractionStatus.Executed : InteractionStatus.RejectedByValidation;
-		}, maxActions, allowedTagFamilies);
+		},
+			maxActions,
+		 allowedTagFamilies,
+		 economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
+		 economyPort,
+		 economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
 	}
 
 	/// <summary>
