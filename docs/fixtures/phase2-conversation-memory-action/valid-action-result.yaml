@@ -1,0 +1,16 @@
+fixture_id: valid-action-result
+contract: ActionExecutionResult
+schema_version: 1
+status: Applied
+action_id: courier_delivery
+target_identity: hero_1
+reason_code: applied
+source_channel: Courier
+conversation_generation: 42
+applied_facts:
+  - fact_id: fact_002
+    text: "信件已确认交付给目标人物"
+    confirmed: true
+thread_boundary: MainThreadApply
+live_objects: []
+save_write: DeferredToExistingFacade

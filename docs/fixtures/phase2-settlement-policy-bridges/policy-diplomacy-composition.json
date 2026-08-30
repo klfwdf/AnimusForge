@@ -1,0 +1,62 @@
+{
+  "fixtureId": "policy-diplomacy-composition-matrix",
+  "contract": "AF.Bridge.PolicyDiplomacy",
+  "contractVersion": 1,
+  "cases": [
+    {
+      "id": "A-policy-system-alone",
+      "enabled": ["PolicySystem"],
+      "bridge": "absent",
+      "requestedOutcome": "apply_policy_effect",
+      "expected": {"status": "Applied", "fallback": "NativePolicy", "worldNotification": false}
+    },
+    {
+      "id": "B-diplomacy-world-alone",
+      "enabled": ["Diplomacy", "WorldDiplomacy"],
+      "bridge": "absent",
+      "requestedOutcome": "accept_peace",
+      "expected": {"status": "Applied", "fallback": "NativeDiplomacy", "worldNotification": true}
+    },
+    {
+      "id": "A-plus-B-without-bridge",
+      "enabled": ["PolicySystem", "Diplomacy", "WorldDiplomacy"],
+      "bridge": "absent",
+      "requestedOutcome": "policy_influences_diplomacy",
+      "expected": {"status": "Accepted", "fallback": "NoOp", "worldNotification": false, "implicitTrigger": false}
+    },
+    {
+      "id": "A-plus-B-plus-bridge",
+      "enabled": ["PolicySystem", "Diplomacy", "WorldDiplomacy", "PolicyDiplomacyBridge"],
+      "bridge": "available",
+      "request": {
+        "sourceChannel": "NativeConversation",
+        "conversationGeneration": 52,
+        "initiatorKingdomId": "empire",
+        "targetKingdomId": "battania",
+        "policyIntentId": "policy_effect_intent_001",
+        "policyModuleIds": ["kingdomStability"],
+        "scope": "kingdom",
+        "targetPlanHandles": ["kingdom:empire"],
+        "requestedOutcome": "accept_peace"
+      },
+      "expected": {"status": "Applied", "fallback": "NativeDiplomacy", "worldNotification": true, "receiptRequired": true, "confirmedFact": true}
+    },
+    {
+      "id": "bridge-failure-incompatible-version",
+      "enabled": ["PolicySystem", "Diplomacy", "WorldDiplomacy", "PolicyDiplomacyBridge"],
+      "bridge": "failure",
+      "request": {
+        "contractVersion": 0,
+        "conversationGeneration": 52,
+        "initiatorKingdomId": "empire",
+        "targetKingdomId": "battania",
+        "policyIntentId": "policy_effect_intent_001",
+        "policyModuleIds": ["kingdomStability"],
+        "scope": "kingdom",
+        "targetPlanHandles": ["kingdom:empire"],
+        "requestedOutcome": "accept_peace"
+      },
+      "expected": {"status": "Incompatible", "reasonCode": "ContractVersionMismatch", "fallback": "NativeDiplomacy", "worldNotification": false, "policyReceiptPreserved": true}
+    }
+  ]
+}

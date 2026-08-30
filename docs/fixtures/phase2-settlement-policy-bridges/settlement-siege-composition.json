@@ -1,0 +1,60 @@
+{
+  "fixtureId": "settlement-siege-composition-matrix",
+  "contract": "AF.Bridge.SettlementSiegeAction",
+  "contractVersion": 1,
+  "cases": [
+    {
+      "id": "A-settlement-siege-alone",
+      "enabled": ["SettlementSiegeRuntime"],
+      "bridge": "absent",
+      "requestedAction": "siege_action_authorize",
+      "expected": {"status": "Authorized", "fallback": "Native", "crossDomainAction": false}
+    },
+    {
+      "id": "B-conversation-scene-alone",
+      "enabled": ["ConversationSceneAdapter"],
+      "bridge": "absent",
+      "requestedAction": "ordinary_conversation",
+      "expected": {"status": "Accepted", "fallback": "Native", "siegeRulesInjected": false}
+    },
+    {
+      "id": "A-plus-B-without-bridge",
+      "enabled": ["SettlementSiegeRuntime", "ConversationSceneAdapter"],
+      "bridge": "absent",
+      "requestedAction": "siege_action_authorize",
+      "expected": {"status": "Accepted", "fallback": "NoOp", "crossDomainAction": false}
+    },
+    {
+      "id": "A-plus-B-plus-bridge",
+      "enabled": ["SettlementSiegeRuntime", "ConversationSceneAdapter", "SettlementSiegeActionBridge"],
+      "bridge": "available",
+      "request": {
+        "settlementId": "town_B1",
+        "sceneKind": "town_aftermath",
+        "missionContext": "authorized_aftermath",
+        "sourceChannel": "SceneShout",
+        "conversationGeneration": 42,
+        "targetIdentity": {"heroId": "lord_1_1", "agentIndex": 7},
+        "requestedActionId": "siege_action_authorize",
+        "postprocessRuleIds": ["siege_action_authorize"]
+      },
+      "expected": {"status": "Applied", "fallback": "Native", "crossDomainAction": true, "confirmedFact": true, "mainThreadApply": true}
+    },
+    {
+      "id": "bridge-failure-stale-generation",
+      "enabled": ["SettlementSiegeRuntime", "ConversationSceneAdapter", "SettlementSiegeActionBridge"],
+      "bridge": "failure",
+      "request": {
+        "settlementId": "town_B1",
+        "sceneKind": "town_aftermath",
+        "missionContext": "authorized_aftermath",
+        "sourceChannel": "SceneShout",
+        "conversationGeneration": 41,
+        "currentGeneration": 42,
+        "targetIdentity": {"heroId": "lord_1_1", "agentIndex": 7},
+        "requestedActionId": "siege_action_authorize"
+      },
+      "expected": {"status": "Expired", "reasonCode": "StaleGeneration", "fallback": "Native", "crossDomainAction": false, "confirmedFact": false}
+    }
+  ]
+}

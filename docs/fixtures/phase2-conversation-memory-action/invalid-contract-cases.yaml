@@ -1,0 +1,29 @@
+fixture_id: invalid-contract-cases
+cases:
+  - id: live-object-input
+    mutation: "live_objects: [Hero.MainHero]"
+    expected_code: LiveObjectNotAllowed
+  - id: missing-postprocess-rules
+    mutation: "postprocess_rule_ids: []"
+    expected_code: PostprocessRuleClosureViolation
+  - id: wrong-role
+    mutation: "visible_history[0].role: assistant"
+    expected_code: InvalidHistoryRole
+  - id: unconfirmed-fact
+    mutation: "memory_view[0].confirmed: false"
+    expected_code: FactConfirmationRequired
+  - id: stale-generation
+    mutation: "conversation_generation: 41"
+    expected_code: StaleGeneration
+  - id: unknown-action-target
+    mutation: "target_identity: x=10,y=20"
+    expected_code: TargetIdentityRequired
+  - id: background-apply
+    mutation: "thread_boundary: BackgroundSnapshotOnly"
+    expected_code: MainThreadApplyRequired
+  - id: oversized-text
+    mutation: "user_text: <bounded-limit-plus-one>"
+    expected_code: BoundedTextLimitExceeded
+  - id: optional-memory-provider
+    mutation: "memory_provider: missing_optional"
+    expected_code: OptionalProviderMissing

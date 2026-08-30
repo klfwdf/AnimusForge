@@ -1,0 +1,14 @@
+{
+  "fixtureId":"phase3-af-contracts-expected-results",
+  "valid":{"contracts":9,"events":3,"capabilities":6,"state":"Valid"},
+  "requiredStates":{"optional-provider-missing":"Degraded","required-version-incompatible":"Blocked","stale-event":"Expired","safe-mode-gameplay-event":"Blocked"},
+  "invalidCaseCount":18,
+  "invariants":[
+    "public contracts have no live Bannerlord objects",
+    "capability IDs and contract IDs are unique",
+    "events are immutable and payload-linked",
+    "only confirmed execution results can produce confirmed facts",
+    "1.3 and 1.4 are explicit API lines",
+    "catalog and health output are bounded"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "fixtureId":"phase3-foundation-runtime-expected-results",
+  "valid":{"contracts":6,"states":8,"state":"Valid","runtimeFrequency":"0"},
+  "invalidCaseCount":16,
+  "requiredStates":{"stale-success":"Expired","safe-mode-gameplay":"Blocked","toggle-harmony":"RestartRequired"},
+  "invariants":["main-thread revalidates state","background work receives immutable snapshots","stale/cancel/timeout/failure remain distinct","SafeMode preserves data","health output is bounded"]
+}

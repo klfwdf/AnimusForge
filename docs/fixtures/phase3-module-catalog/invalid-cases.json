@@ -1,0 +1,21 @@
+{
+  "fixtureId": "phase3-module-catalog-invalid-cases",
+  "cases": [
+    {"id":"duplicate-module-id","mutation":"duplicate af.module.conversation","expected":{"state":"Blocked","code":"IdentityNotUnique"}},
+    {"id":"duplicate-persistence-namespace","mutation":"namespace conversation reused by another module","expected":{"state":"Blocked","code":"PersistenceNamespaceConflict"}},
+    {"id":"missing-owner","mutation":"owner empty","expected":{"state":"Blocked","code":"MissingOwner"}},
+    {"id":"missing-contract-version","mutation":"contractVersion absent","expected":{"state":"Blocked","code":"MissingContractVersion"}},
+    {"id":"required-dependency-missing","mutation":"required module af.missing.runtime","expected":{"state":"Blocked","code":"RequiredDependencyMissing"}},
+    {"id":"dependency-cycle","mutation":"A requires B and B requires A","expected":{"state":"Blocked","code":"DependencyCycle"}},
+    {"id":"profile-closure","mutation":"single-player includes bridge but omits af.module.policy-effects","expected":{"state":"Blocked","code":"ProfileClosureViolation"}},
+    {"id":"safe-mode-gameplay","mutation":"safe-mode includes af.module.conversation","expected":{"state":"Blocked","code":"SafeModeGameplayIncluded"}},
+    {"id":"runtime-toggle-harmony","mutation":"runtime-toggle-safe plus harmonyPatches=true","expected":{"state":"RestartRequired","code":"LifecycleClaimConflict"}},
+    {"id":"incompatible-api-line","mutation":"module supports only 1.2","expected":{"state":"Blocked","code":"BannerlordApiLineUnsupported"}},
+    {"id":"optional-provider-missing","mutation":"optional capability unavailable with explicit native fallback","expected":{"state":"Degraded","code":"OptionalProviderMissing"}},
+    {"id":"required-provider-missing","mutation":"required capability unavailable","expected":{"state":"Blocked","code":"RequiredCapabilityMissing"}},
+    {"id":"bridge-without-peer","mutation":"bridge present without one participating module","expected":{"state":"Blocked","code":"BridgePeerMissing"}},
+    {"id":"bridge-failure","mutation":"bridge startup failure after A and B active","expected":{"state":"Failed","code":"BridgeStartFailed"}},
+    {"id":"unknown-entry-placeholder","mutation":"entryTypeStatus Pending published as executable","expected":{"state":"Blocked","code":"EntryTypeNotBound"}},
+    {"id":"unbounded-health-output","mutation":"health issues > 32 or message > 240","expected":{"state":"Blocked","code":"HealthOutputUnbounded"}}
+  ]
+}
