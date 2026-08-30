@@ -579,3 +579,9 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 验证：economyAwareExecutor mixed=1 receipt=1 economyOnly=1 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1 PASS；Economy port、InteractionPipeline 40 cases、ProductionConfiguredHost、ProductionCourierHost、ProductionOptInEntry、ProductionEconomyOwner 均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 0 warning / 0 error，未部署。
 - 限制：这仍是可控/等价 host 与生产 factory 验证，不代表真实 Campaign/Mission、live inventory/market/debt、游戏内 ActionPlan、旧存档或 AFEF 实机验证；默认三渠道仍未切换。
 - 下一项准确任务：补真实状态 fixture，并在初始化 host 可用时做三渠道 live commit 验收。
+
+## 本轮补充验证（2026-08-30，生产 1.4 Economy-aware executor）
+
+- 直接加载 project-local 1.4 AnimusForge.dll，验证 mixed Economy/non-Economy 与 economy-only ActionPlan 路由、owner receipt 和生产程序集类型。
+- 结果：productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 productionAssembly=1 PASS。
+- 下一项仍是补真实状态 fixture，并在初始化 host 可用时进行 live commit 验收；默认三渠道未切换。
