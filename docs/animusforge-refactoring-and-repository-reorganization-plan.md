@@ -9,7 +9,7 @@
 - 当前分支：`refactor/prepare-af-restructure`（原重构仓库分支；本地项目目录为 `F:\AF测试重构`）
 - 基线 HEAD：`d4cb1467376c6e923f4295dcefc7878c11dbc7c1`
 - 基线父提交：`96a1c60f1877813a9fb3440ddad068d6e92afa1e`（policy 功能基线）
-- 当前工作 HEAD：`2ada463d`（`refactor: add merchant economy replay owner`；已推送到 `origin/refactor/prepare-af-restructure`）
+- 当前工作 HEAD：`a096c1b1`（`docs: sync refactor handoff status`；已推送到 `origin/refactor/prepare-af-restructure`）
 - 当前阶段：阶段 7 ACTIVE，继续接入领域 LLM；本轮完成 Economy/Reward/Debt Merchant CharacterObject/Settlement owner adapter 与 fail-closed 验证，阶段 4/5/6 契约与回放验证保持通过（阶段 1 清理 HOLD；阶段 3 设计已完成；阶段 0 基线详细记录按用户决定跳过）
 - 当前任务：在真实初始化 Campaign/Mission Host 可用时，验证 live Economy、三渠道主线程 commit、confirmed facts、旧存档和 AFEF；纯 contract、生产 1.4 回放和状态 fixture 已完成
 - 当前负责人：Codex 重构会话
