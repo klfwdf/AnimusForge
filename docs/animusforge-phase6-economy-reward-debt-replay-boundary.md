@@ -28,7 +28,9 @@
   `RewardSystemBehavior.CreateEconomyRewardDebtMainThreadPortForExternal()`，
   为 Hero→玩家路径提供生产 owner adapter；本轮另增加
   `CreatePartyEconomyRewardDebtMainThreadPortForExternal()`，支持 PartyBase
-  金币/物品/RP 物品转移，商人和部队债务/固定资产仍 fail-closed。
+  金币/物品/RP 物品转移；本轮另增加
+  `CreateMerchantEconomyRewardDebtMainThreadPortForExternal()`，支持商人金币、
+  物品/RP 物品和市场债务创建/解除，部队债务/固定资产仍 fail-closed。
 
 ## 保持不变
 
@@ -115,3 +117,23 @@ owner adapter。Party 与 `BasicCharacterObject` 必须由渠道 owner 在 captu
 `partyFactoryFailClosed=1`；Economy contract 继续 PASS。真实 PartyBase、库存、
 游戏内 ActionPlan、旧存档和 AFEＦ 写入仍为 `NOT-RUN`。下一项是商人
 CharacterObject/Settlement owner adapter。
+
+
+## Merchant CharacterObject/Settlement owner adapter (2026-08-30)
+
+`RewardSystemBehavior.EconomyMerchantReplay.cs` 增加商人
+`CharacterObject + Settlement` 的生产 owner factory。capture 边界提供商人和
+定居点，commit 边界重新确认主线程、当前定居点、商人角色资格、玩家目标和
+expected subject。
+
+商人 owner 复用现有 `TransferGoldFromSettlement`、
+`TransferItemFromSettlement`、`GenerateRpAssetToPlayer`、
+`SetDebtForSettlementMerchant` 和 `ResolveSettlementMerchantDebtByIdByAgreement`；
+只有正数量转移或债务方法返回成功时才产生 `FactRecord`。
+`SettlementTransfer` 不属于商人库存/市场债务 owner，仍明确拒绝。
+
+验证：1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`；
+`ProductionEconomyOwnerReplay` 的 `merchantFactoryFailClosed=1`，Economy contract
+继续 PASS。真实商人角色、Settlement.CurrentSettlement、市场库存/资金、市场
+债务、游戏内 ActionPlan、旧存档和 AFEF 仍为 `NOT-RUN`。下一项是把 Hero/Party/
+Merchant 三类 owner 接入三渠道 commit 的 Economy capability，并补真实状态 fixture。

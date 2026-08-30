@@ -60,4 +60,10 @@ object partyPort = partyFactory.Invoke(null, new object[] { null, null, "party-s
 AssertTrue(partyPort == null, "party economy owner factory created a port without a live Campaign/party owner");
 AssertTrue(portType.IsAssignableFrom(partyFactory.ReturnType), "party economy owner factory return type drifted");
 
-Console.WriteLine("PASS productionEconomyOwnerReplay factoryFailClosed=1 partyFactoryFailClosed=1 productionType=1 noCampaignMutation=1");
+MethodInfo merchantFactory = rewardType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+    .Single(method => method.Name == "CreateMerchantEconomyRewardDebtMainThreadPortForExternal");
+object merchantPort = merchantFactory.Invoke(null, new object[] { null, null, "merchant-subject", null });
+AssertTrue(merchantPort == null, "merchant economy owner factory created a port without a live Campaign/merchant owner");
+AssertTrue(portType.IsAssignableFrom(merchantFactory.ReturnType), "merchant economy owner factory return type drifted");
+
+Console.WriteLine("PASS productionEconomyOwnerReplay factoryFailClosed=1 partyFactoryFailClosed=1 merchantFactoryFailClosed=1 productionType=1 noCampaignMutation=1");
