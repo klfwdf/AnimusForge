@@ -144,3 +144,9 @@ Merchant 三类 owner 接入三渠道 commit 的 Economy capability，并补真�
 - InteractionResultCommitter 消费 IActionPlanExecutionReceipt 的 confirmed facts；新增 balanced RemoveProtocolTags 工具和纯 contract fixture。
 - 验证：Economy-aware executor contract、Economy port、InteractionPipeline、ProductionConfiguredHost、ProductionCourierHost、ProductionOptInEntry、ProductionEconomyOwner 均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 0 warning / 0 error。
 - 真实游戏 host、live economy state、旧存档和 AFEF 仍为 NOT-RUN；默认三渠道未切换。下一项是补真实状态 fixture 与 live commit 验收。
+
+## 本轮补充验证（2026-08-30，生产 1.4 Economy-aware executor）
+
+- 直接加载 project-local 1.4 AnimusForge.dll，回放 mixed Economy/non-Economy 与 economy-only ActionPlan；确认 planner、main-thread port、legacy callback 和 confirmed facts receipt 的调用边界。
+- 验证：productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 productionAssembly=1 PASS。
+- 该回放仍不等同于真实 Campaign/Mission/live inventory 或游戏内存档验证；默认三渠道未切换，未部署。
