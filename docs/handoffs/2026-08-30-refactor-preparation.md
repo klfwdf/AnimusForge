@@ -597,3 +597,9 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 将 smoke test 对 queued LLM job 截断信号的旧 api.IsOutputTruncated 断言同步为共享 Gateway metadata.IsOutputTruncated；生产代码保持不变。
 - 验证：World diplomacy intent-boundary smoke tests passed: 1168；此前 WorldDiplomacy Gateway、compression、result-settlement、Economy-aware、InteractionPipeline 与生产回放继续通过。
 - 当前限制：真实 Campaign/Mission、live Economy、旧存档和 AFEF 仍 NOT-RUN。
+
+## 本轮完成（2026-08-30，Live Host readiness 只读审计）
+
+- 新增 tools/LiveHostReadinessAudit/live_host_readiness_audit.py 与 README，检查游戏可执行文件、project-local 1.3/1.4/Bootstrap stage、安装模块、SubModule Bootstrap 声明、游戏进程和标准存档目录；不启动、不部署、不读取存档内容。
+- 验证：liveHostReadiness gameRoot=1 exe=1 stage=1 bootstrap=1 implementation13=1 implementation14=1 installedModule=1 gameRunning=0 saveDirs=1 noDeployment=1 PASS。
+- 当前真实 live host 尚未运行；installedMatchesStage=false 是预期安全状态，表示没有把 stage 部署到游戏目录。下一步需在授权的游戏测试窗口执行部署/启动/回滚和 live Economy、旧存档、AFEF 验收。
