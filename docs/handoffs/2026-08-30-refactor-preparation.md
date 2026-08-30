@@ -609,3 +609,12 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - Host readiness 审计本地通过；游戏未运行，project-local stage 齐全，未部署。
 - 本地提交 f0236514 已创建，但三次非强制 push 均因 GitHub HTTPS 443 连接重置/无法连接失败；origin/refactor/prepare-af-restructure 目前仍为 cfbf1e73。
 - 网络恢复后只需执行 git push origin HEAD:refactor/prepare-af-restructure，不要 force push。
+
+
+## 2026-08-30 状态同步：提交、Host 与本地化
+
+- 当前 HEAD：`b1ce1d2b`，分支 `refactor/prepare-af-restructure`；工作树干净，本地领先 `origin/refactor/prepare-af-restructure` 3 个提交。
+- 本轮已提交审计工具部署状态修正；普通 `git push` 仍因 GitHub HTTPS 443 连接重置失败，未使用 force push。
+- 安装模块与 project-local stage 匹配，LiveHostReadiness 审计 PASS；Bannerlord 重启探测后进程已退出，Bootstrap 日志没有产生本次新的启动记录，不能据此宣称真实 Campaign/Mission 或游戏内 LLM/Economy 已通过。
+- 本地化现状：已有 English/简体中文 XML 成对资源（SceneActions 124/124、hostile meeting 6/6，中文 GCCZ 另 7 条）；但 `Refactor/Adapters/LegacyModelCatalogGateway.cs` 仍有 3 条中文硬编码诊断文案，重构层完整中英本地化尚未完成。
+- 接手者下一项：网络恢复后推送当前 3 个提交；随后建立稳定 error-code 本地化映射并补英中 parity 测试，最后再继续真实存档/AFEF/三渠道 live 验收。

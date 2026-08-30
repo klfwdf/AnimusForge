@@ -9,8 +9,8 @@
 - 当前分支：`refactor/prepare-af-restructure`（原重构仓库分支；本地项目目录为 `F:\AF测试重构`）
 - 基线 HEAD：`d4cb1467376c6e923f4295dcefc7878c11dbc7c1`
 - 基线父提交：`96a1c60f1877813a9fb3440ddad068d6e92afa1e`（policy 功能基线）
-- 当前工作 HEAD：`f0236514`（`test: add live host readiness audit`；本地已提交，推送因 GitHub 443 连接重置暂未完成）
-- 当前阶段：阶段 7 ACTIVE，继续接入领域 LLM；本轮完成 Economy/Reward/Debt Merchant CharacterObject/Settlement owner adapter 与 fail-closed 验证，阶段 4/5/6 契约与回放验证保持通过（阶段 1 清理 HOLD；阶段 3 设计已完成；阶段 0 基线详细记录按用户决定跳过）
+- 当前工作 HEAD：`b1ce1d2b`（`test: align live host readiness deployment state`；本地已提交，当前领先 origin 3 个提交，推送仍因 GitHub HTTPS 443 连接重置失败）
+- 当前阶段：阶段 7 ACTIVE，进入真实 Host 验收准备；阶段 4/5/6 契约、生产回放和 Economy owner/state fixture 保持通过（阶段 1 清理 HOLD；阶段 3 设计已完成；阶段 0 基线详细记录按用户决定跳过）
 - 当前任务：在真实初始化 Campaign/Mission Host 可用时，验证 live Economy、三渠道主线程 commit、confirmed facts、旧存档和 AFEF；纯 contract、生产 1.4 回放和状态 fixture 已完成
 - 当前负责人：Codex 重构会话
 - 物理程序集策略：暂不拆分为多个玩法 DLL；先在单一 `AnimusForge.dll` 内完成逻辑模块化
@@ -20,9 +20,9 @@
 - 已安装模块目录：`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`
 - 主要游戏内测试版本：Bannerlord `v1.4.8.119303`（本机当前安装）
 - 1.4 构建引用要求：按 `1.4.x` API 线管理；每个开发者可以使用自己的合法 1.4.x 安装，但构建记录必须写明精确 `BuildInfo`，共享验收使用固定代表性 overlay
-- 最后更新：2026-08-30（Economy/Reward/Debt Merchant owner adapter）
+- 最后更新：2026-08-30（live host readiness、Git 与本地化审查）
 - 状态：IN PROGRESS
-- 最近验证：Economy-aware executor、owner/state fixture、Production 1.4 commit、World Diplomacy intent-boundary、三渠道 host 和 Gateway 回放均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`，未部署。
+- 最近验证：LiveHostReadiness 审计 PASS（project stage、安装模块、Bootstrap-only、1.3/1.4 stage 均存在且匹配）；此前 Economy-aware executor、owner/state fixture、Production 1.4 commit、World Diplomacy intent-boundary、三渠道 host 和 Gateway 回放均 PASS；1.3/1.4/Bootstrap Debug unified stage 均 `0 warning / 0 error`。真实 Campaign/Mission 仍未验收。
 - 依赖记录：实际外部模块路径已解析；当前机器游戏 BuildInfo 为 `v1.4.8.119303`，可复现 1.4 overlay 为 `v1.4.6.115628`。
 - 阶段 1 阻塞：用户已决定先保持仓库现状；1.3.x/1.4.x 游戏源码参考仓库保留在 tracked reference plane，其他未决对象也不做清理，许可证/第三方 provenance 继续作为待确认项。
 
@@ -308,3 +308,11 @@
 | 2026-08-30 | 阶段 7 真实初始化 Campaign/Mission Host 与游戏内 Economy 验收（下一切片） | 使用已完成的 owner/state fixture 作为前置，接入或验证真实初始化 Campaign/Mission host；覆盖 Hero/Party/Merchant live inventory、market/debt、三渠道主线程 commit、confirmed facts、旧存档与 AFEF | 保留默认三渠道与旧 action authority；不改变程序集、模块 ID、SyncData key/type、存档类型、构建/覆盖/推送脚本或游戏目录；无真实 host 时不得宣称已完成游戏内验收 | Economy owner/state fixture、生产 1.4 executor、三渠道 production host、World Diplomacy intent-boundary smoke、1.3/1.4/Bootstrap stage 构建已 PASS；真实 live 对象、旧存档、AFEF 仍 NOT-RUN；Host readiness 已通过，只读审计确认游戏未运行且未部署 | ACTIVE |
 | 2026-08-30 | 阶段 7 Economy owner/state fixture（本轮） | docs/fixtures/phase7-economy-aware-commit/economy-owner-state-cases.json、tools/EconomyOwnerStateFixtureContractTests.py；固化 Hero、Party、Merchant、Courier-Hero、inactive/stale/missing-settlement/unknown-owner 边界 | 仅为可审计纯 fixture，不创建或修改 Bannerlord 对象；字符串/ID-only；不改变默认三渠道、程序集、模块 ID、SyncData key/type、存档或部署流程 | economyOwnerStateFixture cases=7 eligible=4 rejected=3 stringOnly=1 hero=1 party=1 merchant=1 courierHero=1 failClosed=1 PASS；真实 live host、旧存档、AFEF 仍 NOT-RUN | VERIFY |
 | 2026-08-30 | 阶段 7 Live Host readiness 只读审计（本轮） | tools/LiveHostReadinessAudit/live_host_readiness_audit.py、README；检查游戏可执行文件、project-local stage、Bootstrap/1.3/1.4 实现、安装模块、SubModule Bootstrap 加载、游戏进程和标准存档目录 | 只读；不启动游戏、不部署、不读取存档内容、不修改游戏目录；installedMatchesStage=false 仅表示未部署 | liveHostReadiness gameRoot=1 exe=1 stage=1 bootstrap=1 implementation13=1 implementation14=1 installedModule=1 gameRunning=0 saveDirs=1 noDeployment=1 PASS；真实 Campaign/Mission、live Economy、旧存档和 AFEF 仍 NOT-RUN | VERIFY |
+
+## 本地化状态（2026-08-30）
+
+- 现有发布资源已有部分中英双语：`AnimusForge/ModuleData/Languages/sceneactions_strings.xml` 与 `CNs/sceneactions_strings-zh-CN.xml` 各 124 条；`sets_hostile_meeting_strings.xml` 与对应中文文件各 6 条；中文 GCCZ 说明书另有 7 条。
+- 本轮审查发现 `Refactor/` 没有建立独立的本地化资源/错误码解析边界，`Refactor/Adapters/LegacyModelCatalogGateway.cs` 仍有 3 条中文硬编码诊断文案；因此不能宣称“重构代码已完成中英本地化”。
+- 下一项本地化任务：先把对用户可见的 Gateway/配置错误改为稳定 error code + 英文/简体中文资源映射，后台只传 code 和参数，主线程 UI 再解析；不得把 API key、原始响应或凭据放入资源/日志。
+
+| 2026-08-30 | live host 重启探测与本地化审查（本轮） | `tools/LiveHostReadinessAudit/`、安装模块日志、`AnimusForge/ModuleData/Languages/`、`Refactor/Adapters/LegacyModelCatalogGateway.cs`；核对当前部署匹配、游戏进程和中英文资源覆盖 | 只记录证据，不把主菜单/进程存在当作 Campaign/Mission 验收；本轮不改变程序集、模块 ID、SyncData key/type、存档类型或生产本地化调用 | 审计 PASS：`installedMatchesStage=true`、项目/安装 stage 齐全；重启后的 Bannerlord 进程已退出且没有产生新的 Bootstrap 日志，因此真实 live Economy、旧存档、AFEF 仍 `NOT-RUN`；资源覆盖为 SceneActions 124/124、hostile meeting 6/6，重构层仍有 3 条中文硬编码诊断，完整双语本地化 `NOT-DONE` | VERIFY |
