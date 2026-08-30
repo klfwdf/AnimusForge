@@ -11,6 +11,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SandBox;
@@ -3494,6 +3496,49 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static LlmGenerateResult GenerateConfiguredGatewayResult(
+		IEnumerable<object> messages,
+		string apiUrl,
+		string apiKey,
+		string modelName,
+		int maxTokens,
+		float temperature,
+		bool thinkingEnabled,
+		string reasoningEffort,
+		int timeoutMilliseconds,
+		string source,
+		InteractionStage stage = InteractionStage.Postprocess)
+	{
+		string apiLine;
+#if BANNERLORD_1_4_OR_GREATER
+		apiLine = "1.4";
+#else
+		apiLine = "1.3";
+#endif
+		PromptPackage prompt = LegacyConfiguredChatGateway.BuildPromptPackage(messages, Math.Max(1, maxTokens), modelName);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		TraceContext trace = new TraceContext(
+			"af-aiconfig-" + (source ?? "auxiliary") + "-" + runtimeGeneration.ToString(CultureInfo.InvariantCulture) + "-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+			runtimeGeneration,
+			runtimeGeneration,
+			"aiconfig",
+			apiLine);
+		LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(
+			_ => apiKey,
+			temperature: temperature,
+			disableThinking: false,
+			retryWithoutThinkingOnBadRequest: thinkingEnabled || !string.Equals(DuelSettings.ResolveThinkingControlFormat(apiUrl, modelName), "plain", StringComparison.OrdinalIgnoreCase),
+			thinkingEnabled: thinkingEnabled,
+			reasoningEffort: reasoningEffort);
+		return gateway.GenerateAsync(
+			new LlmGenerateRequest(
+				trace,
+				new LlmProviderSnapshot(source ?? "aiconfig", apiUrl, modelName, timeoutMilliseconds, Math.Max(1, maxTokens)),
+				prompt,
+				stage),
+			CancellationToken.None).GetAwaiter().GetResult();
+	}
+
 	public static bool TryCallAuxiliaryActionPostprocess(string systemPrompt, string userPrompt, int maxTokens, float temperature, out string content, out string error)
 	{
 		while (true)
@@ -3510,116 +3555,75 @@ public static class AIConfigHandler
 		}
 	}
 
+	/// <summary>
+	/// Non-interactive bridge for the refactor pipeline. It deliberately skips
+	/// the legacy blocking retry prompt; the coordinator owns cancellation and
+	/// failure isolation for the request.
+	/// </summary>
+	public static bool TryCallAuxiliaryActionPostprocessOnceForExternal(string systemPrompt, string userPrompt, int maxTokens, float temperature, out string content, out string error)
+	{
+		return TryCallAuxiliaryActionPostprocessOnce(systemPrompt, userPrompt, maxTokens, temperature, out content, out error);
+	}
+
 	private static bool TryCallAuxiliaryActionPostprocessOnce(string systemPrompt, string userPrompt, int maxTokens, float temperature, out string content, out string error)
 	{
 		content = "";
 		error = "";
-		string rawResponse = "";
 		if (!ActionPostprocessEnabled)
 		{
 			error = "postprocess_disabled";
 			return false;
 		}
-		if (!TryGetActionPostprocessConfig(out var apiUrl, out var apiKey, out var modelName))
+		if (!TryGetActionPostprocessConfig(out string apiUrl, out string apiKey, out string modelName))
 		{
 			error = "action_postprocess_config_invalid";
 			return false;
 		}
-		object[] array = BuildAuxiliaryChatMessages(systemPrompt, userPrompt);
-		string requestBodyForTokenStats = "";
+		object[] messages = BuildAuxiliaryChatMessages(systemPrompt, userPrompt);
 		Stopwatch freezeWatchSw = Stopwatch.StartNew();
-		FreezeWatchdog.Mark("AuxActionPostprocess.start", "model=" + modelName + " messages=" + array.Length + " timeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds, immediate: true);
+		FreezeWatchdog.Mark("AuxActionPostprocess.start", "model=" + modelName + " messages=" + messages.Length + " timeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds, immediate: true);
 		try
 		{
-			using CancellationTokenSource timeoutCts = new CancellationTokenSource(ActionPostprocessRequestTimeoutMilliseconds);
 			int actualMaxTokens = ResolveActionPostprocessApiMaxTokens(apiUrl, apiKey, modelName, maxTokens);
-			JObject payload = new JObject
+			ResolveActionPostprocessApiSettings(apiUrl, apiKey, modelName, temperature, out bool thinkingEnabled, out string effort, out float effectiveTemperature);
+			LlmGenerateResult generated = GenerateConfiguredGatewayResult(
+				messages,
+				apiUrl,
+				apiKey,
+				modelName,
+				actualMaxTokens,
+				effectiveTemperature,
+				thinkingEnabled,
+				effort,
+				ActionPostprocessRequestTimeoutMilliseconds,
+				"ActionPostprocess");
+			if (generated == null || generated.Status != LlmResultStatus.Succeeded)
 			{
-				["model"] = modelName,
-				["messages"] = JArray.FromObject(array),
-				["stream"] = false,
-				["max_tokens"] = Math.Max(16, actualMaxTokens),
-				["temperature"] = DuelSettings.ClampApiTemperature(temperature)
-			};
-			ResolveActionPostprocessApiSettings(apiUrl, apiKey, modelName, temperature, out var thinkingEnabled, out var effort, out var effectiveTemperature);
-			payload["temperature"] = effectiveTemperature;
-			DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out var controlMode);
-			string jsonBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
-			requestBodyForTokenStats = jsonBody;
-			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
-			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-			FreezeWatchdog.Mark("AuxActionPostprocess.send_begin", "model=" + modelName + " maxTokens=" + Math.Max(16, actualMaxTokens), immediate: true);
-			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage, timeoutCts.Token).GetAwaiter().GetResult();
-			FreezeWatchdog.Mark("AuxActionPostprocess.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
-			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			rawResponse = text ?? "";
-			FreezeWatchdog.Mark("AuxActionPostprocess.content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
-			{
-				Logger.Log("AIConfig", "[ActionPostprocess] thinking payload rejected; retrying without thinking controls.");
-				JObject retryPayload = JObject.Parse(jsonBody);
-				DuelSettings.RemoveThinkingControls(retryPayload);
-				string retryBody = retryPayload.ToString(Formatting.None);
-				requestBodyForTokenStats = retryBody;
-				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
-				httpRequestMessage2.Content = new StringContent(retryBody, Encoding.UTF8, "application/json");
-				FreezeWatchdog.Mark("AuxActionPostprocess.retry_send_begin", "model=" + modelName, immediate: true);
-				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2, timeoutCts.Token).GetAwaiter().GetResult();
-				FreezeWatchdog.Mark("AuxActionPostprocess.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_begin", "status=" + (int)result.StatusCode + " thread=" + Thread.CurrentThread.ManagedThreadId);
-				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-				rawResponse = text ?? "";
-				FreezeWatchdog.Mark("AuxActionPostprocess.retry_content_read_end", "chars=" + ((text ?? "").Length) + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-				controlMode += "_retry_plain";
-			}
-			if (!result.IsSuccessStatusCode)
-			{
-				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
-				FreezeWatchdog.Mark("AuxActionPostprocess.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				LogAuxiliaryRouterTokenTrace("action_postprocess_http_error", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
+				error = LlmRetryPrompt.BuildFailureDetail(generated?.ErrorCode ?? "gateway_failure", "", "");
+				FreezeWatchdog.Mark("AuxActionPostprocess.gateway_error", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				return false;
 			}
-			JObject jObject = JObject.Parse(text);
-			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
+			content = (generated.RawText ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				string emptyContentReason = "empty_content";
-				if (LlmApiCompat.IsReasoningOnlyTokenLimitResponse(jObject, out int completionTokens, out int reasoningTokens))
-				{
-					emptyContentReason = "empty_content_reasoning_token_limit：模型把输出额度全部用于思考，未生成最终content。请降低后处理思维链强度、关闭后处理思维链，或提高最大输出Tokens。completion_tokens=" + completionTokens + "，reasoning_tokens=" + reasoningTokens;
-				}
-				error = LlmRetryPrompt.BuildFailureDetail(emptyContentReason, "", rawResponse);
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", "");
 				FreezeWatchdog.Mark("AuxActionPostprocess.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
 			if (content.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) < 0 || content.IndexOf(']') < 0)
 			{
-				error = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误）动作后处理未返回任何可解析的 [ACTION:...] 标签。", content, rawResponse);
+				error = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误）动作后处理未返回任何可解析的 [ACTION:...] 标签。", content, "");
 				FreezeWatchdog.Mark("AuxActionPostprocess.format_error", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				LogAuxiliaryRouterTokenTrace("action_postprocess_format_error", array, "[ACTION POSTPROCESS PARSE]\nmodel=" + modelName + "\nreason=no_action_tag\nai_response=\n" + content + "\nraw_response=\n" + rawResponse, 0, requestBodyForTokenStats);
 				return false;
 			}
 			FreezeWatchdog.Mark("AuxActionPostprocess.complete", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			LogAuxiliaryRouterTokenTrace("action_postprocess_http", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
+			LogAuxiliaryRouterTokenTrace("action_postprocess_gateway", messages, "[ACTION POSTPROCESS GATEWAY]\nmodel=" + modelName + "\nai_response=\n" + content, Logger.EstimateTokens(content));
 			return true;
-		}
-		catch (OperationCanceledException ex)
-		{
-			error = LlmRetryPrompt.BuildFailureDetail("timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms", content, rawResponse);
-			FreezeWatchdog.Mark("AuxActionPostprocess.timeout", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			LogAuxiliaryRouterTokenTrace("action_postprocess_timeout", array, "[ACTION POSTPROCESS TIMEOUT]\ntimeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds + "\nerror=" + BuildAuxiliaryRouterExceptionText(ex) + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
-			return false;
 		}
 		catch (Exception ex)
 		{
-			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
-			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
-			return false;
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, "");
+			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);			return false;
 		}
 	}
 
@@ -3652,71 +3656,53 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
-		string rawResponse = "";
-		if (!TryGetAuxiliarySimpleDialogueConfig(out var apiUrl, out var apiKey, out var modelName))
+		if (!TryGetAuxiliarySimpleDialogueConfig(out string apiUrl, out string apiKey, out string modelName))
 		{
 			error = "auxiliary_simple_dialogue_config_invalid";
 			return false;
 		}
-		object[] array = CopyAuxiliaryChatMessagesPreservingNames(messages);
-		Logger.RecordMessageDump("auxiliary_simple_dialogue_request", array, "auxiliary_simple_dialogue_request");
-		string requestBodyForTokenStats = "";
+		object[] copiedMessages = CopyAuxiliaryChatMessagesPreservingNames(messages);
+		Logger.RecordMessageDump("auxiliary_simple_dialogue_request", copiedMessages, "auxiliary_simple_dialogue_request");
 		Stopwatch freezeWatchSw = Stopwatch.StartNew();
-		FreezeWatchdog.Mark("AuxSimpleDialogue.start", "model=" + modelName + " messages=" + array.Length, immediate: true);
+		FreezeWatchdog.Mark("AuxSimpleDialogue.start", "model=" + modelName + " messages=" + copiedMessages.Length, immediate: true);
 		try
 		{
-			string jsonBody = BuildAuxiliarySimpleDialogueRequestJson(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
-			requestBodyForTokenStats = jsonBody;
-			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
-			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-			FreezeWatchdog.Mark("AuxSimpleDialogue.send_begin", "model=" + modelName + " maxTokens=" + Math.Max(16, maxTokens), immediate: true);
-			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
-			FreezeWatchdog.Mark("AuxSimpleDialogue.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			rawResponse = text ?? "";
-			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
+			DuelSettings settings = DuelSettings.GetSettings();
+			int requestedMaxTokens = Math.Max(Math.Max(16, maxTokens), maxTokens + 512);
+			int actualMaxTokens = ResolveAuxiliaryApiMaxTokens(settings, requestedMaxTokens);
+			float effectiveTemperature = settings?.GetAuxiliaryApiTemperature() ?? temperature;
+			LlmGenerateResult generated = GenerateConfiguredGatewayResult(
+				copiedMessages,
+				apiUrl,
+				apiKey,
+				modelName,
+				actualMaxTokens,
+				effectiveTemperature,
+				thinkingEnabled: false,
+				reasoningEffort: DuelSettings.ReasoningEffortHigh,
+				DuelSettings.LlmRequestTimeoutMilliseconds,
+				"AuxiliarySimpleDialogue",
+				InteractionStage.MainReply);
+			if (generated == null || generated.Status != LlmResultStatus.Succeeded)
 			{
-				Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] thinking payload rejected; retrying without thinking controls.");
-				JObject jObject2 = JObject.Parse(jsonBody);
-				DuelSettings.RemoveThinkingControls(jObject2);
-				string content2 = jObject2.ToString(Formatting.None);
-				requestBodyForTokenStats = content2;
-				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
-				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
-				FreezeWatchdog.Mark("AuxSimpleDialogue.retry_send_begin", "model=" + modelName, immediate: true);
-				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
-				FreezeWatchdog.Mark("AuxSimpleDialogue.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-				rawResponse = text ?? "";
-				controlMode += "_retry_plain";
-			}
-			if (!result.IsSuccessStatusCode)
-			{
-				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
-				FreezeWatchdog.Mark("AuxSimpleDialogue.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
+				error = LlmRetryPrompt.BuildFailureDetail(generated?.ErrorCode ?? "gateway_failure", "", "");
+				FreezeWatchdog.Mark("AuxSimpleDialogue.gateway_error", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				return false;
 			}
-			JObject jObject = JObject.Parse(text);
-			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
+			content = (generated.RawText ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", "");
 				FreezeWatchdog.Mark("AuxSimpleDialogue.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
 			FreezeWatchdog.Mark("AuxSimpleDialogue.complete", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
+			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_gateway", copiedMessages, "[AUXILIARY SIMPLE DIALOGUE GATEWAY]\nmodel=" + modelName + "\nai_response=\n" + content, Logger.EstimateTokens(content));
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
-			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, "");			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			return false;
 		}
 	}
@@ -4649,54 +4635,76 @@ public static class AIConfigHandler
 	{
 		content = "";
 		error = "";
-		string rawResponse = "";
 		object[] array = BuildAuxiliaryRouterMessages(prompt);
 		string requestBodyForTokenStats = "";
 		try
 		{
-			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, 5000, 0f, out var controlMode);
-			requestBodyForTokenStats = jsonBody;
-			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
-			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
-			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			rawResponse = text ?? "";
-			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
+			PromptPackage promptPackage = LegacyConfiguredChatGateway.BuildPromptPackage(array, 5000, modelName);
+#if BANNERLORD_1_4_OR_GREATER
+			string apiLine = "1.4";
+#else
+			string apiLine = "1.3";
+#endif
+			long generation = SaveRuntimeGuard.CaptureGeneration();
+			TraceContext trace = new TraceContext(
+				"af-auxiliary-router-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+				generation,
+				generation,
+				"auxiliary-router",
+				apiLine);
+			LlmProviderSnapshot provider = new LlmProviderSnapshot(
+				"auxiliary-rule-router",
+				apiUrl,
+				modelName,
+				DuelSettings.LlmRequestTimeoutMilliseconds,
+				5000);
+			LlmGenerateResult generated = new LegacyConfiguredChatGateway(
+				_ => apiKey,
+				temperature: null,
+				disableThinking: false,
+				useConfiguredMaxTokens: true,
+				useConfiguredTemperature: true,
+				retryWithoutThinkingOnBadRequest: true)
+				.GenerateAsync(
+					new LlmGenerateRequest(trace, provider, promptPackage, InteractionStage.Preprocess),
+					CancellationToken.None)
+				.GetAwaiter()
+				.GetResult();
+			string controlMode = "shared-gateway";
+			if (generated == null || generated.Status != LlmResultStatus.Succeeded)
 			{
-				Logger.Log("AIConfig", "[AuxiliaryRouter] thinking payload rejected; retrying without thinking controls.");
-				JObject jObject2 = JObject.Parse(jsonBody);
-				DuelSettings.RemoveThinkingControls(jObject2);
-				string content2 = jObject2.ToString(Formatting.None);
-				requestBodyForTokenStats = content2;
-				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
-				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
-				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
-				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-				rawResponse = text ?? "";
-				controlMode += "_retry_plain";
-			}
-			if (!result.IsSuccessStatusCode)
-			{
-				error = LlmRetryPrompt.BuildFailureDetail("http_" + (int)result.StatusCode, "", rawResponse);
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
+				error = LlmRetryPrompt.BuildFailureDetail(
+					generated?.ErrorCode ?? "auxiliary_router_failure",
+					"",
+					"");
+				LogAuxiliaryRouterTokenTrace(
+					"auxiliary_router_failure",
+					array,
+					"[AUXILIARY ROUTER GATEWAY]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode
+						+ "\nstatus=" + (generated?.Metadata?.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown"),
+					0,
+					requestBodyForTokenStats);
 				return false;
 			}
-			JObject jObject = JObject.Parse(text);
-			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
+			content = (generated.RawText ?? string.Empty).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
-				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", rawResponse);
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
+				error = LlmRetryPrompt.BuildFailureDetail("empty_content", "", "");
 				return false;
 			}
-			LogAuxiliaryRouterTokenTrace("auxiliary_router_http", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "ai_response=" + "\n" + content + "\n" + "raw_response=" + "\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
+			LogAuxiliaryRouterTokenTrace(
+				"auxiliary_router_gateway",
+				array,
+				"[AUXILIARY ROUTER GATEWAY]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode
+					+ "\nstatus=" + (generated.Metadata?.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown")
+					+ "\nai_response=\n" + content,
+				Logger.EstimateTokens(content),
+				requestBodyForTokenStats);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, rawResponse);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, "");
 			LogAuxiliaryRouterTokenTrace("auxiliary_router_exception", array, "[AUXILIARY ROUTER EXCEPTION]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "error=" + error + "\n" + "stack=" + "\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
@@ -9275,6 +9283,17 @@ public static class AIConfigHandler
 			_preprocessPromptsLoadError = ex.Message;
 			_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
 			_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
+		}
+		try
+		{
+			// Publish only a new immutable detached snapshot. In-flight requests
+			// retain the instance they captured before this reload.
+			AnimusForge.Refactor.Adapters.LegacyInteractionSnapshotAdapters.ReloadNativeConversationRuntimeConfigurationForExternal();
+		}
+		catch
+		{
+			// The legacy configuration reload must remain authoritative even if
+			// the optional detached snapshot store is unavailable.
 		}
 	}
 

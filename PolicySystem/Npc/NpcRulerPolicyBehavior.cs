@@ -100,6 +100,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 	private string _lastGenerationError = "";
 	private NpcPolicyRetryContext _lastPolicyRetryContext;
 	private int _generationVersion;
+	private CancellationTokenSource _generationCancellationSource;
 	private bool _initialGenerationCheckPending;
 	private float _initialGenerationCheckElapsed;
 	private int _nextPublicFeedbackNoticeDueHour = int.MaxValue;
@@ -1185,6 +1186,15 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 
 	private void ClearPolicyTransientRuntimeForLoadedSave(string reason, bool incrementVersion)
 	{
+		CancellationTokenSource previousGenerationCancellation = Interlocked.Exchange(ref _generationCancellationSource, null);
+		try
+		{
+			previousGenerationCancellation?.Cancel();
+		}
+		catch
+		{
+		}
+		previousGenerationCancellation?.Dispose();
 		_lastGenerationAttemptHour = -1;
 		_lastGenerationFailureHour = -1;
 		_lastGenerationRetryCount = 0;

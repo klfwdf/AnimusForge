@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MCM.Abstractions;
 using MCM.Abstractions.Attributes;
@@ -18,6 +19,8 @@ using MCM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AnimusForge.PolicyEffects;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.Library;
 
@@ -6049,31 +6052,33 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				modelListFetchResult.ErrorMessage = "API Key 为空，无法拉取模型列表。";
 				return modelListFetchResult;
 			}
-			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, modelListFetchResult.RequestUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, modelListFetchResult.RequestUrl, apiKey);
-			HttpResponseMessage result = await GlobalClient.SendAsync(httpRequestMessage);
-			try
+			ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(rawApiUrl, apiKey, CancellationToken.None);
+			modelListFetchResult.RequestUrl = exchange.RequestUrl;
+			modelListFetchResult.ResponseBody = exchange.ResponseBody;
+			if (exchange.Cancelled)
 			{
-				modelListFetchResult.StatusCode = result.StatusCode;
-				modelListFetchResult.ResponseBody = await result.Content.ReadAsStringAsync();
-				if (!result.IsSuccessStatusCode)
-				{
-					modelListFetchResult.ErrorMessage = $"HTTP {(int)result.StatusCode} {result.ReasonPhrase}";
-					return modelListFetchResult;
-				}
-				modelListFetchResult.Models = ParseModelListFromResponse(modelListFetchResult.ResponseBody);
-				if (modelListFetchResult.Models.Count == 0)
-				{
-					modelListFetchResult.ErrorMessage = "接口返回成功，但模型列表为空或解析失败。";
-					return modelListFetchResult;
-				}
-				modelListFetchResult.Success = true;
+				modelListFetchResult.ErrorMessage = "模型列表拉取已取消。";
 				return modelListFetchResult;
 			}
-			finally
+			if (!exchange.HasStatusCode)
 			{
-				((IDisposable)result)?.Dispose();
+				modelListFetchResult.ErrorMessage = exchange.ErrorMessage;
+				return modelListFetchResult;
 			}
+			modelListFetchResult.StatusCode = (HttpStatusCode)exchange.StatusCode;
+			if (!exchange.IsSuccessStatusCode)
+			{
+				modelListFetchResult.ErrorMessage = $"HTTP {exchange.StatusCode} {exchange.ReasonPhrase}";
+				return modelListFetchResult;
+			}
+			modelListFetchResult.Models = ParseModelListFromResponse(modelListFetchResult.ResponseBody);
+			if (modelListFetchResult.Models.Count == 0)
+			{
+				modelListFetchResult.ErrorMessage = "接口返回成功，但模型列表为空或解析失败。";
+				return modelListFetchResult;
+			}
+			modelListFetchResult.Success = true;
+			return modelListFetchResult;
 		}
 		catch (Exception ex)
 		{
@@ -6363,6 +6368,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return LlmApiCompat.ExtractAssistantText(responseString);
 	}
 
+	private static Task<ConfiguredChatValidationExchange> SendConnectionTestRequestAsync(string providerId, string endpoint, string model, string apiKey, JObject payload, CancellationToken cancellationToken)
+	{
+		int maxTokens = payload?["max_tokens"]?.Value<int>() ?? ApiMaxTokensMinimum;
+		LlmProviderSnapshot provider = new LlmProviderSnapshot(
+			providerId,
+			(endpoint ?? "").Trim(),
+			(model ?? "").Trim(),
+			LlmRequestTimeoutMilliseconds,
+			Math.Max(1, maxTokens));
+		LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(_ => apiKey ?? "", disableThinking: true);
+		return gateway.SendValidationAsync(provider, payload, cancellationToken);
+	}
+
 	private static string BuildApiErrorHint(string effectiveApiUrl, string modelName, HttpStatusCode statusCode, string responseBody)
 	{
 		if ((int)statusCode == 522)
@@ -6379,6 +6397,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址、自动补全后的聊天路径以及模型名称是否正确。";
 		}
 		return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址尾缀和模型名称。";
+	}
+
+	private static Task<ConfiguredChatValidationExchange> SendConnectionTestJsonRequestAsync(string providerId, string endpoint, string model, string apiKey, string preparedJson, CancellationToken cancellationToken)
+	{
+		LlmProviderSnapshot provider = new LlmProviderSnapshot(
+			providerId,
+			(endpoint ?? "").Trim(),
+			(model ?? "").Trim(),
+			LlmRequestTimeoutMilliseconds,
+			256);
+		LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(_ => apiKey ?? "", disableThinking: true);
+		return gateway.SendValidationJsonAsync(provider, preparedJson, cancellationToken);
 	}
 
 	private static void ShowLlmFailurePopup(string title, string reason, string modelReply = null, string rawResponse = null)
@@ -6617,12 +6647,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						requestPayload["temperature"] = GetMainApiTemperature();
 						ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, MainApiThinkingEnabled, GetMainApiReasoningEffort(), out var _);
 						string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
-						using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-						LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, ApiKey);
-						request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-						HttpResponseMessage response = await GlobalClient.SendAsync(request);
-						string responseString = await response.Content.ReadAsStringAsync();
-						if (response.IsSuccessStatusCode)
+						ConfiguredChatValidationExchange response = await SendConnectionTestRequestAsync("main_validation", effectiveApiUrl, effectiveModelName, ApiKey, requestPayload, CancellationToken.None);
+						string responseString = response.ResponseBody;
+						if (response.Result.Status == LlmResultStatus.Succeeded)
 						{
 							string aiReply = TryExtractAssistantReplyText(responseString);
 							if (!string.IsNullOrWhiteSpace(aiReply))
@@ -6637,10 +6664,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						}
 						else
 						{
-							string text = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-							string reason = "连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(text) ? "" : ("\n排查建议：" + text));
+							HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
+							string text = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
+							string reason = "连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(text) ? "" : ("\n排查建议：" + text));
 							ShowLlmFailurePopup("主API连接测试失败", reason, "", responseString);
-							Logger.Log("DuelSettings", $"测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
+							Logger.Log("DuelSettings", $"测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 						}
 					}
 				}
@@ -6690,14 +6718,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						}
 					};
 					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), effectiveModelName, requestPayload.messages, 2048, 0f, out var controlMode, useConfiguredMaxTokens: false);
-					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					string effectiveApiUrl = GetEffectiveApiUrl(AuxiliaryApiUrl);
-					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, AuxiliaryApiKey);
-					request.Content = content;
-					HttpResponseMessage response = await GlobalClient.SendAsync(request);
-					string responseString = await response.Content.ReadAsStringAsync();
-					if (response.IsSuccessStatusCode)
+					ConfiguredChatValidationExchange response = await SendConnectionTestJsonRequestAsync("auxiliary_validation", effectiveApiUrl, effectiveModelName, AuxiliaryApiKey, jsonBody, CancellationToken.None);
+					string responseString = response.ResponseBody;
+					if (response.Result.Status == LlmResultStatus.Succeeded)
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						string text = (controlMode == "plain") ? "" : " [" + controlMode + "]";
@@ -6723,10 +6747,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					}
 					else
 					{
-						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-						string reason = "前处理API连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
+						HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
+						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
+						string reason = "前处理API连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
 						ShowLlmFailurePopup("前处理API连接测试失败", reason, "", responseString);
-						Logger.Log("DuelSettings", $"辅助API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
+						Logger.Log("DuelSettings", $"辅助API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
@@ -6783,13 +6808,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					};
 					ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, ActionPostprocessApiThinkingEnabled, GetActionPostprocessApiReasoningEffort(), out var _);
 					string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
-					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, ActionPostprocessApiKey);
-					request.Content = content;
-					HttpResponseMessage response = await GlobalClient.SendAsync(request);
-					string responseString = await response.Content.ReadAsStringAsync();
-					if (response.IsSuccessStatusCode)
+					ConfiguredChatValidationExchange response = await SendConnectionTestRequestAsync("action_postprocess_validation", effectiveApiUrl, effectiveModelName, ActionPostprocessApiKey, requestPayload, CancellationToken.None);
+					string responseString = response.ResponseBody;
+					if (response.Result.Status == LlmResultStatus.Succeeded)
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						bool recoveredFromReasoningTokenLimit = false;
@@ -6801,12 +6822,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							Logger.Log("DuelSettings", "后处理API测试首次回复仅含思考且达到token上限，关闭思考后重试: completion_tokens=" + completionTokens + " reasoning_tokens=" + reasoningTokens);
 							JObject retryPayload = (JObject)requestPayload.DeepClone();
 							ApplyThinkingControls(retryPayload, effectiveApiUrl, effectiveModelName, false, ReasoningEffortLow, out var retryControlMode);
-							using HttpRequestMessage retryRequest = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-							LlmApiCompat.ApplyAuthenticationHeaders(retryRequest, effectiveApiUrl, ActionPostprocessApiKey);
-							retryRequest.Content = new StringContent(LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload), Encoding.UTF8, "application/json");
-							using HttpResponseMessage retryResponse = await GlobalClient.SendAsync(retryRequest);
-							string retryResponseString = await retryResponse.Content.ReadAsStringAsync();
-							if (retryResponse.IsSuccessStatusCode)
+							ConfiguredChatValidationExchange retryResponse = await SendConnectionTestRequestAsync("action_postprocess_validation_retry", effectiveApiUrl, effectiveModelName, ActionPostprocessApiKey, retryPayload, CancellationToken.None);
+							string retryResponseString = retryResponse.ResponseBody;
+							if (retryResponse.Result.Status == LlmResultStatus.Succeeded)
 							{
 								string retryReply = TryExtractAssistantReplyText(retryResponseString);
 								if (!string.IsNullOrWhiteSpace(retryReply))
@@ -6823,7 +6841,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							}
 							else
 							{
-								emptyReplyReason += " 关闭思考重试失败，状态码：" + retryResponse.StatusCode + "。";
+								emptyReplyReason += " 关闭思考重试失败，状态码：" + (HttpStatusCode)retryResponse.StatusCode + "。";
 								responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
 							}
 						}
@@ -6839,10 +6857,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					}
 					else
 					{
-						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-						string reason = "后处理API连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
+						HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
+						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
+						string reason = "后处理API连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
 						ShowLlmFailurePopup("后处理API连接测试失败", reason, "", responseString);
-						Logger.Log("DuelSettings", $"后处理API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
+						Logger.Log("DuelSettings", $"后处理API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)
@@ -6900,13 +6919,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					};
 					ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, EventAndRebellionApiThinkingEnabled, GetEventAndRebellionApiReasoningEffort(), out var _);
 					string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
-					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, EventAndRebellionApiKey);
-					request.Content = content;
-					HttpResponseMessage response = await GlobalClient.SendAsync(request);
-					string responseString = await response.Content.ReadAsStringAsync();
-					if (response.IsSuccessStatusCode)
+					ConfiguredChatValidationExchange response = await SendConnectionTestRequestAsync("event_rebellion_validation", effectiveApiUrl, effectiveModelName, EventAndRebellionApiKey, requestPayload, CancellationToken.None);
+					string responseString = response.ResponseBody;
+					if (response.Result.Status == LlmResultStatus.Succeeded)
 					{
 						string reply = TryExtractAssistantReplyText(responseString);
 						if (string.IsNullOrWhiteSpace(reply))
@@ -6920,10 +6935,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					}
 					else
 					{
-						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
-						string reason = "事件/叛乱API连接失败，状态码：" + response.StatusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
+						HttpStatusCode statusCode = (HttpStatusCode)response.StatusCode;
+						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
+						string reason = "事件/叛乱API连接失败，状态码：" + statusCode + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n排查建议：" + hint));
 						ShowLlmFailurePopup("事件/叛乱API连接测试失败", reason, "", responseString);
-						Logger.Log("DuelSettings", $"事件/叛乱API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
+						Logger.Log("DuelSettings", $"事件/叛乱API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
 					}
 				}
 				catch (Exception ex)

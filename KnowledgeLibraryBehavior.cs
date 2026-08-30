@@ -9,6 +9,8 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
@@ -11165,12 +11167,6 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 
 	private static string RequestLlmTextOnce(string systemPrompt, string userPrompt, int maxTokens, float? temperature = null)
 	{
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019a: Expected O, but got Unknown
-		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b7: Expected O, but got Unknown
-		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Expected O, but got Unknown
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null || string.IsNullOrWhiteSpace(settings.ApiKey))
 		{
@@ -11182,70 +11178,45 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			throw new Exception("API 地址为空。");
 		}
 		int actualMaxTokens = Math.Max(1, Math.Min(Math.Min(RagShortTextGenerationMaxTokens, maxTokens), settings.GetMainApiMaxTokens()));
-		JObject jObject = new JObject
-		{
-			["model"] = settings.ModelName,
-			["max_tokens"] = actualMaxTokens,
-			["stream"] = false
-		};
-		if (temperature.HasValue)
-		{
-			float num = Math.Max(0f, Math.Min(1.5f, temperature.Value));
-			jObject["temperature"] = num;
-		}
-		JArray value = new JArray
-		{
-			new JObject
+		PromptPackage prompt = new PromptPackage(
+			new[]
 			{
-				["role"] = "system",
-				["content"] = systemPrompt ?? ""
+				new PromptMessage("system", systemPrompt ?? string.Empty),
+				new PromptMessage("user", userPrompt ?? string.Empty)
 			},
-			new JObject
-			{
-				["role"] = "user",
-				["content"] = userPrompt ?? ""
-			}
-		};
-		jObject["messages"] = value;
-		string text = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, jObject);
-		using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(45.0));
-		HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-		try
+			actualMaxTokens,
+			string.IsNullOrWhiteSpace(settings.ModelName) ? "knowledge-rag" : settings.ModelName);
+		string apiLine;
+#if BANNERLORD_1_4_OR_GREATER
+		apiLine = "1.4";
+#else
+		apiLine = "1.3";
+#endif
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		TraceContext trace = new TraceContext(
+			"af-knowledge-rag-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture),
+			runtimeGeneration,
+			runtimeGeneration,
+			"knowledge",
+			apiLine);
+		LlmProviderSnapshot provider = new LlmProviderSnapshot(
+			"knowledge-rag",
+			effectiveApiUrl,
+			string.IsNullOrWhiteSpace(settings.ModelName) ? "knowledge-rag" : settings.ModelName,
+			45000,
+			actualMaxTokens);
+		LegacyKnowledgeRagGateway gateway = new LegacyKnowledgeRagGateway(
+			_ => settings.ApiKey,
+			temperature: temperature
+			);
+		LlmGenerateResult generated = gateway.GenerateAsync(
+			new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+			CancellationToken.None).GetAwaiter().GetResult();
+		if (generated == null || generated.Status != LlmResultStatus.Succeeded || string.IsNullOrWhiteSpace(generated.RawText))
 		{
-			LlmApiCompat.ApplyAuthenticationHeaders(val, effectiveApiUrl, settings.ApiKey);
-			val.Content = (HttpContent)new StringContent(text, Encoding.UTF8, "application/json");
-			HttpResponseMessage result = ((HttpMessageInvoker)DuelSettings.GlobalClient).SendAsync(val, cancellationTokenSource.Token).GetAwaiter().GetResult();
-			try
-			{
-				string result2 = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-				if (!result.IsSuccessStatusCode)
-				{
-					throw new Exception(LlmRetryPrompt.BuildFailureDetail($"API请求失败: {result.StatusCode}", "", result2));
-				}
-				try
-				{
-					JObject jObject2 = JObject.Parse(result2);
-					string text3 = LlmApiCompat.ExtractAssistantText(jObject2);
-					if (string.IsNullOrWhiteSpace(text3))
-					{
-						throw new Exception("API 响应为空。");
-					}
-					return text3.Trim();
-				}
-				catch (Exception ex)
-				{
-					throw new Exception(LlmRetryPrompt.BuildFailureDetail("API 响应解析失败: " + ex.Message, "", result2), ex);
-				}
-			}
-			finally
-			{
-				((IDisposable)result)?.Dispose();
-			}
+			throw new Exception("RAG API 请求失败：" + (generated?.ErrorCode ?? "empty_result"));
 		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
-		}
+		return generated.RawText.Trim();
 	}
 
 	private void GenerateSemanticPrototypesByLlm(LoreRule rule, Action onDone)

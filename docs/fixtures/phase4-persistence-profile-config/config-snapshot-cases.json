@@ -1,0 +1,18 @@
+{
+  "fixtureVersion": 1,
+  "kind": "profile-config-snapshot-cases",
+  "credentialFields": ["apiKey", "auxiliaryApiKey", "actionPostprocessApiKey", "password", "token"],
+  "profiles": {
+    "single-player": ["af.foundation.runtime", "af.game-adapter", "af.persistence", "af.module.conversation", "af.module.memory", "af.module.prompt", "af.module.action"],
+    "developer": ["af.foundation.runtime", "af.game-adapter", "af.persistence", "af.module.conversation", "af.module.memory", "af.module.prompt", "af.module.action", "af.diagnostics"],
+    "safe-mode": ["af.foundation.runtime", "af.game-adapter", "af.persistence", "af.diagnostics"]
+  },
+  "cases": [
+    { "id": "reload-does-not-mutate-inflight", "oldModel": "model-a", "newModel": "model-b", "expected": "inflight-keeps-model-a-future-uses-model-b" },
+    { "id": "credentials-are-out-of-snapshot-persistence", "snapshotFields": ["provider", "endpoint", "model", "timeoutMs", "maxTokens"], "expected": "no-credential-fields" },
+    { "id": "safe-mode-preserves-unknown-data", "disabledNamespace": "af.module.policy", "expected": "metadata-preserved-no-business-instantiation" },
+    { "id": "persistent-module-is-not-runtime-toggle-safe", "module": "af.module.conversation", "effects": ["campaign-behavior", "save", "harmony", "background"], "expected": "save-load-boundary" },
+    { "id": "profile-closure-is-static", "profile": "single-player", "expected": "all-required-foundation-capabilities-declared" }
+  ],
+  "forbiddenFixtureSubstrings": ["sk-", "Bearer ", "C:\\Users\\", "F:\\SteamLibrary", "api_key_value"]
+}

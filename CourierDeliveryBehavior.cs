@@ -29,6 +29,9 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 
 namespace AnimusForge;
 
@@ -322,6 +325,586 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private int _courierLetterInventoryRestoreRetryRemaining;
 
 	public static CourierDeliveryBehavior Instance { get; private set; }
+
+	/// <summary>
+	/// Explicit opt-in detached facade for an outbound Courier reply. The
+	/// existing Courier session state machine remains authoritative for delivery
+	/// and return timing; this only exposes the already-built reply prompt at the
+	/// interaction boundary.
+	/// </summary>
+	public static LegacyChannelInteractionFacade CreateCourierReplyRefactorFacadeForExternal(
+		LegacyInteractionPipelinePorts ports,
+		ILlmGateway gateway,
+		string sessionId)
+	{
+		return LegacyInteractionSnapshotAdapters.CreateCourierInteractionFacade(
+			ports,
+			gateway,
+			playerText => CaptureCourierReplyRefactorEnvelopeForExternal(sessionId, playerText));
+	}
+
+	/// <summary>
+	/// Creates the explicit Courier reply ActionPlan executor. Only the stable
+	/// session ID crosses the detached boundary; the current recipient and
+	/// Courier session are resolved and validated on the game main thread.
+	/// Existing delivery/return timing remains authoritative.
+	/// </summary>
+	public static LegacyNativeActionPlanExecutor CreateCourierReplyActionPlanExecutorForExternal(
+		string sessionId,
+		int maxActions = 64)
+	{
+		CourierDeliveryBehavior instance = Instance;
+		if (instance == null || string.IsNullOrWhiteSpace(sessionId))
+		{
+			return null;
+		}
+		IReadOnlyList<string> allowedTagFamilies = LegacyActionTagCatalog.DefaultAllowedTagFamilies;
+		return new LegacyNativeActionPlanExecutor(
+			(actionPlan, snapshot) => instance.ExecuteCourierActionPlanForExternal(actionPlan, snapshot, sessionId),
+			maxActions,
+			allowedTagFamilies);
+	}
+
+	public static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal()
+	{
+		return LegacyInteractionSnapshotAdapters.CaptureNativeConversationRuntimeConfiguration();
+	}
+
+	public static RuntimeConfigSnapshot CaptureCourierInboundRefactorConfigurationForExternal()
+	{
+		return LegacyInteractionSnapshotAdapters.CaptureNativeConversationRuntimeConfiguration();
+	}
+
+	/// <summary>
+	/// Executes one explicitly opted-in Courier reply through the detached host.
+	/// Capture must happen at the Courier interaction boundary; delivery and
+	/// return timing remain owned by the existing Courier session state machine.
+	/// </summary>
+	public static Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInForExternalAsync(
+		LegacyChannelInteractionFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string sessionId,
+		string playerText,
+		Func<Task<string>> fallbackToLegacy,
+		CancellationToken cancellationToken)
+	{
+		CourierDeliveryBehavior instance = Instance;
+		if (instance == null)
+		{
+			return RunCourierDetachedRefactorFallbackAsync("host_not_ready", fallbackToLegacy);
+		}
+		return instance.SubmitCourierReplyRefactorOptInCoreAsync(
+			facade,
+			configuration,
+			moduleId,
+			providerId,
+			sessionId,
+			playerText,
+			fallbackToLegacy,
+			cancellationToken);
+	}
+
+	/// <summary>
+	/// Executes one explicitly opted-in NPC-initiated inbound letter through the
+	/// detached host. The inbound seed is a generation input, not a player
+	/// utterance, so the shared commit deliberately omits a user-history write.
+	/// </summary>
+	public static Task<DetachedInteractionHostResult> SubmitCourierInboundRefactorOptInForExternalAsync(
+		LegacyChannelInteractionFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string sessionId,
+		string playerText,
+		Func<Task<string>> fallbackToLegacy,
+		CancellationToken cancellationToken)
+	{
+		CourierDeliveryBehavior instance = Instance;
+		if (instance == null)
+		{
+			return RunCourierDetachedRefactorFallbackAsync("host_not_ready", fallbackToLegacy);
+		}
+		return instance.SubmitCourierInboundRefactorOptInCoreAsync(
+			facade,
+			configuration,
+			moduleId,
+			providerId,
+			sessionId,
+			playerText,
+			fallbackToLegacy,
+			cancellationToken);
+	}
+
+	private async Task<DetachedInteractionHostResult> SubmitCourierInboundRefactorOptInCoreAsync(
+		LegacyChannelInteractionFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string sessionId,
+		string playerText,
+		Func<Task<string>> fallbackToLegacy,
+		CancellationToken cancellationToken)
+	{
+		if (facade == null || string.IsNullOrWhiteSpace(sessionId))
+		{
+			return await RunCourierDetachedRefactorFallbackAsync("missing_courier_inbound_facade", fallbackToLegacy).ConfigureAwait(false);
+		}
+		DetachedInteractionHost host = new DetachedInteractionHost(
+			facade.Capture,
+			facade.GenerateAsync,
+			facade.Commit);
+		return await host.ExecuteAsync(
+			playerText,
+			configuration,
+			moduleId,
+			providerId,
+			envelope => null,
+			CreateCourierMemoryFacadeForExternal,
+			(envelope, commit) => DispatchCourierRefactorCommitAsync(
+				commit,
+				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
+				sessionId),
+			fallbackToLegacy,
+			cancellationToken,
+			CompleteCourierInboundDetachedCommit,
+			appendPlayerInput: false).ConfigureAwait(false);
+	}
+
+	private void CompleteCourierInboundDetachedCommit(
+		InteractionEnvelope envelope,
+		InteractionResult result,
+		InteractionCommitResult commit)
+	{
+		try
+		{
+			string sessionId = envelope?.Snapshot?.Identity?.SessionId;
+			CourierSession session = GetSessionById(sessionId);
+			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session) || !commit.HistoryWritten)
+			{
+				return;
+			}
+			Hero sender = ResolveSender(session);
+			string letter = NormalizeInboundLetterText(result?.VisibleReply, session, sender);
+			if (string.IsNullOrWhiteSpace(letter))
+			{
+				letter = NormalizeInboundLetterText(session.InboundFallbackLetter ?? session.LetterText, session, sender);
+			}
+			if (string.IsNullOrWhiteSpace(letter))
+			{
+				return;
+			}
+			session.LetterText = letter;
+			session.ReplyGenerated = true;
+			session.ReplyGenerationStarted = false;
+			Log("detached inbound letter committed session=" + session.Id + " letterLen=" + letter.Length);
+			ProcessSessionById(session.Id, "detached_inbound_letter_generated");
+		}
+		catch (Exception ex)
+		{
+			Log("detached inbound letter commit failed error=" + ex.Message);
+		}
+	}
+
+	private async Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInCoreAsync(
+		LegacyChannelInteractionFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string sessionId,
+		string playerText,
+		Func<Task<string>> fallbackToLegacy,
+		CancellationToken cancellationToken)
+	{
+		if (facade == null || string.IsNullOrWhiteSpace(sessionId))
+		{
+			return await RunCourierDetachedRefactorFallbackAsync("missing_courier_facade", fallbackToLegacy).ConfigureAwait(false);
+		}
+		DetachedInteractionHost host = new DetachedInteractionHost(
+			facade.Capture,
+			facade.GenerateAsync,
+			facade.Commit);
+		return await host.ExecuteAsync(
+			playerText,
+			configuration,
+			moduleId,
+			providerId,
+			envelope => CreateCourierReplyActionPlanExecutorForExternal(sessionId),
+			CreateCourierMemoryFacadeForExternal,
+			(envelope, commit) => DispatchCourierRefactorCommitAsync(
+				commit,
+				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
+				sessionId),
+			fallbackToLegacy,
+			cancellationToken).ConfigureAwait(false);
+	}
+
+	private static IInteractionMemory CreateCourierMemoryFacadeForExternal(InteractionEnvelope envelope)
+	{
+		string subjectId = envelope?.Snapshot?.Identity?.SubjectId;
+		if (string.IsNullOrWhiteSpace(subjectId))
+		{
+			return null;
+		}
+		Hero recipient = ResolveHeroByIdForCourier(subjectId);
+		return recipient == null ? null : new MyBehaviorMemoryFacade(recipient);
+	}
+
+	private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(
+		Func<InteractionCommitResult> commit,
+		string targetLog,
+		string sessionId)
+	{
+		if (commit == null)
+		{
+			return Task.FromResult(new InteractionCommitResult(
+				InteractionStatus.RejectedByValidation,
+				false,
+				false,
+				"missing_commit"));
+		}
+		try
+		{
+			if (TWParallel.IsMainThread())
+			{
+				return Task.FromResult(commit());
+			}
+		}
+		catch
+		{
+			// Fall through to the normal Courier engine-tick queue.
+		}
+		TaskCompletionSource<InteractionCommitResult> completion = new TaskCompletionSource<InteractionCommitResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+		int expired = 0;
+		try
+		{
+			MainThreadActions.Enqueue(() =>
+			{
+				if (Volatile.Read(ref expired) != 0)
+				{
+					return;
+				}
+				try
+				{
+					completion.TrySetResult(commit());
+				}
+				catch (Exception ex)
+				{
+					Log("detached courier commit failed session=" + (sessionId ?? "") + " target=" + (targetLog ?? "") + " error=" + ex.Message);
+					completion.TrySetResult(new InteractionCommitResult(
+						InteractionStatus.RejectedByValidation,
+						false,
+						false,
+						"main_thread_commit_exception"));
+				}
+			});
+		}
+		catch (Exception ex)
+		{
+			Log("detached courier commit queue failed session=" + (sessionId ?? "") + " error=" + ex.Message);
+			return Task.FromResult(new InteractionCommitResult(
+				InteractionStatus.RejectedByValidation,
+				false,
+				false,
+				"main_thread_dispatch_failed"));
+		}
+		return AwaitCourierRefactorCommitAsync(completion.Task, () => Interlocked.Exchange(ref expired, 1), sessionId);
+	}
+
+	private static async Task<InteractionCommitResult> AwaitCourierRefactorCommitAsync(
+		Task<InteractionCommitResult> task,
+		Action onTimeout,
+		string sessionId)
+	{
+		try
+		{
+			Task completed = await Task.WhenAny(task, Task.Delay(30000)).ConfigureAwait(false);
+			if (ReferenceEquals(completed, task))
+			{
+				return await task.ConfigureAwait(false);
+			}
+			onTimeout?.Invoke();
+			Log("detached courier commit timeout session=" + (sessionId ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Log("detached courier commit await failed session=" + (sessionId ?? "") + " error=" + ex.Message);
+		}
+		return new InteractionCommitResult(
+			InteractionStatus.RejectedByValidation,
+			false,
+			false,
+			"main_thread_dispatch_timeout");
+	}
+
+	private static async Task<DetachedInteractionHostResult> RunCourierDetachedRefactorFallbackAsync(
+		string errorCode,
+		Func<Task<string>> fallbackToLegacy)
+	{
+		if (fallbackToLegacy == null)
+		{
+			return new DetachedInteractionHostResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				errorCode,
+				null,
+				null);
+		}
+		try
+		{
+			return new DetachedInteractionHostResult(
+				await fallbackToLegacy().ConfigureAwait(false),
+				true,
+				InteractionStatus.Succeeded,
+				errorCode,
+				null,
+				null);
+		}
+		catch (Exception exception)
+		{
+			return new DetachedInteractionHostResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				errorCode + ";legacy_" + exception.GetType().Name,
+				null,
+				null);
+		}
+	}
+
+	/// <summary>
+	/// Explicit opt-in detached facade for an NPC-initiated inbound letter.
+	/// Inbound letter generation has no action postprocess stage; its existing
+	/// letter delivery state machine is not replaced.
+	/// </summary>
+	public static LegacyChannelInteractionFacade CreateCourierInboundRefactorFacadeForExternal(
+		LegacyInteractionPipelinePorts ports,
+		ILlmGateway gateway,
+		string sessionId)
+	{
+		return LegacyInteractionSnapshotAdapters.CreateCourierInteractionFacade(
+			ports,
+			gateway,
+			playerText => CaptureCourierInboundRefactorEnvelopeForExternal(sessionId, playerText));
+	}
+
+	/// <summary>
+	/// Captures the exact legacy outbound Courier message order into immutable
+	/// PromptPackage/history sections. Must run on the game main thread while
+	/// the session and recipient are valid.
+	/// </summary>
+	public static InteractionEnvelope CaptureCourierReplyRefactorEnvelopeForExternal(
+		string sessionId,
+		string playerText = null)
+	{
+		CourierDeliveryBehavior instance = Instance;
+		CourierSession session = instance?.GetSessionById(sessionId);
+		Hero recipient = session == null ? null : instance.ResolveRecipient(session);
+		if (session == null || recipient == null || recipient.IsDead)
+		{
+			return LegacyInteractionSnapshotAdapters.CaptureCourier(recipient, playerText ?? string.Empty, sessionId, string.Empty);
+		}
+		CourierReplyGenerationRequest request = instance.BuildCourierReplyGenerationRequestOnMainThread(
+			session,
+			recipient,
+			SaveRuntimeGuard.CaptureGeneration());
+		PromptPackage prompt = LegacyPromptPackageAdapter.FromLegacyMessages(
+			request.Messages,
+			MainReplyMaxTokens,
+			"legacy-courier-reply");
+		DetachedPostprocessPromptSections postprocess = instance.BuildCourierDetachedPostprocessSections(
+			recipient,
+			request,
+			request.LetterText,
+			request.HistoryText,
+			string.Empty);
+		Dictionary<string, string> facts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["courier_direction"] = "outbound_reply",
+			["courier_selected_rule_ids"] = string.Join(",", request.SelectedRuleHits ?? new List<string>()),
+			["rule_runtime_context"] = "courier",
+			["excluded_rule_ids"] = string.Join(",", CourierExcludedRuleIds)
+		};
+		return LegacyInteractionSnapshotAdapters.CaptureCourierFromPromptPackage(
+			recipient,
+			request.LetterText,
+			request.SessionId,
+			request.ExtraFact,
+			prompt,
+			postprocess,
+			facts);
+	}
+
+	/// <summary>
+	/// Captures the exact legacy inbound-letter message order into immutable
+	/// PromptPackage/history sections. Must run on the game main thread.
+	/// </summary>
+	public static InteractionEnvelope CaptureCourierInboundRefactorEnvelopeForExternal(
+		string sessionId,
+		string playerText = null)
+	{
+		CourierDeliveryBehavior instance = Instance;
+		CourierSession session = instance?.GetSessionById(sessionId);
+		Hero sender = session == null ? null : instance.ResolveSender(session);
+		if (session == null || sender == null || sender.IsDead)
+		{
+			return LegacyInteractionSnapshotAdapters.CaptureCourier(sender, playerText ?? string.Empty, sessionId, string.Empty);
+		}
+		string fallbackLetter = session.InboundFallbackLetter ?? session.LetterText ?? string.Empty;
+		InboundLetterGenerationRequest request = instance.BuildInboundLetterGenerationRequestOnMainThread(
+			session,
+			sender,
+			fallbackLetter,
+			SaveRuntimeGuard.CaptureGeneration());
+		PromptPackage prompt = LegacyPromptPackageAdapter.FromLegacyMessages(
+			request.Messages,
+			MainReplyMaxTokens,
+			"legacy-courier-inbound");
+		Dictionary<string, string> facts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["courier_direction"] = "inbound_letter",
+			["courier_selected_rule_ids"] = string.Join(",", request.SelectedRuleHits ?? new List<string>()),
+			["rule_runtime_context"] = "courier",
+			["excluded_rule_ids"] = string.Join(",", CourierExcludedRuleIds)
+		};
+		return LegacyInteractionSnapshotAdapters.CaptureCourierFromPromptPackage(
+			sender,
+			request.Seed,
+			request.SessionId,
+			BuildInboundDeliveryFactText(session, delivered: false, sender),
+			prompt,
+			null,
+			facts);
+	}
+
+	/// <summary>
+	/// Creates the Courier detached ports without a second rule lookup: the
+	/// selected rule IDs are captured from the legacy request into the immutable
+	/// envelope. Action execution remains a channel-owned main-thread concern.
+	/// </summary>
+	public static LegacyInteractionPipelinePorts CreateCourierDetachedPortsForExternal(
+		IEnumerable<string> allowedTagFamilies,
+		bool includePostprocess = true,
+		int maxActions = 64)
+	{
+		List<string> tagFamilies = (allowedTagFamilies ?? Enumerable.Empty<string>())
+			.Where(value => !string.IsNullOrWhiteSpace(value))
+			.Select(value => value.Trim())
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		LegacyDetachedPromptComposer mainComposer = new LegacyDetachedPromptComposer(model: "legacy-courier");
+		LegacyDetachedPostprocessPromptComposer postComposer = new LegacyDetachedPostprocessPromptComposer(model: "legacy-courier-postprocess");
+		LegacyActionTagParser actionParser = new LegacyActionTagParser(maxActions);
+		CapabilitySet capabilities = new CapabilitySet(new[]
+		{
+			"llm.generate",
+			"prompt.compose",
+			"postprocess.compose",
+			"action.parse"
+		});
+		return new LegacyInteractionPipelinePorts(
+			snapshot => new RuleSelection(
+				(new[]
+				{
+					snapshot != null
+						&& snapshot.DetachedFacts.TryGetValue("courier_direction", out string direction)
+						&& string.Equals(direction, "inbound_letter", StringComparison.OrdinalIgnoreCase)
+						? "courier_inbound"
+						: "courier_reply"
+				})
+					.Concat(ReadCourierCsvFact(snapshot, "courier_selected_rule_ids"))
+					.Distinct(StringComparer.OrdinalIgnoreCase),
+				Array.Empty<string>()),
+			(envelope, selection, availableCapabilities) => mainComposer.Compose(envelope, selection, availableCapabilities),
+			(snapshot, selection, availableCapabilities) => new PostprocessContext(selection?.RuleIds, tagFamilies, availableCapabilities),
+			(rawText, context) => actionParser.Parse(rawText, context),
+			(rawText, internalTagFamilies) => LlmVisibleReplyNormalizer.NormalizeComplete(rawText),
+			capabilities,
+			includePostprocess
+				? ((envelope, selection, visibleReply, rawReply, context) => postComposer.Compose(envelope, selection, visibleReply, rawReply, context))
+				: null);
+	}
+
+	private static IReadOnlyList<string> ReadCourierCsvFact(GameInteractionSnapshot snapshot, string key)
+	{
+		if (snapshot == null || !snapshot.DetachedFacts.TryGetValue(key, out string value))
+		{
+			return Array.Empty<string>();
+		}
+		return (value ?? string.Empty)
+			.Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+			.Select(item => item.Trim())
+			.Where(item => item.Length > 0)
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+	}
+
+	private DetachedPostprocessPromptSections BuildCourierDetachedPostprocessSections(
+		Hero recipient,
+		CourierReplyGenerationRequest request,
+		string playerText,
+		string historyText,
+		string replyText)
+	{
+		if (recipient == null || request == null)
+		{
+			return DetachedPostprocessPromptSections.Empty;
+		}
+		string extras = request.Extras ?? string.Empty;
+		List<string> selected = request.SelectedRuleHits ?? new List<string>();
+		bool duel = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel") || HasPreprocessRuleHit(selected, "duel");
+		bool reward = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "reward") || HasPreprocessRuleHit(selected, "reward");
+		bool loan = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "loan") || HasPreprocessRuleHit(selected, "loan");
+		bool kingdomService = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service") || HasPreprocessRuleHit(selected, "kingdom_service");
+		bool lordsHall = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access") || HasPreprocessRuleHit(selected, "lords_hall_access");
+		bool meetingRelease = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player") || HasPreprocessRuleHit(selected, "encounter_release_player");
+		bool vanillaIssue = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue") || HasPreprocessRuleHit(selected, "vanilla_issue");
+		bool partyTransfer = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer") || HasPreprocessRuleHit(selected, "party_transfer");
+		bool voteDeal = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_agenda") || HasPreprocessRuleHit(selected, "kingdom_agenda");
+		bool diplomacy = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy") || HasPreprocessRuleHit(selected, "diplomacy");
+		bool worldMap = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command") || HasPreprocessRuleHit(selected, "worldmap_party_command");
+		bool vassalage = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage") || HasPreprocessRuleHit(selected, "kingdom_vassalage");
+		if (!ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(
+			recipient,
+			recipient.CharacterObject,
+			recipient.Name?.ToString() ?? request.RecipientName ?? "NPC",
+			playerText,
+			historyText,
+			replyText,
+			duel,
+			reward,
+			loan,
+			kingdomService,
+			lordsHall,
+			meetingRelease,
+			vanillaIssue,
+			kingdomService,
+			false,
+			partyTransfer,
+			out ShoutBehavior.CourierActionPostprocessWorkItem workItem,
+			out _,
+			voteDeal,
+			diplomacy,
+			worldMap,
+			selected,
+			request.EntityPostprocessContext,
+			-1,
+			latestReplyHasPlayerInput: true,
+			forceLooseWeeklyMemoryMaterialSession: true,
+			kingdomVassalageRuleInjected: vassalage,
+			kingdomAnnexationRuleInjected: false,
+			chainName: "courier-detached"))
+		{
+			return DetachedPostprocessPromptSections.Empty;
+		}
+		return new DetachedPostprocessPromptSections(
+			new[] { workItem.SystemPrompt },
+			Array.Empty<string>(),
+			new[] { workItem.UserPrompt },
+			appendLatestVisibleReply: true);
+	}
 
 	public override void RegisterEvents()
 	{
@@ -3947,7 +4530,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string output = await ShoutNetwork.CallApiWithMessages(request.Messages, MainReplyMaxTokens);
+			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens);
 			EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => CompleteCourierReplyGenerationOnMainThread(request, output), "reply_generated");
 		}
 		catch (Exception ex)
@@ -4350,7 +4933,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string output = await ShoutNetwork.CallApiWithMessages(request.Messages, MainReplyMaxTokens);
+			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens);
 			EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => CompleteInboundLetterGenerationOnMainThread(request, output), "inbound_letter_generated");
 		}
 		catch (Exception ex)
@@ -4505,7 +5088,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient)
+	private void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true)
 	{
 		if (session == null || session.PostprocessConsumed)
 		{
@@ -4624,8 +5207,59 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		session.ReplyPostprocessedText = text;
 		session.PostprocessConsumed = true;
-		PersistCourierReplyToHistories(session, recipient, text);
+		if (persistHistory)
+		{
+			PersistCourierReplyToHistories(session, recipient, text);
+		}
 		Log("postprocess committed at recipient session=" + session.Id + " remainingLen=" + (text ?? "").Length);
+	}
+
+	/// <summary>
+	/// Main-thread bridge for the detached Courier reply path. Domain handlers
+	/// remain in <see cref="CommitGeneratedReplyAtRecipient"/>; the optional
+	/// history write is disabled here because InteractionResultCommitter owns
+	/// the single shared user/assistant memory commit.
+	/// </summary>
+	private InteractionStatus ExecuteCourierActionPlanForExternal(
+		ActionPlan actionPlan,
+		GameInteractionSnapshot snapshot,
+		string sessionId)
+	{
+		try
+		{
+			if (!TWParallel.IsMainThread()
+				|| actionPlan == null
+				|| snapshot?.Identity == null
+				|| snapshot.Identity.Channel != InteractionChannel.Courier
+				|| !string.Equals(snapshot.Identity.SessionId, sessionId, StringComparison.Ordinal)
+				|| string.IsNullOrWhiteSpace(actionPlan.RawPostprocessId))
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			CourierSession session = GetSessionById(sessionId);
+			Hero recipient = session == null ? null : ResolveRecipient(session);
+			if (session == null
+				|| IsTerminalStage(session)
+				|| !session.DeliveryApplied
+				|| session.PostprocessConsumed
+				|| recipient == null
+				|| recipient.IsDead
+				|| !string.Equals(snapshot.Identity.SubjectId, SafeHeroId(recipient), StringComparison.OrdinalIgnoreCase))
+			{
+				Log("detached courier action rejected session=" + sessionId + " reason=target_or_delivery_invalid");
+				return InteractionStatus.RejectedByValidation;
+			}
+			session.ReplyPostprocessedText = actionPlan.RawPostprocessId;
+			CommitGeneratedReplyAtRecipient(session, recipient, persistHistory: false);
+			return session.PostprocessConsumed
+				? InteractionStatus.Executed
+				: InteractionStatus.RejectedByValidation;
+		}
+		catch (Exception ex)
+		{
+			Log("detached courier action failed session=" + (sessionId ?? "") + " error=" + ex.Message);
+			return InteractionStatus.RejectedByValidation;
+		}
 	}
 
 	private void PersistCourierReplyToHistories(CourierSession session, Hero recipient, string processedReplyText)

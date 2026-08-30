@@ -63,7 +63,8 @@ internal static class WorldDiplomacyLlmClient
 		int hardTimeoutMilliseconds,
 		string source,
 		long runtimeGeneration,
-		int maxAttempts = DefaultMaxAttempts)
+		int maxAttempts = DefaultMaxAttempts,
+		CancellationToken cancellationToken = default(CancellationToken))
 	{
 		WorldDiplomacyApiCallResult finalResult = new WorldDiplomacyApiCallResult();
 		JArray stableMessages = messages == null ? new JArray() : (JArray)messages.DeepClone();
@@ -76,6 +77,7 @@ internal static class WorldDiplomacyLlmClient
 		int attempts = Math.Max(1, maxAttempts);
 		for (int attempt = 1; attempt <= attempts; attempt++)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "world_diplomacy_api_attempt"))
 			{
 				finalResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -88,7 +90,8 @@ internal static class WorldDiplomacyLlmClient
 				Math.Max(1, maxTokens),
 				Math.Max(1000, hardTimeoutMilliseconds),
 				source,
-				runtimeGeneration);
+				runtimeGeneration,
+				cancellationToken);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
 			if (result.Success || result.IsAuthFailure || result.IsQuotaLimit
@@ -98,7 +101,7 @@ internal static class WorldDiplomacyLlmClient
 			}
 
 			int delaySeconds = Math.Max(1, Math.Min(MaxRetryDelaySeconds, result.RetryAfterSeconds ?? attempt * 2));
-			await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+			await Task.Delay(TimeSpan.FromSeconds(delaySeconds), cancellationToken).ConfigureAwait(false);
 		}
 		return finalResult;
 	}
@@ -108,7 +111,8 @@ internal static class WorldDiplomacyLlmClient
 		int maxTokens,
 		int hardTimeoutMilliseconds,
 		string source,
-		long runtimeGeneration)
+		long runtimeGeneration,
+		CancellationToken cancellationToken)
 	{
 		WorldDiplomacyApiCallResult result = new WorldDiplomacyApiCallResult();
 		try
@@ -141,7 +145,8 @@ internal static class WorldDiplomacyLlmClient
 				hardTimeoutMilliseconds,
 				runtimeGeneration,
 				source + "_response",
-				result);
+				result,
+				cancellationToken);
 			if (exchange == null)
 			{
 				return result;
@@ -165,13 +170,15 @@ internal static class WorldDiplomacyLlmClient
 						hardTimeoutMilliseconds,
 						runtimeGeneration,
 						source + "_plain_retry_response",
-						result);
+						result,
+						cancellationToken);
 					if (exchange == null)
 					{
 						return result;
 					}
 				}
 
+				cancellationToken.ThrowIfCancellationRequested();
 				return CompleteResult(exchange, result, messages, route, modelName, thinkingMode, source);
 			}
 			finally
@@ -181,6 +188,10 @@ internal static class WorldDiplomacyLlmClient
 		}
 		catch (OperationCanceledException)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				throw;
+			}
 			result.IsTimeout = true;
 			result.ErrorMessage = "world diplomacy api timeout after " + hardTimeoutMilliseconds.ToString(CultureInfo.InvariantCulture) + "ms";
 			return result;
@@ -200,9 +211,14 @@ internal static class WorldDiplomacyLlmClient
 		int hardTimeoutMilliseconds,
 		long runtimeGeneration,
 		string staleSource,
-		WorldDiplomacyApiCallResult result)
+		WorldDiplomacyApiCallResult result,
+		CancellationToken cancellationToken)
 	{
-		using CancellationTokenSource timeout = new CancellationTokenSource(hardTimeoutMilliseconds);
+		using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+		if (hardTimeoutMilliseconds > 0)
+		{
+			timeout.CancelAfter(hardTimeoutMilliseconds);
+		}
 		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 		LlmApiCompat.ApplyAuthenticationHeaders(request, apiUrl, apiKey);
 		request.Content = new StringContent(requestBody ?? "", Encoding.UTF8, "application/json");
@@ -214,6 +230,10 @@ internal static class WorldDiplomacyLlmClient
 		}
 		catch (OperationCanceledException)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				throw;
+			}
 			result.IsTimeout = true;
 			result.ErrorMessage = "world diplomacy api timeout after " + hardTimeoutMilliseconds.ToString(CultureInfo.InvariantCulture) + "ms";
 			return null;
@@ -229,6 +249,7 @@ internal static class WorldDiplomacyLlmClient
 			}
 
 			string responseBody = await response.Content.ReadAsStringAsync();
+			cancellationToken.ThrowIfCancellationRequested();
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, staleSource + "_body"))
 			{
 				result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();

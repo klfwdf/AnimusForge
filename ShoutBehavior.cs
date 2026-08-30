@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using AnimusForge.SceneActions.Core;
 using AnimusForge.SiegeAftermathIntervention;
 using AnimusForge.XihaiAction;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
@@ -2242,6 +2245,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private const int NativeConversationBackgroundPreprocessTimeoutMs = 480000;
 
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
+	private static int _nativeDetachedPromptParityLoggingEnabled;
 
 	private static long _nativeConversationBackgroundPreprocessSequence;
 
@@ -13641,7 +13645,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<object> messages = BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, new string[9] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, persistentHistoryMessages: persistentMemoryRoleMessages);
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
-			string text = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
+			string text = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
 			text = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 			apiSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_api_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " outputLen=" + ((text ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
@@ -16351,6 +16355,874 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return SubmitNativeConversationTextForExternalAsync(playerText, null, null, null);
 	}
 
+	/// <summary>
+	/// Creates the opt-in Native Conversation refactor facade. This is a
+	/// wiring seam only: the existing SubmitNativeConversation* entry points
+	/// remain the default path until the real legacy rule/prompt/action ports
+	/// have been audited. The caller must create and use the facade on the
+	/// game main thread when it captures or commits live conversation state.
+	/// </summary>
+	public static LegacyNativeConversationFacade CreateNativeConversationRefactorFacadeForExternal(
+		LegacyInteractionPipelinePorts ports,
+		ILlmGateway gateway)
+	{
+		return LegacyInteractionSnapshotAdapters.CreateNativeConversationFacade(ports, gateway);
+	}
+
+	/// <summary>
+	/// Opt-in Native facade overload for Prompt sections assembled by the
+	/// existing channel owner at the interaction boundary.
+	/// </summary>
+	public static LegacyNativeConversationFacade CreateNativeConversationRefactorFacadeForExternal(
+		LegacyInteractionPipelinePorts ports,
+		ILlmGateway gateway,
+		Func<string, DetachedPromptSections> promptSectionsProvider)
+	{
+		return LegacyInteractionSnapshotAdapters.CreateNativeConversationFacade(ports, gateway, promptSectionsProvider);
+	}
+
+	/// <summary>
+	/// Enables an opt-in, content-hashed comparison between the final Native
+	/// legacy prompt and its detached sections. It is disabled by default and
+	/// has no effect on request routing, action execution, or persistence.
+	/// </summary>
+	public static bool NativeConversationDetachedPromptParityLoggingEnabled
+	{
+		get { return Volatile.Read(ref _nativeDetachedPromptParityLoggingEnabled) != 0; }
+	}
+
+	public static void SetNativeConversationDetachedPromptParityLoggingForExternal(bool enabled)
+	{
+		Volatile.Write(ref _nativeDetachedPromptParityLoggingEnabled, enabled ? 1 : 0);
+	}
+
+	/// <summary>
+	/// Creates the explicit Native opt-in runner. The caller still owns the
+	/// main-thread capture and commit callback; the default Native entry is not
+	/// routed through this runner.
+	/// </summary>
+	public static LegacyNativeConversationOptInRunner CreateNativeConversationOptInRunnerForExternal(
+		LegacyNativeConversationFacade facade)
+	{
+		return new LegacyNativeConversationOptInRunner(facade);
+	}
+
+	/// <summary>
+	/// Creates the real Native ActionPlan executor for an opt-in turn. The
+	/// current target and its interaction-boundary prompt targets are captured
+	/// here on the game thread; the returned executor must only be used by the
+	/// host's main-thread commit callback. It reuses the same core as the legacy
+	/// Native path, so all existing domain validators, AFEF writes, notifications
+	/// and action ordering remain authoritative.
+	/// </summary>
+	public static LegacyNativeActionPlanExecutor CreateNativeConversationActionPlanExecutorForExternal()
+	{
+		ShoutBehavior instance = CurrentInstance;
+		if (instance == null)
+		{
+			return null;
+		}
+		if (!TryResolveNativeConversationTarget(out Hero targetHero, out CharacterObject targetCharacter, out string npcName))
+		{
+			return null;
+		}
+
+		int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		string targetUnavailableReason = "";
+		if (!IsNativeConversationResponseTargetAvailableForActionDispatch(
+			targetAgentIndex,
+			targetHero,
+			targetCharacter,
+			out targetUnavailableReason))
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] detached action executor unavailable target="
+				+ (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown")
+				+ " agentIndex=" + targetAgentIndex
+				+ " reason=" + (targetUnavailableReason ?? "validation_failed"));
+			return null;
+		}
+
+		NpcDataPacket targetNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+		targetNpc.AgentIndex = targetAgentIndex;
+		List<NpcDataPacket> allNpcData = new List<NpcDataPacket> { targetNpc };
+		Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
+		if (targetAgentIndex >= 0 && targetHero != null)
+		{
+			resolvedHeroes[targetAgentIndex] = targetHero;
+		}
+		List<SceneSummonPromptTarget> sceneSummonTargets = targetAgentIndex >= 0
+			? instance.BuildSceneSummonPromptTargets(allNpcData, resolvedHeroes)
+			: null;
+		int firstGuidePromptId = (sceneSummonTargets != null && sceneSummonTargets.Count > 0
+			? sceneSummonTargets.Max(item => item?.PromptId ?? 0)
+			: 0) + 1;
+		Agent targetAgent = targetAgentIndex >= 0
+			? Mission.Current?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == targetAgentIndex)
+			: null;
+		List<SceneGuidePromptTarget> sceneGuideTargets = targetAgentIndex >= 0
+			? instance.BuildSceneGuidePromptTargets(targetAgent, firstGuidePromptId)
+			: null;
+		ConversationManager expectedConversationManager = Campaign.Current?.ConversationManager;
+		int expectedConversationToken = expectedConversationManager?.ActiveToken ?? int.MinValue;
+
+		return new LegacyNativeActionPlanExecutor((actionPlan, snapshot) =>
+		{
+			if (!IsBannerlordMainThreadForNativeActions())
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			string content = actionPlan?.RawPostprocessId ?? "";
+			NativeConversationGameActionResult actionResult = instance.ApplyNativeConversationGameActionsCore(
+				targetHero,
+				targetCharacter,
+				targetNpc,
+				allNpcData,
+				sceneSummonTargets,
+				sceneGuideTargets,
+				content,
+				snapshot?.PlayerText ?? "",
+				expectedConversationManager,
+				expectedConversationToken);
+			return actionResult != null && !actionResult.ResponseDiscarded
+				? InteractionStatus.Executed
+				: InteractionStatus.RejectedByValidation;
+		}, allowedTagFamilies: LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+	}
+
+	/// <summary>
+	/// Executes one explicitly opted-in Native turn through the detached
+	/// facade. Capture must be called from the game interaction boundary; the
+	/// generated envelope is the only value sent to the worker. The commit
+	/// callback is synchronously marshalled back through the existing Native
+	/// main-thread queue, where the real ActionPlan executor and memory facade
+	/// run. The unchanged Native entry is used only when the detached
+	/// infrastructure fails; this method never changes the default entry.
+	/// </summary>
+	public static Task<LegacyNativeConversationOptInResult> SubmitNativeConversationRefactorOptInForExternalAsync(
+		LegacyNativeConversationFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string playerText,
+		Func<Task<string>> fallbackToLegacyNative,
+		CancellationToken cancellationToken)
+	{
+		ShoutBehavior instance = CurrentInstance;
+		if (instance == null)
+		{
+			return CompleteNativeConversationOptInFallbackAsync("host_not_ready", fallbackToLegacyNative);
+		}
+		return instance.SubmitNativeConversationRefactorOptInCoreAsync(
+			facade,
+			configuration,
+			moduleId,
+			providerId,
+			playerText,
+			fallbackToLegacyNative,
+			cancellationToken);
+	}
+
+	private async Task<LegacyNativeConversationOptInResult> SubmitNativeConversationRefactorOptInCoreAsync(
+		LegacyNativeConversationFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string playerText,
+		Func<Task<string>> fallbackToLegacyNative,
+		CancellationToken cancellationToken)
+	{
+		if (facade == null)
+		{
+			return await CompleteNativeConversationOptInFallbackAsync("missing_facade", fallbackToLegacyNative).ConfigureAwait(false);
+		}
+
+		DetachedInteractionHost host = new DetachedInteractionHost(
+			facade.Capture,
+			facade.GenerateAsync,
+			facade.Commit);
+		DetachedInteractionHostResult hostResult = await host.ExecuteAsync(
+			playerText,
+			configuration,
+			moduleId,
+			providerId,
+			envelope => CreateNativeConversationActionPlanExecutorForExternal(),
+			envelope => CreateNativeConversationMemoryFacadeForExternal(),
+			(envelope, commit) => DispatchNativeConversationOptInCommitAsync(
+				commit,
+				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
+				envelope?.Snapshot?.Candidates?.FirstOrDefault()?.AgentIndex ?? (-1)),
+			fallbackToLegacyNative,
+			cancellationToken).ConfigureAwait(false);
+		return new LegacyNativeConversationOptInResult(
+			hostResult?.VisibleReply ?? "",
+			hostResult?.UsedLegacyFallback ?? false,
+			hostResult?.Status ?? InteractionStatus.NonRetryableFailure,
+			hostResult?.ErrorCode ?? "missing_host_result",
+			hostResult?.DetachedResult,
+			hostResult?.Commit);
+	}
+
+	private static IInteractionMemory CreateNativeConversationMemoryFacadeForExternal()
+	{
+		if (!TryResolveNativeConversationTarget(out Hero targetHero, out CharacterObject targetCharacter, out string targetName))
+		{
+			return null;
+		}
+		return targetHero != null
+			? new MyBehaviorMemoryFacade(targetHero)
+			: new MyBehaviorMemoryFacade(
+				targetCharacter?.StringId ?? "native:unknown",
+				string.IsNullOrWhiteSpace(targetName) ? "NPC" : targetName);
+	}
+
+	private Task<InteractionCommitResult> DispatchNativeConversationOptInCommitAsync(
+		Func<InteractionCommitResult> commit,
+		string targetLog,
+		int targetAgentIndex)
+	{
+		return RunNativeConversationMainThreadFuncAsync(
+			"detached_opt_in_commit",
+			targetLog,
+			targetAgentIndex,
+			commit,
+			new InteractionCommitResult(
+				InteractionStatus.RejectedByValidation,
+				false,
+				false,
+				"main_thread_dispatch_failed"));
+	}
+
+	private static async Task<LegacyNativeConversationOptInResult> CompleteNativeConversationOptInFallbackAsync(
+		string errorCode,
+		Func<Task<string>> fallbackToLegacyNative)
+	{
+		if (fallbackToLegacyNative == null)
+		{
+			return new LegacyNativeConversationOptInResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				errorCode,
+				null,
+				null);
+		}
+		try
+		{
+			return new LegacyNativeConversationOptInResult(
+				await fallbackToLegacyNative().ConfigureAwait(false),
+				true,
+				InteractionStatus.Succeeded,
+				errorCode,
+				null,
+				null);
+		}
+		catch (Exception exception)
+		{
+			return new LegacyNativeConversationOptInResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				errorCode + ";legacy_" + exception.GetType().Name,
+				null,
+				null);
+		}
+	}
+
+	/// <summary>
+	/// Opt-in Native facade overload accepting one atomic main/postprocess
+	/// Prompt sections bundle for the same interaction turn.
+	/// </summary>
+	public static LegacyNativeConversationFacade CreateNativeConversationRefactorFacadeForExternal(
+		LegacyInteractionPipelinePorts ports,
+		ILlmGateway gateway,
+		Func<string, DetachedInteractionPromptSections> promptSectionsProvider)
+	{
+		return LegacyInteractionSnapshotAdapters.CreateNativeConversationFacade(ports, gateway, promptSectionsProvider);
+	}
+
+	/// <summary>
+	/// Creates the explicit SceneShout detached facade. The existing scene
+	/// conversation remains the default path; this factory is only for an
+	/// opt-in host which supplies the channel's ActionPlan executor and main
+	/// thread commit callback.
+	/// </summary>
+	public static LegacyChannelInteractionFacade CreateSceneShoutRefactorFacadeForExternal(
+		LegacyInteractionPipelinePorts ports,
+		ILlmGateway gateway,
+		int targetAgentIndex)
+	{
+		return LegacyInteractionSnapshotAdapters.CreateSceneShoutInteractionFacade(
+			ports,
+			gateway,
+			playerText => CaptureSceneShoutRefactorEnvelopeForExternal(playerText, targetAgentIndex));
+	}
+
+	/// <summary>
+	/// Builds the explicit SceneShout ports from the already captured legacy
+	/// prompt sections. The baseline rule keeps ordinary scene conversation
+	/// eligible when no optional gameplay rule is selected; it grants no action
+	/// capability by itself.
+	/// </summary>
+	public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal(
+		IEnumerable<string> allowedTagFamilies,
+		int maxActions = 64)
+	{
+		List<string> tagFamilies = (allowedTagFamilies ?? Enumerable.Empty<string>())
+			.Where(value => !string.IsNullOrWhiteSpace(value))
+			.Select(value => value.Trim())
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		LegacyDetachedPromptComposer mainComposer = new LegacyDetachedPromptComposer(model: "legacy-scene-shout");
+		LegacyDetachedPostprocessPromptComposer postprocessComposer = new LegacyDetachedPostprocessPromptComposer(model: "legacy-scene-shout-postprocess");
+		LegacyActionTagParser actionParser = new LegacyActionTagParser(maxActions);
+		CapabilitySet capabilities = new CapabilitySet(new[]
+		{
+			"llm.generate",
+			"prompt.compose",
+			"postprocess.compose",
+			"action.parse"
+		});
+		return new LegacyInteractionPipelinePorts(
+			snapshot => new RuleSelection(new[] { "scene_shout" }, Array.Empty<string>()),
+			(envelope, selection, availableCapabilities) => mainComposer.Compose(envelope, selection, availableCapabilities),
+			(snapshot, selection, availableCapabilities) => new PostprocessContext(selection?.RuleIds, tagFamilies, availableCapabilities),
+			(rawText, context) => actionParser.Parse(rawText, context),
+			(rawText, internalTagFamilies) => LlmVisibleReplyNormalizer.NormalizeComplete(rawText),
+			capabilities,
+			(envelope, selection, visibleReply, rawReply, context) => postprocessComposer.Compose(envelope, selection, visibleReply, rawReply, context));
+	}
+
+	/// <summary>
+	/// Creates the explicit SceneShout ActionPlan executor. The executor keeps
+	/// only the captured Agent index; the live Agent/Character/Hero is resolved
+	/// again at the main-thread commit boundary and must still match the
+	/// captured candidate. This is opt-in and does not alter the legacy shout
+	/// path.
+	/// </summary>
+	public static LegacyNativeActionPlanExecutor CreateSceneShoutActionPlanExecutorForExternal(
+		int targetAgentIndex,
+		int maxActions = 64)
+	{
+		ShoutBehavior instance = CurrentInstance;
+		if (instance == null || targetAgentIndex < 0)
+		{
+			return null;
+		}
+		IReadOnlyList<string> allowedTagFamilies = LegacyActionTagCatalog.DefaultAllowedTagFamilies;
+		return new LegacyNativeActionPlanExecutor((actionPlan, snapshot) =>
+		{
+			if (!IsBannerlordMainThreadForNativeActions()
+				|| snapshot?.Identity == null
+				|| snapshot.Identity.Channel != InteractionChannel.SceneShout)
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			InteractionCandidate capturedCandidate = snapshot.Candidates?.FirstOrDefault(
+				candidate => candidate != null && candidate.AgentIndex == targetAgentIndex);
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault(
+				candidate => candidate != null && candidate.Index == targetAgentIndex);
+			if (capturedCandidate == null
+				|| !capturedCandidate.IsAlive
+				|| agent == null
+				|| !agent.IsActive()
+				|| !CanAgentParticipateInSceneSpeech(agent))
+			{
+				Logger.Log("ShoutBehavior", "[RefactorAction] scene target unavailable agent=" + targetAgentIndex);
+				return InteractionStatus.RejectedByValidation;
+			}
+			CharacterObject targetCharacter = agent.Character as CharacterObject;
+			Hero targetHero = targetCharacter?.HeroObject;
+			string currentStableId = targetHero?.StringId ?? targetCharacter?.StringId ?? "agent:" + targetAgentIndex;
+			if (!string.Equals(capturedCandidate.StableId, currentStableId, StringComparison.Ordinal))
+			{
+				Logger.Log("ShoutBehavior", "[RefactorAction] scene target identity changed agent=" + targetAgentIndex);
+				return InteractionStatus.RejectedByValidation;
+			}
+			NpcDataPacket npc = ShoutUtils.ExtractNpcData(agent);
+			if (npc == null)
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			string content = actionPlan.RawPostprocessId ?? string.Empty;
+			bool consumed = instance.TryApplyDeferredSceneMoodTag(npc, content);
+			content = StripDeferredSceneMoodTags(content);
+			if (instance.TryApplyDeferredScenePostprocessActionTagsDirectly(
+				targetHero,
+				targetCharacter,
+				targetAgentIndex,
+				ref content,
+				snapshot.PlayerText ?? string.Empty,
+				string.Empty,
+				"scene-refactor",
+				replyIsDirectPlayerResponse: true))
+			{
+				consumed = true;
+				content = ExtractDeferredSceneActionTags(content);
+			}
+			if (instance.TryExecuteDeferredSceneFollowTagsDirectly(npc, content))
+			{
+				consumed = true;
+			}
+			return consumed ? InteractionStatus.Executed : InteractionStatus.RejectedByValidation;
+		}, maxActions, allowedTagFamilies);
+	}
+
+	/// <summary>
+	/// Executes one explicitly opted-in SceneShout turn through the detached
+	/// host. The caller must create the facade and invoke this entry from the
+	/// interaction boundary; the legacy SceneShout path remains unchanged.
+	/// </summary>
+	public static Task<DetachedInteractionHostResult> SubmitSceneShoutRefactorOptInForExternalAsync(
+		LegacyChannelInteractionFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string playerText,
+		int targetAgentIndex,
+		Func<Task<string>> fallbackToLegacy,
+		CancellationToken cancellationToken)
+	{
+		ShoutBehavior instance = CurrentInstance;
+		if (instance == null)
+		{
+			return Task.FromResult(new DetachedInteractionHostResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				"host_not_ready",
+				null,
+				null));
+		}
+		return instance.SubmitSceneShoutRefactorOptInCoreAsync(
+			facade,
+			configuration,
+			moduleId,
+			providerId,
+			playerText,
+			targetAgentIndex,
+			fallbackToLegacy,
+			cancellationToken);
+	}
+
+	private async Task<DetachedInteractionHostResult> SubmitSceneShoutRefactorOptInCoreAsync(
+		LegacyChannelInteractionFacade facade,
+		RuntimeConfigSnapshot configuration,
+		string moduleId,
+		string providerId,
+		string playerText,
+		int targetAgentIndex,
+		Func<Task<string>> fallbackToLegacy,
+		CancellationToken cancellationToken)
+	{
+		if (facade == null || targetAgentIndex < 0)
+		{
+			return await RunDetachedRefactorFallbackAsync("missing_scene_facade", fallbackToLegacy).ConfigureAwait(false);
+		}
+		DetachedInteractionHost host = new DetachedInteractionHost(
+			facade.Capture,
+			facade.GenerateAsync,
+			facade.Commit);
+		DetachedInteractionHostResult result = await host.ExecuteAsync(
+			playerText,
+			configuration,
+			moduleId,
+			providerId,
+			envelope => CreateSceneShoutActionPlanExecutorForExternal(targetAgentIndex),
+			CreateSceneShoutMemoryFacadeForExternal,
+			(envelope, commit) => DispatchSceneShoutRefactorCommitAsync(
+				commit,
+				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
+				targetAgentIndex),
+			fallbackToLegacy,
+			cancellationToken).ConfigureAwait(false);
+		return result;
+	}
+
+	private static IInteractionMemory CreateSceneShoutMemoryFacadeForExternal(InteractionEnvelope envelope)
+	{
+		GameInteractionSnapshot snapshot = envelope?.Snapshot;
+		if (snapshot?.Identity == null)
+		{
+			return null;
+		}
+		string memoryKind = snapshot.DetachedFacts.TryGetValue("memory_kind", out string kind)
+			? kind
+			: string.Empty;
+		if (string.Equals(memoryKind, "hero", StringComparison.OrdinalIgnoreCase))
+		{
+			Hero hero = Hero.Find(snapshot.Identity.SubjectId);
+			return hero == null ? null : new MyBehaviorMemoryFacade(hero);
+		}
+		string memoryId = snapshot.DetachedFacts.TryGetValue("memory_id", out string detachedMemoryId)
+			? detachedMemoryId
+			: snapshot.Identity.SubjectId;
+		if (string.IsNullOrWhiteSpace(memoryId)
+			|| !snapshot.DetachedFacts.TryGetValue("memory_kind", out string resolvedKind)
+			|| string.Equals(resolvedKind, "unresolved", StringComparison.OrdinalIgnoreCase))
+		{
+			return null;
+		}
+		string name = snapshot.Candidates?.FirstOrDefault()?.DisplayName;
+		return new MyBehaviorMemoryFacade(memoryId, name);
+	}
+
+	private Task<InteractionCommitResult> DispatchSceneShoutRefactorCommitAsync(
+		Func<InteractionCommitResult> commit,
+		string targetLog,
+		int targetAgentIndex)
+	{
+		return RunNativeConversationMainThreadFuncAsync(
+			"detached_scene_commit",
+			targetLog,
+			targetAgentIndex,
+			commit,
+			new InteractionCommitResult(
+				InteractionStatus.RejectedByValidation,
+				false,
+				false,
+				"main_thread_dispatch_failed"));
+	}
+
+	private static async Task<DetachedInteractionHostResult> RunDetachedRefactorFallbackAsync(
+		string errorCode,
+		Func<Task<string>> fallbackToLegacy)
+	{
+		if (fallbackToLegacy == null)
+		{
+			return new DetachedInteractionHostResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				errorCode,
+				null,
+				null);
+		}
+		try
+		{
+			return new DetachedInteractionHostResult(
+				await fallbackToLegacy().ConfigureAwait(false),
+				true,
+				InteractionStatus.Succeeded,
+				errorCode,
+				null,
+				null);
+		}
+		catch (Exception exception)
+		{
+			return new DetachedInteractionHostResult(
+				string.Empty,
+				true,
+				InteractionStatus.NonRetryableFailure,
+				errorCode + ";legacy_" + exception.GetType().Name,
+				null,
+				null);
+		}
+	}
+
+	/// <summary>
+	/// Captures the single-target SceneShout prompt boundary using the same
+	/// helpers as the current per-NPC scene turn. This method is deliberately
+	/// synchronous and must run on the game thread; only its copied strings and
+	/// memory messages cross into the detached pipeline.
+	/// </summary>
+	public static InteractionEnvelope CaptureSceneShoutRefactorEnvelopeForExternal(
+		string playerText,
+		int targetAgentIndex)
+	{
+		return CaptureSceneShoutRefactorEnvelopeForExternal(playerText, targetAgentIndex, null);
+	}
+
+	/// <summary>
+	/// Same as the basic capture overload, with an atomic main/postprocess
+	/// sections provider. The provider is evaluated once at the interaction
+	/// boundary, preventing a config reload from pairing two turns.
+	/// </summary>
+	public static InteractionEnvelope CaptureSceneShoutRefactorEnvelopeForExternal(
+		string playerText,
+		int targetAgentIndex,
+		Func<string, DetachedInteractionPromptSections> promptSectionsProvider)
+	{
+		Func<string, DetachedInteractionPromptSections> provider = promptSectionsProvider
+			?? (text => BuildSceneShoutDetachedPromptSectionsForExternal(text, targetAgentIndex));
+		DetachedInteractionPromptSections sections = provider(playerText) ?? DetachedInteractionPromptSections.Empty;
+		return LegacyInteractionSnapshotAdapters.CaptureSceneShout(
+			playerText,
+			targetAgentIndex,
+			sections.Main,
+			sections.Postprocess);
+	}
+
+	/// <summary>
+	/// Builds the real single-NPC SceneShout main/postprocess sections from the
+	/// current prompt helpers. It does not call an LLM or execute an action.
+	/// The postprocess user section contains the configured legacy template and
+	/// current captured history; the detached composer appends the final visible
+	/// reply after generation.
+	/// </summary>
+	public static DetachedInteractionPromptSections BuildSceneShoutDetachedPromptSectionsForExternal(
+		string playerText,
+		int targetAgentIndex)
+	{
+		ShoutBehavior instance = CurrentInstance;
+		if (instance == null || targetAgentIndex < 0)
+		{
+			return DetachedInteractionPromptSections.Empty;
+		}
+
+		Agent targetAgent = Mission.Current?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == targetAgentIndex);
+		NpcDataPacket targetNpc = targetAgent == null ? null : ShoutUtils.ExtractNpcData(targetAgent);
+		if (targetNpc == null)
+		{
+			return DetachedInteractionPromptSections.Empty;
+		}
+		List<NpcDataPacket> presentNpcs = (ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>())
+			.Select(agent => ShoutUtils.ExtractNpcData(agent))
+			.Where(data => data != null)
+			.ToList();
+		if (!presentNpcs.Any(data => data.AgentIndex == targetAgentIndex))
+		{
+			presentNpcs.Insert(0, targetNpc);
+		}
+		Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
+		foreach (NpcDataPacket data in presentNpcs)
+		{
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault(item => item != null && item.Index == data.AgentIndex);
+			Hero hero = (agent?.Character as CharacterObject)?.HeroObject;
+			if (hero != null)
+			{
+				resolvedHeroes[data.AgentIndex] = hero;
+			}
+		}
+		resolvedHeroes.TryGetValue(targetAgentIndex, out Hero targetHero);
+		CharacterObject targetCharacter = targetAgent.Character as CharacterObject;
+		List<SceneSummonPromptTarget> summonTargets = instance.BuildSceneSummonPromptTargets(presentNpcs, resolvedHeroes);
+		int guidePromptId = (summonTargets ?? new List<SceneSummonPromptTarget>()).Count == 0
+			? 1
+			: summonTargets.Max(item => item?.PromptId ?? 0) + 1;
+		List<SceneGuidePromptTarget> guideTargets = instance.BuildSceneGuidePromptTargets(targetAgent, guidePromptId);
+		List<string> excludedRuleIds = instance.BuildPreprocessExcludedRuleIdsForCurrentInteraction(
+			targetHero,
+			targetCharacter,
+			targetAgentIndex,
+			targetNpc.IsHero,
+			summonTargets,
+			guideTargets,
+			targetNpc,
+			presentNpcs,
+			playerText);
+		MyBehavior.ShoutPromptContext context = MyBehavior.BuildShoutPromptContextForExternal(
+			targetHero,
+			playerText,
+			extraFact: null,
+			targetNpc.CultureId ?? "neutral",
+			hasAnyHero: targetNpc.IsHero,
+			targetCharacter: targetCharacter,
+			kingdomIdOverride: TryGetKingdomIdOverrideFromAgent(targetAgent),
+			targetAgentIndex: targetAgentIndex,
+			preprocessExcludedRuleIds: excludedRuleIds);
+		string baseExtras = StripScenePersonaBlocks((context?.Extras ?? string.Empty).Trim());
+		ExtractTrustPromptBlock(baseExtras, out string extrasWithoutTrust);
+		SplitSceneExtraSections(extrasWithoutTrust, out string miscExtras, out string ruleExtras, out string knowledgeExtras);
+		bool partyTransferSelected = HasPartyTransferRuleContext(baseExtras);
+		bool includeInventory = context != null && (context.UseRewardContext || context.IsLoanContext);
+		string roleTop = BuildSceneSystemTopPromptIntroForSingle(
+			targetNpc,
+			targetHero,
+			presentNpcs,
+			includeInventory,
+			includeInventory,
+			partyTransferSelected,
+			context?.MentionedEntities);
+		string roleRuntime = BuildSceneUserRuntimeContextForSingle(
+			targetNpc,
+			targetHero,
+			presentNpcs,
+			includeInventory,
+			includeInventory,
+			partyTransferSelected,
+			context?.MentionedEntities);
+		string presentBlock = instance.BuildScenePresentNpcListBlockForPrompt(presentNpcs, targetNpc, resolvedHeroes);
+		string mechanism = BuildSceneMechanismPromptSection(
+			summonTargets,
+			guideTargets,
+				instance.BuildSceneSummonClosurePromptInstruction(presentNpcs),
+			instance.BuildSceneFollowControlPromptInstruction(targetNpc),
+			targetNpc);
+		string ruleBlock = BuildSceneSystemRuleBlock(ruleExtras, mechanism);
+		string dynamic = BuildSceneCompositeUserBlock(string.Empty, roleRuntime, presentBlock, miscExtras);
+		GetSceneReplyLengthLimits(DuelSettings.GetSettings(), out int minTokens, out int maxTokens);
+		string playerName = GetPlayerDisplayNameForShout();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		string layered = BuildSceneCompositeUserBlock(
+			string.Empty,
+			roleTop,
+			BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(targetNpc), presentNpcs.Count > 1, minTokens, maxTokens, playerName),
+			context?.PreprocessExcludedRuleBlock);
+		layered = AppendPlayerCustomPromptRuleToSystemPrompt(layered);
+		string persisted = instance.BuildPersistedHeroHistoryContext(targetAgentIndex, playerText, resolvedHeroes);
+		SplitPersistedHeroHistorySections(persisted, out string privateRecent, out string persistedWithoutRecent);
+		List<string> sceneHistoryLines = null;
+		lock (instance._historyLock)
+		{
+			if (instance._publicConversationHistory.Count > 0)
+			{
+				sceneHistoryLines = BuildVisibleSceneHistoryLines(
+					instance._publicConversationHistory,
+					targetAgentIndex,
+					GetSceneNpcHistoryNameForPrompt(targetNpc),
+					useNpcNameAddress: false);
+			}
+		}
+		string scenePublicHistory = BuildScenePublicHistorySection(sceneHistoryLines);
+		string mainHistory = BuildSceneCompositeUserBlock(
+			string.Empty,
+			privateRecent,
+			persistedWithoutRecent,
+			dynamic,
+			BuildSceneCompositeUserBlock(string.Empty, knowledgeExtras, ruleBlock));
+		DetachedPromptSections main = new DetachedPromptSections(
+			new[] { BuildStrictSceneMessagesSystemPrompt(layered, suppressReplyFormatInstruction: false) },
+			new[] { mainHistory },
+			Array.Empty<string>(),
+			appendCurrentPlayerInput: true);
+		string postHistory = BuildSceneCompositeUserBlock(string.Empty, privateRecent, persistedWithoutRecent, scenePublicHistory);
+		string postRules = BuildSceneCompositeUserBlock(string.Empty, knowledgeExtras, ruleBlock);
+		string postUser = BuildSceneActionPostprocessUserPrompt(
+			AIConfigHandler.ActionPostprocessUserPromptTemplate,
+			postRules,
+			GetSceneNpcHistoryNameForPrompt(targetNpc),
+			postHistory,
+			AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, string.Empty, GetSceneNpcHistoryNameForPrompt(targetNpc), postHistory),
+			runtimeContext: context?.EntityPostprocessContext);
+		DetachedPostprocessPromptSections postprocess = new DetachedPostprocessPromptSections(
+			new[] { AIConfigHandler.ActionPostprocessSystemPrompt },
+			new[] { postHistory },
+			new[] { postUser },
+			appendLatestVisibleReply: true);
+		return new DetachedInteractionPromptSections(main, postprocess);
+	}
+
+	/// <summary>
+	/// Captures a Native Conversation into an immutable, detached envelope for
+	/// the opt-in refactor path. No LLM request is started by this method.
+	/// </summary>
+	public static InteractionEnvelope CaptureNativeConversationRefactorEnvelopeForExternal(string playerText)
+	{
+		return LegacyInteractionSnapshotAdapters.CaptureNativeConversation(playerText);
+	}
+
+	/// <summary>
+	/// Opt-in overload for the shared detached composer. The supplied blocks
+	/// must be assembled from the existing scene/native prompt helpers while the
+	/// caller is on the game thread; this overload does not invent or alter
+	/// Persona, history/AFEF, knowledge/RAG, rule, or action semantics.
+	/// </summary>
+	public static InteractionEnvelope CaptureNativeConversationRefactorEnvelopeForExternal(
+		string playerText,
+		DetachedPromptSections promptSections)
+	{
+		return LegacyInteractionSnapshotAdapters.CaptureNativeConversation(playerText, promptSections);
+	}
+
+	/// <summary>
+	/// Creates the shared string-only composer for an opt-in Native/Scene/Courier
+	/// composition. It never resolves a game object and never runs on a tick.
+	/// </summary>
+	public static LegacyDetachedPromptComposer CreateDetachedPromptComposerForExternal(
+		int maxTokens = 4096,
+		string model = "legacy-detached")
+	{
+		return new LegacyDetachedPromptComposer(maxTokens, model);
+	}
+
+	/// <summary>
+	/// Captures a non-secret runtime configuration snapshot for the opt-in
+	/// Native refactor path. The legacy gateway still owns the real API
+	/// endpoint and credential lookup.
+	/// </summary>
+	public static RuntimeConfigSnapshot CaptureNativeConversationRefactorConfigurationForExternal()
+	{
+		return LegacyInteractionSnapshotAdapters.CaptureNativeConversationRuntimeConfiguration();
+	}
+
+	public static RuntimeConfigSnapshot CaptureSceneShoutRefactorConfigurationForExternal()
+	{
+		return LegacyInteractionSnapshotAdapters.CaptureNativeConversationRuntimeConfiguration();
+	}
+
+	/// <summary>
+	/// Creates the detached rule selector for an opt-in refactor composition.
+	/// The lookup receives only strings and rule exclusions; it must not resolve
+	/// or retain Bannerlord game objects.
+	/// </summary>
+	public static LegacyDetachedRuleSelector CreateNativeConversationDetachedRuleSelectorForExternal(int topN = 12)
+	{
+		return new LegacyDetachedRuleSelector(
+			(userText, secondaryText, runtimeContext, requestedTopN, excludedRuleIds) =>
+			{
+				if (AIConfigHandler.TryCallAuxiliaryRuleCodesForExternal(
+					userText,
+					secondaryText,
+					runtimeContext,
+					requestedTopN,
+					out List<string> ruleIds,
+					out string error,
+					excludedRuleIds))
+				{
+					return new DetachedRuleLookupResult(ruleIds, null);
+				}
+				return new DetachedRuleLookupResult(Array.Empty<string>(), string.IsNullOrWhiteSpace(error) ? "failed" : error);
+			},
+			 topN);
+	}
+
+	/// <summary>
+	/// Builds the explicit Native detached ports from the existing rule lookup,
+	/// shared composers and allowlisted action parser. The allowlist is supplied
+	/// by the channel owner; an empty allowlist intentionally produces no
+	/// executable actions. No default Native call is routed here.
+	/// </summary>
+	public static LegacyInteractionPipelinePorts CreateNativeConversationDetachedPortsForExternal(
+		IEnumerable<string> allowedTagFamilies,
+		int topN = 12,
+		int maxActions = 64)
+	{
+		List<string> tagFamilies = (allowedTagFamilies ?? Enumerable.Empty<string>())
+			.Where(value => !string.IsNullOrWhiteSpace(value))
+			.Select(value => value.Trim())
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		LegacyDetachedRuleSelector ruleSelector = CreateNativeConversationDetachedRuleSelectorForExternal(topN);
+		LegacyDetachedPromptComposer mainComposer = new LegacyDetachedPromptComposer(model: "legacy-native");
+		LegacyDetachedPostprocessPromptComposer postprocessComposer = new LegacyDetachedPostprocessPromptComposer(model: "legacy-native-postprocess");
+		LegacyActionTagParser actionParser = new LegacyActionTagParser(maxActions);
+		CapabilitySet capabilities = new CapabilitySet(new[]
+		{
+			"llm.generate",
+			"rule.select",
+			"prompt.compose",
+			"postprocess.compose",
+			"action.parse"
+		});
+		return new LegacyInteractionPipelinePorts(
+			snapshot =>
+			{
+				RuleSelection selection = ruleSelector.Select(snapshot);
+				return selection != null && selection.RuleIds.Count > 0
+					? selection
+					: new RuleSelection(new[] { "native_conversation" }, selection?.ExclusionReasons);
+			},
+			(envelope, selection, availableCapabilities) => mainComposer.Compose(envelope, selection, availableCapabilities),
+			(snapshot, selection, availableCapabilities) => new PostprocessContext(selection?.RuleIds, tagFamilies, availableCapabilities),
+			(rawText, context) => actionParser.Parse(rawText, context),
+			(rawText, internalTagFamilies) => LlmVisibleReplyNormalizer.NormalizeComplete(rawText),
+			capabilities,
+			(envelope, selection, visibleReply, rawReply, context) => postprocessComposer.Compose(envelope, selection, visibleReply, rawReply, context));
+	}
+
 	public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText)
 	{
 		return SubmitNativeConversationTextForExternalAsync(playerText, onStreamText, null, null);
@@ -18527,7 +19399,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock, nativeSceneActionInstruction, ctx?.PreprocessExcludedRuleBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
-		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" }, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
+	string[] nativePromptPrefixSections = new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) };
+	string[] nativePromptSuffixSections = new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" };
+	List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
+	DetachedPromptSections nativeDetachedMainPromptSections = null;
+	if (NativeConversationDetachedPromptParityLoggingEnabled)
+	{
+		try
+		{
+			LegacyNativePromptParity.LegacyNativePromptParityResult parity = LegacyNativePromptParity.CompareMainMessages(
+				messages,
+				nativePromptPrefixSections,
+				nativePromptSuffixSections,
+				promptPlayerText,
+				maxTokens: maxTokens,
+				model: "legacy-native");
+			nativeDetachedMainPromptSections = parity.MainSections;
+			Logger.Log("ShoutBehavior", "[NativeDetachedPromptParity] " + parity.ToDiagnosticString());
+		}
+		catch (Exception ex)
+		{
+			// Diagnostics must fail open to the unchanged Native request path.
+			Logger.Log("ShoutBehavior", "[NativeDetachedPromptParity] main comparison failed open: " + ex.Message);
+		}
+	}
 		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " sharedDailyMemory=" + useSharedDailyMemoryForNpcOpening + " persistentMemoryMessages=" + persistentMemoryRoleMessages.Count + " nativeHistoryMessages=" + nativeHistoryMessages.Count + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
@@ -18730,7 +19625,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex);
 		try
 		{
-			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected);
+			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, detachedMainPromptSections: nativeDetachedMainPromptSections);
 		}
 		finally
 		{
@@ -19036,7 +19931,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (onStreamText == null)
 		{
 			FreezeWatchdog.Mark("NativeConversation.api_non_stream_start", "messages=" + (messages?.Count ?? 0) + " timeoutMs=" + NativeConversationMainReplyTimeoutMs, immediate: true);
-			Task<string> requestTask = ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: false);
+			Task<string> requestTask = LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: false);
 			Task completedTask = await Task.WhenAny(requestTask, Task.Delay(NativeConversationMainReplyTimeoutMs)).ConfigureAwait(false);
 			if (!ReferenceEquals(completedTask, requestTask))
 			{
@@ -19054,7 +19949,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string completed = "";
 		string error = "";
 		using CancellationTokenSource timeoutCts = new CancellationTokenSource(NativeConversationMainReplyTimeoutMs);
-		await ShoutNetwork.CallApiWithMessagesStream(messages, 5000, delegate(string delta)
+		await LegacyShoutNetworkGateway.SendLegacyMessagesStreamAsync(messages, 5000, delegate(string delta)
 		{
 			if (string.IsNullOrEmpty(delta))
 			{
@@ -19262,7 +20157,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(data.AgentIndex, resolvedHeroes);
 				List<object> messages = BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, new string[8] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
-				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
+				string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
 				output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 				swApi.Stop();
 				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败") && !output.StartsWith("（API响应格式错误");
@@ -24842,7 +25737,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return (normalizedDialogue + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 	}
 
-	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false)
+	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, DetachedPromptSections detachedMainPromptSections = null)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? ResolveScenePostprocessChainName() : chainName.Trim();
@@ -25296,6 +26191,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			: AIConfigHandler.BuildActionPostprocessLatestReplyBlock("", text, text20, null);
 		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, latestReplyBlock, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
 		text9 = AfGcczShoutBridge.AppendTownPostprocessDecisionContract(text9, AfGcczShoutBridge.ShouldUseTownPostprocessDecisionContract(), mergedRules);
+		if (NativeConversationDetachedPromptParityLoggingEnabled && detachedMainPromptSections != null)
+		{
+			try
+			{
+				LegacyNativePromptParity.LegacyNativePromptParityResult postprocessParity = LegacyNativePromptParity.ComparePostprocessBlocks(text8, text9, 5000, "legacy-native-postprocess");
+				DetachedInteractionPromptSections atomicBundle = LegacyNativePromptParity.BuildAtomicBundle(
+					detachedMainPromptSections,
+					postprocessParity.PostprocessSections);
+				Logger.Log("ShoutBehavior", "[NativeDetachedPromptParity] " + postprocessParity.ToDiagnosticString()
+					+ " atomicMainSystemSections=" + atomicBundle.Main.SystemSections.Count
+					+ " atomicPostSystemSections=" + atomicBundle.Postprocess.SystemSections.Count);
+			}
+			catch (Exception ex)
+			{
+				// Keep the old postprocess request as the fail-open fallback.
+				Logger.Log("ShoutBehavior", "[NativeDetachedPromptParity] postprocess comparison failed open: " + ex.Message);
+			}
+		}
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] 调用失败: " + error);
@@ -26788,7 +27701,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				Stopwatch swApi = Stopwatch.StartNew();
 				double firstChunkMs = -1.0;
 				LlmVisibleReplyNormalizer.StreamFilter visibleReplyFilter = new LlmVisibleReplyNormalizer.StreamFilter();
-				await ShoutNetwork.CallApiWithMessagesStream(messages, 5000, delegate(string delta)
+				await LegacyShoutNetworkGateway.SendLegacyMessagesStreamAsync(messages, 5000, delegate(string delta)
 				{
 					if (!firstChunkSeen)
 					{
@@ -27255,7 +28168,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
-					string output = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
+					string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
 					output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 					apiSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_api_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));

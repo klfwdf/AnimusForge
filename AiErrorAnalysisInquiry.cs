@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using HarmonyLib;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -308,41 +310,52 @@ public static class AiErrorAnalysisInquiry
 			}
 			string safeTitle = RedactConfiguredApiKeys(title, settings);
 			string safeDetail = RedactConfiguredApiKeys(detail, settings);
-			object[] messages = new object[2]
-			{
-				new
+			PromptPackage prompt = new PromptPackage(
+				new[]
 				{
-					role = "system",
-					content = AnalysisSystemPrompt
+					new PromptMessage("system", AnalysisSystemPrompt),
+					new PromptMessage("user", "报错标题：" + safeTitle + "\n<error>\n" + safeDetail + "\n</error>")
 				},
-				new
-				{
-					role = "user",
-					content = "报错标题：" + safeTitle + "\n<error>\n" + safeDetail + "\n</error>"
-				}
-			};
-			string requestJson = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(
+				AnalysisMaxOutputTokens,
+				modelName);
+			long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+#if BANNERLORD_1_4_OR_GREATER
+			string apiLine = "1.4";
+#else
+			string apiLine = "1.3";
+#endif
+			TraceContext trace = new TraceContext(
+				"af-error-analysis-" + DateTime.UtcNow.Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture),
+				runtimeGeneration,
+				runtimeGeneration,
+				"error-analysis",
+				apiLine);
+			LlmProviderSnapshot provider = new LlmProviderSnapshot(
+				"auxiliary-error-analysis",
 				apiUrl,
 				modelName,
-				messages,
-				AnalysisMaxOutputTokens,
-				0f,
-				out var controlMode,
-				disableThinkingControls: true,
-				useConfiguredMaxTokens: false);
-			using CancellationTokenSource timeout = new CancellationTokenSource(AnalysisRequestTimeoutMilliseconds);
-			using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			LlmApiCompat.ApplyAuthenticationHeaders(request, apiUrl, apiKey);
-			request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
-			using HttpResponseMessage response = DuelSettings.GlobalClient.SendAsync(request, timeout.Token).GetAwaiter().GetResult();
-			string responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			if (!response.IsSuccessStatusCode)
+				AnalysisRequestTimeoutMilliseconds,
+				AnalysisMaxOutputTokens);
+			LlmGenerateResult generated = new LegacyConfiguredChatGateway(
+				_ => apiKey,
+				temperature: 0f,
+				disableThinking: true)
+				.GenerateAsync(
+					new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+					CancellationToken.None)
+				.GetAwaiter()
+				.GetResult();
+			string controlMode = "shared-gateway";
+			if (generated == null || generated.Status != LlmResultStatus.Succeeded)
 			{
-					error = "前处理 API 返回 HTTP " + (int)response.StatusCode + " " + (response.ReasonPhrase ?? "") + "。\n" + NormalizeText(responseBody, "（响应正文为空）");
-				Logger.Log("AiErrorAnalysis", "分析请求失败 status=" + (int)response.StatusCode + " model=" + modelName + " mode=" + controlMode);
+				int? statusCode = generated?.Metadata?.StatusCode;
+				error = statusCode.HasValue
+					? "前处理 API 返回 HTTP " + statusCode.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "。"
+					: "前处理 API 请求失败：" + (generated?.ErrorCode ?? "empty_result");
+				Logger.Log("AiErrorAnalysis", "分析请求失败 status=" + (statusCode?.ToString() ?? "unknown") + " model=" + modelName + " mode=" + controlMode);
 				return false;
 			}
-			analysis = NormalizeText(LlmApiCompat.ExtractAssistantText(responseBody), "");
+			analysis = NormalizeText(generated.RawText, "");
 			if (string.IsNullOrWhiteSpace(analysis))
 			{
 				error = "前处理 API 已响应，但没有解析出可用的模型回复。";

@@ -1,0 +1,1527 @@
+{
+  "fixtureVersion": 1,
+  "kind": "syncdata-binding-catalog",
+  "assemblyIdentity": "AnimusForge",
+  "bindingCount": 121,
+  "uniqueKeyCount": 95,
+  "entries": [
+    {
+      "key": "_AnimusForge_setup_done_v1",
+      "type": "bool",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "ModOnboardingBehavior.cs",
+          "line": 246,
+          "ref": "_setupDone",
+          "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_afNoblePrisonerEncounterMeeting_v1",
+      "type": "TroopRoster",
+      "kind": "native-save-type",
+      "bindings": [
+        {
+          "source": "NoblePrisonerEscortBehavior.cs",
+          "line": 66,
+          "ref": "_encounterMeetingProfile",
+          "type": "TroopRoster",
+          "kind": "native-save-type"
+        }
+      ]
+    },
+    {
+      "key": "_afNoblePrisonerLordsHall_v1",
+      "type": "TroopRoster",
+      "kind": "native-save-type",
+      "bindings": [
+        {
+          "source": "NoblePrisonerEscortBehavior.cs",
+          "line": 65,
+          "ref": "_lordsHallProfile",
+          "type": "TroopRoster",
+          "kind": "native-save-type"
+        }
+      ]
+    },
+    {
+      "key": "_afNoblePrisonerSettlementEntry_v1",
+      "type": "TroopRoster",
+      "kind": "native-save-type",
+      "bindings": [
+        {
+          "source": "NoblePrisonerEscortBehavior.cs",
+          "line": 64,
+          "ref": "_settlementEntryProfile",
+          "type": "TroopRoster",
+          "kind": "native-save-type"
+        }
+      ]
+    },
+    {
+      "key": "_afNoblePrisonerTownAftermath_v1",
+      "type": "TroopRoster",
+      "kind": "native-save-type",
+      "bindings": [
+        {
+          "source": "NoblePrisonerEscortBehavior.cs",
+          "line": 63,
+          "ref": "_townAftermathProfile",
+          "type": "TroopRoster",
+          "kind": "native-save-type"
+        }
+      ]
+    },
+    {
+      "key": "_af_compressedMemoryBlocks_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18278,
+          "ref": "dictionaryMemoryBlocks",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18644,
+          "ref": "dictionaryMemoryBlocksLoad",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_af_dailyMemoryDrafts_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18261,
+          "ref": "dictionaryMemoryDrafts",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18615,
+          "ref": "dictionaryMemoryDraftsLoad",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_af_daimao_singleton_spawn_resolved_v1",
+      "type": "bool",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "AnimusForgeUniqueCosmeticItemBehavior.cs",
+          "line": 43,
+          "ref": "_spawnResolved",
+          "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_daimao_singleton_spawn_settlement_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "AnimusForgeUniqueCosmeticItemBehavior.cs",
+          "line": 44,
+          "ref": "_spawnSettlementId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_memoryOverviewStates_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18309,
+          "ref": "dictionaryMemoryOverviewStates",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18682,
+          "ref": "dictionaryMemoryOverviewStatesLoad",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_af_npcMajorActionSummaries_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18340,
+          "ref": "dictionaryMajorActionSummaries",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18719,
+          "ref": "dictionaryMajorActionSummariesLoad",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_af_terminal_last_hint_day_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "AnimusForgeTerminalBehavior.cs",
+          "line": 90,
+          "ref": "_lastTerminalHintDay",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_unreadWeeklyReportNotices_v1",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18440,
+          "ref": "unreadWeeklyReportNoticeEventIds",
+          "type": "List<string>",
+          "kind": "list"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18880,
+          "ref": "unreadWeeklyReportNoticeEventIdsLoad",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_weeklyReportReadingXpClaimed_v1",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18444,
+          "ref": "weeklyReportReadingXpClaimedEventIds",
+          "type": "List<string>",
+          "kind": "list"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18883,
+          "ref": "weeklyReportReadingXpClaimedEventIdsLoad",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_weeklyReportReadingXpPendingCharm_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18452,
+          "ref": "weeklyReportReadingXpPendingCharm",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18886,
+          "ref": "_weeklyReportReadingXpPendingCharm",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_weeklyReportReadingXpPendingCount_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18451,
+          "ref": "weeklyReportReadingXpPendingCount",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18885,
+          "ref": "_weeklyReportReadingXpPendingCount",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_weeklyReportReadingXpPendingLeadership_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18453,
+          "ref": "weeklyReportReadingXpPendingLeadership",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18887,
+          "ref": "_weeklyReportReadingXpPendingLeadership",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_weeklyReportReadingXpPendingSteward_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18454,
+          "ref": "weeklyReportReadingXpPendingSteward",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18888,
+          "ref": "_weeklyReportReadingXpPendingSteward",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_xihai_legacy_equipment_cleanup_v1",
+      "type": "bool",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "AnimusForgeUniqueCosmeticItemBehavior.cs",
+          "line": 45,
+          "ref": "_legacyCleanupCompleted",
+          "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_dialogueHistory_v2",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18243,
+          "ref": "dictionary2",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18587,
+          "ref": "dictionary8",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_duelCooldowns",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "DuelBehavior.cs",
+          "line": 1987,
+          "ref": "_duelCooldowns",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_eventKingdomOpeningSummaries_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18421,
+          "ref": "dictionary6",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18844,
+          "ref": "dictionary12",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleAnnualEffectUntilDay_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathSettlementRuntimeBridge.cs",
+          "line": 43,
+          "ref": "_annualEffectUntilDay",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleConstructionSpeedMultiplier_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathSettlementRuntimeBridge.cs",
+          "line": 48,
+          "ref": "_constructionSpeedMultiplier",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleLastObservedProsperity_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathSettlementRuntimeBridge.cs",
+          "line": 45,
+          "ref": "_lastObservedProsperity",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleLordIntroLetterBodyBySender_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathLordRecruitmentRuntimeBridge.cs",
+          "line": 63,
+          "ref": "_letterBodyBySender",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleLordIntroLetterCastleBySender_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathLordRecruitmentRuntimeBridge.cs",
+          "line": 64,
+          "ref": "_letterCastleBySender",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleLordIntroLetterDueDayBySender_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathLordRecruitmentRuntimeBridge.cs",
+          "line": 61,
+          "ref": "_letterDueDayBySender",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleLordIntroLetterRecipientBySender_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathLordRecruitmentRuntimeBridge.cs",
+          "line": 62,
+          "ref": "_letterRecipientBySender",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleProsperityGrowthMultiplier_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathSettlementRuntimeBridge.cs",
+          "line": 44,
+          "ref": "_prosperityGrowthMultiplier",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleRecruitQualityMultiplier_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathSettlementRuntimeBridge.cs",
+          "line": 47,
+          "ref": "_recruitQualityMultiplier",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleRecruitmentSpeedMultiplier_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathSettlementRuntimeBridge.cs",
+          "line": 46,
+          "ref": "_recruitmentSpeedMultiplier",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCastleRegularPrisonerTrustByTroopId_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "CastleAftermathPrisonerTrustRuntimeBridge.cs",
+          "line": 20,
+          "ref": "_regularTrustByTroopId",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCivicProsperityBuffUntilDayBySettlement_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 457,
+          "ref": "_civicProsperityBuffUntilDayBySettlement",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCivicProsperityGrowthMultiplierBySettlement_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 459,
+          "ref": "_civicProsperityGrowthMultiplierBySettlement",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczCivicProsperityLastObservedBySettlement_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 458,
+          "ref": "_civicProsperityLastObservedBySettlement",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczRallyOathLoyaltyLockUntilDayBySettlement_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 460,
+          "ref": "_rallyOathLoyaltyLockUntilDayBySettlement",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczRallyOathLoyaltyLockValueBySettlement_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 461,
+          "ref": "_rallyOathLoyaltyLockValueBySettlement",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 462,
+          "ref": "_rallyOathRecruitmentBuffUntilDayBySettlement",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczRepopulationProsperityDebuffUntilDayBySettlement_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 455,
+          "ref": "_repopulationProsperityDebuffUntilDayBySettlement",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczRepopulationProsperityLastObservedBySettlement_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SiegeAiInterventionBehavior.cs",
+          "line": 456,
+          "ref": "_repopulationProsperityLastObservedBySettlement",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczVillageGradualCultureFinishDays_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "VillageAftermathBehavior.cs",
+          "line": 47,
+          "ref": "_gradualCultureFinishDayByVillageId",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_gcczVillageGradualCultureTargets_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "VillageAftermathBehavior.cs",
+          "line": 46,
+          "ref": "_gradualCultureTargetByVillageId",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_kingdomStabilityRelationOffsets_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18492,
+          "ref": "dictionary14b",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18930,
+          "ref": "dictionary15",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_kingdomStability_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18481,
+          "ref": "dictionary13",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18914,
+          "ref": "dictionary14",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_lastAutoGeneratedWeeklyReportWeek_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18515,
+          "ref": "_lastAutoGeneratedWeeklyReportWeek",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18910,
+          "ref": "_lastAutoGeneratedWeeklyReportWeek",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_lastProcessedKingdomRebellionWeek_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18516,
+          "ref": "_lastProcessedKingdomRebellionWeek",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18975,
+          "ref": "_lastProcessedKingdomRebellionWeek",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_modCreatedRebelKingdomIds_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18514,
+          "ref": "dictionary14d",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18962,
+          "ref": "dictionary17",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_npcActionGlobalOrderCounter_v1",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18391,
+          "ref": "_npcActionGlobalOrderCounter",
+          "type": "int",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18837,
+          "ref": "_npcActionGlobalOrderCounter",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_npcMajorActions_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18372,
+          "ref": "dictionary3",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18756,
+          "ref": "dictionary9",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_npcPersonaProfiles_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18409,
+          "ref": "dictionary5",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18812,
+          "ref": "dictionary11",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_npcRecentActions_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18390,
+          "ref": "dictionary4",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18784,
+          "ref": "dictionary10",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_patienceStates_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 37172,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 37181,
+          "ref": "dictionary2",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardDebts_v2",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 1337,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardDirectTrustProgressCarry_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4557,
+          "ref": "_directTrustProgressCarryStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardGeneratedItems_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 1622,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardHeroJoinOriginalClans_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 1430,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardMerchantFacts_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4360,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardNpcTrust_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4445,
+          "ref": "_npcTrustStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardPublicTrustProgressCarry_v2",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4673,
+          "ref": "_publicTrustProgressCarryStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardPublicTrust_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4446,
+          "ref": "_publicTrustStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardSettlementTrustCentiCarry_v2",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4617,
+          "ref": "_settlementTrustCentiCarryStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardSettlementTrustSharedPublicCarry_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4618,
+          "ref": "_settlementTrustSharedPublicCarryStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rewardTradeTrustCarry_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RewardSystemBehavior.cs",
+          "line": 4509,
+          "ref": "_tradeTrustValueCarryStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_romanceMarriageRecords_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RomanceSystemBehavior.cs",
+          "line": 143,
+          "ref": "marriageRecordStorageForSync",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_romancePrivateLove_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "RomanceSystemBehavior.cs",
+          "line": 137,
+          "ref": "_privateLove",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_sceneHeroRevisitDays_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "ShoutBehavior.cs",
+          "line": 10853,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "ShoutBehavior.cs",
+          "line": 10856,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntArmedCarryoverActive_v1",
+      "type": "bool",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 235,
+          "ref": "_armedSettlementCarryoverActive",
+          "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntArmedCarryoverSettlementId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 236,
+          "ref": "_armedSettlementCarryoverSettlementId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntArmedCarryoverSource_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 237,
+          "ref": "_armedSettlementCarryoverSource",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntCrimeRefillReserveByFaction_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 232,
+          "ref": "_crimeRefillReserveByFactionStorage",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntCriminalTrustRewardTenthBySettlement_v1",
+      "type": "Dictionary<string, int>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 234,
+          "ref": "_criminalTrustRewardTenthBySettlementStorage",
+          "type": "Dictionary<string, int>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntDeferredCrimeByFaction_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 231,
+          "ref": "_pendingDeferredCrimeByFactionStorage",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntLastObservedNativeCrimeByFaction_v1",
+      "type": "Dictionary<string, float>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 233,
+          "ref": "_lastObservedNativeCrimeByFactionStorage",
+          "type": "Dictionary<string, float>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingDeferredLordSceneDiplomacy_v1",
+      "type": "bool",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 226,
+          "ref": "_pendingDeferredLordSceneDiplomacy",
+          "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingDeferredLordSceneReason_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 230,
+          "ref": "_pendingDeferredLordSceneReason",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingDeferredLordSceneSettlementId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 229,
+          "ref": "_pendingDeferredLordSceneSettlementId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingDeferredLordSceneTargetFactionId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 228,
+          "ref": "_pendingDeferredLordSceneTargetFactionId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingDeferredLordSceneTargetHeroId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 227,
+          "ref": "_pendingDeferredLordSceneTargetHeroId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingTempWarEnemyFactionId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 225,
+          "ref": "_pendingTemporaryDungeonWarEnemyFactionId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingTempWarPeace_v1",
+      "type": "bool",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 223,
+          "ref": "_pendingTemporaryDungeonWarPeace",
+          "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntPendingTempWarPlayerFactionId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 224,
+          "ref": "_pendingTemporaryDungeonWarPlayerFactionId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_sceneTauntWarnedTargets_v1",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "SceneTauntBehavior.cs",
+          "line": 222,
+          "ref": "_warnedSceneTargetKeysStorage",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_setsOtherSettlementEntryProfile_v1",
+      "type": "TroopRoster",
+      "kind": "native-save-type",
+      "bindings": [
+        {
+          "source": "SettlementEntryTroopSelectionBehavior.cs",
+          "line": 139,
+          "ref": "_otherSettlementProfile",
+          "type": "TroopRoster",
+          "kind": "native-save-type"
+        }
+      ]
+    },
+    {
+      "key": "_setsOwnSettlementEntryProfile_v1",
+      "type": "TroopRoster",
+      "kind": "native-save-type",
+      "bindings": [
+        {
+          "source": "SettlementEntryTroopSelectionBehavior.cs",
+          "line": 138,
+          "ref": "_ownSettlementProfile",
+          "type": "TroopRoster",
+          "kind": "native-save-type"
+        }
+      ]
+    },
+    {
+      "key": "_setsPendingSameKingdomVassalRebellionKingdomId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SettlementEntryTroopSelectionBehavior.cs",
+          "line": 140,
+          "ref": "_pendingSameKingdomVassalRebellionKingdomId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_setsPendingSameKingdomVassalRebellionOwnerClanId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SettlementEntryTroopSelectionBehavior.cs",
+          "line": 142,
+          "ref": "_pendingSameKingdomVassalRebellionOwnerClanId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_setsPendingSameKingdomVassalRebellionSettlementId_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "SettlementEntryTroopSelectionBehavior.cs",
+          "line": 141,
+          "ref": "_pendingSameKingdomVassalRebellionSettlementId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_shownRecords_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18224,
+          "ref": "dictionary",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18548,
+          "ref": "dictionary7",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_vdBilateralDiplomacy",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "VoteDealBehavior.cs",
+          "line": 501,
+          "ref": "serializedBilateralDiplomacyForSync",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_vdDialogueProposalKeys",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "VoteDealBehavior.cs",
+          "line": 504,
+          "ref": "dialogueProposalKeysForSync",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_vdSerializedDeals",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "VoteDealBehavior.cs",
+          "line": 498,
+          "ref": "serializedDealsForSync",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_vdShownRequiredAgendaVoteKeys",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "VoteDealBehavior.cs",
+          "line": 507,
+          "ref": "shownRequiredAgendaVoteKeysForSync",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_voiceMapping_export_folder_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18528,
+          "ref": "_voiceMappingExportFolderStorage",
+          "type": "string",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18977,
+          "ref": "_voiceMappingExportFolderStorage",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_weeklyReportAppliedStabilityDeltas_v1",
+      "type": "Dictionary<string, string>",
+      "kind": "flattened-dictionary",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 18503,
+          "ref": "dictionary14c",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18946,
+          "ref": "dictionary16",
+          "type": "Dictionary<string, string>",
+          "kind": "flattened-dictionary"
+        }
+      ]
+    }
+  ],
+  "invariants": [
+    "every exact literal SyncData key has at least one ref binding",
+    "all bindings for one key keep one C# type across save/load branches",
+    "native save types remain named and are not replaced by new DTOs",
+    "unknown data and legacy keys are retained by the runtime policy"
+  ]
+}

@@ -9,6 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.PolicyEffects;
 using AnimusForge.PolicyTargets;
 using HarmonyLib;
@@ -3405,14 +3407,23 @@ public sealed partial class CustomPolicyBehavior
 		Func<string, string, long, Task<string>> testOverride = PlayerPolicyApiTextOverrideForTests;
 		if (testOverride == null)
 		{
-			apiResult = await PolicyLlmClient.CallPolicyApiWithRetriesAsync(
+			PromptPackage prompt = LegacyPolicyLlmGateway.BuildPromptPackage(
 				messageArray,
+				Math.Max(1, callProfile?.MaxTokens ?? 1),
+				callProfile?.ModelName);
+			InteractionStage stage = resolvedSource.IndexOf("Postprocess", StringComparison.OrdinalIgnoreCase) >= 0
+				? InteractionStage.Postprocess
+				: InteractionStage.MainReply;
+			LlmGenerateRequest gatewayRequest = LegacyPolicyLlmGateway.BuildRequest(
+				prompt,
 				callProfile,
-				PlayerPolicyEvaluationTimeoutMilliseconds,
 				resolvedSource,
 				runtimeGeneration,
-				3,
-				cancellationToken);
+				PlayerPolicyEvaluationTimeoutMilliseconds,
+				stage);
+			LlmGenerateResult gatewayResult = await new LegacyPolicyLlmGateway(false, callProfile)
+				.GenerateAsync(gatewayRequest, cancellationToken).ConfigureAwait(false);
+			apiResult = LegacyPolicyLlmGateway.ToLegacyResult(gatewayResult);
 		}
 		else
 		{

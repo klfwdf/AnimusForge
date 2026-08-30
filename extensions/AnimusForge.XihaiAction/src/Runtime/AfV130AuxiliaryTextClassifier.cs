@@ -395,7 +395,16 @@ namespace AnimusForge.XihaiAction
                 }
                 finally
                 {
-                    gate.Release();
+                    try
+                    {
+                        gate.Release();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        // Dispose may race an already acquired flight gate. The
+                        // lifetime token has already cancelled the operation;
+                        // releasing a disposed semaphore is otherwise harmless.
+                    }
                 }
             }
         }

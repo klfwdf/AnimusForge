@@ -1,0 +1,32 @@
+{
+  "fixtureVersion": 1,
+  "kind": "persistence-namespace-migration-catalog",
+  "assemblyIdentity": "AnimusForge",
+  "migrationPolicy": {
+    "readMode": "legacy-first",
+    "publishMode": "single-point-after-validation",
+    "idempotent": true,
+    "preserveUnknownData": true,
+    "onFailure": "retain-legacy-representation-and-report",
+    "deleteLegacyKeys": false
+  },
+  "namespaces": [
+    { "id": "af.memory", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["MyBehavior.cs"], "legacyKeyPrefixes": ["_dialogueHistory_v2", "_af_dailyMemoryDrafts_v1", "_af_compressedMemoryBlocks_v1", "_af_memoryOverviewStates_v1"] },
+    { "id": "af.conversation", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["ShoutBehavior.cs", "MyBehavior.cs", "CourierDeliveryBehavior.cs"], "legacyKeyPrefixes": ["_scene", "_courier", "_dialogueHistory_v2"] },
+    { "id": "af.reward", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["RewardSystemBehavior.cs", "DuelBehavior.cs"], "legacyKeyPrefixes": ["_reward", "_duelCooldowns"] },
+    { "id": "af.scene", "schema": 1, "lifecycle": "runtime-toggle-unsafe", "owners": ["ShoutBehavior.cs", "SceneTauntBehavior.cs"], "legacyKeyPrefixes": ["_sceneTaunt", "_sceneHeroRevisitDays_v1"] },
+    { "id": "af.policy", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["PolicySystem/Core/CustomPolicyBehavior.Lifecycle.cs", "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"], "legacyKeyPrefixes": ["_policy", "_vdDialogueProposalKeys", "_vdSerializedDeals"] },
+    { "id": "af.siege", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["SiegeAiInterventionBehavior.cs", "VillageAftermathBehavior.cs", "CastleAftermathSettlementRuntimeBridge.cs"], "legacyKeyPrefixes": ["_gccz", "_sets"] },
+    { "id": "af.bridge.gccz", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["GcczTownRuleMemoryRuntimeBridge.cs", "GcczSettlementCulturePersistenceBehavior.cs"], "legacyKeyPrefixes": ["_gccz"] },
+    { "id": "af.profile", "schema": 1, "lifecycle": "boot-only", "owners": ["DuelSettings.cs", "AIConfigHandler.cs"], "legacyKeyPrefixes": ["_AnimusForge_setup_done_v1", "_voiceMapping_export_folder_v1"] },
+    { "id": "af.world", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["WorldDiplomacyBehavior.cs", "WorldEvents/WorldEventInbox.cs", "WorldMapPartyCommandBehavior.cs"], "legacyKeyPrefixes": ["_vd", "_eventKingdom", "_weeklyReport"] }
+  ],
+  "requiredChecks": [
+    "namespace ids are unique and stable",
+    "each namespace has a positive schema",
+    "legacy key prefixes are hints only and never replace exact key catalog",
+    "migration is idempotent and does not delete legacy keys",
+    "unknown fields remain available in SafeMode",
+    "credentials and private absolute paths are excluded"
+  ]
+}

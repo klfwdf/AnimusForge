@@ -5,7 +5,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
@@ -859,13 +862,20 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			}
 			else
 			{
-				NpcPolicyApiCallResult apiResult = await NpcPolicyLlmClient.CallEventAndRebellionApiWithRetriesAsync(
+				PromptPackage prompt = LegacyPolicyLlmGateway.BuildPromptPackage(
 					request.SystemPrompt,
 					FoundingGenerationMaxTokens,
-					FoundingGenerationTimeoutMilliseconds,
+					"event-and-rebellion");
+				LlmGenerateRequest gatewayRequest = LegacyPolicyLlmGateway.BuildRequest(
+					prompt,
+					null,
 					Source,
 					request.RuntimeGeneration,
-					3);
+					FoundingGenerationTimeoutMilliseconds,
+					InteractionStage.MainReply);
+				LlmGenerateResult gatewayResult = await new LegacyPolicyLlmGateway(eventAndRebellionRoute: true)
+					.GenerateAsync(gatewayRequest, CancellationToken.None).ConfigureAwait(false);
+				NpcPolicyApiCallResult apiResult = LegacyPolicyLlmGateway.ToLegacyResult(gatewayResult);
 				if (!apiResult.Success)
 				{
 					result.ErrorMessage = apiResult.ErrorMessage ?? "API 请求失败。";
