@@ -370,7 +370,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			allowedTagFamilies,
 			economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
 			economyPort,
-			economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
+			economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities(),
+			economyPort == null ? null : (actionPlan, snapshot, isEconomyOnly) =>
+				instance.GateCourierEconomyActionPlanForExternal(actionPlan, snapshot, sessionId, isEconomyOnly));
 	}
 
 	public static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal()
@@ -5246,13 +5248,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			CourierSession session = GetSessionById(sessionId);
 			Hero recipient = session == null ? null : ResolveRecipient(session);
-			if (session == null
-				|| IsTerminalStage(session)
-				|| !session.DeliveryApplied
-				|| session.PostprocessConsumed
-				|| recipient == null
+			if (recipient == null
 				|| recipient.IsDead
-				|| !string.Equals(snapshot.Identity.SubjectId, SafeHeroId(recipient), StringComparison.OrdinalIgnoreCase))
+				|| !IsCourierActionSessionEligible(session, snapshot, sessionId, SafeHeroId(recipient)))
 			{
 				Log("detached courier action rejected session=" + sessionId + " reason=target_or_delivery_invalid");
 				return InteractionStatus.RejectedByValidation;
@@ -5268,6 +5266,86 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			Log("detached courier action failed session=" + (sessionId ?? "") + " error=" + ex.Message);
 			return InteractionStatus.RejectedByValidation;
 		}
+	}
+
+	/// <summary>
+	/// Validates the Courier owner before any Economy port mutation. Economy-only
+	/// plans also reserve the already-persisted PostprocessConsumed flag first,
+	/// so a new trace or loaded save cannot replay the same session action.
+	/// Mixed plans retain their later legacy commit and are only prevalidated here.
+	/// </summary>
+	private InteractionStatus GateCourierEconomyActionPlanForExternal(
+		ActionPlan actionPlan,
+		GameInteractionSnapshot snapshot,
+		string sessionId,
+		bool isEconomyOnly)
+	{
+		try
+		{
+			if (!TWParallel.IsMainThread()
+				|| actionPlan == null
+				|| string.IsNullOrWhiteSpace(actionPlan.RawPostprocessId)
+				|| actionPlan.Actions.Count == 0)
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			bool allEconomy = actionPlan.Actions.All(LegacyEconomyRewardDebtAdapter.IsEconomyAction);
+			if (!actionPlan.Actions.Any(LegacyEconomyRewardDebtAdapter.IsEconomyAction)
+				|| allEconomy != isEconomyOnly)
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			CourierSession session = GetSessionById(sessionId);
+			Hero recipient = session == null ? null : ResolveRecipient(session);
+			if (recipient == null
+				|| recipient.IsDead
+				|| !IsCourierActionSessionEligible(session, snapshot, sessionId, SafeHeroId(recipient)))
+			{
+				Log("detached courier economy gate rejected session=" + (sessionId ?? "") + " reason=target_or_delivery_invalid");
+				return InteractionStatus.RejectedByValidation;
+			}
+			if (isEconomyOnly && !TryReserveCourierEconomyOnly(session))
+			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			Log("detached courier economy gate accepted session=" + session.Id + " economyOnly=" + isEconomyOnly);
+			return InteractionStatus.Executed;
+		}
+		catch (Exception ex)
+		{
+			Log("detached courier economy gate failed session=" + (sessionId ?? "") + " error=" + ex.Message);
+			return InteractionStatus.RejectedByValidation;
+		}
+	}
+
+	private static bool IsCourierActionSessionEligible(
+		CourierSession session,
+		GameInteractionSnapshot snapshot,
+		string expectedSessionId,
+		string recipientHeroId)
+	{
+		return session != null
+			&& snapshot?.Identity != null
+			&& snapshot.Identity.Channel == InteractionChannel.Courier
+			&& !string.IsNullOrWhiteSpace(expectedSessionId)
+			&& string.Equals(session.Id, expectedSessionId, StringComparison.Ordinal)
+			&& string.Equals(snapshot.Identity.SessionId, expectedSessionId, StringComparison.Ordinal)
+			&& !IsInboundToPlayer(session)
+			&& !IsTerminalStage(session)
+			&& session.DeliveryApplied
+			&& !session.PostprocessConsumed
+			&& !string.IsNullOrWhiteSpace(recipientHeroId)
+			&& string.Equals(snapshot.Identity.SubjectId, recipientHeroId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool TryReserveCourierEconomyOnly(CourierSession session)
+	{
+		if (session == null || session.PostprocessConsumed)
+		{
+			return false;
+		}
+		session.PostprocessConsumed = true;
+		return true;
 	}
 
 	private void PersistCourierReplyToHistories(CourierSession session, Hero recipient, string processedReplyText)

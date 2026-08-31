@@ -37,7 +37,8 @@ static ActionPlan Parse(string raw)
 static LegacyNativeActionPlanExecutor BuildExecutor(
     Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> legacyExecute,
     Func<EconomyRewardDebtReplayPlan, GameInteractionSnapshot, EconomyRewardDebtReplayResult> replay,
-    CapabilitySet capabilities = null)
+    CapabilitySet capabilities = null,
+    Func<ActionPlan, GameInteractionSnapshot, bool, InteractionStatus> economyExecutionGate = null)
 {
     LegacyEconomyRewardDebtMainThreadPort port = new LegacyEconomyRewardDebtMainThreadPort(
         () => true,
@@ -45,10 +46,12 @@ static LegacyNativeActionPlanExecutor BuildExecutor(
         replay);
     return new LegacyNativeActionPlanExecutor(
         legacyExecute,
-        allowedTagFamilies: LegacyActionTagCatalog.DefaultAllowedTagFamilies,
-        economyPlanner: new LegacyEconomyRewardDebtAdapter(),
-        economyPort: port,
-        economyCapabilities: capabilities ?? LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
+        64,
+        LegacyActionTagCatalog.DefaultAllowedTagFamilies,
+        new LegacyEconomyRewardDebtAdapter(),
+        port,
+        capabilities ?? LegacyEconomyRewardDebtAdapter.CreateAllCapabilities(),
+        economyExecutionGate);
 }
 
 static EconomyRewardDebtReplayResult Applied(int count = 1)
@@ -110,14 +113,74 @@ AssertTrue(commit.Status == InteractionStatus.Executed && commit.HistoryWritten,
 AssertTrue(committedFacts == 1 && memory.LastFacts.Count == 1, "owner facts were not merged into memory commit");
 
 int economyOnlyLegacyCalls = 0;
+List<string> economyOnlyOrder = new List<string>();
 LegacyNativeActionPlanExecutor economyOnly = BuildExecutor(
     (plan, snapshot) => { economyOnlyLegacyCalls++; return InteractionStatus.Executed; },
-    (plan, snapshot) => Applied());
+    (plan, snapshot) => { economyOnlyOrder.Add("replay"); return Applied(); },
+    economyExecutionGate: (plan, snapshot, isEconomyOnly) =>
+    {
+        economyOnlyOrder.Add("gate");
+        AssertTrue(isEconomyOnly, "economy-only gate received a mixed plan");
+        return InteractionStatus.Executed;
+    });
 InteractionStatus economyOnlyStatus = economyOnly.ValidateAndExecute(
     Parse("reply [ACTION:GIVE_GOLD:30]"),
     Snapshot());
 AssertTrue(economyOnlyStatus == InteractionStatus.Executed && economyOnlyLegacyCalls == 0,
     "economy-only plan was delegated to the legacy executor");
+AssertTrue(economyOnlyOrder.SequenceEqual(new[] { "gate", "replay" }),
+    "economy-only owner was not reserved before replay");
+
+int rejectedGateReplayCalls = 0;
+LegacyNativeActionPlanExecutor rejectedGate = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("legacy must not run"),
+    (plan, snapshot) => { rejectedGateReplayCalls++; return Applied(); },
+    economyExecutionGate: (plan, snapshot, isEconomyOnly) => InteractionStatus.RejectedByValidation);
+AssertTrue(rejectedGate.ValidateAndExecute(Parse("[ACTION:GIVE_GOLD:32]"), Snapshot())
+    == InteractionStatus.RejectedByValidation && rejectedGateReplayCalls == 0,
+    "rejected economy-only reservation allowed an economy side effect");
+
+List<string> failedReplayOrder = new List<string>();
+LegacyNativeActionPlanExecutor failedAfterReservation = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("legacy must not run"),
+    (plan, snapshot) =>
+    {
+        failedReplayOrder.Add("replay:failed");
+        return new EconomyRewardDebtReplayResult(
+            EconomyRewardDebtReplayStatus.Failed, 0, Array.Empty<FactRecord>(), "fixture_rejected");
+    },
+    economyExecutionGate: (plan, snapshot, isEconomyOnly) =>
+    {
+        failedReplayOrder.Add("gate:reserved");
+        return InteractionStatus.Executed;
+    });
+AssertTrue(failedAfterReservation.ValidateAndExecute(Parse("[ACTION:GIVE_GOLD:33]"), Snapshot())
+    == InteractionStatus.RejectedByValidation
+    && failedAfterReservation.ConfirmedFacts.Count == 0
+    && failedReplayOrder.SequenceEqual(new[] { "gate:reserved", "replay:failed" }),
+    "failed replay did not preserve reservation-before-side-effect ordering");
+
+int throwingGateReplayCalls = 0;
+LegacyNativeActionPlanExecutor throwingGate = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("legacy must not run"),
+    (plan, snapshot) => { throwingGateReplayCalls++; return Applied(); },
+    economyExecutionGate: (plan, snapshot, isEconomyOnly) => throw new InvalidOperationException("gate failure"));
+AssertTrue(throwingGate.ValidateAndExecute(Parse("[ACTION:GIVE_GOLD:34]"), Snapshot())
+    == InteractionStatus.RejectedByValidation && throwingGateReplayCalls == 0,
+    "throwing economy gate allowed an economy side effect");
+
+List<string> mixedOrder = new List<string>();
+LegacyNativeActionPlanExecutor guardedMixed = BuildExecutor(
+    (plan, snapshot) => { mixedOrder.Add("legacy"); return InteractionStatus.Executed; },
+    (plan, snapshot) => { mixedOrder.Add("replay"); return Applied(); },
+    economyExecutionGate: (plan, snapshot, isEconomyOnly) =>
+    {
+        mixedOrder.Add(isEconomyOnly ? "gate:only" : "gate:mixed");
+        return InteractionStatus.Executed;
+    });
+AssertTrue(guardedMixed.ValidateAndExecute(mixed, Snapshot()) == InteractionStatus.Executed
+    && mixedOrder.SequenceEqual(new[] { "gate:mixed", "replay", "legacy" }),
+    "mixed Courier-style gate did not validate before economy replay");
 
 int missingCapabilityLegacyCalls = 0;
 LegacyNativeActionPlanExecutor missingCapability = BuildExecutor(
@@ -155,7 +218,7 @@ AssertTrue(filteredRichText.IndexOf("[ROT]", StringComparison.Ordinal) < 0
     && filteredRichText.IndexOf("ACTION:DUEL", StringComparison.OrdinalIgnoreCase) >= 0,
     "balanced economy tag filtering broke nested RichText or retained economy tag");
 
-Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
+Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 economyGate=5 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
 
 sealed class RecordingMemory : IInteractionMemory, IInteractionMemoryBatchCommitter
 {

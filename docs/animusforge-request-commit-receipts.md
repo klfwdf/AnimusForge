@@ -75,6 +75,31 @@ owner's draft/line lists, already traversed by sanitization, not the world's NPC
 normal Hero resolution retains direct ID lookup before the existing fallback.
 No tick work, queue, new save key/type or persistent receipt was introduced.
 
+## Courier Economy reservation (LOCAL-7-E)
+
+The generic Economy-aware executor now accepts an optional channel-owner gate.
+Planning, raw/typed plan equality and capability checks remain pure and run
+first; when an Economy replay is present, the gate must return `Executed`
+before the main-thread Economy port can mutate game state. Native and Scene
+owners do not supply this Courier-specific lifecycle gate.
+
+Courier supplies its existing session owner. It re-resolves the current session
+and recipient and validates the exact Courier channel/session/subject,
+outbound direction, delivered state, non-terminal
+state and unconsumed postprocess. Mixed plans are prevalidated before Economy
+and continue to the filtered legacy callback. Economy-only plans additionally
+set the existing `PostprocessConsumed` flag before Economy replay while leaving
+the existing visible/reply fields untouched; raw postprocess is never treated
+as reply prose. A different trace or loaded save therefore cannot treat the
+session as unconsumed. A rejected/throwing gate never calls Economy.
+
+`PostprocessConsumed` was already part of each CourierSession JSON under
+`_af_courier_sessions_v1`; no key, physical SyncData type, parallel receipt or
+new save field was added. This is fail-closed, at-most-once owner behavior, not
+a disk transaction: a process crash before a later game save can still lose
+in-memory state, and a replay failure after reservation remains consumed rather
+than being automatically retried.
+
 `tools/ProductionOptInEntryReplayTests` includes the production-DLL missing-Campaign
 regression (all three channels and repeated attempts), a thread-guard fixture,
 public void signature checks and raw-owner publication/sanitizer fixtures. They
@@ -91,12 +116,12 @@ do not initialize a Campaign or prove live writes, game scheduling or old saves.
   Owner writes can partially mutate lists and consume pending material triggers
   before failure. No rollback or safe automatic retry is implied. Scene session
   forwarding in the detached facade remains a separate follow-up (currently -1).
-- The economy-only Courier route can bypass the later legacy session gate and
-  consumption flag. Review its owner validation/persistent consumption boundary
-  before default cutover; this cache is not a substitute for that business gate.
+- Courier economy-only now has an offline-verified owner reservation, but live
+  save/load and asset evidence remain required. Process-local receipts are still
+  not the durable business authority.
 - A mixed Economy/legacy plan can partially apply before the later action is
-  rejected. The new reservation prevents immediate replay, but does not roll
-  back the earlier transfer or recover discarded confirmed facts.
+  rejected. The request-level reservation prevents immediate replay, but does
+  not roll back the earlier transfer or recover discarded confirmed facts.
 - There is no automatic memory-only retry or compensation: an unconfirmed
   owner result can still mean a partial append. Unknown effects remain
   failed, not fabricated as successful facts.

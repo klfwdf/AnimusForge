@@ -18,7 +18,10 @@ namespace AnimusForge.Refactor.Adapters;
 /// When an Economy owner is supplied, Economy tags are projected and replayed
 /// exactly once through that owner. The legacy callback receives a filtered
 /// plan containing only non-Economy tags, so existing action authority is
-/// retained without double-mutating rewards or debt.
+/// retained without double-mutating rewards or debt. A channel owner may also
+/// supply a gate that runs after pure planning but before the first Economy
+/// side effect; Courier uses it for live session validation and economy-only
+/// persistent consumption.
 /// </summary>
 public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionReceipt
 {
@@ -28,6 +31,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     private readonly IEconomyRewardDebtReplayPlanner _economyPlanner;
     private readonly IEconomyRewardDebtMainThreadPort _economyPort;
     private readonly CapabilitySet _economyCapabilities;
+    private readonly Func<ActionPlan, GameInteractionSnapshot, bool, InteractionStatus> _economyExecutionGate;
     private IReadOnlyList<FactRecord> _confirmedFacts = Array.Empty<FactRecord>();
 
     public LegacyNativeActionPlanExecutor(
@@ -37,6 +41,18 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
         IEconomyRewardDebtReplayPlanner economyPlanner = null,
         IEconomyRewardDebtMainThreadPort economyPort = null,
         CapabilitySet economyCapabilities = null)
+        : this(execute, maxRawActions, allowedTagFamilies, economyPlanner, economyPort, economyCapabilities, null)
+    {
+    }
+
+    public LegacyNativeActionPlanExecutor(
+        Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> execute,
+        int maxRawActions,
+        IEnumerable<string> allowedTagFamilies,
+        IEconomyRewardDebtReplayPlanner economyPlanner,
+        IEconomyRewardDebtMainThreadPort economyPort,
+        CapabilitySet economyCapabilities,
+        Func<ActionPlan, GameInteractionSnapshot, bool, InteractionStatus> economyExecutionGate)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _maxRawActions = Math.Max(1, maxRawActions);
@@ -53,6 +69,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
         _economyPlanner = economyPlanner;
         _economyPort = economyPort;
         _economyCapabilities = economyCapabilities ?? new CapabilitySet(Array.Empty<string>());
+        _economyExecutionGate = economyExecutionGate;
     }
 
     public IReadOnlyList<FactRecord> ConfirmedFacts => _confirmedFacts;
@@ -105,8 +122,17 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                     return InteractionStatus.RejectedByValidation;
                 }
 
+                List<ActionRequest> remainingActions = actionPlan.Actions
+                    .Where(request => !LegacyEconomyRewardDebtAdapter.IsEconomyAction(request))
+                    .ToList();
                 if (economyPlan.Actions.Count > 0)
                 {
+                    bool isEconomyOnly = remainingActions.Count == 0;
+                    if (_economyExecutionGate != null
+                        && _economyExecutionGate(actionPlan, currentSnapshot, isEconomyOnly) != InteractionStatus.Executed)
+                    {
+                        return InteractionStatus.RejectedByValidation;
+                    }
                     EconomyRewardDebtReplayResult replay = _economyPort.Replay(economyPlan, currentSnapshot);
                     if (replay == null
                         || replay.Status != EconomyRewardDebtReplayStatus.Applied
@@ -117,9 +143,6 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                     _confirmedFacts = replay.ConfirmedFacts ?? Array.Empty<FactRecord>();
                 }
 
-                List<ActionRequest> remainingActions = actionPlan.Actions
-                    .Where(request => !LegacyEconomyRewardDebtAdapter.IsEconomyAction(request))
-                    .ToList();
                 if (remainingActions.Count == 0)
                 {
                     return economyPlan.Actions.Count > 0
