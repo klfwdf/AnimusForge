@@ -4,6 +4,8 @@
 
 ## 当前任务（2026-09-01 框架接续）
 
+- `LOCAL-7-D` IN PROGRESS（2026-09-01 自动接续）：基线 `9b8cb509`、工作树 clean；fetch 后远端仍 `fc8c344e`，ahead 11 / behind 0。Memory owner 切片限 `MyBehavior.cs`、batch memory facade、现有生产回放和文档；先复现无 Campaign 时虚假 Applied，再给原写入实现增加 owner 原始状态读回与结果传播。保留公开 void 兼容入口、写入顺序、session/保留窗口和 SyncData key/type；结果仅证明运行时接受，不宣称落盘/事务原子性。计划生产 DLL 红绿回放、契约、存档身份审计与固定引用双版本/Bootstrap Stage；不部署、不推送、不改默认入口。
+
 - `FRAMEWORK-20260901` VERIFY（框架代码与本地验证已完成，真实 Host 未验收）：本机 canonical worktree 仍为 `G:\AFMOD\AF-REFACTOR`。开始时 HEAD `49eeaf33`、clean；远端 `fc8c344e` 仅新增两份交接文档，已通过 checkpoint `b0cc41da` 与普通 merge `2216df41` 保留双方历史。收尾 fetch 仍为 `fc8c344e`；远端文档中的另一台机器路径/验证记录不替代本机事实。
 - 意图与 owner：沿用现有管线，完成测试工具 owner 的本机依赖框架 `LOCAL-7-C`，Conversation/Memory owner 的请求级 commit/receipt 验证与最小修复，以及阶段 8 准备态验收框架（Bridge/清理候选/回滚/证据门禁）。不引入最终多 DLL 模块图、不删除活跃 facade、不切默认入口、不改玩法/存档 key/type。
 - 分工边界：测试依赖工具与阶段门禁工具可独立并行；主代理负责 Git 同步、生产提交边界、集成构建和本台账。子任务不得修改官方一键编译/覆盖/推送脚本、游戏目录或共同源码文件。
