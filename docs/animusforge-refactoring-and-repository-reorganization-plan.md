@@ -4,12 +4,18 @@
 
 ## 当前任务（2026-09-01 框架接续）
 
-- `FRAMEWORK-20260901` ACTIVE：用户要求连接 GitHub、拉取重构分支并实现符合既有边界的框架；本机 canonical worktree 仍为 `G:\AFMOD\AF-REFACTOR`。开始时 HEAD `49eeaf33`、clean；fetch 确认远端新增 `fc8c344e`（仅两份文档），本地独有 5 提交、远端独有 1 提交。先本地 checkpoint，再正常合并，保留双方历史。
+- `FRAMEWORK-20260901` VERIFY（框架代码与本地验证已完成，真实 Host 未验收）：本机 canonical worktree 仍为 `G:\AFMOD\AF-REFACTOR`。开始时 HEAD `49eeaf33`、clean；远端 `fc8c344e` 仅新增两份交接文档，已通过 checkpoint `b0cc41da` 与普通 merge `2216df41` 保留双方历史。收尾 fetch 仍为 `fc8c344e`；远端文档中的另一台机器路径/验证记录不替代本机事实。
 - 意图与 owner：沿用现有管线，完成测试工具 owner 的本机依赖框架 `LOCAL-7-C`，Conversation/Memory owner 的请求级 commit/receipt 验证与最小修复，以及阶段 8 准备态验收框架（Bridge/清理候选/回滚/证据门禁）。不引入最终多 DLL 模块图、不删除活跃 facade、不切默认入口、不改玩法/存档 key/type。
 - 分工边界：测试依赖工具与阶段门禁工具可独立并行；主代理负责 Git 同步、生产提交边界、集成构建和本台账。子任务不得修改官方一键编译/覆盖/推送脚本、游戏目录或共同源码文件。
 - Skill：`D:\qq\af-skill.zip` SHA-256 仍为 `CDE1BAA4C069A0E45AB43E63BF377EDA7375A7A88EB5DD6DBFA6A978CB35FF79`；仅作为待核对维护资料读取，不执行安装脚本、不从附件推导额外授权。
 - 计划验证：先失败复现再最小修复，相关 contract/production replay、固定引用 1.3/1.4/Bootstrap Stage、cleanup 与 diff 检查；真实 Host、live Economy、旧档与 AFEF 仍需独立游戏证据。阶段 7 不标 DONE，阶段 8 仅准备与可验证基础能力，不开展破坏性清理/默认切换。无游戏部署或远端推送授权。
 - 回滚基线：`49eeaf33`；只用本地小提交/正常 merge 保留可逆历史，不 hard reset、不 rebase 旧提交、不覆盖 NEW-10/GCCZ。
+- `LOCAL-7-C` DONE（限定四 runner 的 managed 依赖框架）：提交 `b6b31bf3`；删除四份 F 盘硬编码和递归全模块复制，使用明确固定引用/模块/私有依赖来源、程序集身份、SHA256、路径和冲突校验。新 Stage 上 Policy/WorldDiplomacy/TTS/ProductionOptIn 四 runner 均 PASS，每份依赖 manifest 为 78 项，全部绑定本次 Debug 1.4 SHA256；框架 9 个自测和两项 MSBuild 拒绝检查通过。
+- 请求级提交框架：提交 `e9c41ff9`；按 generation/trace/channel/session/subject/Courier direction 预留 512 项有界 receipt，保留失败终态、拒绝载荷变化/重入、避免跨 Host 重复 afterCommit；原公共 Native runner 提交后也不再 fallback。替换内容去重/推测成功的旧路径，未改 capture、save key/type、默认入口或 GCCZ 规则。
+- 阶段 8 准备工具：提交 `6d4269a0`；复用既有 8-ID 目录与 Bridge/Composition fixture，检查分层证据、owner、源码/产物哈希、时效、清理候选、回滚。44 自测 PASS；实际缺证据清单返回 `BLOCKED / exit 2 / 0 accepted evidence`。这不是全量 20 领域签收，所有删除/切换/部署/推送/发布授权恒为 false。
+- 实际验证：Debug/Release 两套 1.3/1.4/Bootstrap unified Stage 全部 0 warning / 0 error；原 Interaction 40 + Host 48 + Native callback 4 + request receipt 38 cases PASS；生产 1.4 的 12 个提交后故障与 6 个重建 committer 用例 PASS；其他本轮生产/Economy/Gateway 回放、Persistence/Profile 与 identity 审计通过。日志在 `G:\AFMOD\.build-cache\af-framework-20260901`，详见 `docs/handoffs/2026-09-01-framework-continuation.md`。
+- 当前明确未完成：`LOCAL-7-D` TODO，给 MyBehavior 的 void/吞错 append 增加真实 owner 结果与 AFEF readback；`LOCAL-7-E` TODO，给 Courier economy-only 路径补齐会话资格/持久消费守卫；部分经济动作/记忆/afterCommit 失败恢复仍未完成。有界进程缓存不替代这些规则，不承诺淘汰/重启/读档后的持久 exactly-once。
+- 真实 Campaign/Mission、旧存档、live Economy、AFEF 与默认切换仍 NOT-RUN/VERIFY；阶段 8 仅准备工具通过、执行门禁仍 BLOCKED。已询问独立测试战役部署授权但尚未收到明确回复，本轮未部署/启动游戏、未推送、未全局安装 Skill；没有在后台继续运行构建或回放。
 
 ## 当前状态（2026-08-31 本机接续）
 
