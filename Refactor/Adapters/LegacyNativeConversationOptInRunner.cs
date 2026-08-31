@@ -10,7 +10,7 @@ namespace AnimusForge.Refactor.Adapters;
 /// Executes the Native detached sidecar without taking ownership of game
 /// thread state. Capture must already have happened at the interaction
 /// boundary. Generate is detached; commit is supplied as a main-thread
-/// callback. Any infrastructure failure before a successful commit can fall
+/// callback. Only infrastructure failures before the commit callback starts can fall
 /// back to the unchanged Native entry supplied by the caller.
 /// </summary>
 public sealed class LegacyNativeConversationOptInRunner
@@ -67,6 +67,11 @@ public sealed class LegacyNativeConversationOptInRunner
                 fallbackToLegacyNative).ConfigureAwait(false);
         }
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return new LegacyNativeConversationOptInResult(string.Empty, false,
+                InteractionStatus.CancelledAsStale, "cancelled_before_commit", result, null);
+        }
         if (result == null)
         {
             return await FallbackAsync("detached_null_result", fallbackToLegacyNative).ConfigureAwait(false);
@@ -101,21 +106,19 @@ public sealed class LegacyNativeConversationOptInRunner
         }
         catch (Exception exception)
         {
-            return await FallbackAsync(
+            return CommitFailure(
                 "main_thread_commit_" + exception.GetType().Name,
-                fallbackToLegacyNative,
-                result).ConfigureAwait(false);
+                result);
         }
 
         if (commit == null)
         {
-            return await FallbackAsync("missing_commit_result", fallbackToLegacyNative, result).ConfigureAwait(false);
+            return CommitFailure("missing_commit_result", result);
         }
 
         // A stale generation or a failed main-thread validation is a terminal
         // decision for this captured interaction. Retrying the old entry here
-        // could resolve a different target and duplicate player input; only
-        // infrastructure failures are allowed to use the legacy fallback.
+        // could resolve a different target or repeat partially applied effects.
         if (commit.Status == InteractionStatus.CancelledAsStale
             || commit.Status == InteractionStatus.RejectedByValidation)
         {
@@ -130,13 +133,12 @@ public sealed class LegacyNativeConversationOptInRunner
 
         bool commitAccepted = commit.Status == InteractionStatus.Succeeded
             || commit.Status == InteractionStatus.Executed;
-        if (!commitAccepted && !commit.HistoryWritten)
+        if (!commitAccepted)
         {
-            return await FallbackAsync(
+            return CommitFailure(
                 string.IsNullOrWhiteSpace(commit.ErrorCode) ? "commit_rejected" : commit.ErrorCode,
-                fallbackToLegacyNative,
                 result,
-                commit).ConfigureAwait(false);
+                commit);
         }
 
         return new LegacyNativeConversationOptInResult(
@@ -147,6 +149,11 @@ public sealed class LegacyNativeConversationOptInRunner
             result,
             commit);
     }
+
+    private static LegacyNativeConversationOptInResult CommitFailure(
+        string errorCode, InteractionResult result, InteractionCommitResult commit = null)
+        => new LegacyNativeConversationOptInResult(result?.VisibleReply ?? string.Empty, false,
+            InteractionStatus.NonRetryableFailure, errorCode, result, commit);
 
     private static async Task<LegacyNativeConversationOptInResult> FallbackAsync(
         string errorCode,

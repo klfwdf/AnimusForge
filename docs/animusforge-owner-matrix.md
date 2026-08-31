@@ -144,6 +144,14 @@
 - Entry points: Native opt-in runner and Shout/Courier detached hosts. Default channel entries, public signatures, save identity/key/type and resources are unchanged; no new Harmony, tick, queue or scan work.
 - Validation: `InteractionPipelineContractTests` fault matrix and `ProductionConfiguredHostReplayTests`; actual results/rollback/NOT-RUN scope are recorded in the execution ledger and `docs/handoffs/2026-08-31-local-refactor-commit-boundary.md`.
 
+## 2026-09-01 Request receipts and validation framework
+
+- Conversation/Memory lifecycle: `InteractionResultCommitter` reserves a bounded request receipt before owner execution; `InteractionCommitReceiptCache` retains terminal failures, rejects changed payloads/reentry, and distinguishes duplicates. `DetachedInteractionHost` does not repeat `afterCommit` for a duplicate. The public Native opt-in runner retains its signature but no longer falls back after its callback starts.
+- Identity remains channel/session/subject + trace/runtime/save generation, with the existing Courier direction value. No capture/session or save key/type is changed. See `docs/animusforge-request-commit-receipts.md` for the 512-entry limit and non-durable semantics.
+- Test-tool owner: `tools/ReplayDependencies` replaces four machine-specific copy targets with explicit, validated dependency sources. It never changes official build/deploy scripts or game files.
+- Validation owner: `tools/PhaseEightReadiness` reuses the existing 8-ID design catalog, Bridge and Composition contracts. It checks layered evidence, owners, hashes, cleanup candidates and rollback; it does not authorize cutover/deletion/deployment or prove all 20 domains complete.
+- Remaining joint owner work: MyBehavior needs truthful append/readback results; Courier needs a durable session/consumption guard before Economy-only execution; partial Economy outcomes and failed post-commit callbacks need explicit recovery. These are not solved by cache or fixture PASS.
+
 ## 首批切片候选
 
 1. **Host 注册/调度只读分组设计**：先生成注册清单和阶段接口，不改变 `SubModule` 行为。

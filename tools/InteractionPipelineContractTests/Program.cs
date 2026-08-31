@@ -439,13 +439,14 @@ var batchMemory = new RecordingBatchMemory();
 var batchCommitter = new InteractionResultCommitter();
 MemoryCommitReceiptCache.ClearForTests();
 var batchExecutor = new RecordingExecutor(InteractionStatus.Executed);
+var batchSnapshot = WithTrace(snapshot, "batch-memory-request");
 InteractionCommitResult firstBatchCommit = batchCommitter.Commit(
-    new InteractionEnvelope(snapshot, Array.Empty<PromptMessage>()),
+    new InteractionEnvelope(batchSnapshot, Array.Empty<PromptMessage>()),
     committable,
     batchExecutor,
     batchMemory);
 InteractionCommitResult duplicateBatchCommit = batchCommitter.Commit(
-    new InteractionEnvelope(snapshot, Array.Empty<PromptMessage>()),
+    new InteractionEnvelope(batchSnapshot, Array.Empty<PromptMessage>()),
     committable,
     batchExecutor,
     batchMemory);
@@ -461,7 +462,7 @@ AssertTrue(
 
 var inboundSeedBatchMemory = new RecordingBatchMemory();
 InteractionCommitResult inboundSeedCommit = batchCommitter.Commit(
-    new InteractionEnvelope(snapshot, Array.Empty<PromptMessage>()),
+    new InteractionEnvelope(WithTrace(snapshot, "inbound-batch-request"), Array.Empty<PromptMessage>()),
     new InteractionResult(InteractionStatus.Succeeded, "inbound reply", new ActionPlan(Array.Empty<ActionRequest>(), ""), Array.Empty<FactRecord>(), ""),
     null,
     inboundSeedBatchMemory,
@@ -641,7 +642,7 @@ foreach (var channelCase in channelReplayCases)
     }
 }
 
-using (var detachedHostFacade = new LegacyChannelInteractionFacade(nativePorts, new StagedGateway(), () => 4L, text => new InteractionEnvelope(snapshot, Array.Empty<PromptMessage>())))
+using (var detachedHostFacade = new LegacyChannelInteractionFacade(nativePorts, new StagedGateway(), () => 4L, text => new InteractionEnvelope(WithTrace(snapshot, "detached-host-" + text), Array.Empty<PromptMessage>())))
 {
     var detachedHost = new DetachedInteractionHost(
         detachedHostFacade.Capture,
@@ -782,7 +783,7 @@ using (var nativeOptInFacade = new LegacyNativeConversationFacade(nativePorts, n
     var nativeRunnerExecutor = new RecordingExecutor(InteractionStatus.Executed);
     int nativeRunnerCommitCallbackCount = 0;
     LegacyNativeConversationOptInResult nativeOptInResult = nativeRunner.ExecuteAsync(
-        new InteractionEnvelope(snapshot, Array.Empty<PromptMessage>()),
+        new InteractionEnvelope(WithTrace(snapshot, "native-runner-request"), Array.Empty<PromptMessage>()),
         config,
         "conversation",
         "main",
@@ -790,7 +791,7 @@ using (var nativeOptInFacade = new LegacyNativeConversationFacade(nativePorts, n
         {
             nativeRunnerCommitCallbackCount++;
             return nativeOptInFacade.Commit(
-                new InteractionEnvelope(snapshot, Array.Empty<PromptMessage>()),
+                new InteractionEnvelope(WithTrace(snapshot, "native-runner-request"), Array.Empty<PromptMessage>()),
                 result,
                 nativeRunnerExecutor,
                 nativeRunnerMemory);
@@ -803,6 +804,27 @@ using (var nativeOptInFacade = new LegacyNativeConversationFacade(nativePorts, n
         && nativeRunnerCommitCallbackCount == 1
         && nativeRunnerMemory.Roles.Count == 2,
         "Native opt-in runner did not complete detached generate and main-thread commit");
+    foreach (string failureMode in new[] { "failed", "throw", "null", "retryable" })
+    {
+        int callbackCalls = 0;
+        int fallbackCalls = 0;
+        LegacyNativeConversationOptInResult failedCommit = nativeRunner.ExecuteAsync(
+            new InteractionEnvelope(WithTrace(snapshot, "native-commit-" + failureMode), Array.Empty<PromptMessage>()),
+            config, "conversation", "main",
+            result =>
+            {
+                callbackCalls++;
+                if (failureMode == "throw") throw new InvalidOperationException("failure after possible action");
+                return failureMode == "null" ? null : new InteractionCommitResult(
+                    failureMode == "retryable" ? InteractionStatus.RetryableFailure : InteractionStatus.NonRetryableFailure,
+                    false, true, "memory_commit_failed");
+            },
+            () => { fallbackCalls++; return Task.FromResult("unsafe replay"); },
+            CancellationToken.None).GetAwaiter().GetResult();
+        AssertTrue(failedCommit.Status == InteractionStatus.NonRetryableFailure && !failedCommit.UsedLegacyFallback
+            && callbackCalls == 1 && fallbackCalls == 0, "Native legacy overload replayed a started commit: " + failureMode);
+    }
+    Console.WriteLine("PASS nativeCommitFailure cases=4 noFallbackAfterCommit=1");
 }
 
 using (var failingNativeFacade = new LegacyNativeConversationFacade(
@@ -848,6 +870,7 @@ using (var cancelledNativeToken = new CancellationTokenSource())
 Console.WriteLine("PASS interactionPipeline cases=40 immutableSnapshot=true configReloadIsolation=true runtimeConfigAtomicReload=true runtimeConfigFailureIsolation=true coordinatorGeneration=true cancellationIsolation=true compositionRoot=true threeStage=true postprocessIsolation=true commitBoundary=true nativeFacade=true channelFacade=true channelOptInReplay=true detachedHost=true detachedHostAfterCommit=true inboundSeedNoUserHistory=true detachedHostStaleIsolation=true detachedHostRejectedIsolation=true nativeOptInRunner=true nativeFallback=true nativeCancelIsolation=true nativeActionExecutor=true nativeActionRawIntegrity=true detachedRuleSelector=true promptAdapter=true actionTagParser=true detachedPromptComposer=true detachedPostprocessComposer=true atomicDetachedSections=true nativeMainParity=true nativePostprocessParity=true nativeAtomicBundle=true");
 
 await DetachedHostCommitBoundaryTests.RunAsync();
+InteractionCommitReceiptTests.Run();
 
 static InteractionPipeline BuildPipeline(RuleSelection selection, FakeGateway gateway)
 {
@@ -860,6 +883,12 @@ static InteractionPipeline BuildPipeline(RuleSelection selection, FakeGateway ga
         new FakePostprocessor(),
         new CapabilitySet(new[] { "llm.generate", "action.parse" }));
 }
+
+static GameInteractionSnapshot WithTrace(GameInteractionSnapshot source, string traceId)
+    => new GameInteractionSnapshot(source.Identity,
+        new TraceContext(traceId, source.Trace.RuntimeGeneration, source.Trace.SaveGeneration, source.Trace.Profile, source.Trace.ApiLine),
+        source.PlayerText, source.LocationId, source.GameDay, source.GameHour, source.Candidates, source.VisibleHeroIds,
+        source.DetachedFacts.ToDictionary(pair => pair.Key, pair => pair.Value));
 
 sealed class FakeRuleSelector : IRuleSelector
 {

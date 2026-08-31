@@ -15,6 +15,7 @@
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" Link="Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
+    <Compile Include="..\..\Refactor\Runtime\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\Refactor\Runtime\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
   </ItemGroup>
 </Project>

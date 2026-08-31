@@ -13,6 +13,7 @@
     <Compile Include="..\..\Refactor\Contracts\ProfileConfigContracts.cs" Link="Contracts\ProfileConfigContracts.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionRequestCoordinator.cs" Link="Runtime\InteractionRequestCoordinator.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
+    <Compile Include="..\..\Refactor\Runtime\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\Refactor\Runtime\DetachedInteractionHost.cs" Link="Runtime\DetachedInteractionHost.cs" />
     <Compile Include="..\..\Refactor\Runtime\RuntimeConfigSnapshotStore.cs" Link="Runtime\RuntimeConfigSnapshotStore.cs" />
     <Compile Include="..\..\Refactor\Runtime\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />

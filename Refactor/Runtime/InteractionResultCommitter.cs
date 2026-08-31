@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Runtime;
@@ -48,60 +51,73 @@ public sealed class InteractionResultCommitter
         }
 
         bool hasActions = result.ActionPlan != null && result.ActionPlan.Actions.Count > 0;
-        bool supportsBatchCommit = memory is IInteractionMemoryBatchCommitter;
-        string commitId = BuildCommitId(
-            envelope,
-            appendPlayerInput ? envelope.Snapshot.PlayerText : string.Empty,
-            result.VisibleReply,
-            result.ConfirmedFacts,
-            "result");
-        if (supportsBatchCommit && MemoryCommitReceiptCache.Contains(commitId))
+        if (hasActions && actionExecutor == null)
         {
-            return new InteractionCommitResult(
-                hasActions ? InteractionStatus.Executed : InteractionStatus.Succeeded,
-                true,
-                hasActions,
-                "duplicate_commit");
+            return Rejected("missing_action_executor");
         }
+        string requestId;
+        string fingerprint;
+        try
+        {
+            requestId = BuildRequestId(envelope);
+            fingerprint = BuildFingerprint(envelope, result, appendPlayerInput);
+        }
+        catch (Exception)
+        {
+            return Rejected("invalid_commit_payload");
+        }
+        if (!InteractionCommitReceiptCache.TryBegin(requestId, fingerprint,
+            out InteractionCommitReceiptCache.Reservation reservation, out InteractionCommitResult previous))
+        {
+            return previous;
+        }
+        InteractionCommitResult committed = CommitOnce(envelope, result, actionExecutor, memory, appendPlayerInput, requestId, hasActions);
+        InteractionCommitReceiptCache.Complete(reservation, committed);
+        return committed;
+    }
 
+    private static InteractionCommitResult CommitOnce(
+        InteractionEnvelope envelope, InteractionResult result, IActionPlanExecutor actionExecutor,
+        IInteractionMemory memory, bool appendPlayerInput, string requestId, bool hasActions)
+    {
         InteractionStatus actionStatus = InteractionStatus.Succeeded;
         if (hasActions)
         {
-            if (actionExecutor == null)
-            {
-                return Rejected("missing_action_executor", InteractionStatus.RejectedByValidation);
-            }
             try
             {
                 actionStatus = actionExecutor.ValidateAndExecute(result.ActionPlan, envelope.Snapshot);
             }
             catch
             {
-                return Rejected("action_executor_exception", InteractionStatus.RejectedByValidation);
+                // A throwing owner may already have mutated state. Retain a
+                // terminal receipt rather than treating this as safe to retry.
+                return Rejected("action_executor_exception", InteractionStatus.NonRetryableFailure);
             }
             if (actionStatus != InteractionStatus.Executed)
             {
                 // Do not write confirmed facts when the action was not accepted.
-                TryAppendVisibleExchange(envelope, result, memory, appendPlayerInput);
-                return new InteractionCommitResult(actionStatus, true, false, "action_not_executed");
+                MemoryCommitResult rejectedMemory = TryAppendVisibleExchange(envelope, result, memory, appendPlayerInput, requestId);
+                return new InteractionCommitResult(actionStatus, rejectedMemory.HistoryWritten, false,
+                    rejectedMemory.HistoryWritten ? "action_not_executed"
+                        : string.IsNullOrWhiteSpace(rejectedMemory.ErrorCode) ? "memory_commit_failed" : rejectedMemory.ErrorCode);
             }
         }
 
-        IEnumerable<FactRecord> facts = result.ConfirmedFacts ?? Array.Empty<FactRecord>();
-        if (actionExecutor is IActionPlanExecutionReceipt executionReceipt
-            && executionReceipt.ConfirmedFacts != null)
-        {
-            facts = facts.Concat(executionReceipt.ConfirmedFacts);
-        }
         try
         {
+            IEnumerable<FactRecord> facts = result.ConfirmedFacts ?? Array.Empty<FactRecord>();
+            if (hasActions && actionExecutor is IActionPlanExecutionReceipt executionReceipt
+                && executionReceipt.ConfirmedFacts != null)
+            {
+                facts = facts.Concat(executionReceipt.ConfirmedFacts);
+            }
             MemoryCommitResult memoryResult = CommitMemory(
                 envelope,
                 memory,
                 appendPlayerInput ? envelope.Snapshot.PlayerText : string.Empty,
                 result.VisibleReply,
                 facts,
-                "result");
+                requestId + ":memory:result");
             if (memoryResult.Status == MemoryCommitStatus.Failed)
             {
                 return new InteractionCommitResult(
@@ -118,9 +134,9 @@ public sealed class InteractionResultCommitter
                     hasActions,
                     string.IsNullOrWhiteSpace(memoryResult.ErrorCode) ? "memory_commit_rejected" : memoryResult.ErrorCode);
             }
-            if (supportsBatchCommit)
+            if (!memoryResult.HistoryWritten)
             {
-                MemoryCommitReceiptCache.TryAccept(commitId);
+                return new InteractionCommitResult(InteractionStatus.NonRetryableFailure, false, hasActions, "invalid_memory_receipt");
             }
             return new InteractionCommitResult(
                 hasActions ? InteractionStatus.Executed : InteractionStatus.Succeeded,
@@ -138,25 +154,27 @@ public sealed class InteractionResultCommitter
         }
     }
 
-    private static void TryAppendVisibleExchange(
+    private static MemoryCommitResult TryAppendVisibleExchange(
         InteractionEnvelope envelope,
         InteractionResult result,
         IInteractionMemory memory,
-        bool appendPlayerInput)
+        bool appendPlayerInput,
+        string requestId)
     {
         try
         {
-            CommitMemory(
+            return CommitMemory(
                 envelope,
                 memory,
                 appendPlayerInput ? envelope.Snapshot.PlayerText : string.Empty,
                 result.VisibleReply,
                 Array.Empty<FactRecord>(),
-                "rejected-action");
+                requestId + ":memory:rejected-action")
+                ?? new MemoryCommitResult(MemoryCommitStatus.Failed, "missing_memory_receipt");
         }
         catch
         {
-            // Action rejection must never turn into a host exception.
+            return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_commit_exception");
         }
     }
 
@@ -166,9 +184,8 @@ public sealed class InteractionResultCommitter
         string userText,
         string assistantText,
         IEnumerable<FactRecord> facts,
-        string suffix)
+        string commitId)
     {
-        string commitId = BuildCommitId(envelope, userText, assistantText, facts, suffix);
         IInteractionMemoryBatchCommitter batch = memory as IInteractionMemoryBatchCommitter;
         if (batch != null)
         {
@@ -199,26 +216,64 @@ public sealed class InteractionResultCommitter
         return new MemoryCommitResult(MemoryCommitStatus.Applied);
     }
 
-    private static string BuildCommitId(
-        InteractionEnvelope envelope,
-        string userText,
-        string assistantText,
-        IEnumerable<FactRecord> facts,
-        string suffix)
+    private static string BuildRequestId(InteractionEnvelope envelope)
     {
-        string factPart = string.Join("\u001f", (facts ?? Array.Empty<FactRecord>())
-            .Where(fact => fact != null)
-            .Select(fact => (fact.FactType ?? string.Empty) + "\u001e" + (fact.SubjectId ?? string.Empty) + "\u001e" + (fact.Text ?? string.Empty)));
-        return string.Join("\u001d", new[]
+        GameInteractionSnapshot snapshot = envelope.Snapshot;
+        return "request:" + Hash(writer =>
         {
-            envelope.Snapshot.Identity.Channel.ToString(),
-            envelope.Snapshot.Identity.SessionId,
-            envelope.Snapshot.Identity.SubjectId,
-            suffix ?? string.Empty,
-            userText ?? string.Empty,
-            assistantText ?? string.Empty,
-            factPart
+            writer.Write(snapshot.Trace.RuntimeGeneration);
+            writer.Write(snapshot.Trace.SaveGeneration);
+            writer.Write(snapshot.Trace.TraceId);
+            writer.Write((int)snapshot.Identity.Channel);
+            writer.Write(snapshot.Identity.SessionId);
+            writer.Write(snapshot.Identity.SubjectId);
+            writer.Write(snapshot.Identity.Channel == InteractionChannel.Courier
+                && snapshot.DetachedFacts.TryGetValue("courier_direction", out string direction) ? direction ?? string.Empty : string.Empty);
         });
+    }
+
+    private static string BuildFingerprint(InteractionEnvelope envelope, InteractionResult result, bool appendPlayerInput)
+        => Hash(writer =>
+        {
+            writer.Write(appendPlayerInput);
+            writer.Write(envelope.Snapshot.PlayerText);
+            writer.Write(result.VisibleReply);
+            writer.Write(result.ActionPlan.RawPostprocessId);
+            writer.Write(result.ActionPlan.Actions.Count);
+            foreach (ActionRequest action in result.ActionPlan.Actions)
+            {
+                writer.Write(action.Tag);
+                writer.Write(action.TargetId);
+                writer.Write(action.Parameters.Count);
+                foreach (KeyValuePair<string, string> pair in action.Parameters.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+                {
+                    writer.Write(pair.Key);
+                    writer.Write(pair.Value ?? string.Empty);
+                }
+            }
+            writer.Write(result.ConfirmedFacts.Count);
+            foreach (FactRecord fact in result.ConfirmedFacts)
+            {
+                writer.Write(fact != null);
+                if (fact == null) continue;
+                writer.Write(fact.FactType);
+                writer.Write(fact.SubjectId);
+                writer.Write(fact.Text);
+            }
+        });
+
+    private static string Hash(Action<BinaryWriter> write)
+    {
+        using (var stream = new MemoryStream())
+        using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
+        using (SHA256 sha = SHA256.Create())
+        {
+            // BinaryWriter length-prefixes strings; delimiter-like user input
+            // cannot alias another request. Cache only the bounded digest.
+            write(writer);
+            writer.Flush();
+            return BitConverter.ToString(sha.ComputeHash(stream.ToArray())).Replace("-", string.Empty);
+        }
     }
 
     private static InteractionCommitResult Rejected(string errorCode, InteractionStatus status = InteractionStatus.RejectedByValidation)
@@ -243,15 +298,26 @@ public sealed class InteractionResultCommitter
 public sealed class InteractionCommitResult
 {
     public InteractionCommitResult(InteractionStatus status, bool historyWritten, bool actionsExecuted, string errorCode)
+        : this(status, historyWritten, actionsExecuted, errorCode, false)
+    {
+    }
+
+    private InteractionCommitResult(InteractionStatus status, bool historyWritten, bool actionsExecuted, string errorCode, bool isDuplicate)
     {
         Status = status;
         HistoryWritten = historyWritten;
         ActionsExecuted = actionsExecuted;
         ErrorCode = errorCode ?? string.Empty;
+        IsDuplicate = isDuplicate;
     }
 
     public InteractionStatus Status { get; }
     public bool HistoryWritten { get; }
     public bool ActionsExecuted { get; }
     public string ErrorCode { get; }
+    public bool IsDuplicate { get; }
+
+    internal InteractionCommitResult AsDuplicate()
+        => new InteractionCommitResult(Status, HistoryWritten, ActionsExecuted,
+            string.IsNullOrWhiteSpace(ErrorCode) ? "duplicate_commit" : ErrorCode, true);
 }
