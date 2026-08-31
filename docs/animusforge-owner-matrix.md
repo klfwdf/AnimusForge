@@ -137,6 +137,13 @@
 | `一键编译覆盖推送/**` | Build/deploy/package scripts | 未经单独授权不修改；区分 build-only 和 deploy |
 | `.tmp/**`, `.codex_tmp/**`, `bin/**`, `obj/**` | Local/artifacts | 先审计消费者和 tracked 状态，再分批清理；不得误删依赖 |
 
+## 2026-08-31 Conversation Host commit boundary
+
+- Owner: Conversation lifecycle / GameAdapter dispatch contract, not Economy gameplay or GCCZ rules.
+- `Refactor/Runtime/DetachedInteractionHost.cs`: each submitted commit callback is consumed once and closed before pre-commit fallback; failures after callback entry are terminal, retaining any observed receipt. `afterCommit` requires successful history. Queued cancellation is checked on callback entry.
+- Entry points: Native opt-in runner and Shout/Courier detached hosts. Default channel entries, public signatures, save identity/key/type and resources are unchanged; no new Harmony, tick, queue or scan work.
+- Validation: `InteractionPipelineContractTests` fault matrix and `ProductionConfiguredHostReplayTests`; actual results/rollback/NOT-RUN scope are recorded in the execution ledger and `docs/handoffs/2026-08-31-local-refactor-commit-boundary.md`.
+
 ## 首批切片候选
 
 1. **Host 注册/调度只读分组设计**：先生成注册清单和阶段接口，不改变 `SubModule` 行为。
