@@ -4,6 +4,8 @@
 
 ## 当前任务（2026-09-01 框架接续）
 
+- `LOCAL-7-E` IN PROGRESS（2026-09-01 自动接续）：基线 `3d9778d2`、工作树 clean；fetch 后远端仍 `fc8c344e`，ahead 14 / behind 0。Owner 为 Courier/Conversation commit 与既有 Economy port 的联合边界；先复现 economy-only 在 `LegacyNativeActionPlanExecutor` 直接返回、未调用 Courier session owner 的路径，再在任何 Economy Replay 前加入仅 economy-only 使用的 session reservation。优先复用已序列化的 `CourierSession.PostprocessConsumed`，不加 SyncData key/type；保留 mixed plan 当前路径并单列 partial-effect 后续。范围限 generic executor、Courier thin owner、现有 focused/production replay 和文档；不改玩法数值、构建/部署脚本、默认入口或 GCCZ。计划红绿契约、production reflection fixture、Persistence/Profile/Identity 与 Debug/Release 1.3/1.4/Bootstrap Stage；实机/save round-trip 仍需后续证据。
+
 - 最新本机 Memory owner 实现提交：`5d3dc5f0`（未推送）；handoff：`docs/handoffs/2026-09-01-memory-owner-receipts.md`。后续自动接续先做 `LOCAL-7-E`，不重复将 D 的实机缺证据当作可自动完成项。
 
 - `LOCAL-7-D` VERIFY（2026-09-01 自动接续，batch runtime 代码/离线验证完成）：基线 `9b8cb509`，意图 checkpoint `3fe3f656`；fetch 后远端仍 `fc8c344e`。已复现旧生产 DLL 在缺 Campaign 时虚假 Applied；现由 MyBehavior 原写入实现返回 daily/recent 原始 owner 状态确认，batch facade 只在确认后缓存。保留四个公开 void API、原写入顺序、session/260 行窗口和 SyncData key/type；结果不代表原子事务/落盘。新生产缺 Campaign 7、receipt 7、线程 guard fixture 2、void 签名 4，以及 raw-owner 11 assertions PASS；Interaction 40+48+4+38、三类生产 Host、两类 Economy contract PASS；Debug/Release 1.3/1.4/Bootstrap 全部 0 warning / 0 error；Persistence/Profile 和 identity（99 sync / 35 behavior）PASS。仅校正两条 SyncData fixture 导航行号，未放宽断言。独立审查无阻断；日志在本工作区 `.tmp/validation/memory-owner-20260901-0504`，完整证据见 `docs/handoffs/2026-09-01-memory-owner-receipts.md`。真实游戏/旧档/AFEF 仍 NOT-RUN，无后台构建/回放继续运行；下一精确任务为 `LOCAL-7-E`。
