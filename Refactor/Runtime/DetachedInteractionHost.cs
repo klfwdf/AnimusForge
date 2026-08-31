@@ -166,6 +166,7 @@ public sealed class DetachedInteractionHost
                         appendPlayerInput);
                     Volatile.Write(ref observedCommit, committed);
                     if (committed != null
+                        && !committed.IsDuplicate
                         && committed.HistoryWritten
                         && (committed.Status == InteractionStatus.Succeeded
                             || committed.Status == InteractionStatus.Executed))

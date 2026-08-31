@@ -19,6 +19,13 @@ invoke legacy fallback. Action/memory ports remain controlled fixtures, not live
 Hero inventory or AFEF storage. The wider 48-case callback/cancellation matrix
 runs in `InteractionPipelineContractTests` against linked production sources.
 
+The request-receipt matrix also recreates the production committer and repeats
+the same request for each channel, with successful and failing memory ports
+(6 cases). It verifies that the action is not replayed, the terminal status is
+retained, and the duplicate receipt is marked explicitly. This remains a
+process-local bounded guarantee; it does not prove durable Courier consumption,
+actual MyBehavior memory writes, or live economic transactions.
+
 Run:
 
 ```powershell

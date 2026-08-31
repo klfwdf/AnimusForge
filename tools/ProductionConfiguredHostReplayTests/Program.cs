@@ -373,7 +373,43 @@ await using (TestServer commitFailure = await TestServer.StartAsync((_, _) => Ta
         }
     }
 }
-Console.WriteLine("PASS productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1 postCommitNoFallback=12");
+Type committerType = animusForge.GetType("AnimusForge.Refactor.Runtime.InteractionResultCommitter", true);
+Type factType = animusForge.GetType("AnimusForge.Refactor.Contracts.FactRecord", true);
+Type interactionStatusType = commitResultType.GetProperty("Status").PropertyType;
+foreach (string channel in new[] { "NativeConversation", "SceneShout", "Courier" })
+{
+    foreach (bool memoryFails in new[] { false, true })
+    {
+        int effects = 0;
+        int appends = 0;
+        object envelope = MakeEnvelope(channel, "receipt-" + channel + "-" + memoryFails, "receipt input");
+        object generated = New(resultType, Enum.Parse(interactionStatusType, "Succeeded"), "receipt reply",
+            currentPlan, EmptyArray(factType), "", null, null);
+        object executor = MakeProxy(actionExecutorInterfaceType, (_, _) =>
+        {
+            effects++;
+            return Enum.Parse(interactionStatusType, "Executed");
+        });
+        object receiptMemory = MakeProxy(memoryInterfaceType, (method, _) =>
+        {
+            if (method.Name == "Read") return EmptyArray(promptMessageType);
+            appends++;
+            if (memoryFails) throw new InvalidOperationException("fixture memory unavailable");
+            return null;
+        });
+        object commit = null;
+        for (int attempt = 0; attempt < 2; attempt++)
+        {
+            object committer = New(committerType, (object)null);
+            commit = committerType.GetMethod("Commit").Invoke(committer, new[] { envelope, generated, executor, receiptMemory, (object)true });
+        }
+        AssertTrue(effects == 1 && appends == (memoryFails ? 1 : 2), channel + " repeated a request after committer recreation");
+        AssertTrue((bool)commitResultType.GetProperty("IsDuplicate").GetValue(commit), "production duplicate receipt marker missing");
+        AssertTrue(commitResultType.GetProperty("Status").GetValue(commit).ToString()
+            == (memoryFails ? "NonRetryableFailure" : "Executed"), "production receipt lost terminal status");
+    }
+}
+Console.WriteLine("PASS productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1 postCommitNoFallback=12 requestReceipts=6");
 
 internal class ReplayProxy : DispatchProxy
 {
