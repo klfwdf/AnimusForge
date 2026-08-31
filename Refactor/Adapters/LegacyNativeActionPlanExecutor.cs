@@ -23,7 +23,7 @@ namespace AnimusForge.Refactor.Adapters;
 /// side effect; Courier uses it for live session validation and economy-only
 /// persistent consumption.
 /// </summary>
-public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionReceipt
+public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionOutcomeReceipt
 {
     private readonly Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> _execute;
     private readonly int _maxRawActions;
@@ -33,6 +33,8 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     private readonly CapabilitySet _economyCapabilities;
     private readonly Func<ActionPlan, GameInteractionSnapshot, bool, InteractionStatus> _economyExecutionGate;
     private IReadOnlyList<FactRecord> _confirmedFacts = Array.Empty<FactRecord>();
+    private int _appliedActionCount;
+    private string _executionErrorCode = string.Empty;
 
     public LegacyNativeActionPlanExecutor(
         Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> execute,
@@ -73,12 +75,14 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     }
 
     public IReadOnlyList<FactRecord> ConfirmedFacts => _confirmedFacts;
+    public int AppliedActionCount => _appliedActionCount;
+    public string ExecutionErrorCode => _executionErrorCode;
 
     public InteractionStatus ValidateAndExecute(
         ActionPlan actionPlan,
         GameInteractionSnapshot currentSnapshot)
     {
-        _confirmedFacts = Array.Empty<FactRecord>();
+        ResetExecutionOutcome();
         if (actionPlan == null || currentSnapshot == null)
         {
             return InteractionStatus.RejectedByValidation;
@@ -134,13 +138,31 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                         return InteractionStatus.RejectedByValidation;
                     }
                     EconomyRewardDebtReplayResult replay = _economyPort.Replay(economyPlan, currentSnapshot);
-                    if (replay == null
-                        || replay.Status != EconomyRewardDebtReplayStatus.Applied
-                        || replay.AppliedCount != economyPlan.Actions.Count)
+                    if (replay == null)
                     {
                         return InteractionStatus.RejectedByValidation;
                     }
-                    _confirmedFacts = replay.ConfirmedFacts ?? Array.Empty<FactRecord>();
+                    bool hasKnownEffects = (replay.Status == EconomyRewardDebtReplayStatus.Applied
+                        || replay.Status == EconomyRewardDebtReplayStatus.PartiallyApplied)
+                        && replay.AppliedCount > 0;
+                    if (hasKnownEffects)
+                    {
+                        _appliedActionCount = replay.AppliedCount;
+                        _confirmedFacts = replay.ConfirmedFacts ?? Array.Empty<FactRecord>();
+                    }
+                    if (replay.Status != EconomyRewardDebtReplayStatus.Applied
+                        || replay.AppliedCount != economyPlan.Actions.Count)
+                    {
+                        if (_appliedActionCount > 0)
+                        {
+                            _executionErrorCode = string.IsNullOrWhiteSpace(replay.ErrorCode)
+                                ? "economy.partial_replay"
+                                : replay.ErrorCode;
+                            return InteractionStatus.NonRetryableFailure;
+                        }
+                        ResetExecutionOutcome();
+                        return InteractionStatus.RejectedByValidation;
+                    }
                 }
 
                 if (remainingActions.Count == 0)
@@ -159,19 +181,36 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
             InteractionStatus status = _execute(delegatedPlan, currentSnapshot);
             if (status != InteractionStatus.Executed)
             {
-                _confirmedFacts = Array.Empty<FactRecord>();
+                if (_appliedActionCount > 0)
+                {
+                    _executionErrorCode = "economy.applied_before_legacy_rejection";
+                    return InteractionStatus.NonRetryableFailure;
+                }
+                ResetExecutionOutcome();
                 return InteractionStatus.RejectedByValidation;
             }
             return status;
         }
         catch
         {
-            _confirmedFacts = Array.Empty<FactRecord>();
+            if (_appliedActionCount > 0)
+            {
+                _executionErrorCode = "economy.applied_before_executor_exception";
+                return InteractionStatus.NonRetryableFailure;
+            }
+            ResetExecutionOutcome();
             // Action execution is a failure-isolated boundary. The caller can
             // still commit the visible exchange without treating an action
             // exception as confirmed gameplay or AFEF.
             return InteractionStatus.RejectedByValidation;
         }
+    }
+
+    private void ResetExecutionOutcome()
+    {
+        _confirmedFacts = Array.Empty<FactRecord>();
+        _appliedActionCount = 0;
+        _executionErrorCode = string.Empty;
     }
 
     private static bool HasBlockingEconomyExclusion(EconomyRewardDebtReplayPlan plan)

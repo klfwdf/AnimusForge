@@ -9,11 +9,14 @@ static void AssertTrue(bool value, string message)
     if (!value) throw new InvalidOperationException(message);
 }
 
-static GameInteractionSnapshot Snapshot(string subject = "npc-1")
+static GameInteractionSnapshot Snapshot(
+    string subject = "npc-1",
+    string session = "economy-aware-session",
+    string trace = "economy-aware-trace")
 {
     return new GameInteractionSnapshot(
-        new InteractionIdentity("economy-aware-session", InteractionChannel.NativeConversation, subject),
-        new TraceContext("economy-aware-trace", 4, 9, "single-player", "1.4"),
+        new InteractionIdentity(session, InteractionChannel.NativeConversation, subject),
+        new TraceContext(trace, 4, 9, "single-player", "1.4"),
         "player input",
         "town-1",
         12,
@@ -182,6 +185,106 @@ AssertTrue(guardedMixed.ValidateAndExecute(mixed, Snapshot()) == InteractionStat
     && mixedOrder.SequenceEqual(new[] { "gate:mixed", "replay", "legacy" }),
     "mixed Courier-style gate did not validate before economy replay");
 
+ActionPlan twoEconomyActions = Parse("[ACTION:GIVE_GOLD:40] [ACTION:GIVE_GOLD:41]");
+int partialReplayCalls = 0;
+LegacyNativeActionPlanExecutor partialEconomy = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("partial economy-only must not call legacy"),
+    (plan, snapshot) => { partialReplayCalls++; return Applied(1); });
+InteractionStatus partialEconomyStatus = partialEconomy.ValidateAndExecute(twoEconomyActions, Snapshot());
+AssertTrue(partialEconomyStatus == InteractionStatus.NonRetryableFailure
+    && partialEconomy.ConfirmedFacts.Count == 1
+    && partialEconomy.AppliedActionCount == 1
+    && partialEconomy.ExecutionErrorCode == "economy.partial_replay"
+    && partialReplayCalls == 1,
+    "known partial Economy outcome was discarded or treated as retryable rejection");
+
+LegacyNativeActionPlanExecutor economyThenLegacyRejects = BuildExecutor(
+    (plan, snapshot) => InteractionStatus.RejectedByValidation,
+    (plan, snapshot) => Applied());
+InteractionStatus mixedPartialStatus = economyThenLegacyRejects.ValidateAndExecute(mixed, Snapshot());
+AssertTrue(mixedPartialStatus == InteractionStatus.NonRetryableFailure
+    && economyThenLegacyRejects.ConfirmedFacts.Count == 1
+    && economyThenLegacyRejects.AppliedActionCount == 1
+    && economyThenLegacyRejects.ExecutionErrorCode == "economy.applied_before_legacy_rejection",
+    "confirmed Economy outcome was discarded after legacy rejection");
+
+LegacyNativeActionPlanExecutor economyThenLegacyThrows = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("legacy owner threw after Economy"),
+    (plan, snapshot) => Applied());
+InteractionStatus mixedThrowStatus = economyThenLegacyThrows.ValidateAndExecute(mixed, Snapshot());
+AssertTrue(mixedThrowStatus == InteractionStatus.NonRetryableFailure
+    && economyThenLegacyThrows.ConfirmedFacts.Count == 1
+    && economyThenLegacyThrows.AppliedActionCount == 1
+    && economyThenLegacyThrows.ExecutionErrorCode == "economy.applied_before_executor_exception",
+    "confirmed Economy outcome was discarded after legacy exception");
+
+int partialMemoryCommits = 0;
+RecordingMemory partialMemory = new RecordingMemory(() => partialMemoryCommits++);
+GameInteractionSnapshot partialSnapshot = Snapshot(
+    session: "economy-partial-session",
+    trace: "economy-partial-trace");
+InteractionEnvelope partialEnvelope = new InteractionEnvelope(partialSnapshot, Array.Empty<PromptMessage>());
+InteractionResult partialResult = new InteractionResult(
+    InteractionStatus.Succeeded,
+    "visible partial reply",
+    twoEconomyActions,
+    new[] { new FactRecord("unapplied.plan", "npc-1", "must not be written for a partial plan") },
+    string.Empty);
+int partialCommitReplayCalls = 0;
+LegacyNativeActionPlanExecutor partialCommitExecutor = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("partial economy-only must not call legacy"),
+    (plan, snapshot) => { partialCommitReplayCalls++; return Applied(1); });
+InteractionResultCommitter partialCommitter = new InteractionResultCommitter();
+InteractionCommitResult partialCommit = partialCommitter.Commit(
+    partialEnvelope, partialResult, partialCommitExecutor, partialMemory);
+AssertTrue(partialCommit.Status == InteractionStatus.NonRetryableFailure
+    && partialCommit.HistoryWritten
+    && partialCommit.ActionsExecuted
+    && partialCommit.ErrorCode == "economy.partial_replay"
+    && partialMemory.LastFacts.Count == 1
+    && partialMemory.LastFacts[0].Text == "gold applied"
+    && partialMemoryCommits == 1,
+    "partial Economy receipt did not preserve actual effects and facts");
+InteractionCommitResult duplicatePartial = partialCommitter.Commit(
+    partialEnvelope, partialResult, partialCommitExecutor, partialMemory);
+AssertTrue(duplicatePartial.IsDuplicate
+    && duplicatePartial.Status == InteractionStatus.NonRetryableFailure
+    && duplicatePartial.ActionsExecuted
+    && duplicatePartial.HistoryWritten
+    && duplicatePartial.ErrorCode == "economy.partial_replay"
+    && partialReplayCalls == 1
+    && partialCommitReplayCalls == 1
+    && partialMemoryCommits == 1,
+    "partial Economy duplicate was replayed or lost its terminal receipt");
+
+int failedMemoryReplayCalls = 0;
+RejectingMemory failedPartialMemory = new RejectingMemory();
+GameInteractionSnapshot failedMemorySnapshot = Snapshot(
+    session: "economy-partial-memory-failure",
+    trace: "economy-partial-memory-failure-trace");
+InteractionEnvelope failedMemoryEnvelope = new InteractionEnvelope(
+    failedMemorySnapshot, Array.Empty<PromptMessage>());
+LegacyNativeActionPlanExecutor failedMemoryExecutor = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("partial economy-only must not call legacy"),
+    (plan, snapshot) => { failedMemoryReplayCalls++; return Applied(1); });
+InteractionCommitResult failedMemoryCommit = partialCommitter.Commit(
+    failedMemoryEnvelope, partialResult, failedMemoryExecutor, failedPartialMemory);
+AssertTrue(failedMemoryCommit.Status == InteractionStatus.NonRetryableFailure
+    && !failedMemoryCommit.HistoryWritten
+    && failedMemoryCommit.ActionsExecuted
+    && failedMemoryCommit.ErrorCode == "economy.partial_replay:fixture_memory_failed"
+    && failedPartialMemory.LastFacts.Count == 1
+    && failedMemoryReplayCalls == 1,
+    "partial Economy + memory failure lost its terminal action receipt");
+InteractionCommitResult failedMemoryDuplicate = partialCommitter.Commit(
+    failedMemoryEnvelope, partialResult, failedMemoryExecutor, failedPartialMemory);
+AssertTrue(failedMemoryDuplicate.IsDuplicate
+    && failedMemoryDuplicate.ActionsExecuted
+    && !failedMemoryDuplicate.HistoryWritten
+    && failedMemoryReplayCalls == 1
+    && failedPartialMemory.CommitCalls == 1,
+    "partial Economy memory failure was replayed");
+
 int missingCapabilityLegacyCalls = 0;
 LegacyNativeActionPlanExecutor missingCapability = BuildExecutor(
     (plan, snapshot) => { missingCapabilityLegacyCalls++; return InteractionStatus.Executed; },
@@ -218,7 +321,7 @@ AssertTrue(filteredRichText.IndexOf("[ROT]", StringComparison.Ordinal) < 0
     && filteredRichText.IndexOf("ACTION:DUEL", StringComparison.OrdinalIgnoreCase) >= 0,
     "balanced economy tag filtering broke nested RichText or retained economy tag");
 
-Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 economyGate=5 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
+Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 economyGate=5 partial=4 partialReceipt=4 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
 
 sealed class RecordingMemory : IInteractionMemory, IInteractionMemoryBatchCommitter
 {
@@ -246,5 +349,23 @@ sealed class RecordingMemory : IInteractionMemory, IInteractionMemoryBatchCommit
         LastFacts.AddRange(commit.ConfirmedFacts);
         _onCommit();
         return new MemoryCommitResult(MemoryCommitStatus.Applied);
+    }
+}
+
+sealed class RejectingMemory : IInteractionMemory, IInteractionMemoryBatchCommitter
+{
+    public int CommitCalls { get; private set; }
+    public List<FactRecord> LastFacts { get; } = new List<FactRecord>();
+
+    public IReadOnlyList<PromptMessage> Read(string subjectId, int maxItems) => Array.Empty<PromptMessage>();
+
+    public void Append(string subjectId, PromptMessage message, IEnumerable<FactRecord> confirmedFacts)
+        => throw new InvalidOperationException("batch path expected");
+
+    public MemoryCommitResult Commit(InteractionMemoryCommit commit)
+    {
+        CommitCalls++;
+        LastFacts.AddRange(commit.ConfirmedFacts);
+        return new MemoryCommitResult(MemoryCommitStatus.Failed, "fixture_memory_failed");
     }
 }

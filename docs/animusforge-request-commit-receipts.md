@@ -100,6 +100,36 @@ a disk transaction: a process crash before a later game save can still lose
 in-memory state, and a replay failure after reservation remains consumed rather
 than being automatically retried.
 
+## Known partial Economy outcomes (LOCAL-7-F)
+
+Hero, Party and Merchant Economy owners now return the appended
+`PartiallyApplied` status when at least one planned action was verified and at
+least one failed. The enum value is appended, not inserted, so numeric values of
+the existing public statuses remain stable. The main-thread port also normalizes
+the former `Applied + short count` result for source/binary transition, but
+does not promote `Failed/Rejected + positive count` into a trusted outcome.
+
+`IActionPlanExecutionOutcomeReceipt` is an additive optional interface; the
+existing receipt interface and six-argument executor constructor remain intact.
+It exposes only the Economy owner's verified `AppliedActionCount`, confirmed
+facts and structured error. Legacy callbacks still lack per-action receipts and
+are never counted merely because they returned `Executed`.
+
+For a known partial, or for full Economy success followed by legacy rejection,
+the executor stops with `NonRetryableFailure` and retains Economy facts. The
+committer writes the visible exchange plus **only those outcome-owner facts**,
+then records `ActionsExecuted=true`. A memory failure keeps that action bit
+and the terminal partial error. Duplicate requests return the same receipt
+without invoking Economy or memory again. Detached Host does not run
+`afterCommit` and cannot select legacy fallback after the commit callback has
+started.
+
+This is recovery of truthful evidence, not compensation or success synthesis.
+An action helper or domain callback can still mutate and then throw before
+incrementing `AppliedCount`; that is `UnknownAfterStart`, not a known partial.
+This slice does not infer facts for it or make the 512-entry request cache
+durable across eviction, restart or save load.
+
 `tools/ProductionOptInEntryReplayTests` includes the production-DLL missing-Campaign
 regression (all three channels and repeated attempts), a thread-guard fixture,
 public void signature checks and raw-owner publication/sanitizer fixtures. They
@@ -120,8 +150,9 @@ do not initialize a Campaign or prove live writes, game scheduling or old saves.
   save/load and asset evidence remain required. Process-local receipts are still
   not the durable business authority.
 - A mixed Economy/legacy plan can partially apply before the later action is
-  rejected. The request-level reservation prevents immediate replay, but does
-  not roll back the earlier transfer or recover discarded confirmed facts.
+  rejected. Known Economy facts are now retained in a terminal receipt, but the
+  request-level reservation does not roll back effects or recover unknown
+  legacy outcomes.
 - There is no automatic memory-only retry or compensation: an unconfirmed
   owner result can still mean a partial append. Unknown effects remain
   failed, not fabricated as successful facts.

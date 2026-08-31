@@ -95,8 +95,44 @@ public sealed class InteractionResultCommitter
             }
             if (actionStatus != InteractionStatus.Executed)
             {
+                if (actionExecutor is IActionPlanExecutionOutcomeReceipt partialOutcome
+                    && partialOutcome.AppliedActionCount > 0)
+                {
+                    IEnumerable<FactRecord> partialFacts =
+                        partialOutcome.ConfirmedFacts ?? Array.Empty<FactRecord>();
+                    MemoryCommitResult partialMemory = TryAppendVisibleExchange(
+                        envelope,
+                        result,
+                        memory,
+                        appendPlayerInput,
+                        requestId,
+                        partialFacts,
+                        "partial-action");
+                    string partialError = string.IsNullOrWhiteSpace(partialOutcome.ExecutionErrorCode)
+                        ? "partial_action_execution"
+                        : partialOutcome.ExecutionErrorCode;
+                    if (!partialMemory.HistoryWritten)
+                    {
+                        string memoryError = string.IsNullOrWhiteSpace(partialMemory.ErrorCode)
+                            ? "memory_commit_failed"
+                            : partialMemory.ErrorCode;
+                        partialError += ":" + memoryError;
+                    }
+                    return new InteractionCommitResult(
+                        InteractionStatus.NonRetryableFailure,
+                        partialMemory.HistoryWritten,
+                        true,
+                        partialError);
+                }
                 // Do not write confirmed facts when the action was not accepted.
-                MemoryCommitResult rejectedMemory = TryAppendVisibleExchange(envelope, result, memory, appendPlayerInput, requestId);
+                MemoryCommitResult rejectedMemory = TryAppendVisibleExchange(
+                    envelope,
+                    result,
+                    memory,
+                    appendPlayerInput,
+                    requestId,
+                    Array.Empty<FactRecord>(),
+                    "rejected-action");
                 return new InteractionCommitResult(actionStatus, rejectedMemory.HistoryWritten, false,
                     rejectedMemory.HistoryWritten ? "action_not_executed"
                         : string.IsNullOrWhiteSpace(rejectedMemory.ErrorCode) ? "memory_commit_failed" : rejectedMemory.ErrorCode);
@@ -159,7 +195,9 @@ public sealed class InteractionResultCommitter
         InteractionResult result,
         IInteractionMemory memory,
         bool appendPlayerInput,
-        string requestId)
+        string requestId,
+        IEnumerable<FactRecord> confirmedFacts,
+        string receiptKind)
     {
         try
         {
@@ -168,8 +206,8 @@ public sealed class InteractionResultCommitter
                 memory,
                 appendPlayerInput ? envelope.Snapshot.PlayerText : string.Empty,
                 result.VisibleReply,
-                Array.Empty<FactRecord>(),
-                requestId + ":memory:rejected-action")
+                confirmedFacts ?? Array.Empty<FactRecord>(),
+                requestId + ":memory:" + (string.IsNullOrWhiteSpace(receiptKind) ? "action-outcome" : receiptKind))
                 ?? new MemoryCommitResult(MemoryCommitStatus.Failed, "missing_memory_receipt");
         }
         catch

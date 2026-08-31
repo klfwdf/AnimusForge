@@ -48,6 +48,7 @@ Type plannerInterfaceType = T("AnimusForge.Refactor.Contracts.IEconomyRewardDebt
 Type portInterfaceType = T("AnimusForge.Refactor.Contracts.IEconomyRewardDebtMainThreadPort");
 Type executorType = T("AnimusForge.Refactor.Adapters.LegacyNativeActionPlanExecutor");
 Type executorReceiptType = T("AnimusForge.Refactor.Contracts.IActionPlanExecutionReceipt");
+Type executorOutcomeType = T("AnimusForge.Refactor.Contracts.IActionPlanExecutionOutcomeReceipt");
 
 object New(Type type, params object[] args) => Activator.CreateInstance(type, args);
 Array Empty(Type element) => Array.CreateInstance(element, 0);
@@ -92,31 +93,41 @@ object MakeEconomyAction()
     return New(economyActionType, kind, "ACTION:GIVE_GOLD", "production-subject", "GOLD", "25", "25", "", "", "", "economy.reward.give_gold", "", "");
 }
 
-object MakeEconomyPlan()
-    => New(economyPlanType, One(economyActionType, MakeEconomyAction()), Empty(typeof(string)));
+object MakeEconomyPlan(int count = 1)
+{
+    Array actions = Array.CreateInstance(economyActionType, count);
+    for (int index = 0; index < count; index++) actions.SetValue(MakeEconomyAction(), index);
+    return New(economyPlanType, actions, Empty(typeof(string)));
+}
 
 object MakeFact() => New(factRecordType, "economy.confirmed", "production-subject", "gold applied");
-object MakeResult()
-    => New(economyResultType, Enum.Parse(economyStatusType, "Applied"), 1, One(factRecordType, MakeFact()), "");
+object MakeResult(string status = "Applied", int appliedCount = 1, string errorCode = "")
+    => New(economyResultType, Enum.Parse(economyStatusType, status), appliedCount, One(factRecordType, MakeFact()), errorCode);
 
-object BuildExecutor(Counter counter)
+object BuildExecutor(
+    Counter counter,
+    int economyActionCount = 1,
+    string replayStatus = "Applied",
+    int appliedCount = 1,
+    string replayError = "",
+    string legacyStatus = "Executed")
 {
 
     object planner = Proxy(plannerInterfaceType, (method, args) =>
     {
-        if (method.Name == "Plan") { counter.PlannerCalls++; return MakeEconomyPlan(); }
+        if (method.Name == "Plan") { counter.PlannerCalls++; return MakeEconomyPlan(economyActionCount); }
         return null;
     });
     object port = Proxy(portInterfaceType, (method, args) =>
     {
-        if (method.Name == "Replay") { counter.PortCalls++; return MakeResult(); }
+        if (method.Name == "Replay") { counter.PortCalls++; return MakeResult(replayStatus, appliedCount, replayError); }
         return null;
     });
     Type actionDelegateType = Generic(typeof(Func<,,>), actionPlanType, snapshotType, interactionStatusType);
     Delegate execute = DelegateFor(actionDelegateType, args =>
     {
         counter.LegacyCalls++;
-        return Enum.Parse(interactionStatusType, "Executed");
+        return Enum.Parse(interactionStatusType, legacyStatus);
     });
     Type ctor = executorType.GetConstructors().Single(candidate => candidate.GetParameters().Length == 6).GetParameters()[0].ParameterType;
     AssertTrue(ctor == actionDelegateType, "production executor delegate type mismatch");
@@ -133,6 +144,10 @@ Array economyActionArray = Array.CreateInstance(actionRequestType, 1);
 economyActionArray.SetValue(mixedAction, 0);
 object mixedPlan = New(actionPlanType, actionArray, "[ACTION:GIVE_GOLD:25] [ACTION:DUEL:npc]");
 object economyPlan = New(actionPlanType, economyActionArray, "[ACTION:GIVE_GOLD:25]");
+Array twoEconomyActionArray = Array.CreateInstance(actionRequestType, 2);
+twoEconomyActionArray.SetValue(mixedAction, 0);
+twoEconomyActionArray.SetValue(Action("ACTION:GIVE_GOLD", "26", new Dictionary<string,string>()), 1);
+object twoEconomyPlan = New(actionPlanType, twoEconomyActionArray, "[ACTION:GIVE_GOLD:25] [ACTION:GIVE_GOLD:26]");
 object snapshot = Snapshot();
 
 Counter mixedCounter = new Counter();
@@ -147,7 +162,28 @@ object onlyExecutor = BuildExecutor(onlyCounter);
 object onlyStatus = executorType.GetMethod("ValidateAndExecute").Invoke(onlyExecutor, new[] { economyPlan, snapshot });
 AssertTrue(onlyStatus.ToString() == "Executed" && onlyCounter.LegacyCalls == 0 && onlyCounter.PlannerCalls == 1 && onlyCounter.PortCalls == 1, "production economy-only route mismatch");
 
-Console.WriteLine("PASS productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 productionAssembly=1");
+Counter partialCounter = new Counter();
+object partialExecutor = BuildExecutor(
+    partialCounter, economyActionCount: 2, replayStatus: "PartiallyApplied",
+    appliedCount: 1, replayError: "economy.partial_replay");
+object partialStatus = executorType.GetMethod("ValidateAndExecute").Invoke(partialExecutor, new[] { twoEconomyPlan, snapshot });
+AssertTrue(partialStatus.ToString() == "NonRetryableFailure"
+    && (int)executorOutcomeType.GetProperty("AppliedActionCount").GetValue(partialExecutor) == 1
+    && (string)executorOutcomeType.GetProperty("ExecutionErrorCode").GetValue(partialExecutor) == "economy.partial_replay"
+    && ((IReadOnlyList<object>)executorReceiptType.GetProperty("ConfirmedFacts").GetValue(partialExecutor)).Count == 1
+    && partialCounter.LegacyCalls == 0 && partialCounter.PortCalls == 1,
+    "production known-partial outcome mismatch");
+
+Counter mixedRejectedCounter = new Counter();
+object mixedRejectedExecutor = BuildExecutor(mixedRejectedCounter, legacyStatus: "RejectedByValidation");
+object mixedRejectedStatus = executorType.GetMethod("ValidateAndExecute").Invoke(mixedRejectedExecutor, new[] { mixedPlan, snapshot });
+AssertTrue(mixedRejectedStatus.ToString() == "NonRetryableFailure"
+    && (int)executorOutcomeType.GetProperty("AppliedActionCount").GetValue(mixedRejectedExecutor) == 1
+    && (string)executorOutcomeType.GetProperty("ExecutionErrorCode").GetValue(mixedRejectedExecutor) == "economy.applied_before_legacy_rejection"
+    && ((IReadOnlyList<object>)executorReceiptType.GetProperty("ConfirmedFacts").GetValue(mixedRejectedExecutor)).Count == 1,
+    "production Economy-before-legacy-rejection outcome mismatch");
+
+Console.WriteLine("PASS productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 partial=2 productionAssembly=1");
 
 public sealed class Counter
 {

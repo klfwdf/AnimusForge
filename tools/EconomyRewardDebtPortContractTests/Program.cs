@@ -8,6 +8,14 @@ static void AssertTrue(bool condition, string message)
     if (!condition) throw new InvalidOperationException(message);
 }
 
+AssertTrue((int)EconomyRewardDebtReplayStatus.Applied == 0
+    && (int)EconomyRewardDebtReplayStatus.NoApplicableAction == 1
+    && (int)EconomyRewardDebtReplayStatus.RejectedByCapability == 2
+    && (int)EconomyRewardDebtReplayStatus.RejectedByMainThreadValidation == 3
+    && (int)EconomyRewardDebtReplayStatus.Failed == 4
+    && (int)EconomyRewardDebtReplayStatus.PartiallyApplied == 5,
+    "Economy replay status numeric compatibility changed");
+
 static GameInteractionSnapshot Snapshot(string subject = "npc-1")
 {
     InteractionIdentity identity = new InteractionIdentity("economy-session", InteractionChannel.NativeConversation, subject);
@@ -105,4 +113,43 @@ LegacyEconomyRewardDebtMainThreadPort badCount = new LegacyEconomyRewardDebtMain
 EconomyRewardDebtReplayResult countResult = badCount.Replay(Plan(), Snapshot());
 AssertTrue(countResult.Status == EconomyRewardDebtReplayStatus.Failed && countResult.ErrorCode == "economy.applied_count_invalid", "invalid applied count was not rejected");
 
-Console.WriteLine("PASS economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 debtMetadata=1 singleArgumentGold=1");
+EconomyRewardDebtReplayPlan twoActionPlan = new EconomyRewardDebtReplayPlan(
+    new[] { Plan().Actions[0], Plan().Actions[0] },
+    Array.Empty<string>());
+LegacyEconomyRewardDebtMainThreadPort legacyShortApplied = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => Applied());
+EconomyRewardDebtReplayResult normalizedPartial = legacyShortApplied.Replay(twoActionPlan, Snapshot());
+AssertTrue(normalizedPartial.Status == EconomyRewardDebtReplayStatus.PartiallyApplied
+    && normalizedPartial.AppliedCount == 1
+    && normalizedPartial.ConfirmedFacts.Count == 1,
+    "legacy short Applied result was not normalized to structured partial");
+
+LegacyEconomyRewardDebtMainThreadPort explicitPartial = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.PartiallyApplied, 1,
+        new[] { new FactRecord("economy.reward", "npc-1", "first applied") },
+        "economy.partial_replay"));
+EconomyRewardDebtReplayResult partialResult = explicitPartial.Replay(twoActionPlan, Snapshot());
+AssertTrue(partialResult.Status == EconomyRewardDebtReplayStatus.PartiallyApplied
+    && partialResult.ErrorCode == "economy.partial_replay",
+    "explicit structured partial was not preserved");
+
+LegacyEconomyRewardDebtMainThreadPort invalidPartial = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.PartiallyApplied, 1, Array.Empty<FactRecord>(), ""));
+EconomyRewardDebtReplayResult invalidPartialResult = invalidPartial.Replay(Plan(), Snapshot());
+AssertTrue(invalidPartialResult.Status == EconomyRewardDebtReplayStatus.Failed
+    && invalidPartialResult.AppliedCount == 1
+    && invalidPartialResult.ErrorCode == "economy.partial_count_invalid",
+    "invalid full-count partial did not fail closed while retaining known effects");
+
+LegacyEconomyRewardDebtMainThreadPort failedWithCount = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.Failed, 1,
+        new[] { new FactRecord("economy.unknown", "npc-1", "untrusted") },
+        "economy.unknown_after_start"));
+EconomyRewardDebtReplayResult failedWithCountResult = failedWithCount.Replay(twoActionPlan, Snapshot());
+AssertTrue(failedWithCountResult.Status == EconomyRewardDebtReplayStatus.Failed,
+    "Failed+count was incorrectly promoted to a known partial outcome");
+
+Console.WriteLine("PASS economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 partialNormalization=4 enumCompatibility=1 debtMetadata=1 singleArgumentGold=1");

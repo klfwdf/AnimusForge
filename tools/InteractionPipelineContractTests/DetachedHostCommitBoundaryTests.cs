@@ -21,7 +21,8 @@ internal static class DetachedHostCommitBoundaryTests
                 "success", "memory_failed", "memory_throw", "after_commit_throw", "commit_throw",
                 "commit_null", "commit_retryable", "dispatch_throw_after", "dispatch_null_after",
                 "dispatch_failed_after", "dispatch_throw_before", "dispatch_null_before",
-                "dispatch_failed_before", "duplicate_callback", "cancel_queued", "cancel_dispatch"
+                "dispatch_failed_before", "duplicate_callback", "cancel_queued", "cancel_dispatch",
+                "partial_action"
             })
             {
                 try { await RunCaseAsync(channel, scenario); }
@@ -49,7 +50,7 @@ internal static class DetachedHostCommitBoundaryTests
         var result = new InteractionResult(InteractionStatus.Succeeded, "visible reply",
             new ActionPlan(new[] { new ActionRequest("ACTION:GIVE_GOLD", "25", new Dictionary<string, string>()) },
                 "[ACTION:GIVE_GOLD:25]"), Array.Empty<FactRecord>(), string.Empty);
-        var executor = new TransferExecutor();
+        var executor = new TransferExecutor(scenario);
         var memory = new FaultMemory(scenario);
         var committer = new InteractionResultCommitter(() => 4L);
         using var cancellation = new CancellationTokenSource();
@@ -117,13 +118,25 @@ internal static class DetachedHostCommitBoundaryTests
             "unexpected status " + outcome.Status);
         bool memoryApplied = scenario == "success" || scenario == "after_commit_throw"
             || scenario == "dispatch_throw_after" || scenario == "dispatch_null_after"
-            || scenario == "dispatch_failed_after" || scenario == "duplicate_callback";
+            || scenario == "dispatch_failed_after" || scenario == "duplicate_callback"
+            || scenario == "partial_action";
+        bool afterCommitExpected = memoryApplied && scenario != "partial_action";
         Check(memory.Commits == (memoryApplied ? 1 : 0), "history was duplicated or lost");
-        Check(afterCommitCalls == (memoryApplied ? 1 : 0), "afterCommit ran without successful history or ran twice");
+        Check(afterCommitCalls == (afterCommitExpected ? 1 : 0), "afterCommit ran without a complete successful commit or ran twice");
         if (scenario == "memory_failed" || scenario == "memory_throw")
         {
             Check(outcome.Commit != null && outcome.Commit.ActionsExecuted && !outcome.Commit.HistoryWritten,
                 "lost action-executed/memory-failed receipt");
+        }
+        if (scenario == "partial_action")
+        {
+            Check(outcome.Commit != null
+                && outcome.Commit.Status == InteractionStatus.NonRetryableFailure
+                && outcome.Commit.ActionsExecuted
+                && outcome.Commit.HistoryWritten
+                && outcome.Commit.ErrorCode == "economy.partial_replay"
+                && !outcome.UsedLegacyFallback,
+                "known partial outcome was not terminal with history/facts");
         }
         if (scenario == "after_commit_throw" || scenario == "dispatch_throw_after" || scenario == "dispatch_null_after"
             || scenario == "dispatch_failed_after")
@@ -136,7 +149,7 @@ internal static class DetachedHostCommitBoundaryTests
         savedCallback();
         Check(executor.Transfers == expectedTransfers, "late callback repeated a transfer");
         Check(memory.Commits == (memoryApplied ? 1 : 0), "late callback wrote history");
-        Check(afterCommitCalls == (memoryApplied ? 1 : 0), "late callback repeated afterCommit");
+        Check(afterCommitCalls == (afterCommitExpected ? 1 : 0), "late callback repeated afterCommit");
     }
 
     private static void Check(bool condition, string message)
@@ -144,14 +157,24 @@ internal static class DetachedHostCommitBoundaryTests
         if (!condition) throw new InvalidOperationException(message);
     }
 
-    private sealed class TransferExecutor : IActionPlanExecutor, IActionPlanExecutionReceipt
+    private sealed class TransferExecutor : IActionPlanExecutor, IActionPlanExecutionOutcomeReceipt
     {
+        private readonly string _scenario;
+        public TransferExecutor(string scenario) { _scenario = scenario; }
         public int Transfers { get; private set; }
         public IReadOnlyList<FactRecord> ConfirmedFacts { get; private set; } = Array.Empty<FactRecord>();
+        public int AppliedActionCount { get; private set; }
+        public string ExecutionErrorCode { get; private set; } = string.Empty;
         public InteractionStatus ValidateAndExecute(ActionPlan plan, GameInteractionSnapshot snapshot)
         {
             Transfers++;
             ConfirmedFacts = new[] { new FactRecord("economy.confirmed", "hero-1", "25 gold transferred") };
+            AppliedActionCount = 1;
+            if (_scenario == "partial_action")
+            {
+                ExecutionErrorCode = "economy.partial_replay";
+                return InteractionStatus.NonRetryableFailure;
+            }
             return InteractionStatus.Executed;
         }
     }
