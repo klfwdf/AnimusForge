@@ -4,6 +4,8 @@
 
 ## 当前状态（2026-08-31 本机接续）
 
+- 文档任务 `PROGRAM-20260831` DONE（仅指总纲编写完成，不是 AF 全量重构完成）：按用户要求新增 `docs/animusforge-complete-refactor-program-20260831.md`，覆盖 20 领域、P0–P4 接续、owner/集成/测试分工、分层验收、发布清单与回滚边界；本轮仅改两份文档。已 fetch 确认远端 `182da1db`，编写前本机 HEAD `d8c81b5e`、ahead 4、clean；两项独立只读审查和成文复核完成，领域编号/远端 SHA/引用路径/Markdown fence/`git diff --check` 均通过。未重新运行构建/回放/游戏验证，未修改生产代码、Skill、默认入口或部署状态，未推送；文中测试结果明确引用上轮证据。当前生产接续任务仍为 `LOCAL-7-C`，`LOCAL-7-A/B` 仍 VERIFY。
+
 - 本机 canonical worktree：`G:\AFMOD\AF-REFACTOR`；分支 `codex/af-main-refactor-continuation-20260831`。
 - 已 fetch 的远端基线：`182da1db4db4199cf65783f911f3cb6d46b18970`，`origin/refactor/prepare-af-restructure`；`a096c1b1` 仅作历史比较点。下面的 F 盘机器记录保留为历史，不代表本机部署或最新远端。
 - `G:\AFMOD\NEW-10` 保持 `0006d45b`，`G:\AFMOD\GCCZ` 保持 `3849f6f`；接手时两者工作区干净。其他机器是否有未提交或正在进行的工作未知；本轮只在独立本地分支工作，不推送。
