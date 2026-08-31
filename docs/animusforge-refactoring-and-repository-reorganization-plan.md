@@ -7,13 +7,18 @@
 - 本机 canonical worktree：`G:\AFMOD\AF-REFACTOR`；分支 `codex/af-main-refactor-continuation-20260831`。
 - 已 fetch 的远端基线：`182da1db4db4199cf65783f911f3cb6d46b18970`，`origin/refactor/prepare-af-restructure`；`a096c1b1` 仅作历史比较点。下面的 F 盘机器记录保留为历史，不代表本机部署或最新远端。
 - `G:\AFMOD\NEW-10` 保持 `0006d45b`，`G:\AFMOD\GCCZ` 保持 `3849f6f`；接手时两者工作区干净。其他机器是否有未提交或正在进行的工作未知；本轮只在独立本地分支工作，不推送。
-- 当前任务 `LOCAL-7-A`：ACTIVE。本机 SDK/固定引用/contract/replay/Debug 1.3+1.4+Bootstrap Stage 基线；执行者 Codex，owner 为 Host/Build 与 Conversation/Economy，验证日志留在本机 ignored artifact plane。
-- 下一纵切片 `LOCAL-7-B`：检查单 Hero 经济动作 → ActionPlan commit → confirmed facts/AFEF 的异常、部分应用及重复提交边界；沿用现有 Gateway/owner/facade，不创建平行实现、不切换默认三渠道。
+- 当前状态：`LOCAL-7-A` VERIFY（核心基线通过，扩展回归有 4 个环境阻塞）；`LOCAL-7-B` VERIFY（源码、双版本构建与生产 DLL 回放通过，真实 Host 尚未验收）。本线程无继续执行中的写入；阶段 7 总体验收仍未完成。
+- 已完成纵切片 `LOCAL-7-B` 的代码部分：Conversation Host 提交边界；源码提交 `b24fdf4b`。沿用现有 Gateway/owner/facade，没有切换默认三渠道。
 - 计划路径：本台账、`AGENTS.md` 的本地回滚/边界说明；若复现提交边界缺口，限 `Refactor/Adapters`、`Refactor/Runtime`、现有 focused runner 和 owner 文档。不改存档 key/type、程序集身份、GCCZ 规则或构建/覆盖脚本。
 - 本机 SDK 为 `8.0.422`；游戏根为 `E:\steam\steamapps\common\Mount & Blade II Bannerlord`。真实 Campaign/Mission 未初始化、未获游戏部署授权；live Economy/旧存档/AFEF 验收保持 NOT-RUN。仅用纯测试和 production-DLL replay 证明相应边界。
 - 回滚：源代码基线 `182da1db`；编码前建立本地 checkpoint，后续按小提交反向回滚，不改写历史、不覆盖 NEW-10、游戏、ONNX 或玩家数据。
 - `LOCAL-7-A` 基线进展：checkpoint `8020112e`；Debug 1.3/1.4/Bootstrap Stage 各 0 warning / 0 error，InteractionPipeline 40 cases、Economy port/executor、Configured Gateway、PersistenceChunk、Economy owner/state fixture 和三渠道 production configured host PASS。Persistence/Profile/Config 首次 FAIL：`_patienceStates_v1` 两个 ref 的 fixture 行号为 37172/37181，当前源码为 37010/37019；121 条绑定中仅这两处行号不同，未发现 key/type/ref/source 变化。只校正导航行号，保留完整严格校验。
-- `LOCAL-7-B` 意图：ACTIVE，owner 为 Conversation host lifecycle。复现并修复 `DetachedInteractionHost.ExecuteAsync` 在 commit 已开始后因 memory failure、afterCommit/dispatch exception 或缺失返回值再调用旧 fallback 的路径；新增已有 InteractionPipeline runner 内的故障注入回归，并检查三渠道 production-DLL 路径。先写失败测试再改 host，不改变经济玩法、save、标签或默认入口。真实 Host/AFEF 仍 NOT-RUN。
+- `LOCAL-7-B` 原意图（已实现，VERIFY）：owner 为 Conversation host lifecycle。复现并修复 `DetachedInteractionHost.ExecuteAsync` 在 commit 已开始后因 memory failure、afterCommit/dispatch exception 或缺失返回值再调用旧 fallback 的路径；新增已有 InteractionPipeline runner 内的故障注入回归，并检查三渠道 production-DLL 路径。先写失败测试再改 host，不改变经济玩法、save、标签或默认入口。真实 Host/AFEF 仍 NOT-RUN。
+- `LOCAL-7-A` 核心基线 PASS：校正 fixture 后 Persistence/Profile/Config PASS（95 keys / 121 bindings / 8 types）；Production configured host、Economy-aware commit、Hero/Party/Merchant owner factory replay PASS。readiness 为 PASS，但 `gameRunning=false`、`installedMatchesStage=false`（该字段只比较 Bootstrap），不代表游戏已验收。固定引用：1.3 `v1.3.15.110062`，1.4 `v1.4.6.115628`；本机游戏 `v1.4.7.117484`。
+- `LOCAL-7-B` 红绿测试：旧 source-linked host 的 memory/commit/dispatch/late-callback/cancel 用例失败；旧 staged 1.4 DLL 实测 `NativeConversation/memory_throw` 错走 fallback 并返回 Succeeded（`production-configured-boundary-red.log`）。修复源码后原 40-case suite + 新 48-case matrix PASS；重建 Debug 1.3/1.4/Bootstrap 各 0 warning / 0 error，新 staged 1.4 的三渠道 12 个提交后故障回放 PASS。保护范围为一次 `ExecuteAsync` 的提交回调，不承诺跨请求或跨存档的经济事务 exactly-once。
+- 扩展回归执行失败（环境加载，不能记为 PASS）：PolicyGateway / WorldDiplomacyGateway 缺 `MCMv5, Version=5.12.3.0`；TtsGateway / ProductionOptInEntry 缺 `TaleWorlds.CampaignSystem`。四个 runner 的 `.csproj` 仍从 F 盘复制依赖；本轮未改这些工具或官方脚本。其余已执行的 Gateway/生产回放/十项 Python 审计结果见本机 handoff。
+- 下一精确任务 `LOCAL-7-C` TODO：在测试工具 owner 范围内审查这四个 runner 的依赖复制，改为显式本机路径/固定版本引用并验证闭包，重跑失败项；不修改官方一键构建流程、不把游戏依赖打入客户端 Stage。随后审查跨请求经济 receipt/重复记忆提交和真实 Host/旧档证据。
+- 完整命令、构建哈希、清理说明与回滚：`docs/handoffs/2026-08-31-local-refactor-commit-boundary.md`；本机日志 `G:\AFMOD\.build-cache\af-refactor-20260831`。本轮只修改 AF 基础提交边界与测试/文档，未改 GCCZ 核心/桥接，不需复制 AF 主体到 GCCZ；未推送、未部署、未安装全局 Skill。
 
 ## 历史状态（另一台机器，2026-08-30）
 
