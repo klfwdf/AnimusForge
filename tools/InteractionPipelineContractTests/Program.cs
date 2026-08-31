@@ -847,6 +847,8 @@ using (var cancelledNativeToken = new CancellationTokenSource())
 
 Console.WriteLine("PASS interactionPipeline cases=40 immutableSnapshot=true configReloadIsolation=true runtimeConfigAtomicReload=true runtimeConfigFailureIsolation=true coordinatorGeneration=true cancellationIsolation=true compositionRoot=true threeStage=true postprocessIsolation=true commitBoundary=true nativeFacade=true channelFacade=true channelOptInReplay=true detachedHost=true detachedHostAfterCommit=true inboundSeedNoUserHistory=true detachedHostStaleIsolation=true detachedHostRejectedIsolation=true nativeOptInRunner=true nativeFallback=true nativeCancelIsolation=true nativeActionExecutor=true nativeActionRawIntegrity=true detachedRuleSelector=true promptAdapter=true actionTagParser=true detachedPromptComposer=true detachedPostprocessComposer=true atomicDetachedSections=true nativeMainParity=true nativePostprocessParity=true nativeAtomicBundle=true");
 
+await DetachedHostCommitBoundaryTests.RunAsync();
+
 static InteractionPipeline BuildPipeline(RuleSelection selection, FakeGateway gateway)
 {
     return new InteractionPipeline(

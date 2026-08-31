@@ -10,7 +10,8 @@ namespace AnimusForge.Refactor.Runtime;
 /// supplies capture, memory/action facades and a dispatcher that owns the game
 /// main thread. This type owns only lifecycle policy: generate once, dispatch
 /// one commit, never retry stale/validation decisions, and use the legacy
-/// fallback only for detached infrastructure failures.
+/// fallback only for failures before the commit callback starts. Once a
+/// callback starts, even a failed/missing receipt can hide partial effects.
 /// </summary>
 public sealed class DetachedInteractionHost
 {
@@ -105,6 +106,10 @@ public sealed class DetachedInteractionHost
             return await FallbackAsync("detached_generate_" + exception.GetType().Name, fallbackToLegacy).ConfigureAwait(false);
         }
 
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Terminal(InteractionStatus.CancelledAsStale, "cancelled_before_commit", result, null);
+        }
         if (result == null)
         {
             return await FallbackAsync("detached_null_result", fallbackToLegacy).ConfigureAwait(false);
@@ -125,6 +130,11 @@ public sealed class DetachedInteractionHost
             return await FallbackAsync("missing_commit_dependencies", fallbackToLegacy, result).ConfigureAwait(false);
         }
 
+        // 0 = pending, 1 = consumed, 2 = closed without starting. Closing the
+        // gate also prevents a broken dispatcher from running a queued callback
+        // after its task failed/returned and the host selected legacy fallback.
+        int commitState = 0;
+        InteractionCommitResult observedCommit = null;
         InteractionCommitResult commit;
         try
         {
@@ -132,13 +142,31 @@ public sealed class DetachedInteractionHost
                 envelope,
                 () =>
                 {
+                    if (Interlocked.CompareExchange(ref commitState, 1, 0) != 0)
+                    {
+                        InteractionCommitResult receipt = Volatile.Read(ref observedCommit);
+                        return new InteractionCommitResult(
+                            InteractionStatus.NonRetryableFailure,
+                            receipt?.HistoryWritten ?? false,
+                            receipt?.ActionsExecuted ?? false,
+                            "commit_callback_closed");
+                    }
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        var cancelled = new InteractionCommitResult(
+                            InteractionStatus.CancelledAsStale, false, false, "cancelled_before_commit");
+                        Volatile.Write(ref observedCommit, cancelled);
+                        return cancelled;
+                    }
                     InteractionCommitResult committed = _commit(
                         envelope,
                         result,
                         actionExecutor,
                         memory,
                         appendPlayerInput);
+                    Volatile.Write(ref observedCommit, committed);
                     if (committed != null
+                        && committed.HistoryWritten
                         && (committed.Status == InteractionStatus.Succeeded
                             || committed.Status == InteractionStatus.Executed))
                     {
@@ -150,10 +178,32 @@ public sealed class DetachedInteractionHost
         }
         catch (Exception exception)
         {
+            if (Interlocked.CompareExchange(ref commitState, 2, 0) == 1)
+            {
+                return Terminal(InteractionStatus.NonRetryableFailure,
+                    "main_thread_commit_" + exception.GetType().Name, result, Volatile.Read(ref observedCommit));
+            }
+            if (cancellationToken.IsCancellationRequested || exception is OperationCanceledException)
+            {
+                return Terminal(InteractionStatus.CancelledAsStale, "cancelled_before_commit", result, null);
+            }
             return await FallbackAsync("main_thread_commit_" + exception.GetType().Name, fallbackToLegacy, result).ConfigureAwait(false);
+        }
+        finally
+        {
+            Interlocked.CompareExchange(ref commitState, 2, 0);
         }
         if (commit == null)
         {
+            if (Volatile.Read(ref commitState) == 1)
+            {
+                return Terminal(InteractionStatus.NonRetryableFailure,
+                    "missing_commit_result", result, Volatile.Read(ref observedCommit));
+            }
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Terminal(InteractionStatus.CancelledAsStale, "cancelled_before_commit", result, null);
+            }
             return await FallbackAsync("missing_commit_result", fallbackToLegacy, result).ConfigureAwait(false);
         }
         if (commit.Status == InteractionStatus.CancelledAsStale
@@ -168,8 +218,18 @@ public sealed class DetachedInteractionHost
 
         bool accepted = commit.Status == InteractionStatus.Succeeded
             || commit.Status == InteractionStatus.Executed;
+        if (!accepted && Volatile.Read(ref commitState) == 1)
+        {
+            return Terminal(InteractionStatus.NonRetryableFailure,
+                string.IsNullOrWhiteSpace(commit.ErrorCode) ? "commit_failed" : commit.ErrorCode,
+                result, Volatile.Read(ref observedCommit) ?? commit);
+        }
         if (!accepted && !commit.HistoryWritten)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Terminal(InteractionStatus.CancelledAsStale, "cancelled_before_commit", result, commit);
+            }
             return await FallbackAsync(
                 string.IsNullOrWhiteSpace(commit.ErrorCode) ? "commit_failed" : commit.ErrorCode,
                 fallbackToLegacy,

@@ -152,13 +152,14 @@ object capabilities = New(capabilitySetType, (object)new[]
 object selection = New(ruleSelectionType, (object)new[] { "fixture.rule" }, (object)Array.Empty<string>());
 object context = New(postprocessContextType, (object)new[] { "fixture.rule" }, (object)Array.Empty<string>(), capabilities);
 object emptyPlan = New(actionPlanType, EmptyArray(actionRequestType), "fixture-postprocess");
+object currentPlan = emptyPlan;
 
 Type[] portParameters = portsType.GetConstructors().Single().GetParameters()
     .Select(parameter => parameter.ParameterType).ToArray();
 Delegate selectRules = HandlerDelegate(portParameters[0], _ => selection);
 Delegate composePrompt = HandlerDelegate(portParameters[1], _ => MakePrompt("user", "provider main", "fixture-main"));
 Delegate buildContext = HandlerDelegate(portParameters[2], _ => context);
-Delegate parseActions = HandlerDelegate(portParameters[3], _ => emptyPlan);
+Delegate parseActions = HandlerDelegate(portParameters[3], _ => currentPlan);
 Delegate normalize = HandlerDelegate(portParameters[4], arguments => arguments[0]?.ToString() ?? string.Empty);
 Delegate composePostprocess = HandlerDelegate(portParameters[6], _ => MakePrompt("user", "provider postprocess", "fixture-postprocess"));
 object ports = New(
@@ -216,13 +217,14 @@ async Task<(string Status, bool Fallback, string Visible, string CommitStatus, i
     string channel,
     string sessionId,
     string playerText,
-    bool useFallback,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken,
+    string commitFault = null)
 {
     object envelope = MakeEnvelope(channel, sessionId, playerText);
     Type captureType = Generic(typeof(Func<,>), typeof(string), envelopeType);
     Delegate capture = HandlerDelegate(captureType, _ => envelope);
     object facade = New(facadeType, ports, MakeGateway(), HandlerDelegate(typeof(Func<long>), _ => 4L), capture);
+    using IDisposable facadeLifetime = (IDisposable)facade;
     object host = New(hostType,
         capture,
         HandlerDelegate(
@@ -234,16 +236,40 @@ async Task<(string Status, bool Fallback, string Visible, string CommitStatus, i
 
     MethodInfo execute = hostType.GetMethod("ExecuteAsync");
     ParameterInfo[] parameters = execute.GetParameters();
-    Delegate actionFactory = HandlerDelegate(parameters[4].ParameterType, _ => null);
-    Delegate memoryFactory = HandlerDelegate(parameters[5].ParameterType, _ => memory);
+    int actionCalls = 0;
+    int fallbackCalls = 0;
+    int afterCommitCalls = 0;
+    object executor = MakeProxy(actionExecutorInterfaceType, (method, _) =>
+    {
+        AssertTrue(method.Name == "ValidateAndExecute", "unexpected action port call");
+        actionCalls++;
+        return Enum.Parse(commitResultType.GetProperty("Status").PropertyType, "Executed");
+    });
+    object commitMemory = commitFault == "memory_throw" ? MakeProxy(memoryInterfaceType, (method, _) =>
+    {
+        if (method.Name == "Append") throw new InvalidOperationException("fixture memory unavailable");
+        return EmptyArray(promptMessageType);
+    }) : memory;
+    Delegate actionFactory = HandlerDelegate(parameters[4].ParameterType, _ => commitFault == null ? null : executor);
+    Delegate memoryFactory = HandlerDelegate(parameters[5].ParameterType, _ => commitMemory);
     Delegate dispatchCommit = HandlerDelegate(parameters[6].ParameterType, arguments =>
     {
         object callback = arguments[1];
         object result = callback.GetType().GetMethod("Invoke").Invoke(callback, null);
-        return TaskFromResult(commitResultType, result);
+        if (commitFault == "dispatch_throw_after") throw new InvalidOperationException("fixture lost acknowledgement");
+        return TaskFromResult(commitResultType, commitFault == "dispatch_null_after" ? null : result);
     });
-    Delegate fallback = HandlerDelegate(parameters[7].ParameterType, _ => Task.FromResult("legacy-fallback"));
-    Delegate afterCommit = HandlerDelegate(parameters[9].ParameterType, _ => null);
+    Delegate fallback = HandlerDelegate(parameters[7].ParameterType, _ =>
+    {
+        fallbackCalls++;
+        return Task.FromResult("legacy-fallback");
+    });
+    Delegate afterCommit = HandlerDelegate(parameters[9].ParameterType, _ =>
+    {
+        afterCommitCalls++;
+        if (commitFault == "after_commit_throw") throw new InvalidOperationException("fixture notification failed");
+        return null;
+    });
     object[] arguments =
     {
         playerText,
@@ -266,6 +292,15 @@ async Task<(string Status, bool Fallback, string Visible, string CommitStatus, i
     string visible = (string)hostResultType.GetProperty("VisibleReply").GetValue(hostResult);
     object commit = hostResultType.GetProperty("Commit").GetValue(hostResult);
     string commitStatus = commit == null ? string.Empty : commitResultType.GetProperty("Status").GetValue(commit).ToString();
+    if (commitFault != null)
+    {
+        AssertTrue(status == "NonRetryableFailure" && !fallbackUsed && fallbackCalls == 0,
+            channel + "/" + commitFault + " retried a possibly applied commit: " + status);
+        AssertTrue(actionCalls == 1, "production action port did not execute once");
+        AssertTrue(commit != null && (bool)commitResultType.GetProperty("ActionsExecuted").GetValue(commit),
+            "production host lost its action receipt");
+        AssertTrue(afterCommitCalls == (commitFault == "memory_throw" ? 0 : 1), "afterCommit boundary mismatch");
+    }
     return (status, fallbackUsed, visible, commitStatus, server.Requests.Count);
 }
 
@@ -283,7 +318,7 @@ await using (TestServer success = await TestServer.StartAsync((_, body) =>
     {
         historyRoles.Clear();
         (string status, bool fallback, string visible, string commitStatus, int requests) result =
-            await RunHostAsync(success, channel, session, channel + " input", false, CancellationToken.None);
+            await RunHostAsync(success, channel, session, channel + " input", CancellationToken.None);
         AssertTrue(result.status == "Succeeded", channel + " host status mismatch: " + result.status);
         AssertTrue(!result.fallback, channel + " unexpectedly used fallback");
         AssertTrue(result.visible == "provider-main", channel + " visible reply mismatch: " + result.visible);
@@ -300,7 +335,7 @@ await using (TestServer failure = await TestServer.StartAsync((_, _) =>
 {
     historyRoles.Clear();
     (string status, bool fallback, string visible, string commitStatus, int requests) result =
-        await RunHostAsync(failure, "SceneShout", "failure-production-host", "failure input", true, CancellationToken.None);
+        await RunHostAsync(failure, "SceneShout", "failure-production-host", "failure input", CancellationToken.None);
     AssertTrue(result.fallback, "provider failure did not use legacy fallback");
     AssertTrue(result.visible == "legacy-fallback", "fallback visible text mismatch");
     AssertTrue(result.commitStatus == string.Empty, "failed provider unexpectedly committed");
@@ -317,14 +352,28 @@ await using (TestServer slow = await TestServer.StartAsync(async (_, _) =>
     historyRoles.Clear();
     using CancellationTokenSource cancellation = new CancellationTokenSource(100);
     (string status, bool fallback, string visible, string commitStatus, int requests) result =
-        await RunHostAsync(slow, "Courier", "cancel-production-host", "cancel input", true, cancellation.Token);
+        await RunHostAsync(slow, "Courier", "cancel-production-host", "cancel input", cancellation.Token);
     AssertTrue(result.status == "CancelledAsStale", "cancelled host status mismatch: " + result.status);
     AssertTrue(!result.fallback, "cancelled host incorrectly used fallback");
     AssertTrue(result.commitStatus == string.Empty, "cancelled host committed");
     AssertTrue(historyRoles.Count == 0, "cancelled host wrote history");
 }
 
-Console.WriteLine("PASS productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1");
+currentPlan = New(actionPlanType, OneArray(actionRequestType,
+    New(actionRequestType, "ACTION:GIVE_GOLD", "25", new Dictionary<string, string>())), "[ACTION:GIVE_GOLD:25]");
+await using (TestServer commitFailure = await TestServer.StartAsync((_, _) => Task.FromResult((200,
+    "{\"choices\":[{\"message\":{\"content\":\"fixture reply\"}}]}"))))
+{
+    foreach (string channel in new[] { "NativeConversation", "SceneShout", "Courier" })
+    {
+        foreach (string fault in new[] { "memory_throw", "after_commit_throw", "dispatch_throw_after", "dispatch_null_after" })
+        {
+            historyRoles.Clear();
+            await RunHostAsync(commitFailure, channel, channel + "-" + fault, "commit input", CancellationToken.None, fault);
+        }
+    }
+}
+Console.WriteLine("PASS productionConfiguredHostReplay native=1 scene=1 courier=1 mainPostprocess=1 commitHistory=1 credentialBoundary=1 providerFallback=1 cancellationBoundary=1 postCommitNoFallback=12");
 
 internal class ReplayProxy : DispatchProxy
 {
