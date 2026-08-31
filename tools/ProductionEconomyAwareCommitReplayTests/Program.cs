@@ -118,7 +118,7 @@ object BuildExecutor(Counter counter)
         counter.LegacyCalls++;
         return Enum.Parse(interactionStatusType, "Executed");
     });
-    Type ctor = executorType.GetConstructors().Single().GetParameters()[0].ParameterType;
+    Type ctor = executorType.GetConstructors().Single(candidate => candidate.GetParameters().Length == 6).GetParameters()[0].ParameterType;
     AssertTrue(ctor == actionDelegateType, "production executor delegate type mismatch");
     object[] constructorArgs = { execute, 64, null, planner, port, AllCapabilities() };
     return New(executorType, constructorArgs);
