@@ -129,7 +129,9 @@ public partial class RewardSystemBehavior
                 failedCount > 0 ? "economy.merchant_no_action_applied" : "economy.merchant_no_actions");
         }
         return new EconomyRewardDebtReplayResult(
-            EconomyRewardDebtReplayStatus.Applied,
+            failedCount > 0
+                ? EconomyRewardDebtReplayStatus.PartiallyApplied
+                : EconomyRewardDebtReplayStatus.Applied,
             appliedCount,
             facts,
             failedCount > 0 ? "economy.merchant_partial_replay" : string.Empty);

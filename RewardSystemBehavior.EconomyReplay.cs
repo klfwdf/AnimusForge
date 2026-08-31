@@ -115,7 +115,9 @@ public partial class RewardSystemBehavior
         }
 
         return new EconomyRewardDebtReplayResult(
-            EconomyRewardDebtReplayStatus.Applied,
+            failedCount > 0
+                ? EconomyRewardDebtReplayStatus.PartiallyApplied
+                : EconomyRewardDebtReplayStatus.Applied,
             appliedCount,
             confirmedFacts,
             failedCount > 0 ? "economy.partial_replay" : string.Empty);

@@ -435,14 +435,24 @@ public interface IActionPlanExecutor
 }
 
 /// <summary>
-/// Optional receipt exposed by an action executor after a successful main
-/// thread execution. Domain owners use this to return facts that were
-/// confirmed by actual game state; callers must not synthesize them from a
-/// detached ActionPlan.
+/// Optional receipt exposed after an action owner confirms actual game effects,
+/// including the confirmed subset of a known partial outcome. Callers must not
+/// synthesize facts from a detached ActionPlan.
 /// </summary>
 public interface IActionPlanExecutionReceipt
 {
     IReadOnlyList<FactRecord> ConfirmedFacts { get; }
+}
+
+/// <summary>
+/// Optional structured outcome for an executor that can prove some requested
+/// actions changed game state. Committers retain those owner-confirmed facts in
+/// a non-retryable receipt; they never retry or synthesize missing actions.
+/// </summary>
+public interface IActionPlanExecutionOutcomeReceipt : IActionPlanExecutionReceipt
+{
+    int AppliedActionCount { get; }
+    string ExecutionErrorCode { get; }
 }
 
 public interface IRuleSelector

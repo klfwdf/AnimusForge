@@ -94,6 +94,28 @@ public sealed class LegacyEconomyRewardDebtMainThreadPort : IEconomyRewardDebtMa
         {
             return Rejected(EconomyRewardDebtReplayStatus.Failed, "economy.applied_count_invalid");
         }
+        if (result.Status == EconomyRewardDebtReplayStatus.Applied
+            && result.AppliedCount > 0
+            && result.AppliedCount < plan.Actions.Count)
+        {
+            // Preserve backward compatibility with owners that predate the
+            // structured partial status but already returned a short count and
+            // owner-confirmed facts.
+            return new EconomyRewardDebtReplayResult(
+                EconomyRewardDebtReplayStatus.PartiallyApplied,
+                result.AppliedCount,
+                result.ConfirmedFacts,
+                string.IsNullOrWhiteSpace(result.ErrorCode) ? "economy.partial_replay" : result.ErrorCode);
+        }
+        if (result.Status == EconomyRewardDebtReplayStatus.PartiallyApplied
+            && (result.AppliedCount <= 0 || result.AppliedCount >= plan.Actions.Count))
+        {
+            return new EconomyRewardDebtReplayResult(
+                EconomyRewardDebtReplayStatus.Failed,
+                result.AppliedCount,
+                result.ConfirmedFacts,
+                "economy.partial_count_invalid");
+        }
         if (result.Status == EconomyRewardDebtReplayStatus.Applied && result.AppliedCount == 0)
         {
             return Rejected(EconomyRewardDebtReplayStatus.Failed, "economy.applied_without_effect");
