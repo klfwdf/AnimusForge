@@ -1,5 +1,12 @@
 # AnimusForge Codex Instructions
 
+## Local refactor continuation boundary
+
+- For the 2026-08-31 continuation, use `G:\AFMOD\AF-REFACTOR` on `codex/af-main-refactor-continuation-20260831`; see the current execution ledger before editing. Historical NEW-087 and F-drive labels below do not select this machine's worktree.
+- Preserve existing NEW-10, GCCZ, other worktrees and authors' changes. Writes outside the task workspace require explicit approval for the exact change; keep proposals local otherwise.
+- Create local checkpoint/intent commits before substantial changes and commit each verified slice. Roll back with focused inverse commits, never hard reset or rewritten history.
+- Do not push, deploy to the game, install global skills, or change the default interaction entry points without explicit authorization. Keep contract/replay evidence separate from live-game acceptance.
+
 本仓库是 Mount & Blade II: Bannerlord 的 AnimusForge mod，当前目标分支/目录是 `animusforge-1.3.x`。
 
 ## 必须遵循

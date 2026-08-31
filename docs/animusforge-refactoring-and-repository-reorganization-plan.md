@@ -2,7 +2,18 @@
 
 > 本文件是 AF 重构的公共进度台账。它记录目标、阶段、当前状态、验证证据和交接信息；不替代 `.claude/skills/animusforge-maintainer/` 中的长期工作规范。
 
-## 当前状态
+## 当前状态（2026-08-31 本机接续）
+
+- 本机 canonical worktree：`G:\AFMOD\AF-REFACTOR`；分支 `codex/af-main-refactor-continuation-20260831`。
+- 已 fetch 的远端基线：`182da1db4db4199cf65783f911f3cb6d46b18970`，`origin/refactor/prepare-af-restructure`；`a096c1b1` 仅作历史比较点。下面的 F 盘机器记录保留为历史，不代表本机部署或最新远端。
+- `G:\AFMOD\NEW-10` 保持 `0006d45b`，`G:\AFMOD\GCCZ` 保持 `3849f6f`；接手时两者工作区干净。其他机器是否有未提交或正在进行的工作未知；本轮只在独立本地分支工作，不推送。
+- 当前任务 `LOCAL-7-A`：ACTIVE。本机 SDK/固定引用/contract/replay/Debug 1.3+1.4+Bootstrap Stage 基线；执行者 Codex，owner 为 Host/Build 与 Conversation/Economy，验证日志留在本机 ignored artifact plane。
+- 下一纵切片 `LOCAL-7-B`：检查单 Hero 经济动作 → ActionPlan commit → confirmed facts/AFEF 的异常、部分应用及重复提交边界；沿用现有 Gateway/owner/facade，不创建平行实现、不切换默认三渠道。
+- 计划路径：本台账、`AGENTS.md` 的本地回滚/边界说明；若复现提交边界缺口，限 `Refactor/Adapters`、`Refactor/Runtime`、现有 focused runner 和 owner 文档。不改存档 key/type、程序集身份、GCCZ 规则或构建/覆盖脚本。
+- 本机 SDK 为 `8.0.422`；游戏根为 `E:\steam\steamapps\common\Mount & Blade II Bannerlord`。真实 Campaign/Mission 未初始化、未获游戏部署授权；live Economy/旧存档/AFEF 验收保持 NOT-RUN。仅用纯测试和 production-DLL replay 证明相应边界。
+- 回滚：源代码基线 `182da1db`；编码前建立本地 checkpoint，后续按小提交反向回滚，不改写历史、不覆盖 NEW-10、游戏、ONNX 或玩家数据。
+
+## 历史状态（另一台机器，2026-08-30）
 
 - 项目：Mount & Blade II: Bannerlord AnimusForge mod
 - canonical worktree：`F:\AF测试重构`
