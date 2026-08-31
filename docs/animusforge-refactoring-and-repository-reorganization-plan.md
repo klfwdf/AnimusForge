@@ -12,6 +12,8 @@
 - 计划路径：本台账、`AGENTS.md` 的本地回滚/边界说明；若复现提交边界缺口，限 `Refactor/Adapters`、`Refactor/Runtime`、现有 focused runner 和 owner 文档。不改存档 key/type、程序集身份、GCCZ 规则或构建/覆盖脚本。
 - 本机 SDK 为 `8.0.422`；游戏根为 `E:\steam\steamapps\common\Mount & Blade II Bannerlord`。真实 Campaign/Mission 未初始化、未获游戏部署授权；live Economy/旧存档/AFEF 验收保持 NOT-RUN。仅用纯测试和 production-DLL replay 证明相应边界。
 - 回滚：源代码基线 `182da1db`；编码前建立本地 checkpoint，后续按小提交反向回滚，不改写历史、不覆盖 NEW-10、游戏、ONNX 或玩家数据。
+- `LOCAL-7-A` 基线进展：checkpoint `8020112e`；Debug 1.3/1.4/Bootstrap Stage 各 0 warning / 0 error，InteractionPipeline 40 cases、Economy port/executor、Configured Gateway、PersistenceChunk、Economy owner/state fixture 和三渠道 production configured host PASS。Persistence/Profile/Config 首次 FAIL：`_patienceStates_v1` 两个 ref 的 fixture 行号为 37172/37181，当前源码为 37010/37019；121 条绑定中仅这两处行号不同，未发现 key/type/ref/source 变化。只校正导航行号，保留完整严格校验。
+- `LOCAL-7-B` 意图：ACTIVE，owner 为 Conversation host lifecycle。复现并修复 `DetachedInteractionHost.ExecuteAsync` 在 commit 已开始后因 memory failure、afterCommit/dispatch exception 或缺失返回值再调用旧 fallback 的路径；新增已有 InteractionPipeline runner 内的故障注入回归，并检查三渠道 production-DLL 路径。先写失败测试再改 host，不改变经济玩法、save、标签或默认入口。真实 Host/AFEF 仍 NOT-RUN。
 
 ## 历史状态（另一台机器，2026-08-30）
 
