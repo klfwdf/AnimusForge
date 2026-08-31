@@ -27352,17 +27352,17 @@ public class MyBehavior : CampaignBehaviorBase
 		AppendDailyMemoryLineById(GetMemoryHeroId(hero), string.IsNullOrWhiteSpace(heroName) ? "NPC" : heroName, speaker, text, isAfef, isLlmDialogue, sceneSessionId, targetAgentIndex, targetName);
 	}
 
-	private void AppendDailyMemoryLineById(string memoryId, string memoryName, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1, int targetAgentIndex = -1, string targetName = null)
+	private bool AppendDailyMemoryLineById(string memoryId, string memoryName, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1, int targetAgentIndex = -1, string targetName = null)
 	{
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
 		{
-			return;
+			return false;
 		}
 		string text2 = (text ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			return;
+			return false;
 		}
 		int dayIndex = (int)CampaignTime.Now.ToDays;
 		string gameDate = CampaignTime.Now.ToString();
@@ -27417,6 +27417,26 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			LogNonHeroMemoryTrace("stage=daily_append memoryId=" + heroId + " memoryName=" + (dailyMemoryDraft.HeroName ?? "") + " day=" + dayIndex + " drafts=" + list.Count + " lines=" + CountDailyMemoryDraftLines(list) + " speaker=" + (dailyMemoryLine.Speaker ?? "") + " isAfef=" + dailyMemoryLine.IsAfef + " isLlm=" + dailyMemoryLine.IsLlmDialogue + " sceneSession=" + sceneSessionId + " dialogueSession=" + dialogueSessionId);
 		}
+		return IsDailyMemoryLinePublished(heroId, dayIndex, dailyMemoryDraft, dailyMemoryLine);
+	}
+
+	// Read raw owner state, not prompt-filtered history. Sanitization retains object
+	// references; an older identical line cannot acknowledge this append.
+	private bool IsDailyMemoryLinePublished(string normalizedMemoryId, int gameDayIndex, DailyMemoryDraft draft, DailyMemoryLine line)
+	{
+		return draft != null && line != null && gameDayIndex >= 0
+			&& string.Equals(NormalizeMemoryHeroId(draft.HeroId), normalizedMemoryId, StringComparison.Ordinal)
+			&& draft.GameDayIndex == gameDayIndex && line.GameDayIndex == gameDayIndex
+			&& _dailyMemoryDrafts != null && _dailyMemoryDrafts.TryGetValue(normalizedMemoryId, out var published)
+			&& published != null && published.Contains(draft)
+			&& draft.Lines != null && draft.Lines.Contains(line);
+	}
+
+	private bool IsDialogueHistoryPublished(string normalizedMemoryId, List<DialogueDay> records)
+	{
+		return records != null && _dialogueHistory != null
+			&& _dialogueHistory.TryGetValue(normalizedMemoryId, out var published)
+			&& ReferenceEquals(published, records);
 	}
 
 	private List<DialogueDay> LoadDialogueHistory(Hero hero)
@@ -27636,6 +27656,51 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	/// <summary>
+	/// Strict batch boundary for detached commits. Applied confirms runtime daily
+	/// and recent-history acceptance only, not SyncData/disk persistence. Failure
+	/// may follow partial writes; callers must not replay actions or assume rollback.
+	/// </summary>
+	public static MemoryCommitResult CommitExternalDialogueHistory(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact)
+	{
+		try
+		{
+			if (!TWParallel.IsMainThread())
+			{
+				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_not_main_thread");
+			}
+			MyBehavior owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (owner == null)
+			{
+				return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_missing");
+			}
+			string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+			if (string.IsNullOrEmpty(normalizedMemoryId) || isNonHero != IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_identity_invalid");
+			}
+			if (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact))
+			{
+				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_empty_commit");
+			}
+			Hero hero = isNonHero ? null : (Hero.Find(memoryId.Trim()) ?? FindHeroById(normalizedMemoryId));
+			if (!isNonHero && !IsHeroNpcEligibleForCompressedMemory(hero))
+			{
+				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_target_ineligible");
+			}
+			bool accepted = isNonHero
+				? owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact)
+				: owner.AppendDialogueHistory(hero, playerText, aiText, extraFact);
+			return accepted
+				? new MemoryCommitResult(MemoryCommitStatus.Applied)
+				: new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_write_unconfirmed");
+		}
+		catch
+		{
+			return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_append_failed");
+		}
+	}
+
 	public static void AppendExternalSceneDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		try
@@ -27669,11 +27734,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void AppendDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId = -1, int playerTargetAgentIndex = -1, string playerTargetName = null)
+	private bool AppendDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId = -1, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		if (hero == null || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
 		{
-			return;
+			return false;
 		}
 		try
 		{
@@ -27682,15 +27747,16 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				npcNameForMemory = "NPC";
 			}
-			AppendDialogueHistoryById(GetMemoryHeroId(hero), npcNameForMemory, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
+			return AppendDialogueHistoryById(GetMemoryHeroId(hero), npcNameForMemory, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("DialogueHistory", "[错误] 追加失败: " + ex.Message);
+			return false;
 		}
 	}
 
-	private void AppendDialogueHistoryById(string memoryId, string npcNameForMemory, string playerText, string aiText, string extraFact, int sceneSessionId = -1, int playerTargetAgentIndex = -1, string playerTargetName = null)
+	private bool AppendDialogueHistoryById(string memoryId, string npcNameForMemory, string playerText, string aiText, string extraFact, int sceneSessionId = -1, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId) || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
@@ -27699,7 +27765,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				LogNonHeroMemoryTrace("stage=append_skip memoryId=" + normalizedMemoryId + " eligible=" + IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId) + " playerLen=" + ((playerText ?? "").Length) + " aiLen=" + ((aiText ?? "").Length) + " factLen=" + ((extraFact ?? "").Length));
 			}
-			return;
+			return false;
 		}
 		try
 		{
@@ -27708,10 +27774,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				npcNameForMemory = "NPC";
 			}
+			bool dailyAccepted = true;
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
 				Hero memoryHero = FindHeroById(normalizedMemoryId);
-				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, BuildPlayerPublicDisplayNameForPrompt(memoryHero), BuildPlayerAddressedInputForName(npcNameForMemory, playerText, memoryHero, playerTargetName), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId, targetAgentIndex: playerTargetAgentIndex, targetName: playerTargetName);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, BuildPlayerPublicDisplayNameForPrompt(memoryHero), BuildPlayerAddressedInputForName(npcNameForMemory, playerText, memoryHero, playerTargetName), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId, targetAgentIndex: playerTargetAgentIndex, targetName: playerTargetName);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
@@ -27720,7 +27787,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					memoryFact = "[AFEF玩家行为补充] " + memoryFact;
 				}
-				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
@@ -27729,7 +27796,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					memoryAiText = npcNameForMemory + ": " + memoryAiText;
 				}
-				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			List<DialogueDay> list = LoadDialogueHistoryById(normalizedMemoryId);
 			int beforeLines = CountDialogueHistoryLines(list);
@@ -27820,10 +27887,12 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				LogNonHeroMemoryTrace("stage=append_commit memoryId=" + normalizedMemoryId + " memoryName=" + npcNameForMemory + " beforeLines=" + beforeLines + " afterLines=" + CountDialogueHistoryLines(list3) + " days=" + list3.Count + " playerLen=" + ((playerText ?? "").Length) + " aiLen=" + ((aiText ?? "").Length) + " factLen=" + ((extraFact ?? "").Length) + " sceneSession=" + sceneSessionId);
 			}
+			return dailyAccepted && IsDialogueHistoryPublished(normalizedMemoryId, list3);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("DialogueHistory", "[错误] 追加失败: " + ex.Message);
+			return false;
 		}
 	}
 

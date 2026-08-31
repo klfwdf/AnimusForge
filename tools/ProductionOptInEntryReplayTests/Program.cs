@@ -123,4 +123,6 @@ object nativePorts = nativePortsFactory.Invoke(null, new object[] { allowedTags,
 object courierPorts = courierPortsFactory.Invoke(null, new object[] { allowedTags, true, 64 });
 AssertTrue(scenePorts != null && nativePorts != null && courierPorts != null, "one or more production opt-in port factories returned null");
 
+MemoryOwnerReceiptReplay.Run(animusForge);
+MemoryOwnerReadbackReplay.Run(animusForge);
 Console.WriteLine("PASS productionOptInEntryReplay native=1 scene=1 courier=1 identity=1 failClosed=1 ports=1 noDefaultCutover=1");

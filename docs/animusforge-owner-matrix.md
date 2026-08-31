@@ -150,7 +150,8 @@
 - Identity remains channel/session/subject + trace/runtime/save generation, with the existing Courier direction value. No capture/session or save key/type is changed. See `docs/animusforge-request-commit-receipts.md` for the 512-entry limit and non-durable semantics.
 - Test-tool owner: `tools/ReplayDependencies` replaces four machine-specific copy targets with explicit, validated dependency sources. It never changes official build/deploy scripts or game files.
 - Validation owner: `tools/PhaseEightReadiness` reuses the existing 8-ID design catalog, Bridge and Composition contracts. It checks layered evidence, owners, hashes, cleanup candidates and rollback; it does not authorize cutover/deletion/deployment or prove all 20 domains complete.
-- Remaining joint owner work: MyBehavior needs truthful append/readback results; Courier needs a durable session/consumption guard before Economy-only execution; partial Economy outcomes and failed post-commit callbacks need explicit recovery. These are not solved by cache or fixture PASS.
+- Memory owner acceptance (`LOCAL-7-D`): MyBehavior's existing daily/recent writer now returns runtime readback confirmation to the batch facade; no receipt is created on missing owner, rejection or unconfirmed writes. Public void/non-batch compatibility remains. Identity, day and newly published object references are checked after sanitization; this is not a transaction or proof of disk/save persistence. See `docs/animusforge-request-commit-receipts.md`.
+- Remaining joint owner work: MyBehavior still needs live AFEF/old-save acceptance and detached Scene session forwarding review; Courier needs a durable session/consumption guard before Economy-only execution; partial Economy outcomes and failed post-commit callbacks need explicit recovery. These are not solved by cache or fixture PASS.
 
 ## 首批切片候选
 

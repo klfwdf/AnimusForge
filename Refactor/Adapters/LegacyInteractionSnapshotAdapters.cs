@@ -700,8 +700,8 @@ public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMem
     /// <summary>
     /// Commits one detached interaction through the existing MyBehavior entry
     /// point. This keeps the legacy history/AFEF storage, keys and types as
-    /// the sole persistence authority while making the three-channel write
-    /// atomic at the facade boundary and idempotent for a repeated callback.
+    /// the sole persistence authority. Receipts require runtime owner readback;
+    /// writes are not atomic and failures can leave partial effects.
     /// </summary>
     public MemoryCommitResult Commit(InteractionMemoryCommit commit)
     {
@@ -716,13 +716,9 @@ public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMem
             return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_subject_mismatch");
         }
 
-        Hero hero = ResolveHeroOnInteractionBoundary();
-        if (!string.IsNullOrWhiteSpace(_heroId))
+        if (!TaleWorlds.Library.TWParallel.IsMainThread())
         {
-            if (hero == null)
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_target_missing");
-            }
+            return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_not_main_thread");
         }
         if (MemoryCommitReceiptCache.Contains(commit.CommitId))
         {
@@ -736,23 +732,21 @@ public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMem
         string assistantText = EmptyToNull(commit.AssistantText);
         try
         {
-            if (!string.IsNullOrWhiteSpace(_heroId))
+            MemoryCommitResult result = MyBehavior.CommitExternalDialogueHistory(
+                expectedSubjectId, string.IsNullOrWhiteSpace(_heroId), _nonHeroName,
+                userText, assistantText, EmptyToNull(facts));
+            if (result.HistoryWritten)
             {
-                MyBehavior.AppendExternalDialogueHistory(hero, userText, assistantText, EmptyToNull(facts));
+                MemoryCommitReceiptCache.TryAccept(commit.CommitId);
             }
-            else
-            {
-                MyBehavior.AppendExternalNonHeroDialogueHistory(_nonHeroMemoryId, _nonHeroName, userText, assistantText, EmptyToNull(facts));
-            }
+            return result;
         }
         catch
         {
-            // Do not retain a receipt when the legacy persistence owner did
-            // not accept the write. The caller may retry the same commit.
+            // No success receipt for an unconfirmed write. Partial owner effects
+            // are possible; this is not permission to replay the interaction.
             return new MemoryCommitResult(MemoryCommitStatus.Failed, "legacy_memory_append_failed");
         }
-        MemoryCommitReceiptCache.TryAccept(commit.CommitId);
-        return new MemoryCommitResult(MemoryCommitStatus.Applied);
     }
 
     /// <summary>
