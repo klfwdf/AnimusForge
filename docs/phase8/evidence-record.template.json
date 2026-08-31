@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "replace-with-owner-scenario-api-id",
+  "mode": "real",
+  "moduleId": "af.module.conversation",
+  "layer": "LIVE",
+  "kind": "game-scenario",
+  "apiLine": "1.3",
+  "result": "NOT-RUN",
+  "sourceCommit": null,
+  "releaseVersion": null,
+  "recordedAt": null,
+  "steps": [],
+  "expected": "",
+  "observed": "",
+  "caseIds": [],
+  "artifactHashes": {},
+  "attachments": [],
+  "environment": {
+    "hostInitialized": false,
+    "hostContext": null,
+    "gameBuildInfo": null,
+    "saveIdentity": null,
+    "oldSaveLoaded": false,
+    "roundTripVerified": false
+  },
+  "ownerReview": {
+    "decision": "PENDING",
+    "reviewers": [],
+    "reviewedAt": null,
+    "note": ""
+  }
+}

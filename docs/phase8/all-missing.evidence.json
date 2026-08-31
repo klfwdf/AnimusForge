@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "releaseVersion": null,
+  "source": {
+    "commit": null,
+    "files": []
+  },
+  "artifacts": [],
+  "evidence": [],
+  "cleanup": {
+    "auditEvidenceId": null,
+    "candidates": []
+  },
+  "rollback": {
+    "commit": null,
+    "evidenceId": null,
+    "saveSideEffectsNotUndone": true
+  }
+}

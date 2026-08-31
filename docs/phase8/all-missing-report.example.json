@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED",
+  "preparationReport": true,
+  "scope": "existing-phase3-catalog-only",
+  "fullProjectReleaseReady": false,
+  "authorization": {
+    "delete": false,
+    "defaultSwitch": false,
+    "deploy": false,
+    "push": false,
+    "publish": false
+  },
+  "checkedAt": "2026-08-31T18:25:32.700109+00:00",
+  "modules": [
+    {
+      "id": "af.foundation.runtime",
+      "owner": "Foundation",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.game-adapter",
+      "owner": "Compatibility.GameAdapter",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.module.conversation",
+      "owner": "Conversation.AI",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.module.siege-aftermath",
+      "owner": "Settlement.Siege",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.module.policy-effects",
+      "owner": "Policy",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.module.world-diplomacy",
+      "owner": "World.Diplomacy",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.bridge.conversation-siege",
+      "owner": "Conversation.SettlementSiege",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    },
+    {
+      "id": "af.bridge.policy-diplomacy",
+      "owner": "Policy.WorldDiplomacy",
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      }
+    }
+  ],
+  "blockingIssues": [
+    {
+      "code": "SOURCE_COMMIT",
+      "detail": "manifest must match current complete Git commit"
+    },
+    {
+      "code": "SOURCE_DIRTY",
+      "detail": "working tree must be clean before evidence acceptance"
+    },
+    {
+      "code": "SOURCE_BINDINGS",
+      "detail": "hash-bound source/contract files missing"
+    },
+    {
+      "code": "RELEASE_VERSION",
+      "detail": "numeric releaseVersion missing or invalid"
+    },
+    {
+      "code": "ARTIFACTS",
+      "detail": "Bootstrap, both implementations, module manifest and package are required"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.foundation.runtime"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.foundation.runtime"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.foundation.runtime"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.foundation.runtime"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.game-adapter"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.game-adapter"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.game-adapter"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.game-adapter"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.module.conversation"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.module.conversation"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.module.conversation"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.module.conversation"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.module.siege-aftermath"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.module.siege-aftermath"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.module.siege-aftermath"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.module.siege-aftermath"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.module.policy-effects"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.module.policy-effects"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.module.policy-effects"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.module.policy-effects"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.module.world-diplomacy"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.module.world-diplomacy"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.module.world-diplomacy"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.module.world-diplomacy"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.bridge.conversation-siege"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.bridge.conversation-siege"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.bridge.conversation-siege"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.bridge.conversation-siege"
+    },
+    {
+      "code": "MISSING_OFFLINE",
+      "detail": "af.bridge.policy-diplomacy"
+    },
+    {
+      "code": "MISSING_LIVE",
+      "detail": "af.bridge.policy-diplomacy"
+    },
+    {
+      "code": "MISSING_SAVE",
+      "detail": "af.bridge.policy-diplomacy"
+    },
+    {
+      "code": "MISSING_RELEASE",
+      "detail": "af.bridge.policy-diplomacy"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.conversation-siege/OFFLINE/agnostic: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.conversation-siege/LIVE/1.3: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.conversation-siege/LIVE/1.4: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.policy-diplomacy/OFFLINE/agnostic: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-policy-system-alone,B-diplomacy-world-alone,bridge-disabled-data-preserved,bridge-failure-incompatible-version,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.policy-diplomacy/LIVE/1.3: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-policy-system-alone,B-diplomacy-world-alone,bridge-disabled-data-preserved,bridge-failure-incompatible-version,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.policy-diplomacy/LIVE/1.4: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-policy-system-alone,B-diplomacy-world-alone,bridge-disabled-data-preserved,bridge-failure-incompatible-version,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "COMPOSITION_MATRIX",
+      "detail": "OFFLINE/agnostic: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
+    },
+    {
+      "code": "COMPOSITION_MATRIX",
+      "detail": "LIVE/1.3: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
+    },
+    {
+      "code": "COMPOSITION_MATRIX",
+      "detail": "LIVE/1.4: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
+    },
+    {
+      "code": "CLEANUP_REVIEW",
+      "detail": "review evidence is missing or invalid"
+    },
+    {
+      "code": "ROLLBACK",
+      "detail": "full rollback commit missing"
+    }
+  ],
+  "limitations": [
+    "Catalog scope is not the complete 20-domain program.",
+    "Hashes detect changed files; they do not prove human evidence authenticity.",
+    "No command from evidence is executed; readiness is not action authorization."
+  ],
+  "mode": "real",
+  "requiredModuleIds": [
+    "af.bridge.conversation-siege",
+    "af.bridge.policy-diplomacy",
+    "af.foundation.runtime",
+    "af.game-adapter",
+    "af.module.conversation",
+    "af.module.policy-effects",
+    "af.module.siege-aftermath",
+    "af.module.world-diplomacy"
+  ],
+  "requiredCompositionCaseIds": [
+    "bridge-disabled-data-preserved",
+    "bridge-runtime-failure",
+    "foundation-a-plus-b-no-bridge",
+    "foundation-a-plus-b-plus-bridge",
+    "foundation-adapter-noop",
+    "foundation-plus-conversation",
+    "foundation-plus-noop",
+    "foundation-plus-policy",
+    "health-output-bounded",
+    "health-output-overflow",
+    "incompatible-contract-version",
+    "optional-provider-missing",
+    "partial-start-failure",
+    "required-failure-cascade",
+    "required-provider-missing",
+    "runtime-toggle-harmony-conflict",
+    "safe-mode",
+    "stale-completion"
+  ],
+  "currentSourceCommit": "2216df41087fbee950aa4d626e9f34fbdecc5fcd",
+  "acceptedEvidenceCount": 0,
+  "verifiedFileReferences": 5
+}
