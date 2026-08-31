@@ -618,3 +618,21 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 安装模块与 project-local stage 匹配，LiveHostReadiness 审计 PASS；Bannerlord 重启探测后进程已退出，Bootstrap 日志没有产生本次新的启动记录，不能据此宣称真实 Campaign/Mission 或游戏内 LLM/Economy 已通过。
 - 本地化现状：已有 English/简体中文 XML 成对资源（SceneActions 124/124、hostile meeting 6/6，中文 GCCZ 另 7 条）；但 `Refactor/Adapters/LegacyModelCatalogGateway.cs` 仍有 3 条中文硬编码诊断文案，重构层完整中英本地化尚未完成。
 - 接手者下一项：网络恢复后推送当前 3 个提交；随后建立稳定 error-code 本地化映射并补英中 parity 测试，最后再继续真实存档/AFEF/三渠道 live 验收。
+
+## 本轮追加（2026-08-31，阶段 7 离线闭环与 Host 验收准备）
+
+- 当前工作区：`E:\Mount-Blade-Bannerlord-AnimusForge-mod-main`；分支仍为 `refactor/prepare-af-restructure`。本轮保留用户已有未提交修改：`.claude/settings.local.json`、`AnimusForge/ModuleData/RuleBehaviorPrompts.json`、`DuelSettings.cs`、`NobleGatheringBehavior.cs`；不回滚、不覆盖。
+- 已登记阶段 7 当前切片：owner 为 Conversation/Memory/Action × Economy；范围为已有 Economy-aware detached commit、三渠道 production replay、AFEF/confirmed-facts、Persistence identity/migration 和 Gateway 回归；不切换默认三渠道，不修改程序集/模块身份、SyncData key/type、存档类型或构建/覆盖/推送脚本，不部署、不提交、不推送。
+- 阶段 7 的离线/等价 Host 证据可继续完成并分别收口；真实 Campaign/Mission、live inventory/gold/market/debt、真实三渠道主线程 commit、AFEF readback、旧存档 load/save/reload 和当前安装版本加载不能由 fixture 或 readiness audit 替代，仍保持 `VERIFY`/`BLOCKED`。
+- 下一步：运行已有阶段 7 contract/replay 回归并核对当前 project-local stage；若发现明确缺口，仅补最小 fixture/验证材料。真实 Host 验收仍需单独授权部署/启动/存档读写，当前不执行。
+
+## 本轮追加结果（2026-09-01）
+
+- 已安装并验证 `.NET SDK 8.0.424` 与 Python `3.12.10`；Python 实际解释器为 `C:\Users\klfwdf\AppData\Local\Programs\Python\Python312\python.exe`。没有修改构建脚本或测试目标框架。
+- 通过回归：`EconomyOwnerStateFixture`、`PersistenceMigrationContract`、`EconomyRewardDebtPort`、`EconomyAwareActionPlanExecutor`、`InteractionPipeline cases=40`、`ConfiguredGateway`、`ConfiguredChatValidation`、`KnowledgeRagGateway`、`ModelCatalogGateway`、`PersistenceChunkReplay`、`PrimaryLlmGateway`、`ProductionEconomyOwnerReplay`、`ProductionEconomyAwareCommit`、`ProductionConfiguredHost`、`ProductionDetachedHost`、`ProductionCourierHost`。
+- 生产回放直接加载并验证了刷新后的 project-local 1.4 implementation；三渠道等价 Host 的 main/postprocess/commit/history、Courier inbound user-seed 隔离、Economy mixed/economy-only 路由、receipt、provider fallback 和 cancellation/stale 边界均通过。该证据仍不是 Bannerlord Campaign/Mission live host 证据。
+- 直接构建当前 1.3 implementation 与 Bootstrap 均 `0 warning / 0 error`；1.4 direct build 为 `0 warning / 0 error`。统一 `build_single_module.ps1 -Stage` 仍未完成，因为现有脚本的默认依赖路径找不到 MCMv5/相关私有依赖；本轮只使用显式本地 overlay 和 project-local 输出，没有部署。
+- `LiveHostReadinessAudit` 使用实际游戏目录 `E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord` 通过基础检查：game/exe/stage/Bootstrap/1.3/1.4/installed module 均存在，Bootstrap-only 成立，游戏未运行；刷新 project-local stage 后 `installedMatchesStage=false`，这是未部署的预期状态。
+- Persistence identity audit 仍发现相对早期基线 `d4cb1467` 新增 `_gcczRecruitmentSuppressionUntilDayBySettlement_v1`（`Dictionary<string,int>`）。该 key 的来源可追溯到既有 GCCZ 提交 `9c817be0`/代码演进，不属于本轮用户四个未提交文件；没有删除、改名或放宽审计来掩盖它。旧存档/SaveSystem 真实加载仍 `NOT-RUN`。
+- 本轮阶段 7离线/等价 Host 验证切片保持 `VERIFY`；真实 Campaign/Mission、live Economy、真实三渠道 commit、AFEF readback、旧存档 load/save/reload、安装目录加载和默认三渠道切换仍为 `NOT-RUN`/`BLOCKED`。不提交、不推送、不部署。
+- 当前精确下一步：在用户单独授权部署/启动游戏并允许使用隔离存档副本后，执行 Bannerlord 1.4 live Host 的最小三渠道 + Economy + AFEF/旧存档验收；在获得该授权前，不再新增平行阶段 7 pipeline。
