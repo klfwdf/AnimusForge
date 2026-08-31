@@ -4,6 +4,8 @@
 
 ## 当前任务（2026-09-01 框架接续）
 
+- `LOCAL-7-F` IN PROGRESS（2026-09-01 自动接续）：基线 `67603f18`、工作树 clean；fetch 后远端仍 `fc8c344e`，ahead 17 / behind 0。Owner 为 Economy/Reward/Debt outcome + Conversation commit receipt；已确认 Hero/Party/Merchant owner 可返回 `AppliedCount>0` 且少于计划数并携带真实 facts，但 executor 当前清空 facts、报告未执行。选定最小切片：为已知 partial outcome 增加结构化状态/receipt，request 终态 `NonRetryableFailure + ActionsExecuted=true`，只提交 owner 已确认 facts 并禁止 afterCommit/legacy fallback/整套重试。范围限 Economy contract/三 owner、executor、committer、focused/production replay 和文档；不做补偿、玩法重放、存档字段或默认入口切换。计划先红测 partial Economy、mixed legacy failure、duplicate receipt，再做双版本 Stage、Persistence/Profile/Identity；未知 callback exception 仍按 unknown effect 单列风险。
+
 - `LOCAL-7-E` VERIFY（2026-09-01 自动接续，opt-in owner 代码/离线验证完成）：基线 `3d9778d2`，意图 checkpoint `bbe35aa8`，实现提交 `b2542fdd`；fetch 后远端仍 `fc8c344e`。已证明 economy-only 在旧 executor 中直接 `Executed`、不调 Courier owner；现于任何 Economy Replay 前调用可选 channel gate。Courier gate 重解析 active session/recipient，验证 channel/session/subject、outbound、delivery、terminal/consumed；mixed 仅 prevalidate，economy-only 先置既有 JSON 字段 `PostprocessConsumed`。不新增 key/type/field，不从 raw 推导 visible reply，保留旧六参构造器二进制签名。Gate 五类顺序/失败 contract、production session fixture 18 assertions、Production Economy/Courier/Configured、Interaction 40+48+4+38、Economy port、95-key/121-binding profile 和 99-sync/35-behavior identity 均 PASS；Debug/Release 的 1.3/1.4/Bootstrap 全部 0 warning / 0 error。当前 detached Courier 仍无 production caller/default cutover；真实 save/load、live asset/AFEF NOT-RUN，因此只标 VERIFY。完整证据见 `docs/handoffs/2026-09-01-courier-economy-reservation.md`。
 
 - 最新本机 owner 实现提交：Memory `5d3dc5f0`、Courier Economy reservation `b2542fdd`（均未推送）。后续自动接续先做 `LOCAL-7-F` 的 partial outcome/recovery 设计与最小纵切片，不重复把 D/E 的实机缺证据当作可自动完成项。
