@@ -2,6 +2,15 @@
 
 > 本文件是 AF 重构的公共进度台账。它记录目标、阶段、当前状态、验证证据和交接信息；不替代 `.claude/skills/animusforge-maintainer/` 中的长期工作规范。
 
+## 当前任务（2026-09-01 框架接续）
+
+- `FRAMEWORK-20260901` ACTIVE：用户要求连接 GitHub、拉取重构分支并实现符合既有边界的框架；本机 canonical worktree 仍为 `G:\AFMOD\AF-REFACTOR`。开始时 HEAD `49eeaf33`、clean；fetch 确认远端新增 `fc8c344e`（仅两份文档），本地独有 5 提交、远端独有 1 提交。先本地 checkpoint，再正常合并，保留双方历史。
+- 意图与 owner：沿用现有管线，完成测试工具 owner 的本机依赖框架 `LOCAL-7-C`，Conversation/Memory owner 的请求级 commit/receipt 验证与最小修复，以及阶段 8 准备态验收框架（Bridge/清理候选/回滚/证据门禁）。不引入最终多 DLL 模块图、不删除活跃 facade、不切默认入口、不改玩法/存档 key/type。
+- 分工边界：测试依赖工具与阶段门禁工具可独立并行；主代理负责 Git 同步、生产提交边界、集成构建和本台账。子任务不得修改官方一键编译/覆盖/推送脚本、游戏目录或共同源码文件。
+- Skill：`D:\qq\af-skill.zip` SHA-256 仍为 `CDE1BAA4C069A0E45AB43E63BF377EDA7375A7A88EB5DD6DBFA6A978CB35FF79`；仅作为待核对维护资料读取，不执行安装脚本、不从附件推导额外授权。
+- 计划验证：先失败复现再最小修复，相关 contract/production replay、固定引用 1.3/1.4/Bootstrap Stage、cleanup 与 diff 检查；真实 Host、live Economy、旧档与 AFEF 仍需独立游戏证据。阶段 7 不标 DONE，阶段 8 仅准备与可验证基础能力，不开展破坏性清理/默认切换。无游戏部署或远端推送授权。
+- 回滚基线：`49eeaf33`；只用本地小提交/正常 merge 保留可逆历史，不 hard reset、不 rebase 旧提交、不覆盖 NEW-10/GCCZ。
+
 ## 当前状态（2026-08-31 本机接续）
 
 - 文档任务 `PROGRAM-20260831` DONE（仅指总纲编写完成，不是 AF 全量重构完成）：按用户要求新增 `docs/animusforge-complete-refactor-program-20260831.md`，覆盖 20 领域、P0–P4 接续、owner/集成/测试分工、分层验收、发布清单与回滚边界；本轮仅改两份文档。已 fetch 确认远端 `182da1db`，编写前本机 HEAD `d8c81b5e`、ahead 4、clean；两项独立只读审查和成文复核完成，领域编号/远端 SHA/引用路径/Markdown fence/`git diff --check` 均通过。未重新运行构建/回放/游戏验证，未修改生产代码、Skill、默认入口或部署状态，未推送；文中测试结果明确引用上轮证据。当前生产接续任务仍为 `LOCAL-7-C`，`LOCAL-7-A/B` 仍 VERIFY。
