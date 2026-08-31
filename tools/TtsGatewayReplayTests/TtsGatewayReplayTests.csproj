@@ -9,13 +9,5 @@
   <ItemGroup>
     <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
   </ItemGroup>
-  <Target Name="CopyBannerlordRuntimeForReplay" AfterTargets="Build">
-    <ItemGroup>
-      <BannerlordRuntimeDll Include="F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\*.dll" />
-      <BannerlordModuleDll Include="F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\**\bin\Win64_Shipping_Client\*.dll" />
-    </ItemGroup>
-    <Copy SourceFiles="@(BannerlordRuntimeDll);@(BannerlordModuleDll)"
-          DestinationFolder="$(OutputPath)"
-          SkipUnchangedFiles="true" />
-  </Target>
+  <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
 </Project>

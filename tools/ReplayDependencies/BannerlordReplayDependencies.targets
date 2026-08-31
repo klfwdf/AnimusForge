@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <ReplayPowerShell Condition="'$(ReplayPowerShell)' == ''">$(SystemRoot)\System32\WindowsPowerShell\v1.0\powershell.exe</ReplayPowerShell>
+    <_ReplayImplementationPath>$(MSBuildThisFileDirectory)..\..\bin\Debug\single_module_stage\AnimusForge\bin\Win64_Shipping_Client\versions\1.4\AnimusForge.dll</_ReplayImplementationPath>
+  </PropertyGroup>
+  <Target Name="ValidateBannerlordReplayInputs" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <_ReplayActualOutputPath>$([System.IO.Path]::GetFullPath('$(TargetDir)'))</_ReplayActualOutputPath>
+      <_ReplayExpectedOutputPath>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\'))</_ReplayExpectedOutputPath>
+    </PropertyGroup>
+    <Error Condition="'$(GameRoot)' == ''" Text="Replay dependencies require explicit -p:GameRoot. See tools/ReplayDependencies/README.md." />
+    <Error Condition="'$(Bannerlord14ReferencePath)' == ''" Text="Replay dependencies require explicit -p:Bannerlord14ReferencePath; the installed game is not a reference fallback." />
+    <Error Condition="'$(ReplayHarmonyModulePath)' == '' Or '$(ReplayMcmModulePath)' == '' Or '$(ReplayUiExtenderModulePath)' == ''" Text="Specify ReplayHarmonyModulePath, ReplayMcmModulePath and ReplayUiExtenderModulePath (exact module roots, not a Modules/Workshop scan root)." />
+    <Error Condition="'$(ReplayPrivateRuntimePath)' == ''" Text="Replay dependencies require explicit -p:ReplayPrivateRuntimePath." />
+    <Error Condition="!Exists('$(ReplayPowerShell)')" Text="Windows PowerShell 5.1 was not found: $(ReplayPowerShell)." />
+    <Error Condition="'$(_ReplayActualOutputPath)' != '$(_ReplayExpectedOutputPath)'" Text="Replay Program.cs uses the standard bin/Configuration/TargetFramework layout; custom output/runtime-identifier layouts are not supported." />
+  </Target>
+  <Target Name="CopyBannerlordRuntimeForReplay" AfterTargets="Build" DependsOnTargets="ValidateBannerlordReplayInputs">
+    <Exec Command="&quot;$(ReplayPowerShell)&quot; -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Copy-ReplayDependencies.ps1&quot; -GameRoot &quot;$(GameRoot)\.&quot; -ReferencePath &quot;$(Bannerlord14ReferencePath)\.&quot; -HarmonyModulePath &quot;$(ReplayHarmonyModulePath)\.&quot; -McmModulePath &quot;$(ReplayMcmModulePath)\.&quot; -UiExtenderModulePath &quot;$(ReplayUiExtenderModulePath)\.&quot; -PrivateRuntimePath &quot;$(ReplayPrivateRuntimePath)\.&quot; -ImplementationPath &quot;$(_ReplayImplementationPath)&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)\.&quot; -OutputDirectory &quot;$(TargetDir).&quot;" />
+  </Target>
+</Project>
