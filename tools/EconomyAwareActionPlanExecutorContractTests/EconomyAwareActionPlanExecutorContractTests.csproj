@@ -17,5 +17,6 @@
     <Compile Include="..\..\Refactor\Runtime\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\Refactor\Runtime\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
+    <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
   </ItemGroup>
 </Project>

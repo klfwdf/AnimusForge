@@ -85,7 +85,7 @@ def validate_chunk_contract(catalog: dict) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
     assert_true(len(expected_chunked) == 13, "chunked string key catalog must contain 13 keys")
-    assert_true(len(expected_flattened) == 39, "flattened dictionary key catalog must contain 39 keys")
+    assert_true(len(expected_flattened) == 40, "flattened dictionary key catalog must contain 40 keys")
     actual_chunked = resolve_storage_call_keys("SaveChunkedString", 1) | resolve_storage_call_keys("LoadChunkedString", 1)
     actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
     # The helper's own overloads have no persisted key and are intentionally absent.
@@ -260,8 +260,23 @@ def validate_legacy_first_cases(cases: dict) -> dict:
     )
     assert_true(
         by_id.get("corrupt-memory-recovery-journal-fails-closed", {}).get("expected")
-        == "quarantine-without-memory-replay",
+        == "retain-corrupt-memory-journal-for-owner-validation",
         "corrupt recovery journal fail-closed case is absent",
+    )
+    assert_true(
+        cases["knownRepresentativeBindings"].get("_af_weeklyActionOutcomeReceipts_v1")
+        == "Dictionary<string, string>",
+        "weekly action outcome persistence binding is not cataloged",
+    )
+    assert_true(
+        by_id.get("missing-weekly-action-outcome-journal-is-empty", {}).get("expected")
+        == "publish-with-empty-weekly-action-outcome-journal",
+        "missing weekly action outcome journal compatibility case is absent",
+    )
+    assert_true(
+        by_id.get("corrupt-weekly-action-outcome-journal-fails-closed", {}).get("expected")
+        == "retain-corrupt-weekly-journal-for-owner-validation",
+        "corrupt weekly action outcome journal fail-closed case is absent",
     )
     return {"legacyFirstCases": len(cases["cases"])}
 

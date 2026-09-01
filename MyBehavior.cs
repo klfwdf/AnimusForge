@@ -343,6 +343,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string StableKey = "";
 
+		// LOCAL-7-K additive provenance for outcome-confirmed detached material.
+		// Legacy triggers leave these empty. They are data-only digests and must
+		// never be used to reconstruct or replay an ActionPlan.
+		public string OutcomeReceiptId = "";
+
+		public string OutcomeCandidateHash = "";
+
+		public string OutcomePayloadHash = "";
+
+		public string OutcomeActionFingerprint = "";
+
+		public string OutcomeTurnFingerprint = "";
+
 		public long CreatedUtcTicks;
 	}
 
@@ -2391,7 +2404,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			ResetInteractionMemoryRecoveryTransientState(reason);
+			ResetTailPersistenceTransientState(reason);
 			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			ClearRuleStickyCarry();
 			_playerDefeatedHeroBattleFactKeys.Clear();
@@ -15041,6 +15054,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private static string BuildWeeklyMemoryMaterialTagLabel(string tag)
 	{
 		string text = (tag ?? "").Trim();
+		if (string.Equals(text, "[WEEKLY:ECONOMY_GIVE_GOLD]", StringComparison.OrdinalIgnoreCase))
+		{
+			return "已确认的金币给付";
+		}
+		if (string.Equals(text, "[WEEKLY:ECONOMY_GIVE_ASSET]", StringComparison.OrdinalIgnoreCase))
+		{
+			return "已确认的资产给付";
+		}
+		if (string.Equals(text, "[WEEKLY:ECONOMY_DEBT_CREATE]", StringComparison.OrdinalIgnoreCase))
+		{
+			return "已确认的债务建立";
+		}
+		if (string.Equals(text, "[WEEKLY:ECONOMY_DEBT_RESOLVE]", StringComparison.OrdinalIgnoreCase))
+		{
+			return "已确认的债务清偿";
+		}
+		if (string.Equals(text, "[WEEKLY:ECONOMY_SETTLEMENT_TRANSFER]", StringComparison.OrdinalIgnoreCase))
+		{
+			return "已确认的定居点资产转移";
+		}
 		if (string.Equals(text, "[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase))
 		{
 			return "决斗";
@@ -17870,7 +17903,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				ProcessOneInteractionMemoryRecoveryOnTick();
+				ProcessOneTailPersistenceRecoveryOnTick();
 				bool processedWeeklyReportCommits = false;
 			if (Volatile.Read(ref _hasPendingWeeklyReportCommits) != 0)
 			{
@@ -20313,7 +20346,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		QueueMissingOnnxGateCheck(TimeSpan.Zero);
 		RebuildRuntimeDerivedIndexes();
-		ActivateInteractionMemoryRecoveryAfterLoad();
+		ActivateTailPersistenceAfterLoad();
 		SyncModCreatedRebelKingdomBannersOnGameLoad();
 		// The campaign Hero registry is complete at this lifecycle point, so stale saved compression work can be
 		// cancelled before load-finished maintenance queues any LLM request.
@@ -26738,6 +26771,47 @@ public partial class MyBehavior : CampaignBehaviorBase
 			trigger.EstimatedValueDenars = Math.Max(0L, trigger.EstimatedValueDenars);
 			trigger.TriggerReason = (trigger.TriggerReason ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 			trigger.StableKey = stableKey;
+			trigger.OutcomeReceiptId = (trigger.OutcomeReceiptId ?? "").Trim();
+			trigger.OutcomeCandidateHash = (trigger.OutcomeCandidateHash ?? "").Trim();
+			trigger.OutcomePayloadHash = (trigger.OutcomePayloadHash ?? "").Trim();
+			trigger.OutcomeActionFingerprint = (trigger.OutcomeActionFingerprint ?? "").Trim();
+			trigger.OutcomeTurnFingerprint = (trigger.OutcomeTurnFingerprint ?? "").Trim();
+			bool hasOutcomeProvenance = !string.IsNullOrWhiteSpace(trigger.OutcomeReceiptId)
+				|| !string.IsNullOrWhiteSpace(trigger.OutcomeCandidateHash)
+				|| !string.IsNullOrWhiteSpace(trigger.OutcomePayloadHash)
+				|| !string.IsNullOrWhiteSpace(trigger.OutcomeActionFingerprint)
+				|| !string.IsNullOrWhiteSpace(trigger.OutcomeTurnFingerprint);
+			bool hasOutcomeSemanticTag = trigger.Tags.Any(tag =>
+				(tag ?? "").StartsWith("[WEEKLY:ECONOMY_", StringComparison.OrdinalIgnoreCase));
+			bool hasOutcomeStableKey = stableKey.StartsWith(
+				"weekly_outcome:", StringComparison.Ordinal);
+			bool validOutcomeProvenance = hasOutcomeProvenance
+				&& IsMemoryRecoveryHexDigest(trigger.OutcomeReceiptId)
+				&& IsMemoryRecoveryHexDigest(trigger.OutcomeCandidateHash)
+				&& IsMemoryRecoveryHexDigest(trigger.OutcomePayloadHash)
+				&& IsMemoryRecoveryHexDigest(trigger.OutcomeActionFingerprint)
+				&& IsMemoryRecoveryHexDigest(trigger.OutcomeTurnFingerprint)
+				&& string.Equals(
+					stableKey,
+					"weekly_outcome:" + trigger.OutcomeReceiptId + ":" + trigger.OutcomePayloadHash,
+					StringComparison.Ordinal);
+			if ((hasOutcomeSemanticTag || hasOutcomeStableKey)
+				&& (!hasOutcomeSemanticTag || !validOutcomeProvenance))
+			{
+				// Outcome-only semantic material has no legitimate legacy form.
+				// Never downgrade a malformed exact receipt into a broad trigger.
+				continue;
+			}
+			if (hasOutcomeProvenance && !validOutcomeProvenance)
+			{
+				// Legacy action-tag material may survive, but malformed additive
+				// provenance cannot authorize exact readback.
+				trigger.OutcomeReceiptId = "";
+				trigger.OutcomeCandidateHash = "";
+				trigger.OutcomePayloadHash = "";
+				trigger.OutcomeActionFingerprint = "";
+				trigger.OutcomeTurnFingerprint = "";
+			}
 			if (trigger.CreatedUtcTicks <= 0L)
 			{
 				trigger.CreatedUtcTicks = DateTime.UtcNow.Ticks;

@@ -11,7 +11,7 @@
     "deleteLegacyKeys": false
   },
   "namespaces": [
-    { "id": "af.memory", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["MyBehavior.cs", "MyBehavior.MemoryRecovery.cs"], "legacyKeyPrefixes": ["_dialogueHistory_v2", "_af_dailyMemoryDrafts_v1", "_af_compressedMemoryBlocks_v1", "_af_interactionMemoryRecovery_v1", "_af_memoryOverviewStates_v1"] },
+    { "id": "af.memory", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["MyBehavior.cs", "MyBehavior.MemoryRecovery.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs"], "legacyKeyPrefixes": ["_dialogueHistory_v2", "_af_dailyMemoryDrafts_v1", "_af_compressedMemoryBlocks_v1", "_af_interactionMemoryRecovery_v1", "_af_weeklyActionOutcomeReceipts_v1", "_af_memoryOverviewStates_v1"] },
     { "id": "af.conversation", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["ShoutBehavior.cs", "MyBehavior.cs", "CourierDeliveryBehavior.cs"], "legacyKeyPrefixes": ["_scene", "_courier", "_dialogueHistory_v2"] },
     { "id": "af.reward", "schema": 1, "lifecycle": "save-load-boundary", "owners": ["RewardSystemBehavior.cs", "DuelBehavior.cs"], "legacyKeyPrefixes": ["_reward", "_duelCooldowns"] },
     { "id": "af.scene", "schema": 1, "lifecycle": "runtime-toggle-unsafe", "owners": ["ShoutBehavior.cs", "SceneTauntBehavior.cs"], "legacyKeyPrefixes": ["_sceneTaunt", "_sceneHeroRevisitDays_v1"] },

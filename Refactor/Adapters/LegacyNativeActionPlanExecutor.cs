@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 
 namespace AnimusForge.Refactor.Adapters;
 
@@ -23,8 +24,12 @@ namespace AnimusForge.Refactor.Adapters;
 /// side effect; Courier uses it for live session validation and economy-only
 /// persistent consumption.
 /// </summary>
-public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionEffectReceipt
+public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionEffectReceipt,
+    IWeeklyMemoryMaterialCandidateSource, IWeeklyMemoryMaterialExecutionReceipt
 {
+    private static readonly LegacyEconomyRewardDebtAdapter WeeklyMaterialCanonicalPlanner =
+        new LegacyEconomyRewardDebtAdapter();
+
     private readonly Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> _execute;
     private readonly int _maxRawActions;
     private readonly IReadOnlyList<string> _allowedTagFamilies;
@@ -35,6 +40,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     private IReadOnlyList<FactRecord> _confirmedFacts = Array.Empty<FactRecord>();
     private int _appliedActionCount;
     private string _executionErrorCode = string.Empty;
+    private string _confirmedWeeklyMaterialActionFingerprint = string.Empty;
     private ActionExecutionEffectState _effectState;
 
     public LegacyNativeActionPlanExecutor(
@@ -79,6 +85,58 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     public int AppliedActionCount => _appliedActionCount;
     public string ExecutionErrorCode => _executionErrorCode;
     public ActionExecutionEffectState EffectState => _effectState;
+    string IWeeklyMemoryMaterialExecutionReceipt.ConfirmedWeeklyMaterialActionFingerprint
+        => _confirmedWeeklyMaterialActionFingerprint;
+
+    bool IWeeklyMemoryMaterialCandidateSource.TryCreateWeeklyMaterialCandidate(
+        ActionPlan actionPlan,
+        GameInteractionSnapshot snapshot,
+        string requestId,
+        out WeeklyMemoryMaterialOutcomeCandidate candidate)
+    {
+        candidate = null;
+        if (actionPlan == null
+            || snapshot == null
+            || string.IsNullOrWhiteSpace(requestId)
+            || actionPlan.Actions.Count == 0
+            || actionPlan.Actions.Count > _maxRawActions
+            || _economyPlanner == null
+            || _economyPort == null
+            || actionPlan.Actions.Any(action => !LegacyEconomyRewardDebtAdapter.IsEconomyAction(action)))
+        {
+            return false;
+        }
+
+        try
+        {
+            // Candidate projection must not consume the injected gameplay
+            // planner. The actual planner is invoked exactly once by
+            // ValidateAndExecute; its execution fingerprint is compared with
+            // this canonical, data-only projection before weekly publication.
+            EconomyRewardDebtReplayPlan economyPlan = WeeklyMaterialCanonicalPlanner.Plan(
+                actionPlan,
+                _economyCapabilities);
+            if (economyPlan == null
+                || economyPlan.Actions.Count != actionPlan.Actions.Count
+                || economyPlan.ExclusionReasons.Count != 0)
+            {
+                return false;
+            }
+            return WeeklyMemoryMaterialFingerprintHelper.TryCreateCandidate(
+                requestId,
+                snapshot,
+                economyPlan,
+                out candidate,
+                out _);
+        }
+        catch
+        {
+            // Weekly material is an optional, data-only sidecar. Candidate
+            // projection must never block or execute the gameplay ActionPlan.
+            candidate = null;
+            return false;
+        }
+    }
 
     public InteractionStatus ValidateAndExecute(
         ActionPlan actionPlan,
@@ -116,6 +174,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
             }
 
             ActionPlan delegatedPlan = actionPlan;
+            string economyOnlyActionFingerprint = string.Empty;
             if (_economyPlanner != null)
             {
                 EconomyRewardDebtReplayPlan economyPlan = _economyPlanner.Plan(actionPlan, _economyCapabilities);
@@ -136,6 +195,13 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                 if (economyPlan.Actions.Count > 0)
                 {
                     bool isEconomyOnly = remainingActions.Count == 0;
+                    if (isEconomyOnly)
+                    {
+                        WeeklyMemoryMaterialFingerprintHelper.TryBuildActionFingerprint(
+                            economyPlan,
+                            out economyOnlyActionFingerprint,
+                            out _);
+                    }
                     if (_economyExecutionGate != null)
                     {
                         ownerCallbackInFlight = true;
@@ -201,9 +267,12 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
 
                 if (remainingActions.Count == 0)
                 {
-                    return economyPlan.Actions.Count > 0
-                        ? InteractionStatus.Executed
-                        : InteractionStatus.RejectedByValidation;
+                    if (economyPlan.Actions.Count <= 0)
+                    {
+                        return InteractionStatus.RejectedByValidation;
+                    }
+                    _confirmedWeeklyMaterialActionFingerprint = economyOnlyActionFingerprint;
+                    return InteractionStatus.Executed;
                 }
 
                 string filteredRaw = LegacyActionTagParser.RemoveProtocolTags(
@@ -259,6 +328,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
         _confirmedFacts = Array.Empty<FactRecord>();
         _appliedActionCount = 0;
         _executionErrorCode = string.Empty;
+        _confirmedWeeklyMaterialActionFingerprint = string.Empty;
         _effectState = ActionExecutionEffectState.NoConfirmedEffect;
     }
 

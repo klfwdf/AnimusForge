@@ -1384,6 +1384,7 @@ public partial class MyBehavior
     {
         SyncPatienceData(dataStore);
         SyncInteractionMemoryRecoveryData(dataStore);
+        SyncWeeklyActionOutcomeData(dataStore);
     }
 
     private void SyncInteractionMemoryRecoveryData(IDataStore dataStore)
