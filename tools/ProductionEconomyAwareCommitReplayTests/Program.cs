@@ -49,6 +49,7 @@ Type portInterfaceType = T("AnimusForge.Refactor.Contracts.IEconomyRewardDebtMai
 Type executorType = T("AnimusForge.Refactor.Adapters.LegacyNativeActionPlanExecutor");
 Type executorReceiptType = T("AnimusForge.Refactor.Contracts.IActionPlanExecutionReceipt");
 Type executorOutcomeType = T("AnimusForge.Refactor.Contracts.IActionPlanExecutionOutcomeReceipt");
+Type executorEffectType = T("AnimusForge.Refactor.Contracts.IActionPlanExecutionEffectReceipt");
 
 object New(Type type, params object[] args) => Activator.CreateInstance(type, args);
 Array Empty(Type element) => Array.CreateInstance(element, 0);
@@ -110,7 +111,8 @@ object BuildExecutor(
     string replayStatus = "Applied",
     int appliedCount = 1,
     string replayError = "",
-    string legacyStatus = "Executed")
+    string legacyStatus = "Executed",
+    bool legacyThrows = false)
 {
 
     object planner = Proxy(plannerInterfaceType, (method, args) =>
@@ -127,6 +129,7 @@ object BuildExecutor(
     Delegate execute = DelegateFor(actionDelegateType, args =>
     {
         counter.LegacyCalls++;
+        if (legacyThrows) throw new InvalidOperationException("production legacy owner fixture");
         return Enum.Parse(interactionStatusType, legacyStatus);
     });
     Type ctor = executorType.GetConstructors().Single(candidate => candidate.GetParameters().Length == 6).GetParameters()[0].ParameterType;
@@ -144,6 +147,9 @@ Array economyActionArray = Array.CreateInstance(actionRequestType, 1);
 economyActionArray.SetValue(mixedAction, 0);
 object mixedPlan = New(actionPlanType, actionArray, "[ACTION:GIVE_GOLD:25] [ACTION:DUEL:npc]");
 object economyPlan = New(actionPlanType, economyActionArray, "[ACTION:GIVE_GOLD:25]");
+Array duelActionArray = Array.CreateInstance(actionRequestType, 1);
+duelActionArray.SetValue(duelAction, 0);
+object duelPlan = New(actionPlanType, duelActionArray, "[ACTION:DUEL:npc]");
 Array twoEconomyActionArray = Array.CreateInstance(actionRequestType, 2);
 twoEconomyActionArray.SetValue(mixedAction, 0);
 twoEconomyActionArray.SetValue(Action("ACTION:GIVE_GOLD", "26", new Dictionary<string,string>()), 1);
@@ -183,7 +189,40 @@ AssertTrue(mixedRejectedStatus.ToString() == "NonRetryableFailure"
     && ((IReadOnlyList<object>)executorReceiptType.GetProperty("ConfirmedFacts").GetValue(mixedRejectedExecutor)).Count == 1,
     "production Economy-before-legacy-rejection outcome mismatch");
 
-Console.WriteLine("PASS productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 partial=2 productionAssembly=1");
+Counter unknownCounter = new Counter();
+object unknownExecutor = BuildExecutor(
+    unknownCounter, replayStatus: "UnknownAfterStart", appliedCount: 0,
+    replayError: "economy.domain_replay_exception");
+object unknownStatus = executorType.GetMethod("ValidateAndExecute").Invoke(unknownExecutor, new[] { economyPlan, snapshot });
+AssertTrue(unknownStatus.ToString() == "NonRetryableFailure"
+    && (int)executorOutcomeType.GetProperty("AppliedActionCount").GetValue(unknownExecutor) == 0
+    && (string)executorOutcomeType.GetProperty("ExecutionErrorCode").GetValue(unknownExecutor) == "economy.domain_replay_exception"
+    && executorEffectType.GetProperty("EffectState").GetValue(unknownExecutor).ToString() == "UnknownAfterStart"
+    && ((IReadOnlyList<object>)executorReceiptType.GetProperty("ConfirmedFacts").GetValue(unknownExecutor)).Count == 0
+    && unknownCounter.LegacyCalls == 0 && unknownCounter.PortCalls == 1,
+    "production unknown Economy outcome mismatch");
+
+Counter legacyThrowCounter = new Counter();
+object legacyThrowExecutor = BuildExecutor(
+    legacyThrowCounter, economyActionCount: 0, appliedCount: 0, legacyThrows: true);
+object legacyThrowStatus = executorType.GetMethod("ValidateAndExecute").Invoke(legacyThrowExecutor, new[] { duelPlan, snapshot });
+AssertTrue(legacyThrowStatus.ToString() == "NonRetryableFailure"
+    && executorEffectType.GetProperty("EffectState").GetValue(legacyThrowExecutor).ToString() == "UnknownAfterStart"
+    && (int)executorOutcomeType.GetProperty("AppliedActionCount").GetValue(legacyThrowExecutor) == 0
+    && legacyThrowCounter.LegacyCalls == 1 && legacyThrowCounter.PortCalls == 0,
+    "production legacy-only unknown outcome mismatch");
+
+Counter knownThenUnknownCounter = new Counter();
+object knownThenUnknownExecutor = BuildExecutor(knownThenUnknownCounter, legacyThrows: true);
+object knownThenUnknownStatus = executorType.GetMethod("ValidateAndExecute").Invoke(
+    knownThenUnknownExecutor, new[] { mixedPlan, snapshot });
+AssertTrue(knownThenUnknownStatus.ToString() == "NonRetryableFailure"
+    && executorEffectType.GetProperty("EffectState").GetValue(knownThenUnknownExecutor).ToString() == "UnknownAfterStart"
+    && (int)executorOutcomeType.GetProperty("AppliedActionCount").GetValue(knownThenUnknownExecutor) == 1
+    && ((IReadOnlyList<object>)executorReceiptType.GetProperty("ConfirmedFacts").GetValue(knownThenUnknownExecutor)).Count == 1,
+    "production known Economy plus unknown legacy outcome mismatch");
+
+Console.WriteLine("PASS productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 partial=2 unknown=3 productionAssembly=1");
 
 public sealed class Counter
 {

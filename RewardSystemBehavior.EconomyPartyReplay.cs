@@ -94,6 +94,7 @@ public partial class RewardSystemBehavior
 
         int appliedCount = 0;
         int failedCount = 0;
+        bool unknownAfterStart = false;
         List<FactRecord> facts = new List<FactRecord>();
         foreach (EconomyRewardDebtAction action in plan?.Actions ?? Array.Empty<EconomyRewardDebtAction>())
         {
@@ -102,31 +103,66 @@ public partial class RewardSystemBehavior
                 failedCount++;
                 continue;
             }
+            bool applied;
+            string factText;
+            EconomyMutationObservation mutationObservation = new EconomyMutationObservation();
             try
             {
-                if (TryReplayPartyAction(action, giverParty, giverCharacter, receiver, giverName, out string factText))
-                {
-                    appliedCount++;
-                    if (!string.IsNullOrWhiteSpace(factText))
-                    {
-                        facts.Add(new FactRecord(
-                            "economy.party_reward",
-                            snapshot?.Identity?.SubjectId ?? "party",
-                            factText));
-                    }
-                }
-                else
-                {
-                    failedCount++;
-                }
+                applied = TryReplayPartyAction(
+                    action,
+                    giverParty,
+                    giverCharacter,
+                    receiver,
+                    giverName,
+                    mutationObservation,
+                    out factText);
             }
             catch (Exception exception)
             {
                 failedCount++;
-                Logger.Log("RewardSystem", "[RefactorPartyEconomy] action failed kind=" + action.Kind + " error=" + exception.Message);
+                unknownAfterStart = true;
+                LogEconomyReplayFailureSafe("[RefactorPartyEconomy] action failed kind=" + action.Kind + " error=" + exception.Message);
+                break;
+            }
+            if (mutationObservation.UnknownAfterStart)
+            {
+                failedCount++;
+                unknownAfterStart = true;
+                LogEconomyReplayFailureSafe(
+                    "[RefactorPartyEconomy] action outcome unknown kind=" + action.Kind
+                    + " error=" + mutationObservation.ErrorCode);
+                break;
+            }
+            if (!applied)
+            {
+                failedCount++;
+                continue;
+            }
+            appliedCount++;
+            if (!string.IsNullOrWhiteSpace(factText))
+            {
+                try
+                {
+                    facts.Add(new FactRecord(
+                        "economy.party_reward",
+                        snapshot?.Identity?.SubjectId ?? "party",
+                        factText));
+                }
+                catch (Exception exception)
+                {
+                    LogEconomyReplayFailureSafe("[RefactorPartyEconomy] confirmed fact failed kind=" + action.Kind + " error=" + exception.Message);
+                }
             }
         }
 
+        if (unknownAfterStart)
+        {
+            return new EconomyRewardDebtReplayResult(
+                EconomyRewardDebtReplayStatus.UnknownAfterStart,
+                appliedCount,
+                facts,
+                "economy.party_unknown_after_start");
+        }
         if (appliedCount <= 0)
         {
             return new EconomyRewardDebtReplayResult(
@@ -150,6 +186,7 @@ public partial class RewardSystemBehavior
         BasicCharacterObject giverCharacter,
         Hero receiver,
         string giverName,
+        EconomyMutationObservation mutationObservation,
         out string factText)
     {
         factText = string.Empty;
@@ -158,7 +195,14 @@ public partial class RewardSystemBehavior
             case EconomyRewardDebtActionKind.GiveGold:
                 return TryReplayPartyGold(action, giverParty, giverCharacter, receiver, giverName, out factText);
             case EconomyRewardDebtActionKind.GiveAsset:
-                return TryReplayPartyAsset(action, giverParty, giverCharacter, receiver, giverName, out factText);
+                return TryReplayPartyAsset(
+                    action,
+                    giverParty,
+                    giverCharacter,
+                    receiver,
+                    giverName,
+                    mutationObservation,
+                    out factText);
             case EconomyRewardDebtActionKind.DebtCreate:
             case EconomyRewardDebtActionKind.DebtResolve:
             case EconomyRewardDebtActionKind.SettlementTransfer:
@@ -204,6 +248,7 @@ public partial class RewardSystemBehavior
         BasicCharacterObject giverCharacter,
         Hero receiver,
         string giverName,
+        EconomyMutationObservation mutationObservation,
         out string factText)
     {
         factText = string.Empty;
@@ -270,11 +315,12 @@ public partial class RewardSystemBehavior
                 giverCharacter,
                 out itemName,
                 out _,
-                "refactor_party_economy_replay");
+                "refactor_party_economy_replay",
+                mutationObservation: mutationObservation);
         }
         else
         {
-            actual = TransferItemFromParty(
+            actual = TransferItemFromPartyForEconomyReplay(
                 giverParty,
                 receiver,
                 lookup,
@@ -282,7 +328,8 @@ public partial class RewardSystemBehavior
                 giverName,
                 out itemName,
                 giverCharacter,
-                forceComplete: !quantity.IsAll && receiver == Hero.MainHero);
+                forceComplete: !quantity.IsAll && receiver == Hero.MainHero,
+                mutationObservation: mutationObservation);
         }
         if (actual <= 0)
         {

@@ -257,7 +257,9 @@ AssertTrue(
     "Native ActionPlan executor allowed an extra raw action tag");
 var throwingNativeActionExecutor = new LegacyNativeActionPlanExecutor((plan, current) => throw new InvalidOperationException("simulated"));
 AssertTrue(
-    throwingNativeActionExecutor.ValidateAndExecute(nativeActionPlan, snapshot) == InteractionStatus.RejectedByValidation,
+    throwingNativeActionExecutor.ValidateAndExecute(nativeActionPlan, snapshot) == InteractionStatus.NonRetryableFailure
+        && throwingNativeActionExecutor.EffectState == ActionExecutionEffectState.UnknownAfterStart
+        && throwingNativeActionExecutor.AppliedActionCount == 0,
     "Native ActionPlan executor did not isolate a host action exception");
 
 var successGateway = new FakeGateway(new LlmGenerateResult(LlmResultStatus.Succeeded, "raw-with-action", 2, 3, ""));

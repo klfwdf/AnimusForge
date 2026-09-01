@@ -7,7 +7,7 @@ namespace AnimusForge.Refactor.Adapters;
 /// <summary>
 /// Main-thread-only boundary for replaying the Economy/Reward/Debt projection.
 /// This class owns boundary policy only: it rejects missing/stale targets,
-/// capability-invalid plans and callback failures, then delegates actual game
+/// capability-invalid plans and records callback uncertainty, then delegates actual game
 /// mutation to the domain owner supplied by the channel. It never resolves a
 /// Hero, item, debt or settlement and never mutates campaign state itself.
 /// </summary>
@@ -84,15 +84,15 @@ public sealed class LegacyEconomyRewardDebtMainThreadPort : IEconomyRewardDebtMa
         }
         catch
         {
-            return Rejected(EconomyRewardDebtReplayStatus.Failed, "economy.domain_replay_exception");
+            return Unknown("economy.domain_replay_exception");
         }
         if (result == null)
         {
-            return Rejected(EconomyRewardDebtReplayStatus.Failed, "economy.domain_replay_null_result");
+            return Unknown("economy.domain_replay_null_result");
         }
         if (result.AppliedCount < 0 || result.AppliedCount > plan.Actions.Count)
         {
-            return Rejected(EconomyRewardDebtReplayStatus.Failed, "economy.applied_count_invalid");
+            return Unknown("economy.applied_count_invalid");
         }
         if (result.Status == EconomyRewardDebtReplayStatus.Applied
             && result.AppliedCount > 0
@@ -110,15 +110,23 @@ public sealed class LegacyEconomyRewardDebtMainThreadPort : IEconomyRewardDebtMa
         if (result.Status == EconomyRewardDebtReplayStatus.PartiallyApplied
             && (result.AppliedCount <= 0 || result.AppliedCount >= plan.Actions.Count))
         {
-            return new EconomyRewardDebtReplayResult(
-                EconomyRewardDebtReplayStatus.Failed,
-                result.AppliedCount,
-                result.ConfirmedFacts,
-                "economy.partial_count_invalid");
+            return Unknown("economy.partial_count_invalid");
         }
         if (result.Status == EconomyRewardDebtReplayStatus.Applied && result.AppliedCount == 0)
         {
-            return Rejected(EconomyRewardDebtReplayStatus.Failed, "economy.applied_without_effect");
+            return Unknown("economy.applied_without_effect");
+        }
+        bool rejectsEffect = result.Status == EconomyRewardDebtReplayStatus.NoApplicableAction
+            || result.Status == EconomyRewardDebtReplayStatus.RejectedByCapability
+            || result.Status == EconomyRewardDebtReplayStatus.RejectedByMainThreadValidation
+            || result.Status == EconomyRewardDebtReplayStatus.Failed;
+        if ((rejectsEffect && (result.AppliedCount > 0 || result.ConfirmedFacts.Count > 0))
+            || (result.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+                && result.AppliedCount == 0
+                && result.ConfirmedFacts.Count > 0)
+            || !Enum.IsDefined(typeof(EconomyRewardDebtReplayStatus), result.Status))
+        {
+            return Unknown("economy.owner_receipt_inconsistent");
         }
         return result;
     }
@@ -138,5 +146,14 @@ public sealed class LegacyEconomyRewardDebtMainThreadPort : IEconomyRewardDebtMa
         string errorCode)
     {
         return new EconomyRewardDebtReplayResult(status, 0, Array.Empty<FactRecord>(), errorCode);
+    }
+
+    private static EconomyRewardDebtReplayResult Unknown(string errorCode)
+    {
+        return new EconomyRewardDebtReplayResult(
+            EconomyRewardDebtReplayStatus.UnknownAfterStart,
+            0,
+            Array.Empty<FactRecord>(),
+            errorCode);
     }
 }

@@ -87,6 +87,7 @@ public partial class RewardSystemBehavior
 
         int appliedCount = 0;
         int failedCount = 0;
+        bool unknownAfterStart = false;
         List<FactRecord> facts = new List<FactRecord>();
         foreach (EconomyRewardDebtAction action in plan?.Actions ?? Array.Empty<EconomyRewardDebtAction>())
         {
@@ -95,31 +96,67 @@ public partial class RewardSystemBehavior
                 failedCount++;
                 continue;
             }
+            bool applied;
+            string factText;
+            EconomyMutationObservation mutationObservation = new EconomyMutationObservation();
             try
             {
-                if (TryReplayMerchantAction(action, giverCharacter, settlement, kind, receiver, giverName, out string factText))
-                {
-                    appliedCount++;
-                    if (!string.IsNullOrWhiteSpace(factText))
-                    {
-                        facts.Add(new FactRecord(
-                            "economy.merchant_reward",
-                            snapshot?.Identity?.SubjectId ?? giverCharacter.StringId ?? "merchant",
-                            factText));
-                    }
-                }
-                else
-                {
-                    failedCount++;
-                }
+                applied = TryReplayMerchantAction(
+                    action,
+                    giverCharacter,
+                    settlement,
+                    kind,
+                    receiver,
+                    giverName,
+                    mutationObservation,
+                    out factText);
             }
             catch (Exception exception)
             {
                 failedCount++;
-                Logger.Log("RewardSystem", "[RefactorMerchantEconomy] action failed kind=" + action.Kind + " error=" + exception.Message);
+                unknownAfterStart = true;
+                LogEconomyReplayFailureSafe("[RefactorMerchantEconomy] action failed kind=" + action.Kind + " error=" + exception.Message);
+                break;
+            }
+            if (mutationObservation.UnknownAfterStart)
+            {
+                failedCount++;
+                unknownAfterStart = true;
+                LogEconomyReplayFailureSafe(
+                    "[RefactorMerchantEconomy] action outcome unknown kind=" + action.Kind
+                    + " error=" + mutationObservation.ErrorCode);
+                break;
+            }
+            if (!applied)
+            {
+                failedCount++;
+                continue;
+            }
+            appliedCount++;
+            if (!string.IsNullOrWhiteSpace(factText))
+            {
+                try
+                {
+                    facts.Add(new FactRecord(
+                        "economy.merchant_reward",
+                        snapshot?.Identity?.SubjectId ?? giverCharacter.StringId ?? "merchant",
+                        factText));
+                }
+                catch (Exception exception)
+                {
+                    LogEconomyReplayFailureSafe("[RefactorMerchantEconomy] confirmed fact failed kind=" + action.Kind + " error=" + exception.Message);
+                }
             }
         }
 
+        if (unknownAfterStart)
+        {
+            return new EconomyRewardDebtReplayResult(
+                EconomyRewardDebtReplayStatus.UnknownAfterStart,
+                appliedCount,
+                facts,
+                "economy.merchant_unknown_after_start");
+        }
         if (appliedCount <= 0)
         {
             return new EconomyRewardDebtReplayResult(
@@ -144,6 +181,7 @@ public partial class RewardSystemBehavior
         SettlementMerchantKind kind,
         Hero receiver,
         string giverName,
+        EconomyMutationObservation mutationObservation,
         out string factText)
     {
         factText = string.Empty;
@@ -152,7 +190,14 @@ public partial class RewardSystemBehavior
             case EconomyRewardDebtActionKind.GiveGold:
                 return TryReplayMerchantGold(action, giverCharacter, settlement, receiver, giverName, out factText);
             case EconomyRewardDebtActionKind.GiveAsset:
-                return TryReplayMerchantAsset(action, giverCharacter, settlement, receiver, giverName, out factText);
+                return TryReplayMerchantAsset(
+                    action,
+                    giverCharacter,
+                    settlement,
+                    receiver,
+                    giverName,
+                    mutationObservation,
+                    out factText);
             case EconomyRewardDebtActionKind.DebtCreate:
                 return TryReplayMerchantDebtCreate(action, giverCharacter, settlement, kind, out factText);
             case EconomyRewardDebtActionKind.DebtResolve:
@@ -193,6 +238,7 @@ public partial class RewardSystemBehavior
         Settlement settlement,
         Hero receiver,
         string giverName,
+        EconomyMutationObservation mutationObservation,
         out string factText)
     {
         factText = string.Empty;
@@ -239,13 +285,16 @@ public partial class RewardSystemBehavior
         {
             actual = GenerateRpAssetToPlayer(
                 assetToken, requestedAmount, giverName, giverCharacter,
-                out itemName, out _, "refactor_merchant_economy_replay");
+                out itemName, out _, "refactor_merchant_economy_replay",
+                mutationObservation: mutationObservation);
         }
         else
         {
-            actual = TransferItemFromSettlement(
+            actual = TransferItemFromSettlementForEconomyReplay(
                 settlement, receiver, lookup, requestedAmount, giverName, out itemName,
-                giverCharacter, forceComplete: !quantity.IsAll && receiver == Hero.MainHero);
+                giverCharacter,
+                forceComplete: !quantity.IsAll && receiver == Hero.MainHero,
+                mutationObservation: mutationObservation);
         }
         if (actual <= 0)
         {

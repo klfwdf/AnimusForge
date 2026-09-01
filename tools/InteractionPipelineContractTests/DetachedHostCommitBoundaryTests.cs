@@ -22,7 +22,8 @@ internal static class DetachedHostCommitBoundaryTests
                 "commit_null", "commit_retryable", "dispatch_throw_after", "dispatch_null_after",
                 "dispatch_failed_after", "dispatch_throw_before", "dispatch_null_before",
                 "dispatch_failed_before", "duplicate_callback", "cancel_queued", "cancel_dispatch",
-                "partial_action"
+                "partial_action", "unknown_action", "executor_throw", "commit_null_dispatch_failed_after",
+                "dispatch_failed_inflight", "unknown_action_dispatch_success", "dispatch_success_before"
             })
             {
                 try { await RunCaseAsync(channel, scenario); }
@@ -57,17 +58,26 @@ internal static class DetachedHostCommitBoundaryTests
         int fallbackCalls = 0;
         int afterCommitCalls = 0;
         Func<InteractionCommitResult> savedCallback = null;
+        using var callbackEntered = new ManualResetEventSlim(false);
+        using var callbackRelease = new ManualResetEventSlim(false);
+        Task<InteractionCommitResult> inflightCallback = null;
         var host = new DetachedInteractionHost(_ => envelope,
             (_, _, _, _, _) => Task.FromResult(result),
             (captured, generated, actions, history, appendPlayer) =>
             {
-                if (scenario == "commit_throw" || scenario == "commit_null" || scenario == "commit_retryable")
+                if (scenario == "commit_throw" || scenario == "commit_null" || scenario == "commit_retryable"
+                    || scenario == "commit_null_dispatch_failed_after")
                 {
                     actions.ValidateAndExecute(generated.ActionPlan, captured.Snapshot);
                     if (scenario == "commit_throw") throw new InvalidOperationException("owner failed after mutation");
                     if (scenario == "commit_retryable") return new InteractionCommitResult(
                         InteractionStatus.RetryableFailure, false, true, "fixture_retryable_commit");
                     return null;
+                }
+                if (scenario == "dispatch_failed_inflight")
+                {
+                    callbackEntered.Set();
+                    Check(callbackRelease.Wait(TimeSpan.FromSeconds(5)), "in-flight callback was not released");
                 }
                 return committer.Commit(captured, generated, actions, history, appendPlayer);
             });
@@ -80,17 +90,30 @@ internal static class DetachedHostCommitBoundaryTests
                 if (scenario == "dispatch_null_before") return Task.FromResult<InteractionCommitResult>(null);
                 if (scenario == "dispatch_failed_before") return Task.FromResult(new InteractionCommitResult(
                     InteractionStatus.NonRetryableFailure, false, false, "fixture_dispatch_failure"));
+                if (scenario == "dispatch_success_before") return Task.FromResult(new InteractionCommitResult(
+                    InteractionStatus.Succeeded, true, true, "fixture_fake_success"));
                 if (scenario == "cancel_dispatch")
                 {
                     cancellation.Cancel();
                     throw new OperationCanceledException(cancellation.Token);
                 }
                 if (scenario == "cancel_queued") cancellation.Cancel();
+                if (scenario == "dispatch_failed_inflight")
+                {
+                    inflightCallback = Task.Run(commit);
+                    Check(callbackEntered.Wait(TimeSpan.FromSeconds(5)), "in-flight callback did not start");
+                    return Task.FromResult(new InteractionCommitResult(
+                        InteractionStatus.NonRetryableFailure, false, false, "fixture_dispatch_failure"));
+                }
                 InteractionCommitResult committed = commit();
                 if (scenario == "duplicate_callback") committed = commit();
                 if (scenario == "dispatch_throw_after") throw new InvalidOperationException("acknowledgement lost");
                 if (scenario == "dispatch_failed_after") return Task.FromResult(new InteractionCommitResult(
                     InteractionStatus.NonRetryableFailure, false, false, "fixture_dispatch_failure"));
+                if (scenario == "commit_null_dispatch_failed_after") return Task.FromResult(new InteractionCommitResult(
+                    InteractionStatus.NonRetryableFailure, false, false, "fixture_dispatch_failure"));
+                if (scenario == "unknown_action_dispatch_success") return Task.FromResult(new InteractionCommitResult(
+                    InteractionStatus.Succeeded, true, false, "fixture_fake_success"));
                 return Task.FromResult(scenario == "dispatch_null_after" ? null : committed);
             },
             () =>
@@ -105,8 +128,14 @@ internal static class DetachedHostCommitBoundaryTests
                 if (scenario == "after_commit_throw") throw new InvalidOperationException("notification failed");
             });
 
+        if (scenario == "dispatch_failed_inflight")
+        {
+            callbackRelease.Set();
+            await inflightCallback;
+        }
+
         bool fallbackExpected = scenario == "dispatch_throw_before" || scenario == "dispatch_null_before"
-            || scenario == "dispatch_failed_before";
+            || scenario == "dispatch_failed_before" || scenario == "dispatch_success_before";
         bool cancelled = scenario == "cancel_queued" || scenario == "cancel_dispatch";
         int expectedTransfers = cancelled ? 0 : 1;
         Check(fallbackCalls == (fallbackExpected ? 1 : 0), "unexpected fallback count " + fallbackCalls);
@@ -116,11 +145,25 @@ internal static class DetachedHostCommitBoundaryTests
             : fallbackExpected ? InteractionStatus.Succeeded
             : scenario == "success" ? InteractionStatus.Executed : InteractionStatus.NonRetryableFailure),
             "unexpected status " + outcome.Status);
+        if (scenario == "dispatch_success_before")
+        {
+            Check(outcome.Commit != null
+                && !outcome.Commit.ActionsExecuted
+                && !outcome.Commit.HistoryWritten
+                && outcome.Commit.EffectState == ActionExecutionEffectState.NoConfirmedEffect,
+                "dispatcher fake success was retained without a commit callback");
+        }
         bool memoryApplied = scenario == "success" || scenario == "after_commit_throw"
             || scenario == "dispatch_throw_after" || scenario == "dispatch_null_after"
             || scenario == "dispatch_failed_after" || scenario == "duplicate_callback"
-            || scenario == "partial_action";
-        bool afterCommitExpected = memoryApplied && scenario != "partial_action";
+            || scenario == "partial_action" || scenario == "unknown_action" || scenario == "executor_throw"
+            || scenario == "dispatch_failed_inflight" || scenario == "unknown_action_dispatch_success";
+        bool afterCommitExpected = memoryApplied
+            && scenario != "partial_action"
+            && scenario != "unknown_action"
+            && scenario != "executor_throw"
+            && scenario != "dispatch_failed_inflight"
+            && scenario != "unknown_action_dispatch_success";
         Check(memory.Commits == (memoryApplied ? 1 : 0), "history was duplicated or lost");
         Check(afterCommitCalls == (afterCommitExpected ? 1 : 0), "afterCommit ran without a complete successful commit or ran twice");
         if (scenario == "memory_failed" || scenario == "memory_throw")
@@ -138,6 +181,39 @@ internal static class DetachedHostCommitBoundaryTests
                 && !outcome.UsedLegacyFallback,
                 "known partial outcome was not terminal with history/facts");
         }
+        if (scenario == "unknown_action" || scenario == "unknown_action_dispatch_success")
+        {
+            Check(outcome.Commit != null
+                && outcome.Commit.Status == InteractionStatus.NonRetryableFailure
+                && !outcome.Commit.ActionsExecuted
+                && outcome.Commit.HistoryWritten
+                && outcome.Commit.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                && outcome.Commit.ErrorCode == "economy.unknown_after_start"
+                && !outcome.UsedLegacyFallback,
+                "unknown owner effect was not terminal and structured");
+        }
+        if (scenario == "executor_throw")
+        {
+            Check(outcome.Commit != null
+                && outcome.Commit.Status == InteractionStatus.NonRetryableFailure
+                && !outcome.Commit.ActionsExecuted
+                && outcome.Commit.HistoryWritten
+                && outcome.Commit.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                && outcome.Commit.ErrorCode == "action_executor_exception"
+                && !outcome.UsedLegacyFallback,
+                "throwing owner did not produce a terminal unknown receipt");
+        }
+        if (scenario == "commit_throw" || scenario == "commit_null"
+            || scenario == "commit_null_dispatch_failed_after" || scenario == "dispatch_failed_inflight")
+        {
+            Check(outcome.Commit != null
+                && outcome.Commit.Status == InteractionStatus.NonRetryableFailure
+                && !outcome.Commit.ActionsExecuted
+                && !outcome.Commit.HistoryWritten
+                && outcome.Commit.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                && !outcome.UsedLegacyFallback,
+                "started commit callback lost its structured unknown receipt");
+        }
         if (scenario == "after_commit_throw" || scenario == "dispatch_throw_after" || scenario == "dispatch_null_after"
             || scenario == "dispatch_failed_after")
         {
@@ -146,10 +222,19 @@ internal static class DetachedHostCommitBoundaryTests
         }
         // A broken dispatcher may keep a queued callback after returning/throwing.
         // It must not mutate state after either a terminal result or safe fallback.
-        savedCallback();
+        InteractionCommitResult lateReceipt = savedCallback();
         Check(executor.Transfers == expectedTransfers, "late callback repeated a transfer");
         Check(memory.Commits == (memoryApplied ? 1 : 0), "late callback wrote history");
         Check(afterCommitCalls == (afterCommitExpected ? 1 : 0), "late callback repeated afterCommit");
+        if (scenario == "unknown_action" || scenario == "executor_throw"
+            || scenario == "commit_throw" || scenario == "commit_null"
+            || scenario == "commit_null_dispatch_failed_after" || scenario == "dispatch_failed_inflight"
+            || scenario == "unknown_action_dispatch_success")
+        {
+            Check(lateReceipt != null
+                && lateReceipt.EffectState == ActionExecutionEffectState.UnknownAfterStart,
+                "late callback lost the unknown effect state");
+        }
     }
 
     private static void Check(bool condition, string message)
@@ -157,7 +242,7 @@ internal static class DetachedHostCommitBoundaryTests
         if (!condition) throw new InvalidOperationException(message);
     }
 
-    private sealed class TransferExecutor : IActionPlanExecutor, IActionPlanExecutionOutcomeReceipt
+    private sealed class TransferExecutor : IActionPlanExecutor, IActionPlanExecutionEffectReceipt
     {
         private readonly string _scenario;
         public TransferExecutor(string scenario) { _scenario = scenario; }
@@ -165,11 +250,25 @@ internal static class DetachedHostCommitBoundaryTests
         public IReadOnlyList<FactRecord> ConfirmedFacts { get; private set; } = Array.Empty<FactRecord>();
         public int AppliedActionCount { get; private set; }
         public string ExecutionErrorCode { get; private set; } = string.Empty;
+        public ActionExecutionEffectState EffectState { get; private set; }
         public InteractionStatus ValidateAndExecute(ActionPlan plan, GameInteractionSnapshot snapshot)
         {
             Transfers++;
+            if (_scenario == "executor_throw")
+            {
+                throw new InvalidOperationException("owner threw after start");
+            }
+            if (_scenario == "unknown_action" || _scenario == "unknown_action_dispatch_success")
+            {
+                ConfirmedFacts = Array.Empty<FactRecord>();
+                AppliedActionCount = 0;
+                ExecutionErrorCode = "economy.unknown_after_start";
+                EffectState = ActionExecutionEffectState.UnknownAfterStart;
+                return InteractionStatus.NonRetryableFailure;
+            }
             ConfirmedFacts = new[] { new FactRecord("economy.confirmed", "hero-1", "25 gold transferred") };
             AppliedActionCount = 1;
+            EffectState = ActionExecutionEffectState.ConfirmedEffect;
             if (_scenario == "partial_action")
             {
                 ExecutionErrorCode = "economy.partial_replay";
@@ -192,7 +291,10 @@ internal static class DetachedHostCommitBoundaryTests
             if (_scenario == "memory_throw") throw new InvalidOperationException("memory unavailable");
             if (_scenario == "memory_failed") return new MemoryCommitResult(MemoryCommitStatus.Failed, "fixture_memory_failure");
             Check(commit.UserText == "give 25" && commit.AssistantText == "visible reply", "role/text order changed");
-            Check(commit.ConfirmedFacts.Count == 1, "owner confirmed fact missing");
+            Check(commit.ConfirmedFacts.Count == (_scenario == "unknown_action"
+                || _scenario == "unknown_action_dispatch_success"
+                || _scenario == "executor_throw" ? 0 : 1),
+                "owner confirmed fact boundary changed");
             Commits++;
             return new MemoryCommitResult(MemoryCommitStatus.Applied);
         }
