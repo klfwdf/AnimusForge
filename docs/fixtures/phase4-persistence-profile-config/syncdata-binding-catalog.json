@@ -82,14 +82,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18327,
+          "line": 18332,
           "ref": "dictionaryMemoryBlocks",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18693,
+          "line": 18698,
           "ref": "dictionaryMemoryBlocksLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -103,14 +103,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18310,
+          "line": 18315,
           "ref": "dictionaryMemoryDrafts",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18664,
+          "line": 18669,
           "ref": "dictionaryMemoryDraftsLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -152,14 +152,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18358,
+          "line": 18363,
           "ref": "dictionaryMemoryOverviewStates",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18731,
+          "line": 18736,
           "ref": "dictionaryMemoryOverviewStatesLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -173,14 +173,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18389,
+          "line": 18394,
           "ref": "dictionaryMajorActionSummaries",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18768,
+          "line": 18773,
           "ref": "dictionaryMajorActionSummariesLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -208,14 +208,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18489,
+          "line": 18494,
           "ref": "unreadWeeklyReportNoticeEventIds",
           "type": "List<string>",
           "kind": "list"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18929,
+          "line": 18934,
           "ref": "unreadWeeklyReportNoticeEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
@@ -229,14 +229,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18493,
+          "line": 18498,
           "ref": "weeklyReportReadingXpClaimedEventIds",
           "type": "List<string>",
           "kind": "list"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18932,
+          "line": 18937,
           "ref": "weeklyReportReadingXpClaimedEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
@@ -250,14 +250,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18501,
+          "line": 18506,
           "ref": "weeklyReportReadingXpPendingCharm",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18935,
+          "line": 18940,
           "ref": "_weeklyReportReadingXpPendingCharm",
           "type": "int",
           "kind": "scalar"
@@ -271,14 +271,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18500,
+          "line": 18505,
           "ref": "weeklyReportReadingXpPendingCount",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18934,
+          "line": 18939,
           "ref": "_weeklyReportReadingXpPendingCount",
           "type": "int",
           "kind": "scalar"
@@ -292,14 +292,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18502,
+          "line": 18507,
           "ref": "weeklyReportReadingXpPendingLeadership",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18936,
+          "line": 18941,
           "ref": "_weeklyReportReadingXpPendingLeadership",
           "type": "int",
           "kind": "scalar"
@@ -313,14 +313,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18503,
+          "line": 18508,
           "ref": "weeklyReportReadingXpPendingSteward",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18937,
+          "line": 18942,
           "ref": "_weeklyReportReadingXpPendingSteward",
           "type": "int",
           "kind": "scalar"
@@ -348,14 +348,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18292,
+          "line": 18297,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18636,
+          "line": 18641,
           "ref": "dictionary8",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -383,14 +383,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18470,
+          "line": 18475,
           "ref": "dictionary6",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18893,
+          "line": 18898,
           "ref": "dictionary12",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -698,14 +698,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18541,
+          "line": 18546,
           "ref": "dictionary14b",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18979,
+          "line": 18984,
           "ref": "dictionary15",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -719,14 +719,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18530,
+          "line": 18535,
           "ref": "dictionary13",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18963,
+          "line": 18968,
           "ref": "dictionary14",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -740,14 +740,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18564,
+          "line": 18569,
           "ref": "_lastAutoGeneratedWeeklyReportWeek",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18959,
+          "line": 18964,
           "ref": "_lastAutoGeneratedWeeklyReportWeek",
           "type": "int",
           "kind": "scalar"
@@ -761,14 +761,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18565,
+          "line": 18570,
           "ref": "_lastProcessedKingdomRebellionWeek",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 19024,
+          "line": 19029,
           "ref": "_lastProcessedKingdomRebellionWeek",
           "type": "int",
           "kind": "scalar"
@@ -782,14 +782,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18563,
+          "line": 18568,
           "ref": "dictionary14d",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 19011,
+          "line": 19016,
           "ref": "dictionary17",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -803,14 +803,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18440,
+          "line": 18445,
           "ref": "_npcActionGlobalOrderCounter",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18886,
+          "line": 18891,
           "ref": "_npcActionGlobalOrderCounter",
           "type": "int",
           "kind": "scalar"
@@ -824,14 +824,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18421,
+          "line": 18426,
           "ref": "dictionary3",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18805,
+          "line": 18810,
           "ref": "dictionary9",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -845,14 +845,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18458,
+          "line": 18463,
           "ref": "dictionary5",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18861,
+          "line": 18866,
           "ref": "dictionary11",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -866,14 +866,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18439,
+          "line": 18444,
           "ref": "dictionary4",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18833,
+          "line": 18838,
           "ref": "dictionary10",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -887,14 +887,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 37196,
+          "line": 37206,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 37205,
+          "line": 37215,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1405,14 +1405,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18273,
+          "line": 18278,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18597,
+          "line": 18602,
           "ref": "dictionary7",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1482,14 +1482,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18577,
+          "line": 18582,
           "ref": "_voiceMappingExportFolderStorage",
           "type": "string",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 19026,
+          "line": 19031,
           "ref": "_voiceMappingExportFolderStorage",
           "type": "string",
           "kind": "scalar"
@@ -1503,14 +1503,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18552,
+          "line": 18557,
           "ref": "dictionary14c",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18995,
+          "line": 19000,
           "ref": "dictionary16",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"

@@ -91,7 +91,7 @@ public partial class MyBehavior
                 {
                     try
                     {
-                        owner.CompleteInitialInteractionMemoryNotorietyBestEffort(
+                        owner.CompleteInitialInteractionMemoryNotorietyOutcome(
                             seed,
                             recoveryId,
                             preparedPayloadHash);
@@ -624,7 +624,7 @@ public partial class MyBehavior
         return HasDailyInteractionMemoryMarker(work, out _);
     }
 
-    private void CompleteInitialInteractionMemoryNotorietyBestEffort(
+    private void CompleteInitialInteractionMemoryNotorietyOutcome(
         InteractionMemoryRecoverySeed seed,
         string recoveryId,
         string payloadHash)
@@ -636,7 +636,9 @@ public partial class MyBehavior
             return;
         }
 
-        int notorietyAttempts = 0;
+        int notorietyConfirmed = 0;
+        int notorietyDuplicate = 0;
+        int notorietyUnavailable = 0;
         var attemptedParts = new HashSet<string>(StringComparer.Ordinal);
         foreach (InteractionMemoryRecoveryComponentSeed component in
             seed.Components ?? Array.Empty<InteractionMemoryRecoveryComponentSeed>())
@@ -653,20 +655,42 @@ public partial class MyBehavior
                 continue;
             }
 
-            // This void owner has no per-line receipt/readback and may perform
-            // its first known-player roll. Attempt it once only for a brand-new,
-            // synchronously completed commit. ExistingPending, load recovery,
-            // Duplicate and tick paths never call this method.
-            PlayerNotorietyBehavior.NoteConversationLineForExternal(seed.SubjectId);
-            notorietyAttempts++;
+            // The H marker proves only that the Daily line exists. L owns the
+            // separate roll/line receipt and returns an exact outcome; H never
+            // promotes its marker into Notoriety success on its own.
+            NotorietyConversationOutcomeOperationStatus status =
+                PlayerNotorietyBehavior.NoteConversationLineRecoverableForExternal(
+                    seed.SubjectId,
+                    seed.MemorySessionKey,
+                    seed.RuntimeGeneration,
+                    seed.SaveGeneration,
+                    seed.OriginGameDay,
+                    seed.OriginGameHour,
+                    recoveryId,
+                    payloadHash,
+                    componentPart);
+            if (status == NotorietyConversationOutcomeOperationStatus.Accepted)
+            {
+                notorietyConfirmed++;
+            }
+            else if (status == NotorietyConversationOutcomeOperationStatus.Duplicate)
+            {
+                notorietyDuplicate++;
+            }
+            else
+            {
+                notorietyUnavailable++;
+            }
         }
 
-        if (notorietyAttempts > 0)
+        if (notorietyConfirmed > 0 || notorietyDuplicate > 0 || notorietyUnavailable > 0)
         {
             Logger.Log(
                 "MemoryRecovery",
-                "auxiliary_not_recoverable recovery=" + recoveryId
-                    + " notoriety=attempted_unconfirmed count=" + notorietyAttempts
+                "auxiliary_outcome recovery=" + recoveryId
+                    + " notoriety_line=confirmed count=" + notorietyConfirmed
+                    + " duplicate=" + notorietyDuplicate
+                    + " unavailable=" + notorietyUnavailable
                     + " weekly=not_replayed_or_consumed");
         }
     }

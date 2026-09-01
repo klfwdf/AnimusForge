@@ -78,9 +78,13 @@ internal static class MemoryRecoveryProductionReplay
             "NoteConversationLineForExternal",
             AnyStatic)
             ?? throw new InvalidOperationException("missing notoriety note boundary");
+        MethodInfo exactNotorietyNote = notorietyType.GetMethod(
+            "NoteConversationLineRecoverableForExternal",
+            AnyStatic)
+            ?? throw new InvalidOperationException("missing exact notoriety line boundary");
         MethodInfo initialAuxiliary = RequireInstanceMethod(
             ownerType,
-            "CompleteInitialInteractionMemoryNotorietyBestEffort");
+            "CompleteInitialInteractionMemoryNotorietyOutcome");
         MethodInfo auxiliaryMarkerReadback = RequireInstanceMethod(
             ownerType,
             "HasPublishedDailyInteractionMemoryComponent");
@@ -101,6 +105,8 @@ internal static class MemoryRecoveryProductionReplay
             "memory recovery writer still consumes transient weekly candidates");
         Require(!CallsMethod(recoveryWriter, notorietyNote),
             "memory recovery writer still replays non-idempotent notoriety state");
+        Require(!CallsMethod(recoveryWriter, exactNotorietyNote),
+            "memory recovery writer bypassed the completed-core exact notoriety gate");
         Require(CallsMethod(legacyWriter, weeklyAttach),
             "legacy live writer unexpectedly lost its existing weekly best-effort behavior");
         Require(CallsMethod(legacyWriter, notorietyNote),
@@ -110,9 +116,11 @@ internal static class MemoryRecoveryProductionReplay
         Require(CallsMethod(recoverableCommit, initialAuxiliaryGate),
             "recoverable commit bypassed the Began/completed auxiliary gate");
         Require((recoverableCommit.GetMethodBody()?.ExceptionHandlingClauses.Count ?? 0) >= 2,
-            "best-effort auxiliary failure is no longer isolated from the completed core receipt");
-        Require(CallsMethod(initialAuxiliary, notorietyNote),
-            "initial auxiliary boundary no longer attempts current-runtime notoriety");
+            "exact auxiliary failure is no longer isolated from the completed core receipt");
+        Require(!CallsMethod(initialAuxiliary, notorietyNote),
+            "initial auxiliary boundary downgraded to the legacy void notoriety owner");
+        Require(CallsMethod(initialAuxiliary, exactNotorietyNote),
+            "initial auxiliary boundary no longer uses the exact notoriety owner");
         Require(CallsMethod(initialAuxiliary, auxiliaryMarkerReadback),
             "initial auxiliary boundary no longer requires exact Daily marker readback");
         Require(!CallsMethod(initialAuxiliary, weeklyAttach),
@@ -126,7 +134,7 @@ internal static class MemoryRecoveryProductionReplay
         Require((bool)initialAuxiliaryGate.Invoke(
                 null,
                 new object[] { began, true, "receipt-id", "receipt-id" }),
-            "brand-new completed receipt did not open the one-shot auxiliary boundary");
+            "brand-new completed receipt did not open the exact auxiliary boundary");
         Require(!(bool)initialAuxiliaryGate.Invoke(
                 null,
                 new object[] { began, false, "receipt-id", "receipt-id" }),
@@ -166,9 +174,9 @@ internal static class MemoryRecoveryProductionReplay
         Set(blank, "DailyText", " ");
         Set(blank, "IsLlmDialogue", true);
         Require((bool)notorietyEligibility.Invoke(null, new[] { user }),
-            "published user line was excluded from the initial best-effort boundary");
+            "published user line was excluded from the initial exact boundary");
         Require((bool)notorietyEligibility.Invoke(null, new[] { assistant }),
-            "published assistant line was excluded from the initial best-effort boundary");
+            "published assistant line was excluded from the initial exact boundary");
         Require(!(bool)notorietyEligibility.Invoke(null, new[] { fact }),
             "AFEF fact entered the notoriety boundary");
         Require(!(bool)notorietyEligibility.Invoke(null, new[] { blank }),
