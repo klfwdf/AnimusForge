@@ -1,7 +1,8 @@
 # Bannerlord 1.4 replay dependency boundary
 
 用于 `PolicyGatewayReplayTests`、`WorldDiplomacyGatewayReplayTests`、
-`TtsGatewayReplayTests`、`ProductionOptInEntryReplayTests`。四者共用此 targets，
+`TtsGatewayReplayTests`、`ProductionOptInEntryReplayTests`、
+`ShoutNetworkSseReplayTests`。五者共用此 targets，
 不修改 `Program.cs`、生产代码、默认入口、官方构建/部署流程或游戏目录。
 项目仍为 `net8.0`；metadata helper 使用系统 Windows PowerShell 5.1。
 
@@ -34,7 +35,7 @@
 - 输出严格限制为当前 runner 的 `bin` 子目录；不允许与输入重叠或经过 reparse point。
 - 成功输出 `af-replay-dependencies.json`，记录 Stage SHA256、引用路径、每项 owner、
   完整程序集身份和 SHA256。相同输入重复运行不重复复制，manifest 稳定。
-- `System.*` 仍由 SDK/NuGet/.NET runtime 负责。这里证明的是这四个 replay 所需的
+- `System.*` 仍由 SDK/NuGet/.NET runtime 负责。这里证明的是这五个 replay 所需的
   managed 加载边界，**不是**全量游戏/native/ONNX 推理依赖闭包或真实游戏验收。
 
 ## 本机复现（2026-09-01）
@@ -44,9 +45,9 @@
 推断其字节或 API 相同。
 
 ```powershell
-$dotnet = 'C:\Users\28358\AppData\Local\Microsoft\dotnet\dotnet.exe'
+$dotnet = 'G:\AFMOD\.dotnet-sdk\dotnet.exe'
 $env:DOTNET_CLI_HOME = 'G:\AFMOD\.build-cache\af-refactor-cli'
-$env:NUGET_PACKAGES = 'G:\AFMOD\NEW-10\.dotnet_cli\.nuget\packages'
+$env:NUGET_PACKAGES = 'G:\AFMOD\.dotnet_cli\.nuget\packages'
 $properties = @(
     '-p:GameRoot=E:\steam\steamapps\common\Mount & Blade II Bannerlord'
     '-p:Bannerlord14ReferencePath=G:\AFMOD\NEW-10\.tmp\build_check\1.4'
@@ -56,7 +57,8 @@ $properties = @(
     '-p:ReplayPrivateRuntimePath=G:\AFMOD\NEW-10\AnimusForge\bin\Win64_Shipping_Client'
 )
 foreach ($name in @('PolicyGatewayReplayTests', 'WorldDiplomacyGatewayReplayTests',
-                    'TtsGatewayReplayTests', 'ProductionOptInEntryReplayTests')) {
+                    'TtsGatewayReplayTests', 'ProductionOptInEntryReplayTests',
+                    'ShoutNetworkSseReplayTests')) {
     & $dotnet run --project ".\tools\$name\$name.csproj" @properties
     if ($LASTEXITCODE -ne 0) { throw "$name failed: $LASTEXITCODE" }
 }
@@ -86,3 +88,13 @@ foreach ($name in @('PolicyGatewayReplayTests', 'WorldDiplomacyGatewayReplayTest
 覆盖：缺引用、错误模块 ID、输出越界、缺 DLL、程序集身份不符、空格/非 ASCII
 路径、幂等复制、同名输出冲突不覆盖、递归同名候选拒绝。
 各 replay 的测试断言由原 runner 负责；此框架不修改或掩盖它们的失败。
+
+consumer源码边界可在无游戏依赖时单独验证：
+
+```powershell
+.\tools\ReplayDependencies\Test-ReplayProjectBoundary.ps1
+```
+
+该契约固定盘点上述五个managed replay project，要求每个project恰好导入一次shared targets，
+并拒绝project-local复制target、机器绝对盘符、`Modules/**` / `Workshop/**`递归扫描和
+`AnimusForge.dll`复制。它只验证consumer source，不替代上面的9-case依赖helper自测或业务回放。

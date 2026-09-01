@@ -6,13 +6,5 @@
     <PlatformTarget>x64</PlatformTarget>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <Target Name="CopyBannerlordRuntimeForReplay" AfterTargets="Build">
-    <ItemGroup>
-      <BannerlordRuntimeDll Include="F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\bin\Win64_Shipping_Client\*.dll" />
-      <BannerlordModuleDll Include="F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\**\bin\Win64_Shipping_Client\*.dll" />
-    </ItemGroup>
-    <Copy SourceFiles="@(BannerlordRuntimeDll);@(BannerlordModuleDll)"
-          DestinationFolder="$(OutputPath)"
-          SkipUnchangedFiles="true" />
-  </Target>
+  <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
 </Project>
