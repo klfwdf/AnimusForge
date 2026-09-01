@@ -97,7 +97,7 @@
 | `GcczTownRuleMemory*.cs`, `GcczSettlementCulturePersistenceBehavior.cs` | 城镇规则记忆/文化保存 | Settlement Memory | 复用 GCCZ codec/store | namespace、legacy key |
 | `SettlementEntryTroopSelectionBehavior.cs` | 定居点进入时队伍选择 | Settlement Entry | 行为与 MissionLogic 分离 | roster、mission initialization |
 | `TownAmbientDialogueBehavior.cs`, civilian population mission files | 城镇居民/环境对话和人口 | Scene/Settlement | 共用 Conversation，但不混 WorldMap | Agent、场景 context |
-| `DuelBehavior.cs`, `DuelSettings*.cs` | 决斗配置、stakes、Mission、死亡和结果 | Duel/Combat | 配置、规则、Mission、结果分层 | death state、save、Fourberie |
+| `DuelBehavior.cs`, `DuelBehavior.Outcomes.cs`, `Refactor/Runtime/DuelOutcomeReceipt.cs`, `DuelSettings*.cs` | 决斗配置、stakes、Mission、死亡和结果；process-local typed session/outcome/readback | Duel/Combat | legacy public facade不变；actual-start尝试绑定DuelId，成功绑定的三终态先锁胜负再记录分量回执；load只转Unknown且绝不重放 | exact detached request provenance、live reserve failure/death/stake/Memory、旧档、Fourberie |
 | `SceneTauntBehavior.cs`, `SceneTaunt*Patch.cs` | 场景挑衅、冲突升级、Mission | Scene Combat | 严格 damage-context guard；先拆规则 | 和平/竞技场/训练/攻城排除 |
 | `MilitaryExerciseBehavior.cs` | 训练/演习 campaign+Mission | Mission/Training | 行为/mission logic 分离 | roster、native damage |
 | `TroopInspectionBehavior.cs`, prisoner slaughter runtime | 队伍检查/囚犯处置 | Mission/Prisoner | 保留原版安全 fallback | prisoner identity、Mission |

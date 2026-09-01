@@ -267,4 +267,4 @@
 
 owner/refactor map 的第一版基于较早基线，适合导航，不可照搬其旧状态；实际状态以最新 Git、运行证据和公共台账为准。本文件是总纲，不新建一套平行执行台账。
 
-**下一精确任务：`LOCAL-7-M`只读审计并最小建立Duel typed owner/outcome/readback边界，先证明stakes、Mission结果、死亡/取消/退出和Memory事实的真实顺序；不得从legacy callback、对话标签或Mission结束推测成功。并行由领域owner按`docs/phase8/full-domain-acceptance-package.md`采集20领域LIVE/SAVE证据。阶段8所有清理候选继续只登记，默认入口、删除、打包、部署与发布仍后置。**
+**下一精确任务：`LOCAL-7-M2`为Duel补 exact detached dispatch provenance，只把真实 request/trace/channel/session/action fingerprint 绑定到同一 queued/started DuelId，并显式返回 rejected/queued/started；不得把 M1 的 `Domain / legacy-unbound` actual-session receipt 冒充特定 ActionPlan 成功。随后才评估取消/死亡的live readback。并行由领域owner按`docs/phase8/full-domain-acceptance-package.md`采集20领域LIVE/SAVE证据。阶段8所有清理候选继续只登记，默认入口、删除、打包、部署与发布仍后置。**
