@@ -61,15 +61,14 @@ public sealed class GcczSettlementCulturePersistenceBehavior : CampaignBehaviorB
 		}
 
 		GcczSettlementCulturePersistenceBehavior behavior = Campaign.Current?.GetCampaignBehavior<GcczSettlementCulturePersistenceBehavior>();
-		bool recorded = behavior?._ledger.TryRecord(settlement.StringId, culture.StringId) == true;
-		settlement.Culture = culture;
-		if (!recorded)
+		if (behavior == null || !behavior._ledger.TryRecord(settlement.StringId, culture.StringId))
 		{
-			Logger.Log("GcczSettlementCulture", "Applied culture without persistent override. Settlement="
+			Logger.Log("GcczSettlementCulture", "Rejected culture mutation because the persistent override could not be recorded. Settlement="
 				+ (settlement.StringId ?? "N/A") + ", Culture=" + (culture.StringId ?? "N/A") + ", Source=" + (source ?? "N/A"));
 			return false;
 		}
 
+		settlement.Culture = culture;
 		GcczDiagnosticLog.Log("SettlementCulture", "recorded settlement=" + settlement.StringId
 			+ " culture=" + culture.StringId + " source=" + (source ?? "N/A"));
 		return true;

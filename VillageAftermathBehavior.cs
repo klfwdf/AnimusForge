@@ -581,18 +581,22 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			}
 
 			float oldHearth = village.Village.Hearth;
+			if (!TryPersistVillageCulture(village, targetCulture, "village_" + mode))
+			{
+				throw new InvalidOperationException("Village culture persistence rejected the mutation before side effects started.");
+			}
 			mutationStarted = true;
 			village.Village.Hearth = VillageCultureChangeProfile.ApplyImmediateHearth(mode, oldHearth);
 			if (mode == VillageCultureChangeMode.PurgeColonization)
 			{
 				KillVillageNotables(village, "village_purge_colonization");
 			}
-			ApplyVillageCultureNow(
+			ApplyVillageNotableCulture(
 				village,
 				targetCulture,
 				clearVolunteerTypes: true,
-				spawnReplacementNotables: mode == VillageCultureChangeMode.PurgeColonization,
-				source: "village_" + mode);
+				spawnReplacementNotables: mode == VillageCultureChangeMode.PurgeColonization);
+			LogVillageCultureApplied(village, targetCulture, mode == VillageCultureChangeMode.PurgeColonization);
 			ApplyOwnerRelation(mode == VillageCultureChangeMode.PurgeColonization
 				? VillageCultureChangeProfile.PurgeColonizationOwnerRelationDelta
 				: VillageCultureChangeProfile.MigrantResettlementOwnerRelationDelta);
@@ -646,12 +650,18 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 				CultureObject culture = Game.Current?.ObjectManager?.GetObject<CultureObject>(cultureId);
 				if (village?.IsVillage == true && culture != null)
 				{
-					ApplyVillageCultureNow(
+					bool applied = ApplyVillageCultureNow(
 						village,
 						culture,
 						clearVolunteerTypes: true,
 						spawnReplacementNotables: false,
 						source: "village_gradual_education_completed");
+					if (!applied)
+					{
+						Logger.Log("VillageAftermath", "Deferred gradual culture completion because persistence was unavailable. village="
+							+ (village.StringId ?? villageId) + " target=" + (culture.StringId ?? "N/A"));
+						continue;
+					}
 					InformationManager.DisplayMessage(new InformationMessage(
 						"【GCCZ村庄】" + (village.Name?.ToString() ?? villageId) + "的教化改俗完成，文化已转为" + (culture.Name?.ToString() ?? culture.StringId) + "。",
 						Color.FromUint(SuccessColor)));
@@ -666,14 +676,40 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void ApplyVillageCultureNow(
+	private static bool ApplyVillageCultureNow(
 		Settlement village,
 		CultureObject targetCulture,
 		bool clearVolunteerTypes,
 		bool spawnReplacementNotables,
 		string source)
 	{
-		GcczSettlementCulturePersistenceBehavior.ApplyAndRemember(village, targetCulture, source);
+		if (!TryPersistVillageCulture(village, targetCulture, source))
+		{
+			return false;
+		}
+
+		ApplyVillageNotableCulture(village, targetCulture, clearVolunteerTypes, spawnReplacementNotables);
+		LogVillageCultureApplied(village, targetCulture, spawnReplacementNotables);
+		return true;
+	}
+
+	private static bool TryPersistVillageCulture(Settlement village, CultureObject targetCulture, string source)
+	{
+		return GcczSettlementCulturePersistenceBehavior.ApplyAndRemember(village, targetCulture, source);
+	}
+
+	private static void LogVillageCultureApplied(Settlement village, CultureObject targetCulture, bool spawnedReplacements)
+	{
+		GcczDiagnosticLog.Log("VillageCulture", "applied village=" + (village?.StringId ?? "N/A")
+			+ " culture=" + (targetCulture?.StringId ?? "N/A") + " replacement=" + spawnedReplacements);
+	}
+
+	private static void ApplyVillageNotableCulture(
+		Settlement village,
+		CultureObject targetCulture,
+		bool clearVolunteerTypes,
+		bool spawnReplacementNotables)
+	{
 		foreach (Hero notable in village.Notables?.Where(hero => hero != null && hero.IsAlive && hero.IsRuralNotable).ToList() ?? new List<Hero>())
 		{
 			notable.Culture = targetCulture;
@@ -690,7 +726,6 @@ public sealed class VillageAftermathBehavior : CampaignBehaviorBase
 			SpawnReplacementNotables(village, targetCulture, Occupation.Headman);
 			SpawnReplacementNotables(village, targetCulture, Occupation.RuralNotable);
 		}
-		GcczDiagnosticLog.Log("VillageCulture", "applied village=" + (village.StringId ?? "N/A") + " culture=" + (targetCulture.StringId ?? "N/A") + " replacement=" + spawnReplacementNotables);
 	}
 
 	private static void KillVillageNotables(Settlement village, string source)

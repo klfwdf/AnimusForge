@@ -29,6 +29,16 @@ The AF bridge now:
 
 Villages, mixed notable cultures, missing culture evidence, small samples, explicit overrides, and ordinary culture differences never qualify for inference.
 
+## Additional current-path hardening
+
+The follow-up audit found three silent partial-success paths in the current implementation:
+
+- culture mutation continued even when the persistence behavior could not record an override;
+- town colonization marked its state committed before all town and bound-village culture overrides were durable, while a bound-village exception was swallowed;
+- gradual village education removed its pending schedule even when the durable culture mutation was rejected.
+
+The AF adapter now fails closed before applying an untracked culture mutation, records the town and every bound village before committing colonization state, removes the empty exception path, and retains a due gradual-education entry for retry when persistence is temporarily unavailable. Existing hearth, relation, notable replacement, reward, penalty, and eligibility values are unchanged.
+
 ## Ownership
 
 - Reusable decision policy: `AnimusForge.SiegeAftermathIntervention/SettlementCultureLegacyRecoveryPolicy.cs`
@@ -38,6 +48,7 @@ Villages, mixed notable cultures, missing culture evidence, small samples, expli
 ## Validation
 
 - Full GCCZ standalone core suite: PASS, including eight focused recovery-policy cases.
+- Follow-up durable-commit audit: PASS; GCCZ boundary verifier confirmed effect isolation and the current AF adapter compiled after the fail-closed changes.
 - Unified Debug Stage: Bannerlord 1.3 implementation, Bannerlord 1.4 implementation, and Bootstrap all built with zero warnings and zero errors.
 - Game directory and saves were not modified.
 - Representative polluted-save runtime validation remains required.

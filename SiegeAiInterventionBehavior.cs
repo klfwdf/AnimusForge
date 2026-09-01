@@ -9038,7 +9038,12 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string targetCultureName = ResolveCultureName(targetCulture);
 			TownPromptTextCatalog textCatalog = GcczTownPromptResourceProvider.GetCatalog();
 
-			ApplySettlementCulture(settlement, targetCulture, "constructive_town_culture_change");
+			if (!ApplySettlementCulture(settlement, targetCulture, "constructive_town_culture_change"))
+			{
+				Logger.Log("SiegeAiIntervention", "Constructive town culture change rejected because persistence was unavailable. Settlement="
+					+ (settlement.StringId ?? "N/A") + ", Culture=" + (targetCulture.StringId ?? "N/A"));
+				return false;
+			}
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
 				settlement,
 				_previousSettlementOwnerClan,
@@ -9099,36 +9104,46 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			TownColonizationSnapshot colonization = ActiveTownColonization.Snapshot();
 			if (!string.Equals(colonization.SettlementId, settlement.StringId, StringComparison.OrdinalIgnoreCase)
-				|| !ActiveTownColonization.TryCommit())
+				|| colonization.State != TownColonizationState.ReadyToCommit)
 			{
 				Logger.Log("SiegeAiIntervention", "Cultural repopulation commit rejected. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", ExpectedSettlement=" + (colonization.SettlementId ?? "N/A") + ", State=" + colonization.State);
 				return false;
 			}
 			CultureObject oldCulture = settlement.Culture;
-			ApplySettlementCulture(settlement, targetCulture, "town_colonization");
+			if (!ApplySettlementCulture(settlement, targetCulture, "town_colonization"))
+			{
+				Logger.Log("SiegeAiIntervention", "Cultural repopulation could not persist the town culture. Source=" + (source ?? "N/A")
+					+ ", Settlement=" + (settlement.StringId ?? "N/A") + ", Culture=" + (targetCulture.StringId ?? "N/A"));
+				return false;
+			}
+			int boundVillagesChanged = 0;
+			List<Settlement> boundVillageSettlements = settlement.BoundVillages?
+				.Where(village => village?.Settlement != null)
+				.Select(village => village.Settlement)
+				.Distinct()
+				.ToList() ?? new List<Settlement>();
+			foreach (Settlement villageSettlement in boundVillageSettlements)
+			{
+				if (!ApplySettlementCulture(villageSettlement, targetCulture, "town_colonization_bound_village"))
+				{
+					Logger.Log("SiegeAiIntervention", "Cultural repopulation could not persist a bound village culture. Source=" + (source ?? "N/A")
+						+ ", Settlement=" + (settlement.StringId ?? "N/A") + ", Village=" + (villageSettlement.StringId ?? "N/A")
+						+ ", Culture=" + (targetCulture.StringId ?? "N/A"));
+					return false;
+				}
+				boundVillagesChanged++;
+			}
+			if (!ActiveTownColonization.TryCommit())
+			{
+				Logger.Log("SiegeAiIntervention", "Cultural repopulation state changed before the durable culture commit completed. Source=" + (source ?? "N/A")
+					+ ", Settlement=" + (settlement.StringId ?? "N/A") + ", State=" + ActiveTownColonization.State);
+				return false;
+			}
 			GcczTownRuleMemoryRuntimeBridge.RefreshAfterRuntimeTransition(
 				settlement,
 				_previousSettlementOwnerClan,
 				IsActiveInCurrentMission(),
 				"culture_change");
-			int boundVillagesChanged = 0;
-			try
-			{
-				if (settlement.BoundVillages != null)
-				{
-					foreach (Village village in settlement.BoundVillages)
-					{
-						if (village?.Settlement != null)
-						{
-							ApplySettlementCulture(village.Settlement, targetCulture, "town_colonization_bound_village");
-							boundVillagesChanged++;
-						}
-					}
-				}
-			}
-			catch
-			{
-			}
 			int killedNotables = 0;
 			int spawnedNotables = 0;
 			ReplaceTownNotablesForCulturalRepopulation(settlement, targetCulture, source, out killedNotables, out spawnedNotables);
