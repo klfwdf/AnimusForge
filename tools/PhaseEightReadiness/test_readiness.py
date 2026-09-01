@@ -34,9 +34,26 @@ class ReadinessTests(unittest.TestCase):
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(PROJECT / relative, target)
-        self.modules, self.bridges, self.composition_cases = readiness.load_policy(readiness.EvidenceFiles(self.root, None))
+        domain_catalog = json.loads((PROJECT / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
+        cleanup_catalog = json.loads((PROJECT / readiness.CLEANUP_CATALOG).read_text(encoding="utf-8"))
+        referenced_paths = {
+            path
+            for item in domain_catalog["domains"] + domain_catalog["bridges"]
+            for path in item["entryPaths"]
+        } | {item["path"] for item in cleanup_catalog["candidates"]} | {domain_catalog["programSource"]}
+        for relative in sorted(referenced_paths):
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                target.hardlink_to(PROJECT / relative)
+            except OSError:
+                shutil.copyfile(PROJECT / relative, target)
+        (self.modules, self.bridges, self.composition_cases, self.domains,
+         self.full_bridges, self.cleanup_inventory) = readiness.load_policy(readiness.EvidenceFiles(self.root, None))
         self.write("fixture.log", b"FIXTURE ONLY: not a game observation.\n")
-        self.write("candidate.cs", b"// FIXTURE ONLY: synthetic cleanup candidate.\n")
+        self.review_candidate = next(item for item in self.cleanup_inventory.values()
+                                     if item["disposition"] == "REVIEW_REMOVAL")
+        all_domain_reviewers = {maintainer for item in self.domains.values() for maintainer in item["maintainers"]}
         self.records: dict[str, dict] = {}
         artifacts = []
         for artifact_id in sorted(readiness.ARTIFACT_IDS):
@@ -55,6 +72,7 @@ class ReadinessTests(unittest.TestCase):
                         "moduleId": module_id, "layer": layer, "apiLine": api,
                         "kind": {"OFFLINE": "contract", "LIVE": "game-scenario", "SAVE": "save-roundtrip", "RELEASE": "package-validation"}[layer],
                         "result": "PASS", "sourceCommit": COMMIT,
+                        "domainIds": sorted(self.domains), "cleanupCandidateIds": [],
                         "releaseVersion": VERSION,
                         "recordedAt": (NOW - timedelta(hours=1)).isoformat(),
                         "steps": ["FIXTURE ONLY: no game operation was performed."],
@@ -64,7 +82,9 @@ class ReadinessTests(unittest.TestCase):
                         "artifactHashes": {key: item["file"]["sha256"] for key, item in self.artifacts.items()},
                         "attachments": [self.ref("fixture.log")],
                         "environment": {"hostInitialized": True, "hostContext": "Campaign", "gameBuildInfo": "v" + api + ".0.0", "saveIdentity": "FIXTURE-NOT-A-SAVE", "oldSaveLoaded": True, "roundTripVerified": True},
-                        "ownerReview": {"decision": "ACCEPTED", "reviewers": self.modules[module_id]["maintainers"], "reviewedAt": NOW.isoformat(), "note": "FIXTURE ONLY: no actual owner attestation."},
+                        "ownerReview": {"decision": "ACCEPTED",
+                                        "reviewers": sorted(set(self.modules[module_id]["maintainers"]) | all_domain_reviewers),
+                                        "reviewedAt": NOW.isoformat(), "note": "FIXTURE ONLY: no actual owner attestation."},
                     }
                     self.records[record_id] = record
         self.cleanup_id = "af.foundation.runtime/OFFLINE/agnostic"
@@ -113,12 +133,21 @@ class ReadinessTests(unittest.TestCase):
         return self.records["af.module.conversation/LIVE/1.3"]
 
     def candidate(self, disposition: str = "REVIEW_REMOVAL") -> dict:
+        inventory_id = self.review_candidate["id"]
+        replacement = [key for key in self.records if key.startswith("af.foundation.runtime/")]
+        for record_id in replacement:
+            self.records[record_id]["cleanupCandidateIds"] = sorted(
+                set(self.records[record_id].get("cleanupCandidateIds", [])) | {inventory_id})
+        self.records[self.rollback_id]["cleanupCandidateIds"] = sorted(
+            set(self.records[self.rollback_id].get("cleanupCandidateIds", [])) | {inventory_id})
         candidate = {
-            "file": self.ref("candidate.cs"), "moduleId": "af.foundation.runtime",
+            "inventoryCandidateId": inventory_id,
+            "file": self.ref(self.review_candidate["path"]), "moduleId": "af.foundation.runtime",
             "auditEvidenceId": self.cleanup_id, "disposition": disposition,
             "rationale": "FIXTURE ONLY: reviewed synthetic candidate.",
             "activeCallers": [], "dynamicEntryPoints": [], "saveIdentityRequired": False,
-            "replacementEvidenceIds": [key for key in self.records if key.startswith("af.foundation.runtime/")],
+            "replacementEvidenceIds": replacement,
+            "rollback": {"commit": "b" * 40, "evidenceId": self.rollback_id, "saveSideEffectsNotUndone": True},
         }
         self.document["cleanup"]["candidates"] = [candidate]
         return candidate
@@ -127,6 +156,8 @@ class ReadinessTests(unittest.TestCase):
         result = self.evaluate()
         self.assertEqual("FIXTURE-VALID", result["status"], result["blockingIssues"])
         self.assertEqual(49, result["acceptedEvidenceCount"])
+        self.assertEqual(20, len(result["domains"]))
+        self.assertTrue(all(item["layers"]["SAVE"] == "EVIDENCE-ACCEPTED" for item in result["domains"]))
         self.assertFalse(result["fullProjectReleaseReady"])
         self.assertFalse(any(result["authorization"].values()))
 
@@ -135,7 +166,27 @@ class ReadinessTests(unittest.TestCase):
         self.document.update(source={"commit": None, "files": []}, artifacts=[], cleanup={}, rollback={})
         result = self.blocked("MISSING_LIVE")
         self.assertEqual(8, len(result["modules"]))
+        self.assertEqual(20, len(result["domains"]))
         self.assertTrue(all(item["layers"]["SAVE"] == "BLOCKED" for item in result["modules"]))
+        self.assertTrue(all(item["layers"]["SAVE"] == "BLOCKED" for item in result["domains"]))
+
+    def test_all_twenty_domains_require_explicit_evidence_coverage(self) -> None:
+        missing = sorted(self.domains)[-1]
+        for record in self.records.values():
+            record["domainIds"].remove(missing)
+        self.blocked("MISSING_DOMAIN_OFFLINE")
+
+    def test_unknown_domain_id_is_rejected(self) -> None:
+        self.live()["domainIds"].append("unknown-domain")
+        result = self.evaluate()
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(any(issue["code"].startswith("EVIDENCE_") for issue in result["blockingIssues"]))
+
+    def test_domain_maintainer_review_is_required(self) -> None:
+        record = next(iter(self.records.values()))
+        maintainer = self.domains[record["domainIds"][0]]["maintainers"][0]
+        record["ownerReview"]["reviewers"].remove(maintainer)
+        self.blocked("EVIDENCE_0")
 
     def test_fixture_record_cannot_be_promoted_by_manifest_mode(self) -> None:
         self.document["mode"] = "real"
@@ -215,6 +266,10 @@ class ReadinessTests(unittest.TestCase):
         self.records["af.bridge.conversation-siege/LIVE/1.3"]["caseIds"].remove("safe-mode")
         self.blocked("BRIDGE_MATRIX")
 
+    def test_bridge_save_case_missing(self) -> None:
+        self.records["af.bridge.conversation-siege/SAVE/1.4"]["caseIds"].remove("safe-mode")
+        self.blocked("BRIDGE_MATRIX")
+
     def test_full_composition_coverage_not_just_bridge_cases(self) -> None:
         self.records["af.foundation.runtime/LIVE/1.4"]["caseIds"].remove("partial-start-failure")
         self.blocked("COMPOSITION_MATRIX")
@@ -282,6 +337,15 @@ class ReadinessTests(unittest.TestCase):
         candidate["moduleId"] = "af.module.conversation"
         self.blocked("CLEANUP_REVIEW")
 
+    def test_candidate_replacement_and_rollback_bind_exact_inventory_entry(self) -> None:
+        candidate = self.candidate()
+        replacement_id = candidate["replacementEvidenceIds"][0]
+        self.records[replacement_id]["cleanupCandidateIds"] = []
+        self.blocked("CLEANUP_REVIEW")
+        self.records[replacement_id]["cleanupCandidateIds"] = [candidate["inventoryCandidateId"]]
+        self.records[self.rollback_id]["cleanupCandidateIds"] = []
+        self.blocked("CLEANUP_REVIEW")
+
     def test_missing_cleanup_review_blocks_even_empty_candidates(self) -> None:
         self.document["cleanup"]["auditEvidenceId"] = None
         self.blocked("CLEANUP_REVIEW")
@@ -290,6 +354,9 @@ class ReadinessTests(unittest.TestCase):
         self.blocked("ROLLBACK", readiness.SourceState(COMMIT, True, False))
         self.document["rollback"]["saveSideEffectsNotUndone"] = False
         self.blocked("ROLLBACK")
+
+    def test_current_head_is_not_a_rollback_point(self) -> None:
+        self.blocked("ROLLBACK", readiness.SourceState(COMMIT, True, True, True))
 
     def test_rollback_record_must_bind_exact_target_commit(self) -> None:
         self.document["rollback"]["commit"] = "c" * 40
@@ -359,6 +426,33 @@ class ReadinessTests(unittest.TestCase):
         document["modules"][0]["id"] = 99
         self.write(readiness.CATALOG, json.dumps(document).encode())
         self.blocked("EXISTING_CONTRACTS")
+
+    def test_full_domain_and_cleanup_catalogs_are_strict(self) -> None:
+        document = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
+        document["domains"].pop()
+        self.write(readiness.DOMAIN_CATALOG, json.dumps(document).encode())
+        self.blocked("EXISTING_CONTRACTS")
+        shutil.copyfile(PROJECT / readiness.DOMAIN_CATALOG, self.root / readiness.DOMAIN_CATALOG)
+        cleanup = json.loads((self.root / readiness.CLEANUP_CATALOG).read_text(encoding="utf-8"))
+        cleanup["candidates"][0]["disposition"] = "DELETE_NOW"
+        self.write(readiness.CLEANUP_CATALOG, json.dumps(cleanup).encode())
+        self.blocked("EXISTING_CONTRACTS")
+
+    def test_domain_required_fields_fail_closed(self) -> None:
+        original = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
+        mutations = (
+            ("owner", ""), ("maintainers", []), ("entryPaths", []),
+            ("promptAction", {"prompt": "APPLICABLE"}),
+            ("persistence", {"responsibility": "missing key/type declarations"}),
+            ("failureFallback", ""), ("defaultState", "UNKNOWN"),
+            ("currentEvidence", {"offline": "VERIFY"}), ("blockingGates", []), ("bridgeIds", []),
+        )
+        for field, value in mutations:
+            with self.subTest(field=field):
+                document = copy.deepcopy(original)
+                document["domains"][0][field] = value
+                self.write(readiness.DOMAIN_CATALOG, json.dumps(document).encode())
+                self.blocked("EXISTING_CONTRACTS")
 
     def test_size_limit_rejects_oversized_json(self) -> None:
         with self.assertRaises(readiness.InvalidEvidence):
