@@ -6,7 +6,7 @@
 
 本文初版由当时的 Git、公共执行台账、owner matrix、领域 Gateway 边界和本机 handoff 交叉核对形成；2026-08-31 初版只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。后续本机接续以紧随其后的更新块、公共台账和最新 handoff 为准。
 
-> **2026-09-01 本机接续更新：**本文主体保留2026-08-31的全量任务基线；实时状态以公共台账和最新handoff为准。`LOCAL-7-C`已修复四runner依赖边界；`LOCAL-7-D/E/F/G/H/I/J/K/L`已完成Memory/Courier/Economy/weekly/Notoriety相关owner的代码与离线验证。`LOCAL-8-A`又以`b1c5a81a`+`1e341c43`+`f4a02018`把早期8-ID readiness补成完整20领域责任目录、16组full-domain Bridge、16项逐symbol清理/回滚盘点：20领域不是20个物理DLL，当前maintainer均为`ROLE_PLACEHOLDER`且real readiness在团队认领前保持BLOCKED；证据缺任一领域/owner/入口/Prompt-Action/save/fallback/default/gate或OFFLINE/LIVE/SAVE/RELEASE覆盖也保持BLOCKED；3项`REVIEW_REMOVAL`仍未获删除授权。阶段7继续VERIFY、阶段8准备态可继续，真实Campaign/Mission、live Economy/AFEF/Notoriety、旧档和默认切换未验收前，不能删除facade或执行default cutover。
+> **2026-09-01 本机接续更新：**本文主体保留2026-08-31的全量任务基线；实时状态以公共台账和最新handoff为准。`LOCAL-7-C`已修复四runner依赖边界；`LOCAL-7-D/E/F/G/H/I/J/K/L`已完成Memory/Courier/Economy/weekly/Notoriety相关owner的代码与离线验证。`LOCAL-8-A`实现链最终到`8bdd9363`：早期8-ID readiness现同时门禁canonical20领域责任桶、canonical16组PAIR/CROSS_CUT Bridge和18项逐symbol清理/回滚盘点。20领域不是20个物理DLL；maintainer仍为`ROLE_PLACEHOLDER`、入口仍为`REPRESENTATIVE`，团队未确认`ASSIGNED/COMPLETE`前real readiness保持BLOCKED；证据缺任一领域/Bridge或OFFLINE/LIVE/SAVE/RELEASE覆盖也BLOCKED；3项`REVIEW_REMOVAL`仍未获删除授权。阶段7继续VERIFY、阶段8准备态可继续，真实Campaign/Mission、live Economy/AFEF/Notoriety、旧档和默认切换未验收前，不能删除facade或执行default cutover。
 
 ## 一、现状
 
