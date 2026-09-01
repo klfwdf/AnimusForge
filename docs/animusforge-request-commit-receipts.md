@@ -223,6 +223,41 @@ action replay. Production 1.4 reflection replay covers ABI, missing Campaign, ma
 rebuild/load reconciliation, trace nonce and Scene provenance. Debug/Release 1.3/1.4/
 Bootstrap Stage all build with 0 warning / 0 error; this remains offline evidence.
 
+## Courier inbound durable completion (LOCAL-7-I)
+
+The inbound Courier uses a channel-owned `IInteractionMemoryBatchCommitter` wrapper.
+It computes the exact MyBehavior recovery ID and owner payload hash, freezes the
+normalized visible letter, and persists an `AFCI1` intent inside the existing
+`_af_courier_sessions_v1` session JSON **before** the inner memory owner starts.
+The receipt also binds session, direction, sender, current-player recipient and
+Courier party. It contains no raw commit ID, ActionPlan, Economy data, postprocess,
+executor or callback.
+
+The shared memory ledger exposes only internal prepare/status seams. Status lookup
+requires recovery ID, expected subject and expected owner payload hash, so an old
+Pending/Completed entry with the same commit ID but a different payload cannot ready
+the Courier receipt. `Pending` waits; payload-matched `Completed`, initial `Applied`
+or `Duplicate` moves the receipt to `Ready`. Courier then publishes an `Applied`
+tombstone, restores `LetterText`, sets `ReplyGenerated=true`, clears
+`ReplyGenerationStarted`, and calls the existing `ProcessSessionById` exactly as the
+original successful callback did.
+
+Load keeps any nonempty receipt from starting a second LLM. Delivery independently
+requires a valid Applied receipt and matching frozen letter. The runtime cursor
+handles at most one actionable receipt per Campaign tick; a long-pending entry cannot
+starve later receipts. Corrupt, Missing, Disabled, Quarantined, subject/payload/session
+mismatch, deterministic pre-owner rejection and commit-without-receipt all terminate
+that inbound Courier without delivering its generated letter and release the wait
+pause. Outbound `PostprocessConsumed` remains a separate Economy owner flag.
+
+The focused contract dynamically proves arm-before-inner ordering, inner throw,
+pending, Applied, Duplicate, payload conflict/mismatch, checksum, 32,768 Unicode
+characters and owner status identity. Production reflection covers actual session JSON,
+load gating, Applied crash-window repair, fail-closed session gates and one-per-tick
+rotation. This is still fixture/offline evidence; live Campaign save/load and Courier
+travel remain not run. The Applied receipt is removed with its terminal session; the
+absence of that session is the final owner state, not a reusable global tombstone.
+
 ## Limits and mandatory follow-up
 
 - The request/action guard remains bounded and process-local. The new durable ledger
@@ -243,9 +278,12 @@ Bootstrap Stage all build with 0 warning / 0 error; this remains offline evidenc
   compensate gameplay effects.
 - Unknown gameplay effects remain terminal and fact-free for the uncertain action;
   memory repair never compensates or repeats them.
-- An `afterCommit` failure is not resumed by the memory ledger. In particular, Courier
-  inbound can repair its history yet leave `ReplyGenerated`/session progression stuck.
-  A separate Courier-owned persistent completion receipt is the next required slice.
+- The memory ledger still does not resume arbitrary `afterCommit` callbacks. Courier
+  inbound is the one explicit channel-owned recovery implemented in I; other channels
+  need their own durable owner before any similar completion can be claimed.
+- Saves created after H but before I may contain pending memory without an `AFCI1`
+  Courier receipt. The original visible reply was never persisted, so I cannot safely
+  reconstruct it; those intermediate saves retain the legacy regeneration risk.
 
 Keep phase 7 at VERIFY and stage 8 destructive cleanup/default cutover blocked
 until actual Campaign/Mission, inventory/debt, AFEF and old-save acceptance.

@@ -41,20 +41,31 @@ reply 还通过现有 `TryPrepareCourierActionPostprocessForExternal` 捕获配�
   目标存活状态，再复用既有 Courier 领域动作入口。
 - Courier executor 关闭旧的重复历史写入，由共享 `InteractionResultCommitter`
   统一写入 user → assistant；动作领域自身产生的 AFEF/通知仍由原入口负责。
-- Inbound detached host 使用 `appendPlayerInput: false`，并在成功 commit 的主线程
-  回调中重新校验 session、方向和终止状态，再更新 `LetterText`、
-  `ReplyGenerated`/生成中标记并调用既有 `ProcessSessionById`。这只推进原有送达
-  状态机，不直接发放信件或写入新的存档事实；信件发放仍由
-  `DeliverInboundLetterToPlayer` 负责。
+- Inbound detached host 使用 `appendPlayerInput: false`。`LOCAL-7-I` 后由 inbound
+  专用 batch memory wrapper 在 MyBehavior owner 开始前，把 `AFCI1` completion
+  intent 写入既有 `_af_courier_sessions_v1` session JSON；receipt 绑定 owner
+  recovery payload hash、session/sender/current-player/party 和冻结 visible letter。
+  初次 owner 成功仍可在原主线程 callback 立即完成；memory pending、duplicate 或
+  callback 丢失则由 Courier tick 在 payload-matched Completed 后幂等补
+  `LetterText`、`ReplyGenerated`/生成中标记并调用既有 `ProcessSessionById`。
+  信件发放仍只由 `DeliverInboundLetterToPlayer` 负责。
+- load/delivery gate 会阻止带 Pending/Ready/坏 receipt 的 session 重开第二次 LLM
+  或交付未确认正文。每个 Campaign tick 最多处理一条 actionable receipt；坏 wire、
+  Missing/Disabled/Quarantined/PayloadMismatch、pre-owner rejection 或 commit 无 receipt
+  会终止该 inbound Courier 并释放等待暂停，不重放 Memory commit、ActionPlan、
+  Economy 或 postprocess。Outbound 的 `PostprocessConsumed` 不参与此 receipt。
 - ActionPlan 仍必须由 Courier 宿主在主线程做 allowlist、目标复核和执行，旁路
   结果不能直接视为已发生事实。
 
-该切片只在一次显式交互 capture 运行，不进入 Tick；当前 session 查找为一次
-边界字典读取，未增加轮询或后台全量扫描。
+默认 capture/generation 仍未切到 detached；正常 legacy Courier 不进入 receipt
+路径。只有存在未完成 `AFCI1` 的 opt-in session 才在节流后的 Campaign tick 轮转
+检查；已完成且仍在路上的信件使用 flags 快路，不反复解码大 receipt。
 
 ## 未完成与回滚
 
-契约 runner 已覆盖 host commit 回调、inbound seed 历史隔离、stale/rejected 隔离；
-真实 detached HTTP、Courier ActionPlan 完整游戏内执行、旧存档和游戏内验收仍未完成。
+契约 runner 已覆盖 host commit 回调、inbound seed 历史隔离、stale/rejected 隔离、
+arm-before-memory、inner throw、owner outcome、session JSON/load/Applied 恢复、
+fail-closed 和 one-per-tick；真实 detached HTTP、Courier ActionPlan 完整游戏内执行、
+旧存档和游戏内验收仍未完成。
 失败时回滚点是继续使用原 Courier reply/inbound generation 方法；未修改
 SyncData key/type、存档类型、程序集身份、送达时序、构建脚本或游戏目录。
