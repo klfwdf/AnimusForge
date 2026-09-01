@@ -1,14 +1,14 @@
 # 阶段 4：Persistence / Profile / Config 目录
 
-- 状态：ACTIVE（设计与纯 fixture）
+- 状态：VERIFY（目录、纯 fixture与 additive recovery journals已离线验证；真实旧档未验收）
 - 范围：现有存档 key/type、chunk、JSON/PlayerExports/AFEF、配置快照和 profile 边界
-- 本切片：不修改生产 C#、`SubModule.cs`、`.csproj`、构建/部署脚本、`SubModule.xml` 或游戏目录
+- 最新增量：`LOCAL-7-K` 新增一个 symbolic flattened weekly outcome journal；不修改既有 95 个 literal key/type、程序集身份、构建/部署脚本、`SubModule.xml` 或游戏目录
 
 ## 已核对事实
 
-- 当前独立工作树：`F:\AF测试重构`。
+- 当前 canonical 工作树：`G:\AFMOD\AF-REFACTOR`；下文 `F:\AF测试重构` 只属于历史证据来源。
 - 旧存档兼容仍是硬目标；`AnimusForge` 程序集身份、CampaignBehavior 类型和已有 `SyncData` key 不得因目录重构改变。
-- 生产源码中已提取 95 个唯一字面量 `SyncData("...")` key，并确认 40 个源码文件包含符号形式的 `SyncData`/常量 key；chunk key 和 JSON 字典存储仍必须在后续切片补齐。
+- 生产源码中已提取 95 个唯一字面量 `SyncData("...")` key；当前 catalog 对账为 42 个 symbolic source、13 个 chunked string base key、40 个 flattened dictionary base key。
 - 已建立 `docs/fixtures/phase4-persistence-profile-config/persistence-namespace-migration-catalog.json`：9 个逻辑 namespace、schema/lifecycle/owner、legacy key prefix 和 legacy-first 幂等迁移策略；这仍是目录契约，不代表运行时已迁移。
 - 关键存档入口是 `MyBehavior.SyncData`、`CampaignSaveChunkHelper`、各领域 `CampaignBehavior.SyncData`；不能把 `MyBehavior` 整体搬迁。
 - `AnimusForge/ModuleData` 与 `AnimusForge/CustomPrompts` 是静态内容候选；`PlayerExports`、日志、缓存和生成物必须分别分类，不能当作静态覆盖文件。
@@ -73,3 +73,18 @@
 `tools/PersistenceIdentityAudit.py` 对比当前工作树与基线 `d4cb1467376c6e923f4295dcefc7878c11dbc7c1`：`SyncData` 绑定 `99/99`，CampaignBehavior 类型 `35/35`，无 added/removed key/type 或行为类型；`AnimusForge/SubModule.xml` 仍只加载 `AnimusForge.Bootstrap.dll`，主模块 Id/Name 仍为 `AnimusForge`。
 
 该结果证明源码和发布身份边界未漂移，不等同于真实旧存档加载通过；真实 SaveSystem/旧存档/SafeMode runtime 仍为 `NOT-RUN`。
+
+## 2026-09-01 增量验证：weekly exact-outcome journal
+
+`LOCAL-7-K` 增加 symbolic `_af_weeklyActionOutcomeReceipts_v1`，物理绑定仍为
+`Dictionary<string,string>`，经既有 flatten/restore helper进入单独 `AFWM1` receipt ledger。
+它不改变 95 个 literal `SyncData` key、H `_af_interactionMemoryRecovery_v1` wire 或 Courier
+`AFCI1`。缺失 key按空 journal读取；损坏 journal保留原始 flattened 数据并禁用 owner，保存时
+不会用空 ledger覆盖。Prepared load终止为 Unknown，只有 Confirmed可重试 data-only attach。
+
+当前严格对账结果：`literalKeys=95`、`symbolicSources=42`、`chunkedStringKeys=13`、
+`flattenedDictionaryKeys=40`、`typedBindings=121`、`typedBindingKeys=95`、`types=8`；
+legacy-first cases=10，missing weekly journal与 corrupt raw retention均有纯 fixture。Identity仍为
+99 SyncData / 35 CampaignBehavior，因为该审计只追踪 literal binding/行为身份，不能拿来证明
+新 symbolic journal本身的 live SaveSystem兼容。真实旧档、保存后重载、坏 journal游戏内隔离和
+live weekly Daily attach仍为 `NOT-RUN`。
