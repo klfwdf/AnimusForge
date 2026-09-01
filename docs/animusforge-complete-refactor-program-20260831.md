@@ -6,6 +6,8 @@
 
 本文由当前 Git、公共执行台账、owner matrix、领域 Gateway 边界和最近本机 handoff 交叉核对形成。本轮只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。下述测试 PASS 是上轮已记录的证据。
 
+> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界，所以下文“F 盘硬编码/依赖缺失”只保留为历史问题；`LOCAL-7-D/E/F/G` 已分别完成 Memory owner readback、Courier Economy reservation、known partial 与 structured `UnknownAfterStart` 的代码/离线验证。最新源码提交为 `d765270a`，阶段 7 仍 VERIFY，下一切片为只补 memory/AFEF、绝不重放 ActionPlan 的 `LOCAL-7-H`。真实 Campaign/Mission、live Economy/AFEF、旧档和默认切换仍未验收。
+
 ## 一、现状
 
 - 当前主阶段：**阶段 7，领域模块接入与验证；阶段 8 的 Bridge、旧结构清理与最终验收仍未完成。**
