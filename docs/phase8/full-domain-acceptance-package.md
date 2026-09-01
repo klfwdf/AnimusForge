@@ -191,6 +191,7 @@ python -B .\tools\PhaseEightReadiness\readiness.py `
 
 ## 下一安全切片
 
-优先执行 `LOCAL-7-M`：只读审计并最小建立 Duel typed owner/outcome/readback，先证明 stakes、
-Mission result、death/cancel/exit 与 Memory fact 的真实顺序。没有明确 owner readback 时保持
-`NOT-RECOVERABLE`，不得从标签、legacy callback 或 Mission 结束推测成功。
+`LOCAL-7-M1` 已建立 Duel actual-session typed owner/outcome/readback；下一安全切片为
+`LOCAL-7-M2`：只把真实 detached request/trace/channel/session/action fingerprint 绑定到同一
+queued/started `DuelId`。M1 的 `Domain / legacy-unbound` receipt 仍为 `NOT-RECOVERABLE`，不得从
+标签、legacy callback、Mission 结束或 subject latest readback 推测某个 ActionPlan 成功。

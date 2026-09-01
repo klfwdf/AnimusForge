@@ -384,6 +384,55 @@ guards verify embedded storage, duplicate-before-roll ordering, exact finalize o
 load reconciliation, old ABI and H/K isolation. These are not evidence for live MBRandom,
 real ConversationEnded ordering, `IDataStore` atomicity, process crashes or old saves.
 
+## Duel actual-session outcome owner (LOCAL-7-M1)
+
+The legacy Duel action is asynchronous: consuming `[ACTION:DUEL]` can reject,
+queue, start, abort, or settle later in one of three Mission paths. Therefore the
+detached ActionPlan executor no longer promotes a returned legacy callback to
+gameplay success. A delegated Duel returns terminal `UnknownAfterStart` with
+`duel.outcome_pending`; any already confirmed Economy subset remains attached,
+but no Duel fact is synthesized and the host must not fallback or replay it.
+
+`DuelOutcomeOwner` is a pure, bounded process-local ledger. It binds opaque
+request/start/result identities, subject, runtime/save generation, channel/session
+tokens, Duel session kind and an action/artifact fingerprint. The live legacy route
+uses explicitly labelled `Domain / legacy-unbound` provenance because it still lacks
+the detached request ID; this is an actual-session receipt, not proof that a specific
+ActionPlan request caused the Duel. The host retains exact DuelId readback plus a
+bounded latest-by-subject index. At 512 retained terminal receipts, it rolls to a new
+owner only when there are zero active sessions; host-generated serial+nonce DuelIds
+are never reused within the process.
+
+Meeting, arena/local and wilderness actual-start paths now call the typed owner. For a
+successfully bound session, each writer records `ResultIdentity` immediately after
+its local one-shot result guard, before Memory, renown, stake, death or UI, then
+finalizes one receipt with explicit component states:
+`NotApplicable`, `Confirmed`, `Partial`, `AttemptedUnconfirmed` or `Unknown`.
+Renown confirmation uses direct loser/winner readback. Stake uses actual transfer
+counts or debt-owner success; swallowed/partial operations are never promoted.
+Legacy Memory/AFEF and delayed death remain attempted-unconfirmed. An exception after
+the result lock moves the same receipt to `UnknownAfterStart` while retaining the
+known result; it never retries the Mission or any non-idempotent side effect.
+
+Pending stake, deferred-debt and after-line artifacts are replaced per exact Duel
+reply, fingerprinted, bound once to the actual-start DuelId and consumed only by that
+DuelId. Rejected/open/team/queue failures clear unbound artifacts; completed or
+unknown sessions clear matching bound leftovers. Plain wager language without the
+same reply's exact `[ACTION:DUEL]` tag cannot arm a future Duel.
+
+No Duel receipt is serialized. `_duelCooldowns : Dictionary<string,float>`, legacy
+public void methods, Saveable type IDs, MCM JSON and Fourberie optional seams remain
+unchanged. `SyncData` load may only mark currently referenced process-local sessions
+Unknown and clear those references; load/tick never starts/finalizes a Mission,
+transfers assets, kills a Hero or writes Memory. Fresh 1.3/1.4 production IL replay
+verifies these routes and ABI, but does not replace live Campaign/Mission, old-save,
+Fourberie, death, Economy or AFEF evidence.
+
+If process-local reservation fails, legacy gameplay is not reported as typed success:
+unbound artifacts are discarded and exact/latest readback stays absent. The current
+opt-in sidecar does not cancel an already opening Mission solely because observation
+reservation failed; this fail-closed edge still requires live fault validation.
+
 ## Limits and mandatory follow-up
 
 - The generic request/action guard remains bounded and process-local. H's durable ledger

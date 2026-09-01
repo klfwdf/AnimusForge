@@ -694,6 +694,8 @@
       ],
       "entryPaths": [
         "DuelBehavior.cs",
+        "DuelBehavior.Outcomes.cs",
+        "Refactor/Runtime/DuelOutcomeReceipt.cs",
         "DuelSettings.cs",
         "FourberieDuelCompatibility.cs"
       ],
@@ -702,7 +704,7 @@
         "actionPlan": "APPLICABLE"
       },
       "persistence": {
-        "responsibility": "Duel cooldown/result and legacy MCM identity stay with Duel owners.",
+        "responsibility": "Only legacy cooldown data is persisted; typed Duel outcome/readback is bounded process-local and never replays effects on load.",
         "keys": [
           "_duelCooldowns"
         ],
@@ -710,7 +712,7 @@
           "dictionary-string-float"
         ]
       },
-      "failureFallback": "Invalid target/scene/stake aborts and preserves ordinary combat.",
+      "failureFallback": "Detached legacy Duel dispatch is permanently terminal UnknownAfterStart and is never upgraded by the independent actual-session readback; invalid target/scene/stake fails closed without action fallback or cross-Duel artifacts.",
       "defaultState": "LEGACY_DEFAULT",
       "currentEvidence": {
         "offline": "VERIFY",
@@ -723,7 +725,7 @@
         "Live accept/reject/cancel/death/exit",
         "Stake/result/save",
         "Fourberie",
-        "Typed Duel outcome"
+        "Exact detached request-to-Duel provenance"
       ],
       "bridgeIds": [
         "scene-duel",
