@@ -462,6 +462,60 @@ AssertTrue(
         && batchMemory.Commits[0].ConfirmedFacts.Count == 1,
     "batch memory commit did not preserve user/assistant/facts or suppress a duplicate");
 
+var sceneProvenanceMemory = new RecordingBatchMemory();
+var sceneProvenanceSnapshot = new GameInteractionSnapshot(
+    new InteractionIdentity("scene-provenance-session", InteractionChannel.SceneShout, "hero-2"),
+    new TraceContext("scene-provenance-trace", 4, 9, "single-player", "1.4"),
+    "scene provenance", "town-square", 17, 21,
+    new[] { new InteractionCandidate("hero-2", "Scene Target", 37, true) },
+    new[] { "hero-2" },
+    new Dictionary<string, string>
+    {
+        ["scene_session_id"] = "73",
+        ["target_agent_index"] = "37"
+    });
+InteractionCommitResult sceneProvenanceCommit = batchCommitter.Commit(
+    new InteractionEnvelope(sceneProvenanceSnapshot, Array.Empty<PromptMessage>()),
+    new InteractionResult(InteractionStatus.Succeeded, "scene reply",
+        new ActionPlan(Array.Empty<ActionRequest>(), ""), Array.Empty<FactRecord>(), ""),
+    null,
+    sceneProvenanceMemory);
+InteractionMemoryCommit sceneMemoryCommit = sceneProvenanceMemory.Commits.Single();
+AssertTrue(
+    sceneProvenanceCommit.Status == InteractionStatus.Succeeded
+        && sceneMemoryCommit.RuntimeGeneration == 4
+        && sceneMemoryCommit.SaveGeneration == 9
+        && sceneMemoryCommit.TraceId == "scene-provenance-trace"
+        && sceneMemoryCommit.GameDay == 17
+        && sceneMemoryCommit.GameHour == 21
+        && sceneMemoryCommit.LocationId == "town-square"
+        && sceneMemoryCommit.SceneSessionId == 73
+        && sceneMemoryCommit.TargetAgentIndex == 37
+        && sceneMemoryCommit.TargetName == "Scene Target",
+    "batch memory commit did not freeze SceneShout provenance");
+
+var courierProvenanceMemory = new RecordingBatchMemory();
+var courierProvenanceSnapshot = new GameInteractionSnapshot(
+    new InteractionIdentity("courier-provenance-session", InteractionChannel.Courier, "hero-2"),
+    new TraceContext("courier-provenance-trace", 4, 9, "single-player", "1.4"),
+    "courier provenance", "courier-route", 18, 6,
+    Array.Empty<InteractionCandidate>(), new[] { "hero-2" },
+    new Dictionary<string, string> { ["courier_direction"] = "outbound_reply" });
+InteractionCommitResult courierProvenanceCommit = batchCommitter.Commit(
+    new InteractionEnvelope(courierProvenanceSnapshot, Array.Empty<PromptMessage>()),
+    new InteractionResult(InteractionStatus.Succeeded, "courier reply",
+        new ActionPlan(Array.Empty<ActionRequest>(), ""), Array.Empty<FactRecord>(), ""),
+    null,
+    courierProvenanceMemory);
+InteractionMemoryCommit courierMemoryCommit = courierProvenanceMemory.Commits.Single();
+AssertTrue(
+    courierProvenanceCommit.Status == InteractionStatus.Succeeded
+        && courierMemoryCommit.SceneSessionId == -1
+        && courierMemoryCommit.TargetAgentIndex == -1
+        && string.IsNullOrEmpty(courierMemoryCommit.TargetName)
+        && courierMemoryCommit.LocationId == "courier-route",
+    "batch memory commit invented Scene/native provenance for Courier");
+
 var inboundSeedBatchMemory = new RecordingBatchMemory();
 InteractionCommitResult inboundSeedCommit = batchCommitter.Commit(
     new InteractionEnvelope(WithTrace(snapshot, "inbound-batch-request"), Array.Empty<PromptMessage>()),

@@ -271,7 +271,16 @@ public sealed class InteractionResultCommitter
                 envelope.Snapshot.Identity.SubjectId,
                 userText,
                 assistantText,
-                facts));
+                facts,
+                envelope.Snapshot.Trace.RuntimeGeneration,
+                envelope.Snapshot.Trace.SaveGeneration,
+                envelope.Snapshot.Trace.TraceId,
+                envelope.Snapshot.GameDay,
+                envelope.Snapshot.GameHour,
+                envelope.Snapshot.LocationId,
+                ReadDetachedInt(envelope.Snapshot, "scene_session_id"),
+                ReadDetachedInt(envelope.Snapshot, "target_agent_index"),
+                ResolveTargetName(envelope.Snapshot)));
         }
 
         if (!string.IsNullOrWhiteSpace(userText))
@@ -289,6 +298,34 @@ public sealed class InteractionResultCommitter
                 facts ?? Array.Empty<FactRecord>());
         }
         return new MemoryCommitResult(MemoryCommitStatus.Applied);
+    }
+
+    private static int ReadDetachedInt(GameInteractionSnapshot snapshot, string key)
+    {
+        if (snapshot != null && snapshot.DetachedFacts.TryGetValue(key, out string value)
+            && int.TryParse(value, out int parsed))
+        {
+            return Math.Max(-1, parsed);
+        }
+        return -1;
+    }
+
+    private static string ResolveTargetName(GameInteractionSnapshot snapshot)
+    {
+        if (snapshot == null)
+        {
+            return string.Empty;
+        }
+        if (snapshot.DetachedFacts.TryGetValue("target_name", out string targetName)
+            && !string.IsNullOrWhiteSpace(targetName))
+        {
+            return targetName.Trim();
+        }
+        int targetAgentIndex = ReadDetachedInt(snapshot, "target_agent_index");
+        InteractionCandidate candidate = snapshot.Candidates.FirstOrDefault(item => item != null
+            && (item.AgentIndex == targetAgentIndex
+                || string.Equals(item.StableId, snapshot.Identity.SubjectId, StringComparison.OrdinalIgnoreCase)));
+        return candidate?.DisplayName?.Trim() ?? string.Empty;
     }
 
     private static string BuildRequestId(InteractionEnvelope envelope)

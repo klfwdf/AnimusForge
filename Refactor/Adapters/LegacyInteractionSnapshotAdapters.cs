@@ -21,6 +21,7 @@ public static class LegacyInteractionSnapshotAdapters
 {
     private static long _sessionSequence;
     private static long _configurationSequence;
+    private static readonly string ProcessTraceNonce = Guid.NewGuid().ToString("N");
     private static readonly object RuntimeConfigurationStoreLock = new object();
     private static RuntimeConfigSnapshotStore _runtimeConfigurationStore;
 
@@ -533,7 +534,7 @@ public static class LegacyInteractionSnapshotAdapters
 #endif
         long generation = SaveRuntimeGuard.CurrentGeneration;
         TraceContext trace = new TraceContext(
-            "af-trace-" + normalizedSessionId,
+            "af-trace-" + ProcessTraceNonce + "-" + normalizedSessionId,
             generation,
             generation,
             "default",
@@ -720,21 +721,10 @@ public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMem
         {
             return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_not_main_thread");
         }
-        if (MemoryCommitReceiptCache.Contains(commit.CommitId))
-        {
-            return new MemoryCommitResult(MemoryCommitStatus.Duplicate);
-        }
-
-        string facts = string.Join("\n", (commit.ConfirmedFacts ?? Array.Empty<FactRecord>())
-            .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
-            .Select(x => x.Text.Trim()));
-        string userText = EmptyToNull(commit.UserText);
-        string assistantText = EmptyToNull(commit.AssistantText);
         try
         {
-            MemoryCommitResult result = MyBehavior.CommitExternalDialogueHistory(
-                expectedSubjectId, string.IsNullOrWhiteSpace(_heroId), _nonHeroName,
-                userText, assistantText, EmptyToNull(facts));
+            MemoryCommitResult result = MyBehavior.CommitExternalDialogueHistoryRecoverable(
+                commit, string.IsNullOrWhiteSpace(_heroId), _nonHeroName);
             if (result.HistoryWritten)
             {
                 MemoryCommitReceiptCache.TryAccept(commit.CommitId);
