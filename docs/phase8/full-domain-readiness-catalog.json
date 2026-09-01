@@ -42,7 +42,8 @@
         "bootstrap-host",
         "tools-content-release"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 2,
@@ -83,7 +84,8 @@
         "bootstrap-host",
         "host-runtime"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 3,
@@ -126,7 +128,8 @@
         "runtime-game-adapter",
         "ui-runtime-integration"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 4,
@@ -167,7 +170,8 @@
       "bridgeIds": [
         "runtime-game-adapter"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 5,
@@ -218,7 +222,8 @@
       "bridgeIds": [
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 6,
@@ -268,7 +273,8 @@
         "conversation-siege",
         "conversation-courier"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 7,
@@ -312,7 +318,8 @@
         "conversation-gateway",
         "gateway-knowledge-profile"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 8,
@@ -359,7 +366,8 @@
         "action-memory",
         "action-economy"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 9,
@@ -410,7 +418,8 @@
         "persistence-domain-owners",
         "memory-social-reports"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 10,
@@ -462,7 +471,8 @@
         "action-economy",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 11,
@@ -510,7 +520,8 @@
         "policy-world-diplomacy",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 12,
@@ -524,7 +535,10 @@
       "entryPaths": [
         "WorldDiplomacyBehavior.cs",
         "WorldMapPartyCommandBehavior.cs",
-        "VassalageBehavior.cs"
+        "VassalageBehavior.cs",
+        "DiplomacyBehavior.cs",
+        "KingdomAnnexationBehavior.cs",
+        "NpcTributeVassalageBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -560,7 +574,8 @@
         "policy-world-diplomacy",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 13,
@@ -574,7 +589,10 @@
       "entryPaths": [
         "SiegeAiInterventionBehavior.cs",
         "AnimusForge.SiegeAftermathIntervention/SiegeInterventionEntryProfile.cs",
-        "GcczSettlementCulturePersistenceBehavior.cs"
+        "GcczSettlementCulturePersistenceBehavior.cs",
+        "VillageAftermathBehavior.cs",
+        "SettlementEntryTroopSelectionBehavior.cs",
+        "CastleAftermathRuntimeBridge.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -610,7 +628,8 @@
         "conversation-siege",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 14,
@@ -624,7 +643,10 @@
       "entryPaths": [
         "SceneTauntBehavior.cs",
         "MilitaryExerciseBehavior.cs",
-        "MeetingBattleLockMissionBehavior.cs"
+        "MeetingBattleLockMissionBehavior.cs",
+        "TroopInspectionBehavior.cs",
+        "NoblePrisonerEscortBehavior.cs",
+        "NoblePrisonerExecutionOrderBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -659,7 +681,8 @@
         "scene-duel",
         "ui-runtime-integration"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 15,
@@ -706,7 +729,8 @@
         "scene-duel",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 16,
@@ -721,7 +745,9 @@
       "entryPaths": [
         "CourierDeliveryBehavior.cs",
         "ProactiveNpcRequestBehavior.cs",
-        "VanillaIssueOfferBridge.cs"
+        "VanillaIssueOfferBridge.cs",
+        "CompanionProactiveChatBehavior.cs",
+        "VanillaIssuePromptBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -742,8 +768,8 @@
       "failureFallback": "Courier stale/duplicates stop; invalid Issue paths return to vanilla.",
       "defaultState": "MIXED_DEFAULT",
       "currentEvidence": {
-        "offline": "LOCAL_PASS",
-        "compiled": "LOCAL_PASS",
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
         "live": "NOT_RUN",
         "save": "NOT_RUN",
         "release": "BLOCKED"
@@ -758,7 +784,8 @@
         "conversation-courier",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 17,
@@ -772,7 +799,10 @@
       "entryPaths": [
         "PlayerNotorietyBehavior.cs",
         "NobleGatheringBehavior.cs",
-        "AnimusForgeUniqueCosmeticItemBehavior.cs"
+        "AnimusForgeUniqueCosmeticItemBehavior.cs",
+        "RomanceSystemBehavior.cs",
+        "SexualConceptionBehavior.cs",
+        "MyBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -794,8 +824,8 @@
       "failureFallback": "Unknown receipts never reroll; migrations/cooldowns fail closed.",
       "defaultState": "LEGACY_DEFAULT",
       "currentEvidence": {
-        "offline": "LOCAL_PASS",
-        "compiled": "LOCAL_PASS",
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
         "live": "NOT_RUN",
         "save": "NOT_RUN",
         "release": "BLOCKED"
@@ -810,7 +840,8 @@
         "memory-social-reports",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 18,
@@ -862,7 +893,8 @@
         "gateway-knowledge-profile",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 19,
@@ -876,7 +908,8 @@
       "entryPaths": [
         "AnimusForgeNativeConversationOverlay.cs",
         "TtsEngine.cs",
-        "extensions/AnimusForge.XihaiAction/src/SubModule.cs"
+        "SubModule.cs",
+        "SceneActionsIntegrationBoundary.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -911,7 +944,8 @@
         "ui-runtime-integration",
         "tools-content-release"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 20,
@@ -945,8 +979,8 @@
       "failureFallback": "Tools fail closed and never deploy or execute evidence implicitly.",
       "defaultState": "TOOL_ONLY",
       "currentEvidence": {
-        "offline": "LOCAL_PASS",
-        "compiled": "LOCAL_PASS",
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
         "live": "NOT_RUN",
         "save": "NOT_RUN",
         "release": "BLOCKED"
@@ -960,7 +994,8 @@
       "bridgeIds": [
         "tools-content-release"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER"
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE"
     }
   ],
   "bridges": [
@@ -988,7 +1023,8 @@
       ],
       "blockingGates": [
         "Real dual-API Host"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "host-runtime",
@@ -1014,7 +1050,8 @@
       ],
       "blockingGates": [
         "Live lifecycle isolation"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "runtime-game-adapter",
@@ -1040,7 +1077,8 @@
       ],
       "blockingGates": [
         "Real reflection/Harmony"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "persistence-domain-owners",
@@ -1057,25 +1095,26 @@
         "knowledge-persona-profile"
       ],
       "owner": "Foundation.Persistence",
-      "implementationState": "ACTIVE_BOUNDARY",
+      "implementationState": "DESIGN_INVENTORY",
       "entryPaths": [
         "CampaignSaveChunkHelper.cs",
-        "docs/fixtures/phase4-persistence-profile-config/syncdata-binding-catalog.json"
+        "MyBehavior.cs",
+        "RewardSystemBehavior.cs"
       ],
       "requiredCases": [
-        "A_ONLY",
-        "B_ONLY",
-        "A_PLUS_B_NO_BRIDGE",
-        "A_PLUS_B_WITH_BRIDGE",
-        "BRIDGE_DISABLED",
-        "BRIDGE_FAILURE",
+        "EACH_OWNER_ALONE",
+        "ALL_WITHOUT_COORDINATOR",
+        "ALL_WITH_COORDINATOR",
+        "COORDINATOR_DISABLED",
+        "COORDINATOR_FAILURE",
         "OLD_SAVE",
         "ROUND_TRIP",
         "CORRUPT_DATA"
       ],
       "blockingGates": [
         "Real old-save round-trip"
-      ]
+      ],
+      "topology": "CROSS_CUT"
     },
     {
       "id": "conversation-gateway",
@@ -1102,7 +1141,8 @@
       ],
       "blockingGates": [
         "Real provider/three channels"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "conversation-action",
@@ -1129,7 +1169,8 @@
       "blockingGates": [
         "Default cutover",
         "Real non-Economy effects"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "action-memory",
@@ -1155,7 +1196,8 @@
       ],
       "blockingGates": [
         "Real AFEF/save reload"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "action-economy",
@@ -1181,7 +1223,8 @@
       ],
       "blockingGates": [
         "Live Hero/Party/Merchant/debt"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "policy-world-diplomacy",
@@ -1190,10 +1233,11 @@
         "world-simulation-worldmap"
       ],
       "owner": "Policy.WorldDiplomacy",
-      "implementationState": "DESIGN_ONLY",
+      "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "PolicySystem/Core/CustomPolicyBehavior.cs",
-        "WorldDiplomacyBehavior.cs"
+        "WorldDiplomacyBehavior.cs",
+        "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1207,7 +1251,8 @@
       ],
       "blockingGates": [
         "Co-owner live/save review"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "conversation-siege",
@@ -1216,7 +1261,7 @@
         "settlement-siege-gccz-sets"
       ],
       "owner": "Conversation.SettlementSiege",
-      "implementationState": "DESIGN_ONLY",
+      "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "AfGcczShoutBridge.cs",
         "SiegeAiInterventionBehavior.cs"
@@ -1234,7 +1279,8 @@
       "blockingGates": [
         "Co-owner live/save review",
         "Ordinary-scene isolation"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "scene-duel",
@@ -1260,7 +1306,8 @@
       ],
       "blockingGates": [
         "Real Mission combinations"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "conversation-courier",
@@ -1286,7 +1333,8 @@
       ],
       "blockingGates": [
         "Real Courier save lifecycle"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "memory-social-reports",
@@ -1312,7 +1360,8 @@
       ],
       "blockingGates": [
         "Real weekly/notoriety sequencing"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "gateway-knowledge-profile",
@@ -1338,7 +1387,8 @@
       ],
       "blockingGates": [
         "Real model/index/authority"
-      ]
+      ],
+      "topology": "PAIR"
     },
     {
       "id": "ui-runtime-integration",
@@ -1354,18 +1404,18 @@
         "TtsEngine.cs"
       ],
       "requiredCases": [
-        "A_ONLY",
-        "B_ONLY",
-        "A_PLUS_B_NO_BRIDGE",
-        "A_PLUS_B_WITH_BRIDGE",
-        "BRIDGE_DISABLED",
-        "BRIDGE_FAILURE",
+        "EACH_OWNER_ALONE",
+        "ALL_WITHOUT_COORDINATOR",
+        "ALL_WITH_COORDINATOR",
+        "COORDINATOR_DISABLED",
+        "COORDINATOR_FAILURE",
         "FOCUS_CLOSE",
         "OPTIONAL_DEPENDENCY_MISSING"
       ],
       "blockingGates": [
         "Live Gauntlet/TTS/extension"
-      ]
+      ],
+      "topology": "CROSS_CUT"
     },
     {
       "id": "tools-content-release",
@@ -1381,18 +1431,18 @@
         "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
       ],
       "requiredCases": [
-        "A_ONLY",
-        "B_ONLY",
-        "A_PLUS_B_NO_BRIDGE",
-        "A_PLUS_B_WITH_BRIDGE",
-        "BRIDGE_DISABLED",
-        "BRIDGE_FAILURE",
+        "EACH_OWNER_ALONE",
+        "ALL_WITHOUT_COORDINATOR",
+        "ALL_WITH_COORDINATOR",
+        "COORDINATOR_DISABLED",
+        "COORDINATOR_FAILURE",
         "PACKAGE_ALLOWLIST",
         "ROLLBACK_DRILL"
       ],
       "blockingGates": [
         "Final package/install/resource evidence"
-      ]
+      ],
+      "topology": "CROSS_CUT"
     }
   ]
 }

@@ -137,36 +137,6 @@
       "risk": "Removal can make old policy JSON unreadable."
     },
     {
-      "id": "duel-mcm-compatibility-properties",
-      "path": "DuelSettings.cs",
-      "symbols": [
-        "Obsolete MCM properties",
-        "NpcRulerPolicyIntervalHours"
-      ],
-      "ownerDomainId": "duel",
-      "disposition": "KEEP",
-      "rationale": "MCM/legacy JSON use reflection beyond static callers.",
-      "activeCallers": [
-        "migration getters"
-      ],
-      "dynamicEntryPoints": [
-        "AttributeGlobalSettings reflection"
-      ],
-      "compatibilityResponsibilities": [
-        "public config ABI",
-        "legacy JSON"
-      ],
-      "replacement": [],
-      "deletePreconditions": [
-        "Dual-version MCM round-trip"
-      ],
-      "rollback": {
-        "strategy": "git-revert-after-reviewed-removal",
-        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
-      },
-      "risk": "Static zero-caller analysis is insufficient."
-    },
-    {
       "id": "xihai-equipment-cleanup-tombstone",
       "path": "AnimusForgeUniqueCosmeticItemBehavior.cs",
       "symbols": [
@@ -456,7 +426,7 @@
       "id": "gccz-town-manual-mcm-bridge",
       "path": "GcczTownManualMcmBridge.cs",
       "symbols": [
-        "GcczTownManualMcmBridge"
+        "DuelSettings.OpenGcczTownManual"
       ],
       "ownerDomainId": "settlement-siege-gccz-sets",
       "disposition": "KEEP",
@@ -480,6 +450,95 @@
         "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
       },
       "risk": "Static caller scans miss reflected MCM entries."
+    },
+    {
+      "id": "player-policy-mcm-compatibility-properties",
+      "path": "DuelSettings.cs",
+      "symbols": [
+        "CustomPolicyInfluenceCost"
+      ],
+      "ownerDomainId": "policy-political",
+      "disposition": "KEEP",
+      "rationale": "Legacy player-policy MCM/JSON property retained for compatibility.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [
+        "AttributeGlobalSettings reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "public config ABI",
+        "legacy JSON"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Dual-version MCM round-trip"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removing the property can break existing MCM JSON deserialization."
+    },
+    {
+      "id": "npc-policy-mcm-compatibility-properties",
+      "path": "DuelSettings.cs",
+      "symbols": [
+        "NpcRulerPolicyMaxKingdomsPerRequest",
+        "NpcRulerPolicyIntervalHours"
+      ],
+      "ownerDomainId": "policy-political",
+      "disposition": "KEEP",
+      "rationale": "Legacy NPC-policy MCM/JSON properties include an active migration read.",
+      "activeCallers": [
+        "DuelSettings.GetNpcRulerPolicyIntervalDaysForExternal"
+      ],
+      "dynamicEntryPoints": [
+        "AttributeGlobalSettings reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "public config ABI",
+        "legacy JSON"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Dual-version MCM round-trip"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removing the properties can lose legacy interval configuration."
+    },
+    {
+      "id": "world-diplomacy-mcm-compatibility-properties",
+      "path": "DuelSettings.cs",
+      "symbols": [
+        "WorldDiplomacyPropagationSpeedPercent",
+        "EnableWorldDiplomacyForcedWar",
+        "WorldDiplomacyWarPressureThreshold",
+        "WorldDiplomacyPeacePressureThreshold",
+        "WorldDiplomacyNativeIntentInfluencePercent",
+        "WorldDiplomacyDocumentInfluencePercent"
+      ],
+      "ownerDomainId": "world-simulation-worldmap",
+      "disposition": "KEEP",
+      "rationale": "Legacy World Diplomacy MCM/JSON properties remain reflection-visible.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [
+        "AttributeGlobalSettings reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "public config ABI",
+        "legacy JSON"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Dual-version MCM round-trip"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removing the properties can break existing settings files or external consumers."
     }
   ]
 }

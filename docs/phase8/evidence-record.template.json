@@ -6,6 +6,7 @@
   "domainIds": [
     "conversation-encounter"
   ],
+  "bridgeIds": [],
   "cleanupCandidateIds": [],
   "layer": "LIVE",
   "kind": "game-scenario",
