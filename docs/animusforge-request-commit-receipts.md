@@ -43,8 +43,8 @@ payload size; there is no new tick work, scan, background queue or save state.
 ## Validation
 
 Run `tools/InteractionPipelineContractTests/InteractionPipelineContractTests.csproj`
-for the existing 40 cases, 48 Host callback cases, 4 old Native callback-failure
-cases, and 38 request-receipt cases. The receipt cases include fresh traces and
+for the existing 40 cases, 69 Host callback cases, 4 old Native callback-failure
+cases, and 39 request-receipt cases. The receipt cases include fresh traces and
 generations, changed payload/append/facts, memory and executor failures,
 non-batch memory, Courier directions, reentry, recreated Hosts and capacity.
 
@@ -125,15 +125,61 @@ without invoking Economy or memory again. Detached Host does not run
 started.
 
 This is recovery of truthful evidence, not compensation or success synthesis.
-An action helper or domain callback can still mutate and then throw before
-incrementing `AppliedCount`; that is `UnknownAfterStart`, not a known partial.
-This slice does not infer facts for it or make the 512-entry request cache
-durable across eviction, restart or save load.
+An action helper or domain callback that may mutate and then throw before
+incrementing `AppliedCount` is handled by the following `LOCAL-7-G` contract;
+known partials still do not make the 512-entry request cache durable across
+eviction, restart or save load.
 
 `tools/ProductionOptInEntryReplayTests` includes the production-DLL missing-Campaign
 regression (all three channels and repeated attempts), a thread-guard fixture,
 public void signature checks and raw-owner publication/sanitizer fixtures. They
 do not initialize a Campaign or prove live writes, game scheduling or old saves.
+
+## Unknown-after-start effect state (LOCAL-7-G)
+
+`EconomyRewardDebtReplayStatus.UnknownAfterStart` is appended after the existing
+numeric values. `ActionExecutionEffectState` and
+`IActionPlanExecutionEffectReceipt` are additive; the old outcome interface,
+the executor's six-argument constructor and `InteractionCommitResult`'s sole
+public four-argument constructor remain intact.
+
+The main-thread port now treats callback throw/null and malformed post-callback
+receipts as unknown, fact-free outcomes. Pre-callback main-thread, target,
+capability and plan validation still reject with `NoConfirmedEffect`. A valid
+unknown may retain only effects and facts that the owner confirmed before the
+uncertain action; count-zero unknowns retain no success facts.
+
+Hero, Party and Merchant owners stop at the first uncertain action. An explicit
+`EconomyMutationObservation` carries exceptions that legacy inventory/RP,
+fixed-asset and equipment-restore helpers intentionally catch for compatibility.
+This includes roster-add failures, RP generation shells, settlement/workshop/
+caravan transfer catches, restore-queue failures and rollback exception or
+partial/no-op readback. Existing public/internal bool/int helper entry points
+still project their original behavior; only the replay-aware path receives the
+structured observation. Earlier confirmed count/facts survive, while the
+uncertain action creates no fact.
+
+The executor maps Economy, gate and legacy callback uncertainty to
+`NonRetryableFailure`. The committer writes the visible exchange once and only
+the already-confirmed owner facts. `ActionsExecuted` remains false for a
+count-zero unknown; replay prevention comes from the terminal receipt and
+request reservation, not from inventing a successful action bit. Memory failure
+preserves the unknown terminal state, and duplicate/in-progress/mismatched
+requests do not invoke either owner again.
+
+`DetachedInteractionHost` treats the callback's observed receipt as authoritative.
+A dispatcher cannot upgrade an actual unknown/rejection with a fake success.
+A callback-started throw/null/in-flight return is terminal unknown and never
+falls back or runs `afterCommit`; a dispatcher that never starts the callback
+cannot claim success and instead takes the still-safe legacy fallback. Late
+callbacks are closed, and publication after the dispatcher has already returned
+cannot overwrite the host's terminal receipt or fire `afterCommit`.
+
+Offline validation covers Port throw/null/malformed results, gate/owner/legacy
+exceptions, known-before-unknown facts, memory success/failure/duplicate,
+in-progress/mismatch receipts, dispatcher fake success and all three channels.
+Production tests load the final project-local 1.4 DLL. These tests do not inject
+faults into live TaleWorlds mutators and are not Campaign/save/load evidence.
 
 ## Limits and mandatory follow-up
 
@@ -150,12 +196,12 @@ do not initialize a Campaign or prove live writes, game scheduling or old saves.
   save/load and asset evidence remain required. Process-local receipts are still
   not the durable business authority.
 - A mixed Economy/legacy plan can partially apply before the later action is
-  rejected. Known Economy facts are now retained in a terminal receipt, but the
-  request-level reservation does not roll back effects or recover unknown
-  legacy outcomes.
-- There is no automatic memory-only retry or compensation: an unconfirmed
-  owner result can still mean a partial append. Unknown effects remain
-  failed, not fabricated as successful facts.
+  rejected or becomes unknown. Known Economy facts and the structured effect
+  state are retained, but the request-level reservation does not roll back or
+  compensate gameplay effects.
+- There is no automatic memory-only retry or compensation. Unknown effects are
+  terminal and fact-free for the uncertain action, but history/AFEF repair is
+  not durable and is not automatically resumed.
 - An `afterCommit` failure is not automatically resumed on a duplicate request.
   The retained commit receipt describes action/history, not completion of every
   notification or delivery hook; hook recovery remains the channel owner's job.
