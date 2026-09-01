@@ -8,7 +8,7 @@
 - `LOCAL-7-K` 代码与离线/compiled 验证完成，状态 **VERIFY**；阶段 7 仍为 VERIFY，
   阶段 8 破坏性清理/default cutover 仍 BLOCKED。
 - 基线 `da15241f`，意图 checkpoint `7cdf6435`，实现提交 `765b2386`；本 handoff
-  的独立 docs 提交为 `TBD`，待收尾后补录。
+  与公共台账的独立 docs 主提交为 `101fc0fd`。
 - 本切片只接受 **Economy-only + whole-plan full owner confirmation**：mixed、known partial、
   `UnknownAfterStart`、rejected、fingerprint mismatch 或任何无法逐项证明的结果都不能 Attach
   weekly material。
@@ -155,8 +155,8 @@ Release 1.4       EDB3FCDBC4B23624B88EF396DAA58DB03772CB37239FEDA06B9A5C1C5B434E
 
 - 只回滚本切片实现：在干净工作树上正常执行 `git revert 765b2386`；禁止 hard reset、rebase
   或 force push。
-- 本 handoff 为后续独立 docs 提交（当前 `TBD`）；完整撤销 K 时再对最终 docs commit 执行普通
-  `git revert`。
+- 本 handoff 与公共台账主提交为 `101fc0fd`；完整撤销 K 时再对该 docs 提交及其后续纯文档
+  精度修正执行普通 `git revert`。
 - 不要连带回滚 J `84e92f80`、H `f6e5e694` 或 I `de3220b7`。K 没有修改 H/I wire/hash/key/type。
 - 本轮未部署，所以没有游戏目录 DLL/PDB/ModuleData 回滚动作。
 
@@ -180,7 +180,7 @@ Release 1.4       EDB3FCDBC4B23624B88EF396DAA58DB03772CB37239FEDA06B9A5C1C5B434E
 > 请在 `G:\AFMOD\AF-REFACTOR` 读取 `G:\AFMOD\AGENTS.md`、仓库规则、已安装的
 > `af-siege-fusion` / `afmod-clean-code-guard` Skill、公共台账和
 > `docs\handoffs\2026-09-01-weekly-exact-intent-outcomes.md`。确认 HEAD 至少包含 K 实现
-> `765b2386`，并把本 handoff 的 docs commit `TBD` 替换为最终 SHA；fetch 但不要覆盖本地历史。
+> `765b2386` 与 K docs 主提交 `101fc0fd`；fetch 但不要覆盖本地历史。
 > 按 `LOCAL-7-L` 先从 `PlayerNotorietyBehavior.NoteConversationLineForExternal`、line roll、
 > aggregate mutation 与 session finalize 审计 exact per-line/session identity、已发生证据、
 > readback 和 crash/load 边界，再实现独立 bounded data-only durable receipt。绝不重新 roll、重放
