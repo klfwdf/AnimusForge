@@ -343,6 +343,29 @@ public sealed class InteractionMemoryCommit
         string userText,
         string assistantText,
         IEnumerable<FactRecord> confirmedFacts)
+        : this(commitId, channel, sessionId, subjectId, userText, assistantText,
+            confirmedFacts, 0L, 0L, string.Empty, 0, 0, string.Empty,
+            -1, -1, string.Empty)
+    {
+    }
+
+    internal InteractionMemoryCommit(
+        string commitId,
+        InteractionChannel channel,
+        string sessionId,
+        string subjectId,
+        string userText,
+        string assistantText,
+        IEnumerable<FactRecord> confirmedFacts,
+        long runtimeGeneration,
+        long saveGeneration,
+        string traceId,
+        int gameDay,
+        int gameHour,
+        string locationId,
+        int sceneSessionId,
+        int targetAgentIndex,
+        string targetName)
     {
         CommitId = ContractGuard.Required(commitId, nameof(commitId));
         Channel = channel;
@@ -351,6 +374,15 @@ public sealed class InteractionMemoryCommit
         UserText = userText ?? string.Empty;
         AssistantText = assistantText ?? string.Empty;
         ConfirmedFacts = ContractCollections.CopyList(confirmedFacts);
+        RuntimeGeneration = runtimeGeneration;
+        SaveGeneration = saveGeneration;
+        TraceId = traceId ?? string.Empty;
+        GameDay = gameDay;
+        GameHour = gameHour;
+        LocationId = locationId ?? string.Empty;
+        SceneSessionId = sceneSessionId;
+        TargetAgentIndex = targetAgentIndex;
+        TargetName = targetName ?? string.Empty;
     }
 
     public string CommitId { get; }
@@ -360,6 +392,15 @@ public sealed class InteractionMemoryCommit
     public string UserText { get; }
     public string AssistantText { get; }
     public IReadOnlyList<FactRecord> ConfirmedFacts { get; }
+    internal long RuntimeGeneration { get; }
+    internal long SaveGeneration { get; }
+    internal string TraceId { get; }
+    internal int GameDay { get; }
+    internal int GameHour { get; }
+    internal string LocationId { get; }
+    internal int SceneSessionId { get; }
+    internal int TargetAgentIndex { get; }
+    internal string TargetName { get; }
 }
 
 public enum MemoryCommitStatus

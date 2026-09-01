@@ -125,5 +125,6 @@ AssertTrue(scenePorts != null && nativePorts != null && courierPorts != null, "o
 
 MemoryOwnerReceiptReplay.Run(animusForge);
 MemoryOwnerReadbackReplay.Run(animusForge);
+MemoryRecoveryProductionReplay.Run(animusForge);
 CourierEconomyReservationReplay.Run(animusForge);
 Console.WriteLine("PASS productionOptInEntryReplay native=1 scene=1 courier=1 identity=1 failClosed=1 ports=1 noDefaultCutover=1");

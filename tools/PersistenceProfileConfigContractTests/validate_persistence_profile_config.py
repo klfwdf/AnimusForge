@@ -85,7 +85,7 @@ def validate_chunk_contract(catalog: dict) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
     assert_true(len(expected_chunked) == 13, "chunked string key catalog must contain 13 keys")
-    assert_true(len(expected_flattened) == 38, "flattened dictionary key catalog must contain 38 keys")
+    assert_true(len(expected_flattened) == 39, "flattened dictionary key catalog must contain 39 keys")
     actual_chunked = resolve_storage_call_keys("SaveChunkedString", 1) | resolve_storage_call_keys("LoadChunkedString", 1)
     actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
     # The helper's own overloads have no persisted key and are intentionally absent.
@@ -193,11 +193,13 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(discovered == expected, f"literal key mismatch: missing={sorted(expected - discovered)} extra={sorted(discovered - expected)}")
     assert_true(any(item["status"] == "inventory-required" for item in catalog["symbolicKeyFamilies"]), "symbolic key debt was hidden")
     symbolic_sources = []
-    for relative in catalog["symbolicSyncDataSources"]:
-        source = ROOT / relative
-        assert_true(source.is_file(), f"missing symbolic SyncData source: {relative}")
+    for source in sorted(ROOT.rglob("*.cs")):
+        if any(part in {"tools", "bin", "obj"} for part in source.parts):
+            continue
+        if any("原版游戏本体代码" in part for part in source.parts):
+            continue
         if SYMBOLIC_PATTERN.search(source.read_text(encoding="utf-8")):
-            symbolic_sources.append(relative)
+            symbolic_sources.append(source.relative_to(ROOT).as_posix())
     assert_true(symbolic_sources == catalog["symbolicSyncDataSources"], "symbolic SyncData source inventory drifted")
     assert_true(any(item["path"] == "PlayerExports" and item["classification"] == "user-writable-merge-without-deletion" for item in catalog["contentRoots"]), "PlayerExports deletion boundary missing")
     chunk_result = validate_chunk_contract(catalog)
@@ -244,6 +246,26 @@ def validate_namespaces(catalog: dict) -> dict:
     return {"namespaces": len(namespaces), "migrationIdempotent": policy["idempotent"], "unknownDataPreserved": policy["preserveUnknownData"]}
 
 
+def validate_legacy_first_cases(cases: dict) -> dict:
+    assert_true(
+        cases["knownRepresentativeBindings"].get("_af_interactionMemoryRecovery_v1")
+        == "Dictionary<string, string>",
+        "memory recovery persistence binding is not cataloged",
+    )
+    by_id = {case["id"]: case for case in cases["cases"]}
+    assert_true(
+        by_id.get("missing-memory-recovery-journal-is-empty", {}).get("expected")
+        == "publish-with-empty-memory-recovery-journal",
+        "missing recovery journal compatibility case is absent",
+    )
+    assert_true(
+        by_id.get("corrupt-memory-recovery-journal-fails-closed", {}).get("expected")
+        == "quarantine-without-memory-replay",
+        "corrupt recovery journal fail-closed case is absent",
+    )
+    return {"legacyFirstCases": len(cases["cases"])}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", action="store_true", dest="as_json")
@@ -255,7 +277,10 @@ def main() -> int:
         persistence.update(typed)
         profiles = validate_profiles(load_json(FIXTURE_DIR / "config-snapshot-cases.json"))
         namespaces = validate_namespaces(load_json(FIXTURE_DIR / "persistence-namespace-migration-catalog.json"))
-        result = {"status": "PASS", **persistence, **profiles, **namespaces}
+        migration_cases = validate_legacy_first_cases(
+            load_json(FIXTURE_DIR / "legacy-first-safe-mode-migration-cases.json")
+        )
+        result = {"status": "PASS", **persistence, **profiles, **namespaces, **migration_cases}
     except (AssertionError, OSError, json.JSONDecodeError) as exc:
         result = {"status": "FAIL", "error": str(exc)}
         if args.as_json:

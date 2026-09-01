@@ -53,7 +53,7 @@ using TaleWorlds.SaveSystem;
 
 namespace AnimusForge;
 
-public class MyBehavior : CampaignBehaviorBase
+public partial class MyBehavior : CampaignBehaviorBase
 {
 	public static MyBehavior Instance { get; private set; }
 
@@ -210,6 +210,10 @@ public class MyBehavior : CampaignBehaviorBase
 		public string GameDate;
 
 		public List<string> Lines = new List<string>();
+
+		// Non-visible idempotency markers for memory-only recovery. They are
+		// additive JSON fields; legacy saves deserialize with an empty map.
+		public Dictionary<string, string> MemoryCommitMarkers = new Dictionary<string, string>(StringComparer.Ordinal);
 	}
 
 	private sealed class DailyMemoryLine
@@ -239,6 +243,16 @@ public class MyBehavior : CampaignBehaviorBase
 		public bool IsAfef;
 
 		public bool IsLlmDialogue;
+
+		public string MemoryCommitId = "";
+
+		public string MemoryCommitPart = "";
+
+		public string MemoryCommitHash = "";
+
+		public int MemoryCommitOriginGameDay = -1;
+
+		public string MemoryCommitOriginGameDate = "";
 	}
 
 	private sealed class DailyMemoryDraft
@@ -2377,6 +2391,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ResetInteractionMemoryRecoveryTransientState(reason);
 			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			ClearRuleStickyCarry();
 			_playerDefeatedHeroBattleFactKeys.Clear();
@@ -17853,9 +17868,10 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		using (PerfProbe.Scope("MyBehavior.OnCampaignTick"))
 		{
-		try
-		{
-			bool processedWeeklyReportCommits = false;
+			try
+			{
+				ProcessOneInteractionMemoryRecoveryOnTick();
+				bool processedWeeklyReportCommits = false;
 			if (Volatile.Read(ref _hasPendingWeeklyReportCommits) != 0)
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
@@ -18536,7 +18552,7 @@ public class MyBehavior : CampaignBehaviorBase
 					Logger.Log("UnnamedPersona", "[ERROR] Serialize unnamed persona for save failed: " + ex8.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_unnamed_persona_v1", _unnamedPersonaJsonStorage, "UnnamedPersona");
-				SyncPatienceData(dataStore);
+				SyncTailPersistenceData(dataStore);
 				return;
 			}
 			dataStore.SyncData<Dictionary<MobileParty, string>>("_af_wildernessNonHeroPartyMemoryIds_v1", ref _wildernessNonHeroPartyMemoryIds);
@@ -19000,7 +19016,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("UnnamedPersona", "[ERROR] Restore unnamed persona from save failed: " + ex9.Message);
 			}
-			SyncPatienceData(dataStore);
+			SyncTailPersistenceData(dataStore);
 		}
 		catch (Exception ex10)
 		{
@@ -20297,6 +20313,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		QueueMissingOnnxGateCheck(TimeSpan.Zero);
 		RebuildRuntimeDerivedIndexes();
+		ActivateInteractionMemoryRecoveryAfterLoad();
 		SyncModCreatedRebelKingdomBannersOnGameLoad();
 		// The campaign Hero registry is complete at this lifecycle point, so stale saved compression work can be
 		// cancelled before load-finished maintenance queues any LLM request.
@@ -25938,6 +25955,7 @@ public class MyBehavior : CampaignBehaviorBase
 		MergeNpcActionStorageById(_npcMajorActions, source, target, keepOnlyRecentWindow: false);
 		MergeNpcActionStorageById(_npcRecentActions, source, target, keepOnlyRecentWindow: true);
 		RetargetMemoryOverviewCandidateScanIds(source, target);
+		RetargetInteractionMemoryRecoveryProjection(source, target);
 		RemoveMemoryEntityDataById(source);
 	}
 
@@ -25959,7 +25977,8 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						GameDayIndex = dayIndex,
 						GameDate = (day.GameDate ?? "").Trim(),
-						Lines = new List<string>()
+						Lines = new List<string>(),
+						MemoryCommitMarkers = new Dictionary<string, string>(StringComparer.Ordinal)
 					};
 					byDay[dayIndex] = merged;
 				}
@@ -25975,11 +25994,16 @@ public class MyBehavior : CampaignBehaviorBase
 						merged.Lines.Add(text);
 					}
 				}
+				foreach (KeyValuePair<string, string> marker in SanitizeMemoryCommitMarkers(day.MemoryCommitMarkers))
+				{
+					merged.MemoryCommitMarkers[marker.Key] = marker.Value;
+				}
 			}
 		}
 		AddDays(targetDays);
 		AddDays(sourceDays);
-		return byDay.Values.Where((DialogueDay x) => x.Lines != null && x.Lines.Count > 0).OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
+		return byDay.Values.Where((DialogueDay x) => (x.Lines != null && x.Lines.Count > 0)
+			|| (x.MemoryCommitMarkers != null && x.MemoryCommitMarkers.Count > 0)).OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
 	}
 
 	private static List<DailyMemoryDraft> RetargetDailyMemoryDrafts(IEnumerable<DailyMemoryDraft> drafts, string targetMemoryId)
@@ -26522,6 +26546,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		QuarantineInteractionMemoryRecoveryProjection(text, "memory_recovery_subject_removed");
 		_dialogueHistory?.Remove(text);
 		_dialogueHistoryStorage?.Remove(text);
 		_dailyMemoryDrafts?.Remove(text);
@@ -26597,6 +26622,7 @@ public class MyBehavior : CampaignBehaviorBase
 			AddMatchingKeys((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Select((MemoryOverviewJob x) => x?.HeroId));
 			AddMatchingKeys((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Select((MajorActionSummaryJob x) => x?.HeroId));
 			AddMatchingKeys((_pendingWeeklyMemoryMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>()).Select((WeeklyMemoryMaterialTrigger x) => x?.MemoryId));
+			AddMatchingKeys(GetInteractionMemoryRecoveryProjectionSubjects());
 			foreach (string id in ids.ToList())
 			{
 				RemoveMemoryEntityDataById(id);
@@ -26769,6 +26795,19 @@ public class MyBehavior : CampaignBehaviorBase
 				x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
 				x.TargetName = (x.TargetName ?? "").Trim();
 				x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
+				x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
+				x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
+				x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
+				x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
+				x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
+				if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
+				{
+					x.MemoryCommitId = "";
+					x.MemoryCommitPart = "";
+					x.MemoryCommitHash = "";
+					x.MemoryCommitOriginGameDay = -1;
+					x.MemoryCommitOriginGameDate = "";
+				}
 				if (x.SceneSessionId < -1)
 				{
 					x.SceneSessionId = -1;
@@ -27882,6 +27921,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				dialogueDay2.Lines.Add(entry.Item3);
 			}
+			CopyMemoryCommitMarkers(list, list3);
 			SaveDialogueHistoryById(normalizedMemoryId, list3);
 			if (IsNonHeroMemoryId(normalizedMemoryId))
 			{
@@ -31907,7 +31947,8 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				dialogueDay2.Lines.RemoveAt(0);
 				num--;
-				if (dialogueDay2.Lines.Count == 0 && dialogueDay2.GameDayIndex != dayIndex)
+				if (dialogueDay2.Lines.Count == 0 && dialogueDay2.GameDayIndex != dayIndex
+					&& (dialogueDay2.MemoryCommitMarkers == null || dialogueDay2.MemoryCommitMarkers.Count == 0))
 				{
 					list.Remove(dialogueDay2);
 				}
@@ -32051,6 +32092,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		list2.Reverse();
+		List<DialogueDay> memoryCommitMarkerSource = records.ToList();
 		records.Clear();
 		foreach (var item2 in list2)
 		{
@@ -32066,6 +32108,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			dialogueDay.Lines.Add(item2.Line);
 		}
+		CopyMemoryCommitMarkers(memoryCommitMarkerSource, records);
 		return true;
 	}
 
@@ -49256,7 +49299,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			dialogueDay.Lines[lineIndex] = input;
 		}
-		source = source.Where((DialogueDay x) => x != null && x.Lines != null && x.Lines.Count > 0).ToList();
+		source = source.Where((DialogueDay x) => x != null
+			&& ((x.Lines != null && x.Lines.Count > 0)
+				|| (x.MemoryCommitMarkers != null && x.MemoryCommitMarkers.Count > 0))).ToList();
 		SaveDialogueHistory(npc, source);
 		InformationManager.DisplayMessage(new InformationMessage("对话行已更新."));
 		OpenDevHistoryLineSelection(npc, dayIndex);
@@ -51176,7 +51221,8 @@ public class MyBehavior : CampaignBehaviorBase
 			if (day != null)
 			{
 				removedCount = RemoveDialogueHistoryLinesByCounts(day, removeCounts);
-				if (day.Lines == null || day.Lines.Count == 0)
+				if ((day.Lines == null || day.Lines.Count == 0)
+					&& (day.MemoryCommitMarkers == null || day.MemoryCommitMarkers.Count == 0))
 				{
 					records.Remove(day);
 					day = null;
@@ -51202,7 +51248,10 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (removedCount > 0 || addedLines.Count > 0)
 			{
-				records = records.Where((DialogueDay x) => x != null && x.Lines != null && x.Lines.Count > 0).OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
+				records = records.Where((DialogueDay x) => x != null
+					&& ((x.Lines != null && x.Lines.Count > 0)
+						|| (x.MemoryCommitMarkers != null && x.MemoryCommitMarkers.Count > 0)))
+					.OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
 				SaveDialogueHistory(npc, records);
 				ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(npc, npc.CharacterObject, npc.Name?.ToString(), affectedDayIndex);
 				Logger.Log("CompressedMemory", "sync_raw_edit_dialogue_history hero=" + GetMemoryHeroId(npc) + " day=" + affectedDayIndex + " removed=" + removedCount + " added=" + addedLines.Count + " reason=" + (reason ?? ""));

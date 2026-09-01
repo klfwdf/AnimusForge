@@ -33,6 +33,16 @@ internal static class MemoryOwnerReceiptReplay
                     channel + "/missing Campaign retained a success receipt");
             }
         }
+        string staleCacheCommitId = "stale-process-cache-" + Guid.NewGuid().ToString("N");
+        Require((bool)cache.GetMethod("TryAccept").Invoke(null, new object[] { staleCacheCommitId }),
+            "Could not establish stale process-cache fixture.");
+        object staleCacheCommit = Activator.CreateInstance(commitType, staleCacheCommitId,
+            Enum.Parse(channelType, "NativeConversation"), "fixture-session", subject,
+            "different player payload", "different assistant payload", null);
+        object staleCacheResult = facadeType.GetMethod("Commit").Invoke(facade, new[] { staleCacheCommit });
+        Require((string)staleCacheResult.GetType().GetProperty("ErrorCode").GetValue(staleCacheResult)
+            == "memory_owner_missing",
+            "Process cache bypassed the persistent owner/payload validation.");
         MethodInfo strictAppend = ownerType.GetMethod("CommitExternalDialogueHistory");
         object[] appendArgs = { subject, true, "Fixture NPC", "player", "assistant", "confirmed fixture fact" };
         object absentOwner = strictAppend.Invoke(null, appendArgs);

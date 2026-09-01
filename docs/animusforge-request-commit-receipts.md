@@ -15,8 +15,9 @@ action. Executor facts also produced a second, different memory key.
 
 - Request identity: runtime generation, save generation, trace ID, channel,
   session ID, subject ID, and the existing Courier direction snapshot field.
-  Existing capture identity is unchanged: Native/Scene captures have unique
-  sessions; Courier retains a stable letter session and inbound/reply direction.
+  Native/Scene captures have unique sessions; Courier retains a stable letter
+  session and inbound/reply direction. `LOCAL-7-H` adds an internal per-process
+  nonce to trace ID so identical restart-local sequence numbers cannot collide.
 - Payload fingerprint: append-player flag, player/visible text, ordered action
   tags/targets/parameters/raw plan, and supplied facts. Parameters use ordinal
   key order. Length-prefixed encoding is hashed; cached keys retain no raw text.
@@ -28,17 +29,18 @@ action. Executor facts also produced a second, different memory key.
   `afterCommit` for a duplicate so a recreated Host cannot repeat notifications
   or Courier completion callbacks.
 - Memory append keys derive from the same request ID. `MemoryCommitReceiptCache`
-  remains the memory facade's separate append guard; it no longer decides
-  whether game actions happened.
+  remains only a post-success compatibility diagnostic; it is never consulted
+  before the persistent owner validates opaque ID + payload hash + quarantine.
 - Rejected-action history is reported as written only when the memory port
   reports an applied/duplicate result. The old Native opt-in public runner also
   treats callback throw/null/failure as terminal, never as permission to replay
   through legacy. Its public signature is retained for existing external users.
 
-The cache stores at most 512 request receipts. Only completed entries may be
+The request cache stores at most 512 request receipts. Only completed entries may be
 evicted; all-pending capacity rejects new reservations. No game access or owner
 callback occurs under its lock. Hashing is once per commit attempt, linear in
-payload size; there is no new tick work, scan, background queue or save state.
+payload size. The separate memory recovery tick described below does not execute
+through this cache.
 
 ## Validation
 
@@ -73,7 +75,8 @@ callers and share this implementation; no parallel memory pipeline was added.
 These checks run only at append/commit boundaries. Readback scans the selected
 owner's draft/line lists, already traversed by sanitization, not the world's NPCs;
 normal Hero resolution retains direct ID lookup before the existing fallback.
-No tick work, queue, new save key/type or persistent receipt was introduced.
+No tick work, queue, new save key/type or persistent receipt was introduced by
+`LOCAL-7-D`; `LOCAL-7-H` below is the explicit additive persistence extension.
 
 ## Courier Economy reservation (LOCAL-7-E)
 
@@ -181,17 +184,56 @@ in-progress/mismatch receipts, dispatcher fake success and all three channels.
 Production tests load the final project-local 1.4 DLL. These tests do not inject
 faults into live TaleWorlds mutators and are not Campaign/save/load evidence.
 
+## Durable memory-only repair (LOCAL-7-H)
+
+`MyBehaviorMemoryFacade` now always delegates to the distinct internal
+`CommitExternalDialogueHistoryRecoverable` owner; the process cache cannot bypass
+payload conflict or corrupt/quarantined state. The original public six-parameter
+`CommitExternalDialogueHistory` remains unique, avoiding reflection ambiguity,
+and all four public void compatibility methods remain unchanged.
+
+The owner projects only visible user/assistant and owner-confirmed facts into a
+versioned BCL wire record under `_af_interactionMemoryRecovery_v1`. Raw commit ID,
+ActionPlan, postprocess, executor and `afterCommit` are absent. SHA-256 produces an
+opaque recovery ID and payload fingerprint; a full-record checksum covers lifecycle,
+states, attempts and timestamps. A process nonce in captured trace identity prevents
+restart-local session/generation reuse from aliasing an old tombstone.
+
+Each record advances Daily user/fact/assistant, then Recent user/fact/assistant.
+Copy-on-write publication includes a hidden marker. On load, matching marker confirms
+the step, missing marker makes only that step Pending, and conflicting/missing
+already-Applied markers quarantine the receipt. Completed tombstones retain expected
+Daily/Recent marker masks; a sealed Daily draft is allowed to retire its marker,
+whereas missing Recent evidence cannot return `Duplicate`. Cross-day late writes move
+to the current open Daily draft with frozen origin provenance.
+
+The ledger allows 64 pending, 512 oldest-evicted completed tombstones and 64 bounded
+quarantine diagnostics. Retry order rotates by last attempt; a component is isolated
+after five failures. Load validates schema/checksum/hash/state/size, valid+quarantine
+same-ID conflicts, marker ownership and storage caps. non-Hero alias migration retargets
+only the projection subject; destroyed-party cleanup includes ledger-only subjects.
+Tick uses an O(1) flag and processes at most one memory component; it cannot call an
+action owner. Persistence adds one symbolic flattened dictionary key but leaves the
+95 literal/121 typed bindings, 99 identity signatures, 35 behaviors and save types
+unchanged.
+
+Focused validation: memory contract runner covers six ordered steps, 12 marker-side
+faults, restart, long Courier payloads, corruption/capacity/retry/migration and zero
+action replay. Production 1.4 reflection replay covers ABI, missing Campaign, marker
+rebuild/load reconciliation, trace nonce and Scene provenance. Debug/Release 1.3/1.4/
+Bootstrap Stage all build with 0 warning / 0 error; this remains offline evidence.
+
 ## Limits and mandatory follow-up
 
-- This is a bounded process-local replay guard. Eviction, process restart or
-  save generation change is not durable business idempotency. Existing Courier
-  session/consumption flags remain authoritative and need separate validation.
+- The request/action guard remains bounded and process-local. The new durable ledger
+  covers only Memory/AFEF projection; it is not durable Economy/action idempotency.
+  Existing Courier session/consumption flags remain authoritative.
 - The legacy void APIs/non-batch `Append` still cannot acknowledge acceptance.
   The batch owner result confirms runtime daily/recent acceptance only, not
   `SyncData`, disk persistence, weekly/notoriety effects or live AFEF acceptance.
-  Owner writes can partially mutate lists and consume pending material triggers
-  before failure. No rollback or safe automatic retry is implied. Scene session
-  forwarding in the detached facade remains a separate follow-up (currently -1).
+  Core Daily/Recent components now have marker-based repair. Weekly material/notoriety
+  side effects remain best-effort and may be missing after an interruption; no rollback
+  or exactly-once claim is made for those auxiliary effects.
 - Courier economy-only now has an offline-verified owner reservation, but live
   save/load and asset evidence remain required. Process-local receipts are still
   not the durable business authority.
@@ -199,12 +241,11 @@ faults into live TaleWorlds mutators and are not Campaign/save/load evidence.
   rejected or becomes unknown. Known Economy facts and the structured effect
   state are retained, but the request-level reservation does not roll back or
   compensate gameplay effects.
-- There is no automatic memory-only retry or compensation. Unknown effects are
-  terminal and fact-free for the uncertain action, but history/AFEF repair is
-  not durable and is not automatically resumed.
-- An `afterCommit` failure is not automatically resumed on a duplicate request.
-  The retained commit receipt describes action/history, not completion of every
-  notification or delivery hook; hook recovery remains the channel owner's job.
+- Unknown gameplay effects remain terminal and fact-free for the uncertain action;
+  memory repair never compensates or repeats them.
+- An `afterCommit` failure is not resumed by the memory ledger. In particular, Courier
+  inbound can repair its history yet leave `ReplyGenerated`/session progression stuck.
+  A separate Courier-owned persistent completion receipt is the next required slice.
 
 Keep phase 7 at VERIFY and stage 8 destructive cleanup/default cutover blocked
 until actual Campaign/Mission, inventory/debt, AFEF and old-save acceptance.
