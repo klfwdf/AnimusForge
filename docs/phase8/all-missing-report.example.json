@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "BLOCKED",
   "preparationReport": true,
-  "scope": "existing-phase3-catalog-only",
+  "scope": "full-20-domain-program-with-existing-8-id-design-catalog",
   "fullProjectReleaseReady": false,
   "authorization": {
     "delete": false,
@@ -11,7 +11,7 @@
     "push": false,
     "publish": false
   },
-  "checkedAt": "2026-08-31T18:25:32.700109+00:00",
+  "checkedAt": "2026-09-01T12:22:27.108564+00:00",
   "modules": [
     {
       "id": "af.foundation.runtime",
@@ -94,14 +94,567 @@
       }
     }
   ],
+  "domains": [
+    {
+      "number": 1,
+      "id": "bootstrap-build",
+      "title": "Bootstrap / Build",
+      "owner": "Build.Release",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "ACTIVE",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real 1.3/1.4 Campaign startup",
+        "Package allowlist and rollback drill"
+      ]
+    },
+    {
+      "number": 2,
+      "id": "host-composition",
+      "title": "Host / Composition",
+      "owner": "Foundation.Composition",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Registration order",
+        "Partial-start cleanup",
+        "Design entry types remain Pending"
+      ]
+    },
+    {
+      "number": 3,
+      "id": "runtime-diagnostics",
+      "title": "Runtime / Diagnostics",
+      "owner": "Foundation.Runtime",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live tick/queue/cache budgets",
+        "Load generation invalidation",
+        "Exit/privacy review"
+      ]
+    },
+    {
+      "number": 4,
+      "id": "game-adapter-compatibility",
+      "title": "GameAdapter / Compatibility",
+      "owner": "Compatibility.GameAdapter",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real dual-API reflection/Harmony/Gauntlet",
+        "AF-disabled isolation",
+        "Optional dependencies"
+      ]
+    },
+    {
+      "number": 5,
+      "id": "persistence-config",
+      "title": "Persistence / Config",
+      "owner": "Foundation.Persistence",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Representative old saves",
+        "Save round-trip",
+        "Corrupt/unknown data",
+        "Config reload"
+      ]
+    },
+    {
+      "number": 6,
+      "id": "conversation-encounter",
+      "title": "Conversation / Encounter",
+      "owner": "Conversation.Encounter",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "OPT_IN",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real three-channel Host",
+        "Army-member target",
+        "Exit/save-load AFEF",
+        "Default not switched"
+      ]
+    },
+    {
+      "number": 7,
+      "id": "gateway-prompt-protocol",
+      "title": "Gateway / Prompt / Protocol",
+      "owner": "Conversation.Gateway",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "MIXED_DEFAULT",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real provider/SSE",
+        "Auxiliary LLM paths",
+        "Loaded prompt/tag isolation",
+        "Bilingual resources"
+      ]
+    },
+    {
+      "number": 8,
+      "id": "action-commit",
+      "title": "Action / Commit",
+      "owner": "Interaction.ActionCommit",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "OPT_IN",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live effects",
+        "Mixed per-item receipts",
+        "Cross-request/save idempotency",
+        "Non-Economy readback"
+      ]
+    },
+    {
+      "number": 9,
+      "id": "memory-afef",
+      "title": "Memory / AFEF",
+      "owner": "Memory.Persistence",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real AFEF/history",
+        "Crash/reload",
+        "Old saves",
+        "No marker-derived success"
+      ]
+    },
+    {
+      "number": 10,
+      "id": "economy-reward-debt",
+      "title": "Economy / Reward / Debt",
+      "owner": "Economy.RewardDebt",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "MIXED_DEFAULT",
+      "declaredEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Hero/Party/Merchant",
+        "Market debt",
+        "AFEF/save reload",
+        "SettlementTransfer unsupported"
+      ]
+    },
+    {
+      "number": 11,
+      "id": "policy-political",
+      "title": "Policy / Political",
+      "owner": "Policy.Political",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live authority/targets",
+        "Exactly-once/cross-key",
+        "NPC policy save-load",
+        "Policy-world bridge"
+      ]
+    },
+    {
+      "number": 12,
+      "id": "world-simulation-worldmap",
+      "title": "World Simulation / WorldMap",
+      "owner": "World.Simulation",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live diplomacy/vassalage/annexation",
+        "Party commands",
+        "Destroyed targets/save-load",
+        "Exact outcome receipts"
+      ]
+    },
+    {
+      "number": 13,
+      "id": "settlement-siege-gccz-sets",
+      "title": "Settlement / Siege / GCCZ / SETS",
+      "owner": "Settlement.Siege",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real town/castle/village/siege",
+        "MCM/colonization",
+        "Ordinary-scene isolation",
+        "Bridge live/save matrix"
+      ]
+    },
+    {
+      "number": 14,
+      "id": "scene-mission-combat",
+      "title": "Scene / Mission / Combat",
+      "owner": "Scene.Mission",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Agent targets",
+        "Mission cleanup",
+        "Combat isolation",
+        "Escort/execution/inspection"
+      ]
+    },
+    {
+      "number": 15,
+      "id": "duel",
+      "title": "Duel",
+      "owner": "Duel.Combat",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live accept/reject/cancel/death/exit",
+        "Stake/result/save",
+        "Fourberie",
+        "Typed Duel outcome"
+      ]
+    },
+    {
+      "number": 16,
+      "id": "courier-proactive-issue",
+      "title": "Courier / Proactive / Issue",
+      "owner": "Courier.ProactiveIssue",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "MIXED_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Courier save lifecycle",
+        "Opening/Pending",
+        "Issue completion facts",
+        "Proactive/Issue receipts"
+      ]
+    },
+    {
+      "number": 17,
+      "id": "social-progression-reports",
+      "title": "Social / Progression / Reports",
+      "owner": "Social.ProgressionReports",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real MBRandom",
+        "Romance/gathering",
+        "Item migration",
+        "Weekly/legacy save-load"
+      ]
+    },
+    {
+      "number": 18,
+      "id": "knowledge-persona-profile",
+      "title": "Knowledge / Persona / Profile",
+      "owner": "Knowledge.PersonaProfile",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "LEGACY_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real ONNX/index",
+        "Authority precedence",
+        "Old saves/PlayerExports",
+        "Focused live owner"
+      ]
+    },
+    {
+      "number": 19,
+      "id": "ui-tts-external-integration",
+      "title": "UI / TTS / External Integration",
+      "owner": "UI.ExternalIntegration",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "MIXED_DEFAULT",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Gauntlet",
+        "TTS cancel/lipsync",
+        "Optional/Xihai",
+        "Bilingual resources"
+      ]
+    },
+    {
+      "number": 20,
+      "id": "tools-content-package",
+      "title": "Tools / Content / Package",
+      "owner": "Tools.ContentRelease",
+      "ownerAssignmentState": "ROLE_PLACEHOLDER",
+      "entryCoverage": "REPRESENTATIVE",
+      "defaultState": "TOOL_ONLY",
+      "declaredEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "layers": {
+        "OFFLINE": "BLOCKED",
+        "LIVE": "BLOCKED",
+        "SAVE": "BLOCKED",
+        "RELEASE": "BLOCKED"
+      },
+      "blockingGates": [
+        ".NET 10 tools",
+        "Resource/dependency closure",
+        "ZIP/install",
+        "Data backup/rollback"
+      ]
+    }
+  ],
   "blockingIssues": [
     {
       "code": "SOURCE_COMMIT",
       "detail": "manifest must match current complete Git commit"
-    },
-    {
-      "code": "SOURCE_DIRTY",
-      "detail": "working tree must be clean before evidence acceptance"
     },
     {
       "code": "SOURCE_BINDINGS",
@@ -244,6 +797,486 @@
       "detail": "af.bridge.policy-diplomacy"
     },
     {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "bootstrap-build"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "bootstrap-build"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "bootstrap-build"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "bootstrap-build"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "bootstrap-build"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "bootstrap-build"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "host-composition"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "host-composition"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "host-composition"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "host-composition"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "host-composition"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "host-composition"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "runtime-diagnostics"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "runtime-diagnostics"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "runtime-diagnostics"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "runtime-diagnostics"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "runtime-diagnostics"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "runtime-diagnostics"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "game-adapter-compatibility"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "game-adapter-compatibility"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "game-adapter-compatibility"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "game-adapter-compatibility"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "game-adapter-compatibility"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "game-adapter-compatibility"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "persistence-config"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "persistence-config"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "persistence-config"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "persistence-config"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "persistence-config"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "persistence-config"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "conversation-encounter"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "conversation-encounter"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "conversation-encounter"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "conversation-encounter"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "conversation-encounter"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "conversation-encounter"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "gateway-prompt-protocol"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "gateway-prompt-protocol"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "gateway-prompt-protocol"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "gateway-prompt-protocol"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "gateway-prompt-protocol"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "gateway-prompt-protocol"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "action-commit"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "action-commit"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "action-commit"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "action-commit"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "action-commit"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "action-commit"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "memory-afef"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "memory-afef"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "memory-afef"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "memory-afef"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "memory-afef"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "memory-afef"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "economy-reward-debt"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "economy-reward-debt"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "economy-reward-debt"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "economy-reward-debt"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "economy-reward-debt"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "economy-reward-debt"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "policy-political"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "policy-political"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "policy-political"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "policy-political"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "policy-political"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "policy-political"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "world-simulation-worldmap"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "world-simulation-worldmap"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "world-simulation-worldmap"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "world-simulation-worldmap"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "world-simulation-worldmap"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "world-simulation-worldmap"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "settlement-siege-gccz-sets"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "settlement-siege-gccz-sets"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "settlement-siege-gccz-sets"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "settlement-siege-gccz-sets"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "settlement-siege-gccz-sets"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "settlement-siege-gccz-sets"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "scene-mission-combat"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "scene-mission-combat"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "scene-mission-combat"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "scene-mission-combat"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "scene-mission-combat"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "scene-mission-combat"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "duel"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "duel"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "duel"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "duel"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "duel"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "duel"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "courier-proactive-issue"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "courier-proactive-issue"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "courier-proactive-issue"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "courier-proactive-issue"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "courier-proactive-issue"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "courier-proactive-issue"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "social-progression-reports"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "social-progression-reports"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "social-progression-reports"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "social-progression-reports"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "social-progression-reports"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "social-progression-reports"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "knowledge-persona-profile"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "knowledge-persona-profile"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "knowledge-persona-profile"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "knowledge-persona-profile"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "knowledge-persona-profile"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "knowledge-persona-profile"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "ui-tts-external-integration"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "ui-tts-external-integration"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "ui-tts-external-integration"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "ui-tts-external-integration"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "ui-tts-external-integration"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "ui-tts-external-integration"
+    },
+    {
+      "code": "MISSING_DOMAIN_OFFLINE",
+      "detail": "tools-content-package"
+    },
+    {
+      "code": "MISSING_DOMAIN_LIVE",
+      "detail": "tools-content-package"
+    },
+    {
+      "code": "MISSING_DOMAIN_SAVE",
+      "detail": "tools-content-package"
+    },
+    {
+      "code": "MISSING_DOMAIN_RELEASE",
+      "detail": "tools-content-package"
+    },
+    {
+      "code": "UNASSIGNED_DOMAIN_OWNER",
+      "detail": "tools-content-package"
+    },
+    {
+      "code": "INCOMPLETE_DOMAIN_ENTRY_INVENTORY",
+      "detail": "tools-content-package"
+    },
+    {
       "code": "BRIDGE_MATRIX",
       "detail": "af.bridge.conversation-siege/OFFLINE/agnostic: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
     },
@@ -254,6 +1287,14 @@
     {
       "code": "BRIDGE_MATRIX",
       "detail": "af.bridge.conversation-siege/LIVE/1.4: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.conversation-siege/SAVE/1.3: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.conversation-siege/SAVE/1.4: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-settlement-siege-alone,B-conversation-scene-alone,bridge-disabled-data-preserved,bridge-failure-stale-generation,bridge-runtime-failure,incompatible-contract-version,safe-mode"
     },
     {
       "code": "BRIDGE_MATRIX",
@@ -268,6 +1309,14 @@
       "detail": "af.bridge.policy-diplomacy/LIVE/1.4: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-policy-system-alone,B-diplomacy-world-alone,bridge-disabled-data-preserved,bridge-failure-incompatible-version,bridge-runtime-failure,incompatible-contract-version,safe-mode"
     },
     {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.policy-diplomacy/SAVE/1.3: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-policy-system-alone,B-diplomacy-world-alone,bridge-disabled-data-preserved,bridge-failure-incompatible-version,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
+      "code": "BRIDGE_MATRIX",
+      "detail": "af.bridge.policy-diplomacy/SAVE/1.4: A-plus-B-plus-bridge,A-plus-B-without-bridge,A-policy-system-alone,B-diplomacy-world-alone,bridge-disabled-data-preserved,bridge-failure-incompatible-version,bridge-runtime-failure,incompatible-contract-version,safe-mode"
+    },
+    {
       "code": "COMPOSITION_MATRIX",
       "detail": "OFFLINE/agnostic: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
     },
@@ -280,6 +1329,334 @@
       "detail": "LIVE/1.4: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
     },
     {
+      "code": "COMPOSITION_MATRIX",
+      "detail": "SAVE/1.3: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
+    },
+    {
+      "code": "COMPOSITION_MATRIX",
+      "detail": "SAVE/1.4: bridge-disabled-data-preserved,bridge-runtime-failure,foundation-a-plus-b-no-bridge,foundation-a-plus-b-plus-bridge,foundation-adapter-noop,foundation-plus-conversation,foundation-plus-noop,foundation-plus-policy,health-output-bounded,health-output-overflow,incompatible-contract-version,optional-provider-missing,partial-start-failure,required-failure-cascade,required-provider-missing,runtime-toggle-harmony-conflict,safe-mode,stale-completion"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "bootstrap-host/OFFLINE/agnostic: API_1_3,API_1_4,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "bootstrap-host/LIVE/1.3: API_1_3,API_1_4,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "bootstrap-host/LIVE/1.4: API_1_3,API_1_4,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "bootstrap-host/SAVE/1.3: API_1_3,API_1_4,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "bootstrap-host/SAVE/1.4: API_1_3,API_1_4,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "host-runtime/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_START_CLEANUP,STALE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "host-runtime/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_START_CLEANUP,STALE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "host-runtime/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_START_CLEANUP,STALE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "host-runtime/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_START_CLEANUP,STALE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "host-runtime/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_START_CLEANUP,STALE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "runtime-game-adapter/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,NATIVE_FALLBACK,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "runtime-game-adapter/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,NATIVE_FALLBACK,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "runtime-game-adapter/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,NATIVE_FALLBACK,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "runtime-game-adapter/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,NATIVE_FALLBACK,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "runtime-game-adapter/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,NATIVE_FALLBACK,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "persistence-domain-owners/OFFLINE/agnostic: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,CORRUPT_DATA,EACH_OWNER_ALONE,OLD_SAVE,ROUND_TRIP"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "persistence-domain-owners/LIVE/1.3: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,CORRUPT_DATA,EACH_OWNER_ALONE,OLD_SAVE,ROUND_TRIP"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "persistence-domain-owners/LIVE/1.4: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,CORRUPT_DATA,EACH_OWNER_ALONE,OLD_SAVE,ROUND_TRIP"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "persistence-domain-owners/SAVE/1.3: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,CORRUPT_DATA,EACH_OWNER_ALONE,OLD_SAVE,ROUND_TRIP"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "persistence-domain-owners/SAVE/1.4: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,CORRUPT_DATA,EACH_OWNER_ALONE,OLD_SAVE,ROUND_TRIP"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-gateway/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,CANCELLATION,STREAM_END,TIMEOUT"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-gateway/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,CANCELLATION,STREAM_END,TIMEOUT"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-gateway/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,CANCELLATION,STREAM_END,TIMEOUT"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-gateway/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,CANCELLATION,STREAM_END,TIMEOUT"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-gateway/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,CANCELLATION,STREAM_END,TIMEOUT"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-action/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,STALE_TARGET,STARTED_NO_REPLAY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-action/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,STALE_TARGET,STARTED_NO_REPLAY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-action/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,STALE_TARGET,STARTED_NO_REPLAY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-action/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,STALE_TARGET,STARTED_NO_REPLAY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-action/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,STALE_TARGET,STARTED_NO_REPLAY"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-memory/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,HISTORY_WRITTEN,MEMORY_FAILURE"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-memory/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,HISTORY_WRITTEN,MEMORY_FAILURE"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-memory/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,HISTORY_WRITTEN,MEMORY_FAILURE"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-memory/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,HISTORY_WRITTEN,MEMORY_FAILURE"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-memory/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,HISTORY_WRITTEN,MEMORY_FAILURE"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-economy/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_EFFECT,UNKNOWN_AFTER_START"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-economy/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_EFFECT,UNKNOWN_AFTER_START"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-economy/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_EFFECT,UNKNOWN_AFTER_START"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-economy/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_EFFECT,UNKNOWN_AFTER_START"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "action-economy/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,PARTIAL_EFFECT,UNKNOWN_AFTER_START"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "policy-world-diplomacy/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INCOMPATIBLE_VERSION,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "policy-world-diplomacy/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INCOMPATIBLE_VERSION,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "policy-world-diplomacy/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INCOMPATIBLE_VERSION,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "policy-world-diplomacy/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INCOMPATIBLE_VERSION,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "policy-world-diplomacy/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INCOMPATIBLE_VERSION,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-siege/OFFLINE/agnostic: ACTIVE_STAGE_ONLY,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-siege/LIVE/1.3: ACTIVE_STAGE_ONLY,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-siege/LIVE/1.4: ACTIVE_STAGE_ONLY,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-siege/SAVE/1.3: ACTIVE_STAGE_ONLY,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-siege/SAVE/1.4: ACTIVE_STAGE_ONLY,A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,SAVE_DATA_PRESERVED"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "scene-duel/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,MISSION_END,NATIVE_COMBAT_ISOLATION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "scene-duel/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,MISSION_END,NATIVE_COMBAT_ISOLATION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "scene-duel/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,MISSION_END,NATIVE_COMBAT_ISOLATION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "scene-duel/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,MISSION_END,NATIVE_COMBAT_ISOLATION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "scene-duel/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,MISSION_END,NATIVE_COMBAT_ISOLATION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-courier/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,DELIVERY_RESTART,DUPLICATE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-courier/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,DELIVERY_RESTART,DUPLICATE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-courier/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,DELIVERY_RESTART,DUPLICATE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-courier/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,DELIVERY_RESTART,DUPLICATE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "conversation-courier/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,DELIVERY_RESTART,DUPLICATE_COMPLETION"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "memory-social-reports/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,EXACT_IDENTITY,OPEN_LOAD_UNKNOWN"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "memory-social-reports/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,EXACT_IDENTITY,OPEN_LOAD_UNKNOWN"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "memory-social-reports/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,EXACT_IDENTITY,OPEN_LOAD_UNKNOWN"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "memory-social-reports/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,EXACT_IDENTITY,OPEN_LOAD_UNKNOWN"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "memory-social-reports/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,EXACT_IDENTITY,OPEN_LOAD_UNKNOWN"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "gateway-knowledge-profile/OFFLINE/agnostic: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INDEX_STALE,PROVIDER_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "gateway-knowledge-profile/LIVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INDEX_STALE,PROVIDER_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "gateway-knowledge-profile/LIVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INDEX_STALE,PROVIDER_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "gateway-knowledge-profile/SAVE/1.3: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INDEX_STALE,PROVIDER_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "gateway-knowledge-profile/SAVE/1.4: A_ONLY,A_PLUS_B_NO_BRIDGE,A_PLUS_B_WITH_BRIDGE,BRIDGE_DISABLED,BRIDGE_FAILURE,B_ONLY,INDEX_STALE,PROVIDER_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "ui-runtime-integration/OFFLINE/agnostic: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,FOCUS_CLOSE,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "ui-runtime-integration/LIVE/1.3: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,FOCUS_CLOSE,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "ui-runtime-integration/LIVE/1.4: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,FOCUS_CLOSE,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "ui-runtime-integration/SAVE/1.3: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,FOCUS_CLOSE,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "ui-runtime-integration/SAVE/1.4: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,FOCUS_CLOSE,OPTIONAL_DEPENDENCY_MISSING"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "tools-content-release/OFFLINE/agnostic: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,PACKAGE_ALLOWLIST,ROLLBACK_DRILL"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "tools-content-release/LIVE/1.3: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,PACKAGE_ALLOWLIST,ROLLBACK_DRILL"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "tools-content-release/LIVE/1.4: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,PACKAGE_ALLOWLIST,ROLLBACK_DRILL"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "tools-content-release/SAVE/1.3: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,PACKAGE_ALLOWLIST,ROLLBACK_DRILL"
+    },
+    {
+      "code": "FULL_DOMAIN_BRIDGE_MATRIX",
+      "detail": "tools-content-release/SAVE/1.4: ALL_WITHOUT_COORDINATOR,ALL_WITH_COORDINATOR,COORDINATOR_DISABLED,COORDINATOR_FAILURE,EACH_OWNER_ALONE,PACKAGE_ALLOWLIST,ROLLBACK_DRILL"
+    },
+    {
       "code": "CLEANUP_REVIEW",
       "detail": "review evidence is missing or invalid"
     },
@@ -289,7 +1666,7 @@
     }
   ],
   "limitations": [
-    "Catalog scope is not the complete 20-domain program.",
+    "The 20 domains are acceptance responsibility buckets, not 20 deployed physical modules.",
     "Hashes detect changed files; they do not prove human evidence authenticity.",
     "No command from evidence is executed; readiness is not action authorization."
   ],
@@ -303,6 +1680,28 @@
     "af.module.policy-effects",
     "af.module.siege-aftermath",
     "af.module.world-diplomacy"
+  ],
+  "requiredDomainIds": [
+    "bootstrap-build",
+    "host-composition",
+    "runtime-diagnostics",
+    "game-adapter-compatibility",
+    "persistence-config",
+    "conversation-encounter",
+    "gateway-prompt-protocol",
+    "action-commit",
+    "memory-afef",
+    "economy-reward-debt",
+    "policy-political",
+    "world-simulation-worldmap",
+    "settlement-siege-gccz-sets",
+    "scene-mission-combat",
+    "duel",
+    "courier-proactive-issue",
+    "social-progression-reports",
+    "knowledge-persona-profile",
+    "ui-tts-external-integration",
+    "tools-content-package"
   ],
   "requiredCompositionCaseIds": [
     "bridge-disabled-data-preserved",
@@ -324,7 +1723,33 @@
     "safe-mode",
     "stale-completion"
   ],
-  "currentSourceCommit": "2216df41087fbee950aa4d626e9f34fbdecc5fcd",
+  "fullDomainBridgeIds": [
+    "action-economy",
+    "action-memory",
+    "bootstrap-host",
+    "conversation-action",
+    "conversation-courier",
+    "conversation-gateway",
+    "conversation-siege",
+    "gateway-knowledge-profile",
+    "host-runtime",
+    "memory-social-reports",
+    "persistence-domain-owners",
+    "policy-world-diplomacy",
+    "runtime-game-adapter",
+    "scene-duel",
+    "tools-content-release",
+    "ui-runtime-integration"
+  ],
+  "cleanupInventory": {
+    "candidateCount": 18,
+    "dispositions": {
+      "HOLD": 3,
+      "KEEP": 12,
+      "REVIEW_REMOVAL": 3
+    }
+  },
+  "currentSourceCommit": "28787546b1c6368fb9e39671ac2693d4adbe8ace",
   "acceptedEvidenceCount": 0,
-  "verifiedFileReferences": 5
+  "verifiedFileReferences": 21
 }
