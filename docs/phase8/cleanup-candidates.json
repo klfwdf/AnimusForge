@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "catalogId": "af.phase8.cleanup-candidates",
+  "baselineCommit": "9a088f2fe765d6b9ec52e902979519c745c77768",
+  "candidates": [
+    {
+      "id": "legacy-channel-interaction-facade",
+      "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+      "symbols": [
+        "LegacyChannelInteractionFacade"
+      ],
+      "ownerDomainId": "conversation-encounter",
+      "disposition": "KEEP",
+      "rationale": "Active detached facade despite its Legacy name.",
+      "activeCallers": [
+        "ShoutBehavior",
+        "CourierDeliveryBehavior",
+        "LegacyNativeConversationFacade"
+      ],
+      "dynamicEntryPoints": [
+        "Production host reflection guards"
+      ],
+      "compatibilityResponsibilities": [
+        "public ABI",
+        "fallback",
+        "receipt ordering"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Real three-channel Host",
+        "old save",
+        "live Economy/AFEF",
+        "default cutover"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Deletion breaks the only verified detached boundary."
+    },
+    {
+      "id": "legacy-native-opt-in-runner",
+      "path": "Refactor/Adapters/LegacyNativeConversationOptInRunner.cs",
+      "symbols": [
+        "LegacyNativeConversationOptInRunner",
+        "LegacyNativeConversationOptInResult"
+      ],
+      "ownerDomainId": "conversation-encounter",
+      "disposition": "HOLD",
+      "rationale": "Runner has no direct default caller but public factory/tests/result ABI remain.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [
+        "public factory",
+        "contract tests"
+      ],
+      "compatibilityResponsibilities": [
+        "public ABI",
+        "shared result type"
+      ],
+      "replacement": [
+        "DetachedInteractionHost native submit"
+      ],
+      "deletePreconditions": [
+        "External consumer scan",
+        "Move result type",
+        "Dual-API live parity"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Whole-file deletion also removes the active result type."
+    },
+    {
+      "id": "legacy-configured-chat-gateway",
+      "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+      "symbols": [
+        "LegacyConfiguredChatGateway"
+      ],
+      "ownerDomainId": "gateway-prompt-protocol",
+      "disposition": "KEEP",
+      "rationale": "Active transport for multiple domains.",
+      "activeCallers": [
+        "AIConfigHandler",
+        "DuelSettings",
+        "MyBehavior",
+        "TownAmbientAiClient",
+        "XihaiAction"
+      ],
+      "dynamicEntryPoints": [
+        "production reflection guards"
+      ],
+      "compatibilityResponsibilities": [
+        "provider payload",
+        "thinking retry",
+        "SSE",
+        "credentials"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Migrate all callers",
+        "Real provider regression"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Deletion breaks active LLM/config routes."
+    },
+    {
+      "id": "legacy-policy-effect-field-adapter",
+      "path": "PolicySystem/Effects/LegacyPolicyEffectFieldAdapter.cs",
+      "symbols": [
+        "LegacyPolicyEffectFieldAdapter"
+      ],
+      "ownerDomainId": "policy-political",
+      "disposition": "KEEP",
+      "rationale": "Active old-save policy field/alias reader.",
+      "activeCallers": [
+        "PolicyEffectSaveCodec",
+        "NpcRulerPolicyBehavior.Persistence",
+        "CustomPolicyBehavior"
+      ],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [
+        "legacy JSON aliases",
+        "old-save repair"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Load/resave legacy policy saves"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removal can make old policy JSON unreadable."
+    },
+    {
+      "id": "duel-mcm-compatibility-properties",
+      "path": "DuelSettings.cs",
+      "symbols": [
+        "Obsolete MCM properties",
+        "NpcRulerPolicyIntervalHours"
+      ],
+      "ownerDomainId": "duel",
+      "disposition": "KEEP",
+      "rationale": "MCM/legacy JSON use reflection beyond static callers.",
+      "activeCallers": [
+        "migration getters"
+      ],
+      "dynamicEntryPoints": [
+        "AttributeGlobalSettings reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "public config ABI",
+        "legacy JSON"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Dual-version MCM round-trip"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Static zero-caller analysis is insufficient."
+    },
+    {
+      "id": "xihai-equipment-cleanup-tombstone",
+      "path": "AnimusForgeUniqueCosmeticItemBehavior.cs",
+      "symbols": [
+        "_af_xihai_legacy_equipment_cleanup_v1"
+      ],
+      "ownerDomainId": "social-progression-reports",
+      "disposition": "KEEP",
+      "rationale": "Registered save migration tombstone with retry.",
+      "activeCallers": [
+        "SubModule registration",
+        "SyncData"
+      ],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [
+        "save identity",
+        "one-time migration"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Old-save migration evidence",
+        "Data recovery plan"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Git revert cannot restore removed save equipment."
+    },
+    {
+      "id": "bannerlord-api-compat",
+      "path": "BannerlordApiCompat.cs",
+      "symbols": [
+        "BannerlordApiCompat"
+      ],
+      "ownerDomainId": "game-adapter-compatibility",
+      "disposition": "KEEP",
+      "rationale": "Active dual-API reflection/signature adapter.",
+      "activeCallers": [
+        "multiple production files"
+      ],
+      "dynamicEntryPoints": [
+        "runtime reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "dual-API compatibility"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Replace every call",
+        "Real 1.3/1.4 scenarios"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removal can fail only at runtime."
+    },
+    {
+      "id": "player-encounter-compat",
+      "path": "PlayerEncounterCompat.cs",
+      "symbols": [
+        "PlayerEncounterCompat"
+      ],
+      "ownerDomainId": "game-adapter-compatibility",
+      "disposition": "KEEP",
+      "rationale": "Active encounter private-field/overload adapter.",
+      "activeCallers": [
+        "multiple production files"
+      ],
+      "dynamicEntryPoints": [
+        "private member reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "encounter ABI"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Replacement adapter",
+        "Real encounter regression"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removal risks one API line."
+    },
+    {
+      "id": "af-gccz-shout-bridge",
+      "path": "AfGcczShoutBridge.cs",
+      "symbols": [
+        "AfGcczShoutBridge"
+      ],
+      "ownerDomainId": "settlement-siege-gccz-sets",
+      "disposition": "KEEP",
+      "rationale": "Active thin AF/GCCZ bridge.",
+      "activeCallers": [
+        "ShoutBehavior",
+        "SiegeAiInterventionBehavior"
+      ],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [
+        "active-stage gate",
+        "cross-workspace contract"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Bridge live/save matrix",
+        "GCCZ/fused synchronized replacement"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "One-sided removal breaks GCCZ or ordinary dialogue isolation."
+    },
+    {
+      "id": "native-prompt-parity",
+      "path": "Refactor/Adapters/LegacyNativePromptParity.cs",
+      "symbols": [
+        "LegacyNativePromptParity"
+      ],
+      "ownerDomainId": "conversation-encounter",
+      "disposition": "HOLD",
+      "rationale": "Only controlled native prompt parity comparison.",
+      "activeCallers": [
+        "ShoutBehavior guarded calls"
+      ],
+      "dynamicEntryPoints": [
+        "public parity setter"
+      ],
+      "compatibilityResponsibilities": [
+        "prompt rollback comparison"
+      ],
+      "replacement": [
+        "shared prompt composer"
+      ],
+      "deletePreconditions": [
+        "Real dual-API parity",
+        "External API scan"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Early removal erases comparison/fallback evidence."
+    },
+    {
+      "id": "troop-inspection-verbose-logs",
+      "path": "TroopInspectionBehavior.cs",
+      "symbols": [
+        "VerboseInspectionLogs"
+      ],
+      "ownerDomainId": "scene-mission-combat",
+      "disposition": "REVIEW_REMOVAL",
+      "rationale": "Private constant-false diagnostic branch; no discovered ABI/save/reflection.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [],
+      "replacement": [
+        "bounded error logs"
+      ],
+      "deletePreconditions": [
+        "Focused log test",
+        "dual build",
+        "live inspection"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "May remove a still-needed diagnostic signal."
+    },
+    {
+      "id": "troop-inspection-refresh-all",
+      "path": "TroopInspectionBehavior.cs",
+      "symbols": [
+        "RefreshAllPlayerAgents",
+        "RefreshRadius"
+      ],
+      "ownerDomainId": "scene-mission-combat",
+      "disposition": "REVIEW_REMOVAL",
+      "rationale": "Private constant-true flag leaves radius branch unreachable.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [],
+      "replacement": [
+        "unconditional all-agent refresh"
+      ],
+      "deletePreconditions": [
+        "Mission refresh test",
+        "live performance baseline"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Inlining may make an expensive behavior permanent."
+    },
+    {
+      "id": "rhubarb-sound-playback-flag",
+      "path": "ShoutBehavior.cs",
+      "symbols": [
+        "_enableRhubarbSoundEventPlayback"
+      ],
+      "ownerDomainId": "ui-tts-external-integration",
+      "disposition": "REVIEW_REMOVAL",
+      "rationale": "Private constant-true single guard; no discovered setter/save/reflection.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [],
+      "replacement": [
+        "unconditional playback"
+      ],
+      "deletePreconditions": [
+        "Live TTS/lipsync/null/error",
+        "temporary WAV cleanup",
+        "dual build"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "May hide a necessary emergency gate."
+    },
+    {
+      "id": "call-universal-api-detailed",
+      "path": "MyBehavior.cs",
+      "symbols": [
+        "CallUniversalApiDetailed"
+      ],
+      "ownerDomainId": "gateway-prompt-protocol",
+      "disposition": "KEEP",
+      "rationale": "Still has an active caller through the shared gateway.",
+      "activeCallers": [
+        "MyBehavior.CallUniversalApi"
+      ],
+      "dynamicEntryPoints": [],
+      "compatibilityResponsibilities": [
+        "weekly/event fallback",
+        "diagnostics"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Migrate caller",
+        "Real weekly provider"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Removal breaks an active auxiliary route."
+    },
+    {
+      "id": "public-refactor-opt-in-entries",
+      "path": "ShoutBehavior.cs",
+      "symbols": [
+        "SubmitNativeConversationRefactorOptInForExternalAsync",
+        "SubmitSceneShoutRefactorOptInForExternalAsync"
+      ],
+      "ownerDomainId": "conversation-encounter",
+      "disposition": "HOLD",
+      "rationale": "Public verification/cutover seams are not default callers.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [
+        "public ABI",
+        "ProductionOptInEntryReplayTests"
+      ],
+      "compatibilityResponsibilities": [
+        "cutover seam",
+        "compiled contract"
+      ],
+      "replacement": [
+        "reviewed default entry"
+      ],
+      "deletePreconditions": [
+        "Real three-channel Host",
+        "default plan",
+        "ABI decision"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Deletion removes the tested strangler seam."
+    },
+    {
+      "id": "gccz-town-manual-mcm-bridge",
+      "path": "GcczTownManualMcmBridge.cs",
+      "symbols": [
+        "GcczTownManualMcmBridge"
+      ],
+      "ownerDomainId": "settlement-siege-gccz-sets",
+      "disposition": "KEEP",
+      "rationale": "MCM discovers this active-stage button dynamically.",
+      "activeCallers": [],
+      "dynamicEntryPoints": [
+        "SettingPropertyButton reflection"
+      ],
+      "compatibilityResponsibilities": [
+        "MCM entry",
+        "GCCZ documentation"
+      ],
+      "replacement": [],
+      "deletePreconditions": [
+        "Real MCM discovery",
+        "replacement entry",
+        "GCCZ synchronization"
+      ],
+      "rollback": {
+        "strategy": "git-revert-after-reviewed-removal",
+        "checkpoint": "9a088f2fe765d6b9ec52e902979519c745c77768"
+      },
+      "risk": "Static caller scans miss reflected MCM entries."
+    }
+  ]
+}

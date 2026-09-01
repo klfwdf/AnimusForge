@@ -1,0 +1,1378 @@
+{
+  "schemaVersion": 1,
+  "catalogId": "af.phase8.full-domain-readiness",
+  "programSource": "docs/animusforge-complete-refactor-program-20260831.md",
+  "domains": [
+    {
+      "number": 1,
+      "id": "bootstrap-build",
+      "title": "Bootstrap / Build",
+      "owner": "Build.Release",
+      "maintainers": [
+        "build-owner"
+      ],
+      "entryPaths": [
+        "AnimusForge.Bootstrap/BootstrapSubModule.cs",
+        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "AnimusForge/SubModule.xml"
+      ],
+      "promptAction": {
+        "prompt": "NOT_APPLICABLE",
+        "actionPlan": "NOT_APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Module/assembly identity only; no gameplay SyncData.",
+        "keys": [],
+        "types": []
+      },
+      "failureFallback": "Unsupported or ambiguous API selection fails closed.",
+      "defaultState": "ACTIVE",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real 1.3/1.4 Campaign startup",
+        "Package allowlist and rollback drill"
+      ],
+      "bridgeIds": [
+        "bootstrap-host",
+        "tools-content-release"
+      ]
+    },
+    {
+      "number": 2,
+      "id": "host-composition",
+      "title": "Host / Composition",
+      "owner": "Foundation.Composition",
+      "maintainers": [
+        "foundation-owner"
+      ],
+      "entryPaths": [
+        "SubModule.cs",
+        "Refactor/Adapters/LegacyInteractionPipelineComposition.cs"
+      ],
+      "promptAction": {
+        "prompt": "MIXED",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "Registration is not a domain save owner.",
+        "keys": [],
+        "types": []
+      },
+      "failureFallback": "Contribution failures must remain isolated.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Registration order",
+        "Partial-start cleanup",
+        "Design entry types remain Pending"
+      ],
+      "bridgeIds": [
+        "bootstrap-host",
+        "host-runtime"
+      ]
+    },
+    {
+      "number": 3,
+      "id": "runtime-diagnostics",
+      "title": "Runtime / Diagnostics",
+      "owner": "Foundation.Runtime",
+      "maintainers": [
+        "foundation-owner"
+      ],
+      "entryPaths": [
+        "SubModule.cs",
+        "CampaignTickDiagnosticsPatch.cs",
+        "FeatureDiagnosticLogFile.cs"
+      ],
+      "promptAction": {
+        "prompt": "NOT_APPLICABLE",
+        "actionPlan": "NOT_APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Runtime generation/queue state is process-local.",
+        "keys": [],
+        "types": []
+      },
+      "failureFallback": "Reject stale work and preserve bounded diagnostics.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live tick/queue/cache budgets",
+        "Load generation invalidation",
+        "Exit/privacy review"
+      ],
+      "bridgeIds": [
+        "host-runtime",
+        "runtime-game-adapter",
+        "ui-runtime-integration"
+      ]
+    },
+    {
+      "number": 4,
+      "id": "game-adapter-compatibility",
+      "title": "GameAdapter / Compatibility",
+      "owner": "Compatibility.GameAdapter",
+      "maintainers": [
+        "adapter-owner"
+      ],
+      "entryPaths": [
+        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "BannerlordApiCompat.cs",
+        "InteractionComponentSafePatch.cs"
+      ],
+      "promptAction": {
+        "prompt": "NOT_APPLICABLE",
+        "actionPlan": "NOT_APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Compatibility adapters add no save identity.",
+        "keys": [],
+        "types": []
+      },
+      "failureFallback": "Missing capability falls through to supported native behavior.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real dual-API reflection/Harmony/Gauntlet",
+        "AF-disabled isolation",
+        "Optional dependencies"
+      ],
+      "bridgeIds": [
+        "runtime-game-adapter"
+      ]
+    },
+    {
+      "number": 5,
+      "id": "persistence-config",
+      "title": "Persistence / Config",
+      "owner": "Foundation.Persistence",
+      "maintainers": [
+        "persistence-owner"
+      ],
+      "entryPaths": [
+        "CampaignSaveChunkHelper.cs",
+        "AIConfigHandler.cs",
+        "docs/fixtures/phase4-persistence-profile-config/syncdata-binding-catalog.json"
+      ],
+      "promptAction": {
+        "prompt": "MIXED",
+        "actionPlan": "NOT_APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Catalog existing owner key/type/chunk/config precedence.",
+        "keys": [
+          "95-literal-key-catalog",
+          "42-symbolic-source-catalog"
+        ],
+        "types": [
+          "string",
+          "dictionary",
+          "list",
+          "scalar",
+          "TroopRoster"
+        ]
+      },
+      "failureFallback": "Legacy-first load and owner-local corruption isolation.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Representative old saves",
+        "Save round-trip",
+        "Corrupt/unknown data",
+        "Config reload"
+      ],
+      "bridgeIds": [
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 6,
+      "id": "conversation-encounter",
+      "title": "Conversation / Encounter",
+      "owner": "Conversation.Encounter",
+      "maintainers": [
+        "conversation-owner",
+        "encounter-owner"
+      ],
+      "entryPaths": [
+        "ShoutBehavior.cs",
+        "LordEncounterBehavior.cs",
+        "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "Conversation/Memory owners retain history and target state.",
+        "keys": [
+          "_dialogueHistory_v2"
+        ],
+        "types": [
+          "dictionary-string-string"
+        ]
+      },
+      "failureFallback": "Fallback only before commit; stale/started commits never replay.",
+      "defaultState": "OPT_IN",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real three-channel Host",
+        "Army-member target",
+        "Exit/save-load AFEF",
+        "Default not switched"
+      ],
+      "bridgeIds": [
+        "conversation-gateway",
+        "conversation-action",
+        "conversation-siege",
+        "conversation-courier"
+      ]
+    },
+    {
+      "number": 7,
+      "id": "gateway-prompt-protocol",
+      "title": "Gateway / Prompt / Protocol",
+      "owner": "Conversation.Gateway",
+      "maintainers": [
+        "gateway-owner",
+        "prompt-owner"
+      ],
+      "entryPaths": [
+        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "Refactor/Contracts/LegacyShoutNetworkGateway.cs",
+        "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "Requests are transient; domain owners persist accepted results.",
+        "keys": [],
+        "types": []
+      },
+      "failureFallback": "Timeout/cancel/retry/empty/protocol errors never fabricate facts.",
+      "defaultState": "MIXED_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real provider/SSE",
+        "Auxiliary LLM paths",
+        "Loaded prompt/tag isolation",
+        "Bilingual resources"
+      ],
+      "bridgeIds": [
+        "conversation-gateway",
+        "gateway-knowledge-profile"
+      ]
+    },
+    {
+      "number": 8,
+      "id": "action-commit",
+      "title": "Action / Commit",
+      "owner": "Interaction.ActionCommit",
+      "maintainers": [
+        "action-owner"
+      ],
+      "entryPaths": [
+        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "Refactor/Runtime/InteractionCommitReceiptCache.cs"
+      ],
+      "promptAction": {
+        "prompt": "MIXED",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Receipts are process-local except explicit durable sidecars.",
+        "keys": [],
+        "types": [
+          "InteractionCommitResult",
+          "ActionPlanExecutionEffectState"
+        ]
+      },
+      "failureFallback": "Reject stale/tampered plans; preserve known/unknown effects without replay.",
+      "defaultState": "OPT_IN",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live effects",
+        "Mixed per-item receipts",
+        "Cross-request/save idempotency",
+        "Non-Economy readback"
+      ],
+      "bridgeIds": [
+        "conversation-action",
+        "action-memory",
+        "action-economy"
+      ]
+    },
+    {
+      "number": 9,
+      "id": "memory-afef",
+      "title": "Memory / AFEF",
+      "owner": "Memory.Persistence",
+      "maintainers": [
+        "memory-owner"
+      ],
+      "entryPaths": [
+        "MyBehavior.cs",
+        "MyBehavior.MemoryRecovery.cs",
+        "MyBehavior.WeeklyActionOutcomeReceipts.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "MyBehavior owns history, memory and bounded recovery/weekly receipts.",
+        "keys": [
+          "_dialogueHistory_v2",
+          "_af_interactionMemoryRecovery_v1",
+          "_af_weeklyActionOutcomeReceipts_v1"
+        ],
+        "types": [
+          "dictionary-string-string",
+          "string-json"
+        ]
+      },
+      "failureFallback": "Persist only owner-confirmed facts; unknown remains fail-closed.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real AFEF/history",
+        "Crash/reload",
+        "Old saves",
+        "No marker-derived success"
+      ],
+      "bridgeIds": [
+        "action-memory",
+        "persistence-domain-owners",
+        "memory-social-reports"
+      ]
+    },
+    {
+      "number": 10,
+      "id": "economy-reward-debt",
+      "title": "Economy / Reward / Debt",
+      "owner": "Economy.RewardDebt",
+      "maintainers": [
+        "economy-owner"
+      ],
+      "entryPaths": [
+        "RewardSystemBehavior.cs",
+        "RewardSystemBehavior.EconomyReplay.cs",
+        "RewardSystemBehavior.EconomyMerchantReplay.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "RewardSystem owns asset/item/trust/debt/merchant state.",
+        "keys": [
+          "_rewardDebts_v2",
+          "_rewardGeneratedItems_v1",
+          "_rewardMerchantFacts_v1",
+          "_rewardNpcTrust_v1"
+        ],
+        "types": [
+          "dictionary",
+          "list",
+          "string-json"
+        ]
+      },
+      "failureFallback": "Stale/partial/unknown effects retain only observed facts.",
+      "defaultState": "MIXED_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Hero/Party/Merchant",
+        "Market debt",
+        "AFEF/save reload",
+        "SettlementTransfer unsupported"
+      ],
+      "bridgeIds": [
+        "action-economy",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 11,
+      "id": "policy-political",
+      "title": "Policy / Political",
+      "owner": "Policy.Political",
+      "maintainers": [
+        "policy-owner"
+      ],
+      "entryPaths": [
+        "PolicySystem/Core/CustomPolicyBehavior.cs",
+        "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
+        "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Policy records/effects/targets retain domain save owners.",
+        "keys": [
+          "policy-record-and-effect-symbolic-catalog"
+        ],
+        "types": [
+          "record-json",
+          "dictionary"
+        ]
+      },
+      "failureFallback": "Invalid repair/authority/target rejects before delayed effects.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live authority/targets",
+        "Exactly-once/cross-key",
+        "NPC policy save-load",
+        "Policy-world bridge"
+      ],
+      "bridgeIds": [
+        "policy-world-diplomacy",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 12,
+      "id": "world-simulation-worldmap",
+      "title": "World Simulation / WorldMap",
+      "owner": "World.Simulation",
+      "maintainers": [
+        "world-diplomacy-owner",
+        "world-map-owner"
+      ],
+      "entryPaths": [
+        "WorldDiplomacyBehavior.cs",
+        "WorldMapPartyCommandBehavior.cs",
+        "VassalageBehavior.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "World behaviors retain distinct save namespaces.",
+        "keys": [
+          "world-domain-symbolic-catalog"
+        ],
+        "types": [
+          "dictionary",
+          "list",
+          "scalar"
+        ]
+      },
+      "failureFallback": "Destroyed/stale targets reject or use native fallback.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live diplomacy/vassalage/annexation",
+        "Party commands",
+        "Destroyed targets/save-load",
+        "Exact outcome receipts"
+      ],
+      "bridgeIds": [
+        "policy-world-diplomacy",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 13,
+      "id": "settlement-siege-gccz-sets",
+      "title": "Settlement / Siege / GCCZ / SETS",
+      "owner": "Settlement.Siege",
+      "maintainers": [
+        "siege-owner",
+        "settlement-owner"
+      ],
+      "entryPaths": [
+        "SiegeAiInterventionBehavior.cs",
+        "AnimusForge.SiegeAftermathIntervention/SiegeInterventionEntryProfile.cs",
+        "GcczSettlementCulturePersistenceBehavior.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Siege/settlement owners retain keys and active-stage state.",
+        "keys": [
+          "gccz-and-siege-symbolic-catalog"
+        ],
+        "types": [
+          "string-json",
+          "dictionary",
+          "scalar"
+        ]
+      },
+      "failureFallback": "Active-stage guards fall through to ordinary AF/native scenes.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real town/castle/village/siege",
+        "MCM/colonization",
+        "Ordinary-scene isolation",
+        "Bridge live/save matrix"
+      ],
+      "bridgeIds": [
+        "conversation-siege",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 14,
+      "id": "scene-mission-combat",
+      "title": "Scene / Mission / Combat",
+      "owner": "Scene.Mission",
+      "maintainers": [
+        "scene-owner",
+        "mission-owner"
+      ],
+      "entryPaths": [
+        "SceneTauntBehavior.cs",
+        "MilitaryExerciseBehavior.cs",
+        "MeetingBattleLockMissionBehavior.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Mission state clears on end; campaign owners stay separate.",
+        "keys": [
+          "scene-taunt-and-mission-symbolic-catalog"
+        ],
+        "types": [
+          "dictionary",
+          "scalar"
+        ]
+      },
+      "failureFallback": "Inapplicable native combat contexts fall through without effects.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Agent targets",
+        "Mission cleanup",
+        "Combat isolation",
+        "Escort/execution/inspection"
+      ],
+      "bridgeIds": [
+        "scene-duel",
+        "ui-runtime-integration"
+      ]
+    },
+    {
+      "number": 15,
+      "id": "duel",
+      "title": "Duel",
+      "owner": "Duel.Combat",
+      "maintainers": [
+        "duel-owner"
+      ],
+      "entryPaths": [
+        "DuelBehavior.cs",
+        "DuelSettings.cs",
+        "FourberieDuelCompatibility.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Duel cooldown/result and legacy MCM identity stay with Duel owners.",
+        "keys": [
+          "_duelCooldowns"
+        ],
+        "types": [
+          "dictionary-string-float"
+        ]
+      },
+      "failureFallback": "Invalid target/scene/stake aborts and preserves ordinary combat.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live accept/reject/cancel/death/exit",
+        "Stake/result/save",
+        "Fourberie",
+        "Typed Duel outcome"
+      ],
+      "bridgeIds": [
+        "scene-duel",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 16,
+      "id": "courier-proactive-issue",
+      "title": "Courier / Proactive / Issue",
+      "owner": "Courier.ProactiveIssue",
+      "maintainers": [
+        "courier-owner",
+        "proactive-owner",
+        "issue-owner"
+      ],
+      "entryPaths": [
+        "CourierDeliveryBehavior.cs",
+        "ProactiveNpcRequestBehavior.cs",
+        "VanillaIssueOfferBridge.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Courier/proactive/issue keep distinct state and vanilla authority.",
+        "keys": [
+          "_af_courier_sessions_v1",
+          "courier-letter-and-proactive-symbolic-catalog"
+        ],
+        "types": [
+          "string-json",
+          "dictionary",
+          "list"
+        ]
+      },
+      "failureFallback": "Courier stale/duplicates stop; invalid Issue paths return to vanilla.",
+      "defaultState": "MIXED_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Courier save lifecycle",
+        "Opening/Pending",
+        "Issue completion facts",
+        "Proactive/Issue receipts"
+      ],
+      "bridgeIds": [
+        "conversation-courier",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 17,
+      "id": "social-progression-reports",
+      "title": "Social / Progression / Reports",
+      "owner": "Social.ProgressionReports",
+      "maintainers": [
+        "social-owner",
+        "reports-owner"
+      ],
+      "entryPaths": [
+        "PlayerNotorietyBehavior.cs",
+        "NobleGatheringBehavior.cs",
+        "AnimusForgeUniqueCosmeticItemBehavior.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "Social/report/item/Notoriety owners retain state and migrations.",
+        "keys": [
+          "_af_player_notoriety_state_v1",
+          "_af_unreadWeeklyReportNotices_v1",
+          "_af_xihai_legacy_equipment_cleanup_v1"
+        ],
+        "types": [
+          "string-json",
+          "list",
+          "bool"
+        ]
+      },
+      "failureFallback": "Unknown receipts never reroll; migrations/cooldowns fail closed.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real MBRandom",
+        "Romance/gathering",
+        "Item migration",
+        "Weekly/legacy save-load"
+      ],
+      "bridgeIds": [
+        "memory-social-reports",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 18,
+      "id": "knowledge-persona-profile",
+      "title": "Knowledge / Persona / Profile",
+      "owner": "Knowledge.PersonaProfile",
+      "maintainers": [
+        "knowledge-owner",
+        "profile-owner"
+      ],
+      "entryPaths": [
+        "KnowledgeLibraryBehavior.cs",
+        "KingdomStrategicProfileBehavior.cs",
+        "MyBehavior.cs"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "NOT_APPLICABLE"
+      },
+      "persistence": {
+        "responsibility": "Knowledge/persona/profile keep separate file/config/save authority.",
+        "keys": [
+          "knowledge-chunk-storage",
+          "_npcPersonaProfiles_v1",
+          "kingdom-profile-symbolic-catalog"
+        ],
+        "types": [
+          "chunked-string",
+          "dictionary",
+          "file-export"
+        ]
+      },
+      "failureFallback": "Missing model/index/provider falls back without publishing stale results.",
+      "defaultState": "LEGACY_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Real ONNX/index",
+        "Authority precedence",
+        "Old saves/PlayerExports",
+        "Focused live owner"
+      ],
+      "bridgeIds": [
+        "gateway-knowledge-profile",
+        "persistence-domain-owners"
+      ]
+    },
+    {
+      "number": 19,
+      "id": "ui-tts-external-integration",
+      "title": "UI / TTS / External Integration",
+      "owner": "UI.ExternalIntegration",
+      "maintainers": [
+        "ui-owner",
+        "tts-owner"
+      ],
+      "entryPaths": [
+        "AnimusForgeNativeConversationOverlay.cs",
+        "TtsEngine.cs",
+        "extensions/AnimusForge.XihaiAction/src/SubModule.cs"
+      ],
+      "promptAction": {
+        "prompt": "MIXED",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "UI is transient; mappings/config retain current owners.",
+        "keys": [
+          "_voiceMapping_export_folder_v1"
+        ],
+        "types": [
+          "string",
+          "user-file"
+        ]
+      },
+      "failureFallback": "UI/TTS/optional integrations fail non-fatally and never own gameplay truth.",
+      "defaultState": "MIXED_DEFAULT",
+      "currentEvidence": {
+        "offline": "VERIFY",
+        "compiled": "VERIFY",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        "Live Gauntlet",
+        "TTS cancel/lipsync",
+        "Optional/Xihai",
+        "Bilingual resources"
+      ],
+      "bridgeIds": [
+        "ui-runtime-integration",
+        "tools-content-release"
+      ]
+    },
+    {
+      "number": 20,
+      "id": "tools-content-package",
+      "title": "Tools / Content / Package",
+      "owner": "Tools.ContentRelease",
+      "maintainers": [
+        "tools-owner",
+        "release-owner"
+      ],
+      "entryPaths": [
+        "tools/PhaseEightReadiness/readiness.py",
+        "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+        "AnimusForge.csproj"
+      ],
+      "promptAction": {
+        "prompt": "APPLICABLE",
+        "actionPlan": "MIXED"
+      },
+      "persistence": {
+        "responsibility": "Tools/content/package are not gameplay save owners; protect PlayerExports/ONNX.",
+        "keys": [],
+        "types": [
+          "json",
+          "xml",
+          "dll",
+          "zip",
+          "onnx-external-data"
+        ]
+      },
+      "failureFallback": "Tools fail closed and never deploy or execute evidence implicitly.",
+      "defaultState": "TOOL_ONLY",
+      "currentEvidence": {
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
+        "live": "NOT_RUN",
+        "save": "NOT_RUN",
+        "release": "BLOCKED"
+      },
+      "blockingGates": [
+        ".NET 10 tools",
+        "Resource/dependency closure",
+        "ZIP/install",
+        "Data backup/rollback"
+      ],
+      "bridgeIds": [
+        "tools-content-release"
+      ]
+    }
+  ],
+  "bridges": [
+    {
+      "id": "bootstrap-host",
+      "domains": [
+        "bootstrap-build",
+        "host-composition"
+      ],
+      "owner": "Build.Composition",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "SubModule.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "API_1_3",
+        "API_1_4"
+      ],
+      "blockingGates": [
+        "Real dual-API Host"
+      ]
+    },
+    {
+      "id": "host-runtime",
+      "domains": [
+        "host-composition",
+        "runtime-diagnostics"
+      ],
+      "owner": "Foundation.Runtime",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "SubModule.cs",
+        "CampaignTickDiagnosticsPatch.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "PARTIAL_START_CLEANUP",
+        "STALE_COMPLETION"
+      ],
+      "blockingGates": [
+        "Live lifecycle isolation"
+      ]
+    },
+    {
+      "id": "runtime-game-adapter",
+      "domains": [
+        "runtime-diagnostics",
+        "game-adapter-compatibility"
+      ],
+      "owner": "Compatibility.GameAdapter",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "BannerlordApiCompat.cs",
+        "InteractionComponentSafePatch.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "OPTIONAL_DEPENDENCY_MISSING",
+        "NATIVE_FALLBACK"
+      ],
+      "blockingGates": [
+        "Real reflection/Harmony"
+      ]
+    },
+    {
+      "id": "persistence-domain-owners",
+      "domains": [
+        "persistence-config",
+        "memory-afef",
+        "economy-reward-debt",
+        "policy-political",
+        "world-simulation-worldmap",
+        "settlement-siege-gccz-sets",
+        "duel",
+        "courier-proactive-issue",
+        "social-progression-reports",
+        "knowledge-persona-profile"
+      ],
+      "owner": "Foundation.Persistence",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "CampaignSaveChunkHelper.cs",
+        "docs/fixtures/phase4-persistence-profile-config/syncdata-binding-catalog.json"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "OLD_SAVE",
+        "ROUND_TRIP",
+        "CORRUPT_DATA"
+      ],
+      "blockingGates": [
+        "Real old-save round-trip"
+      ]
+    },
+    {
+      "id": "conversation-gateway",
+      "domains": [
+        "conversation-encounter",
+        "gateway-prompt-protocol"
+      ],
+      "owner": "Conversation.Gateway",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "ShoutBehavior.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "TIMEOUT",
+        "CANCELLATION",
+        "STREAM_END"
+      ],
+      "blockingGates": [
+        "Real provider/three channels"
+      ]
+    },
+    {
+      "id": "conversation-action",
+      "domains": [
+        "conversation-encounter",
+        "action-commit"
+      ],
+      "owner": "Conversation.ActionCommit",
+      "implementationState": "OPT_IN",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+        "Refactor/Runtime/InteractionResultCommitter.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "STALE_TARGET",
+        "STARTED_NO_REPLAY"
+      ],
+      "blockingGates": [
+        "Default cutover",
+        "Real non-Economy effects"
+      ]
+    },
+    {
+      "id": "action-memory",
+      "domains": [
+        "action-commit",
+        "memory-afef"
+      ],
+      "owner": "Action.Memory",
+      "implementationState": "OPT_IN",
+      "entryPaths": [
+        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "MyBehavior.MemoryRecovery.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "HISTORY_WRITTEN",
+        "MEMORY_FAILURE"
+      ],
+      "blockingGates": [
+        "Real AFEF/save reload"
+      ]
+    },
+    {
+      "id": "action-economy",
+      "domains": [
+        "action-commit",
+        "economy-reward-debt"
+      ],
+      "owner": "Action.Economy",
+      "implementationState": "OPT_IN",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "RewardSystemBehavior.EconomyReplay.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "PARTIAL_EFFECT",
+        "UNKNOWN_AFTER_START"
+      ],
+      "blockingGates": [
+        "Live Hero/Party/Merchant/debt"
+      ]
+    },
+    {
+      "id": "policy-world-diplomacy",
+      "domains": [
+        "policy-political",
+        "world-simulation-worldmap"
+      ],
+      "owner": "Policy.WorldDiplomacy",
+      "implementationState": "DESIGN_ONLY",
+      "entryPaths": [
+        "PolicySystem/Core/CustomPolicyBehavior.cs",
+        "WorldDiplomacyBehavior.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "INCOMPATIBLE_VERSION",
+        "SAVE_DATA_PRESERVED"
+      ],
+      "blockingGates": [
+        "Co-owner live/save review"
+      ]
+    },
+    {
+      "id": "conversation-siege",
+      "domains": [
+        "conversation-encounter",
+        "settlement-siege-gccz-sets"
+      ],
+      "owner": "Conversation.SettlementSiege",
+      "implementationState": "DESIGN_ONLY",
+      "entryPaths": [
+        "AfGcczShoutBridge.cs",
+        "SiegeAiInterventionBehavior.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "ACTIVE_STAGE_ONLY",
+        "SAVE_DATA_PRESERVED"
+      ],
+      "blockingGates": [
+        "Co-owner live/save review",
+        "Ordinary-scene isolation"
+      ]
+    },
+    {
+      "id": "scene-duel",
+      "domains": [
+        "scene-mission-combat",
+        "duel"
+      ],
+      "owner": "Scene.Duel",
+      "implementationState": "BLOCKED_LIVE",
+      "entryPaths": [
+        "SceneTauntBehavior.cs",
+        "DuelBehavior.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "MISSION_END",
+        "NATIVE_COMBAT_ISOLATION"
+      ],
+      "blockingGates": [
+        "Real Mission combinations"
+      ]
+    },
+    {
+      "id": "conversation-courier",
+      "domains": [
+        "conversation-encounter",
+        "courier-proactive-issue"
+      ],
+      "owner": "Conversation.Courier",
+      "implementationState": "OPT_IN",
+      "entryPaths": [
+        "CourierDeliveryBehavior.cs",
+        "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "DELIVERY_RESTART",
+        "DUPLICATE_COMPLETION"
+      ],
+      "blockingGates": [
+        "Real Courier save lifecycle"
+      ]
+    },
+    {
+      "id": "memory-social-reports",
+      "domains": [
+        "memory-afef",
+        "social-progression-reports"
+      ],
+      "owner": "Memory.SocialReports",
+      "implementationState": "OPT_IN",
+      "entryPaths": [
+        "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "PlayerNotorietyBehavior.ConversationOutcomes.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "EXACT_IDENTITY",
+        "OPEN_LOAD_UNKNOWN"
+      ],
+      "blockingGates": [
+        "Real weekly/notoriety sequencing"
+      ]
+    },
+    {
+      "id": "gateway-knowledge-profile",
+      "domains": [
+        "gateway-prompt-protocol",
+        "knowledge-persona-profile"
+      ],
+      "owner": "Gateway.KnowledgeProfile",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+        "KnowledgeLibraryBehavior.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "INDEX_STALE",
+        "PROVIDER_MISSING"
+      ],
+      "blockingGates": [
+        "Real model/index/authority"
+      ]
+    },
+    {
+      "id": "ui-runtime-integration",
+      "domains": [
+        "runtime-diagnostics",
+        "scene-mission-combat",
+        "ui-tts-external-integration"
+      ],
+      "owner": "UI.RuntimeIntegration",
+      "implementationState": "ACTIVE_BOUNDARY",
+      "entryPaths": [
+        "AnimusForgeNativeConversationOverlay.cs",
+        "TtsEngine.cs"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "FOCUS_CLOSE",
+        "OPTIONAL_DEPENDENCY_MISSING"
+      ],
+      "blockingGates": [
+        "Live Gauntlet/TTS/extension"
+      ]
+    },
+    {
+      "id": "tools-content-release",
+      "domains": [
+        "bootstrap-build",
+        "ui-tts-external-integration",
+        "tools-content-package"
+      ],
+      "owner": "Tools.ContentRelease",
+      "implementationState": "DESIGN_ONLY",
+      "entryPaths": [
+        "tools/PhaseEightReadiness/readiness.py",
+        "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "PACKAGE_ALLOWLIST",
+        "ROLLBACK_DRILL"
+      ],
+      "blockingGates": [
+        "Final package/install/resource evidence"
+      ]
+    }
+  ]
+}

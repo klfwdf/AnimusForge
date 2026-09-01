@@ -3,6 +3,10 @@
   "id": "replace-with-owner-scenario-api-id",
   "mode": "real",
   "moduleId": "af.module.conversation",
+  "domainIds": [
+    "conversation-encounter"
+  ],
+  "cleanupCandidateIds": [],
   "layer": "LIVE",
   "kind": "game-scenario",
   "apiLine": "1.3",

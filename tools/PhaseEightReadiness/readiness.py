@@ -20,7 +20,9 @@ BRIDGES = {
     "af.bridge.conversation-siege": "docs/fixtures/phase2-settlement-policy-bridges/settlement-siege-composition.json",
     "af.bridge.policy-diplomacy": "docs/fixtures/phase2-settlement-policy-bridges/policy-diplomacy-composition.json",
 }
-POLICY_FILES = (CATALOG, COMPOSITION, *BRIDGES.values())
+DOMAIN_CATALOG = "docs/phase8/full-domain-readiness-catalog.json"
+CLEANUP_CATALOG = "docs/phase8/cleanup-candidates.json"
+POLICY_FILES = (CATALOG, COMPOSITION, *BRIDGES.values(), DOMAIN_CATALOG, CLEANUP_CATALOG)
 LAYERS = ("OFFLINE", "LIVE", "SAVE", "RELEASE")
 KINDS = {
     "OFFLINE": {"contract", "production-replay", "metadata", "stage", "readiness", "cleanup-inventory"},
@@ -35,6 +37,8 @@ BRIDGE_EXTRA_CASES = {
 }
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
+SLUG = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
+OWNER_ID = re.compile(r"^[A-Za-z][A-Za-z0-9]*(?:[._-][A-Za-z0-9]+)*$")
 RELEASE_VERSION = re.compile(r"^v?\d+\.\d+\.\d+(?:\.\d+)?(?:-[a-zA-Z0-9][a-zA-Z0-9.-]*)?$")
 GAME_BUILD = re.compile(r"^v1\.(3|4)\.\d+\.\d+$")
 MAX_JSON_BYTES = 2 * 1024 * 1024
@@ -42,6 +46,12 @@ MAX_FILE_BYTES = 512 * 1024 * 1024
 MAX_TOTAL_BYTES = 2 * 1024 * 1024 * 1024
 MAX_ITEMS = 256
 MAX_AGE = timedelta(days=14)
+DOMAIN_EVIDENCE_KEYS = {"offline", "compiled", "live", "save", "release"}
+DOMAIN_EVIDENCE_STATES = {"LOCAL_PASS", "VERIFY", "NOT_RUN", "BLOCKED"}
+PROMPT_ACTION_STATES = {"APPLICABLE", "NOT_APPLICABLE", "MIXED"}
+DEFAULT_STATES = {"LEGACY_DEFAULT", "MIXED_DEFAULT", "OPT_IN", "ACTIVE", "TOOL_ONLY"}
+BRIDGE_STATES = {"ACTIVE_BOUNDARY", "OPT_IN", "DESIGN_ONLY", "BLOCKED_LIVE"}
+STATIC_CLEANUP_DISPOSITIONS = {"KEEP", "HOLD", "REVIEW_REMOVAL"}
 
 
 class InvalidEvidence(ValueError):
@@ -148,6 +158,7 @@ class SourceState:
     commit: str
     clean: bool
     rollback_is_ancestor: bool
+    rollback_is_head: bool = False
 
 
 def git_state(project: Path, rollback: Any) -> SourceState:
@@ -162,10 +173,125 @@ def git_state(project: Path, rollback: Any) -> SourceState:
     ancestor = False
     if isinstance(rollback, str) and HEX40.fullmatch(rollback):
         ancestor = git("merge-base", "--is-ancestor", rollback, "HEAD").returncode == 0
-    return SourceState(head.stdout.strip(), not status.stdout.strip(), ancestor)
+    commit = head.stdout.strip()
+    return SourceState(commit, not status.stdout.strip(), ancestor, rollback == commit)
 
 
-def load_policy(files: EvidenceFiles) -> tuple[dict[str, dict[str, Any]], dict[str, set[str]], set[str]]:
+def exact_keys(value: Any, keys: set[str], label: str) -> dict[str, Any]:
+    require(isinstance(value, dict) and set(value) == keys, f"{label} has missing or unknown fields")
+    return value
+
+
+def source_paths(files: EvidenceFiles, paths: Any, label: str) -> list[str]:
+    require(string_list(paths) and bool(paths), f"{label} requires bounded project file paths")
+    for path in paths:
+        files.resolve("project", path)
+    return paths
+
+
+def load_domains(document: dict[str, Any], files: EvidenceFiles) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    exact_keys(document, {"schemaVersion", "catalogId", "programSource", "domains", "bridges"}, "full-domain catalog")
+    require(document.get("schemaVersion") == 1, "unsupported full-domain catalog schema")
+    require(document["catalogId"] == "af.phase8.full-domain-readiness", "unexpected full-domain catalog ID")
+    files.resolve("project", document["programSource"])
+    entries = document.get("domains")
+    require(isinstance(entries, list) and len(entries) == 20, "full-domain catalog must contain exactly 20 domains")
+    domains: dict[str, dict[str, Any]] = {}
+    numbers: set[int] = set()
+    for entry in entries:
+        exact_keys(entry, {"number", "id", "title", "owner", "maintainers", "entryPaths", "promptAction",
+                           "persistence", "failureFallback", "defaultState", "currentEvidence", "blockingGates",
+                           "bridgeIds"}, "domain")
+        domain_id = entry["id"]
+        require(isinstance(domain_id, str) and SLUG.fullmatch(domain_id) is not None, "domain ID must be an English slug")
+        require(domain_id not in domains, "duplicate domain ID")
+        require(type(entry["number"]) is int and 1 <= entry["number"] <= 20 and entry["number"] not in numbers,
+                "domain number must be unique in 1..20")
+        require(nonempty(entry["title"]), "domain title missing")
+        require(isinstance(entry["owner"], str) and OWNER_ID.fullmatch(entry["owner"]) is not None, "domain owner ID is invalid")
+        require(string_list(entry["maintainers"]) and bool(entry["maintainers"]), "domain maintainers missing")
+        require(all(OWNER_ID.fullmatch(item) is not None for item in entry["maintainers"]), "domain maintainer ID is invalid")
+        source_paths(files, entry["entryPaths"], "domain entry")
+        prompt_action = exact_keys(entry["promptAction"], {"prompt", "actionPlan"}, "prompt/action applicability")
+        require(set(prompt_action.values()) <= PROMPT_ACTION_STATES, "invalid prompt/action applicability")
+        persistence = exact_keys(entry["persistence"], {"responsibility", "keys", "types"}, "persistence responsibility")
+        require(nonempty(persistence["responsibility"]) and string_list(persistence["keys"]) and string_list(persistence["types"]),
+                "persistence responsibility is incomplete")
+        require(nonempty(entry["failureFallback"]), "failure fallback missing")
+        require(entry["defaultState"] in DEFAULT_STATES, "invalid default state")
+        evidence = exact_keys(entry["currentEvidence"], DOMAIN_EVIDENCE_KEYS, "current evidence")
+        require(set(evidence.values()) <= DOMAIN_EVIDENCE_STATES, "invalid current evidence state")
+        require(string_list(entry["blockingGates"]) and bool(entry["blockingGates"]), "blocking gates missing")
+        require(string_list(entry["bridgeIds"]) and bool(entry["bridgeIds"]), "domain bridge inventory missing")
+        domains[domain_id] = entry
+        numbers.add(entry["number"])
+    require(numbers == set(range(1, 21)), "domain numbers must cover 1..20")
+
+    bridge_entries = document.get("bridges")
+    require(isinstance(bridge_entries, list) and 0 < len(bridge_entries) <= MAX_ITEMS, "full-domain bridge matrix is missing")
+    full_bridges: dict[str, dict[str, Any]] = {}
+    for bridge in bridge_entries:
+        exact_keys(bridge, {"id", "domains", "owner", "implementationState", "entryPaths", "requiredCases",
+                            "blockingGates"}, "full-domain bridge")
+        bridge_id = bridge["id"]
+        require(isinstance(bridge_id, str) and SLUG.fullmatch(bridge_id) is not None and bridge_id not in full_bridges,
+                "full-domain bridge ID is invalid or duplicated")
+        require(string_list(bridge["domains"]) and len(set(bridge["domains"])) >= 2
+                and set(bridge["domains"]) <= set(domains), "bridge endpoints are invalid")
+        require(isinstance(bridge["owner"], str) and OWNER_ID.fullmatch(bridge["owner"]) is not None, "bridge owner ID is invalid")
+        require(bridge["implementationState"] in BRIDGE_STATES, "invalid bridge implementation state")
+        source_paths(files, bridge["entryPaths"], "bridge entry")
+        require(string_list(bridge["requiredCases"]) and bool(bridge["requiredCases"]), "bridge cases missing")
+        require(string_list(bridge["blockingGates"]) and bool(bridge["blockingGates"]), "bridge blocking gates missing")
+        full_bridges[bridge_id] = bridge
+    for domain_id, domain in domains.items():
+        require(set(domain["bridgeIds"]) <= set(full_bridges), "domain references an unknown bridge")
+        require(all(domain_id in full_bridges[item]["domains"] for item in domain["bridgeIds"]),
+                "domain/bridge endpoint mapping is inconsistent")
+    return domains, full_bridges
+
+
+def load_cleanup_inventory(document: dict[str, Any], files: EvidenceFiles,
+                           domains: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    exact_keys(document, {"schemaVersion", "catalogId", "baselineCommit", "candidates"}, "cleanup inventory")
+    require(document.get("schemaVersion") == 1, "unsupported cleanup inventory schema")
+    require(document["catalogId"] == "af.phase8.cleanup-candidates", "unexpected cleanup inventory ID")
+    baseline = document.get("baselineCommit")
+    require(isinstance(baseline, str) and HEX40.fullmatch(baseline) is not None, "cleanup inventory baseline must be a full commit")
+    entries = document.get("candidates")
+    require(isinstance(entries, list) and 0 < len(entries) <= MAX_ITEMS, "cleanup inventory must be explicit and nonempty")
+    candidates: dict[str, dict[str, Any]] = {}
+    for entry in entries:
+        exact_keys(entry, {"id", "path", "symbols", "ownerDomainId", "disposition", "rationale", "activeCallers",
+                           "dynamicEntryPoints", "compatibilityResponsibilities", "replacement", "deletePreconditions",
+                           "rollback", "risk"}, "cleanup inventory candidate")
+        candidate_id = entry["id"]
+        require(isinstance(candidate_id, str) and SLUG.fullmatch(candidate_id) is not None and candidate_id not in candidates,
+                "cleanup candidate ID is invalid or duplicated")
+        path = entry["path"]
+        require(nonempty(path), "cleanup candidate path is missing")
+        files.resolve("project", path)
+        require(string_list(entry["symbols"]) and bool(entry["symbols"]), "cleanup symbols missing")
+        require(entry["ownerDomainId"] in domains, "cleanup candidate owner domain is unknown")
+        require(entry["disposition"] in STATIC_CLEANUP_DISPOSITIONS, "invalid cleanup disposition")
+        require(nonempty(entry["rationale"]) and nonempty(entry["risk"]), "cleanup rationale/risk missing")
+        for name in ("activeCallers", "dynamicEntryPoints", "compatibilityResponsibilities", "replacement", "deletePreconditions"):
+            require(string_list(entry[name]), f"cleanup {name} must be an explicit string array")
+        rollback = exact_keys(entry["rollback"], {"strategy", "checkpoint"}, "cleanup rollback")
+        require(rollback["strategy"] == "git-revert-after-reviewed-removal"
+                and isinstance(rollback["checkpoint"], str) and HEX40.fullmatch(rollback["checkpoint"]) is not None,
+                "cleanup rollback must use a full reviewed checkpoint")
+        if entry["disposition"] == "REVIEW_REMOVAL":
+            require(not entry["activeCallers"] and not entry["dynamicEntryPoints"]
+                    and not entry["compatibilityResponsibilities"], "active responsibility prevents removal review")
+            require(entry["replacement"] and entry["deletePreconditions"], "removal review lacks replacement/gates")
+        candidates[candidate_id] = entry
+    return candidates
+
+
+def load_policy(files: EvidenceFiles) -> tuple[dict[str, dict[str, Any]], dict[str, set[str]], set[str],
+                                               dict[str, dict[str, Any]], dict[str, dict[str, Any]],
+                                               dict[str, dict[str, Any]]]:
     documents = {path: decode_json(files.bounded_read(files.resolve("project", path), None, True)) for path in POLICY_FILES}
     entries = documents[CATALOG].get("modules", [])
     require(isinstance(entries, list) and 0 < len(entries) <= MAX_ITEMS, "module catalog is empty or invalid")
@@ -186,7 +312,9 @@ def load_policy(files: EvidenceFiles) -> tuple[dict[str, dict[str, Any]], dict[s
     require(BRIDGE_EXTRA_CASES <= composition_ids, "existing composition contract changed; review policy mapping")
     bridges = {module_id: case_ids(documents[path]) | BRIDGE_EXTRA_CASES for module_id, path in BRIDGES.items()}
     require(set(bridges) <= set(modules), "bridge IDs missing from existing catalog")
-    return modules, bridges, composition_ids
+    domains, full_bridges = load_domains(documents[DOMAIN_CATALOG], files)
+    cleanup_candidates = load_cleanup_inventory(documents[CLEANUP_CATALOG], files, domains)
+    return modules, bridges, composition_ids, domains, full_bridges, cleanup_candidates
 
 
 def review(record: dict[str, Any], maintainers: list[str], now: datetime, recorded: datetime) -> None:
@@ -199,6 +327,7 @@ def review(record: dict[str, Any], maintainers: list[str], now: datetime, record
 
 
 def validate_record(record: dict[str, Any], files: EvidenceFiles, modules: dict[str, Any],
+                    domains: dict[str, dict[str, Any]], cleanup_inventory: dict[str, dict[str, Any]],
                     artifacts: dict[str, Any], commit: str, release_version: str, mode: str, now: datetime) -> None:
     require(record.get("schemaVersion") == 1 and record.get("mode") == mode, "evidence schema/mode mismatch")
     require(nonempty(record.get("id")) and nonempty(record.get("moduleId")) and record["moduleId"] in modules, "unknown evidence/module ID")
@@ -213,7 +342,16 @@ def validate_record(record: dict[str, Any], files: EvidenceFiles, modules: dict[
     require(string_list(record.get("steps")) and bool(record["steps"]), "replay steps missing")
     require(nonempty(record.get("expected")) and nonempty(record.get("observed")), "expected/observed result missing")
     require(string_list(record.get("caseIds")), "caseIds must be an explicit array")
-    review(record, modules[record["moduleId"]]["maintainers"], now, recorded)
+    domain_ids = record.get("domainIds")
+    require(string_list(domain_ids) and bool(domain_ids) and len(domain_ids) == len(set(domain_ids))
+            and set(domain_ids) <= set(domains), "evidence must declare known unique domain IDs")
+    required_reviewers = set(modules[record["moduleId"]]["maintainers"])
+    for domain_id in domain_ids:
+        required_reviewers.update(domains[domain_id]["maintainers"])
+    review(record, sorted(required_reviewers), now, recorded)
+    cleanup_candidate_ids = record.get("cleanupCandidateIds", [])
+    require(string_list(cleanup_candidate_ids) and len(cleanup_candidate_ids) == len(set(cleanup_candidate_ids))
+            and set(cleanup_candidate_ids) <= set(cleanup_inventory), "evidence cleanup candidate IDs are invalid")
     require(isinstance(record.get("artifactHashes"), dict), "artifactHashes missing")
     for artifact_id, checksum in record["artifactHashes"].items():
         require(artifact_id in artifacts and checksum == artifacts[artifact_id]["file"]["sha256"], "artifact identity/hash mismatch")
@@ -254,10 +392,10 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
 
     report: dict[str, Any] = {
         "schemaVersion": 1, "status": "BLOCKED", "preparationReport": True,
-        "scope": "existing-phase3-catalog-only", "fullProjectReleaseReady": False,
+        "scope": "full-20-domain-program-with-existing-8-id-design-catalog", "fullProjectReleaseReady": False,
         "authorization": {name: False for name in ("delete", "defaultSwitch", "deploy", "push", "publish")},
-        "checkedAt": now.isoformat(), "modules": [], "blockingIssues": issues,
-        "limitations": ["Catalog scope is not the complete 20-domain program.",
+        "checkedAt": now.isoformat(), "modules": [], "domains": [], "blockingIssues": issues,
+        "limitations": ["The 20 domains are acceptance responsibility buckets, not 20 deployed physical modules.",
                         "Hashes detect changed files; they do not prove human evidence authenticity.",
                         "No command from evidence is executed; readiness is not action authorization."],
     }
@@ -277,10 +415,17 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
     policy = check("EXISTING_CONTRACTS", lambda: load_policy(files))
     if document is None or policy is None:
         return report
-    modules, bridges, composition_cases = policy
+    modules, bridges, composition_cases, domains, full_bridges, cleanup_inventory = policy
     report["mode"] = document["mode"]
     report["requiredModuleIds"] = sorted(modules)
+    report["requiredDomainIds"] = [item["id"] for item in sorted(domains.values(), key=lambda item: item["number"])]
     report["requiredCompositionCaseIds"] = sorted(composition_cases)
+    report["fullDomainBridgeIds"] = sorted(full_bridges)
+    report["cleanupInventory"] = {
+        "candidateCount": len(cleanup_inventory),
+        "dispositions": {state: sum(1 for item in cleanup_inventory.values() if item["disposition"] == state)
+                         for state in sorted(STATIC_CLEANUP_DISPOSITIONS)},
+    }
     source = document.get("source", {})
     rollback = document.get("rollback", {})
     if not isinstance(source, dict) or not isinstance(rollback, dict):
@@ -331,7 +476,8 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
     for index, reference in enumerate(references):
         def accept_record(reference: Any = reference) -> None:
             record = files.reference(reference, parse=True)
-            validate_record(record, files, modules, artifacts, commit, release_version, document["mode"], now)
+            validate_record(record, files, modules, domains, cleanup_inventory, artifacts, commit,
+                            release_version, document["mode"], now)
             require(record["id"] not in records, "duplicate evidence ID")
             records[record["id"]] = record
         check(f"EVIDENCE_{index}", accept_record)
@@ -348,14 +494,33 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
             if not covered:
                 issues.append({"code": "MISSING_" + layer, "detail": module_id})
         report["modules"].append({"id": module_id, "owner": module["owner"], "layers": coverage})
+    for domain in sorted(domains.values(), key=lambda item: item["number"]):
+        accepted = [record for record in records.values() if domain["id"] in record["domainIds"]]
+        coverage: dict[str, str] = {}
+        for layer in LAYERS:
+            lines = ("1.3", "1.4") if layer in ("LIVE", "SAVE") else ("agnostic",)
+            covered = all(any(record["layer"] == layer and record["apiLine"] == api
+                              and (layer != "RELEASE" or record["kind"] == "package-validation")
+                              for record in accepted) for api in lines)
+            coverage[layer] = "EVIDENCE-ACCEPTED" if covered else "BLOCKED"
+            if not covered:
+                issues.append({"code": "MISSING_DOMAIN_" + layer, "detail": domain["id"]})
+        report["domains"].append({
+            "number": domain["number"], "id": domain["id"], "title": domain["title"],
+            "owner": domain["owner"], "defaultState": domain["defaultState"],
+            "declaredEvidence": domain["currentEvidence"], "layers": coverage,
+            "blockingGates": domain["blockingGates"],
+        })
     for module_id, cases in bridges.items():
-        for layer, api in (("OFFLINE", "agnostic"), ("LIVE", "1.3"), ("LIVE", "1.4")):
+        for layer, api in (("OFFLINE", "agnostic"), ("LIVE", "1.3"), ("LIVE", "1.4"),
+                           ("SAVE", "1.3"), ("SAVE", "1.4")):
             covered_cases = {case for record in records.values()
                              if (record["moduleId"], record["layer"], record["apiLine"]) == (module_id, layer, api)
                              for case in record["caseIds"]}
             if not cases <= covered_cases:
                 issues.append({"code": "BRIDGE_MATRIX", "detail": f"{module_id}/{layer}/{api}: {','.join(sorted(cases - covered_cases))}"})
-    for layer, api in (("OFFLINE", "agnostic"), ("LIVE", "1.3"), ("LIVE", "1.4")):
+    for layer, api in (("OFFLINE", "agnostic"), ("LIVE", "1.3"), ("LIVE", "1.4"),
+                       ("SAVE", "1.3"), ("SAVE", "1.4")):
         covered = {case for record in records.values()
                    if (record["moduleId"], record["layer"], record["apiLine"]) == ("af.foundation.runtime", layer, api)
                    for case in record["caseIds"]}
@@ -377,9 +542,13 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
         paths = set()
         for candidate in candidates:
             require(isinstance(candidate, dict), "cleanup candidate must be an object")
+            inventory_id = candidate.get("inventoryCandidateId")
+            require(nonempty(inventory_id) and inventory_id in cleanup_inventory, "cleanup candidate is not in the reviewed inventory")
+            inventory = cleanup_inventory[inventory_id]
             files.reference(candidate.get("file"))
             require(candidate["file"]["root"] == "project", "cleanup candidate must be project-local")
             path = candidate["file"]["path"]
+            require(path == inventory["path"], "cleanup candidate path does not match its inventory entry")
             require(path not in paths, "duplicate cleanup candidate")
             paths.add(path)
             module_id = candidate.get("moduleId")
@@ -390,20 +559,40 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
             disposition = candidate.get("disposition")
             require(disposition in ("KEEP", "REVIEW_REMOVAL"), "cleanup disposition is not authorization")
             if disposition == "REVIEW_REMOVAL":
+                require(inventory["disposition"] == "REVIEW_REMOVAL", "inventory has not admitted this removal review")
                 require(not candidate["activeCallers"] and not candidate["dynamicEntryPoints"] and not candidate["saveIdentityRequired"], "active caller/dynamic entry/save responsibility prevents removal review")
                 replacement = candidate.get("replacementEvidenceIds")
                 require(string_list(replacement) and bool(replacement), "replacement evidence missing")
                 require(all(item in records and records[item]["moduleId"] == module_id for item in replacement), "replacement evidence owner mismatch")
+                require(all(inventory_id in records[item].get("cleanupCandidateIds", []) for item in replacement),
+                        "replacement evidence is not bound to this cleanup candidate")
+                require(all(inventory["ownerDomainId"] in records[item]["domainIds"] for item in replacement),
+                        "replacement evidence does not cover the candidate owner domain")
                 required = {(layer, api) for layer in LAYERS for api in (("1.3", "1.4") if layer in ("LIVE", "SAVE") else ("agnostic",))}
                 actual = {(records[item]["layer"], records[item]["apiLine"]) for item in replacement
                           if records[item]["layer"] != "RELEASE" or records[item]["kind"] == "package-validation"}
                 require(required <= actual, "replacement lacks offline/live/save/release evidence")
+                candidate_rollback = exact_keys(candidate.get("rollback"),
+                                                {"commit", "evidenceId", "saveSideEffectsNotUndone"},
+                                                "candidate rollback")
+                require(isinstance(candidate_rollback["commit"], str)
+                        and HEX40.fullmatch(candidate_rollback["commit"]) is not None,
+                        "candidate rollback commit missing")
+                rollback_record = evidence_for(candidate_rollback["evidenceId"], "af.foundation.runtime",
+                                               "RELEASE", "rollback-drill")
+                require(rollback_record.get("rollbackTargetCommit") == candidate_rollback["commit"],
+                        "candidate rollback drill targets a different commit")
+                require(inventory_id in rollback_record.get("cleanupCandidateIds", []),
+                        "candidate rollback drill is not bound to this cleanup candidate")
+                require(candidate_rollback["saveSideEffectsNotUndone"] is True,
+                        "candidate source rollback does not undo save side effects")
 
     check("CLEANUP_REVIEW", cleanup_review)
 
     def rollback_review() -> None:
         require(isinstance(rollback.get("commit"), str) and HEX40.fullmatch(rollback["commit"]) is not None, "full rollback commit missing")
         require(state is not None and state.rollback_is_ancestor, "rollback commit must exist in current Git ancestry")
+        require(not state.rollback_is_head, "rollback commit must be a strict ancestor, not current HEAD")
         record = evidence_for(rollback.get("evidenceId"), "af.foundation.runtime", "RELEASE", "rollback-drill")
         require(record.get("rollbackTargetCommit") == rollback["commit"], "rollback drill does not bind the declared target commit")
         require(rollback.get("saveSideEffectsNotUndone") is True, "source rollback does not undo save side effects")
