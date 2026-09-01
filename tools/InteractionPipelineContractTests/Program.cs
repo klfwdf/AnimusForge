@@ -245,9 +245,11 @@ ActionPlan nativeActionPlan = actionParser.Parse(
         new[] { "ACTION:DUEL", "ACTION:MOOD" },
         new CapabilitySet(new[] { "action.parse" })));
 AssertTrue(
-    nativeActionExecutor.ValidateAndExecute(nativeActionPlan, snapshot) == InteractionStatus.Executed
-        && nativeActionCallbackCount == 1,
-    "Native ActionPlan executor did not execute an exact authorized raw plan");
+    nativeActionExecutor.ValidateAndExecute(nativeActionPlan, snapshot) == InteractionStatus.NonRetryableFailure
+        && nativeActionCallbackCount == 1
+        && nativeActionExecutor.EffectState == ActionExecutionEffectState.UnknownAfterStart
+        && nativeActionExecutor.ExecutionErrorCode == "duel.outcome_pending",
+    "Native Duel dispatch was promoted to a synchronous gameplay success");
 ActionPlan tamperedNativeActionPlan = new ActionPlan(
     nativeActionPlan.Actions,
     nativeActionPlan.RawPostprocessId + " [ACTION:SECRET]");

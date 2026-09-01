@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AnimusForge.Refactor.Runtime;
 using HarmonyLib;
 using SandBox.Missions.MissionLogics;
 using SandBox.Missions.MissionLogics.Arena;
@@ -30,10 +31,12 @@ using TaleWorlds.SaveSystem;
 
 namespace AnimusForge;
 
-public class DuelBehavior : CampaignBehaviorBase
+public partial class DuelBehavior : CampaignBehaviorBase
 {
 	private class DuelAfterLines
 	{
+		public string DuelOutcomeId;
+
 		public string WinLine;
 
 		public string LoseLine;
@@ -43,6 +46,8 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private class PendingDuelStake
 	{
+		public string DuelOutcomeId;
+
 		public int Gold;
 
 		public Dictionary<string, int> Items;
@@ -60,6 +65,8 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private class PendingDuelDebtTag
 	{
+		public string DuelOutcomeId;
+
 		public int Amount;
 
 		public int DueDays;
@@ -71,6 +78,8 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private sealed class WildernessDuelBattleRuntime
 	{
+		public DuelOutcomeStartIdentity DuelOutcomeStart;
+
 		public Hero TargetHero;
 
 		public CharacterObject TargetCharacter;
@@ -155,6 +164,17 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			if (_runtime != null)
 			{
+				if (_runtime.DuelOutcomeStart == null)
+				{
+					TryBeginDuelOutcome(
+						ResolveDuelOutcomeSubjectId(
+							_runtime.TargetHero,
+							_runtime.TargetCharacter,
+							_runtime.NonHeroMemoryId),
+						DuelSessionKind.Wilderness,
+						"wilderness_after_start",
+						out _runtime.DuelOutcomeStart);
+				}
 				LogWildernessDuelDiagnostic("vanilla_behavior.AfterStart", _runtime.DiagnosticId, _runtime.TargetHero);
 			}
 			_startedLogged = true;
@@ -180,6 +200,13 @@ public class DuelBehavior : CampaignBehaviorBase
 					if (!_runtime.SettlementDone)
 					{
 						TryResolveResultFromAgents("OnEndMission");
+					}
+					if (!_runtime.SettlementDone)
+					{
+						MarkDuelOutcomeUnknown(
+							_runtime.DuelOutcomeStart,
+							"mission_result_unobserved",
+							"wilderness_on_end_mission");
 					}
 					CleanupWildernessDuelRuntime(_runtime, "OnEndMission");
 				}
@@ -548,6 +575,8 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private class ArenaDuelMissionBehavior : MissionBehavior
 	{
+		private DuelOutcomeStartIdentity _duelOutcomeStart;
+
 		private readonly Hero _targetHero;
 
 		private readonly CharacterObject _targetCharacter;
@@ -650,6 +679,10 @@ public class DuelBehavior : CampaignBehaviorBase
 					_arenaMissionActive = true;
 					SetupArenaDuel();
 					_setupDone = _localAgentsSpawned;
+					if (_setupDone)
+					{
+						EnsureDuelOutcomeStarted("arena_after_start");
+					}
 					if (_isWildernessDuel)
 					{
 						LogWildernessDuelDiagnostic("behavior.AfterStart.after_setup spawned=" + _localAgentsSpawned, _diagnosticId, _targetHero);
@@ -687,6 +720,26 @@ public class DuelBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+		}
+
+		protected override void OnEndMission()
+		{
+			bool needsUnknown = !_localDuelResultRecorded;
+			if (!needsUnknown && _duelOutcomeStart != null)
+			{
+				needsUnknown = !TryReadDuelOutcome(
+					_duelOutcomeStart.DuelId,
+					out DuelOutcomeReceipt receipt)
+					|| !receipt.IsTerminal;
+			}
+			if (needsUnknown)
+			{
+				MarkDuelOutcomeUnknown(
+					_duelOutcomeStart,
+					"mission_result_unobserved",
+					"arena_on_end_mission");
+			}
+			base.OnEndMission();
 		}
 
 		private void SetupArenaDuel()
@@ -841,6 +894,22 @@ public class DuelBehavior : CampaignBehaviorBase
 				}
 			}
 			return null;
+		}
+
+		private void EnsureDuelOutcomeStarted(string source)
+		{
+			if (_duelOutcomeStart != null)
+			{
+				return;
+			}
+			TryBeginDuelOutcome(
+				ResolveDuelOutcomeSubjectId(
+					_targetHero,
+					_targetCharacter,
+					_pendingNonHeroDuelMemoryId),
+				_isWildernessDuel ? DuelSessionKind.Wilderness : DuelSessionKind.Arena,
+				source,
+				out _duelOutcomeStart);
 		}
 
 		private static bool TryGetTaggedFrame(Scene scene, string[] tags, out MatrixFrame frame)
@@ -1257,6 +1326,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					return;
 				}
 			}
+			EnsureDuelOutcomeStarted("arena_mission_tick");
 			if (_localPreFightActive)
 			{
 				float currentTime = base.Mission.CurrentTime;
@@ -1305,6 +1375,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				try
 				{
 					Logger.Log("ArenaDuel", "[Input] 用户按下了 TAB 键，请求退出。");
+					if (!_localDuelResultRecorded)
+					{
+						MarkDuelOutcomeUnknown(
+							_duelOutcomeStart,
+							"player_exit_before_result",
+							"arena_tab_exit");
+					}
 					AnimusForgeQuickInfo.Show("正在退出竞技场...");
 					_arenaMissionLeaveRequested = true;
 					if (Instance != null)
@@ -1443,6 +1520,14 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				_localDuelResultRecorded = true;
 				bool flag = !playerDefeated;
+				DuelOutcomeStartIdentity typedStart = _duelOutcomeStart;
+				TryRecordDuelOutcome(
+					typedStart,
+					flag,
+					"arena_local_result",
+					out DuelOutcomeResultIdentity typedResult);
+				try
+				{
 				if (Instance != null && _targetHero != null && !string.IsNullOrEmpty(_targetHero.StringId))
 				{
 					Instance._lastDuelResults[_targetHero.StringId] = (flag ? 1 : (-1));
@@ -1452,26 +1537,96 @@ public class DuelBehavior : CampaignBehaviorBase
 					SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
 					MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _isWildernessDuel ? "wilderness" : "arena");
 				}
-				string renownText = ApplyDuelRenownPenaltyAndBuildResultText(_targetHero, flag);
+				string renownText = ApplyDuelRenownPenaltyAndBuildResultText(
+					_targetHero,
+					flag,
+					out DuelOutcomeEffectState renownEffect);
 				_localPostDuelFreezeActive = true;
 				float currentTime = base.Mission.CurrentTime;
 				_localPostDuelExitTimer = currentTime + 10f;
 				Agent agent = FindTargetAgent();
-				TryPostDuelAiShout(_targetHero, agent, flag);
+				TryPostDuelAiShout(
+					_targetHero,
+					agent,
+					flag,
+					typedStart?.DuelId);
 				if (agent != null && agent.IsActive())
 				{
-					SetAgentController(agent, "None");
-					agent.SetMortalityState(Agent.MortalityState.Invulnerable);
+					try
+					{
+						SetAgentController(agent, "None");
+						agent.SetMortalityState(Agent.MortalityState.Invulnerable);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("DuelOutcome", "[WARN] arena target freeze failed before typed finalize: " + ex.Message);
+					}
 				}
 				if (Agent.Main != null && Agent.Main.IsActive())
 				{
-					Agent.Main.SetMortalityState(Agent.MortalityState.Invulnerable);
+					try
+					{
+						Agent.Main.SetMortalityState(Agent.MortalityState.Invulnerable);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("DuelOutcome", "[WARN] arena player freeze failed before typed finalize: " + ex.Message);
+					}
 				}
-				string text = (_targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag) : "";
+				DuelOutcomeEffectState stakeEffect = DuelOutcomeEffectState.NotApplicable;
+				string text = (_targetHero != null)
+					? ApplyDuelStakeSettlementAndBuildResultText(
+						_targetHero,
+						flag,
+						typedStart?.DuelId,
+						out stakeEffect)
+					: "";
+				DuelOutcomeEffectState memoryEffect = _targetHero != null
+					? DuelOutcomeEffectState.AttemptedUnconfirmed
+					: DuelOutcomeEffectState.NotApplicable;
+				if (TryCreateDuelOutcomeEffects(
+					memoryEffect,
+					memoryEffect,
+					playerDefeated
+						? DuelOutcomeEffectState.AttemptedUnconfirmed
+						: DuelOutcomeEffectState.NotApplicable,
+					renownEffect,
+					stakeEffect,
+					out DuelOutcomeEffects effects))
+				{
+					bool finalized = TryFinalizeDuelOutcome(
+						typedResult,
+						"arena_local_result",
+						effects,
+						out _);
+					if (!finalized)
+					{
+						MarkDuelOutcomeUnknown(
+							typedStart,
+							"finalization_unobserved",
+							"arena_local_result");
+					}
+				}
+				else
+				{
+					MarkDuelOutcomeUnknown(
+						typedStart,
+						"effects_unavailable",
+						"arena_local_result");
+				}
 				string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 				Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 				string text3 = _isWildernessDuel ? " 10秒后返回大地图..." : " 10秒后退出竞技场...";
 				AnimusForgeQuickInfo.Show(text2 + renownText + text + text3, _targetCharacter);
+				}
+				catch (Exception ex)
+				{
+					MarkDuelOutcomeUnknown(
+						typedStart,
+						"settlement_exception",
+						"arena_local_result");
+					Logger.Log("DuelOutcome", "[ERROR] arena settlement failed after result lock: " + ex);
+				}
 			}
 		}
 	}
@@ -1975,6 +2130,61 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static void ClearPendingDuelDebtTag(Hero hero)
+	{
+		try
+		{
+			string heroId = hero?.StringId;
+			if (!string.IsNullOrWhiteSpace(heroId))
+			{
+				_pendingDuelDebtTags?.Remove(heroId);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool TryConsumePendingDuelDebtTagForOutcome(
+		Hero hero,
+		string duelOutcomeId,
+		out int amount,
+		out int dueDays,
+		out string note)
+	{
+		amount = 0;
+		dueDays = 0;
+		note = null;
+		try
+		{
+			string heroId = hero?.StringId;
+			if (string.IsNullOrWhiteSpace(heroId)
+				|| string.IsNullOrWhiteSpace(duelOutcomeId)
+				|| _pendingDuelDebtTags == null
+				|| !_pendingDuelDebtTags.TryGetValue(heroId, out PendingDuelDebtTag value)
+				|| value == null)
+			{
+				return false;
+			}
+			_pendingDuelDebtTags.Remove(heroId);
+			if (!string.Equals(value.DuelOutcomeId, duelOutcomeId, StringComparison.Ordinal))
+			{
+				return false;
+			}
+			amount = Math.Max(0, value.Amount);
+			dueDays = Math.Max(0, value.DueDays);
+			note = (value.Note ?? "").Trim();
+			return amount > 0;
+		}
+		catch
+		{
+			amount = 0;
+			dueDays = 0;
+			note = null;
+			return false;
+		}
+	}
+
 	public override void RegisterEvents()
 	{
 		Instance = this;
@@ -1982,6 +2192,22 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		if (dataStore != null && dataStore.IsLoading)
+		{
+			MarkDuelOutcomeUnknown(
+				_activeDuelOutcomeStart,
+				"save_generation_changed",
+				"syncdata_load");
+			_activeDuelOutcomeStart = null;
+			if (_wildernessDuelRuntime?.DuelOutcomeStart != null)
+			{
+				MarkDuelOutcomeUnknown(
+					_wildernessDuelRuntime.DuelOutcomeStart,
+					"save_generation_changed",
+					"syncdata_load_wilderness");
+				_wildernessDuelRuntime.DuelOutcomeStart = null;
+			}
+		}
 		try
 		{
 			dataStore.SyncData("_duelCooldowns", ref _duelCooldowns);
@@ -2077,6 +2303,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		if (TryBlockDuelForFourberieCombat())
 		{
+			DiscardUnboundDuelArtifacts(target);
 			return;
 		}
 		if (!CanTargetNpcStartDuel(target, out string blockedReason))
@@ -2086,6 +2313,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
 			}
+			DiscardUnboundDuelArtifacts(target);
 			return;
 		}
 		ShowDuelRiskWarning();
@@ -2132,6 +2360,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] failed to open independent wilderness duel; request aborted.");
 			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+			DiscardUnboundDuelArtifacts(target);
 			return;
 		}
 		if (!string.IsNullOrWhiteSpace(wildernessBlockedReason))
@@ -2179,7 +2408,10 @@ public class DuelBehavior : CampaignBehaviorBase
 				if (Instance != null)
 				{
 					Logger.Log("DuelBehavior", "[ArenaTeleport] 当前无 Active Mission，直接启动竞技场。");
-					Instance.TryTeleportToArenaForDuel(target);
+					if (!Instance.TryTeleportToArenaForDuel(target))
+					{
+						DiscardUnboundDuelArtifacts(target);
+					}
 					return;
 				}
 			}
@@ -3656,6 +3888,11 @@ public class DuelBehavior : CampaignBehaviorBase
 		runtime.SettlementDone = true;
 		runtime.PlayerDefeated = playerDefeated;
 		bool playerWon = !playerDefeated;
+		TryRecordDuelOutcome(
+			runtime.DuelOutcomeStart,
+			playerWon,
+			"wilderness_result",
+			out DuelOutcomeResultIdentity typedResult);
 		Hero targetHero = runtime.TargetHero;
 		CharacterObject targetCharacter = runtime.TargetCharacter ?? targetHero?.CharacterObject;
 		MarkWildernessDuelEncounterMenuGuard("settle:" + (source ?? ""));
@@ -3675,15 +3912,69 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				RecordWildernessNonHeroDuelResult(runtime, playerWon);
 			}
-			string renownText = ApplyDuelRenownPenaltyAndBuildResultText(targetHero, playerWon);
-			TryPostDuelAiShout(targetHero, null, playerWon);
-			string text = (targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(targetHero, playerWon) : "";
+			string renownText = ApplyDuelRenownPenaltyAndBuildResultText(
+				targetHero,
+				playerWon,
+				out DuelOutcomeEffectState renownEffect);
+			TryPostDuelAiShout(
+				targetHero,
+				null,
+				playerWon,
+				runtime.DuelOutcomeStart?.DuelId);
+			DuelOutcomeEffectState stakeEffect = DuelOutcomeEffectState.NotApplicable;
+			string text = (targetHero != null)
+				? ApplyDuelStakeSettlementAndBuildResultText(
+					targetHero,
+					playerWon,
+					runtime.DuelOutcomeStart?.DuelId,
+					out stakeEffect)
+				: "";
+			DuelOutcomeEffectState memoryEffect = targetHero != null
+				|| !string.IsNullOrWhiteSpace(runtime.NonHeroMemoryId)
+					? DuelOutcomeEffectState.AttemptedUnconfirmed
+					: DuelOutcomeEffectState.NotApplicable;
+			if (TryCreateDuelOutcomeEffects(
+				memoryEffect,
+				targetHero != null
+					? DuelOutcomeEffectState.AttemptedUnconfirmed
+					: DuelOutcomeEffectState.NotApplicable,
+				playerDefeated
+					? DuelOutcomeEffectState.AttemptedUnconfirmed
+					: DuelOutcomeEffectState.NotApplicable,
+				renownEffect,
+				stakeEffect,
+				out DuelOutcomeEffects effects))
+			{
+				bool finalized = TryFinalizeDuelOutcome(
+					typedResult,
+					"wilderness_result",
+					effects,
+					out _);
+				if (!finalized)
+				{
+					MarkDuelOutcomeUnknown(
+						runtime.DuelOutcomeStart,
+						"finalization_unobserved",
+						"wilderness_result");
+					}
+			}
+			else
+			{
+				MarkDuelOutcomeUnknown(
+					runtime.DuelOutcomeStart,
+					"effects_unavailable",
+					"wilderness_result");
+			}
 			string resultText = playerWon ? "[Duel Result] You won." : "[Duel Result] You lost.";
 			AnimusForgeQuickInfo.Show(resultText + renownText + text + " Returning to campaign map...", targetCharacter);
 			LogWildernessDuelDiagnostic("vanilla_behavior.settled source=" + source + " playerWon=" + playerWon, runtime.DiagnosticId, targetHero);
 		}
 		catch (Exception ex)
 		{
+			MarkDuelOutcomeUnknown(
+				runtime.DuelOutcomeStart,
+				"settlement_exception",
+				"wilderness_result");
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] settle failed: " + ex);
 		}
 	}
@@ -4207,12 +4498,14 @@ public class DuelBehavior : CampaignBehaviorBase
 					if (_queuedDuelConversationCloseAttempts >= 20)
 					{
 						Logger.Log("DuelBehavior", "[Queue][ERROR] Campaign conversation did not close before queued duel; aborting queued duel.");
+						Hero abortedTarget = _queuedArenaDuelTarget;
 						_queuedArenaDuelTarget = null;
 						_queuedDuelTargetCharacter = null;
 						_queuedWildernessDuel = false;
 						_queuedDuelWaitingForConversationExit = false;
 						_queuedDuelReadyUtcTicks = 0L;
 						_queuedDuelConversationCloseAttempts = 0;
+						DiscardUnboundDuelArtifacts(abortedTarget);
 						return;
 					}
 					_queuedDuelReadyUtcTicks = DateTime.UtcNow.AddMilliseconds(500.0).Ticks;
@@ -4223,10 +4516,12 @@ public class DuelBehavior : CampaignBehaviorBase
 				if (_queuedWildernessDuel && !TryFinishPlayerEncounterForWildernessDuelOpening(_wildernessDuelActiveDiagnosticId, _queuedArenaDuelTarget, null, "queue.conversation_exited"))
 				{
 					Logger.Log("DuelBehavior", "[Queue][ERROR] Source encounter did not close before queued wilderness duel; aborting queued duel.");
+					Hero abortedTarget = _queuedArenaDuelTarget;
 					_queuedArenaDuelTarget = null;
 					_queuedDuelTargetCharacter = null;
 					_queuedWildernessDuel = false;
 					_queuedDuelReadyUtcTicks = 0L;
+					DiscardUnboundDuelArtifacts(abortedTarget);
 					InformationManager.DisplayMessage(new InformationMessage("无法安全结束原遭遇，野外决斗已取消。", Color.FromUint(4294901760u)));
 					return;
 				}
@@ -4256,16 +4551,21 @@ public class DuelBehavior : CampaignBehaviorBase
 					{
 						Logger.Log("DuelBehavior", "[Queue][ERROR] queued wilderness mission failed; arena fallback is disabled.");
 						InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+						DiscardUnboundDuelArtifacts(queuedArenaDuelTarget);
 					}
 				}
 				else
 				{
-					Instance.TryTeleportToArenaForDuel(queuedDuelTargetCharacter);
+					if (!Instance.TryTeleportToArenaForDuel(queuedDuelTargetCharacter))
+					{
+						DiscardUnboundDuelArtifacts(queuedArenaDuelTarget);
+					}
 				}
 			}
 			else
 			{
 				Logger.Log("DuelBehavior", "[Queue] [ERROR] Instance 为空，无法启动决斗。");
+				DiscardUnboundDuelArtifacts(queuedArenaDuelTarget);
 			}
 		}
 		catch (Exception ex)
@@ -4300,7 +4600,10 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (Instance == null || hero == null || string.IsNullOrEmpty(responseText))
+			if (Instance == null
+				|| hero == null
+				|| string.IsNullOrEmpty(responseText)
+				|| !Regex.IsMatch(responseText, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
 			{
 				return false;
 			}
@@ -4309,6 +4612,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			Instance._lastDuelAfterLines?.Remove(stringId);
 			if (Instance._lastDuelAfterLines == null)
 			{
 				Instance._lastDuelAfterLines = new Dictionary<string, DuelAfterLines>();
@@ -4365,6 +4669,13 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			// A wager belongs to the Duel action in this exact owner reply. Plain
+			// dialogue (including natural-language numbers) must not arm a future
+			// Duel for the same Hero.
+			if (!Regex.IsMatch(responseText ?? "", "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
+			{
+				return false;
+			}
 			if (hero == null || string.IsNullOrEmpty(responseText))
 			{
 				return false;
@@ -4374,6 +4685,10 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			// One owner reply replaces any earlier unstarted wager for this Hero.
+			// A rejected Duel therefore cannot leak its stake into the next Duel
+			// reply, even when that next reply carries no stake tags.
+			_pendingDuelStakes?.Remove(stringId);
 			int stakeGold = 0;
 			Dictionary<string, int> stakeItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			int playerStakeGold = 0;
@@ -4515,12 +4830,17 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryConsumePendingDuelStake(string heroId, out PendingDuelStake stake)
+	private static bool TryConsumePendingDuelStake(
+		string heroId,
+		string duelOutcomeId,
+		out PendingDuelStake stake)
 	{
 		stake = null;
 		try
 		{
-			if (string.IsNullOrEmpty(heroId) || _pendingDuelStakes == null)
+			if (string.IsNullOrEmpty(heroId)
+				|| string.IsNullOrWhiteSpace(duelOutcomeId)
+				|| _pendingDuelStakes == null)
 			{
 				return false;
 			}
@@ -4529,6 +4849,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				return false;
 			}
 			_pendingDuelStakes.Remove(heroId);
+			if (!string.Equals(stake.DuelOutcomeId, duelOutcomeId, StringComparison.Ordinal))
+			{
+				stake = null;
+				return false;
+			}
 			return true;
 		}
 		catch
@@ -4608,8 +4933,13 @@ public class DuelBehavior : CampaignBehaviorBase
 		return (list.Count > 0) ? string.Join("，", list) : "（无）";
 	}
 
-	private static string ApplyDuelRenownPenaltyAndBuildResultText(Hero targetHero, bool playerWon)
+	private static string ApplyDuelRenownPenaltyAndBuildResultText(
+		Hero targetHero,
+		bool playerWon,
+		out DuelOutcomeEffectState outcomeState)
 	{
+		outcomeState = DuelOutcomeEffectState.NotApplicable;
+		bool mutationStarted = false;
 		try
 		{
 			if (!DuelSettings.TryGetDuelRenownPenaltySettings(out var minimum, out var percent, out var maximum))
@@ -4656,8 +4986,18 @@ public class DuelBehavior : CampaignBehaviorBase
 			float after = Math.Max(0f, before - appliedPenalty);
 			float winnerBefore = winnerClan.Renown;
 			loserClan.Renown = after;
+			mutationStarted = true;
 			GainRenownAction.Apply(winnerHero, appliedPenalty, doNotNotify: false);
 			float winnerAfter = winnerClan.Renown;
+			bool loserReadbackConfirmed = !float.IsNaN(loserClan.Renown)
+				&& !float.IsInfinity(loserClan.Renown)
+				&& Math.Abs(loserClan.Renown - after) <= 0.01f;
+			bool winnerReadbackConfirmed = !float.IsNaN(winnerAfter)
+				&& !float.IsInfinity(winnerAfter)
+				&& Math.Abs((winnerAfter - winnerBefore) - appliedPenalty) <= 0.01f;
+			outcomeState = loserReadbackConfirmed && winnerReadbackConfirmed
+				? DuelOutcomeEffectState.Confirmed
+				: DuelOutcomeEffectState.Partial;
 			string loserName = (loserHero?.Name?.ToString() ?? "败者").Trim();
 			string winnerName = (winnerHero?.Name?.ToString() ?? "对手").Trim();
 			string clanName = (loserClan.Name?.ToString() ?? "败者家族").Trim();
@@ -4682,28 +5022,49 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (outcomeState != DuelOutcomeEffectState.Confirmed)
+			{
+				outcomeState = mutationStarted
+					? DuelOutcomeEffectState.Unknown
+					: DuelOutcomeEffectState.NotApplicable;
+			}
 			Logger.Log("DuelBehavior", "[DuelRenownPenalty][ERROR] " + ex);
 			return "";
 		}
 	}
 
-	private static string ApplyDuelStakeSettlementAndBuildResultText(Hero targetHero, bool playerWon)
+	private static string ApplyDuelStakeSettlementAndBuildResultText(
+		Hero targetHero,
+		bool playerWon,
+		string duelOutcomeId,
+		out DuelOutcomeEffectState outcomeState)
 	{
+		outcomeState = DuelOutcomeEffectState.NotApplicable;
+		bool settlementClaimed = false;
+		bool mutationStarted = false;
 		try
 		{
 			if (targetHero == null || string.IsNullOrEmpty(targetHero.StringId))
 			{
 				return "";
 			}
-			bool flag = TryConsumePendingDuelDebtTag(targetHero, out var amount, out var dueDays, out var note) && amount > 0;
-			if (!TryConsumePendingDuelStake(targetHero.StringId, out var stake) || stake == null)
+			bool flag = TryConsumePendingDuelDebtTagForOutcome(
+				targetHero,
+				duelOutcomeId,
+				out var amount,
+				out var dueDays,
+				out var note) && amount > 0;
+			settlementClaimed = flag;
+			if (!TryConsumePendingDuelStake(targetHero.StringId, duelOutcomeId, out var stake) || stake == null)
 			{
 				if (!playerWon && flag && RewardSystemBehavior.Instance != null)
 				{
 					string npcName2 = targetHero?.Name?.ToString() ?? "NPC";
 					string playerName2 = Hero.MainHero?.Name?.ToString() ?? "玩家";
+					mutationStarted = true;
 					if (RewardSystemBehavior.Instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText))
 					{
+						outcomeState = DuelOutcomeEffectState.Confirmed;
 						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
 						string text4 = string.IsNullOrWhiteSpace(note) ? "" : ("，备注：" + note);
 						string text5 = string.IsNullOrWhiteSpace(debtId) ? "" : ("（债务ID:" + debtId + "）");
@@ -4711,9 +5072,15 @@ public class DuelBehavior : CampaignBehaviorBase
 						MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {npcName2}，欠 {npcName2} {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。");
 						return $" 你在决斗中输给了{npcName2}，现在欠{npcName2} {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。";
 					}
+					outcomeState = DuelOutcomeEffectState.Partial;
+				}
+				else if (!playerWon && flag)
+				{
+					outcomeState = DuelOutcomeEffectState.Partial;
 				}
 				return "";
 			}
+			settlementClaimed = true;
 			string text = targetHero?.Name?.ToString() ?? "NPC";
 			string text2 = Hero.MainHero?.Name?.ToString();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -4725,25 +5092,31 @@ public class DuelBehavior : CampaignBehaviorBase
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			if (num <= 0 && !HasStakeItems(dictionary))
 			{
+				outcomeState = DuelOutcomeEffectState.NotApplicable;
 				return "";
 			}
+			outcomeState = DuelOutcomeEffectState.Partial;
 			if (playerWon)
 			{
-				TryConsumePendingDuelDebtTag(targetHero, out var _, out var _, out var _);
 				if (instance == null)
 				{
 					return " " + text + "没有结算赌注。";
 				}
 				int num2 = 0;
+				bool transferUnknown = false;
+				bool allTransfersConfirmed = true;
 				if (num > 0)
 				{
 					try
 					{
+						mutationStarted = true;
 						num2 = instance.TransferGold(targetHero, Hero.MainHero, num, forceComplete: true);
 					}
 					catch
 					{
+						transferUnknown = true;
 					}
+					allTransfersConfirmed &= num2 == num;
 				}
 				List<string> list = new List<string>();
 				List<string> list2 = new List<string>();
@@ -4766,11 +5139,14 @@ public class DuelBehavior : CampaignBehaviorBase
 					string itemName = null;
 					try
 					{
+						mutationStarted = true;
 						num4 = instance.TransferItemById(targetHero, Hero.MainHero, item.Key, num3, out itemName, forceComplete: true);
 					}
 					catch
 					{
+						transferUnknown = true;
 					}
+					allTransfersConfirmed &= num4 == num3;
 					string text3 = (string.IsNullOrEmpty(itemName) ? item.Key : itemName);
 					if (num4 > 0)
 					{
@@ -4781,6 +5157,11 @@ public class DuelBehavior : CampaignBehaviorBase
 						list2.Add(text3 + " x" + (num3 - num4));
 					}
 				}
+				outcomeState = transferUnknown
+					? DuelOutcomeEffectState.Unknown
+					: allTransfersConfirmed
+						? DuelOutcomeEffectState.Confirmed
+						: DuelOutcomeEffectState.Partial;
 				if (list.Count > 0)
 				{
 					string text4 = string.Join("，", list);
@@ -4798,8 +5179,10 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			if (instance != null && flag)
 			{
+				mutationStarted = true;
 				if (instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText))
 				{
+					outcomeState = DuelOutcomeEffectState.Confirmed;
 					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
 					string text10 = string.IsNullOrWhiteSpace(note) ? "" : ("，备注：" + note);
 					string text11 = string.IsNullOrWhiteSpace(debtId) ? "" : ("（债务ID:" + debtId + "）");
@@ -4807,6 +5190,15 @@ public class DuelBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {text}，欠 {text} {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。");
 					return $" 你在决斗中输给了{text}，现在欠{text} {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。";
 				}
+				outcomeState = DuelOutcomeEffectState.Partial;
+			}
+			else if (flag)
+			{
+				outcomeState = DuelOutcomeEffectState.Partial;
+			}
+			else
+			{
+				outcomeState = DuelOutcomeEffectState.AttemptedUnconfirmed;
 			}
 			string text8 = BuildStakeSummaryText(num, dictionary);
 			MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {text2}，并已记下：{text2} 欠你 {text8}（决斗赌注）。");
@@ -4815,16 +5207,23 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+			if (settlementClaimed || mutationStarted)
+			{
+				outcomeState = DuelOutcomeEffectState.Unknown;
+			}
 			return "";
 		}
 	}
 
-	private bool TryConsumeDuelAfterLines(Hero hero, out DuelAfterLines lines)
+	private bool TryConsumeDuelAfterLines(
+		Hero hero,
+		string duelOutcomeId,
+		out DuelAfterLines lines)
 	{
 		lines = null;
 		try
 		{
-			if (hero == null)
+			if (hero == null || string.IsNullOrWhiteSpace(duelOutcomeId))
 			{
 				return false;
 			}
@@ -4838,6 +5237,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				return false;
 			}
 			_lastDuelAfterLines.Remove(stringId);
+			if (!string.Equals(lines.DuelOutcomeId, duelOutcomeId, StringComparison.Ordinal))
+			{
+				lines = null;
+				return false;
+			}
 			return true;
 		}
 		catch
@@ -4846,7 +5250,11 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryPostDuelAiShout(Hero targetHero, Agent targetAgent, bool playerWon)
+	private static void TryPostDuelAiShout(
+		Hero targetHero,
+		Agent targetAgent,
+		bool playerWon,
+		string duelOutcomeId)
 	{
 		try
 		{
@@ -4855,7 +5263,9 @@ public class DuelBehavior : CampaignBehaviorBase
 				return;
 			}
 			string text = null;
-			if (targetHero != null && Instance.TryConsumeDuelAfterLines(targetHero, out var lines) && lines != null)
+			if (targetHero != null
+				&& Instance.TryConsumeDuelAfterLines(targetHero, duelOutcomeId, out var lines)
+				&& lines != null)
 			{
 				text = (playerWon ? lines.LoseLine : lines.WinLine);
 				if (string.IsNullOrWhiteSpace(text))
@@ -5108,6 +5518,14 @@ public class DuelBehavior : CampaignBehaviorBase
 		Mission mission = Mission.Current;
 		if (mission == null)
 		{
+			if (_isDuelActive && _activeDuelOutcomeStart != null)
+			{
+				MarkDuelOutcomeUnknown(
+					_activeDuelOutcomeStart,
+					"mission_missing_after_start",
+					"engine_tick_no_mission");
+				_activeDuelOutcomeStart = null;
+			}
 			return;
 		}
 		if (_meetingPendingStart && (_targetHero != null || _targetCharacter != null || _targetAgentIndex >= 0))
@@ -5773,6 +6191,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		if (agent == null)
 		{
 			Logger.Log("DuelBehavior", "决斗启动失败: 找不到目标的 Agent 实体");
+			DiscardUnboundDuelArtifacts(target);
 			return;
 		}
 		StartDuelInternal(agent);
@@ -5799,28 +6218,33 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		if (TryBlockDuelForFourberieCombat())
 		{
+			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (Hero.MainHero?.Clan == null || settings == null)
 		{
 			Logger.Log("DuelBehavior", "Duel start skipped: main hero clan or duel settings unavailable.");
+			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
 		if (Hero.MainHero.Clan.Tier < settings.MinimumClanTier)
 		{
 			Logger.Log("DuelBehavior", "决斗失败: 玩家家族等级不足");
+			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
 		Mission current = Mission.Current;
 		if (current == null)
 		{
 			Logger.Log("DuelBehavior", "Duel start skipped: current mission is unavailable.");
+			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
 		if (!TrySetCurrentDuelTargetFromAgent(agent))
 		{
 			Logger.Log("DuelBehavior", "决斗启动失败: 目标 Agent 无法解析为 CharacterObject");
+			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
 		string text = current.SceneName ?? "Unknown";
@@ -5905,6 +6329,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					{
 						Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] 无法建立稳定的决斗队伍关系，已取消本次决斗以避免异常。");
 						_isDuelActive = false;
+						DiscardUnboundDuelArtifacts(_targetHero);
 						return;
 					}
 					try
@@ -5987,6 +6412,25 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					Logger.Log("DuelBehavior", "[ArenaInfo] 竞技场 Mission 中保持目标在当前队伍，不再依赖 PlayerEnemyTeam。");
 				}
+			}
+			if (_activeDuelOutcomeStart != null)
+			{
+				MarkDuelOutcomeUnknown(
+					_activeDuelOutcomeStart,
+					"superseded_runtime_session",
+					"in_place_start");
+				_activeDuelOutcomeStart = null;
+			}
+			if (_activeDuelOutcomeStart == null)
+			{
+				TryBeginDuelOutcome(
+					ResolveDuelOutcomeSubjectId(
+						_targetHero,
+						_targetCharacter,
+						_pendingNonHeroDuelMemoryId),
+					flag ? DuelSessionKind.Arena : DuelSessionKind.Meeting,
+					"in_place_start",
+					out _activeDuelOutcomeStart);
 			}
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 			if (Agent.Main != null)
@@ -6225,6 +6669,14 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		_duelResultRecorded = true;
 		bool flag = !playerDefeated;
+		DuelOutcomeStartIdentity typedStart = _activeDuelOutcomeStart;
+		TryRecordDuelOutcome(
+			typedStart,
+			flag,
+			"meeting_result",
+			out DuelOutcomeResultIdentity typedResult);
+		try
+		{
 		if (_targetHero != null && !string.IsNullOrEmpty(_targetHero.StringId))
 		{
 			_lastDuelResults[_targetHero.StringId] = (flag ? 1 : (-1));
@@ -6234,9 +6686,16 @@ public class DuelBehavior : CampaignBehaviorBase
 			SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
 			MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _currentDuelIsArena ? "arena" : "meeting");
 		}
-		string renownText = ApplyDuelRenownPenaltyAndBuildResultText(_targetHero, flag);
+		string renownText = ApplyDuelRenownPenaltyAndBuildResultText(
+			_targetHero,
+			flag,
+			out DuelOutcomeEffectState renownEffect);
 		Agent agent = GetTargetAgent();
-		TryPostDuelAiShout(_targetHero, agent, flag);
+		TryPostDuelAiShout(
+			_targetHero,
+			agent,
+			flag,
+			typedStart?.DuelId);
 		if (!_currentDuelIsArena)
 		{
 			try
@@ -6247,26 +6706,95 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		FinishDuel();
 		if (_currentDuelIsArena)
 		{
-			Agent main = Agent.Main;
-			if (agent != null && main != null)
+			try
 			{
-				if (agent.Team != null && main.Team != null)
+				Agent main = Agent.Main;
+				if (agent != null && main != null)
 				{
-					agent.Team.SetIsEnemyOf(main.Team, isEnemyOf: false);
-					main.Team.SetIsEnemyOf(agent.Team, isEnemyOf: false);
+					if (agent.Team != null && main.Team != null)
+					{
+						agent.Team.SetIsEnemyOf(main.Team, isEnemyOf: false);
+						main.Team.SetIsEnemyOf(agent.Team, isEnemyOf: false);
+					}
+					agent.SetWatchState(Agent.WatchState.Patrolling);
+					agent.ClearTargetFrame();
 				}
-				agent.SetWatchState(Agent.WatchState.Patrolling);
-				agent.ClearTargetFrame();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("DuelOutcome", "[WARN] arena restore failed before typed finalize: " + ex.Message);
 			}
 		}
-		string text = (_targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag) : "";
+		DuelOutcomeEffectState stakeEffect = DuelOutcomeEffectState.NotApplicable;
+		string text = (_targetHero != null)
+			? ApplyDuelStakeSettlementAndBuildResultText(
+				_targetHero,
+				flag,
+				typedStart?.DuelId,
+				out stakeEffect)
+			: "";
+		DuelOutcomeEffectState memoryEffect = _targetHero != null
+			? DuelOutcomeEffectState.AttemptedUnconfirmed
+			: DuelOutcomeEffectState.NotApplicable;
+		if (TryCreateDuelOutcomeEffects(
+			memoryEffect,
+			memoryEffect,
+			playerDefeated
+				? DuelOutcomeEffectState.AttemptedUnconfirmed
+				: DuelOutcomeEffectState.NotApplicable,
+			renownEffect,
+			stakeEffect,
+			out DuelOutcomeEffects effects))
+		{
+			bool finalized = TryFinalizeDuelOutcome(
+				typedResult,
+				"meeting_result",
+				effects,
+				out _);
+			if (!finalized)
+			{
+				MarkDuelOutcomeUnknown(
+					typedStart,
+					"finalization_unobserved",
+					"meeting_result");
+			}
+			_activeDuelOutcomeStart = null;
+		}
+		else
+		{
+			MarkDuelOutcomeUnknown(
+				typedStart,
+				"effects_unavailable",
+				"meeting_result");
+			_activeDuelOutcomeStart = null;
+		}
+		FinishDuel();
 		string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 		Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 		string text3 = (_currentDuelIsArena ? " 10秒后退出竞技场..." : "");
 		AnimusForgeQuickInfo.Show(text2 + renownText + text + text3, _targetCharacter);
+		}
+		catch (Exception ex)
+		{
+			MarkDuelOutcomeUnknown(
+				typedStart,
+				"settlement_exception",
+				"meeting_result");
+			_activeDuelOutcomeStart = null;
+			try
+			{
+				if (_isDuelActive)
+				{
+					FinishDuel();
+				}
+			}
+			catch
+			{
+			}
+			Logger.Log("DuelOutcome", "[ERROR] meeting settlement failed after result lock: " + ex);
+		}
 	}
 
 	private void RestoreState()
