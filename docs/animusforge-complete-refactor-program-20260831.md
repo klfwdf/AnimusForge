@@ -6,7 +6,7 @@
 
 本文初版由当时的 Git、公共执行台账、owner matrix、领域 Gateway 边界和本机 handoff 交叉核对形成；2026-08-31 初版只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。后续本机接续以紧随其后的更新块、公共台账和最新 handoff 为准。
 
-> **2026-09-02 本机接续更新：**本文主体保留2026-08-31的全量任务基线；实时状态以公共台账和最新handoff为准。`LOCAL-7-C`已修复四runner依赖边界；`LOCAL-7-D/E/F/G/H/I/J/K/L`已完成Memory/Courier/Economy/weekly/Notoriety相关owner的代码与离线验证；Duel M1/M2分别在`16f3cbef`/`b93f93df`完成actual-session outcome owner和exact detached request provenance的离线/compiled VERIFY。`LOCAL-8-A`实现链最终到`8bdd9363`：早期8-ID readiness现同时门禁canonical20领域责任桶、canonical16组PAIR/CROSS_CUT Bridge和18项逐symbol清理/回滚盘点。20领域不是20个物理DLL；maintainer仍为`ROLE_PLACEHOLDER`、入口仍为`REPRESENTATIVE`，团队未确认`ASSIGNED/COMPLETE`前real readiness保持BLOCKED；证据缺任一领域/Bridge或OFFLINE/LIVE/SAVE/RELEASE覆盖也BLOCKED；3项`REVIEW_REMOVAL`仍未获删除授权。阶段7继续VERIFY、阶段8准备态可继续，真实Campaign/Mission、live Economy/AFEF/Notoriety、Duel live/旧档和默认切换未验收前，不能删除facade或执行default cutover。
+> **2026-09-02 本机接续更新：**本文主体保留2026-08-31的全量任务基线；实时状态以公共台账和最新handoff为准。`LOCAL-7-C/C2`已把五个managed replay consumer统一到显式依赖边界，含Shout SSE；`LOCAL-7-D/E/F/G/H/I/J/K/L`已完成Memory/Courier/Economy/weekly/Notoriety相关owner的代码与离线验证；Duel M1/M2分别在`16f3cbef`/`b93f93df`完成actual-session outcome owner和exact detached request provenance的离线/compiled VERIFY。`LOCAL-8-A`实现链最终到`8bdd9363`：早期8-ID readiness现同时门禁canonical20领域责任桶、canonical16组PAIR/CROSS_CUT Bridge和18项逐symbol清理/回滚盘点。20领域不是20个物理DLL；maintainer仍为`ROLE_PLACEHOLDER`、入口仍为`REPRESENTATIVE`，团队未确认`ASSIGNED/COMPLETE`前real readiness保持BLOCKED；证据缺任一领域/Bridge或OFFLINE/LIVE/SAVE/RELEASE覆盖也BLOCKED；3项`REVIEW_REMOVAL`仍未获删除授权。阶段7继续VERIFY、阶段8准备态可继续，真实Campaign/Mission、live Economy/AFEF/Notoriety、Duel live/旧档和默认切换未验收前，不能删除facade或执行default cutover。
 
 ## 一、现状
 
@@ -261,10 +261,10 @@
 - owner 导航：`G:\AFMOD\AF-REFACTOR\docs\animusforge-owner-matrix.md`
 - 架构/入口导航：`G:\AFMOD\AF-REFACTOR\docs\animusforge-refactor-map.md`
 - 已有领域 transport 边界：`G:\AFMOD\AF-REFACTOR\docs\animusforge-phase7-domain-gateway-boundary.md`
-- 最新本机验证、精确命令与产物哈希：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-duel-exact-dispatch-provenance.md`
+- 最新本机验证、精确命令与产物哈希：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`
 - 原始接续说明：`G:\AFMOD\NEW-10\docs\handoffs\af-main-refactor-continuation-20260831.md`
 - 上轮本机日志：`G:\AFMOD\.build-cache\af-refactor-20260831`
 
 owner/refactor map 的第一版基于较早基线，适合导航，不可照搬其旧状态；实际状态以最新 Git、运行证据和公共台账为准。本文件是总纲，不新建一套平行执行台账。
 
-**`LOCAL-7-M2` 已在 `b93f93df` 完成 Duel exact detached dispatch provenance 的离线/compiled VERIFY：真实 request/trace/channel/session/subject/runtime/save/action fingerprint 在副作用前绑定同一 queued/started DuelId，Rejected/Queued/Started/UnknownAfterStart 可精确读取，legacy-unbound仍保持独立。下一精确自主任务为 `LOCAL-7-C2`：修复 `ShoutNetworkSseReplayTests` 仍存在的F盘硬编码和`Modules\**`递归复制，只复用现有显式ReplayDependencies边界，不改生产C#或业务断言。并行由领域owner按`docs/phase8/full-domain-acceptance-package.md`采集20领域LIVE/SAVE证据；Duel取消/死亡/退出、stake/Memory/AFEF/Fourberie仍需真实 Host/旧档 readback。阶段8所有清理候选继续只登记，默认入口、删除、打包、部署与发布仍后置。**
+**`LOCAL-7-C2` 已在 `ae49e3c8` 完成ShoutNetwork SSE replay依赖闭环：第五个consumer不再硬编码F盘或递归扫描Modules，source 5/5、helper 9/9、Debug/Release runner与78项显式依赖manifest均PASS；这是tool-only离线证据，不是Release AF或LIVE/SAVE。下一精确自主任务为`LOCAL-7-C3`：让`LiveHostReadinessAudit`停止默认选择F盘游戏根，改为显式`--game-root`并用纯fixture/CLI契约验证，禁止启动游戏、部署或读取真实存档。并行由领域owner按`docs/phase8/full-domain-acceptance-package.md`采集20领域LIVE/SAVE证据；Duel取消/死亡/退出、stake/Memory/AFEF/Fourberie仍需真实Host/旧档readback。阶段8所有清理候选继续只登记，默认入口、删除、打包、部署与发布仍后置。**

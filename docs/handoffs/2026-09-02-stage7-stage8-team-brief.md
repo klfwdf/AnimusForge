@@ -20,6 +20,7 @@
 
 - 模块接入、契约、离线/等价Host与compiled回放：**大部分完成，整体仍为VERIFY**。
 - Duel M1/M2：actual-session结果owner和exact detached request-to-DuelId均已离线`LOCAL-PASS`。
+- 五个managed production replay（含Shout SSE）已统一显式依赖owner，不再由consumer硬编码盘符或扫描全部Modules。
 - 真实Host、旧档、live金币/物品/商人/债务、Memory/AFEF、Duel死亡/赌注/Fourberie：**待验收**。
 - Native / SceneShout / Courier默认入口：**尚未统一切换**。
 
@@ -56,4 +57,4 @@
 
 > **现在可以并行完善阶段8准备，但不能跳过阶段7真实验收直接做破坏性清理、默认切换或发布。**
 
-最新技术交接：`docs/handoffs/2026-09-02-duel-exact-dispatch-provenance.md`。
+最新技术交接：`docs/handoffs/2026-09-02-shout-sse-replay-dependency-closure.md`。
