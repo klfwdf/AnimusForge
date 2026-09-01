@@ -6,8 +6,8 @@
 ## 结论
 
 - `LOCAL-8-A` 代码/fixture/文档与离线验证完成，状态 **VERIFY**。
-- 基线/已推送远端 `9566bf3b`；意图 checkpoint `9a088f2f`；实现 `b1c5a81a`；
-  full-domain Bridge SAVE补强`1e341c43`；未认领owner gate `f4a02018`。
+- 基线/已推送远端`9566bf3b`；意图checkpoint`9a088f2f`；实现链：`b1c5a81a`、
+  `1e341c43`、`f4a02018`、`6b1d16f1`、最终catalog/audit闭合`8bdd9363`。
 - 阶段 7 仍是 VERIFY；阶段 8 只完成非破坏性准备，执行仍 BLOCKED。
 - 没有改生产 C#、默认入口、存档 key/type、GCCZ/NEW-10、游戏、ONNX 或玩家数据；
   没有删除任何 facade/bridge/flag/shim，也没有部署、启动游戏或推送本轮本地提交。
@@ -30,22 +30,23 @@ UI/TTS、Tools/Package 等其余责任领域完全不参与判定。这是本轮
 
 `docs/phase8/full-domain-readiness-catalog.json` 新增：
 
-- 总纲 1–20 的稳定英文 domain ID、owner/maintainers。
+- canonical 1–20稳定英文domain ID、owner/maintainers与`REPRESENTATIVE`入口覆盖。
 - maintainer当前全部显式为`ROLE_PLACEHOLDER`；real mode在团队确认并改成`ASSIGNED`前
   一律`UNASSIGNED_DOMAIN_OWNER/BLOCKED`，不冒充制作组成员已认领。
 - 真实 project-local entry file；路径在门禁加载时解析并限制在项目根。
 - Prompt / ActionPlan 的 `APPLICABLE`、`NOT_APPLICABLE`、`MIXED`。
 - persistence responsibility、已知 key/type、failure fallback、default route。
 - offline/compiled/live/save/release 当前状态和 blocking gates。
-- 16 组跨域 Bridge、endpoint、entry、implementation state、required cases 和 live gate。
+- canonical16组跨域Bridge：13组`PAIR`和3组`CROSS_CUT`，各自有endpoint、topology、
+  representative entry、implementation state、required cases和live gate。
 
 这些是验收责任桶，不是生产模块声明；早期 8-ID catalog 和 Pending entry type 没有被覆盖。
 
 ### 清理与逐项回滚目录
 
-`docs/phase8/cleanup-candidates.json` 记录 16 项：
+`docs/phase8/cleanup-candidates.json`记录18项：
 
-- 10 `KEEP`
+- 12 `KEEP`
 - 3 `HOLD`
 - 3 `REVIEW_REMOVAL`
 
@@ -58,13 +59,15 @@ compatibility 和 GCCZ bridge 均被明确 KEEP/HOLD。
 
 `tools/PhaseEightReadiness/readiness.py` 现在：
 
-- 严格校验20领域所有字段、真实入口、Bridge与清理目录。
-- evidence record必须声明已知唯一`domainIds`；module与全部domain maintainer共同审核。
+- 严格校验20领域所有字段、代表性project-local入口、entry coverage、Bridge与清理目录。
+- evidence record必须声明已知唯一`domainIds`与`bridgeIds`；module与全部domain maintainer共同审核。
+- real mode在owner不是`ASSIGNED`或entry coverage不是`COMPLETE`时强制BLOCKED。
 - 20领域各自要求OFFLINE、LIVE 1.3/1.4、SAVE 1.3/1.4、RELEASE证据。
-- 两组既有Bridge、18-case Composition和16组full-domain Bridge都检查
+- 两组既有Bridge、18-case Composition和canonical16组full-domain Bridge都检查
   OFFLINE/LIVE/SAVE五个索引。
-- replacement与rollback evidence必须用`cleanupCandidateIds`精确绑定静态盘点项和owner domain。
-- 全局rollback必须严格早于HEAD；HEAD不再是合法rollback point。
+- cleanup symbol必须真实存在；同文件候选按candidate ID独立。audit、replacement和rollback
+  evidence都绑定静态candidate与owner domain。
+- candidate/global/inventory rollback checkpoint必须一致且严格早于HEAD。
 - `fullProjectReleaseReady=false`和五项授权false保持不变；不执行manifest中的命令。
 
 ## 验证
@@ -75,11 +78,11 @@ compatibility 和 GCCZ bridge 均被明确 KEEP/HOLD。
 
 最终通过：
 
-- PhaseEightReadiness：54 tests / 167.471s / OK。
+- PhaseEightReadiness：62 tests / 214.625s / OK（`phase8-selftest-final-62.log`）。
 - Bridge fixture：10 cases / 6 invariants PASS。
 - Composition matrix：18 cases / 24 invariants / 6 categories PASS。
 - Module catalog：8 modules / 3 profiles / 16 invalid cases / 8 health states PASS。
-- Catalog：20 domains / 16 bridges / 16 cleanup candidates（3 review）PASS。
+- Catalog：20 domains / 16 bridges（13 pair / 3 cross-cut）/ 18 cleanup candidates（3 review）PASS。
 - all-missing：`BLOCKED / exit 2 / full20 / authorization all false`。
 - Python syntax、JSON parse/path、`git diff --check` PASS。
 
@@ -100,8 +103,10 @@ Debug/Release六Stage按纯工具/fixture规则记 `N/A`，不能把上一轮Sta
 - cleanup审计确认当前没有可立即删除文件；Legacy命名不等于dead，MCM/Harmony/reflection/save
   责任不能靠普通caller scan排除。
 
-以上审计针对修改前基线；最终实现仍需一次post-change P0/P1复核，若代理usage limit阻塞必须
-如实记录，不能冒充独立终审通过。
+post-change审查先发现candidate rollback、canonical Bridge与generic cleanup audit三个P1，已分别
+在`6b1d16f1`/`8bdd9363`闭合并补红测；最终独立静态复核在重点轴上为`P0=0 / P1=0`：
+canonical20 domains、domain owner review、canonical16 Bridge OFFLINE/LIVE/SAVE、strict rollback、
+candidate audit/replacement/rollback精确绑定均闭合。
 
 ## 仍未验证 / 风险
 
@@ -116,6 +121,7 @@ Debug/Release六Stage按纯工具/fixture规则记 `N/A`，不能把上一轮Sta
 
 - full-domain Bridge gate：干净工作树普通执行 `git revert 1e341c43`。
 - owner assignment gate：普通执行 `git revert f4a02018`。
+- post-review catalog/audit修复：按逆序普通revert `8bdd9363`、`6b1d16f1`。
 - 20领域readiness实现/fixture：普通执行 `git revert b1c5a81a`。
 - 意图checkpoint：`9a088f2f`；文档提交可独立普通revert。
 - 禁止hard reset、rebase共享历史或force push。本轮未部署，无游戏文件回滚。
@@ -132,6 +138,6 @@ Debug/Release六Stage按纯工具/fixture规则记 `N/A`，不能把上一轮Sta
 > 请在 `G:\AFMOD\AF-REFACTOR` 读取项目AGENTS、公共台账、
 > `docs\handoffs\2026-09-01-phase8-full-domain-readiness.md`、
 > `docs\phase8\full-domain-acceptance-package.md`及两个JSON目录。确认HEAD至少包含
-> `b1c5a81a`、`1e341c43`和`f4a02018`，fetch但不要覆盖本地历史。阶段7保持VERIFY、阶段8执行保持BLOCKED。
+> `8bdd9363`，fetch但不要覆盖本地历史。阶段7保持VERIFY、阶段8执行保持BLOCKED。
 > 优先进入`LOCAL-7-M`只读审计Duel stakes/Mission result/death/cancel/exit/Memory事实顺序，
 > 先红测再最小typed owner；不得从legacy callback或标签推测成功，不切default、不删facade。

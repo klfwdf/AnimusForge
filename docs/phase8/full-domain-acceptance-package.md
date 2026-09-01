@@ -17,6 +17,8 @@
 - 完整 20 领域门禁实现：`b1c5a81a5f4a0b7ccd361f2693b50adc792af0f8`。
 - full-domain Bridge SAVE 门禁：`1e341c433c5de34df79d64f525b9addebc920ff3`。
 - 未认领领域 owner fail-closed：`f4a02018e7fdc11f4fb8faf3505bc2743669a081`。
+- post-review topology/symbol/rollback闭合：`6b1d16f12bc787208126c5c356dadffaecf41dcd`。
+- canonical Bridge与cleanup audit最终闭合：`8bdd936345363d869cbdd267c54006cc20a3a694`。
 - 本轮只改纯 Python 工具、fixture/catalog 和文档；没有修改生产 C#、默认入口、
   `SyncData` key/type、玩法、GCCZ/NEW-10、游戏目录、ONNX 或玩家存档。
 
@@ -31,9 +33,10 @@
 20 个条目是**验收责任桶**，不是 20 个新 DLL、20 个已上线 module，也不改变早期 8-ID
 design catalog 的 `entryTypeStatus=Pending` 事实。
 
-目录中的 maintainer 是逻辑角色占位符，当前20项均为`ROLE_PLACEHOLDER`，不冒充制作组成员已
-认领。real readiness在角色经团队确认并改为`ASSIGNED`前会追加
-`UNASSIGNED_DOMAIN_OWNER/BLOCKED`。
+目录中的maintainer是逻辑角色占位符，当前20项均为`ROLE_PLACEHOLDER`；入口清单均明确为
+`REPRESENTATIVE`，不是全调用图。real readiness在角色改为`ASSIGNED`、入口由owner补齐并改为
+`COMPLETE`前，会追加`UNASSIGNED_DOMAIN_OWNER`和
+`INCOMPLETE_DOMAIN_ENTRY_INVENTORY/BLOCKED`。
 
 ## 20 领域当前验收表
 
@@ -57,11 +60,11 @@ design catalog 的 `entryTypeStatus=Pending` 事实。
 | 13 | `settlement-siege-gccz-sets` | Settlement.Siege | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 14 | `scene-mission-combat` | Scene.Mission | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 15 | `duel` | Duel.Combat | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
-| 16 | `courier-proactive-issue` | Courier.ProactiveIssue | MIXED_DEFAULT | LOCAL-PASS | NOT-RUN | NOT-RUN | BLOCKED |
-| 17 | `social-progression-reports` | Social.ProgressionReports | LEGACY_DEFAULT | LOCAL-PASS | NOT-RUN | NOT-RUN | BLOCKED |
+| 16 | `courier-proactive-issue` | Courier.ProactiveIssue | MIXED_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
+| 17 | `social-progression-reports` | Social.ProgressionReports | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 18 | `knowledge-persona-profile` | Knowledge.PersonaProfile | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 19 | `ui-tts-external-integration` | UI.ExternalIntegration | MIXED_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
-| 20 | `tools-content-package` | Tools.ContentRelease | TOOL_ONLY | LOCAL-PASS | NOT-RUN | NOT-RUN | BLOCKED |
+| 20 | `tools-content-package` | Tools.ContentRelease | TOOL_ONLY | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 
 每个 JSON 条目还绑定真实 `entryPaths`、Prompt/ActionPlan 是否适用、存档责任、失败降级、
 blocking gates 和对应 Bridge；没有证据的字段不能用 Stage、截图或注释补成 PASS。
@@ -87,8 +90,11 @@ blocking gates 和对应 Bridge；没有证据的字段不能用 Stage、截图�
 15. `ui-runtime-integration`
 16. `tools-content-release`
 
-每组必须覆盖 A、B、A+B 无 Bridge、A+B+Bridge、Bridge disabled、Bridge failure，以及各自
-额外 case；门禁分别检查 OFFLINE、LIVE 1.3、LIVE 1.4、SAVE 1.3、SAVE 1.4。
+13组二元`PAIR`必须覆盖A、B、A+B无Bridge、A+B+Bridge、Bridge disabled/failure；
+`persistence-domain-owners`、`ui-runtime-integration`、`tools-content-release`是多端点
+`CROSS_CUT`，改用`EACH_OWNER_ALONE`、`ALL_WITHOUT_COORDINATOR`、
+`ALL_WITH_COORDINATOR`、coordinator disabled/failure。所有组分别检查OFFLINE、LIVE 1.3/1.4、
+SAVE 1.3/1.4，证据必须显式列出相应`bridgeIds`。
 
 早期两个显式 Bridge 契约继续保留：
 
@@ -100,9 +106,9 @@ Foundation 全部 18 个 Composition case 也必须在 SAVE 层覆盖；通用 s
 
 ## 清理候选
 
-当前目录共 16 项：
+当前目录共18项：
 
-- `KEEP`：10 项。包括活跃三渠道 facade、Configured Gateway、Policy old-save adapter、
+- `KEEP`：12项。包括活跃三渠道facade、Configured Gateway、Policy/World MCM old-save adapter、
   MCM compatibility、save migration tombstone、双 API/Encounter compatibility、GCCZ bridge 和
   仍有真实 caller 的 `CallUniversalApiDetailed`。
 - `HOLD`：3 项。包括 Native opt-in runner/result ABI、Prompt parity，以及公共 refactor opt-in
@@ -126,6 +132,7 @@ Foundation 全部 18 个 Composition case 也必须在 SAVE 层覆盖；通用 s
 
 - `moduleId`：仍使用早期设计目录中的逻辑 ID。
 - `domainIds`：本记录实际覆盖的完整责任领域。
+- `bridgeIds`：本记录实际覆盖的Bridge；仅写case文本而不绑定ID不计覆盖。
 - `cleanupCandidateIds`：仅在替代/rollback 证据时填写。
 - `layer` / `kind` / `apiLine`。
 - 完整 source commit、release version、artifact hashes 和带时区时间。
