@@ -54,6 +54,7 @@ class ReadinessTests(unittest.TestCase):
         self.review_candidate = next(item for item in self.cleanup_inventory.values()
                                      if item["disposition"] == "REVIEW_REMOVAL")
         all_domain_reviewers = {maintainer for item in self.domains.values() for maintainer in item["maintainers"]}
+        all_full_bridge_cases = {case for item in self.full_bridges.values() for case in item["requiredCases"]}
         self.records: dict[str, dict] = {}
         artifacts = []
         for artifact_id in sorted(readiness.ARTIFACT_IDS):
@@ -78,7 +79,8 @@ class ReadinessTests(unittest.TestCase):
                         "steps": ["FIXTURE ONLY: no game operation was performed."],
                         "expected": "FIXTURE ONLY: expected sentinel.",
                         "observed": "FIXTURE ONLY: observed sentinel.",
-                        "caseIds": sorted(self.composition_cases if module_id == "af.foundation.runtime" else self.bridges.get(module_id, set())),
+                        "caseIds": sorted((self.composition_cases if module_id == "af.foundation.runtime"
+                                           else self.bridges.get(module_id, set())) | all_full_bridge_cases),
                         "artifactHashes": {key: item["file"]["sha256"] for key, item in self.artifacts.items()},
                         "attachments": [self.ref("fixture.log")],
                         "environment": {"hostInitialized": True, "hostContext": "Campaign", "gameBuildInfo": "v" + api + ".0.0", "saveIdentity": "FIXTURE-NOT-A-SAVE", "oldSaveLoaded": True, "roundTripVerified": True},
@@ -269,6 +271,13 @@ class ReadinessTests(unittest.TestCase):
     def test_bridge_save_case_missing(self) -> None:
         self.records["af.bridge.conversation-siege/SAVE/1.4"]["caseIds"].remove("safe-mode")
         self.blocked("BRIDGE_MATRIX")
+
+    def test_full_domain_bridge_cases_require_offline_live_and_save(self) -> None:
+        case = "PACKAGE_ALLOWLIST"
+        for record in self.records.values():
+            if (record["layer"], record["apiLine"]) == ("SAVE", "1.3") and case in record["caseIds"]:
+                record["caseIds"].remove(case)
+        self.blocked("FULL_DOMAIN_BRIDGE_MATRIX")
 
     def test_full_composition_coverage_not_just_bridge_cases(self) -> None:
         self.records["af.foundation.runtime/LIVE/1.4"]["caseIds"].remove("partial-start-failure")

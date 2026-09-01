@@ -526,6 +526,18 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
                    for case in record["caseIds"]}
         if not composition_cases <= covered:
             issues.append({"code": "COMPOSITION_MATRIX", "detail": f"{layer}/{api}: {','.join(sorted(composition_cases - covered))}"})
+    for bridge_id, bridge in full_bridges.items():
+        endpoints = set(bridge["domains"])
+        required_cases = set(bridge["requiredCases"])
+        for layer, api in (("OFFLINE", "agnostic"), ("LIVE", "1.3"), ("LIVE", "1.4"),
+                           ("SAVE", "1.3"), ("SAVE", "1.4")):
+            covered = {case for record in records.values()
+                       if record["layer"] == layer and record["apiLine"] == api
+                       and endpoints <= set(record["domainIds"])
+                       for case in record["caseIds"]}
+            if not required_cases <= covered:
+                issues.append({"code": "FULL_DOMAIN_BRIDGE_MATRIX",
+                               "detail": f"{bridge_id}/{layer}/{api}: {','.join(sorted(required_cases - covered))}"})
 
     def evidence_for(evidence_id: Any, module_id: str, layer: str, kind: str) -> dict[str, Any]:
         require(nonempty(evidence_id) and evidence_id in records, "review evidence is missing or invalid")
