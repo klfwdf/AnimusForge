@@ -62,6 +62,305 @@ internal enum DuelOutcomeOperationStatus
     InvalidIdentity = 6
 }
 
+internal enum DetachedDuelDispatchState
+{
+    Rejected = 0,
+    Queued = 1,
+    Started = 2,
+    UnknownAfterStart = 3
+}
+
+/// <summary>
+/// Immutable exact-dispatch readback. It is process-local metadata only and
+/// never proves a Duel result or authorizes replay of Mission side effects.
+/// </summary>
+internal sealed class DetachedDuelDispatchReceipt
+{
+    internal DetachedDuelDispatchReceipt(
+        DetachedDuelDispatchState state,
+        string duelId,
+        string requestId,
+        string actionFingerprint,
+        bool hostAccepted,
+        string errorCode)
+    {
+        State = state;
+        DuelId = duelId ?? string.Empty;
+        RequestId = requestId ?? string.Empty;
+        ActionFingerprint = actionFingerprint ?? string.Empty;
+        HostAccepted = hostAccepted;
+        ErrorCode = errorCode ?? string.Empty;
+    }
+
+    internal DetachedDuelDispatchState State { get; }
+    internal string DuelId { get; }
+    internal string RequestId { get; }
+    internal string ActionFingerprint { get; }
+    internal bool HostAccepted { get; }
+    internal string ErrorCode { get; }
+
+    internal DetachedDuelDispatchReceipt Clone()
+        => new DetachedDuelDispatchReceipt(
+            State,
+            DuelId,
+            RequestId,
+            ActionFingerprint,
+            HostAccepted,
+            ErrorCode);
+}
+
+/// <summary>
+/// Explicit request context handed from the main-thread commit reservation to
+/// the concrete Duel branch. It contains only bounded identities and digests;
+/// delayed holders may retain it, but it has no callback, game object or wire
+/// format and cannot replay gameplay.
+/// </summary>
+internal sealed class DetachedDuelDispatchContext
+{
+    private readonly object _sync = new object();
+    private DetachedDuelDispatchState _state;
+    private bool _hasState;
+    private bool _hostAccepted;
+    private bool _sideEffectBoundaryCrossed;
+    private string _errorCode = string.Empty;
+    private DuelOutcomeStartIdentity _startIdentity;
+
+    private DetachedDuelDispatchContext(DuelOutcomeRequestIdentity requestIdentity)
+    {
+        RequestIdentity = requestIdentity;
+    }
+
+    internal DuelOutcomeRequestIdentity RequestIdentity { get; }
+    internal string DuelId => RequestIdentity?.DuelId ?? string.Empty;
+    internal DuelOutcomeStartIdentity StartIdentity
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _startIdentity?.Clone();
+            }
+        }
+    }
+
+    internal static bool TryCreate(
+        string requestId,
+        string traceId,
+        DuelOutcomeChannel channel,
+        string interactionSessionId,
+        string subjectId,
+        long runtimeGeneration,
+        long saveGeneration,
+        string actionFingerprint,
+        out DetachedDuelDispatchContext context,
+        out string errorCode)
+    {
+        context = null;
+        string normalizedRequestId = (requestId ?? string.Empty).Trim();
+        string duelId = DuelOutcomeFingerprint.Hash(
+            "AnimusForge.DuelOutcome.ExactDispatch.v1",
+            normalizedRequestId);
+        if (!DuelOutcomeRequestIdentity.TryCreate(
+            duelId,
+            normalizedRequestId,
+            traceId,
+            channel,
+            interactionSessionId,
+            subjectId,
+            runtimeGeneration,
+            saveGeneration,
+            actionFingerprint,
+            out DuelOutcomeRequestIdentity identity,
+            out errorCode))
+        {
+            return false;
+        }
+        context = new DetachedDuelDispatchContext(identity);
+        errorCode = string.Empty;
+        return true;
+    }
+
+    internal void MarkHostAccepted()
+    {
+        lock (_sync)
+        {
+            if (_hasState && _state != DetachedDuelDispatchState.Rejected)
+            {
+                _hostAccepted = true;
+            }
+        }
+    }
+
+    internal void MarkSideEffectBoundaryCrossed()
+    {
+        lock (_sync)
+        {
+            if (_hasState && _state == DetachedDuelDispatchState.Rejected)
+            {
+                return;
+            }
+            _sideEffectBoundaryCrossed = true;
+        }
+    }
+
+    internal bool SideEffectBoundaryCrossed
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _sideEffectBoundaryCrossed;
+            }
+        }
+    }
+
+    internal void MarkRejected(string errorCode)
+    {
+        lock (_sync)
+        {
+            if (_hasState
+                && (_state == DetachedDuelDispatchState.Started
+                    || _state == DetachedDuelDispatchState.UnknownAfterStart
+                    || _state == DetachedDuelDispatchState.Rejected))
+            {
+                return;
+            }
+            _hasState = true;
+            _state = DetachedDuelDispatchState.Rejected;
+            _errorCode = NormalizeDispatchError(errorCode, "duel.dispatch_rejected");
+        }
+    }
+
+    internal bool ObserveOwnerReceipt(DuelOutcomeReceipt receipt, string errorCode)
+    {
+        if (receipt?.RequestIdentity == null
+            || RequestIdentity == null
+            || !string.Equals(
+                receipt.RequestIdentity.IdentityHash,
+                RequestIdentity.IdentityHash,
+                StringComparison.Ordinal))
+        {
+            MarkRejected(string.IsNullOrWhiteSpace(errorCode)
+                ? "duel.dispatch_identity_conflict"
+                : errorCode);
+            return false;
+        }
+
+        lock (_sync)
+        {
+            if (_state == DetachedDuelDispatchState.UnknownAfterStart)
+            {
+                _startIdentity = receipt.StartIdentity?.Clone() ?? _startIdentity;
+                return true;
+            }
+            if (receipt.State == DuelOutcomeState.Queued)
+            {
+                if (_hasState && _state == DetachedDuelDispatchState.Started)
+                {
+                    return true;
+                }
+                _hasState = true;
+                _state = DetachedDuelDispatchState.Queued;
+                _errorCode = string.Empty;
+                return true;
+            }
+            if (receipt.State == DuelOutcomeState.Rejected
+                || receipt.State == DuelOutcomeState.Cancelled)
+            {
+                if (_hasState && _state == DetachedDuelDispatchState.Started)
+                {
+                    return true;
+                }
+                _hasState = true;
+                _state = DetachedDuelDispatchState.Rejected;
+                _errorCode = NormalizeDispatchError(
+                    errorCode,
+                    string.IsNullOrWhiteSpace(receipt.ReasonCode)
+                        ? "duel.dispatch_rejected"
+                        : "duel." + receipt.ReasonCode);
+                return true;
+            }
+
+            if (receipt.State == DuelOutcomeState.UnknownAfterStart)
+            {
+                _hasState = true;
+                _state = DetachedDuelDispatchState.UnknownAfterStart;
+                _startIdentity = receipt.StartIdentity?.Clone();
+                _errorCode = NormalizeDispatchError(
+                    errorCode,
+                    string.IsNullOrWhiteSpace(receipt.ReasonCode)
+                        ? "duel.unknown_after_start"
+                        : "duel." + receipt.ReasonCode);
+                return true;
+            }
+
+            _hasState = true;
+            _state = DetachedDuelDispatchState.Started;
+            _startIdentity = receipt.StartIdentity?.Clone();
+            _errorCode = string.IsNullOrWhiteSpace(errorCode)
+                ? string.Empty
+                : errorCode.Trim();
+            return true;
+        }
+    }
+
+    internal void MarkUnknownAfterStart(string errorCode)
+    {
+        lock (_sync)
+        {
+            if (_hasState
+                && _state == DetachedDuelDispatchState.Rejected
+                && !_hostAccepted)
+            {
+                return;
+            }
+            _hasState = true;
+            _state = DetachedDuelDispatchState.UnknownAfterStart;
+            _errorCode = NormalizeDispatchError(errorCode, "duel.unknown_after_start");
+        }
+    }
+
+    internal DetachedDuelDispatchReceipt Snapshot()
+    {
+        lock (_sync)
+        {
+            if (!_hasState)
+            {
+                return null;
+            }
+            return new DetachedDuelDispatchReceipt(
+                _state,
+                DuelId,
+                RequestIdentity?.RequestId,
+                RequestIdentity?.ActionFingerprint,
+                _hostAccepted,
+                _errorCode);
+        }
+    }
+
+    private static string NormalizeDispatchError(string value, string fallback)
+    {
+        string normalized = (value ?? string.Empty).Trim();
+        return string.IsNullOrWhiteSpace(normalized) ? fallback : normalized;
+    }
+}
+
+internal interface IDetachedDuelDispatchOwner
+{
+    bool TryQueue(
+        DetachedDuelDispatchContext context,
+        out bool shouldDispatch,
+        out string errorCode);
+    void Reject(DetachedDuelDispatchContext context, string reasonCode);
+    void Cancel(DetachedDuelDispatchContext context, string reasonCode);
+    void MarkUnknownAfterStart(DetachedDuelDispatchContext context, string reasonCode);
+}
+
+internal interface IDetachedDuelDispatchExecutionReceipt
+{
+    DetachedDuelDispatchReceipt DuelDispatchReceipt { get; }
+}
+
 /// <summary>
 /// Immutable request identity for one Duel owner entry. The identity contains
 /// bounded identifiers and an action digest only; it never retains prompts,
@@ -932,6 +1231,55 @@ internal sealed class DuelOutcomeOwner
                 normalizedReason,
                 finalizationHash);
             _entries[start.DuelId] = unknown;
+            MoveToTerminal();
+            receipt = unknown.Clone();
+            errorCode = string.Empty;
+            return DuelOutcomeOperationStatus.Accepted;
+        }
+    }
+
+    internal DuelOutcomeOperationStatus MarkUnknownAfterDispatch(
+        DuelOutcomeRequestIdentity request,
+        string reasonCode,
+        out DuelOutcomeReceipt receipt,
+        out string errorCode)
+    {
+        receipt = null;
+        if (!IsValid(request)
+            || !DuelOutcomeFingerprint.TryNormalizeReasonCode(reasonCode, out string normalizedReason))
+        {
+            errorCode = "duel_dispatch_unknown_identity_invalid";
+            return DuelOutcomeOperationStatus.InvalidIdentity;
+        }
+
+        lock (_sync)
+        {
+            if (!_entries.TryGetValue(request.DuelId, out DuelOutcomeReceipt existing))
+            {
+                return NotFound(out receipt, out errorCode);
+            }
+            if (!SameRequest(existing, request))
+            {
+                return Conflict(existing, out receipt, out errorCode);
+            }
+            if (existing.State == DuelOutcomeState.UnknownAfterStart)
+            {
+                return SameTerminalReason(existing, normalizedReason, out receipt, out errorCode);
+            }
+            if (existing.State != DuelOutcomeState.Queued)
+            {
+                return InvalidTransition(existing, out receipt, out errorCode);
+            }
+
+            string finalizationHash = DuelOutcomeFingerprint.Hash(
+                "AnimusForge.DuelOutcome.UnknownAfterDispatch.v1",
+                request.IdentityHash,
+                normalizedReason);
+            DuelOutcomeReceipt unknown = existing.WithTerminalState(
+                DuelOutcomeState.UnknownAfterStart,
+                normalizedReason,
+                finalizationHash);
+            _entries[request.DuelId] = unknown;
             MoveToTerminal();
             receipt = unknown.Clone();
             errorCode = string.Empty;

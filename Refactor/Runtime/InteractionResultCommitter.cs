@@ -57,10 +57,12 @@ public sealed class InteractionResultCommitter
         }
         string requestId;
         string fingerprint;
+        string actionFingerprint;
         try
         {
-            requestId = BuildRequestId(envelope);
+            requestId = BuildCanonicalRequestId(envelope);
             fingerprint = BuildFingerprint(envelope, result, appendPlayerInput);
+            actionFingerprint = BuildCanonicalActionPlanFingerprint(result.ActionPlan);
         }
         catch (Exception)
         {
@@ -95,7 +97,15 @@ public sealed class InteractionResultCommitter
             InteractionCommitReceiptCache.Complete(reservation, blocked);
             return blocked;
         }
-        InteractionCommitResult committed = CommitOnce(envelope, result, actionExecutor, memory, appendPlayerInput, requestId, hasActions);
+        InteractionCommitResult committed = CommitOnce(
+            envelope,
+            result,
+            actionExecutor,
+            memory,
+            appendPlayerInput,
+            requestId,
+            actionFingerprint,
+            hasActions);
         if (weeklyPreparation == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted)
         {
             CompleteWeeklyMaterialOutcome(
@@ -212,14 +222,21 @@ public sealed class InteractionResultCommitter
 
     private static InteractionCommitResult CommitOnce(
         InteractionEnvelope envelope, InteractionResult result, IActionPlanExecutor actionExecutor,
-        IInteractionMemory memory, bool appendPlayerInput, string requestId, bool hasActions)
+        IInteractionMemory memory, bool appendPlayerInput, string requestId,
+        string actionFingerprint, bool hasActions)
     {
         InteractionStatus actionStatus = InteractionStatus.Succeeded;
         if (hasActions)
         {
             try
             {
-                actionStatus = actionExecutor.ValidateAndExecute(result.ActionPlan, envelope.Snapshot);
+                actionStatus = actionExecutor is IRequestBoundActionPlanExecutor requestBound
+                    ? requestBound.ValidateAndExecute(
+                        result.ActionPlan,
+                        envelope.Snapshot,
+                        requestId,
+                        actionFingerprint)
+                    : actionExecutor.ValidateAndExecute(result.ActionPlan, envelope.Snapshot);
             }
             catch
             {
@@ -246,10 +263,15 @@ public sealed class InteractionResultCommitter
                     unknownMemory.HistoryWritten,
                     false,
                     unknownError,
-                    ActionExecutionEffectState.UnknownAfterStart);
+                    ActionExecutionEffectState.UnknownAfterStart,
+                    TryReadDuelDispatchReceipt(actionExecutor));
             }
             if (actionStatus != InteractionStatus.Executed)
             {
+                DetachedDuelDispatchReceipt duelDispatch =
+                    (actionExecutor as IDetachedDuelDispatchExecutionReceipt)
+                        ?.DuelDispatchReceipt
+                        ?.Clone();
                 if (actionExecutor is IActionPlanExecutionOutcomeReceipt partialOutcome)
                 {
                     ActionExecutionEffectState effectState =
@@ -259,7 +281,10 @@ public sealed class InteractionResultCommitter
                                 ? ActionExecutionEffectState.ConfirmedEffect
                                 : ActionExecutionEffectState.NoConfirmedEffect;
                     bool terminalOutcome = partialOutcome.AppliedActionCount > 0
-                        || effectState == ActionExecutionEffectState.UnknownAfterStart;
+                        || effectState == ActionExecutionEffectState.UnknownAfterStart
+                        || duelDispatch?.State == DetachedDuelDispatchState.Queued
+                        || duelDispatch?.State == DetachedDuelDispatchState.Started
+                        || duelDispatch?.State == DetachedDuelDispatchState.UnknownAfterStart;
                     if (terminalOutcome)
                     {
                         IEnumerable<FactRecord> partialFacts = partialOutcome.AppliedActionCount > 0
@@ -276,9 +301,11 @@ public sealed class InteractionResultCommitter
                                 ? "unknown-action"
                                 : "partial-action");
                         string partialError = string.IsNullOrWhiteSpace(partialOutcome.ExecutionErrorCode)
-                            ? effectState == ActionExecutionEffectState.UnknownAfterStart
-                                ? "action_unknown_after_start"
-                                : "partial_action_execution"
+                            ? !string.IsNullOrWhiteSpace(duelDispatch?.ErrorCode)
+                                ? duelDispatch.ErrorCode
+                                : effectState == ActionExecutionEffectState.UnknownAfterStart
+                                    ? "action_unknown_after_start"
+                                    : "partial_action_execution"
                             : partialOutcome.ExecutionErrorCode;
                         if (!partialMemory.HistoryWritten)
                         {
@@ -292,7 +319,8 @@ public sealed class InteractionResultCommitter
                             partialMemory.HistoryWritten,
                             partialOutcome.AppliedActionCount > 0,
                             partialError,
-                            effectState);
+                            effectState,
+                            duelDispatch);
                     }
                 }
                 // Do not write confirmed facts when the action was not accepted.
@@ -304,9 +332,22 @@ public sealed class InteractionResultCommitter
                     requestId,
                     Array.Empty<FactRecord>(),
                     "rejected-action");
-                return new InteractionCommitResult(actionStatus, rejectedMemory.HistoryWritten, false,
-                    rejectedMemory.HistoryWritten ? "action_not_executed"
-                        : string.IsNullOrWhiteSpace(rejectedMemory.ErrorCode) ? "memory_commit_failed" : rejectedMemory.ErrorCode);
+                string rejectionError = !string.IsNullOrWhiteSpace(duelDispatch?.ErrorCode)
+                    ? duelDispatch.ErrorCode
+                    : "action_not_executed";
+                if (!rejectedMemory.HistoryWritten)
+                {
+                    rejectionError = string.IsNullOrWhiteSpace(rejectedMemory.ErrorCode)
+                        ? "memory_commit_failed"
+                        : rejectedMemory.ErrorCode;
+                }
+                return new InteractionCommitResult(
+                    actionStatus,
+                    rejectedMemory.HistoryWritten,
+                    false,
+                    rejectionError,
+                    ActionExecutionEffectState.NoConfirmedEffect,
+                    duelDispatch);
             }
         }
 
@@ -434,6 +475,21 @@ public sealed class InteractionResultCommitter
         return new MemoryCommitResult(MemoryCommitStatus.Applied);
     }
 
+    private static DetachedDuelDispatchReceipt TryReadDuelDispatchReceipt(
+		IActionPlanExecutor actionExecutor)
+	{
+		try
+		{
+			return (actionExecutor as IDetachedDuelDispatchExecutionReceipt)
+				?.DuelDispatchReceipt
+				?.Clone();
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
     private static int ReadDetachedInt(GameInteractionSnapshot snapshot, string key)
     {
         if (snapshot != null && snapshot.DetachedFacts.TryGetValue(key, out string value)
@@ -462,9 +518,21 @@ public sealed class InteractionResultCommitter
         return candidate?.DisplayName?.Trim() ?? string.Empty;
     }
 
-    private static string BuildRequestId(InteractionEnvelope envelope)
+    internal static string BuildCanonicalRequestId(InteractionEnvelope envelope)
     {
-        GameInteractionSnapshot snapshot = envelope.Snapshot;
+        if (envelope == null)
+        {
+            throw new ArgumentNullException(nameof(envelope));
+        }
+        return BuildCanonicalRequestId(envelope.Snapshot);
+    }
+
+    internal static string BuildCanonicalRequestId(GameInteractionSnapshot snapshot)
+    {
+        if (snapshot == null)
+        {
+            throw new ArgumentNullException(nameof(snapshot));
+        }
         return "request:" + Hash(writer =>
         {
             writer.Write(snapshot.Trace.RuntimeGeneration);
@@ -477,6 +545,34 @@ public sealed class InteractionResultCommitter
                 && snapshot.DetachedFacts.TryGetValue("courier_direction", out string direction) ? direction ?? string.Empty : string.Empty);
         });
     }
+
+    internal static string BuildCanonicalActionPlanFingerprint(ActionPlan actionPlan)
+        => Hash(writer =>
+        {
+            writer.Write(actionPlan != null);
+            if (actionPlan == null)
+            {
+                return;
+            }
+            writer.Write(actionPlan.Actions.Count);
+            foreach (ActionRequest action in actionPlan.Actions)
+            {
+                writer.Write(action != null);
+                if (action == null)
+                {
+                    continue;
+                }
+                writer.Write(action.Tag);
+                writer.Write(action.TargetId);
+                writer.Write(action.Parameters.Count);
+                foreach (KeyValuePair<string, string> pair in action.Parameters
+                    .OrderBy(pair => pair.Key, StringComparer.Ordinal))
+                {
+                    writer.Write(pair.Key);
+                    writer.Write(pair.Value ?? string.Empty);
+                }
+            }
+        });
 
     private static string BuildFingerprint(InteractionEnvelope envelope, InteractionResult result, bool appendPlayerInput)
         => Hash(writer =>
@@ -546,7 +642,8 @@ public sealed class InteractionCommitResult
     public InteractionCommitResult(InteractionStatus status, bool historyWritten, bool actionsExecuted, string errorCode)
         : this(status, historyWritten, actionsExecuted, errorCode,
             actionsExecuted ? ActionExecutionEffectState.ConfirmedEffect : ActionExecutionEffectState.NoConfirmedEffect,
-            false)
+            false,
+            null)
     {
     }
 
@@ -556,7 +653,25 @@ public sealed class InteractionCommitResult
         bool actionsExecuted,
         string errorCode,
         ActionExecutionEffectState effectState)
-        : this(status, historyWritten, actionsExecuted, errorCode, effectState, false)
+        : this(status, historyWritten, actionsExecuted, errorCode, effectState, false, null)
+    {
+    }
+
+    internal InteractionCommitResult(
+        InteractionStatus status,
+        bool historyWritten,
+        bool actionsExecuted,
+        string errorCode,
+        ActionExecutionEffectState effectState,
+        DetachedDuelDispatchReceipt duelDispatchReceipt)
+        : this(
+            status,
+            historyWritten,
+            actionsExecuted,
+            errorCode,
+            effectState,
+            false,
+            duelDispatchReceipt)
     {
     }
 
@@ -566,7 +681,8 @@ public sealed class InteractionCommitResult
         bool actionsExecuted,
         string errorCode,
         ActionExecutionEffectState effectState,
-        bool isDuplicate)
+        bool isDuplicate,
+        DetachedDuelDispatchReceipt duelDispatchReceipt)
     {
         Status = status;
         HistoryWritten = historyWritten;
@@ -574,6 +690,7 @@ public sealed class InteractionCommitResult
         ErrorCode = errorCode ?? string.Empty;
         EffectState = effectState;
         IsDuplicate = isDuplicate;
+        DuelDispatchReceipt = duelDispatchReceipt?.Clone();
     }
 
     public InteractionStatus Status { get; }
@@ -582,10 +699,12 @@ public sealed class InteractionCommitResult
     public string ErrorCode { get; }
     public ActionExecutionEffectState EffectState { get; }
     public bool IsDuplicate { get; }
+    internal DetachedDuelDispatchReceipt DuelDispatchReceipt { get; }
 
     internal InteractionCommitResult AsDuplicate()
         => new InteractionCommitResult(Status, HistoryWritten, ActionsExecuted,
             string.IsNullOrWhiteSpace(ErrorCode) ? "duplicate_commit" : ErrorCode,
             EffectState,
-            true);
+            true,
+            DuelDispatchReceipt);
 }

@@ -476,6 +476,20 @@ public interface IActionPlanExecutor
 }
 
 /// <summary>
+/// Internal additive seam used only after the main-thread commit reservation
+/// owns the canonical request identity. Public executors keep the legacy
+/// two-argument ABI; unbound callers cannot claim exact action provenance.
+/// </summary>
+internal interface IRequestBoundActionPlanExecutor : IActionPlanExecutor
+{
+    InteractionStatus ValidateAndExecute(
+        ActionPlan actionPlan,
+        GameInteractionSnapshot currentSnapshot,
+        string requestId,
+        string actionFingerprint);
+}
+
+/// <summary>
 /// Optional receipt exposed after an action owner confirms actual game effects,
 /// including the confirmed subset of a known partial outcome. Callers must not
 /// synthesize facts from a detached ActionPlan.

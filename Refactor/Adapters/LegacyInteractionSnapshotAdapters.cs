@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using AnimusForge.Refactor.Contracts;
@@ -232,6 +233,16 @@ public static class LegacyInteractionSnapshotAdapters
         }
 
         string subjectId = FirstNonEmpty(memoryId, targetHero?.StringId, "native:unknown");
+        string conversationToken = string.Empty;
+        try
+        {
+            conversationToken = (Campaign.Current?.ConversationManager?.ActiveToken ?? int.MinValue)
+                .ToString(CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            conversationToken = int.MinValue.ToString(CultureInfo.InvariantCulture);
+        }
         List<ConversationMessage> history = targetHero == null
             ? new List<ConversationMessage>()
             : MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(
@@ -243,6 +254,7 @@ public static class LegacyInteractionSnapshotAdapters
         {
             ["target_name"] = targetName ?? string.Empty,
             ["memory_id"] = subjectId,
+            ["native_conversation_token"] = conversationToken,
             ["rule_runtime_context"] = FirstNonEmpty(targetName, CurrentLocationId(), "native_conversation"),
             ["excluded_rule_ids"] = string.Empty
         };

@@ -8,9 +8,11 @@ var tests = new (string Name, Action Run)[]
     ("meeting duel completes exactly once", MeetingDuelCompletesExactlyOnce),
     ("partial effects remain explicit", PartialEffectsRemainExplicit),
     ("unknown after start is terminal", UnknownAfterStartIsTerminal),
+	("unknown after dispatch is terminal without a start identity", UnknownAfterDispatchIsTerminal),
     ("outcome known can fail closed as unknown", OutcomeKnownCanFailClosedAsUnknown),
     ("rejected and cancelled requests are terminal", RejectedAndCancelledAreTerminal),
     ("request identity conflicts fail closed", RequestIdentityConflictsFailClosed),
+    ("exact dispatch request binds one deterministic DuelId", ExactDispatchRequestBindsOneDuelId),
     ("start identity conflicts fail closed", StartIdentityConflictsFailClosed),
     ("result and finalize conflicts fail closed", ResultAndFinalizeConflictsFailClosed),
     ("invalid transitions fail closed", InvalidTransitionsFailClosed),
@@ -299,6 +301,45 @@ static void UnknownAfterStartIsTerminal()
         "unknown reason conflict");
 }
 
+static void UnknownAfterDispatchIsTerminal()
+{
+	var owner = new DuelOutcomeOwner();
+	DuelOutcomeRequestIdentity request = Request();
+	Equal(DuelOutcomeOperationStatus.Accepted,
+		owner.Queue(request, out _, out _), "queue before dispatch unknown");
+	Equal(DuelOutcomeOperationStatus.Accepted,
+		owner.MarkUnknownAfterDispatch(
+			request,
+			"mission_open_unobserved",
+			out DuelOutcomeReceipt receipt,
+			out _),
+		"queued dispatch unknown");
+	Equal(DuelOutcomeState.UnknownAfterStart, receipt.State, "dispatch unknown state");
+	Require(receipt.StartIdentity == null && receipt.IsTerminal,
+		"dispatch unknown invented a StartIdentity or was nonterminal");
+	Equal(0, owner.ActiveCount, "dispatch unknown leaked active capacity");
+	Equal(1, owner.TerminalCount, "dispatch unknown terminal count");
+	Equal(
+		DuelOutcomeOperationStatus.Duplicate,
+		owner.MarkUnknownAfterDispatch(request, "mission_open_unobserved", out _, out _),
+		"same dispatch unknown reason");
+	Equal(
+		DuelOutcomeOperationStatus.IdentityConflict,
+		owner.MarkUnknownAfterDispatch(request, "different_reason", out _, out _),
+		"different dispatch unknown reason");
+
+	var startedOwner = new DuelOutcomeOwner();
+	DuelOutcomeRequestIdentity startedRequest = Request(duel: 'E', requestId: "request-started");
+	Equal(DuelOutcomeOperationStatus.Accepted,
+		startedOwner.Queue(startedRequest, out _, out _), "queue started request");
+	Equal(DuelOutcomeOperationStatus.Accepted,
+		startedOwner.Start(StartIdentity(startedRequest), out _, out _), "start request");
+	Equal(
+		DuelOutcomeOperationStatus.InvalidTransition,
+		startedOwner.MarkUnknownAfterDispatch(startedRequest, "late_dispatch_unknown", out _, out _),
+		"dispatch-only unknown accepted after Start");
+}
+
 static void OutcomeKnownCanFailClosedAsUnknown()
 {
     var (owner, _, start, result) = OutcomeKnown(DuelSessionKind.Wilderness, DuelResultKind.PlayerWon);
@@ -355,6 +396,40 @@ static void RequestIdentityConflictsFailClosed()
     Require(owner.TryGet(original.DuelId, out DuelOutcomeReceipt retained), "retained receipt missing");
     Equal(original.IdentityHash, retained.RequestIdentity.IdentityHash, "conflict replaced request owner");
     Equal(DuelOutcomeState.Queued, retained.State, "conflict changed state");
+}
+
+static void ExactDispatchRequestBindsOneDuelId()
+{
+    Require(DetachedDuelDispatchContext.TryCreate(
+        "request:exact-1",
+        "trace-1",
+        DuelOutcomeChannel.NativeConversation,
+        "session-1",
+        "hero-1",
+        7,
+        7,
+        Hex('A'),
+        out DetachedDuelDispatchContext first,
+        out string firstError),
+        firstError);
+    Require(DetachedDuelDispatchContext.TryCreate(
+        "request:exact-1",
+        "trace-1",
+        DuelOutcomeChannel.NativeConversation,
+        "session-1",
+        "hero-1",
+        7,
+        7,
+        Hex('B'),
+        out DetachedDuelDispatchContext changed,
+        out string changedError),
+        changedError);
+    Equal(first.DuelId, changed.DuelId, "same request produced a second DuelId");
+    var owner = new DuelOutcomeOwner();
+    Equal(DuelOutcomeOperationStatus.Accepted,
+        owner.Queue(first.RequestIdentity, out _, out _), "exact queue");
+    Equal(DuelOutcomeOperationStatus.IdentityConflict,
+        owner.Queue(changed.RequestIdentity, out _, out _), "changed action conflict");
 }
 
 static void StartIdentityConflictsFailClosed()
@@ -466,7 +541,9 @@ static void ContractIsDataOnlyAndNotReplayable()
 {
     Assembly assembly = typeof(DuelOutcomeOwner).Assembly;
     Type[] contractTypes = assembly.GetTypes()
-        .Where(type => type.Namespace == "AnimusForge.Refactor.Runtime" && type.Name.StartsWith("DuelOutcome", StringComparison.Ordinal))
+        .Where(type => type.Namespace == "AnimusForge.Refactor.Runtime"
+            && (type.Name.StartsWith("DuelOutcome", StringComparison.Ordinal)
+                || type.Name.StartsWith("DetachedDuelDispatch", StringComparison.Ordinal)))
         .ToArray();
     Require(contractTypes.Length >= 10, "typed Duel contract surface is incomplete");
 

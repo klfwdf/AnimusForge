@@ -366,8 +366,13 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		IEconomyRewardDebtMainThreadPort economyPort = recipient == null
 			? null
 			: RewardSystemBehavior.CreateEconomyRewardDebtMainThreadPortForExternal();
-		return new LegacyNativeActionPlanExecutor(
-			(actionPlan, snapshot) => instance.ExecuteCourierActionPlanForExternal(actionPlan, snapshot, sessionId),
+		return LegacyNativeActionPlanExecutor.CreateRequestBoundDuelExecutor(
+			(actionPlan, snapshot, duelDispatchContext) => instance.ExecuteCourierActionPlanForExternal(
+				actionPlan,
+				snapshot,
+				sessionId,
+				duelDispatchContext),
+			DuelBehavior.CreateDetachedDuelDispatchOwnerForExternal(),
 			maxActions,
 			allowedTagFamilies,
 			economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
@@ -5275,7 +5280,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	private InteractionStatus ExecuteCourierActionPlanForExternal(
 		ActionPlan actionPlan,
 		GameInteractionSnapshot snapshot,
-		string sessionId)
+		string sessionId,
+		DetachedDuelDispatchContext duelDispatchContext = null)
 	{
 		try
 		{
@@ -5286,6 +5292,15 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				|| !string.Equals(snapshot.Identity.SessionId, sessionId, StringComparison.Ordinal)
 				|| string.IsNullOrWhiteSpace(actionPlan.RawPostprocessId))
 			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			if (duelDispatchContext != null)
+			{
+				DuelBehavior.RejectDetachedDuelDispatchForExternal(
+					duelDispatchContext,
+					"unsupported_channel");
+				Log("detached courier Duel rejected session=" + sessionId
+					+ " reason=unsupported_channel");
 				return InteractionStatus.RejectedByValidation;
 			}
 			CourierSession session = GetSessionById(sessionId);
