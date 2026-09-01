@@ -194,6 +194,12 @@ class ReadinessTests(unittest.TestCase):
         self.document["mode"] = "real"
         self.blocked("EVIDENCE_0")
 
+    def test_role_placeholder_owner_blocks_real_readiness(self) -> None:
+        self.document["mode"] = "real"
+        for record in self.records.values():
+            record["mode"] = "real"
+        self.blocked("UNASSIGNED_DOMAIN_OWNER")
+
     def test_dirty_source_blocks_acceptance(self) -> None:
         self.blocked("SOURCE_DIRTY", readiness.SourceState(COMMIT, False, True))
 
@@ -451,6 +457,7 @@ class ReadinessTests(unittest.TestCase):
         original = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
         mutations = (
             ("owner", ""), ("maintainers", []), ("entryPaths", []),
+            ("ownerAssignmentState", "UNKNOWN"),
             ("promptAction", {"prompt": "APPLICABLE"}),
             ("persistence", {"responsibility": "missing key/type declarations"}),
             ("failureFallback", ""), ("defaultState", "UNKNOWN"),

@@ -41,7 +41,8 @@
       "bridgeIds": [
         "bootstrap-host",
         "tools-content-release"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 2,
@@ -81,7 +82,8 @@
       "bridgeIds": [
         "bootstrap-host",
         "host-runtime"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 3,
@@ -123,7 +125,8 @@
         "host-runtime",
         "runtime-game-adapter",
         "ui-runtime-integration"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 4,
@@ -163,7 +166,8 @@
       ],
       "bridgeIds": [
         "runtime-game-adapter"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 5,
@@ -213,7 +217,8 @@
       ],
       "bridgeIds": [
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 6,
@@ -262,7 +267,8 @@
         "conversation-action",
         "conversation-siege",
         "conversation-courier"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 7,
@@ -305,7 +311,8 @@
       "bridgeIds": [
         "conversation-gateway",
         "gateway-knowledge-profile"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 8,
@@ -351,7 +358,8 @@
         "conversation-action",
         "action-memory",
         "action-economy"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 9,
@@ -401,7 +409,8 @@
         "action-memory",
         "persistence-domain-owners",
         "memory-social-reports"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 10,
@@ -452,7 +461,8 @@
       "bridgeIds": [
         "action-economy",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 11,
@@ -499,7 +509,8 @@
       "bridgeIds": [
         "policy-world-diplomacy",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 12,
@@ -548,7 +559,8 @@
       "bridgeIds": [
         "policy-world-diplomacy",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 13,
@@ -597,7 +609,8 @@
       "bridgeIds": [
         "conversation-siege",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 14,
@@ -645,7 +658,8 @@
       "bridgeIds": [
         "scene-duel",
         "ui-runtime-integration"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 15,
@@ -691,7 +705,8 @@
       "bridgeIds": [
         "scene-duel",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 16,
@@ -742,7 +757,8 @@
       "bridgeIds": [
         "conversation-courier",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 17,
@@ -793,7 +809,8 @@
       "bridgeIds": [
         "memory-social-reports",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 18,
@@ -844,7 +861,8 @@
       "bridgeIds": [
         "gateway-knowledge-profile",
         "persistence-domain-owners"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 19,
@@ -892,7 +910,8 @@
       "bridgeIds": [
         "ui-runtime-integration",
         "tools-content-release"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     },
     {
       "number": 20,
@@ -940,7 +959,8 @@
       ],
       "bridgeIds": [
         "tools-content-release"
-      ]
+      ],
+      "ownerAssignmentState": "ROLE_PLACEHOLDER"
     }
   ],
   "bridges": [
