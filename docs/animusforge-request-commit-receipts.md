@@ -258,6 +258,43 @@ rotation. This is still fixture/offline evidence; live Campaign save/load and Co
 travel remain not run. The Applied receipt is removed with its terminal session; the
 absence of that session is the final owner state, not a reusable global tombstone.
 
+## Memory auxiliary recovery boundary (LOCAL-7-J)
+
+The legacy live path and the detached recovery path are not the same call chain.
+Legacy still reaches `AppendDailyMemoryLineById`, which performs
+`AttachPendingWeeklyMemoryMaterialTriggers → SaveDailyMemoryDraftsById →
+NoteConversationLineForExternal`. The detached batch facade enters
+`CommitExternalDialogueHistoryRecoverable` directly and publishes equivalent core
+Daily/Recent projections through the H journal.
+
+J removes the two auxiliary calls from H's Daily recovery writer. A weekly trigger is
+only a process-local pre-action candidate: it has no request/recovery/turn or terminal
+effect identity, is cleared on load, and can miss when a sealed origin day is moved to
+the current Daily draft. H therefore neither attaches nor consumes that list. This
+does not fix the candidate; it prevents the core marker from being misrepresented as
+weekly success and avoids deleting a different legacy turn's unidentifiable candidate.
+
+Notoriety is also excluded from recovery. Its public boundary returns void and swallows
+failure. The active `LineCount`, session-roll identity and negative outcome are
+non-persisted; a positive roll immediately updates aggregate
+`KnowsMajorHistory/KnownAtDay`, while finalize later updates session count/bonus/last
+day. Neither stage has a per-line/session marker. Replaying from `ExistingPending`,
+Duplicate, load or tick could repeat the roll/count/final bonus. To preserve
+current-runtime behavior without claiming recovery, only a brand-new `Began` receipt
+that completes all core steps in the same call may attempt notoriety. Each
+user/assistant component must have an exact published Daily marker matching recovery
+ID, owner payload hash and part; AFEF/blank/unpublished components are excluded and each
+part is attempted at most once. The attempt is exception-isolated from the already
+completed core result and is logged as `attempted_unconfirmed / NOT-RECOVERABLE`.
+
+No new terminal receipt was added because neither missing auxiliary effect currently
+has sufficient owner evidence. H schema/seed/components/payload hash/wire, the Courier
+`AFCI1` binding, SyncData keys/types and the legacy live path are unchanged. Production
+tests load the final Debug 1.4 DLL and provide reflection/decoded-IL structure guards
+for call isolation, the `Began` truth table, component eligibility and exact marker
+readback. They do not prove live PlayerNotoriety mutation, random-roll behavior, fault
+injection or save/load.
+
 ## Limits and mandatory follow-up
 
 - The request/action guard remains bounded and process-local. The new durable ledger
@@ -266,9 +303,11 @@ absence of that session is the final owner state, not a reusable global tombston
 - The legacy void APIs/non-batch `Append` still cannot acknowledge acceptance.
   The batch owner result confirms runtime daily/recent acceptance only, not
   `SyncData`, disk persistence, weekly/notoriety effects or live AFEF acceptance.
-  Core Daily/Recent components now have marker-based repair. Weekly material/notoriety
-  side effects remain best-effort and may be missing after an interruption; no rollback
-  or exactly-once claim is made for those auxiliary effects.
+  Core Daily/Recent components now have marker-based repair. H never replays weekly or
+  notoriety. The legacy weekly candidate remains pre-action and may cross a turn because
+  it lacks exact intent/outcome identity; detached has no weekly owner. Notoriety remains
+  current-runtime best-effort only. No rollback, recovery or exactly-once claim is made
+  for either auxiliary effect.
 - Courier economy-only now has an offline-verified owner reservation, but live
   save/load and asset evidence remain required. Process-local receipts are still
   not the durable business authority.

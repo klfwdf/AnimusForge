@@ -4,9 +4,9 @@
 
 **目标不是“再写一套聊天 Gateway”，而是覆盖 AF 全部生产责任，完成逻辑拆分、真实领域接线、兼容与存档验证、旧实现收敛和可回滚发布。本文一次写清完整范围与完成条件，不代表这些重构已经一次性做完。**
 
-本文由当前 Git、公共执行台账、owner matrix、领域 Gateway 边界和最近本机 handoff 交叉核对形成。本轮只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。下述测试 PASS 是上轮已记录的证据。
+本文初版由当时的 Git、公共执行台账、owner matrix、领域 Gateway 边界和本机 handoff 交叉核对形成；2026-08-31 初版只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。后续本机接续以紧随其后的更新块、公共台账和最新 handoff 为准。
 
-> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界；`LOCAL-7-D/E/F/G/H/I` 已依次完成 Memory owner readback、Courier Economy reservation、known partial、structured `UnknownAfterStart`、memory-only durable recovery 与 Courier inbound durable completion 的代码/离线验证。最新源码提交为 `de3220b7`，阶段 7 仍 VERIFY；下一切片审计 weekly/notoriety 等 H 未覆盖的 memory 辅助副作用。真实 Campaign/Mission、live Economy/AFEF、旧档和默认切换仍未验收。
+> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界；`LOCAL-7-D/E/F/G/H/I/J` 已依次完成 Memory owner readback、Courier Economy reservation、known partial、structured `UnknownAfterStart`、memory-only durable recovery、Courier inbound durable completion 与 memory auxiliary recovery boundary 的代码/离线验证。最新源码提交为 `84e92f80`。J 明确让 H recovery 只修 Daily/Recent：weekly pending 既不附着也不消费，notoriety 只在 brand-new core 同调用完成且 exact Daily marker 匹配时 current-runtime best-effort 尝试，跨恢复仍为 `NOT-RECOVERABLE`。阶段 7 仍 VERIFY；下一切片是 outcome-aware weekly exact-intent owner。真实 Campaign/Mission、live Economy/AFEF、旧档和默认切换仍未验收。
 
 ## 一、现状
 
