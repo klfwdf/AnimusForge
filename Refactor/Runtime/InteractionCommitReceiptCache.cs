@@ -37,7 +37,8 @@ internal static class InteractionCommitReceiptCache
                         "commit_request_mismatch",
                         existing.Result?.ActionsExecuted ?? false,
                         existing.Result?.HistoryWritten ?? false,
-                        existing.Result?.EffectState ?? ActionExecutionEffectState.UnknownAfterStart)
+                        existing.Result?.EffectState ?? ActionExecutionEffectState.UnknownAfterStart,
+                        existing.Result?.DuelDispatchReceipt)
                     : existing.Result == null
                         ? Failure(
                             "commit_in_progress",
@@ -89,11 +90,13 @@ internal static class InteractionCommitReceiptCache
         string code,
         bool actionsExecuted = false,
         bool historyWritten = false,
-        ActionExecutionEffectState effectState = ActionExecutionEffectState.NoConfirmedEffect)
+        ActionExecutionEffectState effectState = ActionExecutionEffectState.NoConfirmedEffect,
+        DetachedDuelDispatchReceipt duelDispatchReceipt = null)
         => new InteractionCommitResult(
             InteractionStatus.NonRetryableFailure,
             historyWritten,
             actionsExecuted,
             code,
-            effectState);
+            effectState,
+            duelDispatchReceipt);
 }

@@ -9323,7 +9323,16 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|NOBLE_EXECUTE_ESCORT|NOBLE_EXECUTE_PARTY_PRISONER|TROOP_INSPECTION_SLAUGHTER_PRISONERS|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
-	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags, string playerText, string npcReplyText, string chainName, bool replyIsDirectPlayerResponse)
+	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		ref string tags,
+		string playerText,
+		string npcReplyText,
+		string chainName,
+		bool replyIsDirectPlayerResponse,
+		DetachedDuelDispatchContext duelDispatchContext = null)
 	{
 		if (TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, targetAgentIndex, ref tags))
 		{
@@ -9346,7 +9355,15 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return !string.Equals(before, tags ?? "", StringComparison.Ordinal);
 		}
-		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref tags, targetAgentIndex, playerText, actionChainName: chainName, npcReplyTextOverride: npcReplyText);
+		ApplyNativeConversationActionTags(
+			targetHero,
+			targetCharacter,
+			ref tags,
+			targetAgentIndex,
+			playerText,
+			actionChainName: chainName,
+			npcReplyTextOverride: npcReplyText,
+			duelDispatchContext: duelDispatchContext);
 		bool changed = !string.Equals(before, tags ?? "", StringComparison.Ordinal);
 		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " changed=" + changed + " remaining=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 		return changed;
@@ -16411,10 +16428,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Hero targetHero,
 		CharacterObject targetCharacter,
 		int targetAgentIndex,
-		string displayName)
+		string displayName,
+		string expectedInteractionSubjectId)
 	{
 		Hero resolvedHero = targetHero ?? targetCharacter?.HeroObject;
-		string expectedSubjectId = resolvedHero?.StringId
+		string expectedSubjectId = !string.IsNullOrWhiteSpace(expectedInteractionSubjectId)
+			? expectedInteractionSubjectId.Trim()
+			: resolvedHero?.StringId
 			?? targetCharacter?.StringId
 			?? (targetAgentIndex >= 0 ? "agent:" + targetAgentIndex : string.Empty);
 		if (resolvedHero != null)
@@ -16439,6 +16459,31 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				displayName);
 		}
 		return null;
+	}
+
+	private static string ResolveDetachedInteractionSubjectId(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		int targetAgentIndex,
+		NpcDataPacket npc)
+	{
+		if (!string.IsNullOrWhiteSpace(targetHero?.StringId))
+		{
+			return targetHero.StringId;
+		}
+		if (TryResolveWildernessNonHeroMemoryForExternal(
+			npc,
+			null,
+			targetCharacter,
+			targetAgentIndex,
+			out string nonHeroMemoryId,
+			out _)
+			&& !string.IsNullOrWhiteSpace(nonHeroMemoryId))
+		{
+			return nonHeroMemoryId.Trim();
+		}
+		return targetCharacter?.StringId
+			?? (targetAgentIndex >= 0 ? "agent:" + targetAgentIndex : string.Empty);
 	}
 
 	/// <summary>
@@ -16498,12 +16543,65 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			: null;
 		ConversationManager expectedConversationManager = Campaign.Current?.ConversationManager;
 		int expectedConversationToken = expectedConversationManager?.ActiveToken ?? int.MinValue;
-		IEconomyRewardDebtMainThreadPort economyPort = CreateEconomyReplayPortForExternal(targetHero, targetCharacter, targetAgentIndex, npcName);
-
-		return new LegacyNativeActionPlanExecutor((actionPlan, snapshot) =>
+		string expectedSubjectId = ResolveDetachedInteractionSubjectId(
+			targetHero,
+			targetCharacter,
+			targetAgentIndex,
+			targetNpc);
+		try
 		{
-			if (!IsBannerlordMainThreadForNativeActions())
+			TryGetNativeConversationPersistentHistoryTargetForExternal(
+				out Hero persistentHero,
+				out _,
+				out string persistentMemoryId);
+			expectedSubjectId = !string.IsNullOrWhiteSpace(persistentMemoryId)
+				? persistentMemoryId.Trim()
+				: persistentHero?.StringId ?? expectedSubjectId;
+		}
+		catch
+		{
+		}
+		Func<GameInteractionSnapshot, bool> isCurrentNativeContext = snapshot =>
+		{
+			try
 			{
+				if (!IsBannerlordMainThreadForNativeActions()
+					|| snapshot?.Identity == null
+					|| snapshot.Identity.Channel != InteractionChannel.NativeConversation
+					|| !string.Equals(snapshot.Identity.SubjectId, expectedSubjectId, StringComparison.Ordinal)
+					|| !ReferenceEquals(Campaign.Current?.ConversationManager, expectedConversationManager)
+					|| expectedConversationManager == null
+					|| expectedConversationManager.ActiveToken != expectedConversationToken
+					|| !snapshot.DetachedFacts.TryGetValue("native_conversation_token", out string capturedToken)
+					|| !int.TryParse(capturedToken, out int parsedToken)
+					|| parsedToken != expectedConversationToken)
+				{
+					return false;
+				}
+				return IsNativeConversationResponseTargetAvailableForActionDispatch(
+					targetAgentIndex,
+					targetHero,
+					targetCharacter,
+					out _);
+			}
+			catch
+			{
+				return false;
+			}
+		};
+		IEconomyRewardDebtMainThreadPort economyPort = CreateEconomyReplayPortForExternal(
+			targetHero,
+			targetCharacter,
+			targetAgentIndex,
+			npcName,
+			expectedSubjectId);
+
+		return LegacyNativeActionPlanExecutor.CreateRequestBoundDuelExecutor(
+			(actionPlan, snapshot, duelDispatchContext) =>
+		{
+			if (!isCurrentNativeContext(snapshot))
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] detached action rejected because session or target is stale");
 				return InteractionStatus.RejectedByValidation;
 			}
 			string content = actionPlan?.RawPostprocessId ?? "";
@@ -16517,15 +16615,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				content,
 				snapshot?.PlayerText ?? "",
 				expectedConversationManager,
-				expectedConversationToken);
+				expectedConversationToken,
+				duelDispatchContext);
 			return actionResult != null && !actionResult.ResponseDiscarded
 				? InteractionStatus.Executed
 				: InteractionStatus.RejectedByValidation;
 		},
+			DuelBehavior.CreateDetachedDuelDispatchOwnerForExternal(),
 			allowedTagFamilies: LegacyActionTagCatalog.DefaultAllowedTagFamilies,
 			economyPlanner: economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
 			economyPort: economyPort,
-			economyCapabilities: economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
+			economyCapabilities: economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities(),
+			economyExecutionGate: (actionPlan, snapshot, isEconomyOnly) =>
+				isCurrentNativeContext(snapshot)
+					? InteractionStatus.Executed
+					: InteractionStatus.RejectedByValidation);
 	}
 
 	/// <summary>
@@ -16751,17 +16855,68 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Agent capturedAgent = Mission.Current?.Agents?.FirstOrDefault(candidate => candidate != null && candidate.Index == targetAgentIndex);
 		CharacterObject capturedCharacter = capturedAgent?.Character as CharacterObject;
 		Hero capturedHero = capturedCharacter?.HeroObject;
+		NpcDataPacket capturedNpc = capturedAgent == null ? null : ShoutUtils.ExtractNpcData(capturedAgent);
+		string expectedSceneSubjectId = ResolveDetachedInteractionSubjectId(
+			capturedHero,
+			capturedCharacter,
+			targetAgentIndex,
+			capturedNpc);
+		Func<GameInteractionSnapshot, bool> isCurrentSceneContext = snapshot =>
+		{
+			try
+			{
+				if (!IsBannerlordMainThreadForNativeActions()
+					|| snapshot?.Identity == null
+					|| snapshot.Identity.Channel != InteractionChannel.SceneShout
+					|| !string.Equals(snapshot.Identity.SubjectId, expectedSceneSubjectId, StringComparison.Ordinal)
+					|| !snapshot.DetachedFacts.TryGetValue("scene_session_id", out string sceneSessionToken)
+					|| !int.TryParse(sceneSessionToken, out int capturedSceneSessionId)
+					|| capturedSceneSessionId != GetCurrentSceneHistorySessionIdForExternal())
+				{
+					return false;
+				}
+				InteractionCandidate candidate = snapshot.Candidates?.FirstOrDefault(
+					item => item != null && item.AgentIndex == targetAgentIndex);
+				Agent liveAgent = Mission.Current?.Agents?.FirstOrDefault(
+					item => item != null && item.Index == targetAgentIndex);
+				if (candidate == null
+					|| !candidate.IsAlive
+					|| liveAgent == null
+					|| !liveAgent.IsActive()
+					|| !CanAgentParticipateInSceneSpeech(liveAgent))
+				{
+					return false;
+				}
+				CharacterObject liveCharacter = liveAgent.Character as CharacterObject;
+				string liveStableId = liveCharacter?.HeroObject?.StringId
+					?? liveCharacter?.StringId
+					?? "agent:" + targetAgentIndex;
+				return string.Equals(candidate.StableId, liveStableId, StringComparison.Ordinal);
+			}
+			catch
+			{
+				return false;
+			}
+		};
 		IEconomyRewardDebtMainThreadPort economyPort = CreateEconomyReplayPortForExternal(
 			capturedHero,
 			capturedCharacter,
 			targetAgentIndex,
-			capturedCharacter?.Name?.ToString());
-		return new LegacyNativeActionPlanExecutor((actionPlan, snapshot) =>
+			capturedCharacter?.Name?.ToString(),
+			expectedSceneSubjectId);
+		return LegacyNativeActionPlanExecutor.CreateRequestBoundDuelExecutor(
+			(actionPlan, snapshot, duelDispatchContext) =>
 		{
-			if (!IsBannerlordMainThreadForNativeActions()
-				|| snapshot?.Identity == null
-				|| snapshot.Identity.Channel != InteractionChannel.SceneShout)
+			if (!isCurrentSceneContext(snapshot))
 			{
+				return InteractionStatus.RejectedByValidation;
+			}
+			if (duelDispatchContext != null
+				&& (!snapshot.DetachedFacts.TryGetValue("scene_session_id", out string sceneSessionToken)
+					|| !int.TryParse(sceneSessionToken, out int capturedSceneSessionId)
+					|| capturedSceneSessionId != GetCurrentSceneHistorySessionIdForExternal()))
+			{
+				Logger.Log("ShoutBehavior", "[RefactorAction] exact Duel rejected because scene session is stale");
 				return InteractionStatus.RejectedByValidation;
 			}
 			InteractionCandidate capturedCandidate = snapshot.Candidates?.FirstOrDefault(
@@ -16801,7 +16956,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				snapshot.PlayerText ?? string.Empty,
 				string.Empty,
 				"scene-refactor",
-				replyIsDirectPlayerResponse: true))
+				replyIsDirectPlayerResponse: true,
+				duelDispatchContext: duelDispatchContext))
 			{
 				consumed = true;
 				content = ExtractDeferredSceneActionTags(content);
@@ -16812,11 +16968,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			return consumed ? InteractionStatus.Executed : InteractionStatus.RejectedByValidation;
 		},
+			DuelBehavior.CreateDetachedDuelDispatchOwnerForExternal(),
 			maxActions,
 		 allowedTagFamilies,
 		 economyPort == null ? null : new LegacyEconomyRewardDebtAdapter(),
 		 economyPort,
-		 economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities());
+			 economyPort == null ? null : LegacyEconomyRewardDebtAdapter.CreateAllCapabilities(),
+			economyExecutionGate: (actionPlan, snapshot, isEconomyOnly) =>
+				isCurrentSceneContext(snapshot)
+					? InteractionStatus.Executed
+					: InteractionStatus.RejectedByValidation);
 	}
 
 	/// <summary>
@@ -18068,7 +18229,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ConversationManager expectedConversationManager = null,
 		int expectedConversationToken = int.MinValue,
 		string actionChainName = null,
-		string npcReplyTextOverride = null)
+		string npcReplyTextOverride = null,
+		DetachedDuelDispatchContext duelDispatchContext = null)
 	{
 		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult();
 		if (string.IsNullOrWhiteSpace(content))
@@ -18227,7 +18389,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				if (!escalatedToBattle && !meetingReleaseTriggered && !nativeSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
 				{
 					content = Regex.Replace(content, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase).Trim();
-					DuelBehavior.PrepareDuel(targetHero, 3f);
+					PrepareDuelFromActionTag(targetHero, 3f, duelDispatchContext);
 				}
 				LogNativeActionStep("meeting_duel_after", targetHero, targetCharacter, content);
 			}
@@ -18345,7 +18507,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						Agent duelAgent = (agentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex) : null;
 						if (duelAgent != null)
 						{
-							DuelBehavior.PrepareDuel(duelAgent, 3f);
+							PrepareDuelFromActionTag(duelAgent, 3f, duelDispatchContext);
 						}
 						else
 						{
@@ -18358,7 +18520,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							{
 								DuelBehavior.SetPendingNonHeroDuelMemoryTarget(duelMemoryId, duelMemoryName);
 							}
-							DuelBehavior.PrepareDuel(targetCharacter, 3f);
+							PrepareDuelFromActionTag(targetCharacter, 3f, duelDispatchContext);
 						}
 					}
 					LogNativeActionStep("nonhero_meeting_duel_after", targetHero, targetCharacter, content);
@@ -18370,7 +18532,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					Agent duelAgent = (agentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex) : null;
 					if (duelAgent != null)
 					{
-						DuelBehavior.PrepareDuel(duelAgent, 3f);
+						PrepareDuelFromActionTag(duelAgent, 3f, duelDispatchContext);
 					}
 					else
 					{
@@ -18383,7 +18545,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							DuelBehavior.SetPendingNonHeroDuelMemoryTarget(duelMemoryId, duelMemoryName);
 						}
-						DuelBehavior.PrepareDuel(targetCharacter, 3f);
+						PrepareDuelFromActionTag(targetCharacter, 3f, duelDispatchContext);
 					}
 					LogNativeActionStep("nonhero_duel_after", targetHero, targetCharacter, content);
 				}
@@ -18414,6 +18576,60 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
+		}
+	}
+
+	private static void PrepareDuelFromActionTag(
+		Hero target,
+		float delaySeconds,
+		DetachedDuelDispatchContext duelDispatchContext)
+	{
+		if (duelDispatchContext == null)
+		{
+			DuelBehavior.PrepareDuel(target, delaySeconds);
+		}
+		else
+		{
+			DuelBehavior.PrepareDuelForDetachedRequest(
+				target,
+				delaySeconds,
+				duelDispatchContext);
+		}
+	}
+
+	private static void PrepareDuelFromActionTag(
+		Agent target,
+		float delaySeconds,
+		DetachedDuelDispatchContext duelDispatchContext)
+	{
+		if (duelDispatchContext == null)
+		{
+			DuelBehavior.PrepareDuel(target, delaySeconds);
+		}
+		else
+		{
+			DuelBehavior.PrepareDuelForDetachedRequest(
+				target,
+				delaySeconds,
+				duelDispatchContext);
+		}
+	}
+
+	private static void PrepareDuelFromActionTag(
+		CharacterObject target,
+		float delaySeconds,
+		DetachedDuelDispatchContext duelDispatchContext)
+	{
+		if (duelDispatchContext == null)
+		{
+			DuelBehavior.PrepareDuel(target, delaySeconds);
+		}
+		else
+		{
+			DuelBehavior.PrepareDuelForDetachedRequest(
+				target,
+				delaySeconds,
+				duelDispatchContext);
 		}
 	}
 
@@ -18785,7 +19001,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return tcs.Task;
 	}
 
-	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
+	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		NpcDataPacket npc,
+		List<NpcDataPacket> allNpcData,
+		List<SceneSummonPromptTarget> sceneSummonTargets,
+		List<SceneGuidePromptTarget> sceneGuideTargets,
+		string content,
+		string playerText,
+		ConversationManager expectedConversationManager,
+		int expectedConversationToken,
+		DetachedDuelDispatchContext duelDispatchContext = null)
 	{
 		string result = content ?? "";
 		int targetAgentIndex = npc?.AgentIndex ?? (-1);
@@ -18816,7 +19043,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(npc?.UnnamedKey, npc?.Name, ref result);
 		}
 		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
-		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, targetAgentIndex, playerText, expectedConversationManager, expectedConversationToken);
+		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = ApplyNativeConversationActionTags(
+			targetHero,
+			targetCharacter,
+			ref result,
+			targetAgentIndex,
+			playerText,
+			expectedConversationManager,
+			expectedConversationToken,
+			duelDispatchContext: duelDispatchContext);
 		return new NativeConversationGameActionResult { Content = result ?? "", WorldMapResult = worldMapResult };
 	}
 

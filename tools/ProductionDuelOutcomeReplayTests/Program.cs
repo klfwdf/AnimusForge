@@ -10,6 +10,8 @@ internal static class Program
     private const string RuntimeNamespace = "AnimusForge.Refactor.Runtime.";
     private const string ReceiptType = RuntimeNamespace + "DuelOutcomeReceipt";
     private const string OwnerType = RuntimeNamespace + "DuelOutcomeOwner";
+    private const string DispatchContextType = RuntimeNamespace + "DetachedDuelDispatchContext";
+    private const string DispatchReceiptType = RuntimeNamespace + "DetachedDuelDispatchReceipt";
 
     private static int Main(string[] args)
     {
@@ -28,6 +30,7 @@ internal static class Program
         suite.Run("source.processLocalOwner", () => VerifySourceGuards(options.ProjectRoot));
         suite.Run("source.stakeArmGate", () => VerifyStakeArmSourceGuard(options.ProjectRoot));
         suite.Run("source.pendingArtifactBinding", () => VerifyPendingArtifactSourceGuard(options.ProjectRoot));
+        suite.Run("source.exactDispatchProvenance", () => VerifyExactDispatchSourceGuard(options.ProjectRoot));
 
         List<VariantEvidence> evidence = new();
         foreach (string api in new[] { "1.3", "1.4" })
@@ -82,6 +85,7 @@ internal static class Program
                 suite.Run(api + ".stakeArmGate", () => VerifyStakeArmGate(assembly));
                 suite.Run(api + ".pendingArtifactBinding", () => VerifyPendingArtifactBinding(assembly));
                 suite.Run(api + ".fourberieSeam", () => VerifyFourberieSeam(assembly));
+                suite.Run(api + ".exactDispatchProvenance", () => VerifyExactDispatchProvenance(assembly));
 
                 string fingerprint = null;
                 suite.Run(api + ".surfaceFingerprint", () =>
@@ -157,7 +161,7 @@ internal static class Program
         string recordOutcome = ExtractMethod(host, "private static bool TryRecordDuelOutcome(");
         string finalizeOutcome = ExtractMethod(host, "private static bool TryFinalizeDuelOutcome(");
         string unknownOutcome = ExtractMethod(host, "private static void MarkDuelOutcomeUnknown(");
-        Require(CountOccurrences(beginOutcome, "IndexDuelOutcome(normalizedSubject, duelId);") == 1,
+        Require(CountOccurrences(beginOutcome, "IndexDuelOutcome(normalizedSubject, exactDuelId);") == 1,
             "Duel start does not index exactly one subject/duel identity.");
         Require(recordOutcome.Contains("_duelOutcomeOwner.RecordOutcome(", StringComparison.Ordinal),
             "TryRecordDuelOutcome no longer locks the typed result before effects.");
@@ -218,10 +222,43 @@ internal static class Program
             "if (dataStore != null && dataStore.IsLoading)");
         Require(CountOccurrences(loadBoundary, "MarkDuelOutcomeUnknown(") == 2,
             "SyncData load boundary must mark both active Duel sessions unknown exactly once.");
-        Require(loadBoundary.Contains("_activeDuelOutcomeStart = null;", StringComparison.Ordinal)
+        Require(loadBoundary.IndexOf("ClearDetachedDuelDispatchesForLoad();", StringComparison.Ordinal)
+                < loadBoundary.IndexOf("MarkDuelOutcomeUnknown(", StringComparison.Ordinal)
+                && loadBoundary.Contains("_activeDuelOutcomeStart = null;", StringComparison.Ordinal)
+                && loadBoundary.Contains("_wildernessDuelRuntime.AbortRequested = true;", StringComparison.Ordinal)
                 && loadBoundary.Contains("_wildernessDuelRuntime.DuelOutcomeStart = null;", StringComparison.Ordinal)
+                && loadBoundary.Contains("_wildernessDuelRuntime = null;", StringComparison.Ordinal)
                 && loadBoundary.Contains("\"save_generation_changed\"", StringComparison.Ordinal),
-            "SyncData load boundary does not clear both active identities after the unknown transition.");
+            "SyncData load boundary does not clear detached triggers before settling both active identities.");
+        string clearDetached = ExtractMethod(host, "private void ClearDetachedDuelDispatchesForLoad(");
+        foreach (string holder in new[]
+        {
+            "_meetingPendingDuelDispatchContext",
+            "_queuedDuelDispatchContext",
+            "_openingDuelDispatchContext",
+            "_wildernessDuelRuntime.DuelDispatchContext"
+        })
+        {
+            Require(clearDetached.Contains(holder, StringComparison.Ordinal),
+                "Load cleanup omits detached Duel holder: " + holder);
+        }
+        foreach (string triggerReset in new[]
+        {
+            "_meetingPendingStart = false;",
+            "_queuedDuelWaitingForConversationExit = false;",
+            "_leaveSourceMissionRequested = false;",
+            "_pendingDuelTarget = null;",
+            "_arenaMissionActive = false;",
+            "_arenaMissionOpeningGraceUntilUtcTicks = 0L;",
+            "_wildernessDuelRuntime.AbortRequested = true;",
+            "_pendingMainHeroDeath = false;",
+            "_openTownMenuRequested = false;",
+            "_isDuelActive = false;"
+        })
+        {
+            Require(clearDetached.Contains(triggerReset, StringComparison.Ordinal),
+                "Load cleanup leaves a Duel trigger armed: " + triggerReset);
+        }
         foreach (string forbidden in new[]
         {
             "TryBeginDuelOutcome(",
@@ -276,7 +313,8 @@ internal static class Program
 
     private static void VerifyPendingArtifactSourceGuard(string projectRoot)
     {
-        string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
+        string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"))
+            .Replace("\r\n", "\n", StringComparison.Ordinal);
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
         string myBehavior = File.ReadAllText(Path.Combine(projectRoot, "MyBehavior.cs"));
         string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
@@ -295,7 +333,7 @@ internal static class Program
 
         string begin = ExtractMethod(host, "private static bool TryBeginDuelOutcome(");
         Require(begin.Contains("BuildPendingDuelArtifactFingerprint(normalizedSubject)", StringComparison.Ordinal)
-                && begin.Contains("BindPendingDuelArtifacts(normalizedSubject, duelId);", StringComparison.Ordinal),
+                && begin.Contains("BindPendingDuelArtifacts(normalizedSubject, exactDuelId);", StringComparison.Ordinal),
             "TryBeginDuelOutcome does not fingerprint and bind pending Duel artifacts.");
         string bind = ExtractMethod(host, "private static void BindPendingDuelArtifacts(");
         Require(CountOccurrences(bind, ".DuelOutcomeId = duelId;") == 3
@@ -310,8 +348,12 @@ internal static class Program
         Require(CountOccurrences(discardBound, "string.Equals(") == 3
                 && CountOccurrences(discardBound, ".Remove(subjectId);") == 3,
             "Bound Duel artifact cleanup must remove all three artifact types only for the exact DuelId.");
-        Require(CountOccurrences(begin, "DiscardUnboundDuelArtifacts(normalizedSubject);") == 5,
-            "TryBeginDuelOutcome does not clear unbound artifacts on every request/queue/start/exception failure.");
+        string discardForRequest = ExtractMethod(host, "private static void DiscardDuelArtifactsForRequest(");
+        Require(CountOccurrences(begin, "DiscardDuelArtifactsForRequest(dispatchContext, normalizedSubject);") == 5
+                && discardForRequest.Contains("DiscardBoundDuelArtifacts(requestSubject, context.DuelId);", StringComparison.Ordinal)
+                && CountOccurrences(discardForRequest, "DiscardUnboundDuelArtifacts(") == 2
+                && discardForRequest.Contains("string.Equals(requestSubject, subjectId, StringComparison.Ordinal)", StringComparison.Ordinal),
+            "TryBeginDuelOutcome does not clear exact-request and actual-subject artifacts on every failure path.");
 
         string finalize = ExtractMethod(host, "private static bool TryFinalizeDuelOutcome(");
         string unknown = ExtractMethod(host, "private static void MarkDuelOutcomeUnknown(");
@@ -321,16 +363,17 @@ internal static class Program
                 > unknown.IndexOf("_duelOutcomeOwner.MarkUnknownAfterStart(", StringComparison.Ordinal),
             "Typed terminal paths do not clear matching bound Duel artifacts after owner settlement.");
 
-        foreach ((string Signature, int MinimumCalls) failureOwner in new[]
+        foreach (string signature in new[]
         {
-            ("public static void PrepareDuel(Hero", 4),
-            ("public static void GlobalDuelStarterTick(", 5),
-            ("private void StartDuelInternal(Agent", 6)
+            "private static void PrepareDuel(\n\t\tHero target,",
+            "public static void GlobalDuelStarterTick(",
+            "private void StartDuelInternal(\n\t\tAgent agent,"
         })
         {
-            string failurePath = ExtractMethod(behavior, failureOwner.Signature);
-            Require(CountOccurrences(failurePath, "DiscardUnboundDuelArtifacts(") >= failureOwner.MinimumCalls,
-                failureOwner.Signature + " does not clear rejected/aborted unbound Duel artifacts.");
+            string failurePath = ExtractMethod(behavior, signature);
+            Require(failurePath.Contains("DiscardUnboundDuelArtifacts(", StringComparison.Ordinal)
+                    || failurePath.Contains("DiscardDuelArtifactsForRequest(", StringComparison.Ordinal),
+                signature + " does not route rejected/aborted Duel artifacts through cleanup.");
         }
 
         string afterLines = ExtractMethod(behavior, "public static bool TryCacheDuelAfterLinesFromText(");
@@ -389,6 +432,246 @@ internal static class Program
             owner + " does not clear stale debt before caching this Duel reply's debt.");
     }
 
+    private static void VerifyExactDispatchSourceGuard(string projectRoot)
+    {
+        string contracts = File.ReadAllText(Path.Combine(
+            projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"));
+        string committer = File.ReadAllText(Path.Combine(
+            projectRoot, "Refactor", "Runtime", "InteractionResultCommitter.cs"));
+        string executor = File.ReadAllText(Path.Combine(
+            projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs"));
+        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
+        string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
+        string shout = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
+        string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"));
+        string receipt = File.ReadAllText(Path.Combine(
+            projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"));
+        string snapshots = File.ReadAllText(Path.Combine(
+            projectRoot, "Refactor", "Adapters", "LegacyInteractionSnapshotAdapters.cs"));
+        string normalizedHost = host.Replace("\r\n", "\n", StringComparison.Ordinal);
+        string normalizedBehavior = behavior.Replace("\r\n", "\n", StringComparison.Ordinal);
+
+        Require(contracts.Contains("internal interface IRequestBoundActionPlanExecutor", StringComparison.Ordinal)
+                && committer.Contains("BuildCanonicalRequestId(envelope)", StringComparison.Ordinal)
+                && committer.Contains("BuildCanonicalActionPlanFingerprint(result.ActionPlan)", StringComparison.Ordinal)
+                && committer.Contains("requestBound.ValidateAndExecute(", StringComparison.Ordinal),
+            "Commit reservation does not hand its canonical request/action identity to the internal executor seam.");
+
+        string executeCore = ExtractMethod(executor, "private InteractionStatus ValidateAndExecuteCore(");
+        int courierPreflight = executeCore.IndexOf(
+            "currentSnapshot.Identity?.Channel == InteractionChannel.Courier",
+            StringComparison.Ordinal);
+        int exactQueue = executeCore.IndexOf("_duelDispatchOwner.TryQueue(", StringComparison.Ordinal);
+        int economyGate = executeCore.IndexOf("_economyExecutionGate(", StringComparison.Ordinal);
+        int economyReplay = executeCore.IndexOf("_economyPort.Replay(", StringComparison.Ordinal);
+        int requestBoundCallback = executeCore.IndexOf("_requestBoundExecute(delegatedPlan", StringComparison.Ordinal);
+        Require(exactQueue >= 0
+                && courierPreflight >= 0
+                && courierPreflight < exactQueue
+                && economyGate > exactQueue
+                && economyReplay > economyGate
+                && requestBoundCallback > economyReplay,
+            "Courier preflight / exact Queue / Economy gate / Economy replay / gameplay callback order drifted.");
+        Require(executeCore.Contains("duelActionCount != 1", StringComparison.Ordinal)
+                && executeCore.Contains("CancelUnstartedDuelDispatch", StringComparison.Ordinal)
+                && executeCore.Contains("TryMapDuelChannel", StringComparison.Ordinal)
+                && executeCore.Contains("duel.dispatch_queued", StringComparison.Ordinal),
+            "Exact executor does not fail closed on multiple Duel actions or expose queued/started receipts.");
+
+        string resolveExact = ExtractMethod(executor, "private InteractionStatus ResolveExactDuelDispatchStatus(");
+        Require(resolveExact.Contains("duel.dispatch_started", StringComparison.Ordinal)
+                && executeCore.Contains(
+                    "_duelCompanionEffectUncertain = delegatedPlan.Actions.Any(IsDuelCompanionAction);",
+                    StringComparison.Ordinal)
+                && ExtractMethod(executor, "private static bool IsDuelProtocolAction(")
+                    .Contains("ACTION:MOOD", StringComparison.Ordinal)
+                && resolveExact.Contains("context?.SideEffectBoundaryCrossed == true", StringComparison.Ordinal)
+                && resolveExact.Contains("_duelCompanionEffectUncertain", StringComparison.Ordinal)
+                && CountOccurrences(resolveExact, "ActionExecutionEffectState.UnknownAfterStart") >= 4,
+            "Duel+Mood or a crossed host side-effect boundary is no longer conservatively terminal Unknown.");
+
+        Require(CountOccurrences(shout, "CreateRequestBoundDuelExecutor(") == 2
+                && CountOccurrences(shout, "PrepareDuelForDetachedRequest(") == 3
+                && shout.Contains("duelDispatchContext: duelDispatchContext", StringComparison.Ordinal),
+            "Native/SceneShout do not pass the explicit request context to their actual Duel branch.");
+        Require(courier.Contains("CreateRequestBoundDuelExecutor(", StringComparison.Ordinal)
+                && courier.Contains("RejectDetachedDuelDispatchForExternal(", StringComparison.Ordinal)
+                && courier.Contains("\"unsupported_channel\"", StringComparison.Ordinal),
+            "Courier outbound Duel is not an explicit unsupported-channel rejection.");
+
+        string nativeFactory = ExtractMethod(
+            shout,
+            "public static LegacyNativeActionPlanExecutor CreateNativeConversationActionPlanExecutorForExternal(");
+        string sceneFactory = ExtractMethod(
+            shout,
+            "public static LegacyNativeActionPlanExecutor CreateSceneShoutActionPlanExecutorForExternal(");
+        foreach ((string Factory, string ContextName, string Channel) provenance in new[]
+        {
+            (nativeFactory, "isCurrentNativeContext", "InteractionChannel.NativeConversation"),
+            (sceneFactory, "isCurrentSceneContext", "InteractionChannel.SceneShout")
+        })
+        {
+            int subjectCompare = provenance.Factory.IndexOf(
+                "snapshot.Identity.SubjectId",
+                StringComparison.Ordinal);
+            int gateWiring = provenance.Factory.IndexOf("economyExecutionGate:", StringComparison.Ordinal);
+            Require(provenance.Factory.Contains(provenance.Channel, StringComparison.Ordinal)
+                    && subjectCompare >= 0
+                    && provenance.Factory.IndexOf("StringComparison.Ordinal", subjectCompare, StringComparison.Ordinal) > subjectCompare
+                    && gateWiring > subjectCompare
+                    && provenance.Factory.IndexOf(provenance.ContextName + "(snapshot)", gateWiring, StringComparison.Ordinal) > gateWiring,
+                provenance.Channel + " does not independently validate subject/session provenance before Economy replay.");
+        }
+
+        string courierGate = ExtractMethod(
+            courier,
+            "private InteractionStatus GateCourierEconomyActionPlanForExternal(");
+        Require(courierGate.IndexOf("IsCourierActionSessionEligible(", StringComparison.Ordinal)
+                < courierGate.IndexOf("TryReserveCourierEconomyOnly(", StringComparison.Ordinal)
+                && ExtractMethod(courier, "private static bool IsCourierActionSessionEligible(")
+                    .Contains("snapshot.Identity.SubjectId", StringComparison.Ordinal),
+            "Courier Economy preflight no longer validates session/recipient before reserving replay.");
+
+        foreach (string signature in new[]
+        {
+            "internal static void PrepareDuelForDetachedRequest(\n\t\tHero",
+            "internal static void PrepareDuelForDetachedRequest(\n\t\tAgent",
+            "internal static void PrepareDuelForDetachedRequest(\n\t\tCharacterObject"
+        })
+        {
+            string prepare = ExtractMethod(normalizedHost, signature);
+            int validate = prepare.IndexOf("ValidateDetachedDuelTarget(", StringComparison.Ordinal);
+            Require(validate >= 0
+                    && prepare.IndexOf("BindPendingDuelArtifacts(", StringComparison.Ordinal) > validate
+                    && prepare.LastIndexOf("PrepareDuel(", StringComparison.Ordinal) > validate,
+                "Detached prepare does not compare the actual target subject before artifact binding/dispatch: " + signature);
+        }
+        string validateTarget = ExtractMethod(host, "private static bool ValidateDetachedDuelTarget(");
+        Require(validateTarget.Contains("context.RequestIdentity.SubjectId", StringComparison.Ordinal)
+                && validateTarget.Contains("NormalizeDuelOutcomeSubject(subjectId)", StringComparison.Ordinal)
+                && validateTarget.Contains("StringComparison.Ordinal", StringComparison.Ordinal),
+            "Actual Duel subject is not independently compared with the request subject.");
+
+        foreach (string holder in new[]
+        {
+            "_meetingPendingDuelDispatchContext",
+            "_queuedDuelDispatchContext",
+            "_openingDuelDispatchContext",
+            "WildernessDuelBattleRuntime",
+            "ArenaDuelMissionBehavior"
+        })
+        {
+            Require(behavior.Contains(holder, StringComparison.Ordinal),
+                "Delayed Duel holder is missing exact context: " + holder);
+        }
+        Require(host.Contains("TryReadDuelOutcomeByRequestId", StringComparison.Ordinal)
+                && host.Contains("IndexDuelOutcomeRequest", StringComparison.Ordinal)
+                && host.Contains("ClearDetachedDuelDispatchesForLoad", StringComparison.Ordinal),
+            "Exact request readback or load cleanup is missing.");
+        string markDispatchUnknown = ExtractMethod(
+            receipt,
+            "internal DuelOutcomeOperationStatus MarkUnknownAfterDispatch(");
+        Require(markDispatchUnknown.Contains("existing.State != DuelOutcomeState.Queued", StringComparison.Ordinal)
+                && markDispatchUnknown.Contains("DuelOutcomeState.UnknownAfterStart", StringComparison.Ordinal)
+                && markDispatchUnknown.Contains("AnimusForge.DuelOutcome.UnknownAfterDispatch.v1", StringComparison.Ordinal)
+                && ExtractMethod(host, "public void MarkUnknownAfterStart(")
+                    .Contains("_duelOutcomeOwner.MarkUnknownAfterDispatch(", StringComparison.Ordinal),
+            "A crossed pre-Start dispatch cannot be terminalized as a provenance-preserving Unknown.");
+
+        string arenaType = ExtractBlockAfter(normalizedBehavior, "private class ArenaDuelMissionBehavior");
+        string arenaAfterStart = ExtractMethod(arenaType, "public override void AfterStart(");
+        Require(arenaAfterStart.IndexOf("EnsureDuelOutcomeStarted(", StringComparison.Ordinal)
+                < arenaAfterStart.IndexOf("base.Mission.SetMissionMode(", StringComparison.Ordinal)
+                && arenaAfterStart.IndexOf("EnsureDuelOutcomeStarted(", StringComparison.Ordinal)
+                < arenaAfterStart.IndexOf("SetupArenaDuel();", StringComparison.Ordinal),
+            "Arena owner Start is not before Mission/gameplay setup.");
+        string wildernessType = ExtractBlockAfter(normalizedBehavior, "private sealed class WildernessDuelBattleMissionLogic");
+        string wildernessInitialize = ExtractMethod(wildernessType, "public override void OnBehaviorInitialize(");
+        Require(wildernessInitialize.IndexOf("EnsureDuelOutcomeStarted(", StringComparison.Ordinal)
+                < wildernessInitialize.IndexOf("EnsureMainHeroHealthForWildernessDuel(", StringComparison.Ordinal),
+            "Wilderness owner Start is not before gameplay mutation.");
+        string inPlaceStart = ExtractMethod(
+            normalizedBehavior,
+            "private void StartDuelInternal(\n\t\tAgent agent,");
+        Require(inPlaceStart.IndexOf("TryBeginDuelOutcome(", StringComparison.Ordinal)
+                < inPlaceStart.IndexOf("_preDuelMode = current.Mode;", StringComparison.Ordinal)
+                && inPlaceStart.IndexOf("TryBeginDuelOutcome(", StringComparison.Ordinal)
+                < inPlaceStart.IndexOf("current.SetMissionMode(", StringComparison.Ordinal),
+            "In-place owner Start is not before gameplay mutation.");
+
+        Require(arenaType.Contains("private readonly DetachedDuelDispatchContext _duelDispatchContext;", StringComparison.Ordinal)
+                && arenaType.Contains("private readonly string _nonHeroMemoryId;", StringComparison.Ordinal)
+                && ExtractBlockAfter(snapshots, "public sealed class MyBehaviorMemoryFacade")
+                    .Contains("private readonly string _nonHeroMemoryId;", StringComparison.Ordinal),
+            "Non-hero/exact delayed holders are no longer immutable at the action boundary.");
+
+        string openingTick = ExtractMethod(behavior, "public static void GlobalArenaLeaveTick(");
+        string arenaTick = ExtractMethod(arenaType, "public override void OnMissionTick(");
+        Require(openingTick.Contains("opening_timeout_before_afterstart", StringComparison.Ordinal)
+                && openingTick.Contains("MarkDetachedDuelDispatchUnknownAfterStart(", StringComparison.Ordinal)
+                && arenaTick.Contains("_setupAttempts >= 3", StringComparison.Ordinal)
+                && arenaTick.Contains("_setupDeadline", StringComparison.Ordinal)
+                && arenaTick.Contains("arena_setup_timeout", StringComparison.Ordinal)
+                && arenaTick.Contains("MarkDetachedDuelDispatchUnknownAfterStart(", StringComparison.Ordinal),
+            "Opening/setup retry bounds no longer terminalize an exact dispatch as Unknown.");
+
+        string delayedReady = ExtractMethod(host, "private static bool IsDetachedDuelDispatchReadyForDelayedHost(");
+        Require(delayedReady.Contains("receipt?.State == DetachedDuelDispatchState.Queued", StringComparison.Ordinal)
+                && delayedReady.Contains("receipt.HostAccepted", StringComparison.Ordinal),
+            "Delayed Duel consumers no longer require both Queued and HostAccepted.");
+        foreach ((string Signature, string SideEffect) consumer in new[]
+        {
+            ("public static void GlobalDuelStarterTick(", "TryOpenWildernessDuelMission("),
+            ("public void OnEngineTick(", "StartDuelInternal("),
+            ("public static void GlobalSourceMissionLeaveTick(", "current.EndMission();")
+        })
+        {
+            string method = ExtractMethod(behavior, consumer.Signature);
+            int ready = method.IndexOf("IsDetachedDuelDispatchReadyForDelayedHost(", StringComparison.Ordinal);
+            Require(ready >= 0
+                    && method.IndexOf(consumer.SideEffect, ready, StringComparison.Ordinal) > ready,
+                consumer.Signature + " can consume a non-accepted/non-queued exact dispatch.");
+        }
+
+        string heroPrepare = ExtractMethod(
+            normalizedBehavior,
+            "private static void PrepareDuel(\n\t\tHero target,");
+        string nonHeroPrepare = ExtractMethod(
+            normalizedBehavior,
+            "private static void PrepareDuel(\n\t\tCharacterObject targetCharacter,");
+        Require(heroPrepare.Contains("arena_vlandia_a", StringComparison.Ordinal)
+                && heroPrepare.Contains("Instance.StartDuelViaAI(target, duelDispatchContext);", StringComparison.Ordinal)
+                && nonHeroPrepare.Contains("arena_vlandia_a", StringComparison.Ordinal)
+                && nonHeroPrepare.Contains("arena_target_agent_missing", StringComparison.Ordinal)
+                && nonHeroPrepare.Contains("Instance.StartDuelViaAI(arenaTarget, duelDispatchContext);", StringComparison.Ordinal),
+            "A Hero/non-hero already in the arena is no longer routed directly to actual Start.");
+
+        string rejectExact = ExtractMethod(host, "public void Reject(");
+        Require(rejectExact.IndexOf("_exactDuelDispatchIdsSeen.Add(context.DuelId);", StringComparison.Ordinal)
+                < rejectExact.IndexOf("RejectDuelOutcomeRequest(", StringComparison.Ordinal)
+                && rejectExact.Contains("ExactDuelDispatchSeenCapacity", StringComparison.Ordinal),
+            "Exact Reject no longer records a bounded tombstone before owner rejection.");
+
+        string wildernessTick = ExtractMethod(wildernessType, "public override void OnMissionTick(");
+        Require(wildernessTick.Contains("_participantDeadline = base.Mission.CurrentTime + 30f;", StringComparison.Ordinal)
+                && wildernessTick.Contains("wilderness_participant_timeout", StringComparison.Ordinal)
+                && wildernessTick.Contains("_runtime.AbortRequested = true;", StringComparison.Ordinal)
+                && wildernessTick.Contains("base.Mission.EndMission();", StringComparison.Ordinal),
+            "Wilderness participant acquisition is no longer bounded to a terminal 30-second abort.");
+
+        string arenaSettlement = ExtractMethod(arenaType, "private void EndDuelLocal(");
+        string wildernessSettlement = ExtractMethod(behavior, "private static void SettleWildernessDuelRuntime(");
+        Require(arenaSettlement.Contains("if (_abortRequested || _duelOutcomeStart == null)", StringComparison.Ordinal)
+                && wildernessSettlement.Contains(
+                    "if (runtime == null || runtime.SettlementDone || runtime.AbortRequested)",
+                    StringComparison.Ordinal),
+            "Arena/Wilderness abort state can still reach settlement.");
+        Require(!executor.Contains("TryReadLatestDuelOutcome", StringComparison.Ordinal)
+                && !executor.Contains("_lastDuelResults", StringComparison.Ordinal)
+                && !executor.Contains("_duelCooldowns", StringComparison.Ordinal),
+            "Exact executor infers provenance from a subject aggregate, legacy result, or cooldown.");
+    }
+
     private static void VerifyTerminalWriterSourceOrder(
         string behaviorSource,
         string signature,
@@ -400,6 +683,11 @@ internal static class Program
         int legacyEffect = writer.IndexOf(firstLegacyEffectMarker, StringComparison.Ordinal);
         int effectReceipt = writer.IndexOf("TryCreateDuelOutcomeEffects(", StringComparison.Ordinal);
         int finalize = writer.IndexOf("TryFinalizeDuelOutcome(", StringComparison.Ordinal);
+        string recordFailure = ExtractBlockAfter(writer, "if (!TryRecordDuelOutcome(");
+        Require(recordFailure.Contains("return;", StringComparison.Ordinal)
+                && !recordFailure.Contains(firstLegacyEffectMarker, StringComparison.Ordinal)
+                && !recordFailure.Contains("TryFinalizeDuelOutcome(", StringComparison.Ordinal),
+            signature + " can mutate settlement/finalize after the typed result transition fails.");
         Require(record >= 0 && legacyEffect > record,
             signature + " does not lock the typed result before legacy effects.");
         Require(effectReceipt > legacyEffect && finalize > effectReceipt,
@@ -410,7 +698,10 @@ internal static class Program
             signature + " can leave an OutcomeKnown receipt active when effects/final settlement fails.");
         if (!string.IsNullOrEmpty(finishMarker))
         {
-            int finish = writer.IndexOf(finishMarker, StringComparison.Ordinal);
+            // Early record/start failure branches may tear down before any
+            // OutcomeKnown receipt exists. Lock the settled success path by
+            // requiring the final teardown after the typed finalization seam.
+            int finish = writer.LastIndexOf(finishMarker, StringComparison.Ordinal);
             Require(finish > finalize,
                 signature + " tears down the Duel before typed finalization.");
         }
@@ -458,7 +749,11 @@ internal static class Program
             Path.Combine(projectRoot, "FourberieDuelCompatibility.cs"),
             Path.Combine(projectRoot, "MyBehavior.cs"),
             Path.Combine(projectRoot, "ShoutBehavior.cs"),
-            Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs")
+            Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"),
+            Path.Combine(projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"),
+            Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
+            Path.Combine(projectRoot, "Refactor", "Runtime", "InteractionResultCommitter.cs"),
+            Path.Combine(projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs")
         };
         DateTimeOffset markerTime = marker.CreatedUtc.ToUniversalTime();
         foreach (string source in relevantSources)
@@ -491,7 +786,9 @@ internal static class Program
                 [RuntimeNamespace + "DuelOutcomeOperationStatus"] = Values(
                     ("Accepted", 0), ("Duplicate", 1), ("NotFound", 2),
                     ("InvalidTransition", 3), ("IdentityConflict", 4), ("CapacityExceeded", 5),
-                    ("InvalidIdentity", 6))
+                    ("InvalidIdentity", 6)),
+                [RuntimeNamespace + "DetachedDuelDispatchState"] = Values(
+                    ("Rejected", 0), ("Queued", 1), ("Started", 2), ("UnknownAfterStart", 3))
             };
 
         foreach ((string typeName, IReadOnlyDictionary<string, int> expected) in enums)
@@ -507,7 +804,19 @@ internal static class Program
         string startType = RuntimeNamespace + "DuelOutcomeStartIdentity";
         string resultType = RuntimeNamespace + "DuelOutcomeResultIdentity";
         string effectsType = RuntimeNamespace + "DuelOutcomeEffects";
-        foreach (string typeName in new[] { requestType, startType, resultType, effectsType, ReceiptType, OwnerType })
+        foreach (string typeName in new[]
+        {
+            requestType,
+            startType,
+            resultType,
+            effectsType,
+            ReceiptType,
+            OwnerType,
+            DispatchContextType,
+            DispatchReceiptType,
+            RuntimeNamespace + "IDetachedDuelDispatchOwner",
+            RuntimeNamespace + "IDetachedDuelDispatchExecutionReceipt"
+        })
         {
             MetadataAssembly.TypeView type = assembly.RequireType(typeName);
             Require((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
@@ -534,6 +843,48 @@ internal static class Program
                 RuntimeNamespace + "DuelOutcomeEffectState", RuntimeNamespace + "DuelOutcomeEffectState",
                 RuntimeNamespace + "DuelOutcomeEffectState", effectsType + "&", "System.String&"),
             "System.Boolean");
+        AssertStaticMethod(
+            assembly.RequireMethod(
+                DispatchContextType,
+                "TryCreate",
+                "System.String",
+                "System.String",
+                RuntimeNamespace + "DuelOutcomeChannel",
+                "System.String",
+                "System.String",
+                "System.Int64",
+                "System.Int64",
+                "System.String",
+                DispatchContextType + "&",
+                "System.String&"),
+            "System.Boolean");
+        MetadataAssembly.MethodView dispatchReceiptConstructor = assembly.RequireMethod(
+            DispatchReceiptType,
+            ".ctor",
+            RuntimeNamespace + "DetachedDuelDispatchState",
+            "System.String",
+            "System.String",
+            "System.String",
+            "System.Boolean",
+            "System.String");
+        Require(!dispatchReceiptConstructor.IsStatic && dispatchReceiptConstructor.ReturnType == "System.Void",
+            "Detached dispatch receipt constructor ABI drifted: " + dispatchReceiptConstructor.DisplaySignature);
+
+        string dispatchOwnerType = RuntimeNamespace + "IDetachedDuelDispatchOwner";
+        AssertInstanceMethod(
+            assembly.RequireMethod(
+                dispatchOwnerType,
+                "TryQueue",
+                DispatchContextType,
+                "System.Boolean&",
+                "System.String&"),
+            "System.Boolean");
+        foreach (string ownerMethod in new[] { "Reject", "Cancel", "MarkUnknownAfterStart" })
+        {
+            AssertInstanceMethod(
+                assembly.RequireMethod(dispatchOwnerType, ownerMethod, DispatchContextType, "System.String"),
+                "System.Void");
+        }
 
         MetadataAssembly.MethodView constructor = assembly.RequireMethod(OwnerType, ".ctor", "System.Int32", "System.Int32");
         Require(!constructor.IsStatic, "DuelOutcomeOwner constructor became static.");
@@ -552,6 +903,7 @@ internal static class Program
         AssertInstanceMethod(assembly.RequireMethod(OwnerType, "Finalize", resultType, effectsType, ReceiptType + "&", "System.String&"), operationStatus);
         AssertInstanceMethod(assembly.RequireMethod(OwnerType, "Cancel", requestType, "System.String", ReceiptType + "&", "System.String&"), operationStatus);
         AssertInstanceMethod(assembly.RequireMethod(OwnerType, "MarkUnknownAfterStart", startType, "System.String", ReceiptType + "&", "System.String&"), operationStatus);
+        AssertInstanceMethod(assembly.RequireMethod(OwnerType, "MarkUnknownAfterDispatch", requestType, "System.String", ReceiptType + "&", "System.String&"), operationStatus);
         AssertInstanceMethod(assembly.RequireMethod(OwnerType, "TryGet", "System.String", ReceiptType + "&"), "System.Boolean");
     }
 
@@ -917,6 +1269,7 @@ internal static class Program
                 + discard.DisplaySignature);
         }
         RequireCall(assembly, begin, DuelBehaviorType, "DiscardUnboundDuelArtifacts");
+        RequireCall(assembly, begin, DuelBehaviorType, "DiscardDuelArtifactsForRequest");
         MetadataAssembly.MethodView finalize = assembly.RequireUniqueMethod(DuelBehaviorType, "TryFinalizeDuelOutcome");
         MetadataAssembly.MethodView unknown = assembly.RequireUniqueMethod(DuelBehaviorType, "MarkDuelOutcomeUnknown");
         RequireCall(assembly, finalize, DuelBehaviorType, "DiscardBoundDuelArtifacts");
@@ -982,6 +1335,322 @@ internal static class Program
                 call.DeclaringType == DuelBehaviorType && call.Name == "CachePendingDuelDebtTag");
             Require(clear >= 0 && cache > clear,
                 typeName + "::" + methodName + " does not clear stale debt before caching this Duel reply.");
+        }
+    }
+
+    private static void VerifyExactDispatchProvenance(MetadataAssembly assembly)
+    {
+        const string executorType = "AnimusForge.Refactor.Adapters.LegacyNativeActionPlanExecutor";
+        const string committerType = RuntimeNamespace + "InteractionResultCommitter";
+        MetadataAssembly.TypeView behavior = assembly.RequireType(DuelBehaviorType);
+        foreach ((string Name, bool IsStatic) field in new[]
+        {
+            ("_queuedDuelDispatchContext", true),
+            ("_openingDuelDispatchContext", true),
+            ("_meetingPendingDuelDispatchContext", false)
+        })
+        {
+            MetadataAssembly.FieldView actual = RequireField(behavior, field.Name);
+            Require(actual.FieldType == DispatchContextType
+                    && actual.IsPrivate
+                    && actual.IsStatic == field.IsStatic,
+                "Exact Duel holder drifted: " + field.Name + " type=" + actual.FieldType);
+        }
+
+        MetadataAssembly.TypeView arenaBehavior = assembly.RequireType(
+            DuelBehaviorType + "+ArenaDuelMissionBehavior");
+        foreach (string fieldName in new[] { "_duelDispatchContext", "_nonHeroMemoryId", "_targetCharacter" })
+        {
+            MetadataAssembly.FieldView field = RequireField(arenaBehavior, fieldName);
+            Require(field.IsPrivate && !field.IsStatic && field.IsInitOnly,
+                "Arena immutable delayed holder drifted: " + fieldName);
+        }
+        MetadataAssembly.FieldView wildernessContext = RequireField(
+            assembly.RequireType(DuelBehaviorType + "+WildernessDuelBattleRuntime"),
+            "DuelDispatchContext");
+        Require(wildernessContext.FieldType == DispatchContextType && !wildernessContext.IsStatic,
+            "Wilderness runtime no longer carries the exact dispatch context.");
+        MetadataAssembly.FieldView nonHeroMemory = RequireField(
+            assembly.RequireType("AnimusForge.Refactor.Adapters.MyBehaviorMemoryFacade"),
+            "_nonHeroMemoryId");
+        Require(nonHeroMemory.FieldType == "System.String" && nonHeroMemory.IsPrivate && nonHeroMemory.IsInitOnly,
+            "Non-hero memory owner no longer retains an immutable subject identity.");
+
+        foreach (string targetType in new[]
+        {
+            "TaleWorlds.CampaignSystem.Hero",
+            "TaleWorlds.MountAndBlade.Agent",
+            "TaleWorlds.CampaignSystem.CharacterObject"
+        })
+        {
+            MetadataAssembly.MethodView prepare = assembly.RequireMethod(
+                DuelBehaviorType,
+                "PrepareDuelForDetachedRequest",
+                targetType,
+                "System.Single",
+                DispatchContextType);
+            AssertStaticMethod(prepare, "System.Void");
+            RequireCall(assembly, prepare, DuelBehaviorType, "ValidateDetachedDuelTarget");
+            RequireCall(assembly, prepare, DuelBehaviorType, "BindPendingDuelArtifacts");
+        }
+        MetadataAssembly.MethodView validateTarget = assembly.RequireMethod(
+            DuelBehaviorType,
+            "ValidateDetachedDuelTarget",
+            DispatchContextType,
+            "System.String",
+            "System.String");
+        Require(assembly.GetDirectCalls(validateTarget).Any(call =>
+                call.DeclaringType == "System.String" && call.Name == "Equals"),
+            "Actual Duel subject validation no longer performs an independent ordinal comparison.");
+
+        MetadataAssembly.MethodView readByRequest = assembly.RequireMethod(
+            DuelBehaviorType,
+            "TryReadDuelOutcomeByRequestId",
+            "System.String",
+            ReceiptType + "&");
+        AssertStaticMethod(readByRequest, "System.Boolean");
+        RequireCall(assembly, readByRequest, DuelBehaviorType, "TryReadDuelOutcome");
+
+        MetadataAssembly.MethodView exactFactory = assembly.FindMethods(
+                executorType,
+                "CreateRequestBoundDuelExecutor")
+            .Single();
+        Require(exactFactory.IsStatic
+                && exactFactory.ReturnType == executorType,
+            "Exact executor factory ABI drifted: " + exactFactory.DisplaySignature);
+        foreach (string factoryName in new[]
+        {
+            "CreateNativeConversationActionPlanExecutorForExternal",
+            "CreateSceneShoutActionPlanExecutorForExternal"
+        })
+        {
+            MetadataAssembly.MethodView factory = assembly.FindMethods(
+                    "AnimusForge.ShoutBehavior",
+                    factoryName)
+                .Single();
+            RequireCall(assembly, factory, executorType, "CreateRequestBoundDuelExecutor");
+        }
+        MetadataAssembly.MethodView courierFactory = assembly.FindMethods(
+                "AnimusForge.CourierDeliveryBehavior",
+                "CreateCourierReplyActionPlanExecutorForExternal")
+            .Single();
+        RequireCall(assembly, courierFactory, executorType, "CreateRequestBoundDuelExecutor");
+
+        MetadataAssembly.MethodView commit = assembly.FindMethods(committerType, "Commit").Single();
+        RequireCall(assembly, commit, committerType, "BuildCanonicalRequestId");
+        RequireCall(assembly, commit, committerType, "BuildCanonicalActionPlanFingerprint");
+
+        string requestType = RuntimeNamespace + "DuelOutcomeRequestIdentity";
+        MetadataAssembly.MethodView markUnknownAfterDispatch = assembly.RequireMethod(
+            OwnerType,
+            "MarkUnknownAfterDispatch",
+            requestType,
+            "System.String",
+            ReceiptType + "&",
+            "System.String&");
+        AssertInstanceMethod(markUnknownAfterDispatch, RuntimeNamespace + "DuelOutcomeOperationStatus");
+        Require(assembly.GetLoadedStrings(markUnknownAfterDispatch)
+                .Contains("AnimusForge.DuelOutcome.UnknownAfterDispatch.v1", StringComparer.Ordinal),
+            "UnknownAfterDispatch provenance fingerprint drifted.");
+
+        MetadataAssembly.MethodView dispatchUnknown = assembly.RequireMethod(
+            DuelBehaviorType + "+DuelBehaviorDetachedDispatchOwner",
+            "MarkUnknownAfterStart",
+            DispatchContextType,
+            "System.String");
+        RequireCall(assembly, dispatchUnknown, OwnerType, "MarkUnknownAfterDispatch");
+
+        MetadataAssembly.TypeView dispatchContext = assembly.RequireType(DispatchContextType);
+        Require(dispatchContext.Fields.All(field =>
+                !field.FieldType.Contains("TaleWorlds", StringComparison.Ordinal)
+                && !field.FieldType.Contains("System.Action", StringComparison.Ordinal)
+                && !field.FieldType.Contains("System.Func", StringComparison.Ordinal)),
+            "Exact Duel context retained a game object or callback.");
+
+        MetadataAssembly.MethodView syncData = assembly.RequireMethod(
+            DuelBehaviorType,
+            "SyncData",
+            "TaleWorlds.CampaignSystem.IDataStore");
+        Require(!assembly.GetDirectCalls(syncData).Any(call =>
+                call.DeclaringType == OwnerType
+                && (call.Name == "Queue" || call.Name == "Start")),
+            "SyncData creates or starts an exact Duel request.");
+        RequireCall(assembly, syncData, DuelBehaviorType, "ClearDetachedDuelDispatchesForLoad");
+
+        MetadataAssembly.MethodView clearLoad = assembly.RequireMethod(
+            DuelBehaviorType,
+            "ClearDetachedDuelDispatchesForLoad");
+        HashSet<string> clearedRuntimeFields = assembly.GetReferencedFields(clearLoad)
+            .Select(field => field.Name)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (string fieldName in new[]
+        {
+            "_meetingPendingDuelDispatchContext",
+            "_queuedDuelDispatchContext",
+            "_openingDuelDispatchContext",
+            "DuelDispatchContext",
+            "_meetingPendingStart",
+            "_queuedDuelWaitingForConversationExit",
+            "_leaveSourceMissionRequested",
+            "_pendingDuelTarget",
+            "_arenaMissionActive",
+            "_pendingMainHeroDeath",
+            "_isDuelActive"
+        })
+        {
+            Require(clearedRuntimeFields.Contains(fieldName),
+                "Load cleanup IL omits Duel trigger/holder: " + fieldName);
+        }
+        HashSet<string> syncRuntimeFields = assembly.GetReferencedFields(syncData)
+            .Select(field => field.Name)
+            .ToHashSet(StringComparer.Ordinal);
+        Require(syncRuntimeFields.Contains("AbortRequested")
+                && syncRuntimeFields.Contains("DuelOutcomeStart"),
+            "SyncData load does not mark the wilderness runtime aborted and clear its typed start.");
+
+        MetadataAssembly.MethodView delayedReady = assembly.RequireMethod(
+            DuelBehaviorType,
+            "IsDetachedDuelDispatchReadyForDelayedHost",
+            DispatchContextType);
+        AssertStaticMethod(delayedReady, "System.Boolean");
+        IReadOnlyList<MetadataAssembly.MethodCallView> delayedReadyCalls = assembly.GetDirectCalls(delayedReady);
+        Require(delayedReadyCalls.Any(call => call.DeclaringType == DispatchContextType && call.Name == "Snapshot")
+                && delayedReadyCalls.Any(call => call.DeclaringType == DispatchReceiptType && call.Name == "get_State")
+                && delayedReadyCalls.Any(call => call.DeclaringType == DispatchReceiptType && call.Name == "get_HostAccepted"),
+            "Delayed Duel readiness ABI no longer checks Queued plus HostAccepted receipt state.");
+        foreach (MetadataAssembly.MethodView consumer in new[]
+        {
+            assembly.RequireMethod(DuelBehaviorType, "GlobalDuelStarterTick"),
+            assembly.RequireMethod(DuelBehaviorType, "OnEngineTick"),
+            assembly.RequireMethod(DuelBehaviorType, "GlobalSourceMissionLeaveTick")
+        })
+        {
+            RequireCall(assembly, consumer, DuelBehaviorType, "IsDetachedDuelDispatchReadyForDelayedHost");
+        }
+
+        foreach (string targetType in new[]
+        {
+            "TaleWorlds.CampaignSystem.Hero",
+            "TaleWorlds.CampaignSystem.CharacterObject"
+        })
+        {
+            MetadataAssembly.MethodView prepare = assembly.RequireMethod(
+                DuelBehaviorType,
+                "PrepareDuel",
+                targetType,
+                "System.Single",
+                DispatchContextType);
+            Require(assembly.GetLoadedStrings(prepare).Contains("arena_vlandia_a", StringComparer.OrdinalIgnoreCase),
+                "Current-arena direct-start scene marker drifted: " + prepare.DisplaySignature);
+            RequireCall(assembly, prepare, DuelBehaviorType, "StartDuelViaAI");
+        }
+
+        MetadataAssembly.MethodView rejectExact = assembly.RequireMethod(
+            DuelBehaviorType + "+DuelBehaviorDetachedDispatchOwner",
+            "Reject",
+            DispatchContextType,
+            "System.String");
+        AssertCallOrder(
+            assembly,
+            rejectExact,
+            call => call.DeclaringType == "System.Collections.Generic.HashSet`1<System.String>" && call.Name == "Add",
+            call => call.DeclaringType == DuelBehaviorType && call.Name == "RejectDuelOutcomeRequest",
+            "Exact Reject must persist its bounded tombstone before owner rejection.");
+
+        MetadataAssembly.MethodView arenaAfterStart = assembly.RequireMethod(
+            DuelBehaviorType + "+ArenaDuelMissionBehavior",
+            "AfterStart");
+        AssertCallOrder(
+            assembly,
+            arenaAfterStart,
+            call => call.DeclaringType == DuelBehaviorType + "+ArenaDuelMissionBehavior" && call.Name == "EnsureDuelOutcomeStarted",
+            call => call.DeclaringType == DuelBehaviorType + "+ArenaDuelMissionBehavior" && call.Name == "SetupArenaDuel",
+            "Arena owner Start must precede arena gameplay setup.");
+        MetadataAssembly.MethodView wildernessInitialize = assembly.RequireMethod(
+            DuelBehaviorType + "+WildernessDuelBattleMissionLogic",
+            "OnBehaviorInitialize");
+        AssertCallOrder(
+            assembly,
+            wildernessInitialize,
+            call => call.DeclaringType == DuelBehaviorType + "+WildernessDuelBattleMissionLogic" && call.Name == "EnsureDuelOutcomeStarted",
+            call => call.DeclaringType == DuelBehaviorType && call.Name == "EnsureMainHeroHealthForWildernessDuel",
+            "Wilderness owner Start must precede gameplay mutation.");
+        MetadataAssembly.MethodView inPlaceStart = assembly.RequireMethod(
+            DuelBehaviorType,
+            "StartDuelInternal",
+            "TaleWorlds.MountAndBlade.Agent",
+            DispatchContextType,
+            "System.String");
+        AssertCallOrder(
+            assembly,
+            inPlaceStart,
+            call => call.DeclaringType == DuelBehaviorType && call.Name == "TryBeginDuelOutcome",
+            call => call.DeclaringType == "TaleWorlds.MountAndBlade.Mission" && call.Name == "SetMissionMode",
+            "In-place owner Start must precede Mission mutation.");
+
+        MetadataAssembly.MethodView openingTick = assembly.RequireMethod(DuelBehaviorType, "GlobalArenaLeaveTick");
+        Require(assembly.GetLoadedStrings(openingTick).Contains("opening_timeout_before_afterstart", StringComparer.Ordinal)
+                && assembly.GetDirectCalls(openingTick).Any(call =>
+                    call.DeclaringType == DuelBehaviorType && call.Name == "MarkDetachedDuelDispatchUnknownAfterStart"),
+            "Opening timeout no longer terminalizes the exact dispatch Unknown.");
+        MetadataAssembly.MethodView setupTick = assembly.RequireMethod(
+            DuelBehaviorType + "+ArenaDuelMissionBehavior",
+            "OnMissionTick",
+            "System.Single");
+        Require(assembly.GetLoadedStrings(setupTick).Contains("arena_setup_timeout", StringComparer.Ordinal)
+                && assembly.GetDirectCalls(setupTick).Any(call =>
+                    call.DeclaringType == DuelBehaviorType && call.Name == "MarkDetachedDuelDispatchUnknownAfterStart")
+                && assembly.GetLoadedInt32Constants(setupTick).Contains(3),
+            "Arena setup retry/timeout bound no longer terminalizes the exact dispatch Unknown.");
+
+        MetadataAssembly.MethodView wildernessTick = assembly.RequireMethod(
+            DuelBehaviorType + "+WildernessDuelBattleMissionLogic",
+            "OnMissionTick",
+            "System.Single");
+        MetadataAssembly.FieldView participantDeadline = RequireField(
+            assembly.RequireType(DuelBehaviorType + "+WildernessDuelBattleMissionLogic"),
+            "_participantDeadline");
+        Require(participantDeadline.FieldType == "System.Single"
+                && participantDeadline.IsPrivate
+                && !participantDeadline.IsStatic
+                && assembly.GetLoadedStrings(wildernessTick)
+                    .Contains("wilderness_participant_timeout", StringComparer.Ordinal)
+                && assembly.GetReferencedFields(wildernessTick).Any(field => field.Name == "AbortRequested")
+                && assembly.GetDirectCalls(wildernessTick).Any(call =>
+                    call.DeclaringType == DuelBehaviorType && call.Name == "MarkDetachedDuelDispatchUnknownAfterStart"),
+            "Wilderness participant timeout/abort IL contract drifted.");
+
+        MetadataAssembly.MethodView arenaSettlement = assembly.RequireMethod(
+            DuelBehaviorType + "+ArenaDuelMissionBehavior",
+            "EndDuelLocal",
+            "System.Boolean");
+        MetadataAssembly.MethodView wildernessSettlement = assembly.RequireMethod(
+            DuelBehaviorType,
+            "SettleWildernessDuelRuntime",
+            DuelBehaviorType + "+WildernessDuelBattleRuntime",
+            "System.Boolean",
+            "System.String");
+        Require(assembly.GetReferencedFields(arenaSettlement).Any(field => field.Name == "_abortRequested")
+                && assembly.GetReferencedFields(wildernessSettlement).Any(field => field.Name == "AbortRequested"),
+            "Arena/Wilderness settlement no longer observes its abort guard.");
+
+        MetadataAssembly.MethodView executeCore = assembly.RequireUniqueMethod(executorType, "ValidateAndExecuteCore");
+        IReadOnlyList<string> executeStrings = assembly.GetLoadedStrings(executeCore);
+        Require(executeStrings.Contains("duel.unsupported_channel", StringComparer.Ordinal),
+            "Exact executor Courier preflight marker drifted.");
+        MetadataAssembly.MethodView resolveExact = assembly.RequireUniqueMethod(
+            executorType,
+            "ResolveExactDuelDispatchStatus");
+        IReadOnlyList<string> resolutionStrings = assembly.GetLoadedStrings(resolveExact);
+        foreach (string marker in new[]
+        {
+            "duel.dispatch_host_side_effect_pending",
+            "duel.dispatch_queued_companion_effect_unknown",
+            "duel.companion_effect_unknown"
+        })
+        {
+            Require(resolutionStrings.Contains(marker, StringComparer.Ordinal),
+                "Exact executor conservative/preflight marker drifted: " + marker);
         }
     }
 
@@ -1052,6 +1721,11 @@ internal static class Program
             RuntimeNamespace + "DuelSessionKind",
             RuntimeNamespace + "DuelResultKind",
             RuntimeNamespace + "DuelOutcomeOperationStatus",
+            RuntimeNamespace + "DetachedDuelDispatchState",
+            DispatchContextType,
+            DispatchReceiptType,
+            RuntimeNamespace + "IDetachedDuelDispatchOwner",
+            RuntimeNamespace + "IDetachedDuelDispatchExecutionReceipt",
             RuntimeNamespace + "DuelOutcomeRequestIdentity",
             RuntimeNamespace + "DuelOutcomeStartIdentity",
             RuntimeNamespace + "DuelOutcomeResultIdentity",
@@ -1089,11 +1763,16 @@ internal static class Program
             "MarkDuelOutcomeUnknown",
             "TryReadDuelOutcome",
             "TryReadLatestDuelOutcome",
+            "TryReadDuelOutcomeByRequestId",
+            "PrepareDuelForDetachedRequest",
+            "RejectDetachedDuelDispatchForExternal",
+            "ClearDetachedDuelDispatchesForLoad",
             "IndexDuelOutcome",
             "BuildPendingDuelArtifactFingerprint",
             "BindPendingDuelArtifacts",
             "DiscardUnboundDuelArtifacts",
             "DiscardBoundDuelArtifacts",
+            "DiscardDuelArtifactsForRequest",
             "TryConsumePendingDuelDebtTagForOutcome",
             "TryConsumePendingDuelStake",
             "TryConsumeDuelAfterLines"
@@ -1111,6 +1790,23 @@ internal static class Program
         builder.AppendLine(RequireField(duel, "_duelOutcomeOwnerSync").FieldType);
         builder.AppendLine(RequireField(duel, "_latestDuelOutcomeIdsBySubject").FieldType);
         builder.AppendLine(RequireField(duel, "_duelOutcomeSubjectIndexOrder").FieldType);
+        builder.AppendLine(RequireField(duel, "_duelOutcomeIdsByRequest").FieldType);
+        builder.AppendLine(RequireField(duel, "_queuedDuelDispatchContext").FieldType);
+        builder.AppendLine(RequireField(duel, "_openingDuelDispatchContext").FieldType);
+        builder.AppendLine(RequireField(duel, "_meetingPendingDuelDispatchContext").FieldType);
+        foreach ((string Type, string Method) method in new[]
+        {
+            ("AnimusForge.Refactor.Adapters.LegacyNativeActionPlanExecutor", "CreateRequestBoundDuelExecutor"),
+            (RuntimeNamespace + "InteractionResultCommitter", "BuildCanonicalRequestId"),
+            (RuntimeNamespace + "InteractionResultCommitter", "BuildCanonicalActionPlanFingerprint")
+        })
+        {
+            foreach (MetadataAssembly.MethodView view in assembly.FindMethods(method.Type, method.Method)
+                         .OrderBy(item => item.DisplaySignature, StringComparer.Ordinal))
+            {
+                builder.AppendLine(view.DisplaySignature);
+            }
+        }
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(builder.ToString())));
     }
 
@@ -1170,6 +1866,20 @@ internal static class Program
             }
         }
         return -1;
+    }
+
+    private static void AssertCallOrder(
+        MetadataAssembly assembly,
+        MetadataAssembly.MethodView method,
+        Func<MetadataAssembly.MethodCallView, bool> first,
+        Func<MetadataAssembly.MethodCallView, bool> second,
+        string message)
+    {
+        IReadOnlyList<MetadataAssembly.MethodCallView> calls = assembly.GetDirectCalls(method);
+        int firstIndex = FindCallIndex(calls, first);
+        int secondIndex = FindCallIndex(calls, second);
+        Require(firstIndex >= 0 && secondIndex > firstIndex,
+            message + " Direct calls: " + string.Join(" | ", calls.Select(call => call.DisplaySignature)));
     }
 
     private static IReadOnlyDictionary<string, int> Values(params (string Name, int Value)[] values)

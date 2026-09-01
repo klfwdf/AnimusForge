@@ -38,7 +38,23 @@ The replay locks:
 - stake, debt, and after-lines fingerprints/binding/consumption by the exact
   `DuelOutcomeId`, including stale-reply replacement and both debt normalizers'
   clear-before-cache order;
-- equivalent audited surfaces in the 1.3 and 1.4 production DLLs.
+- equivalent audited surfaces in the 1.3 and 1.4 production DLLs;
+- the M2 internal request-bound executor seam, deterministic exact DuelId,
+  request/action fingerprint, pre-Economy Queue, explicit delayed holders,
+  request-ID readback, Native/Scene routing, Courier rejection, duplicate
+  suppression, four-state dispatch receipts and continued `legacy-unbound`
+  isolation;
+- `UnknownAfterDispatch` for a crossed side-effect boundary without an actual
+  session identity, conservative Duel+Mood handling, and exact artifact cleanup;
+- independent actual-target subject checks, immutable non-hero/action holders,
+  Native/Scene provenance gates before Economy, and Courier session preflight;
+- load cleanup of every queued/meeting/opening/runtime trigger, owner Start before
+  Arena/Wilderness/in-place gameplay mutation, and bounded opening/setup timeouts;
+- delayed consumption only from `Queued && HostAccepted`, direct actual start for
+  Hero/non-hero targets already in the arena, and bounded Reject tombstones;
+- successful typed Record as a prerequisite for settlement effects, load/runtime
+  abort-state clearing, 30-second wilderness participant acquisition, and hard
+  Arena/Wilderness no-settlement guards after abort.
 
 ## Fresh production run
 
