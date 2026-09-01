@@ -3711,6 +3711,12 @@ public class DuelBehavior : CampaignBehaviorBase
 				? ("[AFEF NPC行为补充] " + npcName + "在野外决斗中败给了" + playerName + "。")
 				: ("[AFEF NPC行为补充] " + npcName + "在野外决斗中击败了" + playerName + "。");
 			MyBehavior.AppendExternalNonHeroDialogueHistory(runtime.NonHeroMemoryId, npcName, null, null, fact);
+			MyBehavior.RecordNonHeroRecentActionForExternal(
+				runtime.NonHeroMemoryId,
+				npcName,
+				fact,
+				"wilderness_duel_result:" + runtime.NonHeroMemoryId + ":" + (playerWon ? "player_win" : "player_loss"),
+				"duel_result");
 			Logger.Log("DuelBehavior", "[WildernessDuel] recorded non-hero duel result history memoryId=" + runtime.NonHeroMemoryId + " playerWon=" + playerWon);
 		}
 		catch (Exception ex)
