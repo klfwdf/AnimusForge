@@ -59,7 +59,7 @@ design catalog 的 `entryTypeStatus=Pending` 事实。
 | 12 | `world-simulation-worldmap` | World.Simulation | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 13 | `settlement-siege-gccz-sets` | Settlement.Siege | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 14 | `scene-mission-combat` | Scene.Mission | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
-| 15 | `duel` | Duel.Combat | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
+| 15 | `duel` | Duel.Combat | LEGACY_DEFAULT | LOCAL-PASS | NOT-RUN | NOT-RUN | BLOCKED |
 | 16 | `courier-proactive-issue` | Courier.ProactiveIssue | MIXED_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 17 | `social-progression-reports` | Social.ProgressionReports | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
 | 18 | `knowledge-persona-profile` | Knowledge.PersonaProfile | LEGACY_DEFAULT | VERIFY | NOT-RUN | NOT-RUN | BLOCKED |
@@ -191,7 +191,9 @@ python -B .\tools\PhaseEightReadiness\readiness.py `
 
 ## 下一安全切片
 
-`LOCAL-7-M1` 已建立 Duel actual-session typed owner/outcome/readback；下一安全切片为
-`LOCAL-7-M2`：只把真实 detached request/trace/channel/session/action fingerprint 绑定到同一
-queued/started `DuelId`。M1 的 `Domain / legacy-unbound` receipt 仍为 `NOT-RECOVERABLE`，不得从
-标签、legacy callback、Mission 结束或 subject latest readback 推测某个 ActionPlan 成功。
+`LOCAL-7-M1/M2` 已建立 Duel actual-session owner以及 exact detached request-to-Duel provenance；
+Native/Scene request在副作用前绑定同一 queued/started `DuelId`，Courier明确拒绝，legacy-unbound
+保持独立。Duel仍需真实Campaign/Mission的accept/reject/cancel/death/exit、stake/Memory、旧档和
+Fourberie证据，不能把compiled/fixture提升为LIVE或SAVE。下一可自主切片为`LOCAL-7-C2`：只修复
+`ShoutNetworkSseReplayTests` 的F盘硬编码与`Modules\**`递归复制，复用既有显式依赖边界；这项
+工具闭环不能替代任何Duel、WorldMap或其他领域的LIVE/SAVE证据。

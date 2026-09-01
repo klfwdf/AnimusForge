@@ -3,6 +3,10 @@
 日期：2026-09-01。工作区：`G:\AFMOD\AF-REFACTOR`。分支：
 `codex/af-main-refactor-continuation-20260831`。
 
+> 2026-09-02 接续：`LOCAL-7-M2` 已由 `b93f93df` 完成 exact detached dispatch provenance 的
+> 离线/compiled VERIFY；本文件保留 M1 历史边界，legacy-unbound 兼容路径仍不等于 exact request。
+> 最新状态见 `docs/handoffs/2026-09-02-duel-exact-dispatch-provenance.md`。
+
 ## 结论
 
 - `LOCAL-7-M1` 的代码与离线/compiled 验证完成，状态为 **VERIFY**；阶段 7 仍不能标为 DONE。

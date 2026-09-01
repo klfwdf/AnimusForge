@@ -1,5 +1,10 @@
 # LOCAL-8-A：阶段 8 完整 20 领域准备态接续
 
+> 2026-09-02 接续：HEAD 已包含 Duel M1/M2（`16f3cbef` / `b93f93df`），Duel 的
+> offline/compiled evidence 现为 `LOCAL_PASS`，但 LIVE/SAVE 仍 `NOT_RUN`、release仍
+> `BLOCKED`。本文件后文的 `LOCAL-7-M` 建议保留为历史；最新接续见
+> `docs/handoffs/2026-09-02-duel-exact-dispatch-provenance.md`。
+
 日期：2026-09-01。工作区：`G:\AFMOD\AF-REFACTOR`。分支：
 `codex/af-main-refactor-continuation-20260831`。
 

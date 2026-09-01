@@ -696,6 +696,10 @@
         "DuelBehavior.cs",
         "DuelBehavior.Outcomes.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "ShoutBehavior.cs",
+        "CourierDeliveryBehavior.cs",
         "DuelSettings.cs",
         "FourberieDuelCompatibility.cs"
       ],
@@ -712,20 +716,20 @@
           "dictionary-string-float"
         ]
       },
-      "failureFallback": "Detached legacy Duel dispatch is permanently terminal UnknownAfterStart and is never upgraded by the independent actual-session readback; invalid target/scene/stake fails closed without action fallback or cross-Duel artifacts.",
+      "failureFallback": "Exact Native/Scene Duel dispatch binds one request to one process-local DuelId before side effects; the current interaction result is final, and accepted or uncertain dispatch is non-retryable even while the outcome owner later advances the same DuelId. Courier exact dispatch is rejected. Legacy-unbound dispatch remains isolated; invalid target/scene/stake fails closed without action fallback or cross-Duel artifacts.",
       "defaultState": "LEGACY_DEFAULT",
       "currentEvidence": {
-        "offline": "VERIFY",
-        "compiled": "VERIFY",
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
         "live": "NOT_RUN",
         "save": "NOT_RUN",
         "release": "BLOCKED"
       },
       "blockingGates": [
         "Live accept/reject/cancel/death/exit",
-        "Stake/result/save",
-        "Fourberie",
-        "Exact detached request-to-Duel provenance"
+        "Live stake/result/Memory/AFEF",
+        "Real old-save load and post-save reload",
+        "Fourberie"
       ],
       "bridgeIds": [
         "scene-duel",
