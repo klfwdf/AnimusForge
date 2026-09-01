@@ -295,19 +295,72 @@ for call isolation, the `Began` truth table, component eligibility and exact mar
 readback. They do not prove live PlayerNotoriety mutation, random-roll behavior, fault
 injection or save/load.
 
+## Weekly exact-intent/outcome owner (LOCAL-7-K)
+
+K does not upgrade the legacy process-local weekly candidate. It adds a separate
+data-only receipt around the detached action commit. The candidate binds request,
+trace, channel, session, subject, runtime/save generation, Courier direction, origin
+time/location/session/agent, turn fingerprint, ordered Economy action fingerprint and
+candidate hash. Neither the candidate nor persistent receipt stores raw postprocess,
+`ActionPlan`, an executor, callback, Hero or Economy owner.
+
+The first implementation is deliberately narrow. Candidate projection is allowed only
+for an Economy-only whole ActionPlan that the stateless canonical adapter can project
+without exclusions. It never invokes the injected gameplay planner. The latter is
+called exactly once by `ValidateAndExecute`; the exact fingerprint of the plan actually
+passed to the Economy port is exposed only after owner `Applied` with the full count.
+The committer can confirm and publish only when that fingerprint equals the candidate,
+the effect is `ConfirmedEffect`, applied count equals the whole ActionPlan count, the
+commit is `Executed`, and history is written. Once a candidate is durably Prepared,
+known partial, unknown, rejected and post-action memory failure become terminal
+non-publishing outcomes. Mixed/legacy plans and unsupported or ineligible payloads are
+never armed or published. No subset success is inferred from an aggregate count.
+
+`MyBehavior.WeeklyActionOutcomeReceipts.cs` owns an additive `AFWM1` ledger under the
+symbolic flattened key `_af_weeklyActionOutcomeReceipts_v1 : Dictionary<string,string>`.
+It is independent of H and Courier `AFCI1`, retains at most 64 Prepared/Confirmed and
+512 terminal records, validates full-wire SHA-256 and bounds, and never evicts Confirmed
+work. A loaded Prepared record becomes Unknown; only Confirmed may retry the idempotent
+data attach. Transition times clamp across machine-clock rollback. Invalid journal input
+is preserved verbatim and disables this owner instead of replacing it with an empty
+ledger. Because the weekly owner is optional, an invalid journal disables K publication
+and its cross-restart duplicate proof rather than redefining the core Economy result;
+manual repair is required before that protection is available again.
+
+Before reading live debt/value/foothold state, the owner probes durable receipt ID and
+candidate hash. An identical prior receipt returns Duplicate and blocks core replay even
+when the live debt is already gone or the foothold changed; a changed candidate for the
+same request returns Conflict/quarantine. Only NotFound may freeze a payload. Supported
+atoms are gold, numeric/pre-action asset estimates, player-directed debt creation and
+pre-action debt resolution; values that cannot be frozen safely are conservative false
+negatives. Eligible value must be strictly greater than 20,000 denars.
+
+After core memory success, Confirmed publication adds only non-executable
+`[WEEKLY:ECONOMY_*]` labels and five exact outcome digests to the existing Daily JSON.
+Full field readback is required before MarkApplied. Sanitization drops malformed semantic
+triggers rather than downgrading them to legacy. Focused tests cover the receipt state
+matrix, planner single-call/mismatch/throw, durable replay preflight, clock rollback,
+load/capacity/corruption, fault isolation and data-only DTO. Production reflection/IL
+tests run against the fresh staged DLL and cover sanitizer, call order, lifecycle wiring
+and forbidden authority. This remains offline/compiled evidence: live Campaign,
+Economy mutation, SyncData round-trip, old saves and AFEF are not proven.
+
 ## Limits and mandatory follow-up
 
-- The request/action guard remains bounded and process-local. The new durable ledger
-  covers only Memory/AFEF projection; it is not durable Economy/action idempotency.
-  Existing Courier session/consumption flags remain authoritative.
+- The generic request/action guard remains bounded and process-local. H's durable ledger
+  covers only Memory/AFEF projection. K is not a general Economy transaction journal,
+  rollback or compensation manager; for an eligible Economy-only whole plan and a valid
+  K journal, its exact receipt does provide a cross-restart Duplicate/Conflict replay
+  guard plus idempotent data attach. Existing Courier session/consumption flags remain
+  authoritative for their separate channel lifecycle.
 - The legacy void APIs/non-batch `Append` still cannot acknowledge acceptance.
   The batch owner result confirms runtime daily/recent acceptance only, not
-  `SyncData`, disk persistence, weekly/notoriety effects or live AFEF acceptance.
-  Core Daily/Recent components now have marker-based repair. H never replays weekly or
-  notoriety. The legacy weekly candidate remains pre-action and may cross a turn because
-  it lacks exact intent/outcome identity; detached has no weekly owner. Notoriety remains
-  current-runtime best-effort only. No rollback, recovery or exactly-once claim is made
-  for either auxiliary effect.
+  `SyncData`, disk persistence or live AFEF acceptance. Core Daily/Recent components now
+  have marker-based repair. H never replays weekly or notoriety. K adds an independent
+  exact weekly owner only for Economy-only whole-plan success; it does not consume the
+  legacy pre-action candidate, recover old records, cover mixed/legacy/subset actions or
+  prove live save/load. Notoriety remains current-runtime best-effort only and still has
+  no durable per-line/session outcome receipt.
 - Courier economy-only now has an offline-verified owner reservation, but live
   save/load and asset evidence remain required. Process-local receipts are still
   not the durable business authority.

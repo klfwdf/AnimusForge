@@ -6,7 +6,7 @@
 
 本文初版由当时的 Git、公共执行台账、owner matrix、领域 Gateway 边界和本机 handoff 交叉核对形成；2026-08-31 初版只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。后续本机接续以紧随其后的更新块、公共台账和最新 handoff 为准。
 
-> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界；`LOCAL-7-D/E/F/G/H/I/J` 已依次完成 Memory owner readback、Courier Economy reservation、known partial、structured `UnknownAfterStart`、memory-only durable recovery、Courier inbound durable completion 与 memory auxiliary recovery boundary 的代码/离线验证。最新源码提交为 `84e92f80`。J 明确让 H recovery 只修 Daily/Recent：weekly pending 既不附着也不消费，notoriety 只在 brand-new core 同调用完成且 exact Daily marker 匹配时 current-runtime best-effort 尝试，跨恢复仍为 `NOT-RECOVERABLE`。阶段 7 仍 VERIFY；下一切片是 outcome-aware weekly exact-intent owner。真实 Campaign/Mission、live Economy/AFEF、旧档和默认切换仍未验收。
+> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界；`LOCAL-7-D/E/F/G/H/I/J/K` 已依次完成 Memory owner readback、Courier Economy reservation、known partial、structured `UnknownAfterStart`、memory-only durable recovery、Courier inbound durable completion、memory auxiliary recovery boundary 与 weekly exact-intent/outcome owner 的代码/离线验证。最新源码提交为 `765b2386`。K 只接受 Economy-only whole-plan owner full-success + exact execution fingerprint + written memory，使用独立 `AFWM1`/symbolic storage做 Confirmed-only data attach；mixed/legacy/partial/unknown/rejected与旧档无 receipt不推导成功。四个显式依赖 runner现已可在本机正常回放，所以下文“缺 F 盘依赖”的段落仅是 2026-08-31 历史。阶段 7仍 VERIFY；下一切片为 durable Notoriety per-line/session receipt。真实 Campaign/Mission、live Economy/AFEF、旧档和默认切换仍未验收。
 
 ## 一、现状
 
@@ -71,7 +71,11 @@
 - 剩余巨型类的责任拆分和旧路径收敛；仅拆成 partial 文件不算完成解耦。
 - 可回滚的默认三渠道切换、Release/打包/安装验证和最终发布签收。
 
-### 已知工具与环境缺口
+### 已知工具与环境缺口（含 2026-08-31 历史记录）
+
+> 2026-09-01 更新：下面四个 runner 的显式依赖问题已由 `LOCAL-7-C` 闭合，K 的最新
+> `ProductionOptInEntryReplayTests` 也已从 fresh Debug 1.4 Stage 正常 build/run PASS；这些
+> 条目只保留为历史，不再是当前阻塞。`.NET 10`、真实 provider/游戏与发布项仍按下文保留。
 
 - 4 个 runner 已尝试执行，但依赖加载失败、断言未完成，不能记为 PASS：
   - `PolicyGatewayReplayTests`、`WorldDiplomacyGatewayReplayTests` 缺 `MCMv5, Version=5.12.3.0`。
@@ -263,4 +267,4 @@
 
 owner/refactor map 的第一版基于较早基线，适合导航，不可照搬其旧状态；实际状态以最新 Git、运行证据和公共台账为准。本文件是总纲，不新建一套平行执行台账。
 
-**下一精确任务：先做 `LOCAL-7-C`，关闭四个 runner 的本机依赖问题；并行认领 20 领域责任清单。随后推进请求身份/receipt/部分提交恢复和 Hero → Party → Merchant 的真实 Host 纵切片，最后才做默认切换与发布。**
+**下一精确任务：`LOCAL-7-L` 审计并建立 durable Notoriety per-line/session outcome receipt；先证明 line roll、aggregate更新与 finalize 的真实顺序和可读回执，不从 H marker或随机结果反推成功，不重放 roll/finalize。随后继续其他领域 owner 与真实 Host/旧档验收，最后才做默认切换与发布。**
