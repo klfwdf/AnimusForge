@@ -34,8 +34,12 @@ class ReadinessTests(unittest.TestCase):
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(PROJECT / relative, target)
-        domain_catalog = json.loads((PROJECT / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
-        cleanup_catalog = json.loads((PROJECT / readiness.CLEANUP_CATALOG).read_text(encoding="utf-8"))
+        domain_catalog = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
+        cleanup_catalog = json.loads((self.root / readiness.CLEANUP_CATALOG).read_text(encoding="utf-8"))
+        cleanup_catalog["baselineCommit"] = "b" * 40
+        for item in cleanup_catalog["candidates"]:
+            item["rollback"]["checkpoint"] = "b" * 40
+        self.write(readiness.CLEANUP_CATALOG, json.dumps(cleanup_catalog).encode())
         referenced_paths = {
             path
             for item in domain_catalog["domains"] + domain_catalog["bridges"]
@@ -73,7 +77,8 @@ class ReadinessTests(unittest.TestCase):
                         "moduleId": module_id, "layer": layer, "apiLine": api,
                         "kind": {"OFFLINE": "contract", "LIVE": "game-scenario", "SAVE": "save-roundtrip", "RELEASE": "package-validation"}[layer],
                         "result": "PASS", "sourceCommit": COMMIT,
-                        "domainIds": sorted(self.domains), "cleanupCandidateIds": [],
+                        "domainIds": sorted(self.domains), "bridgeIds": sorted(self.full_bridges),
+                        "cleanupCandidateIds": [],
                         "releaseVersion": VERSION,
                         "recordedAt": (NOW - timedelta(hours=1)).isoformat(),
                         "steps": ["FIXTURE ONLY: no game operation was performed."],
@@ -134,8 +139,9 @@ class ReadinessTests(unittest.TestCase):
     def live(self) -> dict:
         return self.records["af.module.conversation/LIVE/1.3"]
 
-    def candidate(self, disposition: str = "REVIEW_REMOVAL") -> dict:
-        inventory_id = self.review_candidate["id"]
+    def candidate(self, disposition: str = "REVIEW_REMOVAL", inventory_id: str | None = None) -> dict:
+        inventory_id = inventory_id or self.review_candidate["id"]
+        inventory = self.cleanup_inventory[inventory_id]
         replacement = [key for key in self.records if key.startswith("af.foundation.runtime/")]
         for record_id in replacement:
             self.records[record_id]["cleanupCandidateIds"] = sorted(
@@ -144,7 +150,7 @@ class ReadinessTests(unittest.TestCase):
             set(self.records[self.rollback_id].get("cleanupCandidateIds", [])) | {inventory_id})
         candidate = {
             "inventoryCandidateId": inventory_id,
-            "file": self.ref(self.review_candidate["path"]), "moduleId": "af.foundation.runtime",
+            "file": self.ref(inventory["path"]), "moduleId": "af.foundation.runtime",
             "auditEvidenceId": self.cleanup_id, "disposition": disposition,
             "rationale": "FIXTURE ONLY: reviewed synthetic candidate.",
             "activeCallers": [], "dynamicEntryPoints": [], "saveIdentityRequired": False,
@@ -180,6 +186,12 @@ class ReadinessTests(unittest.TestCase):
 
     def test_unknown_domain_id_is_rejected(self) -> None:
         self.live()["domainIds"].append("unknown-domain")
+        result = self.evaluate()
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(any(issue["code"].startswith("EVIDENCE_") for issue in result["blockingIssues"]))
+
+    def test_unknown_bridge_id_is_rejected(self) -> None:
+        self.live()["bridgeIds"].append("unknown-bridge")
         result = self.evaluate()
         self.assertEqual("BLOCKED", result["status"])
         self.assertTrue(any(issue["code"].startswith("EVIDENCE_") for issue in result["blockingIssues"]))
@@ -285,6 +297,13 @@ class ReadinessTests(unittest.TestCase):
                 record["caseIds"].remove(case)
         self.blocked("FULL_DOMAIN_BRIDGE_MATRIX")
 
+    def test_full_domain_bridge_cases_do_not_count_without_bridge_binding(self) -> None:
+        bridge_id = "tools-content-release"
+        for record in self.records.values():
+            if (record["layer"], record["apiLine"]) == ("SAVE", "1.4"):
+                record["bridgeIds"].remove(bridge_id)
+        self.blocked("FULL_DOMAIN_BRIDGE_MATRIX")
+
     def test_full_composition_coverage_not_just_bridge_cases(self) -> None:
         self.records["af.foundation.runtime/LIVE/1.4"]["caseIds"].remove("partial-start-failure")
         self.blocked("COMPOSITION_MATRIX")
@@ -360,6 +379,19 @@ class ReadinessTests(unittest.TestCase):
         self.records[replacement_id]["cleanupCandidateIds"] = [candidate["inventoryCandidateId"]]
         self.records[self.rollback_id]["cleanupCandidateIds"] = []
         self.blocked("CLEANUP_REVIEW")
+
+    def test_candidate_rollback_must_match_inventory_and_global_checkpoint(self) -> None:
+        candidate = self.candidate()
+        candidate["rollback"]["commit"] = COMMIT
+        self.records[self.rollback_id]["rollbackTargetCommit"] = COMMIT
+        self.document["rollback"]["commit"] = COMMIT
+        self.blocked("CLEANUP_REVIEW", readiness.SourceState(COMMIT, True, True, True))
+
+    def test_same_file_symbol_candidates_can_be_reviewed_independently(self) -> None:
+        first = copy.deepcopy(self.candidate(inventory_id="troop-inspection-verbose-logs"))
+        second = copy.deepcopy(self.candidate(inventory_id="troop-inspection-refresh-all"))
+        self.document["cleanup"]["candidates"] = [first, second]
+        self.assertEqual("FIXTURE-VALID", self.evaluate()["status"])
 
     def test_missing_cleanup_review_blocks_even_empty_candidates(self) -> None:
         self.document["cleanup"]["auditEvidenceId"] = None
@@ -453,11 +485,23 @@ class ReadinessTests(unittest.TestCase):
         self.write(readiness.CLEANUP_CATALOG, json.dumps(cleanup).encode())
         self.blocked("EXISTING_CONTRACTS")
 
+    def test_cleanup_symbol_must_exist_in_its_file(self) -> None:
+        cleanup = json.loads((self.root / readiness.CLEANUP_CATALOG).read_text(encoding="utf-8"))
+        cleanup["candidates"][0]["symbols"] = ["DefinitelyMissingSymbol"]
+        self.write(readiness.CLEANUP_CATALOG, json.dumps(cleanup).encode())
+        self.blocked("EXISTING_CONTRACTS")
+
+    def test_canonical_domain_ids_cannot_be_substituted(self) -> None:
+        document = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
+        document["domains"][0]["id"] = "replacement-domain"
+        self.write(readiness.DOMAIN_CATALOG, json.dumps(document).encode())
+        self.blocked("EXISTING_CONTRACTS")
+
     def test_domain_required_fields_fail_closed(self) -> None:
         original = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
         mutations = (
             ("owner", ""), ("maintainers", []), ("entryPaths", []),
-            ("ownerAssignmentState", "UNKNOWN"),
+            ("ownerAssignmentState", "UNKNOWN"), ("entryCoverage", "UNKNOWN"),
             ("promptAction", {"prompt": "APPLICABLE"}),
             ("persistence", {"responsibility": "missing key/type declarations"}),
             ("failureFallback", ""), ("defaultState", "UNKNOWN"),
