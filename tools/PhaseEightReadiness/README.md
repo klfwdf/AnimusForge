@@ -43,12 +43,14 @@ python -B .\tools\PhaseEightReadiness\readiness.py `
 - `G:\AFMOD\AF-REFACTOR\docs\fixtures\phase2-settlement-policy-bridges\settlement-siege-composition.json`。
 - `G:\AFMOD\AF-REFACTOR\docs\fixtures\phase2-settlement-policy-bridges\policy-diplomacy-composition.json`。
 - `G:\AFMOD\AF-REFACTOR\docs\fixtures\phase3-composition-matrix\composition-matrix.json`。
+- `G:\AFMOD\AF-REFACTOR\docs\phase8\full-domain-readiness-catalog.json`：总纲20个验收责任桶、真实入口、owner、Prompt/ActionPlan适用性、存档责任、fallback、default、当前证据和Bridge矩阵。
+- `G:\AFMOD\AF-REFACTOR\docs\phase8\cleanup-candidates.json`：逐symbol清理盘点、调用/动态入口/兼容责任、替代门禁、风险与回滚checkpoint。
 
-初版跟踪：`af.foundation.runtime`、`af.game-adapter`、`af.module.conversation`、`af.module.siege-aftermath`、`af.module.policy-effects`、`af.module.world-diplomacy`、`af.bridge.conversation-siege`、`af.bridge.policy-diplomacy`。**不是完整 20 领域验收表**；Economy/Duel/WorldMap 等未进入这份早期目录的 owner 不会被假装已覆盖。后续由既有目录 owner 审查扩展范围，而不是在本工具中私自创建生产模块。
+早期module catalog仍只跟踪8个逻辑ID：`af.foundation.runtime`、`af.game-adapter`、`af.module.conversation`、`af.module.siege-aftermath`、`af.module.policy-effects`、`af.module.world-diplomacy`、`af.bridge.conversation-siege`、`af.bridge.policy-diplomacy`。这些设计ID和20个完整领域责任桶同时受门禁，**但20领域不是20个物理DLL，也不把`entryTypeStatus=Pending`伪装成ModuleHost已上线**。当前domain maintainer都是`ROLE_PLACEHOLDER`角色ID，不冒充已认领的真实成员；real manifest在对应目录改为`ASSIGNED`前必定`UNASSIGNED_DOMAIN_OWNER/BLOCKED`。每份证据必须显式列出`domainIds`并获得对应domain maintainer审核；缺任一领域的OFFLINE/LIVE/SAVE/RELEASE覆盖都会BLOCKED。
 
-两组 Bridge 必须覆盖各自原有 5 个 case ID，再加已有组合矩阵的 `incompatible-contract-version`、`bridge-runtime-failure`、`bridge-disabled-data-preserved`、`safe-mode`。每个 Bridge 的 OFFLINE，以及 LIVE 1.3/1.4 分别检查覆盖；两个 maintainer 都必须审核。不复制 fixture 的期望值为“真实运行结果”，记录必须提供自己的观察证据。
+两组既有 Bridge 必须覆盖各自原有5个case ID，再加已有组合矩阵的`incompatible-contract-version`、`bridge-runtime-failure`、`bridge-disabled-data-preserved`、`safe-mode`。每个Bridge的OFFLINE、LIVE 1.3/1.4和SAVE 1.3/1.4分别检查覆盖；两个maintainer都必须审核。不复制fixture期望值为“真实运行结果”，记录必须提供自己的观察证据。20领域目录中的更广Bridge同样在OFFLINE/LIVE/SAVE五个索引检查`requiredCases`，但它仍是责任/证据门禁，不会把这些责任桶变成已上线Bridge，也不替代两组既有可执行契约。
 
-Foundation 还必须在 OFFLINE、LIVE 1.3、LIVE 1.4 分别覆盖现有 CompositionMatrix 的**全部 18 个 case ID**，包括 required/optional provider、failure cascade、stale completion、partial-start cleanup、生命周期冲突和 health bounds；不能只通过四个 Bridge case 就宣称组合验收齐备。
+Foundation还必须在OFFLINE、LIVE 1.3/1.4和SAVE 1.3/1.4分别覆盖现有CompositionMatrix的**全部18个case ID**，包括required/optional provider、failure cascade、stale completion、partial-start cleanup、生命周期冲突和health bounds；不能只通过四个Bridge case或通用save-roundtrip就宣称组合验收齐备。
 
 已有 `BridgeFixtureContractTests` / `CompositionMatrixContractTests` 只证明设计 fixture；`LiveHostReadinessAudit` 只证明环境可用。可将它们日志登记为 OFFLINE，不提升成 LIVE/SAVE。本工具不自动执行这些 runner。
 
@@ -90,9 +92,9 @@ manifest 是人工审核的信任根，不是加密签名。SHA-256 能识别引
 | SAVE / 1.3 与 1.4 | save-roundtrip | 同上，加真实旧档已加载、存储后重载已核验 |
 | RELEASE / agnostic | package-validation | 各 module 均需此 kind，绑定全部 5 类产物，不代替发布授权 |
 
-此外 Foundation 必须单独提供一份 RELEASE `rollback-drill`。**package-validation 和 rollback-drill 不能相互替代**；完整 8-ID 合成样例为 48 个层/API 单元加 1 个回滚记录。
+此外 Foundation 必须单独提供一份 RELEASE `rollback-drill`。**package-validation 和 rollback-drill 不能相互替代**；完整8-ID合成样例仍为48个层/API单元加1个回滚记录，但这些记录还必须通过`domainIds`显式覆盖全部20领域，不能让8-ID绿色掩盖剩余责任桶。
 
-每份记录包含稳定 `id`、module/layer/kind/api、`mode=real` 或 `fixture`、完整 source commit、带时区时间、`result=PASS`、非空 steps/expected/observed、显式 caseIds、artifactHashes 和至少一份哈希日志/观察附件。命令可作为说明文字，但永远不执行。ownerReview 必须为 ACCEPTED、含目录要求的全部 maintainer、reviewedAt 和人工审核说明。**不得把模板中的 false/NOT-RUN 改成 true/PASS 来代替实际测试**。
+每份记录包含稳定`id`、module/layer/kind/api、`domainIds`、可选`cleanupCandidateIds`、`mode=real`或`fixture`、完整source commit、带时区时间、`result=PASS`、非空steps/expected/observed、显式caseIds、artifactHashes和至少一份哈希日志/观察附件。`domainIds`中的每个领域maintainer与原8-ID module maintainer都必须出现在ACCEPTED ownerReview中；同一记录可覆盖多个领域，但必须由全部相关owner共同签收。命令可作为说明文字，但永远不执行。**不得把模板中的false/NOT-RUN改成true/PASS来代替实际测试**。
 
 场景覆盖仍需 owner 审查：工具检查每条记录的 Host/API 形状，不自动证明所有 Campaign/Mission/Encounter、三渠道、主体和失败场景都已穷尽。源码总纲与真实联合验收要求仍有效。
 
@@ -102,6 +104,7 @@ manifest 是人工审核的信任根，不是加密签名。SHA-256 能识别引
 
 ```json
 {
+  "inventoryCandidateId": "cleanup-candidates.json中的稳定ID",
   "file": {"root":"project","path":"relative/source.cs","sha256":"实际64位小写SHA256"},
   "moduleId": "af.module.conversation",
   "auditEvidenceId": "同owner的cleanup-inventory记录ID",
@@ -110,13 +113,18 @@ manifest 是人工审核的信任根，不是加密签名。SHA-256 能识别引
   "activeCallers": [],
   "dynamicEntryPoints": [],
   "saveIdentityRequired": true,
-  "replacementEvidenceIds": []
+  "replacementEvidenceIds": [],
+  "rollback": {
+    "commit": "严格早于HEAD的40位提交",
+    "evidenceId": "绑定本候选的rollback-drill记录",
+    "saveSideEffectsNotUndone": true
+  }
 }
 ```
 
-`KEEP` 保留有责任的旧入口；`REVIEW_REMOVAL` 只表示进入删除评审，要求 active/dynamic caller 都为空、没有 save identity 责任、同 owner 替代证据覆盖全部 6 个层/API 单元。工具**不扫描证明调用为零、不删除任何代码**，静态调用/反射/存档来源必须由 owner 复核。
+`KEEP`保留有责任的旧入口；`REVIEW_REMOVAL`只表示进入删除评审。候选必须先出现在静态清理目录且目录disposition允许评审，active/dynamic caller必须为空、没有save identity责任；同owner替代证据要覆盖全部6个层/API单元，并在记录的`cleanupCandidateIds`中精确绑定本候选和owner domain。逐候选rollback drill同样必须绑定该ID。工具**不扫描证明调用为零、不删除任何代码**，静态调用/反射/存档来源必须由owner复核。
 
-`rollback.commit` 必须是当前历史中的完整祖先提交；`rollback.evidenceId` 引用 Foundation 的 RELEASE `rollback-drill`，绑定同一候选版本/产物，其 `rollbackTargetCommit` 必须精确等于清单声明的回滚提交；`saveSideEffectsNotUndone=true` 明确认知源码回滚不撤销存档金币/债务/领地等副作用。回滚操作、测试存档备份与数据恢复真实性仍须人工确认。
+全局与逐候选`rollback.commit`都必须是当前历史中**严格早于HEAD**的完整祖先提交，不能拿HEAD本身冒充回退点；Foundation RELEASE `rollback-drill`的`rollbackTargetCommit`必须精确等于声明提交。`saveSideEffectsNotUndone=true`明确认知源码回滚不撤销存档金币/债务/领地等副作用。回滚操作、测试存档备份与数据恢复真实性仍须人工确认。
 
 ## 自测与未验证范围
 
