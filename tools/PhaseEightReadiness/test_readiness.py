@@ -380,6 +380,15 @@ class ReadinessTests(unittest.TestCase):
         self.records[self.rollback_id]["cleanupCandidateIds"] = []
         self.blocked("CLEANUP_REVIEW")
 
+    def test_cleanup_audit_record_binds_candidate_and_owner_domain(self) -> None:
+        candidate = self.candidate()
+        self.records[self.cleanup_id]["cleanupCandidateIds"] = []
+        self.blocked("CLEANUP_REVIEW")
+        self.records[self.cleanup_id]["cleanupCandidateIds"] = [candidate["inventoryCandidateId"]]
+        self.records[self.cleanup_id]["domainIds"].remove(self.review_candidate["ownerDomainId"])
+        self.records[self.cleanup_id]["bridgeIds"] = []
+        self.blocked("CLEANUP_REVIEW")
+
     def test_candidate_rollback_must_match_inventory_and_global_checkpoint(self) -> None:
         candidate = self.candidate()
         candidate["rollback"]["commit"] = COMMIT
@@ -494,6 +503,15 @@ class ReadinessTests(unittest.TestCase):
     def test_canonical_domain_ids_cannot_be_substituted(self) -> None:
         document = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
         document["domains"][0]["id"] = "replacement-domain"
+        self.write(readiness.DOMAIN_CATALOG, json.dumps(document).encode())
+        self.blocked("EXISTING_CONTRACTS")
+
+    def test_canonical_full_bridge_ids_cannot_be_removed(self) -> None:
+        document = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
+        removed = document["bridges"].pop()["id"]
+        for domain in document["domains"]:
+            if removed in domain["bridgeIds"]:
+                domain["bridgeIds"].remove(removed)
         self.write(readiness.DOMAIN_CATALOG, json.dumps(document).encode())
         self.blocked("EXISTING_CONTRACTS")
 

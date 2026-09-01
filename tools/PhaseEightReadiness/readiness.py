@@ -65,6 +65,13 @@ CANONICAL_DOMAIN_IDS = {
     "social-progression-reports", "knowledge-persona-profile", "ui-tts-external-integration",
     "tools-content-package",
 }
+CANONICAL_FULL_BRIDGE_IDS = {
+    "bootstrap-host", "host-runtime", "runtime-game-adapter", "persistence-domain-owners",
+    "conversation-gateway", "conversation-action", "action-memory", "action-economy",
+    "policy-world-diplomacy", "conversation-siege", "scene-duel", "conversation-courier",
+    "memory-social-reports", "gateway-knowledge-profile", "ui-runtime-integration",
+    "tools-content-release",
+}
 
 
 class InvalidEvidence(ValueError):
@@ -290,6 +297,8 @@ def load_domains(document: dict[str, Any], files: EvidenceFiles) -> tuple[dict[s
         require(string_list(bridge["requiredCases"]) and bool(bridge["requiredCases"]), "bridge cases missing")
         require(string_list(bridge["blockingGates"]) and bool(bridge["blockingGates"]), "bridge blocking gates missing")
         full_bridges[bridge_id] = bridge
+    require(set(full_bridges) == CANONICAL_FULL_BRIDGE_IDS,
+            "full-domain bridge IDs must match the canonical phase-eight matrix")
     for domain_id, domain in domains.items():
         require(set(domain["bridgeIds"]) <= set(full_bridges), "domain references an unknown bridge")
         require(all(domain_id in full_bridges[item]["domains"] for item in domain["bridgeIds"]),
@@ -633,7 +642,10 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
             path = candidate["file"]["path"]
             require(path == inventory["path"], "cleanup candidate path does not match its inventory entry")
             module_id = candidate.get("moduleId")
-            evidence_for(candidate.get("auditEvidenceId"), module_id, "OFFLINE", "cleanup-inventory")
+            audit_record = evidence_for(candidate.get("auditEvidenceId"), module_id, "OFFLINE", "cleanup-inventory")
+            require(inventory_id in audit_record.get("cleanupCandidateIds", [])
+                    and inventory["ownerDomainId"] in audit_record["domainIds"],
+                    "cleanup audit evidence is not bound to this candidate and owner domain")
             require(nonempty(candidate.get("rationale")), "cleanup rationale missing")
             require(string_list(candidate.get("activeCallers")) and string_list(candidate.get("dynamicEntryPoints")), "caller/reflection/registration inventory is required")
             require(type(candidate.get("saveIdentityRequired")) is bool, "save identity responsibility must be explicit")
