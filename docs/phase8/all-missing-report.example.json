@@ -11,7 +11,7 @@
     "push": false,
     "publish": false
   },
-  "checkedAt": "2026-09-01T12:22:27.108564+00:00",
+  "checkedAt": "2026-09-01T18:38:04.528217+00:00",
   "modules": [
     {
       "id": "af.foundation.runtime",
@@ -491,8 +491,8 @@
       "entryCoverage": "REPRESENTATIVE",
       "defaultState": "LEGACY_DEFAULT",
       "declaredEvidence": {
-        "offline": "VERIFY",
-        "compiled": "VERIFY",
+        "offline": "LOCAL_PASS",
+        "compiled": "LOCAL_PASS",
         "live": "NOT_RUN",
         "save": "NOT_RUN",
         "release": "BLOCKED"
@@ -505,9 +505,9 @@
       },
       "blockingGates": [
         "Live accept/reject/cancel/death/exit",
-        "Stake/result/save",
-        "Fourberie",
-        "Typed Duel outcome"
+        "Live stake/result/Memory/AFEF",
+        "Real old-save load and post-save reload",
+        "Fourberie"
       ]
     },
     {
@@ -1749,7 +1749,7 @@
       "REVIEW_REMOVAL": 3
     }
   },
-  "currentSourceCommit": "28787546b1c6368fb9e39671ac2693d4adbe8ace",
+  "currentSourceCommit": "033f28aa3c28de927c6b6e0c3dcc294407f2ab20",
   "acceptedEvidenceCount": 0,
   "verifiedFileReferences": 21
 }
