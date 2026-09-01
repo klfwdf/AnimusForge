@@ -66,6 +66,15 @@ static EconomyRewardDebtReplayResult Applied(int count = 1)
         string.Empty);
 }
 
+static EconomyRewardDebtReplayResult UnknownAfterStart(string error = "economy.domain_replay_exception")
+{
+    return new EconomyRewardDebtReplayResult(
+        (EconomyRewardDebtReplayStatus)6,
+        0,
+        Array.Empty<FactRecord>(),
+        error);
+}
+
 int economyCalls = 0;
 int legacyCalls = 0;
 ActionPlan delegatedPlan = null;
@@ -169,8 +178,11 @@ LegacyNativeActionPlanExecutor throwingGate = BuildExecutor(
     (plan, snapshot) => { throwingGateReplayCalls++; return Applied(); },
     economyExecutionGate: (plan, snapshot, isEconomyOnly) => throw new InvalidOperationException("gate failure"));
 AssertTrue(throwingGate.ValidateAndExecute(Parse("[ACTION:GIVE_GOLD:34]"), Snapshot())
-    == InteractionStatus.RejectedByValidation && throwingGateReplayCalls == 0,
-    "throwing economy gate allowed an economy side effect");
+    == InteractionStatus.NonRetryableFailure
+    && throwingGate.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && throwingGate.ExecutionErrorCode == "economy.execution_gate_exception"
+    && throwingGateReplayCalls == 0,
+    "throwing economy gate lost its unknown reservation effect");
 
 List<string> mixedOrder = new List<string>();
 LegacyNativeActionPlanExecutor guardedMixed = BuildExecutor(
@@ -194,6 +206,7 @@ InteractionStatus partialEconomyStatus = partialEconomy.ValidateAndExecute(twoEc
 AssertTrue(partialEconomyStatus == InteractionStatus.NonRetryableFailure
     && partialEconomy.ConfirmedFacts.Count == 1
     && partialEconomy.AppliedActionCount == 1
+    && partialEconomy.EffectState == ActionExecutionEffectState.ConfirmedEffect
     && partialEconomy.ExecutionErrorCode == "economy.partial_replay"
     && partialReplayCalls == 1,
     "known partial Economy outcome was discarded or treated as retryable rejection");
@@ -215,7 +228,8 @@ InteractionStatus mixedThrowStatus = economyThenLegacyThrows.ValidateAndExecute(
 AssertTrue(mixedThrowStatus == InteractionStatus.NonRetryableFailure
     && economyThenLegacyThrows.ConfirmedFacts.Count == 1
     && economyThenLegacyThrows.AppliedActionCount == 1
-    && economyThenLegacyThrows.ExecutionErrorCode == "economy.applied_before_executor_exception",
+    && economyThenLegacyThrows.ExecutionErrorCode == "economy.applied_before_executor_exception"
+    && economyThenLegacyThrows.EffectState == ActionExecutionEffectState.UnknownAfterStart,
     "confirmed Economy outcome was discarded after legacy exception");
 
 int partialMemoryCommits = 0;
@@ -285,6 +299,84 @@ AssertTrue(failedMemoryDuplicate.IsDuplicate
     && failedPartialMemory.CommitCalls == 1,
     "partial Economy memory failure was replayed");
 
+int unknownReplayCalls = 0;
+LegacyNativeActionPlanExecutor unknownExecutor = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("unknown economy-only must not call legacy"),
+    (plan, snapshot) => { unknownReplayCalls++; return UnknownAfterStart(); });
+InteractionStatus unknownStatus = unknownExecutor.ValidateAndExecute(
+    Parse("[ACTION:GIVE_GOLD:50]"), Snapshot());
+AssertTrue(unknownStatus == InteractionStatus.NonRetryableFailure
+    && unknownExecutor.ConfirmedFacts.Count == 0
+    && unknownExecutor.AppliedActionCount == 0
+    && unknownExecutor.ExecutionErrorCode == "economy.domain_replay_exception"
+    && unknownExecutor.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && unknownReplayCalls == 1,
+    "owner-started unknown effect was reported as ordinary validation rejection");
+
+int unknownMemoryCommits = 0;
+RecordingMemory unknownMemory = new RecordingMemory(() => unknownMemoryCommits++);
+GameInteractionSnapshot unknownSnapshot = Snapshot(
+    session: "economy-unknown-session",
+    trace: "economy-unknown-trace");
+InteractionEnvelope unknownEnvelope = new InteractionEnvelope(unknownSnapshot, Array.Empty<PromptMessage>());
+InteractionResult unknownResult = new InteractionResult(
+    InteractionStatus.Succeeded,
+    "visible unknown reply",
+    Parse("[ACTION:GIVE_GOLD:51]"),
+    new[] { new FactRecord("untrusted.plan", "npc-1", "must not be written") },
+    string.Empty);
+int unknownCommitReplayCalls = 0;
+LegacyNativeActionPlanExecutor unknownCommitExecutor = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("unknown economy-only must not call legacy"),
+    (plan, snapshot) => { unknownCommitReplayCalls++; return UnknownAfterStart("economy.domain_replay_null_result"); });
+InteractionCommitResult unknownCommit = partialCommitter.Commit(
+    unknownEnvelope, unknownResult, unknownCommitExecutor, unknownMemory);
+AssertTrue(unknownCommit.Status == InteractionStatus.NonRetryableFailure
+    && unknownCommit.HistoryWritten
+    && !unknownCommit.ActionsExecuted
+    && unknownCommit.ErrorCode == "economy.domain_replay_null_result"
+    && unknownCommit.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && unknownMemory.LastFacts.Count == 0
+    && unknownCommitReplayCalls == 1
+    && unknownMemoryCommits == 1,
+    "unknown effect did not produce a fact-free terminal action receipt");
+InteractionCommitResult unknownDuplicate = partialCommitter.Commit(
+    unknownEnvelope, unknownResult, unknownCommitExecutor, unknownMemory);
+AssertTrue(unknownDuplicate.IsDuplicate
+    && !unknownDuplicate.ActionsExecuted
+    && unknownDuplicate.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && unknownCommitReplayCalls == 1
+    && unknownMemoryCommits == 1,
+    "unknown effect duplicate replayed action or memory");
+
+int unknownFailedMemoryReplayCalls = 0;
+RejectingMemory unknownFailedMemory = new RejectingMemory();
+GameInteractionSnapshot unknownFailedSnapshot = Snapshot(
+    session: "economy-unknown-memory-failure",
+    trace: "economy-unknown-memory-failure-trace");
+InteractionEnvelope unknownFailedEnvelope = new InteractionEnvelope(
+    unknownFailedSnapshot, Array.Empty<PromptMessage>());
+LegacyNativeActionPlanExecutor unknownFailedExecutor = BuildExecutor(
+    (plan, snapshot) => throw new InvalidOperationException("unknown economy-only must not call legacy"),
+    (plan, snapshot) => { unknownFailedMemoryReplayCalls++; return UnknownAfterStart(); });
+InteractionCommitResult unknownFailedCommit = partialCommitter.Commit(
+    unknownFailedEnvelope, unknownResult, unknownFailedExecutor, unknownFailedMemory);
+AssertTrue(unknownFailedCommit.Status == InteractionStatus.NonRetryableFailure
+    && !unknownFailedCommit.HistoryWritten
+    && !unknownFailedCommit.ActionsExecuted
+    && unknownFailedCommit.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && unknownFailedCommit.ErrorCode == "economy.domain_replay_exception:fixture_memory_failed"
+    && unknownFailedMemory.LastFacts.Count == 0
+    && unknownFailedMemoryReplayCalls == 1,
+    "unknown effect + memory failure lost its structured terminal receipt");
+InteractionCommitResult unknownFailedDuplicate = partialCommitter.Commit(
+    unknownFailedEnvelope, unknownResult, unknownFailedExecutor, unknownFailedMemory);
+AssertTrue(unknownFailedDuplicate.IsDuplicate
+    && unknownFailedDuplicate.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && unknownFailedMemoryReplayCalls == 1
+    && unknownFailedMemory.CommitCalls == 1,
+    "unknown effect memory failure was replayed");
+
 int missingCapabilityLegacyCalls = 0;
 LegacyNativeActionPlanExecutor missingCapability = BuildExecutor(
     (plan, snapshot) => { missingCapabilityLegacyCalls++; return InteractionStatus.Executed; },
@@ -321,7 +413,7 @@ AssertTrue(filteredRichText.IndexOf("[ROT]", StringComparison.Ordinal) < 0
     && filteredRichText.IndexOf("ACTION:DUEL", StringComparison.OrdinalIgnoreCase) >= 0,
     "balanced economy tag filtering broke nested RichText or retained economy tag");
 
-Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 economyGate=5 partial=4 partialReceipt=4 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
+Console.WriteLine("PASS economyAwareExecutor mixed=1 receipt=1 economyOnly=1 economyGate=5 partial=4 partialReceipt=4 unknown=3 unknownReceipt=4 capabilityFailClosed=1 invalidFailClosed=1 tamperFailClosed=1 richTextFilter=1");
 
 sealed class RecordingMemory : IInteractionMemory, IInteractionMemoryBatchCommitter
 {

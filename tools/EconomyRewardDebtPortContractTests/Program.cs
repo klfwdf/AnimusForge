@@ -13,8 +13,13 @@ AssertTrue((int)EconomyRewardDebtReplayStatus.Applied == 0
     && (int)EconomyRewardDebtReplayStatus.RejectedByCapability == 2
     && (int)EconomyRewardDebtReplayStatus.RejectedByMainThreadValidation == 3
     && (int)EconomyRewardDebtReplayStatus.Failed == 4
-    && (int)EconomyRewardDebtReplayStatus.PartiallyApplied == 5,
+    && (int)EconomyRewardDebtReplayStatus.PartiallyApplied == 5
+    && (int)EconomyRewardDebtReplayStatus.UnknownAfterStart == 6,
     "Economy replay status numeric compatibility changed");
+AssertTrue((int)ActionExecutionEffectState.NoConfirmedEffect == 0
+    && (int)ActionExecutionEffectState.ConfirmedEffect == 1
+    && (int)ActionExecutionEffectState.UnknownAfterStart == 2,
+    "Action effect state numeric compatibility changed");
 
 static GameInteractionSnapshot Snapshot(string subject = "npc-1")
 {
@@ -106,12 +111,43 @@ AssertTrue(noAction.Status == EconomyRewardDebtReplayStatus.NoApplicableAction, 
 LegacyEconomyRewardDebtMainThreadPort throwing = new LegacyEconomyRewardDebtMainThreadPort(
     () => true, _ => true, (plan, snapshot) => throw new InvalidOperationException("fixture"));
 EconomyRewardDebtReplayResult thrown = throwing.Replay(Plan(), Snapshot());
-AssertTrue(thrown.Status == EconomyRewardDebtReplayStatus.Failed && thrown.ErrorCode == "economy.domain_replay_exception", "domain exception was not isolated");
+AssertTrue(thrown.Status.ToString() == "UnknownAfterStart"
+    && thrown.ErrorCode == "economy.domain_replay_exception",
+    "domain exception was not isolated as unknown-after-start");
+
+LegacyEconomyRewardDebtMainThreadPort nullResult = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => null);
+EconomyRewardDebtReplayResult nullReplay = nullResult.Replay(Plan(), Snapshot());
+AssertTrue(nullReplay.Status.ToString() == "UnknownAfterStart"
+    && nullReplay.ErrorCode == "economy.domain_replay_null_result",
+    "null result after owner start was not isolated as unknown");
 
 LegacyEconomyRewardDebtMainThreadPort badCount = new LegacyEconomyRewardDebtMainThreadPort(
     () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(EconomyRewardDebtReplayStatus.Applied, 2, Array.Empty<FactRecord>(), ""));
 EconomyRewardDebtReplayResult countResult = badCount.Replay(Plan(), Snapshot());
-AssertTrue(countResult.Status == EconomyRewardDebtReplayStatus.Failed && countResult.ErrorCode == "economy.applied_count_invalid", "invalid applied count was not rejected");
+AssertTrue(countResult.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+    && countResult.AppliedCount == 0
+    && countResult.ConfirmedFacts.Count == 0
+    && countResult.ErrorCode == "economy.applied_count_invalid",
+    "malformed post-owner count was not isolated as unknown");
+
+LegacyEconomyRewardDebtMainThreadPort appliedWithoutCount = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.Applied, 0, Array.Empty<FactRecord>(), ""));
+EconomyRewardDebtReplayResult appliedWithoutCountResult = appliedWithoutCount.Replay(Plan(), Snapshot());
+AssertTrue(appliedWithoutCountResult.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+    && appliedWithoutCountResult.AppliedCount == 0
+    && appliedWithoutCountResult.ConfirmedFacts.Count == 0
+    && appliedWithoutCountResult.ErrorCode == "economy.applied_without_effect",
+    "Applied+0 was trusted after owner start");
+
+LegacyEconomyRewardDebtMainThreadPort ordinaryFailed = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.Failed, 0, Array.Empty<FactRecord>(), "economy.no_action_applied"));
+EconomyRewardDebtReplayResult ordinaryFailedResult = ordinaryFailed.Replay(Plan(), Snapshot());
+AssertTrue(ordinaryFailedResult.Status == EconomyRewardDebtReplayStatus.Failed
+    && ordinaryFailedResult.ErrorCode == "economy.no_action_applied",
+    "consistent no-effect owner failure was changed to unknown");
 
 EconomyRewardDebtReplayPlan twoActionPlan = new EconomyRewardDebtReplayPlan(
     new[] { Plan().Actions[0], Plan().Actions[0] },
@@ -138,10 +174,11 @@ LegacyEconomyRewardDebtMainThreadPort invalidPartial = new LegacyEconomyRewardDe
     () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
         EconomyRewardDebtReplayStatus.PartiallyApplied, 1, Array.Empty<FactRecord>(), ""));
 EconomyRewardDebtReplayResult invalidPartialResult = invalidPartial.Replay(Plan(), Snapshot());
-AssertTrue(invalidPartialResult.Status == EconomyRewardDebtReplayStatus.Failed
-    && invalidPartialResult.AppliedCount == 1
+AssertTrue(invalidPartialResult.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+    && invalidPartialResult.AppliedCount == 0
+    && invalidPartialResult.ConfirmedFacts.Count == 0
     && invalidPartialResult.ErrorCode == "economy.partial_count_invalid",
-    "invalid full-count partial did not fail closed while retaining known effects");
+    "invalid full-count partial retained an untrusted owner receipt");
 
 LegacyEconomyRewardDebtMainThreadPort failedWithCount = new LegacyEconomyRewardDebtMainThreadPort(
     () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
@@ -149,7 +186,34 @@ LegacyEconomyRewardDebtMainThreadPort failedWithCount = new LegacyEconomyRewardD
         new[] { new FactRecord("economy.unknown", "npc-1", "untrusted") },
         "economy.unknown_after_start"));
 EconomyRewardDebtReplayResult failedWithCountResult = failedWithCount.Replay(twoActionPlan, Snapshot());
-AssertTrue(failedWithCountResult.Status == EconomyRewardDebtReplayStatus.Failed,
-    "Failed+count was incorrectly promoted to a known partial outcome");
+AssertTrue(failedWithCountResult.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+    && failedWithCountResult.AppliedCount == 0
+    && failedWithCountResult.ConfirmedFacts.Count == 0
+    && failedWithCountResult.ErrorCode == "economy.owner_receipt_inconsistent",
+    "Failed+count was trusted after the owner returned an inconsistent receipt");
 
-Console.WriteLine("PASS economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 exceptionIsolation=1 countValidation=1 partialNormalization=4 enumCompatibility=1 debtMetadata=1 singleArgumentGold=1");
+LegacyEconomyRewardDebtMainThreadPort unknownWithUntrustedFact = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.UnknownAfterStart, 0,
+        new[] { new FactRecord("economy.unknown", "npc-1", "untrusted") },
+        "economy.unknown_after_start"));
+EconomyRewardDebtReplayResult unknownWithUntrustedFactResult = unknownWithUntrustedFact.Replay(Plan(), Snapshot());
+AssertTrue(unknownWithUntrustedFactResult.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+    && unknownWithUntrustedFactResult.AppliedCount == 0
+    && unknownWithUntrustedFactResult.ConfirmedFacts.Count == 0
+    && unknownWithUntrustedFactResult.ErrorCode == "economy.owner_receipt_inconsistent",
+    "count-zero unknown retained untrusted success facts");
+
+LegacyEconomyRewardDebtMainThreadPort unknownWithOverflow = new LegacyEconomyRewardDebtMainThreadPort(
+    () => true, _ => true, (plan, snapshot) => new EconomyRewardDebtReplayResult(
+        EconomyRewardDebtReplayStatus.UnknownAfterStart, 2,
+        new[] { new FactRecord("economy.confirmed", "npc-1", "untrusted overflow") },
+        "economy.unknown_after_start"));
+EconomyRewardDebtReplayResult unknownWithOverflowResult = unknownWithOverflow.Replay(Plan(), Snapshot());
+AssertTrue(unknownWithOverflowResult.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart
+    && unknownWithOverflowResult.AppliedCount == 0
+    && unknownWithOverflowResult.ConfirmedFacts.Count == 0
+    && unknownWithOverflowResult.ErrorCode == "economy.applied_count_invalid",
+    "overflowing unknown receipt retained untrusted count/facts");
+
+Console.WriteLine("PASS economyRewardDebtPort valid=1 mainThread=1 staleTarget=1 capabilityFailClosed=1 nonEconomyExclusion=1 noApplicable=1 unknownIsolation=8 noEffectFailure=1 countValidation=1 partialNormalization=4 enumCompatibility=1 debtMetadata=1 singleArgumentGold=1");

@@ -33,9 +33,15 @@ internal static class InteractionCommitReceiptCache
             if (Entries.TryGetValue(key, out Reservation existing))
             {
                 previous = !string.Equals(existing.Fingerprint, fingerprint, StringComparison.Ordinal)
-                    ? Failure("commit_request_mismatch", existing.Result?.ActionsExecuted ?? false, existing.Result?.HistoryWritten ?? false)
+                    ? Failure(
+                        "commit_request_mismatch",
+                        existing.Result?.ActionsExecuted ?? false,
+                        existing.Result?.HistoryWritten ?? false,
+                        existing.Result?.EffectState ?? ActionExecutionEffectState.UnknownAfterStart)
                     : existing.Result == null
-                        ? Failure("commit_in_progress")
+                        ? Failure(
+                            "commit_in_progress",
+                            effectState: ActionExecutionEffectState.UnknownAfterStart)
                         : existing.Result.AsDuplicate();
                 return false;
             }
@@ -63,7 +69,9 @@ internal static class InteractionCommitReceiptCache
             {
                 throw new InvalidOperationException("Commit receipt reservation is not active.");
             }
-            current.Result = result ?? Failure("missing_commit_receipt");
+            current.Result = result ?? Failure(
+                "missing_commit_receipt",
+                effectState: ActionExecutionEffectState.UnknownAfterStart);
             Completed.Enqueue(reservation.Key);
         }
     }
@@ -77,6 +85,15 @@ internal static class InteractionCommitReceiptCache
         }
     }
 
-    private static InteractionCommitResult Failure(string code, bool actionsExecuted = false, bool historyWritten = false)
-        => new InteractionCommitResult(InteractionStatus.NonRetryableFailure, historyWritten, actionsExecuted, code);
+    private static InteractionCommitResult Failure(
+        string code,
+        bool actionsExecuted = false,
+        bool historyWritten = false,
+        ActionExecutionEffectState effectState = ActionExecutionEffectState.NoConfirmedEffect)
+        => new InteractionCommitResult(
+            InteractionStatus.NonRetryableFailure,
+            historyWritten,
+            actionsExecuted,
+            code,
+            effectState);
 }

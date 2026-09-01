@@ -22,7 +22,8 @@ internal static class InteractionCommitReceiptTests
         VerifyHostCallback();
         VerifyParameterOrder();
         VerifyCapacity();
-        Console.WriteLine("PASS interactionCommitReceipts cases=" + (cases + 5) + " requestIdentity=1 terminalFailure=1 payloadIntegrity=1 reentrant=1 boundedCapacity=1 courierDirection=1 duplicateCallback=1");
+        VerifyPublicAbi();
+        Console.WriteLine("PASS interactionCommitReceipts cases=" + (cases + 6) + " requestIdentity=1 terminalFailure=1 payloadIntegrity=1 reentrant=1 boundedCapacity=1 courierDirection=1 duplicateCallback=1 publicAbi=1");
     }
 
     private static void RunCase(InteractionChannel channel, string scenario)
@@ -56,13 +57,29 @@ internal static class InteractionCommitReceiptTests
         }
         else
         {
-            Check(a.Status == b.Status && a.HistoryWritten == b.HistoryWritten && a.ActionsExecuted == b.ActionsExecuted,
+            Check(a.Status == b.Status
+                && a.HistoryWritten == b.HistoryWritten
+                && a.ActionsExecuted == b.ActionsExecuted
+                && a.EffectState == b.EffectState,
                 "terminal receipt changed on replay");
             Check(b.IsDuplicate != independent, "duplicate receipt flag mismatch");
         }
         if (scenario == "rejected_memory_failed") Check(!a.HistoryWritten, "rejected action reported unwritten history as written");
-        if (scenario == "reentrant") Check(reentrant?.Status == InteractionStatus.NonRetryableFailure, "reentrant commit was not rejected");
-        Check(memory.Attempts == (scenario == "executor_throw" ? 0 : independent ? 2 : 1), "memory was retried or skipped");
+        if (scenario == "reentrant")
+        {
+            Check(reentrant?.Status == InteractionStatus.NonRetryableFailure
+                && reentrant.EffectState == ActionExecutionEffectState.UnknownAfterStart,
+                "reentrant commit lost the in-progress unknown effect state");
+        }
+        if (scenario == "executor_throw")
+        {
+            Check(a.Status == InteractionStatus.NonRetryableFailure
+                && a.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                && !a.ActionsExecuted
+                && a.HistoryWritten,
+                "throwing executor lost its unknown effect receipt");
+        }
+        Check(memory.Attempts == (independent ? 2 : 1), "memory was retried or skipped");
         if (memory.LastId != null) Check(memory.LastId.Length < 160 && !memory.LastId.Contains("private player text"), "receipt retains raw conversation content");
     }
 
@@ -150,8 +167,22 @@ internal static class InteractionCommitReceiptTests
         InteractionCommitReceiptCache.Complete(reservations[0], new InteractionCommitResult(InteractionStatus.Succeeded, true, false, ""));
         Check(InteractionCommitReceiptCache.TryBegin("extra", "payload", out _, out _), "terminal entry did not release capacity");
         Check(!InteractionCommitReceiptCache.TryBegin("key-1", "payload", out _, out var pending)
-            && pending.ErrorCode == "commit_in_progress", "remaining in-flight entry was evicted");
+            && pending.ErrorCode == "commit_in_progress"
+            && pending.EffectState == ActionExecutionEffectState.UnknownAfterStart,
+            "remaining in-flight entry lost its unknown effect state");
+        Check(!InteractionCommitReceiptCache.TryBegin("key-2", "different-payload", out _, out var mismatch)
+            && mismatch.ErrorCode == "commit_request_mismatch"
+            && mismatch.EffectState == ActionExecutionEffectState.UnknownAfterStart,
+            "in-flight payload mismatch lost its unknown effect state");
         InteractionCommitReceiptCache.ClearForTests();
+    }
+
+    private static void VerifyPublicAbi()
+    {
+        var constructors = typeof(InteractionCommitResult).GetConstructors();
+        Check(constructors.Length == 1
+            && constructors[0].GetParameters().Length == 4,
+            "InteractionCommitResult public constructor ABI changed");
     }
 
     private static void Check(bool condition, string message)

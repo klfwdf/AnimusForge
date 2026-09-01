@@ -103,7 +103,8 @@ public enum EconomyRewardDebtReplayStatus
     RejectedByCapability,
     RejectedByMainThreadValidation,
     Failed,
-    PartiallyApplied
+    PartiallyApplied,
+    UnknownAfterStart
 }
 
 /// <summary>

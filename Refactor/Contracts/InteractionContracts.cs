@@ -455,6 +455,23 @@ public interface IActionPlanExecutionOutcomeReceipt : IActionPlanExecutionReceip
     string ExecutionErrorCode { get; }
 }
 
+public enum ActionExecutionEffectState
+{
+    NoConfirmedEffect,
+    ConfirmedEffect,
+    UnknownAfterStart
+}
+
+/// <summary>
+/// Additive uncertainty receipt for an owner callback that started but could
+/// not prove whether it changed game state. Confirmed facts remain a strict
+/// subset; UnknownAfterStart never authorizes synthesized success facts.
+/// </summary>
+public interface IActionPlanExecutionEffectReceipt : IActionPlanExecutionOutcomeReceipt
+{
+    ActionExecutionEffectState EffectState { get; }
+}
+
 public interface IRuleSelector
 {
     RuleSelection Select(GameInteractionSnapshot snapshot);

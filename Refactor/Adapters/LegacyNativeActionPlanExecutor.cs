@@ -23,7 +23,7 @@ namespace AnimusForge.Refactor.Adapters;
 /// side effect; Courier uses it for live session validation and economy-only
 /// persistent consumption.
 /// </summary>
-public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionOutcomeReceipt
+public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActionPlanExecutionEffectReceipt
 {
     private readonly Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> _execute;
     private readonly int _maxRawActions;
@@ -35,6 +35,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     private IReadOnlyList<FactRecord> _confirmedFacts = Array.Empty<FactRecord>();
     private int _appliedActionCount;
     private string _executionErrorCode = string.Empty;
+    private ActionExecutionEffectState _effectState;
 
     public LegacyNativeActionPlanExecutor(
         Func<ActionPlan, GameInteractionSnapshot, InteractionStatus> execute,
@@ -77,12 +78,15 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
     public IReadOnlyList<FactRecord> ConfirmedFacts => _confirmedFacts;
     public int AppliedActionCount => _appliedActionCount;
     public string ExecutionErrorCode => _executionErrorCode;
+    public ActionExecutionEffectState EffectState => _effectState;
 
     public InteractionStatus ValidateAndExecute(
         ActionPlan actionPlan,
         GameInteractionSnapshot currentSnapshot)
     {
         ResetExecutionOutcome();
+        bool ownerCallbackInFlight = false;
+        string ownerCallbackErrorCode = string.Empty;
         if (actionPlan == null || currentSnapshot == null)
         {
             return InteractionStatus.RejectedByValidation;
@@ -132,23 +136,53 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                 if (economyPlan.Actions.Count > 0)
                 {
                     bool isEconomyOnly = remainingActions.Count == 0;
-                    if (_economyExecutionGate != null
-                        && _economyExecutionGate(actionPlan, currentSnapshot, isEconomyOnly) != InteractionStatus.Executed)
+                    if (_economyExecutionGate != null)
                     {
-                        return InteractionStatus.RejectedByValidation;
+                        ownerCallbackInFlight = true;
+                        ownerCallbackErrorCode = "economy.execution_gate_exception";
+                        InteractionStatus gateStatus = _economyExecutionGate(
+                            actionPlan,
+                            currentSnapshot,
+                            isEconomyOnly);
+                        ownerCallbackInFlight = false;
+                        ownerCallbackErrorCode = string.Empty;
+                        if (gateStatus != InteractionStatus.Executed)
+                        {
+                            return InteractionStatus.RejectedByValidation;
+                        }
                     }
+                    ownerCallbackInFlight = true;
+                    ownerCallbackErrorCode = "economy.replay_exception";
                     EconomyRewardDebtReplayResult replay = _economyPort.Replay(economyPlan, currentSnapshot);
+                    ownerCallbackInFlight = false;
+                    ownerCallbackErrorCode = string.Empty;
                     if (replay == null)
                     {
-                        return InteractionStatus.RejectedByValidation;
+                        _effectState = ActionExecutionEffectState.UnknownAfterStart;
+                        _executionErrorCode = "economy.replay_null_result";
+                        return InteractionStatus.NonRetryableFailure;
                     }
                     bool hasKnownEffects = (replay.Status == EconomyRewardDebtReplayStatus.Applied
                         || replay.Status == EconomyRewardDebtReplayStatus.PartiallyApplied)
                         && replay.AppliedCount > 0;
+                    if (replay.Status == EconomyRewardDebtReplayStatus.UnknownAfterStart)
+                    {
+                        if (replay.AppliedCount > 0)
+                        {
+                            _appliedActionCount = replay.AppliedCount;
+                            _confirmedFacts = replay.ConfirmedFacts ?? Array.Empty<FactRecord>();
+                        }
+                        _effectState = ActionExecutionEffectState.UnknownAfterStart;
+                        _executionErrorCode = string.IsNullOrWhiteSpace(replay.ErrorCode)
+                            ? "economy.unknown_after_start"
+                            : replay.ErrorCode;
+                        return InteractionStatus.NonRetryableFailure;
+                    }
                     if (hasKnownEffects)
                     {
                         _appliedActionCount = replay.AppliedCount;
                         _confirmedFacts = replay.ConfirmedFacts ?? Array.Empty<FactRecord>();
+                        _effectState = ActionExecutionEffectState.ConfirmedEffect;
                     }
                     if (replay.Status != EconomyRewardDebtReplayStatus.Applied
                         || replay.AppliedCount != economyPlan.Actions.Count)
@@ -178,7 +212,11 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                 delegatedPlan = new ActionPlan(remainingActions, filteredRaw);
             }
 
+            ownerCallbackInFlight = true;
+            ownerCallbackErrorCode = "legacy.action_executor_exception";
             InteractionStatus status = _execute(delegatedPlan, currentSnapshot);
+            ownerCallbackInFlight = false;
+            ownerCallbackErrorCode = string.Empty;
             if (status != InteractionStatus.Executed)
             {
                 if (_appliedActionCount > 0)
@@ -193,9 +231,19 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
         }
         catch
         {
+            if (ownerCallbackInFlight)
+            {
+                _effectState = ActionExecutionEffectState.UnknownAfterStart;
+                _executionErrorCode = _appliedActionCount > 0
+                    ? "economy.applied_before_executor_exception"
+                    : string.IsNullOrWhiteSpace(ownerCallbackErrorCode)
+                        ? "action_owner_exception"
+                        : ownerCallbackErrorCode;
+                return InteractionStatus.NonRetryableFailure;
+            }
             if (_appliedActionCount > 0)
             {
-                _executionErrorCode = "economy.applied_before_executor_exception";
+                _executionErrorCode = "economy.applied_before_pipeline_exception";
                 return InteractionStatus.NonRetryableFailure;
             }
             ResetExecutionOutcome();
@@ -211,6 +259,7 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
         _confirmedFacts = Array.Empty<FactRecord>();
         _appliedActionCount = 0;
         _executionErrorCode = string.Empty;
+        _effectState = ActionExecutionEffectState.NoConfirmedEffect;
     }
 
     private static bool HasBlockingEconomyExclusion(EconomyRewardDebtReplayPlan plan)

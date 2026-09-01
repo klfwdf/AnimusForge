@@ -90,39 +90,76 @@ public sealed class InteractionResultCommitter
             catch
             {
                 // A throwing owner may already have mutated state. Retain a
-                // terminal receipt rather than treating this as safe to retry.
-                return Rejected("action_executor_exception", InteractionStatus.NonRetryableFailure);
+                // terminal unknown receipt rather than treating this as safe
+                // to retry or inventing an action fact.
+                MemoryCommitResult unknownMemory = TryAppendVisibleExchange(
+                    envelope,
+                    result,
+                    memory,
+                    appendPlayerInput,
+                    requestId,
+                    Array.Empty<FactRecord>(),
+                    "unknown-action");
+                string unknownError = "action_executor_exception";
+                if (!unknownMemory.HistoryWritten)
+                {
+                    unknownError += ":" + (string.IsNullOrWhiteSpace(unknownMemory.ErrorCode)
+                        ? "memory_commit_failed"
+                        : unknownMemory.ErrorCode);
+                }
+                return new InteractionCommitResult(
+                    InteractionStatus.NonRetryableFailure,
+                    unknownMemory.HistoryWritten,
+                    false,
+                    unknownError,
+                    ActionExecutionEffectState.UnknownAfterStart);
             }
             if (actionStatus != InteractionStatus.Executed)
             {
-                if (actionExecutor is IActionPlanExecutionOutcomeReceipt partialOutcome
-                    && partialOutcome.AppliedActionCount > 0)
+                if (actionExecutor is IActionPlanExecutionOutcomeReceipt partialOutcome)
                 {
-                    IEnumerable<FactRecord> partialFacts =
-                        partialOutcome.ConfirmedFacts ?? Array.Empty<FactRecord>();
-                    MemoryCommitResult partialMemory = TryAppendVisibleExchange(
-                        envelope,
-                        result,
-                        memory,
-                        appendPlayerInput,
-                        requestId,
-                        partialFacts,
-                        "partial-action");
-                    string partialError = string.IsNullOrWhiteSpace(partialOutcome.ExecutionErrorCode)
-                        ? "partial_action_execution"
-                        : partialOutcome.ExecutionErrorCode;
-                    if (!partialMemory.HistoryWritten)
+                    ActionExecutionEffectState effectState =
+                        actionExecutor is IActionPlanExecutionEffectReceipt effectReceipt
+                            ? effectReceipt.EffectState
+                            : partialOutcome.AppliedActionCount > 0
+                                ? ActionExecutionEffectState.ConfirmedEffect
+                                : ActionExecutionEffectState.NoConfirmedEffect;
+                    bool terminalOutcome = partialOutcome.AppliedActionCount > 0
+                        || effectState == ActionExecutionEffectState.UnknownAfterStart;
+                    if (terminalOutcome)
                     {
-                        string memoryError = string.IsNullOrWhiteSpace(partialMemory.ErrorCode)
-                            ? "memory_commit_failed"
-                            : partialMemory.ErrorCode;
-                        partialError += ":" + memoryError;
+                        IEnumerable<FactRecord> partialFacts = partialOutcome.AppliedActionCount > 0
+                            ? partialOutcome.ConfirmedFacts ?? Array.Empty<FactRecord>()
+                            : Array.Empty<FactRecord>();
+                        MemoryCommitResult partialMemory = TryAppendVisibleExchange(
+                            envelope,
+                            result,
+                            memory,
+                            appendPlayerInput,
+                            requestId,
+                            partialFacts,
+                            effectState == ActionExecutionEffectState.UnknownAfterStart
+                                ? "unknown-action"
+                                : "partial-action");
+                        string partialError = string.IsNullOrWhiteSpace(partialOutcome.ExecutionErrorCode)
+                            ? effectState == ActionExecutionEffectState.UnknownAfterStart
+                                ? "action_unknown_after_start"
+                                : "partial_action_execution"
+                            : partialOutcome.ExecutionErrorCode;
+                        if (!partialMemory.HistoryWritten)
+                        {
+                            string memoryError = string.IsNullOrWhiteSpace(partialMemory.ErrorCode)
+                                ? "memory_commit_failed"
+                                : partialMemory.ErrorCode;
+                            partialError += ":" + memoryError;
+                        }
+                        return new InteractionCommitResult(
+                            InteractionStatus.NonRetryableFailure,
+                            partialMemory.HistoryWritten,
+                            partialOutcome.AppliedActionCount > 0,
+                            partialError,
+                            effectState);
                     }
-                    return new InteractionCommitResult(
-                        InteractionStatus.NonRetryableFailure,
-                        partialMemory.HistoryWritten,
-                        true,
-                        partialError);
                 }
                 // Do not write confirmed facts when the action was not accepted.
                 MemoryCommitResult rejectedMemory = TryAppendVisibleExchange(
@@ -336,16 +373,35 @@ public sealed class InteractionResultCommitter
 public sealed class InteractionCommitResult
 {
     public InteractionCommitResult(InteractionStatus status, bool historyWritten, bool actionsExecuted, string errorCode)
-        : this(status, historyWritten, actionsExecuted, errorCode, false)
+        : this(status, historyWritten, actionsExecuted, errorCode,
+            actionsExecuted ? ActionExecutionEffectState.ConfirmedEffect : ActionExecutionEffectState.NoConfirmedEffect,
+            false)
     {
     }
 
-    private InteractionCommitResult(InteractionStatus status, bool historyWritten, bool actionsExecuted, string errorCode, bool isDuplicate)
+    internal InteractionCommitResult(
+        InteractionStatus status,
+        bool historyWritten,
+        bool actionsExecuted,
+        string errorCode,
+        ActionExecutionEffectState effectState)
+        : this(status, historyWritten, actionsExecuted, errorCode, effectState, false)
+    {
+    }
+
+    private InteractionCommitResult(
+        InteractionStatus status,
+        bool historyWritten,
+        bool actionsExecuted,
+        string errorCode,
+        ActionExecutionEffectState effectState,
+        bool isDuplicate)
     {
         Status = status;
         HistoryWritten = historyWritten;
         ActionsExecuted = actionsExecuted;
         ErrorCode = errorCode ?? string.Empty;
+        EffectState = effectState;
         IsDuplicate = isDuplicate;
     }
 
@@ -353,9 +409,12 @@ public sealed class InteractionCommitResult
     public bool HistoryWritten { get; }
     public bool ActionsExecuted { get; }
     public string ErrorCode { get; }
+    public ActionExecutionEffectState EffectState { get; }
     public bool IsDuplicate { get; }
 
     internal InteractionCommitResult AsDuplicate()
         => new InteractionCommitResult(Status, HistoryWritten, ActionsExecuted,
-            string.IsNullOrWhiteSpace(ErrorCode) ? "duplicate_commit" : ErrorCode, true);
+            string.IsNullOrWhiteSpace(ErrorCode) ? "duplicate_commit" : ErrorCode,
+            EffectState,
+            true);
 }
