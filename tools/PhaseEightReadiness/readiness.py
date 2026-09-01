@@ -51,6 +51,7 @@ DOMAIN_EVIDENCE_STATES = {"LOCAL_PASS", "VERIFY", "NOT_RUN", "BLOCKED"}
 PROMPT_ACTION_STATES = {"APPLICABLE", "NOT_APPLICABLE", "MIXED"}
 DEFAULT_STATES = {"LEGACY_DEFAULT", "MIXED_DEFAULT", "OPT_IN", "ACTIVE", "TOOL_ONLY"}
 BRIDGE_STATES = {"ACTIVE_BOUNDARY", "OPT_IN", "DESIGN_ONLY", "BLOCKED_LIVE"}
+OWNER_ASSIGNMENT_STATES = {"ASSIGNED", "ROLE_PLACEHOLDER"}
 STATIC_CLEANUP_DISPOSITIONS = {"KEEP", "HOLD", "REVIEW_REMOVAL"}
 
 
@@ -199,7 +200,8 @@ def load_domains(document: dict[str, Any], files: EvidenceFiles) -> tuple[dict[s
     domains: dict[str, dict[str, Any]] = {}
     numbers: set[int] = set()
     for entry in entries:
-        exact_keys(entry, {"number", "id", "title", "owner", "maintainers", "entryPaths", "promptAction",
+        exact_keys(entry, {"number", "id", "title", "owner", "maintainers", "ownerAssignmentState",
+                           "entryPaths", "promptAction",
                            "persistence", "failureFallback", "defaultState", "currentEvidence", "blockingGates",
                            "bridgeIds"}, "domain")
         domain_id = entry["id"]
@@ -211,6 +213,7 @@ def load_domains(document: dict[str, Any], files: EvidenceFiles) -> tuple[dict[s
         require(isinstance(entry["owner"], str) and OWNER_ID.fullmatch(entry["owner"]) is not None, "domain owner ID is invalid")
         require(string_list(entry["maintainers"]) and bool(entry["maintainers"]), "domain maintainers missing")
         require(all(OWNER_ID.fullmatch(item) is not None for item in entry["maintainers"]), "domain maintainer ID is invalid")
+        require(entry["ownerAssignmentState"] in OWNER_ASSIGNMENT_STATES, "domain owner assignment state is invalid")
         source_paths(files, entry["entryPaths"], "domain entry")
         prompt_action = exact_keys(entry["promptAction"], {"prompt", "actionPlan"}, "prompt/action applicability")
         require(set(prompt_action.values()) <= PROMPT_ACTION_STATES, "invalid prompt/action applicability")
@@ -507,10 +510,13 @@ def evaluate(project: Path, manifest: Path, artifact_root: Path | None = None,
                 issues.append({"code": "MISSING_DOMAIN_" + layer, "detail": domain["id"]})
         report["domains"].append({
             "number": domain["number"], "id": domain["id"], "title": domain["title"],
-            "owner": domain["owner"], "defaultState": domain["defaultState"],
+            "owner": domain["owner"], "ownerAssignmentState": domain["ownerAssignmentState"],
+            "defaultState": domain["defaultState"],
             "declaredEvidence": domain["currentEvidence"], "layers": coverage,
             "blockingGates": domain["blockingGates"],
         })
+        if document["mode"] == "real" and domain["ownerAssignmentState"] != "ASSIGNED":
+            issues.append({"code": "UNASSIGNED_DOMAIN_OWNER", "detail": domain["id"]})
     for module_id, cases in bridges.items():
         for layer, api in (("OFFLINE", "agnostic"), ("LIVE", "1.3"), ("LIVE", "1.4"),
                            ("SAVE", "1.3"), ("SAVE", "1.4")):
