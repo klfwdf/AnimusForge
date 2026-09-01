@@ -2,6 +2,14 @@
 
 日期：2026-09-02
 
+## GitHub交接状态
+
+- 远端目标：`origin/refactor/prepare-af-restructure`；本简报与总HANDOFF随当前收尾提交普通push。
+- 自动化`af-7-8`与旧`af`均已暂停；没有AF后台定时任务继续改仓库。
+- 制作组接手前先`git fetch origin --prune`，确认远端分支HEAD，再在不覆盖本地改动的前提下接续。
+- 总交接：`docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`。
+- 发布到GitHub只表示源码与文档完成交接，不代表真实游戏验收、默认切换或阶段7/8完成。
+
 ## 六、最准确的结论
 
 > **阶段7作为“模块接入与离线验证阶段”，大部分工作已经完成：统一Gateway、三渠道管线、
@@ -57,4 +65,6 @@
 
 > **现在可以并行完善阶段8准备，但不能跳过阶段7真实验收直接做破坏性清理、默认切换或发布。**
 
-最新技术交接：`docs/handoffs/2026-09-02-shout-sse-replay-dependency-closure.md`。
+总交接：`docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`。
+
+最新技术证据：`docs/handoffs/2026-09-02-shout-sse-replay-dependency-closure.md`。

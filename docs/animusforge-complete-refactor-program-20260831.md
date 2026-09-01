@@ -261,7 +261,8 @@
 - owner 导航：`G:\AFMOD\AF-REFACTOR\docs\animusforge-owner-matrix.md`
 - 架构/入口导航：`G:\AFMOD\AF-REFACTOR\docs\animusforge-refactor-map.md`
 - 已有领域 transport 边界：`G:\AFMOD\AF-REFACTOR\docs\animusforge-phase7-domain-gateway-boundary.md`
-- 最新本机验证、精确命令与产物哈希：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`
+- GitHub发布与制作组总交接：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`
+- 最新技术验证、精确命令与产物哈希：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`
 - 原始接续说明：`G:\AFMOD\NEW-10\docs\handoffs\af-main-refactor-continuation-20260831.md`
 - 上轮本机日志：`G:\AFMOD\.build-cache\af-refactor-20260831`
 

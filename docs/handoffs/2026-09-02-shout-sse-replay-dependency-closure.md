@@ -3,6 +3,10 @@
 日期：2026-09-02。工作区：`G:\AFMOD\AF-REFACTOR`。分支：
 `codex/af-main-refactor-continuation-20260831`。
 
+> 2026-09-02 收尾：用户已明确授权关闭自动化并普通push GitHub。本文件中“未push”描述的是
+> C2实现/验证切片结束时的边界；最终远端同步状态与制作组接续入口见
+> `docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`。
+
 ## 结论
 
 - `LOCAL-7-C2` 已完成代码与离线验证，状态为 **VERIFY**。
