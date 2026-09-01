@@ -44,8 +44,8 @@
 - Hero / Party / Merchant Economy owner，known partial与`UnknownAfterStart`结构化回执。
 - 请求级commit防重、Memory-only durable recovery、Courier inbound completion。
 - Economy-only weekly exact outcome（`AFWM1`）与detached Notoriety exact line/session witness（`AFNR1`）。
-- Duel actual-session typed outcome/readback：三条结算路径已接入，成功绑定时先锁胜负再记录分量；
-  legacy detached dispatch保持`UnknownAfterStart`，exact request provenance仍由`LOCAL-7-M2`补齐。
+- Duel exact detached dispatch provenance：Native/Scene request在副作用前绑定唯一DuelId并贯穿排队、实际开始和结算；
+  Courier明确拒绝，legacy-unbound保持隔离；本项已离线/compiled VERIFY，真实Mission取消/死亡/退出仍待验收。
 - 1.3 / 1.4 / Bootstrap 的Debug与Release项目本地Stage构建通过；主要contract/production回放通过。
 
 以上证明的是**当前源码、受控Host和compiled边界**，不是实机游戏验收。
@@ -62,4 +62,4 @@
 
 > **我们现在可以“并行准备阶段 8”，但不能“跳过阶段 7 的真实验收直接收尾阶段 8”。**
 
-最新技术交接：`docs/handoffs/2026-09-01-duel-actual-session-outcomes.md`。
+最新技术交接：`docs/handoffs/2026-09-02-duel-exact-dispatch-provenance.md`。

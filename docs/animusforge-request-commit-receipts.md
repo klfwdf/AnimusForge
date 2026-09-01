@@ -433,6 +433,46 @@ unbound artifacts are discarded and exact/latest readback stays absent. The curr
 opt-in sidecar does not cancel an already opening Mission solely because observation
 reservation failed; this fail-closed edge still requires live fault validation.
 
+## Duel exact detached dispatch provenance (LOCAL-7-M2)
+
+M2 preserves the public `IActionPlanExecutor` and legacy constructors, but the committer
+now detects an internal request-bound executor seam. After stale validation and request
+reservation, it supplies the canonical request ID and canonical ActionPlan fingerprint;
+the executor recomputes both values and rejects any mismatch before Queue, Economy or a
+legacy callback. A data-only `DetachedDuelDispatchContext` binds request, trace, channel,
+session/direction, subject, runtime/save generation and fingerprint to one deterministic
+process-local DuelId.
+
+The exact owner publishes Queue before Economy/gameplay and returns one typed state:
+`Rejected`, `Queued`, `Started` or `UnknownAfterStart`. These states terminate the current
+Interaction commit; the underlying owner may still advance the same DuelId without rewriting
+that commit. `UnknownAfterStart` is a conservative umbrella and may have no StartIdentity.
+Native and Scene carry the same
+context through immediate or delayed meeting/arena/wilderness holders to actual start.
+Courier has no production `PrepareDuel` owner and is explicitly rejected. Delayed consumers
+require both `Queued` and `HostAccepted`; holder publication precedes acceptance. Economy
+rejection/throw cancels an unstarted Queue. Duplicate, changed payload, invalid binding,
+generation conflict and full process-lifetime 4096-entry exact-ID seen capacity fail closed.
+The outcome owner separately retains 64 active / 512 receipts. An accepted, started or
+uncertain dispatch is non-retryable for the current commit and never falls back or replays.
+
+`Duel+Mood` remains a supported companion shape, but if the companion effect could already
+have occurred its effect is reported as unknown rather than `NoConfirmedEffect`. A second
+independent gameplay action, multiple Duel actions, bogus binding or Courier direction are
+rejected before side effects. Commit exceptions and request conflicts retain the typed Duel
+receipt instead of replacing provenance with a generic failure.
+
+The context contains no game object, callback, raw reply or replay authority and is not
+serialized. Load clears all pending exact holders and marks active receipts unknown without
+opening/ending a Mission, transferring stake, killing a Hero or writing Memory. Three Duel
+settlement paths must first record the matching result receipt before any result-linked
+Economy/Memory/death work. Exact artifacts are discarded by DuelId; the old pending-meeting
+locks remain only for `context == null`, preserving M1/default gameplay.
+
+M2 offline/compiled evidence is `LOCAL_PASS`: Duel Dispatch 16/16, Duel Outcome 18/18 and
+fresh Debug/Release production replay 35/35 with 1.3/1.4 parity. This is not live Campaign,
+Mission, old-save, stake, death, Fourberie, Economy or AFEF evidence; phase 7 remains VERIFY.
+
 ## Limits and mandatory follow-up
 
 - The generic request/action guard remains bounded and process-local. H's durable ledger
@@ -459,6 +499,9 @@ reservation failed; this fail-closed edge still requires live fault validation.
   compensate gameplay effects.
 - Unknown gameplay effects remain terminal and fact-free for the uncertain action;
   memory repair never compensates or repeats them.
+- Exact Duel dispatch receipts are also bounded process-local metadata. They link a detached
+  request to one DuelId but do not prove final gameplay outcome, durable persistence or live
+  side effects, and they never authorize replay after load/restart.
 - The memory ledger still does not resume arbitrary `afterCommit` callbacks. Courier
   inbound is the one explicit channel-owned recovery implemented in I; other channels
   need their own durable owner before any similar completion can be claimed.
