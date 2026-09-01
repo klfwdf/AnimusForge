@@ -10,7 +10,7 @@
 - 基线 `d2f37a8a`，意图 checkpoint `3436d739`，实现提交 `84e92f80`。
 - 收尾前远端 `origin/refactor/prepare-af-restructure =
   fc8c344e0734ee860ec4012fb29b09e61dbdb240`；实现提交后本地 ahead 31 / behind 0。
-  本 handoff 所在 docs 提交后应为 ahead 32 / behind 0，以最终 fetch 为准。
+  本 handoff 与术语精度修正两次 docs 提交后应为 ahead 33 / behind 0，以最终 fetch 为准。
 - 没有 push、部署、启动游戏、读写真实存档、切默认入口、删除 facade、修改游戏目录、
   NEW-10 或 GCCZ；没有发送 QQ。
 
