@@ -630,7 +630,8 @@ public static class LegacyInteractionSnapshotAdapters
 /// It stores only stable identity and is intended to be used at the commit
 /// boundary; no live Hero crosses into detached generation.
 /// </summary>
-public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMemoryBatchCommitter
+public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMemoryBatchCommitter,
+    IWeeklyMemoryMaterialOutcomeOwner
 {
     private readonly string _heroId;
     private readonly string _nonHeroMemoryId;
@@ -738,6 +739,29 @@ public sealed class MyBehaviorMemoryFacade : IInteractionMemory, IInteractionMem
             return new MemoryCommitResult(MemoryCommitStatus.Failed, "legacy_memory_append_failed");
         }
     }
+
+    WeeklyMemoryMaterialOutcomeOperationStatus IWeeklyMemoryMaterialOutcomeOwner.Prepare(
+        WeeklyMemoryMaterialOutcomeCandidate candidate)
+        => MyBehavior.PrepareWeeklyActionOutcomeForExternal(
+            candidate,
+            string.IsNullOrWhiteSpace(_heroId),
+            _nonHeroName);
+
+    WeeklyMemoryMaterialOutcomeOperationStatus IWeeklyMemoryMaterialOutcomeOwner.Complete(
+        string receiptId,
+        string candidateHash,
+        WeeklyMemoryMaterialOutcomeState state,
+        string errorCode)
+        => MyBehavior.CompleteWeeklyActionOutcomeForExternal(
+            receiptId,
+            candidateHash,
+            state,
+            errorCode);
+
+    WeeklyMemoryMaterialOutcomeOperationStatus IWeeklyMemoryMaterialOutcomeOwner.Publish(
+        string receiptId,
+        string candidateHash)
+        => MyBehavior.PublishWeeklyActionOutcomeForExternal(receiptId, candidateHash);
 
     /// <summary>
     /// Memory read/write is an interaction-boundary operation, not a tick

@@ -71,9 +71,143 @@ public sealed class InteractionResultCommitter
         {
             return previous;
         }
+
+        WeeklyMemoryMaterialOutcomeCandidate weeklyCandidate = null;
+        IWeeklyMemoryMaterialOutcomeOwner weeklyOwner = memory as IWeeklyMemoryMaterialOutcomeOwner;
+        WeeklyMemoryMaterialOutcomeOperationStatus weeklyPreparation = TryPrepareWeeklyMaterialOutcome(
+            result.ActionPlan,
+            envelope.Snapshot,
+            requestId,
+            actionExecutor,
+            weeklyOwner,
+            out weeklyCandidate);
+        if (weeklyPreparation == WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate
+            || weeklyPreparation == WeeklyMemoryMaterialOutcomeOperationStatus.Conflict)
+        {
+            InteractionCommitResult blocked = weeklyPreparation
+                == WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate
+                    ? new InteractionCommitResult(
+                        InteractionStatus.NonRetryableFailure,
+                        false,
+                        false,
+                        "weekly_material_duplicate_request")
+                    : Rejected("weekly_material_candidate_conflict");
+            InteractionCommitReceiptCache.Complete(reservation, blocked);
+            return blocked;
+        }
         InteractionCommitResult committed = CommitOnce(envelope, result, actionExecutor, memory, appendPlayerInput, requestId, hasActions);
+        if (weeklyPreparation == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted)
+        {
+            CompleteWeeklyMaterialOutcome(
+                result.ActionPlan,
+                actionExecutor,
+                committed,
+                weeklyOwner,
+                weeklyCandidate);
+        }
         InteractionCommitReceiptCache.Complete(reservation, committed);
         return committed;
+    }
+
+    private static WeeklyMemoryMaterialOutcomeOperationStatus TryPrepareWeeklyMaterialOutcome(
+        ActionPlan actionPlan,
+        GameInteractionSnapshot snapshot,
+        string requestId,
+        IActionPlanExecutor actionExecutor,
+        IWeeklyMemoryMaterialOutcomeOwner owner,
+        out WeeklyMemoryMaterialOutcomeCandidate candidate)
+    {
+        candidate = null;
+        if (owner == null
+            || !(actionExecutor is IWeeklyMemoryMaterialCandidateSource source))
+        {
+            return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+        }
+
+        try
+        {
+            if (!source.TryCreateWeeklyMaterialCandidate(
+                    actionPlan,
+                    snapshot,
+                    requestId,
+                    out candidate)
+                || candidate == null)
+            {
+                candidate = null;
+                return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+            }
+            return owner.Prepare(candidate);
+        }
+        catch
+        {
+            // Weekly material is an optional persistence sidecar. Failure to
+            // arm it must not block, retry or otherwise alter the core commit.
+            candidate = null;
+            return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
+        }
+    }
+
+    private static void CompleteWeeklyMaterialOutcome(
+        ActionPlan actionPlan,
+        IActionPlanExecutor actionExecutor,
+        InteractionCommitResult committed,
+        IWeeklyMemoryMaterialOutcomeOwner owner,
+        WeeklyMemoryMaterialOutcomeCandidate candidate)
+    {
+        if (owner == null || candidate == null)
+        {
+            return;
+        }
+
+        try
+        {
+            IActionPlanExecutionOutcomeReceipt outcome =
+                actionExecutor as IActionPlanExecutionOutcomeReceipt;
+            IActionPlanExecutionEffectReceipt effect =
+                actionExecutor as IActionPlanExecutionEffectReceipt;
+            IWeeklyMemoryMaterialExecutionReceipt exactExecution =
+                actionExecutor as IWeeklyMemoryMaterialExecutionReceipt;
+            int expectedCount = actionPlan?.Actions?.Count ?? 0;
+            bool exactTerminalSuccess = expectedCount > 0
+                && outcome != null
+                && effect != null
+                && exactExecution != null
+                && effect.EffectState == ActionExecutionEffectState.ConfirmedEffect
+                && outcome.AppliedActionCount == expectedCount
+                && string.Equals(
+                    exactExecution.ConfirmedWeeklyMaterialActionFingerprint,
+                    candidate.ActionFingerprint,
+                    StringComparison.Ordinal)
+                && committed != null
+                && committed.Status == InteractionStatus.Executed
+                && committed.HistoryWritten
+                && committed.ActionsExecuted;
+            WeeklyMemoryMaterialOutcomeState terminalState = exactTerminalSuccess
+                ? WeeklyMemoryMaterialOutcomeState.Confirmed
+                : effect?.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                    || committed?.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                        ? WeeklyMemoryMaterialOutcomeState.Unknown
+                        : (outcome?.AppliedActionCount ?? 0) > 0
+                            ? WeeklyMemoryMaterialOutcomeState.Partial
+                            : WeeklyMemoryMaterialOutcomeState.Rejected;
+            WeeklyMemoryMaterialOutcomeOperationStatus completed = owner.Complete(
+                candidate.ReceiptId,
+                candidate.CandidateHash,
+                terminalState,
+                exactTerminalSuccess ? string.Empty : committed?.ErrorCode ?? "weekly_material_not_confirmed");
+            if (exactTerminalSuccess
+                && (completed == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted
+                    || completed == WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate))
+            {
+                owner.Publish(candidate.ReceiptId, candidate.CandidateHash);
+            }
+        }
+        catch
+        {
+            // A failure after the core commit leaves Prepared/Confirmed in the
+            // sidecar. Load turns Prepared into Unknown and may only retry the
+            // data-only publish of a durable Confirmed receipt.
+        }
     }
 
     private static InteractionCommitResult CommitOnce(

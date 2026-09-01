@@ -8,7 +8,8 @@
     "_setsOwnSettlementEntryProfile_v1": "TroopRoster",
     "_rewardPublicTrust_v1": "Dictionary<string, int>",
     "_af_interactionMemoryRecovery_v1": "Dictionary<string, string>",
-    "_af_memoryOverviewStates_v1": "Dictionary<string, string>"
+    "_af_memoryOverviewStates_v1": "Dictionary<string, string>",
+    "_af_weeklyActionOutcomeReceipts_v1": "Dictionary<string, string>"
   },
   "unknownRecord": {
     "key": "future_module_unknown_v1",
@@ -109,7 +110,29 @@
           "valueKind": "corrupt-versioned-wire"
         }
       ],
-      "expected": "quarantine-without-memory-replay"
+      "expected": "retain-corrupt-memory-journal-for-owner-validation"
+    },
+    {
+      "id": "missing-weekly-action-outcome-journal-is-empty",
+      "records": [
+        {
+          "key": "_af_dailyMemoryDrafts_v1",
+          "type": "Dictionary<string, string>",
+          "valueKind": "dictionary"
+        }
+      ],
+      "expected": "publish-with-empty-weekly-action-outcome-journal"
+    },
+    {
+      "id": "corrupt-weekly-action-outcome-journal-fails-closed",
+      "records": [
+        {
+          "key": "_af_weeklyActionOutcomeReceipts_v1",
+          "type": "Dictionary<string, string>",
+          "valueKind": "corrupt-versioned-wire"
+        }
+      ],
+      "expected": "retain-corrupt-weekly-journal-for-owner-validation"
     },
     {
       "id": "idempotent-second-pass",

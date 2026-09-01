@@ -48,12 +48,18 @@ def validate_chunk(chunk: dict) -> bool:
 
 def main() -> int:
     catalog = load(FIXTURE_DIR / 'syncdata-binding-catalog.json')
+    persistence_catalog = load(FIXTURE_DIR / 'persistence-catalog.json')
     fixture = load(FIXTURE_DIR / 'legacy-first-safe-mode-migration-cases.json')
     check(fixture['assemblyIdentity'] == 'AnimusForge', 'assembly identity changed')
     policy = fixture['policy']
     check(policy == {'readMode': 'legacy-first', 'publishMode': 'single-point-after-validation', 'deleteLegacyKeys': False, 'preserveUnknownData': True}, 'migration policy drifted')
     known = fixture['knownRepresentativeBindings']
     catalog_types = {entry['key']: entry['type'] for entry in catalog['entries']}
+    # Flattened symbolic journals preserve Dictionary<string,string> even
+    # though their SyncData call uses a const key and is intentionally absent
+    # from the literal-only typed binding inventory.
+    for key in persistence_catalog['flattenedDictionaryStorageKeys']:
+        catalog_types.setdefault(key, 'Dictionary<string, string>')
     for key, expected_type in known.items():
         check(catalog_types.get(key) == expected_type, f'representative typed binding drifted: {key}')
     unknown = fixture['unknownRecord']
@@ -83,10 +89,28 @@ def main() -> int:
             check(valid, f'first migration failed: {case_id}')
             valid_again, published_again, errors_again = simulate(published, known, safe_mode)
             check(valid_again and not errors_again and published_again == published, f'migration was not idempotent: {case_id}')
+        elif expected in {
+            'publish-with-empty-memory-recovery-journal',
+            'publish-with-empty-weekly-action-outcome-journal',
+        }:
+            check(valid and published == records, f'missing additive journal invented data: {case_id}')
+            missing_key = (
+                '_af_interactionMemoryRecovery_v1'
+                if 'memory-recovery' in case_id
+                else '_af_weeklyActionOutcomeReceipts_v1'
+            )
+            check(not any(item.get('key') == missing_key for item in published), f'missing journal was synthesized: {case_id}')
+        elif expected in {
+            'retain-corrupt-memory-journal-for-owner-validation',
+            'retain-corrupt-weekly-journal-for-owner-validation',
+        }:
+            check(valid and published == records and len(records) == 1,
+                  f'corrupt journal fixture did not retain its raw record: {case_id}')
+            check(records[0].get('valueKind') == 'corrupt-versioned-wire', f'corrupt journal fixture lost wire marker: {case_id}')
         else:
             fail(f'unknown expected result: {expected}')
         passed += 1
-    print(f'PASS persistenceMigrationContract cases={passed} unknownRetention=1 missingOptional=1 typeMismatchRollback=1 chunkFailureClosed=1 idempotent=1 legacyFirst=1')
+    print(f'PASS persistenceMigrationContract cases={passed} unknownRetention=1 missingOptional=1 typeMismatchRollback=1 chunkFailureClosed=1 corruptJournalRetained=2 idempotent=1 legacyFirst=1')
     return 0
 
 
