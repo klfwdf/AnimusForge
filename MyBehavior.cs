@@ -35124,6 +35124,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
+				DuelBehavior.ClearPendingDuelDebtTag(targetHero);
 				string deferredAdTag = list.LastOrDefault((string x) => (x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase));
 				if (!string.IsNullOrWhiteSpace(deferredAdTag))
 				{

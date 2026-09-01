@@ -369,7 +369,7 @@
       "bindings": [
         {
           "source": "DuelBehavior.cs",
-          "line": 1987,
+          "line": 2213,
           "ref": "_duelCooldowns",
           "type": "Dictionary<string, float>",
           "kind": "flattened-dictionary"
@@ -887,14 +887,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 37206,
+          "line": 37207,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 37215,
+          "line": 37216,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"

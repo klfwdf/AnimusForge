@@ -159,7 +159,12 @@ object snapshot = Snapshot();
 Counter mixedCounter = new Counter();
 object mixedExecutor = BuildExecutor(mixedCounter);
 object mixedStatus = executorType.GetMethod("ValidateAndExecute").Invoke(mixedExecutor, new[] { mixedPlan, snapshot });
-AssertTrue(mixedStatus.ToString() == "Executed" && mixedCounter.LegacyCalls == 1 && mixedCounter.PlannerCalls == 1 && mixedCounter.PortCalls == 1, "production mixed route mismatch");
+AssertTrue(mixedStatus.ToString() == "NonRetryableFailure"
+    && executorEffectType.GetProperty("EffectState").GetValue(mixedExecutor).ToString() == "UnknownAfterStart"
+    && (int)executorOutcomeType.GetProperty("AppliedActionCount").GetValue(mixedExecutor) == 1
+    && (string)executorOutcomeType.GetProperty("ExecutionErrorCode").GetValue(mixedExecutor) == "duel.outcome_pending"
+    && mixedCounter.LegacyCalls == 1 && mixedCounter.PlannerCalls == 1 && mixedCounter.PortCalls == 1,
+    "production mixed Duel route was promoted to terminal gameplay success");
 IReadOnlyList<object> mixedFacts = (IReadOnlyList<object>)executorReceiptType.GetProperty("ConfirmedFacts").GetValue(mixedExecutor);
 AssertTrue(mixedFacts.Count == 1, "production receipt mismatch");
 

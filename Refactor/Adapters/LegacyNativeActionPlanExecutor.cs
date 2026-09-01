@@ -296,6 +296,17 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
                 ResetExecutionOutcome();
                 return InteractionStatus.RejectedByValidation;
             }
+            if (delegatedPlan.Actions.Any(IsDeferredDuelAction))
+            {
+                // The legacy Duel callback can reject, queue, start or later
+                // abort after it consumes the tag. Its synchronous return is
+                // not a terminal gameplay receipt. Keep the commit terminal
+                // and non-retryable without inventing Duel facts or allowing
+                // the host to replay a Mission-start side effect.
+                _effectState = ActionExecutionEffectState.UnknownAfterStart;
+                _executionErrorCode = "duel.outcome_pending";
+                return InteractionStatus.NonRetryableFailure;
+            }
             return status;
         }
         catch
@@ -338,6 +349,10 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IActio
             !string.IsNullOrWhiteSpace(reason)
             && !reason.StartsWith("economy.action_not_applicable:", StringComparison.OrdinalIgnoreCase));
     }
+
+    private static bool IsDeferredDuelAction(ActionRequest request)
+        => request != null
+            && string.Equals(request.Tag, "ACTION:DUEL", StringComparison.OrdinalIgnoreCase);
 
     private static bool PlansMatch(ActionPlan expected, ActionPlan actual)
     {

@@ -94,7 +94,10 @@ LegacyNativeActionPlanExecutor executor = BuildExecutor(
 
 ActionPlan mixed = Parse("reply [ACTION:GIVE_GOLD:25] [ACTION:DUEL:npc-1]");
 InteractionStatus mixedStatus = executor.ValidateAndExecute(mixed, Snapshot());
-AssertTrue(mixedStatus == InteractionStatus.Executed, "mixed economy plan was not executed");
+AssertTrue(mixedStatus == InteractionStatus.NonRetryableFailure
+    && executor.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && executor.ExecutionErrorCode == "duel.outcome_pending",
+    "mixed Duel dispatch was promoted to a terminal gameplay success");
 AssertTrue(economyCalls == 1 && legacyCalls == 1, "mixed plan dispatch count mismatch");
 AssertTrue(delegatedPlan != null && delegatedPlan.Actions.Count == 1
     && delegatedPlan.Actions[0].Tag == "ACTION:DUEL",
@@ -121,8 +124,25 @@ InteractionCommitResult commit = new InteractionResultCommitter().Commit(
     result,
     commitExecutor,
     memory);
-AssertTrue(commit.Status == InteractionStatus.Executed && commit.HistoryWritten, "commit result mismatch");
+AssertTrue(commit.Status == InteractionStatus.NonRetryableFailure
+    && commit.HistoryWritten
+    && commit.ActionsExecuted
+    && commit.EffectState == ActionExecutionEffectState.UnknownAfterStart,
+    "mixed Duel commit did not retain the known Economy subset and terminal uncertainty");
 AssertTrue(committedFacts == 1 && memory.LastFacts.Count == 1, "owner facts were not merged into memory commit");
+
+int duelOnlyCalls = 0;
+LegacyNativeActionPlanExecutor duelOnly = BuildExecutor(
+    (plan, snapshot) => { duelOnlyCalls++; return InteractionStatus.Executed; },
+    (plan, snapshot) => throw new InvalidOperationException("Duel-only plan reached Economy owner"));
+InteractionStatus duelOnlyStatus = duelOnly.ValidateAndExecute(Parse("[ACTION:DUEL:npc-1]"), Snapshot());
+AssertTrue(duelOnlyStatus == InteractionStatus.NonRetryableFailure
+    && duelOnlyCalls == 1
+    && duelOnly.AppliedActionCount == 0
+    && duelOnly.ConfirmedFacts.Count == 0
+    && duelOnly.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && duelOnly.ExecutionErrorCode == "duel.outcome_pending",
+    "legacy Duel callback was treated as a confirmed or safely retryable action");
 
 int economyOnlyLegacyCalls = 0;
 List<string> economyOnlyOrder = new List<string>();
@@ -193,7 +213,9 @@ LegacyNativeActionPlanExecutor guardedMixed = BuildExecutor(
         mixedOrder.Add(isEconomyOnly ? "gate:only" : "gate:mixed");
         return InteractionStatus.Executed;
     });
-AssertTrue(guardedMixed.ValidateAndExecute(mixed, Snapshot()) == InteractionStatus.Executed
+AssertTrue(guardedMixed.ValidateAndExecute(mixed, Snapshot()) == InteractionStatus.NonRetryableFailure
+    && guardedMixed.EffectState == ActionExecutionEffectState.UnknownAfterStart
+    && guardedMixed.ExecutionErrorCode == "duel.outcome_pending"
     && mixedOrder.SequenceEqual(new[] { "gate:mixed", "replay", "legacy" }),
     "mixed Courier-style gate did not validate before economy replay");
 
