@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
 internal static class MemoryRecoveryProductionReplay
@@ -49,13 +50,225 @@ internal static class MemoryRecoveryProductionReplay
         VerifyCompatibilityVoidAbi(ownerType);
         VerifyMemoryCommitConstructorAbi(memoryCommitType, channelType, factType);
         VerifyRecoveryIsolationAndBounds(production, ownerType);
+        VerifyAuxiliaryRecoveryBoundary(ownerType);
         VerifyHiddenMarkerReadback(production, ownerType);
         VerifyPersistedMarkerReconciliation(production, ownerType);
         VerifyAdapterTraceNonce(production);
 
         Console.WriteLine(
-            "PASS memoryRecoveryProductionReplay abi=1 isolatedPayload=1 bounds=64/512 hiddenMarkers=1 rebuildPreservesMarkers=1 tombstoneReconcile=1 orphanCleanup=1 wrongOwnerQuarantine=1 processNonce=1 sceneProvenance=1 assertions="
+            "PASS memoryRecoveryProductionReplay abi=1 isolatedPayload=1 auxiliaryBoundary=1 bounds=64/512 hiddenMarkers=1 rebuildPreservesMarkers=1 tombstoneReconcile=1 orphanCleanup=1 wrongOwnerQuarantine=1 processNonce=1 sceneProvenance=1 assertions="
             + _assertions);
+    }
+
+    private static void VerifyAuxiliaryRecoveryBoundary(Type ownerType)
+    {
+        MethodInfo recoveryWriter = RequireInstanceMethod(
+            ownerType,
+            "PublishDailyInteractionMemoryComponent");
+        MethodInfo legacyWriter = RequireInstanceMethod(
+            ownerType,
+            "AppendDailyMemoryLineById");
+        MethodInfo weeklyAttach = RequireInstanceMethod(
+            ownerType,
+            "AttachPendingWeeklyMemoryMaterialTriggers");
+        Type notorietyType = ownerType.Assembly.GetType(
+            "AnimusForge.PlayerNotorietyBehavior",
+            throwOnError: true);
+        MethodInfo notorietyNote = notorietyType.GetMethod(
+            "NoteConversationLineForExternal",
+            AnyStatic)
+            ?? throw new InvalidOperationException("missing notoriety note boundary");
+        MethodInfo initialAuxiliary = RequireInstanceMethod(
+            ownerType,
+            "CompleteInitialInteractionMemoryNotorietyBestEffort");
+        MethodInfo auxiliaryMarkerReadback = RequireInstanceMethod(
+            ownerType,
+            "HasPublishedDailyInteractionMemoryComponent");
+        MethodInfo initialAuxiliaryGate = ownerType.GetMethod(
+            "ShouldCompleteInitialInteractionMemoryNotoriety",
+            AnyStatic)
+            ?? throw new InvalidOperationException("missing initial auxiliary gate");
+        MethodInfo notorietyEligibility = ownerType.GetMethod(
+            "IsInitialInteractionMemoryNotorietyComponentEligible",
+            AnyStatic)
+            ?? throw new InvalidOperationException("missing notoriety component gate");
+        MethodInfo recoverableCommit = ownerType.GetMethod(
+            "CommitExternalDialogueHistoryRecoverable",
+            AnyStatic)
+            ?? throw new InvalidOperationException("missing recoverable commit owner");
+
+        Require(!CallsMethod(recoveryWriter, weeklyAttach),
+            "memory recovery writer still consumes transient weekly candidates");
+        Require(!CallsMethod(recoveryWriter, notorietyNote),
+            "memory recovery writer still replays non-idempotent notoriety state");
+        Require(CallsMethod(legacyWriter, weeklyAttach),
+            "legacy live writer unexpectedly lost its existing weekly best-effort behavior");
+        Require(CallsMethod(legacyWriter, notorietyNote),
+            "legacy live writer unexpectedly lost its existing notoriety best-effort behavior");
+        Require(CallsMethod(recoverableCommit, initialAuxiliary),
+            "initial recoverable commit no longer owns the one-shot auxiliary boundary");
+        Require(CallsMethod(recoverableCommit, initialAuxiliaryGate),
+            "recoverable commit bypassed the Began/completed auxiliary gate");
+        Require((recoverableCommit.GetMethodBody()?.ExceptionHandlingClauses.Count ?? 0) >= 2,
+            "best-effort auxiliary failure is no longer isolated from the completed core receipt");
+        Require(CallsMethod(initialAuxiliary, notorietyNote),
+            "initial auxiliary boundary no longer attempts current-runtime notoriety");
+        Require(CallsMethod(initialAuxiliary, auxiliaryMarkerReadback),
+            "initial auxiliary boundary no longer requires exact Daily marker readback");
+        Require(!CallsMethod(initialAuxiliary, weeklyAttach),
+            "initial auxiliary boundary attached an unconfirmed weekly candidate");
+        Require(ownerType.GetMethods(AnyInstance)
+                .Count(method => CallsMethod(method, initialAuxiliary)) == 0,
+            "an instance owner bypasses the static recoverable commit auxiliary gate");
+
+        Type beginStatusType = initialAuxiliaryGate.GetParameters()[0].ParameterType;
+        object began = Enum.Parse(beginStatusType, "Began");
+        Require((bool)initialAuxiliaryGate.Invoke(
+                null,
+                new object[] { began, true, "receipt-id", "receipt-id" }),
+            "brand-new completed receipt did not open the one-shot auxiliary boundary");
+        Require(!(bool)initialAuxiliaryGate.Invoke(
+                null,
+                new object[] { began, false, "receipt-id", "receipt-id" }),
+            "incomplete core receipt opened the auxiliary boundary");
+        Require(!(bool)initialAuxiliaryGate.Invoke(
+                null,
+                new object[] { began, true, "receipt-id", "other-id" }),
+            "mismatched recovery identity opened the auxiliary boundary");
+        foreach (object status in Enum.GetValues(beginStatusType))
+        {
+            if (string.Equals(status.ToString(), "Began", StringComparison.Ordinal))
+            {
+                continue;
+            }
+            Require(!(bool)initialAuxiliaryGate.Invoke(
+                    null,
+                    new object[] { status, true, "receipt-id", "receipt-id" }),
+                status + " replayed the initial auxiliary boundary");
+        }
+
+        Type componentType = notorietyEligibility.GetParameters()[0].ParameterType;
+        object user = New(componentType);
+        Set(user, "Part", "user");
+        Set(user, "DailyText", "player line");
+        Set(user, "IsLlmDialogue", true);
+        object assistant = New(componentType);
+        Set(assistant, "Part", "assistant");
+        Set(assistant, "DailyText", "npc line");
+        Set(assistant, "IsLlmDialogue", true);
+        object fact = New(componentType);
+        Set(fact, "Part", "fact");
+        Set(fact, "DailyText", "AFEF fact");
+        Set(fact, "IsLlmDialogue", true);
+        Set(fact, "IsAfef", true);
+        object blank = New(componentType);
+        Set(blank, "Part", "user");
+        Set(blank, "DailyText", " ");
+        Set(blank, "IsLlmDialogue", true);
+        Require((bool)notorietyEligibility.Invoke(null, new[] { user }),
+            "published user line was excluded from the initial best-effort boundary");
+        Require((bool)notorietyEligibility.Invoke(null, new[] { assistant }),
+            "published assistant line was excluded from the initial best-effort boundary");
+        Require(!(bool)notorietyEligibility.Invoke(null, new[] { fact }),
+            "AFEF fact entered the notoriety boundary");
+        Require(!(bool)notorietyEligibility.Invoke(null, new[] { blank }),
+            "blank line entered the notoriety boundary");
+
+    }
+
+    private static bool CallsMethod(MethodInfo caller, MethodInfo callee)
+    {
+        byte[] il = caller?.GetMethodBody()?.GetILAsByteArray() ?? Array.Empty<byte>();
+        Dictionary<ushort, OpCode> opCodes = typeof(OpCodes)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(field => field.FieldType == typeof(OpCode))
+            .Select(field => (OpCode)field.GetValue(null))
+            .ToDictionary(opCode => unchecked((ushort)opCode.Value));
+        int index = 0;
+        while (index < il.Length)
+        {
+            ushort value = il[index++];
+            if (value == 0xfe)
+            {
+                if (index >= il.Length)
+                {
+                    return false;
+                }
+                value = (ushort)(0xfe00 | il[index++]);
+            }
+            if (!opCodes.TryGetValue(value, out OpCode opCode))
+            {
+                return false;
+            }
+
+            int operandSize = GetOperandSize(opCode.OperandType, il, index);
+            if (operandSize < 0 || index + operandSize > il.Length)
+            {
+                return false;
+            }
+            if (opCode.OperandType == OperandType.InlineMethod)
+            {
+                int token = BitConverter.ToInt32(il, index);
+                try
+                {
+                    MethodBase resolved = caller.Module.ResolveMethod(
+                        token,
+                        caller.DeclaringType?.GetGenericArguments(),
+                        caller.IsGenericMethod ? caller.GetGenericArguments() : Type.EmptyTypes);
+                    if (resolved != null
+                        && resolved.Module == callee.Module
+                        && resolved.MetadataToken == callee.MetadataToken)
+                    {
+                        return true;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // Invalid metadata cannot prove the expected call.
+                }
+            }
+            index += operandSize;
+        }
+        return false;
+    }
+
+    private static int GetOperandSize(OperandType operandType, byte[] il, int operandIndex)
+    {
+        switch (operandType)
+        {
+            case OperandType.InlineNone:
+                return 0;
+            case OperandType.ShortInlineBrTarget:
+            case OperandType.ShortInlineI:
+            case OperandType.ShortInlineVar:
+                return 1;
+            case OperandType.InlineVar:
+                return 2;
+            case OperandType.InlineBrTarget:
+            case OperandType.InlineField:
+            case OperandType.InlineI:
+            case OperandType.InlineMethod:
+            case OperandType.InlineSig:
+            case OperandType.InlineString:
+            case OperandType.InlineTok:
+            case OperandType.InlineType:
+            case OperandType.ShortInlineR:
+                return 4;
+            case OperandType.InlineI8:
+            case OperandType.InlineR:
+                return 8;
+            case OperandType.InlineSwitch:
+                if (operandIndex + 4 > il.Length)
+                {
+                    return -1;
+                }
+                int count = BitConverter.ToInt32(il, operandIndex);
+                return count < 0 || count > (il.Length - operandIndex - 4) / 4
+                    ? -1
+                    : 4 + count * 4;
+            default:
+                return -1;
+        }
     }
 
     private static void VerifyOwnerEntryPointAbi(
@@ -335,8 +548,23 @@ internal static class MemoryRecoveryProductionReplay
         MethodInfo dailyReadback = RequireInstanceMethod(
             ownerType,
             "HasDailyInteractionMemoryMarker");
+        MethodInfo auxiliaryDailyReadback = RequireInstanceMethod(
+            ownerType,
+            "HasPublishedDailyInteractionMemoryComponent");
         AssertMarker(dailyReadback, owner, work, expectedMatch: true, expectedConflict: false,
             "daily matching marker");
+        Require((bool)auxiliaryDailyReadback.Invoke(
+                owner,
+                new object[] { ownerId, recoveryId, payloadHash, part }),
+            "initial auxiliary boundary could not read its exact Daily marker");
+        Require(!(bool)auxiliaryDailyReadback.Invoke(
+                owner,
+                new object[] { ownerId, recoveryId, conflictingHash, part }),
+            "initial auxiliary boundary accepted a conflicting payload hash");
+        Require(!(bool)auxiliaryDailyReadback.Invoke(
+                owner,
+                new object[] { ownerId, recoveryId, payloadHash, "assistant" }),
+            "initial auxiliary boundary accepted an unpublished component part");
         Set(work, "PayloadHash", conflictingHash);
         AssertMarker(dailyReadback, owner, work, expectedMatch: false, expectedConflict: true,
             "daily conflicting marker");
