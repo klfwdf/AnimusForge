@@ -62,22 +62,20 @@ internal sealed class InteractionMemoryRecoveryLedger
                 : _disabledReason;
             return InteractionMemoryRecoveryBeginStatus.Rejected;
         }
-        if (!TryNormalizeSeed(seed, out InteractionMemoryRecoverySeed normalized, out errorCode))
+        if (!TryBuildRecoveryIdentityCore(
+            seed,
+            out InteractionMemoryRecoverySeed normalized,
+            out recoveryId,
+            out string payloadHash,
+            out errorCode))
         {
             return InteractionMemoryRecoveryBeginStatus.Rejected;
         }
-
-        recoveryId = Hash(writer =>
-        {
-            writer.Write(RecoveryNamespace);
-            writer.Write(normalized.CommitId);
-        });
         if (_blockedRecoveryIds.Contains(recoveryId))
         {
             errorCode = "memory_recovery_quarantined";
             return InteractionMemoryRecoveryBeginStatus.Rejected;
         }
-        string payloadHash = ComputePayloadHash(normalized);
         if (_entries.TryGetValue(recoveryId, out InteractionMemoryRecoveryEntry existing))
         {
             if (!string.Equals(existing.PayloadHash, payloadHash, StringComparison.Ordinal))
@@ -317,6 +315,97 @@ internal sealed class InteractionMemoryRecoveryLedger
         => !string.IsNullOrWhiteSpace(recoveryId)
             && _entries.TryGetValue(recoveryId, out InteractionMemoryRecoveryEntry entry)
             && entry.Lifecycle == InteractionMemoryRecoveryLifecycle.Completed;
+
+    internal static bool TryBuildRecoveryId(string commitId, out string recoveryId)
+    {
+        recoveryId = string.Empty;
+        string normalized = (commitId ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(normalized) || normalized.Length > 512)
+        {
+            return false;
+        }
+        recoveryId = Hash(writer =>
+        {
+            writer.Write(RecoveryNamespace);
+            writer.Write(normalized);
+        });
+        return true;
+    }
+
+    internal static bool TryBuildRecoveryIdentity(
+        InteractionMemoryRecoverySeed seed,
+        out string recoveryId,
+        out string payloadHash,
+        out string errorCode)
+        => TryBuildRecoveryIdentityCore(
+            seed,
+            out _,
+            out recoveryId,
+            out payloadHash,
+            out errorCode);
+
+    private static bool TryBuildRecoveryIdentityCore(
+        InteractionMemoryRecoverySeed seed,
+        out InteractionMemoryRecoverySeed normalized,
+        out string recoveryId,
+        out string payloadHash,
+        out string errorCode)
+    {
+        recoveryId = string.Empty;
+        payloadHash = string.Empty;
+        if (!TryNormalizeSeed(seed, out normalized, out errorCode))
+        {
+            return false;
+        }
+        if (!TryBuildRecoveryId(normalized.CommitId, out recoveryId))
+        {
+            errorCode = "memory_recovery_commit_id_invalid";
+            return false;
+        }
+        payloadHash = ComputePayloadHash(normalized);
+        return true;
+    }
+
+    internal InteractionMemoryRecoveryLookupStatus GetLookupStatus(
+        string recoveryId,
+        string expectedSubjectId,
+        string expectedPayloadHash)
+    {
+        string key = (recoveryId ?? string.Empty).Trim();
+        string subject = (expectedSubjectId ?? string.Empty).Trim();
+        string payloadHash = (expectedPayloadHash ?? string.Empty).Trim();
+        if (!IsHexDigest(key) || !IsHexDigest(payloadHash)
+            || string.IsNullOrWhiteSpace(subject) || subject.Length > 512)
+        {
+            return InteractionMemoryRecoveryLookupStatus.Invalid;
+        }
+        if (_disabled)
+        {
+            return InteractionMemoryRecoveryLookupStatus.Disabled;
+        }
+        if (_blockedRecoveryIds.Contains(key))
+        {
+            return InteractionMemoryRecoveryLookupStatus.Quarantined;
+        }
+        if (!_entries.TryGetValue(key, out InteractionMemoryRecoveryEntry entry))
+        {
+            return InteractionMemoryRecoveryLookupStatus.Missing;
+        }
+        if (!string.Equals(entry.OriginalSubjectId, subject, StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(entry.SubjectId, subject, StringComparison.OrdinalIgnoreCase))
+        {
+            return InteractionMemoryRecoveryLookupStatus.SubjectMismatch;
+        }
+        if (!string.Equals(entry.PayloadHash, payloadHash, StringComparison.Ordinal))
+        {
+            return InteractionMemoryRecoveryLookupStatus.PayloadMismatch;
+        }
+        return entry.Lifecycle == InteractionMemoryRecoveryLifecycle.Completed
+            ? InteractionMemoryRecoveryLookupStatus.Completed
+            : entry.Lifecycle == InteractionMemoryRecoveryLifecycle.Pending
+                ? InteractionMemoryRecoveryLookupStatus.Pending
+                : InteractionMemoryRecoveryLookupStatus.Invalid;
+    }
 
     internal void DisableForCurrentCampaign(string reason)
         => Disable(reason);
@@ -1282,6 +1371,19 @@ internal enum InteractionMemoryRecoveryLifecycle
     Unknown = 0,
     Pending = 1,
     Completed = 2
+}
+
+internal enum InteractionMemoryRecoveryLookupStatus
+{
+    Unavailable = 0,
+    Missing = 1,
+    Pending = 2,
+    Completed = 3,
+    Quarantined = 4,
+    Disabled = 5,
+    SubjectMismatch = 6,
+    PayloadMismatch = 7,
+    Invalid = 8
 }
 
 internal sealed class InteractionMemoryRecoverySeed

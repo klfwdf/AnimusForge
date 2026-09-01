@@ -35,7 +35,7 @@ using AnimusForge.Refactor.Runtime;
 
 namespace AnimusForge;
 
-public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
+public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 {
 	private const string LogSource = "CourierDelivery";
 	private const string SessionStorageKey = "_af_courier_sessions_v1";
@@ -139,6 +139,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public bool ReplyPopupShown;
 		public bool PostprocessConsumed;
 		public bool ReplyWaitPopupShown;
+		public string InboundCompletionReceipt;
 		public int EscrowGold;
 		public List<CourierCargoEntry> Entries = new List<CourierCargoEntry>();
 		public List<CourierCargoEntry> CrewEntries = new List<CourierCargoEntry>();
@@ -315,6 +316,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private Dictionary<string, string> _courierLetterInventoryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private PendingCourierFlow _pendingFlow;
 	private long _lastCampaignTickUtcTicks;
+	private string _courierInboundCompletionScanCursor = string.Empty;
 	private long _nextCourierLetterInventoryRestoreRetryUtcTicks;
 	private float _npcDiplomacyLetterGlobalCooldownUntilDays;
 	private float _nextNpcDiplomacyLetterScanHour;
@@ -471,50 +473,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			moduleId,
 			providerId,
 			envelope => null,
-			CreateCourierMemoryFacadeForExternal,
+			envelope => CreateCourierInboundMemoryFacadeForExternal(envelope, sessionId),
 			(envelope, commit) => DispatchCourierRefactorCommitAsync(
 				commit,
 				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
-				sessionId),
+				sessionId,
+				abortInboundWithoutReceipt: true),
 			fallbackToLegacy,
 			cancellationToken,
 			CompleteCourierInboundDetachedCommit,
 			appendPlayerInput: false).ConfigureAwait(false);
-	}
-
-	private void CompleteCourierInboundDetachedCommit(
-		InteractionEnvelope envelope,
-		InteractionResult result,
-		InteractionCommitResult commit)
-	{
-		try
-		{
-			string sessionId = envelope?.Snapshot?.Identity?.SessionId;
-			CourierSession session = GetSessionById(sessionId);
-			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session) || !commit.HistoryWritten)
-			{
-				return;
-			}
-			Hero sender = ResolveSender(session);
-			string letter = NormalizeInboundLetterText(result?.VisibleReply, session, sender);
-			if (string.IsNullOrWhiteSpace(letter))
-			{
-				letter = NormalizeInboundLetterText(session.InboundFallbackLetter ?? session.LetterText, session, sender);
-			}
-			if (string.IsNullOrWhiteSpace(letter))
-			{
-				return;
-			}
-			session.LetterText = letter;
-			session.ReplyGenerated = true;
-			session.ReplyGenerationStarted = false;
-			Log("detached inbound letter committed session=" + session.Id + " letterLen=" + letter.Length);
-			ProcessSessionById(session.Id, "detached_inbound_letter_generated");
-		}
-		catch (Exception ex)
-		{
-			Log("detached inbound letter commit failed error=" + ex.Message);
-		}
 	}
 
 	private async Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInCoreAsync(
@@ -564,7 +532,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(
 		Func<InteractionCommitResult> commit,
 		string targetLog,
-		string sessionId)
+		string sessionId,
+		bool abortInboundWithoutReceipt = false)
 	{
 		if (commit == null)
 		{
@@ -574,16 +543,21 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				false,
 				"missing_commit"));
 		}
+		bool isMainThread = false;
 		try
 		{
-			if (TWParallel.IsMainThread())
-			{
-				return Task.FromResult(commit());
-			}
+			isMainThread = TWParallel.IsMainThread();
 		}
 		catch
 		{
-			// Fall through to the normal Courier engine-tick queue.
+		}
+		if (isMainThread)
+		{
+			return Task.FromResult(InvokeCourierRefactorCommit(
+				commit,
+				targetLog,
+				sessionId,
+				abortInboundWithoutReceipt));
 		}
 		TaskCompletionSource<InteractionCommitResult> completion = new TaskCompletionSource<InteractionCommitResult>(TaskCreationOptions.RunContinuationsAsynchronously);
 		int expired = 0;
@@ -597,7 +571,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					completion.TrySetResult(commit());
+					completion.TrySetResult(InvokeCourierRefactorCommit(
+						commit,
+						targetLog,
+						sessionId,
+						abortInboundWithoutReceipt));
 				}
 				catch (Exception ex)
 				{
@@ -620,6 +598,62 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				"main_thread_dispatch_failed"));
 		}
 		return AwaitCourierRefactorCommitAsync(completion.Task, () => Interlocked.Exchange(ref expired, 1), sessionId);
+	}
+
+	private InteractionCommitResult InvokeCourierRefactorCommit(
+		Func<InteractionCommitResult> commit,
+		string targetLog,
+		string sessionId,
+		bool abortInboundWithoutReceipt)
+	{
+		InteractionCommitResult result;
+		try
+		{
+			result = commit()
+				?? new InteractionCommitResult(
+					InteractionStatus.RejectedByValidation,
+					false,
+					false,
+					"missing_commit_result");
+		}
+		catch (Exception ex)
+		{
+			Log("detached courier commit failed session=" + (sessionId ?? "")
+				+ " target=" + (targetLog ?? "") + " error=" + ex.Message);
+			result = new InteractionCommitResult(
+				InteractionStatus.RejectedByValidation,
+				false,
+				false,
+				"main_thread_commit_exception");
+		}
+		if (abortInboundWithoutReceipt)
+		{
+			try
+			{
+				CourierSession session = GetSessionById(sessionId);
+				if (session != null && IsInboundToPlayer(session) && !IsTerminalStage(session)
+					&& !session.DeliveryApplied && !session.ReplyGenerated
+					&& string.IsNullOrWhiteSpace(session.InboundCompletionReceipt))
+				{
+					AbortCourierInboundCompletion(
+						session,
+						string.IsNullOrWhiteSpace(result.ErrorCode)
+							? "commit_without_completion_receipt"
+							: result.ErrorCode);
+					result = new InteractionCommitResult(
+						InteractionStatus.NonRetryableFailure,
+						result.HistoryWritten,
+						result.ActionsExecuted,
+						"courier_inbound_completion_receipt_missing");
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("inbound commit cleanup failed session=" + (sessionId ?? "")
+					+ " error=" + ex.Message);
+			}
+		}
+		return result;
 	}
 
 	private static async Task<InteractionCommitResult> AwaitCourierRefactorCommitAsync(
@@ -1136,6 +1170,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			_pendingFlow = null;
 			_npcInitiatedLetterScan = null;
 			_lastCampaignTickUtcTicks = 0L;
+			_courierInboundCompletionScanCursor = string.Empty;
 			_courierReplyWaitTimeLocked = false;
 			_courierReplyWaitPreviousMode = CampaignTimeControlMode.Stop;
 			_courierReplyWaitPreviousLock = false;
@@ -2131,6 +2166,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				}
 			}
 			ProcessCourierLetterInventoryRestoreRetry();
+			ProcessOneCourierInboundCompletionReceipt();
 			List<CourierSession> snapshot;
 			using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.BuildSnapshot"))
 			{
@@ -3434,6 +3470,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		Hero sender = ResolveSender(session);
 		string senderName = string.IsNullOrWhiteSpace(session.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
+		if (!IsCourierInboundCompletionReadyForDelivery(session))
+		{
+			session.ReplyGenerationStarted = true;
+			HoldInboundCourierAtPlayer(session, courier);
+			return;
+		}
 		if (!session.ReplyGenerated)
 		{
 			session.Stage = CourierStage.GeneratingReply.ToString();
@@ -9228,6 +9270,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		session.InboundIntentText = session.InboundIntentText ?? "";
 		session.InboundFallbackLetter = session.InboundFallbackLetter ?? session.LetterText ?? "";
 		session.InboundEventKey = (session.InboundEventKey ?? "").Trim();
+		session.InboundCompletionReceipt = (session.InboundCompletionReceipt ?? "").Trim();
 		if (IsInboundToPlayer(session))
 		{
 			session.IsNpcInitiated = true;
@@ -9334,7 +9377,20 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return;
 		}
 		session.ReplyWaitPopupShown = false;
-		if (session.ReplyGenerated || IsTerminalStage(session))
+		if (IsTerminalStage(session))
+		{
+			session.ReplyGenerationStarted = false;
+			return;
+		}
+		if (IsInboundToPlayer(session)
+			&& !string.IsNullOrWhiteSpace(session.InboundCompletionReceipt))
+		{
+			// A persisted receipt is either waiting for durable memory completion,
+			// ready to apply, or quarantined. All three must block a second LLM run.
+			session.ReplyGenerationStarted = !session.ReplyGenerated;
+			return;
+		}
+		if (session.ReplyGenerated)
 		{
 			session.ReplyGenerationStarted = false;
 			return;

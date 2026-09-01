@@ -46,51 +46,21 @@ public partial class MyBehavior
     {
         try
         {
-            if (!TWParallel.IsMainThread())
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_not_main_thread");
-            }
-            if (commit == null)
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Rejected, "missing_memory_commit");
-            }
-            MyBehavior owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-            if (owner == null)
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_missing");
-            }
-            if (Interlocked.Read(ref owner._interactionMemoryRecoveryLoadedGeneration)
-                != SaveRuntimeGuard.CurrentGeneration
-                || Volatile.Read(ref owner._interactionMemoryRecoveryLoadImportConfirmed) == 0)
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_recovery_not_activated");
-            }
-            string normalizedMemoryId = NormalizeMemoryHeroId(commit.SubjectId);
-            if (string.IsNullOrEmpty(normalizedMemoryId) || isNonHero != IsNonHeroMemoryId(normalizedMemoryId))
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_identity_invalid");
-            }
-            if (string.IsNullOrWhiteSpace(commit.UserText)
-                && string.IsNullOrWhiteSpace(commit.AssistantText)
-                && !(commit.ConfirmedFacts ?? Array.Empty<FactRecord>()).Any(fact =>
-                    fact != null && !string.IsNullOrWhiteSpace(fact.Text)))
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_empty_commit");
-            }
-            Hero hero = isNonHero
-                ? null
-                : (Hero.Find(commit.SubjectId.Trim()) ?? FindHeroById(normalizedMemoryId));
-            if (!isNonHero && !IsHeroNpcEligibleForCompressedMemory(hero))
-            {
-                return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_target_ineligible");
-            }
-
-            InteractionMemoryRecoverySeed seed = owner.BuildInteractionMemoryRecoverySeed(
+            if (!TryPrepareExternalDialogueHistoryRecovery(
                 commit,
-                normalizedMemoryId,
                 isNonHero,
                 npcName,
-                hero);
+                out MyBehavior owner,
+                out InteractionMemoryRecoverySeed seed,
+                out _,
+                out _,
+                out string preparationError,
+                out MemoryCommitStatus preparationFailureStatus))
+            {
+                return new MemoryCommitResult(
+                    preparationFailureStatus,
+                    preparationError);
+            }
             InteractionMemoryRecoveryLedger ledger = owner.EnsureInteractionMemoryRecoveryLedger();
             InteractionMemoryRecoveryBeginStatus beginStatus = ledger.Begin(
                 seed,
@@ -125,6 +95,157 @@ public partial class MyBehavior
             Logger.Log("MemoryRecovery", "[ERROR] recoverable commit failed: " + ex.Message);
             return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_recovery_commit_failed");
         }
+    }
+
+    internal static bool TryPrepareExternalDialogueHistoryRecoveryIdentity(
+        InteractionMemoryCommit commit,
+        bool isNonHero,
+        string npcName,
+        out string recoveryId,
+        out string payloadHash,
+        out string errorCode)
+    {
+        try
+        {
+            return TryPrepareExternalDialogueHistoryRecovery(
+                commit,
+                isNonHero,
+                npcName,
+                out _,
+                out _,
+                out recoveryId,
+                out payloadHash,
+                out errorCode,
+                out _);
+        }
+        catch
+        {
+            recoveryId = string.Empty;
+            payloadHash = string.Empty;
+            errorCode = "memory_recovery_identity_failed";
+            return false;
+        }
+    }
+
+    internal static InteractionMemoryRecoveryLookupStatus GetExternalDialogueHistoryRecoveryStatus(
+        string recoveryId,
+        string expectedSubjectId,
+        string expectedPayloadHash)
+    {
+        try
+        {
+            if (!TWParallel.IsMainThread())
+            {
+                return InteractionMemoryRecoveryLookupStatus.Unavailable;
+            }
+            MyBehavior owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+            if (owner == null)
+            {
+                return InteractionMemoryRecoveryLookupStatus.Unavailable;
+            }
+            InteractionMemoryRecoveryLedger ledger = owner.EnsureInteractionMemoryRecoveryLedger();
+            if (ledger.IsDisabled)
+            {
+                return InteractionMemoryRecoveryLookupStatus.Disabled;
+            }
+            if (Interlocked.Read(ref owner._interactionMemoryRecoveryLoadedGeneration)
+                    != SaveRuntimeGuard.CurrentGeneration
+                || Volatile.Read(ref owner._interactionMemoryRecoveryLoadImportConfirmed) == 0)
+            {
+                return InteractionMemoryRecoveryLookupStatus.Unavailable;
+            }
+            return ledger.GetLookupStatus(
+                recoveryId,
+                expectedSubjectId,
+                expectedPayloadHash);
+        }
+        catch
+        {
+            return InteractionMemoryRecoveryLookupStatus.Unavailable;
+        }
+    }
+
+    private static bool TryPrepareExternalDialogueHistoryRecovery(
+        InteractionMemoryCommit commit,
+        bool isNonHero,
+        string npcName,
+        out MyBehavior owner,
+        out InteractionMemoryRecoverySeed seed,
+        out string recoveryId,
+        out string payloadHash,
+        out string errorCode,
+        out MemoryCommitStatus failureStatus)
+    {
+        owner = null;
+        seed = null;
+        recoveryId = string.Empty;
+        payloadHash = string.Empty;
+        errorCode = string.Empty;
+        failureStatus = MemoryCommitStatus.Rejected;
+        if (!TWParallel.IsMainThread())
+        {
+            errorCode = "memory_not_main_thread";
+            return false;
+        }
+        if (commit == null)
+        {
+            errorCode = "missing_memory_commit";
+            return false;
+        }
+        owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+        if (owner == null)
+        {
+            failureStatus = MemoryCommitStatus.Failed;
+            errorCode = "memory_owner_missing";
+            return false;
+        }
+        if (Interlocked.Read(ref owner._interactionMemoryRecoveryLoadedGeneration)
+            != SaveRuntimeGuard.CurrentGeneration
+            || Volatile.Read(ref owner._interactionMemoryRecoveryLoadImportConfirmed) == 0)
+        {
+            failureStatus = MemoryCommitStatus.Failed;
+            errorCode = "memory_recovery_not_activated";
+            return false;
+        }
+        string normalizedMemoryId = NormalizeMemoryHeroId(commit.SubjectId);
+        if (string.IsNullOrEmpty(normalizedMemoryId)
+            || isNonHero != IsNonHeroMemoryId(normalizedMemoryId))
+        {
+            errorCode = "memory_identity_invalid";
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(commit.UserText)
+            && string.IsNullOrWhiteSpace(commit.AssistantText)
+            && !(commit.ConfirmedFacts ?? Array.Empty<FactRecord>()).Any(fact =>
+                fact != null && !string.IsNullOrWhiteSpace(fact.Text)))
+        {
+            errorCode = "memory_empty_commit";
+            return false;
+        }
+        Hero hero = isNonHero
+            ? null
+            : (Hero.Find(commit.SubjectId.Trim()) ?? FindHeroById(normalizedMemoryId));
+        if (!isNonHero && !IsHeroNpcEligibleForCompressedMemory(hero))
+        {
+            errorCode = "memory_target_ineligible";
+            return false;
+        }
+        seed = owner.BuildInteractionMemoryRecoverySeed(
+            commit,
+            normalizedMemoryId,
+            isNonHero,
+            npcName,
+            hero);
+        if (!InteractionMemoryRecoveryLedger.TryBuildRecoveryIdentity(
+            seed,
+            out recoveryId,
+            out payloadHash,
+            out errorCode))
+        {
+            failureStatus = MemoryCommitStatus.Failed;
+            return false;
+        }
+        return true;
     }
 
     private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(
