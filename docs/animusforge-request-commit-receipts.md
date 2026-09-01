@@ -345,6 +345,45 @@ tests run against the fresh staged DLL and cover sanitizer, call order, lifecycl
 and forbidden authority. This remains offline/compiled evidence: live Campaign,
 Economy mutation, SyncData round-trip, old saves and AFEF are not proven.
 
+## Notoriety exact line/session owner (LOCAL-7-L)
+
+The previous auxiliary call was a swallowed `void`: observer reads could create and roll
+a transient hero-only session before any line; a positive roll mutated persistent known
+state immediately, while negative outcome and line count were not saved. Finalize removed
+the active session before incrementing sessions/bonus/day. Daily/Recent markers and logs
+could not distinguish success, no-op or a swallowed failure.
+
+L preserves the legacy public void ABI but gives the detached H completion a separate
+typed owner. Session identity binds subject, opaque memory-session digest and runtime/save
+generation; each line binds H recovery ID, payload hash, `user`/`assistant` part and origin
+clock. `ProbeLine` executes before active creation or RNG. Same identity/payload returns
+Duplicate; changed identity conflicts; capacity failure performs no roll. Raw session key,
+dialogue text, H payload, Hero, callback or executable authority is never persisted.
+
+The `AFNR1` ledger is embedded as `Dictionary<string,string>` inside the existing
+`_af_player_notoriety_state_v1` JSON, bounded at 64 Open/Confirmed, 512 terminal and 260
+line IDs per session. This adds no SyncData key/type. A read-path roll is transient until
+an actual exact line is accepted; that owner publication places aggregate known state and
+the receipt witness into the same JSON owner value. A zero-line roll no longer increments
+completed sessions. Different exact sessions for the same observer finalize separately;
+a late finalize must match the active memory session, while prior-day sessions may close
+through the bounded stale path. Mixing an exact receipt with a legacy line terminates the
+exact receipt as Unknown before returning to legacy behavior.
+
+Session finalize freezes absolute known/known-day/bonus/completed-session/last-day targets,
+applies monotonic values, performs readback and then records Applied. Repeating finalize
+does not add the delta again. A loaded Open receipt becomes Unknown and only retains exact
+line tombstones; it cannot roll or finalize. A loaded Confirmed receipt may reconcile only
+its frozen absolute data target. Invalid embedded receipt wires preserve the raw dictionary
+and disable the L owner rather than silently claiming success. Corruption of the outer
+legacy Notoriety JSON still follows the pre-existing full-state reset behavior and remains
+a real-save risk.
+
+Pure tests cover 14 receipt/wire/identity/load/capacity/clock/data-only cases. Fresh compiled
+guards verify embedded storage, duplicate-before-roll ordering, exact finalize ordering,
+load reconciliation, old ABI and H/K isolation. These are not evidence for live MBRandom,
+real ConversationEnded ordering, `IDataStore` atomicity, process crashes or old saves.
+
 ## Limits and mandatory follow-up
 
 - The generic request/action guard remains bounded and process-local. H's durable ledger
@@ -359,8 +398,9 @@ Economy mutation, SyncData round-trip, old saves and AFEF are not proven.
   have marker-based repair. H never replays weekly or notoriety. K adds an independent
   exact weekly owner only for Economy-only whole-plan success; it does not consume the
   legacy pre-action candidate, recover old records, cover mixed/legacy/subset actions or
-  prove live save/load. Notoriety remains current-runtime best-effort only and still has
-  no durable per-line/session outcome receipt.
+  prove live save/load. L adds an exact receipt only for detached lines carrying H
+  recovery/session identity. Legacy default lines, missing L receipts and loaded Open
+  sessions remain non-recoverable; no marker or aggregate value is promoted into success.
 - Courier economy-only now has an offline-verified owner reservation, but live
   save/load and asset evidence remain required. Process-local receipts are still
   not the durable business authority.

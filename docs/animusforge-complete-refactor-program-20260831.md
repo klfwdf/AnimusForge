@@ -6,7 +6,7 @@
 
 本文初版由当时的 Git、公共执行台账、owner matrix、领域 Gateway 边界和本机 handoff 交叉核对形成；2026-08-31 初版只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。后续本机接续以紧随其后的更新块、公共台账和最新 handoff 为准。
 
-> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界；`LOCAL-7-D/E/F/G/H/I/J/K` 已依次完成 Memory owner readback、Courier Economy reservation、known partial、structured `UnknownAfterStart`、memory-only durable recovery、Courier inbound durable completion、memory auxiliary recovery boundary 与 weekly exact-intent/outcome owner 的代码/离线验证。最新源码提交为 `765b2386`。K 只接受 Economy-only whole-plan owner full-success + exact execution fingerprint + written memory，使用独立 `AFWM1`/symbolic storage做 Confirmed-only data attach；mixed/legacy/partial/unknown/rejected与旧档无 receipt不推导成功。四个显式依赖 runner现已可在本机正常回放，所以下文“缺 F 盘依赖”的段落仅是 2026-08-31 历史。阶段 7仍 VERIFY；下一切片为 durable Notoriety per-line/session receipt。真实 Campaign/Mission、live Economy/AFEF、旧档和默认切换仍未验收。
+> **2026-09-01 本机接续更新：**本文主体保留 2026-08-31 的全量任务基线；实时状态以公共台账和最新 handoff 为准。`LOCAL-7-C` 已修复四 runner 的显式依赖边界；`LOCAL-7-D/E/F/G/H/I/J/K/L` 已完成 Memory owner readback、Courier reservation、known partial、structured unknown、memory-only recovery、Courier completion、auxiliary隔离、weekly exact outcome与Notoriety exact detached line/session的代码/离线验证。最新源码提交为 `80729cb9`。L 的 `AFNR1` witness与aggregate同在旧Notoriety JSON；duplicate在roll前、Open load→Unknown、finalize只应用冻结绝对target。它不覆盖legacy line，也不证明真实MBRandom/save/load。阶段7仍VERIFY；现在可以并行做阶段8 Bridge矩阵、清理候选、回滚与最终验收包，但真实Campaign/Mission、live Economy/AFEF、旧档和默认切换未验收前，不能执行删除facade或default cutover。
 
 ## 一、现状
 
@@ -267,4 +267,4 @@
 
 owner/refactor map 的第一版基于较早基线，适合导航，不可照搬其旧状态；实际状态以最新 Git、运行证据和公共台账为准。本文件是总纲，不新建一套平行执行台账。
 
-**下一精确任务：`LOCAL-7-L` 审计并建立 durable Notoriety per-line/session outcome receipt；先证明 line roll、aggregate更新与 finalize 的真实顺序和可读回执，不从 H marker或随机结果反推成功，不重放 roll/finalize。随后继续其他领域 owner 与真实 Host/旧档验收，最后才做默认切换与发布。**
+**下一精确任务：并行进入 `LOCAL-8-A` 非破坏性准备，刷新 Bridge矩阵、旧facade/flag/bridge清理候选、逐项回滚方案和最终验收包；同时保留阶段7真实Host/旧档/live Economy/AFEF清单为硬门禁。任何候选只能标记，不能在真实验收前删除；默认入口、打包、部署与发布仍后置。**
