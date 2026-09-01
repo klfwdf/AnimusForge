@@ -88,3 +88,19 @@ legacy-first cases=10，missing weekly journal与 corrupt raw retention均有纯
 99 SyncData / 35 CampaignBehavior，因为该审计只追踪 literal binding/行为身份，不能拿来证明
 新 symbolic journal本身的 live SaveSystem兼容。真实旧档、保存后重载、坏 journal游戏内隔离和
 live weekly Daily attach仍为 `NOT-RUN`。
+
+## 2026-09-01 增量验证：Notoriety embedded outcome witness
+
+`LOCAL-7-L` 没有新增 `SyncData` key/type，而是在既有
+`_af_player_notoriety_state_v1` string JSON中增加
+`ConversationOutcomeReceipts : Dictionary<string,string>`。每个值是有checksum和长度上限的
+`AFNR1` data-only receipt；旧JSON缺字段时由initializer/Normalize得到空字典，未知字段继续按
+Json.NET既有行为忽略。aggregate `NpcKnowledge`与receipt witness由同一个CampaignBehavior、同一
+JSON值保存，避免另建key后出现明显的跨key非原子声明。
+
+AFNR1上限为64 Open/Confirmed、512 terminal、每session 260 exact line IDs。valid load把Open转为
+Unknown且不重roll/重finalize；Confirmed只允许按冻结绝对target做幂等readback。embedded wire损坏
+会保留raw dictionary并禁用L owner；但外层旧Notoriety JSON/chunk本身损坏仍沿用原有“重置整个
+Notoriety state”的行为，本轮没有伪称修复。由于没有新literal/symbolic base key，严格目录仍为
+95 literal、121 typed、42 symbolic sources、40 flattened dictionaries；Identity仍为99/35。
+真实旧档、真实SaveSystem round-trip、crash窗口与坏外层JSON均 `NOT-RUN`。
