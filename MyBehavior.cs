@@ -4476,7 +4476,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnMemoryConversationEnded(IEnumerable<CharacterObject> characters)
 	{
-		PlayerNotorietyBehavior.FinalizeConversationForExternal(characters);
+		string memorySessionKey = _activeNativeConversationMemorySessionId >= 0
+			? BuildCurrentMemorySessionKey(-1, _activeNativeConversationMemorySessionId)
+			: string.Empty;
+		PlayerNotorietyBehavior.FinalizeConversationForExternal(
+			characters,
+			memorySessionKey);
 		_activeNativeConversationMemorySessionId = -1;
 	}
 
@@ -27522,7 +27527,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		AttachPendingWeeklyMemoryMaterialTriggers(dailyMemoryDraft, dailyMemoryLine);
 		SaveDailyMemoryDraftsById(heroId, list);
-		if (dailyMemoryLine.IsLlmDialogue)
+		bool dailyPublished = IsDailyMemoryLinePublished(
+			heroId,
+			dayIndex,
+			dailyMemoryDraft,
+			dailyMemoryLine);
+		if (dailyPublished && dailyMemoryLine.IsLlmDialogue)
 		{
 			PlayerNotorietyBehavior.NoteConversationLineForExternal(heroId);
 		}
@@ -27530,7 +27540,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			LogNonHeroMemoryTrace("stage=daily_append memoryId=" + heroId + " memoryName=" + (dailyMemoryDraft.HeroName ?? "") + " day=" + dayIndex + " drafts=" + list.Count + " lines=" + CountDailyMemoryDraftLines(list) + " speaker=" + (dailyMemoryLine.Speaker ?? "") + " isAfef=" + dailyMemoryLine.IsAfef + " isLlm=" + dailyMemoryLine.IsLlmDialogue + " sceneSession=" + sceneSessionId + " dialogueSession=" + dialogueSessionId);
 		}
-		return IsDailyMemoryLinePublished(heroId, dayIndex, dailyMemoryDraft, dailyMemoryLine);
+		return dailyPublished;
 	}
 
 	// Read raw owner state, not prompt-filtered history. Sanitization retains object

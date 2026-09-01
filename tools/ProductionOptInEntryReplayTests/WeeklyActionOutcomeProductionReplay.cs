@@ -333,10 +333,13 @@ internal static class WeeklyActionOutcomeProductionReplay
         {
             "MyBehavior.cs",
             "MyBehavior.MemoryRecovery.cs",
+            "PlayerNotorietyBehavior.cs",
+            "PlayerNotorietyBehavior.ConversationOutcomes.cs",
             "MyBehavior.WeeklyActionOutcomeReceipts.cs",
             "Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs",
             "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
             "Refactor/Runtime/InteractionResultCommitter.cs",
+            "Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs",
             "Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs"
         };
         DateTime newestSource = sources

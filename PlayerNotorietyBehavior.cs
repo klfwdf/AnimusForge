@@ -18,7 +18,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
-public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
+public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 {
 	private const string StorageKey = "_af_player_notoriety_state_v1";
 	private const int RecentActionWindowDays = 10;
@@ -97,7 +97,9 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		string storageJson = null;
 		if (dataStore.IsSaving)
 		{
-			storageJson = JsonConvert.SerializeObject(NormalizeState(_state));
+			_state = NormalizeState(_state);
+			PrepareNotorietyConversationOutcomeStorageForSave();
+			storageJson = JsonConvert.SerializeObject(_state);
 			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "PlayerNotoriety", storageJson, BuildStorageDiagnostics());
 			CampaignSaveChunkHelper.SaveChunkedString(dataStore, StorageKey, storageJson, "PlayerNotoriety");
 			return;
@@ -112,10 +114,13 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			_state = string.IsNullOrWhiteSpace(storageJson) ? new PlayerNotorietyState() : JsonConvert.DeserializeObject<PlayerNotorietyState>(storageJson) ?? new PlayerNotorietyState();
 			_state = NormalizeState(_state);
 			_activeConversationStates.Clear();
+			ActivateNotorietyConversationOutcomeStorageAfterLoad();
 		}
 		catch (Exception ex)
 		{
 			_state = new PlayerNotorietyState();
+			_activeConversationStates.Clear();
+			ResetNotorietyConversationOutcomeStorageAfterFailedLoad();
 			Logger.Log("PlayerNotoriety", "load failed: " + ex.Message);
 		}
 	}
@@ -135,6 +140,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				+ " pendingMaterials=" + pending
 				+ " summarizedMaterialKeys=" + (state.SummarizedMaterialKeys?.Count ?? 0)
 				+ " npcKnowledge=" + (state.NpcKnowledge?.Count ?? 0)
+				+ " conversationOutcomeReceipts=" + (state.ConversationOutcomeReceipts?.Count ?? 0)
 				+ " cultures=" + (state.CultureNotoriety?.Count ?? 0)
 				+ " summaryBytes=" + summaryBytes
 				+ " maxMaterialBytes=" + maxMaterialBytes;
@@ -1604,6 +1610,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return;
 		}
 		_state.LowProfileModeEnabled = enabled;
+		AbandonOpenNotorietyConversationOutcomes("low_profile_changed");
 		_activeConversationStates.Clear();
 		LogDebug("low profile mode=" + enabled);
 	}
@@ -1845,7 +1852,9 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: false);
-		return state?.KnowsMajorHistory == true;
+		return state?.KnowsMajorHistory == true
+			|| _activeConversationStates.TryGetValue(key, out ActiveConversationState active)
+				&& active?.KnowsMajorThisSession == true;
 	}
 
 	private void MarkObserverKnowsPlayer(Hero observer, string reason)
@@ -1902,12 +1911,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: true);
 			int chance = GetEffectiveNotoriety(key, cultureId);
-			bool knows = RollPercent(chance);
-			if (knows)
-			{
-				state.KnowsMajorHistory = true;
-				state.KnownAtDay = GetCurrentGameDayIndex();
-			}
+			bool knows = state?.KnowsMajorHistory == true || RollPercent(chance);
 			active = new ActiveConversationState
 			{
 				HeroId = key,
@@ -2068,6 +2072,9 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		DowngradeExactNotorietyOutcomeToLegacy(active);
+		PublishKnownRollForLegacyLine(active);
+		active.HasLegacyLines = true;
 		active.LineCount++;
 		active.LastDay = GetCurrentGameDayIndex();
 		active.LastHour = GetCurrentGameHour();
@@ -2135,7 +2142,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			if (state == null || currentDay > state.StartDay)
 			{
-				FinalizeConversationByHeroId(state?.HeroId);
+				FinalizeStaleNotorietyConversationByHeroId(state?.HeroId);
 			}
 		}
 	}
@@ -2151,9 +2158,28 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		_activeConversationStates.Remove(normalizedHeroId);
+		if (active.LineCount <= 0)
+		{
+			// Read-only prompt checks may freeze a roll, but a conversation
+			// without a published LLM line is not a completed session.
+			_activeConversationStates.Remove(normalizedHeroId);
+			return;
+		}
 		PlayerNpcKnowledgeState state = GetNpcKnowledgeState(normalizedHeroId, create: true);
 		if (state == null)
+		{
+			return;
+		}
+		if (TryFinalizeExactNotorietyConversation(
+			normalizedHeroId,
+			active,
+			state,
+			out bool exactHandled))
+		{
+			_activeConversationStates.Remove(normalizedHeroId);
+			return;
+		}
+		if (exactHandled)
 		{
 			return;
 		}
@@ -2163,6 +2189,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			state.PersonalKnownBonus = ClampPercentDouble(state.PersonalKnownBonus + active.LineCount * PersonalKnownBonusPerLine);
 		}
 		state.LastConversationDay = GetCurrentGameDayIndex();
+		_activeConversationStates.Remove(normalizedHeroId);
 		LogDebug("finalize conversation observer=" + normalizedHeroId + " lines=" + active.LineCount + " bonus=" + state.PersonalKnownBonus.ToString("0.##"));
 	}
 
@@ -2728,6 +2755,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		bool repairLegacyVillageRaidDefense = !state.LegacyVillageRaidDefenseRepairApplied;
 		state.CultureNotoriety ??= new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 		state.NpcKnowledge ??= new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
+		state.ConversationOutcomeReceipts ??= new Dictionary<string, string>(StringComparer.Ordinal);
 		state.RecentActions ??= new List<PlayerActionEntry>();
 		state.MajorMaterials ??= new List<PlayerHistoryMaterial>();
 		state.SummarizedMaterialKeys = NormalizeSummarizedMaterialKeys(state.SummarizedMaterialKeys);
@@ -3747,6 +3775,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		public double WorldNotoriety;
 		public Dictionary<string, double> CultureNotoriety = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 		public Dictionary<string, PlayerNpcKnowledgeState> NpcKnowledge = new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);
+		public Dictionary<string, string> ConversationOutcomeReceipts = new Dictionary<string, string>(StringComparer.Ordinal);
 		public List<PlayerActionEntry> RecentActions = new List<PlayerActionEntry>();
 		public List<PlayerHistoryMaterial> MajorMaterials = new List<PlayerHistoryMaterial>();
 		public List<string> SummarizedMaterialKeys = new List<string>();
@@ -3781,6 +3810,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		public int KnownRollChance;
 		public bool KnowsMajorThisSession;
 		public int LineCount;
+		public bool HasLegacyLines;
+		public string ExactOutcomeReceiptId = "";
+		public string ExactOutcomeCandidateHash = "";
+		public string ExactMemorySessionKey = "";
 	}
 
 	private sealed class PrisonerRosterCountEntry
