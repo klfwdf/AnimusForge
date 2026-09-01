@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30477,6 +30477,57 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordNonHeroRecentActionForExternal(string nonHeroMemoryId, string npcName, string text, string stableKey, string actionKind = "")
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordNonHeroRecentAction(nonHeroMemoryId, npcName, text, stableKey, actionKind);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordNonHeroRecentActionForExternal: " + ex.Message);
+		}
+	}
+
+	private void RecordNonHeroRecentAction(string nonHeroMemoryId, string npcName, string text, string stableKey, string actionKind)
+	{
+		try
+		{
+			string ownerKey = NormalizeMemoryHeroId(nonHeroMemoryId);
+			string cleanText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (!IsNonHeroMemoryId(ownerKey) || string.IsNullOrWhiteSpace(cleanText)) return;
+			if (_npcRecentActions == null) _npcRecentActions = new Dictionary<string, List<NpcActionEntry>>(StringComparer.OrdinalIgnoreCase);
+			if (!_npcRecentActions.TryGetValue(ownerKey, out List<NpcActionEntry> entries) || entries == null)
+			{
+				entries = new List<NpcActionEntry>();
+				_npcRecentActions[ownerKey] = entries;
+			}
+			int day = GetCurrentGameDayIndexSafe();
+			RemoveInvalidNpcActionEntries(entries, day - RecentNpcActionWindowDays + 1, true);
+			string normalizedKey = NormalizeNpcActionStableKey(stableKey, cleanText);
+			if (ContainsNpcActionStableKey(entries, normalizedKey)) return;
+			entries.Add(new NpcActionEntry
+			{
+				Day = day,
+				Order = GetNextNpcActionOrder(entries, day),
+				Sequence = ++_npcActionGlobalOrderCounter,
+				GameDate = GetCurrentGameDateTextSafe(),
+				Text = cleanText,
+				StableKey = normalizedKey,
+				ActionKind = (actionKind ?? "").Trim(),
+				IsMajor = false
+			});
+			entries.Sort(CompareNpcActionTimeline);
+			if (entries.Count > MaxRecentNpcActionEntriesPerHero) entries.RemoveRange(0, entries.Count - MaxRecentNpcActionEntriesPerHero);
+			RefreshNpcRecentActionStableKeyIndexForHero(ownerKey, entries);
+			LogNonHeroMemoryTrace("stage=recent_action_commit memoryId=" + ownerKey + " name=" + (npcName ?? "NPC") + " day=" + day + " key=" + normalizedKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordNonHeroRecentAction: " + ex.Message);
+		}
+	}
+
 	public static string BuildNpcMajorActionsRuntimeInstructionForExternal(Hero hero)
 	{
 		try
@@ -36380,7 +36431,13 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		return targetHero != Hero.MainHero && !targetHero.IsPlayerCompanion && !targetHero.IsPrisoner;
+		Hero mainHero = Hero.MainHero;
+		Clan playerClan = Clan.PlayerClan ?? mainHero?.Clan;
+		// Loyalty reflects ordinary residents: this one-shot reply check uses only O(1) Hero/Clan flags and never scans rosters.
+		bool isPlayerFamilyOrCompanion = targetHero.IsPlayerCompanion
+			|| (playerClan != null && (targetHero.CompanionOf == playerClan || targetHero.Clan == playerClan))
+			|| RomanceSystemBehavior.IsPlayerCompanionOrFamily(targetHero);
+		return targetHero != mainHero && !targetHero.IsPrisoner && !isPlayerFamilyOrCompanion && !targetHero.IsLord;
 	}
 
 	private static void ApplyRoyalDomainConversationLoyaltyFromMood(PatienceMood mood, Hero targetHero, string unnamedKey, string npcName, bool directConversation)

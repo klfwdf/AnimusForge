@@ -62,6 +62,10 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 				LogGuard("party_hourly_ai_prior_crash_skip", party, priorCrashReason);
 				return false;
 			}
+			if (IsPartyInNativeNavalTransition(party))
+			{
+				return true;
+			}
 			if (!ShouldSkipNativeAiForUtilityParty(party, out string reason))
 			{
 				if (!IsUnsafeForNativeHourlyAiParty(party, out reason))
@@ -131,6 +135,10 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		try
 		{
 			MobileParty party = ExtractParty(__args);
+			if (IsPartyInNativeNavalTransition(party))
+			{
+				return true;
+			}
 			if (ShouldSkipNativeAiForUtilityParty(party, out string utilityReason))
 			{
 				TryLockNativeAiDecisions(party, utilityReason);
@@ -1392,6 +1400,24 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		catch (Exception ex)
 		{
 			return "ship_describe_failed=" + ex.GetType().Name;
+		}
+	}
+
+	private static bool IsPartyInNativeNavalTransition(MobileParty party)
+	{
+		try
+		{
+			if (party == null || party == MobileParty.MainParty || CourierDeliveryBehavior.IsCourierParty(party))
+			{
+				return false;
+			}
+			return party.IsCurrentlyAtSea
+				|| party.IsTransitionInProgress
+				|| (party.IsTargetingPort && party.TargetSettlement != null);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
