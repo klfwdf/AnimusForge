@@ -1,0 +1,820 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "af.phase8.bridge-bindings",
+  "catalogPath": "docs/phase8/full-domain-readiness-catalog.json",
+  "contractVersion": 1,
+  "runtimeBindingPolicy": {
+    "allowedStates": [
+      "wired",
+      "declared-only"
+    ],
+    "wiredEntryFrequency": [
+      "startup",
+      "event",
+      "campaign-lifecycle",
+      "mission-lifecycle"
+    ],
+    "forbiddenFrequency": [
+      "tick",
+      "per-frame",
+      "full-scan"
+    ],
+    "declaredOnlyMeaning": "Contract and ownership are recorded, but no runtime caller is authorized to claim the bridge is active."
+  },
+  "bindings": [
+    {
+      "id": "bootstrap-host",
+      "domains": [
+        "bootstrap-build",
+        "host-composition"
+      ],
+      "topology": "PAIR",
+      "owner": "Build.Composition",
+      "entryPaths": [
+        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "SubModule.cs"
+      ],
+      "symbols": [
+        {
+          "path": "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+          "symbol": "BootstrapRuntime",
+          "kind": "type"
+        },
+        {
+          "path": "SubModule.cs",
+          "symbol": "SubModule",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "SafeMode",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "API_1_3",
+        "API_1_4"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Bootstrap selection remains owned by the dedicated Bootstrap runtime; this catalog entry does not add a second loader."
+      }
+    },
+    {
+      "id": "host-runtime",
+      "domains": [
+        "host-composition",
+        "runtime-diagnostics"
+      ],
+      "topology": "PAIR",
+      "owner": "Foundation.Runtime",
+      "entryPaths": [
+        "SubModule.cs",
+        "CampaignTickDiagnosticsPatch.cs"
+      ],
+      "symbols": [
+        {
+          "path": "SubModule.cs",
+          "symbol": "OnApplicationTick",
+          "kind": "method"
+        },
+        {
+          "path": "CampaignTickDiagnosticsPatch.cs",
+          "symbol": "CampaignTickDiagnosticsPatch",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "SafeMode",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "PARTIAL_START_CLEANUP",
+        "STALE_COMPLETION"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Host lifecycle and diagnostics are already coordinated by SubModule; no parallel coordinator is introduced."
+      }
+    },
+    {
+      "id": "runtime-game-adapter",
+      "domains": [
+        "runtime-diagnostics",
+        "game-adapter-compatibility"
+      ],
+      "topology": "PAIR",
+      "owner": "Compatibility.GameAdapter",
+      "entryPaths": [
+        "BannerlordApiCompat.cs",
+        "InteractionComponentSafePatch.cs"
+      ],
+      "symbols": [
+        {
+          "path": "BannerlordApiCompat.cs",
+          "symbol": "BannerlordApiCompat",
+          "kind": "type"
+        },
+        {
+          "path": "InteractionComponentSafePatch.cs",
+          "symbol": "InteractionComponentSafePatch",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "Native",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "OPTIONAL_DEPENDENCY_MISSING",
+        "NATIVE_FALLBACK"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Version-specific calls stay behind existing compatibility helpers."
+      }
+    },
+    {
+      "id": "persistence-domain-owners",
+      "domains": [
+        "persistence-config",
+        "memory-afef",
+        "economy-reward-debt",
+        "policy-political",
+        "world-simulation-worldmap",
+        "settlement-siege-gccz-sets",
+        "duel",
+        "courier-proactive-issue",
+        "social-progression-reports",
+        "knowledge-persona-profile"
+      ],
+      "topology": "CROSS_CUT",
+      "owner": "Foundation.Persistence",
+      "entryPaths": [
+        "CampaignSaveChunkHelper.cs",
+        "MyBehavior.cs",
+        "RewardSystemBehavior.cs"
+      ],
+      "symbols": [
+        {
+          "path": "CampaignSaveChunkHelper.cs",
+          "symbol": "CampaignSaveChunkHelper",
+          "kind": "type"
+        },
+        {
+          "path": "MyBehavior.cs",
+          "symbol": "MyBehavior",
+          "kind": "type"
+        },
+        {
+          "path": "RewardSystemBehavior.cs",
+          "symbol": "RewardSystemBehavior",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "DESIGN_INVENTORY",
+      "fallback": "SafeMode",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "EACH_OWNER_ALONE",
+        "ALL_WITHOUT_COORDINATOR",
+        "ALL_WITH_COORDINATOR",
+        "COORDINATOR_DISABLED",
+        "COORDINATOR_FAILURE",
+        "OLD_SAVE",
+        "ROUND_TRIP",
+        "CORRUPT_DATA"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Persistence ownership is an inventory and does not create a cross-domain save coordinator."
+      }
+    },
+    {
+      "id": "conversation-gateway",
+      "domains": [
+        "conversation-encounter",
+        "gateway-prompt-protocol"
+      ],
+      "topology": "PAIR",
+      "owner": "Conversation.Gateway",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "ShoutBehavior.cs"
+      ],
+      "symbols": [
+        {
+          "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+          "symbol": "LegacyConfiguredChatGateway",
+          "kind": "type"
+        },
+        {
+          "path": "ShoutBehavior.cs",
+          "symbol": "ShoutBehavior",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "Native",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "TIMEOUT",
+        "CANCELLATION",
+        "STREAM_END"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Conversation gateway remains behind the existing facade and provider contracts."
+      }
+    },
+    {
+      "id": "conversation-action",
+      "domains": [
+        "conversation-encounter",
+        "action-commit"
+      ],
+      "topology": "PAIR",
+      "owner": "Conversation.ActionCommit",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+        "Refactor/Runtime/InteractionResultCommitter.cs"
+      ],
+      "symbols": [
+        {
+          "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+          "symbol": "LegacyChannelInteractionFacade",
+          "kind": "type"
+        },
+        {
+          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "symbol": "InteractionResultCommitter",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "OPT_IN",
+      "fallback": "NoOp",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "STALE_TARGET",
+        "STARTED_NO_REPLAY"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Opt-in action commit remains explicit; default native callers are unchanged."
+      }
+    },
+    {
+      "id": "action-memory",
+      "domains": [
+        "action-commit",
+        "memory-afef"
+      ],
+      "topology": "PAIR",
+      "owner": "Action.Memory",
+      "entryPaths": [
+        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "MyBehavior.MemoryRecovery.cs"
+      ],
+      "symbols": [
+        {
+          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "symbol": "InteractionResultCommitter",
+          "kind": "type"
+        },
+        {
+          "path": "MyBehavior.MemoryRecovery.cs",
+          "symbol": "CommitExternalDialogueHistoryRecoverable",
+          "kind": "method"
+        }
+      ],
+      "implementationState": "OPT_IN",
+      "fallback": "NoOp",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "HISTORY_WRITTEN",
+        "MEMORY_FAILURE"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Memory receipts remain owned by the existing commit/recovery boundaries."
+      }
+    },
+    {
+      "id": "action-economy",
+      "domains": [
+        "action-commit",
+        "economy-reward-debt"
+      ],
+      "topology": "PAIR",
+      "owner": "Action.Economy",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "RewardSystemBehavior.EconomyReplay.cs"
+      ],
+      "symbols": [
+        {
+          "path": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+          "symbol": "LegacyNativeActionPlanExecutor",
+          "kind": "type"
+        },
+        {
+          "path": "RewardSystemBehavior.EconomyReplay.cs",
+          "symbol": "TryReplayAction",
+          "kind": "method"
+        }
+      ],
+      "implementationState": "OPT_IN",
+      "fallback": "NoOp",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "PARTIAL_EFFECT",
+        "UNKNOWN_AFTER_START"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Economy replay remains opt-in and preserves whole-plan/unknown-after-start semantics."
+      }
+    },
+    {
+      "id": "policy-world-diplomacy",
+      "domains": [
+        "policy-political",
+        "world-simulation-worldmap"
+      ],
+      "topology": "PAIR",
+      "owner": "Policy.WorldDiplomacy",
+      "entryPaths": [
+        "PolicySystem/Core/CustomPolicyBehavior.cs",
+        "WorldDiplomacyBehavior.cs",
+        "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"
+      ],
+      "symbols": [
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.cs",
+          "symbol": "CustomPolicyBehavior",
+          "kind": "type"
+        },
+        {
+          "path": "WorldDiplomacyBehavior.cs",
+          "symbol": "NotifyExternalDiplomacyResolved",
+          "kind": "method"
+        },
+        {
+          "path": "PolicySystem/Context/WorldDiplomacyPolicyContext.cs",
+          "symbol": "WorldDiplomacyPolicyContext",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "Native",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "INCOMPATIBLE_VERSION",
+        "SAVE_DATA_PRESERVED"
+      ],
+      "runtimeBinding": {
+        "state": "wired",
+        "entryPath": "WorldDiplomacyBehavior.cs",
+        "symbol": "NotifyExternalDiplomacyResolved",
+        "frequency": "event",
+        "notes": "The existing diplomacy-to-world notification is guarded at the event boundary; policy and native diplomacy remain independent owners."
+      }
+    },
+    {
+      "id": "conversation-siege",
+      "domains": [
+        "conversation-encounter",
+        "settlement-siege-gccz-sets"
+      ],
+      "topology": "PAIR",
+      "owner": "Conversation.SettlementSiege",
+      "entryPaths": [
+        "AfGcczShoutBridge.cs",
+        "SiegeAiInterventionBehavior.cs"
+      ],
+      "symbols": [
+        {
+          "path": "AfGcczShoutBridge.cs",
+          "symbol": "IsActive",
+          "kind": "method"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.cs",
+          "symbol": "ShouldRunSiegeInterventionPostprocessForExternal",
+          "kind": "method"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "Native",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "ACTIVE_STAGE_ONLY",
+        "SAVE_DATA_PRESERVED"
+      ],
+      "runtimeBinding": {
+        "state": "wired",
+        "entryPath": "AfGcczShoutBridge.cs",
+        "symbol": "IsActive",
+        "frequency": "event",
+        "notes": "The AF-side adapter is the single gate for prompt/postprocess/action exchange; Siege runtime and ordinary native scenes remain separate."
+      }
+    },
+    {
+      "id": "scene-duel",
+      "domains": [
+        "scene-mission-combat",
+        "duel"
+      ],
+      "topology": "PAIR",
+      "owner": "Scene.Duel",
+      "entryPaths": [
+        "SceneTauntBehavior.cs",
+        "DuelBehavior.cs"
+      ],
+      "symbols": [
+        {
+          "path": "SceneTauntBehavior.cs",
+          "symbol": "SceneTauntBehavior",
+          "kind": "type"
+        },
+        {
+          "path": "DuelBehavior.cs",
+          "symbol": "DuelBehavior",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "BLOCKED_LIVE",
+      "fallback": "Native",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "MISSION_END",
+        "NATIVE_COMBAT_ISOLATION"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Duel remains blocked for live Mission acceptance; no default scene/combat cutover is claimed."
+      }
+    },
+    {
+      "id": "conversation-courier",
+      "domains": [
+        "conversation-encounter",
+        "courier-proactive-issue"
+      ],
+      "topology": "PAIR",
+      "owner": "Conversation.Courier",
+      "entryPaths": [
+        "CourierDeliveryBehavior.cs",
+        "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
+      ],
+      "symbols": [
+        {
+          "path": "CourierDeliveryBehavior.cs",
+          "symbol": "CourierDeliveryBehavior",
+          "kind": "type"
+        },
+        {
+          "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+          "symbol": "LegacyChannelInteractionFacade",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "OPT_IN",
+      "fallback": "NoOp",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "DELIVERY_RESTART",
+        "DUPLICATE_COMPLETION"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Courier has no production default Bridge caller; its explicit reservation and receipt paths remain opt-in."
+      }
+    },
+    {
+      "id": "memory-social-reports",
+      "domains": [
+        "memory-afef",
+        "social-progression-reports"
+      ],
+      "topology": "PAIR",
+      "owner": "Memory.SocialReports",
+      "entryPaths": [
+        "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "PlayerNotorietyBehavior.ConversationOutcomes.cs"
+      ],
+      "symbols": [
+        {
+          "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+          "symbol": "CompleteWeeklyActionOutcomeForExternal",
+          "kind": "method"
+        },
+        {
+          "path": "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+          "symbol": "FinalizeConversationForExternal",
+          "kind": "method"
+        }
+      ],
+      "implementationState": "OPT_IN",
+      "fallback": "NoOp",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "EXACT_IDENTITY",
+        "OPEN_LOAD_UNKNOWN"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Weekly and notoriety owners retain their exact identity/readback gates; no shared coordinator is enabled."
+      }
+    },
+    {
+      "id": "gateway-knowledge-profile",
+      "domains": [
+        "gateway-prompt-protocol",
+        "knowledge-persona-profile"
+      ],
+      "topology": "PAIR",
+      "owner": "Gateway.KnowledgeProfile",
+      "entryPaths": [
+        "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+        "KnowledgeLibraryBehavior.cs"
+      ],
+      "symbols": [
+        {
+          "path": "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+          "symbol": "LegacyKnowledgeRagGateway",
+          "kind": "type"
+        },
+        {
+          "path": "KnowledgeLibraryBehavior.cs",
+          "symbol": "KnowledgeLibraryBehavior",
+          "kind": "type"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "Native",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "A_ONLY",
+        "B_ONLY",
+        "A_PLUS_B_NO_BRIDGE",
+        "A_PLUS_B_WITH_BRIDGE",
+        "BRIDGE_DISABLED",
+        "BRIDGE_FAILURE",
+        "INDEX_STALE",
+        "PROVIDER_MISSING"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Knowledge/profile authority remains in the existing gateway and campaign behavior owners."
+      }
+    },
+    {
+      "id": "ui-runtime-integration",
+      "domains": [
+        "runtime-diagnostics",
+        "scene-mission-combat",
+        "ui-tts-external-integration"
+      ],
+      "topology": "CROSS_CUT",
+      "owner": "UI.RuntimeIntegration",
+      "entryPaths": [
+        "AnimusForgeNativeConversationOverlay.cs",
+        "TtsEngine.cs",
+        "SceneActionsIntegrationBoundary.cs"
+      ],
+      "symbols": [
+        {
+          "path": "AnimusForgeNativeConversationOverlay.cs",
+          "symbol": "AnimusForgeNativeConversationOverlay",
+          "kind": "type"
+        },
+        {
+          "path": "TtsEngine.cs",
+          "symbol": "TtsEngine",
+          "kind": "type"
+        },
+        {
+          "path": "SceneActionsIntegrationBoundary.cs",
+          "symbol": "InitializeRuntime",
+          "kind": "method"
+        }
+      ],
+      "implementationState": "ACTIVE_BOUNDARY",
+      "fallback": "SafeMode",
+      "apiLines": [
+        "1.3",
+        "1.4"
+      ],
+      "requiredCases": [
+        "EACH_OWNER_ALONE",
+        "ALL_WITHOUT_COORDINATOR",
+        "ALL_WITH_COORDINATOR",
+        "COORDINATOR_DISABLED",
+        "COORDINATOR_FAILURE",
+        "FOCUS_CLOSE",
+        "OPTIONAL_DEPENDENCY_MISSING"
+      ],
+      "runtimeBinding": {
+        "state": "wired",
+        "entryPath": "SceneActionsIntegrationBoundary.cs",
+        "symbol": "InitializeRuntime",
+        "frequency": "startup",
+        "notes": "Optional SceneActions/BattleSpeech integration is initialized once and fails closed without changing native gameplay."
+      }
+    },
+    {
+      "id": "tools-content-release",
+      "domains": [
+        "bootstrap-build",
+        "ui-tts-external-integration",
+        "tools-content-package"
+      ],
+      "topology": "CROSS_CUT",
+      "owner": "Tools.ContentRelease",
+      "entryPaths": [
+        "tools/PhaseEightReadiness/readiness.py",
+        "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
+      ],
+      "symbols": [
+        {
+          "path": "tools/PhaseEightReadiness/readiness.py",
+          "symbol": "evaluate",
+          "kind": "function"
+        },
+        {
+          "path": "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+          "symbol": "Duel",
+          "kind": "asset"
+        }
+      ],
+      "implementationState": "DESIGN_ONLY",
+      "fallback": "SafeMode",
+      "apiLines": [
+        "agnostic"
+      ],
+      "requiredCases": [
+        "EACH_OWNER_ALONE",
+        "ALL_WITHOUT_COORDINATOR",
+        "ALL_WITH_COORDINATOR",
+        "COORDINATOR_DISABLED",
+        "COORDINATOR_FAILURE",
+        "PACKAGE_ALLOWLIST",
+        "ROLLBACK_DRILL"
+      ],
+      "runtimeBinding": {
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Readiness and content tools never authorize deployment, package creation, or runtime execution implicitly."
+      }
+    }
+  ]
+}

@@ -9,6 +9,10 @@
 - 制作组接手前先`git fetch origin --prune`，确认远端分支HEAD，再在不覆盖本地改动的前提下接续。
 - 总交接：`docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`。
 - 发布到GitHub只表示源码与文档完成交接，不代表真实游戏验收、默认切换或阶段7/8完成。
+- 本地接续已按用户授权完成一次 Debug 双版本编译与统一模块测试部署；来源是
+  `refactor/prepare-af-restructure`，不是 `main`。本轮未启动游戏，部署不代表 Release 或 LIVE/SAVE 通过。
+- 随后日志边界修复重建了当前 Debug Stage；已安装目录的实现 DLL 仍是部署时版本，实机前必须先
+  在明确授权下重新部署当前 Stage。readiness 的 `installedMatchesStage=true` 只比较 Bootstrap。
 
 ## 六、最准确的结论
 
@@ -37,11 +41,19 @@
 - 20领域owner、16组Bridge和完整真实入口清单。
 - 每项旧facade/bridge/flag/shim的KEEP/HOLD/REVIEW_REMOVAL证据。
 - 逐项回滚点、存档副作用说明、LIVE/SAVE验收记录和最终打包清单。
+- `LOCAL-7-C3` 与 Persistence/Profile/Identity 离线收尾已完成；C3 `4/4`、Persistence `95/121/44`、
+  Identity `99/35` 均 PASS，详情见 `docs/handoffs/2026-09-02-offline-closeout-c3-persistence.md`。
+- Bridge 绑定清单 `docs/phase8/bridge-binding-manifest.json` 已闭合 16 组；纯校验结果为
+  `16 bindings / 3 wired / 13 declared-only`。`wired` 仅覆盖现有 Siege、WorldDiplomacy 通知和
+  UI runtime 初始化 Gate；`declared-only` 不代表运行时已接入。
+- Release 离线 Stage 与 ZIP 已重建并校验：双 API/Bootstrap 各 `0 warning / 0 error`，Production
+  Duel Release `35/35 PASS`；ZIP 位于 `.tmp/packages/release-final-20260902/`，不等同于实际安装或
+  发布签收。
 
 ### 阶段8执行（当前禁止）
 
 - 删除仍有调用、反射、存档或兼容责任的旧入口。
-- 切默认三渠道、打包发布或覆盖游戏。
+- 切默认三渠道、再次覆盖游戏、Release 打包发布或最终安装。
 - 在LIVE/SAVE证据不完整时宣布阶段7或阶段8完成。
 
 ## 本轮新增闭环：Duel M2
@@ -60,6 +72,8 @@
 3. Duel重点覆盖accept/reject/queue/start/cancel/death/exit、stake/debt、Memory/AFEF和Fourberie。
 4. 验证代表旧档加载、保存后重载、缺失/损坏数据隔离，不用fixture或DLL加载冒充SAVE PASS。
 5. 每个清理候选先证明替代路径和rollback drill；没有真实证据继续写`NOT-RUN / BLOCKED`。
+6. 本机 5 个 net6 smoke 与 ActionPostprocess/Preprocess net10 smoke 均通过；PlayerExportsEditor
+   smoke 因现有内容校验错误退出码 `1`（RagShortText 长度及 JSON 字段类型），不得吞错或批量改生产数据。
 
 ## 一句话结论
 

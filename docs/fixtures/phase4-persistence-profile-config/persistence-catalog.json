@@ -135,6 +135,10 @@
     "_voiceMapping_v1"
   ],
   "flattenedDictionaryStorageKeys": [
+    "_afCustomPolicyActiveEffects_v1",
+    "_afCustomPolicyRecordHistory_v1",
+    "_afDynamicPolicyRegistry_v1",
+    "_afLocalPolicyRecords_v1",
     "_afNobleGatheringNpcKingdomHostDays_v1",
     "_afNobleGatheringPlayerHostCooldowns_v1",
     "_afNobleGatherings_v1",

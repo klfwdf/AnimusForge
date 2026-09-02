@@ -8,7 +8,8 @@
 > live Economy、AFEF/Notoriety 和默认入口仍未闭合，因此阶段 7 继续为 `VERIFY`。
 
 > 阶段 8 现在已有完整 20 领域目录、Bridge 矩阵、清理候选、逐项回滚要求和 fail-closed
-> readiness 工具，可以并行采集证据；但删除旧入口、默认切换、部署和发布仍为 `BLOCKED`。
+> readiness 工具，可以并行采集证据；删除旧入口、默认切换、Release/最终部署和发布仍为
+> `BLOCKED`。本机另有一次用户明确授权的 Debug 测试部署，但不构成阶段 8 的发布或 LIVE/SAVE 证据。
 
 ## Git 与范围
 
@@ -104,6 +105,27 @@ SAVE 1.3/1.4，证据必须显式列出相应`bridgeIds`。
 它们各自原有 case、Composition 的 compatibility/failure/data-preserved/safe-mode case，和
 Foundation 全部 18 个 Composition case 也必须在 SAVE 层覆盖；通用 save-roundtrip 不能替代。
 
+### Bridge 绑定清单（离线配置）
+
+`docs/phase8/bridge-binding-manifest.json` 是 16 组 Bridge 的唯一离线绑定清单，逐组记录
+`domains`、`topology`、`owner`、真实 `entryPaths`/`symbols`、`implementationState`、
+`fallback`、`apiLines` 和 required cases。`runtimeBinding.state` 明确区分：
+
+- `wired`：仅限已经审阅并在生产入口调用 `FeatureBridgeRuntime` Gate 的
+  `conversation-siege`、`policy-world-diplomacy`、`ui-runtime-integration`；
+- `declared-only`：合同和责任已登记，但没有运行时 caller，不能当作功能已接入或已验收。
+
+纯源代码校验器会拒绝绝对/遍历路径、生成物、终端 UI 文件、缺失 symbol、热路径频率和未经审阅的
+`wired` 标记。它只读元数据与源码，不加载游戏、不读存档、不执行 Bridge：
+
+```powershell
+python -B .\tools\BridgeBindingContractTests\validate_bridge_bindings.py
+python -B -m unittest discover -s .\tools\BridgeBindingContractTests -p 'test_*.py' -v
+```
+
+当前离线状态为 `16 bindings / 3 wired / 13 declared-only`；这不是 LIVE/SAVE 证据，也不授权
+默认切换、删除、部署或发布。
+
 ## 清理候选
 
 当前目录共18项：
@@ -163,16 +185,17 @@ Foundation 全部 18 个 Composition case 也必须在 SAVE 层覆盖；通用 s
 ## 可重复命令
 
 ```powershell
-Set-Location -LiteralPath 'G:\AFMOD\AF-REFACTOR'
+Set-Location -LiteralPath 'F:\AnimusForge-main'
 
 python -B -m unittest discover -s .\tools\PhaseEightReadiness -p 'test_*.py' -v
 python -B .\tools\BridgeFixtureContractTests\validate_bridge_fixtures.py
+python -B .\tools\BridgeBindingContractTests\validate_bridge_bindings.py
 python -B .\tools\CompositionMatrixContractTests\validate_composition_matrix.py
 python -B .\tools\ModuleCatalogContractTests\validate_module_catalog.py
 
 python -B .\tools\PhaseEightReadiness\readiness.py `
-  --project-root 'G:\AFMOD\AF-REFACTOR' `
-  --manifest 'G:\AFMOD\AF-REFACTOR\docs\phase8\all-missing.evidence.json'
+  --project-root 'F:\AnimusForge-main' `
+  --manifest 'F:\AnimusForge-main\docs\phase8\all-missing.evidence.json'
 # 必须 BLOCKED / exit 2；这是缺证据的正确结果。
 ```
 
@@ -187,13 +210,15 @@ python -B .\tools\PhaseEightReadiness\readiness.py `
 - `publish`
 
 即使真实证据结构最终通过，工具也只返回 `READY-FOR-OWNER-REVIEW`，仍需集成人员和用户对
-具体默认切换、删除、部署与发布分别授权。
+具体默认切换、删除、Release/最终部署与发布分别授权；工具的 `deploy=false` 不撤销本机已获授权的
+Debug 测试安装，也不能把该安装当作发布验收。
 
-## 下一安全切片
+## 当前下一步
 
 `LOCAL-7-M1/M2` 已建立 Duel actual-session owner以及 exact detached request-to-Duel provenance；
 Native/Scene request在副作用前绑定同一 queued/started `DuelId`，Courier明确拒绝，legacy-unbound
 保持独立。Duel仍需真实Campaign/Mission的accept/reject/cancel/death/exit、stake/Memory、旧档和
-Fourberie证据，不能把compiled/fixture提升为LIVE或SAVE。下一可自主切片为`LOCAL-7-C2`：只修复
-`ShoutNetworkSseReplayTests` 的F盘硬编码与`Modules\**`递归复制，复用既有显式依赖边界；这项
-工具闭环不能替代任何Duel、WorldMap或其他领域的LIVE/SAVE证据。
+Fourberie证据，不能把compiled/fixture提升为LIVE或SAVE。`LOCAL-7-C2`、`LOCAL-7-C3` 与本轮
+Persistence/Profile/Identity 离线收尾均已完成；没有新的破坏性代码切片获授权。下一步由实机人员
+按本验收包补齐20领域LIVE/SAVE、Bridge和rollback drill；在真实证据到齐前，工具闭环不能替代
+任何Duel、WorldMap或其他领域的LIVE/SAVE证据。

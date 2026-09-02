@@ -1,5 +1,7 @@
 using AnimusForge.SceneActions.Core;
 using AnimusForge.XihaiAction;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using System;
 using TaleWorlds.MountAndBlade;
 
@@ -37,6 +39,18 @@ internal static class SceneActionsIntegrationBoundary
 
         string moduleRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
         SceneActionsLog.InitializeForModuleRoot(moduleRoot);
+
+        FeatureBridgeDecision bridgeDecision = FeatureBridgeRuntime.Evaluate(
+            FeatureBridgeIds.UiRuntimeIntegration,
+            FeatureBridgeIds.ContractVersion);
+        if (!bridgeDecision.IsAllowed)
+        {
+            SceneActionsLog.Warning(
+                "INTEGRATION",
+                "UI/runtime integration bridge is unavailable; keeping native fallback. " + bridgeDecision.ReasonCode);
+            return;
+        }
+
         try
         {
             if (!TryValidateCoreContract(out string contractReason))

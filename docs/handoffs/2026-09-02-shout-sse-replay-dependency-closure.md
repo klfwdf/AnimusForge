@@ -1,7 +1,10 @@
 # LOCAL-7-C2：ShoutNetwork SSE replay dependency closure 接续
 
-日期：2026-09-02。工作区：`G:\AFMOD\AF-REFACTOR`。分支：
-`codex/af-main-refactor-continuation-20260831`。
+日期：2026-09-02。当前工作区：`F:\AnimusForge-main`。当前分支：
+`refactor/prepare-af-restructure`。
+
+> 本文正文中的 `G:\AFMOD`、`G:\AFMOD\NEW-10` 和相关日志目录是 C2 切片时的历史证据路径；当前复现
+> 使用本工作区与当前分支，历史路径不作为本机依赖。
 
 > 2026-09-02 收尾：用户已明确授权关闭自动化并普通push GitHub。本文件中“未push”描述的是
 > C2实现/验证切片结束时的边界；最终远端同步状态与制作组接续入口见
@@ -156,8 +159,8 @@ project root，补纯fixture/CLI测试与文档；不得启动游戏、部署、
 
 ## 新线程启动语
 
-> 请读取 `G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`，
-> 在分支 `codex/af-main-refactor-continuation-20260831` 上继续。先fetch并核对Git/工作树，不pull、
+> 请读取 `F:\AnimusForge-main\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`，
+> 在分支 `refactor/prepare-af-restructure` 上继续。先fetch并核对Git/工作树，不pull、
 > rebase或reset；确认HEAD至少包含`ae49e3c8`。按`LOCAL-7-C3`只修复LiveHostReadinessAudit的
 > explicit-root portability：先红测F盘默认，再要求显式`--game-root`并用纯fixture/CLI契约验证。
 > 不启动游戏、不部署、不读写真实存档、不改生产C#、不push；阶段7保持VERIFY、阶段8执行保持BLOCKED。

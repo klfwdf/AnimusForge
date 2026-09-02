@@ -3,10 +3,10 @@ param(
     [string]$Configuration = "Debug",
     [switch]$SkipStageBuild,
     [string]$ProjectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..")),
-    [string]$BannerlordRoot = $(if ($env:BANNERLORD_ROOT) { $env:BANNERLORD_ROOT } else { "E:\steam\steamapps\common\Mount & Blade II Bannerlord" }),
+    [string]$BannerlordRoot = $(if ($env:BANNERLORD_ROOT) { $env:BANNERLORD_ROOT } else { "" }),
     [string]$Bannerlord13ReferenceDir = "",
     [string]$Bannerlord14ReferenceDir = "",
-    [string]$WorkshopContentDir = $(if ($env:WORKSHOP_CONTENT_DIR) { $env:WORKSHOP_CONTENT_DIR } else { "E:\steam\steamapps\workshop\content\261550" }),
+    [string]$WorkshopContentDir = $(if ($env:WORKSHOP_CONTENT_DIR) { $env:WORKSHOP_CONTENT_DIR } else { "" }),
     [string]$RuntimeDependencyDir = ""
 )
 
@@ -19,11 +19,14 @@ if ([string]::IsNullOrWhiteSpace($Bannerlord14ReferenceDir)) {
     $Bannerlord14ReferenceDir = Join-Path $ProjectRoot ".tmp\build_check\1.4"
 }
 if ([string]::IsNullOrWhiteSpace($RuntimeDependencyDir)) {
-    $RuntimeDependencyDir = [IO.Path]::GetFullPath((Join-Path $ProjectRoot "..\NEW-10\AnimusForge\bin\Win64_Shipping_Client"))
+    # Leave resolution to the official unified build script.  It validates a
+    # complete private-runtime set from the source module or the explicit game
+    # module and keeps Debug/Release staging from copying a stale historical
+    # workspace.
+    $RuntimeDependencyDir = ""
 }
 
 $dotnetCandidates = @()
-$dotnetCandidates += "C:\Users\28358\AppData\Local\Microsoft\dotnet\dotnet.exe"
 if ($env:DOTNET_ROOT) {
     $dotnetCandidates += (Join-Path $env:DOTNET_ROOT "dotnet.exe")
 }
@@ -63,20 +66,47 @@ if (-not $env:DOTNET_CLI_HOME) {
 }
 
 if (-not $SkipStageBuild) {
-    $buildScript = Join-Path $ProjectRoot "一键编译覆盖推送\build_single_module.ps1"
-    if (-not (Test-Path -LiteralPath $buildScript -PathType Leaf)) {
-        throw "STAGE_BUILD_SCRIPT_MISSING: $buildScript"
+    if ([string]::IsNullOrWhiteSpace($BannerlordRoot)) {
+        throw "BANNERLORD_ROOT_REQUIRED: pass -BannerlordRoot or set BANNERLORD_ROOT when rebuilding the Stage."
     }
+    # Resolve the repository build entry by its ASCII file name instead of a
+    # non-ASCII directory literal. Windows PowerShell 5.1 can parse a UTF-8
+    # script without a BOM using the active code page, which previously turned
+    # the Chinese directory name into mojibake and made a valid checkout look
+    # incomplete. The immediate-child search remains bounded and deterministic.
+    $buildScriptCandidates = @(
+        Get-ChildItem -LiteralPath $ProjectRoot -Directory -ErrorAction Stop |
+            ForEach-Object {
+                $candidate = Join-Path $_.FullName "build_single_module.ps1"
+                if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                    [IO.Path]::GetFullPath($candidate)
+                }
+            }
+    )
+    if ($buildScriptCandidates.Count -ne 1) {
+        throw "STAGE_BUILD_SCRIPT_MISSING_OR_AMBIGUOUS: candidates=$($buildScriptCandidates.Count)"
+    }
+    $buildScript = [string]$buildScriptCandidates[0]
     Write-Host "STAGE_BUILD configuration=$Configuration deploy=false"
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $buildScript `
-        -ProjectRoot $ProjectRoot `
-        -BannerlordRoot $BannerlordRoot `
-        -Bannerlord13ReferenceDir $Bannerlord13ReferenceDir `
-        -Bannerlord14ReferenceDir $Bannerlord14ReferenceDir `
-        -WorkshopContentDir $WorkshopContentDir `
-        -RuntimeDependencyDir $RuntimeDependencyDir `
-        -Configuration $Configuration `
-        -Stage
+    $stageBuildArguments = @(
+        "-ProjectRoot", $ProjectRoot,
+        "-BannerlordRoot", $BannerlordRoot,
+        "-Bannerlord13ReferenceDir", $Bannerlord13ReferenceDir,
+        "-Bannerlord14ReferenceDir", $Bannerlord14ReferenceDir,
+        "-Configuration", $Configuration,
+        "-Stage"
+    )
+    if (-not [string]::IsNullOrWhiteSpace($WorkshopContentDir)) {
+        $stageBuildArguments = @(
+            "-WorkshopContentDir", $WorkshopContentDir
+        ) + $stageBuildArguments
+    }
+    if (-not [string]::IsNullOrWhiteSpace($RuntimeDependencyDir)) {
+        $stageBuildArguments = @(
+            "-RuntimeDependencyDir", $RuntimeDependencyDir
+        ) + $stageBuildArguments
+    }
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $buildScript @stageBuildArguments
     if ($LASTEXITCODE -ne 0) {
         throw "STAGE_BUILD_FAILED: exit=$LASTEXITCODE"
     }

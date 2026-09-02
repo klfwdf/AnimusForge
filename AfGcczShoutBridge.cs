@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -20,16 +22,23 @@ internal static class AfGcczShoutBridge
 
 	internal static string InjectedRuleBlockMarker => SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
 
+	// The catalog is immutable for the process; resolve the gate once so prompt
+	// and response hot paths do not repeatedly rebuild or scan configuration.
+	private static readonly bool ConversationSiegeBridgeEnabled =
+		FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationSiege);
+
 	internal static string MeetingTauntRuleBlockMarker => "\u3010\u9644\u52a0\u89c4\u5219:meeting_taunt\u3011";
 
 	internal static bool IsActive()
 	{
-		return IsTownOrCastleAftermathActive() || VillageAftermathBehavior.IsActive();
+		return ConversationSiegeBridgeEnabled
+			&& (IsTownOrCastleAftermathActive() || VillageAftermathBehavior.IsActive());
 	}
 
 	private static bool IsTownOrCastleAftermathActive()
 	{
-		return SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal();
+		return ConversationSiegeBridgeEnabled
+			&& SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal();
 	}
 
 	internal static bool ShouldUseExclusivePreprocessRuleRouting()
@@ -163,7 +172,8 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldUseTownPostprocessDecisionContract()
 	{
-		return GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
+		return ConversationSiegeBridgeEnabled
+			&& GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
 	}
 
 	internal static string ValidateTownPostprocessDecision(string normalizedTags)
@@ -222,7 +232,8 @@ internal static class AfGcczShoutBridge
 
 	internal static bool ShouldUseTownNpcResponseBudgetForExternal()
 	{
-		return GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
+		return ConversationSiegeBridgeEnabled
+			&& GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
 	}
 
 	internal static bool TryClaimNpcResponseForExternal(
@@ -234,9 +245,20 @@ internal static class AfGcczShoutBridge
 		string source,
 		out SiegeNpcResponseDecision decision)
 	{
+		int configuredLimit = DuelSettings.GetGcczNpcResponseLimit();
+		if (!ConversationSiegeBridgeEnabled)
+		{
+			decision = new SiegeNpcResponseDecision(
+				false,
+				SiegeNpcResponseDecisionReason.InactiveScene,
+				SiegeNpcResponseLimitProfile.ClampResponseLimit(configuredLimit),
+				0,
+				0);
+			return false;
+		}
+
 		bool activeTownStage = GetTownDialoguePhase() != TownAfDialoguePhase.Inactive;
 		bool unlimited = DuelSettings.IsGcczNpcResponseUnlimitedEnabled();
-		int configuredLimit = DuelSettings.GetGcczNpcResponseLimit();
 		lock (NpcResponseBudgetLock)
 		{
 			if (activeTownStage && !NpcResponseBudget.IsSceneActive)
@@ -289,7 +311,7 @@ internal static class AfGcczShoutBridge
 	{
 		try
 		{
-			if (shoutPromptContext == null)
+			if (!ConversationSiegeBridgeEnabled || shoutPromptContext == null)
 			{
 				return;
 			}
@@ -326,7 +348,7 @@ internal static class AfGcczShoutBridge
 		bool replyIsDirectPlayerResponse,
 		string playerText)
 	{
-		if (!selected)
+		if (!ConversationSiegeBridgeEnabled || !selected)
 		{
 			return null;
 		}
@@ -346,7 +368,7 @@ internal static class AfGcczShoutBridge
 		bool replyIsDirectPlayerResponse,
 		string playerText = null)
 	{
-		if (!selected)
+		if (!ConversationSiegeBridgeEnabled || !selected)
 		{
 			return string.Empty;
 		}
@@ -367,7 +389,7 @@ internal static class AfGcczShoutBridge
 		bool useTownContract,
 		IEnumerable<PostprocessRuleEntry> rules)
 	{
-		if (!useTownContract)
+		if (!ConversationSiegeBridgeEnabled || !useTownContract)
 		{
 			return userPrompt ?? string.Empty;
 		}
@@ -473,7 +495,7 @@ internal static class AfGcczShoutBridge
 
 	internal static string NormalizePostprocessTags(bool selected, string raw, List<PostprocessRuleEntry> rules)
 	{
-		if (!selected)
+		if (!ConversationSiegeBridgeEnabled || !selected)
 		{
 			return string.Empty;
 		}
@@ -492,6 +514,12 @@ internal static class AfGcczShoutBridge
 		string playerText = null,
 		string speakerReplyText = null)
 	{
+		if (!ConversationSiegeBridgeEnabled)
+		{
+			actionHandled = false;
+			return false;
+		}
+
 		if (VillageAftermathBehavior.IsActive())
 		{
 			return VillageAftermathBehavior.TryProcessActionTagsForExternal(
@@ -513,6 +541,12 @@ internal static class AfGcczShoutBridge
 
 	internal static bool TryProcessDirectSceneCommand(int targetAgentIndex, string playerText, bool replyIsDirectPlayerResponse, out bool actionHandled)
 	{
+		if (!ConversationSiegeBridgeEnabled)
+		{
+			actionHandled = false;
+			return false;
+		}
+
 		return SiegeAiInterventionBehavior.TryProcessDirectSceneCommandForExternal(targetAgentIndex, playerText, replyIsDirectPlayerResponse, out actionHandled);
 	}
 
@@ -525,6 +559,11 @@ internal static class AfGcczShoutBridge
 
 	internal static bool CaptureSharedReliefGoldTransfer(int targetAgentIndex, int goldAmount)
 	{
+		if (!ConversationSiegeBridgeEnabled)
+		{
+			return false;
+		}
+
 		return SiegeAiInterventionBehavior.RecordSharedCivilianReliefTransferForExternal(
 			targetAgentIndex,
 			goldAmount,
@@ -537,6 +576,11 @@ internal static class AfGcczShoutBridge
 
 	internal static bool CaptureSharedReliefItemTransfer(int targetAgentIndex, string itemId, int itemAmount, ItemObject item, int unitValue)
 	{
+		if (!ConversationSiegeBridgeEnabled)
+		{
+			return false;
+		}
+
 		return SiegeAiInterventionBehavior.RecordSharedCivilianReliefTransferForExternal(
 			targetAgentIndex,
 			0,

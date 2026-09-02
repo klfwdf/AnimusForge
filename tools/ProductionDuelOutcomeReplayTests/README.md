@@ -60,14 +60,20 @@ The replay locks:
 
 The normal entry point first calls the repository's official unified Stage build
 with `-Stage` only, then runs the audit. It never deploys to the game directory.
+When rebuilding, pass the actual Bannerlord installation root explicitly (or set
+`BANNERLORD_ROOT`); the wrapper has no machine-specific game or `NEW-10` default.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File `
-  .\tools\ProductionDuelOutcomeReplayTests\Invoke-ProductionDuelOutcomeReplay.ps1
+  .\tools\ProductionDuelOutcomeReplayTests\Invoke-ProductionDuelOutcomeReplay.ps1 `
+  -BannerlordRoot "<Bannerlord root>"
 ```
 
-All build paths are parameters. The defaults match the current G-drive
-workspace; pass explicit values on another machine.
+All build paths are parameters. `-WorkshopContentDir` is optional (or can be supplied
+through `WORKSHOP_CONTENT_DIR`). `-RuntimeDependencyDir` is optional: when omitted,
+the official unified build script resolves and validates the private runtime DLL
+set from the source or installed unified module. Pass it explicitly only when a
+separate, complete dependency directory is intended.
 
 ## Intentional red-stage inspection
 

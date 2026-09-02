@@ -53,7 +53,7 @@ def sync_bindings(source: str) -> set[tuple[str, str]]:
 def production_sources() -> list[Path]:
     paths = []
     for path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "bin", "obj"} for part in path.parts):
+        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in path.parts):
             continue
         if any("原版游戏本体代码" in part for part in path.parts):
             continue

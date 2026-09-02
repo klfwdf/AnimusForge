@@ -1407,7 +1407,8 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "AnimusForgeNativeConversationOverlay.cs",
-        "TtsEngine.cs"
+        "TtsEngine.cs",
+        "SceneActionsIntegrationBoundary.cs"
       ],
       "requiredCases": [
         "EACH_OWNER_ALONE",
