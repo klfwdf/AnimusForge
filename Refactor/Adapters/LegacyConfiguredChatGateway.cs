@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Refactor.Adapters;
@@ -148,6 +149,22 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         if (request == null)
         {
             throw new ArgumentNullException(nameof(request));
+        }
+
+        if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway))
+        {
+            return CreateExchange(
+                0,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                "bridge-disabled",
+                new LlmGenerateResult(
+                    LlmResultStatus.NonRetryableFailure,
+                    string.Empty,
+                    0,
+                    0,
+                    "bridge.conversation_gateway_disabled"));
         }
 
         LlmProviderSnapshot provider = request.Provider;

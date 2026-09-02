@@ -6,6 +6,8 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="..\..\Refactor\Contracts\FeatureBridgeContracts.cs" Link="Contracts\FeatureBridgeContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\InteractionPipeline.cs" Link="Contracts\InteractionPipeline.cs" />
@@ -19,6 +21,7 @@
     <Compile Include="..\..\Refactor\Runtime\DetachedInteractionHost.cs" Link="Runtime\DetachedInteractionHost.cs" />
     <Compile Include="..\..\Refactor\Runtime\RuntimeConfigSnapshotStore.cs" Link="Runtime\RuntimeConfigSnapshotStore.cs" />
     <Compile Include="..\..\Refactor\Runtime\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
+    <Compile Include="..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyInteractionPipelineComposition.cs" Link="Adapters\LegacyInteractionPipelineComposition.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyDetachedRuleSelector.cs" Link="Adapters\LegacyDetachedRuleSelector.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyPromptPackageAdapter.cs" Link="Adapters\LegacyPromptPackageAdapter.cs" />

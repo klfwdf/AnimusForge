@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
@@ -32,6 +33,10 @@ public partial class MyBehavior
     {
         try
         {
+            if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.MemorySocialReports))
+            {
+                return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
+            }
             if (!TWParallel.IsMainThread())
             {
                 return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
@@ -93,6 +98,10 @@ public partial class MyBehavior
     {
         try
         {
+            if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.MemorySocialReports))
+            {
+                return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
+            }
             if (!TWParallel.IsMainThread())
             {
                 return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;
@@ -125,6 +134,10 @@ public partial class MyBehavior
     {
         try
         {
+            if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.MemorySocialReports))
+            {
+                return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
+            }
             if (!TWParallel.IsMainThread())
             {
                 return WeeklyMemoryMaterialOutcomeOperationStatus.Rejected;

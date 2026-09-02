@@ -284,6 +284,16 @@ public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IReque
                 return InteractionStatus.RejectedByValidation;
             }
 
+            bool hasEconomyActions = actionPlan.Actions.Any(LegacyEconomyRewardDebtAdapter.IsEconomyAction);
+            if (hasEconomyActions)
+            {
+                if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ActionEconomy))
+                {
+                    _executionErrorCode = "bridge.action_economy_disabled";
+                    return InteractionStatus.RejectedByValidation;
+                }
+            }
+
             ActionPlan delegatedPlan = actionPlan;
             string economyOnlyActionFingerprint = string.Empty;
             EconomyRewardDebtReplayPlan economyPlan = null;

@@ -270,11 +270,11 @@
         "STREAM_END"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Conversation gateway remains behind the existing facade and provider contracts."
+        "state": "wired",
+        "entryPath": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "symbol": "GenerateExchangeAsync",
+        "frequency": "event",
+        "notes": "Configured generation requests pass one immutable allow-list gate before credentials, payload construction, or network I/O; validation-only sends remain owner-controlled."
       }
     },
     {
@@ -318,11 +318,11 @@
         "STARTED_NO_REPLAY"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Opt-in action commit remains explicit; default native callers are unchanged."
+        "state": "wired",
+        "entryPath": "Refactor/Runtime/InteractionResultCommitter.cs",
+        "symbol": "Commit",
+        "frequency": "event",
+        "notes": "The shared main-thread committer rejects ActionPlan execution when the explicit action bridge is disabled; default native callers are unchanged."
       }
     },
     {
@@ -366,11 +366,11 @@
         "MEMORY_FAILURE"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Memory receipts remain owned by the existing commit/recovery boundaries."
+        "state": "wired",
+        "entryPath": "Refactor/Runtime/InteractionResultCommitter.cs",
+        "symbol": "Commit",
+        "frequency": "event",
+        "notes": "The same main-thread commit boundary gates history/memory receipt publication before the existing committer; no new save key or coordinator is introduced."
       }
     },
     {
@@ -414,11 +414,11 @@
         "UNKNOWN_AFTER_START"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Economy replay remains opt-in and preserves whole-plan/unknown-after-start semantics."
+        "state": "wired",
+        "entryPath": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "symbol": "ValidateAndExecuteCore",
+        "frequency": "event",
+        "notes": "Economy actions are checked after pure raw-plan validation and before any Economy owner or legacy callback side effect; whole-plan and unknown-after-start semantics remain unchanged."
       }
     },
     {
@@ -612,11 +612,11 @@
         "DUPLICATE_COMPLETION"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Courier has no production default Bridge caller; its explicit reservation and receipt paths remain opt-in."
+        "state": "wired",
+        "entryPath": "CourierDeliveryBehavior.cs",
+        "symbol": "IsCourierBridgeEnabled",
+        "frequency": "event",
+        "notes": "All explicit Courier detached facade/reservation entry points share one gate; no default Courier caller or delivery/return state-machine cutover is claimed."
       }
     },
     {
@@ -660,11 +660,11 @@
         "OPEN_LOAD_UNKNOWN"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Weekly and notoriety owners retain their exact identity/readback gates; no shared coordinator is enabled."
+        "state": "wired",
+        "entryPath": "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+        "symbol": "IsSocialReportsBridgeEnabled",
+        "frequency": "event",
+        "notes": "The exact Notoriety finalize seam and weekly receipt owner entry points are gated; both remain bounded opt-in sidecars and real weekly/notoriety sequencing is still blocked."
       }
     },
     {
@@ -708,11 +708,11 @@
         "PROVIDER_MISSING"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Knowledge/profile authority remains in the existing gateway and campaign behavior owners."
+        "state": "wired",
+        "entryPath": "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+        "symbol": "GenerateAsync",
+        "frequency": "event",
+        "notes": "Knowledge/RAG generation is gated before delegation to the configured transport; prompt, index, profile and deterministic fallback authority remain with existing owners."
       }
     },
     {

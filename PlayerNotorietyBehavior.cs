@@ -263,6 +263,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!IsSocialReportsBridgeEnabled())
+			{
+				return;
+			}
 			Instance?.FinalizeConversation(hero);
 		}
 		catch
@@ -274,6 +278,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!IsSocialReportsBridgeEnabled())
+			{
+				return;
+			}
 			Instance?.FinalizeConversation(characters);
 		}
 		catch

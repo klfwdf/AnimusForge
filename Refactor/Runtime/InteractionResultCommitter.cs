@@ -55,6 +55,14 @@ public sealed class InteractionResultCommitter
         {
             return Rejected("missing_action_executor");
         }
+        if (hasActions && !FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationAction))
+        {
+            return Rejected("bridge.conversation_action_disabled", InteractionStatus.NonRetryableFailure);
+        }
+        if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ActionMemory))
+        {
+            return Rejected("bridge.action_memory_disabled", InteractionStatus.NonRetryableFailure);
+        }
         string requestId;
         string fingerprint;
         string actionFingerprint;

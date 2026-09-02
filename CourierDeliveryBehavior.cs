@@ -328,6 +328,11 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	public static CourierDeliveryBehavior Instance { get; private set; }
 
+	private static bool IsCourierBridgeEnabled()
+	{
+		return FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationCourier);
+	}
+
 	/// <summary>
 	/// Explicit opt-in detached facade for an outbound Courier reply. The
 	/// existing Courier session state machine remains authoritative for delivery
@@ -339,6 +344,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		ILlmGateway gateway,
 		string sessionId)
 	{
+		if (!IsCourierBridgeEnabled())
+		{
+			return null;
+		}
 		return LegacyInteractionSnapshotAdapters.CreateCourierInteractionFacade(
 			ports,
 			gateway,
@@ -355,6 +364,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		string sessionId,
 		int maxActions = 64)
 	{
+		if (!IsCourierBridgeEnabled())
+		{
+			return null;
+		}
 		CourierDeliveryBehavior instance = Instance;
 		if (instance == null || string.IsNullOrWhiteSpace(sessionId))
 		{
@@ -407,6 +420,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		Func<Task<string>> fallbackToLegacy,
 		CancellationToken cancellationToken)
 	{
+		if (!IsCourierBridgeEnabled())
+		{
+			return RunCourierDetachedRefactorFallbackAsync("bridge.conversation_courier_disabled", fallbackToLegacy);
+		}
 		CourierDeliveryBehavior instance = Instance;
 		if (instance == null)
 		{
@@ -438,6 +455,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		Func<Task<string>> fallbackToLegacy,
 		CancellationToken cancellationToken)
 	{
+		if (!IsCourierBridgeEnabled())
+		{
+			return RunCourierDetachedRefactorFallbackAsync("bridge.conversation_courier_disabled", fallbackToLegacy);
+		}
 		CourierDeliveryBehavior instance = Instance;
 		if (instance == null)
 		{
@@ -733,6 +754,10 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		ILlmGateway gateway,
 		string sessionId)
 	{
+		if (!IsCourierBridgeEnabled())
+		{
+			return null;
+		}
 		return LegacyInteractionSnapshotAdapters.CreateCourierInteractionFacade(
 			ports,
 			gateway,
