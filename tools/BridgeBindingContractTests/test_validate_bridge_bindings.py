@@ -61,6 +61,12 @@ class BridgeBindingManifestTests(unittest.TestCase):
 
         self.assert_config_rejected(mutate)
 
+    def test_runtime_config_rejects_noncanonical_id_case(self) -> None:
+        def mutate(config: dict) -> None:
+            config["enabled"][0] = config["enabled"][0].upper()
+
+        self.assert_config_rejected(mutate)
+
     def test_runtime_config_rejects_blocked_id(self) -> None:
         def mutate(config: dict) -> None:
             config["enabled"].append("scene-duel")

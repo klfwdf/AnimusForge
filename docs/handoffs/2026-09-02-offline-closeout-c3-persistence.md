@@ -1,6 +1,6 @@
 # AF 主体重构：C3 与 Persistence 离线收尾交接
 
-日期：2026-09-02
+日期：2026-09-02；2026-09-03追加 Bridge 接线收尾
 
 工作区：`F:\AnimusForge-main`
 
@@ -17,6 +17,24 @@ Persistence Identity 的扫描误报已修复，阶段 8 的 20 域/16 Bridge/cl
 本轮没有启动 Bannerlord，没有进入 Campaign/Mission，没有读取或写入真实存档，没有验证 live Economy、
 AFEF、Notoriety、Duel 真实副作用，没有切默认入口或删除 facade。用户随后明确授权了一次 Debug
 编译与统一模块测试部署；该部署不等同于 Release/发布验收，且本轮仍未启动游戏。
+
+## 2026-09-03 Bridge 接线收尾追加
+
+本追加覆盖上一版 Bridge 段落之后的离线接线与安全修复；上一版 `16 bindings / 3 wired / 13 declared-only`
+是 2026-09-02 历史快照，当前结果为 `16 bindings / 10 wired / 6 declared-only / configEnabled=10`。
+
+- 新增的 source-bound Gate 覆盖 `conversation-gateway`、`conversation-action`、`action-memory`、
+  `action-economy`、`policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
+  `memory-social-reports`、`gateway-knowledge-profile`、`ui-runtime-integration`。
+- `bootstrap-host`、`host-runtime`、`runtime-game-adapter`、`persistence-domain-owners`、`scene-duel`、
+  `tools-content-release` 仍是 declared-only；没有运行时 caller，不能当作已接入或已验收。
+- `FeatureBridgeRuntime` 的配置路径只接受带 `SubModule.xml`/`ModuleData` 的 `AnimusForge` 模块边界；
+  缺失配置使用内建审阅默认值，损坏配置、未知字段、版本错误和非规范大小写 ID 均 fail-closed。
+  Action/Memory Bridge 禁用继续保持拒绝/`NoOp`，不触发 legacy 副作用重放。
+- Bridge validator `PASS`、Bridge Python 单测 `15/15`，以及 PhaseEightReadiness、BridgeFixture、
+  Composition、ModuleCatalog、Foundation、GameAdapter、Persistence/Profile、LiveHostReadiness、
+  Interaction/Duel/Economy/Gateway/Knowledge/Production suites 与双 API Debug/Release/Bootstrap Stage
+  均通过；真实 Campaign/Mission、LIVE/SAVE 仍未运行。
 
 ## C3：LiveHostReadinessAudit explicit-root portability
 
@@ -62,16 +80,21 @@ AFEF、Notoriety、Duel 真实副作用，没有切默认入口或删除 facade�
 
 新增 `docs/phase8/bridge-binding-manifest.json` 和
 `tools/BridgeBindingContractTests/validate_bridge_bindings.py`，逐路径/逐 symbol 对齐 canonical
-16 组 Bridge。当前状态为 `16 bindings / 3 wired / 13 declared-only`；`declared-only` 只表示
-合同、owner 和 required cases 已登记，不表示存在运行时 caller。
+16 组 Bridge。2026-09-02 历史状态为 `16 bindings / 3 wired / 13 declared-only`；当前状态为
+`16 bindings / 10 wired / 6 declared-only`；`declared-only` 只表示合同、owner 和 required cases
+已登记，不表示存在运行时 caller。
 
-仅三个已经存在的边界接入 `FeatureBridgeRuntime`：
+当前已有十个边界接入 `FeatureBridgeRuntime`：
 
-- `AfGcczShoutBridge.IsActive`：conversation-siege，事件/对话边界；禁用时回到 native 路径；
-- `WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved`：policy-world-diplomacy，事件边界；
-  跨域通知失败不影响 Policy/Diplomacy 各自 owner；
-- `SceneActionsIntegrationBoundary.InitializeRuntime`：ui-runtime-integration，启动期一次性；
-  可选集成失败时保持 native UI/runtime。
+- `LegacyConfiguredChatGateway.GenerateExchangeAsync`：conversation-gateway，网络请求前一次性 allow-list Gate，禁用回 Native；
+- `InteractionResultCommitter.Commit`：conversation-action/action-memory，共享主线程边界，禁用保持拒绝/NoOp；
+- `LegacyNativeActionPlanExecutor.ValidateAndExecuteCore`：action-economy，副作用前校验，禁用回 NoOp；
+- `WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved`：policy-world-diplomacy，事件边界，owner 独立；
+- `AfGcczShoutBridge.IsActive`：conversation-siege，事件/对话边界，禁用回 native；
+- `CourierDeliveryBehavior.IsCourierBridgeEnabled`：conversation-courier，显式 detached 入口共享 Gate；
+- `PlayerNotorietyBehavior.ConversationOutcomes.IsSocialReportsBridgeEnabled`：memory-social-reports，exact finalize/weekly sidecar Gate；
+- `LegacyKnowledgeRagGateway.GenerateAsync`：gateway-knowledge-profile，委托 configured transport 前 Gate；
+- `SceneActionsIntegrationBoundary.InitializeRuntime`：ui-runtime-integration，启动期一次性，失败保持 native UI/runtime。
 
 Gate 不持有 Bannerlord live 对象、不读取存档或文件、不扫描程序集，也没有新增每帧/全量 Tick 工作。
 绑定校验及 Debug 双 API Stage 均通过；真实 Bridge/LIVE/SAVE 仍未运行。
@@ -84,8 +107,8 @@ Gate 不持有 Bannerlord live 对象、不读取存档或文件、不扫描程�
 - 安装目标：`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`；事务部署退出码 `0`，部署当时安装模块与项目 Stage 三份 DLL 哈希完全一致。
 - 部署时 SHA-256：Bootstrap `BF57E46CF3C095FB3205DBA4A7428339A1C574BC30B3B8DE882822E4ACC2AAE9`；1.3 `5F66A4932AB1948BBB71D38C80C6AADC63AD3F5F508004B1F2469FB13544E970`；1.4 `D28931E9129E3E6F441BC5297466BA99FC886BD9DD15A5C3484B7EFCF598D16C`。
 - `SubModule.xml` 仍只声明 `AnimusForge.Bootstrap.dll`；合并 `PlayerExports` 4,753 个文件；既有 `Logs`、`PlayerExports`、`ONNX` 保留；临时部署/备份目录已清理，未发现旧版模块目录。
-- 随后重建当前 Debug Stage 的实现哈希为 1.3 `BB157A03F97F606158203E3A68F53AEC7687F6BFD5850728760446285CFC2ABE`、1.4 `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`；安装目录仍为部署时实现哈希，只有 Bootstrap 相同。readiness 的 `installedMatchesStage=true` 仅比较 Bootstrap，不能证明三份 DLL 一致；实机前须重新部署当前 Stage。
-- readiness：`status=PASS`、`installedMatchesStage=true`、`gameRunning=false`。这只证明工具检查通过，不代表 Campaign/Mission 或 LIVE/SAVE 通过。
+- 2026-09-02 当时重建的 Debug Stage 实现哈希为 1.3 `BB157A03F97F606158203E3A68F53AEC7687F6BFD5850728760446285CFC2ABE`、1.4 `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`；安装目录仍为部署时实现哈希。2026-09-03 收尾后项目内 Stage 已重新生成（精确哈希见 `docs/handoffs/2026-09-03-bridge-binding-closeout.md`），安装目录未改，实机前仍须重新部署。
+- readiness：`status=PASS`、`installedMatchesStage=false`、`gameRunning=false`。这只证明工具检查通过，不代表 Campaign/Mission 或 LIVE/SAVE 通过；false 正确反映当前安装与项目 Stage 尚未对齐。
 
 ## Release 离线验证
 

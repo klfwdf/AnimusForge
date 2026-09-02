@@ -1,6 +1,6 @@
 # AF 阶段 8：完整 20 领域验收包
 
-日期：2026-09-01。切片：`LOCAL-8-A`。本文件是**准备态验收包**，不是发布许可。
+日期：2026-09-01；2026-09-03追加 Bridge 接线收尾。切片：`LOCAL-8-A`。本文件是**准备态验收包**，不是发布许可。
 
 ## 最准确结论
 
@@ -11,6 +11,12 @@
 > readiness 工具，可以并行采集证据；删除旧入口、默认切换、Release/最终部署和发布仍为
 > `BLOCKED`。本机另有一次用户明确授权的 Debug 测试部署，但不构成阶段 8 的发布或 LIVE/SAVE 证据。
 
+> **2026-09-03 Bridge 接线收尾追加：**当前 `FeatureBridgeRuntime` 与既有生产入口的离线绑定已审阅
+> 并更新为 `16 bindings / 10 wired / 6 declared-only`。本次 wired 仅表示 source-bound Gate 已在
+> 入口调用，不表示真实 Campaign/Mission、LIVE 或 SAVE 验收；六组 `declared-only` 仍不得宣称已接入。
+> 项目内 Debug/Release Stage 已重新生成但未部署；只读审计为 `status=PASS`、
+> `installedMatchesStage=false`、`gameRunning=false`。本轮没有启动游戏、读取/写入真实存档、部署或切换默认入口。
+
 ## Git 与范围
 
 - 已推送共同基线：`9566bf3bec0642ccef6764db6b6630edc195300a`。
@@ -20,7 +26,8 @@
 - 未认领领域 owner fail-closed：`f4a02018e7fdc11f4fb8faf3505bc2743669a081`。
 - post-review topology/symbol/rollback闭合：`6b1d16f12bc787208126c5c356dadffaecf41dcd`。
 - canonical Bridge与cleanup audit最终闭合：`8bdd936345363d869cbdd267c54006cc20a3a694`。
-- 本轮只改纯 Python 工具、fixture/catalog 和文档；没有修改生产 C#、默认入口、
+- `LOCAL-8-A` 准备链的历史切片只改纯 Python 工具、fixture/catalog 和文档；2026-09-03
+  Bridge 收尾另修改了 `Refactor/Runtime/FeatureBridgeRuntime.cs` 与其纯契约测试。两轮均未修改默认入口、
   `SyncData` key/type、玩法、GCCZ/NEW-10、游戏目录、ONNX 或玩家存档。
 
 ## 权威材料
@@ -112,7 +119,9 @@ Foundation 全部 18 个 Composition case 也必须在 SAVE 层覆盖；通用 s
 `fallback`、`apiLines` 和 required cases。`runtimeBinding.state` 明确区分：
 
 - `wired`：仅限已经审阅并在生产入口调用 `FeatureBridgeRuntime` Gate 的
-  `conversation-siege`、`policy-world-diplomacy`、`ui-runtime-integration`；
+  `conversation-gateway`、`conversation-action`、`action-memory`、`action-economy`、
+  `policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
+  `memory-social-reports`、`gateway-knowledge-profile`、`ui-runtime-integration`；
 - `declared-only`：合同和责任已登记，但没有运行时 caller，不能当作功能已接入或已验收。
 
 纯源代码校验器会拒绝绝对/遍历路径、生成物、终端 UI 文件、缺失 symbol、热路径频率和未经审阅的
@@ -123,8 +132,8 @@ python -B .\tools\BridgeBindingContractTests\validate_bridge_bindings.py
 python -B -m unittest discover -s .\tools\BridgeBindingContractTests -p 'test_*.py' -v
 ```
 
-当前离线状态为 `16 bindings / 3 wired / 13 declared-only`；这不是 LIVE/SAVE 证据，也不授权
-默认切换、删除、部署或发布。
+2026-09-02 的历史快照为 `16 bindings / 3 wired / 13 declared-only`；当前离线状态为
+`16 bindings / 10 wired / 6 declared-only`。两者都不是 LIVE/SAVE 证据，也不授权默认切换、删除、部署或发布。
 
 ## 清理候选
 
