@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using AnimusForge.PolicyEffects;
 using System.IO;
 using System.Text;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using Bannerlord.UIExtenderEx;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -40,6 +42,14 @@ public class SubModule : MBSubModuleBase
 	protected override void OnSubModuleLoad()
 	{
 		base.OnSubModuleLoad();
+		if (FeatureBridgeRuntime.Initialize(out string featureBridgeReason))
+		{
+			Logger.LogTrace("SubModule", ">>> Feature bridge catalog initialized: " + featureBridgeReason);
+		}
+		else
+		{
+			Logger.LogTrace("SubModule", ">>> Feature bridge catalog failed closed: " + featureBridgeReason);
+		}
 		SceneActionsIntegrationBoundary.InitializeRuntime();
 		if (_uiExtenderInitialized)
 		{

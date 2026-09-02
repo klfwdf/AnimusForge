@@ -2,9 +2,9 @@
 
 日期：2026-09-02
 
-工作区：`G:\AFMOD\AF-REFACTOR`
+工作区：`F:\AnimusForge-main`
 
-本地分支：`codex/af-main-refactor-continuation-20260831`
+本地分支：`refactor/prepare-af-restructure`
 
 远端交接分支：`origin/refactor/prepare-af-restructure`
 
@@ -112,6 +112,57 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
 - ModuleCatalog：8 modules / 3 profiles / 16 invalid cases / 8 health states PASS。
 - all-missing真实项目报告仍为`BLOCKED`，不是失败误报，也不是发布许可。
 
+### LOCAL-7-C3 与 Persistence 离线收尾
+
+- `LiveHostReadinessAudit` 已改为显式必填 `--game-root`，删除 F 盘默认路径并补纯 fixture/CLI
+  测试；C3 测试 `4/4 PASS`，Python 编译与 `git diff --check` 通过。
+- Persistence/Profile/Config scanner 已排除 `.tmp`、artifacts、缓存和依赖输出，支持跨 partial
+  文件解析唯一常量；catalog 同步至 44 个 flattened dictionary key。
+- Persistence/Profile/Config：95 literal / 121 typed / 8 types / 3 profiles / 44 flattened，
+  Persistence Identity：99 SyncData / 35 CampaignBehavior / AnimusForge / Bootstrap-only，均 PASS。
+- 阶段8只读复核保持 20 domains / 16 bridges / 18 cleanup candidates，owner 与 entry 仍未认领；
+  `all-missing` 仍 `BLOCKED` / exit 2。
+- 详见 `docs/handoffs/2026-09-02-offline-closeout-c3-persistence.md`。
+
+### Bridge 配置与安全接线
+
+- 新增 `docs/phase8/bridge-binding-manifest.json`，闭合阶段 8 的 16 组 Bridge：逐组记录
+  domains、topology、owner、真实 entry paths/symbols、实现状态、fallback、API line 和 required
+  cases。
+- 新增 `tools/BridgeBindingContractTests/validate_bridge_bindings.py` 及 7 个纯源代码契约测试；
+  当前结果 `16 bindings / 3 wired / 13 declared-only PASS`。`declared-only` 只表示合同已登记，
+  不表示运行时功能已接入。
+- 仅三个已有入口接入一次性/事件边界 Gate：`AfGcczShoutBridge`（conversation-siege）、
+  `WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved`（policy-world-diplomacy）和
+  `SceneActionsIntegrationBoundary.InitializeRuntime`（ui-runtime-integration）。失败或禁用时
+  保留原版/各自 owner 的 fallback；没有新 Tick 扫描、网络、存档或 live 对象跨边界。
+- 1.3/1.4/Bootstrap Debug Stage 已重新编译，均 `0 warning / 0 error`；尚未启动游戏或读取真实存档。
+
+### 用户授权的 Debug 编译与测试部署（本地接续）
+
+- 本地实际来源：`F:\AnimusForge-main` 的 `refactor/prepare-af-restructure`，HEAD
+  `109835cd18fee09ebd591fa254f0af1aa913acb4`；不是 `main`，也未切换默认分支。
+- 使用统一 `build_single_module.ps1 -Configuration Debug -Deploy`；1.3 引用为
+  `v1.3.15.110062`，1.4 引用为 `v1.4.6.115628`，1.3/1.4/Bootstrap 均 `0 warning / 0 error`。
+- 安装目标：`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`。
+  事务部署退出码 `0`；部署当时的 Bootstrap、1.3、1.4 DLL 与当时项目 Stage 哈希完全一致：
+  `BF57E46CF3C095FB3205DBA4A7428339A1C574BC30B3B8DE882822E4ACC2AAE9`、
+  `5F66A4932AB1948BBB71D38C80C6AADC63AD3F5F508004B1F2469FB13544E970`、
+  `D28931E9129E3E6F441BC5297466BA99FC886BD9DD15A5C3484B7EFCF598D16C`。
+- `SubModule.xml` 仅加载 Bootstrap；合并 4,753 个 `PlayerExports` 文件，保留既有 Logs/PlayerExports/ONNX，临时部署与备份目录已清理，未发现旧版模块目录。
+- 随后的离线日志边界修复触发了当前 Debug Stage 重建；当前 Stage 实现哈希为
+  `BB157A03F97F606158203E3A68F53AEC7687F6BFD5850728760446285CFC2ABE`（1.3）和
+  `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`（1.4），而安装目录仍为上面的部署时哈希；只有 Bootstrap 仍相同。因此 readiness 的
+  `installedMatchesStage=true` 仅反映工具当前比较的 Bootstrap，不足以证明三份 DLL 一致；实机测试前必须在明确授权下重新部署当前已核验 Stage。
+- 这是用户明确授权的 Debug 测试安装，不是 Release、默认切换、最终发布或真实 LIVE/SAVE 验收；本轮没有启动游戏。
+
+### Release 离线构建、Duel 回放与 ZIP
+
+- 使用统一 `build_single_module.ps1 -Configuration Release -Stage` 重建当前源码的 1.3、1.4、Bootstrap；三项均 `0 warning / 0 error`，且未修改游戏目录。
+- Production Duel Release replay：`35/35 PASS`，1.3/1.4 parity 通过；该回放只读取生产 Stage 元数据/IL，不启动 Bannerlord、不读取存档。
+- ZIP：`F:\AnimusForge-main\.tmp\packages\release-final-20260902\AnimusForge_v1.3.7.2_20260902_100952_233.zip`，4919 entries，SHA-256 `1215A88666E6FCCD949BE413C75719B2C96BCA061546FCAD86DB9AB0F805ACE5`；Bootstrap-only XML、双实现 marker/hash、ONNX/旧模块排除均通过。
+- 这是 Release 的离线工件证据，不是实际安装、Campaign/Mission、LIVE/SAVE、默认切换或发布签收。
+
 ## 制作组接下来做什么
 
 1. 先获取远端，不覆盖自己已有工作：
@@ -126,9 +177,10 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
    Memory/AFEF、Fourberie和旧档往返证据。
 4. 其他领域按`docs/phase8/full-domain-acceptance-package.md`补20领域LIVE/SAVE evidence、owner assignment、
    entry coverage与rollback drill。
-5. 若继续自动化原计划，下一安全工具切片是`LOCAL-7-C3`：让LiveHostReadinessAudit要求显式
-   `--game-root`并用纯fixture/CLI验证；自动化当前已暂停，必须由接手人明确恢复或人工执行。
-6. 所有真实门禁完成后，另行评审default cutover、旧facade删除、最终包和游戏部署；不得提前执行。
+5. `LOCAL-7-C3` 与 Persistence 离线收尾已完成；自动化仍暂停。实机人员应先在明确授权下把当前
+   已核验 Stage 重新部署，再在隔离存档按20领域验收包补LIVE/SAVE与rollback drill，不能把本轮
+   离线证据提升为真实验收。
+6. 所有真实门禁完成后，另行评审default cutover、旧facade删除、Release/最终包和再次部署；不得提前执行。
 
 ## 尚未完成 / 不得误报
 
@@ -137,7 +189,11 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
 - live金币、物品、Merchant、债务、Memory/AFEF/Notoriety：NOT-RUN。
 - Duel live死亡、stake/debt、Fourberie、退出/取消时序：NOT-RUN。
 - WorldMap、Diplomacy、Siege/GCCZ、周报、主动NPC、Issue等完整领域LIVE/SAVE签收：未完成。
-- 默认Native/SceneShout/Courier切换、facade删除、最终打包、安装和发布：BLOCKED。
+- 默认Native/SceneShout/Courier切换、facade删除、最终 Release 安装和发布：BLOCKED；当前
+  已生成 Release 离线 ZIP，但 Debug 测试模块的实现 DLL 相对当前 Stage 已过时，不构成发布许可。
+- 本机 5 个 net6 smoke 均通过（3、PASS、269、1168、453）；ActionPostprocessPromptLab 与
+  PreprocessTopicPromptLab net10 smoke 均通过。PlayerExportsEditor smoke 因现有内容校验错误退出码
+  `1`（RagShortText 长度及 JSON 字段类型），不是运行时缺失；未修改生产 PlayerExports 数据。
 
 ## 回滚
 
@@ -149,12 +205,15 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
 - Shout C2实现：`git revert ae49e3c8`。
 - 文档提交独立revert；源码revert不会撤销游戏/存档副作用，也不会清理ignored Stage、runner output或
   validation目录。回滚后相关产物全部视为stale，必须重新构建/验证。
-- 本次没有部署或游戏文件写入，所以无需恢复游戏目录、NEW-10、GCCZ或ONNX。
+- 本次 Debug 部署已通过事务备份/替换完成，部署脚本生成的临时 staging/backup 已清理；当前回滚只允许
+  对明确的 `Modules\\AnimusForge` 目标执行 scoped 事务恢复或重新部署已核验 artifact，不得用 Git
+  回滚代替游戏目录回滚。源码回滚不会撤销可能产生的存档副作用；本轮未启动游戏，未产生新的存档副作用。
 
 ## 新任务启动语
 
-> 请先读取 `G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`、
+> 请先读取 `F:\AnimusForge-main\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`、
 > `docs\handoffs\2026-09-02-stage7-stage8-team-brief.md`和公共执行台账；fetch
 > `origin/refactor/prepare-af-restructure`但不要覆盖本地未提交内容。阶段7保持VERIFY、阶段8执行保持
-> BLOCKED。优先由实机人员补LIVE/SAVE；若只做可自主离线工作，则从LOCAL-7-C3显式game-root工具
-> 边界开始。未经新的具体授权，不切default、不删facade、不部署、不覆盖游戏、不force push。
+> BLOCKED。C3 与 Persistence 离线收尾已完成；Debug 测试模块已按明确授权部署，但尚未启动游戏。
+> 优先由实机人员先重新部署当前已核验 Stage 后补LIVE/SAVE；未经新的具体授权，不切default、不删facade、不再部署/覆盖游戏、
+> 不force push。

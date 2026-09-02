@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import subprocess
 from pathlib import Path
 
@@ -51,7 +50,12 @@ def find_save_dirs() -> list[Path]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Read-only Bannerlord live-host readiness audit")
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[2])
-    parser.add_argument("--game-root", type=Path, default=Path(r"F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord"))
+    parser.add_argument(
+        "--game-root",
+        type=Path,
+        required=True,
+        help="Bannerlord installation root; must be supplied explicitly",
+    )
     args = parser.parse_args()
     project = args.project_root.resolve()
     game = args.game_root.resolve()
@@ -96,7 +100,7 @@ def main() -> int:
     status = "PASS" if all(result[key] for key in required) else "FAIL"
     print(json.dumps({"status": status, **result}, ensure_ascii=False, indent=2))
     print(
-        "PASS liveHostReadiness "
+        f"{status} liveHostReadiness "
         f"gameRoot={int(result['gameRoot'])} exe={int(result['bannerlordExe'])} "
         f"stage={int(result['projectStage'])} bootstrap={int(result['stageBootstrap'])} "
         f"implementation13={int(result['stage13'])} implementation14={int(result['stage14'])} "

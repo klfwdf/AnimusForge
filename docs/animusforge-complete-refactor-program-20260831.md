@@ -8,6 +8,34 @@
 
 > **2026-09-02 本机接续更新：**本文主体保留2026-08-31的全量任务基线；实时状态以公共台账和最新handoff为准。`LOCAL-7-C/C2`已把五个managed replay consumer统一到显式依赖边界，含Shout SSE；`LOCAL-7-D/E/F/G/H/I/J/K/L`已完成Memory/Courier/Economy/weekly/Notoriety相关owner的代码与离线验证；Duel M1/M2分别在`16f3cbef`/`b93f93df`完成actual-session outcome owner和exact detached request provenance的离线/compiled VERIFY。`LOCAL-8-A`实现链最终到`8bdd9363`：早期8-ID readiness现同时门禁canonical20领域责任桶、canonical16组PAIR/CROSS_CUT Bridge和18项逐symbol清理/回滚盘点。20领域不是20个物理DLL；maintainer仍为`ROLE_PLACEHOLDER`、入口仍为`REPRESENTATIVE`，团队未确认`ASSIGNED/COMPLETE`前real readiness保持BLOCKED；证据缺任一领域/Bridge或OFFLINE/LIVE/SAVE/RELEASE覆盖也BLOCKED；3项`REVIEW_REMOVAL`仍未获删除授权。阶段7继续VERIFY、阶段8准备态可继续，真实Campaign/Mission、live Economy/AFEF/Notoriety、Duel live/旧档和默认切换未验收前，不能删除facade或执行default cutover。
 
+> **2026-09-02 离线收尾补充：**`LOCAL-7-C3` 已完成：`LiveHostReadinessAudit` 现在要求显式
+> `--game-root`，纯 fixture/CLI 测试 4/4 通过。Persistence/Profile/Config scanner 已排除生成物与
+> 缓存并支持跨 partial 常量解析，catalog 为 95 literal / 121 typed / 44 flattened；Identity 为
+> `sync=99 / behavior=35 / module=AnimusForge / bootstrap=1`，均 PASS。阶段 8 只读复核保持 20 域、
+> 16 Bridge、18 cleanup 候选（KEEP 12 / HOLD 3 / REVIEW_REMOVAL 3）；真实 LIVE/SAVE、阶段 7 完整
+> 交付和阶段 8 执行仍未授权。
+
+> **2026-09-02 Debug 部署补充：**用户明确授权从本机 `F:\AnimusForge-main` 的
+> `refactor/prepare-af-restructure`（HEAD `109835cd18fee09ebd591fa254f0af1aa913acb4`，不是
+> `main`）执行统一 Debug 编译与测试部署。1.3/1.4/Bootstrap 均 `0 warning / 0 error`，安装到
+> `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，三份
+> DLL 与项目 Stage 哈希一致，readiness `PASS` 且游戏进程未运行。该安装只作为后续实机测试准备，
+> 不提升阶段 7、阶段 8、Release、LIVE/SAVE 或默认切换状态。
+
+> **2026-09-02 Bridge 配置补充：**`docs/phase8/bridge-binding-manifest.json` 已对齐 canonical
+> 16 组 Bridge，并以 `tools/BridgeBindingContractTests/validate_bridge_bindings.py` 做逐路径/逐
+> symbol 的只读校验。当前只有既有 `conversation-siege`、`policy-world-diplomacy`、
+> `ui-runtime-integration` 三个边界标为 `wired`，其余 13 组明确为 `declared-only`；后者只表示
+> 合同已登记，不能冒充运行时接线或 LIVE/SAVE 验收。三个 Gate 均保持一次性启动或事件边界，未新增
+> Tick 全量扫描、存档字段或跨域 live 对象持有。
+
+> **2026-09-02 Release 离线验证补充：**当前源码已用统一脚本重建 Release 1.3、1.4、Bootstrap
+> Stage（各 0 warning / 0 error），Production Duel Release replay 为 35/35 PASS；Release ZIP
+> 已通过 Bootstrap-only XML、双实现 marker/hash、ONNX/旧模块排除校验，工件位于
+> `F:\AnimusForge-main\.tmp\packages\release-final-20260902\AnimusForge_v1.3.7.2_20260902_100952_233.zip`，4919 entries，SHA-256 为
+> `1215A88666E6FCCD949BE413C75719B2C96BCA061546FCAD86DB9AB0F805ACE5`。这仍是离线工件证据，
+> 不代表实际安装、Campaign/Mission、LIVE/SAVE 或最终发布。
+
 ## 一、现状
 
 - 当前主阶段：**阶段 7，领域模块接入与验证；阶段 8 的 Bridge、旧结构清理与最终验收仍未完成。**
@@ -16,7 +44,7 @@
 - 团队远端分支：`refactor/prepare-af-restructure`。
 - 本轮重新 fetch 确认的远端提交：`182da1db4db4199cf65783f911f3cb6d46b18970`。
 - `a096c1b1` 是历史比较点，不是最新提交，也不是经真实游戏验收的发布回滚点。
-- 本机工作树：`G:\AFMOD\AF-REFACTOR`，分支 `codex/af-main-refactor-continuation-20260831`。
+- 本机工作树：`F:\AnimusForge-main`，分支 `refactor/prepare-af-restructure`。
 - 本轮编写总纲前，本机 HEAD 为 `d8c81b5e`，领先远端 4 个本地提交、无未提交改动；其中生产源码修复为 `b24fdf4b`。**这些本地提交尚未推送，其他创作者拉取远端不会自动拿到。** 本轮总纲与台账另作本地文档提交。
 - 当前仍不是可发布版本：真实 Campaign/Mission、旧存档、核心经济副作用和默认三渠道切换没有完成联合验收。
 - 原 NEW-10 与 GCCZ 保留各自用途；不把整个 AF 主体复制进 GCCZ，不把旧融合树覆盖到新重构树。
@@ -52,7 +80,10 @@
 
 ### 5. 已有验证与交接资料
 
-- 本机 Debug 1.3、1.4、Bootstrap unified Stage：各 0 warning / 0 error。
+- 本机 Debug 1.3、1.4、Bootstrap unified Stage 与一次用户授权安装均各 0 warning / 0 error；部署
+  当时三份 DLL 哈希一致。随后日志边界修复重建了当前 Stage，当前安装仅 Bootstrap 仍一致、实现
+  DLL 已过时（当前 Stage 实现哈希为 1.3 `BB157A03F97F606158203E3A68F53AEC7687F6BFD5850728760446285CFC2ABE`、
+  1.4 `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`），不能把 readiness 的 Bootstrap 比较当作三份一致；这是编译/布局/部署证据，不是游戏内验收。
 - InteractionPipeline 原 40 cases，加新提交边界 48 cases，通过。
 - 生产 1.4 三渠道新增 12 个提交后故障场景通过，未重复调用 fallback。
 - Economy owner/commit、Detached/Courier Host、主要配置/模型/辅助 Gateway 和多项 Python 契约审计已有 PASS。
@@ -69,7 +100,8 @@
 - 代表性旧存档实际加载、执行后存读档、未知数据保留、缺失/损坏数据隔离和幂等恢复。
 - Duel、WorldMap、Policy/Diplomacy、Scene、Siege/GCCZ/SETS、Courier、周报/主动 NPC、Issue、社交成长、Knowledge、UI/TTS 等全部领域的迁移确认与组合回归。
 - 剩余巨型类的责任拆分和旧路径收敛；仅拆成 partial 文件不算完成解耦。
-- 可回滚的默认三渠道切换、Release/打包/安装验证和最终发布签收。
+- 可回滚的默认三渠道切换、Release 实际安装/启动/存读档验证和最终发布签收；Release Stage/ZIP
+  的离线构建与结构校验已完成。
 
 ### 已知工具与环境缺口（含 2026-08-31 历史记录）
 
@@ -81,8 +113,11 @@
   - `PolicyGatewayReplayTests`、`WorldDiplomacyGatewayReplayTests` 缺 `MCMv5, Version=5.12.3.0`。
   - `TtsGatewayReplayTests`、`ProductionOptInEntryReplayTests` 缺 `TaleWorlds.CampaignSystem`。
   - 四者 `.csproj` 的依赖复制仍硬编码另一台机器的 F 盘路径。
-- `.NET 10` PromptLab/PlayerExportsEditor 尚未运行；本机上轮确认只有 SDK `8.0.422`。不得降 TargetFramework 来凑通过。
-- XihaiAction 独立 net472 runtime、本机 Release/ZIP/package、真实外部 provider 未在上轮执行。别台机器的 Developer Pack 或部署结果不能移作本机证据。
+- 本机现有 SDK/runtime 为 6.0.428、8.0.421、10.0.400。5 个 net6 smoke 及 ActionPostprocess/Preprocess
+  net10 smoke 已通过；PlayerExportsEditor smoke 仍因现有内容校验错误退出（RagShortText 长度和
+  `Variants[].When.Cultures`/`Keywords` 类型），不得吞错或批量修改生产 PlayerExports。
+- XihaiAction 独立 net472 runtime、真实外部 provider 尚未执行；本机 Release Stage/ZIP/package
+  离线证据已在 2026-09-02 补齐。别台机器的 Developer Pack 或部署结果不能移作本机证据。
 - 重构层仍有本地化欠账：例如模型目录 Gateway 的中文硬编码诊断，需要稳定错误码与英文/简体中文资源映射。
 - 参考资料、第三方 provenance/许可证和分发边界仍需确认；原阶段 1 清理 HOLD 不能被“全面重构”自动解除。
 
@@ -253,19 +288,27 @@
 
 这些不是已经过游戏验收的发布版本。需要撤销本机提交边界修复时，评估后用 `git revert b24fdf4b` 创建小型反向提交；不执行 hard reset、不改写团队历史。**源码回滚不会自动撤销已经写进游戏存档的金币、物品、债务或领地副作用**，因此测试存档和明确重置点不可省。
 
-本机构建引用：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`；上轮读取的实际游戏为 `v1.4.7.117484`。不要把其他机器的 F 盘路径、游戏版本、Release 或部署记录当成本机事实。
+本机构建引用：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`；上轮读取的实际游戏为 `v1.4.7.117484`。不要把其他机器的 F 盘路径、游戏版本、Release 或部署记录当成本机事实；本机 2026-09-02 Debug 部署仅以 `DEBUG-DEPLOY-20260902` 记录为准。
 
 ## 十一、资料与下一精确任务
 
-- 实时执行状态：`G:\AFMOD\AF-REFACTOR\docs\animusforge-refactoring-and-repository-reorganization-plan.md`
-- owner 导航：`G:\AFMOD\AF-REFACTOR\docs\animusforge-owner-matrix.md`
-- 架构/入口导航：`G:\AFMOD\AF-REFACTOR\docs\animusforge-refactor-map.md`
-- 已有领域 transport 边界：`G:\AFMOD\AF-REFACTOR\docs\animusforge-phase7-domain-gateway-boundary.md`
-- GitHub发布与制作组总交接：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`
-- 最新技术验证、精确命令与产物哈希：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`
+- 实时执行状态：`F:\AnimusForge-main\docs\animusforge-refactoring-and-repository-reorganization-plan.md`
+- owner 导航：`F:\AnimusForge-main\docs\animusforge-owner-matrix.md`
+- 架构/入口导航：`F:\AnimusForge-main\docs\animusforge-refactor-map.md`
+- 已有领域 transport 边界：`F:\AnimusForge-main\docs\animusforge-phase7-domain-gateway-boundary.md`
+- GitHub发布与制作组总交接：`F:\AnimusForge-main\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`
+- 最新技术验证、精确命令与产物哈希：`F:\AnimusForge-main\docs\handoffs\2026-09-02-shout-sse-replay-dependency-closure.md`
 - 原始接续说明：`G:\AFMOD\NEW-10\docs\handoffs\af-main-refactor-continuation-20260831.md`
 - 上轮本机日志：`G:\AFMOD\.build-cache\af-refactor-20260831`
 
 owner/refactor map 的第一版基于较早基线，适合导航，不可照搬其旧状态；实际状态以最新 Git、运行证据和公共台账为准。本文件是总纲，不新建一套平行执行台账。
 
-**`LOCAL-7-C2` 已在 `ae49e3c8` 完成ShoutNetwork SSE replay依赖闭环：第五个consumer不再硬编码F盘或递归扫描Modules，source 5/5、helper 9/9、Debug/Release runner与78项显式依赖manifest均PASS；这是tool-only离线证据，不是Release AF或LIVE/SAVE。下一精确自主任务为`LOCAL-7-C3`：让`LiveHostReadinessAudit`停止默认选择F盘游戏根，改为显式`--game-root`并用纯fixture/CLI契约验证，禁止启动游戏、部署或读取真实存档。并行由领域owner按`docs/phase8/full-domain-acceptance-package.md`采集20领域LIVE/SAVE证据；Duel取消/死亡/退出、stake/Memory/AFEF/Fourberie仍需真实Host/旧档readback。阶段8所有清理候选继续只登记，默认入口、删除、打包、部署与发布仍后置。**
+**`LOCAL-7-C2` 已在 `ae49e3c8` 完成ShoutNetwork SSE replay依赖闭环，`LOCAL-7-C3` 已完成
+LiveHostReadinessAudit显式`--game-root`与4/4纯fixture/CLI契约；Persistence/Profile/Identity扫描与
+catalog也已收尾。上述均为tool-only离线证据，不是Release AF或LIVE/SAVE。下一步由领域owner按
+`docs/phase8/full-domain-acceptance-package.md`采集20领域LIVE/SAVE证据；Duel取消/死亡/退出、
+stake/Memory/AFEF/Fourberie仍需真实Host/旧档readback。阶段8所有清理候选继续只登记，默认入口、
+删除、Release实际安装/启动、默认切换与最终发布仍后置；本机 Debug 测试部署已单独完成但实现
+DLL需在实机前重新部署，Release Stage/ZIP离线验证已完成。**
+**Bridge 绑定清单当前为 `16 / 3 wired / 13 declared-only`；真实 Bridge/LIVE/SAVE 证据仍需制作组在
+隔离存档中补齐。**

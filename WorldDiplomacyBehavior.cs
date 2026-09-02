@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
 using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -381,6 +382,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			FeatureBridgeDecision bridgeDecision = FeatureBridgeRuntime.Evaluate(
+				FeatureBridgeIds.PolicyWorldDiplomacy,
+				FeatureBridgeIds.ContractVersion);
+			if (!bridgeDecision.IsAllowed)
+			{
+				Log("external diplomacy notification skipped: " + bridgeDecision.ReasonCode);
+				return;
+			}
 			ResolveInstance()?.NotifyExternalDiplomacyResolvedInternal(action, initiator, target, reason);
 		}
 		catch (Exception ex)

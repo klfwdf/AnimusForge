@@ -1,7 +1,13 @@
 # LOCAL-7-M2：Duel exact detached dispatch provenance 接续
 
-日期：2026-09-02。工作区：`G:\AFMOD\AF-REFACTOR`。分支：
-`codex/af-main-refactor-continuation-20260831`。
+日期：2026-09-02。当前工作区：`F:\AnimusForge-main`。当前分支：
+`refactor/prepare-af-restructure`。
+
+> 本文记录 M2 切片时的历史路径/提交边界；当前远端同步、后续验证与制作组接续以
+> `docs/handoffs/2026-09-02-github-publish-and-team-handoff.md` 为准。
+
+> 正文中的 `G:\AFMOD` 及其日志/依赖目录是 M2 切片历史证据路径；当前复现使用
+> `F:\AnimusForge-main` 与 `refactor/prepare-af-restructure`，不把历史路径当本机依赖。
 
 ## 结论
 
@@ -183,8 +189,8 @@ exact accept/reject/queue/start/cancel/death/exit、stake/Memory/AFEF、Fourberi
 
 ## 新线程启动语
 
-> 请读取 `G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-02-duel-exact-dispatch-provenance.md`，
-> 在分支 `codex/af-main-refactor-continuation-20260831` 上继续。先fetch并核对Git、工作树和最新
+> 请读取 `F:\AnimusForge-main\docs\handoffs\2026-09-02-duel-exact-dispatch-provenance.md`，
+> 在分支 `refactor/prepare-af-restructure` 上继续。先fetch并核对Git、工作树和最新
 > 台账，不pull/rebase/reset。确认HEAD至少包含`b93f93df`，按`LOCAL-7-C2`只修复ShoutNetwork SSE
 > replay依赖边界；先用红契约锁定F盘硬编码和`Modules\**`递归复制，再复用显式ReplayDependencies
 > 做最小工具改动并跑Debug/Release回放。保持阶段7为VERIFY、阶段8执行为BLOCKED；不push、不部署、

@@ -62,13 +62,24 @@ def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
     resolved: set[str] = set()
     call_pattern = re.compile(name + r"\s*\((.*?)\)", re.DOTALL)
     constant_pattern = re.compile(r"\b(?:private|internal|public|protected)?\s*(?:static\s+)?const\s+string\s+(\w+)\s*=\s*\"([^\"]+)\"")
+    source_paths = []
     for source_path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "bin", "obj"} for part in source_path.parts):
+        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.parts):
             continue
         if any("原版游戏本体代码" in part for part in source_path.parts):
             continue
+        source_paths.append(source_path)
+    constant_values: dict[str, set[str]] = {}
+    for source_path in source_paths:
+        for name, value in constant_pattern.findall(source_path.read_text(encoding="utf-8")):
+            constant_values.setdefault(name, set()).add(value)
+    globally_unique_constants = {
+        name: next(iter(values)) for name, values in constant_values.items() if len(values) == 1
+    }
+    for source_path in source_paths:
         source = source_path.read_text(encoding="utf-8")
-        constants = dict(constant_pattern.findall(source))
+        constants = dict(globally_unique_constants)
+        constants.update(dict(constant_pattern.findall(source)))
         for match in call_pattern.finditer(source):
             arguments = split_call_arguments(match.group(1))
             if len(arguments) <= argument_index:
@@ -85,7 +96,7 @@ def validate_chunk_contract(catalog: dict) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
     assert_true(len(expected_chunked) == 13, "chunked string key catalog must contain 13 keys")
-    assert_true(len(expected_flattened) == 40, "flattened dictionary key catalog must contain 40 keys")
+    assert_true(len(expected_flattened) == 44, "flattened dictionary key catalog must contain 44 keys")
     actual_chunked = resolve_storage_call_keys("SaveChunkedString", 1) | resolve_storage_call_keys("LoadChunkedString", 1)
     actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
     # The helper's own overloads have no persisted key and are intentionally absent.
@@ -128,7 +139,7 @@ DECLARATION_PATTERN = re.compile(
 def discover_typed_bindings() -> list[dict]:
     rows: list[dict] = []
     for source_path in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "bin", "obj"} for part in source_path.parts):
+        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.parts):
             continue
         if any("原版游戏本体代码" in part for part in source_path.parts):
             continue
@@ -194,7 +205,7 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(any(item["status"] == "inventory-required" for item in catalog["symbolicKeyFamilies"]), "symbolic key debt was hidden")
     symbolic_sources = []
     for source in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "bin", "obj"} for part in source.parts):
+        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.parts):
             continue
         if any("原版游戏本体代码" in part for part in source.parts):
             continue
