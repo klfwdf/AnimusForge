@@ -22,12 +22,11 @@
 > DLL 与项目 Stage 哈希一致，readiness `PASS` 且游戏进程未运行。该安装只作为后续实机测试准备，
 > 不提升阶段 7、阶段 8、Release、LIVE/SAVE 或默认切换状态。
 
-> **2026-09-02 Bridge 配置补充：**`docs/phase8/bridge-binding-manifest.json` 已对齐 canonical
+> **2026-09-02 Bridge 配置历史快照：**`docs/phase8/bridge-binding-manifest.json` 已对齐 canonical
 > 16 组 Bridge，并以 `tools/BridgeBindingContractTests/validate_bridge_bindings.py` 做逐路径/逐
-> symbol 的只读校验。当前只有既有 `conversation-siege`、`policy-world-diplomacy`、
-> `ui-runtime-integration` 三个边界标为 `wired`，其余 13 组明确为 `declared-only`；后者只表示
-> 合同已登记，不能冒充运行时接线或 LIVE/SAVE 验收。三个 Gate 均保持一次性启动或事件边界，未新增
-> Tick 全量扫描、存档字段或跨域 live 对象持有。
+> symbol 的只读校验。当时只有既有 `conversation-siege`、`policy-world-diplomacy`、
+> `ui-runtime-integration` 三个边界标为 `wired`，其余 13 组为 `declared-only`；这只是当日快照，
+> 不能冒充运行时接线或 LIVE/SAVE 验收。
 
 > **2026-09-02 Release 离线验证补充：**当前源码已用统一脚本重建 Release 1.3、1.4、Bootstrap
 > Stage（各 0 warning / 0 error），Production Duel Release replay 为 35/35 PASS；Release ZIP
@@ -35,6 +34,18 @@
 > `F:\AnimusForge-main\.tmp\packages\release-final-20260902\AnimusForge_v1.3.7.2_20260902_100952_233.zip`，4919 entries，SHA-256 为
 > `1215A88666E6FCCD949BE413C75719B2C96BCA061546FCAD86DB9AB0F805ACE5`。这仍是离线工件证据，
 > 不代表实际安装、Campaign/Mission、LIVE/SAVE 或最终发布。
+
+> **2026-09-03 Bridge 接线收尾更新：**在保持旧 facade、默认入口、SyncData key/type、程序集身份和
+> 双版本输出结构不变的前提下，已有生产入口的 source-bound Gate 已扩展为 10 组：
+> `conversation-gateway`、`conversation-action`、`action-memory`、`action-economy`、
+> `policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
+> `memory-social-reports`、`gateway-knowledge-profile`、`ui-runtime-integration`；
+> `bootstrap-host`、`host-runtime`、`runtime-game-adapter`、`persistence-domain-owners`、
+> `scene-duel`、`tools-content-release` 仍为 `declared-only`。Bridge validator 为
+> `16 bindings / 10 wired / 6 declared-only / configEnabled=10`，相关纯契约测试和双 API
+> Debug/Release/Bootstrap Stage 均通过；最新 LiveHostReadiness 为 `status=PASS`、
+> `installedMatchesStage=false`、`gameRunning=false`（项目 Stage 已重建但未部署）；本轮没有启动游戏、
+> 读取真实存档或执行 LIVE/SAVE 验收。
 
 ## 一、现状
 
@@ -310,5 +321,5 @@ catalog也已收尾。上述均为tool-only离线证据，不是Release AF或LIV
 stake/Memory/AFEF/Fourberie仍需真实Host/旧档readback。阶段8所有清理候选继续只登记，默认入口、
 删除、Release实际安装/启动、默认切换与最终发布仍后置；本机 Debug 测试部署已单独完成但实现
 DLL需在实机前重新部署，Release Stage/ZIP离线验证已完成。**
-**Bridge 绑定清单当前为 `16 / 3 wired / 13 declared-only`；真实 Bridge/LIVE/SAVE 证据仍需制作组在
-隔离存档中补齐。**
+**2026-09-02 历史快照为 `16 / 3 wired / 13 declared-only`；当前离线状态为
+`16 / 10 wired / 6 declared-only`。真实 Bridge/LIVE/SAVE 证据仍需制作组在隔离存档中补齐。**

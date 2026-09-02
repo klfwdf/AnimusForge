@@ -45,10 +45,18 @@ internal static class FeatureBridgeRuntime
         if (Snapshot.IsValid)
         {
             int enabledCount = Volatile.Read(ref _enabledById).Count(item => item.Value);
+            if (!string.IsNullOrWhiteSpace(_configurationError))
+            {
+                reason = "feature bridge configuration rejected: " + _configurationError
+                    + "; definitions=" + Snapshot.Definitions.Count
+                    + ", enabled=" + enabledCount
+                    + ", source=" + _configurationSource;
+                return false;
+            }
             reason = "feature bridge catalog valid; definitions=" + Snapshot.Definitions.Count
                 + ", enabled=" + enabledCount
                 + ", source=" + _configurationSource;
-            return string.IsNullOrWhiteSpace(_configurationError);
+            return true;
         }
 
         reason = "feature bridge catalog invalid: " + string.Join("; ", Snapshot.Issues);
@@ -309,6 +317,7 @@ internal static class FeatureBridgeRuntime
             string id = (token.Value<string>() ?? string.Empty).Trim();
             if (!requested.Add(id)
                 || !DefinitionsById.TryGetValue(id, out FeatureBridgeDefinition definition)
+                || !string.Equals(definition.Id, id, StringComparison.Ordinal)
                 || !definition.DefaultEnabled
                 || definition.ImplementationState == FeatureBridgeImplementationState.BlockedLive
                 || definition.ImplementationState == FeatureBridgeImplementationState.DesignInventory
@@ -363,9 +372,11 @@ internal static class FeatureBridgeRuntime
         {
         }
         moduleConfiguration = FindModuleConfiguration(baseDirectory);
-        return string.IsNullOrWhiteSpace(moduleConfiguration)
-            ? ConfigurationFileName
-            : moduleConfiguration;
+        // Never fall back to a relative filename.  A process working directory
+        // is not a module boundary and could contain an unrelated file with the
+        // same name.  Missing module metadata must use the reviewed built-in
+        // defaults instead of reading ambient process state.
+        return moduleConfiguration ?? string.Empty;
     }
 
     private static string FindModuleConfiguration(string startDirectory)

@@ -1,12 +1,43 @@
 # AF 主体重构：GitHub 发布与制作组总交接
 
-日期：2026-09-02
+日期：2026-09-02；2026-09-03追加 Bridge 接线收尾
 
 工作区：`F:\AnimusForge-main`
 
 本地分支：`refactor/prepare-af-restructure`
 
 远端交接分支：`origin/refactor/prepare-af-restructure`
+
+> 本文 2026-09-02 的同步段落和 `3 wired / 13 declared-only` 数字是历史快照；当前状态以
+> 下方 2026-09-03 追加章节为准。
+
+## 2026-09-03 Bridge 接线收尾追加（以本节为准）
+
+- 接续起点为本地 `HEAD 231f6cb6`、远端 `e5af64fb`，ahead 2；本轮只在项目工作区完成
+  Bridge 接线、配置安全修复、文档同步和离线审查，随后按授权执行普通 fast-forward push。
+- 当前清单结果：`16 bindings / 10 wired / 6 declared-only / configEnabled=10`。
+- 10 个 source-bound wired：`conversation-gateway`、`conversation-action`、`action-memory`、
+  `action-economy`、`policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
+  `memory-social-reports`、`gateway-knowledge-profile`、`ui-runtime-integration`。
+- 6 个仍为 declared-only：`bootstrap-host`、`host-runtime`、`runtime-game-adapter`、
+  `persistence-domain-owners`、`scene-duel`、`tools-content-release`。它们只有合同/owner/required
+  cases 登记，没有运行时 caller，不能当作功能接入或 LIVE/SAVE 通过。
+- `FeatureBridgeRuntime` 现在只从带 `SubModule.xml` 和 `ModuleData` 的 `AnimusForge` 模块边界找配置；
+  缺失配置使用审阅过的内建默认值，损坏/未知字段/非法版本/非规范大小写 ID fail-closed。Action、
+  Memory Bridge 禁用仍保持现有拒绝/`NoOp` 语义，不回放 legacy 副作用。
+- 验证：Bridge validator `PASS`；Bridge Python 单测 `15/15`；PhaseEightReadiness `62/62`；
+  BridgeFixture `10 cases / 6 invariants`；Composition `18/24`；ModuleCatalog `8/3/16/8`；
+  Foundation `6/8/16`；GameAdapter `14`；Persistence/Profile `95/121/44`；LiveHostReadiness `PASS`；
+  Interaction、Duel、Economy、Configured Gateway/Validation、Knowledge/RAG、Production hosts 与
+  Production Duel fresh replay（`35/35`，1.3/1.4 parity）均通过；Debug/Release 双 API/Bootstrap
+  Stage 均 `0 warning / 0 error`。
+- 本轮没有启动 Bannerlord、进入 Campaign/Mission、读取或写入真实存档、执行 LIVE/SAVE、部署、
+  切换默认入口、删除 facade 或修改终端 UI；阶段 7 总体仍 `VERIFY`，阶段 8 执行仍 `BLOCKED`。
+- 授权推送命令仍仅限：
+
+  ```powershell
+  git push origin HEAD:refs/heads/refactor/prepare-af-restructure
+  ```
 
 ## 六、最准确的结论
 
@@ -18,7 +49,7 @@
 > **当前代码、HANDOFF与制作组简报可以推送GitHub并转交；阶段8仍只能做非破坏性准备，不能把这次
 > push解释为阶段7 DONE、阶段8执行许可、默认切换或可发布游戏版本。**
 
-## 本次GitHub同步
+## 本次GitHub同步（2026-09-02历史快照）
 
 - 用户已明确授权关闭自动化并普通push。
 - 自动化`af-7-8`与旧`af`均为`PAUSED`，不会继续定时修改仓库。
@@ -129,13 +160,12 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
 - 新增 `docs/phase8/bridge-binding-manifest.json`，闭合阶段 8 的 16 组 Bridge：逐组记录
   domains、topology、owner、真实 entry paths/symbols、实现状态、fallback、API line 和 required
   cases。
-- 新增 `tools/BridgeBindingContractTests/validate_bridge_bindings.py` 及 7 个纯源代码契约测试；
-  当前结果 `16 bindings / 3 wired / 13 declared-only PASS`。`declared-only` 只表示合同已登记，
-  不表示运行时功能已接入。
-- 仅三个已有入口接入一次性/事件边界 Gate：`AfGcczShoutBridge`（conversation-siege）、
-  `WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved`（policy-world-diplomacy）和
-  `SceneActionsIntegrationBoundary.InitializeRuntime`（ui-runtime-integration）。失败或禁用时
-  保留原版/各自 owner 的 fallback；没有新 Tick 扫描、网络、存档或 live 对象跨边界。
+- 新增 `tools/BridgeBindingContractTests/validate_bridge_bindings.py` 及纯源代码契约测试；
+  **2026-09-02 历史结果**为 `16 bindings / 3 wired / 13 declared-only PASS`。`declared-only` 只表示
+  合同已登记，不表示运行时功能已接入。
+- 历史快照中仅三个已有入口接入一次性/事件边界 Gate；失败或禁用时保留原版/各自 owner 的
+  fallback，没有新 Tick 扫描、网络、存档或 live 对象跨边界。当前 10 wired 的完整清单见上方
+  2026-09-03 追加章节和 `docs/phase8/bridge-binding-manifest.json`。
 - 1.3/1.4/Bootstrap Debug Stage 已重新编译，均 `0 warning / 0 error`；尚未启动游戏或读取真实存档。
 
 ### 用户授权的 Debug 编译与测试部署（本地接续）
@@ -150,10 +180,10 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
   `5F66A4932AB1948BBB71D38C80C6AADC63AD3F5F508004B1F2469FB13544E970`、
   `D28931E9129E3E6F441BC5297466BA99FC886BD9DD15A5C3484B7EFCF598D16C`。
 - `SubModule.xml` 仅加载 Bootstrap；合并 4,753 个 `PlayerExports` 文件，保留既有 Logs/PlayerExports/ONNX，临时部署与备份目录已清理，未发现旧版模块目录。
-- 随后的离线日志边界修复触发了当前 Debug Stage 重建；当前 Stage 实现哈希为
+- 2026-09-02 的离线日志边界修复曾触发 Debug Stage 重建；当时 Stage 实现哈希为
   `BB157A03F97F606158203E3A68F53AEC7687F6BFD5850728760446285CFC2ABE`（1.3）和
-  `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`（1.4），而安装目录仍为上面的部署时哈希；只有 Bootstrap 仍相同。因此 readiness 的
-  `installedMatchesStage=true` 仅反映工具当前比较的 Bootstrap，不足以证明三份 DLL 一致；实机测试前必须在明确授权下重新部署当前已核验 Stage。
+  `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`（1.4），而安装目录仍为上面的部署时哈希。2026-09-03 收尾后项目内 Stage 已重新生成，安装目录未改；最新 readiness 为
+  `installedMatchesStage=false`，该字段仅比较 Bootstrap，不足以证明三份 DLL 一致，实机测试前必须在明确授权下重新部署当前已核验 Stage。精确新哈希见 `docs/handoffs/2026-09-03-bridge-binding-closeout.md`。
 - 这是用户明确授权的 Debug 测试安装，不是 Release、默认切换、最终发布或真实 LIVE/SAVE 验收；本轮没有启动游戏。
 
 ### Release 离线构建、Duel 回放与 ZIP

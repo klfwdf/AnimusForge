@@ -1,6 +1,6 @@
 # AF 主体重构：阶段 7 / 阶段 8 制作组简报
 
-日期：2026-09-02
+日期：2026-09-02；2026-09-03追加 Bridge 接线收尾
 
 ## GitHub交接状态
 
@@ -12,7 +12,23 @@
 - 本地接续已按用户授权完成一次 Debug 双版本编译与统一模块测试部署；来源是
   `refactor/prepare-af-restructure`，不是 `main`。本轮未启动游戏，部署不代表 Release 或 LIVE/SAVE 通过。
 - 随后日志边界修复重建了当前 Debug Stage；已安装目录的实现 DLL 仍是部署时版本，实机前必须先
-  在明确授权下重新部署当前 Stage。readiness 的 `installedMatchesStage=true` 只比较 Bootstrap。
+  在明确授权下重新部署当前 Stage。最新只读审计为 `installedMatchesStage=false`、`gameRunning=false`；
+  该字段只比较 Bootstrap，不能证明三份实现 DLL 一致。
+
+## 2026-09-03 Bridge 接线收尾（当前状态）
+
+- 当前离线清单为 `16 bindings / 10 wired / 6 declared-only / configEnabled=10`；2026-09-02
+  的 `16 bindings / 3 wired / 13 declared-only` 是历史快照。
+- 已接线 10 组：`conversation-gateway`、`conversation-action`、`action-memory`、
+  `action-economy`、`policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
+  `memory-social-reports`、`gateway-knowledge-profile`、`ui-runtime-integration`。
+- 仍 declared-only 6 组：`bootstrap-host`、`host-runtime`、`runtime-game-adapter`、
+  `persistence-domain-owners`、`scene-duel`、`tools-content-release`。只登记合同/owner/required
+  cases，没有运行时 caller，也没有 LIVE/SAVE 证据。
+- 配置读取严格限定在 `AnimusForge` 模块边界；缺失配置使用内建默认值，损坏配置和非规范大小写
+  ID fail-closed。Action/Memory 禁用保持既有拒绝/`NoOp` 语义，不回退重放 legacy 副作用。
+- Bridge validator、纯契约测试、各领域 fixture/replay、Production hosts、Duel fresh replay 与
+  双 API Debug/Release/Bootstrap Stage 全部通过；本轮不启动游戏、不读写真实存档、不部署、不切默认。
 
 ## 六、最准确的结论
 
@@ -43,9 +59,9 @@
 - 逐项回滚点、存档副作用说明、LIVE/SAVE验收记录和最终打包清单。
 - `LOCAL-7-C3` 与 Persistence/Profile/Identity 离线收尾已完成；C3 `4/4`、Persistence `95/121/44`、
   Identity `99/35` 均 PASS，详情见 `docs/handoffs/2026-09-02-offline-closeout-c3-persistence.md`。
-- Bridge 绑定清单 `docs/phase8/bridge-binding-manifest.json` 已闭合 16 组；纯校验结果为
-  `16 bindings / 3 wired / 13 declared-only`。`wired` 仅覆盖现有 Siege、WorldDiplomacy 通知和
-  UI runtime 初始化 Gate；`declared-only` 不代表运行时已接入。
+- Bridge 绑定清单 `docs/phase8/bridge-binding-manifest.json` 已闭合 16 组；**2026-09-02 历史快照**
+  为 `16 bindings / 3 wired / 13 declared-only`。当前结果为 `16 bindings / 10 wired / 6 declared-only`；
+  `wired` 仅表示 source-bound Gate 已在既有入口调用，`declared-only` 不代表运行时已接入。
 - Release 离线 Stage 与 ZIP 已重建并校验：双 API/Bootstrap 各 `0 warning / 0 error`，Production
   Duel Release `35/35 PASS`；ZIP 位于 `.tmp/packages/release-final-20260902/`，不等同于实际安装或
   发布签收。
