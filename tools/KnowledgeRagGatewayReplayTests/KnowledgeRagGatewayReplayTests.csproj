@@ -7,8 +7,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="..\..\Refactor\Contracts\FeatureBridgeContracts.cs" Link="Contracts\FeatureBridgeContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
+    <Compile Include="..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyConfiguredChatGateway.cs" Link="Adapters\LegacyConfiguredChatGateway.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyKnowledgeRagGateway.cs" Link="Adapters\LegacyKnowledgeRagGateway.cs" />
   </ItemGroup>

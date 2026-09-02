@@ -27,8 +27,58 @@ class BridgeBindingManifestTests(unittest.TestCase):
         result = validator.run(ROOT)
         self.assertEqual(result["state"], "PASS")
         self.assertEqual(result["bindings"], 16)
-        self.assertEqual(result["wired"], 3)
-        self.assertEqual(result["declaredOnly"], 13)
+        self.assertEqual(result["wired"], 10)
+        self.assertEqual(result["declaredOnly"], 6)
+        self.assertEqual(result["configEnabled"], 10)
+
+    def load_config(self) -> dict:
+        return json.loads((ROOT / "AnimusForge" / "ModuleData" / "FeatureBridges.json").read_text(encoding="utf-8"))
+
+    def assert_config_rejected(self, mutate) -> None:
+        config = self.load_config()
+        mutate(config)
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_feature_bridge_config(config)
+
+    def test_runtime_config_accepts_explicit_disable_all(self) -> None:
+        config = self.load_config()
+        config["enabled"] = []
+        result = validator.validate_feature_bridge_config(config)
+        self.assertEqual(result["configEnabled"], 0)
+
+    def test_runtime_config_rejects_unknown_field(self) -> None:
+        self.assert_config_rejected(lambda config: config.update({"unexpected": True}))
+
+    def test_runtime_config_rejects_duplicate_id(self) -> None:
+        def mutate(config: dict) -> None:
+            config["enabled"].append(config["enabled"][0])
+
+        self.assert_config_rejected(mutate)
+
+    def test_runtime_config_rejects_unwired_id(self) -> None:
+        def mutate(config: dict) -> None:
+            config["enabled"].append("bootstrap-host")
+
+        self.assert_config_rejected(mutate)
+
+    def test_runtime_config_rejects_blocked_id(self) -> None:
+        def mutate(config: dict) -> None:
+            config["enabled"].append("scene-duel")
+
+        self.assert_config_rejected(mutate)
+
+    def test_runtime_config_rejects_bad_version(self) -> None:
+        self.assert_config_rejected(lambda config: config.update({"contractVersion": 99}))
+
+    def test_runtime_config_rejects_duplicate_json_field(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "FeatureBridges.json"
+            path.write_text(
+                '{"schemaVersion":1,"schemaVersion":1,"contractVersion":1,"enabled":[]}',
+                encoding="utf-8",
+            )
+            with self.assertRaises(validator.BridgeBindingFailure):
+                validator.load_json(path, "feature bridge runtime config")
 
     def assert_manifest_rejected(self, mutate) -> None:
         manifest = self.load_manifest()

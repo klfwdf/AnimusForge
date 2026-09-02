@@ -2,7 +2,9 @@
 
 > 本文件是 AF 重构的公共进度台账。它记录目标、阶段、当前状态、验证证据和交接信息；不替代 `.claude/skills/animusforge-maintainer/` 中的长期工作规范。
 
-## 当前任务（2026-09-01 框架接续）
+## 当前任务（2026-09-03 Bridge 接线收尾接续）
+
+- `BRIDGE-CONFIG-20260903` ACTIVE（用户已授权继续）：承接 checkpoint `13e21560` 的未提交 Bridge 运行时接线，先完成显式依赖 Production replay 与全量离线回归，再同步 `10 wired / 6 declared-only` 到总纲、阶段8包、handoff和制作组简报，执行最终凭据/生成物/终端 UI/双版本身份审查，最后只做普通 fast-forward push。owner 为 Foundation/Bridge runtime 与各已接线领域；本轮不启动实机、不读取或写入真实存档、不部署、不切默认入口、不删除 facade、不修改一键编译/覆盖脚本，也不把 offline/compiled 证据提升为 LIVE/SAVE。预期路径：`Refactor/Runtime/FeatureBridgeRuntime.cs`、已接线 adapters/behaviors、`AnimusForge/ModuleData/FeatureBridges.json`、`docs/phase8/bridge-binding-manifest.json`、`tools/BridgeBindingContractTests/`、相关总纲/阶段8/2026-09-02 handoff；风险为配置坏损 fail-closed、可选 Bridge 禁用后的 owner fallback、1.3/1.4/Bootstrap 兼容和工作树中已有终端 UI本地改动，验证计划为显式依赖 Production replay、Bridge/相关 focused suites、双 API Debug/Release/Bootstrap Stage、git diff/凭据/产物审查、push 后 HEAD 与远端 0/0 对账。
 
 - `PUBLISH-20260902` DONE（仅指自动化关闭与GitHub制作组交接，不代表阶段7/8 DONE）：用户明确要求关闭自动化并把当前重构分支、HANDOFF和制作组简报推送GitHub。`af-7-8`与旧`af`均为PAUSED；收尾编写前工作树clean，本地HEAD `19e5d6b1`，`origin/refactor/prepare-af-restructure`为`9566bf3b`，ahead 19 / behind 0。最终发布只增加交接文档，通过普通fast-forward push同步到同一远端分支，完成后要求本地HEAD与远端分支完全一致；禁止force push、部署、覆盖游戏、切default或把离线证据提升为LIVE/SAVE。本轮发布总交接为`docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`，制作组短文为`docs/handoffs/2026-09-02-stage7-stage8-team-brief.md`。
 

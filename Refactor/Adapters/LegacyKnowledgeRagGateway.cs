@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 
 namespace AnimusForge.Refactor.Adapters;
 
@@ -42,6 +43,16 @@ public sealed class LegacyKnowledgeRagGateway : ILlmGateway
                 0,
                 0,
                 "knowledge_stage_not_supported"));
+        }
+
+        if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile))
+        {
+            return Task.FromResult(new LlmGenerateResult(
+                LlmResultStatus.NonRetryableFailure,
+                string.Empty,
+                0,
+                0,
+                "bridge.gateway_knowledge_profile_disabled"));
         }
         return _configuredGateway.GenerateAsync(request, cancellationToken);
     }

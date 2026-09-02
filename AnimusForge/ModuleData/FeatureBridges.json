@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "enabled": [
+    "conversation-gateway",
+    "conversation-action",
+    "action-memory",
+    "action-economy",
+    "policy-world-diplomacy",
+    "conversation-siege",
+    "conversation-courier",
+    "memory-social-reports",
+    "gateway-knowledge-profile",
+    "ui-runtime-integration"
+  ]
+}

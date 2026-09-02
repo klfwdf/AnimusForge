@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
@@ -15,6 +16,11 @@ public sealed partial class PlayerNotorietyBehavior
     private bool _notorietyConversationOutcomeImportConfirmed = true;
     private string _expectedNotorietyFinalizeMemorySessionKey = string.Empty;
     private bool _allowStaleExactNotorietyFinalize;
+
+    private static bool IsSocialReportsBridgeEnabled()
+    {
+        return FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.MemorySocialReports);
+    }
 
     internal static NotorietyConversationOutcomeOperationStatus
         NoteConversationLineRecoverableForExternal(
@@ -30,6 +36,10 @@ public sealed partial class PlayerNotorietyBehavior
     {
         try
         {
+            if (!IsSocialReportsBridgeEnabled())
+            {
+                return NotorietyConversationOutcomeOperationStatus.NotReady;
+            }
             if (!TWParallel.IsMainThread())
             {
                 return NotorietyConversationOutcomeOperationStatus.Rejected;
@@ -68,6 +78,11 @@ public sealed partial class PlayerNotorietyBehavior
     {
         try
         {
+            if (!IsSocialReportsBridgeEnabled())
+            {
+                Logger.Log("PlayerNotoriety", "[INFO] social reports bridge disabled; exact finalize skipped");
+                return;
+            }
             Instance?.FinalizeConversationWithExpectedSession(characters, memorySessionKey);
         }
         catch (Exception ex)
