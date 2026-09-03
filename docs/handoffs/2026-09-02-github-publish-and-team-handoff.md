@@ -16,7 +16,7 @@
 
 - 接续起点为本地 `HEAD 231f6cb6`、远端 `e5af64fb`，ahead 2；本轮只在项目工作区完成
   Bridge 接线、配置安全修复、文档同步和离线审查。当前工作树尚未 push，最新本地提交见
-  `e7db736`。
+  `ab6ce72` 及其后的本地 handoff 文档提交；当前尚未 push。
 - 当前清单结果：`16 bindings / 10 wired / 6 declared-only / configEnabled=10`。
 - 10 个 source-bound wired：`conversation-gateway`、`conversation-action`、`action-memory`、
   `action-economy`、`policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
