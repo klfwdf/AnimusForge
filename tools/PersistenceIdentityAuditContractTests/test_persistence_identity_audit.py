@@ -50,9 +50,12 @@ class PersistenceIdentityAuditTests(unittest.TestCase):
              mock.patch.object(audit, "baseline_source_snapshot", side_effect=RuntimeError("baseline unavailable")), \
              mock.patch.object(sys, "argv", ["PersistenceIdentityAudit.py", "--json", "--quiet"]):
             stdout = io.StringIO()
+            stderr = io.StringIO()
             with contextlib.redirect_stdout(stdout):
-                self.assertEqual(audit.main(), 1)
+                with contextlib.redirect_stderr(stderr):
+                    self.assertEqual(audit.main(), 1)
             self.assertEqual(json.loads(stdout.getvalue())["status"], "FAIL")
+            self.assertIn("baseline unavailable", stderr.getvalue())
 
 
 if __name__ == "__main__":

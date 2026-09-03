@@ -206,8 +206,7 @@ def main() -> int:
             result["status"] = "FAIL"
     except Exception as exc:
         result = {"status": "FAIL", "error": str(exc)[:240]}
-        if not args.quiet:
-            print("persistence identity audit failed: " + result["error"], file=sys.stderr)
+        print("persistence identity audit failed: " + result["error"], file=sys.stderr)
         if args.json:
             print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         else:
