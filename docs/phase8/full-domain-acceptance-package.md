@@ -19,10 +19,12 @@
 > 缺少 89 个基线源码 blob 按设计返回 `FAIL`/fail-closed，不能把当前审计写成 PASS。本轮没有启动游戏、
 > 读取/写入真实存档、部署或切换默认入口。
 
-> OFFLINE-GAP 同步内容包括：真实方法体/顺序 validator 与负例、纯 net8 Bridge 隔离 runner、Phase 8
+> `OFFLINE-GAP-20260903` 同步内容包括：真实方法体/顺序 validator 与负例、纯 net8 Bridge 隔离 runner、Phase 8
 > 入口候选 inventory（仅补 `entryPaths`）、PersistenceIdentityAudit 单快照/batch/progress/quiet，
 > 以及 ModelCatalog 稳定错误码、受限参数和中英文 formatter。20 个领域仍为
 > `ownerAssignmentState=ROLE_PLACEHOLDER`、`entryCoverage=REPRESENTATIVE`；readiness 继续 `BLOCKED`。
+> 当前离线验证为 Bridge `20/20 PASS`、Bridge isolation `9 scenarios PASS`、Phase 8 `68/68 PASS`、
+> Persistence contract `5/5 PASS` 和 ModelCatalog replay `PASS`；当前本地提交尚未 push。
 
 ## Git 与范围
 
