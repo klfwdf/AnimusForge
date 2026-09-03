@@ -142,7 +142,8 @@
       "entryPaths": [
         "AnimusForge.Bootstrap/BootstrapRuntime.cs",
         "BannerlordApiCompat.cs",
-        "InteractionComponentSafePatch.cs"
+        "InteractionComponentSafePatch.cs",
+        "PlayerEncounterCompat.cs"
       ],
       "promptAction": {
         "prompt": "NOT_APPLICABLE",
@@ -332,7 +333,8 @@
       "entryPaths": [
         "Refactor/Runtime/InteractionResultCommitter.cs",
         "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
-        "Refactor/Runtime/InteractionCommitReceiptCache.cs"
+        "Refactor/Runtime/InteractionCommitReceiptCache.cs",
+        "Refactor/Runtime/DetachedInteractionHost.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -432,7 +434,10 @@
       "entryPaths": [
         "RewardSystemBehavior.cs",
         "RewardSystemBehavior.EconomyReplay.cs",
-        "RewardSystemBehavior.EconomyMerchantReplay.cs"
+        "RewardSystemBehavior.EconomyMerchantReplay.cs",
+        "RewardSystemBehavior.EconomyPartyReplay.cs",
+        "RewardSystemBehavior.PlayerRpCrafting.cs",
+        "RewardSystemBehavior.RpItemIntroduction.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -485,7 +490,17 @@
       "entryPaths": [
         "PolicySystem/Core/CustomPolicyBehavior.cs",
         "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
-        "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"
+        "PolicySystem/Npc/NpcRulerPolicyBehavior.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.ArmyFormation.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.AutoDraft.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Effects.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Generation.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Lifecycle.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Management.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Models.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.PartySizeLimit.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Targets.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.VillageRaidBan.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -592,7 +607,12 @@
         "GcczSettlementCulturePersistenceBehavior.cs",
         "VillageAftermathBehavior.cs",
         "SettlementEntryTroopSelectionBehavior.cs",
-        "CastleAftermathRuntimeBridge.cs"
+        "CastleAftermathRuntimeBridge.cs",
+        "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+        "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+        "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+        "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+        "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -753,7 +773,10 @@
         "ProactiveNpcRequestBehavior.cs",
         "VanillaIssueOfferBridge.cs",
         "CompanionProactiveChatBehavior.cs",
-        "VanillaIssuePromptBehavior.cs"
+        "VanillaIssuePromptBehavior.cs",
+        "CourierDeliveryBehavior.InboundCompletion.cs",
+        "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
+        "Refactor/Runtime/CourierInboundCompletionReceipt.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -808,7 +831,8 @@
         "AnimusForgeUniqueCosmeticItemBehavior.cs",
         "RomanceSystemBehavior.cs",
         "SexualConceptionBehavior.cs",
-        "MyBehavior.cs"
+        "MyBehavior.cs",
+        "PlayerNotorietyBehavior.ConversationOutcomes.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",

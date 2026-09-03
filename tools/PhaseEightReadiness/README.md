@@ -12,6 +12,17 @@ python -B .\tools\PhaseEightReadiness\readiness.py `
   --manifest 'G:\AFMOD\AF-REFACTOR\docs\phase8\all-missing.evidence.json'
 ```
 
+Phase 8 入口候选可用以下只读清单生成器检查。它只补领域 `entryPaths`，不改变
+`ROLE_PLACEHOLDER`、`REPRESENTATIVE` 或任何 COMPLETE/LIVE/SAVE 证据状态：
+
+```powershell
+python -B .\tools\PhaseEightReadiness\entry_inventory.py --check
+python -B .\tools\PhaseEightReadiness\entry_inventory.py
+```
+
+不带参数的清单为每条稳定排序路径附带命中的 `reviewed-pattern` 来源原因；`--update`
+仍只会合并 catalog 的 `entryPaths`，不会把来源说明或候选发现提升为验收证据。
+
 第二条命令必须输出 `BLOCKED`、退出 **2**：这是缺失证据的成功演示，不是工具测试失败。示例报告见 `G:\AFMOD\AF-REFACTOR\docs\phase8\all-missing-report.example.json`。它是生成时的快照，不是自动刷新的项目状态。
 
 真实采集时在明确的 artifact root 保存 manifest、记录和日志，不修改已验收源码：
