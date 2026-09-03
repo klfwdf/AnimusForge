@@ -11,11 +11,18 @@
 > readiness 工具，可以并行采集证据；删除旧入口、默认切换、Release/最终部署和发布仍为
 > `BLOCKED`。本机另有一次用户明确授权的 Debug 测试部署，但不构成阶段 8 的发布或 LIVE/SAVE 证据。
 
-> **2026-09-03 Bridge 接线收尾追加：**当前 `FeatureBridgeRuntime` 与既有生产入口的离线绑定已审阅
+> **2026-09-03 Bridge 接线收尾与 OFFLINE-GAP 追加：**当前 `FeatureBridgeRuntime` 与既有生产入口的离线绑定已审阅
 > 并更新为 `16 bindings / 10 wired / 6 declared-only`。本次 wired 仅表示 source-bound Gate 已在
 > 入口调用，不表示真实 Campaign/Mission、LIVE 或 SAVE 验收；六组 `declared-only` 仍不得宣称已接入。
-> 项目内 Debug/Release Stage 已重新生成但未部署；只读审计为 `status=PASS`、
-> `installedMatchesStage=false`、`gameRunning=false`。本轮没有启动游戏、读取/写入真实存档、部署或切换默认入口。
+> 项目内 Debug/Release Stage 已重新生成但未部署。较早环境检查曾记录 `status=PASS`、
+> `installedMatchesStage=false`、`gameRunning=false`；本轮 `PersistenceIdentityAudit` 因 partial clone
+> 缺少 89 个基线源码 blob 按设计返回 `FAIL`/fail-closed，不能把当前审计写成 PASS。本轮没有启动游戏、
+> 读取/写入真实存档、部署或切换默认入口。
+
+> OFFLINE-GAP 同步内容包括：真实方法体/顺序 validator 与负例、纯 net8 Bridge 隔离 runner、Phase 8
+> 入口候选 inventory（仅补 `entryPaths`）、PersistenceIdentityAudit 单快照/batch/progress/quiet，
+> 以及 ModelCatalog 稳定错误码、受限参数和中英文 formatter。20 个领域仍为
+> `ownerAssignmentState=ROLE_PLACEHOLDER`、`entryCoverage=REPRESENTATIVE`；readiness 继续 `BLOCKED`。
 
 ## Git 与范围
 
@@ -194,7 +201,7 @@ python -B -m unittest discover -s .\tools\BridgeBindingContractTests -p 'test_*.
 ## 可重复命令
 
 ```powershell
-Set-Location -LiteralPath 'F:\AnimusForge-main'
+Set-Location -LiteralPath 'E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel'
 
 python -B -m unittest discover -s .\tools\PhaseEightReadiness -p 'test_*.py' -v
 python -B .\tools\BridgeFixtureContractTests\validate_bridge_fixtures.py
@@ -203,8 +210,8 @@ python -B .\tools\CompositionMatrixContractTests\validate_composition_matrix.py
 python -B .\tools\ModuleCatalogContractTests\validate_module_catalog.py
 
 python -B .\tools\PhaseEightReadiness\readiness.py `
-  --project-root 'F:\AnimusForge-main' `
-  --manifest 'F:\AnimusForge-main\docs\phase8\all-missing.evidence.json'
+  --project-root 'E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel' `
+  --manifest 'E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel\docs\phase8\all-missing.evidence.json'
 # 必须 BLOCKED / exit 2；这是缺证据的正确结果。
 ```
 
@@ -228,6 +235,7 @@ Debug 测试安装，也不能把该安装当作发布验收。
 Native/Scene request在副作用前绑定同一 queued/started `DuelId`，Courier明确拒绝，legacy-unbound
 保持独立。Duel仍需真实Campaign/Mission的accept/reject/cancel/death/exit、stake/Memory、旧档和
 Fourberie证据，不能把compiled/fixture提升为LIVE或SAVE。`LOCAL-7-C2`、`LOCAL-7-C3` 与本轮
-Persistence/Profile/Identity 离线收尾均已完成；没有新的破坏性代码切片获授权。下一步由实机人员
+Persistence/Profile 离线收尾已完成；Identity 契约为 `5/5 PASS`，但当前真实审计因 partial clone
+缺少 `89` 个基线源码 blob 按设计 fail-closed，不应把旧的 `99/35 PASS` 当作当前结果。没有新的破坏性代码切片获授权。下一步由实机人员
 按本验收包补齐20领域LIVE/SAVE、Bridge和rollback drill；在真实证据到齐前，工具闭环不能替代
 任何Duel、WorldMap或其他领域的LIVE/SAVE证据。

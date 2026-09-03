@@ -1,20 +1,22 @@
 # AF 主体重构：GitHub 发布与制作组总交接
 
-日期：2026-09-02；2026-09-03追加 Bridge 接线收尾
+日期：2026-09-02；2026-09-03追加 Bridge 接线收尾与 OFFLINE-GAP 更正
 
-工作区：`F:\AnimusForge-main`
+工作区：`E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`
 
 本地分支：`refactor/prepare-af-restructure`
 
 远端交接分支：`origin/refactor/prepare-af-restructure`
 
 > 本文 2026-09-02 的同步段落和 `3 wired / 13 declared-only` 数字是历史快照；当前状态以
-> 下方 2026-09-03 追加章节为准。
+> 下方 2026-09-03 追加章节及 `docs/handoffs/2026-09-03-bridge-binding-closeout.md` 的
+> OFFLINE-GAP 追加为准。
 
 ## 2026-09-03 Bridge 接线收尾追加（以本节为准）
 
 - 接续起点为本地 `HEAD 231f6cb6`、远端 `e5af64fb`，ahead 2；本轮只在项目工作区完成
-  Bridge 接线、配置安全修复、文档同步和离线审查，随后按授权执行普通 fast-forward push。
+  Bridge 接线、配置安全修复、文档同步和离线审查。当前工作树尚未 push，最新本地提交见
+  `ab6ce72`。
 - 当前清单结果：`16 bindings / 10 wired / 6 declared-only / configEnabled=10`。
 - 10 个 source-bound wired：`conversation-gateway`、`conversation-action`、`action-memory`、
   `action-economy`、`policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
@@ -25,7 +27,8 @@
 - `FeatureBridgeRuntime` 现在只从带 `SubModule.xml` 和 `ModuleData` 的 `AnimusForge` 模块边界找配置；
   缺失配置使用审阅过的内建默认值，损坏/未知字段/非法版本/非规范大小写 ID fail-closed。Action、
   Memory Bridge 禁用仍保持现有拒绝/`NoOp` 语义，不回放 legacy 副作用。
-- 验证：Bridge validator `PASS`；Bridge Python 单测 `15/15`；PhaseEightReadiness `62/62`；
+- 验证：Bridge validator `PASS`；Bridge Python 单测历史切片为 `15/15`，OFFLINE-GAP 追加后
+  当前为 `20/20`；PhaseEightReadiness 历史切片为 `62/62`，追加 inventory 后全套为 `68/68`；
   BridgeFixture `10 cases / 6 invariants`；Composition `18/24`；ModuleCatalog `8/3/16/8`；
   Foundation `6/8/16`；GameAdapter `14`；Persistence/Profile `95/121/44`；LiveHostReadiness `PASS`；
   Interaction、Duel、Economy、Configured Gateway/Validation、Knowledge/RAG、Production hosts 与
@@ -33,7 +36,7 @@
   Stage 均 `0 warning / 0 error`。
 - 本轮没有启动 Bannerlord、进入 Campaign/Mission、读取或写入真实存档、执行 LIVE/SAVE、部署、
   切换默认入口、删除 facade 或修改终端 UI；阶段 7 总体仍 `VERIFY`，阶段 8 执行仍 `BLOCKED`。
-- 授权推送命令仍仅限：
+- 推送仍未执行；若未来获得明确授权，命令才限于：
 
   ```powershell
   git push origin HEAD:refs/heads/refactor/prepare-af-restructure
@@ -46,8 +49,9 @@
 
 因此：
 
-> **当前代码、HANDOFF与制作组简报可以推送GitHub并转交；阶段8仍只能做非破坏性准备，不能把这次
-> push解释为阶段7 DONE、阶段8执行许可、默认切换或可发布游戏版本。**
+> **当前代码、HANDOFF 与制作组简报尚未 push；未来如获得明确授权才可按下方历史同步规则转交。
+> 阶段8仍只能做非破坏性准备，不能把任何 push 解释为阶段7 DONE、阶段8执行许可、默认切换或
+> 可发布游戏版本。**
 
 ## 本次GitHub同步（2026-09-02历史快照）
 
@@ -137,7 +141,8 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
 
 ### 阶段8准备工具
 
-- PhaseEightReadiness：62/62 PASS。
+- PhaseEightReadiness：`62/62 PASS` 为 2026-09-02 历史快照；OFFLINE-GAP 追加入口 inventory 后
+  当前全套为 `68/68 PASS`。
 - Bridge：10 cases / 6 invariants PASS。
 - Composition：18 cases / 24 invariants PASS。
 - ModuleCatalog：8 modules / 3 profiles / 16 invalid cases / 8 health states PASS。
@@ -149,8 +154,10 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
   测试；C3 测试 `4/4 PASS`，Python 编译与 `git diff --check` 通过。
 - Persistence/Profile/Config scanner 已排除 `.tmp`、artifacts、缓存和依赖输出，支持跨 partial
   文件解析唯一常量；catalog 同步至 44 个 flattened dictionary key。
-- Persistence/Profile/Config：95 literal / 121 typed / 8 types / 3 profiles / 44 flattened，
-  Persistence Identity：99 SyncData / 35 CampaignBehavior / AnimusForge / Bootstrap-only，均 PASS。
+- Persistence/Profile/Config：95 literal / 121 typed / 8 types / 3 profiles / 44 flattened，历史证据
+  仍 PASS。Persistence Identity 的 `99 SyncData / 35 CampaignBehavior / AnimusForge / Bootstrap-only`
+  是较早完整基线快照；当前 partial clone 缺少 `89` 个基线源码 blob，真实审计按设计 fail-closed，
+  不能记录为当前 PASS。
 - 阶段8只读复核保持 20 domains / 16 bridges / 18 cleanup candidates，owner 与 entry 仍未认领；
   `all-missing` 仍 `BLOCKED` / exit 2。
 - 详见 `docs/handoffs/2026-09-02-offline-closeout-c3-persistence.md`。
@@ -167,6 +174,22 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
   fallback，没有新 Tick 扫描、网络、存档或 live 对象跨边界。当前 10 wired 的完整清单见上方
   2026-09-03 追加章节和 `docs/phase8/bridge-binding-manifest.json`。
 - 1.3/1.4/Bootstrap Debug Stage 已重新编译，均 `0 warning / 0 error`；尚未启动游戏或读取真实存档。
+
+### OFFLINE-GAP-20260903 离线缺口追加
+
+- Bridge validator 已加入真实 C# 方法体/顺序解析及跨方法、错误 ID、伪造调用、缓存初始化负例；
+  当前 Bridge 单测为 `20/20 PASS`。
+- 新增纯 `net8.0` Bridge runtime isolation runner，`9 scenarios PASS`；每个场景独立子进程，
+  不加载 Bannerlord DLL，并验证缺失/空列表/损坏配置、CWD 陷阱、fallback 和稳定 reason code。
+- 新增 `tools/PhaseEightReadiness/entry_inventory.py`，只补 8 个领域的真实候选 `entryPaths`，
+  输出稳定排序和 `reviewed-pattern` 来源；20 个领域仍是 `ROLE_PLACEHOLDER` /
+  `REPRESENTATIVE`。
+- `PersistenceIdentityAudit.py` 改为单快照、单次 baseline tree、`git cat-file --batch`，增加
+  stderr 阶段进度和 `--quiet`。契约测试 `5/5 PASS`；当前 partial clone 缺少 89 个基线源码 blob，
+  真实审计按设计返回 `FAIL`/fail-closed，不再把旧的 `99/35 PASS` 误写成当前结果。
+- `LegacyModelCatalogGateway` 增加 `model_catalog.*` 稳定错误码、受限只读 `ErrorArguments`、
+  中英文 formatter；DuelSettings/ModOnboarding 已按错误码映射，ModelCatalog replay PASS。
+- `all-missing` readiness 当前仍为 `BLOCKED` / exit `2`，不改变任何发布或默认入口授权。
 
 ### 用户授权的 Debug 编译与测试部署（本地接续）
 
@@ -241,7 +264,7 @@ runner均PASS，两份78项dependency manifest一致。Release只代表Release r
 
 ## 新任务启动语
 
-> 请先读取 `F:\AnimusForge-main\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`、
+> 请先读取 `E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel\docs\handoffs\2026-09-02-github-publish-and-team-handoff.md`、
 > `docs\handoffs\2026-09-02-stage7-stage8-team-brief.md`和公共执行台账；fetch
 > `origin/refactor/prepare-af-restructure`但不要覆盖本地未提交内容。阶段7保持VERIFY、阶段8执行保持
 > BLOCKED。C3 与 Persistence 离线收尾已完成；Debug 测试模块已按明确授权部署，但尚未启动游戏。

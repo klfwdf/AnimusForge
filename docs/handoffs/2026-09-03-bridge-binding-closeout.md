@@ -2,7 +2,7 @@
 
 日期：2026-09-03
 
-工作区：`F:\AnimusForge-main`
+工作区：`E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`
 
 分支：`refactor/prepare-af-restructure`
 
@@ -10,8 +10,8 @@
 
 ## 结论
 
-本轮完成 Bridge 配置与既有生产入口的离线安全接线，并完成源码、fixture、compiled 和双版本
-Stage 回归。当前清单为：
+本轮完成 Bridge 配置与既有生产入口的离线安全接线，并完成 OFFLINE-GAP-20260903 的离线
+修复、源码/fixture/compiled 和双版本 Stage 回归。当前清单为：
 
 ```text
 16 bindings / 10 wired / 6 declared-only / configEnabled=10
@@ -20,6 +20,50 @@ Stage 回归。当前清单为：
 这表示十组 Bridge 已有经过审阅的 source-bound Gate；六组仍只有合同/owner/required cases
 登记。它不代表真实 Campaign/Mission、LIVE、SAVE、旧存档、默认入口切换或发布完成。阶段 7
 总体保持 `VERIFY`，阶段 8 执行保持 `BLOCKED`。
+
+## OFFLINE-GAP-20260903 追加（当前结论）
+
+本节覆盖本 handoff 原有 Bridge 收尾记录之后的离线缺口修复；当前本地 HEAD 为
+`ab6ce72dffa45fb0b9bc8f5f00669b3c33b5981a`，相对 `origin/refactor/prepare-af-restructure`
+为 ahead 8 / behind 0，尚未 push。两个既有 `.branch-archive*.zip` 未加入提交、未删除、未读取。
+
+### 修复范围
+
+- Bridge validator 现在会屏蔽 C# 注释/字符串，按真实方法声明和花括号提取方法体，校验 gate
+  是否位于凭据、网络、owner 回调、提交或玩法副作用之前；`conversation-siege` 额外检查缓存
+  字段初始化器。负例覆盖跨方法 gate、gate 晚于副作用、错误 ID、伪造调用和错误缓存初始化。
+- 新增纯 `net8.0` `BridgeRuntimeIsolationTests`，每个场景使用独立子进程和临时
+  `AnimusForge/ModuleData`；覆盖缺配置、`enabled=[]`、malformed/duplicate/unknown/大小写错误/
+  版本错误、CWD 同名诱导配置、fallback 一致性和 `bridge.unknown`/
+  `bridge.contract_version_mismatch`/`bridge.stale_generation` reason code。
+- 新增 Phase 8 `entry_inventory.py`，按审阅 pattern 稳定排序输出真实候选路径及来源原因；只补
+  `entryPaths`，20 个领域仍为 `ROLE_PLACEHOLDER` / `REPRESENTATIVE`，不扩展 Bridge runtime
+  entryPaths，也不制造 COMPLETE/LIVE/SAVE 证据。
+- `PersistenceIdentityAudit.py` 当前源码只枚举/读取一次，基线 tree 只加载一次，基线源码使用
+  单次 `git cat-file --batch`；新增 stderr 阶段进度和 `--quiet`，`--json` 保持 stdout 纯 JSON，
+  失败时 fail-closed。
+- `LegacyModelCatalogGateway` 增加稳定错误码、受限只读 `ErrorArguments` 和中英文 formatter；
+  `DuelSettings`、`ModOnboardingBehavior` 按错误码映射，同时保留旧构造函数和中文 UI 文案。
+
+### 当前验证
+
+- Bridge validator：`16 bindings / 10 wired / 6 declared-only`；Bridge Python 单测 `20/20 PASS`。
+- Bridge 隔离 runner：`9 scenarios PASS`；Phase 8 inventory `PASS`，Phase 8 全套单测 `68/68 PASS`。
+- PersistenceIdentityAudit 契约测试：`5/5 PASS`。真实审计因 partial clone 缺少 `89` 个基线源码
+  blob 返回 `FAIL`（`baseline source blob unavailable (89 missing)`），这是预期的 fail-closed，
+  不能记录为当前 identity PASS。
+- ModelCatalog replay：`PASS`，覆盖 URL/API key/cancellation/HTTP/transport 错误码、中文兼容文案、
+  英文 fallback、参数边界和凭据不泄露。
+- Debug/Release 的 1.3、1.4 和 Bootstrap unified Stage 均为 `0 warning / 0 error`；只做项目内
+  `-Stage`，未部署。
+- `all-missing` readiness 仍为 `BLOCKED` / exit `2`，`fullProjectReleaseReady=false`，所有
+  delete/defaultSwitch/deploy/push/publish 授权均为 `false`。
+
+### 不变边界
+
+未启动游戏、未进入真实 Campaign/Mission、未读取或写入真实存档、未部署、未切换默认入口、未删除
+facade，未修改模块发布结构、程序集身份、`SubModule.xml`、`SyncData` key/type 或构建脚本。
+阶段 7 继续 `VERIFY`，阶段 8 继续 `BLOCKED`。
 
 ## 接续与范围
 
@@ -80,13 +124,15 @@ OFFLINE/LIVE/SAVE 证据后，才能另行变更 `runtimeBinding.state`。
 - `python -B .\tools\BridgeBindingContractTests\validate_bridge_bindings.py`：
   `PASS bridgeBindings=16 wired=10 declaredOnly=6 configEnabled=10`。
 - `python -B -m unittest discover -s .\tools\BridgeBindingContractTests -p 'test_*.py' -v`：
-  `15/15 PASS`，包含非规范大小写 ID 拒绝。
-- PhaseEightReadiness：`62/62 PASS`；`all-missing` 按设计返回 `BLOCKED`/exit 2。
+  历史 Bridge 接线切片为 `15/15 PASS`；OFFLINE-GAP 追加负例后当前为 `20/20 PASS`。
+- PhaseEightReadiness：历史接线切片为 `62/62 PASS`；OFFLINE-GAP 入口 inventory 与追加测试当前为
+  `68/68 PASS`；`all-missing` 按设计返回 `BLOCKED`/exit 2。
 - BridgeFixture：`10 cases / 6 invariants PASS`；Composition：`18 cases / 24 invariants PASS`。
 - ModuleCatalog：`8 modules / 3 profiles / 16 invalid cases / 8 health states PASS`；Foundation：
   `6 contracts / 8 health states / 16 invalid cases PASS`；GameAdapter：`14 cases PASS`。
-- Persistence/Profile：`95 literal / 121 typed / 44 flattened PASS`；Identity：`99/35`，模块身份
-  `AnimusForge`、Bootstrap-only 通过；LiveHostReadiness `PASS` 且 `gameRunning=0`。
+- Persistence/Profile：`95 literal / 121 typed / 44 flattened PASS`；较早完整基线上的 Identity
+  结果为 `99/35`、模块身份 `AnimusForge`、Bootstrap-only；本轮 partial clone 重跑因 89 个基线
+  blob 不可用而按设计 fail-closed。LiveHostReadiness 历史检查为 `PASS` 且 `gameRunning=0`。
 - Interaction、Duel、Economy、Configured Gateway/Validation、Knowledge/RAG、Production host、
   Production Duel fresh replay（`35/35`，1.3/1.4 parity）均通过。
 - 1.3/1.4/Bootstrap Debug 与 Release unified Stage：均 `0 warning / 0 error`。
