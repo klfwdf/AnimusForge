@@ -71,6 +71,7 @@ internal static class Program
         }
 
         ChildResult invalidResult = RunChild("invalid", "{not-json", false);
+        AssertFallbacksMatchDefinitions(invalidResult);
         Require(FeatureBridgeRuntime.Evaluate("not-a-bridge", 1).ReasonCode == "bridge.unknown", "unknown reason code mismatch");
         Require(FeatureBridgeRuntime.Evaluate(FeatureBridgeIds.ConversationGateway, 999).ReasonCode == "bridge.contract_version_mismatch", "contract mismatch reason code mismatch");
         Require(FeatureBridgeRuntime.Evaluate(FeatureBridgeIds.ConversationGateway, 1, 7, 8).ReasonCode == "bridge.stale_generation", "stale generation reason code mismatch");
@@ -84,9 +85,19 @@ internal static class Program
         HashSet<string> enabled = result.Enabled.ToHashSet(StringComparer.Ordinal);
         Require(enabled.SetEquals(expectedEnabled), name + " enabled set mismatch");
         Require(result.Definitions.Count == FeatureBridgeIds.All.Count, name + " definition count mismatch");
+        AssertFallbacksMatchDefinitions(result);
         if (!expectedValid)
         {
             Require(result.Enabled.Count == 0, name + " invalid configuration must disable all bridges");
+        }
+    }
+
+    private static void AssertFallbacksMatchDefinitions(ChildResult result)
+    {
+        foreach (DecisionResult decision in result.Decisions)
+        {
+            DefinitionResult definition = result.Definitions.Single(item => item.Id == decision.Id);
+            Require(decision.Fallback == definition.Fallback, "fallback mismatch for " + decision.Id);
         }
     }
 
