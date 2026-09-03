@@ -5646,9 +5646,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (TryGetSceneSummonConversationSessionForAgentIndex(agent.Index) != null)
 		{
-			return "";
+			return "【当前是传唤后的会面】若玩家明确要求你在当前场景跟随、陪同或保护玩家，且你在正文明确同意，系统会记录开始跟随；若玩家明确表示会面结束或要求你回去，系统会记录停止跟随并恢复岗位。若玩家改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若玩家改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。";
 		}
-		return IsAgentFollowingPlayerBySceneCommand(agent) ? "【当前正跟随玩家】若此人明确让你停止跟随且你同意，系统会记录停止跟随；若此人改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若此人改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。" : "";
+		return IsAgentFollowingPlayerBySceneCommand(agent)
+			? "【当前正跟随玩家】若玩家明确要求你停止跟随、退下或回到岗位，且你在正文明确同意，系统会记录停止跟随；若玩家改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若玩家改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。"
+			: "【场景跟随】若玩家明确要求你在当前场景跟随、陪同、保护或随行，且你在正文明确无条件同意，系统会记录开始跟随；若你当前已经跟随，玩家明确要求停止跟随、退下或回到岗位，且你明确同意，系统会记录停止跟随。这里的跟随只适用于当前场景，不是大地图队伍命令。正文只自然说话，不要自己写标签。";
 	}
 
 	private static bool HasPartyTransferRuleContext(string extras)
@@ -18034,7 +18036,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool stopFollow = TryConsumeSceneFollowStopTag(npc, agent, ref content);
 		bool startFollow = TryConsumeSceneFollowStartTag(npc, agent, ref content);
 		bool endChat = TryConsumeSceneEndChatActionTag(npc, agent, ref content, out sceneSummonConversationSession);
-		bool summon = !openLordsHall && !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
+		bool summon = !openLordsHall && !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, sceneGuideTargets, ref content, out activeSceneSummonRequest);
 		bool guide = !openLordsHall && !string.IsNullOrWhiteSpace(content) && TryTriggerSceneGuideAction(npc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
 		bool handled = setsOwnedMassacre || openLordsHall || stopFollow || startFollow || endChat || summon || guide;
 		if (!handled)
@@ -25435,7 +25437,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			foreach (string item in list4)
 			{
-				SceneSummonPromptTarget sceneSummonPromptTarget = ResolveSceneMechanismTargetByToken(summonCandidates, item, (SceneSummonPromptTarget x) => x.PromptId, (SceneSummonPromptTarget x) => x.DisplayName);
+				SceneSummonPromptTarget sceneSummonPromptTarget = ResolveSceneSummonPromptTargetByToken(summonCandidates, guideCandidates, item);
 				if (sceneSummonPromptTarget == null)
 				{
 					continue;
@@ -29198,7 +29200,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							bool flag3 = TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
 							bool flag2 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flag && !flagSceneTaunt && !flagMeetingRelease && ShoutUtils.TryTriggerDuelAction(matchedNpc, playerDirectedActionText, ref content);
-							bool flag6 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneSummonAction(matchedNpc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
+							bool flag6 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneSummonAction(matchedNpc, agent, sceneSummonTargets, sceneGuideTargets, ref content, out activeSceneSummonRequest);
 							bool flag10 = !flag3 && allowPlayerDirectedActions && !flagNpcSurrender && !flagSceneTaunt && !flagMeetingRelease && TryTriggerSceneGuideAction(matchedNpc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
 							if (!string.IsNullOrWhiteSpace(content))
 							{
@@ -32487,7 +32489,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return null;
 	}
 
-	private bool TryTriggerSceneSummonAction(NpcDataPacket npc, Agent agent, List<SceneSummonPromptTarget> summonTargets, ref string content, out ActiveSceneSummonRequest preparedRequest)
+	private static SceneSummonPromptTarget ResolveSceneSummonPromptTargetByToken(
+		IEnumerable<SceneSummonPromptTarget> summonTargets,
+		IEnumerable<SceneGuidePromptTarget> guideTargets,
+		string token)
+	{
+		SceneSummonPromptTarget direct = ResolveSceneMechanismTargetByToken(
+			summonTargets,
+			token,
+			(SceneSummonPromptTarget x) => x.PromptId,
+			(SceneSummonPromptTarget x) => x.DisplayName);
+		if (direct != null)
+		{
+			return direct;
+		}
+
+		SceneGuidePromptTarget guide = ResolveSceneMechanismTargetByToken(
+			guideTargets,
+			token,
+			(SceneGuidePromptTarget x) => x.PromptId,
+			(SceneGuidePromptTarget x) => x.DisplayName);
+		if (guide == null || guide.LocationCharacter == null)
+		{
+			return null;
+		}
+
+		// The guide list intentionally contains off-location role targets (for example
+		// shop workers). Reuse that same LocationCharacter for summon execution instead
+		// of dropping a valid model tag simply because it was not a visible NPC.
+		return new SceneSummonPromptTarget
+		{
+			PromptId = guide.PromptId,
+			DisplayName = guide.DisplayName,
+			LocationCode = guide.LocationCode,
+			LocationCharacter = guide.LocationCharacter,
+			SourceLocation = guide.SourceLocation
+		};
+	}
+
+	private bool TryTriggerSceneSummonAction(NpcDataPacket npc, Agent agent, List<SceneSummonPromptTarget> summonTargets, List<SceneGuidePromptTarget> guideTargets, ref string content, out ActiveSceneSummonRequest preparedRequest)
 	{
 		preparedRequest = null;
 		if (string.IsNullOrWhiteSpace(content))
@@ -32521,17 +32561,28 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			foreach (string item in list2)
 			{
-				SceneSummonPromptTarget sceneSummonPromptTarget = ResolveSceneMechanismTargetByToken(summonTargets, item, (SceneSummonPromptTarget x) => x.PromptId, (SceneSummonPromptTarget x) => x.DisplayName);
+				SceneSummonPromptTarget sceneSummonPromptTarget = ResolveSceneSummonPromptTargetByToken(summonTargets, guideTargets, item);
 				if (sceneSummonPromptTarget != null && sceneSummonPromptTarget.LocationCharacter != null && hashSet.Add(sceneSummonPromptTarget.LocationCharacter))
 				{
 					list.Add(sceneSummonPromptTarget);
 				}
 			}
 		}
-		if (list == null || list.Count == 0 || summonTargets == null || summonTargets.Count == 0)
+		if (list == null || list.Count == 0)
 		{
+			Logger.Log(
+				"SceneSummon",
+				"tag_target_unresolved agent=" + (agent?.Index ?? npc?.AgentIndex ?? -1)
+				+ " summonCandidates=" + (summonTargets?.Count ?? 0)
+				+ " guideCandidates=" + (guideTargets?.Count ?? 0));
 			return false;
 		}
+		Logger.Log(
+			"SceneSummon",
+			"tag_targets_resolved agent=" + (agent?.Index ?? npc?.AgentIndex ?? -1)
+			+ " targets=" + string.Join(",", list.Select((SceneSummonPromptTarget x) => x?.DisplayName ?? ""))
+			+ " summonCandidates=" + (summonTargets?.Count ?? 0)
+			+ " guideCandidates=" + (guideTargets?.Count ?? 0));
 		return StartSceneSummonBatchAction(npc, agent, list, out preparedRequest);
 	}
 
@@ -37637,6 +37688,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished,
 			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (mission.CurrentTime + num))
 		};
+		Logger.Log(
+			"SceneFollow",
+			"scheduled agent=" + agentIndex
+			+ " action=" + (startFollow ? "start" : "stop")
+			+ " waitPlayback=" + (playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished)
+			+ " executeAt=" + ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? "playback" : (mission.CurrentTime + num).ToString("F2")));
 	}
 
 	private void FlushSceneFollowCommandAfterSpeech(int agentIndex)
@@ -37649,6 +37706,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 		if (!CanAgentParticipateInSceneSpeech(agent))
 		{
+			Logger.Log("SceneFollow", "flush_skip agent=" + agentIndex + " reason=agent_unavailable action=" + (value.StartFollow ? "start" : "stop"));
 			return;
 		}
 		if (value.StartFollow)
@@ -37662,6 +37720,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
 			ReturnAgentAfterStoppingSceneFollow(agent);
 		}
+		Logger.Log("SceneFollow", "flushed agent=" + agentIndex + " action=" + (value.StartFollow ? "start" : "stop") + " following=" + IsAgentFollowingPlayerBySceneCommand(agent));
 	}
 
 	private void ScheduleMeetingReleaseAfterSpeech(int agentIndex, Hero targetHero, SceneSpeechPlaybackInfo playbackInfo)
