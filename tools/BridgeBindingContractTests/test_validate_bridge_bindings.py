@@ -141,6 +141,90 @@ class BridgeBindingManifestTests(unittest.TestCase):
 
         self.assert_manifest_rejected(mutate)
 
+    def test_gate_in_other_method_is_rejected(self) -> None:
+        def mutate(document: dict) -> None:
+            source_path = ROOT / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs"
+            original = source_path.read_text(encoding="utf-8")
+            altered = original.replace(
+                "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile))",
+                "// gate moved out of the reviewed method\n        if (false)",
+                1,
+            ).replace(
+                "    public Task<LlmGenerateResult> GenerateAsync(",
+                "    private static bool FakeGate() => FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile);\n\n    public Task<LlmGenerateResult> GenerateAsync(",
+                1,
+            )
+            with tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                target = root / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs"
+                target.parent.mkdir(parents=True)
+                target.write_text(altered, encoding="utf-8")
+                # Copy the minimum project files needed by the validator and
+                # replace only the reviewed source path through a temp project.
+                for relative in ("docs/phase8/bridge-binding-manifest.json", "docs/phase8/full-domain-readiness-catalog.json", "AnimusForge/ModuleData/FeatureBridges.json"):
+                    destination = root / relative
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_text((ROOT / relative).read_text(encoding="utf-8"), encoding="utf-8")
+                manifest = self.load_manifest()
+                # The full validator requires all source files; this focused
+                # parser assertion exercises the method-body contract directly.
+                with self.assertRaises(validator.BridgeBindingFailure):
+                    validator.validate_wired_method_contract(
+                        "gateway-knowledge-profile", altered,
+                        "GenerateAsync", "FeatureBridgeIds.GatewayKnowledgeProfile",
+                    )
+
+    def test_gate_after_side_effect_is_rejected(self) -> None:
+        source = (ROOT / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs").read_text(encoding="utf-8")
+        altered = source.replace(
+            "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile))",
+            "if (false)",
+            1,
+        ).replace(
+            "        return _configuredGateway.GenerateAsync(request, cancellationToken);",
+            "        _configuredGateway.GenerateAsync(request, cancellationToken);\n        if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile)) { return Task.FromResult(new LlmGenerateResult()); }\n        return Task.FromResult(new LlmGenerateResult());",
+            1,
+        )
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_wired_method_contract(
+                "gateway-knowledge-profile", altered,
+                "GenerateAsync", "FeatureBridgeIds.GatewayKnowledgeProfile",
+            )
+
+    def test_wrong_bridge_id_is_rejected(self) -> None:
+        source = (ROOT / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs").read_text(encoding="utf-8")
+        altered = source.replace(
+            "FeatureBridgeIds.GatewayKnowledgeProfile",
+            "FeatureBridgeIds.ConversationGateway",
+        )
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_wired_method_contract(
+                "gateway-knowledge-profile", altered,
+                "GenerateAsync", "FeatureBridgeIds.GatewayKnowledgeProfile",
+            )
+
+    def test_fake_call_without_method_declaration_is_rejected(self) -> None:
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_wired_method_contract(
+                "gateway-knowledge-profile",
+                "// GenerateAsync(FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile));",
+                "GenerateAsync", "FeatureBridgeIds.GatewayKnowledgeProfile",
+            )
+
+    def test_cached_siege_gate_requires_initializer(self) -> None:
+        source = (ROOT / "AfGcczShoutBridge.cs").read_text(encoding="utf-8")
+        altered = source.replace(
+            "FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationSiege)",
+            "FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway)",
+            1,
+        )
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_wired_method_contract(
+                "conversation-siege", altered,
+                "IsActive", "FeatureBridgeIds.ConversationSiege",
+                cached_gate="ConversationSiegeBridgeEnabled",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

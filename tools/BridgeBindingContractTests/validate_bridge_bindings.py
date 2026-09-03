@@ -49,6 +49,70 @@ EXPECTED_GATE_TOKENS = {
     "gateway-knowledge-profile": "FeatureBridgeIds.GatewayKnowledgeProfile",
     "ui-runtime-integration": "FeatureBridgeIds.UiRuntimeIntegration",
 }
+EXPECTED_METHOD_CONTRACTS = {
+    "conversation-gateway": {
+        "method": "GenerateExchangeAsync",
+        "gate": "FeatureBridgeIds.ConversationGateway",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("_credentialResolver", "SendOnceAsync", "BuildPayload", "PrepareChatRequestJson", "CreateTimeout"),
+    },
+    "conversation-action": {
+        "method": "Commit",
+        "gate": "FeatureBridgeIds.ConversationAction",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("CommitOnce", "TryAppendVisibleExchange", "ValidateAndExecute"),
+    },
+    "action-memory": {
+        "method": "Commit",
+        "gate": "FeatureBridgeIds.ActionMemory",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("CommitOnce", "TryAppendVisibleExchange", "ValidateAndExecute"),
+    },
+    "action-economy": {
+        "method": "ValidateAndExecuteCore",
+        "gate": "FeatureBridgeIds.ActionEconomy",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("_economyPlanner", "_economyExecutionGate", "_economyPort.Replay", "_requestBoundExecute(", "_execute(", "TryQueue(", "Publish"),
+    },
+    "conversation-siege": {
+        "method": "IsActive",
+        "gate": "FeatureBridgeIds.ConversationSiege",
+        "gate_marker": "ConversationSiegeBridgeEnabled",
+        "cached_gate": "ConversationSiegeBridgeEnabled",
+        "initializer": "FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationSiege)",
+        "before": ("IsTownOrCastleAftermathActive", "VillageAftermathBehavior.IsActive"),
+    },
+    "conversation-courier": {
+        "method": "IsCourierBridgeEnabled",
+        "gate": "FeatureBridgeIds.ConversationCourier",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": (),
+    },
+    "memory-social-reports": {
+        "method": "IsSocialReportsBridgeEnabled",
+        "gate": "FeatureBridgeIds.MemorySocialReports",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": (),
+    },
+    "gateway-knowledge-profile": {
+        "method": "GenerateAsync",
+        "gate": "FeatureBridgeIds.GatewayKnowledgeProfile",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("_configuredGateway.GenerateAsync",),
+    },
+    "policy-world-diplomacy": {
+        "method": "NotifyExternalDiplomacyResolved",
+        "gate": "FeatureBridgeIds.PolicyWorldDiplomacy",
+        "gate_marker": "FeatureBridgeRuntime.Evaluate",
+        "before": ("ResolveInstance", "NotifyExternalDiplomacyResolvedInternal"),
+    },
+    "ui-runtime-integration": {
+        "method": "InitializeRuntime",
+        "gate": "FeatureBridgeIds.UiRuntimeIntegration",
+        "gate_marker": "FeatureBridgeRuntime.Evaluate",
+        "before": ("SceneActionsRuntimeHost.Initialize", "BattleSpeechRuntimeHost.Initialize", "SceneActionsAfBridgeHost.TryInstall"),
+    },
+}
 ALLOWED_BINDING_STATES = {"wired", "declared-only"}
 ALLOWED_TOPOLOGIES = {"PAIR", "CROSS_CUT"}
 ALLOWED_IMPLEMENTATION_STATES = {
@@ -85,6 +149,179 @@ SLUG = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 
 class BridgeBindingFailure(ValueError):
     """Raised when the binding inventory is incomplete or unsafe."""
+
+
+def mask_csharp(text: str) -> str:
+    """Replace comments and string/char literals with spaces, preserving offsets."""
+    chars = list(text)
+    i = 0
+    n = len(chars)
+    state = "code"
+    while i < n:
+        c = chars[i]
+        nxt = chars[i + 1] if i + 1 < n else ""
+        if state == "code":
+            if c == "/" and nxt == "/":
+                chars[i] = chars[i + 1] = " "
+                i += 2
+                state = "line"
+                continue
+            if c == "/" and nxt == "*":
+                chars[i] = chars[i + 1] = " "
+                i += 2
+                state = "block"
+                continue
+            if c == "@" and nxt == '"':
+                chars[i] = chars[i + 1] = " "
+                i += 2
+                state = "verbatim"
+                continue
+            if c == '"':
+                chars[i] = " "
+                i += 1
+                state = "string"
+                continue
+            if c == "'":
+                chars[i] = " "
+                i += 1
+                state = "char"
+                continue
+            i += 1
+            continue
+        if state == "line":
+            if c == "\n":
+                state = "code"
+            else:
+                chars[i] = " "
+            i += 1
+            continue
+        if state == "block":
+            if c == "*" and nxt == "/":
+                chars[i] = chars[i + 1] = " "
+                i += 2
+                state = "code"
+            else:
+                if c != "\n":
+                    chars[i] = " "
+                i += 1
+            continue
+        if state == "verbatim":
+            if c == '"' and nxt == '"':
+                chars[i] = chars[i + 1] = " "
+                i += 2
+            elif c == '"':
+                chars[i] = " "
+                i += 1
+                state = "code"
+            else:
+                if c != "\n":
+                    chars[i] = " "
+                i += 1
+            continue
+        # normal string/char literal
+        if c == "\\":
+            chars[i] = " "
+            if i + 1 < n:
+                if chars[i + 1] != "\n":
+                    chars[i + 1] = " "
+                i += 2
+            else:
+                i += 1
+        elif (state == "string" and c == '"') or (state == "char" and c == "'"):
+            chars[i] = " "
+            i += 1
+            state = "code"
+        else:
+            if c != "\n":
+                chars[i] = " "
+            i += 1
+    return "".join(chars)
+
+
+def _find_matching(text: str, start: int, opening: str, closing: str) -> int:
+    depth = 0
+    for index in range(start, len(text)):
+        if text[index] == opening:
+            depth += 1
+        elif text[index] == closing:
+            depth -= 1
+            if depth == 0:
+                return index
+    return -1
+
+
+def extract_method_body(text: str, method: str) -> str:
+    masked = mask_csharp(text)
+    declaration = re.compile(
+        rf"(?m)^[ \t]*(?:(?:public|private|protected|internal|static|async|virtual|override|sealed|unsafe|new|partial|extern|readonly)\s+)+"
+        rf"[^\n;{{}}]*?\b{re.escape(method)}\s*\("
+    )
+    match = declaration.search(masked)
+    require(match is not None, f"real method declaration is missing: {method}")
+    open_paren = masked.find("(", match.start(), match.end())
+    close_paren = _find_matching(masked, open_paren, "(", ")")
+    require(close_paren >= 0, f"method parameter list is unbalanced: {method}")
+    open_brace = masked.find("{", close_paren + 1)
+    require(open_brace >= 0, f"method body is missing: {method}")
+    close_brace = _find_matching(masked, open_brace, "{", "}")
+    require(close_brace >= 0, f"method body braces are unbalanced: {method}")
+    return masked[open_brace + 1:close_brace]
+
+
+def extract_field_initializer(text: str, field: str) -> str:
+    """Extract one real field initializer, excluding methods/comments/strings."""
+    masked = mask_csharp(text)
+    declaration = re.compile(
+        rf"(?m)^[ \t]*(?:(?:public|private|protected|internal|static|readonly|volatile|const|new|unsafe)\s+)+"
+        rf"[^\n;{{}}=]*?\b{re.escape(field)}\b\s*="
+    )
+    match = declaration.search(masked)
+    require(match is not None, f"real cached field initializer is missing: {field}")
+    end = masked.find(";", match.end())
+    require(end >= 0, f"cached field initializer is unterminated: {field}")
+    return masked[match.end():end]
+
+
+def validate_wired_method_contract(
+    bridge_id: str,
+    source: str,
+    method: str | None = None,
+    gate: str | None = None,
+    *,
+    cached_gate: str | None = None,
+) -> None:
+    """Validate a reviewed gate against one real method body."""
+    contract = EXPECTED_METHOD_CONTRACTS.get(bridge_id)
+    require(contract is not None, f"no reviewed method contract: {bridge_id}")
+    method = method or contract["method"]
+    gate = gate or contract["gate"]
+    masked = mask_csharp(source)
+    body = extract_method_body(source, method)
+    gate_marker = contract["gate_marker"]
+    if contract.get("cached_gate"):
+        gate_index = body.find(gate_marker)
+    else:
+        gate_match = re.search(
+            rf"{re.escape(gate_marker)}\s*\(\s*[^)]*?{re.escape(gate)}",
+            body,
+            flags=re.DOTALL,
+        )
+        gate_index = gate_match.start() if gate_match else -1
+    require(gate_index >= 0, f"bridge gate is not inside reviewed method: {bridge_id}")
+    if not contract.get("cached_gate"):
+        require(gate in body[gate_index:gate_index + 240], f"wrong bridge ID gate: {bridge_id}")
+    for marker in contract.get("before", ()):
+        position = body.find(marker)
+        if position >= 0:
+            require(gate_index < position, f"bridge gate occurs after side effect {marker}: {bridge_id}")
+    if cached_gate or contract.get("cached_gate"):
+        cache_name = cached_gate or contract["cached_gate"]
+        require(re.search(rf"\b{re.escape(cache_name)}\b", body) is not None,
+                f"cached bridge gate is not used in method: {bridge_id}")
+        initializer = contract.get("initializer")
+        field_initializer = extract_field_initializer(source, cache_name)
+        require(initializer and initializer in field_initializer,
+                f"cached bridge gate initializer is missing or has wrong ID: {bridge_id}")
 
 
 def require(condition: bool, message: str) -> None:
@@ -175,6 +412,7 @@ def symbol_is_present(text: str, symbol: str, kind: str, label: str) -> None:
             f"{label} symbol is not a safe identifier")
     token = symbol.rsplit(".", 1)[-1]
     escaped = re.escape(token)
+    searchable = text if kind == "asset" else mask_csharp(text)
     if kind == "type":
         pattern = rf"\b(?:class|interface|struct|enum)\s+{escaped}\b"
     elif kind == "method":
@@ -184,7 +422,7 @@ def symbol_is_present(text: str, symbol: str, kind: str, label: str) -> None:
     else:
         # Asset symbols are canonical top-level JSON keys, not executable code.
         pattern = rf"[\"']{escaped}[\"']\s*:"
-    require(re.search(pattern, text) is not None, f"{label} symbol is not present in its declared file")
+    require(re.search(pattern, searchable) is not None, f"{label} symbol is not present in its declared file")
 
 
 def validate_feature_bridge_config(config: dict[str, Any]) -> dict[str, int]:
@@ -267,13 +505,23 @@ def validate_runtime_binding(
         require((entry_path, symbol) == expected, f"wired runtime entry does not match reviewed gate: {bridge_id}")
         require(frequency in ALLOWED_WIRED_FREQUENCIES, f"wired runtime frequency is invalid: {bridge_id}")
         source = read_source(project, entry_path, source_cache)
-        require("FeatureBridgeRuntime" in source and "FeatureBridgeIds" in source,
+        masked_source = mask_csharp(source)
+        require("FeatureBridgeRuntime" in masked_source and "FeatureBridgeIds" in masked_source,
                 f"wired entry lacks an explicit FeatureBridgeRuntime gate: {bridge_id}")
         gate_token = EXPECTED_GATE_TOKENS.get(bridge_id)
         if gate_token is not None:
-            require(gate_token in source,
+            require(gate_token in masked_source,
                     f"wired entry lacks the expected bridge ID gate: {bridge_id}")
         symbol_is_present(source, symbol, "method", f"runtime binding {bridge_id}")
+        contract = EXPECTED_METHOD_CONTRACTS.get(bridge_id)
+        require(contract is not None, f"wired bridge lacks reviewed method contract: {bridge_id}")
+        validate_wired_method_contract(
+            bridge_id,
+            source,
+            symbol,
+            gate_token,
+            cached_gate=contract.get("cached_gate"),
+        )
     else:
         require(expected is None, f"reviewed runtime gate was left declared-only: {bridge_id}")
         require(runtime.get("entryPath") is None and runtime.get("symbol") is None,

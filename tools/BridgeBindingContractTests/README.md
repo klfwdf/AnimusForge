@@ -6,6 +6,7 @@
 - 每个 entry path 必须是项目内真实文件，symbol 必须在声明文件中存在；
 - 拒绝绝对路径、路径遍历、生成物/缓存目录和终端 UI 文件；
 - `wired` 只能用于已经审阅的十个安全入口，并要求源码出现对应的 `FeatureBridgeRuntime`/`FeatureBridgeIds` Gate；
+- wired gate 通过 C# 注释/字符串屏蔽、真实方法声明和花括号配对提取方法体；同时固定 gate 必须早于凭据读取、网络、owner 回调、提交或玩法副作用。`conversation-siege` 还必须校验缓存字段初始化器中的 Bridge ID；
 - `AnimusForge/ModuleData/FeatureBridges.json` 必须是严格的 schema/contract 配置，只能启用这十个已审阅入口；空数组表示显式全部关闭；
 - 其余六个 Bridge 必须是 `declared-only`，不允许把设计登记冒充运行时接线；
 - 频率禁止使用 `tick`、`per-frame` 或 `full-scan`。
