@@ -23,9 +23,10 @@
 
 ## OFFLINE-GAP-20260903 追加（当前结论）
 
-本节覆盖本 handoff 原有 Bridge 收尾记录之后的离线缺口修复；当前本地 HEAD 为
-`e7db736673599d2ccc83cd2db25a6fbb4330e137`，相对 `origin/refactor/prepare-af-restructure`
-为 ahead 10 / behind 0，尚未 push。两个既有 `.branch-archive*.zip` 未加入提交、未删除、未读取。
+本节覆盖本 handoff 原有 Bridge 收尾记录之后的离线缺口修复；代码修复提交为
+`ab6ce72`，其后的 handoff 文档提交均保留在当前本地分支，尚未 push。接手时请用
+`git rev-parse HEAD` 和 `git rev-list --left-right --count origin/refactor/prepare-af-restructure...HEAD`
+核对最新文档提交及 ahead/behind。两个既有 `.branch-archive*.zip` 未加入提交、未删除、未读取。
 
 ### 修复范围
 
