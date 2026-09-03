@@ -5,7 +5,7 @@
 > **当前状态（2026-09-03）：**本简报中的 2026-09-02 编译、部署、Identity 和推送描述均为
 > 历史快照。当前工作区为
 > `E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`，本地 HEAD
-> `ab6ce72` 及其后的本地 handoff 文档提交，尚未 push。当前结论以
+> `ab6ce72` 及其后的本地 handoff 文档提交已随本次 push 同步。当前结论以
 > `docs/handoffs/2026-09-03-bridge-binding-closeout.md` 的 `OFFLINE-GAP-20260903` 追加为准：
 > Bridge `20/20`、Phase 8 `68/68`、Bridge isolation `9 scenarios`、Persistence contract `5/5`
 > 和 ModelCatalog replay 均通过；真实 PersistenceIdentityAudit 因缺少 `89` 个基线源码 blob
@@ -14,7 +14,7 @@
 ## GitHub交接状态（历史快照与当前更正）
 
 - 远端目标：`origin/refactor/prepare-af-restructure`；2026-09-02 原计划随收尾提交普通 push，
-  但当前 OFFLINE-GAP 文档和测试提交尚未 push。
+  OFFLINE-GAP 文档和测试提交已在本次 push 中同步并完成回读。
 - 自动化`af-7-8`与旧`af`均已暂停；没有AF后台定时任务继续改仓库。
 - 制作组接手前先`git fetch origin --prune`，确认远端分支HEAD，再在不覆盖本地改动的前提下接续。
 - 总交接：`docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`。

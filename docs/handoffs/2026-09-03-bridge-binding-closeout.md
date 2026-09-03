@@ -24,7 +24,7 @@
 ## OFFLINE-GAP-20260903 追加（当前结论）
 
 本节覆盖本 handoff 原有 Bridge 收尾记录之后的离线缺口修复；代码修复提交为
-`ab6ce72`，其后的 handoff 文档提交均保留在当前本地分支，尚未 push。接手时请用
+`ab6ce72`，其后的 handoff 文档提交已通过本次 push 同步到远端。接手时请用
 `git rev-parse HEAD` 和 `git rev-list --left-right --count origin/refactor/prepare-af-restructure...HEAD`
 核对最新文档提交及 ahead/behind。两个既有 `.branch-archive*.zip` 未加入提交、未删除、未读取。
 

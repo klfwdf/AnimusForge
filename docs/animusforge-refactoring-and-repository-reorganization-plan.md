@@ -4,7 +4,7 @@
 
 ## 当前任务（2026-09-03 Bridge 接线收尾接续）
 
-- `OFFLINE-GAP-20260903` VERIFY：已完成 Bridge caller/body validator、Bridge 隔离运行时配置测试、Phase 8 入口候选 inventory、PersistenceIdentityAudit 性能/进度契约和 ModelCatalog 稳定错误码/双语映射；不启动游戏、不读写真实存档、不部署、不切换默认入口、不删除 facade、不修改发布结构、程序集身份、SubModule.xml、SyncData key/type 或构建脚本。owner 为 Foundation/Bridge runtime、Phase8/Tools 与 ModelCatalog adapter/既有 UI owners。阶段 7 保持 `VERIFY`，阶段 8 保持 `BLOCKED`，当前本地提交尚未 push。实现提交：`552d8b9`、`f1a17f7`、`4feac3c`、`4a8e929`、`8f12298`、`ab6ce72`；意图记录提交：`01e7bc1`。
+- `OFFLINE-GAP-20260903` VERIFY：已完成 Bridge caller/body validator、Bridge 隔离运行时配置测试、Phase 8 入口候选 inventory、PersistenceIdentityAudit 性能/进度契约和 ModelCatalog 稳定错误码/双语映射；不启动游戏、不读写真实存档、不部署、不切换默认入口、不删除 facade、不修改发布结构、程序集身份、SubModule.xml、SyncData key/type 或构建脚本。owner 为 Foundation/Bridge runtime、Phase8/Tools 与 ModelCatalog adapter/既有 UI owners。阶段 7 保持 `VERIFY`，阶段 8 保持 `BLOCKED`，本次本地提交已 push。实现提交：`552d8b9`、`f1a17f7`、`4feac3c`、`4a8e929`、`8f12298`、`ab6ce72`；意图记录提交：`01e7bc1`。
 
 - `BRIDGE-CONFIG-20260903` VERIFY（本轮离线收尾已完成；历史记录中的普通 push 授权未在当前工作树执行）：承接 checkpoint `13e21560` 的 Bridge 运行时接线，已完成显式依赖 Production replay、全量离线回归、文档同步和最终安全审查；当前为 `10 wired / 6 declared-only`。owner 为 Foundation/Bridge runtime 与各已接线领域；本轮不启动实机、不读取或写入真实存档、不部署、不切默认入口、不删除 facade、不修改一键编译/覆盖脚本，也不把 offline/compiled 证据提升为 LIVE/SAVE。已审阅路径包括 `Refactor/Runtime/FeatureBridgeRuntime.cs`、已接线 adapters/behaviors、`AnimusForge/ModuleData/FeatureBridges.json`、`docs/phase8/bridge-binding-manifest.json`、`tools/BridgeBindingContractTests/` 及相关总纲/阶段8/handoff；验证包含 Bridge validator/unit、Production/compiled suites、双 API Debug/Release/Bootstrap Stage、git diff/凭据/产物审查。阶段 7 总体仍 `VERIFY`，阶段 8 执行仍 `BLOCKED`。
 
