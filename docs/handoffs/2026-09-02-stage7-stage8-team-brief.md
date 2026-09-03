@@ -1,10 +1,20 @@
 # AF 主体重构：阶段 7 / 阶段 8 制作组简报
 
-日期：2026-09-02；2026-09-03追加 Bridge 接线收尾
+日期：2026-09-02；2026-09-03追加 Bridge 接线收尾与 OFFLINE-GAP 更正
 
-## GitHub交接状态
+> **当前状态（2026-09-03）：**本简报中的 2026-09-02 编译、部署、Identity 和推送描述均为
+> 历史快照。当前工作区为
+> `E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`，本地 HEAD
+> `ab6ce72`，尚未 push。当前结论以
+> `docs/handoffs/2026-09-03-bridge-binding-closeout.md` 的 `OFFLINE-GAP-20260903` 追加为准：
+> Bridge `20/20`、Phase 8 `68/68`、Bridge isolation `9 scenarios`、Persistence contract `5/5`
+> 和 ModelCatalog replay 均通过；真实 PersistenceIdentityAudit 因缺少 `89` 个基线源码 blob
+> 按设计 fail-closed，readiness 仍 `BLOCKED`。未启动游戏、未读写真实存档、未部署、未切默认。
 
-- 远端目标：`origin/refactor/prepare-af-restructure`；本简报与总HANDOFF随当前收尾提交普通push。
+## GitHub交接状态（历史快照与当前更正）
+
+- 远端目标：`origin/refactor/prepare-af-restructure`；2026-09-02 原计划随收尾提交普通 push，
+  但当前 OFFLINE-GAP 文档和测试提交尚未 push。
 - 自动化`af-7-8`与旧`af`均已暂停；没有AF后台定时任务继续改仓库。
 - 制作组接手前先`git fetch origin --prune`，确认远端分支HEAD，再在不覆盖本地改动的前提下接续。
 - 总交接：`docs/handoffs/2026-09-02-github-publish-and-team-handoff.md`。
@@ -57,8 +67,25 @@
 - 20领域owner、16组Bridge和完整真实入口清单。
 - 每项旧facade/bridge/flag/shim的KEEP/HOLD/REVIEW_REMOVAL证据。
 - 逐项回滚点、存档副作用说明、LIVE/SAVE验收记录和最终打包清单。
-- `LOCAL-7-C3` 与 Persistence/Profile/Identity 离线收尾已完成；C3 `4/4`、Persistence `95/121/44`、
-  Identity `99/35` 均 PASS，详情见 `docs/handoffs/2026-09-02-offline-closeout-c3-persistence.md`。
+- `LOCAL-7-C3` 与 Persistence/Profile 离线收尾的历史证据仍为 C3 `4/4`、Persistence `95/121/44`；
+  Identity `99/35` 是较早完整基线上的历史 PASS。当前 partial clone 缺少 89 个基线源码 blob，
+  `PersistenceIdentityAudit.py` 按设计 fail-closed；详情和当前更正见
+  `docs/handoffs/2026-09-02-offline-closeout-c3-persistence.md` 与
+  `docs/handoffs/2026-09-03-bridge-binding-closeout.md`。
+
+## OFFLINE-GAP-20260903 当前离线追加
+
+- Bridge caller validator 增加真实方法体、gate 顺序、缓存初始化检查及负例；当前 Python 测试
+  `20/20 PASS`，清单保持 `16 bindings / 10 wired / 6 declared-only`。
+- 纯 `net8.0` Bridge runtime isolation runner 为 `9 scenarios PASS`，不加载 Bannerlord DLL；
+  Phase 8 entry inventory 只补真实 `entryPaths`，全套测试 `68/68 PASS`，20 个领域仍为
+  `ROLE_PLACEHOLDER` / `REPRESENTATIVE`。
+- PersistenceIdentityAudit 已改为单快照、batch baseline 读取、stderr 进度和 `--quiet`；契约
+  `5/5 PASS`。真实审计因 partial clone 缺少 `89` 个基线源码 blob 返回 `FAIL`/fail-closed，
+  不能把历史 `99/35 PASS` 当作当前结论。
+- ModelCatalog 已采用稳定 `model_catalog.*` 错误码、受限参数和中英文 formatter；replay PASS。
+- `all-missing` readiness 仍 `BLOCKED` / exit `2`；本轮不启动游戏、不读写真实存档、不部署、不
+  切默认入口、不删除 facade，两个 `.branch-archive*.zip` 保持不处理。
 - Bridge 绑定清单 `docs/phase8/bridge-binding-manifest.json` 已闭合 16 组；**2026-09-02 历史快照**
   为 `16 bindings / 3 wired / 13 declared-only`。当前结果为 `16 bindings / 10 wired / 6 declared-only`；
   `wired` 仅表示 source-bound Gate 已在既有入口调用，`declared-only` 不代表运行时已接入。

@@ -1,12 +1,22 @@
 # AF 主体重构：C3 与 Persistence 离线收尾交接
 
-日期：2026-09-02；2026-09-03追加 Bridge 接线收尾
+日期：2026-09-02；2026-09-03追加 Bridge 接线收尾与 OFFLINE-GAP 更正
 
-工作区：`F:\AnimusForge-main`
+历史执行工作区（2026-09-02）：`F:\AnimusForge-main`
+
+当前接续工作区（2026-09-03）：`E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`
 
 本地分支：`refactor/prepare-af-restructure`
 
 远端：`origin/refactor/prepare-af-restructure`
+
+> **当前状态更正（2026-09-03）：**本文 2026-09-02 的 C3、Persistence Identity、Bridge 和
+> Debug 部署段落保留为历史快照，不得覆盖当前结论。当前离线缺口以
+> `docs/handoffs/2026-09-03-bridge-binding-closeout.md` 的 `OFFLINE-GAP-20260903` 追加为准：
+> Bridge validator 为 `20/20 PASS`，Phase 8 全套为 `68/68 PASS`；PersistenceIdentityAudit 契约
+> 为 `5/5 PASS`，但本工作树的 partial clone 缺少 `89` 个基线源码 blob，真实审计按设计
+> fail-closed，不能记录为当前 Identity `99/35 PASS`。当前本地变更尚未 push、未部署、未启动游戏，
+> readiness 仍为 `BLOCKED`。
 
 ## 结论
 
@@ -18,7 +28,7 @@ Persistence Identity 的扫描误报已修复，阶段 8 的 20 域/16 Bridge/cl
 AFEF、Notoriety、Duel 真实副作用，没有切默认入口或删除 facade。用户随后明确授权了一次 Debug
 编译与统一模块测试部署；该部署不等同于 Release/发布验收，且本轮仍未启动游戏。
 
-## 2026-09-03 Bridge 接线收尾追加
+## 2026-09-03 Bridge 接线收尾追加（历史段落的当前更正）
 
 本追加覆盖上一版 Bridge 段落之后的离线接线与安全修复；上一版 `16 bindings / 3 wired / 13 declared-only`
 是 2026-09-02 历史快照，当前结果为 `16 bindings / 10 wired / 6 declared-only / configEnabled=10`。
@@ -31,7 +41,8 @@ AFEF、Notoriety、Duel 真实副作用，没有切默认入口或删除 facade�
 - `FeatureBridgeRuntime` 的配置路径只接受带 `SubModule.xml`/`ModuleData` 的 `AnimusForge` 模块边界；
   缺失配置使用内建审阅默认值，损坏配置、未知字段、版本错误和非规范大小写 ID 均 fail-closed。
   Action/Memory Bridge 禁用继续保持拒绝/`NoOp`，不触发 legacy 副作用重放。
-- Bridge validator `PASS`、Bridge Python 单测 `15/15`，以及 PhaseEightReadiness、BridgeFixture、
+- Bridge validator `PASS`、Bridge Python 单测历史切片为 `15/15`，OFFLINE-GAP 追加后当前为 `20/20`；
+  PhaseEightReadiness 历史切片为 `62/62`，追加入口 inventory 后当前全套为 `68/68`；BridgeFixture、
   Composition、ModuleCatalog、Foundation、GameAdapter、Persistence/Profile、LiveHostReadiness、
   Interaction/Duel/Economy/Gateway/Knowledge/Production suites 与双 API Debug/Release/Bootstrap Stage
   均通过；真实 Campaign/Mission、LIVE/SAVE 仍未运行。
@@ -73,8 +84,10 @@ AFEF、Notoriety、Duel 真实副作用，没有切默认入口或删除 facade�
 
 - Persistence/Profile/Config：`literalKeys=95`、`typedBindings=121`、`typedBindingTypes=8`、
   `profiles=3`、`flattenedDictionaryKeys=44`、`PASS`；
-- Persistence Identity：`sync=99 / behavior=35 / module=AnimusForge / bootstrap=1`、`PASS`；
-- Python 编译通过，`git diff --check` 通过。
+- Persistence Identity：较早完整基线上的 `sync=99 / behavior=35 / module=AnimusForge / bootstrap=1`
+  为历史 `PASS`；本轮 partial clone 缺少 89 个基线源码 blob，真实审计按设计 fail-closed。
+- Python 编译通过，历史工作树上的 `git diff --check` 通过；当前工作树的 diff 检查受 partial clone
+  缺少 promisor blob 影响，详见 2026-09-03 OFFLINE-GAP handoff。
 
 ## Bridge 配置与安全接线
 
@@ -108,7 +121,9 @@ Gate 不持有 Bannerlord live 对象、不读取存档或文件、不扫描程�
 - 部署时 SHA-256：Bootstrap `BF57E46CF3C095FB3205DBA4A7428339A1C574BC30B3B8DE882822E4ACC2AAE9`；1.3 `5F66A4932AB1948BBB71D38C80C6AADC63AD3F5F508004B1F2469FB13544E970`；1.4 `D28931E9129E3E6F441BC5297466BA99FC886BD9DD15A5C3484B7EFCF598D16C`。
 - `SubModule.xml` 仍只声明 `AnimusForge.Bootstrap.dll`；合并 `PlayerExports` 4,753 个文件；既有 `Logs`、`PlayerExports`、`ONNX` 保留；临时部署/备份目录已清理，未发现旧版模块目录。
 - 2026-09-02 当时重建的 Debug Stage 实现哈希为 1.3 `BB157A03F97F606158203E3A68F53AEC7687F6BFD5850728760446285CFC2ABE`、1.4 `F43DFD482596BA58501A48723225CF6999E3C2143B0E7029B4363410ED6A5376`；安装目录仍为部署时实现哈希。2026-09-03 收尾后项目内 Stage 已重新生成（精确哈希见 `docs/handoffs/2026-09-03-bridge-binding-closeout.md`），安装目录未改，实机前仍须重新部署。
-- readiness：`status=PASS`、`installedMatchesStage=false`、`gameRunning=false`。这只证明工具检查通过，不代表 Campaign/Mission 或 LIVE/SAVE 通过；false 正确反映当前安装与项目 Stage 尚未对齐。
+- readiness：`status=PASS`、`installedMatchesStage=false`、`gameRunning=false` 是 2026-09-02 历史快照，
+  只证明当时工具检查通过，不代表 Campaign/Mission 或 LIVE/SAVE。当前 `all-missing` readiness 仍为
+  `BLOCKED` / exit 2，且项目 Stage 与安装目录未因本轮离线修复而部署同步。
 
 ## Release 离线验证
 
@@ -124,7 +139,7 @@ Gate 不持有 Bannerlord live 对象、不读取存档或文件、不扫描程�
 - 20 个 owner 仍为 `ROLE_PLACEHOLDER`，20 个入口仍为 `REPRESENTATIVE`；
 - readiness 工具的 `delete/defaultSwitch/deploy/push/publish` 授权字段仍全部为 `false`；本次 Debug 部署来自用户单独的明确授权，不改变阶段 8 的 Release/破坏性操作门禁；
 - `all-missing.evidence.json` 输出 `BLOCKED`，退出码 2，`acceptedEvidenceCount=0`；
-- 阶段 8 readiness 62/62、Bridge 10 cases/6 invariants、Composition 18 cases/24 invariants、
+- 阶段 8 readiness 历史切片为 `62/62`，OFFLINE-GAP 追加后为 `68/68`；Bridge 10 cases/6 invariants、Composition 18 cases/24 invariants、
   ModuleCatalog 8 modules/3 profiles/16 invalid cases/8 health states 均通过。
 
 ## 环境阻塞与未运行项
