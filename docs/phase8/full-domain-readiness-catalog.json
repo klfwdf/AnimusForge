@@ -331,10 +331,10 @@
         "action-owner"
       ],
       "entryPaths": [
-        "Refactor/Runtime/InteractionResultCommitter.cs",
         "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "Refactor/Runtime/DetachedInteractionHost.cs",
         "Refactor/Runtime/InteractionCommitReceiptCache.cs",
-        "Refactor/Runtime/DetachedInteractionHost.cs"
+        "Refactor/Runtime/InteractionResultCommitter.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -432,12 +432,12 @@
         "economy-owner"
       ],
       "entryPaths": [
-        "RewardSystemBehavior.cs",
-        "RewardSystemBehavior.EconomyReplay.cs",
         "RewardSystemBehavior.EconomyMerchantReplay.cs",
         "RewardSystemBehavior.EconomyPartyReplay.cs",
+        "RewardSystemBehavior.EconomyReplay.cs",
         "RewardSystemBehavior.PlayerRpCrafting.cs",
-        "RewardSystemBehavior.RpItemIntroduction.cs"
+        "RewardSystemBehavior.RpItemIntroduction.cs",
+        "RewardSystemBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -488,9 +488,6 @@
         "policy-owner"
       ],
       "entryPaths": [
-        "PolicySystem/Core/CustomPolicyBehavior.cs",
-        "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
-        "PolicySystem/Npc/NpcRulerPolicyBehavior.cs",
         "PolicySystem/Core/CustomPolicyBehavior.ArmyFormation.cs",
         "PolicySystem/Core/CustomPolicyBehavior.AutoDraft.cs",
         "PolicySystem/Core/CustomPolicyBehavior.Effects.cs",
@@ -500,7 +497,10 @@
         "PolicySystem/Core/CustomPolicyBehavior.Models.cs",
         "PolicySystem/Core/CustomPolicyBehavior.PartySizeLimit.cs",
         "PolicySystem/Core/CustomPolicyBehavior.Targets.cs",
-        "PolicySystem/Core/CustomPolicyBehavior.VillageRaidBan.cs"
+        "PolicySystem/Core/CustomPolicyBehavior.VillageRaidBan.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.cs",
+        "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
+        "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -602,17 +602,17 @@
         "settlement-owner"
       ],
       "entryPaths": [
-        "SiegeAiInterventionBehavior.cs",
         "AnimusForge.SiegeAftermathIntervention/SiegeInterventionEntryProfile.cs",
-        "GcczSettlementCulturePersistenceBehavior.cs",
-        "VillageAftermathBehavior.cs",
-        "SettlementEntryTroopSelectionBehavior.cs",
         "CastleAftermathRuntimeBridge.cs",
+        "GcczSettlementCulturePersistenceBehavior.cs",
+        "SettlementEntryTroopSelectionBehavior.cs",
         "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
         "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
         "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
         "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
-        "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
+        "SiegeAiInterventionBehavior.cs",
+        "VillageAftermathBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -713,15 +713,15 @@
         "duel-owner"
       ],
       "entryPaths": [
-        "DuelBehavior.cs",
-        "DuelBehavior.Outcomes.cs",
-        "Refactor/Runtime/DuelOutcomeReceipt.cs",
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs",
-        "ShoutBehavior.cs",
         "CourierDeliveryBehavior.cs",
+        "DuelBehavior.Outcomes.cs",
+        "DuelBehavior.cs",
         "DuelSettings.cs",
-        "FourberieDuelCompatibility.cs"
+        "FourberieDuelCompatibility.cs",
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "Refactor/Runtime/DuelOutcomeReceipt.cs",
+        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "ShoutBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -769,14 +769,14 @@
         "issue-owner"
       ],
       "entryPaths": [
+        "CompanionProactiveChatBehavior.cs",
+        "CourierDeliveryBehavior.InboundCompletion.cs",
         "CourierDeliveryBehavior.cs",
         "ProactiveNpcRequestBehavior.cs",
-        "VanillaIssueOfferBridge.cs",
-        "CompanionProactiveChatBehavior.cs",
-        "VanillaIssuePromptBehavior.cs",
-        "CourierDeliveryBehavior.InboundCompletion.cs",
         "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
-        "Refactor/Runtime/CourierInboundCompletionReceipt.cs"
+        "Refactor/Runtime/CourierInboundCompletionReceipt.cs",
+        "VanillaIssueOfferBridge.cs",
+        "VanillaIssuePromptBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -826,13 +826,13 @@
         "reports-owner"
       ],
       "entryPaths": [
-        "PlayerNotorietyBehavior.cs",
-        "NobleGatheringBehavior.cs",
         "AnimusForgeUniqueCosmeticItemBehavior.cs",
-        "RomanceSystemBehavior.cs",
-        "SexualConceptionBehavior.cs",
         "MyBehavior.cs",
-        "PlayerNotorietyBehavior.ConversationOutcomes.cs"
+        "NobleGatheringBehavior.cs",
+        "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+        "PlayerNotorietyBehavior.cs",
+        "RomanceSystemBehavior.cs",
+        "SexualConceptionBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",

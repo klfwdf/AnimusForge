@@ -2,13 +2,20 @@
 
 日期：2026-09-01；2026-09-03追加 Bridge 接线收尾。切片：`LOCAL-8-A`。本文件是**准备态验收包**，不是发布许可。
 
-> **2026-09-04 当前工作树校正（优先于下方历史快照）：**本机使用
+本轮离线责任认领与 Bridge 接手顺序见
+`docs/phase8/offline-owner-bridge-closeout-plan-20260904.md`。该文件只记录用户授权的临时准备，
+不替代本目录的 ownerReview，也不改变下文的 `ROLE_PLACEHOLDER` / `REPRESENTATIVE` 门禁。
+
+> **2026-09-04 较早工作树校正（已被下方后续复核覆盖）：**本机使用
 > `F:\AnimusForge-main` / `refactor/prepare-af-restructure` / HEAD
-> `34b3f35811130e26b60a5407451d169de3667dbb`。当前 `PersistenceIdentityAudit` 实际为 `PASS`
+> `34b3f35811130e26b60a5407451d169de3667dbb`。该次记录的 `PersistenceIdentityAudit` 实际为 `PASS`
 > （sync 99、behavior 35、module `AnimusForge`），下方“缺 89 个 blob / FAIL”保留为此前另一
-> partial worktree 的历史结果。Debug unified Stage 已部署并核对三份 DLL 哈希一致，
+> partial worktree 的历史结果。当时的 Debug unified Stage 已部署并核对三份 DLL 哈希一致，
 > `installedMatchesStage=true`、`gameRunning=false`；尚未启动游戏或采集 LIVE/SAVE。实机准备交接见
 > `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md`。
+
+> **后续复核覆盖：**本机随后只重建了项目内 Debug/Release Stage，未再次部署；游戏目录仍为较早部署版本，
+> 当前 `installedMatchesStage=false`。开始实机前以实机准备交接中的 04:20 覆盖记录为准。
 
 ## 最准确结论
 

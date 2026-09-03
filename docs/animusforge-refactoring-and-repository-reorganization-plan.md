@@ -4,15 +4,23 @@
 
 ## 当前任务（2026-09-03 Bridge 接线收尾接续）
 
-> **2026-09-04 当前工作树校正（优先于历史快照）：**本机实际工作区为
-> `F:\\AnimusForge-main`，当前 HEAD 为 `34b3f35811130e26b60a5407451d169de3667dbb`。
-> `PersistenceIdentityAudit --json --quiet` 在该 HEAD 上实际返回 `PASS`（sync 99、behavior 35、
+本轮离线责任认领/入口复核计划已单独记录于
+`docs/phase8/offline-owner-bridge-closeout-plan-20260904.md`；它是 `PROVISIONAL_AUTHORIZED`
+准备态，不会把正式目录晋级为 `ASSIGNED/COMPLETE`，也不会解除 LIVE/SAVE、默认切换或发布门禁。
+
+> **2026-09-04 较早工作树校正（已被下方后续复核覆盖）：**本机实际工作区为
+> `F:\\AnimusForge-main`，该次记录的 HEAD 为 `34b3f35811130e26b60a5407451d169de3667dbb`。
+> `PersistenceIdentityAudit --json --quiet` 在该次记录的 HEAD 上实际返回 `PASS`（sync 99、behavior 35、
 > module `AnimusForge`）；“缺 89 个基线 blob / FAIL”仅适用于此前另一 partial worktree 的历史记录。
-> 当前 Debug unified Stage 已按授权部署到 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，
+> 当时的 Debug unified Stage 已按授权部署到 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，
 > 三份 DLL 与项目 Stage 哈希一致，`installedMatchesStage=true`、`gameRunning=false`。本机仍未启动游戏，
 > LIVE/SAVE、默认切换、facade 清理和发布仍未完成。详见 `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md`。
 
-- `LIVE-HOST-PREP-20260904` VERIFY：当前 Stage 已构建并完成 scoped Debug 部署；部署只更新统一
+> **后续复核覆盖：**随后仅为离线验证重新生成了 Debug/Release Stage，未再次部署；游戏目录仍是较早
+> 的 Debug Stage，因此当前 `installedMatchesStage=false`。实机开始前以
+> `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md` 的 04:20 覆盖记录为准。
+
+- `LIVE-HOST-PREP-20260904` VERIFY（较早部署快照，已被后续复核覆盖）：当时 Stage 已构建并完成 scoped Debug 部署；部署只更新统一
   `Modules\AnimusForge`，保留 `CustomPrompts`/`Logs`/`PlayerExports`，不启动游戏。下一步是制作组在
   隔离存档完成 1.3/1.4 Campaign/Mission 的 LIVE/SAVE 和 rollback evidence；没有这些证据不得升级
   阶段 7 或执行阶段 8 的删除、默认切换、Release 发布。

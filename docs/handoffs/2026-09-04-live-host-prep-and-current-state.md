@@ -6,14 +6,24 @@
 
 - 工作区：`F:\AnimusForge-main`
 - 分支：`refactor/prepare-af-restructure`
-- 当前 HEAD：`34b3f35811130e26b60a5407451d169de3667dbb`
+- 文档初次记录时的 HEAD（历史快照）：`34b3f35811130e26b60a5407451d169de3667dbb`
 - 远端：`origin/refactor/prepare-af-restructure`
-- 本地/远端：`ahead 0 / behind 0`
-- 工作树：clean
+- 文档初次记录时的本地/远端状态（历史快照）：`ahead 0 / behind 0`
+- 文档初次记录时的工作树状态（历史快照）：clean
 
 本文件是 2026-09-04 本机复核结果。此前交接中出现的
 `E:\AnimusForge-klfwdf\_worktrees\...` 是另一工作树路径；在本机执行命令时必须使用上述
 `F:\AnimusForge-main`。
+
+> **04:20 后续复核覆盖（优先于本文件下方较早的部署快照）：**本轮仅为离线验证重新生成了
+> Debug/Release unified Stage，没有再次部署或启动游戏。新的 Debug Stage 哈希为 Bootstrap
+> `1D0759FFA937E5BC29ABD8471C5B314369EFB3A820CD7AEBBB5DC00F35602565`、1.3
+> `4774B6504788EFA4DBC1D40302E92B80720CE4C8001E81DEB3E4DB295298A9EC`、1.4
+> `D861D1171BE3DB5FA9893E1825DCD03C233540A93B42CC5EA6EDBB9CEDBE78CD`；游戏目录仍保留先前部署的
+> Bootstrap `8411354A1D8B2CBCEF8F30D7C514C2A1F9219310E6E8A2C560036812DEB2DC1F`、1.3
+> `27FBB101D8C5ABA194E4812B7549F2648807C33DAE0DF6235C31F8C60B13EDCC`、1.4
+> `5B19B8267E5DFEE626DA7E917CBA85A087FBD06244BA59D300A10B5BA0BA20D8`。因此当前
+> `installedMatchesStage=false`；制作组开始实机前必须重新部署与源码匹配的 Stage，并重新记录哈希。
 
 ## 本轮已完成
 
@@ -29,7 +39,7 @@
 - ModelCatalog gateway replay：PASS。
 - Debug 与 Release 的 1.3、1.4、Bootstrap unified Stage：均 `0 warning / 0 error`。
 
-### Debug 测试部署
+### 较早 Debug 测试部署快照（已被 04:20 后续复核覆盖）
 
 按用户授权，使用官方 `一键编译覆盖推送\build_single_module.ps1 -Configuration Debug -Deploy`
 把当前分支构建结果部署到：
@@ -45,7 +55,8 @@
 | 1.3 implementation | `27FBB101D8C5ABA194E4812B7549F2648807C33DAE0DF6235C31F8C60B13EDCC` |
 | 1.4 implementation | `5B19B8267E5DFEE626DA7E917CBA85A087FBD06244BA59D300A10B5BA0BA20D8` |
 
-`SubModule.xml` 只加载 `AnimusForge.Bootstrap.dll`；临时 deploy/backup 目录已清理。
+`SubModule.xml` 只加载 `AnimusForge.Bootstrap.dll`；临时 deploy/backup 目录已清理。以上部署结果
+仅属于较早快照，不能代表当前项目 Stage 已安装。
 LiveHostReadiness 当前为：`PASS`、`installedMatchesStage=true`、`gameRunning=false`。
 
 ## 仍未完成
