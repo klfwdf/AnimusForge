@@ -711,6 +711,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		public string ResponseBody = "";
 
 		public string ErrorMessage = "";
+
+		public string ErrorCode = "";
+
+		public IReadOnlyDictionary<string, string> ErrorArguments = new Dictionary<string, string>();
 	}
 
 	private sealed class ModelDropdownCacheSnapshot
@@ -6044,12 +6048,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			modelListFetchResult.RequestUrl = BuildModelListApiUrl(rawApiUrl);
 			if (string.IsNullOrWhiteSpace(modelListFetchResult.RequestUrl))
 			{
-				modelListFetchResult.ErrorMessage = "API 地址为空，无法拉取模型列表。";
+				modelListFetchResult.ErrorCode = ModelCatalogErrorCodes.UrlMissing;
+				modelListFetchResult.ErrorMessage = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments);
 				return modelListFetchResult;
 			}
 			if (string.IsNullOrWhiteSpace(apiKey))
 			{
-				modelListFetchResult.ErrorMessage = "API Key 为空，无法拉取模型列表。";
+				modelListFetchResult.ErrorCode = ModelCatalogErrorCodes.ApiKeyMissing;
+				modelListFetchResult.ErrorMessage = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments);
 				return modelListFetchResult;
 			}
 			ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(rawApiUrl, apiKey, CancellationToken.None);
@@ -6057,17 +6063,23 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			modelListFetchResult.ResponseBody = exchange.ResponseBody;
 			if (exchange.Cancelled)
 			{
-				modelListFetchResult.ErrorMessage = "模型列表拉取已取消。";
+				modelListFetchResult.ErrorCode = exchange.ErrorCode;
+				modelListFetchResult.ErrorArguments = exchange.ErrorArguments;
+				modelListFetchResult.ErrorMessage = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments, legacyMessage: exchange.ErrorMessage);
 				return modelListFetchResult;
 			}
 			if (!exchange.HasStatusCode)
 			{
-				modelListFetchResult.ErrorMessage = exchange.ErrorMessage;
+				modelListFetchResult.ErrorCode = exchange.ErrorCode;
+				modelListFetchResult.ErrorArguments = exchange.ErrorArguments;
+				modelListFetchResult.ErrorMessage = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments, legacyMessage: exchange.ErrorMessage);
 				return modelListFetchResult;
 			}
 			modelListFetchResult.StatusCode = (HttpStatusCode)exchange.StatusCode;
 			if (!exchange.IsSuccessStatusCode)
 			{
+				modelListFetchResult.ErrorCode = exchange.ErrorCode;
+				modelListFetchResult.ErrorArguments = exchange.ErrorArguments;
 				modelListFetchResult.ErrorMessage = $"HTTP {exchange.StatusCode} {exchange.ReasonPhrase}";
 				return modelListFetchResult;
 			}
@@ -6082,7 +6094,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 		catch (Exception ex)
 		{
-			modelListFetchResult.ErrorMessage = ex.Message;
+			modelListFetchResult.ErrorCode = ModelCatalogErrorCodes.TransportFailed;
+			modelListFetchResult.ErrorArguments = new Dictionary<string, string>
+			{
+				["exceptionType"] = ex.GetType().Name
+			};
+			modelListFetchResult.ErrorMessage = ModelCatalogErrorFormatter.Format(
+				modelListFetchResult.ErrorCode,
+				modelListFetchResult.ErrorArguments,
+				legacyMessage: ex.Message);
 			return modelListFetchResult;
 		}
 	}
@@ -6259,7 +6279,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				ModelListFetchResult modelListFetchResult = await FetchModelListAsync(text2, text3);
 				if (!modelListFetchResult.Success)
 				{
-					string text4 = modelListFetchResult.ErrorMessage ?? "未知错误";
+					string text4 = ModelCatalogErrorFormatter.Format(modelListFetchResult.ErrorCode, modelListFetchResult.ErrorArguments, legacyMessage: modelListFetchResult.ErrorMessage ?? "未知错误");
 					if ((int)modelListFetchResult.StatusCode > 0)
 					{
 						string text5 = BuildApiErrorHint(modelListFetchResult.RequestUrl, "", modelListFetchResult.StatusCode, modelListFetchResult.ResponseBody);

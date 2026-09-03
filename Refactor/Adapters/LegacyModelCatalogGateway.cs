@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +22,19 @@ public sealed class ModelCatalogExchange
         string responseBody,
         string errorMessage,
         bool cancelled)
+        : this(requestUrl, statusCode, reasonPhrase, responseBody, errorMessage, cancelled, string.Empty, null)
+    {
+    }
+
+    public ModelCatalogExchange(
+        string requestUrl,
+        int statusCode,
+        string reasonPhrase,
+        string responseBody,
+        string errorMessage,
+        bool cancelled,
+        string errorCode,
+        IReadOnlyDictionary<string, string> errorArguments)
     {
         RequestUrl = requestUrl ?? string.Empty;
         StatusCode = statusCode;
@@ -27,6 +42,8 @@ public sealed class ModelCatalogExchange
         ResponseBody = responseBody ?? string.Empty;
         ErrorMessage = errorMessage ?? string.Empty;
         Cancelled = cancelled;
+        ErrorCode = errorCode ?? string.Empty;
+        ErrorArguments = ModelCatalogErrorFormatter.BoundArguments(errorArguments);
     }
 
     public string RequestUrl { get; }
@@ -37,6 +54,83 @@ public sealed class ModelCatalogExchange
     public string ResponseBody { get; }
     public string ErrorMessage { get; }
     public bool Cancelled { get; }
+    public string ErrorCode { get; }
+    public IReadOnlyDictionary<string, string> ErrorArguments { get; }
+}
+
+public static class ModelCatalogErrorCodes
+{
+    public const string UrlMissing = "model_catalog.url_missing";
+    public const string ApiKeyMissing = "model_catalog.api_key_missing";
+    public const string Cancelled = "model_catalog.cancelled";
+    public const string HttpFailure = "model_catalog.http_failure";
+    public const string TransportFailed = "model_catalog.transport_failed";
+}
+
+public static class ModelCatalogErrorFormatter
+{
+    private const int MaxArguments = 4;
+    private const int MaxArgumentLength = 96;
+    private static readonly HashSet<string> AllowedArgumentKeys = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "status",
+        "reason",
+        "exceptionType",
+    };
+
+    internal static IReadOnlyDictionary<string, string> BoundArguments(IReadOnlyDictionary<string, string> arguments)
+    {
+        Dictionary<string, string> bounded = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (KeyValuePair<string, string> pair in arguments ?? new Dictionary<string, string>())
+        {
+            if (bounded.Count >= MaxArguments || string.IsNullOrWhiteSpace(pair.Key) || string.IsNullOrWhiteSpace(pair.Value)
+                || !AllowedArgumentKeys.Contains(pair.Key.Trim()))
+            {
+                continue;
+            }
+            bounded[pair.Key.Trim()] = pair.Value.Trim().Length <= MaxArgumentLength
+                ? pair.Value.Trim()
+                : pair.Value.Trim().Substring(0, MaxArgumentLength);
+        }
+        return new ReadOnlyDictionary<string, string>(bounded);
+    }
+
+    public static string Format(string errorCode, IReadOnlyDictionary<string, string> arguments, string cultureId = "zh-CN", string legacyMessage = null)
+    {
+        bool chinese = string.IsNullOrWhiteSpace(cultureId)
+            || cultureId.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
+        string status = arguments != null && arguments.TryGetValue("status", out string statusValue) ? statusValue : "";
+        string reason = arguments != null && arguments.TryGetValue("reason", out string reasonValue) ? reasonValue : "";
+        if (chinese)
+        {
+            // Keep the legacy display text when an existing owner supplied
+            // one (for example, ProbeBaseUrlAsync historically used a
+            // different URL-missing sentence).  English callers still get a
+            // stable formatter-owned fallback below.
+            if (!string.IsNullOrWhiteSpace(legacyMessage))
+            {
+                return legacyMessage;
+            }
+            switch (errorCode)
+            {
+                case ModelCatalogErrorCodes.UrlMissing: return "API 地址为空，无法拉取模型列表。";
+                case ModelCatalogErrorCodes.ApiKeyMissing: return "API Key 为空，无法拉取模型列表。";
+                case ModelCatalogErrorCodes.Cancelled: return "模型列表拉取已取消。";
+                case ModelCatalogErrorCodes.HttpFailure: return "HTTP " + status + (string.IsNullOrWhiteSpace(reason) ? "" : " " + reason);
+                case ModelCatalogErrorCodes.TransportFailed: return "模型列表请求失败。";
+            }
+            return string.IsNullOrWhiteSpace(legacyMessage) ? "模型列表请求失败。" : legacyMessage;
+        }
+        switch (errorCode)
+        {
+            case ModelCatalogErrorCodes.UrlMissing: return "Model catalog URL is missing.";
+            case ModelCatalogErrorCodes.ApiKeyMissing: return "Model catalog API key is missing.";
+            case ModelCatalogErrorCodes.Cancelled: return "Model catalog request was cancelled.";
+            case ModelCatalogErrorCodes.HttpFailure: return "HTTP " + status + (string.IsNullOrWhiteSpace(reason) ? "" : " " + reason);
+            case ModelCatalogErrorCodes.TransportFailed: return "Model catalog request failed.";
+            default: return string.IsNullOrWhiteSpace(legacyMessage) ? "Model catalog request failed." : legacyMessage;
+        }
+    }
 }
 
 /// <summary>
@@ -82,8 +176,12 @@ public sealed class LegacyModelCatalogGateway
                 0,
                 string.Empty,
                 string.Empty,
-                "API 地址为空，无法访问模型列表。",
-                cancelled: false);
+                includeAuthentication
+                    ? "API 地址为空，无法拉取模型列表。"
+                    : "API 地址为空，无法访问模型列表。",
+                cancelled: false,
+                ModelCatalogErrorCodes.UrlMissing,
+                null);
         }
         if (includeAuthentication && string.IsNullOrWhiteSpace(apiKey))
         {
@@ -93,7 +191,9 @@ public sealed class LegacyModelCatalogGateway
                 string.Empty,
                 string.Empty,
                 "API Key 为空，无法拉取模型列表。",
-                cancelled: false);
+                cancelled: false,
+                ModelCatalogErrorCodes.ApiKeyMissing,
+                null);
         }
 
         try
@@ -112,13 +212,25 @@ public sealed class LegacyModelCatalogGateway
                     string responseBody = await response.Content
                         .ReadAsStringAsync()
                         .ConfigureAwait(false);
+                    string errorCode = response.IsSuccessStatusCode ? string.Empty : ModelCatalogErrorCodes.HttpFailure;
+                    IReadOnlyDictionary<string, string> errorArguments = response.IsSuccessStatusCode
+                        ? null
+                        : new Dictionary<string, string>
+                        {
+                            ["status"] = ((int)response.StatusCode).ToString(System.Globalization.CultureInfo.InvariantCulture),
+                            ["reason"] = response.ReasonPhrase ?? string.Empty,
+                        };
                     return new ModelCatalogExchange(
                         requestUrl,
                         (int)response.StatusCode,
                         response.ReasonPhrase,
                         responseBody,
-                        string.Empty,
-                        cancelled: false);
+                        string.IsNullOrEmpty(errorCode)
+                            ? string.Empty
+                            : ModelCatalogErrorFormatter.Format(errorCode, errorArguments),
+                        cancelled: false,
+                        errorCode,
+                        errorArguments);
                 }
             }
         }
@@ -130,7 +242,9 @@ public sealed class LegacyModelCatalogGateway
                 string.Empty,
                 string.Empty,
                 "模型列表请求已取消。",
-                cancelled: true);
+                cancelled: true,
+                ModelCatalogErrorCodes.Cancelled,
+                null);
         }
         catch (Exception exception)
         {
@@ -139,8 +253,12 @@ public sealed class LegacyModelCatalogGateway
                 0,
                 string.Empty,
                 string.Empty,
-                exception.Message,
-                cancelled: false);
+                ModelCatalogErrorFormatter.Format(
+                    ModelCatalogErrorCodes.TransportFailed,
+                    new Dictionary<string, string> { ["exceptionType"] = exception.GetType().Name }),
+                cancelled: false,
+                ModelCatalogErrorCodes.TransportFailed,
+                new Dictionary<string, string> { ["exceptionType"] = exception.GetType().Name });
         }
     }
 }

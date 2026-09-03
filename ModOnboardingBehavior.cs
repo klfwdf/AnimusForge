@@ -2376,7 +2376,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					message = "Base URL 检查失败：" + (exchange.ErrorMessage ?? "未知错误");
+					message = "Base URL 检查失败：" + ModelCatalogErrorFormatter.Format(exchange.ErrorCode, exchange.ErrorArguments, legacyMessage: exchange.ErrorMessage ?? "未知错误");
 				}
 			}
 			catch (OperationCanceledException)
@@ -2612,7 +2612,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					text = "拉取模型列表失败：" + (exchange.ErrorMessage ?? "未知错误");
+					text = "拉取模型列表失败：" + ModelCatalogErrorFormatter.Format(exchange.ErrorCode, exchange.ErrorArguments, legacyMessage: exchange.ErrorMessage ?? "未知错误");
 				}
 			}
 			catch (OperationCanceledException)
