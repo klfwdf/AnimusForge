@@ -14,6 +14,7 @@ await using (ReplayServer probe = await ReplayServer.StartAsync((_, _) =>
     ModelCatalogExchange result = await new LegacyModelCatalogGateway().ProbeBaseUrlAsync(probe.Url, CancellationToken.None);
     AssertTrue(result.IsSuccessStatusCode && result.StatusCode == 200, "base URL probe status mismatch");
     AssertTrue(result.RequestUrl.EndsWith("/models", StringComparison.OrdinalIgnoreCase), "model catalog URL was not normalized");
+    AssertTrue(string.IsNullOrEmpty(result.ErrorMessage) && string.IsNullOrEmpty(result.ErrorCode), "successful catalog exchange reported an error");
     AssertTrue(probe.Requests.Count == 1 && string.IsNullOrEmpty(probe.Requests[0].Authorization), "base URL probe sent credentials");
 }
 
@@ -30,7 +31,8 @@ await using (ReplayServer failure = await ReplayServer.StartAsync((_, _) =>
     (401, "unauthorized")))
 {
     ModelCatalogExchange result = await new LegacyModelCatalogGateway().FetchModelsAsync(failure.Url, "secret-key", CancellationToken.None);
-    AssertTrue(result.StatusCode == 401 && !result.IsSuccessStatusCode, "model fetch HTTP failure was not preserved");
+    AssertTrue(result.StatusCode == 401 && !result.IsSuccessStatusCode && result.ErrorCode == ModelCatalogErrorCodes.HttpFailure, "model fetch HTTP failure was not preserved");
+    AssertTrue(result.ErrorArguments["status"] == "401", "HTTP status error argument mismatch");
 }
 
 await using (ReplayServer slow = await ReplayServer.StartAsync(async (_, _) =>
@@ -41,11 +43,39 @@ await using (ReplayServer slow = await ReplayServer.StartAsync(async (_, _) =>
 {
     using CancellationTokenSource cancellation = new CancellationTokenSource(100);
     ModelCatalogExchange result = await new LegacyModelCatalogGateway().FetchModelsAsync(slow.Url, "secret-key", cancellation.Token);
-    AssertTrue(result.Cancelled && !result.HasStatusCode, "caller cancellation was not isolated");
+    AssertTrue(result.Cancelled && !result.HasStatusCode && result.ErrorCode == ModelCatalogErrorCodes.Cancelled, "caller cancellation was not isolated");
 }
 
 ModelCatalogExchange invalid = await new LegacyModelCatalogGateway().FetchModelsAsync("", "secret-key", CancellationToken.None);
-AssertTrue(!invalid.HasStatusCode && !invalid.Cancelled && !string.IsNullOrWhiteSpace(invalid.ErrorMessage), "empty model catalog URL was not rejected");
+AssertTrue(!invalid.HasStatusCode && !invalid.Cancelled && invalid.ErrorCode == ModelCatalogErrorCodes.UrlMissing, "empty model catalog URL was not rejected with stable code");
+AssertTrue(invalid.ErrorMessage == "API 地址为空，无法拉取模型列表。", "legacy fetch URL-missing message changed");
+ModelCatalogExchange invalidProbe = await new LegacyModelCatalogGateway().ProbeBaseUrlAsync("", CancellationToken.None);
+AssertTrue(invalidProbe.ErrorMessage == "API 地址为空，无法访问模型列表。", "legacy probe URL-missing message changed");
+
+ModelCatalogExchange missingKey = await new LegacyModelCatalogGateway().FetchModelsAsync("http://127.0.0.1:1/v1", "", CancellationToken.None);
+AssertTrue(missingKey.ErrorCode == ModelCatalogErrorCodes.ApiKeyMissing, "missing API key stable code mismatch");
+ModelCatalogExchange transport = await new LegacyModelCatalogGateway().FetchModelsAsync("http://127.0.0.1:1/v1", "secret-key", CancellationToken.None);
+AssertTrue(transport.ErrorCode == ModelCatalogErrorCodes.TransportFailed, "transport failure stable code mismatch");
+AssertTrue(!transport.ErrorMessage.Contains("secret-key", StringComparison.Ordinal)
+    && !transport.ErrorMessage.Contains("127.0.0.1:1", StringComparison.Ordinal), "transport error leaked credentials or URL");
+AssertTrue(ModelCatalogErrorFormatter.Format(ModelCatalogErrorCodes.UrlMissing, invalid.ErrorArguments, "zh-CN") == "API 地址为空，无法拉取模型列表。", "Chinese URL message changed");
+AssertTrue(ModelCatalogErrorFormatter.Format(ModelCatalogErrorCodes.UrlMissing, invalid.ErrorArguments, "en-US").Contains("URL", StringComparison.OrdinalIgnoreCase), "English URL fallback missing");
+AssertTrue(ModelCatalogErrorFormatter.Format("model_catalog.unknown", new Dictionary<string, string>(), "en-US") == "Model catalog request failed.", "unknown error fallback mismatch");
+AssertTrue(!invalid.ErrorArguments.ContainsKey("apiKey") && invalid.ErrorArguments.Count <= 4, "error arguments are not bounded/non-sensitive");
+ModelCatalogExchange bounded = new ModelCatalogExchange("http://localhost/models", 0, "", "", "legacy", false, "model_catalog.transport_failed", new Dictionary<string, string>
+{
+    ["apiKey"] = "secret-key",
+    ["exceptionType"] = "HttpRequestException",
+});
+AssertTrue(!bounded.ErrorArguments.ContainsKey("apiKey") && bounded.ErrorArguments.ContainsKey("exceptionType"), "sensitive error argument was retained");
+try
+{
+    ((IDictionary<string, string>)bounded.ErrorArguments)["status"] = "500";
+    throw new InvalidOperationException("error arguments are mutable");
+}
+catch (NotSupportedException)
+{
+}
 
 Console.WriteLine("PASS modelCatalogGatewayReplay probeNoCredential=1 fetchCredentialBoundary=1 httpFailure=1 cancellation=1 invalidConfig=1");
 
