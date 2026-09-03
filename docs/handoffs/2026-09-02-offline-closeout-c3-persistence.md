@@ -2,6 +2,14 @@
 
 日期：2026-09-02；2026-09-03追加 Bridge 接线收尾与 OFFLINE-GAP 更正
 
+> **2026-09-04 当前工作树校正（优先于历史快照）：**本机以
+> `F:\AnimusForge-main` / `refactor/prepare-af-restructure` / HEAD
+> `34b3f35811130e26b60a5407451d169de3667dbb` 为准。PersistenceIdentityAudit 实际为 PASS
+> （sync=99、behavior=35、module=AnimusForge），Debug Stage 已重新部署并与安装目录三份
+> DLL 哈希一致；未启动游戏，LIVE/SAVE 仍未验证。旧的 partial-clone “缺 89 个 blob”记录
+> 保留为历史，不适用于本机当前状态。详见
+> `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md`。
+
 历史执行工作区（2026-09-02）：`F:\AnimusForge-main`
 
 当前接续工作区（2026-09-03）：`E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`

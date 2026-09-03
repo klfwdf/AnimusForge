@@ -4,6 +4,19 @@
 
 ## 当前任务（2026-09-03 Bridge 接线收尾接续）
 
+> **2026-09-04 当前工作树校正（优先于历史快照）：**本机实际工作区为
+> `F:\\AnimusForge-main`，当前 HEAD 为 `34b3f35811130e26b60a5407451d169de3667dbb`。
+> `PersistenceIdentityAudit --json --quiet` 在该 HEAD 上实际返回 `PASS`（sync 99、behavior 35、
+> module `AnimusForge`）；“缺 89 个基线 blob / FAIL”仅适用于此前另一 partial worktree 的历史记录。
+> 当前 Debug unified Stage 已按授权部署到 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge`，
+> 三份 DLL 与项目 Stage 哈希一致，`installedMatchesStage=true`、`gameRunning=false`。本机仍未启动游戏，
+> LIVE/SAVE、默认切换、facade 清理和发布仍未完成。详见 `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md`。
+
+- `LIVE-HOST-PREP-20260904` VERIFY：当前 Stage 已构建并完成 scoped Debug 部署；部署只更新统一
+  `Modules\AnimusForge`，保留 `CustomPrompts`/`Logs`/`PlayerExports`，不启动游戏。下一步是制作组在
+  隔离存档完成 1.3/1.4 Campaign/Mission 的 LIVE/SAVE 和 rollback evidence；没有这些证据不得升级
+  阶段 7 或执行阶段 8 的删除、默认切换、Release 发布。
+
 - `OFFLINE-GAP-20260903` VERIFY：已完成 Bridge caller/body validator、Bridge 隔离运行时配置测试、Phase 8 入口候选 inventory、PersistenceIdentityAudit 性能/进度契约和 ModelCatalog 稳定错误码/双语映射；不启动游戏、不读写真实存档、不部署、不切换默认入口、不删除 facade、不修改发布结构、程序集身份、SubModule.xml、SyncData key/type 或构建脚本。owner 为 Foundation/Bridge runtime、Phase8/Tools 与 ModelCatalog adapter/既有 UI owners。阶段 7 保持 `VERIFY`，阶段 8 保持 `BLOCKED`，本次本地提交已 push。实现提交：`552d8b9`、`f1a17f7`、`4feac3c`、`4a8e929`、`8f12298`、`ab6ce72`；意图记录提交：`01e7bc1`。
 
 - `BRIDGE-CONFIG-20260903` VERIFY（本轮离线收尾已完成；历史记录中的普通 push 授权未在当前工作树执行）：承接 checkpoint `13e21560` 的 Bridge 运行时接线，已完成显式依赖 Production replay、全量离线回归、文档同步和最终安全审查；当前为 `10 wired / 6 declared-only`。owner 为 Foundation/Bridge runtime 与各已接线领域；本轮不启动实机、不读取或写入真实存档、不部署、不切默认入口、不删除 facade、不修改一键编译/覆盖脚本，也不把 offline/compiled 证据提升为 LIVE/SAVE。已审阅路径包括 `Refactor/Runtime/FeatureBridgeRuntime.cs`、已接线 adapters/behaviors、`AnimusForge/ModuleData/FeatureBridges.json`、`docs/phase8/bridge-binding-manifest.json`、`tools/BridgeBindingContractTests/` 及相关总纲/阶段8/handoff；验证包含 Bridge validator/unit、Production/compiled suites、双 API Debug/Release/Bootstrap Stage、git diff/凭据/产物审查。阶段 7 总体仍 `VERIFY`，阶段 8 执行仍 `BLOCKED`。
