@@ -2,6 +2,14 @@
 
 日期：2026-09-01；2026-09-03追加 Bridge 接线收尾。切片：`LOCAL-8-A`。本文件是**准备态验收包**，不是发布许可。
 
+> **2026-09-04 当前工作树校正（优先于下方历史快照）：**本机使用
+> `F:\AnimusForge-main` / `refactor/prepare-af-restructure` / HEAD
+> `34b3f35811130e26b60a5407451d169de3667dbb`。当前 `PersistenceIdentityAudit` 实际为 `PASS`
+> （sync 99、behavior 35、module `AnimusForge`），下方“缺 89 个 blob / FAIL”保留为此前另一
+> partial worktree 的历史结果。Debug unified Stage 已部署并核对三份 DLL 哈希一致，
+> `installedMatchesStage=true`、`gameRunning=false`；尚未启动游戏或采集 LIVE/SAVE。实机准备交接见
+> `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md`。
+
 ## 最准确结论
 
 > 阶段 7 的模块接入与离线/等价 Host 验证已完成大部分，但真实 Campaign/Mission、旧档、

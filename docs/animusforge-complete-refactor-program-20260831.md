@@ -6,6 +6,14 @@
 
 本文初版由当时的 Git、公共执行台账、owner matrix、领域 Gateway 边界和本机 handoff 交叉核对形成；2026-08-31 初版只读核对与编写文档，没有重新执行构建/测试、修改生产代码或部署游戏。后续本机接续以紧随其后的更新块、公共台账和最新 handoff 为准。
 
+> **2026-09-04 当前工作树校正（优先于历史快照）：**本机实际工作区为
+> `F:\AnimusForge-main`，当前分支为 `refactor/prepare-af-restructure`，HEAD 为
+> `34b3f35811130e26b60a5407451d169de3667dbb`。当前 PersistenceIdentityAudit 实际返回 PASS
+> （sync=99、behavior=35、module=AnimusForge）；Debug unified Stage 已按授权部署并核对三份
+> DLL 哈希一致，`installedMatchesStage=true`、`gameRunning=false`。这不表示真实
+> Campaign/Mission、LIVE/SAVE 或发布完成；接手步骤见
+> `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md`。
+
 > **2026-09-02 本机接续更新：**本文主体保留2026-08-31的全量任务基线；实时状态以公共台账和最新handoff为准。`LOCAL-7-C/C2`已把五个managed replay consumer统一到显式依赖边界，含Shout SSE；`LOCAL-7-D/E/F/G/H/I/J/K/L`已完成Memory/Courier/Economy/weekly/Notoriety相关owner的代码与离线验证；Duel M1/M2分别在`16f3cbef`/`b93f93df`完成actual-session outcome owner和exact detached request provenance的离线/compiled VERIFY。`LOCAL-8-A`实现链最终到`8bdd9363`：早期8-ID readiness现同时门禁canonical20领域责任桶、canonical16组PAIR/CROSS_CUT Bridge和18项逐symbol清理/回滚盘点。20领域不是20个物理DLL；maintainer仍为`ROLE_PLACEHOLDER`、入口仍为`REPRESENTATIVE`，团队未确认`ASSIGNED/COMPLETE`前real readiness保持BLOCKED；证据缺任一领域/Bridge或OFFLINE/LIVE/SAVE/RELEASE覆盖也BLOCKED；3项`REVIEW_REMOVAL`仍未获删除授权。阶段7继续VERIFY、阶段8准备态可继续，真实Campaign/Mission、live Economy/AFEF/Notoriety、Duel live/旧档和默认切换未验收前，不能删除facade或执行default cutover。
 
 > **2026-09-02 离线收尾补充：**`LOCAL-7-C3` 已完成：`LiveHostReadinessAudit` 现在要求显式

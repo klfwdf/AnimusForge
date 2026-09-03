@@ -2,6 +2,13 @@
 
 日期：2026-09-02；2026-09-03追加 Bridge 接线收尾与 OFFLINE-GAP 更正
 
+> **2026-09-04 当前工作树校正（优先于历史快照）：**当前本机工作区为
+> `F:\AnimusForge-main`，HEAD 为 `34b3f35811130e26b60a5407451d169de3667dbb`。
+> Debug unified Stage 已重新部署并核对三份 DLL 哈希一致，`installedMatchesStage=true`、
+> `gameRunning=false`；PersistenceIdentityAudit 为 PASS。真实 Campaign/Mission、LIVE/SAVE、
+> 旧档和默认切换仍未完成。请以
+> `docs/handoffs/2026-09-04-live-host-prep-and-current-state.md` 为当前接手入口。
+
 > **当前状态（2026-09-03）：**本简报中的 2026-09-02 编译、部署、Identity 和推送描述均为
 > 历史快照。当前工作区为
 > `E:\AnimusForge-klfwdf\_worktrees\refactor-prepare-af-restructure-schannel`，本地 HEAD
