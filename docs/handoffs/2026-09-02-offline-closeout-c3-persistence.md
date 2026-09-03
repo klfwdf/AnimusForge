@@ -15,8 +15,8 @@
 > `docs/handoffs/2026-09-03-bridge-binding-closeout.md` 的 `OFFLINE-GAP-20260903` 追加为准：
 > Bridge validator 为 `20/20 PASS`，Phase 8 全套为 `68/68 PASS`；PersistenceIdentityAudit 契约
 > 为 `5/5 PASS`，但本工作树的 partial clone 缺少 `89` 个基线源码 blob，真实审计按设计
-> fail-closed，不能记录为当前 Identity `99/35 PASS`。当前本地变更尚未 push、未部署、未启动游戏，
-> readiness 仍为 `BLOCKED`。
+> fail-closed，不能记录为当前 Identity `99/35 PASS`。本次本地提交已 push 并完成远端回读；仍未部署、
+> 未启动游戏，readiness 仍为 `BLOCKED`。
 
 ## 结论
 

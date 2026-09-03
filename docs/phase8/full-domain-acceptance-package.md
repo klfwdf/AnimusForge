@@ -24,7 +24,8 @@
 > 以及 ModelCatalog 稳定错误码、受限参数和中英文 formatter。20 个领域仍为
 > `ownerAssignmentState=ROLE_PLACEHOLDER`、`entryCoverage=REPRESENTATIVE`；readiness 继续 `BLOCKED`。
 > 当前离线验证为 Bridge `20/20 PASS`、Bridge isolation `9 scenarios PASS`、Phase 8 `68/68 PASS`、
-> Persistence contract `5/5 PASS` 和 ModelCatalog replay `PASS`；当前本地提交尚未 push。
+> Persistence contract `5/5 PASS` 和 ModelCatalog replay `PASS`；本次本地提交已 push，远端回读应与当前
+> HEAD 一致（接手时请用 `git rev-parse` 和 `git rev-list --left-right --count` 复核）。
 
 ## Git 与范围
 

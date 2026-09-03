@@ -15,8 +15,8 @@
 ## 2026-09-03 Bridge 接线收尾追加（以本节为准）
 
 - 接续起点为本地 `HEAD 231f6cb6`、远端 `e5af64fb`，ahead 2；本轮只在项目工作区完成
-  Bridge 接线、配置安全修复、文档同步和离线审查。当前工作树尚未 push，最新本地提交见
-  `ab6ce72` 及其后的本地 handoff 文档提交；当前尚未 push。
+  Bridge 接线、配置安全修复、文档同步和离线审查。代码修复提交为 `ab6ce72`，其后的 handoff
+  文档提交已随本次 push 同步；远端回读已确认与当前 HEAD 一致。
 - 当前清单结果：`16 bindings / 10 wired / 6 declared-only / configEnabled=10`。
 - 10 个 source-bound wired：`conversation-gateway`、`conversation-action`、`action-memory`、
   `action-economy`、`policy-world-diplomacy`、`conversation-siege`、`conversation-courier`、
@@ -36,7 +36,7 @@
   Stage 均 `0 warning / 0 error`。
 - 本轮没有启动 Bannerlord、进入 Campaign/Mission、读取或写入真实存档、执行 LIVE/SAVE、部署、
   切换默认入口、删除 facade 或修改终端 UI；阶段 7 总体仍 `VERIFY`，阶段 8 执行仍 `BLOCKED`。
-- 推送仍未执行；若未来获得明确授权，命令才限于：
+- 本次 push 已执行并成功回读；后续任何再次 push 仍需明确授权，命令限于：
 
   ```powershell
   git push origin HEAD:refs/heads/refactor/prepare-af-restructure
@@ -49,8 +49,8 @@
 
 因此：
 
-> **当前代码、HANDOFF 与制作组简报尚未 push；未来如获得明确授权才可按下方历史同步规则转交。
-> 阶段8仍只能做非破坏性准备，不能把任何 push 解释为阶段7 DONE、阶段8执行许可、默认切换或
+> **当前代码、HANDOFF 与制作组简报已随本次 push 同步；这不改变阶段8只能做非破坏性准备的边界，
+> 也不能把任何 push 解释为阶段7 DONE、阶段8执行许可、默认切换或
 > 可发布游戏版本。**
 
 ## 本次GitHub同步（2026-09-02历史快照）
