@@ -47,10 +47,11 @@
                 <!-- 面包屑导航指示（在非战争页面居中优雅展示当前层级） -->
                 <RichTextWidget IsVisible="@IsBreadcrumbVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="156" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="@BreadcrumbText" />
 
-                <!-- 战争子标签切换栏 (当前战争 / 历史战争 / 清除所有) - 提升至面包屑位置，仅在战争面板下显示 -->
-                <Widget IsVisible="@IsWarStatsVisible" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="36" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="150">
+                <!-- 战争子标签切换与模式控制栏 (当前战争 / 历史战争 / 清除所有 / 单页多页切换) - 提升至面包屑位置 -->
+                <Widget IsVisible="@IsWarStatsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" VerticalAlignment="Top" MarginTop="150">
                   <Children>
-                    <ListPanel DataSource="{WarStatsVm}" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                    <!-- 中间：当前战争 / 历史战争 / 清除所有 (保持原有居中布局) -->
+                    <ListPanel DataSource="{WarStatsVm}" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
                         <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160" Brush="Popup.SelectionElement.Tuple" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectCurrent">
                           <Children>
@@ -73,6 +74,17 @@
                         </ButtonWidget>
                       </Children>
                     </ListPanel>
+
+                    <!-- 右侧：单页/多页切换按钮 (位于用户截图红框区域，对齐顶部分类栏右端) -->
+                    <Widget DataSource="{WarStatsVm}" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="134">
+                      <Children>
+                        <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleDisplayMode">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DisplayModeButtonText" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
                   </Children>
                 </Widget>
 
@@ -418,8 +430,8 @@
                               </Children>
                             </ListPanel>
 
-                            <!-- 主内容区域：当前战争 / 历史战争 / 空白占位 (高度提升，起始MarginTop降低至72) -->
-                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="72" MarginBottom="6">
+                            <!-- 主内容区域：当前战争 / 历史战争 / 空白占位 (高度提升，起始MarginTop降低至72，底部留36留出分页控制栏空间) -->
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="72" MarginBottom="36">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.32" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#050403FF" AlphaFactor="0.25" IsEnabled="false" />

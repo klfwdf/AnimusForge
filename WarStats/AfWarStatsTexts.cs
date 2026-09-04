@@ -14,6 +14,10 @@ internal static class AfWarStatsTexts
 
     public static string ClearAll => Get("AFWST_ClearAll", "Clear All");
 
+    public static string ModeScrollable => Get("AFWST_ModeScrollable", "Mode: Single Page");
+
+    public static string ModePaged => Get("AFWST_ModePaged", "Mode: Multi-Page");
+
     public static string HistorySortLabel => Get("AFWST_HistorySortLabel", "Sort");
 
     public static string CurrentSortLabel => Get("AFWST_CurrentSortLabel", "Sort");
