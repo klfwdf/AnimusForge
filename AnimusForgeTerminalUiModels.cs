@@ -199,9 +199,11 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	[DataSourceProperty]
 	public MBBindingList<AnimusForgeTerminalItemVM> Items { get => _items; set { if (value != _items) { _items = value; OnPropertyChangedWithValue(value, nameof(Items)); } } }
 
-	// 视图模式可见性
 	[DataSourceProperty]
 	public bool IsMenuListVisible => _currentViewMode == TerminalViewMode.MenuList;
+
+	[DataSourceProperty]
+	public bool IsBreadcrumbVisible => _currentViewMode != TerminalViewMode.WarStats;
 
 	[DataSourceProperty]
 	public bool IsWarStatsVisible => _currentViewMode == TerminalViewMode.WarStats;
@@ -288,6 +290,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		_currentViewMode = mode;
 		OnPropertyChanged(nameof(IsMenuListVisible));
+		OnPropertyChanged(nameof(IsBreadcrumbVisible));
 		OnPropertyChanged(nameof(IsWarStatsVisible));
 		OnPropertyChanged(nameof(IsWeeklyReportsVisible));
 		OnPropertyChanged(nameof(IsVassalageVisible));
