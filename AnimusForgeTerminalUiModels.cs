@@ -267,6 +267,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, SelectTab));
 		}
+		WarStatsVm = new AfWarStatsPopupVM(ExecuteBack);
 		RefreshItems();
 	}
 
@@ -374,8 +375,14 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 				tab.IsSelected = string.Equals(tab.TabId, "战争", StringComparison.Ordinal);
 			}
 		}
-		WarStatsVm?.OnFinalize();
-		WarStatsVm = new AfWarStatsPopupVM(ExecuteBack);
+		if (WarStatsVm == null)
+		{
+			WarStatsVm = new AfWarStatsPopupVM(ExecuteBack);
+		}
+		else
+		{
+			WarStatsVm.RefreshContent();
+		}
 		BreadcrumbText = "终端 / 战争";
 		SetViewMode(TerminalViewMode.WarStats);
 	}

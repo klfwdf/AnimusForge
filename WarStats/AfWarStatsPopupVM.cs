@@ -899,6 +899,9 @@ public sealed class AfWarStatsPopupVM : ViewModel
         set => SetField(ref _historyBannerB, value, nameof(HistoryBannerB));
     }
 
+    [DataSourceProperty]
+    public bool IsWarStatsVisible => true;
+
     public AfWarStatsPopupVM(Action onClose)
     {
         _onClose = onClose;
@@ -1166,7 +1169,7 @@ public sealed class AfWarStatsPopupVM : ViewModel
         }
     }
 
-    private void RefreshContent()
+    public void RefreshContent()
     {
         CurrentTabSelected = _activeTab == TabKind.CurrentWars;
         HistoryTabSelected = _activeTab == TabKind.HistoricalWars;
