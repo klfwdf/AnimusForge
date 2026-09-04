@@ -349,30 +349,34 @@
                     <!-- ======================================================== -->
                     <!-- 视图 7: 内嵌战争态势与统计档案 (WarStats) -->
                     <!-- ======================================================== -->
-                    <Widget IsVisible="@IsWarStatsVisible" DataSource="{WarStatsVm}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10" MarginTop="8" MarginBottom="8">
+                    <Widget IsVisible="@IsWarStatsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
-                        <!-- 战争子标签切换栏 (当前战争 / 历史战争 / 清除所有) -->
-                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                        <Widget DataSource="{WarStatsVm}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10" MarginTop="8" MarginBottom="8">
                           <Children>
-                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectCurrent">
+                            <!-- 战争子标签切换栏 (当前战争 / 历史战争 / 清除所有) - 保留战争统计经典原版样式 -->
+                            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="40" HorizontalAlignment="Center" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                               <Children>
-                                <Widget IsVisible="@CurrentTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
-                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CurrentTabText" />
+                                <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" Brush="Popup.SelectionElement.Tuple" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectCurrent">
+                                  <Children>
+                                    <Widget IsVisible="@CurrentTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#755C38FF" AlphaFactor="0.82" IsEnabled="false" />
+                                    <Widget IsVisible="@CurrentTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="3" VerticalAlignment="Bottom" MarginLeft="4" MarginRight="4" Sprite="BlankWhiteSquare_9" Color="#D0A75EFF" IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CurrentTabText" />
+                                  </Children>
+                                </ButtonWidget>
+                                <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginLeft="12" Brush="Popup.SelectionElement.Tuple" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectHistory">
+                                  <Children>
+                                    <Widget IsVisible="@HistoryTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#755C38FF" AlphaFactor="0.82" IsEnabled="false" />
+                                    <Widget IsVisible="@HistoryTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="3" VerticalAlignment="Bottom" MarginLeft="4" MarginRight="4" Sprite="BlankWhiteSquare_9" Color="#D0A75EFF" IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryTabText" />
+                                  </Children>
+                                </ButtonWidget>
+                                <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160" MarginLeft="12" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteClearAll">
+                                  <Children>
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@ClearAllText" />
+                                  </Children>
+                                </ButtonWidget>
                               </Children>
-                            </ButtonWidget>
-                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginLeft="12" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectHistory">
-                              <Children>
-                                <Widget IsVisible="@HistoryTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
-                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryTabText" />
-                              </Children>
-                            </ButtonWidget>
-                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="150" MarginLeft="12" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteClearAll">
-                              <Children>
-                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@ClearAllText" />
-                              </Children>
-                            </ButtonWidget>
-                          </Children>
-                        </ListPanel>
+                            </ListPanel>
 
                         <!-- 顶部战争数据概览卡片 (3 个紧凑金边方框) -->
                         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="66" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="44" LayoutImp.LayoutMethod="HorizontalLeftToRight">
@@ -413,9 +417,11 @@
                         <!-- 主内容区域：当前战争 / 历史战争 / 空白占位 -->
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="116" MarginBottom="34">
                           <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.32" IsEnabled="false" />
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#050403FF" AlphaFactor="0.25" IsEnabled="false" />
 
                             <!-- 1. 当前战争列表面板 -->
-                            <Widget IsVisible="@ShowCurrentPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                            <Widget IsVisible="@ShowCurrentPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="6" MarginBottom="6">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38">
                                   <Children>
@@ -552,7 +558,7 @@
                             </Widget>
 
                             <!-- 2. 历史战争档案面板 -->
-                            <Widget IsVisible="@ShowHistoryPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                            <Widget IsVisible="@ShowHistoryPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="6" MarginBottom="6">
                               <Children>
                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                   <Children>
@@ -810,7 +816,7 @@
                               </Children>
                             </ButtonWidget>
                             <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="280" HorizontalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C9B993FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PageText" />
-                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="120" HorizontalAlignment="Right" MarginRight="180" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteNextPage" IsEnabled="@CanGoNext">
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="120" HorizontalAlignment="Right" MarginRight="12" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteNextPage" IsEnabled="@CanGoNext">
                               <Children>
                                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NextText" />
                               </Children>
@@ -818,6 +824,8 @@
                           </Children>
                         </Widget>
 
+                          </Children>
+                        </Widget>
                       </Children>
                     </Widget>
 

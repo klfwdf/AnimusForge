@@ -337,7 +337,12 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
 
     private List<string> _savedActiveRecentHeroBattlesV5 = new();
 
-    public static AfWarStatsBehavior Instance { get; private set; }
+    private static AfWarStatsBehavior _instance;
+    public static AfWarStatsBehavior Instance
+    {
+        get => _instance ?? Campaign.Current?.GetCampaignBehavior<AfWarStatsBehavior>();
+        private set => _instance = value;
+    }
 
     public AfWarStatsBehavior()
     {
