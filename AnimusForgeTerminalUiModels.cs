@@ -311,9 +311,9 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			tab.IsSelected = string.Equals(tab.TabId, _selectedTab, StringComparison.Ordinal);
 		}
-		IEnumerable<AnimusForgeTerminalNode> source = _path.Count > 0 
-			? _path.Peek().Children 
-			: (_selectedTab == "全部" 
+		IEnumerable<AnimusForgeTerminalNode> source = _path.Count > 0
+			? _path.Peek().Children
+			: (_selectedTab == "全部"
 				? _roots 
 				: _roots.Where(x => string.Equals(x.Category, _selectedTab, StringComparison.Ordinal)));
 
