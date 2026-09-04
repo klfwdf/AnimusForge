@@ -57,11 +57,16 @@ class EntryInventoryTests(unittest.TestCase):
         ):
             self.assertTrue(entry_inventory._excluded(value), str(value))
 
-    def test_catalog_state_is_not_promoted(self) -> None:
+    def test_catalog_state_matches_owner_review(self) -> None:
         document = json.loads((ROOT / "docs/phase8/full-domain-readiness-catalog.json").read_text(encoding="utf-8"))
         for domain in document["domains"]:
-            self.assertEqual(domain["ownerAssignmentState"], "ROLE_PLACEHOLDER")
-            self.assertEqual(domain["entryCoverage"], "REPRESENTATIVE")
+            self.assertEqual(domain["ownerAssignmentState"], "ASSIGNED")
+            self.assertEqual(domain["entryCoverage"], "COMPLETE")
+
+    def test_preparation_state_guard_detects_promotion(self) -> None:
+        errors = entry_inventory.check_catalog(ROOT, require_preparation_state=True)
+        self.assertTrue(errors)
+        self.assertIn("ownerAssignmentState changed", " ".join(errors))
 
     def test_check_rejects_drift(self) -> None:
         self.assertEqual(entry_inventory.check_catalog(ROOT), [])

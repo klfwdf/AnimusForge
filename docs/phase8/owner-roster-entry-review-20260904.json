@@ -1,0 +1,1583 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase8-owner-roster-entry-review",
+  "recordedAt": "2026-09-04T00:42:09.3021609Z",
+  "sourceCommit": "57f10cec90fbdf6eb59f55e60b5c1aebdd10bbc6",
+  "userEvidenceRuntimeBaseline": "c01a2fcc3e9471d6c38f513423cab9ce91ca44f1",
+  "userEvidenceBinding": "PENDING_REBIND_AFTER_LATER_WARSTATS_COMMITS",
+  "account": {
+    "handle": "von.branden",
+    "email": "316820213+shenyic744-png@users.noreply.github.com",
+    "confirmation": "USER_CONFIRMED",
+    "identitySource": "Git commit author and user confirmation",
+    "logicalRolePolicy": "One real account may own multiple or all logical roles."
+  },
+  "entryInventory": {
+    "command": "python -B .\\tools\\PhaseEightReadiness\\entry_inventory.py --check",
+    "result": "PASS",
+    "preparationStateGuardCommand": "python -B .\\tools\\PhaseEightReadiness\\entry_inventory.py --check --require-preparation-state",
+    "preparationStateGuardResult": "EXPECTED_FAIL_AFTER_OWNER_PROMOTION",
+    "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+    "scope": "catalog paths and reviewed-pattern candidates",
+    "candidateDomains": [
+      "action-commit",
+      "courier-proactive-issue",
+      "duel",
+      "economy-reward-debt",
+      "game-adapter-compatibility",
+      "policy-political",
+      "settlement-siege-gccz-sets",
+      "social-progression-reports"
+    ]
+  },
+  "domainCount": 20,
+  "domains": [
+    {
+      "number": 1,
+      "domainId": "bootstrap-build",
+      "logicalOwner": "Build.Release",
+      "maintainerRoles": [
+        "build-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "bootstrap-host",
+        "tools-content-release"
+      ],
+      "entryPaths": [
+        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "AnimusForge.Bootstrap/BootstrapSubModule.cs",
+        "AnimusForge/SubModule.xml"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "AnimusForge.Bootstrap/BootstrapSubModule.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "AnimusForge/SubModule.xml",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 2,
+      "domainId": "host-composition",
+      "logicalOwner": "Foundation.Composition",
+      "maintainerRoles": [
+        "foundation-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "bootstrap-host",
+        "host-runtime"
+      ],
+      "entryPaths": [
+        "Refactor/Adapters/LegacyInteractionPipelineComposition.cs",
+        "SubModule.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "Refactor/Adapters/LegacyInteractionPipelineComposition.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SubModule.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 3,
+      "domainId": "runtime-diagnostics",
+      "logicalOwner": "Foundation.Runtime",
+      "maintainerRoles": [
+        "foundation-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "host-runtime",
+        "runtime-game-adapter",
+        "ui-runtime-integration"
+      ],
+      "entryPaths": [
+        "CampaignTickDiagnosticsPatch.cs",
+        "FeatureDiagnosticLogFile.cs",
+        "SubModule.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "CampaignTickDiagnosticsPatch.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "FeatureDiagnosticLogFile.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SubModule.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 4,
+      "domainId": "game-adapter-compatibility",
+      "logicalOwner": "Compatibility.GameAdapter",
+      "maintainerRoles": [
+        "adapter-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "runtime-game-adapter"
+      ],
+      "entryPaths": [
+        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "BannerlordApiCompat.cs",
+        "InteractionComponentSafePatch.cs",
+        "PlayerEncounterCompat.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "BannerlordApiCompat.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "InteractionComponentSafePatch.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PlayerEncounterCompat.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 5,
+      "domainId": "persistence-config",
+      "logicalOwner": "Foundation.Persistence",
+      "maintainerRoles": [
+        "persistence-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "AIConfigHandler.cs",
+        "CampaignSaveChunkHelper.cs",
+        "docs/fixtures/phase4-persistence-profile-config/syncdata-binding-catalog.json"
+      ],
+      "entryChecks": [
+        {
+          "path": "AIConfigHandler.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "CampaignSaveChunkHelper.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "docs/fixtures/phase4-persistence-profile-config/syncdata-binding-catalog.json",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 6,
+      "domainId": "conversation-encounter",
+      "logicalOwner": "Conversation.Encounter",
+      "maintainerRoles": [
+        "conversation-owner",
+        "encounter-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "conversation-gateway",
+        "conversation-action",
+        "conversation-siege",
+        "conversation-courier"
+      ],
+      "entryPaths": [
+        "LordEncounterBehavior.cs",
+        "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+        "ShoutBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "LordEncounterBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "ShoutBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 7,
+      "domainId": "gateway-prompt-protocol",
+      "logicalOwner": "Conversation.Gateway",
+      "maintainerRoles": [
+        "gateway-owner",
+        "prompt-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "conversation-gateway",
+        "gateway-knowledge-profile"
+      ],
+      "entryPaths": [
+        "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "Refactor/Contracts/LegacyShoutNetworkGateway.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Contracts/LegacyShoutNetworkGateway.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 8,
+      "domainId": "action-commit",
+      "logicalOwner": "Interaction.ActionCommit",
+      "maintainerRoles": [
+        "action-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "conversation-action",
+        "action-memory",
+        "action-economy"
+      ],
+      "entryPaths": [
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "Refactor/Runtime/DetachedInteractionHost.cs",
+        "Refactor/Runtime/InteractionCommitReceiptCache.cs",
+        "Refactor/Runtime/InteractionResultCommitter.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/DetachedInteractionHost.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/InteractionCommitReceiptCache.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 9,
+      "domainId": "memory-afef",
+      "logicalOwner": "Memory.Persistence",
+      "maintainerRoles": [
+        "memory-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "action-memory",
+        "persistence-domain-owners",
+        "memory-social-reports"
+      ],
+      "entryPaths": [
+        "MyBehavior.cs",
+        "MyBehavior.MemoryRecovery.cs",
+        "MyBehavior.WeeklyActionOutcomeReceipts.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "MyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "MyBehavior.MemoryRecovery.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 10,
+      "domainId": "economy-reward-debt",
+      "logicalOwner": "Economy.RewardDebt",
+      "maintainerRoles": [
+        "economy-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "action-economy",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "RewardSystemBehavior.cs",
+        "RewardSystemBehavior.EconomyMerchantReplay.cs",
+        "RewardSystemBehavior.EconomyPartyReplay.cs",
+        "RewardSystemBehavior.EconomyReplay.cs",
+        "RewardSystemBehavior.PlayerRpCrafting.cs",
+        "RewardSystemBehavior.RpItemIntroduction.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "RewardSystemBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "RewardSystemBehavior.EconomyMerchantReplay.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "RewardSystemBehavior.EconomyPartyReplay.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "RewardSystemBehavior.EconomyReplay.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "RewardSystemBehavior.PlayerRpCrafting.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "RewardSystemBehavior.RpItemIntroduction.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 11,
+      "domainId": "policy-political",
+      "logicalOwner": "Policy.Political",
+      "maintainerRoles": [
+        "policy-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "policy-world-diplomacy",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "PolicySystem/Core/CustomPolicyBehavior.ArmyFormation.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.AutoDraft.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Effects.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Generation.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Lifecycle.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Management.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Models.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.PartySizeLimit.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.Targets.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.VillageRaidBan.cs",
+        "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
+        "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.ArmyFormation.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.AutoDraft.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.Effects.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.Generation.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.Lifecycle.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.Management.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.Models.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.PartySizeLimit.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.Targets.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Core/CustomPolicyBehavior.VillageRaidBan.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PolicySystem/Npc/NpcRulerPolicyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 12,
+      "domainId": "world-simulation-worldmap",
+      "logicalOwner": "World.Simulation",
+      "maintainerRoles": [
+        "world-diplomacy-owner",
+        "world-map-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "policy-world-diplomacy",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "DiplomacyBehavior.cs",
+        "KingdomAnnexationBehavior.cs",
+        "NpcTributeVassalageBehavior.cs",
+        "VassalageBehavior.cs",
+        "WorldDiplomacyBehavior.cs",
+        "WorldMapPartyCommandBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "DiplomacyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "KingdomAnnexationBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "NpcTributeVassalageBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "VassalageBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "WorldDiplomacyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "WorldMapPartyCommandBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 13,
+      "domainId": "settlement-siege-gccz-sets",
+      "logicalOwner": "Settlement.Siege",
+      "maintainerRoles": [
+        "siege-owner",
+        "settlement-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "conversation-siege",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "AnimusForge.SiegeAftermathIntervention/SiegeInterventionEntryProfile.cs",
+        "CastleAftermathRuntimeBridge.cs",
+        "GcczSettlementCulturePersistenceBehavior.cs",
+        "SettlementEntryTroopSelectionBehavior.cs",
+        "SiegeAiInterventionBehavior.cs",
+        "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+        "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+        "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+        "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+        "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
+        "VillageAftermathBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForge.SiegeAftermathIntervention/SiegeInterventionEntryProfile.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "CastleAftermathRuntimeBridge.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "GcczSettlementCulturePersistenceBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SettlementEntryTroopSelectionBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "VillageAftermathBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 14,
+      "domainId": "scene-mission-combat",
+      "logicalOwner": "Scene.Mission",
+      "maintainerRoles": [
+        "scene-owner",
+        "mission-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "scene-duel",
+        "ui-runtime-integration"
+      ],
+      "entryPaths": [
+        "MeetingBattleLockMissionBehavior.cs",
+        "MilitaryExerciseBehavior.cs",
+        "NoblePrisonerEscortBehavior.cs",
+        "NoblePrisonerExecutionOrderBehavior.cs",
+        "SceneTauntBehavior.cs",
+        "TroopInspectionBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "MeetingBattleLockMissionBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "MilitaryExerciseBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "NoblePrisonerEscortBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "NoblePrisonerExecutionOrderBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SceneTauntBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "TroopInspectionBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 15,
+      "domainId": "duel",
+      "logicalOwner": "Duel.Combat",
+      "maintainerRoles": [
+        "duel-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "scene-duel",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "CourierDeliveryBehavior.cs",
+        "DuelBehavior.cs",
+        "DuelBehavior.Outcomes.cs",
+        "DuelSettings.cs",
+        "FourberieDuelCompatibility.cs",
+        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "Refactor/Runtime/DuelOutcomeReceipt.cs",
+        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "ShoutBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "CourierDeliveryBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "DuelBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "DuelBehavior.Outcomes.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "DuelSettings.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "FourberieDuelCompatibility.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/DuelOutcomeReceipt.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "ShoutBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 16,
+      "domainId": "courier-proactive-issue",
+      "logicalOwner": "Courier.ProactiveIssue",
+      "maintainerRoles": [
+        "courier-owner",
+        "proactive-owner",
+        "issue-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "conversation-courier",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "CompanionProactiveChatBehavior.cs",
+        "CourierDeliveryBehavior.cs",
+        "CourierDeliveryBehavior.InboundCompletion.cs",
+        "ProactiveNpcRequestBehavior.cs",
+        "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
+        "Refactor/Runtime/CourierInboundCompletionReceipt.cs",
+        "VanillaIssueOfferBridge.cs",
+        "VanillaIssuePromptBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "CompanionProactiveChatBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "CourierDeliveryBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "CourierDeliveryBehavior.InboundCompletion.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "ProactiveNpcRequestBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "Refactor/Runtime/CourierInboundCompletionReceipt.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "VanillaIssueOfferBridge.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "VanillaIssuePromptBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 17,
+      "domainId": "social-progression-reports",
+      "logicalOwner": "Social.ProgressionReports",
+      "maintainerRoles": [
+        "social-owner",
+        "reports-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "memory-social-reports",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "AnimusForgeUniqueCosmeticItemBehavior.cs",
+        "MyBehavior.cs",
+        "NobleGatheringBehavior.cs",
+        "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+        "PlayerNotorietyBehavior.cs",
+        "RomanceSystemBehavior.cs",
+        "SexualConceptionBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForgeUniqueCosmeticItemBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "MyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "NobleGatheringBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "PlayerNotorietyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "RomanceSystemBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SexualConceptionBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 18,
+      "domainId": "knowledge-persona-profile",
+      "logicalOwner": "Knowledge.PersonaProfile",
+      "maintainerRoles": [
+        "knowledge-owner",
+        "profile-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "gateway-knowledge-profile",
+        "persistence-domain-owners"
+      ],
+      "entryPaths": [
+        "KingdomStrategicProfileBehavior.cs",
+        "KnowledgeLibraryBehavior.cs",
+        "MyBehavior.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "KingdomStrategicProfileBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "KnowledgeLibraryBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "MyBehavior.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 19,
+      "domainId": "ui-tts-external-integration",
+      "logicalOwner": "UI.ExternalIntegration",
+      "maintainerRoles": [
+        "ui-owner",
+        "tts-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "ui-runtime-integration",
+        "tools-content-release"
+      ],
+      "entryPaths": [
+        "AnimusForgeNativeConversationOverlay.cs",
+        "SceneActionsIntegrationBoundary.cs",
+        "SubModule.cs",
+        "TtsEngine.cs"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForgeNativeConversationOverlay.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SceneActionsIntegrationBoundary.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "SubModule.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "TtsEngine.cs",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    },
+    {
+      "number": 20,
+      "domainId": "tools-content-package",
+      "logicalOwner": "Tools.ContentRelease",
+      "maintainerRoles": [
+        "tools-owner",
+        "release-owner"
+      ],
+      "realAccount": "von.branden",
+      "assignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE",
+      "bridgeIds": [
+        "tools-content-release"
+      ],
+      "entryPaths": [
+        "AnimusForge.csproj",
+        "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+        "tools/PhaseEightReadiness/readiness.py"
+      ],
+      "entryChecks": [
+        {
+          "path": "AnimusForge.csproj",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        },
+        {
+          "path": "tools/PhaseEightReadiness/readiness.py",
+          "exists": true,
+          "staticReview": "ACCEPTED"
+        }
+      ],
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "scope": "catalog entryPaths plus stable entry_inventory candidates; static file existence and ownership",
+        "note": "User-confirmed single-account ownership. Runtime LIVE/SAVE evidence remains separately gated."
+      }
+    }
+  ],
+  "bridgeCount": 16,
+  "bridges": [
+    {
+      "bridgeId": "bootstrap-host",
+      "logicalOwner": "Build.Composition",
+      "topology": "PAIR",
+      "domainIds": [
+        "bootstrap-build",
+        "host-composition"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "host-runtime",
+      "logicalOwner": "Foundation.Runtime",
+      "topology": "PAIR",
+      "domainIds": [
+        "host-composition",
+        "runtime-diagnostics"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "runtime-game-adapter",
+      "logicalOwner": "Compatibility.GameAdapter",
+      "topology": "PAIR",
+      "domainIds": [
+        "runtime-diagnostics",
+        "game-adapter-compatibility"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "persistence-domain-owners",
+      "logicalOwner": "Foundation.Persistence",
+      "topology": "CROSS_CUT",
+      "domainIds": [
+        "persistence-config",
+        "memory-afef",
+        "economy-reward-debt",
+        "policy-political",
+        "world-simulation-worldmap",
+        "settlement-siege-gccz-sets",
+        "duel",
+        "courier-proactive-issue",
+        "social-progression-reports",
+        "knowledge-persona-profile"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "conversation-gateway",
+      "logicalOwner": "Conversation.Gateway",
+      "topology": "PAIR",
+      "domainIds": [
+        "conversation-encounter",
+        "gateway-prompt-protocol"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "conversation-action",
+      "logicalOwner": "Conversation.ActionCommit",
+      "topology": "PAIR",
+      "domainIds": [
+        "conversation-encounter",
+        "action-commit"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "action-memory",
+      "logicalOwner": "Action.Memory",
+      "topology": "PAIR",
+      "domainIds": [
+        "action-commit",
+        "memory-afef"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "action-economy",
+      "logicalOwner": "Action.Economy",
+      "topology": "PAIR",
+      "domainIds": [
+        "action-commit",
+        "economy-reward-debt"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "policy-world-diplomacy",
+      "logicalOwner": "Policy.WorldDiplomacy",
+      "topology": "PAIR",
+      "domainIds": [
+        "policy-political",
+        "world-simulation-worldmap"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "conversation-siege",
+      "logicalOwner": "Conversation.SettlementSiege",
+      "topology": "PAIR",
+      "domainIds": [
+        "conversation-encounter",
+        "settlement-siege-gccz-sets"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "scene-duel",
+      "logicalOwner": "Scene.Duel",
+      "topology": "PAIR",
+      "domainIds": [
+        "scene-mission-combat",
+        "duel"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "conversation-courier",
+      "logicalOwner": "Conversation.Courier",
+      "topology": "PAIR",
+      "domainIds": [
+        "conversation-encounter",
+        "courier-proactive-issue"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "memory-social-reports",
+      "logicalOwner": "Memory.SocialReports",
+      "topology": "PAIR",
+      "domainIds": [
+        "memory-afef",
+        "social-progression-reports"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "gateway-knowledge-profile",
+      "logicalOwner": "Gateway.KnowledgeProfile",
+      "topology": "PAIR",
+      "domainIds": [
+        "gateway-prompt-protocol",
+        "knowledge-persona-profile"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "ui-runtime-integration",
+      "logicalOwner": "UI.RuntimeIntegration",
+      "topology": "CROSS_CUT",
+      "domainIds": [
+        "runtime-diagnostics",
+        "scene-mission-combat",
+        "ui-tts-external-integration"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    },
+    {
+      "bridgeId": "tools-content-release",
+      "logicalOwner": "Tools.ContentRelease",
+      "topology": "CROSS_CUT",
+      "domainIds": [
+        "bootstrap-build",
+        "ui-tts-external-integration",
+        "tools-content-package"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z",
+        "note": "Same confirmed account owns the logical Bridge review role; no new caller is introduced."
+      }
+    }
+  ],
+  "moduleCount": 8,
+  "modules": [
+    {
+      "moduleId": "af.foundation.runtime",
+      "logicalOwner": "Foundation",
+      "maintainerRoles": [
+        "foundation-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.game-adapter",
+      "logicalOwner": "Compatibility.GameAdapter",
+      "maintainerRoles": [
+        "adapter-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.module.conversation",
+      "logicalOwner": "Conversation.AI",
+      "maintainerRoles": [
+        "conversation-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.module.siege-aftermath",
+      "logicalOwner": "Settlement.Siege",
+      "maintainerRoles": [
+        "siege-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.module.policy-effects",
+      "logicalOwner": "Policy",
+      "maintainerRoles": [
+        "policy-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.module.world-diplomacy",
+      "logicalOwner": "World.Diplomacy",
+      "maintainerRoles": [
+        "world-diplomacy-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.bridge.conversation-siege",
+      "logicalOwner": "Conversation.SettlementSiege",
+      "maintainerRoles": [
+        "conversation-owner",
+        "siege-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    },
+    {
+      "moduleId": "af.bridge.policy-diplomacy",
+      "logicalOwner": "Policy.WorldDiplomacy",
+      "maintainerRoles": [
+        "policy-owner",
+        "world-diplomacy-owner"
+      ],
+      "realAccount": "von.branden",
+      "ownerReview": {
+        "decision": "ACCEPTED",
+        "reviewer": "von.branden",
+        "reviewedAt": "2026-09-04T00:42:09.3021609Z"
+      }
+    }
+  ],
+  "limitations": [
+    "This roster records logical responsibility, not physical DLL splitting.",
+    "Owner/entry assignment does not promote missing or unrun LIVE/SAVE evidence.",
+    "Domain runtime-diagnostics is explicitly NOT-RUN in the current test intake.",
+    "Final readiness still requires a clean source tree and evidence bound to the final runtime commit."
+  ],
+  "trackedSourceTreeClean": false,
+  "workingTreeClean": false,
+  "untrackedFiles": [
+    "docs/phase8/owner-roster-entry-review-20260904.json"
+  ],
+  "statusNote": "Roster file is currently untracked until the owner-review checkpoint is committed; runtime readiness still requires a clean tree."
+}

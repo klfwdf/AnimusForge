@@ -42,8 +42,8 @@
         "bootstrap-host",
         "tools-content-release"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 2,
@@ -84,8 +84,8 @@
         "bootstrap-host",
         "host-runtime"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 3,
@@ -128,8 +128,8 @@
         "runtime-game-adapter",
         "ui-runtime-integration"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 4,
@@ -171,8 +171,8 @@
       "bridgeIds": [
         "runtime-game-adapter"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 5,
@@ -223,8 +223,8 @@
       "bridgeIds": [
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 6,
@@ -274,8 +274,8 @@
         "conversation-siege",
         "conversation-courier"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 7,
@@ -319,8 +319,8 @@
         "conversation-gateway",
         "gateway-knowledge-profile"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 8,
@@ -368,8 +368,8 @@
         "action-memory",
         "action-economy"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 9,
@@ -420,8 +420,8 @@
         "persistence-domain-owners",
         "memory-social-reports"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 10,
@@ -476,8 +476,8 @@
         "action-economy",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 11,
@@ -535,8 +535,8 @@
         "policy-world-diplomacy",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 12,
@@ -589,8 +589,8 @@
         "policy-world-diplomacy",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 13,
@@ -648,8 +648,8 @@
         "conversation-siege",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 14,
@@ -701,8 +701,8 @@
         "scene-duel",
         "ui-runtime-integration"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 15,
@@ -755,8 +755,8 @@
         "scene-duel",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 16,
@@ -813,8 +813,8 @@
         "conversation-courier",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 17,
@@ -870,8 +870,8 @@
         "memory-social-reports",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 18,
@@ -923,8 +923,8 @@
         "gateway-knowledge-profile",
         "persistence-domain-owners"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 19,
@@ -974,8 +974,8 @@
         "ui-runtime-integration",
         "tools-content-release"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     },
     {
       "number": 20,
@@ -1024,8 +1024,8 @@
       "bridgeIds": [
         "tools-content-release"
       ],
-      "ownerAssignmentState": "ROLE_PLACEHOLDER",
-      "entryCoverage": "REPRESENTATIVE"
+      "ownerAssignmentState": "ASSIGNED",
+      "entryCoverage": "COMPLETE"
     }
   ],
   "bridges": [

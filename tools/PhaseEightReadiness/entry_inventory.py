@@ -69,7 +69,7 @@ def build_inventory(project: Path) -> dict[str, list[str]]:
     }
 
 
-def check_catalog(project: Path) -> list[str]:
+def check_catalog(project: Path, *, require_preparation_state: bool = False) -> list[str]:
     inventory = build_inventory(project)
     document = json.loads((project / CATALOG_PATH).read_text(encoding="utf-8"))
     domains = {item["id"]: item for item in document.get("domains", [])}
@@ -82,10 +82,11 @@ def check_catalog(project: Path) -> list[str]:
         missing = sorted(set(candidates) - set(actual))
         if missing:
             errors.append(f"{domain_id} missing: {', '.join(missing)}")
-        if domains[domain_id].get("entryCoverage") != "REPRESENTATIVE":
-            errors.append(f"{domain_id} entryCoverage changed")
-        if domains[domain_id].get("ownerAssignmentState") != "ROLE_PLACEHOLDER":
-            errors.append(f"{domain_id} ownerAssignmentState changed")
+        if require_preparation_state:
+            if domains[domain_id].get("entryCoverage") != "REPRESENTATIVE":
+                errors.append(f"{domain_id} entryCoverage changed")
+            if domains[domain_id].get("ownerAssignmentState") != "ROLE_PLACEHOLDER":
+                errors.append(f"{domain_id} ownerAssignmentState changed")
     return errors
 
 
@@ -104,11 +105,12 @@ def main() -> int:
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--update", action="store_true")
+    parser.add_argument("--require-preparation-state", action="store_true")
     args = parser.parse_args()
     try:
         if args.update:
             update_catalog(args.project_root)
-        errors = check_catalog(args.project_root)
+        errors = check_catalog(args.project_root, require_preparation_state=args.require_preparation_state)
         if args.check:
             if errors:
                 for error in errors:
