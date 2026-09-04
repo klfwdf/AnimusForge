@@ -848,10 +848,51 @@
                   </Children>
                 </Widget>
 
-                <!-- 底部控制栏：左侧提示文字，右侧原生按钮 -->
+                <!-- 底部控制栏：左侧入口开关与提示文字，右侧原生按钮 -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="52" VerticalAlignment="Bottom">
                   <Children>
-                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Left" MarginLeft="6" MarginRight="320" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#9E907BFF" Text="提示：按 Backspace 或点击【返回上一级】可快速退回，按 ESC 或【关闭】退出终端。" />
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginLeft="6">
+                      <Children>
+                        <!-- 选项 1：按键呼出 -->
+                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginRight="16">
+                          <Children>
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" VerticalAlignment="Center" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHotkey">
+                              <Children>
+                                <BrushWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.Checkbox.Full.Button" IsVisible="@IsHotkeyEnabled" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleHotkey">
+                              <Children>
+                                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#D4C8B4FF" Text="按键呼出" />
+                              </Children>
+                            </ButtonWidget>
+                          </Children>
+                        </ListPanel>
+
+                        <!-- 选项 2：图标入口 -->
+                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginRight="20">
+                          <Children>
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" VerticalAlignment="Center" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleMapIcon">
+                              <Children>
+                                <BrushWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.Checkbox.Full.Button" IsVisible="@IsMapIconEnabled" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleMapIcon">
+                              <Children>
+                                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#D4C8B4FF" Text="图标入口" />
+                              </Children>
+                            </ButtonWidget>
+                          </Children>
+                        </ListPanel>
+
+                        <!-- 垂直细分割线 -->
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="18" VerticalAlignment="Center" MarginRight="16" Sprite="BlankWhiteSquare_9" Color="#765D3C66" />
+
+                        <!-- 快捷操作提示 -->
+                        <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#8C806DFF" Text="提示：ESC 或【关闭】退出，Backspace 返回" />
+                      </Children>
+                    </ListPanel>
+
                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
                         <ButtonWidget IsVisible="@CanGoBack" DoNotPassEventsToChildren="true" Command.Click="ExecuteBack" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="44" MarginRight="12" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
