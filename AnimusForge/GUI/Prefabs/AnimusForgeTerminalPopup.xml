@@ -87,18 +87,8 @@
                                             <!-- 中间：垂直信息排版 (MarginLeft="66"，空出左侧图标位置) -->
                                             <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="66" MarginRight="160" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                               <Children>
-                                                <!-- 第一行：标题 + 次级角标 -->
-                                                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="28" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                                                  <Children>
-                                                    <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.FontColor="#F7EAC7FF" Brush.TextHorizontalAlignment="Left" Text="@Title" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="56" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="10" Sprite="BlankWhiteSquare_9" Color="#3E2E1CFF" AlphaFactor="0.88">
-                                                      <Children>
-                                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="2" ExtendTop="2" ExtendRight="2" ExtendBottom="2" AlphaFactor="0.45" IsEnabled="false" />
-                                                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="@BadgeText" />
-                                                      </Children>
-                                                    </Widget>
-                                                  </Children>
-                                                </ListPanel>
+                                                <!-- 第一行：标题 -->
+                                                <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.FontColor="#F7EAC7FF" Brush.TextHorizontalAlignment="Left" Text="@Title" />
 
                                                 <!-- 第二行：功能说明文字 (清晰左对齐，与标题齐平) -->
                                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="5" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#B3A48FFF" Brush.TextHorizontalAlignment="Left" Text="@HintText" />
