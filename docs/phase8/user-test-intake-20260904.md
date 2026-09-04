@@ -3,8 +3,9 @@
 日期：2026-09-04
 工作区：`F:\\AnimusForge-main`
 分支：`refactor/prepare-af-restructure`
-运行时代码基线：`c01a2fcc3e9471d6c38f513423cab9ce91ca44f1`
-接收台账提交：`d2515f9f`
+用户实测运行时代码基线：`c01a2fcc3e9471d6c38f513423cab9ce91ca44f1`
+当前静态审查基线：`57f10cec90fbdf6eb59f55e60b5c1aebdd10bbc6`
+接收台账提交：见本文件所在提交；用户实测结果不自动代表后续 WarStats 代码已实测。
 
 ## 1. 当前结论
 
@@ -52,15 +53,16 @@ C:\Users\29310\Documents\Mount and Blade II Bannerlord\Game Saves\save003.sav
 
 ## 4. 20 域状态处理
 
-本轮不直接修改 `full-domain-readiness-catalog.json` 中的
-`ownerAssignmentState`、`entryCoverage` 或 `currentEvidence`。在 owner roster、入口 review 和
-正式 evidence 绑定完成前，仍保持：
+本轮已根据用户确认的单一真实账号完成 owner roster 和静态入口 review：
 
-```text
-ownerAssignmentState = ROLE_PLACEHOLDER
-entryCoverage = REPRESENTATIVE
-formalEvidence = PENDING_OWNER_REVIEW
-```
+- 20 个 domain：`ownerAssignmentState = ASSIGNED`
+- 20 个 domain：`entryCoverage = COMPLETE`
+- 入口路径和 reviewed-pattern candidates：全部存在，`entry_inventory.py --check` 为 `PASS`
+- 形式化 LIVE/SAVE 证据：仍为 `PENDING_OWNER_REVIEW`
+- `runtime-diagnostics`（domain 3）：明确保持 `NOT_RUN`
+
+详细映射见 `docs/phase8/owner-roster-entry-review-20260904.json`。入口晋级不等于运行时证据通过；所有
+LIVE/SAVE 记录仍必须绑定实际步骤、Campaign/Mission、BuildInfo、存档 identity、日志哈希和 ownerReview。
 
 用户可以用一个真实账号兼任全部 20 个逻辑 owner；记录时需要显式列出账号到每个 domain/Bridge
 角色的映射，不能只写“制作组已确认”。
@@ -71,9 +73,12 @@ formalEvidence = PENDING_OWNER_REVIEW
    无 stale completion。
 2. 将用户报告的 19 个领域分别拆成正式 evidence record，绑定 `domainIds`、真实 `bridgeIds`、
    当前源码 commit、BuildInfo、DLL/存档哈希和日志附件。
-3. 完成一个账号承担 20 个逻辑角色的 owner roster 与完整入口 review。
+3. 一个账号承担 20 个逻辑角色的 owner roster 与完整静态入口 review 已完成，见
+   `docs/phase8/owner-roster-entry-review-20260904.json`。
 4. 对失败或缺附件的领域保持 `BLOCKED/PENDING`，不以口头 PASS 补齐证据。
 5. 全部 LIVE/SAVE 和 owner review 完成后，才进入 Release Stage/ZIP、安装验证、rollback drill、
    最终 diff 审查和推送。
 
-本台账不授予 Release、rollback、default cutover、删除 facade 或 push 权限。
+WarStats 终端整合交接说明已纳入当前分支：`docs/war_stats_terminal_integration_handover.md`；它会在最终
+diff 审查通过后随本分支一起推送。本文档不改变 Release、rollback、default cutover、删除 facade 或
+push 的最终门禁。

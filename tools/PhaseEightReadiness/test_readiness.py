@@ -210,6 +210,10 @@ class ReadinessTests(unittest.TestCase):
         self.document["mode"] = "real"
         for record in self.records.values():
             record["mode"] = "real"
+        domain_catalog_path = self.root / readiness.DOMAIN_CATALOG
+        domain_catalog = json.loads(domain_catalog_path.read_text(encoding="utf-8"))
+        domain_catalog["domains"][0]["ownerAssignmentState"] = "ROLE_PLACEHOLDER"
+        self.write(readiness.DOMAIN_CATALOG, json.dumps(domain_catalog).encode())
         self.blocked("UNASSIGNED_DOMAIN_OWNER")
 
     def test_dirty_source_blocks_acceptance(self) -> None:

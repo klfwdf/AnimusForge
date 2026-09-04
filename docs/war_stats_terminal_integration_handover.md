@@ -115,29 +115,8 @@
 
 ---
 
-## 5. 编译与部署指令
 
-接手 Agent 如需再次修改代码并验证构建，**必须严格按照以下步骤执行**：
-
-### 5.1 验证双版本 API 编译通过
-```powershell
-# 1. 验证 Bannerlord 1.4.x 编译
-dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.4
-
-# 2. 验证 Bannerlord 1.3.x 编译
-dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.3 /p:Bannerlord13ReferencesVerified=true
-```
-*要求：必须 0 错误、0 警告。*
-
-### 5.2 统一单模块一键部署至游戏
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\一键编译覆盖推送\build_single_module.ps1 -ProjectRoot "F:\AnimusForge-main" -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration "Debug" -Deploy
-```
-*该脚本会自动编译 1.3 DLL、1.4 DLL 与 Bootstrap，并将 Prefab、Languages、Data 及 DLL 统一热替换至 `Modules/AnimusForge`。*
-
----
-
-## 6. 后续可能的扩展建议
+## 5. 后续可能的扩展建议
 
 1. **历史战争领主阵亡跳转**：
    - 目前点击历史战争右侧的阵亡领主名（`HistoryDeathsA` / `HistoryDeathsB`）已挂接原版百科跳转，若未来领主被斩首有特殊记忆交互，可由此处切入。
