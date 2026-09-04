@@ -343,7 +343,6 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		return new List<AnimusForgeTerminalNode>
 		{
-			Node("war_stats", "战争", "全部", "⚔", "查看卡拉迪亚正在发生与已结束的战争态势、伤亡与战报。"),
 			Node("trust_query", "信任度查询", "查询与记录", "⚖", "查询英雄、定居点与商人信任来源。"),
 			Node("weekly_reports", "查看周报", "查询与记录", "✉", "打开国家周报浏览器。"),
 			Node("tag_catalog", "标签列表", "查询与记录", "❖", "查看正文/后处理标签索引，可刷新或导出 TXT。"),

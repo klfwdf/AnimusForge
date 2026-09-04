@@ -262,7 +262,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		TagCatalogItems = new MBBindingList<TerminalTagCatalogItemVM>();
 		TrustItems = new MBBindingList<TerminalTrustItemVM>();
 
-		string[] tabs = new[] { "全部", "外交", "部队", "玩家", "查询与记录", "系统" };
+		string[] tabs = new[] { "战争", "全部", "外交", "部队", "玩家", "查询与记录", "系统" };
 		foreach (string tab in tabs)
 		{
 			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, SelectTab));
@@ -274,6 +274,11 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		_selectedTab = string.IsNullOrWhiteSpace(tab) ? "全部" : tab;
 		_path.Clear();
+		if (string.Equals(_selectedTab, "战争", StringComparison.Ordinal))
+		{
+			ShowWarStats();
+			return;
+		}
 		SetViewMode(TerminalViewMode.MenuList);
 		RefreshItems();
 	}
@@ -361,9 +366,17 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ShowWarStats()
 	{
+		_selectedTab = "战争";
+		if (TabItems != null)
+		{
+			foreach (AnimusForgeTerminalTabItemVM tab in TabItems)
+			{
+				tab.IsSelected = string.Equals(tab.TabId, "战争", StringComparison.Ordinal);
+			}
+		}
 		WarStatsVm?.OnFinalize();
 		WarStatsVm = new AfWarStatsPopupVM(ExecuteBack);
-		BreadcrumbText = "终端 / " + _selectedTab + " / 战争";
+		BreadcrumbText = "终端 / 战争";
 		SetViewMode(TerminalViewMode.WarStats);
 	}
 
@@ -458,8 +471,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		if (_currentViewMode != TerminalViewMode.MenuList)
 		{
-			SetViewMode(TerminalViewMode.MenuList);
-			UpdateBreadcrumb();
+			SelectTab("全部");
 			return;
 		}
 
