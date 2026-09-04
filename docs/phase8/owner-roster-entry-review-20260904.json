@@ -3,6 +3,7 @@
   "kind": "phase8-owner-roster-entry-review",
   "recordedAt": "2026-09-04T00:42:09.3021609Z",
   "sourceCommit": "57f10cec90fbdf6eb59f55e60b5c1aebdd10bbc6",
+  "recordingCommit": "2558db89",
   "userEvidenceRuntimeBaseline": "c01a2fcc3e9471d6c38f513423cab9ce91ca44f1",
   "userEvidenceBinding": "PENDING_REBIND_AFTER_LATER_WARSTATS_COMMITS",
   "account": {
@@ -1574,10 +1575,8 @@
     "Domain runtime-diagnostics is explicitly NOT-RUN in the current test intake.",
     "Final readiness still requires a clean source tree and evidence bound to the final runtime commit."
   ],
-  "trackedSourceTreeClean": false,
-  "workingTreeClean": false,
-  "untrackedFiles": [
-    "docs/phase8/owner-roster-entry-review-20260904.json"
-  ],
-  "statusNote": "Roster file is currently untracked until the owner-review checkpoint is committed; runtime readiness still requires a clean tree."
+  "trackedSourceTreeClean": true,
+  "workingTreeClean": true,
+  "untrackedFiles": [],
+  "statusNote": "Owner-review checkpoint is committed; runtime readiness still requires complete hash-bound LIVE/SAVE and RELEASE evidence."
 }
