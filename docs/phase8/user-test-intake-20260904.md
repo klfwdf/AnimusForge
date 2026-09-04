@@ -3,7 +3,8 @@
 日期：2026-09-04
 工作区：`F:\\AnimusForge-main`
 分支：`refactor/prepare-af-restructure`
-源码 HEAD：`c01a2fcc3e9471d6c38f513423cab9ce91ca44f1`
+运行时代码基线：`c01a2fcc3e9471d6c38f513423cab9ce91ca44f1`
+接收台账提交：`d2515f9f`
 
 ## 1. 当前结论
 
