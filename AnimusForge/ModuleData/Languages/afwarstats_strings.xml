@@ -72,6 +72,8 @@
     <string id="AFWST_DisplayPaged" text="Multiple Pages (6 per page)" />
     <string id="AFWST_DisplayPagedHistory" text="Multiple Pages (8 per page)" />
     <string id="AFWST_DisplayScrollable" text="Single Page (scroll all wars)" />
+    <string id="AFWST_ModeScrollable" text="Mode: Single Page" />
+    <string id="AFWST_ModePaged" text="Mode: Multi-Page" />
     <string id="AFWST_TotalKills" text="Total Kills" />
     <string id="AFWST_ConfirmedDeaths" text="Confirmed Deaths" />
     <string id="AFWST_TotalCasualties" text="Total Casualties" />

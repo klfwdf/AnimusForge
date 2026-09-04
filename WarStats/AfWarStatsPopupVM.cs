@@ -58,6 +58,8 @@ public sealed class AfWarStatsPopupVM : ViewModel
 
     private string _clearAllText = string.Empty;
 
+    private string _displayModeButtonText = string.Empty;
+
     private string _currentSortLabelText = string.Empty;
 
     private string _historySortLabelText = string.Empty;
@@ -267,6 +269,13 @@ public sealed class AfWarStatsPopupVM : ViewModel
     {
         get => _clearAllText;
         set => SetField(ref _clearAllText, value, nameof(ClearAllText));
+    }
+
+    [DataSourceProperty]
+    public string DisplayModeButtonText
+    {
+        get => _displayModeButtonText;
+        set => SetField(ref _displayModeButtonText, value, nameof(DisplayModeButtonText));
     }
 
     [DataSourceProperty]
@@ -941,6 +950,19 @@ public sealed class AfWarStatsPopupVM : ViewModel
         RefreshContent();
     }
 
+    public void ExecuteToggleDisplayMode()
+    {
+        bool currentlyScrollable = CurrentTabSelected
+            ? (AfWarStatsSettings.GetCurrentWarsDisplayMode() == 1)
+            : (AfWarStatsSettings.GetHistoryWarsDisplayMode() == 1);
+
+        int newMode = currentlyScrollable ? 0 : 1;
+        AfWarStatsSettings.SetCurrentWarsDisplayMode(newMode);
+        AfWarStatsSettings.SetHistoryWarsDisplayMode(newMode);
+
+        RefreshContent();
+    }
+
     public void ExecutePrevPage()
     {
         ref int pageIndex = ref GetActivePageIndex();
@@ -1175,6 +1197,7 @@ public sealed class AfWarStatsPopupVM : ViewModel
         HistoryTabSelected = _activeTab == TabKind.HistoricalWars;
         ShowCurrentPanel = CurrentTabSelected;
         ShowHistoryPanel = HistoryTabSelected;
+        UpdateDisplayModeButtonText();
 
         if (CurrentTabSelected)
         {
@@ -1184,6 +1207,17 @@ public sealed class AfWarStatsPopupVM : ViewModel
         {
             RefreshHistoricalWars();
         }
+    }
+
+    private void UpdateDisplayModeButtonText()
+    {
+        bool isScrollable = CurrentTabSelected
+            ? (AfWarStatsSettings.GetCurrentWarsDisplayMode() == 1)
+            : (AfWarStatsSettings.GetHistoryWarsDisplayMode() == 1);
+
+        DisplayModeButtonText = isScrollable
+            ? AfWarStatsTexts.ModeScrollable
+            : AfWarStatsTexts.ModePaged;
     }
 
     private void RefreshCurrentWars()

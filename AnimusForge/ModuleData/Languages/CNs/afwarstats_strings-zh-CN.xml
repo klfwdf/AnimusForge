@@ -72,6 +72,8 @@
     <string id="AFWST_DisplayPaged" text="多页切换（每页 6 场）" />
     <string id="AFWST_DisplayPagedHistory" text="多页切换（每页 8 场）" />
     <string id="AFWST_DisplayScrollable" text="单页滚动（显示全部战争）" />
+    <string id="AFWST_ModeScrollable" text="模式：单页滚动" />
+    <string id="AFWST_ModePaged" text="模式：多页分页" />
     <string id="AFWST_TotalKills" text="累计击杀" />
     <string id="AFWST_ConfirmedDeaths" text="确认死亡" />
     <string id="AFWST_TotalCasualties" text="累计伤亡" />
