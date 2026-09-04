@@ -1,8 +1,8 @@
 # 阶段 8 实机结果接收台账（用户报告）
 
-日期：2026-09-04  
-工作区：`F:\AnimusForge-main`  
-分支：`refactor/prepare-af-restructure`  
+日期：2026-09-04
+工作区：`F:\\AnimusForge-main`
+分支：`refactor/prepare-af-restructure`
 源码 HEAD：`c01a2fcc3e9471d6c38f513423cab9ce91ca44f1`
 
 ## 1. 当前结论
