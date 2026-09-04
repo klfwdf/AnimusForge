@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AFWST_Title" text="War Statistics" />
+    <string id="AFWST_CurrentWars" text="Current Wars" />
+    <string id="AFWST_HistoricalWars" text="Historical Wars" />
+    <string id="AFWST_ClearAll" text="Clear All" />
+    <string id="AFWST_HistorySortLabel" text="Sort" />
+    <string id="AFWST_CurrentSortLabel" text="Sort" />
+    <string id="AFWST_SelectAll" text="Select All" />
+    <string id="AFWST_DeselectAll" text="Deselect All" />
+    <string id="AFWST_DeleteSelected" text="Delete Selected" />
+    <string id="AFWST_Previous" text="Previous" />
+    <string id="AFWST_Next" text="Next" />
+    <string id="AFWST_Close" text="Close" />
+    <string id="AFWST_Versus" text="VS" />
+    <string id="AFWST_AttackerLeft" text="Attacker" />
+    <string id="AFWST_WarColumn" text="War" />
+    <string id="AFWST_DefenderRight" text="Defender" />
+    <string id="AFWST_HistoryDetails" text="War Archive" />
+    <string id="AFWST_SelectedWar" text="Selected War" />
+    <string id="AFWST_PlayerInvolvedBadge" text="★ Player Involved" />
+    <string id="AFWST_DurationLabel" text="Duration" />
+    <string id="AFWST_WarStatusLabel" text="War Status" />
+    <string id="AFWST_AttackerRole" text="Attacker" />
+    <string id="AFWST_DefenderRole" text="Defender" />
+    <string id="AFWST_Advantage" text="Advantage" />
+    <string id="AFWST_Stalemate" text="Stalemate" />
+    <string id="AFWST_WearinessLabel" text="War Weariness" />
+    <string id="AFWST_AttackerFallenLords" text="Attacker · Lord Deaths During War" />
+    <string id="AFWST_DefenderFallenLords" text="Defender · Lord Deaths During War" />
+    <string id="AFWST_NoFallenLords" text="No lord deaths were recorded during this war." />
+    <string id="AFWST_DeathTrackingNotice" text="Lord deaths during wars are recorded from v1.3.9 onward." />
+    <string id="AFWST_UnknownHero" text="Unknown Hero" />
+    <string id="AFWST_UnknownCause" text="Unknown cause of death" />
+    <string id="AFWST_OpenFailed" text="Failed to open War Statistics. Details were written to rgl_log." />
+    <string id="AFWST_NotInitializedMessage" text="War Statistics is not initialized." />
+    <string id="AFWST_ClearTitle" text="Clear All War Statistics" />
+    <string id="AFWST_ClearBody" text="Clear all historical wars and lord-death records, and reset kills, casualties, wins, and losses for current wars? This action cannot be undone." />
+    <string id="AFWST_ConfirmClear" text="Confirm Clear" />
+    <string id="AFWST_Cancel" text="Cancel" />
+    <string id="AFWST_RecordsCleared" text="War Statistics records have been cleared." />
+    <string id="AFWST_DeleteSelectedTitle" text="Delete Selected Historical Wars" />
+    <string id="AFWST_ConfirmDeleteSelected" text="Delete Selected" />
+    <string id="AFWST_RecordsDeleted" text="{COUNT} historical war records were deleted." />
+    <string id="AFWST_CurrentSubtitle" text="Current Wars · {ROWS} per page · War weariness is estimated from duration, casualties, defeats, and territorial losses" />
+    <string id="AFWST_CurrentSubtitleScrollable" text="Current Wars · Single-page scrolling · War weariness is estimated from duration, casualties, defeats, and territorial losses" />
+    <string id="AFWST_HistorySubtitle" text="Historical Wars · Dates, estimated advantage, war weariness, and lord deaths during the war" />
+    <string id="AFWST_PlayerInvolvedCount" text="Player Involved  {COUNT}" />
+    <string id="AFWST_HistorySelectionCount" text="Selected {COUNT}" />
+    <string id="AFWST_DeleteSelectedBody" text="Delete {COUNT} selected historical wars and their lord-death records? This action cannot be undone." />
+    <string id="AFWST_SortLatest" text="Latest Wars First" />
+    <string id="AFWST_SortEarliest" text="Earliest Wars First" />
+    <string id="AFWST_SortDuration" text="Longest Duration" />
+    <string id="AFWST_SortCasualties" text="Most Casualties" />
+    <string id="AFWST_SortWeariness" text="Highest War Weariness" />
+    <string id="AFWST_SortPlayer" text="Player-Related First" />
+    <string id="AFWST_SettingsName" text="War Statistics" />
+    <string id="AFWST_MCMCurrentGroup" text="Current Wars" />
+    <string id="AFWST_MCMCurrentSortMode" text="Current War Sort" />
+    <string id="AFWST_MCMCurrentSortModeHint" text="Choose the order used by the Current Wars page." />
+    <string id="AFWST_MCMCurrentDisplayMode" text="Current War List Display" />
+    <string id="AFWST_MCMCurrentDisplayModeHint" text="Choose between six-row pages and one scrollable list." />
+    <string id="AFWST_MCMHistoryGroup" text="War Archive" />
+    <string id="AFWST_MCMHistorySortMode" text="Historical War Sort" />
+    <string id="AFWST_MCMHistorySortModeHint" text="Choose the order used by the Historical Wars page." />
+    <string id="AFWST_MCMHistoryDisplayMode" text="Historical War List Display" />
+    <string id="AFWST_MCMHistoryDisplayModeHint" text="Choose between eight-row pages and one scrollable historical-war list." />
+    <string id="AFWST_DisplayPaged" text="Multiple Pages (6 per page)" />
+    <string id="AFWST_DisplayPagedHistory" text="Multiple Pages (8 per page)" />
+    <string id="AFWST_DisplayScrollable" text="Single Page (scroll all wars)" />
+    <string id="AFWST_TotalKills" text="Total Kills" />
+    <string id="AFWST_ConfirmedDeaths" text="Confirmed Deaths" />
+    <string id="AFWST_TotalCasualties" text="Total Casualties" />
+    <string id="AFWST_DeadWounded" text="Dead + Wounded" />
+    <string id="AFWST_NoActiveWars" text="There are no active kingdom wars." />
+    <string id="AFWST_EndedWars" text="Ended Wars" />
+    <string id="AFWST_NoHistoricalWars" text="There are no completed war records yet." />
+    <string id="AFWST_Status" text="Status" />
+    <string id="AFWST_NotInitialized" text="Not Initialized" />
+    <string id="AFWST_WaitingForCampaign" text="Waiting for Campaign" />
+    <string id="AFWST_BehaviorNotInitialized" text="The War Statistics campaign behavior is not initialized." />
+    <string id="AFWST_Page" text="Page {CURRENT} / {TOTAL} · {ROWS} wars per page" />
+    <string id="AFWST_Kills" text="Kills  {COUNT}" />
+    <string id="AFWST_Casualties" text="Casualties  {COUNT}" />
+    <string id="AFWST_Record" text="Record  {WINS} W · {LOSSES} L" />
+    <string id="AFWST_Weariness" text="War Weariness  {PERCENT}%" />
+    <string id="AFWST_FinalWeariness" text="Final War Weariness  {PERCENT}%" />
+    <string id="AFWST_Percent" text="{PERCENT}%" />
+    <string id="AFWST_DateRange" text="{START} — {END}" />
+    <string id="AFWST_DeathCount" text="{COUNT}" />
+    <string id="AFWST_DeathBattleBy" text="Killed in battle · Slain by {KILLER}" />
+    <string id="AFWST_DeathBattle" text="Killed in battle" />
+    <string id="AFWST_DeathWoundsBy" text="Died of battle wounds · Fatally wounded by {KILLER}" />
+    <string id="AFWST_DeathWounds" text="Died of battle wounds" />
+    <string id="AFWST_DeathExecutedBy" text="Executed · Executed by {KILLER}" />
+    <string id="AFWST_DeathExecuted" text="Executed" />
+    <string id="AFWST_DeathExecutedAfterBattleBy" text="Executed after battle · Executed by {KILLER}" />
+    <string id="AFWST_DeathExecutedAfterBattle" text="Executed after battle" />
+    <string id="AFWST_DeathMurderedBy" text="Murdered · Killed by {KILLER}" />
+    <string id="AFWST_DeathMurdered" text="Murdered" />
+    <string id="AFWST_DeathOldAge" text="Died of old age" />
+    <string id="AFWST_DeathInLabor" text="Died in childbirth" />
+    <string id="AFWST_DeathLost" text="Disappeared" />
+    <string id="AFWST_DeathUnknownBy" text="Died · Killed by {KILLER}" />
+    <string id="AFWST_DeathMetaNoBattle" text="{DATE} · No associated battle" />
+    <string id="AFWST_DeathMeta" text="{DATE} · {BATTLE}" />
+    <string id="AFWST_RecentlyDeclared" text="Recently Declared" />
+    <string id="AFWST_Day" text="{DAYS} day" />
+    <string id="AFWST_Days" text="{DAYS} days" />
+    <string id="AFWST_Fiefs" text="Fiefs {A} : {B}" />
+    <string id="AFWST_CompactHistory" text="Attacker {A_WINS}W·{A_LOSSES}L    Defender {B_WINS}W·{B_LOSSES}L    Casualties {CASUALTIES}" />
+    <string id="AFWST_Legacy" text="Legacy" />
+    <string id="AFWST_LegacyRecord" text="Legacy Record" />
+    <string id="AFWST_WarEnded" text="Truce · {DATE}" />
+    <string id="AFWST_TerritoryOf" text="Territory of {NAME}" />
+    <string id="AFWST_UnknownKingdom" text="Unknown Kingdom" />
+  </strings>
+</base>

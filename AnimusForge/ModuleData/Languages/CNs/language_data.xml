@@ -3,4 +3,5 @@
   <LanguageFile xml_path="CNs/gccz_town_manual_strings.xml" />
   <LanguageFile xml_path="CNs/sceneactions_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/sets_hostile_meeting_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afwarstats_strings-zh-CN.xml" />
 </LanguageData>

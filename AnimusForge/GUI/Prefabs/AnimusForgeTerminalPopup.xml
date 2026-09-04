@@ -1,0 +1,865 @@
+<Prefab>
+  <Window>
+    <!-- 全屏半透明遮罩，阻隔大地图/城镇底层界面与文字杂讯 -->
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.92">
+      <Children>
+        
+        <!-- 终端居中主窗口：1280 × 820 黄金尺寸 -->
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1280" SuggestedHeight="820" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <!-- 羊皮纸底层材质与暗角 -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.85" IsEnabled="false" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="22" ExtendTop="22" ExtendRight="22" ExtendBottom="22" AlphaFactor="0.65" IsEnabled="false" />
+
+            <!-- 内部内容容器 -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="30" MarginRight="30" MarginTop="24" MarginBottom="22">
+              <Children>
+                
+                <!-- 顶部标题与副标题栏 -->
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="82" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.25" Color="#000000FF">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="20" MarginRight="20" MarginTop="10" MarginBottom="10">
+                      <Children>
+                        <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Title.Text" Brush.FontSize="30" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C2B29AFF" Brush.TextHorizontalAlignment="Center" Text="@SubtitleText" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+
+                <!-- 分割线 -->
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="12" VerticalAlignment="Top" MarginTop="86" Sprite="StdAssets\Popup\divider" />
+
+                <!-- 顶部分类 Tab 栏：严格居中对其，使用骑砍原生凸起金属按钮材质 -->
+                <ListPanel DataSource="{TabItems}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="104" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                  <ItemTemplate>
+                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="126" SuggestedHeight="42" MarginLeft="5" MarginRight="5" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                      <Children>
+                        <!-- 选中时呈现金色高亮原版按钮效果 -->
+                        <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center" Text="@TabId" />
+                      </Children>
+                    </ButtonWidget>
+                  </ItemTemplate>
+                </ListPanel>
+
+                <!-- 面包屑导航指示（居中优雅展示当前层级） -->
+                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="156" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="@BreadcrumbText" />
+
+                <!-- 中央主视窗区域 (带暗色镶边框架) -->
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" VerticalAlignment="Top" MarginTop="184" MarginBottom="70">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.4" IsEnabled="false" />
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.22" IsEnabled="false" />
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 1: 主功能列表 (MenuList) - 经典居中卡片流 -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsMenuListVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
+                      <Children>
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MenuClip" InnerPanel="MenuClip\MenuInner" MarginRight="12" AutoHideScrollBars="true" VerticalScrollbar="..\MenuScrollbar\Scrollbar">
+                          <Children>
+                            <Widget Id="MenuClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="MenuInner" DataSource="{Items}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpen" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="10" Brush="Popup.SelectionElement.Tuple" UpdateChildrenStates="true">
+                                      <Children>
+                                        <!-- 卡片底色与金线修饰 -->
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1B150FFF" AlphaFactor="0.86" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.35" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" VerticalAlignment="Top" MarginLeft="14" MarginRight="14" Sprite="BlankWhiteSquare_9" Color="#C2A368FF" AlphaFactor="0.45" IsEnabled="false" />
+
+                                        <!-- 卡片内部两端布局 -->
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18">
+                                          <Children>
+                                            
+                                            <!-- 左侧：图标徽章 (精致的 50x50 浮雕框 + 金色图标) -->
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="50" SuggestedHeight="50" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                              <Children>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.55" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#130D08FF" AlphaFactor="0.88" IsEnabled="false" />
+                                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.FontSize="26" Brush.FontColor="#E8CA88FF" Brush.TextHorizontalAlignment="Center" Text="@IconText" />
+                                              </Children>
+                                            </Widget>
+
+                                            <!-- 中间：垂直信息排版 (MarginLeft="66"，空出左侧图标位置) -->
+                                            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="66" MarginRight="160" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                              <Children>
+                                                <!-- 第一行：标题 + 次级角标 -->
+                                                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="28" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                                  <Children>
+                                                    <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.FontColor="#F7EAC7FF" Brush.TextHorizontalAlignment="Left" Text="@Title" />
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="56" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="10" Sprite="BlankWhiteSquare_9" Color="#3E2E1CFF" AlphaFactor="0.88">
+                                                      <Children>
+                                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="2" ExtendTop="2" ExtendRight="2" ExtendBottom="2" AlphaFactor="0.45" IsEnabled="false" />
+                                                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Center" Text="@BadgeText" />
+                                                      </Children>
+                                                    </Widget>
+                                                  </Children>
+                                                </ListPanel>
+
+                                                <!-- 第二行：功能说明文字 (清晰左对齐，与标题齐平) -->
+                                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="5" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#B3A48FFF" Brush.TextHorizontalAlignment="Left" Text="@HintText" />
+                                              </Children>
+                                            </ListPanel>
+
+                                            <!-- 右侧操作按键：采用原版金色按钮造型 -->
+                                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpen" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="44" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Done.Button" UpdateChildrenStates="true">
+                                              <Children>
+                                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Brush.FontColor="#FDE68AFF" Text="@ButtonText" />
+                                              </Children>
+                                            </ButtonWidget>
+
+                                          </Children>
+                                        </Widget>
+
+                                      </Children>
+                                    </ButtonWidget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <Standard.VerticalScrollbar Id="MenuScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="StretchToParent" MarginRight="2" />
+                      </Children>
+                    </Widget>
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 2: 内嵌国家周报 (WeeklyReports) -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsWeeklyReportsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
+                      <Children>
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <!-- 左侧王国阵营列表 -->
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="270" MarginRight="14">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.45">
+                                  <Children>
+                                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="14" MarginRight="14" Brush="Popup.Title.Text" Brush.FontSize="20" Brush.TextHorizontalAlignment="Left" Text="@WeeklyReportVm.CountryPanelTitleText" />
+                                  </Children>
+                                </Widget>
+                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="WeeklyCountryClip" InnerPanel="WeeklyCountryClip\WeeklyCountryInner" MarginTop="52" AutoHideScrollBars="true" VerticalScrollbar="..\WeeklyCountryScrollbar\Scrollbar">
+                                  <Children>
+                                    <Widget Id="WeeklyCountryClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                      <Children>
+                                        <ListPanel Id="WeeklyCountryInner" DataSource="{WeeklyReportVm.CountryItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                          <ItemTemplate>
+                                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="66" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                                              <Children>
+                                                <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="8" MarginBottom="8">
+                                                  <Children>
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Left" Text="@DisplayName" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Left" Text="@ReportCountText" />
+                                                  </Children>
+                                                </Widget>
+                                              </Children>
+                                            </ButtonWidget>
+                                          </ItemTemplate>
+                                        </ListPanel>
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </ScrollablePanel>
+                                <Standard.VerticalScrollbar Id="WeeklyCountryScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="52" />
+                              </Children>
+                            </Widget>
+
+                            <!-- 右侧周报条目与正文 -->
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.4">
+                                  <Children>
+                                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="16" Brush="Popup.Title.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@WeeklyReportVm.SelectedCountryNameText" />
+                                  </Children>
+                                </Widget>
+                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="WeeklyReportClip" InnerPanel="WeeklyReportClip\WeeklyReportInner" MarginTop="52" AutoHideScrollBars="true" VerticalScrollbar="..\WeeklyReportScrollbar\Scrollbar">
+                                  <Children>
+                                    <Widget Id="WeeklyReportClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                      <Children>
+                                        <ListPanel Id="WeeklyReportInner" DataSource="{WeeklyReportVm.ReportItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                          <ItemTemplate>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="14">
+                                              <Children>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.35" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#18130EFF" AlphaFactor="0.65" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="14" MarginBottom="14">
+                                                  <Children>
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@TitleText" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="28" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@DateText" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="52" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@SummaryText" />
+                                                  </Children>
+                                                </Widget>
+                                              </Children>
+                                            </Widget>
+                                          </ItemTemplate>
+                                        </ListPanel>
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </ScrollablePanel>
+                                <Standard.VerticalScrollbar Id="WeeklyReportScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="52" />
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 3: 内嵌臣属贡金管理 (Vassalage) -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsVassalageVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
+                      <Children>
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="VassalClip" InnerPanel="VassalClip\VassalInner" AutoHideScrollBars="true" VerticalScrollbar="..\VassalScrollbar\Scrollbar">
+                          <Children>
+                            <Widget Id="VassalClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="VassalInner" DataSource="{VassalageVm.RecordItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="14">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="6" ExtendTop="6" ExtendRight="6" ExtendBottom="6" AlphaFactor="0.4" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1E1710FF" AlphaFactor="0.88" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="22" MarginRight="22" MarginTop="14" MarginBottom="14">
+                                          <Children>
+                                            <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.TextHorizontalAlignment="Left" Text="@DateText" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="19" Brush.FontColor="#E7C46CFF" Brush.TextHorizontalAlignment="Left" Text="@TributeValueText" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="60" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@PlayerGainSummaryText" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="86" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@PlayerSettlementGainText" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="112" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Left" Text="@TributaryCostText" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <Standard.VerticalScrollbar Id="VassalScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" />
+                      </Children>
+                    </Widget>
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 4: 内嵌标签字典 (TagCatalog) -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsTagCatalogVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
+                      <Children>
+                        <!-- 顶栏操作按键与说明 -->
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" VerticalAlignment="Top">
+                          <Children>
+                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="320" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@TagCatalogSummaryText" />
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteExportTagCatalog" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="40" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="146" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="导出为 TXT" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteRefreshTagCatalog" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="40" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Done.Button" UpdateChildrenStates="true">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="刷新字典" />
+                              </Children>
+                            </ButtonWidget>
+                          </Children>
+                        </Widget>
+                        <!-- 标签列表 -->
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="TagClip" InnerPanel="TagClip\TagInner" MarginTop="52" AutoHideScrollBars="true" VerticalScrollbar="..\TagScrollbar\Scrollbar">
+                          <Children>
+                            <Widget Id="TagClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="TagInner" DataSource="{TagCatalogItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="10">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.32" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#18130EFF" AlphaFactor="0.65" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="12" MarginBottom="12">
+                                          <Children>
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="21" Brush.FontColor="#E7C46CFF" Brush.TextHorizontalAlignment="Left" Text="@Tag" />
+                                            <RichTextWidget WidthSizePolicy="Fixed" SuggestedWidth="200" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Right" Text="@Category" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="28" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Left" Text="@Description" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <Standard.VerticalScrollbar Id="TagScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="52" />
+                      </Children>
+                    </Widget>
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 5: 内嵌信任度查询 (TrustQuery) -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsTrustQueryVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
+                      <Children>
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@TrustQuerySummaryText" />
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="TrustClip" InnerPanel="TrustClip\TrustInner" MarginTop="32" AutoHideScrollBars="true" VerticalScrollbar="..\TrustScrollbar\Scrollbar">
+                          <Children>
+                            <Widget Id="TrustClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="TrustInner" DataSource="{TrustItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="66" MarginBottom="8">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.3" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#18130EFF" AlphaFactor="0.6" IsEnabled="false" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="20" MarginRight="20" MarginTop="8" MarginBottom="8">
+                                          <Children>
+                                            <RichTextWidget WidthSizePolicy="Fixed" SuggestedWidth="280" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@Name" />
+                                            <RichTextWidget WidthSizePolicy="Fixed" SuggestedWidth="130" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="300" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@TypeText" />
+                                            <RichTextWidget WidthSizePolicy="Fixed" SuggestedWidth="140" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Right" MarginRight="220" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.FontColor="#E7C46CFF" Brush.TextHorizontalAlignment="Right" Text="@TrustValueText" />
+                                            <RichTextWidget WidthSizePolicy="Fixed" SuggestedWidth="200" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Right" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Right" Text="@ExtraInfo" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <Standard.VerticalScrollbar Id="TrustScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="32" />
+                      </Children>
+                    </Widget>
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 6: 内嵌系统诊断与报错分析 (Diagnostics) -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsDiagnosticsVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
+                      <Children>
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#18130EFF" AlphaFactor="0.8">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="22" MarginRight="22" MarginTop="16" MarginBottom="16">
+                              <Children>
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@DiagnosticsStatusText" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="36" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@DiagnosticsDetailText" />
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </Widget>
+                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteRequestAiAnalysis" IsEnabled="@HasLatestErrorToAnalyze" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="230" SuggestedHeight="48" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="30" Brush="Popup.Done.Button" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="调用 AI 诊断分析" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </Widget>
+
+                    <!-- ======================================================== -->
+                    <!-- 视图 7: 内嵌战争态势与统计档案 (WarStats) -->
+                    <!-- ======================================================== -->
+                    <Widget IsVisible="@IsWarStatsVisible" DataSource="{WarStatsVm}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10" MarginTop="8" MarginBottom="8">
+                      <Children>
+                        <!-- 战争子标签切换栏 (当前战争 / 历史战争 / 清除所有) -->
+                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectCurrent">
+                              <Children>
+                                <Widget IsVisible="@CurrentTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CurrentTabText" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginLeft="12" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectHistory">
+                              <Children>
+                                <Widget IsVisible="@HistoryTabSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Done.Button" IsEnabled="false" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryTabText" />
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="150" MarginLeft="12" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteClearAll">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@ClearAllText" />
+                              </Children>
+                            </ButtonWidget>
+                          </Children>
+                        </ListPanel>
+
+                        <!-- 顶部战争数据概览卡片 (3 个紧凑金边方框) -->
+                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="66" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="44" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="370">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.35" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#130E0AFF" AlphaFactor="0.7" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" MarginLeft="6" MarginRight="6" MarginTop="3" Sprite="BlankWhiteSquare_9" Color="#A77C42FF" AlphaFactor="0.88" IsEnabled="false" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" MarginTop="5" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#BFA77AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary1Label" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" MarginTop="21" Brush="Popup.Title.Text" Brush.FontSize="22" Brush.FontColor="#F0D59CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary1Value" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16" VerticalAlignment="Bottom" MarginBottom="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#9F9688FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary1Detail" />
+                              </Children>
+                            </Widget>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="370" MarginLeft="12">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.35" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#130E0AFF" AlphaFactor="0.7" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" MarginLeft="6" MarginRight="6" MarginTop="3" Sprite="BlankWhiteSquare_9" Color="#9A5C3FFF" AlphaFactor="0.88" IsEnabled="false" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" MarginTop="5" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#BFA77AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary2Label" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" MarginTop="21" Brush="Popup.Title.Text" Brush.FontSize="22" Brush.FontColor="#E9C69AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary2Value" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16" VerticalAlignment="Bottom" MarginBottom="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#9F9688FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary2Detail" />
+                              </Children>
+                            </Widget>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="370" MarginLeft="12">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.35" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#130E0AFF" AlphaFactor="0.7" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" MarginLeft="6" MarginRight="6" MarginTop="3" Sprite="BlankWhiteSquare_9" Color="#876A45FF" AlphaFactor="0.88" IsEnabled="false" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" MarginTop="5" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#BFA77AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary3Label" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" MarginTop="21" Brush="Popup.Title.Text" Brush.FontSize="22" Brush.FontColor="#E6D4AAFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary3Value" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16" VerticalAlignment="Bottom" MarginBottom="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#AFA493FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@Summary3Detail" />
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ListPanel>
+
+                        <!-- 主内容区域：当前战争 / 历史战争 / 空白占位 -->
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="116" MarginBottom="34">
+                          <Children>
+
+                            <!-- 1. 当前战争列表面板 -->
+                            <Widget IsVisible="@ShowCurrentPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38">
+                                  <Children>
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="110" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CurrentTabText" />
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="42" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@CurrentSortLabelText" />
+                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginLeft="4" MarginRight="8" Parameter.IsCustomWidth="true" Parameter.CustomWidth="180" Parameter.IsFlatDesign="true" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{CurrentSortSelector}" />
+                                      </Children>
+                                    </ListPanel>
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginTop="22" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="480" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@AttackerHeaderText" />
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#AFA697FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@WarHeaderText" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B88C80FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DefenderHeaderText" />
+                                      </Children>
+                                    </ListPanel>
+                                  </Children>
+                                </Widget>
+
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="480" SuggestedHeight="2" MarginTop="37" Sprite="BlankWhiteSquare_9" Color="#B88646FF" AlphaFactor="0.9" IsEnabled="false" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" MarginLeft="640" MarginTop="37" Sprite="BlankWhiteSquare_9" Color="#82463EFF" AlphaFactor="0.9" IsEnabled="false" />
+
+                                <Widget IsVisible="@HasCurrentRows" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="40">
+                                  <Children>
+                                    <ScrollablePanel Id="CurrentWarsScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="CurrentWarsClip" InnerPanel="CurrentWarsClip\CurrentWarsList" VerticalScrollbar="..\CurrentWarsScrollbar">
+                                      <Children>
+                                        <Widget Id="CurrentWarsClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipContents="true">
+                                          <Children>
+                                            <ListPanel Id="CurrentWarsList" DataSource="{CurrentRows}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                              <ItemTemplate>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="74">
+                                                  <Children>
+                                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#090706FF" AlphaFactor="0.43" IsEnabled="false" />
+                                                    <Widget IsVisible="@IsEven" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#FFFFFF" AlphaFactor="0.035" IsEnabled="false" />
+                                                    <Widget IsVisible="@IsHighlighted" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#C49A55FF" AlphaFactor="0.10" IsEnabled="false" />
+                                                    <Widget IsVisible="@IsHighlighted" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#D5AE68FF" AlphaFactor="0.96" IsEnabled="false" />
+
+                                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                                      <Children>
+                                                        <!-- 进攻方王国 -->
+                                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="480">
+                                                          <Children>
+                                                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="52" SuggestedHeight="66" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="4" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenKingdomA" Command.AlternateClick="ExecuteOpenKingdomA" HoveredCursorState="RightClickLink">
+                                                              <Children>
+                                                                <MaskedTextureWidget DataSource="{BannerA}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Nameplate.FlatBanner.Big" OverlayTextureScale="1" AdditionalArgs="@AdditionalArgs" ImageId="@Id" TextureProviderName="@TextureProviderName" IsDisabled="true" DoNotAcceptEvents="true" />
+                                                              </Children>
+                                                            </ButtonWidget>
+                                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="62" MarginRight="8">
+                                                              <Children>
+                                                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" MarginTop="2" Brush="Popup.Title.Text" Brush.FontSize="17" Brush.FontColor="#DDD4C5FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NameAText" />
+                                                                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="18" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="24" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                                                  <Children>
+                                                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="95" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@KillsAText" />
+                                                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="95" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B8AE9FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CasualtiesAText" />
+                                                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="140" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4BD8CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@RecordAText" />
+                                                                  </Children>
+                                                                </ListPanel>
+                                                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="290" SuggestedHeight="16" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="3">
+                                                                  <Children>
+                                                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.90" IsEnabled="false" />
+                                                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="1" MarginRight="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#17120EFF" AlphaFactor="0.96" IsEnabled="false" />
+                                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="@WearinessBarWidthA" MarginLeft="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#B88646FF" AlphaFactor="0.92" IsEnabled="false" />
+                                                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#F0E3C6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@WearinessAText" />
+                                                                  </Children>
+                                                                </Widget>
+                                                              </Children>
+                                                            </Widget>
+                                                          </Children>
+                                                        </Widget>
+
+                                                        <!-- 中间：战事状态与持续天数 -->
+                                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160">
+                                                          <Children>
+                                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#100C09FF" AlphaFactor="0.48" IsEnabled="false" />
+                                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Left" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.45" IsEnabled="false" />
+                                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.45" IsEnabled="false" />
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" MarginTop="4" Brush="Popup.Title.Text" Brush.FontSize="16" Brush.FontColor="#E4C98FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@VersusText" />
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" MarginTop="26" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B8AE9FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DurationText" />
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="6" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#948979FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@TerritoryText" />
+                                                          </Children>
+                                                        </Widget>
+
+                                                        <!-- 防御方王国 -->
+                                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                                                          <Children>
+                                                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="52" SuggestedHeight="66" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenKingdomB" Command.AlternateClick="ExecuteOpenKingdomB" HoveredCursorState="RightClickLink">
+                                                              <Children>
+                                                                <MaskedTextureWidget DataSource="{BannerB}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Nameplate.FlatBanner.Big" OverlayTextureScale="1" AdditionalArgs="@AdditionalArgs" ImageId="@Id" TextureProviderName="@TextureProviderName" IsDisabled="true" DoNotAcceptEvents="true" />
+                                                              </Children>
+                                                            </ButtonWidget>
+                                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="62">
+                                                              <Children>
+                                                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" MarginTop="2" Brush="Popup.Title.Text" Brush.FontSize="17" Brush.FontColor="#DDD4C5FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NameBText" />
+                                                                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="18" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="24" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                                                  <Children>
+                                                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="95" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B88C80FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@KillsBText" />
+                                                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="95" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B8AE9FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CasualtiesBText" />
+                                                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="140" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4BD8CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@RecordBText" />
+                                                                  </Children>
+                                                                </ListPanel>
+                                                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="290" SuggestedHeight="16" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="3">
+                                                                  <Children>
+                                                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.90" IsEnabled="false" />
+                                                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="1" MarginRight="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#17120EFF" AlphaFactor="0.96" IsEnabled="false" />
+                                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="@WearinessBarWidthB" MarginLeft="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#82463EFF" AlphaFactor="0.94" IsEnabled="false" />
+                                                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#F0E3C6FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@WearinessBText" />
+                                                                  </Children>
+                                                                </Widget>
+                                                              </Children>
+                                                            </Widget>
+                                                          </Children>
+                                                        </Widget>
+
+                                                      </Children>
+                                                    </ListPanel>
+                                                  </Children>
+                                                </Widget>
+                                              </ItemTemplate>
+                                            </ListPanel>
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </ScrollablePanel>
+                                    <ScrollbarWidget IsVisible="@CurrentWarsScrollable" Id="CurrentWarsScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="10" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="CurrentWarsScrollbarHandle" MaxValue="100" MinValue="0">
+                                      <Children>
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="3" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#5A4033FF" AlphaFactor="0.42" />
+                                        <ImageWidget Id="CurrentWarsScrollbarHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="48" SuggestedWidth="10" HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                                      </Children>
+                                    </ScrollbarWidget>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </Widget>
+
+                            <!-- 2. 历史战争档案面板 -->
+                            <Widget IsVisible="@ShowHistoryPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                              <Children>
+                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                  <Children>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="100" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HistoryTabText" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@HistorySortLabelText" />
+                                    <Standard.DropdownWithHorizontalControl WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160" MarginLeft="4" MarginRight="6" Parameter.IsCustomWidth="true" Parameter.CustomWidth="160" Parameter.IsFlatDesign="true" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{HistorySortSelector}" />
+                                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="80" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectAllHistory" IsEnabled="@HasHistoryRows">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@SelectAllText" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="96" MarginLeft="6" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteDeleteSelectedHistory" IsEnabled="@CanDeleteSelectedHistory">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DeleteSelectedText" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="76" MarginLeft="6" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C9B993FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistorySelectionCountText" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HistoryDetailsHeaderText" />
+                                  </Children>
+                                </ListPanel>
+
+                                <!-- 左侧历史战争列表 -->
+                                <Widget IsVisible="@HasHistoryRows" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="490" MarginTop="36">
+                                  <Children>
+                                    <ScrollablePanel Id="HistoryWarsScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="HistoryWarsClip" InnerPanel="HistoryWarsClip\HistoryWarsList" VerticalScrollbar="..\HistoryWarsScrollbar">
+                                      <Children>
+                                        <Widget Id="HistoryWarsClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipContents="true">
+                                          <Children>
+                                            <ListPanel Id="HistoryWarsList" DataSource="{HistoryRows}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                              <ItemTemplate>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="58" MarginBottom="2">
+                                                  <Children>
+                                                    <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.SelectionElement.Tuple" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelect">
+                                                      <Children>
+                                                        <Widget IsVisible="@IsSelected" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#755C38FF" AlphaFactor="0.78" IsEnabled="false" />
+                                                        <MaskedTextureWidget DataSource="{BannerA}" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="36" SuggestedHeight="46" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="36" Brush="Nameplate.FlatBanner.Small" OverlayTextureScale="1" AdditionalArgs="@AdditionalArgs" ImageId="@Id" TextureProviderName="@TextureProviderName" IsDisabled="true" DoNotAcceptEvents="true" />
+                                                        <MaskedTextureWidget DataSource="{BannerB}" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="36" SuggestedHeight="46" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="6" Brush="Nameplate.FlatBanner.Small" OverlayTextureScale="1" AdditionalArgs="@AdditionalArgs" ImageId="@Id" TextureProviderName="@TextureProviderName" IsDisabled="true" DoNotAcceptEvents="true" />
+                                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" MarginLeft="78" MarginRight="50" MarginTop="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                                          <Children>
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NameAText" />
+                                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="32" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B8AE9FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@VersusText" />
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Tuple.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NameBText" />
+                                                          </Children>
+                                                        </ListPanel>
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Bottom" MarginLeft="78" MarginRight="130" MarginBottom="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#AFA697FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@StatsText" />
+                                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="76" SuggestedHeight="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="50" MarginBottom="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C9B993FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@DurationText" />
+                                                      </Children>
+                                                    </ButtonWidget>
+                                                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="26" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="5" Brush="SPOptions.Checkbox.Empty.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleMarked">
+                                                      <Children>
+                                                        <BrushWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.Checkbox.Full.Button" IsVisible="@IsMarkedForDeletion" />
+                                                      </Children>
+                                                    </ButtonWidget>
+                                                  </Children>
+                                                </Widget>
+                                              </ItemTemplate>
+                                            </ListPanel>
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </ScrollablePanel>
+                                    <ScrollbarWidget IsVisible="@HistoryWarsScrollable" Id="HistoryWarsScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="10" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="HistoryWarsScrollbarHandle" MaxValue="100" MinValue="0">
+                                      <Children>
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="3" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#5A4033FF" AlphaFactor="0.42" />
+                                        <ImageWidget Id="HistoryWarsScrollbarHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="48" SuggestedWidth="10" HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                                      </Children>
+                                    </ScrollbarWidget>
+                                  </Children>
+                                </Widget>
+
+                                <!-- 右侧选中战争详细归档 -->
+                                <Widget IsVisible="@ShowHistoryDetail" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="504" MarginTop="36">
+                                  <Children>
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Left" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.55" IsEnabled="false" />
+                                    <TextWidget IsVisible="@HistoryInvolvesPlayer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="100" SuggestedHeight="24" HorizontalAlignment="Right" MarginRight="10" MarginTop="2" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D5AE68FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PlayerInvolvedText" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" MarginLeft="110" MarginRight="110" MarginTop="2" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#D8CDBAFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryDateRange" />
+
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="180" MarginLeft="12" MarginRight="12" MarginTop="28">
+                                      <Children>
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.34" IsEnabled="false" />
+
+                                        <Widget IsVisible="@ShowHistoryAdvantageA" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="100" SuggestedHeight="22" HorizontalAlignment="Left" MarginLeft="100" Sprite="BlankWhiteSquare_9" Color="#755C38FF" AlphaFactor="0.82">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#F0D59CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@AdvantageText" />
+                                          </Children>
+                                        </Widget>
+                                        <Widget IsVisible="@ShowHistoryAdvantageB" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="100" SuggestedHeight="22" HorizontalAlignment="Right" MarginRight="100" Sprite="BlankWhiteSquare_9" Color="#755C38FF" AlphaFactor="0.82">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#F0D59CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@AdvantageText" />
+                                          </Children>
+                                        </Widget>
+                                        <Widget IsVisible="@ShowHistoryStalemate" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="80" SuggestedHeight="22" HorizontalAlignment="Center" MarginTop="2" Sprite="BlankWhiteSquare_9" Color="#3B342BFF" AlphaFactor="0.90">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D8CDBAFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@StalemateText" />
+                                          </Children>
+                                        </Widget>
+
+                                        <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="60" SuggestedHeight="78" HorizontalAlignment="Left" MarginLeft="16" MarginTop="24" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenHistoryKingdomA" Command.AlternateClick="ExecuteOpenHistoryKingdomA" HoveredCursorState="RightClickLink">
+                                          <Children>
+                                            <MaskedTextureWidget DataSource="{HistoryBannerA}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Nameplate.FlatBanner.Big" OverlayTextureScale="1" AdditionalArgs="@AdditionalArgs" ImageId="@Id" TextureProviderName="@TextureProviderName" IsDisabled="true" DoNotAcceptEvents="true" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="60" SuggestedHeight="78" HorizontalAlignment="Right" MarginRight="16" MarginTop="24" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenHistoryKingdomB" Command.AlternateClick="ExecuteOpenHistoryKingdomB" HoveredCursorState="RightClickLink">
+                                          <Children>
+                                            <MaskedTextureWidget DataSource="{HistoryBannerB}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Nameplate.FlatBanner.Big" OverlayTextureScale="1" AdditionalArgs="@AdditionalArgs" ImageId="@Id" TextureProviderName="@TextureProviderName" IsDisabled="true" DoNotAcceptEvents="true" />
+                                          </Children>
+                                        </ButtonWidget>
+
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="20" HorizontalAlignment="Left" MarginLeft="82" MarginTop="28" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#AFA697FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@AttackerRoleText" />
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="28" HorizontalAlignment="Left" MarginLeft="82" MarginTop="48" Brush="Popup.Title.Text" Brush.FontSize="18" Brush.FontColor="#DDD4C5FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryNameA" />
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="20" HorizontalAlignment="Right" MarginRight="82" MarginTop="28" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#AFA697FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DefenderRoleText" />
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="28" HorizontalAlignment="Right" MarginRight="82" MarginTop="48" Brush="Popup.Title.Text" Brush.FontSize="18" Brush.FontColor="#DDD4C5FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryNameB" />
+                                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="50" SuggestedHeight="24" HorizontalAlignment="Center" MarginTop="52" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#AFA697FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@VersusText" />
+
+                                        <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="64" HorizontalAlignment="Left" MarginLeft="6" MarginTop="88" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryKillsA" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B8AE9FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryCasualtiesA" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4BD8CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryRecordA" />
+                                          </Children>
+                                        </ListPanel>
+                                        <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="64" HorizontalAlignment="Right" MarginRight="6" MarginTop="88" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B88C80FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryKillsB" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#B8AE9FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryCasualtiesB" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4BD8CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@HistoryRecordB" />
+                                          </Children>
+                                        </ListPanel>
+
+                                        <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="18" HorizontalAlignment="Left" MarginLeft="6" MarginTop="156" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="65" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@WearinessLabelText" />
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginLeft="4">
+                                              <Children>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.90" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="1" MarginRight="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#17120EFF" AlphaFactor="0.96" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="@HistoryWearinessBarWidthA" MarginLeft="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#B88646FF" AlphaFactor="0.92" IsEnabled="false" />
+                                              </Children>
+                                            </Widget>
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="38" MarginLeft="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#F0E3C6FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HistoryWearinessBarTextA" />
+                                          </Children>
+                                        </ListPanel>
+                                        <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="18" HorizontalAlignment="Right" MarginRight="6" MarginTop="156" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="65" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#B88C80FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@WearinessLabelText" />
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginLeft="4">
+                                              <Children>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.90" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="1" MarginRight="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#17120EFF" AlphaFactor="0.96" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="@HistoryWearinessBarWidthB" MarginLeft="1" MarginTop="1" MarginBottom="1" Sprite="BlankWhiteSquare_9" Color="#82463EFF" AlphaFactor="0.94" IsEnabled="false" />
+                                              </Children>
+                                            </Widget>
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="38" MarginLeft="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#F0E3C6FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HistoryWearinessBarTextB" />
+                                          </Children>
+                                        </ListPanel>
+                                      </Children>
+                                    </Widget>
+
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" MarginLeft="14" MarginRight="14" MarginTop="212" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.48" IsEnabled="false" />
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Center" MarginTop="216" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.40" IsEnabled="false" />
+
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="22" HorizontalAlignment="Left" MarginLeft="12" MarginTop="216" Brush="Popup.Title.Text" Brush.FontSize="15" Brush.FontColor="#E4C98FFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@AttackerFallenLordsText" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="40" SuggestedHeight="22" HorizontalAlignment="Left" MarginLeft="255" MarginTop="216" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#D8CDBAFF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@HistoryDeathCountA" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="22" HorizontalAlignment="Right" MarginRight="55" MarginTop="216" Brush="Popup.Title.Text" Brush.FontSize="15" Brush.FontColor="#E4C98FFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@DefenderFallenLordsText" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="40" SuggestedHeight="22" HorizontalAlignment="Right" MarginRight="12" MarginTop="216" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#D8CDBAFF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@HistoryDeathCountB" />
+
+                                    <!-- 进攻方阵亡领主列表 -->
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="310" HorizontalAlignment="Left" MarginLeft="8" MarginTop="242">
+                                      <Children>
+                                        <ScrollablePanel Id="HistoryDeathsScrollA" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="HistoryDeathsClipA" InnerPanel="HistoryDeathsClipA\HistoryDeathsListA" VerticalScrollbar="..\HistoryDeathsScrollbarA">
+                                          <Children>
+                                            <Widget Id="HistoryDeathsClipA" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="10" ClipContents="true">
+                                              <Children>
+                                                <ListPanel Id="HistoryDeathsListA" DataSource="{HistoryDeathsA}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                                  <ItemTemplate>
+                                                    <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="2" ClipContents="true" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenEncyclopedia" Command.AlternateClick="ExecuteOpenEncyclopedia" HoveredCursorState="RightClickLink">
+                                                      <Children>
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" MarginLeft="4" MarginRight="4" Brush="Popup.Title.Text" Brush.FontSize="16" Brush.FontColor="#F2E4C8FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@NameText" />
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" MarginLeft="4" MarginRight="4" MarginTop="22" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#E3C790FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CauseText" />
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="4" MarginRight="4" MarginTop="42" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D0C6B6FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@MetaText" />
+                                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" VerticalAlignment="Bottom" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.34" IsEnabled="false" />
+                                                      </Children>
+                                                    </ButtonWidget>
+                                                  </ItemTemplate>
+                                                </ListPanel>
+                                              </Children>
+                                            </Widget>
+                                          </Children>
+                                        </ScrollablePanel>
+                                        <ScrollbarWidget IsVisible="@HasHistoryDeathsA" Id="HistoryDeathsScrollbarA" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="8" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="HistoryDeathsScrollbarHandleA" MaxValue="100" MinValue="0">
+                                          <Children>
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="2" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#5A4033FF" AlphaFactor="0.42" />
+                                            <ImageWidget Id="HistoryDeathsScrollbarHandleA" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="42" SuggestedWidth="8" HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                                          </Children>
+                                        </ScrollbarWidget>
+                                        <TextWidget IsVisible="@ShowNoHistoryDeathsA" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="6" MarginRight="6" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#948979FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NoFallenLordsText" />
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- 防御方阵亡领主列表 -->
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="310" HorizontalAlignment="Right" MarginRight="8" MarginTop="242">
+                                      <Children>
+                                        <ScrollablePanel Id="HistoryDeathsScrollB" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" OnlyAcceptScrollEventIfCanScroll="true" MouseScrollAxis="Vertical" ClipRect="HistoryDeathsClipB" InnerPanel="HistoryDeathsClipB\HistoryDeathsListB" VerticalScrollbar="..\HistoryDeathsScrollbarB">
+                                          <Children>
+                                            <Widget Id="HistoryDeathsClipB" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="10" ClipContents="true">
+                                              <Children>
+                                                <ListPanel Id="HistoryDeathsListB" DataSource="{HistoryDeathsB}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                                  <ItemTemplate>
+                                                    <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="76" MarginBottom="2" ClipContents="true" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenEncyclopedia" Command.AlternateClick="ExecuteOpenEncyclopedia" HoveredCursorState="RightClickLink">
+                                                      <Children>
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" MarginLeft="4" MarginRight="4" Brush="Popup.Title.Text" Brush.FontSize="16" Brush.FontColor="#F2E4C8FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@NameText" />
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" MarginLeft="4" MarginRight="4" MarginTop="22" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#E3C790FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CauseText" />
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="4" MarginRight="4" MarginTop="42" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D0C6B6FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@MetaText" />
+                                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" VerticalAlignment="Bottom" Sprite="BlankWhiteSquare_9" Color="#765D3CFF" AlphaFactor="0.34" IsEnabled="false" />
+                                                      </Children>
+                                                    </ButtonWidget>
+                                                  </ItemTemplate>
+                                                </ListPanel>
+                                              </Children>
+                                            </Widget>
+                                          </Children>
+                                        </ScrollablePanel>
+                                        <ScrollbarWidget IsVisible="@HasHistoryDeathsB" Id="HistoryDeathsScrollbarB" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="8" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="HistoryDeathsScrollbarHandleB" MaxValue="100" MinValue="0">
+                                          <Children>
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="2" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#5A4033FF" AlphaFactor="0.42" />
+                                            <ImageWidget Id="HistoryDeathsScrollbarHandleB" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="42" SuggestedWidth="8" HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                                          </Children>
+                                        </ScrollbarWidget>
+                                        <TextWidget IsVisible="@ShowNoHistoryDeathsB" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="6" MarginRight="6" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#948979FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NoFallenLordsText" />
+                                      </Children>
+                                    </Widget>
+
+                                  </Children>
+                                </Widget>
+
+                              </Children>
+                            </Widget>
+
+                            <!-- 3. 空白数据状态提示 -->
+                            <Widget IsVisible="@ShowEmptyState" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="50">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="20" Brush.FontColor="#B7AC9AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@EmptyText" />
+                              </Children>
+                            </Widget>
+
+                          </Children>
+                        </Widget>
+
+                        <!-- 底部翻页控制栏 (仅在分页模式下显示) -->
+                        <Widget IsVisible="@ShowPaginationControls" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Bottom">
+                          <Children>
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="120" HorizontalAlignment="Left" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecutePrevPage" IsEnabled="@CanGoPrev">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PrevText" />
+                              </Children>
+                            </ButtonWidget>
+                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="280" HorizontalAlignment="Center" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C9B993FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PageText" />
+                            <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="120" HorizontalAlignment="Right" MarginRight="180" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteNextPage" IsEnabled="@CanGoNext">
+                              <Children>
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@NextText" />
+                              </Children>
+                            </ButtonWidget>
+                          </Children>
+                        </Widget>
+
+                      </Children>
+                    </Widget>
+
+                  </Children>
+                </Widget>
+
+                <!-- 底部控制栏：左侧提示文字，右侧原生按钮 -->
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="52" VerticalAlignment="Bottom">
+                  <Children>
+                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Left" MarginLeft="6" MarginRight="320" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#9E907BFF" Text="提示：按 Backspace 或点击【返回上一级】可快速退回，按 ESC 或【关闭】退出终端。" />
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Center" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                      <Children>
+                        <ButtonWidget IsVisible="@CanGoBack" DoNotPassEventsToChildren="true" Command.Click="ExecuteBack" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="44" MarginRight="12" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Text="返回上一级" />
+                          </Children>
+                        </ButtonWidget>
+                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="44" Brush="Popup.Done.Button" UpdateChildrenStates="true">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="17" Text="关闭" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>
