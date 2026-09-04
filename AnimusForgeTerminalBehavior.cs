@@ -108,6 +108,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				TroopInspectionBehavior.OnEngineTick();
 			}
 		}
+		if (!AnimusForgeTerminalSettings.IsHotkeyEnabled)
+		{
+			_wasTerminalKeyDown = false;
+			return;
+		}
 		InputKey configuredTerminalKey = GetCachedConfiguredTerminalKey();
 		bool flag = false;
 		using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.TerminalHotkeyPoll"))
@@ -249,7 +254,14 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				return;
 			}
 			_lastTerminalHintDay = campaignDayIndex;
-			InformationManager.DisplayMessage(new InformationMessage($"按{GetConfiguredTerminalKeyLabel()}键打开AnimusForge终端。"));
+			if (AnimusForgeTerminalSettings.IsHotkeyEnabled)
+			{
+				InformationManager.DisplayMessage(new InformationMessage($"按{GetConfiguredTerminalKeyLabel()}键打开AnimusForge终端。"));
+			}
+			else if (AnimusForgeTerminalSettings.IsMapIconEnabled)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("可点击大地图右上角图标打开AnimusForge终端。"));
+			}
 		}
 		catch (Exception ex)
 		{

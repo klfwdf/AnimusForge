@@ -30,7 +30,7 @@ public sealed class AfWarStatsMapButtonLayer : GlobalLayer
         ScreenBase topScreen = ScreenManager.TopScreen;
         bool isMapScreen = Campaign.Current != null && IsCampaignMapScreen(topScreen);
         bool isTerminalOpen = AnimusForge.AnimusForgeTerminalPopup.ActivePopup != null;
-        bool isVisible = isMapScreen && !isTerminalOpen && !AfWarStatsPopup.IsOpen;
+        bool isVisible = isMapScreen && !isTerminalOpen && !AfWarStatsPopup.IsOpen && AnimusForge.AnimusForgeTerminalSettings.IsMapIconEnabled;
         _dataSource.IsVisible = isVisible;
 
         if (isVisible)

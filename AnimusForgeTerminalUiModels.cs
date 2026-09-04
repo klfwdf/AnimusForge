@@ -492,6 +492,52 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 	}
 
+	[DataSourceProperty]
+	public bool IsHotkeyEnabled => AnimusForgeTerminalSettings.IsHotkeyEnabled;
+
+	[DataSourceProperty]
+	public bool IsMapIconEnabled => AnimusForgeTerminalSettings.IsMapIconEnabled;
+
+	public void ExecuteToggleHotkey()
+	{
+		if (AnimusForgeTerminalSettings.IsHotkeyEnabled)
+		{
+			if (!AnimusForgeTerminalSettings.IsMapIconEnabled)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("至少需要保留一个终端入口（按键或图标）。", Colors.Red));
+				return;
+			}
+			AnimusForgeTerminalSettings.IsHotkeyEnabled = false;
+			InformationManager.DisplayMessage(new InformationMessage("已关闭终端按键呼出（U键）。", Colors.Yellow));
+		}
+		else
+		{
+			AnimusForgeTerminalSettings.IsHotkeyEnabled = true;
+			InformationManager.DisplayMessage(new InformationMessage("已开启终端按键呼出（U键）。", Colors.Green));
+		}
+		OnPropertyChanged(nameof(IsHotkeyEnabled));
+	}
+
+	public void ExecuteToggleMapIcon()
+	{
+		if (AnimusForgeTerminalSettings.IsMapIconEnabled)
+		{
+			if (!AnimusForgeTerminalSettings.IsHotkeyEnabled)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("至少需要保留一个终端入口（按键或图标）。", Colors.Red));
+				return;
+			}
+			AnimusForgeTerminalSettings.IsMapIconEnabled = false;
+			InformationManager.DisplayMessage(new InformationMessage("已关闭大地图终端图标入口。", Colors.Yellow));
+		}
+		else
+		{
+			AnimusForgeTerminalSettings.IsMapIconEnabled = true;
+			InformationManager.DisplayMessage(new InformationMessage("已开启大地图终端图标入口。", Colors.Green));
+		}
+		OnPropertyChanged(nameof(IsMapIconEnabled));
+	}
+
 	public void ExecuteClose()
 	{
 		_onClose?.Invoke();
