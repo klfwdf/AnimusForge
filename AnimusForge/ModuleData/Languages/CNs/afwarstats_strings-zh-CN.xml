@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AFWST_Title" text="战争统计" />
+    <string id="AFWST_CurrentWars" text="当前战争" />
+    <string id="AFWST_HistoricalWars" text="历史战争" />
+    <string id="AFWST_ClearAll" text="清除所有" />
+    <string id="AFWST_HistorySortLabel" text="排序" />
+    <string id="AFWST_CurrentSortLabel" text="排序" />
+    <string id="AFWST_SelectAll" text="全选" />
+    <string id="AFWST_DeselectAll" text="取消全选" />
+    <string id="AFWST_DeleteSelected" text="删除选中" />
+    <string id="AFWST_Previous" text="上一页" />
+    <string id="AFWST_Next" text="下一页" />
+    <string id="AFWST_Close" text="关闭" />
+    <string id="AFWST_Versus" text="对阵" />
+    <string id="AFWST_AttackerLeft" text="进攻方" />
+    <string id="AFWST_WarColumn" text="战事" />
+    <string id="AFWST_DefenderRight" text="防御方" />
+    <string id="AFWST_HistoryDetails" text="战争档案" />
+    <string id="AFWST_SelectedWar" text="选中战争" />
+    <string id="AFWST_PlayerInvolvedBadge" text="★ 玩家相关" />
+    <string id="AFWST_DurationLabel" text="持续时间" />
+    <string id="AFWST_WarStatusLabel" text="战争状态" />
+    <string id="AFWST_AttackerRole" text="进攻方" />
+    <string id="AFWST_DefenderRole" text="防御方" />
+    <string id="AFWST_Advantage" text="优势" />
+    <string id="AFWST_Stalemate" text="僵持" />
+    <string id="AFWST_WearinessLabel" text="厌战度" />
+    <string id="AFWST_AttackerFallenLords" text="进攻方 · 战争期间死亡领主" />
+    <string id="AFWST_DefenderFallenLords" text="防御方 · 战争期间死亡领主" />
+    <string id="AFWST_NoFallenLords" text="本次战争期间暂无领主死亡记录。" />
+    <string id="AFWST_DeathTrackingNotice" text="战争期间死亡领主详情从 v1.3.9 起开始记录。" />
+    <string id="AFWST_UnknownHero" text="未知领主" />
+    <string id="AFWST_UnknownCause" text="死因不明" />
+    <string id="AFWST_OpenFailed" text="战争统计界面打开失败，详情已写入 rgl_log。" />
+    <string id="AFWST_NotInitializedMessage" text="战争统计尚未初始化。" />
+    <string id="AFWST_ClearTitle" text="清除所有战争统计" />
+    <string id="AFWST_ClearBody" text="确认清除全部历史战争和领主死亡档案，并将当前战争的击杀、伤亡和胜负累计归零？此操作无法撤销。" />
+    <string id="AFWST_ConfirmClear" text="确认清除" />
+    <string id="AFWST_Cancel" text="取消" />
+    <string id="AFWST_RecordsCleared" text="战争统计记录已清除。" />
+    <string id="AFWST_DeleteSelectedTitle" text="删除选中的历史战争" />
+    <string id="AFWST_ConfirmDeleteSelected" text="确认删除" />
+    <string id="AFWST_RecordsDeleted" text="已删除 {COUNT} 条历史战争记录。" />
+    <string id="AFWST_CurrentSubtitle" text="当前战争 · 每页 {ROWS} 场 · 厌战度由时长、伤亡、战败和领土损失综合估算" />
+    <string id="AFWST_CurrentSubtitleScrollable" text="当前战争 · 单页滚动查看 · 厌战度由时长、伤亡、战败和领土损失综合估算" />
+    <string id="AFWST_HistorySubtitle" text="历史战争 · 完整日期、优势推算、最终厌战度与战争期间领主死亡档案" />
+    <string id="AFWST_PlayerInvolvedCount" text="玩家相关  {COUNT}" />
+    <string id="AFWST_HistorySelectionCount" text="已选择 {COUNT} 场" />
+    <string id="AFWST_DeleteSelectedBody" text="确认删除选中的 {COUNT} 场历史战争及其领主死亡档案？此操作无法撤销。" />
+    <string id="AFWST_SortLatest" text="最新战争优先" />
+    <string id="AFWST_SortEarliest" text="最早战争优先" />
+    <string id="AFWST_SortDuration" text="持续时间最长" />
+    <string id="AFWST_SortCasualties" text="伤亡数量最多" />
+    <string id="AFWST_SortWeariness" text="厌战度最高" />
+    <string id="AFWST_SortPlayer" text="玩家相关优先" />
+    <string id="AFWST_SettingsName" text="战争统计" />
+    <string id="AFWST_MCMCurrentGroup" text="当前战争" />
+    <string id="AFWST_MCMCurrentSortMode" text="当前战争排序" />
+    <string id="AFWST_MCMCurrentSortModeHint" text="选择当前战争页面使用的排序方式。" />
+    <string id="AFWST_MCMCurrentDisplayMode" text="当前战争显示方式" />
+    <string id="AFWST_MCMCurrentDisplayModeHint" text="在每页六场和单页滚动列表之间选择。" />
+    <string id="AFWST_MCMHistoryGroup" text="战争档案" />
+    <string id="AFWST_MCMHistorySortMode" text="历史战争排序" />
+    <string id="AFWST_MCMHistorySortModeHint" text="选择历史战争页面使用的排序方式。" />
+    <string id="AFWST_MCMHistoryDisplayMode" text="历史战争显示方式" />
+    <string id="AFWST_MCMHistoryDisplayModeHint" text="在每页八场和单页滚动列表之间选择。" />
+    <string id="AFWST_DisplayPaged" text="多页切换（每页 6 场）" />
+    <string id="AFWST_DisplayPagedHistory" text="多页切换（每页 8 场）" />
+    <string id="AFWST_DisplayScrollable" text="单页滚动（显示全部战争）" />
+    <string id="AFWST_TotalKills" text="累计击杀" />
+    <string id="AFWST_ConfirmedDeaths" text="确认死亡" />
+    <string id="AFWST_TotalCasualties" text="累计伤亡" />
+    <string id="AFWST_DeadWounded" text="死亡 + 受伤" />
+    <string id="AFWST_NoActiveWars" text="当前没有正在进行的王国战争。" />
+    <string id="AFWST_EndedWars" text="已结束战争" />
+    <string id="AFWST_NoHistoricalWars" text="尚无已经结束的战争记录。" />
+    <string id="AFWST_Status" text="状态" />
+    <string id="AFWST_NotInitialized" text="未初始化" />
+    <string id="AFWST_WaitingForCampaign" text="等待战役载入" />
+    <string id="AFWST_BehaviorNotInitialized" text="战争统计行为尚未初始化。" />
+    <string id="AFWST_Page" text="第 {CURRENT} / {TOTAL} 页 · 每页 {ROWS} 场" />
+    <string id="AFWST_Kills" text="击杀  {COUNT}" />
+    <string id="AFWST_Casualties" text="伤亡  {COUNT}" />
+    <string id="AFWST_Record" text="战绩  {WINS}胜 · {LOSSES}负" />
+    <string id="AFWST_Weariness" text="厌战度  {PERCENT}%" />
+    <string id="AFWST_FinalWeariness" text="最终厌战度  {PERCENT}%" />
+    <string id="AFWST_Percent" text="{PERCENT}%" />
+    <string id="AFWST_DateRange" text="{START} — {END}" />
+    <string id="AFWST_DeathCount" text="{COUNT}人" />
+    <string id="AFWST_DeathBattleBy" text="战死 · 被{KILLER}杀死" />
+    <string id="AFWST_DeathBattle" text="战死" />
+    <string id="AFWST_DeathWoundsBy" text="战伤不治 · 被{KILLER}重伤后死亡" />
+    <string id="AFWST_DeathWounds" text="战伤不治" />
+    <string id="AFWST_DeathExecutedBy" text="被处决 · 处决者为{KILLER}" />
+    <string id="AFWST_DeathExecuted" text="被处决" />
+    <string id="AFWST_DeathExecutedAfterBattleBy" text="战后被处决 · 处决者为{KILLER}" />
+    <string id="AFWST_DeathExecutedAfterBattle" text="战后被处决" />
+    <string id="AFWST_DeathMurderedBy" text="遇刺 · 被{KILLER}杀死" />
+    <string id="AFWST_DeathMurdered" text="遇刺身亡" />
+    <string id="AFWST_DeathOldAge" text="因年老去世" />
+    <string id="AFWST_DeathInLabor" text="难产去世" />
+    <string id="AFWST_DeathLost" text="失踪" />
+    <string id="AFWST_DeathUnknownBy" text="死亡 · 被{KILLER}杀死" />
+    <string id="AFWST_DeathMetaNoBattle" text="{DATE} · 无关联战斗" />
+    <string id="AFWST_DeathMeta" text="{DATE} · {BATTLE}" />
+    <string id="AFWST_RecentlyDeclared" text="新近爆发" />
+    <string id="AFWST_Day" text="{DAYS} 天" />
+    <string id="AFWST_Days" text="{DAYS} 天" />
+    <string id="AFWST_Fiefs" text="领地 {A} : {B}" />
+    <string id="AFWST_CompactHistory" text="进攻方 {A_WINS}胜·{A_LOSSES}负    防御方 {B_WINS}胜·{B_LOSSES}负    伤亡 {CASUALTIES}" />
+    <string id="AFWST_Legacy" text="旧版" />
+    <string id="AFWST_LegacyRecord" text="旧版记录" />
+    <string id="AFWST_WarEnded" text="已停战 · {DATE}" />
+    <string id="AFWST_TerritoryOf" text="{NAME}领地" />
+    <string id="AFWST_UnknownKingdom" text="未知王国" />
+  </strings>
+</base>

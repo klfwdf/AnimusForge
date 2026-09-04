@@ -2,4 +2,5 @@
 <LanguageData id="English" name="English" subtitle_extension="en-GB" supported_iso="en-GB,en-US,en,eng,en-us,en-gb,en-au,en-bz,en-ca,en-ie,en-jm,en-nz,en-za,en-tt" text_processor="TaleWorlds.Localization.TextProcessor.LanguageProcessors.EnglishTextProcessor" under_development="false">
   <LanguageFile xml_path="sceneactions_strings.xml" />
   <LanguageFile xml_path="sets_hostile_meeting_strings.xml" />
+  <LanguageFile xml_path="afwarstats_strings.xml" />
 </LanguageData>

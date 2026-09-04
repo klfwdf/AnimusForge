@@ -13,6 +13,9 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ScreenSystem;
+using AFWarStatsTerminal.Behaviors;
+using AFWarStatsTerminal.UI;
 
 namespace AnimusForge;
 
@@ -32,6 +35,8 @@ public class SubModule : MBSubModuleBase
 	private bool _initialApiGuideNoticeShown;
 
 	private long _initialApiGuideNoticeAfterUtcTicks;
+	private AfWarStatsMapButtonLayer _mapButtonLayer;
+	private float _mapButtonRetryDelay;
 
 	public override void OnInitialState()
 	{
@@ -89,8 +94,15 @@ public class SubModule : MBSubModuleBase
 		SceneActionsIntegrationBoundary.VerifyMissionInitialization(mission);
 	}
 
+	public override void OnGameEnd(Game game)
+	{
+		RemoveMapButtonLayer();
+		base.OnGameEnd(game);
+	}
+
 	protected override void OnSubModuleUnloaded()
 	{
+		RemoveMapButtonLayer();
 		SceneActionsIntegrationBoundary.ShutdownRuntime();
 		base.OnSubModuleUnloaded();
 	}
@@ -679,6 +691,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new VassalageBehavior());
 			campaignGameStarter.AddBehavior(new NpcTributeVassalageBehavior());
 			campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
+			campaignGameStarter.AddBehavior(new AfWarStatsBehavior());
 		}
 	}
 
@@ -749,6 +762,7 @@ public class SubModule : MBSubModuleBase
 			{
 				RunWatchedApplicationTickPhases();
 			}
+			TickWarStatsMapButton(dt);
 		}
 		catch (Exception ex)
 		{
@@ -990,5 +1004,72 @@ public class SubModule : MBSubModuleBase
 	{
 		AIConfigHandler.ReloadConfig();
 		return "Config Reloaded Successfully!";
+	}
+
+	private void TickWarStatsMapButton(float dt)
+	{
+		if (Campaign.Current == null)
+		{
+			if (_mapButtonLayer != null)
+			{
+				RemoveMapButtonLayer();
+			}
+			return;
+		}
+
+		if (_mapButtonLayer != null)
+		{
+			return;
+		}
+
+		_mapButtonRetryDelay = Math.Max(0f, _mapButtonRetryDelay - dt);
+		if (_mapButtonRetryDelay > 0f)
+		{
+			return;
+		}
+
+		ScreenBase topScreen = ScreenManager.TopScreen;
+		if (!AfWarStatsMapButtonLayer.IsCampaignMapScreen(topScreen))
+		{
+			return;
+		}
+
+		try
+		{
+			_mapButtonLayer = new AfWarStatsMapButtonLayer();
+			ScreenManager.AddGlobalLayer(_mapButtonLayer, true);
+			Logger.LogTrace("SubModule", ">>> WarStats map button layer created for " + topScreen.GetType().FullName + ".");
+		}
+		catch (Exception ex)
+		{
+			_mapButtonLayer = null;
+			_mapButtonRetryDelay = 3f;
+			Logger.LogTrace("SubModule", ">>> Failed to create WarStats map button layer: " + ex.Message);
+		}
+	}
+
+	private void RemoveMapButtonLayer()
+	{
+		if (_mapButtonLayer == null)
+		{
+			return;
+		}
+
+		try
+		{
+			ScreenManager.RemoveGlobalLayer(_mapButtonLayer);
+		}
+		catch
+		{
+		}
+
+		try
+		{
+			_mapButtonLayer.FinalizeLayer();
+		}
+		catch
+		{
+		}
+		_mapButtonLayer = null;
 	}
 }

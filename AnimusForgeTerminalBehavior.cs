@@ -300,117 +300,215 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OpenRootMenu()
+	public void OpenRootMenu()
 	{
 		_terminalUiActive = true;
-		List<InquiryElement> list = new List<InquiryElement>
+		List<AnimusForgeTerminalNode> roots = BuildTerminalRootNodes();
+		if (!AnimusForgeTerminalPopup.Show(roots, ExecuteTerminalLeaf, CloseTerminal))
 		{
-			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
-			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
-			new InquiryElement("custom_policy_management", "王国公告", null, isEnabled: true, "撰写自定义政策或外交宣言，并统一查看各国王国公告。"),
-			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
-			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
-			new InquiryElement("player_rp_forge", "制造RP物品", null, isEnabled: true, "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
-			new InquiryElement("settlement_entry_troops", "进城随行配置", null, isEnabled: true, "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
-			new InquiryElement("noble_prisoner_escort", "贵族俘虏随行配置", null, isEnabled: true, "分别配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
-			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
-			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
-			// This terminal entry is intentionally separate from onboarding and developer import so its replacement scope stays narrow.
-			new InquiryElement("reload_database", "重载数据库", null, isEnabled: true, "替换非主角知识、世界/王国开局知识、王国性格/战略和声音；不修改 NPC 个性、背景、记忆、外貌或提示词。"),
-			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。"),
-			// 错误不再自动弹窗；此入口保留玩家按需调用 AI 分析最近错误的原有能力。
-			new InquiryElement("analyze_latest_error", "分析最近错误", null, isEnabled: true, "使用前处理 API 分析本局最近一次 AnimusForge 错误。"),
-			new InquiryElement("tag_catalog", "标签列表", null, isEnabled: true, "查看从当前 AnimusForge 模块文件和程序集里提取到的正文/后处理标签。")
-		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				CloseTerminal();
-				return;
-			}
-			string text = selected[0].Identifier as string;
-			if (string.Equals(text, "trust_query", StringComparison.Ordinal))
-			{
-				OpenTrustQueryMenu(CloseTerminal);
-			}
-			else if (string.Equals(text, "weekly_reports", StringComparison.Ordinal))
-			{
-				OpenWeeklyReportBrowser();
-			}
-			else if (string.Equals(text, "custom_policy_management", StringComparison.Ordinal))
-			{
-				OpenCustomPolicyManagementView();
-			}
-			else if (string.Equals(text, "vassalage_management", StringComparison.Ordinal))
-			{
-				OpenVassalageManagementView();
-			}
-			else if (string.Equals(text, "player_persona", StringComparison.Ordinal))
-			{
-				OpenPlayerPersonaEditor();
-			}
-			else if (string.Equals(text, "player_rp_forge", StringComparison.Ordinal))
-			{
-				OpenPlayerRpCrafterSelection();
-			}
-			else if (string.Equals(text, "settlement_entry_troops", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				SettlementEntryTroopSelectionBehavior.OpenConfigFromTerminal();
-			}
-			else if (string.Equals(text, "noble_prisoner_escort", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				NoblePrisonerEscortBehavior.OpenConfigFromTerminal();
-			}
-			else if (string.Equals(text, "troop_inspection", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				TroopInspectionBehavior.OpenInspectionFromTerminal();
-			}
-			else if (string.Equals(text, "military_exercise", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				MilitaryExerciseBehavior.OpenExerciseFromTerminal();
-			}
-			else if (string.Equals(text, "reload_database", StringComparison.Ordinal))
-			{
-				// Keep the terminal session active so every picker/confirmation callback returns to this root menu.
-				if (!MyBehavior.OpenDatabaseReloadFromTerminal(OpenRootMenu))
-				{
-					InformationManager.DisplayMessage(new InformationMessage("无法打开数据库重载流程。"));
-					OpenRootMenu();
-				}
-			}
-			else if (string.Equals(text, "api_onboarding", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				if (!ModOnboardingBehavior.OpenApiSetupOnlyFlow())
-				{
-					InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
-				}
-			}
-			else if (string.Equals(text, "analyze_latest_error", StringComparison.Ordinal))
-			{
-				// 先关闭选择窗口，避免玩家主动查看的分析结果与终端菜单叠加。
-				CloseTerminal();
-				AiErrorAnalysisInquiry.AnalyzeLatestFailure();
-			}
-			else if (string.Equals(text, "tag_catalog", StringComparison.Ordinal))
-			{
-				OpenTagCatalogBrowser(null, forceRefresh: true);
-			}
-			else
-			{
-				CloseTerminal();
-			}
-		}, delegate
-		{
+			InformationManager.DisplayMessage(new InformationMessage("打开 AnimusForge 终端失败。"));
 			CloseTerminal();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+		}
 	}
+
+	public void OpenTerminalToWarStats()
+	{
+		OpenRootMenu();
+		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.ShowWarStats();
+	}
+
+	private static AnimusForgeTerminalNode Node(string id, string title, string category, string icon, string hint, params AnimusForgeTerminalNode[] children)
+	{
+		AnimusForgeTerminalNode node = new AnimusForgeTerminalNode
+		{
+			Id = id ?? "",
+			Title = title ?? "",
+			Category = string.IsNullOrWhiteSpace(category) ? "全部" : category,
+			Icon = string.IsNullOrWhiteSpace(icon) ? "❖" : icon,
+			Hint = hint ?? ""
+		};
+		if (children != null)
+		{
+			node.Children.AddRange(children);
+		}
+		return node;
+	}
+
+	private static AnimusForgeTerminalNode Node(string id, string title, string category, string hint, params AnimusForgeTerminalNode[] children)
+	{
+		return Node(id, title, category, "❖", hint, children);
+	}
+
+	private static List<AnimusForgeTerminalNode> BuildTerminalRootNodes()
+	{
+		return new List<AnimusForgeTerminalNode>
+		{
+			Node("war_stats", "战争", "全部", "⚔", "查看卡拉迪亚正在发生与已结束的战争态势、伤亡与战报。"),
+			Node("trust_query", "信任度查询", "查询与记录", "⚖", "查询英雄、定居点与商人信任来源。"),
+			Node("weekly_reports", "查看周报", "查询与记录", "✉", "打开国家周报浏览器。"),
+			Node("tag_catalog", "标签列表", "查询与记录", "❖", "查看正文/后处理标签索引，可刷新或导出 TXT。"),
+			Node("custom_policy_management", "王国公告", "外交", "♚", "二级面板：撰写公告、地方政策、查看公告。",
+				Node("policy_compose", "撰写王国公告", "外交", "✍", "继续进入二级：自定义政策或外交宣言。",
+					Node("custom_policy", "撰写自定义政策", "外交", "⚖", "打开自定义政策撰写面板。"),
+					Node("diplomatic_document", "撰写外交宣言", "外交", "⚐", "发布王国外交宣言。")),
+				Node("local_policies", "地方政策", "外交", "♜", "发布只影响玩家家族封地范围的地方政策。"),
+				Node("world_policies", "查看王国公告", "外交", "✉", "统一查看自定义政策与各国公开外交宣言。")),
+			Node("vassalage_management", "臣属国管理", "外交", "⚜", "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
+			Node("settlement_entry_troops", "进城随行配置", "部队", "♞", "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
+			Node("noble_prisoner_escort", "贵族俘虏随行配置", "部队", "⚓", "配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
+			Node("troop_inspection", "检阅士兵", "部队", "⚔", "进入部队检阅流程。"),
+			Node("military_exercise", "军事演习", "部队", "⚑", "进入军事演习流程。"),
+			Node("player_persona", "修改玩家外貌与背景", "玩家", "♟", "编辑玩家 RP 外貌与背景。"),
+			Node("player_rp_forge", "制造RP物品", "玩家", "⚒", "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
+			Node("reload_database", "重载数据库", "系统", "⚡", "替换非主角知识、世界/王国开局知识、王国性格/战略和声音。"),
+			Node("api_onboarding", "重新进行API首次引导", "系统", "⚙", "只重新选择和测试 API 配置。"),
+			Node("analyze_latest_error", "分析最近错误", "系统", "⚠", "使用前处理 API 分析本局最近一次 AnimusForge 错误。")
+		};
+	}
+
+	private bool ExecuteTerminalLeaf(string id)
+	{
+		AnimusForgeTerminalPopupVM popupVm = AnimusForgeTerminalPopup.ActivePopup?.ViewModel;
+		switch (id ?? "")
+		{
+		case "war_stats":
+			if (popupVm != null)
+			{
+				popupVm.ShowWarStats();
+				return true;
+			}
+			return false;
+		case "weekly_reports":
+			if (popupVm != null)
+			{
+				List<MyBehavior.WeeklyReportBrowserCountryData> countries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
+				popupVm.ShowWeeklyReports(countries);
+				return true;
+			}
+			OpenWeeklyReportBrowser();
+			return true;
+
+		case "vassalage_management":
+			if (popupVm != null)
+			{
+				VassalageBehavior vassalageBehavior = VassalageBehavior.Instance;
+				TerminalVassalageManagementData vData = vassalageBehavior?.BuildTerminalVassalageManagementData();
+				string agreementId = vData?.Subjects?.FirstOrDefault((TerminalVassalageSubjectData x) => x.IsTributePaying)?.AgreementId ?? "";
+				TerminalTributaryPaymentHistoryData historyData = vassalageBehavior?.BuildTerminalTributaryPaymentHistoryData(agreementId) ?? new TerminalTributaryPaymentHistoryData
+				{
+					TitleText = "臣属贡金结算记录",
+					SubtitleText = "当前无附庸履约流水。",
+					EmptyStateText = "尚无贡金入账。"
+				};
+				popupVm.ShowVassalageTributeHistory(historyData);
+				return true;
+			}
+			OpenVassalageManagementView();
+			return true;
+
+		case "tag_catalog":
+			if (popupVm != null)
+			{
+				AnimusForgeTagCatalogSnapshot snapshot = AnimusForgeTagCatalog.BuildSnapshot(forceRefresh: false);
+				popupVm.ShowTagCatalog(snapshot);
+				return true;
+			}
+			OpenTagCatalogBrowser(null, forceRefresh: true);
+			return true;
+
+		case "trust_query":
+			if (popupVm != null)
+			{
+				List<Settlement> settlements = Settlement.All.Where((Settlement x) => x != null).OrderBy((Settlement x) => x.Name?.ToString() ?? x.StringId ?? "").ToList();
+				List<Hero> heroes = Hero.AllAliveHeroes.Where((Hero x) => x != null && !x.IsChild).OrderByDescending((Hero x) => RewardSystemBehavior.Instance?.GetEffectiveTrust(x) ?? 0).ToList();
+				popupVm.ShowTrustQuery(settlements, heroes);
+				return true;
+			}
+			OpenTrustQueryMenu(CloseTerminal);
+			return true;
+
+		case "analyze_latest_error":
+			if (popupVm != null)
+			{
+				bool hasError = AiErrorAnalysisInquiry.TryGetLatestFailure(out string errTitle, out string errDetail);
+				popupVm.ShowDiagnostics(
+					"捕获哨兵状态: 正常在线",
+					hasError ? $"【最近报错: {errTitle}】\n{errDetail}" : "本局当前未记录到任何致命报错堆栈。",
+					hasError
+				);
+				return true;
+			}
+			CloseTerminal();
+			AiErrorAnalysisInquiry.AnalyzeLatestFailure();
+			return true;
+
+		case "custom_policy":
+			CustomPolicyBehavior.OpenFromTerminal();
+			return true;
+
+		case "diplomatic_document":
+			if (!WorldDiplomacyBehavior.OpenComposeFromTerminal())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
+			}
+			return true;
+
+		case "local_policies":
+			CustomPolicyBehavior.OpenLocalPolicyManagementFromTerminal();
+			return true;
+
+		case "world_policies":
+			if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
+			}
+			return true;
+
+		case "settlement_entry_troops":
+			SettlementEntryTroopSelectionBehavior.OpenConfigFromTerminal();
+			return true;
+
+		case "noble_prisoner_escort":
+			NoblePrisonerEscortBehavior.OpenConfigFromTerminal();
+			return true;
+
+		case "troop_inspection":
+			CloseTerminal();
+			TroopInspectionBehavior.OpenInspectionFromTerminal();
+			return true;
+
+		case "military_exercise":
+			CloseTerminal();
+			MilitaryExerciseBehavior.OpenExerciseFromTerminal();
+			return true;
+
+		case "player_persona":
+			OpenPlayerPersonaEditor();
+			return true;
+
+		case "player_rp_forge":
+			OpenPlayerRpCrafterSelection();
+			return true;
+
+		case "reload_database":
+			if (!MyBehavior.OpenDatabaseReloadFromTerminal(null))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法打开数据库重载流程。"));
+			}
+			return true;
+
+		case "api_onboarding":
+			if (!ModOnboardingBehavior.OpenApiSetupOnlyFlow())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
+			}
+			return true;
+
+		default:
+			return false;
+		}
+	}
+
 
 	private void OpenCustomPolicyManagementView()
 	{
@@ -609,7 +707,6 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private void OpenPlayerPersonaEditor()
 	{
-		CloseTerminal();
 		try
 		{
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
@@ -1736,6 +1833,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	private void CloseTerminal()
 	{
 		_terminalUiActive = false;
+		AnimusForgeTerminalPopup.CloseActive(silent: true);
 	}
 
 	private static ImageIdentifier GetHeroImageIdentifier(Hero hero)

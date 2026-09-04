@@ -133,6 +133,16 @@ public static class AiErrorAnalysisInquiry
 		RequestLatestFailureAnalysis();
 	}
 
+	public static bool TryGetLatestFailure(out string title, out string detail)
+	{
+		lock (LatestFailureLock)
+		{
+			title = _latestFailureTitle ?? "";
+			detail = _latestFailureDetail ?? "";
+			return !string.IsNullOrWhiteSpace(detail);
+		}
+	}
+
 	private static void TryShowPendingAnalysisPrompt()
 	{
 		if (Volatile.Read(ref _analysisPromptPending) == 0
