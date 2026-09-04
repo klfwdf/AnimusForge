@@ -314,7 +314,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		IEnumerable<AnimusForgeTerminalNode> source = _path.Count > 0
 			? _path.Peek().Children
 			: (_selectedTab == "全部"
-				? _roots 
+				? _roots
 				: _roots.Where(x => string.Equals(x.Category, _selectedTab, StringComparison.Ordinal)));
 
 		MBBindingList<AnimusForgeTerminalItemVM> list = new MBBindingList<AnimusForgeTerminalItemVM>();
