@@ -192,7 +192,7 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(catalog["assemblyIdentity"] == "AnimusForge", "assembly identity changed")
     assert_true(catalog["saveTypePolicy"].startswith("preserve"), "save identity policy is not conservative")
     assert_true(len(keys) == len(set(keys)), "duplicate literal SyncData key in catalog")
-    assert_true(len(keys) == 95, f"expected 95 unique literal keys, got {len(keys)}")
+    assert_true(len(keys) == 142, f"expected 142 unique literal keys, got {len(keys)}")
 
     discovered: set[str] = set()
     for relative in catalog["sourceFiles"]:
