@@ -792,6 +792,12 @@ try {
     )
     Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $stagingModuleDir -ExtraArguments $sourceCopyArguments
     Merge-InstalledCustomPromptsIntoStaging -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir -StagingModuleDir $stagingModuleDir
+    $targetTerminalSettings = Join-Path $targetModuleDir "ModuleData\TerminalSettings.json"
+    $stagingTerminalSettings = Join-Path $stagingModuleDir "ModuleData\TerminalSettings.json"
+    if (Test-Path -LiteralPath $targetTerminalSettings -PathType Leaf) {
+        Copy-Item -LiteralPath $targetTerminalSettings -Destination $stagingTerminalSettings -Force
+        Write-Host "Preserved TerminalSettings: $targetTerminalSettings"
+    }
     Set-SingleModuleIdentity -ModuleDir $stagingModuleDir
 
     $stagingBinDir = Join-Path $stagingModuleDir "bin\Win64_Shipping_Client"
