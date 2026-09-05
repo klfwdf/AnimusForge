@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Text;
 using System.Linq;
 using AFWarStatsTerminal.UI;
 using TaleWorlds.Core;
@@ -17,6 +17,7 @@ public sealed class AnimusForgeTerminalNode
 	public string Id { get; set; } = "";
 	public string Title { get; set; } = "";
 	public string Hint { get; set; } = "";
+	public string SearchTerms { get; set; } = "";
 	public string Category { get; set; } = "全部";
 	public string Icon { get; set; } = "❖";
 	public Action OnExecute { get; set; }
@@ -31,7 +32,6 @@ public enum TerminalViewMode
 	WarStats,
 	WeeklyReports,
 	Vassalage,
-	TagCatalog,
 	Details,
 	Diagnostics
 }
@@ -186,9 +186,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	// 内嵌模块：臣属国与贡金记录
 	private TerminalVassalageTributeHistoryPopupVM _vassalageVm;
 
-	// 内嵌模块：标签字典
-	private string _tagCatalogSummaryText = "";
-	private MBBindingList<TerminalTagCatalogItemVM> _tagCatalogItems;
+	private AnimusForgeTagCatalogSnapshot _tagCatalogSnapshot;
+	private AnimusForgeTerminalNode _tagBrowser;
 
 	private const int MenuPageSize = 50;
 	private string _searchText = "";
@@ -236,7 +235,12 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public bool IsVassalageVisible => _currentViewMode == TerminalViewMode.Vassalage;
 
 	[DataSourceProperty]
-	public bool IsTagCatalogVisible => _currentViewMode == TerminalViewMode.TagCatalog;
+	public bool IsTagCatalogBrowser => _currentViewMode == TerminalViewMode.MenuList && _tagBrowser != null
+		&& _path.Count > 0 && ReferenceEquals(_path.Peek(), _tagBrowser);
+	[DataSourceProperty]
+	public float MenuContentTop => IsTagCatalogBrowser ? 98f : 50f;
+	[DataSourceProperty]
+	public string TagCatalogStatusText => _tagCatalogSnapshot == null ? "" : $"索引：{_tagCatalogSnapshot.Entries.Count} 项 · {_tagCatalogSnapshot.BuiltUtc.ToLocalTime():HH:mm:ss} 更新；可搜索参数/来源";
 
 	[DataSourceProperty]
 	public bool IsDetailsVisible => _currentViewMode == TerminalViewMode.Details;
@@ -253,12 +257,6 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	[DataSourceProperty]
 	public TerminalVassalageTributeHistoryPopupVM VassalageVm { get => _vassalageVm; set { if (value != _vassalageVm) { _vassalageVm = value; OnPropertyChangedWithValue(value, nameof(VassalageVm)); } } }
-
-	[DataSourceProperty]
-	public string TagCatalogSummaryText { get => _tagCatalogSummaryText; set { if (value != _tagCatalogSummaryText) { _tagCatalogSummaryText = value; OnPropertyChangedWithValue(value, nameof(TagCatalogSummaryText)); } } }
-
-	[DataSourceProperty]
-	public MBBindingList<TerminalTagCatalogItemVM> TagCatalogItems { get => _tagCatalogItems; set { if (value != _tagCatalogItems) { _tagCatalogItems = value; OnPropertyChangedWithValue(value, nameof(TagCatalogItems)); } } }
 
 	[DataSourceProperty]
 	public string SearchText
@@ -302,7 +300,6 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		_roots = (roots ?? new List<AnimusForgeTerminalNode>()).Where(x => x != null).ToList();
 		TabItems = new MBBindingList<AnimusForgeTerminalTabItemVM>();
 		Items = new MBBindingList<AnimusForgeTerminalItemVM>();
-		TagCatalogItems = new MBBindingList<TerminalTagCatalogItemVM>();
 
 		string[] tabs = new[] { "战争", "全部", "外交", "部队", "玩家", "查询与记录", "系统" };
 		foreach (string tab in tabs)
@@ -316,6 +313,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		_selectedTab = string.IsNullOrWhiteSpace(tab) ? "全部" : tab;
 		_path.Clear();
+		_tagBrowser = null;
+		_tagCatalogSnapshot = null;
 		_returnToView = null;
 		ResetMenuFilter();
 		if (string.Equals(_selectedTab, "战争", StringComparison.Ordinal))
@@ -335,7 +334,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		OnPropertyChanged(nameof(IsWarStatsVisible));
 		OnPropertyChanged(nameof(IsWeeklyReportsVisible));
 		OnPropertyChanged(nameof(IsVassalageVisible));
-		OnPropertyChanged(nameof(IsTagCatalogVisible));
+		OnPropertyChanged(nameof(IsTagCatalogBrowser));
+		OnPropertyChanged(nameof(MenuContentTop));
 		OnPropertyChanged(nameof(IsDetailsVisible));
 		OnPropertyChanged(nameof(IsDiagnosticsVisible));
 		UpdateCanGoBack();
@@ -361,7 +361,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		string query = _searchText.Trim();
 		List<AnimusForgeTerminalNode> filtered = source.Where(node => query.Length == 0
 			|| (node.Title ?? "").IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0
-			|| (node.Hint ?? "").IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0).ToList();
+			|| (node.Hint ?? "").IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0
+			|| (node.SearchTerms ?? "").IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0).ToList();
 		_filteredCount = filtered.Count;
 		_menuPage = Math.Min(_menuPage, Math.Max(0, (_filteredCount - 1) / MenuPageSize));
 		MBBindingList<AnimusForgeTerminalItemVM> list = new MBBindingList<AnimusForgeTerminalItemVM>();
@@ -369,6 +370,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			list.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
 		}
+		OnPropertyChanged(nameof(IsTagCatalogBrowser));
+		OnPropertyChanged(nameof(MenuContentTop));
 		OnPropertyChanged(nameof(MenuPageText));
 		OnPropertyChanged(nameof(HasPreviousMenuPage));
 		OnPropertyChanged(nameof(HasNextMenuPage));
@@ -460,16 +463,32 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	internal void ShowTagCatalog(AnimusForgeTagCatalogSnapshot snapshot)
 	{
-		snapshot ??= AnimusForgeTagCatalog.BuildSnapshot(forceRefresh: false);
-		TagCatalogSummaryText = $"已从当前代码库与配置文件提取到 {snapshot.Entries.Count} 个指令动作标签。";
-		MBBindingList<TerminalTagCatalogItemVM> items = new MBBindingList<TerminalTagCatalogItemVM>();
-		foreach (AnimusForgeTagCatalogEntry entry in snapshot.Entries)
+		_tagCatalogSnapshot = snapshot ?? AnimusForgeTagCatalog.BuildSnapshot(forceRefresh: false);
+		OnPropertyChanged(nameof(TagCatalogStatusText));
+		if (_tagBrowser == null || _path.Count == 0 || !ReferenceEquals(_path.Peek(), _tagBrowser))
 		{
-			items.Add(new TerminalTagCatalogItemVM(entry));
+			_tagBrowser = new AnimusForgeTerminalNode { Title = "指令标签列表" };
+			_path.Push(_tagBrowser);
+			ResetMenuFilter();
 		}
-		TagCatalogItems = items;
-		BreadcrumbText = "终端 / " + _selectedTab + " / 指令标签列表";
-		SetViewMode(TerminalViewMode.TagCatalog);
+		_tagBrowser.Children.Clear();
+		foreach (AnimusForgeTagCatalogEntry entry in _tagCatalogSnapshot.Entries)
+		{
+			_tagBrowser.Children.Add(new AnimusForgeTerminalNode
+			{
+				Id = entry.Id,
+				Title = BuildTagCatalogEntryTitle(entry),
+				Hint = BuildTagCatalogEntryHint(entry),
+				SearchTerms = (entry.Description ?? "") + " " + string.Join(" ", entry.Sources),
+				OnExecute = () => ShowDetails("标签详情", BuildTagCatalogEntryDetailText(entry))
+			});
+		}
+		ReturnToMenu();
+	}
+
+	public void ExecuteTagCatalogInfo()
+	{
+		if (IsTagCatalogBrowser) ShowDetails("标签索引说明", BuildTagCatalogSummary(_tagCatalogSnapshot));
 	}
 
 	private void ResetMenuFilter()
@@ -514,21 +533,125 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ExecuteExportTagCatalog()
 	{
-		if (AnimusForgeTagCatalog.TryExportSnapshotToModuleTxt(null, out string path, out string err))
+		if (!IsTagCatalogBrowser || _tagCatalogSnapshot == null) return;
+		if (AnimusForgeTagCatalog.TryExportSnapshotToModuleTxt(_tagCatalogSnapshot, out string path, out string error))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("已导出标签字典至: " + Path.GetFileName(path), Colors.Green));
+			ShowDetails("标签列表已导出", "已导出到：\n" + path);
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败: " + err, Colors.Red));
+			ShowDetails("标签列表导出失败", string.IsNullOrWhiteSpace(error) ? "未知错误。" : error);
 		}
 	}
 
 	public void ExecuteRefreshTagCatalog()
 	{
-		AnimusForgeTagCatalogSnapshot snapshot = AnimusForgeTagCatalog.BuildSnapshot(forceRefresh: true);
-		ShowTagCatalog(snapshot);
-		InformationManager.DisplayMessage(new InformationMessage("标签字典已强制刷新。", Colors.Yellow));
+		if (!IsTagCatalogBrowser) return;
+		try
+		{
+			ShowTagCatalog(AnimusForgeTagCatalog.BuildSnapshot(forceRefresh: true));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Terminal", "[ERROR] refresh tag catalog failed: " + ex);
+			ShowDetails("刷新标签索引失败", ex.Message);
+		}
+	}
+
+	private static string BuildTagCatalogSummary(AnimusForgeTagCatalogSnapshot snapshot)
+	{
+		if (snapshot == null)
+		{
+			return "";
+		}
+		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("正文", StringComparison.Ordinal));
+		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("后处理", StringComparison.Ordinal));
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("从当前 AnimusForge 模块文件、当前程序集和内置运行时规则提取。");
+		stringBuilder.AppendLine("共 " + snapshot.Entries.Count + " 项；正文/历史 " + bodyCount + " 项，后处理 " + postprocessCount + " 项。");
+		stringBuilder.AppendLine("已扫描文件：" + snapshot.ScannedFileCount + " 个。可用上方搜索框按标签、功能名或参数名筛选。");
+		if (snapshot.SourceRoots.Count > 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("来源根目录：");
+			foreach (string root in snapshot.SourceRoots)
+			{
+				stringBuilder.AppendLine(root);
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildTagCatalogEntryTitle(AnimusForgeTagCatalogEntry entry)
+	{
+		if (entry == null)
+		{
+			return "标签";
+		}
+		return "[" + (entry.Category ?? "标签") + "] " + (entry.Tag ?? "");
+	}
+
+	private static string BuildTagCatalogEntryHint(AnimusForgeTagCatalogEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		string description = CompactOneLine(entry.Description);
+		string source = (entry.Sources != null && entry.Sources.Count > 0) ? entry.Sources[0] : "";
+		string text = "";
+		if (!string.IsNullOrWhiteSpace(description))
+		{
+			text = description;
+		}
+		if (!string.IsNullOrWhiteSpace(source))
+		{
+			text = string.IsNullOrWhiteSpace(text) ? ("来源：" + source) : (text + " 来源：" + source);
+		}
+		return TruncateMenuHint(text, 220);
+	}
+
+	private static string BuildTagCatalogEntryDetailText(AnimusForgeTagCatalogEntry entry)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("标签：" + (entry.Tag ?? ""));
+		stringBuilder.AppendLine("分类：" + (entry.Category ?? "标签"));
+		if (!string.IsNullOrWhiteSpace(entry.Description))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("说明：");
+			stringBuilder.AppendLine(entry.Description.Trim());
+		}
+		if (entry.Sources != null && entry.Sources.Count > 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("来源：");
+			foreach (string source in entry.Sources)
+			{
+				stringBuilder.AppendLine(source);
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string CompactOneLine(string text)
+	{
+		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		return text;
+	}
+
+	private static string TruncateMenuHint(string text, int maxLength)
+	{
+		text = text ?? "";
+		if (maxLength <= 0 || text.Length <= maxLength)
+		{
+			return text;
+		}
+		return text.Substring(0, Math.Max(0, maxLength - 1)).TrimEnd() + "…";
 	}
 
 	public void ExecuteRequestAiAnalysis()
@@ -685,23 +808,4 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 	}
 
 	public void ExecuteOpen() => _onOpen?.Invoke(Node);
-}
-
-public sealed class TerminalTagCatalogItemVM : ViewModel
-{
-	[DataSourceProperty]
-	public string Tag { get; }
-
-	[DataSourceProperty]
-	public string Category { get; }
-
-	[DataSourceProperty]
-	public string Description { get; }
-
-	internal TerminalTagCatalogItemVM(AnimusForgeTagCatalogEntry entry)
-	{
-		Tag = entry?.Tag ?? "";
-		Category = entry?.Category ?? "";
-		Description = entry?.Description ?? "";
-	}
 }

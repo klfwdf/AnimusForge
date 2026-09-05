@@ -116,7 +116,21 @@
                             </ButtonWidget>
                           </Children>
                         </Widget>
-                        <ScrollablePanel MarginTop="50" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MenuClip" InnerPanel="MenuClip\MenuInner" MarginRight="12" AutoHideScrollBars="true" VerticalScrollbar="..\MenuScrollbar\Scrollbar">
+                        <Widget IsVisible="@IsTagCatalogBrowser" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" MarginTop="50" VerticalAlignment="Top">
+                          <Children>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="440" Brush="Popup.Description.Text" Brush.FontSize="16" Text="@TagCatalogStatusText" />
+                            <ButtonWidget Command.Click="ExecuteTagCatalogInfo" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" SuggestedWidth="134" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="284" Brush="Popup.Done.Button">
+                              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Text="索引说明" /></Children>
+                            </ButtonWidget>
+                            <ButtonWidget Command.Click="ExecuteExportTagCatalog" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" SuggestedWidth="134" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="142" Brush="Popup.Done.Button">
+                              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Text="导出为 TXT" /></Children>
+                            </ButtonWidget>
+                            <ButtonWidget Command.Click="ExecuteRefreshTagCatalog" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" SuggestedWidth="134" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="0" Brush="Popup.Done.Button">
+                              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Text="刷新字典" /></Children>
+                            </ButtonWidget>
+                          </Children>
+                        </Widget>
+                        <ScrollablePanel MarginTop="@MenuContentTop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MenuClip" InnerPanel="MenuClip\MenuInner" MarginRight="12" AutoHideScrollBars="true" VerticalScrollbar="..\MenuScrollbar\Scrollbar">
                           <Children>
                             <Widget Id="MenuClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                               <Children>
@@ -172,7 +186,7 @@
                             </Widget>
                           </Children>
                         </ScrollablePanel>
-                        <Standard.VerticalScrollbar MarginTop="50" Id="MenuScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="StretchToParent" MarginRight="2" />
+                        <Standard.VerticalScrollbar MarginTop="@MenuContentTop" Id="MenuScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="StretchToParent" MarginRight="2" />
                       </Children>
                     </Widget>
 
@@ -294,57 +308,6 @@
                           </Children>
                         </ScrollablePanel>
                         <Standard.VerticalScrollbar MarginTop="70" Id="VassalScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" />
-                      </Children>
-                    </Widget>
-
-                    <!-- ======================================================== -->
-                    <!-- 视图 4: 内嵌标签字典 (TagCatalog) -->
-                    <!-- ======================================================== -->
-                    <Widget IsVisible="@IsTagCatalogVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12">
-                      <Children>
-                        <!-- 顶栏操作按键与说明 -->
-                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" VerticalAlignment="Top">
-                          <Children>
-                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="320" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@TagCatalogSummaryText" />
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteExportTagCatalog" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="40" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="146" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                              <Children>
-                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="导出为 TXT" />
-                              </Children>
-                            </ButtonWidget>
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteRefreshTagCatalog" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="134" SuggestedHeight="40" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Done.Button" UpdateChildrenStates="true">
-                              <Children>
-                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="刷新字典" />
-                              </Children>
-                            </ButtonWidget>
-                          </Children>
-                        </Widget>
-                        <!-- 标签列表 -->
-                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="TagClip" InnerPanel="TagClip\TagInner" MarginTop="52" AutoHideScrollBars="true" VerticalScrollbar="..\TagScrollbar\Scrollbar">
-                          <Children>
-                            <Widget Id="TagClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
-                              <Children>
-                                <ListPanel Id="TagInner" DataSource="{TagCatalogItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
-                                  <ItemTemplate>
-                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="10">
-                                      <Children>
-                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.32" IsEnabled="false" />
-                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#18130EFF" AlphaFactor="0.65" IsEnabled="false" />
-                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="12" MarginBottom="12">
-                                          <Children>
-                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="21" Brush.FontColor="#E7C46CFF" Brush.TextHorizontalAlignment="Left" Text="@Tag" />
-                                            <RichTextWidget WidthSizePolicy="Fixed" SuggestedWidth="200" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Right" Text="@Category" />
-                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="28" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Left" Text="@Description" />
-                                          </Children>
-                                        </Widget>
-                                      </Children>
-                                    </Widget>
-                                  </ItemTemplate>
-                                </ListPanel>
-                              </Children>
-                            </Widget>
-                          </Children>
-                        </ScrollablePanel>
-                        <Standard.VerticalScrollbar Id="TagScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="52" />
                       </Children>
                     </Widget>
 

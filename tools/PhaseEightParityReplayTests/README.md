@@ -7,3 +7,5 @@ dotnet run --project tools/PhaseEightParityReplayTests/PhaseEightParityReplayTes
 ```
 
 验证终端全量分页/搜索、精确选择、详情和贡赋返回、空列表与关闭；调用真实 WarStats owner 的归档、重复归档及 v5 平行存档列表读写。战争 fixture 使用空王国标识避免访问真实 Campaign。此项不验证原生和平事件、Gauntlet 渲染/焦点、IDataStore 序列化或实际旧档，不得标记 LIVE/SAVE PASS。依赖参数与来源规则见 `tools/ReplayDependencies/README.md`。输出包含实际 DLL SHA256。
+
+标签回归使用 73 条 fixture，验证分页、卡片截断后参数搜索、15 个来源的完整详情、4 个根目录说明、空索引刷新与返回。导出仅验证生产文本格式器和空快照拒绝路径，不调用非空快照的文件写入或真实模块扫描。
