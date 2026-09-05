@@ -391,13 +391,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			}
 			return false;
 		case "weekly_reports":
-			if (popupVm != null)
-			{
-				List<MyBehavior.WeeklyReportBrowserCountryData> countries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
-				popupVm.ShowWeeklyReports(countries);
-				return true;
-			}
-			OpenWeeklyReportBrowser();
+			if (popupVm == null) return false;
+			List<MyBehavior.WeeklyReportBrowserCountryData> countries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
+			popupVm.ShowWeeklyReports(countries);
 			return true;
 
 		case "vassalage_management":
@@ -416,25 +412,22 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return true;
 
 		case "analyze_latest_error":
-			if (popupVm != null)
-			{
-				bool hasError = AiErrorAnalysisInquiry.TryGetLatestFailure(out string errTitle, out string errDetail);
-				popupVm.ShowDiagnostics(
-					"捕获哨兵状态: 正常在线",
-					hasError ? $"【最近报错: {errTitle}】\n{errDetail}" : "本局当前未记录到任何致命报错堆栈。",
-					hasError
-				);
-				return true;
-			}
-			CloseTerminal();
-			AiErrorAnalysisInquiry.AnalyzeLatestFailure();
+			if (popupVm == null) return false;
+			bool hasError = AiErrorAnalysisInquiry.TryGetLatestFailure(out string errTitle, out string errDetail);
+			popupVm.ShowDiagnostics(
+				"捕获哨兵状态: 正常在线",
+				hasError ? $"【最近报错: {errTitle}】\n{errDetail}" : "本局当前未记录到任何致命报错堆栈。",
+				hasError
+			);
 			return true;
 
 		case "custom_policy":
+			CloseTerminal();
 			CustomPolicyBehavior.OpenFromTerminal();
 			return true;
 
 		case "diplomatic_document":
+			CloseTerminal();
 			if (!WorldDiplomacyBehavior.OpenComposeFromTerminal())
 			{
 				InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
@@ -442,21 +435,25 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return true;
 
 		case "local_policies":
-			CustomPolicyBehavior.OpenLocalPolicyManagementFromTerminal();
+			CloseTerminal();
+			CustomPolicyBehavior.OpenLocalPolicyManagementFromTerminal(OpenCustomPolicyManagementView);
 			return true;
 
 		case "world_policies":
-			if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive())
+			CloseTerminal();
+			if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
 			}
 			return true;
 
 		case "settlement_entry_troops":
+			CloseTerminal();
 			SettlementEntryTroopSelectionBehavior.OpenConfigFromTerminal();
 			return true;
 
 		case "noble_prisoner_escort":
+			CloseTerminal();
 			NoblePrisonerEscortBehavior.OpenConfigFromTerminal();
 			return true;
 
@@ -479,13 +476,15 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return true;
 
 		case "reload_database":
-			if (!MyBehavior.OpenDatabaseReloadFromTerminal(null))
+			CloseTerminal();
+			if (!MyBehavior.OpenDatabaseReloadFromTerminal(OpenRootMenu))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("无法打开数据库重载流程。"));
 			}
 			return true;
 
 		case "api_onboarding":
+			CloseTerminal();
 			if (!ModOnboardingBehavior.OpenApiSetupOnlyFlow())
 			{
 				InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
@@ -500,87 +499,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private void OpenCustomPolicyManagementView()
 	{
-		_terminalUiActive = true;
-		List<InquiryElement> list = new List<InquiryElement>
-		{
-			new InquiryElement("compose", "撰写王国公告", null, isEnabled: true, "选择撰写自定义政策或外交宣言。两套功能只共享入口，内部处理互不影响。"),
-			new InquiryElement("local_policies", "地方政策", null, isEnabled: true, "发布只影响玩家家族封地范围的地方政策，或查看地方政策记录。"),
-			new InquiryElement("world_policies", "查看王国公告", null, isEnabled: true, "统一查看自定义政策、政策衍生事件与各国公开外交宣言。")
-		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("王国公告", "请选择公告功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenRootMenu();
-				return;
-			}
-			string text = selected[0].Identifier as string;
-			if (string.Equals(text, "compose", StringComparison.Ordinal))
-			{
-				OpenRoyalAnnouncementComposeChoice();
-			}
-			else if (string.Equals(text, "local_policies", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				CustomPolicyBehavior.OpenLocalPolicyManagementFromTerminal(OpenCustomPolicyManagementView);
-			}
-			else if (string.Equals(text, "world_policies", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive())
-				{
-					InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
-				}
-			}
-			else
-			{
-				OpenRootMenu();
-			}
-		}, delegate
-		{
-			OpenRootMenu();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
-	}
-
-	private void OpenRoyalAnnouncementComposeChoice()
-	{
-		_terminalUiActive = true;
-		List<InquiryElement> list = new List<InquiryElement>
-		{
-			new InquiryElement("custom_policy", "撰写自定义政策", null, isEnabled: true, "进入原有自定义政策功能。政策评议、费用、议程、效果和存档链路保持不变。"),
-			new InquiryElement("diplomatic_document", "撰写外交宣言", null, isEnabled: true, "发布王国外交宣言；对象国与外交意图由后台判断，不会暂停游戏等待生成。")
-		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("撰写王国公告", "请选择公告类别：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenCustomPolicyManagementView();
-				return;
-			}
-			string id = selected[0].Identifier as string;
-			if (string.Equals(id, "custom_policy", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				CustomPolicyBehavior.OpenFromTerminal();
-			}
-			else if (string.Equals(id, "diplomatic_document", StringComparison.Ordinal))
-			{
-				CloseTerminal();
-				if (!WorldDiplomacyBehavior.OpenComposeFromTerminal())
-				{
-					InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
-				}
-			}
-			else
-			{
-				OpenCustomPolicyManagementView();
-			}
-		}, delegate
-		{
-			OpenCustomPolicyManagementView();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+		if (!ReferenceEquals(Instance, this)) return;
+		OpenRootMenu();
+		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.OpenNode(
+			BuildTerminalRootNodes().First(node => node.Id == "custom_policy_management"));
 	}
 
 	private static void ShowVassalageManagement(AnimusForgeTerminalPopupVM popupVm)
@@ -615,18 +537,9 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		})));
 	}
 
-	private void OpenWeeklyReportBrowser()
-	{
-		List<MyBehavior.WeeklyReportBrowserCountryData> terminalWeeklyReportBrowserCountries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
-		CloseTerminal();
-		if (!TerminalWeeklyReportBrowserPopup.Show(terminalWeeklyReportBrowserCountries))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("打开周报浏览器失败。"));
-		}
-	}
-
 	private void OpenPlayerPersonaEditor()
 	{
+		CloseTerminal();
 		try
 		{
 			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
@@ -649,6 +562,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private void OpenPlayerRpCrafterSelection()
 	{
+		CloseTerminal();
 		_terminalUiActive = true;
 		if (!RewardSystemBehavior.TryGetAvailablePlayerRpCraftersForExternal(
 			out List<PlayerRpCrafterOption> crafters,

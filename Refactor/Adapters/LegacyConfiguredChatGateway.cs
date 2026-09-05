@@ -76,6 +76,7 @@ public sealed class ConfiguredChatGenerationExchange
 public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGateway
 {
     private readonly Func<LlmProviderSnapshot, string> _credentialResolver;
+    private readonly string _ownerBridgeId = FeatureBridgeIds.ConversationGateway;
     private readonly float? _temperature;
     private readonly bool _disableThinking;
     private readonly bool _useConfiguredMaxTokens;
@@ -104,6 +105,21 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         _reasoningEffort = string.IsNullOrWhiteSpace(reasoningEffort)
             ? DuelSettings.ReasoningEffortLow
             : reasoningEffort.Trim();
+    }
+
+    // Knowledge owns a separate bridge. Sharing provider transport must not make
+    // that domain depend on the conversation entry's enablement.
+    internal static LegacyConfiguredChatGateway ForKnowledgeProfile(
+        Func<LlmProviderSnapshot, string> credentialResolver, float? temperature)
+    {
+        return new LegacyConfiguredChatGateway(credentialResolver, temperature, FeatureBridgeIds.GatewayKnowledgeProfile);
+    }
+
+    private LegacyConfiguredChatGateway(
+        Func<LlmProviderSnapshot, string> credentialResolver, float? temperature, string ownerBridgeId)
+        : this(credentialResolver, temperature, disableThinking: true)
+    {
+        _ownerBridgeId = ownerBridgeId;
     }
 
     public async Task<LlmGenerateResult> GenerateAsync(
@@ -151,7 +167,10 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
             throw new ArgumentNullException(nameof(request));
         }
 
-        if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway))
+        bool bridgeEnabled = _ownerBridgeId == FeatureBridgeIds.GatewayKnowledgeProfile
+            ? FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile)
+            : FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway);
+        if (!bridgeEnabled)
         {
             return CreateExchange(
                 0,
@@ -164,7 +183,9 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
                     string.Empty,
                     0,
                     0,
-                    "bridge.conversation_gateway_disabled"));
+                    _ownerBridgeId == FeatureBridgeIds.GatewayKnowledgeProfile
+                        ? "bridge.gateway_knowledge_profile_disabled"
+                        : "bridge.conversation_gateway_disabled"));
         }
 
         LlmProviderSnapshot provider = request.Provider;

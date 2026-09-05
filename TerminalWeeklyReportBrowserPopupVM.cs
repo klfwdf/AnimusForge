@@ -13,6 +13,12 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 
 	private readonly List<MyBehavior.WeeklyReportBrowserCountryData> _countries;
 
+	private readonly long _saveGeneration = SaveRuntimeGuard.CaptureGeneration();
+	private bool _isFinalized;
+	private Task<bool> _pendingFullReport;
+	private MyBehavior _requestOwner;
+	private TerminalWeeklyReportEntryItemVM _requestItem;
+
 	private string _selectedCountryId;
 
 	private string _titleText;
@@ -265,35 +271,72 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		_onClose?.Invoke();
 	}
 
-	private async void RequestViewFullReport(string eventId)
+	private void RequestViewFullReport(string eventId)
 	{
+		string id = (eventId ?? "").Trim();
+		TerminalWeeklyReportEntryItemVM item = ReportItems.FirstOrDefault(report => report.EventId == id);
+		if (_isFinalized || _pendingFullReport != null || item == null || !item.ShowViewFullReport
+			|| !SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration)) return;
+		MyBehavior owner = MyBehavior.Instance;
+		if (owner == null)
+		{
+			SelectedCountryMetaText = "周报功能尚未初始化，请关闭后重试。";
+			return;
+		}
+		_requestOwner = owner;
+		_requestItem = item;
+		item.ShowViewFullReport = false;
+		SelectedCountryMetaText = "正在生成完整周报，请稍候。";
 		try
 		{
-			string text = (eventId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return;
-			}
-			MyBehavior myBehavior = MyBehavior.Instance;
-			if (myBehavior == null)
-			{
-				return;
-			}
-			bool flag = await myBehavior.GenerateWeeklyReportFullByEventIdAsync(text);
-			if (flag)
+			_pendingFullReport = owner.GenerateWeeklyReportFullByEventIdAsync(id);
+		}
+		catch (Exception ex)
+		{
+			item.ShowViewFullReport = true;
+			_requestOwner = null;
+			_requestItem = null;
+			Logger.Log("TerminalWeeklyReports", "[ERROR] full report request failed: " + ex);
+			SelectedCountryMetaText = "完整周报生成失败，原有内容已保留，请重试。";
+		}
+	}
+
+	internal void Tick()
+	{
+		// Completion is observed on the terminal's main-thread tick, never on an HTTP continuation.
+		if (_isFinalized || _pendingFullReport == null || !_pendingFullReport.IsCompleted) return;
+		Task<bool> completed = _pendingFullReport;
+		MyBehavior owner = _requestOwner;
+		TerminalWeeklyReportEntryItemVM item = _requestItem;
+		_pendingFullReport = null;
+		_requestOwner = null;
+		_requestItem = null;
+		if (!ReferenceEquals(owner, MyBehavior.Instance)
+			|| !SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration)) return;
+		try
+		{
+			bool generated = completed.GetAwaiter().GetResult();
+			if (generated)
 			{
 				ReloadFromGameState(_selectedCountryId);
 			}
+			else SelectedCountryMetaText = "完整周报未生成，原有内容已保留，可再次尝试。";
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("TerminalWeeklyReports", "[ERROR] full report completion failed: " + ex);
+			SelectedCountryMetaText = "完整周报生成失败，原有内容已保留，请重试。";
+		}
+		finally
+		{
+			if (item != null) item.ShowViewFullReport = true;
 		}
 	}
 
 	private void SelectCountry(string countryId)
 	{
 		string text = (countryId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
+		if (_isFinalized || string.IsNullOrWhiteSpace(text))
 		{
 			return;
 		}
@@ -303,8 +346,8 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 	private void ApplyCountrySelection(string countryId)
 	{
 		string text = (countryId ?? "").Trim();
-		_selectedCountryId = text;
 		MyBehavior.WeeklyReportBrowserCountryData weeklyReportBrowserCountryData = _countries.FirstOrDefault((MyBehavior.WeeklyReportBrowserCountryData x) => string.Equals((x?.CountryId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)) ?? _countries.FirstOrDefault();
+		_selectedCountryId = (weeklyReportBrowserCountryData?.CountryId ?? "").Trim();
 		foreach (TerminalWeeklyReportCountryItemVM countryItem in CountryItems)
 		{
 			countryItem.IsSelected = weeklyReportBrowserCountryData != null && string.Equals((countryItem.CountryId ?? "").Trim(), (weeklyReportBrowserCountryData.CountryId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
@@ -321,9 +364,9 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 			return;
 		}
 		SelectedCountryNameText = (weeklyReportBrowserCountryData.DisplayName ?? "").Trim();
-		int num = (weeklyReportBrowserCountryData.Reports != null) ? weeklyReportBrowserCountryData.Reports.Count : 0;
-		SelectedCountryMetaText = ((num > 0) ? ("共 " + num + " 期周报  · ") : "这个条目当前还没有周报记录");
-		foreach (MyBehavior.WeeklyReportBrowserEntryData report in (weeklyReportBrowserCountryData.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>()).OrderByDescending((MyBehavior.WeeklyReportBrowserEntryData x) => x?.WeekIndex ?? int.MinValue).ThenByDescending((MyBehavior.WeeklyReportBrowserEntryData x) => x?.CreatedDay ?? int.MinValue).ThenByDescending((MyBehavior.WeeklyReportBrowserEntryData x) => x?.Title ?? "", StringComparer.OrdinalIgnoreCase))
+		var reports = (weeklyReportBrowserCountryData.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>()).Where(report => report != null).ToList();
+		SelectedCountryMetaText = reports.Count > 0 ? "共 " + reports.Count + " 期周报 · 最新在前" : "这个条目当前还没有周报记录";
+		foreach (MyBehavior.WeeklyReportBrowserEntryData report in reports.OrderByDescending(x => x.WeekIndex).ThenByDescending(x => x.CreatedDay).ThenByDescending(x => x.Title ?? "", StringComparer.OrdinalIgnoreCase))
 		{
 			mBBindingList.Add(new TerminalWeeklyReportEntryItemVM(report, RequestViewFullReport));
 		}
@@ -342,6 +385,18 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 			CountryItems.Add(new TerminalWeeklyReportCountryItemVM(country, SelectCountry));
 		}
 		ApplyCountrySelection(selectedCountryId);
+	}
+
+	public override void OnFinalize()
+	{
+		if (_isFinalized) return;
+		_isFinalized = true;
+		_pendingFullReport = null;
+		_requestOwner = null;
+		_requestItem = null;
+		foreach (var country in CountryItems) country.OnFinalize();
+		foreach (var report in ReportItems) report.OnFinalize();
+		base.OnFinalize();
 	}
 }
 
@@ -430,7 +485,7 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 		_onSelect = onSelect;
 		CountryId = (country?.CountryId ?? "").Trim();
 		DisplayName = (country?.DisplayName ?? "").Trim();
-		int num = (country?.Reports != null) ? country.Reports.Count : 0;
+		int num = country?.Reports?.Count(report => report != null) ?? 0;
 		ReportCountText = "共 " + num + " 期";
 	}
 

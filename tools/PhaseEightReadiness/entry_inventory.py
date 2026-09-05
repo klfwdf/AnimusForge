@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the reviewed Phase 8 domain entry candidate inventory."""
+"""Build Phase 8 entry candidates; additions require renewed coverage review."""
 
 from __future__ import annotations
 
@@ -14,7 +14,20 @@ RULES = {
     "settlement-siege-gccz-sets": ("SiegeAiInterventionBehavior*.cs",),
     "duel": ("DuelBehavior*.cs",),
     "courier-proactive-issue": ("CourierDeliveryBehavior*.cs", "Refactor/Runtime/CourierInboundCompletion*.cs"),
-    "social-progression-reports": ("PlayerNotorietyBehavior*.cs",),
+    "social-progression-reports": (
+        "PlayerNotorietyBehavior*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "AnimusForgeWeeklyReportMapNotification.cs", "WeeklyReportSchedulePolicy.cs",
+        "WeeklyReportTextHelper.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
+    ),
+    "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
+    "ui-tts-external-integration": (
+        "AnimusForgeTerminal*.cs", "Terminal*PopupVM.cs", "DevWeeklyReportPopup*.cs",
+        "WarStats/*VM.cs", "WarStats/AfWarStatsMapButtonLayer.cs",
+        "WarStats/AfWarStatsEncyclopedia.cs", "WarStats/AfWarStatsSettings.cs", "WarStats/AfWarStatsTexts.cs",
+        "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+        "AnimusForge/GUI/Prefabs/AFWarStatsMapButton.xml",
+        "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
+    ),
     "game-adapter-compatibility": ("PlayerEncounterCompat.cs",),
     "action-commit": ("Refactor/Runtime/DetachedInteractionHost.cs",),
 }
@@ -27,8 +40,6 @@ EXCLUDED_PARTS = {
 def _excluded(path: Path) -> bool:
     lowered = {part.lower() for part in path.parts}
     if lowered & EXCLUDED_PARTS:
-        return True
-    if any("terminal" in part.lower() for part in path.parts):
         return True
     if any("原版游戏" in part for part in path.parts):
         return True
@@ -96,7 +107,11 @@ def update_catalog(project: Path) -> None:
     document = json.loads(path.read_text(encoding="utf-8"))
     for domain in document["domains"]:
         if domain["id"] in inventory:
-            domain["entryPaths"] = sorted(set(domain["entryPaths"]) | set(inventory[domain["id"]]))
+            existing = set(domain["entryPaths"])
+            candidates = set(inventory[domain["id"]])
+            if candidates - existing:
+                domain["entryCoverage"] = "REPRESENTATIVE"
+            domain["entryPaths"] = sorted(existing | candidates)
     path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 

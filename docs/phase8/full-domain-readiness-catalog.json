@@ -548,12 +548,13 @@
         "world-map-owner"
       ],
       "entryPaths": [
-        "WorldDiplomacyBehavior.cs",
-        "WorldMapPartyCommandBehavior.cs",
-        "VassalageBehavior.cs",
         "DiplomacyBehavior.cs",
         "KingdomAnnexationBehavior.cs",
-        "NpcTributeVassalageBehavior.cs"
+        "NpcTributeVassalageBehavior.cs",
+        "VassalageBehavior.cs",
+        "WarStats/AfWarStatsBehavior.cs",
+        "WorldDiplomacyBehavior.cs",
+        "WorldMapPartyCommandBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -590,7 +591,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 13,
@@ -827,12 +828,17 @@
       ],
       "entryPaths": [
         "AnimusForgeUniqueCosmeticItemBehavior.cs",
+        "AnimusForgeWeeklyReportMapNotification.cs",
+        "MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "MyBehavior.cs",
         "NobleGatheringBehavior.cs",
         "PlayerNotorietyBehavior.ConversationOutcomes.cs",
         "PlayerNotorietyBehavior.cs",
         "RomanceSystemBehavior.cs",
-        "SexualConceptionBehavior.cs"
+        "SexualConceptionBehavior.cs",
+        "TerminalWeeklyReportBrowserPopupVM.cs",
+        "WeeklyReportSchedulePolicy.cs",
+        "WeeklyReportTextHelper.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -871,7 +877,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 18,
@@ -936,10 +942,29 @@
         "tts-owner"
       ],
       "entryPaths": [
+        "AnimusForge/GUI/Prefabs/AFWarStatsMapButton.xml",
+        "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+        "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
         "AnimusForgeNativeConversationOverlay.cs",
-        "TtsEngine.cs",
+        "AnimusForgeTerminalBehavior.cs",
+        "AnimusForgeTerminalSettings.cs",
+        "AnimusForgeTerminalUiModels.cs",
+        "DevWeeklyReportPopup.cs",
+        "DevWeeklyReportPopupVM.cs",
+        "SceneActionsIntegrationBoundary.cs",
         "SubModule.cs",
-        "SceneActionsIntegrationBoundary.cs"
+        "TerminalVassalageTributeHistoryPopupVM.cs",
+        "TerminalWeeklyReportBrowserPopupVM.cs",
+        "TtsEngine.cs",
+        "WarStats/AfWarStatsDeathItemVM.cs",
+        "WarStats/AfWarStatsEncyclopedia.cs",
+        "WarStats/AfWarStatsHistoryItemVM.cs",
+        "WarStats/AfWarStatsMapButtonLayer.cs",
+        "WarStats/AfWarStatsMapButtonVM.cs",
+        "WarStats/AfWarStatsPopupVM.cs",
+        "WarStats/AfWarStatsRowVM.cs",
+        "WarStats/AfWarStatsSettings.cs",
+        "WarStats/AfWarStatsTexts.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -975,7 +1000,7 @@
         "tools-content-release"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 20,

@@ -86,6 +86,33 @@ public sealed class AnimusForgeTerminalPopup
 		_activePopup?.Close(silent);
 	}
 
+	public static bool ShowWarStats()
+	{
+		// The map entry remains usable when the terminal behavior is unavailable.
+		// It uses the same view model/movie instead of a second, divergent war popup.
+		try
+		{
+			var roots = new List<AnimusForgeTerminalNode>
+			{
+				new AnimusForgeTerminalNode { Id = "war_stats", Title = "战争统计", Category = "战争" }
+			};
+			if (!Show(roots, id =>
+			{
+				if (id != "war_stats") return false;
+				_activePopup?.ViewModel.ShowWarStats();
+				return true;
+			})) return false;
+			_activePopup.ViewModel.ShowWarStats();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			CloseActive();
+			Logger.Log("Terminal", "[ERROR] failed to open war-only terminal: " + ex);
+			return false;
+		}
+	}
+
 	public AnimusForgeTerminalPopupVM ViewModel => _dataSource;
 
 	private void Open()
@@ -99,7 +126,7 @@ public sealed class AnimusForgeTerminalPopup
 		catch
 		{
 		}
-		// Keep the terminal below the native encyclopedia (310), like the standalone war panel.
+		// Native encyclopedia links must render above this terminal (310).
 		_screen.AddLayer(_layer);
 		Game.Current?.GameStateManager?.RegisterActiveStateDisableRequest(this);
 		_layer.IsFocusLayer = true;
@@ -110,6 +137,7 @@ public sealed class AnimusForgeTerminalPopup
 	{
 		AnimusForgeTerminalPopup popup = _activePopup;
 		if (popup == null || popup._isClosed) return;
+		popup._dataSource.WeeklyReportVm?.Tick();
 		if (ScreenManager.TopScreen != popup._screen
 			|| (ScreenManager.FocusedLayer == popup._layer && popup._layer.Input.IsHotKeyReleased("Exit")))
 		{
@@ -447,6 +475,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ShowWeeklyReports(List<MyBehavior.WeeklyReportBrowserCountryData> countries)
 	{
+		_returnToView = ReturnToMenu;
+		WeeklyReportVm?.OnFinalize();
 		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack);
 		BreadcrumbText = "终端 / " + _selectedTab + " / 查看周报";
 		SetViewMode(TerminalViewMode.WeeklyReports);
@@ -524,6 +554,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ShowDiagnostics(string status, string detail, bool canAnalyze)
 	{
+		_returnToView = ReturnToMenu;
 		DiagnosticsStatusText = status ?? "捕获哨兵状态: 在线";
 		DiagnosticsDetailText = string.IsNullOrWhiteSpace(detail) ? "本局当前未记录到任何致命报错堆栈。" : detail;
 		HasLatestErrorToAnalyze = canAnalyze;
@@ -656,6 +687,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ExecuteRequestAiAnalysis()
 	{
+		if (!HasLatestErrorToAnalyze) return;
+		_onClose?.Invoke();
 		AiErrorAnalysisInquiry.AnalyzeLatestFailure();
 	}
 

@@ -96,3 +96,7 @@
 - `AnimusForge.Bootstrap.dll` SHA256 `F885348AD81C76B8D3F54FBEAF0B70769535E8BFA2A976B288B0DE23C0FF49F1`
 - `versions/1.3/AnimusForge.dll` SHA256 `6F3D9B1B6EE33006FF28A89C6BC9135E050543722D98A333858DAACF083DB203`
 - `versions/1.4/AnimusForge.dll` SHA256 `5EE01CFA1770509335F16783F796FB05D199C64D5DA316ED03AAEB1F1D9D6A54`
+
+## 整体任务覆盖记录
+
+2026-09-06 后续已不再逐小批交付；当前统一实现/验证/实际剩余问题以 `docs/handoffs/2026-09-06-integrated-phase8-handoff.md` 为准。前面的独立周报/战争弹窗已完成替代删除，最新 Stage 哈希也以该总交接为准。仍有活跃默认路径未迁移，不能宣称全部旧代码清零。

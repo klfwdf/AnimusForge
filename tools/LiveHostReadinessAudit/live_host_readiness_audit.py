@@ -86,8 +86,17 @@ def main() -> int:
     submodule_bootstrap = False
     try:
         declaration = ET.parse(submodule).getroot()
+        module_ids = [node.get("value") for node in declaration.findall("./Id")]
         dll_names = [node.get("value") for node in declaration.findall("./SubModules/SubModule/DLLName")]
-        submodule_bootstrap = declaration.tag == "Module" and dll_names == ["AnimusForge.Bootstrap.dll"]
+        class_names = [node.get("value") for node in declaration.findall("./SubModules/SubModule/SubModuleClassType")]
+        submodule_bootstrap = (
+            declaration.tag == "Module"
+            and module_ids == ["AnimusForge"]
+            and len(declaration.findall("./SubModules")) == 1
+            and len(declaration.findall("./SubModules/SubModule")) == 1
+            and dll_names == ["AnimusForge.Bootstrap.dll"]
+            and class_names == ["AnimusForge.Bootstrap.BootstrapSubModule"]
+        )
     except (OSError, ET.ParseError):
         pass
     installed_matches_stage = submodule_bootstrap and all(matches.values())
