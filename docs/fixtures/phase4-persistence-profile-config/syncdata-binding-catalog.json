@@ -2,8 +2,8 @@
   "fixtureVersion": 1,
   "kind": "syncdata-binding-catalog",
   "assemblyIdentity": "AnimusForge",
-  "bindingCount": 121,
-  "uniqueKeyCount": 95,
+  "bindingCount": 168,
+  "uniqueKeyCount": 142,
   "entries": [
     {
       "key": "_AnimusForge_setup_done_v1",
@@ -219,6 +219,664 @@
           "ref": "unreadWeeklyReportNoticeEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_attacker_side_v4",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 417,
+          "ref": "_savedActiveAttackerSideV4",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_casualties_a_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 383,
+          "ref": "_savedActiveCasualtiesAV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_casualties_b_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 384,
+          "ref": "_savedActiveCasualtiesBV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_duration_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 385,
+          "ref": "_savedActiveDurationV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_hero_deaths_v4",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 418,
+          "ref": "_savedActiveHeroDeathsV4",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_initial_territory_a_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 407,
+          "ref": "_savedActiveInitialTerritoryAV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_initial_territory_b_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 408,
+          "ref": "_savedActiveInitialTerritoryBV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_keys_v2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 378,
+          "ref": "_savedActiveKeysV2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_kills_a_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 381,
+          "ref": "_savedActiveKillsAV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_kills_b_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 382,
+          "ref": "_savedActiveKillsBV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_losses_a_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 405,
+          "ref": "_savedActiveLossesAV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_losses_b_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 406,
+          "ref": "_savedActiveLossesBV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_names_a_v2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 379,
+          "ref": "_savedActiveNamesAV2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_names_b_v2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 380,
+          "ref": "_savedActiveNamesBV2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_player_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 388,
+          "ref": "_savedActivePlayerV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_recent_hero_battles_v5",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 424,
+          "ref": "_savedActiveRecentHeroBattlesV5",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_start_day_v4",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 416,
+          "ref": "_savedActiveStartDayV4",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_territory_a_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 386,
+          "ref": "_savedActiveTerritoryAV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_territory_b_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 387,
+          "ref": "_savedActiveTerritoryBV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_wins_a_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 403,
+          "ref": "_savedActiveWinsAV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_active_wins_b_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 404,
+          "ref": "_savedActiveWinsBV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_casualties_a_v1",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 375,
+          "ref": "_savedCasualtiesA",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_casualties_b_v1",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 376,
+          "ref": "_savedCasualtiesB",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_data_version_v2",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 372,
+          "ref": "_dataVersion",
+          "type": "int",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_attacker_side_v4",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 420,
+          "ref": "_savedHistoryAttackerSideV4",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_casualties_a_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 395,
+          "ref": "_savedHistoryCasualtiesAV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_casualties_b_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 396,
+          "ref": "_savedHistoryCasualtiesBV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_duration_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 397,
+          "ref": "_savedHistoryDurationV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_end_day_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 400,
+          "ref": "_savedHistoryEndDayV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_hero_deaths_v4",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 421,
+          "ref": "_savedHistoryHeroDeathsV4",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_initial_territory_a_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 413,
+          "ref": "_savedHistoryInitialTerritoryAV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_initial_territory_b_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 414,
+          "ref": "_savedHistoryInitialTerritoryBV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_keys_v2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 390,
+          "ref": "_savedHistoryKeysV2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_kills_a_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 393,
+          "ref": "_savedHistoryKillsAV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_kills_b_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 394,
+          "ref": "_savedHistoryKillsBV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_losses_a_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 411,
+          "ref": "_savedHistoryLossesAV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_losses_b_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 412,
+          "ref": "_savedHistoryLossesBV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_names_a_v2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 391,
+          "ref": "_savedHistoryNamesAV2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_names_b_v2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 392,
+          "ref": "_savedHistoryNamesBV2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_player_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 401,
+          "ref": "_savedHistoryPlayerV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_start_day_v4",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 419,
+          "ref": "_savedHistoryStartDayV4",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_territory_a_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 398,
+          "ref": "_savedHistoryTerritoryAV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_territory_b_v2",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 399,
+          "ref": "_savedHistoryTerritoryBV2",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_wins_a_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 409,
+          "ref": "_savedHistoryWinsAV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_history_wins_b_v3",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 410,
+          "ref": "_savedHistoryWinsBV3",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_pair_keys_v1",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 374,
+          "ref": "_savedPairKeys",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_af_war_stats_recent_battle_sequence_v5",
+      "type": "int",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "WarStats/AfWarStatsBehavior.cs",
+          "line": 423,
+          "ref": "_recentBattleSequence",
+          "type": "int",
+          "kind": "scalar"
         }
       ]
     },

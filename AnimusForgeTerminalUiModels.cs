@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AFWarStatsTerminal.UI;
-using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ImageIdentifiers;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
@@ -20,6 +19,8 @@ public sealed class AnimusForgeTerminalNode
 	public string Hint { get; set; } = "";
 	public string Category { get; set; } = "全部";
 	public string Icon { get; set; } = "❖";
+	public Action OnExecute { get; set; }
+	public Func<ImageIdentifier> ImageFactory { get; set; }
 	public bool IsBranch => Children != null && Children.Count > 0;
 	public List<AnimusForgeTerminalNode> Children { get; } = new List<AnimusForgeTerminalNode>();
 }
@@ -31,7 +32,7 @@ public enum TerminalViewMode
 	WeeklyReports,
 	Vassalage,
 	TagCatalog,
-	TrustQuery,
+	Details,
 	Diagnostics
 }
 
@@ -51,7 +52,7 @@ public sealed class AnimusForgeTerminalPopup
 		_screen = screen;
 		_onClose = onClose;
 		_dataSource = new AnimusForgeTerminalPopupVM(roots, onExecuteLeaf, HandleCloseRequested);
-		_layer = new GauntletLayer("AnimusForgeTerminalPopup", 3950, false);
+		_layer = new GauntletLayer("AnimusForgeTerminalPopup", 309, false);
 	}
 
 	public static bool Show(List<AnimusForgeTerminalNode> roots, Func<string, bool> onExecuteLeaf, Action onClose = null)
@@ -61,10 +62,11 @@ public sealed class AnimusForgeTerminalPopup
 		{
 			return false;
 		}
+		AnimusForgeTerminalPopup popup = null;
 		try
 		{
 			_activePopup?.Close(silent: true);
-			AnimusForgeTerminalPopup popup = new AnimusForgeTerminalPopup(topScreen, roots, onExecuteLeaf, onClose);
+			popup = new AnimusForgeTerminalPopup(topScreen, roots, onExecuteLeaf, onClose);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -72,6 +74,7 @@ public sealed class AnimusForgeTerminalPopup
 		catch (Exception ex)
 		{
 			Logger.Log("Terminal", "[ERROR] Failed to open terminal popup: " + ex);
+			popup?.Close(silent: true);
 			_activePopup?.Close(silent: true);
 			_activePopup = null;
 			return false;
@@ -96,9 +99,22 @@ public sealed class AnimusForgeTerminalPopup
 		catch
 		{
 		}
+		// Keep the terminal below the native encyclopedia (310), like the standalone war panel.
 		_screen.AddLayer(_layer);
+		Game.Current?.GameStateManager?.RegisterActiveStateDisableRequest(this);
 		_layer.IsFocusLayer = true;
 		ScreenManager.TrySetFocus(_layer);
+	}
+
+	public static void TickActive()
+	{
+		AnimusForgeTerminalPopup popup = _activePopup;
+		if (popup == null || popup._isClosed) return;
+		if (ScreenManager.TopScreen != popup._screen
+			|| (ScreenManager.FocusedLayer == popup._layer && popup._layer.Input.IsHotKeyReleased("Exit")))
+		{
+			popup.HandleCloseRequested();
+		}
 	}
 
 	private void HandleCloseRequested()
@@ -133,6 +149,8 @@ public sealed class AnimusForgeTerminalPopup
 				Logger.Log("Terminal", "[WARN] Failed to remove terminal popup layer: " + ex.Message);
 			}
 		}
+		_layer.InputRestrictions.ResetInputRestrictions();
+		Game.Current?.GameStateManager?.UnregisterActiveStateDisableRequest(this);
 		_dataSource?.OnFinalize();
 		if (ReferenceEquals(_activePopup, this))
 		{
@@ -172,9 +190,12 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private string _tagCatalogSummaryText = "";
 	private MBBindingList<TerminalTagCatalogItemVM> _tagCatalogItems;
 
-	// 内嵌模块：信任度查询
-	private string _trustQuerySummaryText = "";
-	private MBBindingList<TerminalTrustItemVM> _trustItems;
+	private const int MenuPageSize = 50;
+	private string _searchText = "";
+	private int _menuPage;
+	private int _filteredCount;
+	private string _detailText = "";
+	private Action _returnToView;
 
 	// 内嵌模块：AI 错误诊断
 	private string _diagnosticsStatusText = "捕获哨兵状态: 正常在线";
@@ -218,7 +239,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public bool IsTagCatalogVisible => _currentViewMode == TerminalViewMode.TagCatalog;
 
 	[DataSourceProperty]
-	public bool IsTrustQueryVisible => _currentViewMode == TerminalViewMode.TrustQuery;
+	public bool IsDetailsVisible => _currentViewMode == TerminalViewMode.Details;
 
 	[DataSourceProperty]
 	public bool IsDiagnosticsVisible => _currentViewMode == TerminalViewMode.Diagnostics;
@@ -240,10 +261,30 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public MBBindingList<TerminalTagCatalogItemVM> TagCatalogItems { get => _tagCatalogItems; set { if (value != _tagCatalogItems) { _tagCatalogItems = value; OnPropertyChangedWithValue(value, nameof(TagCatalogItems)); } } }
 
 	[DataSourceProperty]
-	public string TrustQuerySummaryText { get => _trustQuerySummaryText; set { if (value != _trustQuerySummaryText) { _trustQuerySummaryText = value; OnPropertyChangedWithValue(value, nameof(TrustQuerySummaryText)); } } }
+	public string SearchText
+	{
+		get => _searchText;
+		set
+		{
+			if (_searchText == (value ?? "")) return;
+			_searchText = value ?? "";
+			_menuPage = 0;
+			OnPropertyChangedWithValue(_searchText, nameof(SearchText));
+			RefreshItems();
+		}
+	}
 
 	[DataSourceProperty]
-	public MBBindingList<TerminalTrustItemVM> TrustItems { get => _trustItems; set { if (value != _trustItems) { _trustItems = value; OnPropertyChangedWithValue(value, nameof(TrustItems)); } } }
+	public string MenuPageText => $"{_menuPage + 1}/{Math.Max(1, (_filteredCount + MenuPageSize - 1) / MenuPageSize)} 页 · {_filteredCount} 项";
+	[DataSourceProperty]
+	public bool HasPreviousMenuPage => _menuPage > 0;
+	[DataSourceProperty]
+	public bool HasNextMenuPage => (_menuPage + 1) * MenuPageSize < _filteredCount;
+	[DataSourceProperty]
+	public string DetailText { get => _detailText; private set { _detailText = value ?? ""; OnPropertyChangedWithValue(_detailText, nameof(DetailText)); } }
+
+	public void ExecutePreviousMenuPage() { if (HasPreviousMenuPage) { _menuPage--; RefreshItems(); } }
+	public void ExecuteNextMenuPage() { if (HasNextMenuPage) { _menuPage++; RefreshItems(); } }
 
 	[DataSourceProperty]
 	public string DiagnosticsStatusText { get => _diagnosticsStatusText; set { if (value != _diagnosticsStatusText) { _diagnosticsStatusText = value; OnPropertyChangedWithValue(value, nameof(DiagnosticsStatusText)); } } }
@@ -262,14 +303,12 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		TabItems = new MBBindingList<AnimusForgeTerminalTabItemVM>();
 		Items = new MBBindingList<AnimusForgeTerminalItemVM>();
 		TagCatalogItems = new MBBindingList<TerminalTagCatalogItemVM>();
-		TrustItems = new MBBindingList<TerminalTrustItemVM>();
 
 		string[] tabs = new[] { "战争", "全部", "外交", "部队", "玩家", "查询与记录", "系统" };
 		foreach (string tab in tabs)
 		{
 			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, SelectTab));
 		}
-		WarStatsVm = new AfWarStatsPopupVM(ExecuteBack);
 		RefreshItems();
 	}
 
@@ -277,6 +316,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		_selectedTab = string.IsNullOrWhiteSpace(tab) ? "全部" : tab;
 		_path.Clear();
+		_returnToView = null;
+		ResetMenuFilter();
 		if (string.Equals(_selectedTab, "战争", StringComparison.Ordinal))
 		{
 			ShowWarStats();
@@ -295,7 +336,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		OnPropertyChanged(nameof(IsWeeklyReportsVisible));
 		OnPropertyChanged(nameof(IsVassalageVisible));
 		OnPropertyChanged(nameof(IsTagCatalogVisible));
-		OnPropertyChanged(nameof(IsTrustQueryVisible));
+		OnPropertyChanged(nameof(IsDetailsVisible));
 		OnPropertyChanged(nameof(IsDiagnosticsVisible));
 		UpdateCanGoBack();
 	}
@@ -317,11 +358,20 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 				? _roots
 				: _roots.Where(x => string.Equals(x.Category, _selectedTab, StringComparison.Ordinal)));
 
+		string query = _searchText.Trim();
+		List<AnimusForgeTerminalNode> filtered = source.Where(node => query.Length == 0
+			|| (node.Title ?? "").IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0
+			|| (node.Hint ?? "").IndexOf(query, StringComparison.CurrentCultureIgnoreCase) >= 0).ToList();
+		_filteredCount = filtered.Count;
+		_menuPage = Math.Min(_menuPage, Math.Max(0, (_filteredCount - 1) / MenuPageSize));
 		MBBindingList<AnimusForgeTerminalItemVM> list = new MBBindingList<AnimusForgeTerminalItemVM>();
-		foreach (AnimusForgeTerminalNode node in source)
+		foreach (AnimusForgeTerminalNode node in filtered.Skip(_menuPage * MenuPageSize).Take(MenuPageSize))
 		{
 			list.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
 		}
+		OnPropertyChanged(nameof(MenuPageText));
+		OnPropertyChanged(nameof(HasPreviousMenuPage));
+		OnPropertyChanged(nameof(HasNextMenuPage));
 		Items = list;
 		UpdateBreadcrumb();
 		UpdateCanGoBack();
@@ -352,13 +402,15 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		if (node.IsBranch)
 		{
 			_path.Push(node);
+			ResetMenuFilter();
 			RefreshItems();
 			return;
 		}
 
 		try
 		{
-			_onExecuteLeaf?.Invoke(node.Id ?? "");
+			if (node.OnExecute != null) node.OnExecute();
+			else _onExecuteLeaf?.Invoke(node.Id ?? "");
 		}
 		catch (Exception ex)
 		{
@@ -399,6 +451,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ShowVassalageTributeHistory(TerminalTributaryPaymentHistoryData data)
 	{
+		_returnToView = ReturnToMenu;
+		VassalageVm?.OnFinalize();
 		VassalageVm = new TerminalVassalageTributeHistoryPopupVM(data ?? new TerminalTributaryPaymentHistoryData(), ExecuteBack);
 		BreadcrumbText = "终端 / " + _selectedTab + " / 臣属贡金结算记录";
 		SetViewMode(TerminalViewMode.Vassalage);
@@ -418,30 +472,35 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		SetViewMode(TerminalViewMode.TagCatalog);
 	}
 
-	public void ShowTrustQuery(List<Settlement> settlements, List<Hero> heroes)
+	private void ResetMenuFilter()
 	{
-		RewardSystemBehavior reward = RewardSystemBehavior.Instance;
-		MBBindingList<TerminalTrustItemVM> list = new MBBindingList<TerminalTrustItemVM>();
-		if (settlements != null)
-		{
-			foreach (Settlement s in settlements.Take(30))
-			{
-				int trust = reward != null ? (reward.GetSettlementLocalPublicTrust(s) + reward.GetSettlementSharedPublicTrust(s)) : 0;
-				list.Add(new TerminalTrustItemVM(s.Name?.ToString() ?? s.StringId, "定居点", trust, s.OwnerClan?.Name?.ToString() ?? ""));
-			}
-		}
-		if (heroes != null)
-		{
-			foreach (Hero h in heroes.Take(30))
-			{
-				int trust = reward?.GetEffectiveTrust(h) ?? 0;
-				list.Add(new TerminalTrustItemVM(h.Name?.ToString() ?? h.StringId, "NPC领主", trust, h.Clan?.Name?.ToString() ?? ""));
-			}
-		}
-		TrustItems = list;
-		TrustQuerySummaryText = $"已统计当前卡拉迪亚主要封地与领主信任度 (显示前 {list.Count} 项)";
-		BreadcrumbText = "终端 / " + _selectedTab + " / 信任度查询";
-		SetViewMode(TerminalViewMode.TrustQuery);
+		_searchText = "";
+		_menuPage = 0;
+		OnPropertyChanged(nameof(SearchText));
+	}
+
+	public void ShowBrowser(string title, IEnumerable<AnimusForgeTerminalNode> entries)
+	{
+		AnimusForgeTerminalNode browser = new AnimusForgeTerminalNode { Title = title };
+		browser.Children.AddRange(entries);
+		_path.Push(browser);
+		ResetMenuFilter();
+		ReturnToMenu();
+	}
+
+	private void ReturnToMenu()
+	{
+		_returnToView = null;
+		SetViewMode(TerminalViewMode.MenuList);
+		RefreshItems();
+	}
+
+	public void ShowDetails(string title, string text)
+	{
+		_returnToView = ReturnToMenu;
+		DetailText = text;
+		BreadcrumbText = "终端 / " + _selectedTab + " / " + title;
+		SetViewMode(TerminalViewMode.Details);
 	}
 
 	public void ShowDiagnostics(string status, string detail, bool canAnalyze)
@@ -479,6 +538,13 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ExecuteBack()
 	{
+		if (_returnToView != null)
+		{
+			Action onReturn = _returnToView;
+			_returnToView = null;
+			onReturn();
+			return;
+		}
 		if (_currentViewMode != TerminalViewMode.MenuList)
 		{
 			SelectTab("全部");
@@ -488,6 +554,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		if (_path.Count > 0)
 		{
 			_path.Pop();
+			ResetMenuFilter();
 			RefreshItems();
 		}
 	}
@@ -577,6 +644,17 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 	private readonly Action<AnimusForgeTerminalNode> _onOpen;
 
 	public AnimusForgeTerminalNode Node { get; }
+	private readonly ImageIdentifier _image;
+	[DataSourceProperty]
+	public string ImageId => _image?.Id ?? "";
+	[DataSourceProperty]
+	public string ImageArgs => _image?.AdditionalArgs ?? "";
+	[DataSourceProperty]
+	public string ImageProvider => _image?.TextureProviderName ?? "";
+	[DataSourceProperty]
+	public bool HasImage => _image != null;
+	[DataSourceProperty]
+	public bool ShowIcon => !HasImage;
 
 	[DataSourceProperty]
 	public string Id => Node?.Id ?? "";
@@ -597,11 +675,12 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 	public string BadgeText => IsBranch ? "子面板" : "动作";
 
 	[DataSourceProperty]
-	public string ButtonText => IsBranch ? "进入 ➔" : "执行 ⚡";
+	public string ButtonText => IsBranch ? "进入 ➔" : Node?.OnExecute != null ? "查看" : "执行 ⚡";
 
 	public AnimusForgeTerminalItemVM(AnimusForgeTerminalNode node, Action<AnimusForgeTerminalNode> onOpen)
 	{
 		Node = node;
+		_image = node?.ImageFactory?.Invoke();
 		_onOpen = onOpen;
 	}
 
@@ -624,28 +703,5 @@ public sealed class TerminalTagCatalogItemVM : ViewModel
 		Tag = entry?.Tag ?? "";
 		Category = entry?.Category ?? "";
 		Description = entry?.Description ?? "";
-	}
-}
-
-public sealed class TerminalTrustItemVM : ViewModel
-{
-	[DataSourceProperty]
-	public string Name { get; }
-
-	[DataSourceProperty]
-	public string TypeText { get; }
-
-	[DataSourceProperty]
-	public string TrustValueText { get; }
-
-	[DataSourceProperty]
-	public string ExtraInfo { get; }
-
-	public TerminalTrustItemVM(string name, string typeText, int trustValue, string extraInfo)
-	{
-		Name = name ?? "";
-		TypeText = typeText ?? "";
-		TrustValueText = (trustValue >= 0 ? "+" : "") + trustValue.ToString();
-		ExtraInfo = extraInfo ?? "";
 	}
 }

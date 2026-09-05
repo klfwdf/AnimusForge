@@ -93,6 +93,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	public void OnEngineTick()
 	{
 		_engineTickSequence++;
+		AnimusForgeTerminalPopup.TickActive();
 		ProcessPendingPlayerRpItemIntroduction();
 		if (MilitaryExerciseBehavior.NeedsEngineTick())
 		{
@@ -400,21 +401,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return true;
 
 		case "vassalage_management":
-			if (popupVm != null)
-			{
-				VassalageBehavior vassalageBehavior = VassalageBehavior.Instance;
-				TerminalVassalageManagementData vData = vassalageBehavior?.BuildTerminalVassalageManagementData();
-				string agreementId = vData?.Subjects?.FirstOrDefault((TerminalVassalageSubjectData x) => x.IsTributePaying)?.AgreementId ?? "";
-				TerminalTributaryPaymentHistoryData historyData = vassalageBehavior?.BuildTerminalTributaryPaymentHistoryData(agreementId) ?? new TerminalTributaryPaymentHistoryData
-				{
-					TitleText = "臣属贡金结算记录",
-					SubtitleText = "当前无附庸履约流水。",
-					EmptyStateText = "尚无贡金入账。"
-				};
-				popupVm.ShowVassalageTributeHistory(historyData);
-				return true;
-			}
-			OpenVassalageManagementView();
+			if (popupVm == null) return false;
+			ShowVassalageManagement(popupVm);
 			return true;
 
 		case "tag_catalog":
@@ -428,14 +416,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return true;
 
 		case "trust_query":
-			if (popupVm != null)
-			{
-				List<Settlement> settlements = Settlement.All.Where((Settlement x) => x != null).OrderBy((Settlement x) => x.Name?.ToString() ?? x.StringId ?? "").ToList();
-				List<Hero> heroes = Hero.AllAliveHeroes.Where((Hero x) => x != null && !x.IsChild).OrderByDescending((Hero x) => RewardSystemBehavior.Instance?.GetEffectiveTrust(x) ?? 0).ToList();
-				popupVm.ShowTrustQuery(settlements, heroes);
-				return true;
-			}
-			OpenTrustQueryMenu(CloseTerminal);
+			if (popupVm == null) return false;
+			ShowTrustQuery(popupVm);
 			return true;
 
 		case "analyze_latest_error":
@@ -606,104 +588,36 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}
 
-	private void OpenVassalageManagementView()
+	private static void ShowVassalageManagement(AnimusForgeTerminalPopupVM popupVm)
 	{
-		_terminalUiActive = true;
-		VassalageBehavior vassalageBehavior = VassalageBehavior.Instance;
-		if (vassalageBehavior == null)
+		VassalageBehavior owner = VassalageBehavior.Instance;
+		TerminalVassalageManagementData data = owner?.BuildTerminalVassalageManagementData();
+		if (data == null || data.Subjects.Count == 0)
 		{
-			InformationManager.ShowInquiry(new InquiryData("臣属国管理", "臣属国管理页不可用：VassalageBehavior 尚未初始化。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "关闭", "", delegate
-			{
-				CloseTerminal();
-			}, null), pauseGameActiveState: true, prioritize: false);
+			popupVm.ShowDetails(data?.TitleText ?? "臣属国管理", data?.DescriptionText ?? "VassalageBehavior 尚未初始化。");
 			return;
 		}
-		TerminalVassalageManagementData data = vassalageBehavior.BuildTerminalVassalageManagementData();
-		if (data.Subjects.Count <= 0)
+		popupVm.ShowBrowser(data.TitleText ?? "臣属国管理", new[]
 		{
-			InformationManager.ShowInquiry(new InquiryData(data.TitleText ?? "臣属国管理", data.DescriptionText ?? "", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "关闭", "", delegate
+			new AnimusForgeTerminalNode
 			{
-				CloseTerminal();
-			}, null), pauseGameActiveState: true, prioritize: false);
-			return;
-		}
-		List<InquiryElement> list = data.Subjects.Select((TerminalVassalageSubjectData subject) => new InquiryElement(subject.AgreementId, subject.EntryTitleText, null, subject.IsTributePaying, subject.EntryHintText)).ToList();
-		MultiSelectionInquiryData inquiryData = new MultiSelectionInquiryData(data.TitleText ?? "臣属国管理", data.DescriptionText ?? "请选择臣属国：", list, isExitShown: true, 1, 1, "查看贡赋记录", "关闭", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				CloseTerminal();
-				return;
+				Title = "臣属管理说明",
+				Hint = data.DescriptionText,
+				OnExecute = () => popupVm.ShowDetails(data.TitleText ?? "臣属国管理", data.DescriptionText)
 			}
-			string agreementId = selected[0].Identifier as string;
-			TerminalVassalageSubjectData subject = data.Subjects.FirstOrDefault((TerminalVassalageSubjectData x) => string.Equals(x.AgreementId, agreementId, StringComparison.OrdinalIgnoreCase));
-			if (subject == null || !subject.IsTributePaying)
+		}.Concat(data.Subjects.Select(subject => new AnimusForgeTerminalNode
+		{
+			Id = subject.AgreementId,
+			Title = subject.EntryTitleText,
+			Hint = subject.EntryHintText,
+			OnExecute = () =>
 			{
-				OpenVassalageManagementView();
-				return;
+				if (subject.IsTributePaying)
+					popupVm.ShowVassalageTributeHistory(owner.BuildTerminalTributaryPaymentHistoryData(subject.AgreementId));
+				else
+					popupVm.ShowDetails(subject.EntryTitleText, subject.EntryHintText);
 			}
-			OpenVassalageTributeHistoryView(subject.AgreementId);
-		}, delegate
-		{
-			CloseTerminal();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(inquiryData, pauseGameActiveState: true);
-	}
-
-	private void OpenVassalageTributeHistoryView(string agreementId)
-	{
-		TerminalTributaryPaymentHistoryData historyData = VassalageBehavior.Instance?.BuildTerminalTributaryPaymentHistoryData(agreementId) ?? new TerminalTributaryPaymentHistoryData
-		{
-			SubtitleText = "VassalageBehavior 尚未初始化。",
-			EmptyStateText = "尚无贡赋入库记录。"
-		};
-		if (!TerminalVassalageTributeHistoryPopup.Show(historyData, OpenVassalageManagementView))
-		{
-			InformationManager.ShowInquiry(new InquiryData(historyData.TitleText ?? "贡赋记录", BuildVassalageTributeHistoryFallbackText(historyData), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
-			{
-				OpenVassalageManagementView();
-			}, null), pauseGameActiveState: true, prioritize: false);
-		}
-	}
-
-	private static string BuildVassalageTributeHistoryFallbackText(TerminalTributaryPaymentHistoryData data)
-	{
-		if (data == null)
-		{
-			return "尚无贡赋入库记录。";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		if (!string.IsNullOrWhiteSpace(data.SubtitleText))
-		{
-			stringBuilder.AppendLine(data.SubtitleText);
-			stringBuilder.AppendLine();
-		}
-		if (data.Records == null || data.Records.Count <= 0)
-		{
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(data.EmptyStateText) ? "尚无贡赋入库记录。" : data.EmptyStateText);
-			return stringBuilder.ToString().TrimEnd();
-		}
-		for (int i = 0; i < data.Records.Count; i++)
-		{
-			TerminalTributaryPaymentRecordData record = data.Records[i];
-			stringBuilder.AppendLine((i + 1).ToString() + ". " + record.DateText + "  " + record.TributeValueText);
-			if (!string.IsNullOrWhiteSpace(record.PlayerGainSummaryText))
-			{
-				stringBuilder.AppendLine(record.PlayerGainSummaryText);
-			}
-			if (!string.IsNullOrWhiteSpace(record.PlayerSettlementGainText))
-			{
-				stringBuilder.AppendLine("【宗主国各领地所得】");
-				stringBuilder.AppendLine(record.PlayerSettlementGainText);
-			}
-			if (!string.IsNullOrWhiteSpace(record.TributaryCostText))
-			{
-				stringBuilder.AppendLine("【臣属国消耗】");
-				stringBuilder.AppendLine(record.TributaryCostText);
-			}
-			stringBuilder.AppendLine();
-		}
-		return stringBuilder.ToString().TrimEnd();
+		})));
 	}
 
 	private void OpenWeeklyReportBrowser()
@@ -1394,164 +1308,41 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		return builder.ToString();
 	}
 
-	private void OpenTrustQueryMenu(Action onReturn)
+	private static void ShowTrustQuery(AnimusForgeTerminalPopupVM popupVm)
 	{
-		List<InquiryElement> list = new List<InquiryElement>
+		popupVm.ShowBrowser("信任度查询", new[]
 		{
-			new InquiryElement("settlement", "搜索定居点信任", null, isEnabled: true, ""),
-			new InquiryElement("hero", "搜索NPC信任", null, isEnabled: true, "")
-		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("信任度查询", "请选择查询方式：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				onReturn();
-				return;
-			}
-			string text = selected[0].Identifier as string;
-			if (string.Equals(text, "settlement", StringComparison.Ordinal))
-			{
-				OpenSettlementBrowser(delegate
-				{
-					OpenTrustQueryMenu(onReturn);
-				});
-			}
-			else if (string.Equals(text, "hero", StringComparison.Ordinal))
-			{
-				OpenHeroBrowser(delegate
-				{
-					OpenTrustQueryMenu(onReturn);
-				});
-			}
-			else
-			{
-				OpenTrustQueryMenu(onReturn);
-			}
-		}, delegate
-		{
-			onReturn();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+			new AnimusForgeTerminalNode { Title = "搜索定居点信任", OnExecute = () => ShowSettlementTrustBrowser(popupVm) },
+			new AnimusForgeTerminalNode { Title = "搜索NPC信任", OnExecute = () => ShowHeroTrustBrowser(popupVm) }
+		});
 	}
 
-	private void OpenSettlementBrowser(Action onReturn)
+	private static void ShowSettlementTrustBrowser(AnimusForgeTerminalPopupVM popupVm)
 	{
-		List<Settlement> list = Settlement.All.Where((Settlement x) => x != null).OrderBy((Settlement x) => x.Name?.ToString() ?? x.StringId ?? "").ToList();
-		if (list.Count <= 0)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可查询的定居点。"));
-			onReturn();
-			return;
-		}
-		RewardSystemBehavior instance = RewardSystemBehavior.Instance;
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("__back__", "返回上级", null, isEnabled: true, ""));
-		foreach (Settlement item in list)
-		{
-			int num = instance?.GetSettlementLocalPublicTrust(item) ?? 0;
-			int num2 = instance?.GetSettlementSharedPublicTrust(item) ?? 0;
-			int num3 = ClampTrustForDisplay(num + num2);
-			string text6 = $"{item.Name} 信任度：{FormatTrustDisplay(num3)}";
-			list2.Add(new InquiryElement("settlement:" + item.StringId, text6, GetSettlementImageIdentifier(item), isEnabled: true, ""));
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("定居点信任查询", "可直接在上方搜索框中筛选定居点。", list2, isExitShown: true, 1, 1, "查看", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
+		RewardSystemBehavior reward = RewardSystemBehavior.Instance;
+		popupVm.ShowBrowser("定居点信任查询", Settlement.All.Where(x => x != null)
+			.OrderBy(x => x.Name?.ToString() ?? x.StringId).Select(settlement => new AnimusForgeTerminalNode
 			{
-				onReturn();
-				return;
-			}
-			string text7 = selected[0].Identifier as string;
-			if (text7 == "__back__")
-			{
-				onReturn();
-				return;
-			}
-			if (text7 != null && text7.StartsWith("settlement:", StringComparison.OrdinalIgnoreCase))
-			{
-				string value = text7.Substring("settlement:".Length);
-				Settlement settlement = Settlement.All.FirstOrDefault((Settlement x) => x != null && string.Equals(x.StringId, value, StringComparison.OrdinalIgnoreCase));
-				if (settlement == null)
-				{
-					OpenSettlementBrowser(onReturn);
-				}
-				else
-				{
-					OpenSettlementDetails(settlement, delegate
-					{
-						OpenSettlementBrowser(onReturn);
-					});
-				}
-			}
-		}, delegate
-		{
-			onReturn();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+				Id = settlement.StringId,
+				ImageFactory = () => GetSettlementImageIdentifier(settlement),
+				Title = settlement.Name?.ToString() ?? settlement.StringId,
+				Hint = "信任度：" + FormatTrustDisplay(ClampTrustForDisplay((reward?.GetSettlementLocalPublicTrust(settlement) ?? 0) + (reward?.GetSettlementSharedPublicTrust(settlement) ?? 0))),
+				OnExecute = () => popupVm.ShowDetails("定居点信任详情", BuildSettlementTrustReport(settlement, RewardSystemBehavior.Instance))
+			}));
 	}
 
-	private void OpenHeroBrowser(Action onReturn)
+	private static void ShowHeroTrustBrowser(AnimusForgeTerminalPopupVM popupVm)
 	{
-		List<Hero> list = Hero.AllAliveHeroes.Where((Hero x) => x != null).OrderBy((Hero x) => x.Name?.ToString() ?? x.StringId ?? "").ToList();
-		if (list.Count <= 0)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可查询的 NPC。"));
-			onReturn();
-			return;
-		}
-		RewardSystemBehavior instance = RewardSystemBehavior.Instance;
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("__back__", "返回上级", null, isEnabled: true, ""));
-		foreach (Hero item in list)
-		{
-			int num = instance?.GetEffectiveTrust(item) ?? 0;
-			string text4 = item.Name?.ToString() ?? item.StringId ?? "未知NPC";
-			list2.Add(new InquiryElement("hero:" + item.StringId, $"{text4} 信任度：{FormatTrustDisplay(num)}", GetHeroImageIdentifier(item), isEnabled: true, ""));
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("NPC信任查询", "可直接在上方搜索框中筛选 NPC。", list2, isExitShown: true, 1, 1, "查看", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
+		RewardSystemBehavior reward = RewardSystemBehavior.Instance;
+		popupVm.ShowBrowser("NPC信任查询", Hero.AllAliveHeroes.Where(x => x != null)
+			.OrderBy(x => x.Name?.ToString() ?? x.StringId).Select(hero => new AnimusForgeTerminalNode
 			{
-				onReturn();
-				return;
-			}
-			string text5 = selected[0].Identifier as string;
-			if (text5 == "__back__")
-			{
-				onReturn();
-				return;
-			}
-			if (text5 != null && text5.StartsWith("hero:", StringComparison.OrdinalIgnoreCase))
-			{
-				string value = text5.Substring("hero:".Length);
-				Hero hero = Hero.AllAliveHeroes.FirstOrDefault((Hero x) => x != null && string.Equals(x.StringId, value, StringComparison.OrdinalIgnoreCase));
-				if (hero == null)
-				{
-					OpenHeroBrowser(onReturn);
-				}
-				else
-				{
-					OpenHeroDetails(hero, delegate
-					{
-						OpenHeroBrowser(onReturn);
-					});
-				}
-			}
-		}, delegate
-		{
-			onReturn();
-		}, "", isSeachAvailable: true);
-		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
-	}
-
-	private void OpenSettlementDetails(Settlement settlement, Action onReturn)
-	{
-		RewardSystemBehavior instance = RewardSystemBehavior.Instance;
-		string text = BuildSettlementTrustReport(settlement, instance);
-		InformationManager.ShowInquiry(new InquiryData("定居点信任详情", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
-		{
-			onReturn();
-		}, null), pauseGameActiveState: true, prioritize: false);
+				Id = hero.StringId,
+				ImageFactory = () => GetHeroImageIdentifier(hero),
+				Title = hero.Name?.ToString() ?? hero.StringId,
+				Hint = "信任度：" + FormatTrustDisplay(reward?.GetEffectiveTrust(hero) ?? 0),
+				OnExecute = () => popupVm.ShowDetails("NPC信任详情", BuildHeroTrustReport(hero, RewardSystemBehavior.Instance))
+			}));
 	}
 
 	private static string BuildSettlementTrustReport(Settlement settlement, RewardSystemBehavior reward)
@@ -1583,16 +1374,6 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private void OpenHeroDetails(Hero hero, Action onReturn)
-	{
-		RewardSystemBehavior instance = RewardSystemBehavior.Instance;
-		string text = BuildHeroTrustReport(hero, instance);
-		InformationManager.ShowInquiry(new InquiryData("NPC信任详情", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
-		{
-			onReturn();
-		}, null), pauseGameActiveState: true, prioritize: false);
-	}
-
 	private static string BuildHeroTrustReport(Hero hero, RewardSystemBehavior reward)
 	{
 		if (hero == null)
@@ -1601,8 +1382,6 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}
 		string text = hero.Name?.ToString() ?? hero.StringId ?? "未知NPC";
 		string text2 = hero.MapFaction?.Name?.ToString() ?? hero.Clan?.Kingdom?.Name?.ToString() ?? hero.Clan?.Name?.ToString() ?? hero.Culture?.Name?.ToString() ?? "未知势力";
-		int num = reward?.GetNpcTrust(hero) ?? 0;
-		int num2 = reward?.GetPublicTrust(hero) ?? 0;
 		int num3 = reward?.GetEffectiveTrust(hero) ?? 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine($"名称：{text}");
