@@ -68,3 +68,8 @@
 - `AnimusForge.Bootstrap.dll` SHA256 `3414DA2579CD9955234BE5FB91EB0CF5637F5A27FCA3832C450DA4EFA7B4F400`
 - `versions/1.3/AnimusForge.dll` SHA256 `441ED57993F86C631EC5BE7455903A005C39A719467402D07D91DCB64BAAEF6E`
 - `versions/1.4/AnimusForge.dll` SHA256 `BD3487AED67646330A0EA59F207E33B241D4345A6475CAC7D3526ED3A08C3DFE`
+
+## 第二批：标签字典功能对照（IN PROGRESS）
+
+基线 b8757240；补齐旧标签浏览器的搜索、分类/说明/来源详情、索引说明、刷新和导出当前快照，统一复用第一批菜单分页与详情返回。删除已被替代的旧 inquiry 菜单与只显示摘要的重复 VM/XML。仍只在项目内构建/回放，不部署，不改 LLM 标签语义、来源扫描规则或存档。
+
