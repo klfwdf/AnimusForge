@@ -235,37 +235,48 @@
                             <!-- 右侧周报条目与正文 -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                               <Children>
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.4">
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.4">
                                   <Children>
-                                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="16" Brush="Popup.Title.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@WeeklyReportVm.SelectedCountryNameText" />
+                                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="10" MarginLeft="16" Brush="Popup.Title.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@WeeklyReportVm.SelectedCountryNameText" />
+                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" MarginBottom="10" MarginLeft="16" MarginRight="16" Brush="Popup.Description.Text" Brush.FontSize="16" Text="@WeeklyReportVm.SelectedCountryMetaText" />
                                   </Children>
                                 </Widget>
-                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="WeeklyReportClip" InnerPanel="WeeklyReportClip\WeeklyReportInner" MarginTop="52" AutoHideScrollBars="true" VerticalScrollbar="..\WeeklyReportScrollbar\Scrollbar">
+                                <RichTextWidget IsVisible="@WeeklyReportVm.ShowEmptyState" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="Popup.Description.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Center" Text="@WeeklyReportVm.EmptyStateText" />
+                                <ScrollablePanel IsVisible="@WeeklyReportVm.HasReportItems" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="WeeklyReportClip" InnerPanel="WeeklyReportClip\WeeklyReportInner" MarginTop="86" AutoHideScrollBars="true" VerticalScrollbar="..\WeeklyReportScrollbar\Scrollbar">
                                   <Children>
                                     <Widget Id="WeeklyReportClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                                       <Children>
                                         <ListPanel Id="WeeklyReportInner" DataSource="{WeeklyReportVm.ReportItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                           <ItemTemplate>
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="14">
+                                            <AutoHeightSyncWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="0" PaddingAmount="28" MarginBottom="14">
                                               <Children>
                                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.35" IsEnabled="false" />
                                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#18130EFF" AlphaFactor="0.65" IsEnabled="false" />
-                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="14" MarginBottom="14">
+                                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="14" MarginBottom="14" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                                   <Children>
-                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@TitleText" />
-                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="28" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@DateText" />
-                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="52" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@SummaryText" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="21" Brush.TextHorizontalAlignment="Left" Text="@TitleText" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="8" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@WeekText" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#DDBB73FF" Brush.TextHorizontalAlignment="Left" Text="@DateText" />
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="12" MarginBottom="12" Brush="Popup.Description.Text" Brush.FontSize="@BodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@BodyText" />
+                                                    <RichTextWidget IsVisible="@ShowPositiveTag" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#75BB75FF" Text="@TagText" />
+                                                    <RichTextWidget IsVisible="@ShowNegativeTag" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#DD7777FF" Text="@TagText" />
+                                                    <RichTextWidget IsVisible="@ShowNeutralTag" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#B8B8B8FF" Text="@TagText" />
+                                                    <ButtonWidget IsVisible="@ShowViewFullReport" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="38" MarginTop="8" Brush="Popup.Done.Button" Command.Click="ExecuteViewFullReport" UpdateChildrenStates="true">
+                                                      <Children>
+                                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Button.Text" Text="查看完整周报" />
+                                                      </Children>
+                                                    </ButtonWidget>
                                                   </Children>
-                                                </Widget>
+                                                </ListPanel>
                                               </Children>
-                                            </Widget>
+                                            </AutoHeightSyncWidget>
                                           </ItemTemplate>
                                         </ListPanel>
                                       </Children>
                                     </Widget>
                                   </Children>
                                 </ScrollablePanel>
-                                <Standard.VerticalScrollbar Id="WeeklyReportScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="52" />
+                                <Standard.VerticalScrollbar Id="WeeklyReportScrollbar" IsVisible="@WeeklyReportVm.HasReportItems" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginTop="86" />
                               </Children>
                             </Widget>
                           </Children>

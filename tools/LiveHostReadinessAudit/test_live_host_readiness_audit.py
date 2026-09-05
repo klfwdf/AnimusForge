@@ -7,10 +7,17 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "tools" / "LiveHostReadinessAudit" / "live_host_readiness_audit.py"
+MODULE_XML = (
+    '<Module><Id value="AnimusForge" /><SubModules><SubModule>'
+    '<DLLName value="AnimusForge.Bootstrap.dll" />'
+    '<SubModuleClassType value="AnimusForge.Bootstrap.BootstrapSubModule" />'
+    '</SubModule></SubModules></Module>'
+)
 
 
 class LiveHostReadinessAuditCliTests(unittest.TestCase):
@@ -59,7 +66,7 @@ class LiveHostReadinessAuditCliTests(unittest.TestCase):
         (installed_bin / "versions" / "1.4" / "AnimusForge.dll").write_bytes(b"fixture-14")
         (game / "bin" / "Win64_Shipping_Client" / "Bannerlord.exe").write_bytes(b"fixture-exe")
         (game / "Modules" / "AnimusForge" / "SubModule.xml").write_text(
-            '<Module><SubModules><SubModule><DLLName value="AnimusForge.Bootstrap.dll" /></SubModule></SubModules></Module>',
+            MODULE_XML,
             encoding="utf-8",
         )
         return project, game
@@ -139,6 +146,57 @@ class LiveHostReadinessAuditCliTests(unittest.TestCase):
                 payload = self.parse_payload(result)
                 self.assertEqual(result.returncode, 1)
                 self.assertFalse(payload["submoduleLoadsBootstrap"])
+                self.assertNotIn("can start", payload["nextAction"])
+
+    def test_bootstrap_fixture_matches_project_identity(self) -> None:
+        project_xml = ET.parse(ROOT / "AnimusForge/SubModule.xml").getroot()
+        fixture_xml = ET.fromstring(MODULE_XML)
+        for path in ("./Id", "./SubModules/SubModule/DLLName", "./SubModules/SubModule/SubModuleClassType"):
+            self.assertEqual(
+                [node.get("value") for node in project_xml.findall(path)],
+                [node.get("value") for node in fixture_xml.findall(path)],
+                path,
+            )
+
+    def test_missing_wrong_or_duplicate_bootstrap_identity_fails_closed(self) -> None:
+        mutations = (
+            ("missing-id", "./Id", "remove"),
+            ("wrong-id", "./Id", "wrong-value"),
+            ("duplicate-id", "./Id", "duplicate"),
+            ("missing-class", "./SubModules/SubModule/SubModuleClassType", "remove"),
+            ("wrong-class", "./SubModules/SubModule/SubModuleClassType", "wrong-value"),
+            ("duplicate-class", "./SubModules/SubModule/SubModuleClassType", "duplicate"),
+            ("missing-submodule", "./SubModules/SubModule", "remove"),
+            ("duplicate-submodule", "./SubModules/SubModule", "duplicate"),
+            ("empty-extra-submodule", "./SubModules/SubModule", "empty-duplicate"),
+            ("missing-submodules", "./SubModules", "remove"),
+            ("duplicate-submodules", "./SubModules", "duplicate"),
+            ("empty-extra-submodules", "./SubModules", "empty-duplicate"),
+            ("missing-dll", "./SubModules/SubModule/DLLName", "remove"),
+            ("wrong-dll", "./SubModules/SubModule/DLLName", "wrong-value"),
+            ("duplicate-dll", "./SubModules/SubModule/DLLName", "duplicate"),
+        )
+        for name, path, mutation in mutations:
+            with self.subTest(case=name), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                project, game = self.make_fixture(root)
+                declaration = ET.fromstring(MODULE_XML)
+                node = declaration.find(path)
+                parent = declaration.find(path.rsplit("/", 1)[0])
+                if mutation == "remove":
+                    parent.remove(node)
+                elif mutation == "wrong-value":
+                    node.set("value", "Does.Not.Exist")
+                elif mutation == "duplicate":
+                    parent.append(ET.fromstring(ET.tostring(node)))
+                else:
+                    parent.append(ET.Element(node.tag))
+                ET.ElementTree(declaration).write(game / "Modules/AnimusForge/SubModule.xml", encoding="utf-8")
+                result = self.run_cli("--project-root", str(project), "--game-root", str(game), home=root / "profile")
+                payload = self.parse_payload(result)
+                self.assertEqual(result.returncode, 1)
+                self.assertFalse(payload["submoduleLoadsBootstrap"])
+                self.assertFalse(payload["installedMatchesStage"])
                 self.assertNotIn("can start", payload["nextAction"])
 
     def test_no_machine_bound_paths_remain(self) -> None:

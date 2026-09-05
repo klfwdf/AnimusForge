@@ -21,10 +21,9 @@ public sealed class LegacyKnowledgeRagGateway : ILlmGateway
         Func<LlmProviderSnapshot, string> credentialResolver,
         float? temperature = null)
     {
-        _configuredGateway = new LegacyConfiguredChatGateway(
+        _configuredGateway = LegacyConfiguredChatGateway.ForKnowledgeProfile(
             credentialResolver ?? throw new ArgumentNullException(nameof(credentialResolver)),
-            temperature: temperature,
-            disableThinking: true);
+            temperature);
     }
 
     public Task<LlmGenerateResult> GenerateAsync(

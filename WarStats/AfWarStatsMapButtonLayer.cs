@@ -27,10 +27,14 @@ public sealed class AfWarStatsMapButtonLayer : GlobalLayer
     protected override void OnTick(float dt)
     {
         base.OnTick(dt);
+        if (AnimusForge.AnimusForgeTerminalBehavior.Instance == null)
+        {
+            AnimusForge.AnimusForgeTerminalPopup.TickActive();
+        }
         ScreenBase topScreen = ScreenManager.TopScreen;
         bool isMapScreen = Campaign.Current != null && IsCampaignMapScreen(topScreen);
         bool isTerminalOpen = AnimusForge.AnimusForgeTerminalPopup.ActivePopup != null;
-        bool isVisible = isMapScreen && !isTerminalOpen && !AfWarStatsPopup.IsOpen && AnimusForge.AnimusForgeTerminalSettings.IsMapIconEnabled;
+        bool isVisible = isMapScreen && !isTerminalOpen && AnimusForge.AnimusForgeTerminalSettings.IsMapIconEnabled;
         _dataSource.IsVisible = isVisible;
 
         if (isVisible)

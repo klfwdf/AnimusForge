@@ -33,7 +33,7 @@ public sealed class AfWarStatsMapButtonVM : ViewModel
         {
             AnimusForge.AnimusForgeTerminalBehavior.Instance.OpenTerminalToWarStats();
         }
-        else if (!AfWarStatsPopup.Show())
+        else if (!AnimusForge.AnimusForgeTerminalPopup.ShowWarStats())
         {
             InformationManager.DisplayMessage(new InformationMessage(AfWarStatsTexts.OpenFailed));
         }
