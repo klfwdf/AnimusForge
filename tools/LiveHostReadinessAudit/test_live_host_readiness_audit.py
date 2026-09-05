@@ -46,7 +46,8 @@ class LiveHostReadinessAuditCliTests(unittest.TestCase):
         installed_bin = game / "Modules" / "AnimusForge" / "bin" / "Win64_Shipping_Client"
         (stage_bin / "versions" / "1.3").mkdir(parents=True)
         (stage_bin / "versions" / "1.4").mkdir(parents=True)
-        (installed_bin).mkdir(parents=True)
+        (installed_bin / "versions" / "1.3").mkdir(parents=True)
+        (installed_bin / "versions" / "1.4").mkdir(parents=True)
         (game / "bin" / "Win64_Shipping_Client").mkdir(parents=True)
         (game / "Modules" / "AnimusForge").mkdir(parents=True, exist_ok=True)
         bootstrap = b"fixture-bootstrap"
@@ -54,9 +55,11 @@ class LiveHostReadinessAuditCliTests(unittest.TestCase):
         (installed_bin / "AnimusForge.Bootstrap.dll").write_bytes(bootstrap)
         (stage_bin / "versions" / "1.3" / "AnimusForge.dll").write_bytes(b"fixture-13")
         (stage_bin / "versions" / "1.4" / "AnimusForge.dll").write_bytes(b"fixture-14")
+        (installed_bin / "versions" / "1.3" / "AnimusForge.dll").write_bytes(b"fixture-13")
+        (installed_bin / "versions" / "1.4" / "AnimusForge.dll").write_bytes(b"fixture-14")
         (game / "bin" / "Win64_Shipping_Client" / "Bannerlord.exe").write_bytes(b"fixture-exe")
         (game / "Modules" / "AnimusForge" / "SubModule.xml").write_text(
-            "<Module><DependedModule Id=\"AnimusForge.Bootstrap.dll\" /></Module>",
+            '<Module><SubModules><SubModule><DLLName value="AnimusForge.Bootstrap.dll" /></SubModule></SubModules></Module>',
             encoding="utf-8",
         )
         return project, game
@@ -100,6 +103,43 @@ class LiveHostReadinessAuditCliTests(unittest.TestCase):
             payload = self.parse_payload(result)
             self.assertEqual(payload["status"], "FAIL")
             self.assertFalse(payload["gameRoot"])
+
+    def test_missing_or_stale_installed_binary_fails_closed(self) -> None:
+        for relative in ("AnimusForge.Bootstrap.dll", "versions/1.3/AnimusForge.dll", "versions/1.4/AnimusForge.dll"):
+            for state in ("missing", "stale"):
+                with self.subTest(binary=relative, state=state), tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary).resolve()
+                    project, game = self.make_fixture(root)
+                    binary = game / "Modules/AnimusForge/bin/Win64_Shipping_Client" / relative
+                    self.assertTrue(binary.resolve().is_relative_to(root))
+                    if state == "missing":
+                        binary.unlink()
+                    else:
+                        binary.write_bytes(b"stale-implementation")
+                    result = self.run_cli("--project-root", str(project), "--game-root", str(game), home=root / "profile")
+                    payload = self.parse_payload(result)
+                    self.assertEqual(result.returncode, 1)
+                    self.assertFalse(payload["installedMatchesStage"])
+                    self.assertNotEqual(payload["deploymentState"], "matches-project-stage")
+                    self.assertNotIn("can start", payload["nextAction"])
+
+    def test_invalid_bootstrap_declaration_fails_closed(self) -> None:
+        for xml in (
+            '<Module><!-- AnimusForge.Bootstrap.dll --></Module>',
+            '<Module><DependedModule Id="AnimusForge.Bootstrap.dll" /></Module>',
+            '<Module><SubModules><SubModule><DLLName value="AnimusForge.dll" /></SubModule></SubModules></Module>',
+            '<Module><SubModules><SubModule><DLLName value="AnimusForge.Bootstrap.dll" /></SubModule><SubModule><DLLName value="AnimusForge.dll" /></SubModule></SubModules></Module>',
+            '<Module>AnimusForge.Bootstrap.dll',
+        ):
+            with self.subTest(xml=xml), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                project, game = self.make_fixture(root)
+                (game / "Modules/AnimusForge/SubModule.xml").write_text(xml, encoding="utf-8")
+                result = self.run_cli("--project-root", str(project), "--game-root", str(game), home=root / "profile")
+                payload = self.parse_payload(result)
+                self.assertEqual(result.returncode, 1)
+                self.assertFalse(payload["submoduleLoadsBootstrap"])
+                self.assertNotIn("can start", payload["nextAction"])
 
     def test_no_machine_bound_paths_remain(self) -> None:
         source = SCRIPT.read_text(encoding="utf-8")
