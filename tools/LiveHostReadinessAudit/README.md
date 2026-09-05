@@ -17,6 +17,6 @@ python .\tools\LiveHostReadinessAudit\live_host_readiness_audit.py `
   --game-root 'E:\steam\steamapps\common\Mount & Blade II Bannerlord'
 ```
 
-`installedMatchesStage=true` 表示安装模块与当前 project-local stage 的 Bootstrap 内容一致，可以进入 live 测试准备；false 表示尚未部署或版本不一致。工具本身永远不执行部署和启动。
+`installedMatchesStage=true` 表示安装模块的 Bootstrap、1.3、1.4 三份 DLL 均与当前 project-local stage 哈希一致，且 XML 只声明 Bootstrap 为加载入口；缺失、过期、不可读或错误入口均返回 FAIL。PASS 才可以进入 live 测试准备；false 表示尚未部署或版本不一致。工具本身永远不执行部署和启动。
 
 `--game-root` 必须显式提供，避免审计误读另一台机器的游戏目录；`--project-root` 默认使用仓库根目录，也可以显式指定 fixture 或其他项目根目录。审计通过只代表离线环境检查通过，不代表真实 Campaign/Mission、LIVE/SAVE 或发布许可。
