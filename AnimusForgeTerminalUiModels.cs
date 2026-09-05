@@ -6,6 +6,7 @@ using AFWarStatsTerminal.UI;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
@@ -33,6 +34,18 @@ public enum TerminalViewMode
 	TagCatalog,
 	TrustQuery,
 	Diagnostics
+}
+
+public enum TerminalItemKind
+{
+	Header,
+	Action,
+	BoolSetting,
+	NumericSetting,
+	DropdownSetting,
+	TextSetting,
+	ButtonSetting,
+	HotkeySetting
 }
 
 public sealed class AnimusForgeTerminalPopup
@@ -83,6 +96,11 @@ public sealed class AnimusForgeTerminalPopup
 		_activePopup?.Close(silent);
 	}
 
+	public static void OnTick()
+	{
+		_activePopup?.ViewModel?.OnTick();
+	}
+
 	public AnimusForgeTerminalPopupVM ViewModel => _dataSource;
 
 	private void Open()
@@ -114,6 +132,10 @@ public sealed class AnimusForgeTerminalPopup
 			return;
 		}
 		_isClosed = true;
+		if (_dataSource != null && _dataSource.HasUnsavedChanges)
+		{
+			TerminalSettingsRegistry.SaveSettings();
+		}
 		try
 		{
 			_layer.IsFocusLayer = false;
@@ -149,10 +171,13 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private readonly Stack<AnimusForgeTerminalNode> _path = new Stack<AnimusForgeTerminalNode>();
 
 	private string _titleText = "AnimusForge 终端";
-	private string _subtitleText = "选择工具直接执行，或进入二级功能面板。按 ESC 或关闭退出。";
+	private string _subtitleText = "选择工具直接执行，或调节全量 252 项机制参数。按 ESC 或关闭退出。";
 	private string _breadcrumbText = "终端 / 全部";
 	private string _selectedTab = "全部";
+	private string _searchFilter = "";
+	private bool _hasUnsavedChanges;
 	private bool _canGoBack;
+	private readonly HashSet<string> _collapsedGroups = new HashSet<string>(StringComparer.Ordinal);
 
 	private TerminalViewMode _currentViewMode = TerminalViewMode.MenuList;
 
@@ -223,6 +248,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	[DataSourceProperty]
 	public bool IsDiagnosticsVisible => _currentViewMode == TerminalViewMode.Diagnostics;
 
+	public bool HasUnsavedChanges => _hasUnsavedChanges;
+
 	// 内嵌子视图属性绑定
 	[DataSourceProperty]
 	public AfWarStatsPopupVM WarStatsVm { get => _warStatsVm; set { if (value != _warStatsVm) { _warStatsVm = value; OnPropertyChangedWithValue(value, nameof(WarStatsVm)); } } }
@@ -264,12 +291,36 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		TagCatalogItems = new MBBindingList<TerminalTagCatalogItemVM>();
 		TrustItems = new MBBindingList<TerminalTrustItemVM>();
 
-		string[] tabs = new[] { "战争", "全部", "外交", "部队", "玩家", "查询与记录", "系统" };
+		string[] tabs = new[] { "战争", "全部", "外交与国家", "提示词与规则", "AI核心", "决斗与部队", "场景互动", "角色与同伴" };
 		foreach (string tab in tabs)
 		{
 			TabItems.Add(new AnimusForgeTerminalTabItemVM(tab, SelectTab));
 		}
 		WarStatsVm = new AfWarStatsPopupVM(ExecuteBack);
+
+		// 默认折叠“全部”标签页下的 MCM 二级分组，避免首屏内容过长
+		foreach (var d in TerminalSettingsRegistry.AllDefinitions)
+		{
+			if (!string.IsNullOrEmpty(d.GroupName))
+			{
+				_collapsedGroups.Add($"全部/{d.GroupName}");
+			}
+		}
+
+		RefreshItems();
+	}
+
+	public void ToggleGroupCollapse(string groupKey)
+	{
+		if (string.IsNullOrEmpty(groupKey)) return;
+		if (_collapsedGroups.Contains(groupKey))
+		{
+			_collapsedGroups.Remove(groupKey);
+		}
+		else
+		{
+			_collapsedGroups.Add(groupKey);
+		}
 		RefreshItems();
 	}
 
@@ -305,26 +356,276 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		CanGoBack = _currentViewMode != TerminalViewMode.MenuList || _path.Count > 0;
 	}
 
+	public void MarkModified()
+	{
+		_hasUnsavedChanges = true;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings != null && Items != null)
+		{
+			foreach (var item in Items)
+			{
+				item.UpdateFromSettings(settings);
+			}
+		}
+	}
+
+	private AnimusForgeTerminalItemVM _activeListeningItem;
+
+	public void StartListeningKey(AnimusForgeTerminalItemVM item)
+	{
+		if (_activeListeningItem != null && _activeListeningItem != item)
+		{
+			CancelListeningKey();
+		}
+		_activeListeningItem = item;
+		item.IsListeningKey = true;
+		item.DisplayValue = "请按任意键 (ESC取消)...";
+		item.OnPropertyChanged(nameof(item.DisplayValue));
+	}
+
+	public void CancelListeningKey()
+	{
+		if (_activeListeningItem != null)
+		{
+			_activeListeningItem.IsListeningKey = false;
+			DuelSettings s = DuelSettings.GetSettings();
+			string orig = s != null ? _activeListeningItem.SettingDef?.Getter(s)?.ToString() ?? "" : "";
+			_activeListeningItem.DisplayValue = string.IsNullOrWhiteSpace(orig) ? "未设置" : orig.ToUpperInvariant();
+			_activeListeningItem.OnPropertyChanged(nameof(_activeListeningItem.DisplayValue));
+			_activeListeningItem = null;
+		}
+	}
+
+	public void OnTick()
+	{
+		if (_activeListeningItem != null)
+		{
+			if (Input.IsKeyPressed(InputKey.Escape))
+			{
+				CancelListeningKey();
+				return;
+			}
+
+			int keyNum = Input.GetFirstKeyPressedInRange(0);
+			if (keyNum >= 0 && keyNum < 256)
+			{
+				InputKey key = (InputKey)keyNum;
+				if (key != InputKey.LeftMouseButton && key != InputKey.RightMouseButton && key != InputKey.MiddleMouseButton && key != InputKey.MouseScrollUp && key != InputKey.MouseScrollDown && key != InputKey.Invalid)
+				{
+					string keyName = key.ToString();
+					DuelSettings settings = DuelSettings.GetSettings();
+					if (settings != null && _activeListeningItem.SettingDef != null)
+					{
+						_activeListeningItem.SettingDef.Setter(settings, keyName);
+						_activeListeningItem.DisplayValue = keyName.ToUpperInvariant();
+						_activeListeningItem.OnPropertyChanged(nameof(_activeListeningItem.DisplayValue));
+						_activeListeningItem.IsListeningKey = false;
+						MarkModified();
+						InformationManager.DisplayMessage(new InformationMessage($"快捷键【{_activeListeningItem.Title}】已设置为 [{keyName}]", Colors.Green));
+					}
+					_activeListeningItem = null;
+				}
+			}
+		}
+	}
+
 	private void RefreshItems()
 	{
 		foreach (AnimusForgeTerminalTabItemVM tab in TabItems)
 		{
 			tab.IsSelected = string.Equals(tab.TabId, _selectedTab, StringComparison.Ordinal);
 		}
-		IEnumerable<AnimusForgeTerminalNode> source = _path.Count > 0
-			? _path.Peek().Children
-			: (_selectedTab == "全部"
-				? _roots
-				: _roots.Where(x => string.Equals(x.Category, _selectedTab, StringComparison.Ordinal)));
 
 		MBBindingList<AnimusForgeTerminalItemVM> list = new MBBindingList<AnimusForgeTerminalItemVM>();
-		foreach (AnimusForgeTerminalNode node in source)
+
+		if (_path.Count > 0)
 		{
-			list.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
+			foreach (AnimusForgeTerminalNode child in _path.Peek().Children)
+			{
+				list.Add(new AnimusForgeTerminalItemVM(child, OpenNode));
+			}
 		}
+		else if (string.Equals(_selectedTab, "全部", StringComparison.Ordinal))
+		{
+			bool hasFilter = !string.IsNullOrWhiteSpace(_searchFilter);
+			if (hasFilter)
+			{
+				list.Add(AnimusForgeTerminalItemVM.CreateSearchAction(
+					$"🔍 当前搜索：\"{_searchFilter}\"",
+					"点击重新输入搜索词，或清空筛选条件查看全部条目。",
+					"清除筛选 ✕",
+					ExecuteClearSearch
+				));
+
+				string q = _searchFilter.Trim();
+				// 匹配过滤工具节点
+				foreach (AnimusForgeTerminalNode node in _roots)
+				{
+					if (NodeMatchesQuery(node, q))
+					{
+						list.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
+					}
+				}
+
+				// 匹配过滤配置项
+				var matchedSettings = TerminalSettingsRegistry.AllDefinitions.Where(d => SettingMatchesQuery(d, q)).ToList();
+				if (matchedSettings.Count > 0)
+				{
+					var groups = matchedSettings.GroupBy(x => x.GroupName);
+					foreach (var g in groups)
+					{
+						list.Add(AnimusForgeTerminalItemVM.CreateHeader($"▼  {g.Key}", $"{g.Count()} 项匹配"));
+						foreach (var def in g)
+						{
+							list.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
+						}
+					}
+				}
+			}
+			else
+			{
+				list.Add(AnimusForgeTerminalItemVM.CreateSearchAction(
+					"❖ 搜索全量机制与工具 (252 项)",
+					"点击输入关键词，快速过滤全量机制参数、规则与快捷操作工具。",
+					"搜索",
+					ExecuteOpenSearch
+				));
+
+				string[] categories = new[] { "外交与国家", "提示词与规则", "AI核心", "决斗与部队", "场景互动", "角色与同伴" };
+				foreach (string cat in categories)
+				{
+					var catTools = _roots.Where(x => string.Equals(x.Category, cat, StringComparison.Ordinal)).ToList();
+					var catSettings = TerminalSettingsRegistry.GetByCategory(cat);
+					int totalCount = catTools.Count + catSettings.Count;
+
+					list.Add(AnimusForgeTerminalItemVM.CreateHeader($"❖ {cat}", $"{totalCount} 项"));
+
+					foreach (AnimusForgeTerminalNode node in catTools)
+					{
+						list.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
+					}
+
+					var groups = catSettings.GroupBy(x => x.GroupName);
+					foreach (var g in groups)
+					{
+						string groupKey = $"全部/{g.Key}";
+						bool isCollapsed = _collapsedGroups.Contains(groupKey);
+						string collapseTitle = isCollapsed ? $"▶  {g.Key}" : $"▼  {g.Key}";
+						string collapseBadge = isCollapsed ? $"{g.Count()} 项 [点击展开]" : $"{g.Count()} 项 [点击折叠]";
+
+						list.Add(AnimusForgeTerminalItemVM.CreateCollapsibleHeader(collapseTitle, collapseBadge, groupKey, isCollapsed, ToggleGroupCollapse));
+
+						if (!isCollapsed)
+						{
+							foreach (var def in g)
+							{
+								list.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			// 对应具体分类
+			var catTools = _roots.Where(x => string.Equals(x.Category, _selectedTab, StringComparison.Ordinal)).ToList();
+			if (catTools.Count > 0)
+			{
+				list.Add(AnimusForgeTerminalItemVM.CreateHeader("⚡ 专属快捷工具操作", $"{catTools.Count} 项工具"));
+				foreach (AnimusForgeTerminalNode node in catTools)
+				{
+					list.Add(new AnimusForgeTerminalItemVM(node, OpenNode));
+				}
+			}
+
+			var catSettings = TerminalSettingsRegistry.GetByCategory(_selectedTab);
+			if (catSettings.Count > 0)
+			{
+				var groups = catSettings.GroupBy(x => x.GroupName);
+				foreach (var g in groups)
+				{
+					string groupKey = $"{_selectedTab}/{g.Key}";
+					bool isCollapsed = _collapsedGroups.Contains(groupKey);
+					string collapseTitle = isCollapsed ? $"▶  {g.Key}" : $"▼  {g.Key}";
+					string collapseBadge = isCollapsed ? $"{g.Count()} 项 [点击展开]" : $"{g.Count()} 项 [点击折叠]";
+
+					list.Add(AnimusForgeTerminalItemVM.CreateCollapsibleHeader(collapseTitle, collapseBadge, groupKey, isCollapsed, ToggleGroupCollapse));
+
+					if (!isCollapsed)
+					{
+						foreach (var def in g)
+						{
+							list.Add(new AnimusForgeTerminalItemVM(def, MarkModified));
+						}
+					}
+				}
+			}
+		}
+
 		Items = list;
 		UpdateBreadcrumb();
 		UpdateCanGoBack();
+	}
+
+	private static bool NodeMatchesQuery(AnimusForgeTerminalNode node, string q)
+	{
+		if (node == null) return false;
+		if (node.Title?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		if (node.Hint?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		if (node.Id?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		return false;
+	}
+
+	private static bool SettingMatchesQuery(TerminalSettingDef def, string q)
+	{
+		if (def == null) return false;
+		if (def.DisplayName?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		if (def.Id?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		if (def.HintText?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		if (def.GroupName?.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+		return false;
+	}
+
+	public void ExecuteOpenSearch()
+	{
+		InformationManager.ShowTextInquiry(new TextInquiryData(
+			"搜索设置项与工具",
+			"请输入关键词（参数名、中文说明或工具名称）：",
+			isAffirmativeOptionShown: true,
+			isNegativeOptionShown: true,
+			"搜索",
+			"取消",
+			input =>
+			{
+				_searchFilter = input ?? "";
+				RefreshItems();
+			},
+			null,
+			shouldInputBeObfuscated: false,
+			null,
+			"",
+			_searchFilter
+		));
+	}
+
+	public void ExecuteClearSearch()
+	{
+		_searchFilter = "";
+		RefreshItems();
+	}
+
+	public void ExecuteSaveSettings()
+	{
+		if (TerminalSettingsRegistry.SaveSettings())
+		{
+			_hasUnsavedChanges = false;
+			InformationManager.DisplayMessage(new InformationMessage("AnimusForge 终端设置已成功保存！", Colors.Green));
+		}
+		else
+		{
+			InformationManager.DisplayMessage(new InformationMessage("保存设置失败，请查看日志。", Colors.Red));
+		}
 	}
 
 	private void UpdateBreadcrumb()
@@ -574,38 +875,650 @@ public sealed class AnimusForgeTerminalTabItemVM : ViewModel
 
 public sealed class AnimusForgeTerminalItemVM : ViewModel
 {
-	private readonly Action<AnimusForgeTerminalNode> _onOpen;
+	private readonly Action<AnimusForgeTerminalNode> _onOpenNode;
+	private readonly Action _onActionTrigger;
+	private readonly Action _onModified;
 
 	public AnimusForgeTerminalNode Node { get; }
+	public TerminalSettingDef SettingDef { get; }
+	public TerminalItemKind ItemKind { get; }
 
 	[DataSourceProperty]
-	public string Id => Node?.Id ?? "";
+	public bool IsHeader => ItemKind == TerminalItemKind.Header;
 
 	[DataSourceProperty]
-	public string Title => Node?.Title ?? "";
+	public bool IsAction => ItemKind == TerminalItemKind.Action;
 
 	[DataSourceProperty]
-	public string HintText => string.IsNullOrWhiteSpace(Node?.Hint) ? "无附加说明。" : Node.Hint;
+	public bool IsBool => ItemKind == TerminalItemKind.BoolSetting;
 
 	[DataSourceProperty]
-	public string IconText => string.IsNullOrWhiteSpace(Node?.Icon) ? "❖" : Node.Icon;
+	public bool IsNumeric => ItemKind == TerminalItemKind.NumericSetting;
+
+	[DataSourceProperty]
+	public bool IsDropdown => ItemKind == TerminalItemKind.DropdownSetting;
+
+	[DataSourceProperty]
+	public bool IsText => ItemKind == TerminalItemKind.TextSetting;
+
+	[DataSourceProperty]
+	public bool IsButton => ItemKind == TerminalItemKind.ButtonSetting;
+
+	[DataSourceProperty]
+	public bool IsHotkey => ItemKind == TerminalItemKind.HotkeySetting;
+
+	private bool _isListeningKey;
+	[DataSourceProperty]
+	public bool IsListeningKey
+	{
+		get => _isListeningKey;
+		set
+		{
+			if (value != _isListeningKey)
+			{
+				_isListeningKey = value;
+				OnPropertyChangedWithValue(value, nameof(IsListeningKey));
+			}
+		}
+	}
+
+	private SelectorVM<SelectorItemVM> _dropdownSelector;
+	[DataSourceProperty]
+	public SelectorVM<SelectorItemVM> DropdownSelector
+	{
+		get => _dropdownSelector;
+		set
+		{
+			if (value != _dropdownSelector)
+			{
+				_dropdownSelector = value;
+				OnPropertyChangedWithValue(value, nameof(DropdownSelector));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string Id { get; } = "";
+
+	[DataSourceProperty]
+	public string Title { get; } = "";
+
+	[DataSourceProperty]
+	public string CodeName { get; } = "";
+
+	[DataSourceProperty]
+	public string HintText { get; } = "";
+
+	[DataSourceProperty]
+	public string IconText { get; } = "❖";
 
 	[DataSourceProperty]
 	public bool IsBranch => Node?.IsBranch == true;
 
 	[DataSourceProperty]
-	public string BadgeText => IsBranch ? "子面板" : "动作";
+	public string BadgeText { get; set; } = "";
 
 	[DataSourceProperty]
-	public string ButtonText => IsBranch ? "进入 ➔" : "执行 ⚡";
+	public string ButtonText { get; set; } = "";
 
+	[DataSourceProperty]
+	public string DisplayValue { get; set; } = "";
+
+	[DataSourceProperty]
+	public string TextValue
+	{
+		get
+		{
+			if (SettingDef == null) return "";
+			DuelSettings settings = DuelSettings.GetSettings();
+			return settings != null ? (SettingDef.Getter(settings)?.ToString() ?? "") : "";
+		}
+		set
+		{
+			if (SettingDef != null && value != null)
+			{
+				DuelSettings s = DuelSettings.GetSettings();
+				if (s != null)
+				{
+					SettingDef.Setter(s, value);
+					DisplayValue = string.IsNullOrWhiteSpace(value) ? "点击填写 ✎" : (value.Length > 24 ? value.Substring(0, 24) + "..." : value);
+					OnPropertyChangedWithValue(value, nameof(TextValue));
+					OnPropertyChanged(nameof(DisplayValue));
+					_onModified?.Invoke();
+				}
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool BoolValue { get; set; }
+
+	[DataSourceProperty]
+	public string BoolStatusText { get; set; } = "";
+
+	[DataSourceProperty]
+	public bool IsBoolTrue => BoolValue;
+
+	private readonly Action<string> _onToggleCollapse;
+
+	[DataSourceProperty]
+	public bool IsCollapsible { get; }
+
+	[DataSourceProperty]
+	public bool IsCollapsed { get; }
+
+	public string GroupKey { get; } = "";
+
+	public void ExecuteToggleCollapse()
+	{
+		if (IsCollapsible && !string.IsNullOrEmpty(GroupKey))
+		{
+			_onToggleCollapse?.Invoke(GroupKey);
+		}
+	}
+
+	// 构造：分组标题 Header
+	public static AnimusForgeTerminalItemVM CreateHeader(string title, string badge = "")
+	{
+		return new AnimusForgeTerminalItemVM(TerminalItemKind.Header, title, "", "", "❖", badge, "");
+	}
+
+	// 构造：支持点击折叠/展开的分组标题 Header
+	public static AnimusForgeTerminalItemVM CreateCollapsibleHeader(string title, string badge, string groupKey, bool isCollapsed, Action<string> onToggle)
+	{
+		return new AnimusForgeTerminalItemVM(TerminalItemKind.Header, title, "", "", "❖", badge, "", null, true, isCollapsed, groupKey, onToggle);
+	}
+
+	// 构造：搜索动作项
+	public static AnimusForgeTerminalItemVM CreateSearchAction(string title, string hint, string buttonText, Action onAction)
+	{
+		return new AnimusForgeTerminalItemVM(TerminalItemKind.Action, title, "", hint, "❖", "检索", buttonText, onAction);
+	}
+
+	// 内部全参构造
+	private AnimusForgeTerminalItemVM(TerminalItemKind kind, string title, string codeName, string hintText, string iconText, string badgeText, string buttonText, Action onAction = null, bool isCollapsible = false, bool isCollapsed = false, string groupKey = "", Action<string> onToggle = null)
+	{
+		ItemKind = kind;
+		Title = title ?? "";
+		CodeName = codeName ?? "";
+		HintText = hintText ?? "";
+		IconText = string.IsNullOrWhiteSpace(iconText) ? "❖" : iconText;
+		BadgeText = badgeText ?? "";
+		ButtonText = buttonText ?? "";
+		_onActionTrigger = onAction;
+		IsCollapsible = isCollapsible;
+		IsCollapsed = isCollapsed;
+		GroupKey = groupKey ?? "";
+		_onToggleCollapse = onToggle;
+	}
+
+	// 构造：原有 Action 工具节点
 	public AnimusForgeTerminalItemVM(AnimusForgeTerminalNode node, Action<AnimusForgeTerminalNode> onOpen)
 	{
 		Node = node;
-		_onOpen = onOpen;
+		_onOpenNode = onOpen;
+		ItemKind = TerminalItemKind.Action;
+		Id = node?.Id ?? "";
+		Title = node?.Title ?? "";
+		CodeName = "";
+		HintText = string.IsNullOrWhiteSpace(node?.Hint) ? "无附加说明。" : node.Hint;
+		IconText = string.IsNullOrWhiteSpace(node?.Icon) ? "❖" : node.Icon;
+		BadgeText = node?.IsBranch == true ? "子面板" : "动作";
+		ButtonText = node?.IsBranch == true ? "进入 ➔" : "执行 ⚡";
 	}
 
-	public void ExecuteOpen() => _onOpen?.Invoke(Node);
+	// 构造：MCM 设置项
+	public AnimusForgeTerminalItemVM(TerminalSettingDef def, Action onModified)
+	{
+		SettingDef = def;
+		_onModified = onModified;
+		Id = def?.Id ?? "";
+		Title = def?.DisplayName ?? "";
+		CodeName = def?.Id ?? "";
+		HintText = string.IsNullOrWhiteSpace(def?.HintText) ? "按需调节该机制项的运行参数或开关。" : def.HintText;
+		IconText = "⚙";
+
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (def == null || settings == null)
+		{
+			ItemKind = TerminalItemKind.Header;
+			return;
+		}
+
+		switch (def.SettingType)
+		{
+			case TerminalSettingType.Bool:
+				ItemKind = TerminalItemKind.BoolSetting;
+				BadgeText = "开关";
+				BoolValue = Convert.ToBoolean(def.Getter(settings));
+				BoolStatusText = BoolValue ? "✔ 开启" : "✕ 关闭";
+				break;
+
+			case TerminalSettingType.Integer:
+			case TerminalSettingType.FloatingInteger:
+				ItemKind = TerminalItemKind.NumericSetting;
+				BadgeText = "参数";
+				object numVal = def.Getter(settings);
+				DisplayValue = FormatNumeric(numVal, def.FormatString, def.Id);
+				break;
+
+			case TerminalSettingType.Dropdown:
+				ItemKind = TerminalItemKind.DropdownSetting;
+				BadgeText = "下拉";
+				DisplayValue = def.Getter(settings)?.ToString() ?? "";
+				var dropdown = def.DropdownGetter?.Invoke(settings);
+				if (dropdown != null && dropdown.Count > 0)
+				{
+					var options = new List<string>();
+					for (int i = 0; i < dropdown.Count; i++)
+					{
+						options.Add(dropdown[i]);
+					}
+					_dropdownSelector = new SelectorVM<SelectorItemVM>(options, dropdown.SelectedIndex, OnDropdownItemChanged);
+				}
+				break;
+
+			case TerminalSettingType.Hotkey:
+				ItemKind = TerminalItemKind.HotkeySetting;
+				BadgeText = "按键";
+				string keyStr = def.Getter(settings)?.ToString() ?? "";
+				DisplayValue = string.IsNullOrWhiteSpace(keyStr) ? "未设置" : keyStr.ToUpperInvariant();
+				break;
+
+			case TerminalSettingType.Text:
+				ItemKind = TerminalItemKind.TextSetting;
+				BadgeText = "文本";
+				string raw = def.Getter(settings)?.ToString() ?? "";
+				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+				break;
+
+			case TerminalSettingType.Button:
+				ItemKind = TerminalItemKind.ButtonSetting;
+				BadgeText = "执行";
+				ButtonText = "执行 ⚡";
+				break;
+		}
+	}
+
+	private void OnDropdownItemChanged(SelectorVM<SelectorItemVM> selector)
+	{
+		if (SettingDef == null || selector == null || selector.SelectedIndex < 0) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+		SettingDef.Setter(settings, selector.SelectedIndex);
+		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+		OnPropertyChanged(nameof(DisplayValue));
+		_onModified?.Invoke();
+	}
+
+	public void ExecuteRebindHotkey()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.HotkeySetting) return;
+		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.StartListeningKey(this);
+	}
+
+	private static string FormatNumeric(object val, string fmt, string propId)
+	{
+		if (val == null) return "0";
+		float f = Convert.ToSingle(val);
+		string unit = "";
+		if (propId.IndexOf("Percent", StringComparison.OrdinalIgnoreCase) >= 0 || (fmt != null && fmt.Contains("%")))
+		{
+			if (f <= 1.01f && f >= -1.01f && ((fmt != null && fmt.Contains("%")) || (f != 0f && f < 1f)))
+			{
+				return $"{(int)Math.Round(f * 100)} %";
+			}
+			return $"{(int)Math.Round(f)} %";
+		}
+		if (propId.IndexOf("Seconds", StringComparison.OrdinalIgnoreCase) >= 0 || propId.IndexOf("Second", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			unit = " 秒";
+		}
+		else if (propId.IndexOf("Days", StringComparison.OrdinalIgnoreCase) >= 0 || propId.IndexOf("Day", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			unit = " 天";
+		}
+		else if (propId.IndexOf("Hours", StringComparison.OrdinalIgnoreCase) >= 0 || propId.IndexOf("Hour", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			unit = " 小时";
+		}
+		else if (propId.IndexOf("Multiplier", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return $"{f:F2}x";
+		}
+		else if (propId.IndexOf("Tokens", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return $"{(int)f} Tokens";
+		}
+		else if (propId.IndexOf("Megabytes", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return $"{(int)f} MB";
+		}
+		else if (propId.IndexOf("Cost", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return $"{(int)f} 第纳尔";
+		}
+
+		if (fmt == "0.00" || fmt == "0.0")
+		{
+			return f.ToString(fmt) + unit;
+		}
+		if (Math.Abs(f - Math.Round(f)) < 0.001)
+		{
+			return ((int)Math.Round(f)).ToString() + unit;
+		}
+		return f.ToString("0.##") + unit;
+	}
+
+	public void ExecuteOpen()
+	{
+		if (Node != null)
+		{
+			_onOpenNode?.Invoke(Node);
+		}
+		else if (_onActionTrigger != null)
+		{
+			_onActionTrigger.Invoke();
+		}
+		else if (ItemKind == TerminalItemKind.ButtonSetting)
+		{
+			ExecuteButtonClick();
+		}
+		else if (ItemKind == TerminalItemKind.BoolSetting)
+		{
+			ExecuteToggleBool();
+		}
+		else if (ItemKind == TerminalItemKind.NumericSetting)
+		{
+			ExecuteEditNumeric();
+		}
+		else if (ItemKind == TerminalItemKind.DropdownSetting)
+		{
+			ExecuteCycleDropdown();
+		}
+		else if (ItemKind == TerminalItemKind.TextSetting)
+		{
+			ExecuteEditText();
+		}
+		else if (ItemKind == TerminalItemKind.HotkeySetting)
+		{
+			ExecuteRebindHotkey();
+		}
+	}
+
+	public void ExecuteToggleBool()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.BoolSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+		bool next = !BoolValue;
+		SettingDef.Setter(settings, next);
+		BoolValue = next;
+		BoolStatusText = next ? "✔ 开启" : "✕ 关闭";
+		OnPropertyChanged(nameof(BoolValue));
+		OnPropertyChanged(nameof(BoolStatusText));
+		OnPropertyChanged(nameof(IsBoolTrue));
+		_onModified?.Invoke();
+	}
+
+	public void ExecuteDecrease()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.NumericSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+
+		if (SettingDef.SettingType == TerminalSettingType.Integer)
+		{
+			int cur = Convert.ToInt32(SettingDef.Getter(settings));
+			int step = (int)Math.Max(1f, SettingDef.StepValue);
+			int next = Math.Max((int)SettingDef.MinValue, cur - step);
+			SettingDef.Setter(settings, next);
+			DisplayValue = FormatNumeric(next, SettingDef.FormatString, SettingDef.Id);
+		}
+		else
+		{
+			float cur = Convert.ToSingle(SettingDef.Getter(settings));
+			float step = SettingDef.StepValue > 0 ? SettingDef.StepValue : 0.05f;
+			float next = (float)Math.Round(Math.Max(SettingDef.MinValue, cur - step), 2);
+			SettingDef.Setter(settings, next);
+			DisplayValue = FormatNumeric(next, SettingDef.FormatString, SettingDef.Id);
+		}
+		OnPropertyChanged(nameof(DisplayValue));
+		_onModified?.Invoke();
+	}
+
+	public void ExecuteIncrease()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.NumericSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+
+		if (SettingDef.SettingType == TerminalSettingType.Integer)
+		{
+			int cur = Convert.ToInt32(SettingDef.Getter(settings));
+			int step = (int)Math.Max(1f, SettingDef.StepValue);
+			int next = Math.Min((int)SettingDef.MaxValue, cur + step);
+			SettingDef.Setter(settings, next);
+			DisplayValue = FormatNumeric(next, SettingDef.FormatString, SettingDef.Id);
+		}
+		else
+		{
+			float cur = Convert.ToSingle(SettingDef.Getter(settings));
+			float step = SettingDef.StepValue > 0 ? SettingDef.StepValue : 0.05f;
+			float next = (float)Math.Round(Math.Min(SettingDef.MaxValue, cur + step), 2);
+			SettingDef.Setter(settings, next);
+			DisplayValue = FormatNumeric(next, SettingDef.FormatString, SettingDef.Id);
+		}
+		OnPropertyChanged(nameof(DisplayValue));
+		_onModified?.Invoke();
+	}
+
+	public void ExecuteEditNumeric()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.NumericSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+
+		object cur = SettingDef.Getter(settings);
+		InformationManager.ShowTextInquiry(new TextInquiryData(
+			$"设置 {Title}",
+			$"请输入数值（有效范围: {SettingDef.MinValue} ~ {SettingDef.MaxValue}）：\n{HintText}",
+			isAffirmativeOptionShown: true,
+			isNegativeOptionShown: true,
+			"确定",
+			"取消",
+			input =>
+			{
+				if (float.TryParse(input, out float parsed))
+				{
+					if (SettingDef.SettingType == TerminalSettingType.Integer)
+					{
+						int clamped = (int)Math.Max(SettingDef.MinValue, Math.Min(SettingDef.MaxValue, Math.Round(parsed)));
+						SettingDef.Setter(settings, clamped);
+						DisplayValue = FormatNumeric(clamped, SettingDef.FormatString, SettingDef.Id);
+					}
+					else
+					{
+						float clamped = (float)Math.Round(Math.Max(SettingDef.MinValue, Math.Min(SettingDef.MaxValue, parsed)), 2);
+						SettingDef.Setter(settings, clamped);
+						DisplayValue = FormatNumeric(clamped, SettingDef.FormatString, SettingDef.Id);
+					}
+					OnPropertyChanged(nameof(DisplayValue));
+					_onModified?.Invoke();
+				}
+			},
+			null,
+			shouldInputBeObfuscated: false,
+			null,
+			"",
+			cur?.ToString() ?? ""
+		));
+	}
+
+	public void ExecuteCycleDropdownPrevious()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.DropdownSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+		var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
+		if (dropdown == null || dropdown.Count <= 0) return;
+		int nextIdx = dropdown.SelectedIndex - 1;
+		if (nextIdx < 0) nextIdx = dropdown.Count - 1;
+		SettingDef.Setter(settings, nextIdx);
+		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+		OnPropertyChanged(nameof(DisplayValue));
+		_onModified?.Invoke();
+	}
+
+	public void ExecuteCycleDropdownNext()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.DropdownSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+		var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
+		if (dropdown == null || dropdown.Count <= 0) return;
+		int nextIdx = (dropdown.SelectedIndex + 1) % dropdown.Count;
+		SettingDef.Setter(settings, nextIdx);
+		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+		OnPropertyChanged(nameof(DisplayValue));
+		_onModified?.Invoke();
+	}
+
+	public void ExecuteCycleDropdown()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.DropdownSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+
+		var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
+		if (dropdown == null || dropdown.Count <= 0) return;
+
+		List<InquiryElement> elements = new List<InquiryElement>();
+		for (int i = 0; i < dropdown.Count; i++)
+		{
+			string opt = dropdown[i];
+			elements.Add(new InquiryElement(i.ToString(), opt, null, isEnabled: true, ""));
+		}
+
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
+			$"选择 {Title}",
+			$"请从以下可用选项中选择：\n{HintText}",
+			elements,
+			isExitShown: true,
+			1,
+			1,
+			"确定",
+			"返回",
+			selected =>
+			{
+				if (selected != null && selected.Count > 0 && int.TryParse(selected[0].Identifier as string, out int idx))
+				{
+					SettingDef.Setter(settings, idx);
+					DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+					OnPropertyChanged(nameof(DisplayValue));
+					_onModified?.Invoke();
+				}
+			},
+			null,
+			"",
+			isSeachAvailable: true
+		);
+		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	public void ExecuteEditText()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.TextSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+
+		string cur = SettingDef.Getter(settings)?.ToString() ?? "";
+		InformationManager.ShowTextInquiry(new TextInquiryData(
+			$"编辑 {Title}",
+			$"{HintText}",
+			isAffirmativeOptionShown: true,
+			isNegativeOptionShown: true,
+			"确定",
+			"取消",
+			input =>
+			{
+				SettingDef.Setter(settings, input ?? "");
+				string raw = input ?? "";
+				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+				OnPropertyChanged(nameof(DisplayValue));
+				OnPropertyChanged(nameof(TextValue));
+				_onModified?.Invoke();
+			},
+			null,
+			shouldInputBeObfuscated: false,
+			null,
+			"",
+			cur
+		));
+	}
+
+	public void ExecuteButtonClick()
+	{
+		if (SettingDef == null || ItemKind != TerminalItemKind.ButtonSetting) return;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null) return;
+
+		try
+		{
+			SettingDef.Invoker?.Invoke(settings);
+			InformationManager.DisplayMessage(new InformationMessage($"已触发：{Title}", Colors.Green));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Terminal", $"[ERROR] Failed to invoke setting action {SettingDef.Id}: {ex}");
+			InformationManager.DisplayMessage(new InformationMessage($"触发失败：{ex.Message}", Colors.Red));
+		}
+	}
+
+	public void UpdateFromSettings(DuelSettings settings)
+	{
+		if (SettingDef == null || settings == null) return;
+		switch (ItemKind)
+		{
+			case TerminalItemKind.BoolSetting:
+				BoolValue = Convert.ToBoolean(SettingDef.Getter(settings));
+				BoolStatusText = BoolValue ? "✔ 开启" : "✕ 关闭";
+				OnPropertyChanged(nameof(BoolValue));
+				OnPropertyChanged(nameof(BoolStatusText));
+				OnPropertyChanged(nameof(IsBoolTrue));
+				break;
+			case TerminalItemKind.NumericSetting:
+				DisplayValue = FormatNumeric(SettingDef.Getter(settings), SettingDef.FormatString, SettingDef.Id);
+				OnPropertyChanged(nameof(DisplayValue));
+				break;
+			case TerminalItemKind.DropdownSetting:
+				DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+				OnPropertyChanged(nameof(DisplayValue));
+				if (_dropdownSelector != null)
+				{
+					var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
+					if (dropdown != null && dropdown.SelectedIndex != _dropdownSelector.SelectedIndex && dropdown.SelectedIndex >= 0 && dropdown.SelectedIndex < _dropdownSelector.ItemList.Count)
+					{
+						_dropdownSelector.SelectedIndex = dropdown.SelectedIndex;
+					}
+				}
+				break;
+			case TerminalItemKind.HotkeySetting:
+				if (!_isListeningKey)
+				{
+					string rawKey = SettingDef.Getter(settings)?.ToString() ?? "";
+					DisplayValue = string.IsNullOrWhiteSpace(rawKey) ? "未设置" : rawKey.ToUpperInvariant();
+					OnPropertyChanged(nameof(DisplayValue));
+				}
+				break;
+			case TerminalItemKind.TextSetting:
+				string raw = SettingDef.Getter(settings)?.ToString() ?? "";
+				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+				OnPropertyChanged(nameof(DisplayValue));
+				OnPropertyChanged(nameof(TextValue));
+				break;
+		}
+	}
 }
 
 public sealed class TerminalTagCatalogItemVM : ViewModel

@@ -93,6 +93,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	public void OnEngineTick()
 	{
 		_engineTickSequence++;
+		AnimusForgeTerminalPopup.OnTick();
 		ProcessPendingPlayerRpItemIntroduction();
 		if (MilitaryExerciseBehavior.NeedsEngineTick())
 		{
@@ -355,25 +356,29 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		return new List<AnimusForgeTerminalNode>
 		{
-			Node("trust_query", "信任度查询", "查询与记录", "⚖", "查询英雄、定居点与商人信任来源。"),
-			Node("weekly_reports", "查看周报", "查询与记录", "✉", "打开国家周报浏览器。"),
-			Node("tag_catalog", "标签列表", "查询与记录", "❖", "查看正文/后处理标签索引，可刷新或导出 TXT。"),
-			Node("custom_policy_management", "王国公告", "外交", "♚", "二级面板：撰写公告、地方政策、查看公告。",
-				Node("policy_compose", "撰写王国公告", "外交", "✍", "继续进入二级：自定义政策或外交宣言。",
-					Node("custom_policy", "撰写自定义政策", "外交", "⚖", "打开自定义政策撰写面板。"),
-					Node("diplomatic_document", "撰写外交宣言", "外交", "⚐", "发布王国外交宣言。")),
-				Node("local_policies", "地方政策", "外交", "♜", "发布只影响玩家家族封地范围的地方政策。"),
-				Node("world_policies", "查看王国公告", "外交", "✉", "统一查看自定义政策与各国公开外交宣言。")),
-			Node("vassalage_management", "臣属国管理", "外交", "⚜", "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
-			Node("settlement_entry_troops", "进城随行配置", "部队", "♞", "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
-			Node("noble_prisoner_escort", "贵族俘虏随行配置", "部队", "⚓", "配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
-			Node("troop_inspection", "检阅士兵", "部队", "⚔", "进入部队检阅流程。"),
-			Node("military_exercise", "军事演习", "部队", "⚑", "进入军事演习流程。"),
-			Node("player_persona", "修改玩家外貌与背景", "玩家", "♟", "编辑玩家 RP 外貌与背景。"),
-			Node("player_rp_forge", "制造RP物品", "玩家", "⚒", "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
-			Node("reload_database", "重载数据库", "系统", "⚡", "替换非主角知识、世界/王国开局知识、王国性格/战略和声音。"),
-			Node("api_onboarding", "重新进行API首次引导", "系统", "⚙", "只重新选择和测试 API 配置。"),
-			Node("analyze_latest_error", "分析最近错误", "系统", "⚠", "使用前处理 API 分析本局最近一次 AnimusForge 错误。")
+			Node("custom_policy_management", "王国公告", "外交与国家", "♚", "二级面板：撰写公告、地方政策、查看公告。",
+				Node("policy_compose", "撰写王国公告", "外交与国家", "✍", "继续进入二级：自定义政策或外交宣言。",
+					Node("custom_policy", "撰写自定义政策", "外交与国家", "⚖", "打开自定义政策撰写面板。"),
+					Node("diplomatic_document", "撰写外交宣言", "外交与国家", "⚐", "发布王国外交宣言。")),
+				Node("local_policies", "地方政策", "外交与国家", "♜", "发布只影响玩家家族封地范围的地方政策。"),
+				Node("world_policies", "查看王国公告", "外交与国家", "✉", "统一查看自定义政策与各国公开外交宣言。")),
+			Node("vassalage_management", "臣属国管理", "外交与国家", "⚜", "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
+			Node("weekly_reports", "查看周报", "外交与国家", "✉", "打开国家周报浏览器。"),
+
+			Node("tag_catalog", "标签列表", "提示词与规则", "❖", "查看正文/后处理标签索引，可刷新或导出 TXT。"),
+			Node("reload_database", "重载数据库", "提示词与规则", "⚡", "替换非主角知识、世界/王国开局知识、王国性格/战略和声音。"),
+
+			Node("api_onboarding", "重新进行API首次引导", "AI核心", "⚙", "只重新选择和测试 API 配置。"),
+			Node("analyze_latest_error", "分析最近错误", "AI核心", "⚠", "使用前处理 API 分析本局最近一次 AnimusForge 错误。"),
+
+			Node("settlement_entry_troops", "进城随行配置", "决斗与部队", "♞", "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
+			Node("noble_prisoner_escort", "贵族俘虏随行配置", "决斗与部队", "⚓", "配置攻城处置、普通定居点、领主大厅和野外会面中带入的英雄俘虏。"),
+			Node("troop_inspection", "检阅士兵", "决斗与部队", "⚔", "进入部队检阅流程。"),
+			Node("military_exercise", "军事演习", "决斗与部队", "⚑", "进入军事演习流程。"),
+
+			Node("player_persona", "修改玩家外貌与背景", "角色与同伴", "♟", "编辑玩家 RP 外貌与背景。"),
+			Node("player_rp_forge", "制造RP物品", "角色与同伴", "⚒", "投入第纳尔，制造玩家自己的普通RP物品或武器装备。"),
+			Node("trust_query", "信任度查询", "角色与同伴", "⚖", "查询英雄、定居点与商人信任来源。")
 		};
 	}
 
