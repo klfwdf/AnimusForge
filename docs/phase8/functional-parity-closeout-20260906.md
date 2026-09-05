@@ -12,6 +12,7 @@
 | 战争记录 | 和平归档、再次宣战使用新记录、旧历史不丢、存档兼容 | owner 归档/列表往返 PASS，原生事件/旧档待复核 |
 | 部署检查 | Bootstrap 与双实现实际一致、缺失/过期失败、XML 实际入口 | 离线 PASS |
 | 存档契约 | WarStats 的 47 个键/类型被追踪，旧契约保留 | 142 keys / 168 bindings PASS |
+| 标签字典 | 全量分页/搜索、完整说明/来源、索引说明、刷新、导出当前快照、返回 | 第二批生产 VM 回放 PASS；实机待复核 |
 
 ## 清理边界
 
@@ -41,7 +42,7 @@
 - 截断式 `TerminalTrustItemVM`、TrustQuery 专用列表绑定/旧 XML，以及未使用的 NPC trust 临时变量。
 - Bootstrap-only 部署比对和 XML 子串入口检查。
 
-仍保留：真实三渠道默认 legacy facade、旧存档/版本迁移、1.3/1.4 兼容。它们有活跃用途，不能通过删名字实现功能对等。标签字典旧详情/搜索和其他未完成逐项对照的菜单暂不盲删；后续单独补齐替代路径。原版参考源码不属于废弃 AF 实现。
+仍保留：真实三渠道默认 legacy facade、旧存档/版本迁移、1.3/1.4 兼容。它们有活跃用途，不能通过删名字实现功能对等。第一批保留的标签字典旧详情/搜索已在下方第二批完成替代并删除；其他未完成逐项对照的菜单仍不盲删。原版参考源码不属于废弃 AF 实现。
 
 ## 本机验证
 
@@ -69,7 +70,29 @@
 - `versions/1.3/AnimusForge.dll` SHA256 `441ED57993F86C631EC5BE7455903A005C39A719467402D07D91DCB64BAAEF6E`
 - `versions/1.4/AnimusForge.dll` SHA256 `BD3487AED67646330A0EA59F207E33B241D4345A6475CAC7D3526ED3A08C3DFE`
 
-## 第二批：标签字典功能对照（IN PROGRESS）
+## 第二批：标签字典功能对照（VERIFY；离线完成）
 
 基线 b8757240；补齐旧标签浏览器的搜索、分类/说明/来源详情、索引说明、刷新和导出当前快照，统一复用第一批菜单分页与详情返回。删除已被替代的旧 inquiry 菜单与只显示摘要的重复 VM/XML。仍只在项目内构建/回放，不部署，不改 LLM 标签语义、来源扫描规则或存档。
 
+
+### 第二批变更、删留与证据
+
+- 标签字典不再另造一套列表：复用菜单的 50 项分页、全量搜索和详情面板。`SearchTerms` 保存完整说明/来源，卡片提示截断不会截断搜索范围；只在打开/刷新索引时建立快照，键入时只过滤内存，不触发重新扫描。
+- 恢复分类、完整描述、全部来源路径、扫描文件数、所有来源根目录。详情滚动显示，不再只给摘要或将来源截到 12 项；返回保留搜索和页码。
+- 工具条保留索引说明、刷新、导出；索引数量与更新时间提供可见反馈。刷新替换当前浏览器，不叠加返回层级；空索引也可刷新和返回。
+- 导出向原 owner 传递正在显示的快照，而非 null 触发第二次扫描；成功显示完整输出路径，失败显示可返回的错误页。隐藏工具条后的残留命令不导出。未修改来源扫描、标签语义、导出目录规则或文件命名规则。
+- Removed：`OpenTagCatalogBrowser`、`ExportTagCatalogToModuleTxt`、`OpenTagCatalogEntryDetail` 及不可达 fallback；`TerminalTagCatalogItemVM`、独立 TagCatalog view mode、专用列表属性/XML；失效的刷新提示 helper。需要的纯格式化方法迁入 UI owner，不留重复实现。
+- 最终 Debug/Release × 1.3/1.4/Bootstrap 六项均 0 warning / 0 error、Stage PASS。日志 `.tmp/phase8-tag-build-Debug-final.log`、`.tmp/phase8-tag-build-Release-final.log`。
+- 生产 DLL 回放新增 73 条标签、300 字符以上说明、15 个来源、4 个来源根；分页、完整搜索/详情、快照绑定、导出文本格式、空索引失败可恢复、刷新不重复压栈全部 PASS；第一批终端与战争 owner 回归同时 PASS。日志 `.tmp/phase8-tag-replay-final.log`。
+- 存档契约仍 142 keys / 168 bindings PASS；Bridge 16/10/6 与入口 inventory PASS；XML 可解析；废弃标签 UI 符号活跃引用清零；diff --check PASS。
+- 未执行真实模块扫描或非空导出的文件写入；导出回放只验证生产格式器和空快照拒绝路径。Gauntlet 搜索/滚动/刷新反馈仍需制作组按实际画面观察，不能以以上回放代替实机。
+
+### 第二批后的继续顺序
+
+先对照周报的国家选择/日期排序/完整文本/返回与空状态，再审独立战争旧弹窗是否还有动态调用，最后回到三渠道默认 facade 的真实替代覆盖。仍在用的 owner、存档迁移和 API 兼容不得按名称删掉。此文只对已完成切片负责，不宣告全仓旧代码清零或零 BUG。未 push、未部署、自动化保持关闭。
+
+### 第二批 Debug Stage 二进制绑定（覆盖前一批 Stage）
+
+- `AnimusForge.Bootstrap.dll` SHA256 `F885348AD81C76B8D3F54FBEAF0B70769535E8BFA2A976B288B0DE23C0FF49F1`
+- `versions/1.3/AnimusForge.dll` SHA256 `6F3D9B1B6EE33006FF28A89C6BC9135E050543722D98A333858DAACF083DB203`
+- `versions/1.4/AnimusForge.dll` SHA256 `5EE01CFA1770509335F16783F796FB05D199C64D5DA316ED03AAEB1F1D9D6A54`

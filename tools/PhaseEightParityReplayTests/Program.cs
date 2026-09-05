@@ -58,6 +58,49 @@ Check((bool)Get(Get(vm, "VassalageVm"), "ShowEmptyState"), "empty tribute histor
 Call(vm, "ExecuteBack"); Check((string)Get(vm, "SearchText") == "NPC-090", "tribute back returns to selected browser");
 Call(vm, "ExecuteBack"); Check(((IList)Get(vm, "Items")).Count == 50, "browser back returns root");
 Call(vm, "SelectTab", "系统"); Check(!(bool)Get(vm, "HasPreviousMenuPage"), "tab change resets paging");
+Type snapshotType = af.GetType("AnimusForge.AnimusForgeTagCatalogSnapshot", true);
+Type entryType = af.GetType("AnimusForge.AnimusForgeTagCatalogEntry", true);
+object snapshot = Activator.CreateInstance(snapshotType, true);
+IList entries = (IList)Get(snapshot, "Entries");
+for (int i = 0; i < 73; i++)
+{
+    object entry = Activator.CreateInstance(entryType, true);
+    Set(entry, "Id", "tag-" + i); Set(entry, "Tag", "[ACTION:fixture-" + i + "]");
+    Set(entry, "Category", "后处理/规则表");
+    Set(entry, "Description", new string('x', 300) + " 参数尾部-" + i);
+    IList sources = (IList)Get(entry, "Sources");
+    for (int j = 0; j < 15; j++) sources.Add("source-" + i + "-" + j);
+    entries.Add(entry);
+}
+IList sourceRoots = (IList)Get(snapshot, "SourceRoots");
+for (int i = 0; i < 4; i++) sourceRoots.Add("fixture-root-" + i);
+Set(snapshot, "ScannedFileCount", 81);
+Call(vm, "ShowTagCatalog", snapshot);
+Check((bool)Get(vm, "IsMenuListVisible") && ((IList)Get(vm, "Items")).Count == 50, "tag catalog reuses bounded menu");
+Check(((string)Get(vm, "TagCatalogStatusText")).Contains("73") && ((string)Get(vm, "TagCatalogStatusText")).Contains("更新"), "refresh feedback shows snapshot size and update time");
+Check((bool)Get(vm, "IsTagCatalogBrowser") && (float)Get(vm, "MenuContentTop") == 98f, "tag commands have dedicated nonoverlapping header");
+Call(vm, "ExecuteNextMenuPage"); Check(((IList)Get(vm, "Items")).Count == 23, "tag pagination covers all 73 entries");
+Set(vm, "SearchText", "参数尾部-72"); Check(((IList)Get(vm, "Items")).Count == 1, "search includes description beyond card truncation");
+Set(vm, "SearchText", "source-72-14"); Check(((IList)Get(vm, "Items")).Count == 1, "search includes all source paths");
+Call(((IList)Get(vm, "Items"))[0], "ExecuteOpen");
+string details = (string)Get(vm, "DetailText");
+Check(details.Contains("[ACTION:fixture-72]") && details.Contains("参数尾部-72") && details.Contains("source-72-14"), "tag detail includes full description and more than 12 sources");
+Call(vm, "ExecuteBack"); Check((string)Get(vm, "SearchText") == "source-72-14" && (bool)Get(vm, "IsTagCatalogBrowser"), "tag details back preserves filter");
+Call(vm, "ExecuteTagCatalogInfo");
+Check(((string)Get(vm, "DetailText")).Contains("fixture-root-3") && ((string)Get(vm, "DetailText")).Contains("81"), "index summary retains scan count and all roots");
+Call(vm, "ExecuteBack");
+Check(ReferenceEquals(Get(vm, "_tagCatalogSnapshot"), snapshot), "export is bound to displayed snapshot rather than fresh scan");
+Type catalogType = af.GetType("AnimusForge.AnimusForgeTagCatalog", true);
+string exportText = (string)catalogType.GetMethod("BuildExportText", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new[] { snapshot, "fixture-root" });
+Check(exportText.Contains("[ACTION:fixture-0]") && exportText.Contains("[ACTION:fixture-72]") && exportText.Contains("source-72-14"), "export formatter retains unfiltered snapshot without file IO");
+object emptySnapshot = Activator.CreateInstance(snapshotType, true);
+Call(vm, "ShowTagCatalog", emptySnapshot);
+Check(((IList)Get(vm, "Items")).Count == 0 && (bool)Get(vm, "IsTagCatalogBrowser"), "refresh to empty index remains navigable");
+Call(vm, "ExecuteExportTagCatalog"); // Empty snapshot fails before module-root resolution or any write.
+Check((bool)Get(vm, "IsDetailsVisible") && ((string)Get(vm, "DetailText")).Contains("没有可导出"), "export failure is visible and actionable");
+Call(vm, "ExecuteBack"); Check((bool)Get(vm, "IsTagCatalogBrowser"), "export failure returns to index");
+Call(vm, "ExecuteBack"); Check(!(bool)Get(vm, "IsTagCatalogBrowser") && (float)Get(vm, "MenuContentTop") == 50f, "refresh does not stack duplicate browsers");
+Call(vm, "ExecuteExportTagCatalog"); Check((bool)Get(vm, "IsMenuListVisible"), "stale hidden export command is ignored");
 Call(vm, "ExecuteClose"); Check(closed == 1, "close callback exactly once per command"); Call(vm, "OnFinalize");
 
 Type warType = af.GetType("AFWarStatsTerminal.Behaviors.AfWarStatsBehavior", true);
@@ -83,5 +126,5 @@ Set(loaded, "_dataVersion", 5); Call(loaded, "LoadSavedData");
 Check(((IDictionary)Get(loaded, "_activeWars")).Count == 1 && ((IList)Get(loaded, "_historicalWars")).Count == 1, "active/history list roundtrip");
 Check((int)Get(((IDictionary)Get(loaded, "_activeWars"))["|"], "KillsA") == 7, "new war survives owner load");
 Check((int)Get(((IList)Get(loaded, "_historicalWars"))[0], "KillsA") == 123, "old war survives owner load");
-Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close war=archive/idempotence/list-roundtrip live=NOT_RUN");
+Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty war=archive/idempotence/list-roundtrip live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
