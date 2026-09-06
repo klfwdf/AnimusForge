@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,7 +45,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		Import
 	}
 
-	private enum ApiSetupTarget
+	internal enum ApiSetupTarget
 	{
 		Primary,
 		Auxiliary,
@@ -53,35 +53,35 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		EventAndRebellion
 	}
 
-	private enum QuickApiPreset
+	internal enum QuickApiPreset
 	{
 		None,
 		DeepSeekFlash,
 		DeepSeekPro
 	}
 
-	private enum YjApiSetupMode
+	internal enum YjApiSetupMode
 	{
 		None,
 		SingleGroup,
 		MultiGroup
 	}
 
-	private enum SaveAndExitStage
+	internal enum SaveAndExitStage
 	{
 		None,
 		WaitingForCurrentSave,
 		WaitingForRequestedQuickSave
 	}
 
-	private enum ApiValidationFlow
+	internal enum ApiValidationFlow
 	{
 		Normal,
 		QuickPresetAll,
 		ExistingConfigAll
 	}
 
-	private sealed class ApiValidationTargetInfo
+	internal sealed class ApiValidationTargetInfo
 	{
 		public ApiSetupTarget Target { get; set; }
 
@@ -94,7 +94,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		public string ModelName { get; set; } = "";
 	}
 
-	private sealed class ApiValidationTargetResult
+	internal sealed class ApiValidationTargetResult
 	{
 		public ApiValidationTargetInfo Target { get; set; }
 
@@ -666,7 +666,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		SetApiKeyForTarget(settings, ApiSetupTarget.EventAndRebellion, value);
 	}
 
-	private static void SetModelNameForTarget(DuelSettings settings, ApiSetupTarget target, string value)
+	internal static void SetModelNameForTarget(DuelSettings settings, ApiSetupTarget target, string value)
 	{
 		if (settings == null)
 		{
@@ -797,7 +797,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (InformationManager.IsAnyInquiryActive())
+		if (InformationManager.IsAnyInquiryActive() || AnimusForgeApiOnboardingPopup.IsOpen)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -1236,6 +1236,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (AnimusForgeApiOnboardingPopup.IsOpen)
+			{
+				return;
+			}
 			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
@@ -1254,6 +1258,35 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.SetupModeChoice;
 			_welcomeInProgress = true;
+
+			if (AnimusForgeApiOnboardingPopup.Show(_apiOnlySetupFlowActive, delegate
+			{
+				_welcomeInProgress = false;
+				if (_apiOnlySetupFlowActive)
+				{
+					CompleteApiSetupOnlyFlow();
+				}
+				else
+				{
+					_setupDone = true;
+					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				}
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				if (_apiOnlySetupFlowActive)
+				{
+					CancelApiSetupOnlyFlow();
+				}
+				else
+				{
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				}
+			}))
+			{
+				return;
+			}
+
 			List<InquiryElement> list = new List<InquiryElement>
 			{
 				new InquiryElement("support", "支持AnimusForge制作组", null, isEnabled: true, "打开爱发电支持页面。"),
@@ -1907,7 +1940,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 	}
 
-	private static async Task<ApiValidationTargetResult> ValidateApiTargetAsync(ApiValidationTargetInfo target, CancellationToken cancellationToken)
+	internal static async Task<ApiValidationTargetResult> ValidateApiTargetAsync(ApiValidationTargetInfo target, CancellationToken cancellationToken)
 	{
 		ApiValidationTargetResult result = new ApiValidationTargetResult
 		{
@@ -3441,7 +3474,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void TryPersistMcmSettings(DuelSettings settings)
+	internal static void TryPersistMcmSettings(DuelSettings settings)
 	{
 		if (settings == null)
 		{
@@ -3583,7 +3616,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return LlmRetryPrompt.BuildFailureDetail(text, "", responseBody);
 	}
 
-	private static List<string> ExtractModelNamesFromResponse(string responseBody)
+	internal static List<string> ExtractModelNamesFromResponse(string responseBody)
 	{
 		List<string> list = new List<string>();
 		try

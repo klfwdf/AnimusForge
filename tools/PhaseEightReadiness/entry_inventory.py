@@ -22,9 +22,11 @@ RULES = {
     "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
     "ui-tts-external-integration": (
         "AnimusForgeTerminal*.cs", "Terminal*PopupVM.cs", "DevWeeklyReportPopup*.cs",
+        "AnimusForgeApiOnboarding*.cs", "TerminalSettingsRegistry.cs", "DuelSettings.TerminalSave.cs",
         "WarStats/*VM.cs", "WarStats/AfWarStatsMapButtonLayer.cs",
         "WarStats/AfWarStatsEncyclopedia.cs", "WarStats/AfWarStatsSettings.cs", "WarStats/AfWarStatsTexts.cs",
         "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+        "AnimusForge/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
         "AnimusForge/GUI/Prefabs/AFWarStatsMapButton.xml",
         "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
