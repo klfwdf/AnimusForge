@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
 using HarmonyLib;
 using SandBox.Missions.MissionLogics;
@@ -2200,6 +2201,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		{
 		}
 		return false;
+	}
+
+	internal static bool IsSceneDuelBridgeEnabled()
+	{
+		return FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.SceneDuel);
 	}
 
 	public static bool IsFormalDuelActive

@@ -4540,6 +4540,59 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			CourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_reply_preflight");
+			if (IsCourierBridgeEnabled())
+			{
+				try
+				{
+					LegacyInteractionPipelinePorts ports = CreateCourierDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+					ILlmGateway gateway = new LegacyShoutNetworkGateway();
+					using (LegacyChannelInteractionFacade facade = CreateCourierReplyRefactorFacadeForExternal(ports, gateway, sessionId))
+					{
+						if (facade != null)
+						{
+							RuntimeConfigSnapshot configuration = CaptureCourierReplyRefactorConfigurationForExternal();
+							string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
+							string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
+							DetachedInteractionHostResult hostResult = await SubmitCourierReplyRefactorOptInForExternalAsync(
+								facade,
+								configuration,
+								moduleId,
+								providerId,
+								sessionId,
+								session.LetterText ?? "",
+								async () =>
+								{
+									await GenerateNpcReplyAsync(request).ConfigureAwait(false);
+									return session.ReplyText ?? "";
+								},
+								CancellationToken.None).ConfigureAwait(false);
+							if (hostResult != null)
+							{
+								if (hostResult.Status == InteractionStatus.CancelledAsStale)
+								{
+									return;
+								}
+								if (!hostResult.UsedLegacyFallback && (hostResult.Status == InteractionStatus.Executed || hostResult.Status == InteractionStatus.Succeeded))
+								{
+									EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
+									{
+										FinalizeCourierReplyGenerationOnMainThread(request, hostResult.VisibleReply, session.ReplyPostprocessedText, " [detached_refactor]");
+									}, "reply_detached_finalized");
+									return;
+								}
+								if (hostResult.UsedLegacyFallback)
+								{
+									return;
+								}
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Log("detached courier reply cutover fallback error=" + ex.Message);
+				}
+			}
 			await GenerateNpcReplyAsync(request).ConfigureAwait(false);
 		}
 		catch (PreprocessFormatException ex)

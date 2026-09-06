@@ -11,6 +11,9 @@
     "conversation-courier",
     "memory-social-reports",
     "gateway-knowledge-profile",
-    "ui-runtime-integration"
+    "ui-runtime-integration",
+    "runtime-game-adapter",
+    "scene-duel",
+    "host-runtime"
   ]
 }

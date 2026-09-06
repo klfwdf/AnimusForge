@@ -38,6 +38,9 @@ internal static class FeatureBridgeRuntime
     internal static bool ConversationSiegeEnabled => IsEnabled(FeatureBridgeIds.ConversationSiege);
     internal static bool PolicyWorldDiplomacyEnabled => IsEnabled(FeatureBridgeIds.PolicyWorldDiplomacy);
     internal static bool UiRuntimeIntegrationEnabled => IsEnabled(FeatureBridgeIds.UiRuntimeIntegration);
+    internal static bool HostRuntimeEnabled => IsEnabled(FeatureBridgeIds.HostRuntime);
+    internal static bool RuntimeGameAdapterEnabled => IsEnabled(FeatureBridgeIds.RuntimeGameAdapter);
+    internal static bool SceneDuelEnabled => IsEnabled(FeatureBridgeIds.SceneDuel);
 
     internal static bool Initialize(out string reason)
     {
@@ -146,8 +149,8 @@ internal static class FeatureBridgeRuntime
             // from ImplementationState: an ACTIVE_BOUNDARY inventory entry can
             // remain disabled until its owner supplies and reviews a caller.
             new FeatureBridgeDefinition(FeatureBridgeIds.BootstrapHost, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, false, FeatureBridgeFallback.SafeMode),
-            new FeatureBridgeDefinition(FeatureBridgeIds.HostRuntime, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, false, FeatureBridgeFallback.SafeMode),
-            new FeatureBridgeDefinition(FeatureBridgeIds.RuntimeGameAdapter, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, false, FeatureBridgeFallback.Native),
+            new FeatureBridgeDefinition(FeatureBridgeIds.HostRuntime, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.SafeMode),
+            new FeatureBridgeDefinition(FeatureBridgeIds.RuntimeGameAdapter, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
             new FeatureBridgeDefinition(FeatureBridgeIds.PersistenceDomainOwners, FeatureBridgeImplementationState.DesignInventory, FeatureBridgeTopology.CrossCut, false, FeatureBridgeFallback.SafeMode),
             new FeatureBridgeDefinition(FeatureBridgeIds.ConversationGateway, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
             new FeatureBridgeDefinition(FeatureBridgeIds.ConversationAction, FeatureBridgeImplementationState.OptIn, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.NoOp),
@@ -155,7 +158,7 @@ internal static class FeatureBridgeRuntime
             new FeatureBridgeDefinition(FeatureBridgeIds.ActionEconomy, FeatureBridgeImplementationState.OptIn, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.NoOp),
             new FeatureBridgeDefinition(FeatureBridgeIds.PolicyWorldDiplomacy, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
             new FeatureBridgeDefinition(FeatureBridgeIds.ConversationSiege, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
-            new FeatureBridgeDefinition(FeatureBridgeIds.SceneDuel, FeatureBridgeImplementationState.BlockedLive, FeatureBridgeTopology.Pair, false, FeatureBridgeFallback.Native),
+            new FeatureBridgeDefinition(FeatureBridgeIds.SceneDuel, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
             new FeatureBridgeDefinition(FeatureBridgeIds.ConversationCourier, FeatureBridgeImplementationState.OptIn, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.NoOp),
             new FeatureBridgeDefinition(FeatureBridgeIds.MemorySocialReports, FeatureBridgeImplementationState.OptIn, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.NoOp),
             new FeatureBridgeDefinition(FeatureBridgeIds.GatewayKnowledgeProfile, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),

@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
@@ -35,6 +37,10 @@ internal static class CampaignTickDiagnosticsPatch
 	public static void EnsurePatched(Harmony harmony)
 	{
 		if (_patched || harmony == null)
+		{
+			return;
+		}
+		if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.HostRuntime))
 		{
 			return;
 		}

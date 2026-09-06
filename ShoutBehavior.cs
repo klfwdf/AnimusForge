@@ -17716,6 +17716,51 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Task.Run(async delegate
 		{
 			SynchronizationContext.SetSynchronizationContext(null);
+			if (FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway))
+			{
+				try
+				{
+					LegacyInteractionPipelinePorts ports = CreateNativeConversationDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+					ILlmGateway gateway = new LegacyShoutNetworkGateway();
+					using (LegacyNativeConversationFacade facade = CreateNativeConversationRefactorFacadeForExternal(ports, gateway))
+					{
+						RuntimeConfigSnapshot configuration = CaptureNativeConversationRefactorConfigurationForExternal();
+						string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
+						string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
+						LegacyNativeConversationOptInResult optInResult = await currentInstance.SubmitNativeConversationRefactorOptInCoreAsync(
+							facade,
+							configuration,
+							moduleId,
+							providerId,
+							playerText,
+							() => currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady),
+							CancellationToken.None).ConfigureAwait(false);
+						if (optInResult != null)
+						{
+							if (optInResult.Status == InteractionStatus.CancelledAsStale)
+							{
+								return SaveRuntimeGuard.BuildStaleRequestErrorText();
+							}
+							if (optInResult.UsedLegacyFallback)
+							{
+								return optInResult.VisibleReply ?? "";
+							}
+							if (optInResult.Status == InteractionStatus.Succeeded || optInResult.Status == InteractionStatus.Executed)
+							{
+								if (onMainReplyReady != null && TryResolveNativeConversationTarget(out Hero readyHero, out CharacterObject readyChar, out _))
+								{
+									onMainReplyReady(optInResult.VisibleReply ?? "", readyHero, readyChar);
+								}
+								return optInResult.VisibleReply ?? "";
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("ShoutBehavior", "[NativeRefactor] default cutover fallback error=" + ex.Message);
+				}
+			}
 			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady).ConfigureAwait(false);
 		});
 	}
@@ -28276,6 +28321,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string postprocessEntityContext = "";
 				bool endRequested = false;
 				int resolvedRelayTargetAgentIndex = -1;
+				bool sceneShoutDetachedCommitted = false;
 				// 多人接力的每一轮都必须走完整的前处理、正文和后处理链路，避免后续 NPC 降级到短请求体。
 				if (currentSpeaker != null)
 				{
@@ -28437,8 +28483,71 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
-					string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
-					output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
+					string output = "";
+					if (FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway))
+					{
+						try
+						{
+							InteractionEnvelope envelope = await RunNativeConversationMainThreadFuncAsync(
+								"scene_refactor_capture",
+								currentSpeaker.Name,
+								currentSpeaker.AgentIndex,
+								() => CaptureSceneShoutRefactorEnvelopeForExternal(playerText, currentSpeaker.AgentIndex),
+								null).ConfigureAwait(false);
+							if (envelope != null)
+							{
+								LegacyInteractionPipelinePorts ports = CreateSceneShoutDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+								ILlmGateway gateway = new LegacyShoutNetworkGateway();
+								using (LegacyChannelInteractionFacade facade = LegacyInteractionSnapshotAdapters.CreateSceneShoutInteractionFacade(
+									ports,
+									gateway,
+									text => envelope))
+								{
+									RuntimeConfigSnapshot configuration = CaptureSceneShoutRefactorConfigurationForExternal();
+									string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
+									string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
+									DetachedInteractionHostResult hostResult = await SubmitSceneShoutRefactorOptInForExternalAsync(
+										facade,
+										configuration,
+										moduleId,
+										providerId,
+										playerText,
+										currentSpeaker.AgentIndex,
+										async () =>
+										{
+											string legOutput = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
+											return LlmVisibleReplyNormalizer.NormalizeComplete(legOutput);
+										},
+										CancellationToken.None).ConfigureAwait(false);
+									if (hostResult != null)
+									{
+										if (hostResult.Status == InteractionStatus.CancelledAsStale)
+										{
+											return;
+										}
+										if (!hostResult.UsedLegacyFallback && (hostResult.Status == InteractionStatus.Executed || hostResult.Status == InteractionStatus.Succeeded))
+										{
+											sceneShoutDetachedCommitted = true;
+											output = hostResult.VisibleReply ?? "";
+										}
+										else if (hostResult.UsedLegacyFallback)
+										{
+											output = hostResult.VisibleReply ?? "";
+										}
+									}
+								}
+							}
+						}
+						catch (Exception ex)
+						{
+							Logger.Log("ShoutBehavior", "[SceneRefactor] default cutover fallback error=" + ex.Message);
+						}
+					}
+					if (string.IsNullOrEmpty(output))
+					{
+						output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
+						output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
+					}
 					apiSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_api_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
@@ -28508,7 +28617,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							roundNpcSpeakerIndices.Add(currentSpeaker.AgentIndex);
 						}
 						RecordResponseForAllNearbySafe(allNpcData, currentSpeaker.AgentIndex, currentSpeaker.Name, historyText);
-						PersistNpcSpeechToNamedHeroes(currentSpeaker.AgentIndex, currentSpeaker.Name, historyText, allNpcData);
+						if (!sceneShoutDetachedCommitted)
+						{
+							PersistNpcSpeechToNamedHeroes(currentSpeaker.AgentIndex, currentSpeaker.Name, historyText, allNpcData);
+						}
 					}
 					bool duelPostprocessSelected = duelRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "duel");
 					bool rewardPostprocessSelected = rewardRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "reward");
@@ -28569,7 +28681,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							.ToList();
 					}
 				relayPostprocessSelected = !suppressBattleSpeechFollowups && !endRequested && remainingTurns > 0 && relayCandidatesForNextTurn.Count > 0;
-				bool flag11 = BattleSpeechFrameworkV2.ShouldQueueOrdinaryScenePostprocess(suppressBattleSpeechFollowups, duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || customPolicyAgendaPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected);
+				bool flag11 = !sceneShoutDetachedCommitted && BattleSpeechFrameworkV2.ShouldQueueOrdinaryScenePostprocess(suppressBattleSpeechFollowups, duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || customPolicyAgendaPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected);
 				Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " battleSpeechClaimed=" + battleSpeechClaimedReply + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " customPolicyAgendaSelected=" + customPolicyAgendaPostprocessSelected + " diplomacyInjected=" + diplomacyRuleInjected + " independentClanPeaceResident=" + independentClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
 					float dynamicTimeoutSeconds = ResolveDynamicSceneConversationTimeoutSeconds(playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count, Math.Max(1, speakableCandidates.Count));
 					EnqueueSpeechLineWithOptions(
