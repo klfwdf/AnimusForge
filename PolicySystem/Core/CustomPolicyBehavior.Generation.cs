@@ -5466,6 +5466,10 @@ public sealed partial class CustomPolicyBehavior
 				PolicyName = FirstNonEmpty(policy.PolicyName, history?.PolicyName),
 				PolicyContent = FirstNonEmpty(policy.PolicyContent, history?.PolicyContentSummary),
 				ImpactSummary = FirstNonEmpty(history?.ImpactEffectsSummary, history?.ImpactSummary, policy.SecondaryEffects),
+				DiplomacyImpactSummary = LimitDisplayChars(BuildPolicyRecordEffectSummary(history, includeRemainingDays: false), MaxPolicyRecordImpactChars),
+				DiplomacyRevisionKey = string.Join(";", (history?.Effects ?? new List<PolicyRecordEffectSaveData>())
+					.Where(effect => effect != null).Select(effect => effect.EffectId + ":" + effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture))
+					.OrderBy(value => value, StringComparer.Ordinal)),
 				PolicyStatus = policyStatus,
 				RawPolicyStatus = (policy.Status ?? string.Empty).Trim().ToLowerInvariant(),
 				HistoryBucket = PolicyHistoryRetrievalService.ResolveHistoryBucketFromStatus(policy.Status),
@@ -5515,6 +5519,7 @@ public sealed partial class CustomPolicyBehavior
 				PolicyName = policy.PolicyName ?? string.Empty,
 				PolicyContent = policy.PolicyContent ?? string.Empty,
 				ImpactSummary = FirstNonEmpty(policy.ImpactSummary, policy.EffectReason),
+				DiplomacyRevisionKey = policy.RenewalCount.ToString(CultureInfo.InvariantCulture) + ":" + policy.OriginalDurationDays.ToString(CultureInfo.InvariantCulture),
 				PolicyStatus = policyStatus,
 				RawPolicyStatus = (policy.Status ?? string.Empty).Trim().ToLowerInvariant(),
 				HistoryBucket = PolicyHistoryRetrievalService.ResolveHistoryBucketFromStatus(policy.Status),

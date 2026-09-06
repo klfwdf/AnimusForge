@@ -353,7 +353,7 @@ internal static class Program
         Test.True(relaySystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract)", StringComparison.Ordinal),
             "relay declaration generation must use the shared first system message");
         Test.True(compressionEnqueue.Contains(
-                "SystemPrompt = BuildCanonicalHistorySystemPrompt(BuildCommonDiplomacySystemPrefix())",
+                "string systemPrompt = BuildCanonicalHistorySystemPrompt(BuildCommonDiplomacySystemPrefix())",
                 StringComparison.Ordinal),
             "compression must use the same shared first system-message renderer");
         Test.True(compressionEnqueue.Contains("CacheAffinityKey = CanonicalHistoryCacheAffinityKey", StringComparison.Ordinal),
@@ -505,8 +505,8 @@ internal static class Program
             "private void CommitCompression(WorldDiplomacyJob job, string raw)");
         Test.True(scheduler.Contains("GetHistoryCompressionTriggerTokens()", StringComparison.Ordinal),
             "scheduler must compare history size with the independent trigger");
-        Test.Equal(1, CountOccurrences(scheduler, ".Any("),
-            "only one queued-job guard should block compression scheduling");
+        Test.True(scheduler.Contains("x.AwaitingHistoryCompression", StringComparison.Ordinal),
+            "total-input pressure must schedule compression even when history alone is below the trigger");
         Test.True(scheduler.Contains("string.Equals(x.Kind, \"compress\"", StringComparison.Ordinal),
             "the only queued-job guard must detect an existing compression job");
         Test.True(!scheduler.Contains("_llmRequestRunning", StringComparison.Ordinal),
