@@ -482,8 +482,26 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 	}
 
+	public void RefreshCurrentItemsFromSettings()
+	{
+		DuelSettings currentSettings = DuelSettings.GetSettings();
+		if (currentSettings != null && Items != null)
+		{
+			for (int i = 0; i < Items.Count; i++)
+			{
+				Items[i]?.UpdateFromSettings(currentSettings);
+			}
+		}
+	}
+
 	public void OnTick()
 	{
+		if (DuelSettings.ModelDropdownsDirty)
+		{
+			DuelSettings.ModelDropdownsDirty = false;
+			RefreshCurrentItemsFromSettings();
+		}
+
 		if (_activeListeningItem != null)
 		{
 			if (Input.IsKeyPressed(InputKey.Escape))
@@ -1051,6 +1069,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		}
 	}
 
+	private bool _isUpdatingFromSettings;
 	private SelectorVM<SelectorItemVM> _dropdownSelector;
 	[DataSourceProperty]
 	public SelectorVM<SelectorItemVM> DropdownSelector
@@ -1254,7 +1273,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 	private void OnDropdownItemChanged(SelectorVM<SelectorItemVM> selector)
 	{
-		if (SettingDef == null || selector == null || selector.SelectedIndex < 0) return;
+		if (_isUpdatingFromSettings || SettingDef == null || selector == null || selector.SelectedIndex < 0) return;
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null) return;
 		var current = SettingDef.DropdownGetter?.Invoke(settings);
@@ -1263,6 +1282,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
 		OnPropertyChanged(nameof(DisplayValue));
 		_onModified?.Invoke();
+		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
 	}
 
 	public void ExecuteRebindHotkey()
@@ -1478,6 +1498,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
 		OnPropertyChanged(nameof(DisplayValue));
 		_onModified?.Invoke();
+		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
 	}
 
 	public void ExecuteCycleDropdownNext()
@@ -1492,6 +1513,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 		DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
 		OnPropertyChanged(nameof(DisplayValue));
 		_onModified?.Invoke();
+		AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
 	}
 
 	public void ExecuteCycleDropdown()
@@ -1527,6 +1549,7 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 					DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
 					OnPropertyChanged(nameof(DisplayValue));
 					_onModified?.Invoke();
+					AnimusForgeTerminalPopup.ActivePopup?.ViewModel?.RefreshCurrentItemsFromSettings();
 				}
 			},
 			null,
@@ -1587,46 +1610,81 @@ public sealed class AnimusForgeTerminalItemVM : ViewModel
 
 	public void UpdateFromSettings(DuelSettings settings)
 	{
-		if (SettingDef == null || settings == null) return;
-		switch (ItemKind)
+		if (SettingDef == null || settings == null || _isUpdatingFromSettings) return;
+		try
 		{
-			case TerminalItemKind.BoolSetting:
-				BoolValue = Convert.ToBoolean(SettingDef.Getter(settings));
-				BoolStatusText = BoolValue ? "✔ 开启" : "✕ 关闭";
-				OnPropertyChanged(nameof(BoolValue));
-				OnPropertyChanged(nameof(BoolStatusText));
-				OnPropertyChanged(nameof(IsBoolTrue));
-				break;
-			case TerminalItemKind.NumericSetting:
-				DisplayValue = FormatNumeric(SettingDef.Getter(settings), SettingDef.FormatString, SettingDef.Id);
-				OnPropertyChanged(nameof(DisplayValue));
-				break;
-			case TerminalItemKind.DropdownSetting:
-				DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
-				OnPropertyChanged(nameof(DisplayValue));
-				if (_dropdownSelector != null)
-				{
-					var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
-					if (dropdown != null && dropdown.SelectedIndex != _dropdownSelector.SelectedIndex && dropdown.SelectedIndex >= 0 && dropdown.SelectedIndex < _dropdownSelector.ItemList.Count)
-					{
-						_dropdownSelector.SelectedIndex = dropdown.SelectedIndex;
-					}
-				}
-				break;
-			case TerminalItemKind.HotkeySetting:
-				if (!_isListeningKey)
-				{
-					string rawKey = SettingDef.Getter(settings)?.ToString() ?? "";
-					DisplayValue = string.IsNullOrWhiteSpace(rawKey) ? "未设置" : rawKey.ToUpperInvariant();
+			_isUpdatingFromSettings = true;
+			switch (ItemKind)
+			{
+				case TerminalItemKind.BoolSetting:
+					BoolValue = Convert.ToBoolean(SettingDef.Getter(settings));
+					BoolStatusText = BoolValue ? "✔ 开启" : "✕ 关闭";
+					OnPropertyChanged(nameof(BoolValue));
+					OnPropertyChanged(nameof(BoolStatusText));
+					OnPropertyChanged(nameof(IsBoolTrue));
+					break;
+				case TerminalItemKind.NumericSetting:
+					DisplayValue = FormatNumeric(SettingDef.Getter(settings), SettingDef.FormatString, SettingDef.Id);
 					OnPropertyChanged(nameof(DisplayValue));
-				}
-				break;
-			case TerminalItemKind.TextSetting:
-				string raw = SettingDef.Getter(settings)?.ToString() ?? "";
-				DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
-				OnPropertyChanged(nameof(DisplayValue));
-				OnPropertyChanged(nameof(TextValue));
-				break;
+					break;
+				case TerminalItemKind.DropdownSetting:
+					DisplayValue = SettingDef.Getter(settings)?.ToString() ?? "";
+					OnPropertyChanged(nameof(DisplayValue));
+					var dropdown = SettingDef.DropdownGetter?.Invoke(settings);
+					if (dropdown != null && dropdown.Count > 0)
+					{
+						bool needRebuild = (_dropdownSelector == null || _dropdownSelector.ItemList == null || _dropdownSelector.ItemList.Count != dropdown.Count);
+						if (!needRebuild)
+						{
+							for (int i = 0; i < dropdown.Count; i++)
+							{
+								if (_dropdownSelector.ItemList[i]?.StringItem != dropdown[i])
+								{
+									needRebuild = true;
+									break;
+								}
+							}
+						}
+
+						if (needRebuild)
+						{
+							var options = new List<string>(dropdown.Count);
+							for (int i = 0; i < dropdown.Count; i++)
+							{
+								options.Add(dropdown[i]);
+							}
+							int selectedIdx = dropdown.SelectedIndex;
+							if (selectedIdx < 0 || selectedIdx >= options.Count)
+							{
+								selectedIdx = 0;
+							}
+							DropdownSelector = new SelectorVM<SelectorItemVM>(options, selectedIdx, OnDropdownItemChanged);
+						}
+						else if (dropdown.SelectedIndex != _dropdownSelector.SelectedIndex && dropdown.SelectedIndex >= 0 && dropdown.SelectedIndex < _dropdownSelector.ItemList.Count)
+						{
+							_dropdownSelector.SelectedIndex = dropdown.SelectedIndex;
+						}
+					}
+					break;
+				case TerminalItemKind.HotkeySetting:
+					if (!_isListeningKey)
+					{
+						string rawKey = SettingDef.Getter(settings)?.ToString() ?? "";
+						DisplayValue = string.IsNullOrWhiteSpace(rawKey) ? "未设置" : rawKey.ToUpperInvariant();
+						OnPropertyChanged(nameof(DisplayValue));
+					}
+					break;
+				case TerminalItemKind.TextSetting:
+					string raw = SettingDef.Getter(settings)?.ToString() ?? "";
+					DisplayValue = string.IsNullOrWhiteSpace(raw) ? "点击填写 ✎" : (raw.Length > 24 ? raw.Substring(0, 24) + "..." : raw);
+					OnPropertyChanged(nameof(DisplayValue));
+					OnPropertyChanged(nameof(TextValue));
+					break;
+			}
+		}
+		finally
+		{
+			_isUpdatingFromSettings = false;
 		}
 	}
 }

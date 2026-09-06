@@ -613,27 +613,20 @@
                                   <Children>
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46">
                                       <Children>
-                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Top">
-                                           <Children>
-                                             <ListPanel HorizontalAlignment="Left" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="96" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CurrentTabText" />
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@CurrentSortLabelText" />
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="24" MarginLeft="6" VerticalAlignment="Center">
                                                <Children>
-                                                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="36" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CurrentSortLabelText" />
-                                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="20" MarginLeft="4" VerticalAlignment="Center">
-                                                   <Children>
-                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
-                                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="2" ExtendRight="3" ExtendBottom="2" AlphaFactor="0.4" IsEnabled="false" />
-                                                     <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="174" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{CurrentSortSelector}" />
-                                                   </Children>
-                                                 </Widget>
+                                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
+                                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.4" IsEnabled="false" />
+                                                 <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="134" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{CurrentSortSelector}" />
                                                </Children>
-                                             </ListPanel>
-
-                                             <TextWidget HorizontalAlignment="Center" VerticalAlignment="Center" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CurrentTabText" />
-                                           </Children>
-                                         </Widget>
-                                      </Children>
-                                    </Widget>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginTop="28" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                             </Widget>
+                                          </Children>
+                                        </ListPanel>
+                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginTop="28" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                       <Children>
                                         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="480" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@AttackerHeaderText" />
                                         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#AFA697FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@WarHeaderText" />
@@ -763,12 +756,13 @@
                               <Children>
                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                   <Children>
-                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="36" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HistorySortLabelText" />
-                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="20" MarginLeft="4" MarginRight="10" VerticalAlignment="Center">
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="80" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HistoryTabText" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="36" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#C8AD79FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@HistorySortLabelText" />
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="26" MarginLeft="6" MarginRight="8" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
-                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="2" ExtendRight="3" ExtendBottom="2" AlphaFactor="0.4" IsEnabled="false" />
-                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="174" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{HistorySortSelector}" />
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.4" IsEnabled="false" />
+                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="134" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{HistorySortSelector}" />
                                       </Children>
                                     </Widget>
                                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Cancel.Button" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelectAllHistory" IsEnabled="@HasHistoryRows">
