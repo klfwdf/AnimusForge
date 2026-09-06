@@ -2015,6 +2015,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private NpcDataPacket _shoutTradeTargetNpc = null;
 
+	// The live Agent captured when the short-lived trade UI opens is the stable identity for non-Hero native conversation targets.
+	private Agent _shoutTradeTargetAgentSnapshot = null;
+
 	private bool _shoutTradeActionOnly = false;
 
 	private Hero _shoutTradeTargetHeroOverride = null;
@@ -20894,7 +20897,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			hero = ResolveHeroFromAgentIndex(_shoutTradeTargetNpc.AgentIndex) ?? characterObject?.HeroObject;
 		}
-		if (_shoutTradeTargetCharacterOverride != null)
+		// Prefer the current scene Agent character; native non-Hero conversations can expose a proxy CharacterObject instead.
+		if (_shoutTradeTargetCharacterOverride != null && characterObject == null)
 		{
 			characterObject = _shoutTradeTargetCharacterOverride;
 		}
@@ -20924,6 +20928,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
+			// Agent indexes are scene-local; reject a recycled index when this UI flow already captured the original Agent.
+			bool hasCapturedLiveAgent = _shoutTradeTargetAgentSnapshot != null;
+			if (hasCapturedLiveAgent && !ReferenceEquals(liveAgent, _shoutTradeTargetAgentSnapshot))
+			{
+				return false;
+			}
 			if (requireCurrentShoutFrame
 				&& !GetAgentsForShoutTargetingContext(_activeShoutTargetingContext)
 					.Any(agent => agent != null && agent.Index == expectedTarget.AgentIndex))
@@ -20935,7 +20945,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			if (_shoutTradeTargetCharacterOverride != null
+			// A captured Agent is authoritative for non-Hero native dialogue; its proxy CharacterObject may legitimately differ.
+			if (!hasCapturedLiveAgent
+				&& _shoutTradeTargetCharacterOverride != null
 				&& !ReferenceEquals(liveCharacter, _shoutTradeTargetCharacterOverride)
 				&& !string.Equals(
 					liveCharacter.StringId ?? "",
@@ -20952,7 +20964,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			if (!string.IsNullOrWhiteSpace(expectedTarget.TroopId)
+			if (!hasCapturedLiveAgent
+				&& !string.IsNullOrWhiteSpace(expectedTarget.TroopId)
 				&& !string.Equals(
 					expectedTarget.TroopId,
 					liveCharacter.StringId ?? "",
@@ -20960,7 +20973,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			if (!string.IsNullOrWhiteSpace(expectedTarget.UnnamedKey))
+			if (!hasCapturedLiveAgent && !string.IsNullOrWhiteSpace(expectedTarget.UnnamedKey))
 			{
 				NpcDataPacket liveTarget = ShoutUtils.ExtractNpcData(liveAgent);
 				if (!string.Equals(
@@ -21008,6 +21021,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		_shoutTradeTargetNpc = targetNpc;
 		_shoutTradeMode = mode;
+		try
+		{
+			// Capture once per UI flow so later validation does not mistake a non-Hero conversation proxy for another NPC.
+			_shoutTradeTargetAgentSnapshot = Mission.Current?.Agents?.FirstOrDefault(
+				agent => agent != null && agent.Index == (targetNpc?.AgentIndex ?? (-1)));
+		}
+		catch
+		{
+			_shoutTradeTargetAgentSnapshot = null;
+		}
 		ResolveShoutTradeRuntimeTarget(out var resolvedHero, out var resolvedCharacter, out var _);
 		if (IsNativeConversationSelfTarget(resolvedHero, resolvedCharacter))
 		{
@@ -27227,6 +27250,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_shoutPendingTradeItemIndex = 0;
 		_shoutTradeMode = ShoutChatMode.Normal;
 		_shoutTradeTargetNpc = null;
+		// Release the scene-bound identity when the UI flow ends; Agents must not outlive a completed trade flow.
+		_shoutTradeTargetAgentSnapshot = null;
 	}
 
 	private async void OnShoutConfirmed(string shoutText)
