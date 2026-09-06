@@ -14856,6 +14856,251 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static void SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(
+		Hero targetHero,
+		CharacterObject targetCharacter,
+		string npcName,
+		int dayIndex,
+		IEnumerable<AnimusForgeDialogueHistoryEntry> previousEntries,
+		IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries,
+		string reason)
+	{
+		try
+		{
+			if (targetHero == null)
+			{
+				targetHero = targetCharacter?.HeroObject;
+			}
+			if (targetCharacter == null)
+			{
+				targetCharacter = targetHero?.CharacterObject;
+			}
+			if (string.IsNullOrWhiteSpace(npcName))
+			{
+				npcName = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "").Trim();
+			}
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
+			if (string.IsNullOrWhiteSpace(key) || dayIndex < 0)
+			{
+				return;
+			}
+
+			List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(previousEntries, dayIndex);
+			List<AnimusForgeDialogueHistoryEntry> newSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(currentEntries, dayIndex);
+			List<AnimusForgeDialogueHistoryEntry> removed = BuildNativeConversationHistoryEditDelta(oldSnapshot, newSnapshot);
+			List<AnimusForgeDialogueHistoryEntry> added = BuildNativeConversationHistoryEditDelta(newSnapshot, oldSnapshot);
+			if (removed.Count == 0 && added.Count == 0)
+			{
+				return;
+			}
+
+			int replacedCount = 0;
+			int removedCount = 0;
+			int addedCount = 0;
+			bool rebuilt = false;
+			lock (_nativeConversationSessionHistoryLock)
+			{
+				_nativeConversationSessionHistory.TryGetValue(key, out var existing);
+				List<AnimusForgeDialogueHistoryEntry> working = existing ?? new List<AnimusForgeDialogueHistoryEntry>();
+				bool hadAffectedDayEntries = working.Any((AnimusForgeDialogueHistoryEntry x) => x != null && x.GameDayIndex == dayIndex);
+				bool exactMatchFailed = false;
+				int pairedCount = Math.Min(removed.Count, added.Count);
+				List<Tuple<int, AnimusForgeDialogueHistoryEntry>> replacements = new List<Tuple<int, AnimusForgeDialogueHistoryEntry>>();
+				List<int> removalIndexes = new List<int>();
+				HashSet<int> reservedIndexes = new HashSet<int>();
+
+				if (hadAffectedDayEntries)
+				{
+					for (int i = 0; i < pairedCount; i++)
+					{
+						int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes);
+						if (index < 0)
+						{
+							exactMatchFailed = true;
+							break;
+						}
+						reservedIndexes.Add(index);
+						replacements.Add(Tuple.Create(index, added[i]));
+					}
+
+					if (!exactMatchFailed)
+					{
+						for (int i = pairedCount; i < removed.Count; i++)
+						{
+							int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes);
+							if (index < 0)
+							{
+								exactMatchFailed = true;
+								break;
+							}
+							reservedIndexes.Add(index);
+							removalIndexes.Add(index);
+						}
+					}
+				}
+
+				if (exactMatchFailed)
+				{
+					working = RebuildNativeConversationSessionHistoryDayForDailyMemoryEdit(existing, newSnapshot, dayIndex);
+					rebuilt = true;
+					replacedCount = 0;
+					removedCount = 0;
+					addedCount = newSnapshot.Count;
+				}
+				else
+				{
+					foreach (Tuple<int, AnimusForgeDialogueHistoryEntry> replacement in replacements)
+					{
+						long eventSequence = working[replacement.Item1].EventSequence;
+						CopyNativeConversationHistoryEntryForDailyMemoryEdit(working[replacement.Item1], replacement.Item2);
+						working[replacement.Item1].EventSequence = eventSequence > 0L ? eventSequence : NextConversationEventSequence();
+						replacedCount++;
+					}
+					foreach (int index in removalIndexes.OrderByDescending((int x) => x))
+					{
+						working.RemoveAt(index);
+						removedCount++;
+					}
+					int firstAddedIndex = hadAffectedDayEntries ? pairedCount : 0;
+					for (int i = firstAddedIndex; i < added.Count; i++)
+					{
+						AnimusForgeDialogueHistoryEntry entry = CloneNativeConversationHistoryEntry(added[i]);
+						entry.EventSequence = NextConversationEventSequence();
+						working.Add(entry);
+						addedCount++;
+					}
+				}
+
+				TrimNativeConversationSessionHistory(working);
+				if (working.Count == 0)
+				{
+					_nativeConversationSessionHistory.Remove(key);
+				}
+				else
+				{
+					_nativeConversationSessionHistory[key] = working;
+				}
+			}
+			Logger.Log("NativeConversationHistory", "manual_daily_memory_sync key=" + key + " day=" + dayIndex + " replaced=" + replacedCount + " removed=" + removedCount + " added=" + addedCount + " rebuilt=" + rebuilt + " reason=" + (reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationHistory", "[WARN] manual daily memory sync failed: " + ex.Message);
+		}
+	}
+
+	private static List<AnimusForgeDialogueHistoryEntry> CloneNativeConversationHistoryEntriesForDailyMemoryEdit(IEnumerable<AnimusForgeDialogueHistoryEntry> entries, int dayIndex)
+	{
+		return (entries ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
+			.Where((AnimusForgeDialogueHistoryEntry x) => x != null && x.GameDayIndex == dayIndex && !string.IsNullOrWhiteSpace(x.Text))
+			.Select(CloneNativeConversationHistoryEntry)
+			.ToList();
+	}
+
+	private static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEditDelta(IEnumerable<AnimusForgeDialogueHistoryEntry> source, IEnumerable<AnimusForgeDialogueHistoryEntry> target)
+	{
+		Dictionary<string, int> targetCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (AnimusForgeDialogueHistoryEntry entry in target ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
+		{
+			string fingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(entry);
+			if (!targetCounts.ContainsKey(fingerprint))
+			{
+				targetCounts[fingerprint] = 0;
+			}
+			targetCounts[fingerprint]++;
+		}
+		List<AnimusForgeDialogueHistoryEntry> result = new List<AnimusForgeDialogueHistoryEntry>();
+		foreach (AnimusForgeDialogueHistoryEntry entry in source ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
+		{
+			string fingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(entry);
+			if (targetCounts.TryGetValue(fingerprint, out var count) && count > 0)
+			{
+				targetCounts[fingerprint] = count - 1;
+				continue;
+			}
+			result.Add(CloneNativeConversationHistoryEntry(entry));
+		}
+		return result;
+	}
+
+	private static string BuildNativeConversationHistoryDailyMemoryEditFingerprint(AnimusForgeDialogueHistoryEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		return BuildNativeConversationHistoryDailyMemoryEditCoreKey(entry)
+			+ "\u001f" + (entry.Speaker ?? "").Trim().ToLowerInvariant()
+			+ "\u001f" + entry.GameHour
+			+ "\u001f" + (entry.Scene ?? "").Trim().ToLowerInvariant()
+			+ "\u001f" + entry.TargetAgentIndex
+			+ "\u001f" + (entry.TargetName ?? "").Trim().ToLowerInvariant();
+	}
+
+	private static string BuildNativeConversationHistoryDailyMemoryEditCoreKey(AnimusForgeDialogueHistoryEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		return (entry.Kind ?? "").Trim().ToLowerInvariant() + "\u001f" + NormalizeNativeConversationVisibleTextKey(entry.Text);
+	}
+
+	private static int FindNativeConversationHistoryEntryForDailyMemoryEdit(List<AnimusForgeDialogueHistoryEntry> entries, AnimusForgeDialogueHistoryEntry expected, int dayIndex, HashSet<int> reservedIndexes)
+	{
+		string expectedFingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(expected);
+		for (int i = 0; i < (entries?.Count ?? 0); i++)
+		{
+			AnimusForgeDialogueHistoryEntry candidate = entries[i];
+			if ((reservedIndexes == null || !reservedIndexes.Contains(i)) && candidate != null && candidate.GameDayIndex == dayIndex && string.Equals(BuildNativeConversationHistoryDailyMemoryEditFingerprint(candidate), expectedFingerprint, StringComparison.Ordinal))
+			{
+				return i;
+			}
+		}
+		string expectedKey = BuildNativeConversationHistoryDailyMemoryEditCoreKey(expected);
+		for (int i = 0; i < (entries?.Count ?? 0); i++)
+		{
+			AnimusForgeDialogueHistoryEntry candidate = entries[i];
+			if ((reservedIndexes == null || !reservedIndexes.Contains(i)) && candidate != null && candidate.GameDayIndex == dayIndex && string.Equals(BuildNativeConversationHistoryDailyMemoryEditCoreKey(candidate), expectedKey, StringComparison.Ordinal))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static void CopyNativeConversationHistoryEntryForDailyMemoryEdit(AnimusForgeDialogueHistoryEntry target, AnimusForgeDialogueHistoryEntry source)
+	{
+		if (target == null || source == null)
+		{
+			return;
+		}
+		target.GameDayIndex = source.GameDayIndex;
+		target.GameDate = source.GameDate ?? "";
+		target.GameHour = source.GameHour;
+		target.Scene = source.Scene ?? "";
+		target.Speaker = source.Speaker ?? "";
+		target.TargetAgentIndex = source.TargetAgentIndex;
+		target.TargetName = source.TargetName ?? "";
+		target.Text = source.Text ?? "";
+		target.Kind = source.Kind ?? "";
+	}
+
+	private static List<AnimusForgeDialogueHistoryEntry> RebuildNativeConversationSessionHistoryDayForDailyMemoryEdit(IEnumerable<AnimusForgeDialogueHistoryEntry> existing, IEnumerable<AnimusForgeDialogueHistoryEntry> replacement, int dayIndex)
+	{
+		List<AnimusForgeDialogueHistoryEntry> result = (existing ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
+			.Where((AnimusForgeDialogueHistoryEntry x) => x != null && x.GameDayIndex != dayIndex)
+			.ToList();
+		foreach (AnimusForgeDialogueHistoryEntry source in replacement ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
+		{
+			AnimusForgeDialogueHistoryEntry entry = CloneNativeConversationHistoryEntry(source);
+			entry.EventSequence = NextConversationEventSequence();
+			result.Add(entry);
+		}
+		return result;
+	}
+
 	public static void RecordNativeConversationNpcLineForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string text, int targetAgentIndex = -1, NpcDataPacket npc = null)
 	{
 		try
