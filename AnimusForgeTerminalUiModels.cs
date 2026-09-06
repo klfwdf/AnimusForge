@@ -333,9 +333,13 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			_searchText = value ?? "";
 			_menuPage = 0;
 			OnPropertyChangedWithValue(_searchText, nameof(SearchText));
+			OnPropertyChanged(nameof(IsSearchEmpty));
 			RefreshItems();
 		}
 	}
+
+	[DataSourceProperty]
+	public bool IsSearchEmpty => string.IsNullOrWhiteSpace(_searchText);
 
 	[DataSourceProperty]
 	public string MenuPageText => $"{_menuPage + 1}/{Math.Max(1, (_filteredCount + MenuPageSize - 1) / MenuPageSize)} 页 · {_filteredCount} 项";
@@ -551,6 +555,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		}
 		OnPropertyChanged(nameof(IsTagCatalogBrowser));
 		OnPropertyChanged(nameof(IsSearchVisible));
+		OnPropertyChanged(nameof(IsSearchEmpty));
 		OnPropertyChanged(nameof(MenuContentTop));
 		OnPropertyChanged(nameof(MenuPageText));
 		OnPropertyChanged(nameof(HasPreviousMenuPage));
@@ -717,6 +722,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		_searchText = "";
 		_menuPage = 0;
 		OnPropertyChanged(nameof(SearchText));
+		OnPropertyChanged(nameof(IsSearchEmpty));
 	}
 
 	public void ShowBrowser(string title, IEnumerable<AnimusForgeTerminalNode> entries)
