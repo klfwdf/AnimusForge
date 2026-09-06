@@ -2771,6 +2771,9 @@ public sealed partial class NpcRulerPolicyBehavior
 				PolicyName = record.PolicyName ?? string.Empty,
 				PolicyContent = FirstNonEmpty(record.PolicyContent, record.PolicyDigest),
 				ImpactSummary = FirstNonEmpty(record.ImpactSummary, BuildEffectSummary(record.Effects)),
+				DiplomacyRevisionKey = string.Join(";", (record.Effects ?? new List<NpcRulerPolicyEffectDto>())
+					.Where(effect => effect != null).Select(effect => effect.EffectId + ":" + effect.DurationDays.ToString(CultureInfo.InvariantCulture))
+					.OrderBy(value => value, StringComparer.Ordinal)),
 				PolicyStatus = policyStatus,
 				RawPolicyStatus = (record.AgendaStatus ?? string.Empty).Trim().ToLowerInvariant(),
 				HistoryBucket = PolicyHistoryRetrievalService.ResolveHistoryBucketFromStatus(record.AgendaStatus),

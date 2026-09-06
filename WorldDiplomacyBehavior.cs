@@ -1935,9 +1935,30 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)
 	{
+		EnsureCanonicalHistoryInitialized();
+		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		string systemPrompt = BuildCanonicalHistorySystemPrompt(BuildCommonDiplomacySystemPrefix());
+		// Reserve room for the request contract, mode parameters, archive headings and message framing.
+		long inputBudget = GetHistoryCompressionTriggerTokens() - EstimateHistoryTokens(systemPrompt) - 2048L;
+		throughSequence = WorldDiplomacyPolicyHistoryRules.SelectCompressionPrefix(
+			history.Snapshot.CoveredThroughSequence, history.Snapshot.EstimatedTokens,
+			history.DeltaEntries.Where(x => x != null && x.Sequence <= throughSequence).OrderBy(x => x.Sequence),
+			inputBudget, x => x.Sequence, x => x.EstimatedTokens);
+		tokenCount = history.Snapshot.EstimatedTokens + history.DeltaEntries
+			.Where(x => x != null && x.Sequence <= throughSequence).Sum(x => x.EstimatedTokens);
 		int batchSequence = Math.Max(0, _storage.CompressionSequence) + 1;
 		string batchId = "diplomacy_compaction_" + batchSequence.ToString(CultureInfo.InvariantCulture);
 		int overallTargetTokens = Math.Max(1, targetTokens);
+		overallTargetTokens = (int)Math.Min(overallTargetTokens, Math.Max(256L, inputBudget / 2L));
+		if (!WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(throughSequence,
+			history.Snapshot.CoveredThroughSequence, history.Snapshot.EstimatedTokens, overallTargetTokens))
+		{
+			// Do not repeatedly pay to compress an already-small snapshot while the next
+			// indivisible entry still cannot fit. Keep the archive intact and back off locally.
+			_storage.CompressionRetryAfterHour = CurrentHour() + CompressionRetryMaximumHours;
+			Log("compression input budget cannot fit the next history entry; archive retained, retry deferred");
+			return;
+		}
 		int protectedBudgetTokens = Math.Max(0, Math.Min(overallTargetTokens - 256, overallTargetTokens / 4));
 		List<WorldDiplomacyCanonicalProtectedFact> protectedFacts = SelectCanonicalProtectedFactsWithinTokenBudget(
 			BuildCanonicalProtectedFactsThrough(throughSequence), protectedBudgetTokens);
@@ -1962,12 +1983,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			CompressionThroughSequence = Math.Max(0L, throughSequence),
 			CompressionOverallTargetTokens = overallTargetTokens,
 			CompressionTargetTokens = summaryTargetTokens,
-			SystemPrompt = BuildCanonicalHistorySystemPrompt(BuildCommonDiplomacySystemPrefix()),
+			SystemPrompt = systemPrompt,
 			UserPrompt = BuildTokenCompressionPrompt(batchId, throughSequence, tokenCount, summaryTargetTokens, protectedTokens),
 			CacheAffinityKey = CanonicalHistoryCacheAffinityKey,
 			MaxTokens = Math.Min(configuredOutputTokenLimit, summaryTargetTokens + outputTokenReserve)
 		};
-		CaptureCanonicalHistoryForJob(job, syncSources: false);
+		CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: throughSequence);
 		EnqueueJob(job);
 		Log("token compression queued batch=" + batchId
 			+ " through_sequence=" + throughSequence.ToString(CultureInfo.InvariantCulture)
@@ -2234,7 +2255,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		List<WorldDiplomacyJob> runnable = _storage.Jobs.Where(x => x != null && !x.IsRunning).ToList();
+		List<WorldDiplomacyJob> runnable = _storage.Jobs.Where(x => x != null && !x.IsRunning
+			&& (!x.AwaitingHistoryCompression || hour >= _storage.CompressionRetryAfterHour)).ToList();
 		int highestPriority = runnable.Count == 0 ? int.MinValue : runnable.Max(x => x.Priority);
 		WorldDiplomacyJob job = runnable
 			.Where(x => x.Priority == highestPriority)
@@ -2310,10 +2332,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			CommitFailedJob(job, "api not configured: " + configError);
 			return;
 		}
-		if (!TryConsumeDiplomacyLlmRequestBudget())
-		{
-			return;
-		}
+		if (!TryConsumeDiplomacyLlmRequestBudget(consume: false)) return;
 		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase))
 		{
 			if (!EnsureGenerationJobHasKingdomStrategicProfile(job))
@@ -2331,6 +2350,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 		}
 		JArray requestMessages = BuildLlmMessageArray(job);
+		if (!EnsureRequestFitsInputBudget(job, requestMessages)) return;
+		if (!TryConsumeDiplomacyLlmRequestBudget()) return;
 		job.IsRunning = true;
 		job.CacheAffinityKey = ResolveCacheAffinityKey(job);
 		_lastLlmCacheAffinityKey = job.CacheAffinityKey;
@@ -2388,6 +2409,47 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 			_completedJobs.Enqueue(result);
 		});
+	}
+
+	private bool EnsureRequestFitsInputBudget(WorldDiplomacyJob job, JArray messages)
+	{
+		long inputTokens = 0L;
+		foreach (JToken message in messages)
+			inputTokens += EstimateHistoryTokens((string)message["content"]) + EstimateHistoryTokens((string)message["role"]) + 4L;
+		long limit = GetHistoryCompressionTriggerTokens();
+		if (inputTokens <= limit)
+		{
+			job.AwaitingHistoryCompression = false;
+			return true;
+		}
+		if (!string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase))
+		{
+			CommitFailedJob(job, "input budget exceeded before send: " + inputTokens + "/" + limit
+				+ "; single archive entry/snapshot or non-history prompt requires reduction");
+			return false;
+		}
+		if (IsValidSemanticRepairMessageChain(job))
+		{
+			// A repair owns a frozen rejected prompt. Rebuild the declaration from current
+			// authoritative state before compressing, rather than silently editing that chain.
+			job.LlmMessages.Clear();
+			job.SemanticRepairAttempts = 0;
+			if (!TryRebuildPendingWorldDiplomacyJob(job)) CommitFailedJob(job, "oversized repair could not be rebuilt");
+			return false;
+		}
+		long historyTokens = EstimateHistoryTokens(BuildCanonicalHistoryBlock(job.HistoryThroughSequence));
+		long availableHistoryTokens = limit - (inputTokens - historyTokens) - 1024L;
+		if (availableHistoryTokens < 512L)
+		{
+			CommitFailedJob(job, "non-history prompt alone exceeds input budget; history was retained");
+			return false;
+		}
+		job.AwaitingHistoryCompression = true;
+		job.InputBudgetHistoryTargetTokens = (int)Math.Min(GetHistoryCompressionTargetTokens(), availableHistoryTokens / 2L);
+		TryScheduleTokenCompression();
+		Log("generation deferred for history compression job=" + job.JobId + " input_tokens=" + inputTokens
+			+ " input_limit=" + limit + " history_target=" + job.InputBudgetHistoryTargetTokens);
+		return false;
 	}
 
 	private static bool HasCurrentCanonicalPromptContract(WorldDiplomacyJob job)
@@ -8550,7 +8612,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryConsumeDiplomacyLlmRequestBudget()
+	private bool TryConsumeDiplomacyLlmRequestBudget(bool consume = true)
 	{
 		int day = CurrentDay();
 		if (_llmRequestsStartedDay != day)
@@ -8569,7 +8631,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 			return false;
 		}
-		_llmRequestsStartedToday++;
+		if (consume) _llmRequestsStartedToday++;
 		return true;
 	}
 
@@ -10764,11 +10826,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		EnsureCanonicalHistoryInitialized();
 		SyncCanonicalHistorySources();
 		long threshold = GetHistoryCompressionTriggerTokens();
-		_storage.DiplomacyCompressionPending = _storage.CanonicalHistory.EstimatedTokens >= threshold;
+		_storage.DiplomacyCompressionPending = _storage.CanonicalHistory.EstimatedTokens >= threshold
+			|| _storage.Jobs.Any(x => x != null && x.AwaitingHistoryCompression);
 		if (!_storage.DiplomacyCompressionPending || CurrentHour() < _storage.CompressionRetryAfterHour) return;
 		if (_storage.Jobs.Any(x => x != null && string.Equals(x.Kind, "compress", StringComparison.OrdinalIgnoreCase))) return;
 		long throughSequence = Math.Max(_storage.CanonicalHistory.Snapshot.CoveredThroughSequence, _storage.CanonicalHistory.NextSequence - 1L);
-		EnqueueCompressionJob(throughSequence, _storage.CanonicalHistory.EstimatedTokens, GetHistoryCompressionTargetTokens());
+		int targetTokens = _storage.Jobs.Where(x => x != null && x.AwaitingHistoryCompression && x.InputBudgetHistoryTargetTokens > 0)
+			.Select(x => x.InputBudgetHistoryTargetTokens).DefaultIfEmpty(GetHistoryCompressionTargetTokens()).Min();
+		EnqueueCompressionJob(throughSequence, _storage.CanonicalHistory.EstimatedTokens, Math.Min(targetTokens, GetHistoryCompressionTargetTokens()));
 	}
 
 	private void CommitCompression(WorldDiplomacyJob job, string raw)
@@ -10833,6 +10898,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		history.Snapshot = replacement;
 		history.DeltaEntries.RemoveAll(x => x != null && x.Sequence <= cutoff);
 		history.Revision++;
+		foreach (WorldDiplomacyJob pending in _storage.Jobs.Where(x => x != null && x.AwaitingHistoryCompression))
+		{
+			// Let the waiting declaration remeasure its complete request after each commit.
+			// Keeping this flag set would enqueue another compaction before it could resume.
+			pending.AwaitingHistoryCompression = false;
+		}
 		_storage.CompressionSummaries.RemoveAll(x => x != null && string.Equals(x.BatchId, summary.BatchId, StringComparison.OrdinalIgnoreCase));
 		_storage.CompressionSummaries.Add(summary);
 		_storage.CompressionSequence = Math.Max(_storage.CompressionSequence + 1, ParseCompressionSequence(summary.BatchId));
@@ -13603,6 +13674,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		history.WorldWeeklySourceHashes ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		history.WorldWeeklySourceRevisions ??= new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 		history.PolicyRevisionSignatures ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		history.PolicyEventRevisions = (history.PolicyEventRevisions ?? new Dictionary<string, long>())
+			.Where(x => !string.IsNullOrWhiteSpace(x.Key))
+			.GroupBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
+			.ToDictionary(x => x.Key, x => Math.Max(0L, x.Last().Value), StringComparer.OrdinalIgnoreCase);
 		history.LastPolicyArtifactSequence = Math.Max(0L, history.LastPolicyArtifactSequence);
 		history.LastPolicyArtifactLedgerId = (history.LastPolicyArtifactLedgerId ?? "").Trim();
 		history.WorldWeeklySourceHashes = history.WorldWeeklySourceHashes.Where(x => !string.IsNullOrWhiteSpace(x.Key))
@@ -13617,6 +13692,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.GroupBy(x => x.Sequence)
 			.Select(x => x.First())
 			.ToList();
+		MigratePolicyCountdownHistory(history);
 		_canonicalHistorySourceKeys.Clear();
 		foreach (string sourceKey in history.DeltaEntries.Select(x => x?.SourceKey).Where(x => !string.IsNullOrWhiteSpace(x))) _canonicalHistorySourceKeys.Add(sourceKey);
 		long lastSequence = history.DeltaEntries.Count == 0
@@ -13646,6 +13722,50 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static long EstimateHistoryTokens(string text)
 	{
 		return Math.Max(0, Logger.EstimateTokens(text ?? ""));
+	}
+
+	private void MigratePolicyCountdownHistory(WorldDiplomacyCanonicalHistoryState history)
+	{
+		if (history.PolicyHistorySchemaVersion >= 1) return;
+		// One cold pass, preserving sequences and non-policy facts. An increase in any
+		// countdown, changed duration, status, body or effect remains a real observation.
+		history.DeltaEntries = WorldDiplomacyPolicyHistoryRules.CollapseCountdownCopies(
+			history.DeltaEntries,
+			entry => entry.Kind == "policy_published" || entry.Kind == "policy_snapshot"
+				? entry.SourceId : null,
+			entry => entry.Text, out int removed,
+			(before, after) => before.Kind == after.Kind && before.GameDate == after.GameDate
+				&& before.AuthorKingdomId == after.AuthorKingdomId && before.Verified == after.Verified
+				&& before.Intent == after.Intent && before.Commitment == after.Commitment
+				&& before.RespondingToOfferDocumentId == after.RespondingToOfferDocumentId
+				&& before.RespondingToThreatDocumentId == after.RespondingToThreatDocumentId
+				&& (before.TargetKingdomIds ?? new List<string>()).SequenceEqual(after.TargetKingdomIds ?? new List<string>())
+				&& (before.ActionFacts ?? new List<string>()).SequenceEqual(after.ActionFacts ?? new List<string>()));
+		foreach (WorldDiplomacyCanonicalHistoryEntry entry in history.DeltaEntries)
+		{
+			if ((entry.Kind == "policy_published" || entry.Kind == "policy_snapshot") && !string.IsNullOrWhiteSpace(entry.SourceId))
+			{
+				history.PolicyEventRevisions.TryGetValue(entry.SourceId, out long revision);
+				history.PolicyEventRevisions[entry.SourceId] = revision + 1L;
+			}
+		}
+		history.PolicyRevisionSignatures.Clear();
+		history.LastPolicyArtifactSequence = 0L;
+		history.LastPolicyArtifactRevision = 0L;
+		history.LastPolicyArtifactLedgerId = "";
+		history.PolicyHistorySchemaVersion = 1;
+		history.Revision++;
+		// Persisted repair chains contain their own copy of the old oversized history.
+		foreach (WorldDiplomacyJob job in _storage.Jobs ?? new List<WorldDiplomacyJob>())
+		{
+			if (job == null || job.IsRunning || !UsesCanonicalHistory(job)) continue;
+			job.LlmMessages?.Clear();
+			job.SemanticRepairAttempts = 0;
+			job.HistoryPrefixHash = "";
+		}
+		InvalidateCanonicalHistoryRenderCache();
+		Log("policy countdown history migration removed=" + removed.ToString(CultureInfo.InvariantCulture)
+			+ " retained=" + history.DeltaEntries.Count.ToString(CultureInfo.InvariantCulture));
 	}
 
 	private void RecalculateCanonicalHistoryTokens()
@@ -13831,6 +13951,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
 		string ledgerId = (WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(ledgerId)) return;
+		long sourceRevision = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentRevision();
+		if (history.LastPolicyArtifactRevision != sourceRevision)
+		{
+			// Snapshot sequence positions may shift after insertion/removal. Rescan only when
+			// its semantic revision changes; durable per-policy fingerprints prevent replay.
+			history.LastPolicyArtifactSequence = 0L;
+			history.LastPolicyArtifactRevision = sourceRevision;
+		}
 		if (string.IsNullOrWhiteSpace(history.LastPolicyArtifactLedgerId))
 		{
 			history.LastPolicyArtifactLedgerId = ledgerId;
@@ -13878,6 +14006,9 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void RebuildPublishedPolicySignaturesThrough(long throughSequence)
 	{
 		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
+		// v2 cursors are durable observations, not an event-log prefix. Rebuilding them
+		// from today's snapshot would silently acknowledge changes made since the save.
+		if (history.PolicyHistorySchemaVersion >= 1) return;
 		long cutoff = Math.Max(0L, throughSequence);
 		long cursor = 0L;
 		while (cursor < cutoff)
@@ -13910,15 +14041,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string eventKind = (policy?.EventKind ?? "").Trim().ToLowerInvariant();
 		if (policy == null || policy.Revision <= 0L || string.IsNullOrWhiteSpace(policy.PolicyId)
 			|| (eventKind != "policy_published" && eventKind != "policy_snapshot")) return false;
-		signatureKey = policy.PolicyId.Trim() + ":" + policy.Revision.ToString(CultureInfo.InvariantCulture) + ":" + eventKind;
-		fingerprint = StablePromptHash(string.Join("\n", new[]
-		{
-			policy.PolicyName ?? "",
-			policy.KingdomId ?? "",
-			policy.KingdomName ?? "",
-			policy.ScopeKind ?? "",
-			policy.PublishedText ?? ""
-		}));
+		signatureKey = policy.PolicyId.Trim();
+		fingerprint = policy.ContentHash;
 		return true;
 	}
 
@@ -13933,13 +14057,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			|| (eventKind != "policy_published" && eventKind != "policy_snapshot")) return false;
 		if (!TryBuildPublishedPolicySignature(policy, out string signatureKey, out string fingerprint)) return false;
 		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
-		if (history.PolicyRevisionSignatures.TryGetValue(signatureKey, out string previousFingerprint)
-			&& string.Equals(previousFingerprint, fingerprint, StringComparison.Ordinal)) return true;
-		string ledgerId = FirstNonEmpty(history.LastPolicyArtifactLedgerId, "legacy");
-		string sourceKey = "policy:" + ledgerId + ":" + signatureKey;
+		long nextRevision = WorldDiplomacyPolicyHistoryRules.NextEventRevision(
+			history.PolicyRevisionSignatures, history.PolicyEventRevisions, signatureKey, fingerprint);
+		if (nextRevision == 0L) return true;
+		history.PolicyEventRevisions.TryGetValue(signatureKey, out long previousRevision);
+		string sourceKey = "policy:event-v2:" + signatureKey + ":r" + nextRevision.ToString(CultureInfo.InvariantCulture);
 		if (CanonicalDeltaContainsSourceKey(sourceKey))
 		{
 			history.PolicyRevisionSignatures[signatureKey] = fingerprint;
+			history.PolicyEventRevisions[signatureKey] = nextRevision;
 			return true;
 		}
 		StringBuilder text = new StringBuilder();
@@ -13950,10 +14076,15 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(policy.ScopeKind)) text.Append("；范围=").Append(policy.ScopeKind.Trim());
 		text.AppendLine().Append(policy.PublishedText.Trim());
-		bool appended = AppendCanonicalHistoryEntry(eventKind, sourceKey, policy.PolicyId,
-			policy.OccurredDay, policy.GameDate, policy.KingdomId, Enumerable.Empty<string>(), "", "",
+		bool isChange = previousRevision > 0L;
+		bool appended = AppendCanonicalHistoryEntry(isChange ? "policy_snapshot" : eventKind, sourceKey, policy.PolicyId,
+			isChange ? CurrentDay() : policy.OccurredDay, isChange ? FormatCampaignDate(CurrentDay()) : policy.GameDate, policy.KingdomId, Enumerable.Empty<string>(), "", "",
 			text.ToString(), verified: true);
-		if (appended) history.PolicyRevisionSignatures[signatureKey] = fingerprint;
+		if (appended)
+		{
+			history.PolicyRevisionSignatures[signatureKey] = fingerprint;
+			history.PolicyEventRevisions[signatureKey] = nextRevision;
+		}
 		return appended;
 	}
 
@@ -14211,7 +14342,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_canonicalHistoryRenderCache = "";
 	}
 
-	private void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources)
+	private void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources, long throughSequence = long.MaxValue)
 	{
 		if (job == null) return;
 		if (syncSources)
@@ -14221,7 +14352,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		EnsureCanonicalHistoryInitialized();
 		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
-		job.HistoryThroughSequence = Math.Max(history.Snapshot.CoveredThroughSequence, history.NextSequence - 1L);
+		job.HistoryThroughSequence = Math.Min(throughSequence, Math.Max(history.Snapshot.CoveredThroughSequence, history.NextSequence - 1L));
 		job.HistoryRevision = history.Revision;
 		job.HistoryEstimatedTokens = history.EstimatedTokens;
 		job.HistorySnapshotThroughSequence = history.Snapshot.CoveredThroughSequence;
@@ -19220,6 +19351,12 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+	[JsonProperty("awaitingHistoryCompression")]
+	public bool AwaitingHistoryCompression { get; set; }
+
+	[JsonProperty("inputBudgetHistoryTargetTokens")]
+	public int InputBudgetHistoryTargetTokens { get; set; }
+
 	[JsonProperty("historyThroughSequence")]
 	public long HistoryThroughSequence { get; set; }
 
@@ -19367,6 +19504,15 @@ public sealed class WorldDiplomacyJob
 
 public sealed class WorldDiplomacyCanonicalHistoryState
 {
+	[JsonProperty("policyHistorySchemaVersion")]
+	public int PolicyHistorySchemaVersion { get; set; }
+
+	[JsonProperty("policyEventRevisions")]
+	public Dictionary<string, long> PolicyEventRevisions { get; set; } = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+
+	[JsonProperty("lastPolicyArtifactRevision")]
+	public long LastPolicyArtifactRevision { get; set; }
+
 	[JsonProperty("snapshot")]
 	public WorldDiplomacyCanonicalHistorySnapshot Snapshot { get; set; } = new WorldDiplomacyCanonicalHistorySnapshot();
 

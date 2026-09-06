@@ -10,8 +10,8 @@ using Newtonsoft.Json;
 namespace AnimusForge;
 
 /// <summary>
-/// Immutable adapter from the unified new-policy history into the world-diplomacy
-/// canonical-history ingestion contract. It does not own or persist policy state.
+/// One immutable observation in the bounded unified-policy snapshot. The diplomacy
+/// consumer owns durable event revisions; snapshot positions are not event identities.
 /// </summary>
 internal sealed class PublishedPolicyArtifactLedgerEntry
 {
@@ -66,7 +66,7 @@ internal static class WorldDiplomacyPolicyContext
 	private const int MaxPublishedPolicyArtifacts = 400;
 	private const int OwnPolicyLimit = 3;
 	private const int ForeignPressureLimit = 3;
-	private const string UnifiedPolicyHistoryLedgerPrefix = "unified-policy-history-v1:";
+	private const string UnifiedPolicyHistoryLedgerId = "unified-policy-history-v2";
 	private static readonly long RefreshIntervalTicks = Math.Max(1L, Stopwatch.Frequency);
 	private static readonly object CacheLock = new object();
 	private static readonly Dictionary<string, string> SnapshotByKingdomId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -294,6 +294,7 @@ internal static class WorldDiplomacyPolicyContext
 			AppendHash(ref contentSignature, entry.OwnerKingdomName);
 			AppendHash(ref contentSignature, entry.PolicyName);
 			AppendHash(ref contentSignature, publishedText);
+			AppendHash(ref contentSignature, entry.DiplomacyRevisionKey);
 			artifacts.Add(new PublishedPolicyArtifactLedgerEntry(
 				sequence: index + 1L,
 				revision: isCurrent ? 1L : 2L,
@@ -319,8 +320,9 @@ internal static class WorldDiplomacyPolicyContext
 		}
 		_publishedPolicyArtifacts = artifacts;
 		_publishedHistoryRevision = unchecked((long)ledgerSignature);
-		_publishedHistoryLedgerId = UnifiedPolicyHistoryLedgerPrefix
-			+ ledgerSignature.ToString("X16", CultureInfo.InvariantCulture);
+		// This is a bounded current-state snapshot. Its revision changes with policy events;
+		// its identity must not change when any policy changes.
+		_publishedHistoryLedgerId = UnifiedPolicyHistoryLedgerId;
 	}
 
 	private static string BuildPublishedPolicyArtifactText(NpcPolicyHistoryEntry entry)
@@ -331,10 +333,13 @@ internal static class WorldDiplomacyPolicyContext
 		{
 			text.AppendLine().Append(entry.PolicyContent.Trim());
 		}
-		if (!string.IsNullOrWhiteSpace(entry?.ImpactSummary))
+		string archivalImpact = entry?.DiplomacyImpactSummary ?? entry?.ImpactSummary;
+		if (!string.IsNullOrWhiteSpace(archivalImpact))
 		{
-			text.AppendLine().Append("影响：").Append(entry.ImpactSummary.Trim());
+			text.AppendLine().Append("影响：").Append(archivalImpact.Trim());
 		}
+		if (!string.IsNullOrWhiteSpace(entry?.EffectStatus))
+			text.AppendLine().Append("效果状态：").Append(entry.EffectStatus.Trim());
 		List<string> effects = (entry?.EffectSummaries ?? new List<string>())
 			.Where(value => !string.IsNullOrWhiteSpace(value))
 			.Select(value => value.Trim())
