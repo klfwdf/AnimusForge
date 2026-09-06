@@ -39,6 +39,7 @@ for (int i = 0; i < 123; i++)
     roots.Add(node);
 }
 object vm = Activator.CreateInstance(vmType, roots, (Func<string, bool>)(_ => false), (Action)(() => closed++));
+Call(vm, "ShowBrowser", "query-fixture", roots);
 Check(((IList)Get(vm, "Items")).Count == 50, "first page bounded");
 Call(vm, "ExecuteNextMenuPage"); Call(vm, "ExecuteNextMenuPage");
 Check(((IList)Get(vm, "Items")).Count == 23 && !(bool)Get(vm, "HasNextMenuPage"), "last page includes all remaining identities");
@@ -178,6 +179,41 @@ Check(af.GetType("AnimusForge.TerminalWeeklyReportBrowserPopup", false) == null 
 Call(vm, "ExecuteBack"); Call(vm, "ShowDiagnostics", "status", "detail", false);
 Call(vm, "ExecuteRequestAiAnalysis"); Check(closed == 0, "no-error analysis action is inert");
 Call(vm, "ExecuteBack"); Check((string)Get(vm, "SearchText") == "NPC-090", "diagnostics back preserves menu state");
+// Merge regression: upstream settings remain reachable alongside local query browsers.
+Type registryType = af.GetType("AnimusForge.TerminalSettingsRegistry", true);
+IList definitions = (IList)registryType.GetProperty("AllDefinitions").GetValue(null);
+Check(definitions.Count > 0, "upstream setting definitions retained");
+Check(definitions.Cast<object>().Select(d => (string)Get(d, "Id")).Distinct().Count() == definitions.Count, "setting IDs remain unique");
+Call(vm, "SelectTab", "AI核心");
+var expectedSettingIds = definitions.Cast<object>().Where(d => (string)Get(d, "TabCategory") == "AI核心").Select(d => (string)Get(d, "Id")).ToHashSet();
+var visibleSettingIds = new System.Collections.Generic.HashSet<string>();
+while (true)
+{
+    foreach (object item in (IList)Get(vm, "Items"))
+        if (Get(item, "SettingDef") is object def) visibleSettingIds.Add((string)Get(def, "Id"));
+    if (!(bool)Get(vm, "HasNextMenuPage")) break;
+    Call(vm, "ExecuteNextMenuPage");
+}
+Check(expectedSettingIds.Count > 0 && expectedSettingIds.SetEquals(visibleSettingIds), "every upstream AI setting is accessible across pages");
+Check(!(bool)Get(vm, "HasUnsavedChanges"), "browsing settings must not mark unchanged values dirty");
+Call(vm, "SelectTab", "全部");
+object hotkeyDef = definitions.Cast<object>().First(d => Get(d, "SettingType").ToString() == "Hotkey");
+string hotkeyId = (string)Get(hotkeyDef, "Id");
+Set(vm, "SearchText", hotkeyId);
+object hotkeyItem = ((IList)Get(vm, "Items")).Cast<object>().First(item => Get(item, "SettingDef") is object def && (string)Get(def, "Id") == hotkeyId);
+Check(!(bool)Get(vm, "HasPreviousMenuPage"), "global setting search resets page and expands matched groups");
+Call(vm, "StartListeningKey", hotkeyItem); Check((bool)Get(vm, "IsListeningForKey"), "hotkey capture started");
+Call(vm, "CancelListeningKey"); Check(!(bool)Get(vm, "IsListeningForKey"), "hotkey capture cancels without editing settings");
+Call(vm, "StartListeningKey", hotkeyItem); Call(vm, "SelectTab", "全部");
+Check(!(bool)Get(vm, "IsListeningForKey"), "navigation cannot leave an invisible key listener");
+Check(vmType.GetMethod("ExecuteSaveSettings") != null && af.GetType("AnimusForge.DuelSettings", true).GetMethod("SaveCurrentSettings") != null, "upstream save entrypoints retained without writing settings");
+Check(af.GetType("AnimusForge.AnimusForgeApiOnboardingPopup", false) != null && af.GetType("AnimusForge.AnimusForgeApiOnboardingVM", false) != null, "upstream API wizard types retained");
+XDocument.Load(Path.Combine(repo, "AnimusForge/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
+var mergeXml = XDocument.Load(Path.Combine(repo, "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml"));
+var mergeBindings = mergeXml.Descendants().Attributes().Select(a => a.Value).ToHashSet();
+foreach (string binding in new[] { "@IsBool", "@IsNumeric", "@IsDropdown", "@IsHotkey", "@IsText", "@IsButton", "@BodyText", "@SearchText", "@ImageId" })
+    Check(mergeBindings.Contains(binding), "merged XML retains " + binding);
+Console.WriteLine("PASS mergedTerminalSettings pagination/search/groups/hotkey-cancel/save-entrypoints/api-wizard settingsWrite=NOT_RUN apiNetwork=NOT_RUN");
 Call(vm, "ExecuteClose"); Check(closed == 1, "close callback exactly once per command"); Call(vm, "OnFinalize");
 
 WeeklyReportOwnerReplay.Run(af);
