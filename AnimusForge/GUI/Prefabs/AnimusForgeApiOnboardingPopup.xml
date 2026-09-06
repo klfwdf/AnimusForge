@@ -563,17 +563,17 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.35" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16">
                                   <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="220" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
                                         <RichTextWidget Text="1. 主 API 角色对话模型（沉浸扮演核心）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
                                         <RichTextWidget Text="推荐 deepseek-chat 或 gpt-4o-mini，负责与 NPC 的正文交谈。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
-                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="194" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PrimaryModelSelector}" />
+                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="334" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PrimaryModelSelector}" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -588,17 +588,17 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.35" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16">
                                   <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="220" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
                                         <RichTextWidget Text="2. 前处理意图分类模型（快速分流）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
                                         <RichTextWidget Text="推荐极速通道 deepseek-chat，负责判断玩家说话动机与场景机制。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
-                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="194" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{AuxiliaryModelSelector}" />
+                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="334" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{AuxiliaryModelSelector}" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -613,17 +613,17 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.35" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16">
                                   <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="220" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
                                         <RichTextWidget Text="3. 后处理指令标签模型（动作执行）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
                                         <RichTextWidget Text="负责从回复中提取决斗、交易、入队等游戏行为标签。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
-                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="194" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PostprocessModelSelector}" />
+                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="334" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PostprocessModelSelector}" />
                                       </Children>
                                     </Widget>
                                   </Children>
@@ -638,17 +638,17 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.35" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16">
                                   <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="220" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginRight="360" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <Children>
                                         <RichTextWidget Text="4. 每日与周报写作模型（天下大势）" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="16" Brush.FontColor="#F5E3C3FF" />
                                         <RichTextWidget Text="负责总结卡拉迪亚战争形势、领地发展与叛乱情报。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="4" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#C8BCA8FF" />
                                       </Children>
                                     </ListPanel>
-                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="34" HorizontalAlignment="Right" VerticalAlignment="Center">
                                       <Children>
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="194" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{EventModelSelector}" />
+                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="334" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{EventModelSelector}" />
                                       </Children>
                                     </Widget>
                                   </Children>
