@@ -316,7 +316,6 @@ internal static class Program
         string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"))
             .Replace("\r\n", "\n", StringComparison.Ordinal);
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
-        string myBehavior = File.ReadAllText(Path.Combine(projectRoot, "MyBehavior.cs"));
         string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
 
         foreach (string classMarker in new[]
@@ -402,9 +401,11 @@ internal static class Program
             "_lastDuelAfterLines.Remove(stringId);",
             "lines.DuelOutcomeId");
 
-        AssertDebtNormalizerClearsBeforeCache(
-            ExtractMethod(myBehavior, "private static string NormalizeDuelPostprocessTags("),
-            "MyBehavior.NormalizeDuelPostprocessTags");
+        // Native and Scene now reach the same live normalizer. Do not retain a
+        // disconnected MyBehavior duplicate merely to keep this test target alive.
+        Require(ExtractMethod(shoutBehavior, "private async Task<string> SubmitNativeConversationTextInternalAsync(")
+                .Contains("TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal),
+            "Native conversation no longer reaches the shared action postprocessor.");
         AssertDebtNormalizerClearsBeforeCache(
             ExtractMethod(shoutBehavior, "private static string NormalizeDuelPostprocessTagsForScene("),
             "ShoutBehavior.NormalizeDuelPostprocessTagsForScene");
@@ -1323,7 +1324,6 @@ internal static class Program
 
         foreach ((string typeName, string methodName) in new[]
         {
-            ("AnimusForge.MyBehavior", "NormalizeDuelPostprocessTags"),
             ("AnimusForge.ShoutBehavior", "NormalizeDuelPostprocessTagsForScene")
         })
         {
@@ -1336,6 +1336,9 @@ internal static class Program
             Require(clear >= 0 && cache > clear,
                 typeName + "::" + methodName + " does not clear stale debt before caching this Duel reply.");
         }
+        RequireCall(assembly,
+            assembly.RequireUniqueMethod("AnimusForge.ShoutBehavior", "TryRunSceneUnifiedActionPostprocess"),
+            "AnimusForge.ShoutBehavior", "NormalizeDuelPostprocessTagsForScene");
     }
 
     private static void VerifyExactDispatchProvenance(MetadataAssembly assembly)

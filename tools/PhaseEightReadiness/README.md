@@ -21,7 +21,7 @@ python -B .\tools\PhaseEightReadiness\entry_inventory.py
 ```
 
 不带参数的清单为每条稳定排序路径附带命中的 `reviewed-pattern` 来源原因；`--update`
-仍只会合并 catalog 的 `entryPaths`，不会把来源说明或候选发现提升为验收证据。
+合并 catalog 的 `entryPaths`；有新增候选的域会降为 `entryCoverage=REPRESENTATIVE` 等待重新入口复核，但保留真实 owner assignment。没有新增候选的域不改状态。不会把来源说明或候选发现提升为验收证据。
 
 第二条命令必须输出 `BLOCKED`、退出 **2**：这是缺失证据的成功演示，不是工具测试失败。示例报告见 `G:\AFMOD\AF-REFACTOR\docs\phase8\all-missing-report.example.json`。它是生成时的快照，不是自动刷新的项目状态。
 
@@ -57,7 +57,7 @@ python -B .\tools\PhaseEightReadiness\readiness.py `
 - `G:\AFMOD\AF-REFACTOR\docs\phase8\full-domain-readiness-catalog.json`：总纲20个验收责任桶、代表性真实入口与`entryCoverage`、owner assignment、Prompt/ActionPlan适用性、存档责任、fallback、default、当前证据和Bridge矩阵。
 - `G:\AFMOD\AF-REFACTOR\docs\phase8\cleanup-candidates.json`：逐symbol清理盘点、调用/动态入口/兼容责任、替代门禁、风险与回滚checkpoint。
 
-早期module catalog仍只跟踪8个逻辑ID：`af.foundation.runtime`、`af.game-adapter`、`af.module.conversation`、`af.module.siege-aftermath`、`af.module.policy-effects`、`af.module.world-diplomacy`、`af.bridge.conversation-siege`、`af.bridge.policy-diplomacy`。这些设计ID和20个完整领域责任桶同时受门禁，**但20领域不是20个物理DLL，也不把`entryTypeStatus=Pending`伪装成ModuleHost已上线**。当前domain maintainer都是`ROLE_PLACEHOLDER`角色ID、入口覆盖均为`REPRESENTATIVE`；real manifest在角色改为`ASSIGNED`且入口由owner确认为`COMPLETE`前，必定`UNASSIGNED_DOMAIN_OWNER/INCOMPLETE_DOMAIN_ENTRY_INVENTORY/BLOCKED`。每份证据必须显式列出`domainIds`和`bridgeIds`并获得相关maintainer审核；缺任一领域的OFFLINE/LIVE/SAVE/RELEASE覆盖都会BLOCKED。
+早期module catalog仍只跟踪8个逻辑ID：`af.foundation.runtime`、`af.game-adapter`、`af.module.conversation`、`af.module.siege-aftermath`、`af.module.policy-effects`、`af.module.world-diplomacy`、`af.bridge.conversation-siege`、`af.bridge.policy-diplomacy`。这些设计ID和20个完整领域责任桶同时受门禁，**但20领域不是20个物理DLL，也不把`entryTypeStatus=Pending`伪装成ModuleHost已上线**。2026-09-06 当前目录已有20个`ASSIGNED` owner；本轮补齐真实终端/周报/WarStats候选后，world/social/UI三个受影响域的入口覆盖回到`REPRESENTATIVE`待复核，其余17域保留既有`COMPLETE`。real manifest仍会因未复核入口而`INCOMPLETE_DOMAIN_ENTRY_INVENTORY/BLOCKED`；owner认领也不等于LIVE/SAVE证据通过。每份证据必须显式列出`domainIds`和`bridgeIds`并获得相关maintainer审核；缺任一领域的OFFLINE/LIVE/SAVE/RELEASE覆盖都会BLOCKED。
 
 两组既有 Bridge 必须覆盖各自原有5个case ID，再加已有组合矩阵的`incompatible-contract-version`、`bridge-runtime-failure`、`bridge-disabled-data-preserved`、`safe-mode`。每个Bridge的OFFLINE、LIVE 1.3/1.4和SAVE 1.3/1.4分别检查覆盖；两个maintainer都必须审核。不复制fixture期望值为“真实运行结果”，记录必须提供自己的观察证据。20领域目录中的13组`PAIR`使用A/B case，3组`CROSS_CUT`使用`EACH_OWNER_ALONE/ALL_WITHOUT_COORDINATOR/ALL_WITH_COORDINATOR`等多owner case；证据必须在`bridgeIds`中精确绑定对应Bridge，单纯把case文本放进generic record不计覆盖。这仍是责任/证据门禁，不会把责任桶变成已上线Bridge。
 

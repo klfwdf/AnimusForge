@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
+using System.Reflection;
 
 static void AssertTrue(bool condition, string message)
 {
@@ -60,7 +62,38 @@ await using (ReplayServer nonMain = await ReplayServer.StartAsync((_, _) => (500
     AssertTrue(nonMain.Requests.Count == 0, "non-main stage reached provider");
 }
 
-Console.WriteLine("PASS knowledgeRagGatewayReplay success=1 empty=1 providerFailure=1 cancellation=1 nonMainExclusion=1 credentialBoundary=1");
+// Exercise independent domain gates with the real runtime allow-list, without changing
+// production files or adding a runtime override. Existing isolation tests cover JSON loading.
+FeatureBridgeRuntime.Initialize(out _);
+FieldInfo enabledField = typeof(FeatureBridgeRuntime).GetField("_enabledById", BindingFlags.NonPublic | BindingFlags.Static);
+object originalEnabled = enabledField.GetValue(null);
+try
+{
+    foreach ((bool conversation, bool knowledge) in new[] { (false, true), (true, false), (false, false), (true, true) })
+    {
+        enabledField.SetValue(null, new System.Collections.ObjectModel.ReadOnlyDictionary<string, bool>(new Dictionary<string, bool>
+        {
+            [FeatureBridgeIds.ConversationGateway] = conversation,
+            [FeatureBridgeIds.GatewayKnowledgeProfile] = knowledge
+        }));
+        await using ReplayServer server = await ReplayServer.StartAsync((_, _) => (200, "{\"choices\":[{\"message\":{\"content\":\"domain-reply\"}}]}"));
+        int ragCredentials = 0, conversationCredentials = 0;
+        var rag = new LegacyKnowledgeRagGateway(_ => { ragCredentials++; return "fixture-key"; });
+        var chat = new LegacyConfiguredChatGateway(_ => { conversationCredentials++; return "fixture-key"; });
+        LlmGenerateResult ragResult = await rag.GenerateAsync(Request(server.Url), CancellationToken.None);
+        LlmGenerateResult chatResult = await chat.GenerateAsync(Request(server.Url), CancellationToken.None);
+        AssertTrue((ragResult.Status == LlmResultStatus.Succeeded) == knowledge, $"RAG must depend on its own bridge only: conversation={conversation} knowledge={knowledge}");
+        AssertTrue((chatResult.Status == LlmResultStatus.Succeeded) == conversation, "RAG bridge must not authorize ordinary chat");
+        AssertTrue(ragCredentials == (knowledge ? 1 : 0) && conversationCredentials == (conversation ? 1 : 0), "disabled owner accessed credentials");
+        AssertTrue(server.Requests.Count == (knowledge ? 1 : 0) + (conversation ? 1 : 0), "disabled owner reached provider");
+    }
+}
+finally
+{
+    enabledField.SetValue(null, originalEnabled);
+}
+
+Console.WriteLine("PASS knowledgeRagGatewayReplay success=1 empty=1 providerFailure=1 cancellation=1 nonMainExclusion=1 credentialBoundary=1 independentBridgeCombinations=4");
 
 internal sealed class ReplayServer : IAsyncDisposable
 {

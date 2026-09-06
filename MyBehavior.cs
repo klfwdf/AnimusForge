@@ -2034,6 +2034,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly ConcurrentQueue<Action> _weekZeroShortSummaryMainThreadActions = new ConcurrentQueue<Action>();
 
+	private readonly Queue<WeeklyFullReportCompletion> _weeklyFullReportCompletions = new Queue<WeeklyFullReportCompletion>();
+
+	private sealed class WeeklyFullReportCompletion
+	{
+		internal long RuntimeGeneration;
+		internal Func<bool> Apply;
+		internal readonly TaskCompletionSource<bool> Completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+	}
+
 	private bool _weekZeroShortSummaryQueueProcessing;
 
 	private long _weekZeroShortSummaryLastRequestUtcTicks;
@@ -2404,6 +2413,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			CancelWeeklyFullReportCompletions();
 			ResetTailPersistenceTransientState(reason);
 			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			ClearRuleStickyCarry();
@@ -20303,6 +20313,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ProcessWeeklyReportUiResume();
 			TryPublishUnreadWeeklyReportMapNotifications();
 			ProcessWeekZeroShortSummaryMainThreadActions();
+			ProcessWeeklyFullReportCompletions();
 			ProcessKingdomRebellionApiRepairResume();
 			ProcessKingdomRebellionNamingMainThreadActions();
 			ProcessPendingDevForcedKingdomRebellionResult();
@@ -34986,801 +34997,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text.Trim();
 	}
 
-	private static string StripDuelActionTags(string text)
-	{
-		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_STAKE[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_LINE_WIN:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_LINE_LOSE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		return text2.Trim();
-	}
-
-	private static string BuildPostprocessRuleText(IEnumerable<PostprocessRuleEntry> entries)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		foreach (PostprocessRuleEntry entry in entries ?? new List<PostprocessRuleEntry>())
-		{
-			string text = (entry?.Tag ?? "").Trim();
-			string text2 = (entry?.Description ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				stringBuilder.AppendLine(string.IsNullOrWhiteSpace(text2) ? text : (text + "：" + text2));
-			}
-		}
-		return stringBuilder.ToString().TrimEnd();
-	}
-
-	private static string BuildDuelPostprocessItemList(List<RewardSystemBehavior.DuelStakeOption> options)
-	{
-		if (options == null || options.Count <= 0)
-		{
-			return "（无）";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		List<RewardSystemBehavior.DuelStakeOption> list = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && !x.IsPrivateEquipment).ToList();
-		List<RewardSystemBehavior.DuelStakeOption> list2 = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && x.IsPrivateEquipment).ToList();
-		if (list.Count > 0)
-		{
-			stringBuilder.AppendLine("库存物品：");
-			foreach (RewardSystemBehavior.DuelStakeOption duelStakeOption in list)
-			{
-				stringBuilder.Append(duelStakeOption.Name ?? "未知物品")
-					.Append(" x")
-					.Append(System.Math.Max(1, duelStakeOption.Count))
-					.Append(" | guidePrice=")
-					.Append(System.Math.Max(1, duelStakeOption.GuidePrice))
-					.AppendLine();
-			}
-		}
-		if (list2.Count > 0)
-		{
-			stringBuilder.AppendLine("私人装备：");
-			foreach (RewardSystemBehavior.DuelStakeOption duelStakeOption2 in list2)
-			{
-				stringBuilder.Append(duelStakeOption2.Name ?? "未知物品")
-					.Append(" x")
-					.Append(System.Math.Max(1, duelStakeOption2.Count))
-					.Append(" | guidePrice=")
-					.Append(System.Math.Max(1, duelStakeOption2.GuidePrice))
-					.AppendLine();
-			}
-		}
-		return stringBuilder.ToString().TrimEnd();
-	}
-
-	private static RewardSystemBehavior.DuelStakeOption FindDuelStakeOptionByToken(List<RewardSystemBehavior.DuelStakeOption> options, string token)
-	{
-		if (options == null || options.Count == 0 || string.IsNullOrWhiteSpace(token))
-		{
-			return null;
-		}
-		string text = token.Trim();
-		RewardSystemBehavior.DuelStakeOption duelStakeOption = options.FirstOrDefault((RewardSystemBehavior.DuelStakeOption x) => x != null && string.Equals((x.Name ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
-		if (duelStakeOption != null)
-		{
-			return duelStakeOption;
-		}
-		List<RewardSystemBehavior.DuelStakeOption> list3 = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-		if (list3.Count == 1)
-		{
-			return list3[0];
-		}
-		list3 = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && text.IndexOf(x.Name ?? "", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-		if (list3.Count == 1)
-		{
-			return list3[0];
-		}
-		return null;
-	}
-
-	private static string TranslateDuelStakeItemNames(string text, List<RewardSystemBehavior.DuelStakeOption> options)
-	{
-		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
-		{
-			return text ?? "";
-		}
-		return Regex.Replace(text, "\\[ACTION:(DUEL_STAKE(?:_(?:NPC|PLAYER))?_ITEM):([^\\]\\r\\n:]+):(\\d+)\\]", delegate(Match m)
-		{
-			string value = m.Groups[1].Value;
-			string token = m.Groups[2].Value;
-			if (!int.TryParse(m.Groups[3].Value, out var result3) || result3 <= 0)
-			{
-				return "";
-			}
-			RewardSystemBehavior.DuelStakeOption duelStakeOption2 = FindDuelStakeOptionByToken(options, token);
-			if (duelStakeOption2 == null || string.IsNullOrWhiteSpace(duelStakeOption2.Name))
-			{
-				return "[ACTION:" + value + ":" + token.Trim() + ":" + result3 + "]";
-			}
-			result3 = System.Math.Min(System.Math.Max(1, result3), System.Math.Max(1, duelStakeOption2.Count));
-			return "[ACTION:" + value + ":" + duelStakeOption2.Name.Trim() + ":" + result3 + "]";
-		}, RegexOptions.IgnoreCase);
-	}
-
-	private static string NormalizeDuelPostprocessTags(string raw, List<RewardSystemBehavior.DuelStakeOption> options, Hero targetHero = null)
-	{
-		List<string> list = new List<string>();
-		HashSet<string> hashSet = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
-		{
-			string text2 = (item?.Value ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				continue;
-			}
-			if (text2.StartsWith("[ACTION:MOOD:", System.StringComparison.OrdinalIgnoreCase))
-			{
-				text = text2;
-				continue;
-			}
-			if (hashSet.Add(text2))
-			{
-				list.Add(text2);
-			}
-		}
-		if (list.Any((string x) => string.Equals((x ?? "").Trim(), "[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase)))
-		{
-			try
-			{
-				DuelBehavior.ClearPendingDuelDebtTag(targetHero);
-				string deferredAdTag = list.LastOrDefault((string x) => (x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase));
-				if (!string.IsNullOrWhiteSpace(deferredAdTag))
-				{
-					Match match = Regex.Match(deferredAdTag, "\\[AD:(\\d+):(\\d+):P:([^\\]]*)\\]", RegexOptions.IgnoreCase);
-					if (match.Success && int.TryParse(match.Groups[1].Value, out var result) && int.TryParse(match.Groups[2].Value, out var result2) && result > 0)
-					{
-						DuelBehavior.CachePendingDuelDebtTag(targetHero, result, result2, (match.Groups[3].Value ?? "").Trim());
-					}
-				}
-			}
-			catch
-			{
-			}
-			list = list.Where((string x) => !((x ?? "").Trim().StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) || (x ?? "").Trim().StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))).ToList();
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-		return TranslateDuelStakeItemNames(text3, options).Trim();
-	}
-
-	private static string StripRewardActionTags(string text)
-	{
-		string text2 = text ?? "";
-		text2 = GiveAssetTagCodec.StripTags(text2);
-		text2 = Regex.Replace(text2, "\\[AD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[ADP:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		return text2.Trim();
-	}
-
-	private static string StripKingdomServiceActionTags(string text)
-	{
-		string text2 = text ?? "";
-		text2 = Regex.Replace(text2, "\\[ACTION:KINGDOM_SERVICE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
-		text2 = Regex.Replace(text2, "\\[A:(?:P_J_K_[MV]|P_L_K)\\]", "", RegexOptions.IgnoreCase);
-		return text2.Trim();
-	}
-
-	private static string BuildRewardPostprocessItemList(List<RewardSystemBehavior.RewardItemInfo> options, int gold, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
-		if (options == null || options.Count <= 0)
-		{
-			stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
-			return stringBuilder.ToString().TrimEnd();
-		}
-		List<RewardSystemBehavior.RewardItemInfo> list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
-		List<RewardSystemBehavior.RewardItemInfo> list2 = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.IsPrivateEquipment).ToList();
-		if (list.Count > 0)
-		{
-			stringBuilder.AppendLine("库存物品：");
-			foreach (RewardSystemBehavior.RewardItemInfo item in list)
-			{
-				stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? "未知物品")
-					.Append(string.IsNullOrWhiteSpace(item.PromptStringId) || string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase) ? "" : (" | id=" + item.PromptStringId))
-					.Append(" | type=")
-					.Append(RewardSystemBehavior.GetItemPromptTypeLabelForExternal(item.Item))
-					.Append(" x")
-					.Append(Math.Max(1, item.Count))
-					.Append(" | guidePrice=")
-					.Append(Math.Max(1, item.GuidePrice))
-					.AppendLine();
-			}
-		}
-		if (list2.Count > 0)
-		{
-			stringBuilder.AppendLine("私人战斗装备：");
-			foreach (RewardSystemBehavior.RewardItemInfo item2 in list2)
-			{
-				stringBuilder.Append(item2.Name ?? item2.PromptStringId ?? item2.StringId ?? "未知物品")
-					.Append(" | type=")
-					.Append(RewardSystemBehavior.GetItemPromptTypeLabelForExternal(item2.Item))
-					.Append(" x")
-					.Append(Math.Max(1, item2.Count))
-					.Append(" | guidePrice=")
-					.Append(Math.Max(1, item2.GuidePrice))
-					.AppendLine();
-			}
-		}
-		stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
-		return stringBuilder.ToString().TrimEnd();
-	}
-
-	private static RewardSystemBehavior.RewardItemInfo FindRewardItemByToken(List<RewardSystemBehavior.RewardItemInfo> options, string token)
-	{
-		if (options == null || options.Count == 0 || string.IsNullOrWhiteSpace(token))
-		{
-			return null;
-		}
-		string text = token.Trim();
-		static string normalizeLooseName(string value)
-		{
-			if (string.IsNullOrWhiteSpace(value))
-			{
-				return "";
-			}
-			return Regex.Replace(value.Trim(), "[\\s\\u3000]+", "").Replace("的", "");
-		}
-		RewardSystemBehavior.RewardItemInfo rewardItemInfo = options.FirstOrDefault((RewardSystemBehavior.RewardItemInfo x) => x != null && string.Equals((x.Name ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
-		if (rewardItemInfo != null)
-		{
-			return rewardItemInfo;
-		}
-		rewardItemInfo = options.FirstOrDefault((RewardSystemBehavior.RewardItemInfo x) => x != null && string.Equals((x.PromptStringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
-		if (rewardItemInfo != null)
-		{
-			return rewardItemInfo;
-		}
-		rewardItemInfo = options.FirstOrDefault((RewardSystemBehavior.RewardItemInfo x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
-		if (rewardItemInfo != null)
-		{
-			return rewardItemInfo;
-		}
-		string looseText = normalizeLooseName(text);
-		if (!string.IsNullOrWhiteSpace(looseText))
-		{
-			List<RewardSystemBehavior.RewardItemInfo> looseMatches = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && string.Equals(normalizeLooseName(x.Name ?? ""), looseText, StringComparison.OrdinalIgnoreCase)).ToList();
-			if (looseMatches.Count == 1)
-			{
-				return looseMatches[0];
-			}
-		}
-		List<RewardSystemBehavior.RewardItemInfo> list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-		if (list.Count == 1)
-		{
-			return list[0];
-		}
-		list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !string.IsNullOrWhiteSpace(text) && text.IndexOf(x.Name ?? "", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-		if (list.Count == 1)
-		{
-			return list[0];
-		}
-		return null;
-	}
-
-	private static string TranslateRewardItemIndexes(string text, List<RewardSystemBehavior.RewardItemInfo> options)
-	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return text ?? "";
-		}
-		static string getItemDisplayName(RewardSystemBehavior.RewardItemInfo item)
-		{
-			string text4 = item?.Name;
-			if (string.IsNullOrWhiteSpace(text4))
-			{
-				text4 = item?.Item?.Name?.ToString();
-			}
-			return text4 ?? "";
-		}
-		static void logRewardItemTranslation(string source, string token, RewardSystemBehavior.RewardItemInfo item, string actionKey)
-		{
-			try
-			{
-				Logger.Log("Logic", "[RewardPostprocess] item_translate source=" + (source ?? "") + " token=" + (token ?? "") + " matchedName=" + (item?.Name ?? "") + " stringId=" + (item?.StringId ?? "") + " promptId=" + (item?.PromptStringId ?? "") + " modifierId=" + (item?.ModifierStringId ?? "") + " actionKey=" + (actionKey ?? ""));
-			}
-			catch
-			{
-			}
-		}
-		return GiveAssetTagCodec.ReplaceTags(text, delegate(GiveAssetTag tag)
-		{
-			string token = (tag.AssetToken ?? "").Trim();
-			bool isAll = TransferQuantitySpec.IsAllValue(tag.QuantityToken);
-			int result3 = 0;
-			if (TransferQuantitySpec.IsAllValue(token) && !isAll)
-			{
-				return "";
-			}
-			if (!isAll && (!int.TryParse(tag.QuantityToken, out result3) || result3 <= 0))
-			{
-				return "";
-			}
-			if (options != null && int.TryParse(token, out var itemIndex) && itemIndex > 0 && itemIndex <= options.Count)
-			{
-				RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[itemIndex - 1];
-				string text3 = getItemDisplayName(rewardItemInfo);
-				logRewardItemTranslation("index", token, rewardItemInfo, text3);
-				if (string.IsNullOrWhiteSpace(text3))
-				{
-					return "";
-				}
-				token = text3.Trim();
-			}
-			return isAll ? ("[ACTION:GIVE_ASSET:" + token + ":ALL]") : ("[ACTION:GIVE_ASSET:" + token + ":" + result3 + "]");
-		});
-	}
-
-	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
-	{
-		List<string> list = new List<string>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		string text = "";
-		List<string> extractedTags = GiveAssetTagCodec.Extract(raw).Select((GiveAssetTag x) => x.RawTag).ToList();
-		string rawWithoutGiveAssetTags = GiveAssetTagCodec.StripTags(raw);
-		foreach (Match item in Regex.Matches(rawWithoutGiveAssetTags, "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
-		{
-			extractedTags.Add(item?.Value ?? "");
-		}
-		foreach (string extractedTag in extractedTags)
-		{
-			string text2 = (extractedTag ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				continue;
-			}
-			if (text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
-			{
-				text = text2;
-				continue;
-			}
-			if (!text2.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-			if ((text2.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
-				&& !RewardSystemBehavior.IsCanonicalDebtActionTagForExternal(text2))
-			{
-				continue;
-			}
-			if (GiveAssetTagCodec.TryParseWhole(text2, out GiveAssetTag giveAssetTag))
-			{
-				string assetToken = (giveAssetTag.AssetToken ?? "").Trim();
-				string quantityToken = (giveAssetTag.QuantityToken ?? "").Trim();
-				if (TransferQuantitySpec.IsAllValue(assetToken))
-				{
-					continue;
-				}
-				if (RewardSystemBehavior.IsGoldAssetTokenForExternal(assetToken))
-				{
-					if (!int.TryParse(quantityToken, out var goldAmount) || goldAmount <= 0)
-					{
-						continue;
-					}
-					text2 = "[ACTION:GIVE_ASSET:GOLD:" + goldAmount + "]";
-				}
-				else
-				{
-					RewardSystemBehavior.RewardItemInfo rewardItem = FindRewardItemByToken(options, assetToken);
-					if (rewardItem == null && !ReferenceEquals(allOptions, options))
-					{
-						rewardItem = FindRewardItemByToken(allOptions, assetToken);
-					}
-					bool isItemIndex = int.TryParse(assetToken, out var itemIndex) && itemIndex > 0 && itemIndex <= (options?.Count ?? 0);
-					if (TransferQuantitySpec.IsAllValue(quantityToken))
-					{
-						if (!isItemIndex && (rewardItem == null || rewardItem.Item == null || rewardItem.Count <= 0))
-						{
-							continue;
-						}
-						text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":ALL]";
-					}
-			else if (int.TryParse(quantityToken, out var generatedItemAmount)
-				&& generatedItemAmount > 0
-				&& (isItemIndex || RewardSystemBehavior.IsValidGeneratedRpAssetNameForExternal(assetToken)))
-			{
-				text2 = "[ACTION:GIVE_ASSET:" + assetToken + ":" + generatedItemAmount + "]";
-				Logger.Log("Logic", "[RewardPostprocess] GIVE_ASSET literal accepted source=free asset=" + assetToken + " amount=" + generatedItemAmount + " indexed=" + isItemIndex);
-			}
-			else
-			{
-				Logger.Log("Logic", "[RewardPostprocess] GIVE_ASSET literal rejected source=free asset=" + assetToken + " quantity=" + quantityToken + " indexed=" + isItemIndex);
-				continue;
-			}
-				}
-			}
-			if (hashSet.Add(text2))
-			{
-				list.Add(text2);
-			}
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-		text3 = TranslateRewardItemIndexes(text3, options);
-		return text3.Trim();
-	}
-
-	private static List<PostprocessRuleEntry> MergePostprocessRules(params List<PostprocessRuleEntry>[] ruleSets)
-	{
-		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (ruleSets == null)
-		{
-			return list;
-		}
-		foreach (List<PostprocessRuleEntry> ruleSet in ruleSets)
-		{
-			if (ruleSet == null)
-			{
-				continue;
-			}
-			foreach (PostprocessRuleEntry item in ruleSet)
-			{
-				string text = item?.Tag ?? "";
-				if (!string.IsNullOrWhiteSpace(text) && hashSet.Add(text))
-				{
-					list.Add(item);
-				}
-			}
-		}
-		return list;
-	}
-
-	private static string NormalizeKingdomServicePostprocessTags(string raw, List<PostprocessRuleEntry> rules)
-	{
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
-		{
-			string text2 = (rule?.Tag ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				hashSet.Add(text2);
-			}
-		}
-		List<string> list = new List<string>();
-		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:P_J_K_[MV]|P_L_K))\\]", RegexOptions.IgnoreCase))
-		{
-			string text3 = (item?.Value ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				continue;
-			}
-			if (text3.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
-			{
-				text = text3;
-				continue;
-			}
-			bool allowed = hashSet.Contains(text3);
-			if (!allowed)
-			{
-				Match legacyJoinMatch = Regex.Match(text3, "^\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE):[^\\]]+\\]$", RegexOptions.IgnoreCase);
-				if (legacyJoinMatch.Success)
-				{
-					string serviceType = (legacyJoinMatch.Groups[1].Value ?? "").Trim();
-					allowed = (serviceType.Equals("MERCENARY", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_J_K_M]"))
-						|| (serviceType.Equals("VASSAL", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_J_K_V]"))
-						|| (serviceType.Equals("LEAVE", StringComparison.OrdinalIgnoreCase) && hashSet.Contains("[A:P_L_K]"));
-				}
-			}
-			if (!allowed)
-			{
-				continue;
-			}
-			if (hashSet2.Add(text3))
-			{
-				list.Add(text3);
-			}
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-	}
-
-	private static string MergeNormalizedPostprocessBlocks(params string[] blocks)
-	{
-		List<string> list = new List<string>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		string text = "";
-		foreach (string block in blocks ?? Array.Empty<string>())
-		{
-			if (string.IsNullOrWhiteSpace(block))
-			{
-				continue;
-			}
-			string[] array = block.Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (string line in array)
-			{
-				string text2 = (line ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text2))
-				{
-					continue;
-				}
-				if (text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
-				{
-					if (string.IsNullOrWhiteSpace(text))
-					{
-						text = text2;
-					}
-					continue;
-				}
-				if (hashSet.Add(text2))
-				{
-					list.Add(text2);
-				}
-			}
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-	}
-
-	private string TryRunTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
-	{
-		string text = StripRewardActionTags(replyText);
-		if (string.Equals(logPrefix, "LoanPostprocess", StringComparison.OrdinalIgnoreCase) && AIConfigHandler.IsPlayerPartyTradeLimitedTarget(targetHero))
-		{
-			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
-			{
-				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-			}
-			return text.Trim();
-		}
-		if ((targetHero == null && targetCharacter == null) || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
-		{
-			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
-			{
-				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-			}
-			return text.Trim();
-		}
-		string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
-		string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
-		if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
-		{
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
-		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(rules, royalRules);
-		if (actionRules == null || actionRules.Count == 0)
-		{
-			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
-			{
-				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-			}
-			return text.Trim();
-		}
-		string text7 = targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC";
-		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text7);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text7);
-		}
-		string text3 = BuildPostprocessRuleText(actionRules);
-		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
-		string text5 = "（无）";
-		string text6 = "（无）";
-		string text12 = "（无）";
-		List<RewardSystemBehavior.RewardItemInfo> list = null;
-		List<RewardSystemBehavior.RewardItemInfo> allList = null;
-		MentionedWorldEntities promptListMentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
-		int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
-		if (RewardSystemBehavior.Instance != null)
-		{
-			try
-			{
-				text6 = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero, promptListMentions, promptListMax);
-			}
-			catch
-			{
-				text6 = "赤身裸体";
-			}
-			try
-			{
-				if (targetHero != null)
-				{
-					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, out allList))
-					{
-						allList = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
-						PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, targetHero, targetCharacter, -1, allList);
-					}
-					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, targetHero, targetCharacter, -1, out list))
-					{
-						list = PromptListRetrievalService.FilterNpcRewardItemsForAssetTransfer(allList, promptListMentions, promptListMax);
-					}
-					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero), allList);
-					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text7);
-				}
-				else if (targetCharacter != null)
-				{
-					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, out allList))
-					{
-						allList = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
-						PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, targetCharacter, -1, allList);
-					}
-					if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, targetCharacter, -1, out list))
-					{
-						list = PromptListRetrievalService.FilterRewardItems(allList, promptListMentions, promptListMax);
-					}
-					int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
-					text5 = BuildRewardPostprocessItemList(list, num, allList);
-					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);
-				}
-			}
-			catch
-			{
-				text5 = "（无）";
-				text12 = "（无）";
-				list = null;
-				allList = null;
-			}
-		}
-		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text7, text5, text6, text12);
-		string text9 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text7, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text7, text2), text5, text6, text12);
-		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
-		{
-			Logger.Log("Logic", "[" + logPrefix + "] 调用失败: " + error);
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-		}
-		string rewardTags = NormalizeRewardPostprocessTags(content, list, allList);
-		string royalTags = royalRules.Count > 0 ? NormalizeKingdomServicePostprocessTags(content, royalRules) : "";
-		string text10 = MergeNormalizedPostprocessBlocks(rewardTags, royalTags);
-		if (string.IsNullOrWhiteSpace(text10))
-		{
-			text10 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		try
-		{
-			MarkWeeklyMemoryMaterialTriggerInternal(targetHero ?? targetCharacter?.HeroObject, "", text7, text10, -1, -1, -1, allList ?? list, null, null, null);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][WARN] direct_transaction_mark_failed npc=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "") + " error=" + ex.Message);
-		}
-		string text11 = (text + "\n" + text10).Trim();
-		Logger.Log("Logic", "[" + logPrefix + "] RAW=\n" + content + "\nFINAL=\n" + text11 + "\n");
-		return text11;
-	}
-
-	private string TryRunRewardActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText)
-	{
-		return TryRunTransactionActionPostprocess(targetHero, targetCharacter, extraFact, replyText, AIConfigHandler.RewardPostprocessRules, "RewardPostprocess");
-	}
-
-	private string TryRunLoanActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText)
-	{
-		return TryRunTransactionActionPostprocess(targetHero, targetCharacter, extraFact, replyText, AIConfigHandler.LoanPostprocessRules, "LoanPostprocess");
-	}
-
-	private string TryRunKingdomServiceActionPostprocess(Hero targetHero, string extraFact, string replyText)
-	{
-		string text = StripKingdomServiceActionTags(replyText);
-		if (targetHero == null || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
-		{
-			Logger.Log("Logic", "[KingdomServicePostprocess] skipped reason=" + ((targetHero == null) ? "targetHero_null" : "api_unavailable"));
-			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
-			{
-				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-			}
-			return text.Trim();
-		}
-		string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
-		string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
-		if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
-		{
-			Logger.Log("Logic", "[KingdomServicePostprocess] skipped reason=template_missing");
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-		}
-		string text9 = targetHero?.Name?.ToString() ?? "NPC";
-		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text9);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text9);
-		}
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
-		List<PostprocessRuleEntry> list = MergePostprocessRules(AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>(), royalRules);
-		if (list.Count == 0)
-		{
-			Logger.Log("Logic", "[KingdomServicePostprocess] mood_only npc=" + (targetHero?.StringId ?? ""));
-		}
-		else
-		{
-			Logger.Log("Logic", "[KingdomServicePostprocess] start npc=" + (targetHero?.StringId ?? "") + " rules=" + string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x))));
-		}
-		string text3 = BuildPostprocessRuleText(list);
-		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
-		string text5 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text9);
-		string text6 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text9, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text9, text2));
-		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text5, text6, 5000, 0f, out var content, out var error))
-		{
-			Logger.Log("Logic", "[KingdomServicePostprocess] 调用失败: " + error);
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-		}
-		string text7 = NormalizeKingdomServicePostprocessTags(content, list);
-		if (string.IsNullOrWhiteSpace(text7))
-		{
-			text7 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		string text8 = (text + "\n" + text7).Trim();
-		Logger.Log("Logic", "[KingdomServicePostprocess] RAW=\n" + content + "\nFINAL=\n" + text8 + "\n");
-		return text8;
-	}
-
-	private string TryRunDuelActionPostprocess(Hero targetHero, string extraFact, string replyText, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions)
-	{
-		string text = StripDuelActionTags(replyText);
-		if (targetHero == null || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
-		{
-			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
-			{
-				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-			}
-			return text.Trim();
-		}
-		string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
-		string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
-		if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
-		{
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-		}
-		string text11 = targetHero?.Name?.ToString() ?? "NPC";
-		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
-		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(AIConfigHandler.DuelPostprocessRules, royalRules);
-		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text11);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text11);
-		}
-		string text3 = BuildPostprocessRuleText(actionRules);
-		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
-		string text5 = BuildDuelPostprocessItemList(duelStakeOptions);
-		string text7 = "（无）";
-		try
-		{
-			if (RewardSystemBehavior.Instance != null && Hero.MainHero != null)
-			{
-				MentionedWorldEntities promptListMentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
-				int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
-				text7 = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero, promptListMentions, promptListMax);
-			}
-		}
-		catch
-		{
-			text7 = "赤身裸体";
-		}
-		string text6 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text11, text5, text7);
-		text6 = text6.Replace("请仔细分辨物品名称、物品序号和数量", "请仔细分辨物品名称和数量；决斗赌注物品标签必须填写物品清单中的完整物品名称，禁止填写序号，禁止填写物品ID");
-		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text11, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text11, text2), text5, text7);
-		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text6, text8, 5000, 0f, out var content, out var error))
-		{
-			Logger.Log("Logic", "[DuelPostprocess] 调用失败: " + error);
-			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
-		}
-		string duelTags = NormalizeDuelPostprocessTags(content, duelStakeOptions, targetHero);
-		string royalTags = royalRules.Count > 0 ? NormalizeKingdomServicePostprocessTags(content, royalRules) : "";
-		string text9 = MergeNormalizedPostprocessBlocks(duelTags, royalTags);
-		if (string.IsNullOrWhiteSpace(text9))
-		{
-			text9 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
-		}
-		string text10 = (text + "\n" + text9).Trim();
-		Logger.Log("Logic", "[DuelPostprocess] RAW=\n" + content + "\nFINAL=\n" + text10 + "\n");
-		return text10;
-	}
-
 	private string CleanAIResponse(string input)
 	{
 		if (string.IsNullOrEmpty(input))
@@ -35790,23 +35006,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		input = Regex.Replace(input, "<think>.*?</think>", "", RegexOptions.Singleline);
 		input = input.Replace("**", "").Replace("#", "").Replace("`", "");
 		return input.Trim();
-	}
-
-	private static string NormalizePlayerNameForPostprocess(string text, string npcName = null)
-	{
-		try
-		{
-			string text2 = (text ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				return text2;
-			}
-			return AIConfigHandler.NormalizeActionPostprocessNameReferences(text2, npcName);
-		}
-		catch
-		{
-			return text ?? "";
-		}
 	}
 
 	private static float GetNowCampaignDay()
@@ -44744,6 +43943,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
 	{
+		// Capture live records and prompts only at the UI/main-thread boundary.
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this))
+		{
+			Logger.Log("EventWeeklyReport", "[FullOnDemand] rejected non-current main-thread owner");
+			return false;
+		}
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(eventId);
 		if (eventRecordEntry == null)
 		{
@@ -44764,38 +43970,120 @@ public partial class MyBehavior : CampaignBehaviorBase
 		string text = BuildWeeklyReportFullOnDemandSystemPrompt(weeklyEventMaterialPreviewGroup);
 		string text2 = BuildWeeklyReportFullOnDemandUserPrompt(weeklyEventMaterialPreviewGroup, num);
 		string text3 = BuildWeeklyReportPromptPreviewText(weeklyEventMaterialPreviewGroup, text, text2);
+		string capturedEventId = eventRecordEntry.EventId;
+		string capturedSource = BuildWeeklyFullReportSourceState(eventRecordEntry);
 		ShowWeeklyFullOnDemandProgressPopup(eventRecordEntry);
 		try
 		{
-			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
-			if (!apiCallResult.Success)
+			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2).ConfigureAwait(false);
+			return await QueueWeeklyFullReportCompletionAsync(runtimeGeneration, () =>
 			{
-				ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + (apiCallResult.ErrorMessage ?? "未知错误"));
-				return false;
-			}
-			if (!TryParseWeeklyFullOnDemandReportResponse(apiCallResult.Content, out var title, out var shortSummary, out var report))
-			{
-				ShowWeeklyFullOnDemandFailurePopup(LlmRetryPrompt.BuildFailureDetail("完整周报返回内容无法解析。", apiCallResult.Content, apiCallResult.ResponseBody));
-				return false;
-			}
-			string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(eventRecordEntry);
-			eventRecordEntry.Title = title;
-			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
-			eventRecordEntry.Summary = (report ?? "").Trim();
-			eventRecordEntry.PromptText = text3;
-			eventRecordEntry.Materials = CloneWeeklyReportMaterials(eventRecordEntry.Materials);
-			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-			NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, FindWeeklyReportRecordById(eventRecordEntry.EventId));
-			// The completed full report changes the selected timeline item's body and action state.
-			NotifyWorldMessageWeeklyTimelineChanged();
-			InformationManager.HideInquiry();
-			InformationManager.DisplayMessage(new InformationMessage("完整周报已生成。"));
-			return true;
+				EventRecordEntry currentEntry = FindWeeklyReportRecordById(capturedEventId);
+				if (currentEntry != null && !string.IsNullOrWhiteSpace(currentEntry.Summary))
+				{
+					// Another accepted request won the race; never overwrite its report.
+					InformationManager.HideInquiry();
+					return true;
+				}
+				if (currentEntry == null || !string.Equals(capturedSource, BuildWeeklyFullReportSourceState(currentEntry), StringComparison.Ordinal))
+				{
+					ShowWeeklyFullOnDemandFailurePopup("该期周报或素材已变更，请重新选择后生成。");
+					return false;
+				}
+				if (apiCallResult == null || !apiCallResult.Success)
+				{
+					ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + (apiCallResult?.ErrorMessage ?? "未知错误"));
+					return false;
+				}
+				if (!TryParseWeeklyFullOnDemandReportResponse(apiCallResult.Content, out var title, out var shortSummary, out var report))
+				{
+					ShowWeeklyFullOnDemandFailurePopup(LlmRetryPrompt.BuildFailureDetail("完整周报返回内容无法解析。", apiCallResult.Content, apiCallResult.ResponseBody));
+					return false;
+				}
+				string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(currentEntry);
+				currentEntry.Title = title;
+				currentEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
+				currentEntry.Summary = (report ?? "").Trim();
+				currentEntry.PromptText = text3;
+				currentEntry.Materials = CloneWeeklyReportMaterials(currentEntry.Materials);
+				_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+				NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, FindWeeklyReportRecordById(capturedEventId));
+				NotifyWorldMessageWeeklyTimelineChanged();
+				InformationManager.HideInquiry();
+				InformationManager.DisplayMessage(new InformationMessage("完整周报已生成。"));
+				return true;
+			}).ConfigureAwait(false);
 		}
 		catch (Exception ex)
 		{
-			ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + ex.Message);
-			return false;
+			return await QueueWeeklyFullReportCompletionAsync(runtimeGeneration, () =>
+			{
+				ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + ex.Message);
+				return false;
+			}).ConfigureAwait(false);
+		}
+	}
+
+	private static string BuildWeeklyFullReportSourceState(EventRecordEntry entry)
+	{
+		return JsonConvert.SerializeObject(new
+		{
+			WeekIndex = Math.Max(0, entry.WeekIndex),
+			EventKind = (entry.EventKind ?? "").Trim(),
+			ScopeKingdomId = (entry.ScopeKingdomId ?? "").Trim(),
+			Title = (entry.Title ?? "").Trim(),
+			ShortSummary = (entry.ShortSummary ?? "").Trim(),
+			Materials = CloneWeeklyReportMaterials(entry.Materials)
+		});
+	}
+
+	private Task<bool> QueueWeeklyFullReportCompletionAsync(long runtimeGeneration, Func<bool> apply)
+	{
+		lock (_pendingWeeklyReportCommitLock)
+		{
+			if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_full_report_enqueue"))
+			{
+				return Task.FromResult(false);
+			}
+			var pending = new WeeklyFullReportCompletion { RuntimeGeneration = runtimeGeneration, Apply = apply };
+			_weeklyFullReportCompletions.Enqueue(pending);
+			return pending.Completion.Task;
+		}
+	}
+
+	private void ProcessWeeklyFullReportCompletions()
+	{
+		// Only completed on-demand requests are queued; at most two commits per engine tick.
+		for (int processed = 0; processed < 2; processed++)
+		{
+			WeeklyFullReportCompletion pending;
+			lock (_pendingWeeklyReportCommitLock)
+			{
+				if (_weeklyFullReportCompletions.Count == 0) return;
+				pending = _weeklyFullReportCompletions.Dequeue();
+			}
+			try
+			{
+				bool accepted = ReferenceEquals(Instance, this)
+					&& !SaveRuntimeGuard.IsStale(pending.RuntimeGeneration, "weekly_full_report_commit");
+				pending.Completion.TrySetResult(accepted && (pending.Apply?.Invoke() ?? false));
+			}
+			catch (Exception ex)
+			{
+				// Observe exceptions in the awaiting request so its failure UI is also queued.
+				pending.Completion.TrySetException(ex);
+			}
+		}
+	}
+
+	private void CancelWeeklyFullReportCompletions()
+	{
+		lock (_pendingWeeklyReportCommitLock)
+		{
+			while (_weeklyFullReportCompletions.Count > 0)
+			{
+				_weeklyFullReportCompletions.Dequeue().Completion.TrySetResult(false);
+			}
 		}
 	}
 
@@ -48970,6 +48258,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ClearAllDataForCurrentSave()
 	{
+		CancelWeeklyFullReportCompletions();
 		_shownRecords = new Dictionary<string, HeroShownRecord>();
 		_shownRecordStorage = new Dictionary<string, string>();
 		_dialogueHistory = new Dictionary<string, List<DialogueDay>>();

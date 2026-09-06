@@ -9,6 +9,10 @@ internal static class HotkeyInputGuard
 {
 	public static bool IsTextInputFocused()
 	{
+		if (AnimusForgeApiOnboardingPopup.IsOpen)
+		{
+			return true;
+		}
 		if (DevHistoryEditPopup.IsOpen)
 		{
 			return true;

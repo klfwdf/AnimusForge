@@ -355,6 +355,7 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
         CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
         CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
         CampaignEvents.WarDeclared.AddNonSerializedListener(this, OnWarDeclared);
+        CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
         CampaignEvents.BeforeHeroKilledEvent.AddNonSerializedListener(this, OnBeforeHeroKilled);
     }
 
@@ -618,6 +619,14 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
     private void OnDailyTick()
     {
         ReconcileCurrentWars();
+    }
+
+    private void OnMakePeace(IFaction factionOne, IFaction factionTwo, MakePeaceAction.MakePeaceDetail detail)
+    {
+        if (factionOne is Kingdom kingdomA && factionTwo is Kingdom kingdomB && kingdomA != kingdomB)
+        {
+            EndActiveWar(MakePairKey(kingdomA, kingdomB));
+        }
     }
 
     private void OnWarDeclared(
@@ -1174,20 +1183,32 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
         List<string> endedPairs = _activeWars.Keys.Where(key => !currentPairs.ContainsKey(key)).ToList();
         foreach (string pairKey in endedPairs)
         {
-            WarStatsRecord record = _activeWars[pairKey];
-            if (TryResolvePair(pairKey, out Kingdom kingdomA, out Kingdom kingdomB))
-            {
-                record.NameA = GetKingdomName(kingdomA);
-                record.NameB = GetKingdomName(kingdomB);
-                record.LastTerritoryA = CountTerritory(kingdomA);
-                record.LastTerritoryB = CountTerritory(kingdomB);
-                string playerKingdomId = GetPlayerKingdomId();
-                record.InvolvesPlayer |= IsPlayerKingdom(kingdomA, playerKingdomId) || IsPlayerKingdom(kingdomB, playerKingdomId);
-            }
-
-            ArchiveEndedWar(pairKey, record);
-            _activeWars.Remove(pairKey);
+            EndActiveWar(pairKey);
         }
+    }
+
+    private void EndActiveWar(string pairKey)
+    {
+        if (string.IsNullOrEmpty(pairKey) || !_activeWars.TryGetValue(pairKey, out WarStatsRecord record))
+        {
+            return;
+        }
+        if (TryResolvePair(pairKey, out Kingdom kingdomA, out Kingdom kingdomB))
+        {
+            record.NameA = GetKingdomName(kingdomA);
+            record.NameB = GetKingdomName(kingdomB);
+            record.LastTerritoryA = CountTerritory(kingdomA);
+            record.LastTerritoryB = CountTerritory(kingdomB);
+            string playerKingdomId = GetPlayerKingdomId();
+            record.InvolvesPlayer |= IsPlayerKingdom(kingdomA, playerKingdomId) || IsPlayerKingdom(kingdomB, playerKingdomId);
+        }
+        // After MakePeace, the native stance no longer exposes the elapsed war duration.
+        if (record.StartDay >= 0)
+        {
+            record.LastDurationDays = Math.Max(0, GetCurrentDay() - record.StartDay);
+        }
+        ArchiveEndedWar(pairKey, record);
+        _activeWars.Remove(pairKey);
     }
 
     private void MigrateLegacyRecords(Dictionary<string, (Kingdom A, Kingdom B)> currentPairs)

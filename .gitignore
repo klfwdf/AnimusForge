@@ -34,3 +34,7 @@ _codex_tmp/
 artifacts/
 AnimusForge/PlayerExports/
 FUYONG/
+
+# Local debug preview files
+api_wizard_interactive_preview.html
+integrated_tabs_settings_preview.html
