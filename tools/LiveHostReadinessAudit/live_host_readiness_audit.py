@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -68,18 +69,37 @@ def main() -> int:
     stage_bootstrap = stage_bin / "AnimusForge.Bootstrap.dll"
     stage_13 = stage_bin / "versions" / "1.3" / "AnimusForge.dll"
     stage_14 = stage_bin / "versions" / "1.4" / "AnimusForge.dll"
-    installed_bootstrap = installed_bin / "AnimusForge.Bootstrap.dll"
+    binaries = {
+        "bootstrapMatchesStage": "AnimusForge.Bootstrap.dll",
+        "implementation13MatchesStage": "versions/1.3/AnimusForge.dll",
+        "implementation14MatchesStage": "versions/1.4/AnimusForge.dll",
+    }
+    matches: dict[str, bool] = {}
+    for key, relative in binaries.items():
+        staged_binary, installed_binary = stage_bin / relative, installed_bin / relative
+        try:
+            matches[key] = bool(staged_binary.is_file() and installed_binary.is_file()
+                                and sha256(staged_binary) == sha256(installed_binary))
+        except OSError:
+            matches[key] = False
     saves = find_save_dirs()
     submodule_bootstrap = False
-    if submodule.is_file():
-        try:
-            submodule_bootstrap = "AnimusForge.Bootstrap.dll" in submodule.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            pass
-    installed_matches_stage = bool(
-        stage_bootstrap.is_file() and installed_bootstrap.is_file()
-        and sha256(stage_bootstrap) == sha256(installed_bootstrap)
-    )
+    try:
+        declaration = ET.parse(submodule).getroot()
+        module_ids = [node.get("value") for node in declaration.findall("./Id")]
+        dll_names = [node.get("value") for node in declaration.findall("./SubModules/SubModule/DLLName")]
+        class_names = [node.get("value") for node in declaration.findall("./SubModules/SubModule/SubModuleClassType")]
+        submodule_bootstrap = (
+            declaration.tag == "Module"
+            and module_ids == ["AnimusForge"]
+            and len(declaration.findall("./SubModules")) == 1
+            and len(declaration.findall("./SubModules/SubModule")) == 1
+            and dll_names == ["AnimusForge.Bootstrap.dll"]
+            and class_names == ["AnimusForge.Bootstrap.BootstrapSubModule"]
+        )
+    except (OSError, ET.ParseError):
+        pass
+    installed_matches_stage = submodule_bootstrap and all(matches.values())
     result = {
         "gameRoot": game.is_dir(),
         "bannerlordExe": exe.is_file(),
@@ -90,14 +110,15 @@ def main() -> int:
         "installedModule": installed.is_dir(),
         "submoduleLoadsBootstrap": submodule_bootstrap,
         "installedMatchesStage": installed_matches_stage,
+        **matches,
         "gameRunning": process_running(),
         "saveDirectoryCount": len(saves),
         "saveDirectories": [str(path) for path in saves],
         "deploymentState": "matches-project-stage" if installed_matches_stage else "different-or-unavailable",
-        "nextAction": "live-game test can start when the game is launched" if installed_matches_stage else "deploy the verified project-local stage before live testing",
     }
-    required = ["gameRoot", "bannerlordExe", "projectStage", "stageBootstrap", "stage13", "stage14", "installedModule", "submoduleLoadsBootstrap"]
+    required = ["gameRoot", "bannerlordExe", "projectStage", "stageBootstrap", "stage13", "stage14", "installedModule", "submoduleLoadsBootstrap", "installedMatchesStage"]
     status = "PASS" if all(result[key] for key in required) else "FAIL"
+    result["nextAction"] = "live-game test can start when the game is launched" if status == "PASS" else "resolve installation/stage mismatches before live testing"
     print(json.dumps({"status": status, **result}, ensure_ascii=False, indent=2))
     print(
         f"{status} liveHostReadiness "
