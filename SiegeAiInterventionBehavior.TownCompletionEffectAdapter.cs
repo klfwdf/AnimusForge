@@ -33,9 +33,9 @@ public partial class SiegeAiInterventionBehavior
 		SiegeAftermathAction.ApplyAftermath(attackerParty, settlement, aftermath, previousOwner, contributions);
 	}
 
-	private static void ApplySettlementCulture(Settlement settlement, CultureObject culture, string source)
+	private static bool ApplySettlementCulture(Settlement settlement, CultureObject culture, string source)
 	{
-		GcczSettlementCulturePersistenceBehavior.ApplyAndRemember(settlement, culture, source);
+		return GcczSettlementCulturePersistenceBehavior.ApplyAndRemember(settlement, culture, source);
 	}
 
 	private static void ApplyHeroCulture(Hero hero, CultureObject culture)
