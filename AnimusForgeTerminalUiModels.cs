@@ -297,7 +297,9 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	public bool IsTagCatalogBrowser => _currentViewMode == TerminalViewMode.MenuList && _tagBrowser != null
 		&& _path.Count > 0 && ReferenceEquals(_path.Peek(), _tagBrowser);
 	[DataSourceProperty]
-	public float MenuContentTop => IsTagCatalogBrowser ? 98f : 50f;
+	public bool IsSearchVisible => _currentViewMode == TerminalViewMode.MenuList && (string.Equals(_selectedTab, "全部", StringComparison.Ordinal) || IsTagCatalogBrowser);
+	[DataSourceProperty]
+	public float MenuContentTop => IsTagCatalogBrowser ? 98f : (IsSearchVisible ? 50f : 6f);
 	[DataSourceProperty]
 	public string TagCatalogStatusText => _tagCatalogSnapshot == null ? "" : $"索引：{_tagCatalogSnapshot.Entries.Count} 项 · {_tagCatalogSnapshot.BuiltUtc.ToLocalTime():HH:mm:ss} 更新；可搜索参数/来源";
 
@@ -423,6 +425,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		OnPropertyChanged(nameof(IsWeeklyReportsVisible));
 		OnPropertyChanged(nameof(IsVassalageVisible));
 		OnPropertyChanged(nameof(IsTagCatalogBrowser));
+		OnPropertyChanged(nameof(IsSearchVisible));
 		OnPropertyChanged(nameof(MenuContentTop));
 		OnPropertyChanged(nameof(IsDetailsVisible));
 		OnPropertyChanged(nameof(IsDiagnosticsVisible));
@@ -547,6 +550,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			foreach (var item in rootItems.Skip(_menuPage * MenuPageSize).Take(MenuPageSize)) list.Add(item);
 		}
 		OnPropertyChanged(nameof(IsTagCatalogBrowser));
+		OnPropertyChanged(nameof(IsSearchVisible));
 		OnPropertyChanged(nameof(MenuContentTop));
 		OnPropertyChanged(nameof(MenuPageText));
 		OnPropertyChanged(nameof(HasPreviousMenuPage));
