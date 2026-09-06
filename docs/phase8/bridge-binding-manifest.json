@@ -111,11 +111,11 @@
         "STALE_COMPLETION"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Host lifecycle and diagnostics are already coordinated by SubModule; no parallel coordinator is introduced."
+        "state": "wired",
+        "entryPath": "CampaignTickDiagnosticsPatch.cs",
+        "symbol": "EnsurePatched",
+        "frequency": "startup",
+        "notes": "CampaignTick diagnostics patching is gated before Harmony patch application; disabled falls back to safe unpatched mode."
       }
     },
     {
@@ -159,11 +159,11 @@
         "NATIVE_FALLBACK"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Version-specific calls stay behind existing compatibility helpers."
+        "state": "wired",
+        "entryPath": "InteractionComponentSafePatch.cs",
+        "symbol": "EnsurePatched",
+        "frequency": "startup",
+        "notes": "Mission interaction component safety patching is gated before reflection and Harmony patch application; disabled falls back to native unpatched behavior."
       }
     },
     {
@@ -547,7 +547,7 @@
           "kind": "type"
         }
       ],
-      "implementationState": "BLOCKED_LIVE",
+      "implementationState": "ACTIVE_BOUNDARY",
       "fallback": "Native",
       "apiLines": [
         "1.3",
@@ -564,11 +564,11 @@
         "NATIVE_COMBAT_ISOLATION"
       ],
       "runtimeBinding": {
-        "state": "declared-only",
-        "entryPath": null,
-        "symbol": null,
-        "frequency": "none",
-        "notes": "Duel remains blocked for live Mission acceptance; no default scene/combat cutover is claimed."
+        "state": "wired",
+        "entryPath": "DuelBehavior.cs",
+        "symbol": "IsSceneDuelBridgeEnabled",
+        "frequency": "event",
+        "notes": "Scene duel dispatch and prepare requests pass one immutable gate before queueing or mission dispatch; native fallback is preserved."
       }
     },
     {

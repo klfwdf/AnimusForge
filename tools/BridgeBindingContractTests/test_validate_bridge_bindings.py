@@ -27,9 +27,9 @@ class BridgeBindingManifestTests(unittest.TestCase):
         result = validator.run(ROOT)
         self.assertEqual(result["state"], "PASS")
         self.assertEqual(result["bindings"], 16)
-        self.assertEqual(result["wired"], 10)
-        self.assertEqual(result["declaredOnly"], 6)
-        self.assertEqual(result["configEnabled"], 10)
+        self.assertEqual(result["wired"], 13)
+        self.assertEqual(result["declaredOnly"], 3)
+        self.assertEqual(result["configEnabled"], 13)
 
     def load_config(self) -> dict:
         return json.loads((ROOT / "AnimusForge" / "ModuleData" / "FeatureBridges.json").read_text(encoding="utf-8"))
@@ -69,7 +69,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
 
     def test_runtime_config_rejects_blocked_id(self) -> None:
         def mutate(config: dict) -> None:
-            config["enabled"].append("scene-duel")
+            config["enabled"].append("persistence-domain-owners")
 
         self.assert_config_rejected(mutate)
 

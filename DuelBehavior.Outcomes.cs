@@ -63,6 +63,12 @@ public partial class DuelBehavior
 		{
 			shouldDispatch = false;
 			errorCode = "duel.dispatch_identity_invalid";
+			if (!IsSceneDuelBridgeEnabled())
+			{
+				errorCode = "duel.bridge_disabled";
+				context?.MarkRejected(errorCode);
+				return false;
+			}
 			if (!ValidateDetachedDuelDispatchContext(context, out errorCode))
 			{
 				context?.MarkRejected(errorCode);

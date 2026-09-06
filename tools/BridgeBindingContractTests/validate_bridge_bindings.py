@@ -35,6 +35,9 @@ EXPECTED_WIRED = {
     "gateway-knowledge-profile": ("Refactor/Adapters/LegacyKnowledgeRagGateway.cs", "GenerateAsync"),
     "policy-world-diplomacy": ("WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
     "ui-runtime-integration": ("SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
+    "host-runtime": ("CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),
+    "runtime-game-adapter": ("InteractionComponentSafePatch.cs", "EnsurePatched"),
+    "scene-duel": ("DuelBehavior.cs", "IsSceneDuelBridgeEnabled"),
 }
 EXPECTED_CONFIGURABLE = frozenset(EXPECTED_WIRED)
 EXPECTED_GATE_TOKENS = {
@@ -48,6 +51,9 @@ EXPECTED_GATE_TOKENS = {
     "memory-social-reports": "FeatureBridgeIds.MemorySocialReports",
     "gateway-knowledge-profile": "FeatureBridgeIds.GatewayKnowledgeProfile",
     "ui-runtime-integration": "FeatureBridgeIds.UiRuntimeIntegration",
+    "host-runtime": "FeatureBridgeIds.HostRuntime",
+    "runtime-game-adapter": "FeatureBridgeIds.RuntimeGameAdapter",
+    "scene-duel": "FeatureBridgeIds.SceneDuel",
 }
 EXPECTED_METHOD_CONTRACTS = {
     "conversation-gateway": {
@@ -111,6 +117,24 @@ EXPECTED_METHOD_CONTRACTS = {
         "gate": "FeatureBridgeIds.UiRuntimeIntegration",
         "gate_marker": "FeatureBridgeRuntime.Evaluate",
         "before": ("SceneActionsRuntimeHost.Initialize", "BattleSpeechRuntimeHost.Initialize", "SceneActionsAfBridgeHost.TryInstall"),
+    },
+    "host-runtime": {
+        "method": "EnsurePatched",
+        "gate": "FeatureBridgeIds.HostRuntime",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("PatchMethod", "_patched = true"),
+    },
+    "runtime-game-adapter": {
+        "method": "EnsurePatched",
+        "gate": "FeatureBridgeIds.RuntimeGameAdapter",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": ("AccessTools.TypeByName", "harmony.Patch"),
+    },
+    "scene-duel": {
+        "method": "IsSceneDuelBridgeEnabled",
+        "gate": "FeatureBridgeIds.SceneDuel",
+        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
+        "before": (),
     },
 }
 ALLOWED_BINDING_STATES = {"wired", "declared-only"}

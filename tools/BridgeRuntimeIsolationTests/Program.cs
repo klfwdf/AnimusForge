@@ -19,6 +19,9 @@ internal static class Program
         FeatureBridgeIds.MemorySocialReports,
         FeatureBridgeIds.GatewayKnowledgeProfile,
         FeatureBridgeIds.UiRuntimeIntegration,
+        FeatureBridgeIds.HostRuntime,
+        FeatureBridgeIds.RuntimeGameAdapter,
+        FeatureBridgeIds.SceneDuel,
     };
 
     private static int Main(string[] args)
