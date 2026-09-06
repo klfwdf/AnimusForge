@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Diagnostics;
@@ -751,6 +751,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	private const string ModelDropdownCacheFileName = "ModelDropdownCache.json";
 
 	private static readonly object ModelDropdownCacheFileLock = new object();
+
+	public static volatile bool ModelDropdownsDirty = false;
+
+	public static event Action OnModelListRefreshed;
 
 	private List<string> _mainApiModelOptions = new List<string>();
 
@@ -6152,6 +6156,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		EnsureModelDropdownCacheHydrated();
 		_mainApiModelDropdown = BuildDropdownFromOptions(_mainApiModelOptions, ManualDropdownModelName, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
 		PersistModelDropdownCacheSnapshot();
+		ModelDropdownsDirty = true;
+		OnModelListRefreshed?.Invoke();
 		McmDropdownRuntimeRefresh.RequestRefresh();
 	}
 
@@ -6160,6 +6166,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		EnsureModelDropdownCacheHydrated();
 		_auxiliaryApiModelDropdown = BuildDropdownFromOptions(_auxiliaryApiModelOptions, ManualDropdownModelName, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
 		PersistModelDropdownCacheSnapshot();
+		ModelDropdownsDirty = true;
+		OnModelListRefreshed?.Invoke();
 		McmDropdownRuntimeRefresh.RequestRefresh();
 	}
 
@@ -6168,6 +6176,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		EnsureModelDropdownCacheHydrated();
 		_actionPostprocessApiModelDropdown = BuildDropdownFromOptions(_actionPostprocessApiModelOptions, ManualDropdownModelName, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
 		PersistModelDropdownCacheSnapshot();
+		ModelDropdownsDirty = true;
+		OnModelListRefreshed?.Invoke();
 		McmDropdownRuntimeRefresh.RequestRefresh();
 	}
 
@@ -6176,6 +6186,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		EnsureModelDropdownCacheHydrated();
 		_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(_eventAndRebellionApiModelOptions, ManualDropdownModelName, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
 		PersistModelDropdownCacheSnapshot();
+		ModelDropdownsDirty = true;
+		OnModelListRefreshed?.Invoke();
 		McmDropdownRuntimeRefresh.RequestRefresh();
 	}
 
@@ -6293,6 +6305,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					return;
 				}
 				applyModels?.Invoke(modelListFetchResult.Models);
+				ModelDropdownsDirty = true;
+				OnModelListRefreshed?.Invoke();
 				McmDropdownRuntimeRefresh.RequestRefresh();
 				string text6 = "";
 				if (string.Equals(text, "主API", StringComparison.Ordinal))
