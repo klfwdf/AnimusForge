@@ -595,6 +595,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		RecoverPlayerCourtReceiptsFromKnowledge();
 		InitializeSchedule();
 		ResetTransientRuntime("game-loaded");
+		ReconcileActiveDiplomacyAfterLoad();
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -604,6 +605,45 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		RecoverPlayerCourtReceiptsFromKnowledge();
 		InitializeSchedule();
 		ResetTransientRuntime("session-launched");
+		ReconcileActiveDiplomacyAfterLoad();
+	}
+
+	private void ReconcileActiveDiplomacyAfterLoad()
+	{
+		WorldDiplomacyRound round = _storage?.ActiveRound;
+		if (round == null || !string.Equals(round.State, "active", StringComparison.OrdinalIgnoreCase)) return;
+		int day = CurrentDay();
+		if (day >= round.HardEndDay)
+		{
+			CloseActiveRound("relay_hard_end_after_load");
+			return;
+		}
+		bool hasPersistedWork = (_storage.Jobs ?? new List<WorldDiplomacyJob>()).Any(x => x != null
+			&& string.Equals(FirstNonEmpty(x.RoundId, x.ExchangeId), round.RoundId, StringComparison.OrdinalIgnoreCase))
+			|| (_storage.RelayArrivals ?? new List<WorldDiplomacyRelayArrival>()).Any(x => x != null
+				&& string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase));
+		if (hasPersistedWork) return;
+		bool playerWaiting = (_storage.PlayerOpportunities ?? new List<WorldDiplomacyPlayerOpportunity>()).Any(x => x != null
+			&& string.Equals(x.RoundId, round.RoundId, StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(x.Status, "open", StringComparison.OrdinalIgnoreCase));
+		if (playerWaiting) return;
+		if (round.RelayWaiting)
+		{
+			round.RelayWaiting = false;
+			Log("reconciled orphaned diplomacy wait after load round=" + round.RoundId);
+		}
+		if (round.ResultSettlementPending)
+		{
+			ScheduleNextResultSettlementTurn(round);
+		}
+		else if (round.RelayPlanned)
+		{
+			ScheduleNextRelayHop(round, scheduleImmediately: true);
+		}
+		else if (string.IsNullOrWhiteSpace(round.RootDocumentId))
+		{
+			CloseActiveRound("technical_missing_root_after_load");
+		}
 	}
 
 	private void OnCampaignTick(float dt)
@@ -1128,6 +1168,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void HandleDisabledState()
 	{
 		_disabledStateApplied = true;
+		if (_storage.ActiveRound != null)
+		{
+			CloseActiveRound("closed_disabled");
+		}
 		if (_storage.ActiveExchange != null)
 		{
 			_storage.ActiveExchange.State = "closed_disabled";
@@ -2806,7 +2850,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!TryApplyGeneratedSemanticEnvelope(document, json, author, target, job.AllowUntargeted,
 			job.IsRelayTurn))
 		{
-			RejectGeneratedDraftBeforePublication(job, raw, author, target, "generated_semantic_envelope_incomplete", json);
+			RejectGeneratedDraftBeforePublication(job, raw, author, target,
+				GetGeneratedEnvelopeApplicationFailureReason(document, json, author, target, job.IsRelayTurn), json);
 			return;
 		}
 		if (jobRound != null) jobRound.ConsecutiveTechnicalGenerationFailures = 0;
@@ -3046,6 +3091,20 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!IsActionableDiplomacyIntent(intent) && !allowedRoundResponseNoAction)
 		{
 			reason = "non_actionable_diplomatic_intent";
+			return true;
+		}
+		string negotiationMove = NormalizeNegotiationMove(ReadString(json, "negotiation_move"));
+		if (string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
+			&& !IsSupportedNegotiationMove(negotiationMove))
+		{
+			reason = "statement_missing_negotiation_move";
+			return true;
+		}
+		if (string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
+			&& owningRound?.ConsecutiveNoActionPasses >= 2
+			&& !IsTerminalNegotiationMove(negotiationMove))
+		{
+			reason = "statement_requires_terminal_negotiation_move";
 			return true;
 		}
 		List<string> addressedIds = ReadStringList(json, "addressed_kingdom_ids", "addressed");
@@ -3926,6 +3985,14 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			|| string.Equals(reason, "intent_commitment_mismatch", StringComparison.OrdinalIgnoreCase))
 		{
 			correctionBuilder.AppendLine("intent只从当前可选动作中选择；只有当前列出statement时才可使用无动作宣言。");
+		}
+		else if (string.Equals(reason, "statement_missing_negotiation_move", StringComparison.OrdinalIgnoreCase))
+		{
+			correctionBuilder.AppendLine("statement必须填写negotiation_move，并实际完成一项结构化谈判动作，例如question、counterproposal、request_delay、final_offer、end_negotiation或declare_deadlock；不能只发表空泛立场。");
+		}
+		else if (string.Equals(reason, "statement_requires_terminal_negotiation_move", StringComparison.OrdinalIgnoreCase))
+		{
+			correctionBuilder.AppendLine("本次交涉已经连续缺少实质外交动作；statement只能使用end_negotiation或declare_deadlock，或改选当前可用的实际外交动作，不得继续普通拖延。");
 		}
 		else if (string.Equals(reason, "target_kingdom_not_found", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(reason, "target_kingdom_not_eligible", StringComparison.OrdinalIgnoreCase)
@@ -9198,11 +9265,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			participant.State = "observer";
 			Log("mandatory response blocked by author authority round=" + round.RoundId
 				+ " author=" + receiver.StringId + " reason=" + authorBlockReason);
-			if (string.Equals(authorBlockReason, "ruler_is_prisoner", StringComparison.OrdinalIgnoreCase))
-			{
-				InformationManager.DisplayMessage(new InformationMessage(
-					KingdomName(receiver) + "的统治者目前身陷囹圄，王庭暂时无法正式回应你的宣言。"));
-			}
 			return;
 		}
 		if (round.ResultSettlementPending)
@@ -11435,7 +11497,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		sb.AppendLine("用户消息含“同次确定本次外交事件参与国”时，round_plan.selected_kingdom_ids必须包含全部动作对象。");
 		sb.AppendLine("只输出一个JSON对象，不要代码围栏：");
 		sb.AppendLine("title与body必须完整表达actions中的全部动作。");
-		sb.AppendLine("{\"title\":\"简短标题\",\"body\":\"完整外交措辞正文\",\"actions\":[{\"target_kingdom_id\":\"对象ID\",\"intent\":\"当前可选动作\",\"negotiation_move\":\"statement时必填否则空字符串\",\"peace_terms\":{}}],\"mentioned_kingdom_ids\":[],\"tone\":\"conciliatory|neutral|firm|hostile\",\"round_plan\":{\"topic\":\"议题或空\",\"selected_kingdom_ids\":[\"ID\"]},\"international_reputation_delta\":1,\"international_reputation_reason\":\"事后评估理由\"}");
+		sb.AppendLine("{\"title\":\"简短标题\",\"body\":\"完整外交措辞正文\",\"actions\":[{\"target_kingdom_id\":\"对象ID\",\"intent\":\"当前可选动作\",\"commitment\":\"non_binding|proposal|acceptance|rejection|binding\",\"negotiation_move\":\"statement时必填否则空字符串\",\"peace_terms\":{}}],\"mentioned_kingdom_ids\":[],\"tone\":\"conciliatory|neutral|firm|hostile\",\"round_plan\":{\"topic\":\"议题或空\",\"selected_kingdom_ids\":[\"ID\"]},\"international_reputation_delta\":1,\"international_reputation_reason\":\"事后评估理由\"}");
 		return sb.ToString().TrimEnd();
 	}
 
@@ -11800,6 +11862,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Select(x => x.StringId + "=" + KingdomName(x))
 			.ToList();
 		sb.AppendLine("本国当前交战国=" + (currentWars.Count == 0 ? "[]" : "[" + string.Join("；", currentWars) + "]") + "。此项只陈述战争状态，不授予名单外外交动作。");
+		AppendRulerCaptivityDecisionContext(sb, author, null);
 		AppendDiplomaticThreatDynamicContext(sb, author, roundId);
 		sb.AppendLine("【发文者人格与声音】");
 		sb.AppendLine(BuildRulerVoiceContext(author));
@@ -12155,6 +12218,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			target,
 			includePeaceNegotiationTerms: canProposePeace,
 			legalActions: legalActions);
+		AppendRulerCaptivityDecisionContext(sb, author, target);
 		if (isResponse || isExternalResponseOnly || sourceDocument != null)
 		{
 			AppendOtherKingdomRelationshipContext(sb, author, new[] { targetId });
@@ -12213,6 +12277,8 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			: BuildLegalDiplomaticActionIntents(round, initiator, candidate);
 		string line = BuildCompactDiplomaticRelationshipLine(initiator, candidate)
 			+ "；可选动作=" + DescribePotentialDiplomaticActions(actions);
+		string captivityHint = BuildRulerCaptivityTargetHint(initiator, candidate);
+		if (!string.IsNullOrWhiteSpace(captivityHint)) line += "\n  " + captivityHint;
 		string reputationConflictOpportunity = BuildLowReputationConflictOpportunityContext(candidate, actions);
 		return string.IsNullOrWhiteSpace(reputationConflictOpportunity)
 			? line
@@ -13722,6 +13788,89 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private static long EstimateHistoryTokens(string text)
 	{
 		return Math.Max(0, Logger.EstimateTokens(text ?? ""));
+	}
+
+	private static string BuildRulerCaptivityTargetHint(Kingdom author, Kingdom target)
+	{
+		Hero ruler = author?.RulingClan?.Leader ?? author?.Leader;
+		if (ruler == null || !ruler.IsPrisoner) return "";
+		TaleWorlds.CampaignSystem.Party.PartyBase holder = null;
+		try { holder = ruler.PartyBelongedToAsPrisoner; } catch { }
+		Kingdom holderKingdom = null;
+		try { holderKingdom = holder?.MapFaction as Kingdom; } catch { }
+		if (holderKingdom != null && !holderKingdom.IsEliminated && holderKingdom == target)
+			return "君主被当前对象国关押或控制：本国应更重视停战、和平和可执行的让步，但仍不得绕过当前合法动作。";
+		if (holderKingdom != null && !holderKingdom.IsEliminated)
+			return "君主被其他王国关押或控制：本国整体处境恶化，应更重视稳定与谈判，不得把当前对象误认作关押方。";
+		return "君主被俘但关押或控制方未知：本国处境恶化，应更重视稳定与谈判，不得猜测关押方。";
+	}
+
+	private string GetGeneratedEnvelopeApplicationFailureReason(
+		WorldDiplomacyDocument document,
+		JObject json,
+		Kingdom author,
+		Kingdom target,
+		bool relayTurn)
+	{
+		if (document == null || json == null || !(json["actions"] is JArray actions) || actions.Count == 0)
+			return "diplomatic_actions_envelope_invalid";
+		if (!(json["author_intent"] is JObject)) return "semantic_envelope_missing_author_intent";
+		if (!IsJsonStringArray(json["addressed_kingdom_ids"])) return "semantic_envelope_invalid_addressed_kingdom_ids";
+		if (!IsJsonStringArray(json["mentioned_kingdom_ids"])) return "semantic_envelope_invalid_mentioned_kingdom_ids";
+		if (!(json["round_plan"] is JObject roundPlan) || !IsJsonStringArray(roundPlan["selected_kingdom_ids"])) return "semantic_envelope_invalid_round_plan";
+		if (!(json["peace_terms"] is JObject)) return "semantic_envelope_missing_peace_terms";
+		if (json["requires_response"] == null) return "semantic_envelope_missing_requires_response";
+		if (json["tone"] == null) return "semantic_envelope_missing_tone";
+		if (json["confidence"] == null) return "semantic_envelope_missing_confidence";
+		if (json["primary_target_kingdom_id"] == null) return "semantic_envelope_missing_primary_target";
+		string intent = NormalizeIntent(ReadString(json, "author_intent.intent", "intent"));
+		string commitment = NormalizeCommitment(ReadString(json, "author_intent.commitment", "commitment"));
+		if (!IsSupportedCommitment(commitment)) return "unsupported_commitment";
+		if (string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)
+			&& !IsSupportedNegotiationMove(ReadString(json, "negotiation_move"))) return "statement_missing_negotiation_move";
+		if (target == null && !string.Equals(intent, "statement", StringComparison.OrdinalIgnoreCase)) return "diplomatic_action_has_no_target";
+		if (relayTurn && target != null && document.RoundId != null)
+		{
+			WorldDiplomacyRound round = ResolveRound(document.RoundId);
+			if (round != null && !RoundRouteContainsKingdom(round, target.StringId)) return "kingdom_not_in_relay_route";
+		}
+		return "generated_semantic_envelope_incomplete";
+	}
+
+	private static void AppendRulerCaptivityDecisionContext(StringBuilder sb, Kingdom author, Kingdom currentTarget)
+	{
+		if (sb == null || author == null) return;
+		Hero ruler = author.RulingClan?.Leader ?? author.Leader;
+		if (ruler == null || !ruler.IsPrisoner) return;
+		TaleWorlds.CampaignSystem.Party.PartyBase holder = null;
+		try { holder = ruler.PartyBelongedToAsPrisoner; } catch { }
+		Kingdom holderKingdom = null;
+		try { holderKingdom = holder?.MapFaction as Kingdom; } catch { }
+		bool holderKnown = holderKingdom != null && !holderKingdom.IsEliminated;
+		bool currentTargetIsHolder = holderKnown && currentTarget != null && holderKingdom == currentTarget;
+		string pressure = currentTarget == null
+			? "需结合具体外交对象判断"
+			: currentTargetIsHolder ? "高" : holderKnown ? "中" : "低";
+		sb.AppendLine("【本国君主当前处境】");
+		sb.AppendLine("本国统治者被俘：是；当前关押/控制方="
+			+ (holderKnown ? KingdomName(holderKingdom) + "（ID=" + holderKingdom.StringId + "）" : "未知")
+			+ "；针对本篇外交对象的被俘压力=" + pressure + "。");
+		if (currentTarget == null)
+		{
+			sb.AppendLine("君主被俘会提高本国对稳定、停战与谈判的重视程度；若本篇对象正是当前关押或控制方，则进一步提高对让步和妥协的重视。不得猜测未知关押方，也不得绕过当前合法动作。");
+		}
+		else if (currentTargetIsHolder)
+		{
+			sb.AppendLine("君主被当前外交对象关押或控制。本国处于明显不利处境，应更重视停战、和平、让步和避免战争扩大；可以接受比平时更不利但仍可执行的条件。不得因此无条件接受不存在的提议、非法条款或绕过当前合法动作。");
+		}
+		else if (holderKnown)
+		{
+			sb.AppendLine("本国君主被其他王国关押或控制。本国整体处境恶化，应减少无意义的外交升级，更重视稳定与谈判；不得因此自动接受当前对象的条件，也不得把当前对象误认作关押方。");
+		}
+		else
+		{
+			sb.AppendLine("本国君主被俘但当前关押/控制方无法可靠确认。本国处境恶化，应更重视稳定与谈判；不得猜测关押方，也不得把当前对象自动认定为关押方。");
+		}
 	}
 
 	private void MigratePolicyCountdownHistory(WorldDiplomacyCanonicalHistoryState history)
@@ -17492,11 +17641,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (ruler == null || !ruler.IsAlive)
 		{
 			reason = "ruler_unavailable";
-			return false;
-		}
-		if (ruler.IsPrisoner)
-		{
-			reason = "ruler_is_prisoner";
 			return false;
 		}
 		return true;

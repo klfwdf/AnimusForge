@@ -580,19 +580,35 @@ internal static class Program
 	private static void RunRecoveredDiplomacyRegressionContractTests(string source)
 	{
 		string authorGate = ExtractMethod(source, "private static bool CanAiAuthorDiplomaticDocument(");
-		Test.True(authorGate.Contains("ruler.IsPrisoner", StringComparison.Ordinal)
+		Test.True(!authorGate.Contains("ruler.IsPrisoner", StringComparison.Ordinal)
 			&& authorGate.Contains("player_controlled_realm_requires_player_authorization", StringComparison.Ordinal),
-			"AI diplomatic authorship must reject captive rulers and player-ruled realms");
+			"AI diplomatic authorship must allow captive rulers while still rejecting player-ruled realms");
 		Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") >= 8,
 			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
 		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
 		Test.True(mandatoryResponse.Contains("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
-			&& mandatoryResponse.Contains("ruler_is_prisoner", StringComparison.Ordinal)
-			&& mandatoryResponse.Contains("王庭暂时无法正式回应你的宣言", StringComparison.Ordinal),
-			"a player declaration delivered to a captive ruler must receive an explicit unable-to-respond notice instead of hanging");
+			&& !mandatoryResponse.Contains("ruler_is_prisoner", StringComparison.Ordinal)
+			&& !mandatoryResponse.Contains("王庭暂时无法正式回应你的宣言", StringComparison.Ordinal),
+			"a player declaration delivered to a captive ruler must continue into the normal response path");
 		Test.True(mandatoryResponse.IndexOf("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
 			< mandatoryResponse.IndexOf("if (round.ResultSettlementPending)", StringComparison.Ordinal),
 			"captive-ruler feedback must not be bypassed when the round has already entered result settlement");
+		string captivityContext = ExtractMethod(source, "private static void AppendRulerCaptivityDecisionContext(");
+		string captivityTargetHint = ExtractMethod(source, "private static string BuildRulerCaptivityTargetHint(");
+		Test.True(captivityContext.Contains("currentTargetIsHolder", StringComparison.Ordinal)
+			&& captivityContext.Contains("holderKnown", StringComparison.Ordinal)
+			&& captivityContext.Contains("string pressure", StringComparison.Ordinal)
+			&& captivityContext.Contains("\"高\"", StringComparison.Ordinal)
+			&& captivityContext.Contains("\"中\"", StringComparison.Ordinal)
+			&& captivityContext.Contains("\"低\"", StringComparison.Ordinal),
+			"captive-ruler prompt context must expose the agreed three pressure levels");
+		Test.True(captivityContext.Contains("不得因此无条件接受", StringComparison.Ordinal)
+			&& captivityContext.Contains("不得绕过当前合法动作", StringComparison.Ordinal)
+			&& captivityTargetHint.Contains("不得猜测关押方", StringComparison.Ordinal),
+			"captive-ruler pressure must remain prompt-only and must not bypass diplomatic legality");
+		Test.True(source.Contains("PartyBelongedToAsPrisoner", StringComparison.Ordinal)
+			&& source.Contains("holder?.MapFaction as Kingdom", StringComparison.Ordinal),
+			"captive-ruler pressure must use the reliable captor-party kingdom when available");
 
 		string courtArrival = ExtractMethod(source, "private void ProcessCourtArrival(");
 		Test.True(courtArrival.Contains("IsPlayerAffiliatedKingdom(receiver)", StringComparison.Ordinal),
@@ -2099,11 +2115,13 @@ internal static class Program
             "if (!TryApplyGeneratedSemanticEnvelope(",
             StringComparison.Ordinal);
         int secondStageEnvelopeRejection = generatedCommit.IndexOf(
-            "RejectGeneratedDraftBeforePublication(job, raw, author, target, \"generated_semantic_envelope_incomplete\", json);",
+            "RejectGeneratedDraftBeforePublication(job, raw, author, target,",
+            secondStageEnvelopeCheck,
             StringComparison.Ordinal);
         int publishDocument = generatedCommit.IndexOf("AddDocument(document);", StringComparison.Ordinal);
         Test.True(secondStageEnvelopeCheck >= 0
                   && secondStageEnvelopeRejection > secondStageEnvelopeCheck
+                  && generatedCommit.IndexOf("GetGeneratedEnvelopeApplicationFailureReason(document, json, author, target, job.IsRelayTurn)", secondStageEnvelopeCheck, StringComparison.Ordinal) > secondStageEnvelopeCheck
                   && publishDocument > secondStageEnvelopeRejection,
             "a second-stage envelope application failure must repair before any document publication");
 
