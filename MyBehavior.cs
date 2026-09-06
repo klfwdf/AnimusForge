@@ -50642,6 +50642,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Dictionary<string, int> newCounts = BuildDailyMemorySyncLineCounts(newLines);
 			Dictionary<string, int> removeCounts = BuildDailyMemorySyncCountDelta(oldCounts, newCounts);
 			Dictionary<string, int> addCounts = BuildDailyMemorySyncCountDelta(newCounts, oldCounts);
+			ShoutBehavior.SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(
+				npc,
+				npc.CharacterObject,
+				npc.Name?.ToString(),
+				affectedDayIndex,
+				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(npc, oldLines),
+				BuildNativeConversationHistoryEntriesForDailyMemoryEdit(npc, newLines),
+				reason);
 			if (removeCounts.Count == 0 && addCounts.Count == 0)
 			{
 				return;
@@ -50684,7 +50692,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 						|| (x.MemoryCommitMarkers != null && x.MemoryCommitMarkers.Count > 0)))
 					.OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
 				SaveDialogueHistory(npc, records);
-				ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(npc, npc.CharacterObject, npc.Name?.ToString(), affectedDayIndex);
 				Logger.Log("CompressedMemory", "sync_raw_edit_dialogue_history hero=" + GetMemoryHeroId(npc) + " day=" + affectedDayIndex + " removed=" + removedCount + " added=" + addedLines.Count + " reason=" + (reason ?? ""));
 			}
 		}
@@ -50692,6 +50699,41 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("CompressedMemory", "[WARN] sync_raw_edit_dialogue_history failed: " + ex.Message);
 		}
+	}
+
+	private static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEntriesForDailyMemoryEdit(Hero npc, IEnumerable<DailyMemoryLine> lines)
+	{
+		List<AnimusForgeDialogueHistoryEntry> result = new List<AnimusForgeDialogueHistoryEntry>();
+		string npcName = (npc?.Name?.ToString() ?? "NPC").Trim();
+		if (string.IsNullOrWhiteSpace(npcName))
+		{
+			npcName = "NPC";
+		}
+		foreach (DailyMemoryLine line in lines ?? Enumerable.Empty<DailyMemoryLine>())
+		{
+			ConversationMessage message = BuildUncompressedMemoryConversationMessage(line, npcName, line?.TargetAgentIndex ?? -1);
+			if (message == null || string.IsNullOrWhiteSpace(message.Content))
+			{
+				continue;
+			}
+			string role = (message.Role ?? "").Trim();
+			string kind = string.Equals(role, "system", StringComparison.OrdinalIgnoreCase)
+				? "fact"
+				: (string.Equals(role, "user", StringComparison.OrdinalIgnoreCase) ? "player" : "npc");
+			result.Add(new AnimusForgeDialogueHistoryEntry
+			{
+				GameDayIndex = message.GameDayIndex,
+				GameDate = message.GameDate ?? "",
+				GameHour = message.GameHour,
+				Scene = message.Scene ?? "",
+				Speaker = message.SpeakerName ?? "",
+				TargetAgentIndex = message.TargetAgentIndex,
+				TargetName = message.TargetName ?? "",
+				Text = message.Content ?? "",
+				Kind = kind
+			});
+		}
+		return result;
 	}
 
 	private static List<DailyMemoryLine> CloneDevDailyMemoryLines(IEnumerable<DailyMemoryLine> lines)
