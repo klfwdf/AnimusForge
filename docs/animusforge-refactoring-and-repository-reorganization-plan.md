@@ -8,6 +8,12 @@
 - 检测锁定源码 `35524b04`，未修生产/正式测试、未推送或部署。确认 4 个 P1 与 2 个 P2 功能问题，另有 Bridge/目录不一致及未验证风险；构建通过不能将阶段八升级为 DONE。
 - 完整报告：`G:\AFMOD\AF-REFACTOR\docs\audits\2026-09-08-full-refactor-audit-35524b04.md`。后续修复按报告给用户确认，不由已暂停的自动化继续修改。
 
+## 检测收尾交接（2026-09-08）
+
+- 用户要求做结尾工作；仅归档检测与交接，不修生产、不恢复自动化、不推送或部署。源码验收仍绑定 `35524b04`，4 个 P1 与 2 个 P2 功能问题尚未修复。
+- HANDOFF：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-08-audit-closeout-handoff.md`；制作组短文：`G:\AFMOD\AF-REFACTOR\docs\handoffs\2026-09-08-audit-closeout-team-brief.md`。
+- 本地证据 ZIP 已通过完整性和逐文件 SHA-256 校验；索引见 `G:\AFMOD\AF-REFACTOR\docs\audits\2026-09-08-audit-evidence-manifest.json`。证据包不是可安装 MOD，未进入远端。
+
 ## 自动接续重启（2026-09-08）
 
 - 用户已批准“设置自动化开改”；复用当前任务 heartbeat `af-7-8`，每30分钟，不创建重复自动化。唯一代码工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-main-refactor-continuation-20260831`。
