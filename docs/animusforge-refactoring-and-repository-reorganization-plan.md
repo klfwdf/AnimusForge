@@ -19,6 +19,14 @@
 - 独立源码审查无本轮阻断；日志 `.tmp/cutover-20260908/`、`.tmp/channel-cutover-boundary/`。完整命令/哈希/未验证项见 `docs/handoffs/2026-09-08-cutover-terminal-safety-handoff.md`。
 - 下一精确任务 `P0-SCENE-PARITY` TODO：从完整Scene现有前处理/消息/动态PostprocessRules到detached重新捕获链做差异回放，优先复用完整上下文，不重复计算或偷偷切Native默认。自动化保持ACTIVE；没有推送或部署。
 
+### P0-SCENE-MAIN-PARITY-20260908 ACTIVE
+
+- 基线 `92ad625a`；fetch后远端仍为aefa02ad，本地ahead3，无远端新提交。两份旧草稿不变。
+- 初查确认默认Scene先调用BuildStrictSceneMessagesForNpc消费当前AFEF并构造完整role消息，detached随后重新捕获，主请求不再使用该完整messages；信任、当前事实、场景标签及历史顺序会丢失。后处理另有真实PostprocessRules/资格/归一化/relay时机缺口，不能混称本轮全部等价。
+- 本轮意图仅闭环主请求保真：冻结已准备的messages并沿现有Scene端口交给Gateway；保留public工厂ABI与无prepared的opt-in行为，不复制另一套Prompt逻辑，不改Postprocess/Action/Memory/default/存档或GCCZ。后处理所需旧捕获暂留，不宣称已消除重复前处理。
+- owner为Conversation.Scene/Prompt adapter。拟修改ShoutBehavior.cs及定向source-linked/外层回归与文档；验证同一角色/顺序/文本/事实/当前输入/5000token完整进入main请求、不可变性、无跨请求重用及非Scene路径不变；原44外层故障回归、相关Host契约与官方六项构建。
+- 先做新旧实际factory/callsite反例，再修复并清理不再使用的默认主消息重组选择。本轮实机NOT_RUN，不推送/部署/切Native默认。
+
 ## GitHub 融合交接推送（2026-09-06）
 
 用户明确授权“融合然后推送”。已完成本地 `38c72484` 与共享远端 `8f1fa8db` 的正常合并，代码提交 `fb01c03c`；三个终端冲突按功能融合，保留API引导/设置与本地功能修复。融合后六项构建、终端/周报/Duel/Gateway/Host及相关契约回归通过。新交接为 `docs/handoffs/2026-09-06-merged-refactor-handoff.md`，制作组文案同目录 `2026-09-06-merged-refactor-team-brief.md`；普通推送目标仍为 `refactor/prepare-af-restructure`，不覆盖main、不force push。
