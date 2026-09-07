@@ -3682,6 +3682,25 @@ internal static class Program
             out string blankLineRepairError));
         Equal(null, blankLineRepairError);
         Equal(combined.SpeechText, blankLineRepaired.SpeechText);
+        string multilineSpeechOutput =
+            "SPEECH_BEGIN\n" +
+            "北坡的尘土已经遮住敌人的旗，盾牌靠紧！\n" +
+            "握紧武器，别让他们撕开左翼！\n" +
+            "SPEECH_END\n" +
+            "ACTIONS PLAY_PROGRAM explain>command\n" +
+            "TACTIC NONE\n" +
+            "REPLIES 北坡不能丢，盾牌靠紧！|我有点怕，但我不会逃！";
+        True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
+            multilineSpeechOutput,
+            20,
+            80,
+            new[] { "explain", "command" },
+            2,
+            out BattleSpeechCombinedNpcResponseV2 multilineParsed,
+            out string multilineError));
+        Equal(null, multilineError);
+        True(multilineParsed.SpeechText.Contains("北坡的尘土已经遮住敌人的旗，盾牌靠紧！"));
+        True(multilineParsed.SpeechText.Contains("握紧武器，别让他们撕开左翼！"));
         True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
             combinedOutput.Replace(
                 "REPLIES 北坡不能丢，盾牌靠紧！|我有点怕，但我不会逃！",
