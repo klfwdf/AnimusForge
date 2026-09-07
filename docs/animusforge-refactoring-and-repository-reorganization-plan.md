@@ -36,6 +36,15 @@
 - 下一精确任务 `P0-SCENE-POST-PREP` TODO：在原Queue调用时机下把TryRunSceneUnifiedActionPostprocess原实现分离成prepare/network/normalize，先保持旧入口可重放；禁止直接复用缺少Scene relay/summon/guide的Courier builder或提前以空回复生成post prompt。详见新HANDOFF。Native诊断CompareMainMessages对匿名消息的遗漏纳入P1，不依赖字典fixture的PASS直接迁移。
 - 日志 `.tmp/scene-main-20260908/` 与 `.tmp/channel-cutover-boundary/prompt-*`，独立审查无本轮新增阻断。完整证据见 `docs/handoffs/2026-09-08-scene-main-prompt-fidelity-handoff.md`。自动化继续；未推送、未部署、未操作存档。
 
+### SCENE-POSTPROCESS-MILESTONE-20260908 ACTIVE
+
+- 用户反馈每轮过小，已将af-7-8调整为整模块连续推进：30分钟仅唤醒间隔；规则准备、network、normalize、调用方接线、firstTurn/relay/历史边界和回归统一完成，不以单个prepare helper作为交付。
+- 基线d40808b3，fetch远端仍aefa02ad，本地ahead5；两份已知草稿保留。owner为Conversation.Scene/Postprocess。拟改ShoutBehavior.cs、同名partial后处理模块、定向行为回放和现有外层回归/文档，不动GCCZ核心、存档key/type、数值、Bridge配置或Native默认。
+- 先保留旧完整方法签名，将原实际规则/动态候选/网络/归一化分离并接回实际调用；再核对早期detached与生成后完整Queue的动作/历史/relay所有权，修复有证据的内部接线问题。若方案实质需要新的默认路径切换，则先明确提出授权，继续其他已授权部分，不自行越界。
+- 验证覆盖原方法vs新阶段请求/输出对照、动作目标/firstTurn/relay、失败及无规则路径；继续保留原52外层测试。开发阶段做定向红绿，整合后统一官方Debug/Release的1.3/1.4/Bootstrap，不在每个helper后全量构建。
+- 内部agent按新partial生产文件、独立只读时序审查、独占测试目录分工；主任务负责大文件删除/改partial及整合、最终验证/提交。新文件中只调用既有GCCZbridge，不复制其核心规则。
+- 实机/存档NOT_RUN；不推送/部署/跨工作区写入。未达到完整验收前保持ACTIVE，不能把提取或测试数量包装为阶段八完成。
+
 ## GitHub 融合交接推送（2026-09-06）
 
 用户明确授权“融合然后推送”。已完成本地 `38c72484` 与共享远端 `8f1fa8db` 的正常合并，代码提交 `fb01c03c`；三个终端冲突按功能融合，保留API引导/设置与本地功能修复。融合后六项构建、终端/周报/Duel/Gateway/Host及相关契约回归通过。新交接为 `docs/handoffs/2026-09-06-merged-refactor-handoff.md`，制作组文案同目录 `2026-09-06-merged-refactor-team-brief.md`；普通推送目标仍为 `refactor/prepare-af-restructure`，不覆盖main、不force push。
