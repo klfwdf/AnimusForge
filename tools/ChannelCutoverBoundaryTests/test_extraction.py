@@ -43,6 +43,23 @@ class ExtractionTests(unittest.TestCase):
         self.assertIn(blocks["FINALIZE_METHOD"], courier)
         self.assertIn(blocks["STATUS_ENUM"], source("Refactor/Contracts/InteractionContracts.cs", None))
 
+    def test_prompt_factory_and_anonymous_message_adapter_are_production_declarations(self):
+        blocks = extract(None)
+        scene = source("ShoutBehavior.cs", None)
+        for key in ("PUBLIC_SCENE_FACTORY", "PRIVATE_SCENE_FACTORY", "CREATE_MESSAGE"):
+            self.assertTrue(blocks[key], key)
+            self.assertIn(blocks[key], scene)
+        self.assertIn(blocks["BUILD_PROMPT"], source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", None))
+        self.assertIn(blocks["PORTS_TYPE"], source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", None))
+        self.assertIn(blocks["MAIN_COMPOSER"], source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", None))
+        self.assertIn(blocks["POSTPROCESS_COMPOSER"], source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", None))
+
+    def test_known_prompt_baseline_keeps_real_public_factory_and_no_synthetic_fix(self):
+        blocks = extract("92ad625a")
+        self.assertEqual("", blocks["PRIVATE_SCENE_FACTORY"])
+        self.assertIn(blocks["PUBLIC_SCENE_FACTORY"], source("ShoutBehavior.cs", "92ad625a"))
+        self.assertNotIn("preparedMainPrompt", blocks["SCENE_BLOCK"])
+
 
 if __name__ == "__main__":
     unittest.main()

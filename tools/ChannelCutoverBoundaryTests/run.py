@@ -55,7 +55,20 @@ def extract(ref: str | None) -> dict[str, str]:
     # The same await also appears inside the fallback lambda; select the last.
     last_await = "await GenerateNpcReplyAsync(request).ConfigureAwait(false);"
     end_c = method.rindex(last_await) + len(last_await)
-    return {
+    contracts = source("Refactor/Contracts/InteractionContracts.cs", ref)
+    prompt_contracts = [
+        "public enum InteractionChannel", "public sealed class InteractionIdentity",
+        "public sealed class TraceContext", "public sealed class InteractionCandidate",
+        "public sealed class GameInteractionSnapshot", "public sealed class InteractionEnvelope",
+        "public sealed class DetachedPromptSections", "public sealed class DetachedPostprocessPromptSections",
+        "public sealed class RuleSelection", "public sealed class CapabilitySet",
+        "public sealed class PromptMessage", "public sealed class PromptPackage",
+        "public sealed class PostprocessContext", "public sealed class ActionRequest",
+        "public sealed class ActionPlan", "public interface IPromptPackageComposer",
+        "public interface IActionPostprocessor", "internal static class ContractGuard",
+        "internal static class ContractCollections",
+    ]
+    blocks = {
         "SCENE_BLOCK": scene[begin:end],
         "COURIER_BLOCK": method[begin_c:end_c],
         "FAIL_METHOD": declaration(courier, "private void FailCourierReplyGenerationOnMainThread("),
@@ -63,7 +76,18 @@ def extract(ref: str | None) -> dict[str, str]:
         "DETACHED_FAIL_METHOD": declaration(courier, "private void FailDetachedCourierReplyOnMainThread(", optional=True),
         "STATUS_ENUM": declaration(source("Refactor/Contracts/InteractionContracts.cs", ref), "public enum InteractionStatus"),
         "RESULT_TYPE": declaration(source("Refactor/Runtime/DetachedInteractionHost.cs", ref), "public sealed class DetachedInteractionHostResult"),
+        "PROMPT_CONTRACTS": "\n\n".join(declaration(contracts, item) for item in prompt_contracts),
+        "POSTPROCESS_INTERFACE": declaration(source("Refactor/Contracts/LlmContracts.cs", ref), "public interface IPostprocessPromptComposer"),
+        "PORTS_TYPE": declaration(source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", ref), "public sealed class LegacyInteractionPipelinePorts"),
+        "MAIN_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", ref), "public sealed class LegacyDetachedPromptComposer"),
+        "POSTPROCESS_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", ref), "public sealed class LegacyDetachedPostprocessPromptComposer"),
+        "ACTION_PARSER": declaration(source("Refactor/Adapters/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
+        "BUILD_PROMPT": declaration(source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
+        "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),
+        "PUBLIC_SCENE_FACTORY": declaration(scene, "public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal("),
+        "PRIVATE_SCENE_FACTORY": declaration(scene, "private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPorts(", optional=True),
     }
+    return blocks
 
 
 def main() -> int:
@@ -71,6 +95,8 @@ def main() -> int:
     parser.add_argument("--source-ref", help="Read immutable Git source instead of the working tree.")
     parser.add_argument("--dotnet", help="Path to dotnet; otherwise use DOTNET_ROOT or PATH.")
     parser.add_argument("--output-name", default="current", help="A single name under .tmp/channel-cutover-boundary.")
+    parser.add_argument("--newtonsoft", type=Path, default=ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll",
+                        help="Existing Newtonsoft.Json assembly for the production anonymous-message adapter; no package download.")
     args = parser.parse_args()
     dotnet_root = os.environ.get("DOTNET_ROOT")
     root_dotnet = Path(dotnet_root) / ("dotnet.exe" if os.name == "nt" else "dotnet") if dotnet_root else None
@@ -80,6 +106,8 @@ def main() -> int:
     dotnet = str(Path(dotnet).resolve())
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.output_name):
         parser.error("--output-name must contain only letters, digits, underscore or hyphen")
+    if not args.newtonsoft.is_file():
+        parser.error("Pass --newtonsoft <path-to-existing-Newtonsoft.Json.dll>.")
     blocks = extract(args.source_ref)
     template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
     for name, block in blocks.items():
@@ -90,11 +118,14 @@ def main() -> int:
     output = ROOT / ".tmp" / "channel-cutover-boundary" / args.output_name
     output.mkdir(parents=True, exist_ok=True)
     (output / "Program.cs").write_text(template, encoding="utf-8")
+    shutil.copyfile(args.newtonsoft, output / "Newtonsoft.Json.dll")
     (output / "Boundary.csproj").write_text(
         '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
         '<TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings>'
         '<Nullable>disable</Nullable>'
-        '<RestoreSources></RestoreSources></PropertyGroup></Project>', encoding="utf-8"
+        '<RestoreSources></RestoreSources></PropertyGroup>'
+        '<ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>Newtonsoft.Json.dll</HintPath></Reference></ItemGroup>'
+        '</Project>', encoding="utf-8"
     )
     (output / "NuGet.Config").write_text(
         '<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8"
