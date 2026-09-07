@@ -2,6 +2,14 @@
 
 > 本文件是 AF 重构的公共进度台账。它记录目标、阶段、当前状态、验证证据和交接信息；不替代 `.claude/skills/animusforge-maintainer/` 中的长期工作规范。
 
+## 自动接续重启（2026-09-08）
+
+- 用户已批准“设置自动化开改”；复用当前任务 heartbeat `af-7-8`，每30分钟，不创建重复自动化。唯一代码工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-main-refactor-continuation-20260831`。
+- 已 fetch 并安全快进到共享重构分支 `aefa02ad15758222b87e4e240a85c52eb3f913d9`。两份2026-09-06 integrated-phase8-handoff/team-brief本地草稿原样保留、不暂存；不改其他工作区、游戏或真实存档。
+- 任务 `P0-CUTOVER-20260908` ACTIVE：先修Scene/Courier外层在Host终态失败后重新请求的缺口。owner为Conversation/Courier调用边界。计划路径：ShoutBehavior.cs、CourierDeliveryBehavior.cs、定向外层回归工具及本计划/HANDOFF；不改存档key/type、玩法数值、Bridge开关、默认选择或官方构建脚本。
+- 验证：先对生产外层控制流作故障注入红测，修后回放成功/失败/空回复/回退/取消/异常，补既有Host契约与官方1.3/1.4/Bootstrap项目内Stage。真实LIVE/SAVE仍未在本轮执行。
+- 当前实际Native已恢复完整旧入口；Scene/Courier接入不等于三渠道等价完成。13 wired与历史PASS不可提升为全领域实机通过。具体计划及20领域清单见 `docs/phase8/refactor-execution-plan-20260908.md`。
+- 回滚基线 `aefa02ad`；本地意图提交后执行，后续按定向逆提交回滚，不reset/rebase/force-push。推送、部署、新默认切换及广泛删旧另待明确方案批准。
 ## GitHub 融合交接推送（2026-09-06）
 
 用户明确授权“融合然后推送”。已完成本地 `38c72484` 与共享远端 `8f1fa8db` 的正常合并，代码提交 `fb01c03c`；三个终端冲突按功能融合，保留API引导/设置与本地功能修复。融合后六项构建、终端/周报/Duel/Gateway/Host及相关契约回归通过。新交接为 `docs/handoffs/2026-09-06-merged-refactor-handoff.md`，制作组文案同目录 `2026-09-06-merged-refactor-team-brief.md`；普通推送目标仍为 `refactor/prepare-af-restructure`，不覆盖main、不force push。
