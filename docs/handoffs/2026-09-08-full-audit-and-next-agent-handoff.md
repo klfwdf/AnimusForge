@@ -16,12 +16,14 @@
 
 - **工作区路径**：`F:\AnimusForge-main`
 - **当前 Git 分支**：`refactor/prepare-af-restructure`
-- **本地 HEAD 提交**：`05b173bc` (`fix(lifecycle,policy): decouple campaign time and eliminate firstchance NPEs`)
-- **分支状态**：领先 `origin/refactor/prepare-af-restructure` 4 个本地提交：
+- **本地 HEAD 提交**：`2ed86eaa` (`fix(conversation): restore Native conversation authoritative prompt path and eliminate raw prompt leak`)
+- **分支状态**：领先 `origin/refactor/prepare-af-restructure` 6 个本地提交：
   - `54fd7974` fix(ui): widen war stats sort dropdowns to prevent text truncation and refine height
   - `d9f974ce` feat(refactor): wire stage 8 remaining bridges and enable three-channel default cutover
   - `52a82b0e` fix(duel,encounter): resolve duel tag omission and enforce meeting release leave
   - `05b173bc` fix(lifecycle,policy): decouple campaign time and eliminate firstchance NPEs
+  - `8ef120fa` docs(handoff): record full code audit, stage 8 closure, and next-agent handoff
+  - `2ed86eaa` fix(conversation): restore Native conversation authoritative prompt path and eliminate raw prompt leak
 - **未跟踪资产与用户修改保护**：
   - `AnimusForge/GUI/SpriteParts/af_courier/*.png`（共 21 个卷轴与火漆素材图片），严禁暂存、提交或清理，必须保持当前未跟踪状态；
   - `extensions/AnimusForge.XihaiAction` 内既有修改保持完好。
@@ -37,7 +39,19 @@
 
 ## 二、本周期已完成的核心成果（Done）
 
-### 1. 决斗后处理标签漏出与会面放行离开闭环（Commit `52a82b0e`）
+### 1. 修复 Native 自由对话提示词完全丢失导致 AI 破防出戏缺陷（Commit `2ed86eaa`）
+- **现象**：实机测试中向领主（如阿德拉姆埃米尔）提出决斗时，AI 完全脱离骑砍世界观，自称“本AI”，并回复“规则如下：1. 【文斗】成语接龙 2. 【武斗】文字跑团RPG（降龙十八掌对终极光束）3. 石头剪刀布 4. 脑筋急转弯”等荒谬内容，决斗机制完全不触发。
+- **根因分析**：
+  - 此前 `d9f974ce` 在切流 `SubmitNativeConversationTextForExternalAsync` 时，接入了 `CreateNativeConversationRefactorFacadeForExternal(ports, gateway)`；
+  - 但该 Facade 内部绑定的 `promptSectionsProvider` 为 `null`，导致创建的 `envelope.PromptSections` 为空；
+  - `LegacyDetachedPromptComposer` 在组装发送给 LLM 的请求时，System Prompt、NPC 角色人设（Persona）、世界背景、知识库以及决斗等所有规则提示词均为 0，**发送给大模型的实际请求中仅有玩家裸输入**（`"我要和你决斗"`）；
+  - 大模型由于完全没收到世界观与人设，误以为自己是通用聊天机器人，因而输出了通用 AI 挑战游戏文本。
+- **修复方案**：
+  - 恢复 `SubmitNativeConversationTextForExternalAsync` 默认指向权威的 `SubmitNativeConversationTextInternalAsync` 完整流水线；
+  - 确保角色人设、前处理路由规则、PromptComposer 复合块与决斗规则完整注入大模型请求；
+  - 重新完成 1.3 / 1.4 / Bootstrap 编译并执行单模块热部署，SHA256 1:1 对齐通过。
+
+### 2. 决斗后处理标签漏出与会面放行离开闭环（Commit `52a82b0e`）
 - **决斗触发词库扩充**：在 `RuleBehaviorPrompts.json` 的 `Duel.AcceptKeywords` 中增补了 14 组常用无标点短语（`我要和你决斗`、`拔剑吧`、`切磋`、`单挑` 等），修复语义未命中时的词汇漏检；
 - **解除家族等级门禁锁死**：将 `DuelSettings.MinimumClanTier` 默认值降为 `0`，并移除了 `ShoutBehavior.cs` 中阻止向后处理规则表注入 `[ACTION:DUEL]` 的强杀判断；若 MCM 配置了高门槛，通过屏幕通知向玩家明示；
 - **遭遇放行离开死锁修复**：在 `LordEncounterBehavior.cs` 中将谈判放行 `negotiable` 置为 `true`，下发放行后立即授予安全通行证（`AuthorizeMeetingPlayerRelease`），并在 10 秒倒计时结束或玩家主动提前离开时安全调用 `EndConversation()` 与 `EndMission()`，阻断掉入原生战斗/俘获菜单的缺陷。
