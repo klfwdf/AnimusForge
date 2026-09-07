@@ -289,7 +289,8 @@ namespace AnimusForge.SceneActions.Core
                 : "玩家明确指定文风时优先遵守；否则只选一种主情绪：我方明显占优用鼓舞或坚定，双方接近用冷静或坚定，我方劣势或伤亡较重用悲壮或坚定，敌人逼近或已经交战用冷静、愤怒或坚定。";
             return "【正文规则】\n" +
                    "- 受众是同侧己方士兵，不是玩家、镜头或对话框；不要称呼、点名或请示玩家。\n" +
-                   "- 使用该NPC自己的身份、性格和口吻。先给出能喊出口的现场判断，再推进情绪，最后落到具体号召。\n" +
+                   "- 动员必须具备卡拉迪亚中世纪战场的豪迈血性与力量感。使用该NPC自己的身份、性格和口吻。先给出能喊出口的现场判断，再推进情绪，最后落到具体号召。\n" +
+                   "- 局势判断先观察敌我态势、地形或刀兵动向（如盾墙逼近、敌骑试探）；情绪推进要融入所属阵营与文化血性（帝国的严整秩序与鹰旗荣耀、瓦兰迪亚的骑枪誓言、巴旦尼亚的密林与祖灵、斯特吉亚的盾墙战斧、库吉特的马蹄狂风、阿塞莱的烈阳刀锋）；号召要铿锵有力，直指战斗目标。\n" +
                    "- 最多使用两个上下文已确认的战场事实；不得补造地名、数字、天气、敌军位置或战况，也不要复述装备、俘虏和队伍清单。\n" +
                    "- 不写战况报告、背景简介、内心独白、舞台旁白、标题、编号或元话语。开头不要用‘看看这片平原’‘看看晨光’等纯景物镜头；天气和地形只有影响行动时才可写。\n" +
                    "- " + toneRule + "避免固定口号、连续命令和换词复读。\n" +
@@ -458,7 +459,7 @@ namespace AnimusForge.SceneActions.Core
                    "\n【字段规则】\n" +
                    "- ACTIONS：只有正文或上下文明确描述已经发生的身体动作时才输出动作；纯对白、情绪、承诺、命令意图和未来动作一律输出NONE。允许键：" + keys + "。最多4个动作，>表示先后，+表示同时；禁止act_*、演员、目标和强制标志。\n" +
                    "- TACTIC：只能是NONE或ADVANCE；正文明确号召立即推进、冲锋或开战时才用ADVANCE。MCM仍是最终开关。\n" +
-                   "- REPLIES：" + replyRule + "回应要像不同现场士兵，针对正文具体内容，可沉着、紧张、粗粝、迟疑或激昂；避免统一口号和换词复读。\n" +
+                   "- REPLIES：" + replyRule + "回应要像不同现场士兵，生动展现士卒众生相（如老兵的短促冷笑、新兵紧绷的应答、重步兵撞击盾牌的怒吼）；针对正文具体内容，可沉着、紧张、粗粝、迟疑或激昂；避免统一口号和换词复读。\n" +
                    "- 正文与REPLIES必须使用简体中文；字段标记保持英文大写。" +
                    AppendPromptBlock(battlefieldBlock) +
                    AppendPromptBlock(diversity) +
@@ -1671,12 +1672,15 @@ namespace AnimusForge.SceneActions.Core
             }
 
             int endExclusive = end + "SPEECH_END".Length;
-            string speechBlock = string.Join(
-                "\n",
-                normalized.Substring(begin, endExclusive - begin)
+            int contentStart = begin + "SPEECH_BEGIN".Length;
+            string rawSpeechContent = normalized.Substring(contentStart, end - contentStart);
+            string singleLineSpeech = string.Join(
+                " ",
+                rawSpeechContent
                     .Split('\n')
                     .Select(line => line.Trim())
                     .Where(line => !string.IsNullOrWhiteSpace(line)));
+            string speechBlock = "SPEECH_BEGIN\n" + singleLineSpeech + "\nSPEECH_END";
             string[] rawSuffixLines = normalized
                 .Substring(endExclusive)
                 .Split('\n')
