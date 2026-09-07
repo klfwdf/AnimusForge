@@ -1,0 +1,387 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading;
+
+public class OldHost : StubHost { @@BASELINE@@ }
+public class NewHost : StubHost { @@CANDIDATE@@ }
+public class StubHost
+{
+    protected const string PersistentAdpDebtPostprocessRuleId = "persistent_adp_debt";
+    protected const string CustomPolicyAgendaPostprocessRuleId = "kingdom_agenda";
+    protected static readonly Regex CustomPolicyAgendaActionTagRegex = new("CUSTOM_POLICY");
+    protected static bool NativeConversationDetachedPromptParityLoggingEnabled => false;
+    protected static PostprocessRuleEntry MergeSharedDeferredDebtPostprocessRule(PostprocessRuleEntry a, PostprocessRuleEntry b) => new() {Tag=a.Tag,Description=a.Description+"|"+b.Description};
+    @@HELPERS@@
+}
+
+public sealed class Fixture
+{
+    public string Name;
+    public HashSet<string> Flags = new();
+    public HashSet<string> Blocked = new();
+    public List<string> Hits = new();
+    public bool Aux = true, Templates = true, NetworkSuccess = true, Direct = true, Hero = true;
+    public bool AllAssets, Party, Royal, IndependentPeace, ExcludeMoves, NoRules, Snapshots, ThrowReward, SuppressJoin, AgendaBlocked, NpcSurrender, SiegeSurrender, Exclusive, SingleRelay, NoExecutionRules, NoTargets, NoRewardOwner, ThrowOnNormalize;
+    public string Reply = "NPC回答实际内容 [ACTION:SCENE_MOVE:99]", History = "玩家:历史甲\nNPC:历史乙", Player = "当前玩家输入";
+    public string Raw = "[ACTION:MOOD:CALM]\n[A:GIVE:3]\n[AD:1]\n[ADP:1]\n[ACTION:DUEL]\n[ACTION:VASSALAGE]\n[ACTION:KINGDOM_ANNEX]";
+    public string Chain = "scene", NpcName = "NPC-A";
+    public Fixture(string name, params string[] flags) { Name=name; Flags=new(flags); }
+    public object[] Args(MethodInfo method)
+    {
+        return method.GetParameters().Select<ParameterInfo, object>(p => p.Name switch
+        {
+            "targetHero" => Hero ? new Hero() : null,
+            "targetCharacter" => new CharacterObject(),
+            "targetAgentIndex" => 11,
+            "npcName" => NpcName,
+            "playerText" => Player,
+            "historyText" => History,
+            "replyText" => Reply,
+            "entityPostprocessContext" => "entity-context:hero-A/debt-A",
+            "preprocessRuleHits" => Hits.ToList(),
+            "chainName" => Chain,
+            "replyIsDirectPlayerResponse" => Direct,
+            "relayPrimaryTargetAgentIndex" => 22,
+            "relaySingleFramedNpc" => SingleRelay,
+            "duelStakeOptions" => new List<RewardSystemBehavior.DuelStakeOption>{new(){Id="stake-A"}},
+            "kingdomServiceRules" when NoRules => new List<PostprocessRuleEntry>(),
+            "sceneMechanismRules" when NoRules => new List<PostprocessRuleEntry>(),
+            "kingdomServiceRules" => new List<PostprocessRuleEntry>{new(){Tag="[ACTION:KINGDOM_SERVICE_FIXTURE]",Description="kingdom-service-runtime"}},
+            "sceneMechanismRules" when NoExecutionRules => new List<PostprocessRuleEntry>{new(){Tag="[ACTION:SCENE_MOVE]",Description="scene runtime"}},
+            "sceneMechanismRules" => new List<PostprocessRuleEntry>{new(){Tag="[ACTION:SCENE_MOVE]",Description="scene runtime, not body rules"},new(){Tag=TroopInspectionPrisonerSlaughterProfile.ActionTag},new(){Tag=NoblePrisonerEscortBehavior.ExecuteActionTag}},
+            "sceneSummonTargets" when NoTargets => null,
+            "sceneGuideTargets" when NoTargets => null,
+            "sceneSummonTargets" => new List<SceneSummonPromptTarget>{new(){Id=22}},
+            "sceneGuideTargets" => new List<SceneGuidePromptTarget>{new(){Id=33}},
+            "relayCandidates" => new List<NpcDataPacket>{new(){AgentIndex=11},new(){AgentIndex=22}},
+            "detachedMainPromptSections" => null,
+            _ when p.ParameterType == typeof(bool) => Flags.Contains(p.Name.Replace("RuleInjected","")) || Flags.Contains("all"),
+            _ => throw new InvalidOperationException("Unmodeled production parameter "+p.Name)
+        }).ToArray();
+    }
+}
+
+public static class F
+{
+    public static Fixture Current;
+    public static List<string> Calls = new();
+    public static string Serialize(object value) => JsonSerializer.Serialize(value,new JsonSerializerOptions{IncludeFields=true});
+    public static void Reset(Fixture f) { Current=f; Calls=new(); RewardSystemBehavior.Instance=f.NoRewardOwner ? null : new();  }
+    public static void Record(string name, params object[] values) => Calls.Add(name+":"+Serialize(values));
+    public static string Value(string name, params object[] values) { Record(name, values); return name+"="+Serialize(values); }
+    public static string Normalize(string name, params object[] values)
+    {
+        Record("normalize:"+name,values);
+        if (Current.ThrowOnNormalize) throw new InvalidOperationException("fixture-normalization-failure");
+        if (string.IsNullOrWhiteSpace(values.FirstOrDefault() as string)) return "";
+        if (values.Any(x => x is List<PostprocessRuleEntry> rules && rules.Count==0)) return "";
+        if (values.LastOrDefault() is bool enabled && !enabled) return "";
+        return "<"+name+">";
+    }
+    public static List<PostprocessRuleEntry> Rules(string name, params object[] values)
+    {
+        Record("rules:"+name,values);
+        if(Current.NoRules) return new();
+        return new(){new(){Tag="[ACTION:"+name+"]",Description="PostprocessRules:"+name+":"+Serialize(values)}};
+    }
+    public static List<RewardSystemBehavior.RewardItemInfo> Items(string owner)
+    {
+        Record("items:"+owner);
+        if(Current.ThrowReward) throw new InvalidOperationException("fixture assets unavailable");
+        return new(){new(){Id=owner+"-A",Count=2},new(){Id=owner+"-B",Count=3},new(){Id=owner+"-empty",Count=0}};
+    }
+}
+
+public sealed class Hero { public string StringId="hero-A"; public string Name="Hero-A"; public static Hero MainHero=new(){StringId="player",Name="Player"}; }
+public sealed class CharacterObject { public string StringId="character-A"; public string Name="Character-A"; public Hero HeroObject; public int Tier=2; }
+public sealed class Settlement { public string StringId="town-A"; public static Settlement CurrentSettlement=new(); }
+public sealed class PartyBase { public string Id="party-A"; }
+public enum BattleSideEnum { None, Attacker, Defender }
+public sealed class PostprocessRuleEntry { public string Tag; public string Description; }
+public sealed class SceneSummonPromptTarget { public int Id; }
+public sealed class SceneGuidePromptTarget { public int Id; }
+public sealed class NpcDataPacket { public int AgentIndex; }
+public sealed class MentionedWorldEntities { public string Id="mentions-A"; }
+public sealed class DetachedPromptSections { public List<string> SystemSections = new(); }
+public sealed class DetachedInteractionPromptSections { public DetachedPromptSections Main=new(), Postprocess=new(); }
+public static class LegacyNativePromptParity
+{
+    public class LegacyNativePromptParityResult { public DetachedPromptSections PostprocessSections=new(); public string ToDiagnosticString()=>""; }
+    public static LegacyNativePromptParityResult ComparePostprocessBlocks(params object[] a) => new();
+    public static DetachedInteractionPromptSections BuildAtomicBundle(params object[] a) => new();
+}
+public static class Logger { public static void Log(string category,string message) => F.Record("log",category,message); }
+public static class VassalageDiagnosticLog
+{
+    public static void Event(string name,Dictionary<string,object> values) => F.Record(name,values);
+    public static string DescribeHero(Hero hero) => hero?.StringId;
+    public static string Preview(string text,int max) => text;
+}
+public static class TroopInspectionPrisonerSlaughterProfile { public const string ActionTag="[ACTION:INSPECTION_SLAUGHTER]"; }
+public static class NoblePrisonerEscortBehavior { public const string ExecuteActionTag="[ACTION:NOBLE_EXECUTE]"; }
+public static class TownAfRuleRoutingPolicy
+{
+    public const string DuelRuleId="duel",RewardRuleId="reward",LoanRuleId="loan",PersistentDebtRuleId="persistent",KingdomServiceRuleId="service",KingdomVassalageRuleId="vassalage",LordsHallRuleId="hall",EncounterReleaseRuleId="release",VanillaIssueRuleId="issue",SceneMechanismRuleId="scene",PartyTransferRuleId="party",KingdomAgendaRuleId="agenda",DiplomacyRuleId="diplomacy",WorldMapPartyCommandRuleId="world",NobleGatheringRuleId="gathering",MarriageRuleId="marriage",SceneRelayRuleId="relay",RoyalActionRuleId="royal",EncounterSurrenderRuleId="surrender",IntimacyRuleId="intimacy";
+}
+public static class AIConfigHandler
+{
+    public static string ActionPostprocessFallbackMoodTag => "[ACTION:MOOD:CALM]";
+    public static string ActionPostprocessSystemPrompt => F.Current.Templates ? "system-template" : "";
+    public static string ActionPostprocessUserPromptTemplate => F.Current.Templates ? "user-template" : "";
+    public static bool CanUseAuxiliaryActionPostprocess() => F.Current.Aux;
+    public static bool ShouldExcludeSceneMoveRuleForCurrentMission() => F.Current.ExcludeMoves;
+    public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero h) => F.Current.Royal;
+    public static List<PostprocessRuleEntry> DuelPostprocessRules => F.Rules("duel");
+    public static List<PostprocessRuleEntry> RewardPostprocessRules => F.Rules("reward");
+    public static List<PostprocessRuleEntry> LoanPostprocessRules => F.Rules("loan");
+    public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => F.Rules("mood");
+    public static List<PostprocessRuleEntry> BuildRuntimeKingdomServicePostprocessRules() => F.Rules("kingdom-service");
+    public static List<PostprocessRuleEntry> BuildRuntimeLordsHallAccessPostprocessRules() => F.Rules("hall");
+    public static List<PostprocessRuleEntry> GetGuardrailRulePostprocessRules(string id) => F.Rules("guardrail:"+id);
+    public static List<PostprocessRuleEntry> BuildRuntimeHeroJoinPartyPostprocessRules(bool allowed,Hero hero,string context) => allowed ? F.Rules("hero-join",hero,context) : new();
+    public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero hero) => F.Current.Royal ? new(){new(){Tag="[ACTION:KING_ABDICATE_TO_PLAYER]",Description="royal-runtime"}} : new();
+    public static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal() { F.Record("mentions"); return new(); }
+    public static string BuildActionPostprocessSystemPrompt(params object[] a) => F.Value("SYSTEM",a);
+    public static string BuildActionPostprocessUserPrompt(params object[] a) => F.Value("USER",a);
+    public static string BuildActionPostprocessLatestReplyBlock(params object[] a) => F.Value("LATEST",a);
+    public static bool TryCallAuxiliaryActionPostprocess(string system,string user,int tokens,float temperature,out string content,out string error)
+    { F.Record("NETWORK",system,user,tokens,temperature); content=F.Current.Raw; error=F.Current.NetworkSuccess?null:"fixture-network-failure"; return F.Current.NetworkSuccess; }
+}
+public static class AfGcczShoutBridge
+{
+    public static bool ShouldAllowAfRuleForCurrentStage(string id,int agent) {F.Record("gate",id,agent); return !F.Current.Blocked.Contains(id);}
+    public static bool ShouldContinuePostprocess(bool enabled,List<string> hits) => enabled;
+    public static bool ShouldUseExclusivePostprocessRuleRouting(int id) => F.Current.Exclusive;
+    public static bool ShouldUseTownPostprocessDecisionContract() => F.Current.Exclusive;
+    public static List<PostprocessRuleEntry> BuildPostprocessRules(bool enabled,int agent,bool direct,string player) => enabled ? F.Rules("siege",agent,direct,player) : new();
+    public static string BuildPostprocessContext(params object[] a) => F.Value("siege-context",a);
+    public static string AppendTownPostprocessDecisionContract(string user,bool enabled,List<PostprocessRuleEntry> rules) {F.Record("decision-contract",user,enabled,rules);return enabled?user+"\nDecisionContract":user;}
+    public static string NormalizePostprocessTags(bool enabled,string raw,List<PostprocessRuleEntry> rules) => enabled?F.Normalize("siege",raw,rules):"";
+    public static string ValidateTownPostprocessDecision(string tags) {F.Record("decision-validate",tags);return tags;}
+}
+public static class KingdomAgendaCustomPolicyBehavior
+{
+    public static bool IsEligibleTargetForExternal(Hero hero,out string reason) {reason="fixture-blocked";F.Record("agenda-eligible",hero);return !F.Current.AgendaBlocked;}
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(params object[] a) => F.Rules("agenda",a);
+}
+public static class DiplomacyBehavior
+{
+    public static bool CanUseDiplomacyActionPostprocessForExternal(params object[] a) => F.Current.Royal;
+    public static bool CanUseIndependentClanPeaceForExternal(params object[] a) => F.Current.IndependentPeace;
+    public static string BuildDiplomacyPostprocessContext(params object[] a) => F.Value("diplomacy-context",a);
+}
+public static class VassalageBehavior { public static List<PostprocessRuleEntry> BuildRuntimeVassalagePostprocessRulesForExternal(params object[] a) => F.Rules("VASSALAGE",a); }
+public static class LordEncounterBehavior { public static List<PostprocessRuleEntry> BuildMeetingPlayerReleasePostprocessRulesForExternal(params object[] a) => F.Rules("meeting-release",a); }
+public static class VanillaIssueOfferBridge { public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(params object[] a) => F.Rules("issue",a); }
+public static class NoblePrisonerExecutionOrderBehavior
+{
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRules(params object[] a) => F.Rules("noble-execution",a);
+    public static string NormalizePostprocessTags(params object[] a) => F.Normalize("noble-execution",a);
+}
+public static class VoteDealBehavior { public static List<PostprocessRuleEntry> BuildAgendaVotePostprocessRulesForExternal(params object[] a) => F.Rules("vote-deal",a); }
+public static class WorldMapPartyCommandBehavior
+{
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(params object[] a) => F.Rules("world-command",a);
+    public static string BuildCurrentNpcCommandTasksPromptForExternal(params object[] a) => F.Value("world-tasks",a);
+}
+public static class NobleGatheringBehavior
+{
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(params object[] a) => F.Rules("gathering",a);
+    public static string BuildPostprocessContextForExternal(params object[] a) => F.Value("gathering-context",a);
+    public static string NormalizeNobleGatheringPostprocessTagsForExternal(params object[] a) => F.Normalize("gathering",a);
+}
+public static class SexualConceptionBehavior
+{
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRules(params object[] a) => F.Rules("intimacy",a);
+    public static string NormalizePostprocessTags(params object[] a) => F.Normalize("intimacy",a);
+}
+public sealed class RomanceSystemBehavior
+{
+    public static RomanceSystemBehavior Instance=new();
+    public List<PostprocessRuleEntry> BuildRuntimeMarriagePostprocessRulesForExternal(params object[] a) => F.Rules("marriage",a);
+    public string BuildMarriagePostprocessPlayerCandidatesBlockForExternal(params object[] a) => F.Value("marriage-player",a);
+    public string BuildMarriagePostprocessTargetCandidatesBlockForExternal(params object[] a) => F.Value("marriage-target",a);
+    public string NormalizeMarriagePostprocessTagsForExternal(params object[] a) => F.Normalize("marriage",a);
+}
+public sealed class RewardSystemBehavior
+{
+    public sealed class DuelStakeOption { public string Id; }
+    public sealed class RewardItemInfo { public string Id; public int Count; }
+    public static RewardSystemBehavior Instance=new();
+    public string BuildVisibleEquipmentPostprocessListForAI(params object[] a) => F.Value("equipment",a);
+    public string BuildDebtHintForAI(params object[] a) => F.Value("hero-debt",a);
+    public string BuildSettlementMerchantDebtHintForAI(params object[] a) => F.Value("merchant-debt",a);
+    public List<RewardItemInfo> BuildHeroRewardPostprocessItems(params object[] a) => F.Items("hero");
+    public List<RewardItemInfo> BuildPartyRewardPostprocessItems(params object[] a) => F.Items("party");
+    public List<RewardItemInfo> BuildSettlementMerchantPostprocessItems(params object[] a) => F.Items("merchant");
+    public int GetRewardPostprocessGoldForHero(params object[] a) {F.Record("hero-gold",a);return 701;}
+    public int GetPartyTradeGoldForExternal(params object[] a) {F.Record("party-gold",a);return 702;}
+    public int GetSettlementMarketTradeGold(params object[] a) {F.Record("merchant-gold",a);return 703;}
+}
+public static class MyBehavior
+{
+    public enum PartyTransferEntrySection { NpcTroops,NpcVolunteers,NpcPrisoners }
+    public enum SettlementTransferEntrySection { NpcFiefs }
+    public class PartyTransferPromptEntry { public string Id; public PartyTransferEntrySection Section; public CharacterObject Character; }
+    public class SettlementTransferPromptEntry { public string Id; public SettlementTransferEntrySection Section; }
+    public static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesForExternal(params object[] a)
+    {F.Record("party-entries",a);return new(){new(){Id="troop-low",Section=PartyTransferEntrySection.NpcTroops,Character=new(){Tier=2}},new(){Id="troop-high",Section=PartyTransferEntrySection.NpcTroops,Character=new(){Tier=5}},new(){Id="volunteer",Section=PartyTransferEntrySection.NpcVolunteers,Character=new(){Tier=1}},new(){Id="prisoner",Section=PartyTransferEntrySection.NpcPrisoners,Character=new(){Tier=4}}};}
+    public static List<SettlementTransferPromptEntry> BuildSettlementTransferPromptEntriesForExternal(params object[] a)
+    {F.Record("settlement-entries",a);return new(){new(){Id="castle-A"},new(){Id="castle-B"}};}
+    public static bool IsSettlementTransferEntryValidForExternal(SettlementTransferPromptEntry e) => true;
+    public static bool IsWildernessNonHeroPartyTransferEligibleForExternal(params object[] a) => F.Current.Party;
+}
+public static class PromptListRetrievalService
+{
+    public const string NpcRewardItemsAllSnapshotScope="hero-all",NpcRewardItemsSnapshotScope="hero-filtered",PartyRewardItemsAllSnapshotScope="party-all",SettlementMerchantItemsAllSnapshotScope="merchant-all",SettlementMerchantItemsSnapshotScope="merchant-filtered",PartyTransferTroopsSnapshotScope="troops",PartyTransferPrisonersSnapshotScope="prisoners",PartyTransferAllTroopsSnapshotScope="troops-all",PartyTransferAllPrisonersSnapshotScope="prisoners-all",SettlementTransferAllNpcAssetsSnapshotScope="fiefs-all",SettlementTransferNpcAssetsSnapshotScope="fiefs";
+    public static int GetMaxCandidateCount()=>1;
+    public static bool TryGetRewardItemSnapshot(string scope,Hero hero,CharacterObject character,int id,out List<RewardSystemBehavior.RewardItemInfo> value)
+    {F.Record("get-reward",scope,hero,character,id);value=F.Current.Snapshots ? new(){new(){Id=scope+"-snapshot",Count=8}} : null;return value!=null;}
+    public static bool TryGetPartyTransferSnapshot(string scope,Hero hero,CharacterObject character,int id,out List<MyBehavior.PartyTransferPromptEntry> value)
+    {F.Record("get-party",scope,hero,character,id);value=F.Current.Snapshots?new(){new(){Id=scope+"-snapshot",Character=new()}}:null;return value!=null;}
+    public static bool TryGetSettlementTransferSnapshot(string scope,Hero hero,CharacterObject character,int id,out List<MyBehavior.SettlementTransferPromptEntry> value)
+    {F.Record("get-settlement",scope,hero,character,id);value=F.Current.Snapshots?new(){new(){Id=scope+"-snapshot"}}:null;return value!=null;}
+    public static void PublishRewardItemSnapshot(params object[] a) => F.Record("publish-reward",a);
+    public static void PublishPartyTransferSnapshot(params object[] a) => F.Record("publish-party",a);
+    public static void PublishSettlementTransferSnapshot(params object[] a) => F.Record("publish-settlement",a);
+    public static List<RewardSystemBehavior.RewardItemInfo> FilterNpcRewardItemsForAssetTransfer(List<RewardSystemBehavior.RewardItemInfo> list,MentionedWorldEntities mentions,int max) {F.Record("filter-assets",list,mentions,max);return list.Take(max).ToList();}
+    public static List<RewardSystemBehavior.RewardItemInfo> FilterRewardItems(List<RewardSystemBehavior.RewardItemInfo> list,MentionedWorldEntities mentions,int max) {F.Record("filter-items",list,mentions,max);return list.Take(max).ToList();}
+    public static List<MyBehavior.PartyTransferPromptEntry> FilterPartyTransferEntries(List<MyBehavior.PartyTransferPromptEntry> list,MentionedWorldEntities mentions,int max,bool isPrisoner) {F.Record("filter-party",list,mentions,max,isPrisoner);return list.Take(max).ToList();}
+    public static List<MyBehavior.SettlementTransferPromptEntry> FilterSettlementTransferEntries(List<MyBehavior.SettlementTransferPromptEntry> list,MentionedWorldEntities mentions,int max) {F.Record("filter-fiefs",list,mentions,max);return list.Take(max).ToList();}
+}
+
+public static class Program
+{
+    static readonly BindingFlags Flags=BindingFlags.NonPublic|BindingFlags.Static;
+    static int Count;
+    static (string,List<string>) Run(Type type,Fixture fixture,bool phases=false)
+    {
+        F.Reset(fixture);
+        var method=type.GetMethod(phases?"PrepareSceneUnifiedActionPostprocess":"TryRunSceneUnifiedActionPostprocess",Flags);
+        if(method==null) throw new Exception("Missing production API "+type+" phases="+phases);
+        object result=method.Invoke(null,fixture.Args(method));
+        if(phases)
+        {
+            Check(!F.Calls.Any(c=>c.StartsWith("NETWORK:")||c.StartsWith("normalize:")||c.StartsWith("MarkWeekly")),"prepare must not request/normalize/write memory");
+            var workType=result.GetType();
+            bool network=(bool)workType.GetProperty("RequiresNetwork").GetValue(result);
+            bool success=true; string content=null,error=null;
+            if(network)
+            {
+                var before=F.Calls.Count;
+                object[] args={workType.GetProperty("SystemPrompt").GetValue(result),workType.GetProperty("UserPrompt").GetValue(result),null,null};
+                success=(bool)type.GetMethod("TryRequestSceneUnifiedActionPostprocess",Flags).Invoke(null,args);
+                content=(string)args[2];error=(string)args[3];
+                Check(F.Calls.Count==before+1 && F.Calls.Last().StartsWith("NETWORK:"),"network phase must only make one string-only request");
+            }
+            result=type.GetMethod("CompleteSceneUnifiedActionPostprocess",Flags).Invoke(null,new object[]{result,success,content,error});
+        }
+        return ((string)result,F.Calls.ToList());
+    }
+    static void Check(bool value,string message) {if(!value)throw new Exception(message);}
+    static void Equal((string output,List<string> calls) expected,(string output,List<string> calls) actual,string label)
+    {
+        Check(expected.output==actual.output,label+" output mismatch\nEXPECTED "+expected.output+"\nACTUAL "+actual.output);
+        for(int i=0;i<Math.Max(expected.calls.Count,actual.calls.Count);i++)
+        {
+            string e=i<expected.calls.Count?expected.calls[i]:"<missing>",a=i<actual.calls.Count?actual.calls[i]:"<missing>";
+            Check(e==a,label+" call["+i+"] mismatch\nEXPECTED "+e+"\nACTUAL "+a);
+        }
+    }
+    static IEnumerable<Fixture> Fixtures()
+    {
+        yield return new("no-selected-rules");
+        yield return new("all-direct","all"){Royal=true,Hits=new(){"kingdom_vassalage","noble_gathering","persistent_adp_debt","kingdom_agenda"}};
+        yield return new("all-relay","all"){Direct=false,Royal=true,SingleRelay=true,Hits=new(){"kingdom_vassalage","noble_gathering","persistent_adp_debt","kingdom_agenda"}};
+        foreach(string name in new[]{"duel","reward","loan","kingdomService","kingdomVassalage","kingdomAnnexation","lordsHall","meetingRelease","vanillaIssue","heroJoinParty","sceneMechanism","partyTransfer","voteDeal","diplomacy","worldMapPartyCommand","marriage","siegeIntervention","relay","customPolicyAgenda"}) yield return new("single-"+name,name){Royal=name=="diplomacy"};
+        yield return new("reward-party","reward","loan"){Hero=false,Party=true};
+        yield return new("reward-merchant","reward","loan"){Hero=false};
+        yield return new("reward-all-assets","reward"){AllAssets=true};
+        yield return new("reward-snapshots","reward","partyTransfer"){Snapshots=true};
+        yield return new("party-nohero","partyTransfer"){Hero=false,Party=true};
+        yield return new("reward-no-owner","reward"){NoRewardOwner=true};
+        yield return new("reward-failure-fallback","reward"){ThrowReward=true};
+        yield return new("persistent-only"){Hits=new(){"persistent_adp_debt"}};
+        yield return new("vassalage-hit-only"){Hits=new(){"kingdom_vassalage"}};
+        yield return new("agenda-hit-direct"){Hits=new(){"kingdom_agenda"}};
+        yield return new("agenda-hit-relay"){Direct=false,Hits=new(){"kingdom_agenda"}};
+        yield return new("agenda-target-ineligible","customPolicyAgenda"){AgendaBlocked=true};
+        yield return new("hero-join-suppressed","heroJoinParty"){SuppressJoin=true};
+        yield return new("independent-clan-peace"){IndependentPeace=true};
+        yield return new("independent-clan-relay"){IndependentPeace=true,Direct=false};
+        yield return new("no-aux","all"){Aux=false};
+        yield return new("no-aux-existing-mood"){Aux=false,Reply="NPC\n[ACTION:MOOD:HAPPY]"};
+        yield return new("missing-template","all"){Templates=false};
+        yield return new("no-rules","all"){NoRules=true};
+        yield return new("empty-normalized","all"){Raw=""};
+        yield return new("network-failure","all"){NetworkSuccess=false};
+        yield return new("scene-excluded-retains-executions","sceneMechanism"){ExcludeMoves=true};
+        yield return new("scene-excluded-no-execution","sceneMechanism"){ExcludeMoves=true,NoExecutionRules=true};
+        yield return new("scene-no-targets","sceneMechanism"){NoTargets=true};
+        yield return new("scene-gccz-denied","sceneMechanism"){Blocked=new(){"scene"}};
+        yield return new("siege-exclusive","all"){Exclusive=true};
+        yield return new("native-siege-surrender"){Chain="native",SiegeSurrender=true};
+        yield return new("npc-surrender"){NpcSurrender=true};
+        yield return new("blank-display-history","reward"){NpcName="",History="",Reply=""};
+        foreach(var gate in new[]{"duel","reward","loan","persistent","service","vassalage","hall","release","issue","scene","party","agenda","diplomacy","world","gathering","marriage","relay","royal","surrender","intimacy"}) yield return new("denied-"+gate,"all"){Royal=true,Blocked=new(){gate},Hits=new(){"kingdom_vassalage","noble_gathering","persistent_adp_debt","kingdom_agenda"}};
+    }
+    static void CompletionGuards()
+    {
+        foreach(bool failFirst in new[]{false,true})
+        {
+            var fixture=new Fixture(failFirst?"normalize-throws-no-reentry":"complete-once","duel"){ThrowOnNormalize=failFirst};
+            F.Reset(fixture);
+            var prepare=typeof(NewHost).GetMethod("PrepareSceneUnifiedActionPostprocess",Flags);
+            var complete=typeof(NewHost).GetMethod("CompleteSceneUnifiedActionPostprocess",Flags);
+            var work=prepare.Invoke(null,fixture.Args(prepare));
+            object[] args={work,true,fixture.Raw,null};
+            bool failed=false;
+            try { complete.Invoke(null,args); }
+            catch(TargetInvocationException e) when(e.InnerException is InvalidOperationException) {failed=true;}
+            Check(failed==failFirst,fixture.Name+" unexpected first completion");
+            int before=F.Calls.Count;
+            bool rejected=false;
+            try { complete.Invoke(null,args); }
+            catch(TargetInvocationException e) when(e.InnerException is InvalidOperationException) {rejected=true;}
+            Check(rejected,fixture.Name+" second completion was not rejected");
+            Check(F.Calls.Count==before,fixture.Name+" second completion repeated domain effects");
+            Check(F.Calls.Count(c=>c.StartsWith("MarkWeekly"))==(failFirst?0:1),fixture.Name+" weekly side effect count");
+            Console.WriteLine("PASS "+fixture.Name);
+        }
+    }
+    public static int Main()
+    {
+        try
+        {
+            bool phases=typeof(NewHost).GetMethod("PrepareSceneUnifiedActionPostprocess",Flags)!=null;
+            foreach(var fixture in Fixtures())
+            {
+                var old=Run(typeof(OldHost),fixture); var current=Run(typeof(NewHost),fixture);
+                Equal(old,current,fixture.Name+" wrapper");
+                if(phases) Equal(old,Run(typeof(NewHost),fixture,true),fixture.Name+" phases");
+                Check(current.Item2.Count(c=>c.StartsWith("NETWORK:"))<=1,fixture.Name+" duplicate network");
+                var latest=current.Item2.FirstOrDefault(c=>c.StartsWith("LATEST:"));
+                if(latest!=null)
+                {
+                    using var json=JsonDocument.Parse(latest.Substring("LATEST:".Length));
+                    Check(json.RootElement[0].GetString()==(fixture.Direct?fixture.Player:""),fixture.Name+" direct/relay player attribution");
+                    if(!fixture.Direct) Check(json.RootElement[3].ValueKind==JsonValueKind.Null,fixture.Name+" relay inherited direct-player history");
+                }
+                if(fixture.NoRules) Check(current.Item2.Any(c=>c.Contains("mergedRules=(none; mood postprocess still runs)")),fixture.Name+" fixture did not actually remove all action rules");
+
+                if(!fixture.Aux||!fixture.Templates||!fixture.NetworkSuccess) Check(!current.Item2.Any(c=>c.StartsWith("MarkWeekly")),fixture.Name+" fallback wrote memory");
+                Console.WriteLine("PASS "+fixture.Name+" requests="+current.Item2.Count(c=>c.StartsWith("NETWORK:"))+" calls="+current.Item2.Count);Count++;
+            }
+            if(phases) CompletionGuards();
+            Console.WriteLine("PASS ScenePostprocessParity fixtures="+Count+" originalMethod=executed candidateMethod=executed splitPhases="+phases+" domainHelpers=STUBBED live=NOT_RUN save=NOT_RUN apiNetwork=NOT_RUN");
+            return 0;
+        }
+        catch(Exception e) {Console.Error.WriteLine(e);return 1;}
+    }
+}

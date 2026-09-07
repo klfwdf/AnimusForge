@@ -36,14 +36,15 @@
 - 下一精确任务 `P0-SCENE-POST-PREP` TODO：在原Queue调用时机下把TryRunSceneUnifiedActionPostprocess原实现分离成prepare/network/normalize，先保持旧入口可重放；禁止直接复用缺少Scene relay/summon/guide的Courier builder或提前以空回复生成post prompt。详见新HANDOFF。Native诊断CompareMainMessages对匿名消息的遗漏纳入P1，不依赖字典fixture的PASS直接迁移。
 - 日志 `.tmp/scene-main-20260908/` 与 `.tmp/channel-cutover-boundary/prompt-*`，独立审查无本轮新增阻断。完整证据见 `docs/handoffs/2026-09-08-scene-main-prompt-fidelity-handoff.md`。自动化继续；未推送、未部署、未操作存档。
 
-### SCENE-POSTPROCESS-MILESTONE-20260908 ACTIVE
+### SCENE-POSTPROCESS-MILESTONE-20260908 VERIFY（Scene 定向离线通过，全局门禁仍有失败）
 
-- 用户反馈每轮过小，已将af-7-8调整为整模块连续推进：30分钟仅唤醒间隔；规则准备、network、normalize、调用方接线、firstTurn/relay/历史边界和回归统一完成，不以单个prepare helper作为交付。
-- 基线d40808b3，fetch远端仍aefa02ad，本地ahead5；两份已知草稿保留。owner为Conversation.Scene/Postprocess。拟改ShoutBehavior.cs、同名partial后处理模块、定向行为回放和现有外层回归/文档，不动GCCZ核心、存档key/type、数值、Bridge配置或Native默认。
-- 先保留旧完整方法签名，将原实际规则/动态候选/网络/归一化分离并接回实际调用；再核对早期detached与生成后完整Queue的动作/历史/relay所有权，修复有证据的内部接线问题。若方案实质需要新的默认路径切换，则先明确提出授权，继续其他已授权部分，不自行越界。
-- 验证覆盖原方法vs新阶段请求/输出对照、动作目标/firstTurn/relay、失败及无规则路径；继续保留原52外层测试。开发阶段做定向红绿，整合后统一官方Debug/Release的1.3/1.4/Bootstrap，不在每个helper后全量构建。
-- 内部agent按新partial生产文件、独立只读时序审查、独占测试目录分工；主任务负责大文件删除/改partial及整合、最终验证/提交。新文件中只调用既有GCCZbridge，不复制其核心规则。
-- 实机/存档NOT_RUN；不推送/部署/跨工作区写入。未达到完整验收前保持ACTIVE，不能把提取或测试数量包装为阶段八完成。
+- 用户明确授权 Scene 默认改为仅生成正文，再由完整后处理统一执行动作/接力和原听众记忆 owner；不切 Native、不改开关、不部署游戏。原基线 `d40808b3`、意图 `17151d6b`。
+- 完成同类型 partial 的完整 prepare/network/complete 拆分并接回默认流程；保留原动态规则/资产/债务/候选/normalizer，取消早期 Host commit、重复玩家历史与漏旁听 owner。主线程 prepare/dispatch、后台只传网络字符串，原 public opt-in ABI 不变。
+- 同里程碑修复正文标签播放旁路、relay 与 speech 互等、generation/session/epoch 跨档发布、五处会话清理晚回调、request deadline 及旧 gate/waiter 干扰新请求；移除重复原实现与失效提交屏蔽条件。没有借此删仍有调用的 facade。
+- 验证：Channel 132 / extraction 14，原方法差分 71 + guard 2 / mutation 5 / extraction 8，Queue 37 / mutation 7，Gate 6（原版三种竞态实际红测）；Interaction 40+69+39+4，生产 DLL 七套回放通过，Duel 双 API 35；官方 Debug/Release 的 1.3/1.4/Bootstrap 六项 0 warning / 0 error，构建前后输入指纹一致。
+- 集成基线含其他作者 `4a239d95` / `cec3877a` 的遭遇安全修复，未覆盖或归为本轮成果。其移除 InteractionComponentSafePatch 可选 gate 后，runtime-game-adapter 清单仍声明 gated wired，当前 Bridge validator FAIL；20 个自检中的 1 个仓库基准 error 同因。未恢复安全 gate 或降低检查掩盖。下一项先核对 mandatory safety 与 optional bridge 的真实边界。
+- 入口清单已登记新 partial；LIVE/SAVE 不升级。保留两份既有草稿；未推送、未部署、未操作存档、未跨工作区写入。真实游戏/旧档/live Economy/AFEF/TTS NOT_RUN，不把本里程碑或测试数量当阶段八 DONE。
+- 完整 HANDOFF 与制作组简报：`docs/handoffs/2026-09-08-scene-postprocess-milestone-handoff.md`、`docs/handoffs/2026-09-08-scene-postprocess-team-brief.md`。后续继续前段 capture、Native 完整 Prompt/流式/主动开场 parity，以及 BattleSpeech 异步回退重入验证；自动化按完整模块接续。
 
 ## GitHub 融合交接推送（2026-09-06）
 

@@ -1,0 +1,144 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class GateHost
+{
+    private const int ScenePostprocessGateWaitTimeoutMilliseconds=120;
+    @@FIELDS@@
+    @@METHODS@@
+    private static void QueueSceneInfoMessage(string text,Color color,int epoch){}
+    public void Register(Task task)=>RegisterScenePostprocessGateTask(task);
+    public Task Gate()=>GetScenePostprocessGateTask();
+    public Task Wait(string name)=>WaitForScenePostprocessGateAsync(name);
+    public void Clear(string reason)
+    {
+        var method=GetType().GetMethod("ForceClearScenePostprocessGate",BindingFlags.NonPublic|BindingFlags.Instance);
+        var p=method.GetParameters();var args=new object[p.Length];args[0]=reason;for(int i=1;i<args.Length;i++)args[i]=p[i].DefaultValue;
+        method.Invoke(this,args);
+    }
+    public void DrainMessages()
+    {
+        var field=GetType().GetField("_mainThreadActions",BindingFlags.NonPublic|BindingFlags.Instance);
+        if(field?.GetValue(this) is ConcurrentQueue<Action> queue)while(queue.TryDequeue(out var action))action();
+    }
+    public int Pending=>_pendingScenePostprocessActionCount;
+    public bool Waiting=>_isWaitingForScenePostprocessGate;
+    public bool Processing {get=>_isProcessingShout;set=>_isProcessingShout=value;}
+    public void NewSession()=>Interlocked.Increment(ref _sceneHistorySessionId);
+}
+public static class SaveRuntimeGuard {public static long CaptureGeneration()=>1;public static bool IsCurrentGeneration(long generation)=>generation==1;}
+public sealed class InformationMessage {public string Text;public InformationMessage(string text,Color color){Text=text;}}
+public static class InformationManager {public static List<string> Messages=new();public static void DisplayMessage(InformationMessage message){Messages.Add(message.Text);}}
+public sealed class Color {public Color(float r,float g,float b){}}
+public static class Logger
+{
+    public static bool BlockFault;
+    public static ManualResetEventSlim FaultEntered=new(false),PermitFault=new(false);
+    public static void Log(string category,string text)
+    {
+        if(BlockFault&&text.Contains("gate task faulted:"))
+        {FaultEntered.Set();if(!PermitFault.Wait(TimeSpan.FromSeconds(3)))throw new TimeoutException("fixture fault continuation permit");}
+    }
+}
+public sealed class ManualContext:SynchronizationContext
+{
+    private BlockingCollection<(SendOrPostCallback,object)> queue=new();
+    public override void Post(SendOrPostCallback callback,object state)=>queue.Add((callback,state));
+    public Task Capture(Func<Task> body)
+    {
+        var prior=Current;SetSynchronizationContext(this);try{return body();}finally{SetSynchronizationContext(prior);}
+    }
+    public void RunNext()
+    {
+        if(!queue.TryTake(out var item,TimeSpan.FromSeconds(3)))throw new Exception("wait continuation was not posted");
+        var prior=Current;SetSynchronizationContext(this);try{item.Item1(item.Item2);}finally{SetSynchronizationContext(prior);}
+    }
+    public void WaitForPending()
+    {
+        if(!SpinWait.SpinUntil(()=>queue.Count>0,TimeSpan.FromSeconds(3)))throw new Exception("wait continuation not ready");
+    }
+}
+public static class Program
+{
+    static void Check(bool value,string message){if(!value)throw new Exception(message);}
+    static TaskCompletionSource<bool> Pending()=>new(TaskCreationOptions.RunContinuationsAsynchronously);
+    static void DrainFaultContinuation(TaskCompletionSource<bool> source)
+    {
+        Logger.BlockFault=true;Logger.FaultEntered.Reset();Logger.PermitFault.Reset();
+        source.SetException(new InvalidOperationException("fixture retired task failed"));
+        Check(Logger.FaultEntered.Wait(TimeSpan.FromSeconds(3)),"production fault continuation not started");
+        // Exactly one default worker: this marker cannot run until the real continuation returns.
+        var marker=Task.Run(()=>{});Logger.PermitFault.Set();Check(marker.Wait(3000),"production continuation did not return");Logger.BlockFault=false;
+    }
+    static void LateTask()
+    {
+        var host=new GateHost();var a=Pending();host.Register(a.Task);Task gateA=host.Gate();
+        host.Clear("new-scene");var b=Pending();host.Register(b.Task);Task gateB=host.Gate();
+        Check(gateA.IsCompleted&&!gateB.IsCompleted&&host.Pending==1,"fixture did not replace gate A with B");
+        DrainFaultContinuation(a);
+        Check(host.Pending==1&&!gateB.IsCompleted,"retired A completion decremented/completed newer B gate");
+        b.SetResult(true);Check(gateB.Wait(3000),"B did not complete its own gate");Check(host.Pending==0,"B pending count not cleared");
+    }
+    static void LateWaiter(bool newSession)
+    {
+        var host=new GateHost(){Processing=true};var a=Pending();host.Register(a.Task);
+        var contextA=new ManualContext();Task waitA=contextA.Capture(()=>host.Wait("A"));
+        Check(host.Waiting&&!host.Processing,"A did not release processing while waiting");
+        host.Clear("replace-A");contextA.WaitForPending();if(newSession)host.NewSession();
+        var b=Pending();host.Register(b.Task);host.Processing=true;var contextB=new ManualContext();Task waitB=contextB.Capture(()=>host.Wait("B"));
+        Check(host.Waiting&&!host.Processing,"B did not acquire waiting state");
+        contextA.RunNext();Check(waitA.IsCompleted,"A waiter did not finish");
+        Check(host.Waiting&&!host.Processing,"retired A waiter cleared newer B waiting/processing state");
+        b.SetResult(true);contextB.RunNext();Check(waitB.IsCompleted&&!host.Waiting&&host.Processing,"B own waiter did not restore state");
+        a.TrySetResult(true);
+    }
+    static void LateTimeout()
+    {
+        var host=new GateHost(){Processing=true};var a=Pending();host.Register(a.Task);var contextA=new ManualContext();Task waitA=contextA.Capture(()=>host.Wait("timeout-A"));
+        // Capture A's timeout continuation but defer its ForceClear/finally until B exists.
+        contextA.WaitForPending();host.Clear("replace-after-A-timeout");
+        var b=Pending();host.Register(b.Task);Task gateB=host.Gate();host.Processing=true;
+        var contextB=new ManualContext();Task waitB=contextB.Capture(()=>host.Wait("B-after-timeout"));
+        contextA.RunNext();Check(waitA.IsCompleted,"A timeout waiter not finished");
+        Check(!gateB.IsCompleted&&host.Pending==1,"retired A timeout force-cleared newer B gate");
+        Check(host.Waiting&&!host.Processing,"retired A timeout cleared newer B waiting state");
+        b.SetResult(true);contextB.RunNext();Check(waitB.IsCompleted,"B waiter did not finish");a.TrySetResult(true);
+    }
+    static void QueuedMessages()
+    {
+        InformationManager.Messages.Clear();var host=new GateHost();var a=Pending();host.Register(a.Task);var contextA=new ManualContext();Task waitA=contextA.Capture(()=>host.Wait("message-A"));
+        host.Clear("replace-A-message");contextA.WaitForPending();var b=Pending();host.Register(b.Task);var contextB=new ManualContext();Task waitB=contextB.Capture(()=>host.Wait("message-B"));
+        contextA.RunNext();host.DrainMessages();Check(InformationManager.Messages.Count==1,"retired waiter emitted stale queued message or suppressed current B message");
+        b.SetResult(true);contextB.RunNext();a.TrySetResult(true);Check(waitA.IsCompleted&&waitB.IsCompleted,"message fixture waiters incomplete");
+    }
+    static void SameGate()
+    {
+        var host=new GateHost();var a=Pending();var b=Pending();host.Register(a.Task);host.Register(b.Task);Task gate=host.Gate();
+        Check(host.Pending==2,"same gate registrations not counted");DrainFaultContinuation(a);
+        Check(host.Pending==1&&!gate.IsCompleted,"first same-gate completion cleared second task");b.SetResult(true);Check(gate.Wait(3000),"same gate final completion stuck");
+    }
+    static void FaultCancel()
+    {
+        var host=new GateHost();host.Register(null);host.Register(Task.CompletedTask);Check(host.Pending==0&&host.Gate().IsCompleted,"null/completed task registered");
+        var cancelled=Pending();host.Register(cancelled.Task);Task gate=host.Gate();cancelled.SetCanceled();Check(gate.Wait(3000)&&host.Pending==0,"cancelled task failed to release own gate");
+        var faulted=Pending();host.Register(faulted.Task);gate=host.Gate();DrainFaultContinuation(faulted);Check(gate.IsCompleted&&host.Pending==0,"faulted task failed to release own gate");
+        var pending=Pending();host.Register(pending.Task);var context=new ManualContext();host.Processing=true;Task wait=context.Capture(()=>host.Wait("own-timeout"));context.RunNext();Check(wait.IsCompleted&&host.Pending==0&&!host.Waiting&&host.Processing,"current wait timeout did not clear/restore own gate");pending.TrySetResult(true);
+    }
+    public static int Main(string[] args)
+    {
+        try
+        {
+            Check(ThreadPool.SetMinThreads(1,1)&&ThreadPool.SetMaxThreads(1,1),"could not configure deterministic single-worker scheduler");
+            string only=args.Length==0?"all":args[0];int count=0;
+            void Run(string name,Action body){if(only!="all"&&only!=name)return;body();Console.WriteLine("PASS gate "+name);count++;}
+            Run("late-task",LateTask);Run("late-waiter",()=>{LateWaiter(false);LateWaiter(true);});Run("late-timeout",LateTimeout);Run("queued-messages",QueuedMessages);Run("same-gate",SameGate);Run("fault-cancel",FaultCancel);
+            Console.WriteLine("PASS ScenePostprocessGate groups="+count+" realContinuations=executed synchronizationContexts=controlled live=NOT_RUN");return 0;
+        }
+        catch(Exception e){Console.Error.WriteLine(e);return 1;}
+        finally{Logger.PermitFault.Set();}
+    }
+}

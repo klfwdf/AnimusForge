@@ -238,7 +238,8 @@
       "owner": "Conversation.Gateway",
       "entryPaths": [
         "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
-        "ShoutBehavior.cs"
+        "ShoutBehavior.cs",
+        "ShoutBehavior.ScenePostprocess.cs"
       ],
       "symbols": [
         {

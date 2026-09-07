@@ -237,6 +237,7 @@
       ],
       "entryPaths": [
         "ShoutBehavior.cs",
+        "ShoutBehavior.ScenePostprocess.cs",
         "LordEncounterBehavior.cs",
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
       ],
@@ -722,7 +723,8 @@
         "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
         "Refactor/Runtime/InteractionResultCommitter.cs",
-        "ShoutBehavior.cs"
+        "ShoutBehavior.cs",
+        "ShoutBehavior.ScenePostprocess.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -1186,7 +1188,8 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
-        "ShoutBehavior.cs"
+        "ShoutBehavior.cs",
+        "ShoutBehavior.ScenePostprocess.cs"
       ],
       "requiredCases": [
         "A_ONLY",

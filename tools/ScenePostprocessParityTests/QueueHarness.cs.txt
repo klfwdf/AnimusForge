@@ -1,0 +1,326 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class QueueHost
+{
+    public int _sceneHistorySessionId=7, _sceneConversationEpoch=9;
+    private const int DeferredPostprocessTargetUnavailableResult=-2;
+    // Test-only scheduler budget. Production source and its constant remain unchanged.
+    private const int NativeConversationMainThreadPreprocessTimeoutMs=100;
+    private const int ScenePostprocessGateWaitTimeoutMilliseconds=700;
+    private const string PersistentAdpDebtPostprocessRuleId="persistent_adp_debt",CustomPolicyAgendaPostprocessRuleId="kingdom_agenda";
+    @@WORK@@
+    @@COMPLETE@@
+    @@REQUEST@@
+    @@PREPARE_STUB@@
+    @@QUEUE@@
+    private static bool HasPreprocessRuleHit(List<string> rules,string id)=>rules?.Contains(id)==true;
+    private static bool IsNpcSurrenderPostprocessContext(){Q.AssertMain("surrender context");return false;}
+    private static string ResolveScenePostprocessChainName(){Q.AssertMain("chain");return "scene";}
+    private static string TryGetKingdomIdOverrideFromAgent(Agent agent){Q.AssertMain("kingdom");return "kingdom-A";}
+    private static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==Q.MainThreadId;
+    private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index,Hero hero,CharacterObject character,out string reason){Q.AssertMain("availability");Q.TargetChecks++;reason="fixture unavailable";return Q.TargetAvailable;}
+    private static NpcDataPacket CloneNpcDataPacket(NpcDataPacket n)=>n==null?null:new(){AgentIndex=n.AgentIndex,Name=n.Name};
+    private static List<NpcDataPacket> CloneNpcDataSnapshot(List<NpcDataPacket> list)=>list?.Select(CloneNpcDataPacket).ToList()??new();
+    private static List<SceneSummonPromptTarget> CloneSceneSummonPromptTargets(List<SceneSummonPromptTarget> list)=>list?.Select(x=>new SceneSummonPromptTarget{Id=x.Id}).ToList()??new();
+    private static List<SceneGuidePromptTarget> CloneSceneGuidePromptTargets(List<SceneGuidePromptTarget> list)=>list?.Select(x=>new SceneGuidePromptTarget{Id=x.Id}).ToList()??new();
+    private static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket n)=>n.Name;
+    private static string TrimPrivateRecentWindowForActionPostprocess(string text,int max)=>"trim["+max+"]:"+text;
+    private static string FilterHistorySectionAgainstScenePublicHistory(string text,string pub)=>text+"|filtered:"+pub;
+    private static string BuildSceneCompositeUserBlock(string a,string b,string c)=>b+"|public:"+c;
+    private static void RegisterScenePostprocessGateTask(Task<int> task){Q.GateRegistrations++;}
+    private static Task<T> RunNativeConversationMainThreadFuncAsync<T>(string stage,string target,int id,Func<T> action,T fallback)
+    {
+        var completion=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Q.Main.Add(()=>
+        {
+            try
+            {
+                Q.At(stage=="scene_postprocess_prepare"?"before-prepare":stage=="scene_postprocess_complete_and_dispatch"?"before-complete":"before-relay-publish");
+                if(Q.Current.DropMainPhase==stage){completion.SetResult(fallback);return;}
+                completion.SetResult(action());
+            }
+            catch(Exception ex){completion.SetException(ex);}
+            finally{Q.Check(Q.Ambient.Value=="main-ambient","main ExecutionContext not restored at "+stage);Q.Check(Q.Runtime.Value=="main-runtime","main runtime targets not restored at "+stage);Q.Check(Q.TargetContext()=="main-K|main-H|main-C|main-T|main-R","main six-target context not restored");}
+        });
+        return completion.Task;
+    }
+    private static string NormalizeAutoGroupRelayPostprocessTagsForScene(string text,List<NpcDataPacket> candidates,int current){Q.AssertMain("relay-normalize");return text?.Contains("[RELAY:22]")==true?"[RELAY:22]":"";}
+    private static bool TryParseAutoGroupRelayTargetAgentIndex(string tag,out int id){id=22;return true;}
+    private static string ExtractDeferredSceneActionTags(string text)=>text?.Contains("[ACTION:SPEECH]")==true?"[ACTION:SPEECH]":text?.Contains("[ACTION:DIRECT]")==true?"[ACTION:DIRECT]":"";
+    private static bool TryApplyDeferredSceneMoodTag(NpcDataPacket speaker,string text){Q.AssertMain("mood");return false;}
+    private static string StripDeferredSceneMoodTags(string text)=>text;
+    private static bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero hero,CharacterObject character,int agent,ref string text,string player,string reply,string chain,bool direct)
+    {
+        Q.AssertMain("direct");Q.AssertRequestScope();Q.DirectCalls++;
+        Q.DirectParameters=new object[]{player,reply,chain,direct,agent};
+        if(text.Contains("[ACTION:DIRECT]")){Q.ActionEffects++;text="";return true;}return false;
+    }
+    private static bool HasNonMoodDeferredSceneActionTag(string text)=>!string.IsNullOrWhiteSpace(text);
+    private static bool TryExecuteDeferredSceneFollowTagsDirectly(NpcDataPacket speaker,string text){Q.AssertMain("follow");return false;}
+    private static void EnqueueSpeechLineWithOptions(NpcDataPacket speaker,string text,List<NpcDataPacket> context,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,object extra,TaskCompletionSource<bool> completion,Func<bool> canStillPublish,string playerDirectedActionText,string playerDirectedNpcReplyText)
+    {
+        Q.AssertMain("enqueue");Q.AssertRequestScope();Q.SpeechEnqueues++;
+        Q.SpeechParameters=new object[]{speaker,context,commitHistory,suppressStare,allowPlayerDirectedActions,requiredConversationEpoch,summon,guide,playerDirectedActionText,playerDirectedNpcReplyText};
+        Q.LastSpeechGuard=canStillPublish;Q.LastSpeechCompletion=completion;
+        if(Q.Current.SpeechTimeout) return;
+        _=Task.Run(()=>
+        {
+            Q.At("speech-worker");
+            bool workerAllowed=canStillPublish();
+            Q.Main.Add(()=>
+            {
+                Q.At("speech-main");
+                bool mainAllowed=canStillPublish();
+                if(workerAllowed&&mainAllowed&&Q.Current.SpeechSuccess)Q.ActionEffects++;
+                completion.TrySetResult(workerAllowed&&mainAllowed&&Q.Current.SpeechSuccess);
+            });
+        });
+    }
+    public Task<int> Start(QueueFixture fixture)
+    {
+        var method=GetType().GetMethod("QueueDeferredScenePostprocessActions",BindingFlags.NonPublic|BindingFlags.Instance);
+        object[] args=method.GetParameters().Select<ParameterInfo,object>(p=>p.Name switch
+        {
+            "currentSpeaker"=>fixture.NullSpeaker?null:Q.Speaker,
+            "allNpcData"=>Q.Npcs,
+            "speakingHero"=>new Hero(),
+            "npcCharacter"=>new CharacterObject(),
+            "privateRecentWindowSection"=>"private-history",
+            "scenePublicHistorySection"=>"public-history",
+            "playerText"=>"player-current",
+            "replyText"=>fixture.EmptyReply?" ":"real-npc-reply",
+            "conversationEpoch"=>9,
+            "expectedRuntimeGeneration"=>fixture.ExpectedGeneration,
+            "expectedSceneSessionId"=>fixture.ExpectedSession,
+            "duelStakeOptions"=>new List<RewardSystemBehavior.DuelStakeOption>{new(){Id="stake-A"}},
+            "kingdomServiceRules"=>new List<PostprocessRuleEntry>{new(){Tag="service-A"}},
+            "sceneMechanismRules"=>Q.SceneRules,
+            "sceneSummonTargets"=>Q.Summon,
+            "sceneGuideTargets"=>Q.Guide,
+            "preprocessRuleHits"=>Q.Hits,
+            "relayCandidates"=>Q.Relay,
+            "entityPostprocessContext"=>"entity-A",
+            "replyIsDirectPlayerResponse"=>fixture.Direct,
+            "relayPrimaryTargetAgentIndex"=>22,
+            "relaySingleFramedNpc"=>true,
+            _ when p.ParameterType==typeof(bool)=>!fixture.NoSelected && (p.Name=="sceneMechanismRuleInjected"||p.Name=="relayRuleInjected"),
+            _=>throw new Exception("unmodeled Queue parameter "+p.Name)
+        }).ToArray();
+        return (Task<int>)method.Invoke(this,args);
+    }
+}
+
+public sealed class QueueFixture
+{
+    public string Name,At,Change,DropMainPhase;
+    public string CompletedText="[ACTION:SPEECH]\n[RELAY:22]";
+    public bool Direct=true,NetworkSuccess=true,SpeechSuccess=true;
+    public bool SpeechTimeout,NormalizeThrows,Immediate,NullSpeaker,EmptyReply,NoSelected,MutateInputs,BlockNetwork,NetworkThrows,PrepareThrows;
+    public int Expected=22,ExpectedActions=1,ExpectedSession=-1;
+    public long ExpectedGeneration;
+    public QueueFixture(string name){Name=name;}
+}
+public static class Q
+{
+    public static BlockingCollection<Action> Main=new();
+    public static int MainThreadId;
+    public static Thread MainThread;
+    public static QueueFixture Current;
+    public static QueueHost Host;
+    public static AsyncLocal<string> Ambient=new(),Runtime=new(),Kingdom=new(),HeroTarget=new(),CharacterTarget=new(),Troop=new(),Rank=new();
+    public static ManualResetEventSlim NetworkResume=new(false),NetworkExited=new(false);
+    public static int OffMainReads;
+    public static string TargetContext()=>string.Join("|",Kingdom.Value,HeroTarget.Value,CharacterTarget.Value,Troop.Value,Rank.Value);
+    public static bool TargetAvailable=true;
+    public static int Generation=1,PrepareCalls,NormalizeCalls,NetworkCalls,ActionEffects,DirectCalls,SpeechEnqueues,TargetChecks,GateRegistrations;
+    public static Dictionary<string,object> Prepared;
+    public static object[] DirectParameters,SpeechParameters;
+    public static Func<bool> LastSpeechGuard;
+    public static TaskCompletionSource<bool> LastSpeechCompletion;
+    public static NpcDataPacket Speaker;
+    public static List<NpcDataPacket> Npcs,Relay;
+    public static List<string> Hits;
+    public static List<PostprocessRuleEntry> SceneRules;
+    public static List<SceneSummonPromptTarget> Summon;
+    public static List<SceneGuidePromptTarget> Guide;
+    public static ConcurrentQueue<Exception> ThreadErrors=new();
+    public static void Check(bool value,string message){if(!value)throw new Exception(message);}
+    public static void AssertMain(string stage){if(Thread.CurrentThread.ManagedThreadId!=MainThreadId){Interlocked.Increment(ref OffMainReads);throw new Exception(stage+" used game state off main thread");}}
+    public static void AssertRequestScope(){Check(Ambient.Value=="request-mentions","missing request mentions");Check(Runtime.Value=="agent:11","runtime target agent missing");Check(TargetContext()=="kingdom-A|hero-A|character-A|character-A|","runtime five target facts missing");}
+    public static void StartMain()
+    {
+        MainThread=new Thread(()=>
+        {
+            MainThreadId=Thread.CurrentThread.ManagedThreadId;Ambient.Value="main-ambient";Runtime.Value="main-runtime";Kingdom.Value="main-K";HeroTarget.Value="main-H";CharacterTarget.Value="main-C";Troop.Value="main-T";Rank.Value="main-R";
+            foreach(var action in Main.GetConsumingEnumerable())try{action();}catch(Exception e){ThreadErrors.Enqueue(e);}
+        });MainThread.IsBackground=true;MainThread.Start();
+    }
+    public static void At(string stage)
+    {
+        if(Current.MutateInputs&&stage=="before-prepare")
+        {Speaker.Name="changed";Npcs.Clear();Relay.Clear();Hits.Clear();SceneRules[0].Tag="changed";Summon[0].Id=999;Guide[0].Id=999;}
+        if(Current.At!=stage)return;
+        switch(Current.Change)
+        {
+            case "generation":Interlocked.Increment(ref Generation);break;
+            case "session":Interlocked.Increment(ref Host._sceneHistorySessionId);break;
+            case "epoch":Interlocked.Increment(ref Host._sceneConversationEpoch);break;
+            case "target":TargetAvailable=false;break;
+        }
+    }
+    public static async Task Barrier()
+    {var done=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);Main.Add(()=>done.SetResult(true));await done.Task;}
+    public static void Reset(QueueFixture fixture)
+    {
+        Current=fixture;Host=new();Generation=1;TargetAvailable=true;OffMainReads=0;NetworkResume.Reset();NetworkExited.Reset();
+        PrepareCalls=NormalizeCalls=NetworkCalls=ActionEffects=DirectCalls=SpeechEnqueues=TargetChecks=GateRegistrations=0;
+        Prepared=null;DirectParameters=SpeechParameters=null;LastSpeechGuard=null;LastSpeechCompletion=null;
+        Speaker=new(){AgentIndex=11,Name="Speaker-A"};Npcs=new(){new(){AgentIndex=11,Name="Speaker-A"}};Relay=new(){new(){AgentIndex=22,Name="Relay-A"}};
+        Hits=new(){" kingdom_agenda ","kingdom_agenda",""};SceneRules=new(){new(){Tag="scene-rule-A",Description="description-A"}};Summon=new(){new(){Id=33}};Guide=new(){new(){Id=44}};
+    }
+}
+public static class SaveRuntimeGuard
+{
+    public static long CaptureGeneration()=>Volatile.Read(ref Q.Generation);
+    public static bool IsCurrentGeneration(long generation)=>generation==Volatile.Read(ref Q.Generation);
+}
+public class Hero
+{
+    public string StringId {get{Q.AssertMain("Hero.StringId");return "hero-A";}}
+    public Clan Clan {get{Q.AssertMain("Hero.Clan");return new();}}
+}
+public class Clan {public Kingdom Kingdom=>new();}
+public class Kingdom {public string StringId=>"kingdom-A";}
+public class CharacterObject
+{
+    public string StringId {get{Q.AssertMain("Character.StringId");return "character-A";}}
+    public Hero HeroObject {get{Q.AssertMain("Character.HeroObject");return null;}}
+    public bool IsSoldier {get{Q.AssertMain("Character.IsSoldier");return false;}}
+}
+public class Agent {public int Index=11;}
+public class Mission
+{
+    public static Mission Current {get{Q.AssertMain("Mission.Current");return new();}}
+    public List<Agent> Agents=>new(){new()};
+}
+public class NpcDataPacket {public int AgentIndex;public string Name;}
+public class SceneSummonPromptTarget {public int Id;}
+public class SceneGuidePromptTarget {public int Id;}
+public class PostprocessRuleEntry {public string Tag,Description;}
+public class DetachedPromptSections {}
+public class RewardSystemBehavior {public class DuelStakeOption {public string Id;}}
+public static class Logger {public static void Log(string category,string text){}}
+public static class VassalageDiagnosticLog
+{
+    public static void Event(string name,Dictionary<string,object> values){}
+    public static string DescribeHero(Hero hero)=>hero?.StringId;
+    public static string Preview(string text,int max)=>text;
+}
+public static class DiplomacyBehavior {public static bool CanUseIndependentClanPeaceForExternal(Hero h,CharacterObject c){Q.AssertMain("peace eligibility");return false;}}
+public static class AIConfigHandler
+{
+    public static string ActionPostprocessFallbackMoodTag=>"[ACTION:MOOD:CALM]";
+    public static bool CanUseAuxiliaryActionPostprocess(){Q.AssertMain("aux eligibility");return true;}
+    public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero h){Q.AssertMain("royal eligibility");return false;}
+    public static void SetGuardrailRuntimeTargetKingdom(string s){Q.AssertMain("target kingdom");Q.Kingdom.Value=s;}
+    public static void SetGuardrailRuntimeTargetHero(string s){Q.AssertMain("target hero");Q.HeroTarget.Value=s;}
+    public static void SetGuardrailRuntimeTargetCharacter(string s){Q.AssertMain("target character");Q.CharacterTarget.Value=s;}
+    public static void SetGuardrailRuntimeTargetTroop(string s){Q.AssertMain("target troop");Q.Troop.Value=s;}
+    public static void SetGuardrailRuntimeTargetUnnamedRank(string s){Q.AssertMain("target rank");Q.Rank.Value=s;}
+    public static void SetGuardrailRuntimeTargetAgentIndex(int id){Q.AssertMain("target agent");Q.Runtime.Value="agent:"+id;}
+    public static bool TryCallAuxiliaryActionPostprocess(string system,string user,int tokens,float temperature,out string content,out string error)
+    {
+        Q.Check(Thread.CurrentThread.ManagedThreadId!=Q.MainThreadId,"network blocked main thread");
+        Q.Check(system=="system"&&user=="user"&&tokens==5000&&temperature==0,"network request mismatch");
+        Q.NetworkCalls++;if(Q.Current.BlockNetwork){Q.NetworkResume.Wait(TimeSpan.FromSeconds(4));Q.NetworkExited.Set();}
+        if(Q.Current.NetworkThrows)throw new InvalidOperationException("fixture-network-throws");
+        content="fixed-result";error=Q.Current.NetworkSuccess?null:"fixture-network";Q.At("after-network");return Q.Current.NetworkSuccess;
+    }
+}
+public static class AfGcczShoutBridge
+{
+    public static bool TryProcessActionTags(Hero h,CharacterObject c,int id,ref string tags,out bool handled,bool direct,string player,string reply){Q.AssertMain("siege");handled=false;return false;}
+}
+
+public static class Program
+{
+    static IEnumerable<QueueFixture> Fixtures()
+    {
+        yield return new("direct-speech-success");
+        yield return new("inherited-old-generation-rejected"){ExpectedGeneration=42,Expected=-1,ExpectedActions=0};
+        yield return new("inherited-old-session-rejected"){ExpectedSession=42,Expected=-1,ExpectedActions=0};
+        yield return new("relay-speech-success"){Direct=false};
+        yield return new("direct-action-success"){CompletedText="[ACTION:DIRECT]\n[RELAY:22]"};
+        yield return new("relay-only-success"){CompletedText="[RELAY:22]",ExpectedActions=0};
+        foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})
+        foreach(string change in new[]{"generation","session","epoch"})yield return new(stage+"-"+change){At=stage,Change=change,Expected=-1,ExpectedActions=0};
+        foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})yield return new(stage+"-target"){At=stage,Change="target",Expected=-2,ExpectedActions=0};
+        foreach(string change in new[]{"generation","session","epoch"})yield return new("relay-only-"+change){CompletedText="[RELAY:22]",At="before-dispatch",Change=change,Expected=-1,ExpectedActions=0};
+        foreach(string change in new[]{"generation","session","epoch","target"})yield return new("speech-stale-"+change){At="speech-main",Change=change,Expected=change=="target"?-2:-1,ExpectedActions=0};
+        yield return new("speech-timeout-retired"){SpeechTimeout=true,Expected=-1,ExpectedActions=0};
+        yield return new("speech-rejected-no-retry"){SpeechSuccess=false,Expected=-1,ExpectedActions=0};
+        yield return new("network-fallback-no-action"){NetworkSuccess=false,Expected=-1,ExpectedActions=0};
+        yield return new("network-deadline-retired"){BlockNetwork=true,Expected=-1,ExpectedActions=0};
+        yield return new("network-throws-no-retry"){NetworkThrows=true,Expected=-1,ExpectedActions=0};
+        yield return new("prepare-throws-cleans-scope"){PrepareThrows=true,Expected=-1,ExpectedActions=0};
+        yield return new("normalizer-failure-no-retry"){NormalizeThrows=true,Expected=-1,ExpectedActions=0};
+        yield return new("no-rules-no-network"){NoSelected=true,Direct=false,Expected=-1,ExpectedActions=0};
+        yield return new("null-speaker"){NullSpeaker=true,Expected=-1,ExpectedActions=0};
+        yield return new("empty-reply"){EmptyReply=true,Expected=-1,ExpectedActions=0};
+        yield return new("copied-input-candidates"){MutateInputs=true};
+        yield return new("main-prepare-dropped"){DropMainPhase="scene_postprocess_prepare",Expected=-1,ExpectedActions=0};
+    }
+    public static async Task<int> Main()
+    {
+        Q.StartMain();int count=0;
+        try
+        {
+            foreach(var fixture in Fixtures())
+            {
+                Q.Reset(fixture);Q.Ambient.Value="request-mentions";
+                Task<int> task=Q.Host.Start(fixture);
+                Q.Ambient.Value="caller-restored";
+                int result=await task.WaitAsync(TimeSpan.FromSeconds(4));await Q.Barrier();
+                Q.Check(!Q.ThreadErrors.TryDequeue(out var threadError),"scheduler failure: "+threadError);
+                if(fixture.BlockNetwork){Q.Check(!Q.NetworkExited.IsSet&&Q.NormalizeCalls==0,"deadline did not finish independently of blocked network");Q.NetworkResume.Set();Q.NetworkExited.Wait(TimeSpan.FromSeconds(1));await Task.Delay(20);await Q.Barrier();}
+                Q.Check(Q.OffMainReads==0,fixture.Name+" attempted game reads off main thread (including swallowed exceptions)");
+                Q.Check(result==fixture.Expected,fixture.Name+" result expected "+fixture.Expected+" actual "+result);
+                Q.Check(Q.ActionEffects==fixture.ExpectedActions,fixture.Name+" unexpected action effects "+Q.ActionEffects);
+                Q.Check(Q.NetworkCalls<=1&&Q.NormalizeCalls<=1&&Q.SpeechEnqueues<=1,fixture.Name+" repeated pipeline");
+                Q.Check(Q.Ambient.Value=="caller-restored",fixture.Name+" caller AsyncLocal contaminated");
+                if(Q.Prepared!=null)
+                {
+                    Q.Check((string)Q.Prepared["replyText"]=="real-npc-reply",fixture.Name+" lost real NPC reply");
+                    Q.Check((bool)Q.Prepared["replyIsDirectPlayerResponse"]==fixture.Direct,fixture.Name+" wrong firstTurn/direct");
+                    Q.Check((string)Q.Prepared["npcName"]=="Speaker-A",fixture.Name+" lost speaker snapshot");
+                    Q.Check(((List<SceneSummonPromptTarget>)Q.Prepared["sceneSummonTargets"])[0].Id==33,fixture.Name+" summon candidates mutated");
+                    Q.Check(((List<SceneGuidePromptTarget>)Q.Prepared["sceneGuideTargets"])[0].Id==44,fixture.Name+" guide candidates mutated");
+                    Q.Check(((List<NpcDataPacket>)Q.Prepared["relayCandidates"])[0].AgentIndex==22,fixture.Name+" relay candidates mutated");
+                    Q.Check(((List<PostprocessRuleEntry>)Q.Prepared["sceneMechanismRules"])[0].Tag=="scene-rule-A",fixture.Name+" rule snapshot mutated");
+                    Q.Check(((List<string>)Q.Prepared["preprocessRuleHits"]).SequenceEqual(new[]{"kingdom_agenda"}),fixture.Name+" hit snapshot/filter changed");
+                }
+                if(Q.DirectParameters!=null){Q.Check((string)Q.DirectParameters[0]==(fixture.Direct?"player-current":""),fixture.Name+" direct player context");Q.Check((string)Q.DirectParameters[1]=="real-npc-reply",fixture.Name+" direct reply context");}
+                if(Q.SpeechParameters!=null){Q.Check(!(bool)Q.SpeechParameters[2],fixture.Name+" duplicated history commit");Q.Check((string)Q.SpeechParameters[8]==(fixture.Direct?"player-current":""),fixture.Name+" speech player context");Q.Check((string)Q.SpeechParameters[9]=="real-npc-reply",fixture.Name+" speech NPC reply context");}
+                if(fixture.SpeechTimeout)
+                {
+                    Q.Check(!Q.LastSpeechGuard(),"timed out worker speech can still publish");
+                    var checkedMain=new TaskCompletionSource<bool>();Q.Main.Add(()=>checkedMain.SetResult(Q.LastSpeechGuard()));
+                    Q.Check(!await checkedMain.Task,"timed out main speech can still publish");Q.LastSpeechCompletion.TrySetResult(true);await Q.Barrier();
+                    Q.Check(Q.ActionEffects==0&&Q.NetworkCalls==1,"late timeout completion retried effects");
+                }
+                Console.WriteLine("PASS "+fixture.Name+" result="+result+" prepare="+Q.PrepareCalls+" network="+Q.NetworkCalls+" normalize="+Q.NormalizeCalls+" actions="+Q.ActionEffects);count++;
+            }
+            Console.WriteLine("PASS SceneDeferredQueue fixtures="+count+" realQueue=executed realWorkItemComplete=executed physicalThreadBoundary=verified gameDomainHelpers=STUBBED live=NOT_RUN");return 0;
+        }
+        catch(Exception e){Console.Error.WriteLine(e);return 1;}
+        finally{Q.Main.CompleteAdding();Q.MainThread.Join(1000);}
+    }
+}

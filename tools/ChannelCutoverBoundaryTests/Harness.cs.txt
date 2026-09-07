@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -11,7 +12,6 @@ using Newtonsoft.Json.Linq;
 // courier completion/failure methods are inserted verbatim from production.
 @@STATUS_ENUM@@
 @@RESULT_TYPE@@
-public sealed class InteractionResult { }
 public sealed class InteractionCommitResult { }
 @@PROMPT_CONTRACTS@@
 @@POSTPROCESS_INTERFACE@@
@@ -19,6 +19,7 @@ public sealed class InteractionCommitResult { }
 @@MAIN_COMPOSER@@
 @@POSTPROCESS_COMPOSER@@
 @@ACTION_PARSER@@
+@@GIVE_ASSET_CODEC@@
 public static class LegacyConfiguredChatGateway
 {
     @@BUILD_PROMPT@@
@@ -32,6 +33,26 @@ public sealed class LegacyChannelInteractionFacade : IDisposable
 {
     public LegacyInteractionPipelinePorts Ports;
     public Func<string, InteractionEnvelope> Capture;
+    public Task<InteractionResult> GenerateAsync(InteractionEnvelope envelope, RuntimeConfigSnapshot configuration,
+        string moduleId, string providerId, CancellationToken cancellationToken)
+    {
+        Scenario scenario = Scenario.Current;
+        scenario.HostCalls++;
+        scenario.CapturePortDelegates(Ports, envelope);
+        scenario.AfterGeneration?.Invoke();
+        if (scenario.HostThrows) throw new InvalidOperationException("generation-failed-before-commit");
+        if (scenario.NullResult) return Task.FromResult<InteractionResult>(null);
+        ActionPlan resultActions = scenario.UnexpectedGeneratedActions
+            ? new ActionPlan(new[] { new ActionRequest("ACTION:GIVE_GOLD", "npc-alpha", new Dictionary<string, string>()) }, "[ACTION:GIVE_GOLD:100]")
+            : scenario.CapturedActionPlan;
+        return Task.FromResult(new InteractionResult(scenario.Status, scenario.VisibleReply,
+            resultActions, Array.Empty<FactRecord>(), "fixture-error", scenario.VisibleReply));
+    }
+    public InteractionCommitResult Commit(params object[] args)
+    {
+        Scenario.Current.EarlyCommitCalls++;
+        throw new InvalidOperationException("Main generation must never commit");
+    }
     public void Dispose()
     {
         if (Scenario.Current.DisposeThrows) throw new InvalidOperationException("dispose-failed");
@@ -51,6 +72,14 @@ public static class LegacyInteractionSnapshotAdapters
 {
     public const string NativeConversationModuleId = "native";
     public const string LegacyShoutNetworkProviderId = "fixture";
+    public static InteractionEnvelope CaptureSceneShout(string text, int agentIndex,
+        DetachedPromptSections main, DetachedPostprocessPromptSections postprocess)
+    {
+        Scenario scenario = Scenario.Current;
+        scenario.DirectCaptures++;
+        if (scenario.CaptureThrows) throw new InvalidOperationException("capture-failed-before-submit");
+        return scenario.CaptureNull ? null : ProductionBlockHost.FixtureEnvelope(scenario.Subject, agentIndex);
+    }
     public static LegacyChannelInteractionFacade CreateSceneShoutInteractionFacade(
         LegacyInteractionPipelinePorts ports, ILlmGateway gateway, Func<string, InteractionEnvelope> capture)
     {
@@ -64,14 +93,29 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway
     public static Task<string> SendLegacyMessagesAsync(List<object> messages, int tokens, bool promptRetryOnError)
     {
         Scenario.Current.LegacyCalls++;
+        Scenario.Current.DuringFallback?.Invoke();
+        if (Scenario.Current.LegacyThrows) throw new InvalidOperationException("legacy-network-failed");
         return Task.FromResult(Scenario.Current.LegacyReply);
     }
 }
 public static class SaveRuntimeGuard
 {
-    public static bool IsStale(long generation, string reason) => Scenario.Current.RuntimeStale;
+    public static bool IsStale(long generation, string reason = null) => Scenario.Current.RuntimeStale;
+    public static bool IsCurrentGeneration(long generation) => generation == CurrentGeneration;
+    public static long CurrentGeneration => Scenario.Current.RuntimeStale ? 2 : 1;
+    public static long CaptureGeneration() => CurrentGeneration;
 }
 public sealed class Speaker { public string Name = "fixture"; public int AgentIndex = 1; }
+public sealed class NpcDataPacket { public string Name = "fixture"; public int AgentIndex = 1; }
+public sealed class Hero { }
+public sealed class CharacterObject { }
+public sealed class Agent { public int Index; }
+public sealed class SceneSummonPromptTarget { }
+public sealed class SceneGuidePromptTarget { }
+public static class BattleSpeechFrameworkV2
+{
+    @@BATTLE_QUEUE_METHOD@@
+}
 public sealed class CourierSession
 {
     public string Id = "session", LetterText = "letter", ReplyText = "untrusted-reply", ReplyPostprocessedText = "[ACTION:pending]";
@@ -87,10 +131,27 @@ public sealed class Scenario
     public static Scenario Current;
     public string Name;
     public bool BridgeEnabled = true, CaptureNull, CaptureThrows, PrepareThrows, HostThrows, NullResult;
-    public bool UsedLegacyFallback, RuntimeStale, DisposeThrows, CallbackThenThrows, StaleBeforeDrain;
-    public InteractionStatus Status = InteractionStatus.Executed;
+    public bool UsedLegacyFallback, RuntimeStale, DisposeThrows, CallbackThenThrows, StaleBeforeDrain, LegacyThrows, EpochStale;
+    public bool OnMainThread, TargetUnavailable, HistoryResult;
+    public bool UnexpectedGeneratedActions;
+    public bool SpeechQueueResult, SpeechPostprocess = true, SpeechDirectResponse = true;
+    public string SpeechInput = "cleaned-main-reply";
+    public int SpeechSessionId = 1, SpeechEnqueues, TargetChecks;
+    public string EnqueuedSpeech, EnqueuedPlayerText, EnqueuedReplyText, EnqueuedInfo;
+    public bool EnqueuedCommitHistory, EnqueuedAllowActions;
+    public int EnqueuedEpoch, EnqueuedParticipants, EnqueuedAudienceCount;
+    public float EnqueuedTimeout;
+    public Func<bool> EnqueuedCanPublish;
+    public bool LifecycleResult;
+    public List<string> LifecycleOwnerCalls = new();
+    public int HistorySessionId = 1;
+    public int SceneHistoryCalls, ScenePersistenceCalls;
+    public List<string> HistoryEvents = new();
+    public Dictionary<int, List<string>> ObserverHistory = new();
+    public InteractionStatus Status = InteractionStatus.Succeeded;
     public string VisibleReply = "detached-reply", LegacyReply = "legacy-reply";
     public int LegacyCalls, HostCalls, FinalizeCalls, FailureCalls, UnconsumedFailureCalls, LegacyCompletionCalls, Notifications;
+    public int EarlyCommitCalls, PostprocessCompositions, DirectCaptures, RecomputedCaptures;
     public bool SceneCleanup, ScenePostBlock, SceneCommitted;
     public string SceneReply;
     public string Subject = "npc-alpha";
@@ -98,10 +159,27 @@ public sealed class Scenario
     public List<object> PreparedMessages;
     public PromptPackage CapturedPrompt, CapturedPostprocess;
     public LegacyInteractionPipelinePorts CapturedPorts;
+    public ActionPlan CapturedActionPlan;
+    public DetachedInteractionHostResult MainResult;
     public InteractionEnvelope CapturedEnvelope;
-    public Action AfterPortsPrepared;
+    public Action AfterPortsPrepared, AfterGeneration, DuringFallback;
     public readonly CourierSession Session = new();
     public readonly Queue<Action> MainThreadActions = new();
+
+    public void CapturePortDelegates(LegacyInteractionPipelinePorts ports, InteractionEnvelope envelope)
+    {
+        RuleSelection selection = ports.SelectRules(envelope.Snapshot);
+        PostprocessContext context = ports.BuildPostprocessContext(envelope.Snapshot, selection, ports.Capabilities);
+        CapturedPorts = ports;
+        CapturedEnvelope = envelope;
+        CapturedPrompt = ports.ComposePrompt(envelope, selection, ports.Capabilities);
+        CapturedActionPlan = ports.ParseActions(VisibleReply, context);
+        if (ports.ComposePostprocessPrompt != null)
+        {
+            PostprocessCompositions++;
+            CapturedPostprocess = ports.ComposePostprocessPrompt(envelope, selection, " visible-reply ", "raw-reply", context);
+        }
+    }
 
     public async Task<DetachedInteractionHostResult> Submit(Func<Task<string>> fallback)
     {
@@ -121,6 +199,10 @@ public sealed class Scenario
 }
 public sealed class ProductionBlockHost
 {
+    private static int _sceneHistorySessionId = 1;
+    public static void SetSceneSessionForFixture(int session) => _sceneHistorySessionId = session;
+    private bool IsSceneConversationEpochCurrent(int epoch) => !Scenario.Current.EpochStale;
+    private static bool IsBannerlordMainThreadForNativeActions() => Scenario.Current.OnMainThread;
     private static void Log(string message) { }
     private static bool IsCourierBridgeEnabled() => Scenario.Current.BridgeEnabled;
     private static bool IsTerminalStage(CourierSession session) => false;
@@ -166,6 +248,13 @@ public sealed class ProductionBlockHost
     }
     @@PUBLIC_SCENE_FACTORY@@
     @@PRIVATE_SCENE_FACTORY@@
+    @@MAIN_REPLY_FACTORY@@
+    @@MAIN_REPLY_METHOD@@
+    @@MAIN_FALLBACK_METHOD@@
+    @@SCENE_HISTORY_METHOD@@
+    @@SCENE_MAIN_SPEECH_SANITIZER@@
+    @@SCENE_MAIN_SPEECH_QUEUE@@
+    @@SCENE_SPEECH_STRIPPERS@@
     @@CREATE_MESSAGE@@
     public static object Message(string role, string content) => CreateChatMessage(role, content);
     private static LegacyInteractionPipelinePorts CreateCourierDetachedPortsForExternal(string[] tags) => PreparePorts();
@@ -175,24 +264,106 @@ public sealed class ProductionBlockHost
         => Scenario.Current.CaptureNull ? null : new();
     private static InteractionEnvelope CaptureSceneShoutRefactorEnvelopeForExternal(string text, int agentIndex)
     {
+        Scenario.Current.RecomputedCaptures++;
         if (Scenario.Current.CaptureThrows) throw new InvalidOperationException("capture-failed-before-submit");
         return Scenario.Current.CaptureNull ? null : FixtureEnvelope(Scenario.Current.Subject, agentIndex);
     }
-    private static Task<InteractionEnvelope> RunNativeConversationMainThreadFuncAsync(
-        string reason, string name, int index, Func<InteractionEnvelope> action, object fallback) => Task.FromResult(action());
+    private static Task<T> RunNativeConversationMainThreadFuncAsync<T>(
+        string reason, string name, int index, Func<T> action, T fallback)
+    {
+        Scenario.Current.OnMainThread = true;
+        try { return Task.FromResult(action()); }
+        finally { Scenario.Current.OnMainThread = false; }
+    }
+    private bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index, Hero hero, CharacterObject character, out string reason)
+    {
+        if (!Scenario.Current.OnMainThread) throw new Exception("Target validation must run on the main-thread boundary");
+        Scenario.Current.TargetChecks++;
+        reason = Scenario.Current.TargetUnavailable ? "target-unavailable" : string.Empty;
+        return !Scenario.Current.TargetUnavailable;
+    }
+    private void RecordResponseForAllNearbySafe(List<NpcDataPacket> audience, int index, string name, string response)
+    {
+        if (!Scenario.Current.OnMainThread) throw new Exception("Scene history must be dispatched to main thread");
+        Scenario.Current.SceneHistoryCalls++;
+        Scenario.Current.HistoryEvents.Add("scene:" + response);
+    }
+    private void PersistNpcSpeechToNamedHeroes(int index, string name, string response, List<NpcDataPacket> audience)
+    {
+        if (!Scenario.Current.OnMainThread) throw new Exception("Memory owner must be dispatched to main thread");
+        Scenario.Current.ScenePersistenceCalls++;
+        Scenario.Current.HistoryEvents.Add("persistent:" + response);
+        foreach (NpcDataPacket npc in audience)
+        {
+            if (!Scenario.Current.ObserverHistory.TryGetValue(npc.AgentIndex, out var history))
+                Scenario.Current.ObserverHistory[npc.AgentIndex] = history = new();
+            history.Add(response);
+        }
+    }
+    private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> audience,
+        bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch,
+        List<SceneSummonPromptTarget> summonTargets = null, List<SceneGuidePromptTarget> guideTargets = null,
+        string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null,
+        float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1,
+        Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null)
+    {
+        Scenario s = Scenario.Current;
+        if (!s.OnMainThread) throw new Exception("Main speech queue must be dispatched to game thread");
+        s.SpeechEnqueues++;
+        s.EnqueuedSpeech = content;
+        s.EnqueuedAudienceCount = audience.Count;
+        s.EnqueuedCommitHistory = commitHistory;
+        s.EnqueuedAllowActions = allowPlayerDirectedActions;
+        s.EnqueuedEpoch = requiredConversationEpoch;
+        s.EnqueuedTimeout = interactionTimeoutSeconds;
+        s.EnqueuedParticipants = interactionParticipantCount;
+        s.EnqueuedCanPublish = canStillPublish;
+        s.EnqueuedPlayerText = playerDirectedActionText;
+        s.EnqueuedReplyText = playerDirectedNpcReplyText;
+        s.EnqueuedInfo = afterSpeechInfoMessage;
+    }
+    private static void NoteLifecycleOwner(string owner)
+    {
+        if (!Scenario.Current.OnMainThread) throw new Exception("Scene lifecycle owner must run on game thread");
+        Scenario.Current.LifecycleOwnerCalls.Add(owner);
+    }
+    private void ReleaseSceneConversationConstraints(List<NpcDataPacket> participants, int primaryIndex,
+        bool stopAutoGroupSession, bool clearQueuedSpeech, bool forceFullAutonomyRelease)
+    {
+        if (participants.Count != 1 || primaryIndex != 1 || !stopAutoGroupSession || !clearQueuedSpeech || !forceFullAutonomyRelease)
+            throw new Exception("Lifecycle release changed captured participants or release scope");
+        NoteLifecycleOwner("release");
+    }
+    private void ActivateMultiSceneMovementSuppression(IEnumerable<int> indices)
+    {
+        if (!indices.SequenceEqual(new[] { 1 })) throw new Exception("Movement suppression target changed");
+        NoteLifecycleOwner("movement-suppression");
+    }
+    private void HoldSceneConversationAgents(List<Agent> agents)
+    {
+        if (agents.Count != 1 || agents[0].Index != 1) throw new Exception("Held scene target changed");
+        NoteLifecycleOwner("hold");
+    }
+    private void SuppressOrdinarySceneFollowupsForBattleSpeech(IEnumerable<NpcDataPacket> participants)
+    {
+        if (participants.Count() != 1) throw new Exception("Battle suppression participants changed");
+        NoteLifecycleOwner("battle-suppression");
+    }
+    private void PrepareAutoGroupParticipantsForIdleTimeout(List<NpcDataPacket> participants, string lastReply,
+        string playerText, List<string> visibleReplies, int speakerCount)
+    {
+        if (participants.Count != 1 || lastReply != "last-reply" || playerText != "player-input"
+            || visibleReplies.Single() != "last-reply" || speakerCount != 1)
+            throw new Exception("Idle timeout must retain this request's participants and reply context");
+        NoteLifecycleOwner("idle-timeout");
+    }
     private static Task<DetachedInteractionHostResult> SubmitSceneShoutRefactorOptInForExternalAsync(
         LegacyChannelInteractionFacade facade, RuntimeConfigSnapshot configuration, string module, string provider,
         string text, int agentIndex, Func<Task<string>> fallback, CancellationToken cancellationToken)
     {
         Scenario scenario = Scenario.Current;
         InteractionEnvelope envelope = facade.Capture(text);
-        LegacyInteractionPipelinePorts ports = facade.Ports;
-        RuleSelection selection = ports.SelectRules(envelope.Snapshot);
-        PostprocessContext context = ports.BuildPostprocessContext(envelope.Snapshot, selection, ports.Capabilities);
-        scenario.CapturedPorts = ports;
-        scenario.CapturedEnvelope = envelope;
-        scenario.CapturedPrompt = ports.ComposePrompt(envelope, selection, ports.Capabilities);
-        scenario.CapturedPostprocess = ports.ComposePostprocessPrompt(envelope, selection, " visible-reply ", "raw-reply", context);
+        scenario.CapturePortDelegates(facade.Ports, envelope);
         return scenario.Submit(fallback);
     }
     private static Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInForExternalAsync(
@@ -252,13 +423,65 @@ public sealed class ProductionBlockHost
             new TraceContext("fixture-trace", 1, 1, "fixture", "1.4"),
             "snapshot-player-input-must-not-be-appended", "fixture-tavern", 1, 12,
             new[] { new InteractionCandidate(subject, subject, agentIndex, true) },
-            Array.Empty<string>(), new Dictionary<string, string>());
+            Array.Empty<string>(), new Dictionary<string, string> { ["scene_session_id"] = "1" });
         return new InteractionEnvelope(snapshot,
             new[] { new PromptMessage("assistant", "detached-history-for-" + subject) },
             new DetachedPromptSections(new[] { "captured-system-for-" + subject },
                 new[] { "captured-prefix" }, new[] { "captured-suffix" }, true),
             new DetachedPostprocessPromptSections(new[] { "postprocess-rules-for-" + subject },
                 new[] { "postprocess-runtime-targets" }, new[] { "postprocess-facts" }, true));
+    }
+
+    // Only input bindings are fixtures. The relay/queue/direct-response expressions
+    // and the battle suppression method are extracted verbatim from production.
+    public static (bool Queue, bool Relay, bool Direct) TailDecisions(string ruleName, bool firstTurn,
+        bool suppressBattleSpeechFollowups, bool endRequested, int remainingTurns, int candidateCount)
+    {
+        bool sceneShoutDetachedCommitted = true; // Deliberate counterexample to the retired early-commit gate.
+        bool relayPostprocessSelected = false;
+        var relayCandidatesForNextTurn = Enumerable.Range(0, Math.Max(0, candidateCount)).ToList();
+        @@SCENE_TAIL_LOCALS@@
+        @@SCENE_DIRECT_REPLY_ASSIGNMENT@@
+        @@SCENE_TAIL_DECISIONS@@
+        return (flag11, relayPostprocessSelected, replyIsDirectPlayerResponse);
+    }
+    public static string MainSpeechText(string text, bool following = false, bool summon = false)
+    {
+        string cleaned = text;
+        bool endRequested = ContainsAutoGroupEndSignal(cleaned);
+        bool flag9 = endRequested && following;
+        bool flag10 = endRequested && summon;
+        @@SCENE_SPEECH_SANITIZATION_BLOCK@@
+        return cleaned;
+    }
+
+    public bool ExecuteSceneLifecycleDelegate(string operation)
+    {
+        // Captured request inputs are fixtures; all five complete delegate bodies
+        // below are inserted unchanged from their actual production dispatch calls.
+        long sceneReplyGeneration = 1;
+        int sceneReplySessionId = 1, conversationEpoch = 1, primaryTargetAgentIndex = 1;
+        var primaryNpc = new NpcDataPacket { AgentIndex = 1 };
+        var failedPrimaryParticipants = new List<NpcDataPacket> { primaryNpc };
+        var failedEngagedParticipants = new List<NpcDataPacket> { primaryNpc };
+        var finalEngagedParticipants = new List<NpcDataPacket> { primaryNpc };
+        var speakableCandidates = new List<NpcDataPacket> { primaryNpc };
+        var engagedAgentIndices = new HashSet<int> { 1 };
+        var engagedAgents = new List<Agent> { new() { Index = 1 } };
+        string lastSpeakerOutputText = "last-reply", playerText = "player-input";
+        var roundNpcVisibleTexts = new List<string> { lastSpeakerOutputText };
+        var roundNpcSpeakerIndices = new HashSet<int> { 1 };
+        var callbacks = new Dictionary<string, Func<bool>>
+        {
+            ["primary-release"] = @@SCENE_PRIMARY_RELEASE_DELEGATE@@,
+            ["hold-participants"] = @@SCENE_HOLD_PARTICIPANTS_DELEGATE@@,
+            ["battle-suppression"] = @@SCENE_BATTLE_SUPPRESSION_DELEGATE@@,
+            ["idle-timeout"] = @@SCENE_IDLE_TIMEOUT_DELEGATE@@,
+            ["failure-release"] = @@SCENE_FAILURE_RELEASE_DELEGATE@@,
+        };
+        Scenario.Current.OnMainThread = true;
+        try { return callbacks[operation](); }
+        finally { Scenario.Current.OnMainThread = false; }
     }
 }
 
@@ -269,15 +492,18 @@ public static class Program
     {
         if (!condition) throw new Exception(message);
     }
-    private static async Task Case(string name, bool courier, Action<Scenario> arrange, Action<Scenario> assert)
+    private static async Task Case(string name, bool courier, Action<Scenario> arrange, Action<Scenario> assert,
+        Func<ProductionBlockHost, Task> execute = null)
     {
-        var scenario = new Scenario { Name = name };
+        var scenario = new Scenario { Name = name, Status = courier ? InteractionStatus.Executed : InteractionStatus.Succeeded };
         Scenario.Current = scenario;
+        ProductionBlockHost.SetSceneSessionForFixture(1);
         arrange(scenario);
         try
         {
             var host = new ProductionBlockHost();
-            if (courier) await host.CourierAsync(); else await host.SceneAsync();
+            if (execute != null) await execute(host);
+            else if (courier) await host.CourierAsync(); else await host.SceneAsync();
             scenario.Drain();
             assert(scenario);
             passes++;
@@ -303,6 +529,22 @@ public static class Program
         Require(s.SceneCleanup, "Terminal scene must break to tail cleanup rather than return");
         Require(!s.ScenePostBlock, "Terminal scene must not continue reply/action processing");
     }
+    private static void SceneGenerationOnly(Scenario s)
+    {
+        Require(!s.SceneCommitted && s.EarlyCommitCalls == 0,
+            "Scene main result is not a game/history commit; early effects must remain zero");
+        Require(s.CapturedPostprocess == null && s.PostprocessCompositions == 0,
+            "Main generation must not compose the reduced detached postprocess");
+        Require(s.CapturedActionPlan != null && s.CapturedActionPlan.Actions.Count == 0,
+            "Main generation must not create executable actions from reply text");
+    }
+    private static void SceneFallbackOnce(Scenario s)
+    {
+        Require(s.HostCalls == 1 && s.LegacyCalls == 1, "Only explicit pre-effect failures allow one internal fallback");
+        Require(s.SceneCleanup && s.ScenePostBlock && s.SceneReply == s.LegacyReply,
+            "Internal fallback must preserve its reply and Scene downstream ownership");
+        SceneGenerationOnly(s);
+    }
     private static void TerminalCourier(Scenario s)
     {
         NoSecondRequest(s);
@@ -324,7 +566,11 @@ public static class Program
                 InteractionStatus.NonRetryableFailure, InteractionStatus.RejectedByValidation,
                 InteractionStatus.RetryableFailure, InteractionStatus.SkippedByEligibility, InteractionStatus.DegradedWithoutProvider })
             {
-                await Case(channel + "/terminal-" + status, courier, s => s.Status = status, courier ? TerminalCourier : TerminalScene);
+                bool allowsMainFallback = !courier && (status == InteractionStatus.RetryableFailure
+                    || status == InteractionStatus.SkippedByEligibility || status == InteractionStatus.DegradedWithoutProvider);
+                await Case(channel + (allowsMainFallback ? "/pre-effect-fallback-" : "/terminal-") + status,
+                    courier, s => s.Status = status,
+                    allowsMainFallback ? SceneFallbackOnce : courier ? TerminalCourier : TerminalScene);
             }
             await Case(channel + "/host-throws", courier, s => s.HostThrows = true, courier ? TerminalCourier : TerminalScene);
             await Case(channel + "/null-result", courier, s => s.NullResult = true, courier ? TerminalCourier : TerminalScene);
@@ -334,7 +580,9 @@ public static class Program
                 if (!courier) Require(!s.SceneCleanup && !s.ScenePostBlock, "Stale scene must return without touching a new epoch");
                 else Require(s.FailureCalls == 0 && s.FinalizeCalls == 0, "Stale courier result must not mutate current session");
             });
-            foreach (InteractionStatus status in new[] { InteractionStatus.Executed, InteractionStatus.Succeeded })
+            foreach (InteractionStatus status in courier
+                ? new[] { InteractionStatus.Executed, InteractionStatus.Succeeded }
+                : new[] { InteractionStatus.Succeeded })
             foreach (string reply in new[] { "detached-reply", "" })
             {
                 await Case(channel + "/success-" + status + (reply == "" ? "-empty" : "-text"), courier,
@@ -343,24 +591,32 @@ public static class Program
                         NoSecondRequest(s);
                         Require(s.FailureCalls == 0, "Success cannot become failure");
                         if (courier) Require(s.FinalizeCalls == 1, "Success must finalize once");
-                        else Require(s.SceneCleanup && s.SceneCommitted && s.SceneReply == reply, "Success must retain detached commit and visible reply");
+                        else
+                        {
+                            Require(s.SceneCleanup && s.SceneReply == reply, "Success must preserve visible reply for later authoritative Scene processing");
+                            SceneGenerationOnly(s);
+                        }
                     });
             }
             foreach (string reply in new[] { "legacy-reply", "" })
             {
                 await Case(channel + "/internal-fallback" + (reply == "" ? "-empty" : "-text"), courier,
-                    s => { s.UsedLegacyFallback = true; s.VisibleReply = reply; s.LegacyReply = reply; }, s =>
+                    s => { s.UsedLegacyFallback = true; s.VisibleReply = reply; s.LegacyReply = reply;
+                        if (!courier) s.Status = InteractionStatus.RetryableFailure; }, s =>
                     {
                         Require(s.HostCalls == 1 && s.LegacyCalls == 1, "Internal fallback is already executed and must not run again");
                         Require(s.FailureCalls == 0, "Internal fallback must not be reclassified as terminal failure");
-                        if (!courier) Require(s.SceneCleanup && !s.SceneCommitted && s.SceneReply == reply, "Fallback retains legacy processing ownership");
+                        if (!courier) SceneFallbackOnce(s);
                         else Require(s.FinalizeCalls == 0 && s.LegacyCompletionCalls == 1, "Legacy fallback owns its queued finalization");
                     });
             }
         }
         await Case("scene/capture-exception", false, s => s.CaptureThrows = true, LegacyOnce);
+        foreach (string reply in new[] { "unexpected-executed", "" })
+            await Case("scene/unexpected-executed-status-" + (reply.Length == 0 ? "empty" : "text"), false,
+                s => { s.Status = InteractionStatus.Executed; s.VisibleReply = reply; }, TerminalScene);
         await Case("scene/internal-fallback-failure", false,
-            s => { s.UsedLegacyFallback = true; s.Status = InteractionStatus.NonRetryableFailure; s.VisibleReply = ""; s.LegacyReply = ""; }, s =>
+            s => { s.Status = InteractionStatus.RetryableFailure; s.LegacyThrows = true; }, s =>
             {
                 Require(s.HostCalls == 1 && s.LegacyCalls == 1, "Failed internal fallback cannot trigger another legacy request");
                 Require(s.SceneCleanup && !s.ScenePostBlock, "Failed internal fallback must stop reply processing and reach cleanup");
@@ -373,6 +629,35 @@ public static class Program
             });
         await Case("courier/pre-delivery-legacy-generation", true, s => s.Session.DeliveryApplied = false, LegacyOnce);
         await Case("scene/success-before-dispose-throws", false, s => s.DisposeThrows = true, TerminalScene);
+        await Case("scene/stale-before-generation", false, s => s.RuntimeStale = true, s =>
+        {
+            Require(s.HostCalls == 0 && s.LegacyCalls == 0 && !s.SceneCleanup && !s.ScenePostBlock,
+                "Stale generation must stop before request/fallback and avoid new-epoch mutation");
+        });
+        await Case("scene/stale-after-generation", false, s => s.AfterGeneration = () => s.RuntimeStale = true, s =>
+        {
+            NoSecondRequest(s);
+            Require(!s.SceneCleanup && !s.ScenePostBlock, "Generation changed while awaiting main result must stop all later processing");
+            SceneGenerationOnly(s);
+        });
+        await Case("scene/stale-before-fallback", false, s =>
+        {
+            s.Status = InteractionStatus.RetryableFailure;
+            s.AfterGeneration = () => s.RuntimeStale = true;
+        }, s =>
+        {
+            NoSecondRequest(s);
+            Require(!s.SceneCleanup && !s.ScenePostBlock, "Stale failure must not start legacy fallback");
+        });
+        await Case("scene/stale-during-fallback", false, s =>
+        {
+            s.Status = InteractionStatus.RetryableFailure;
+            s.DuringFallback = () => s.RuntimeStale = true;
+        }, s =>
+        {
+            Require(s.HostCalls == 1 && s.LegacyCalls == 1 && !s.SceneCleanup && !s.ScenePostBlock,
+                "Old fallback completion cannot write history or actions into a new generation");
+        });
         await Case("courier/finalize-queued-before-dispose-throws", true, s => s.DisposeThrows = true, s =>
         {
             NoSecondRequest(s);
@@ -403,6 +688,10 @@ public static class Program
                 Require(!s.Session.PostprocessConsumed && s.FailureCalls == 0, "Stale queued failure must not mutate new generation");
             });
         await PromptCases();
+        await MainResultCases();
+        await HistoryAndTailCases();
+        await MainSpeechCases();
+        await SceneLifecycleCases();
         Console.WriteLine("ChannelCutoverBoundary passes=" + passes + " failures=" + failures + " extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN");
         return failures == 0 ? 0 : 1;
     }
@@ -497,14 +786,281 @@ public static class Program
             var defaultPorts = ProductionBlockHost.CreateSceneShoutDetachedPortsForExternal(null);
             Require(defaultPorts.Capabilities.CapabilityIds.Count == 4, "Default factory capabilities changed");
         });
-        await Case("scene-prompt/postprocess-delegate-remains-envelope-owned", false, s => { }, s =>
+        await Case("scene-prompt/public-optin-postprocess-remains-envelope-owned", false, s => { }, s =>
         {
-            ExactMessages(s.CapturedPostprocess, new[] {
+            var ports = ProductionBlockHost.CreateSceneShoutDetachedPortsForExternal(new[] { "ACTION" }, 1);
+            InteractionEnvelope envelope = ProductionBlockHost.FixtureEnvelope();
+            RuleSelection selection = ports.SelectRules(envelope.Snapshot);
+            PostprocessContext context = ports.BuildPostprocessContext(envelope.Snapshot, selection, ports.Capabilities);
+            PromptPackage postprocess = ports.ComposePostprocessPrompt(envelope, selection, " visible-reply ", "raw-reply", context);
+            ExactMessages(postprocess, new[] {
                 ("system", "postprocess-rules-for-npc-alpha"), ("user", "postprocess-runtime-targets"),
                 ("assistant", "detached-history-for-npc-alpha"), ("user", "postprocess-facts"),
                 ("user", "[latest_reply]\nvisible-reply") });
-            Require(s.CapturedPostprocess.MaxTokens == 4096 && s.CapturedPostprocess.Model == "legacy-scene-shout-postprocess",
-                "Main prompt fix cannot alter the existing postprocess delegate");
+            Require(postprocess.MaxTokens == 4096 && postprocess.Model == "legacy-scene-shout-postprocess",
+                "Internal Scene staging must retain full opt-in public postprocess behavior");
         });
+        await Case("scene-prompt/main-tags-never-become-actions", false, s =>
+            s.VisibleReply = "答复 [ACTION:GIVE_GOLD:100] [ACTION:DUEL] [AD:50:1:借款] [END]", s =>
+        {
+            NoSecondRequest(s);
+            SceneGenerationOnly(s);
+            Require(s.CapturedActionPlan.RawPostprocessId == string.Empty,
+                "Main tags must not be retained as a latent postprocess execution payload");
+            Require(s.SceneReply == s.VisibleReply, "Generation only must preserve END for the Scene stage to interpret");
+        });
+        await Case("scene-prompt/default-has-no-postprocess-action-capability", false, s => { }, s =>
+        {
+            SceneGenerationOnly(s);
+            Require(s.CapturedPorts.ComposePostprocessPrompt == null, "Default must not schedule detached postprocess");
+            Require(!s.CapturedPorts.Capabilities.CapabilityIds.Any(value => value.StartsWith("action.", StringComparison.Ordinal)
+                || value.StartsWith("postprocess.", StringComparison.Ordinal)), "Main ports must not advertise execution/postprocess capabilities");
+            RuleSelection selection = s.CapturedPorts.SelectRules(s.CapturedEnvelope.Snapshot);
+            PostprocessContext context = s.CapturedPorts.BuildPostprocessContext(s.CapturedEnvelope.Snapshot, selection, s.CapturedPorts.Capabilities);
+            Require(context.AllowedTagFamilies.Count == 0, "Main phase must not grant executable tag families");
+        });
+        await Case("scene-prompt/default-does-not-recompute-prompt-sections", false, s => { }, s =>
+        {
+            Require(s.DirectCaptures == 1 && s.RecomputedCaptures == 0,
+                "Prepared main path must capture identity directly, not rebuild reduced main/postprocess sections");
+        });
+    }
+
+    private static async Task InvokeProductionMainHelper(ProductionBlockHost host)
+    {
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.NonPublic
+            | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance;
+        var factory = typeof(ProductionBlockHost).GetMethod("CreateSceneShoutMainReplyPorts", flags);
+        var generate = typeof(ProductionBlockHost).GetMethod("GenerateSceneShoutMainReplyAsync", flags);
+        Require(factory != null && generate != null, "Production generation-only ports/helper is not implemented");
+        var prompt = LegacyConfiguredChatGateway.BuildPromptPackage(ProductionBlockHost.PreparedSceneMessages("npc-alpha"), 5000, "legacy-scene-shout");
+        var ports = (LegacyInteractionPipelinePorts)factory.Invoke(null, new object[] { prompt });
+        var envelope = ProductionBlockHost.FixtureEnvelope();
+        using var facade = new LegacyChannelInteractionFacade { Ports = ports, Capture = text => envelope };
+        Func<Task<string>> fallback = () => LegacyShoutNetworkGateway.SendLegacyMessagesAsync(new List<object>(), 5000, true);
+        var task = (Task<DetachedInteractionHostResult>)generate.Invoke(host,
+            new object[] { facade, new RuntimeConfigSnapshot(), "native", "fixture", envelope, 1, fallback, CancellationToken.None });
+        Scenario.Current.MainResult = await task;
+    }
+
+    private static async Task MainResultCases()
+    {
+        foreach (InteractionStatus status in new[] { InteractionStatus.Succeeded, InteractionStatus.RetryableFailure })
+            await Case("scene-main-result/reject-unexpected-actions-" + status, false, s =>
+            {
+                s.Status = status;
+                s.UnexpectedGeneratedActions = true;
+            }, s =>
+            {
+                Require(s.MainResult?.Status == InteractionStatus.NonRetryableFailure && s.MainResult.Commit == null,
+                    "Any unexpected generated ActionPlan must remain terminal, even with a retryable status");
+                Require(s.MainResult.ErrorCode == "scene_main_unexpected_action_result", "Unexpected actions require an explicit diagnostic");
+                NoSecondRequest(s);
+                Require(s.EarlyCommitCalls == 0, "Unexpected actions cannot reach a commit owner");
+            }, InvokeProductionMainHelper);
+        await Case("scene-main-result/preserves-generation-metadata-without-commit", false, s => { }, s =>
+        {
+            var result = s.MainResult;
+            Require(result != null && result.Status == InteractionStatus.Succeeded && !result.UsedLegacyFallback,
+                "Successful generation must preserve explicit success status");
+            Require(result.Commit == null && result.DetachedResult != null, "Main generation may retain generation metadata but never invent a commit receipt");
+            Require(result.DetachedResult.RawReply == s.VisibleReply && result.VisibleReply == s.VisibleReply,
+                "Generation raw/visible text metadata changed");
+            SceneGenerationOnly(s);
+        }, InvokeProductionMainHelper);
+        await Case("scene-main-result/fallback-never-invents-commit", false,
+            s => s.Status = InteractionStatus.RetryableFailure, s =>
+        {
+            Require(s.MainResult != null && s.MainResult.UsedLegacyFallback && s.MainResult.Commit == null,
+                "Fallback is a main reply, not a completed game/memory transaction");
+            Require(s.HostCalls == 1 && s.LegacyCalls == 1 && s.MainResult.VisibleReply == s.LegacyReply,
+                "Fallback reply and ownership metadata must describe exactly one request");
+            SceneGenerationOnly(s);
+        }, InvokeProductionMainHelper);
+        await Case("scene-main-result/epoch-stale-before-request", false, s => s.EpochStale = true, s =>
+        {
+            Require(s.MainResult?.Status == InteractionStatus.CancelledAsStale && s.MainResult.Commit == null,
+                "Scene epoch invalidation must be terminal without a commit");
+            Require(s.HostCalls == 0 && s.LegacyCalls == 0, "Old scene epoch must not send requests");
+        }, InvokeProductionMainHelper);
+        await Case("scene-main-result/epoch-stale-after-request", false,
+            s => s.AfterGeneration = () => s.EpochStale = true, s =>
+        {
+            Require(s.MainResult?.Status == InteractionStatus.CancelledAsStale && s.MainResult.Commit == null,
+                "Scene epoch invalidation while waiting must not publish a completed exchange");
+            NoSecondRequest(s);
+        }, InvokeProductionMainHelper);
+    }
+
+    private static async Task InvokeProductionHistoryHelper(ProductionBlockHost host)
+    {
+        var method = typeof(ProductionBlockHost).GetMethod("RecordSceneReplyHistoryOnMainThreadAsync",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        Require(method != null, "Production Scene history main-thread boundary is not implemented");
+        var speaker = new NpcDataPacket { Name = "speaker", AgentIndex = 1 };
+        var audience = new List<NpcDataPacket> { speaker,
+            new() { Name = "hero-observer", AgentIndex = 2 }, new() { Name = "party-observer", AgentIndex = 3 } };
+        foreach (var observer in audience)
+            Scenario.Current.ObserverHistory[observer.AgentIndex] = new() { "already-persisted-player-input" };
+        var task = (Task<bool>)method.Invoke(host, new object[] { speaker, audience, new Hero(), new CharacterObject(),
+            "cleaned-npc-reply", 1L, Scenario.Current.HistorySessionId, 1 });
+        Scenario.Current.HistoryResult = await task;
+    }
+
+    private static async Task HistoryAndTailCases()
+    {
+        await Case("scene-history/one-scene-and-one-audience-owner-call", false, s => { }, s =>
+        {
+            Require(s.HistoryResult && s.SceneHistoryCalls == 1 && s.ScenePersistenceCalls == 1,
+                "Real helper must invoke scene and persistent history owners exactly once");
+            Require(s.HistoryEvents.SequenceEqual(new[] { "scene:cleaned-npc-reply", "persistent:cleaned-npc-reply" }),
+                "Scene/shared-history then persistent-history order must be preserved");
+            Require(s.ObserverHistory.Count == 3 && s.ObserverHistory.Values.All(history => history.SequenceEqual(
+                new[] { "already-persisted-player-input", "cleaned-npc-reply" })),
+                "History owner must receive the entire audience with no second player append");
+        }, InvokeProductionHistoryHelper);
+        foreach (string reason in new[] { "generation", "epoch", "session", "target" })
+            await Case("scene-history/reject-" + reason, false, s =>
+            {
+                s.RuntimeStale = reason == "generation";
+                s.EpochStale = reason == "epoch";
+                s.TargetUnavailable = reason == "target";
+                s.HistorySessionId = reason == "session" ? 99 : 1;
+            }, s =>
+            {
+                Require(!s.HistoryResult && s.SceneHistoryCalls == 0 && s.ScenePersistenceCalls == 0,
+                    "Stale or unavailable target cannot append scene/persistent history");
+                Require(s.ObserverHistory.Values.All(history => history.Count == 1), "Rejected history must leave all listeners unchanged");
+            }, InvokeProductionHistoryHelper);
+
+        foreach (bool firstTurn in new[] { true, false })
+        foreach (string input in new[] { "relay", "battle", "end", "no-candidates", "no-turns", "action-only" })
+            await Case("scene-tail/" + input + "/firstTurn=" + firstTurn, false, s => { }, s =>
+            {
+                bool actionOnly = input == "action-only";
+                var result = ProductionBlockHost.TailDecisions(actionOnly ? "rewardPostprocessSelected" : "",
+                    firstTurn, input == "battle", input == "end", input == "no-turns" ? 0 : 1,
+                    input == "no-candidates" || actionOnly ? 0 : 2);
+                bool expectedRelay = input == "relay";
+                Require(result.Relay == expectedRelay && result.Queue == (expectedRelay || actionOnly),
+                    "Authoritative Scene tail must preserve battle/end/turn/candidate eligibility and action-only execution");
+                Require(result.Direct == firstTurn, "Relay rounds must preserve firstTurn=false, not force direct player response");
+            }, host => Task.CompletedTask);
+    }
+
+    private static async Task InvokeProductionSpeechQueueHelper(ProductionBlockHost host)
+    {
+        var method = typeof(ProductionBlockHost).GetMethod("QueueSceneMainReplyOnMainThreadAsync",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        Require(method != null, "Production Scene main speech queue boundary is not implemented");
+        var speaker = new NpcDataPacket { Name = "speaker", AgentIndex = 1 };
+        var audience = new List<NpcDataPacket> { speaker, new() { Name = "observer", AgentIndex = 2 } };
+        Scenario s = Scenario.Current;
+        string speechText = ProductionBlockHost.MainSpeechText(s.SpeechInput);
+        var task = (Task<bool>)method.Invoke(host, new object[] { speaker, audience, new Hero(), new CharacterObject(),
+            speechText, 1L, s.SpeechSessionId, 1, new List<SceneSummonPromptTarget>(), new List<SceneGuidePromptTarget>(),
+            s.SpeechPostprocess, 17f, 2, "original-player-input", s.SpeechDirectResponse });
+        s.SpeechQueueResult = await task;
+    }
+
+    private static async Task MainSpeechCases()
+    {
+        foreach (string tag in new[] {
+            "[ACTION:GIVE_GOLD:100]", "[ACTION:DUEL]", "[ACTION:LET_PLAYER_GO]", "[ACTION:ISSUE_ACCEPT_SELF]",
+            "[ACTION:GIVE_ASSET:带[铭文]:的剑:2]", "[ACTION:GIVE_ASSET:金币:ALL]",
+            "[AD:50:1:借款]", "[ADP:debt-id]", "[A:H_J_P_P_C]", "[GUI:7]", "[ASS:4]", "[FOL]",
+            "[ACTION:MOOD:HAPPY]", "[ACTION:VASSALAGE:accept]" })
+            await Case("scene-speech/strip-main-tag/" + tag, false, s => { }, s =>
+            {
+                string actual = ProductionBlockHost.MainSpeechText("可以。" + tag);
+                Require(actual == "可以。", "Executable main tag survived the actual tail sanitization: " + actual);
+                Require(ProductionBlockHost.MainSpeechText(tag) == string.Empty,
+                    "Tag-only main reply must not enqueue a hidden gameplay action");
+            }, host => Task.CompletedTask);
+        foreach (bool following in new[] { false, true })
+        foreach (bool summon in new[] { false, true })
+            await Case("scene-speech/only-validated-end-controls/following=" + following + "/summon=" + summon,
+                false, s => { }, s =>
+            {
+                string actual = ProductionBlockHost.MainSpeechText(
+                    "告辞。[ACTION:DUEL][RELAY:9][NO_CONTINUE][STP][END][ACTION:SCENE_STOP_FOLLOW]", following, summon);
+                string expected = "告辞。" + (following ? " [STP]" : "") + (summon ? " [END]" : "");
+                Require(actual == expected, "Raw tags must be removed before only validated Scene controls are restored");
+                Require(ProductionBlockHost.MainSpeechText("普通问候", following, summon) == "普通问候",
+                    "Being followed/summoned alone must not generate an END signal");
+            }, host => Task.CompletedTask);
+        foreach (bool direct in new[] { true, false })
+            await Case("scene-speech/main-thread-queue/direct=" + direct, false,
+                s => { s.SpeechDirectResponse = direct; s.SpeechInput = "安全回复[ACTION:GIVE_GOLD:100]"; }, s =>
+            {
+                Require(s.SpeechQueueResult && s.SpeechEnqueues == 1 && s.TargetChecks == 1,
+                    "One validated game-thread boundary must enqueue the main reply exactly once");
+                Require(s.EnqueuedSpeech == "安全回复" && s.EnqueuedAudienceCount == 2 && !s.EnqueuedCommitHistory,
+                    "Speech queue must receive safe text and full audience without a second history commit");
+                Require(s.EnqueuedAllowActions && s.EnqueuedEpoch == 1 && s.EnqueuedCanPublish != null,
+                    "Validated Scene control support and publication lifetime guard must be retained");
+                Require(s.EnqueuedTimeout == 17f && s.EnqueuedParticipants == 2 && !string.IsNullOrEmpty(s.EnqueuedInfo),
+                    "Existing interaction timeout, participants and pending-postprocess hint must be forwarded");
+                Require(s.EnqueuedPlayerText == (direct ? "original-player-input" : "")
+                    && s.EnqueuedReplyText == (direct ? "安全回复" : ""), "Relay rounds must not gain player-directed action context");
+            }, InvokeProductionSpeechQueueHelper);
+        await Case("scene-speech/no-postprocess-has-no-pending-hint", false,
+            s => s.SpeechPostprocess = false, s =>
+        {
+            Require(s.SpeechQueueResult && s.SpeechEnqueues == 1 && s.EnqueuedInfo == null,
+                "Main text without postprocess must not display a stuck pending-action hint");
+        }, InvokeProductionSpeechQueueHelper);
+        foreach (string reason in new[] { "generation", "epoch", "session", "target", "tag-only" })
+            await Case("scene-speech/reject-before-enqueue/" + reason, false, s =>
+            {
+                s.RuntimeStale = reason == "generation";
+                s.EpochStale = reason == "epoch";
+                s.SpeechSessionId = reason == "session" ? 99 : 1;
+                s.TargetUnavailable = reason == "target";
+                if (reason == "tag-only") s.SpeechInput = "[ACTION:DUEL]";
+            }, s => Require(!s.SpeechQueueResult && s.SpeechEnqueues == 0,
+                "Stale, unavailable or tag-only main text must not enter the speech worker"), InvokeProductionSpeechQueueHelper);
+        foreach (string reason in new[] { "generation", "epoch", "session", "target" })
+            await Case("scene-speech/revalidate-publication/" + reason, false, s => { }, s =>
+            {
+                Require(s.SpeechQueueResult && s.EnqueuedCanPublish != null, "Expected an actual captured production publication guard");
+                int capturedChecks = s.TargetChecks;
+                s.RuntimeStale = reason == "generation";
+                s.EpochStale = reason == "epoch";
+                s.TargetUnavailable = reason == "target";
+                if (reason == "session") ProductionBlockHost.SetSceneSessionForFixture(2);
+                bool backgroundCurrent = s.EnqueuedCanPublish();
+                Require(s.TargetChecks == capturedChecks, "Background publication check must not resolve game objects");
+                Require(backgroundCurrent == (reason == "target"), "Background must reject stale state but defer entity reads to game thread");
+                s.OnMainThread = true;
+                try { Require(!s.EnqueuedCanPublish(), "Delayed main-thread publication must reject stale/replaced/unavailable target"); }
+                finally { s.OnMainThread = false; }
+                Require(s.SpeechEnqueues == 1, "Rejected delayed publication must not re-enqueue or retry the reply");
+            }, InvokeProductionSpeechQueueHelper);
+    }
+
+    private static async Task SceneLifecycleCases()
+    {
+        foreach (string operation in new[] { "primary-release", "hold-participants", "battle-suppression", "idle-timeout", "failure-release" })
+        foreach (string state in new[] { "current", "generation", "session", "epoch" })
+            await Case("scene-lifecycle/" + operation + "/" + state, false, s =>
+            {
+                s.RuntimeStale = state == "generation";
+                s.EpochStale = state == "epoch";
+                if (state == "session") ProductionBlockHost.SetSceneSessionForFixture(2);
+            }, s =>
+            {
+                Require(s.LifecycleResult == (state == "current"), "Actual lifecycle delegate must reject stale request provenance");
+                string[] expected = state != "current" ? Array.Empty<string>()
+                    : operation == "hold-participants" ? new[] { "movement-suppression", "hold" }
+                    : operation == "battle-suppression" ? new[] { "battle-suppression" }
+                    : operation == "idle-timeout" ? new[] { "idle-timeout" } : new[] { "release" };
+                Require(s.LifecycleOwnerCalls.SequenceEqual(expected),
+                    "Old generation/session/epoch must not release, hold, suppress or re-arm a replacement scene participant");
+            }, host =>
+            {
+                Scenario.Current.LifecycleResult = host.ExecuteSceneLifecycleDelegate(operation);
+                return Task.CompletedTask;
+            });
     }
 }
