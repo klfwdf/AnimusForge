@@ -7327,9 +7327,12 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				_leaveSourceMissionRequested = false;
 				return;
 			}
-			bool timeExpired = current.CurrentTime >= _leaveSourceMissionReadyTime;
+			if (current.CurrentTime < _leaveSourceMissionReadyTime)
+			{
+				return;
+			}
 			bool conversationActive = current.Mode == MissionMode.Conversation || IsCampaignConversationActive();
-			if (timeExpired && conversationActive)
+			if (conversationActive)
 			{
 				try
 				{
@@ -7338,10 +7341,6 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
-				return;
-			}
-			if (conversationActive)
-			{
 				return;
 			}
 			string text = current.SceneName ?? string.Empty;

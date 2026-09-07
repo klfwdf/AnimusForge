@@ -2,8 +2,6 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.MountAndBlade;
-using AnimusForge.Refactor.Contracts;
-using AnimusForge.Refactor.Runtime;
 
 namespace AnimusForge;
 
@@ -14,10 +12,6 @@ public static class InteractionComponentSafePatch
 	public static void EnsurePatched()
 	{
 		if (_patched)
-		{
-			return;
-		}
-		if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.RuntimeGameAdapter))
 		{
 			return;
 		}

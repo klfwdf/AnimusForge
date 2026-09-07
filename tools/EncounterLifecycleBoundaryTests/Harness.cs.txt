@@ -1,0 +1,167 @@
+using System;
+using System.Reflection;
+
+internal static class Program
+{
+    private static int _assertions;
+    public static void Check(bool condition, string name)
+    {
+        if (!condition) throw new InvalidOperationException(name);
+        _assertions++;
+    }
+    public static void Main()
+    {
+        ReleaseAudit.Run();
+        DuelAudit.Run();
+        InteractionComponentSafePatch.Run();
+        Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
+    }
+}
+internal sealed class Hero { }
+internal sealed class PartyBase { public Hero LeaderHero = new Hero(); public bool IsNonHero; }
+internal sealed class PlayerEncounter { public static PlayerEncounter Current; }
+internal static class SaveRuntimeGuard
+{
+    public static long Generation = 1;
+    public static long CaptureGeneration() => Generation;
+    public static bool IsCurrentGeneration(long generation) => generation == Generation;
+}
+internal static class Time { public static float ApplicationTime; }
+internal enum MissionMode { Normal, Conversation }
+internal sealed class Mission
+{
+    public static Mission Current;
+    public float CurrentTime;
+    public MissionMode Mode;
+    public string SceneName = "town";
+    public int EndCount;
+    public void EndMission() { EndCount++; }
+}
+internal sealed class MissionState { }
+internal sealed class GameStateManager { public object ActiveState; }
+internal sealed class Game { public static Game Current = new Game(); public GameStateManager GameStateManager = new GameStateManager(); }
+internal sealed class ConversationManager
+{
+    public bool IsConversationInProgress;
+    public Action OnEnd;
+    public void EndConversation() { IsConversationInProgress = false; if (Mission.Current != null) Mission.Current.Mode = MissionMode.Normal; OnEnd?.Invoke(); }
+}
+internal sealed class Campaign { public static Campaign Current = new Campaign(); public ConversationManager ConversationManager = new ConversationManager(); }
+internal static class Logger { public static void Log(string category, string message) { } public static void LogTrace(string category, string message) { } }
+internal static class ReleaseAudit
+{
+    private static Hero _targetHero;
+    private static MeetingPlayerReleaseRequest _pendingNativeConversationMeetingRelease, _meetingPlayerReleaseAuthorization;
+    private const float NativeConversationReleaseDialogDelaySeconds = 10f;
+    private static PartyBase _party;
+    private static int _executions;
+    private static Hero _releasedTarget;
+    private static PartyBase TryGetMeetingReleaseEncounterParty() => _party;
+    private static bool IsMissionStateActiveForMeetingRelease() => Mission.Current != null;
+    private static bool IsNonHeroMeetingReleaseParty(PartyBase party) => party.IsNonHero;
+    private static bool TryEndCurrentMeetingMissionByReflection(string reason) { Mission.Current.EndMission(); return true; }
+    private static void SuppressCustomEncounterMenuUntilBackOnMap(string reason) { }
+    private static void ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason) { }
+    private static bool TryExecuteMeetingPlayerRelease(Hero target, PartyBase party, string reason)
+    {
+        Program.Check(ReferenceEquals(party, _party), "release receives captured party");
+        _executions++; _releasedTarget=target; return true;
+    }
+    @@RELEASE_METHODS@@
+    private static Mission Reset(bool mission=true)
+    {
+        PlayerEncounter.Current=new PlayerEncounter(); _party=new PartyBase(); _targetHero=new Hero();
+        Mission.Current=mission ? new Mission() : null;
+        Game.Current.GameStateManager.ActiveState=mission ? new MissionState() : null;
+        Time.ApplicationTime=0; SaveRuntimeGuard.Generation=1; _executions=0;
+        Campaign.Current.ConversationManager=new ConversationManager();
+        _pendingNativeConversationMeetingRelease=CaptureMeetingPlayerReleaseRequest(_targetHero, "test");
+        _meetingPlayerReleaseAuthorization=_pendingNativeConversationMeetingRelease;
+        return Mission.Current;
+    }
+    public static void Run()
+    {
+        var original=Reset(); Time.ApplicationTime=1; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(original.EndCount==0 && _executions==0, "release waits from application time zero");
+        Time.ApplicationTime=10; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(original.EndCount==1, "release exits captured mission at deadline");
+        Program.Check(ConsumeMeetingPlayerReleaseAuthorization("exit"), "manual or timed exit remains authorized");
+        Program.Check(!ConsumeMeetingPlayerReleaseAuthorization("duplicate"), "authorization consumed once");
+        foreach (string change in new[] { "encounter", "party", "mission", "generation", "missing", "expiry" })
+        {
+            original=Reset(); Time.ApplicationTime=11;
+            if(change=="encounter") PlayerEncounter.Current=new PlayerEncounter();
+            if(change=="party") _party=new PartyBase();
+            if(change=="mission") Mission.Current=new Mission();
+            if(change=="generation") SaveRuntimeGuard.Generation++;
+            if(change=="missing") PlayerEncounter.Current=null;
+            if(change=="expiry") Time.ApplicationTime=121;
+            var active=Mission.Current;
+            TryForcePendingNativeConversationMeetingReleaseIfReady();
+            Program.Check(_pendingNativeConversationMeetingRelease==null && _meetingPlayerReleaseAuthorization==null, change+" cancels owned authorization");
+            Program.Check(original.EndCount==0 && active.EndCount==0 && _executions==0, change+" performs no native exit or release");
+        }
+        Reset(); Time.ApplicationTime=121; Program.Check(!ConsumeMeetingPlayerReleaseAuthorization("expired_without_tick"), "expired authorization cannot be consumed before the next tick");
+        Reset(); _party=new PartyBase(); Program.Check(!ConsumeMeetingPlayerReleaseAuthorization("changed"), "authorization cannot cross encounter party");
+        original=Reset(); Mission.Current=null; Game.Current.GameStateManager.ActiveState=null; Time.ApplicationTime=1;
+        TryForcePendingNativeConversationMeetingReleaseIfReady(); TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_executions==1 && original.EndCount==0, "manual map exit finalizes once without closing any mission");
+        Reset(false); _party.IsNonHero=true; TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(_releasedTarget==null, "nonhero party cannot inherit a stale lord target");
+        Reset(); var pending=_pendingNativeConversationMeetingRelease; AuthorizeMeetingPlayerRelease("newer");
+        ClearPendingNativeConversationMeetingRelease("cancel_older");
+        Program.Check(_meetingPlayerReleaseAuthorization!=null && !ReferenceEquals(_meetingPlayerReleaseAuthorization,pending), "old cancellation preserves a distinct newer authorization");
+        original=Reset(); Time.ApplicationTime=11; Campaign.Current.ConversationManager.IsConversationInProgress=true;
+        Campaign.Current.ConversationManager.OnEnd=()=> { Mission.Current=new Mission(); };
+        TryForcePendingNativeConversationMeetingReleaseIfReady();
+        Program.Check(original.EndCount==0 && Mission.Current.EndCount==0 && _pendingNativeConversationMeetingRelease==null, "conversation callback cannot redirect mission exit");
+    }
+}
+internal sealed class DetachedDuelDispatchContext { }
+internal static class DuelAudit
+{
+    private static bool _leaveSourceMissionRequested, _queuedWildernessDuel, _queuedDuelWaitingForConversationExit;
+    private static float _leaveSourceMissionReadyTime;
+    private static DetachedDuelDispatchContext _queuedDuelDispatchContext;
+    private static object _queuedArenaDuelTarget, _queuedDuelTargetCharacter;
+    private static string _queuedDuelNonHeroMemoryId;
+    private static long _queuedDuelReadyUtcTicks;
+    private static int _queuedDuelConversationCloseAttempts;
+    private static bool IsDetachedDuelDispatchReadyForDelayedHost(DetachedDuelDispatchContext context) => true;
+    private static bool IsCampaignConversationActive() => Campaign.Current.ConversationManager.IsConversationInProgress;
+    private static void MarkDetachedDuelSideEffectBoundaryCrossed(DetachedDuelDispatchContext context) { }
+    private static void AbortDetachedDuelDispatch(DetachedDuelDispatchContext context, string reason) { }
+    @@DUEL_METHOD@@
+    public static void Run()
+    {
+        foreach(bool conversation in new[] { false, true })
+        {
+            Mission.Current=new Mission { CurrentTime=1, Mode=conversation ? MissionMode.Conversation : MissionMode.Normal };
+            Campaign.Current.ConversationManager=new ConversationManager { IsConversationInProgress=conversation };
+            _leaveSourceMissionRequested=true; _leaveSourceMissionReadyTime=10;
+            GlobalSourceMissionLeaveTick();
+            Program.Check(Mission.Current.EndCount==0 && _leaveSourceMissionRequested, "duel waits in both conversation and free scene");
+            Mission.Current.CurrentTime=10; GlobalSourceMissionLeaveTick();
+            if(conversation) { Program.Check(Mission.Current.EndCount==0, "duel closes dialog before mission exit"); GlobalSourceMissionLeaveTick(); }
+            Program.Check(Mission.Current.EndCount==1 && !_leaveSourceMissionRequested, "duel exits exactly at deadline");
+            GlobalSourceMissionLeaveTick(); Program.Check(Mission.Current.EndCount==1, "duel duplicate tick does not exit again");
+        }
+    }
+}
+internal static class AccessTools { public static Type TypeByName(string name) => typeof(InteractionComponentSafePatch); public static MethodInfo Method(Type type, string name) => type.GetMethod(name); }
+internal sealed class HarmonyMethod { public HarmonyMethod(MethodInfo method) { } }
+internal sealed class Harmony
+{
+    public static int Patches;
+    public Harmony(string id) { }
+    public void Patch(MethodInfo method, HarmonyMethod prefix, object postfix, object transpiler, HarmonyMethod finalizer) { Patches++; }
+}
+internal static class InteractionComponentSafePatch
+{
+    private static bool _patched;
+    @@FOCUS_METHOD@@
+    public static void FocusTick() { }
+    public static void Prefix() { }
+    public static void Finalizer() { }
+    public static void Run() { EnsurePatched(); EnsurePatched(); Program.Check(Harmony.Patches==1, "safety patch installs once without a feature bridge dependency"); }
+}
