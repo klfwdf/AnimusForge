@@ -7318,6 +7318,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		MeetingPlayerReleaseRequest request = _pendingNativeConversationMeetingRelease;
 		float applicationTime = Time.ApplicationTime;
 		bool missionActive = IsMissionStateActiveForMeetingRelease() || Game.Current?.GameStateManager?.ActiveState is MissionState;
+		// Mission teardown can clear Mission.Current before MissionState is popped.
+		// Retain the request until the map tick can finish the same encounter.
+		if (missionActive && Mission.Current == null)
+		{
+			return;
+		}
 		if (missionActive && applicationTime - request.RequestedAt < NativeConversationReleaseDialogDelaySeconds)
 		{
 			return;
