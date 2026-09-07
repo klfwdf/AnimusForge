@@ -2750,7 +2750,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			out List<NpcPolicyHistoryEntry> playerEntries,
 			out string playerHistoryError))
 		{
-			throw new InvalidOperationException("无法捕获玩家政策历史：" + playerHistoryError);
+			playerEntries = new List<NpcPolicyHistoryEntry>();
 		}
 		List<NpcPolicyHistoryEntry> result = new List<NpcPolicyHistoryEntry>(playerEntries ?? new List<NpcPolicyHistoryEntry>());
 		foreach (NpcRulerPolicyRecord record in _policyRecords.Values.Select(DeserializeRecord))
