@@ -17716,51 +17716,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Task.Run(async delegate
 		{
 			SynchronizationContext.SetSynchronizationContext(null);
-			if (FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway))
-			{
-				try
-				{
-					LegacyInteractionPipelinePorts ports = CreateNativeConversationDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
-					ILlmGateway gateway = new LegacyShoutNetworkGateway();
-					using (LegacyNativeConversationFacade facade = CreateNativeConversationRefactorFacadeForExternal(ports, gateway))
-					{
-						RuntimeConfigSnapshot configuration = CaptureNativeConversationRefactorConfigurationForExternal();
-						string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
-						string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
-						LegacyNativeConversationOptInResult optInResult = await currentInstance.SubmitNativeConversationRefactorOptInCoreAsync(
-							facade,
-							configuration,
-							moduleId,
-							providerId,
-							playerText,
-							() => currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady),
-							CancellationToken.None).ConfigureAwait(false);
-						if (optInResult != null)
-						{
-							if (optInResult.Status == InteractionStatus.CancelledAsStale)
-							{
-								return SaveRuntimeGuard.BuildStaleRequestErrorText();
-							}
-							if (optInResult.UsedLegacyFallback)
-							{
-								return optInResult.VisibleReply ?? "";
-							}
-							if (optInResult.Status == InteractionStatus.Succeeded || optInResult.Status == InteractionStatus.Executed)
-							{
-								if (onMainReplyReady != null && TryResolveNativeConversationTarget(out Hero readyHero, out CharacterObject readyChar, out _))
-								{
-									onMainReplyReady(optInResult.VisibleReply ?? "", readyHero, readyChar);
-								}
-								return optInResult.VisibleReply ?? "";
-							}
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("ShoutBehavior", "[NativeRefactor] default cutover fallback error=" + ex.Message);
-				}
-			}
 			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady).ConfigureAwait(false);
 		});
 	}
