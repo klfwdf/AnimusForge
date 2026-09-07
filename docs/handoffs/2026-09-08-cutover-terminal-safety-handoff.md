@@ -3,7 +3,7 @@
 ## 状态与授权
 
 - 唯一工作区：`G:\AFMOD\AF-REFACTOR`；本地分支 `codex/af-main-refactor-continuation-20260831`。
-- 已fetch并快进至共享 `origin/refactor/prepare-af-restructure` 的 `aefa02ad15758222b87e4e240a85c52eb3f913d9`，再作计划意图提交 `bdeeadd8`。本文随生产修复同次提交；精确实现SHA可用 `git log -1 -- docs/handoffs/2026-09-08-cutover-terminal-safety-handoff.md` 查询。
+- 已fetch并快进至共享 `origin/refactor/prepare-af-restructure` 的 `aefa02ad15758222b87e4e240a85c52eb3f913d9`，再作计划意图提交 `bdeeadd8`。生产修复提交 `7ab55a36`；后续文档格式修正不改变上述已验证生产代码。
 - 用户批准自动化开改，复用 `af-7-8` 每30分钟继续本任务；旧 `af` 保持PAUSED。剩余可授权项目内工作完成或只剩外部决策时自动暂停，不重复刷同一状态。
 - 本轮为P0-CUTOVER离线VERIFY，不是阶段八全部DONE。Native仍走修复后的完整旧入口。没有推送、部署、游戏/存档操作、默认开关变更或GCCZ跨工作区写入。
 - 两份旧本地占位草稿（2026-09-06-integrated-phase8-handoff、2026-09-06-team-brief）不覆盖、不暂存；工作树因此不应声称完全干净。
