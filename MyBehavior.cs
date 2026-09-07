@@ -22254,6 +22254,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static int GetCurrentHourOfDaySafeForPrompt()
 	{
+		if (Campaign.Current == null || !Campaign.Current.GameStarted)
+		{
+			return 0;
+		}
 		try
 		{
 			int getHourOfDay = CampaignTime.Now.GetHourOfDay;

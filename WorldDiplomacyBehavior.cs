@@ -17648,6 +17648,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static int CurrentDay()
 	{
+		if (Campaign.Current == null || !Campaign.Current.GameStarted)
+		{
+			return 0;
+		}
 		try
 		{
 			return Math.Max(0, (int)CampaignTime.Now.ToDays);
@@ -17660,6 +17664,10 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private static int CurrentHour()
 	{
+		if (Campaign.Current == null || !Campaign.Current.GameStarted)
+		{
+			return 0;
+		}
 		try
 		{
 			return Math.Max(0, (int)CampaignTime.Now.ToHours);
