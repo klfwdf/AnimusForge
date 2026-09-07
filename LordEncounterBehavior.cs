@@ -73,7 +73,30 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _cameraLockWasActive;
 
-	private static bool _meetingPlayerReleaseAuthorized;
+	private static MeetingPlayerReleaseRequest _meetingPlayerReleaseAuthorization;
+
+	private sealed class MeetingPlayerReleaseRequest
+	{
+		public PlayerEncounter Encounter { get; }
+		public PartyBase Party { get; }
+		public Mission SourceMission { get; }
+		public long RuntimeGeneration { get; }
+		public Hero Target { get; }
+		public string Reason { get; }
+		public float RequestedAt { get; }
+		public float LastAttemptAt { get; set; } = -1f;
+
+		public MeetingPlayerReleaseRequest(PlayerEncounter encounter, PartyBase party, Mission sourceMission, long runtimeGeneration, Hero target, string reason, float requestedAt)
+		{
+			Encounter = encounter;
+			Party = party;
+			SourceMission = sourceMission;
+			RuntimeGeneration = runtimeGeneration;
+			Target = target;
+			Reason = reason;
+			RequestedAt = requestedAt;
+		}
+	}
 
 	// The custom meeting mission performs an additional encounter cleanup after
 	// OnMissionEnded. Keep the release target until that cleanup has finished so
@@ -200,17 +223,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static string _pendingNativeConversationNpcSurrenderReason;
 
-	private static bool _pendingNativeConversationMeetingRelease;
-
-	private static float _pendingNativeConversationMeetingReleaseAtTime;
-
-	private static float _pendingNativeConversationMeetingReleaseLastAttemptTime = -1f;
-
-	private static Hero _pendingNativeConversationMeetingReleaseHero;
-
-	private static PartyBase _pendingNativeConversationMeetingReleaseParty;
-
-	private static string _pendingNativeConversationMeetingReleaseReason;
+	private static MeetingPlayerReleaseRequest _pendingNativeConversationMeetingRelease;
 
 	private static bool _npcSurrenderSkipHeroCaptureConversations;
 
@@ -269,23 +282,45 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		_encounterMeetingMissionActive = active;
 	}
 
+	private static MeetingPlayerReleaseRequest CaptureMeetingPlayerReleaseRequest(Hero target, string reason)
+	{
+		PlayerEncounter encounter = PlayerEncounter.Current;
+		PartyBase party = TryGetMeetingReleaseEncounterParty();
+		if (encounter == null || party == null)
+		{
+			return null;
+		}
+		return new MeetingPlayerReleaseRequest(encounter, party, Mission.Current,
+			SaveRuntimeGuard.CaptureGeneration(), target, reason, Time.ApplicationTime);
+	}
+
+	private static bool IsMeetingPlayerReleaseRequestCurrent(MeetingPlayerReleaseRequest request)
+	{
+		return request != null
+			&& SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration)
+			&& ReferenceEquals(request.Encounter, PlayerEncounter.Current)
+			&& ReferenceEquals(request.Party, TryGetMeetingReleaseEncounterParty())
+			&& (Mission.Current == null || ReferenceEquals(request.SourceMission, Mission.Current));
+	}
+
 	private static void AuthorizeMeetingPlayerRelease(string reason)
 	{
-		_meetingPlayerReleaseAuthorized = true;
-		Logger.Log("MeetingRelease", "Meeting player release authorized. Reason=" + (reason ?? "N/A"));
+		_meetingPlayerReleaseAuthorization = CaptureMeetingPlayerReleaseRequest(_targetHero, reason);
+		Logger.Log("MeetingRelease", "Meeting player release authorized=" + (_meetingPlayerReleaseAuthorization != null) + ". Reason=" + (reason ?? "N/A"));
 	}
 
 	private static bool ConsumeMeetingPlayerReleaseAuthorization(string reason)
 	{
-		bool meetingPlayerReleaseAuthorized = _meetingPlayerReleaseAuthorized;
-		_meetingPlayerReleaseAuthorized = false;
+		bool meetingPlayerReleaseAuthorized = IsMeetingPlayerReleaseRequestCurrent(_meetingPlayerReleaseAuthorization)
+			&& Time.ApplicationTime - _meetingPlayerReleaseAuthorization.RequestedAt <= 120f;
+		_meetingPlayerReleaseAuthorization = null;
 		Logger.Log("MeetingRelease", $"Meeting player release authorization consumed={meetingPlayerReleaseAuthorized}. Reason={reason ?? "N/A"}");
 		return meetingPlayerReleaseAuthorized;
 	}
 
 	private static void ClearMeetingPlayerReleaseAuthorization(string reason)
 	{
-		_meetingPlayerReleaseAuthorized = false;
+		_meetingPlayerReleaseAuthorization = null;
 		Logger.Log("MeetingRelease", "Meeting player release authorization cleared. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -3534,7 +3569,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingTaunt", "Engine tick pending native encounter attack failed: " + ex.Message);
 			}
 		}
-		if (_pendingNativeConversationMeetingRelease)
+		if (_pendingNativeConversationMeetingRelease != null)
 		{
 			try
 			{
@@ -5396,7 +5431,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			TryForcePendingNativeEncounterAttackIfReady();
 		}
-		if (_pendingNativeConversationMeetingRelease)
+		if (_pendingNativeConversationMeetingRelease != null)
 		{
 			TryForcePendingNativeConversationMeetingReleaseIfReady();
 		}
@@ -6871,7 +6906,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			meetingActive = false;
 		}
-		if (meetingActive || _encounterMeetingMissionActive || _pendingNativeConversationMeetingRelease)
+		if (meetingActive || _encounterMeetingMissionActive || _pendingNativeConversationMeetingRelease != null)
 		{
 			return true;
 		}
@@ -7215,34 +7250,26 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingRelease", "Native conversation release schedule ignored because current encounter is not eligible.");
 				return false;
 			}
-			_pendingNativeConversationMeetingRelease = true;
-			try
+			MeetingPlayerReleaseRequest request = CaptureMeetingPlayerReleaseRequest(resolvedTarget ?? target, reason ?? "native_conversation_release_tag");
+			if (request == null)
 			{
-				_pendingNativeConversationMeetingReleaseAtTime = Time.ApplicationTime;
+				return false;
 			}
-			catch
-			{
-				_pendingNativeConversationMeetingReleaseAtTime = 0f;
-			}
-			_pendingNativeConversationMeetingReleaseLastAttemptTime = -1f;
-			_pendingNativeConversationMeetingReleaseParty = TryGetMeetingReleaseEncounterParty();
-			bool isNonHeroEncounterParty = IsNonHeroMeetingReleaseParty(_pendingNativeConversationMeetingReleaseParty);
-			_pendingNativeConversationMeetingReleaseHero = isNonHeroEncounterParty ? null : (resolvedTarget ?? target);
-			_pendingNativeConversationMeetingReleaseReason = reason ?? "native_conversation_release_tag";
-			AuthorizeMeetingPlayerRelease(reason ?? "native_conversation_release_scheduled");
+			_pendingNativeConversationMeetingRelease = request;
+			_meetingPlayerReleaseAuthorization = request;
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_conversation_release_scheduled");
 			DisableCustomEncounterMenuForCurrentEncounter("native_conversation_release_scheduled");
 			try
 			{
 				string message = "对方同意放你离开，10秒后将自动结束当前对话并回到大地图。";
 				InformationManager.DisplayMessage(new InformationMessage(message, new Color(0.4f, 1f, 0.4f)));
-				AnimusForgeQuickInfo.Show(message, _pendingNativeConversationMeetingReleaseHero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(message, request.Target?.CharacterObject);
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("MeetingRelease", "Show pending native conversation release prompt failed: " + ex.Message);
 			}
-			Logger.Log("MeetingRelease", "Scheduled native conversation release after delay. Target=" + (_pendingNativeConversationMeetingReleaseHero?.StringId ?? "null") + ", Party=" + GetPartyLogName(_pendingNativeConversationMeetingReleaseParty) + ", Delay=" + NativeConversationReleaseDialogDelaySeconds.ToString("F1") + ", Reason=" + (reason ?? "N/A"));
+			Logger.Log("MeetingRelease", "Scheduled native conversation release after delay. Target=" + (request.Target?.StringId ?? "null") + ", Party=" + GetPartyLogName(request.Party) + ", Delay=" + NativeConversationReleaseDialogDelaySeconds.ToString("F1") + ", Reason=" + (reason ?? "N/A"));
 			return true;
 		}
 		catch (Exception ex2)
@@ -7254,22 +7281,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool HasPendingNativeConversationMeetingRelease()
 	{
-		if (!_pendingNativeConversationMeetingRelease)
+		MeetingPlayerReleaseRequest request = _pendingNativeConversationMeetingRelease;
+		if (request == null)
 		{
 			return false;
 		}
-		float elapsed = 0f;
-		try
+		if (!IsMeetingPlayerReleaseRequestCurrent(request))
 		{
-			if (_pendingNativeConversationMeetingReleaseAtTime > 0f)
-			{
-				elapsed = Time.ApplicationTime - _pendingNativeConversationMeetingReleaseAtTime;
-			}
+			ClearPendingNativeConversationMeetingRelease("context_changed");
+			return false;
 		}
-		catch
-		{
-		}
-		if (elapsed > 120f)
+		if (Time.ApplicationTime - request.RequestedAt > 120f)
 		{
 			ClearPendingNativeConversationMeetingRelease("expired");
 			return false;
@@ -7279,12 +7301,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void ClearPendingNativeConversationMeetingRelease(string reason)
 	{
-		_pendingNativeConversationMeetingRelease = false;
-		_pendingNativeConversationMeetingReleaseAtTime = 0f;
-		_pendingNativeConversationMeetingReleaseLastAttemptTime = -1f;
-		_pendingNativeConversationMeetingReleaseHero = null;
-		_pendingNativeConversationMeetingReleaseParty = null;
-		_pendingNativeConversationMeetingReleaseReason = null;
+		if (ReferenceEquals(_meetingPlayerReleaseAuthorization, _pendingNativeConversationMeetingRelease))
+		{
+			ClearMeetingPlayerReleaseAuthorization(reason);
+		}
+		_pendingNativeConversationMeetingRelease = null;
 		Logger.Log("MeetingRelease", "Cleared pending native conversation release. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -7294,98 +7315,57 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		float applicationTime = 0f;
-		bool missionActive = IsMissionStateActiveForMeetingRelease();
-		try
+		MeetingPlayerReleaseRequest request = _pendingNativeConversationMeetingRelease;
+		float applicationTime = Time.ApplicationTime;
+		bool missionActive = IsMissionStateActiveForMeetingRelease() || Game.Current?.GameStateManager?.ActiveState is MissionState;
+		if (missionActive && applicationTime - request.RequestedAt < NativeConversationReleaseDialogDelaySeconds)
 		{
-			applicationTime = Time.ApplicationTime;
-			if (missionActive && _pendingNativeConversationMeetingReleaseAtTime > 0f && applicationTime - _pendingNativeConversationMeetingReleaseAtTime < NativeConversationReleaseDialogDelaySeconds)
-			{
-				return;
-			}
-			if (_pendingNativeConversationMeetingReleaseLastAttemptTime > 0f && applicationTime - _pendingNativeConversationMeetingReleaseLastAttemptTime < 0.25f)
-			{
-				return;
-			}
-			_pendingNativeConversationMeetingReleaseLastAttemptTime = applicationTime;
-		}
-		catch
-		{
-			_pendingNativeConversationMeetingReleaseLastAttemptTime = 0f;
-		}
-		try
-		{
-			if (missionActive || Game.Current?.GameStateManager?.ActiveState is MissionState)
-			{
-				try
-				{
-					if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
-					{
-						Campaign.Current.ConversationManager.EndConversation();
-					}
-				}
-				catch
-				{
-				}
-				if (!TryEndCurrentMeetingMissionByReflection("native_conversation_release_delay_expired"))
-				{
-					try
-					{
-						Mission.Current?.EndMission();
-					}
-					catch
-					{
-					}
-				}
-				return;
-			}
-		}
-		catch
-		{
-		}
-		PartyBase currentParty = TryGetMeetingReleaseEncounterParty();
-		if (_pendingNativeConversationMeetingReleaseParty != null && currentParty != _pendingNativeConversationMeetingReleaseParty)
-		{
-			Logger.Log("MeetingRelease", "Pending native conversation release cancelled because encounter party changed. Pending=" + GetPartyLogName(_pendingNativeConversationMeetingReleaseParty) + ", Current=" + GetPartyLogName(currentParty));
-			ClearPendingNativeConversationMeetingRelease("encounter_party_changed");
 			return;
 		}
-		if (PlayerEncounter.Current == null)
+		if (request.LastAttemptAt >= 0f && applicationTime - request.LastAttemptAt < 0.25f)
 		{
-			ClearPendingNativeConversationMeetingRelease("player_encounter_missing");
 			return;
 		}
-		string reason = _pendingNativeConversationMeetingReleaseReason ?? "native_conversation_release_tag";
-		Hero target = _pendingNativeConversationMeetingReleaseHero;
-		if (target == null)
+		request.LastAttemptAt = applicationTime;
+		if (missionActive)
 		{
+			// Never close a newly opened Mission for an older release request.
+			if (request.SourceMission == null || !ReferenceEquals(request.SourceMission, Mission.Current))
+			{
+				ClearPendingNativeConversationMeetingRelease("source_mission_missing");
+				return;
+			}
 			try
 			{
-				target = _pendingNativeConversationMeetingReleaseParty?.LeaderHero;
+				if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+				{
+					Campaign.Current.ConversationManager.EndConversation();
+				}
+				// Conversation callbacks can synchronously replace the encounter or Mission.
+				if (!HasPendingNativeConversationMeetingRelease()
+					|| !ReferenceEquals(request, _pendingNativeConversationMeetingRelease)
+					|| !ReferenceEquals(request.SourceMission, Mission.Current))
+				{
+					return;
+				}
+				if (!TryEndCurrentMeetingMissionByReflection("native_conversation_release_delay_expired")
+					&& IsMeetingPlayerReleaseRequestCurrent(request)
+					&& ReferenceEquals(request.SourceMission, Mission.Current))
+				{
+					request.SourceMission.EndMission();
+				}
 			}
-			catch
+			catch (Exception ex)
 			{
+				Logger.Log("MeetingRelease", "Pending release mission exit failed: " + ex.GetType().Name);
 			}
-			if (target == null && _pendingNativeConversationMeetingReleaseParty == null)
-			{
-				target = _targetHero;
-			}
+			return;
 		}
-		try
-		{
-			SuppressCustomEncounterMenuUntilBackOnMap("native_conversation_release");
-		}
-		catch
-		{
-		}
-		try
-		{
-			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_conversation_release");
-		}
-		catch
-		{
-		}
-		if (TryExecuteMeetingPlayerRelease(target, reason))
+		string reason = request.Reason;
+		Hero target = IsNonHeroMeetingReleaseParty(request.Party) ? null : (request.Target ?? request.Party.LeaderHero);
+		SuppressCustomEncounterMenuUntilBackOnMap("native_conversation_release");
+		ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_conversation_release");
+		if (TryExecuteMeetingPlayerRelease(target, request.Party, reason))
 		{
 			ClearPendingNativeConversationMeetingRelease("executed");
 		}
@@ -8483,6 +8463,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				return;
 			}
 			SetTarget(target);
+			ClearPendingNativeConversationMeetingRelease("start_meeting");
 			ClearMeetingPlayerReleaseAuthorization("start_meeting");
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("start_meeting");
 			_meetingStartedForProactiveRequest = false;
