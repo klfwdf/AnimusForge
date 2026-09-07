@@ -4540,8 +4540,11 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			CourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_reply_preflight");
-			if (IsCourierBridgeEnabled())
+			// Preflight replies must retain their deferred, arrival-time action commit.
+			if (IsCourierBridgeEnabled() && session.DeliveryApplied)
 			{
+				bool detachedSubmitted = false;
+				bool legacyFallbackStarted = false;
 				try
 				{
 					LegacyInteractionPipelinePorts ports = CreateCourierDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
@@ -4553,6 +4556,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 							RuntimeConfigSnapshot configuration = CaptureCourierReplyRefactorConfigurationForExternal();
 							string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
 							string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
+							detachedSubmitted = true;
 							DetachedInteractionHostResult hostResult = await SubmitCourierReplyRefactorOptInForExternalAsync(
 								facade,
 								configuration,
@@ -4562,35 +4566,48 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 								session.LetterText ?? "",
 								async () =>
 								{
+									legacyFallbackStarted = true;
 									await GenerateNpcReplyAsync(request).ConfigureAwait(false);
 									return session.ReplyText ?? "";
 								},
 								CancellationToken.None).ConfigureAwait(false);
-							if (hostResult != null)
+							if (hostResult?.Status == InteractionStatus.CancelledAsStale)
 							{
-								if (hostResult.Status == InteractionStatus.CancelledAsStale)
-								{
-									return;
-								}
-								if (!hostResult.UsedLegacyFallback && (hostResult.Status == InteractionStatus.Executed || hostResult.Status == InteractionStatus.Succeeded))
-								{
-									EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
-									{
-										FinalizeCourierReplyGenerationOnMainThread(request, hostResult.VisibleReply, session.ReplyPostprocessedText, " [detached_refactor]");
-									}, "reply_detached_finalized");
-									return;
-								}
-								if (hostResult.UsedLegacyFallback)
-								{
-									return;
-								}
+								return;
 							}
+							// The legacy callback may have only queued its main-thread completion so far.
+							if (legacyFallbackStarted || hostResult?.UsedLegacyFallback == true)
+							{
+								return;
+							}
+							if (hostResult != null && (hostResult.Status == InteractionStatus.Executed || hostResult.Status == InteractionStatus.Succeeded))
+							{
+								EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
+								{
+									FinalizeCourierReplyGenerationOnMainThread(request, hostResult.VisibleReply, session.ReplyPostprocessedText, " [detached_refactor]");
+								}, "reply_detached_finalized");
+								return;
+							}
+							EnqueueMainThreadActionForGeneration(runtimeGeneration,
+								() => FailDetachedCourierReplyOnMainThread(sessionId, runtimeGeneration, hostResult?.ErrorCode ?? "missing_host_result"),
+								"reply_detached_stopped");
+							return;
 						}
 					}
 				}
 				catch (Exception ex)
 				{
-					Log("detached courier reply cutover fallback error=" + ex.Message);
+					Log("detached courier reply cutover error=" + ex.Message);
+					if (detachedSubmitted)
+					{
+						if (!legacyFallbackStarted)
+						{
+							EnqueueMainThreadActionForGeneration(runtimeGeneration,
+								() => FailDetachedCourierReplyOnMainThread(sessionId, runtimeGeneration, "host_exception_" + ex.GetType().Name),
+								"reply_detached_exception");
+						}
+						return;
+					}
 				}
 			}
 			await GenerateNpcReplyAsync(request).ConfigureAwait(false);
@@ -4914,6 +4931,27 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			Log("show courier reply retry prompt failed session=" + request?.SessionId + " error=" + ex.Message);
 			return false;
 		}
+	}
+
+	private void FailDetachedCourierReplyOnMainThread(string sessionId, long runtimeGeneration, string errorCode)
+	{
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_detached_reply_stop"))
+		{
+			return;
+		}
+		CourierSession session = GetSessionById(sessionId);
+		if (session == null || IsTerminalStage(session) || session.ReplyGenerated)
+		{
+			return;
+		}
+		// Failure advances the existing session state machine. Seal unconfirmed tags
+		// first so neither arrival nor return can retry a partial/unknown action.
+		session.PostprocessConsumed = true;
+		session.ReplyText = string.Empty;
+		session.ReplyPostprocessedText = string.Empty;
+		Log("detached courier reply stopped session=" + sessionId + " error=" + (errorCode ?? ""));
+		FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_detached_stopped");
+		NonBlockingErrorReport.Show("信使回信已停止", "本次回信未能安全完成，系统不会自动重试可能已生效的动作。请查看日志并核对实际结果。");
 	}
 
 	private void FailCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, string reason)
