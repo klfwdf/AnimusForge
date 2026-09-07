@@ -17060,12 +17060,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		IEnumerable<string> allowedTagFamilies,
 		int maxActions = 64)
 	{
+		return CreateSceneShoutDetachedPorts(allowedTagFamilies, null, maxActions);
+	}
+
+	private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPorts(
+		IEnumerable<string> allowedTagFamilies,
+		PromptPackage preparedMainPrompt,
+		int maxActions = 64)
+	{
 		List<string> tagFamilies = (allowedTagFamilies ?? Enumerable.Empty<string>())
 			.Where(value => !string.IsNullOrWhiteSpace(value))
 			.Select(value => value.Trim())
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToList();
-		LegacyDetachedPromptComposer mainComposer = new LegacyDetachedPromptComposer(model: "legacy-scene-shout");
+		LegacyDetachedPromptComposer mainComposer = preparedMainPrompt == null
+			? new LegacyDetachedPromptComposer(model: "legacy-scene-shout")
+			: null;
 		LegacyDetachedPostprocessPromptComposer postprocessComposer = new LegacyDetachedPostprocessPromptComposer(model: "legacy-scene-shout-postprocess");
 		LegacyActionTagParser actionParser = new LegacyActionTagParser(maxActions);
 		CapabilitySet capabilities = new CapabilitySet(new[]
@@ -17077,7 +17087,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 		return new LegacyInteractionPipelinePorts(
 			snapshot => new RuleSelection(new[] { "scene_shout" }, Array.Empty<string>()),
-			(envelope, selection, availableCapabilities) => mainComposer.Compose(envelope, selection, availableCapabilities),
+			// A prepared package already contains scoped role history and current facts.
+			// Do not append snapshot history or player input to that authoritative request.
+			(envelope, selection, availableCapabilities) => preparedMainPrompt ?? mainComposer.Compose(envelope, selection, availableCapabilities),
 			(snapshot, selection, availableCapabilities) => new PostprocessContext(selection?.RuleIds, tagFamilies, availableCapabilities),
 			(rawText, context) => actionParser.Parse(rawText, context),
 			(rawText, internalTagFamilies) => LlmVisibleReplyNormalizer.NormalizeComplete(rawText),
@@ -28442,7 +28454,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								null).ConfigureAwait(false);
 							if (envelope != null)
 							{
-								LegacyInteractionPipelinePorts ports = CreateSceneShoutDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+								// Freeze the full request already built for this speaker, not the recaptured main sections.
+								// In particular, current AFEF facts have already been consumed into messages.
+								PromptPackage preparedMainPrompt = LegacyConfiguredChatGateway.BuildPromptPackage(messages, 5000, "legacy-scene-shout");
+								LegacyInteractionPipelinePorts ports = CreateSceneShoutDetachedPorts(LegacyActionTagCatalog.DefaultAllowedTagFamilies, preparedMainPrompt);
 								ILlmGateway gateway = new LegacyShoutNetworkGateway();
 								using (LegacyChannelInteractionFacade facade = LegacyInteractionSnapshotAdapters.CreateSceneShoutInteractionFacade(
 									ports,

@@ -19,13 +19,22 @@
 - 独立源码审查无本轮阻断；日志 `.tmp/cutover-20260908/`、`.tmp/channel-cutover-boundary/`。完整命令/哈希/未验证项见 `docs/handoffs/2026-09-08-cutover-terminal-safety-handoff.md`。
 - 下一精确任务 `P0-SCENE-PARITY` TODO：从完整Scene现有前处理/消息/动态PostprocessRules到detached重新捕获链做差异回放，优先复用完整上下文，不重复计算或偷偷切Native默认。自动化保持ACTIVE；没有推送或部署。
 
-### P0-SCENE-MAIN-PARITY-20260908 ACTIVE
+### P0-SCENE-MAIN-PARITY-20260908 VERIFY（主请求交付离线通过）
 
 - 基线 `92ad625a`；fetch后远端仍为aefa02ad，本地ahead3，无远端新提交。两份旧草稿不变。
 - 初查确认默认Scene先调用BuildStrictSceneMessagesForNpc消费当前AFEF并构造完整role消息，detached随后重新捕获，主请求不再使用该完整messages；信任、当前事实、场景标签及历史顺序会丢失。后处理另有真实PostprocessRules/资格/归一化/relay时机缺口，不能混称本轮全部等价。
 - 本轮意图仅闭环主请求保真：冻结已准备的messages并沿现有Scene端口交给Gateway；保留public工厂ABI与无prepared的opt-in行为，不复制另一套Prompt逻辑，不改Postprocess/Action/Memory/default/存档或GCCZ。后处理所需旧捕获暂留，不宣称已消除重复前处理。
 - owner为Conversation.Scene/Prompt adapter。拟修改ShoutBehavior.cs及定向source-linked/外层回归与文档；验证同一角色/顺序/文本/事实/当前输入/5000token完整进入main请求、不可变性、无跨请求重用及非Scene路径不变；原44外层故障回归、相关Host契约与官方六项构建。
 - 先做新旧实际factory/callsite反例，再修复并清理不再使用的默认主消息重组选择。本轮实机NOT_RUN，不推送/部署/切Native默认。
+
+### Scene 主请求保真结果与下一项
+
+- 意图提交 `8c30424e`；生产仅ShoutBehavior 21行差异：默认每轮将已经完整准备的messages冻结为PromptPackage传入同一Scene ports。原public二参数factory保留，委托private factory；无prepared时保持旧组合行为。main不再丢弃原AFEF/信任/role消息，也不再额外拼接snapshot输入。
+- 实际CreateChatMessage是匿名{role,content}，LegacyPromptPackageAdapter只支持字典，不能拿它转换该真实请求；本轮复用已有LegacyConfiguredChatGateway.BuildPromptPackage，不新增反射/消息序列化实现、不改全局CreateChatMessage。
+- 扩展原外层harness实际执行production factory/callsite/匿名converter：基线92ad625a 46 PASS/6 FAIL（原44全通过），修后52 PASS/0 FAIL；抽取7 tests通过。六项官方Debug/Release双API/Bootstrap各0warning/0error；Interaction与Configured/Detached/OptIn生产回放、142键/168绑定、Bridge16/13/3通过。NU1900仍为本机NuGet元数据网络警告，不隐藏。
+- 验证仅证明已准备main消息交付保真；未执行BuildStrict场景构造、真实API或LIVE/SAVE。postprocess保持原delegate，复capture/正文规则冒充tag_rules/逐领域归一化/relay/firstTurn及NPC回复参数缺口仍在，不能标Scene全部等价或删旧。
+- 下一精确任务 `P0-SCENE-POST-PREP` TODO：在原Queue调用时机下把TryRunSceneUnifiedActionPostprocess原实现分离成prepare/network/normalize，先保持旧入口可重放；禁止直接复用缺少Scene relay/summon/guide的Courier builder或提前以空回复生成post prompt。详见新HANDOFF。Native诊断CompareMainMessages对匿名消息的遗漏纳入P1，不依赖字典fixture的PASS直接迁移。
+- 日志 `.tmp/scene-main-20260908/` 与 `.tmp/channel-cutover-boundary/prompt-*`，独立审查无本轮新增阻断。完整证据见 `docs/handoffs/2026-09-08-scene-main-prompt-fidelity-handoff.md`。自动化继续；未推送、未部署、未操作存档。
 
 ## GitHub 融合交接推送（2026-09-06）
 

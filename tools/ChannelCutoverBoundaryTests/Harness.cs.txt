@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 // Dependencies are simulated; cutover blocks, status/result contracts, and
 // courier completion/failure methods are inserted verbatim from production.
@@ -10,8 +13,16 @@ using System.Threading.Tasks;
 @@RESULT_TYPE@@
 public sealed class InteractionResult { }
 public sealed class InteractionCommitResult { }
-public sealed class InteractionEnvelope { }
-public sealed class LegacyInteractionPipelinePorts { }
+@@PROMPT_CONTRACTS@@
+@@POSTPROCESS_INTERFACE@@
+@@PORTS_TYPE@@
+@@MAIN_COMPOSER@@
+@@POSTPROCESS_COMPOSER@@
+@@ACTION_PARSER@@
+public static class LegacyConfiguredChatGateway
+{
+    @@BUILD_PROMPT@@
+}
 public interface ILlmGateway { }
 public sealed class RuntimeConfigSnapshot
 {
@@ -19,6 +30,8 @@ public sealed class RuntimeConfigSnapshot
 }
 public sealed class LegacyChannelInteractionFacade : IDisposable
 {
+    public LegacyInteractionPipelinePorts Ports;
+    public Func<string, InteractionEnvelope> Capture;
     public void Dispose()
     {
         if (Scenario.Current.DisposeThrows) throw new InvalidOperationException("dispose-failed");
@@ -39,7 +52,12 @@ public static class LegacyInteractionSnapshotAdapters
     public const string NativeConversationModuleId = "native";
     public const string LegacyShoutNetworkProviderId = "fixture";
     public static LegacyChannelInteractionFacade CreateSceneShoutInteractionFacade(
-        LegacyInteractionPipelinePorts ports, ILlmGateway gateway, Func<string, InteractionEnvelope> capture) => new();
+        LegacyInteractionPipelinePorts ports, ILlmGateway gateway, Func<string, InteractionEnvelope> capture)
+    {
+        if (Scenario.Current.PrepareThrows) throw new InvalidOperationException("prepare-failed-before-submit");
+        Scenario.Current.AfterPortsPrepared?.Invoke();
+        return new() { Ports = ports, Capture = capture };
+    }
 }
 public sealed class LegacyShoutNetworkGateway : ILlmGateway
 {
@@ -75,6 +93,13 @@ public sealed class Scenario
     public int LegacyCalls, HostCalls, FinalizeCalls, FailureCalls, UnconsumedFailureCalls, LegacyCompletionCalls, Notifications;
     public bool SceneCleanup, ScenePostBlock, SceneCommitted;
     public string SceneReply;
+    public string Subject = "npc-alpha";
+    public int AgentIndex = 1;
+    public List<object> PreparedMessages;
+    public PromptPackage CapturedPrompt, CapturedPostprocess;
+    public LegacyInteractionPipelinePorts CapturedPorts;
+    public InteractionEnvelope CapturedEnvelope;
+    public Action AfterPortsPrepared;
     public readonly CourierSession Session = new();
     public readonly Queue<Action> MainThreadActions = new();
 
@@ -137,9 +162,12 @@ public sealed class ProductionBlockHost
     private static LegacyInteractionPipelinePorts PreparePorts()
     {
         if (Scenario.Current.PrepareThrows) throw new InvalidOperationException("prepare-failed-before-submit");
-        return new();
+        return CreateSceneShoutDetachedPortsForExternal(Array.Empty<string>());
     }
-    private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal(string[] tags) => PreparePorts();
+    @@PUBLIC_SCENE_FACTORY@@
+    @@PRIVATE_SCENE_FACTORY@@
+    @@CREATE_MESSAGE@@
+    public static object Message(string role, string content) => CreateChatMessage(role, content);
     private static LegacyInteractionPipelinePorts CreateCourierDetachedPortsForExternal(string[] tags) => PreparePorts();
     private static RuntimeConfigSnapshot CaptureSceneShoutRefactorConfigurationForExternal() => new();
     private static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal() => new();
@@ -148,24 +176,36 @@ public sealed class ProductionBlockHost
     private static InteractionEnvelope CaptureSceneShoutRefactorEnvelopeForExternal(string text, int agentIndex)
     {
         if (Scenario.Current.CaptureThrows) throw new InvalidOperationException("capture-failed-before-submit");
-        return Scenario.Current.CaptureNull ? null : new();
+        return Scenario.Current.CaptureNull ? null : FixtureEnvelope(Scenario.Current.Subject, agentIndex);
     }
     private static Task<InteractionEnvelope> RunNativeConversationMainThreadFuncAsync(
         string reason, string name, int index, Func<InteractionEnvelope> action, object fallback) => Task.FromResult(action());
     private static Task<DetachedInteractionHostResult> SubmitSceneShoutRefactorOptInForExternalAsync(
         LegacyChannelInteractionFacade facade, RuntimeConfigSnapshot configuration, string module, string provider,
-        string text, int agentIndex, Func<Task<string>> fallback, CancellationToken cancellationToken) => Scenario.Current.Submit(fallback);
+        string text, int agentIndex, Func<Task<string>> fallback, CancellationToken cancellationToken)
+    {
+        Scenario scenario = Scenario.Current;
+        InteractionEnvelope envelope = facade.Capture(text);
+        LegacyInteractionPipelinePorts ports = facade.Ports;
+        RuleSelection selection = ports.SelectRules(envelope.Snapshot);
+        PostprocessContext context = ports.BuildPostprocessContext(envelope.Snapshot, selection, ports.Capabilities);
+        scenario.CapturedPorts = ports;
+        scenario.CapturedEnvelope = envelope;
+        scenario.CapturedPrompt = ports.ComposePrompt(envelope, selection, ports.Capabilities);
+        scenario.CapturedPostprocess = ports.ComposePostprocessPrompt(envelope, selection, " visible-reply ", "raw-reply", context);
+        return scenario.Submit(fallback);
+    }
     private static Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInForExternalAsync(
         LegacyChannelInteractionFacade facade, RuntimeConfigSnapshot configuration, string module, string provider,
         string sessionId, string text, Func<Task<string>> fallback, CancellationToken cancellationToken) => Scenario.Current.Submit(fallback);
 
     public async Task SceneAsync()
     {
-        var currentSpeaker = new Speaker();
+        var currentSpeaker = new Speaker { Name = Scenario.Current.Subject, AgentIndex = Scenario.Current.AgentIndex };
         string playerText = "player-input";
         int conversationEpoch = 1;
         _ = conversationEpoch;
-        var messages = new List<object> { "already-prepared-full-prompt" };
+        var messages = Scenario.Current.PreparedMessages ?? PreparedSceneMessages(Scenario.Current.Subject);
         bool sceneShoutDetachedCommitted = false;
         // One loop iteration retains production break/return semantics:
         // terminal failure breaks to tail cleanup; stale return avoids new state.
@@ -192,6 +232,34 @@ public sealed class ProductionBlockHost
     @@FAIL_METHOD@@
     @@DETACHED_FAIL_METHOD@@
     @@FINALIZE_METHOD@@
+
+    // These are deterministic inputs, not copied production prompt builders.
+    // Message objects use the production anonymous role/content shape.
+    public static List<object> PreparedSceneMessages(string subject) => new()
+    {
+        Message("system", "  角色=" + subject + "\n自定义规则/知识/资格/AFEF边界  "),
+        Message("user", "  信任=73；当前场景=酒馆；当前目标=" + subject + "  "),
+        Message("user", "【过往行为】[AFEF玩家行为补充]昨日已给予10金币。"),
+        Message("assistant", "我记得昨天那笔钱。"),
+        Message("user", "【当下行为】[AFEF玩家行为补充]本轮展示物品；不是再次交付。"),
+        Message("user", "玩家本轮输入：给我解释，不要再次扣款。\n尾部空格  "),
+    };
+
+    public static InteractionEnvelope FixtureEnvelope(string subject = "npc-alpha", int agentIndex = 1)
+    {
+        var snapshot = new GameInteractionSnapshot(
+            new InteractionIdentity("fixture-session", InteractionChannel.SceneShout, subject),
+            new TraceContext("fixture-trace", 1, 1, "fixture", "1.4"),
+            "snapshot-player-input-must-not-be-appended", "fixture-tavern", 1, 12,
+            new[] { new InteractionCandidate(subject, subject, agentIndex, true) },
+            Array.Empty<string>(), new Dictionary<string, string>());
+        return new InteractionEnvelope(snapshot,
+            new[] { new PromptMessage("assistant", "detached-history-for-" + subject) },
+            new DetachedPromptSections(new[] { "captured-system-for-" + subject },
+                new[] { "captured-prefix" }, new[] { "captured-suffix" }, true),
+            new DetachedPostprocessPromptSections(new[] { "postprocess-rules-for-" + subject },
+                new[] { "postprocess-runtime-targets" }, new[] { "postprocess-facts" }, true));
+    }
 }
 
 public static class Program
@@ -334,7 +402,109 @@ public static class Program
                 NoSecondRequest(s);
                 Require(!s.Session.PostprocessConsumed && s.FailureCalls == 0, "Stale queued failure must not mutate new generation");
             });
+        await PromptCases();
         Console.WriteLine("ChannelCutoverBoundary passes=" + passes + " failures=" + failures + " extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN");
         return failures == 0 ? 0 : 1;
+    }
+
+    private static (string Role, string Content)[] Rows(IEnumerable<object> messages)
+        => messages.Select(item => JObject.FromObject(item)).Select(item => ((string)item["role"], (string)item["content"])).ToArray();
+
+    private static void ExactMessages(PromptPackage actual, (string Role, string Content)[] expected)
+    {
+        Require(actual != null, "Actual default Scene caller did not compose a prompt");
+        Require(actual.Messages.Count == expected.Length, "Prepared message count/order must not be recomposed or appended");
+        for (int index = 0; index < expected.Length; index++)
+            Require(actual.Messages[index].Role == expected[index].Role && actual.Messages[index].Content == expected[index].Content,
+                "Prepared role/content changed at index " + index);
+    }
+
+    private static async Task PromptCases()
+    {
+        await Case("scene-prompt/anonymous-production-shape", false, s =>
+            s.PreparedMessages = ProductionBlockHost.PreparedSceneMessages(s.Subject), s =>
+        {
+            Require(s.PreparedMessages.All(item => item is not IDictionary<string, object> && item is not IDictionary<string, string>),
+                "Fixture must use actual anonymous CreateChatMessage objects, not dictionary-only substitute");
+            ExactMessages(s.CapturedPrompt, Rows(s.PreparedMessages));
+        });
+        await Case("scene-prompt/token-budget-and-model", false, s => { }, s =>
+        {
+            Require(s.CapturedPrompt.MaxTokens == 5000, "Actual default caller must preserve 5000 token limit, not detached 4096");
+            Require(s.CapturedPrompt.Model == "legacy-scene-shout", "Scene model routing changed");
+        });
+        await Case("scene-prompt/no-extra-snapshot-player-input", false, s => { }, s =>
+        {
+            Require(!s.CapturedPrompt.Messages.Any(item => item.Content.Contains("snapshot-player-input-must-not-be-appended")),
+                "Prepared complete prompt must not append capture's player input again");
+            Require(s.CapturedPrompt.Messages.Count(item => item.Content.Contains("玩家本轮输入：")) == 1,
+                "Prepared current input must be retained exactly once");
+        });
+        (string Role, string Content)[] frozenRows = null;
+        await Case("scene-prompt/freeze-before-host-and-source-mutation", false, s =>
+        {
+            s.PreparedMessages = ProductionBlockHost.PreparedSceneMessages(s.Subject);
+            var mutable = new Dictionary<string, object> { ["role"] = "user", ["content"] = "mutable-extra-fact" };
+            s.PreparedMessages.Add(mutable);
+            frozenRows = Rows(s.PreparedMessages);
+            s.AfterPortsPrepared = () =>
+            {
+                mutable["role"] = "assistant";
+                mutable["content"] = "changed-after-freeze";
+                s.PreparedMessages.Clear();
+                s.PreparedMessages.Add(ProductionBlockHost.Message("user", "replacement-request"));
+            };
+        }, s => ExactMessages(s.CapturedPrompt, frozenRows));
+
+        PromptPackage firstPrompt = null;
+        LegacyInteractionPipelinePorts firstPorts = null;
+        (string Role, string Content)[] firstRows = null;
+        await Case("scene-prompt/first-target-request", false, s =>
+        {
+            s.PreparedMessages = ProductionBlockHost.PreparedSceneMessages(s.Subject);
+            firstRows = Rows(s.PreparedMessages);
+        }, s =>
+        {
+            firstPrompt = s.CapturedPrompt;
+            firstPorts = s.CapturedPorts;
+            ExactMessages(firstPrompt, firstRows);
+        });
+        await Case("scene-prompt/second-target-does-not-replace-first-request", false, s =>
+        {
+            s.Subject = "npc-beta";
+            s.AgentIndex = 22;
+            s.PreparedMessages = ProductionBlockHost.PreparedSceneMessages(s.Subject);
+        }, s =>
+        {
+            ExactMessages(s.CapturedPrompt, Rows(s.PreparedMessages));
+            Require(!ReferenceEquals(firstPrompt, s.CapturedPrompt), "Separate requests cannot share mutable/static prompt storage");
+            RuleSelection selection = firstPorts.SelectRules(s.CapturedEnvelope.Snapshot);
+            PromptPackage oldRequestRecomposed = firstPorts.ComposePrompt(s.CapturedEnvelope, selection, firstPorts.Capabilities);
+            ExactMessages(oldRequestRecomposed, firstRows);
+            ExactMessages(firstPrompt, firstRows);
+        });
+        await Case("scene-prompt/public-two-parameter-factory-retains-old-composition", false, s => { }, s =>
+        {
+            var ports = ProductionBlockHost.CreateSceneShoutDetachedPortsForExternal(new[] { "ACTION" }, 1);
+            InteractionEnvelope envelope = ProductionBlockHost.FixtureEnvelope();
+            RuleSelection selection = ports.SelectRules(envelope.Snapshot);
+            PromptPackage actual = ports.ComposePrompt(envelope, selection, ports.Capabilities);
+            Require(actual.MaxTokens == 4096 && actual.Model == "legacy-scene-shout", "External factory ABI/defaults changed");
+            ExactMessages(actual, new[] {
+                ("system", "captured-system-for-npc-alpha"), ("user", "captured-prefix"),
+                ("assistant", "detached-history-for-npc-alpha"), ("user", "captured-suffix"),
+                ("user", "snapshot-player-input-must-not-be-appended") });
+            var defaultPorts = ProductionBlockHost.CreateSceneShoutDetachedPortsForExternal(null);
+            Require(defaultPorts.Capabilities.CapabilityIds.Count == 4, "Default factory capabilities changed");
+        });
+        await Case("scene-prompt/postprocess-delegate-remains-envelope-owned", false, s => { }, s =>
+        {
+            ExactMessages(s.CapturedPostprocess, new[] {
+                ("system", "postprocess-rules-for-npc-alpha"), ("user", "postprocess-runtime-targets"),
+                ("assistant", "detached-history-for-npc-alpha"), ("user", "postprocess-facts"),
+                ("user", "[latest_reply]\nvisible-reply") });
+            Require(s.CapturedPostprocess.MaxTokens == 4096 && s.CapturedPostprocess.Model == "legacy-scene-shout-postprocess",
+                "Main prompt fix cannot alter the existing postprocess delegate");
+        });
     }
 }
