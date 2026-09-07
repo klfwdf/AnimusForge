@@ -13,6 +13,13 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
+SCENE_LIFECYCLE_DISPATCHES = {
+    "SCENE_PRIMARY_RELEASE_DELEGATE": "scene_primary_first_release",
+    "SCENE_HOLD_PARTICIPANTS_DELEGATE": "scene_relay_hold_participants",
+    "SCENE_BATTLE_SUPPRESSION_DELEGATE": "battle_speech_followup_suppression",
+    "SCENE_IDLE_TIMEOUT_DELEGATE": "scene_relay_idle_timeout",
+    "SCENE_FAILURE_RELEASE_DELEGATE": "scene_relay_failure_release",
+}
 
 
 def source(path: str, ref: str | None) -> str:
@@ -56,6 +63,12 @@ def extract(ref: str | None) -> dict[str, str]:
     last_await = "await GenerateNpcReplyAsync(request).ConfigureAwait(false);"
     end_c = method.rindex(last_await) + len(last_await)
     contracts = source("Refactor/Contracts/InteractionContracts.cs", ref)
+    tail_begin = scene.index("relayPostprocessSelected = !suppressBattleSpeechFollowups", end)
+    tail_end = scene.index(";", scene.index("bool flag11 =", tail_begin)) + 1
+    tail_decisions = scene[tail_begin:tail_end]
+    selected_names = sorted(set(re.findall(r"\b\w+PostprocessSelected\b", tail_decisions)) - {"relayPostprocessSelected"})
+    speech_begin = scene.index(";", scene.index("bool flag10 = endRequested", end)) + 1
+    speech_end = scene.index("if (!string.IsNullOrWhiteSpace(cleaned))", speech_begin)
     prompt_contracts = [
         "public enum InteractionChannel", "public sealed class InteractionIdentity",
         "public sealed class TraceContext", "public sealed class InteractionCandidate",
@@ -64,7 +77,8 @@ def extract(ref: str | None) -> dict[str, str]:
         "public sealed class RuleSelection", "public sealed class CapabilitySet",
         "public sealed class PromptMessage", "public sealed class PromptPackage",
         "public sealed class PostprocessContext", "public sealed class ActionRequest",
-        "public sealed class ActionPlan", "public interface IPromptPackageComposer",
+        "public sealed class ActionPlan", "public sealed class FactRecord", "public sealed class InteractionResult",
+        "public interface IPromptPackageComposer",
         "public interface IActionPostprocessor", "internal static class ContractGuard",
         "internal static class ContractCollections",
     ]
@@ -86,7 +100,30 @@ def extract(ref: str | None) -> dict[str, str]:
         "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),
         "PUBLIC_SCENE_FACTORY": declaration(scene, "public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal("),
         "PRIVATE_SCENE_FACTORY": declaration(scene, "private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPorts(", optional=True),
+        "MAIN_REPLY_FACTORY": declaration(scene, "private static LegacyInteractionPipelinePorts CreateSceneShoutMainReplyPorts(", optional=True),
+        "MAIN_REPLY_METHOD": declaration(scene, "private async Task<DetachedInteractionHostResult> GenerateSceneShoutMainReplyAsync(", optional=True),
+        "MAIN_FALLBACK_METHOD": declaration(scene, "private static async Task<DetachedInteractionHostResult> RunDetachedRefactorFallbackAsync("),
+        "SCENE_HISTORY_METHOD": declaration(scene, "private Task<bool> RecordSceneReplyHistoryOnMainThreadAsync(", optional=True),
+        "SCENE_TAIL_DECISIONS": tail_decisions,
+        # Synthetic fixture inputs only; the decision expressions above remain verbatim production.
+        "SCENE_TAIL_LOCALS": "\n".join(f'bool {name} = ruleName == "{name}";' for name in selected_names),
+        "SCENE_DIRECT_REPLY_ASSIGNMENT": re.search(r"bool replyIsDirectPlayerResponse = firstTurn;", scene[end:]).group(),
+        "BATTLE_QUEUE_METHOD": declaration(source("extensions/AnimusForge.XihaiAction/src/CoreProject/BattleSpeechFrameworkV2.cs", ref),
+                                           "public static bool ShouldQueueOrdinaryScenePostprocess("),
+        "SCENE_MAIN_SPEECH_SANITIZER": declaration(scene, "private static string PrepareSceneMainReplySpeechText(", optional=True),
+        "SCENE_MAIN_SPEECH_QUEUE": declaration(scene, "private Task<bool> QueueSceneMainReplyOnMainThreadAsync(", optional=True),
+        "SCENE_SPEECH_SANITIZATION_BLOCK": scene[speech_begin:speech_end],
+        "SCENE_SPEECH_STRIPPERS": "\n\n".join(declaration(scene, signature) for signature in (
+            "private static bool ContainsAutoGroupEndSignal(", "private static string StripAutoGroupStopSignal(",
+            "private static string StripAutoGroupRelaySignal(", "private static string StripActionTagsForSceneSpeech(")),
+        "GIVE_ASSET_CODEC": "\n\n".join(declaration(source("GiveAssetTagCodec.cs", ref), signature) for signature in (
+            "internal readonly struct GiveAssetTag", "internal static class GiveAssetTagCodec")),
     }
+    group_method = declaration(scene, "private async Task HandleGroupResponsePerHeroIndependent(")
+    for name, operation in SCENE_LIFECYCLE_DISPATCHES.items():
+        dispatch_start = group_method.index('RunNativeConversationMainThreadFuncAsync("' + operation + '"')
+        delegate_start = group_method.index("delegate", dispatch_start)
+        blocks[name] = declaration(group_method[delegate_start:], "delegate")
     return blocks
 
 

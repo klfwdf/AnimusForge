@@ -1,65 +1,73 @@
 # Channel cutover boundary regression
 
-This offline test executes the **actual contiguous production outer control flow**, not a copied implementation of the desired behavior.
+This offline suite executes extracted production control flow against deterministic dependency stubs. It does not deploy a module, access a live API, modify player settings, or load a game save.
 
-## What is executed
+## Production code executed
 
-- Scene: the block starting at string output = ""; after group_turn_prompt_ready, ending immediately before apiSw.Stop(), from ShoutBehavior.cs.
-- Courier: the complete cutover condition through the final await GenerateNpcReplyAsync(request), from PrepareAndGenerateCourierReplyOffMainThreadAsync in CourierDeliveryBehavior.cs. The fallback callback's await is deliberately included as well.
-- The production InteractionStatus enum and DetachedInteractionHostResult declaration.
-- Courier's real FailDetachedCourierReplyOnMainThread (when present), FailCourierReplyGenerationOnMainThread, and FinalizeCourierReplyGenerationOnMainThread.
-- Scene's actual public/private port factories, `CreateChatMessage` anonymous-object constructor, configured-chat `BuildPromptPackage`, immutable prompt/envelope contracts, main/postprocess composers and ports. These are extracted production declarations, not a substitute factory or adapter.
+- Scene's contiguous default-entry block, from `string output = "";` after `group_turn_prompt_ready` to immediately before `apiSw.Stop()` in `ShoutBehavior.cs`. It runs inside one loop iteration, preserving terminal `break` versus stale `return` semantics.
+- Scene's actual `GenerateSceneShoutMainReplyAsync`, `CreateSceneShoutMainReplyPorts`, `RunDetachedRefactorFallbackAsync`, and `RecordSceneReplyHistoryOnMainThreadAsync` declarations.
+- Scene's actual `PrepareSceneMainReplySpeechText`, `QueueSceneMainReplyOnMainThreadAsync`, all four end/relay/action stripping helpers, the full `GiveAssetTagCodec`, and the contiguous tail sanitization statements. This extends the check beyond an empty main ActionPlan to the text actually passed to the speech queue.
+- Scene's exact relay/queue decision expressions, `replyIsDirectPlayerResponse = firstTurn`, and the production battle-postprocess suppression predicate. Only their input bindings are synthetic.
+- Five complete production main-thread lifecycle delegates: primary-target failure release, participant hold, battle follow-up suppression, normal idle-timeout arming, and failure release. Their bodies remain verbatim, including the request-start generation/session/epoch guards.
+- Courier's complete cutover condition through the final `await GenerateNpcReplyAsync(request)`, plus its actual terminal failure and finalization methods.
+- The real interaction status/result, prompt/envelope, ActionPlan, and capability contracts; actual public Scene opt-in factory, prompt composers, action parser, `CreateChatMessage`, and configured-chat `BuildPromptPackage`.
 
-The extractor inserts these unchanged source regions into a temporary net8.0 harness. The scene region runs inside one loop iteration, preserving the real difference between terminal break (tail cleanup) and stale return (do not touch a new conversation epoch). Source fingerprints are included in each run log.
+The runner inserts these source regions unchanged into a temporary .NET 8 harness and records their SHA-256 fingerprints. Optional declarations are absent when testing an older Git revision; the harness does not insert a synthetic production fix to make that baseline pass.
 
-External dependencies are stubs: capture/configuration, detached Host outcomes, network send, logger/UI, normalization, and main-thread queue scheduling. The simulated Host also invokes the real port delegates with a deliberately different captured envelope, so the test detects accidental use of recomposed fragments instead of the already-prepared messages. The simulated ProcessSessionById asserts that action consumption is reserved and both pending text fields are cleared **before** terminal failure advances the session. Legacy completion stays queued until explicit drain.
+## What the stubs mean
+
+The Scene facade stub invokes the **real production port delegates** with a deliberately different captured envelope, then supplies a deterministic generation result. Calling its commit method is a test failure. This checks the prepared-message boundary, zero executable actions from main text, and the actual generation helper's cancellation/fallback/result handling; it does not execute the full real coordinator or a network API.
+
+History tests execute the actual dispatching helper. The dispatcher and history owners are simulated: callbacks assert that they run inside the dispatch boundary, record call order, and observe the audience passed by production. Three simulated listeners start with one already-recorded player line. This proves the helper calls the full-audience owners once without appending the player again, **not** that real Hero/non-Hero memory storage succeeds.
+
+Main-speech tests execute the actual sanitizer and enqueue helper. The enqueue boundary records text, audience, action context, timeout, commit-history setting, and the real captured publication predicate. Tests invoke that predicate after generation/session/epoch/target changes; simulated entity resolution throws if attempted outside the main-thread dispatch boundary. The speech worker's actual gameplay executors remain outside this harness.
+
+Lifecycle tests compile those five actual delegate bodies as `Func<bool>` callbacks. Only captured input objects and final game-side owners are stubbed; current requests must call the correct owners in order, while stale generation/session/epoch requests must call none. This covers the failure/cleanup tail after a history or speech enqueue rejection, not merely the generation-success path.
+
+Courier Host outcomes and `ProcessSessionById` are simulated. Its original 24 cases retain their assertions: pending action text must be cleared and action consumption reserved before terminal session processing. The stub checks state at the real caller boundary, not the actual downstream arrival/return implementation.
 
 ## Commands
 
-Run from G:\AFMOD\AF-REFACTOR:
+Run from `G:\AFMOD\AF-REFACTOR`:
 
-    # Baseline red test. Exit code 1 is expected for this known-bug revision.
-    python tools/ChannelCutoverBoundaryTests/run.py --dotnet G:\AFMOD\.dotnet-sdk\dotnet.exe --source-ref aefa02ad --output-name baseline-aefa02ad
+```powershell
+# Known buggy early-commit baseline: nonzero exit is expected.
+python tools/ChannelCutoverBoundaryTests/run.py --dotnet G:\AFMOD\.dotnet-sdk\dotnet.exe --source-ref d40808b3 --output-name scene-main-staging-red-d408
 
-    # Prepared Scene main-prompt baseline: 46 PASS / 6 FAIL, including all original 44 boundary cases passing.
-    python tools/ChannelCutoverBoundaryTests/run.py --dotnet G:\AFMOD\.dotnet-sdk\dotnet.exe --source-ref 92ad625a --output-name prompt-red-92ad625a
+# Working-tree regression: zero exit is required.
+python tools/ChannelCutoverBoundaryTests/run.py --dotnet G:\AFMOD\.dotnet-sdk\dotnet.exe --output-name scene-main-staging-current
 
-    # Working-tree regression. Exit code 0 is required.
-    python tools/ChannelCutoverBoundaryTests/run.py --dotnet G:\AFMOD\.dotnet-sdk\dotnet.exe --output-name current
+# Additional immutable baseline containing the main-tag-to-speech bypass.
+python tools/ChannelCutoverBoundaryTests/run.py --dotnet G:\AFMOD\.dotnet-sdk\dotnet.exe --source-ref cec3877a --output-name scene-speech-red-cec3877a
 
-    # Focused extraction checks.
-    python tools/ChannelCutoverBoundaryTests/test_extraction.py
+# Source extraction and actual tail wiring checks.
+python tools/ChannelCutoverBoundaryTests/test_extraction.py
+```
 
-Use --dotnet <full-path-to-dotnet> to specify the SDK path. When omitted, the script checks DOTNET_ROOT and PATH; it does not assume a machine-specific drive. Python 3.10+ and .NET SDK 8 are sufficient. The production anonymous-message adapter requires an existing Newtonsoft.Json DLL: by default the runner uses `.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll`; otherwise pass `--newtonsoft <full-path-to-existing-dll>`. No game assemblies or package downloads are needed. NuGet package sources are cleared for the generated project. This does not invoke the repository's build/stage/deploy scripts.
+Python 3.10+ and .NET SDK 8 suffice. `--dotnet` may be omitted when `DOTNET_ROOT` or `PATH` resolves an existing SDK. The actual anonymous-message adapter requires an existing Newtonsoft.Json DLL: default `.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll`, or pass `--newtonsoft <path>`.
 
-Generated files and logs stay under:
+No game assemblies or package downloads are needed. The generated project clears package sources. Files and logs stay under `G:\AFMOD\AF-REFACTOR\.tmp\channel-cutover-boundary\<output-name>`. The repository build/stage/deploy scripts are not invoked.
 
-G:\AFMOD\AF-REFACTOR\.tmp\channel-cutover-boundary\<output-name>
+## Covered boundaries
 
-## Covered failure boundaries
+- Bridge disabled or failed preparation before submission: exactly one legacy request.
+- Scene main success, including empty text: no postprocess composition, action plan, memory transaction, or commit receipt before the authoritative tail.
+- Main text containing real action-tag syntax remains an empty ActionPlan; END is retained for the Scene stage rather than executed during generation.
+- Actual tail sanitization removes main-origin gold/Duel/Issue/asset/debt/recruitment/guide/summon/follow/mood/vassalage tags, including GIVE_ASSET names with embedded brackets/colons. A tag-only main result becomes empty rather than a hidden action. Only already-validated follow-stop/summon-end booleans can restore `[STP]`/`[END]` once; being followed without an END signal creates neither.
+- Main speech enqueues once on the main thread, forwards full audience and original timing, does not commit history again, and does not grant player-directed context to relay replies. Empty/stale/unavailable text never enqueues; delayed generation/session/epoch invalidation is rejected on either thread, while entity checks run only on the main thread.
+- All five lifecycle delegates preserve current-request behavior but reject stale generation/session/epoch before holding, releasing, suppressing or re-arming participants; this prevents an old cleanup tail from mutating a new scene that reused an epoch or agent index.
+- Only known `RetryableFailure`, `DegradedWithoutProvider`, or `SkippedByEligibility` permits one internal, pre-effect fallback. Null, exception, validation failure, unexpected `Executed`, and nonretryable status stop without an outer retry.
+- Unexpected nonempty generated actions are rejected before fallback eligibility, including a contradictory `RetryableFailure` carrying actions.
+- Runtime generation/epoch changes before or after generation and during fallback suppress subsequent history/action processing.
+- Disposal failure never re-enters legacy generation; Courier queued completion retains its existing ownership.
+- Prepared anonymous messages preserve system/user/assistant order, whitespace, persona/rule/trust/AFEF markers, 5000-token budget, and model. No captured input is appended again; source mutation and another target cannot change the frozen prompt.
+- Current default captures identity directly rather than recomputing reduced Prompt sections. The public full opt-in factory retains its 4096-token main/postprocess composition and capability contract.
+- Real history helper rejects stale generation/session/epoch and unavailable target; successful calls preserve Scene/shared-history then persistent-audience-owner order exactly once.
+- Extracted tail predicates preserve action-only processing, battle suppression, relay END/remaining-turn/candidate guards, and `firstTurn=false` on relay rounds.
+- Separate source-bound assertions require exactly one awaited history helper call followed by exactly one authoritative deferred queue call, with original rule hits, reply context, and live relay candidate variables. Relay must release the processing flag through the existing bounded gate before awaiting a completed postprocess task. These assertions are wiring evidence, not gameplay execution.
 
-- Bridge disabled, null capture/facade, or preparation exception before Host submission: exactly one old request.
-- Host non-success statuses, missing result, and thrown exception after submission: no second old request.
-- Empty successful replies and empty internal fallback replies: no duplicate request.
-- Scene terminal failures reach existing loop tail; stale status returns without new-epoch mutation.
-- Scene successful result followed by disposal exception stops downstream processing without issuing a second request.
-- Courier pre-delivery generation retains the old deferred action path; post-delivery terminal failure reserves PostprocessConsumed, clears pending text, and releases generation wait.
-- Queued successful finalization followed by disposal exception is preserved.
-- Two failure actions caused by terminal result plus disposal exception finalize failure once.
-- Started legacy fallback retains queued completion after disposal/Host exceptions.
-- Generation change before queued failure processing causes no state mutation.
-- A failed scene internal fallback stops cleanly; courier fallback retains its already-started completion ownership.
+## Architecture and evidence boundary
 
-## Evidence boundary
+The former assertion that an accepted default Scene Host had already committed is intentionally replaced by **zero early effects**. This is the approved staging repair, not a weaker success criterion: the authoritative Scene tail must now own the one history/postprocess path. Full public opt-in APIs and Courier behavior remain covered separately. The original 82 behavior checks and 10 extraction checks remain; main-speech coverage adds 30 behavior checks and 3 extraction/wiring checks, and lifecycle delegates add 20 behavior checks and 1 extraction check: 132 behavior checks and 14 extraction checks in total.
 
-The original 44 failure-boundary cases are retained. Eight additional main-prompt cases cover:
-
-- Production anonymous message shape (not a dictionary-only fixture), exact system/user/assistant order, all content and whitespace, persona/rules/trust/current and historical AFEF markers.
-- The actual caller's 5000-token budget and `legacy-scene-shout` model routing.
-- No extra current input appended from the independently captured envelope.
-- A source list and mutable message changed after factory creation cannot change the frozen prompt.
-- Different target requests keep separate prepared messages; composing the first request after creating the second cannot borrow the second prompt.
-- The public two-parameter/default-argument factory retains its old 4096-token detached composition for callers that provide no prepared prompt.
-- Postprocess remains envelope-owned, with its existing history, sections, latest-reply composition, 4096-token budget and model unchanged.
-
-This proves the extracted default-entry routing and failure-state ordering against deterministic outcomes, plus the **already-prepared main-message handoff** through the real factory and adapter. It does **not** execute `BuildStrictSceneMessagesForNpc` or prove that the prepared content itself is correct: complete prepared-message fixtures are supplied at that boundary. It does not execute the real detached pipeline, game state machine, Bannerlord thread scheduler, action executors, API, save/load, or player UI. In particular, the ProcessSessionById stub checks state **on entry**; it does not prove real arrival/return execution. The unchanged postprocess test is not evidence of full Scene postprocess parity. Existing production-DLL Host replay and dual-version builds remain separate checks; live-game acceptance is NOT_RUN.
+This suite does not prove that `BuildStrictSceneMessagesForNpc` assembled correct content, that the complete deferred postprocess applies real game actions, or that persistence, AFEF, TTS, relay movement, save/load, and UI work in Bannerlord. Full production-DLL replay, official dual-version builds, and live-game acceptance remain distinct evidence. `live=NOT_RUN`, `apiNetwork=NOT_RUN`.

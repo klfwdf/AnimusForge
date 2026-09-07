@@ -17,7 +17,7 @@
 
 1. **基线/目录**：同步并锁定源码；20领域按真实入口展开功能，区分已实现、已验证、待复核和阻塞。不覆盖已有改动。
 2. **P0-CUTOVER-20260908（VERIFY：离线完成）**：先用外层真实控制流复现终态失败后重跑；限定Scene/Courier修复。已开始提交、部分成功、结果未知、验证拒绝或过期必须停止，不由外层重启旧管线。成功空回复与已执行legacy fallback也不能再次发请求。保留提交前安全回退。
-3. **P0-SCENE-PARITY（ACTIVE：主请求VERIFY；下一项P0-SCENE-POST-PREP）**：对照完整前处理/正文/后处理；复用已计算上下文，补事实、信任、历史role、动态PostprocessRules及多人relay；减少主线程重复计算。先验证差异，不改变规则资格。
+3. **P0-SCENE-PARITY（正文/完整后处理与生命周期定向 VERIFY；前段 capture 待复核）**：对照完整前处理/正文/后处理；复用已计算上下文，补事实、信任、历史role、动态PostprocessRules及多人relay；减少主线程重复计算。先验证差异，不改变规则资格。
 4. **P1-NATIVE-PARITY（TODO）**：完整人设/知识/规则、流式、主动开场、主回复与后处理回调保持语义；补空Prompt拒绝或安全回退验证，等价前不切默认。
 5. **全领域闭环（TODO）**：按下表完善入口/状态/失败/持久化与测试，迁移至已有owner；不改玩法平衡或新增无必要服务。
 6. **清理（HOLD，逐项解锁）**：逐symbol确认静态/反射/外部/存档依赖，替代完整并回归后才删除重复实现；活跃Legacy facade、兼容身份保留并说明原因。广泛删除及新默认方案须报用户。
@@ -65,3 +65,11 @@
 首轮结果：基线44案例中25项失败，修后44/44；提取器5、现有相关Host契约与生产回放、六项官方构建、持久化与Bridge检查通过。实机尚未运行；下一项为P0-SCENE-PARITY。详见同日cutover-terminal-safety HANDOFF。
 
 Scene主请求首轮：实际匿名消息转换/角色/完整文本/AFEF/当前输入/5000token/隔离与ABI回归通过，52/52外层回放、7个提取检查及六项构建通过。未证明完整场景构造或后处理等价，仍暂留后处理所需复capture；下一精确任务为P0-SCENE-POST-PREP，见同日scene-main-prompt-fidelity HANDOFF。
+
+## Scene 整模块里程碑更新
+
+用户已明确批准 Scene 默认仅生成正文，再由完整后处理执行动作、接力及原有听众记忆 owner；该授权不覆盖 Native 默认切换、开关修改或部署。上述历史主请求结果保留作为阶段记录，当前结果以 `docs/handoffs/2026-09-08-scene-postprocess-milestone-handoff.md` 为准。
+
+本轮 Channel 132 + 提取14、方法差分71 + guard2、Queue37、Gate6及相应变异反例通过，七套生产DLL回放与六项官方构建通过。旧方法/Queue移至同类型partial并接回；删除早期commit、正文动作旁路和失效屏蔽条件，保留有真实调用的旧接口。
+
+全局门禁尚未全绿：另一作者的 `4a239d95` 安全修复使runtime-game-adapter清单与真实入口不一致，Bridge validator与一个仓库自检失败。先审查 mandatory safety/optional bridge边界并同步清单，不擅自恢复gate或放宽validator。随后继续Scene/Courier前段capture、Native完整Prompt/流式/主动开场，以及已定位但未复现的BattleSpeech异步回退同gate重入风险。实机/旧档/live Economy/AFEF/TTS仍NOT_RUN；阶段八不标DONE。
