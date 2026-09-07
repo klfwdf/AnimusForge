@@ -4909,6 +4909,13 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 			}
 			MarkWildernessDuelEncounterMenuGuard("source_encounter_finish:" + (source ?? ""));
+			try
+			{
+				PlayerEncounter.CampaignBattleResult = null;
+			}
+			catch
+			{
+			}
 			PlayerEncounter.LeaveEncounter = true;
 			try
 			{
@@ -4917,7 +4924,25 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+			try
+			{
+				PlayerEncounter.Update();
+			}
+			catch
+			{
+			}
 			PlayerEncounter.Finish(forcePlayerOutFromSettlement: true);
+			if (PlayerEncounterCompat.GetCurrentSafe() != null)
+			{
+				try
+				{
+					PlayerEncounter.LeaveEncounter = true;
+					PlayerEncounter.Finish(forcePlayerOutFromSettlement: true);
+				}
+				catch
+				{
+				}
+			}
 			if (PlayerEncounterCompat.GetCurrentSafe() != null)
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel][WARN] source PlayerEncounter remained active after Finish source=" + (source ?? ""));
@@ -6889,6 +6914,13 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		{
 			RejectDetachedDuelDispatch(duelDispatchContext, "clan_tier_blocked");
 			Logger.Log("DuelBehavior", "决斗失败: 玩家家族等级不足");
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage($"[决斗] 家族等级不足（当前: {Hero.MainHero?.Clan?.Tier ?? 0}，要求最低: {settings.MinimumClanTier}），决斗未能启动。", Color.FromUint(4294901760u)));
+			}
+			catch
+			{
+			}
 			DiscardUnboundDuelArtifacts(_targetHero);
 			return;
 		}
@@ -7295,7 +7327,20 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				_leaveSourceMissionRequested = false;
 				return;
 			}
-			if (current.CurrentTime < _leaveSourceMissionReadyTime || current.Mode == MissionMode.Conversation || IsCampaignConversationActive())
+			bool timeExpired = current.CurrentTime >= _leaveSourceMissionReadyTime;
+			bool conversationActive = current.Mode == MissionMode.Conversation || IsCampaignConversationActive();
+			if (timeExpired && conversationActive)
+			{
+				try
+				{
+					Campaign.Current?.ConversationManager?.EndConversation();
+				}
+				catch
+				{
+				}
+				return;
+			}
+			if (conversationActive)
 			{
 				return;
 			}
@@ -7304,7 +7349,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				_leaveSourceMissionRequested = false;
 				_leaveSourceMissionReadyTime = 0f;
-				Logger.Log("ArenaDuel", "[Leave] GlobalSourceMissionLeaveTick 10秒等待结束，正在退出原始 Mission。");
+				Logger.Log("ArenaDuel", "[Leave] GlobalSourceMissionLeaveTick 10秒等待结束或对话已退出，正在退出原始 Mission。");
 				MarkDetachedDuelSideEffectBoundaryCrossed(
 					_queuedDuelDispatchContext);
 				current.EndMission();

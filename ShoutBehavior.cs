@@ -23445,16 +23445,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static bool CanInjectDuelPostprocessRule(MyBehavior.ShoutPromptContext ctx, Hero targetHero, int targetAgentIndex, string playerText, out string reason)
 	{
 		reason = "";
-		if (ctx == null || !ctx.UseDuelContext)
-		{
-			reason = "no_duel_context";
-			return false;
-		}
-		if (!ctx.IsQualified)
-		{
-			reason = "player_not_qualified";
-			return false;
-		}
 		try
 		{
 			Agent agent = null;

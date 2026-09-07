@@ -981,7 +981,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyInteger("最小家族等级", 0, 6, "0", Order = 0, RequireRestart = false)]
 	[SettingPropertyGroup("2. 决斗规则")]
-	public int MinimumClanTier { get; set; } = 2;
+	public int MinimumClanTier { get; set; } = 0;
 
 	[SettingPropertyFloatingInteger("战败血量阈值", 0.1f, 0.5f, "#0%", Order = 1, RequireRestart = false)]
 	[SettingPropertyGroup("2. 决斗规则")]
