@@ -1,0 +1,340 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+// Dependencies are simulated; cutover blocks, status/result contracts, and
+// courier completion/failure methods are inserted verbatim from production.
+@@STATUS_ENUM@@
+@@RESULT_TYPE@@
+public sealed class InteractionResult { }
+public sealed class InteractionCommitResult { }
+public sealed class InteractionEnvelope { }
+public sealed class LegacyInteractionPipelinePorts { }
+public interface ILlmGateway { }
+public sealed class RuntimeConfigSnapshot
+{
+    public Dictionary<string, object> Providers = new() { ["fixture"] = new object() };
+}
+public sealed class LegacyChannelInteractionFacade : IDisposable
+{
+    public void Dispose()
+    {
+        if (Scenario.Current.DisposeThrows) throw new InvalidOperationException("dispose-failed");
+    }
+}
+public readonly struct Color { public Color(float r, float g, float b) { } }
+public static class NonBlockingErrorReport { public static void Show(string title, string message) { Scenario.Current.Notifications++; } }
+public static class FeatureBridgeIds { public const string ConversationGateway = "conversation"; }
+public static class FeatureBridgeRuntime
+{
+    public static bool IsEnabled(string id) => Scenario.Current.BridgeEnabled;
+}
+public static class LegacyActionTagCatalog { public static string[] DefaultAllowedTagFamilies = Array.Empty<string>(); }
+public static class Logger { public static void Log(string area, string message) { } }
+public static class LlmVisibleReplyNormalizer { public static string NormalizeComplete(string reply) => reply; }
+public static class LegacyInteractionSnapshotAdapters
+{
+    public const string NativeConversationModuleId = "native";
+    public const string LegacyShoutNetworkProviderId = "fixture";
+    public static LegacyChannelInteractionFacade CreateSceneShoutInteractionFacade(
+        LegacyInteractionPipelinePorts ports, ILlmGateway gateway, Func<string, InteractionEnvelope> capture) => new();
+}
+public sealed class LegacyShoutNetworkGateway : ILlmGateway
+{
+    public static Task<string> SendLegacyMessagesAsync(List<object> messages, int tokens, bool promptRetryOnError)
+    {
+        Scenario.Current.LegacyCalls++;
+        return Task.FromResult(Scenario.Current.LegacyReply);
+    }
+}
+public static class SaveRuntimeGuard
+{
+    public static bool IsStale(long generation, string reason) => Scenario.Current.RuntimeStale;
+}
+public sealed class Speaker { public string Name = "fixture"; public int AgentIndex = 1; }
+public sealed class CourierSession
+{
+    public string Id = "session", LetterText = "letter", ReplyText = "untrusted-reply", ReplyPostprocessedText = "[ACTION:pending]";
+    public bool DeliveryApplied = true, PostprocessConsumed, ReplyGenerated, ReplyGenerationStarted = true;
+}
+public sealed class CourierReplyGenerationRequest
+{
+    public string SessionId = "session";
+    public long RuntimeGeneration = 1;
+}
+public sealed class Scenario
+{
+    public static Scenario Current;
+    public string Name;
+    public bool BridgeEnabled = true, CaptureNull, CaptureThrows, PrepareThrows, HostThrows, NullResult;
+    public bool UsedLegacyFallback, RuntimeStale, DisposeThrows, CallbackThenThrows, StaleBeforeDrain;
+    public InteractionStatus Status = InteractionStatus.Executed;
+    public string VisibleReply = "detached-reply", LegacyReply = "legacy-reply";
+    public int LegacyCalls, HostCalls, FinalizeCalls, FailureCalls, UnconsumedFailureCalls, LegacyCompletionCalls, Notifications;
+    public bool SceneCleanup, ScenePostBlock, SceneCommitted;
+    public string SceneReply;
+    public readonly CourierSession Session = new();
+    public readonly Queue<Action> MainThreadActions = new();
+
+    public async Task<DetachedInteractionHostResult> Submit(Func<Task<string>> fallback)
+    {
+        HostCalls++;
+        if (HostThrows) throw new InvalidOperationException("host-outcome-unknown");
+        if (NullResult) return null;
+        if (UsedLegacyFallback || CallbackThenThrows) await fallback();
+        if (CallbackThenThrows) throw new InvalidOperationException("callback-completion-queued");
+        return new DetachedInteractionHostResult(VisibleReply, UsedLegacyFallback, Status, "fixture-error", null, null);
+    }
+
+    public void Drain()
+    {
+        if (StaleBeforeDrain) RuntimeStale = true;
+        while (MainThreadActions.Count != 0) MainThreadActions.Dequeue()();
+    }
+}
+public sealed class ProductionBlockHost
+{
+    private static void Log(string message) { }
+    private static bool IsCourierBridgeEnabled() => Scenario.Current.BridgeEnabled;
+    private static bool IsTerminalStage(CourierSession session) => false;
+    private CourierSession GetSessionById(string sessionId) => Scenario.Current.Session;
+    private static void QueueSceneInfoMessage(string message, Color color, int epoch) { Scenario.Current.Notifications++; }
+    private void EnqueueMainThreadActionForGeneration(long generation, Action action, string reason)
+    {
+        Scenario.Current.MainThreadActions.Enqueue(() =>
+        {
+            if (!SaveRuntimeGuard.IsStale(generation, reason)) action();
+        });
+    }
+    private void ProcessSessionById(string sessionId, string reason)
+    {
+        Scenario scenario = Scenario.Current;
+        if (reason == "reply_generated")
+        {
+            scenario.FinalizeCalls++;
+            return;
+        }
+        scenario.FailureCalls++;
+        if (!scenario.Session.PostprocessConsumed || scenario.Session.ReplyPostprocessedText != "" || scenario.Session.ReplyText != "")
+            scenario.UnconsumedFailureCalls++;
+    }
+    private Task GenerateNpcReplyAsync(CourierReplyGenerationRequest request)
+    {
+        Scenario scenario = Scenario.Current;
+        scenario.LegacyCalls++;
+        EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () =>
+        {
+            scenario.Session.ReplyText = scenario.LegacyReply;
+            scenario.Session.ReplyPostprocessedText = scenario.LegacyReply;
+            scenario.Session.ReplyGenerated = true;
+            scenario.Session.ReplyGenerationStarted = false;
+            scenario.LegacyCompletionCalls++;
+        }, "fixture-legacy-completion");
+        return Task.CompletedTask;
+    }
+    private static LegacyInteractionPipelinePorts PreparePorts()
+    {
+        if (Scenario.Current.PrepareThrows) throw new InvalidOperationException("prepare-failed-before-submit");
+        return new();
+    }
+    private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal(string[] tags) => PreparePorts();
+    private static LegacyInteractionPipelinePorts CreateCourierDetachedPortsForExternal(string[] tags) => PreparePorts();
+    private static RuntimeConfigSnapshot CaptureSceneShoutRefactorConfigurationForExternal() => new();
+    private static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal() => new();
+    private static LegacyChannelInteractionFacade CreateCourierReplyRefactorFacadeForExternal(LegacyInteractionPipelinePorts ports, ILlmGateway gateway, string id)
+        => Scenario.Current.CaptureNull ? null : new();
+    private static InteractionEnvelope CaptureSceneShoutRefactorEnvelopeForExternal(string text, int agentIndex)
+    {
+        if (Scenario.Current.CaptureThrows) throw new InvalidOperationException("capture-failed-before-submit");
+        return Scenario.Current.CaptureNull ? null : new();
+    }
+    private static Task<InteractionEnvelope> RunNativeConversationMainThreadFuncAsync(
+        string reason, string name, int index, Func<InteractionEnvelope> action, object fallback) => Task.FromResult(action());
+    private static Task<DetachedInteractionHostResult> SubmitSceneShoutRefactorOptInForExternalAsync(
+        LegacyChannelInteractionFacade facade, RuntimeConfigSnapshot configuration, string module, string provider,
+        string text, int agentIndex, Func<Task<string>> fallback, CancellationToken cancellationToken) => Scenario.Current.Submit(fallback);
+    private static Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInForExternalAsync(
+        LegacyChannelInteractionFacade facade, RuntimeConfigSnapshot configuration, string module, string provider,
+        string sessionId, string text, Func<Task<string>> fallback, CancellationToken cancellationToken) => Scenario.Current.Submit(fallback);
+
+    public async Task SceneAsync()
+    {
+        var currentSpeaker = new Speaker();
+        string playerText = "player-input";
+        int conversationEpoch = 1;
+        _ = conversationEpoch;
+        var messages = new List<object> { "already-prepared-full-prompt" };
+        bool sceneShoutDetachedCommitted = false;
+        // One loop iteration retains production break/return semantics:
+        // terminal failure breaks to tail cleanup; stale return avoids new state.
+        while (true)
+        {
+            @@SCENE_BLOCK@@
+            Scenario.Current.ScenePostBlock = true;
+            Scenario.Current.SceneReply = output;
+            Scenario.Current.SceneCommitted = sceneShoutDetachedCommitted;
+            break;
+        }
+        Scenario.Current.SceneCleanup = true;
+    }
+
+    public async Task CourierAsync()
+    {
+        string sessionId = "session";
+        long runtimeGeneration = 1;
+        CourierSession session = Scenario.Current.Session;
+        var request = new CourierReplyGenerationRequest();
+        @@COURIER_BLOCK@@
+    }
+
+    @@FAIL_METHOD@@
+    @@DETACHED_FAIL_METHOD@@
+    @@FINALIZE_METHOD@@
+}
+
+public static class Program
+{
+    private static int failures, passes;
+    private static void Require(bool condition, string message)
+    {
+        if (!condition) throw new Exception(message);
+    }
+    private static async Task Case(string name, bool courier, Action<Scenario> arrange, Action<Scenario> assert)
+    {
+        var scenario = new Scenario { Name = name };
+        Scenario.Current = scenario;
+        arrange(scenario);
+        try
+        {
+            var host = new ProductionBlockHost();
+            if (courier) await host.CourierAsync(); else await host.SceneAsync();
+            scenario.Drain();
+            assert(scenario);
+            passes++;
+            Console.WriteLine("PASS " + name);
+        }
+        catch (Exception ex)
+        {
+            failures++;
+            Console.WriteLine("FAIL " + name + ": " + ex.Message + " host=" + scenario.HostCalls + " legacy=" + scenario.LegacyCalls);
+        }
+    }
+    private static void LegacyOnce(Scenario s)
+    {
+        Require(s.HostCalls == 0 && s.LegacyCalls == 1, "Pre-submit path must invoke legacy exactly once");
+    }
+    private static void NoSecondRequest(Scenario s)
+    {
+        Require(s.HostCalls == 1 && s.LegacyCalls == 0, "Submitted host owns outcome; must not issue second legacy request");
+    }
+    private static void TerminalScene(Scenario s)
+    {
+        NoSecondRequest(s);
+        Require(s.SceneCleanup, "Terminal scene must break to tail cleanup rather than return");
+        Require(!s.ScenePostBlock, "Terminal scene must not continue reply/action processing");
+    }
+    private static void TerminalCourier(Scenario s)
+    {
+        NoSecondRequest(s);
+        Require(s.FinalizeCalls == 0, "Terminal failure cannot finalize as a successful reply");
+        Require(s.Session.PostprocessConsumed, "Unknown/failed commit must reserve action consumption");
+        Require(s.Session.ReplyPostprocessedText == "" && s.Session.ReplyText == "", "Terminal failure must clear pending action and reply text");
+        Require(s.FailureCalls == 1 && s.UnconsumedFailureCalls == 0, "Consumed and clear state must precede ProcessSessionById");
+        Require(s.Session.ReplyGenerated && !s.Session.ReplyGenerationStarted, "Failure must release reply-generation wait state");
+    }
+    public static async Task<int> Main()
+    {
+        foreach (bool courier in new[] { false, true })
+        {
+            string channel = courier ? "courier" : "scene";
+            await Case(channel + "/bridge-disabled", courier, s => s.BridgeEnabled = false, LegacyOnce);
+            await Case(channel + "/capture-null", courier, s => s.CaptureNull = true, LegacyOnce);
+            await Case(channel + "/prepare-exception", courier, s => s.PrepareThrows = true, LegacyOnce);
+            foreach (InteractionStatus status in new[] {
+                InteractionStatus.NonRetryableFailure, InteractionStatus.RejectedByValidation,
+                InteractionStatus.RetryableFailure, InteractionStatus.SkippedByEligibility, InteractionStatus.DegradedWithoutProvider })
+            {
+                await Case(channel + "/terminal-" + status, courier, s => s.Status = status, courier ? TerminalCourier : TerminalScene);
+            }
+            await Case(channel + "/host-throws", courier, s => s.HostThrows = true, courier ? TerminalCourier : TerminalScene);
+            await Case(channel + "/null-result", courier, s => s.NullResult = true, courier ? TerminalCourier : TerminalScene);
+            await Case(channel + "/stale", courier, s => s.Status = InteractionStatus.CancelledAsStale, s =>
+            {
+                NoSecondRequest(s);
+                if (!courier) Require(!s.SceneCleanup && !s.ScenePostBlock, "Stale scene must return without touching a new epoch");
+                else Require(s.FailureCalls == 0 && s.FinalizeCalls == 0, "Stale courier result must not mutate current session");
+            });
+            foreach (InteractionStatus status in new[] { InteractionStatus.Executed, InteractionStatus.Succeeded })
+            foreach (string reply in new[] { "detached-reply", "" })
+            {
+                await Case(channel + "/success-" + status + (reply == "" ? "-empty" : "-text"), courier,
+                    s => { s.Status = status; s.VisibleReply = reply; }, s =>
+                    {
+                        NoSecondRequest(s);
+                        Require(s.FailureCalls == 0, "Success cannot become failure");
+                        if (courier) Require(s.FinalizeCalls == 1, "Success must finalize once");
+                        else Require(s.SceneCleanup && s.SceneCommitted && s.SceneReply == reply, "Success must retain detached commit and visible reply");
+                    });
+            }
+            foreach (string reply in new[] { "legacy-reply", "" })
+            {
+                await Case(channel + "/internal-fallback" + (reply == "" ? "-empty" : "-text"), courier,
+                    s => { s.UsedLegacyFallback = true; s.VisibleReply = reply; s.LegacyReply = reply; }, s =>
+                    {
+                        Require(s.HostCalls == 1 && s.LegacyCalls == 1, "Internal fallback is already executed and must not run again");
+                        Require(s.FailureCalls == 0, "Internal fallback must not be reclassified as terminal failure");
+                        if (!courier) Require(s.SceneCleanup && !s.SceneCommitted && s.SceneReply == reply, "Fallback retains legacy processing ownership");
+                        else Require(s.FinalizeCalls == 0 && s.LegacyCompletionCalls == 1, "Legacy fallback owns its queued finalization");
+                    });
+            }
+        }
+        await Case("scene/capture-exception", false, s => s.CaptureThrows = true, LegacyOnce);
+        await Case("scene/internal-fallback-failure", false,
+            s => { s.UsedLegacyFallback = true; s.Status = InteractionStatus.NonRetryableFailure; s.VisibleReply = ""; s.LegacyReply = ""; }, s =>
+            {
+                Require(s.HostCalls == 1 && s.LegacyCalls == 1, "Failed internal fallback cannot trigger another legacy request");
+                Require(s.SceneCleanup && !s.ScenePostBlock, "Failed internal fallback must stop reply processing and reach cleanup");
+            });
+        await Case("courier/internal-fallback-failure-owns-completion", true,
+            s => { s.UsedLegacyFallback = true; s.Status = InteractionStatus.NonRetryableFailure; }, s =>
+            {
+                Require(s.HostCalls == 1 && s.LegacyCalls == 1 && s.LegacyCompletionCalls == 1, "Already-started legacy callback retains completion ownership");
+                Require(s.FailureCalls == 0, "Outer failure must not clear pending legacy completion");
+            });
+        await Case("courier/pre-delivery-legacy-generation", true, s => s.Session.DeliveryApplied = false, LegacyOnce);
+        await Case("scene/success-before-dispose-throws", false, s => s.DisposeThrows = true, TerminalScene);
+        await Case("courier/finalize-queued-before-dispose-throws", true, s => s.DisposeThrows = true, s =>
+        {
+            NoSecondRequest(s);
+            Require(s.FinalizeCalls == 1 && s.FailureCalls == 0, "Late exception must not overwrite successful queued finalization");
+            Require(s.Session.ReplyText == s.VisibleReply && s.Session.ReplyGenerated, "Success must remain intact");
+        });
+        await Case("courier/terminal-queued-before-dispose-throws", true,
+            s => { s.DisposeThrows = true; s.Status = InteractionStatus.NonRetryableFailure; }, s =>
+            {
+                TerminalCourier(s);
+                Require(s.Notifications == 1, "Two queued failure actions must be idempotent");
+            });
+        await Case("courier/legacy-completion-queued-before-dispose-throws", true,
+            s => { s.DisposeThrows = true; s.UsedLegacyFallback = true; }, s =>
+            {
+                Require(s.LegacyCalls == 1 && s.LegacyCompletionCalls == 1, "Dispose failure must retain a single legacy completion");
+                Require(s.FailureCalls == 0 && s.Session.ReplyText == s.LegacyReply, "Failure must not clear queued legacy reply");
+            });
+        await Case("courier/callback-queued-before-host-throws", true, s => s.CallbackThenThrows = true, s =>
+        {
+            Require(s.HostCalls == 1 && s.LegacyCalls == 1 && s.LegacyCompletionCalls == 1, "Callback ownership survives host exception");
+            Require(s.FailureCalls == 0 && s.Session.ReplyText == s.LegacyReply, "Queued callback completion cannot be cleared");
+        });
+        await Case("courier/new-generation-before-failure-drain", true,
+            s => { s.Status = InteractionStatus.NonRetryableFailure; s.StaleBeforeDrain = true; }, s =>
+            {
+                NoSecondRequest(s);
+                Require(!s.Session.PostprocessConsumed && s.FailureCalls == 0, "Stale queued failure must not mutate new generation");
+            });
+        Console.WriteLine("ChannelCutoverBoundary passes=" + passes + " failures=" + failures + " extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN");
+        return failures == 0 ? 0 : 1;
+    }
+}

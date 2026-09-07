@@ -6,10 +6,19 @@
 
 - 用户已批准“设置自动化开改”；复用当前任务 heartbeat `af-7-8`，每30分钟，不创建重复自动化。唯一代码工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-main-refactor-continuation-20260831`。
 - 已 fetch 并安全快进到共享重构分支 `aefa02ad15758222b87e4e240a85c52eb3f913d9`。两份2026-09-06 integrated-phase8-handoff/team-brief本地草稿原样保留、不暂存；不改其他工作区、游戏或真实存档。
-- 任务 `P0-CUTOVER-20260908` ACTIVE：先修Scene/Courier外层在Host终态失败后重新请求的缺口。owner为Conversation/Courier调用边界。计划路径：ShoutBehavior.cs、CourierDeliveryBehavior.cs、定向外层回归工具及本计划/HANDOFF；不改存档key/type、玩法数值、Bridge开关、默认选择或官方构建脚本。
+- 任务 `P0-CUTOVER-20260908` VERIFY（代码/离线验证完成，实机未测）：先修Scene/Courier外层在Host终态失败后重新请求的缺口。owner为Conversation/Courier调用边界。计划路径：ShoutBehavior.cs、CourierDeliveryBehavior.cs、定向外层回归工具及本计划/HANDOFF；不改存档key/type、玩法数值、Bridge开关、默认选择或官方构建脚本。
 - 验证：先对生产外层控制流作故障注入红测，修后回放成功/失败/空回复/回退/取消/异常，补既有Host契约与官方1.3/1.4/Bootstrap项目内Stage。真实LIVE/SAVE仍未在本轮执行。
 - 当前实际Native已恢复完整旧入口；Scene/Courier接入不等于三渠道等价完成。13 wired与历史PASS不可提升为全领域实机通过。具体计划及20领域清单见 `docs/phase8/refactor-execution-plan-20260908.md`。
 - 回滚基线 `aefa02ad`；本地意图提交后执行，后续按定向逆提交回滚，不reset/rebase/force-push。推送、部署、新默认切换及广泛删旧另待明确方案批准。
+### P0-CUTOVER-20260908 首轮结果
+
+- 意图提交 `bdeeadd8`，修复只改Scene/Courier现有外层控制流。Scene以Host接管状态替代空回复判断，终态失败break至现有收尾；Courier保留送达前预生成，失败先seal既有PostprocessConsumed/清残留文本再推进返程，保护已排队legacy完成和已完成回信。
+- 从真实生产连续block抽取编译的44案例：基线 `aefa02ad` 19 PASS/25 FAIL，修后44 PASS/0 FAIL；提取器5 tests通过。Host/队列/网络依赖为stub，不冒充完整游戏状态机。
+- Debug/Release × 1.3/1.4/Bootstrap六项官方构建各0 warning/0 error；Interaction 40+69+39+4通过，生产Configured/Detached/Courier Host回放通过；Bridge16/13/3、20自测、入口10自测通过。持久化校验确认远端已有3处导航行号过时，仅校正行号后142键/168绑定通过，无存档key/type变化。
+- Interaction runner有NuGet漏洞元数据获取NU1900警告，测试正常完成；不修改源配置或关闭审计掩盖警告。
+- 独立源码审查无本轮阻断；日志 `.tmp/cutover-20260908/`、`.tmp/channel-cutover-boundary/`。完整命令/哈希/未验证项见 `docs/handoffs/2026-09-08-cutover-terminal-safety-handoff.md`。
+- 下一精确任务 `P0-SCENE-PARITY` TODO：从完整Scene现有前处理/消息/动态PostprocessRules到detached重新捕获链做差异回放，优先复用完整上下文，不重复计算或偷偷切Native默认。自动化保持ACTIVE；没有推送或部署。
+
 ## GitHub 融合交接推送（2026-09-06）
 
 用户明确授权“融合然后推送”。已完成本地 `38c72484` 与共享远端 `8f1fa8db` 的正常合并，代码提交 `fb01c03c`；三个终端冲突按功能融合，保留API引导/设置与本地功能修复。融合后六项构建、终端/周报/Duel/Gateway/Host及相关契约回归通过。新交接为 `docs/handoffs/2026-09-06-merged-refactor-handoff.md`，制作组文案同目录 `2026-09-06-merged-refactor-team-brief.md`；普通推送目标仍为 `refactor/prepare-af-restructure`，不覆盖main、不force push。

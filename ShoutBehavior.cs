@@ -28429,6 +28429,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
 					string output = "";
+					bool sceneShoutDetachedSubmitted = false;
 					if (FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway))
 					{
 						try
@@ -28451,6 +28452,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									RuntimeConfigSnapshot configuration = CaptureSceneShoutRefactorConfigurationForExternal();
 									string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
 									string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
+									// The Host exclusively owns fallback after this boundary, even for an empty reply.
+									sceneShoutDetachedSubmitted = true;
 									DetachedInteractionHostResult hostResult = await SubmitSceneShoutRefactorOptInForExternalAsync(
 										facade,
 										configuration,
@@ -28464,31 +28467,32 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 											return LlmVisibleReplyNormalizer.NormalizeComplete(legOutput);
 										},
 										CancellationToken.None).ConfigureAwait(false);
-									if (hostResult != null)
+									if (hostResult?.Status == InteractionStatus.CancelledAsStale)
 									{
-										if (hostResult.Status == InteractionStatus.CancelledAsStale)
-										{
-											return;
-										}
-										if (!hostResult.UsedLegacyFallback && (hostResult.Status == InteractionStatus.Executed || hostResult.Status == InteractionStatus.Succeeded))
-										{
-											sceneShoutDetachedCommitted = true;
-											output = hostResult.VisibleReply ?? "";
-										}
-										else if (hostResult.UsedLegacyFallback)
-										{
-											output = hostResult.VisibleReply ?? "";
-										}
+										return;
 									}
+									if (hostResult == null || (hostResult.Status != InteractionStatus.Executed && hostResult.Status != InteractionStatus.Succeeded))
+									{
+										Logger.Log("ShoutBehavior", "[SceneRefactor] terminal reply stopped error=" + (hostResult?.ErrorCode ?? "missing_host_result"));
+										QueueSceneInfoMessage("本轮回应已停止，系统不会自动重复执行可能已生效的动作。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+										break;
+									}
+									sceneShoutDetachedCommitted = !hostResult.UsedLegacyFallback;
+									output = hostResult.VisibleReply ?? "";
 								}
 							}
 						}
 						catch (Exception ex)
 						{
-							Logger.Log("ShoutBehavior", "[SceneRefactor] default cutover fallback error=" + ex.Message);
+							Logger.Log("ShoutBehavior", "[SceneRefactor] cutover error=" + ex.Message);
+							if (sceneShoutDetachedSubmitted)
+							{
+								QueueSceneInfoMessage("本轮回应发生错误，系统不会自动重试已提交的动作。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+								break;
+							}
 						}
 					}
-					if (string.IsNullOrEmpty(output))
+					if (!sceneShoutDetachedSubmitted)
 					{
 						output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
 						output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
