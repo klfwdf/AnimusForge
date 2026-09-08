@@ -2,15 +2,22 @@
 
 ## 最准确的结论
 
-**断线修改已恢复，本轮实际缺陷修复已本地提交；整个重构项目尚未收尾。** 当前仍是阶段八实施中的修复候选，不是可宣称“功能全部复现、旧代码全删、没有 BUG”的发布版本。
+**断线修改已恢复，本轮实际缺陷修复已提交，现交付至独立 GitHub 重构分支；整个重构项目尚未收尾。** 当前仍是阶段八实施中的修复候选，不是可宣称“功能全部复现、旧代码全删、没有 BUG”的发布版本。
 
 - 工作区：`G:\AFMOD\AF-REFACTOR`。
 - 分支：`codex/af-main-refactor-continuation-20260831`。
 - **代码提交：`9a4a26dc1716329d699833d5da0b3679ff3fd192`**。
-- 共享目标：`origin/refactor/prepare-af-restructure`，远端 `https://github.com/klfwdf/AnimusForge.git`。
+- **GitHub 交付分支**：`origin/codex/af-main-refactor-continuation-20260831`；[打开重构代码](https://github.com/klfwdf/AnimusForge/tree/codex/af-main-refactor-continuation-20260831)。
+- 原共享分支 `origin/refactor/prepare-af-restructure` 保持不动；不推 `main`。
 - 修复前回滚 checkpoint：`5ce8767a`；历史缺陷对照 `35524b04`，不能继续引用 `a096c1b1` 作为当前最新版。
-- 未推送；自动化继续暂停；未部署游戏、操作真实存档或改变 Native 默认路径。
+- 用户于本轮明确授权 GitHub 推送；本交接与制作组文案随独立重构分支交付。本地保留同名文件；自动化继续暂停，未部署游戏、操作真实存档或改变 Native 默认路径。
 - 两份 2026-09-06 用户草稿仍有原工作树改动，未纳入提交；**不能据此硬重置工作区**。
+
+## 为什么使用独立重构分支
+
+推送前 fetch 发现共享分支从 `aefa02ad` 被改写到 `03eb33f1`，与本地不是快进关系。远端最新两文件改动与本地已有 `aefa02ad` 的 patch-id 相同，但共享历史删去了其他祖先提交。为避免擅自恢复他人移除的历史，本次不强推、不合并回共享分支，直接发布本地已验证候选至同名 `codex/` 重构分支。后续如需合回共享分支，应由制作组先确认历史取舍；不能直接执行不加审查的 pull/reset。
+
+**状态优先级：**旧 09-07/09-08 交接中关于“阶段八完成、三渠道全切换、实机全通过”的陈述只作历史记录；当前以本 09-09 HANDOFF 和验证报告的未完成门槛为准。验证索引里的 `gitPush=false` 是验证时点快照，不代表本次后续交付状态。
 
 ## 已完成
 
@@ -54,6 +61,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File '.\一键编译覆盖推送\
 
 再以 Release 重复。只使用 `-Stage`，不改项目的一键流程；引用版本已验证为 1.3.15 与 1.4.6。完整 SHA/测试索引：`docs/audits/2026-09-09-closeout-verification.json`。
 
-原始日志和构建 DLL 属本地忽略产物，在 `.tmp/closeout-20260909/`、`bin/Debug/single_module_stage/` 与 `bin/Release/single_module_stage/`；**没有随本地代码提交上传**。Policy 为无 ONNX 隔离投影，报告保留 SDK 默认开发证书提示及未检查其用户级效果的限制。
+原始日志和构建 DLL 属本地忽略产物，在 `.tmp/closeout-20260909/`、`bin/Debug/single_module_stage/` 与 `bin/Release/single_module_stage/`；**不随本次源代码与文档交付上传**。Policy 为无 ONNX 隔离投影，报告保留 SDK 默认开发证书提示及未检查其用户级效果的限制。
 
 回滚优先针对 `9a4a26dc` 做审查后的 inverse/revert 提交；不 hard-reset、force-push 或删参考资料。真实部署另行确认，并先备份 DLL/PDB/ModuleData、保留 ONNX。
