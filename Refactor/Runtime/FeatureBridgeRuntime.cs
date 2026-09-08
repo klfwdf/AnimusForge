@@ -39,7 +39,6 @@ internal static class FeatureBridgeRuntime
     internal static bool PolicyWorldDiplomacyEnabled => IsEnabled(FeatureBridgeIds.PolicyWorldDiplomacy);
     internal static bool UiRuntimeIntegrationEnabled => IsEnabled(FeatureBridgeIds.UiRuntimeIntegration);
     internal static bool HostRuntimeEnabled => IsEnabled(FeatureBridgeIds.HostRuntime);
-    internal static bool RuntimeGameAdapterEnabled => IsEnabled(FeatureBridgeIds.RuntimeGameAdapter);
     internal static bool SceneDuelEnabled => IsEnabled(FeatureBridgeIds.SceneDuel);
 
     internal static bool Initialize(out string reason)
@@ -150,7 +149,8 @@ internal static class FeatureBridgeRuntime
             // remain disabled until its owner supplies and reviews a caller.
             new FeatureBridgeDefinition(FeatureBridgeIds.BootstrapHost, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, false, FeatureBridgeFallback.SafeMode),
             new FeatureBridgeDefinition(FeatureBridgeIds.HostRuntime, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.SafeMode),
-            new FeatureBridgeDefinition(FeatureBridgeIds.RuntimeGameAdapter, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
+            // Mandatory interaction safety is independent; no optional caller is wired for this ID.
+            new FeatureBridgeDefinition(FeatureBridgeIds.RuntimeGameAdapter, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, false, FeatureBridgeFallback.Native),
             new FeatureBridgeDefinition(FeatureBridgeIds.PersistenceDomainOwners, FeatureBridgeImplementationState.DesignInventory, FeatureBridgeTopology.CrossCut, false, FeatureBridgeFallback.SafeMode),
             new FeatureBridgeDefinition(FeatureBridgeIds.ConversationGateway, FeatureBridgeImplementationState.ActiveBoundary, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.Native),
             new FeatureBridgeDefinition(FeatureBridgeIds.ConversationAction, FeatureBridgeImplementationState.OptIn, FeatureBridgeTopology.Pair, true, FeatureBridgeFallback.NoOp),

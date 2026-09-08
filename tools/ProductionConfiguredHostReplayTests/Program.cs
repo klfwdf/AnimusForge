@@ -154,7 +154,7 @@ object context = New(postprocessContextType, (object)new[] { "fixture.rule" }, (
 object emptyPlan = New(actionPlanType, EmptyArray(actionRequestType), "fixture-postprocess");
 object currentPlan = emptyPlan;
 
-Type[] portParameters = portsType.GetConstructors().Single().GetParameters()
+Type[] portParameters = portsType.GetConstructors().Single(ctor => ctor.GetParameters().Length == 7).GetParameters()
     .Select(parameter => parameter.ParameterType).ToArray();
 Delegate selectRules = HandlerDelegate(portParameters[0], _ => selection);
 Delegate composePrompt = HandlerDelegate(portParameters[1], _ => MakePrompt("user", "provider main", "fixture-main"));

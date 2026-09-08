@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -19,6 +21,7 @@ public sealed class InteractionCommitResult { }
 @@MAIN_COMPOSER@@
 @@POSTPROCESS_COMPOSER@@
 @@ACTION_PARSER@@
+@@LEGACY_PROMPT_ADAPTER@@
 @@GIVE_ASSET_CODEC@@
 public static class LegacyConfiguredChatGateway
 {
@@ -80,6 +83,8 @@ public static class LegacyInteractionSnapshotAdapters
         if (scenario.CaptureThrows) throw new InvalidOperationException("capture-failed-before-submit");
         return scenario.CaptureNull ? null : ProductionBlockHost.FixtureEnvelope(scenario.Subject, agentIndex);
     }
+    public static LegacyChannelInteractionFacade CreateCourierInteractionFacade(LegacyInteractionPipelinePorts ports, ILlmGateway gateway, Func<string, InteractionEnvelope> capture)
+        => Scenario.Current.CaptureNull ? null : new() { Ports = ports, Capture = capture };
     public static LegacyChannelInteractionFacade CreateSceneShoutInteractionFacade(
         LegacyInteractionPipelinePorts ports, ILlmGateway gateway, Func<string, InteractionEnvelope> capture)
     {
@@ -107,7 +112,7 @@ public static class SaveRuntimeGuard
 }
 public sealed class Speaker { public string Name = "fixture"; public int AgentIndex = 1; }
 public sealed class NpcDataPacket { public string Name = "fixture"; public int AgentIndex = 1; }
-public sealed class Hero { }
+public sealed class Hero { public bool IsDead; }
 public sealed class CharacterObject { }
 public sealed class Agent { public int Index; }
 public sealed class SceneSummonPromptTarget { }
@@ -123,7 +128,8 @@ public sealed class CourierSession
 }
 public sealed class CourierReplyGenerationRequest
 {
-    public string SessionId = "session";
+    public string SessionId = "session", RecipientHeroId = "recipient";
+    public List<object> Messages = new() { new { role = "system", content = "courier persona" }, new { role = "user", content = "courier letter" } };
     public long RuntimeGeneration = 1;
 }
 public sealed class Scenario
@@ -258,6 +264,14 @@ public sealed class ProductionBlockHost
     @@CREATE_MESSAGE@@
     public static object Message(string role, string content) => CreateChatMessage(role, content);
     private static LegacyInteractionPipelinePorts CreateCourierDetachedPortsForExternal(string[] tags) => PreparePorts();
+    private const int MainReplyMaxTokens = 5000;
+    private static LegacyInteractionPipelinePorts CreateCourierDetachedPorts(IEnumerable<string> tags, bool post, int maxActions, PromptPackage prompt) => PreparePorts();
+    private Task<T> RunCourierOwnerPhaseAsync<T>(long generation, string source, Func<T> action, CancellationToken token) => Task.FromResult(action());
+    private Hero ResolveRecipient(CourierSession session) => new();
+    private static string SafeHeroId(Hero hero) => "recipient";
+    private InteractionEnvelope CapturePreparedCourierReplyEnvelope(CourierReplyGenerationRequest request, Hero recipient, PromptPackage prompt)
+        => FixtureEnvelope();
+
     private static RuntimeConfigSnapshot CaptureSceneShoutRefactorConfigurationForExternal() => new();
     private static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal() => new();
     private static LegacyChannelInteractionFacade CreateCourierReplyRefactorFacadeForExternal(LegacyInteractionPipelinePorts ports, ILlmGateway gateway, string id)

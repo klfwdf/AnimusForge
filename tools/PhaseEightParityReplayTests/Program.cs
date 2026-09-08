@@ -77,7 +77,9 @@ for (int i = 0; i < 73; i++)
 IList sourceRoots = (IList)Get(snapshot, "SourceRoots");
 for (int i = 0; i < 4; i++) sourceRoots.Add("fixture-root-" + i);
 Set(snapshot, "ScannedFileCount", 81);
+Check((int)Get(Get(vm, "_path"), "Count") == 0, "system tab starts at navigation root");
 Call(vm, "ShowTagCatalog", snapshot);
+Check((int)Get(Get(vm, "_path"), "Count") == 1, "opening tag browser pushes exactly one navigation frame");
 Check((bool)Get(vm, "IsMenuListVisible") && ((IList)Get(vm, "Items")).Count == 50, "tag catalog reuses bounded menu");
 Check(((string)Get(vm, "TagCatalogStatusText")).Contains("73") && ((string)Get(vm, "TagCatalogStatusText")).Contains("更新"), "refresh feedback shows snapshot size and update time");
 Check((bool)Get(vm, "IsTagCatalogBrowser") && (float)Get(vm, "MenuContentTop") == 98f, "tag commands have dedicated nonoverlapping header");
@@ -97,11 +99,26 @@ string exportText = (string)catalogType.GetMethod("BuildExportText", BindingFlag
 Check(exportText.Contains("[ACTION:fixture-0]") && exportText.Contains("[ACTION:fixture-72]") && exportText.Contains("source-72-14"), "export formatter retains unfiltered snapshot without file IO");
 object emptySnapshot = Activator.CreateInstance(snapshotType, true);
 Call(vm, "ShowTagCatalog", emptySnapshot);
+Check((int)Get(Get(vm, "_path"), "Count") == 1, "refresh replaces contents without pushing another navigation frame");
+// Deliberately duplicate a fixture frame: the navigation invariant must detect it independently of layout.
+object navigation = Get(vm, "_path");
+Call(navigation, "Push", Get(vm, "_tagBrowser"));
+Check((int)Get(navigation, "Count") != 1, "mutation: duplicate browser frame is observable");
+Call(navigation, "Pop");
+Check((int)Get(navigation, "Count") == 1, "navigation fixture restored after mutation");
 Check(((IList)Get(vm, "Items")).Count == 0 && (bool)Get(vm, "IsTagCatalogBrowser"), "refresh to empty index remains navigable");
 Call(vm, "ExecuteExportTagCatalog"); // Empty snapshot fails before module-root resolution or any write.
 Check((bool)Get(vm, "IsDetailsVisible") && ((string)Get(vm, "DetailText")).Contains("没有可导出"), "export failure is visible and actionable");
 Call(vm, "ExecuteBack"); Check((bool)Get(vm, "IsTagCatalogBrowser"), "export failure returns to index");
-Call(vm, "ExecuteBack"); Check(!(bool)Get(vm, "IsTagCatalogBrowser") && (float)Get(vm, "MenuContentTop") == 50f, "refresh does not stack duplicate browsers");
+Call(vm, "ExecuteBack");
+Check(!(bool)Get(vm, "IsTagCatalogBrowser") && (int)Get(Get(vm, "_path"), "Count") == 0,
+    "refresh navigation follows 0-1-1-0 and returns to the original tab root");
+Check(!(bool)Get(vm, "IsSearchVisible") && (float)Get(vm, "MenuContentTop") == 6f,
+    "system tab without search uses the compact nonoverlapping header");
+Call(vm, "SelectTab", "全部");
+Check((bool)Get(vm, "IsSearchVisible") && (float)Get(vm, "MenuContentTop") == 50f,
+    "all tab with search retains its dedicated header space");
+Call(vm, "SelectTab", "系统");
 Call(vm, "ExecuteExportTagCatalog"); Check((bool)Get(vm, "IsMenuListVisible"), "stale hidden export command is ignored");
 Type countryType = af.GetType("AnimusForge.MyBehavior+WeeklyReportBrowserCountryData", true);
 Type reportType = af.GetType("AnimusForge.MyBehavior+WeeklyReportBrowserEntryData", true);
@@ -172,8 +189,20 @@ Call(selectedWeekly, "OnFinalize");
 XElement weeklyView = XDocument.Load(Path.Combine(repo, "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
     .Descendants().Single(element => (string)element.Attribute("IsVisible") == "@IsWeeklyReportsVisible");
 var weeklyBindings = weeklyView.DescendantsAndSelf().Attributes().Select(attribute => attribute.Value).ToList();
-foreach (string binding in new[] { "@BodyText", "@BodyFontSize", "@WeekText", "@DateText", "@TagText", "@ShowViewFullReport", "ExecuteViewFullReport", "@WeeklyReportVm.EmptyStateText", "@WeeklyReportVm.SelectedCountryMetaText" })
+foreach (string binding in new[] { "@BodyText", "@BodyFontSize", "@WeekText", "@DateText", "@TagText", "@ShowViewFullReport", "ExecuteViewFullReport" })
     Check(weeklyBindings.Contains(binding), "weekly XML binds " + binding);
+static bool HasWeeklyModelBinding(XElement view, string binding) => view.DescendantsAndSelf()
+    .Where(element => element.Attributes().Any(attribute => attribute.Value == binding))
+    .Any(element => (string)element.AncestorsAndSelf().FirstOrDefault(ancestor => ancestor.Attribute("DataSource") != null)?.Attribute("DataSource") == "{WeeklyReportVm}");
+foreach (string property in new[] { "EmptyStateText", "SelectedCountryMetaText" })
+{
+    Check(weeklyType.GetProperty(property, Members) != null && HasWeeklyModelBinding(weeklyView, "@" + property),
+        "weekly XML binds a real property inside the WeeklyReportVm data-source scope: " + property);
+}
+var wrongWeeklyScope = new XElement(weeklyView);
+wrongWeeklyScope.Descendants().Single(element => (string)element.Attribute("DataSource") == "{WeeklyReportVm}")
+    .SetAttributeValue("DataSource", "{WarStatsVm}");
+Check(!HasWeeklyModelBinding(wrongWeeklyScope, "@EmptyStateText"), "mutation: same field in wrong view-model scope must fail");
 Check(!weeklyBindings.Contains("@SummaryText"), "weekly XML does not bind nonexistent summary field");
 Check(af.GetType("AnimusForge.TerminalWeeklyReportBrowserPopup", false) == null && af.GetType("AFWarStatsTerminal.UI.AfWarStatsPopup", false) == null, "replaced independent popup implementations removed");
 Call(vm, "ExecuteBack"); Call(vm, "ShowDiagnostics", "status", "detail", false);

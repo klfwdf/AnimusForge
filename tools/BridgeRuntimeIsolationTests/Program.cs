@@ -7,6 +7,7 @@ namespace BridgeRuntimeIsolationTests;
 
 internal static class Program
 {
+    private static int _childRuns;
     private static readonly string[] WiredIds =
     {
         FeatureBridgeIds.ConversationGateway,
@@ -20,7 +21,6 @@ internal static class Program
         FeatureBridgeIds.GatewayKnowledgeProfile,
         FeatureBridgeIds.UiRuntimeIntegration,
         FeatureBridgeIds.HostRuntime,
-        FeatureBridgeIds.RuntimeGameAdapter,
         FeatureBridgeIds.SceneDuel,
     };
 
@@ -34,7 +34,7 @@ internal static class Program
         try
         {
             RunParent();
-            Console.WriteLine("PASS BridgeRuntimeIsolationTests scenarios=9");
+            Console.WriteLine("PASS BridgeRuntimeIsolationTests processScenarios=" + _childRuns + " definitions=16 wired=12 mandatorySafety=independent");
             return 0;
         }
         catch (Exception exception)
@@ -52,6 +52,7 @@ internal static class Program
         string[] invalid =
         {
             "{not-json",
+            "{\"schemaVersion\":1,\"contractVersion\":1,\"enabled\":[\"runtime-game-adapter\"]}",
             "{\"schemaVersion\":1,\"contractVersion\":1,\"enabled\":[\"conversation-gateway\",\"conversation-gateway\"]}",
             "{\"schemaVersion\":1,\"contractVersion\":1,\"enabled\":[\"unknown\"]}",
             "{\"schemaVersion\":1,\"contractVersion\":1,\"enabled\":[\"Conversation-Gateway\"]}",
@@ -72,6 +73,12 @@ internal static class Program
             DefinitionResult definition = disabled.Definitions.Single(item => item.Id == decision.Id);
             Require(decision.Fallback == definition.Fallback, "disabled fallback mismatch for " + decision.Id);
         }
+
+        ChildResult defaults = RunChild("missing", null, false);
+        Require(defaults.Definitions.Count == 16 && defaults.Definitions.Any(item => item.Id == FeatureBridgeIds.RuntimeGameAdapter),
+            "canonical responsibility definition must remain recorded");
+        Require(defaults.Decisions.Single(item => item.Id == FeatureBridgeIds.RuntimeGameAdapter).Status == FeatureBridgeDecisionStatus.Disabled.ToString(),
+            "unwired game adapter must not claim an enabled optional runtime entry");
 
         ChildResult invalidResult = RunChild("invalid", "{not-json", false);
         AssertFallbacksMatchDefinitions(invalidResult);
@@ -106,6 +113,7 @@ internal static class Program
 
     private static ChildResult RunChild(string name, string config, bool cwdTrap)
     {
+        _childRuns++;
         string sourceDirectory = AppContext.BaseDirectory;
         string tempRoot = Path.Combine(Path.GetTempPath(), "af-bridge-isolation-" + Guid.NewGuid().ToString("N"));
         string moduleRoot = Path.Combine(tempRoot, "AnimusForge");

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Helpers;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -188,7 +188,12 @@ public partial class RewardSystemBehavior
         {
             return false;
         }
-        int actual = TransferGold(giver, receiver, amount, forceComplete: receiver == Hero.MainHero && giver != Hero.MainHero);
+        Settlement market = ResolveNotableMarketSettlement(giver);
+        bool forceComplete = receiver == Hero.MainHero && giver != Hero.MainHero;
+        int actual = IsNotableMarketHero(giver, market)
+            ? TransferGoldFromSettlement(market, receiver, amount, giver.Name?.ToString() ?? "NPC",
+                giver.CharacterObject, forceComplete: forceComplete)
+            : TransferGold(giver, receiver, amount, forceComplete: forceComplete);
         if (actual <= 0)
         {
             return false;
@@ -225,97 +230,73 @@ public partial class RewardSystemBehavior
                 receiver,
                 out factText);
         }
-        if (string.IsNullOrWhiteSpace(assetToken) || string.IsNullOrWhiteSpace(quantityToken))
+        if (string.IsNullOrWhiteSpace(assetToken)
+            || TransferQuantitySpec.IsAllValue(assetToken)
+            || !TransferQuantitySpec.TryParse(quantityToken, out TransferQuantitySpec quantity))
         {
             return false;
         }
 
-        if (TransferQuantitySpec.IsAllValue(quantityToken))
-        {
-            List<RewardItemInfo> items = BuildHeroRewardItemResolutionContext(giver)
-                ?.Where(item => item?.Item != null && item.Count > 0)
-                ?.ToList() ?? new List<RewardItemInfo>();
-            int total = 0;
-            HashSet<string> transferredKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (RewardItemInfo item in items)
-            {
-                string key = GetRewardItemTransferKey(item);
-                if (string.IsNullOrWhiteSpace(key) || !transferredKeys.Add(key))
-                {
-                    continue;
-                }
-                int actual = TransferItemByIdForEconomyReplay(
-                    giver,
-                    receiver,
-                    key,
-                    Math.Max(1, ResolveAllRewardItemAmount(key, items)),
-                    out string itemName,
-                    forceComplete: false,
-                    mutationObservation: mutationObservation);
-                total += Math.Max(0, actual);
-                if (mutationObservation.UnknownAfterStart)
-                {
-                    break;
-                }
-            }
-            if (total <= 0)
-            {
-                return false;
-            }
-            factText = "已实际转移全部可用普通物品，共 " + total.ToString(CultureInfo.InvariantCulture) + " 件。";
-            return true;
-        }
-
-        if (!int.TryParse(quantityToken, NumberStyles.None, CultureInfo.InvariantCulture, out int quantity) || quantity <= 0)
+        bool authorized = TryResolveAuthorizedHeroRewardItem(
+            giver, assetToken, out List<RewardItemInfo> authorizedItems, out string transferKey);
+        bool generated = !authorized
+            && !quantity.IsAll
+            && receiver == Hero.MainHero
+            && giver != Hero.MainHero
+            && IsValidGeneratedRpAssetNameForExternal(assetToken);
+        if (!authorized && !generated)
         {
             return false;
         }
-        List<RewardItemInfo> contextItems = BuildHeroRewardItemResolutionContext(giver);
-        string lookup = assetToken;
-        if (TryResolveRewardItemByNameOrId(lookup, contextItems, out RewardItemResolution resolution, "refactor_economy"))
+        string lookup = authorized ? transferKey : assetToken;
+        // Count the authorized key before stripping a market owner prefix for transfer.
+        int requestedAmount = quantity.IsAll
+            ? ResolveAllRewardItemAmount(lookup, authorizedItems)
+            : quantity.Amount;
+        if (requestedAmount <= 0)
         {
-            string resolvedLookup = BuildRewardItemTransferLookup(resolution);
-            if (!string.IsNullOrWhiteSpace(resolvedLookup))
-            {
-                lookup = resolvedLookup;
-            }
+            return false;
         }
-        if (TryResolveKnownItemAssetTokenForExternal(lookup, out string itemId))
+
+        int actual;
+        string itemName;
+        if (generated)
         {
-            int actual = TransferItemByIdForEconomyReplay(
-                giver,
-                receiver,
-                itemId,
-                quantity,
-                out string itemName,
-                forceComplete: true,
+            actual = GenerateRpAssetToPlayer(
+                assetToken, requestedAmount, giver.Name?.ToString() ?? "NPC", giver.CharacterObject,
+                out itemName, out _, "refactor_economy_replay",
                 mutationObservation: mutationObservation);
-            if (actual <= 0)
+        }
+        else
+        {
+            Settlement market = ResolveNotableMarketSettlement(giver);
+            bool usesMarket = IsNotableMarketHero(giver, market);
+            string marketLookup = string.Empty;
+            bool marketItem = usesMarket && TryParseNotableMarketPromptStringId(lookup, out marketLookup);
+            if (usesMarket && !marketItem
+                && TryResolveRewardItemByNameOrId(lookup, BuildSettlementRewardItemResolutionContext(market),
+                    out RewardItemResolution marketResolution, "notable_market_give_item"))
             {
-                return false;
+                marketLookup = BuildRewardItemTransferLookup(marketResolution);
+                marketItem = !string.IsNullOrWhiteSpace(marketLookup);
             }
-            factText = "已实际转移物品 " + (itemName ?? itemId) + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
-            return true;
+            actual = marketItem
+                ? TransferItemFromSettlementForEconomyReplay(
+                    market, receiver, marketLookup, requestedAmount, giver.Name?.ToString() ?? "NPC",
+                    out itemName, giver.CharacterObject,
+                    forceComplete: !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero,
+                    mutationObservation: mutationObservation)
+                : TransferItemByIdForEconomyReplay(
+                    giver, receiver, lookup, requestedAmount, out itemName,
+                    forceComplete: !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero,
+                    mutationObservation: mutationObservation);
         }
-
-        if (!IsValidGeneratedRpAssetNameForExternal(assetToken))
+        if (actual <= 0)
         {
             return false;
         }
-        int generated = GenerateRpAssetToPlayer(
-            assetToken,
-            quantity,
-            giver.Name?.ToString() ?? "NPC",
-            giver.CharacterObject,
-            out string generatedName,
-            out ItemObject generatedItem,
-            "refactor_economy_replay",
-            mutationObservation: mutationObservation);
-        if (generated <= 0)
-        {
-            return false;
-        }
-        factText = "已生成并实际转移 RP 物品 " + (generatedName ?? assetToken) + " ×" + generated.ToString(CultureInfo.InvariantCulture) + "。";
+        factText = (generated ? "已生成并实际转移 RP 物品 " : "已实际转移物品 ")
+            + (itemName ?? lookup) + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
         return true;
     }
 

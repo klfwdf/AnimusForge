@@ -127,9 +127,23 @@ foreach (string replayAwareHelper in new[]
     AssertTrue(ownerSource.Contains(replayAwareHelper, StringComparison.Ordinal),
         "replay-aware mutation helper is missing: " + replayAwareHelper);
 }
-AssertTrue(CountOccurrences(heroSource, "TransferItemByIdForEconomyReplay(") == 2
+string heroAssetReplay = ExtractMethod(heroSource, "private bool TryReplayGiveAsset(");
+AssertTrue(heroAssetReplay.Contains("TryResolveAuthorizedHeroRewardItem(", StringComparison.Ordinal)
+    && heroAssetReplay.Contains("ResolveAllRewardItemAmount(lookup, authorizedItems)", StringComparison.Ordinal)
+    && heroAssetReplay.Contains("forceComplete: !quantity.IsAll", StringComparison.Ordinal)
+    && heroAssetReplay.Contains("TransferItemByIdForEconomyReplay(", StringComparison.Ordinal)
+    && heroAssetReplay.Contains("GenerateRpAssetToPlayer(", StringComparison.Ordinal)
+    && heroAssetReplay.Contains("TransferItemFromSettlementForEconomyReplay(", StringComparison.Ordinal)
+    && heroAssetReplay.Contains("TryParseNotableMarketPromptStringId(", StringComparison.Ordinal)
+    && CountOccurrences(heroAssetReplay, "mutationObservation: mutationObservation") == 3
     && heroSource.Contains("if (mutationObservation.UnknownAfterStart)", StringComparison.Ordinal),
-    "Hero finite/ALL item paths do not both propagate swallowed mutation uncertainty");
+    "Hero scoped finite/ALL and RP paths must preserve authority and swallowed mutation observation");
+string heroGoldReplay = ExtractMethod(heroSource, "private bool TryReplayGiveGold(");
+AssertTrue(heroGoldReplay.Contains("ResolveNotableMarketSettlement(giver)", StringComparison.Ordinal)
+    && heroGoldReplay.Contains("IsNotableMarketHero(giver, market)", StringComparison.Ordinal)
+    && heroGoldReplay.Contains("TransferGoldFromSettlement(", StringComparison.Ordinal)
+    && heroGoldReplay.Contains("TransferGold(giver, receiver", StringComparison.Ordinal),
+    "Hero gold must preserve notable market versus personal ownership");
 AssertTrue(partySource.Contains("TransferItemFromPartyForEconomyReplay(", StringComparison.Ordinal)
     && partySource.Contains("mutationObservation: mutationObservation", StringComparison.Ordinal),
     "Party item/RP path does not propagate mutation observation");

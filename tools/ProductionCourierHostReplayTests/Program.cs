@@ -145,6 +145,30 @@ object ports = portsFactory.Invoke(null, new object[] { allowedTags, true, 64 })
 AssertTrue(ports != null, "production Courier ports factory returned null");
 string portError = string.Empty;
 
+// This fixture deliberately has no Campaign/session owner. It must not invent a
+// postprocess owner merely to preserve the old synthetic two-stage call count.
+object capabilities = portsType.GetProperty("Capabilities").GetValue(ports);
+object selection = ((Delegate)portsType.GetProperty("SelectRules").GetValue(ports)).DynamicInvoke(replySnapshot);
+object unboundContext = ((Delegate)portsType.GetProperty("BuildPostprocessContext").GetValue(ports))
+    .DynamicInvoke(replySnapshot, selection, capabilities);
+object unboundPlan = ((Delegate)portsType.GetProperty("ParseActions").GetValue(ports))
+    .DynamicInvoke("[ACTION:DUEL]", unboundContext);
+AssertTrue(!((IEnumerable)actionPlanType.GetProperty("Actions").GetValue(unboundPlan)).Cast<object>().Any(),
+    "synthetic Courier synchronous ports granted live action authority");
+Delegate asyncCapture = (Delegate)portsType.GetProperty("ComposePostprocessPromptAsync")?.GetValue(ports);
+Delegate asyncParse = (Delegate)portsType.GetProperty("ParseActionsAsync")?.GetValue(ports);
+AssertTrue(asyncCapture != null && asyncParse != null, "Courier asynchronous owner contract is missing");
+Task unboundCapture = (Task)asyncCapture.DynamicInvoke(replyEnvelope, selection, "visible", "raw", unboundContext, CancellationToken.None);
+await unboundCapture;
+AssertTrue(unboundCapture.GetType().GetProperty("Result").GetValue(unboundCapture) == null,
+    "synthetic Courier snapshot fabricated a live postprocess prompt");
+Task unboundParse = (Task)asyncParse.DynamicInvoke("[ACTION:DUEL]", unboundContext, CancellationToken.None);
+await unboundParse;
+object unboundAsyncPlan = unboundParse.GetType().GetProperty("Result").GetValue(unboundParse);
+AssertTrue(!((IEnumerable)actionPlanType.GetProperty("Actions").GetValue(unboundAsyncPlan)).Cast<object>().Any(),
+    "synthetic Courier async ports parsed unbound model actions");
+List<string> generatedStages = new();
+
 int gatewayCalls = 0;
 object gateway = MakeProxy(gatewayInterfaceType, (method, arguments) =>
 {
@@ -157,7 +181,9 @@ object gateway = MakeProxy(gatewayInterfaceType, (method, arguments) =>
         gatewayCalls++;
         object request = arguments[0];
         object stage = llmRequestType.GetProperty("Stage").GetValue(request);
-        string raw = stage.ToString() == "Postprocess" ? "production-postprocess-raw" : "production-main-raw";
+        generatedStages.Add(stage.ToString());
+        AssertTrue(stage.ToString() == "MainReply", "synthetic Courier context reached postprocess HTTP without a live owner");
+        string raw = "production-main-raw";
         object llmResult = New(llmResultType, Enum.Parse(llmStatusType, "Succeeded"), raw, 3, 4, "", null);
         return TaskFromResult(llmResultType, llmResult);
     }
@@ -243,7 +269,7 @@ string commitStatus = commitResultValue.GetType().GetProperty("Status").GetValue
 AssertTrue(status == "Succeeded", "production detached host did not succeed: " + status);
 AssertTrue(visibleReply == "production-main-raw", "production detached host visible reply mismatch: " + visibleReply);
 AssertTrue(commitStatus == "Succeeded", "production detached host commit mismatch: " + commitStatus);
-AssertTrue(gatewayCalls == 2, "production detached host did not execute main and postprocess stages");
+AssertTrue(gatewayCalls == 1 && generatedStages.SequenceEqual(new[] { "MainReply" }), "ownerless reply must generate main text only");
 AssertTrue(appendedRoles.SequenceEqual(new[] { "user", "assistant" }), "Courier reply history role order mismatch");
 
 activeEnvelope = inboundEnvelope;
@@ -269,7 +295,7 @@ string inboundStatus = hostResultType.GetProperty("Status").GetValue(inboundHost
 object inboundCommit = hostResultType.GetProperty("Commit").GetValue(inboundHostResult);
 AssertTrue(inboundStatus == "Succeeded", "production Courier inbound host did not succeed: " + inboundStatus);
 AssertTrue(inboundCommit != null && inboundCommit.GetType().GetProperty("Status").GetValue(inboundCommit).ToString() == "Succeeded", "production Courier inbound commit failed");
-AssertTrue(gatewayCalls == 4, "production Courier reply/inbound did not execute expected stages");
+AssertTrue(gatewayCalls == 2 && generatedStages.SequenceEqual(new[] { "MainReply", "MainReply" }), "ownerless reply/inbound must never fabricate postprocess transport");
 AssertTrue(appendedRoles.SequenceEqual(new[] { "assistant" }), "Courier inbound seed was written as user history");
 
 int committedBeforeTerminalCases = commitDispatches;
@@ -315,7 +341,7 @@ AssertTrue((bool)hostResultType.GetProperty("UsedLegacyFallback").GetValue(fallb
     && fallbackCalls == 1, "Courier fallback isolation mismatch");
 AssertTrue(commitDispatches == committedBeforeTerminalCases, "Courier terminal/fallback cases dispatched an unexpected commit");
 
-Console.WriteLine("PASS productionCourierHostReplay courierPorts=1 replyMain=1 replyPostprocess=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1");
+Console.WriteLine("PASS productionCourierHostReplay courierPorts=1 replyMain=1 syntheticOwnerAbsent=1 unboundPostprocessDenied=1 postprocessTransportDenied=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1");
 
 internal class ReplayProxy : DispatchProxy
 {

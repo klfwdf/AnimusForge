@@ -1,0 +1,120 @@
+using System;using System.Collections; using System.Collections.Generic;using System.Collections.Concurrent;using System.Linq;using System.Reflection;using System.Threading;using System.Threading.Tasks;
+public class ShoutBehavior {
+private const int ScenePostprocessGateWaitTimeoutMilliseconds=5000;
+@@FIELDS@@
+private ShoutTargetingContext _activeShoutTargetingContext;
+// TTS owns playback semantics; this fixture retains only the collections touched by real Scene reset.
+private readonly object _ttsBubbleSyncLock=new();
+private readonly Dictionary<long,object> _ttsPlaybackOwners=new();
+private readonly Dictionary<int,long> _activeTtsPlaybackRequests=new();
+public void SeedTtsResetBoundary(){_ttsPlaybackOwners[41]=new object();_activeTtsPlaybackRequests[12]=41;}
+public bool TtsResetBoundaryEmpty=>_ttsPlaybackOwners.Count==0&&_activeTtsPlaybackRequests.Count==0;
+private float _shoutProcessingStartedAt=-1f,_stareTimer;private Agent _currentStareTarget;private bool _lastShoutDuelLiteralHit;
+private Dictionary<int,int> _activeInteractionSessions=new(), _pendingInteractionTimeoutArms=new(); private object _pendingLordsHallMissionEntryAfterSpeech; private void ClearPendingNativeSceneMechanismActions(string x){} private void ClearPendingNativeSceneTauntFight(string x){} private void UnregisterPendingLordsHallMissionEntryConversationEndHook(){}
+public int Accepted,ClearedSpeech;public Agent LastPrimary; public List<Agent> LastFramed;public string LastText;
+private bool IsBannerlordMainThreadForNativeActions()=>Environment.CurrentManagedThreadId==Program.MainThread;
+private float GetApplicationTimeSafe()=>0;
+private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string op,string target,int index,Func<T> action,T fallback){
+ if(IsBannerlordMainThreadForNativeActions())return Task.FromResult(action());
+ var done=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+ _mainThreadActions.Enqueue(()=>{try{CheckMain();done.TrySetResult(action());}catch(Exception e){done.TrySetException(e);}});return done.Task;}
+private void CheckMain(){if(!IsBannerlordMainThreadForNativeActions())throw new Exception("game mutation off main thread");}
+public void Drain(){CheckMain();while(_mainThreadActions.TryDequeue(out var action))action();}
+public int SuppressedAccepted;
+public object CaptureReplay(Agent[] framed,Agent primary){var method=GetType().GetMethod("CaptureScenePlayerShoutRequestForReplay",BindingFlags.Instance|BindingFlags.NonPublic);return method?.Invoke(this,new object[]{framed,primary});}
+private void CancelShoutHotkeyCharge(string s){} private float GetShoutProcessingElapsedSeconds()=>0;private void ResumeTtsAfterShoutUi(){}
+private static bool ContainsLiteralKeywordHit(string x,string y)=>false;
+private void DeactivateMultiSceneMovementSuppression(){}private void ClearPendingSceneConversationAttentionRelease(){}private void ResetStaringBehavior(){}private void ClearQueuedSceneSpeech(){ClearedSpeech++;}private void StopAllLipSyncPlaybackAndCleanup(){}
+public void Open(params Agent[] targets){BeginShoutProcessing("fixture_open");_activeShoutTargetingContext=new ShoutTargetingContext{CandidateAgentIndices=targets.Select(x=>x.Index).ToList(),PreviewCandidateAgents=targets.ToList(),PrimaryAgentIndex=targets.Length>0?targets[0].Index:-1};_isProcessingShout=true;}
+public void Register(Task t)=>RegisterScenePostprocessGateTask(t);public Task Wait(string x)=>WaitForScenePostprocessGateAsync(x); public Task Gate()=>GetScenePostprocessGateTask();
+public void NewSession(){ResetSceneShoutRuntimeOnMissionEnd("fixture_mission_end");}
+public int Epoch=>_sceneConversationEpoch;public bool Processing=>_isProcessingShout;public bool Waiting=>_isWaitingForScenePostprocessGate;
+public Task Submit(string x,int? primary)=>ProcessShoutConfirmedInternal(x,null,primary);
+@@GATES@@
+@@REQUEST@@
+@@METHODS@@
+@@PREFIX@@
+}
+public static class AfCompatV130 {
+private static bool _installed=true;private static object _behaviorInstance;private static MethodInfo _patchedMethod=typeof(ShoutBehavior).GetMethod("OnShoutConfirmedWithContext",BindingFlags.Instance|BindingFlags.NonPublic);
+private static MethodInfo _replayCapturedPlayerShoutMethod=typeof(ShoutBehavior).GetMethod("TryReplayCapturedScenePlayerShout",BindingFlags.Instance|BindingFlags.NonPublic);
+public static bool Suppressed=>Volatile.Read(ref _suppressRecordedObservationDepth)>0;
+private static MethodInfo _resumeGameMethod=typeof(ShoutBehavior).GetMethod("ResumeGame",BindingFlags.Instance|BindingFlags.NonPublic); private static int _replayDepth,_suppressRecordedObservationDepth;
+public static void ClaimAndResume(ShoutBehavior host)=>ResumeAfShoutUi(host);
+private static MethodInfo _capturePlayerShoutRequestMethod=typeof(ShoutBehavior).GetMethod("CaptureScenePlayerShoutRequestForReplay",BindingFlags.Instance|BindingFlags.NonPublic);
+private static FieldInfo _contextField=typeof(ShoutBehavior).GetField("_activeShoutTargetingContext",BindingFlags.Instance|BindingFlags.NonPublic),_conversationEpochField=typeof(ShoutBehavior).GetField("_sceneConversationEpoch",BindingFlags.Instance|BindingFlags.NonPublic),_primaryIndexField=typeof(ShoutTargetingContext).GetField("PrimaryAgentIndex");
+private static MethodInfo _getAgentsMethod=typeof(ShoutBehavior).GetMethod("GetAgentsForShoutTargetingContext",BindingFlags.Instance|BindingFlags.NonPublic);
+private static void CaptureBehaviorInstance(object x){_behaviorInstance=x;}
+public static void CaptureAvailable(bool available){_capturePlayerShoutRequestMethod=available?typeof(ShoutBehavior).GetMethod("CaptureScenePlayerShoutRequestForReplay",BindingFlags.Instance|BindingFlags.NonPublic):null;}
+public static bool PreRoute(ShoutBehavior host,string text,int? index)=>ObserveAcceptedPlayerShout(host,text,null,index);
+public static void Record(ShoutBehavior host,string text,int index,List<Agent> framed)=>ObserveRecordedPlayerMessage(host,text,null,index,"npc",framed.ToDictionary(a=>a.Index,a=>a));
+@@OBSERVER@@
+@@RECORD@@
+
+@@REPLAY@@
+@@RESUME@@
+}
+public enum BattleSpeechTriggerKindV2{None,DeliverPlayerSpeech,ArmPlayerSpeech,Cancel,NeedsClassifier}
+public class BattleSpeechTriggerDecisionV2{public bool Force;public BattleSpeechTriggerKindV2 Kind;}
+public static class BattleSpeechFrameworkV2{public static BattleSpeechTriggerDecisionV2 Decision=new(){Kind=BattleSpeechTriggerKindV2.NeedsClassifier};public static BattleSpeechTriggerDecisionV2 ParsePlayerShout(string text)=>Decision;}
+public static class BattleSpeechRuntimeHost{
+public static int NaturalCalls,ForcedCalls,RecordedCalls;public static bool NaturalHandled=true;public static BattleSpeechCapturedInputV1 Input;
+public static bool TryPreRouteForcedPlayerShout(Mission mission,string text,Agent player,Agent primary,List<Agent> framed,int epoch,double now,out bool allow){ForcedCalls++;allow=false;return true;}
+public static bool TryPreRouteNaturalPlayerShout(object host,Mission mission,string text,string extra,int? forced,Agent player,Agent primary,List<Agent> framed,int epoch,double now,out bool allow)=>TryPreRouteNaturalPlayerShout(host,mission,text,extra,forced,player,primary,framed,epoch,now,null,out allow);
+public static bool TryPreRouteNaturalPlayerShout(object host,Mission mission,string text,string extra,int? forced,Agent player,Agent primary,List<Agent> framed,int epoch,double now,object request,out bool allow){NaturalCalls++;allow=false;Input=new(){RawText=text,OriginalAfBehavior=host,OriginalExtraFact=extra,OriginalForcedPrimaryAgentIndex=forced,OriginalScenePlayerShoutRequest=request,FramedTargets=framed.ToArray(),PrimaryTarget=primary};return NaturalHandled;}
+public static void SubmitPlayerShout(Mission mission,string text,Agent player,Agent primary,List<Agent> framed,int epoch,double now){RecordedCalls++;}
+public static void Reset(){NaturalCalls=ForcedCalls=RecordedCalls=0;NaturalHandled=true;Input=null;BattleSpeechFrameworkV2.Decision=new(){Kind=BattleSpeechTriggerKindV2.NeedsClassifier};SceneActionsRuntimeHost.Calls=0;AfCompatV130.CaptureAvailable(true);}
+}
+public static class SceneActionsRuntimeHost{public static int Calls;public static void SubmitPlayerSceneShout(Guid id,Mission mission,string text,Agent player,Agent primary,List<Agent> framed,double now){Calls++;}}
+public class BattleSpeechCapturedInputV1 { public string RawText,OriginalExtraFact;public object OriginalAfBehavior;public object OriginalScenePlayerShoutRequest; public int? OriginalForcedPrimaryAgentIndex;public Agent[] FramedTargets;public Agent PrimaryTarget; }
+public class ShoutTargetingContext{public List<int> CandidateAgentIndices;public List<Agent> PreviewCandidateAgents;public int PrimaryAgentIndex;}
+public static class AIConfigHandler{public static string DuelTriggerKeywords="duel";}
+public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long x)=>x==Generation;}
+public sealed class InformationMessage{public string Text;public InformationMessage(string text,Color c){Text=text;}}
+public static class InformationManager{public static List<string> Messages=new();public static void DisplayMessage(InformationMessage m){Messages.Add(m.Text);Console.WriteLine("UI "+m.Text);}}
+public class Color{public Color(float r,float g,float b){}}
+public static class Logger{public static void Log(string c,string t){}}
+public static class SceneActionsLog{public static void Error(string c,string t,Exception e){throw e;}}
+public struct Vec3{public float X,Y,Z;public Vec3(float x,float y,float z){X=x;Y=y;Z=z;}public float Distance(Vec3 o)=>MathF.Sqrt((X-o.X)*(X-o.X)+(Y-o.Y)*(Y-o.Y)+(Z-o.Z)*(Z-o.Z));public static Vec3 operator -(Vec3 a,Vec3 b)=>new(a.X-b.X,a.Y-b.Y,a.Z-b.Z);public void Normalize(){float m=Distance(default);if(m>0){X/=m;Y/=m;Z/=m;}}public static float DotProduct(Vec3 a,Vec3 b)=>a.X*b.X+a.Y*b.Y+a.Z*b.Z;}
+public class Agent{public static Agent Main;public int Index;public bool IsHuman=true;public bool IsActive()=>true;public Vec3 Position,LookDirection=new Vec3(1,0,0);}
+public class Scene{public float TimeSpeed;}
+public class Mission{public double CurrentTime;public static Mission Current;public Scene Scene=new();public List<Agent> Agents=new();}
+public static class ShoutUtils{public static bool HasShoutLineOfSightToMainAgent(Agent a)=>true;
+@@UTILS@@
+}
+public sealed class ManualContext:SynchronizationContext{private BlockingCollection<(SendOrPostCallback,object)> q=new();public override void Post(SendOrPostCallback c,object s)=>q.Add((c,s));public Task Capture(Func<Task> body){var p=Current;SetSynchronizationContext(this);try{return body();}finally{SetSynchronizationContext(p);}} public void RunNext(){if(!q.TryTake(out var x,3000))throw new Exception("missing continuation");var p=Current;SetSynchronizationContext(this);try{x.Item1(x.Item2);}finally{SetSynchronizationContext(p);}}}
+public static class Program{
+public static readonly int MainThread=Environment.CurrentManagedThreadId;static int passed,failed;
+static void Check(bool ok,string msg){if(!ok)throw new Exception(msg);} static TaskCompletionSource<bool> Pending()=>new(TaskCreationOptions.RunContinuationsAsynchronously);
+static void Pump(ShoutBehavior host,Task task){var limit=DateTime.UtcNow.AddSeconds(4);while(!task.IsCompleted&&DateTime.UtcNow<limit){host.Drain();Thread.Sleep(1);}host.Drain();Check(task.IsCompleted,"main dispatch timeout");task.GetAwaiter().GetResult();}
+static void AwaitAccept(ShoutBehavior host,int expected){var limit=DateTime.UtcNow.AddSeconds(3);while(host.Accepted!=expected&&DateTime.UtcNow<limit){host.Drain();Thread.Sleep(1);}host.Drain();Check(host.Accepted==expected,"wrong accepted count="+host.Accepted);}
+static Agent At(int id,float x)=>new Agent{Index=id,Position=new Vec3(x,0,0)};
+static void World(params Agent[] targets){Agent.Main=At(0,0);Mission.Current=new Mission{Agents=targets.Append(Agent.Main).ToList()};InformationManager.Messages.Clear();BattleSpeechRuntimeHost.Reset();}
+static BattleSpeechCapturedInputV1 Input(ShoutBehavior host,Agent npc)=>new(){RawText="给大家讲两句吧",OriginalAfBehavior=host,OriginalForcedPrimaryAgentIndex=npc.Index,FramedTargets=new[]{npc},PrimaryTarget=npc,OriginalScenePlayerShoutRequest=host.CaptureReplay(new[]{npc},npc)};
+static void ReplayRange(){var npc=At(12,20);World(npc);var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);Check(AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _),"replay refused");Check(host.Accepted==1&&ReferenceEquals(host.LastPrimary,npc),"frozen 20m target lost");}
+static void ReplayAudience(){var npc=At(12,3);World(npc,At(13,2));var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);Check(AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _),"replay failed");Check(host.Accepted==1&&host.LastFramed.Count==1,"framed scope broadened");}
+static void StaleSession(){var npc=At(12,20);World(npc);var host=new ShoutBehavior();host.Open(npc);var gate=Pending();host.Register(gate.Task);var context=new ManualContext();Task submit=context.Capture(()=>host.Submit("OLD SESSION PLAYER TEXT",12));host.SeedTtsResetBoundary();host.NewSession();World(At(12,22));host.Open(Mission.Current.Agents[0]);int epoch=host.Epoch,clear=host.ClearedSpeech;context.RunNext();Pump(host,submit);Check(host.Accepted==0&&host.Epoch==epoch&&host.ClearedSpeech==clear&&host.Processing,"stale input mutated new session");Check(host.TtsResetBoundaryEmpty,"real Scene reset did not clear TTS owner boundaries");gate.TrySetResult(true);}
+static void SameGateWaiters(){World();var host=new ShoutBehavior();host.Open(At(12,3));var gate=Pending();host.Register(gate.Task);var a=new ManualContext();var b=new ManualContext();Task wa=a.Capture(()=>host.Wait("first"));Task wb=b.Capture(()=>host.Wait("second"));gate.SetResult(true);a.RunNext();b.RunNext();Check(wa.IsCompleted&&wb.IsCompleted&&!host.Waiting&&host.Processing,"lost borrowed processing flag");}
+static void ClosedUiWaiter(bool reopen){World();var host=new ShoutBehavior();host.Open(At(12,3));var gate=Pending();host.Register(gate.Task);Task wait=host.Wait("closed-ui");if(reopen)host.Open(At(13,3));AfCompatV130.ClaimAndResume(host);gate.SetResult(true);Pump(host,wait);Check(!host.Processing&&!host.Waiting,"closed UI resurrected busy flag");}
+static void ReverseWaiters(){World();var host=new ShoutBehavior();host.Open(At(12,3));var gate=Pending();host.Register(gate.Task);var a=new ManualContext();var b=new ManualContext();Task wa=a.Capture(()=>host.Wait("first"));Task wb=b.Capture(()=>host.Wait("second"));gate.SetResult(true);b.RunNext();a.RunNext();Check(wa.IsCompleted&&wb.IsCompleted&&!host.Waiting&&host.Processing,"reverse waiters lost borrowed flag");}
+static void StaleWhileWaiting(string kind){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var gate=Pending();host.Register(gate.Task);Task submit=host.Submit("stale "+kind,12);int epoch=host.Epoch,clear=host.ClearedSpeech;
+ if(kind=="generation")SaveRuntimeGuard.Generation++;else if(kind=="mission")Mission.Current=new Mission{Agents=new(){Agent.Main,npc}};else if(kind=="player")Agent.Main=At(0,0);else if(kind=="new-ui")host.Open(npc);
+ gate.SetResult(true);Pump(host,submit);Check(host.Accepted==0&&host.Epoch==epoch&&host.ClearedSpeech==clear,"stale "+kind+" side effect");}
+static void MainThreadDispatch(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var gate=Pending();host.Register(gate.Task);Task submit=host.Submit("main",12);Task.Run(()=>gate.SetResult(true)).GetAwaiter().GetResult();Pump(host,submit);Check(host.Accepted==1,"valid await rejected");}
+static void FrozenMutation(){var npc=At(12,20);var other=At(13,3);World(npc,other);var host=new ShoutBehavior();host.Open(npc);var field=typeof(ShoutBehavior).GetField("_activeShoutTargetingContext",BindingFlags.Instance|BindingFlags.NonPublic);var mutable=(ShoutTargetingContext)field.GetValue(host);var gate=Pending();host.Register(gate.Task);Task submit=host.Submit("frozen",12);mutable.CandidateAgentIndices.Clear();mutable.PreviewCandidateAgents.Clear();mutable.CandidateAgentIndices.Add(13);mutable.PreviewCandidateAgents.Add(other);gate.SetResult(true);Pump(host,submit);Check(host.Accepted==1&&ReferenceEquals(host.LastPrimary,npc)&&host.LastFramed.Count==1,"mutable targeting read after await");}
+static void AgentReuse(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var gate=Pending();host.Register(gate.Task);Task submit=host.Submit("identity",12);int epoch=host.Epoch;Mission.Current.Agents.Remove(npc);Mission.Current.Agents.Add(At(12,3));gate.SetResult(true);Pump(host,submit);Check(host.Accepted==0&&host.Epoch==epoch,"replaced agent accepted or epoch cleared");}
+static void ReplayStale(string kind){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);if(kind=="new-ui")host.Open(npc);else if(kind=="generation")SaveRuntimeGuard.Generation++;else if(kind=="mission")Mission.Current=new Mission{Agents=new(){Agent.Main,npc}};else input.OriginalScenePlayerShoutRequest=null;int epoch=host.Epoch,clear=host.ClearedSpeech;Check(!AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _),"stale replay accepted "+kind);Check(host.Accepted==0&&host.Epoch==epoch&&host.ClearedSpeech==clear,"stale replay mutation "+kind);}
+static void ReplayOnce(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);Check(AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _),"first replay failed");Check(!AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _)&&host.Accepted==1,"replayed twice");}
+static void ReplayPendingOnce(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);var gate=Pending();host.Register(gate.Task);Check(AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _),"first pending replay refused");bool duplicate=AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _);gate.SetResult(true);AwaitAccept(host,1);Check(!duplicate&&host.Accepted==1,"pending request consumed twice");}
+static void DeferredObservation(bool observe){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);var gate=Pending();host.Register(gate.Task);Check(AfCompatV130.TryReplayOriginalPlayerShout(input,observe,out _),"deferred replay rejected");Check(host.Accepted==0&&!AfCompatV130.Suppressed,"suppression leaked over await");gate.SetResult(true);AwaitAccept(host,1);Check(host.SuppressedAccepted==(observe?0:1)&&BattleSpeechRuntimeHost.RecordedCalls==(observe?1:0)&&!AfCompatV130.Suppressed,"wrong delayed observation scope");}
+static void TwoInputs(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var gate=Pending();host.Register(gate.Task);Task old=host.Submit("old",12);Task current=host.Submit("new",12);gate.SetResult(true);Pump(host,Task.WhenAll(old,current));Check(host.Accepted==1&&host.LastText=="new"&&!host.Waiting,"two gate inputs lost newest request");}
+static void FullClaimReplay(){var npc=At(12,20);World(npc);var host=new ShoutBehavior();host.Open(npc);Check(!AfCompatV130.PreRoute(host,"plain",12),"natural claim not intercepted");Check(!host.Processing&&BattleSpeechRuntimeHost.NaturalCalls==1&&BattleSpeechRuntimeHost.Input!=null,"natural capture/UI not completed");Check(AfCompatV130.TryReplayOriginalPlayerShout(BattleSpeechRuntimeHost.Input,false,out _),"full route fallback failed");Check(host.Accepted==1&&ReferenceEquals(host.LastPrimary,npc)&&BattleSpeechRuntimeHost.RecordedCalls==0,"full route target lost or classifier reentered");}
+static void MissingReplayCapability(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);AfCompatV130.CaptureAvailable(false);Check(AfCompatV130.PreRoute(host,"plain",12)&&BattleSpeechRuntimeHost.NaturalCalls==0&&SceneActionsRuntimeHost.Calls==1,"old host lost ordinary scene observer");AfCompatV130.CaptureAvailable(true);}
+static void MissingPrimary(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);Check(AfCompatV130.PreRoute(host,"plain",99)&&BattleSpeechRuntimeHost.NaturalCalls==0&&SceneActionsRuntimeHost.Calls==1,"missing scope claimed or skipped ordinary scene observer");}
+static void ForcedNoScope(){World();var host=new ShoutBehavior();host.Open();BattleSpeechFrameworkV2.Decision=new(){Force=true,Kind=BattleSpeechTriggerKindV2.DeliverPlayerSpeech};Check(!AfCompatV130.PreRoute(host,"speech",null)&&BattleSpeechRuntimeHost.ForcedCalls==1&&BattleSpeechRuntimeHost.NaturalCalls==0,"forced route lost when no replay scope");}
+static void UnclaimedNormal(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);BattleSpeechRuntimeHost.NaturalHandled=false;Check(AfCompatV130.PreRoute(host,"plain",12),"unclaimed ordinary input blocked");Pump(host,host.Submit("plain",12));Check(host.Accepted==1&&SceneActionsRuntimeHost.Calls==1&&BattleSpeechRuntimeHost.RecordedCalls==1,"ordinary observer path changed");}
+static void OwnResumeAfterSubmit(){var npc=At(12,3);World(npc);var host=new ShoutBehavior();host.Open(npc);var gate=Pending();host.Register(gate.Task);Task submit=host.Submit("own resume",12);AfCompatV130.ClaimAndResume(host);gate.SetResult(true);Pump(host,submit);Check(host.Accepted==1&&!host.Processing,"own UI close invalidated accepted input or resurrected busy flag");}
+static void StaleDeferredReplay(){var npc=At(12,3);var next=At(13,4);World(npc,next);var host=new ShoutBehavior();host.Open(npc);var input=Input(host,npc);AfCompatV130.ClaimAndResume(host);var gate=Pending();host.Register(gate.Task);Check(AfCompatV130.TryReplayOriginalPlayerShout(input,false,out _),"deferred kickoff refused");host.Open(next);gate.SetResult(true);Pump(host,host.Gate());Thread.Sleep(30);host.Drain();Check(host.Accepted==0&&host.Processing,"late replay overwrote new input");}
+static void Case(string name,Action action){try{action();passed++;Console.WriteLine("PASS "+name);}catch(Exception e){failed++;Console.WriteLine("FAIL "+name+": "+e.Message);}}
+public static int Main(string[] args){Console.OutputEncoding=System.Text.Encoding.UTF8;bool core=args.Contains("core");Case("replay-frozen-range",ReplayRange);Case("replay-framed-audience",ReplayAudience);Case("stale-session-after-await",StaleSession);Case("same-gate-waiters",SameGateWaiters);if(!core){Case("full-natural-claim-replay",FullClaimReplay);Case("old-host-observer-fallthrough",MissingReplayCapability);Case("missing-primary-observer-fallthrough",MissingPrimary);Case("forced-route-without-scope",ForcedNoScope);Case("unclaimed-normal-observer",UnclaimedNormal);Case("own-resume-preserves-accepted-input",OwnResumeAfterSubmit);Case("stale-deferred-replay-new-ui",StaleDeferredReplay);Case("resume-ui-no-stale-busy",()=>ClosedUiWaiter(false));Case("new-ui-resume-no-stale-busy",()=>ClosedUiWaiter(true));Case("reverse-gate-waiters",ReverseWaiters);foreach(string x in new[]{"generation","mission","player","new-ui"})Case("stale-"+x,()=>StaleWhileWaiting(x));Case("main-thread-resume",MainThreadDispatch);Case("frozen-context-copy",FrozenMutation);Case("agent-index-reuse",AgentReuse);foreach(string x in new[]{"new-ui","generation","mission","no-scope"})Case("replay-reject-"+x,()=>ReplayStale(x));Case("replay-one-shot",ReplayOnce);Case("replay-pending-one-shot",ReplayPendingOnce);Case("deferred-ordinary-observation",()=>DeferredObservation(false));Case("deferred-battle-observation",()=>DeferredObservation(true));Case("two-inputs-one-gate",TwoInputs);}Console.WriteLine($"SceneRequestLifetime PASS={passed} FAIL={failed} LIVE=NOT_RUN");return failed==0?0:1;}
+}

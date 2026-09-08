@@ -489,11 +489,14 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return await RunCourierDetachedRefactorFallbackAsync("missing_courier_inbound_facade", fallbackToLegacy).ConfigureAwait(false);
 		}
+		Task<DetachedInteractionHostResult> execution = await RunCourierOwnerPhaseAsync(
+			SaveRuntimeGuard.CaptureGeneration(), "inbound_host_start", () =>
+		{
 		DetachedInteractionHost host = new DetachedInteractionHost(
 			facade.Capture,
 			facade.GenerateAsync,
 			facade.Commit);
-		return await host.ExecuteAsync(
+		return host.ExecuteAsync(
 			playerText,
 			configuration,
 			moduleId,
@@ -508,7 +511,9 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			fallbackToLegacy,
 			cancellationToken,
 			CompleteCourierInboundDetachedCommit,
-			appendPlayerInput: false).ConfigureAwait(false);
+			appendPlayerInput: false);
+		}, cancellationToken).ConfigureAwait(false);
+		return await execution.ConfigureAwait(false);
 	}
 
 	private async Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInCoreAsync(
@@ -525,11 +530,14 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return await RunCourierDetachedRefactorFallbackAsync("missing_courier_facade", fallbackToLegacy).ConfigureAwait(false);
 		}
+		Task<DetachedInteractionHostResult> execution = await RunCourierOwnerPhaseAsync(
+			SaveRuntimeGuard.CaptureGeneration(), "reply_host_start", () =>
+		{
 		DetachedInteractionHost host = new DetachedInteractionHost(
 			facade.Capture,
 			facade.GenerateAsync,
 			facade.Commit);
-		return await host.ExecuteAsync(
+		return host.ExecuteAsync(
 			playerText,
 			configuration,
 			moduleId,
@@ -541,7 +549,9 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
 				sessionId),
 			fallbackToLegacy,
-			cancellationToken).ConfigureAwait(false);
+			cancellationToken);
+		}, cancellationToken).ConfigureAwait(false);
+		return await execution.ConfigureAwait(false);
 	}
 
 	private static IInteractionMemory CreateCourierMemoryFacadeForExternal(InteractionEnvelope envelope)
@@ -788,18 +798,20 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			request.Messages,
 			MainReplyMaxTokens,
 			"legacy-courier-reply");
-		DetachedPostprocessPromptSections postprocess = instance.BuildCourierDetachedPostprocessSections(
-			recipient,
-			request,
-			request.LetterText,
-			request.HistoryText,
-			string.Empty);
+		return instance.CapturePreparedCourierReplyEnvelope(request, recipient, prompt);
+	}
+
+	private InteractionEnvelope CapturePreparedCourierReplyEnvelope(CourierReplyGenerationRequest request, Hero recipient, PromptPackage prompt)
+	{
 		Dictionary<string, string> facts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
 			["courier_direction"] = "outbound_reply",
 			["courier_selected_rule_ids"] = string.Join(",", request.SelectedRuleHits ?? new List<string>()),
 			["rule_runtime_context"] = "courier",
-			["excluded_rule_ids"] = string.Join(",", CourierExcludedRuleIds)
+			["excluded_rule_ids"] = string.Join(",", CourierExcludedRuleIds),
+			["courier_request_extras"] = request.Extras ?? string.Empty,
+			["courier_request_history"] = request.HistoryText ?? string.Empty,
+			["courier_request_entities"] = request.EntityPostprocessContext ?? string.Empty
 		};
 		return LegacyInteractionSnapshotAdapters.CaptureCourierFromPromptPackage(
 			recipient,
@@ -807,7 +819,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			request.SessionId,
 			request.ExtraFact,
 			prompt,
-			postprocess,
+			null,
 			facts);
 	}
 
@@ -863,14 +875,20 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		bool includePostprocess = true,
 		int maxActions = 64)
 	{
+		return CreateCourierDetachedPorts(allowedTagFamilies, includePostprocess, maxActions, null);
+	}
+
+	private static LegacyInteractionPipelinePorts CreateCourierDetachedPorts(
+		IEnumerable<string> allowedTagFamilies, bool includePostprocess, int maxActions, PromptPackage preparedMainPrompt)
+	{
 		List<string> tagFamilies = (allowedTagFamilies ?? Enumerable.Empty<string>())
 			.Where(value => !string.IsNullOrWhiteSpace(value))
 			.Select(value => value.Trim())
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.ToList();
-		LegacyDetachedPromptComposer mainComposer = new LegacyDetachedPromptComposer(model: "legacy-courier");
-		LegacyDetachedPostprocessPromptComposer postComposer = new LegacyDetachedPostprocessPromptComposer(model: "legacy-courier-postprocess");
+		LegacyDetachedPromptComposer mainComposer = new LegacyDetachedPromptComposer(MainReplyMaxTokens, "legacy-courier");
 		LegacyActionTagParser actionParser = new LegacyActionTagParser(maxActions);
+		var postprocessOwners = new ConditionalWeakTable<PostprocessContext, CourierDetachedPostprocessOwner>();
 		CapabilitySet capabilities = new CapabilitySet(new[]
 		{
 			"llm.generate",
@@ -891,13 +909,18 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 					.Concat(ReadCourierCsvFact(snapshot, "courier_selected_rule_ids"))
 					.Distinct(StringComparer.OrdinalIgnoreCase),
 				Array.Empty<string>()),
-			(envelope, selection, availableCapabilities) => mainComposer.Compose(envelope, selection, availableCapabilities),
+			(envelope, selection, availableCapabilities) => preparedMainPrompt ?? mainComposer.Compose(envelope, selection, availableCapabilities),
 			(snapshot, selection, availableCapabilities) => new PostprocessContext(selection?.RuleIds, tagFamilies, availableCapabilities),
-			(rawText, context) => actionParser.Parse(rawText, context),
-			(rawText, internalTagFamilies) => LlmVisibleReplyNormalizer.NormalizeComplete(rawText),
+			// Unbound/synchronous parsing has no live rule authority. Only the async owner may parse.
+			(rawText, context) => new ActionPlan(Array.Empty<ActionRequest>(), string.Empty),
+			(rawText, internalTagFamilies) => NormalizeCourierDetachedVisibleReply(rawText),
 			capabilities,
+			null,
 			includePostprocess
-				? ((envelope, selection, visibleReply, rawReply, context) => postComposer.Compose(envelope, selection, visibleReply, rawReply, context))
+				? ((envelope, selection, visibleReply, rawReply, context, token) => PrepareCourierDetachedPostprocessAsync(envelope, rawReply, context, postprocessOwners, token))
+				: null,
+			includePostprocess
+				? ((rawText, context, token) => CompleteCourierDetachedPostprocessAsync(rawText, context, postprocessOwners, actionParser, token))
 				: null);
 	}
 
@@ -915,7 +938,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			.ToList();
 	}
 
-	private DetachedPostprocessPromptSections BuildCourierDetachedPostprocessSections(
+	private ShoutBehavior.CourierActionPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(
 		Hero recipient,
 		CourierReplyGenerationRequest request,
 		string playerText,
@@ -924,7 +947,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		if (recipient == null || request == null)
 		{
-			return DetachedPostprocessPromptSections.Empty;
+			return null;
 		}
 		string extras = request.Extras ?? string.Empty;
 		List<string> selected = request.SelectedRuleHits ?? new List<string>();
@@ -971,13 +994,9 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			kingdomAnnexationRuleInjected: false,
 			chainName: "courier-detached"))
 		{
-			return DetachedPostprocessPromptSections.Empty;
+			return null;
 		}
-		return new DetachedPostprocessPromptSections(
-			new[] { workItem.SystemPrompt },
-			Array.Empty<string>(),
-			new[] { workItem.UserPrompt },
-			appendLatestVisibleReply: true);
+		return workItem;
 	}
 
 	public override void RegisterEvents()
@@ -4547,9 +4566,20 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				bool legacyFallbackStarted = false;
 				try
 				{
-					LegacyInteractionPipelinePorts ports = CreateCourierDetachedPortsForExternal(LegacyActionTagCatalog.DefaultAllowedTagFamilies);
+					PromptPackage preparedMainPrompt = LegacyPromptPackageAdapter.FromLegacyMessages(request.Messages, MainReplyMaxTokens, "legacy-courier-reply");
+					InteractionEnvelope preparedEnvelope = await RunCourierOwnerPhaseAsync(runtimeGeneration,
+						"reply_capture_prepared", () =>
+						{
+							CourierSession current = GetSessionById(request.SessionId);
+							Hero currentRecipient = current == null ? null : ResolveRecipient(current);
+							if (current == null || IsTerminalStage(current) || currentRecipient == null || currentRecipient.IsDead
+								|| !string.Equals(SafeHeroId(currentRecipient), request.RecipientHeroId, StringComparison.Ordinal))
+								throw new OperationCanceledException("Courier prepared request expired.");
+							return CapturePreparedCourierReplyEnvelope(request, currentRecipient, preparedMainPrompt);
+						}, CancellationToken.None).ConfigureAwait(false);
+					LegacyInteractionPipelinePorts ports = CreateCourierDetachedPorts(LegacyActionTagCatalog.DefaultAllowedTagFamilies, true, 64, preparedMainPrompt);
 					ILlmGateway gateway = new LegacyShoutNetworkGateway();
-					using (LegacyChannelInteractionFacade facade = CreateCourierReplyRefactorFacadeForExternal(ports, gateway, sessionId))
+					using (LegacyChannelInteractionFacade facade = LegacyInteractionSnapshotAdapters.CreateCourierInteractionFacade(ports, gateway, _ => preparedEnvelope))
 					{
 						if (facade != null)
 						{

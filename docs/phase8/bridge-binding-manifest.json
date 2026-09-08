@@ -159,11 +159,11 @@
         "NATIVE_FALLBACK"
       ],
       "runtimeBinding": {
-        "state": "wired",
-        "entryPath": "InteractionComponentSafePatch.cs",
-        "symbol": "EnsurePatched",
-        "frequency": "startup",
-        "notes": "Mission interaction component safety patching is gated before reflection and Harmony patch application; disabled falls back to native unpatched behavior."
+        "state": "declared-only",
+        "entryPath": null,
+        "symbol": null,
+        "frequency": "none",
+        "notes": "Optional runtime-game-adapter wiring is not implemented. InteractionComponentSafePatch is mandatory safety infrastructure installed independently by Patch_TriggerMassiveHook, not a configurable bridge; disabling optional bridges must not disable this patch."
       }
     },
     {

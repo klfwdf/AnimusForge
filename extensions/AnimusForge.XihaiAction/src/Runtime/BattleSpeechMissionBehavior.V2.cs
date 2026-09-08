@@ -55,6 +55,7 @@ namespace AnimusForge.XihaiAction
                 ConversationEpoch = input.ConversationEpoch,
                 SubmittedAtMissionTime = input.SubmittedAtMissionTime,
                 OriginalAfBehavior = input.OriginalAfBehavior,
+                OriginalScenePlayerShoutRequest = input.OriginalScenePlayerShoutRequest,
                 OriginalExtraFact = input.OriginalExtraFact,
                 OriginalForcedPrimaryAgentIndex = input.OriginalForcedPrimaryAgentIndex
             };
@@ -243,7 +244,8 @@ namespace AnimusForge.XihaiAction
             {
                 if (trigger.Generation != _triggerGeneration ||
                     trigger.Input == null ||
-                    !ReferenceEquals(trigger.Input.Mission, Mission))
+                    !ReferenceEquals(trigger.Input.Mission, Mission)
+                    || !AfCompatV130.IsCapturedPlayerShoutCurrent(trigger.Input))
                 {
                     continue;
                 }
@@ -347,6 +349,9 @@ namespace AnimusForge.XihaiAction
             Agent player = input.Player ?? Mission.MainAgent ?? Agent.Main;
             if (kind == BattleSpeechTriggerKindV2.ArmPlayerSpeech)
             {
+                // Resolve-phase callbacks and newer UI input must not revive a captured old request.
+                // This is a read-only host check immediately before starting any session side effects.
+                if (!AfCompatV130.IsCapturedPlayerShoutCurrent(input)) { return; }
                 ActiveBattleSpeechSessionV1 session = StartSession(
                     player,
                     BattleSpeechSpeakerKindV1.Player,

@@ -24,6 +24,8 @@ Main-speech tests execute the actual sanitizer and enqueue helper. The enqueue b
 
 Lifecycle tests compile those five actual delegate bodies as `Func<bool>` callbacks. Only captured input objects and final game-side owners are stubbed; current requests must call the correct owners in order, while stale generation/session/epoch requests must call none. This covers the failure/cleanup tail after a history or speech enqueue rejection, not merely the generation-success path.
 
+Courier prepared-capture and owner-phase scheduling dependencies are stubbed here; their actual implementations are covered by `tools/CourierPostprocessOwnerRegressionTests`. The extracted cutover block itself remains unchanged.
+
 Courier Host outcomes and `ProcessSessionById` are simulated. Its original 24 cases retain their assertions: pending action text must be cleared and action consumption reserved before terminal session processing. The stub checks state at the real caller boundary, not the actual downstream arrival/return implementation.
 
 ## Commands

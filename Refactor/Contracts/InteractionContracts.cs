@@ -547,6 +547,12 @@ public interface IActionPostprocessor
     ActionPlan Parse(string rawText, PostprocessContext context);
 }
 
+/// <summary>Runs channel-owned normalization before creating an executable plan.</summary>
+public interface IAsyncActionPostprocessor : IActionPostprocessor
+{
+    Task<ActionPlan> ParseAsync(string rawText, PostprocessContext context, CancellationToken cancellationToken);
+}
+
 public interface IInteractionPipeline
 {
     Task<InteractionResult> GenerateAsync(

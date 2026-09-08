@@ -160,7 +160,7 @@ object MakePrompt(string role, string content, string model)
     return New(promptPackageType, OneArray(promptMessageType, message), 128, model);
 }
 
-Type[] portsConstructorTypes = portsType.GetConstructors().Single().GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+Type[] portsConstructorTypes = portsType.GetConstructors().Single(ctor => ctor.GetParameters().Length == 7).GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 Delegate selectRules = HandlerDelegate(portsConstructorTypes[0], _ => emptySelection);
 Delegate composePrompt = HandlerDelegate(portsConstructorTypes[1], _ => MakePrompt("user", "production detached main", "fixture-main"));
 Delegate buildContext = HandlerDelegate(portsConstructorTypes[2], _ => emptyContext);

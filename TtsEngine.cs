@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 
@@ -53,8 +51,35 @@ internal sealed class TtsEngine : IDisposable
 		public IntPtr reserved;
 	}
 
+	internal sealed class PlaybackRequest
+	{
+		private readonly CancellationToken _generationToken;
+		public long RequestId { get; }
+		public int AgentIndex { get; }
+		public CancellationToken CancellationToken { get; }
+		public bool IsCancellationRequested => CancellationToken.IsCancellationRequested || _generationToken.IsCancellationRequested;
+
+		internal PlaybackRequest(long requestId, int agentIndex, CancellationToken cancellationToken, CancellationToken generationToken)
+		{
+			RequestId = requestId;
+			AgentIndex = agentIndex;
+			CancellationToken = cancellationToken;
+			_generationToken = generationToken;
+		}
+	}
+
 	private class TtsJob
 	{
+		public PlaybackRequest Request;
+		public CancellationTokenSource Cancellation;
+		public bool BypassEnabledCheck;
+		public bool Cancelled;
+		public bool TerminalPublished;
+		public bool HoldsQueueSlot;
+		public bool ReleaseRequested;
+		public bool CancellationDispatched;
+		public bool CancellationDisposed;
+
 		public string Text;
 
 		public int SpeakerId;
@@ -88,16 +113,19 @@ internal sealed class TtsEngine : IDisposable
 	private volatile bool _stopWorker;
 
 	private IntPtr _currentWaveOut = IntPtr.Zero;
+	private PlaybackRequest _currentWaveOutRequest;
 
 	private readonly object _playbackLock = new object();
 
-	private volatile bool _cancelCurrent;
-
-	private volatile bool _bypassEnabledCheck;
+	private readonly object _requestLock = new object();
+	private readonly Dictionary<long, TtsJob> _pendingJobs = new Dictionary<long, TtsJob>();
+	private CancellationTokenSource _playbackGeneration = new CancellationTokenSource();
+	private static long _nextRequestId;
+	private int _reservedQueueSlots;
+	private TtsJob _currentJob;
 
 	private volatile bool _pauseRequested;
 
-	private volatile int _currentAgentIndex = -1;
 
 	private static readonly uint _currentProcessId = (uint)Process.GetCurrentProcess().Id;
 
@@ -127,7 +155,7 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	public bool IsReady => _initialized;
+	public bool IsReady => _initialized && !_disposed && !_stopWorker;
 
 	public event Action<int> OnPlaybackStarted;
 
@@ -136,6 +164,13 @@ internal sealed class TtsEngine : IDisposable
 	public event Action<int, string, string, float> OnAudioFileReady;
 
 	public event Action<int, string> OnPlaybackFailed;
+
+	// Existing events remain source-compatible; in-project consumers use the request-scoped events.
+	public event Action<PlaybackRequest> OnRequestPlaybackStarted;
+	public event Action<PlaybackRequest> OnRequestPlaybackFinished;
+	public event Action<PlaybackRequest, string, string, float> OnRequestAudioFileReady;
+	public event Action<PlaybackRequest, string> OnRequestPlaybackFailed;
+	public event Action<PlaybackRequest> OnRequestPlaybackCancelled;
 
 	[DllImport("winmm.dll")]
 	internal static extern int waveOutOpen(out IntPtr phwo, uint uDeviceID, ref WAVEFORMATEX pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
@@ -172,13 +207,13 @@ internal sealed class TtsEngine : IDisposable
 
 	public void Initialize()
 	{
-		if (_initialized)
+		if (_initialized || _disposed)
 		{
 			return;
 		}
 		lock (_initLock)
 		{
-			if (_initialized)
+			if (_initialized || _disposed)
 			{
 				return;
 			}
@@ -202,6 +237,11 @@ internal sealed class TtsEngine : IDisposable
 	}
 
 	public bool SpeakAsync(string text, int speakerId = -1, float speed = -1f, int agentIndex = -1, string voiceIdOverride = null)
+	{
+		return SpeakAsync(text, speakerId, speed, agentIndex, voiceIdOverride, null);
+	}
+
+	public bool SpeakAsync(string text, int speakerId, float speed, int agentIndex, string voiceIdOverride, Action<PlaybackRequest> onAccepted)
 	{
 		if (!IsReady)
 		{
@@ -244,9 +284,9 @@ internal sealed class TtsEngine : IDisposable
 				AgentIndex = agentIndex,
 				VoiceIdOverride = (voiceIdOverride ?? "").Trim()
 			};
-			if (!_jobQueue.TryAdd(item, 0))
+			if (!TryEnqueueJob(item, onAccepted))
 			{
-				Logger.Log("TtsEngine", "[WARN] TTS 队列已满，丢弃: " + text.Substring(0, Math.Min(30, text.Length)));
+				Logger.Log("TtsEngine", "[WARN] TTS 请求未入队（已取消、已关闭或队列已满）: " + text.Substring(0, Math.Min(30, text.Length)));
 				return false;
 			}
 			return true;
@@ -267,47 +307,181 @@ internal sealed class TtsEngine : IDisposable
 				Text = text.Trim(),
 				SpeakerId = 0,
 				Speed = ((speed > 0f) ? speed : 1f),
-				AgentIndex = -1
+				AgentIndex = -1,
+				BypassEnabledCheck = true
 			};
-			_bypassEnabledCheck = true;
-			if (!_jobQueue.TryAdd(item, 0))
+			if (!TryEnqueueJob(item, null))
 			{
-				_bypassEnabledCheck = false;
 				Logger.Log("TtsEngine", "[WARN] TTS 队列已满，测试播放丢弃");
 			}
 		}
 	}
 
-	public void StopPlayback()
+	private bool TryEnqueueJob(TtsJob job, Action<PlaybackRequest> onAccepted)
+	{
+		lock (_requestLock)
+		{
+			if (!IsReady || _reservedQueueSlots >= _jobQueue.BoundedCapacity)
+			{
+				return false;
+			}
+			CancellationToken generationToken = _playbackGeneration.Token;
+			job.Cancellation = CancellationTokenSource.CreateLinkedTokenSource(generationToken);
+			job.Request = new PlaybackRequest(Interlocked.Increment(ref _nextRequestId), job.AgentIndex, job.Cancellation.Token, generationToken);
+			job.HoldsQueueSlot = true;
+			_reservedQueueSlots++;
+			_pendingJobs.Add(job.Request.RequestId, job);
+		}
+		bool queued = false;
+		try
+		{
+			// Register waits before publication, without holding lifecycle locks across caller code.
+			onAccepted?.Invoke(job.Request);
+			lock (_requestLock)
+			{
+				if (IsJobCurrentLocked(job))
+				{
+					queued = _jobQueue.TryAdd(job, 0);
+				}
+			}
+			return queued;
+		}
+		finally
+		{
+			if (!queued)
+			{
+				CancelJob(job);
+				ReleaseJob(job);
+			}
+		}
+	}
+
+	private bool IsJobCurrentLocked(TtsJob job)
+	{
+		return job != null && !job.Cancelled && !job.Request.IsCancellationRequested && !_stopWorker && !_disposed
+			&& _pendingJobs.ContainsKey(job.Request.RequestId);
+	}
+
+	private bool IsJobCurrent(TtsJob job)
+	{
+		lock (_requestLock) { return IsJobCurrentLocked(job); }
+	}
+
+	private void ReleaseJob(TtsJob job)
+	{
+		CancellationTokenSource dispose = null;
+		lock (_requestLock)
+		{
+			_pendingJobs.Remove(job.Request.RequestId);
+			if (job.HoldsQueueSlot)
+			{
+				job.HoldsQueueSlot = false;
+				_reservedQueueSlots--;
+			}
+			if (ReferenceEquals(_currentJob, job))
+			{
+				_currentJob = null;
+			}
+			job.ReleaseRequested = true;
+			if (!job.CancellationDisposed && (!job.Cancelled || job.CancellationDispatched))
+			{
+				job.CancellationDisposed = true;
+				dispose = job.Cancellation;
+			}
+		}
+		dispose?.Dispose();
+	}
+
+	private void CancelJob(TtsJob job)
+	{
+		lock (_requestLock)
+		{
+			if (job == null || job.Cancelled || job.ReleaseRequested) { return; }
+			job.Cancelled = true;
+		}
+		DispatchJobCancellation(job);
+	}
+
+	private void DispatchJobCancellation(TtsJob job)
 	{
 		try
 		{
-			TtsJob item;
-			while (_jobQueue.TryTake(out item))
+			job.Cancellation.Cancel();
+		}
+		catch (Exception ex)
+		{
+			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.CancelRequest", ex);
+		}
+		try
+		{
+			InvokePlaybackSubscribers(OnRequestPlaybackCancelled, handler => handler(job.Request), job.Request, allowCancelled: true);
+		}
+		catch (Exception ex)
+		{
+			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnRequestPlaybackCancelled", ex);
+		}
+		finally
+		{
+			CancellationTokenSource dispose = null;
+			lock (_requestLock)
 			{
-			}
-			_cancelCurrent = true;
-			_pauseRequested = false;
-			lock (_playbackLock)
-			{
-				if (_currentWaveOut != IntPtr.Zero)
+				job.CancellationDispatched = true;
+				if (job.ReleaseRequested && !job.CancellationDisposed)
 				{
-					try
-					{
-						waveOutReset(_currentWaveOut);
-						return;
-					}
-					catch
-					{
-						return;
-					}
+					job.CancellationDisposed = true;
+					dispose = job.Cancellation;
 				}
 			}
-		}
-		catch
-		{
+			dispose?.Dispose();
 		}
 	}
+
+	public void StopPlayback()
+	{
+		CancellationTokenSource previousGeneration;
+		List<TtsJob> jobs;
+		List<TtsJob> drained = new List<TtsJob>();
+		lock (_requestLock)
+		{
+			previousGeneration = _playbackGeneration;
+			if (previousGeneration == null) { return; }
+			_playbackGeneration = _disposed ? null : new CancellationTokenSource();
+			jobs = new List<TtsJob>();
+			foreach (TtsJob job in _pendingJobs.Values)
+			{
+				if (!job.Cancelled && !job.ReleaseRequested)
+				{
+					// Claim cancellation before a dequeued worker can release its CTS or skip notification.
+					job.Cancelled = true;
+					jobs.Add(job);
+				}
+			}
+			while (_jobQueue.TryTake(out TtsJob queued)) { drained.Add(queued); }
+			_pauseRequested = false;
+		}
+		// All accepted jobs, including a job between dequeue and activation, retain this generation.
+		try { previousGeneration.Cancel(); }
+		catch (Exception ex) { BannerlordExceptionSentinel.ReportObservedException("TtsEngine.StopPlayback", ex); }
+		finally { previousGeneration.Dispose(); }
+		foreach (TtsJob job in jobs) { DispatchJobCancellation(job); }
+		foreach (TtsJob job in drained) { ReleaseJob(job); }
+		ResetCurrentWaveOut();
+	}
+
+	private void ResetCurrentWaveOut()
+	{
+		lock (_playbackLock)
+		{
+			// A cancellation subscriber can enqueue a new job before StopPlayback finishes.
+			// Never reset an audio handle now owned by that newer request.
+			if (_currentWaveOut != IntPtr.Zero && _currentWaveOutRequest != null && _currentWaveOutRequest.IsCancellationRequested)
+			{
+				try { waveOutReset(_currentWaveOut); }
+				catch { }
+			}
+		}
+	}
+
 
 	public void PausePlayback()
 	{
@@ -389,79 +563,87 @@ internal sealed class TtsEngine : IDisposable
 				TtsJob item;
 				try
 				{
-					if (!_jobQueue.TryTake(out item, 500))
-					{
-						continue;
-					}
+					if (!_jobQueue.TryTake(out item, 500)) { continue; }
 				}
-				catch (InvalidOperationException)
-				{
-					break;
-				}
-				if (_stopWorker)
-				{
-					break;
-				}
-				if (_bypassEnabledCheck)
-				{
-					_bypassEnabledCheck = false;
-				}
-				else
-				{
-					try
-					{
-						DuelSettings settings = DuelSettings.GetSettings();
-						if (settings != null && (!settings.EnableTtsSpeech || !settings.TtsVolcDedicatedEnabled))
-						{
-							continue;
-						}
-					}
-					catch
-					{
-					}
-				}
-				_cancelCurrent = false;
+				catch (InvalidOperationException) { break; }
 				try
 				{
-					ProcessJob(item);
+					lock (_requestLock)
+					{
+						if (!IsJobCurrentLocked(item)) { continue; }
+						_currentJob = item;
+						if (item.HoldsQueueSlot)
+						{
+							item.HoldsQueueSlot = false;
+							_reservedQueueSlots--;
+						}
+					}
+					if (IsJobCurrent(item)) { ProcessJob(item); }
 				}
-				catch (Exception ex2)
+				catch (OperationCanceledException) when (item.Request.IsCancellationRequested) { }
+				catch (Exception ex)
 				{
-					Logger.Log("TtsEngine", "[ERROR] ProcessJob: " + ex2.Message);
-					BannerlordExceptionSentinel.ReportObservedException("TtsEngine.ProcessJob", ex2, "agentIndex=" + (item?.AgentIndex ?? (-1)));
-					NotifyPlaybackFailed(item, "TTS processing exception: " + ex2.Message);
+					Logger.Log("TtsEngine", "[ERROR] ProcessJob: " + ex.Message);
+					BannerlordExceptionSentinel.ReportObservedException("TtsEngine.ProcessJob", ex, "agentIndex=" + item.AgentIndex);
+					NotifyPlaybackFailed(item, "TTS processing exception: " + ex.Message);
 				}
+				finally { ReleaseJob(item); }
 			}
 		}
-		catch (Exception ex3)
+		catch (Exception ex)
 		{
-			Logger.Log("TtsEngine", "[ERROR] WorkerLoop 异常退出: " + ex3.Message);
-			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.WorkerLoop", ex3);
+			Logger.Log("TtsEngine", "[ERROR] WorkerLoop 异常退出: " + ex.Message);
+			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.WorkerLoop", ex);
 		}
 		Logger.Log("TtsEngine", "工作线程已退出");
+	}
+
+
+	private static void InvokePlaybackSubscribers<TDelegate>(TDelegate subscribers, Action<TDelegate> invoke, PlaybackRequest request, bool allowCancelled = false) where TDelegate : Delegate
+	{
+		if (subscribers == null) { return; }
+		foreach (TDelegate handler in subscribers.GetInvocationList())
+		{
+			if (!allowCancelled && request.IsCancellationRequested) { break; }
+			try { invoke(handler); }
+			catch (Exception ex) { BannerlordExceptionSentinel.ReportObservedException("TtsEngine.PlaybackSubscriber", ex); }
+		}
+	}
+
+	private bool PublishJobEvent(TtsJob job, Action requestEvent, Action legacyEvent, bool terminal = false)
+	{
+		lock (_requestLock)
+		{
+			if (!IsJobCurrentLocked(job) || job.TerminalPublished) { return false; }
+			if (terminal) { job.TerminalPublished = true; }
+		}
+		try { if (!job.Request.IsCancellationRequested) { requestEvent?.Invoke(); } }
+		catch (Exception ex) { BannerlordExceptionSentinel.ReportObservedException("TtsEngine.RequestEvent", ex); }
+		// Subscribers can reenter StopPlayback. Never follow that with an unscoped late event.
+		try { if (!job.Request.IsCancellationRequested) { legacyEvent?.Invoke(); } }
+		catch (Exception ex) { BannerlordExceptionSentinel.ReportObservedException("TtsEngine.LegacyEvent", ex); }
+		return !job.Request.IsCancellationRequested;
 	}
 
 	private void NotifyPlaybackFailed(TtsJob job, string reason)
 	{
 		string text = string.IsNullOrWhiteSpace(reason) ? "TTS failed." : reason.Trim();
-		LogTtsReport("NotifyPlaybackFailed", job?.AgentIndex ?? (-1), $"reason={text}");
-		try
-		{
-			this.OnPlaybackFailed?.Invoke(job?.AgentIndex ?? -1, text);
-		}
-		catch (Exception ex)
-		{
-			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.NotifyPlaybackFailed", ex, "agentIndex=" + (job?.AgentIndex ?? (-1)));
-		}
+		LogTtsReport("NotifyPlaybackFailed", job?.AgentIndex ?? -1, "reason=" + text);
+		PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestPlaybackFailed, handler => handler(job.Request, text), job.Request), () => InvokePlaybackSubscribers(OnPlaybackFailed, handler => handler(job.AgentIndex, text), job.Request), terminal: true);
 	}
+
+	private void NotifyPlaybackFinished(TtsJob job)
+	{
+		PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestPlaybackFinished, handler => handler(job.Request), job.Request), () => InvokePlaybackSubscribers(OnPlaybackFinished, handler => handler(job.AgentIndex), job.Request), terminal: true);
+	}
+
 
 	private void ProcessJob(TtsJob job)
 	{
-		if (string.IsNullOrWhiteSpace(job.Text))
+		if (!IsJobCurrent(job) || string.IsNullOrWhiteSpace(job.Text))
 		{
 			return;
 		}
-		_currentAgentIndex = job.AgentIndex;
 		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(job.Text ?? string.Empty).Length}");
 		string text = "";
 		string text2 = "";
@@ -506,7 +688,7 @@ internal sealed class TtsEngine : IDisposable
 		{
 			text5 = job.VoiceIdOverride;
 		}
-		if (!flag2)
+		if (!flag2 && !job.BypassEnabledCheck)
 		{
 			NotifyPlaybackFailed(job, "TTS disabled during playback; fallback to text bubble.");
 			Logger.Log("TtsEngine", "[WARN] 火山专用模式未开启，跳过合成");
@@ -561,10 +743,10 @@ internal sealed class TtsEngine : IDisposable
 		{
 			LogTtsReport("ProcessJob.AbortInvalidAgent.BeforeSynthesis", job.AgentIndex, "speakerId=" + job.SpeakerId);
 			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
-			_currentAgentIndex = -1;
 			return;
 		}
-		byte[] array = CallVolcV1Api(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson);
+		byte[] array = CallVolcV1Api(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson, job.Request.CancellationToken);
+		if (!IsJobCurrent(job)) { return; }
 		if (array == null || array.Length == 0)
 		{
 			NotifyPlaybackFailed(job, "TTS synthesis returned empty audio.");
@@ -572,7 +754,7 @@ internal sealed class TtsEngine : IDisposable
 		}
 		else
 		{
-			if (_cancelCurrent || _stopWorker)
+			if (job.Request.IsCancellationRequested || _stopWorker)
 			{
 				return;
 			}
@@ -594,7 +776,7 @@ internal sealed class TtsEngine : IDisposable
 			}
 			else
 			{
-				if (_cancelCurrent || _stopWorker)
+				if (job.Request.IsCancellationRequested || _stopWorker)
 				{
 					return;
 				}
@@ -602,23 +784,22 @@ internal sealed class TtsEngine : IDisposable
 				{
 					LogTtsReport("ProcessJob.AbortInvalidAgent.BeforePlayback", job.AgentIndex, $"bytes={array.Length}");
 					NotifyPlaybackFailed(job, "Scene speech target became unavailable before playback.");
-					_currentAgentIndex = -1;
 					return;
 				}
 				float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
 				bool flag3 = job.AgentIndex >= 0;
-				bool nativeMapConversationTableauPlayback = !flag3 && this.OnAudioFileReady != null && ShoutBehavior.ShouldUseMapConversationTableauPlaybackForNativeTtsExternal();
+				bool nativeMapConversationTableauPlayback = !flag3 && (this.OnAudioFileReady != null || this.OnRequestAudioFileReady != null) && ShoutBehavior.ShouldUseMapConversationTableauPlaybackForNativeTtsExternal();
 				bool flag4 = flag3 ? flag : !nativeMapConversationTableauPlayback;
 				LogTtsReport("ProcessJob.PlaybackPrepared", job.AgentIndex, $"duration={num3:F2};sampleRate={sampleRate};sceneAgent={flag3};playAudible={flag4};mapTableau={nativeMapConversationTableauPlayback}");
 				try
 				{
-					if (this.OnAudioFileReady != null)
+					if (this.OnAudioFileReady != null || this.OnRequestAudioFileReady != null)
 					{
 						if (job.AgentIndex < 0 && !nativeMapConversationTableauPlayback)
 						{
 							try
 							{
-								this.OnAudioFileReady(job.AgentIndex, "", "", num3);
+								PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestAudioFileReady, handler => handler(job.Request, "", "", num3), job.Request), () => InvokePlaybackSubscribers(OnAudioFileReady, handler => handler(job.AgentIndex, "", "", num3), job.Request));
 								LogTtsReport("ProcessJob.OnAudioDurationReadyDispatched", job.AgentIndex, $"duration={num3:F2}");
 							}
 							catch (Exception ex)
@@ -664,7 +845,11 @@ internal sealed class TtsEngine : IDisposable
 							GenerateRhubarbXml(text9, num3);
 							try
 							{
-								this.OnAudioFileReady(job.AgentIndex, text8, text9, num3);
+								if (!PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestAudioFileReady, handler => handler(job.Request, text8, text9, num3), job.Request), () => InvokePlaybackSubscribers(OnAudioFileReady, handler => handler(job.AgentIndex, text8, text9, num3), job.Request)))
+								{
+									TryDeleteUnpublishedAudioFile(text8);
+									TryDeleteUnpublishedAudioFile(text9);
+								}
 								LogTtsReport("ProcessJob.OnAudioFileReadyDispatched", job.AgentIndex, $"wav={Path.GetFileName(text8)};xml={Path.GetFileName(text9)};duration={num3:F2}");
 							}
 							catch (Exception ex)
@@ -682,7 +867,7 @@ internal sealed class TtsEngine : IDisposable
 				try
 				{
 					LogTtsReport("ProcessJob.OnPlaybackStartedDispatching", job.AgentIndex);
-					this.OnPlaybackStarted?.Invoke(job.AgentIndex);
+					PublishJobEvent(job, () => InvokePlaybackSubscribers(OnRequestPlaybackStarted, handler => handler(job.Request), job.Request), () => InvokePlaybackSubscribers(OnPlaybackStarted, handler => handler(job.AgentIndex), job.Request));
 					LogTtsReport("ProcessJob.OnPlaybackStartedDispatched", job.AgentIndex);
 				}
 				catch (Exception ex2)
@@ -696,7 +881,7 @@ internal sealed class TtsEngine : IDisposable
 					{
 						if (flag4)
 						{
-							PlayPcmData(pcmData, sampleRate, num2, true);
+							PlayPcmData(job, pcmData, sampleRate, num2, true);
 							return;
 						}
 						int num5 = Math.Max(100, (int)(num3 * 1000f) + 100);
@@ -704,7 +889,7 @@ internal sealed class TtsEngine : IDisposable
 						bool flag5 = false;
 						while (num6 < num5)
 						{
-							if (_cancelCurrent || _stopWorker)
+							if (job.Request.IsCancellationRequested || _stopWorker)
 							{
 								break;
 							}
@@ -734,7 +919,7 @@ internal sealed class TtsEngine : IDisposable
 						int num8 = 0;
 						while (num8 < num7)
 						{
-							if (_cancelCurrent || _stopWorker)
+							if (job.Request.IsCancellationRequested || _stopWorker)
 							{
 								break;
 							}
@@ -749,25 +934,21 @@ internal sealed class TtsEngine : IDisposable
 					}
 					else
 					{
-						PlayPcmData(pcmData, sampleRate, num2, false);
+						PlayPcmData(job, pcmData, sampleRate, num2, false);
 					}
 				}
 				finally
 				{
 					try
 					{
-						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatching", job.AgentIndex, $"cancelCurrent={_cancelCurrent};stopWorker={_stopWorker}");
-						this.OnPlaybackFinished?.Invoke(job.AgentIndex);
-						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatched", job.AgentIndex, $"cancelCurrent={_cancelCurrent};stopWorker={_stopWorker}");
+						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatching", job.AgentIndex, $"cancelCurrent={job.Request.IsCancellationRequested};stopWorker={_stopWorker}");
+						NotifyPlaybackFinished(job);
+						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatched", job.AgentIndex, $"cancelCurrent={job.Request.IsCancellationRequested};stopWorker={_stopWorker}");
 					}
 					catch (Exception ex3)
 					{
 						LogTtsReport("ProcessJob.OnPlaybackFinishedFailed", job.AgentIndex, "error=" + ex3.Message);
 						BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnPlaybackFinished", ex3, "agentIndex=" + job.AgentIndex);
-					}
-					finally
-					{
-						_currentAgentIndex = -1;
 					}
 				}
 			}
@@ -776,41 +957,19 @@ internal sealed class TtsEngine : IDisposable
 
 	public bool InterruptCurrentPlaybackForAgent(int agentIndex, string reason = "")
 	{
-		if (agentIndex < 0)
+		TtsJob current;
+		lock (_requestLock)
 		{
-			return false;
-		}
-		if (_currentAgentIndex != agentIndex)
-		{
-			LogTtsReport("InterruptCurrentPlaybackForAgent.Skip", agentIndex, "reason=" + reason + ";currentAgentIndex=" + _currentAgentIndex);
-			return false;
-		}
-		try
-		{
-			_cancelCurrent = true;
+			current = _currentJob;
+			if (agentIndex < 0 || current == null || current.AgentIndex != agentIndex || !IsJobCurrentLocked(current)) { return false; }
 			_pauseRequested = false;
-			lock (_playbackLock)
-			{
-				if (_currentWaveOut != IntPtr.Zero)
-				{
-					try
-					{
-						waveOutReset(_currentWaveOut);
-					}
-					catch
-					{
-					}
-				}
-			}
-			LogTtsReport("InterruptCurrentPlaybackForAgent", agentIndex, "reason=" + reason);
-			return true;
 		}
-		catch (Exception ex)
-		{
-			LogTtsReport("InterruptCurrentPlaybackForAgent.Failed", agentIndex, "reason=" + reason + ";error=" + ex.Message);
-			return false;
-		}
+		CancelJob(current);
+		ResetCurrentWaveOut();
+		LogTtsReport("InterruptCurrentPlaybackForAgent", agentIndex, "reason=" + reason);
+		return true;
 	}
+
 
 	private void LogTtsReport(string stage, int agentIndex, string extra = null)
 	{
@@ -826,7 +985,7 @@ internal sealed class TtsEngine : IDisposable
 				queueCount = -1;
 			}
 			string extraSuffix = string.IsNullOrWhiteSpace(extra) ? string.Empty : ", " + extra;
-			Logger.Log("TTSReport", $"[Engine.{stage}] agentIndex={agentIndex}, queueCount={queueCount}, ready={_initialized}, disposed={_disposed}, cancelCurrent={_cancelCurrent}, pauseRequested={_pauseRequested}, stopWorker={_stopWorker}, waveOutActive={(_currentWaveOut != IntPtr.Zero)}{extraSuffix}");
+			Logger.Log("TTSReport", $"[Engine.{stage}] agentIndex={agentIndex}, queueCount={queueCount}, ready={_initialized}, disposed={_disposed}, cancelCurrent={_currentJob?.Request.IsCancellationRequested ?? false}, pauseRequested={_pauseRequested}, stopWorker={_stopWorker}, waveOutActive={(_currentWaveOut != IntPtr.Zero)}{extraSuffix}");
 		}
 		catch (Exception ex)
 		{
@@ -834,10 +993,11 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	private byte[] CallVolcV1Api(string apiUrl, string token, string appId, string resourceId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson)
+	private byte[] CallVolcV1Api(string apiUrl, string token, string appId, string resourceId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson, CancellationToken cancellationToken)
 	{
 		try
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			TtsSynthesisRequest request = new TtsSynthesisRequest(
 				apiUrl,
 				appId,
@@ -850,7 +1010,7 @@ internal sealed class TtsEngine : IDisposable
 				loudnessRatio,
 				extraParamJson);
 			TtsSynthesisResult result = new LegacyVolcTtsGateway(_httpClient)
-				.SynthesizeAsync(request, token, CancellationToken.None)
+				.SynthesizeAsync(request, token, cancellationToken)
 				.GetAwaiter()
 				.GetResult();
 			if (!result.Success)
@@ -858,7 +1018,12 @@ internal sealed class TtsEngine : IDisposable
 				Logger.Log("TtsEngine", "[ERROR] 火山 V1 Gateway failure: " + (result.ErrorCode ?? "unknown"));
 				return null;
 			}
+			cancellationToken.ThrowIfCancellationRequested();
 			return result.AudioBytes;
+		}
+		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+		{
+			throw;
 		}
 		catch (Exception exception)
 		{
@@ -867,22 +1032,12 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	private static string NormalizeExtraParam(string json)
+	private static void TryDeleteUnpublishedAudioFile(string path)
 	{
-		if (string.IsNullOrWhiteSpace(json))
-		{
-			return "{}";
-		}
-		try
-		{
-			JToken jToken = JToken.Parse(json);
-			return jToken.ToString(Formatting.None);
-		}
-		catch
-		{
-			return null;
-		}
+		try { if (!string.IsNullOrEmpty(path)) { File.Delete(path); } }
+		catch (Exception ex) { BannerlordExceptionSentinel.ReportObservedException("TtsEngine.UnpublishedAudioCleanup", ex); }
 	}
+
 
 	private static void ParseAudioData(byte[] data, string format, out byte[] pcmData, out int sampleRate)
 	{
@@ -1005,9 +1160,9 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	private void PlayPcmData(byte[] pcmData, int sampleRate, float volume, bool autoPauseOnFocusLoss)
+	private void PlayPcmData(TtsJob job, byte[] pcmData, int sampleRate, float volume, bool autoPauseOnFocusLoss)
 	{
-		if (pcmData == null || pcmData.Length == 0)
+		if (job.Request.IsCancellationRequested || pcmData == null || pcmData.Length == 0)
 		{
 			return;
 		}
@@ -1028,6 +1183,7 @@ internal sealed class TtsEngine : IDisposable
 		lock (_playbackLock)
 		{
 			_currentWaveOut = phwo;
+			_currentWaveOutRequest = job.Request;
 		}
 		try
 		{
@@ -1053,7 +1209,15 @@ internal sealed class TtsEngine : IDisposable
 				Logger.Log("TtsEngine", $"[ERROR] waveOutPrepareHeader 失败, result={num}");
 				return;
 			}
-			num = waveOutWrite(phwo, ref pwh, cbwh);
+			lock (_playbackLock)
+			{
+				if (job.Request.IsCancellationRequested || _stopWorker)
+				{
+					waveOutUnprepareHeader(phwo, ref pwh, cbwh);
+					return;
+				}
+				num = waveOutWrite(phwo, ref pwh, cbwh);
+			}
 			if (num != 0)
 			{
 				Logger.Log("TtsEngine", $"[ERROR] waveOutWrite 失败, result={num}");
@@ -1066,7 +1230,7 @@ internal sealed class TtsEngine : IDisposable
 			bool flag2 = false;
 			while (num3 < num2)
 			{
-				if (_cancelCurrent || _stopWorker)
+				if (job.Request.IsCancellationRequested || _stopWorker)
 				{
 					break;
 				}
@@ -1116,7 +1280,7 @@ internal sealed class TtsEngine : IDisposable
 					break;
 				}
 			}
-			if (_cancelCurrent || _stopWorker)
+			if (job.Request.IsCancellationRequested || _stopWorker)
 			{
 				waveOutReset(phwo);
 			}
@@ -1128,6 +1292,7 @@ internal sealed class TtsEngine : IDisposable
 			lock (_playbackLock)
 			{
 				_currentWaveOut = IntPtr.Zero;
+				_currentWaveOutRequest = null;
 			}
 			waveOutClose(phwo);
 		}
@@ -1257,24 +1422,24 @@ internal sealed class TtsEngine : IDisposable
 
 	public void Dispose()
 	{
-		if (!_disposed)
+		lock (_initLock)
 		{
-			_disposed = true;
-			_stopWorker = true;
-			StopPlayback();
-			try
+			lock (_requestLock)
 			{
-				_jobQueue.CompleteAdding();
+				if (_disposed) { return; }
+				_disposed = true;
+				_stopWorker = true;
+				_initialized = false;
 			}
-			catch
-			{
-			}
-			if (_workerThread != null && _workerThread.IsAlive)
-			{
-				_workerThread.Join(3000);
-			}
-			_initialized = false;
-			Logger.Log("TtsEngine", "TTS 引擎已释放");
 		}
+		// Cancellation events are caller code and may reenter Initialize/Dispose from any thread.
+		StopPlayback();
+		try { _jobQueue.CompleteAdding(); }
+		catch (InvalidOperationException) { }
+		if (_workerThread != null && _workerThread != Thread.CurrentThread && _workerThread.IsAlive)
+		{
+			_workerThread.Join(3000);
+		}
+		Logger.Log("TtsEngine", "TTS 引擎已释放");
 	}
 }

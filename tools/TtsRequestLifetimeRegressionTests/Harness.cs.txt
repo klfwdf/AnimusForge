@@ -1,0 +1,80 @@
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Reflection;
+using AnimusForge;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+
+namespace AnimusForge.Refactor.Contracts {
+ public sealed class TtsSynthesisRequest { public string Text; public TtsSynthesisRequest(string a,string b,string c,string d,string text,string f,int g,float h,float i,string j){Text=text;} }
+ public sealed class TtsSynthesisResult { public bool Success;public string ErrorCode;public byte[] AudioBytes; }
+}
+namespace AnimusForge.Refactor.Adapters {
+ public sealed class LegacyVolcTtsGateway {
+  public static Func<TtsSynthesisRequest,CancellationToken,TtsSynthesisResult> Send = (_,_)=>new(){Success=true,AudioBytes=new byte[16]};
+  public LegacyVolcTtsGateway(System.Net.Http.HttpClient c){}
+  public Task<TtsSynthesisResult> SynthesizeAsync(TtsSynthesisRequest r,string t,CancellationToken c)=>Task.FromResult(Send(r,c));
+ }
+}
+namespace AnimusForge {
+ static class Logger { public static void Log(string a,string b){} }
+ static class BannerlordExceptionSentinel { public static ConcurrentQueue<Exception> Errors=new(); public static void ReportObservedException(string a,Exception b,string c=null){Errors.Enqueue(b);} }
+ static class ShoutBehavior { public static bool CanAgentParticipateInSceneSpeechExternal(int i)=>true;public static bool ShouldUseMapConversationTableauPlaybackForNativeTtsExternal()=>true; }
+ sealed class DuelSettings {
+  public bool EnableTtsSpeech=true,TtsVolcDedicatedEnabled=true,TtsSceneUseWinmmAudible=false;
+  public string TtsVolcDedicatedApiUrl="https://fixture.invalid",TtsVolcDedicatedApiKey="fixture",TtsVolcDedicatedAppKey="fixture",TtsVolcDedicatedResourceId="fixture",TtsVolcDedicatedSpeaker="fixture",TtsVolcDedicatedAudioFormat="pcm",TtsVolcDedicatedAdditionsJson="{}";
+  public int TtsVolcDedicatedSampleRate=24000;
+  public float TtsVolcDedicatedVolume=0,TtsLipSyncSoundEventVolume=0,TtsVolcDedicatedSpeed=1;
+  public static Func<DuelSettings> Read=()=>new(); public static DuelSettings GetSettings()=>Read();
+ }
+}
+static class Program {
+ static int Passed,Failed;
+ const BindingFlags F=BindingFlags.Instance|BindingFlags.Static|BindingFlags.NonPublic;
+ static object Get(object o,string n)=>o.GetType().GetField(n,F).GetValue(o);
+ static void Set(object o,string n,object v)=>o.GetType().GetField(n,F).SetValue(o,v);
+ static object Call(object o,string n,params object[] a)=>o.GetType().GetMethod(n,F).Invoke(o,a);
+ static void Assert(bool v,string message){if(!v)throw new Exception(message);}
+ static void Eventually(Func<bool> p,string m){Assert(SpinWait.SpinUntil(p,4000),m);}
+ static TtsEngine Manual(){var e=new TtsEngine();Set(e,"_initialized",true);return e;}
+ static TtsEngine Active(){var e=new TtsEngine();e.OnRequestAudioFileReady+=(r,w,x,d)=>{};e.Initialize();return e;}
+ static IDictionary Jobs(TtsEngine e)=>(IDictionary)Get(e,"_pendingJobs");
+ static object Job(TtsEngine e,TtsEngine.PlaybackRequest r)=>Jobs(e)[r.RequestId];
+ static bool Speak(TtsEngine e,Action<TtsEngine.PlaybackRequest> cb=null,string text="hello",int agent=-1)=>e.SpeakAsync(text,-1,-1,agent,null,cb);
+ static void Check(string name,Action test){try{DuelSettings.Read=()=>new();LegacyVolcTtsGateway.Send=(_,_)=>new(){Success=true,AudioBytes=new byte[16]};while(BannerlordExceptionSentinel.Errors.TryDequeue(out _)){};test();Passed++;Console.WriteLine("PASS "+name);}catch(Exception e){Failed++;Console.WriteLine("FAIL "+name+": "+e);}}
+ static int Main(){
+  typeof(TtsEngine).GetField("_tempAudioDir",F).SetValue(null,Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory,"audio-fixtures"));
+  Check("not-ready rejects without acceptance",()=>{using var e=new TtsEngine();int n=0;Assert(!Speak(e,_=>n++),"accepted");Assert(n==0,"callback");});
+  Check("blank rejects without acceptance",()=>{using var e=Manual();int n=0;Assert(!Speak(e,_=>n++," "),"accepted");Assert(n==0,"callback");});
+  Check("acceptance precedes publication and runs outside lock",()=>{using var e=Manual();Assert(Speak(e,r=>{Assert(!Monitor.IsEntered(Get(e,"_requestLock")),"lock held");Assert((int)Get(e,"_reservedQueueSlots")==1,"unreserved");Assert(((ICollection)Get(e,"_jobQueue")).Count==0,"published early");}),"rejected");});
+  Check("Stop before publication retires request",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;int cancel=0;e.OnRequestPlaybackCancelled+=_=>cancel++;Assert(!Speak(e,x=>{r=x;e.StopPlayback();}),"published");Assert(r.IsCancellationRequested&&cancel==1&&Jobs(e).Count==0,"not cancelled exactly once");});
+  Check("cross-thread Stop from acceptance is deadlock-free",()=>{using var e=Manual();Assert(!Speak(e,_=>Assert(Task.Run(e.StopPlayback).Wait(2000),"deadlock")),"published");});
+  Check("acceptance exception releases reservation",()=>{using var e=Manual();int cancel=0;e.OnRequestPlaybackCancelled+=_=>cancel++;Assert(!Speak(e,_=>throw new Exception("expected acceptance")),"accepted");Assert(cancel==1&&Jobs(e).Count==0&&(int)Get(e,"_reservedQueueSlots")==0,"leak");Assert(Speak(e),"next rejected");});
+  Check("acceptance reentrantly enqueues independent job",()=>{using var e=Manual();TtsEngine.PlaybackRequest a=null,b=null;Assert(Speak(e,x=>{a=x;Assert(Speak(e,y=>b=y),"nested rejected");}),"outer rejected");Assert(a.RequestId!=b.RequestId&&Jobs(e).Count==2,"collision");});
+  Check("queue capacity accounts for unpublished reservations",()=>{using var e=Manual();int cb=0;for(int i=0;i<32;i++)Assert(Speak(e,_=>cb++),"capacity early");Assert(!Speak(e,_=>cb++),"overflow");Assert(cb==32,"rejected callback ran");e.StopPlayback();Assert(Jobs(e).Count==0&&(int)Get(e,"_reservedQueueSlots")==0,"drain leak");Assert(Speak(e),"capacity not restored");});
+  Check("Stop drains all pending IDs exactly once",()=>{using var e=Manual();var ids=new HashSet<long>();int cancel=0;e.OnRequestPlaybackCancelled+=r=>{Assert(ids.Add(r.RequestId),"duplicate");cancel++;};for(int i=0;i<10;i++)Speak(e);e.StopPlayback();e.StopPlayback();Assert(cancel==10,"missing cancellation");});
+  Check("dequeued pre-activation request cannot be revived",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);var j=Job(e,r);var queue=Get(e,"_jobQueue");object[] args={null,0};queue.GetType().GetMethod("TryTake",new[]{j.GetType().MakeByRefType(),typeof(int)}).Invoke(queue,args);e.StopPlayback();Assert(!(bool)Call(e,"IsJobCurrent",j),"revived");Call(e,"ReleaseJob",j);Assert(Jobs(e).Count==0,"release leak");});
+  Check("Stop cancellation callback can submit new generation",()=>{using var e=Manual();TtsEngine.PlaybackRequest old=null,next=null;Speak(e,r=>old=r);e.OnRequestPlaybackCancelled+=r=>{if(r.RequestId==old.RequestId)Assert(Speak(e,x=>next=x),"new rejected");};e.StopPlayback();Assert(old.IsCancellationRequested&&!next.IsCancellationRequested&&Jobs(e).Count==1,"new cancelled");});
+  Check("Dispose acceptance reentry rejects publication",()=>{var e=Manual();Assert(!Speak(e,_=>e.Dispose()),"accepted");Assert(!e.IsReady&&Jobs(e).Count==0,"not disposed");e.Dispose();e.StopPlayback();});
+  Check("Dispose cancellation callback can cross-thread reenter",()=>{var e=Manual();Speak(e);e.OnRequestPlaybackCancelled+=_=>Assert(Task.Run(e.Dispose).Wait(2000),"Dispose lock held");e.Dispose();Assert(!BannerlordExceptionSentinel.Errors.Any(),"callback deadlock or fault");Assert(Get(e,"_playbackGeneration")==null,"generation leak");});
+  Check("release racing Stop still emits cancellation",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);var j=Job(e,r);int cancelled=0;e.OnRequestPlaybackCancelled+=_=>cancelled++;r.CancellationToken.Register(()=>Call(e,"ReleaseJob",j));e.StopPlayback();Assert(cancelled==1&&Jobs(e).Count==0,"cancel event lost to release");});
+  Check("cancel subscriber exception still releases resources",()=>{using var e=Manual();Speak(e);e.OnRequestPlaybackCancelled+=_=>throw new Exception("expected subscriber");e.StopPlayback();Assert(Jobs(e).Count==0&&(int)Get(e,"_reservedQueueSlots")==0,"leak");});
+  Check("cancelled old finished/failed cannot publish",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);var j=Job(e,r);int n=0;e.OnRequestPlaybackFinished+=_=>n++;e.OnRequestPlaybackFailed+=(_,_)=>n++;e.OnPlaybackFinished+=_=>n++;e.OnPlaybackFailed+=(_,_)=>n++;e.StopPlayback();Call(e,"NotifyPlaybackFinished",j);Call(e,"NotifyPlaybackFailed",j,"old");Assert(n==0,"late publication");});
+  Check("terminal finished/failure is one-shot",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);var j=Job(e,r);int n=0;e.OnRequestPlaybackFinished+=_=>n++;e.OnRequestPlaybackFailed+=(_,_)=>n++;Call(e,"NotifyPlaybackFinished",j);Call(e,"NotifyPlaybackFailed",j,"second");Call(e,"NotifyPlaybackFinished",j);Assert(n==1,"duplicate terminal");});
+  Check("Stop in typed subscriber suppresses legacy event",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);int legacy=0;e.OnRequestPlaybackFinished+=_=>e.StopPlayback();e.OnPlaybackFinished+=_=>legacy++;Call(e,"NotifyPlaybackFinished",Job(e,r));Assert(legacy==0,"late legacy event");});
+  Check("normal completion invokes typed and legacy once",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);int typed=0,legacy=0;e.OnRequestPlaybackFinished+=x=>{Assert(x.RequestId==r.RequestId,"id");typed++;};e.OnPlaybackFinished+=_=>legacy++;Call(e,"NotifyPlaybackFinished",Job(e,r));Assert(typed==1&&legacy==1,"missing compatible publication");});
+  Check("event exception cannot kill worker or second job",()=>{using var e=Active();int done=0;e.OnRequestPlaybackFinished+=_=>{Interlocked.Increment(ref done);throw new Exception("expected event");};Speak(e);Speak(e);Eventually(()=>done==2&&Jobs(e).Count==0,"worker died");});
+  Check("ultrafast synthesis observes registered wait",()=>{using var e=Active();TtsEngine.PlaybackRequest wait=null;int completed=0;e.OnRequestPlaybackFinished+=r=>{Assert(wait!=null&&wait.RequestId==r.RequestId,"wait registered too late");Interlocked.Increment(ref completed);};Speak(e,r=>wait=r);Eventually(()=>completed==1,"not completed");});
+  Check("Stop during network passes and cancels real request token",()=>{using var entered=new ManualResetEventSlim();using var released=new ManualResetEventSlim();CancellationToken sent=default;LegacyVolcTtsGateway.Send=(_,c)=>{sent=c;entered.Set();c.WaitHandle.WaitOne(4000);released.Set();c.ThrowIfCancellationRequested();return null;};using var e=Active();int failed=0,finished=0;e.OnRequestPlaybackFailed+=(_,_)=>failed++;e.OnRequestPlaybackFinished+=_=>finished++;Speak(e);Assert(entered.Wait(4000),"no network");e.StopPlayback();Assert(released.Wait(4000)&&sent.CanBeCanceled&&sent.IsCancellationRequested,"network not cancelled");Eventually(()=>Jobs(e).Count==0,"not released");Assert(failed==0&&finished==0,"old terminal emitted");});
+  Check("late null audio failure cannot complete newer same-agent wait",()=>{using var entered=new ManualResetEventSlim();using var released=new ManualResetEventSlim();LegacyVolcTtsGateway.Send=(r,c)=>{if(r.Text=="old"){entered.Set();Assert(released.Wait(4000),"network barrier");return new(){Success=false};}return new(){Success=true,AudioBytes=new byte[16]};};using var e=Active();long wait=0;var newer=new TaskCompletionSource<bool>();int stale=0;e.OnRequestPlaybackFailed+=(r,_)=>{if(r.RequestId!=wait)stale++;if(r.RequestId==wait)newer.TrySetResult(true);};Speak(e,r=>wait=r.RequestId,"old");Assert(entered.Wait(4000),"network absent");e.StopPlayback();Speak(e,r=>wait=r.RequestId,"new");released.Set();Eventually(()=>Jobs(e).Count==0,"worker incomplete");Assert(stale==0&&!newer.Task.IsCompleted,"old consumed new wait");});
+  Check("test-mode bypass is per-job not next queued regular job",()=>{using var entered=new ManualResetEventSlim();using var released=new ManualResetEventSlim();int sent=0;LegacyVolcTtsGateway.Send=(r,c)=>{Interlocked.Increment(ref sent);return new(){Success=true,AudioBytes=new byte[16]};};using var e=Manual();Speak(e,text:"normal");DuelSettings.Read=()=>new(){EnableTtsSpeech=false};e.SpeakTestAsync("test",1);var thread=new Thread(()=>Call(e,"WorkerLoop")){IsBackground=true};Set(e,"_workerThread",thread);thread.Start();Eventually(()=>Jobs(e).Count==0,"queue incomplete");Assert(sent==1,"bypass leaked or missing");});
+  Check("Stop prevents old callbacks already queued in consumer",()=>{using var e=Manual();TtsEngine.PlaybackRequest a=null,b=null;var callbacks=new Queue<Action>();long owner=0;int consumed=0;e.OnRequestPlaybackFinished+=r=>callbacks.Enqueue(()=>{if(!r.IsCancellationRequested&&r.RequestId==owner)consumed++;});Speak(e,r=>{a=r;owner=r.RequestId;});var job=Job(e,a);Call(e,"NotifyPlaybackFinished",job);Call(e,"ReleaseJob",job);e.StopPlayback();Speak(e,r=>{b=r;owner=r.RequestId;});callbacks.Dequeue()();Assert(consumed==0&&a.IsCancellationRequested&&!b.IsCancellationRequested,"late queued event consumed new owner");});
+  Check("subscriber exception cannot suppress later AF cancellation listener",()=>{using var e=Manual();int notified=0;e.OnRequestPlaybackCancelled+=_=>throw new Exception("plugin fault");e.OnRequestPlaybackCancelled+=_=>notified++;Speak(e);e.StopPlayback();Assert(notified==1,"later subscriber skipped");});
+  Check("subscriber exception cannot suppress later AF completion listener",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);int notified=0;e.OnRequestPlaybackFinished+=_=>throw new Exception("plugin fault");e.OnRequestPlaybackFinished+=_=>notified++;Call(e,"NotifyPlaybackFinished",Job(e,r));Assert(notified==1,"later subscriber skipped");});
+  Check("Stop in first typed subscriber suppresses later typed subscribers",()=>{using var e=Manual();TtsEngine.PlaybackRequest r=null;Speak(e,x=>r=x);int notified=0;e.OnRequestPlaybackFinished+=_=>e.StopPlayback();e.OnRequestPlaybackFinished+=_=>notified++;Call(e,"NotifyPlaybackFinished",Job(e,r));Assert(notified==0,"late typed subscriber invoked");});
+  Check("same-agent legal FIFO preserves both real worker jobs and ordered Scene preparation",()=>{using var e=Active();var c=new TtsConsumerSubject();var main=new ConcurrentQueue<Action>();var accepted=new List<long>();var prepared=new List<long>();var finished=new List<long>();e.OnRequestAudioFileReady+=(r,w,x,d)=>main.Enqueue(()=>{Assert(c.IsCurrent(r)&&c.Prepare(r),"audio owner dropped");});e.OnRequestPlaybackStarted+=r=>main.Enqueue(()=>Assert(c.Active(r),"start owner dropped"));e.OnRequestPlaybackFinished+=r=>main.Enqueue(()=>{Assert(c.Active(r),"finish owner dropped");finished.Add(r.RequestId);c.Retire(r);});for(int i=0;i<2;i++)Speak(e,r=>{accepted.Add(r.RequestId);c.Track(r,()=>prepared.Add(r.RequestId));},"FIFO",7);Eventually(()=>Jobs(e).Count==0,"workers not drained");while(main.TryDequeue(out var action))action();Assert(prepared.SequenceEqual(accepted)&&finished.SequenceEqual(accepted)&&c.Owners==0,"FIFO dropped/reordered/leaked");});
+  Check("same-agent queued owner survives cancel of active old request",()=>{using var e=Manual();var c=new TtsConsumerSubject();TtsEngine.PlaybackRequest a=null,b=null;int oldPrepared=0,newPrepared=0;Speak(e,r=>{a=r;c.Track(r,()=>oldPrepared++);},agent:7);Speak(e,r=>{b=r;c.Track(r,()=>newPrepared++);},agent:7);c.Prepare(a);Call(e,"CancelJob",Job(e,a));Assert(c.Active(a,true)&&!c.Active(b),"active changed on mere acceptance");c.Retire(a);Assert(c.IsCurrent(b)&&c.Prepare(b)&&newPrepared==1&&oldPrepared==1,"new queued request lost");c.Retire(b);Assert(c.Owners==0,"owner leak");});
+  ConsumerTests.Run(Check);
+  Console.WriteLine($"RESULT {Passed} PASS / {Failed} FAIL");return Failed==0?0:1;
+ }
+}

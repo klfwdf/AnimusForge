@@ -1,0 +1,358 @@
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using AnimusForge;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using TaleWorlds.CampaignSystem;
+
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Hero { public string StringId; public object Name; public bool IsDead; public CharacterObject CharacterObject = new(); }
+    public sealed class CharacterObject { }
+}
+namespace TaleWorlds.Library
+{
+    public static class TWParallel { public static bool IsMainThread() => Environment.CurrentManagedThreadId == Program.MainThread; }
+}
+namespace AnimusForge
+{
+    public static class SaveRuntimeGuard
+    {
+        public static long Generation = 4;
+        public static long CaptureGeneration() => Generation;
+        public static bool IsCurrentGeneration(long value) => value == Generation;
+    }
+    public static class Logger { public static void Log(string area, string message) { } }
+    public static class AIConfigHandler
+    {
+        public static readonly Dictionary<string, string> Targets = new();
+        private static void Set(string key, string value) { Program.CheckMain(); Targets[key] = value; }
+        public static void SetGuardrailRuntimeTargetKingdom(string value) => Set("kingdom", value);
+        public static void SetGuardrailRuntimeTargetHero(string value) => Set("hero", value);
+        public static void SetGuardrailRuntimeTargetCharacter(string value) => Set("character", value);
+        public static void SetGuardrailRuntimeTargetTroop(string value) => Set("troop", value);
+        public static void SetGuardrailRuntimeTargetUnnamedRank(string value) => Set("rank", value);
+        public static void SetGuardrailRuntimeTargetAgentIndex(int value) => Set("agent", value.ToString());
+    }
+    public sealed class CourierSession
+    {
+        public string Id; public Hero Recipient; public bool Terminal, ReplyGenerated, ReplyGenerationStarted = true;
+    }
+    public sealed partial class CourierDeliveryBehavior
+    {
+        public static CourierDeliveryBehavior Instance;
+        private const int MainReplyMaxTokens = 5000;
+        private static readonly string[] CourierExcludedRuleIds = { "scene_only" };
+        private static readonly ConcurrentQueue<Action> MainThreadActions = new();
+        internal readonly Dictionary<string, CourierSession> Sessions = new();
+        internal int BuilderCalls;
+        private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(CourierSession session, Hero hero, long generation)
+        { BuilderCalls++; throw new Exception("prepared capture must not rebuild the request"); }
+        private CourierSession GetSessionById(string id) { Program.CheckMain(); return Sessions.TryGetValue(id, out var session) ? session : null; }
+        private Hero ResolveRecipient(CourierSession session) { Program.CheckMain(); return session?.Recipient; }
+        private static bool IsTerminalStage(CourierSession session) => session.Terminal;
+        private static string SafeHeroId(Hero hero) => hero?.StringId ?? "";
+        private static void Log(string text) { }
+        public static int Queued => MainThreadActions.Count;
+        public static void Drain() { Program.CheckMain(); while (MainThreadActions.TryDequeue(out var action)) action(); }
+        public static Action Dequeue() { if (!MainThreadActions.TryDequeue(out var action)) throw new Exception("missing queued callback"); return action; }
+        public Task<T> Phase<T>(Func<T> action, CancellationToken token = default) => RunCourierOwnerPhaseAsync(SaveRuntimeGuard.CaptureGeneration(), "fixture", action, token);
+        public LegacyInteractionPipelinePorts Ports(PromptPackage prompt = null, int max = 64, bool post = true) => CreateCourierDetachedPorts(new[] { "ACTION:GIVE_GOLD", "ACTION:DUEL" }, post, max, prompt);
+        public InteractionEnvelope Capture(string id, PromptPackage prompt, string letter = "player-input", string history = "history", string extras = "extras", string[] hits = null)
+        {
+            var recipient = Sessions[id].Recipient;
+            return CapturePreparedCourierReplyEnvelope(new CourierReplyGenerationRequest
+            {
+                SessionId = id, RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(), RecipientHeroId = recipient.StringId,
+                RecipientName = recipient.Name.ToString(), LetterText = letter, HistoryText = history, Extras = extras,
+                EntityPostprocessContext = "entity:" + id, SelectedRuleHits = hits?.ToList() ?? new List<string>(), ExtraFact = "fact:" + id
+            }, recipient, prompt);
+        }
+        @@METHODS@@
+    }
+    public static class LegacyInteractionSnapshotAdapters
+    {
+        public static PromptPackage LastCapturedPrompt;
+        public static InteractionEnvelope CaptureCourierFromPromptPackage(Hero hero, string text, string session, string extra,
+            PromptPackage prompt, object post, Dictionary<string, string> facts)
+        {
+            Program.CheckMain(); LastCapturedPrompt = prompt;
+            return new InteractionEnvelope(new GameInteractionSnapshot(new InteractionIdentity(session, InteractionChannel.Courier, hero.StringId),
+                new TraceContext("trace:" + session, SaveRuntimeGuard.CaptureGeneration(), 1, "fixture", "1.4"), text, "town", 1, 1,
+                Array.Empty<InteractionCandidate>(), Array.Empty<string>(), facts), prompt.Messages);
+        }
+    }
+    public partial class ShoutBehavior
+    {
+        public sealed class CaptureRecord
+        {
+            public Hero Hero; public string Input, History, Reply, Entities, Chain; public List<string> Hits;
+            public bool LatestInput, LooseWeekly; public int TargetIndex; public Dictionary<string, bool> Flags;
+        }
+        public static readonly List<CaptureRecord> Captures = new();
+        public static readonly List<string> Completed = new();
+        public static bool PrepareNull, CompleteThrows;
+        public static Action DuringComplete;
+        public static bool HasInjectedRuleBlockForExternal(string extras, string rule) => (extras ?? "").Contains("rule:" + rule + ";", StringComparison.Ordinal);
+        internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName,
+            string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected,
+            bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected,
+            bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected,
+            out CourierActionPostprocessWorkItem workItem, out string immediateResult,
+            bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false,
+            List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1,
+            bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false,
+            bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
+        {
+            Program.CheckMain();
+            Captures.Add(new CaptureRecord { Hero = targetHero, Input = playerText, History = historyText, Reply = replyText,
+                Hits = preprocessRuleHits.ToList(), Entities = entityPostprocessContext, Chain = chainName,
+                LatestInput = latestReplyHasPlayerInput, LooseWeekly = forceLooseWeeklyMemoryMaterialSession, TargetIndex = targetAgentIndex,
+                Flags = new() { ["duel"] = duelRuleInjected, ["reward"] = rewardRuleInjected, ["loan"] = loanRuleInjected,
+                    ["kingdom_service"] = kingdomServiceRuleInjected, ["lords_hall_access"] = lordsHallRuleInjected,
+                    ["encounter_release_player"] = meetingReleaseRuleInjected, ["vanilla_issue"] = vanillaIssueRuleInjected,
+                    ["hero_join"] = heroJoinPartyRuleInjected, ["scene_mechanism"] = sceneMechanismRuleInjected,
+                    ["party_transfer"] = partyTransferRuleInjected, ["kingdom_agenda"] = voteDealRuleInjected,
+                    ["diplomacy"] = diplomacyRuleInjected, ["worldmap_party_command"] = worldMapPartyCommandRuleInjected,
+                    ["kingdom_vassalage"] = kingdomVassalageRuleInjected, ["kingdom_annexation"] = kingdomAnnexationRuleInjected } });
+            immediateResult = "";
+            workItem = PrepareNull ? null : new CourierActionPostprocessWorkItem("system:" + targetHero.StringId,
+                "input:" + playerText + "|history:" + historyText + "|reply:" + replyText, "fallback without actions", "kingdom", targetHero.StringId,
+                "character", "troop", "rank", -1, raw =>
+                {
+                    Program.CheckMain();
+                    if (AIConfigHandler.Targets["hero"] != targetHero.StringId) throw new Exception("runtime target crossed owner requests");
+                    Completed.Add(targetHero.StringId + "|" + raw);
+                    DuringComplete?.Invoke();
+                    if (CompleteThrows) throw new InvalidOperationException("fixture normalizer failure");
+                    return "[ACTION:GIVE_GOLD:7] [ACTION:UNAUTHORIZED:3]";
+                });
+            return workItem != null;
+        }
+        @@WORK_ITEM@@
+    }
+}
+
+public static class Program
+{
+    public static readonly int MainThread = Environment.CurrentManagedThreadId;
+    private static int passed, failed;
+    private static CourierDeliveryBehavior Host;
+    private static CourierSession Session;
+    public static void CheckMain() { if (Environment.CurrentManagedThreadId != MainThread) throw new Exception("live owner operation off main thread"); }
+    private static void Check(bool value, string message) { if (!value) throw new Exception(message); }
+    private static PromptPackage Prompt(string text = " persona\n ") => LegacyPromptPackageAdapter.FromLegacyMessages(new object[]
+        { new { role = "system", content = text }, new { role = "user", content = " exact letter\r\n " } }, 5000, "legacy-courier-reply");
+    private static void Reset()
+    {
+        CourierDeliveryBehavior.Drain(); SaveRuntimeGuard.Generation = 4;
+        Host = new CourierDeliveryBehavior(); CourierDeliveryBehavior.Instance = Host;
+        Session = new CourierSession { Id = "session", Recipient = new Hero { StringId = "hero", Name = "Name" } }; Host.Sessions[Session.Id] = Session;
+        ShoutBehavior.Captures.Clear(); ShoutBehavior.Completed.Clear(); ShoutBehavior.PrepareNull = ShoutBehavior.CompleteThrows = false; ShoutBehavior.DuringComplete = null;
+        AIConfigHandler.Targets.Clear();
+    }
+    private static (LegacyInteractionPipelinePorts Ports, InteractionEnvelope Envelope, RuleSelection Rules, PostprocessContext Context) Request(string id = "session", string[] hits = null, string extras = "extras")
+    {
+        var prompt = Prompt(); var envelope = Host.Capture(id, prompt, hits: hits, extras: extras);
+        var ports = Host.Ports(prompt); var rules = ports.SelectRules(envelope.Snapshot);
+        return (ports, envelope, rules, ports.BuildPostprocessContext(envelope.Snapshot, rules, ports.Capabilities));
+    }
+    private static T Pump<T>(Task<T> task)
+    {
+        var limit = DateTime.UtcNow.AddSeconds(3);
+        while (!task.IsCompleted && DateTime.UtcNow < limit) { CourierDeliveryBehavior.Drain(); Thread.Sleep(1); }
+        CourierDeliveryBehavior.Drain(); Check(task.IsCompleted, "owner task did not finish"); return task.GetAwaiter().GetResult();
+    }
+    private static void WaitQueued()
+    {
+        var limit = DateTime.UtcNow.AddSeconds(3);
+        while (CourierDeliveryBehavior.Queued == 0 && DateTime.UtcNow < limit) Thread.Sleep(1);
+        Check(CourierDeliveryBehavior.Queued > 0, "owner did not queue a main-thread callback");
+    }
+    private static void Rejected<T>(Task<T> task)
+    {
+        bool cancelled = false;
+        try { Pump(task); } catch (OperationCanceledException) { cancelled = true; }
+        Check(cancelled, "stale/cancelled owner returned a result");
+    }
+    private static Task<PromptPackage> Prepare((LegacyInteractionPipelinePorts Ports, InteractionEnvelope Envelope, RuleSelection Rules, PostprocessContext Context) request, CancellationToken token = default, string raw = "<think>private</think>NPC: visible reply")
+        => Task.Run(() => request.Ports.ComposePostprocessPromptAsync(request.Envelope, request.Rules, "VISIBLE-ARG-MUST-NOT-REPLACE-RAW", raw, request.Context, token));
+    private static Task<ActionPlan> Complete((LegacyInteractionPipelinePorts Ports, InteractionEnvelope Envelope, RuleSelection Rules, PostprocessContext Context) request, CancellationToken token = default)
+        => Task.Run(() => request.Ports.ParseActionsAsync("[ACTION:GIVE_GOLD:999] [ACTION:DUEL]", request.Context, token));
+
+    private sealed class FixtureGateway : ILlmGateway
+    {
+        internal string Raw; internal int PostCalls;
+        public Task<LlmGenerateResult> GenerateAsync(LlmGenerateRequest request, CancellationToken token)
+        {
+            if (request.Stage == InteractionStage.Postprocess) PostCalls++;
+            return Task.FromResult(new LlmGenerateResult(LlmResultStatus.Succeeded,
+                request.Stage == InteractionStage.MainReply ? Raw : "[ACTION:GIVE_GOLD:999]", 0, 0, ""));
+        }
+    }
+    private static InteractionResult Generate(string raw, out FixtureGateway gateway)
+    {
+        var request = Request(); var transport = new FixtureGateway { Raw = raw }; gateway = transport;
+        using var coordinator = LegacyInteractionPipelineComposition.Create(request.Ports, transport, () => SaveRuntimeGuard.Generation);
+        var config = new RuntimeConfigSnapshot("fixture", 1, new Dictionary<string, bool> { ["courier"] = true },
+            new Dictionary<string, LlmProviderSnapshot> { ["provider"] = new("provider", "https://fixture.invalid", "fixture", 1000, 5000) });
+        return Pump(Task.Run(() => coordinator.ExecuteAsync(request.Envelope, config, "courier", "provider", CancellationToken.None)));
+    }
+    private static void InvalidVisibleCannotCommit(string raw)
+    {
+        InteractionResult result = Generate(raw, out var gateway);
+        Check(result.Status == InteractionStatus.NonRetryableFailure && result.ActionPlan.Actions.Count == 0,
+            "empty/API/internal-only main response was committable");
+        Check(gateway.PostCalls == 0 && ShoutBehavior.Captures.Count == 0 && ShoutBehavior.Completed.Count == 0,
+            "invalid main text reached postprocess game owner");
+    }
+    private static void FullValidOwnerPipeline()
+    {
+        const string raw = "{\"response\":\"*smiles* body [ACTION:GIVE_GOLD:999]\"}";
+        InteractionResult result = Generate(raw, out var gateway);
+        Check(result.Status == InteractionStatus.Succeeded && result.VisibleReply == "body" && result.RawReply == raw,
+            "full pipeline mixed visible text with raw execution evidence");
+        Check(result.ActionPlan.Actions.Count == 1 && result.ActionPlan.Actions[0].TargetId == "7"
+            && gateway.PostCalls == 1 && ShoutBehavior.Captures.Single().Reply == "*smiles* body [ACTION:GIVE_GOLD:999]",
+            "full pipeline skipped authoritative normalization or lost raw prose");
+    }
+    private static void ExactPrompt()
+    {
+        var request = Request(); PromptPackage prepared = request.Ports.ComposePrompt(request.Envelope, request.Rules, request.Ports.Capabilities);
+        Check(ReferenceEquals(prepared, LegacyInteractionSnapshotAdapters.LastCapturedPrompt), "prepared main prompt was rebuilt");
+        Check(prepared.MaxTokens == 5000 && prepared.Messages.Count == 2 && prepared.Messages[0].Content == " persona\n " && prepared.Messages[1].Content == " exact letter\r\n ", "main context/order/whitespace/token budget lost");
+        Check(Host.BuilderCalls == 0, "prepared envelope repeated request builder");
+    }
+    private static void OwnerMapping()
+    {
+        var hits = new[] { "reward", "duel", "kingdom_service", "lords_hall_access", "encounter_release_player", "vanilla_issue", "party_transfer", "kingdom_agenda", "diplomacy", "worldmap_party_command", "kingdom_vassalage" };
+        var request = Request(hits: hits, extras: "rule:loan;");
+        PromptPackage post = Pump(Prepare(request)); var capture = ShoutBehavior.Captures.Single();
+        Check(post.MaxTokens == 5000 && post.Model == "legacy-courier-postprocess" && post.Messages.Select(x => x.Role).SequenceEqual(new[] { "system", "user" }), "postprocess prompt budget/shape changed");
+        Check(capture.Input == "player-input" && capture.History == "history" && capture.Reply == "visible reply" && capture.Entities == "entity:session", "owner lost real input/history/reply/entity context");
+        Check(capture.Hits.SequenceEqual(hits) && capture.LatestInput && capture.LooseWeekly && capture.TargetIndex == -1 && capture.Chain == "courier-detached", "owner policy flags/selected rules changed");
+        Check(capture.Flags.All(pair => pair.Value == (pair.Key != "scene_mechanism" && pair.Key != "kingdom_annexation")), "rule qualification mapping changed");
+        Check(post.Messages[0].Content == "system:hero" && post.Messages[1].Content == "input:player-input|history:history|reply:visible reply", "full owner prompt was replaced with generic output");
+    }
+    private static void RawEvidenceAndVisibleCleanup()
+    {
+        var request = Request();
+        const string raw = "{\"response\":\"*smiles* body [ACTION:GIVE_GOLD:999]\"}";
+        string visible = request.Ports.NormalizeVisibleReply(raw, request.Context.AllowedTagFamilies);
+        Check(visible == "body", "visible reply retains action tags or stage directions");
+        Pump(Prepare(request, raw: raw));
+        Check(ShoutBehavior.Captures.Single().Reply == "*smiles* body [ACTION:GIVE_GOLD:999]", "postprocess lost full raw execution evidence");
+    }
+    private static void NestedVisibleTags()
+    {
+        var request = Request();
+        foreach (string tag in new[] { "[ACTION:GIVE_ASSET:[ROT]Sword:ALL]", "[GUI:7]", "[ASS:4]", "[RELAY:2]" })
+        {
+            string visible = request.Ports.NormalizeVisibleReply("body " + tag, request.Context.AllowedTagFamilies);
+            Check(visible == "body", "recognized protocol leaked into visible text: " + tag + " => " + visible);
+        }
+    }
+    private static void NormalizedOnly()
+    {
+        var request = Request(); Pump(Prepare(request)); Task<ActionPlan> pending = Complete(request); WaitQueued();
+        Check(!pending.IsCompleted && ShoutBehavior.Completed.Count == 0, "raw model tags escaped before main-thread normalizer");
+        ActionPlan plan = Pump(pending);
+        Check(plan.Actions.Count == 1 && plan.Actions[0].Tag == "ACTION:GIVE_GOLD" && plan.Actions[0].TargetId == "7" && !plan.RawPostprocessId.Contains("999"), "parser consumed raw unqualified tags instead of normalized output");
+        Check(ShoutBehavior.Completed.Count == 1 && AIConfigHandler.Targets["hero"] == "", "normalization count/runtime cleanup wrong");
+        Check(Pump(Complete(request)).Actions.Count == 0 && ShoutBehavior.Completed.Count == 1, "completed owner reentered");
+    }
+    private static void Unbound()
+    {
+        var request = Request();
+        Check(request.Ports.ParseActions("[ACTION:GIVE_GOLD:999]", request.Context).Actions.Count == 0, "unbound synchronous parse granted actions");
+        Check(Pump(Complete(request)).Actions.Count == 0 && ShoutBehavior.Completed.Count == 0, "unprepared async context granted actions");
+        var disabled = Host.Ports(post: false); Check(disabled.ComposePostprocessPromptAsync == null && disabled.ParseActionsAsync == null, "disabled postprocess retained async action owner");
+    }
+    private static void Mutate(string kind)
+    {
+        switch (kind)
+        {
+            case "generation": SaveRuntimeGuard.Generation++; break;
+            case "owner": CourierDeliveryBehavior.Instance = new CourierDeliveryBehavior(); break;
+            case "session": Host.Sessions.Remove(Session.Id); break;
+            case "terminal": Session.Terminal = true; break;
+            case "not-started": Session.ReplyGenerationStarted = false; break;
+            case "already-generated": Session.ReplyGenerated = true; break;
+            case "dead": Session.Recipient.IsDead = true; break;
+            case "same-id-instance": Session.Recipient = new Hero { StringId = "hero", Name = "Replaced" }; break;
+            case "target-id": Session.Recipient = new Hero { StringId = "other", Name = "Other" }; break;
+        }
+    }
+    private static void Stale(string phase, string kind)
+    {
+        var request = Request();
+        if (phase == "complete") Pump(Prepare(request));
+        Task task = phase == "prepare" ? Prepare(request) : Complete(request); WaitQueued(); Mutate(kind);
+        bool rejected = false; try { while (!task.IsCompleted) { CourierDeliveryBehavior.Drain(); Thread.Sleep(1); } task.GetAwaiter().GetResult(); } catch (OperationCanceledException) { rejected = true; }
+        Check(rejected && ShoutBehavior.Completed.Count == 0, "expired " + phase + "/" + kind + " reached owner result/normalize");
+        if (phase == "prepare") Check(ShoutBehavior.Captures.Count == 0, "stale prepare touched game owner");
+    }
+    private static void CancelQueued(string phase)
+    {
+        var request = Request(); if (phase == "complete") Pump(Prepare(request)); using var token = new CancellationTokenSource();
+        Task task = phase == "prepare" ? Prepare(request, token.Token) : Complete(request, token.Token); WaitQueued(); token.Cancel();
+        bool cancelled = false; try { task.GetAwaiter().GetResult(); } catch (OperationCanceledException) { cancelled = true; }
+        CourierDeliveryBehavior.Drain(); Check(cancelled && ShoutBehavior.Completed.Count == 0, "cancelled pending callback still normalized");
+    }
+    private static void TimeoutLateCallback()
+    {
+        int actions = 0; Task<int> phase = Task.Run(() => Host.Phase(() => ++actions)); WaitQueued();
+        bool cancelled = false; try { phase.GetAwaiter().GetResult(); } catch (OperationCanceledException) { cancelled = true; }
+        CourierDeliveryBehavior.Drain(); Check(cancelled && actions == 0, "timed-out callback executed late");
+    }
+    private static void DuplicateCallback()
+    {
+        int calls = 0; Task<int> pending = Task.Run(() => Host.Phase(() => ++calls)); WaitQueued(); Action callback = CourierDeliveryBehavior.Dequeue(); callback(); callback();
+        Check(Pump(pending) == 1 && calls == 1, "owner queue duplicate replayed action");
+    }
+    private static void CancelAfterStart()
+    {
+        using var token = new CancellationTokenSource(); using var entered = new ManualResetEventSlim(); using var cancelled = new ManualResetEventSlim(); int effects = 0;
+        Task cancel = Task.Run(() => { entered.Wait(); token.Cancel(); cancelled.Set(); });
+        Task<int> pending = Task.Run(() => Host.Phase(() => { effects++; entered.Set(); Check(cancelled.Wait(3000), "canceller did not run"); return effects; }, token.Token));
+        Rejected(pending); cancel.GetAwaiter().GetResult(); Check(effects == 1, "fixture must honestly retain already-started effect");
+    }
+    private static void ConcurrentOwners()
+    {
+        Host.Sessions["second"] = new CourierSession { Id = "second", Recipient = new Hero { StringId = "hero-2", Name = "Second" } };
+        var first = Request(); var secondEnvelope = Host.Capture("second", Prompt("second persona")); var rules = first.Ports.SelectRules(secondEnvelope.Snapshot);
+        var second = (first.Ports, secondEnvelope, rules, first.Ports.BuildPostprocessContext(secondEnvelope.Snapshot, rules, first.Ports.Capabilities));
+        Pump(Prepare(first)); Pump(Prepare(second)); Pump(Complete(second)); Pump(Complete(first));
+        Check(ShoutBehavior.Completed.Count == 2 && ShoutBehavior.Completed[0].StartsWith("hero-2|") && ShoutBehavior.Completed[1].StartsWith("hero|"), "context owner table crossed two concurrent recipients");
+    }
+    private static void EmptyReply(string raw)
+    {
+        var request = Request(); Check(Pump(Prepare(request, raw: raw)) == null && ShoutBehavior.Captures.Count == 0, "empty/API failure reply reached authoritative owner");
+        Check(Pump(Complete(request)).Actions.Count == 0, "empty/API failure reply bound actions");
+    }
+    private static void CompleteException()
+    {
+        var request = Request(); Pump(Prepare(request)); ShoutBehavior.CompleteThrows = true;
+        Check(Pump(Complete(request)).Actions.Count == 0 && ShoutBehavior.Completed.Count == 1, "normalizer failure created executable tags");
+        Check(Pump(Complete(request)).Actions.Count == 0 && ShoutBehavior.Completed.Count == 1, "failed normalizer reentered");
+    }
+    private static void Case(string name, Action action)
+    {
+        try { Reset(); action(); passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception exception) { failed++; Console.WriteLine("FAIL " + name + ": " + exception.Message); }
+    }
+    public static int Main()
+    {
+        Case("prepared-exact-main-prompt-no-rebuild", ExactPrompt); Case("owner-real-input-reply-rules-5000", OwnerMapping);
+        Case("raw-evidence-visible-cleanup", RawEvidenceAndVisibleCleanup); Case("full-valid-owner-pipeline", FullValidOwnerPipeline);
+        foreach (string raw in new[] { "", "无回信", "[ACTION:GIVE_GOLD:999]", "（smiles）", "（API请求失败：fixture）" }) Case("reject-invalid-main-" + raw, () => InvalidVisibleCannotCommit(raw)); Case("nested-and-other-protocol-visible-cleanup", NestedVisibleTags); Case("normalize-before-parser-once", NormalizedOnly); Case("unbound-sync-and-async-zero-actions", Unbound);
+        foreach (string phase in new[] { "prepare", "complete" }) foreach (string kind in new[] { "generation", "owner", "session", "terminal", "not-started", "already-generated", "dead", "target-id" }) Case(phase + "-reject-" + kind, () => Stale(phase, kind));
+        Case("complete-reject-same-id-instance", () => Stale("complete", "same-id-instance"));
+        Case("prepare-cancel-queued", () => CancelQueued("prepare")); Case("complete-cancel-queued", () => CancelQueued("complete"));
+        Case("phase-timeout-late-callback", TimeoutLateCallback); Case("phase-duplicate-callback", DuplicateCallback); Case("phase-cancel-after-start-no-fake-rollback", CancelAfterStart);
+        Case("concurrent-context-owner-isolation", ConcurrentOwners); Case("normalizer-exception-no-actions-no-reentry", CompleteException);
+        foreach (string raw in new[] { "", "无回信", "（API请求失败：fixture）" }) Case("skip-empty-error-" + raw, () => EmptyReply(raw));
+        Console.WriteLine($"CourierPostprocessOwner PASS={passed} FAIL={failed} realParser=true ownerThread=physical-main LIVE=NOT_RUN"); return failed == 0 ? 0 : 1;
+    }
+}

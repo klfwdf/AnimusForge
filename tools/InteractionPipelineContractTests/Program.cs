@@ -929,6 +929,8 @@ Console.WriteLine("PASS interactionPipeline cases=40 immutableSnapshot=true conf
 
 await DetachedHostCommitBoundaryTests.RunAsync();
 InteractionCommitReceiptTests.Run();
+await AsyncInteractionOwnerTests.RunAsync();
+LegacyAnonymousPromptTests.Run();
 
 static InteractionPipeline BuildPipeline(RuleSelection selection, FakeGateway gateway)
 {
