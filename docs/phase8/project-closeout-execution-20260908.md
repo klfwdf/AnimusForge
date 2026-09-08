@@ -1,32 +1,38 @@
 # AF 整个重构项目收尾执行台账
 
-## 当前授权与基线
+## 最新状态（2026-09-09）
 
-用户已澄清目标是整个重构项目收尾，而不是检测文档收尾。本次开始实施缺陷修复、功能对照、有证明的旧路径清理和统一验收。自动化保持 PAUSED；不把文档完成、测试数量或构建通过当作项目 DONE。
+**阶段八继续实施，整个项目 NOT_DONE。** 已恢复断线修改并形成实际修复提交 `9a4a26dc`，不是继续只写检测文档。最新接续入口：`docs/handoffs/2026-09-09-recovery-fixes-handoff.md`。
 
-- 工作区：`G:\AFMOD\AF-REFACTOR`。
-- 起点：`6c98e6fc`；已审查生产基线 `35524b04`；已 fetch，共享远端无新增需要合并的提交。
-- 原两份 2026-09-06 handoff/team-brief 占位草稿保持不改、不暂存；其他作者提交保留。
-- 本地修改/回归/可逆提交可执行；推送、部署/真实存档操作、全局安装、新默认切换和广泛删除按明确范围另行确认。已向用户收集当前候选实机验收材料与部署许可。
-- 原检测报告和原证据包不篡改；新红绿证据与最终状态另行绑定到实际修复提交。
+- 唯一工作区：`G:\AFMOD\AF-REFACTOR`；分支 `codex/af-main-refactor-continuation-20260831`。
+- 修复前 checkpoint `5ce8767a`；原红基线 `35524b04`。原审查报告/坏状态证据未改写。
+- 自动化保持 PAUSED；本轮未推送、未部署或操作真实存档，未切新的默认入口。
+- 2026-09-06 两份用户占位草稿保留、不暂存；其他工作树与 GCCZ 主体不改。
+- 本轮代码已验证、本地提交；推送、部署/真实存档操作、新默认切换和广泛删除按明确范围另行处理。已有用户“其他成员验收过”的反馈保留，但没有本修复候选的对应实机证据。
 
-## 连续实施顺序
+## 收尾清单
 
-| 范围 | 交付条件 | 状态 |
+| 范围 | 本轮结果 | 仍需完成 |
 |---|---|---|
-| F1 Hero asset ALL | 只转移指定资产，modifier/数量/异常/重复语义保持；真实方法红绿 | ACTIVE |
-| F2/F3 Courier | 完整 prepared main 保真；权威后处理 completion/领域资格恢复；不重复捕获或提前提交；失败/取消/历史 owner 一致 | ACTIVE |
-| F4/F5 Scene/BattleSpeech | 首次 await 前绑定请求；旧 scene/generation 不落地；frozen 目标不丢、旧回退不覆盖新输入；waiter ownership 验证 | ACTIVE |
-| F6 TTS | 请求身份和取消贯穿 job/网络/成功失败/等待回调，旧事件不消费新轮 | ACTIVE |
-| Bridge/目录/三个测试 | mandatory safety 与 optional bridge 分离；真实渠道状态；保留行为断言而非恢复旧布局/死 helper | TODO |
-| 其余领域/Native/旧代码 | 对照原20领域清单，已替代且无静态/反射/外部/存档职责才删除；Native 等价门槛与残余 owner 缺口明确列出 | TODO |
-| 统一验收 | 所有受影响正式测试/生产回放、Debug/Release 1.3/1.4/Bootstrap；失败必须归因；实机/旧档证据不可用 stub 替代 | TODO |
-| 最终交付 | 准确 HANDOFF、制作组说明、回滚与发布条件；只有所有必要门槛满足才标项目完成 | TODO |
+| F1 Hero asset ALL | 指定资产、modifier、RP、市场 owner；67 场景与旧红/变异通过 | 真实资产/商人职业/旧档 |
+| F2/F3 Courier | 完整匿名 Prompt、复用捕获、权威主线程 completion、资格/取消/同 ID 替换、可见文字与 raw 分离；39 场景 | 更早的前置准备线程边界 NOT_FIXED；失败 MOOD 兼容审查 |
+| F4/F5 Scene/BattleSpeech | 请求冻结、框选回退、双 waiter；30 场景；分类成功路径 18 场景 | 实际分类/演讲、场景动作及 UI |
+| F6 TTS | 请求级取消与合法 FIFO；43 场景；独立 Native 延迟兜底 14 场景 | 实际声音/口型/暂停/地图对话 |
+| Gateway | 实际错误 envelope 不当成功，晚结果拒收；40 场景 | 底层同步 Action 网络可中断取消、真实 provider |
+| Bridge/清单/旧测试 | mandatory safety 独立，16/12/4；混合默认明确；旧测试按真实当前协议/行为更新且保留反例 | 运行时/实机隔离 |
+| 其余领域/Native/旧代码 | 没有广泛删旧或切 Native；公开 ABI/存档 owner 保留 | 按 20 领域逐项补齐，证明无职责后清理 |
+| 统一离线验收 | 六构建 PASS；37 个完整 C# runner PASS；Python 26 检查 PASS＋1 预期缺证据 BLOCKED；Policy 四安全子集 PASS | 三个 SDK 10 工具未运行；所有真实验收 |
+| 文档交付 | 同日验证报告、证据索引、HANDOFF、制作组文案 | 发布/最终打包/真实回滚演练尚未交付 |
 
-## 协作边界
+## 接续顺序
 
-根代理负责 Courier 与集成/公共台账/最终构建。独立工作按 Economy、Scene/BattleSpeech、TTS 分文件授权；不并行写同一文件或同一 Stage。TTS 如需 ShoutBehavior 接线，先交最小补丁建议，待 Scene 写入结束后由根代理整合。不碰 GCCZ 主体规则或其他工作树。
+1. 先读 `docs/audits/2026-09-09-courier-thread-boundary-plan.md`，完整设计并实现前置 prepare/network/complete，保留 aux/semantic fallback、记忆选择 mode、persona 和规则资格。不把含同步网络的整个 builder 搬到主线程。
+2. 按 `docs/phase8/refactor-execution-plan-20260908.md` 的 20 领域清单接续 Native 与领域 owner；对照旧行为、取消和部分成功，不以删功能换清理数字。
+3. 清理只针对有调用/反射/存档/外部 ABI 证明的已替代路径。共享 facade、旧事件或 Legacy 文件名本身不是删除依据。
+4. 对最终同一候选补齐真实 Campaign/Mission、旧档、live Economy、AFEF、TTS、第三方与打包回滚证据；最终门槛满足前不标项目 DONE。
 
-## 当前验收结论
+## 验证来源与协作
 
-执行刚开始，尚无本轮修复 PASS。六个已确认功能问题以原报告为红基线，真实 Host/旧档/live Economy/AFEF/TTS 尚未验收。所有最终状态必须由新增证据更新，不能继承旧 DONE 或将缺失证据伪造为完成。
+本轮报告：`docs/audits/2026-09-09-refactor-recovery-fixes.md`；机器可读索引：`docs/audits/2026-09-09-closeout-verification.json`。原始日志、阴性对照、源码及产物摘要在 `.tmp/closeout-20260909/`，不上传真实日志/凭据或忽略目录。
+
+根代理统筹集成/公共台账/构建；经济、场景、TTS 分范围实现并交叉复核。一次只由一个 owner 写同一区域，只有根代理操作 Stage/提交。全部代理已停写，最终源码摘要与 `9a4a26dc` 规范化换行后的 Git blob 一致。
