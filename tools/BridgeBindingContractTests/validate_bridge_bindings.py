@@ -36,7 +36,6 @@ EXPECTED_WIRED = {
     "policy-world-diplomacy": ("WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
     "ui-runtime-integration": ("SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
     "host-runtime": ("CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),
-    "runtime-game-adapter": ("InteractionComponentSafePatch.cs", "EnsurePatched"),
     "scene-duel": ("DuelBehavior.cs", "IsSceneDuelBridgeEnabled"),
 }
 EXPECTED_CONFIGURABLE = frozenset(EXPECTED_WIRED)
@@ -52,7 +51,6 @@ EXPECTED_GATE_TOKENS = {
     "gateway-knowledge-profile": "FeatureBridgeIds.GatewayKnowledgeProfile",
     "ui-runtime-integration": "FeatureBridgeIds.UiRuntimeIntegration",
     "host-runtime": "FeatureBridgeIds.HostRuntime",
-    "runtime-game-adapter": "FeatureBridgeIds.RuntimeGameAdapter",
     "scene-duel": "FeatureBridgeIds.SceneDuel",
 }
 EXPECTED_METHOD_CONTRACTS = {
@@ -123,12 +121,6 @@ EXPECTED_METHOD_CONTRACTS = {
         "gate": "FeatureBridgeIds.HostRuntime",
         "gate_marker": "FeatureBridgeRuntime.IsEnabled",
         "before": ("PatchMethod", "_patched = true"),
-    },
-    "runtime-game-adapter": {
-        "method": "EnsurePatched",
-        "gate": "FeatureBridgeIds.RuntimeGameAdapter",
-        "gate_marker": "FeatureBridgeRuntime.IsEnabled",
-        "before": ("AccessTools.TypeByName", "harmony.Patch"),
     },
     "scene-duel": {
         "method": "IsSceneDuelBridgeEnabled",
@@ -449,6 +441,18 @@ def symbol_is_present(text: str, symbol: str, kind: str, label: str) -> None:
     require(re.search(pattern, searchable) is not None, f"{label} symbol is not present in its declared file")
 
 
+def validate_mandatory_interaction_safety(patch: str, installation: str) -> None:
+    patch_code = mask_csharp(patch)
+    install_body = mask_csharp(extract_method_body(installation, "EnsurePatchGroupIfDue"))
+    require("FeatureBridge" not in patch_code and "FeatureBridge" not in install_body,
+            "mandatory interaction safety cannot depend on an optional feature bridge")
+    patch_body = mask_csharp(extract_method_body(patch, "EnsurePatched"))
+    require("harmony.Patch" in patch_body and "_patched = true" in patch_body,
+            "mandatory interaction safety patch installation is missing")
+    require("InteractionComponentSafePatch.EnsurePatched();" in install_body,
+            "mandatory interaction safety lost its independent installation caller")
+
+
 def validate_feature_bridge_config(config: dict[str, Any]) -> dict[str, int]:
     exact_keys(
         config,
@@ -675,6 +679,10 @@ def run(
     require(manifest.is_relative_to(project), "manifest must be inside project root")
     require(catalog.is_relative_to(project), "catalog must be inside project root")
     require(config.is_relative_to(project), "config must be inside project root")
+    validate_mandatory_interaction_safety(
+        (project / "InteractionComponentSafePatch.cs").read_text(encoding="utf-8"),
+        (project / "Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8"),
+    )
     catalog_index = load_catalog(load_json(catalog, "full-domain catalog"))
     counts = validate_manifest(load_json(manifest, "bridge binding manifest"), catalog_index, project)
     config_counts = validate_feature_bridge_config(

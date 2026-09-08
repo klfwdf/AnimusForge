@@ -588,6 +588,7 @@ namespace AnimusForge.XihaiAction
             IReadOnlyList<Agent> framedTargets,
             int conversationEpoch,
             double now,
+            object capturedScenePlayerShoutRequest,
             out bool allowOriginalAfGeneration)
         {
             allowOriginalAfGeneration = false;
@@ -638,6 +639,7 @@ namespace AnimusForge.XihaiAction
                 SubmittedAtMissionTime = now,
                 Force = decision.Force,
                 OriginalAfBehavior = afBehavior,
+                OriginalScenePlayerShoutRequest = capturedScenePlayerShoutRequest,
                 OriginalExtraFact = extraFact,
                 OriginalForcedPrimaryAgentIndex = forcedPrimaryAgentIndex
             });
@@ -1685,6 +1687,7 @@ namespace AnimusForge.XihaiAction
         public object AfNpcPacket { get; set; }
         public BattleSpeechCombinedNpcResponseV2 CombinedResponse { get; set; }
         public object OriginalAfBehavior { get; set; }
+        public object OriginalScenePlayerShoutRequest { get; set; }
         public string OriginalExtraFact { get; set; }
         public int? OriginalForcedPrimaryAgentIndex { get; set; }
         public double SubmittedAtMissionTime { get; set; }

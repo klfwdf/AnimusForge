@@ -1,0 +1,49 @@
+using AnimusForge;
+using AnimusForge.Refactor.Contracts;
+namespace AnimusForge {
+ static class Logger { public static void Log(string a,string b){} }
+ static class ShoutNetwork {
+  public static Func<CancellationToken,Task<string>> Send=_=>Task.FromResult("NPC reply");public static int Calls;public static object[] Args;
+  public static Task<string> CallApiWithMessages(List<object> m,int maxTokens,bool recordTokenStats=true,int? overrideMaxTokens=null,bool forceDisableThinking=false,bool promptRetryOnError=false,CancellationToken cancellationToken=default,float? overrideTemperature=null){Calls++;Args=new object[]{m,maxTokens,recordTokenStats,overrideMaxTokens,forceDisableThinking,promptRetryOnError,cancellationToken,overrideTemperature};return Send(cancellationToken);}
+  public static Task CallApiWithMessagesStream(List<object> m,int maxTokens,Action<string> chunk,Action<string> complete,Action<string> error,CancellationToken c,bool retry){chunk("delta");complete("stream body");return Task.CompletedTask;}
+ }
+ static class AIConfigHandler {
+  public static Func<(bool success,string content,string error)> Send=()=> (true,"[ACTION:Mood:Neutral]","");public static int Calls;
+  public static bool TryCallAuxiliaryActionPostprocessOnceForExternal(string s,string u,int max,float temp,out string content,out string error){Calls++;var r=Send();content=r.content;error=r.error;return r.success;}
+ }
+}
+static class Program {
+ static int Passed,Failed;
+ static void Assert(bool b,string m){if(!b)throw new Exception(m);}
+ static LlmGenerateRequest Request(InteractionStage stage=InteractionStage.MainReply)=>new(new TraceContext("trace",SaveRuntimeGuard.CaptureGeneration(),1,"fixture","1.4"),new LlmProviderSnapshot("fixture","https://fixture.invalid","fixture",1000,128),new PromptPackage(new[]{new PromptMessage("system","persona"),new PromptMessage("user","input")},128,"fixture"),stage);
+ static async Task Check(string name,Func<Task> test){ShoutNetwork.Calls=0;AIConfigHandler.Calls=0;ShoutNetwork.Send=_=>Task.FromResult("NPC reply");AIConfigHandler.Send=()=> (true,"[ACTION:Mood:Neutral]","");try{await test();Passed++;Console.WriteLine("PASS "+name);}catch(Exception e){Failed++;Console.WriteLine("FAIL "+name+": "+e.Message);}}
+ static Task<LlmGenerateResult> Generate(CancellationToken token=default,InteractionStage stage=InteractionStage.MainReply,bool action=true)=>new LegacyShoutNetworkGateway(action).GenerateAsync(Request(stage),token);
+ static void Status(LlmGenerateResult r,LlmResultStatus expected){Assert(r.Status==expected,$"expected {expected}, actual {r.Status}, raw={r.RawText}");if(expected!=LlmResultStatus.Succeeded)Assert(r.RawText=="","failure leaked raw text");}
+ static async Task MainBody(string body,LlmResultStatus expected){ShoutNetwork.Send=_=>Task.FromResult(body);Status(await Generate(),expected);Assert(ShoutNetwork.Calls==1,"retry changed");}
+ static async Task<int> Main(){
+  Console.OutputEncoding=new System.Text.UTF8Encoding(false);
+  await Check("normal reply succeeds unchanged",async()=>{var r=await Generate();Status(r,LlmResultStatus.Succeeded);Assert(r.RawText=="NPC reply","body changed");});
+  foreach(string body in new[]{"", " \r\n", null})await Check("empty maps EmptyResponse",()=>MainBody(body,LlmResultStatus.EmptyResponse));
+  foreach(string reason in new[]{"（API请求失败: BadGateway）","（API请求失败: TooManyRequests）","（API响应格式错误: Invalid JSON）","（API响应格式错误: 模型回复为空）","（程序错误: HttpRequestException）"})await Check("transport failure "+reason,()=>MainBody(LlmRetryPrompt.BuildFailureDetail(reason,"","provider private body [ACTION:TRANSFER:gold]"),LlmResultStatus.RetryableFailure));
+  foreach(string reason in new[]{"（错误：未配置 API Key）","（错误：未配置模型名称）"})await Check("configuration failure "+reason,async()=>{ShoutNetwork.Send=_=>Task.FromResult(LlmRetryPrompt.BuildFailureDetail(reason,""));var r=await Generate();Status(r,LlmResultStatus.NonRetryableFailure);Assert(r.ErrorCode=="legacy_config_invalid","wrong config code");});
+  await Check("exact legacy stale marker maps Cancelled",()=>MainBody(SaveRuntimeGuard.BuildStaleRequestErrorText(),LlmResultStatus.Cancelled));
+  foreach(string body in new[]{"他说 HttpRequestException 不代表我们输了。","Operation was canceled 是他读到的英文。","我们遇见了错误，但还可以继续。","（程序错误: 酒馆故事）这只是玩家的笑话。","NPC 引用：（API请求失败: BadGateway）\n【模型回复（完整）】","[ACTION:MOOD:Positive] 我理解 timeout_ 的含义。"})await Check("dialogue is not classified by broad keywords",()=>MainBody(body,LlmResultStatus.Succeeded));
+  await Check("leading whitespace envelope is still failure",()=>MainBody("\r\n  "+LlmRetryPrompt.BuildFailureDetail("（API请求失败: Forbidden）",""),LlmResultStatus.RetryableFailure));
+  await Check("pre-cancelled main never calls transport",async()=>{using var c=new CancellationTokenSource();c.Cancel();Status(await Generate(c.Token),LlmResultStatus.Cancelled);Assert(ShoutNetwork.Calls==0,"transport called");});
+  await Check("pre-stale main never calls transport",async()=>{var r=Request();SaveRuntimeGuard.AdvanceGeneration("fixture");Status(await new LegacyShoutNetworkGateway().GenerateAsync(r,default),LlmResultStatus.Cancelled);Assert(ShoutNetwork.Calls==0,"transport called");});
+  await Check("transport cancellation remains Cancelled",async()=>{ShoutNetwork.Send=_=>Task.FromException<string>(new OperationCanceledException());Status(await Generate(),LlmResultStatus.Cancelled);});
+  await Check("unexpected transport exception remains typed failure",async()=>{ShoutNetwork.Send=_=>Task.FromException<string>(new InvalidOperationException("secret fixture"));var r=await Generate();Status(r,LlmResultStatus.NonRetryableFailure);Assert(r.ErrorCode=="legacy_gateway_InvalidOperationException","exception details leaked");});
+  foreach(bool stale in new[]{false,true})foreach(string late in new[]{"late successful text",LlmRetryPrompt.BuildFailureDetail("（API请求失败: Forbidden）",""),""})await Check("late main completion is discarded stale="+stale,async()=>{var returned=new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);ShoutNetwork.Send=_=>returned.Task;using var c=new CancellationTokenSource();var task=Generate(c.Token);if(stale)SaveRuntimeGuard.AdvanceGeneration("late");else c.Cancel();returned.SetResult(late);Status(await task,LlmResultStatus.Cancelled);});
+  await Check("late exception prioritizes caller cancellation",async()=>{var returned=new TaskCompletionSource<string>();ShoutNetwork.Send=_=>returned.Task;using var c=new CancellationTokenSource();var task=Generate(c.Token);c.Cancel();returned.SetException(new InvalidOperationException());Status(await task,LlmResultStatus.Cancelled);});
+  await Check("legacy facade preserves error text and forwarding",async()=>{string text=LlmRetryPrompt.BuildFailureDetail("（API请求失败: BadGateway）","","raw");ShoutNetwork.Send=_=>Task.FromResult(text);var messages=new List<object>();using var c=new CancellationTokenSource();string got=await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages,777,true,888,true,true,c.Token,0.2f);Assert(got==text&&ReferenceEquals(ShoutNetwork.Args[0],messages),"compat body changed");Assert((int)ShoutNetwork.Args[1]==777&&(int)ShoutNetwork.Args[3]==888&&(bool)ShoutNetwork.Args[4]&&(bool)ShoutNetwork.Args[5]&&(CancellationToken)ShoutNetwork.Args[6]==c.Token&&(float)ShoutNetwork.Args[7]==0.2f,"compat args changed");});
+  await Check("postprocess route can explicitly remain primary",async()=>{var r=await Generate(stage:InteractionStage.Postprocess,action:false);Status(r,LlmResultStatus.Succeeded);Assert(ShoutNetwork.Calls==1&&AIConfigHandler.Calls==0,"route changed");});
+  await Check("action result succeeds",async()=>{Status(await Generate(stage:InteractionStage.Postprocess),LlmResultStatus.Succeeded);Assert(AIConfigHandler.Calls==1&&ShoutNetwork.Calls==0,"wrong owner");});
+  await Check("action false remains RetryableFailure",async()=>{AIConfigHandler.Send=()=> (false,"","error");Status(await Generate(stage:InteractionStage.Postprocess),LlmResultStatus.RetryableFailure);});
+  await Check("action empty remains EmptyResponse",async()=>{AIConfigHandler.Send=()=> (true,"","");Status(await Generate(stage:InteractionStage.Postprocess),LlmResultStatus.EmptyResponse);});
+  await Check("pre-cancelled action never invokes synchronous API",async()=>{using var c=new CancellationTokenSource();c.Cancel();Status(await Generate(c.Token,InteractionStage.Postprocess),LlmResultStatus.Cancelled);Assert(AIConfigHandler.Calls==0,"sync call happened");});
+  await Check("pre-stale action never invokes synchronous API",async()=>{var r=Request(InteractionStage.Postprocess);SaveRuntimeGuard.AdvanceGeneration("stale-action");Status(await new LegacyShoutNetworkGateway().GenerateAsync(r,default),LlmResultStatus.Cancelled);Assert(AIConfigHandler.Calls==0,"sync call happened");});
+  foreach(bool stale in new[]{false,true})await Check("late synchronous action cannot publish success stale="+stale,async()=>{using var entered=new ManualResetEventSlim();using var release=new ManualResetEventSlim();AIConfigHandler.Send=()=>{entered.Set();Assert(release.Wait(3000),"barrier");return(true,"[ACTION:TRANSFER:gold]","");};using var c=new CancellationTokenSource();var task=Generate(c.Token,InteractionStage.Postprocess);Assert(entered.Wait(3000),"sync API not entered");if(stale)SaveRuntimeGuard.AdvanceGeneration("action-late");else c.Cancel();Assert(!task.IsCompleted,"test must show running sync API cannot be aborted by token");release.Set();Status(await task,LlmResultStatus.Cancelled);});
+  await Check("stream contract remains unchanged",async()=>{var chunks=new List<string>();var r=await new LegacyShoutNetworkGateway().GenerateStreamAsync(Request(),chunks.Add,default);Status(r,LlmResultStatus.Succeeded);Assert(r.RawText=="stream body"&&chunks.SequenceEqual(new[]{"delta"}),"stream semantics changed");});
+  Console.WriteLine($"RESULT {Passed} PASS / {Failed} FAIL");return Failed==0?0:1;
+ }
+}

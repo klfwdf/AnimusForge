@@ -255,7 +255,7 @@
         ]
       },
       "failureFallback": "Fallback only before commit; stale/started commits never replay.",
-      "defaultState": "OPT_IN",
+      "defaultState": "MIXED_DEFAULT",
       "currentEvidence": {
         "offline": "LOCAL_PASS",
         "compiled": "LOCAL_PASS",
@@ -267,7 +267,10 @@
         "Real three-channel Host",
         "Army-member target",
         "Exit/save-load AFEF",
-        "Default not switched"
+        "Native main/player/proactive flows retain the legacy default; detached Native remains opt-in",
+        "Scene main generation uses the new default with shared scene-owned postprocess/actions/relay/memory",
+        "Courier delivered reply uses the detached default; inbound detached API remains opt-in",
+        "Current-candidate live acceptance is required before any further default cutover"
       ],
       "bridgeIds": [
         "conversation-gateway",
@@ -350,7 +353,7 @@
         ]
       },
       "failureFallback": "Reject stale/tampered plans; preserve known/unknown effects without replay.",
-      "defaultState": "OPT_IN",
+      "defaultState": "MIXED_DEFAULT",
       "currentEvidence": {
         "offline": "LOCAL_PASS",
         "compiled": "LOCAL_PASS",
@@ -723,8 +726,8 @@
         "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
         "Refactor/Runtime/InteractionResultCommitter.cs",
-        "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs"
+        "ShoutBehavior.ScenePostprocess.cs",
+        "ShoutBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -773,6 +776,7 @@
       ],
       "entryPaths": [
         "CompanionProactiveChatBehavior.cs",
+        "CourierDeliveryBehavior.DetachedPostprocess.cs",
         "CourierDeliveryBehavior.InboundCompletion.cs",
         "CourierDeliveryBehavior.cs",
         "ProactiveNpcRequestBehavior.cs",
@@ -1138,7 +1142,8 @@
         "NATIVE_FALLBACK"
       ],
       "blockingGates": [
-        "Real reflection/Harmony"
+        "Real reflection/Harmony",
+        "Optional runtime wiring is declared only; mandatory interaction safety is not a configurable bridge"
       ],
       "topology": "PAIR"
     },

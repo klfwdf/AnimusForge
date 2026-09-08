@@ -1879,6 +1879,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void BeginShoutProcessing(string reason)
 	{
+		Interlocked.Increment(ref _scenePlayerInputSequence);
+		Interlocked.Increment(ref _sceneShoutProcessingSequence);
 		_isProcessingShout = true;
 		_shoutProcessingStartedAt = GetApplicationTimeSafe();
 		Logger.Log("ShoutBehavior", "[Processing] begin reason=" + (reason ?? ""));
@@ -1886,6 +1888,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void EndShoutProcessing(string reason)
 	{
+		Interlocked.Increment(ref _sceneShoutProcessingSequence);
 		if (_isProcessingShout || _shoutProcessingStartedAt >= 0f)
 		{
 			Logger.Log("ShoutBehavior", "[Processing] end reason=" + (reason ?? "") + " elapsed=" + GetShoutProcessingElapsedSeconds().ToString("0.###"));
@@ -2298,13 +2301,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<int, SceneInteractionSession> _activeInteractionSessions = new Dictionary<int, SceneInteractionSession>();
 
-	private Action<int, string, string, float> _ttsOnAudioFileReadyHandler;
+	private Action<TtsEngine.PlaybackRequest, string, string, float> _ttsOnAudioFileReadyHandler;
 
-	private Action<int> _ttsOnPlaybackStartedHandler;
+	private Action<TtsEngine.PlaybackRequest> _ttsOnPlaybackStartedHandler;
 
-	private Action<int> _ttsOnPlaybackFinishedHandler;
+	private Action<TtsEngine.PlaybackRequest> _ttsOnPlaybackFinishedHandler;
 
-	private Action<int, string> _ttsOnPlaybackFailedHandler;
+	private Action<TtsEngine.PlaybackRequest, string> _ttsOnPlaybackFailedHandler;
+	private Action<TtsEngine.PlaybackRequest> _ttsOnPlaybackCancelledHandler;
 
 	private long _lastEscapePressedUtcTicks = 0L;
 
@@ -3202,9 +3206,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private void SchedulePendingNpcBubbleFallbackDispatch(int agentIndex, int delayMs = 180, int remainingRetries = 3)
+	private void SchedulePendingNpcBubbleFallbackDispatch(TtsEngine.PlaybackRequest request, int delayMs = 180, int remainingRetries = 3)
 	{
-		if (agentIndex < 0)
+		int agentIndex = request?.AgentIndex ?? -1;
+		if (agentIndex < 0 || !IsTtsPlaybackRequestCurrent(request))
 		{
 			return;
 		}
@@ -3215,6 +3220,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				await Task.Delay(Math.Max(50, delayMs));
 				_mainThreadActions.Enqueue(delegate
 				{
+					if (!IsTtsPlaybackRequestCurrent(request)) { return; }
 					try
 					{
 						bool flag;
@@ -3235,7 +3241,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 							}
 							else if (remainingRetries > 0)
 							{
-								SchedulePendingNpcBubbleFallbackDispatch(agentIndex, delayMs, remainingRetries - 1);
+								SchedulePendingNpcBubbleFallbackDispatch(request, delayMs, remainingRetries - 1);
 							}
 							else
 							{
@@ -3442,6 +3448,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 	{
 		lock (_ttsBubbleSyncLock)
 		{
+			_ttsPlaybackOwners.Clear();
+			_activeTtsPlaybackRequests.Clear();
 			_pendingNpcBubbleQueues.Clear();
 			_pendingAudioDurationQueues.Clear();
 			_pendingSpeechCompletionTokenQueues.Clear();
@@ -3452,10 +3460,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		_pendingInteractionTimeoutArms.Clear();
 	}
 
-	private void HandleTtsPlaybackFailed(int agentIndex, string errorMessage)
+	private void HandleTtsPlaybackFailed(TtsEngine.PlaybackRequest request, string errorMessage)
 	{
-		bool releaseNativeTypewriter = IsNativeConversationTtsPlaybackWaitAgentIndex(agentIndex);
-		CompleteNativeConversationTtsPlaybackWait(agentIndex, "playback_failed");
+		if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+		if (!PrepareTtsPlaybackRequest(request)) { return; }
+		int agentIndex = request.AgentIndex;
+		bool releaseNativeTypewriter = CompleteNativeConversationTtsPlaybackWait(request, "playback_failed");
 		if (releaseNativeTypewriter)
 		{
 			ConversationHelper.StartTypewriterPlaybackIfWaiting();
@@ -3482,8 +3492,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string failText = string.IsNullOrWhiteSpace(errorMessage) ? "语音合成失败，已切换为文字气泡。" : ("语音合成失败：" + errorMessage);
 		Logger.Log("LipSync", $"[OnPlaybackFailed] agentIndex={agentIndex}, error={errorMessage}");
 		LogTtsReport("PlaybackFailed", agentIndex, $"error={errorMessage};hasInteractionToken={hasInteractionToken};hasBubble={hasBubble};typingDuration={typingDuration:F2}");
-		_mainThreadActions.Enqueue(delegate
+		RunTtsMainThreadEventStep(delegate
 		{
+			if (!IsTtsPlaybackRequestCurrent(request)) { return; }
 			try
 			{
 				if (hasAgent)
@@ -3688,6 +3699,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			interactionToken = value.InteractionToken;
 		}
 		bool flag = false;
+		TtsEngine.PlaybackRequest acceptedRequest = null;
 		bool flag2 = allowTts && IsTtsPlaybackEnabledForShout();
 		sceneSpeechPlaybackInfo.TtsEnabled = flag2;
 		string text3 = "scene_lipsync_not_requested";
@@ -3738,28 +3750,39 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				if (!string.IsNullOrWhiteSpace(text5))
 				{
-					flag = TtsEngine.Instance.SpeakAsync(text5, -1, -1f, num2, text4);
+					flag = TtsEngine.Instance.SpeakAsync(text5, -1, -1f, num2, text4, request =>
+					{
+						acceptedRequest = request;
+						sceneSpeechPlaybackInfo.TtsAccepted = true;
+						sceneSpeechPlaybackInfo.WaitForPlaybackFinished = num2 >= 0;
+						sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(text));
+						TrackTtsPlaybackRequest(request, delegate
+						{
+							if (num2 < 0) { return; }
+						sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(text));
+						ClearPendingTtsBubbleSyncForAgent(num, clearInteractionToken: true);
+						ClearPendingSceneDialogueFeedForAgent(num);
+						if (interactionToken != 0L)
+						{
+							EnqueuePendingSpeechCompletionToken(num, interactionToken);
+						}
+						EnqueuePendingNpcBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
+						ScheduleNpcSpeechToMessageFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+						});
+					});
 				}
 			}
 			catch
 			{
 			}
+			if (!flag && acceptedRequest != null) { RetireTtsPlaybackRequest(acceptedRequest); }
 			sceneSpeechPlaybackInfo.TtsAccepted = flag;
 			sceneSpeechPlaybackInfo.WaitForPlaybackFinished = flag && num2 >= 0;
 			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text4};lipSyncSafe={flag3};lipSyncReason={text3};ttsLen={(text5 ?? string.Empty).Length};uiLen={(text ?? string.Empty).Length}");
 		}
 		if (flag && num2 >= 0 && CanAgentParticipateInSceneSpeech(liveAgent))
 		{
-			sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(text));
-			ClearPendingTtsBubbleSyncForAgent(num);
-			if (interactionToken != 0L)
-			{
-				EnqueuePendingSpeechCompletionToken(num, interactionToken);
-			}
-			EnqueuePendingNpcBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
-			ScheduleNpcSpeechToMessageFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
 			MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
-			LogTtsReport("ShowNpcSpeechOutput.SceneBubbleQueued", num, $"interactionToken={interactionToken};uiLen={text.Length}");
 			return sceneSpeechPlaybackInfo;
 		}
 		float num3 = EstimateBubbleTypingDurationSeconds(text);
@@ -3775,40 +3798,6 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		ScheduleNpcSpeechToMessageFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
 		MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
 		LogTtsReport("ShowNpcSpeechOutput.BubbleFallback", num, $"interactionToken={interactionToken};typingDuration={num3:F2};ttsAccepted={flag};ttsEnabled={flag2}");
-		if (!(!flag && flag2))
-		{
-			return sceneSpeechPlaybackInfo;
-		}
-		try
-		{
-			string text4 = "";
-			string text5 = SanitizeSceneSpeechTextForTts(text);
-			if (string.IsNullOrWhiteSpace(text5))
-			{
-				return sceneSpeechPlaybackInfo;
-			}
-			if (npc != null && npc.IsHero)
-			{
-				Hero hero2 = ResolveHeroFromAgentIndex(num);
-				if (hero2 != null)
-				{
-					text4 = MyBehavior.GetNpcVoiceIdForExternal(hero2);
-					if (string.IsNullOrWhiteSpace(text4))
-					{
-						text4 = VoiceMapper.ResolveVoiceId(hero2);
-					}
-				}
-			}
-			if (string.IsNullOrWhiteSpace(text4) && npc != null)
-			{
-				text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, num);
-			}
-			TtsEngine.Instance.SpeakAsync(text5, -1, -1f, num2, text4);
-			LogTtsReport("ShowNpcSpeechOutput.DetachedSpeakFallback", num, $"effectiveAgentIndex={num2};voiceId={text4};ttsLen={(text5 ?? string.Empty).Length};uiLen={(text ?? string.Empty).Length}");
-		}
-		catch
-		{
-		}
 		return sceneSpeechPlaybackInfo;
 	}
 
@@ -3890,27 +3879,39 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			}
 			int effectiveAgentIndex = lipSyncSafe ? targetAgentIndex : -1;
 			bool accepted = false;
+			long acceptedWaitToken = 0L;
 			try
 			{
 				EnsureTtsPlaybackEventsSubscribedForNativeConversation();
 				ResumeTtsForNativeConversationReply();
-				accepted = TtsEngine.Instance.SpeakAsync(ttsText, -1, -1f, effectiveAgentIndex, voiceId);
-				if (accepted)
+				accepted = TtsEngine.Instance.SpeakAsync(ttsText, -1, -1f, effectiveAgentIndex, voiceId, request =>
 				{
+					TrackTtsPlaybackRequest(request);
 					float estimatedDuration = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(typewriterText));
-					long waitToken = RegisterNativeConversationTtsPlaybackWait(effectiveAgentIndex, estimatedDuration, typewriterText.Length);
+					acceptedWaitToken = RegisterNativeConversationTtsPlaybackWait(request, estimatedDuration, typewriterText.Length);
+					if (acceptedWaitToken == 0L) { return; }
 					ConversationHelper.StartTypewriterText(typewriterText, estimatedDuration, waitForPlayback: true);
-					ScheduleNativeConversationTypewriterPlaybackFallback(waitToken, effectiveAgentIndex, estimatedDuration, typewriterText.Length);
-				}
+					ScheduleNativeConversationTypewriterPlaybackFallback(acceptedWaitToken, effectiveAgentIndex, estimatedDuration, typewriterText.Length);
+				});
 			}
 			catch (Exception ex2)
 			{
+				if (acceptedWaitToken != 0L && IsNativeConversationTtsPlaybackWaitToken(acceptedWaitToken, effectiveAgentIndex))
+				{
+					CompleteNativeConversationTtsPlaybackWaitByToken(acceptedWaitToken, "enqueue_rejected");
+					ConversationHelper.StartTypewriterPlaybackIfWaiting();
+				}
 				LogTtsReport("NativeConversationTts.SpeakFailed", targetAgentIndex, $"effectiveAgentIndex={effectiveAgentIndex};lipSyncSafe={lipSyncSafe};reason={lipSyncReason};error={ex2.Message}");
 				Logger.Log("NativeConversation", "[TTS] SpeakAsync threw for native conversation reply: " + ex2.Message);
 				return;
 			}
 			if (!accepted)
 			{
+				if (acceptedWaitToken != 0L && IsNativeConversationTtsPlaybackWaitToken(acceptedWaitToken, effectiveAgentIndex))
+				{
+					CompleteNativeConversationTtsPlaybackWaitByToken(acceptedWaitToken, "enqueue_rejected");
+					ConversationHelper.StartTypewriterPlaybackIfWaiting();
+				}
 				Logger.Log("NativeConversation", "[TTS] SpeakAsync rejected native conversation reply. effectiveAgentIndex=" + effectiveAgentIndex + ", lipSyncSafe=" + lipSyncSafe + ", reason=" + lipSyncReason);
 				try
 				{
@@ -10919,7 +10920,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static void CloseNativeConversationInput(bool clearSessionHistory = false)
 	{
-		CompleteNativeConversationTtsPlaybackWait(int.MinValue, "native_conversation_closed", force: true);
+		CompleteNativeConversationTtsPlaybackWait(null, "native_conversation_closed", force: true);
 		_nativeConversationInputOpen = false;
 		_nativeConversationInputTargetKey = "";
 		lock (_nativeConversationSessionHistoryLock)
@@ -11103,6 +11104,132 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private sealed class TtsPlaybackOwner
+	{
+		public TtsEngine.PlaybackRequest Request;
+		public long RuntimeGeneration;
+		public int SceneSessionId;
+		public int ConversationEpoch;
+		public Mission Mission;
+		public Action PrepareSceneOutput;
+		public bool Prepared;
+	}
+
+	private readonly Dictionary<long, TtsPlaybackOwner> _ttsPlaybackOwners = new Dictionary<long, TtsPlaybackOwner>();
+	private readonly Dictionary<int, long> _activeTtsPlaybackRequests = new Dictionary<int, long>();
+
+	private void TrackTtsPlaybackRequest(TtsEngine.PlaybackRequest request, Action prepareSceneOutput = null)
+	{
+		if (request == null || request.IsCancellationRequested) { return; }
+		lock (_ttsBubbleSyncLock)
+		{
+			_ttsPlaybackOwners[request.RequestId] = new TtsPlaybackOwner
+			{
+				Request = request,
+				RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
+				SceneSessionId = _sceneHistorySessionId,
+				ConversationEpoch = _sceneConversationEpoch,
+				Mission = Mission.Current,
+				PrepareSceneOutput = prepareSceneOutput
+			};
+		}
+	}
+
+	private bool IsTtsPlaybackRequestCurrent(TtsEngine.PlaybackRequest request, bool allowCancelled = false)
+	{
+		if (request == null || (!allowCancelled && request.IsCancellationRequested)) { return false; }
+		lock (_ttsBubbleSyncLock)
+		{
+			return _ttsPlaybackOwners.TryGetValue(request.RequestId, out TtsPlaybackOwner owner)
+				&& ReferenceEquals(owner.Request, request)
+				&& SaveRuntimeGuard.IsCurrentGeneration(owner.RuntimeGeneration)
+				&& owner.SceneSessionId == _sceneHistorySessionId
+				&& owner.ConversationEpoch == _sceneConversationEpoch
+				&& ReferenceEquals(owner.Mission, Mission.Current);
+		}
+	}
+
+	private bool PrepareTtsPlaybackRequest(TtsEngine.PlaybackRequest request)
+	{
+		Action prepare = null;
+		lock (_ttsBubbleSyncLock)
+		{
+			if (!IsTtsPlaybackRequestCurrent(request)) { return false; }
+			TtsPlaybackOwner owner = _ttsPlaybackOwners[request.RequestId];
+			if (owner.Prepared) { return true; }
+			owner.Prepared = true;
+			prepare = owner.PrepareSceneOutput;
+			owner.PrepareSceneOutput = null;
+			_activeTtsPlaybackRequests[request.AgentIndex] = request.RequestId;
+		}
+		// The event consumer is on the game thread. Preparing only the active request
+		// preserves multiple legitimate FIFO jobs for the same agent without replacing their waits.
+		prepare?.Invoke();
+		return IsTtsPlaybackRequestCurrent(request);
+	}
+
+	private bool IsActiveTtsPlaybackRequest(TtsEngine.PlaybackRequest request, bool allowCancelled = false)
+	{
+		lock (_ttsBubbleSyncLock)
+		{
+			return IsTtsPlaybackRequestCurrent(request, allowCancelled)
+				&& _activeTtsPlaybackRequests.TryGetValue(request.AgentIndex, out long activeId)
+				&& activeId == request.RequestId;
+		}
+	}
+
+	private void RetireTtsPlaybackRequest(TtsEngine.PlaybackRequest request)
+	{
+		if (request == null) { return; }
+		lock (_ttsBubbleSyncLock)
+		{
+			_ttsPlaybackOwners.Remove(request.RequestId);
+			if (_activeTtsPlaybackRequests.TryGetValue(request.AgentIndex, out long activeId) && activeId == request.RequestId)
+			{
+				_activeTtsPlaybackRequests.Remove(request.AgentIndex);
+			}
+		}
+	}
+
+	private static void RunTtsMainThreadEventStep(Action action)
+	{
+		// Only called from request-scoped handlers already dispatched to _mainThreadActions.
+		// Do not enqueue again: an old finish must drain before the next FIFO job is activated.
+		action?.Invoke();
+	}
+
+	private void HandleTtsPlaybackCancelled(TtsEngine.PlaybackRequest request)
+	{
+		if (request == null) { return; }
+		long completedWaitRevision;
+		lock (_nativeConversationTtsPlaybackWaitLock) { completedWaitRevision = _nativeConversationTtsPlaybackWaitToken; }
+		bool releaseNativeTypewriter = CompleteNativeConversationTtsPlaybackWait(request, "playback_cancelled");
+		_mainThreadActions.Enqueue(delegate
+		{
+			try
+			{
+				if (!IsTtsPlaybackRequestCurrent(request, allowCancelled: true)) { return; }
+				if (releaseNativeTypewriter)
+				{
+					lock (_nativeConversationTtsPlaybackWaitLock)
+					{
+						if (_nativeConversationTtsPlaybackWaitToken == completedWaitRevision && _nativeConversationTtsPlaybackWaitTcs == null)
+						{
+							ConversationHelper.StartTypewriterPlaybackIfWaiting();
+						}
+					}
+				}
+				if (request.AgentIndex >= 0 && IsActiveTtsPlaybackRequest(request, allowCancelled: true))
+				{
+					ClearPendingTtsBubbleSyncForAgent(request.AgentIndex, clearInteractionToken: true);
+					ClearPendingSceneDialogueFeedForAgent(request.AgentIndex);
+					CleanupSceneLipSyncAfterPlaybackFinished(request.AgentIndex);
+				}
+			}
+			finally { RetireTtsPlaybackRequest(request); }
+		});
+	}
+
 	private void SubscribeTtsPlaybackEvents()
 	{
 		try
@@ -11129,288 +11256,331 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					Logger.Log("LipSync", "[WARN] 检测到旧 ShoutBehavior 残留订阅，已自动解绑旧实例");
 				}
 				UnsubscribeTtsPlaybackEventsInternal(instance, clearOwnerIfMatch: false);
-				_ttsOnAudioFileReadyHandler = delegate(int agentIndex, string wavPath, string xmlPath, float durationSecs)
+				_ttsOnAudioFileReadyHandler = delegate(TtsEngine.PlaybackRequest request, string wavPath, string xmlPath, float durationSecs)
 				{
-					bool nativeConversationWait = IsNativeConversationTtsPlaybackWaitAgentIndex(agentIndex);
-					if (nativeConversationWait)
+					_mainThreadActions.Enqueue(delegate
 					{
-						ConversationHelper.AdjustTypewriterDuration(durationSecs);
-					}
-					if (agentIndex < 0)
-					{
-						bool mapTableauQueued = false;
-						if (!string.IsNullOrWhiteSpace(wavPath))
+						if (!IsTtsPlaybackRequestCurrent(request)) { QueueDeferredCleanup(null, wavPath, xmlPath, "stale_tts_audio", request?.AgentIndex ?? -1); return; }
+						int agentIndex = request.AgentIndex;
+						if (!PrepareTtsPlaybackRequest(request)) { return; }
+						bool nativeConversationWait = IsNativeConversationTtsPlaybackWaitRequest(request);
+						if (nativeConversationWait)
 						{
-							mapTableauQueued = TryQueueNativeMapConversationTableauTtsPlayback(wavPath, xmlPath, durationSecs);
+							ConversationHelper.AdjustTypewriterDuration(durationSecs);
 						}
-						if (!mapTableauQueued && nativeConversationWait)
+						if (agentIndex < 0)
+						{
+							bool mapTableauQueued = false;
+							if (!string.IsNullOrWhiteSpace(wavPath))
+							{
+								mapTableauQueued = TryQueueNativeMapConversationTableauTtsPlayback(request, wavPath, xmlPath, durationSecs);
+							}
+							if (!mapTableauQueued && nativeConversationWait)
+							{
+								ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+							}
+							LogTtsReport("AudioDurationReady.NativeNoAgent", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)};mapTableauQueued={mapTableauQueued}");
+							return;
+						}
+						if (nativeConversationWait)
 						{
 							ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
 						}
-						LogTtsReport("AudioDurationReady.NativeNoAgent", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)};mapTableauQueued={mapTableauQueued}");
-						return;
-					}
-					if (nativeConversationWait)
-					{
-						ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
-					}
-					if (agentIndex >= 0)
-					{
-						Logger.Log("LipSync", $"[OnAudioFileReady] agentIndex={agentIndex}, wav={wavPath}, xml={xmlPath}, dur={durationSecs:F2}s");
-						EnqueuePendingAudioDuration(agentIndex, durationSecs);
-						LogTtsReport("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
-						bool flag = false;
-						lock (_ttsBubbleSyncLock)
+						if (agentIndex >= 0)
 						{
-							flag = _ttsPlaybackStartedAgents.Contains(agentIndex);
-						}
-						if (flag)
-						{
-							_mainThreadActions.Enqueue(delegate
+							Logger.Log("LipSync", $"[OnAudioFileReady] agentIndex={agentIndex}, wav={wavPath}, xml={xmlPath}, dur={durationSecs:F2}s");
+							EnqueuePendingAudioDuration(agentIndex, durationSecs);
+							LogTtsReport("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
+							bool flag = false;
+							lock (_ttsBubbleSyncLock)
 							{
+								flag = _ttsPlaybackStartedAgents.Contains(agentIndex);
+							}
+							if (flag)
+							{
+								RunTtsMainThreadEventStep(delegate
+								{
+									if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+									try
+									{
+										if (!TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false))
+										{
+											ClearOrphanPendingAudioDuration(agentIndex);
+										}
+									}
+									catch
+									{
+									}
+								});
+							}
+							RunTtsMainThreadEventStep(delegate
+							{
+									if (!IsTtsPlaybackRequestCurrent(request)) { QueueDeferredCleanup(null, wavPath, xmlPath, "stale_tts_audio_main", agentIndex); return; }
 								try
 								{
-									if (!TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false))
+									LogTtsReport("AudioFileReady.MainThreadStart", agentIndex, $"wavExists={(!string.IsNullOrWhiteSpace(wavPath) && File.Exists(wavPath))};xmlExists={(!string.IsNullOrWhiteSpace(xmlPath) && File.Exists(xmlPath))}");
+									if (IsInEscapeTransitionWindow())
 									{
-										ClearOrphanPendingAudioDuration(agentIndex);
-									}
-								}
-								catch
-								{
-								}
-							});
-						}
-						_mainThreadActions.Enqueue(delegate
-						{
-							try
-							{
-								LogTtsReport("AudioFileReady.MainThreadStart", agentIndex, $"wavExists={(!string.IsNullOrWhiteSpace(wavPath) && File.Exists(wavPath))};xmlExists={(!string.IsNullOrWhiteSpace(xmlPath) && File.Exists(xmlPath))}");
-								if (IsInEscapeTransitionWindow())
-								{
-									try
-									{
-										if (!string.IsNullOrEmpty(wavPath) && File.Exists(wavPath))
+										try
 										{
-											File.Delete(wavPath);
+											if (!string.IsNullOrEmpty(wavPath) && File.Exists(wavPath))
+											{
+												File.Delete(wavPath);
+											}
 										}
-									}
-									catch
-									{
-									}
-									try
-									{
-										if (!string.IsNullOrEmpty(xmlPath) && File.Exists(xmlPath))
+										catch
 										{
-											File.Delete(xmlPath);
 										}
-										return;
-									}
-									catch
-									{
-										return;
-									}
-								}
-								Mission mission = Mission.Current;
-								if (_enableRhubarbSoundEventPlayback && mission?.Scene != null)
-								{
-									Agent agent = mission.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
-									if (agent != null && agent.IsActive())
-									{
-										CleanupPreviousLipSyncPlaybackForReplacement("OnAudioFileReady.ReplaceExisting");
-								LogLipSyncNativeProbe("CreateEventFromExternalFile.Before", agentIndex, "wav=" + System.IO.Path.GetFileName(wavPath));
-								SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, mission.Scene, is3d: false, isBlocking: false);
-								if (soundEvent == null)
-								{
-									Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile 返回 null, agentIndex={agentIndex}");
-									LogTtsReport("AudioFileReady.CreateSoundEventNull", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
-									QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.CreateSoundEventNull", agentIndex);
+										try
+										{
+											if (!string.IsNullOrEmpty(xmlPath) && File.Exists(xmlPath))
+											{
+												File.Delete(xmlPath);
+											}
+											return;
 										}
-								else
-								{
-									LogTtsReport("AudioFileReady.SoundEventCreated", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
-									LogLipSyncNativeProbe("SoundEvent.SetPosition.Before", agentIndex);
-									soundEvent.SetPosition(agent.Position);
-									LogLipSyncNativeProbe("SoundEvent.SetPosition.After", agentIndex);
-									LogLipSyncNativeProbe("SoundEvent.Play.Before", agentIndex);
-									soundEvent.Play();
-									LogLipSyncNativeProbe("SoundEvent.Play.After", agentIndex);
-									float num = 0f;
-									bool flag = true;
-									try
-									{
-										flag = DuelSettings.GetSettings()?.TtsSceneUseWinmmAudible ?? true;
-												num = DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f;
-											}
-											catch
-											{
-												flag = true;
-												num = 0f;
-											}
-											if (flag)
-											{
-												num = 0f;
-											}
-											if (num < 0f)
-											{
-												num = 0f;
-											}
-											if (num > 1f)
-											{
-												num = 1f;
-											}
-											try
-											{
-												soundEvent.SetParameter("Volume", num);
-											}
-											catch (Exception ex2)
-									{
-										Logger.Log("LipSync", "[WARN] 设置 SoundEvent 音量失败(Volume): " + ex2.Message);
+										catch
+										{
+											return;
+										}
 									}
-									LogLipSyncNativeProbe("SoundEvent.GetSoundId.Before", agentIndex);
-									int soundId = soundEvent.GetSoundId();
-									LogLipSyncNativeProbe("SoundEvent.GetSoundId.After", agentIndex, "soundId=" + soundId);
-									if (soundId <= 0)
+									Mission mission = Mission.Current;
+									if (_enableRhubarbSoundEventPlayback && mission?.Scene != null)
 									{
-										Logger.Log("LipSync", $"[WARN] SoundEvent.GetSoundId 非法({soundId})，跳过 StartRhubarbRecord, agentIndex={agentIndex}");
-										SafeStopAndReleaseSoundEvent(soundEvent);
-										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.InvalidSoundId", agentIndex);
-									}
-											else
-											{
-												string text = "";
-												bool flag2 = CanAgentUseSceneLipSync(agent, out text);
-												Logger.Log("LipSync", $"[Rhubarb] SoundEvent created, vol={num:F2}, agentIndex={agentIndex}, soundId={soundId}, lipSyncSafe={flag2}, reason={text}");
-												lock (_speakingLock)
+										Agent agent = mission.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+										if (agent != null && agent.IsActive())
+										{
+											CleanupPreviousLipSyncPlaybackForReplacement("OnAudioFileReady.ReplaceExisting");
+									LogLipSyncNativeProbe("CreateEventFromExternalFile.Before", agentIndex, "wav=" + System.IO.Path.GetFileName(wavPath));
+									SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, mission.Scene, is3d: false, isBlocking: false);
+									if (soundEvent == null)
+									{
+										Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile 返回 null, agentIndex={agentIndex}");
+										LogTtsReport("AudioFileReady.CreateSoundEventNull", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
+										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.CreateSoundEventNull", agentIndex);
+											}
+									else
+									{
+										LogTtsReport("AudioFileReady.SoundEventCreated", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
+										LogLipSyncNativeProbe("SoundEvent.SetPosition.Before", agentIndex);
+										soundEvent.SetPosition(agent.Position);
+										LogLipSyncNativeProbe("SoundEvent.SetPosition.After", agentIndex);
+										LogLipSyncNativeProbe("SoundEvent.Play.Before", agentIndex);
+										soundEvent.Play();
+										LogLipSyncNativeProbe("SoundEvent.Play.After", agentIndex);
+										float num = 0f;
+										bool flag = true;
+										try
+										{
+											flag = DuelSettings.GetSettings()?.TtsSceneUseWinmmAudible ?? true;
+													num = DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f;
+												}
+												catch
 												{
+													flag = true;
+													num = 0f;
+												}
+												if (flag)
+												{
+													num = 0f;
+												}
+												if (num < 0f)
+												{
+													num = 0f;
+												}
+												if (num > 1f)
+												{
+													num = 1f;
+												}
+												try
+												{
+													soundEvent.SetParameter("Volume", num);
+												}
+												catch (Exception ex2)
+										{
+											Logger.Log("LipSync", "[WARN] 设置 SoundEvent 音量失败(Volume): " + ex2.Message);
+										}
+										LogLipSyncNativeProbe("SoundEvent.GetSoundId.Before", agentIndex);
+										int soundId = soundEvent.GetSoundId();
+										LogLipSyncNativeProbe("SoundEvent.GetSoundId.After", agentIndex, "soundId=" + soundId);
+										if (soundId <= 0)
+										{
+											Logger.Log("LipSync", $"[WARN] SoundEvent.GetSoundId 非法({soundId})，跳过 StartRhubarbRecord, agentIndex={agentIndex}");
+											SafeStopAndReleaseSoundEvent(soundEvent);
+											QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.InvalidSoundId", agentIndex);
+										}
+												else
+												{
+													string text = "";
+													bool flag2 = CanAgentUseSceneLipSync(agent, out text);
+													Logger.Log("LipSync", $"[Rhubarb] SoundEvent created, vol={num:F2}, agentIndex={agentIndex}, soundId={soundId}, lipSyncSafe={flag2}, reason={text}");
+													lock (_speakingLock)
+													{
+														if (flag2)
+														{
+															_agentLipSyncDetachedForSafety.Remove(agentIndex);
+														}
+														else
+														{
+															_agentLipSyncDetachedForSafety.Add(agentIndex);
+														}
+														_agentSoundEvents[agentIndex] = soundEvent;
+														_agentWavPaths[agentIndex] = wavPath;
+														_agentXmlPaths[agentIndex] = xmlPath;
+													}
 													if (flag2)
 													{
-														_agentLipSyncDetachedForSafety.Remove(agentIndex);
+														PrepareAgentForTrueLipSyncIfPossible(agent);
+														LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
+														agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
+														LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
+														Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord 调用成功, agentIndex={agentIndex}, soundId={soundId}");
 													}
 													else
 													{
-														_agentLipSyncDetachedForSafety.Add(agentIndex);
+														Logger.Log("LipSync", $"[SAFEGUARD] Skip StartRhubarbRecord for unsafe scene agent. agentIndex={agentIndex}, reason={text}");
+														LogTtsReport("AudioFileReady.LipSyncDetached", agentIndex, "reason=" + text);
 													}
-													_agentSoundEvents[agentIndex] = soundEvent;
-													_agentWavPaths[agentIndex] = wavPath;
-													_agentXmlPaths[agentIndex] = xmlPath;
-												}
-												if (flag2)
-												{
-													PrepareAgentForTrueLipSyncIfPossible(agent);
-													LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
-													agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
-													LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
-													Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord 调用成功, agentIndex={agentIndex}, soundId={soundId}");
-												}
-												else
-												{
-													Logger.Log("LipSync", $"[SAFEGUARD] Skip StartRhubarbRecord for unsafe scene agent. agentIndex={agentIndex}, reason={text}");
-													LogTtsReport("AudioFileReady.LipSyncDetached", agentIndex, "reason=" + text);
-												}
+											}
+										}
+										}
+										else
+										{
+											LogTtsReport("AudioFileReady.AgentUnavailable", agentIndex, $"agentMissing={(agent == null)};active={(agent != null && agent.IsActive())}");
+											QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.AgentUnavailable", agentIndex);
 										}
 									}
-									}
-									else
-									{
-										LogTtsReport("AudioFileReady.AgentUnavailable", agentIndex, $"agentMissing={(agent == null)};active={(agent != null && agent.IsActive())}");
-										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.AgentUnavailable", agentIndex);
-									}
+									LogTtsReport("AudioFileReady.MainThreadEnd", agentIndex);
 								}
-								LogTtsReport("AudioFileReady.MainThreadEnd", agentIndex);
-							}
-							catch (Exception ex3)
-							{
-								QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.MainThreadFailed", agentIndex);
-								Logger.Log("LipSync", "[ERROR] OnAudioFileReady 主线程处理失败: " + ex3.Message);
-								LogTtsReport("AudioFileReady.MainThreadFailed", agentIndex, "error=" + ex3.Message);
-								BannerlordExceptionSentinel.ReportObservedException("LipSync.OnAudioFileReady.MainThread", ex3, "agentIndex=" + agentIndex);
-							}
-						});
-					}
-				};
-				_ttsOnPlaybackStartedHandler = delegate(int agentIndex)
-				{
-					if (IsNativeConversationTtsPlaybackWaitAgentIndex(agentIndex))
-					{
-						if (agentIndex >= 0 || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
-						{
-							ConversationHelper.StartTypewriterPlaybackIfWaiting();
+								catch (Exception ex3)
+								{
+									QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.MainThreadFailed", agentIndex);
+									Logger.Log("LipSync", "[ERROR] OnAudioFileReady 主线程处理失败: " + ex3.Message);
+									LogTtsReport("AudioFileReady.MainThreadFailed", agentIndex, "error=" + ex3.Message);
+									BannerlordExceptionSentinel.ReportObservedException("LipSync.OnAudioFileReady.MainThread", ex3, "agentIndex=" + agentIndex);
+								}
+							});
 						}
-					}
-					if (agentIndex >= 0)
+
+					});
+				};
+				_ttsOnPlaybackStartedHandler = delegate(TtsEngine.PlaybackRequest request)
+				{
+					_mainThreadActions.Enqueue(delegate
 					{
-						if (!CanAgentParticipateInSceneSpeechExternal(agentIndex))
+						if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+						int agentIndex = request.AgentIndex;
+						if (!PrepareTtsPlaybackRequest(request)) { return; }
+						if (IsNativeConversationTtsPlaybackWaitRequest(request))
 						{
+							if (agentIndex >= 0 || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
+							{
+								ConversationHelper.StartTypewriterPlaybackIfWaiting();
+							}
+						}
+						if (agentIndex >= 0)
+						{
+							if (!CanAgentParticipateInSceneSpeechExternal(agentIndex))
+							{
+								lock (_ttsBubbleSyncLock)
+								{
+									_pendingNpcBubbleQueues.Remove(agentIndex);
+									_pendingAudioDurationQueues.Remove(agentIndex);
+									_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+									_pendingSceneDialogueFeedQueues.Remove(agentIndex);
+								}
+								LogTtsReport("PlaybackStarted.InvalidAgent", agentIndex);
+								return;
+							}
+							string text = "";
+							bool flag2 = CanAgentUseSceneLipSyncExternal(agentIndex, out text);
+							lock (_speakingLock)
+							{
+								if (flag2)
+								{
+									_agentLipSyncDetachedForSafety.Remove(agentIndex);
+									_speakingAgentIndices.Add(agentIndex);
+								}
+								else
+								{
+									_speakingAgentIndices.Remove(agentIndex);
+									_agentLipSyncDetachedForSafety.Add(agentIndex);
+								}
+							}
+							Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex}, lipSyncSafe={flag2}, reason={text}");
+							LogTtsReport("PlaybackStarted", agentIndex, $"lipSyncSafe={flag2};reason={text}");
 							lock (_ttsBubbleSyncLock)
 							{
-								_pendingNpcBubbleQueues.Remove(agentIndex);
-								_pendingAudioDurationQueues.Remove(agentIndex);
-								_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
-								_pendingSceneDialogueFeedQueues.Remove(agentIndex);
+								_ttsPlaybackStartedAgents.Add(agentIndex);
 							}
-							LogTtsReport("PlaybackStarted.InvalidAgent", agentIndex);
-							return;
-						}
-						string text = "";
-						bool flag2 = CanAgentUseSceneLipSyncExternal(agentIndex, out text);
-						lock (_speakingLock)
-						{
-							if (flag2)
+							RunTtsMainThreadEventStep(delegate
 							{
-								_agentLipSyncDetachedForSafety.Remove(agentIndex);
-								_speakingAgentIndices.Add(agentIndex);
-							}
-							else
-							{
-								_speakingAgentIndices.Remove(agentIndex);
-								_agentLipSyncDetachedForSafety.Add(agentIndex);
-							}
-						}
-						Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex}, lipSyncSafe={flag2}, reason={text}");
-						LogTtsReport("PlaybackStarted", agentIndex, $"lipSyncSafe={flag2};reason={text}");
-						lock (_ttsBubbleSyncLock)
-						{
-							_ttsPlaybackStartedAgents.Add(agentIndex);
-						}
-						_mainThreadActions.Enqueue(delegate
-						{
-							try
-							{
-								bool flag3 = TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false);
-								if (!flag3)
+									if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+								try
 								{
-									SchedulePendingNpcBubbleFallbackDispatch(agentIndex);
+									bool flag3 = TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false);
+									if (!flag3)
+									{
+										SchedulePendingNpcBubbleFallbackDispatch(request);
+									}
 								}
-							}
-							catch (Exception ex4)
-							{
-								Logger.Log("LipSync", $"[ERROR] PlaybackStarted bubble dispatch failed, agentIndex={agentIndex}, error={ex4.Message}");
-								LogTtsReport("PlaybackStarted.BubbleDispatchFailed", agentIndex, "error=" + ex4.Message);
-								BannerlordExceptionSentinel.ReportObservedException("LipSync.PlaybackStarted.BubbleDispatch", ex4, "agentIndex=" + agentIndex);
-							}
-						});
-					}
+								catch (Exception ex4)
+								{
+									Logger.Log("LipSync", $"[ERROR] PlaybackStarted bubble dispatch failed, agentIndex={agentIndex}, error={ex4.Message}");
+									LogTtsReport("PlaybackStarted.BubbleDispatchFailed", agentIndex, "error=" + ex4.Message);
+									BannerlordExceptionSentinel.ReportObservedException("LipSync.PlaybackStarted.BubbleDispatch", ex4, "agentIndex=" + agentIndex);
+								}
+							});
+						}
+
+					});
 				};
-				_ttsOnPlaybackFinishedHandler = delegate(int agentIndex)
+				_ttsOnPlaybackFinishedHandler = delegate(TtsEngine.PlaybackRequest request)
 				{
-					CompleteNativeConversationTtsPlaybackWait(agentIndex, "playback_finished");
-					if (agentIndex >= 0)
+					_mainThreadActions.Enqueue(delegate
 					{
-						FreezeWatchdog.Mark("SceneTts.playback_finished.event", "agent=" + agentIndex + " thread=" + Thread.CurrentThread.ManagedThreadId, immediate: true);
-						_mainThreadActions.Enqueue(delegate
+						try
 						{
-							HandleSceneTtsPlaybackFinishedOnMainThread(agentIndex);
-						});
-					}
+						if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+						int agentIndex = request.AgentIndex;
+						if (!PrepareTtsPlaybackRequest(request)) { return; }
+						CompleteNativeConversationTtsPlaybackWait(request, "playback_finished");
+						if (agentIndex >= 0)
+						{
+							FreezeWatchdog.Mark("SceneTts.playback_finished.event", "agent=" + agentIndex + " thread=" + Thread.CurrentThread.ManagedThreadId, immediate: true);
+							RunTtsMainThreadEventStep(delegate
+							{
+									if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+								HandleSceneTtsPlaybackFinishedOnMainThread(agentIndex);
+							});
+						}
+
+						}
+						finally { RetireTtsPlaybackRequest(request); }
+
+					});
 				};
-				_ttsOnPlaybackFailedHandler = delegate(int agentIndex, string errorMessage)
+				_ttsOnPlaybackFailedHandler = delegate(TtsEngine.PlaybackRequest request, string errorMessage)
 				{
-					HandleTtsPlaybackFailed(agentIndex, errorMessage);
+					_mainThreadActions.Enqueue(delegate
+					{
+						try
+						{
+						if (!IsTtsPlaybackRequestCurrent(request)) { return; }
+						int agentIndex = request.AgentIndex;
+						HandleTtsPlaybackFailed(request, errorMessage);
+
+						}
+						finally { RetireTtsPlaybackRequest(request); }
+
+					});
 				};
-				instance.OnAudioFileReady += _ttsOnAudioFileReadyHandler;
-				instance.OnPlaybackStarted += _ttsOnPlaybackStartedHandler;
-				instance.OnPlaybackFinished += _ttsOnPlaybackFinishedHandler;
-				instance.OnPlaybackFailed += _ttsOnPlaybackFailedHandler;
+				_ttsOnPlaybackCancelledHandler = HandleTtsPlaybackCancelled;
+				instance.OnRequestPlaybackCancelled += _ttsOnPlaybackCancelledHandler;
+				instance.OnRequestAudioFileReady += _ttsOnAudioFileReadyHandler;
+				instance.OnRequestPlaybackStarted += _ttsOnPlaybackStartedHandler;
+				instance.OnRequestPlaybackFinished += _ttsOnPlaybackFinishedHandler;
+				instance.OnRequestPlaybackFailed += _ttsOnPlaybackFailedHandler;
 				_ttsEventSubscribedOwner = this;
 				Logger.Log("LipSync", $"[INFO] TTS 播放事件订阅完成 owner={GetHashCode()}");
 			}
@@ -11429,21 +11599,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
+			if (_ttsOnPlaybackCancelledHandler != null) { tts.OnRequestPlaybackCancelled -= _ttsOnPlaybackCancelledHandler; }
 			if (_ttsOnAudioFileReadyHandler != null)
 			{
-				tts.OnAudioFileReady -= _ttsOnAudioFileReadyHandler;
+				tts.OnRequestAudioFileReady -= _ttsOnAudioFileReadyHandler;
 			}
 			if (_ttsOnPlaybackStartedHandler != null)
 			{
-				tts.OnPlaybackStarted -= _ttsOnPlaybackStartedHandler;
+				tts.OnRequestPlaybackStarted -= _ttsOnPlaybackStartedHandler;
 			}
 			if (_ttsOnPlaybackFinishedHandler != null)
 			{
-				tts.OnPlaybackFinished -= _ttsOnPlaybackFinishedHandler;
+				tts.OnRequestPlaybackFinished -= _ttsOnPlaybackFinishedHandler;
 			}
 			if (_ttsOnPlaybackFailedHandler != null)
 			{
-				tts.OnPlaybackFailed -= _ttsOnPlaybackFailedHandler;
+				tts.OnRequestPlaybackFailed -= _ttsOnPlaybackFailedHandler;
 			}
 		}
 		catch (Exception ex)
@@ -13149,15 +13320,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static long RegisterNativeConversationTtsPlaybackWait(int agentIndex, float estimatedDurationSeconds, int textLength)
+	private static long RegisterNativeConversationTtsPlaybackWait(TtsEngine.PlaybackRequest request, float estimatedDurationSeconds, int textLength)
 	{
+		if (request == null || request.IsCancellationRequested) { return 0L; }
+		int agentIndex = request.AgentIndex;
 		TaskCompletionSource<bool> oldTcs = null;
 		int timeoutMs = ResolveNativeConversationTtsPlaybackWaitTimeoutMs(estimatedDurationSeconds, textLength);
 		TaskCompletionSource<bool> newTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 		long token = 0L;
 		lock (_nativeConversationTtsPlaybackWaitLock)
 		{
+			if (request.IsCancellationRequested) { return 0L; }
 			oldTcs = _nativeConversationTtsPlaybackWaitTcs;
+			_nativeConversationTtsPlaybackRequest = request;
 			_nativeConversationTtsPlaybackWaitTcs = newTcs;
 			_nativeConversationTtsPlaybackWaitAgentIndex = agentIndex;
 			_nativeConversationTtsPlaybackWaitTimeoutMs = timeoutMs;
@@ -13193,21 +13368,55 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static void ScheduleNativeConversationTypewriterPlaybackFallback(long waitToken, int agentIndex, float estimatedDurationSeconds, int textLength)
 	{
+		ShoutBehavior owner = CurrentInstance;
+		TtsEngine.PlaybackRequest request;
+		lock (_nativeConversationTtsPlaybackWaitLock)
+		{
+			if (owner == null || _nativeConversationTtsPlaybackWaitToken != waitToken
+				|| _nativeConversationTtsPlaybackWaitTcs == null || _nativeConversationTtsPlaybackRequest == null)
+			{
+				return;
+			}
+			request = _nativeConversationTtsPlaybackRequest;
+		}
 		int delayMs = ResolveNativeConversationTypewriterFallbackDelayMs(estimatedDurationSeconds, textLength);
 		Task.Run(async delegate
 		{
 			try
 			{
 				await Task.Delay(delayMs).ConfigureAwait(false);
-				if (!IsNativeConversationTtsPlaybackWaitToken(waitToken, agentIndex) || !ConversationHelper.IsTypewriterWaitingForPlayback)
+				owner._mainThreadActions.Enqueue(delegate
 				{
-					return;
-				}
-				bool started = ConversationHelper.StartTypewriterPlaybackIfWaiting(estimatedDurationSeconds);
-				if (started)
-				{
-					Logger.Log("NativeConversation", "[TTS] typewriter playback fallback released waiting text. agentIndex=" + agentIndex + ", token=" + waitToken + ", delayMs=" + delayMs);
-				}
+					try
+					{
+					if (!ReferenceEquals(CurrentInstance, owner)) { return; }
+					bool started;
+					// Keep the owner -> native-wait lock order. Registration of B cannot
+					// replace A between its last identity check and the typewriter release.
+					lock (owner._ttsBubbleSyncLock)
+					{
+						if (!owner.IsTtsPlaybackRequestCurrent(request)) { return; }
+						lock (_nativeConversationTtsPlaybackWaitLock)
+						{
+							if (!ReferenceEquals(_nativeConversationTtsPlaybackRequest, request)
+								|| !IsNativeConversationTtsPlaybackWaitToken(waitToken, agentIndex)
+								|| !ConversationHelper.IsTypewriterWaitingForPlayback)
+							{
+								return;
+							}
+							started = ConversationHelper.StartTypewriterPlaybackIfWaiting(estimatedDurationSeconds);
+						}
+					}
+					if (started)
+					{
+						Logger.Log("NativeConversation", "[TTS] typewriter playback fallback released waiting text. agentIndex=" + agentIndex + ", token=" + waitToken + ", delayMs=" + delayMs);
+					}
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("NativeConversation", "[TTS] typewriter playback fallback failed: " + ex.Message);
+					}
+				});
 			}
 			catch (Exception ex)
 			{
@@ -13234,7 +13443,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		lock (_nativeConversationTtsPlaybackWaitLock)
 		{
-			if (_nativeConversationTtsPlaybackWaitTcs == null || _nativeConversationTtsPlaybackWaitToken != token)
+			if (_nativeConversationTtsPlaybackWaitTcs == null || _nativeConversationTtsPlaybackWaitToken != token || _nativeConversationTtsPlaybackRequest == null || _nativeConversationTtsPlaybackRequest.IsCancellationRequested)
 			{
 				return false;
 			}
@@ -13243,8 +13452,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static void CompleteNativeConversationTtsPlaybackWait(int agentIndex, string reason, bool force = false)
+	private static bool CompleteNativeConversationTtsPlaybackWait(TtsEngine.PlaybackRequest request, string reason, bool force = false)
 	{
+		int agentIndex = request?.AgentIndex ?? int.MinValue;
 		TaskCompletionSource<bool> tcs = null;
 		int expectedAgentIndex = int.MinValue;
 		long token = 0L;
@@ -13252,17 +13462,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			if (_nativeConversationTtsPlaybackWaitTcs == null)
 			{
-				return;
+				return false;
 			}
 			expectedAgentIndex = _nativeConversationTtsPlaybackWaitAgentIndex;
-			bool matches = force || expectedAgentIndex == agentIndex || (expectedAgentIndex < 0 && agentIndex < 0);
+			bool matches = force || (request != null && ReferenceEquals(_nativeConversationTtsPlaybackRequest, request));
 			if (!matches)
 			{
-				return;
+				return false;
 			}
 			tcs = _nativeConversationTtsPlaybackWaitTcs;
 			token = _nativeConversationTtsPlaybackWaitToken;
 			_nativeConversationTtsPlaybackWaitTcs = null;
+			_nativeConversationTtsPlaybackRequest = null;
 			_nativeConversationTtsPlaybackWaitAgentIndex = int.MinValue;
 			_nativeConversationTtsPlaybackWaitTimeoutMs = 0;
 		}
@@ -13274,6 +13485,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 		}
 		Logger.Log("NativeConversation", "[TTS] completed native playback wait. reason=" + (reason ?? "") + ", agentIndex=" + agentIndex + ", expectedAgentIndex=" + expectedAgentIndex + ", token=" + token);
+		return true;
 	}
 
 	private static void CompleteNativeConversationTtsPlaybackWaitByToken(long token, string reason)
@@ -13289,6 +13501,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			tcs = _nativeConversationTtsPlaybackWaitTcs;
 			expectedAgentIndex = _nativeConversationTtsPlaybackWaitAgentIndex;
 			_nativeConversationTtsPlaybackWaitTcs = null;
+			_nativeConversationTtsPlaybackRequest = null;
 			_nativeConversationTtsPlaybackWaitAgentIndex = int.MinValue;
 			_nativeConversationTtsPlaybackWaitTimeoutMs = 0;
 		}
@@ -13302,7 +13515,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Logger.Log("NativeConversation", "[TTS] completed native playback wait by token. reason=" + (reason ?? "") + ", expectedAgentIndex=" + expectedAgentIndex + ", token=" + token);
 	}
 
-	private static bool IsNativeConversationTtsPlaybackWaitAgentIndex(int agentIndex)
+	private static bool IsNativeConversationTtsPlaybackWaitRequest(TtsEngine.PlaybackRequest request)
 	{
 		lock (_nativeConversationTtsPlaybackWaitLock)
 		{
@@ -13310,8 +13523,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			int expectedAgentIndex = _nativeConversationTtsPlaybackWaitAgentIndex;
-			return expectedAgentIndex == agentIndex || (expectedAgentIndex < 0 && agentIndex < 0);
+			return request != null && !request.IsCancellationRequested && ReferenceEquals(_nativeConversationTtsPlaybackRequest, request);
 		}
 	}
 
@@ -13700,6 +13912,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static int _nativeConversationTtsPlaybackWaitTimeoutMs = 0;
 
 	private static long _nativeConversationTtsPlaybackWaitToken = 0L;
+	private static TtsEngine.PlaybackRequest _nativeConversationTtsPlaybackRequest;
 
 	private const int NativeConversationTtsPlaybackWaitMinTimeoutMs = 30000;
 
@@ -13930,12 +14143,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static bool TryQueueNativeMapConversationTableauTtsPlayback(string wavPath, string xmlPath, float durationSecs)
+	private static bool TryQueueNativeMapConversationTableauTtsPlayback(TtsEngine.PlaybackRequest request, string wavPath, string xmlPath, float durationSecs)
 	{
 		try
 		{
 			ShoutBehavior instance = CurrentInstance;
-			if (instance == null || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
+			if (instance == null || !instance.IsTtsPlaybackRequestCurrent(request) || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
 			{
 				return false;
 			}
@@ -13943,11 +14156,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			instance._mainThreadActions.Enqueue(delegate
+			RunTtsMainThreadEventStep(delegate
 			{
 				try
 				{
-					if (!ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
+					if (!instance.IsTtsPlaybackRequestCurrent(request) || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
 					{
 						return;
 					}
@@ -13967,6 +14180,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				catch (Exception ex)
 				{
+					if (!instance.IsTtsPlaybackRequestCurrent(request)) { return; }
 					Logger.Log("NativeConversation", "[TTS] map conversation tableau playback failed: " + ex.Message);
 					ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
 				}
@@ -26503,6 +26717,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	}
 
 	private long _scenePostprocessWaitOwnerSequence;
+	private Task _scenePostprocessWaitGate;
+	private bool _scenePostprocessWaitBorrowedProcessingFlag;
+	private long _scenePostprocessWaitProcessingSequence;
+	private long _sceneShoutProcessingSequence;
+	private long _scenePlayerInputSequence;
 
 	private void RegisterScenePostprocessGateTask(Task task)
 	{
@@ -26576,6 +26795,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			Interlocked.Increment(ref _scenePostprocessWaitOwnerSequence);
 			_isWaitingForScenePostprocessGate = false;
+			_scenePostprocessWaitGate = null;
+			_scenePostprocessWaitBorrowedProcessingFlag = false;
 			if (_pendingScenePostprocessActionCount <= 0 && _scenePostprocessIdleTcs == null)
 			{
 				return;
@@ -26590,6 +26811,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ResetSceneShoutRuntimeOnMissionEnd(string reason)
 	{
+		lock (_ttsBubbleSyncLock) { _ttsPlaybackOwners.Clear(); _activeTtsPlaybackRequests.Clear(); }
 		try
 		{
 			Interlocked.Increment(ref _sceneConversationEpoch);
@@ -26702,6 +26924,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				&& waitConversationEpoch == Volatile.Read(ref _sceneConversationEpoch);
 		}
 		long waitOwner;
+		long processingSequence;
 		bool restoreProcessingFlag;
 		lock (_scenePostprocessGateLock)
 		{
@@ -26710,7 +26933,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return;
 			}
 			waitOwner = Interlocked.Increment(ref _scenePostprocessWaitOwnerSequence);
-			restoreProcessingFlag = _isProcessingShout;
+			// A newer waiter inherits the same gate's flag, but never an already closed UI's busy state.
+			processingSequence = Interlocked.Read(ref _sceneShoutProcessingSequence);
+			restoreProcessingFlag = _isProcessingShout
+				|| (ReferenceEquals(_scenePostprocessWaitGate, task) && _scenePostprocessWaitBorrowedProcessingFlag
+					&& _scenePostprocessWaitProcessingSequence == processingSequence);
+			_scenePostprocessWaitProcessingSequence = processingSequence;
+			_scenePostprocessWaitGate = task;
+			_scenePostprocessWaitBorrowedProcessingFlag = restoreProcessingFlag;
 			_isWaitingForScenePostprocessGate = true;
 			if (restoreProcessingFlag)
 			{
@@ -26751,7 +26981,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					if (IsCurrentWaitOwner() && ReferenceEquals(_scenePostprocessIdleTcs?.Task, task))
 					{
 						// Restore only the flag borrowed by this waiter before force-clear retires it.
-						if (restoreProcessingFlag)
+						if (restoreProcessingFlag && processingSequence == Interlocked.Read(ref _sceneShoutProcessingSequence))
 						{
 							_isProcessingShout = true;
 						}
@@ -26775,11 +27005,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				if (IsCurrentWaitOwner())
 				{
-					if (restoreProcessingFlag)
+					if (restoreProcessingFlag && processingSequence == Interlocked.Read(ref _sceneShoutProcessingSequence))
 					{
 						_isProcessingShout = true;
 					}
 					_isWaitingForScenePostprocessGate = false;
+					_scenePostprocessWaitGate = null;
+					_scenePostprocessWaitBorrowedProcessingFlag = false;
 					Interlocked.Increment(ref _scenePostprocessWaitOwnerSequence);
 				}
 			}
@@ -26947,16 +27179,132 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		await ProcessShoutConfirmedInternal(shoutText, extraFact, forcedPrimaryAgentIndex);
 	}
 
+	private sealed class ScenePlayerShoutRequest
+	{
+		public ShoutBehavior Owner;
+		public Mission Mission;
+		public Agent Player;
+		public long RuntimeGeneration;
+		public int SceneSessionId;
+		public int ConversationEpoch;
+		public long InputSequence;
+		public ShoutTargetingContext TargetingContext;
+		public int Started;
+	}
+
+	// The opaque request is transient, never persisted, and never installed as the UI's mutable context.
+	internal object CaptureScenePlayerShoutRequestForReplay(Agent[] framedTargets, Agent primaryTarget)
+	{
+		if (!IsBannerlordMainThreadForNativeActions() || framedTargets == null || primaryTarget == null
+			|| !framedTargets.Any(agent => ReferenceEquals(agent, primaryTarget)))
+		{
+			return null;
+		}
+		return CaptureScenePlayerShoutRequest(framedTargets, primaryTarget.Index);
+	}
+
+	internal bool IsCapturedScenePlayerShoutRequestCurrent(object capturedRequest)
+	{
+		ScenePlayerShoutRequest request = capturedRequest as ScenePlayerShoutRequest;
+		return IsBannerlordMainThreadForNativeActions()
+			&& IsScenePlayerShoutRequestCurrent(request)
+			&& Volatile.Read(ref request.Started) == 0;
+	}
+
+	private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(IEnumerable<Agent> framedTargets, int primaryAgentIndex)
+	{
+		List<Agent> frozen = (framedTargets ?? Enumerable.Empty<Agent>()).Where(agent => agent != null).Distinct().ToList();
+		return new ScenePlayerShoutRequest
+		{
+			Owner = this,
+			Mission = Mission.Current,
+			Player = Agent.Main,
+			RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
+			SceneSessionId = Volatile.Read(ref _sceneHistorySessionId),
+			ConversationEpoch = Volatile.Read(ref _sceneConversationEpoch),
+			InputSequence = Interlocked.Increment(ref _scenePlayerInputSequence),
+			TargetingContext = new ShoutTargetingContext
+			{
+				PrimaryAgentIndex = primaryAgentIndex,
+				CandidateAgentIndices = frozen.Select(agent => agent.Index).ToList(),
+				PreviewCandidateAgents = frozen
+			}
+		};
+	}
+
+	private bool IsScenePlayerShoutRequestCurrent(ScenePlayerShoutRequest request)
+	{
+		return request != null && ReferenceEquals(request.Owner, this)
+			&& request.Mission != null && ReferenceEquals(request.Mission, Mission.Current)
+			&& request.Player != null && ReferenceEquals(request.Player, Agent.Main)
+			&& SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration)
+			&& request.SceneSessionId == Volatile.Read(ref _sceneHistorySessionId)
+			&& request.ConversationEpoch == Volatile.Read(ref _sceneConversationEpoch)
+			&& request.InputSequence == Interlocked.Read(ref _scenePlayerInputSequence);
+	}
+
+	internal bool TryReplayCapturedScenePlayerShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
+		object capturedRequest, Action<Action> runWithObservationScope)
+	{
+		ScenePlayerShoutRequest request = capturedRequest as ScenePlayerShoutRequest;
+		if (!IsBannerlordMainThreadForNativeActions() || !IsScenePlayerShoutRequestCurrent(request)
+			|| string.IsNullOrWhiteSpace(shoutText) || runWithObservationScope == null
+			|| Interlocked.CompareExchange(ref request.Started, 1, 0) != 0)
+		{
+			return false;
+		}
+		_ = ProcessCapturedScenePlayerShoutAsync(shoutText, extraFact, forcedPrimaryAgentIndex, request, runWithObservationScope);
+		return true;
+	}
+
 	private async Task ProcessShoutConfirmedInternal(string shoutText, string extraFact, int? forcedPrimaryAgentIndex)
 	{
-		_stareTimer = 0f;
-		_currentStareTarget = null;
+		if (!IsBannerlordMainThreadForNativeActions())
+		{
+			Logger.Log("ShoutBehavior", "[SceneInput] rejected off-main-thread submission");
+			return;
+		}
 		if (string.IsNullOrWhiteSpace(shoutText))
 		{
 			ResumeGame();
 			return;
 		}
+		ShoutTargetingContext targetingContext = _activeShoutTargetingContext;
+		List<Agent> framedTargets = GetAgentsForShoutTargetingContext(targetingContext);
+		int primaryAgentIndex = forcedPrimaryAgentIndex ?? targetingContext?.PrimaryAgentIndex ?? -1;
+		ScenePlayerShoutRequest request = CaptureScenePlayerShoutRequest(framedTargets, primaryAgentIndex);
+		request.Started = 1;
+		await ProcessCapturedScenePlayerShoutAsync(shoutText, extraFact, forcedPrimaryAgentIndex, request, null);
+	}
+
+	private async Task ProcessCapturedScenePlayerShoutAsync(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
+		ScenePlayerShoutRequest request, Action<Action> runWithObservationScope)
+	{
 		await WaitForScenePostprocessGateAsync("before_player_shout_pipeline");
+		await RunNativeConversationMainThreadFuncAsync("scene_player_input", "player", request.TargetingContext.PrimaryAgentIndex, () =>
+		{
+			if (!IsScenePlayerShoutRequestCurrent(request))
+			{
+				return false;
+			}
+			Action process = () => ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request);
+			if (runWithObservationScope == null)
+			{
+				process();
+			}
+			else
+			{
+				runWithObservationScope(process);
+			}
+			return true;
+		}, false);
+	}
+
+	private void ProcessCurrentScenePlayerShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
+		ScenePlayerShoutRequest request)
+	{
+		_stareTimer = 0f;
+		_currentStareTarget = null;
 		try
 		{
 			_lastShoutDuelLiteralHit = ContainsLiteralKeywordHit(shoutText, AIConfigHandler.DuelTriggerKeywords);
@@ -26965,8 +27313,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			_lastShoutDuelLiteralHit = false;
 		}
-		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
-		ShoutTargetingContext targetingContext = _activeShoutTargetingContext;
+		ShoutTargetingContext targetingContext = request.TargetingContext;
 		List<Agent> framedAgents = GetAgentsForShoutTargetingContext(targetingContext);
 		if (framedAgents.Count == 0)
 		{
@@ -26995,6 +27342,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ResumeGame();
 			return;
 		}
+		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
 		if (!TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents))
 		{
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 在场人物快照已失效，请重新框选。", new Color(1f, 0.5f, 0.3f)));

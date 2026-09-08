@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Adapters;
@@ -13,6 +15,18 @@ namespace AnimusForge.Refactor.Adapters;
 /// </summary>
 public static class LegacyPromptPackageAdapter
 {
+    private sealed class MessageAccessors
+    {
+        internal readonly PropertyInfo Role;
+        internal readonly PropertyInfo Content;
+        internal MessageAccessors(Type type)
+        {
+            Role = type.GetProperty("role", BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+            Content = type.GetProperty("content", BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+        }
+    }
+
+    private static readonly ConditionalWeakTable<Type, MessageAccessors> Accessors = new ConditionalWeakTable<Type, MessageAccessors>();
     public static PromptPackage FromLegacyMessages(
         IEnumerable<object> messages,
         int maxTokens,
@@ -64,6 +78,19 @@ public static class LegacyPromptPackageAdapter
             stringMap.TryGetValue("role", out role);
             stringMap.TryGetValue("content", out content);
             return true;
+        }
+        // AF's actual message factories return anonymous role/content objects.
+        // Read only their two string properties; never serialize arbitrary game objects.
+        if (message != null)
+        {
+            MessageAccessors accessors = Accessors.GetValue(message.GetType(), type => new MessageAccessors(type));
+            if (accessors.Role?.PropertyType == typeof(string) && accessors.Content?.PropertyType == typeof(string)
+                && accessors.Role.GetIndexParameters().Length == 0 && accessors.Content.GetIndexParameters().Length == 0)
+            {
+                role = (string)accessors.Role.GetValue(message, null);
+                content = (string)accessors.Content.GetValue(message, null);
+                return true;
+            }
         }
         return false;
     }

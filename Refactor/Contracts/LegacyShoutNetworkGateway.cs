@@ -80,6 +80,9 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
             throw new ArgumentNullException(nameof(request));
         }
 
+        LlmGenerateResult stopped = GetStoppedRequestResult(request, cancellationToken);
+        if (stopped != null) { return stopped; }
+
         if (_routePostprocessToActionApi && request.Stage == InteractionStage.Postprocess)
         {
             return await GenerateActionPostprocessAsync(request, cancellationToken).ConfigureAwait(false);
@@ -96,6 +99,17 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
                 promptRetryOnError: false,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
+            stopped = GetStoppedRequestResult(request, cancellationToken);
+            if (stopped != null) { return stopped; }
+            if (string.Equals((rawText ?? string.Empty).Trim(), SaveRuntimeGuard.BuildStaleRequestErrorText(), StringComparison.Ordinal))
+            {
+                return new LlmGenerateResult(LlmResultStatus.Cancelled, string.Empty, 0, 0, "stale");
+            }
+            if (TryClassifyLegacyTransportFailure(rawText, out LlmResultStatus failureStatus, out string failureCode))
+            {
+                return new LlmGenerateResult(failureStatus, string.Empty, 0, 0, failureCode);
+            }
+
             if (string.IsNullOrWhiteSpace(rawText))
             {
                 return new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response");
@@ -109,7 +123,7 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
         }
         catch (Exception exception)
         {
-            return new LlmGenerateResult(
+            return GetStoppedRequestResult(request, cancellationToken) ?? new LlmGenerateResult(
                 LlmResultStatus.NonRetryableFailure,
                 string.Empty,
                 0,
@@ -196,11 +210,45 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
         }
     }
 
+    private static LlmGenerateResult GetStoppedRequestResult(LlmGenerateRequest request, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return new LlmGenerateResult(LlmResultStatus.Cancelled, string.Empty, 0, 0, "cancelled");
+        }
+        if (!SaveRuntimeGuard.IsCurrentGeneration(request.Trace.RuntimeGeneration))
+        {
+            return new LlmGenerateResult(LlmResultStatus.Cancelled, string.Empty, 0, 0, "stale");
+        }
+        return null;
+    }
+
+    private static bool TryClassifyLegacyTransportFailure(string rawText, out LlmResultStatus status, out string errorCode)
+    {
+        status = LlmResultStatus.RetryableFailure;
+        errorCode = "legacy_network_failure";
+        string text = (rawText ?? string.Empty).TrimStart();
+        // ShoutNetwork returns BuildFailureDetail envelopes, not typed errors. Match its
+        // reserved reason prefixes AND detail marker, never exception words in NPC dialogue.
+        if (text.IndexOf("【模型回复（完整）】", StringComparison.Ordinal) < 0) { return false; }
+        if (text.StartsWith("（错误：未配置 API Key）", StringComparison.Ordinal)
+            || text.StartsWith("（错误：未配置模型名称）", StringComparison.Ordinal))
+        {
+            status = LlmResultStatus.NonRetryableFailure;
+            errorCode = "legacy_config_invalid";
+            return true;
+        }
+        return text.StartsWith("（API请求失败:", StringComparison.Ordinal)
+            || text.StartsWith("（API响应格式错误:", StringComparison.Ordinal)
+            || text.StartsWith("（程序错误:", StringComparison.Ordinal);
+    }
+
     private static async Task<LlmGenerateResult> GenerateActionPostprocessAsync(
         LlmGenerateRequest request,
         CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        LlmGenerateResult stopped = GetStoppedRequestResult(request, cancellationToken);
+        if (stopped != null) { return stopped; }
         string systemPrompt = string.Empty;
         List<string> userSections = new List<string>();
         foreach (PromptMessage message in request.Prompt.Messages)
@@ -226,14 +274,22 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
         try
         {
             bool succeeded = await Task.Run(
-                () => AIConfigHandler.TryCallAuxiliaryActionPostprocessOnceForExternal(
-                    systemPrompt,
-                    userPrompt,
-                    Math.Max(16, request.Prompt.MaxTokens),
-                    0f,
-                    out content,
-                    out error),
+                () =>
+                {
+                    if (GetStoppedRequestResult(request, cancellationToken) != null) { return false; }
+                    return AIConfigHandler.TryCallAuxiliaryActionPostprocessOnceForExternal(
+                        systemPrompt,
+                        userPrompt,
+                        Math.Max(16, request.Prompt.MaxTokens),
+                        0f,
+                        out content,
+                        out error);
+                },
                 cancellationToken).ConfigureAwait(false);
+            // The legacy action API is synchronous and has no cancellation parameter.
+            // A running call cannot be aborted here; its late result must never become executable.
+            stopped = GetStoppedRequestResult(request, cancellationToken);
+            if (stopped != null) { return stopped; }
             if (!succeeded)
             {
                 return new LlmGenerateResult(
@@ -256,7 +312,7 @@ public sealed class LegacyShoutNetworkGateway : ILlmGateway, ILlmStreamingGatewa
         }
         catch (Exception exception)
         {
-            return new LlmGenerateResult(
+            return GetStoppedRequestResult(request, cancellationToken) ?? new LlmGenerateResult(
                 LlmResultStatus.NonRetryableFailure,
                 string.Empty,
                 0,

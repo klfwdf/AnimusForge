@@ -95,6 +95,7 @@ def extract(ref: str | None) -> dict[str, str]:
         "PORTS_TYPE": declaration(source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", ref), "public sealed class LegacyInteractionPipelinePorts"),
         "MAIN_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", ref), "public sealed class LegacyDetachedPromptComposer"),
         "POSTPROCESS_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", ref), "public sealed class LegacyDetachedPostprocessPromptComposer"),
+        "LEGACY_PROMPT_ADAPTER": declaration(source("Refactor/Adapters/LegacyPromptPackageAdapter.cs", ref), "public static class LegacyPromptPackageAdapter"),
         "ACTION_PARSER": declaration(source("Refactor/Adapters/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
         "BUILD_PROMPT": declaration(source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
         "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),

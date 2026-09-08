@@ -18,6 +18,9 @@ namespace AnimusForge.XihaiAction
         private const string HarmonyId = "animusforge.sceneactions.compat.af130";
         private static Harmony _harmony;
         private static MethodInfo _patchedMethod;
+        private static MethodInfo _capturePlayerShoutRequestMethod;
+        private static MethodInfo _replayCapturedPlayerShoutMethod;
+        private static MethodInfo _isCapturedPlayerShoutCurrentMethod;
         private static MethodInfo _pauseGameMethod;
         private static MethodInfo _resumeGameMethod;
         private static MethodInfo _recordPlayerMessageMethod;
@@ -148,6 +151,7 @@ namespace AnimusForge.XihaiAction
                     reason = "conversation epoch field is missing";
                     return false;
                 }
+                BindOptionalCapturedPlayerShoutMethods(behaviorType, instanceFlags);
                 Type contextType = _contextField.FieldType;
                 _currentInstanceProperty = behaviorType.GetProperty(
                     "CurrentInstance",
@@ -488,6 +492,9 @@ namespace AnimusForge.XihaiAction
                 _installed = false;
                 _harmony = null;
                 _patchedMethod = null;
+                _capturePlayerShoutRequestMethod = null;
+                _replayCapturedPlayerShoutMethod = null;
+                _isCapturedPlayerShoutCurrentMethod = null;
                 _pauseGameMethod = null;
                 _resumeGameMethod = null;
                 _recordPlayerMessageMethod = null;
@@ -677,7 +684,10 @@ namespace AnimusForge.XihaiAction
                      localDecision.Kind == BattleSpeechTriggerKindV2.NeedsClassifier);
                 if (naturalCandidate)
                 {
-                    if (BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(
+                    object capturedRequest = _capturePlayerShoutRequestMethod?.Invoke(
+                        __instance, new object[] { framed.ToArray(), primary });
+                    // Without a safe replay scope, retain the normal AF and scene-observer route.
+                    if (capturedRequest != null && BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(
                         __instance,
                         mission,
                         shoutText,
@@ -688,6 +698,7 @@ namespace AnimusForge.XihaiAction
                         framed,
                         conversationEpoch,
                         mission.CurrentTime,
+                        capturedRequest,
                         out bool allowNaturalOriginal))
                     {
                         if (allowNaturalOriginal)
@@ -1361,41 +1372,107 @@ namespace AnimusForge.XihaiAction
             return prompt;
         }
 
+        private static void BindOptionalCapturedPlayerShoutMethods(Type behaviorType, BindingFlags instanceFlags)
+        {
+            _capturePlayerShoutRequestMethod = behaviorType.GetMethod(
+                "CaptureScenePlayerShoutRequestForReplay", instanceFlags, null,
+                new[] { typeof(Agent[]), typeof(Agent) }, null);
+            _replayCapturedPlayerShoutMethod = behaviorType.GetMethod(
+                "TryReplayCapturedScenePlayerShout", instanceFlags, null,
+                new[] { typeof(string), typeof(string), typeof(int?), typeof(object), typeof(Action<Action>) }, null);
+            _isCapturedPlayerShoutCurrentMethod = behaviorType.GetMethod(
+                "IsCapturedScenePlayerShoutRequestCurrent", instanceFlags, null,
+                new[] { typeof(object) }, null);
+            // Older hosts retain AF and its observer. Claim natural input only when both
+            // ordinary replay and a non-consuming success-path lifetime check are supported.
+            if (_capturePlayerShoutRequestMethod?.ReturnType != typeof(object)
+                || _replayCapturedPlayerShoutMethod?.ReturnType != typeof(bool)
+                || _isCapturedPlayerShoutCurrentMethod?.ReturnType != typeof(bool))
+            {
+                _capturePlayerShoutRequestMethod = null;
+                _replayCapturedPlayerShoutMethod = null;
+                _isCapturedPlayerShoutCurrentMethod = null;
+            }
+        }
+
+        internal static bool IsCapturedPlayerShoutCurrent(BattleSpeechCapturedInputV1 input)
+        {
+            if (input == null) { return false; }
+            // Older-host observer and dedicated routes have no captured ordinary AF request.
+            if (input.OriginalScenePlayerShoutRequest == null) { return true; }
+            object behavior = input.OriginalAfBehavior;
+            if (!_installed || _isCapturedPlayerShoutCurrentMethod == null || behavior == null
+                || !_isCapturedPlayerShoutCurrentMethod.DeclaringType.IsInstanceOfType(behavior))
+            {
+                return false;
+            }
+            try
+            {
+                return (bool)_isCapturedPlayerShoutCurrentMethod.Invoke(
+                    behavior, new[] { input.OriginalScenePlayerShoutRequest });
+            }
+            catch (Exception ex)
+            {
+                SceneActionsLog.Warning("BATTLE_SPEECH_COMPAT",
+                    "Captured player shout validation failed closed: " + ex.GetBaseException().Message);
+                return false;
+            }
+        }
+
         internal static bool TryReplayOriginalPlayerShout(
             BattleSpeechCapturedInputV1 input,
             bool observeForBattleSpeech,
             out string error)
         {
             error = null;
-            if (!_installed || input == null || _patchedMethod == null ||
-                string.IsNullOrWhiteSpace(input.RawText))
+            if (!_installed || input == null || _replayCapturedPlayerShoutMethod == null
+                || input.OriginalScenePlayerShoutRequest == null || string.IsNullOrWhiteSpace(input.RawText))
             {
-                error = "AF original shout replay is unavailable.";
+                error = "AF captured shout replay is unavailable.";
                 return false;
             }
-            object behavior = input.OriginalAfBehavior ?? _behaviorInstance;
-            if (behavior == null || !_patchedMethod.DeclaringType.IsInstanceOfType(behavior))
+            object behavior = input.OriginalAfBehavior;
+            if (behavior == null || !_replayCapturedPlayerShoutMethod.DeclaringType.IsInstanceOfType(behavior))
             {
                 error = "AF ShoutBehavior instance is unavailable for replay.";
                 return false;
             }
-
-            Interlocked.Increment(ref _replayDepth);
-            if (!observeForBattleSpeech)
-            {
-                Interlocked.Increment(ref _suppressRecordedObservationDepth);
-            }
             try
             {
-                _patchedMethod.Invoke(
+                // Enter suppression at the actual synchronous main-thread publication, not around an async kickoff.
+                Action<Action> observationScope = action =>
+                {
+                    if (!observeForBattleSpeech)
+                    {
+                        Interlocked.Increment(ref _suppressRecordedObservationDepth);
+                    }
+                    try
+                    {
+                        action();
+                    }
+                    finally
+                    {
+                        if (!observeForBattleSpeech)
+                        {
+                            Interlocked.Decrement(ref _suppressRecordedObservationDepth);
+                        }
+                    }
+                };
+                bool accepted = (bool)_replayCapturedPlayerShoutMethod.Invoke(
                     behavior,
                     new object[]
                     {
                         input.RawText,
                         input.OriginalExtraFact,
-                        input.OriginalForcedPrimaryAgentIndex
+                        input.OriginalForcedPrimaryAgentIndex,
+                        input.OriginalScenePlayerShoutRequest,
+                        observationScope
                     });
-                return true;
+                if (!accepted)
+                {
+                    error = "AF captured shout request is stale or already consumed.";
+                }
+                return accepted;
             }
             catch (TargetInvocationException ex)
             {
@@ -1406,14 +1483,6 @@ namespace AnimusForge.XihaiAction
             {
                 error = ex.GetType().Name + ": " + ex.Message;
                 return false;
-            }
-            finally
-            {
-                if (!observeForBattleSpeech)
-                {
-                    Interlocked.Decrement(ref _suppressRecordedObservationDepth);
-                }
-                Interlocked.Decrement(ref _replayDepth);
             }
         }
 

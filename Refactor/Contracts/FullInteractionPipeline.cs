@@ -83,12 +83,11 @@ public sealed class FullInteractionPipeline : IInteractionPipeline
         string visibleReply = _visibleReplyNormalizer.Normalize(
             main.RawText,
             context?.AllowedTagFamilies ?? Array.Empty<string>());
-        PromptPackage postprocessPrompt = _postprocessPromptComposer.Compose(
-            envelope,
-            selection,
-            visibleReply,
-            main.RawText,
-            context);
+        cancellationToken.ThrowIfCancellationRequested();
+        PromptPackage postprocessPrompt = _postprocessPromptComposer is IAsyncPostprocessPromptComposer asyncComposer
+            ? await asyncComposer.ComposeAsync(envelope, selection, visibleReply, main.RawText, context, cancellationToken).ConfigureAwait(false)
+            : _postprocessPromptComposer.Compose(envelope, selection, visibleReply, main.RawText, context);
+        cancellationToken.ThrowIfCancellationRequested();
         if (postprocessPrompt == null)
         {
             return Result(InteractionStatus.Succeeded, string.Empty, visibleReply, main.RawText, null);
@@ -114,8 +113,12 @@ public sealed class FullInteractionPipeline : IInteractionPipeline
                 null);
         }
 
-        ActionPlan actionPlan = _actionPostprocessor.Parse(postprocess.RawText, context)
+        cancellationToken.ThrowIfCancellationRequested();
+        ActionPlan actionPlan = (_actionPostprocessor is IAsyncActionPostprocessor asyncPostprocessor
+            ? await asyncPostprocessor.ParseAsync(postprocess.RawText, context, cancellationToken).ConfigureAwait(false)
+            : _actionPostprocessor.Parse(postprocess.RawText, context))
             ?? new ActionPlan(Array.Empty<ActionRequest>(), string.Empty);
+        cancellationToken.ThrowIfCancellationRequested();
         return Result(InteractionStatus.Succeeded, string.Empty, visibleReply, main.RawText, actionPlan, postprocess.RawText);
     }
 

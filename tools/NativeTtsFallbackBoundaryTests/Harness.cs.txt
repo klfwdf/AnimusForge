@@ -1,0 +1,112 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
+namespace AnimusForge;
+internal static class Program
+{
+    public static int Main()
+    {
+        int passed=0,failed=0;
+        foreach(string mode in new[]{"normal","duplicate","same-index-B","cancel","generation","mission","scene-session","epoch","owner-replaced","owner-null","wrong-token","missing-wait","exception","atomic-register-B"})
+        {
+            try { ShoutBehavior.Verify(mode); passed++; Console.WriteLine("PASS "+mode); }
+            catch(Exception error) { failed++; Console.WriteLine("FAIL "+mode+": "+error.Message); }
+        }
+        Console.WriteLine($"RESULT nativeTtsFallback passed={passed} failed={failed} liveGame=false");
+        return failed==0?0:1;
+    }
+}
+internal sealed class ShoutBehavior
+{
+    private static ShoutBehavior CurrentInstance;
+    private readonly object _ttsBubbleSyncLock=new();
+    private readonly ConcurrentQueue<Action> _mainThreadActions=new();
+    private readonly Dictionary<long,TtsPlaybackOwner> _ttsPlaybackOwners=new();
+    private int _sceneHistorySessionId=1,_sceneConversationEpoch=1;
+    private static readonly object _nativeConversationTtsPlaybackWaitLock=new();
+    private static TaskCompletionSource<bool> _nativeConversationTtsPlaybackWaitTcs;
+    private static TtsEngine.PlaybackRequest _nativeConversationTtsPlaybackRequest;
+    private static int _nativeConversationTtsPlaybackWaitAgentIndex,_nativeConversationTtsPlaybackWaitTimeoutMs;
+    private static long _nativeConversationTtsPlaybackWaitToken;
+    private static int ResolveNativeConversationTtsPlaybackWaitTimeoutMs(float d,int l)=>30000;
+    private static int ResolveNativeConversationTypewriterFallbackDelayMs(float d,int l)=>1;
+    private static void Require(bool ok,string error) { if(!ok) throw new InvalidOperationException(error); }
+    public static void Verify(string mode)
+    {
+        var owner=new ShoutBehavior();CurrentInstance=owner;Mission.Current=new Mission();SaveRuntimeGuard.Generation++;
+        _nativeConversationTtsPlaybackWaitTcs=null;_nativeConversationTtsPlaybackWaitToken=0;
+        ConversationHelper.Reset();Logger.Errors=0;
+        int mainThread=Environment.CurrentManagedThreadId;
+        using var cancel=new CancellationTokenSource();
+        var a=new TtsEngine.PlaybackRequest(1,-1,cancel.Token,CancellationToken.None);
+        var b=new TtsEngine.PlaybackRequest(2,-1,CancellationToken.None,CancellationToken.None);
+        owner.TrackTtsPlaybackRequest(a);owner.TrackTtsPlaybackRequest(b);
+        long token=RegisterNativeConversationTtsPlaybackWait(a,3.5f,70);
+        Task<long> competing=null;
+        if(mode=="atomic-register-B") ConversationHelper.BeforeRead=()=>
+        {
+            ConversationHelper.BeforeRead=null;
+            competing=Task.Run(()=>
+            {
+                long next=RegisterNativeConversationTtsPlaybackWait(b,9f,180);
+                ConversationHelper.Waiting=true;
+                return next;
+            });
+            // Deterministic contention at the exact check/start boundary. Only the fixture waits.
+            competing.Wait(100);
+        };
+        if(mode=="exception") ConversationHelper.Throw=true;
+        if(mode=="wrong-token") token++;
+        if(mode=="missing-wait") _nativeConversationTtsPlaybackWaitTcs=null;
+        ScheduleNativeConversationTypewriterPlaybackFallback(token,-1,3.5f,70);
+        if(mode=="duplicate") ScheduleNativeConversationTypewriterPlaybackFallback(token,-1,3.5f,70);
+        bool shouldSchedule=mode!="wrong-token"&&mode!="missing-wait";
+        if(shouldSchedule) Require(SpinWait.SpinUntil(()=>!owner._mainThreadActions.IsEmpty||ConversationHelper.Starts>0||Logger.Errors>0,3000),"no delayed action");
+        else Task.Delay(20).GetAwaiter().GetResult();
+        switch(mode)
+        {
+            case "same-index-B": RegisterNativeConversationTtsPlaybackWait(b,9f,180); ConversationHelper.Waiting=true; break;
+            case "cancel": cancel.Cancel();break;
+            case "generation": SaveRuntimeGuard.Generation++;break;
+            case "mission": Mission.Current=new Mission();break;
+            case "scene-session":owner._sceneHistorySessionId++;break;
+            case "epoch":owner._sceneConversationEpoch++;break;
+            case "owner-replaced":CurrentInstance=new ShoutBehavior();break;
+            case "owner-null":CurrentInstance=null;break;
+        }
+        while(owner._mainThreadActions.TryDequeue(out var action)) action();
+        if(competing!=null) { Require(competing.Wait(2000),"registration B deadlocked"); }
+        Task.Delay(10).GetAwaiter().GetResult();
+        while(owner._mainThreadActions.TryDequeue(out var action)) action();
+        bool expectedStart=mode=="normal"||mode=="duplicate"||mode=="atomic-register-B";
+        Require(ConversationHelper.Starts==(expectedStart?1:0),"unexpected releases="+ConversationHelper.Starts);
+        if(expectedStart)
+        {
+            Require(ConversationHelper.StartThread==mainThread,"fallback touched typewriter off main thread");
+            Require(ConversationHelper.StartedToken==1,"old A released B token="+ConversationHelper.StartedToken);
+        }
+        if(mode=="atomic-register-B") Require(_nativeConversationTtsPlaybackWaitToken==2 && ConversationHelper.Waiting,"B must remain waiting after A release");
+        if(mode=="exception") Require(Logger.Errors==1,"callback exception was not isolated");
+        cancel.Cancel();
+    }
+    private static class ConversationHelper
+    {
+        public static volatile bool Waiting;
+        public static volatile int Starts;
+        public static int StartThread; public static long StartedToken;
+        public static Action BeforeRead; public static bool Throw;
+        public static bool IsTypewriterWaitingForPlayback { get { BeforeRead?.Invoke(); return Waiting; } }
+        public static bool StartTypewriterPlaybackIfWaiting(float duration)
+        {
+            if(Throw) throw new InvalidOperationException("fixture.typewriter");
+            if(!Waiting) return false;
+            StartedToken=_nativeConversationTtsPlaybackWaitToken;StartThread=Environment.CurrentManagedThreadId;
+            Waiting=false;Interlocked.Increment(ref Starts);return true;
+        }
+        public static void Reset() { Waiting=true;Starts=0;StartThread=0;StartedToken=0;BeforeRead=null;Throw=false; }
+    }
+@@METHODS@@
+}
+internal static class TtsEngine { @@REQUEST@@ }
+internal sealed class Mission {public static Mission Current;}
+internal static class SaveRuntimeGuard {public static long Generation;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long value)=>value==Generation;}
+internal static class Logger {public static int Errors;public static void Log(string category,string message) {if(message.Contains("fallback failed"))Interlocked.Increment(ref Errors);}}

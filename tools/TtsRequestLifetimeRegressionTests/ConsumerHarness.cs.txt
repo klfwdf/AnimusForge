@@ -1,0 +1,53 @@
+using AnimusForge;
+using System.Reflection;
+
+namespace AnimusForge {
+ sealed class Mission { public static Mission Current=new(); }
+ static class SaveRuntimeGuard {public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}
+}
+sealed class TtsConsumerSubject {
+ readonly object _ttsBubbleSyncLock=new();
+ int _sceneHistorySessionId=1,_sceneConversationEpoch=1;
+ static readonly object _nativeConversationTtsPlaybackWaitLock=new();
+ static TaskCompletionSource<bool> _nativeConversationTtsPlaybackWaitTcs;
+ static int _nativeConversationTtsPlaybackWaitAgentIndex=int.MinValue,_nativeConversationTtsPlaybackWaitTimeoutMs;
+ static long _nativeConversationTtsPlaybackWaitToken;
+ static TtsEngine.PlaybackRequest _nativeConversationTtsPlaybackRequest;
+ const int NativeConversationTtsPlaybackWaitMinTimeoutMs=30000,NativeConversationTtsPlaybackWaitMaxTimeoutMs=300000;
+ @@METHODS@@
+ public void Track(TtsEngine.PlaybackRequest r,Action prepare=null)=>TrackTtsPlaybackRequest(r,prepare);
+ public bool Prepare(TtsEngine.PlaybackRequest r)=>PrepareTtsPlaybackRequest(r);
+ public bool Active(TtsEngine.PlaybackRequest r,bool cancelled=false)=>IsActiveTtsPlaybackRequest(r,cancelled);
+ public void Retire(TtsEngine.PlaybackRequest r)=>RetireTtsPlaybackRequest(r);
+ public int Owners=>_ttsPlaybackOwners.Count;
+ public bool IsCurrent(TtsEngine.PlaybackRequest r,bool cancelled=false)=>IsTtsPlaybackRequestCurrent(r,cancelled);
+ public void NextSession()=>_sceneHistorySessionId++;
+ public void NextEpoch()=>_sceneConversationEpoch++;
+ public static long Register(TtsEngine.PlaybackRequest r)=>RegisterNativeConversationTtsPlaybackWait(r,1,5);
+ public static Task Wait=>_nativeConversationTtsPlaybackWaitTcs?.Task;
+ public static bool Complete(TtsEngine.PlaybackRequest r)=>CompleteNativeConversationTtsPlaybackWait(r,"fixture");
+ public static void Reset()=>CompleteNativeConversationTtsPlaybackWait(null,"reset",true);
+ public static bool Matches(TtsEngine.PlaybackRequest r)=>IsNativeConversationTtsPlaybackWaitRequest(r);
+ public static bool Token(long t,int agent)=>IsNativeConversationTtsPlaybackWaitToken(t,agent);
+ public static void CompleteToken(long t)=>CompleteNativeConversationTtsPlaybackWaitByToken(t,"timeout");
+}
+static class ConsumerTests {
+ static TtsEngine.PlaybackRequest Request(TtsEngine e,int agent=-1){TtsEngine.PlaybackRequest r=null;e.SpeakAsync("x",-1,1,agent,null,x=>r=x);return r;}
+ static TtsEngine Engine(){var e=new TtsEngine();typeof(TtsEngine).GetField("_initialized",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(e,true);return e;}
+ static void Assert(bool b){if(!b)throw new Exception("consumer assertion");}
+ public static void Run(Action<string,Action> check){
+  check("consumer: old negative-agent failure cannot consume replacement wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);var b=Request(e);TtsConsumerSubject.Register(a);TtsConsumerSubject.Register(b);var wait=TtsConsumerSubject.Wait;Assert(!TtsConsumerSubject.Complete(a)&&!wait.IsCompleted);Assert(TtsConsumerSubject.Complete(b)&&wait.IsCompleted);});
+  check("consumer: same Scene agent late finish does not consume new wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e,7);var b=Request(e,7);TtsConsumerSubject.Register(a);TtsConsumerSubject.Register(b);Assert(!TtsConsumerSubject.Complete(a)&&TtsConsumerSubject.Matches(b));});
+  check("consumer: cancelled request cannot register new wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);e.StopPlayback();Assert(TtsConsumerSubject.Register(a)==0&&TtsConsumerSubject.Wait==null);});
+  check("consumer: cancellation closes only its already-registered wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);TtsConsumerSubject.Register(a);var wait=TtsConsumerSubject.Wait;e.OnRequestPlaybackCancelled+=r=>TtsConsumerSubject.Complete(r);e.StopPlayback();Assert(wait.IsCompleted);});
+  check("consumer: old cancellation does not close newer wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);e.StopPlayback();var b=Request(e);TtsConsumerSubject.Register(b);Assert(!TtsConsumerSubject.Complete(a)&&TtsConsumerSubject.Matches(b));});
+  check("consumer: timeout token cannot close newer wait",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);var b=Request(e);long token=TtsConsumerSubject.Register(a);TtsConsumerSubject.Register(b);TtsConsumerSubject.CompleteToken(token);Assert(TtsConsumerSubject.Matches(b));});
+  check("consumer: cancelled generation invalidates typewriter fallback token",()=>{TtsConsumerSubject.Reset();using var e=Engine();var a=Request(e);long t=TtsConsumerSubject.Register(a);Assert(TtsConsumerSubject.Token(t,-1));e.StopPlayback();Assert(!TtsConsumerSubject.Token(t,-1));});
+  check("consumer: late retired event cannot mutate queued same-agent Scene owner",()=>{using var e=Engine();var s=new TtsConsumerSubject();var a=Request(e,7);s.Track(a);var b=Request(e,7);s.Track(b);Assert(s.IsCurrent(a)&&s.IsCurrent(b));s.Retire(a);Assert(!s.IsCurrent(a)&&s.IsCurrent(b)&&s.Owners==1);});
+  check("consumer: session change invalidates queued UI event",()=>{using var e=Engine();var s=new TtsConsumerSubject();var a=Request(e,7);s.Track(a);s.NextSession();Assert(!s.IsCurrent(a));});
+  check("consumer: epoch change invalidates queued UI event",()=>{using var e=Engine();var s=new TtsConsumerSubject();var a=Request(e,7);s.Track(a);s.NextEpoch();Assert(!s.IsCurrent(a));});
+  check("consumer: mission replacement invalidates queued UI event",()=>{using var e=Engine();var s=new TtsConsumerSubject();var a=Request(e,7);s.Track(a);Mission.Current=new();Assert(!s.IsCurrent(a));});
+  check("consumer: save generation invalidates queued UI event",()=>{using var e=Engine();var s=new TtsConsumerSubject();var a=Request(e,7);s.Track(a);SaveRuntimeGuard.Generation++;Assert(!s.IsCurrent(a));});
+  check("consumer: cancelled cleanup requires exact owner and lifetime",()=>{using var e=Engine();var s=new TtsConsumerSubject();var a=Request(e,7);s.Track(a);e.StopPlayback();Assert(!s.IsCurrent(a)&&s.IsCurrent(a,true));var b=Request(e,7);s.Track(b);s.Prepare(b);Assert(!s.Active(a,true)&&s.Active(b));s.Retire(a);Assert(s.IsCurrent(b)&&s.Owners==1);});
+ }
+}

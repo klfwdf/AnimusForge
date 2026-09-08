@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -263,6 +265,65 @@ internal static class Program
             "a migrated aggregate store must persist JSON version 5");
     }
 
+    private static JsonObject ReadModeSchema(string contract)
+    {
+        var schemas = new List<JsonObject>();
+        foreach (Match line in Regex.Matches(contract, @"sb\.AppendLine\(""((?:\\.|[^""\\])*)""\);"))
+        {
+            string literal = JsonSerializer.Deserialize<string>("\"" + line.Groups[1].Value + "\"")!;
+            int start = literal.IndexOf('{');
+            if (start >= 0 && literal.EndsWith("}", StringComparison.Ordinal))
+                schemas.Add(JsonNode.Parse(literal.Substring(start))!.AsObject());
+        }
+        Test.Equal(1, schemas.Count, "each fixed mode contract must publish one parseable JSON schema");
+        return schemas[0];
+    }
+
+    private static void VerifyModeSchema(JsonObject schema, bool declaration)
+    {
+        static void Keys(JsonObject value, params string[] expected) => Test.True(
+            value.Select(pair => pair.Key).ToHashSet(StringComparer.Ordinal).SetEquals(expected),
+            "fixed mode schema fields must remain at their exact protocol scope");
+        if (!declaration)
+        {
+            Keys(schema, "summary", "covered_through_sequence");
+            Test.True(schema["summary"] is JsonValue && schema["covered_through_sequence"]!.GetValue<int>() == 0,
+                "COMPACT schema retains summary and caller-bound sequence only");
+            return;
+        }
+        Keys(schema, "title", "body", "actions", "mentioned_kingdom_ids", "tone", "round_plan",
+            "international_reputation_delta", "international_reputation_reason");
+        var actions = schema["actions"]!.AsArray();
+        Test.Equal(1, actions.Count, "DECLARE schema contains one directed action template");
+        JsonObject action = actions[0]!.AsObject();
+        Keys(action, "target_kingdom_id", "intent", "commitment", "negotiation_move", "peace_terms");
+        Test.Equal("non_binding|proposal|acceptance|rejection|binding", action["commitment"]!.GetValue<string>(),
+            "commitment belongs to each directed action and retains the supported protocol values");
+        Test.Equal("当前可选动作", action["intent"]!.GetValue<string>(),
+            "DECLARE must use the per-target allowed intent rather than a global intent list");
+        Test.Equal("statement时必填否则空字符串", action["negotiation_move"]!.GetValue<string>(),
+            "statement retains its explicit negotiation-move contract");
+        Test.True(action["peace_terms"] is JsonObject, "peace terms remain structured within the action");
+    }
+
+    private static void VerifySchemaMutations(JsonObject declaration, JsonObject compression)
+    {
+        static void Rejected(JsonObject schema, bool mode, Action<JsonObject> mutation)
+        {
+            JsonObject altered = JsonNode.Parse(schema.ToJsonString())!.AsObject();
+            mutation(altered);
+            bool rejected = false;
+            try { VerifyModeSchema(altered, mode); }
+            catch (InvalidOperationException) { rejected = true; }
+            Test.True(rejected, "schema mutation must fail the same production-schema assertion");
+        }
+        Rejected(declaration, true, value => value["commitment"] = "binding");
+        Rejected(declaration, true, value => value["actions"]![0]!.AsObject().Remove("commitment"));
+        Rejected(declaration, true, value => value["actions"]![0]!["commitment"] = "always_execute");
+        Rejected(declaration, true, value => value["author_intent"] = new JsonObject());
+        Rejected(compression, false, value => value["actions"] = new JsonArray());
+    }
+
     private static void VerifyStaticModeContractsAndPromptMigration(string behavior)
     {
 		Test.Equal(28, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
@@ -290,7 +351,6 @@ internal static class Program
 		Test.True(!declarationContract.Contains("author_intent", StringComparison.Ordinal)
 				  && !declarationContract.Contains("primary_target_kingdom_id", StringComparison.Ordinal)
 				  && !declarationContract.Contains("【本篇唯一合法intent清单】", StringComparison.Ordinal)
-				  && !declarationContract.Contains("\\\"commitment\\\"", StringComparison.Ordinal)
 				  && !declarationContract.Contains(
 					  "\\\"intent\\\":\\\"warning|ultimatum|",
 					  StringComparison.Ordinal),
@@ -308,6 +368,12 @@ internal static class Program
 		Test.True(!compressionContract.Contains("author_intent", StringComparison.Ordinal)
 				  && !compressionContract.Contains("\\\"actions\\\"", StringComparison.Ordinal),
 			"the compression contract must not inherit the declaration JSON schema");
+
+        JsonObject declarationSchema = ReadModeSchema(declarationContract);
+        JsonObject compressionSchema = ReadModeSchema(compressionContract);
+        VerifyModeSchema(declarationSchema, declaration: true);
+        VerifyModeSchema(compressionSchema, declaration: false);
+        VerifySchemaMutations(declarationSchema, compressionSchema);
 
         string canonicalSystem = ExtractSection(
             behavior,

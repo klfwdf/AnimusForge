@@ -1,0 +1,198 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Text.Json;
+namespace AnimusForge;
+
+internal static class Program
+{
+    private static int _passed, _failed;
+    private static void Case(string name, Action test)
+    {
+        try { test(); _passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception error) { _failed++; Console.WriteLine("FAIL " + name + ": " + error.Message); }
+    }
+    internal static void Require(bool ok, string message)
+    { if (!ok) throw new InvalidOperationException(message); }
+    internal static void Moves(Owner owner, params string[] expected)
+    {
+        string[] actual = owner.Mutations.Select(m => m.Kind+":"+m.Key+":"+m.Quantity+":"+m.Forced).ToArray();
+        Require(actual.SequenceEqual(expected), "expected="+JsonSerializer.Serialize(expected)+" actual="+JsonSerializer.Serialize(actual));
+    }
+    internal static EconomyRewardDebtAction Asset(string name, string count) => new(
+        EconomyRewardDebtActionKind.GiveAsset, "[ACTION:GIVE_ASSET]", "npc", name, count,
+        "", "", "", "", EconomyRewardDebtCapabilityIds.GiveAsset);
+    internal static List<RewardItemInfo> Inventory() => new()
+    {
+        Item("grain", "grain", "谷物", 5), Item("iron", "iron", "铁", 7),
+        Item("sword", "sword@fine", "精良剑", 2), Item("sword", "sword@rusty", "生锈剑", 3)
+    };
+    internal static RewardItemInfo Item(string id,string key,string name,int count) => new()
+    { Item=new ItemObject { StringId=id }, StringId=id, PromptStringId=key, Name=name, Count=count };
+    public static int Main()
+    {
+        Console.OutputEncoding=System.Text.Encoding.UTF8;
+        foreach (string channel in new[]{"hero","party","merchant"})
+        {
+            Case(channel+"_specified_all_keeps_unrelated_inventory", () =>
+            { var owner=new Owner(); var result=owner.Apply(channel,Asset("grain","ALL")); Require(result.Applied,"not applied"); Moves(owner,"item:grain:5:False"); Require(!result.Fact.Contains("全部可用普通物品"),"fact claims global inventory transfer"); });
+            Case(channel+"_modifier_all_keeps_other_modifier", () =>
+            { var owner=new Owner(); owner.Apply(channel,Asset("sword@fine","ALL")); Moves(owner,"item:sword@fine:2:False"); });
+            Case(channel+"_finite_modifier_is_inventory_not_rp", () =>
+            { var owner=new Owner(); owner.Apply(channel,Asset("sword@fine","1")); Moves(owner,"item:sword@fine:1:True"); });
+            Case(channel+"_finite_existing_item", () =>
+            { var owner=new Owner(); owner.Apply(channel,Asset("grain","2")); Moves(owner,"item:grain:2:True"); });
+            Case(channel+"_exact_name_all", () =>
+            { var owner=new Owner(); owner.Apply(channel,Asset("谷物","ALL")); Moves(owner,"item:grain:5:False"); });
+            Case(channel+"_unknown_all_rejected", () =>
+            { var owner=new Owner(); var result=owner.Apply(channel,Asset("礼物戒指","ALL")); Require(!result.Applied && result.Fact=="","unknown ALL accepted"); Moves(owner); });
+            Case(channel+"_global_asset_all_rejected", () =>
+            { var owner=new Owner(); Require(!owner.Apply(channel,Asset("ALL","ALL")).Applied,"global ALL accepted"); Moves(owner); });
+            Case(channel+"_finite_rp_preserves_literal", () =>
+            { var owner=new Owner(); owner.Apply(channel,Asset("纪念[ROT]戒指","2")); Moves(owner,"rp:纪念[ROT]戒指:2:False"); });
+            Case(channel+"_duplicate_stack_all_count", () =>
+            { var owner=new Owner(); owner.Items.Add(Item("grain","grain","谷物",4)); owner.Apply(channel,Asset("grain"," all ")); Moves(owner,"item:grain:9:False"); });
+        }
+        foreach (string qty in new[]{"", "0", "-1", "2147483648", "1.0", "none"})
+            Case("hero_invalid_quantity_"+qty, () => { var owner=new Owner(); Require(!owner.Apply("hero",Asset("grain",qty)).Applied,"invalid quantity accepted"); Moves(owner); });
+        Case("hero_global_asset_finite_rejected", () => { var owner=new Owner(); Require(!owner.Apply("hero",Asset("ALL","3")).Applied,"global finite accepted"); Moves(owner); });
+        Case("hero_finite_missing_native_item_preserves_legacy_rp_route", () => { var owner=new Owner(); owner.Items.RemoveAll(i=>i.StringId=="grain"); owner.Apply("hero",Asset("grain","3")); Moves(owner,"rp:grain:3:False"); });
+        Case("hero_zero_inventory_all_no_mutation", () => { var owner=new Owner(); owner.Items.RemoveAll(i=>i.StringId=="grain"); Require(!owner.Apply("hero",Asset("grain","ALL")).Applied,"missing item accepted"); Moves(owner); });
+        Case("hero_all_quantity_saturates", () => { var owner=new Owner(); owner.Items=new(){Item("grain","grain","谷物",int.MaxValue), Item("grain","grain","谷物",int.MaxValue)}; owner.Apply("hero",Asset("grain","ALL")); Moves(owner,"item:grain:2147483647:False"); });
+        foreach (string token in new[]{"GOLD", "金币", "denars"})
+            Case("hero_gold_alias_"+token, () => { var owner=new Owner(); owner.Apply("hero",Asset(token,"25")); Moves(owner,"gold:GOLD:25:True"); });
+        Case("hero_gold_all_stays_rejected", () => { var owner=new Owner(); Require(!owner.Apply("hero",Asset("GOLD","ALL")).Applied,"gold ALL accepted"); Moves(owner); });
+        Case("hero_no_effect_has_no_confirmed_fact", () => { var owner=new Owner{ReturnZero=true}; var r=owner.Replay(Asset("grain","ALL")); Require(r.Status==EconomyRewardDebtReplayStatus.Failed && r.ConfirmedFacts.Count==0 && r.AppliedCount==0,"zero effect creates fact"); });
+        Case("hero_unknown_after_first_transfer_stops_later_actions", () =>
+        {
+            var owner=new Owner{UnknownKey="grain"}; var r=owner.Replay(Asset("iron","2"),Asset("grain","ALL"),Asset("sword@fine","1"));
+            Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.AppliedCount==1 && r.ConfirmedFacts.Count==1,"unknown result lost prior known facts or forged current fact");
+            Moves(owner,"item:iron:2:True","item:grain:5:False");
+        });
+        Case("hero_rp_unknown_stops_later_actions", () => { var owner=new Owner{UnknownKey="戒指"}; var r=owner.Replay(Asset("戒指","2"),Asset("grain","1")); Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.ConfirmedFacts.Count==0,"RP observation lost"); Moves(owner,"rp:戒指:2:False"); });
+        Case("hero_throw_after_start_stops_later_actions", () => { var owner=new Owner{ThrowKey="grain"}; var r=owner.Replay(Asset("grain","ALL"),Asset("iron","1")); Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.AppliedCount==0,"throw not unknown"); Moves(owner,"item:grain:5:False"); });
+        Case("hero_no_effect_then_applied_is_partial", () => { var owner=new Owner(); var r=owner.Replay(Asset("missing","ALL"),Asset("grain","2")); Require(r.Status==EconomyRewardDebtReplayStatus.PartiallyApplied && r.AppliedCount==1 && r.ConfirmedFacts.Count==1,"partial result wrong"); Moves(owner,"item:grain:2:True"); });
+        Case("notable_market_all_uses_settlement_only", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("market@grain","ALL")); Moves(owner,"market:grain:13:False"); });
+        Case("notable_market_modifier_all_preserved", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("market@sword@fine","ALL")); Moves(owner,"market:sword@fine:4:False"); });
+        Case("notable_market_modifier_finite_preserved", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("market@sword@fine","2")); Moves(owner,"market:sword@fine:2:True"); });
+        Case("notable_market_exact_display_name_all", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("市场谷物","ALL")); Moves(owner,"market:grain:13:False"); });
+        Case("notable_market_bare_authorized_item_keeps_old_route", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("grain","2")); Moves(owner,"market:grain:2:True"); });
+        Case("notable_personal_item_without_market_match_keeps_hero_owner", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("iron","ALL")); Moves(owner,"item:iron:7:False"); });
+        Case("notable_rp_literal_does_not_use_settlement_roster", () => { var owner=Owner.Notable(); owner.Apply("hero",Asset("纪念戒指","3")); Moves(owner,"rp:纪念戒指:3:False"); });
+        Case("notable_unknown_all_cannot_transfer_anything", () => { var owner=Owner.Notable(); Require(!owner.Apply("hero",Asset("market@missing","ALL")).Applied,"missing market item accepted"); Moves(owner); });
+        foreach(string token in new[]{"GOLD","金币","denars"})
+            Case("notable_gold_uses_market_"+token, () => { var owner=Owner.Notable(); owner.Apply("hero",Asset(token,"25")); Moves(owner,"marketGold:GOLD:25:True"); });
+        Case("notable_market_all_duplicate_stacks_remain_scoped", () => { var owner=Owner.Notable(); owner.MarketItems.Add(Item("grain","grain","谷物",8)); owner.Apply("hero",Asset("market@grain","ALL")); Moves(owner,"market:grain:21:False"); });
+        Case("notable_market_unknown_stops_following_asset_and_gold", () => { var owner=Owner.Notable(); owner.UnknownKey="grain"; var r=owner.Replay(Asset("market@grain","ALL"),Asset("iron","1"),Asset("GOLD","3")); Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.ConfirmedFacts.Count==0 && r.AppliedCount==0,"unknown market effect creates fact"); Moves(owner,"market:grain:13:False"); });
+        Case("notable_market_no_effect_no_confirmed_fact", () => { var owner=Owner.Notable(); owner.ReturnZero=true; var r=owner.Replay(Asset("market@grain","ALL")); Require(r.Status==EconomyRewardDebtReplayStatus.Failed && r.ConfirmedFacts.Count==0,"empty market creates fact"); });
+        Case("notable_gold_no_effect_no_confirmed_fact", () => { var owner=Owner.Notable(); owner.ReturnZero=true; var r=owner.Replay(Asset("GOLD","25")); Require(r.Status==EconomyRewardDebtReplayStatus.Failed && r.ConfirmedFacts.Count==0,"empty gold creates fact"); Moves(owner,"marketGold:GOLD:25:True"); });
+        Case("notable_gold_throw_after_start_stops_following_item", () => { var owner=Owner.Notable(); owner.ThrowKey="GOLD"; var r=owner.Replay(Asset("GOLD","25"),Asset("iron","1")); Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.ConfirmedFacts.Count==0,"gold exception reported as ordinary failure"); Moves(owner,"marketGold:GOLD:25:True"); });
+        Case("hero_gold_throw_after_start_stops_following_item", () => { var owner=new Owner{ThrowKey="GOLD"}; var r=owner.Replay(Asset("GOLD","25"),Asset("iron","1")); Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.ConfirmedFacts.Count==0,"hero gold exception reported as ordinary failure"); Moves(owner,"gold:GOLD:25:True"); });
+        Case("main_thread_port_executes_scoped_asset", () => { var owner=new Owner(); var port=owner.Port(); var r=port.Replay(new EconomyRewardDebtReplayPlan(new[]{Asset("grain","ALL")},null),new GameInteractionSnapshot()); Require(r.Status==EconomyRewardDebtReplayStatus.Applied,"main thread rejected"); Moves(owner,"item:grain:5:False"); });
+        Case("off_thread_port_cannot_reach_inventory_owner", () => { var owner=new Owner(); var port=owner.Port(); var r=Task.Run(()=>port.Replay(new EconomyRewardDebtReplayPlan(new[]{Asset("grain","ALL")},null),new GameInteractionSnapshot())).GetAwaiter().GetResult(); Require(r.ErrorCode=="economy.not_main_thread" && r.ConfirmedFacts.Count==0,"worker allowed"); Moves(owner); });
+        Case("stale_target_port_cannot_reach_inventory_owner", () => { var owner=new Owner(); var r=owner.Port(false).Replay(new EconomyRewardDebtReplayPlan(new[]{Asset("grain","ALL")},null),new GameInteractionSnapshot()); Require(r.ErrorCode=="economy.target_stale_or_changed" && r.ConfirmedFacts.Count==0,"stale allowed"); Moves(owner); });
+        Case("port_retains_unknown_and_prior_confirmed_fact", () => { var owner=Owner.Notable(); owner.UnknownKey="grain"; var r=owner.Port().Replay(new EconomyRewardDebtReplayPlan(new[]{Asset("iron","1"),Asset("market@grain","ALL"),Asset("GOLD","3")},null),new GameInteractionSnapshot()); Require(r.Status==EconomyRewardDebtReplayStatus.UnknownAfterStart && r.AppliedCount==1 && r.ConfirmedFacts.Count==1,"port forged unknown receipt"); Moves(owner,"item:iron:1:True","market:grain:13:False"); });
+        Console.WriteLine($"RESULT heroAssetScope passed={_passed} failed={_failed} liveGame=false");
+        return _failed == 0 ? 0 : 1;
+    }
+}
+
+internal sealed class Owner
+{
+    private const string NotableMarketPromptPrefix="market@";
+    internal List<RewardItemInfo> Items=Program.Inventory();
+    internal List<RewardItemInfo> MarketItems=new();
+    private Settlement Market;
+    internal static Owner Notable() => new() { Market=new Settlement(), MarketItems=new() {
+        Program.Item("grain","grain","谷物",13), Program.Item("sword","sword@fine","精良剑",4),
+        Program.Item("sword","sword@rusty","生锈剑",9) } };
+    internal LegacyEconomyRewardDebtMainThreadPort Port(bool current=true)
+    {
+        int mainThread=Environment.CurrentManagedThreadId;
+        return new LegacyEconomyRewardDebtMainThreadPort(()=>Environment.CurrentManagedThreadId==mainThread,
+            _=>current,ReplayEconomyRewardDebtPlanOnMainThread);
+    }
+    internal List<Mutation> Mutations=new();
+    internal bool ReturnZero;
+    internal string UnknownKey,ThrowKey;
+    internal (bool Applied,string Fact) Apply(string channel,EconomyRewardDebtAction action)
+    {
+        var observation=new EconomyMutationObservation(); string fact; bool ok;
+        switch(channel)
+        {
+            case "hero": ok=TryReplayGiveAsset(action,Hero.Npc,Hero.MainHero,observation,out fact); break;
+            case "party": ok=TryReplayPartyAsset(action,new PartyBase(),new BasicCharacterObject(),Hero.MainHero,"NPC",observation,out fact); break;
+            default: ok=TryReplayMerchantAsset(action,new CharacterObject(),new Settlement(),Hero.MainHero,"NPC",observation,out fact); break;
+        }
+        return (ok,fact);
+    }
+    internal EconomyRewardDebtReplayResult Replay(params EconomyRewardDebtAction[] actions) =>
+        ReplayEconomyRewardDebtPlanOnMainThread(new EconomyRewardDebtReplayPlan(actions,null),new GameInteractionSnapshot());
+    private List<RewardItemInfo> GetHeroInventoryItems(Hero hero) => Items;
+    private List<RewardItemInfo> BuildHeroRewardPostprocessItems(Hero hero) => Items.Concat(MarketItems.Select(
+        item=>Program.Item(item.StringId,"market@"+item.PromptStringId,"市场"+item.Name,item.Count))).ToList();
+    private Settlement ResolveNotableMarketSettlement(Hero hero) => Market;
+    private bool IsNotableMarketHero(Hero hero,Settlement market) => market != null;
+    private List<RewardItemInfo> BuildSettlementRewardItemResolutionContext(Settlement market) => MarketItems;
+    private bool TryResolveAuthorizedPartyRewardItem(PartyBase party,BasicCharacterObject character,string token,out List<RewardItemInfo> items,out string key) => Authorized(token,out items,out key);
+    private bool TryResolveAuthorizedMerchantRewardItem(CharacterObject character,string token,out List<RewardItemInfo> items,out string key) => Authorized(token,out items,out key);
+    private bool Authorized(string token,out List<RewardItemInfo> items,out string key)
+    { items=Items; return TryResolveExactAuthorizedRewardItem(items,token,out _,out key); }
+    private List<RewardItemInfo> BuildHeroRewardItemResolutionContext(Hero hero) => Items;
+    // Boundary substitute for the game resolver used by market routing and the red baseline.
+    // Exact fixture lookup does not reproduce the global fuzzy-name algorithm.
+    private bool TryResolveRewardItemByNameOrId(string token,IEnumerable<RewardItemInfo> items,out RewardItemResolution resolution,string source)
+    {
+        bool found=TryResolveExactAuthorizedRewardItem(items,token,out var info,out var key);
+        resolution=found ? new RewardItemResolution{Info=info,ActionKey=key}:null; return found;
+    }
+    private static string BuildRewardItemTransferLookup(RewardItemResolution r) => r?.ActionKey;
+    private static bool TryResolveKnownItemAssetTokenForExternal(string token,out string id)
+    { id=token; return new[]{"grain","iron","sword"}.Contains(token); }
+    private int Mutate(string kind,string key,int amount,bool forced,EconomyMutationObservation observation)
+    {
+        Mutations.Add(new Mutation(kind,key,amount,forced));
+        if(key==UnknownKey) observation?.MarkUnknown("fixture.roster_exception");
+        if(key==ThrowKey) throw new InvalidOperationException("fixture mutation failed after start");
+        return ReturnZero ? 0 : amount;
+    }
+    private int TransferItemByIdForEconomyReplay(Hero giver,Hero receiver,string key,int amount,out string itemName,bool forceComplete,EconomyMutationObservation mutationObservation)
+    { itemName=key; return Mutate("item",key,amount,forceComplete,mutationObservation); }
+    private int TransferItemFromPartyForEconomyReplay(PartyBase giver,Hero receiver,string key,int amount,string giverName,out string itemName,BasicCharacterObject character,bool forceComplete,EconomyMutationObservation mutationObservation)
+    { itemName=key; return Mutate("item",key,amount,forceComplete,mutationObservation); }
+    private int TransferItemFromSettlementForEconomyReplay(Settlement giver,Hero receiver,string key,int amount,string giverName,out string itemName,BasicCharacterObject character,bool forceComplete,EconomyMutationObservation mutationObservation)
+    { itemName=key; return Mutate(Market==giver ? "market" : "item",key,amount,forceComplete,mutationObservation); }
+    private int GenerateRpAssetToPlayer(string asset,int amount,string giverName,object character,out string itemName,out ItemObject item,string source,EconomyMutationObservation mutationObservation)
+    { itemName=asset; item=null; return Mutate("rp",asset,amount,false,mutationObservation); }
+    private int TransferGold(Hero giver,Hero receiver,int amount,bool forceComplete) => Mutate("gold","GOLD",amount,forceComplete,null);
+    private int TransferGoldFromParty(PartyBase giver,Hero receiver,int amount,string name,BasicCharacterObject character,bool forceComplete) => Mutate("gold","GOLD",amount,forceComplete,null);
+    private int TransferGoldFromSettlement(Settlement giver,Hero receiver,int amount,string name,BasicCharacterObject character,bool forceComplete) => Mutate(Market==giver ? "marketGold" : "gold","GOLD",amount,forceComplete,null);
+    private bool TryReplayDebtCreate(EconomyRewardDebtAction action,Hero giver,out string fact) => throw new InvalidOperationException("Unexpected debt create");
+    private bool TryReplayDebtResolve(EconomyRewardDebtAction action,Hero giver,out string fact) => throw new InvalidOperationException("Unexpected debt resolve");
+    private bool TryReplaySettlementTransfer(EconomyRewardDebtAction action,Hero giver,Hero receiver,EconomyMutationObservation observation,out string fact) => throw new InvalidOperationException("Unexpected settlement");
+@@METHODS@@
+}
+
+internal sealed record Mutation(string Kind,string Key,int Quantity,bool Forced);
+internal sealed class Hero
+{
+    internal static readonly Hero MainHero=new(){StringId="player"};
+    internal static readonly Hero Npc=new(){StringId="npc"};
+    internal static Hero Find(string id) => id=="npc" ? Npc : id=="player" ? MainHero : null;
+    internal string StringId; internal object Name=>"NPC"; internal CharacterObject CharacterObject=>new();
+}
+internal class BasicCharacterObject { }
+internal sealed class CharacterObject : BasicCharacterObject { }
+internal sealed class PartyBase { }
+internal sealed class Settlement { }
+internal sealed class ItemObject { internal string StringId; }
+internal sealed class RewardItemInfo { internal ItemObject Item; internal string StringId,PromptStringId,Name; internal int Count; }
+internal sealed class RewardItemResolution { internal RewardItemInfo Info; internal string ActionKey; }
+public sealed class GameInteractionSnapshot { internal InteractionIdentity Identity=>new(); }
+public sealed class InteractionIdentity { internal string SubjectId=>"npc"; }
+internal static class PromptListRetrievalService
+{
+    internal const string NpcRewardItemsAllSnapshotScope="fixture";
+    internal static void PublishRewardItemSnapshot(string scope,Hero hero,CharacterObject character,int index,List<RewardItemInfo> items) { }
+}
+internal static class Logger { internal static void Log(string channel,string message) { } }
+@@CONTRACTS@@

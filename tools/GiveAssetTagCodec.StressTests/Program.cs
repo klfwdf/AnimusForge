@@ -30,6 +30,23 @@ static class Test
 
 internal static class Program
 {
+private static bool HasSharedRewardCodec(string shout, string completion)
+{
+    static string Section(string source, string start, string end)
+    {
+        int first = source.IndexOf(start, StringComparison.Ordinal);
+        int last = first < 0 ? -1 : source.IndexOf(end, first + start.Length, StringComparison.Ordinal);
+        return first >= 0 && last > first ? source.Substring(first, last - first) : string.Empty;
+    }
+    string translator = Section(shout, "private static string TranslateRewardItemIndexesForScene(", "private static string NormalizeRewardPostprocessTagsForScene(");
+    string normalizer = Section(shout, "private static string NormalizeRewardPostprocessTagsForScene(", "private static int ResolvePartyTransferRecruitMaxTierForScene(");
+    return translator.Contains("GiveAssetTagCodec.ReplaceTags(text,", StringComparison.Ordinal)
+        && normalizer.Contains("GiveAssetTagCodec.TryParseWhole(text2,", StringComparison.Ordinal)
+        && normalizer.Contains("TranslateRewardItemIndexesForScene(text3, options)", StringComparison.Ordinal)
+        && completion.Contains("NormalizeRewardPostprocessTagsForScene(content,", StringComparison.Ordinal)
+        && shout.Contains("NormalizeRewardPostprocessTagsForScene(content,", StringComparison.Ordinal);
+}
+
 private static void AssertSingle(string asset, string quantity)
 {
     string raw = "[ACTION:GIVE_ASSET:" + asset + ":" + quantity + "]";
@@ -159,7 +176,21 @@ while (!File.Exists(Path.Combine(repoRoot, "MyBehavior.cs")))
 string myBehavior = File.ReadAllText(Path.Combine(repoRoot, "MyBehavior.cs"));
 string shoutBehavior = File.ReadAllText(Path.Combine(repoRoot, "ShoutBehavior.cs"));
 string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"));
-Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringComparison.Ordinal) && myBehavior.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal), "free-conversation parser integration missing");
+string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "ShoutBehavior.ScenePostprocess.cs"));
+string courier = File.ReadAllText(Path.Combine(repoRoot, "CourierDeliveryBehavior.cs"));
+string nativeOverlay = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeNativeConversationOverlay.cs"));
+Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringComparison.Ordinal), "free-conversation input codec missing");
+Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/Scene/Courier reward codec chain missing");
+Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationTextForExternalAsync(", StringComparison.Ordinal)
+    && shoutBehavior.Contains("postprocessed = TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && courier.Contains("ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal),
+    "real Native overlay and Courier owner must reach the shared Shout postprocessor");
+Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.ReplaceTags(text,", "RemovedCodec(text,"), scenePostprocess),
+    "mutation must catch a translator that bypasses the real codec");
+Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.TryParseWhole(text2,", "RemovedCodec(text2,"), scenePostprocess),
+    "mutation must catch a normalizer that bypasses whole-tag parsing");
+Test.True(!HasSharedRewardCodec(shoutBehavior, scenePostprocess.Replace("NormalizeRewardPostprocessTagsForScene(content,", "RemovedNormalizer(content,")),
+    "mutation must catch disconnected shared postprocess completion");
 Test.True(shoutBehavior.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && shoutBehavior.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
 Test.True(rewardSystem.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal) && rewardSystem.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "all reward execution parser integration missing");
 Test.True(!rewardSystem.Contains("known_global_give_asset", StringComparison.Ordinal), "global fuzzy lookup must not replace a postprocess asset name");
@@ -461,7 +492,9 @@ Test.True(playerRpCrafting.Contains("if (current.InvestedDenars > 10000)", Strin
 Test.True(playerRpCrafting.Contains("NormalizePlayerRpStrictExactLookup", StringComparison.Ordinal)
     && playerRpCrafting.Contains("[\\\\s\\\\u3000]+", StringComparison.Ordinal),
     "strict exact display-name matching must preserve hyphen/underscore boundaries");
-Test.True(myBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !myBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "free-conversation normalization must preserve direct asset names");
+Test.True(!myBehavior.Contains("TranslateRewardItemIndexes(", StringComparison.Ordinal)
+    && HasSharedRewardCodec(shoutBehavior, scenePostprocess),
+    "free conversation must use the shared translator rather than retain a duplicate private implementation");
 Test.True(shoutBehavior.Contains("getItemDisplayName", StringComparison.Ordinal) && !shoutBehavior.Contains("knownItemKey.Trim()", StringComparison.Ordinal), "scene normalization must preserve direct asset names");
 Match foodSuffixBlock = Regex.Match(rewardSystem, @"private static readonly GeneratedRpFoodSuffixRule\[\] GeneratedRpFoodSuffixRules.*?(?=\r?\n\s*public class RewardItemInfo)", RegexOptions.Singleline);
 Test.True(foodSuffixBlock.Success, "generated RP food suffix pool missing");

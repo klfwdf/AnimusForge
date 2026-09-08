@@ -1,0 +1,73 @@
+using System.Collections.Concurrent;using System.Reflection;
+public sealed class Agent{public static Agent Main=new();public int Index;}
+public sealed class Mission{public static Mission Current=new();public Agent MainAgent=>Agent.Main;}
+public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}
+public class ShoutTargetingContext{public int PrimaryAgentIndex;public List<int> CandidateAgentIndices;public List<Agent> PreviewCandidateAgents;}
+public sealed class ShoutBehavior {
+ int _sceneHistorySessionId=1,_sceneConversationEpoch=1;long _scenePlayerInputSequence;public bool MainThread=true;
+ bool IsBannerlordMainThreadForNativeActions()=>MainThread;
+ @@HOST@@
+ public object Capture(Agent target)=>CaptureScenePlayerShoutRequestForReplay(new[]{target},target);
+ public void OpenNewUi()=>_scenePlayerInputSequence++;
+ public void NextEpoch()=>_sceneConversationEpoch++;
+ public void NextSession()=>_sceneHistorySessionId++;
+ public int ReplayCalls;
+ internal bool TryReplayCapturedScenePlayerShout(string text,string fact,int? primary,object request,Action<Action> scope){ReplayCalls++;return true;}
+ public int Started(object r)=>(int)r.GetType().GetField("Started").GetValue(r);
+ public void Consume(object r)=>r.GetType().GetField("Started").SetValue(r,1);
+}
+public class OlderHost {internal object CaptureScenePlayerShoutRequestForReplay(Agent[] a,Agent b)=>new();internal bool TryReplayCapturedScenePlayerShout(string s,string x,int? i,object r,Action<Action> scope)=>true;}
+public class WrongReturnHost:OlderHost{internal int IsCapturedScenePlayerShoutRequestCurrent(object r)=>1;}
+public class ThrowingHost:OlderHost{internal bool IsCapturedScenePlayerShoutRequestCurrent(object r)=>throw new Exception("fixture");}
+public static class SceneActionsLog{public static void Warning(string a,string b){}}
+public static class AfCompatV130 {
+ static bool _installed=true;static MethodInfo _capturePlayerShoutRequestMethod,_replayCapturedPlayerShoutMethod,_isCapturedPlayerShoutCurrentMethod;
+ @@COMPAT@@
+ public static void Bind(Type t)=>BindOptionalCapturedPlayerShoutMethods(t,BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance);
+ public static bool Safe=>_capturePlayerShoutRequestMethod!=null&&_replayCapturedPlayerShoutMethod!=null&&_isCapturedPlayerShoutCurrentMethod!=null;
+}
+public sealed class BattleSpeechCapturedInputV1{public object OriginalScenePlayerShoutRequest,OriginalAfBehavior;public Mission Mission;public Agent Player;public int ConversationEpoch;public string RawText="old speech";}
+public enum BattleSpeechTriggerKindV2{None,OrdinaryScene,ArmPlayerSpeech,RequestNpcSpeech}
+public enum BattleSpeechPhaseV1{Battle}public enum BattleSpeechSpeakerKindV1{Player}public enum BattleSpeechSessionStateV1{AwaitingPlayerSpeech}
+public sealed class BattleSpeechTriggerClassifierRequestV2{}
+public interface IBattleSpeechClassifierV2{Task<string> ClassifyBattleSpeechTriggerAsync(BattleSpeechTriggerClassifierRequestV2 r,CancellationToken token);}
+public sealed class Classifier:IBattleSpeechClassifierV2{public readonly TaskCompletionSource<string> Result=new(TaskCreationOptions.RunContinuationsAsynchronously);public Task<string> ClassifyBattleSpeechTriggerAsync(BattleSpeechTriggerClassifierRequestV2 r,CancellationToken token)=>Result.Task;}
+public sealed class BattleSpeechTriggerCompletionV2{public BattleSpeechCapturedInputV1 Input;public long Generation;public string RawOutput,Error;}
+public static class BattleSpeechFrameworkV2{public static bool TryParseTriggerClassifierOutput(string s,out BattleSpeechTriggerKindV2 kind){kind=s=="PLAYER_SPEECH"?BattleSpeechTriggerKindV2.ArmPlayerSpeech:BattleSpeechTriggerKindV2.OrdinaryScene;return s!="invalid";}}
+public static class BattleSpeechRuntimeHost{public static Settings Settings=new();}
+public class Settings{public float PlayerCaptureSeconds=30;}
+public sealed class ActiveBattleSpeechSessionV1{}
+public sealed class Subject {
+ readonly ConcurrentQueue<BattleSpeechTriggerCompletionV2> _triggerCompletions=new();
+ readonly CancellationTokenSource _v2LifetimeCancellation=new(),_v2RequestCancellation=new();
+ long _triggerGeneration=1;public Mission Mission=Mission.Current;public int Sessions,Prepared,Replays;public string Spoken;public Action PhaseHook;public bool PhaseAvailable=true;
+ bool TryResolvePhase(out BattleSpeechPhaseV1 p){p=BattleSpeechPhaseV1.Battle;PhaseHook?.Invoke();return PhaseAvailable;}
+ ActiveBattleSpeechSessionV1 StartSession(Agent a,BattleSpeechSpeakerKindV1 b,BattleSpeechPhaseV1 c,BattleSpeechSessionStateV1 d,int epoch,string text,float timeout){Sessions++;return new();}
+ void PrepareSpeech(ActiveBattleSpeechSessionV1 s,string text){Prepared++;Spoken=text;}
+ void ReplayOrdinaryAfShout(BattleSpeechCapturedInputV1 input){Replays++;}
+ @@TRIGGER@@
+ public Task Start(Classifier classifier,BattleSpeechCapturedInputV1 input)=>RunTriggerClassificationAsync(classifier,new(),input,_triggerGeneration,60000);
+ public void Drain()=>ProcessV2ClassifierCompletions();
+ public void NewMessage()=>_triggerGeneration++;
+}
+public static class Program {
+ static int passed,failed;static void Assert(bool b,string message){if(!b)throw new Exception(message);}
+ static async Task Case(string name,Func<Task> body){try{Mission.Current=new();Agent.Main=new();SaveRuntimeGuard.Generation=1;AfCompatV130.Bind(typeof(ShoutBehavior));await body();passed++;Console.WriteLine("PASS "+name);}catch(Exception e){failed++;Console.WriteLine("FAIL "+name+": "+e.Message);}}
+ static BattleSpeechCapturedInputV1 Input(ShoutBehavior h)=>new(){OriginalAfBehavior=h,OriginalScenePlayerShoutRequest=h.Capture(new Agent{Index=7}),Mission=Mission.Current,Player=Agent.Main,ConversationEpoch=1};
+ static async Task Complete(Subject s,Classifier c,Task task,string output="PLAYER_SPEECH"){c.Result.SetResult(output);await task;s.Drain();}
+ public static async Task<int> Main(){
+  await Case("valid natural success preserves intent and does not consume/replay request",async()=>{var h=new ShoutBehavior();var input=Input(h);var s=new Subject();var c=new Classifier();var task=s.Start(c,input);await Complete(s,c,task);Assert(s.Sessions==1&&s.Prepared==1&&s.Spoken==input.RawText,"valid speech lost");Assert(h.Started(input.OriginalScenePlayerShoutRequest)==0&&h.ReplayCalls==0,"validation consumed or replayed request");});
+  foreach(string state in new[]{"new-ui","epoch","session","save-generation","player","consumed","off-main"})await Case("late natural success rejects "+state,async()=>{var h=new ShoutBehavior();var input=Input(h);var s=new Subject();var c=new Classifier();var task=s.Start(c,input);switch(state){case"new-ui":h.OpenNewUi();break;case"epoch":h.NextEpoch();break;case"session":h.NextSession();break;case"save-generation":SaveRuntimeGuard.Generation++;break;case"player":Agent.Main=new();break;case"consumed":h.Consume(input.OriginalScenePlayerShoutRequest);break;case"off-main":h.MainThread=false;break;}await Complete(s,c,task);Assert(s.Sessions==0&&s.Prepared==0&&s.Replays==0,"stale callback started/replayed speech");});
+  await Case("last action boundary rechecks after phase resolution",async()=>{var h=new ShoutBehavior();var s=new Subject{PhaseHook=h.OpenNewUi};var c=new Classifier();var task=s.Start(c,Input(h));await Complete(s,c,task);Assert(s.Sessions==0&&s.Prepared==0,"phase callback revived old input");});
+  await Case("stale failed classifier is discarded before ordinary fallback",async()=>{var h=new ShoutBehavior();var s=new Subject();var c=new Classifier();var task=s.Start(c,Input(h));h.OpenNewUi();await Complete(s,c,task,"invalid");Assert(s.Sessions==0&&s.Replays==0,"stale failure entered fallback");});
+  await Case("new BattleSpeech generation still invalidates old classifier",async()=>{var h=new ShoutBehavior();var s=new Subject();var c=new Classifier();var task=s.Start(c,Input(h));s.NewMessage();await Complete(s,c,task);Assert(s.Sessions==0,"trigger generation ignored");});
+  await Case("different mission still invalidates old classifier",async()=>{var h=new ShoutBehavior();var s=new Subject();var c=new Classifier();var task=s.Start(c,Input(h));s.Mission=new();await Complete(s,c,task);Assert(s.Sessions==0,"mission ignored");});
+  await Case("ordinary successful classification keeps existing fallback",async()=>{var h=new ShoutBehavior();var s=new Subject();var c=new Classifier();var task=s.Start(c,Input(h));await Complete(s,c,task,"ORDINARY_SCENE");Assert(s.Sessions==0&&s.Replays==1,"ordinary route changed");});
+  await Case("old-host observer without capture still supports speech",async()=>{AfCompatV130.Bind(typeof(OlderHost));Assert(!AfCompatV130.Safe,"unsafe pre-route enabled");var s=new Subject();var c=new Classifier();var task=s.Start(c,new(){Mission=Mission.Current,Player=Agent.Main,RawText="legacy observer speech"});await Complete(s,c,task);Assert(s.Sessions==1&&s.Prepared==1,"older observer disabled");});
+  await Case("dedicated/noncaptured route is not rejected",async()=>{var s=new Subject();var c=new Classifier();var task=s.Start(c,new(){Mission=Mission.Current,Player=Agent.Main,RawText="dedicated speech"});await Complete(s,c,task);Assert(s.Sessions==1,"dedicated route disabled");});
+  await Case("missing validator and wrong return type disable only safe capture",()=>{AfCompatV130.Bind(typeof(OlderHost));Assert(!AfCompatV130.Safe,"missing validator accepted");AfCompatV130.Bind(typeof(WrongReturnHost));Assert(!AfCompatV130.Safe,"wrong return accepted");AfCompatV130.Bind(typeof(ShoutBehavior));Assert(AfCompatV130.Safe,"modern capability rejected");return Task.CompletedTask;});
+  await Case("captured input with missing validator fails closed",()=>{var h=new ShoutBehavior();var input=Input(h);AfCompatV130.Bind(typeof(OlderHost));Assert(!AfCompatV130.IsCapturedPlayerShoutCurrent(input),"missing validator accepted capture");return Task.CompletedTask;});
+  await Case("validation failure and wrong owner cannot fall back to current instance",()=>{AfCompatV130.Bind(typeof(ThrowingHost));Assert(!AfCompatV130.IsCapturedPlayerShoutCurrent(new(){OriginalAfBehavior=new ThrowingHost(),OriginalScenePlayerShoutRequest=new()}),"throwing validator accepted");AfCompatV130.Bind(typeof(ShoutBehavior));Assert(!AfCompatV130.IsCapturedPlayerShoutCurrent(new(){OriginalAfBehavior=new OlderHost(),OriginalScenePlayerShoutRequest=new()}),"wrong owner accepted");return Task.CompletedTask;});
+  Console.WriteLine($"RESULT {passed} PASS / {failed} FAIL");return failed==0?0:1;
+ }
+}

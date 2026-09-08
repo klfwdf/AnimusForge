@@ -168,3 +168,15 @@ public interface IPostprocessPromptComposer
         string rawReply,
         PostprocessContext context);
 }
+
+/// <summary>Allows a channel to capture live postprocess inputs on its owner thread.</summary>
+public interface IAsyncPostprocessPromptComposer : IPostprocessPromptComposer
+{
+    Task<PromptPackage> ComposeAsync(
+        InteractionEnvelope envelope,
+        RuleSelection selection,
+        string visibleReply,
+        string rawReply,
+        PostprocessContext context,
+        CancellationToken cancellationToken);
+}

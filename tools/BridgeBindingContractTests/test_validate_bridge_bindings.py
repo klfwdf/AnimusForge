@@ -27,9 +27,9 @@ class BridgeBindingManifestTests(unittest.TestCase):
         result = validator.run(ROOT)
         self.assertEqual(result["state"], "PASS")
         self.assertEqual(result["bindings"], 16)
-        self.assertEqual(result["wired"], 13)
-        self.assertEqual(result["declaredOnly"], 3)
-        self.assertEqual(result["configEnabled"], 13)
+        self.assertEqual(result["wired"], 12)
+        self.assertEqual(result["declaredOnly"], 4)
+        self.assertEqual(result["configEnabled"], 12)
 
     def load_config(self) -> dict:
         return json.loads((ROOT / "AnimusForge" / "ModuleData" / "FeatureBridges.json").read_text(encoding="utf-8"))
@@ -39,6 +39,26 @@ class BridgeBindingManifestTests(unittest.TestCase):
         mutate(config)
         with self.assertRaises(validator.BridgeBindingFailure):
             validator.validate_feature_bridge_config(config)
+
+    def test_inert_game_adapter_config_is_rejected(self) -> None:
+        self.assert_config_rejected(lambda config: config["enabled"].append("runtime-game-adapter"))
+
+    def test_mandatory_safety_cannot_claim_optional_wiring(self) -> None:
+        def mutate(document: dict) -> None:
+            binding = next(item for item in document["bindings"] if item["id"] == "runtime-game-adapter")
+            binding["runtimeBinding"].update(state="wired", entryPath="InteractionComponentSafePatch.cs",
+                                             symbol="EnsurePatched", frequency="startup")
+        self.assert_manifest_rejected(mutate)
+
+    def test_mandatory_safety_cannot_be_disabled_by_bridge(self) -> None:
+        patch = (ROOT / "InteractionComponentSafePatch.cs").read_text(encoding="utf-8")
+        install = (ROOT / "Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8")
+        altered = patch.replace("if (_patched)", "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.RuntimeGameAdapter)) return;\n        if (_patched)")
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_mandatory_interaction_safety(altered, install)
+        removed = install.replace("InteractionComponentSafePatch.EnsurePatched();", "")
+        with self.assertRaises(validator.BridgeBindingFailure):
+            validator.validate_mandatory_interaction_safety(patch, removed)
 
     def test_runtime_config_accepts_explicit_disable_all(self) -> None:
         config = self.load_config()
