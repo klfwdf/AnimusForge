@@ -1,0 +1,1033 @@
+{
+  "schemaVersion": 1,
+  "kind": "isolated-refactor-regression-not-release-acceptance",
+  "date": "2026-09-09",
+  "sourceCodeCommit": "9a4a26dc1716329d699833d5da0b3679ff3fd192",
+  "recoveryParent": "5ce8767a3922e17829eafa04f84a80ceb86d2a7a",
+  "overallProjectStatus": "NOT_DONE",
+  "gitPush": false,
+  "gameDeployment": false,
+  "liveGame": "NOT_RUN",
+  "realSave": "NOT_RUN",
+  "verifiedWorkingSourcesMatchCommittedBlobsAfterLineEndingNormalization": true,
+  "sourceSha256": {
+    "CourierDeliveryBehavior.DetachedPostprocess.cs": "2d9392707569a1ecaa1458cc63008a7ce5e26551edeff6c06af0623a5c172ef4",
+    "CourierDeliveryBehavior.cs": "d446fde975e39b5ab6efe58fa0af2b15d312298894e856448d8a3029c4f4336a",
+    "Refactor/Adapters/LegacyInteractionPipelineComposition.cs": "1939a4d22a0df2111a9301eec447924b8b5165fd19b6223a0d1a5b69f690f882",
+    "Refactor/Adapters/LegacyPromptPackageAdapter.cs": "0ae044b38e551eb489aee50ad0452cd524b9ce5ce8e5c9542563c64edab9c329",
+    "Refactor/Contracts/FullInteractionPipeline.cs": "f8fe3538eb203da0085236c26ee604f909820c723b99c21b09477c849bdbd263",
+    "Refactor/Contracts/InteractionContracts.cs": "86d08d83b18e39233016201cde9de78db90abdc34538e2169353c3bae769a987",
+    "Refactor/Contracts/LegacyShoutNetworkGateway.cs": "1f614efbbee2df25f51f8d6c74808ae10f9b070d6d1e8679a87b2fb99675bd41",
+    "Refactor/Contracts/LlmContracts.cs": "5720a7da32fff7d1868408cc308482f3e15005c32a6d075b43d6ef89c337e52c",
+    "Refactor/Runtime/FeatureBridgeRuntime.cs": "a30d0514a38b34b40a61eebc9530553f3cfe110c181e51f034510ff57004ca20",
+    "RewardSystemBehavior.EconomyReplay.cs": "35330ec2b6d55c0e13645749f57cb0fa95391acf62b539eb9690e353c29e4979",
+    "ShoutBehavior.cs": "f85300b8a7e6e9883c997619ac51c99c52ec34a84a72a3d45834cbce9ff11d2d",
+    "TtsEngine.cs": "c1d5081ee65672cd9bc55c31d7465a8cccfa20da9e6628c5b072091ec99d8905",
+    "extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs": "f16a43dc489f82d26b13693c42a41551bd1d511e963a03f5d7bd2ef0e9d12046",
+    "extensions/AnimusForge.XihaiAction/src/Runtime/BattleSpeechMissionBehavior.V2.cs": "60707a0d0e250db7a0c0d53fcb4163eb948d31023f95d2ff5de9f26c05106b04",
+    "extensions/AnimusForge.XihaiAction/src/Runtime/BattleSpeechRuntimeHost.cs": "21cee4fdc334ed44ee785988f3c5115ae08ef74364fdb2de7301951e851bcac9"
+  },
+  "artifactSha256": {
+    "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll": "3724efa588e8835a6c5c324d951eaf3c07c5a2c40f4641c233f3f20107debfc2",
+    "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll": "2df0b2cde21db7aa8a5ef3750ff5e51ae288bce12bc2684a3208cd3933a68f81",
+    "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll": "61bf17bc800d3fb15060602c733dd1129dc69b1fc8b6e0d8c126b79fbbdedcd8",
+    "bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll": "fe2615854c759bae805308d2a879bf110f1f44e7dfd2e6f6fe79746f1212d205",
+    "bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll": "942da4cf8aeb33b8a043b0627c0196561fcf88f91de44df7a01d9f4fed8d0e26",
+    "bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll": "b74a0582cfa1287487d7de08f0e6fe9684bb7c5a65ba818049ca5627b622ad9d"
+  },
+  "buildLogSha256": {
+    ".tmp/closeout-20260909/build-Debug-final.log": "027536828857429023557a31d1dffe0af8db6d5fe5f452c65bf9a6454baab6cf",
+    ".tmp/closeout-20260909/build-Release-final.log": "96fdc6d7eec464293b494ac42415d2a02b018c0929d7d31a2af4b610c7355f63"
+  },
+  "buildMatrix": {
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "targets": [
+      "Bannerlord 1.3",
+      "Bannerlord 1.4",
+      "Bootstrap"
+    ],
+    "passed": 6,
+    "gameReferences": [
+      "v1.3.15.110062",
+      "v1.4.6.115628"
+    ],
+    "scope": "project-local Stage only"
+  },
+  "existingCSharpTests": {
+    "projects": 41,
+    "completeRunnerPassed": 37,
+    "policy": "PARTIAL_PASS: four isolated modes, 1056 assertions; no default suite/real ONNX",
+    "sdk10": "BLOCKED_ENV: three net10.0 tools; NETSDK1045 using local SDK 8.0.422",
+    "results": [
+      {
+        "name": "net-ActionPostprocessPromptLab.SmokeTests",
+        "state": "BLOCKED_ENV",
+        "reason": "Active SDK is 8.0.422; project requires SDK 10; runtime does not substitute for SDK",
+        "project": "tools/ActionPostprocessPromptLab/tests/ActionPostprocessPromptLab.SmokeTests/ActionPostprocessPromptLab.SmokeTests.csproj"
+      },
+      {
+        "name": "net-PlayerExportsEditor.SmokeTests",
+        "state": "BLOCKED_ENV",
+        "reason": "Active SDK is 8.0.422; project requires SDK 10; runtime does not substitute for SDK",
+        "project": "tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj"
+      },
+      {
+        "name": "net-PolicyEffectModule.ContractTests",
+        "state": "PARTIAL_PASS",
+        "reason": "Four explicit safe subset modes passed; default suite and real ONNX not run.",
+        "project": "tools/PolicyEffectModule.ContractTests/PolicyEffectModule.ContractTests.csproj",
+        "log": ".tmp/closeout-20260909/policy/report.md"
+      },
+      {
+        "name": "net-PreprocessTopicPromptLab.SmokeTests",
+        "state": "BLOCKED_ENV",
+        "reason": "Active SDK is 8.0.422; project requires SDK 10; runtime does not substitute for SDK",
+        "project": "tools/PreprocessTopicPromptLab/tests/PreprocessTopicPromptLab.SmokeTests/PreprocessTopicPromptLab.SmokeTests.csproj"
+      },
+      {
+        "name": "net-AgendaMapNotification.SmokeTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-AgendaMapNotification.SmokeTests.log"
+      },
+      {
+        "name": "net-BridgeRuntimeIsolationTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-BridgeRuntimeIsolationTests.log"
+      },
+      {
+        "name": "net-ConfiguredChatGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ConfiguredChatGatewayReplayTests.log"
+      },
+      {
+        "name": "net-ConfiguredChatValidationReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ConfiguredChatValidationReplayTests.log"
+      },
+      {
+        "name": "net-CourierInboundCompletionContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-CourierInboundCompletionContractTests.log"
+      },
+      {
+        "name": "net-DuelDispatchContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-DuelDispatchContractTests.log"
+      },
+      {
+        "name": "net-DuelOutcomeContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-DuelOutcomeContractTests.log"
+      },
+      {
+        "name": "net-EconomyAwareActionPlanExecutorContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-EconomyAwareActionPlanExecutorContractTests.log"
+      },
+      {
+        "name": "net-EconomyRewardDebtPortContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-EconomyRewardDebtPortContractTests.log"
+      },
+      {
+        "name": "net-GiveAssetTagCodec.StressTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-GiveAssetTagCodec.StressTests.log"
+      },
+      {
+        "name": "net-InteractionPipelineContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-InteractionPipelineContractTests.log"
+      },
+      {
+        "name": "net-KnowledgeRagGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-KnowledgeRagGatewayReplayTests.log"
+      },
+      {
+        "name": "net-MemoryCommitRecoveryContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-MemoryCommitRecoveryContractTests.log"
+      },
+      {
+        "name": "net-ModelCatalogGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ModelCatalogGatewayReplayTests.log"
+      },
+      {
+        "name": "net-NotorietyConversationOutcomeContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-NotorietyConversationOutcomeContractTests.log"
+      },
+      {
+        "name": "net-PersistenceChunkReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-PersistenceChunkReplayTests.log"
+      },
+      {
+        "name": "net-PhaseEightParityReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-PhaseEightParityReplayTests.log"
+      },
+      {
+        "name": "net-PolicyGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-PolicyGatewayReplayTests.log"
+      },
+      {
+        "name": "net-PrimaryLlmGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-PrimaryLlmGatewayReplayTests.log"
+      },
+      {
+        "name": "net-ProductionConfiguredHostReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionConfiguredHostReplayTests.log"
+      },
+      {
+        "name": "net-ProductionCourierHostReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionCourierHostReplayTests.log"
+      },
+      {
+        "name": "net-ProductionDetachedHostReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionDetachedHostReplayTests.log"
+      },
+      {
+        "name": "net-ProductionDuelOutcomeReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionDuelOutcomeReplayTests.log"
+      },
+      {
+        "name": "net-ProductionEconomyAwareCommitReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionEconomyAwareCommitReplayTests.log"
+      },
+      {
+        "name": "net-ProductionEconomyOwnerReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionEconomyOwnerReplayTests.log"
+      },
+      {
+        "name": "net-ProductionOptInEntryReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionOptInEntryReplayTests.log"
+      },
+      {
+        "name": "net-ProductionValidationProviderReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ProductionValidationProviderReplayTests.log"
+      },
+      {
+        "name": "net-ShoutNetworkSseReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-ShoutNetworkSseReplayTests.log"
+      },
+      {
+        "name": "net-TtsGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-TtsGatewayReplayTests.log"
+      },
+      {
+        "name": "net-WeeklyMemoryMaterialOutcomeContractTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WeeklyMemoryMaterialOutcomeContractTests.log"
+      },
+      {
+        "name": "net-WeeklyReportSchedulePolicy.SmokeTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WeeklyReportSchedulePolicy.SmokeTests.log"
+      },
+      {
+        "name": "net-WorldDiplomacyCompression.SmokeTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WorldDiplomacyCompression.SmokeTests.log"
+      },
+      {
+        "name": "net-WorldDiplomacyGatewayReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WorldDiplomacyGatewayReplayTests.log"
+      },
+      {
+        "name": "net-WorldDiplomacyIntentBoundary.SmokeTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WorldDiplomacyIntentBoundary.SmokeTests.log"
+      },
+      {
+        "name": "net-WorldDiplomacyPolicyHistory.SmokeTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WorldDiplomacyPolicyHistory.SmokeTests.log"
+      },
+      {
+        "name": "net-WorldDiplomacyResultSettlement.SmokeTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-WorldDiplomacyResultSettlement.SmokeTests.log"
+      },
+      {
+        "name": "net-XihaiClassifierTransportReplayTests",
+        "state": "PASS",
+        "log": ".tmp/closeout-20260909/net-XihaiClassifierTransportReplayTests.log"
+      }
+    ]
+  },
+  "pythonChecks": {
+    "passed": 26,
+    "expectedMissingEvidenceBlocked": 1,
+    "results": [
+      {
+        "name": "py-AFContractsContractTests-validate_af_contracts",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/AFContractsContractTests/validate_af_contracts.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-AFContractsContractTests-validate_af_contracts.log"
+      },
+      {
+        "name": "py-BridgeBindingContractTests-test_validate_bridge_bindings",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\BridgeBindingContractTests",
+          "-p",
+          "test_validate_bridge_bindings.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-BridgeBindingContractTests-test_validate_bridge_bindings.log"
+      },
+      {
+        "name": "py-BridgeBindingContractTests-validate_bridge_bindings",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/BridgeBindingContractTests/validate_bridge_bindings.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-BridgeBindingContractTests-validate_bridge_bindings.log"
+      },
+      {
+        "name": "py-BridgeFixtureContractTests-validate_bridge_fixtures",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/BridgeFixtureContractTests/validate_bridge_fixtures.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-BridgeFixtureContractTests-validate_bridge_fixtures.log"
+      },
+      {
+        "name": "py-ChannelCutoverBoundaryTests-test_extraction",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\ChannelCutoverBoundaryTests",
+          "-p",
+          "test_extraction.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ChannelCutoverBoundaryTests-test_extraction.log"
+      },
+      {
+        "name": "py-CompositionMatrixContractTests-validate_composition_matrix",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/CompositionMatrixContractTests/validate_composition_matrix.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-CompositionMatrixContractTests-validate_composition_matrix.log"
+      },
+      {
+        "name": "py-tools-EconomyOwnerStateFixtureContractTests",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/EconomyOwnerStateFixtureContractTests.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-tools-EconomyOwnerStateFixtureContractTests.log"
+      },
+      {
+        "name": "py-FoundationRuntimeContractTests-validate_foundation_runtime",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/FoundationRuntimeContractTests/validate_foundation_runtime.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-FoundationRuntimeContractTests-validate_foundation_runtime.log"
+      },
+      {
+        "name": "py-GameAdapterContractTests-validate_game_adapter",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/GameAdapterContractTests/validate_game_adapter.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-GameAdapterContractTests-validate_game_adapter.log"
+      },
+      {
+        "name": "py-LiveHostReadinessAudit-test_live_host_readiness_audit",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\LiveHostReadinessAudit",
+          "-p",
+          "test_live_host_readiness_audit.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-LiveHostReadinessAudit-test_live_host_readiness_audit.log"
+      },
+      {
+        "name": "py-ModuleCatalogContractTests-validate_module_catalog",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ModuleCatalogContractTests/validate_module_catalog.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ModuleCatalogContractTests-validate_module_catalog.log"
+      },
+      {
+        "name": "py-PersistenceIdentityAuditContractTests-test_persistence_identity_audit",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\PersistenceIdentityAuditContractTests",
+          "-p",
+          "test_persistence_identity_audit.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-PersistenceIdentityAuditContractTests-test_persistence_identity_audit.log"
+      },
+      {
+        "name": "py-tools-PersistenceMigrationContractTests",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/PersistenceMigrationContractTests.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-tools-PersistenceMigrationContractTests.log"
+      },
+      {
+        "name": "py-PersistenceProfileConfigContractTests-validate_persistence_profile_config",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-PersistenceProfileConfigContractTests-validate_persistence_profile_config.log"
+      },
+      {
+        "name": "py-PhaseEightReadiness-test_entry_inventory",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\PhaseEightReadiness",
+          "-p",
+          "test_entry_inventory.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-PhaseEightReadiness-test_entry_inventory.log"
+      },
+      {
+        "name": "py-PhaseEightReadiness-test_readiness",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\PhaseEightReadiness",
+          "-p",
+          "test_readiness.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-PhaseEightReadiness-test_readiness.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-test_extraction",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools\\ScenePostprocessParityTests",
+          "-p",
+          "test_extraction.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-test_extraction.log"
+      },
+      {
+        "name": "py-ChannelCutoverBoundaryTests-run",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ChannelCutoverBoundaryTests/run.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ChannelCutoverBoundaryTests-run.log"
+      },
+      {
+        "name": "py-EncounterLifecycleBoundaryTests-run",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/EncounterLifecycleBoundaryTests/run.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-EncounterLifecycleBoundaryTests-run.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-run",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ScenePostprocessParityTests/run.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-run.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-run_mutations",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ScenePostprocessParityTests/run_mutations.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-run_mutations.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-run_queue",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ScenePostprocessParityTests/run_queue.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-run_queue.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-run_queue_mutations",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ScenePostprocessParityTests/run_queue_mutations.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-run_queue_mutations.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-run_gate",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ScenePostprocessParityTests/run_gate.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-run_gate.log"
+      },
+      {
+        "name": "py-ScenePostprocessParityTests-run_gate_red",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/ScenePostprocessParityTests/run_gate_red.py"
+        ],
+        "log": ".tmp/closeout-20260909/py-ScenePostprocessParityTests-run_gate_red.log"
+      },
+      {
+        "name": "py-PhaseEightReadiness-entry_inventory",
+        "outcome": "PASS",
+        "exitCode": 0,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/PhaseEightReadiness/entry_inventory.py",
+          "--check"
+        ],
+        "log": ".tmp/closeout-20260909/py-PhaseEightReadiness-entry_inventory.log"
+      },
+      {
+        "name": "phase8-missing-evidence",
+        "outcome": "EXPECTED_BLOCKED",
+        "exitCode": 2,
+        "command": [
+          "G:\\Python310\\python.exe",
+          "-B",
+          "tools/PhaseEightReadiness/readiness.py",
+          "--manifest",
+          "docs/phase8/all-missing.evidence.json"
+        ],
+        "log": ".tmp/closeout-20260909/phase8-missing-evidence.log"
+      }
+    ]
+  },
+  "newRegressionsAndNegativeControls": [
+    {
+      "name": "hero-current",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/HeroAssetScopeRegressionTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/hero-current.log"
+    },
+    {
+      "name": "hero-red",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/HeroAssetScopeRegressionTests/run.py",
+        "--source-ref",
+        "35524b04",
+        "--output-name",
+        "root-red"
+      ],
+      "log": ".tmp/closeout-20260909/hero-red.log"
+    },
+    {
+      "name": "gateway-current",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/LegacyShoutGatewayResultRegressionTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/gateway-current.log"
+    },
+    {
+      "name": "gateway-red",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/LegacyShoutGatewayResultRegressionTests/run.py",
+        "--source-ref",
+        "5ce8767a",
+        "--output-name",
+        "root-red"
+      ],
+      "log": ".tmp/closeout-20260909/gateway-red.log"
+    },
+    {
+      "name": "courier-current",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/CourierPostprocessOwnerRegressionTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/courier-current.log"
+    },
+    {
+      "name": "courier-mutations",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/CourierPostprocessOwnerRegressionTests/run_mutations.py"
+      ],
+      "log": ".tmp/closeout-20260909/courier-mutations.log"
+    },
+    {
+      "name": "tts-current",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/TtsRequestLifetimeRegressionTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/tts-current.log"
+    },
+    {
+      "name": "tts-mutations",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/TtsRequestLifetimeRegressionTests/run_mutations.py"
+      ],
+      "log": ".tmp/closeout-20260909/tts-mutations.log"
+    },
+    {
+      "name": "native-fallback-current",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/NativeTtsFallbackBoundaryTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/native-fallback-current.log"
+    },
+    {
+      "name": "native-fallback-red",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/NativeTtsFallbackBoundaryTests/run.py",
+        "--schedule-source-ref",
+        "5ce8767a",
+        "--output-name",
+        "root-red"
+      ],
+      "log": ".tmp/closeout-20260909/native-fallback-red.log"
+    },
+    {
+      "name": "battle-trigger-current",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/BattleSpeechCapturedTriggerRegressionTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/battle-trigger-current.log"
+    },
+    {
+      "name": "battle-trigger-red",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/BattleSpeechCapturedTriggerRegressionTests/run.py",
+        "--source-ref",
+        "5ce8767a",
+        "--output-name",
+        "root-red"
+      ],
+      "log": ".tmp/closeout-20260909/battle-trigger-red.log"
+    },
+    {
+      "name": "CourierPostprocessOwnerRegressionTests-test_extraction.py",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/CourierPostprocessOwnerRegressionTests",
+        "-p",
+        "test_extraction.py"
+      ],
+      "log": ".tmp/closeout-20260909/CourierPostprocessOwnerRegressionTests-test_extraction.py.log"
+    },
+    {
+      "name": "TtsRequestLifetimeRegressionTests-test_wiring.py",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/TtsRequestLifetimeRegressionTests",
+        "-p",
+        "test_wiring.py"
+      ],
+      "log": ".tmp/closeout-20260909/TtsRequestLifetimeRegressionTests-test_wiring.py.log"
+    },
+    {
+      "name": "LegacyShoutGatewayResultRegressionTests-test_compatibility.py",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/LegacyShoutGatewayResultRegressionTests",
+        "-p",
+        "test_compatibility.py"
+      ],
+      "log": ".tmp/closeout-20260909/LegacyShoutGatewayResultRegressionTests-test_compatibility.py.log"
+    },
+    {
+      "name": "HeroAssetScopeRegressionTests-force-all",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/HeroAssetScopeRegressionTests/run.py",
+        "--mutate",
+        "force-all",
+        "--output-name",
+        "root-mutant-force-all"
+      ],
+      "log": ".tmp/closeout-20260909/HeroAssetScopeRegressionTests-force-all.log"
+    },
+    {
+      "name": "HeroAssetScopeRegressionTests-drop-modifier",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/HeroAssetScopeRegressionTests/run.py",
+        "--mutate",
+        "drop-modifier",
+        "--output-name",
+        "root-mutant-drop-modifier"
+      ],
+      "log": ".tmp/closeout-20260909/HeroAssetScopeRegressionTests-drop-modifier.log"
+    },
+    {
+      "name": "HeroAssetScopeRegressionTests-drop-observation",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/HeroAssetScopeRegressionTests/run.py",
+        "--mutate",
+        "drop-observation",
+        "--output-name",
+        "root-mutant-drop-observation"
+      ],
+      "log": ".tmp/closeout-20260909/HeroAssetScopeRegressionTests-drop-observation.log"
+    },
+    {
+      "name": "HeroAssetScopeRegressionTests-drop-market-route",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/HeroAssetScopeRegressionTests/run.py",
+        "--mutate",
+        "drop-market-route",
+        "--output-name",
+        "root-mutant-drop-market-route"
+      ],
+      "log": ".tmp/closeout-20260909/HeroAssetScopeRegressionTests-drop-market-route.log"
+    },
+    {
+      "name": "NativeTtsFallbackBoundaryTests-drop-lifetime",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/NativeTtsFallbackBoundaryTests/run.py",
+        "--mutate",
+        "drop-lifetime",
+        "--output-name",
+        "root-mutant-drop-lifetime"
+      ],
+      "log": ".tmp/closeout-20260909/NativeTtsFallbackBoundaryTests-drop-lifetime.log"
+    },
+    {
+      "name": "NativeTtsFallbackBoundaryTests-drop-instance",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/NativeTtsFallbackBoundaryTests/run.py",
+        "--mutate",
+        "drop-instance",
+        "--output-name",
+        "root-mutant-drop-instance"
+      ],
+      "log": ".tmp/closeout-20260909/NativeTtsFallbackBoundaryTests-drop-instance.log"
+    },
+    {
+      "name": "NativeTtsFallbackBoundaryTests-drop-atomic-wait",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/NativeTtsFallbackBoundaryTests/run.py",
+        "--mutate",
+        "drop-atomic-wait",
+        "--output-name",
+        "root-mutant-drop-atomic-wait"
+      ],
+      "log": ".tmp/closeout-20260909/NativeTtsFallbackBoundaryTests-drop-atomic-wait.log"
+    },
+    {
+      "name": "BattleSpeechCapturedTriggerRegressionTests-omit-completion-check",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/BattleSpeechCapturedTriggerRegressionTests/run.py",
+        "--mutation",
+        "omit-completion-check",
+        "--output-name",
+        "root-mutant-omit-completion-check"
+      ],
+      "log": ".tmp/closeout-20260909/BattleSpeechCapturedTriggerRegressionTests-omit-completion-check.log"
+    },
+    {
+      "name": "BattleSpeechCapturedTriggerRegressionTests-omit-final-check",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/BattleSpeechCapturedTriggerRegressionTests/run.py",
+        "--mutation",
+        "omit-final-check",
+        "--output-name",
+        "root-mutant-omit-final-check"
+      ],
+      "log": ".tmp/closeout-20260909/BattleSpeechCapturedTriggerRegressionTests-omit-final-check.log"
+    },
+    {
+      "name": "scene-final",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/SceneRequestLifetimeRegressionTests/run.py"
+      ],
+      "log": ".tmp/closeout-20260909/scene-final.log"
+    },
+    {
+      "name": "scene-extraction-final",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/SceneRequestLifetimeRegressionTests",
+        "-p",
+        "test_extraction.py"
+      ],
+      "log": ".tmp/closeout-20260909/scene-extraction-final.log"
+    },
+    {
+      "name": "scene-mutations-final",
+      "outcome": "PASS",
+      "exitCode": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/SceneRequestLifetimeRegressionTests/run_mutations.py"
+      ],
+      "log": ".tmp/closeout-20260909/scene-mutations-final.log"
+    },
+    {
+      "name": "scene-red-final",
+      "outcome": "EXPECTED_DEFECT_DETECTED",
+      "exitCode": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/SceneRequestLifetimeRegressionTests/run.py",
+        "--source-ref",
+        "5ce8767a",
+        "--core",
+        "--output-name",
+        "root-red-final"
+      ],
+      "log": ".tmp/closeout-20260909/scene-red-final.log"
+    }
+  ],
+  "policyReport": ".tmp/closeout-20260909/policy/report.md",
+  "policyAssertions": [
+    164,
+    764,
+    11,
+    117
+  ],
+  "environmentNote": "Initial SDK property evaluation with a fresh CLI home printed a developer-certificate installation message. Actual certificate-store effects were not inspected; later commands reused the workspace CLI home with generation disabled.",
+  "remainingGates": [
+    "Courier prerequisite preparation threads/aux/persona/history-memory split",
+    "Native/default flow parity and remaining domain owners",
+    "Postprocess failure/MOOD fallback compatibility review",
+    "Current-candidate live Campaign/Mission/economy/AFEF/TTS and old saves",
+    "SDK 10 tools",
+    "Evidence-based obsolete code removal and package/rollback/release acceptance"
+  ],
+  "evidenceAvailability": "Raw logs and build binaries are local ignored artifacts, not committed or uploaded; formal regression sources and per-suite README commands are committed."
+}
