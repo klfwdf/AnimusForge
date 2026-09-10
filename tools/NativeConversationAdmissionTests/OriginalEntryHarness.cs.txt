@@ -1,0 +1,40 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+class Hero { public string Id; }
+class CharacterObject { }
+class ConversationManager { public int ActiveToken; }
+class Campaign { public static Campaign Current = new Campaign(); public ConversationManager ConversationManager = new ConversationManager(); }
+static class SaveRuntimeGuard { public static long CaptureGeneration() => 1; }
+static class PlayerEncounterCompat { public static bool IsInPostBattleResultFlow() => false; }
+class ShoutBehavior
+{
+    public static ShoutBehavior CurrentInstance = new ShoutBehavior();
+    public static Hero Target = new Hero { Id = "A" };
+    public static readonly ManualResetEventSlim Continue = new ManualResetEventSlim(false);
+    public static int Reads;
+    private static bool TryResolveNativeConversationTarget(out Hero hero, out CharacterObject character, out string name)
+    {
+        Interlocked.Increment(ref Reads); Continue.Wait();
+        hero = Target; character = null; name = hero.Id; return true;
+    }
+@@ENTRY@@
+@@PREFIX@@
+        return targetHero.Id + ":" + nativeRequestConversationToken;
+    }
+}
+class Program
+{
+    static void Main()
+    {
+        Task<string> first = ShoutBehavior.SubmitNativeConversationTextForExternalAsync("first", null, null, null, null);
+        Task<string> second = ShoutBehavior.SubmitNativeConversationTextForExternalAsync("second", null, null, null, null);
+        if (!SpinWait.SpinUntil(() => Volatile.Read(ref ShoutBehavior.Reads) == 2, 5000)) throw new Exception("Original entry reproduction did not reach both captures");
+        ShoutBehavior.Target = new Hero { Id = "B" }; Campaign.Current.ConversationManager.ActiveToken = 99;
+        ShoutBehavior.Continue.Set(); Task.WaitAll(first, second);
+        if (first.Result != "B:99" || second.Result != "B:99") throw new Exception("Original defect changed; re-audit baseline");
+        Console.WriteLine("REPRODUCED original Task.Run entry: 2 concurrent calls entered; both captured replacement B:99 rather than call-time A:0.");
+        Console.WriteLine("Expected defect controls=2; exact original public entry and internal capture prefix executed; downstream/network/game=STUBBED/NOT_RUN.");
+    }
+}

@@ -38,3 +38,8 @@ python tools/TeamModulePortParityTests/run.py
 ## 证据边界
 
 这些是接线/委托契约，不是模块业务单测或真实游戏验收。生产源码双版本构建、完整后处理回放与旧存档/live Economy/AFEF 仍需独立证据；不能据此删除仍被使用的原 owner。
+
+
+## 后续 Native 准入变更的严格例外（2026-09-11）
+
+原 31 个制作组调用点仍全部保持。随后新增 Native 准入修改了 5 个**不含任何 TeamModuleServices 调用**的声明：两个入口、Native 完整方法、动作队列、ConversationEnded 处理。`reviewed-native-admission-deltas.json` 逐个冻结这些已审阅声明的 SHA；本工具只有精确 hash 一致才将它们还原到历史基线后继续做全文逆变换。任何后续改动仍失败，不能笼统跳过整个 Native 文件或随意刷新基线。这些方法的新行为由 `tools/NativeConversationAdmissionTests` 的真实准入源码/入口及动作队列执行、反例和 mutation 负责验证。原 13 个 adapter 方法的参数/回执断言和 3 个 mutation 不变。

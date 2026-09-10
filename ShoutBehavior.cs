@@ -18073,15 +18073,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
 		}
-		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
-		{
-			return Task.FromResult("");
-		}
-		return Task.Run(async delegate
-		{
-			SynchronizationContext.SetSynchronizationContext(null);
-			return await currentInstance.SubmitNativeConversationTextInternalAsync(playerText, onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady).ConfigureAwait(false);
-		});
+		return currentInstance.SubmitNativeConversationAdmittedAsync(playerText, onStreamText,
+			currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening: false);
 	}
 
 	public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted)
@@ -18097,15 +18090,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
 		}
-		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
-		{
-			return Task.FromResult("");
-		}
-		return Task.Run(async delegate
-		{
-			SynchronizationContext.SetSynchronizationContext(null);
-			return await currentInstance.SubmitNativeConversationTextInternalAsync("", onStreamText, currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening: true).ConfigureAwait(false);
-		});
+		return currentInstance.SubmitNativeConversationAdmittedAsync("", onStreamText,
+			currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening: true);
 	}
 
 	private static bool TryResolveNativeConversationTarget(out Hero targetHero, out CharacterObject targetCharacter, out string npcName)
@@ -19564,7 +19550,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		public bool ResponseDiscarded;
 	}
 
-	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken)
+	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken, NativeConversationAdmission admission)
 	{
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
@@ -19572,6 +19558,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Stopwatch directSw = Stopwatch.StartNew();
 			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
+			if (!IsNativeConversationAdmissionCurrent(admission, out _))
+				return Task.FromResult(new NativeConversationGameActionResult { Content = "", ResponseDiscarded = true });
 			NativeConversationGameActionResult direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
 			directSw.Stop();
 			Logger.Log("Logic", "[NativePerf] game_actions_mainthread_direct target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
@@ -19589,6 +19577,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_start target=" + targetLog + " agent=" + targetAgentIndex);
 					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
+					if (!IsNativeConversationAdmissionCurrent(admission, out _))
+					{
+						tcs.TrySetResult(new NativeConversationGameActionResult { Content = "", ResponseDiscarded = true });
+						return;
+					}
 					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result.Content, playerText, expectedConversationManager, expectedConversationToken);
 					actionSw.Stop();
 					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_done target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length));
@@ -20072,25 +20065,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private async Task<string> SubmitNativeConversationTextInternalAsync(string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)
+	private async Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)
 	{
 		Stopwatch nativeTurnSw = Stopwatch.StartNew();
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		long runtimeGeneration = admission.Generation;
 		playerText = (playerText ?? "").Replace("\r", "").Trim();
-		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
-		{
+		if (!await RunNativeConversationMainThreadFuncAsync("admitted_request_start", admission.NpcName,
+			admission.AgentIndex, () => IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false))
 			return "";
-		}
-		if (string.IsNullOrWhiteSpace(playerText) && !npcInitiatedOpening)
-		{
-			return "";
-		}
-		if (!TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var npcName))
-		{
-			return "当前没有可接入的对话对象。";
-		}
-		ConversationManager nativeRequestConversationManager = Campaign.Current?.ConversationManager;
-		int nativeRequestConversationToken = nativeRequestConversationManager?.ActiveToken ?? int.MinValue;
+		Hero targetHero = admission.Hero;
+		CharacterObject targetCharacter = admission.Character;
+		string npcName = admission.NpcName;
+		ConversationManager nativeRequestConversationManager = admission.ConversationManager;
+		int nativeRequestConversationToken = admission.ConversationToken;
 		Logger.Log("Logic", "[NativePerf] submit_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
 		FreezeWatchdog.Mark("NativeConversation.submit_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length, immediate: true);
 		string npcOpeningExtraFact = "";
@@ -20101,11 +20088,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool npcOpeningConsumed = false;
 		if (npcInitiatedOpening)
 		{
-			npcOpeningConsumed = NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(targetHero, out npcOpeningExtraFact, out npcOpeningPromptText, out npcOpeningSource);
-			if (!npcOpeningConsumed)
-			{
-				return "";
-			}
+			npcOpeningConsumed = true;
+			npcOpeningExtraFact = admission.OpeningExtraFact;
+			npcOpeningPromptText = admission.OpeningPrompt;
+			npcOpeningSource = admission.OpeningSource;
 			npcOpeningUserText = BuildNpcInitiatedOpeningUserText(npcOpeningExtraFact, npcOpeningPromptText);
 			npcOpeningPersistentFactText = BuildNpcInitiatedOpeningPersistentFactText(npcOpeningExtraFact);
 			Logger.Log("ShoutBehavior", "[NativeConversation] NPC initiated opening consumed source=" + npcOpeningSource + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown"));
@@ -20124,7 +20110,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return "";
 		}
-		int nativeTargetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		int nativeTargetAgentIndex = admission.AgentIndex;
 		NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
 		npc.AgentIndex = nativeTargetAgentIndex;
 		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
@@ -20133,7 +20119,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			"request_target_validation",
 			nativeTargetLog,
 			nativeTargetAgentIndex,
-			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeInitialTargetUnavailableReason),
+			() => IsNativeConversationAdmissionCurrent(admission, out nativeInitialTargetUnavailableReason),
 			false).ConfigureAwait(false);
 		if (!nativeInitialTargetAvailable)
 		{
@@ -20341,7 +20327,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			"main_reply_target_validation",
 			nativeTargetLog,
 			nativeTargetAgentIndex,
-			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeMainReplyTargetUnavailableBeforeDispatchReason),
+			() => IsNativeConversationAdmissionCurrent(admission, out nativeMainReplyTargetUnavailableBeforeDispatchReason),
 			false).ConfigureAwait(false);
 		if (!nativeMainReplyTargetAvailableBeforeDispatch)
 		{
@@ -20368,7 +20354,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeTargetAgentIndex,
 			() =>
 			{
-				if (!IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeMainReplyTargetUnavailableReason))
+				if (!IsNativeConversationAdmissionCurrent(admission, out nativeMainReplyTargetUnavailableReason))
 				{
 					return false;
 				}
@@ -20408,7 +20394,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			"postprocess_start_target_validation",
 			nativeTargetLog,
 			nativeTargetAgentIndex,
-			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativePostprocessStartTargetUnavailableReason),
+			() => IsNativeConversationAdmissionCurrent(admission, out nativePostprocessStartTargetUnavailableReason),
 			false).ConfigureAwait(false);
 		if (!nativePostprocessStartTargetAvailable)
 		{
@@ -20481,7 +20467,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				"direct_scene_command_target_validation",
 				nativeTargetLog,
 				nativeTargetAgentIndex,
-				() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeDirectCommandTargetUnavailableReason),
+				() => IsNativeConversationAdmissionCurrent(admission, out nativeDirectCommandTargetUnavailableReason),
 				false).ConfigureAwait(false);
 			if (!nativeDirectCommandTargetAvailable)
 			{
@@ -20553,7 +20539,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			"postprocess_target_validation",
 			nativeTargetLog,
 			nativeTargetAgentIndex,
-			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativePostprocessTargetUnavailableReason),
+			() => IsNativeConversationAdmissionCurrent(admission, out nativePostprocessTargetUnavailableReason),
 			false).ConfigureAwait(false);
 		if (!nativePostprocessTargetAvailable)
 		{
@@ -20576,7 +20562,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeTargetAgentIndex,
 			shouldRecordPlayerInput ? promptPlayerText : string.Empty,
 			nativeRequestConversationManager,
-			nativeRequestConversationToken).ConfigureAwait(false);
+			nativeRequestConversationToken, admission).ConfigureAwait(false);
 		if (nativeActionResult?.ResponseDiscarded == true)
 		{
 			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, "action_dispatch_target_unavailable");

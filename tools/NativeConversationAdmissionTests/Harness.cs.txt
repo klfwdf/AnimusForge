@@ -1,0 +1,234 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
+
+namespace TaleWorlds.CampaignSystem
+{
+    public class Hero { public string StringId; }
+    public class CharacterObject { public string StringId; }
+    public class Campaign { public static Campaign Current = new Campaign(); public ConversationManager ConversationManager = new ConversationManager(); }
+}
+namespace TaleWorlds.CampaignSystem.Conversation { public class ConversationManager { public int ActiveToken; public bool IsConversationInProgress = true; } }
+namespace TaleWorlds.MountAndBlade { public class Mission { public static Mission Current = new Mission(); } }
+namespace AnimusForge
+{
+    static class Host
+    {
+        internal static readonly int MainThread = Thread.CurrentThread.ManagedThreadId;
+        internal static Hero Target;
+        internal static CharacterObject Character;
+        internal static int AgentIndex = 7;
+        internal static bool Available = true, PostBattle, PendingOpening, ThrowOpening;
+        internal static int ConsumeCount, GameReads, CoreCalls, ActionCalls, DelayOnNextRead;
+        internal static readonly ConcurrentDictionary<string, TaskCompletionSource<bool>> Releases = new ConcurrentDictionary<string, TaskCompletionSource<bool>>();
+        internal static void Read() { if (Thread.CurrentThread.ManagedThreadId != MainThread) throw new Exception("FAIL game read off main"); GameReads++; int delay = Interlocked.Exchange(ref DelayOnNextRead, 0); if (delay > 0) Thread.Sleep(delay); }
+        internal static void Reset()
+        {
+            Target = new Hero { StringId = "A" }; Character = new CharacterObject { StringId = "A.character" };
+            AgentIndex = 7; Available = true; PostBattle = PendingOpening = ThrowOpening = false;
+            ConsumeCount = GameReads = CoreCalls = ActionCalls = DelayOnNextRead = 0; Releases.Clear();
+            Campaign.Current = new Campaign(); Mission.Current = new Mission(); SaveRuntimeGuard.Generation++;
+            ShoutBehavior.CurrentInstance = new ShoutBehavior();
+        }
+    }
+    static class SaveRuntimeGuard
+    {
+        internal static long Generation = 1;
+        internal static long CaptureGeneration() => Interlocked.Read(ref Generation);
+        internal static bool IsCurrentGeneration(long generation) => generation == CaptureGeneration();
+    }
+    static class PlayerEncounterCompat { internal static bool IsInPostBattleResultFlow() { Host.Read(); return Host.PostBattle; } }
+    static class NpcInitiatedOpeningRouter
+    {
+        internal static bool TryConsumePendingNativeOpening(Hero hero, out string fact, out string prompt, out string source)
+        {
+            Host.Read(); Host.ConsumeCount++; fact = "opening-fact"; prompt = "opening-prompt"; source = "opening-source";
+            if (Host.ThrowOpening) throw new InvalidOperationException("opening fixture failed");
+            bool pending = Host.PendingOpening; Host.PendingOpening = false; return pending;
+        }
+    }
+    static class Logger { internal static void Log(string category, string text) { } }
+    static class FreezeWatchdog { internal static void Mark(string stage, string text, bool immediate = false) { } }
+    static class WorldMapPartyCommandBehavior { internal class WorldMapOrderApplyResult { } }
+    public partial class ShoutBehavior
+    {
+        public static ShoutBehavior CurrentInstance;
+        private const int NativeConversationMainThreadPreprocessTimeoutMs = 40; // Test-only accelerated queue timeout.
+        private readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
+        private class NpcDataPacket { public string Name; public int AgentIndex; }
+        private class SceneSummonPromptTarget { }
+        private class SceneGuidePromptTarget { }
+        private static bool IsBannerlordMainThreadForNativeActions() => Thread.CurrentThread.ManagedThreadId == Host.MainThread;
+        private static bool TryResolveNativeConversationTarget(out Hero hero, out CharacterObject character, out string name)
+        { Host.Read(); hero = Host.Target; character = Host.Character; name = hero?.StringId; return hero != null || character != null; }
+        private static int TryResolveNativeConversationAgentIndex(Hero hero, CharacterObject character) { Host.Read(); return Host.AgentIndex; }
+        private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index, Hero hero, CharacterObject character, out string reason)
+        { Host.Read(); reason = Host.Available ? "available" : "unavailable"; return Host.Available; }
+        public static bool CanSubmitNativeConversationForExternal()
+        { Host.Read(); return Campaign.Current?.ConversationManager?.IsConversationInProgress == true && !Host.PostBattle && (Host.Target != null || Host.Character != null); }
+        internal static void Pump() { while (CurrentInstance._mainThreadActions.TryDequeue(out Action a)) a(); }
+        internal int QueueCount => _mainThreadActions.Count;
+        internal bool SlotExists => _nativeConversationAdmission != null;
+        internal void PumpOwn() { while (_mainThreadActions.TryDequeue(out Action a)) a(); }
+        private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name, string target, int index, Func<T> action, T fallback)
+        {
+            if (IsBannerlordMainThreadForNativeActions()) return Task.FromResult(action());
+            var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _mainThreadActions.Enqueue(() => { try { tcs.SetResult(action()); } catch (Exception ex) { tcs.SetException(ex); } });
+            return tcs.Task;
+        }
+@@ENTRY@@
+@@OPENING_ENTRY@@
+@@PREFIX@@
+            Interlocked.Increment(ref Host.CoreCalls);
+            if (playerText == "throw") throw new InvalidOperationException("core fixture failed");
+            if (Host.Releases.TryGetValue(playerText, out TaskCompletionSource<bool> release)) await release.Task.ConfigureAwait(false);
+            onStreamText?.Invoke("stream:" + targetHero?.StringId);
+            onPostprocessStarted?.Invoke(npcName);
+            onMainReplyReady?.Invoke("main", targetHero, targetCharacter);
+            return (targetHero?.StringId ?? targetCharacter?.StringId) + ":" + nativeRequestConversationToken
+                + (npcInitiatedOpening ? ":" + admission.OpeningExtraFact : "");
+        }
+@@ACTION_RESULT@@
+@@ACTION_QUEUE@@
+        private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero hero, CharacterObject character,
+            NpcDataPacket npc, List<NpcDataPacket> all, List<SceneSummonPromptTarget> summon, List<SceneGuidePromptTarget> guide,
+            string text, string input, ConversationManager manager, int token)
+        { Host.Read(); Host.ActionCalls++; return new NativeConversationGameActionResult { Content = text }; }
+        internal Task<bool> TestActionDispatch(bool background)
+        {
+            NativeConversationAdmission a = _nativeConversationAdmission;
+            async Task<bool> Run()
+            {
+                NativeConversationGameActionResult result = await ApplyNativeConversationGameActionsOnMainThreadAsync(a.Hero, a.Character,
+                    new NpcDataPacket { Name = a.NpcName, AgentIndex = a.AgentIndex }, null, null, null, "action", a.NpcName,
+                    a.AgentIndex, "input", a.ConversationManager, a.ConversationToken, a).ConfigureAwait(false);
+                return result.ResponseDiscarded;
+            }
+            return background ? Task.Run(Run) : Run();
+        }
+    }
+    static class ConversationHelper { internal static int Ends; internal static void EndStreaming() { Ends++; } }
+    class OverlayCompletionProof
+    {
+        private bool _isClosed;
+        private bool _isSubmitting = true;
+        private int _submitGeneration;
+        internal bool Busy => _isSubmitting;
+        internal OverlayCompletionProof(bool closed, int generation) { _isClosed = closed; _submitGeneration = generation; }
+        private void StopWaitingDotsAnimation(int generation) { }
+        private void RunOnMainThread(Action action) { action(); }
+@@OVERLAY_FINALIZERS@@
+    }
+    class Program
+    {
+        static int checks;
+        static void Check(bool value, string label) { if (!value) throw new Exception("FAIL " + label); checks++; Console.WriteLine("PASS " + label); }
+        static void PumpUntil(Func<bool> done)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            while (!done()) { ShoutBehavior.Pump(); if (sw.ElapsedMilliseconds > 5000) throw new Exception("FAIL harness timed out"); Thread.Sleep(1); }
+            ShoutBehavior.Pump();
+        }
+        static string Finish(Task<string> task) { PumpUntil(() => task.IsCompleted); return task.GetAwaiter().GetResult(); }
+        static Task<string> Submit(string input) => ShoutBehavior.SubmitNativeConversationTextForExternalAsync(input, null, null, null, null);
+        static TaskCompletionSource<bool> Hold(string text)
+        { var t = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously); Host.Releases[text] = t; return t; }
+        static void Rejected(Task<string> task, string reason)
+        {
+            PumpUntil(() => task.IsCompleted);
+            try { task.GetAwaiter().GetResult(); throw new Exception("FAIL rejection missing"); }
+            catch (ShoutBehavior.NativeConversationAdmissionException ex) { Check(ex.ReasonCode == reason, "rejection " + reason); }
+        }
+        static void Main()
+        {
+            Host.Reset(); var first = Submit("one"); Check(ShoutBehavior.IsNativeConversationBackendBusy(), "main caller captures before Task.Run");
+            Check(ShoutBehavior.CanSubmitNativeConversationForExternal(), "busy does not close eligible overlay");
+            Check(Finish(first) == "A:0", "stable normal request keeps captured target"); Check(!ShoutBehavior.IsNativeConversationBackendBusy(), "successful completion releases own slot");
+
+            Host.Reset(); Mission.Current = null; Host.AgentIndex = -1;
+            Check(Finish(Submit("tableau")) == "A:0", "tableau conversation without live mission or agent is preserved");
+            Host.Reset(); Host.Target = null; Host.Character = new CharacterObject { StringId = "anonymous" };
+            Check(Finish(Submit("anonymous")) == "anonymous:0", "non-Hero conversation keeps character identity");
+            Host.Reset(); var hold = Hold("held"); first = Submit("held"); PumpUntil(() => Host.CoreCalls == 1);
+            Rejected(Submit("duplicate"), "native.busy"); Host.PendingOpening = true;
+            Rejected(ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(null, null, null, null), "native.busy");
+            Check(Host.ConsumeCount == 0 && Host.PendingOpening, "busy cannot consume NPC opening");
+            hold.SetResult(true); Check(Finish(first) == "A:0", "first survives rejected duplicate");
+            Check(Finish(ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(null, null, null, null)) == "A:0:opening-fact", "NPC opening uses admitted facts and empty input");
+            Check(Host.ConsumeCount == 1, "opening consumed once on main");
+
+            Host.Reset(); first = Submit("changed-before-start"); Host.Target = new Hero { StringId = "B" }; Campaign.Current.ConversationManager.ActiveToken = 9;
+            Check(Finish(first) == "" && Host.CoreCalls == 0, "changed target before worker start is rejected not recaptured");
+            Host.Reset(); first = Submit("generation"); SaveRuntimeGuard.Generation++; Check(Finish(first) == "" && Host.CoreCalls == 0, "save load before worker start rejected");
+            Host.Reset(); first = Submit("mission"); Mission.Current = new Mission(); Check(Finish(first) == "", "mission replacement rejected");
+            Host.Reset(); first = Submit("index"); Host.AgentIndex++; Check(Finish(first) == "", "agent index replacement rejected");
+            Host.Reset(); first = Submit("manager"); Campaign.Current.ConversationManager = new ConversationManager(); Check(Finish(first) == "", "conversation manager replacement rejected");
+            Host.Reset(); first = Submit("token"); Campaign.Current.ConversationManager.ActiveToken++; Check(Finish(first) == "", "conversation token change rejected");
+            Host.Reset(); first = Submit("character"); Host.Character = new CharacterObject { StringId = "B" }; Check(Finish(first) == "", "character identity change rejected");
+
+            Host.Reset(); hold = Hold("old"); var nextHold = Hold("new"); first = Submit("old"); PumpUntil(() => Host.CoreCalls == 1);
+            ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();
+            var next = Submit("new"); PumpUntil(() => Host.CoreCalls == 2); hold.SetResult(true); Finish(first);
+            Check(ShoutBehavior.IsNativeConversationBackendBusy(), "old completion cannot release reopened same-token conversation request");
+            nextHold.SetResult(true); Finish(next); Check(!ShoutBehavior.IsNativeConversationBackendBusy(), "new request releases itself");
+
+            Host.Reset(); first = Submit("throw"); PumpUntil(() => first.IsCompleted);
+            try { first.GetAwaiter().GetResult(); throw new Exception("FAIL core exception missing"); } catch (InvalidOperationException ex) { Check(ex.Message == "core fixture failed", "body exception propagated"); }
+            Check(!ShoutBehavior.IsNativeConversationBackendBusy(), "body exception releases slot");
+            Host.Reset(); Host.PendingOpening = true; Host.ThrowOpening = true;
+            first = ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(null, null, null, null);
+            try { Finish(first); throw new Exception("FAIL opening exception missing"); } catch (InvalidOperationException ex) { Check(ex.Message == "opening fixture failed", "opening capture exception propagated"); }
+            Check(!ShoutBehavior.IsNativeConversationBackendBusy(), "opening capture failure releases slot");
+            Host.Reset(); Check(Finish(ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(null, null, null, null)) == "" && !ShoutBehavior.IsNativeConversationBackendBusy(), "absent opening releases slot");
+            Host.Reset(); Check(Finish(Submit("  ")) == "" && Host.GameReads == 0, "empty input has no admission side effect");
+            Host.Reset(); Host.PostBattle = true; Check(Finish(Submit("battle")) == "" && Host.CoreCalls == 0, "postbattle admission refused on main");
+
+            Host.Reset(); first = Task.Run(() => Submit("background")); Check(Finish(first) == "A:0", "background caller captures through main queue");
+            Host.Reset(); Host.DelayOnNextRead = 120; first = Task.Run(() => Submit("started-before-timeout"));
+            string startedResult;
+            try { startedResult = Finish(first); } catch (Exception ex) { throw new Exception("FAIL started admission result lost at timeout", ex); }
+            Check(startedResult == "A:0" && Host.CoreCalls == 1 && !ShoutBehavior.CurrentInstance.SlotExists, "started admission is acknowledged after timeout threshold without a leaked slot");
+            Host.Reset(); first = Task.Run(() => Submit("timeout"));
+            if (!SpinWait.SpinUntil(() => ShoutBehavior.CurrentInstance.QueueCount > 0, 5000)) throw new Exception("FAIL missing queued admission");
+            Thread.Sleep(120); Rejected(first, "native.admission_timeout");
+            Check(Host.CoreCalls == 0 && !ShoutBehavior.CurrentInstance.SlotExists && Host.GameReads == 0, "expired queued admission cannot run later or leak slot");
+            Host.Reset(); first = Task.Run(() => ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(null, null, null, null));
+            if (!SpinWait.SpinUntil(() => ShoutBehavior.CurrentInstance.QueueCount > 0, 5000)) throw new Exception("FAIL missing queued admission");
+            ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();
+            Host.PendingOpening = true; // New conversation's opening must not be consumed by the old queued request.
+            Check(Finish(first) == "" && Host.CoreCalls == 0 && Host.GameReads == 0 && Host.ConsumeCount == 0 && Host.PendingOpening,
+                "queued previous-conversation request cannot capture or consume reopened same-token opening");
+            Host.Reset(); first = Task.Run(() => Submit("load-before-admission"));
+            if (!SpinWait.SpinUntil(() => ShoutBehavior.CurrentInstance.QueueCount > 0, 5000)) throw new Exception("FAIL missing queued admission");
+            SaveRuntimeGuard.Generation++; Check(Finish(first) == "" && Host.CoreCalls == 0, "queued pre-load call cannot capture new save");
+
+            Host.Reset(); hold = Hold("actions"); first = Submit("actions"); PumpUntil(() => Host.CoreCalls == 1);
+            Check(!ShoutBehavior.CurrentInstance.TestActionDispatch(false).GetAwaiter().GetResult() && Host.ActionCalls == 1, "current direct action dispatch allowed once");
+            Task<bool> actions = ShoutBehavior.CurrentInstance.TestActionDispatch(true);
+            if (!SpinWait.SpinUntil(() => ShoutBehavior.CurrentInstance.QueueCount > 0, 5000)) throw new Exception("FAIL missing queued action");
+            Campaign.Current.ConversationManager.ActiveToken++; PumpUntil(() => actions.IsCompleted);
+            Check(actions.GetAwaiter().GetResult() && Host.ActionCalls == 1, "late queued action refused before side effect");
+            Check(ShoutBehavior.CurrentInstance.TestActionDispatch(false).GetAwaiter().GetResult() && Host.ActionCalls == 1, "stale direct action refused before side effect");
+            hold.SetResult(true); Finish(first);
+            Check(Host.GameReads > 0, "physical main game reads exercised");
+            foreach (bool opening in new[] { false, true })
+            {
+                ConversationHelper.Ends = 0;
+                var oldUi = new OverlayCompletionProof(true, 1); oldUi.Complete(1, opening);
+                Check(ConversationHelper.Ends == 0 && oldUi.Busy, "closed old UI cannot end another conversation stream opening=" + opening);
+                var replacedUi = new OverlayCompletionProof(false, 2); replacedUi.Complete(1, opening);
+                Check(ConversationHelper.Ends == 0 && replacedUi.Busy, "old generation cannot clear newer UI busy opening=" + opening);
+                var activeUi = new OverlayCompletionProof(false, 2); activeUi.Complete(2, opening);
+                Check(ConversationHelper.Ends == 1 && !activeUi.Busy, "current UI completion still cleans up opening=" + opening);
+            }
+            Console.WriteLine($"NativeConversationAdmission PASS={checks} FAIL=0 sourceLinkedAdmission=true extractedEntryAndActionQueue=true downstream=STUBBED LIVE=NOT_RUN timeoutMs=test40/production30000");
+        }
+    }
+}

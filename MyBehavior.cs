@@ -4487,6 +4487,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnMemoryConversationEnded(IEnumerable<CharacterObject> characters)
 	{
+		ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();
 		string memorySessionKey = _activeNativeConversationMemorySessionId >= 0
 			? BuildCurrentMemorySessionKey(-1, _activeNativeConversationMemorySessionId)
 			: string.Empty;
