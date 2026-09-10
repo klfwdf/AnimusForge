@@ -15,6 +15,7 @@ using AnimusForge.SiegeAftermathIntervention;
 using AnimusForge.XihaiAction;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
@@ -10553,7 +10554,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
 								VanillaIssueOfferBridge.ApplyIssueOfferTags(characterObject.HeroObject, ref aiResponse);
-								if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(characterObject.HeroObject, ref aiResponse, out var nobleFacts, out var nobleNotifications))
+								if (TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(characterObject.HeroObject, ref aiResponse, out var nobleFacts, out var nobleNotifications))
 								{
 									foreach (string generatedFact in nobleFacts ?? new List<string>())
 									{
@@ -18815,7 +18816,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool started = false;
 		try
 		{
-			started = KingdomAgendaCustomPolicyBehavior.TryProcessAcceptedAgendaTag(targetHero, resolvedChainName, playerProposalText, npcReplyText, ref content, out failureReason);
+			started = TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(targetHero, resolvedChainName, playerProposalText, npcReplyText, ref content, out failureReason);
 			Logger.Log("ShoutBehavior", "[CustomPolicyAgenda] dispatch chain=" + resolvedChainName + " ruler=" + (targetHero?.StringId ?? "null") + " started=" + started + " reason=" + (failureReason ?? ""));
 		}
 		catch (Exception ex)
@@ -18886,7 +18887,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			int siegeAgentIndex = resolvedTargetAgentIndex;
 			bool siegeActionHandled;
 			LogNativeActionStep("siege_before", targetHero, targetCharacter, content);
-			if (AfGcczShoutBridge.TryProcessActionTags(
+			if (TeamModuleServices.Siege.TryProcessActionTags(
 				targetHero,
 				targetCharacter,
 				siegeAgentIndex,
@@ -18919,7 +18920,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, targetAgentIndex, ref content);
 				LogNativeActionStep("scene_taunt_lords_hall_after", targetHero, targetCharacter, content);
 				LogNativeActionStep("noble_gathering_before", targetHero, targetCharacter, content);
-				if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(targetHero, ref content, out var nobleFacts, out var nobleNotifications))
+				if (TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(targetHero, ref content, out var nobleFacts, out var nobleNotifications))
 				{
 					if (nobleFacts != null)
 					{
@@ -23220,7 +23221,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			bool kingdomVassalagePreprocessHit = HasPreprocessRuleHit(preprocessRuleHits, "kingdom_vassalage");
 			bool persistentAdpDebtRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, PersistentAdpDebtPostprocessRuleId);
 			bool customPolicyAgendaRuleInjected = latestReplyHasPlayerInput && HasPreprocessRuleHit(preprocessRuleHits, CustomPolicyAgendaPostprocessRuleId);
-			if (customPolicyAgendaRuleInjected && !KingdomAgendaCustomPolicyBehavior.IsEligibleTargetForExternal(targetHero ?? targetCharacter?.HeroObject, out var customPolicyAgendaBlockedReason))
+			if (customPolicyAgendaRuleInjected && !TeamModuleServices.Policy.IsEligibleTargetForExternal(targetHero ?? targetCharacter?.HeroObject, out var customPolicyAgendaBlockedReason))
 			{
 				customPolicyAgendaRuleInjected = false;
 				Logger.Log("CourierDelivery", "[CustomPolicyAgendaPostprocess] blocked chain=" + resolvedChainName + " target=" + (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "null") + " reason=" + (customPolicyAgendaBlockedReason ?? ""));
@@ -23359,7 +23360,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				: new List<PostprocessRuleEntry>();
 			List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? VoteDealBehavior.BuildAgendaVotePostprocessRulesForExternal() : null;
-			List<PostprocessRuleEntry> customPolicyAgendaRules = customPolicyAgendaRuleInjected ? KingdomAgendaCustomPolicyBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;
+			List<PostprocessRuleEntry> customPolicyAgendaRules = customPolicyAgendaRuleInjected ? TeamModuleServices.Policy.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;
 			if (customPolicyAgendaRuleInjected && customPolicyAgendaRules.Count == 0)
 			{
 				customPolicyAgendaRuleInjected = false;
@@ -23367,11 +23368,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<PostprocessRuleEntry> diplomacyRules = diplomacyRuleInjected ? BuildRuntimeDiplomacyPostprocessRulesForScene(targetHero, targetCharacter) : null;
 			List<PostprocessRuleEntry> proposeAgendaRules = null;
 			List<PostprocessRuleEntry> worldMapPartyCommandRules = worldMapPartyCommandRuleInjected ? (WorldMapPartyCommandBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex) ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> nobleGatheringRules = nobleGatheringRuleInjected ? (NobleGatheringBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> nobleGatheringRules = nobleGatheringRuleInjected ? (TeamModuleServices.Gathering.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 			Hero marriageSpeaker = targetHero ?? targetCharacter?.HeroObject;
 			List<PostprocessRuleEntry> marriageRuntimeRules = marriageRuleInjected ? (RomanceSystemBehavior.Instance?.BuildRuntimeMarriagePostprocessRulesForExternal(marriageSpeaker) ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? marriageRuntimeRules : null;
-			List<PostprocessRuleEntry> siegeInterventionRules = AfGcczShoutBridge.BuildPostprocessRules(
+			List<PostprocessRuleEntry> siegeInterventionRules = TeamModuleServices.Siege.BuildPostprocessRules(
 				siegeInterventionRuleInjected,
 				targetAgentIndex,
 				latestReplyHasPlayerInput,
@@ -23606,7 +23607,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (nobleGatheringRuleInjected)
 			{
-				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, NobleGatheringBehavior.BuildPostprocessContextForExternal(targetHero ?? targetCharacter?.HeroObject));
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, TeamModuleServices.Gathering.BuildPostprocessContextForExternal(targetHero ?? targetCharacter?.HeroObject));
 			}
 			if (diplomacyRuleInjected)
 			{
@@ -23614,7 +23615,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (siegeInterventionRuleInjected)
 			{
-				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, TeamModuleServices.Siege.BuildPostprocessContext(
 					siegeInterventionRuleInjected,
 					targetAgentIndex,
 					latestReplyHasPlayerInput,
@@ -23670,10 +23671,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			string proposeAgendaTags = "";
 			string worldMapPartyCommandTags = worldMapPartyCommandRuleInjected ? NormalizeWorldMapPartyCommandPostprocessTagsForScene(content) : "";
-			string nobleGatheringTags = nobleGatheringRuleInjected ? NobleGatheringBehavior.NormalizeNobleGatheringPostprocessTagsForExternal(content) : "";
+			string nobleGatheringTags = nobleGatheringRuleInjected ? TeamModuleServices.Gathering.NormalizeNobleGatheringPostprocessTagsForExternal(content) : "";
 			string marriageTags = (marriageRuleInjected && RomanceSystemBehavior.Instance != null) ? RomanceSystemBehavior.Instance.NormalizeMarriagePostprocessTagsForExternal(content, marriageRules, marriageSpeaker) : "";
 			string npcSurrenderTags = NormalizeNpcSurrenderPostprocessTagsForScene(content, npcSurrenderRules, npcSurrenderPostprocessEnabled);
-			string siegeInterventionTags = siegeInterventionRuleInjected ? AfGcczShoutBridge.NormalizePostprocessTags(siegeInterventionRuleInjected, content, siegeInterventionRules) : "";
+			string siegeInterventionTags = siegeInterventionRuleInjected ? TeamModuleServices.Siege.NormalizePostprocessTags(siegeInterventionRuleInjected, content, siegeInterventionRules) : "";
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
 			string merged = siegeInterventionExclusive
 				? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags, nobleExecutionOrderTags)
@@ -26534,7 +26535,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return EnsureScenePostprocessFallbackMood(dialogue);
 		}
 
-		List<PostprocessRuleEntry> rules = AfGcczShoutBridge.BuildPostprocessRules(
+		List<PostprocessRuleEntry> rules = TeamModuleServices.Siege.BuildPostprocessRules(
 			true,
 			targetAgentIndex,
 			false,
@@ -26576,7 +26577,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return EnsureScenePostprocessFallbackMood(dialogue);
 		}
 
-		string normalized = AfGcczShoutBridge.NormalizePostprocessTags(true, rawTags, rules);
+		string normalized = TeamModuleServices.Siege.NormalizePostprocessTags(true, rawTags, rules);
 		normalized = AfGcczShoutBridge.ValidateTownPostprocessDecision(normalized);
 		if (string.IsNullOrWhiteSpace(normalized))
 		{
@@ -28833,7 +28834,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);
 									VanillaIssueOfferBridge.ApplyIssueOfferTags(characterObject.HeroObject, ref content);
-								if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(characterObject.HeroObject, ref content, out var nobleFacts, out var nobleNotifications))
+								if (TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(characterObject.HeroObject, ref content, out var nobleFacts, out var nobleNotifications))
 								{
 									foreach (string generatedFact in nobleFacts ?? new List<string>())
 									{
@@ -39457,7 +39458,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					siegeInterventionRuleInjected: true,
 					replyIsDirectPlayerResponse: false,
 					chainName: "siege_ambient_witness_reaction");
-				AfGcczShoutBridge.TryProcessActionTags(
+				TeamModuleServices.Siege.TryProcessActionTags(
 					contextHero,
 					npcCharacter,
 					request.TargetAgentIndex,

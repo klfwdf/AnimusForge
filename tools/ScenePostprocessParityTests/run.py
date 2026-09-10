@@ -9,6 +9,15 @@ extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
 BASELINE = 'd40808b3'
 SIGNATURE = 'private static string TryRunSceneUnifiedActionPostprocess('
+TEAM_MODULE_FILES = ('TeamModulePorts.cs', 'TeamModuleAdapters.cs', 'TeamModuleServices.cs')
+
+
+def team_module_project_items():
+    # Compile production thin adapters unchanged; old and new paths share the same domain stubs.
+    from xml.sax.saxutils import escape
+    return '<ItemGroup>' + ''.join(
+        '<Compile Include="' + escape(str(ROOT / 'Refactor/Modules' / name)) + '" Link="' + name + '" />'
+        for name in TEAM_MODULE_FILES) + '</ItemGroup>'
 
 
 def stub_helpers(old_source, method):
@@ -116,10 +125,10 @@ def main():
     output=HERE/'.generated'/args.output_name
     output.mkdir(parents=True,exist_ok=True)
     (output/'Program.cs').write_text(template,encoding='utf-8')
-    (output/'Parity.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>')
+    (output/'Parity.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+team_module_project_items()+'</Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
     meta=f'baseline={BASELINE} candidate={args.source_ref or "working-tree"} phaseSplit={phases} mutation={args.mutate or "none"}\n'+'\n'.join(k+' sha256='+hashlib.sha256(v.encode()).hexdigest() for k,v in blocks.items())
-    env=os.environ.copy(); env['DOTNET_ROOT']=str(Path(args.dotnet).parent); env['DOTNET_CLI_HOME']=str(output/'cli'); env['DOTNET_CLI_TELEMETRY_OPTOUT']='1'; env['DOTNET_NOLOGO']='1'; env['DOTNET_CLI_UI_LANGUAGE']='en'
+    env=os.environ.copy(); env['DOTNET_ROOT']=str(Path(args.dotnet).parent); env['DOTNET_CLI_HOME']=str(ROOT/'.tmp/dotnet-cli'); env['DOTNET_GENERATE_ASPNET_CERTIFICATE']='false'; env['DOTNET_CLI_TELEMETRY_OPTOUT']='1'; env['DOTNET_NOLOGO']='1'; env['DOTNET_CLI_UI_LANGUAGE']='en'
     r=subprocess.run([args.dotnet,'run','--project',str(output/'Parity.csproj'),'-c','Release'],cwd=output,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     log=meta+'\n'+r.stdout+r.stderr
     (output/'source-fingerprints.txt').write_text(meta+'\n',encoding='utf-8')
