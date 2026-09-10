@@ -7,3 +7,19 @@
 范围：统一 direct/queued 动作派发的异常结果；仅在动作 owner 进入之前与之后区分 NoConfirmedEffect / UnknownAfterStart（复用现有枚举）。异常不能返回普通成功回复、不自动重试、不删除已确认的先前效果。观测日志异常不得替代动作 Task 结果。沿用完整原 Action core、原准入与 UI 展示 scope，不重写业务规则或开放新 API。
 
 本轮不宣称整个回合无副作用：Raw taunt/自然动作等可能在动作派发之前发生。完整历史/事实原子回执、Native prepare 和 Courier prepare 仍待后续。先执行旧真实队列反例，再验证真实新派发器、结果传播与 UI 处理，最后 Stage、回归和交接。
+
+## 本轮落地
+
+- direct/queued 共用真实同步执行边界；复用现有 ActionExecutionEffectState 表达未进入 owner 与 UnknownAfterStart，不把异常装成普通回复。
+- 唯一 TaskCompletionSource 由 claim 成功的 callback 完成；若 enqueue 发布后抛错，只能取消尚未 claim 的 callback，不能覆盖已开始 callback 的结果。
+- 诊断日志与 FreezeWatchdog 观察失败不再改变 Task 结果或触发另一条 fallback。
+- 两条 Overlay 对类型化动作异常显示明确警告，抑制正常 ready 提示，不调用自动重试。消息只描述本次派发，不承诺整个回合零副作用。
+- 业务 Core 与正常返回内容未改；已经发生或各 owner 已记录的效果不删除。历史/AFEF 的完整原子提交仍待继续。
+
+## 当前证据
+
+原真实队列反例已复现。新 59 个检查、6 个行为变异；原准入/展示及相关回归与最终六项 Stage 构建详见本轮审计记录。未推送、未部署、未实机验收。
+
+后续仍需处理未消费动作队列的超时/取消、成功路径的主线程完成与事实回执、Native prepare/TTS 直接回调、Courier 双向 prepare。自动化继续，不把本次故障语义修正当作整个 Native 服务完成。
+
+本轮实现/测试已提交 `8da4fbd7`；精确证据见 `docs/audits/2026-09-11-native-action-outcome-verification.md` 及同名 JSON。断开后已复核全部回归日志和六 DLL marker，并重新执行 59 项定向检查。

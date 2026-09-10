@@ -1,6 +1,14 @@
 # AF 总 HANDOFF — 当前入口（2026-09-11）
 
-## 最新续作：Native 展示观察（生产/测试 32230a64）
+## 最新续作：Native 动作派发失败（生产/测试 8da4fbd7）
+
+- 修复部分动作后异常仍按正常回复收尾，以及 enqueue 后日志异常让回复提前结束的问题；原业务 Core 未改。
+- direct/queued 统一异常边界；未进入 owner 与执行后结果不明明确区分，不自动重试。两个 Overlay 失败分支复用展示 scope，目前共 16 个受保护异步 UI 消费点。
+- 59 检查 / 6 变异、原准入 44 / 7、展示 46 / 6、ports 308 / 3、六项 Stage 构建及相关回归通过；不是实机验收。
+- 简明交接：`docs/handoffs/2026-09-11-native-action-outcome-handoff.md`；审计：`docs/audits/2026-09-11-native-action-outcome-verification.md`；台账：`docs/phase8/native-action-outcome-progress-20260911.md`。
+- 未推送、未部署、公共 API 仍只读。下一项优先处理动作队列一直未消费的等待边界，然后继续成功路径主线程完成/事实回执、Native prepare/TTS、Courier prepare。
+
+## 前序续作：Native 展示观察（生产/测试 32230a64）
 
 - 两个 Overlay 提交入口复用同一内部观察桥和完整旧 Native 流程；14 个 UI 异步消费位置在出队时核对捕获会话，而不是只看当前 NPC 可用。
 - 后端已释放时，合法最终结果仍能显示；换会话/读档/新 revision 后旧结果失效，并只释放本地旧 busy，不操作新显示。
@@ -79,4 +87,4 @@ AnimusForge.dll
 
 回滚采用本轮实现提交的定向 `git revert <commit>` 并保留用户改动，不 hard reset，不 force-push。`6e0de826` 是开始写生产之前的明确检查点。
 
-不要推原共享 `refactor/prepare-af-restructure` 或恢复其已改写历史；远端交付要使用经用户确认的专门重构分支。最新 fetch 时同名远端为 `a58c2191`，本地文档领先；新修改尚未推送。
+不要推原共享 `refactor/prepare-af-restructure` 或恢复其已改写历史；远端交付要使用经用户确认的专门重构分支。最新 fetch 时同名远端为 `a58c2191`，本地已有源码/测试/文档领先；新修改尚未推送。

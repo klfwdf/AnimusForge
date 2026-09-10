@@ -1,0 +1,414 @@
+{
+  "kind": "native-action-dispatch-local-verification",
+  "recordedUtc": "2026-09-10T22:53:29.989161+00:00",
+  "sourceCommit": "8da4fbd76e182c1d5b4771c1b27d5fc6bcdd4b95",
+  "checkpoint": "861dd7a7",
+  "originalDefectBaseline": "646dd987",
+  "productionFiles": [
+    {
+      "path": "ShoutBehavior.cs",
+      "sha256": "6bf2e97494ab6b0ea1de37bbdd431bdb43911399c80924799340808f085c2825"
+    },
+    {
+      "path": "ShoutBehavior.NativeActionDispatch.cs",
+      "sha256": "50cf9805540466ad1d0745a7b7c431e01bb82a63f78c144a8fb3e23b90f76228"
+    },
+    {
+      "path": "AnimusForgeNativeConversationOverlay.cs",
+      "sha256": "94e469ad4e1a47027aa2af76d6af05d7a5aca7c6cfb608b676b05d5b10774e45"
+    }
+  ],
+  "coreUnchanged": {
+    "signature": "private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(",
+    "normalizedSha256": "2b2b64d9ecd7d58a9c4f35ab027ba73636a95d793d506d9f883255be74881763",
+    "comparedTo": "646dd987"
+  },
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "configuration": "Debug",
+      "apiLine": "1.3",
+      "sha256": "22788fc76c04e6d82374084019886cff4f2bf5faf32d1c29c81ec407d71a3321",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "configuration": "Debug",
+      "apiLine": "1.4",
+      "sha256": "f830598bbe0ded1ac841e4fc246ac19e1e8a395c55780ba582df16c3d44fbd7f",
+      "referenceGameVersion": "v1.4.6.115628"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "configuration": "Debug",
+      "apiLine": "bootstrap",
+      "sha256": "fa5a59e4b1372baa784637e920b3d8fe3609a2904e435346e987f03d108b879c",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "configuration": "Release",
+      "apiLine": "1.3",
+      "sha256": "2edf82f9bd9eaeb815a571ce6d4fff0b4da1473eba921c2177e0b4030b17c19f",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "configuration": "Release",
+      "apiLine": "1.4",
+      "sha256": "47307c5ef04b2d1548565d73247d1748afc0da45948a5670fc34ad9ce003d27e",
+      "referenceGameVersion": "v1.4.6.115628"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "configuration": "Release",
+      "apiLine": "bootstrap",
+      "sha256": "b0ab9bd99923247ad960161e857ef365502b8924d1a11478268f0d7327a9a12a",
+      "referenceGameVersion": "v1.3.15.110062"
+    }
+  ],
+  "tests": {
+    "dispatchChecks": 59,
+    "dispatchMutations": 6,
+    "admissionChecks": 44,
+    "admissionMutations": 7,
+    "presentationChecks": 46,
+    "presentationMutations": 6,
+    "teamPortAssertions": 308,
+    "teamPortMutations": 3
+  },
+  "regressions": [
+    {
+      "name": "InteractionPipelineContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 2.78,
+      "summary": [
+        "PASS detachedHostCommitBoundary cases=69 channels=3 noReplayAfterCommit=1 lateCallbackClosed=1 singleCommit=1 cancellation=1 receipts=1",
+        "PASS interactionCommitReceipts cases=39 requestIdentity=1 terminalFailure=1 payloadIntegrity=1 reentrant=1 boundedCapacity=1 courierDirection=1 duplicateCallback=1 publicAbi=1",
+        "PASS asyncInteractionOwner cases=18 realComposition=true realCoordinator=true realCommitBoundary=true game=NOT_RUN",
+        "PASS legacyAnonymousPrompt cases=13 realAdapter=true stringPropertiesOnly=true legacyDictionaryCoercion=unchanged game=NOT_RUN"
+      ]
+    },
+    {
+      "name": "BridgeRuntimeIsolationTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 6.05,
+      "summary": [
+        "PASS BridgeRuntimeIsolationTests processScenarios=12 definitions=16 wired=12 mandatorySafety=independent"
+      ]
+    },
+    {
+      "name": "ProductionOptInEntryReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 6.44,
+      "summary": [
+        "PASS notorietyConversationOutcomeProductionReplay embeddedWitness=1 bounds=64/512/260 exactLine=1 duplicateBeforeRoll=1 exactFinalize=1 loadUnknown=1 confirmedReconcile=1 legacyAbi=1 dataOnly=1",
+        "PASS courierEconomyReservation fixtureOnly=1 liveCampaign=0 saveWrite=0 assertions=18",
+        "PASS courierInboundCompletionReplay receipt=1 checksum=1 payloadConflict=1 sessionJson=1 loadGate=1 completion=1 stateIdempotent=1 ownerQuerySeam=1 tickOne=1 isolated=1 assertions=87",
+        "PASS productionOptInEntryReplay native=1 scene=1 courier=1 identity=1 failClosed=1 ports=1 notorietyOutcomeStructural=1 weeklyOutcomeStructural=1 noDefaultCutover=1"
+      ]
+    },
+    {
+      "name": "ProductionCourierHostReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 2.62,
+      "summary": [
+        "PASS productionCourierHostReplay courierPorts=1 replyMain=1 syntheticOwnerAbsent=1 unboundPostprocessDenied=1 postprocessTransportDenied=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1"
+      ]
+    },
+    {
+      "name": "ProductionDetachedHostReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 2.88,
+      "summary": [
+        "PASS productionDetachedHostReplay capture=1 main=1 postprocess=1 visibleFinal=1 commit=1 memoryBoundary=1 fallbackIsolation=1"
+      ]
+    },
+    {
+      "name": "ProductionEconomyAwareCommitReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 2.72,
+      "summary": [
+        "PASS productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 partial=2 unknown=3 productionAssembly=1"
+      ]
+    },
+    {
+      "name": "BridgeBindingContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 6.36,
+      "summary": [
+        "PASS bridgeBindings=16 wired=12 declaredOnly=4 configEnabled=12 sourceFiles=33 execution=source-bound metadata-only; no Bannerlord/runtime/network/save access"
+      ]
+    },
+    {
+      "name": "PersistenceProfileConfigContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 14.84,
+      "summary": [
+        "PASS persistenceProfileConfig literalKeys=142 sourceFiles=18 symbolicSources=43 symbolicFamilies=4 chunkedStringKeys=13 flattenedDictionaryKeys=44 chunkMaxBytes=12000 typedBindings=168 typedBindingKeys=142 typedBindingTypes=9 profiles=3 cases=5 credentialFieldsExcluded=5 namespaces=9 migrationIdempotent=True unknownDataPreserved=True legacyFirstCases=10"
+      ]
+    },
+    {
+      "name": "PhaseEightReadiness",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 0.14,
+      "summary": [
+        "PASS Phase8 entry inventory"
+      ]
+    },
+    {
+      "name": "scene-parity",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 4.69,
+      "summary": [
+        "PASS complete-once",
+        "PASS normalize-throws-no-reentry",
+        "PASS ScenePostprocessParity fixtures=71 originalMethod=executed candidateMethod=executed splitPhases=True domainHelpers=STUBBED live=NOT_RUN save=NOT_RUN apiNetwork=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "name": "scene-queue",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 3.98,
+      "summary": [
+        "PASS copied-input-candidates result=22 prepare=1 network=1 normalize=1 actions=1",
+        "PASS main-prepare-dropped result=-1 prepare=0 network=0 normalize=0 actions=0",
+        "PASS SceneDeferredQueue fixtures=37 realQueue=executed realWorkItemComplete=executed physicalThreadBoundary=verified gameDomainHelpers=STUBBED live=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "name": "channel",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 3.67,
+      "summary": [
+        "PASS scene-lifecycle/failure-release/generation",
+        "PASS scene-lifecycle/failure-release/session",
+        "PASS scene-lifecycle/failure-release/epoch",
+        "ChannelCutoverBoundary passes=132 failures=0 extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN"
+      ]
+    },
+    {
+      "name": "courier-owner",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 4.95,
+      "summary": [
+        "PASS skip-empty-error-无回信",
+        "PASS skip-empty-error-（API请求失败：fixture）",
+        "CourierPostprocessOwner PASS=39 FAIL=0 realParser=true ownerThread=physical-main LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "name": "native-tts-fallback",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 3.09,
+      "summary": [
+        "PASS exception",
+        "PASS atomic-register-B",
+        "RESULT nativeTtsFallback passed=14 failed=0 liveGame=false",
+        ""
+      ]
+    },
+    {
+      "name": "public-api",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 10.17,
+      "summary": [
+        "ARTIFACT G:\\AFMOD\\AF-REFACTOR\\bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll SHA256=2edf82f9bd9eaeb815a571ce6d4fff0b4da1473eba921c2177e0b4030b17c19f",
+        "ARTIFACT G:\\AFMOD\\AF-REFACTOR\\bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll SHA256=47307c5ef04b2d1548565d73247d1748afc0da45948a5670fc34ad9ce003d27e",
+        "PASS 472 actual-DLL metadata assertions; 4 implementation DLLs; public V1 signatures match and module ports remain internal.",
+        "NOT TESTED: CLR loading, Bootstrap ordering, game object access, real sub-MOD execution."
+      ]
+    },
+    {
+      "name": "missing-evidence",
+      "exitCode": 2,
+      "expectedExit": 2,
+      "state": "PASS",
+      "seconds": 0.66,
+      "summary": [
+        "  \"currentSourceCommit\": \"861dd7a78e60b45b9e07731b67ead633350bfee8\",",
+        "  \"acceptedEvidenceCount\": 0,",
+        "  \"verifiedFileReferences\": 21",
+        "}"
+      ]
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/native-action-outcome-20260911/admission-mutations.log",
+      "sha256": "5005edf3e822554594c2b2f1d8d926711a212a88f158eccd9f4c91ee57c9d094"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/admission.log",
+      "sha256": "47daf1a9eb6657fb9f6282bf119000f1fdedc434a2ccdc1b410a69b472f1ed60"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/BridgeBindingContractTests.log",
+      "sha256": "cf02aa7c8d28ff8c8959e4b8f9dd96955ab40f2a022b3378906bc985c99b5d56"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/BridgeRuntimeIsolationTests.log",
+      "sha256": "13a24193ab746f3fab2f8ab3ecb0ef495bfca5be78f251b009ca3030c122638f"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/build-Debug.log",
+      "sha256": "d5e0c4832879453a700e9d53a8ba07e9ce87f1b788e34d8869bfa4b0aaf2ca39"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/build-Release.log",
+      "sha256": "9389c808ed398a91df1988ff5f6d76b16970559cfa9509b8d1c07a6b86fef2b1"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/channel.log",
+      "sha256": "8b8d35f1c40a802f091a4c0df092aeb407fbe2a90abb3686dd2aa91257853684"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/courier-owner.log",
+      "sha256": "e9e6c1af8f9860add6fb3c201f6f97d778d6e2800b8e1de06e39d19499258b29"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/current-final.log",
+      "sha256": "c14ca550348fd872763b87b84362c5e7d594381e138527c3c2d50ace9d030ff1"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/current-integration.log",
+      "sha256": "8ae415aca811961fe6ce05dc1ac319343f05ba04ed2c1b1416488ea737a42b6f"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/current-verified.log",
+      "sha256": "c14ca550348fd872763b87b84362c5e7d594381e138527c3c2d50ace9d030ff1"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/final-confirmation.log",
+      "sha256": "8ae415aca811961fe6ce05dc1ac319343f05ba04ed2c1b1416488ea737a42b6f"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/InteractionPipelineContractTests.log",
+      "sha256": "9b6cbe3f468a21ef9a2b39d2963c9a687722f4ae226e0edb515823c2ddf7e6c3"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/missing-evidence.log",
+      "sha256": "cd48f9fb2e2e1f0fd612b3290e6ad94748f67d8626c44046f78bc3a6f09c6061"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/mutations-final.log",
+      "sha256": "02290e6149d4f2be62eee052605d215b8e91026a308eb99fca20a41e9a66bb04"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/mutations-verified.log",
+      "sha256": "02290e6149d4f2be62eee052605d215b8e91026a308eb99fca20a41e9a66bb04"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/mutations.log",
+      "sha256": "84bdb0433bdce0d9ee7f98025a022c8663c3d1256da34167911700ef1c787bec"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/native-tts-fallback.log",
+      "sha256": "92da9a3dbf2ad051ea2035d6220c29587a9d79e5bee5566bd79b4ffb84566a61"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/original-integration.log",
+      "sha256": "bff955317b97de7e062b9c5bf6b62e38aff40174b3d9fce0c73db7095b11dc3e"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/original.log",
+      "sha256": "6725ae80ded4dbceafe76268fb39b4d044ca52c94485afde8dde1d7fb602a3dc"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/PersistenceProfileConfigContractTests.log",
+      "sha256": "2977a53f5c1cead8fbb21d7314627aa0e16f5be5f451a85ba2fcf2a0d431ff70"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/PhaseEightReadiness.log",
+      "sha256": "a6c97c25d1a5c1a526e0efb1b9897fa935c0a28ff95cefb702bd75423ce6e1c1"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/presentation-mutations.log",
+      "sha256": "d73cbca0f012a2f895fda2a4a9c459137268d9e0548e73196853038b3a998c8b"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/presentation.log",
+      "sha256": "7b0d28da60b7e2cc04522393619b1bd034df8ad79d63c01b415519357e7ca3e4"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/ProductionCourierHostReplayTests.log",
+      "sha256": "db68f74aeb13436ea1743ae5b1e44eb849d2dbef89b6fc03acfa0e5b20039fd4"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/ProductionDetachedHostReplayTests.log",
+      "sha256": "6a39694067d0a97be0cbab003663749f004e57eb06362f96d9b59538afc8d88c"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/ProductionEconomyAwareCommitReplayTests.log",
+      "sha256": "7b33edeeab2a7b3c0d3ef80295e03f50319a1e94121d7209d25a9c213c3e86c6"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/ProductionOptInEntryReplayTests.log",
+      "sha256": "3e39a1367321fbef5c70605a0cf11900a58cf1ea6c85f92d35d89ad7ca301b25"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/public-api.log",
+      "sha256": "5d70f74c2a160805eef9941232ce0363e19179d4ca9113b154b9666a8e655403"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/scene-parity.log",
+      "sha256": "54a8667decbe7455f6f5b8ed801c336f506ca3f723b713567bf3308622ed816c"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/scene-queue.log",
+      "sha256": "c27886e1bc497a168fa117b77e2d8dec4c533ebaf4ffbd7d95b27b90c57de698"
+    },
+    {
+      "path": ".tmp/native-action-outcome-20260911/team-ports.log",
+      "sha256": "42bed3329fe34900fe11636d8fd1513e0d2f538311b10453c1bfd8f0d304b5e1"
+    }
+  ],
+  "unverified": [
+    "Real Campaign/Mission or old-save acceptance",
+    "Full action/fact/history atomic receipts",
+    "Unconsumed action queue timeout/cancellation",
+    "Native prepare and direct TTS callbacks",
+    "Courier early prepare",
+    "Historical .NET 10 tools not run"
+  ],
+  "boundaries": {
+    "pushed": false,
+    "deployed": false,
+    "gameSaveAccess": false,
+    "publicApi": "V1 read-only",
+    "otherWorktreesModified": false
+  }
+}
