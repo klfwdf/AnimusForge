@@ -1,0 +1,418 @@
+{
+  "kind": "native-action-queue-timeout-local-verification",
+  "recordedUtc": "2026-09-10T23:05:40.086025+00:00",
+  "sourceCommit": "9a5335bef584070d1d55f5e31d1448268357703f",
+  "checkpoint": "841e8751",
+  "priorImplementation": "8da4fbd7",
+  "productionFiles": [
+    {
+      "path": "ShoutBehavior.cs",
+      "sha256": "f5ddd0d386d03c9ca19507d5b4cf08efeb97a178575704ef7a20be2f21e68497"
+    },
+    {
+      "path": "ShoutBehavior.NativeActionDispatch.cs",
+      "sha256": "bb0023e6112108eccce6af0ed355649aae04ac0bef72065ef657bc0bbb89fd95"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "c5f42387cf6b74f6025b778ca8d9ecd01f5cbf5a857bb36169c8b8fed6b107d3",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "eb76791e2ab98a1c2efbb3492bcb811425be82dc0f4e0e2d62f246dbb56cac14",
+      "referenceGameVersion": "v1.4.6.115628"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "7b351d696f335d23f906035f9c72b1d45ebaa22d17cc19eb6aececb11855031c",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "2b623e9a587e13483666e3805f03b6d3ebaebd91e777ef85b4401b6d0c1db2e8",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "8c3024c056275bb9d2b97fa07bd4b51abfd1b91a35098f70d1cce09a2b24e7cb",
+      "referenceGameVersion": "v1.4.6.115628"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "243601b9a21100378127a39114b5aff2b36368da64870e29519050d272af04ae",
+      "referenceGameVersion": "v1.3.15.110062"
+    }
+  ],
+  "tests": {
+    "dispatchChecks": 88,
+    "dispatchMutations": 9,
+    "admissionChecks": 44,
+    "admissionMutations": 7,
+    "presentationChecks": 46,
+    "presentationMutations": 6,
+    "teamPortsAssertions": 308,
+    "teamPortsMutations": 3,
+    "publicApiMetadataAssertions": 472
+  },
+  "regressions": [
+    {
+      "name": "InteractionPipelineContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "run",
+        "--project",
+        "tools/InteractionPipelineContractTests/InteractionPipelineContractTests.csproj",
+        "--no-restore",
+        "-p:GameRoot=E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-p:Bannerlord14ReferencePath=G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-p:ReplayHarmonyModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859188632",
+        "-p:ReplayMcmModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859238197",
+        "-p:ReplayUiExtenderModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859222409",
+        "-p:ReplayPrivateRuntimePath=G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client"
+      ]
+    },
+    {
+      "name": "BridgeRuntimeIsolationTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "run",
+        "--project",
+        "tools/BridgeRuntimeIsolationTests/BridgeRuntimeIsolationTests.csproj",
+        "--no-restore",
+        "-p:GameRoot=E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-p:Bannerlord14ReferencePath=G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-p:ReplayHarmonyModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859188632",
+        "-p:ReplayMcmModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859238197",
+        "-p:ReplayUiExtenderModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859222409",
+        "-p:ReplayPrivateRuntimePath=G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client"
+      ]
+    },
+    {
+      "name": "ProductionOptInEntryReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "run",
+        "--project",
+        "tools/ProductionOptInEntryReplayTests/ProductionOptInEntryReplayTests.csproj",
+        "--no-restore",
+        "-p:GameRoot=E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-p:Bannerlord14ReferencePath=G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-p:ReplayHarmonyModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859188632",
+        "-p:ReplayMcmModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859238197",
+        "-p:ReplayUiExtenderModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859222409",
+        "-p:ReplayPrivateRuntimePath=G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client"
+      ]
+    },
+    {
+      "name": "ProductionCourierHostReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "run",
+        "--project",
+        "tools/ProductionCourierHostReplayTests/ProductionCourierHostReplayTests.csproj",
+        "--no-restore",
+        "-p:GameRoot=E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-p:Bannerlord14ReferencePath=G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-p:ReplayHarmonyModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859188632",
+        "-p:ReplayMcmModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859238197",
+        "-p:ReplayUiExtenderModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859222409",
+        "-p:ReplayPrivateRuntimePath=G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client"
+      ]
+    },
+    {
+      "name": "ProductionDetachedHostReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "run",
+        "--project",
+        "tools/ProductionDetachedHostReplayTests/ProductionDetachedHostReplayTests.csproj",
+        "--no-restore",
+        "-p:GameRoot=E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-p:Bannerlord14ReferencePath=G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-p:ReplayHarmonyModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859188632",
+        "-p:ReplayMcmModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859238197",
+        "-p:ReplayUiExtenderModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859222409",
+        "-p:ReplayPrivateRuntimePath=G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client"
+      ]
+    },
+    {
+      "name": "ProductionEconomyAwareCommitReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "run",
+        "--project",
+        "tools/ProductionEconomyAwareCommitReplayTests/ProductionEconomyAwareCommitReplayTests.csproj",
+        "--no-restore",
+        "-p:GameRoot=E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-p:Bannerlord14ReferencePath=G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-p:ReplayHarmonyModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859188632",
+        "-p:ReplayMcmModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859238197",
+        "-p:ReplayUiExtenderModulePath=E:\\steam\\steamapps\\workshop\\content\\261550\\2859222409",
+        "-p:ReplayPrivateRuntimePath=G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client"
+      ]
+    },
+    {
+      "name": "BridgeBindingContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/BridgeBindingContractTests/validate_bridge_bindings.py"
+      ]
+    },
+    {
+      "name": "PersistenceProfileConfigContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py"
+      ]
+    },
+    {
+      "name": "PhaseEightReadiness",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/PhaseEightReadiness/entry_inventory.py",
+        "--check"
+      ]
+    },
+    {
+      "name": "scene-parity",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/ScenePostprocessParityTests/run.py",
+        "--output-name",
+        "native-action-timeout-20260911"
+      ]
+    },
+    {
+      "name": "scene-queue",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/ScenePostprocessParityTests/run_queue.py",
+        "--output-name",
+        "native-action-timeout-20260911"
+      ]
+    },
+    {
+      "name": "channel",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/ChannelCutoverBoundaryTests/run.py"
+      ]
+    },
+    {
+      "name": "courier-owner",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/CourierPostprocessOwnerRegressionTests/run.py",
+        "--output-name",
+        "native-action-timeout-20260911"
+      ]
+    },
+    {
+      "name": "native-tts-fallback",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/NativeTtsFallbackBoundaryTests/run.py"
+      ]
+    },
+    {
+      "name": "public-api",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/ModuleFrameworkApiTests/run.py",
+        "--artifact-root",
+        "bin/Debug/single_module_artifacts",
+        "--artifact-root",
+        "bin/Release/single_module_artifacts"
+      ]
+    },
+    {
+      "name": "missing-evidence",
+      "exitCode": 2,
+      "expectedExit": 2,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-B",
+        "tools/PhaseEightReadiness/readiness.py",
+        "--manifest",
+        "docs/phase8/all-missing.evidence.json"
+      ]
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/native-action-timeout-20260911/admission-mutations.log",
+      "sha256": "5005edf3e822554594c2b2f1d8d926711a212a88f158eccd9f4c91ee57c9d094"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/admission.log",
+      "sha256": "657e6864612a9133c2496141eae4881ba8291cd51bdfbc8d8476d77fe94fd071"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/before-fix.log",
+      "sha256": "c24b859b1b49e20fe6a18fe25a4401a1ec570abc4f32ab744ea177571525ef69"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/BridgeBindingContractTests.log",
+      "sha256": "cf02aa7c8d28ff8c8959e4b8f9dd96955ab40f2a022b3378906bc985c99b5d56"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/BridgeRuntimeIsolationTests.log",
+      "sha256": "13a24193ab746f3fab2f8ab3ecb0ef495bfca5be78f251b009ca3030c122638f"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/build-Debug.log",
+      "sha256": "6c705392cdd10e2db728981fc34dd3f0f11dbf86fd5d46fdd85ad34dc1d67832"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/build-Release.log",
+      "sha256": "eb9770a9729091ea63d09ed3e786c59e3c4a25366aa5e70b43c5858ecb6fc1e5"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/channel.log",
+      "sha256": "8b8d35f1c40a802f091a4c0df092aeb407fbe2a90abb3686dd2aa91257853684"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/courier-owner.log",
+      "sha256": "ecbc3ce071ac501c331b5e0cca872f807cab5601720aadbde6e2a28242cdb0c9"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/current-final.log",
+      "sha256": "5bef4ac0d43fc073e974a8332f60747aab1188cbce6f8126b22a743e3f758e01"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/current.log",
+      "sha256": "2a03128ba3e434f0a138b872f58fff9c1ca2e4f45f897397740ac2a95cf1b4f2"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/InteractionPipelineContractTests.log",
+      "sha256": "9b6cbe3f468a21ef9a2b39d2963c9a687722f4ae226e0edb515823c2ddf7e6c3"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/missing-evidence.log",
+      "sha256": "373c13708fc5014c41ee36d58809b4676690c4a38098105af10fbc08f7132837"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/mutations-final.log",
+      "sha256": "e47a137371feab10ff5ff9e245d117a0865a00dd2d2c976ec317c91ff33510b4"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/mutations.log",
+      "sha256": "e47a137371feab10ff5ff9e245d117a0865a00dd2d2c976ec317c91ff33510b4"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/native-tts-fallback.log",
+      "sha256": "92da9a3dbf2ad051ea2035d6220c29587a9d79e5bee5566bd79b4ffb84566a61"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/original.log",
+      "sha256": "7ec714ed9ef042237239db5e2cb16c8b666657de9b5e4b835dc73a02d057dd03"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/PersistenceProfileConfigContractTests.log",
+      "sha256": "2977a53f5c1cead8fbb21d7314627aa0e16f5be5f451a85ba2fcf2a0d431ff70"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/PhaseEightReadiness.log",
+      "sha256": "a6c97c25d1a5c1a526e0efb1b9897fa935c0a28ff95cefb702bd75423ce6e1c1"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/presentation-mutations.log",
+      "sha256": "d73cbca0f012a2f895fda2a4a9c459137268d9e0548e73196853038b3a998c8b"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/presentation.log",
+      "sha256": "7b0d28da60b7e2cc04522393619b1bd034df8ad79d63c01b415519357e7ca3e4"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/ProductionCourierHostReplayTests.log",
+      "sha256": "db68f74aeb13436ea1743ae5b1e44eb849d2dbef89b6fc03acfa0e5b20039fd4"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/ProductionDetachedHostReplayTests.log",
+      "sha256": "6a39694067d0a97be0cbab003663749f004e57eb06362f96d9b59538afc8d88c"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/ProductionEconomyAwareCommitReplayTests.log",
+      "sha256": "7b33edeeab2a7b3c0d3ef80295e03f50319a1e94121d7209d25a9c213c3e86c6"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/ProductionOptInEntryReplayTests.log",
+      "sha256": "3e39a1367321fbef5c70605a0cf11900a58cf1ea6c85f92d35d89ad7ca301b25"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/public-api.log",
+      "sha256": "b17ec1aba46999d4b7a459f82842ea6601376c9ad3bf4206df8d68206d295166"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/scene-parity.log",
+      "sha256": "193e11a664ead7d4417917aff87abd34089c5ed8612587864b766039f8003df4"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/scene-queue.log",
+      "sha256": "f75ae099b903bf75d7def1cde71c9d34c406d6dc972904facafe7fc437b10bb0"
+    },
+    {
+      "path": ".tmp/native-action-timeout-20260911/team-ports.log",
+      "sha256": "42bed3329fe34900fe11636d8fd1513e0d2f538311b10453c1bfd8f0d304b5e1"
+    }
+  ],
+  "buildInstructions": "docs/phase8/framework-v1-execution-20260911.md",
+  "sdk": "G:\\AFMOD\\.dotnet-sdk",
+  "boundaries": {
+    "pushed": false,
+    "deployed": false,
+    "gameSaveAccess": false,
+    "publicApi": "V1 read-only",
+    "realGame": "NOT_RUN"
+  },
+  "notes": [
+    "Before-fix regression fails at runtime: unconsumed queue never settles.",
+    "Production timeout stays 30000ms; fixture uses 40ms/500ms.",
+    "Claimed work is never abandoned by this timer.",
+    "Action core is declaration-identical to 8da4fbd7 and 646dd987.",
+    "No claim of whole-turn rollback or physical network cancellation.",
+    "Existing .NET 10 tools were not run."
+  ]
+}

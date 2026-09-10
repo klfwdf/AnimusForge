@@ -27,3 +27,11 @@
 ## 同链续作检查点：未消费队列等待
 
 起点 `b7128a7d`（生产 `8da4fbd7`）。当前派发 Task 对永远未消费的队列没有期限，后端 busy 因此可能一直占用。下一步先执行真实派发方法的有限等待反例，再复用已有 30 秒主线程等待预算，仅允许 CAS 从 queued 转为 expired；callback 已 claim 时不得超时放弃真实结果。结束时取消计时器，不新增 Tick/轮询/请求重试或物理网络取消承诺。保持旧业务 Core、准入、展示、渠道路由和存档身份不变。
+
+## 未消费等待已落地（9a5335be）
+
+- 复用 30 秒预算，唯一 CAS 只允许未 claim 请求过期；晚到 callback 无效。已经 claim 的动作等待真实结果，正常完成取消计时器。
+- 队列超时使用显式错误分类，守卫的 TimeoutException 不冒充队列过期；只取消此队列待执行项，不回滚先前效果。
+- 原方法有限等待反例和修复前运行时失败均保存；当前 88 检查 / 9 变异、原准入/展示/ports、六项 Stage 和 16 组回归通过。
+- 审计：`docs/audits/2026-09-11-native-action-timeout-verification.md` 及同名 JSON；技术责任：`docs/architecture/af-native-action-dispatch.md`。
+- 下一项：Native 成功完成路径的主线程事实/记忆边界。先验证旧会话晚完成与 owner 合法结束会话两种情况，既不能污染新会话，也不能丢掉实际已发生事实；不能直接换一个 guard 就宣称事务/回执完成。其后处理 Native prepare/TTS 与 Courier 双向 prepare。
