@@ -12,12 +12,14 @@ namespace AnimusForge
     using TaleWorlds.CampaignSystem.Conversation;
     static class Host
     {
-        internal static bool Main, Allow = true, ThrowValidation, ThrowEnqueue, ThrowDiagnostics, ThrowAfterPublish, RunBeforeQueueError, DuplicateCallback;
+        internal static bool Main, Allow = true, ThrowValidation, ValidationTimeout, ThrowEnqueue, ThrowDiagnostics, ThrowAfterPublish, RunBeforeQueueError, DuplicateCallback;
         internal static string Mode, DiagnosticStage;
-        internal static int Calls, Effects, History;
+        internal static int Calls, Effects, History, QueueTimeoutMs;
+        internal static readonly ManualResetEventSlim Started = new ManualResetEventSlim();
+        internal static readonly ManualResetEventSlim Release = new ManualResetEventSlim();
         internal static readonly Exception Failure = new InvalidOperationException("fixture action failed after effect");
         internal static void Reset(string mode = "success", bool main = false)
-        { Main=main; Allow=true; ThrowValidation=ThrowEnqueue=ThrowDiagnostics=ThrowAfterPublish=RunBeforeQueueError=DuplicateCallback=false; Mode=mode; DiagnosticStage=null; Calls=Effects=History=0; }
+        { Main=main; Allow=true; ThrowValidation=ValidationTimeout=ThrowEnqueue=ThrowDiagnostics=ThrowAfterPublish=RunBeforeQueueError=DuplicateCallback=false; Mode=mode; DiagnosticStage=null; Calls=Effects=History=0; QueueTimeoutMs=40; Started.Reset();Release.Reset(); }
     }
     class ActionQueue
     {
@@ -42,9 +44,11 @@ namespace AnimusForge
         private class SceneGuidePromptTarget {}
         private class NativeConversationAdmission {}
         private readonly ActionQueue _mainThreadActions = new ActionQueue();
+        // Only the clock budget is shortened; the production dispatch algorithm is extracted unchanged.
+        private static int NativeConversationMainThreadPreprocessTimeoutMs => Host.QueueTimeoutMs;
         private static bool IsBannerlordMainThreadForNativeActions()=>Host.Main;
         private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason)
-        { reason="fixture";if(Host.ThrowValidation)throw new InvalidOperationException("guard failed");return Host.Allow; }
+        { reason="fixture";if(Host.ThrowValidation) { if(Host.ValidationTimeout)throw new TimeoutException("guard operation timed out");throw new InvalidOperationException("guard failed"); }return Host.Allow; }
 @@RESULT@@
 @@QUEUE@@
         private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero hero,CharacterObject character,NpcDataPacket npc,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string text,string input,ConversationManager manager,int token)
@@ -53,7 +57,8 @@ namespace AnimusForge
             if(Host.Mode=="null")return null;
             if(Host.Mode=="discard")return new NativeConversationGameActionResult {ResponseDiscarded=true,Content=""};
             Host.Effects++;
-            if(Host.Mode=="throw")throw Host.Failure;
+            if (Host.Mode.StartsWith("block")) { Host.Started.Set();Host.Release.Wait(); }
+            if(Host.Mode=="throw" || Host.Mode=="block-throw")throw Host.Failure;
             return new NativeConversationGameActionResult {Content="applied",WorldMapResult=new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult()};
         }
         internal async Task<string> Turn()
@@ -86,7 +91,13 @@ namespace AnimusForge
         { try { return Finish(owner,task); } catch(Exception ex) { throw new Exception("FAIL expected successful dispatch despite diagnostics",ex); } }
         static void Main()
         {
-#if ORIGINAL
+#if TIMEOUT_BASELINE
+            Host.Reset();var owner=new ShoutBehavior();var task=owner.Turn();
+            Thread.Sleep(Host.QueueTimeoutMs*4);
+            Check(!task.IsCompleted&&owner.Pending==1&&Host.Calls==0,"REPRODUCED unconsumed action dispatch remains pending beyond the main-thread budget");
+            Check(Success(owner,task)=="applied"&&Host.Effects==1,"REPRODUCED old callback can still start after that budget");
+            Console.WriteLine("Pre-timeout Native dispatch reproduced; source baseline=8da4fbd7; only clock shortened; game/core=STUBBED.");
+#elif ORIGINAL
             Host.Reset("throw");var owner=new ShoutBehavior();var task=owner.Turn();
             Check(Success(owner,task)=="original reply"&&Host.Effects==1&&Host.History==1,"REPRODUCED partial effect then exception silently returned original reply and continued history");
             Host.Reset();Host.ThrowDiagnostics=true;Host.DiagnosticStage="queued";owner=new ShoutBehavior();task=owner.Turn();
@@ -110,6 +121,9 @@ namespace AnimusForge
                 Check(Host.Calls==1&&Host.History==0,"missing owner result cannot authorize normal completion main="+main);
                 Host.Reset(main:main);Host.ThrowValidation=true;owner=new ShoutBehavior();task=owner.Turn();Failure(owner,task,ActionExecutionEffectState.NoConfirmedEffect);
                 Check(Host.Calls==0&&Host.Effects==0&&Host.History==0,"guard exception is before owner main="+main);
+                Host.Reset(main:main);Host.ThrowValidation=Host.ValidationTimeout=true;owner=new ShoutBehavior();task=owner.Turn();
+                var guardFailure=Failure(owner,task,ActionExecutionEffectState.NoConfirmedEffect);
+                Check(guardFailure.ErrorCode=="native.actions.dispatch_not_started"&&Host.Calls==0,"guard TimeoutException must not be mislabeled as queue expiry main="+main);
                 Host.Reset(main:main);Host.ThrowDiagnostics=true;owner=new ShoutBehavior();task=owner.Turn();
                 Check(Success(owner,task)=="applied"&&Host.Calls==1&&Host.History==1,"logging failure cannot replace owner result main="+main);
                 Host.Reset("throw",main);Host.ThrowDiagnostics=true;owner=new ShoutBehavior();task=owner.Turn();Failure(owner,task,ActionExecutionEffectState.UnknownAfterStart);
@@ -128,6 +142,17 @@ namespace AnimusForge
             Check(Success(queuedOwner,queued)=="applied"&&Host.Effects==1&&Host.History==1,"already claimed queue completion wins over a later enqueue error");
             Host.Reset();Host.DuplicateCallback=true;queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();
             Check(Success(queuedOwner,queued)=="applied"&&Host.Effects==1&&Host.History==1,"duplicate queue callback cannot execute action twice");
+            foreach(bool diagnosticsFail in new[]{false,true})
+            {
+                Host.Reset();Host.ThrowDiagnostics=diagnosticsFail;Host.DiagnosticStage="queue_timeout";
+                queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();
+                Check(SpinWait.SpinUntil(()=>queued.IsCompleted,3000),"unconsumed queue settles without a pump diagnosticsFail="+diagnosticsFail);
+                var timeoutFailure=Failure(queuedOwner,queued,ActionExecutionEffectState.NoConfirmedEffect);
+                Check(timeoutFailure.InnerException is TimeoutException && timeoutFailure.ErrorCode=="native.actions.dispatch_timeout","timeout is identified without implying whole-turn rollback");
+                Check(Host.Calls==0&&Host.Effects==0&&Host.History==0&&queuedOwner.Pending==0,"expired callback cannot execute after late pump diagnosticsFail="+diagnosticsFail);
+            }
+            StartedAcrossDeadline("block-success");
+            StartedAcrossDeadline("block-throw");
             Host.ThrowDiagnostics=false;
             foreach(bool opening in new[]{false,true})
             {
@@ -140,6 +165,25 @@ namespace AnimusForge
 #endif
         }
 #if !ORIGINAL
+        static void StartedAcrossDeadline(string mode)
+        {
+            Host.Reset(mode);Host.QueueTimeoutMs=500;
+            var owner=new ShoutBehavior();var turn=owner.Turn();
+            Task pump=Task.Run(()=>owner.Pump());
+            try
+            {
+                Check(Host.Started.Wait(3000),"physical callback claimed owner before deadline mode="+mode);
+                Thread.Sleep(Host.QueueTimeoutMs*3);
+                Check(!turn.IsCompleted,"deadline must not abandon already-started owner mode="+mode);
+            }
+            finally { Host.Release.Set();pump.GetAwaiter().GetResult(); }
+            if(mode=="block-throw")
+            {
+                Failure(owner,turn,ActionExecutionEffectState.UnknownAfterStart);
+                Check(Host.Effects==1&&Host.History==0,"started failure retains partial effect without success or replay");
+            }
+            else Check(Success(owner,turn)=="applied"&&Host.Effects==1&&Host.History==1,"started success beyond deadline retains actual result exactly once");
+        }
         static ShoutBehavior.NativeConversationActionDispatchException Failure(ShoutBehavior owner,Task<string> task,ActionExecutionEffectState effect)
         {
             try{Finish(owner,task);throw new Exception("FAIL expected action fault");}
