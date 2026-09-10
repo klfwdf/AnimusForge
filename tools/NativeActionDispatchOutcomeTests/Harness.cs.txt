@@ -1,0 +1,156 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using AnimusForge.Refactor.Contracts;
+namespace TaleWorlds.CampaignSystem { public class Hero { public string StringId = "A"; } public class CharacterObject { public string StringId = "A.character"; } }
+namespace TaleWorlds.CampaignSystem.Conversation { public class ConversationManager {} }
+namespace AnimusForge
+{
+    using TaleWorlds.CampaignSystem;
+    using TaleWorlds.CampaignSystem.Conversation;
+    static class Host
+    {
+        internal static bool Main, Allow = true, ThrowValidation, ThrowEnqueue, ThrowDiagnostics, ThrowAfterPublish, RunBeforeQueueError, DuplicateCallback;
+        internal static string Mode, DiagnosticStage;
+        internal static int Calls, Effects, History;
+        internal static readonly Exception Failure = new InvalidOperationException("fixture action failed after effect");
+        internal static void Reset(string mode = "success", bool main = false)
+        { Main=main; Allow=true; ThrowValidation=ThrowEnqueue=ThrowDiagnostics=ThrowAfterPublish=RunBeforeQueueError=DuplicateCallback=false; Mode=mode; DiagnosticStage=null; Calls=Effects=History=0; }
+    }
+    class ActionQueue
+    {
+        readonly Queue<Action> actions = new Queue<Action>();
+        internal void Enqueue(Action action)
+        {
+            if (Host.ThrowEnqueue) throw new InvalidOperationException("queue unavailable");
+            if (Host.RunBeforeQueueError) { Host.Main=true;action();Host.Main=false;throw new InvalidOperationException("queue failed after claim"); }
+            actions.Enqueue(action);
+            if (Host.ThrowAfterPublish) throw new InvalidOperationException("queue failed after publish");
+        }
+        internal int Count => actions.Count;
+        internal void Pump() { Host.Main=true;while(actions.Count>0) { var a=actions.Dequeue();a();if(Host.DuplicateCallback)a(); }Host.Main=false; }
+    }
+    static class Logger { internal static void Log(string category,string text) { if(Host.ThrowDiagnostics&&(Host.DiagnosticStage==null||text.Contains(Host.DiagnosticStage)))throw new InvalidOperationException("diagnostic failure"); } }
+    static class FreezeWatchdog { internal static void Mark(string stage,string text,bool immediate=false) {} }
+    static class WorldMapPartyCommandBehavior { internal class WorldMapOrderApplyResult { public bool NeedsChannelExit; } }
+    public partial class ShoutBehavior
+    {
+        private class NpcDataPacket { public string Name="A"; public int AgentIndex=1; }
+        private class SceneSummonPromptTarget {}
+        private class SceneGuidePromptTarget {}
+        private class NativeConversationAdmission {}
+        private readonly ActionQueue _mainThreadActions = new ActionQueue();
+        private static bool IsBannerlordMainThreadForNativeActions()=>Host.Main;
+        private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason)
+        { reason="fixture";if(Host.ThrowValidation)throw new InvalidOperationException("guard failed");return Host.Allow; }
+@@RESULT@@
+@@QUEUE@@
+        private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero hero,CharacterObject character,NpcDataPacket npc,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string text,string input,ConversationManager manager,int token)
+        {
+            Host.Calls++;
+            if(Host.Mode=="null")return null;
+            if(Host.Mode=="discard")return new NativeConversationGameActionResult {ResponseDiscarded=true,Content=""};
+            Host.Effects++;
+            if(Host.Mode=="throw")throw Host.Failure;
+            return new NativeConversationGameActionResult {Content="applied",WorldMapResult=new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult()};
+        }
+        internal async Task<string> Turn()
+        {
+            var targetHero=new Hero();var targetCharacter=new CharacterObject();var npc=new NpcDataPacket();
+            string npcName="A",nativeTargetLog="A",cleaned="original reply";int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
+            NativeConversationGameActionResult nativeActionResult=await ApplyNativeConversationGameActionsOnMainThreadAsync(targetHero,targetCharacter,npc,null,null,null,cleaned,npcName,1,"input",new ConversationManager(),1,new NativeConversationAdmission());
+@@CONSUMER_GATE@@
+            Host.History++;
+            return cleaned;
+        }
+        private void RollbackNativeConversationPendingPlayerHistory(Hero hero,CharacterObject character,string name,int index,NpcDataPacket npc,long sequence,string reason) {}
+        internal void Pump()=>_mainThreadActions.Pump();
+        internal int Pending=>_mainThreadActions.Count;
+    }
+#if !ORIGINAL
+    static class LlmRetryPrompt { internal static int Reports; internal static string Message; internal static void ShowFailurePopup(string title,string message) { Reports++;Message=message; } }
+    class UiFailureProof
+    {
+        private void RunNativePresentationCallback(int generation,Action action) { action(); }
+@@UI_FAILURE@@
+    }
+#endif
+    class Program
+    {
+        static int checks;
+        static void Check(bool value,string name){if(!value)throw new Exception("FAIL "+name);checks++;Console.WriteLine("PASS "+name);}
+        static string Finish(ShoutBehavior owner,Task<string> task){owner.Pump();return task.GetAwaiter().GetResult();}
+        static string Success(ShoutBehavior owner,Task<string> task)
+        { try { return Finish(owner,task); } catch(Exception ex) { throw new Exception("FAIL expected successful dispatch despite diagnostics",ex); } }
+        static void Main()
+        {
+#if ORIGINAL
+            Host.Reset("throw");var owner=new ShoutBehavior();var task=owner.Turn();
+            Check(Success(owner,task)=="original reply"&&Host.Effects==1&&Host.History==1,"REPRODUCED partial effect then exception silently returned original reply and continued history");
+            Host.Reset();Host.ThrowDiagnostics=true;Host.DiagnosticStage="queued";owner=new ShoutBehavior();task=owner.Turn();
+            Check(task.IsCompleted&&Host.Calls==0&&Host.History==1&&owner.Pending==1,"REPRODUCED post-enqueue logging failure completed caller before queued work");
+            Host.ThrowDiagnostics=false;owner.Pump();Check(Host.Effects==1,"queued action still ran after caller was already completed");
+            Console.WriteLine("Original Native dispatch defects reproduced; actual method executed; game/core=STUBBED.");
+#else
+            foreach(bool main in new[]{false,true})
+            {
+                Host.Reset(main:main);var owner=new ShoutBehavior();var task=owner.Turn();
+                Check(Success(owner,task)=="applied"&&Host.Calls==1&&Host.Effects==1&&Host.History==1,"normal completion preserved main="+main);
+                Host.Reset("discard",main);owner=new ShoutBehavior();task=owner.Turn();
+                Check(Success(owner,task)==""&&Host.Effects==0&&Host.History==0,"owner discard preserved main="+main);
+                Host.Reset(main:main);Host.Allow=false;owner=new ShoutBehavior();task=owner.Turn();
+                Check(Success(owner,task)==""&&Host.Calls==0&&Host.History==0,"admission rejection before owner main="+main);
+                Host.Reset("throw",main);owner=new ShoutBehavior();task=owner.Turn();
+                var failure=Failure(owner,task,ActionExecutionEffectState.UnknownAfterStart);
+                Check(Host.Calls==1&&Host.Effects==1&&Host.History==0,"partial effects retained but no false history or replay main="+main);
+                Check(ReferenceEquals(failure.InnerException,Host.Failure),"original failure retained main="+main);
+                Host.Reset("null",main);owner=new ShoutBehavior();task=owner.Turn();Failure(owner,task,ActionExecutionEffectState.UnknownAfterStart);
+                Check(Host.Calls==1&&Host.History==0,"missing owner result cannot authorize normal completion main="+main);
+                Host.Reset(main:main);Host.ThrowValidation=true;owner=new ShoutBehavior();task=owner.Turn();Failure(owner,task,ActionExecutionEffectState.NoConfirmedEffect);
+                Check(Host.Calls==0&&Host.Effects==0&&Host.History==0,"guard exception is before owner main="+main);
+                Host.Reset(main:main);Host.ThrowDiagnostics=true;owner=new ShoutBehavior();task=owner.Turn();
+                Check(Success(owner,task)=="applied"&&Host.Calls==1&&Host.History==1,"logging failure cannot replace owner result main="+main);
+                Host.Reset("throw",main);Host.ThrowDiagnostics=true;owner=new ShoutBehavior();task=owner.Turn();Failure(owner,task,ActionExecutionEffectState.UnknownAfterStart);
+                Check(Host.Effects==1&&Host.History==0,"logging failure cannot hide partial action failure main="+main);
+            }
+            Host.Reset();Host.ThrowEnqueue=true;var queuedOwner=new ShoutBehavior();var queued=queuedOwner.Turn();Failure(queuedOwner,queued,ActionExecutionEffectState.NoConfirmedEffect);
+            Check(queuedOwner.Pending==0&&Host.Calls==0&&Host.History==0,"failed enqueue cannot execute or report success");
+            Host.Reset();queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();Host.Allow=false;
+            Check(Success(queuedOwner,queued)==""&&Host.Calls==0,"stale after enqueue rechecked at execution");
+            Host.Reset();Host.ThrowDiagnostics=true;Host.DiagnosticStage="queued";queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();
+            Check(!queued.IsCompleted&&Host.History==0,"post-enqueue diagnostic failure keeps real completion pending");
+            Check(Success(queuedOwner,queued)=="applied"&&Host.Effects==1,"accepted queue executes exactly once despite failed diagnostic");
+            Host.Reset();Host.ThrowAfterPublish=true;queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();Failure(queuedOwner,queued,ActionExecutionEffectState.NoConfirmedEffect);
+            Check(Host.Effects==0&&Host.History==0,"published but unclaimed failed enqueue is cancelled before execution");
+            Host.Reset();Host.RunBeforeQueueError=true;queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();
+            Check(Success(queuedOwner,queued)=="applied"&&Host.Effects==1&&Host.History==1,"already claimed queue completion wins over a later enqueue error");
+            Host.Reset();Host.DuplicateCallback=true;queuedOwner=new ShoutBehavior();queued=queuedOwner.Turn();
+            Check(Success(queuedOwner,queued)=="applied"&&Host.Effects==1&&Host.History==1,"duplicate queue callback cannot execute action twice");
+            Host.ThrowDiagnostics=false;
+            foreach(bool opening in new[]{false,true})
+            {
+                LlmRetryPrompt.Reports=0;
+                var failure=new ShoutBehavior.NativeConversationActionDispatchException(true,Host.Failure);
+                Check(new UiFailureProof().Report(failure,opening),"actual UI failure branch suppresses normal ready notice opening="+opening);
+                Check(LlmRetryPrompt.Reports==1&&LlmRetryPrompt.Message==failure.Message,"UI reports uncertainty without replay opening="+opening);
+            }
+            Console.WriteLine($"NativeActionDispatch PASS={checks} FAIL=0 actualQueue=true actualBoundary=true coreAndHistory=STUBBED LIVE=NOT_RUN");
+#endif
+        }
+#if !ORIGINAL
+        static ShoutBehavior.NativeConversationActionDispatchException Failure(ShoutBehavior owner,Task<string> task,ActionExecutionEffectState effect)
+        {
+            try{Finish(owner,task);throw new Exception("FAIL expected action fault");}
+            catch(ShoutBehavior.NativeConversationActionDispatchException ex)
+            {
+                Check(ex.EffectState==effect,"typed effect boundary "+effect);
+                Check(!ex.CanRetryAutomatically,"whole turn is never automatically replayable");
+                Check(!string.IsNullOrWhiteSpace(ex.ErrorCode)&&!ex.Message.Contains(Host.Failure.Message),"bounded UI diagnostic separate from original cause");
+                return ex;
+            }
+        }
+#endif
+    }
+}

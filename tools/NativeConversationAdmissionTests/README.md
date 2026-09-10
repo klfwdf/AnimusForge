@@ -52,3 +52,5 @@ python -B tools/NativeConversationAdmissionTests/run_presentation_mutations.py
 - 六个行为 mutation：移除 callback guard、移除 revision、错误依赖 backend slot、跳过 Tick 退休、允许过期最终收尾、允许过期通知；必须是运行时断言失败。
 - 原 44 项准入及 7 个反例全部保留。旧 finally 所有权证明现在提取真实 `CompleteNativeSubmissionPresentation`，其 fixture 假定游戏 scope 有效，只测试本地关闭/generation；真实 scope 失效由上述新套件负责，不用假 scope 代替新边界验收。
 - 生成的 UI 片段含一些未被该片段使用的原局部变量，展示 fixture 仅屏蔽 CS0169/CS0414/CS0219 未使用提示；生产构建不屏蔽这些警告。
+
+动作派发失败续作将同步/队列执行统一到真实 `ShoutBehavior.NativeActionDispatch.cs`。本套件现 Link 该文件与既有 effect enum；原队列 guard 变异改为破坏同一个共享 guard，原断言未删除。展示接线现在有 16 个受保护消费点（新增两个动作失败报告）；原 46 项展示检查不变，动作失败分支由 NativeActionDispatchOutcomeTests 单独执行验证。
