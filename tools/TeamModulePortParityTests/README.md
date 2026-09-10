@@ -46,3 +46,5 @@ python tools/TeamModulePortParityTests/run.py
 
 展示 scope 接入后，原 public 可用性查询的三行调用方注释更新为兼容说明。该注释以明确的 current/original 对纳入逆变换，只允许 `//` 行注释；不忽略其它注释或代码，也不放宽原行为断言。
 动作队列失败修复只更新已登记 dispatch 声明的精确 SHA，其它声明不变；dispatcher 及调用方完成门禁/动作失败 UI 分支由 NativeActionDispatchOutcomeTests 的真实源码片段和反例验证。31 个制作组接缝与原断言保留。
+
+后续动作队列等待同样只刷新既有派发声明 SHA；新 88 检查 / 9 变异负责证明等待期限、未执行取消和已开始归属，13 方法 / 31 调用 / 308 断言不变。

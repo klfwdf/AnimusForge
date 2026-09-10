@@ -19585,7 +19585,33 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return tcs.Task;
 		}
 		ObserveNativeActionDispatch("queued", targetLog, targetAgentIndex);
-		return tcs.Task;
+		return AwaitDispatch();
+
+		async Task<NativeConversationGameActionResult> AwaitDispatch()
+		{
+			using (var timeout = new CancellationTokenSource())
+			{
+				try
+				{
+					Task winner = await Task.WhenAny(tcs.Task,
+						Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs, timeout.Token)).ConfigureAwait(false);
+					// Only a callback that has never claimed execution can expire. Once claimed,
+					// await its real outcome: a timer cannot roll back or safely repeat game actions.
+					if (winner != tcs.Task && Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+					{
+						var cause = new TimeoutException("native.action_queue_not_consumed");
+						tcs.TrySetException(new NativeConversationActionDispatchException(false, cause, queueTimedOut: true));
+						ObserveNativeActionDispatch("queue_timeout", targetLog, targetAgentIndex, error: cause);
+					}
+					return await tcs.Task.ConfigureAwait(false);
+				}
+				finally
+				{
+					// Do not retain a per-request delay until its deadline after normal completion.
+					timeout.Cancel();
+				}
+			}
+		}
 	}
 
 	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(

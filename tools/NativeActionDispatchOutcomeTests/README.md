@@ -5,6 +5,7 @@
 ```powershell
 $env:PYTHONIOENCODING = 'utf-8'
 python -B tools/NativeActionDispatchOutcomeTests/run.py --original
+python -B tools/NativeActionDispatchOutcomeTests/run.py --timeout-baseline
 python -B tools/NativeActionDispatchOutcomeTests/run.py
 python -B tools/NativeActionDispatchOutcomeTests/run_mutations.py
 ```
@@ -27,13 +28,16 @@ SDK 使用 `G:\AFMOD\.dotnet-sdk`；复用项目 `.tmp/dotnet-cli` / `.tmp/nuget
 
 ## 当前覆盖
 
-**59 PASS / 0 FAIL**：direct/queued 正常返回、owner discard、执行前校验拒绝/异常、执行后异常与原始 cause、null 结果、诊断异常、enqueue 前/发布后/已 claim 后异常、执行前失效、重复 callback，以及实际 UI 失败分支。
+**88 PASS / 0 FAIL**（保留前序 59 项）：direct/queued 正常返回、owner discard、执行前校验拒绝/异常、执行后异常与原始 cause、null 结果、诊断异常、enqueue 前/发布后/已 claim 后异常、执行前失效、重复 callback，以及实际 UI 失败分支。
 
-六个行为变异：丢失 start 边界、允许 null 作为普通结果、吞掉 owner 异常、让诊断异常影响控制流、去掉 claim 去重、让失败发布的 callback 继续执行。均须由运行时失败捕获，不接受编译错误冒充。
+九个行为变异：丢失 start 边界、允许 null 作为普通结果、吞掉 owner 异常、让诊断异常影响控制流、去掉 claim 去重、让失败发布的 callback 继续执行。再覆盖跳过超时等待、超时未封死 callback、错误放弃已开始动作。均须由运行时失败捕获，不接受编译错误冒充。
 
 ## 语义边界
 
 - `NoConfirmedEffect` 只描述本次派发未进入 owner；**不保证此前 raw/taunt/自然动作等没有效果**。
 - `UnknownAfterStart` 表示进入 owner 后无法确认完整结果，不回滚或抹掉已发生的效果，也不自动重试整轮。
 - 正常 Task 返回只代表此次同步调用返回，不代表每个异步玩法结果最终成功；未虚设统一 ConfirmedEffect。
-- 整个历史/事实原子回执、排队一直不被消费时的超时/取消、真实游戏验收仍未由此套件解决。
+- 未消费队列等待复用真实 30 秒预算，只有 queued→expired 的 CAS 胜方可超时完成；已经 claimed 的 owner 必须继续等待其成功/失败结果。已完成的计时器主动取消；不新增轮询或自动重试。
+- `--timeout-baseline` 使用 `8da4fbd7` 的实际派发方法，证明缺少等待期限；`before-fix.log` 保留新增断言在旧实现上的真实失败。fixture 只将预算缩短到 40ms（常规）/500ms（跨期限执行），并断言生产常量仍为 30000ms。
+- 新物理线程夹具让 callback 进入 owner 后跨过期限，分别验证成功/抛错；不把同步 claim 后立即完成的 fixture 当作跨期限竞态证据。守卫本身抛 TimeoutException 不会被误标为队列超时。
+- 整个历史/事实原子回执、其他准备队列的期限/取消、实际主线程完全卡死时的恢复、真实游戏验收仍未由此套件解决。

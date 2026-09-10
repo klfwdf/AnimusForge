@@ -9,13 +9,16 @@ public partial class ShoutBehavior
     // This outcome covers this dispatch boundary, not earlier raw/taunt/natural actions in the turn.
     internal sealed class NativeConversationActionDispatchException : InvalidOperationException
     {
-        internal NativeConversationActionDispatchException(bool ownerStarted, Exception cause)
+        internal NativeConversationActionDispatchException(bool ownerStarted, Exception cause, bool queueTimedOut = false)
             : base(ownerStarted
                 ? "对话动作处理异常，部分操作可能已经执行。请检查实际游戏结果，不要自动重试整轮。"
-                : "本次后处理动作派发未开始，当前回复未完成处理。请检查游戏状态后再继续。", cause)
+                : queueTimedOut
+                    ? "主线程未及时开始本次后处理动作派发，已停止等待；此队列动作不会随后补做。请检查此前已发生的游戏结果，不要自动重试整轮。"
+                    : "本次后处理动作派发未开始，当前回复未完成处理。请检查游戏状态后再继续。", cause)
         {
             EffectState = ownerStarted ? ActionExecutionEffectState.UnknownAfterStart : ActionExecutionEffectState.NoConfirmedEffect;
-            ErrorCode = ownerStarted ? "native.actions.outcome_unknown" : "native.actions.dispatch_not_started";
+            ErrorCode = ownerStarted ? "native.actions.outcome_unknown"
+                : queueTimedOut ? "native.actions.dispatch_timeout" : "native.actions.dispatch_not_started";
         }
         internal ActionExecutionEffectState EffectState { get; }
         internal string ErrorCode { get; }

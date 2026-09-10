@@ -15,7 +15,7 @@
     {
       "path": "ShoutBehavior.cs",
       "signature": "private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(",
-      "sha256": "ad89bf405b6359fc5ce6b49cae73f6b63cdbbf985860a90ed340289052512fc7"
+      "sha256": "7de028a0b9598f29a3bae51ef61ebd2822da5a1b1bbafb91fb407d52e2c1333d"
     },
     {
       "path": "ShoutBehavior.cs",
