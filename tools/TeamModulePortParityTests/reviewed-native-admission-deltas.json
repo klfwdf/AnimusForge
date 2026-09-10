@@ -1,0 +1,31 @@
+{
+  "reason": "Reviewed Native admission change after framework v1; no team module call sites occur inside these exact frozen methods. NativeConversationAdmissionTests owns their behavior checks.",
+  "baseline": "14dec2d7",
+  "methods": [
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)",
+      "sha256": "7358c783e6c7b11fd69c1a01cb646968a6fed22fca506e1db8b3b2972e5118fe"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)",
+      "sha256": "1635b60972713a03f757b207d560ba767088c00036d4d0304045c824097e8fc1"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(",
+      "sha256": "79dd800ec45284a9f2f17e86c1c75c4d288292c5c12a496d388078c5421285ec"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
+      "sha256": "2dcd450dadfcabc8cbeb9d58b7c81471c6e1696992258ac0067cf9a2b8533ae6"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OnMemoryConversationEnded(",
+      "sha256": "f5668401c313ed38146cb77192b5ffffa27923bbce2c96f17365815d098ee592"
+    }
+  ]
+}

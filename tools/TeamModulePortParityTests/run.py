@@ -23,6 +23,26 @@ def read(path):
     return (ROOT/path).read_text(encoding="utf-8-sig")
 
 
+
+def restore_reviewed_nonport_deltas(path, current, prior):
+    # Preserve the strict original whole-file proof without freezing unrelated Native evolution.
+    # Only these hash-frozen, separately behavior-tested declarations can differ; a future edit fails.
+    spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+    extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
+    review = json.loads((HERE / "reviewed-native-admission-deltas.json").read_text(encoding="utf-8"))
+    for item in review["methods"]:
+        if item["path"] != path:
+            continue
+        declaration = extractor.declaration(current, item["signature"])
+        if hashlib.sha256(declaration.encode()).hexdigest() != item["sha256"] or "TeamModuleServices." in declaration:
+            raise AssertionError("Unreviewed non-port owner delta: " + path + ":" + item["signature"])
+        original = extractor.declaration(prior, item["signature"])
+        if current.count(declaration) != 1:
+            raise AssertionError("Nonunique reviewed declaration")
+        current = current.replace(declaration, original, 1)
+    return current
+
+
 def owner_parity(baseline):
     replacements = {f"TeamModuleServices.{port}.{method}": f"{owner}.{method}"
         for port, (owner, methods) in MAP.items() for method in methods}
@@ -30,14 +50,15 @@ def owner_parity(baseline):
     seen = {name: 0 for name in replacements}
     for path in ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]:
         current = read(path)
-        restored = current.replace("using AnimusForge.Refactor.Modules;\n", "")
+        prior = subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        restored = restore_reviewed_nonport_deltas(path, current, prior).replace("using AnimusForge.Refactor.Modules;\n", "")
         for new, old in replacements.items():
             seen[new] += restored.count(new)
             restored = restored.replace(new, old)
         prior = subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         if restored != prior:
             raise AssertionError(f"Owner parity failed: {path} differs beyond declared receiver/using changes")
-        print(f"PASS full-file receiver inverse equals {baseline}: {path}")
+        print(f"PASS full-file reviewed-native/receiver inverse equals {baseline}: {path}")
     if len(seen) != 13 or any(count == 0 for count in seen.values()):
         raise AssertionError("Every declared method must have a live owner call, not only a descriptor")
     sub = read("SubModule.cs")

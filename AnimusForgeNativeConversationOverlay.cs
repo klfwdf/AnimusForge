@@ -741,7 +741,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private void HandleSubmitRequested(string inputText)
 	{
-		if (_isClosed || _isSubmitting || !_dataSource.IsCustomAnswerVisible)
+		if (_isClosed || _isSubmitting || ShoutBehavior.IsNativeConversationBackendBusy() || !_dataSource.IsCustomAnswerVisible)
 		{
 			return;
 		}
@@ -896,6 +896,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
+		if (ShoutBehavior.IsNativeConversationBackendBusy())
+			return;
 		_npcOpeningAutoStarted = true;
 		SetInputVisible(true);
 		_ = SubmitNpcInitiatedOpeningAsync();
@@ -1062,6 +1064,17 @@ public sealed class AnimusForgeNativeConversationOverlay
 				});
 			}
 		}
+		catch (ShoutBehavior.NativeConversationAdmissionException ex)
+		{
+			suppressReadyNotice = true;
+			RunOnMainThread(() =>
+			{
+				if (!IsSubmitGenerationCurrent(generation)) return;
+				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+				_npcOpeningAutoStarted = false;
+				Logger.Log("NativeConversationOverlay", "Native admission rejected: " + ex.ReasonCode);
+			});
+		}
 		catch (Exception ex)
 		{
 			RunOnMainThread(delegate
@@ -1086,10 +1099,11 @@ public sealed class AnimusForgeNativeConversationOverlay
 			RunOnMainThread(delegate
 			{
 				StopWaitingDotsAnimation(generation);
-				ConversationHelper.EndStreaming();
-				_isSubmitting = false;
 				if (!_isClosed && generation == _submitGeneration)
 				{
+					// 旧请求的 finally 不得结束新会话的全局流式展示或清掉它的 busy。
+					ConversationHelper.EndStreaming();
+					_isSubmitting = false;
 					_dataSource.SetBusy(false);
 					if (_dataSource.IsCustomAnswerVisible)
 					{
@@ -1109,11 +1123,6 @@ public sealed class AnimusForgeNativeConversationOverlay
 					{
 						ShowNativeConversationNpcOpeningPreprocessRetryInquiry(generation);
 					}
-				}
-				else if (!_isClosed && !_dataSource.IsCustomAnswerVisible)
-				{
-					_postRestoreForceRestoreTicks = 8;
-					RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 				}
 			});
 		}
@@ -1281,6 +1290,17 @@ public sealed class AnimusForgeNativeConversationOverlay
 				});
 			}
 		}
+		catch (ShoutBehavior.NativeConversationAdmissionException ex)
+		{
+			suppressReadyNotice = true;
+			RunOnMainThread(() =>
+			{
+				if (!IsSubmitGenerationCurrent(generation)) return;
+				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+				_dataSource.InputText = text;
+				Logger.Log("NativeConversationOverlay", "Native admission rejected: " + ex.ReasonCode);
+			});
+		}
 		catch (Exception ex)
 		{
 			RunOnMainThread(delegate
@@ -1305,10 +1325,11 @@ public sealed class AnimusForgeNativeConversationOverlay
 			RunOnMainThread(delegate
 			{
 				StopWaitingDotsAnimation(generation);
-				ConversationHelper.EndStreaming();
-				_isSubmitting = false;
 				if (!_isClosed && generation == _submitGeneration)
 				{
+					// 旧请求的 finally 不得结束新会话的全局流式展示或清掉它的 busy。
+					ConversationHelper.EndStreaming();
+					_isSubmitting = false;
 					_dataSource.SetBusy(false);
 					if (_dataSource.IsCustomAnswerVisible)
 					{
@@ -1328,11 +1349,6 @@ public sealed class AnimusForgeNativeConversationOverlay
 					{
 						ShowNativeConversationPreprocessRetryInquiry(text, generation);
 					}
-				}
-				else if (!_isClosed && !_dataSource.IsCustomAnswerVisible)
-				{
-					_postRestoreForceRestoreTicks = 8;
-					RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 				}
 			});
 		}
