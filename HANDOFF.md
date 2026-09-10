@@ -1,5 +1,14 @@
 # AF 总 HANDOFF — 当前入口（2026-09-11）
 
+## 最新续作：Native 准入（生产/测试 77d4a940）
+
+- 普通输入/主动开场统一主线程捕获、后端 busy 与会话票据；结束会话也拒绝尚未开始的旧排队请求。
+- 动作实际执行前复查作用域；旧请求/旧 Overlay 完成不能清新请求 busy 或结束新展示。
+- 44 个定向检查、7 个行为变异、最终六项构建和相关回归通过；公共 V1 仍只读，未部署、未推送。
+- 最新短版：`docs/handoffs/2026-09-11-native-admission-handoff.md`；验证：`docs/audits/2026-09-11-native-admission-verification.md`；续作台账：`docs/phase8/native-admission-progress-20260911.md`。
+- 下一轮：继续 Native prepare/动作后事实回执/流式回调的完整线程与会话归属，不能把本轮准入当成整个 Native 公共服务完成。Courier 双向 prepare 仍待处理。
+
+
 ## 1. 当前结论
 
 **已进入确认架构的初版实施；本轮新接口不是整个阶段 8 或完整 SDK 的最终完成。**
@@ -14,12 +23,12 @@ AnimusForge.dll
 当前工作树：`G:\AFMOD\AF-REFACTOR`。
 分支：`codex/af-main-refactor-continuation-20260831`。
 初版实施前：`df6ab928`；本轮意图/回滚检查点：`6e0de826`。
-本轮生产与测试提交：`a616958c`。
+框架初版生产与测试提交：`a616958c`；最新生产见上方续作段。
 精确最终提交请运行 `git log -3 --oneline`；本文与本轮源码一起提交，不编造包含自身的未来 commit hash。
 
 给制作组直接看的短版：`docs/handoffs/2026-09-11-framework-v1-team-handoff.md`。
 
-## 2. 本轮真实变更
+## 2. 框架初版真实变更（a616958c）
 
 - `Refactor/Modules/InternalModuleDirectory.cs`：内部定义、依赖/版本校验、冻结与只读目录。未初始化不报告可用，冲突不覆盖 provider。
 - `TeamModulePorts.cs / TeamModuleAdapters.cs / TeamModuleServices.cs`：3 组 internal 接口、13 个原样转接方法、单例薄桥。没有改额外模块业务实现。
@@ -46,7 +55,7 @@ AnimusForge.dll
 - 上一生产修复：`docs/handoffs/2026-09-09-recovery-fixes-handoff.md`
 - Courier 深层线程缺口：`docs/audits/2026-09-09-courier-thread-boundary-plan.md`
 
-## 4. 本轮验证
+## 4. 框架初版验证（最新 Native 验证见上方）
 
 已完成：Debug/Release × 1.3/1.4/Bootstrap 六项构建全部通过；新目录 44、公共 API 119、薄桥 308 个断言通过，四份实际实现 DLL 的 472 个元数据断言通过；原 Scene/Courier/管线与所选生产回放通过。原始命令/日志在 `.tmp/framework-v1-20260911/`，可提交的摘要在 `docs/audits/2026-09-11-framework-v1-verification.md`。
 
@@ -54,7 +63,7 @@ AnimusForge.dll
 
 ## 5. 后续工作（按顺序，不重写额外模块业务）
 
-1. Native admission：主线程绑定当前对话/目标，与 Overlay 共用忙碌约束；先明确排队/开始/完成/取消语义，再开放公共普通文本提交。
+1. Native：主线程准入、排队 epoch、共享后端 busy 和旧 UI finally 隔离已完成；继续完整 prepare/commit/stream 展示作用域与结果回执，之后才开放有限公共普通文本提交。
 2. Courier 双向更早的 prepare：拆开游戏读取、网络/人设/记忆准备和主线程完成，避免把整段含网络的 builder 搬主线程。
 3. 保持 Scene 主体的接力、旁听、后处理、记忆/AFEF 和 TTS 回归；新接缝必须有原功能对照。
 4. 在稳定请求与事实回执上再扩充公共结果/生命周期通知、内部贡献协议、经过批准的制作组能力转接或子 MOD 扩展。
@@ -66,7 +75,7 @@ AnimusForge.dll
 
 使用既有 `一键编译覆盖推送/build_single_module.ps1 -Stage`，一套源码构建 1.3、1.4、Bootstrap；不改脚本、不拆 Contracts DLL、不改程序集/存档身份。准确本机构建参数保存在验证日志及实施台账中。
 
-本轮不推送、不部署、不安装 SDK、不操作存档、不恢复自动化。原两份 2026-09-06 用户草稿改动保留，不能 stage 进本轮提交。
+当前每小时自动化 af-7-8 已由用户明确授权启用；只本地推进、验证和提交，不推送、不部署、不安装 SDK、不操作存档。原两份 2026-09-06 用户草稿改动保留，不能 stage 进本轮提交。
 
 回滚采用本轮实现提交的定向 `git revert <commit>` 并保留用户改动，不 hard reset，不 force-push。`6e0de826` 是开始写生产之前的明确检查点。
 
