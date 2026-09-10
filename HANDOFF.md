@@ -1,13 +1,13 @@
 # AF 总 HANDOFF — 当前入口（2026-09-11）
 
-## 最新续作：Native 准入（生产/测试 77d4a940）
+## 最新续作：Native 展示观察（生产/测试 32230a64）
 
-- 普通输入/主动开场统一主线程捕获、后端 busy 与会话票据；结束会话也拒绝尚未开始的旧排队请求。
-- 动作实际执行前复查作用域；旧请求/旧 Overlay 完成不能清新请求 busy 或结束新展示。
-- 44 个定向检查、7 个行为变异、最终六项构建和相关回归通过；公共 V1 仍只读，未部署、未推送。
-- 最新短版：`docs/handoffs/2026-09-11-native-admission-handoff.md`；验证：`docs/audits/2026-09-11-native-admission-verification.md`；续作台账：`docs/phase8/native-admission-progress-20260911.md`。
-- 下一轮：继续 Native prepare/动作后事实回执/流式回调的完整线程与会话归属，不能把本轮准入当成整个 Native 公共服务完成。Courier 双向 prepare 仍待处理。
-
+- 两个 Overlay 提交入口复用同一内部观察桥和完整旧 Native 流程；14 个 UI 异步消费位置在出队时核对捕获会话，而不是只看当前 NPC 可用。
+- 后端已释放时，合法最终结果仍能显示；换会话/读档/新 revision 后旧结果失效，并只释放本地旧 busy，不操作新显示。
+- 新 46 检查 / 6 变异、原准入 44 / 7、六项构建和相关回归通过。公共 V1 仍只读；没有推送或部署，实机未验收。
+- 最新短版：`docs/handoffs/2026-09-11-native-presentation-handoff.md`；技术边界：`docs/architecture/af-native-presentation-lifetime.md`；验证：`docs/audits/2026-09-11-native-presentation-verification.md`。
+- 前序准入生产 `77d4a940`，记录保留在 `docs/phase8/native-admission-progress-20260911.md`；本轮台账为 `docs/phase8/native-presentation-progress-20260911.md`。
+- 下一轮：继续 Native prepare/动作后事实回执及剩余 TTS 直接回调边界，然后处理 Courier 双向 prepare；不能把 Overlay 观察票据当成完整公共请求服务。
 
 ## 1. 当前结论
 
@@ -26,7 +26,7 @@ AnimusForge.dll
 框架初版生产与测试提交：`a616958c`；最新生产见上方续作段。
 精确最终提交请运行 `git log -3 --oneline`；本文与本轮源码一起提交，不编造包含自身的未来 commit hash。
 
-给制作组直接看的短版：`docs/handoffs/2026-09-11-framework-v1-team-handoff.md`。
+给制作组直接看的最新短版见上方；框架初版说明保留在 `docs/handoffs/2026-09-11-framework-v1-team-handoff.md`。
 
 ## 2. 框架初版真实变更（a616958c）
 
@@ -63,7 +63,7 @@ AnimusForge.dll
 
 ## 5. 后续工作（按顺序，不重写额外模块业务）
 
-1. Native：主线程准入、排队 epoch、共享后端 busy 和旧 UI finally 隔离已完成；继续完整 prepare/commit/stream 展示作用域与结果回执，之后才开放有限公共普通文本提交。
+1. Native：准入、排队 epoch、共享后端 busy 和 Overlay 队列观察作用域已落地；继续 prepare 的线程归属、动作后事实/记忆回执以及 TTS 引擎直接回调边界，再评估有限公共普通文本提交。
 2. Courier 双向更早的 prepare：拆开游戏读取、网络/人设/记忆准备和主线程完成，避免把整段含网络的 builder 搬主线程。
 3. 保持 Scene 主体的接力、旁听、后处理、记忆/AFEF 和 TTS 回归；新接缝必须有原功能对照。
 4. 在稳定请求与事实回执上再扩充公共结果/生命周期通知、内部贡献协议、经过批准的制作组能力转接或子 MOD 扩展。
