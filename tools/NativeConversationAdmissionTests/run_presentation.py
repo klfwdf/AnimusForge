@@ -14,7 +14,7 @@ for key,sig in [('PLAYER_STREAM','private async Task SubmitAsync(string text)'),
  method=ex.declaration(overlay,sig);values[key]=ex.declaration(method,'RunNativePresentationCallback(generation, delegate')+');'
  # Every visual async callback is guarded. The sole unguarded scheduler is the owner-aware finally.
  before,finally_body=method.rsplit('\n\t\tfinally',1)
- assert 'RunOnMainThread(' not in before and before.count('RunNativePresentationCallback(generation, ')==7
+ assert 'RunOnMainThread(' not in before and before.count('RunNativePresentationCallback(generation, ')==8
  assert 'CompleteNativeSubmissionPresentation(generation)' in finally_body
  assert 'IsNativeConversationResponseTargetAvailableForExternal()' not in method
  assert 'CaptureNativeConversationPresentationScopeForOverlay()' in method and 'SubmitNativeConversationForOverlayAsync(presentationScope,' in method
@@ -34,6 +34,8 @@ assert '@@' not in code
 code=code.replace('internal static void Mark(string stage, string text, bool immediate = false) { }','internal static void Mark(string stage, string text, bool immediate = false) { } internal sealed class EmptyScope : IDisposable { public void Dispose() { } } internal static IDisposable Scope(string text) => new EmptyScope();')
 out=HERE/'.generated'/('presentation-'+(args.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
 for name,text in [('Program.cs',code),('Admission.cs',partial),('Presentation.cs',ui)]: (out/name).write_text(text,encoding='utf-8')
+(out/'ActionDispatch.cs').write_text((ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0169;CS0414;CS0219</NoWarn></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')

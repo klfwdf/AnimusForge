@@ -19554,57 +19554,37 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
+		Func<NativeConversationGameActionResult> dispatch = () => ExecuteNativeConversationActionDispatch(admission,
+			() => ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData,
+				sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken),
+			targetLog, targetAgentIndex);
 		if (IsBannerlordMainThreadForNativeActions())
 		{
-			Stopwatch directSw = Stopwatch.StartNew();
-			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-			if (!IsNativeConversationAdmissionCurrent(admission, out _))
-				return Task.FromResult(new NativeConversationGameActionResult { Content = "", ResponseDiscarded = true });
-			NativeConversationGameActionResult direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
-			directSw.Stop();
-			Logger.Log("Logic", "[NativePerf] game_actions_mainthread_direct target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
-			FreezeWatchdog.Mark("NativeConversation.game_actions_direct_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			return Task.FromResult(direct);
+			try { return Task.FromResult(dispatch()); }
+			catch (Exception ex) { return Task.FromException<NativeConversationGameActionResult>(ex); }
 		}
-		TaskCompletionSource<NativeConversationGameActionResult> tcs = new TaskCompletionSource<NativeConversationGameActionResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+		var tcs = new TaskCompletionSource<NativeConversationGameActionResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+		int dispatchState = 0; // queued=0, claimed=1, cancelled before claim=2.
 		try
 		{
-			_mainThreadActions.Enqueue(delegate
+			_mainThreadActions.Enqueue(() =>
 			{
-				Stopwatch actionSw = Stopwatch.StartNew();
-				NativeConversationGameActionResult result = new NativeConversationGameActionResult { Content = initial, WorldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult() };
-				try
-				{
-					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_start target=" + targetLog + " agent=" + targetAgentIndex);
-					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_start", "target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-					if (!IsNativeConversationAdmissionCurrent(admission, out _))
-					{
-						tcs.TrySetResult(new NativeConversationGameActionResult { Content = "", ResponseDiscarded = true });
-						return;
-					}
-					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result.Content, playerText, expectedConversationManager, expectedConversationToken);
-					actionSw.Stop();
-					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_done target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length));
-					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_done", "target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result?.Content ?? "").Length), immediate: true);
-					tcs.TrySetResult(result);
-				}
-				catch (Exception ex)
-				{
-					actionSw.Stop();
-					Logger.Log("ShoutBehavior", "[NativeConversation] main-thread game actions failed target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
-					FreezeWatchdog.Mark("NativeConversation.game_actions_mainthread_exception", ex.GetType().Name + ": " + ex.Message + " target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-					tcs.TrySetResult(result);
-				}
+				if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)
+					return;
+				try { tcs.TrySetResult(dispatch()); }
+				catch (Exception ex) { tcs.TrySetException(ex); }
 			});
-			Logger.Log("Logic", "[NativePerf] game_actions_queued target=" + targetLog + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId);
-			FreezeWatchdog.Mark("NativeConversation.game_actions_queued", "target=" + targetLog + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId, immediate: true);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("ShoutBehavior", "[NativeConversation] queue game actions failed target=" + targetLog + " agent=" + targetAgentIndex + " error=" + ex.Message);
-			FreezeWatchdog.Mark("NativeConversation.game_actions_queue_exception", ex.GetType().Name + ": " + ex.Message + " target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-			tcs.TrySetResult(new NativeConversationGameActionResult { Content = initial, WorldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult() });
+			// If a queue published before throwing, cancel its unclaimed callback. If already
+			// claimed, only that callback may settle the Task; do not overwrite its real result.
+			if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+				tcs.TrySetException(new NativeConversationActionDispatchException(false, ex));
+			ObserveNativeActionDispatch("queue_exception", targetLog, targetAgentIndex, error: ex);
+			return tcs.Task;
 		}
+		ObserveNativeActionDispatch("queued", targetLog, targetAgentIndex);
 		return tcs.Task;
 	}
 

@@ -26,7 +26,6 @@ if args.mutate=='release-new-slot':partial=partial.replace('Interlocked.CompareE
 if args.mutate=='skip-timeout-cas':partial=partial.replace('if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)','if (false)',1)
 if args.mutate=='skip-generation':partial=partial.replace('|| !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)','|| false',1)
 if args.mutate=='skip-queued-epoch':partial=partial.replace('|| conversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch)', '|| false', 1)
-if args.mutate=='skip-queued-action-guard':values['ACTION_QUEUE']=values['ACTION_QUEUE'].replace('if (!IsNativeConversationAdmissionCurrent(admission, out _))','if (false)',2)
 overlay_source = subprocess.check_output(['git','show','14dec2d7:AnimusForgeNativeConversationOverlay.cs'],cwd=ROOT).decode('utf-8-sig') if args.mutate=='old-overlay-finalizer' else overlay
 finalizers=[]
 for signature,name in [('private async Task SubmitAsync(string text)', 'CompletePlayer'),('private async Task SubmitNpcInitiatedOpeningAsync(', 'CompleteOpening')]:
@@ -45,6 +44,10 @@ for key,value in values.items():code=code.replace('@@'+key+'@@',value)
 assert '@@' not in code
 out=HERE/'.generated'/(args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Admission.cs').write_text(partial,encoding='utf-8')
+dispatch=(ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
+if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNativeConversationAdmissionCurrent(admission, out _))','if (false)',1)
+(out/'ActionDispatch.cs').write_text(dispatch,encoding='utf-8')
+(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')

@@ -1059,6 +1059,16 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				Logger.Log("NativeConversationOverlay", "Native admission rejected: " + ex.ReasonCode);
 			});
 		}
+		catch (ShoutBehavior.NativeConversationActionDispatchException ex)
+		{
+			// A failed dispatch is not a retryable LLM format error or a completed turn.
+			suppressReadyNotice = true;
+			RunNativePresentationCallback(generation, () =>
+			{
+				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
+				LlmRetryPrompt.ShowFailurePopup("AnimusForge 动作处理未完成", ex.Message);
+			});
+		}
 		catch (Exception ex)
 		{
 			RunNativePresentationCallback(generation, delegate
@@ -1261,6 +1271,16 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
 				_dataSource.InputText = text;
 				Logger.Log("NativeConversationOverlay", "Native admission rejected: " + ex.ReasonCode);
+			});
+		}
+		catch (ShoutBehavior.NativeConversationActionDispatchException ex)
+		{
+			// A failed dispatch is not a retryable LLM format error or a completed turn.
+			suppressReadyNotice = true;
+			RunNativePresentationCallback(generation, () =>
+			{
+				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
+				LlmRetryPrompt.ShowFailurePopup("AnimusForge 动作处理未完成", ex.Message);
 			});
 		}
 		catch (Exception ex)
