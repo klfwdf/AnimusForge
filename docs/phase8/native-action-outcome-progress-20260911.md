@@ -23,3 +23,7 @@
 后续仍需处理未消费动作队列的超时/取消、成功路径的主线程完成与事实回执、Native prepare/TTS 直接回调、Courier 双向 prepare。自动化继续，不把本次故障语义修正当作整个 Native 服务完成。
 
 本轮实现/测试已提交 `8da4fbd7`；精确证据见 `docs/audits/2026-09-11-native-action-outcome-verification.md` 及同名 JSON。断开后已复核全部回归日志和六 DLL marker，并重新执行 59 项定向检查。
+
+## 同链续作检查点：未消费队列等待
+
+起点 `b7128a7d`（生产 `8da4fbd7`）。当前派发 Task 对永远未消费的队列没有期限，后端 busy 因此可能一直占用。下一步先执行真实派发方法的有限等待反例，再复用已有 30 秒主线程等待预算，仅允许 CAS 从 queued 转为 expired；callback 已 claim 时不得超时放弃真实结果。结束时取消计时器，不新增 Tick/轮询/请求重试或物理网络取消承诺。保持旧业务 Core、准入、展示、渠道路由和存档身份不变。
