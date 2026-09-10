@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
+using AnimusForge.Refactor.Modules;
 using Bannerlord.UIExtenderEx;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -55,6 +56,9 @@ public class SubModule : MBSubModuleBase
 		{
 			Logger.LogTrace("SubModule", ">>> Feature bridge catalog failed closed: " + featureBridgeReason);
 		}
+		// 只装配同 DLL 的内部接缝与只读 API 目录，不切换任何渠道的默认执行路径。
+		ModuleFrameworkRuntime.Initialize(out string moduleFrameworkReason);
+		Logger.LogTrace("SubModule", ">>> Module framework: " + moduleFrameworkReason);
 		SceneActionsIntegrationBoundary.InitializeRuntime();
 		if (_uiExtenderInitialized)
 		{
@@ -103,6 +107,7 @@ public class SubModule : MBSubModuleBase
 	protected override void OnSubModuleUnloaded()
 	{
 		RemoveMapButtonLayer();
+		ModuleFrameworkRuntime.Shutdown();
 		SceneActionsIntegrationBoundary.ShutdownRuntime();
 		base.OnSubModuleUnloaded();
 	}

@@ -1,3 +1,4 @@
+using AnimusForge.Refactor.Modules;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -155,6 +156,8 @@ public static class AIConfigHandler
 }
 public static class AfGcczShoutBridge
 {
+    public static bool TryProcessActionTags(Hero hero,CharacterObject character,int agent,ref string text,out bool handled,bool direct,string player,string reply)
+        => throw new InvalidOperationException("Scene prepare/normalize fixture must not execute siege actions");
     public static bool ShouldAllowAfRuleForCurrentStage(string id,int agent) {F.Record("gate",id,agent); return !F.Current.Blocked.Contains(id);}
     public static bool ShouldContinuePostprocess(bool enabled,List<string> hits) => enabled;
     public static bool ShouldUseExclusivePostprocessRuleRouting(int id) => F.Current.Exclusive;
@@ -167,6 +170,8 @@ public static class AfGcczShoutBridge
 }
 public static class KingdomAgendaCustomPolicyBehavior
 {
+    public static bool TryProcessAcceptedAgendaTag(Hero ruler,string chainName,string playerProposalText,string npcReplyText,ref string content,out string failureReason)
+        => throw new InvalidOperationException("Scene prepare/normalize fixture must not execute policy actions");
     public static bool IsEligibleTargetForExternal(Hero hero,out string reason) {reason="fixture-blocked";F.Record("agenda-eligible",hero);return !F.Current.AgendaBlocked;}
     public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(params object[] a) => F.Rules("agenda",a);
 }
@@ -192,6 +197,10 @@ public static class WorldMapPartyCommandBehavior
 }
 public static class NobleGatheringBehavior
 {
+    public static string BuildFeastAttendanceContext(Hero hero)
+        => throw new InvalidOperationException("Scene postprocess fixture does not build main-reply attendance");
+    public static bool TryApplyNobleGatheringTagsForExternal(Hero hero,ref string content,out List<string> facts,out List<string> notifications)
+        => throw new InvalidOperationException("Scene prepare/normalize fixture must not execute gathering actions");
     public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(params object[] a) => F.Rules("gathering",a);
     public static string BuildPostprocessContextForExternal(params object[] a) => F.Value("gathering-context",a);
     public static string NormalizeNobleGatheringPostprocessTagsForExternal(params object[] a) => F.Normalize("gathering",a);
@@ -384,4 +393,12 @@ public static class Program
         }
         catch(Exception e) {Console.Error.WriteLine(e);return 1;}
     }
+}
+
+// Assembly-local module files use these namespaces; live game objects remain the original fixture types.
+namespace TaleWorlds.CampaignSystem { }
+public static class NpcRulerPolicyBehavior
+{
+    public static string BuildActivePolicyDialogueContextForExternal(Hero hero,CharacterObject character,string kingdomIdOverride=null)
+        => throw new InvalidOperationException("Scene postprocess fixture does not build policy main-reply context");
 }

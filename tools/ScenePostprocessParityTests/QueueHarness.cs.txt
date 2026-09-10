@@ -1,3 +1,4 @@
+using AnimusForge.Refactor.Modules;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -247,6 +248,12 @@ public static class AIConfigHandler
 }
 public static class AfGcczShoutBridge
 {
+    public static List<PostprocessRuleEntry> BuildPostprocessRules(bool selected,int index,bool direct,string player)
+        => throw new InvalidOperationException("Queue fixture preparation is an explicit stub");
+    public static string BuildPostprocessContext(bool selected,int index,bool direct,string player=null)
+        => throw new InvalidOperationException("Queue fixture preparation is an explicit stub");
+    public static string NormalizePostprocessTags(bool selected,string raw,List<PostprocessRuleEntry> rules)
+        => throw new InvalidOperationException("Queue fixture normalization is an explicit stub");
     public static bool TryProcessActionTags(Hero h,CharacterObject c,int id,ref string tags,out bool handled,bool direct,string player,string reply){Q.AssertMain("siege");handled=false;return false;}
 }
 
@@ -323,4 +330,25 @@ public static class Program
         catch(Exception e){Console.Error.WriteLine(e);return 1;}
         finally{Q.Main.CompleteAdding();Q.MainThread.Join(1000);}
     }
+}
+
+// Unused module ports fail loudly; only the real queued Siege adapter may reach its existing action stub.
+namespace TaleWorlds.CampaignSystem { }
+public static class KingdomAgendaCustomPolicyBehavior
+{
+    public static bool IsEligibleTargetForExternal(Hero ruler,out string failureReason) => throw new InvalidOperationException("Unexpected policy eligibility in Queue fixture");
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero ruler) => throw new InvalidOperationException("Unexpected policy prompt in Queue fixture");
+    public static bool TryProcessAcceptedAgendaTag(Hero ruler,string chainName,string playerProposalText,string npcReplyText,ref string content,out string failureReason) => throw new InvalidOperationException("Unexpected policy execution in Queue fixture");
+}
+public static class NpcRulerPolicyBehavior
+{
+    public static string BuildActivePolicyDialogueContextForExternal(Hero hero,CharacterObject character,string kingdomIdOverride=null) => throw new InvalidOperationException("Unexpected policy main context in Queue fixture");
+}
+public static class NobleGatheringBehavior
+{
+    public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero) => throw new InvalidOperationException("Unexpected gathering prompt in Queue fixture");
+    public static string BuildPostprocessContextForExternal(Hero hero) => throw new InvalidOperationException("Unexpected gathering context in Queue fixture");
+    public static string NormalizeNobleGatheringPostprocessTagsForExternal(string raw) => throw new InvalidOperationException("Unexpected gathering normalization in Queue fixture");
+    public static string BuildFeastAttendanceContext(Hero hero) => throw new InvalidOperationException("Unexpected gathering attendance in Queue fixture");
+    public static bool TryApplyNobleGatheringTagsForExternal(Hero hero,ref string content,out List<string> facts,out List<string> notifications) => throw new InvalidOperationException("Unexpected gathering execution in Queue fixture");
 }

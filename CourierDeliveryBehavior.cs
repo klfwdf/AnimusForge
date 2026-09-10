@@ -31,6 +31,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
 
 namespace AnimusForge;
@@ -5311,7 +5312,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			KingdomAgendaCustomPolicyBehavior.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+			TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
 			if (!string.IsNullOrWhiteSpace(proposalFailure))
 			{
 				Log("kingdom agenda custom policy not queued session=" + session.Id + " reason=" + proposalFailure);
@@ -5340,7 +5341,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
+			if (TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
 			{
 				foreach (string fact in nobleFacts ?? new List<string>())
 				{
@@ -5717,7 +5718,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			string text = session.ReplyPostprocessedText;
 			try
 			{
-				KingdomAgendaCustomPolicyBehavior.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
+				TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
 				if (!string.IsNullOrWhiteSpace(proposalFailure))
 				{
 					Log("kingdom agenda custom policy fallback not queued session=" + session.Id + " reason=" + proposalFailure);
@@ -5746,7 +5747,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
+				if (TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
 				{
 						foreach (string fact in nobleFacts ?? new List<string>())
 						{

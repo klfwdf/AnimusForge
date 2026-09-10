@@ -10,6 +10,7 @@
 - 原有规则文本拼装、规则合并、输出去重合并、上下文追加及 Scene user-prompt 转发 helper 同样从 Git 原样提取执行。其他领域 normalizer 使用可观察的标记返回值，不复制生产算法当作自己的期望实现。
 - 显式三阶段另验 prepare 不发请求、不归一化、不写周报；network 只收到字符串并只发一次请求；fallback 不写周报。
 - work item 完成一次后再调用必须拒绝，第一次 normalizer 抛异常后也不能重新执行。
+- 同 DLL 模块接缝迁移后，两个 harness 直接 Link 工作树的 `TeamModulePorts.cs`、`TeamModuleAdapters.cs`、`TeamModuleServices.cs`，不伪造服务实现。旧方法仍直接调用原领域 stub，新方法经真实薄桥委托到同一 stub；为完整编译补齐的未覆盖领域入口直接抛错。`--source-ref` 选择的是提取方法版本，薄桥依赖仍来自当前工作树。
 
 **这验证的是生产 postprocess 方法的编排与三阶段搬迁等价，不是生产域 normalizer 内部正确性，不是最终真实 HTTP Prompt 模板渲染，不是游戏对象、线程调度器或真实金币/存档验收。** Queue 的世代/主线程/回调保护需由实际外层入口测试覆盖。`firstTurn` 在本方法对应 `replyIsDirectPlayerResponse`；历史/AFEF 的最终实际写入不在此 harness 内。
 
@@ -44,6 +45,8 @@ python tools\ScenePostprocessParityTests\run.py --source-ref d40808b3 --output-n
 ```
 
 可用 `--source-ref <commit>` 对具体提交执行。需要保留 `d40808b3` Git 对象及现有 `tools/ChannelCutoverBoundaryTests/run.py` 声明提取器。
+
+两个 mutation runner 可传 `--output-prefix <prefix>`，隔离保留各轮反例副本与日志；不改变反例或失败判定。运行复用项目内 `.tmp/dotnet-cli`，并禁用 SDK 开发证书生成。
 
 所有生成源码、隔离 net8 项目、源码哈希和运行日志留在本测试目录 `.generated/<output-name>/`，该目录已忽略。无 NuGet 包引用、无网络调用、无游戏 Stage 写入、无真实配置或存档操作。
 

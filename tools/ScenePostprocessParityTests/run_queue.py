@@ -48,9 +48,9 @@ def main():
     if '@@' in template: raise ValueError('Unexpanded queue placeholder')
     output=HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
     (output/'Program.cs').write_text(template,encoding='utf-8')
-    (output/'Queue.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>')
+    (output/'Queue.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+run.team_module_project_items()+'</Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-    env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(output/'cli');env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
+    env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(run.ROOT/'.tmp/dotnet-cli');env['DOTNET_GENERATE_ASPNET_CERTIFICATE']='false';env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
     meta='source='+(args.source_ref or 'working-tree')+' mutation='+(args.mutate or 'none')+'\n'+'\n'.join(key+' sha256='+hashlib.sha256(value.encode()).hexdigest() for key,value in snippets.items())
     result=subprocess.run([args.dotnet,'run','--project',str(output/'Queue.csproj'),'-c','Release'],cwd=output,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     log=meta+'\n'+result.stdout+result.stderr

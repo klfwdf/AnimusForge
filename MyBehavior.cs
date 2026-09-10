@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.SiegeAftermathIntervention;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -31753,7 +31754,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		LogShoutPromptContextStage("relationship_blocks_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
-		string feastContext = NobleGatheringBehavior.BuildFeastAttendanceContext(targetHero);
+		string feastContext = TeamModuleServices.Gathering.BuildFeastAttendanceContext(targetHero);
 		if (!string.IsNullOrWhiteSpace(feastContext))
 		{
 			stringBuilder.AppendLine(feastContext);
@@ -31823,7 +31824,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		LogShoutPromptContextStage("policy_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		string activePolicyContext = AfGcczShoutBridge.IsActive()
 			? string.Empty
-			: NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
+			: TeamModuleServices.Policy.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(activePolicyContext))
 		{
 			stringBuilder.AppendLine(activePolicyContext);
