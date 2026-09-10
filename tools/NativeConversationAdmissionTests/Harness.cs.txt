@@ -120,6 +120,14 @@ namespace AnimusForge
         private bool _isClosed;
         private bool _isSubmitting = true;
         private int _submitGeneration;
+        private object _submitPresentationScope = new object();
+        private class UiState { internal void SetBusy(bool value) { } }
+        private readonly UiState _dataSource = new UiState();
+        // This historical proof keeps a current game scope; run_presentation.py exercises actual scope loss.
+        private bool IsSubmitGenerationCurrent(int generation) => !_isClosed && generation == _submitGeneration;
+        private bool IsSubmissionPresentationCurrent(int generation) => IsSubmitGenerationCurrent(generation);
+        private void RetireStaleSubmissionPresentation(int generation) { throw new Exception("FAIL unexpected scope stub path"); }
+@@OVERLAY_COMPLETION_HELPER@@
         internal bool Busy => _isSubmitting;
         internal OverlayCompletionProof(bool closed, int generation) { _isClosed = closed; _submitGeneration = generation; }
         private void StopWaitingDotsAnimation(int generation) { }

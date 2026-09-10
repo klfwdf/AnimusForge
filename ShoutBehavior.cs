@@ -14073,9 +14073,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	// Called by the native-conversation overlay immediately before it renders an
-	// asynchronous chunk or final reply. This is intentionally fail-closed for a
-	// scene Agent, while map/tableau conversations (which have no live Agent) keep
+	// Legacy public availability query retained for binary/source compatibility.
+	// The current overlay uses a request-bound presentation scope instead. This
+	// still fails closed for a scene Agent, while map/tableau conversations keep
 	// their existing behavior.
 	public static bool IsNativeConversationResponseTargetAvailableForExternal()
 	{

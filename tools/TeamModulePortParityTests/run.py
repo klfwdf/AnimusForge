@@ -30,6 +30,13 @@ def restore_reviewed_nonport_deltas(path, current, prior):
     spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
     review = json.loads((HERE / "reviewed-native-admission-deltas.json").read_text(encoding="utf-8"))
+    for comment in review.get("commentRewrites", []):
+        if comment["path"] == path:
+            if not all(line.lstrip().startswith("//") for key in ("current", "original") for line in comment[key].splitlines()):
+                raise AssertionError("Only explicit line-comment rewrites are allowed")
+            if current.count(comment["current"]) != 1 or prior.count(comment["original"]) != 1:
+                raise AssertionError("Unreviewed compatibility comment rewrite")
+            current = current.replace(comment["current"], comment["original"], 1)
     for item in review["methods"]:
         if item["path"] != path:
             continue

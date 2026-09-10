@@ -31,9 +31,14 @@ overlay_source = subprocess.check_output(['git','show','14dec2d7:AnimusForgeNati
 finalizers=[]
 for signature,name in [('private async Task SubmitAsync(string text)', 'CompletePlayer'),('private async Task SubmitNpcInitiatedOpeningAsync(', 'CompleteOpening')]:
     method=ex.declaration(overlay_source,signature)
-    prefix=method[method.rindex('\t\tfinally'):].split('_dataSource.SetBusy(false);')[0]
-    assert 'ConversationHelper.EndStreaming();' in prefix and '_isSubmitting = false;' in prefix
+    final=method[method.rindex('\t\tfinally'):]
+    if 'CompleteNativeSubmissionPresentation(generation)' in final:
+        prefix=final.split('if (_dataSource.IsCustomAnswerVisible)')[0]
+    else:
+        prefix=final.split('_dataSource.SetBusy(false);')[0]
+        assert 'ConversationHelper.EndStreaming();' in prefix and '_isSubmitting = false;' in prefix
     finalizers.append('private void '+name+'(int generation) { try { } '+prefix+'\n} }); } }')
+values['OVERLAY_COMPLETION_HELPER']=ex.declaration((ROOT/'AnimusForgeNativeConversationOverlay.Presentation.cs').read_text(encoding='utf-8-sig'),'private bool CompleteNativeSubmissionPresentation(')
 values['OVERLAY_FINALIZERS']='\n'.join(finalizers)+'\ninternal void Complete(int generation, bool opening) { if (opening) CompleteOpening(generation); else CompletePlayer(generation); }'
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for key,value in values.items():code=code.replace('@@'+key+'@@',value)

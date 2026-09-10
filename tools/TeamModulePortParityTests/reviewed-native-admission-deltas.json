@@ -27,5 +27,12 @@
       "signature": "private void OnMemoryConversationEnded(",
       "sha256": "f5668401c313ed38146cb77192b5ffffa27923bbce2c96f17365815d098ee592"
     }
+  ],
+  "commentRewrites": [
+    {
+      "path": "ShoutBehavior.cs",
+      "original": "\t// Called by the native-conversation overlay immediately before it renders an\n\t// asynchronous chunk or final reply. This is intentionally fail-closed for a\n\t// scene Agent, while map/tableau conversations (which have no live Agent) keep",
+      "current": "\t// Legacy public availability query retained for binary/source compatibility.\n\t// The current overlay uses a request-bound presentation scope instead. This\n\t// still fails closed for a scene Agent, while map/tableau conversations keep"
+    }
   ]
 }
