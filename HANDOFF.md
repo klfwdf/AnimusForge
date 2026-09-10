@@ -1,12 +1,13 @@
 # AF 总 HANDOFF — 当前入口（2026-09-11）
 
-## 最新续作：Native 动作派发失败（生产/测试 8da4fbd7）
+## 最新续作：Native 动作派发边界（生产/测试 9a5335be）
 
-- 修复部分动作后异常仍按正常回复收尾，以及 enqueue 后日志异常让回复提前结束的问题；原业务 Core 未改。
-- direct/queued 统一异常边界；未进入 owner 与执行后结果不明明确区分，不自动重试。两个 Overlay 失败分支复用展示 scope，目前共 16 个受保护异步 UI 消费点。
-- 59 检查 / 6 变异、原准入 44 / 7、展示 46 / 6、ports 308 / 3、六项 Stage 构建及相关回归通过；不是实机验收。
-- 简明交接：`docs/handoffs/2026-09-11-native-action-outcome-handoff.md`；审计：`docs/audits/2026-09-11-native-action-outcome-verification.md`；台账：`docs/phase8/native-action-outcome-progress-20260911.md`。
-- 未推送、未部署、公共 API 仍只读。下一项优先处理动作队列一直未消费的等待边界，然后继续成功路径主线程完成/事实回执、Native prepare/TTS、Courier prepare。
+- 前半批 `8da4fbd7` 修复动作异常被当成功、日志异常让回复提前结束；本次 `9a5335be` 继续补齐未消费动作队列的等待期限。原业务 Core 未改。
+- 仅尚未 claim 的动作可在 30 秒后过期，晚到不补做；已开始动作等待真实结果，不按超时伪装取消或自动重试。两个 Overlay 失败分支仍在原展示 scope 内，目前共 16 个受保护异步 UI 消费点。
+- 88 检查 / 9 变异、原准入 44 / 7、展示 46 / 6、ports 308 / 3、六项 Stage 构建及 16 组相关回归通过；不是实机验收。
+- 简明交接：`docs/handoffs/2026-09-11-native-action-outcome-handoff.md`；技术边界：`docs/architecture/af-native-action-dispatch.md`；最终审计：`docs/audits/2026-09-11-native-action-timeout-verification.md`；台账：`docs/phase8/native-action-outcome-progress-20260911.md`。
+- 前半批审计保留在 `docs/audits/2026-09-11-native-action-outcome-verification.md`；检查点分别为 `861dd7a7`、`841e8751`。
+- 未推送、未部署、公共 API 仍只读。下一项：Native 成功路径的主线程事实/记忆收尾（须区分旧会话晚返回和 owner 合法结束会话），然后更早 prepare/TTS、Courier prepare。不要把本次派发取消当整个回合回滚。
 
 ## 前序续作：Native 展示观察（生产/测试 32230a64）
 
@@ -71,7 +72,7 @@ AnimusForge.dll
 
 ## 5. 后续工作（按顺序，不重写额外模块业务）
 
-1. Native：准入、排队 epoch、共享后端 busy 和 Overlay 队列观察作用域已落地；继续 prepare 的线程归属、动作后事实/记忆回执以及 TTS 引擎直接回调边界，再评估有限公共普通文本提交。
+1. Native：准入、排队 epoch、共享后端 busy、Overlay 队列观察与动作派发失败/未开始超时边界已落地；继续 prepare 的线程归属、动作后事实/记忆回执以及 TTS 引擎直接回调边界，再评估有限公共普通文本提交。
 2. Courier 双向更早的 prepare：拆开游戏读取、网络/人设/记忆准备和主线程完成，避免把整段含网络的 builder 搬主线程。
 3. 保持 Scene 主体的接力、旁听、后处理、记忆/AFEF 和 TTS 回归；新接缝必须有原功能对照。
 4. 在稳定请求与事实回执上再扩充公共结果/生命周期通知、内部贡献协议、经过批准的制作组能力转接或子 MOD 扩展。
@@ -85,6 +86,6 @@ AnimusForge.dll
 
 当前每小时自动化 af-7-8 已由用户明确授权启用；只本地推进、验证和提交，不推送、不部署、不安装 SDK、不操作存档。原两份 2026-09-06 用户草稿改动保留，不能 stage 进本轮提交。
 
-回滚采用本轮实现提交的定向 `git revert <commit>` 并保留用户改动，不 hard reset，不 force-push。`6e0de826` 是开始写生产之前的明确检查点。
+回滚采用本轮实现提交的定向 `git revert <commit>` 并保留用户改动，不 hard reset，不 force-push。`6e0de826` 是框架初版检查点；最新两批检查点见顶部，需回滚时定向反转对应实现提交并保留用户改动。
 
 不要推原共享 `refactor/prepare-af-restructure` 或恢复其已改写历史；远端交付要使用经用户确认的专门重构分支。最新 fetch 时同名远端为 `a58c2191`，本地已有源码/测试/文档领先；新修改尚未推送。
