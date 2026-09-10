@@ -5,7 +5,7 @@
 ## 范围
 - 在同一个 AnimusForge.dll 中建立 internal 模块契约、显式登记和只读状态目录；不扫描 DLL、不新增全局功能开关。
 - 政策、宴会、GCCZ 的选定实际接缝改走具名 typed 薄桥；业务实现、参数顺序、返回值、副作用和权威后处理责任保持不变。
-- 对外建立独立 V1 API/只读 DTO，开放版本、框架初始化、能力目录查询；不暴露游戏对象、执行器、密钥或可变内部集合。
+- 对外建立独立 V1 API/只读 DTO，开放版本、框架装配状态与能力目录查询；不暴露游戏对象、执行器、密钥或可变内部集合。
 - Native/Scene/Courier 程序化提交、动作写入、记忆写入、第三方注册本轮不开放。Native 原入口无统一排他和可靠取消；不能以缩减路径替代完整默认链。
 - 补代码边界注释、内外接入技术 MD、外部编译示例、简明制作组 HANDOFF 及总 HANDOFF。
 
@@ -19,4 +19,42 @@
 实施前 HEAD: df6ab928，生产基线 9a4a26dc。本地 intent commit 后开始写代码。回滚用本轮提交的反向提交，不 reset、不清理用户改动。本轮不推送、不部署、不恢复自动化。
 
 ## 状态
-实施中；完成后在本页补写真实结果与剩余事项。
+初版实现与本地验证已完成；不是全部 21 项或整个重构项目 DONE。结果详见根目录 HANDOFF.md 与 docs/audits/2026-09-11-framework-v1-verification.md。
+
+## 初版落地对应原清单
+
+| 原编号 | 本轮状态 | 剩余 |
+|---|---|---|
+| A01 | 部分：31 个接缝的原新调用与参数可对照 | 主体所有功能逐项基线仍需继续 |
+| A02-A09 | 沿用既有管线与修复，做相关回归；不宣称补完所有缺口 | Native admission、Courier prepare 线程、主体全面收敛等 |
+| B01 | 初版：internal 显式目录、版本/依赖/冻结/状态查询 | 非动态插件注册，不承诺所有模块激活协议已完成 |
+| B02-B03 | 部分：具名 typed 方法转接原规则/context/normalize/apply | 非通用贡献/Action 注册和完整新结果协议 |
+| B04 | 本轮选定 13 方法、31 调用完成接线 | 模块其他旧接口仍保留，由原 owner 负责 |
+| C01 | 首版只读 API 已实现 | 游戏态查询按需单独设计，不把目录 Ready 当 CampaignReady |
+| C02-C05 | 未开放、不伪造成功 | 先补真实请求/结果边界，再按能力逐项扩充 |
+| D01 | 本轮双实现构建、离线对照及外部契约验证 | 新接口实机、旧存档、子 MOD 加载/升级 |
+| D02-D03 | 未执行 | 保留仍有责任的旧入口；默认切换单独确认 |
+
+## 本机构建（仅 Stage）
+
+```powershell
+Set-Location -LiteralPath 'G:\AFMOD\AF-REFACTOR'
+$env:DOTNET_ROOT = 'G:\AFMOD\.dotnet-sdk'
+$env:PATH = $env:DOTNET_ROOT + ';' + $env:PATH
+$env:DOTNET_CLI_HOME = 'G:\AFMOD\AF-REFACTOR\.tmp\dotnet-cli'
+$env:NUGET_PACKAGES = 'G:\AFMOD\AF-REFACTOR\.tmp\nuget-packages'
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+$env:DOTNET_GENERATE_ASPNET_CERTIFICATE = 'false'
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
+# Debug / Release 分别执行；禁止并发构建两个实现。
+powershell -NoProfile -ExecutionPolicy Bypass -File '.\一键编译覆盖推送\build_single_module.ps1' `
+  -ProjectRoot 'G:\AFMOD\AF-REFACTOR' `
+  -BannerlordRoot 'E:\steam\steamapps\common\Mount & Blade II Bannerlord' `
+  -Bannerlord13ReferenceDir 'G:\AFMOD\NEW-10\_deps_auto' `
+  -Bannerlord14ReferenceDir 'G:\AFMOD\NEW-10\.tmp\build_check\1.4' `
+  -WorkshopContentDir 'E:\steam\steamapps\workshop\content\261550' `
+  -RuntimeDependencyDir 'G:\AFMOD\NEW-10\AnimusForge\bin\Win64_Shipping_Client' `
+  -Configuration Debug -Stage
+```
+
+SDK 8 足以完成本轮测试。历史 3 个 .NET 10 工具没有在本轮安装新 SDK 后重跑，不能写成全部工具通过。
