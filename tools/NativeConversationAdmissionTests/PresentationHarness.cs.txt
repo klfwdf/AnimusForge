@@ -1,0 +1,143 @@
+    static class ConversationHelper
+    {
+        internal static string Text;
+        internal static int Writes, Ends;
+        internal static void UpdateDialogText(string value) { Text = value; Writes++; }
+        internal static void EndStreaming() { Ends++; }
+        internal static void Reset(string text = "current native text") { Text = text; Writes = Ends = 0; }
+    }
+    static class EncyclopediaEntityLinkFormatter
+    {
+        internal class StreamingDisplaySession { internal string FormatStreamingText(string text, Hero hero, CharacterObject character) => text; }
+        internal static StreamingDisplaySession CreateStreamingDisplaySession() => new StreamingDisplaySession();
+    }
+    struct Color { internal Color(float r, float g, float b) { } }
+    class InformationMessage { internal InformationMessage(string message, Color color) { } }
+    static class InformationManager { internal static int Notices; internal static void DisplayMessage(InformationMessage message) { Notices++; } }
+    public sealed partial class AnimusForgeNativeConversationOverlay
+    {
+        private class UiState { internal bool IsCustomAnswerVisible = true; internal bool Busy = true; internal void SetBusy(bool value) { Busy = value; } }
+        private readonly UiState _dataSource = new UiState();
+        private bool _isClosed, _isSubmitting = true, _npcOpeningAutoStarted;
+        private int _submitGeneration = 1;
+        private static readonly int _mainThreadId = Host.MainThread;
+        private readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
+        private const int WaitingDotsIntervalMilliseconds = 350;
+        private bool _waitingDotsActive;
+        private int _waitingDotsGeneration = 1, _waitingDotsPhase;
+        private long _nextWaitingDotsUpdateUtcTicks;
+        private readonly object _postprocessNoticeLock = new object();
+        private bool _hasPendingPostprocessNotice;
+        private int _queuedPostprocessNoticeGeneration = -1, _pendingPostprocessNoticeGeneration = -1;
+        private string _pendingPostprocessNoticeNpcName;
+        private void FocusInputIfVisible() { }
+        private void StopWaitingDotsAnimation() { _waitingDotsActive = false; }
+        private void StopWaitingDotsAnimation(int generation) { if (generation == _waitingDotsGeneration) StopWaitingDotsAnimation(); }
+        internal bool Busy => _isSubmitting || _dataSource.Busy;
+        internal int Generation => _submitGeneration;
+        internal AnimusForgeNativeConversationOverlay(ShoutBehavior.NativeConversationPresentationScope scope) { _submitPresentationScope = scope; }
+        internal void Drain() { while (_mainThreadActions.TryDequeue(out Action action)) action(); }
+        internal void CheckStamp() => ValidatePendingSubmissionPresentation();
+        internal void EnqueueNotice() => QueuePostprocessNotice(_submitGeneration, "A");
+        internal void FlushNotice() => FlushPendingPostprocessNotice();
+        internal void Dots() { _waitingDotsActive = true; _waitingDotsGeneration = _submitGeneration; UpdateWaitingDotsAnimation(true); }
+        internal bool Finish(int generation = 1) => CompleteNativeSubmissionPresentation(generation);
+        internal void CloseForTest() { _isClosed = true; }
+@@GENERATION_HELPERS@@
+@@RUN_ON_MAIN@@
+@@NOTICES@@
+@@DOTS@@
+        internal void Stream(string partial, bool opening = false)
+        {
+            int generation = 1;
+            string originalDialogText = "old A text";
+            bool receivedVisibleText = false, suppressReadyNotice = false, suppressVisibleStreamingForTts = false;
+            EncyclopediaEntityLinkFormatter.StreamingDisplaySession streamingLinkDisplaySession = null;
+            Hero streamLinkTargetHero = Host.Target;
+            CharacterObject streamLinkTargetCharacter = Host.Character;
+            if (opening)
+            {
+@@OPENING_STREAM@@
+            }
+            else
+            {
+@@PLAYER_STREAM@@
+            }
+        }
+    }
+    class Program
+    {
+        static int checks;
+        static void Check(bool value, string name) { if (!value) throw new Exception("FAIL " + name); checks++; Console.WriteLine("PASS " + name); }
+        static void PumpUntil(Func<bool> done)
+        {
+            Stopwatch watch = Stopwatch.StartNew();
+            while (!done()) { ShoutBehavior.Pump(); if (watch.ElapsedMilliseconds > 5000) throw new Exception("FAIL timed out"); Thread.Sleep(1); }
+            ShoutBehavior.Pump();
+        }
+        static string Finish(Task<string> task) { PumpUntil(() => task.IsCompleted); return task.GetAwaiter().GetResult(); }
+        static ShoutBehavior.NativeConversationPresentationScope Scope(bool submit = true)
+        {
+            var scope = ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();
+            if (submit) Check(Finish(ShoutBehavior.SubmitNativeConversationForOverlayAsync(scope, "text", null, null, null, null, false)) == "A:0", "scope bound to real internal legacy-chain admission");
+            return scope;
+        }
+        static void QueueStream(AnimusForgeNativeConversationOverlay ui, bool opening = false)
+            => Task.Run(() => ui.Stream("reply for A", opening)).GetAwaiter().GetResult();
+        static void Main()
+        {
+            Host.Reset(); ConversationHelper.Reset(); var scope = Scope();
+            Check(!ShoutBehavior.CurrentInstance.SlotExists && scope.IsCurrent(), "observation survives backend completion without retaining execution slot");
+            var ui = new AnimusForgeNativeConversationOverlay(scope); QueueStream(ui); ui.Drain();
+            Check(ConversationHelper.Text == "reply for A" && ui.Busy, "valid late stream still renders");
+            Check(ui.Finish() && !ui.Busy && ConversationHelper.Ends == 1, "valid final cleanup releases local busy and its stream");
+            var reused = ShoutBehavior.SubmitNativeConversationForOverlayAsync(scope, "again", null, null, null, null, false);
+            try { Finish(reused); throw new Exception("FAIL reused scope accepted"); } catch (ShoutBehavior.NativeConversationAdmissionException ex) { Check(ex.ReasonCode == "native.presentation_scope_reused", "scope is single-submission observation"); }
+            Check(!Task.Run(() => scope.IsCurrent()).GetAwaiter().GetResult(), "off-main scope probe cannot read game state");
+
+            foreach (bool opening in new[] { false, true })
+            {
+                Host.Reset(); scope = Scope(); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset("B native text");
+                QueueStream(ui, opening); Host.Target = new Hero { StringId = "B" }; ui.Drain();
+                Check(ConversationHelper.Writes == 0 && ConversationHelper.Text == "B native text", "queued old reply cannot render on another eligible target opening=" + opening);
+                Check(!ui.Busy && ui.Generation == 2, "target mismatch retires only old UI submission opening=" + opening);
+                Check(ConversationHelper.Ends == 0 && !ui.Finish(), "stale finally cannot end newer stream opening=" + opening);
+            }
+            foreach (string change in new[] { "load", "end", "token", "manager", "mission", "instance" })
+            {
+                Host.Reset(); scope = Scope(); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset();
+                if (change == "load") SaveRuntimeGuard.Generation++;
+                if (change == "end") ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();
+                if (change == "token") Campaign.Current.ConversationManager.ActiveToken++;
+                if (change == "manager") Campaign.Current.ConversationManager = new ConversationManager();
+                if (change == "mission") Mission.Current = new Mission();
+                if (change == "instance") ShoutBehavior.CurrentInstance = new ShoutBehavior();
+                int reads = Host.GameReads; ui.CheckStamp();
+                Check(!ui.Busy && ConversationHelper.Writes == 0 && ConversationHelper.Ends == 0, "idle stale stamp releases old controls without global display effects " + change);
+                Check(reads == Host.GameReads, "stamp check adds no target/agent enumeration " + change);
+            }
+            Host.Reset(); scope = Scope(); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset(); QueueStream(ui);
+            Check(Finish(ShoutBehavior.SubmitNativeConversationTextForExternalAsync("other client", null, null, null, null)) == "A:0", "later admission uses same full legacy entry");
+            ui.Drain(); Check(ConversationHelper.Writes == 0 && !ui.Busy, "same-context later admission invalidates previous presentation revision");
+
+            Host.Reset(); scope = Scope(); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset();
+            SaveRuntimeGuard.Generation++;
+            Check(!ui.Finish() && !ui.Busy && ConversationHelper.Ends == 0, "stale completion without an earlier callback releases local state but cannot end global stream");
+
+            Host.Reset(); scope = Scope(); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset();
+            ui.EnqueueNotice(); Campaign.Current.ConversationManager.ActiveToken++; InformationManager.Notices = 0; ui.FlushNotice();
+            Check(InformationManager.Notices == 0, "queued postprocess notice revalidates captured context when flushed");
+            ui.Dots(); Check(ConversationHelper.Writes == 0 && !ui.Busy, "waiting animation cannot replace a new conversation line");
+
+            Host.Reset(); scope = Scope(); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset();
+            ui.EnqueueNotice(); InformationManager.Notices = 0; ui.FlushNotice(); Check(InformationManager.Notices == 1, "valid postprocess notice preserved");
+            ui.Dots(); Check(ConversationHelper.Writes == 1, "valid waiting animation preserved");
+            ui.CloseForTest(); QueueStream(ui); ui.Drain(); Check(ConversationHelper.Writes == 1 && !ui.Finish(), "closed overlay has no late display authority");
+
+            Host.Reset(); scope = Scope(false); ui = new AnimusForgeNativeConversationOverlay(scope); ConversationHelper.Reset();
+            Check(scope.IsCurrent() && !ShoutBehavior.CurrentInstance.SlotExists, "origin capture does not reserve backend or require a submitted request");
+            Check(ui.Finish() && ConversationHelper.Ends == 1, "valid pre-admission rejection can restore its own UI");
+            Console.WriteLine($"NativePresentation PASS={checks} FAIL=0 realScope=true realQueuedStreamCallbacks=2 realUiHelpers=true downstream=STUBBED LIVE=NOT_RUN");
+        }
+    }
+}

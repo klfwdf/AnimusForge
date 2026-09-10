@@ -12,11 +12,13 @@ public partial class ShoutBehavior
     // 后端票据只覆盖本次完整请求；不把 Task 完成解释成 TTS 播放完成。
     private NativeConversationAdmission _nativeConversationAdmission;
     private long _nativeConversationAdmissionEpoch;
+    private long _nativeConversationPresentationRevision;
 
-    private sealed class NativeConversationAdmission
+    internal sealed class NativeConversationAdmission
     {
         internal long Generation;
         internal long ConversationEpoch;
+        internal long PresentationRevision;
         internal ConversationManager ConversationManager;
         internal int ConversationToken;
         internal Mission Mission;
@@ -60,7 +62,8 @@ public partial class ShoutBehavior
 
     private async Task<string> SubmitNativeConversationAdmittedAsync(string playerText,
         Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted,
-        Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening)
+        Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening,
+        NativeConversationPresentationScope presentationScope = null)
     {
         if (!npcInitiatedOpening && string.IsNullOrWhiteSpace(playerText))
             return "";
@@ -72,6 +75,8 @@ public partial class ShoutBehavior
             return "";
         try
         {
+            // Overlay calls admission on the main thread, before its first stream callback can run.
+            presentationScope?.Bind(admission);
             return await Task.Run(async delegate
             {
                 SynchronizationContext.SetSynchronizationContext(null);
@@ -123,6 +128,32 @@ public partial class ShoutBehavior
             return null;
         if (IsNativeConversationAdmissionCurrent(Volatile.Read(ref _nativeConversationAdmission), out _))
             throw new NativeConversationAdmissionException("native.busy", "上一轮对话仍在处理，请稍后再提交。");
+        NativeConversationAdmission admission = CaptureNativeConversationContext(generation, conversationEpoch);
+        if (admission == null)
+            return null;
+        Interlocked.Exchange(ref _nativeConversationAdmission, admission);
+        try
+        {
+            // 主动开场与普通输入共用准入；拒绝 busy 之前绝不消费待开场状态。
+            if (npcInitiatedOpening && !NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(admission.Hero,
+                out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
+            {
+                Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
+                return null;
+            }
+            admission.PresentationRevision = Interlocked.Increment(ref _nativeConversationPresentationRevision);
+            return admission;
+        }
+        catch
+        {
+            Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
+            throw;
+        }
+    }
+
+    // Capture-only snapshot: no reservation, opening consumption, network or action side effects.
+    private NativeConversationAdmission CaptureNativeConversationContext(long generation, long conversationEpoch)
+    {
         if (!TryResolveNativeConversationTarget(out Hero hero, out CharacterObject character, out string npcName))
             return null;
         ConversationManager manager = Campaign.Current?.ConversationManager;
@@ -132,6 +163,7 @@ public partial class ShoutBehavior
         {
             Generation = generation,
             ConversationEpoch = conversationEpoch,
+            PresentationRevision = Interlocked.Read(ref _nativeConversationPresentationRevision),
             ConversationManager = manager,
             ConversationToken = manager.ActiveToken,
             Mission = Mission.Current,
@@ -142,38 +174,33 @@ public partial class ShoutBehavior
         };
         if (!IsNativeConversationResponseTargetAvailableForActionDispatch(admission.AgentIndex, hero, character, out _))
             return null;
-        Interlocked.Exchange(ref _nativeConversationAdmission, admission);
-        try
-        {
-            // 主动开场与普通输入共用准入；拒绝 busy 之前绝不消费待开场状态。
-            if (npcInitiatedOpening && !NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(hero,
-                out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
-            {
-                Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
-                return null;
-            }
-            return admission;
-        }
-        catch
-        {
-            Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
-            throw;
-        }
+        return admission;
     }
 
     private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason)
     {
         reason = "native.admission_stale";
+        return admission != null && ReferenceEquals(Volatile.Read(ref _nativeConversationAdmission), admission)
+            && IsNativeConversationContextCurrent(admission, out reason);
+    }
+
+    // Cheap stamp used from an existing UI Tick: no target/agent enumeration or provider work.
+    private bool IsNativeConversationContextStampCurrent(NativeConversationAdmission admission)
+    {
         if (admission == null || !IsBannerlordMainThreadForNativeActions()
             || !ReferenceEquals(CurrentInstance, this)
-            || !ReferenceEquals(Volatile.Read(ref _nativeConversationAdmission), admission)
             || !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)
             || admission.ConversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch))
             return false;
         ConversationManager current = Campaign.Current?.ConversationManager;
-        if (!ReferenceEquals(current, admission.ConversationManager) || current?.IsConversationInProgress != true
-            || current.ActiveToken != admission.ConversationToken || !ReferenceEquals(Mission.Current, admission.Mission)
-            || PlayerEncounterCompat.IsInPostBattleResultFlow())
+        return ReferenceEquals(current, admission.ConversationManager) && current?.IsConversationInProgress == true
+            && current.ActiveToken == admission.ConversationToken && ReferenceEquals(Mission.Current, admission.Mission);
+    }
+
+    private bool IsNativeConversationContextCurrent(NativeConversationAdmission admission, out string reason)
+    {
+        reason = "native.admission_stale";
+        if (!IsNativeConversationContextStampCurrent(admission) || PlayerEncounterCompat.IsInPostBattleResultFlow())
             return false;
         if (!TryResolveNativeConversationTarget(out Hero hero, out CharacterObject character, out _)
             || !ReferenceEquals(hero, admission.Hero) || !ReferenceEquals(character, admission.Character)
@@ -181,5 +208,49 @@ public partial class ShoutBehavior
             return false;
         return IsNativeConversationResponseTargetAvailableForActionDispatch(admission.AgentIndex,
             admission.Hero, admission.Character, out reason);
+    }
+
+    // This is an internal read-only observation capability, not permission to execute an action.
+    // It survives backend Task completion, but not a later admission or a conversation/save change.
+    internal sealed class NativeConversationPresentationScope
+    {
+        private readonly ShoutBehavior _owner;
+        private NativeConversationAdmission _snapshot;
+        private int _submissionStarted;
+
+        internal NativeConversationPresentationScope(ShoutBehavior owner, NativeConversationAdmission snapshot)
+        { _owner = owner; _snapshot = snapshot; }
+
+        internal bool IsOwnedBy(ShoutBehavior owner) => ReferenceEquals(_owner, owner);
+        internal bool TryBeginSubmission() => Interlocked.CompareExchange(ref _submissionStarted, 1, 0) == 0;
+        internal void Bind(NativeConversationAdmission admission) { _snapshot = admission; }
+        internal bool HasCurrentContext()
+            => _snapshot != null && _snapshot.PresentationRevision == Interlocked.Read(ref _owner._nativeConversationPresentationRevision)
+                && _owner.IsNativeConversationContextStampCurrent(_snapshot);
+        internal bool IsCurrent()
+            => HasCurrentContext() && _owner.IsNativeConversationContextCurrent(_snapshot, out _);
+    }
+
+    internal static NativeConversationPresentationScope CaptureNativeConversationPresentationScopeForOverlay()
+    {
+        ShoutBehavior owner = CurrentInstance;
+        if (owner == null || !IsBannerlordMainThreadForNativeActions() || !CanSubmitNativeConversationForExternal())
+            return null;
+        NativeConversationAdmission snapshot = owner.CaptureNativeConversationContext(SaveRuntimeGuard.CaptureGeneration(),
+            Interlocked.Read(ref owner._nativeConversationAdmissionEpoch));
+        return snapshot == null ? null : new NativeConversationPresentationScope(owner, snapshot);
+    }
+
+    internal static Task<string> SubmitNativeConversationForOverlayAsync(NativeConversationPresentationScope scope,
+        string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted,
+        Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening)
+    {
+        ShoutBehavior owner = CurrentInstance;
+        if (owner == null || scope == null || !scope.IsOwnedBy(owner) || !scope.IsCurrent())
+            return Task.FromResult("");
+        if (!scope.TryBeginSubmission())
+            return Task.FromException<string>(new NativeConversationAdmissionException("native.presentation_scope_reused", "本次对话票据已使用，请重新提交。"));
+        return owner.SubmitNativeConversationAdmittedAsync(playerText, onStreamText, currentDialogTextOverride,
+            onPostprocessStarted, onMainReplyReady, npcInitiatedOpening, scope);
     }
 }

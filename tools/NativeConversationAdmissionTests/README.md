@@ -37,3 +37,18 @@ python -B tools/NativeConversationAdmissionTests/run_mutations.py
 ## 尚未证明
 
 真实 Bannerlord 主线程/ConversationEnded 时序、旧存档、后续人设/Prompt/历史/AFEF 的完整线程和原子提交边界、流式回调的完整 UI 生命周期、物理网络取消及公共请求回执。新公共 V1 提交仍为 NotSupported。后端票据结束不代表 TTS 播放结束，也不撤销已经执行的业务副作用。
+
+## 展示观察续作（2026-09-11）
+
+```powershell
+python -B tools/NativeConversationAdmissionTests/run_presentation_original.py
+python -B tools/NativeConversationAdmissionTests/run_presentation.py
+python -B tools/NativeConversationAdmissionTests/run_presentation_mutations.py
+```
+
+- `36e04059` 的真实旧 stream 回调及 generation guard 执行：两个 NPC 都合法、UI generation 未变化时，先排队 A 的回复，再将显示切到 B，旧回调确实将 B 覆盖成 A 的回复。格式器/游戏实体为 stub，不是完整游戏。
+- 新展示套件：**46 PASS / 0 FAIL**。链接真实 NativeAdmission 和 Overlay.Presentation 源码；从实际 Overlay 抽取两条 stream 回调、原主线程队列入口、generation、通知和动画方法。目标与下游 LLM/游戏仍为 fixture。
+- 覆盖 origin 无副作用、单次 scope 提交、实际准入绑定、后台拒绝游戏读取、后端先释放仍能显示最终结果、换目标/保存代数/epoch/token/manager/Mission/owner、新准入 revision、队列通知、动画与本地/全局收尾责任。
+- 六个行为 mutation：移除 callback guard、移除 revision、错误依赖 backend slot、跳过 Tick 退休、允许过期最终收尾、允许过期通知；必须是运行时断言失败。
+- 原 44 项准入及 7 个反例全部保留。旧 finally 所有权证明现在提取真实 `CompleteNativeSubmissionPresentation`，其 fixture 假定游戏 scope 有效，只测试本地关闭/generation；真实 scope 失效由上述新套件负责，不用假 scope 代替新边界验收。
+- 生成的 UI 片段含一些未被该片段使用的原局部变量，展示 fixture 仅屏蔽 CS0169/CS0414/CS0219 未使用提示；生产构建不屏蔽这些警告。

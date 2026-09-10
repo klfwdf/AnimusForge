@@ -15,7 +15,7 @@ using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
-public sealed class AnimusForgeNativeConversationOverlay
+public sealed partial class AnimusForgeNativeConversationOverlay
 {
 	private const int WaitingDotsIntervalMilliseconds = 350;
 
@@ -209,6 +209,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.MainThreadActions"))
 		{
 			ProcessMainThreadActions();
+			ValidatePendingSubmissionPresentation();
 		}
 		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.PostRestore"))
 		{
@@ -905,7 +906,14 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private async Task SubmitNpcInitiatedOpeningAsync()
 	{
+		ShoutBehavior.NativeConversationPresentationScope presentationScope = ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();
+		if (presentationScope == null)
+		{
+			_npcOpeningAutoStarted = false;
+			return;
+		}
 		int generation = ++_submitGeneration;
+		_submitPresentationScope = presentationScope;
 		string originalDialogText = ConversationHelper.GetCurrentDialogText();
 		bool receivedVisibleText = false;
 		bool offerPreprocessRetry = false;
@@ -929,21 +937,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
 		{
-			string reply = await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(delegate(string partial)
+			string reply = await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentationScope, "", delegate(string partial)
 			{
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
 					if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
 					{
-						if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
-						{
-							receivedVisibleText = false;
-							suppressReadyNotice = true;
-							StopWaitingDotsAnimation(generation);
-							ClearPendingPostprocessNotice();
-							ConversationHelper.UpdateDialogText(originalDialogText ?? "");
-							return;
-						}
+
 						if (suppressVisibleStreamingForTts)
 						{
 							return;
@@ -960,21 +960,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 				});
 			}, originalDialogText, delegate(string npcName)
 			{
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
 					if (!IsSubmitGenerationActive(generation))
 					{
 						return;
 					}
-					if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
-					{
-						receivedVisibleText = false;
-						suppressReadyNotice = true;
-						StopWaitingDotsAnimation(generation);
-						ClearPendingPostprocessNotice();
-						ConversationHelper.UpdateDialogText(originalDialogText ?? "");
-						return;
-					}
+
 					QueuePostprocessNotice(generation, npcName);
 				});
 			}, delegate(string mainReply, Hero mainReplyTargetHero, CharacterObject mainReplyTargetCharacter)
@@ -985,9 +977,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 				{
 					return;
 				}
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
-					if (_isClosed || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					if (_isClosed || !IsSubmitGenerationActive(generation))
 					{
 						return;
 					}
@@ -999,23 +991,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
 					ConversationHelper.UpdateDialogText(completedDisplayReply);
 				});
-			});
+			}, npcInitiatedOpening: true);
 			string completedReply = reply;
-			RunOnMainThread(delegate
+			RunNativePresentationCallback(generation, delegate
 			{
 				if (_isClosed)
 				{
 					return;
 				}
-				if (IsSubmitGenerationActive(generation) && !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
-				{
-					receivedVisibleText = false;
-					suppressReadyNotice = true;
-					StopWaitingDotsAnimation(generation);
-					ClearPendingPostprocessNotice();
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
-					return;
-				}
+
 				completedReply = (completedReply ?? "").Replace("\r", "").Trim();
 				if (IsSubmitGenerationActive(generation) && ShoutBehavior.IsNativeConversationPreprocessUnavailableTextForExternal(completedReply))
 				{
@@ -1053,9 +1037,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 			if (suppressVisibleStreamingForTts && IsSubmitGenerationCurrent(generation))
 			{
 				await ShoutBehavior.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
-					if (_isClosed || !needsFinalDisplayAfterTts || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					if (_isClosed || !needsFinalDisplayAfterTts || !IsSubmitGenerationActive(generation))
 					{
 						return;
 					}
@@ -1067,7 +1051,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		catch (ShoutBehavior.NativeConversationAdmissionException ex)
 		{
 			suppressReadyNotice = true;
-			RunOnMainThread(() =>
+			RunNativePresentationCallback(generation, () =>
 			{
 				if (!IsSubmitGenerationCurrent(generation)) return;
 				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
@@ -1077,7 +1061,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		catch (Exception ex)
 		{
-			RunOnMainThread(delegate
+			RunNativePresentationCallback(generation, delegate
 			{
 				StopWaitingDotsAnimation(generation);
 				if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
@@ -1099,12 +1083,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 			RunOnMainThread(delegate
 			{
 				StopWaitingDotsAnimation(generation);
-				if (!_isClosed && generation == _submitGeneration)
+				if (CompleteNativeSubmissionPresentation(generation))
 				{
-					// 旧请求的 finally 不得结束新会话的全局流式展示或清掉它的 busy。
-					ConversationHelper.EndStreaming();
-					_isSubmitting = false;
-					_dataSource.SetBusy(false);
 					if (_dataSource.IsCustomAnswerVisible)
 					{
 						if (!suppressReadyNotice)
@@ -1130,7 +1110,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private async Task SubmitAsync(string text)
 	{
+		ShoutBehavior.NativeConversationPresentationScope presentationScope = ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();
+		if (presentationScope == null)
+		{
+			return;
+		}
 		int generation = ++_submitGeneration;
+		_submitPresentationScope = presentationScope;
 		string originalDialogText = ConversationHelper.GetCurrentDialogText();
 		bool receivedVisibleText = false;
 		bool offerPreprocessRetry = false;
@@ -1154,21 +1140,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
 		{
-			string reply = await ShoutBehavior.SubmitNativeConversationTextForExternalAsync(text, delegate(string partial)
+			string reply = await ShoutBehavior.SubmitNativeConversationForOverlayAsync(presentationScope, text, delegate(string partial)
 			{
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
 					if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
 					{
-						if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
-						{
-							receivedVisibleText = false;
-							suppressReadyNotice = true;
-							StopWaitingDotsAnimation(generation);
-							ClearPendingPostprocessNotice();
-							ConversationHelper.UpdateDialogText(originalDialogText ?? "");
-							return;
-						}
+
 						if (suppressVisibleStreamingForTts)
 						{
 							return;
@@ -1185,21 +1163,13 @@ public sealed class AnimusForgeNativeConversationOverlay
 				});
 			}, originalDialogText, delegate(string npcName)
 			{
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
 					if (!IsSubmitGenerationActive(generation))
 					{
 						return;
 					}
-					if (!ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
-					{
-						receivedVisibleText = false;
-						suppressReadyNotice = true;
-						StopWaitingDotsAnimation(generation);
-						ClearPendingPostprocessNotice();
-						ConversationHelper.UpdateDialogText(originalDialogText ?? "");
-						return;
-					}
+
 					QueuePostprocessNotice(generation, npcName);
 				});
 			}, delegate(string mainReply, Hero mainReplyTargetHero, CharacterObject mainReplyTargetCharacter)
@@ -1210,9 +1180,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 				{
 					return;
 				}
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
-					if (_isClosed || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					if (_isClosed || !IsSubmitGenerationActive(generation))
 					{
 						return;
 					}
@@ -1224,23 +1194,15 @@ public sealed class AnimusForgeNativeConversationOverlay
 						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
 					ConversationHelper.UpdateDialogText(completedDisplayReply);
 				});
-			});
+			}, npcInitiatedOpening: false);
 			string completedReply = reply;
-			RunOnMainThread(delegate
+			RunNativePresentationCallback(generation, delegate
 			{
 				if (_isClosed)
 				{
 					return;
 				}
-				if (IsSubmitGenerationActive(generation) && !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
-				{
-					receivedVisibleText = false;
-					suppressReadyNotice = true;
-					StopWaitingDotsAnimation(generation);
-					ClearPendingPostprocessNotice();
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
-					return;
-				}
+
 				completedReply = (completedReply ?? "").Replace("\r", "").Trim();
 				if (IsSubmitGenerationActive(generation) && ShoutBehavior.IsNativeConversationPreprocessUnavailableTextForExternal(completedReply))
 				{
@@ -1279,9 +1241,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 			if (suppressVisibleStreamingForTts && IsSubmitGenerationCurrent(generation))
 			{
 				await ShoutBehavior.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
-				RunOnMainThread(delegate
+				RunNativePresentationCallback(generation, delegate
 				{
-					if (_isClosed || !needsFinalDisplayAfterTts || !IsSubmitGenerationActive(generation) || !ShoutBehavior.IsNativeConversationResponseTargetAvailableForExternal())
+					if (_isClosed || !needsFinalDisplayAfterTts || !IsSubmitGenerationActive(generation))
 					{
 						return;
 					}
@@ -1293,7 +1255,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		catch (ShoutBehavior.NativeConversationAdmissionException ex)
 		{
 			suppressReadyNotice = true;
-			RunOnMainThread(() =>
+			RunNativePresentationCallback(generation, () =>
 			{
 				if (!IsSubmitGenerationCurrent(generation)) return;
 				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
@@ -1303,7 +1265,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		catch (Exception ex)
 		{
-			RunOnMainThread(delegate
+			RunNativePresentationCallback(generation, delegate
 			{
 				StopWaitingDotsAnimation(generation);
 				if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
@@ -1325,12 +1287,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 			RunOnMainThread(delegate
 			{
 				StopWaitingDotsAnimation(generation);
-				if (!_isClosed && generation == _submitGeneration)
+				if (CompleteNativeSubmissionPresentation(generation))
 				{
-					// 旧请求的 finally 不得结束新会话的全局流式展示或清掉它的 busy。
-					ConversationHelper.EndStreaming();
-					_isSubmitting = false;
-					_dataSource.SetBusy(false);
 					if (_dataSource.IsCustomAnswerVisible)
 					{
 						if (!suppressReadyNotice)
@@ -1429,6 +1387,11 @@ public sealed class AnimusForgeNativeConversationOverlay
 		long ticks = DateTime.UtcNow.Ticks;
 		if (!force && _nextWaitingDotsUpdateUtcTicks > 0L && ticks < _nextWaitingDotsUpdateUtcTicks)
 		{
+			return;
+		}
+		if (!IsSubmissionPresentationCurrent(_waitingDotsGeneration))
+		{
+			RetireStaleSubmissionPresentation(_waitingDotsGeneration);
 			return;
 		}
 		using (FreezeWatchdog.Scope("NativeConversationOverlay.WaitingAnimation.UpdateDialogText"))
@@ -1534,7 +1497,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private void QueuePostprocessNotice(int generation, string npcName)
 	{
-		if (!IsSubmitGenerationActive(generation))
+		if (!IsSubmitGenerationActive(generation) || !IsSubmissionPresentationCurrent(generation))
 		{
 			return;
 		}
@@ -1567,7 +1530,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 			_pendingPostprocessNoticeGeneration = -1;
 			_hasPendingPostprocessNotice = false;
 		}
-		if (!IsSubmitGenerationActive(generation))
+		if (!IsSubmitGenerationActive(generation) || !IsSubmissionPresentationCurrent(generation))
 		{
 			return;
 		}
@@ -1649,6 +1612,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 			return;
 		}
 		_isClosed = true;
+		_submitPresentationScope = null;
 		StopWaitingDotsAnimation();
 		ClearPendingPostprocessNotice();
 		_submitGeneration++;
