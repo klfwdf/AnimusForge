@@ -16,3 +16,12 @@
 - C#、项目/解决方案、ModuleData 和一键脚本相对 `8f1cd479` 没有变化，不重复运行全部游戏构建。之前六项 Stage 是上一批运行代码的证据，不是本轮新增实机验证。
 - 本地验证日志：`.tmp/framework-skill-delivery-20260911/validation-results.json`。两份用户草稿哈希保持；指定简明 HANDOFF 留本地，交付时同时排除其文件和引入它的本地祖先。
 - 干净交付分支拟为 `codex/af-framework-skill-delivery-20260911`，远端仍是原 GitHub 重构分支；确切推送结果必须以远端 ref 核实后记录。自动化仍 PAUSED，不部署游戏。
+
+## GitHub 交付已核实
+
+- 框架/代码/Skill/可上传文档已普通快进推到 `origin/codex/af-main-refactor-continuation-20260831`：`a58c2191 → 38c003ab`，`git ls-remote` 确認目标提交。此后若补交接记录，分支末端为该记录提交，以实际 ref 为准。
+- `38c003ab` 父提交为已验证源码 `8f1cd479`；保留此前全部测试对照祖先。与本地来源 `669fbedd` 的完整树差异仅为排除指定简明 HANDOFF；源分支历史原样保留。
+- 指定文档在交付树和新增远端提交历史均不存在，对应 blob 也不在待推对象可达集合中；原文件本地仍在且字节未变。两份 2026-09-06 草稿字节未变且未加入提交。
+- 在干净交付分支再次运行 Skill 格式、25 点当前坐标、Team ports 308/3、Memory snapshot 852、Native history 27 检查均通过。原源码 `8f1cd479` 没有改变，未新增游戏部署/实机测试。
+- 当前本地分支是 `codex/af-framework-skill-delivery-20260911`，跟踪原远端重构分支；后续推送须显式指定获准 ref，不从原本地来源分支推送或合并排除文档历史。
+- 自动化 `af-7-8` 仍 PAUSED。交付回执留本地 `.tmp/framework-skill-delivery-20260911/first-push-receipt.json`。
