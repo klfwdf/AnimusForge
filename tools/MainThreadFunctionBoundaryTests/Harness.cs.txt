@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace AnimusForge;
+public sealed class BadMessageException : Exception
+{
+    public override string Message => throw new InvalidOperationException("message formatting");
+}
+public sealed class TestQueue
+{
+    public readonly ConcurrentQueue<Action> Items = new();
+    public Action<Action> Publish;
+    public int Count => Items.Count;
+    public void Enqueue(Action action) { if (Publish != null) Publish(action); else Items.Enqueue(action); }
+}
+public static class Logger
+{
+    public static Func<string, bool> Fail;
+    public static void Log(string category, string message) { if (Fail?.Invoke(message) == true) throw new InvalidOperationException("diagnostic"); }
+}
+public static class FreezeWatchdog
+{
+    public static Func<string, bool> Fail;
+    public static void Mark(string stage, string detail, bool immediate = false) { if (Fail?.Invoke(stage) == true) throw new InvalidOperationException("watchdog"); }
+}
+public sealed class ShoutBehavior
+{
+    public static int MainThreadId;
+    private const int NativeConversationMainThreadPreprocessTimeoutMs = 120;
+    public readonly TestQueue _mainThreadActions = new();
+    private static bool IsBannerlordMainThreadForNativeActions() => Thread.CurrentThread.ManagedThreadId == MainThreadId;
+    public Task<int> Submit(Func<int> operation) => RunNativeConversationMainThreadFuncAsync("test", "npc", 7, operation, -1);
+    @@RUN@@
+    @@WAIT@@
+}
+public static class Program
+{
+    private static int checks, failures;
+    private static readonly List<string> Failed = new();
+    private static void Check(bool value, string name) { checks++; if (!value) { failures++; Failed.Add(name); Console.WriteLine("FAIL " + name); } }
+    private static void Case(string name, Action action)
+    {
+        Logger.Fail = null; FreezeWatchdog.Fail = null; ShoutBehavior.MainThreadId = Thread.CurrentThread.ManagedThreadId;
+        try { action(); } catch (Exception ex) { Check(false, name + ": " + ex); }
+        finally { Logger.Fail = null; FreezeWatchdog.Fail = null; }
+    }
+    private static Task<int> Queue(ShoutBehavior owner, Func<int> operation)
+    {
+        Task<int> task = Task.Run(() => owner.Submit(operation));
+        Check(SpinWait.SpinUntil(() => owner._mainThreadActions.Count > 0 || task.IsCompleted, 2500), "publication bounded");
+        return task;
+    }
+    private static Action Take(ShoutBehavior owner) { Check(owner._mainThreadActions.Items.TryDequeue(out Action action), "published callback exists"); return action; }
+    private static int Result(Task<int> task) { Check(SpinWait.SpinUntil(() => task.IsCompleted, 3000), "result bounded"); return task.GetAwaiter().GetResult(); }
+    private static void Format(Task<int> task, Exception original)
+    {
+        try { Result(task); Check(false, "format exception must propagate"); }
+        catch (PreprocessFormatException ex) { Check(ReferenceEquals(original, ex), "original format error identity preserved"); }
+    }
+    public static int Main()
+    {
+        Case("direct", () => { var o = new ShoutBehavior(); int calls = 0; Check(Result(o.Submit(() => { calls++; return 42; })) == 42 && calls == 1, "direct exactly once"); Check(Result(o.Submit(null)) == -1, "null fallback"); Check(Result(o.Submit(() => throw new InvalidOperationException("business"))) == -1, "direct ordinary fallback"); var e = new PreprocessFormatException("format"); Format(o.Submit(() => throw e), e); });
+        Case("queued", () => { var o = new ShoutBehavior(); int calls = 0; var t = Queue(o, () => { calls++; Check(Thread.CurrentThread.ManagedThreadId == ShoutBehavior.MainThreadId, "runs on main"); return 42; }); var callback = Take(o); Check(!t.IsCompleted, "does not complete before dispatch"); callback(); Check(Result(t) == 42 && calls == 1, "queue result"); callback(); Check(calls == 1, "duplicate callback cannot execute twice"); });
+        Case("queued ordinary", () => { var o = new ShoutBehavior(); var t = Queue(o, () => throw new InvalidOperationException("business")); Take(o)(); Check(Result(t) == -1, "queued ordinary fallback"); });
+        Case("queued format", () => { var o = new ShoutBehavior(); var e = new PreprocessFormatException("format"); var t = Queue(o, () => throw e); Take(o)(); Format(t, e); });
+        Case("unclaimed timeout", () => { var o = new ShoutBehavior(); int calls = 0; var t = Queue(o, () => { calls++; return 42; }); Check(Result(t) == -1, "unclaimed timeout fallback"); var callback = Take(o); callback(); callback(); Check(calls == 0, "expired callback never executes"); });
+        Case("claimed timeout", () =>
+        {
+            var o = new ShoutBehavior(); int calls = 0; using var entered = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
+            var t = Queue(o, () => { calls++; entered.Set(); if (!release.Wait(3000)) throw new Exception("release missing"); return 42; });
+            var callback = Take(o); Exception pumpFailure = null;
+            var pump = new Thread(() => { ShoutBehavior.MainThreadId = Thread.CurrentThread.ManagedThreadId; try { callback(); } catch (Exception e) { pumpFailure = e; } });
+            pump.Start(); Check(entered.Wait(2500), "claimed operation entered"); Thread.Sleep(350); Check(!t.IsCompleted, "claimed work cannot expire"); release.Set(); Check(pump.Join(2500), "pump exits"); Check(pumpFailure == null, "pump not faulted"); Check(Result(t) == 42 && calls == 1, "claimed actual result");
+        });
+        foreach (bool queued in new[] { false, true }) Case("error formatting " + queued, () =>
+        {
+            var o = new ShoutBehavior(); int calls = 0;
+            Func<int> operation = () => { calls++; throw new BadMessageException(); };
+            var t = queued ? Queue(o, operation) : o.Submit(operation);
+            if (queued) Take(o)();
+            Check(Result(t) == -1 && calls == 1, "error formatting cannot change ordinary fallback");
+        });
+        foreach (bool watchdog in new[] { false, true }) foreach (string phase in new[] { "_start", "_done", "_queued", "_exception", "all" }) foreach (bool queued in new[] { false, true })
+        {
+            Case("diagnostic " + watchdog + phase + queued, () =>
+            {
+                Func<string,bool> fault = s => phase == "all" || s.Contains(phase) || (phase == "_done" && s.Contains("_finished"));
+                if (watchdog) FreezeWatchdog.Fail = fault; else Logger.Fail = fault;
+                var o = new ShoutBehavior(); int calls = 0; bool ordinary = phase == "_exception";
+                Func<int> operation = () => { calls++; if (ordinary) throw new InvalidOperationException("business"); return 42; };
+                var t = queued ? Queue(o, operation) : o.Submit(operation);
+                if (queued) { Check(!t.IsCompleted, "diagnostics cannot complete publication"); Take(o)(); }
+                Check(Result(t) == (ordinary ? -1 : 42) && calls == 1, "diagnostics preserve result and execution");
+            });
+        }
+        Case("timeout diagnostics", () => { Logger.Fail = _ => true; FreezeWatchdog.Fail = _ => true; var o = new ShoutBehavior(); int calls = 0; var t = Queue(o, () => ++calls); Check(Result(t) == -1, "timeout fallback despite diagnostics"); Take(o)(); Check(calls == 0, "timeout observer cannot reactivate work"); });
+        Case("format diagnostics", () => { Logger.Fail = _ => true; FreezeWatchdog.Fail = _ => true; var o = new ShoutBehavior(); var e = new PreprocessFormatException("format"); var t = Queue(o, () => throw e); Take(o)(); Format(t, e); ShoutBehavior.MainThreadId = Thread.CurrentThread.ManagedThreadId; Format(o.Submit(() => throw e), e); });
+        Case("failed before publish", () => { var o = new ShoutBehavior(); int calls = 0; o._mainThreadActions.Publish = _ => throw new InvalidOperationException("publish"); var t = Task.Run(() => o.Submit(() => ++calls)); Check(Result(t) == -1 && calls == 0, "failed publication fallback"); });
+        Case("failed after publish", () => { var o = new ShoutBehavior(); int calls = 0; o._mainThreadActions.Publish = a => { o._mainThreadActions.Items.Enqueue(a); throw new InvalidOperationException("after publish"); }; var t = Queue(o, () => ++calls); Check(Result(t) == -1, "failed unclaimed publication fallback"); Take(o)(); Check(calls == 0, "failed published work is retired"); });
+        Case("claimed publication failure", () => { var o = new ShoutBehavior(); int calls = 0; o._mainThreadActions.Publish = a => { ShoutBehavior.MainThreadId = Thread.CurrentThread.ManagedThreadId; a(); throw new InvalidOperationException("after claim"); }; var t = Task.Run(() => o.Submit(() => { calls++; return 42; })); Check(Result(t) == 42 && calls == 1, "claimed publication preserves owner result"); });
+        Console.WriteLine($"{(failures == 0 ? "PASS" : "FAIL")} {checks} checks; {failures} failures");
+        return failures == 0 ? 0 : 1;
+    }
+}

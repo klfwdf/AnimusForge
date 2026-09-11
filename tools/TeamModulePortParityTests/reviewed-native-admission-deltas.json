@@ -1,5 +1,5 @@
 {
-  "reason": "Reviewed Native-only declarations, each hash-frozen and with no team-module receiver. Admission, dispatch-outcome and completion-boundary suites own their behavior; full receiver inverse proof remains strict.",
+  "reason": "Reviewed non-port declarations, each hash-frozen and with no team-module receiver. Native suites and MainThreadFunctionBoundaryTests own their behavior; full receiver inverse proof remains strict.",
   "baseline": "14dec2d7",
   "methods": [
     {
@@ -61,6 +61,16 @@
       "path": "ShoutBehavior.cs",
       "signature": "private void RemoveNativeConversationSessionHistoryEventFromSceneHistory(",
       "sha256": "8a6fd62af46d5fa80bfff80c744105d83cdfe77dbd3bff1f20653d285ca54ad9"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>(",
+      "sha256": "b72578ecf826da509e558f1863ac12dd38f90be3dfb87cf674622d59ad210c19"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(",
+      "sha256": "bcf4007cc2fba370c59ddeda12afa2e2c0310da73dc6cb51504b1d2cbdd689ac"
     }
   ],
   "commentRewrites": [
