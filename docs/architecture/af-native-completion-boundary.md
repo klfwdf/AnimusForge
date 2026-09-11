@@ -11,7 +11,7 @@
   ├─ 原请求准入/上下文校验
   ├─ Capture completion：固定原 scene session 与非 Hero 记忆身份
   ├─ 原 Action core（规则和数值不改）
-  ├─ 在原 Campaign/generation 向原历史 owner 派发完整 payload
+  ├─ 在原 Campaign/generation 向原历史 owner 提交 payload 并检查运行期接受结果
   ├─ 原会话/revision 仍匹配时：短期记录、显示标记、未提前派发的 TTS
   └─ 需要关窗时排入带原 context/revision 的 callback
   ↓
@@ -35,10 +35,13 @@
 
 ## 严格不夸大
 
-现有 `MyBehavior.AppendExternal*History` 是 void 外壳，可能吞错或没有可用 owner；本轮返回值只确认收尾代码已返回，**不是可靠日记/AFEF/磁盘提交 receipt**。原日记资格、AFEF 规范和存档写入没有重写，新 Api.V1 的完整公开提交仍为 NotSupported；原 ForExternal 兼容入口仍保留原 owner 准入，不等于新 SDK 契约。
+当前 Native 不再依赖 `MyBehavior.AppendExternal*History` 的 void 返回。`MyBehavior.DialogueHistoryCommit.cs` 提供一个支持 sceneSessionId 的 internal 严格入口，复用原日记/最近历史 owner 和 MemoryCommitResult；旧 public 六参 CommitExternalDialogueHistory 仍以 -1 调它，保留 ABI 与 loose 语义。
 
+对适用且非空的 payload，只有 HistoryWritten（Applied/Duplicate 的既有语义）允许正常收尾。Rejected/Failed/无结果会成为 `native.memory.commit_unconfirmed`，保留原结果原因和已发生的动作/部分记录，不自动重试。动作已要求的关窗仍按原 context/revision 排队；它不能因记忆失败被吞掉，也不能关闭后来新请求。非持久 NPC 或真正空 payload 没有提出持久历史请求，不能伪称有 Applied receipt。
+
+**Applied 只确认运行期日记与最近历史 owner 的接受，不确认 SyncData/磁盘，不是动作+记忆原子事务，也不是跨重试恢复 receipt。** 新 Api.V1 的公开提交仍为 NotSupported；原 ForExternal 兼容入口不等于新 SDK 契约。旧 void 外壳还有其他实际调用者，本轮未删除它们。
 这次迁移的是动作后的收尾。更早 Native prepare 与几个前置失败分支的 pending history 清理仍需继续查；TTS 引擎自身直接回调、真实读档、owner 切场景时的运行细节也仍待实测。
 
-下一步优先复用已有 `MyBehavior.CommitExternalDialogueHistory` / `MemoryCommitResult` 的严格接受语义，设计不丢 scene session 的内部 Native 接线；不能把 Native 改成较短 detached 路径，也不能把运行期接受说成磁盘保存成功。
+下一步处理更早 Native prepare/失败清理，以及 TTS 直接回调、Courier 双向 prepare；需要进一步的稳定请求身份/恢复协议时复用既有 recovery 边界，不另造存档键或擅自打开公共提交。
 
 验证工具：`tools/NativeCompletionBoundaryTests`；结果与源/DLL SHA 见本轮 audit，总接续顺序见根 `HANDOFF.md`。
