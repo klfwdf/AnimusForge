@@ -19426,111 +19426,110 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	}
 
 	private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string operationName, string targetLog, int targetAgentIndex, Func<T> func, T fallback)
-	{
-		if (func == null)
-		{
-			return Task.FromResult(fallback);
-		}
-		string op = string.IsNullOrWhiteSpace(operationName) ? "operation" : operationName.Trim();
-		string target = string.IsNullOrWhiteSpace(targetLog) ? "unknown" : targetLog.Trim();
-		if (IsBannerlordMainThreadForNativeActions())
-		{
-			Stopwatch directSw = Stopwatch.StartNew();
-			FreezeWatchdog.Mark("NativeConversation." + op + "_direct_start", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
-			try
-			{
-				T direct = func();
-				directSw.Stop();
-				Logger.Log("Logic", "[NativePerf] " + op + "_mainthread_direct target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
-				FreezeWatchdog.Mark("NativeConversation." + op + "_direct_done", "target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				return Task.FromResult(direct);
-			}
-			catch (Exception ex)
-			{
-				directSw.Stop();
-				Logger.Log("ShoutBehavior", "[NativeConversation] " + op + " direct failed target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
-				FreezeWatchdog.Mark("NativeConversation." + op + "_direct_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
-				if (ex is PreprocessFormatException)
-				{
-					return Task.FromException<T>(ex);
-				}
-				return Task.FromResult(fallback);
-			}
-		}
-		TaskCompletionSource<T> tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-		bool cancelledBeforeRun = false;
-		try
-		{
-			_mainThreadActions.Enqueue(delegate
-			{
-				if (cancelledBeforeRun)
-				{
-					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_skipped", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
-					return;
-				}
-				Stopwatch actionSw = Stopwatch.StartNew();
-				try
-				{
-					Logger.Log("Logic", "[NativePerf] " + op + "_mainthread_start target=" + target + " agent=" + targetAgentIndex);
-					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_start", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
-					T result = func();
-					actionSw.Stop();
-					Logger.Log("Logic", "[NativePerf] " + op + "_mainthread_done target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2));
-					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_done", "target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					tcs.TrySetResult(result);
-				}
-				catch (Exception ex)
-				{
-					actionSw.Stop();
-					Logger.Log("ShoutBehavior", "[NativeConversation] " + op + " main-thread failed target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
-					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
-					if (ex is PreprocessFormatException)
-					{
-						tcs.TrySetException(ex);
-						return;
-					}
-					tcs.TrySetResult(fallback);
-				}
-			});
-			Logger.Log("Logic", "[NativePerf] " + op + "_queued target=" + target + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId + " pending=" + _mainThreadActions.Count);
-			FreezeWatchdog.Mark("NativeConversation." + op + "_queued", "target=" + target + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId + " pending=" + _mainThreadActions.Count, immediate: true);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("ShoutBehavior", "[NativeConversation] queue " + op + " failed target=" + target + " agent=" + targetAgentIndex + " error=" + ex.Message);
-			FreezeWatchdog.Mark("NativeConversation." + op + "_queue_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
-			tcs.TrySetResult(fallback);
-		}
-		return AwaitNativeConversationMainThreadFuncAsync(tcs.Task, op, target, targetAgentIndex, () => cancelledBeforeRun = true, fallback);
-	}
+    {
+        if (func == null) return Task.FromResult(fallback);
+        string op = string.IsNullOrWhiteSpace(operationName) ? "operation" : operationName.Trim();
+        string target = string.IsNullOrWhiteSpace(targetLog) ? "unknown" : targetLog.Trim();
 
-	private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(Task<T> task, string operationName, string targetLog, int targetAgentIndex, Action onTimeout, T fallback)
-	{
-		try
-		{
-			Task completed = await Task.WhenAny(task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs)).ConfigureAwait(false);
-			if (completed == task)
-			{
-				return await task.ConfigureAwait(false);
-			}
-			try
-			{
-				onTimeout?.Invoke();
-			}
-			catch
-			{
-			}
-			Logger.Log("ShoutBehavior", "[NativeConversation] " + operationName + " main-thread queue timeout target=" + targetLog + " agent=" + targetAgentIndex + " timeoutMs=" + NativeConversationMainThreadPreprocessTimeoutMs);
-			FreezeWatchdog.Mark("NativeConversation." + operationName + "_mainthread_timeout", "target=" + targetLog + " agent=" + targetAgentIndex + " timeoutMs=" + NativeConversationMainThreadPreprocessTimeoutMs, immediate: true);
-			return fallback;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("ShoutBehavior", "[NativeConversation] " + operationName + " main-thread await failed target=" + targetLog + " agent=" + targetAgentIndex + " error=" + ex.Message);
-			FreezeWatchdog.Mark("NativeConversation." + operationName + "_mainthread_await_exception", ex.GetType().Name + ": " + ex.Message + " target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
-			return fallback;
-		}
-	}
+        void Observe(string phase, string detail = "", Exception error = null)
+        {
+            try
+            {
+                string context = "target=" + target + " agent=" + targetAgentIndex + " " + detail
+                    + (error == null ? "" : " " + error.GetType().Name + ": " + error.Message);
+                Logger.Log("Logic", "[NativePerf] " + op + "_" + phase + " " + context);
+                FreezeWatchdog.Mark("NativeConversation." + op + "_" + phase, context, immediate: true);
+            }
+            catch (Exception)
+            {
+                // Optional diagnostics never own execution or completion.
+                return;
+            }
+        }
+
+        T Execute(string phase)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            Observe(phase + "_start");
+            try { return func(); }
+            // 格式错误由原上层失败提示处理；排队和直接执行必须一致。
+            catch (PreprocessFormatException ex)
+            {
+                Observe(phase + "_exception", error: ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Observe(phase + "_exception", error: ex);
+                return fallback;
+            }
+            finally
+            {
+                sw.Stop();
+                Observe(phase + "_finished", "ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+            }
+        }
+
+        if (IsBannerlordMainThreadForNativeActions())
+        {
+            try { return Task.FromResult(Execute("direct")); }
+            catch (Exception ex) { return Task.FromException<T>(ex); }
+        }
+
+        TaskCompletionSource<T> tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+        // 0 queued, 1 claimed, 2 retired: deadline 只能取消未开始的操作。
+        int state = 0;
+        try
+        {
+            _mainThreadActions.Enqueue(delegate
+            {
+                if (Interlocked.CompareExchange(ref state, 1, 0) != 0) return;
+                try { tcs.TrySetResult(Execute("mainthread")); }
+                catch (Exception ex) { tcs.TrySetException(ex); }
+            });
+            Observe("queued", "callerThread=" + Thread.CurrentThread.ManagedThreadId);
+        }
+        catch (Exception ex)
+        {
+            // 若发布时已被消费，只有消费方可以确定结果；不能把它改成失败/取消。
+            if (Interlocked.CompareExchange(ref state, 2, 0) == 0) tcs.TrySetResult(fallback);
+            Observe("queue_exception", error: ex);
+        }
+        return AwaitNativeConversationMainThreadFuncAsync(tcs.Task, op, target, targetAgentIndex, () =>
+        {
+            if (Interlocked.CompareExchange(ref state, 2, 0) != 0) return false;
+            tcs.TrySetResult(fallback);
+            return true;
+        });
+    }
+
+	private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(Task<T> task, string operationName, string targetLog, int targetAgentIndex, Func<bool> tryExpire)
+    {
+        using (CancellationTokenSource timeout = new CancellationTokenSource())
+        {
+            try
+            {
+                Task completed = await Task.WhenAny(task,
+                    Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs, timeout.Token)).ConfigureAwait(false);
+                if (completed != task && tryExpire())
+                {
+                    try
+                    {
+                        string detail = "target=" + targetLog + " agent=" + targetAgentIndex + " timeoutMs=" + NativeConversationMainThreadPreprocessTimeoutMs;
+                        Logger.Log("ShoutBehavior", "[NativeConversation] " + operationName + " main-thread queue expired before start " + detail);
+                        FreezeWatchdog.Mark("NativeConversation." + operationName + "_mainthread_timeout", detail, immediate: true);
+                    }
+                    catch (Exception)
+                    {
+                        // Only diagnostic failure is ignored; operation exceptions propagate below.
+                    }
+                }
+                // 已开始不代表可取消；等待真实结果，避免 fallback 后游戏状态又被迟到操作修改。
+                return await task.ConfigureAwait(false);
+            }
+            finally { timeout.Cancel(); }
+        }
+    }
 
 	private sealed class NativeConversationGameActionResult
 	{
