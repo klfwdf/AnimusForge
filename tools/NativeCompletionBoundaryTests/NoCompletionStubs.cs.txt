@@ -3,12 +3,12 @@ public partial class ShoutBehavior
 {
     private sealed class NativeConversationHistoryCommitException : System.InvalidOperationException { }
     // These suites submit no completion payload. Fail if production unexpectedly invokes this seam.
-    private sealed class NativeConversationCompletionRequest { internal long PendingPlayerHistorySequence; }
+    private sealed class NativeConversationCompletionRequest { internal long PendingPlayerHistorySequence; internal string PendingPlayerHistoryKey; }
     private sealed class NativeConversationCompletionScope { }
     private NativeConversationCompletionScope CaptureNativeConversationCompletionOnMainThread(
         NativeConversationAdmission admission, NpcDataPacket npc, string name, int index, NativeConversationCompletionRequest request)
         => throw new System.InvalidOperationException("FAIL completion not part of this fixture");
-    private void RollbackDiscardedNativeCompletionOnMainThread(NativeConversationAdmission admission, NpcDataPacket npc, string name, int index, long sequence)
+    private static void RollbackNativeConversationPendingPlayerHistory(ShoutBehavior owner, NativeConversationAdmission admission, string historyKey, long sequence, string reason)
         => throw new System.InvalidOperationException("FAIL completion not part of this fixture");
     private string CompleteNativeConversationReplyOnMainThread(NativeConversationCompletionScope scope, NativeConversationGameActionResult result)
         => throw new System.InvalidOperationException("FAIL completion not part of this fixture");

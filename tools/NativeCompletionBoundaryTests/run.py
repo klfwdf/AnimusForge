@@ -16,10 +16,12 @@ for signature,name in [('private async Task SubmitAsync(string text)','Normal'),
  method=ex.declaration(overlay,signature);handler=ex.declaration(method,'catch (ShoutBehavior.NativeConversationActionDispatchException ex)')
  handlers.append('private bool '+name+'(ShoutBehavior.NativeConversationActionDispatchException failure) { bool suppressReadyNotice=false;int generation=1;try { throw failure; } '+handler+' return suppressReadyNotice; }')
 values['UI_HANDLERS']='\n'.join(handlers)+'\ninternal bool Report(ShoutBehavior.NativeConversationActionDispatchException e,bool opening)=>opening?Opening(e):Normal(e);'
+values['ROLLBACK']='' if baseline else ex.declaration(s,'private static void RollbackNativeConversationPendingPlayerHistory(')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for k,v in values.items():code=code.replace('@@'+k+'@@',v)
 assert '@@' not in code
 out=HERE/'.generated'/('original' if a.original else 'memory-baseline' if a.memory_baseline else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+(out/'AnimusForgeDialogueHistoryEntry.cs').write_text(read('AnimusForgeDialogueHistoryEntry.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Dispatch.cs').write_text(read('ShoutBehavior.NativeActionDispatch.cs'),encoding='utf-8')
 contracts=(ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig');types='\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']);(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+types,encoding='utf-8')
 if not baseline:
@@ -38,11 +40,8 @@ if not a.original:
  if a.mutate=='drop-memory-acceptance':completion=completion.replace('if (memory?.HistoryWritten != true)','if (false)',1)
  if a.mutate=='lose-failed-exit':completion=completion.replace('QueueNativeConversationCompletionExit(scope, result);',';',1)
  if a.mutate=='drop-discard-context':
-  old='''if (eventSequence <= 0 || !IsNativeConversationContextStampCurrent(admission)
-            || admission.PresentationRevision != Interlocked.Read(ref _nativeConversationPresentationRevision)
-            || !TryResolveNativeConversationTarget(out Hero hero, out var character, out _)
-            || !ReferenceEquals(hero, admission.Hero) || !ReferenceEquals(character, admission.Character))'''
-  assert old in completion;completion=completion.replace(old,'if (eventSequence <= 0)',1)
+  code=code.replace('|| !owner.IsNativeConversationContextStampCurrent(admission)\n            || admission.PresentationRevision != Interlocked.Read(ref owner._nativeConversationPresentationRevision)','|| false',1)
+  (out/'Program.cs').write_text(code,encoding='utf-8')
  if a.mutate=='drop-generation':completion=completion.replace('SaveRuntimeGuard.IsCurrentGeneration(scope.Admission.Generation)','true',1)
  if a.mutate=='current-scene':
   cut=completion.index('private string CompleteNativeConversationReplyOnMainThread(')

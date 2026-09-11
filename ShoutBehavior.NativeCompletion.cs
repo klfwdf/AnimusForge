@@ -24,6 +24,7 @@ public partial class ShoutBehavior
         internal string OpeningFact;
         internal bool TtsAlreadyDispatched;
         internal long PendingPlayerHistorySequence;
+        internal string PendingPlayerHistoryKey;
     }
 
     // Captured after admission validation and before actions can change the scene/party.
@@ -55,20 +56,6 @@ public partial class ShoutBehavior
             scope.HasNonHeroMemory = TryResolveWildernessNonHeroMemory(npc, admission.Hero, admission.Character,
                 agentIndex, out scope.NonHeroMemoryId, out scope.NonHeroMemoryName);
         return scope;
-    }
-
-    private void RollbackDiscardedNativeCompletionOnMainThread(NativeConversationAdmission admission,
-        NpcDataPacket npc, string npcName, int agentIndex, long eventSequence)
-    {
-        // Never resolve an old pending event against another save/scene/conversation. Skipping
-        // stale cleanup is safer than deleting an unrelated event from a new history owner.
-        if (eventSequence <= 0 || !IsNativeConversationContextStampCurrent(admission)
-            || admission.PresentationRevision != Interlocked.Read(ref _nativeConversationPresentationRevision)
-            || !TryResolveNativeConversationTarget(out Hero hero, out var character, out _)
-            || !ReferenceEquals(hero, admission.Hero) || !ReferenceEquals(character, admission.Character))
-            return;
-        RollbackNativeConversationPendingPlayerHistory(admission.Hero, admission.Character, npcName,
-            agentIndex, npc, eventSequence, "action_dispatch_target_unavailable");
     }
 
     private static bool IsNativeConversationCompletionCampaignCurrent(NativeConversationCompletionScope scope)
