@@ -1,6 +1,7 @@
 namespace AnimusForge;
 public partial class ShoutBehavior
 {
+    private sealed class NativeConversationHistoryCommitException : System.InvalidOperationException { }
     // These suites submit no completion payload. Fail if production unexpectedly invokes this seam.
     private sealed class NativeConversationCompletionRequest { internal long PendingPlayerHistorySequence; }
     private sealed class NativeConversationCompletionScope { }

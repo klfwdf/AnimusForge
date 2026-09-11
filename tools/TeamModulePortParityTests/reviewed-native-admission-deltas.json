@@ -31,6 +31,11 @@
       "path": "ShoutBehavior.cs",
       "signature": "private sealed class NativeConversationGameActionResult",
       "sha256": "4a4981bb6338a225530e7cfe108b38923e643fdaf8f1f1a87e770e0552471828"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static MemoryCommitResult CommitExternalDialogueHistory(",
+      "sha256": "17cb5819c95634e077fab18dad7ec629de1d6e29a453593293e8a2d80cb1f556"
     }
   ],
   "commentRewrites": [

@@ -24,6 +24,7 @@ internal static class Program
         Check(reader.GetString(reader.GetAssemblyDefinition().Name) == "AnimusForge", "implementation assembly identity");
         var provider = new Names(); var lines = new List<string>();
         var api = new HashSet<string>(); var internalTypes = new HashSet<string>();
+        bool foundMemoryOwner = false;
         foreach (TypeDefinitionHandle handle in reader.TypeDefinitions)
         {
             TypeDefinition type = reader.GetTypeDefinition(handle);
@@ -33,6 +34,11 @@ internal static class Program
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
                     name + " stays assembly-internal in actual DLL");
                 internalTypes.Add(name);
+            }
+            if (ns == "AnimusForge" && name == "MyBehavior")
+            {
+                foundMemoryOwner = true;
+                CheckMemoryOwner(reader, type, provider, lines);
             }
             if (ns != "AnimusForge.Api.V1") continue;
             Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public, name + " is published");
@@ -75,6 +81,7 @@ internal static class Program
         }
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
             "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo" };
+        Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(api.SetEquals(expected), "exact initial V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
@@ -84,6 +91,31 @@ internal static class Program
         Console.WriteLine("ARTIFACT " + path + " SHA256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant());
         return lines;
     }
+    private static void CheckMemoryOwner(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
+    {
+        Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public, "legacy MyBehavior visibility preserved");
+        int found = 0;
+        foreach (MethodDefinitionHandle handle in type.GetMethods())
+        {
+            MethodDefinition method = reader.GetMethodDefinition(handle);
+            string name = reader.GetString(method.Name);
+            if (name != "CommitExternalDialogueHistory" && name != "CommitDialogueHistoryWithScene") continue;
+            found++;
+            bool legacy = name == "CommitExternalDialogueHistory";
+            MethodSignature<string> signature = method.DecodeSignature(provider, null);
+            Check((method.Attributes & MethodAttributes.Static) != 0, name + " remains static");
+            Check((method.Attributes & MethodAttributes.MemberAccessMask) == (legacy ? MethodAttributes.Public : MethodAttributes.Assembly), name + " exact visibility");
+            Check(signature.ReturnType == "AnimusForge.Refactor.Contracts.MemoryCommitResult", name + " existing result type");
+            string expected = "String,Boolean,String,String,String,String" + (legacy ? "" : ",Int32");
+            Check(string.Join(",", signature.ParameterTypes) == expected, name + " exact ABI parameter types");
+            var parameters = method.GetParameters().Select(reader.GetParameter).Where(p => p.SequenceNumber > 0).ToArray();
+            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "memoryId,isNonHero,npcName,playerText,aiText,extraFact" + (legacy ? "" : ",sceneSessionId"), name + " parameter names/order");
+            Check(parameters.All(p => (p.Attributes & ParameterAttributes.Optional) == 0 && p.GetDefaultValue().IsNil), name + " no accidental optional ABI");
+            lines.Add("MEMORY " + name + " " + method.Attributes + " " + signature.ReturnType + "(" + expected + ")");
+        }
+        Check(found == 2, "one legacy facade and one internal scene-aware memory owner");
+    }
+
     private static string Constant(MetadataReader reader, ConstantHandle handle)
     {
         if (handle.IsNil) return "none";
@@ -101,7 +133,7 @@ internal static class Program
             if (baseline != null) Check(baseline.SequenceEqual(left), "Debug and Release public metadata surface identical");
             baseline = left;
         }
-        Console.WriteLine($"PASS {checks} actual-DLL metadata assertions; {args.Length} implementation DLLs; public V1 signatures match and module ports remain internal.");
+        Console.WriteLine($"PASS {checks} actual-DLL metadata assertions; {args.Length} implementation DLLs; public V1/legacy memory signatures match; module ports and scene-aware memory owner remain internal.");
         Console.WriteLine("NOT TESTED: CLR loading, Bootstrap ordering, game object access, real sub-MOD execution.");
     }
     private sealed class Names : ISignatureTypeProvider<string, object>

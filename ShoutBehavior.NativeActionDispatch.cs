@@ -11,13 +11,15 @@ public partial class ShoutBehavior
     {
         internal NativeConversationActionDispatchException(bool ownerStarted, Exception cause, bool queueTimedOut = false)
             : base(ownerStarted
-                ? "对话动作或收尾处理异常，部分操作可能已经执行。请检查实际游戏结果，不要自动重试整轮。"
+                ? cause is NativeConversationHistoryCommitException
+                    ? "本轮记忆记录未确认，动作或部分记录可能已经发生。请检查实际游戏结果，不要自动重试整轮。"
+                    : "对话动作或收尾处理异常，部分操作可能已经执行。请检查实际游戏结果，不要自动重试整轮。"
                 : queueTimedOut
                     ? "主线程未及时开始本次后处理动作派发，已停止等待；此队列动作不会随后补做。请检查此前已发生的游戏结果，不要自动重试整轮。"
                     : "本次后处理动作派发未开始，当前回复未完成处理。请检查游戏状态后再继续。", cause)
         {
             EffectState = ownerStarted ? ActionExecutionEffectState.UnknownAfterStart : ActionExecutionEffectState.NoConfirmedEffect;
-            ErrorCode = ownerStarted ? "native.actions.outcome_unknown"
+            ErrorCode = ownerStarted ? (cause is NativeConversationHistoryCommitException ? "native.memory.commit_unconfirmed" : "native.actions.outcome_unknown")
                 : queueTimedOut ? "native.actions.dispatch_timeout" : "native.actions.dispatch_not_started";
         }
         internal ActionExecutionEffectState EffectState { get; }

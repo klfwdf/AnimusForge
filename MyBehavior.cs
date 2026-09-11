@@ -27803,42 +27803,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	/// </summary>
 	public static MemoryCommitResult CommitExternalDialogueHistory(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact)
 	{
-		try
-		{
-			if (!TWParallel.IsMainThread())
-			{
-				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_not_main_thread");
-			}
-			MyBehavior owner = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			if (owner == null)
-			{
-				return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_missing");
-			}
-			string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
-			if (string.IsNullOrEmpty(normalizedMemoryId) || isNonHero != IsNonHeroMemoryId(normalizedMemoryId))
-			{
-				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_identity_invalid");
-			}
-			if (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact))
-			{
-				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_empty_commit");
-			}
-			Hero hero = isNonHero ? null : (Hero.Find(memoryId.Trim()) ?? FindHeroById(normalizedMemoryId));
-			if (!isNonHero && !IsHeroNpcEligibleForCompressedMemory(hero))
-			{
-				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_target_ineligible");
-			}
-			bool accepted = isNonHero
-				? owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact)
-				: owner.AppendDialogueHistory(hero, playerText, aiText, extraFact);
-			return accepted
-				? new MemoryCommitResult(MemoryCommitStatus.Applied)
-				: new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_write_unconfirmed");
-		}
-		catch
-		{
-			return new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_append_failed");
-		}
+		// Preserve the public six-argument ABI and its original loose-session behavior.
+		return CommitDialogueHistoryWithScene(memoryId, isNonHero, npcName, playerText, aiText, extraFact, -1);
 	}
 
 	public static void AppendExternalSceneDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
