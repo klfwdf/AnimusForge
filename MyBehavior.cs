@@ -2415,6 +2415,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			CancelWeeklyFullReportCompletions();
+			ResetMemorySummaryMainThreadActions();
 			ResetTailPersistenceTransientState(reason);
 			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			ClearRuleStickyCarry();
@@ -4990,72 +4991,66 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			List<string> failures = new List<string>();
-			foreach (MemorySummaryExecutionResult result in results)
+			List<MemoryOverviewJob> extraOverviewJobs = null;
+			bool accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 			{
-				if (result == null || result.Job == null)
+				foreach (MemorySummaryExecutionResult result in results)
 				{
-					continue;
+					if (result == null || result.Job == null || result.IsObsolete)
+					{
+						continue;
+					}
+					if (result.Success)
+					{
+						ApplyMemorySummarySuccess(result.Job, result.Block);
+					}
+					else
+					{
+						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
+						MarkMemorySummaryFailure(result.Job, result.Error);
+					}
 				}
-				// Target/source cleanup is normal save recovery, not an actionable API error or popup condition.
-				if (result.IsObsolete)
+				foreach (MajorActionSummaryExecutionResult result2 in majorResults)
 				{
-					continue;
+					if (result2 == null || result2.Job == null || result2.IsObsolete)
+					{
+						continue;
+					}
+					if (result2.Success)
+					{
+						ApplyMajorActionSummarySuccess(result2.Job, result2.State);
+					}
+					else
+					{
+						failures.Add((result2.Job.HeroName ?? result2.Job.HeroId) + " 重大履历：" + (result2.Error ?? "未知错误"));
+						MarkMajorActionSummaryFailure(result2.Job, result2.Error);
+					}
 				}
-				if (result.Success)
+				foreach (MemoryOverviewExecutionResult result3 in overviewResults)
 				{
-					ApplyMemorySummarySuccess(result.Job, result.Block);
+					if (result3 == null || result3.Job == null || result3.IsObsolete)
+					{
+						continue;
+					}
+					if (result3.Success)
+					{
+						ApplyMemoryOverviewSuccess(result3.Job, result3.State);
+					}
+					else
+					{
+						failures.Add((result3.Job.HeroName ?? result3.Job.HeroId) + " 记忆总览：" + (result3.Error ?? "未知错误"));
+						MarkMemoryOverviewFailure(result3.Job, result3.Error);
+					}
 				}
-				else
-				{
-					failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
-					MarkMemorySummaryFailure(result.Job, result.Error);
-				}
-			}
-			foreach (MajorActionSummaryExecutionResult result2 in majorResults)
+				QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+				HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null && !x.IsObsolete).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
+				extraOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !processedOverviewHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
+				return true;
+			});
+			if (!accepted)
 			{
-				if (result2 == null || result2.Job == null)
-				{
-					continue;
-				}
-				// Target/source cleanup is normal save recovery, not an actionable API error or popup condition.
-				if (result2.IsObsolete)
-				{
-					continue;
-				}
-				if (result2.Success)
-				{
-					ApplyMajorActionSummarySuccess(result2.Job, result2.State);
-				}
-				else
-				{
-					failures.Add((result2.Job.HeroName ?? result2.Job.HeroId) + " 重大履历：" + (result2.Error ?? "未知错误"));
-					MarkMajorActionSummaryFailure(result2.Job, result2.Error);
-				}
+				return;
 			}
-			foreach (MemoryOverviewExecutionResult result3 in overviewResults)
-			{
-				if (result3 == null || result3.Job == null)
-				{
-					continue;
-				}
-				// Target/source cleanup is normal save recovery, not an actionable API error or popup condition.
-				if (result3.IsObsolete)
-				{
-					continue;
-				}
-				if (result3.Success)
-				{
-					ApplyMemoryOverviewSuccess(result3.Job, result3.State);
-				}
-				else
-				{
-					failures.Add((result3.Job.HeroName ?? result3.Job.HeroId) + " 记忆总览：" + (result3.Error ?? "未知错误"));
-					MarkMemoryOverviewFailure(result3.Job, result3.Error);
-				}
-			}
-			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-			HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null && !x.IsObsolete).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
-			List<MemoryOverviewJob> extraOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !processedOverviewHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
 			if (extraOverviewJobs.Count > 0)
 			{
 				if (queueItems.Count > 0)
@@ -5074,41 +5069,48 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
-				foreach (MemoryOverviewExecutionResult result4 in extraOverviewResults)
+				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 				{
-					if (result4 == null || result4.Job == null)
+					foreach (MemoryOverviewExecutionResult result4 in extraOverviewResults)
 					{
-						continue;
+						if (result4 == null || result4.Job == null || result4.IsObsolete)
+						{
+							continue;
+						}
+						if (result4.Success)
+						{
+							ApplyMemoryOverviewSuccess(result4.Job, result4.State);
+						}
+						else
+						{
+							failures.Add((result4.Job.HeroName ?? result4.Job.HeroId) + " 记忆总览：" + (result4.Error ?? "未知错误"));
+							MarkMemoryOverviewFailure(result4.Job, result4.Error);
+						}
 					}
-					// A target removed during the delayed overview wave is intentionally silent and is dropped below.
-					if (result4.IsObsolete)
-					{
-						continue;
-					}
-					if (result4.Success)
-					{
-						ApplyMemoryOverviewSuccess(result4.Job, result4.State);
-					}
-					else
-					{
-						failures.Add((result4.Job.HeroName ?? result4.Job.HeroId) + " 记忆总览：" + (result4.Error ?? "未知错误"));
-						MarkMemoryOverviewFailure(result4.Job, result4.Error);
-					}
+					overviewResults.AddRange(extraOverviewResults);
+					return true;
+				});
+				if (!accepted)
+				{
+					return;
 				}
-				overviewResults.AddRange(extraOverviewResults);
 			}
-			// Keep only runnable work; terminal retries and invalid targets must not be serialized back into the save.
-			_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where((MajorActionSummaryJob job) => job != null && HasMajorActionSummaryJobStillPending(job)).ToList());
-			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
-			if (failures.Count > 0)
+			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 			{
-				ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。", runtimeGeneration);
-			}
-			else if (results.Count > 0 || majorResults.Count > 0 || overviewResults.Count > 0)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + results.Count((MemorySummaryExecutionResult x) => x != null && x.Success) + " 个，重大履历 " + majorResults.Count((MajorActionSummaryExecutionResult x) => x != null && x.Success) + " 个，记忆总览 " + overviewResults.Count((MemoryOverviewExecutionResult x) => x != null && x.Success) + " 个。"));
-			}
+				// Keep only runnable work; terminal retries and invalid targets must not be serialized back into the save.
+				_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
+				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where((MajorActionSummaryJob job) => job != null && HasMajorActionSummaryJobStillPending(job)).ToList());
+				_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
+				if (failures.Count > 0)
+				{
+					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。", runtimeGeneration);
+				}
+				else if (results.Count > 0 || majorResults.Count > 0 || overviewResults.Count > 0)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + results.Count((MemorySummaryExecutionResult x) => x != null && x.Success) + " 个，重大履历 " + majorResults.Count((MajorActionSummaryExecutionResult x) => x != null && x.Success) + " 个，记忆总览 " + overviewResults.Count((MemoryOverviewExecutionResult x) => x != null && x.Success) + " 个。"));
+				}
+				return true;
+			});
 		}
 		catch (Exception ex)
 		{
@@ -5120,10 +5122,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
+			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 			{
 				_memorySummaryProcessing = false;
-			}
+				return true;
+			});
 		}
 	}
 
@@ -20309,6 +20312,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ProcessMemorySummaryMainThreadActions();
 			ProcessPendingMemoryFailureNotice();
 			ProcessPendingMissingOnnxGateCheck();
 			ProcessMissingOnnxGateUiResume();
@@ -48274,6 +48278,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private void ClearAllDataForCurrentSave()
 	{
 		CancelWeeklyFullReportCompletions();
+		ResetMemorySummaryMainThreadActions();
 		_shownRecords = new Dictionary<string, HeroShownRecord>();
 		_shownRecordStorage = new Dictionary<string, string>();
 		_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
