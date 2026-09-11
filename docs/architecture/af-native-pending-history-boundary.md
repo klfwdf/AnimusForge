@@ -16,7 +16,7 @@
 
 history 专用 runner 只服务 prepare/cleanup，仍使用原 _mainThreadActions。只有 queued 能被 deadline 或失败发布取消；claimed 后必须等真实结果。重复 callback 只能执行一次。未开始超时明确抛 TimeoutException，不能静默返回空结果冒充已处理；日志失败不改变结果。计时结束主动取消/释放 timer，无新增 Tick/轮询。
 
-没有全局替换当前通用 RunNativeConversationMainThreadFuncAsync：它还有大量 Scene/其他调用及不同历史 fallback 语义，需要后续独立回归，不能随这一段一并盲改。
+历史批次未全局替换通用 RunNativeConversationMainThreadFuncAsync。后续共用调度修复已独立完成；其普通 fallback 与这里的明确历史异常仍有不同责任，见 af-mainthread-function-boundary.md。
 
 ## 保留与性能
 
@@ -26,6 +26,6 @@ history 专用 runner 只服务 prepare/cleanup，仍使用原 _mainThreadAction
 
 ## 未完成
 
-这不是完整 Native prepare 迁移：此前的人设/规则/持久记忆等游戏读取、一般主线程函数的 bool timeout 竞态、TTS 引擎直接回调、Courier prepare 还需接续。无真实游戏/旧存档验收，公共 Api.V1 保持只读。新的快照/清理不是持久化或完整恢复 receipt。
+这不是完整 Native prepare 迁移：此前的人设/规则/持久记忆等游戏读取、TTS 引擎直接回调、Courier prepare 还需接续。无真实游戏/旧存档验收，公共 Api.V1 保持只读。新的快照/清理不是持久化或完整恢复 receipt。
 
 验证入口：tools/NativePendingHistoryBoundaryTests；总状态见 HANDOFF.md。

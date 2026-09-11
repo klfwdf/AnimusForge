@@ -2,6 +2,10 @@
 
 用户已授权按确认架构开始构建初版。本文是本轮实施检查点，不表示此前 21 项全部完成。
 
+## 当前续作入口
+
+共用 Native/Scene 主线程函数已修复并提交 `5bf830f3`；132 检查 / 7 变异、六项 Stage 和相关回归通过。当前下一项是更早 Native prepare/TTS、Courier prepare，不是公共写 API 或阶段 8 收尾。详见 `docs/phase8/mainthread-function-progress-20260911.md` 和根 HANDOFF 最新段。
+
 ## 范围
 - 在同一个 AnimusForge.dll 中建立 internal 模块契约、显式登记和只读状态目录；不扫描 DLL、不新增全局功能开关。
 - 政策、宴会、GCCZ 的选定实际接缝改走具名 typed 薄桥；业务实现、参数顺序、返回值、副作用和权威后处理责任保持不变。
