@@ -1,5 +1,5 @@
 {
-  "reason": "Reviewed non-port declarations, each hash-frozen and with no team-module receiver. Native suites and MainThreadFunctionBoundaryTests own their behavior; full receiver inverse proof remains strict.",
+  "reason": "Reviewed non-port declarations, each hash-frozen and with no team-module receiver. Native, shared-scheduler and memory-failure boundary suites own their behavior; full receiver inverse proof remains strict.",
   "baseline": "14dec2d7",
   "methods": [
     {

@@ -1,0 +1,397 @@
+{
+  "kind": "memory-failure-presentation-local-verification",
+  "recordedUtc": "2026-09-11T06:30:34.080354+00:00",
+  "sourceCommit": "6f0bac67cbd8928ff5983034098e7892497df33e",
+  "checkpoint": "88777e45",
+  "baseline": "38488ed2",
+  "productionFiles": [
+    {
+      "path": "MyBehavior.cs",
+      "sha256": "3ac18894db2bb22680aba14400d2bc8e083387a3bdeecc50857d39b67b8b7a43"
+    },
+    {
+      "path": "MyBehavior.MemoryFailureNotice.cs",
+      "sha256": "483ee562c1d8c97097bc710b63f98f66a352523eb3a03eed2e651d8963493ac1"
+    }
+  ],
+  "sourceParity": {
+    "baseline": "38488ed2",
+    "reviewedDeclarations": [
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private async Task ProcessMemorySummaryQueueAsync()",
+        "sha256": "19c4d50cf0c3ee0bd2b23dd9c7c6de959dac175e79793be667214d0138b93d7f"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private bool TryBuildMemoryRecallCandidates(",
+        "sha256": "312fa59f12786f01552be8e7953256f618a8307984243365ff3d25827af23bf0"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private bool TrySelectMemoryIdsWithPreprocess(",
+        "sha256": "39887c024565c9e8b78e4039aec3fe48dde9222e52568adf1d927647c47b72a2"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private string BuildCompressedMemoryContextById(",
+        "sha256": "fdbfb7c563f7c7775e0215e77d172c0e784fba5933c4fc55f835e7ec299c8bba"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void ShowCompressedMemoryBlockingPopup(",
+        "sha256": "5de0dabf34c838dee831de50e928fa1d61c439c272119dc4272a22aa02d13c9c"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "public void OnEngineTick()",
+        "sha256": "6023ecef2b656d0ecfe07d1657890e8eeadfaab7cf26a76ab5f41e5d6080a371"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void ResetLocalTransientRuntimeForLoadedSave(",
+        "sha256": "a33998ca535a39b0aad68c9560c64e9995e9dc58e48f695de59a1bda9f730783"
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void ClearAllDataForCurrentSave()",
+        "sha256": "e9bfd028341a9a41ef46e021ef9b330b9e440810451579bf1f61c13e93b9ff1c"
+      }
+    ],
+    "wholeFileInverse": true,
+    "producerAndAlgorithmInverse": true,
+    "producerCount": 9
+  },
+  "checks": 85,
+  "mutations": 7,
+  "baselineRuntimeFailures": 37,
+  "noticeRuns": [
+    {
+      "mode": "original",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "current",
+      "exit": 0,
+      "expected": 0,
+      "verified": true
+    },
+    {
+      "mode": "off-main-ui",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "drop-generation",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "drop-owner",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "drop-campaign",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "drop-revision",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "keep-pending-on-reset",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    },
+    {
+      "mode": "diagnostic-throws",
+      "exit": 1,
+      "expected": 1,
+      "verified": true
+    }
+  ],
+  "focusedRuns": [
+    {
+      "name": "preparation",
+      "exit": 0
+    },
+    {
+      "name": "mainthread",
+      "exit": 0
+    },
+    {
+      "name": "admission",
+      "exit": 0
+    },
+    {
+      "name": "presentation",
+      "exit": 0
+    },
+    {
+      "name": "action",
+      "exit": 0
+    },
+    {
+      "name": "completion",
+      "exit": 0
+    },
+    {
+      "name": "pending",
+      "exit": 0
+    },
+    {
+      "name": "team-ports",
+      "exit": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "ce5f5866938d9729b3dde85e384094d519d7f381af3982bcc8d8223441d3cc82",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "e3ddf6cc30e36d19bbef0334a90740851213d04a17515286c99ab1dcc2a15dec",
+      "referenceGameVersion": "v1.4.6.115628"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "c2d145d769270c4afa2cedf84bb0384d54e5c8cc3159c0dfe36ffd85b2136c23",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "7c40a341d2114437a8116b1f1f1c6bf593038300c80605cf834075b5d7f2907b",
+      "referenceGameVersion": "v1.3.15.110062"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "0fe30a1607c5a2880311f1f11e38d872ae768843804ca9d0cb2d09c86a6ba0af",
+      "referenceGameVersion": "v1.4.6.115628"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "1439485bec539df450b4da9babb2fb2ce242a5f250a2faa2cdad249baaa554ee",
+      "referenceGameVersion": "v1.3.15.110062"
+    }
+  ],
+  "regressions": [
+    {
+      "name": "InteractionPipelineContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 1.72,
+      "summary": [
+        "PASS detachedHostCommitBoundary cases=69 channels=3 noReplayAfterCommit=1 lateCallbackClosed=1 singleCommit=1 cancellation=1 receipts=1",
+        "PASS interactionCommitReceipts cases=39 requestIdentity=1 terminalFailure=1 payloadIntegrity=1 reentrant=1 boundedCapacity=1 courierDirection=1 duplicateCallback=1 publicAbi=1",
+        "PASS asyncInteractionOwner cases=18 realComposition=true realCoordinator=true realCommitBoundary=true game=NOT_RUN",
+        "PASS legacyAnonymousPrompt cases=13 realAdapter=true stringPropertiesOnly=true legacyDictionaryCoercion=unchanged game=NOT_RUN"
+      ]
+    },
+    {
+      "name": "BridgeRuntimeIsolationTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 5.58,
+      "summary": [
+        "PASS BridgeRuntimeIsolationTests processScenarios=12 definitions=16 wired=12 mandatorySafety=independent"
+      ]
+    },
+    {
+      "name": "ProductionOptInEntryReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 4.64,
+      "summary": [
+        "PASS notorietyConversationOutcomeProductionReplay embeddedWitness=1 bounds=64/512/260 exactLine=1 duplicateBeforeRoll=1 exactFinalize=1 loadUnknown=1 confirmedReconcile=1 legacyAbi=1 dataOnly=1",
+        "PASS courierEconomyReservation fixtureOnly=1 liveCampaign=0 saveWrite=0 assertions=18",
+        "PASS courierInboundCompletionReplay receipt=1 checksum=1 payloadConflict=1 sessionJson=1 loadGate=1 completion=1 stateIdempotent=1 ownerQuerySeam=1 tickOne=1 isolated=1 assertions=87",
+        "PASS productionOptInEntryReplay native=1 scene=1 courier=1 identity=1 failClosed=1 ports=1 notorietyOutcomeStructural=1 weeklyOutcomeStructural=1 noDefaultCutover=1"
+      ]
+    },
+    {
+      "name": "ProductionCourierHostReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 2.19,
+      "summary": [
+        "PASS productionCourierHostReplay courierPorts=1 replyMain=1 syntheticOwnerAbsent=1 unboundPostprocessDenied=1 postprocessTransportDenied=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1"
+      ]
+    },
+    {
+      "name": "ProductionDetachedHostReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 1.95,
+      "summary": [
+        "PASS productionDetachedHostReplay capture=1 main=1 postprocess=1 visibleFinal=1 commit=1 memoryBoundary=1 fallbackIsolation=1"
+      ]
+    },
+    {
+      "name": "ProductionEconomyAwareCommitReplayTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 2.02,
+      "summary": [
+        "PASS productionEconomyAwareCommit mixed=1 economyOnly=1 receipt=1 partial=2 unknown=3 productionAssembly=1"
+      ]
+    },
+    {
+      "name": "BridgeBindingContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 5.89,
+      "summary": [
+        "PASS bridgeBindings=16 wired=12 declaredOnly=4 configEnabled=12 sourceFiles=33 execution=source-bound metadata-only; no Bannerlord/runtime/network/save access"
+      ]
+    },
+    {
+      "name": "PersistenceProfileConfigContractTests",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 13.73,
+      "summary": [
+        "PASS persistenceProfileConfig literalKeys=142 sourceFiles=18 symbolicSources=43 symbolicFamilies=4 chunkedStringKeys=13 flattenedDictionaryKeys=44 chunkMaxBytes=12000 typedBindings=168 typedBindingKeys=142 typedBindingTypes=9 profiles=3 cases=5 credentialFieldsExcluded=5 namespaces=9 migrationIdempotent=True unknownDataPreserved=True legacyFirstCases=10"
+      ]
+    },
+    {
+      "name": "PhaseEightReadiness",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 0.14,
+      "summary": [
+        "PASS Phase8 entry inventory"
+      ]
+    },
+    {
+      "name": "scene-parity",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 4.05,
+      "summary": [
+        "PASS complete-once",
+        "PASS normalize-throws-no-reentry",
+        "PASS ScenePostprocessParity fixtures=71 originalMethod=executed candidateMethod=executed splitPhases=True domainHelpers=STUBBED live=NOT_RUN save=NOT_RUN apiNetwork=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "name": "scene-queue",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 3.56,
+      "summary": [
+        "PASS copied-input-candidates result=22 prepare=1 network=1 normalize=1 actions=1",
+        "PASS main-prepare-dropped result=-1 prepare=0 network=0 normalize=0 actions=0",
+        "PASS SceneDeferredQueue fixtures=37 realQueue=executed realWorkItemComplete=executed physicalThreadBoundary=verified gameDomainHelpers=STUBBED live=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "name": "channel",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 3.25,
+      "summary": [
+        "PASS scene-lifecycle/failure-release/generation",
+        "PASS scene-lifecycle/failure-release/session",
+        "PASS scene-lifecycle/failure-release/epoch",
+        "ChannelCutoverBoundary passes=132 failures=0 extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN"
+      ]
+    },
+    {
+      "name": "courier-owner",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 4.92,
+      "summary": [
+        "PASS skip-empty-error-无回信",
+        "PASS skip-empty-error-（API请求失败：fixture）",
+        "CourierPostprocessOwner PASS=39 FAIL=0 realParser=true ownerThread=physical-main LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "name": "native-tts-fallback",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 3.27,
+      "summary": [
+        "PASS exception",
+        "PASS atomic-register-B",
+        "RESULT nativeTtsFallback passed=14 failed=0 liveGame=false",
+        ""
+      ]
+    },
+    {
+      "name": "public-api",
+      "exitCode": 0,
+      "expectedExit": 0,
+      "state": "PASS",
+      "seconds": 8.36,
+      "summary": [
+        "ARTIFACT G:\\AFMOD\\AF-REFACTOR\\bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll SHA256=7c40a341d2114437a8116b1f1f1c6bf593038300c80605cf834075b5d7f2907b",
+        "ARTIFACT G:\\AFMOD\\AF-REFACTOR\\bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll SHA256=0fe30a1607c5a2880311f1f11e38d872ae768843804ca9d0cb2d09c86a6ba0af",
+        "PASS 532 actual-DLL metadata assertions; 4 implementation DLLs; public V1/legacy memory signatures match; module ports and scene-aware memory owner remain internal.",
+        "NOT TESTED: CLR loading, Bootstrap ordering, game object access, real sub-MOD execution."
+      ]
+    },
+    {
+      "name": "missing-evidence",
+      "exitCode": 2,
+      "expectedExit": 2,
+      "state": "PASS",
+      "seconds": 0.61,
+      "summary": [
+        "  \"currentSourceCommit\": \"88777e452220483e36fcc253d290c50219f56f48\",",
+        "  \"acceptedEvidenceCount\": 0,",
+        "  \"verifiedFileReferences\": 21",
+        "}"
+      ]
+    }
+  ],
+  "persistenceSourceLineDeltas": [
+    {
+      "key": "_patienceStates_v1",
+      "before": 36435,
+      "after": 36421
+    },
+    {
+      "key": "_patienceStates_v1",
+      "before": 36444,
+      "after": 36430
+    }
+  ],
+  "liveGame": false,
+  "realSaveAccess": false,
+  "deploy": false,
+  "push": false,
+  "publicApi": "V1 remains read-only",
+  "logs": ".tmp/memory-failure-ui-20260911"
+}

@@ -4,7 +4,7 @@
 
 ## 当前续作入口
 
-Native 初始场景准备已接入主线程，生产/测试 `0306beba`；589 检查 / 5 变异、六项 Stage 与相关回归通过。当前下一项为深层持久历史/记忆检索的数据边界，随后 persona/周报绑定、TTS 和 Courier prepare；不是开放公共写 API 或阶段 8 最终收尾。详见 `docs/phase8/native-preparation-progress-20260911.md` 和根 HANDOFF 最新段。
+记忆失败提示的主线程与 owner/Campaign/generation/revision 边界已提交 `6f0bac67`；85 检查 / 7 变异、六项 Stage 和相关回归通过。记忆数据快照仍是下一项，不能把本次提示修复写成完整记忆线程安全。随后继续 TTS/Courier prepare，公共 Api.V1 仍只读。见 `docs/phase8/memory-failure-ui-progress-20260911.md` 和根 HANDOFF 最新段。
 
 ## 范围
 - 在同一个 AnimusForge.dll 中建立 internal 模块契约、显式登记和只读状态目录；不扫描 DLL、不新增全局功能开关。
