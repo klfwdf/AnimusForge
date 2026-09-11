@@ -1,0 +1,4 @@
+interface:
+  display_name: "AF 主体框架维护"
+  short_description: "维护 AF 三层架构与可演进的主体能力，交接标注代码位置和覆盖边界"
+  default_prompt: "使用 $af-core-framework 核对当前 AF 主体框架，按本次功能要求实施并更新带代码坐标的 HANDOFF。"

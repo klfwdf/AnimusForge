@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "8f1cd4794fe19b9d3fc9b1f1ca50afc65eed92ab",
+  "remoteBaseline": "a58c219122d7064cbcb34eed504ec99a826ca563",
+  "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
+  "anchors": [
+    {
+      "id": "internal.port.policy",
+      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "start": 7,
+      "end": 10,
+      "symbol": "internal interface IPolicyModulePort",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "政策 typed 接缝，业务归原 owner",
+      "fileSha256": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a"
+    },
+    {
+      "id": "internal.port.gathering",
+      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "start": 17,
+      "end": 20,
+      "symbol": "internal interface IGatheringModulePort",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "宴会 typed 接缝，不迁移玩法",
+      "fileSha256": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a"
+    },
+    {
+      "id": "internal.port.siege",
+      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "start": 27,
+      "end": 30,
+      "symbol": "internal interface ISiegeModulePort",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "GCCZ 接缝，保留原场景门禁",
+      "fileSha256": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a"
+    },
+    {
+      "id": "internal.adapters",
+      "path": "Refactor/Modules/TeamModuleAdapters.cs",
+      "start": 7,
+      "end": 10,
+      "symbol": "internal sealed class PolicyModuleAdapter : IPolicyModulePort",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "同文件三组薄桥原样转接参数/返回/ref/out",
+      "fileSha256": "a06157b46c4e1730f3194c00414ca663b22428f72157f021b276f9a1f1242051"
+    },
+    {
+      "id": "internal.services",
+      "path": "Refactor/Modules/TeamModuleServices.cs",
+      "start": 5,
+      "end": 8,
+      "symbol": "internal static class TeamModuleServices",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "无状态 typed 单例装配",
+      "fileSha256": "ea992ecbd11664fbbccc9e122f49841201dd2ede8530c8967d00f37a1346ca72"
+    },
+    {
+      "id": "internal.directory",
+      "path": "Refactor/Modules/InternalModuleDirectory.cs",
+      "start": 137,
+      "end": 140,
+      "symbol": "internal sealed class InternalModuleDirectory",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "注册/冻结/依赖校验，非游戏执行授权",
+      "fileSha256": "0c0a448c8487328c510fa73db1dbc11be991d91d6e80b4bc42304a3117996126"
+    },
+    {
+      "id": "internal.runtime",
+      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "start": 14,
+      "end": 17,
+      "symbol": "internal static class ModuleFrameworkRuntime",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "装配与只读投影，不是第二套执行器",
+      "fileSha256": "4739b5537b5c8a84152a469cfc13d975b4c4930ede2b49dfb22c74545d3e1f5d"
+    },
+    {
+      "id": "public.api",
+      "path": "Api/V1/AfApi.cs",
+      "start": 13,
+      "end": 16,
+      "symbol": "public static class AfApi",
+      "match": "exact",
+      "status": "readonly-api",
+      "note": "当前只读；其他提交/写能力未开放",
+      "fileSha256": "6c1d44c72aa8388fab3caf147e524cf66ae10353b25a5acb00f41ab5c86f72ee"
+    },
+    {
+      "id": "public.ids",
+      "path": "Api/V1/AfApiContracts.cs",
+      "start": 35,
+      "end": 38,
+      "symbol": "public static class AfCapabilityIds",
+      "match": "exact",
+      "status": "readonly-api",
+      "note": "公开 ID 和同文件 DTO，可按兼容版本演进",
+      "fileSha256": "49c0a3e170ea53da978b2895dfb16fa38b042a1cf051834c6279e9ca2e94229f"
+    },
+    {
+      "id": "lifecycle.load",
+      "path": "SubModule.cs",
+      "start": 60,
+      "end": 63,
+      "symbol": "ModuleFrameworkRuntime.Initialize(out string moduleFrameworkReason);",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "模块装配，不是 Campaign Ready",
+      "fileSha256": "1e4bedea5735dd490ad5d2249e33cfe200a389372f3449a23c694ce810a4b4eb"
+    },
+    {
+      "id": "lifecycle.unload",
+      "path": "SubModule.cs",
+      "start": 110,
+      "end": 113,
+      "symbol": "ModuleFrameworkRuntime.Shutdown();",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "发布停止状态",
+      "fileSha256": "1e4bedea5735dd490ad5d2249e33cfe200a389372f3449a23c694ce810a4b4eb"
+    },
+    {
+      "id": "native.admission",
+      "path": "ShoutBehavior.NativeAdmission.cs",
+      "start": 17,
+      "end": 20,
+      "symbol": "internal sealed class NativeConversationAdmission",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "准入/忙碌/会话绑定，不是完整公共提交服务",
+      "fileSha256": "1224e462f3767e20f7b8b5df8256c94b15b8bf55f9fc382f5a2babe5fdbe582a"
+    },
+    {
+      "id": "native.preparation",
+      "path": "ShoutBehavior.NativePreparation.cs",
+      "start": 14,
+      "end": 17,
+      "symbol": "private sealed class NativeConversationPreparationSnapshot",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "仍含原 Location 引用，不是公共不可变 DTO",
+      "fileSha256": "4117c5b06e4e7ae49e559393f4d6330e83fbb52cf417643e08ffab9eab03fbd7"
+    },
+    {
+      "id": "native.history.capture",
+      "path": "MyBehavior.HistoryPromptSnapshot.cs",
+      "start": 35,
+      "end": 38,
+      "symbol": "internal static Func<string> CaptureHistoryContextWorkById",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "召回用途投影，非全局记忆事务",
+      "fileSha256": "bf01837f92bbc18c36d1c079e22467342b65d1c4f4f0d4a89fdcb9094922367f"
+    },
+    {
+      "id": "native.history.bridge",
+      "path": "ShoutBehavior.cs",
+      "start": 16180,
+      "end": 16183,
+      "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
+      "match": "contains",
+      "status": "mixed-host",
+      "note": "原身份解析在主线程捕获，非全 Shout 重写",
+      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+    },
+    {
+      "id": "native.history.dispatch",
+      "path": "ShoutBehavior.cs",
+      "start": 20159,
+      "end": 20162,
+      "symbol": "\"persisted_history_capture\", nativeTargetLog, nativeTargetAgentIndex,",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "原 admission 验证后捕获 work",
+      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+    },
+    {
+      "id": "native.history.accept",
+      "path": "ShoutBehavior.cs",
+      "start": 20201,
+      "end": 20204,
+      "symbol": "if (!await RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
+      "match": "contains",
+      "status": "mixed-host",
+      "note": "使用结果前再验原 admission",
+      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+    },
+    {
+      "id": "native.dispatch.shared",
+      "path": "ShoutBehavior.cs",
+      "start": 19437,
+      "end": 19440,
+      "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
+      "match": "contains",
+      "status": "mixed-host",
+      "note": "排队/开始/退休，不假称网络已取消",
+      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+    },
+    {
+      "id": "memory.acceptance",
+      "path": "MyBehavior.DialogueHistoryCommit.cs",
+      "start": 12,
+      "end": 15,
+      "symbol": "internal static MemoryCommitResult CommitDialogueHistoryWithScene",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "运行期接受，不是磁盘/跨动作事务",
+      "fileSha256": "c83eac734c9be55050eea528f1b3bed136af1d3acafbf15537e0add3f5ec7886"
+    },
+    {
+      "id": "memory.failure.ui",
+      "path": "MyBehavior.MemoryFailureNotice.cs",
+      "start": 53,
+      "end": 56,
+      "symbol": "private void ProcessPendingMemoryFailureNotice()",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "原 EngineTick 消费；owner/Campaign/generation/revision",
+      "fileSha256": "8578fbd0ea46c7db547997fb5dd606fb21ce0aea6b0fec402127c4bb710059fa"
+    },
+    {
+      "id": "legacy.history",
+      "path": "MyBehavior.cs",
+      "start": 28087,
+      "end": 28090,
+      "symbol": "public static string BuildHistoryContextForExternal(",
+      "match": "contains",
+      "status": "retained-live",
+      "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
+      "fileSha256": "9040b07c3e999c74a50e2eb3e464f36fa2aeafa5bc1e54c3a0781fcd22694314"
+    },
+    {
+      "id": "legacy.recall",
+      "path": "MyBehavior.cs",
+      "start": 34093,
+      "end": 34096,
+      "symbol": "private string BuildCompressedMemoryContextById(",
+      "match": "contains",
+      "status": "mixed-host",
+      "note": "snapshot 和默认旧调用共用原算法",
+      "fileSha256": "9040b07c3e999c74a50e2eb3e464f36fa2aeafa5bc1e54c3a0781fcd22694314"
+    },
+    {
+      "id": "scene.postprocess",
+      "path": "ShoutBehavior.ScenePostprocess.cs",
+      "start": 25,
+      "end": 28,
+      "symbol": "private sealed class SceneActionPostprocessWorkItem",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "已有完整后处理；非本次重写 Scene 业务",
+      "fileSha256": "e58ca40fdab4c4413735d533bbbdfcd9cb6afa465620a5c2bcf829fd063c80fd"
+    },
+    {
+      "id": "courier.prepare.reply",
+      "path": "CourierDeliveryBehavior.cs",
+      "start": 4674,
+      "end": 4677,
+      "symbol": "string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient,",
+      "match": "contains",
+      "status": "retained-live",
+      "note": "回信早期准备待线程审查，未迁快照",
+      "fileSha256": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9"
+    },
+    {
+      "id": "courier.prepare.inbound",
+      "path": "CourierDeliveryBehavior.cs",
+      "start": 5102,
+      "end": 5105,
+      "symbol": "string historyText = (MyBehavior.BuildHistoryContextForExternal(sender,",
+      "match": "contains",
+      "status": "retained-live",
+      "note": "来信早期准备待线程审查，未迁快照",
+      "fileSha256": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9"
+    }
+  ]
+}

@@ -2,9 +2,13 @@
 
 用户已授权按确认架构开始构建初版。本文是本轮实施检查点，不表示此前 21 项全部完成。
 
-## 当前续作入口
+## 当前交接入口（自动化已暂停）
 
-记忆失败提示的主线程与 owner/Campaign/generation/revision 边界已提交 `6f0bac67`；85 检查 / 7 变异、六项 Stage 和相关回归通过。记忆数据快照仍是下一项，不能把本次提示修复写成完整记忆线程安全。随后继续 TTS/Courier prepare，公共 Api.V1 仍只读。见 `docs/phase8/memory-failure-ui-progress-20260911.md` 和根 HANDOFF 最新段。
+后续用户已授权框架 Skill/代码定位文档的单次 GitHub 交付；见根 HANDOFF 顶部和 `framework-skill-publish-progress-20260911.md`。以下“未推送”是运行代码批次当时状态，不禁止这次获准交付，也不授权恢复自动化。
+
+Native 持久历史输入快照已提交 `8f1cd479`；新 memory 852 / Native 27、10 个新变异、既有定向回归、26 个旧变异、六项最终 Stage 与 16 组相关回归通过。详见 `docs/phase8/native-history-snapshot-progress-20260911.md` 和根 HANDOFF 最新段。
+
+用户要求本轮完成后暂停，自动化 `af-7-8` 已确认为 PAUSED，等待新指示，不继续下一项。Api.V1 仍只读；快照只接 Native 这条历史入口，不是全局记忆线程安全，更不是实机或整个阶段 8 DONE。未推送、部署或操作真实存档。
 
 ## 范围
 - 在同一个 AnimusForge.dll 中建立 internal 模块契约、显式登记和只读状态目录；不扫描 DLL、不新增全局功能开关。
