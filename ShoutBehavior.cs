@@ -16177,39 +16177,48 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static string BuildNativeConversationPersistedHistoryContextForPrompt(Hero targetHero, CharacterObject targetCharacter, string playerText, string currentNativeDialogText, bool includeCurrentActiveSceneSession = false)
-	{
-		try
-		{
-			Hero hero = targetHero ?? targetCharacter?.HeroObject;
-			if (hero == null)
-			{
-				int agentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
-				NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
-				if (npc != null)
-				{
-					npc.AgentIndex = agentIndex;
-				}
-				string nonHeroSecondaryInput = NormalizeNativeConversationVisibleTextKey(currentNativeDialogText);
-				if (string.IsNullOrWhiteSpace(nonHeroSecondaryInput))
-				{
-					nonHeroSecondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter, agentIndex);
-				}
-				return BuildWildernessNonHeroHistoryContextForPrompt(npc, targetHero, targetCharacter, agentIndex, playerText, nonHeroSecondaryInput, includeCurrentActiveSceneSession);
-			}
-			string secondaryInput = NormalizeNativeConversationVisibleTextKey(currentNativeDialogText);
-			if (string.IsNullOrWhiteSpace(secondaryInput))
-			{
-				secondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter, TryResolveNativeConversationAgentIndex(targetHero, targetCharacter));
-			}
-			string text = MyBehavior.BuildHistoryContextForExternal(hero, 0, playerText, secondaryInput, includeCurrentActiveSceneSession);
-			return (text ?? "").Trim();
-		}
-		catch
-		{
-			return "";
-		}
-	}
+	private static Func<string> CaptureNativeConversationPersistedHistoryWork(Hero targetHero, CharacterObject targetCharacter, string playerText, string currentNativeDialogText, bool includeCurrentActiveSceneSession, long generation)
+    {
+        if (!IsBannerlordMainThreadForNativeActions()) return null;
+        try
+        {
+            Hero hero = targetHero ?? targetCharacter?.HeroObject;
+            Func<string> work;
+            if (hero == null)
+            {
+                int agentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+                NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+                if (npc != null) npc.AgentIndex = agentIndex;
+                string secondaryInput = NormalizeNativeConversationVisibleTextKey(currentNativeDialogText);
+                if (string.IsNullOrWhiteSpace(secondaryInput))
+                    secondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter, agentIndex);
+                if (!TryResolveWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, out var memoryId, out var memoryName))
+                {
+                    LogNonHeroMemoryTrace("stage=history_context_request ok=0 reason=resolve_failed agent=" + agentIndex);
+                    return () => "";
+                }
+                Func<string> captured = MyBehavior.CaptureHistoryContextWorkById(memoryId, memoryName, playerText, secondaryInput, includeCurrentActiveSceneSession, generation);
+                if (captured == null) return null;
+                work = () =>
+                {
+                    string context = (captured() ?? "").Trim();
+                    LogNonHeroMemoryTrace("stage=history_context_request ok=1 agent=" + agentIndex + " memoryId=" + memoryId + " memoryName=" + memoryName + " chars=" + context.Length + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentInputLen=" + ((playerText ?? "").Length) + " secondaryInputLen=" + ((secondaryInput ?? "").Length));
+                    return context;
+                };
+            }
+            else
+            {
+                string secondaryInput = NormalizeNativeConversationVisibleTextKey(currentNativeDialogText);
+                if (string.IsNullOrWhiteSpace(secondaryInput))
+                    secondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter, TryResolveNativeConversationAgentIndex(targetHero, targetCharacter));
+                work = MyBehavior.CaptureHistoryContextWorkForHero(hero, playerText, secondaryInput, includeCurrentActiveSceneSession, generation);
+            }
+            if (work == null) return null;
+            // Preserve the old history-only failure fallback; the work itself contains no live identity lookup.
+            return () => { try { return (work() ?? "").Trim(); } catch { return ""; } };
+        }
+        catch { return () => ""; }
+    }
 
 	private static bool IsWildernessNonHeroMemoryScope(int agentIndex)
 	{
@@ -20146,7 +20155,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] including active scene-session memory because scene dialogue snapshot is missing. target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex);
 		}
 		Logger.Log("Logic", "[MemoryPerf] parallel_history_start reason=native_conversation target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + nativeTargetAgentIndex + " mode=task");
-		Task<string> persistedHeroHistoryTask = Task.Run(() => BuildNativeConversationPersistedHistoryContextForPrompt(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory));
+		Func<string> nativeHistoryWork = await RunNativeConversationMainThreadFuncAsync(
+			"persisted_history_capture", nativeTargetLog, nativeTargetAgentIndex,
+			() => IsNativeConversationAdmissionCurrent(admission, out _)
+				? CaptureNativeConversationPersistedHistoryWork(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory, admission.Generation)
+				: null, (Func<string>)null).ConfigureAwait(false);
+		if (nativeHistoryWork == null) return "";
+		Task<string> persistedHeroHistoryTask = Task.Run(nativeHistoryWork);
 		Stopwatch nativePreprocessSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot = await RunNativeConversationMainThreadFuncAsync(
@@ -20183,6 +20198,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Stopwatch nativeHistoryJoinSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.history_join_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		string persistedHeroHistory = ((await persistedHeroHistoryTask) ?? "").Trim();
+		if (!await RunNativeConversationMainThreadFuncAsync("persisted_history_accept", nativeTargetLog, nativeTargetAgentIndex,
+			() => IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false)) return "";
 		nativeHistoryJoinSw.Stop();
 		Logger.Log("Logic", "[MemoryPerf] parallel_history_join reason=native_conversation target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " hasValue=" + !string.IsNullOrWhiteSpace(persistedHeroHistory) + " waitMs=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2));
 		FreezeWatchdog.Mark("NativeConversation.history_join_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " ms=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2), immediate: true);

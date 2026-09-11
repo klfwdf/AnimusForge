@@ -1,0 +1,57 @@
+    public class NpcDataPacket {public int AgentIndex;}
+    public sealed class ShoutBehavior
+    {
+        private sealed class NativeConversationAdmission {public int AgentIndex=7;public long Generation;}
+        public bool Valid=true;
+        public readonly System.Collections.Concurrent.ConcurrentQueue<Action> _mainThreadActions=new();
+        private const int NativeConversationMainThreadPreprocessTimeoutMs=120;
+        private static bool IsBannerlordMainThreadForNativeActions()=>TWParallel.IsMainThread();
+        private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason){reason=Valid?"":"stale";return Valid&&SaveRuntimeGuard.IsCurrentGeneration(a.Generation);}
+        private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c){Host.Read("agent");return 7;}
+        private static NpcDataPacket BuildNativeConversationNpcData(Hero h,CharacterObject c){Host.Read("npc");return new();}
+        private static string NormalizeNativeConversationVisibleTextKey(string text)=>(text??"").Trim();
+        private static string GetLatestNativeConversationNpcUtteranceForExternal(Hero h,CharacterObject c,int agent){Host.Read("latest");return Host.Secondary;}
+        private static bool TryResolveWildernessNonHeroMemory(NpcDataPacket n,Hero h,CharacterObject c,int a,out string id,out string name){Host.Read("party identity");id="af_nonhero:party";name="Party";return true;}
+        private static string BuildWildernessNonHeroHistoryContextForPrompt(NpcDataPacket n,Hero h,CharacterObject c,int a,string input,string secondary,bool include){TryResolveWildernessNonHeroMemory(n,h,c,a,out var id,out var name);return MyBehavior.BuildNonHeroHistoryContextForExternal(id,name,0,input,secondary,include);}
+        private static void LogNonHeroMemoryTrace(string text){}
+        @@CAPTURE@@
+        @@RUN@@
+        @@WAIT@@
+        public async Task<string> Execute(bool isHero,bool opening)
+        {
+            var admission=new NativeConversationAdmission{Generation=SaveRuntimeGuard.CurrentGeneration};
+            Hero targetHero=isHero?new Hero():null;var targetCharacter=new CharacterObject();
+            string nativeTargetLog="NPC",promptPlayerText=Host.Input,currentNativeDialogText="";
+            int nativeTargetAgentIndex=7;bool shouldRecordPlayerInput=!opening,includeCurrentSceneSessionInPersistedHistory=false;
+            @@START@@
+            @@JOIN@@
+            return persistedHeroHistory;
+        }
+    }
+    public static class Program
+    {
+        static int Checks,Failures;
+        static void Check(bool v,string name){Checks++;if(!v){Failures++;Console.WriteLine("FAIL "+name);}}
+        static MyBehavior Owner(){Host.Reset();var o=new MyBehavior();MyBehavior.Instance=o;Campaign.Owner=o;SaveRuntimeGuard.AdvanceGeneration("native");o.Seed(9);return o;}
+        static string Finish(ShoutBehavior owner,Task<string> task)
+        {
+            var sw=Stopwatch.StartNew();while(!task.IsCompleted&&sw.ElapsedMilliseconds<4000){while(owner._mainThreadActions.TryDequeue(out var work))work();Thread.Sleep(1);}
+            Check(task.IsCompleted,"native completion bounded");return task.GetAwaiter().GetResult();
+        }
+        public static int Main()
+        {
+            foreach(bool hero in new[]{true,false})foreach(bool opening in new[]{true,false})
+            {
+                var data=Owner();string expected=data.BaselineFor(hero?"hero":"af_nonhero:party",opening?"":Host.Input,Host.Secondary).Trim();Host.ApiCalls=Host.EmbedCalls=0;Host.Reads=Host.OffThread=0;
+                var shout=new ShoutBehavior();var task=Task.Run(()=>shout.Execute(hero,opening));
+                Check(SpinWait.SpinUntil(()=>shout._mainThreadActions.Count>0||task.IsCompleted,2500),"capture queued or baseline returned");
+                Check(shout._mainThreadActions.TryDequeue(out var capture),"capture must dispatch before work");if(capture!=null)capture();
+                data.Corrupt();string result=Finish(shout,task);Check(result==expected,"native full historical payload unchanged");Check(Host.OffThread==0,"native identity and memory reads stay on main");
+            }
+            {Owner();var s=new ShoutBehavior{Valid=false};Check(Finish(s,Task.Run(()=>s.Execute(true,false)))=="","invalid before capture is stopped");Check(Host.Reads==0&&Host.ApiCalls==0,"invalid before capture does not resolve identities or request API");}
+            {Owner();var s=new ShoutBehavior();var t=Task.Run(()=>s.Execute(true,false));SpinWait.SpinUntil(()=>s._mainThreadActions.Count>0||t.IsCompleted,2500);if(s._mainThreadActions.TryDequeue(out var capture))capture();s.Valid=false;Check(Finish(s,t)=="","result acceptance revalidates original admission");}
+            {Owner();var s=new ShoutBehavior();var t=Task.Run(()=>s.Execute(false,false));Check(SpinWait.SpinUntil(()=>t.IsCompleted,2500),"unconsumed capture expires");while(s._mainThreadActions.TryDequeue(out var call))call();Check(t.GetAwaiter().GetResult()==""&&Host.Reads==0&&Host.ApiCalls==0,"expired capture cannot read or start late");}
+            Console.WriteLine($"{(Failures==0?"PASS":"FAIL")} NativeHistorySnapshot checks={Checks} failures={Failures} actualCaptureAndAccept=true actualMemoryRenderer=true game=STUBBED LIVE=NOT_RUN");return Failures==0?0:1;
+        }
+    }
+}

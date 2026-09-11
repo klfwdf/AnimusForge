@@ -1,0 +1,120 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library { public static class TWParallel {public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==AnimusForge.Host.MainId;} public static class MBMath {public static int ClampInt(int n,int a,int b)=>Math.Clamp(n,a,b);} }
+namespace TaleWorlds.CampaignSystem
+{
+    public class CharacterObject {public Hero HeroObject {get{AnimusForge.Host.Read("character hero");return null;}}}
+    public class Hero { public string StringId {get{AnimusForge.Host.Read("hero");return "hero";}} public string Name=>"Hero"; }
+    public class Campaign { public static object Owner;public static Campaign Current {get{AnimusForge.Host.Read("campaign");return new();}} public T GetCampaignBehavior<T>() where T:class=>Owner as T; }
+}
+namespace AnimusForge
+{
+    public static class Host
+    {
+        public static int MainId,OffThread,Reads,Day=50,Final=2,Limit=3,Mode=1,ApiCalls,EmbedCalls;
+        public static string Scene="original scene",Input="player input",Secondary="NPC input",Reply="1",ApiPrompt="";public static bool Eligible=true,ApiOk=true,EmbedOk=true;public static long LastErrorGeneration;public static Action DuringApi;
+        public static List<string> Queries=new();
+        public static void Read(string stage){Interlocked.Increment(ref Reads);if(!TWParallel.IsMainThread())Interlocked.Increment(ref OffThread);}
+        public static void Reset(){MainId=Thread.CurrentThread.ManagedThreadId;Reads=OffThread=ApiCalls=EmbedCalls=0;Day=50;Final=2;Limit=3;Mode=1;Scene="original scene";Eligible=ApiOk=EmbedOk=true;Reply="1";ApiPrompt="";Queries.Clear();DuringApi=null;LastErrorGeneration=0;}
+    }
+    public static class FreezeWatchdog {public static void Mark(string a,string b,bool immediate=false){}}
+    public static class Logger {public static void Log(string a,string b){}public static void Obs(string a,string b,object c){}public static void Metric(string name,bool ok=true){} }
+    public sealed class OnnxEmbeddingEngine
+    {
+        public static readonly OnnxEmbeddingEngine Instance=new();public bool IsAvailable=>Host.EmbedOk;
+        public bool TryGetEmbedding(string text,out float[] vector){Host.EmbedCalls++;Host.Queries.Add(text);vector=new[]{1f,(float)(text.Length%7)/7};return Host.EmbedOk;}
+    }
+    public static class AIConfigHandler
+    {
+        public static string StrictPreprocessJsonSystemPrompt=>"system";
+        public static string BuildMemoryPreprocessFallbackGameDateForExternal(int d)=>"day"+d;
+        public static string BuildMemoryPreprocessCandidateLineForExternal(int id,string date,string age,string hour,string title)=>$"{id}|{date}|{age}|{hour}|{title}";
+        public static string BuildMemoryPreprocessUserPromptForExternal(int mode,int count,string input,string secondary,string scene,string candidates)=>$"{mode}|{count}|{input}|{secondary}|{scene}|{candidates}";
+        public static bool TryCallAuxiliarySimpleDialogue(object[] messages,int tokens,float temperature,out string content,out string error){Host.ApiCalls++;Host.ApiPrompt=(string)messages[1].GetType().GetProperty("content").GetValue(messages[1]);Host.DuringApi?.Invoke();content=Host.Reply;error="api failure";return Host.ApiOk;}
+    }
+    public partial class MyBehavior
+    {
+        public static MyBehavior Instance {get;set;}
+        @@MODELS@@
+        @@METHODS@@
+        @@BASELINE_METHODS@@
+        private List<CompressedMemoryBlock> Blocks=new();private List<DailyMemoryDraft> Drafts=new();private string Overview="overview";
+        private static bool IsMemoryEntityEligibleForCompressedMemory(string id){Host.Read("eligibility");return Host.Eligible;}
+        private List<CompressedMemoryBlock> LoadCompressedMemoryBlocksById(string id){Host.Read("blocks");return Blocks;}
+        private List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string id){Host.Read("drafts");return Drafts;}
+        private string BuildMemoryOverviewContextById(string id){Host.Read("overview");return Overview;}
+        private static int GetMemoryFinalInjectCountFromSettings(){Host.Read("final");return Host.Final;}
+        private static int GetMemoryCandidateLimitFromSettings(){Host.Read("limit");return Host.Limit;}
+        private static int GetMemoryPreprocessModeFromSettings(){Host.Read("mode");return Host.Mode;}
+        private static int GetCurrentGameDayIndexSafe(){Host.Read("day");return Host.Day;}
+        private static string ResolveCurrentMemorySceneLabel(){Host.Read("scene");return Host.Scene;}
+        private static void LogNonHeroMemoryTrace(string s){}
+        private void ShowCompressedMemoryBlockingPopup(string title,string message,long generation){Host.LastErrorGeneration=generation;}
+        private static bool TryParseMemoryPreprocessIds(string content,IEnumerable<int> allowed,int final,out List<int> ids,out string error){ids=new();error="bad format";if(content=="invalid")return false;foreach(string s in content.Split(','))if(int.TryParse(s,out int id)&&allowed.Contains(id)&&!ids.Contains(id))ids.Add(id);return true;}
+        private static string BuildMemoryPreprocessFormatError(string error,string content)=>error+":"+content;
+        public void Seed(int count)
+        {
+            for(int i=0;i<count;i++)Blocks.Add(new CompressedMemoryBlock{Id="b"+i,HeroId="hero",GameDayIndex=30+i,GameDate=i%2==0?"date "+i:"",StartHour=i,EndHour=i+1,CreatedUtcTicks=i,RichTitle="Title "+i,Summary="Summary "+i,AfefLines=new(){"fact "+i,"【过往行为】old "+i,""}});
+            Drafts.Add(new DailyMemoryDraft{GameDayIndex=49,Lines=Enumerable.Range(0,9).Select(i=>new DailyMemoryLine{Text="line "+i,IsAfef=i==7}).ToList()});
+        }
+        public static string BuildHistoryContextForExternal(Hero h,int max,string input,string secondary,bool include)=>Campaign.Current.GetCampaignBehavior<MyBehavior>().BuildHistoryContextById(GetMemoryHeroId(h),"NPC",max,input,secondary,include);
+        public static string BuildNonHeroHistoryContextForExternal(string id,string name,int max,string input,string secondary,bool include)=>Campaign.Current.GetCampaignBehavior<MyBehavior>().BuildHistoryContextById(id,name,max,input,secondary,include);
+        public string BaselineFor(string id,string input,string secondary)=>BaselineBuildHistoryContextById(id,"NPC",0,input,secondary,false);
+        public void SetVariant(int variant)
+        {
+            if(variant==1)foreach(var b in Blocks)b.Id="duplicate";
+            if(variant==2)foreach(var b in Blocks)b.AfefLines=null;
+            if(variant==3)foreach(var b in Blocks)b.RichTitle=" ";
+            if(variant==4&&Blocks.Count>0)Blocks[0]=null;
+        }
+        public string Original(string id)=>BaselineBuildHistoryContextById(id,"NPC",0,Host.Input,Host.Secondary,false);
+        public Func<string> Capture(string id,long generation)
+        {
+#if ORIGINAL
+            return ()=>Original(id);
+#else
+            return CaptureHistoryContextWorkById(id,"NPC",Host.Input,Host.Secondary,false,generation);
+#endif
+        }
+        public void Corrupt()
+        {
+            foreach(var b in Blocks){if(b==null)continue;b.Summary="changed";b.RichTitle="changed";b.GameDate="changed";b.AfefLines?.Clear();}
+            Blocks.Clear();Drafts[0].Lines.Clear();Overview="changed overview";
+            Host.Scene="changed scene";Host.Day=500;Host.Final=20;Host.Limit=40;Host.Mode=2;Host.Eligible=false;
+        }
+    }
+    public static class Program
+    {
+        static int Checks,Failures;
+        static void Check(bool v,string message){Checks++;if(!v){Failures++;Console.WriteLine("FAIL "+message);}}
+        static MyBehavior Owner(int count){Host.Reset();var o=new MyBehavior();MyBehavior.Instance=o;Campaign.Owner=o;SaveRuntimeGuard.AdvanceGeneration("test");o.Seed(count);return o;}
+        public static int Main()
+        {
+            foreach(int count in new[]{0,1,2,3,4,9})foreach(int mode in new[]{1,2})foreach(string id in new[]{"hero","af_nonhero:party"})foreach(int variant in new[]{0,1,2,3,4})
+            {
+                var o=Owner(count);Host.Mode=mode;o.SetVariant(variant);string reference=o.Original(id);string prompt=Host.ApiPrompt;string queries=string.Join(";",Host.Queries);int api=Host.ApiCalls;
+                Host.ApiCalls=Host.EmbedCalls=0;Host.Queries.Clear();Host.ApiPrompt="";
+                var work=o.Capture(id,SaveRuntimeGuard.CurrentGeneration);Check(work!=null,"capture returns work");Check(Host.ApiCalls==0&&Host.EmbedCalls==0,"capture never runs network or embedding");
+                o.Corrupt();Host.Reads=Host.OffThread=0;string actual=Task.Run(work).GetAwaiter().GetResult();
+                Check(actual==reference,"original full rendered memory preserved after owner mutation");Check(Host.ApiCalls==api,"same API branch");Check(Host.ApiPrompt==prompt,"original candidate/scene/date/mode prompt");Check(string.Join(";",Host.Queries)==queries,"same recall query including recent lines");Check(Host.OffThread==0&&Host.Reads==0,"background consumes no live owner/game data");
+            }
+            foreach(string failure in new[]{"embedding","api","format"})
+            {
+                var o=Owner(9);Host.EmbedOk=failure!="embedding";Host.ApiOk=failure!="api";Host.Reply=failure=="format"?"invalid":"1";string expected=o.Original("hero");long gen=SaveRuntimeGuard.CurrentGeneration;var work=o.Capture("hero",gen);Host.Reads=Host.OffThread=0;Host.LastErrorGeneration=0;
+                string actual=Task.Run(work).GetAwaiter().GetResult();Check(actual==expected,"failure output unchanged");Check(Host.LastErrorGeneration==gen,"failure uses captured generation");Check(Host.OffThread==0,"failure also avoids game reads");
+            }
+            {var o=Owner(9);long gen=SaveRuntimeGuard.CurrentGeneration;var work=o.Capture("hero",gen);SaveRuntimeGuard.AdvanceGeneration("load");Check(Task.Run(work).GetAwaiter().GetResult()==""&&Host.ApiCalls==0&&Host.EmbedCalls==0,"retired work does not start retrieval");}
+            {var o=Owner(9);var work=o.Capture("hero",SaveRuntimeGuard.CurrentGeneration);MyBehavior.Instance=new MyBehavior();Check(Task.Run(work).GetAwaiter().GetResult()==""&&Host.ApiCalls==0,"replaced owner cannot execute");}
+            {var o=Owner(9);long gen=SaveRuntimeGuard.CurrentGeneration;var work=o.Capture("hero",gen);Host.ApiOk=false;Host.DuringApi=()=>SaveRuntimeGuard.AdvanceGeneration("during API");Task.Run(work).GetAwaiter().GetResult();Check(Host.LastErrorGeneration==gen,"late failure keeps original generation");}
+            Console.WriteLine($"{(Failures==0?"PASS":"FAIL")} HistorySnapshot checks={Checks} failures={Failures} realRenderRecallSelect=true ownerDataAndNetwork=STUBBED LIVE=NOT_RUN");return Failures==0?0:1;
+        }
+    }
+}

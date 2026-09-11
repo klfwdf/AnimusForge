@@ -1,0 +1,171 @@
+{
+  "baseline": "659bb998",
+  "methods": [
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static string FormatCompressedMemoryAgeSuffix(",
+      "baselineSignature": "private static string FormatCompressedMemoryAgeSuffix(",
+      "sha256": "6f623c26055e3a7f48ce6d4ef8b55e7e159520ef957e63c9e2bf3cb0fa5633d5"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static string BuildMemoryRecallQueryText(",
+      "baselineSignature": "private static string BuildMemoryRecallQueryText(",
+      "sha256": "8fb4975f6387bf18344667b695be09dcc2cf2e9945ff2dfb429cd8f833593207"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool TryBuildMemoryRecallCandidates(",
+      "baselineSignature": "private bool TryBuildMemoryRecallCandidates(",
+      "sha256": "bfe8023056e46110c8f07eac43b3e00346afef8441a6e6e868a1452d11cff4e4"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool TrySelectMemoryIdsWithPreprocess(",
+      "baselineSignature": "private bool TrySelectMemoryIdsWithPreprocess(",
+      "sha256": "ce5e82e67bae3402e2a9d564b06ae0f775066ef3ddb0c3936989ed1278e24fee"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private string BuildCompressedMemoryContextById(",
+      "baselineSignature": "private string BuildCompressedMemoryContextById(",
+      "sha256": "cfaa869c96b6ea67916aa45c5250b28758cdef691dacb8a9b5a2b4111e59eb82"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private string BuildHistoryContextById(",
+      "baselineSignature": "private string BuildHistoryContextById(",
+      "sha256": "7a5be331534fce919b812db9ddf79515c31788cf7bef9f13431284a24522b4a7"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
+      "baselineSignature": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
+      "sha256": "7c751a0bcceeeef4e6f75ae3abd9d667a37867424d93891ac91f1da68313aa22"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static Func<string> CaptureNativeConversationPersistedHistoryWork(",
+      "baselineSignature": "private static string BuildNativeConversationPersistedHistoryContextForPrompt(",
+      "sha256": "d26d37931888c40d84fcd489489c2c332d80cf3b8956ae93603bc833c40eb4ff"
+    }
+  ],
+  "defaultRewrites": {
+    "private static string FormatCompressedMemoryAgeSuffix(": [
+      [
+        "CompressedMemoryBlock block)",
+        "CompressedMemoryBlock block, int? capturedDay = null)"
+      ],
+      [
+        "int currentDay = GetCurrentGameDayIndexSafe();",
+        "int currentDay = capturedDay ?? GetCurrentGameDayIndexSafe();"
+      ]
+    ],
+    "private static string BuildMemoryRecallQueryText(": [
+      [
+        "IEnumerable<DailyMemoryDraft> drafts)",
+        "IEnumerable<DailyMemoryDraft> drafts, string capturedScene = null)"
+      ],
+      [
+        "string text3 = ResolveCurrentMemorySceneLabel();",
+        "string text3 = capturedScene ?? ResolveCurrentMemorySceneLabel();"
+      ]
+    ],
+    "private bool TryBuildMemoryRecallCandidates(": [
+      [
+        "long runtimeGeneration)",
+        "long runtimeGeneration, HistoryPromptSnapshot snapshot = null)"
+      ],
+      [
+        "((drafts ?? new List<DailyMemoryDraft>()).Count)",
+        "(snapshot?.DraftCount ?? ((drafts ?? new List<DailyMemoryDraft>()).Count))"
+      ],
+      [
+        "string text = BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts);",
+        "string text = snapshot?.RecallQuery ?? BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts);"
+      ]
+    ],
+    "private bool TrySelectMemoryIdsWithPreprocess(": [
+      [
+        "long runtimeGeneration)",
+        "long runtimeGeneration, HistoryPromptSnapshot snapshot = null)"
+      ],
+      [
+        "int mode = GetMemoryPreprocessModeFromSettings();",
+        "int mode = snapshot?.PreprocessMode ?? GetMemoryPreprocessModeFromSettings();"
+      ],
+      [
+        "FormatCompressedMemoryAgeSuffix(block)",
+        "FormatCompressedMemoryAgeSuffix(block, snapshot?.GameDay)"
+      ],
+      [
+        "ResolveCurrentMemorySceneLabel(), memoryCandidates.ToString()",
+        "snapshot?.Scene ?? ResolveCurrentMemorySceneLabel(), memoryCandidates.ToString()"
+      ]
+    ],
+    "private string BuildCompressedMemoryContextById(": [
+      [
+        "string secondaryInput)",
+        "string secondaryInput, HistoryPromptSnapshot snapshot = null)"
+      ],
+      [
+        "long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();",
+        "long runtimeGeneration = snapshot?.Generation ?? SaveRuntimeGuard.CaptureGeneration();"
+      ],
+      [
+        "List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocksById(heroId);",
+        "List<CompressedMemoryBlock> list = snapshot == null ? LoadCompressedMemoryBlocksById(heroId) : snapshot.Blocks;"
+      ],
+      [
+        "int finalCount = GetMemoryFinalInjectCountFromSettings();",
+        "int finalCount = snapshot?.FinalCount ?? GetMemoryFinalInjectCountFromSettings();"
+      ],
+      [
+        "int candidateLimit = GetMemoryCandidateLimitFromSettings();",
+        "int candidateLimit = snapshot?.CandidateLimit ?? GetMemoryCandidateLimitFromSettings();"
+      ],
+      [
+        "List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(heroId);",
+        "List<DailyMemoryDraft> drafts = snapshot == null ? LoadDailyMemoryDraftsById(heroId) : null;"
+      ],
+      [
+        "out var error, runtimeGeneration))",
+        "out var error, runtimeGeneration, snapshot))"
+      ],
+      [
+        "out var error2, runtimeGeneration))",
+        "out var error2, runtimeGeneration, snapshot))"
+      ],
+      [
+        "FormatCompressedMemoryAgeSuffix(block)",
+        "FormatCompressedMemoryAgeSuffix(block, snapshot?.GameDay)"
+      ]
+    ],
+    "private string BuildHistoryContextById(": [
+      [
+        "bool includeCurrentActiveSceneSession = false)",
+        "bool includeCurrentActiveSceneSession = false, HistoryPromptSnapshot snapshot = null)"
+      ],
+      [
+        "if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))",
+        "if (snapshot == null && !IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))"
+      ],
+      [
+        "int memoryBlockCount = LoadCompressedMemoryBlocksById(normalizedMemoryId).Count;",
+        "int memoryBlockCount = snapshot?.BlockCount ?? LoadCompressedMemoryBlocksById(normalizedMemoryId).Count;"
+      ],
+      [
+        "int dailyDraftCount = LoadDailyMemoryDraftsById(normalizedMemoryId).Count;",
+        "int dailyDraftCount = snapshot?.DraftCount ?? LoadDailyMemoryDraftsById(normalizedMemoryId).Count;"
+      ],
+      [
+        "string memoryOverviewContext = BuildMemoryOverviewContextById(normalizedMemoryId);",
+        "string memoryOverviewContext = snapshot == null ? BuildMemoryOverviewContextById(normalizedMemoryId) : snapshot.Overview;"
+      ],
+      [
+        "BuildCompressedMemoryContextById(normalizedMemoryId, currentInput, secondaryInput);",
+        "BuildCompressedMemoryContextById(normalizedMemoryId, currentInput, secondaryInput, snapshot);"
+      ]
+    ]
+  }
+}

@@ -13,12 +13,15 @@ wait=ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainT
 if not a.original:
  prior=subprocess.check_output(['git','show','613ac245:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  restored=s
+ snapshot_spec=importlib.util.spec_from_file_location('snapshot_parity',ROOT/'tools/NativeHistorySnapshotTests/source_parity.py');snapshot_parity=importlib.util.module_from_spec(snapshot_spec);snapshot_spec.loader.exec_module(snapshot_parity)
+ restored=snapshot_parity.restore_snapshot_source('ShoutBehavior.cs',restored)
  # Separately proven preparation capture: permit only the exact shared reviewed declaration SHA.
  signature='private async Task<string> SubmitNativeConversationTextInternalAsync('
  current=ex.declaration(restored,signature)
  review=json.loads((ROOT/'tools/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
  expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
- assert hashlib.sha256(current.encode()).hexdigest()==expected and 'TeamModuleServices.' not in current
+ live_submit=ex.declaration(s,signature)
+ assert hashlib.sha256(live_submit.encode()).hexdigest()==expected and 'TeamModuleServices.' not in live_submit
  restored=restored.replace(current,ex.declaration(prior,signature),1)
  for signature in ['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(']:
   restored=restored.replace(ex.declaration(restored,signature),ex.declaration(prior,signature),1)

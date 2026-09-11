@@ -4,7 +4,11 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(path):return subprocess.check_output(['git','show','50f84818:'+path],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/path).read_text(encoding='utf-8-sig')
-s=read('ShoutBehavior.cs');body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
+s=read('ShoutBehavior.cs')
+if not a.original:
+ snapshot_spec=importlib.util.spec_from_file_location('snapshot_parity',ROOT/'tools/NativeHistorySnapshotTests/source_parity.py');snapshot_parity=importlib.util.module_from_spec(snapshot_spec);snapshot_spec.loader.exec_module(snapshot_parity)
+ s=snapshot_parity.restore_snapshot_source('ShoutBehavior.cs',s)
+body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 start=body.index('\t\tint nativeTargetAgentIndex = admission.AgentIndex;');end=body.index('\t\tbool includeCurrentSceneSessionInPersistedHistory',start)
 prepare=body[start:end].replace('return "";','return null;')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@PREPARE@@',prepare).replace('@@RUN@@',ex.declaration(s,'private Task<T> RunNativeConversationMainThreadFuncAsync<T>(')).replace('@@WAIT@@',ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>('))

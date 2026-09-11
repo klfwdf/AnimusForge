@@ -4,7 +4,11 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(n):return subprocess.check_output(['git','show','38488ed2:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/n).read_text(encoding='utf-8-sig')
-s=read('MyBehavior.cs');calls=[line.strip() for line in s.splitlines() if line.strip().startswith('ShowCompressedMemoryBlockingPopup(')]
+s=read('MyBehavior.cs')
+if not a.original:
+ snapshot_spec=importlib.util.spec_from_file_location('snapshot_parity',ROOT/'tools/NativeHistorySnapshotTests/source_parity.py');snapshot_parity=importlib.util.module_from_spec(snapshot_spec);snapshot_spec.loader.exec_module(snapshot_parity)
+ s=snapshot_parity.restore_snapshot_source('MyBehavior.cs',s)
+calls=[line.strip() for line in s.splitlines() if line.strip().startswith('ShowCompressedMemoryBlockingPopup(')]
 assert len(calls)==9
 if not a.original:
  old=subprocess.check_output(['git','show','38488ed2:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig');signatures=['private async Task ProcessMemorySummaryQueueAsync()', 'private bool TryBuildMemoryRecallCandidates(', 'private bool TrySelectMemoryIdsWithPreprocess(', 'private string BuildCompressedMemoryContextById(', 'private void ShowCompressedMemoryBlockingPopup(', 'public void OnEngineTick()', 'private void ResetLocalTransientRuntimeForLoadedSave(', 'private void ClearAllDataForCurrentSave()'];restored=s;rows=[]

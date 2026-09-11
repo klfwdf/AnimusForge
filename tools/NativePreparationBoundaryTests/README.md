@@ -13,3 +13,5 @@ The fixture executes the actual extracted entry slice, private capture method an
 Game helpers and admission validity are recording stubs, not real Bannerlord behavior. Existing admission tests separately cover the real lifecycle guard. Preparation source-body inverse equality protects every unchanged surrounding line, and the copied builder statements must equal the original exactly. There is no real API call or save access.
 
 The preparation container is private and still reuses existing LocationCharacter/Location-bearing target types; it is not a public thread-safe immutable DTO. Generated artifacts belong under ignored `.generated`.
+
+Later persistent-history changes are normalized only through NativeHistorySnapshotTests/source_parity.py (exact SHA plus independent behavior proof); the original preparation and whole-owner assertions remain.

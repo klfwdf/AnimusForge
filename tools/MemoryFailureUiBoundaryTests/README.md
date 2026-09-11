@@ -13,3 +13,5 @@ The real notice implementation and SaveRuntimeGuard are linked, and the real Eng
 Tests cover background versus direct calls, bounded concurrent publication, stale generations/owners, reset, failed or reentrant show, late acknowledgement, diagnostics and all producer statements. Keep these behavioral checks when extending the reviewed source baseline; do not delete the inverse proof to allow unrelated edits.
 
 Generated fixtures/logs remain under ignored `.generated`. None of these results is real Bannerlord UI or save acceptance.
+
+Later memory-snapshot defaults are first checked/restored through NativeHistorySnapshotTests/source_parity.py. This keeps the original notice producer and whole-owner inverse checks intact; the live notice implementation still runs.

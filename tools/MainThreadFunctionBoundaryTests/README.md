@@ -14,3 +14,5 @@ G:\Python310\python.exe tools/MainThreadFunctionBoundaryTests/run.py --mutate ex
 - Success/fallback/format-error identity, late/duplicate consumption, failed publication before/after claim, and diagnostic failures are tested. Ordinary operation exceptions intentionally retain the existing fallback policy.
 - The scheduler inverse still proves the normalized whole host equals `613ac245`. The separately tested Native preparation declaration is first restored using its exact reviewed SHA from TeamModulePortParityTests; NativePreparationBoundaryTests independently proves that extraction against `50f84818`. Future unrelated changes still fail, and all 132 scheduler checks / 7 mutations remain.
 - Generated fixtures/logs remain under ignored `.generated`. Test failures never count as live-game acceptance, and the fake queue's publication faults test defensive ownership, not a claim that `ConcurrentQueue` normally throws after publishing.
+
+Native persistent-history deltas now pass an independent exact source-review/inverse layer before this suite restores earlier reviewed Native changes. All scheduler assertions and mutants remain.
