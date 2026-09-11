@@ -71,6 +71,46 @@
       "path": "ShoutBehavior.cs",
       "signature": "private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(",
       "sha256": "bcf4007cc2fba370c59ddeda12afa2e2c0310da73dc6cb51504b1d2cbdd689ac"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task ProcessMemorySummaryQueueAsync()",
+      "sha256": "19c4d50cf0c3ee0bd2b23dd9c7c6de959dac175e79793be667214d0138b93d7f"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool TryBuildMemoryRecallCandidates(",
+      "sha256": "312fa59f12786f01552be8e7953256f618a8307984243365ff3d25827af23bf0"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool TrySelectMemoryIdsWithPreprocess(",
+      "sha256": "39887c024565c9e8b78e4039aec3fe48dde9222e52568adf1d927647c47b72a2"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private string BuildCompressedMemoryContextById(",
+      "sha256": "fdbfb7c563f7c7775e0215e77d172c0e784fba5933c4fc55f835e7ec299c8bba"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ShowCompressedMemoryBlockingPopup(",
+      "sha256": "5de0dabf34c838dee831de50e928fa1d61c439c272119dc4272a22aa02d13c9c"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public void OnEngineTick()",
+      "sha256": "6023ecef2b656d0ecfe07d1657890e8eeadfaab7cf26a76ab5f41e5d6080a371"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ResetLocalTransientRuntimeForLoadedSave(",
+      "sha256": "a33998ca535a39b0aad68c9560c64e9995e9dc58e48f695de59a1bda9f730783"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ClearAllDataForCurrentSave()",
+      "sha256": "e9bfd028341a9a41ef46e021ef9b330b9e440810451579bf1f61c13e93b9ff1c"
     }
   ],
   "commentRewrites": [
