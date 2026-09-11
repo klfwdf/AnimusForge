@@ -35,3 +35,5 @@ Native 动作 runner 有类型化未知结果，pending-history runner 对未开
 `tools/MainThreadFunctionBoundaryTests` 链接真实两个方法；132 检查、7 个变异。对两个声明做逆变换后，规范化全文等于基线，25 个调用点未变；Team ports 的 13 方法 / 31 接缝仍做原严格对照。构建/离线证据见本轮审计，不能替代真实游戏验收。
 
 后续仍先处理 Native 更早 prepare/TTS、Courier 双向 prepare，再决定有限公共提交。不要借本次调度修复改玩法、扩大 SDK 或标整个阶段 8 DONE。
+
+后续 Native 初始准备抽取已独立验证；runner suite 仅按精确 SHA 还原该 Submit 声明后继续全文逆变换，原 132 检查 / 7 变异保留。见 af-native-initial-preparation-boundary.md。
