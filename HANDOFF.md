@@ -1,6 +1,15 @@
 # AF 总 HANDOFF — 当前入口（2026-09-11）
 
-## 最新续作：Native 前置历史（生产/测试 128e9842）
+## 最新续作：共用主线程函数（生产/测试 5bf830f3）
+
+- Native/Scene 共用调度改为 queued/claimed/retired CAS：未开始才可过期，已开始等真实结果；失败发布不遗留晚到工作，日志/错误消息格式化不改变结果。direct/queued 前处理格式异常一致，普通 fallback 兼容责任保留。
+- 仅两个私有调度声明改变，25 个业务调用点保持原样；移除 bool timeout、wait 吞错和重复执行处理。未改制作组业务、存档键、默认路径或公共写 API。
+- 132 检查 / 7 变异；Native 44/46/88/184/111、ports 308/3、六项最终 Stage、16 组相关回归、实际四 DLL 532 元数据通过；不是实机。
+- 简明版：`docs/handoffs/2026-09-11-mainthread-function-team-handoff.md`；技术说明：`docs/architecture/af-mainthread-function-boundary.md`；审计：`docs/audits/2026-09-11-mainthread-function-verification.md`；台账：`docs/phase8/mainthread-function-progress-20260911.md`。
+- 检查点 `84d7097b`。未推送/部署/真实存档访问；Api.V1 仍只读。普通 fallback 仍不能证明没有部分副作用，已开始的同步 owner 不能强行取消。
+- 下一项：Native 更早 prepare（尤其后台 persisted history 与人设/规则构造的游戏读取）、TTS 直接回调，再处理 Courier prepare。现有 whole-host inverse 是本轮严格对照，后续其他 host 变更要补独立审查证据，不弱化断言。自动化继续。
+
+## 前序续作：Native 前置历史（生产/测试 128e9842）
 
 - 玩家显示名、tentative 输入、pending AFEF 与 Native 历史消息改在同一次主线程消费里准备；原 history key 只解析一次，私有 helper 默认行为不变。
 - 五个拒绝分支与 action discard 共用固定 key + 原 owner/generation/会话/revision 的清理，改为只删 player/user，不误删事实或新存档重用序号。未开始队列超时明确失败，晚到不补做；原 Action core 未改。
@@ -99,7 +108,7 @@ AnimusForge.dll
 
 ## 5. 后续工作（按顺序，不重写额外模块业务）
 
-1. Native：准入、排队 epoch、共享后端 busy、Overlay 队列观察与动作派发失败/未开始超时和主线程收尾边界已落地；单次运行期记忆接受结果也已接入；前置历史与五个拒绝清理也已收敛；继续其他 prepare/通用队列、完整请求/恢复证据及 TTS 引擎直接回调边界，再评估有限公共普通文本提交。
+1. Native：准入、排队 epoch、共享后端 busy、Overlay 队列观察与动作派发失败/未开始超时和主线程收尾边界已落地；单次运行期记忆接受结果也已接入；前置历史与五个拒绝清理也已收敛；共用主线程函数的等待/诊断边界也已修复；继续其他 prepare、完整请求/恢复证据及 TTS 引擎直接回调边界，再评估有限公共普通文本提交。
 2. Courier 双向更早的 prepare：拆开游戏读取、网络/人设/记忆准备和主线程完成，避免把整段含网络的 builder 搬主线程。
 3. 保持 Scene 主体的接力、旁听、后处理、记忆/AFEF 和 TTS 回归；新接缝必须有原功能对照。
 4. 在稳定请求与事实回执上再扩充公共结果/生命周期通知、内部贡献协议、经过批准的制作组能力转接或子 MOD 扩展。
