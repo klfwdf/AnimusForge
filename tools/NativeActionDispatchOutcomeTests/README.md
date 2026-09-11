@@ -41,3 +41,5 @@ SDK 使用 `G:\AFMOD\.dotnet-sdk`；复用项目 `.tmp/dotnet-cli` / `.tmp/nuget
 - `--timeout-baseline` 使用 `8da4fbd7` 的实际派发方法，证明缺少等待期限；`before-fix.log` 保留新增断言在旧实现上的真实失败。fixture 只将预算缩短到 40ms（常规）/500ms（跨期限执行），并断言生产常量仍为 30000ms。
 - 新物理线程夹具让 callback 进入 owner 后跨过期限，分别验证成功/抛错；不把同步 claim 后立即完成的 fixture 当作跨期限竞态证据。守卫本身抛 TimeoutException 不会被误标为队列超时。
 - 整个历史/事实原子回执、其他准备队列的期限/取消、实际主线程完全卡死时的恢复、真实游戏验收仍未由此套件解决。
+
+完整 Native 的最终正文、历史派发与关窗现在由 NativeCompletionBoundaryTests 的真实调用 tail 验证。本工具仍验证真实 discard gate 与派发结果，使用不带 completion payload 的明确 fixture；正常 Content 的局部取值保留 null fallback，以让 return-null 变异按预期类型化失败断言被拒绝。

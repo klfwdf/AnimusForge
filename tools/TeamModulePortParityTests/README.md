@@ -48,3 +48,5 @@ python tools/TeamModulePortParityTests/run.py
 动作队列失败修复只更新已登记 dispatch 声明的精确 SHA，其它声明不变；dispatcher 及调用方完成门禁/动作失败 UI 分支由 NativeActionDispatchOutcomeTests 的真实源码片段和反例验证。31 个制作组接缝与原断言保留。
 
 后续动作队列等待同样只刷新既有派发声明 SHA；新 88 检查 / 9 变异负责证明等待期限、未执行取消和已开始归属，13 方法 / 31 调用 / 308 断言不变。
+
+Native 收尾续作只刷新既有 dispatch、完整 Native request 声明 SHA，并将 private NativeConversationGameActionResult（新增 FinalVisible）作为一个精确冻结声明纳入反向恢复。均无 TeamModuleServices receiver；未删除原 13 方法 / 31 调用 / 308 断言或 3 变异，完整文件对照不放宽。

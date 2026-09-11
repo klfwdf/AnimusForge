@@ -67,6 +67,9 @@ namespace AnimusForge
             string npcName="A",nativeTargetLog="A",cleaned="original reply";int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
             NativeConversationGameActionResult nativeActionResult=await ApplyNativeConversationGameActionsOnMainThreadAsync(targetHero,targetCharacter,npc,null,null,null,cleaned,npcName,1,"input",new ConversationManager(),1,new NativeConversationAdmission());
 @@CONSUMER_GATE@@
+            // This fixture submits no completion payload; assert the dispatch result independently.
+            // Full Native final text/history ownership is covered by NativeCompletionBoundaryTests.
+            cleaned = nativeActionResult?.Content ?? cleaned;
             Host.History++;
             return cleaned;
         }

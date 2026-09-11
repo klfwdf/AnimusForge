@@ -19548,16 +19548,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		public string Content;
 		public WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult;
 		public bool ResponseDiscarded;
+		public string FinalVisible;
 	}
 
-	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken, NativeConversationAdmission admission)
+	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken, NativeConversationAdmission admission, NativeConversationCompletionRequest completion = null)
 	{
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
+		NativeConversationCompletionScope completionScope = null;
 		Func<NativeConversationGameActionResult> dispatch = () => ExecuteNativeConversationActionDispatch(admission,
-			() => ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData,
-				sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken),
-			targetLog, targetAgentIndex);
+			() =>
+			{
+				NativeConversationGameActionResult result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData,
+					sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
+				if (completionScope != null && result != null && !result.ResponseDiscarded)
+					result.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);
+				return result;
+			}, targetLog, targetAgentIndex,
+			beforeOwner: completion == null ? null : () => completionScope = CaptureNativeConversationCompletionOnMainThread(
+				admission, npc, npcName, targetAgentIndex, completion),
+			onDiscard: completion == null ? null : () => RollbackDiscardedNativeCompletionOnMainThread(
+				admission, npc, npcName, targetAgentIndex, completion.PendingPlayerHistorySequence));
 		if (IsBannerlordMainThreadForNativeActions())
 		{
 			try { return Task.FromResult(dispatch()); }
@@ -20554,7 +20565,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped completed response because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
-		Stopwatch nativeActionSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.action_tags_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		NativeConversationGameActionResult nativeActionResult = await ApplyNativeConversationGameActionsOnMainThreadAsync(
 			targetHero,
@@ -20568,101 +20578,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeTargetAgentIndex,
 			shouldRecordPlayerInput ? promptPlayerText : string.Empty,
 			nativeRequestConversationManager,
-			nativeRequestConversationToken, admission).ConfigureAwait(false);
+			nativeRequestConversationToken, admission, new NativeConversationCompletionRequest
+			{
+				PlayerText = shouldRecordPlayerInput ? promptPlayerText : null,
+				OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
+				TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
+				PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence
+			}).ConfigureAwait(false);
 		if (nativeActionResult?.ResponseDiscarded == true)
 		{
-			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, "action_dispatch_target_unavailable");
 			Logger.Log("ShoutBehavior", "[NativeConversation] response discarded during main-thread action dispatch because the target became unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex);
 			return "";
 		}
-		cleaned = nativeActionResult?.Content ?? cleaned;
-		bool closeNativeConversationForImplicitPartyCreation = nativeActionResult?.WorldMapResult?.NeedsChannelExit == true;
-		nativeActionSw.Stop();
-		Logger.Log("Logic", "[NativePerf] action_tags_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
-		FreezeWatchdog.Mark("NativeConversation.action_tags_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-		string visible = SanitizeSceneSpeechText(cleaned);
-		bool suppressHistoryWrite = IsNativeConversationNoSpeechPlaceholder(visible);
-		string historyReplyText = suppressHistoryWrite ? null : PrepareSceneHistorySpeechText(cleaned);
-		if (!suppressHistoryWrite && string.IsNullOrWhiteSpace(historyReplyText))
-		{
-			historyReplyText = visible;
-		}
-		string nativeCompletionTargetUnavailableReason = "";
-		bool nativeCompletionTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
-			"completion_target_validation",
-			nativeTargetLog,
-			nativeTargetAgentIndex,
-			() => IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeCompletionTargetUnavailableReason),
-			false).ConfigureAwait(false);
-		if (!nativeCompletionTargetAvailable)
-		{
-			string reason = string.IsNullOrWhiteSpace(nativeCompletionTargetUnavailableReason) ? "main_thread_validation_failed" : nativeCompletionTargetUnavailableReason;
-			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
-			Logger.Log("ShoutBehavior", "[NativeConversation] dropped final reply because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
-			return "";
-		}
-		if (!suppressHistoryWrite && !nativeTtsDispatchedBeforePostprocess)
-		{
-			string nativeFinalTtsTargetUnavailableReason = "";
-			bool nativeFinalTtsTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
-				"final_tts_target_validation",
-				nativeTargetLog,
-				nativeTargetAgentIndex,
-				() =>
-				{
-					if (!IsNativeConversationResponseTargetAvailableForActionDispatch(nativeTargetAgentIndex, targetHero, targetCharacter, out nativeFinalTtsTargetUnavailableReason))
-					{
-						return false;
-					}
-					TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
-					return true;
-				},
-				false).ConfigureAwait(false);
-			if (!nativeFinalTtsTargetAvailable)
-			{
-				string reason = string.IsNullOrWhiteSpace(nativeFinalTtsTargetUnavailableReason) ? "main_thread_validation_failed" : nativeFinalTtsTargetUnavailableReason;
-				RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
-				Logger.Log("ShoutBehavior", "[NativeConversation] skipped final TTS because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
-				return "";
-			}
-		}
-		try
-		{
-			if (targetHero != null)
-			{
-				int sceneSessionId = TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
-				if (sceneSessionId >= 0)
-				{
-					MyBehavior.AppendExternalSceneDialogueHistory(targetHero, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, npcOpeningConsumed ? npcOpeningPersistentFactText : null, sceneSessionId);
-				}
-				else
-				{
-					MyBehavior.AppendExternalDialogueHistory(targetHero, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, npcOpeningConsumed ? npcOpeningPersistentFactText : null);
-				}
-			}
-			else
-			{
-				int sceneSessionId = TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
-				AppendWildernessNonHeroMemory(npc, targetHero, targetCharacter, nativeTargetAgentIndex, shouldRecordPlayerInput ? promptPlayerText : null, historyReplyText, npcOpeningConsumed ? npcOpeningPersistentFactText : null, sceneSessionId);
-			}
-		}
-		catch
-		{
-		}
-		if (!suppressHistoryWrite)
-		{
-			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), historyReplyText, nativeTargetAgentIndex, npc);
-			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, historyReplyText, nativeTargetAgentIndex, npc);
-		}
-		string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
 		nativeTurnSw.Stop();
-		Logger.Log("Logic", "[NativePerf] submit_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + ((finalVisible ?? "").Length) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
-		FreezeWatchdog.Mark("NativeConversation.submit_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + ((finalVisible ?? "").Length) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-		if (closeNativeConversationForImplicitPartyCreation)
-		{
-			_mainThreadActions.Enqueue(() => CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation"));
-		}
-		return finalVisible;
+		ObserveNativeActionDispatch("completion_returned", nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw);
+		return nativeActionResult?.FinalVisible ?? "";
 	}
 
 	private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)
