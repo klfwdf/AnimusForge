@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library
+{
+    public static class TWParallel { public static int MainId; public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==MainId; }
+    public sealed class InquiryData
+    {
+        public string Title,Text,Button;public bool Positive,Negative;public Action AffirmativeAction;
+        public InquiryData(string title,string text,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string affirmativeText,string negativeText,Action affirmativeAction,Action negativeAction) { Title=title;Text=text;Button=affirmativeText;Positive=isAffirmativeOptionShown;Negative=isNegativeOptionShown;AffirmativeAction=affirmativeAction; }
+    }
+    public static class InformationManager
+    {
+        public static List<InquiryData> Shown=new();public static int OffThread;public static bool Paused;public static Action<InquiryData> DuringShow;
+        public static void ShowInquiry(InquiryData data,bool pauseGameActiveState=false) { if(!TWParallel.IsMainThread())OffThread++;lock(Shown)Shown.Add(data);Paused=pauseGameActiveState;DuringShow?.Invoke(data); }
+    }
+}
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Campaign
+    {
+        public static bool Available;public static object Owner;public static int OffThread;private static readonly Campaign Singleton=new();
+        public static Campaign Current {get{if(!TaleWorlds.Library.TWParallel.IsMainThread())OffThread++;return Available?Singleton:null;}}
+        public T GetCampaignBehavior<T>() where T:class => Owner as T;
+    }
+}
+namespace AnimusForge
+{
+    public static class Logger { public static bool Fail; public static void Log(string a,string b) { if(Fail)throw new Exception("log failure"); } }
+    public partial class MyBehavior
+    {
+        public static MyBehavior Instance {get;set;}
+        private bool _memorySummaryFailurePopupActive;
+        public int OtherTickPhases;
+        public bool Active=>_memorySummaryFailurePopupActive;
+        public void Notify(string title,string text,long generation)
+        {
+#if ORIGINAL
+            ShowCompressedMemoryBlockingPopup(title,text);
+#else
+            ShowCompressedMemoryBlockingPopup(title,text,generation);
+#endif
+        }
+        public void ResetForFixture()
+        {
+#if ORIGINAL
+            _memorySummaryFailurePopupActive=false;
+#else
+            ResetMemoryFailureNotices();
+#endif
+        }
+        public void NotifyProducer(int index,long runtimeGeneration)
+        {
+            string error="fixture error";var failures=new List<string>{"fixture failure"};var ex=new Exception("fixture exception");
+            switch(index) { @@PRODUCERS@@ }
+        }
+        @@SHOW@@
+        @@TICK@@
+        @@TICK_STUBS@@
+    }
+    public static class Program
+    {
+        static int Checks,Failures;
+        static void Check(bool v,string name) { Checks++;if(!v){Failures++;Console.WriteLine("FAIL "+name);} }
+        static void Case(string name,Action<MyBehavior,long> body)
+        {
+            TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;Logger.Fail=false;InformationManager.Shown.Clear();InformationManager.OffThread=0;InformationManager.DuringShow=null;
+            var owner=new MyBehavior();MyBehavior.Instance=owner;TaleWorlds.CampaignSystem.Campaign.Available=true;TaleWorlds.CampaignSystem.Campaign.Owner=owner;TaleWorlds.CampaignSystem.Campaign.OffThread=0;long gen=SaveRuntimeGuard.AdvanceGeneration("fixture");
+            try {body(owner,gen);}catch(Exception e){Check(false,name+": "+e);}
+        }
+        static void Send(MyBehavior owner,long gen,string title="failure") => Task.Run(()=>owner.Notify(title,"original body",gen)).GetAwaiter().GetResult();
+        static void Tick(MyBehavior o) {o.OnEngineTick();Check(o.OtherTickPhases>0,"remaining engine phases still execute");}
+        static int Count=>InformationManager.Shown.Count;
+        public static int Main()
+        {
+            Case("background",(o,g)=>{Send(o,g);Check(Count==0&&!o.Active,"background only publishes");Tick(o);Check(Count==1&&o.Active,"main tick displays once");Check(InformationManager.OffThread==0,"UI never off main");Check(TaleWorlds.CampaignSystem.Campaign.OffThread==0,"campaign accessed only on main");Check(InformationManager.Paused,"original pause behavior");Check(InformationManager.Shown[0].Button=="知道了"&&InformationManager.Shown[0].Positive&&!InformationManager.Shown[0].Negative,"original acknowledgement controls");Check(InformationManager.Shown[0].Title=="failure"&&InformationManager.Shown[0].Text=="original body","original content preserved");Tick(o);Check(Count==1,"single consumption");InformationManager.Shown[0].AffirmativeAction();Check(!o.Active,"ack releases active");});
+            Case("direct",(o,g)=>{o.Notify("direct","body",g);Check(Count==1&&o.Active,"main call stays immediate");});
+            Case("burst",(o,g)=>{for(int i=0;i<100;i++)Send(o,g,"error"+i);Check(Count==0,"burst stays queued");Tick(o);Check(Count==1&&InformationManager.Shown[0].Title=="error0","bounded first failure wins");Send(o,g);Tick(o);Check(Count==1,"active notice suppresses duplicates");});
+            Case("wrong tick",(o,g)=>{Send(o,g);Task.Run(()=>o.OnEngineTick()).GetAwaiter().GetResult();Check(Count==0,"off-main drain refused");Tick(o);Check(Count==1&&InformationManager.OffThread==0,"correct tick can consume");});
+            Case("stale source",(o,g)=>{SaveRuntimeGuard.AdvanceGeneration("load");Send(o,g);Tick(o);Check(Count==0&&!o.Active,"old operation generation cannot publish");});
+            Case("stale queued",(o,g)=>{Send(o,g);SaveRuntimeGuard.AdvanceGeneration("load");Tick(o);Check(Count==0&&!o.Active,"revalidate at consumption");});
+            Case("owner replaced",(o,g)=>{Send(o,g);MyBehavior.Instance=new MyBehavior();Tick(o);Check(Count==0&&!o.Active,"old owner cannot present");});
+            Case("no campaign",(o,g)=>{Send(o,g);TaleWorlds.CampaignSystem.Campaign.Available=false;Tick(o);Check(Count==0&&!o.Active,"catalog instance is not a live campaign");});
+            Case("different campaign owner",(o,g)=>{Send(o,g);TaleWorlds.CampaignSystem.Campaign.Owner=new MyBehavior();Tick(o);Check(Count==0&&!o.Active,"active campaign must own the behavior");});
+            Case("replace stale slot",(o,g)=>{Send(o,g,"old");g=SaveRuntimeGuard.AdvanceGeneration("load");Send(o,g,"new");Tick(o);Check(Count==1&&InformationManager.Shown[0].Title=="new","stale slot does not suppress current failure");});
+            Case("reset pending",(o,g)=>{Send(o,g);o.ResetForFixture();Tick(o);Check(Count==0&&!o.Active,"explicit reset drops pending");});
+            Case("late ack",(o,g)=>{o.Notify("old","body",g);var old=InformationManager.Shown[0];o.ResetForFixture();o.Notify("new","body",g);Check(o.Active&&Count==2,"new notice after reset");old.AffirmativeAction();Check(o.Active,"old ack cannot clear new active");InformationManager.Shown[1].AffirmativeAction();Check(!o.Active,"current ack can clear");});
+            Case("off-thread ack",(o,g)=>{o.Notify("active","body",g);var notice=InformationManager.Shown[0];Task.Run(notice.AffirmativeAction).GetAwaiter().GetResult();Check(o.Active,"off-thread acknowledgement refused");notice.AffirmativeAction();Check(!o.Active,"engine-thread acknowledgement succeeds");});
+            Case("generation ack",(o,g)=>{o.Notify("old","body",g);var old=InformationManager.Shown[0];SaveRuntimeGuard.AdvanceGeneration("load");old.AffirmativeAction();Check(o.Active,"old-generation ack cannot mutate state");o.ResetForFixture();Check(!o.Active,"lifecycle reset owns clearing");});
+            Case("diagnostics",(o,g)=>{Logger.Fail=true;Send(o,g);Tick(o);Check(Count==1&&o.Active,"log failure cannot swallow UI");if(Count>0)InformationManager.Shown[0].AffirmativeAction();Check(!o.Active,"log failure cannot block acknowledgement");});
+            Case("UI failure",(o,g)=>{InformationManager.DuringShow=_=>throw new Exception("UI failure");o.Notify("failed","body",g);Check(!o.Active,"UI failure releases owned state");var old=InformationManager.Shown[0];InformationManager.DuringShow=null;o.Notify("next","body",g);old.AffirmativeAction();Check(o.Active,"failed-show callback cannot clear newer UI");});
+            Case("reentrant show",(o,g)=>{InformationManager.DuringShow=data=>{InformationManager.DuringShow=null;data.AffirmativeAction();o.Notify("nested","body",g);throw new Exception("outer UI failure");};o.Notify("outer","body",g);Check(Count==2&&o.Active,"outer failure cannot clear reentrant newer notice");});
+            Case("parallel publishers",(o,g)=>{Parallel.For(0,100,_=>o.Notify("same","body",g));Tick(o);Check(Count==1&&InformationManager.OffThread==0,"concurrent publishers coalesce");});
+            for(int i=0;i<9;i++)
+            {
+                int producer=i;
+                Case("current producer "+i,(o,g)=>{Task.Run(()=>o.NotifyProducer(producer,g)).GetAwaiter().GetResult();Tick(o);Check(Count==1&&InformationManager.OffThread==0,"real producer call reaches main UI");});
+                Case("stale producer "+i,(o,g)=>{SaveRuntimeGuard.AdvanceGeneration("between work and failure");Task.Run(()=>o.NotifyProducer(producer,g)).GetAwaiter().GetResult();Tick(o);Check(Count==0,"real producer preserves operation generation");});
+            }
+            Console.WriteLine($"{(Failures==0?"PASS":"FAIL")} MemoryFailureUi checks={Checks} failures={Failures} realPopupOwner=true realEngineHook=true gameUI=STUBBED LIVE=NOT_RUN");return Failures==0?0:1;
+        }
+    }
+}

@@ -2420,7 +2420,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ClearRuleStickyCarry();
 			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryProcessing = false;
-			_memorySummaryFailurePopupActive = false;
+			ResetMemoryFailureNotices();
 			_lastMemoryMaintenanceObservedGameDay = -1;
 			_nativeConversationMemorySessionCounter = 0;
 			_activeNativeConversationMemorySessionId = -1;
@@ -5103,7 +5103,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
 			if (failures.Count > 0)
 			{
-				ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
+				ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。", runtimeGeneration);
 			}
 			else if (results.Count > 0 || majorResults.Count > 0 || overviewResults.Count > 0)
 			{
@@ -5115,7 +5115,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
 			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
 			{
-				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message);
+				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message, runtimeGeneration);
 			}
 		}
 		finally
@@ -20309,6 +20309,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ProcessPendingMemoryFailureNotice();
 			ProcessPendingMissingOnnxGateCheck();
 			ProcessMissingOnnxGateUiResume();
 			ProcessPendingWeeklyReportManualRetryResult();
@@ -33483,7 +33484,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text4;
 	}
 
-	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error)
+	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error, long runtimeGeneration)
 	{
 		Stopwatch sw = Stopwatch.StartNew();
 		candidates = new List<MemoryRecallCandidate>();
@@ -33520,7 +33521,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				error = "本地 ONNX embedding 不可用，无法对超过候选上限的压缩记忆执行富标题 RAG。";
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=query_embedding_unavailable queryLen=" + ((text ?? "").Length) + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
-				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型或降低记忆块数量后重试。系统不会静默改用日期或全文兜底。");
+				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型或降低记忆块数量后重试。系统不会静默改用日期或全文兜底。", runtimeGeneration);
 				return false;
 			}
 			querySw.Stop();
@@ -33560,7 +33561,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				error = "压缩记忆富标题 embedding 全部失败。";
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=title_embedding_empty scanned=" + scanned + " failed=" + titleEmbeddingFailed + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " titleMs=" + Math.Round(titleSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
-				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型后重试。");
+				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型后重试。", runtimeGeneration);
 				return false;
 			}
 			candidates = list2.OrderByDescending((MemoryRecallCandidate x) => x.Score).ThenByDescending((MemoryRecallCandidate x) => x.Block.GameDayIndex).Take(candidateLimit).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
@@ -33574,7 +33575,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			error = ex.Message;
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=exception type=" + ex.GetType().Name + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " msg=" + ex.Message);
-			ShowCompressedMemoryBlockingPopup("压缩记忆召回异常", error);
+			ShowCompressedMemoryBlockingPopup("压缩记忆召回异常", error, runtimeGeneration);
 			return false;
 		}
 	}
@@ -33594,7 +33595,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error)
+	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error, long runtimeGeneration)
 	{
 		Stopwatch sw = Stopwatch.StartNew();
 		selectedIds = new List<int>();
@@ -33661,7 +33662,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				sw.Stop();
 				error = ex.Message;
 				Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=wait_exception type=" + ex.GetType().Name);
-				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理请求异常：" + error);
+				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理请求异常：" + error, runtimeGeneration);
 				return false;
 			}
 			apiSw.Stop();
@@ -33670,7 +33671,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				error = memoryError;
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=api_failed error=" + (error ?? ""));
-				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。");
+				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。", runtimeGeneration);
 				return false;
 			}
 		}
@@ -33679,7 +33680,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			apiSw.Stop();
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=api_failed error=" + (error ?? ""));
-			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆筛选请求失败：" + (error ?? "未知错误") + "\n\n请修复前处理 API 后重试。");
+			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆筛选请求失败：" + (error ?? "未知错误") + "\n\n请修复前处理 API 后重试。", runtimeGeneration);
 			return false;
 		}
 		else
@@ -33691,7 +33692,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			error = BuildMemoryPreprocessFormatError(parseError, content);
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=format_error parseError=" + (parseError ?? "") + " responseLen=" + ((content ?? "").Length));
-			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。");
+			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。", runtimeGeneration);
 			throw new PreprocessFormatException(error);
 		}
 		if (selectedIds.Count < finalCount)
@@ -33770,26 +33771,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
-	private void ShowCompressedMemoryBlockingPopup(string title, string message)
-	{
-		try
-		{
-			Logger.Log("CompressedMemory", "[BLOCK] " + title + " :: " + (message ?? ""));
-			if (_memorySummaryFailurePopupActive)
-			{
-				return;
-			}
-			_memorySummaryFailurePopupActive = true;
-			InformationManager.ShowInquiry(new InquiryData(title, message ?? "", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "知道了", "", delegate
-			{
-				_memorySummaryFailurePopupActive = false;
-			}, null), pauseGameActiveState: true);
-		}
-		catch
-		{
-			_memorySummaryFailurePopupActive = false;
-		}
-	}
+	private void ShowCompressedMemoryBlockingPopup(string title, string message, long runtimeGeneration)
+    {
+        PublishMemoryFailureNotice(title, message, runtimeGeneration);
+    }
 
 	private List<ConversationMessage> BuildUncompressedMemoryRoleMessages(Hero hero, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
 	{
@@ -34107,6 +34092,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		Stopwatch sw = Stopwatch.StartNew();
 		string heroId = NormalizeMemoryHeroId(memoryId);
 		List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocksById(heroId);
@@ -34140,7 +34126,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(heroId);
 			if (selectableFinalCount > 0 && selectableBlocks.Count > 0)
 			{
-				if (!TryBuildMemoryRecallCandidates(null, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error))
+				if (!TryBuildMemoryRecallCandidates(null, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error, runtimeGeneration))
 				{
 					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + heroId + " error=" + error);
 					sw.Stop();
@@ -34149,7 +34135,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				if (candidates.Count > selectableFinalCount)
 				{
-					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2))
+					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2, runtimeGeneration))
 					{
 						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + heroId + " error=" + error2);
 						sw.Stop();
@@ -48299,7 +48285,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_memorySummaryQueue = new List<MemorySummaryJob>();
 		_memorySummaryQueueJsonStorage = "[]";
 		_memorySummaryProcessing = false;
-		_memorySummaryFailurePopupActive = false;
+		ResetMemoryFailureNotices();
 		_nativeConversationMemorySessionCounter = 0;
 		_activeNativeConversationMemorySessionId = -1;
 		_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
