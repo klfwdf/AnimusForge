@@ -50,3 +50,5 @@ python tools/TeamModulePortParityTests/run.py
 后续动作队列等待同样只刷新既有派发声明 SHA；新 88 检查 / 9 变异负责证明等待期限、未执行取消和已开始归属，13 方法 / 31 调用 / 308 断言不变。
 
 Native 收尾续作只刷新既有 dispatch、完整 Native request 声明 SHA，并将 private NativeConversationGameActionResult（新增 FinalVisible）作为一个精确冻结声明纳入反向恢复。均无 TeamModuleServices receiver；未删除原 13 方法 / 31 调用 / 308 断言或 3 变异，完整文件对照不放宽。
+
+记忆接受续作将旧 public 六参 CommitExternalDialogueHistory 的薄 facade 纳入精确 hash 反向恢复；原业务入口/receiver 不变。新 MyBehavior.DialogueHistoryCommit.cs 的 strict owner 由 NativeCompletionBoundaryTests 对原方法作逐字逆变换对照，并验证真实 Native 调用与 scene 参数，不跳过原 308 断言。

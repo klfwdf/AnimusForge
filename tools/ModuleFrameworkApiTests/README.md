@@ -38,3 +38,7 @@ python tools/ModuleFrameworkApiTests/run.py `
 ## 尚未证明
 
 没有验证真实子 MOD 的 CLR/Bootstrap 加载顺序、游戏主线程、Campaign/Mission 状态、旧存档、live Economy、AFEF 或任何新公共执行入口。元数据相同也不等于不同游戏版本的运行行为相同。
+
+## 严格记忆接口兼容补充
+
+记忆接受续作新增实际 PE 检查：MyBehavior 保持 public，原 CommitExternalDialogueHistory 仍是 public static 六参，scene-aware CommitDialogueHistoryWithScene 是 internal static 七参，返回类型、参数类型/名称/顺序及无可选参数均锁定。四个实际实现 DLL 当前共 532 个元数据断言（保留原 472，新增 60），同时比较 Debug/Release 与 1.3/1.4。不加载游戏 DLL，不宣称真实子 MOD 运行通过。

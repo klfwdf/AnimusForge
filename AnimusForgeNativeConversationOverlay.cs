@@ -1066,7 +1066,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
-				LlmRetryPrompt.ShowFailurePopup("AnimusForge 动作处理未完成", ex.Message);
+				LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message);
 			});
 		}
 		catch (Exception ex)
@@ -1280,7 +1280,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
-				LlmRetryPrompt.ShowFailurePopup("AnimusForge 动作处理未完成", ex.Message);
+				LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message);
 			});
 		}
 		catch (Exception ex)

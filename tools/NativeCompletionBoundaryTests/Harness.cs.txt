@@ -4,22 +4,25 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using AnimusForge.Refactor.Contracts;
+using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.MountAndBlade;
-namespace TaleWorlds.CampaignSystem { public class Hero { public string StringId="A"; } public class CharacterObject { public string StringId="char"; } public class Campaign { public static Campaign Current;public ConversationManager ConversationManager=new ConversationManager(); } }
+namespace TaleWorlds.CampaignSystem { public class Hero { public string StringId="A"; public bool IsAlive=true,IsDisabled; public static Hero MainHero; public static Hero Find(string id)=>string.Equals(id,AnimusForge.Host.RegisteredHero?.StringId,StringComparison.OrdinalIgnoreCase)?AnimusForge.Host.RegisteredHero:null; } public class CharacterObject { public string StringId="char"; } public class Campaign { public static Campaign Current;public ConversationManager ConversationManager=new ConversationManager(); public T GetCampaignBehavior<T>(){AnimusForge.Host.Game();AnimusForge.Host.OwnerQueries++;return AnimusForge.Host.OwnerPresent?(T)(object)new AnimusForge.MyBehavior():default(T);} } }
 namespace TaleWorlds.CampaignSystem.Conversation { public class ConversationManager { public bool IsConversationInProgress=true;public int ActiveToken=3; } }
 namespace TaleWorlds.MountAndBlade { public class Mission { public static Mission Current; } }
+namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==AnimusForge.Host.MainThread; } }
 namespace AnimusForge {
 static class Host {
- internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks;
- internal static bool TargetAvailable=true,MemoryThrows,CaptureThrows,DuplicateCallback;
- internal static string Mode,NonHeroId="party-A";
- internal static Hero Hero;internal static CharacterObject Character;
+ internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks,OwnerQueries;
+ internal static bool TargetAvailable=true,MemoryThrows,CaptureThrows,DuplicateCallback,OwnerPresent,OwnerAccept;
+ internal static string Mode,NonHeroId="af_nonhero:party-a";
+ internal static Hero Hero,RegisteredHero;internal static CharacterObject Character;
  internal static Action AfterValidation,AfterWrite;
  internal static readonly List<string> History=new List<string>();
  internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread)Interlocked.Increment(ref WrongThread);}
- internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=0;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;Mode="normal";NonHeroId="party-A";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
+ internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=OwnerQueries=0;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;OwnerPresent=OwnerAccept=true;Mode="normal";NonHeroId="af_nonhero:party-a";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();RegisteredHero=Hero;TaleWorlds.CampaignSystem.Hero.MainHero=null;Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
  internal static void Write(string key,string player,string reply,string fact,int session){Game();if(MemoryThrows)throw new InvalidOperationException("memory fixture failed");History.Add(key+"|"+session+"|"+(player??"<null>")+"|"+(reply??"<null>")+"|"+(fact??"<null>"));AfterWrite?.Invoke();AfterWrite=null;}
 }
 static class SaveRuntimeGuard {internal static long Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
@@ -27,12 +30,14 @@ static class PlayerEncounterCompat {internal static bool IsInPostBattleResultFlo
 static class Logger {internal static void Log(string category,string text){} }
 static class FreezeWatchdog {internal static void Mark(string stage,string text,bool immediate=false){} }
 static class WorldMapPartyCommandBehavior {internal class WorldMapOrderApplyResult {public bool NeedsChannelExit;} }
-static class MyBehavior {
- internal static void AppendExternalDialogueHistory(Hero h,string p,string a,string f)=>Host.Write(h.StringId,p,a,f,-1);
- internal static void AppendExternalSceneDialogueHistory(Hero h,string p,string a,string f,int s)=>Host.Write(h.StringId,p,a,f,s);
- internal static void AppendExternalNonHeroDialogueHistory(string id,string name,string p,string a,string f)=>Host.Write(id,p,a,f,-1);
- internal static void AppendExternalNonHeroSceneDialogueHistory(string id,string name,string p,string a,string f,int s)=>Host.Write(id,p,a,f,s);
+public partial class MyBehavior {
+ private const string NonHeroMemoryIdPrefix = "af_nonhero:";
+ private static Hero FindHeroById(string id)=>Hero.Find(id);
+ private bool AppendDialogueHistory(Hero h,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(h.StringId,p,a,f,s);return Host.OwnerAccept;}
+ private bool AppendDialogueHistoryById(string id,string name,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(id,p,a,f,s);return Host.OwnerAccept;}
+@@MEMORY_METHODS@@
 }
+
 public partial class ShoutBehavior {
  private sealed class NpcDataPacket {public string Name="A";public int AgentIndex=1;}
  private class SceneSummonPromptTarget{} private class SceneGuidePromptTarget{}
@@ -66,19 +71,19 @@ public partial class ShoutBehavior {
  private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero h,CharacterObject c,NpcDataPacket npc,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string content,string input,ConversationManager manager,int token){
   Host.Game();Host.Effects++;
   if(Host.Mode=="end"){manager.IsConversationInProgress=false;_nativeConversationAdmissionEpoch++;_nativeConversationAdmission=null;}
-  if(Host.Mode=="scene"){Mission.Current=new Mission();Host.Session=7;Host.NonHeroId="party-B";_nativeConversationAdmissionEpoch++;}
+  if(Host.Mode=="scene"){Mission.Current=new Mission();Host.Session=7;Host.NonHeroId="af_nonhero:party-b";_nativeConversationAdmissionEpoch++;}
   if(Host.Mode=="load")SaveRuntimeGuard.Generation++;
   if(Host.Mode=="target")Host.Hero=new Hero{StringId="B"};
   if(Host.Mode=="throw")throw new InvalidOperationException("partial action fixture");
   return new NativeConversationGameActionResult{Content=content,ResponseDiscarded=Host.Mode=="discard",WorldMapResult=new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult{NeedsChannelExit=Host.Mode=="close"}};
  }
- internal Task<string> Start(bool opening=false,bool earlyTts=true,string reply="answer [TAG]"){
+ internal Task<string> Start(bool opening=false,bool earlyTts=true,string reply="answer [TAG]",string openingFact="opening fact"){
   var admission=new NativeConversationAdmission{Generation=SaveRuntimeGuard.Generation,ConversationEpoch=_nativeConversationAdmissionEpoch,PresentationRevision=_nativeConversationPresentationRevision,ConversationManager=Campaign.Current.ConversationManager,ConversationToken=Campaign.Current.ConversationManager.ActiveToken,Mission=Mission.Current,Hero=Host.Hero,Character=Host.Character,NpcName="A",AgentIndex=1};_nativeConversationAdmission=admission;
-  return Task.Run(()=>Turn(admission,opening,earlyTts,reply));
+  return Task.Run(()=>Turn(admission,opening,earlyTts,reply,openingFact));
  }
- private async Task<string> Turn(NativeConversationAdmission admission,bool opening,bool earlyTts,string reply){
+ private async Task<string> Turn(NativeConversationAdmission admission,bool opening,bool earlyTts,string reply,string openingFact){
   Hero targetHero=admission.Hero;CharacterObject targetCharacter=admission.Character;var npc=new NpcDataPacket();List<NpcDataPacket> presentNpcs=null;List<SceneSummonPromptTarget> nativeSceneSummonTargets=null;List<SceneGuidePromptTarget> nativeSceneGuideTargets=null;
-  string cleaned=reply,npcName="A",nativeTargetLog="A",promptPlayerText="input",npcOpeningPersistentFactText="opening fact";int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
+  string cleaned=reply,npcName="A",nativeTargetLog="A",promptPlayerText="input",npcOpeningPersistentFactText=openingFact;int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
   bool shouldRecordPlayerInput=!opening,npcOpeningConsumed=opening,nativeTtsDispatchedBeforePostprocess=earlyTts;
   var nativeRequestConversationManager=admission.ConversationManager;int nativeRequestConversationToken=admission.ConversationToken;var nativeTurnSw=Stopwatch.StartNew();var nativeActionSw=Stopwatch.StartNew();
 @@TAIL@@
@@ -86,6 +91,14 @@ public partial class ShoutBehavior {
  internal bool PumpOne(){if(!_mainThreadActions.TryDequeue(out var action))return false;action();if(Host.DuplicateCallback)action();return true;}
  internal void NewRevision(){_nativeConversationPresentationRevision++;}
  internal void ReleaseBackend(){_nativeConversationAdmission=null;}
+#if !ORIGINAL && !MEMORY_BASELINE
+ internal static MemoryCommitResult MemoryFailure(NativeConversationActionDispatchException ex)=>(ex.InnerException as NativeConversationHistoryCommitException)?.Result;
+#endif
+}
+static class LlmRetryPrompt {internal static int Reports;internal static string Title;internal static void ShowFailurePopup(string title,string message){Reports++;Title=title;} }
+class MemoryUiProof {
+ private void RunNativePresentationCallback(int generation,Action work){work();}
+@@UI_HANDLERS@@
 }
 static class Program {
  static int checks;
@@ -93,10 +106,17 @@ static class Program {
  static string Finish(ShoutBehavior owner,Task<string> task){var wait=Stopwatch.StartNew();while(!task.IsCompleted&&wait.ElapsedMilliseconds<3000){owner.PumpOne();Thread.Sleep(1);}Check(task.IsCompleted,"task settled");try{return task.GetAwaiter().GetResult();}catch(Exception ex){throw new Exception("FAIL unexpected completion fault",ex);}}
  static bool SpinUntilPump(ShoutBehavior o){var w=Stopwatch.StartNew();while(w.ElapsedMilliseconds<3000){if(o.PumpOne())return true;Thread.Sleep(1);}return false;}
 #if !ORIGINAL
- static void Fault(ShoutBehavior o,Task<string> task,AnimusForge.Refactor.Contracts.ActionExecutionEffectState state){Check(SpinUntilPump(o),"faulting callback pumped");Check(SpinWait.SpinUntil(()=>task.IsCompleted,3000),"fault completed");try{task.GetAwaiter().GetResult();throw new Exception("FAIL expected typed failure");}catch(ShoutBehavior.NativeConversationActionDispatchException e){Check(e.EffectState==state&&!e.CanRetryAutomatically,"failure preserves actual start boundary and no replay");}}
+ static ShoutBehavior.NativeConversationActionDispatchException Fault(ShoutBehavior o,Task<string> task,AnimusForge.Refactor.Contracts.ActionExecutionEffectState state){Check(SpinUntilPump(o),"faulting callback pumped");Check(SpinWait.SpinUntil(()=>task.IsCompleted,3000),"fault completed");try{task.GetAwaiter().GetResult();throw new Exception("FAIL expected typed failure");}catch(ShoutBehavior.NativeConversationActionDispatchException e){Check(e.EffectState==state&&!e.CanRetryAutomatically,"failure preserves actual start boundary and no replay");return e;}}
 #endif
  static void Main(){
-#if ORIGINAL
+#if MEMORY_BASELINE
+  foreach(string mode in new[]{"missing","false","throw"}) {
+   Host.Reset();Host.OwnerPresent=mode!="missing";Host.OwnerAccept=mode!="false";Host.MemoryThrows=mode=="throw";
+   var owner=new ShoutBehavior();Check(Finish(owner,owner.Start())=="answer"&&Host.Echo==1&&Host.Marker==1,"REPRODUCED real void owner failure ignored by complete Native tail: "+mode);
+   Check(Host.History.Count==(mode=="false"?1:0),"unconfirmed/partial history is not evidence of acceptance: "+mode);
+  }
+  Console.WriteLine("Original memory acceptance defect reproduced; actual void wrappers and Native completion; lower append=STUBBED.");
+#elif ORIGINAL
   Host.Reset();var owner=new ShoutBehavior();var task=owner.Start();Check(Finish(owner,task)=="answer","original successful reply");Check(Host.WrongThread>0,"REPRODUCED actual Native tail performs game/history work off main thread");
   Host.Reset();owner=new ShoutBehavior();Host.AfterValidation=()=>{Host.Session=7;SaveRuntimeGuard.Generation++;};task=owner.Start();Finish(owner,task);Check(Host.History.Count==1&&Host.History[0].StartsWith("A|7|"),"REPRODUCED validation-to-write gap records old reply under changed save/session");
   Console.WriteLine("Original Native completion defects reproduced; actual dispatch and consumer tail; game/owners=STUBBED.");
@@ -104,7 +124,7 @@ static class Program {
   foreach(bool nonHero in new[]{false,true}) foreach(bool opening in new[]{false,true}) {
    Host.Reset(nonHero);var owner=new ShoutBehavior();var task=owner.Start(opening,earlyTts:false);
    Check(Finish(owner,task)=="answer","normal visible text preserved nonHero="+nonHero+" opening="+opening);
-   string expected=(nonHero?"party-A":"A")+"|3|"+(opening?"<null>":"input")+"|answer|"+(opening?"opening fact":"<null>");
+   string expected=(nonHero?"af_nonhero:party-a":"A")+"|3|"+(opening?"<null>":"input")+"|answer|"+(opening?"opening fact":"<null>");
    Check(Host.History.Count==1&&Host.History[0]==expected,"exact player/reply/opening/session payload");
    Check(Host.WrongThread==0&&Host.Effects==1,"action and all completion game work stay on physical main thread");
    Check(Host.Echo==1&&Host.Marker==1&&Host.Tts==1,"normal echo marker and fallback TTS preserved");
@@ -113,7 +133,7 @@ static class Program {
    Host.Reset(nonHero);Host.Session=-1;var owner=new ShoutBehavior();Finish(owner,owner.Start());Check(Host.History[0].Contains("|-1|"),"loose history route preserved nonHero="+nonHero);
    foreach(string mode in new[]{"end","scene","target"}) {
     Host.Reset(nonHero);Host.Mode=mode;owner=new ShoutBehavior();Check(Finish(owner,owner.Start(earlyTts:false))=="answer","completed actions keep original-target history across owner transition "+mode);
-    Check(Host.History.Count==1&&Host.History[0].StartsWith((nonHero?"party-A":"A")+"|3|"),"captured scene/party identity retained "+mode);
+    Check(Host.History.Count==1&&Host.History[0].StartsWith((nonHero?"af_nonhero:party-a":"A")+"|3|"),"captured scene/party identity retained "+mode);
     Check(Host.Echo==0&&Host.Marker==0&&Host.Tts==0&&Host.WrongThread==0,"old transition cannot touch current transient state "+mode);
    }
   }
@@ -136,7 +156,29 @@ static class Program {
    if(change=="manager")Campaign.Current=new Campaign();if(change=="mission")Mission.Current=new Mission();if(change=="generation")SaveRuntimeGuard.Generation++;
    o.PumpOne();Check(Host.Closed==(change=="none"?1:0),"deferred close follows original context, independent of released backend: "+change);
   }
-  Console.WriteLine($"NativeCompletion PASS={checks} FAIL=0 actualDispatch=true actualConsumerTail=true actualContextChecks=true gameAndPersistenceOwners=STUBBED LIVE=NOT_RUN");
+  foreach(bool nonHero in new[]{false,true}) foreach(string mode in new[]{"missing","false","throw"}) {
+   Host.Reset(nonHero);Host.OwnerPresent=mode!="missing";Host.OwnerAccept=mode!="false";Host.MemoryThrows=mode=="throw";o=new ShoutBehavior();
+   var failure=Fault(o,o.Start(earlyTts:false),ActionExecutionEffectState.UnknownAfterStart);var memory=ShoutBehavior.MemoryFailure(failure);
+   string reason=mode=="missing"?"memory_owner_missing":mode=="false"?"memory_owner_write_unconfirmed":"memory_owner_append_failed";
+   Check(memory!=null&&memory.Status==MemoryCommitStatus.Failed&&memory.ErrorCode==reason,"real memory-owner rejection/failure reaches Native: "+mode+" nonHero="+nonHero);
+   Check(failure.ErrorCode=="native.memory.commit_unconfirmed"&&failure.Message.Contains("记忆"),"memory failure has distinct bounded player diagnostic");
+   Check(Host.Effects==1&&Host.History.Count==(mode=="false"?1:0)&&Host.Echo==0&&Host.Marker==0&&Host.Tts==0,"no false completion/replay/rollback of partial records");
+   Check(Host.WrongThread==0,"strict owner invoked only on physical main thread");
+   foreach(bool openingUi in new[]{false,true}) {LlmRetryPrompt.Reports=0;Check(new MemoryUiProof().Report(failure,openingUi)&&LlmRetryPrompt.Reports==1&&LlmRetryPrompt.Title=="AnimusForge 记忆记录未确认","actual UI branch suppresses ready and reports memory status");}
+  }
+  Host.Reset();Func<string,bool,string,string,string,string,MemoryCommitResult> legacy=MyBehavior.CommitExternalDialogueHistory;
+  Check(legacy("A",false,"NPC","input","answer","fact").HistoryWritten&&Host.History[0]=="A|-1|input|answer|fact","legacy six-argument public facade preserves loose-session ABI and payload");
+  Host.Reset();Check(MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer","fact",73).HistoryWritten&&Host.History[0]=="A|73|input|answer|fact","strict Native Hero route retains requested scene session");
+  Host.Reset(true);Check(MyBehavior.CommitDialogueHistoryWithScene(" AF_NONHERO:PARTY-X ",true,"NPC","input","answer","fact",73).HistoryWritten&&Host.History[0]=="af_nonhero:party-x|73|input|answer|fact","strict nonHero route retains normalization and scene session");
+  foreach(var identity in new[]{("",false),("af_nonhero:x",false),("A",true),("af_nonhero:",true)}) {Host.Reset();var receipt=MyBehavior.CommitDialogueHistoryWithScene(identity.Item1,identity.Item2,"NPC","input","answer",null,3);Check(receipt.Status==MemoryCommitStatus.Rejected&&receipt.ErrorCode=="memory_identity_invalid"&&Host.History.Count==0,"original strict identity gate retained");}
+  foreach(string mode in new[]{"dead","disabled","player","missing"}) {Host.Reset();if(mode=="dead")Host.RegisteredHero.IsAlive=false;if(mode=="disabled")Host.RegisteredHero.IsDisabled=true;if(mode=="player")Hero.MainHero=Host.RegisteredHero;if(mode=="missing")Host.RegisteredHero=null;var receipt=MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer",null,3);Check(receipt.Status==MemoryCommitStatus.Rejected&&receipt.ErrorCode=="memory_target_ineligible"&&Host.History.Count==0,"original Hero eligibility retained: "+mode);}
+  Host.Reset();var background=Task.Run(()=>MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer",null,3)).GetAwaiter().GetResult();Check(background.Status==MemoryCommitStatus.Rejected&&background.ErrorCode=="memory_not_main_thread"&&Host.OwnerQueries==0&&Host.History.Count==0,"background memory entry rejects before game-owner access");
+  Host.Reset();var empty=MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC"," ",null,"",3);Check(empty.Status==MemoryCommitStatus.Rejected&&empty.ErrorCode=="memory_empty_commit"&&Host.History.Count==0,"strict empty payload remains rejected");
+  Host.Reset();Host.OwnerPresent=false;o=new ShoutBehavior();Check(Finish(o,o.Start(opening:true,earlyTts:false,reply:"（没说话）",openingFact:" "))=="（没说话）"&&Host.OwnerQueries==0&&Host.History.Count==0,"genuinely empty Native payload requests no write and fabricates no receipt");
+  Host.Reset(true);Host.NonHeroId="";Host.OwnerPresent=false;o=new ShoutBehavior();Check(Finish(o,o.Start())=="answer"&&Host.OwnerQueries==0&&Host.Echo==1,"transient NPC does not require a persistent memory owner");
+  foreach(bool retiredClose in new[]{false,true}) {Host.Reset();Host.Mode="close";Host.OwnerPresent=false;o=new ShoutBehavior();Fault(o,o.Start(),ActionExecutionEffectState.UnknownAfterStart);Check(Host.Closed==0,"action-driven close remains queued after memory failure");o.ReleaseBackend();if(retiredClose)o.NewRevision();o.PumpOne();Check(Host.Closed==(retiredClose?0:1),"memory failure preserves required close but never closes a new request");}
+  Check(typeof(MyBehavior).GetMethod("CommitExternalDialogueHistory",System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static)!=null&&typeof(MyBehavior).GetMethod("CommitDialogueHistoryWithScene",System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static)==null,"only unchanged legacy facade is public; scene-aware owner stays internal");
+  Console.WriteLine($"NativeCompletion PASS={checks} FAIL=0 actualDispatch=true actualConsumerTail=true actualContextChecks=true strictMemoryEntry=true lowerAppendAndGame=STUBBED LIVE=NOT_RUN");
 #endif
  }
 }

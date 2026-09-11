@@ -1,11 +1,22 @@
 using System;
 using System.Threading;
+using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 
 namespace AnimusForge;
 
 public partial class ShoutBehavior
 {
+    private sealed class NativeConversationHistoryCommitException : InvalidOperationException
+    {
+        internal NativeConversationHistoryCommitException(MemoryCommitResult result)
+            : base("native.memory_commit_unconfirmed: " + (result?.ErrorCode ?? "result_missing"))
+        {
+            Result = result;
+        }
+        internal MemoryCommitResult Result { get; }
+    }
+
     // Prepared text only. No public API and no new persistence schema.
     private sealed class NativeConversationCompletionRequest
     {
@@ -88,26 +99,22 @@ public partial class ShoutBehavior
         if (!suppressHistoryWrite && string.IsNullOrWhiteSpace(historyReplyText))
             historyReplyText = visible;
 
-        // These existing void owners do not acknowledge durable success. Returning from this
-        // dispatch is NOT an atomic memory/AFEF receipt; keep public write capabilities closed.
-        // An action may legitimately end this conversation. Preserve its original-target history
-        // in the same campaign, without recreating an ended/new conversation's transient state.
-        if (hero != null)
+        // Transient scene NPCs and a genuinely empty payload request no durable-history write.
+        // For applicable payloads, inspect the existing owner's acceptance instead of its old void facade.
+        bool hasMemoryPayload = !string.IsNullOrWhiteSpace(scope.Request.PlayerText)
+            || !string.IsNullOrWhiteSpace(historyReplyText) || !string.IsNullOrWhiteSpace(scope.Request.OpeningFact);
+        if ((hero != null || scope.HasNonHeroMemory) && hasMemoryPayload)
         {
-            if (scope.SceneSessionId >= 0)
-                MyBehavior.AppendExternalSceneDialogueHistory(hero, scope.Request.PlayerText, historyReplyText,
-                    scope.Request.OpeningFact, scope.SceneSessionId);
-            else
-                MyBehavior.AppendExternalDialogueHistory(hero, scope.Request.PlayerText, historyReplyText, scope.Request.OpeningFact);
-        }
-        else if (scope.HasNonHeroMemory)
-        {
-            if (scope.SceneSessionId >= 0)
-                MyBehavior.AppendExternalNonHeroSceneDialogueHistory(scope.NonHeroMemoryId, scope.NonHeroMemoryName,
-                    scope.Request.PlayerText, historyReplyText, scope.Request.OpeningFact, scope.SceneSessionId);
-            else
-                MyBehavior.AppendExternalNonHeroDialogueHistory(scope.NonHeroMemoryId, scope.NonHeroMemoryName,
-                    scope.Request.PlayerText, historyReplyText, scope.Request.OpeningFact);
+            MemoryCommitResult memory = MyBehavior.CommitDialogueHistoryWithScene(
+                hero != null ? hero.StringId : scope.NonHeroMemoryId, hero == null,
+                hero != null ? scope.NpcName : scope.NonHeroMemoryName, scope.Request.PlayerText,
+                historyReplyText, scope.Request.OpeningFact, scope.SceneSessionId);
+            if (memory?.HistoryWritten != true)
+            {
+                // A required action-driven channel exit must not be lost just because history failed.
+                QueueNativeConversationCompletionExit(scope, result);
+                throw new NativeConversationHistoryCommitException(memory);
+            }
         }
 
         if (!suppressHistoryWrite && IsNativeConversationCompletionContextCurrent(scope))
@@ -121,6 +128,12 @@ public partial class ShoutBehavior
         if (!suppressHistoryWrite && !scope.Request.TtsAlreadyDispatched && IsNativeConversationCompletionContextCurrent(scope))
             TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
 
+        QueueNativeConversationCompletionExit(scope, result);
+        return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+    }
+
+    private void QueueNativeConversationCompletionExit(NativeConversationCompletionScope scope, NativeConversationGameActionResult result)
+    {
         if (result.WorldMapResult?.NeedsChannelExit == true && IsNativeConversationCompletionContextCurrent(scope))
         {
             // The backend slot can be released before this callback runs. Validate the captured
@@ -131,6 +144,6 @@ public partial class ShoutBehavior
                     CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation");
             });
         }
-        return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
     }
+
 }
