@@ -1,14 +1,16 @@
 # AF 整个重构项目收尾执行台账
 
-## 2026-09-11 当前切片：压缩记忆结果的主线程接受与提交（IN_PROGRESS）
+## 2026-09-12 当前切片：压缩记忆结果的主线程接受与提交（OFFLINE_COMPLETE / LIVE_SAVE_PENDING）
 
-- 旧行为：`TryStartMemorySummaryQueue` 从 Campaign tick 启动 `ProcessMemorySummaryQueueAsync`；第一次网络 `await` 之后，continuation 直接调用 `ApplyMemorySummarySuccess`、`ApplyMajorActionSummarySuccess`、`ApplyMemoryOverviewSuccess`、对应失败标记及队列清理。这些路径会改写 `MyBehavior` 记忆/履历/总览 owner，并可能继续读取 `Hero`、`Settlement` 或其他 Campaign 状态，未建立 Bannerlord 主线程接受边界。
-- 本切片新行为：保留原网络、重试、解析、规则和持久字段，只把异步结果的接受/提交、失败登记、队列清理和玩家提示派发到 `MyBehavior.OnEngineTick` 消费的有界主线程队列；接受时复核当前 `MyBehavior` owner、Campaign generation 及待处理来源，旧 owner/旧读档结果不得写入新状态。
-- 渠道：Native、Scene、Courier 仍经原共享 `AppendExternalDialogueHistory` / daily draft owner 产出素材；本切片不改三渠道 prompt、role、AFEF、动作、默认入口或窗口差异，只收紧其共享压缩 writer。
-- 兼容行为：原成功/失败文本、3 次重试、RPM 波次、Summary/AFEF/周报素材和 overview 顺序保持；未开始或已过期工作不伪称完成，不从未知结果重试动作。Api.V1 保持只读，政策/宴会/GCCZ 业务不迁移。
-- 真实入口与 owner：`MyBehavior.TryRunCampaignMemoryMaintenance` → `TryStartMemorySummaryQueue` → `ProcessMemorySummaryQueueAsync`；权威可变状态仍由当前 Campaign 的 `MyBehavior` 拥有，`OnEngineTick` 是接受/提交消费者，后台只保留网络和不可变结果。
-- 验证计划：先新增会在旧源码上失败的线程/owner/generation/晚结果 replay，再验证原 memory/history/weekly/notoriety 回归；生产代码涉及 Campaign owner，最终运行 Debug/Release × Bannerlord 1.3/1.4/Bootstrap 的既有单模块 `-Stage`。fixture/replay、编译、Stage、实际 DLL、LIVE、SAVE 分层记录，未执行项保持 `NOT_RUN`。
-- 回滚：本段作为生产改动前 intent/checkpoint；完成后生产、测试、HANDOFF 和范围图另作聚焦提交，撤销使用定向 inverse commit，不 reset/rebase。
+- 来源与提交：远端来源 `e40c92d7`，意图/checkpoint `909550d4`，聚焦生产与测试提交 `9040d184`。未 push、未部署、未覆盖游戏、未切默认入口。
+- 旧行为：`TryStartMemorySummaryQueue` 从 Campaign tick 启动 `ProcessMemorySummaryQueueAsync`；第一次网络 `await` 之后，continuation 直接调用三类 `Apply*Success`、对应 `Mark*Failure`、队列清理和完成提示。它们会改写 `MyBehavior` 记忆/履历/总览 owner，却没有 Campaign 主线程接受边界。
+- 本切片新行为：三批 post-await 结果接受、失败登记、队列清理、完成提示和 `_memorySummaryProcessing` 释放均经 `RunMemorySummaryMainThreadAsync` 发布，由 `OnEngineTick` 的 `ProcessMemorySummaryMainThreadActions` 消费。接受时复核物理主线程、`MyBehavior.Instance`、当前 Campaign behavior 与 save generation；入队前后双检避免 reset 后把 worker 永久挂到不再 tick 的旧 owner。
+- 性能边界：这是低频日结完成队列；worker 每次等待接受后才继续发布，EngineTick 每次最多处理 2 个动作。没有热路径全量扫描、反射、锁或空转轮询；原 RPM 波次和 60 秒批间距不变。
+- 渠道与兼容：Native、Scene、Courier 仍经原共享 daily draft owner 产出素材；不改三渠道 prompt、role、AFEF、动作、重试、成功/失败文本、默认入口、公开 ABI 或存档键。Api.V1 仍只读；政策/宴会/GCCZ 业务未迁移。
+- 已验证：专用边界 17/17；精确旧源码 `e40c92d7` 和 3 个行为突变均按预期失败；HistorySnapshot 852/852、native 27/27、MemoryFailureUi 85/85、memory recovery、weekly material、团队端口 308 及 3 突变通过。持久化相对 `e40c92d7` 为 146/146 SyncData、36/36 CampaignBehavior、单一 `AnimusForge`/Bootstrap 身份；Debug/Release × 1.3/1.4/Bootstrap 六项构建和两套项目内 Stage 通过，四份实现 DLL 532 个元数据断言通过。
+- 未覆盖：`ProcessMemorySummaryQueueAsync` 首次 await 前的调度快照，以及 `ExecuteMemorySummaryJobAsync` / `ExecuteMajorActionSummaryJobAsync` / `ExecuteMemoryOverviewJobAsync` 的 prompt/目标准备仍可能在 continuation 上读取 live owner/game 状态；本切片也未加入逐任务 source fingerprint。LIVE、真实 provider、真实 SAVE/读档晚返回均 `NOT_RUN`，阶段八未完成。
+- 下一切片：为三类压缩任务在 Campaign 主线程捕获只读输入和精确来源 revision/fingerprint，后台只执行 provider/解析；接受时除本轮 owner/generation 外，再拒绝来源已变的结果。先做精确旧源码红例，不扩大到 Courier 或公共写 API。
+- 回滚：按用户指示定向 inverse/revert `9040d184`，保留 `909550d4` 审计边界；不 reset/rebase、不覆盖其他作者改动。
 
 ## 2026-09-10 逐项审阅入口
 

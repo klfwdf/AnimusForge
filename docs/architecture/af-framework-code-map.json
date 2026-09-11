@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "8f1cd4794fe19b9d3fc9b1f1ca50afc65eed92ab",
-  "remoteBaseline": "a58c219122d7064cbcb34eed504ec99a826ca563",
+  "sourceRevision": "9040d184998120d3476426337160403f08fdfee9",
+  "remoteBaseline": "e40c92d72524b7ea80a5dc0e36dc996963a62e66",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
     {
@@ -225,26 +225,59 @@
       "fileSha256": "8578fbd0ea46c7db547997fb5dd606fb21ce0aea6b0fec402127c4bb710059fa"
     },
     {
+      "id": "memory.summary.dispatch",
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "start": 44,
+      "end": 47,
+      "symbol": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation)",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "后台只发布低频完成动作；旧 owner/generation 在入队前后 fail closed",
+      "fileSha256": "6435828a98076b74d0152829513079cc334fd32b94b857a79df69bfdb7b3323c"
+    },
+    {
+      "id": "memory.summary.drain",
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "start": 92,
+      "end": 95,
+      "symbol": "private void ProcessMemorySummaryMainThreadActions()",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "EngineTick 每次最多接受 2 个动作，并复核主线程、owner、Campaign 与 generation",
+      "fileSha256": "6435828a98076b74d0152829513079cc334fd32b94b857a79df69bfdb7b3323c"
+    },
+    {
+      "id": "memory.summary.accept",
+      "path": "MyBehavior.cs",
+      "start": 4995,
+      "end": 4998,
+      "symbol": "bool accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "网络 await 后的成功/失败写入由当前 Campaign owner 接受；前置准备仍待后续快照化",
+      "fileSha256": "70cf2ac751ada1bbbe9beb7562710ac43d236240323e66871f0110fe8712971b"
+    },
+    {
       "id": "legacy.history",
       "path": "MyBehavior.cs",
-      "start": 28087,
-      "end": 28090,
+      "start": 28091,
+      "end": 28094,
       "symbol": "public static string BuildHistoryContextForExternal(",
       "match": "contains",
       "status": "retained-live",
       "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
-      "fileSha256": "9040b07c3e999c74a50e2eb3e464f36fa2aeafa5bc1e54c3a0781fcd22694314"
+      "fileSha256": "70cf2ac751ada1bbbe9beb7562710ac43d236240323e66871f0110fe8712971b"
     },
     {
       "id": "legacy.recall",
       "path": "MyBehavior.cs",
-      "start": 34093,
-      "end": 34096,
+      "start": 34097,
+      "end": 34100,
       "symbol": "private string BuildCompressedMemoryContextById(",
       "match": "contains",
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
-      "fileSha256": "9040b07c3e999c74a50e2eb3e464f36fa2aeafa5bc1e54c3a0781fcd22694314"
+      "fileSha256": "70cf2ac751ada1bbbe9beb7562710ac43d236240323e66871f0110fe8712971b"
     },
     {
       "id": "scene.postprocess",
