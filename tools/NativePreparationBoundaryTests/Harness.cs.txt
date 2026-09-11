@@ -1,0 +1,113 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+namespace AnimusForge;
+public static class Host
+{
+    public static int MainThread, OffThread, Reads, Guards, Mode;
+    public static bool Current = true;
+    public static readonly List<string> Trace = new();
+    public static void Read(string name) { lock(Trace) { Reads++; if(Thread.CurrentThread.ManagedThreadId != MainThread) OffThread++; Trace.Add(name); } }
+    public static void Reset(int mode) { MainThread=Thread.CurrentThread.ManagedThreadId;Mode=mode;Current=true;Reads=OffThread=Guards=0;Trace.Clear(); }
+}
+public class Hero { public string StringId { get { Host.Read("hero.id");return "hero"; } } }
+public class CharacterObject { public string StringId { get { Host.Read("character.id");return "troop"; } } }
+public class PartyBase { }
+public class Agent { public int Index; }
+public class Mission
+{
+    public static Mission Current { get { Host.Read("mission");return new Mission(); } }
+    public List<Agent> Agents => new() {new Agent { Index=99 },new Agent {Index=7}};
+}
+public class NpcDataPacket { public int AgentIndex;public string CultureId;public bool IsHero; }
+public class SceneSummonPromptTarget { public int PromptId; }
+public class SceneGuidePromptTarget { public int PromptId; }
+public static class LordEncounterBehavior { public static string BuildMeetingTauntRuntimeInstructionForExternal(Hero h,CharacterObject c,PartyBase p) { Host.Read("lord:"+(h!=null)+":"+(p!=null));return Host.Mode%3==0?" lord ":" "; } }
+public static class SceneTauntBehavior { public static string BuildSceneTauntRuntimeInstructionForExternal(Hero h,CharacterObject c,int index) { Host.Read("scene:"+index);return " scene "; } }
+public static class AfGcczShoutBridge { public const string MeetingTauntRuleBlockMarker="TAUNT";public static bool ShouldAllowAfRuleForCurrentStage(string rule,int index) { Host.Read("gccz:"+rule+":"+index);return Host.Mode%4!=0; } }
+public static class TownAfRuleRoutingPolicy { public const string MeetingTauntRuleId="meeting_taunt"; }
+public static class Logger { public static void Log(string a,string b) { } }
+public static class FreezeWatchdog { public static void Mark(string a,string b,bool immediate=false) { } }
+public sealed class ShoutBehavior
+{
+    private sealed class NativeConversationAdmission { public int AgentIndex; }
+    private const int NativeConversationMainThreadPreprocessTimeoutMs=120;
+    public readonly ConcurrentQueue<Action> _mainThreadActions=new();
+    private static bool IsBannerlordMainThreadForNativeActions() => Thread.CurrentThread.ManagedThreadId==Host.MainThread;
+    private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission,out string reason) { Host.Guards++;reason=Host.Current?"":"stale";return Host.Current; }
+    private static NpcDataPacket BuildNativeConversationNpcData(Hero hero,CharacterObject character) { Host.Read("npc");return new NpcDataPacket { IsHero=hero!=null,CultureId=Host.Mode%2==0?null:"empire" }; }
+    private static bool HasNativeConversationSessionHistory(Hero h,CharacterObject c,string n,int index,NpcDataPacket npc) { Host.Read("history:"+n+":"+index+":"+npc.AgentIndex);return Host.Mode%2==1; }
+    private static bool TryResolveNativeConversationMeetingTauntParty(Hero h,CharacterObject c,int index,out PartyBase p) { Host.Read("party:"+index);p=new PartyBase();return true; }
+    private List<SceneSummonPromptTarget> BuildSceneSummonPromptTargets(IEnumerable<NpcDataPacket> list,Dictionary<int,Hero> heroes) { Host.Read("summon:"+list.Single().AgentIndex+":"+heroes.Count);return Host.Mode%3==1?new():new(){new(){PromptId=4},null,new(){PromptId=2}}; }
+    private List<SceneGuidePromptTarget> BuildSceneGuidePromptTargets(Agent guide,int first) { Host.Read("guide:"+guide?.Index+":"+first);return new(){new(){PromptId=first}}; }
+    private List<string> BuildPreprocessExcludedRuleIdsForCurrentInteraction(Hero hero,CharacterObject character,int index,bool isHero,List<SceneSummonPromptTarget> summons,List<SceneGuidePromptTarget> guides,NpcDataPacket speaker,List<NpcDataPacket> candidates,string text)
+    {
+        Host.Read("rules:"+index+":"+isHero+":"+ReferenceEquals(speaker,candidates.Single())+":"+(summons?.Count??-1)+":"+(guides?.First().PromptId??-1)+":"+text);
+        return new(){"excluded:"+text,"scope:"+index};
+    }
+    @@RUN@@
+    @@WAIT@@
+    @@SNAPSHOT@@
+    @@CAPTURE@@
+    public async Task<string> Prepare(Hero targetHero,CharacterObject targetCharacter,int index)
+    {
+        var admission=new NativeConversationAdmission { AgentIndex=index };
+        string npcName="NPC", routingInput="question", npcOpeningPersistentFactText="opening";
+        @@PREPARE@@
+        return string.Join("|",npc.AgentIndex,npc.IsHero,cultureId,presentNpcs.Count,hadNativeConversationSessionHistoryBeforeTurn,nativeMeetingTauntRuleBlock.Replace(Environment.NewLine,"/"),nativeSceneSummonTargets?.Count??-1,nativeSceneGuideTargets?.First().PromptId??-1,string.Join(",",preprocessExcludedRuleIds),extraFact,currentNativeDialogText,nativeTargetLog);
+    }
+    public async Task<string> BaselinePrepare(Hero targetHero,CharacterObject targetCharacter,int index)
+    {
+        var admission=new NativeConversationAdmission { AgentIndex=index };
+        string npcName="NPC", routingInput="question", npcOpeningPersistentFactText="opening";
+        @@BASELINE@@
+        return string.Join("|",npc.AgentIndex,npc.IsHero,cultureId,presentNpcs.Count,hadNativeConversationSessionHistoryBeforeTurn,nativeMeetingTauntRuleBlock.Replace(Environment.NewLine,"/"),nativeSceneSummonTargets?.Count??-1,nativeSceneGuideTargets?.First().PromptId??-1,string.Join(",",preprocessExcludedRuleIds),extraFact,currentNativeDialogText,nativeTargetLog);
+    }
+}
+public static class Program
+{
+    private static int Checks,Failures;
+    private static void Check(bool value,string name) { Checks++;if(!value){Failures++;Console.WriteLine("FAIL "+name);} }
+    private static string Finish(ShoutBehavior owner,Task<string> task)
+    {
+        var until=Stopwatch.StartNew();
+        while(!task.IsCompleted&&until.ElapsedMilliseconds<3000)
+        {
+            while(owner._mainThreadActions.TryDequeue(out var work)) work();
+            Thread.Sleep(1);
+        }
+        Check(task.IsCompleted,"completion bounded");return task.GetAwaiter().GetResult();
+    }
+    public static int Main()
+    {
+        for(int mode=0;mode<12;mode++)
+        {
+            foreach(bool hero in new[]{false,true}) foreach(int index in new[]{-1,7})
+            {
+                Host.Reset(mode);var owner=new ShoutBehavior();Hero h=hero?new():null;var c=new CharacterObject();
+                string reference=Finish(owner,owner.BaselinePrepare(h,c,index));string referenceTrace=string.Join(";",Host.Trace);
+                Host.Reset(mode);owner=new ShoutBehavior();string direct=Finish(owner,owner.Prepare(h,c,index));string directTrace=string.Join(";",Host.Trace);
+                Check(direct==reference,"payload equals original");Check(directTrace==referenceTrace,"helper arguments/order equal original");
+                Check(direct!=null,"healthy capture result");Check(Host.OffThread==0,"direct main-thread reads");Check(Host.Guards==1,"one context check");
+                Host.Reset(mode);owner=new ShoutBehavior();string queued=Finish(owner,Task.Run(()=>owner.Prepare(h,c,index)));
+                Check(queued==direct,"same payload direct/queued");Check(string.Join(";",Host.Trace)==directTrace,"same helper order/arguments");Check(Host.OffThread==0,"queued game reads only on main");Check(Host.Guards==1,"one queued context check");
+            }
+        }
+        foreach(bool queued in new[]{false,true})
+        {
+            Host.Reset(1);Host.Current=false;var owner=new ShoutBehavior();var t=queued?Task.Run(()=>owner.Prepare(new Hero(),new CharacterObject(),7)):owner.Prepare(new Hero(),new CharacterObject(),7);
+            Check(Finish(owner,t)==null,"stale returns no payload");Check(Host.Reads==0,"stale cannot read game or evaluate rules");
+        }
+        Host.Reset(1);var late=new ShoutBehavior();var pending=Task.Run(()=>late.Prepare(new Hero(),new CharacterObject(),7));
+        Check(SpinWait.SpinUntil(()=>late._mainThreadActions.Count>0,2500),"published before retirement");Host.Current=false;
+        Check(Finish(late,pending)==null,"revalidate at consumption");Check(Host.Reads==0,"retired queued request cannot read");
+        Host.Reset(1);late=new ShoutBehavior();pending=Task.Run(()=>late.Prepare(new Hero(),new CharacterObject(),7));
+        Check(SpinWait.SpinUntil(()=>pending.IsCompleted,2500),"unconsumed request expires");Check(pending.GetAwaiter().GetResult()==null,"timeout no snapshot");
+        while(late._mainThreadActions.TryDequeue(out var callback))callback();Check(Host.Reads==0,"expired preparation never reads late");
+        Console.WriteLine($"{(Failures==0?"PASS":"FAIL")} NativePreparation checks={Checks} failures={Failures} productionCapture=extracted queue=real-helper domainHelpers=recording-stubs LIVE=NOT_RUN");return Failures==0?0:1;
+    }
+}
