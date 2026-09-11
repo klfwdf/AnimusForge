@@ -1,8 +1,13 @@
 # AnimusForge Codex Instructions
 
+## AF core framework skill
+
+- For AF core/framework/interface changes, reviews or handoffs, read `.agents/skills/af-core-framework/SKILL.md`. Internal team ports and the public sub-MOD API stay separate; the core implementation may evolve for approved requirements rather than being frozen to current behavior.
+- HANDOFF must include verified source paths, line ranges, symbols, source revisions and covered/uncovered responsibilities. Resolve the active checkout and delivery branch from current Git plus HANDOFF, not historical branch/directory labels.
+
 ## Local refactor continuation boundary
 
-- For the 2026-08-31 continuation, use `G:\AFMOD\AF-REFACTOR` on `codex/af-main-refactor-continuation-20260831`; see the current execution ledger before editing. Historical NEW-087 and F-drive labels below do not select this machine's worktree.
+- Use `G:\AFMOD\AF-REFACTOR` for this local continuation; the current HANDOFF records the active delivery branch and its approved remote target. The original local continuation history is retained separately and must not be pushed when it contains the excluded local-only handoff. Historical NEW-087 and F-drive labels below do not select this machine's worktree.
 - Preserve existing NEW-10, GCCZ, other worktrees and authors' changes. Writes outside the task workspace require explicit approval for the exact change; keep proposals local otherwise.
 - Create local checkpoint/intent commits before substantial changes and commit each verified slice. Roll back with focused inverse commits, never hard reset or rewritten history.
 - Do not push, deploy to the game, install global skills, or change the default interaction entry points without explicit authorization. Keep contract/replay evidence separate from live-game acceptance.

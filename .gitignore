@@ -38,3 +38,6 @@ FUYONG/
 # Local debug preview files
 api_wizard_interactive_preview.html
 integrated_tabs_settings_preview.html
+
+# Explicitly local-only team brief; publishing must also exclude its unpushed history.
+/docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md
