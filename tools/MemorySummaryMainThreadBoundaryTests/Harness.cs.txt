@@ -1,0 +1,154 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.Library;
+
+namespace TaleWorlds.Library
+{
+    public static class TWParallel
+    {
+        public static int MainId;
+        public static bool IsMainThread() => Thread.CurrentThread.ManagedThreadId == MainId;
+    }
+}
+
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Campaign
+    {
+        public static bool Available = true;
+        public static object Owner;
+        public static int OffThreadReads;
+        private static readonly Campaign CurrentValue = new Campaign();
+        public static Campaign Current
+        {
+            get
+            {
+                if (!TaleWorlds.Library.TWParallel.IsMainThread()) Interlocked.Increment(ref OffThreadReads);
+                return Available ? CurrentValue : null;
+            }
+        }
+        public T GetCampaignBehavior<T>() where T : class => Owner as T;
+    }
+}
+
+namespace AnimusForge
+{
+    public static class Logger
+    {
+        public static void Log(string category, string message) { }
+    }
+
+    public partial class MyBehavior
+    {
+        public static MyBehavior Instance { get; set; }
+        public int PendingMemorySummaryMainThreadActionCountForTests => _memorySummaryMainThreadActions.Count;
+        public Task<bool> Queue(long generation, Func<bool> operation) =>
+            RunMemorySummaryMainThreadAsync(generation, operation);
+        public void Tick() => ProcessMemorySummaryMainThreadActions();
+        public void Reset() => ResetMemorySummaryMainThreadActions();
+    }
+
+    public static class Program
+    {
+        private static int _checks;
+        private static int _failures;
+        private static void Check(bool value, string name)
+        {
+            _checks++;
+            if (!value) { _failures++; Console.WriteLine("FAIL " + name); }
+        }
+
+        private static (MyBehavior Owner, long Generation) NewOwner()
+        {
+            TWParallel.MainId = Thread.CurrentThread.ManagedThreadId;
+            TaleWorlds.CampaignSystem.Campaign.Available = true;
+            TaleWorlds.CampaignSystem.Campaign.OffThreadReads = 0;
+            var owner = new MyBehavior();
+            MyBehavior.Instance = owner;
+            TaleWorlds.CampaignSystem.Campaign.Owner = owner;
+            return (owner, SaveRuntimeGuard.AdvanceGeneration("fixture"));
+        }
+
+        private static Task<bool> Publish(MyBehavior owner, long generation, Func<bool> operation) =>
+            Task.Run(() => owner.Queue(generation, operation));
+
+        public static int Main()
+        {
+            {
+                var f = NewOwner(); int applied = 0;
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                Check(applied == 0 && !pending.IsCompleted, "background only publishes");
+                f.Owner.Tick();
+                Check(pending.GetAwaiter().GetResult() && applied == 1, "main tick applies exactly once");
+                f.Owner.Tick(); Check(applied == 1, "completion cannot replay");
+                Check(TaleWorlds.CampaignSystem.Campaign.OffThreadReads == 0, "campaign read stays on main");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                Check(f.Owner.Queue(f.Generation, () => { applied++; return true; }).GetAwaiter().GetResult() && applied == 1,
+                    "main-thread caller remains synchronous");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                SaveRuntimeGuard.AdvanceGeneration("load"); f.Owner.Tick();
+                Check(!pending.GetAwaiter().GetResult() && applied == 0, "stale generation rejected");
+                Task<bool> retired = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                Check(retired.Wait(1000) && !retired.Result && applied == 0,
+                    "already-stale worker cannot strand on retired queue");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                MyBehavior.Instance = new MyBehavior(); f.Owner.Tick();
+                Check(!pending.GetAwaiter().GetResult() && applied == 0, "replaced instance rejected");
+                Task<bool> retired = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                Check(retired.Wait(1000) && !retired.Result && applied == 0,
+                    "replaced owner cannot strand worker on retired queue");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                TaleWorlds.CampaignSystem.Campaign.Owner = new MyBehavior(); f.Owner.Tick();
+                Check(!pending.GetAwaiter().GetResult() && applied == 0, "different Campaign owner rejected");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                f.Owner.Reset();
+                Check(!pending.GetAwaiter().GetResult() && applied == 0, "lifecycle reset retires pending work");
+            }
+            {
+                var f = NewOwner(); int applied = 0; var tasks = new List<Task<bool>>();
+                for (int i = 0; i < 5; i++) tasks.Add(Publish(f.Owner, f.Generation, () => { applied++; return true; }));
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests == 5, 1000);
+                f.Owner.Tick(); Check(applied == 2, "drain is bounded per tick");
+                f.Owner.Tick(); Check(applied == 4, "second drain remains bounded");
+                f.Owner.Tick(); Task.WaitAll(tasks.ToArray()); Check(applied == 5 && tasks.TrueForAll(x => x.Result), "remaining work completes");
+            }
+            {
+                var f = NewOwner();
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => throw new InvalidOperationException("fixture"));
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                f.Owner.Tick(); Check(!pending.GetAwaiter().GetResult(), "apply exception is isolated");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                Task.Run(f.Owner.Tick).GetAwaiter().GetResult(); Check(applied == 0 && !pending.IsCompleted, "wrong-thread drain refuses work");
+                f.Owner.Tick(); Check(pending.GetAwaiter().GetResult() && applied == 1, "valid tick later accepts work");
+            }
+            Console.WriteLine($"{(_failures == 0 ? "PASS" : "FAIL")} MemorySummaryMainThread checks={_checks} failures={_failures} LIVE=NOT_RUN SAVE=NOT_RUN");
+            return _failures == 0 ? 0 : 1;
+        }
+    }
+}

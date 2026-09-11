@@ -1,5 +1,28 @@
 {
   "baseline": "659bb998",
+  "postSnapshotBaseline": "e40c92d7",
+  "postSnapshotMethods": [
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ResetLocalTransientRuntimeForLoadedSave(",
+      "sha256": "a15e64b68f51f9f88ab35ed290e2ee993be222942b9c994399ad26fe73f6d3e3"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task ProcessMemorySummaryQueueAsync()",
+      "sha256": "a8103086c3d6404881820ec5a16aabc342d214bbff269b00d4ac4c5764b38f22"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public void OnEngineTick()",
+      "sha256": "3c12970c8bdf770f45cee8e9907bdcff9b8f642cbe7c3960bdfabd2a2c79767f"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ClearAllDataForCurrentSave()",
+      "sha256": "7ea97b37b877a89a39247a0f0ba74222b9cd1ad7b0b4606ae852392646bc54a9"
+    }
+  ],
   "methods": [
     {
       "path": "MyBehavior.cs",
