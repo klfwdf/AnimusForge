@@ -20,7 +20,7 @@
     {
       "path": "ShoutBehavior.cs",
       "signature": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
-      "sha256": "cf47301c7bd1f7149145008615a71bc78b79dc7e8984a94970f1ab552f08b71e"
+      "sha256": "7c751a0bcceeeef4e6f75ae3abd9d667a37867424d93891ac91f1da68313aa22"
     },
     {
       "path": "MyBehavior.cs",
@@ -80,17 +80,17 @@
     {
       "path": "MyBehavior.cs",
       "signature": "private bool TryBuildMemoryRecallCandidates(",
-      "sha256": "312fa59f12786f01552be8e7953256f618a8307984243365ff3d25827af23bf0"
+      "sha256": "bfe8023056e46110c8f07eac43b3e00346afef8441a6e6e868a1452d11cff4e4"
     },
     {
       "path": "MyBehavior.cs",
       "signature": "private bool TrySelectMemoryIdsWithPreprocess(",
-      "sha256": "39887c024565c9e8b78e4039aec3fe48dde9222e52568adf1d927647c47b72a2"
+      "sha256": "ce5e82e67bae3402e2a9d564b06ae0f775066ef3ddb0c3936989ed1278e24fee"
     },
     {
       "path": "MyBehavior.cs",
       "signature": "private string BuildCompressedMemoryContextById(",
-      "sha256": "fdbfb7c563f7c7775e0215e77d172c0e784fba5933c4fc55f835e7ec299c8bba"
+      "sha256": "cfaa869c96b6ea67916aa45c5250b28758cdef691dacb8a9b5a2b4111e59eb82"
     },
     {
       "path": "MyBehavior.cs",
@@ -111,6 +111,27 @@
       "path": "MyBehavior.cs",
       "signature": "private void ClearAllDataForCurrentSave()",
       "sha256": "e9bfd028341a9a41ef46e021ef9b330b9e440810451579bf1f61c13e93b9ff1c"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static string FormatCompressedMemoryAgeSuffix(",
+      "sha256": "6f623c26055e3a7f48ce6d4ef8b55e7e159520ef957e63c9e2bf3cb0fa5633d5"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static string BuildMemoryRecallQueryText(",
+      "sha256": "8fb4975f6387bf18344667b695be09dcc2cf2e9945ff2dfb429cd8f833593207"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private string BuildHistoryContextById(",
+      "sha256": "7a5be331534fce919b812db9ddf79515c31788cf7bef9f13431284a24522b4a7"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static Func<string> CaptureNativeConversationPersistedHistoryWork(",
+      "baselineSignature": "private static string BuildNativeConversationPersistedHistoryContextForPrompt(",
+      "sha256": "d26d37931888c40d84fcd489489c2c332d80cf3b8956ae93603bc833c40eb4ff"
     }
   ],
   "commentRewrites": [

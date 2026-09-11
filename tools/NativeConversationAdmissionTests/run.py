@@ -8,12 +8,13 @@ selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForEx
 values={k:ex.declaration(s,v) for k,v in selectors.items()};body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 values['PREFIX']=body.split('\t\tLogger.Log("Logic", "[NativePerf] submit_start')[0];assert 'admission.ConversationToken' in values['PREFIX']
 # Independent wiring checks: unchanged UI existence condition, actual conversation-end invalidation,
-# no late target recapture and all seven pre-action guard sites, including the extracted capture.
+# no late target recapture and all nine pre-action guard sites, including the extracted capture.
 baseline=subprocess.check_output(['git','show','14dec2d7:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
 assert ex.declaration(s,'public static bool CanSubmitNativeConversationForExternal()')==ex.declaration(baseline,'public static bool CanSubmitNativeConversationForExternal()')
 pre=body.split('\t\tStopwatch nativeActionSw =')[0]
 capture=ex.declaration((ROOT/'ShoutBehavior.NativePreparation.cs').read_text(encoding='utf-8-sig'),'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
-assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==6
+assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==8
+assert '"persisted_history_capture"' in pre and '"persisted_history_accept"' in pre
 assert capture.count('IsNativeConversationAdmissionCurrent(admission, out ')==1
 assert pre.count('() => CaptureNativeConversationPreparation(admission,')==1
 assert capture.index('IsNativeConversationAdmissionCurrent(admission, out ') < capture.index('BuildNativeConversationNpcData(')

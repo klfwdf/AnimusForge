@@ -33379,13 +33379,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return startHour + "-" + endHour + "时";
 	}
 
-	private static string FormatCompressedMemoryAgeSuffix(CompressedMemoryBlock block)
+	private static string FormatCompressedMemoryAgeSuffix(CompressedMemoryBlock block, int? capturedDay = null)
 	{
 		if (block == null)
 		{
 			return "";
 		}
-		int currentDay = GetCurrentGameDayIndexSafe();
+		int currentDay = capturedDay ?? GetCurrentGameDayIndexSafe();
 		int daysAgo = currentDay - block.GameDayIndex;
 		if (daysAgo <= 0)
 		{
@@ -33444,7 +33444,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return draft?.Lines != null && draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsAfef && !string.IsNullOrWhiteSpace(x.Text));
 	}
 
-	private static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts)
+	private static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts, string capturedScene = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		string text = (currentInput ?? "").Trim();
@@ -33457,7 +33457,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(text2);
 		}
-		string text3 = ResolveCurrentMemorySceneLabel();
+		string text3 = capturedScene ?? ResolveCurrentMemorySceneLabel();
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
 			stringBuilder.AppendLine(text3);
@@ -33484,14 +33484,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text4;
 	}
 
-	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error, long runtimeGeneration)
+	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error, long runtimeGeneration, HistoryPromptSnapshot snapshot = null)
 	{
 		Stopwatch sw = Stopwatch.StartNew();
 		candidates = new List<MemoryRecallCandidate>();
 		error = "";
 		List<CompressedMemoryBlock> list = (blocks ?? new List<CompressedMemoryBlock>()).Where((CompressedMemoryBlock x) => x != null && (!string.IsNullOrWhiteSpace(x.RichTitle) || !string.IsNullOrWhiteSpace(x.Summary))).ToList();
 		string debugHeroId = NormalizeMemoryHeroId(hero?.StringId ?? list.Select((CompressedMemoryBlock x) => x?.HeroId).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)));
-		Logger.Log("Logic", "[MemoryPerf] recall_candidates_start hero=" + (debugHeroId ?? "") + " blocks=" + ((blocks ?? new List<CompressedMemoryBlock>()).Count) + " eligible=" + list.Count + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length) + " drafts=" + ((drafts ?? new List<DailyMemoryDraft>()).Count));
+		Logger.Log("Logic", "[MemoryPerf] recall_candidates_start hero=" + (debugHeroId ?? "") + " blocks=" + ((blocks ?? new List<CompressedMemoryBlock>()).Count) + " eligible=" + list.Count + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length) + " drafts=" + (snapshot?.DraftCount ?? ((drafts ?? new List<DailyMemoryDraft>()).Count)));
 		if (list.Count <= 0 || candidateLimit <= 0)
 		{
 			sw.Stop();
@@ -33513,7 +33513,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
-			string text = BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts);
+			string text = snapshot?.RecallQuery ?? BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts);
 			Stopwatch querySw = Stopwatch.StartNew();
 			if (instance == null || !instance.IsAvailable || string.IsNullOrWhiteSpace(text) || !instance.TryGetEmbedding(text, out var vector) || vector == null || vector.Length == 0)
 			{
@@ -33595,7 +33595,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error, long runtimeGeneration)
+	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error, long runtimeGeneration, HistoryPromptSnapshot snapshot = null)
 	{
 		Stopwatch sw = Stopwatch.StartNew();
 		selectedIds = new List<int>();
@@ -33616,7 +33616,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		string system = AIConfigHandler.StrictPreprocessJsonSystemPrompt;
-		int mode = GetMemoryPreprocessModeFromSettings();
+		int mode = snapshot?.PreprocessMode ?? GetMemoryPreprocessModeFromSettings();
 		StringBuilder memoryCandidates = new StringBuilder();
 		foreach (MemoryRecallCandidate item in list)
 		{
@@ -33626,9 +33626,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				text = AIConfigHandler.BuildMemoryPreprocessFallbackGameDateForExternal(block.GameDayIndex);
 			}
-			memoryCandidates.AppendLine(AIConfigHandler.BuildMemoryPreprocessCandidateLineForExternal(item.DisplayId, text, FormatCompressedMemoryAgeSuffix(block), FormatMemoryHourRange(block.StartHour, block.EndHour), block.RichTitle));
+			memoryCandidates.AppendLine(AIConfigHandler.BuildMemoryPreprocessCandidateLineForExternal(item.DisplayId, text, FormatCompressedMemoryAgeSuffix(block, snapshot?.GameDay), FormatMemoryHourRange(block.StartHour, block.EndHour), block.RichTitle));
 		}
-		string user = AIConfigHandler.BuildMemoryPreprocessUserPromptForExternal(mode, finalCount, currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), memoryCandidates.ToString());
+		string user = AIConfigHandler.BuildMemoryPreprocessUserPromptForExternal(mode, finalCount, currentInput, secondaryInput, snapshot?.Scene ?? ResolveCurrentMemorySceneLabel(), memoryCandidates.ToString());
 		object[] messages = new object[2]
 		{
 			new
@@ -34090,20 +34090,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return BuildCompressedMemoryContextById(GetMemoryHeroId(hero), currentInput, secondaryInput);
 	}
 
-	private string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput)
+	private string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput, HistoryPromptSnapshot snapshot = null)
 	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		long runtimeGeneration = snapshot?.Generation ?? SaveRuntimeGuard.CaptureGeneration();
 		Stopwatch sw = Stopwatch.StartNew();
 		string heroId = NormalizeMemoryHeroId(memoryId);
-		List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocksById(heroId);
+		List<CompressedMemoryBlock> list = snapshot == null ? LoadCompressedMemoryBlocksById(heroId) : snapshot.Blocks;
 		if (list == null || list.Count <= 0)
 		{
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] compressed_context_done hero=" + heroId + " blocks=0 candidates=0 final=0 chars=0 ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return "";
 		}
-		int finalCount = GetMemoryFinalInjectCountFromSettings();
-		int candidateLimit = GetMemoryCandidateLimitFromSettings();
+		int finalCount = snapshot?.FinalCount ?? GetMemoryFinalInjectCountFromSettings();
+		int candidateLimit = snapshot?.CandidateLimit ?? GetMemoryCandidateLimitFromSettings();
 		List<MemoryRecallCandidate> candidates;
 		Logger.Log("Logic", "[MemoryPerf] compressed_context_start hero=" + heroId + " blocks=" + list.Count + " finalCount=" + finalCount + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length));
 		if (list.Count <= finalCount)
@@ -34123,10 +34123,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			int selectableCandidateLimit = Math.Max(selectableFinalCount, candidateLimit - ((latestBlock != null) ? 1 : 0));
 			List<CompressedMemoryBlock> selectableBlocks = list.Where((CompressedMemoryBlock x) => x != null && (latestBlock == null || !string.Equals((x.Id ?? "").Trim(), latestBlockId, StringComparison.OrdinalIgnoreCase))).ToList();
 			candidates = new List<MemoryRecallCandidate>();
-			List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(heroId);
+			List<DailyMemoryDraft> drafts = snapshot == null ? LoadDailyMemoryDraftsById(heroId) : null;
 			if (selectableFinalCount > 0 && selectableBlocks.Count > 0)
 			{
-				if (!TryBuildMemoryRecallCandidates(null, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error, runtimeGeneration))
+				if (!TryBuildMemoryRecallCandidates(null, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error, runtimeGeneration, snapshot))
 				{
 					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + heroId + " error=" + error);
 					sw.Stop();
@@ -34135,7 +34135,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				if (candidates.Count > selectableFinalCount)
 				{
-					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2, runtimeGeneration))
+					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2, runtimeGeneration, snapshot))
 					{
 						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + heroId + " error=" + error2);
 						sw.Stop();
@@ -34177,7 +34177,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				text2 = "往日对话记忆";
 			}
-			stringBuilder.AppendLine(num + "#标题：" + text + FormatCompressedMemoryAgeSuffix(block) + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " " + text2);
+			stringBuilder.AppendLine(num + "#标题：" + text + FormatCompressedMemoryAgeSuffix(block, snapshot?.GameDay) + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " " + text2);
 			stringBuilder.AppendLine("内容：");
 			stringBuilder.AppendLine((block.Summary ?? "").Trim());
 			stringBuilder.AppendLine("AFEF行为补充：");
@@ -34227,26 +34227,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return BuildHistoryContextById(GetMemoryHeroId(hero), hero.Name?.ToString() ?? "NPC", maxLines, currentInput, secondaryInput, includeCurrentActiveSceneSession);
 	}
 
-	private string BuildHistoryContextById(string memoryId, string memoryName, int maxLines = 0, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
+	private string BuildHistoryContextById(string memoryId, string memoryName, int maxLines = 0, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false, HistoryPromptSnapshot snapshot = null)
 	{
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
-		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
+		if (snapshot == null && !IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
 		{
 			return "";
 		}
 		try
 		{
 			Stopwatch sw = Stopwatch.StartNew();
-			int memoryBlockCount = LoadCompressedMemoryBlocksById(normalizedMemoryId).Count;
-			int dailyDraftCount = LoadDailyMemoryDraftsById(normalizedMemoryId).Count;
+			int memoryBlockCount = snapshot?.BlockCount ?? LoadCompressedMemoryBlocksById(normalizedMemoryId).Count;
+			int dailyDraftCount = snapshot?.DraftCount ?? LoadDailyMemoryDraftsById(normalizedMemoryId).Count;
 			StringBuilder stringBuilder = new StringBuilder(4096);
-			string memoryOverviewContext = BuildMemoryOverviewContextById(normalizedMemoryId);
+			string memoryOverviewContext = snapshot == null ? BuildMemoryOverviewContextById(normalizedMemoryId) : snapshot.Overview;
 			if (!string.IsNullOrWhiteSpace(memoryOverviewContext))
 			{
 				stringBuilder.AppendLine(memoryOverviewContext);
 				stringBuilder.AppendLine();
 			}
-			string compressedMemoryContext = BuildCompressedMemoryContextById(normalizedMemoryId, currentInput, secondaryInput);
+			string compressedMemoryContext = BuildCompressedMemoryContextById(normalizedMemoryId, currentInput, secondaryInput, snapshot);
 			if (!string.IsNullOrWhiteSpace(compressedMemoryContext))
 			{
 				stringBuilder.AppendLine(compressedMemoryContext);

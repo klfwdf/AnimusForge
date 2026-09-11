@@ -43,7 +43,7 @@ def restore_reviewed_nonport_deltas(path, current, prior):
         declaration = extractor.declaration(current, item["signature"])
         if hashlib.sha256(declaration.encode()).hexdigest() != item["sha256"] or "TeamModuleServices." in declaration:
             raise AssertionError("Unreviewed non-port owner delta: " + path + ":" + item["signature"])
-        original = extractor.declaration(prior, item["signature"])
+        original = extractor.declaration(prior, item.get("baselineSignature", item["signature"]))
         if current.count(declaration) != 1:
             raise AssertionError("Nonunique reviewed declaration")
         current = current.replace(declaration, original, 1)
