@@ -39,3 +39,5 @@ python -B tools/NativeCompletionBoundaryTests/run_mutations.py
 `--memory-baseline` 从 `29ca75c9` 提取真实 Native 全 tail 和真实 void owner 外壳：owner 缺失、返回 false、抛异常都曾继续正常收尾。新版执行同一底层接受结果门禁，失败不重放/不删除部分记录，并保留必要的原上下文关窗。
 
 新场景严格入口反向去除方法名/scene 参数差异后，完整声明必须等于原六参 strict owner；原 public 六参 facade 仍走 -1，scene-aware owner 仍 internal。原资格、规范化、错误码与 payload 顺序不改。非持久 NPC/真正空 payload 不伪造写入请求。实际 DLL ABI/可见性由 ModuleFrameworkApiTests 的 PE 元数据检查补充。
+
+前置历史续作后，action discard 与五个前置拒绝共用固定 key 的真实 rollback。此套件链接该真实 guard/Native 集合清理，场景 remover 仍为原覆盖范围内的 fixture；前置 append/完整镜像角色清理由 NativePendingHistoryBoundaryTests 执行。原 drop-discard-context 变异迁移到同一新共享 guard，未删除原断言。

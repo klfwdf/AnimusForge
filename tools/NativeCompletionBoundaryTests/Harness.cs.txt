@@ -46,12 +46,17 @@ public partial class ShoutBehavior {
  private static ShoutBehavior CurrentInstance;
  private NativeConversationAdmission _nativeConversationAdmission;
  private long _nativeConversationAdmissionEpoch=1,_nativeConversationPresentationRevision=1;
+ private static readonly object _nativeConversationSessionHistoryLock=new object();
+ private static readonly Dictionary<string,List<AnimusForgeDialogueHistoryEntry>> _nativeConversationSessionHistory=new Dictionary<string,List<AnimusForgeDialogueHistoryEntry>>();
+ private void RemoveNativeConversationSessionHistoryEventFromSceneHistory(long sequence){Host.Game();Host.Rollbacks++;}
+ private static void ObserveNativePendingHistory(string stage,Exception error=null){}
+@@ROLLBACK@@
 @@ADMISSION@@
 @@CHECKS@@
 @@RESULT@@
 @@DISPATCH@@
 @@NO_SPEECH@@
- internal ShoutBehavior(){CurrentInstance=this;}
+ internal ShoutBehavior(){CurrentInstance=this;_nativeConversationSessionHistory["fixture"]=new List<AnimusForgeDialogueHistoryEntry>{new AnimusForgeDialogueHistoryEntry{EventSequence=1,Kind="player"}};}
  private static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==Host.MainThread;
  private static bool TryResolveNativeConversationTarget(out Hero h,out CharacterObject c,out string name){Host.Game();h=Host.Hero;c=Host.Character;name="A";return true;}
  private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c)=>1;
@@ -66,7 +71,9 @@ public partial class ShoutBehavior {
  private static void MarkNativeConversationCurrentDialogRecorded(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket npc){Host.Game();Host.Marker++;}
  private static void TrySpeakNativeConversationReplyWithTts(Hero h,CharacterObject c,NpcDataPacket npc,int i,string text){Host.Game();Host.Tts++;}
  private static void CloseNativeConversationForSceneMechanism(string why){Host.Game();Host.Closed++;Campaign.Current.ConversationManager.IsConversationInProgress=false;}
+#if ORIGINAL || MEMORY_BASELINE
  private static void RollbackNativeConversationPendingPlayerHistory(Hero h,CharacterObject c,string name,int i,NpcDataPacket npc,long seq,string why){Host.Game();Host.Rollbacks++;}
+#endif
  private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int index,Func<T> work,T fallback){var done=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);_mainThreadActions.Enqueue(()=>{T value=work();Host.AfterValidation?.Invoke();Host.AfterValidation=null;done.SetResult(value);});return done.Task;}
  private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero h,CharacterObject c,NpcDataPacket npc,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string content,string input,ConversationManager manager,int token){
   Host.Game();Host.Effects++;
@@ -83,7 +90,7 @@ public partial class ShoutBehavior {
  }
  private async Task<string> Turn(NativeConversationAdmission admission,bool opening,bool earlyTts,string reply,string openingFact){
   Hero targetHero=admission.Hero;CharacterObject targetCharacter=admission.Character;var npc=new NpcDataPacket();List<NpcDataPacket> presentNpcs=null;List<SceneSummonPromptTarget> nativeSceneSummonTargets=null;List<SceneGuidePromptTarget> nativeSceneGuideTargets=null;
-  string cleaned=reply,npcName="A",nativeTargetLog="A",promptPlayerText="input",npcOpeningPersistentFactText=openingFact;int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
+  string cleaned=reply,npcName="A",nativePendingAfefKey="fixture",nativeTargetLog="A",promptPlayerText="input",npcOpeningPersistentFactText=openingFact;int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
   bool shouldRecordPlayerInput=!opening,npcOpeningConsumed=opening,nativeTtsDispatchedBeforePostprocess=earlyTts;
   var nativeRequestConversationManager=admission.ConversationManager;int nativeRequestConversationToken=admission.ConversationToken;var nativeTurnSw=Stopwatch.StartNew();var nativeActionSw=Stopwatch.StartNew();
 @@TAIL@@

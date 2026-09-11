@@ -15456,7 +15456,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true, int targetAgentIndex = -1, NpcDataPacket npc = null, int playerTargetAgentIndex = -1, string playerTargetName = null)
+	private static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true, int targetAgentIndex = -1, NpcDataPacket npc = null, int playerTargetAgentIndex = -1, string playerTargetName = null, string capturedHistoryKey = null)
 	{
 		text = (text ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -15472,7 +15472,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				storedTargetName = (npcName ?? "").Trim();
 			}
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
+			string key = capturedHistoryKey ?? BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return;
@@ -15531,37 +15531,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	// turn is available to the main and postprocess prompts. If its live scene
 	// target disappears, remove only that request's globally unique event rather
 	// than leaving an orphaned player line in either shared history store.
-	private static void RollbackNativeConversationPendingPlayerHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, NpcDataPacket npc, long eventSequence, string reason)
-	{
-		if (eventSequence <= 0L)
-		{
-			return;
-		}
-		try
-		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
-			if (!string.IsNullOrWhiteSpace(key))
-			{
-				lock (_nativeConversationSessionHistoryLock)
-				{
-					if (_nativeConversationSessionHistory.TryGetValue(key, out var entries) && entries != null)
-					{
-						entries.RemoveAll((AnimusForgeDialogueHistoryEntry entry) => entry != null && entry.EventSequence == eventSequence);
-						if (entries.Count == 0)
-						{
-							_nativeConversationSessionHistory.Remove(key);
-						}
-					}
-				}
-			}
-			CurrentInstance?.RemoveNativeConversationSessionHistoryEventFromSceneHistory(eventSequence);
-			Logger.Log("ShoutBehavior", "[NativeConversation] rolled back pending player history because response target became unavailable target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agentIndex=" + targetAgentIndex + " event=" + eventSequence + " reason=" + (reason ?? "unknown"));
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("ShoutBehavior", "[NativeConversation] pending player-history rollback failed: " + ex.Message);
-		}
-	}
+	private static void RollbackNativeConversationPendingPlayerHistory(ShoutBehavior owner,
+        NativeConversationAdmission admission, string historyKey, long eventSequence, string reason)
+    {
+        // Event sequences reset on load. Never recompute the key or use a new CurrentInstance.
+        if (owner == null || eventSequence <= 0 || string.IsNullOrWhiteSpace(historyKey)
+            || !owner.IsNativeConversationContextStampCurrent(admission)
+            || admission.PresentationRevision != Interlocked.Read(ref owner._nativeConversationPresentationRevision))
+            return;
+        lock (_nativeConversationSessionHistoryLock)
+        {
+            if (_nativeConversationSessionHistory.TryGetValue(historyKey, out var entries) && entries != null)
+            {
+                entries.RemoveAll(entry => entry != null && entry.EventSequence == eventSequence
+                    && string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase));
+                if (entries.Count == 0) _nativeConversationSessionHistory.Remove(historyKey);
+            }
+        }
+        owner.RemoveNativeConversationSessionHistoryEventFromSceneHistory(eventSequence);
+        ObserveNativePendingHistory("rollback_applied_" + (reason ?? "unknown"));
+    }
 
 	private static void TrimNativeConversationSessionHistory(List<AnimusForgeDialogueHistoryEntry> entries)
 	{
@@ -15742,11 +15731,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
-	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 0, NpcDataPacket npc = null)
+	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 0, NpcDataPacket npc = null, string capturedHistoryKey = null)
 	{
 		try
 		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
+			string key = capturedHistoryKey ?? BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return new List<AnimusForgeDialogueHistoryEntry>();
@@ -15811,12 +15800,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 0, NpcDataPacket npc = null)
+	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 0, NpcDataPacket npc = null, string capturedHistoryKey = null)
 	{
 		List<ConversationMessage> list = new List<ConversationMessage>();
 		try
 		{
-			List<AnimusForgeDialogueHistoryEntry> entries = GetNativeConversationSessionHistorySnapshot(targetHero, targetCharacter, npcName, targetAgentIndex, maxLines, npc);
+			List<AnimusForgeDialogueHistoryEntry> entries = GetNativeConversationSessionHistorySnapshot(targetHero, targetCharacter, npcName, targetAgentIndex, maxLines, npc, capturedHistoryKey);
 			string targetName = (npcName ?? "").Trim();
 			string npcSpeakerName = string.IsNullOrWhiteSpace(targetName) ? "NPC" : targetName;
 			for (int i = 0; i < entries.Count; i++)
@@ -19567,8 +19556,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}, targetLog, targetAgentIndex,
 			beforeOwner: completion == null ? null : () => completionScope = CaptureNativeConversationCompletionOnMainThread(
 				admission, npc, npcName, targetAgentIndex, completion),
-			onDiscard: completion == null ? null : () => RollbackDiscardedNativeCompletionOnMainThread(
-				admission, npc, npcName, targetAgentIndex, completion.PendingPlayerHistorySequence));
+			onDiscard: completion == null ? null : () => RollbackNativeConversationPendingPlayerHistory(
+				this, admission, completion.PendingPlayerHistoryKey, completion.PendingPlayerHistorySequence, "action_dispatch_target_unavailable"));
 		if (IsBannerlordMainThreadForNativeActions())
 		{
 			try { return Task.FromResult(dispatch()); }
@@ -20276,20 +20265,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			duelRuleInjected = false;
 			Logger.Log("ShoutBehavior", "[NativeConversation] duel postprocess blocked: " + duelPostprocessBlockedReason);
 		}
-		string playerName = GetPlayerDisplayNameForShout();
-		if (string.IsNullOrWhiteSpace(playerName))
-		{
-			playerName = "玩家";
-		}
-		long nativePendingPlayerHistoryEventSequence = 0L;
-		if (shouldRecordPlayerInput)
-		{
-			nativePendingPlayerHistoryEventSequence = NextConversationEventSequence();
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, playerName, promptPlayerText, "player", nativePendingPlayerHistoryEventSequence, targetAgentIndex: nativeTargetAgentIndex, npc: npc);
-		}
-		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
-		List<ConversationMessage> pendingNativeCurrentAfefFacts = ConsumePendingCurrentNativeAfefFactMessagesForPrompt(nativePendingAfefKey);
-		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc: npc);
+		NativeConversationPendingHistory nativePendingHistory = await PrepareNativeConversationPendingHistoryAsync(
+			admission, npc, npcName, nativeTargetAgentIndex, promptPlayerText, shouldRecordPlayerInput).ConfigureAwait(false);
+		if (nativePendingHistory == null) return "";
+		string playerName = nativePendingHistory.PlayerName;
+		long nativePendingPlayerHistoryEventSequence = nativePendingHistory.EventSequence;
+		string nativePendingAfefKey = nativePendingHistory.HistoryKey;
+		List<ConversationMessage> pendingNativeCurrentAfefFacts = nativePendingHistory.PendingFacts;
+		List<ConversationMessage> nativeHistoryMessages = nativePendingHistory.Messages;
 		bool useSharedDailyMemoryForNpcOpening = npcInitiatedOpening;
 		List<ConversationMessage> persistentMemoryRoleMessages = (useSharedDailyMemoryForNpcOpening || !hadNativeConversationSessionHistoryBeforeTurn)
 			? BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex)
@@ -20349,7 +20332,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!nativeMainReplyTargetAvailableBeforeDispatch)
 		{
 			string reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableBeforeDispatchReason) ? "main_thread_validation_failed" : nativeMainReplyTargetUnavailableBeforeDispatchReason;
-			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
@@ -20386,7 +20369,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!nativeMainReplyTargetAvailable)
 		{
 			string reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableReason) ? "main_thread_validation_failed" : nativeMainReplyTargetUnavailableReason;
-			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply before postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
@@ -20416,7 +20399,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!nativePostprocessStartTargetAvailable)
 		{
 			string reason = string.IsNullOrWhiteSpace(nativePostprocessStartTargetUnavailableReason) ? "main_thread_validation_failed" : nativePostprocessStartTargetUnavailableReason;
-			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
 			Logger.Log("ShoutBehavior", "[NativeConversation] skipped postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
@@ -20489,7 +20472,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!nativeDirectCommandTargetAvailable)
 			{
 				string reason = string.IsNullOrWhiteSpace(nativeDirectCommandTargetUnavailableReason) ? "main_thread_validation_failed" : nativeDirectCommandTargetUnavailableReason;
-				RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+				await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
 				Logger.Log("ShoutBehavior", "[NativeConversation] skipped direct scene command because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 				return "";
 			}
@@ -20561,7 +20544,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!nativePostprocessTargetAvailable)
 		{
 			string reason = string.IsNullOrWhiteSpace(nativePostprocessTargetUnavailableReason) ? "main_thread_validation_failed" : nativePostprocessTargetUnavailableReason;
-			RollbackNativeConversationPendingPlayerHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc, nativePendingPlayerHistoryEventSequence, reason);
+			await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped completed response because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
@@ -20583,7 +20566,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				PlayerText = shouldRecordPlayerInput ? promptPlayerText : null,
 				OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
 				TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
-				PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence
+				PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence,
+				PendingPlayerHistoryKey = nativePendingAfefKey
 			}).ConfigureAwait(false);
 		if (nativeActionResult?.ResponseDiscarded == true)
 		{
@@ -29281,10 +29265,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			lock (_historyLock)
 			{
-				_publicConversationHistory.RemoveAll((ConversationMessage message) => message != null && message.EventSequence == eventSequence);
+				_publicConversationHistory.RemoveAll((ConversationMessage message) => message != null && message.EventSequence == eventSequence && string.Equals(message.Role, "user", StringComparison.OrdinalIgnoreCase));
 				foreach (List<ConversationMessage> history in _npcConversationHistory.Values)
 				{
-					history?.RemoveAll((ConversationMessage message) => message != null && message.EventSequence == eventSequence);
+					history?.RemoveAll((ConversationMessage message) => message != null && message.EventSequence == eventSequence && string.Equals(message.Role, "user", StringComparison.OrdinalIgnoreCase));
 				}
 			}
 		}

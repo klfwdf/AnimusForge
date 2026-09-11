@@ -15,12 +15,12 @@
     {
       "path": "ShoutBehavior.cs",
       "signature": "private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(",
-      "sha256": "1e83f4db3ea95c5fe1673a8fe6efe4b5713be161146d9c4007d1ab09f9d76cd2"
+      "sha256": "a7a56a331c7cd94457c7056c3d55352f4dacfaf54195f4aa7f8d076b9052937a"
     },
     {
       "path": "ShoutBehavior.cs",
       "signature": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
-      "sha256": "448b5ac828a9b5277a04dfdbaecfa6024a9193876a429cf33506389d01bccf19"
+      "sha256": "53bea46f56c2b585aa75e8e0df62ffc71c0190e84924db63465a002b9951f96d"
     },
     {
       "path": "MyBehavior.cs",
@@ -36,6 +36,31 @@
       "path": "MyBehavior.cs",
       "signature": "public static MemoryCommitResult CommitExternalDialogueHistory(",
       "sha256": "17cb5819c95634e077fab18dad7ec629de1d6e29a453593293e8a2d80cb1f556"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static void AppendNativeConversationSessionHistory(",
+      "sha256": "bd1f209e5a226084f375cd15c2bbb4f1a13533587e99704ad392137cc475f215"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static void RollbackNativeConversationPendingPlayerHistory(",
+      "sha256": "3c6c60fa56e1f66b94c93d64a9db8a59bac0f07c2c92e6f72698d4484ce67d56"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(",
+      "sha256": "2dca21f26ea2dd869cabc2043203bfcd2b32a73ce02ea9e8b1dfd9a2c0d34bdb"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(",
+      "sha256": "df10230a8a6d3d397417b30887c19487e1d3afd1c540d3787d19d9a24edba406"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "signature": "private void RemoveNativeConversationSessionHistoryEventFromSceneHistory(",
+      "sha256": "8a6fd62af46d5fa80bfff80c744105d83cdfe77dbd3bff1f20653d285ca54ad9"
     }
   ],
   "commentRewrites": [

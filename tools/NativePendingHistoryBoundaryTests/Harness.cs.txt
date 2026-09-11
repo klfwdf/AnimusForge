@@ -1,0 +1,127 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Linq;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
+namespace TaleWorlds.CampaignSystem {public class Hero{public string StringId="hero";}public class CharacterObject{public string StringId="npc";}public class Campaign{public static Campaign Current=new Campaign();public ConversationManager ConversationManager=new ConversationManager();}public struct CampaignTime{public static CampaignTime Now{get{AnimusForge.Host.Game();return new CampaignTime();}}public double ToDays=>2;public override string ToString()=>"day-2";}}
+namespace TaleWorlds.CampaignSystem.Conversation{public class ConversationManager{public bool IsConversationInProgress=true;public int ActiveToken=1;}}
+namespace TaleWorlds.MountAndBlade{public class Mission{public static Mission Current=new Mission();}}
+namespace AnimusForge{
+static class Host{
+ internal static int MainThread,WrongThread,KeyReads,TimeoutMs=60;
+ internal static string Key="party-a",PlayerName="Player";
+ internal static bool Available=true,ThrowLogs,ThrowQueue,ThrowAfterQueue,Duplicate;
+ internal static Action OnPlayerName;
+ internal static Hero Hero;internal static CharacterObject Character;
+ internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread)Interlocked.Increment(ref WrongThread);}
+ internal static void Reset(){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=KeyReads=0;TimeoutMs=60;Key="party-a";PlayerName="Player";OnPlayerName=null;Available=true;ThrowLogs=ThrowQueue=ThrowAfterQueue=Duplicate=false;Hero=new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
+}
+static class SaveRuntimeGuard{internal static long Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+static class PlayerEncounterCompat{internal static bool IsInPostBattleResultFlow()=>false;}
+static class Logger{internal static void Log(string c,string m){if(Host.ThrowLogs)throw new InvalidOperationException("fixture logger failure");}}
+static class FreezeWatchdog{internal static void Mark(string stage,string data,bool immediate=false){}}
+static class MyBehavior{internal static int GetCurrentMemoryGameHourForExternal(){Host.Game();return 9;}internal static string ResolveCurrentMemorySceneLabelForExternal(){Host.Game();return "scene-a";}}
+class ActionQueue{readonly ConcurrentQueue<Action> queue=new ConcurrentQueue<Action>();internal void Enqueue(Action a){if(Host.ThrowQueue)throw new InvalidOperationException("queue unavailable");queue.Enqueue(a);if(Host.ThrowAfterQueue)throw new InvalidOperationException("queue published then failed");}internal bool Pump(){if(!queue.TryDequeue(out var a))return false;a();if(Host.Duplicate)a();return true;}internal int Count=>queue.Count;}
+public partial class ShoutBehavior{
+ private class NpcDataPacket{public string Name="NPC";public int AgentIndex=1;}
+ private static ShoutBehavior CurrentInstance;
+ private NativeConversationAdmission _nativeConversationAdmission;
+ private long _nativeConversationAdmissionEpoch=1,_nativeConversationPresentationRevision=1;
+ private static int NativeConversationMainThreadPreprocessTimeoutMs=>Host.TimeoutMs;
+ private static long _currentConversationEventSequence;
+ private readonly ActionQueue _mainThreadActions=new ActionQueue();
+ private static readonly object _nativeConversationSessionHistoryLock=new object();
+ private static readonly Dictionary<string,List<AnimusForgeDialogueHistoryEntry>> _nativeConversationSessionHistory=new Dictionary<string,List<AnimusForgeDialogueHistoryEntry>>();
+ private readonly object _historyLock=new object(),_pendingCurrentNativeAfefFactsLock=new object();
+ private readonly List<ConversationMessage> _publicConversationHistory=new List<ConversationMessage>();
+ private readonly Dictionary<int,List<ConversationMessage>> _npcConversationHistory=new Dictionary<int,List<ConversationMessage>>();
+ private readonly Dictionary<string,List<ConversationMessage>> _pendingCurrentNativeAfefFactsByKey=new Dictionary<string,List<ConversationMessage>>();
+@@ADMISSION@@
+@@CHECKS@@
+@@HISTORY_METHODS@@
+ internal ShoutBehavior(){CurrentInstance=this;_nativeConversationSessionHistory.Clear();_currentConversationEventSequence=0;_nativeConversationAdmission=new NativeConversationAdmission{Generation=SaveRuntimeGuard.Generation,ConversationEpoch=1,PresentationRevision=1,ConversationManager=Campaign.Current.ConversationManager,ConversationToken=1,Mission=Mission.Current,Hero=Host.Hero,Character=Host.Character,NpcName="NPC",AgentIndex=1};}
+ private static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==Host.MainThread;
+ private static bool TryResolveNativeConversationTarget(out Hero h,out CharacterObject c,out string name){Host.Game();h=Host.Hero;c=Host.Character;name="NPC";return true;}
+ private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c)=>1;
+ private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int i,Hero h,CharacterObject c,out string reason){Host.Game();reason="fixture";return Host.Available;}
+ private static string BuildNativeConversationHistoryKey(Hero h,CharacterObject c,string name,int i=-1,NpcDataPacket npc=null){Host.Game();Host.KeyReads++;return Host.Key;}
+ private static string GetPlayerDisplayNameForShout(){Host.Game();Host.OnPlayerName?.Invoke();Host.OnPlayerName=null;return Host.PlayerName;}
+ private static void TrimNativeConversationSessionHistory(List<AnimusForgeDialogueHistoryEntry> rows){}
+ private static int ResolveDailyConversationHistoryLineLimit(int maximum=0)=>maximum>0?maximum:2;
+ private static string NormalizeNativeConversationFactLineForPrompt(string text,string speaker)=>text;
+ private static float GetPlayerDistanceToAgentForScenePrompt(int i){Host.Game();return 12f;}
+ private void AppendNativeConversationSessionLineToSceneHistory(Hero h,CharacterObject c,string name,string speaker,string text,string kind,long sequence,int index,NpcDataPacket npc,int targetIndex,string targetName){Host.Game();var m=new ConversationMessage{EventSequence=sequence,Role=kind=="player"?"user":kind=="fact"?"system":"assistant",Content=text};_publicConversationHistory.Add(m);if(!_npcConversationHistory.ContainsKey(index))_npcConversationHistory[index]=new List<ConversationMessage>();_npcConversationHistory[index].Add(m);}
+ internal sealed class Captured{internal string Key,Player;internal long Sequence;internal List<ConversationMessage> Facts,Messages;}
+ internal async Task<Captured> Prepare(bool record=true){var admission=_nativeConversationAdmission;Hero targetHero=admission.Hero;CharacterObject targetCharacter=admission.Character;string npcName="NPC",promptPlayerText="hello";int nativeTargetAgentIndex=1;var npc=new NpcDataPacket();bool shouldRecordPlayerInput=record;
+@@PREPARE@@
+ return new Captured{Key=nativePendingAfefKey,Player=playerName,Sequence=nativePendingPlayerHistoryEventSequence,Facts=pendingNativeCurrentAfefFacts,Messages=nativeHistoryMessages};}
+ internal async Task<string> Reject(Captured captured,int stage=0){var admission=_nativeConversationAdmission;Hero targetHero=admission.Hero;CharacterObject targetCharacter=admission.Character;string npcName="NPC",nativeTargetLog="NPC",nativePendingAfefKey=captured.Key;int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=captured.Sequence;var npc=new NpcDataPacket();
+ string nativeMainReplyTargetUnavailableBeforeDispatchReason="fixture",nativeMainReplyTargetUnavailableReason="fixture",nativePostprocessStartTargetUnavailableReason="fixture",nativeDirectCommandTargetUnavailableReason="fixture",nativePostprocessTargetUnavailableReason="fixture";
+ bool nativeMainReplyTargetAvailableBeforeDispatch=false,nativeMainReplyTargetAvailable=false,nativePostprocessStartTargetAvailable=false,nativeDirectCommandTargetAvailable=false,nativePostprocessTargetAvailable=false;
+ switch(stage){@@REJECTIONS@@}return "not rejected";}
+ internal void Seed(string key,long seq,string kind="player",string text="seed"){_nativeConversationSessionHistory[key]=new List<AnimusForgeDialogueHistoryEntry>{new AnimusForgeDialogueHistoryEntry{EventSequence=seq,Kind=kind,Text=text}};_publicConversationHistory.Add(new ConversationMessage{EventSequence=seq,Role=kind=="player"?"user":"system",Content=text});}
+ internal void Fact(string key){_pendingCurrentNativeAfefFactsByKey[key]=new List<ConversationMessage>{new ConversationMessage{Role="system",Content="fact"},null};}
+ internal void Add(string key,long seq,string kind,string text){if(!_nativeConversationSessionHistory.ContainsKey(key))_nativeConversationSessionHistory[key]=new List<AnimusForgeDialogueHistoryEntry>();_nativeConversationSessionHistory[key].Add(new AnimusForgeDialogueHistoryEntry{EventSequence=seq,Kind=kind,Text=text,Speaker="NPC",TargetAgentIndex=1,TargetName="NPC"});_currentConversationEventSequence=Math.Max(_currentConversationEventSequence,seq);}
+ internal int Rows(string key)=>_nativeConversationSessionHistory.TryGetValue(key,out var list)?list.Count:0;
+ internal int SceneRows(long seq)=>_publicConversationHistory.Count(x=>x.EventSequence==seq);
+ internal bool HasFacts(string key)=>_pendingCurrentNativeAfefFactsByKey.ContainsKey(key);
+ internal bool Pump()=>_mainThreadActions.Pump();
+ internal void Revision()=>_nativeConversationPresentationRevision++;
+ internal void Epoch()=>_nativeConversationAdmissionEpoch++;
+#if !ORIGINAL
+ internal Task<int> Work(Func<int> work)=>RunNativePendingHistoryOnMainThreadAsync(work,"test");
+#endif
+}
+static class Program{
+ static int checks;
+ static void Check(bool yes,string name){if(!yes)throw new Exception("FAIL "+name);checks++;Console.WriteLine("PASS "+name);}
+ static T Finish<T>(ShoutBehavior owner,Task<T> task){try{var w=Stopwatch.StartNew();while(!task.IsCompleted&&w.ElapsedMilliseconds<3000){owner.Pump();Thread.Sleep(1);}Check(task.IsCompleted,"task settled");return task.GetAwaiter().GetResult();}catch(Exception ex){throw new Exception("FAIL unexpected history task failure",ex);}}
+ static void Main(){
+#if ORIGINAL
+ Host.Reset();var owner=new ShoutBehavior();owner.Fact("party-a");var data=Task.Run(()=>owner.Prepare()).GetAwaiter().GetResult();Check(Host.WrongThread>0&&data.Messages.Count==1&&data.Facts.Count==1,"REPRODUCED actual prepare reads/writes game history from worker");
+ Host.Key="party-b";owner.Seed("party-b",2);Task.Run(()=>owner.Reject(data)).GetAwaiter().GetResult();Check(owner.Rows("party-a")==1&&owner.SceneRows(data.Sequence)==0,"REPRODUCED recomputed party key leaves original Native row but removes scene mirror");
+ Host.Reset();owner=new ShoutBehavior();data=Task.Run(()=>owner.Prepare()).GetAwaiter().GetResult();SaveRuntimeGuard.Generation++;Host.Key="party-b";var replacement=new ShoutBehavior();replacement.Seed("party-b",data.Sequence);Task.Run(()=>owner.Reject(data)).GetAwaiter().GetResult();Check(replacement.Rows("party-b")==0&&replacement.SceneRows(data.Sequence)==0,"REPRODUCED stale cleanup deletes new save event with reused sequence");
+#else
+ foreach(bool worker in new[]{false,true}) foreach(bool record in new[]{false,true}) {
+  Host.Reset();var owner=new ShoutBehavior();owner.Fact("party-a");var task=worker?Task.Run(()=>owner.Prepare(record)):owner.Prepare(record);var data=Finish(owner,task);
+  Check(data!=null&&data.Key=="party-a"&&data.Player=="Player","captured identity and display name worker="+worker+" record="+record);
+  Check(data.Sequence==(record?1:0)&&owner.Rows("party-a")== (record?1:0),"one tentative player event or opening without player seed");
+  Check(data.Facts.Count==1&&data.Facts[0].Role=="system"&&!owner.HasFacts("party-a"),"pending AFEF consumed once into request-owned prompt data");
+  Check(data.Messages.Count==(record?1:0)&&(!record||(data.Messages[0].Role=="user"&&data.Messages[0].Content=="hello"&&data.Messages[0].TargetAgentIndex==1&&data.Messages[0].PlayerDistanceMeters==12)),"real history renderer preserves role/content/target metadata");
+  Check(Host.WrongThread==0&&Host.KeyReads==1,"game access stays main and history key is resolved once");
+ }
+ for(int stage=0;stage<5;stage++) {
+  Host.Reset();var owner=new ShoutBehavior();var data=Finish(owner,Task.Run(()=>owner.Prepare()));Host.Key="party-b";owner.Seed("party-b",2);Host.Available=false;
+  Finish(owner,Task.Run(()=>owner.Reject(data,stage)));Check(owner.Rows("party-a")==0&&owner.Rows("party-b")==1&&owner.SceneRows(data.Sequence)==0,"actual rejection branch removes original key and scene mirror only stage="+stage);Check(Host.WrongThread==0,"rejection cleanup is physically main-thread stage="+stage);
+ }
+ foreach(string change in new[]{"generation","revision","epoch","token","manager","mission","owner"}) {
+  Host.Reset();var owner=new ShoutBehavior();var data=Finish(owner,Task.Run(()=>owner.Prepare()));ShoutBehavior current=owner;
+  if(change=="generation")SaveRuntimeGuard.Generation++;if(change=="revision")owner.Revision();if(change=="epoch")owner.Epoch();if(change=="token")Campaign.Current.ConversationManager.ActiveToken++;if(change=="manager")Campaign.Current=new Campaign();if(change=="mission")Mission.Current=new Mission();if(change=="owner")current=new ShoutBehavior();
+  current.Seed("party-a",data.Sequence);Finish(owner,Task.Run(()=>owner.Reject(data)));Check(current.Rows("party-a")==1&&current.SceneRows(data.Sequence)>=1,"stale cleanup cannot delete reused event: "+change);Check(Host.WrongThread==0,"stale cleanup performs no worker game access");
+ }
+ Host.Reset();var o=new ShoutBehavior();var saved=Finish(o,Task.Run(()=>o.Prepare()));o.Seed("party-a",saved.Sequence,"fact","confirmed");Finish(o,Task.Run(()=>o.Reject(saved)));Check(o.Rows("party-a")==1&&o.SceneRows(saved.Sequence)==1,"pending cleanup never removes a fact/system record sharing the sequence");
+ Host.Reset();Host.PlayerName=" ";o=new ShoutBehavior();Check(Finish(o,Task.Run(()=>o.Prepare())).Player=="玩家","player-name fallback preserved");
+ Host.Reset();o=new ShoutBehavior();o.Fact("party-a");o.Fact("party-b");Host.OnPlayerName=()=>Host.Key="party-b";saved=Finish(o,Task.Run(()=>o.Prepare()));Check(saved.Key=="party-a"&&o.Rows("party-a")==1&&o.Rows("party-b")==0&&saved.Messages.Count==1,"append and snapshot honor captured key even if resolver context changes");Check(saved.Facts.Count==1&&!o.HasFacts("party-a")&&o.HasFacts("party-b"),"AFEF consumption uses the same captured key");
+ Host.Reset();o=new ShoutBehavior();o.Add("party-a",10,"fact","confirmed");o.Add("party-a",11,"npc","old");o.Add("party-a",12,"npc","recent");saved=Finish(o,Task.Run(()=>o.Prepare()));Check(saved.Messages.Count==3&&saved.Messages[0].Role=="system"&&saved.Messages[1].Content=="recent"&&saved.Messages[2].Content=="hello","original normal-window and fact-retention policy preserved");
+ Host.Reset();Host.Duplicate=true;o=new ShoutBehavior();o.Fact("party-a");saved=Finish(o,Task.Run(()=>o.Prepare()));Check(o.Rows("party-a")==1&&saved.Sequence==1&&saved.Facts.Count==1&&Host.KeyReads==1,"duplicate callback cannot append or consume twice");
+ Host.Reset();Host.ThrowLogs=true;o=new ShoutBehavior();saved=Finish(o,Task.Run(()=>o.Prepare()));Check(saved!=null&&o.Rows("party-a")==1,"diagnostic failure cannot change prepare result");
+ Host.Reset();o=new ShoutBehavior();o.Fact("party-a");var queued=Task.Run(()=>o.Prepare());Check(SpinWait.SpinUntil(()=>queued.IsCompleted,3000),"unconsumed history queue expires");Check(queued.IsFaulted,"expired prepare is not a successful empty reply");try{queued.GetAwaiter().GetResult();throw new Exception("FAIL expected preparation timeout");}catch(TimeoutException){checks++;}o.Pump();Check(o.Rows("party-a")==0&&o.HasFacts("party-a"),"expired callback cannot later append or consume AFEF");
+ Host.Reset();o=new ShoutBehavior();saved=Finish(o,Task.Run(()=>o.Prepare()));var rollback=Task.Run(()=>o.Reject(saved));Check(SpinWait.SpinUntil(()=>rollback.IsCompleted,3000)&&rollback.IsFaulted,"unconsumed cleanup explicitly faults instead of claiming completion");try{rollback.GetAwaiter().GetResult();throw new Exception("FAIL expected cleanup timeout");}catch(TimeoutException){checks++;}o.Pump();Check(o.Rows("party-a")==1,"expired cleanup cannot delete records later");
+ foreach(bool after in new[]{false,true}) {Host.Reset();Host.ThrowQueue=!after;Host.ThrowAfterQueue=after;o=new ShoutBehavior();queued=Task.Run(()=>o.Prepare());Check(SpinWait.SpinUntil(()=>queued.IsCompleted,3000),"failed publication settles");try{queued.GetAwaiter().GetResult();throw new Exception("FAIL expected queue error");}catch(InvalidOperationException){checks++;}o.Pump();Check(o.Rows("party-a")==0,"failed unclaimed publication cannot mutate history later");}
+ Host.Reset();o=new ShoutBehavior();Host.Available=false;o.Fact("party-a");Check(Finish(o,Task.Run(()=>o.Prepare()))==null&&Host.KeyReads==0&&o.HasFacts("party-a"),"stale admission declines capture before key/AFEF access");
+ Host.Reset();o=new ShoutBehavior();Host.Key="";Check(Finish(o,Task.Run(()=>o.Prepare()))==null&&o.Rows("")==0,"missing key cannot seed an unaddressable input");
+ foreach(bool worker in new[]{false,true}) {Host.Reset();Host.ThrowLogs=true;o=new ShoutBehavior();var failure=new InvalidOperationException("history operation fixture failed");var work=worker?Task.Run(()=>o.Work(()=>throw failure)):o.Work(()=>throw failure);var w=Stopwatch.StartNew();while(!work.IsCompleted&&w.ElapsedMilliseconds<3000){o.Pump();Thread.Sleep(1);}Check(work.IsCompleted&&work.IsFaulted,"operation failure cannot turn into fallback worker="+worker);try{work.GetAwaiter().GetResult();throw new Exception("FAIL expected operation fault");}catch(InvalidOperationException ex){Check(ReferenceEquals(ex,failure),"original history operation cause preserved despite broken diagnostics");}}
+ Host.Reset();Host.TimeoutMs=150;o=new ShoutBehavior();using(var started=new ManualResetEventSlim())using(var release=new ManualResetEventSlim()){
+  var owner=o;var pump=new Thread(()=>{while(!owner.Pump())Thread.Sleep(1);});Host.MainThread=pump.ManagedThreadId;pump.Start();int effects=0;var work=owner.Work(()=>{Interlocked.Increment(ref effects);started.Set();release.Wait();return 7;});
+  try{Check(started.Wait(3000),"real callback begins history operation");Thread.Sleep(Host.TimeoutMs*3);Check(!work.IsCompleted,"started operation is not abandoned at queue deadline");}finally{release.Set();pump.Join(3000);}Check(work.GetAwaiter().GetResult()==7&&effects==1,"started operation keeps actual result exactly once");
+ }
+ Console.WriteLine($"NativePendingHistory PASS={checks} FAIL=0 actualPrepareAndRejectBranches=true realAppendSnapshotRenderer=true game=STUBBED LIVE=NOT_RUN");
+#endif
+ }
+}
+}

@@ -52,3 +52,5 @@ python tools/TeamModulePortParityTests/run.py
 Native 收尾续作只刷新既有 dispatch、完整 Native request 声明 SHA，并将 private NativeConversationGameActionResult（新增 FinalVisible）作为一个精确冻结声明纳入反向恢复。均无 TeamModuleServices receiver；未删除原 13 方法 / 31 调用 / 308 断言或 3 变异，完整文件对照不放宽。
 
 记忆接受续作将旧 public 六参 CommitExternalDialogueHistory 的薄 facade 纳入精确 hash 反向恢复；原业务入口/receiver 不变。新 MyBehavior.DialogueHistoryCommit.cs 的 strict owner 由 NativeCompletionBoundaryTests 对原方法作逐字逆变换对照，并验证真实 Native 调用与 scene 参数，不跳过原 308 断言。
+
+前置历史续作将 private append/snapshot/message renderer、固定键 rollback 和 user-only Scene remover 纳入精确 hash 的非 ports 逆向恢复；调用主体/参数不涉及 TeamModuleServices。新 NativePendingHistoryBoundaryTests 另对三个 helper 的默认行为作完整逆变换对照。13 方法 / 31 调用 / 308 断言与原 3 变异继续保留。
