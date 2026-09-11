@@ -20116,52 +20116,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return "";
 		}
 		int nativeTargetAgentIndex = admission.AgentIndex;
-		NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
-		npc.AgentIndex = nativeTargetAgentIndex;
-		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
 		string nativeInitialTargetUnavailableReason = "";
-		bool nativeInitialTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
+		NativeConversationPreparationSnapshot nativePreparation = await RunNativeConversationMainThreadFuncAsync(
 			"request_target_validation",
-			nativeTargetLog,
+			npcName,
 			nativeTargetAgentIndex,
-			() => IsNativeConversationAdmissionCurrent(admission, out nativeInitialTargetUnavailableReason),
-			false).ConfigureAwait(false);
-		if (!nativeInitialTargetAvailable)
+			() => CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason),
+			(NativeConversationPreparationSnapshot)null).ConfigureAwait(false);
+		if (nativePreparation == null)
 		{
-			Logger.Log("ShoutBehavior", "[NativeConversation] skipped request because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + (string.IsNullOrWhiteSpace(nativeInitialTargetUnavailableReason) ? "main_thread_validation_failed" : nativeInitialTargetUnavailableReason));
+			Logger.Log("ShoutBehavior", "[NativeConversation] skipped request because preparation is unavailable target=" + npcName + " agentIndex=" + nativeTargetAgentIndex + " reason=" + (string.IsNullOrWhiteSpace(nativeInitialTargetUnavailableReason) ? "main_thread_preparation_failed" : nativeInitialTargetUnavailableReason));
 			return "";
 		}
-		List<NpcDataPacket> presentNpcs = new List<NpcDataPacket> { npc };
-		string cultureId = npc.CultureId ?? "neutral";
+		NpcDataPacket npc = nativePreparation.Npc;
+		string nativeTargetLog = nativePreparation.TargetLog;
+		List<NpcDataPacket> presentNpcs = nativePreparation.PresentNpcs;
+		string cultureId = nativePreparation.CultureId;
 		// Do not feed vanilla conversation UI text into AF prompt history.
 		string currentNativeDialogText = "";
-		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
+		bool hadNativeConversationSessionHistoryBeforeTurn = nativePreparation.HadSessionHistory;
 		string extraFact = npcOpeningPersistentFactText;
-		string nativeMeetingTauntRuleBlock = "";
-		PartyBase nativeMeetingTauntParty = null;
-		if (targetHero == null)
-		{
-			TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, nativeTargetAgentIndex, out nativeMeetingTauntParty);
-		}
-		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeMeetingTauntParty) ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
-		{
-			nativeMeetingTauntInstruction = (SceneTauntBehavior.BuildSceneTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeTargetAgentIndex) ?? "").Trim();
-		}
-		if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId, nativeTargetAgentIndex) && !string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
-		{
-			nativeMeetingTauntRuleBlock = AfGcczShoutBridge.MeetingTauntRuleBlockMarker + Environment.NewLine + nativeMeetingTauntInstruction;
-		}
-		Dictionary<int, Hero> nativeResolvedHeroes = new Dictionary<int, Hero>();
-		if (nativeTargetAgentIndex >= 0 && targetHero != null)
-		{
-			nativeResolvedHeroes[nativeTargetAgentIndex] = targetHero;
-		}
-		List<SceneSummonPromptTarget> nativeSceneSummonTargets = (nativeTargetAgentIndex >= 0) ? BuildSceneSummonPromptTargets(presentNpcs, nativeResolvedHeroes) : null;
-		int nativeSceneGuideFirstPromptId = ((nativeSceneSummonTargets != null && nativeSceneSummonTargets.Count > 0) ? nativeSceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
-		Agent nativeTargetAgent = (nativeTargetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == nativeTargetAgentIndex) : null;
-		List<SceneGuidePromptTarget> nativeSceneGuideTargets = (nativeTargetAgentIndex >= 0) ? BuildSceneGuidePromptTargets(nativeTargetAgent, nativeSceneGuideFirstPromptId) : null;
-		List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(targetHero, targetCharacter, nativeTargetAgentIndex, npc.IsHero, nativeSceneSummonTargets, nativeSceneGuideTargets, npc, presentNpcs, routingInput);
+		string nativeMeetingTauntRuleBlock = nativePreparation.MeetingTauntRuleBlock;
+		List<SceneSummonPromptTarget> nativeSceneSummonTargets = nativePreparation.SummonTargets;
+		List<SceneGuidePromptTarget> nativeSceneGuideTargets = nativePreparation.GuideTargets;
+		List<string> preprocessExcludedRuleIds = nativePreparation.ExcludedRuleIds;
 		bool includeCurrentSceneSessionInPersistedHistory = false;
 		if (includeCurrentSceneSessionInPersistedHistory)
 		{

@@ -20,7 +20,7 @@
     {
       "path": "ShoutBehavior.cs",
       "signature": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
-      "sha256": "53bea46f56c2b585aa75e8e0df62ffc71c0190e84924db63465a002b9951f96d"
+      "sha256": "cf47301c7bd1f7149145008615a71bc78b79dc7e8984a94970f1ab552f08b71e"
     },
     {
       "path": "MyBehavior.cs",

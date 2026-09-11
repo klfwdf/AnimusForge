@@ -1,5 +1,5 @@
 """Run the actual two shared scheduler declarations with a physical main-thread queue fixture."""
-import argparse, importlib.util, subprocess, os
+import argparse, importlib.util, subprocess, os, json, hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]; HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
@@ -13,9 +13,16 @@ wait=ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainT
 if not a.original:
  prior=subprocess.check_output(['git','show','613ac245:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  restored=s
+ # Separately proven preparation capture: permit only the exact shared reviewed declaration SHA.
+ signature='private async Task<string> SubmitNativeConversationTextInternalAsync('
+ current=ex.declaration(restored,signature)
+ review=json.loads((ROOT/'tools/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
+ expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
+ assert hashlib.sha256(current.encode()).hexdigest()==expected and 'TeamModuleServices.' not in current
+ restored=restored.replace(current,ex.declaration(prior,signature),1)
  for signature in ['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(']:
   restored=restored.replace(ex.declaration(restored,signature),ex.declaration(prior,signature),1)
- assert restored==prior, 'Changes outside the two reviewed scheduler declarations'
+ assert restored==prior, 'Changes outside scheduler and separately reviewed preparation declarations'
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RUN@@',run).replace('@@WAIT@@',wait)
 mutations={
  'drop-claim':('if (Interlocked.CompareExchange(ref state, 1, 0) != 0) return;', 'if (false) return;'),
