@@ -8,7 +8,8 @@ s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RESULT@@',ex.declaration(s,'private sealed class NativeConversationGameActionResult')).replace('@@QUEUE@@',ex.declaration(s,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('))
 body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
-consumer=body[body.index('\t\tif (nativeActionResult?.ResponseDiscarded == true)'):body.index('\t\tnativeActionSw.Stop();')]
+consumer_end='\t\tnativeActionSw.Stop();' if '\t\tnativeActionSw.Stop();' in body else '\t\tnativeTurnSw.Stop();'
+consumer=body[body.index('\t\tif (nativeActionResult?.ResponseDiscarded == true)'):body.index(consumer_end)]
 code=code.replace('@@CONSUMER_GATE@@',consumer)
 if not args.original:
  overlay=(ROOT/'AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig');reports=[]
@@ -32,6 +33,7 @@ if not args.original:
  if args.mutate=='swallow-owner-failure':boundary=boundary.replace('throw new NativeConversationActionDispatchException(ownerStarted, ex);','return new NativeConversationGameActionResult { Content = "fallback" };',1)
  if args.mutate=='allow-diagnostic-failure':boundary=boundary.replace('catch (Exception)\n        {\n            // Observability must never change whether actions run or how their Task completes.\n            return;\n        }','catch (Exception) { throw; }',1)
  (out/'Boundary.cs').write_text(boundary,encoding='utf-8')
+(out/'CompletionStubs.cs').write_text((ROOT/'tools/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if args.original else '<DefineConstants>TIMEOUT_BASELINE</DefineConstants>' if args.timeout_baseline else '')+'</PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')

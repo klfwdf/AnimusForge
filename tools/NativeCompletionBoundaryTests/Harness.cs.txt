@@ -1,0 +1,143 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
+namespace TaleWorlds.CampaignSystem { public class Hero { public string StringId="A"; } public class CharacterObject { public string StringId="char"; } public class Campaign { public static Campaign Current;public ConversationManager ConversationManager=new ConversationManager(); } }
+namespace TaleWorlds.CampaignSystem.Conversation { public class ConversationManager { public bool IsConversationInProgress=true;public int ActiveToken=3; } }
+namespace TaleWorlds.MountAndBlade { public class Mission { public static Mission Current; } }
+namespace AnimusForge {
+static class Host {
+ internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks;
+ internal static bool TargetAvailable=true,MemoryThrows,CaptureThrows,DuplicateCallback;
+ internal static string Mode,NonHeroId="party-A";
+ internal static Hero Hero;internal static CharacterObject Character;
+ internal static Action AfterValidation,AfterWrite;
+ internal static readonly List<string> History=new List<string>();
+ internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread)Interlocked.Increment(ref WrongThread);}
+ internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=0;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;Mode="normal";NonHeroId="party-A";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
+ internal static void Write(string key,string player,string reply,string fact,int session){Game();if(MemoryThrows)throw new InvalidOperationException("memory fixture failed");History.Add(key+"|"+session+"|"+(player??"<null>")+"|"+(reply??"<null>")+"|"+(fact??"<null>"));AfterWrite?.Invoke();AfterWrite=null;}
+}
+static class SaveRuntimeGuard {internal static long Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+static class PlayerEncounterCompat {internal static bool IsInPostBattleResultFlow()=>false;}
+static class Logger {internal static void Log(string category,string text){} }
+static class FreezeWatchdog {internal static void Mark(string stage,string text,bool immediate=false){} }
+static class WorldMapPartyCommandBehavior {internal class WorldMapOrderApplyResult {public bool NeedsChannelExit;} }
+static class MyBehavior {
+ internal static void AppendExternalDialogueHistory(Hero h,string p,string a,string f)=>Host.Write(h.StringId,p,a,f,-1);
+ internal static void AppendExternalSceneDialogueHistory(Hero h,string p,string a,string f,int s)=>Host.Write(h.StringId,p,a,f,s);
+ internal static void AppendExternalNonHeroDialogueHistory(string id,string name,string p,string a,string f)=>Host.Write(id,p,a,f,-1);
+ internal static void AppendExternalNonHeroSceneDialogueHistory(string id,string name,string p,string a,string f,int s)=>Host.Write(id,p,a,f,s);
+}
+public partial class ShoutBehavior {
+ private sealed class NpcDataPacket {public string Name="A";public int AgentIndex=1;}
+ private class SceneSummonPromptTarget{} private class SceneGuidePromptTarget{}
+ private readonly ConcurrentQueue<Action> _mainThreadActions=new ConcurrentQueue<Action>();
+ private const int NativeConversationMainThreadPreprocessTimeoutMs=100;
+ private static ShoutBehavior CurrentInstance;
+ private NativeConversationAdmission _nativeConversationAdmission;
+ private long _nativeConversationAdmissionEpoch=1,_nativeConversationPresentationRevision=1;
+@@ADMISSION@@
+@@CHECKS@@
+@@RESULT@@
+@@DISPATCH@@
+@@NO_SPEECH@@
+ internal ShoutBehavior(){CurrentInstance=this;}
+ private static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==Host.MainThread;
+ private static bool TryResolveNativeConversationTarget(out Hero h,out CharacterObject c,out string name){Host.Game();h=Host.Hero;c=Host.Character;name="A";return true;}
+ private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c)=>1;
+ private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int i,Hero h,CharacterObject c,out string reason){Host.Game();reason="fixture";return Host.TargetAvailable;}
+ private static string SanitizeSceneSpeechText(string text)=>text.Replace("[TAG]","").Trim();
+ private static string PrepareSceneHistorySpeechText(string text)=>SanitizeSceneSpeechText(text);
+ private static int TryGetCurrentSceneHistorySessionIdForHistoryPersistence(){Host.Game();return Host.Session;}
+ private static bool TryResolveWildernessNonHeroMemory(NpcDataPacket npc,Hero hero,CharacterObject character,int i,out string id,out string name){Host.Game();Host.CaptureCount++;if(Host.CaptureThrows)throw new InvalidOperationException("capture fixture failed");id=Host.NonHeroId;name="party";return hero==null&&!string.IsNullOrEmpty(id);}
+ private static void AppendWildernessNonHeroMemory(NpcDataPacket npc,Hero h,CharacterObject c,int i,string p,string a,string f,int s=-1){Host.Game();if(TryResolveWildernessNonHeroMemory(npc,h,c,i,out var id,out var name))Host.Write(id,p,a,f,s);}
+ private static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket npc)=>npc.Name;
+ private static void RecordNativeConversationNpcLineForExternal(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket npc){Host.Game();Host.Echo++;}
+ private static void MarkNativeConversationCurrentDialogRecorded(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket npc){Host.Game();Host.Marker++;}
+ private static void TrySpeakNativeConversationReplyWithTts(Hero h,CharacterObject c,NpcDataPacket npc,int i,string text){Host.Game();Host.Tts++;}
+ private static void CloseNativeConversationForSceneMechanism(string why){Host.Game();Host.Closed++;Campaign.Current.ConversationManager.IsConversationInProgress=false;}
+ private static void RollbackNativeConversationPendingPlayerHistory(Hero h,CharacterObject c,string name,int i,NpcDataPacket npc,long seq,string why){Host.Game();Host.Rollbacks++;}
+ private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int index,Func<T> work,T fallback){var done=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);_mainThreadActions.Enqueue(()=>{T value=work();Host.AfterValidation?.Invoke();Host.AfterValidation=null;done.SetResult(value);});return done.Task;}
+ private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero h,CharacterObject c,NpcDataPacket npc,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string content,string input,ConversationManager manager,int token){
+  Host.Game();Host.Effects++;
+  if(Host.Mode=="end"){manager.IsConversationInProgress=false;_nativeConversationAdmissionEpoch++;_nativeConversationAdmission=null;}
+  if(Host.Mode=="scene"){Mission.Current=new Mission();Host.Session=7;Host.NonHeroId="party-B";_nativeConversationAdmissionEpoch++;}
+  if(Host.Mode=="load")SaveRuntimeGuard.Generation++;
+  if(Host.Mode=="target")Host.Hero=new Hero{StringId="B"};
+  if(Host.Mode=="throw")throw new InvalidOperationException("partial action fixture");
+  return new NativeConversationGameActionResult{Content=content,ResponseDiscarded=Host.Mode=="discard",WorldMapResult=new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult{NeedsChannelExit=Host.Mode=="close"}};
+ }
+ internal Task<string> Start(bool opening=false,bool earlyTts=true,string reply="answer [TAG]"){
+  var admission=new NativeConversationAdmission{Generation=SaveRuntimeGuard.Generation,ConversationEpoch=_nativeConversationAdmissionEpoch,PresentationRevision=_nativeConversationPresentationRevision,ConversationManager=Campaign.Current.ConversationManager,ConversationToken=Campaign.Current.ConversationManager.ActiveToken,Mission=Mission.Current,Hero=Host.Hero,Character=Host.Character,NpcName="A",AgentIndex=1};_nativeConversationAdmission=admission;
+  return Task.Run(()=>Turn(admission,opening,earlyTts,reply));
+ }
+ private async Task<string> Turn(NativeConversationAdmission admission,bool opening,bool earlyTts,string reply){
+  Hero targetHero=admission.Hero;CharacterObject targetCharacter=admission.Character;var npc=new NpcDataPacket();List<NpcDataPacket> presentNpcs=null;List<SceneSummonPromptTarget> nativeSceneSummonTargets=null;List<SceneGuidePromptTarget> nativeSceneGuideTargets=null;
+  string cleaned=reply,npcName="A",nativeTargetLog="A",promptPlayerText="input",npcOpeningPersistentFactText="opening fact";int nativeTargetAgentIndex=1;long nativePendingPlayerHistoryEventSequence=1;
+  bool shouldRecordPlayerInput=!opening,npcOpeningConsumed=opening,nativeTtsDispatchedBeforePostprocess=earlyTts;
+  var nativeRequestConversationManager=admission.ConversationManager;int nativeRequestConversationToken=admission.ConversationToken;var nativeTurnSw=Stopwatch.StartNew();var nativeActionSw=Stopwatch.StartNew();
+@@TAIL@@
+ }
+ internal bool PumpOne(){if(!_mainThreadActions.TryDequeue(out var action))return false;action();if(Host.DuplicateCallback)action();return true;}
+ internal void NewRevision(){_nativeConversationPresentationRevision++;}
+ internal void ReleaseBackend(){_nativeConversationAdmission=null;}
+}
+static class Program {
+ static int checks;
+ static void Check(bool ok,string name){if(!ok)throw new Exception("FAIL "+name);checks++;Console.WriteLine("PASS "+name);}
+ static string Finish(ShoutBehavior owner,Task<string> task){var wait=Stopwatch.StartNew();while(!task.IsCompleted&&wait.ElapsedMilliseconds<3000){owner.PumpOne();Thread.Sleep(1);}Check(task.IsCompleted,"task settled");try{return task.GetAwaiter().GetResult();}catch(Exception ex){throw new Exception("FAIL unexpected completion fault",ex);}}
+ static bool SpinUntilPump(ShoutBehavior o){var w=Stopwatch.StartNew();while(w.ElapsedMilliseconds<3000){if(o.PumpOne())return true;Thread.Sleep(1);}return false;}
+#if !ORIGINAL
+ static void Fault(ShoutBehavior o,Task<string> task,AnimusForge.Refactor.Contracts.ActionExecutionEffectState state){Check(SpinUntilPump(o),"faulting callback pumped");Check(SpinWait.SpinUntil(()=>task.IsCompleted,3000),"fault completed");try{task.GetAwaiter().GetResult();throw new Exception("FAIL expected typed failure");}catch(ShoutBehavior.NativeConversationActionDispatchException e){Check(e.EffectState==state&&!e.CanRetryAutomatically,"failure preserves actual start boundary and no replay");}}
+#endif
+ static void Main(){
+#if ORIGINAL
+  Host.Reset();var owner=new ShoutBehavior();var task=owner.Start();Check(Finish(owner,task)=="answer","original successful reply");Check(Host.WrongThread>0,"REPRODUCED actual Native tail performs game/history work off main thread");
+  Host.Reset();owner=new ShoutBehavior();Host.AfterValidation=()=>{Host.Session=7;SaveRuntimeGuard.Generation++;};task=owner.Start();Finish(owner,task);Check(Host.History.Count==1&&Host.History[0].StartsWith("A|7|"),"REPRODUCED validation-to-write gap records old reply under changed save/session");
+  Console.WriteLine("Original Native completion defects reproduced; actual dispatch and consumer tail; game/owners=STUBBED.");
+#else
+  foreach(bool nonHero in new[]{false,true}) foreach(bool opening in new[]{false,true}) {
+   Host.Reset(nonHero);var owner=new ShoutBehavior();var task=owner.Start(opening,earlyTts:false);
+   Check(Finish(owner,task)=="answer","normal visible text preserved nonHero="+nonHero+" opening="+opening);
+   string expected=(nonHero?"party-A":"A")+"|3|"+(opening?"<null>":"input")+"|answer|"+(opening?"opening fact":"<null>");
+   Check(Host.History.Count==1&&Host.History[0]==expected,"exact player/reply/opening/session payload");
+   Check(Host.WrongThread==0&&Host.Effects==1,"action and all completion game work stay on physical main thread");
+   Check(Host.Echo==1&&Host.Marker==1&&Host.Tts==1,"normal echo marker and fallback TTS preserved");
+  }
+  foreach(bool nonHero in new[]{false,true}) {
+   Host.Reset(nonHero);Host.Session=-1;var owner=new ShoutBehavior();Finish(owner,owner.Start());Check(Host.History[0].Contains("|-1|"),"loose history route preserved nonHero="+nonHero);
+   foreach(string mode in new[]{"end","scene","target"}) {
+    Host.Reset(nonHero);Host.Mode=mode;owner=new ShoutBehavior();Check(Finish(owner,owner.Start(earlyTts:false))=="answer","completed actions keep original-target history across owner transition "+mode);
+    Check(Host.History.Count==1&&Host.History[0].StartsWith((nonHero?"party-A":"A")+"|3|"),"captured scene/party identity retained "+mode);
+    Check(Host.Echo==0&&Host.Marker==0&&Host.Tts==0&&Host.WrongThread==0,"old transition cannot touch current transient state "+mode);
+   }
+  }
+  Host.Reset();var alreadySpoken=new ShoutBehavior();Finish(alreadySpoken,alreadySpoken.Start());Check(Host.Tts==0,"already dispatched main-reply TTS is not repeated at completion");
+  Host.Reset(true);Host.NonHeroId="";var o=new ShoutBehavior();Finish(o,o.Start());Check(Host.History.Count==0&&Host.Echo==1,"nonpersistent scene NPC retains transient history without fabricated long-term identity");
+  Host.Reset();o=new ShoutBehavior();Finish(o,o.Start(earlyTts:false,reply:"（没说话）"));Check(Host.History[0]=="A|3|input|<null>|<null>"&&Host.Echo==0&&Host.Marker==0&&Host.Tts==0,"no-speech keeps player input but suppresses NPC speech side effects");
+  Host.Reset();Host.Mode="load";o=new ShoutBehavior();Check(Finish(o,o.Start())==""&&Host.History.Count==0&&Host.Echo==0&&Host.Tts==0&&Host.Effects==1,"reentrant load after actions cannot write new campaign history or deny earlier action");
+  Host.Reset();o=new ShoutBehavior();var queued=o.Start();SaveRuntimeGuard.Generation++;Check(Finish(o,queued)==""&&Host.Effects==0&&Host.History.Count==0&&Host.CaptureCount==0&&Host.Rollbacks==0&&Host.WrongThread==0,"stale before action cannot capture/execute/complete");
+  Host.Reset();o=new ShoutBehavior();var retired=o.Start();o.NewRevision();Campaign.Current.ConversationManager.ActiveToken++;Check(Finish(o,retired)==""&&Host.Rollbacks==0&&Host.WrongThread==0,"retired request cannot roll back current history after queue discard");
+  Host.Reset();Host.Mode="discard";o=new ShoutBehavior();Check(Finish(o,o.Start())==""&&Host.History.Count==0&&Host.Echo==0&&Host.Rollbacks==1&&Host.WrongThread==0,"owner discarded result never completes history");
+  Host.Reset();Host.DuplicateCallback=true;o=new ShoutBehavior();Finish(o,o.Start());Check(Host.Effects==1&&Host.History.Count==1&&Host.Echo==1,"duplicate callback cannot repeat actions or completion");
+  Host.Reset();Host.MemoryThrows=true;o=new ShoutBehavior();Fault(o,o.Start(),AnimusForge.Refactor.Contracts.ActionExecutionEffectState.UnknownAfterStart);Check(Host.Effects==1&&Host.Echo==0&&Host.Tts==0,"propagated history failure does not run normal transient completion");
+  Host.Reset(true);Host.CaptureThrows=true;o=new ShoutBehavior();Fault(o,o.Start(),AnimusForge.Refactor.Contracts.ActionExecutionEffectState.NoConfirmedEffect);Check(Host.Effects==0&&Host.History.Count==0,"snapshot failure stays before actual action owner");
+  Host.Reset();o=new ShoutBehavior();Host.AfterWrite=()=>SaveRuntimeGuard.Generation++;Finish(o,o.Start(earlyTts:false));Check(Host.History.Count==1&&Host.Echo==0&&Host.Marker==0&&Host.Tts==0,"reentrant generation change after persistent dispatch blocks later transient work");
+  foreach(string change in new[]{"none","revision","target","token","manager","mission","generation"}) {
+   Host.Reset();Host.Mode="close";o=new ShoutBehavior();var task=o.Start();
+   Check(SpinUntilPump(o),"completion queue consumed before delayed close");Check(SpinWait.SpinUntil(()=>task.IsCompleted,3000),"main completion returns without waiting for deferred close");
+   Check(task.GetAwaiter().GetResult()=="answer"&&Host.Closed==0,"close remains deferred");o.ReleaseBackend();
+   if(change=="revision")o.NewRevision();if(change=="target")Host.Hero=new Hero{StringId="B"};if(change=="token")Campaign.Current.ConversationManager.ActiveToken++;
+   if(change=="manager")Campaign.Current=new Campaign();if(change=="mission")Mission.Current=new Mission();if(change=="generation")SaveRuntimeGuard.Generation++;
+   o.PumpOne();Check(Host.Closed==(change=="none"?1:0),"deferred close follows original context, independent of released backend: "+change);
+  }
+  Console.WriteLine($"NativeCompletion PASS={checks} FAIL=0 actualDispatch=true actualConsumerTail=true actualContextChecks=true gameAndPersistenceOwners=STUBBED LIVE=NOT_RUN");
+#endif
+ }
+}
+}
