@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "9040d184998120d3476426337160403f08fdfee9",
+  "sourceRevision": "53ddb7d4656e426c2c7317927d344150dfe8f988",
   "remoteBaseline": "e40c92d72524b7ea80a5dc0e36dc996963a62e66",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -232,7 +232,7 @@
       "symbol": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation)",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "后台只发布低频完成动作；旧 owner/generation 在入队前后 fail closed",
+      "note": "后台发布低频捕获/检查/完成动作；旧 owner/generation 入队前后拒绝",
       "fileSha256": "6435828a98076b74d0152829513079cc334fd32b94b857a79df69bfdb7b3323c"
     },
     {
@@ -249,35 +249,35 @@
     {
       "id": "memory.summary.accept",
       "path": "MyBehavior.cs",
-      "start": 4995,
-      "end": 4998,
+      "start": 5005,
+      "end": 5008,
       "symbol": "bool accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate",
       "match": "exact",
       "status": "mixed-host",
-      "note": "网络 await 后的成功/失败写入由当前 Campaign owner 接受；前置准备仍待后续快照化",
-      "fileSha256": "70cf2ac751ada1bbbe9beb7562710ac43d236240323e66871f0110fe8712971b"
+      "note": "捕获原 generation 的任务输入；成功/失败均复核来源后由当前 Campaign owner 接受",
+      "fileSha256": "95e2244aa617432eff639466f68bc255744144022bc65ee700a582419d493fa8"
     },
     {
       "id": "legacy.history",
       "path": "MyBehavior.cs",
-      "start": 28091,
-      "end": 28094,
+      "start": 28043,
+      "end": 28046,
       "symbol": "public static string BuildHistoryContextForExternal(",
       "match": "contains",
       "status": "retained-live",
       "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
-      "fileSha256": "70cf2ac751ada1bbbe9beb7562710ac43d236240323e66871f0110fe8712971b"
+      "fileSha256": "95e2244aa617432eff639466f68bc255744144022bc65ee700a582419d493fa8"
     },
     {
       "id": "legacy.recall",
       "path": "MyBehavior.cs",
-      "start": 34097,
-      "end": 34100,
+      "start": 34049,
+      "end": 34052,
       "symbol": "private string BuildCompressedMemoryContextById(",
       "match": "contains",
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
-      "fileSha256": "70cf2ac751ada1bbbe9beb7562710ac43d236240323e66871f0110fe8712971b"
+      "fileSha256": "95e2244aa617432eff639466f68bc255744144022bc65ee700a582419d493fa8"
     },
     {
       "id": "scene.postprocess",
@@ -311,6 +311,61 @@
       "status": "retained-live",
       "note": "来信早期准备待线程审查，未迁快照",
       "fileSha256": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9"
+    },
+    {
+      "id": "memory.summary.input.daily",
+      "path": "MyBehavior.MemorySummaryInputs.cs",
+      "symbol": "private DailyMemorySummaryInput CaptureDailyMemorySummaryInput(",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "日结 prompt、时间/AFEF/周报回执/信任/姓名只读输入",
+      "start": 121,
+      "end": 124,
+      "fileSha256": "7dc099c75d1bc04f74f60a03094d86f3b380a4cbf57f71e4838cf3daaa9baff4"
+    },
+    {
+      "id": "memory.summary.input.major",
+      "path": "MyBehavior.MemorySummaryInputs.cs",
+      "symbol": "private MajorActionSummaryInput CaptureMajorActionSummaryInput(",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "重大履历原文、cursor、已有状态与 prompt 副本",
+      "start": 158,
+      "end": 161,
+      "fileSha256": "7dc099c75d1bc04f74f60a03094d86f3b380a4cbf57f71e4838cf3daaa9baff4"
+    },
+    {
+      "id": "memory.summary.input.overview",
+      "path": "MyBehavior.MemorySummaryInputs.cs",
+      "symbol": "private MemoryOverviewInput CaptureMemoryOverviewInput(",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "总览原状态/已纳入 ID/新增块与 prompt 副本",
+      "start": 194,
+      "end": 197,
+      "fileSha256": "7dc099c75d1bc04f74f60a03094d86f3b380a4cbf57f71e4838cf3daaa9baff4"
+    },
+    {
+      "id": "memory.summary.input.accept",
+      "path": "MyBehavior.MemorySummaryInputs.cs",
+      "symbol": "private static bool IsMemorySummaryInputCurrent(",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "仅主线程校验来源身份和完整内容，不同于持久化事务",
+      "start": 118,
+      "end": 121,
+      "fileSha256": "7dc099c75d1bc04f74f60a03094d86f3b380a4cbf57f71e4838cf3daaa9baff4"
+    },
+    {
+      "id": "memory.summary.input.names",
+      "path": "PlayerNotorietyBehavior.MemorySummarySnapshot.cs",
+      "symbol": "internal static Func<string, string> CaptureMemorySummaryHistoryRenderer(",
+      "match": "contains",
+      "status": "wired-boundary",
+      "note": "冻结实际姓名/公开称呼/文化年龄别名，后台仅文本替换",
+      "start": 10,
+      "end": 13,
+      "fileSha256": "9fc3be079ffca8c613741487bce6dffe14994bbfc4687d191ba2665ec06d791b"
     }
   ]
 }

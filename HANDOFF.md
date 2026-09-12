@@ -4,6 +4,23 @@
 
 用户在全项目分析后明确要求“开目标模式做吧”，已恢复当前 `F:\AnimusForge-main`、`codex/af-main-refactor-continuation-20260831` 上的本地实现和验证。起点 `bd2ed35f`；执行顺序、边界及状态见 [本轮台账](docs/phase8/local-goal-continuation-20260912.md)。先重新建立当前源码的本机构建基线，再按独立切片推进压缩输入快照、Native、TTS 和 Courier。原有 75 个未跟踪图片/预览文件保留。没有本轮 push、游戏覆盖、真实存档操作或恢复定时自动化授权。
 
+
+## 当前已验证切片：压缩输入与来源拒收（生产/测试 `53ddb7d4`）
+
+`OFFLINE_COMPLETE / LIVE_SAVE_PENDING`。当前分支继续本地推进；检查点 `15c58d59`，生产/测试/架构证据提交 `53ddb7d4`。本轮原有 75 个未跟踪文件保持原样。
+
+- `MyBehavior.MemorySummaryInputs.cs:121-231`：`CaptureDailyMemorySummaryInput` / `CaptureMajorActionSummaryInput` / `CaptureMemoryOverviewInput` 在主线程冻结三个任务的私有来源副本、prompt 和解析材料；`76-119` 的 `MemorySummarySourceStamp` / `IsMemorySummaryInputCurrent` 校验任务、来源和已有摘要的对象身份及完整内容。
+- `PlayerNotorietyBehavior.MemorySummarySnapshot.cs:10-33`：`CaptureMemorySummaryHistoryRenderer` 冻结实际姓名、公开称呼和文化年龄别名；后台只替换字符串。
+- `MyBehavior.cs:4960-5203`：`ProcessMemorySummaryQueueAsync` / `RunDailySummaryQueueItemsAsync` / `ExecuteDailySummaryQueueItemAsync` 传递原 save generation；首段准备与所有成功/失败接受走原主线程边界，来源改变的结果不能消费或标失败。
+- `MyBehavior.cs:5239-5392`：三个 Execute 仅消费独立输入进行网络/解析，重试前校验来源；`5475-5525`、`5644-5679`、`5838-5898` 的三个 parser 使用冻结的名字/cursor/metadata。
+- 原 prompt builders、正式 Apply/Mark、玩法/三渠道语义、存档键、公开 ABI 和默认入口未改；原 60 秒波次、三次重试及 EngineTick 两个动作上限保留。成本按当前任务来源规模增长，未测实机峰值及单动作耗时。
+
+验证：net8/net472 各 137；六个故障变异拒绝；history 852、Native 27、failure UI 85、main-thread 17、ports 308/3 mutation、recovery/weekly 合同 PASS；持久身份 146/146 与 36/36；六构建/两 Stage 和实际四 DLL 532 元数据断言 PASS。游戏对象/网络/写入副作用仍为 fixture，LIVE/真实 provider/旧存档未运行。
+
+详细说明：[输入边界](docs/architecture/af-memory-summary-input-boundary.md)；[验证记录](docs/audits/2026-09-12-memory-summary-input-verification.md)；[本轮台账](docs/phase8/local-goal-continuation-20260912.md)。当前代码图已按 `53ddb7d4` 更新。回滚使用定向 revert `53ddb7d4` 并复验，禁止 reset/改写历史。
+
+接下来继续 Native 剩余实时读取，再做 TTS 与 Courier。上述边界不代表整个 memory owner 或阶段八已完成。
+
 以下暂停／转手文字是前一机器的历史记录，不再代表本轮开发暂停；其中一次性 push 授权也不沿用。
 
 ## 历史暂停／转手记录
