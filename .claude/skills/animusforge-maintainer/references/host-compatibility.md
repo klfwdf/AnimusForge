@@ -16,13 +16,9 @@
 
 ## Installation layouts
 
-The source remains at:
+The source is the explicitly selected directory containing this `SKILL.md`, not a fixed path on the author's machine. This repository keeps the maintained copy under `.claude/skills/animusforge-maintainer/`; its AGENTS routes Codex to that same copy and to the specialized framework skill when applicable. No duplicated full rule tree is required.
 
-```text
-/Volumes/工作区/MyBannerlordMods/AFmod/af-skill
-```
-
-Run installation from that source directory, or pass it explicitly with `--source`; do not infer a source from an AF code copy.
+For an explicitly authorized global installation, run the helper from that selected source or pass `--source`. Resolve the actual path first; do not infer a source or write target from another computer's drive/volume or an unreviewed ZIP. Project-local integration does not require running the installer.
 
 Install the source under the common skill identifier for each host:
 
@@ -82,7 +78,7 @@ Record actual host/version/discovery observations in the AF execution ledger. Do
 
 ## Updating the shared source
 
-1. Edit only the source `af-skill/` directory after the ledger protocol permits the documentation change.
+1. Edit only the selected canonical skill source after the current task permits the change; the folder may be named `animusforge-maintainer` rather than `af-skill`. Preserve the input ZIP separately and record deliberate local adaptations.
 2. Run `verify-af-skill.sh` and, when available, Codex `quick_validate.py`.
 3. If installed via symlink, verify both destinations still resolve to the source.
 4. If installed via copy, refresh each copied destination through an explicit, reviewed update; do not silently overwrite it.

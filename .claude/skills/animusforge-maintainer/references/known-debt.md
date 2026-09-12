@@ -76,6 +76,20 @@ Avoid:
 - claiming failure isolation while module exceptions still escape application tick or save load;
 - marking repository cleanup complete while old artifacts remain required for builds.
 
+## Original-plan review follow-ups
+
+Use [refactor-review-checklist.md](refactor-review-checklist.md) for the revision-bound 2026-09-12 review and its acceptance checklist. It separates confirmed budget/status gaps from explicitly unfinished module-host/snapshot work and recorded scope/HOLD decisions. Recheck every item against the current source; it is not a permanent assertion about later revisions or authority to resume implementation.
+
+Additional false-completion patterns to reject:
+
+- equating AF core/body with Foundation and silently absorbing domain policy;
+- calling adapter construction/catalog `Ready` complete module lifecycle or fault isolation;
+- treating a scoped, same-DLL thin adapter as an automatically approved gameplay Bridge;
+- limiting callback count while an individual callback drains an entire backlog;
+- treating main-thread writes as proof all earlier reads/inputs are detached;
+- marking removed/deferred scope as implemented, or keeping conflicting “current” status entries;
+- treating a read-only API or a source-map/metadata check as an end-to-end extension acceptance.
+
 ## Technical-debt record format
 
 For durable debt record:

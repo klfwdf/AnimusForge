@@ -15,6 +15,18 @@ Choose evidence according to the changed surface. A single successful compile is
 | In-game | Supported Bannerlord 1.3/1.4 | Campaign/Mission/Encounter/Harmony/Gauntlet/thread/lifecycle behavior. |
 | Interaction | Keyless fixtures + optional real API/in-game | Rule/prompt/postprocess/action/history alignment and visible output. |
 
+## Bind claims to the evidence actually collected
+
+Record the requested branch and exact source revision; do not combine another branch's uncommitted cleanup, an older Stage or a different machine's run into the candidate result. Historical committed build logs are reported evidence, not a build rerun by the current reviewer.
+
+- A source coordinate/hash map proves location and content binding, not semantics or gameplay.
+- MSBuild `Compile` item evaluation proves inclusion, not a complete build or resolved dependency closure.
+- Design/catalog fixtures prove validation rules, not a production ModuleHost or live activation.
+- Source-derived tests must identify exact extracted spans, wrappers and fakes; passing them does not mean the whole host compiled or ran. Keep negative controls for missing/changed declarations and for the defect under test.
+- PE metadata checks prove assembly shape, not CLR/Bootstrap loading, third-party MOD upgrades or gameplay.
+- A read-only review may inspect or run genuinely read-only checks. If an existing runner writes fixed repository-local outputs, requires unavailable history/dependencies or invokes game/provider behavior, report that limitation instead of modifying the runner or installing dependencies to manufacture a pass.
+- In sparse/shallow audit clones, use the Git tree for repository membership. An excluded file or unavailable historical commit is a review-environment limitation, not a source deletion/regression. Mixed pass/error results remain partial, never an all-pass summary.
+
 ## Manifest and profile tests
 
 Test:
@@ -42,7 +54,9 @@ optional provider missing → explicit Degraded or documented behavior
 stale generation completion → ignored/rejected
 ```
 
-Hand-constructing objects without the actual module host is insufficient for product-visible lifecycle behavior.
+Hand-constructing objects without the actual module host is insufficient for product-visible lifecycle behavior. Check that production lifecycle/error paths actually report state changes and release owned resources; testing a manually updated directory state is not proof of runtime fault propagation.
+
+For scheduled completions, test actual records/jobs handled per tick and backlog behavior, not only queued delegate count. For asynchronous snapshots, force a yield and mutate inputs within the same generation as well as replacing the owner or loading a save.
 
 ## Bridge matrix
 

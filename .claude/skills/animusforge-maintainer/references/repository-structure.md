@@ -4,6 +4,8 @@ Use this reference for inventory, cleanup, directory migration, large assets, tr
 
 ## Cleanup precedes broad decomposition
 
+This gate concerns cleanup and broad architectural extraction. It is not a blanket prohibition on authorized feature development, bug fixes, UI/content/configuration maintenance or compatibility work within an existing owner. Those tasks follow [mod-development.md](mod-development.md) and their directly affected safety/acceptance rules; they do not silently turn into the full repository refactor.
+
 Do not broadly extract modules until the repository gate in the execution ledger is complete. Cleanup establishes:
 
 - one canonical worktree;
@@ -52,7 +54,7 @@ local/        ignored machine-local game refs/private settings/reference snapsho
 artifacts/    ignored stage/packages/logs/test output/diagnostics/tool distributions
 ```
 
-Directory diagrams are targets, not permission for bulk moves.
+Directory diagrams are targets, not permission for bulk moves. A user-authorized HOLD on cleanup must be preserved: retained references, caches or distributions are evidence of an open repository gate, not permission to delete them or proof of unauthorized drift. Record which cleanup requirements remain deferred and what bounded work, if any, is explicitly allowed. HOLD, a narrower task or a successful local build does not make clean-clone/provenance/package gates complete, and does not authorize broad decomposition by implication.
 
 ## Classification table
 

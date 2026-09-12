@@ -29,6 +29,7 @@ require_file() {
 require_file "SKILL.md"
 require_file "agents/openai.yaml"
 require_file "references/routing-and-identity.md"
+require_file "references/mod-development.md"
 require_file "references/host-compatibility.md"
 require_file "references/ledger-and-handoff.md"
 require_file "references/repository-structure.md"
@@ -40,6 +41,7 @@ require_file "references/persistence-and-user-data.md"
 require_file "references/runtime-safety.md"
 require_file "references/validation.md"
 require_file "references/known-debt.md"
+require_file "references/refactor-review-checklist.md"
 require_file "assets/module/module.yaml"
 require_file "assets/module/README.template.md"
 require_file "assets/bridge/module.yaml"
@@ -56,17 +58,27 @@ if [[ -f "$root/SKILL.md" ]]; then
     || error "SKILL.md frontmatter needs a one-line description"
 
   if command -v python3 >/dev/null 2>&1; then
-    SKILL_FILE="$root/SKILL.md" python3 - <<'PY' || error "SKILL.md YAML frontmatter is not portable YAML"
+    SKILL_FILE="$root/SKILL.md" python3 - <<'PY' || error "SKILL.md frontmatter or skill version is invalid"
 import os
 from pathlib import Path
+import re
+
+content = Path(os.environ["SKILL_FILE"]).read_text(encoding="utf-8")
+frontmatter = content.split("---", 2)[1]
+# Keep version checks available even without the optional YAML parser.
+metadata = re.search(r'^metadata:\s*\n((?:[ \t]+[^\n]*\n|[ \t]*\n)*)', frontmatter, re.M)
+versions = re.findall(r'^  version: "([^"\n]+)"[ \t]*$', metadata.group(1), re.M) if metadata else []
+if len(versions) != 1 or not re.fullmatch(r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)', versions[0]):
+    raise SystemExit('Expected one quoted metadata.version in major.minor.patch form')
+if re.findall(r'^Skill version: `([^`]+)`', content, re.M) != versions:
+    raise SystemExit('Displayed skill version differs from metadata.version')
 
 try:
     import yaml
 except ImportError:
+    print('NOTE: PyYAML unavailable; full YAML parse NOT-RUN (version checks passed).')
     raise SystemExit(0)
 
-content = Path(os.environ["SKILL_FILE"]).read_text(encoding="utf-8")
-frontmatter = content.split("---", 2)[1]
 data = yaml.safe_load(frontmatter)
 if not isinstance(data, dict):
     raise SystemExit(1)
@@ -74,14 +86,17 @@ if set(data) - {"name", "description", "license", "allowed-tools", "metadata"}:
     raise SystemExit(1)
 if not isinstance(data.get("name"), str) or not isinstance(data.get("description"), str):
     raise SystemExit(1)
+if not isinstance(data.get("metadata"), dict) or data["metadata"].get("version") != versions[0]:
+    raise SystemExit(1)
 PY
   else
-    warn "python3 unavailable; portable YAML frontmatter parse was NOT-RUN"
+    warn "python3 unavailable; YAML parse and skill version checks were NOT-RUN"
   fi
 
   for phrase in \
     "specific Mount & Blade II: Bannerlord mod AnimusForge" \
     "Apply only to positively identified AnimusForge work" \
+    "AF mod development, maintenance and constraints skill" \
     "Manual invocation" \
     "Prove this is AnimusForge" \
     "execution ledger" \
