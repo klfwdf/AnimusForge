@@ -5,6 +5,14 @@
 用户在全项目分析后明确要求“开目标模式做吧”，已恢复当前 `F:\AnimusForge-main`、`codex/af-main-refactor-continuation-20260831` 上的本地实现和验证。起点 `bd2ed35f`；执行顺序、边界及状态见 [本轮台账](docs/phase8/local-goal-continuation-20260912.md)。先重新建立当前源码的本机构建基线，再按独立切片推进压缩输入快照、Native、TTS 和 Courier。原有 75 个未跟踪图片/预览文件保留。没有本轮 push、游戏覆盖、真实存档操作或恢复定时自动化授权。
 
 
+## 当前已验证小片：Native 未压缩历史（生产/测试 `54e07882`）
+
+`ShoutBehavior.cs:20270-20288` 的 `SubmitNativeConversationTextInternalAsync` 未压缩历史入口改为原主线程队列中校验 admission 后调用；失效/超时走原暂存输入回滚。原 Hero/普通人物 ID 解析、AFEF、当前会话排除与主动开场去重不变。编辑前 intent 为 `75a692ac`，可定向 revert `54e07882` 并复验。
+
+验证：69 PASS，真实旧源码失败 13，三个变异失败 4/4/3；pending-history 111、history 27、preparation 589、scheduler 132、admission 44、ports 308/3 mutation；六构建/两 Stage、四 DLL 532、存档身份 146/146 和 36/36 均 PASS。详见 [验证记录](docs/audits/2026-09-12-native-uncompressed-history-verification.md)。代码图已更新到 `54e07882`。
+
+只覆盖这一个入口。Native 的角色上下文、persona、共享规则/lore、后处理 prepare/complete 仍需后续；TTS worker 查询、Courier 也未完成。LIVE/provider/旧存档/实机耗时均未验证。继续本地目标，不推送或覆盖游戏。
+
 ## 当前已验证切片：压缩输入与来源拒收（生产/测试 `53ddb7d4`）
 
 `OFFLINE_COMPLETE / LIVE_SAVE_PENDING`。当前分支继续本地推进；检查点 `15c58d59`，生产/测试/架构证据提交 `53ddb7d4`。本轮原有 75 个未跟踪文件保持原样。

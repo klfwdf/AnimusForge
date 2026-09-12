@@ -1,6 +1,6 @@
 # AF 框架代码范围图
 
-本图是当前已验证源码 `53ddb7d4` 的定位快照，与 GitHub 原重构分支基线 `e40c92d7` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
+本图是当前已验证源码 `54e07882` 的定位快照，与 GitHub 原重构分支基线 `e40c92d7` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
 
 ## 新旧责任分区（不搬动运行代码）
 
@@ -16,7 +16,7 @@
 
 ## 已核实代码坐标
 
-以下一基行号均属于源码 `53ddb7d4`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
+以下一基行号均属于源码 `54e07882`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
 
 | 边界 | 源码位置 | 符号 / 责任 | 状态 |
 |---|---|---|---|
@@ -53,6 +53,7 @@
 | `memory.summary.input.overview` | `MyBehavior.MemorySummaryInputs.cs:194-197` | `private MemoryOverviewInput CaptureMemoryOverviewInput(` — 总览原状态/已纳入 ID/新增块与 prompt 副本 | `wired-boundary` |
 | `memory.summary.input.accept` | `MyBehavior.MemorySummaryInputs.cs:118-121` | `private static bool IsMemorySummaryInputCurrent(` — 仅主线程校验来源身份和完整内容，不同于持久化事务 | `wired-boundary` |
 | `memory.summary.input.names` | `PlayerNotorietyBehavior.MemorySummarySnapshot.cs:10-13` | `internal static Func<string, string> CaptureMemorySummaryHistoryRenderer(` — 冻结实际姓名/公开称呼/文化年龄别名，后台仅文本替换 | `wired-boundary` |
+| `native.history.uncompressed` | `ShoutBehavior.cs:20272-20275` | `"uncompressed_history_capture", nativeTargetLog, nativeTargetAgentIndex,` — 原 admission 主线程捕获未压缩历史；无效/过期回滚暂存输入，其他 Native 准备仍待迁移 | `mixed-host` |
 
 `wired-boundary` 仅局部接线验证；`mixed-host` 是新旧共用 host；`retained-live` 仍有实际调用/兼容责任；`readonly-api` 是当前公开只读面。没有 LIVE/SAVE 标签，因为本轮未运行真实游戏/存档。
 
