@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-12",
+  "sourceBaseline": "e40c92d72524b7ea80a5dc0e36dc996963a62e66",
+  "intentCheckpoint": "909550d44229406454e7895ab3618d7a2f87e54f",
+  "productionRevision": "9040d184998120d3476426337160403f08fdfee9",
+  "slice": "memory-summary-post-await-main-thread-commit",
+  "status": "OFFLINE_COMPLETE_LIVE_SAVE_PENDING",
+  "focused": {
+    "current": { "exit": 0, "checks": 17, "failures": 0 },
+    "original": { "baseline": "e40c92d7", "exit": 1, "expected": 1, "verified": true },
+    "mutations": [
+      { "name": "ignore-generation", "exit": 1, "expected": 1, "verified": true },
+      { "name": "ignore-owner", "exit": 1, "expected": 1, "verified": true },
+      { "name": "unbounded-drain", "exit": 1, "expected": 1, "verified": true }
+    ]
+  },
+  "regressions": [
+    { "name": "NativeHistorySnapshotTests", "exit": 0, "checks": 852 },
+    { "name": "NativeHistorySnapshotTests.native", "exit": 0, "checks": 27 },
+    { "name": "MemoryFailureUiBoundaryTests", "exit": 0, "checks": 85 },
+    { "name": "MemoryCommitRecoveryContractTests", "exit": 0 },
+    { "name": "WeeklyMemoryMaterialOutcomeContractTests", "exit": 0 },
+    { "name": "TeamModulePortParityTests", "exit": 0, "assertions": 308, "runtimeMutationsRejected": 3 },
+    { "name": "ModuleFrameworkApiTests", "exit": 0, "assertions": 119, "concurrentReads": 256, "actualDllMetadataAssertions": 532 }
+  ],
+  "persistence": {
+    "baseline": "e40c92d7",
+    "status": "PASS",
+    "syncCurrent": 146,
+    "syncBaseline": 146,
+    "campaignBehaviorsCurrent": 36,
+    "campaignBehaviorsBaseline": 36,
+    "moduleName": "AnimusForge",
+    "moduleId": "AnimusForge",
+    "moduleAssemblies": ["AnimusForge.Bootstrap.dll"]
+  },
+  "builds": {
+    "debug": { "bannerlord13": "PASS", "bannerlord14": "PASS", "bootstrap": "PASS", "stage": "PASS" },
+    "release": { "bannerlord13": "PASS", "bannerlord14": "PASS", "bootstrap": "PASS", "stage": "PASS" },
+    "errors": 0,
+    "warning": "NU1900: nuget.org vulnerability metadata unavailable in sandbox",
+    "gameDirectoryModified": false
+  },
+  "artifacts": [
+    { "configuration": "Debug", "api": "1.3", "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll", "sha256": "cf4b1d2556c1f07d19f484775f4da15bd8d77206b8a5213441cd5c47e209acf0" },
+    { "configuration": "Debug", "api": "1.4", "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll", "sha256": "732a793571e0ccb0f1f0034325dfa3e36ad92601c8b3f370976129ca546bac94" },
+    { "configuration": "Debug", "api": "bootstrap", "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll", "sha256": "f99d5d94becc85a2438cf458751ca79fb57cc85a522842db59df7f163126c92f" },
+    { "configuration": "Release", "api": "1.3", "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll", "sha256": "0854d673081ff418db96e7e2d29cba8438ec92f0ac8aa4ca00496600bb1d155a" },
+    { "configuration": "Release", "api": "1.4", "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll", "sha256": "51579c1d6a4c482dbb50ba52b40f18df6cade706c2056cb580113af23fe46edc" },
+    { "configuration": "Release", "api": "bootstrap", "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll", "sha256": "f5985d11bec75afb13c27585d5757d73881ba6f6d81cb4437fcd7f7d6ba20617" }
+  ],
+  "boundaries": {
+    "liveGame": "NOT_RUN",
+    "realProvider": "NOT_RUN",
+    "realSave": "NOT_RUN",
+    "push": false,
+    "deployment": false,
+    "defaultCutover": false,
+    "publicWriteApi": false,
+    "teamBusinessChanges": false,
+    "phase8Done": false,
+    "inputSnapshotAndSourceFingerprint": "NOT_IMPLEMENTED"
+  }
+}

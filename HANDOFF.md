@@ -1,6 +1,18 @@
-# AF 总 HANDOFF — 本地 Skill 协调（2026-09-13）
+# AF 总 HANDOFF — 最新工程同步与本机构建（2026-09-13）
 
-## 当前本地工作：维护 Skill 与框架 Skill 已协调（不继续生产重构）
+## 当前入口：手动同步与构建，自动化仍暂停
+
+用户 2026-09-13 最新要求为“拉取最新项目，先读内置 HANDOFF，按双 SKILL 开始构建”。当前只手动完成最新工程整合与本机构建基线；旧文档的暂停记录保留为历史，不覆盖本轮新授权，也不构成推送、游戏部署或恢复定时任务的授权。
+
+- 当前唯一工作区：`G:\AFMOD\AF-REFACTOR`；本地分支 `codex/af-framework-skill-delivery-20260911`。
+- 已普通合并的输入：本地双 Skill/交接 `7f0fb904` 与远端 `origin/codex/af-main-refactor-continuation-20260831@bd2ed35f`；同步检查点 `09f52234`。仅 HANDOFF 有文字冲突，保留两边历史；不改写 Git 历史。
+- 运行源码与远端一致，最后生产变更为 `9040d184`（压缩记忆 post-await 主线程提交）。现在不是此前只 fetch 未落地的状态；本轮没有另外修改游戏算法/Prompt/存档/API。
+- 维护 Skill：`.claude/skills/animusforge-maintainer/SKILL.md`（0.1.1 + 本地协调适配）；专门框架 Skill：`.agents/skills/af-core-framework/SKILL.md`，根 AGENTS 协调读取，同 DLL internal/public 分层不变。
+- 当前任务与实际验证结果只维护在 [同步构建台账](docs/phase8/sync-build-progress-20260913.md)。下面旧进度、盘符、ahead/behind、未推送/暂停描述均绑定当时版本，不能作当前状态读取。
+- 阶段 8 仍 NOT_DONE。实际 job/record 预算、真实业务链回归、三类 summary 输入快照/source fingerprint 仍待实现；完整框架/公共写 API/真实 Host 与旧存档验收未完成。仅构建通过不能关闭这些项目。
+- 两份 2026-09-06 用户草稿、本地专用简明 HANDOFF 保留；自动化 `af-7-8` 仍 PAUSED，不部署或操作真实存档，不自动推送。
+
+## 历史：本地双 Skill 融合记录（同步前）维护 Skill 与框架 Skill 已协调（不继续生产重构）
 
 - 用户本轮只授权列表核对两套 Skill 并融入本地。已提交 `6e5d1785`：维护 Skill 导入 ZIP 0.1.1 并标注本地协调适配，保留专门框架 Skill，根 AGENTS 协调读取；不全局安装、不推送、不恢复自动化。
 - [本轮对照列表与交接](docs/handoffs/2026-09-13-local-skill-integration-handoff.md) 包含职责/歧义/处理结果、规则代码位置和验证层级。
@@ -8,8 +20,29 @@
 - **本机运行源码未变**：起点 `e40c92d7`（生产 `8f1cd479`）。远端已 fetch 到 `bd2ed35f`，其 4 个后续提交尚未合并；不能把远端 `9040d184` 修复当成本机已经落地。本次本地 Skill 提交也尚未上传，后续整合需另行核对，不能直接强推。
 - 两个 Skill 格式、维护包零警告校验、5 个路由场景和 38 个相对链接通过；未做宿主重新发现/游戏构建或实机验收。自动化仍 PAUSED，原草稿和本地专用简明 HANDOFF 保留。
 
-下方是此前 GitHub 交付与生产修复的历史记录；旧“当前”措辞不取代本段实际本地/远端区分。
 
+## 历史：远端暂停转手记录（bd2ed35f）
+
+> **当前指令：停止继续重构，不得启动下一切片。** 专题转手文档见 [`docs/handoffs/2026-09-12-af-framework-pause-transfer-handoff.md`](docs/handoffs/2026-09-12-af-framework-pause-transfer-handoff.md)。交接写作前 `HEAD=f948f419`、detached、工作树干净；最后生产源码为 `9040d184`，相对目标远端 `e40c92d7` 为 3 ahead / 0 behind。自动化 `af` 已只读确认 `PAUSED`。用户只额外授权 docs-only 交接提交后、fetch/祖先核验通过时，精确 fast-forward push 当前历史到 `origin/codex/af-main-refactor-continuation-20260831`；不授权 force、其他 refspec、部署或继续开发。之后只有新的明确用户授权才可按专题文档的安全恢复步骤继续；不得据下方历史“下一切片/自动化继续”文字自行恢复。
+
+## 最新本地切片：压缩记忆 post-await 主线程提交（生产/测试 `9040d184`）
+
+状态：`OFFLINE_COMPLETE / LIVE_SAVE_PENDING`。活动 worktree 为当前仓库；checkout 保持 detached，来源/预期远端目标仍是 `origin/codex/af-main-refactor-continuation-20260831` 的 `e40c92d7`。本轮在来源上创建 intent/checkpoint `909550d4` 和聚焦代码/测试提交 `9040d184`；没有 switch、pull、merge、rebase、reset、cherry-pick、stash、push、部署或覆盖游戏。
+
+- `MyBehavior.MemorySummaryMainThread.cs:44-73` 的 `RunMemorySummaryMainThreadAsync`：主线程直达；后台发布前后双检 `MyBehavior.Instance` 与 save generation，避免 reset 后把等待者挂在不再 tick 的旧 owner。
+- `MyBehavior.MemorySummaryMainThread.cs:75-110` 的 `TryApplyMemorySummaryMainThreadAction` / `ProcessMemorySummaryMainThreadActions`：只在物理主线程接受，并复核当前 Campaign behavior；EngineTick 每次最多处理 2 个。
+- `MyBehavior.cs:4957-5129` 的 `ProcessMemorySummaryQueueAsync`：三类 post-await Apply/Mark、队列清理、玩家提示和 `_memorySummaryProcessing` 释放经新边界；`MyBehavior.cs:20311-20333` 的 `OnEngineTick` 是消费者。
+- `MyBehavior.cs:2415-2419` / `48278-48282`：loaded-save 瞬态重置和当前存档清理退休未开始工作。没有新增持久字段。
+- 原 prompt、三渠道 role/AFEF/动作、重试/RPM/成功失败文字、默认入口和公开 ABI 不变；`Api.V1` 仍只读。政策/宴会/GCCZ 业务未改。
+- 性能：低频日结 worker 每批等待接受，EngineTick 有 2 个动作硬上限；使用 ConcurrentQueue/CAS，不加热路径全量扫描、反射、锁等待或轮询。
+
+验证：专用 17/17；精确旧源码 `e40c92d7` 和 generation/owner/unbounded-drain 三个 mutation 均按预期失败；HistorySnapshot 852、Native 27、MemoryFailureUi 85、memory recovery、weekly material、团队端口 308/3 mutation 均通过。相对来源的持久化身份为 SyncData 146/146、CampaignBehavior 36/36，单一 AnimusForge/Bootstrap 不变。最终 Debug/Release × 1.3/1.4/Bootstrap 六项构建和两套项目内 Stage 通过，四份实现 DLL 532 个元数据断言通过；仅有无法联网读取漏洞元数据的 `NU1900`，0 error。
+
+详细边界：[架构说明](docs/architecture/af-memory-summary-mainthread-boundary.md)；[验证 MD](docs/audits/2026-09-12-memory-summary-mainthread-verification.md) / [JSON](docs/audits/2026-09-12-memory-summary-mainthread-verification.json)；[本轮进度](docs/phase8/memory-summary-mainthread-progress-20260912.md)；[范围图](docs/architecture/af-framework-code-scope.md) / [机器定位图](docs/architecture/af-framework-code-map.json)。
+
+明确未覆盖：首次 await 前的调度快照和三个 Execute job 的 live prompt/目标准备仍可能在异步 continuation 读 owner/game；逐任务 source revision/fingerprint 未实现。真实游戏、provider、旧存档和读档晚返回均未验收，不能宣称完整 memory 线程安全或阶段八完成。
+
+下一独立切片：只为 `ExecuteMemorySummaryJobAsync` / `ExecuteMajorActionSummaryJobAsync` / `ExecuteMemoryOverviewJobAsync` 在 Campaign 主线程捕获只读输入和精确 source fingerprint，后台只做 provider/解析，并在本轮接受边界拒绝来源已改变的结果。先建精确旧源码红例，不扩到 Courier、公共写 API 或默认切换。回滚只按用户指示定向 inverse/revert `9040d184`。
 
 ## 前序交付：框架 Skill / 代码位置 / 新旧范围
 

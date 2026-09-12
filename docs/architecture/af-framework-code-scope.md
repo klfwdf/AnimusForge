@@ -1,6 +1,6 @@
 # AF 框架代码范围图
 
-本图是交付前源码 `8f1cd479` 的定位快照，与 GitHub 原重构分支基线 `a58c2191` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
+本图是当前已验证源码 `9040d184` 的定位快照，与 GitHub 原重构分支基线 `e40c92d7` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
 
 ## 新旧责任分区（不搬动运行代码）
 
@@ -10,13 +10,13 @@
 | `Api/V1/` | 新公开只读接口；未来按需求和兼容证据扩展 |
 | 本次具名 Native / Memory partial 边界 | 已接线的主体局部边界，不代表整个 Native / Memory 完成 |
 | `ShoutBehavior.cs` / `MyBehavior.cs` / `CourierDeliveryBehavior.cs` / `SubModule.cs` | 新旧混合 owner，按符号标界，不能整文件打 DONE |
-| 原 Scene/Courier 默认历史、Native persona/周报/剩余 TTS、其他记忆维护 writer | 保留运行责任，未完成部分仍需接续 |
+| 原 Scene/Courier 默认历史、Native persona/周报/剩余 TTS、压缩记忆前置准备与其他记忆维护 writer | 保留运行责任，未完成部分仍需接续 |
 | 政策 / 宴会 / `AnimusForge.SiegeAftermathIntervention` 业务 | 本轮不重写，只处理 AF 侧接口，不误删旧业务 |
 | GitHub 主分支及其他旧版本 | 分支/固定基线隔离，不复制到活动编译目录，不整片覆盖当前重构分支 |
 
 ## 已核实代码坐标
 
-以下一基行号均属于源码 `8f1cd479`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
+以下一基行号均属于源码 `9040d184`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
 
 | 边界 | 源码位置 | 符号 / 责任 | 状态 |
 |---|---|---|---|
@@ -40,8 +40,11 @@
 | `native.dispatch.shared` | `ShoutBehavior.cs:19437-19440` | `private Task<T> RunNativeConversationMainThreadFuncAsync<T>` — 排队/开始/退休，不假称网络已取消 | `mixed-host` |
 | `memory.acceptance` | `MyBehavior.DialogueHistoryCommit.cs:12-15` | `internal static MemoryCommitResult CommitDialogueHistoryWithScene` — 运行期接受，不是磁盘/跨动作事务 | `wired-boundary` |
 | `memory.failure.ui` | `MyBehavior.MemoryFailureNotice.cs:53-56` | `private void ProcessPendingMemoryFailureNotice()` — 原 EngineTick 消费；owner/Campaign/generation/revision | `wired-boundary` |
-| `legacy.history` | `MyBehavior.cs:28087-28090` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
-| `legacy.recall` | `MyBehavior.cs:34093-34096` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
+| `memory.summary.dispatch` | `MyBehavior.MemorySummaryMainThread.cs:44-47` | `RunMemorySummaryMainThreadAsync` — 后台只发布完成动作；旧 owner/generation 入队前后 fail closed | `wired-boundary` |
+| `memory.summary.drain` | `MyBehavior.MemorySummaryMainThread.cs:92-95` | `ProcessMemorySummaryMainThreadActions` — EngineTick 每次最多接受 2 个动作，并复核主线程/owner/Campaign/generation | `wired-boundary` |
+| `memory.summary.accept` | `MyBehavior.cs:4995-4998` | 首批压缩结果接受 — 成功/失败写入回到当前 Campaign owner；前置准备仍未快照化 | `mixed-host` |
+| `legacy.history` | `MyBehavior.cs:28091-28094` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
+| `legacy.recall` | `MyBehavior.cs:34097-34100` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
 | `scene.postprocess` | `ShoutBehavior.ScenePostprocess.cs:25-28` | `private sealed class SceneActionPostprocessWorkItem` — 已有完整后处理；非本次重写 Scene 业务 | `mixed-host` |
 | `courier.prepare.reply` | `CourierDeliveryBehavior.cs:4674-4677` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient,` — 回信早期准备待线程审查，未迁快照 | `retained-live` |
 | `courier.prepare.inbound` | `CourierDeliveryBehavior.cs:5102-5105` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(sender,` — 来信早期准备待线程审查，未迁快照 | `retained-live` |
