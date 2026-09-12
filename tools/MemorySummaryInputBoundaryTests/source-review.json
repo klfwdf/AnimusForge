@@ -1,0 +1,54 @@
+{
+  "baseline": "9040d184",
+  "reason": "Input capture/generation propagation/source rejection only. Real capture, parser, worker and acceptance proof: MemorySummaryInputBoundaryTests/runtime.py, net8 and net472, six fault mutations. Prompt builders and Apply/Mark bodies remain byte-identical.",
+  "declarations": [
+    {
+      "signature": "private sealed class MemorySummaryExecutionResult\n",
+      "sha256": "bcb44357e9c61613c048b68b6615c4cc204ff29bc1281204b6b5aa7da5b40e05"
+    },
+    {
+      "signature": "private sealed class MajorActionSummaryExecutionResult\n",
+      "sha256": "782ac49db6ca17169f0a6e104a984f675173d4dab4d046267b5b7a670b410536"
+    },
+    {
+      "signature": "private sealed class MemoryOverviewExecutionResult\n",
+      "sha256": "9197fb8c60602a0c02161d311778edf6b7f8b382325ffcb15123b3a46725c31a"
+    },
+    {
+      "signature": "private async Task ProcessMemorySummaryQueueAsync(",
+      "sha256": "82cc2b65c89be2d89441395b3306378657d3b30240b21db7550895786474f1d7"
+    },
+    {
+      "signature": "private async Task RunDailySummaryQueueItemsAsync(",
+      "sha256": "dc8cfd0365db89f1a02b0a4ed431fc90fdb2c9a1ef0edbf795cb1fb59cfd8d6a"
+    },
+    {
+      "signature": "private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(",
+      "sha256": "ab34bb1101ff0bc7135292fbde8fe2ecc27d0962fd0f9c99c6a3981719688403"
+    },
+    {
+      "signature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
+      "sha256": "19efd06492250c0b179bcd61c03f4e4ff0d935d826bbce814d3ad4ee57b6f5de"
+    },
+    {
+      "signature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
+      "sha256": "24a58ca6c79ef1c0e1005c4034060d0ee79802d1f3bedbf1ff0966dc77d19d01"
+    },
+    {
+      "signature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
+      "sha256": "33dfc382859d575e9ae61b86ef5e88a6f9910835cc7382d6a19eb5f447a70e22"
+    },
+    {
+      "signature": "private static bool TryParseMemorySummaryResponse(",
+      "sha256": "a50c7e4bdfe2ff2f567b903108e0795a800cb5d476cd3dd1c4e128ebe883dde5"
+    },
+    {
+      "signature": "private static bool TryParseMajorActionSummaryResponse(",
+      "sha256": "9b26578168f51a42a570c61d26928cece8d64fc51be96885dd8af389ebec77b0"
+    },
+    {
+      "signature": "private static bool TryParseMemoryOverviewResponse(",
+      "sha256": "3f15cfcbe0f82f77d2b1cd08e2cd6d788c20823a1e0eb18bcb2dd5f19c3cbda7"
+    }
+  ]
+}

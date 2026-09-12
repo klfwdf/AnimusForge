@@ -25,6 +25,9 @@ def read(path):
 
 
 def restore_reviewed_nonport_deltas(path, current, prior):
+    input_spec = importlib.util.spec_from_file_location('input_parity', ROOT / 'tools/MemorySummaryInputBoundaryTests/source_parity.py')
+    input_parity = importlib.util.module_from_spec(input_spec); input_spec.loader.exec_module(input_parity)
+    current = input_parity.restore_input_source(path, current)
     # Preserve the strict original whole-file proof without freezing unrelated Native evolution.
     # Only these hash-frozen, separately behavior-tested declarations can differ; a future edit fails.
     spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")

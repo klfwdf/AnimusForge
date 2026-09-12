@@ -3,6 +3,8 @@ import json,hashlib,subprocess,importlib.util
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 def restore_snapshot_source(path,source):
+ input_spec=importlib.util.spec_from_file_location('input_parity',ROOT/'tools/MemorySummaryInputBoundaryTests/source_parity.py');input_parity=importlib.util.module_from_spec(input_spec);input_spec.loader.exec_module(input_parity)
+ source=input_parity.restore_input_source(path,source)
  spec=importlib.util.spec_from_file_location('snapshot_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  review=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
  prior=subprocess.check_output(['git','show',review['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig')
