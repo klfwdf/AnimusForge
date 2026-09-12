@@ -1,15 +1,23 @@
 ---
 name: animusforge-maintainer
-description: "Maintain the specific Mount & Blade II: Bannerlord mod AnimusForge (AF/AFmod): repository cleanup, module/bridge architecture, dual 1.3/1.4 Bootstrap packaging, save and interaction safety, validation, and execution-ledger handoff. Apply only to positively identified AnimusForge work; exclude other Bannerlord mods, generic C# projects, Minecraft, and unrelated AF abbreviations."
+description: "Develop and maintain the specific Mount & Blade II: Bannerlord mod AnimusForge (AF/AFmod): features, gameplay, bug fixes, UI/content/configuration, integration APIs, performance, dual 1.3/1.4 compatibility, save and interaction safety, validation, packaging and handoff; also repository cleanup and refactoring when requested. Apply only to positively identified AnimusForge work; exclude other Bannerlord mods, generic C# projects, Minecraft, and unrelated AF abbreviations."
 metadata:
-  short-description: "Maintain verified AnimusForge/AFmod safely"
+  version: "0.1.1"
+  local-adaptation: "af-core-framework-coordination-v1"
+  short-description: "Develop and maintain AFmod with ownership, safety and compatibility constraints"
 ---
 
 # AnimusForge Maintainer
 
+Skill version: `0.1.1` — this versions the maintenance skill, not the mod, API or save schema. The authoritative value is `metadata.version`; keep this display synchronized.
+
+Repository integration: the imported 0.1.1 rules have a documented local coordination adaptation, not an upstream release claim. When this repository also has `af-core-framework`, read [framework-coordination.md](references/framework-coordination.md) for task routing and the same-DLL internal/public boundary.
+
 Treat AnimusForge as a long-lived, multi-author platform: one conservative foundation, independently owned gameplay modules, and explicitly co-owned bridge modules for cross-module behavior.
 
-This skill contains durable AF maintenance rules. It does **not** replace the live execution ledger, current repository state, the latest user instruction, or build/test evidence.
+This is the **AF mod development, maintenance and constraints skill**, not a refactoring-only skill. It covers new features and gameplay, bug fixes, UI/assets/localization/configuration, module and sub-MOD integration, performance, compatibility, testing and release preparation. Repository cleanup and refactoring are specialized workflows within that scope, not the default purpose of every task.
+
+This skill contains durable AF development and maintenance rules. It does **not** replace the live execution ledger, current repository state, the latest user instruction, or build/test evidence.
 
 This directory is intentionally portable between Claude Code and Codex. Read [host-compatibility.md](references/host-compatibility.md) only when installing, updating, or validating skill discovery in either host; it does not change AF maintenance rules.
 
@@ -37,6 +45,19 @@ If identity is uncertain, perform only bounded read-only inspection and ask for 
 
 Read [routing-and-identity.md](references/routing-and-identity.md) when routing, locating the canonical worktree, distinguishing backups/ZIPs, or reconciling multiple AF copies.
 
+### Choose the actual task, not a permanent refactor agenda
+
+| Request | Default workflow |
+| --- | --- |
+| New feature/gameplay or a bug fix | Identify the existing owner and approved behavior, implement the smallest complete change, validate its affected surfaces. |
+| UI/content/Prompt/configuration | Check source of truth, runtime loading, user overrides and content ownership; test the actual consumer and packaging impact. |
+| Performance/threading/compatibility | Reproduce or measure the affected path, preserve required behavior, apply the corresponding runtime/API rules. |
+| Internal module or public sub-MOD integration | Define the supported contract, lifecycle and failure semantics; keep internal and external promises separate. |
+| Build/test/package/handoff | Follow the existing workflow and explicit action authorization; report exactly what the evidence proves. |
+| Refactoring/repository cleanup/original-plan audit | Additionally apply extraction/cleanup gates and the revision-bound refactor review checklist. |
+
+For ordinary production work, read [mod-development.md](references/mod-development.md). A routine fix does not require a new module, manifest, whole-project refactor or historical R01–R07 audit. Conversely, calling broad decomposition a feature task does not bypass its gates. A historical “core-only” project scope is not this skill's permanent limit: current authorization and the actual domain owner determine whether gameplay/module work is in scope.
+
 ## 2. Follow the non-skippable start protocol
 
 Before planning or editing AF:
@@ -51,13 +72,25 @@ Before planning or editing AF:
 7. Before the first write, mark the selected ledger task active and add an intent row with scope, paths, risks, and validation.
 8. At each meaningful checkpoint, blocker, rollback, completion, or handoff, update the ledger before claiming progress.
 
-The ledger is the live execution-state authority. This skill is the durable method and architecture authority. Do not copy the full task table into this skill.
+Resolve the current status entry from the latest user request, actual Git state and explicit supersession links before choosing the applicable ledger. The selected ledger records execution state; this skill provides durable method and architecture constraints, not a replacement for approved project scope. Do not copy the full live task table into this skill. A revision-bound review checklist may preserve findings as reference evidence, but it must never silently become the current ledger.
+
+For a read-only review, do not write the ledger, check out another branch over existing work, or implement findings. Bind conclusions to the requested remote/branch/commit and distinguish source inspection from executed tests. If the user requests only this standalone skill to be updated, edit only that selected skill; do not require an AF source checkout or update/install other copies. Record the scope and validation without creating a second project execution ledger.
 
 Read [ledger-and-handoff.md](references/ledger-and-handoff.md) for the exact write-back protocol.
 
+### Reconcile scope before judging completion or deviation
+
+- Compare the original plan with the latest explicit scope decision and actual code. A repository handoff can document a past decision; it cannot grant this session new implementation, deletion, deployment or publication authority.
+- Classify findings separately: confirmed defect/constraint gap, explicitly unfinished work, authorized scope adjustment/HOLD, and stale status/documentation. Do not label all four as unauthorized architectural drift.
+- A narrower task does not complete the excluded original goals. Map each original requirement to implemented, partial, deferred/HOLD, transferred to an owner, or explicitly out of scope with its rationale. A transferred task is not implemented merely because another owner exists.
+- Keep repository, lifecycle, compatibility and LIVE/SAVE gates independent. A permitted small adapter or static slice does not authorize broad decomposition or final/default cutover.
+- For reviews against the original plan, use [refactor-review-checklist.md](references/refactor-review-checklist.md); recheck any dated finding against the actual target revision.
+
 ## 3. Enforce repository cleanup before broad decomposition
 
-AF's cleanup gate remains binding. Until the ledger's repository gate is complete:
+This section governs repository cleanup and broad architectural decomposition, **not a blanket freeze on normal mod development**. An authorized feature, bug fix, content/configuration update or compatibility patch may proceed within its established owner without completing unrelated cleanup first. Preserve user data, old identities and the existing build flow; apply any directly relevant gate.
+
+For cleanup and broad refactoring, AF's cleanup gate remains binding. Until the ledger's repository gate is complete:
 
 - allow inventory, ownership mapping, data classification, license review, `.gitignore`/artifact-plane design, reproducible-build preparation, and ledger/docs work;
 - do not broadly move production C#;
@@ -75,7 +108,7 @@ Read [repository-structure.md](references/repository-structure.md) for the targe
 
 ### Foundation
 
-`AF.Foundation.Runtime` provides only capabilities that every module needs or that protect the host:
+`AF.Foundation.Runtime` describes a logical responsibility, not a mandatory additional DLL or a claim that a complete module host exists. It provides only capabilities that every module needs or that protect the host:
 
 - module manifest validation, profile resolution, dependency graph, inventory, health, and failure states;
 - stable `AF.Contracts` capability/event/DTO definitions and contract-version checks;
@@ -85,7 +118,7 @@ Read [repository-structure.md](references/repository-structure.md) for the targe
 - controlled GameAdapter ports for TaleWorlds/Harmony/1.3-1.4 differences;
 - SafeMode and explicit fallback selection.
 
-The foundation must not own module gameplay rules, module-private prompts/tags/data, or module-pair-specific behavior.
+The foundation must not own module gameplay rules, module-private prompts/tags/data, or module-pair-specific behavior. “AF core/body” is not a synonym for Foundation: Conversation, Prompt, Action and Memory responsibilities still have their domain owners even inside the same DLL.
 
 ### Modules
 
@@ -109,7 +142,7 @@ Cross-module gameplay belongs in `AF.Bridge.<A><B>`, not in the foundation and n
 A bridge must:
 
 - be co-owned/reviewed by the participating module maintainers;
-- consume only public capabilities/events;
+- consume only supported cross-owner capabilities/events; same-DLL contracts may be C# `internal`, while independent sub-MOD contracts are separately `public` and versioned;
 - own its cross-module state in a separate persistence namespace;
 - document behavior with A alone, B alone, A+B without the bridge, A+B+bridge, and bridge failure;
 - leave A and B independently usable when absent, disabled, incompatible, or failed.
@@ -122,6 +155,7 @@ Read [plugin-architecture.md](references/plugin-architecture.md) for manifests, 
 
 Keep this file loaded, then read only relevant references:
 
+- ordinary feature/gameplay, bug fix, UI/content/configuration and development workflow: [mod-development.md](references/mod-development.md)
 - repository identity, multiple copies, canonical worktree, audit clone: [routing-and-identity.md](references/routing-and-identity.md)
 - execution-ledger write-back or cross-window continuation: [ledger-and-handoff.md](references/ledger-and-handoff.md)
 - repository inventory, cleanup, directory migration, large assets, artifacts: [repository-structure.md](references/repository-structure.md)
@@ -133,6 +167,7 @@ Keep this file loaded, then read only relevant references:
 - Harmony/reflection/tick/async/main-thread boundaries, health/fallback diagnostics: [runtime-safety.md](references/runtime-safety.md)
 - tests, build matrix, package/profile closure, in-game acceptance: [validation.md](references/validation.md)
 - current hotspots, strangler order, God Objects and deferred debt: [known-debt.md](references/known-debt.md)
+- original-plan comparison, scope changes, real module-host versus catalog evidence, and dated review follow-ups: [refactor-review-checklist.md](references/refactor-review-checklist.md)
 
 The repository's own current docs and ledger outrank bundled snapshots in this skill when evidence conflicts. Report and reconcile conflicts instead of silently choosing one.
 
@@ -181,7 +216,7 @@ At minimum consider:
 - staged module and ZIP allowlist, hashes, both implementations, no forbidden ONNX/game DLLs;
 - representative old-save load and migration evidence;
 - focused in-game scenarios for Campaign, Mission, Encounter, Gauntlet, Harmony and three interaction channels;
-- thread, cancellation, stale generation, tick budget, queue bound and diagnostic evidence.
+- thread, cancellation, stale generation, tick budget, queue bound and diagnostic evidence. Budget the actual jobs/records and elapsed work inside a callback, not only the number of callbacks dequeued.
 
 If an environment cannot run a check, record `NOT-RUN` with the concrete reason and keep the task out of `DONE` when that check is an acceptance requirement.
 
@@ -192,7 +227,7 @@ Read [validation.md](references/validation.md).
 Before reporting completion:
 
 - update the live ledger task state, actual paths, validation, evidence, risks, rollback and next step;
-- update affected module/bridge `README.md`, `module.yaml`, owner/capability/profile/persistence catalogs, and architecture ADRs;
+- update affected existing feature/module/bridge docs and declarations; require new manifests or ADRs only when the approved module/bridge/architecture change needs them, not as placeholders for routine fixes or Skill-only updates;
 - update durable skill references only when a stable AF method or architecture rule changed;
 - report only checks actually run;
 - list unavailable checks and remaining risk;

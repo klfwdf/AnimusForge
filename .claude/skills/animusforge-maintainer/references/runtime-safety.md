@@ -31,6 +31,14 @@ Background operations receive detached immutable snapshots. Their completion ret
 4. execute once;
 5. publish facts/notifications after success.
 
+### Trace the whole asynchronous chain
+
+A method named `OnMainThread` is not a thread witness. Follow `Task.Run`, each await/retry/wave, callbacks and the actual dispatcher. Returning writes to the main thread does not make earlier background reads of Hero/session/owner dictionaries safe.
+
+Capture detached, immutable inputs on the owning thread. Besides owner/save/session generation, bind a source revision or fingerprint whenever the input can change within the same generation (for example, summary blocks or a draft/cursor). On acceptance revalidate the relevant source as well as the current owner. Define rejection, merge or requeue semantics explicitly; stale-result protection must not silently discard new authoritative data or duplicate effects.
+
+Tests should force a genuine asynchronous yield, source mutation during retry, owner replacement and load/reset. State exactly which captured inputs and commit paths are covered; a safe post-await commit is not proof that the entire worker is network-only or that all channels are thread-safe.
+
 ## Module lifecycle ownership
 
 Every module owns:
@@ -77,6 +85,14 @@ Metric/trace name
 ```
 
 Prefer Bannerlord/Campaign events over polling. Measure before changing frequencies. Avoid full-world/hero/party scans, repeated reflection, repeated JSON parsing, unbounded allocations/queues and lock contention in hot paths.
+
+### Budget the real work, not only envelopes
+
+- Count jobs/records/effects executed inside each queued callback and bound elapsed work as appropriate. A limit of two callbacks is not a two-job limit when one callback loops over every accumulated result.
+- Trace upstream batching: provider RPM or a delay between network waves limits request rate, not the size of the later main-thread commit. A scan/enqueue budget does not bound a loaded backlog or its total completion work.
+- Specify queue/backpressure limits separately from per-tick drain limits. When a batch must remain atomic, define its maximum size and measured worst-case cost; do not silently split a transaction to satisfy a counter.
+- For resumable work, retain a cursor and revalidate owner/generation/source at safe chunk boundaries. Preserve ordering and completion semantics; cancellation cannot undo already executed effects.
+- Validate a large backlog, one callback containing many jobs, load/restored queues, and unrelated work progressing. A test of only the dequeue count cannot establish a frame budget. Report an unmeasured performance exposure as such, not as a reproduced freeze.
 
 ## Error policy
 

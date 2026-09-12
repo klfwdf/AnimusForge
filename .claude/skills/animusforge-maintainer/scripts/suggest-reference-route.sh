@@ -47,11 +47,15 @@ fi
 printf 'IDENTITY: likely AnimusForge; verify ledger/canonical worktree before writes.\n'
 printf -- '- Always: SKILL.md + references/ledger-and-handoff.md\n'
 
+if has '功能|玩法|制作|开发|修复|修bug|bug|feature|gameplay|develop|modding|ui|界面|资源|素材|本地化|翻译|配置|设置|content|asset|localization|config|setting'; then
+  printf -- '- Development route: references/mod-development.md\n'
+fi
+
 if has '仓库|整理|清理|目录|git|大文件|二进制|dll|onnx|日志|zip|artifact|repository|cleanup|layout|license'; then
   printf -- '- Task route: references/repository-structure.md\n'
 fi
 
-if has '插件|模块|bridge|桥接|manifest|profile|foundation|主底座|capability|owner|依赖|卸载|safemode|safe.?mode'; then
+if has '插件|模块|bridge|桥接|manifest|profile|foundation|主底座|主体|框架|framework|internal|public api|sdk|capability|owner|依赖|卸载|safemode|safe.?mode'; then
   printf -- '- Task route: references/plugin-architecture.md\n'
   printf -- '- Task route: references/module-and-bridge-workflow.md\n'
 fi
@@ -74,6 +78,10 @@ fi
 
 if has '重构|技术债|god object|mybehavior|shoutbehavior|rewardsystem|aiconfighandler|duelsettings|debt|refactor'; then
   printf -- '- Task route: references/known-debt.md\n'
+fi
+
+if has '原计划|重构清单|重构审查|重构复核|偏离|跑偏|original.plan|refactor.review|refactor.checklist' || { has '重构|refactor' && has '审查|复核|清单|review|checklist|audit'; }; then
+  printf -- '- Review route: references/refactor-review-checklist.md (revalidate dated findings)\n'
 fi
 
 printf -- '- Before completion: references/validation.md\n'

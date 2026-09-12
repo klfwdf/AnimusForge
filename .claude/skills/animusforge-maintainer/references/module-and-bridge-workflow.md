@@ -62,7 +62,9 @@ Missing/incompatible/failed bridge degradation
 A/B/bridge composition test matrix
 ```
 
-It may call public services or subscribe to public typed events. It may not:
+It may call supported cross-owner services or subscribe to typed events. For same-DLL modules these contracts may be `internal`; this is distinct from a versioned C# `public` sub-MOD API. A temporary, explicitly scoped adapter can bind an existing implementation at the composition edge, but is not yet an independently qualified gameplay Bridge. See [plugin-architecture.md](plugin-architecture.md) for the transition boundary.
+
+A qualified Bridge may not:
 
 - import participating modules' implementation assemblies;
 - reflect private fields/methods;
@@ -103,7 +105,7 @@ It may call public services or subscribe to public typed events. It may not:
 
 ```text
 AF.Module.<Name>/ or AF.Bridge.<A><B>/
-  *.csproj
+  *.csproj   # only if an independent project is justified
   module.yaml
   README.md
   src/
@@ -111,4 +113,4 @@ AF.Module.<Name>/ or AF.Bridge.<A><B>/
   content/    # only when this owner ships content
 ```
 
-The README covers responsibility, public APIs/capabilities/events, configuration, persistence, lifecycle, Harmony/tick/UI effects, extension rules, validation and limitations.
+The README covers responsibility, supported APIs/capabilities/events, configuration, persistence, lifecycle, Harmony/tick/UI effects, extension rules, validation and limitations. A same-DLL logical module need not create a separate project or duplicate contracts merely to match this diagram; its real declarations and acceptance requirements still apply.

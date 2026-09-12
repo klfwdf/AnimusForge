@@ -7,6 +7,12 @@ description: Maintain or evolve the AnimusForge core, same-DLL team bridges, and
 
 用于 AF 主体实现、接口演进、审查和交接。先从 `git rev-parse --show-toplevel` 定位仓库，再读根 `AGENTS.md`、`HANDOFF.md` 的当前段和本次涉及的实际代码；历史交接、目录名和测试数字不是当前状态或操作授权。
 
+## 与通用维护 Skill 分工
+
+本 Skill 专门约束 AF 主体与内外接口，不取代通用开发维护规则。当前仓库的通用入口是 `.claude/skills/animusforge-maintainer/SKILL.md`；普通功能/Bug/资源开发按对应 workflow，涉及主体框架时再合用本 Skill。完整分工见 [协调说明](../../../.claude/skills/animusforge-maintainer/references/framework-coordination.md)。
+
+“本任务只做主体”是当前主体重构任务的范围，不是永久禁止用户另行授权制作组业务开发；新的业务任务仍由其真实 owner 负责。通用 Skill 中的 Foundation/Module/Bridge 逻辑目标不强制拆 DLL，也不代表现有目录已实现完整生命周期 Host。
+
 ## 架构约定
 
 ```text
@@ -33,6 +39,7 @@ AnimusForge.dll
 
 ## 实施与覆盖边界
 
+- 性能预算要落到实际 job/record 数量或耗时；不能用“每帧最多几个回调”掩盖单回调遍历全部积压。Skill 规则更新不等于相关生产缺口已经修复。
 - 沿一条真实输入到输出/提交的路径定位改动。游戏对象读取/写入在所属主线程；后台只运行明确可后台执行的网络/计算。检查 owner、会话和 generation，区分未开始取消、晚结果丢弃与真正的网络取消。
 - Native / Scene / Courier 同类行为需要核对，但不要因为一处改完就宣称三渠道都完成；Scene 的多人接力、旁听、玩家输入去重和唯一权威后处理不能被简化掉。
 - 未迁移旧代码保留其当前运行责任；同一大文件混合新旧时按符号/调用点标界，不能把整文件标成已重写。仅在替代路径真实接线且无调用、兼容或存档责任时删除旧代码；不复制一整棵旧源码到新编译目录作“隔离”。

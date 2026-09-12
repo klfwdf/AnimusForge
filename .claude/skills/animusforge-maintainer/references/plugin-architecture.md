@@ -98,6 +98,29 @@ Validate before entry-point invocation:
 
 Calls/queries use services. Notifications use typed events. Decisions that can be intercepted require an explicit arbitration contract defining order, short-circuiting, failure and ownership; do not create a generic middleware chain by default.
 
+## Internal ports, external API and transitional adapters
+
+Same-DLL collaboration may use typed `internal` ports; independent sub-MODs use a separately versioned public contract. “Public capability” means the provider's supported cross-owner surface, not that every internal interface must become C# `public`. Keep live game types in explicit main-thread adapters; do not expose them through background snapshots or the external API.
+
+A small composition root and temporary adapter may reference an existing implementation to preserve behavior. Keep that knowledge at the adapter/composition boundary, record the remaining direct callers, and do not spread it back through the shared pipeline. A thin adapter is not automatically a jointly owned gameplay Bridge. New cross-domain behavior still requires the actual co-owner/capability/state/composition gates.
+
+A read-only external API is a valid limited release when unsupported submission/write/registration capabilities report that fact explicitly. It does not complete a planned request/action API or prove external MOD loading and binary compatibility. Internal and external callers must ultimately use the same authoritative execution/fact owners, not a second shortened pipeline.
+
+## Catalog readiness is not module-host readiness
+
+Check these layers separately:
+
+| Layer | Required evidence |
+| --- | --- |
+| Directory/registry | Unique declarations, dependency/version/cycle checks and truthful query results. |
+| Adapter wiring | Actual callers reach typed providers with preserved arguments/results and explicit legacy coverage. |
+| Runtime ModuleHost | Real module activation, owned registrations/tasks/resources, stop or restart policy, partial-start cleanup, failure reporting and dependency propagation. |
+| Composition | Failure/absence/disablement of A leaves unrelated B usable; profiles and save data remain valid. |
+
+`Ready` may mean only adapter construction if documented that narrowly. Do not infer runtime health from `provider != null`, a declaration existing, an offline fixture passing or a manually assigned state. Likewise, a registry's dependency algorithm is real progress, but unused production dependency declarations do not prove real profile/module closure.
+
+A shutdown that only changes a status string is not resource disposal. A directory's `Failed` state is not fault isolation unless actual failures update that state, block affected dependents and allow unrelated contributions to continue. Review real registration/Tick/dispatch call paths, not just status enums. Preserve existing behavior during a scoped adapter slice, but leave missing host guarantees explicitly unfinished.
+
 ## Lifecycle states
 
 ```text
