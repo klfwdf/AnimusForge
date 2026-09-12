@@ -1,0 +1,452 @@
+{
+  "kind": "latest-refactor-local-sync-build",
+  "recordedUtc": "2026-09-12T22:40:01.040290+00:00",
+  "mergeCommit": "4304f5bb1f6e2c8932919dc33ffe0a8bc15008c9",
+  "remoteRevision": "bd2ed35fef0b68eb9c9b56e6376d1594ecf6f0a8",
+  "productionRevision": "9040d184998120d3476426337160403f08fdfee9",
+  "localSkillRevision": "6e5d178559434f930f822c00cd045daa39eb30ae",
+  "checkpoint": "09f52234",
+  "mergeConflictFiles": [
+    "HANDOFF.md"
+  ],
+  "productionEqualsRemote": true,
+  "builds": [
+    {
+      "configuration": "Debug",
+      "exit": 0,
+      "seconds": 74.97,
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+        "-ProjectRoot",
+        "G:\\AFMOD\\AF-REFACTOR",
+        "-BannerlordRoot",
+        "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-Bannerlord13ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\_deps_auto",
+        "-Bannerlord14ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-WorkshopContentDir",
+        "E:\\steam\\steamapps\\workshop\\content\\261550",
+        "-RuntimeDependencyDir",
+        "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+        "-Configuration",
+        "Debug",
+        "-Stage"
+      ]
+    },
+    {
+      "configuration": "Release",
+      "exit": 0,
+      "seconds": 29.53,
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+        "-ProjectRoot",
+        "G:\\AFMOD\\AF-REFACTOR",
+        "-BannerlordRoot",
+        "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-Bannerlord13ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\_deps_auto",
+        "-Bannerlord14ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-WorkshopContentDir",
+        "E:\\steam\\steamapps\\workshop\\content\\261550",
+        "-RuntimeDependencyDir",
+        "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+        "-Configuration",
+        "Release",
+        "-Stage"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "maintainer-skill",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 0.12,
+      "summary": [
+        "Skill is valid!"
+      ]
+    },
+    {
+      "name": "framework-skill",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 0.14,
+      "summary": [
+        "Skill is valid!"
+      ]
+    },
+    {
+      "name": "code-map",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 1.55,
+      "summary": [
+        "PASS code-map anchors=28 mode=recorded-revision source=9040d184998120d3476426337160403f08fdfee9; not gameplay verification"
+      ]
+    },
+    {
+      "name": "code-map-working",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 0.31,
+      "summary": [
+        "PASS code-map anchors=28 mode=working-tree source=9040d184998120d3476426337160403f08fdfee9; not gameplay verification"
+      ]
+    },
+    {
+      "name": "memory-summary",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 8.14,
+      "summary": [
+        "PASS MemorySummaryMainThread checks=17 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "memory-original-source-only",
+      "exit": 1,
+      "expected": 1,
+      "passed": true,
+      "seconds": 0.2,
+      "summary": [
+        "FAIL MemorySummaryMainThread baseline=e40c92d7 direct_post_await_writer=true"
+      ]
+    },
+    {
+      "name": "memory-mutant-ignore-generation",
+      "exit": 1,
+      "expected": 1,
+      "passed": true,
+      "seconds": 3.08,
+      "summary": [
+        "FAIL already-stale worker cannot strand on retired queue",
+        "FAIL MemorySummaryMainThread checks=17 failures=2 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "memory-mutant-ignore-owner",
+      "exit": 1,
+      "expected": 1,
+      "passed": true,
+      "seconds": 3.05,
+      "summary": [
+        "FAIL replaced owner cannot strand worker on retired queue",
+        "FAIL MemorySummaryMainThread checks=17 failures=2 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "memory-mutant-unbounded-drain",
+      "exit": 1,
+      "expected": 1,
+      "passed": true,
+      "seconds": 2.08,
+      "summary": [
+        "FAIL second drain remains bounded",
+        "FAIL MemorySummaryMainThread checks=17 failures=2 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "history-snapshot",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 2.81,
+      "summary": [
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\.generated\\current\\Program.cs(98,14): warning CS0649: Field 'MyBehavior.DailyMemoryDraft.SummaryRetryCount' is never assigned to, and will always have its default value 0 [G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\.generated\\current\\Proof.csproj]",
+        "PASS HistorySnapshot checks=852 failures=0 realRenderRecallSelect=true ownerDataAndNetwork=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "native-history",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 3.09,
+      "summary": [
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\.generated\\native-current\\Program.cs(48,14): warning CS0649: Field 'MyBehavior.DailyMemoryLine.GameDayIndex' is never assigned to, and will always have its default value 0 [G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\.generated\\native-current\\Proof.csproj]",
+        "PASS NativeHistorySnapshot checks=27 failures=0 actualCaptureAndAccept=true actualMemoryRenderer=true game=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "memory-ui",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 2.56,
+      "summary": [
+        "PASS MemoryFailureUi checks=85 failures=0 realPopupOwner=true realEngineHook=true gameUI=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "team-ports",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 12.77,
+      "summary": [
+        "PASS behavioral mutation rejected: invert_siege_selected",
+        "PASS behavioral mutation rejected: swap_siege_context_texts"
+      ]
+    },
+    {
+      "name": "persistence",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 5.09,
+      "summary": [
+        "{\"baseline\": \"e40c92d7\", \"behaviorAdded\": [], \"behaviorBaseline\": 36, \"behaviorCurrent\": 36, \"behaviorRemoved\": [], \"moduleAssemblies\": [\"AnimusForge.Bootstrap.dll\"], \"moduleId\": \"AnimusForge\", \"moduleName\": \"AnimusForge\", \"status\": \"PASS\", \"syncAdded\": [], \"syncBaseline\": 146, \"syncCurrent\": 146, \"syncRemoved\": []}"
+      ]
+    },
+    {
+      "name": "MemoryCommitRecoveryContractTests",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 2.45,
+      "summary": [
+        "PASS memoryCommitRecovery orderedSteps=6 duplicate=1 conflict=1 pendingCap=64 completedCap=512 roundTrip=1 startedFailClosed=1 markerAbsentRetry=1 markerPresentAdvance=1 quarantine=4 processNonceIsolation=1 quarantineCommitBlocked=1 quarantineOverflowDisabled=1 storageOverflowDisabled=1 emptyPayloadRejected=1 unicodeCourier12kAccepted=1 courierReply20kAccepted=1 aggregateOverflowRejected=1 pendingNeverEvicted=1 sameIdQuarantineWins=1 retryRotation=1 retryExhaustion=5 bodiesCleared=1 projectionRetarget=1 removedProjectionBlocked=1 writerSentinelFailurePoints=6 writerSentinelScenarios=12 initialMutationReplay=0 dataOnlyDto=1"
+      ]
+    },
+    {
+      "name": "WeeklyMemoryMaterialOutcomeContractTests",
+      "exit": 0,
+      "expected": 0,
+      "passed": true,
+      "seconds": 2.52,
+      "summary": [
+        "PASS weeklyMemoryMaterialOutcomeContract fingerprintVersion=1 identityFields=13 direction=1 order=1 hiddenSemantic=3 duplicate=3 conflict=4 payloadMismatch=3 durablePreflight=2 states=7 wire=5 capacity=4 atomicImport=2 loadPrepared=1 confirmedRetry=1 applyIdempotency=2 clockRollback=2 dataOnly=1"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "configuration": "Debug",
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "4721f0d894cf504c7d8d5af59319441a874dff682551e61dd21335978b34355c",
+      "metadata": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "4721F0D894CF504C7D8D5AF59319441A874DFF682551E61DD21335978B34355C",
+        "CreatedUtc": "2026-09-12T22:35:13.6316002Z"
+      }
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "a8ef37b3606687d8e3ae0280204f6e3bccf92fa94b5c74242e8529f9c6c5f809",
+      "metadata": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "A8EF37B3606687D8E3AE0280204F6E3BCCF92FA94B5C74242E8529F9C6C5F809",
+        "CreatedUtc": "2026-09-12T22:35:36.3139438Z"
+      }
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "d87f9f299861ec944ce042fe389dfed7850afc2d7146295824a5b64ac35858e1",
+      "metadata": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "D87F9F299861EC944CE042FE389DFED7850AFC2D7146295824A5B64AC35858E1",
+        "CreatedUtc": "2026-09-12T22:35:38.5086660Z"
+      }
+    },
+    {
+      "configuration": "Release",
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "f35b1a6f0a23c6d27816e66b06078f6983620e53f6067a5490cf64fe92c0d02a",
+      "metadata": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "F35B1A6F0A23C6D27816E66B06078F6983620E53F6067A5490CF64FE92C0D02A",
+        "CreatedUtc": "2026-09-12T22:35:56.3101456Z"
+      }
+    },
+    {
+      "configuration": "Release",
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "77f7b40a4485c75b4636efab3d603aac0f0578aebb4f7f9b936eafd5422deb84",
+      "metadata": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "77F7B40A4485C75B4636EFAB3D603AAC0F0578AEBB4F7F9B936EAFD5422DEB84",
+        "CreatedUtc": "2026-09-12T22:36:07.0102716Z"
+      }
+    },
+    {
+      "configuration": "Release",
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "54e3f49aa5c07303dcaf934e94c420a617347dfdce1d5cc5057347f17bfe5158",
+      "metadata": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "54E3F49AA5C07303DCAF934E94C420A617347DFDCE1D5CC5057347F17BFE5158",
+        "CreatedUtc": "2026-09-12T22:36:08.9238989Z"
+      }
+    }
+  ],
+  "apiVerification": {
+    "exit": 0,
+    "assertions": 119,
+    "concurrentReads": 256,
+    "externalInternalAccessRejection": "CS0122",
+    "actualDllMetadataAssertions": 532
+  },
+  "persistence": {
+    "sync": 146,
+    "baselineSync": 146,
+    "campaignBehaviors": 36,
+    "baselineCampaignBehaviors": 36,
+    "baseline": "e40c92d7"
+  },
+  "limits": [
+    "Original memory-summary control is source detection plus explicit failure, not execution of the historical business workflow.",
+    "17 memory-summary assertions and 3 mutations exercise the helper; full ProcessMemorySummaryQueueAsync behavior is not proven.",
+    "Per-tick callback limit is not a complete job/record/time budget.",
+    "Input snapshots and source fingerprints for summary jobs remain incomplete."
+  ],
+  "notRun": [
+    "real Campaign/Mission",
+    "real provider API",
+    "real old save",
+    "live sub-MOD loading"
+  ],
+  "notPerformed": [
+    "push",
+    "game deployment",
+    "automation resume",
+    "default cutover",
+    "new production edits beyond upstream merge"
+  ],
+  "logFiles": [
+    {
+      "path": ".tmp/sync-build-20260913/build-Debug.log",
+      "sha256": "b899d65a0767d2eaf81daa153a2fd86e54d8abc9bd5bba8b241c29f451833817"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/build-Release.log",
+      "sha256": "132c9b6680d9dd3530c20a13a216b19ff707e2cfe7598772e4cb73a7b0a7b834"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/code-map-working.log",
+      "sha256": "dbbb2db545cc73aa91aae6c7837d07f433f4d4abb57d1eda2d40ad1409a4fd25"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/code-map.log",
+      "sha256": "a73b19c5bdea6b9bd102f3f7d236565fb239039693b561655d285927defa6c05"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/framework-skill.log",
+      "sha256": "956e8f87442e3f1d3ab423a0449e7887c135c685f122428094ce51736c9fa527"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/history-snapshot.log",
+      "sha256": "02d35f2a169187834096257a47b48598dbea04d4560d7959b68e68af8828978a"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/isolated-appdata-maintainer-skill.log",
+      "sha256": "73112f84ca01ae5fa120675322561aeef594181a0044cb5a29433b27be952ff0"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/maintainer-skill.log",
+      "sha256": "2238ea0d1fa920b90614c366e80b8b71d33ed1951bd321c39d85dd604339127b"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/memory-mutant-ignore-generation.log",
+      "sha256": "248f78b2c5a296c9c3f2078209c1289b167ebb46ea24ced0dd66c790f2a8b0a9"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/memory-mutant-ignore-owner.log",
+      "sha256": "854d59ef614ca3aa57352e684e673f47a4a7e916e364a9080fcbc80970e9f5ed"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/memory-mutant-unbounded-drain.log",
+      "sha256": "1f0f3311f07ed2a7e3f1ccfd14b612104c723b9dfe8e2206cabf1726c4fcc7bc"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/memory-original-source-only.log",
+      "sha256": "beb9171c73859162d24cad83607d6ef28354e463bf69d1a9c67f38f3c33a5429"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/memory-summary.log",
+      "sha256": "93c71bd03f99c93424cc04178050c01a057c1e9aaab544c91d2ecdd5d246e00c"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/memory-ui.log",
+      "sha256": "f75dbf56bc5bd35d6fb0e0557d603dbb7784b61de56156c2231d36bf638349af"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/MemoryCommitRecoveryContractTests.log",
+      "sha256": "152dfafe6ff982ecd43a56ade17e375b80299b5cbcc563f5e580151a22ae5cbe"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/native-history.log",
+      "sha256": "c35981484825f65173f91a751c4a404521c92e24b2bfc5ab83874fea3ad86fb5"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/persistence.log",
+      "sha256": "11ec9071b5eecb42d33d86ff20181281dd1ea011393489b650e4f91003f0c81d"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/public-api.log",
+      "sha256": "93be42871a84c30587c7ee5a9350c3503196a615c5a682a90d423612282f5bf4"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/team-ports.log",
+      "sha256": "655bfdb1466a37f015482987a0713cf896912abfe151e98adee4f47c0369f416"
+    },
+    {
+      "path": ".tmp/sync-build-20260913/WeeklyMemoryMaterialOutcomeContractTests.log",
+      "sha256": "34f7ae2d437e5596e5e16e0fcf62730fda3712c9c04a89c90a865f401319c728"
+    }
+  ]
+}

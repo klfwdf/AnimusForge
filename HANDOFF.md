@@ -1,6 +1,6 @@
 # AF 总 HANDOFF — 最新工程同步与本机构建（2026-09-13）
 
-## 当前入口：手动同步与构建，自动化仍暂停
+## 当前入口：最新工程已整合并通过本机构建，自动化仍暂停
 
 用户 2026-09-13 最新要求为“拉取最新项目，先读内置 HANDOFF，按双 SKILL 开始构建”。当前只手动完成最新工程整合与本机构建基线；旧文档的暂停记录保留为历史，不覆盖本轮新授权，也不构成推送、游戏部署或恢复定时任务的授权。
 
@@ -8,7 +8,7 @@
 - 已普通合并的输入：本地双 Skill/交接 `7f0fb904` 与远端 `origin/codex/af-main-refactor-continuation-20260831@bd2ed35f`；同步检查点 `09f52234`。仅 HANDOFF 有文字冲突，保留两边历史；不改写 Git 历史。
 - 运行源码与远端一致，最后生产变更为 `9040d184`（压缩记忆 post-await 主线程提交）。现在不是此前只 fetch 未落地的状态；本轮没有另外修改游戏算法/Prompt/存档/API。
 - 维护 Skill：`.claude/skills/animusforge-maintainer/SKILL.md`（0.1.1 + 本地协调适配）；专门框架 Skill：`.agents/skills/af-core-framework/SKILL.md`，根 AGENTS 协调读取，同 DLL internal/public 分层不变。
-- 当前任务与实际验证结果只维护在 [同步构建台账](docs/phase8/sync-build-progress-20260913.md)。下面旧进度、盘符、ahead/behind、未推送/暂停描述均绑定当时版本，不能作当前状态读取。
+- 普通合并 `4304f5bb` 已完成；本机 Debug/Release × 1.3/1.4/Bootstrap 六项构建与两套 Stage 通过，相关记忆/存档身份/实际 DLL 校验完成。准确证据和未验证边界只维护在 [同步构建台账](docs/phase8/sync-build-progress-20260913.md) 与 [验证 JSON](docs/audits/2026-09-13-sync-build-verification.json)。下面旧进度、盘符、ahead/behind、未推送/暂停描述均绑定当时版本，不能作当前状态读取。
 - 阶段 8 仍 NOT_DONE。实际 job/record 预算、真实业务链回归、三类 summary 输入快照/source fingerprint 仍待实现；完整框架/公共写 API/真实 Host 与旧存档验收未完成。仅构建通过不能关闭这些项目。
 - 两份 2026-09-06 用户草稿、本地专用简明 HANDOFF 保留；自动化 `af-7-8` 仍 PAUSED，不部署或操作真实存档，不自动推送。
 
