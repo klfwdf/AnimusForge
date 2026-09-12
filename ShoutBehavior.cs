@@ -20268,9 +20268,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<ConversationMessage> pendingNativeCurrentAfefFacts = nativePendingHistory.PendingFacts;
 		List<ConversationMessage> nativeHistoryMessages = nativePendingHistory.Messages;
 		bool useSharedDailyMemoryForNpcOpening = npcInitiatedOpening;
-		List<ConversationMessage> persistentMemoryRoleMessages = (useSharedDailyMemoryForNpcOpening || !hadNativeConversationSessionHistoryBeforeTurn)
-			? BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex)
-			: new List<ConversationMessage>();
+		List<ConversationMessage> persistentMemoryRoleMessages = await RunNativeConversationMainThreadFuncAsync(
+			"uncompressed_history_capture", nativeTargetLog, nativeTargetAgentIndex,
+			() => !IsNativeConversationAdmissionCurrent(admission, out _) ? null
+				: (useSharedDailyMemoryForNpcOpening || !hadNativeConversationSessionHistoryBeforeTurn)
+					? BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex)
+					: new List<ConversationMessage>(), (List<ConversationMessage>)null).ConfigureAwait(false);
+		if (persistentMemoryRoleMessages == null)
+		{
+			await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey,
+				nativePendingPlayerHistoryEventSequence, "uncompressed_history_unavailable").ConfigureAwait(false);
+			return "";
+		}
 		if (useSharedDailyMemoryForNpcOpening && persistentMemoryRoleMessages.Count > 0 && nativeHistoryMessages.Count > 0)
 		{
 			nativeHistoryMessages = RemoveNativeMessagesAlreadyInPersistentMemory(nativeHistoryMessages, persistentMemoryRoleMessages);

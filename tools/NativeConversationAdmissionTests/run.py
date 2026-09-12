@@ -8,12 +8,13 @@ selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForEx
 values={k:ex.declaration(s,v) for k,v in selectors.items()};body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 values['PREFIX']=body.split('\t\tLogger.Log("Logic", "[NativePerf] submit_start')[0];assert 'admission.ConversationToken' in values['PREFIX']
 # Independent wiring checks: unchanged UI existence condition, actual conversation-end invalidation,
-# no late target recapture and all nine pre-action guard sites, including the extracted capture.
+# no late target recapture and all ten pre-action guard sites, including the extracted capture.
 baseline=subprocess.check_output(['git','show','14dec2d7:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
 assert ex.declaration(s,'public static bool CanSubmitNativeConversationForExternal()')==ex.declaration(baseline,'public static bool CanSubmitNativeConversationForExternal()')
 pre=body.split('\t\tStopwatch nativeActionSw =')[0]
 capture=ex.declaration((ROOT/'ShoutBehavior.NativePreparation.cs').read_text(encoding='utf-8-sig'),'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
-assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==8
+assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==9
+assert '"uncompressed_history_capture"' in pre
 assert '"persisted_history_capture"' in pre and '"persisted_history_accept"' in pre
 assert capture.count('IsNativeConversationAdmissionCurrent(admission, out ')==1
 assert pre.count('() => CaptureNativeConversationPreparation(admission,')==1
@@ -56,7 +57,8 @@ if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNat
 (out/'CompletionStubs.cs').write_text((ROOT/'tools/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
-r=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')
+env=os.environ.copy();env.update(DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+r=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log='sourceSha256='+hashlib.sha256(s.encode()).hexdigest()+' admissionSha256='+hashlib.sha256(partial.encode()).hexdigest()+' mutation='+str(args.mutate)+'\n'+r.stdout+r.stderr
 (out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

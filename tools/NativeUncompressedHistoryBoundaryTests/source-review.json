@@ -1,0 +1,5 @@
+{
+  "baseline": "53ddb7d4",
+  "sha256": "4e30cd9f4e34596987bcf95a1c45383f4ebb32c0d85d67761b729a0422555e53",
+  "reason": "Actual 69-check call-site/dispatcher proof; original fails 13, guard/selection/rollback mutations fail 4/4/3. All other Shout source unchanged."
+}

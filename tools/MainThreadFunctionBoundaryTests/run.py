@@ -20,7 +20,8 @@ if not a.original:
  current=ex.declaration(restored,signature)
  review=json.loads((ROOT/'tools/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
  expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
- live_submit=ex.declaration(s,signature)
+ native_spec=importlib.util.spec_from_file_location('uncompressed_parity',ROOT/'tools/NativeUncompressedHistoryBoundaryTests/source_parity.py');native_parity=importlib.util.module_from_spec(native_spec);native_spec.loader.exec_module(native_parity)
+ live_submit=ex.declaration(native_parity.restore_uncompressed_source('ShoutBehavior.cs',s),signature)
  assert hashlib.sha256(live_submit.encode()).hexdigest()==expected and 'TeamModuleServices.' not in live_submit
  restored=restored.replace(current,ex.declaration(prior,signature),1)
  for signature in ['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(']:
@@ -42,6 +43,7 @@ out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'PreprocessFormatException.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
-r=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')
+env=os.environ.copy();env.update(DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+r=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

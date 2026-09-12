@@ -3,6 +3,8 @@ import json,hashlib,subprocess,importlib.util
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 def restore_snapshot_source(path,source):
+ native_spec=importlib.util.spec_from_file_location('uncompressed_parity',ROOT/'tools/NativeUncompressedHistoryBoundaryTests/source_parity.py');native_parity=importlib.util.module_from_spec(native_spec);native_spec.loader.exec_module(native_parity)
+ source=native_parity.restore_uncompressed_source(path,source)
  input_spec=importlib.util.spec_from_file_location('input_parity',ROOT/'tools/MemorySummaryInputBoundaryTests/source_parity.py');input_parity=importlib.util.module_from_spec(input_spec);input_spec.loader.exec_module(input_parity)
  source=input_parity.restore_input_source(path,source)
  spec=importlib.util.spec_from_file_location('snapshot_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
