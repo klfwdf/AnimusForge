@@ -30,6 +30,7 @@
 - `PASS`：当前源码基线 Debug/Release × 1.3/1.4/Bootstrap 六构建和两套 Stage；基线 history 852、main-thread 17、实际四 DLL 532 PASS。日志 `.tmp/goal-20260912/baseline-*`。
 - `OFFLINE_COMPLETE / LIVE_SAVE_PENDING`：压缩输入切片 `53ddb7d4`。net8/net472 各 137 项、六变异、相关回归、六构建/两 Stage、四 DLL 元数据和存档身份通过；详见 [验证记录](../audits/2026-09-12-memory-summary-input-verification.md)。
 - `IN_PROGRESS`：Native 剩余实时读取调查。
+- Native 下一原子切片：将 `PrepareNativeConversationPendingHistoryAsync` 后的未压缩历史读取纳入原 admission 主线程调度；保留主动开场/已有会话选择、AFEF、普通人物 memory ID 和去重语义。角色 prompt、persona、共享规则/lore 与后处理 prepare/complete 仍有实时读取，作为后续依赖继续处理，不能仅修一处就标 Native 完成。此记录为编辑前 intent。
 - `NOT_STARTED`：TTS、Courier 后续切片。
 - SDK：测试使用项目内 dotnet8.cmd 调用已安装 8.0.421；没有更改系统 SDK 或根 global.json。构建仍使用原脚本。
 - 可回滚生产提交：`53ddb7d4`；执行定向 revert 后需按影响面复验，不改写历史。
