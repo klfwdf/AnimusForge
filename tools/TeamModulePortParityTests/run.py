@@ -25,6 +25,9 @@ def read(path):
 
 
 def restore_reviewed_nonport_deltas(path, current, prior):
+    native_spec = importlib.util.spec_from_file_location('uncompressed_parity', ROOT / 'tools/NativeUncompressedHistoryBoundaryTests/source_parity.py')
+    native_parity = importlib.util.module_from_spec(native_spec); native_spec.loader.exec_module(native_parity)
+    current = native_parity.restore_uncompressed_source(path, current)
     input_spec = importlib.util.spec_from_file_location('input_parity', ROOT / 'tools/MemorySummaryInputBoundaryTests/source_parity.py')
     input_parity = importlib.util.module_from_spec(input_spec); input_spec.loader.exec_module(input_parity)
     current = input_parity.restore_input_source(path, current)
