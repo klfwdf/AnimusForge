@@ -25,8 +25,6 @@ namespace AnimusForge.Illustrator.Core
         public string SelectedQuality { get; }
         public string SelectedStyle { get; }
         public string CustomStylePrompt { get; }
-        public string ResponseFormat { get; }
-        public int RequestTimeoutSeconds { get; }
         public bool UseExactEndpointUrl { get; }
         public bool EnableReferenceImageForGeneration { get; }
         public string NegativePrompt { get; }
@@ -49,8 +47,6 @@ namespace AnimusForge.Illustrator.Core
             SelectedQuality = settings.SelectedQuality;
             SelectedStyle = settings.SelectedStyle;
             CustomStylePrompt = settings.CustomStylePrompt;
-            ResponseFormat = settings.SelectedResponseFormat;
-            RequestTimeoutSeconds = settings.RequestTimeoutSeconds;
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
             NegativePrompt = settings.NegativePrompt;

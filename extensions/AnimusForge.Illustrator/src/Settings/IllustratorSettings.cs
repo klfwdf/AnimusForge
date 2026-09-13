@@ -32,6 +32,8 @@ namespace AnimusForge.Illustrator
         public IllustratorSettings()
         {
             FetchModelList = RequestModelListFetch;
+            EditCustomStylePrompt = OpenCustomStylePromptEditor;
+            EditNegativePrompt = OpenNegativePromptEditor;
         }
 
         private bool _enableImageGeneration = true;
@@ -154,37 +156,6 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyInteger("生图请求超时秒数", 30, 600, "0 秒", HintText = "单次生图 HTTP 请求的最长等待时间。大尺寸/多参考图时可适当调大，默认 120 秒。", Order = 12, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public int RequestTimeoutSeconds { get; set; } = 120;
-
-        private static readonly List<string> _responseFormatOptions = new List<string> { "默认 (不传)", "b64_json (内嵌Base64)", "url (图片链接)" };
-        private Dropdown<string> _responseFormatDropdown;
-
-        [SettingPropertyDropdown("响应图片格式 (Response Format)", Order = 13, RequireRestart = false, HintText = "仅 /images/generations 通道生效。部分服务商只支持 b64_json 或只支持 url 返回；选“默认”时由服务端决定。若生成成功但解析不到图，可尝试切换此项。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public Dropdown<string> ResponseFormatDropdown
-        {
-            get
-            {
-                if (_responseFormatDropdown == null)
-                    _responseFormatDropdown = new Dropdown<string>(_responseFormatOptions, 0);
-                return _responseFormatDropdown;
-            }
-            set => _responseFormatDropdown = value;
-        }
-
-        public string SelectedResponseFormat
-        {
-            get
-            {
-                if (_responseFormatDropdown == null || _responseFormatDropdown.SelectedIndex <= 0) return "";
-                if (_responseFormatDropdown.SelectedIndex == 1) return "b64_json";
-                if (_responseFormatDropdown.SelectedIndex == 2) return "url";
-                return "";
-            }
-        }
-
         private static readonly List<string> _qualityOptions = new List<string>
         {
             "默认 (不传)",
@@ -262,16 +233,20 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyText("自定义画风提示词 (Style=提示词 时生效)", HintText = "仅当上方画风预设选“提示词”时生效。玩家可自由编辑的画风指令，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。例如：古典厚涂油画, 水彩淡彩插画, 暗黑史诗写实, 电影级光影, 铅笔素描。", Order = 10, RequireRestart = false)]
+        [SettingPropertyButton("自定义画风提示词 (Style=提示词 时生效)", Content = "打开编辑器", Order = 10, RequireRestart = false, HintText = "点击打开大文本编辑器，自由编辑画风指令。仅当上方画风预设选“提示词”时生效，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public Action EditCustomStylePrompt { get; set; }
+
         public string CustomStylePrompt { get; set; } = "";
 
         [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘、家族纹章与现场实景参考图将一并发送给生图模型（仅对话多模态生图通道生效，如 Gemini Image 系列）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public bool EnableReferenceImageForGeneration { get; set; } = true;
 
-        [SettingPropertyText("负面提示词 (Negative Prompt)", HintText = "填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。仅对对话多模态生图通道作为禁止指令注入提示词。", Order = 11, RequireRestart = false)]
+        [SettingPropertyButton("负面提示词 (Negative Prompt)", Content = "打开编辑器", Order = 11, RequireRestart = false, HintText = "点击打开大文本编辑器，填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。作为禁止指令注入提示词。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public Action EditNegativePrompt { get; set; }
+
         public string NegativePrompt { get; set; } = "";
 
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
@@ -320,6 +295,46 @@ namespace AnimusForge.Illustrator
         public string DirectorApiBaseUrl { get; set; } = "";
         public string DirectorApiKey { get; set; } = "";
         public string DirectorModelName { get; set; } = "";
+
+        private void OpenCustomStylePromptEditor()
+        {
+            try
+            {
+                string initialText = CustomStylePrompt ?? "";
+                DevTextEditorHelper.ShowLongTextEditor("编辑自定义画风提示词", "仅当画风预设选“提示词”时生效，内容作为【画风指令】注入所有生图通道的提示词末尾。", "例如：古典厚涂油画, 水彩淡彩插画, 暗黑史诗写实, 电影级光影, 铅笔素描。留空则不注入。", initialText, delegate (string input)
+                {
+                    CustomStylePrompt = input ?? "";
+                    if (Instance != null && !ReferenceEquals(Instance, this))
+                    {
+                        Instance.CustomStylePrompt = CustomStylePrompt;
+                    }
+                }, null, "保存", "返回");
+            }
+            catch (Exception ex)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[Illustrator] 打开画风提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+            }
+        }
+
+        private void OpenNegativePromptEditor()
+        {
+            try
+            {
+                string initialText = NegativePrompt ?? "";
+                DevTextEditorHelper.ShowLongTextEditor("编辑负面提示词", "内容作为禁止指令注入生图提示词，告诉模型画面中不要出现什么。", "例如：模糊, 变形, 多余手指, 现代物品, 水印文字, 低画质。留空则不注入。", initialText, delegate (string input)
+                {
+                    NegativePrompt = input ?? "";
+                    if (Instance != null && !ReferenceEquals(Instance, this))
+                    {
+                        Instance.NegativePrompt = NegativePrompt;
+                    }
+                }, null, "保存", "返回");
+            }
+            catch (Exception ex)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[Illustrator] 打开负面提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+            }
+        }
 
         private static void QueueInjectedButtonRefresh()
         {
