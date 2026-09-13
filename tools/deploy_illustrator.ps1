@@ -37,8 +37,8 @@ function Get-GameVersion {
 function Resolve-BannerlordApi {
     param([string]$Requested, [string]$Version)
     if ($Requested -ne "auto") { return $Requested }
-    if ($Version -match '^1\.3\.') { return "1.3" }
-    if ($Version -match '^1\.4\.') { return "1.4" }
+    if ($Version -match '^v?1\.3\.') { return "1.3" }
+    if ($Version -match '^v?1\.4\.') { return "1.4" }
     throw "Unsupported Bannerlord version '$Version'; pass -BannerlordApi explicitly."
 }
 
