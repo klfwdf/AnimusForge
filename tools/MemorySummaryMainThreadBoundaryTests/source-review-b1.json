@@ -839,19 +839,188 @@
         "runner": "57ba28f794194588a7fc751a72c0e76b96e0116540ea1bcbf0d4c2cf332b6537",
         "harness": "c960d1f09c4509157525dfb0b9e44205fecb0ee0970ed68229f2c3c8e6fa8cf7"
       },
-      "acceptedInverse": false
+      "acceptedInverse": false,
+      "counterexampleSummary": ".tmp/b1-sealing-mutate-20260914/summary.json",
+      "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
+      "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
+      "current": {
+        "pass": 30,
+        "fail": 0,
+        "exit": 0
+      },
+      "original": {
+        "revision": "62abfdb3",
+        "pass": 19,
+        "fail": 11,
+        "exit": 1
+      },
+      "redMutations": [
+        {
+          "name": "abandon-incomplete-same-day",
+          "exit": 1,
+          "pass": 29,
+          "fail": 1,
+          "failedCases": [
+            "same-day-no-job-resume"
+          ]
+        },
+        {
+          "name": "ignore-empty-probe",
+          "exit": 1,
+          "pass": 29,
+          "fail": 1,
+          "failedCases": [
+            "probe-empty-no-candidate-start"
+          ]
+        },
+        {
+          "name": "ignore-stale-queued-job",
+          "exit": 1,
+          "pass": 29,
+          "fail": 1,
+          "failedCases": [
+            "same-reference-indexed-key-change"
+          ]
+        },
+        {
+          "name": "ignore-owner-binding",
+          "exit": 1,
+          "pass": 29,
+          "fail": 1,
+          "failedCases": [
+            "owner-list-replacement"
+          ]
+        },
+        {
+          "name": "ignore-cleanup-identity",
+          "exit": 1,
+          "pass": 29,
+          "fail": 1,
+          "failedCases": [
+            "cleanup-same-ref-retarget"
+          ]
+        },
+        {
+          "name": "unbounded-metadata",
+          "exit": 1,
+          "pass": 28,
+          "fail": 2,
+          "failedCases": [
+            "finite-4096-convergence",
+            "same-tick-multiple-callers"
+          ]
+        },
+        {
+          "name": "unbounded-expensive",
+          "exit": 1,
+          "pass": 29,
+          "fail": 1,
+          "failedCases": [
+            "finite-48draft-convergence"
+          ]
+        },
+        {
+          "name": "ignore-deadline",
+          "exit": 1,
+          "pass": 24,
+          "fail": 6,
+          "failedCases": [
+            "expired-budget-then-sync",
+            "same-day-no-job-resume",
+            "same-reference-indexed-key-change",
+            "owner-list-replacement",
+            "owner-inserted-after-index",
+            "major-indexed-key-change"
+          ]
+        }
+      ]
     },
     "materials": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_materials.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/MaterialsHarness.cs.txt",
       "scope": "Actual event-source material index append/rebuild/current-check. 23 current cases, 62abfdb3 baseline 8 reds, seven --mutate reds. No live/game/save.",
       "observed": "MATERIALS_RESULT scenarios=23 failures=0; source-baseline-62abfdb3 failures=8; seven mutations EXIT=1",
-      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/current",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/current/manifest.json",
       "testSourceSha256": {
         "runner": "6c126a3f9ddaa0be2c4e2c3eb2d2e06263151df48b7d8e39b0e96bbe07e79aef",
         "harness": "0d61f265762b514fa447cc0dd0a075c46802e7d7bbb6174fcc1d7311dcc2bda2"
       },
-      "acceptedInverse": false
+      "acceptedInverse": false,
+      "counterexampleSummary": ".tmp/b1-adjacent-20260914/summary.json",
+      "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/<variant>/",
+      "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/<variant>/run.log",
+      "current": {
+        "scenarios": 23,
+        "failures": 0,
+        "exit": 0
+      },
+      "original": {
+        "revision": "62abfdb3",
+        "scenarios": 23,
+        "failures": 8,
+        "exit": 1
+      },
+      "redMutations": [
+        {
+          "name": "ignore-structure",
+          "exit": 1,
+          "failures": 3,
+          "failedCases": [
+            "live-source-clear-add",
+            "live-source-slot",
+            "live-source-exhausted-probe"
+          ]
+        },
+        {
+          "name": "ignore-map-binding",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "replaced-map-rebuild"
+          ]
+        },
+        {
+          "name": "ignore-source-binding",
+          "exit": 1,
+          "failures": 2,
+          "failedCases": [
+            "large-history-fresh-key-cost",
+            "live-source-replace-list"
+          ]
+        },
+        {
+          "name": "publish-partial",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "build-failure-no-half-publication"
+          ]
+        },
+        {
+          "name": "blank-last-wins",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "loaded-empty-key-first-match"
+          ]
+        },
+        {
+          "name": "omit-append-bind",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "large-history-fresh-key-cost"
+          ]
+        },
+        {
+          "name": "restore-fallback",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "large-history-fresh-key-cost"
+          ]
+        }
+      ]
     }
   },
   "testSourceHashNormalization": "utf8-no-bom-lf",
@@ -893,7 +1062,11 @@
         "probe-empty-no-candidate-start",
         "same-day-no-job-resume"
       ],
-      "acceptedInverse": false
+      "acceptedInverse": false,
+      "logs": [
+        "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log",
+        "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/abandon-incomplete-same-day/run.log"
+      ]
     }
   ],
   "wipIntegration": "UNREVIEWED_NOT_INVERSE_ACCEPTED",
@@ -902,7 +1075,7 @@
     "wipSourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
     "verifiedRevision": "62abfdb3039b64660f6aebce6ebd4af2a60e719a",
     "identity": "Symbols identify declarations. Line numbers are locating aids only and are not inverse keys.",
-    "note": "These hashes describe the paused WIP. They are not accepted inverse replacements. productionFileSha256 remains the last reviewed MyBehavior.cs at 62abfdb3.",
+    "note": "These hashes describe the paused WIP. They are not accepted inverse replacements. productionFileSha256 remains the last reviewed MyBehavior.cs at 62abfdb3. Counterexample pointers on these items are not inverse acceptance.",
     "declarations": [
       {
         "path": "MyBehavior.cs",
@@ -923,7 +1096,11 @@
         "targetedCases": [
           "large-history-fresh-key-cost"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/omit-append-bind/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/restore-fallback/run.log"
+        ]
       },
       {
         "path": "MyBehavior.cs",
@@ -945,7 +1122,11 @@
           "loaded-empty-key-first-match",
           "build-failure-no-half-publication"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/blank-last-wins/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/publish-partial/run.log"
+        ]
       },
       {
         "path": "MyBehavior.EventSourceMaterialIndex.cs",
@@ -972,7 +1153,12 @@
           "live-source-replace-list",
           "large-history-fresh-key-cost"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/ignore-structure/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/ignore-map-binding/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/ignore-source-binding/run.log"
+        ]
       },
       {
         "path": "MyBehavior.EventSourceMaterialIndex.cs",
@@ -994,7 +1180,11 @@
           "large-history-fresh-key-cost",
           "build-failure-no-half-publication"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/omit-append-bind/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/publish-partial/run.log"
+        ]
       },
       {
         "path": "MyBehavior.cs",
@@ -1016,7 +1206,11 @@
           "expired-budget-then-sync",
           "probe-empty-no-candidate-start"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-deadline/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log"
+        ]
       },
       {
         "path": "MyBehavior.MemorySealing.cs",
@@ -1031,6 +1225,7 @@
           "sealing"
         ],
         "mutations": [
+          "ignore-empty-probe",
           "ignore-stale-queued-job",
           "ignore-owner-binding",
           "ignore-cleanup-identity",
@@ -1039,6 +1234,7 @@
           "ignore-deadline"
         ],
         "targetedCases": [
+          "probe-empty-no-candidate-start",
           "same-reference-indexed-key-change",
           "owner-list-replacement",
           "cleanup-same-ref-retarget",
@@ -1046,7 +1242,16 @@
           "finite-48draft-convergence",
           "same-tick-multiple-callers"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-stale-queued-job/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-owner-binding/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-cleanup-identity/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/unbounded-metadata/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/unbounded-expensive/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-deadline/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log"
+        ]
       },
       {
         "path": "MyBehavior.cs",
@@ -1067,7 +1272,10 @@
         "targetedCases": [
           "same-day-no-job-resume"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/abandon-incomplete-same-day/run.log"
+        ]
       },
       {
         "path": "MyBehavior.cs",
@@ -1087,7 +1295,10 @@
         "targetedCases": [
           "probe-empty-no-candidate-start"
         ],
-        "acceptedInverse": false
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log"
+        ]
       }
     ]
   }
