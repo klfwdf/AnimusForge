@@ -1,3 +1,19 @@
+# AF 总 HANDOFF — B1-P1 步骤 A：sealing mutate 入口（2026-09-14）
+
+**用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
+
+- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。起始 detached HEAD `c43e3bc2`。远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
+- 本切片只改 `tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py:9-39`：给封存 suite 补 `--mutate`（与 `--original` 互斥）。**未改生产 C#、已审生产 hash、代码地图、一键脚本、审查表声明 hash。**
+- 8 个 mutate 都对准现有 30 例断言，坏实现必须 EXIT=1 且 `BUILD_PASS`：`abandon-incomplete-same-day`（same-day-no-job-resume）、`ignore-empty-probe`（probe-empty-no-candidate-start）、`ignore-stale-queued-job`（same-reference-indexed-key-change）、`ignore-owner-binding`（owner-list-replacement）、`ignore-cleanup-identity`（cleanup-same-ref-retarget）、`unbounded-metadata`（finite-4096-convergence / same-tick-multiple-callers）、`unbounded-expensive`（finite-48draft-convergence）、`ignore-deadline`（expired-budget 与若干 pause 夹具）。丢掉 5 个仍 30/0 的绿 mutate，不当红例。
+- 验证（`DOTNET_EXE=C:\Program Files\dotnet\dotnet.exe`）：current **30/0 EXIT=0**；`--original` `62abfdb3` **19/11 EXIT=1**（旧实现红例）；8 个 mutate 均为 **BUILD_PASS 且 EXIT=1**，无 EXIT=2。源码 hash `MyBehavior.cs` `03afca51…` / `MyBehavior.MemorySealing.cs` `63ef3f34…`。证据 `.tmp/b1-sealing-mutate-20260914/summary.json` 与 `.generated/sealing/<variant>/`。LIVE/SAVE=NOT_RUN。
+- Inverse 本机 `restore_memory_summary_source` 仍一次列出 9 个未审项。代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。
+
+回滚：定向 revert 本切片 `run_sealing.py` + HANDOFF 提交，保留其后用户改动，不 hard reset。
+
+下一步：仍停在 B1-P1 步骤 A；把 sealing/materials 反例证据挂到 9 个未审 WIP 符号上，不刷新已审生产 hash，不进 B2/B3。
+
+## 以下为历史交接，当前状态以上方入口为准
+
 # AF 总 HANDOFF — B1-P1 步骤 A：business 编译适配（2026-09-14）
 
 **用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
