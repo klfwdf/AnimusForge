@@ -1,3 +1,21 @@
+# AF 总 HANDOFF — B1-P1 步骤 A：business 编译适配（2026-09-14）
+
+**用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
+
+- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。起始 detached HEAD 为 `b78b10a9`（在 `6dd5fbd7` / 审查表 `2de78e5d` 之上）；远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
+- 本切片只改 business 测试适配，使抽出的 `TryRunCampaignMemoryMaintenance` 能编译。**未改生产 C#、审查表、inverse hash、代码地图、一键脚本**。`productionFileSha256` 与 `TryRunCampaignMemoryMaintenance` 的已审 `sha256` 仍绑 `62abfdb3`。
+- 未把 `MyBehavior.MemorySealing.cs` 编进 business：该 suite 的 past-draft seal 仍是 fixture；`--original` `e40c92d7` 与 current 共用同一 harness，旧 `TryRun` 仍调用两参 `TrySeal` / `HasPastDailyMemoryDrafts` stub。编入真实 sealing 会在 completion 用例里跑封存并需要大量额外抽取。
+- 测试替身（`BusinessHarness.cs.txt:85-89`）：`object _dailyMemorySealState`、`int _dailyMemoryDraftSealTargetDay`、`bool _dailyMemorySealCompletedPass`；`TrySealPastDailyMemoryDrafts(long, double, bool requirePendingProbe = false)` 仍 `return true`，不置 completed-pass（保持旧 `HasPast=false` 空队列不 `TryStart`）。`run_business.py:238` 默认 SDK 改为 `C:/Program Files/dotnet/dotnet.exe`，与 `run_sealing.py` 一致。
+- 生产定位（行号只是定位，身份是签名，源码仍是 WIP / 未审）：`TryRunCampaignMemoryMaintenance` `MyBehavior.cs:17741`；`TrySealPastDailyMemoryDrafts(..., requirePendingProbe)` `MyBehavior.cs:4814`；`_dailyMemoryDraftSealTargetDay` `MyBehavior.cs:1926`；`_dailyMemorySealState` / `_dailyMemorySealCompletedPass` `MyBehavior.MemorySealing.cs:13` / `:16`。
+- 验证（`DOTNET_EXE=C:\Program Files\dotnet\dotnet.exe`）：current **BUILD_PASS 36/0 EXIT=0**；`--original` `e40c92d7` **BUILD_PASS 4/32 EXIT=1**（新 36 例对旧实现，不是编译失败）；`--mutate maintenance-rescan` **BUILD_PASS 34/2 EXIT=1**（有效红例，不是 EXIT=2）。证据 `tools/MemorySummaryMainThreadBoundaryTests/.generated/business/{current,original,maintenance-rescan}/`。LIVE/SAVE=NOT_RUN。
+- Inverse / 审查表未重跑、未刷新。代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。封存与相邻 suite 数字仍以上一入口为准。
+
+回滚：定向 revert 本切片测试+HANDOFF 提交，保留其后用户改动，不 hard reset。
+
+下一步：仍停在 B1-P1 步骤 A；不要把 business 绿当成封存/WIP 已审或阶段 8 DONE。
+
+## 以下为历史交接，当前状态以上方入口为准
+
 # AF 总 HANDOFF — 恢复 B1-P1 步骤 A：WIP 审查表（2026-09-13）
 
 **用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**

@@ -82,8 +82,11 @@ namespace AnimusForge
         private int _lastMemoryMaintenanceObservedGameDay = -1;
         private bool busy;
         private bool IsDialogueOrLetterChainBusyForMemorySummary() => busy;
+        private object _dailyMemorySealState;
+        private int _dailyMemoryDraftSealTargetDay = -1;
+        private bool _dailyMemorySealCompletedPass;
         private bool HasPastDailyMemoryDrafts(int day) { Witness.Touch("past-draft-seam"); return false; }
-        private bool TrySealPastDailyMemoryDrafts(long start, double budget) { Witness.Touch("seal-seam"); return true; }
+        private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue, bool requirePendingProbe = false) { Witness.Touch("seal-seam"); _dailyMemorySealCompletedPass = true; return true; }
         private List<MemorySummaryJob> _memorySummaryQueue = new List<MemorySummaryJob>();
         private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
         private List<MemoryOverviewJob> _memoryOverviewQueue = new List<MemoryOverviewJob>();
