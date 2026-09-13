@@ -254,6 +254,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int MemoryCommitOriginGameDay = -1;
 
 		public string MemoryCommitOriginGameDate = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal DailyMemoryLine CopyForSummary()
+		{
+			var copy = (DailyMemoryLine)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class DailyMemoryDraft
@@ -277,6 +284,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<DailyMemoryLine> Lines = new List<DailyMemoryLine>();
 
 		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal DailyMemoryDraft CopyForSummary()
+		{
+			var copy = (DailyMemoryDraft)MemberwiseClone();
+			copy.Lines = Lines?.Select(x => x?.CopyForSummary()).ToList();
+			copy.WeeklyMaterialTriggers = WeeklyMaterialTriggers?.Select(x => x?.CopyForSummary()).ToList();
+			return copy;
+		}
 	}
 
 	private sealed class CompressedMemoryBlock
@@ -312,6 +328,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long CreatedUtcTicks;
 
 		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal CompressedMemoryBlock CopyForSummary()
+		{
+			var copy = (CompressedMemoryBlock)MemberwiseClone();
+			copy.Scenes = Scenes?.ToList();
+			copy.AfefLines = AfefLines?.ToList();
+			copy.WeeklyMaterialTriggers = WeeklyMaterialTriggers?.Select(x => x?.CopyForSummary()).ToList();
+			return copy;
+		}
 	}
 
 	private sealed class WeeklyMemoryMaterialTrigger
@@ -358,6 +384,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string OutcomeTurnFingerprint = "";
 
 		public long CreatedUtcTicks;
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal WeeklyMemoryMaterialTrigger CopyForSummary()
+		{
+			var copy = (WeeklyMemoryMaterialTrigger)MemberwiseClone();
+			copy.Tags = Tags?.ToList();
+			return copy;
+		}
 	}
 
 	private sealed class WeeklyMemoryMaterialEvaluation
@@ -386,6 +420,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int RetryCount;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MemorySummaryJob CopyForSummary()
+		{
+			var copy = (MemorySummaryJob)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MemoryRecallCandidate
@@ -426,6 +467,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long UpdatedUtcTicks;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MemoryOverviewState CopyForSummary()
+		{
+			var copy = (MemoryOverviewState)MemberwiseClone();
+			copy.IncludedBlockIds = IncludedBlockIds?.ToList();
+			return copy;
+		}
 	}
 
 	private sealed class MemoryOverviewJob
@@ -441,6 +490,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int RetryCount;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MemoryOverviewJob CopyForSummary()
+		{
+			var copy = (MemoryOverviewJob)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MemoryOverviewExecutionResult
@@ -474,6 +530,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long UpdatedUtcTicks;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MajorActionSummaryState CopyForSummary()
+		{
+			var copy = (MajorActionSummaryState)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MajorActionSummaryJob
@@ -489,6 +552,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int RetryCount;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MajorActionSummaryJob CopyForSummary()
+		{
+			var copy = (MajorActionSummaryJob)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MajorActionSummaryExecutionResult
@@ -584,6 +654,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<string> RelatedClanIds = new List<string>();
 
 		public List<string> RelatedKingdomIds = new List<string>();
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal NpcActionEntry CopyForSummary()
+		{
+			var copy = (NpcActionEntry)MemberwiseClone();
+			copy.RelatedHeroIds = RelatedHeroIds?.ToList();
+			copy.RelatedClanIds = RelatedClanIds?.ToList();
+			copy.RelatedKingdomIds = RelatedKingdomIds?.ToList();
+			return copy;
+		}
 	}
 
 	private sealed class NpcActionFacts
@@ -4900,16 +4980,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			// Validate only the bounded queues here; the full saved-memory owner scan is reserved for load finish.
-			CancelUnavailableHeroCompressionQueuedJobs("queue_start");
-			// Persist only runnable work so old terminal or malformed entries cannot survive until a later unrelated batch.
-			_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending).ToList());
-			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending).ToList());
-			// The queues were just filtered, so raw counts avoid another Hero registry lookup on this hot scheduler path.
-			bool hasMemoryJobs = _memorySummaryQueue.Count > 0;
-			bool hasMajorActionJobs = _npcMajorActionSummaryQueue.Count > 0;
-			bool hasOverviewJobs = _memoryOverviewQueue.Count > 0;
+			// Admission is O(1): eligibility can inspect every source record, so do it
+			// only in the guarded planner, never again on each maintenance/entry call.
+			bool hasMemoryJobs = (_memorySummaryQueue?.Count ?? 0) > 0;
+			bool hasMajorActionJobs = (_npcMajorActionSummaryQueue?.Count ?? 0) > 0;
+			bool hasOverviewJobs = (_memoryOverviewQueue?.Count ?? 0) > 0;
 			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs && ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
 			{
 				using (PerfProbe.Scope("MyBehavior.TryStartMemorySummaryQueue.EnqueueMemoryOverviewForAllCandidates"))
@@ -4923,17 +4998,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 						QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 					}
 				}
-				// Candidate creation validates owners itself; use its filtered queue counts without repeating the bounded scan.
-				hasMemoryJobs = _memorySummaryQueue.Count > 0;
-				hasMajorActionJobs = _npcMajorActionSummaryQueue.Count > 0;
-				hasOverviewJobs = _memoryOverviewQueue.Count > 0;
+				// This only enqueues candidate IDs; the existing budgeted scanner creates jobs later.
 			}
 			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs)
 			{
 				return;
 			}
 			_memorySummaryProcessing = true;
-			_ = ProcessMemorySummaryQueueAsync();
+			_ = ProcessMemorySummaryQueueAsync(forceOverviewCandidateScan);
 		}
 		catch (Exception ex)
 		{
@@ -4962,7 +5034,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private async Task ProcessMemorySummaryQueueAsync()
+	private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
@@ -4970,14 +5042,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 			List<object> queueItems = null;
 			int burstSize = 1;
 			var attemptedOverviewIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			bool accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+			bool accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 			{
-				QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 				CancelUnavailableHeroCompressionQueuedJobs("queue_execute");
-				var jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue).Where(HasMemorySummaryJobStillPending).ToList();
-				var majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue).Where(HasMajorActionSummaryJobStillPending).ToList();
+				// Filter before deduplication, as the former admission path did: an
+				// exhausted duplicate must not hide a later runnable entry of the same key.
+				var jobs = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending));
+				var majorJobs = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending));
 				var memoryIds = new HashSet<string>(jobs.Select(x => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
-				var pending = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where(HasMemoryOverviewJobStillPending).ToList();
+				var pending = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending));
+				if (jobs.Count + majorJobs.Count + pending.Count == 0)
+				{
+					// Raw admission may consist entirely of stale entries. Preserve the
+					// forced/throttled rescan after filtering, rather than losing the request.
+					if (ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
+					{
+						if (forceOverviewCandidateScan) QueueAllMemoryOverviewCandidatesForDeferredScan();
+						else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+					}
+				}
+				else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 				var overviewJobs = pending.Where(x => !memoryIds.Contains(NormalizeMemoryHeroId(x.HeroId))).ToList();
 				_memorySummaryQueue = jobs;
 				_npcMajorActionSummaryQueue = majorJobs;
@@ -5001,7 +5085,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			// One accepted business result per dispatched operation; no whole-result foreach inside a callback.
 			foreach (var result in results)
 			{
-				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 				{
 					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
 					if (result.Success) { if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++; }
@@ -5016,7 +5100,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (var result in majorResults)
 			{
-				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 				{
 					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
 					if (result.Success) { if (ApplyMajorActionSummarySuccess(result.Job, result.State)) appliedMajor++; }
@@ -5034,7 +5118,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (var result in overviewResults)
 				{
-					accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+					accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 					{
 						if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
 						if (result.Success) { if (ApplyMemoryOverviewSuccess(result.Job, result.State)) appliedOverview++; }
@@ -5049,7 +5133,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				if (wave == 1) break;
 				List<object> extra = null;
-				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 				{
 					QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 					extra = SanitizeMemoryOverviewQueue(_memoryOverviewQueue)
@@ -5064,7 +5148,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
 			}
-			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+			await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 			{
 				_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
 				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending).ToList());
@@ -5080,7 +5164,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
 			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message, runtimeGeneration);
+				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + ex.Message, runtimeGeneration);
 		}
 		finally
 		{
@@ -17807,8 +17891,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			currentDay = 0;
 		}
-		// Queues are small and bounded; check runnable work so exhausted stale items cannot trigger per-tick maintenance.
-		bool hasQueuedWork = (_memorySummaryQueue != null && _memorySummaryQueue.Any(HasMemorySummaryJobStillPending)) || (_npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Any(HasMajorActionSummaryJobStillPending)) || (_memoryOverviewQueue != null && _memoryOverviewQueue.Any(HasMemoryOverviewJobStillPending));
+		// Raw queued work is drained/filtered once by the guarded planner. Do not
+		// re-clone overview blocks or rescan daily text on every campaign tick.
+		bool hasQueuedWork = (_memorySummaryQueue?.Count ?? 0) > 0 || (_npcMajorActionSummaryQueue?.Count ?? 0) > 0 || (_memoryOverviewQueue?.Count ?? 0) > 0;
 		if (!hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay)
 		{
 			return;

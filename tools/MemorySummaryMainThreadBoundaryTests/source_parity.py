@@ -18,6 +18,15 @@ def restore_memory_summary_source(path, source):
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
     baseline = subprocess.check_output(['git', 'show', review['baseline'] + ':' + path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
+    # The inverse is permitted only for the exact separately tested harness/runner.
+    # It must not turn an arbitrary new assertion deletion into an old-owner PASS.
+    assert review.get('testSourceHashNormalization') == 'utf8-no-bom-lf', 'Missing test source normalization'
+    labels = {label for item in review['declarations'] for label in item['evidence']}
+    for label in labels:
+        evidence = review['evidence'][label]
+        for role in ('runner', 'harness'):
+            text = (ROOT / evidence[role]).read_text(encoding='utf-8-sig')
+            assert hashlib.sha256(text.encode()).hexdigest() == evidence['testSourceSha256'][role], 'Unreviewed B1 evidence source: ' + evidence[role]
     restored = source
     for item in review['declarations']:
         assert item['path'] == path and item['evidence'], 'B1 review entry lacks path or scoped evidence'

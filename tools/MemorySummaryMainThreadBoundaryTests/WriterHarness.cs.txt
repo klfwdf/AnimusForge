@@ -65,6 +65,9 @@ namespace AnimusForge
     }
     public partial class MyBehavior
     {
+  // Timing belongs to the helper suite; keep count/functional scenarios independent of JIT/load.
+  private static double GetDailyMaintenanceFrameBudgetMs() => 1000.0;
+
         public static MyBehavior Instance { get; set; }
         public readonly List<WriteCall> Calls = new List<WriteCall>();
         public int OffThreadWrites;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,23 @@ public partial class MyBehavior
     private static T CloneMemorySummarySource<T>(T value)
     {
         if (ReferenceEquals(value, null)) return default(T);
-        return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(value));
+        object copy = value switch
+        {
+            DailyMemoryLine item => item.CopyForSummary(),
+            DailyMemoryDraft item => item.CopyForSummary(),
+            CompressedMemoryBlock item => item.CopyForSummary(),
+            WeeklyMemoryMaterialTrigger item => item.CopyForSummary(),
+            MemorySummaryJob item => item.CopyForSummary(),
+            MemoryOverviewJob item => item.CopyForSummary(),
+            MajorActionSummaryJob item => item.CopyForSummary(),
+            MemoryOverviewState item => item.CopyForSummary(),
+            MajorActionSummaryState item => item.CopyForSummary(),
+            NpcActionEntry item => item.CopyForSummary(),
+            List<NpcActionEntry> items => items.Select(x => x?.CopyForSummary()).ToList(),
+            List<CompressedMemoryBlock> items => items.Select(x => x?.CopyForSummary()).ToList(),
+            _ => throw new ArgumentException("Unsupported memory summary data model: " + typeof(T).Name)
+        };
+        return (T)copy;
     }
 
     private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation)
@@ -51,13 +68,13 @@ public partial class MyBehavior
             || !ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this)) return null;
 
         var input = new MemorySummaryInput { Generation = generation, QueueJob = queueJob };
-        string sourceJson;
+        object sourceData;
         if (queueJob is MemorySummaryJob daily)
         {
             if (_memorySummaryQueue == null || !_memorySummaryQueue.Contains(daily)
                 || !HasMemorySummaryJobStillPending(daily)) return null;
             var source = FindMemoryDraft(daily);
-            sourceJson = JsonConvert.SerializeObject(new { Job = daily, Draft = source });
+            sourceData = new { Job = daily, Draft = source };
             input.Job = CloneMemorySummarySource(daily);
             input.Draft = CloneMemorySummarySource(source);
             input.HeroId = NormalizeMemoryHeroId(daily.HeroId);
@@ -72,7 +89,7 @@ public partial class MyBehavior
             input.HeroId = NormalizeMemoryHeroId(major.HeroId);
             _npcMajorActions.TryGetValue(input.HeroId, out var actions);
             var state = GetMajorActionSummaryState(input.HeroId);
-            sourceJson = JsonConvert.SerializeObject(new { Job = major, Actions = actions, State = state });
+            sourceData = new { Job = major, Actions = actions, State = state };
             input.Job = CloneMemorySummarySource(major);
             // The existing sanitizers may repair their arguments. Only detached copies enter them.
             input.Actions = SanitizeNpcActionEntries(CloneMemorySummarySource(actions), keepOnlyRecentWindow: false);
@@ -92,7 +109,7 @@ public partial class MyBehavior
             input.HeroId = NormalizeMemoryHeroId(overview.HeroId);
             _compressedMemoryBlocks.TryGetValue(input.HeroId, out var blocks);
             var state = GetMemoryOverviewState(input.HeroId);
-            sourceJson = JsonConvert.SerializeObject(new { Job = overview, Blocks = blocks, State = state });
+            sourceData = new { Job = overview, Blocks = blocks, State = state };
             input.Job = CloneMemorySummarySource(overview);
             var all = SanitizeCompressedMemoryBlocks(CloneMemorySummarySource(blocks));
             input.Overview = CloneMemorySummarySource(state) ?? new MemoryOverviewState
@@ -110,16 +127,32 @@ public partial class MyBehavior
         // Prompt text includes the effective writing requirements, metadata and rendered facts.
         // The extra fields are parse-time dependencies (including otherwise invisible identity changes).
         var currentHero = FindHeroById(input.HeroId);
-        string identity = JsonConvert.SerializeObject(new
+        object identity = new
         {
             HeroName = currentHero?.Name?.ToString(),
             Trust = RewardSystemBehavior.Instance?.GetEffectiveTrust(currentHero) ?? 0,
             PlayerHistoryRendering = PlayerNotorietyBehavior.CaptureMemorySummaryHistoryRenderingIdentity(),
-            input.SystemPrompt, input.UserPrompt, Source = sourceJson
-        });
-        using (var hash = SHA256.Create())
-            input.SourceFingerprint = BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(identity))).Replace("-", "");
+            input.SystemPrompt, input.UserPrompt, Source = sourceData
+        };
+        input.SourceFingerprint = ComputeMemorySummaryFingerprint(identity);
         return input;
+    }
+
+    // Stream a single framed object into the digest. Avoid serializing a source
+    // to a giant string only to escape/encode that string again inside identity.
+    private static string ComputeMemorySummaryFingerprint(object identity)
+    {
+        using (var hash = SHA256.Create())
+        using (var crypto = new CryptoStream(Stream.Null, hash, CryptoStreamMode.Write))
+        {
+            using (var text = new StreamWriter(crypto, new UTF8Encoding(false), 4096, leaveOpen: true))
+            using (var json = new JsonTextWriter(text))
+            {
+                JsonSerializer.CreateDefault().Serialize(json, identity);
+            }
+            crypto.FlushFinalBlock();
+            return BitConverter.ToString(hash.Hash).Replace("-", "");
+        }
     }
 
     private bool IsMemorySummaryInputCurrent(MemorySummaryInput input)

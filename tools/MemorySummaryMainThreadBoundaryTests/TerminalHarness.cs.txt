@@ -1,0 +1,277 @@
+// Terminal integration fixtures: actual Product/Input own source writes and acceptance.
+// Game identity/time and downstream public/weekly effects remain controlled boundaries.
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using AnimusForge.Refactor.Runtime;
+using AnimusForge.Refactor.Contracts;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library {
+ public sealed class InformationMessage { public string Text; public InformationMessage(string text){Text=text;} }
+ public static class InformationManager { public static void DisplayMessage(InformationMessage message) { AnimusForge.TerminalProbe.Event("ui:"+message.Text); } }
+}
+namespace TaleWorlds.CampaignSystem.Settlements { public sealed class Settlement { public static Settlement CurrentSettlement=new(); } }
+namespace TaleWorlds.CampaignSystem {
+ public readonly struct CampaignTime {
+  public static CampaignTime Now { get { AnimusForge.Probe.Live("campaign-time"); return new(); } }
+  public double ToDays => 10;
+  public override string ToString()=>"Summer 10";
+ }
+}
+namespace AnimusForge.Refactor.Runtime {
+ static class FeatureBridgeRuntime { public static bool IsEnabled(string id){AnimusForge.Probe.Live("feature-enabled");return true;} }
+ static class FeatureBridgeIds { public const string MemorySocialReports="memory-social-reports"; }
+}
+namespace AnimusForge {
+ static class TerminalProbe {
+  public static ConcurrentQueue<string> Events=new();
+  public static string FailSaveId,FailRecentSaveId,FailEvent;
+  public static void Event(string name){Probe.Live(name);Events.Enqueue(name);if(FailEvent==name)throw new InvalidOperationException("controlled Apply tail failure");}
+  public static int Count(string name)=>Events.Count(x=>x==name);
+  public static void Reset(){Events.Clear();FailSaveId=null;FailRecentSaveId=null;FailEvent=null;}
+ }
+ public static partial class PlayerNotorietyBehavior {
+  public static void NoteConversationLineForExternal(string id)=>TerminalProbe.Event("note:"+id);
+  public static void RecordPublicMemoryForExternal(Hero hero,Settlement settlement,string material,string publicity,string reason,int day,string date)=>TerminalProbe.Event("public:"+hero.Id);
+ }
+ public static class ShoutBehavior { public static void ClearNativeConversationSessionHistoryForExternal(Hero hero,object character,string name,int day)=>TerminalProbe.Event("native-clear:"+hero.Id); }
+ public partial class MyBehavior {
+  bool _memorySummaryProcessing;
+  HashSet<string> _dirtyMemoryOverviewIds=new();
+  List<WeeklyMemoryMaterialTrigger> _pendingWeeklyMemoryMaterialTriggers=new();
+  ConcurrentQueue<MemorySummaryExecutionResult> terminalCompleted=new();
+  ConcurrentQueue<MajorActionSummaryExecutionResult> terminalMajorCompleted=new();
+  ConcurrentQueue<MemoryOverviewExecutionResult> terminalOverviewCompleted=new();
+  static void TerminalEvent(string value)=>TerminalProbe.Event(value);
+  static void BeforeTerminalSave(string id){TerminalEvent("save:"+id);if(TerminalProbe.FailSaveId==id)throw new InvalidOperationException("controlled terminal pre-save failure");}
+  static int GetCurrentHourOfDaySafeForPrompt(){Probe.Live("hour");return 11;}
+  int GetOrStartActiveNativeConversationMemorySessionId(){Probe.Live("native-session");return 20;}
+  static string BuildCurrentMemorySessionKey(int scene,int dialogue){Probe.Live("session-key");return scene>=0?"scene:"+scene:"dialogue:"+dialogue;}
+  static void LogNonHeroMemoryTrace(string text)=>TerminalEvent("nonhero-trace");
+  void CancelUnavailableHeroCompressionQueuedJobs(string reason)=>TerminalEvent("cancel-scan");
+  void CancelUnavailableHeroCompressionWorkById(string id,string reason)=>TerminalEvent("cancel:"+id);
+  static int GetMemorySummaryRequestsPerMinuteFromSettings()=>12;
+  bool ShouldScanMemoryOverviewCandidates(bool force){TerminalEvent("overview-scan-admission");return false;}
+  void QueueAllMemoryOverviewCandidatesForDeferredScan()=>throw new InvalidOperationException("Full owner scan is outside this terminal fixture");
+  void EnqueueMemoryOverviewCandidateScanId(string id)=>TerminalEvent("overview-plan:"+id);
+  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);
+  void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block)=>TerminalEvent("weekly-public:"+block.HeroId);
+  void RecordWeeklyMemoryMaterialForBlock(CompressedMemoryBlock block)=>TerminalEvent("weekly-block:"+block.HeroId);
+  void PublishMemoryFailureNotice(string title,string text,long generation)=>TerminalProbe.Events.Enqueue("popup:"+title+":"+text);
+  static MyBehavior TerminalOwner(){TerminalProbe.Reset();return Owner();}
+  Task StartTerminal(){_memorySummaryProcessing=true;return Task.Run(()=>ProcessMemorySummaryQueueAsync());}
+  MemorySummaryExecutionResult Completed(string id)=>terminalCompleted.Single(x=>x.Job.HeroId==id);
+  List<DailyMemoryLine> Lines(string id)=>_dailyMemoryDrafts[id].Single(x=>x.GameDayIndex==10).Lines;
+  static ApiCallResult Failed()=>new(){Success=false,ErrorMessage="old terminal failure"};
+  bool Write(string id,bool afef=false,bool failSave=false){
+   TerminalProbe.FailSaveId=failSave?id:null;
+   try { return AppendDailyMemoryLineById(id,"NPC "+id,afef?"AFEF":"player",afef?"[AFEF玩家行为补充] new confirmed fact":"new terminal dialogue",afef,!afef,7,23,"Target NPC"); }
+   finally {TerminalProbe.FailSaveId=null;}
+  }
+  void Pending(string id){var trigger=Trigger(id);trigger.StableKey="pending-terminal";trigger.SceneSessionId=7;trigger.DialogueSessionId=-1;_pendingWeeklyMemoryMaterialTriggers.Add(trigger);}
+  Dictionary<string,List<DialogueDay>> _dialogueHistory=new();
+  static void BeforeRecentTerminalSave(string id){TerminalEvent("save-recent:"+id);if(TerminalProbe.FailRecentSaveId==id)throw new InvalidOperationException("controlled Recent pre-save failure");}
+  static bool IsActiveSceneSessionHistoryLine(string line)=>throw new InvalidOperationException("Scene mission admission is outside this direct-history terminal fixture");
+  static void LogNonHeroMemoryTrace(Func<string> text)=>TerminalEvent("nonhero-trace");
+  int CountNonHeroDialogueHistoryOwners()=>_dialogueHistory.Keys.Count(IsNonHeroMemoryId);
+  int CountNonHeroDailyDraftOwners()=>_dailyMemoryDrafts.Keys.Count(IsNonHeroMemoryId);
+  string BuildNonHeroMemorySampleIds()=>string.Join(",",_dialogueHistory.Keys.Where(IsNonHeroMemoryId).Take(5));
+  WeeklyMemoryMaterialOutcomeLedger _weeklyActionOutcomeLedger=new();
+  int _weeklyActionOutcomeLoadImportConfirmed=1;
+  long _weeklyActionOutcomeLoadedGeneration=SaveRuntimeGuard.CurrentGeneration;
+  int _hasWeeklyActionOutcomePublishWork;
+  long _weeklyActionOutcomeNextAttemptUtcTicks;
+  WeeklyMemoryMaterialOutcomeReceipt WeeklyReceipt(string id,bool confirm=true){
+   var action=new EconomyRewardDebtAction(EconomyRewardDebtActionKind.GiveAsset,"ACTION:GIVE_ASSET","grain","grain","2",string.Empty,string.Empty,string.Empty,string.Empty,EconomyRewardDebtCapabilityIds.GiveAsset);
+   Check(WeeklyMemoryMaterialFingerprintHelper.TryCreateCandidate("terminal-request-"+id,"terminal-trace",InteractionChannel.NativeConversation,"scene:7",id,SaveRuntimeGuard.CaptureGeneration(),SaveRuntimeGuard.CaptureGeneration(),"",10,11,"town",7,-1,23,new[]{action},out var candidate,out var error),"weekly candidate fixture invalid: "+error);
+   Check(WeeklyMemoryMaterialFrozenPayload.TryCreate(id,"NPC "+id,"Summer 10","empire","town",new[]{new WeeklyMemoryMaterialAtom(0,EconomyRewardDebtActionKind.GiveAsset,200,"2")},200,"confirmed terminal material",out var payload,out error),"weekly payload fixture invalid: "+error);
+   var ledger=EnsureWeeklyActionOutcomeLedger();Check(ledger.Prepare(candidate,payload,out error)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"real weekly ledger prepare failed: "+error);
+   if(confirm)Check(ledger.Complete(candidate.ReceiptId,candidate.CandidateHash,WeeklyMemoryMaterialOutcomeState.Confirmed,"",out error)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"real weekly completion failed: "+error);
+   return ledger.GetEntries().Single();
+  }
+  static WeeklyMemoryMaterialOutcomeOperationStatus PublishWeekly(WeeklyMemoryMaterialOutcomeReceipt receipt)=>PublishWeeklyActionOutcomeForExternal(receipt.ReceiptId,receipt.CandidateHash);
+  static void WeeklyInFlight(bool failure,bool afterParse,bool failSave){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");if(afterParse)b.Seed("daily","b");var receipt=b.WeeklyReceipt("a");var task=b.StartTerminal();b.Until(()=>b.requests.Count==(afterParse?2:1));
+   Request held=afterParse?b.requests.Last():b.requests.Single();
+   if(afterParse)b.Until(()=>b.terminalCompleted.Any(x=>x.Job.HeroId=="a"),()=>{foreach(var r in b.requests)if(!ReferenceEquals(r,held)&&!r.Done.Task.IsCompleted)Release(r,failure?Failed():Ok(r.Area));foreach(var d in b.delays)d.Done.TrySetResult(true);});
+   if(afterParse)Check(!b.Completed("a").IsObsolete&&b.Completed("a").Success==!failure&&!task.IsCompleted,"weekly B window not established");
+   TerminalProbe.FailSaveId=failSave?"a":null;WeeklyMemoryMaterialOutcomeOperationStatus status;try{status=PublishWeekly(receipt);}finally{TerminalProbe.FailSaveId=null;}
+   Check(status==(failSave?WeeklyMemoryMaterialOutcomeOperationStatus.NotReady:WeeklyMemoryMaterialOutcomeOperationStatus.Accepted),"weekly caller falsely acknowledged failed receipt");
+   string key="weekly_outcome:"+receipt.ReceiptId+":"+receipt.PayloadHash;
+   var draft=b._dailyMemoryDrafts["a"].Single();Check(HasExactWeeklyActionOutcomeTrigger(draft,receipt,key)&&draft.Lines.Count==2,"weekly actual marker/readback changed dialogue lines or lost provenance");
+   Check(receipt.State==(failSave?WeeklyMemoryMaterialOutcomeState.Confirmed:WeeklyMemoryMaterialOutcomeState.Applied),"weekly ledger reported wrong pre-retry state");
+   if(failSave)Check(PublishWeekly(receipt)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"weekly retry failed to acknowledge existing exact in-place trigger");
+   Check(PublishWeekly(receipt)==WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate&&draft.WeeklyMaterialTriggers.Count(x=>x.StableKey==key)==1&&TerminalProbe.Count("save:a")==1,"weekly duplicate reattached or rewrote terminal data");
+   Release(held,afterParse?Ok(held.Area):failure?Failed():Ok(held.Area));b.Finish(task);
+   if(afterParse){Check(b.HasCompressedMemoryBlock("b",10)&&b.requests.Count==(failure?4:2),"weekly partial independent B result lost");AssertRejected(b,job,1);}
+   else{Check(b.Completed("a").IsObsolete&&b.requests.Count==1,"weekly nested source did not reject old response");AssertRejected(b,job);}
+  }
+  static void WeeklyNoFalseReceipt(string mode){
+   var b=TerminalOwner();if(mode!="missing-draft")b.Seed("daily","a");else b.heroes["a"]=new Hero{Id="a",Label="NPC a"};var receipt=b.WeeklyReceipt("a",mode!="prepared");
+   if(mode=="conflicting-readback"){
+    var frozen=receipt.Payload;var labels=frozen.Atoms.Select(x=>x.Label).ToList();b.AddWeeklyMemoryMaterialTriggerToDraft(b._dailyMemoryDrafts["a"].Single(),new WeeklyMemoryMaterialTrigger{MemoryId="a",NpcName=frozen.NpcName,GameDayIndex=10,GameDate="Summer 10",SceneSessionId=receipt.SceneSessionId,DialogueSessionId=receipt.DialogueSessionId,TargetAgentIndex=receipt.TargetAgentIndex,FootholdKingdomId=frozen.FootholdKingdomId,FootholdSettlementId=frozen.FootholdSettlementId,Tags=labels,NormalizedTagText=string.Join("\n",labels),EstimatedValueDenars=frozen.EstimatedValueDenars,TriggerReason=frozen.Reason,StableKey="weekly_outcome:"+receipt.ReceiptId+":"+receipt.PayloadHash,OutcomeReceiptId=receipt.ReceiptId,OutcomeCandidateHash=receipt.CandidateHash,OutcomePayloadHash=receipt.PayloadHash,OutcomeActionFingerprint=new string('A',64),OutcomeTurnFingerprint=receipt.TurnFingerprint,CreatedUtcTicks=receipt.ConfirmedUtcTicks});
+   }
+   Check(PublishWeekly(receipt)==WeeklyMemoryMaterialOutcomeOperationStatus.NotReady,"weekly "+mode+" falsely acknowledged success");Check(receipt.State==(mode=="prepared"?WeeklyMemoryMaterialOutcomeState.Prepared:WeeklyMemoryMaterialOutcomeState.Confirmed),"weekly failed publication advanced ledger");
+   if(mode!="prepared")Check(b._hasWeeklyActionOutcomePublishWork==1&&b._weeklyActionOutcomeNextAttemptUtcTicks>0,"weekly unconfirmed publication lost retry");MainReads();
+  }
+  InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger=new();
+  static string GetCurrentGameDateTextSafe()=>"Summer 10";
+  void PruneEvictedInteractionMemoryRecoveryMarkers()=>TerminalEvent("recovery-retention-boundary");
+  void ScheduleInteractionMemoryRecoveryRetry()=>TerminalEvent("recovery-retry-boundary");
+  void RefreshInteractionMemoryRecoveryWorkFlag()=>TerminalEvent("recovery-refresh-boundary");
+  InteractionMemoryRecoveryWorkItem RecoveryWork(string id,bool afef,bool recentOnly=false,bool withRecent=false){
+   var seed=new InteractionMemoryRecoverySeed{CommitId="terminal-recovery-"+id,SessionId="scene:7",SubjectId=id,NpcName="NPC "+id,RuntimeGeneration=SaveRuntimeGuard.CaptureGeneration(),SaveGeneration=SaveRuntimeGuard.CaptureGeneration(),OriginGameDay=10,OriginGameDate="Summer 10",OriginGameHour=11,OriginScene="Town",DailyStorageDay=10,DailyStorageDate="Summer 10",SceneSessionId=7,MemorySessionKey="scene:7",Components=new[]{new InteractionMemoryRecoveryComponentSeed{Part=afef?"fact":"user",DailySpeaker=afef?"AFEF":"player",DailyText=recentOnly?"":afef?"[AFEF玩家行为补充] recovery fact":"recovery dialogue",RecentText=recentOnly||withRecent?(afef?"[AFEF玩家行为补充] recovery fact":"recovery dialogue"):"",IsAfef=afef,IsLlmDialogue=!afef}}};
+   var ledger=EnsureInteractionMemoryRecoveryLedger();Check(ledger.Begin(seed,out var recoveryId,out var error)==InteractionMemoryRecoveryBeginStatus.Began,"recovery seed rejected: "+error);
+   Check(ledger.TryGetNextWorkFor(recoveryId,out var work)&&work.Target==(recentOnly?InteractionMemoryRecoveryTarget.Recent:InteractionMemoryRecoveryTarget.Daily),"recovery did not select requested actual work");return work;
+  }
+  static void RecoveryDuringProvider(bool failure,bool afef){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");b.Pending("a");var work=b.RecoveryWork("a",afef);var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
+   Check(b.TryApplyInteractionMemoryRecoveryWork(work),"actual recovery writer/marker did not acknowledge publish");Check(b.HasDailyInteractionMemoryMarker(work,out var conflict)&&!conflict,"real recovery marker readback failed");
+   var line=b.Lines("a").Last();Check(b.Lines("a").Count==3&&line.MemoryCommitId==work.RecoveryId&&line.MemoryCommitHash==work.PayloadHash&&line.MemoryCommitPart==work.Part&&line.IsAfef==afef,"recovery terminal provenance lost");
+   Check(b._pendingWeeklyMemoryMaterialTriggers.Count==1&&TerminalProbe.Count("note:a")==0,"recovery replayed live-only weekly/Notoriety effects");
+   Check(b.TryApplyInteractionMemoryRecoveryWork(work)&&b.Lines("a").Count==3&&TerminalProbe.Count("save:a")==1,"duplicate recovery rewrote Daily source");
+   Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));b.Finish(task);Check(b.Completed("a").IsObsolete&&b.requests.Count==1,"recovery source mutation did not reject old response");AssertRejected(b,job);
+  }
+  static void RecoveryClonePreSaveFailure(){
+   var b=TerminalOwner();b.Seed("daily","a");b.Pending("a");var work=b.RecoveryWork("a",false);var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);string before=JsonConvert.SerializeObject(b._dailyMemoryDrafts);
+   TerminalProbe.FailSaveId="a";bool applied;try{applied=b.TryApplyInteractionMemoryRecoveryWork(work);}finally{TerminalProbe.FailSaveId=null;}
+   Check(!applied&&before==JsonConvert.SerializeObject(b._dailyMemoryDrafts)&&!b.HasDailyInteractionMemoryMarker(work,out _),"failed detached recovery mutated original or acknowledged a marker");
+   Check(b.EnsureInteractionMemoryRecoveryLedger().PendingCount==1&&TerminalProbe.Count("recovery-retry-boundary")==1,"unpublished recovery falsely completed or lost retry");
+   Release(b.requests.Single(),Ok("CompressedMemory"));b.Finish(task);Check(!b.Completed("a").IsObsolete&&b.HasCompressedMemoryBlock("a",10)&&TerminalProbe.Count("ApplyMemorySummarySuccess")==1,"unchanged source invalidated by unpublished detached recovery");
+   Check(TerminalProbe.Count("note:a")==0&&b._pendingWeeklyMemoryMaterialTriggers.Count==1,"failed recovery consumed unrelated live effects");Check(!b._memorySummaryProcessing,"recovery control leaked processing");MainReads();
+  }
+  static void RecentOnly(bool failure,bool failSave){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");b._dialogueHistory["a"]=new(){new DialogueDay{GameDayIndex=10,GameDate="Summer 10",Lines=new(){"existing recent dialogue"}}};var work=b.RecoveryWork("a",false,true);var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);string dailyBefore=JsonConvert.SerializeObject(b._dailyMemoryDrafts),recentBefore=JsonConvert.SerializeObject(b._dialogueHistory);
+   TerminalProbe.FailRecentSaveId=failSave?"a":null;bool applied;try{applied=b.TryApplyInteractionMemoryRecoveryWork(work);}finally{TerminalProbe.FailRecentSaveId=null;TerminalProbe.FailEvent=null;}
+   Check(applied==!failSave&&dailyBefore==JsonConvert.SerializeObject(b._dailyMemoryDrafts),"Recent terminal rewrote Daily source or acknowledged a failed publish");
+   if(failSave)Check(recentBefore==JsonConvert.SerializeObject(b._dialogueHistory)&&!b.HasRecentInteractionMemoryMarker(work,out _)&&b._interactionMemoryRecoveryLedger.PendingCount==1,"failed Recent clone leaked lines/marker or completed journal");
+   else{
+    Check(b.HasRecentInteractionMemoryMarker(work,out var conflict)&&!conflict&&b._dialogueHistory["a"].Single().Lines.Last()=="[AF_SCENE_SESSION:7] recovery dialogue","actual Recent scene marker or recovery marker lost");
+    Check(b.TryApplyInteractionMemoryRecoveryWork(work)&&b._dialogueHistory["a"].Single().Lines.Count==2&&TerminalProbe.Count("save-recent:a")==1,"Recent duplicate rewrote published data");
+   }
+   Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));
+   b.Until(()=>task.IsCompleted,()=>{foreach(var r in b.requests)if(!r.Done.Task.IsCompleted)Release(r,failure?Failed():Ok(r.Area));foreach(var d in b.delays)d.Done.TrySetResult(true);});task.GetAwaiter().GetResult();
+   Check(!b.Completed("a").IsObsolete,"Recent-only source falsely invalidated independent Daily summary");
+   if(failure)Check(job.RetryCount==3&&b._dailyMemoryDrafts["a"].Single().SummaryRetryCount==3&&TerminalProbe.Count("MarkMemorySummaryFailure")==1,"valid old Daily failure was incorrectly discarded");
+   else Check(b.HasCompressedMemoryBlock("a",10)&&TerminalProbe.Count("ApplyMemorySummarySuccess")==1,"valid old Daily success was incorrectly discarded");
+   Check(!b._memorySummaryProcessing,"Recent-only control leaked processing");MainReads();
+  }
+  static void DailyRecentRecovery(bool failure,bool afef){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");var daily=b.RecoveryWork("a",afef,false,true);var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
+   Check(b.TryApplyInteractionMemoryRecoveryWork(daily),"actual recovery Daily failed");Check(b._interactionMemoryRecoveryLedger.TryGetNextWorkFor(daily.RecoveryId,out var recent)&&recent.Target==InteractionMemoryRecoveryTarget.Recent,"actual recovery Daily→Recent order failed");
+   Check(b.TryApplyInteractionMemoryRecoveryWork(recent)&&b.HasDailyInteractionMemoryMarker(daily,out _)&&b.HasRecentInteractionMemoryMarker(recent,out _)&&b._interactionMemoryRecoveryLedger.IsCompleted(daily.RecoveryId),"recovery combined publish did not complete exact markers");
+   Check(b.TryApplyInteractionMemoryRecoveryWork(daily)&&b.TryApplyInteractionMemoryRecoveryWork(recent)&&TerminalProbe.Count("save:a")==1&&TerminalProbe.Count("save-recent:a")==1,"completed Daily/Recent duplicate rewrote source");
+   Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));b.Finish(task);Check(b.Completed("a").IsObsolete&&b.requests.Count==1,"Daily+Recent writer failed to invalidate old Daily summary");AssertRejected(b,job);
+  }
+  static void RecentTrimKeepsMarkers(){
+   var b=TerminalOwner();b.heroes["a"]=new Hero{Id="a",Label="NPC a"};b._dialogueHistory["a"]=new(){new DialogueDay{GameDayIndex=10,GameDate="Summer 10",Lines=Enumerable.Range(0,270).Select(x=>"recent "+x).ToList()}};var work=b.RecoveryWork("a",false,true);
+   Check(b.TryApplyInteractionMemoryRecoveryWork(work)&&b._dialogueHistory["a"].Sum(x=>x.Lines.Count)==260&&b.HasRecentInteractionMemoryMarker(work,out _),"actual 260-line Recent trimming lost marker or exceeded limit");Check(b.TryApplyInteractionMemoryRecoveryWork(work)&&TerminalProbe.Count("save-recent:a")==1,"trimmed duplicate rewrote marker");MainReads();
+  }
+  static void AssertChangedStored(MyBehavior b,string id,bool afef,bool saveFailed){
+   var draft=b._dailyMemoryDrafts[id].Single();
+   Check(draft.Lines.Count==3,"terminal writer lost or duplicated line");var line=draft.Lines.Last();
+   Check(line.Text==(afef?"[AFEF玩家行为补充] new confirmed fact":"new terminal dialogue")&&line.IsAfef==afef&&line.IsLlmDialogue==!afef,"actual line flags/text changed");
+   Check(line.SceneSessionId==7&&line.DialogueSessionId==-1&&line.TargetAgentIndex==23&&line.TargetName=="Target NPC"&&line.MemorySessionKey=="scene:7","terminal provenance changed");
+   Check(draft.WeeklyMaterialTriggers.Count(x=>x.StableKey=="pending-terminal")==1&&b._pendingWeeklyMemoryMaterialTriggers.Count==0,"pending trigger not attached/consumed once");
+   Check(TerminalProbe.Count("note:"+id)==(!afef&&!saveFailed?1:0),"notoriety publication ordering changed");
+  }
+  static void AssertRejected(MyBehavior b,MemorySummaryJob job,int acceptedOther=0){
+   Check(!b.HasCompressedMemoryBlock(job.HeroId,job.GameDayIndex),"old success overwrote new source");
+   Check(b._dailyMemoryDrafts[job.HeroId].Single().SummaryRetryCount==0&&job.RetryCount==0&&string.IsNullOrEmpty(job.LastError),"old failure terminalized new source");
+   Check(b._memorySummaryQueue.Contains(job),"changed pending work was discarded");
+   Check(TerminalProbe.Count("ApplyMemorySummarySuccess")==acceptedOther&&TerminalProbe.Count("MarkMemorySummaryFailure")==0,"rejected work reached actual Apply/Mark");
+   Check(!TerminalProbe.Events.Any(x=>x.StartsWith("popup:",StringComparison.Ordinal)),"obsolete failure presented as current");
+   var completion=TerminalProbe.Events.Where(x=>x.StartsWith("ui:AnimusForge 日结压缩完成",StringComparison.Ordinal)).ToList();
+   Check(acceptedOther==0?completion.Count==0:completion.Count==1&&completion[0].Contains("对话记忆 "+acceptedOther+" 个"),"completion count ignored actual accepted work");
+   Check(!b._memorySummaryProcessing,"processing flag not released");MainReads();
+  }
+  // Window A: capture is complete but the first provider response has not returned.
+  static void DuringProvider(bool failure,bool afef,bool failSave){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");b.Pending("a");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
+   bool threw=false;try{Check(b.Write("a",afef,failSave),"actual publication receipt rejected");}catch(InvalidOperationException ex){if(!failSave||ex.Message!="controlled terminal pre-save failure")throw;threw=true;}
+   Check(threw==failSave,"pre-save failure injection did not execute");AssertChangedStored(b,"a",afef,failSave);
+   Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));b.Finish(task);
+   Check(b.Completed("a").IsObsolete&&!b.Completed("a").Success,"changed source was not obsolete at provider boundary");
+   Check(b.requests.Count==1&&b.delays.Count==0&&TerminalProbe.Count("TryParseMemorySummaryResponse")==0,"old provider response parsed or retried");AssertRejected(b,job);
+  }
+  // Window B: A's real Execute/parser/receipt finished, but B keeps Task.WhenAll pending.
+  static void BeforeApply(bool failure,bool afef){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");b.Seed("daily","b");b.Pending("a");var task=b.StartTerminal();b.Until(()=>b.requests.Count==2);
+   Request held=b.requests.Last();
+   b.Until(()=>b.terminalCompleted.Any(x=>x.Job.HeroId=="a"),()=>{
+    foreach(var r in b.requests)if(!ReferenceEquals(r,held)&&!r.Done.Task.IsCompleted)Release(r,failure?Failed():Ok(r.Area));
+    foreach(var d in b.delays)d.Done.TrySetResult(true);
+   });
+   var old=b.Completed("a");Check(!old.IsObsolete&&old.Success==!failure,"A did not finish as a valid pre-write receipt");Check(!task.IsCompleted,"B failed to hold final application");
+   Check(b.Write("a",afef),"terminal write not accepted");AssertChangedStored(b,"a",afef,false);
+   Release(held,Ok(held.Area));b.Finish(task);
+   Check(b.HasCompressedMemoryBlock("b",10),"independent valid B result not committed");
+   Check(b.requests.Count==(failure?4:2),"unexpected provider retries after terminal write");AssertRejected(b,job,1);
+  }
+  static void FreshWriteAndEmptyRejection(){
+   var b=TerminalOwner();b.heroes["fresh"]=new Hero{Id="fresh",Label="Fresh"};b.Pending("fresh");
+   Check(b.Write("fresh"),"new draft Save/readback failed");Check(b.Lines("fresh").Count==1&&b._dailyMemoryDrafts["fresh"].Single().HasLlmDialogue,"new dictionary publish failed");
+   Check(TerminalProbe.Count("note:fresh")==1&&b._pendingWeeklyMemoryMaterialTriggers.Count==0,"new publication downstream count");
+   string before=JsonConvert.SerializeObject(b._dailyMemoryDrafts);Check(!b.AppendDailyMemoryLineById("fresh","Fresh","player"," ",false,true),"blank text accepted");Check(before==JsonConvert.SerializeObject(b._dailyMemoryDrafts),"blank write changed source");MainReads();
+  }
+  static void FreshSaveFailure(){
+   var b=TerminalOwner();b.heroes["fresh"]=new Hero{Id="fresh",Label="Fresh"};bool failed=false;
+   try{b.Write("fresh",false,true);}catch(InvalidOperationException ex){failed=ex.Message=="controlled terminal pre-save failure";}
+   Check(failed&&!b._dailyMemoryDrafts.ContainsKey("fresh")&&TerminalProbe.Count("note:fresh")==0,"unpublished new list leaked or emitted success");MainReads();
+  }
+  int _npcActionGlobalOrderCounter=3;
+  static bool ShouldTrackNpcActionHero(Hero hero,bool allowNonLordHero=false){Probe.Live("npc-action-eligible");return hero!=null;}
+  static NpcActionFacts CreateNpcActionFacts(string kind,Hero hero)=>throw new InvalidOperationException("Supply detached actor facts in this terminal fixture");
+  static void ApplyActorFacts(NpcActionFacts facts,Hero hero)=>throw new InvalidOperationException("Supply detached actor identity in this terminal fixture");
+  void RecordPlayerNotorietyActionFromNpcAction(string text,string key,NpcActionFacts facts,bool major)=>throw new InvalidOperationException("Player action branch outside NPC writer fixture");
+  void RefreshNpcRecentActionStableKeyIndexForHero(string id,List<NpcActionEntry> entries)=>throw new InvalidOperationException("Recent action index outside Major writer fixture");
+  bool IsNpcRecentActionStableKeyKnown(string id,string key)=>throw new InvalidOperationException("Recent action index outside Major writer fixture");
+  static void MajorWriterInFlight(bool failure){
+   var b=TerminalOwner();var job=(MajorActionSummaryJob)b.Seed("major");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
+   var facts=new NpcActionFacts{ActionKind="terminal_major",ActorHeroId="major",TargetHeroId="target",SettlementId="town",SettlementName="Town",RelatedHeroIds=new(){"target"}};
+   b.RecordNpcMajorAction(b.heroes["major"]," newly recorded major event "," TERMINAL-MAJOR ",facts);
+   Check(b._npcMajorActions["major"].Count==3,"real major writer did not append");var added=b._npcMajorActions["major"].Last();Check(added.Text=="newly recorded major event"&&added.StableKey=="terminal-major"&&added.Day==10&&added.Sequence==4&&added.Order==3&&added.ActionKind=="terminal_major"&&added.TargetHeroId=="target"&&added.RelatedHeroIds.SequenceEqual(new[]{"target"}),"real major entry metadata/order changed");
+   facts.RelatedHeroIds.Add("later mutation");Check(added.RelatedHeroIds.Count==1,"real major factory retained detached-facts alias");b.RecordNpcMajorAction(b.heroes["major"]," newly recorded major event "," TERMINAL-MAJOR ",facts);Check(b._npcMajorActions["major"].Count==3&&b._npcActionGlobalOrderCounter==4,"real major duplicate added new record/sequence");
+   Release(b.requests.Single(),failure?Failed():Ok("NpcMajorSummary"));b.Finish(task);Check(b.terminalMajorCompleted.Single().IsObsolete&&b.requests.Count==1,"actual major writer failed to invalidate old source");Check(b._npcMajorActionSummaries["major"].Summary=="old summary"&&b._npcMajorActionSummaries["major"].LastSummarizedSequence==1&&job.RetryCount==0&&string.IsNullOrEmpty(job.LastError)&&b._npcMajorActionSummaryQueue.Contains(job),"old major success/failure overwrote new event source");Check(TerminalProbe.Count("ApplyMajorActionSummarySuccess")==0&&TerminalProbe.Count("MarkMajorActionSummaryFailure")==0&&!TerminalProbe.Events.Any(x=>x.StartsWith("popup:")||x.StartsWith("ui:AnimusForge 日结压缩完成"))&&!b._memorySummaryProcessing,"obsolete major side effects/presentation/release");MainReads();
+  }
+  static void BlockWriterInFlight(bool failure){
+   var b=TerminalOwner();var job=(MemoryOverviewJob)b.Seed("overview");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
+   var replacement=new List<CompressedMemoryBlock>{Block("overview",9),Block("overview",10)};replacement[1].Summary=" newly accepted daily block ";b.SaveCompressedMemoryBlocksById("overview",replacement);
+   Check(b._compressedMemoryBlocks["overview"][1].Summary=="newly accepted daily block"&&b._dirtyMemoryOverviewIds.Contains("overview"),"actual block Save did not publish sanitized replacement/dirty marker");
+   Release(b.requests.Single(),failure?Failed():Ok("MemoryOverview"));b.Finish(task);Check(b.terminalOverviewCompleted.Single().IsObsolete&&b.requests.Count==1,"actual block writer failed to invalidate old overview source");Check(b._memoryOverviewStates["overview"].Summary=="old overview"&&b._memoryOverviewStates["overview"].IncludedBlockIds.SequenceEqual(new[]{"overview/9"})&&job.RetryCount==0&&string.IsNullOrEmpty(job.LastError)&&b._memoryOverviewQueue.Contains(job),"old overview success/failure overwrote replacement source");Check(TerminalProbe.Count("ApplyMemoryOverviewSuccess")==0&&TerminalProbe.Count("MarkMemoryOverviewFailure")==0&&!TerminalProbe.Events.Any(x=>x.StartsWith("popup:")||x.StartsWith("ui:AnimusForge 日结压缩完成"))&&!b._memorySummaryProcessing,"obsolete overview side effects/presentation/release");MainReads();
+  }
+  static void PartialApplyFailure(bool weeklyTail){
+   var b=TerminalOwner();b.Seed("daily","a");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
+   if(weeklyTail)TerminalProbe.FailEvent="weekly-public:a";else TerminalProbe.FailSaveId="a";
+   try{Release(b.requests.Single(),Ok("CompressedMemory"));b.Finish(task);}finally{TerminalProbe.FailSaveId=null;TerminalProbe.FailEvent=null;}
+   Check(b.HasCompressedMemoryBlock("a",10)&&(!b._dailyMemoryDrafts.ContainsKey("a")||b._dailyMemoryDrafts["a"].Count==0),"partial Apply side effects were rolled back/repeated or fixture failed before real write");
+   Check(b.requests.Count==1&&TerminalProbe.Count("ApplyMemorySummarySuccess")==1&&TerminalProbe.Count("MarkMemorySummaryFailure")==0,"partial Apply retried provider/writer or terminalized unrelated source");
+   Check(TerminalProbe.Count("weekly-block:a")==0&&!TerminalProbe.Events.Any(x=>x.StartsWith("ui:AnimusForge 日结压缩完成")),"partial Apply falsely completed weekly tail or success UI");
+   var errors=TerminalProbe.Events.Where(x=>x.StartsWith("popup:压缩记忆总结异常:")).ToList();Check(errors.Count==1&&errors[0].Contains("controlled")&&errors[0].Contains("部分"),"partial Apply exception swallowed or ambiguous error notice");Check(!b._memorySummaryProcessing,"partial Apply exception leaked processing flag");MainReads();
+  }
+  static void UnchangedCompletion(bool failure){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");var task=b.StartTerminal();
+   b.Until(()=>task.IsCompleted,()=>{foreach(var r in b.requests)if(!r.Done.Task.IsCompleted)Release(r,failure?Failed():Ok(r.Area));foreach(var d in b.delays)d.Done.TrySetResult(true);});task.GetAwaiter().GetResult();
+   if(failure){Check(b.requests.Count==3&&job.RetryCount==3&&b._dailyMemoryDrafts["a"].Single().SummaryRetryCount==3&&TerminalProbe.Count("MarkMemorySummaryFailure")==1,"real terminal failure no longer marks original queue/draft");Check(TerminalProbe.Events.Any(x=>x.StartsWith("popup:")),"current failure lost presentation");}
+   else{Check(b.requests.Count==1&&b.HasCompressedMemoryBlock("a",10)&&!b._dailyMemoryDrafts.ContainsKey("a")&&TerminalProbe.Count("ApplyMemorySummarySuccess")==1,"unchanged real Apply did not save block/remove draft");Check(TerminalProbe.Count("weekly-block:a")==1&&TerminalProbe.Count("native-clear:a")==1,"real Apply downstream duplicate/missing");}
+   Check(!b._memorySummaryProcessing,"normal completion not released");MainReads();
+  }
+  public static int Main(){
+   TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string Name,Action Test)>{("fresh-publish-readback",FreshWriteAndEmptyRejection),("partial-apply-before-daily-save",()=>PartialApplyFailure(false)),("partial-apply-weekly-tail",()=>PartialApplyFailure(true)),("major-writer-old-success",()=>MajorWriterInFlight(false)),("major-writer-old-failure",()=>MajorWriterInFlight(true)),("block-writer-old-overview-success",()=>BlockWriterInFlight(false)),("block-writer-old-overview-failure",()=>BlockWriterInFlight(true)),("fresh-pre-save-failure",FreshSaveFailure),("recovery-clone-pre-save-failure",RecoveryClonePreSaveFailure),("recent-trim-keeps-markers",RecentTrimKeepsMarkers),("unchanged-success-real-apply",()=>UnchangedCompletion(false)),("unchanged-failure-real-mark",()=>UnchangedCompletion(true))};
+   foreach(var mode in new[]{"prepared","missing-draft","conflicting-readback"}){var m=mode;cases.Add(("weekly-no-false-receipt-"+m,()=>WeeklyNoFalseReceipt(m)));}
+   foreach(bool fail in new[]{false,true})foreach(bool after in new[]{false,true})foreach(bool save in new[]{false,true}){var f=fail;var a=after;var s=save;cases.Add(($"weekly-inflight-{f}-{a}-{s}",()=>WeeklyInFlight(f,a,s)));}
+   foreach(bool fail in new[]{false,true})foreach(bool save in new[]{false,true}){var f=fail;var s=save;cases.Add(($"recent-only-{f}-{s}",()=>RecentOnly(f,s)));}
+   foreach(bool failure in new[]{false,true})foreach(bool afef in new[]{false,true}){
+    var f=failure;var a=afef;cases.Add(($"daily-recent-recovery-{f}-{a}",()=>DailyRecentRecovery(f,a)));cases.Add(($"recovery-provider-{f}-{a}",()=>RecoveryDuringProvider(f,a)));cases.Add(($"provider-{f}-{a}",()=>DuringProvider(f,a,false)));cases.Add(($"provider-pre-save-failure-{f}-{a}",()=>DuringProvider(f,a,true)));cases.Add(($"before-final-apply-{f}-{a}",()=>BeforeApply(f,a)));
+   }
+   int failures=0;foreach(var test in cases){try{test.Test();Console.WriteLine("PASS "+test.Name);}catch(Exception ex){failures++;Console.WriteLine("FAIL "+test.Name+": "+ex.Message);}}
+   Console.WriteLine($"TERMINAL_RESULT scenarios={cases.Count} failures={failures} actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED");return failures==0?0:1;
+  }
+ }
+}

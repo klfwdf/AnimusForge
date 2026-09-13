@@ -2,6 +2,8 @@
 // prompt builders, parsers, sanitizers and models. Input.cs contains real clone/fingerprint.
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using System.Reflection;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
@@ -55,6 +57,9 @@ namespace AnimusForge {
  }
  public static class LlmRetryPrompt {public static string BuildFailureDetail(string reason,string content)=>reason+"\n"+content;}
  public partial class MyBehavior {
+  // Timing belongs to the helper suite; keep count/functional scenarios independent of JIT/load.
+  private static double GetDailyMaintenanceFrameBudgetMs() => 1000.0;
+
   public static MyBehavior Instance;
   readonly Dictionary<string,Hero> heroes=new();
   List<MemorySummaryJob> _memorySummaryQueue=new();
@@ -222,6 +227,102 @@ namespace AnimusForge {
    if(background)Check(Original()==original,"background sanitizer modified caller data");
    MainReads();
   }
+  // Reflection enumerates the actual model fields rather than a hand-maintained member list.
+  // A new unsupported field type fails this fixture until its copy/ownership contract is covered.
+  static FieldInfo[] DataFields(Type type)=>type.GetFields(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic).OrderBy(x=>x.Name).ToArray();
+  static object Filled(Type type,string path) {
+   if(type==typeof(string))return path+"-sentinel";
+   if(type==typeof(int))return 173;
+   if(type==typeof(long))return 193L;
+   if(type==typeof(bool))return true;
+   if(Nullable.GetUnderlyingType(type)!=null)return Filled(Nullable.GetUnderlyingType(type),path);
+   if(type.IsGenericType&&type.GetGenericTypeDefinition()==typeof(List<>)) {
+    var list=(IList)Activator.CreateInstance(type);list.Add(Filled(type.GetGenericArguments()[0],path+"[0]"));list.Add(null);return list;
+   }
+   Check(type.DeclaringType==typeof(MyBehavior),"unsupported copy field type "+type.FullName);
+   var value=Activator.CreateInstance(type,true);
+   foreach(var field in DataFields(type))field.SetValue(value,Filled(field.FieldType,path+"."+field.Name));
+   return value;
+  }
+  static object CopyRuntime(object value) {
+   var method=typeof(MyBehavior).GetMethod("CloneMemorySummarySource",BindingFlags.NonPublic|BindingFlags.Static);
+   return method.MakeGenericMethod(value.GetType()).Invoke(null,new[]{value});
+  }
+  static int _copyFieldChecks,_detachedChecks;
+  static void DetachedGraph(object source,object copy,string path) {
+   if(source==null){Check(copy==null,"null changed "+path);return;}
+   Check(copy!=null&&copy.GetType()==source.GetType(),"copy type changed "+path);
+   var type=source.GetType();
+   if(type==typeof(string)||type.IsValueType){_copyFieldChecks++;Check(source.Equals(copy),"scalar omitted/changed "+path);return;}
+   _detachedChecks++;Check(!ReferenceEquals(source,copy),"mutable alias "+path);
+   if(source is IList items){var copies=(IList)copy;Check(items.Count==copies.Count,"list changed "+path);for(int i=0;i<items.Count;i++)DetachedGraph(items[i],copies[i],path+"["+i+"]");return;}
+   foreach(var field in DataFields(type))DetachedGraph(field.GetValue(source),field.GetValue(copy),path+"."+field.Name);
+  }
+  static void CopyAllFields() {
+   var types=new[]{typeof(DailyMemoryLine),typeof(DailyMemoryDraft),typeof(CompressedMemoryBlock),typeof(WeeklyMemoryMaterialTrigger),typeof(MemorySummaryJob),typeof(MemoryOverviewJob),typeof(MajorActionSummaryJob),typeof(MemoryOverviewState),typeof(MajorActionSummaryState),typeof(NpcActionEntry),typeof(List<NpcActionEntry>),typeof(List<CompressedMemoryBlock>)};
+   _copyFieldChecks=0;_detachedChecks=0;
+   foreach(var type in types) {
+    object source=Filled(type,type.Name),copy=CopyRuntime(source);DetachedGraph(source,copy,type.Name);
+    Check(JsonConvert.SerializeObject(source)==JsonConvert.SerializeObject(copy),"all-field JSON compatibility "+type.Name);
+    string sourceBefore=JsonConvert.SerializeObject(source);
+    if(copy is IList root){root.Clear();}else foreach(var field in DataFields(type)) {
+     if(field.GetValue(copy) is IList nested)nested.Clear();else if(field.FieldType==typeof(string))field.SetValue(copy,"copy mutation");
+    }
+    Check(JsonConvert.SerializeObject(source)==sourceBefore,"clone edit leaked to source "+type.Name);
+    source=Filled(type,type.Name);
+    if(source is IList list)list.Clear();else foreach(var field in DataFields(type))if(typeof(IList).IsAssignableFrom(field.FieldType))field.SetValue(source,null);
+    copy=CopyRuntime(source);DetachedGraph(source,copy,type.Name+".nullable-lists");
+   }
+   Check(CloneMemorySummarySource<DailyMemoryDraft>(null)==null&&CloneMemorySummarySource<List<NpcActionEntry>>(null)==null,"top-level null changed");
+   Console.WriteLine($"COPY_FIELD_COVERAGE models=10 list_types=2 scalar_checks={_copyFieldChecks} independent_mutable_nodes={_detachedChecks} reflection_inventory=ALL_FIELDS null_and_null_elements=PRESERVED");
+  }
+  static List<(string Name,Action Edit)> SourceEdits(object root,string path) {
+   var edits=new List<(string,Action)>();
+   foreach(var field in DataFields(root.GetType())) {
+    var f=field;var value=f.GetValue(root);string name=path+"."+f.Name;
+    if(f.FieldType==typeof(string))edits.Add((name,()=>f.SetValue(root,(string)value+"|field-mutation")));
+    else if(f.FieldType==typeof(int))edits.Add((name,()=>f.SetValue(root,(int)value+1)));
+    else if(f.FieldType==typeof(long))edits.Add((name,()=>f.SetValue(root,(long)value+1L)));
+    else if(f.FieldType==typeof(bool))edits.Add((name,()=>f.SetValue(root,!(bool)value)));
+    else if(f.FieldType==typeof(bool?))edits.Add((name,()=>f.SetValue(root,value==null?true:!(bool)value)));
+    else if(typeof(IList).IsAssignableFrom(f.FieldType)) {
+     var list=(IList)value;
+     edits.Add((name+".null",()=>f.SetValue(root,list==null?Activator.CreateInstance(f.FieldType):null)));
+     if(list==null)continue;
+     var element=f.FieldType.GetGenericArguments()[0];
+     edits.Add((name+".append",()=>list.Add(Filled(element,name+".added"))));
+     for(int index=0;index<list.Count;index++) {
+      int i=index;if(list[i]==null)continue;
+      if(element==typeof(string))edits.Add((name+"["+i+"]",()=>list[i]=(string)list[i]+"|field-mutation"));
+      else edits.AddRange(SourceEdits(list[i],name+"["+i+"]"));
+     }
+    } else throw new Exception("unsupported source field type "+f.FieldType.FullName);
+   }
+   return edits;
+  }
+  List<(string Name,Action Edit)> AllSourceEdits(string kind,object job) {
+   var edits=SourceEdits(job,"job");
+   if(kind=="daily")edits.AddRange(SourceEdits(_dailyMemoryDrafts[kind][0],"draft"));
+   else if(kind=="major") {
+    edits.AddRange(SourceEdits(_npcMajorActionSummaries[kind],"major-state"));
+    for(int i=0;i<_npcMajorActions[kind].Count;i++)edits.AddRange(SourceEdits(_npcMajorActions[kind][i],"action["+i+"]"));
+   } else {
+    edits.AddRange(SourceEdits(_memoryOverviewStates[kind],"overview-state"));
+    for(int i=0;i<_compressedMemoryBlocks[kind].Count;i++)edits.AddRange(SourceEdits(_compressedMemoryBlocks[kind][i],"block["+i+"]"));
+   }
+   return edits;
+  }
+  static void EverySourceFieldInvalidates(string kind) {
+   var b=Owner();var job=b.Seed(kind);var sample=b.AllSourceEdits(kind,job);int checkedFields=0;
+   foreach(var name in sample.Select(x=>x.Name)) {
+    b=Owner();job=b.Seed(kind);var input=b.CaptureMemorySummaryInput(job,SaveRuntimeGuard.CaptureGeneration());
+    Check(input!=null&&b.IsMemorySummaryInputCurrent(input),"baseline not capturable for "+kind+" "+name);
+    b.AllSourceEdits(kind,job).Single(x=>x.Name==name).Edit();
+    Check(!b.IsMemorySummaryInputCurrent(input),"source field mutation accepted "+kind+" "+name);
+    checkedFields++;MainReads();
+   }
+   Console.WriteLine($"SOURCE_FIELD_COVERAGE kind={kind} mutation_checks={checkedFields} includes_unrendered_fields=true same_generation=true");
+  }
   static void LargeCaptureObservation() {
    var b=Owner();var job=b.Seed("daily");var draft=b._dailyMemoryDrafts["daily"][0];
    draft.Lines=Enumerable.Range(0,1000).Select(i=>new DailyMemoryLine{Text="line "+i+" dialogue factual source "+new string('x',70),GameDayIndex=10,GameHour=i%24,GameDate="Summer 10",Scene="Town",Speaker="player",IsLlmDialogue=true}).ToList();
@@ -241,7 +342,8 @@ namespace AnimusForge {
    Check(b.dailyResults.Count==1&&b.majorResults.Count==0&&b.delays.Count==1,"retired wave changed completed results or scheduled further waits");MainReads();
   }
   static int Main() {
-   TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>{("three-kinds-metadata",ThreeKinds),("detached-source",Detached),("late-generation",LateGeneration),("late-owner",LateOwner),("major-capture-pure",()=>CaptureDoesNotRepairSource("major")),("overview-capture-pure",()=>CaptureDoesNotRepairSource("overview")),("rpm-wave-order",WaveOrder),("generation-during-wave-spacing",()=>RetireBetweenWaves(false)),("owner-during-wave-spacing",()=>RetireBetweenWaves(true)),("parser-formats",ParseFormats),("large-capture-observation",LargeCaptureObservation)};
+   TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>{("all-model-copy-fields",CopyAllFields),("three-kinds-metadata",ThreeKinds),("detached-source",Detached),("late-generation",LateGeneration),("late-owner",LateOwner),("major-capture-pure",()=>CaptureDoesNotRepairSource("major")),("overview-capture-pure",()=>CaptureDoesNotRepairSource("overview")),("rpm-wave-order",WaveOrder),("generation-during-wave-spacing",()=>RetireBetweenWaves(false)),("owner-during-wave-spacing",()=>RetireBetweenWaves(true)),("parser-formats",ParseFormats),("large-capture-observation",LargeCaptureObservation)};
+   foreach(var kind in new[]{"daily","major","overview"}){var k=kind;cases.Add((k+"-every-source-field",()=>EverySourceFieldInvalidates(k)));}
    foreach(var kind in new[]{"daily","blocks","weekly"})foreach(var background in new[]{false,true}){var k=kind;var bg=background;cases.Add((k+(bg?"-background-sanitize":"-main-sanitize"),()=>SanitizeIsolation(k,bg)));}
    foreach(var kind in new[]{"daily","major","overview"}) {
     foreach(var edit in new[]{"body","nested","list","state"})foreach(var fail in new[]{false,true}){var k=kind;var e=edit;var f=fail;cases.Add((k+"-"+e+"-"+(f?"failure":"success"),()=>Changed(k,e,f)));}
