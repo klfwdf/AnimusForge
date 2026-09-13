@@ -29,7 +29,7 @@ namespace AnimusForge {
   Queue<DailyMaintenanceJob> _dailyMaintenanceQueue=new();HashSet<string> _dailyMaintenanceJobKeys=new();
   object _pendingAutoWeeklyReportBuild;bool _automaticKingdomRebellionFlowActive;
   static bool IsDeferredDailyMaintenanceEnabled()=>true;
-  void ProcessPendingAutoWeeklyReportBuildBudget(long start,double budget){}
+  void ProcessPendingAutoWeeklyReportBuildBudget(long start,double budget){SealProbe.Hit("weekly-budget-seam");}
   int ProcessMemoryOverviewCandidateScanBudget(long start,double budget)=>0;
   void QueueDirtyMemoryOverviewCandidatesForDeferredScan(){}
   void QueueAllMemoryOverviewCandidatesForDeferredScan(){}
@@ -143,11 +143,11 @@ namespace AnimusForge {
    if(drafts)Check(b._memorySummaryQueue.Count==48&&draftTotal==48,"finite draft traversal lost/duplicated records");else Check(ownerTotal==4096&&dailyIndexTotal==4096&&majorIndexTotal==4096&&dailyFilterTotal==4096&&majorFilterTotal==4096,"metadata/null-slot accounting skipped or rescanned stable source");
    Console.WriteLine($"SEAL_FINITE layout={(drafts?"48drafts":"4096owners+8192nullslots")} calls={calls} max_index_per_call={maxIndex} max_metadata_grants={maxGrants} max_expensive_per_call={maxExpensive} indexed_owners={ownerTotal} indexed_daily={dailyIndexTotal} indexed_major={majorIndexTotal} draft_visited={draftTotal} daily_filter={dailyFilterTotal} major_filter={majorFilterTotal} max_atomic_completed_owner_check={atomicOwnerChecks} per_tick_bound=NOT_CLAIMED");MainReads();
   }
-  static void SameTickMultipleCallers(){
+  static void StandaloneMultipleCallers(){
    var b=LargeEmptyLayout();b.EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts,Probe.GameDay);
    SealProbe.Counts.Clear();b.TryRunCampaignMemoryMaintenance();int afterCampaign=SealProbe.Count("TrySealPastDailyMemoryDrafts");b.ProcessDeferredDailyMaintenance();int all=SealProbe.Count("TrySealPastDailyMemoryDrafts");
-   Check(afterCampaign==1&&all==9,"actual campaign+deferred entry caller multiplicity changed");Check(SealProbe.Count("owner-index")>128,"fixture did not exercise more than one slice in a logical tick");
-   Console.WriteLine($"SEAL_CALLER_WINDOWS campaign_calls={afterCampaign} total_seal_calls={all} owner_index_in_same_logical_tick={SealProbe.Count("owner-index")} separate_caller_deadlines=true helper_limit_is_per_call=true");MainReads();
+   Check(afterCampaign==1&&all==9,"standalone direct helper multiplicity changed");Check(SealProbe.Count("owner-index")>128,"fixture did not exercise more than one slice in a logical tick");
+   Console.WriteLine($"STANDALONE_SEAL_CALLER_WINDOWS campaign_calls={afterCampaign} total_seal_calls={all} owner_index_across_standalone_calls={SealProbe.Count("owner-index")} separate_caller_deadlines=true helper_limit_is_per_call=true");MainReads();
   }
   static void ProbeCompletionReceipt(bool terminal){
    var b=NewSealOwner();var d=b.AddDraft("a");
@@ -189,8 +189,67 @@ namespace AnimusForge {
    Console.WriteLine("SEAL_COST owners=4096 daily_slots=4096 major_slots=4096 ms="+timer.Elapsed.TotalMilliseconds.ToString("F3")+" bytes="+allocated+" counters="+JsonConvert.SerializeObject(SealProbe.Counts));
    Check(b._memorySummaryQueue.Count==0&&b._npcMajorActionSummaryQueue.Count==0,"final null filtering incomplete");MainReads();
   }
+  static void SharedCampaignCaps(bool drafts){
+   var b=drafts?NewSealOwner():LargeEmptyLayout();
+   if(drafts){for(int i=0;i<48;i++)b.AddDraft("owner"+i,9);}
+   b.EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts,Probe.GameDay);
+   SealProbe.Counts.Clear();b.RunCampaignMemoryMaintenanceCycle(false);
+   Check(SealProbe.Count("metadata-granted")<=128,"one Campaign cycle refreshed metadata allowance");
+   Check(SealProbe.Count("expensive-granted")<=8,"one Campaign cycle refreshed expensive allowance");
+   Check(SealProbe.Count("owner-index")<=128,"one Campaign cycle indexed more than its metadata cap");
+   MainReads();
+  }
+  static void SharedCampaignConverges(){
+   var b=LargeEmptyLayout();b.EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts,Probe.GameDay);
+   int windows=0;
+   do{
+    SealProbe.Counts.Clear();b.RunCampaignMemoryMaintenanceCycle(false);windows++;
+    Check(SealProbe.Count("metadata-granted")<=128&&SealProbe.Count("owner-index")<=128,"shared cycle exceeded metadata cap");
+    Check(SealProbe.Count("expensive-granted")<=8,"shared cycle exceeded expensive cap");
+   }while(windows<2048&&(b._dailyMemoryDraftSealOwnerKeys!=null||b._dailyMaintenanceQueue.Count>0||b._memorySummaryQueue.Count>0||b._npcMajorActionSummaryQueue.Count>0));
+   Check(windows>1&&windows<2048,"shared windows did not converge");
+   Console.WriteLine("CAMPAIGN_BUDGET_CONVERGENCE windows="+windows+" actual_cycle=true whole_game_frame=NOT_CLAIMED");MainReads();
+  }
+  static void SharedCampaignDeadline(){
+   var b=NewSealOwner();b._pendingAutoWeeklyReportBuild=new object();SealProbe.Budget=20;
+   SealProbe.Hook=key=>{if(key=="campaign-seal-return")Thread.Sleep(35);};
+   b.RunCampaignMemoryMaintenanceCycle(false);SealProbe.Hook=null;
+   Check(SealProbe.Count("weekly-budget-seam")==0,"deferred domain received a fresh deadline after primary overrun");MainReads();
+  }
+  static void DeferredCampaignStart(bool advance){
+   var b=NewSealOwner();b.AddDraft("a");b._memorySummaryQueue.Add(new(){HeroId="a",GameDayIndex=9,RetryCount=3});SealProbe.Budget=20;
+   SealProbe.Hook=key=>{if(key=="campaign-seal-return")Thread.Sleep(35);};
+   b.RunCampaignMemoryMaintenanceCycle(false);SealProbe.Hook=null;
+   Check(b.summaryStarts==0&&b._memorySummaryQueue.Count==0,"terminal seal did not exhaust before start");
+   if(advance)SaveRuntimeGuard.AdvanceGeneration("budget-pending-test");
+   SealProbe.Budget=1000;b.RunCampaignMemoryMaintenanceCycle(true);b.RunCampaignMemoryMaintenanceCycle(true);
+   Check(b.summaryStarts==(advance?0:1),"deferred same-day summary request lost/duplicated or survived load");MainReads();
+  }
+  static void CampaignScopeRestored(){
+   var b=NewSealOwner();b._pendingAutoWeeklyReportBuild=new object();SealProbe.Budget=20;bool thrown=false;
+   SealProbe.Hook=key=>{if(key=="weekly-budget-seam")throw new Exception("scope-fault");};
+   try{b.RunCampaignMemoryMaintenanceCycle(false);}catch(Exception){thrown=true;}
+   Check(thrown,"scope fault not reached");SealProbe.Hook=null;Thread.Sleep(35);SealProbe.Counts.Clear();
+   b.RunCampaignMemoryMaintenanceCycle(false);Check(SealProbe.Count("weekly-budget-seam")>0,"expired scope leaked to the next cycle");MainReads();
+  }
+  static void CampaignSkipDeferred(){
+   var b=NewSealOwner();b._pendingAutoWeeklyReportBuild=new object();b.RunCampaignMemoryMaintenanceCycle(true);
+   Check(SealProbe.Count("TrySealPastDailyMemoryDrafts")>0&&SealProbe.Count("weekly-budget-seam")==0,"weekly-commit skip changed primary/deferred ordering");MainReads();
+  }
+  static void CampaignExplicitSync(){
+   var b=NewSealOwner();SealProbe.Budget=20;bool invoked=false;
+   SealProbe.Hook=key=>{if(key=="campaign-seal-return"&&!invoked){invoked=true;Thread.Sleep(35);b.AddDraft("a");Check(b.TrySealPastDailyMemoryDrafts()&&b._memorySummaryQueue.Count==1,"explicit synchronous seal inherited exhausted finite window");}};
+   b.RunCampaignMemoryMaintenanceCycle(true);SealProbe.Hook=null;Check(invoked,"explicit sync boundary not reached");MainReads();
+  }
+  static void IdleCampaignBudget(){
+   var b=NewSealOwner();b.RunCampaignMemoryMaintenanceCycle(false);SealProbe.Counts.Clear();
+   b.RunCampaignMemoryMaintenanceCycle(false);
+   Check(SealProbe.Count("budget-settings")==0,"idle campaign cycle allocated/read a work budget");MainReads();
+  }
   static int Main(){TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>();foreach(var mode in new[]{"normal","afef-only","empty","terminal","mismatch","block","today","invalid-owner"}){var m=mode;cases.Add((m,()=>Semantics(m)));}
-   cases.Add(("daily-queue-contract",DailyQueueContract));cases.Add(("major-queue-contract",MajorQueueContract));cases.Add(("expired-budget-then-sync",FiniteThenSynchronous));cases.Add(("same-day-no-job-resume",SameDayResume));cases.Add(("same-reference-indexed-key-change",SameReferenceIndexedKeyChange));cases.Add(("owner-list-replacement",OwnerListReplacement));cases.Add(("cleanup-queue-append",()=>QueueWriteDuringCleanup(false)));cases.Add(("cleanup-queue-replacement",()=>QueueWriteDuringCleanup(true)));cases.Add(("4096-index-final-filter-cost",IndexCost));cases.Add(("finite-4096-convergence",()=>FiniteConvergence(false)));cases.Add(("finite-48draft-convergence",()=>FiniteConvergence(true)));cases.Add(("same-tick-multiple-callers",SameTickMultipleCallers));cases.Add(("probe-empty-no-candidate-start",()=>ProbeCompletionReceipt(false)));cases.Add(("probe-terminal-preserves-candidate-start",()=>ProbeCompletionReceipt(true)));cases.Add(("multiple-invalid-owners-sync",MultipleInvalidOwnersSync));cases.Add(("cleanup-same-ref-retarget",CleanupSameReferenceRetarget));cases.Add(("owner-inserted-after-index",OwnerInsertedAfterIndex));cases.Add(("major-indexed-key-change",MajorIndexedKeyChange));foreach(var budget in new[]{0.0,double.NaN,double.PositiveInfinity,double.MaxValue}){double value=budget;cases.Add(("unlimited-sentinel-"+budget,()=>UnlimitedCompatibility(value)));}
+   cases.Add(("daily-queue-contract",DailyQueueContract));cases.Add(("major-queue-contract",MajorQueueContract));cases.Add(("expired-budget-then-sync",FiniteThenSynchronous));cases.Add(("same-day-no-job-resume",SameDayResume));cases.Add(("same-reference-indexed-key-change",SameReferenceIndexedKeyChange));cases.Add(("owner-list-replacement",OwnerListReplacement));cases.Add(("cleanup-queue-append",()=>QueueWriteDuringCleanup(false)));cases.Add(("cleanup-queue-replacement",()=>QueueWriteDuringCleanup(true)));cases.Add(("4096-index-final-filter-cost",IndexCost));cases.Add(("finite-4096-convergence",()=>FiniteConvergence(false)));cases.Add(("finite-48draft-convergence",()=>FiniteConvergence(true)));cases.Add(("standalone-multiple-callers-compatibility",StandaloneMultipleCallers));cases.Add(("probe-empty-no-candidate-start",()=>ProbeCompletionReceipt(false)));cases.Add(("probe-terminal-preserves-candidate-start",()=>ProbeCompletionReceipt(true)));cases.Add(("multiple-invalid-owners-sync",MultipleInvalidOwnersSync));cases.Add(("cleanup-same-ref-retarget",CleanupSameReferenceRetarget));cases.Add(("owner-inserted-after-index",OwnerInsertedAfterIndex));cases.Add(("major-indexed-key-change",MajorIndexedKeyChange));foreach(var budget in new[]{0.0,double.NaN,double.PositiveInfinity,double.MaxValue}){double value=budget;cases.Add(("unlimited-sentinel-"+budget,()=>UnlimitedCompatibility(value)));}
+   cases.Add(("campaign-shared-metadata",()=>SharedCampaignCaps(false)));cases.Add(("campaign-shared-expensive",()=>SharedCampaignCaps(true)));cases.Add(("campaign-shared-convergence",SharedCampaignConverges));cases.Add(("campaign-shared-deadline",SharedCampaignDeadline));cases.Add(("campaign-deferred-start",()=>DeferredCampaignStart(false)));cases.Add(("campaign-retired-start",()=>DeferredCampaignStart(true)));cases.Add(("campaign-scope-exception",CampaignScopeRestored));cases.Add(("campaign-skip-deferred",CampaignSkipDeferred));cases.Add(("campaign-explicit-sync",CampaignExplicitSync));
+   cases.Add(("campaign-idle-no-budget",IdleCampaignBudget));
    int pass=0,fail=0;foreach(var (name,run) in cases){try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}}
    Console.WriteLine($"SEALING_RESULT pass={pass} fail={fail} LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED");return fail==0?0:1;
   }

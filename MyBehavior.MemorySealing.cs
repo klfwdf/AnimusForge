@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 
 namespace AnimusForge;
@@ -8,33 +9,14 @@ namespace AnimusForge;
 public partial class MyBehavior
 {
     // Metadata has no source-text traversal. Keep its independent, measurable cap
-    // higher than the existing expensive-job cap; both share the caller deadline.
-    private const int DailyMemorySealMetadataPerSlice = 128;
+    // higher than the existing expensive-job cap. A Campaign cycle shares both caps
+    // and its deadline; standalone finite calls retain their own allowance.
     private DailyMemorySealState _dailyMemorySealState;
     // One-call completion receipt, not a feature switch: maintenance preserves
     // the old HasPast=true path even when cleanup consumes its last raw job.
     private bool _dailyMemorySealCompletedPass;
 
     private enum DailyMemorySealPhase { Owners, Probe, DailyIndex, MajorIndex, Drafts, DailyCleanup, MajorCleanup }
-
-    private sealed class DailyMemorySealBudget
-    {
-        internal readonly long Start;
-        internal readonly double Milliseconds;
-        internal readonly bool Unbounded;
-        internal int Metadata = DailyMemorySealMetadataPerSlice;
-        internal int Expensive = DailyMaintenanceMaxJobsPerTick;
-        internal DailyMemorySealBudget(long start, double milliseconds)
-        { Start = start; Milliseconds = milliseconds; Unbounded = start <= 0L || milliseconds <= 0.0 || milliseconds == double.MaxValue || double.IsInfinity(milliseconds) || double.IsNaN(milliseconds); }
-        internal bool Take(bool expensive)
-        {
-            if (Unbounded) return true;
-            if (IsDailyMaintenanceBudgetExceeded(Start, Milliseconds)) return false;
-            if (expensive) { if (Expensive <= 0) return false; Expensive--; }
-            else { if (Metadata <= 0) return false; Metadata--; }
-            return true;
-        }
-    }
 
     private sealed class DailyMemorySealOwnerBinding
     {
@@ -87,7 +69,7 @@ public partial class MyBehavior
         internal readonly List<DailyMemorySealQueueEntry<T>> Entries = new List<DailyMemorySealQueueEntry<T>>();
         internal bool Step(List<T> current, Action<List<T>> publish, Func<T, bool> pending,
             Func<T, T> copy, Func<T, T, bool> same,
-            Func<IEnumerable<T>, List<T>> finish, DailyMemorySealBudget budget)
+            Func<IEnumerable<T>, List<T>> finish, MemoryMaintenanceWorkBudget budget)
         {
             Deferred = false;
             if (Source == null)
@@ -163,7 +145,7 @@ public partial class MyBehavior
         => NormalizeMemoryHeroId(job.HeroId) + "|" + job.GameDayIndex;
 
     private bool PrepareDailyMemorySealIndex<T>(DailyMemorySealIndex<T> index, List<T> current,
-        HashSet<string> keys, Func<T, string> key, DailyMemorySealBudget budget) where T : class
+        HashSet<string> keys, Func<T, string> key, MemoryMaintenanceWorkBudget budget) where T : class
     {
         if (!index.Current(current)) return false;
         while (index.Cursor < index.Count)
@@ -197,7 +179,10 @@ public partial class MyBehavior
 
     private bool ContinueDailyMemorySeal(long startTimestamp, double budgetMs, bool requirePendingProbe)
     {
-        var budget = new DailyMemorySealBudget(startTimestamp, budgetMs);
+        var budget = _campaignMemoryMaintenanceBudget;
+        if (budget == null || budget.Start != startTimestamp || budget.Milliseconds != budgetMs)
+            budget = new MemoryMaintenanceWorkBudget(startTimestamp, budgetMs,
+                DailyMemorySealMetadataPerSlice, DailyMaintenanceMaxJobsPerTick);
         if (_dailyMemorySealState == null) BeginDailyMemorySeal(requirePendingProbe);
         var state = _dailyMemorySealState;
         // An explicit synchronous caller must perform sealing, even if maintenance
@@ -314,7 +299,7 @@ public partial class MyBehavior
         }
     }
 
-    private bool RunDailyMemorySealProbe(DailyMemorySealState state, DailyMemorySealBudget budget, out bool found)
+    private bool RunDailyMemorySealProbe(DailyMemorySealState state, MemoryMaintenanceWorkBudget budget, out bool found)
     {
         found = false;
         while (_dailyMemoryDraftSealOwnerIndex < _dailyMemoryDraftSealOwnerKeys.Count)
@@ -381,7 +366,7 @@ public partial class MyBehavior
         return true;
     }
 
-    private bool RunDailyMemorySealDrafts(DailyMemorySealState state, DailyMemorySealBudget budget)
+    private bool RunDailyMemorySealDrafts(DailyMemorySealState state, MemoryMaintenanceWorkBudget budget)
     {
         while (_dailyMemoryDraftSealOwnerIndex < _dailyMemoryDraftSealOwnerKeys.Count)
         {

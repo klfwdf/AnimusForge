@@ -1,11 +1,11 @@
 # 当前自动实施：B1 Campaign维护共享预算（2026-09-14）
 
-- 状态ACTIVE；当前主代理单独实施，起点2fc32b6d、生产73a6977c；fresh fetch远端仍3f00fefa，本地5 ahead/0 behind，无新协作覆盖。
+- 本轮共享Campaign窗口与延迟启动修复已完成影响面离线验证，整体B1保持VERIFY；当前主代理单独实施，起点2fc32b6d、前生产73a6977c，检查点01e24b9e。启动fetch远端3f00fefa，无新协作覆盖。
 - 目的：把OnCampaignTick内主维护与deferred维护接到同一有限时间窗口，封存的metadata/expensive授予跨多次调用累计；抽出真实独立预算组件，保持显式同步/无限预算语义。EngineTick摘要回调仍是独立既有窗口，不冒称全游戏帧预算。
 - 关联正确性：窗口耗尽时已完成封存的summary启动意图须留到下一窗口，不能同日丢失；绑定save generation，退场/异常不泄漏旧窗口。保留正常、空/终止任务、重复调用、异常/耗时/同步/读档等对照。
 - 预计路径：MyBehavior.cs、MemorySealing/新的预算接缝与Refactor运行时组件、直接business/sealing tests、精确source inverse/定位图及交接。不得改Prompt、provider/存档身份、制作组玩法、默认/public入口或原一键脚本。
 - 验证：先用原73a6977c真实Campaign维护段证明重复授予/重复deadline和迟到启动缺口，再实现并复测真实链与故障反例；保留已有30/23等语义用例；相邻回归、六项Stage、API/持久化身份，按最终源码绑定。源码范围/已验/未验在最终交接更新。
-- 自动化继续ACTIVE；不推送/部署/操作真实存档。用户草稿和指定本地专用HANDOFF保持原hash。
+- 自动化继续ACTIVE；下一续点为剩余深来源与原子尾步，不重做本轮已共享的Campaign窗口。40场景、14反例、旧版35/5和相邻回归已通过；最终六项Stage通过，接口/身份检查及最终交接落盘。未推送/部署/操作真实存档；用户草稿原hash保持。
 
 ---
 

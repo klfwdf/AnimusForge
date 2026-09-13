@@ -231,6 +231,11 @@ def main():
             # the actual shared scanner's dispatch, not the now-empty old callback.
             planning = replace_exact(planning, "await RunMemorySummaryCompletionAsync(generation, delegate", "await Task.Run(delegate", count=4)
         files["Planning.cs"] = planning
+    if not args.original and (ROOT / "MyBehavior.MemoryMaintenanceBudget.cs").is_file():
+        for target, relative in [("BudgetBinding.cs", "MyBehavior.MemoryMaintenanceBudget.cs"),
+                                 ("BudgetRuntime.cs", "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs")]:
+            files[target] = (ROOT / relative).read_text(encoding="utf-8-sig")
+    files["Proof.csproj"] = files["Proof.csproj"].replace("<OutputType>", "<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>", 1).replace("</Project>", "<ItemGroup>" + "".join('<Compile Include="' + name + '" />' for name in files if name.endswith(".cs")) + "</ItemGroup></Project>")
     manifest["generated_sha256"] = {name: hashlib.sha256(data.encode()).hexdigest() for name, data in files.items()}
     for name, data in files.items():
         (out / name).write_bytes(data.encode("utf-8"))

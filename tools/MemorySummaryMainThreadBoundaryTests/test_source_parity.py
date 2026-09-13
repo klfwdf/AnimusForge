@@ -54,6 +54,11 @@ class InverseGuards(unittest.TestCase):
                                    body + "\npublic override void SyncData(IDataStore dataStore)", 1),
                     "Deleted B1 declaration unexpectedly restored")
 
+    def test_added_campaign_scope_cannot_drift(self):
+        self.reject(SOURCE.replace("_campaignMemoryMaintenanceCycleActive = true;",
+                                   "_campaignMemoryMaintenanceCycleActive = false;", 1),
+                    "Unreviewed B1 added source span")
+
     def test_whole_components_and_test_inputs_are_locked(self):
         original = Path.read_text
         targets = list(REVIEW["productionDependencies"]) + [
