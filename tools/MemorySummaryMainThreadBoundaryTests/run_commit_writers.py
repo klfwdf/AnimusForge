@@ -91,6 +91,10 @@ def main():
     # Replace only the game registry fixture; FindHeroById itself now executes actual code.
     files['Fixture.cs'],count=re.subn(r'^  Hero FindHeroById\([^\n]+\n','',files['Fixture.cs'],flags=re.M)
     if count!=1:raise ValueError('Base game hero lookup fixture drift')
+    # The expanded shared registry now has a fallback helper. Retain this suite's
+    # explicit current-Campaign game registry seam without defining FindFirst twice.
+    files['Fixture.cs'],registry_helpers=re.subn(r'^  public static Hero FindFirst\([^\n]+\n','',files['Fixture.cs'],flags=re.M)
+    if registry_helpers>1:raise ValueError('Ambiguous shared Hero.FindFirst fixture')
     files['Fixture.cs']=replace(files['Fixture.cs'],'public sealed class Hero {','public sealed class Hero { public static Hero Find(string id){AnimusForge.Probe.Live("hero-find");return AnimusForge.MyBehavior.CommitFixtureHeroes.FirstOrDefault(h=>h.Id==id);} public static Hero FindFirst(Func<Hero,bool> predicate){AnimusForge.Probe.Live("hero-find-first");return AnimusForge.MyBehavior.CommitFixtureHeroes.FirstOrDefault(predicate);}')
     files['Terminal.cs']=replace(files['Terminal.cs'],'public static void NoteConversationLineForExternal(string id)=>TerminalProbe.Event("note:"+id);','public static void NoteConversationLineForExternal(string id){TerminalProbe.Event("note:"+id);MyBehavior.CommitFixtureAfterNote(id);}')
     files['Terminal.cs']=replace(files['Terminal.cs'],'public static class InformationManager {','public static partial class InformationManager {')

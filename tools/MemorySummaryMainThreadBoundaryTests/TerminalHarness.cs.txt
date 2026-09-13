@@ -16,7 +16,7 @@ namespace TaleWorlds.Library {
  public sealed class InformationMessage { public string Text; public InformationMessage(string text){Text=text;} }
  public static class InformationManager { public static void DisplayMessage(InformationMessage message) { AnimusForge.TerminalProbe.Event("ui:"+message.Text); } }
 }
-namespace TaleWorlds.CampaignSystem.Settlements { public sealed class Settlement { public static Settlement CurrentSettlement=new(); } }
+namespace TaleWorlds.CampaignSystem.Settlements { public sealed partial class Settlement { public static Settlement CurrentSettlement=new(); } }
 namespace TaleWorlds.CampaignSystem {
  public readonly struct CampaignTime {
   public static CampaignTime Now { get { AnimusForge.Probe.Live("campaign-time"); return new(); } }
@@ -29,6 +29,13 @@ namespace AnimusForge.Refactor.Runtime {
  static class FeatureBridgeIds { public const string MemorySocialReports="memory-social-reports"; }
 }
 namespace AnimusForge {
+#if ADMISSION_PROOF
+ static class AdmissionProbe {
+  public static int Sanitizers,SanitizedRecords,Clones,ClonedBlocks;
+  public static void Reset(){Sanitizers=0;SanitizedRecords=0;Clones=0;ClonedBlocks=0;}
+  public static string Counts()=>$"sanitizers={Sanitizers} sanitized_records={SanitizedRecords} clones={Clones} cloned_blocks={ClonedBlocks}";
+ }
+#endif
  static class TerminalProbe {
   public static ConcurrentQueue<string> Events=new();
   public static string FailSaveId,FailRecentSaveId,FailEvent;
@@ -240,11 +247,39 @@ namespace AnimusForge {
    facts.RelatedHeroIds.Add("later mutation");Check(added.RelatedHeroIds.Count==1,"real major factory retained detached-facts alias");b.RecordNpcMajorAction(b.heroes["major"]," newly recorded major event "," TERMINAL-MAJOR ",facts);Check(b._npcMajorActions["major"].Count==3&&b._npcActionGlobalOrderCounter==4,"real major duplicate added new record/sequence");
    Release(b.requests.Single(),failure?Failed():Ok("NpcMajorSummary"));b.Finish(task);Check(b.terminalMajorCompleted.Single().IsObsolete&&b.requests.Count==1,"actual major writer failed to invalidate old source");Check(b._npcMajorActionSummaries["major"].Summary=="old summary"&&b._npcMajorActionSummaries["major"].LastSummarizedSequence==1&&job.RetryCount==0&&string.IsNullOrEmpty(job.LastError)&&b._npcMajorActionSummaryQueue.Contains(job),"old major success/failure overwrote new event source");Check(TerminalProbe.Count("ApplyMajorActionSummarySuccess")==0&&TerminalProbe.Count("MarkMajorActionSummaryFailure")==0&&!TerminalProbe.Events.Any(x=>x.StartsWith("popup:")||x.StartsWith("ui:AnimusForge 日结压缩完成"))&&!b._memorySummaryProcessing,"obsolete major side effects/presentation/release");MainReads();
   }
-  static void BlockWriterInFlight(bool failure){
+  static void BlockWriterInFlight(bool failure,bool unrenderedTimestamp=false){
    var b=TerminalOwner();var job=(MemoryOverviewJob)b.Seed("overview");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
-   var replacement=new List<CompressedMemoryBlock>{Block("overview",9),Block("overview",10)};replacement[1].Summary=" newly accepted daily block ";b.SaveCompressedMemoryBlocksById("overview",replacement);
-   Check(b._compressedMemoryBlocks["overview"][1].Summary=="newly accepted daily block"&&b._dirtyMemoryOverviewIds.Contains("overview"),"actual block Save did not publish sanitized replacement/dirty marker");
+   var replacement=b.LoadCompressedMemoryBlocksById("overview").Select(x=>x.CopyForSummary()).ToList();if(unrenderedTimestamp)replacement[1].CreatedUtcTicks=23;else replacement[1].Summary=" newly accepted daily block ";b.SaveCompressedMemoryBlocksById("overview",replacement);
+   Check((unrenderedTimestamp?b._compressedMemoryBlocks["overview"][1].CreatedUtcTicks==23:b._compressedMemoryBlocks["overview"][1].Summary=="newly accepted daily block")&&b._dirtyMemoryOverviewIds.Contains("overview"),"actual block Save did not publish sanitized replacement/dirty marker");
    Release(b.requests.Single(),failure?Failed():Ok("MemoryOverview"));b.Finish(task);Check(b.terminalOverviewCompleted.Single().IsObsolete&&b.requests.Count==1,"actual block writer failed to invalidate old overview source");Check(b._memoryOverviewStates["overview"].Summary=="old overview"&&b._memoryOverviewStates["overview"].IncludedBlockIds.SequenceEqual(new[]{"overview/9"})&&job.RetryCount==0&&string.IsNullOrEmpty(job.LastError)&&b._memoryOverviewQueue.Contains(job),"old overview success/failure overwrote replacement source");Check(TerminalProbe.Count("ApplyMemoryOverviewSuccess")==0&&TerminalProbe.Count("MarkMemoryOverviewFailure")==0&&!TerminalProbe.Events.Any(x=>x.StartsWith("popup:")||x.StartsWith("ui:AnimusForge 日结压缩完成"))&&!b._memorySummaryProcessing,"obsolete overview side effects/presentation/release");MainReads();
+  }
+  object RawSummaryState(string kind)=>kind=="major"?(object)_npcMajorActionSummaries[kind]:_memoryOverviewStates[kind];
+  void ChangeRawSummaryState(string kind,string change){
+   if(kind=="major"){
+    var state=_npcMajorActionSummaries[kind];
+    switch(change){case "summary-space":state.Summary="  "+state.Summary+"\r ";break;case "name-space":state.HeroName=" "+state.HeroName+" ";break;case "error-space":state.LastError=" ";break;case "error-null":state.LastError=null;break;case "negative-cursor":state.LastSummarizedSequence=-1;break;case "unrendered-ticks":state.UpdatedUtcTicks=97;break;default:throw new Exception("unknown raw major edit");}
+   }else{
+    var state=_memoryOverviewStates[kind];
+    switch(change){case "summary-space":state.Summary="  "+state.Summary+"\r ";break;case "name-space":state.HeroName=" "+state.HeroName+" ";break;case "error-space":state.LastError=" ";break;case "error-null":state.LastError=null;break;case "duplicate-id":state.IncludedBlockIds.Add(state.IncludedBlockIds[0]);break;case "empty-id":state.IncludedBlockIds.Add(" ");break;case "unrendered-ticks":state.UpdatedUtcTicks=97;break;default:throw new Exception("unknown raw overview edit");}
+   }
+  }
+  static void RawStateInFlight(string kind,string change,bool failure,bool afterParse){
+   var b=TerminalOwner();var job=b.Seed(kind);if(change=="negative-cursor")b._npcMajorActionSummaries[kind].LastSummarizedSequence=0;
+   if(afterParse)b.Seed("daily","held-daily");var task=b.StartTerminal();b.Until(()=>b.requests.Count==(afterParse?2:1));var held=afterParse?b.requests.Single(x=>x.Area=="CompressedMemory"):b.requests.Single();
+   bool FinishedTarget()=>kind=="major"?!b.terminalMajorCompleted.IsEmpty:!b.terminalOverviewCompleted.IsEmpty;
+   bool ObsoleteTarget()=>kind=="major"?b.terminalMajorCompleted.Single().IsObsolete:b.terminalOverviewCompleted.Single().IsObsolete;
+   if(afterParse){b.Until(FinishedTarget,()=>{foreach(var r in b.requests)if(!ReferenceEquals(r,held)&&!r.Done.Task.IsCompleted)Release(r,failure?Failed():Ok(r.Area));foreach(var d in b.delays)d.Done.TrySetResult(true);});Check(!ObsoleteTarget()&&!task.IsCompleted,"raw-state final-apply window was not established");}
+   string before=ComputeMemorySummaryFingerprint(b.RawSummaryState(kind));b.ChangeRawSummaryState(kind,change);string changed=ComputeMemorySummaryFingerprint(b.RawSummaryState(kind));Check(before!=changed,"raw fixture failed to change authoritative state");
+   Release(held,afterParse?Ok(held.Area):failure?Failed():Ok(held.Area));b.Finish(task);
+   Check((afterParse||ObsoleteTarget())&&ComputeMemorySummaryFingerprint(b.RawSummaryState(kind))==changed,"raw state edit was lost or missed: "+kind+"/"+change);
+   string domain=kind=="major"?"MajorActionSummary":"MemoryOverview";Check(TerminalProbe.Count("Apply"+domain+"Success")==0&&TerminalProbe.Count("Mark"+domain+"Failure")==0,"old success/failure reached real "+domain+" Apply/Mark after raw edit");
+   Check(b.requests.Count==(afterParse?(failure?4:2):1),"old raw-state response was retried");Check(!TerminalProbe.Events.Any(x=>x.StartsWith("popup:"))&&!b._memorySummaryProcessing,"obsolete raw state caused failure UI or leaked processing");
+   if(afterParse)Check(b.HasCompressedMemoryBlock("held-daily",10),"raw-state rejection discarded unrelated accepted Daily result");MainReads();
+  }
+  static void DailySaveUnrenderedMarker(bool failure){
+   var b=TerminalOwner();var job=(MemorySummaryJob)b.Seed("daily","a");var line=b._dailyMemoryDrafts["a"][0].Lines[0];line.MemoryCommitId=new string('A',64);line.MemoryCommitHash=new string('B',64);line.MemoryCommitPart="user";line.MemoryCommitOriginGameDay=10;line.MemoryCommitOriginGameDate="old origin date";
+   var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);line.MemoryCommitOriginGameDate="new origin date";b.SaveDailyMemoryDraftsById("a",b.LoadDailyMemoryDraftsById("a"));Check(b._dailyMemoryDrafts["a"][0].Lines[0].MemoryCommitOriginGameDate=="new origin date","actual Save sanitized away the intended valid marker edit");
+   Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));b.Finish(task);Check(b.Completed("a").IsObsolete&&b.requests.Count==1,"actual Daily Save of unrendered marker did not obsolete old response");AssertRejected(b,job);
   }
   static void PartialApplyFailure(bool weeklyTail){
    var b=TerminalOwner();b.Seed("daily","a");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);
@@ -262,8 +297,95 @@ namespace AnimusForge {
    else{Check(b.requests.Count==1&&b.HasCompressedMemoryBlock("a",10)&&!b._dailyMemoryDrafts.ContainsKey("a")&&TerminalProbe.Count("ApplyMemorySummarySuccess")==1,"unchanged real Apply did not save block/remove draft");Check(TerminalProbe.Count("weekly-block:a")==1&&TerminalProbe.Count("native-clear:a")==1,"real Apply downstream duplicate/missing");}
    Check(!b._memorySummaryProcessing,"normal completion not released");MainReads();
   }
+#if ADMISSION_PROOF
+  static MyBehavior AdmissionOwner(){var b=TerminalOwner();b.Seed("overview");b._memoryOverviewQueue.Clear();return b;}
+  static CompressedMemoryBlock EmptyAdmissionBlock(int day){var b=Block("overview",day);b.RichTitle="";b.Summary="";b.AfefLines.Clear();return b;}
+  // The reference predicate is the complete pre-change e77602f9 implementation,
+  // not a restatement of the new eligibility projection. All sanitizers remain real.
+  static void AdmissionOracle(string change,bool preSanitized){
+   var b=AdmissionOwner();var blocks=b._compressedMemoryBlocks["overview"];var state=b._memoryOverviewStates["overview"];
+   switch(change){
+    case "ordinary":break;
+    case "below-threshold":blocks.RemoveAt(2);break;
+    case "threshold-setting":DuelSettings.GetSettings().MemoryOverviewStartBlockCount=4;break;
+    case "failure":state.LastError=" old error ";break;
+    case "blank-error":state.LastError=" \r ";break;
+    case "no-state":b._memoryOverviewStates.Clear();break;
+    case "empty-summary":state.Summary=" \r ";break;
+    case "all-included":state.IncludedBlockIds=blocks.Select(x=>x.Id).ToList();break;
+    case "included-case":state.IncludedBlockIds=blocks.Select(x=>x.Id.ToUpperInvariant()).ToList();break;
+    case "title-twice":foreach(var x in blocks){x.RichTitle="[123][456]";x.Summary="";x.AfefLines.Clear();}break;
+    case "afef-only":foreach(var x in blocks){x.RichTitle="";x.Summary="";x.AfefLines=new(){null," "," fact "};}break;
+    case "afef-blank":foreach(var x in blocks){x.RichTitle="";x.Summary="";x.AfefLines=new(){null," \r "};}break;
+    case "first-empty-duplicate":var empty=EmptyAdmissionBlock(11);empty.Id=blocks[2].Id;blocks.Insert(0,empty);break;
+    case "first-invalid-owner":var invalid=EmptyAdmissionBlock(11);invalid.HeroId=" ";invalid.Id=blocks[2].Id;blocks.Insert(0,invalid);break;
+    case "empty-id":blocks[2].Id=" ";break;
+    case "padded-id":blocks[2].Id="  overview/11  ";state.IncludedBlockIds=blocks.Select(x=>x.Id.Trim()).ToList();break;
+    case "raw-id-distinct-trim-included":blocks[0].Id="x";blocks[1].Id=" x ";blocks[2].Id="y";state.IncludedBlockIds=new(){"x","y"};break;
+    case "raw-id-distinct-count":blocks[0].Id="x";blocks[1].Id=" x ";blocks[2].Id="y";state.IncludedBlockIds=new(){"x"};break;
+    case "other-owner":blocks[2].HeroId="another-owner";break;
+    case "negative-day":blocks[2].GameDayIndex=-1;break;
+    case "missing-owner":blocks[2].HeroId=" ";break;
+    case "null-record":blocks.Insert(0,null);break;
+    case "null-source":blocks=null;break;
+    default:throw new Exception("unknown admission fixture");
+   }
+   if(preSanitized)blocks=SanitizeCompressedMemoryBlocks(blocks);
+   string before=JsonConvert.SerializeObject(new{blocks,b._memoryOverviewStates});
+   bool expected=b.HasMemoryOverviewPendingBlocksOracle("overview",blocks);bool actual=b.HasMemoryOverviewPendingBlocks("overview",blocks);
+   Check(actual==expected,"eligibility differs from actual old sanitizer predicate: "+change+" preSanitized="+preSanitized);
+   Check(before==JsonConvert.SerializeObject(new{blocks,b._memoryOverviewStates}),"read-only admission predicate mutated caller source");
+   if(change=="title-twice")Check(actual==!preSanitized,"non-idempotent title normalization contract changed");MainReads();
+  }
+  static void AdmissionEnqueue(string change){
+   var b=AdmissionOwner();var blocks=b._compressedMemoryBlocks["overview"];var state=b._memoryOverviewStates["overview"];MemoryOverviewJob existing=null;
+   switch(change){
+    case "normal":break;
+    case "below-threshold":blocks.RemoveAt(2);break;
+    case "failure":state.LastError="failed";break;
+    case "included":state.IncludedBlockIds=blocks.Select(x=>x.Id).ToList();break;
+    case "title-twice":foreach(var x in blocks){x.RichTitle="[123][456]";x.Summary="";x.AfefLines.Clear();}break;
+    case "latest-filtered":var latest=EmptyAdmissionBlock(99);latest.RichTitle="[123][456]";latest.HeroName="  Latest Hero  ";latest.GameDate="  Last date  ";blocks.Add(latest);break;
+    case "duplicate":existing=new(){HeroId="overview",HeroName="Kept name",TriggerGameDayIndex=4,TriggerGameDate=""};b._memoryOverviewQueue.Add(existing);break;
+    default:throw new Exception("unknown enqueue fixture");
+   }
+   b.TryEnqueueMemoryOverviewForMemoryId(" overview ",change=="latest-filtered"?null:"  Supplied name  ",blocks);
+   bool reject=new[]{"below-threshold","failure","included","title-twice"}.Contains(change);
+   Check(b._memoryOverviewQueue.Count==(reject?0:1),"actual enqueue count changed for "+change);
+   if(!reject){var job=b._memoryOverviewQueue.Single();Check(job.TriggerGameDayIndex==(change=="latest-filtered"?99:11),"enqueue latest block no longer uses first-sanitized list");
+    Check(job.HeroName==(change=="latest-filtered"?"Latest Hero":change=="duplicate"?"Kept name":"Supplied name"),"enqueue name contract changed");
+    Check(job.TriggerGameDate==(change=="latest-filtered"?"Last date":"Summer 11"),"enqueue date contract changed");
+    if(existing!=null)Check(ReferenceEquals(job,existing),"duplicate overview replaced queue identity");
+   }MainReads();
+  }
+  static void AdmissionCost(){
+   var b=AdmissionOwner();var blocks=Enumerable.Range(1,2000).Select(x=>Block("overview",x)).ToList();
+   AdmissionProbe.Reset();bool expected=b.HasMemoryOverviewPendingBlocksOracle("overview",blocks);var old=AdmissionProbe.Counts();int oldCopies=AdmissionProbe.ClonedBlocks;
+   AdmissionProbe.Reset();bool actual=b.HasMemoryOverviewPendingBlocks("overview",blocks);var current=AdmissionProbe.Counts();
+   Check(expected&&actual&&oldCopies==2000,"cost fixture did not execute old complete clone predicate");
+   Check(AdmissionProbe.ClonedBlocks==0&&AdmissionProbe.Sanitizers==0,"eligibility projection still clones or sanitizes full block payloads");
+   Console.WriteLine("ADMISSION_COST path=predicate blocks=2000 old_"+old.Replace(" "," old_")+" current_"+current.Replace(" "," current_"));
+   AdmissionProbe.Reset();b.TryEnqueueMemoryOverviewForMemoryId("overview","NPC overview",blocks);
+   Check(b._memoryOverviewQueue.Count==1,"large admission did not publish queue job");Console.WriteLine("ADMISSION_COST path=enqueue blocks=2000 "+AdmissionProbe.Counts());MainReads();
+  }
+  static int RunAdmissionCases(){
+   TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string Name,Action Test)>();
+   foreach(var change in new[]{"ordinary","below-threshold","threshold-setting","failure","blank-error","no-state","empty-summary","all-included","included-case","title-twice","afef-only","afef-blank","first-empty-duplicate","first-invalid-owner","empty-id","padded-id","raw-id-distinct-trim-included","raw-id-distinct-count","other-owner","negative-day","missing-owner","null-record","null-source"})foreach(bool pre in new[]{false,true}){var c=change;var p=pre;cases.Add(($"oracle-{c}-pre-{p}",()=>AdmissionOracle(c,p)));}
+   foreach(var change in new[]{"normal","below-threshold","failure","included","title-twice","latest-filtered","duplicate"}){var c=change;cases.Add(("enqueue-"+c,()=>AdmissionEnqueue(c)));}cases.Add(("large-source-operation-count",AdmissionCost));
+   int failures=0;foreach(var test in cases){try{test.Test();Console.WriteLine("PASS "+test.Name);}catch(Exception ex){failures++;Console.WriteLine("FAIL "+test.Name+": "+ex.Message);}}
+   Console.WriteLine($"TERMINAL_RESULT mode=admission scenarios={cases.Count} failures={failures} actual_enqueue=true old_predicate_oracle=e77602f9 game_frame_time=NOT_TESTED");return failures==0?0:1;
+  }
+#endif
   public static int Main(){
+#if ADMISSION_PROOF
+   return RunAdmissionCases();
+#else
    TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string Name,Action Test)>{("fresh-publish-readback",FreshWriteAndEmptyRejection),("partial-apply-before-daily-save",()=>PartialApplyFailure(false)),("partial-apply-weekly-tail",()=>PartialApplyFailure(true)),("major-writer-old-success",()=>MajorWriterInFlight(false)),("major-writer-old-failure",()=>MajorWriterInFlight(true)),("block-writer-old-overview-success",()=>BlockWriterInFlight(false)),("block-writer-old-overview-failure",()=>BlockWriterInFlight(true)),("fresh-pre-save-failure",FreshSaveFailure),("recovery-clone-pre-save-failure",RecoveryClonePreSaveFailure),("recent-trim-keeps-markers",RecentTrimKeepsMarkers),("unchanged-success-real-apply",()=>UnchangedCompletion(false)),("unchanged-failure-real-mark",()=>UnchangedCompletion(true))};
+   foreach(var kind in new[]{"major","overview"})foreach(var change in kind=="major"?new[]{"summary-space","name-space","error-space","error-null","negative-cursor","unrendered-ticks"}:new[]{"summary-space","name-space","error-space","error-null","duplicate-id","empty-id","unrendered-ticks"})foreach(bool failure in new[]{false,true}){
+    var k=kind;var c=change;var f=failure;cases.Add(($"raw-state-provider-{k}-{c}-{f}",()=>RawStateInFlight(k,c,f,false)));
+    if(c=="summary-space"&&k=="major"||c=="negative-cursor"||c=="duplicate-id"||c=="empty-id")cases.Add(($"raw-state-final-{k}-{c}-{f}",()=>RawStateInFlight(k,c,f,true)));
+   }
+   foreach(bool failure in new[]{false,true}){var f=failure;cases.Add(($"daily-save-unrendered-marker-{f}",()=>DailySaveUnrenderedMarker(f)));cases.Add(($"block-save-unrendered-ticks-{f}",()=>BlockWriterInFlight(f,true)));}
    foreach(var mode in new[]{"prepared","missing-draft","conflicting-readback"}){var m=mode;cases.Add(("weekly-no-false-receipt-"+m,()=>WeeklyNoFalseReceipt(m)));}
    foreach(bool fail in new[]{false,true})foreach(bool after in new[]{false,true})foreach(bool save in new[]{false,true}){var f=fail;var a=after;var s=save;cases.Add(($"weekly-inflight-{f}-{a}-{s}",()=>WeeklyInFlight(f,a,s)));}
    foreach(bool fail in new[]{false,true})foreach(bool save in new[]{false,true}){var f=fail;var s=save;cases.Add(($"recent-only-{f}-{s}",()=>RecentOnly(f,s)));}
@@ -272,6 +394,7 @@ namespace AnimusForge {
    }
    int failures=0;foreach(var test in cases){try{test.Test();Console.WriteLine("PASS "+test.Name);}catch(Exception ex){failures++;Console.WriteLine("FAIL "+test.Name+": "+ex.Message);}}
    Console.WriteLine($"TERMINAL_RESULT scenarios={cases.Count} failures={failures} actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED");return failures==0?0:1;
+#endif
   }
  }
 }

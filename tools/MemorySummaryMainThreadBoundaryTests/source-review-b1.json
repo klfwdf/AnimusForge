@@ -489,17 +489,27 @@
       "signature": "private bool HasMemoryOverviewPendingBlocks(",
       "baselineSignature": "private bool HasMemoryOverviewPendingBlocks(",
       "line": 26957,
-      "sha256": "d0b47e3e31779215056fe5f70cbefee01409f10573c0dcadd4ac1faf4aa063e5",
+      "sha256": "89dfecbb0e24c4ecf9ca3553118329dd4bbddea9d6c17f554ca79ad464d86dc5",
       "baselineSha256": "84068d59abb0f92e6b1d90435656417167320a59a6cdb98bc2b00b89dda4b605",
       "evidence": [
-        "captured"
+        "captured",
+        "admission"
+      ],
+      "targetedCases": [
+        "oracle-title-twice-pre-False",
+        "oracle-title-twice-pre-True",
+        "oracle-first-empty-duplicate-pre-False",
+        "oracle-raw-id-distinct-count-pre-False",
+        "oracle-other-owner-pre-False",
+        "enqueue-title-twice",
+        "large-source-operation-count"
       ]
     },
     {
       "path": "MyBehavior.cs",
       "signature": "private MajorActionSummaryState GetMajorActionSummaryState(",
       "baselineSignature": "private MajorActionSummaryState GetMajorActionSummaryState(",
-      "line": 27039,
+      "line": 27051,
       "sha256": "8d6e83958890000151a72b7407d0ccc4cad33da79362b609c932a9b4876b50da",
       "baselineSha256": "1440f4d53a9c641121b88e1a3c6cb2724dbeac17c274132689885fed86a40065",
       "evidence": [
@@ -510,7 +520,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalDialogueHistory(",
       "baselineSignature": "public static void AppendExternalDialogueHistory(",
-      "line": 27671,
+      "line": 27683,
       "sha256": "4241cdfeb36886e1c73465a80b995ad41bd51fceb3ca6d2b45a6d12c591cf593",
       "baselineSha256": "e0ff60b95a5740d87064a237e644c55daa532b2e8d7238e308fab7795c7ae608",
       "evidence": [
@@ -521,7 +531,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalSceneDialogueHistory(",
-      "line": 27695,
+      "line": 27707,
       "sha256": "be0e4aecf26ca789533fdc23838a6b23ce47b4808f9a45b9aca3ccc72d17492a",
       "baselineSha256": "61b21fe4ab5b041288a52708946ca991ddd3c271a32df2fbb39eee30673db7e1",
       "evidence": [
@@ -532,7 +542,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroDialogueHistory(",
-      "line": 27708,
+      "line": 27720,
       "sha256": "d872c7be4c8c596f282ab852ac2c8d73cf14d7e2641cb9983c982badf2c76985",
       "baselineSha256": "29d45e998b70b8645ce7f5edb049fb6f69856093719bb3166e007b0595c10bf4",
       "evidence": [
@@ -543,7 +553,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
-      "line": 27721,
+      "line": 27733,
       "sha256": "00bb71e1de80054398872e1c0849315124db196071ff28d39ab18d263c87dfe0",
       "baselineSha256": "310ec210e62dcb68961e51f8f536567351a9067fa7e5bbf3273af63eb0d056a6",
       "evidence": [
@@ -557,12 +567,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50106,
+      "line": 50118,
       "sha256": "78261bc4882d632f24ae2b5ab00e45dbd8809d693f6de81516580d4bf29efad8",
       "baselineSha256": "5cc7f21759e292824bb974c4c560759ac77976478243eba2213b2195dad2db44",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -572,12 +582,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50180,
+      "line": 50192,
       "sha256": "3af489646e2b910040bdda07a79756a34ace55b560a41022bebaf9bba08a7b8b",
       "baselineSha256": "1d7015d8ac12ce452e64f495722d28a44b70f9680488e57782b94a36d100af42",
       "verificationLevel": "actual extracted method/closure execution plus structural guards",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -587,12 +597,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50218,
+      "line": 50230,
       "sha256": "0fb8f92c78b2d89afed8dd7f0c3c451ee08e3d580004c125f5628dd175063762",
       "baselineSha256": "249754eee4dbe0099b0a1bdd4e0041c6c64daf344bad4d0acb89ec5469507470",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -602,12 +612,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50248,
+      "line": 50260,
       "sha256": "078d20ad099ac6fdab1c6975deebce947cbacd4007e1fe1f96c0b8239199be59",
       "baselineSha256": "2dc5cf1ed7edd8b81d43eec58f039798c57f67daa2e17277dbc183024a443294",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -617,12 +627,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50278,
+      "line": 50290,
       "sha256": "5bf19d80b828e436d57f4b7a14dc0128c7006bf58eefb075f65f8a282af0f24f",
       "baselineSha256": "144f8db4cf2f36dbf3e08228fc5e5590d7f5c0dbcb9e661ad000fd4a791dda4a",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -632,12 +642,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50348,
+      "line": 50360,
       "sha256": "8d2d58ed846230326e5b56c212323e921b0a8ac1f56d92322304922d04c33814",
       "baselineSha256": "99dd71d92fd9c25517c34c027bf0b2db231193e35d6ebcdd3580f7a2d3ac09c9",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -647,12 +657,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50409,
+      "line": 50421,
       "sha256": "31927e9edf1b549e0699fc57a22ff4ddac7cc857444307adbd9447803b7986d3",
       "baselineSha256": "5b2d2becef7a15335347ad45288a4262ed8d3599911ad4ccd9ad0cecc4c94612",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -662,12 +672,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50441,
+      "line": 50453,
       "sha256": "bf7e6c0f370b3ec05146e9dc6d89a87ecbbac12bc1e1f7d8699ad13adf1d2721",
       "baselineSha256": "4201867d4b5c62fecff826fb639fa3404635ff20a7f9e6e1d9f6ae7279aacc67",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -677,12 +687,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 55018,
+      "line": 55030,
       "sha256": "9cad101c484d6a8516d41210650f1c83717ea6957d78bc8d95b610afac4a7831",
       "baselineSha256": "de972b72d399783cfbb3b87972f4e215d8c7c62f10e1316c07f13d7e940dfdc8",
       "verificationLevel": "actual extracted method/closure execution plus structural guards",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -692,12 +702,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 55215,
+      "line": 55227,
       "sha256": "0dfcaa1289fb5091c5c1afa18308d2dd1a39b7b54286aeb0da04adf90f8af2fd",
       "baselineSha256": "3a3323995a9e62cb6686588682b698b8c189a6c631dcb6485bbc6a27211a99da",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -707,12 +717,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 57123,
+      "line": 57135,
       "sha256": "8c87cbac510f1c9ce96be601ed0d4abdd0d415f9cdd506fc7374a157597e7f3c",
       "baselineSha256": "08cf2cf3387a75448450f61b54dfbbecc0ebacde51e73f7891bd0cbc376cabfe",
       "verificationLevel": "actual extracted method/closure execution plus structural guards",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     },
     {
@@ -722,12 +732,12 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 57651,
+      "line": 57663,
       "sha256": "1164e21ef32229e6e63bf87afa42b5ea252117f23579951beeee1c81ac7cf48f",
       "baselineSha256": "443f988853cd789d4fa7ab5e72676ebd95cd622dfc9767212c63f1a6e0dc74b2",
       "verificationLevel": "structural guards only; no full business execution",
       "targetedCases": [
-        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     }
   ],
@@ -739,22 +749,22 @@
       "observed": "BUSINESS_RESULT passed=36 failed=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
       "testSourceSha256": {
-        "runner": "c28a99cedd2d14d62c814b577e572722f79d9760cccca6a58c852c745be96fac",
+        "runner": "408277f2093fbf6ddf392879ef01442b3b3406698db08e8c27cb2a64794fcf57",
         "harness": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
       },
-      "extractedProductionEvidence": 48
+      "extractedProductionEvidence": 49
     },
     "captured": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt",
-      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it. Actual PlanEntry/Describe and dispatcher pass frozen job fingerprints into the same guarded Capture callback; same-reference edits before dispatch or while awaiting capture cannot send a stale request.",
-      "observed": "CAPTURED_RESULT pass=70 fail=0; copy scalar checks=351; independent mutable nodes=49; exact source field mutations=251; 9 planned-job unchanged/stale/queued-capture cases; hard budget NOT_PROVEN",
+      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it. Actual PlanEntry/Describe and dispatcher pass frozen job fingerprints into the same guarded Capture callback; same-reference edits before dispatch or while awaiting capture cannot send a stale request. Effective context checks use actual requirement/target getters and entity render resolvers over instrumented game objects, compared to the unchanged six Build methods; explicit/equivalent scene and denominator changes are accepted, effective changes rejected. Revalidation prohibits Capture/Clone/HasPending/Build calls. Initial binding and context/threshold getter mutation probes, retarget-before-observer guard and absent/present-null state identity are covered.",
+      "observed": "CAPTURED_RESULT pass=109 fail=0; reflection scalar checks=351; independent mutable nodes=49; exact raw field mutations=294; 28 compiled runtime mutation controls; observe mode 7 PASS: Capture1/Build1 per prompt across 1 or 3 attempts, checks3/7, clone2 daily or3 major/overview; hard budget NOT_PROVEN",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "a27c4da93f58bfb8668c9a78cb2695ed6314a8fb00426c730e20b1ae466fda1f",
-        "harness": "5421089f9db77531df3bd17b87e0ca4e98f0dfb962d1f940e52647ce52ab1b6d"
+        "runner": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
+        "harness": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4"
       },
-      "extractedProductionEvidence": 86
+      "extractedProductionEvidence": 98
     },
     "writers": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py",
@@ -784,21 +794,43 @@
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/CommitWritersHarness.cs.txt",
       "scope": "Actual commit/daily/recent/readback, text-editor closure, and single/global dialogue-import apply callbacks; remaining editor windows and aggregated all-data import windows are structural guard checks only. No real save/game acceptance.",
-      "observed": "COMMIT_WRITERS_RESULT scenarios=49 failures=0",
+      "observed": "COMMIT_WRITERS_RESULT scenarios=51 failures=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/manifest.json",
       "testSourceSha256": {
-        "runner": "9ea8d93ab9acdd5294699379fdff81e9ed29945e57f5141e3f455e123b4ec114",
-        "harness": "a038c37e341fc666eba6a4bdbbdf4e2d9bb8d637909c97725b1a48ebda3d1769"
+        "runner": "565e18d55d25588d372e564e517e601ef9470429ff840b912cbb9a3ef968d89f",
+        "harness": "2fc7214de09f87beed9b24b811e06a726f49fae43a343a3f28af657d13296747"
       },
       "additionalTestSourceSha256": {
-        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "2f0ae4488a0bac2e1168baa4941b2242e465ca48f7802c0a5726abc8f1e3de09",
-        "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "5bfe5d6850feae6fdfc6febd3c393fa6db9be06676a7439bad99aec5e96b02de"
+        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "7c1363766cfe639c85d1e9e7e03e38c4014e558683f4b6fbae9b75d7e68623aa",
+        "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "408277f2093fbf6ddf392879ef01442b3b3406698db08e8c27cb2a64794fcf57",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
       },
-      "extractedProductionEvidence": 56
+      "extractedProductionEvidence": 237
+    },
+    "admission": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt",
+      "scope": "Actual TryEnqueueMemoryOverviewForMemoryId and current pending predicate compared against the extracted e77602f9 clone+sanitize predicate oracle on raw and pre-sanitized inputs. Covers non-idempotent title stripping, raw-ID duplicate occupancy before content filtering, trim-at-inclusion semantics, other owner IDs, eligibility, LastError and threshold. Operation counts use 2000 blocks; not game time or hard-budget proof.",
+      "observed": "TERMINAL_RESULT mode=admission scenarios=54 failures=0; 5 compiled runtime mutation controls",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/admission-current/manifest.json",
+      "additionalTestSourceSha256": {
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "408277f2093fbf6ddf392879ef01442b3b3406698db08e8c27cb2a64794fcf57",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
+      },
+      "extractedProductionEvidence": 183,
+      "testSourceSha256": {
+        "runner": "7c1363766cfe639c85d1e9e7e03e38c4014e558683f4b6fbae9b75d7e68623aa",
+        "harness": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab"
+      }
     }
   },
   "testSourceHashNormalization": "utf8-no-bom-lf",
-  "productionFileSha256": "e86ec86af7660bda774757dbae73d0d59010a3ba8a582f4254f673b686fd55a0",
+  "productionFileSha256": "ddfd2de541206d0751fae488ea945850575dd11f971a16c5d57946d280c457da",
   "deletedDeclarations": [
     {
       "path": "MyBehavior.cs",
