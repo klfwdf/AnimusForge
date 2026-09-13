@@ -81,3 +81,19 @@ G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/ru
 - 完整恢复load/retention、其余窗口实机UI、广泛导入组合、LIVE/SAVE仍未验；继续B1，不提前进入B2。
 
 新套复现：`python tools/MemorySummaryMainThreadBoundaryTests/run_planning.py`、`python tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py`。每套`--help`列出反例，测试失败与工具/编译失败必须区分。
+
+## B1 大来源 / 上下文 / overview 资格联合验证（2026-09-13，本候选）
+
+本节覆盖上方历史数字；不把 B1 标为整批合格。实际生产入口是 `MyBehavior.MemorySummaryInput.cs` 的 Capture → Execute → IsCurrent 与 `MyBehavior.cs` 的 `HasMemoryOverviewPendingBlocks`。旧六个 Build/三个 Parse、Apply/Mark、Prompt 文字、存档身份不变。
+
+- `run_captured.py`：109 场景；保留原 70，增加有效上下文/等效设置与场景、初始资格、getter 同步改源、retarget、state dictionary absent/null。设置 getter、重大履历名字 resolver 使用实际提取源码；游戏 registry/HTTP/时钟为替身。
+- `run_captured.py --observe-rebuilds`：7 场景运行真实 Capture/Execute/retry 与实际最终 IsCurrent，记录调用和分配；普通成功与第三次成功都只 Capture 一次、各 Build 一次；重复检查无 Clone/Build。该观察不执行整个 Process/Apply，不能冒充游戏帧时。
+- `run_terminal.py`：85 场景；`run_commit_writers.py`：51 场景，新增实际 Import 覆盖在途成功/失败结果。`run_terminal.py --source-baseline e77602f9` 只替换旧 Input，85 场景中 30 个 raw state 漏检变红，其余 55 绿；保留精确历史输入和生成清单。
+- `run_terminal.py --admission-only`：54 场景；真实旧 `e77602f9` predicate 作为 oracle，包含 raw/已清理两种输入、首个无效记录占用 ID、未 Trim 的重复 ID 计数、非匹配块 owner、非幂等双层日期标题、真实 enqueue 和 2000 块成本。
+- admission 反例用 `--admission-only --admission-mutate <name>`，准确参数以 `--help` 为准；正常返回 0，必须 BUILD_PASS 后断言失败才算有效反例。不要把恢复旧 clone 的成本红例说成旧资格业务错误。
+
+### 新边界不冻结主体功能
+
+后续改变 Build/Parse 的游戏依赖时，同时更新 `CaptureMemorySummaryContextFingerprint` 和对应正反对照；不是永久锁定现有 Prompt。Daily 保存实际 targetChars、header 顺序/场景 fallback 描述符，Major 保存实际被解析名字的去重 ID，Overview 保留目标与动态门槛。来源 raw 全字段摘要独立于净化后正文；原地编辑、导入和格式等价改动也能拒绝旧结果。
+
+清理掉的是重验时重新捕获/复制/渲染，以及资格查询中丢弃的大图复制和排序。权威写入 sanitizer、仍被 planner 使用的三个 HasPending 入口继续保留。完整 raw hash、首次复制、Apply/public/weekly 与外围维护仍有原子扫描；此次没有证明深记录硬预算、实机或旧存档通过。

@@ -9,9 +9,10 @@ ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 MODELS=['DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemorySummaryExecutionResult','MemoryOverviewState','MemoryOverviewJob','MemoryOverviewExecutionResult','MajorActionSummaryState','MajorActionSummaryJob','MajorActionSummaryExecutionResult','DailySummaryQueueResult']
 NAMES='''RunDailySummaryQueueItemsAsync ExecuteDailySummaryQueueItemAsync ExecuteMemorySummaryJobAsync ExecuteMajorActionSummaryJobAsync ExecuteMemoryOverviewJobAsync FindMemoryDraft HasMemorySummaryJobStillPending HasMajorActionSummaryJobStillPending HasMemoryOverviewJobStillPending HasMajorActionsNeedingSummary HasMemoryOverviewPendingBlocks GetMemoryOverviewState GetMajorActionSummaryState SanitizeMemoryOverviewState SanitizeMajorActionSummaryState GetMajorActionMaxCursor IsNpcActionAfterSummaryCursor IsMemoryBlockIncludedInOverview BuildCompressedMemoryBlockId NormalizeMemoryHeroId IsNonHeroMemoryId CountDailyMemorySummarySourceChars BuildMemorySummarySystemPrompt BuildMemorySummaryUserPrompt BuildMajorActionSummarySystemPrompt BuildMajorActionSummaryUserPrompt GetMajorActionSummaryTargetChars BuildMajorActionSummarySourceLine BuildMemoryOverviewSummarySystemPrompt BuildMemoryOverviewSummaryUserPrompt BuildMemoryOverviewBlockSourceText BuildCompressionWritingRequirementsPromptSection TryParseMemorySummaryResponse TryParseMajorActionSummaryResponse TryParseMemoryOverviewResponse TryParseBestSummaryJsonObject TryParseTaggedSummaryObject AddTaggedSummaryProperty TryExtractTaggedBlock TryParseLooseSummaryJsonObject AddLooseJsonStringProperties TryExtractLooseJsonStringProperty SkipJsonWhitespace TryReadLooseJsonStringValue BuildRequiredJsonFieldDescription BuildRequiredJsonFieldGroupDescription HasAnyNonWhiteSpaceJsonProperty IsEmptySummaryMarker GetJsonStringIgnoreCase GetJsonPropertyIgnoreCase BuildSummaryJsonParseFailureMessage StripJsonResponseEnvelope ExtractJsonObjectPayloads StripMemoryTitleDateTime FormatMemoryHourRange BuildDailyMemoryLineForPrompt ResolveMemoryLineSceneForPrompt SanitizeDailyMemoryDrafts SanitizeCompressedMemoryBlocks SanitizeNpcActionEntries SanitizeWeeklyMemoryMaterialTriggers NormalizeWeeklyMemoryMaterialTags ExtractWeeklyMemoryMaterialTags NormalizeWeeklyMemoryMaterialTagText BuildWeeklyMemoryMaterialTriggerStableKey ComputeWeeklyMemoryMaterialHash CopyFactIds AddUniqueId'''.split()
-MUTATIONS=['retain-payload','reuse-source','ignore-fingerprint','worker-parse','skip-retry-source','drop-afef','drop-overview-ids','drop-major-cursor','background-sanitize-alias','main-sanitize-detach','drop-source-receipt','ignore-wave-lifetime','drop-nested-copy','drop-scalar-copy','omit-stream-source','drop-plan-expected','skip-planned-source-check']
+NAMES += '''GetMemoryCompressionDenominatorFromSettings GetMemoryOverviewStartBlockCountFromSettings GetMemoryOverviewTargetCharsFromSettings StripBattlePlayerMarker RenderNpcActionPromptText RewriteNpcActionSecondPersonPronouns BuildNpcActionMetadataNarrativeSuffix TranslateNpcActionKindForPrompt ResolveHeroName ResolveClanName ResolveKingdomName ResolveDisplayNameBySettlementEntry'''.split()
+MUTATIONS=['retain-payload','reuse-source','ignore-fingerprint','worker-parse','skip-retry-source','drop-afef','drop-overview-ids','drop-major-cursor','background-sanitize-alias','main-sanitize-detach','drop-source-receipt','ignore-wave-lifetime','drop-nested-copy','drop-scalar-copy','omit-stream-source','drop-plan-expected','skip-planned-source-check','ignore-context','rebuild-on-check','clone-on-check','stale-pre-getter-view','skip-initial-binding','skip-retarget-guard','skip-overview-threshold','raw-denominator-context','raw-scene-context','ignore-initial-retry','omit-state-presence']
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args()
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--observe-rebuilds',action='store_true');a=ap.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')
     spec=importlib.util.spec_from_file_location('capture_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     source=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig');snippets=[];manifest=[]
@@ -24,6 +25,11 @@ def main():
         if 'ExecuteDailySummaryQueueItemAsync(' in sig:
             opening=body.index('{')+1
             body=body[:opening]+'\n System.Threading.Interlocked.Increment(ref Probe.QueueDispatches);'+body[opening:]
+        if any(name+'(' in sig for name in ['BuildMemorySummarySystemPrompt','BuildMemorySummaryUserPrompt','BuildMajorActionSummarySystemPrompt','BuildMajorActionSummaryUserPrompt','BuildMemoryOverviewSummarySystemPrompt','BuildMemoryOverviewSummaryUserPrompt']):
+            name=re.search(r'(\w+)\($',sig)[1];opening=body.index('{')+1
+            body=body[:opening]+'\n Probe.Call("'+name+'");'+body[opening:]
+        if any(name+'(' in sig for name in ['HasMemorySummaryJobStillPending','HasMajorActionSummaryJobStillPending','HasMemoryOverviewJobStillPending']):
+            opening=body.index('{')+1;body=body[:opening]+'\n Probe.Call("HasPending");'+body[opening:]
         snippets.append(body)
     for name in MODELS:add('private sealed class '+name)
     add('private class NpcActionEntry')
@@ -41,24 +47,48 @@ def main():
         if not match or '=>' not in match.group():raise ValueError('Missing expression-bodied recovery guard '+name)
         body=match.group();snippets.append(body)
         manifest.append(dict(file='MyBehavior.MemoryRecovery.cs',signature=name,line=recovery[:match.start()].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
-    product='using System; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading.Tasks; using Newtonsoft.Json.Linq; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
+    product='using System; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading.Tasks; using Newtonsoft.Json.Linq; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
     capture=(ROOT/'MyBehavior.MemorySummaryInput.cs').read_text(encoding='utf-8-sig')
+    for sig,label in [('private MemorySummaryInput CaptureMemorySummaryInput(','Capture'),('private bool IsMemorySummaryInputCurrent(','Check'),('private static T CloneMemorySummarySource<T>(', 'Clone'),('private static string ComputeMemorySummaryFingerprint(', 'Fingerprint')]:
+        body=ex.declaration(capture,sig);opening=body.index('{')+1
+        capture=capture.replace(body,body[:opening]+'\n Probe.Call("'+label+'");'+body[opening:],1)
     old='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
     assert capture.count(old)==1
     capture=capture.replace(old,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
     def mutation(text,old,new):
         assert text.count(old)==1,old
         return text.replace(old,new)
-    if a.mutate=='retain-payload':
+    if a.mutate=='omit-state-presence':
+        assert capture.count(', StatePresent = statePresent')==2
+        capture=capture.replace(', StatePresent = statePresent','')
+    elif a.mutate=='ignore-context':capture=mutation(capture,'if (!string.Equals(CaptureMemorySummaryContextFingerprint(input), input.ContextFingerprint, StringComparison.Ordinal)) return false;','/* fault: context ignored */')
+    elif a.mutate=='rebuild-on-check':
+        capture=mutation(capture,'return IsMemorySummaryInputCurrent(input) ? input : null;','return input;')
+        old_check=ex.declaration(capture,'private bool IsMemorySummaryInputCurrent(')
+        capture=mutation(capture,old_check,'private bool IsMemorySummaryInputCurrent(MemorySummaryInput input) { Probe.Call("Check"); if(input==null)return false; var current=CaptureMemorySummaryInput(input.QueueJob,input.Generation); return current!=null && string.Equals(current.SourceFingerprint,input.SourceFingerprint,StringComparison.Ordinal) && string.Equals(current.ContextFingerprint,input.ContextFingerprint,StringComparison.Ordinal); }')
+    elif a.mutate=='clone-on-check':capture=mutation(capture,'var initialSource = ReadMemorySummarySource(input.QueueJob, input.Generation);','CloneMemorySummarySource(input.Job); var initialSource = ReadMemorySummarySource(input.QueueJob, input.Generation);')
+    elif a.mutate=='stale-pre-getter-view':capture=mutation(capture,'var source = ReadMemorySummarySource(input.QueueJob, input.Generation);','var source = initialSource;')
+    elif a.mutate=='skip-initial-binding':capture=mutation(capture,'return IsMemorySummaryInputCurrent(input) ? input : null;','return input;')
+    elif a.mutate=='skip-retarget-guard':capture=mutation(capture,'!string.Equals(initialSource.HeroId, input.HeroId, StringComparison.OrdinalIgnoreCase)','false')
+    elif a.mutate=='skip-overview-threshold':capture=mutation(capture,'if (input.Job is MemoryOverviewJob && input.OverviewBlockCount < GetMemoryOverviewStartBlockCountFromSettings()) return false;','/* fault: dynamic threshold ignored */')
+    elif a.mutate=='raw-denominator-context':capture=mutation(capture,'Math.Max(80, input.Context.DailySourceCharCount / Math.Max(1, GetMemoryCompressionDenominatorFromSettings()))','GetMemoryCompressionDenominatorFromSettings()')
+    elif a.mutate=='raw-scene-context':
+        original=ex.declaration(capture,'private static object CaptureMemorySummaryDailySceneContext(')
+        capture=mutation(capture,original,'private static object CaptureMemorySummaryDailySceneContext(MemorySummaryContextDependencies context) { return new {Day=GetCurrentGameDayIndexSafe(),Scene=ResolveCurrentMemorySceneLabel()}; }')
+    elif a.mutate=='ignore-initial-retry':
+        for kind in ['daily','major','overview']:capture=mutation(capture,'if ('+kind+'.RetryCount >= 3) return null;','/* fault: initial retry gate omitted */')
+    elif a.mutate=='retain-payload':
         for field in ['Draft','Actions','Blocks','Overview','SystemPrompt','UserPrompt']:
             capture=mutation(capture,'result.Source.'+field+' = null;','/* fault: retained request payload */')
     elif a.mutate=='reuse-source':capture=mutation(capture,'return (T)copy;','return value;')
     elif a.mutate=='drop-nested-copy':product=mutation(product,'copy.Tags = Tags?.ToList();','copy.Tags = Tags;')
     elif a.mutate=='drop-scalar-copy':product=mutation(product,'var copy = (DailyMemoryLine)MemberwiseClone();','var copy = (DailyMemoryLine)MemberwiseClone(); copy.MemoryCommitOriginGameDate = "";')
-    elif a.mutate=='omit-stream-source':capture=mutation(capture,'Source = sourceData','Source = (object)null')
+    elif a.mutate=='omit-stream-source':
+        capture=mutation(capture,'SourceFingerprint = ComputeMemorySummaryFingerprint(source.Identity)','SourceFingerprint = ComputeMemorySummaryFingerprint((object)null)')
+        capture=mutation(capture,'string.Equals(ComputeMemorySummaryFingerprint(source.Identity),','string.Equals(ComputeMemorySummaryFingerprint((object)null),')
     elif a.mutate=='drop-plan-expected':product=mutation(product,'expectedJobFingerprint = planned.JobFingerprint;','expectedJobFingerprint = null;')
     elif a.mutate=='skip-planned-source-check':capture=mutation(capture,'if (expectedJobFingerprint != null && !string.Equals(expectedJobFingerprint,','if (false && !string.Equals(expectedJobFingerprint,')
-    elif a.mutate=='ignore-fingerprint':capture=mutation(capture,'string.Equals(current.SourceFingerprint, input.SourceFingerprint, StringComparison.Ordinal)','true')
+    elif a.mutate=='ignore-fingerprint':capture=mutation(capture,'if (source == null || !string.Equals(ComputeMemorySummaryFingerprint(source.Identity),\n            input.SourceFingerprint, StringComparison.Ordinal)) return false;','if (source == null) return false;')
     elif a.mutate=='worker-parse':capture=mutation(capture,'\n                accepted = await RunMemorySummaryMainThreadAsync(generation, delegate','\n                accepted = await Task.Run(delegate')
     elif a.mutate=='skip-retry-source':capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryMainThreadAsync','false && !await RunMemorySummaryMainThreadAsync')
     elif a.mutate=='drop-afef':product=mutation(product,'AfefLines = afefLines,','AfefLines = new List<string>(),')
@@ -75,18 +105,18 @@ def main():
         product=product.replace(anchor,'sourceEntry' if a.mutate=='background-sanitize-alias' else 'CloneMemorySummarySource(sourceEntry)')
     deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'
     if not deps.is_file():raise ValueError('Existing Newtonsoft DLL missing; no downloads allowed')
-    out=HERE/'.generated/captured'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+    out=HERE/'.generated/captured'/(a.mutate or ('observe-rebuilds' if a.observe_rebuilds else 'current'));out.mkdir(parents=True,exist_ok=True)
     files={'Product.cs':product,'Input.cs':capture,'Boundary.cs':(ROOT/'MyBehavior.MemorySummaryMainThread.cs').read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'CapturedHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
     for name,data in files.items():(out/name).write_bytes(data.encode())
-    metadata=dict(mutation=a.mutate,declarations=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},production_sha256={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySummaryMainThread.cs','MyBehavior.MemorySummaryPlanning.cs']},seams=['Queue dispatcher entry count probe without changed conditions','Gateway HTTP boundary scripted TCS','Task.Delay -> controlled clock','TaleWorlds/game rendering/settings lookups are instrumented fixtures','legacy action repair/suppression and public material normalization are fixtures'],limits=['No live provider/game/save or hard frame-time/record budget proof','Does not execute Apply/Mark/final queue Process (separate business suite)'])
+    metadata=dict(mutation=a.mutate,observe_rebuilds=a.observe_rebuilds,declarations=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},production_sha256={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySummaryMainThread.cs','MyBehavior.MemorySummaryPlanning.cs']},seams=['Capture/check/clone/hash and six Build entry call counters without changed business conditions','Queue dispatcher entry count probe without changed conditions','Gateway HTTP boundary scripted TCS','Task.Delay -> controlled clock','TaleWorlds/game rendering/settings lookups are instrumented fixtures','legacy action repair/suppression and public material normalization are fixtures'],limits=['No live provider/game/save or hard frame-time/record budget proof','Does not execute Apply/Mark/final queue Process (separate business suite)'])
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
     dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT.parent/'.dotnet-sdk/dotnet.exe')))
     env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     (out/'build.log').write_bytes((build.stdout+build.stderr).encode())
     if build.returncode:print(build.stdout+build.stderr);return 2
-    run=subprocess.run([str(dotnet),str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
-    (out/'run.log').write_bytes((run.stdout+run.stderr).encode());print('BUILD_PASS captured='+str(a.mutate or 'current'));print(run.stdout+run.stderr,end='')
+    run=subprocess.run([str(dotnet),str(out/'bin/Release/net8.0/Proof.dll')]+(['--observe-rebuilds'] if a.observe_rebuilds else []),cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
+    (out/'run.log').write_bytes((run.stdout+run.stderr).encode());print('BUILD_PASS captured='+str(a.mutate or ('observe-rebuilds' if a.observe_rebuilds else 'current')));print(run.stdout+run.stderr,end='')
     return run.returncode if 'CAPTURED_RESULT' in run.stdout else 2
 if __name__=='__main__':
     try: code=main()

@@ -43,6 +43,7 @@ METHODS = [
     "private static void GetMajorActionMaxCursor(",
     "private static bool IsMemoryBlockIncludedInOverview(",
     "private static int CountDailyMemorySummarySourceChars(",
+    "private static string StripMemoryTitleDateTime(",
     "private static string BuildCompressedMemoryBlockId(",
     "private static string NormalizeMemoryHeroId(", "private static bool IsNonHeroMemoryId(",
     "private void QueueDirtyMemoryOverviewCandidatesForDeferredScan(",
@@ -184,7 +185,7 @@ def build_sources(original, mutation):
         boundary = boundary.replace("ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this)", "true")
     elif mutation == "ignore-generation":
         boundary = boundary.replace("SaveRuntimeGuard.IsCurrentGeneration(generation)", "true")
-    prefix = "using Newtonsoft.Json; using System; using System.IO; using System.Text; using System.Security.Cryptography; using System.Diagnostics; using System.Collections.Generic; using System.Linq; using System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library;\nnamespace AnimusForge { public partial class MyBehavior {\n"
+    prefix = "using System.Text.RegularExpressions; using Newtonsoft.Json; using System; using System.IO; using System.Text; using System.Security.Cryptography; using System.Diagnostics; using System.Collections.Generic; using System.Linq; using System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library;\nnamespace AnimusForge { public partial class MyBehavior {\n"
     manifest = dict(source_revision=BASELINE if original else subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         production_file_sha256=hashlib.sha256(source.encode()).hexdigest(), declarations=positions,

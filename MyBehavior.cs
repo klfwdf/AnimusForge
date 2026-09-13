@@ -26956,23 +26956,35 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool HasMemoryOverviewPendingBlocks(string heroId, List<CompressedMemoryBlock> blocks)
 	{
-		List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(CloneMemorySummarySource(blocks));
-		if (sanitizedBlocks.Count < GetMemoryOverviewStartBlockCountFromSettings())
+		// This is a read-only eligibility query, not a publication/sanitization owner.
+		// Project exactly the fields used by Count/IsMemoryBlockIncludedInOverview
+		// after ONE SanitizeCompressedMemoryBlocks pass. Do not clone/sort unrelated
+		// scenes, AFEF text or weekly trigger graphs just to discard them here.
+		List<string> blockIds = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
 		{
-			return false;
+			if (block == null) continue;
+			string ownerId = NormalizeMemoryHeroId(block.HeroId);
+			if (string.IsNullOrWhiteSpace(ownerId) || block.GameDayIndex < 0) continue;
+			string blockId = string.IsNullOrWhiteSpace(block.Id) ? BuildCompressedMemoryBlockId(ownerId, block.GameDayIndex) : block.Id;
+			// The original sanitizer reserves an untrimmed ID even when its first
+			// block later fails content validation. Keep that ordering and identity.
+			if (!seen.Add(blockId)) continue;
+			string title = StripMemoryTitleDateTime((block.RichTitle ?? "").Trim());
+			bool hasContent = !string.IsNullOrWhiteSpace(block.Summary)
+				|| (block.AfefLines?.Any(line => !string.IsNullOrWhiteSpace(line)) ?? false)
+				|| !string.IsNullOrWhiteSpace(title);
+			if (hasContent) blockIds.Add(blockId.Trim());
 		}
+		// Do not deduplicate the trimmed list: raw IDs " x " and "x" count as two
+		// blocks, but both match the same IncludedBlockId in the original query.
+		if (blockIds.Count < GetMemoryOverviewStartBlockCountFromSettings()) return false;
 		MemoryOverviewState state = GetMemoryOverviewState(heroId);
-		if (state != null && !string.IsNullOrWhiteSpace(state.LastError))
-		{
-			// A completed three-attempt failure stays visible for manual repair, but must not auto-enqueue forever.
-			return false;
-		}
-		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
-		{
-			return true;
-		}
+		if (state != null && !string.IsNullOrWhiteSpace(state.LastError)) return false;
+		if (state == null || string.IsNullOrWhiteSpace(state.Summary)) return true;
 		HashSet<string> included = new HashSet<string>(state.IncludedBlockIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-		return sanitizedBlocks.Any((CompressedMemoryBlock x) => !IsMemoryBlockIncludedInOverview(x, included));
+		return blockIds.Any(id => !included.Contains(id));
 	}
 
 	private bool HasMemoryOverviewJobStillPending(MemoryOverviewJob job)
