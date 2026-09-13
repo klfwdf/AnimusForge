@@ -1,11 +1,12 @@
 # AF 主体重构：从当前基线到收尾评审前
 
-版本：v1，2026-09-13。**状态：P1-01 ACTIVE / 自动接续中；P1–P6 尚未完成，D-A–D-E 未决定项继续待审。**
+版本：v1，2026-09-13。**状态：P1-01 完成层 OFFLINE_VERIFIED；下一项 P1-02，P1–P6 尚未完成，D-A–D-E 未决定项继续待审。**
 
 ### 当前执行记录
 
-- 2026-09-13，单代理 P1-01 ACTIVE，基线 `9153aac9`，生产仍 `9040d184`；fetch 后远端 `bd2ed35f` 未前进。意图：在现有 `tools/MemorySummaryMainThreadBoundaryTests/` 增加实际业务方法红绿回放，owner 为 Memory completion 测试；根 HANDOFF/本计划记录证据。不改生产、Prompt、默认、存档身份、构建或其他作者文件。
-- 验证目标：编译执行旧/新 Process、实际 Apply/Mark/cleanup/release；强制跨线程 await，观察三类状态、失败/迟到/换 owner、额外 overview 波次；业务调用点 mutation 必须在编译成功后运行失败。provider/游戏/底层存储为明确替身，不冒充输入快照、实际 provider、实机或预算已通过。保留原 helper 回归；P1-02/03 仍另有缺口。
+- 首轮 P1-01 已完成本轮范围：意图检查点 `9a80c570`，测试提交 `2c90ef8a`；生产仍 `9040d184`，远端仍 `bd2ed35f`。单代理只改现有完成层测试与交接，未改生产、默认、Prompt、存档身份或构建。
+- 实际旧/新 Process + Apply/Mark/cleanup/release 回放：当前 14/14 场景；旧 `e40c92d7` 编译执行后 2 PASS / 12 FAIL；14 个故障注入全部编译成功并运行失败。原 helper 17、UI 85、history 852 通过。完整范围、坐标和复现见第 10 节，不代表真实 Execute/输入快照或游戏验收完成。
+- 下一项 P1-02：真实积压用例见证一次 Tick 应用 12 个 daily；另见证过期结果没有写入，却仍计入完成提示并再次规划 overview。预算与接受回执/计数需一并沿实际 owner 修正，不能只数两个回调或只过滤提示文本。之后 P1-03/04。
 
 编制时只授权写计划；用户随后明确要求自动运行。现有 `af-7-8` 已设为 ACTIVE，每小时在当前任务从 P1 自动推进范围明确且依赖满足的工作，未决定的 API/扩展/融合/实机权限仍须确认。终点为 `READY_FOR_CLOSEOUT_REVIEW`（可进入收尾评审），不是阶段 8 DONE、已发布或零 BUG；到达终点或只剩外部阻塞时自动暂停并交接，不自动执行推送、部署、默认迁移或广泛删旧。
 
@@ -49,7 +50,7 @@ P0 是已具备的起点；P1–P6 为本次新计划。每个阶段下的完整
 | 阶段 | 要达到的结果 | 主要依赖 | 出口 / 当前状态 |
 |---|---|---|---|
 | P0 基线与范围 | 锁定功能对照来源、发布范围和可复现构建 | 当前已确认主体范围；D-A/D-B 只阻塞相应外部扩展 | 基线已具备；范围清单待补，不能直接开始删旧 |
-| P1 记忆与线程可靠性 | 真实业务回归、实际处理预算、输入快照与来源重验 | P0 | 三类 summary 从捕获到提交可复现，关键故障反例可失败；未开始 |
+| P1 记忆与线程可靠性 | 真实业务回归、实际处理预算、输入快照与来源重验 | P0 | 完成层真实回归通过；实际预算、捕获与来源一致性仍待实施 |
 | P2 三渠道主体闭环 | Native/Scene/Courier、Prompt/标签/记忆/TTS 责任收口 | P1 的共享记忆安全边界；各功能基线 | 原主体功能逐项对齐，真实调用链与失败语义明确；未开始 |
 | P3 内部模块接口稳定 | 明确登记/生命周期、贡献、动作/结果 owner 与薄桥 | P2 的共享协议；现有三组 ports | 所选制作组接缝真实接入且隔离可证明，不改其业务；未开始 |
 | P4 子 MOD 最小可用 API | 经选择的提交/结果/取消及生命周期，兼容旧公开面 | 对应 P2 渠道 + P3 稳定边界；D-A/D-B | 独立示例消费者走完整主体链；未开始，开放范围待确认 |
@@ -222,4 +223,50 @@ P4 的具体方法签名、DTO 和版本扩展方式在实现前定稿，不在�
 - [Courier 深层准备说明](../audits/2026-09-09-courier-thread-boundary-plan.md)。
 - [旧 A01–D03 清单](af-core-review-checklist-20260910.md)：历史要求对照，不取代本计划的当前顺序/状态。
 
-计划编制本身仅核对 Git、交接、双 Skill、功能清单与坐标，没有实施生产修改。随后本次自动化设置已验证 ACTIVE、每小时运行、沿用原目标任务；每个获准工作项在实际开始时才标为 ACTIVE，完成须有证据，尚未决定的项目维持待决。设置自动化不等于 P1 已开始或任何功能已完成。
+**历史：计划/自动化设置时快照（首次执行结果以上方和第 10 节为准）。** 计划编制本身仅核对 Git、交接、双 Skill、功能清单与坐标，没有实施生产修改。随后本次自动化设置已验证 ACTIVE、每小时运行、沿用原目标任务；每个获准工作项在实际开始时才标为 ACTIVE，完成须有证据，尚未决定的项目维持待决。设置自动化不等于 P1 已开始或任何功能已完成。
+
+## 10. P1-01 完成层业务回归证据（2026-09-13）
+
+### 完成内容与代码位置
+
+本轮源码未改，代码坐标绑定生产 `9040d184`；旧方法比较点 `e40c92d7`。下表为实际提取/执行责任，不是整个 MyBehavior 已拆完。每个提取声明的行号/完整 hash 在生成 manifest 中；本轮提取声明相对旧版只有 Process 改变，其余数据模型/Apply/Mark/filter 保持同一源码。
+
+| 位置（一基） | 符号与真实执行责任 | 尚未覆盖 |
+|---|---|---|
+| `MyBehavior.cs:4957-5131` | `ProcessMemorySummaryQueueAsync`，实际初筛、provider await 后应用、额外 overview 规划、终态清理、失败/成功提示和 finally 释放 | provider executor 替身；不是完整 EngineTick/实际请求准备 |
+| `MyBehavior.cs:5948-5986,5988-6008` | `ApplyMemorySummarySuccess` / `MarkMemorySummaryFailure`，块/草稿列表改写、队列移除、失败字段与下游调用 | lower load/save、周报/声望/Native 历史末端替身，不验证序列化/实际周报 |
+| `MyBehavior.cs:5723-5755,5757-5789` | `ApplyMajorActionSummarySuccess` / `MarkMajorActionSummaryFailure`，实际状态字典与失败归一化 | 游戏资格/目标清理末端替身 |
+| `MyBehavior.cs:5569-5602,5604-5636` | `ApplyMemoryOverviewSuccess` / `MarkMemoryOverviewFailure`，实际 overview 状态/队列/失败更新 | block 深层 sanitize 和入队资格替身 |
+| `MyBehavior.cs:5191-5223,26983-27010` | `FindMemoryDraft`、`HasMemorySummaryJobStillPending`、daily queue sanitizer，实际来源 owner/重试/队列筛选 | 非精确 source revision/fingerprint |
+| `MyBehavior.MemorySummaryMainThread.cs:44-119` | 真正 publish/accept/drain/reset helper，与真实 `SaveRuntimeGuard.cs` 一起编译 | fixture 直接调用 drain；完整主游戏 Tick 未运行 |
+| `tools/MemorySummaryMainThreadBoundaryTests/run_business.py:62-134,137-181`（`2c90ef8a`） | 提取/最小观测变换/调用点 mutation；分别编译和执行，保留 manifest/log | 非完整游戏程序集；脚本提取/编译失败不算预期红例 |
+| `tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt:108-170,238-385`（`2c90ef8a`） | 标记外部替身，14 个实际方法场景、状态/线程/顺序断言和处理数量观测 | 不是 provider、TaleWorlds 或存档模拟器 |
+
+测试仅在生成文件加入六个 Apply/Mark 入口事件和 release 赋值前事件，并把 60 秒延时换成可控异步门；业务分支、实际写入、队列清理和 finally 不由 fixture 重写。真正 UI publish 可来自后台，其消费由原 UI owner 回归另行验证；不能把一个 publish 事件当玩家已经看到弹窗。
+
+### 复现与结果
+
+在本工作区设置 `$env:DOTNET_EXE='G:\AFMOD\.dotnet-sdk\dotnet.exe'`，使用 `G:\Python310\python.exe -X utf8 -B`：
+
+| 脚本/参数 | 实际结果 |
+|---|---|
+| `tools/MemorySummaryMainThreadBoundaryTests/run_business.py` | 编译后 14 个场景通过 |
+| 同脚本 `--original` | 编译并执行 `e40c92d7`，2 PASS / 12 FAIL；存在 tick 前写入、worker Apply/Mark/cleanup/release 等运行时证据，不是源字符串主动报错 |
+| 同脚本 `--mutate <name>` | README 所列 14 种全部编译成功后出现断言失败；不是编译/提取错误 |
+| 原 `tools/MemorySummaryMainThreadBoundaryTests/run.py` | helper 17/17 |
+| `tools/MemoryFailureUiBoundaryTests/run.py` | 85/85 |
+| `tools/NativeHistorySnapshotTests/run.py` | 852/852；保留提取 fixture 数据字段的 CS0649 警告 |
+
+业务回放的独立测试 csproj 只对所提取模型的未赋值字段抑制 CS0649，不改变生产编译警告设置；不把 fixture 构建当六项产品构建。源码/配置/依赖未变，复用先前同步台账六项 Stage，不无差别重跑。原测试及故障反例保留；修正文档对旧 `run.py --original` 的“运行时”误导，没有删除它或弱化断言。
+
+证据索引：[验证 JSON](../audits/2026-09-13-memory-summary-business-verification.json)。原始编译日志、运行日志、生成源码/hash 在忽略目录 `tools/MemorySummaryMainThreadBoundaryTests/.generated/business/<case>/`；邻接测试也留其 `.generated/current/run.log`。测试产物不会被打进游戏模块。
+
+### 工程师/玩家视角与下一步
+
+- 工程师自审：当前业务实际改变三类状态、失败标记、清理和释放；副作用只能通过真实调用一次；旧业务红例与回调/省略/重复/owner/generation/source-owner mutation 有效。源码声明差异核对、Python AST、定向清理与本轮文件 `git diff --check` 通过。全工作树 diff-check 仍命中两份用户旧草稿原有首行空白，本轮不修它们；保护文件 hash 未变。
+- 玩家视角（受控回放，**未进行游戏内实测**）：正常一次完成提示与实际三类结果一致；混合失败保留成功块、失败草稿和错误状态，并发布失败通知；读档/换 owner 晚结果不写入，旧请求不能释放新 owner 的状态。不能据此宣称 UI 实际显示、旧档实际往返或完整 memory exactly-once。
+- 新确认缺口一：12 个独立 daily 成果可在同一 Tick 内实际 Apply 12 次。两回调上限不等于 job/record/耗时预算；P1-02 要覆盖单回调内部、规划、初筛/整理、失败汇总与收尾，不能只拆 foreach 忽略剩余全扫描。没有测真实帧时，不先写死时间/数量目标。
+- 新确认缺口二：三个类型全是 obsolete successful payload 时，实际 Apply 为 0，完成提示却为 daily 1 / major 1 / overview 2（overview 被额外规划一次）。后续按实际接受/拒绝回执形成计数，并校正过期重排责任；不能仅删提示或把它称为已修。
+- P1-03 精确同代来源变动、三类真实 Execute 的主线程捕获、provider 重试/RPM、P1-04 writer 原子性尚未验证，后续继续；P1 整体及阶段 8 均 NOT_DONE。
+- 回滚：检查点 `9a80c570`；如需撤本轮测试，定向 revert `2c90ef8a` 并同步撤销本次结果说明，不 reset/覆盖用户文件。无生产回滚/默认迁移需求；不推送、部署或操作存档。
+- 自动化继续 ACTIVE，每小时推进 P1-02；仍有独立可做工作，不在本轮测试完成后提前暂停。完成获准工作或只剩外部阻塞再按既有规则暂停并交接。简明版只在项目忽略文件 `.tmp/af-core-precloseout-team-handoff.md`，不上传。
