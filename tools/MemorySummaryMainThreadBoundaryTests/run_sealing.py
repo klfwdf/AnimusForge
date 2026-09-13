@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
- 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope']
+ 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding']
 def module(name,path):
  sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 def exact(s,old,new,count=1):
@@ -31,6 +31,10 @@ def apply_product_mutation(product, mutation):
  return product
 def apply_seal_mutation(seal, mutation):
  if not mutation: return seal
+ if mutation=='ignore-sort-source':
+  seal=exact(seal,'!Current(current) || ', '')
+  return exact(seal,'!Current(readCurrent()) || ', '')
+ if mutation=='ignore-sort-final-binding':return exact(seal,'if (!BindingsCurrent(same)) return false;', '')
  if mutation=='renew-seal-budget':return exact(seal,'var budget = _campaignMemoryMaintenanceBudget;','MemoryMaintenanceWorkBudget budget = null;')
  if mutation=='ignore-empty-probe':
   return exact(seal,'if (!found) { ResetDailyMemoryDraftSealSliceState(); return true; }','if (false) { ResetDailyMemoryDraftSealSliceState(); return true; }')
@@ -48,7 +52,7 @@ def apply_seal_mutation(seal, mutation):
   return exact(seal,'if (IsExceeded) return false;' if 'if (IsExceeded) return false;' in seal else 'if (IsDailyMaintenanceBudgetExceeded(Start, Milliseconds)) return false;','')
  return seal
 def main():
- ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
+ ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
  ex=module('seal_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
@@ -70,9 +74,14 @@ def main():
    body=exact(body,'_npcMajorActionSummaryQueue.Where(HasMajorActionSummaryJobStillPending)','SealProbe.Visit(_npcMajorActionSummaryQueue,"major-final-filter").Where(HasMajorActionSummaryJobStillPending)')
   if name=='TryRunCampaignMemoryMaintenance':
    body=exact(body,'if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return;','if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return; SealProbe.Hit("campaign-seal-return");') if 'requirePendingProbe: true' in body else body
+  if name in ('SanitizeMemorySummaryQueue','SanitizeMajorActionSummaryQueue'):
+   body=body.replace('OrderBy((MemorySummaryJob x) => x.GameDayIndex)', 'OrderBy((MemorySummaryJob x) => x.GameDayIndex, SealProbe.SortComparer<int>())').replace('OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex)', 'OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex, SealProbe.SortComparer<int>())')
+   body=body.replace('ThenBy((MemorySummaryJob x) => x.HeroName)', 'ThenBy((MemorySummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())').replace('ThenBy((MajorActionSummaryJob x) => x.HeroName)', 'ThenBy((MajorActionSummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())')
   snippets.append(body)
  for name in cap.MODELS:add('private sealed class '+name)
  add('private class NpcActionEntry');add('private enum DailyMaintenanceTaskKind');add('private sealed class DailyMaintenanceJob')
+ for helper in ['NormalizeMemorySummaryQueue','NormalizeMajorActionSummaryQueue']:
+  if re.search(r'private static List<[^>]+> '+helper+r'\(',source):names.append(helper)
  for name in names:
   if name=='HasPastDailyMemoryDrafts' and 'private bool HasPastDailyMemoryDrafts(' not in source:continue
   hit=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M);assert hit,name;add(hit.group().strip())
@@ -123,6 +132,15 @@ def main():
   seal=exact(seal,'_dailyMemoryDraftSealOwnerKeys.Add(state.OwnerEnumerator.Current.Key);','_dailyMemoryDraftSealOwnerKeys.Add(state.OwnerEnumerator.Current.Key); SealProbe.Hit("owner-index");')
   seal=exact(seal,'foreach (var owner in state.CompletedOwners)\n        {','foreach (var owner in state.CompletedOwners)\n        { SealProbe.Hit("completed-owner-check");')
   files['MemorySealing.cs']=apply_seal_mutation(seal, None if shared_budget and a.mutate in ('unbounded-metadata','unbounded-expensive','ignore-deadline') else a.mutate)
+ if 'CooperativeMemoryQueueSort' in files.get('MemorySealing.cs',''):
+  path='Refactor/Runtime/CooperativeMemoryQueueSort.cs';sort=read(path)
+  manifest.append(dict(file=path,sha256=hashlib.sha256(sort.encode()).hexdigest(),whole_component=True))
+  sort=exact(sort,'if (!budget.Take(false)) return false;','if (!budget.Take(false)) return false; SealProbe.Hit("queue-sort-unit");',2)
+  if a.mutate=='unbudgeted-sort':sort=exact(sort,'if (!budget.Take(false)) return false;', '',2)
+  if a.mutate=='unstable-sort':sort=exact(sort,'Compare(_input[_left], _input[_right]) <= 0','Compare(_input[_left], _input[_right]) < 0')
+  if a.mutate=='ordinal-sort':sort=exact(sort,'_compareInfo.Compare(a.Name, b.Name, CompareOptions.None)','string.CompareOrdinal(a.Name, b.Name)')
+  if a.mutate=='ignore-sort-culture':sort=exact(sort,'_compareInfo.Equals(CultureInfo.CurrentCulture.CompareInfo)','true')
+  files['QueueSort.cs']=sort
  files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
  for path,text in files.items():(out/path).write_bytes(text.encode())
  meta=dict(source_revision=baseline or 'worktree',mutation=a.mutate,source_sha256=hashlib.sha256(source.encode()).hexdigest(),declarations=manifest,generated_sha256={p:hashlib.sha256(t.encode()).hexdigest() for p,t in files.items()},seams=['Actual Seal/Reset/HasPast/TryRun/sanitizers/pending/major enqueue/cancel execute; game owner identity and summary-start are fixtures','Entry/iteration counters only; controlled entry delay exercises actual Stopwatch budget'],limits=['One owner sanitizer and inner source scan still atomic','No real game/save/provider or overall frame-time acceptance'])

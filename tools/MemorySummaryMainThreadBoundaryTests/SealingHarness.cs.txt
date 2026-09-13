@@ -15,6 +15,8 @@ namespace AnimusForge {
   public static void Hit(string key){Counts[key]=Count(key)+1;Hook?.Invoke(key);}
   public static int Count(string key)=>Counts.TryGetValue(key,out var n)?n:0;
   public static IEnumerable<T> Visit<T>(IEnumerable<T> items,string key){foreach(var item in items){Hit(key);yield return item;}}
+  // Actual old LINQ key comparisons; no estimated O(N log N) proxy.
+  public static IComparer<T> SortComparer<T>() => Comparer<T>.Create((a,b)=>{Hit("queue-sort-unit");return Comparer<T>.Default.Compare(a,b);});
   public static void Reset(){Counts.Clear();Hook=null;Budget=1000;}
  }
  public partial class MyBehavior {
@@ -246,11 +248,87 @@ namespace AnimusForge {
    b.RunCampaignMemoryMaintenanceCycle(false);
    Check(SealProbe.Count("budget-settings")==0,"idle campaign cycle allocated/read a work budget");MainReads();
   }
+  static void QueueSortConvergence(bool major){
+   var b=NewSealOwner();Probe.GameDay=11;const int n=513;
+   for(int i=0;i<n;i++){
+    string id="sort"+i;
+    if(major){var j=(MajorActionSummaryJob)b.Seed("major",id);j.HeroName=" "+new[]{"z","Å","ä","a","same"}[i%5]+" ";j.TriggerGameDayIndex=i%7-2;}
+    else {var j=(MemorySummaryJob)b.Seed("daily",id);j.HeroName=" "+new[]{"z","Å","ä","a","same"}[i%5]+" ";}
+   }
+   if(major)b._dailyMemoryDrafts["sort0"]=new();
+   object[] expected=major?b._npcMajorActionSummaryQueue.OrderBy(x=>Math.Max(0,x.TriggerGameDayIndex)).ThenBy(x=>x.HeroName.Trim()).Cast<object>().ToArray():b._memorySummaryQueue.OrderBy(x=>x.GameDayIndex).ThenBy(x=>x.HeroName.Trim()).Cast<object>().ToArray();
+   int calls=0,max=0,total=0;bool done=false;
+   while(!done&&calls++<4096){SealProbe.Counts.Clear();done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),1000);int units=SealProbe.Count("queue-sort-unit");max=Math.Max(max,units);total+=units;Check(units<=128,"atomic queue sort exceeded 128 actual compare/move units: "+units);}
+   object[] actual=major?b._npcMajorActionSummaryQueue.Cast<object>().ToArray():b._memorySummaryQueue.Cast<object>().ToArray();
+   Check(done&&calls>1&&total>n,"finite sort did not converge with measured work");Check(actual.SequenceEqual(expected),"stable culture/date order or original object identity changed");
+   Console.WriteLine($"QUEUE_SORT_COST kind={(major?"major":"daily")} jobs={n} windows={calls} max_units={max} total_units={total} normalization_and_binding=ATOMIC");MainReads();
+  }
+  static void QueueSortResume(bool major,string change){
+   System.Globalization.CultureInfo.CurrentCulture=System.Globalization.CultureInfo.GetCultureInfo("en-US");
+   var b=NewSealOwner();Probe.GameDay=11;const int n=40;
+   for(int i=0;i<n;i++){if(major){var j=(MajorActionSummaryJob)b.Seed("major","sort"+i);j.HeroName=new[]{"ä","z","Å","a","same"}[i%5]+(n-i);}else{var j=(MemorySummaryJob)b.Seed("daily","sort"+i);j.HeroName=new[]{"ä","z","Å","a","same"}[i%5]+(n-i);}}
+   if(major)b._dailyMemoryDrafts["sort0"]=new();
+   bool paused=false;SealProbe.Hook=key=>{if(key=="queue-sort-unit"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=false;for(int i=0;i<512&&!paused;i++)done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);
+   SealProbe.Hook=null;Check(paused&&!done,"sort ignored expired deadline instead of retaining private unfinished work");
+   var culture=System.Globalization.CultureInfo.CurrentCulture;
+   try{
+    if(change=="culture")System.Globalization.CultureInfo.CurrentCulture=System.Globalization.CultureInfo.GetCultureInfo(culture.Name=="sv-SE"?"en-US":"sv-SE");
+    if(major){
+     var j=b._npcMajorActionSummaryQueue[0];
+     if(change=="name")j.HeroName="!first";
+     if(change=="retry")j.RetryCount=3;
+     if(change=="day")j.TriggerGameDayIndex=99;
+     if(change=="append")b.Seed("major","late");
+     if(change=="replace")b._npcMajorActionSummaryQueue=b._npcMajorActionSummaryQueue.ToList();
+     if(change=="slot")b._npcMajorActionSummaryQueue[0]=j.CopyForSummary();
+     var expected=b._npcMajorActionSummaryQueue.Where(x=>x!=null&&x.RetryCount<3).OrderBy(x=>Math.Max(0,x.TriggerGameDayIndex)).ThenBy(x=>x.HeroName.Trim()).ToArray();
+     Check(b.TrySealPastDailyMemoryDrafts(),"sync major could not drain/restart pending sort");Check(b._npcMajorActionSummaryQueue.SequenceEqual(expected),"major sort overwrote current source, metadata or identity");
+    }else{
+     var j=b._memorySummaryQueue[0];
+     if(change=="name")j.HeroName="!first";
+     if(change=="retry")j.RetryCount=3;
+     if(change=="day")j.GameDayIndex=999; // no matching draft: must re-evaluate pending
+     if(change=="append")b.Seed("daily","late");
+     if(change=="replace")b._memorySummaryQueue=b._memorySummaryQueue.ToList();
+     if(change=="slot")b._memorySummaryQueue[0]=j.CopyForSummary();
+     var expected=b._memorySummaryQueue.Where(x=>x!=null&&x.RetryCount<3&&x.GameDayIndex==10).OrderBy(x=>x.GameDayIndex).ThenBy(x=>x.HeroName.Trim()).ToArray();
+     Check(b.TrySealPastDailyMemoryDrafts(),"sync daily could not drain/restart pending sort");Check(b._memorySummaryQueue.SequenceEqual(expected),"daily sort overwrote current source, metadata or identity");
+    }
+   }finally{System.Globalization.CultureInfo.CurrentCulture=culture;}
+   MainReads();
+  }
+  static void QueueNormalizerAliasContract(){
+   var daily=new MemorySummaryJob{HeroId=" a ",HeroName=" same ",GameDayIndex=10,GameDate=" day ",LastError=" error ",RetryCount=-1};
+   var duplicate=new MemorySummaryJob{HeroId=" A ",HeroName=" loser ",GameDayIndex=10,RetryCount=-2};
+   var other=new MemorySummaryJob{HeroId="b",HeroName=" same ",GameDayIndex=10};
+   var invalid=new MemorySummaryJob{HeroId=" ",HeroName=" invalid ",GameDayIndex=10};
+   var d=SanitizeMemorySummaryQueue(new[]{null,daily,daily,duplicate,other,invalid});
+   Check(d.SequenceEqual(new[]{daily,other})&&daily.HeroName=="same"&&daily.RetryCount==0&&daily.LastError=="error"&&daily.GameDate=="day","daily alias/first-winner stable contract changed");
+   Check(duplicate.HeroId=="a"&&duplicate.HeroName==" loser "&&duplicate.RetryCount==-2&&invalid.HeroId==""&&invalid.HeroName==" invalid ","daily duplicate/invalid mutation order changed");
+   var major=new MajorActionSummaryJob{HeroId=" a ",HeroName=" same ",TriggerGameDayIndex=-1,TriggerGameDate=" day ",LastError=" error ",RetryCount=-1};
+   var loser=new MajorActionSummaryJob{HeroId=" A ",HeroName=" loser ",TriggerGameDayIndex=-2};
+   var second=new MajorActionSummaryJob{HeroId="b",HeroName=" same ",TriggerGameDayIndex=0};
+   var m=SanitizeMajorActionSummaryQueue(new[]{null,major,major,loser,second});
+   Check(m.SequenceEqual(new[]{major,second})&&major.TriggerGameDayIndex==0&&major.TriggerGameDate=="day"&&major.RetryCount==0&&major.LastError=="error","major alias/first-winner stable contract changed");
+   Check(loser.HeroId=="a"&&loser.HeroName==" loser "&&loser.TriggerGameDayIndex==-2,"major duplicate was fully normalized before dedupe");
+  }
+  static void CampaignSortConvergence(){
+   var b=NewSealOwner();Probe.GameDay=11;
+   for(int i=0;i<129;i++)b.Seed("daily","sort"+(129-i));
+   var expected=b._memorySummaryQueue.OrderBy(x=>x.GameDayIndex).ThenBy(x=>x.HeroName).ToArray();
+   b.EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts,11);
+   int calls=0,total=0;bool complete=false;
+   while(!complete&&calls++<1024){SealProbe.Counts.Clear();b.RunCampaignMemoryMaintenanceCycle(false);total+=SealProbe.Count("queue-sort-unit");Check(SealProbe.Count("queue-sort-unit")<=128&&SealProbe.Count("metadata-granted")<=128,"Campaign refreshed sort allowance across callers");complete=b.summaryStarts>0;}
+   Check(complete&&total>129&&b._memorySummaryQueue.SequenceEqual(expected),"Campaign sort failed to converge preserving queue");MainReads();
+  }
   static int Main(){TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>();foreach(var mode in new[]{"normal","afef-only","empty","terminal","mismatch","block","today","invalid-owner"}){var m=mode;cases.Add((m,()=>Semantics(m)));}
    cases.Add(("daily-queue-contract",DailyQueueContract));cases.Add(("major-queue-contract",MajorQueueContract));cases.Add(("expired-budget-then-sync",FiniteThenSynchronous));cases.Add(("same-day-no-job-resume",SameDayResume));cases.Add(("same-reference-indexed-key-change",SameReferenceIndexedKeyChange));cases.Add(("owner-list-replacement",OwnerListReplacement));cases.Add(("cleanup-queue-append",()=>QueueWriteDuringCleanup(false)));cases.Add(("cleanup-queue-replacement",()=>QueueWriteDuringCleanup(true)));cases.Add(("4096-index-final-filter-cost",IndexCost));cases.Add(("finite-4096-convergence",()=>FiniteConvergence(false)));cases.Add(("finite-48draft-convergence",()=>FiniteConvergence(true)));cases.Add(("standalone-multiple-callers-compatibility",StandaloneMultipleCallers));cases.Add(("probe-empty-no-candidate-start",()=>ProbeCompletionReceipt(false)));cases.Add(("probe-terminal-preserves-candidate-start",()=>ProbeCompletionReceipt(true)));cases.Add(("multiple-invalid-owners-sync",MultipleInvalidOwnersSync));cases.Add(("cleanup-same-ref-retarget",CleanupSameReferenceRetarget));cases.Add(("owner-inserted-after-index",OwnerInsertedAfterIndex));cases.Add(("major-indexed-key-change",MajorIndexedKeyChange));foreach(var budget in new[]{0.0,double.NaN,double.PositiveInfinity,double.MaxValue}){double value=budget;cases.Add(("unlimited-sentinel-"+budget,()=>UnlimitedCompatibility(value)));}
    cases.Add(("campaign-shared-metadata",()=>SharedCampaignCaps(false)));cases.Add(("campaign-shared-expensive",()=>SharedCampaignCaps(true)));cases.Add(("campaign-shared-convergence",SharedCampaignConverges));cases.Add(("campaign-shared-deadline",SharedCampaignDeadline));cases.Add(("campaign-deferred-start",()=>DeferredCampaignStart(false)));cases.Add(("campaign-retired-start",()=>DeferredCampaignStart(true)));cases.Add(("campaign-scope-exception",CampaignScopeRestored));cases.Add(("campaign-skip-deferred",CampaignSkipDeferred));cases.Add(("campaign-explicit-sync",CampaignExplicitSync));
    cases.Add(("campaign-idle-no-budget",IdleCampaignBudget));
-   int pass=0,fail=0;foreach(var (name,run) in cases){try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}}
+   foreach(bool major in new[]{false,true}){bool m=major;cases.Add(("queue-sort-budget-"+m,()=>QueueSortConvergence(m)));foreach(string mode in new[]{"unchanged","name","retry","day","append","replace","slot","culture"}){string change=mode;cases.Add(("queue-sort-resume-"+m+"-"+change,()=>QueueSortResume(m,change)));}}
+   cases.Add(("queue-normalizer-alias-contract",QueueNormalizerAliasContract));cases.Add(("campaign-sort-budget",CampaignSortConvergence));
+   int pass=0,fail=0;foreach(var (name,run) in cases){var priorCulture=System.Globalization.CultureInfo.CurrentCulture;try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}finally{System.Globalization.CultureInfo.CurrentCulture=priorCulture;}}
    Console.WriteLine($"SEALING_RESULT pass={pass} fail={fail} LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED");return fail==0?0:1;
   }
  }

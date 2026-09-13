@@ -152,3 +152,13 @@ python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py --
 后续改变 Build/Parse 的游戏依赖时，同时更新 `CaptureMemorySummaryContextFingerprint` 和对应正反对照；不是永久锁定现有 Prompt。Daily 保存实际 targetChars、header 顺序/场景 fallback 描述符，Major 保存实际被解析名字的去重 ID，Overview 保留目标与动态门槛。来源 raw 全字段摘要独立于净化后正文；原地编辑、导入和格式等价改动也能拒绝旧结果。
 
 清理掉的是重验时重新捕获/复制/渲染，以及资格查询中丢弃的大图复制和排序。权威写入 sanitizer、仍被 planner 使用的三个 HasPending 入口继续保留。完整 raw hash、首次复制、Apply/public/weekly 与外围维护仍有原子扫描；此次没有证明深记录硬预算、实机或旧存档通过。
+
+## B1 封存尾部协作排序（2026-09-14）
+
+- `run_sealing.py` 当前60场景；`--source-baseline 9158132c` 使用全部对应版本生产输入，在同60例中46绿14红（BUILD_PASS，不把编译失败当反例）。保留原40例，增加Daily/Major排序、跨tick源与culture变化、别名净化及实际Campaign累计预算。
+- 20个 `--mutate` 全部 BUILD_PASS 后业务断言失败；新增6个为 `unbudgeted-sort`、`unstable-sort`、`ordinal-sort`、`ignore-sort-source`、`ignore-sort-culture`、`ignore-sort-final-binding`。原14个保留。
+- 513项Daily/Major：旧LINQ一个调用实测9224/8250次标量key比较；新组件每窗口最多128个排序工作单元，每单元最多一次entry比较（day及必要的name比较）+一次move，或一次结果copy。计量层不同，不能相减当CPU加速比；新总5643单元，两类都保留原引用和稳定最终顺序。
+- `CooperativeMemoryQueueSort<T>`是真实消费者组件，捕获不可变key，不跨tick读取live DTO键；封存尾部持有未发布结果，最终核对实际owner列表/版本、字段和culture。无worker/新线程。显式同步调用仍排空。
+- 两个原Sanitize入口保留同步排序责任；新的Normalize仅提取完全相同的原地净化/去重体。`test_source_parity.py`现10项，增加精确反拼原净化体断言；58声明/4新增span/2删除/5组件锁仅覆盖具名变化。
+- 初次测试曾因planning extractor未包含新Normalize而编译失败：已补两个真实声明，不改24例断言、不用stub。business/terminal一并抽取相同函数；旧business e40c92d7跳过不存在的新helper，旧行为对照仍4/32。
+- 限制：队列净化、两次标量绑定、数组分配/key捕获、单个字符串比较、pending内深来源等仍原子。同步Sanitize、整体游戏帧/内存上限、完整B1及LIVE/SAVE没有借此放行。冻结日志及最终版本见根HANDOFF指向的排序交接与验收JSON。

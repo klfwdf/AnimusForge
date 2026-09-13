@@ -67,16 +67,17 @@ public partial class MyBehavior
         internal List<T>.Enumerator Probe;
         internal bool Deferred;
         internal readonly List<DailyMemorySealQueueEntry<T>> Entries = new List<DailyMemorySealQueueEntry<T>>();
-        internal bool Step(List<T> current, Action<List<T>> publish, Func<T, bool> pending,
+        private CooperativeMemoryQueueSort<T> _sort;
+        internal bool Step(Func<List<T>> readCurrent, Action<List<T>> publish, Func<T, bool> pending,
             Func<T, T> copy, Func<T, T, bool> same,
-            Func<IEnumerable<T>, List<T>> finish, MemoryMaintenanceWorkBudget budget)
+            Func<IEnumerable<T>, List<T>> normalize, Func<T, int> day, Func<T, string> name,
+            MemoryMaintenanceWorkBudget budget)
         {
             Deferred = false;
+            var current = readCurrent();
             if (Source == null)
             { Source = current; Count = current.Count; Cursor = 0; Probe = current.GetEnumerator(); }
-            bool valid = ReferenceEquals(Source, current) && Count == current.Count;
-            if (valid) { try { Probe.MoveNext(); } catch (InvalidOperationException) { valid = false; } }
-            if (!valid) { Restart(); return false; }
+            if (!Current(current) || (_sort != null && !_sort.IsCultureCurrent)) { Restart(); return false; }
             while (Cursor < Count)
             {
                 T job = Source[Cursor];
@@ -88,17 +89,37 @@ public partial class MyBehavior
                 // Nulling is immediate, not an old cross-tick deletion decision.
                 Probe = Source.GetEnumerator();
             }
-            if (!budget.Take(false)) return false;
-            // Scalar binding and the original metadata-only sanitize/dedupe/sort
-            // remain one atomic tail. No expensive HasPending runs in this tail.
-            // This O(N) check / O(N log N) sort is not claimed to be preemptible.
+            if (_sort == null)
+            {
+                if (!budget.Take(false) || !BindingsCurrent(same)) return false;
+                // Preserve the original in-place normalize/filter/dedupe order and
+                // first surviving reference. Only this metadata mutation is visible
+                // before sorting finishes; no summary is started by this tail.
+                var prepared = normalize(Source);
+                foreach (var entry in Entries) entry.Frozen = copy(entry.Value);
+                _sort = new CooperativeMemoryQueueSort<T>(prepared, day, name);
+            }
+            if (!_sort.Step(budget) || !budget.Take(false)) return false;
+            // Full scalar binding remains atomic O(N), but only at preparation and
+            // publication, not at every sort slice. Re-read the actual owner's list.
+            if (!Current(readCurrent()) || !_sort.IsCultureCurrent) { Restart(); return false; }
+            if (!BindingsCurrent(same)) return false;
+            publish(_sort.Result);
+            return true;
+        }
+        private bool Current(List<T> current)
+        {
+            if (!ReferenceEquals(Source, current) || current == null || Count != current.Count) return false;
+            try { Probe.MoveNext(); return true; } catch (InvalidOperationException) { return false; }
+        }
+        private bool BindingsCurrent(Func<T, T, bool> same)
+        {
             foreach (var entry in Entries)
                 if (!same(entry.Value, entry.Frozen)) { Restart(); return false; }
-            publish(finish(Source));
             return true;
         }
         private void Restart()
-        { Source = null; Count = Cursor = 0; Entries.Clear(); Deferred = true; }
+        { Source = null; Count = Cursor = 0; Entries.Clear(); _sort = null; Deferred = true; }
     }
 
     private sealed class DailyMemorySealState
@@ -275,9 +296,9 @@ public partial class MyBehavior
                     state.Phase = DailyMemorySealPhase.DailyCleanup;
                     continue;
                 case DailyMemorySealPhase.DailyCleanup:
-                    if (!state.DailyTail.Step(_memorySummaryQueue, x => _memorySummaryQueue = x,
+                    if (!state.DailyTail.Step(() => _memorySummaryQueue, x => _memorySummaryQueue = x,
                         HasMemorySummaryJobStillPending, x => x.CopyForSummary(), SameDailyMemorySealJob,
-                        SanitizeMemorySummaryQueue, budget))
+                        NormalizeMemorySummaryQueue, x => x.GameDayIndex, x => x.HeroName, budget))
                     {
                         if (budget.Unbounded && state.DailyTail.Deferred && !retried) { retried = true; continue; }
                         return false;
@@ -285,9 +306,9 @@ public partial class MyBehavior
                     state.Phase = DailyMemorySealPhase.MajorCleanup;
                     continue;
                 case DailyMemorySealPhase.MajorCleanup:
-                    if (!state.MajorTail.Step(_npcMajorActionSummaryQueue, x => _npcMajorActionSummaryQueue = x,
+                    if (!state.MajorTail.Step(() => _npcMajorActionSummaryQueue, x => _npcMajorActionSummaryQueue = x,
                         HasMajorActionSummaryJobStillPending, x => x.CopyForSummary(), SameDailyMemorySealMajorJob,
-                        SanitizeMajorActionSummaryQueue, budget))
+                        NormalizeMajorActionSummaryQueue, x => x.TriggerGameDayIndex, x => x.HeroName, budget))
                     {
                         if (budget.Unbounded && state.MajorTail.Deferred && !retried) { retried = true; continue; }
                         return false;
