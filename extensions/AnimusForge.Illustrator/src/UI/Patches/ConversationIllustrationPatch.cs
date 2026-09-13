@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace AnimusForge.Illustrator.UI.Patches
     public static class ConversationIllustrationPatch
     {
         private const string ButtonId = "AnimusForgeConversationIllustrateButton";
+        private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
 
         public static void EnsurePatched(Harmony harmony)
@@ -72,13 +74,15 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             if (root == null) return;
 
-            var settings = IllustratorSettings.Instance;
-            if (settings != null && !settings.EnableConversationIllustration)
+            var existing = root.FindChild(ButtonId, includeAllChildren: true) as ButtonWidget;
+            if (existing != null)
             {
+                TrackButton(existing);
+                existing.IsVisible = IllustratorRuntime.IsEnabled("conversation");
                 return;
             }
 
-            if (root.FindChild(ButtonId, includeAllChildren: true) != null)
+            if (!IllustratorRuntime.IsEnabled("conversation"))
             {
                 return;
             }
@@ -102,6 +106,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 HandleConversationIllustrateClicked();
             });
+            TrackButton(button);
 
             TextWidget textWidget = new TextWidget(root.Context)
             {
@@ -133,13 +138,15 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             if (root == null) return;
 
-            var settings = IllustratorSettings.Instance;
-            if (settings != null && !settings.EnableConversationIllustration)
+            var existing = root.FindChild(ButtonId, includeAllChildren: true) as ButtonWidget;
+            if (existing != null)
             {
+                TrackButton(existing);
+                existing.IsVisible = IllustratorRuntime.IsEnabled("conversation");
                 return;
             }
 
-            if (root.FindChild(ButtonId, includeAllChildren: true) != null)
+            if (!IllustratorRuntime.IsEnabled("conversation"))
             {
                 return;
             }
@@ -166,6 +173,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 HandleConversationIllustrateClicked();
             });
+            TrackButton(button);
 
             TextWidget textWidget = new TextWidget(root.Context)
             {
@@ -185,6 +193,35 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             button.AddChild(textWidget);
             root.AddChild(button);
+        }
+
+        private static void TrackButton(ButtonWidget button)
+        {
+            if (button == null) return;
+            for (int i = InjectedButtons.Count - 1; i >= 0; i--)
+            {
+                if (!InjectedButtons[i].TryGetTarget(out var existing) || ReferenceEquals(existing, button))
+                {
+                    if (ReferenceEquals(existing, button)) return;
+                    InjectedButtons.RemoveAt(i);
+                }
+            }
+            InjectedButtons.Add(new WeakReference<ButtonWidget>(button));
+        }
+
+        public static void RefreshInjectedButtons()
+        {
+            IllustratorRuntime.AssertMainThread();
+            bool visible = IllustratorRuntime.IsEnabled("conversation");
+            for (int i = InjectedButtons.Count - 1; i >= 0; i--)
+            {
+                if (!InjectedButtons[i].TryGetTarget(out var button))
+                {
+                    InjectedButtons.RemoveAt(i);
+                    continue;
+                }
+                button.IsVisible = visible;
+            }
         }
 
         private static void HandleConversationIllustrateClicked()

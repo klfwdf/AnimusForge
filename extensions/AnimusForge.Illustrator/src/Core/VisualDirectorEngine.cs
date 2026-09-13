@@ -42,25 +42,27 @@ namespace AnimusForge.Illustrator.Core
             "7. 【输出格式】：\n" +
             "   - 仅输出这一整段中文生图提示词本身。不要包含任何问候语、Markdown 标记、引号或额外解释。";
 
-        public static async Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData = null, CancellationToken cancellationToken = default)
+        public static Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData = null, CancellationToken cancellationToken = default)
         {
-            var settings = IllustratorSettings.Instance;
+            var options = IllustratorRuntime.IsMainThread ? IllustratorRuntime.CaptureOptions() : null;
+            return ExpandToDetailedPromptAsync(gameContext, base64ImageData, options, cancellationToken);
+        }
 
-            // 若配置关闭多模态，则清空传入图片
-            if (settings != null && !settings.EnableMultimodalVision)
+        public static async Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData, IllustrationOptions options, CancellationToken cancellationToken = default)
+        {
+            if (options != null && !options.EnableMultimodalVision)
             {
                 base64ImageData = null;
             }
 
             int imgLen = !string.IsNullOrEmpty(base64ImageData) ? base64ImageData.Length / 1024 : 0;
-            TaleWorlds.Library.Debug.Print($"[VisualDirector] Starting prompt expansion (MultimodalVision={(settings?.EnableMultimodalVision == true ? "ON" : "OFF")}, ImagePayload={imgLen}KB)...");
+            TaleWorlds.Library.Debug.Print($"[VisualDirector] Starting prompt expansion (MultimodalVision={(options?.EnableMultimodalVision == true ? "ON" : "OFF")}, ImagePayload={imgLen}KB)...");
 
-            // 尝试通过大模型进行提示词扩写
             try
             {
-                if (TryResolveChatConfig(settings, out string baseUrl, out string apiKey, out string model))
+                if (options != null && options.EnableLlmPromptExpansion && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))
                 {
-                    string llmPrompt = await CallLlmDirectorAsync(gameContext, baseUrl, apiKey, model, base64ImageData, cancellationToken).ConfigureAwait(false);
+                    string llmPrompt = await CallLlmDirectorAsync(gameContext, options.DirectorApiBaseUrl, options.DirectorApiKey, options.DirectorModelName, base64ImageData, cancellationToken).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(llmPrompt))
                     {
                         TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion successful ({llmPrompt.Length} chars): {llmPrompt.Substring(0, Math.Min(120, llmPrompt.Length))}...");
@@ -69,7 +71,7 @@ namespace AnimusForge.Illustrator.Core
                 }
                 else
                 {
-                    TaleWorlds.Library.Debug.Print("[VisualDirector] Could not resolve chat config for prompt expansion, falling back to rule-based synthesis.");
+                    TaleWorlds.Library.Debug.Print("[VisualDirector] Chat expansion disabled or unavailable, falling back to rule-based synthesis.");
                 }
             }
             catch (Exception ex)
@@ -77,10 +79,14 @@ namespace AnimusForge.Illustrator.Core
                 TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion fallback triggered: {ex.Message}");
             }
 
-            // 兜底：离线规则导演组装（深度融入提取到的装备与环境描写）
             string rulePrompt = SynthesizeRuleBasedPrompt(gameContext);
             TaleWorlds.Library.Debug.Print($"[VisualDirector] Using rule-based prompt ({rulePrompt.Length} chars): {rulePrompt.Substring(0, Math.Min(120, rulePrompt.Length))}...");
             return rulePrompt;
+        }
+
+        internal static bool ResolveChatConfigForSnapshot(IllustratorSettings settings, out string baseUrl, out string apiKey, out string model)
+        {
+            return TryResolveChatConfig(settings, out baseUrl, out apiKey, out model);
         }
 
         private static bool TryResolveChatConfig(IllustratorSettings settings, out string baseUrl, out string apiKey, out string model)
@@ -279,39 +285,49 @@ namespace AnimusForge.Illustrator.Core
 
         private static string SynthesizeRuleBasedPrompt(string rawContext)
         {
-            // 离线规则智能导演：解析 rawContext 中的全量要素，动态组装符合该角色文化、地位与装束的顶级历史油画【中文提示词】
+            rawContext = rawContext ?? string.Empty;
             var sb = new StringBuilder();
             sb.Append("古典写实历史油画巨作，伦勃朗与克雷格·穆林斯（Craig Mullins）明暗对照法大师级光影，8K超清细腻笔触。");
 
-            bool isFemale = rawContext.Contains("女性") || rawContext.Contains("Female") || rawContext.Contains("Lady") || rawContext.Contains("Queen") || rawContext.Contains("Empress");
-            bool isMonarch = rawContext.Contains("最高统治者") || rawContext.Contains("至尊君主") || rawContext.Contains("至尊君王") || rawContext.Contains("Sovereign") || rawContext.Contains("Monarch") || rawContext.Contains("女皇") || rawContext.Contains("苏丹") || rawContext.Contains("可汗") || rawContext.Contains("国王");
-            bool isHighLord = rawContext.Contains("大领主") || rawContext.Contains("宗族首领") || rawContext.Contains("贵胄贵妇") || rawContext.Contains("领主") || rawContext.Contains("Lord") || rawContext.Contains("Noble");
-            bool isScholar = rawContext.Contains("学者") || rawContext.Contains("医师") || rawContext.Contains("工兵") || rawContext.Contains("Scholar") || rawContext.Contains("Physician");
-            bool isCleanShaven = rawContext.Contains("无任何胡须") || rawContext.Contains("Clean-shaven");
+            bool isEventScene = rawContext.Contains("核心事件") || rawContext.Contains("周报") || rawContext.Contains("纪事") || rawContext.IndexOf("weekly", StringComparison.OrdinalIgnoreCase) >= 0;
+            bool hasExplicitMale = rawContext.Contains("男性") || rawContext.Contains("男子") || rawContext.Contains("绅士") ||
+                                   rawContext.IndexOf("Male", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("King", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   rawContext.IndexOf("Lord,", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("领主") && rawContext.Contains("男性");
+            bool isFemale = !hasExplicitMale && (rawContext.Contains("女性") || rawContext.Contains("贵妇") || rawContext.Contains("名媛") ||
+                            rawContext.Contains("女王") || rawContext.Contains("女皇") || rawContext.Contains("王后") ||
+                            rawContext.IndexOf("Female", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("Queen", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            rawContext.IndexOf("Empress", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf(" Lady", StringComparison.OrdinalIgnoreCase) >= 0);
+            bool isMonarch = rawContext.Contains("最高统治者") || rawContext.Contains("至尊君主") || rawContext.Contains("至尊君王") ||
+                             rawContext.IndexOf("Sovereign", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("Monarch", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             rawContext.Contains("女皇") || rawContext.Contains("苏丹") || rawContext.Contains("可汗") || rawContext.Contains("国王");
+            bool isHighLord = rawContext.Contains("大领主") || rawContext.Contains("宗族首领") || rawContext.Contains("贵胄贵妇") ||
+                              rawContext.Contains("领主") || rawContext.IndexOf("Lord", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("Noble", StringComparison.OrdinalIgnoreCase) >= 0;
+            bool isScholar = rawContext.Contains("学者") || rawContext.Contains("医师") || rawContext.Contains("工兵") ||
+                             rawContext.IndexOf("Scholar", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("Physician", StringComparison.OrdinalIgnoreCase) >= 0;
+            bool isCleanShaven = rawContext.Contains("无任何胡须") || rawContext.IndexOf("Clean-shaven", StringComparison.OrdinalIgnoreCase) >= 0;
 
-            // 1. 文化与环境基调判定
             string cultureSetting;
-            if (rawContext.Contains("阿塞莱") || rawContext.Contains("Aserai") || rawContext.Contains("沙") || rawContext.Contains("沙漠") || rawContext.Contains("苏丹") || rawContext.Contains("绿洲"))
+            if (rawContext.Contains("阿塞莱") || rawContext.IndexOf("Aserai", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("沙漠") || rawContext.Contains("苏丹") || rawContext.Contains("绿洲"))
             {
-                cultureSetting = "背景为金碧辉煌的东方沙漠王宫，饰有精雕细刻的沙岩马蹄形拱券、复杂的伊斯兰几何回纹石雕、垂落的华贵丝绸帘幔与温暖倾泻的金色斜阳";
+                cultureSetting = "背景为金碧辉煌的东方沙漠王宫，饰有精雕细刻的沙岩马蹄形拱券、复杂几何回纹石雕、垂落的华贵丝绸帘幔与温暖倾泻的金色斜阳";
             }
-            else if (rawContext.Contains("库赛特") || rawContext.Contains("Khuzait") || rawContext.Contains("草原") || rawContext.Contains("游牧") || rawContext.Contains("可汗"))
+            else if (rawContext.Contains("库赛特") || rawContext.IndexOf("Khuzait", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("草原") || rawContext.Contains("游牧") || rawContext.Contains("可汗"))
             {
                 cultureSetting = "背景为奢华的草原金顶大帐，铺设华美的手工织毯与羊毛毡壁毯，大帐帷幕敞开，远方呈现苍茫辽阔的高原草浪与万里晴空";
             }
-            else if (rawContext.Contains("斯特吉亚") || rawContext.Contains("Sturgia") || rawContext.Contains("瓦良格") || rawContext.Contains("北地") || rawContext.Contains("雪"))
+            else if (rawContext.Contains("斯特吉亚") || rawContext.IndexOf("Sturgia", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("瓦良格") || rawContext.Contains("北地") || rawContext.Contains("雪"))
             {
                 cultureSetting = "背景为宏伟粗犷的北境花岗岩与原木领主大厅，燃烧着熊熊烈火的巨大石砌壁炉，雕刻着渡鸦与狼首的厚重木柱，冰冷肃杀的漫天风雪映照长窗";
             }
-            else if (rawContext.Contains("巴旦尼亚") || rawContext.Contains("Battania") || rawContext.Contains("高地") || rawContext.Contains("凯尔特") || rawContext.Contains("森林"))
+            else if (rawContext.Contains("巴旦尼亚") || rawContext.IndexOf("Battania", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("高地") || rawContext.Contains("凯尔特") || rawContext.Contains("森林"))
             {
                 cultureSetting = "背景为被冷雾笼罩的古老高地石砌堡垒主楼，饰有繁复神秘的凯尔特青铜与绳结石雕，燃烧的生铁火盆，远景隐现幽邃茂密的翡翠原始橡树森林";
             }
-            else if (rawContext.Contains("帝国") || rawContext.Contains("Empire") || rawContext.Contains("拉盖娅") || rawContext.Contains("伊拉") || rawContext.Contains("罗马") || rawContext.Contains("拜占庭") || rawContext.Contains("元老院"))
+            else if (rawContext.Contains("帝国") || rawContext.IndexOf("Empire", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("罗马") || rawContext.Contains("拜占庭") || rawContext.Contains("元老院"))
             {
                 cultureSetting = "背景为恢弘典雅的古典帝国拜占庭式大理石宫殿巴西利卡，高耸直插穹顶的柯林斯式大理石圆柱、璀璨的黄金马赛克穹顶壁画与紫红色悬垂帷幔，温暖的夕阳斜射穿透宏伟拱券长廊";
             }
-            else if (rawContext.Contains("和") || rawContext.Contains("武士") || rawContext.Contains("幕府") || rawContext.Contains("Sengoku") || rawContext.Contains("Japan"))
+            else if (rawContext.Contains("日本") || rawContext.IndexOf("Japan", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("Sengoku", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("幕府") || rawContext.Contains("武士"))
             {
                 cultureSetting = "背景为庄严清幽的武士天守阁本丸评定间，绘有松鹤的精美金箔折叠屏风、光洁明亮的榻榻米地面与推拉障子门，外侧为宁静深邃的枯山水庭院";
             }
@@ -320,28 +336,21 @@ namespace AnimusForge.Illustrator.Core
                 cultureSetting = "背景为雄伟的中世纪石砌城堡大厅，高耸的石拱穹顶天花板、悬挂各色军旗的铁艺吊灯与巨大的哥特式拱窗";
             }
 
-            // 2. 身份、体貌与着装
-            if (isMonarch)
+            if (isEventScene)
             {
-                if (isFemale)
-                {
-                    sb.Append("一幅令人肃然起敬的帝国女皇/执政女王尊贵肖像。她仪态万方，流露出至高无上的君王统治气魄与政治远谋。身着织锦丝绸与天鹅绒剪裁的御用宫廷礼袍，精工刺绣华美金线并点缀宝石，头戴璀璨的皇家金冠。");
-                }
-                else
-                {
-                    sb.Append("一幅威严雄浑的最高封建君王与至尊统治者肖像。目光威严深沉，浑身散发着开疆拓土的王者气象。身着精工刺绣金纹的华贵天鹅绒王袍，外披镶有毛皮滚边的高贵王室斗篷，头戴象征至高王权的庄严王冠。");
-                }
+                sb.Append("一幅忠实再现下列真实游戏事件的历史纪事群像，必须以事件、地点、天气、攻城器械与人物行动为画面主体，严禁退化成无关单人肖像。");
+            }
+            else if (isMonarch)
+            {
+                sb.Append(isFemale
+                    ? "一幅令人肃然起敬的帝国女皇/执政女王尊贵肖像。她仪态万方，流露出至高无上的君王统治气魄与政治远谋。身着织锦丝绸与天鹅绒剪裁的御用宫廷礼袍，精工刺绣华美金线并点缀宝石，头戴璀璨的皇家金冠。"
+                    : "一幅威严雄浑的最高封建君王与至尊统治者肖像。目光威严深沉，浑身散发着开疆拓土的王者气象。身着精工刺绣金纹的华贵天鹅绒王袍，外披镶有毛皮滚边的高贵王室斗篷，头戴象征至高王权的庄严王冠。");
             }
             else if (isHighLord)
             {
-                if (isFemale)
-                {
-                    sb.Append("一幅优雅端庄的宗族女领主与显赫贵妇肖像。兼具贵族名媛的典雅娴静与巾帼将领的坚韧英武，身着量身定制的高阶贵族长袍或精致战甲，刺绣滚边细腻华美。");
-                }
-                else
-                {
-                    sb.Append("一幅刚毅沉稳的封建大领主与百战统帅肖像。身姿挺拔威严，身披做工考究的贵族战袍与厚重金属甲胄，气度沉稳如山岳。");
-                }
+                sb.Append(isFemale
+                    ? "一幅优雅端庄的显赫女性贵族肖像。兼具典雅娴静与坚韧英武，身着量身定制的高阶贵族长袍或精致战甲，刺绣滚边细腻华美。"
+                    : "一幅刚毅沉稳的封建大领主与百战统帅肖像。身姿挺拔威严，身披做工考究的贵族战袍与厚重金属甲胄，气度沉稳如山岳。");
             }
             else if (isScholar)
             {
@@ -349,10 +358,9 @@ namespace AnimusForge.Illustrator.Core
             }
             else
             {
-                sb.Append("一幅英姿飒爽、刚毅果决的百战勇士肖像。眼神坚韧不拔，身着历经沙场淬炼的精制锁子甲与金属护甲，充满战将威势。");
+                sb.Append("一幅忠于游戏上下文的人物/场景纪实油画。严禁擅自替换人物姓名、身份、装备或事件。");
             }
 
-            // 3. 面容毛发与真实人类皮肤约束
             if (isCleanShaven && !isFemale)
             {
                 sb.Append("面庞修得干干净净，绝无任何胡须胡茬，轮廓刚毅光洁。");
@@ -363,11 +371,9 @@ namespace AnimusForge.Illustrator.Core
             }
 
             sb.Append("【真实人类肤色约束】面部呈现健康自然的真实人类肉色肤质与红润血色，绝对严禁画成蓝色、青色、灰色或怪异异类皮肤。");
-
-            // 4. 环境与光影
             sb.Append(cultureSetting + "。");
+            sb.Append("【必须保留的游戏事实】").Append(rawContext.Replace('\r', ' ').Trim()).Append('。');
             sb.Append("戏剧性明暗对比光影，柔和温润的自然天光与跃动的烛光交织，逼真的布料与金属反光质感，写实油画大师级杰作。");
-
             return sb.ToString();
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
@@ -11,10 +12,14 @@ namespace AnimusForge.Illustrator.Engine
     public sealed class CachedIllustrationItem
     {
         public string Key { get; set; } = string.Empty;
+        public string SubjectKey { get; set; } = string.Empty;
+        public string CampaignKey { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public string Prompt { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
+        public bool IsDefault { get; set; }
+        public bool Deleted { get; set; }
         public DateTime CreatedTime { get; set; }
         [JsonIgnore]
         public byte[] ImageData { get; set; }
@@ -23,6 +28,10 @@ namespace AnimusForge.Illustrator.Engine
     public static class DiskImageCacheManager
     {
         private static readonly string CacheBaseDir;
+        private static readonly object CacheLock = new object();
+        private static List<CachedIllustrationItem> _cachedIllustrations;
+        private static string _cachedCampaignKey;
+        private static readonly string[] Categories = { "encyclopedia", "conversation", "weekly_report", "general" };
 
         static DiskImageCacheManager()
         {
@@ -30,10 +39,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 CacheBaseDir = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
-                if (!Directory.Exists(CacheBaseDir))
-                {
-                    Directory.CreateDirectory(CacheBaseDir);
-                }
+                Directory.CreateDirectory(CacheBaseDir);
             }
             catch (Exception ex)
             {
@@ -42,140 +48,127 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        public static bool TryGetCachedImage(string key, out byte[] imageBytes, out string filePath)
+        public static string CacheRoot => CacheBaseDir;
+
+        public static string SanitizeKey(string value)
         {
-            imageBytes = null;
-            filePath = GetImagePath(key);
-
-            if (File.Exists(filePath))
+            if (string.IsNullOrWhiteSpace(value)) return "unknown";
+            var invalid = Path.GetInvalidFileNameChars();
+            var chars = value.Trim().ToCharArray();
+            for (int i = 0; i < chars.Length; i++)
             {
-                try
-                {
-                    imageBytes = File.ReadAllBytes(filePath);
-                    return imageBytes != null && imageBytes.Length > 0;
-                }
-                catch
-                {
-                    return false;
-                }
+                if (Array.IndexOf(invalid, chars[i]) >= 0 || char.IsControl(chars[i])) chars[i] = '_';
             }
-
-            return false;
+            return new string(chars);
         }
 
-        public static CachedIllustrationItem LoadImage(string key, string category = null)
+        private static string CampaignDirectory(string campaignKey)
         {
+            return Path.Combine(CacheBaseDir, SanitizeKey(campaignKey));
+        }
+
+        private static string TrashDirectory(string campaignKey)
+        {
+            return Path.Combine(CacheBaseDir, "_trash", SanitizeKey(campaignKey));
+        }
+
+        public static bool TryGetCachedImage(string key, string campaignKey, out byte[] imageBytes, out string filePath, string category = null)
+        {
+            imageBytes = null;
+            filePath = null;
+            var item = LoadImage(key, campaignKey, category);
+            if (item == null) return false;
+            imageBytes = item.ImageData;
+            filePath = item.FilePath;
+            return imageBytes != null && imageBytes.Length > 0;
+        }
+
+        public static CachedIllustrationItem LoadImage(string subjectKey, string campaignKey, string category = null)
+        {
+            if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey)) return null;
             try
             {
-                string[] categories = !string.IsNullOrEmpty(category)
-                    ? new[] { category }
-                    : new[] { "encyclopedia", "conversation", "weekly_report" };
-
+                string[] categories = !string.IsNullOrEmpty(category) ? new[] { category } : Categories;
+                CachedIllustrationItem fallback = null;
                 foreach (var cat in categories)
                 {
-                    string filePath = GetImagePath(key, cat);
-                    if (File.Exists(filePath))
+                    string dir = Path.Combine(CampaignDirectory(campaignKey), cat);
+                    if (!Directory.Exists(dir)) continue;
+                    foreach (var metaPath in Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly))
                     {
-                        byte[] bytes = File.ReadAllBytes(filePath);
-                        string metaPath = Path.ChangeExtension(filePath, ".json");
-                        string prompt = string.Empty;
-                        string title = string.Empty;
-                        DateTime created = File.GetCreationTime(filePath);
-
-                        if (File.Exists(metaPath))
+                        var item = ReadMetadata(metaPath);
+                        if (item == null || item.Deleted) continue;
+                        if (!string.Equals(item.SubjectKey, subjectKey, StringComparison.Ordinal) &&
+                            !string.Equals(item.Key, subjectKey, StringComparison.Ordinal)) continue;
+                        if (!File.Exists(item.FilePath)) continue;
+                        if (item.IsDefault)
                         {
-                            try
-                            {
-                                string metaJson = File.ReadAllText(metaPath, Encoding.UTF8);
-                                var meta = JsonConvert.DeserializeObject<CachedIllustrationItem>(metaJson);
-                                if (meta != null)
-                                {
-                                    prompt = meta.Prompt;
-                                    title = meta.Title;
-                                    if (meta.CreatedTime != default)
-                                    {
-                                        created = meta.CreatedTime;
-                                    }
-                                }
-                            }
-                            catch { }
+                            item.ImageData = File.ReadAllBytes(item.FilePath);
+                            return item;
                         }
-
-                        return new CachedIllustrationItem
-                        {
-                            Key = key,
-                            Category = cat,
-                            FilePath = filePath,
-                            Prompt = prompt,
-                            Title = title,
-                            CreatedTime = created,
-                            ImageData = bytes
-                        };
+                        if (fallback == null || item.CreatedTime > fallback.CreatedTime) fallback = item;
                     }
                 }
+                if (fallback != null) fallback.ImageData = File.ReadAllBytes(fallback.FilePath);
+                return fallback;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[Illustrator] Failed to load image cache: {ex.Message}");
+                return null;
             }
-            return null;
         }
 
-        public static void SaveImage(string key, byte[] bytes, string prompt, string title, string category = "weekly_report")
+        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false)
         {
-            if (bytes == null || bytes.Length == 0)
-            {
-                return;
-            }
-
+            if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey) || bytes == null || bytes.Length == 0) return null;
             try
             {
-                string categoryDir = Path.Combine(CacheBaseDir, category);
-                if (!Directory.Exists(categoryDir))
-                {
-                    Directory.CreateDirectory(categoryDir);
-                }
-
-                string filePath = Path.Combine(categoryDir, ComputeHash(key) + ".png");
+                string categoryDir = Path.Combine(CampaignDirectory(campaignKey), string.IsNullOrWhiteSpace(category) ? "general" : category);
+                Directory.CreateDirectory(categoryDir);
+                string imageId = $"{ComputeHash(subjectKey)}_{DateTime.UtcNow:yyyyMMddHHmmssfff}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
+                string filePath = Path.Combine(categoryDir, imageId + ".png");
                 File.WriteAllBytes(filePath, bytes);
 
-                string metaPath = Path.ChangeExtension(filePath, ".json");
                 var item = new CachedIllustrationItem
                 {
-                    Key = key,
-                    Category = category,
+                    Key = imageId,
+                    SubjectKey = subjectKey,
+                    CampaignKey = campaignKey,
+                    Category = string.IsNullOrWhiteSpace(category) ? "general" : category,
                     FilePath = filePath,
                     Prompt = prompt ?? string.Empty,
                     Title = title ?? string.Empty,
-                    CreatedTime = DateTime.UtcNow
+                    CreatedTime = DateTime.UtcNow,
+                    IsDefault = makeDefault || LoadImage(subjectKey, campaignKey, category) == null
                 };
-
-                File.WriteAllText(metaPath, JsonConvert.SerializeObject(item, Formatting.Indented), Encoding.UTF8);
+                File.WriteAllText(Path.ChangeExtension(filePath, ".json"), JsonConvert.SerializeObject(item, Formatting.Indented), Encoding.UTF8);
+                if (item.IsDefault) SetDefault(item, campaignKey);
+                EnforceLimit(campaignKey, maxCacheCount);
                 InvalidateCache();
+                return item;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[Illustrator] Failed to save image cache: {ex.Message}");
+                return null;
             }
         }
-
-        private static List<CachedIllustrationItem> _cachedIllustrations;
-        private static DateTime _lastScanTime = DateTime.MinValue;
-        private static readonly object _cacheLock = new object();
 
         public static void InvalidateCache()
         {
-            lock (_cacheLock)
+            lock (CacheLock)
             {
                 _cachedIllustrations = null;
+                _cachedCampaignKey = null;
             }
         }
 
-        public static List<CachedIllustrationItem> GetAllCachedIllustrations(bool forceRefresh = false)
+        public static List<CachedIllustrationItem> GetAllCachedIllustrations(string campaignKey, bool forceRefresh = false)
         {
-            lock (_cacheLock)
+            lock (CacheLock)
             {
-                if (!forceRefresh && _cachedIllustrations != null && (DateTime.UtcNow - _lastScanTime).TotalSeconds < 10)
+                if (!forceRefresh && _cachedIllustrations != null && string.Equals(_cachedCampaignKey, campaignKey, StringComparison.Ordinal))
                 {
                     return new List<CachedIllustrationItem>(_cachedIllustrations);
                 }
@@ -183,92 +176,133 @@ namespace AnimusForge.Illustrator.Engine
                 var list = new List<CachedIllustrationItem>();
                 try
                 {
-                if (!Directory.Exists(CacheBaseDir))
+                    string campaignDir = CampaignDirectory(campaignKey);
+                    if (Directory.Exists(campaignDir))
+                    {
+                        foreach (var jsonFile in Directory.GetFiles(campaignDir, "*.json", SearchOption.AllDirectories))
+                        {
+                            var item = ReadMetadata(jsonFile);
+                            if (item != null && !item.Deleted && File.Exists(item.FilePath)) list.Add(item);
+                        }
+                        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                        foreach (var item in list) visited.Add(item.FilePath);
+                        foreach (var png in Directory.GetFiles(campaignDir, "*.png", SearchOption.AllDirectories))
+                        {
+                            if (visited.Contains(png)) continue;
+                            list.Add(new CachedIllustrationItem
+                            {
+                                Key = Path.GetFileNameWithoutExtension(png),
+                                SubjectKey = Path.GetFileNameWithoutExtension(png),
+                                CampaignKey = campaignKey,
+                                Category = new DirectoryInfo(Path.GetDirectoryName(png)).Name,
+                                FilePath = png,
+                                Title = "卡拉迪亚历史画卷",
+                                Prompt = "（本地已留存历史画卷）",
+                                CreatedTime = File.GetCreationTimeUtc(png)
+                            });
+                        }
+                    }
+                    list.Sort((a, b) => b.CreatedTime.CompareTo(a.CreatedTime));
+                    _cachedIllustrations = list;
+                    _cachedCampaignKey = campaignKey;
+                    return new List<CachedIllustrationItem>(list);
+                }
+                catch
                 {
                     return list;
                 }
-
-                var visitedPngs = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                string[] jsonFiles = Directory.GetFiles(CacheBaseDir, "*.json", SearchOption.AllDirectories);
-                foreach (string jsonFile in jsonFiles)
-                {
-                    try
-                    {
-                        string content = File.ReadAllText(jsonFile, Encoding.UTF8);
-                        var item = JsonConvert.DeserializeObject<CachedIllustrationItem>(content);
-                        if (item != null)
-                        {
-                            string localPng = Path.ChangeExtension(jsonFile, ".png");
-                            if (File.Exists(localPng))
-                            {
-                                item.FilePath = localPng;
-                                visitedPngs.Add(localPng);
-                                list.Add(item);
-                            }
-                            else if (!string.IsNullOrEmpty(item.FilePath) && File.Exists(item.FilePath))
-                            {
-                                visitedPngs.Add(item.FilePath);
-                                list.Add(item);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                // 兜底扫描任何未绑定的 PNG 文件
-                string[] pngFiles = Directory.GetFiles(CacheBaseDir, "*.png", SearchOption.AllDirectories);
-                foreach (string png in pngFiles)
-                {
-                    if (!visitedPngs.Contains(png))
-                    {
-                        string fileName = Path.GetFileNameWithoutExtension(png);
-                        list.Add(new CachedIllustrationItem
-                        {
-                            Key = fileName,
-                            Category = "general",
-                            FilePath = png,
-                            Title = "卡拉迪亚历史画卷",
-                            Prompt = "（本地已留存历史画卷）",
-                            CreatedTime = File.GetCreationTimeUtc(png)
-                        });
-                    }
-                }
-
-                list.Sort((a, b) => b.CreatedTime.CompareTo(a.CreatedTime));
-                _cachedIllustrations = list;
-                _lastScanTime = DateTime.UtcNow;
-                return new List<CachedIllustrationItem>(_cachedIllustrations);
-            }
-            catch
-            {
-                return list;
-            }
             }
         }
 
-        public static string GetImagePath(string key, string category = "weekly_report")
+        private static CachedIllustrationItem ReadMetadata(string jsonFile)
         {
-            string categoryDir = Path.Combine(CacheBaseDir, category);
-            return Path.Combine(categoryDir, ComputeHash(key) + ".png");
+            try
+            {
+                var item = JsonConvert.DeserializeObject<CachedIllustrationItem>(File.ReadAllText(jsonFile, Encoding.UTF8));
+                if (item == null) return null;
+                string localPng = Path.ChangeExtension(jsonFile, ".png");
+                if (File.Exists(localPng)) item.FilePath = localPng;
+                if (string.IsNullOrEmpty(item.Key)) item.Key = Path.GetFileNameWithoutExtension(jsonFile);
+                if (string.IsNullOrEmpty(item.SubjectKey)) item.SubjectKey = item.Key;
+                return item;
+            }
+            catch { return null; }
+        }
+
+        public static bool SetDefault(CachedIllustrationItem target, string campaignKey)
+        {
+            if (target == null || string.IsNullOrWhiteSpace(target.SubjectKey)) return false;
+            string campaignDir = CampaignDirectory(campaignKey);
+            if (!Directory.Exists(campaignDir)) return false;
+            bool found = false;
+            foreach (var jsonFile in Directory.GetFiles(campaignDir, "*.json", SearchOption.AllDirectories))
+            {
+                var item = ReadMetadata(jsonFile);
+                if (item == null || !string.Equals(item.SubjectKey, target.SubjectKey, StringComparison.Ordinal) ||
+                    !string.Equals(item.Category, target.Category, StringComparison.OrdinalIgnoreCase)) continue;
+                bool isTarget = string.Equals(item.Key, target.Key, StringComparison.OrdinalIgnoreCase);
+                item.IsDefault = isTarget;
+                File.WriteAllText(jsonFile, JsonConvert.SerializeObject(item, Formatting.Indented), Encoding.UTF8);
+                found |= isTarget;
+            }
+            if (found) InvalidateCache();
+            return found;
+        }
+
+        public static bool DeleteItem(CachedIllustrationItem item, string campaignKey)
+        {
+            if (item == null || string.IsNullOrWhiteSpace(item.FilePath)) return false;
+            try
+            {
+                string trash = TrashDirectory(campaignKey);
+                Directory.CreateDirectory(trash);
+                string imageTarget = Path.Combine(trash, Path.GetFileName(item.FilePath));
+                string metaSource = Path.ChangeExtension(item.FilePath, ".json");
+                string metaTarget = Path.Combine(trash, Path.GetFileName(metaSource));
+                if (File.Exists(item.FilePath)) File.Move(item.FilePath, imageTarget);
+                if (File.Exists(metaSource)) File.Move(metaSource, metaTarget);
+                InvalidateCache();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] Failed to move illustration to recycle area: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static void EnforceLimit(string campaignKey, int maxCacheCount)
+        {
+            var items = GetAllCachedIllustrations(campaignKey, true);
+            int limit = Math.Max(20, Math.Min(1000, maxCacheCount));
+            if (items.Count <= limit) return;
+            int remaining = items.Count;
+            foreach (var item in items.Where(i => !i.IsDefault).OrderBy(i => i.CreatedTime))
+            {
+                if (remaining <= limit) break;
+                if (DeleteItem(item, campaignKey)) remaining--;
+            }
+            if (remaining <= limit) return;
+            foreach (var item in items.Where(i => i.IsDefault).OrderBy(i => i.CreatedTime))
+            {
+                if (remaining <= limit) break;
+                if (DeleteItem(item, campaignKey)) remaining--;
+            }
+        }
+
+        public static string GetImagePath(string imageId, string campaignKey, string category = "weekly_report")
+        {
+            return Path.Combine(CampaignDirectory(campaignKey), category, ComputeHash(imageId) + ".png");
         }
 
         public static string ComputeHash(string input)
         {
-            if (string.IsNullOrEmpty(input))
-            {
-                return "empty_" + Guid.NewGuid().ToString("N");
-            }
+            if (string.IsNullOrEmpty(input)) return "empty";
             using (var sha = SHA256.Create())
             {
                 byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
                 var sb = new StringBuilder();
-                for (int i = 0; i < 16; i++) // 32 字符 hex
-                {
-                    sb.Append(bytes[i].ToString("x2"));
-                }
+                for (int i = 0; i < 16; i++) sb.Append(bytes[i].ToString("x2"));
                 return sb.ToString();
             }
         }

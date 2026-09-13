@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.Library;
@@ -20,6 +21,7 @@ namespace AnimusForge.Illustrator.Engine
 
         public static bool TryGetSprite(string spriteName, out BannerlordUiSprite sprite)
         {
+            Core.IllustratorRuntime.AssertMainThread();
             sprite = null;
             if (string.IsNullOrWhiteSpace(spriteName))
             {
@@ -34,15 +36,15 @@ namespace AnimusForge.Illustrator.Engine
             if (UIResourceManager.SpriteData != null &&
                 UIResourceManager.SpriteData.Sprites.TryGetValue(spriteName, out sprite))
             {
-                LoadedSprites[spriteName] = sprite;
                 return true;
             }
 
             return false;
         }
 
-        public static BannerlordUiSprite LoadOrRegisterPngBytes(string spriteName, byte[] bytes, int fallbackWidth = 1024, int fallbackHeight = 1024)
+        public static BannerlordUiSprite LoadOrRegisterPngBytes(string spriteName, byte[] bytes, int fallbackWidth = 1024, int fallbackHeight = 1024, bool fixColorChannels = true)
         {
+            Core.IllustratorRuntime.AssertMainThread();
             if (string.IsNullOrWhiteSpace(spriteName) || bytes == null || bytes.Length == 0)
             {
                 return null;
@@ -50,12 +52,23 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
+                if (LoadedSprites.TryGetValue(spriteName, out var previous))
+                {
+                    ReleaseSprite(spriteName, previous);
+                }
+                else if (UIResourceManager.SpriteData != null &&
+                         UIResourceManager.SpriteData.Sprites.TryGetValue(spriteName, out var registered) &&
+                         registered is RuntimeIllustrationSprite runtimeSprite)
+                {
+                    UIResourceManager.SpriteData.Sprites.Remove(spriteName);
+                    runtimeSprite.ReleaseTexture();
+                }
+
                 byte[] bytesToLoad = bytes;
                 int detectedWidth = 0;
                 int detectedHeight = 0;
 
-                bool shouldFixColors = IllustratorSettings.Instance == null || IllustratorSettings.Instance.FixColorChannels;
-                if (shouldFixColors)
+                if (fixColorChannels)
                 {
                     bytesToLoad = SwapRedAndBlueInPng(bytes, out detectedWidth, out detectedHeight);
                 }
@@ -89,13 +102,50 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 LoadedSprites[spriteName] = sprite;
 
-                Debug.Print($"[Illustrator] Successfully loaded dynamic sprite: {spriteName} ({width}x{height}, colorFixed={shouldFixColors})");
+                Debug.Print($"[Illustrator] Successfully loaded dynamic sprite: {spriteName} ({width}x{height}, colorFixed={fixColorChannels})");
                 return sprite;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[Illustrator] Failed to load PNG sprite {spriteName}: {ex.Message}");
                 return null;
+            }
+        }
+
+        public static void ReleaseSprite(string spriteName, BannerlordUiSprite expected = null)
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            if (string.IsNullOrWhiteSpace(spriteName)) return;
+            if (!LoadedSprites.TryGetValue(spriteName, out var sprite)) return;
+            if (expected != null && !ReferenceEquals(sprite, expected)) return;
+
+            LoadedSprites.TryRemove(spriteName, out _);
+            if (UIResourceManager.SpriteData != null &&
+                UIResourceManager.SpriteData.Sprites.TryGetValue(spriteName, out var registered) &&
+                ReferenceEquals(registered, sprite))
+            {
+                UIResourceManager.SpriteData.Sprites.Remove(spriteName);
+            }
+
+            try
+            {
+                if (sprite is RuntimeIllustrationSprite runtimeSprite)
+                {
+                    runtimeSprite.ReleaseTexture();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] Failed to release sprite {spriteName}: {ex.Message}");
+            }
+        }
+
+        public static void ReleaseAllSprites()
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            foreach (var spriteName in LoadedSprites.Keys.ToArray())
+            {
+                ReleaseSprite(spriteName);
             }
         }
 
@@ -153,6 +203,11 @@ namespace AnimusForge.Illustrator.Engine
                 : base(name, width, height, SpriteNinePatchParameters.Empty)
             {
                 _texture = texture;
+            }
+
+            public void ReleaseTexture()
+            {
+                _texture?.PlatformTexture?.Release();
             }
 
             public override BannerlordUiTexture Texture => _texture;

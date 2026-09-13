@@ -39,10 +39,7 @@ namespace AnimusForge.Illustrator.Core
         public static async Task<ImageGenerationResult> GenerateImageAsync(
             string prompt,
             string inputBase64Image = null,
-            string overrideModel = null,
-            string overrideSize = null,
-            string overrideQuality = null,
-            string overrideStyle = null,
+            IllustrationOptions options = null,
             CancellationToken cancellationToken = default)
         {
             var result = new ImageGenerationResult
@@ -50,7 +47,7 @@ namespace AnimusForge.Illustrator.Core
                 ResolvedPrompt = prompt ?? string.Empty
             };
 
-            var settings = IllustratorSettings.Instance;
+            var settings = options;
             if (settings == null || !settings.EnableImageGeneration)
             {
                 result.ErrorMessage = "AI 生图系统未启用";
@@ -65,10 +62,10 @@ namespace AnimusForge.Illustrator.Core
             }
 
             string apiKey = (settings.ApiKey ?? string.Empty).Trim();
-            string model = !string.IsNullOrWhiteSpace(overrideModel) ? overrideModel.Trim() : (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
-            string size = !string.IsNullOrWhiteSpace(overrideSize) ? overrideSize.Trim() : (settings.ImageSize ?? "1024x1024").Trim();
-            string quality = !string.IsNullOrWhiteSpace(overrideQuality) ? overrideQuality.Trim() : (settings.SelectedQuality ?? "");
-            string style = !string.IsNullOrWhiteSpace(overrideStyle) ? overrideStyle.Trim() : (settings.SelectedStyle ?? "");
+            string model = (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
+            string size = (settings.ImageSize ?? "1024x1024").Trim();
+            string quality = settings.SelectedQuality ?? "";
+            string style = settings.SelectedStyle ?? "";
 
             var stopwatch = Stopwatch.StartNew();
 
@@ -451,8 +448,10 @@ namespace AnimusForge.Illustrator.Core
             try
             {
                 using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(60) })
+                using (var response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false))
                 {
-                    return await client.GetByteArrayAsync(url).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

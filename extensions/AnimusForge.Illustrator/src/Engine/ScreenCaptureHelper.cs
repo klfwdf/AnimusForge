@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -23,6 +24,9 @@ namespace AnimusForge.Illustrator.Engine
     {
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
@@ -55,6 +59,12 @@ namespace AnimusForge.Illustrator.Engine
             {
                 IntPtr hWnd = GetForegroundWindow();
                 if (hWnd == IntPtr.Zero)
+                {
+                    return null;
+                }
+
+                GetWindowThreadProcessId(hWnd, out uint windowPid);
+                if (windowPid != (uint)Process.GetCurrentProcess().Id)
                 {
                     return null;
                 }

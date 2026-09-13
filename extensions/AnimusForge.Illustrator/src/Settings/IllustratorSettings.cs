@@ -12,6 +12,8 @@ using MCM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.Library;
+using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.UI.Patches;
 
 namespace AnimusForge.Illustrator
 {
@@ -29,18 +31,23 @@ namespace AnimusForge.Illustrator
 
         public IllustratorSettings()
         {
-            FetchModelList = () =>
-            {
-                Task.Run(async () =>
-                {
-                    await FetchModelsAsync().ConfigureAwait(false);
-                });
-            };
+            FetchModelList = RequestModelListFetch;
         }
+
+        private bool _enableImageGeneration = true;
 
         [SettingPropertyBool("启用 AI 画卷生图系统", HintText = "全局总开关。开启后将在周报、画廊等界面提供 AI 图像生成与插画展示。", Order = 0, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
-        public bool EnableImageGeneration { get; set; } = true;
+        public bool EnableImageGeneration
+        {
+            get => _enableImageGeneration;
+            set
+            {
+                if (value == _enableImageGeneration) return;
+                _enableImageGeneration = value;
+                QueueInjectedButtonRefresh();
+            }
+        }
 
         [SettingPropertyBool("启用多模态视觉提词 (方案 A)", HintText = "开启后自动抓取游戏内 3D 角色模型与会面实景画面，喂给视觉大模型 (如 GPT-4o / Qwen-VL) 提炼超精准提示词。若配置的模型不支持视觉参数，系统会自动平滑降级为高精度文本提词。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
@@ -162,13 +169,34 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
 
+        private bool _enableEncyclopediaIllustration = true;
+        private bool _enableConversationIllustration = true;
+
         [SettingPropertyBool("英雄百科页注入【纪事插画】按钮", HintText = "开启后，在英雄百科页面将注入【纪事插画】按钮，可点击针对该英雄的 3D 模型与身份生平生成史诗级肖像立绘。", Order = 2, RequireRestart = false)]
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
-        public bool EnableEncyclopediaIllustration { get; set; } = true;
+        public bool EnableEncyclopediaIllustration
+        {
+            get => _enableEncyclopediaIllustration;
+            set
+            {
+                if (value == _enableEncyclopediaIllustration) return;
+                _enableEncyclopediaIllustration = value;
+                QueueInjectedButtonRefresh();
+            }
+        }
 
         [SettingPropertyBool("现场对话界面注入【场景插画】按钮", HintText = "开启后，在地图对话与场景面对面对话时注入【场景插画】按钮，可点击根据现场双方站姿与对话语境生成生动的会晤史诗插画。", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
-        public bool EnableConversationIllustration { get; set; } = true;
+        public bool EnableConversationIllustration
+        {
+            get => _enableConversationIllustration;
+            set
+            {
+                if (value == _enableConversationIllustration) return;
+                _enableConversationIllustration = value;
+                QueueInjectedButtonRefresh();
+            }
+        }
 
         [SettingPropertyInteger("本地缓存最大保留张数", 20, 1000, "0 张", HintText = "生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("4. 存储与性能", GroupOrder = 4)]
@@ -183,6 +211,15 @@ namespace AnimusForge.Illustrator
         public string DirectorApiBaseUrl { get; set; } = "";
         public string DirectorApiKey { get; set; } = "";
         public string DirectorModelName { get; set; } = "";
+
+        private static void QueueInjectedButtonRefresh()
+        {
+            IllustratorRuntime.Post(() =>
+            {
+                EncyclopediaHeroIllustrationPatch.RefreshInjectedButtons();
+                ConversationIllustrationPatch.RefreshInjectedButtons();
+            });
+        }
 
         private static string GetCacheFilePath()
         {
@@ -286,21 +323,61 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        public async Task FetchModelsAsync()
+        private bool _modelFetchInProgress;
+
+        private void RequestModelListFetch()
+        {
+            if (!IllustratorRuntime.IsMainThread)
+            {
+                IllustratorRuntime.Post(RequestModelListFetch);
+                return;
+            }
+
+            if (_modelFetchInProgress)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 模型列表正在拉取中，请稍候。", Color.FromUint(4294967040u)));
+                return;
+            }
+
+            string baseUrl = (ApiBaseUrl ?? string.Empty).Trim().TrimEnd('/');
+            string apiKey = (ApiKey ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 请先填写生图 API 端点地址 (Base URL)！", Color.FromUint(4294901760u)));
+                return;
+            }
+
+            _modelFetchInProgress = true;
+            InformationManager.DisplayMessage(new InformationMessage("[AI生图] 正在拉取可用模型列表...", Color.FromUint(4294967040u)));
+
+            bool started = IllustratorRuntime.Start(() => FetchModelListAsync(baseUrl, apiKey), (result, error) =>
+            {
+                _modelFetchInProgress = false;
+                if (error != null)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 拉取模型异常: {error.Message}", Color.FromUint(4294901760u)));
+                    return;
+                }
+                ApplyFetchedModels(result);
+            });
+
+            if (!started)
+            {
+                _modelFetchInProgress = false;
+                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 后台任务繁忙，请稍后重试。", Color.FromUint(4294901760u)));
+            }
+        }
+
+        private sealed class ModelListFetchResult
+        {
+            public List<string> Models;
+            public string Error;
+        }
+
+        private static async Task<ModelListFetchResult> FetchModelListAsync(string baseUrl, string apiKey)
         {
             try
             {
-                string baseUrl = (ApiBaseUrl ?? string.Empty).Trim().TrimEnd('/');
-                string apiKey = (ApiKey ?? string.Empty).Trim();
-
-                if (string.IsNullOrWhiteSpace(baseUrl))
-                {
-                    InformationManager.DisplayMessage(new InformationMessage("[AI生图] 请先填写生图 API 端点地址 (Base URL)！", Color.FromUint(4294901760u)));
-                    return;
-                }
-
-                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 正在拉取可用模型列表...", Color.FromUint(4294967040u)));
-
                 string modelsUrl = baseUrl;
                 if (modelsUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
                     modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/chat/completions".Length).TrimEnd('/');
@@ -309,10 +386,9 @@ namespace AnimusForge.Illustrator
 
                 if (!modelsUrl.EndsWith("/models", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (modelsUrl.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
-                        modelsUrl = modelsUrl + "/models";
-                    else
-                        modelsUrl = modelsUrl + "/v1/models";
+                    modelsUrl = modelsUrl.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)
+                        ? modelsUrl + "/models"
+                        : modelsUrl + "/v1/models";
                 }
 
                 using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) })
@@ -328,16 +404,14 @@ namespace AnimusForge.Illustrator
                         string json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                         if (!resp.IsSuccessStatusCode)
                         {
-                            InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 拉取失败 (HTTP {(int)resp.StatusCode}): {json}", Color.FromUint(4294901760u)));
-                            return;
+                            return new ModelListFetchResult { Error = $"拉取失败 (HTTP {(int)resp.StatusCode}): {json}" };
                         }
 
                         JObject parsed = JObject.Parse(json);
                         JArray data = parsed["data"] as JArray;
                         if (data == null || data.Count == 0)
                         {
-                            InformationManager.DisplayMessage(new InformationMessage("[AI生图] 接口返回成功，但未解析到可用模型数据。", Color.FromUint(4294936576u)));
-                            return;
+                            return new ModelListFetchResult { Error = "接口返回成功，但未解析到可用模型数据。" };
                         }
 
                         var list = new List<string>();
@@ -350,7 +424,6 @@ namespace AnimusForge.Illustrator
                             }
                         }
 
-                        // 优先排序：图像与画卷相关模型排在最前
                         list.Sort((a, b) =>
                         {
                             bool aIsImg = a.IndexOf("image", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("flux", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("dall", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -360,39 +433,53 @@ namespace AnimusForge.Illustrator
                             return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
                         });
 
-                        lock (_modelLock)
-                        {
-                            _modelOptions = new List<string> { "*手动输入*" };
-                            _modelOptions.AddRange(list);
-
-                            int selectedIdx = _modelOptions.IndexOf(ModelName);
-                            if (selectedIdx < 0) selectedIdx = _modelOptions.Count > 1 ? 1 : 0;
-
-                            _modelDropdown = new Dropdown<string>(_modelOptions, selectedIdx);
-                            if (selectedIdx > 0)
-                            {
-                                string selectedModel = _modelOptions[selectedIdx];
-                                ModelName = selectedModel;
-                                if (Instance != null && !ReferenceEquals(Instance, this))
-                                {
-                                    Instance.ModelName = selectedModel;
-                                }
-                            }
-
-                            SaveCachedModels(list);
-                        }
-
-                        // 请求 MCM 运行时热重构刷新（主线程 Tick 将即刻重建 ModOptions 视图）
-                        RequestMcmRefresh();
-
-                        InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 成功获取 {list.Count} 个可用模型！已优先选中: {ModelName}，下拉选单已即时刷新。", Color.FromUint(4278255360u)));
+                        SaveCachedModels(list);
+                        return new ModelListFetchResult { Models = list };
                     }
                 }
             }
             catch (Exception ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 拉取模型异常: {ex.Message}", Color.FromUint(4294901760u)));
+                return new ModelListFetchResult { Error = ex.Message };
             }
+        }
+
+        private void ApplyFetchedModels(ModelListFetchResult result)
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (result == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 拉取模型异常: 空结果", Color.FromUint(4294901760u)));
+                return;
+            }
+            if (!string.IsNullOrWhiteSpace(result.Error))
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"[AI生图] {result.Error}", Color.FromUint(4294901760u)));
+                return;
+            }
+
+            lock (_modelLock)
+            {
+                _modelOptions = new List<string> { "*手动输入*" };
+                _modelOptions.AddRange(result.Models);
+
+                int selectedIdx = _modelOptions.IndexOf(ModelName);
+                if (selectedIdx < 0) selectedIdx = _modelOptions.Count > 1 ? 1 : 0;
+
+                _modelDropdown = new Dropdown<string>(_modelOptions, selectedIdx);
+                if (selectedIdx > 0)
+                {
+                    string selectedModel = _modelOptions[selectedIdx];
+                    ModelName = selectedModel;
+                    if (Instance != null && !ReferenceEquals(Instance, this))
+                    {
+                        Instance.ModelName = selectedModel;
+                    }
+                }
+            }
+
+            RequestMcmRefresh();
+            InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 成功获取 {result.Models.Count} 个可用模型！已优先选中: {ModelName}，下拉选单已即时刷新。", Color.FromUint(4278255360u)));
         }
     }
 }

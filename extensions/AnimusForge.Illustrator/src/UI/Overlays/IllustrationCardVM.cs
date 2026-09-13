@@ -1,4 +1,5 @@
 using System;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.UI.Gallery;
 
@@ -157,6 +158,20 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void ExecuteTogglePrompt()
         {
             ShowPrompt = !ShowPrompt;
+        }
+
+        public void ExecuteCopyPrompt()
+        {
+            if (string.IsNullOrWhiteSpace(PromptText)) return;
+            try
+            {
+                Input.SetClipboardText(PromptText);
+                StatusText = "提示词已复制到剪贴板";
+            }
+            catch (Exception ex)
+            {
+                StatusText = "复制失败: " + ex.Message;
+            }
         }
 
         public void ExecuteOpenGallery()

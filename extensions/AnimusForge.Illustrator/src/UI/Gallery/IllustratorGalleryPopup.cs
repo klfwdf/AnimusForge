@@ -3,6 +3,7 @@ using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
+using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.UI.Overlays;
 
 namespace AnimusForge.Illustrator.UI.Gallery
@@ -13,11 +14,14 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly ScreenBase _screen;
         private readonly MovableGauntletLayer _layer;
         private readonly IllustratorGalleryPopupVM _dataSource;
+        private readonly IllustrationScope _scope;
+        private bool _closed;
 
         private IllustratorGalleryPopup(ScreenBase screen)
         {
             _screen = screen;
-            _dataSource = new IllustratorGalleryPopupVM(Close);
+            _scope = new IllustrationScope(screen, null, Close);
+            _dataSource = new IllustratorGalleryPopupVM(Close, _scope.CampaignKey);
             var layer = new MovableGauntletLayer("IllustratorGalleryPopup", 4020, false);
             var movieIdentifier = layer.LoadMovie("IllustratorGalleryPopup", _dataSource);
             layer.AutoAttachMovable(movieIdentifier?.Movie, "MainPanel", "TitleBar");
@@ -37,6 +41,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         public static void Show(string focusKey = null)
         {
+            IllustratorRuntime.AssertMainThread();
+            if (!IllustratorRuntime.IsEnabled()) return;
             ScreenBase topScreen = ScreenManager.TopScreen;
             if (topScreen == null)
             {
@@ -62,8 +68,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         public void Close()
         {
+            if (_closed) return;
+            _closed = true;
             try
             {
+                _scope?.Close();
+                _dataSource?.DisposeVisuals();
                 if (_screen != null && _layer != null)
                 {
                     _screen.RemoveLayer(_layer);
