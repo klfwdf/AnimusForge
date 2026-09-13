@@ -1,0 +1,198 @@
+// Tests compose real extracted sealing/maintenance with game identity and start-dispatch fixtures.
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using Newtonsoft.Json;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.CampaignSystem { public readonly struct CampaignTime { public static CampaignTime Now=>new(); public double ToDays=>AnimusForge.Probe.GameDay; } }
+namespace AnimusForge {
+ public static class PerfProbe { sealed class Token:IDisposable {public void Dispose(){}} public static IDisposable Scope(string label)=>new Token(); }
+ static class SealProbe {
+  public static Dictionary<string,int> Counts=new();public static Action<string> Hook;public static double Budget=1000;
+  public static void Hit(string key){Counts[key]=Count(key)+1;Hook?.Invoke(key);}
+  public static int Count(string key)=>Counts.TryGetValue(key,out var n)?n:0;
+  public static IEnumerable<T> Visit<T>(IEnumerable<T> items,string key){foreach(var item in items){Hit(key);yield return item;}}
+  public static void Reset(){Counts.Clear();Hook=null;Budget=1000;}
+ }
+ public partial class MyBehavior {
+  bool _memorySummaryProcessing,busy;
+  int _lastMemoryMaintenanceObservedGameDay=-1,summaryStarts;
+  HashSet<string> _dirtyMemoryOverviewIds=new(),_pendingMemoryOverviewCandidateScanIdSet=new();
+  Queue<string> _pendingMemoryOverviewCandidateScanIds=new();
+  Dictionary<string,string> _memoryOverviewStateStorage=new(),_npcMajorActionSummaryStorage=new();
+  bool IsDialogueOrLetterChainBusyForMemorySummary()=>busy;
+  void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan=false){summaryStarts++;SealProbe.Hit("summary-start-seam");}
+  // Unrelated daily-maintenance domains remain explicit seams; the queue/dispatch loop is real.
+  Queue<DailyMaintenanceJob> _dailyMaintenanceQueue=new();HashSet<string> _dailyMaintenanceJobKeys=new();
+  object _pendingAutoWeeklyReportBuild;bool _automaticKingdomRebellionFlowActive;
+  static bool IsDeferredDailyMaintenanceEnabled()=>true;
+  void ProcessPendingAutoWeeklyReportBuildBudget(long start,double budget){}
+  int ProcessMemoryOverviewCandidateScanBudget(long start,double budget)=>0;
+  void QueueDirtyMemoryOverviewCandidatesForDeferredScan(){}
+  void QueueAllMemoryOverviewCandidatesForDeferredScan(){}
+  void TryDiscontinueLandlessModRebelKingdoms(string reason){}
+  bool ProcessWeekZeroOpeningSummaryEventsSlice()=>true;
+  bool ProcessMissedStrategicWorldEventsSlice()=>true;
+  bool ProcessKingdomStabilityRelationAdjustmentsSlice()=>true;
+  bool ProcessWeeklyKingdomRebellionsSlice(int week)=>true;
+  void TryInitializePendingAutoWeeklyReportBuild(DailyMaintenanceJob job){}
+  static MyBehavior NewSealOwner(){var b=Owner();SealProbe.Reset();return b;}
+  DailyMemoryDraft AddDraft(string id,int day=9){Seed("daily",id);_memorySummaryQueue.Clear();var d=_dailyMemoryDrafts[id][0];d.GameDayIndex=day;d.GameDate=" Day "+day+" ";return d;}
+  void AddMajorSource(string id){_npcMajorActions[id]=new(){new NpcActionEntry{Day=9,Sequence=1,Order=1,Text="major action",StableKey=id+"-major"}};}
+  static void Semantics(string mode){
+   var b=NewSealOwner();var d=b.AddDraft("a");
+   if(mode=="afef-only"){d.HasLlmDialogue=false;d.Lines.RemoveAll(x=>!x.IsAfef);}
+   if(mode=="empty"){d.HasLlmDialogue=false;d.Lines.Clear();}
+   if(mode=="terminal"){d.SummaryRetryCount=3;d.LastSummaryError="terminal diagnostic";d.QueuedForSummary=true;b.AddMajorSource("a");}
+   if(mode=="mismatch"){d.HeroId="different";d.QueuedForSummary=true;}
+   if(mode=="block")b._compressedMemoryBlocks["a"]=new(){Block("a",9)};
+   if(mode=="today")d.GameDayIndex=10;
+   if(mode=="invalid-owner"){b.heroes.Clear();b._memorySummaryQueue.Add(new(){HeroId="a",GameDayIndex=9});b._npcMajorActionSummaryQueue.Add(new(){HeroId="a"});b._npcMajorActionSummaries["a"]=new(){HeroId="a",Summary="derived"};b._memoryOverviewStates["a"]=new(){HeroId="a",Summary="derived"};}
+   Check(b.TrySealPastDailyMemoryDrafts(),"unbudgeted Seal did not complete");
+   Check(b._dailyMemoryDraftSealOwnerKeys==null,"unbudgeted completion retained stale cursor");
+   bool kept=b._dailyMemoryDrafts.TryGetValue("a",out var drafts)&&drafts.Count>0;
+   if(mode is "empty" or "block")Check(!kept,"consumed/empty draft retained");else Check(kept,"raw draft or AFEF source lost");
+   if(mode=="normal")Check(b._memorySummaryQueue.Count==1&&d.QueuedForSummary,"eligible old draft not queued synchronously");
+   else Check(b._memorySummaryQueue.Count==0,"ineligible draft recreated daily job");
+   if(mode=="terminal")Check(b._npcMajorActionSummaryQueue.Count==1&&!d.QueuedForSummary&&d.LastSummaryError=="terminal diagnostic","terminal daily retry lost major eligibility/error");
+   if(mode=="mismatch")Check(!d.QueuedForSummary&&d.HeroId=="different","owner mismatch redirected source");
+   if(mode=="afef-only")Check(d.Lines.Count==1&&d.Lines[0].IsAfef&&d.WeeklyMaterialTriggers.Count==1,"AFEF-only weekly fact lost");
+   if(mode=="invalid-owner")Check(b._npcMajorActionSummaryQueue.Count==0&&!b._npcMajorActionSummaries.ContainsKey("a")&&!b._memoryOverviewStates.ContainsKey("a")&&d.WeeklyMaterialTriggers.Count==1,"invalid-owner cancellation lost source or retained derived work");
+   MainReads();
+  }
+  static void DailyQueueContract(){
+   var b=NewSealOwner();b.AddDraft("a",8);b.AddDraft("b",7);
+   var terminal=new MemorySummaryJob{HeroId="a",GameDayIndex=8,RetryCount=3};var first=new MemorySummaryJob{HeroId=" a ",GameDayIndex=8,HeroName=" Z ",GameDate=" Day8 ",LastError=" old ",RetryCount=-2};
+   b._memorySummaryQueue=new(){null,terminal,first,new(){HeroId="a",GameDayIndex=8,HeroName="duplicate"},new(){HeroId="b",GameDayIndex=7,HeroName=" B "}};
+   Check(b.TrySealPastDailyMemoryDrafts(),"daily contract did not complete");
+   Check(b._memorySummaryQueue.Count==2&&ReferenceEquals(b._memorySummaryQueue[1],first),"daily filter-before-dedupe/reference winner changed");
+   Check(b._memorySummaryQueue[0].HeroId=="b"&&first.HeroId=="a"&&first.HeroName=="Z"&&first.GameDate=="Day8"&&first.LastError=="old"&&first.RetryCount==0,"daily ordering/normalization drift");MainReads();
+  }
+  static void MajorQueueContract(){
+   var b=NewSealOwner();b.AddDraft("a",8);b.AddDraft("b",7);b.AddMajorSource("a");b.AddMajorSource("b");
+   var first=new MajorActionSummaryJob{HeroId=" a ",TriggerGameDayIndex=-2,HeroName=" Z ",TriggerGameDate=" Day ",LastError=" old ",RetryCount=-2};
+   b._npcMajorActionSummaryQueue=new(){null,new(){HeroId="a",RetryCount=3},first,new(){HeroId="a",TriggerGameDayIndex=8},new(){HeroId="b",TriggerGameDayIndex=4,HeroName=" B "}};
+   Check(b.TrySealPastDailyMemoryDrafts(),"major contract did not complete");
+   Check(b._npcMajorActionSummaryQueue.Count==2&&b._npcMajorActionSummaryQueue.Contains(first),"major filter-before-dedupe changed");
+   Check(first.HeroId=="a"&&first.HeroName=="Z"&&first.TriggerGameDate=="Day"&&first.LastError=="old"&&first.RetryCount==0&&first.TriggerGameDayIndex==0,"major normalization drift");
+   Check(ReferenceEquals(b._npcMajorActionSummaryQueue[0],first),"major date sort lost");MainReads();
+  }
+  static void FiniteThenSynchronous(){
+   var b=NewSealOwner();b.AddDraft("a");bool first=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp()-(Stopwatch.Frequency/10),1);
+   Check(!first&&b._memorySummaryQueue.Count==0,"expired budget did not defer before job creation");
+   Check(b.TrySealPastDailyMemoryDrafts()&&b._memorySummaryQueue.Count==1,"unbudgeted call failed to drain pending slice");MainReads();
+  }
+  static void SameDayResume(){
+   var b=NewSealOwner();b.AddDraft("a");SealProbe.Budget=1;bool delayed=false;
+   SealProbe.Hook=key=>{if(key=="TrySealPastDailyMemoryDrafts"&&!delayed){delayed=true;Thread.Sleep(12);}};
+   b.TryRunCampaignMemoryMaintenance();Check(delayed&&b._memorySummaryQueue.Count==0&&SealProbe.Count("TrySealPastDailyMemoryDrafts")==1,"first tick did not stop before enqueue");
+   SealProbe.Hook=null;SealProbe.Budget=1000;
+   for(int i=0;i<32&&b._memorySummaryQueue.Count==0;i++)b.TryRunCampaignMemoryMaintenance();
+   Console.WriteLine($"SAME_DAY_RESUME seal_calls={SealProbe.Count("TrySealPastDailyMemoryDrafts")} jobs={b._memorySummaryQueue.Count} same_day={Probe.GameDay}");
+   Check(b._memorySummaryQueue.Count==1,"incomplete no-job Seal abandoned by same-day maintenance gate");MainReads();
+  }
+  static void SameReferenceIndexedKeyChange(){
+   var b=NewSealOwner();b.AddDraft("a",9);b.AddDraft("b",8);var moving=new MemorySummaryJob{HeroId="a",GameDayIndex=9,HeroName="first"};b._memorySummaryQueue.Add(moving);
+   bool paused=false;SealProbe.Hook=key=>{if(key=="daily-index"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);SealProbe.Hook=null;
+   Check(paused&&!done&&b._memorySummaryQueue.Count==1,"did not pause after actual key-index read");
+   moving.HeroId="b";moving.GameDayIndex=8;
+   Check(b.TrySealPastDailyMemoryDrafts(),"key-change synchronous drain incomplete");
+   Check(b._memorySummaryQueue.Count==2&&b._memorySummaryQueue.Any(x=>x.HeroId=="a"&&x.GameDayIndex==9)&&ReferenceEquals(b._memorySummaryQueue.First(x=>x.HeroId=="b"),moving),"old indexed key suppressed live draft or replaced current first job");MainReads();
+  }
+  static void OwnerListReplacement(){
+   var b=NewSealOwner();var template=b.AddDraft("a",1);b._dailyMemoryDrafts["a"]=Enumerable.Range(1,3).Select(day=>{var d=template.CopyForSummary();d.GameDayIndex=day;return d;}).ToList();
+   bool paused=false;SealProbe.Hook=key=>{if(key=="draft-visited"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);SealProbe.Hook=null;
+   Check(paused&&!done&&b._memorySummaryQueue.Count==1,"did not pause within actual owner draft iteration");
+   b._dailyMemoryDrafts["a"]=Enumerable.Range(1,5).Select(day=>{var d=template.CopyForSummary();d.GameDayIndex=day;return d;}).ToList();
+   Check(b.TrySealPastDailyMemoryDrafts(),"replaced-list synchronous drain incomplete");
+   Check(b._memorySummaryQueue.Select(x=>x.GameDayIndex).SequenceEqual(Enumerable.Range(1,5)),"old reverse cursor skipped replacement-list records");MainReads();
+  }
+  static void QueueWriteDuringCleanup(bool replace){
+   var b=NewSealOwner();Probe.GameDay=11;
+   for(int i=0;i<12;i++)b.Seed("daily","queued"+i);
+   bool paused=false;SealProbe.Hook=key=>{if(key=="HasMemorySummaryJobStillPending"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=false;for(int i=0;i<1024&&!paused;i++)done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);
+   SealProbe.Hook=null;Check(paused&&!done,"cleanup ignored deadline after first pending predicate");
+   var late=(MemorySummaryJob)b.Seed("daily","late");
+   if(replace)b._memorySummaryQueue=b._memorySummaryQueue.ToList();
+   Check(b.TrySealPastDailyMemoryDrafts(),"queue-write synchronous drain incomplete");
+   Check(b._memorySummaryQueue.Count==13&&b._memorySummaryQueue.Contains(late)&&b._memorySummaryQueue.Select(x=>x.HeroId).Distinct().Count()==13,"cleanup overwrote added/replaced live queue");MainReads();
+  }
+  static MyBehavior LargeEmptyLayout(){
+   var b=NewSealOwner();for(int i=0;i<4096;i++){string id="owner"+i;b.heroes[id]=new Hero{Id=id,Label=id};b._dailyMemoryDrafts[id]=new();b._memorySummaryQueue.Add(null);b._npcMajorActionSummaryQueue.Add(null);}return b;
+  }
+  static void FiniteConvergence(bool drafts){
+   var b=drafts?NewSealOwner():LargeEmptyLayout();
+   if(drafts){Probe.GameDay=100;foreach(string id in new[]{"a","b","c"}){var template=b.AddDraft(id,1);b._dailyMemoryDrafts[id]=Enumerable.Range(1,16).Select(day=>{var d=template.CopyForSummary();d.GameDayIndex=day;return d;}).ToList();}}
+   int calls=0,maxIndex=0,maxExpensive=0,maxGrants=0,ownerTotal=0,dailyIndexTotal=0,majorIndexTotal=0,draftTotal=0,dailyFilterTotal=0,majorFilterTotal=0,atomicOwnerChecks=0;bool complete=false;
+   while(!complete&&calls<4096){SealProbe.Counts.Clear();complete=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),1000);calls++;
+    int indexes=SealProbe.Count("owner-index")+SealProbe.Count("daily-index")+SealProbe.Count("major-index");
+    int expensive=SealProbe.Count("draft-visited")+SealProbe.Count("owner-sanitize-nonempty")+SealProbe.Count("HasMemorySummaryJobStillPending")+SealProbe.Count("HasMajorActionSummaryJobStillPending");
+    // Null queue slots consume metadata, not expensive predicate grants.
+    maxIndex=Math.Max(maxIndex,indexes);maxExpensive=Math.Max(maxExpensive,Math.Max(expensive,SealProbe.Count("expensive-granted")));maxGrants=Math.Max(maxGrants,SealProbe.Count("metadata-granted"));
+    ownerTotal+=SealProbe.Count("owner-index");dailyIndexTotal+=SealProbe.Count("daily-index");majorIndexTotal+=SealProbe.Count("major-index");draftTotal+=SealProbe.Count("draft-visited");dailyFilterTotal+=SealProbe.Count("daily-final-filter");majorFilterTotal+=SealProbe.Count("major-final-filter");atomicOwnerChecks=Math.Max(atomicOwnerChecks,SealProbe.Count("completed-owner-check"));
+    Check(indexes<=128&&SealProbe.Count("metadata-granted")<=128,"initial/index metadata exceeded per-call cap");Check(expensive<=8&&SealProbe.Count("expensive-granted")<=8,"expensive work exceeded per-call cap");
+    if(calls==1)Check(!complete,"large finite call completed whole backlog without yielding");
+   }
+   Check(complete&&calls>1,"finite sealing failed to converge");
+   if(drafts)Check(b._memorySummaryQueue.Count==48&&draftTotal==48,"finite draft traversal lost/duplicated records");else Check(ownerTotal==4096&&dailyIndexTotal==4096&&majorIndexTotal==4096&&dailyFilterTotal==4096&&majorFilterTotal==4096,"metadata/null-slot accounting skipped or rescanned stable source");
+   Console.WriteLine($"SEAL_FINITE layout={(drafts?"48drafts":"4096owners+8192nullslots")} calls={calls} max_index_per_call={maxIndex} max_metadata_grants={maxGrants} max_expensive_per_call={maxExpensive} indexed_owners={ownerTotal} indexed_daily={dailyIndexTotal} indexed_major={majorIndexTotal} draft_visited={draftTotal} daily_filter={dailyFilterTotal} major_filter={majorFilterTotal} max_atomic_completed_owner_check={atomicOwnerChecks} per_tick_bound=NOT_CLAIMED");MainReads();
+  }
+  static void SameTickMultipleCallers(){
+   var b=LargeEmptyLayout();b.EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts,Probe.GameDay);
+   SealProbe.Counts.Clear();b.TryRunCampaignMemoryMaintenance();int afterCampaign=SealProbe.Count("TrySealPastDailyMemoryDrafts");b.ProcessDeferredDailyMaintenance();int all=SealProbe.Count("TrySealPastDailyMemoryDrafts");
+   Check(afterCampaign==1&&all==9,"actual campaign+deferred entry caller multiplicity changed");Check(SealProbe.Count("owner-index")>128,"fixture did not exercise more than one slice in a logical tick");
+   Console.WriteLine($"SEAL_CALLER_WINDOWS campaign_calls={afterCampaign} total_seal_calls={all} owner_index_in_same_logical_tick={SealProbe.Count("owner-index")} separate_caller_deadlines=true helper_limit_is_per_call=true");MainReads();
+  }
+  static void ProbeCompletionReceipt(bool terminal){
+   var b=NewSealOwner();var d=b.AddDraft("a");
+   if(terminal)b._memorySummaryQueue.Add(new(){HeroId="a",GameDayIndex=9,RetryCount=3});else{d.HasLlmDialogue=false;d.Lines.RemoveAll(x=>!x.IsAfef);}
+   b.TryRunCampaignMemoryMaintenance();
+   Check(b._dailyMemoryDraftSealOwnerKeys==null&&b._memorySummaryQueue.Count==0,"probe receipt fixture not fully processed");
+   Check(b.summaryStarts==(terminal?1:0),"completion receipt changed empty/proven-past candidate-start responsibility");MainReads();
+  }
+  static void MultipleInvalidOwnersSync(){
+   var b=NewSealOwner();for(int i=0;i<4;i++){var d=b.AddDraft("invalid"+i);b._memorySummaryQueue.Add(new(){HeroId=d.HeroId,GameDayIndex=9});}
+   b.heroes.Clear();Check(b.TrySealPastDailyMemoryDrafts()&&b._dailyMemoryDraftSealOwnerKeys==null,"unbudgeted known cancellation/reindex did not complete synchronously");
+   Check(b._dailyMemoryDrafts.Count==4&&b._memorySummaryQueue.Count==0,"invalid-owner sync pass lost raw source or retained queue");MainReads();
+  }
+  static void UnlimitedCompatibility(double budget){
+   var b=NewSealOwner();b.AddDraft("a");Check(b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp()-Stopwatch.Frequency,budget)&&b._memorySummaryQueue.Count==1,"legacy unlimited budget sentinel changed");MainReads();
+  }
+  static void CleanupSameReferenceRetarget(){
+   var b=NewSealOwner();Probe.GameDay=11;var moving=(MemorySummaryJob)b.Seed("daily","a");var second=(MemorySummaryJob)b.Seed("daily","b");var independent=(MemorySummaryJob)b.Seed("daily","c");
+   bool paused=false;SealProbe.Hook=key=>{if(key=="HasMemorySummaryJobStillPending"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=false;for(int i=0;i<1024&&!paused;i++)done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);
+   SealProbe.Hook=null;Check(paused&&!done,"same-ref cleanup fixture failed to pause");moving.HeroId="missing";moving.GameDayIndex=7;
+   Check(b.TrySealPastDailyMemoryDrafts(),"same-ref cleanup retry did not drain");Check(b._memorySummaryQueue.Count==2&&b._memorySummaryQueue.Contains(second)&&b._memorySummaryQueue.Contains(independent)&&!b._memorySummaryQueue.Contains(moving),"old pending qualification survived same-ref retarget");MainReads();
+  }
+  static void OwnerInsertedAfterIndex(){
+   var b=NewSealOwner();var template=b.AddDraft("a");bool paused=false;SealProbe.Hook=key=>{if(key=="owner-index"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);SealProbe.Hook=null;Check(paused&&!done,"owner-index fixture failed to pause");
+   var added=template.CopyForSummary();added.HeroId="b";b.heroes["b"]=new Hero{Id="b",Label="b"};b._dailyMemoryDrafts["b"]=new(){added};
+   Check(b.TrySealPastDailyMemoryDrafts()&&b._memorySummaryQueue.Count==2&&b._memorySummaryQueue.Any(x=>x.HeroId=="b"),"inserted owner source missed synchronous resumed pass");MainReads();
+  }
+  static void MajorIndexedKeyChange(){
+   var b=NewSealOwner();b.AddDraft("a");b.AddDraft("b",8);b.AddMajorSource("a");b.AddMajorSource("b");var moving=new MajorActionSummaryJob{HeroId="a",TriggerGameDayIndex=9};b._npcMajorActionSummaryQueue.Add(moving);
+   bool paused=false;SealProbe.Hook=key=>{if(key=="major-index"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);SealProbe.Hook=null;Check(paused&&!done,"major index fixture failed to pause");moving.HeroId="b";
+   Check(b.TrySealPastDailyMemoryDrafts()&&b._npcMajorActionSummaryQueue.Count==2&&b._npcMajorActionSummaryQueue.Contains(moving)&&b._npcMajorActionSummaryQueue.Any(x=>x.HeroId=="a"),"major stale indexed key suppressed required new work");MainReads();
+  }
+  static void IndexCost(){
+   var b=NewSealOwner();for(int i=0;i<4096;i++){string id="owner"+i;b.heroes[id]=new Hero{Id=id,Label=id};b._dailyMemoryDrafts[id]=new();b._memorySummaryQueue.Add(null);b._npcMajorActionSummaryQueue.Add(null);}
+   long bytes=GC.GetAllocatedBytesForCurrentThread();var timer=Stopwatch.StartNew();Check(b.TrySealPastDailyMemoryDrafts(),"cost baseline failed");timer.Stop();long allocated=GC.GetAllocatedBytesForCurrentThread()-bytes;
+   Console.WriteLine("SEAL_COST owners=4096 daily_slots=4096 major_slots=4096 ms="+timer.Elapsed.TotalMilliseconds.ToString("F3")+" bytes="+allocated+" counters="+JsonConvert.SerializeObject(SealProbe.Counts));
+   Check(b._memorySummaryQueue.Count==0&&b._npcMajorActionSummaryQueue.Count==0,"final null filtering incomplete");MainReads();
+  }
+  static int Main(){TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>();foreach(var mode in new[]{"normal","afef-only","empty","terminal","mismatch","block","today","invalid-owner"}){var m=mode;cases.Add((m,()=>Semantics(m)));}
+   cases.Add(("daily-queue-contract",DailyQueueContract));cases.Add(("major-queue-contract",MajorQueueContract));cases.Add(("expired-budget-then-sync",FiniteThenSynchronous));cases.Add(("same-day-no-job-resume",SameDayResume));cases.Add(("same-reference-indexed-key-change",SameReferenceIndexedKeyChange));cases.Add(("owner-list-replacement",OwnerListReplacement));cases.Add(("cleanup-queue-append",()=>QueueWriteDuringCleanup(false)));cases.Add(("cleanup-queue-replacement",()=>QueueWriteDuringCleanup(true)));cases.Add(("4096-index-final-filter-cost",IndexCost));cases.Add(("finite-4096-convergence",()=>FiniteConvergence(false)));cases.Add(("finite-48draft-convergence",()=>FiniteConvergence(true)));cases.Add(("same-tick-multiple-callers",SameTickMultipleCallers));cases.Add(("probe-empty-no-candidate-start",()=>ProbeCompletionReceipt(false)));cases.Add(("probe-terminal-preserves-candidate-start",()=>ProbeCompletionReceipt(true)));cases.Add(("multiple-invalid-owners-sync",MultipleInvalidOwnersSync));cases.Add(("cleanup-same-ref-retarget",CleanupSameReferenceRetarget));cases.Add(("owner-inserted-after-index",OwnerInsertedAfterIndex));cases.Add(("major-indexed-key-change",MajorIndexedKeyChange));foreach(var budget in new[]{0.0,double.NaN,double.PositiveInfinity,double.MaxValue}){double value=budget;cases.Add(("unlimited-sentinel-"+budget,()=>UnlimitedCompatibility(value)));}
+   int pass=0,fail=0;foreach(var (name,run) in cases){try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}}
+   Console.WriteLine($"SEALING_RESULT pass={pass} fail={fail} LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED");return fail==0?0:1;
+  }
+ }
+}
