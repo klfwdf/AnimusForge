@@ -1,3 +1,17 @@
+# AF 总 HANDOFF — 阶段/架构/功能复现审查（2026-09-13）
+
+**本轮最新请求是审查当前进度、详细交接和 GitHub 上传；不是恢复生产重构。自动化 `af-7-8` 保持 PAUSED。**
+
+- 最新审查入口：[详细 HANDOFF](docs/handoffs/2026-09-13-af-stage-architecture-parity-detailed-handoff.md)，含原始 AF 对照、功能矩阵、确认问题、22 处源码坐标、复现命令和转发文案。
+- **准确阶段：阶段 8 / B1-P1，PAUSED_WIP / NOT_BATCH_ACCEPTED。** 最新生产 `c21523f8`；最后完整离线联验 `62abfdb3`。不是只剩实机验收：Courier 准备线程、WIP 集成/预算、主体实际拆薄与所选公共能力仍有工作。
+- 架构已有 48 个 Refactor C#、3 组 typed ports、只读 V1；19 个 owner partial 仍属原大类。不能把目录/adapter Ready 或大文件分段称为完整模块化。
+- 本轮当前源码 ChannelCutover 132/0；记录版代码图 53 点通过、工作树 stale；严格 inverse 在维护入口拒绝未审 WIP。上述阻塞未通过修改 hash 掩盖。无新产品全构建、无 LIVE/SAVE。
+- 后续沿用 [P0–P6 原计划第 15 节](docs/phase8/af-core-precloseout-plan-20260913.md)：先闭合 B1，再 B2 三渠道、B3 内部接缝和经选择的 public 能力；最终同候选验收后评审删旧/默认/发布，不另起阶段号。
+- 只新增/修正文档和审计索引，未改生产、测试实现、游戏/存档或其他工作树。用户草稿及指定旧 Native 简明版不暂存、不上传。
+- 交付分支 `codex/af-framework-skill-delivery-20260911` → `origin/codex/af-main-refactor-continuation-20260831`。本次授权普通快进，禁止分叉融合/force/顺带 main；最终推送状态看本轮 Git 回执。
+
+## 以下为历史交接，当前状态以上方审查入口为准
+
 # AF 总 HANDOFF — 用户要求暂停，WIP交接并推送（2026-09-13）
 
 **当前指令：停止开发。自动化 `af-7-8` 已 PAUSED，所有实施/测试代理已停止。以下历史ACTIVE/继续B1不再生效；新指示前不恢复。**
