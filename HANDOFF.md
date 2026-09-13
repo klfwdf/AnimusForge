@@ -7,12 +7,12 @@
 - `tools/MemorySummaryMainThreadBoundaryTests/source-review-b1.json` 新增 `unreviewedWip`（8 个符号）以及未审删除 `HasPastDailyMemoryDrafts`。`source_parity.py` 在恢复旧声明前收集全部未审项并失败。
 - 未审符号（行号只是定位，身份是签名）：`RecordEventSourceMaterial` `MyBehavior.cs:13705`；`RebuildEventSourceMaterialIndex` `MyBehavior.cs:20126`；`IsEventSourceMaterialIndexCurrent` / `BindEventSourceMaterialIndex` `MyBehavior.EventSourceMaterialIndex.cs:16` / `:27`；`TrySealPastDailyMemoryDrafts` `MyBehavior.cs:4814`；`ContinueDailyMemorySeal` `MyBehavior.MemorySealing.cs:198`；`TryRunCampaignMemoryMaintenance` `MyBehavior.cs:17741`；`ResetDailyMemoryDraftSealSliceState` `MyBehavior.cs:4835`；删除 `HasPastDailyMemoryDrafts`（下一锚 `SyncData`，不是业务红例）。
 - Inverse **FAIL**，一次列出 9 个未审项（含删除的 `HasPastDailyMemoryDrafts`）。已审 `productionFileSha256` / `TryRunCampaignMemoryMaintenance` hash 未刷新。日志 `.tmp/b1-wip-review-20260913/official-inverse.log`。本机 `Python312\python.exe` 仍拒绝访问，改用 Codex bundled Python 跑同一 `source_parity.py`。
-- 本地提交这 5 个文件：**NOT-RUN**。无 `index.lock` 文件；无法创建 `E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.git\worktrees\Mount-Blade-Bannerlord-AnimusForge-mod-main2\index.lock`（Permission denied）。未 hard reset。
+- 本地提交这 5 个文件：`2de78e5d`（detached HEAD，信息 `docs: inventory unreviewed B1 WIP declarations without accepting inverse`）。未 push、未 hard reset。
 - 封存 30 例已跑。current **30/0**；`--original` `62abfdb3` **19 绿 / 11 红**（新 30 例对旧实现，不是 WIP 回退）。`run_sealing.py` 无 `--mutate`。证据 `.tmp/b1-sealing-20260914/`，绑定 `MyBehavior.cs` sha256 `03afca51…`。LIVE/SAVE=NOT_RUN。
 - 相邻 suite（绑定当前 WIP 源码）：materials current 23/0，7 个 mutation 均 exit=1（有效红例），`62abfdb3` baseline 23 例 8 红；planning 24/0；writers 238/0；commit_writers 51/0；captured 109/0；terminal 85/0。business **EXIT=2 编译失败**（抽出的 `TryRunCampaignMemoryMaintenance` 依赖 `MemorySealing.cs` 字段/`requirePendingProbe`，共享 harness 未纳入该 partial）。未改生产语义。
 - 代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。
 
-回滚：定向还原 `source-review-b1.json` / `source_parity.py` / README / `run_sealing.py` / 本 HANDOFF 的未提交工作区改动，不 hard reset。
+回滚：定向 `git revert 2de78e5d`，保留其后用户改动，不 hard reset。
 
 ## 以下为历史交接，当前状态以上方入口为准
 
