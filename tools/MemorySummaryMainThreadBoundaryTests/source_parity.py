@@ -33,6 +33,11 @@ def restore_memory_summary_source(path, source):
     assert review.get('testSourceHashNormalization') == 'utf8-no-bom-lf', 'Missing test source normalization'
     reviewed_deleted = [item for item in review.get('deletedDeclarations', []) if _is_reviewed_deleted(item)]
     labels = {label for item in review['declarations'] + reviewed_deleted for label in item.get('evidence') or []}
+    for item in (review.get('unreviewedWip') or {}).get('declarations') or []:
+        labels.update(item.get('evidence') or [])
+    for item in review.get('deletedDeclarations', []):
+        if not _is_reviewed_deleted(item):
+            labels.update(item.get('evidence') or [])
     for label in labels:
         evidence = review['evidence'][label]
         for role in ('runner', 'harness'):

@@ -828,6 +828,30 @@
         "runner": "7c1363766cfe639c85d1e9e7e03e38c4014e558683f4b6fbae9b75d7e68623aa",
         "harness": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab"
       }
+    },
+    "sealing": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
+      "scope": "Actual TrySeal/ContinueDailyMemorySeal/TryRunCampaignMemoryMaintenance over controlled drafts. 30 current cases, original 62abfdb3 contrast, and eight --mutate reds. No live/game/save.",
+      "observed": "SEALING_RESULT pass=30 fail=0; original-62abfdb3 pass=19 fail=11; eight mutations BUILD_PASS EXIT=1",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "57ba28f794194588a7fc751a72c0e76b96e0116540ea1bcbf0d4c2cf332b6537",
+        "harness": "c960d1f09c4509157525dfb0b9e44205fecb0ee0970ed68229f2c3c8e6fa8cf7"
+      },
+      "acceptedInverse": false
+    },
+    "materials": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_materials.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/MaterialsHarness.cs.txt",
+      "scope": "Actual event-source material index append/rebuild/current-check. 23 current cases, 62abfdb3 baseline 8 reds, seven --mutate reds. No live/game/save.",
+      "observed": "MATERIALS_RESULT scenarios=23 failures=0; source-baseline-62abfdb3 failures=8; seven mutations EXIT=1",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/current",
+      "testSourceSha256": {
+        "runner": "6c126a3f9ddaa0be2c4e2c3eb2d2e06263151df48b7d8e39b0e96bbe07e79aef",
+        "harness": "0d61f265762b514fa447cc0dd0a075c46802e7d7bbb6174fcc1d7311dcc2bda2"
+      },
+      "acceptedInverse": false
     }
   },
   "testSourceHashNormalization": "utf8-no-bom-lf",
@@ -854,11 +878,22 @@
       "baselineSpanSha256": "b168a8f16c27804201d3fd68de5c3851205f411da07f8bec991ab7cab54c787f",
       "nextSignature": "public override void SyncData(IDataStore dataStore)",
       "nextDeclarationSha256": "107e1aa4a75ad989dac0e9c748cba11fef61f9668b9780a544e4ee3f2af53f83",
-      "evidence": [],
+      "evidence": [
+        "sealing"
+      ],
       "reviewed": false,
       "status": "UNREVIEWED_WIP",
       "wipSourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
-      "reason": "WIP moved the whole-source HasPast predicate into a non-mutating seal probe. Inventory this deletion here. Do not restore it as an accepted inverse, and do not treat the deletion as a business red case."
+      "reason": "WIP moved the whole-source HasPast predicate into a non-mutating seal probe. Inventory this deletion here. Do not restore it as an accepted inverse, and do not treat the deletion as a business red case.",
+      "mutations": [
+        "ignore-empty-probe",
+        "abandon-incomplete-same-day"
+      ],
+      "targetedCases": [
+        "probe-empty-no-candidate-start",
+        "same-day-no-job-resume"
+      ],
+      "acceptedInverse": false
     }
   ],
   "wipIntegration": "UNREVIEWED_NOT_INVERSE_ACCEPTED",
@@ -877,7 +912,18 @@
         "baselineSignature": "private void RecordEventSourceMaterial(",
         "baselineSha256": "11de9a9a4945cc247dd21d5b4f2d5040a332e87964cb39465c48d519034c456c",
         "currentLine": 13705,
-        "reason": "Complete index owns misses; a new daily key must not rescan all history. Bind only after append and index insert both succeed."
+        "reason": "Complete index owns misses; a new daily key must not rescan all history. Bind only after append and index insert both succeed.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "omit-append-bind",
+          "restore-fallback"
+        ],
+        "targetedCases": [
+          "large-history-fresh-key-cost"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.cs",
@@ -887,7 +933,19 @@
         "baselineSignature": "private void RebuildEventSourceMaterialIndex(",
         "baselineSha256": "1f5469f22c9091673de3552448a577ed2f651db0ffee68308476d00a98d4a347",
         "currentLine": 20126,
-        "reason": "Named keys keep last-wins. Same-day blank keys keep first-wins for Day>=0. Throw if the source list changes mid-rebuild, then bind."
+        "reason": "Named keys keep last-wins. Same-day blank keys keep first-wins for Day>=0. Throw if the source list changes mid-rebuild, then bind.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "blank-last-wins",
+          "publish-partial"
+        ],
+        "targetedCases": [
+          "loaded-empty-key-first-match",
+          "build-failure-no-half-publication"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.EventSourceMaterialIndex.cs",
@@ -897,7 +955,24 @@
         "baselineSignature": null,
         "baselineSha256": null,
         "currentLine": 16,
-        "reason": "Runtime-only derived index current-check: source/map reference, count, and List structure probe. Not in inverse baseline 90201155."
+        "reason": "Runtime-only derived index current-check: source/map reference, count, and List structure probe. Not in inverse baseline 90201155.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "ignore-structure",
+          "ignore-map-binding",
+          "ignore-source-binding"
+        ],
+        "targetedCases": [
+          "live-source-clear-add",
+          "live-source-slot",
+          "live-source-exhausted-probe",
+          "replaced-map-rebuild",
+          "live-source-replace-list",
+          "large-history-fresh-key-cost"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.EventSourceMaterialIndex.cs",
@@ -907,7 +982,19 @@
         "baselineSignature": null,
         "baselineSha256": null,
         "currentLine": 27,
-        "reason": "Publish the derived index binding after a complete rebuild or successful append+insert. Not in inverse baseline 90201155."
+        "reason": "Publish the derived index binding after a complete rebuild or successful append+insert. Not in inverse baseline 90201155.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "omit-append-bind",
+          "publish-partial"
+        ],
+        "targetedCases": [
+          "large-history-fresh-key-cost",
+          "build-failure-no-half-publication"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.cs",
@@ -917,7 +1004,19 @@
         "baselineSignature": "private bool TrySealPastDailyMemoryDrafts(",
         "baselineSha256": "0424fc3bd9580b15db03068b78e208017d30eced0818c922985eaa91ad721648",
         "currentLine": 4814,
-        "reason": "Entry now takes requirePendingProbe and delegates to ContinueDailyMemorySeal. Empty drafts still reset unless a seal state remains."
+        "reason": "Entry now takes requirePendingProbe and delegates to ContinueDailyMemorySeal. Empty drafts still reset unless a seal state remains.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "ignore-deadline",
+          "ignore-empty-probe"
+        ],
+        "targetedCases": [
+          "expired-budget-then-sync",
+          "probe-empty-no-candidate-start"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.MemorySealing.cs",
@@ -927,7 +1026,27 @@
         "baselineSignature": null,
         "baselineSha256": null,
         "currentLine": 198,
-        "reason": "Seven-phase resumable seal. 128 metadata / 8 expensive operations are per call, not per Tick. Atomic tail steps remain."
+        "reason": "Seven-phase resumable seal. 128 metadata / 8 expensive operations are per call, not per Tick. Atomic tail steps remain.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "ignore-stale-queued-job",
+          "ignore-owner-binding",
+          "ignore-cleanup-identity",
+          "unbounded-metadata",
+          "unbounded-expensive",
+          "ignore-deadline"
+        ],
+        "targetedCases": [
+          "same-reference-indexed-key-change",
+          "owner-list-replacement",
+          "cleanup-same-ref-retarget",
+          "finite-4096-convergence",
+          "finite-48draft-convergence",
+          "same-tick-multiple-callers"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.cs",
@@ -938,7 +1057,17 @@
         "baselineSignature": "private void TryRunCampaignMemoryMaintenance(",
         "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9",
         "currentLine": 17741,
-        "reason": "Same-day resume uses seal state, not raw queue counts. HasPast is a non-mutating probe sharing the deadline. Completion receipt preserves the old post-seal path. Keep declarations[].sha256 at the last reviewed 62abfdb3 body."
+        "reason": "Same-day resume uses seal state, not raw queue counts. HasPast is a non-mutating probe sharing the deadline. Completion receipt preserves the old post-seal path. Keep declarations[].sha256 at the last reviewed 62abfdb3 body.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "abandon-incomplete-same-day"
+        ],
+        "targetedCases": [
+          "same-day-no-job-resume"
+        ],
+        "acceptedInverse": false
       },
       {
         "path": "MyBehavior.cs",
@@ -948,7 +1077,17 @@
         "baselineSignature": "private void ResetDailyMemoryDraftSealSliceState(",
         "baselineSha256": "731ddf61cd5d7d38622a1979dfaacee7127b0a35b8e5b1f1913419585e4df7d3",
         "currentLine": 4835,
-        "reason": "Also clears _dailyMemorySealState and _dailyMemorySealCompletedPass."
+        "reason": "Also clears _dailyMemorySealState and _dailyMemorySealCompletedPass.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "ignore-empty-probe"
+        ],
+        "targetedCases": [
+          "probe-empty-no-candidate-start"
+        ],
+        "acceptedInverse": false
       }
     ]
   }
