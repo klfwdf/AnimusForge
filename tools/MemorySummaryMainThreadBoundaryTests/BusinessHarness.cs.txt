@@ -53,9 +53,11 @@ namespace AnimusForge
         internal sealed record Entry(string Name, bool Main, int Tick);
         internal static readonly ConcurrentQueue<Entry> Events = new ConcurrentQueue<Entry>();
         internal static int Tick;
+        internal static int Aggregations; internal static bool AggregateOnMain, BlockAggregation;
+        internal static ManualResetEventSlim AggregateEntered=new(false),AggregateRelease=new(false);
         internal static void Touch(string name) => Events.Enqueue(new Entry(name, TWParallel.IsMainThread(), Volatile.Read(ref Tick)));
         internal static int Count(string prefix) => Events.Count(x => x.Name.StartsWith(prefix, StringComparison.Ordinal));
-        internal static void Reset() { Events.Clear(); Tick = 0; }
+        internal static void Reset() { AggregateRelease.Set(); AggregateEntered=new(false); AggregateRelease=new(false); Aggregations=0; AggregateOnMain=BlockAggregation=false; Events.Clear(); Tick = 0; }
     }
     public static class PerfProbe { private sealed class ScopeToken : IDisposable { public void Dispose() {} } public static IDisposable Scope(string area) => new ScopeToken(); }
     public static class Logger { public static void Log(string area, string text) { } }
@@ -100,6 +102,7 @@ namespace AnimusForge
         private readonly ConcurrentQueue<ProviderBatch> batches = new ConcurrentQueue<ProviderBatch>();
         private readonly TaskCompletionSource<bool> clockGate = NewGate();
         private int clockCalls;
+        private string resultError = " provider-error ";
         private bool providerThrows;
         private bool throwAfterBlockPublish, throwAfterWeeklyPublish, throwAfterRetryMark;
         private bool providerCompletesSynchronously;
@@ -135,12 +138,16 @@ namespace AnimusForge
             List<MemorySummaryExecutionResult> daily, List<MajorActionSummaryExecutionResult> major,
             List<MemoryOverviewExecutionResult> overview)
         {
-            var batch = new ProviderBatch { Items = items };
+            var actualItems = items;
+#if HAS_INPUT_SOURCE
+            actualItems = items.Select(x => x is MemorySummaryPlanEntry plan ? plan.Job : x).ToList();
+#endif
+            var batch = new ProviderBatch { Items = actualItems };
             batches.Enqueue(batch);
             if (providerCompletesSynchronously) batch.Ready.TrySetResult(true);
             await batch.Ready.Task.ConfigureAwait(false);
             if (providerThrows) throw new InvalidOperationException("scripted provider failure");
-            foreach (object item in items)
+            foreach (object item in actualItems)
             {
                 string key = JobKey(item);
                 bool fail = failures.Contains(key), stale = obsolete.Contains(key);
@@ -149,21 +156,21 @@ namespace AnimusForge
 #if HAS_INPUT_SOURCE
                         Source = FixtureSource(key),
 #endif
-                        Error = " provider-error ", IsObsolete = stale,
+                        Error = resultError, IsObsolete = stale,
                         Block = fail ? null : Block(d.HeroId, d.GameDayIndex) });
                 else if (item is MajorActionSummaryJob m)
                     major.Add(new MajorActionSummaryExecutionResult { Job = m,
 #if HAS_INPUT_SOURCE
                         Source = FixtureSource(key),
 #endif
-                        Error = " provider-error ", IsObsolete = stale,
+                        Error = resultError, IsObsolete = stale,
                         State = fail ? null : new MajorActionSummaryState { Summary = " major-result ", LastSummarizedDay = 10, LastSummarizedSequence = 1 } });
                 else if (item is MemoryOverviewJob o)
                     overview.Add(new MemoryOverviewExecutionResult { Job = o,
 #if HAS_INPUT_SOURCE
                         Source = FixtureSource(key),
 #endif
-                        Error = " provider-error ", IsObsolete = stale,
+                        Error = resultError, IsObsolete = stale,
                         State = fail ? null : new MemoryOverviewState { Summary = " overview-result ", IncludedBlockIds = new List<string> { o.HeroId + "/10" } } });
             }
             if (includeMalformedResults)
@@ -172,6 +179,20 @@ namespace AnimusForge
                 major.Add(null); major.Add(new MajorActionSummaryExecutionResult());
                 overview.Add(null); overview.Add(new MemoryOverviewExecutionResult());
             }
+        }
+        private static string ObserveFailureAggregation(Func<string> render)
+        {
+            Witness.Aggregations++; Witness.AggregateOnMain = TWParallel.IsMainThread(); Witness.AggregateEntered.Set();
+            if(Witness.BlockAggregation && !Witness.AggregateRelease.Wait(4000)) throw new Exception("aggregate fixture gate timeout");
+            return render();
+        }
+        // Mutation-only relocation of the unchanged aggregate expression to the
+        // real main-thread dispatcher; normal production never calls this seam.
+        private async Task<string> RunFailureAggregationOnMainForFaultAsync(Func<string> render)
+        {
+            string text = null;
+            await RunMemorySummaryMainThreadAsync(SaveRuntimeGuard.CaptureGeneration(),()=>{text=render();return true;});
+            return text;
         }
         private Task WaitOverviewWindowAsync() { Interlocked.Increment(ref clockCalls); return clockGate.Task; }
         // These lower storage methods intentionally do not reproduce serialization or caching.
@@ -263,8 +284,9 @@ namespace AnimusForge
         }
         private void AwaitFirstCompletion(Task task)
         {
-            // A faulted initial dispatcher may reach the provider asynchronously. Keep
-            // releasing only the external provider gate, never pump game work here.
+            // Planning now spans main-thread slices. Pump only until the provider exists;
+            // then release it without pumping the actual completion being inspected.
+            Until(() => task.IsCompleted || batches.Count > 0, Tick);
             ReleaseProviders(); Until(() => task.IsCompleted || !_memorySummaryMainThreadActions.IsEmpty, ReleaseProviders);
         }
         private static void Check(bool value, string message) { if (!value) throw new Exception(message); }
@@ -388,7 +410,16 @@ namespace AnimusForge
             Check(Witness.Count("save-blocks") == 0 && Witness.Count("weekly:") == 0 &&
                 b._npcMajorActionSummaries.Count == 0 && b._memoryOverviewStates.Count == 0,
                 "removed target still received derived state");
-            Check(Witness.Count("cancel-unavailable:") == 3, "actual Apply eligibility guard not reached");
+            // New terminal queue cleanup may cancel those owners again. Verify the
+            // original three Apply guards at their own exact trace positions, not
+            // an aggregate count that also includes independent cleanup operations.
+            var guardTrace = Witness.Events.Select(x => x.Name).ToList();
+            foreach (var pair in new[] { ("ApplyMemorySummarySuccess", "daily"), ("ApplyMajorActionSummarySuccess", "major"), ("ApplyMemoryOverviewSuccess", "overview") })
+            {
+                int index = guardTrace.IndexOf(pair.Item1);
+                Check(index >= 0 && guardTrace.Skip(index + 1).Take(2).SequenceEqual(new[] { "find-hero", "cancel-unavailable:" + pair.Item2 }),
+                    "actual Apply eligibility guard did not reject its removed owner: " + pair.Item1);
+            }
             Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "rejected Apply counted as accepted success");
             b.CleanQueues(); MainThreadEffects();
         }
@@ -445,6 +476,29 @@ namespace AnimusForge
             Check(peak <= 2, "completion acceptance exceeds two actual Apply jobs per tick: " + peak);
             Console.WriteLine("BUDGET_OBSERVATION actual_apply_max_per_tick=" + peak + " (jobs only; not record/time budget acceptance)");
             MainThreadEffects();
+        }
+        private static void FailureAggregateDetached(string retirement)
+        {
+            var b=NewOwner();b.resultError=" api-detail:"+new string('x',2048)+" ";
+            for(int i=0;i<64;i++){var job=b.AddDaily("failed-"+i.ToString("D3"));b.failures.Add(JobKey(job));}
+            Witness.BlockAggregation=retirement!="none";var task=b.Start();
+            if(Witness.BlockAggregation)
+            {
+                Until(()=>Witness.AggregateEntered.IsSet||task.IsCompleted,()=>{b.ReleaseProviders();b.Tick();});
+                Check(Witness.AggregateEntered.IsSet&&!task.IsCompleted,"did not pause the detached failure aggregation");
+                if(retirement=="generation")SaveRuntimeGuard.AdvanceGeneration("aggregation-load");else NewOwner();
+                Witness.AggregateRelease.Set();
+            }
+            b.Finish(task);
+            Check(Witness.Aggregations==1&&!Witness.AggregateOnMain,"large failure message was constructed on the main thread or repeated");
+            Check(Witness.Count("MarkMemorySummaryFailure")==64&&applied==0&&b._dailyMemoryDrafts.Count==64,"failure aggregation changed actual failure/source outcomes");
+            if(retirement=="none")
+            {
+                string body="以下日结压缩任务重试 3 次后仍失败：\n\n"+string.Join("\n",Enumerable.Range(0,64).Select(i=>"failed-"+i.ToString("D3")+" 第10日："+b.resultError))+"\n\n请修复 API 或调低记忆总结 RPM 后重试。";
+                Check(Witness.Count("popup-publish:日结压缩总结失败:"+body)==1&&!b._memorySummaryProcessing,"aggregated failure detail/order changed or processing stranded");
+            }
+            else Check(Witness.Count("popup-publish:")==0&&b._memorySummaryProcessing,"retired aggregate notified or released the replacement context");
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成")==0,"all-failed batch reported successful completion");MainThreadEffects();
         }
         private static void PartialCompletionException(string stage)
         {
@@ -570,7 +624,10 @@ namespace AnimusForge
                 ("worker-admission-no-source-read",BackgroundAdmissionDoesNotFilter),("busy-admission-retains-work",BusyAdmissionPreservesQueue),
                 ("partial-apply-block-exception",()=>PartialCompletionException("block")),
                 ("partial-apply-weekly-exception",()=>PartialCompletionException("weekly")),
-                ("partial-mark-exception",()=>PartialCompletionException("mark"))
+                ("partial-mark-exception",()=>PartialCompletionException("mark")),
+                ("64-failure-detached-aggregate",()=>FailureAggregateDetached("none")),
+                ("generation-during-failure-aggregate",()=>FailureAggregateDetached("generation")),
+                ("owner-during-failure-aggregate",()=>FailureAggregateDetached("owner"))
             };
             foreach (var test in cases)
             {

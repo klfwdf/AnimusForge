@@ -50,10 +50,13 @@ G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/ru
 | Runner | 结果 / 实际执行责任 | 明确替身与边界 |
 |---|---|---|
 | `run.py` | 32 个断言；FIFO、owner/load/reset、inline/queued 共享数量和实际 Stopwatch 计时，超时后下一操作留给下个 Tick | 直接驱动 drain；1 ms 时间场景使用真实耗时，其他场景隔离 JIT/机器负载；不是硬抢占或完整 EngineTick |
-| `run_business.py` | 33 场景；真实入场/maintenance/扫描策略、三型 Process/Apply/Mark、终态清理、部分执行异常提示和释放 | provider executor、源有效性和底层游戏端为明确 seam；不是完整来源证明 |
-| `run_captured.py` | 61 场景；真实 Capture/Execute/Build/Parse/JSON/tag/retry/source；10 模型+2列表反射覆盖351个标量检查、49个可变节点分离，251次逐字段来源变动拒绝 | HTTP/game/settings/rendering为替身；不模拟真实 provider/游戏 |
+| `run_business.py` | 36 场景；真实入场/maintenance/分段规划、三型 Process/Apply/Mark、终态清理、部分执行异常提示和释放 | provider executor、源有效性和底层游戏端为明确 seam；不是完整来源证明 |
+| `run_captured.py` | 70 场景；真实 Capture/Execute/Build/Parse/JSON/tag/retry/source；10 模型+2列表反射覆盖351个标量检查、49个可变节点分离，251次逐字段来源变动拒绝 | HTTP/game/settings/rendering为替身；不模拟真实 provider/游戏 |
 | `run_writers.py` | 238 项；8个真实旧 façade、封送、参数/嵌套DTO复制 | 存储/weekly末端为替身，由 terminal 补具体真实链路 |
 | `run_terminal.py` | 47 场景；真实Daily append/Save/readback、Recovery Daily→Recent及ledger、Weekly outcome/回读/ledger、Major记录和压缩块Save→在途总结失效；两处真实Apply部分写入异常 | 场景/人物事实、provider、UI显示、若干下游发布是隔离边界；不等于普通提交/导入/编辑所有调用方已验证 |
+| `run_planning.py` | 24场景；真实分片分类/空洞整理、结构变化defer、metadata worker排序；4096槽分类/整理各访问4096次，每片≤8槽、每Tick≤16槽 | 单个HasPending内部仍可扫大来源；不能据槽预算说深记录已硬切分 |
+| `run_commit_writers.py` | 49场景；普通Commit→Daily/Recent→回读、文本编辑真实保存、单NPC/批量记忆导入真实ReadJson/选择/Apply；过期保存与源变动拒绝 | 文件系统、选择窗口为替身；8编辑/4导入入口结构检查不是12个窗口均跑过真实UI |
+
 
 ```powershell
 G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py
@@ -65,12 +68,16 @@ G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/ru
 
 正常返回0；反例必须编译成功后执行断言失败，提取/编译/工具错误不能计成红例。所有 runner 的 `--help` 列出对应故障变体。保存于忽略的 `.generated/<suite>/<variant>/`，保留输入清单、精确提取声明、生成 hash、build/run 日志；历史结果不可冒充当前源码。
 
-`source_parity.py` / `source-review-b1.json` 只对37个已审声明逆变换（原25+10模型+2真实调度入口），并约束对应 runner/harness hash；随后原 whole-owner/default 校验完整执行。不得仅刷新hash消除未解释的变化。
+`source_parity.py` / `source-review-b1.json` 只对50个已审声明逆变换，并精确恢复1个已删除的私有预扫方法，并约束对应 runner/harness hash；随后原 whole-owner/default 校验完整执行。不得仅刷新hash消除未解释的变化。
 
 ### 实际变化与仍未通过的门槛
 
 - typed copy 分离完整可变图；SHA256 流式接收完整来源/Prompt/解析依赖，不再构造嵌套转义大JSON。1000行源仍全部保留，测试分配由旧9,257,688降到1,579,504 bytes；耗时随机器负载变化，不作游戏帧率承诺。
 - 入场只读raw数量，真实资格筛选集中到guarded planner；无效队列仍清掉，强制扫描/节流及terminal重复项顺序保留。候选ID排队不冒充创建了总结job。
-- 实际累计耗时超过既有维护配置后不启动下一操作；**单个大源、初筛/排序/extra/cleanup/Apply内循环仍可超预算**，不能把协作式上限当硬record/time保证。
+- 初筛/extra/cleanup现按槽分片，并扣除同Tick已耗时；无效slot当片置null，之后只复制nonnull原引用，结构探针未变才发布整理结果，不以旧过滤表覆盖新入队。worker仅按冻结metadata排序/去重；计划指纹与Capture同回调校验。结构变化时只返回已采集部分计划，其余留live下一轮，不无限重启或宣称全积压已扫描。
+- **仍未过深层门槛：** 单大源capture/check、单次HasPending、Apply/Mark内部、候选ID生产/维护前探测/无效owner取消仍有原子工作。槽和协作耗时预算已证，不等于深记录硬切分或同步抢占。失败全文拼接已移worker，原文/顺序及聚合期间退休均验证。
 - 部分Apply异常不再静默消失：异常沿专用Completion包装进入原通知，保留已发生副作用、停止本轮、不盲重放；这是partial/unknown通知，**不是事务回滚、尾项恢复或全局exactly-once已经完成**。
-- Recent-only不会虚构为Daily来源变化；普通DialogueHistoryCommit、编辑/导入调用方线程责任、完整恢复load/retention、LIVE/SAVE仍未验。继续B1，不提前进入B2。
+- Recent-only不会虚构为Daily来源变化。普通Commit与代表编辑/导入现有真实链证据：两类旧编辑late保存和8类旧导入late保存已复现并转绿。窗口绑定开窗generation/current owner/main；编辑同时绑定记录原引用/指纹，拒绝索引移位与已改变内容。原overwrite/merge业务不改，聚合导入只加AF窗口门禁，不重写各领域owner。
+- 完整恢复load/retention、其余窗口实机UI、广泛导入组合、LIVE/SAVE仍未验；继续B1，不提前进入B2。
+
+新套复现：`python tools/MemorySummaryMainThreadBoundaryTests/run_planning.py`、`python tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py`。每套`--help`列出反例，测试失败与工具/编译失败必须区分。

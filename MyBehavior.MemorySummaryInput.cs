@@ -61,11 +61,15 @@ public partial class MyBehavior
         return (T)copy;
     }
 
-    private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation)
+    private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation, string expectedJobFingerprint = null)
     {
         if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this)
             || !SaveRuntimeGuard.IsCurrentGeneration(generation)
             || !ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this)) return null;
+        // A plan can span ticks. Validate its frozen job identity in the SAME
+        // callback as source capture, not in a separate preflight await.
+        if (expectedJobFingerprint != null && !string.Equals(expectedJobFingerprint,
+            ComputeMemorySummaryFingerprint(queueJob), StringComparison.Ordinal)) return null;
 
         var input = new MemorySummaryInput { Generation = generation, QueueJob = queueJob };
         object sourceData;
@@ -162,7 +166,7 @@ public partial class MyBehavior
         return current != null && string.Equals(current.SourceFingerprint, input.SourceFingerprint, StringComparison.Ordinal);
     }
 
-    private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(object job, int maxAttempts)
+    private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(object job, int maxAttempts, string expectedJobFingerprint = null)
     {
         var result = new CapturedMemorySummaryResult();
         long generation = SaveRuntimeGuard.CaptureGeneration();
@@ -170,7 +174,7 @@ public partial class MyBehavior
         {
             bool accepted = await RunMemorySummaryMainThreadAsync(generation, delegate
             {
-                result.Source = CaptureMemorySummaryInput(job, generation);
+                result.Source = CaptureMemorySummaryInput(job, generation, expectedJobFingerprint);
                 return result.Source != null;
             });
             if (!accepted) { result.IsObsolete = true; return result; }

@@ -147,6 +147,25 @@ namespace AnimusForge {
    Check(!b.requests.Single(x=>x.Area=="NpcMajorSummary").User.Contains("old action")&&b.requests.Single(x=>x.Area=="NpcMajorSummary").User.Contains("new action"),"major incremental source");
    MainReads();
   }
+  static void PlannedJobCapture(string kind,string change) {
+   var b=Owner();object job=b.Seed(kind);var planned=b.DescribeMemorySummaryJob(job,0);
+   Check(planned!=null&&ReferenceEquals(planned.Job,job),"real plan descriptor lost job reference");
+   void Edit(){if(job is MemorySummaryJob d)d.HeroName+="-edited";else if(job is MajorActionSummaryJob m)m.HeroName+="-edited";else ((MemoryOverviewJob)job).HeroName+="-edited";}
+   if(change=="before-dispatch")Edit();
+   if(change=="before-capture") {
+    b.RunMemorySummaryMainThreadAsync(SaveRuntimeGuard.CaptureGeneration(),()=>true).GetAwaiter().GetResult();
+    b.RunMemorySummaryMainThreadAsync(SaveRuntimeGuard.CaptureGeneration(),()=>true).GetAwaiter().GetResult();
+   }
+   var task=b.Start(new(){planned});
+   if(change=="before-capture") {
+    Check(SpinWait.SpinUntil(()=>b._memorySummaryMainThreadActions.Count>0||task.IsCompleted,1000)&&!task.IsCompleted&&b.requests.IsEmpty,"fixture did not stop before queued capture");
+    Edit();
+   }
+   b.Finish(task);
+   if(change=="unchanged")Check(b.Success(kind)&&!b.Obsolete(kind)&&b.requests.Count==1,"unchanged plan did not reach provider once");
+   else Check(b.Obsolete(kind)&&!b.Success(kind)&&b.requests.IsEmpty,"stale plan job reached source capture/provider after "+change);
+   MainReads();
+  }
   static void Detached() {
    var b=Owner();foreach(var kind in new[]{"daily","major","overview"}) {
     var job=b.Seed(kind);var input=b.CaptureMemorySummaryInput(job,SaveRuntimeGuard.CaptureGeneration());Check(input!=null,"capture null "+kind);
@@ -344,6 +363,7 @@ namespace AnimusForge {
   static int Main() {
    TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>{("all-model-copy-fields",CopyAllFields),("three-kinds-metadata",ThreeKinds),("detached-source",Detached),("late-generation",LateGeneration),("late-owner",LateOwner),("major-capture-pure",()=>CaptureDoesNotRepairSource("major")),("overview-capture-pure",()=>CaptureDoesNotRepairSource("overview")),("rpm-wave-order",WaveOrder),("generation-during-wave-spacing",()=>RetireBetweenWaves(false)),("owner-during-wave-spacing",()=>RetireBetweenWaves(true)),("parser-formats",ParseFormats),("large-capture-observation",LargeCaptureObservation)};
    foreach(var kind in new[]{"daily","major","overview"}){var k=kind;cases.Add((k+"-every-source-field",()=>EverySourceFieldInvalidates(k)));}
+   foreach(var kind in new[]{"daily","major","overview"})foreach(var change in new[]{"unchanged","before-dispatch","before-capture"}){var k=kind;var c=change;cases.Add((k+"-planned-"+c,()=>PlannedJobCapture(k,c)));}
    foreach(var kind in new[]{"daily","blocks","weekly"})foreach(var background in new[]{false,true}){var k=kind;var bg=background;cases.Add((k+(bg?"-background-sanitize":"-main-sanitize"),()=>SanitizeIsolation(k,bg)));}
    foreach(var kind in new[]{"daily","major","overview"}) {
     foreach(var edit in new[]{"body","nested","list","state"})foreach(var fail in new[]{false,true}){var k=kind;var e=edit;var f=fail;cases.Add((k+"-"+e+"-"+(f?"failure":"success"),()=>Changed(k,e,f)));}

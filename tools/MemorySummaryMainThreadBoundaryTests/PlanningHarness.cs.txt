@@ -1,0 +1,155 @@
+// External predicate/game boundaries only. Planning.cs, Boundary.cs and queue
+// sanitizers/cancellation are the actual extracted production implementation.
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library {
+ public static class TWParallel {public static int MainId;public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==MainId;}
+ public static class MBMath {public static int ClampInt(int n,int min,int max)=>Math.Clamp(n,min,max);}
+}
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Campaign {static readonly Campaign Value=new();public static object Owner;public static Campaign Current {get{AnimusForge.PlanningProbe.OnMain("campaign");return Value;}}public T GetCampaignBehavior<T>() where T:class=>Owner as T;}
+}
+namespace AnimusForge {
+ public static class Logger {public static void Log(string area,string text){if(text.StartsWith("cancelled unavailable"))PlanningProbe.Cancellations++;}}
+ static class PlanningProbe {
+  public record Slot(string Phase,int Slice,int Tick);
+  public static List<Slot> Slots=new();public static ConcurrentQueue<string> Wrong=new();public static int Slice,Tick,Predicates,Cancellations,MissingCleanup,Settled,Described;
+  public static bool BlockSort;public static ManualResetEventSlim SortEntered=new(false),SortRelease=new(false);
+  public static void OnMain(string name){if(!TWParallel.IsMainThread())Wrong.Enqueue(name);}
+  public static void Visit(string phase){OnMain(phase);Slots.Add(new(phase,Slice,Tick));}
+  public static void BeginSlice(){OnMain("slice");Slice++;}
+  public static void WaitSortGate(){if(!BlockSort)return;SortEntered.Set();if(!SortRelease.Wait(4000))throw new Exception("sort barrier timeout");}
+  public static void Reset(){SortRelease.Set();Slots.Clear();Wrong.Clear();Slice=Tick=Predicates=Cancellations=MissingCleanup=Settled=Described=0;BlockSort=false;SortEntered=new(false);SortRelease=new(false);}
+ }
+ public partial class MyBehavior {
+  public static MyBehavior Instance;
+  List<MemorySummaryJob> _memorySummaryQueue=new();List<MajorActionSummaryJob> _npcMajorActionSummaryQueue=new();List<MemoryOverviewJob> _memoryOverviewQueue=new();
+  Dictionary<string,MemoryOverviewState> _memoryOverviewStates=new();Dictionary<string,string> _memoryOverviewStateStorage=new();
+  Dictionary<string,MajorActionSummaryState> _npcMajorActionSummaries=new();Dictionary<string,string> _npcMajorActionSummaryStorage=new();
+  HashSet<string> _dirtyMemoryOverviewIds=new(),_pendingMemoryOverviewCandidateScanIdSet=new(),_dailyMemoryDraftSealQueued=new(),_dailyMemoryDraftSealQueuedMajor=new();
+  Queue<string> _pendingMemoryOverviewCandidateScanIds=new();HashSet<string> unavailable=new();
+  static double configuredBudget=1000;
+  string slowPredicateId; int slowCalls; int slowSlice; double slowElapsed;
+  int initialDelayMs,allPredicateDelayMs; bool delayedInit; double observedFirstSliceRemaining; int firstDelayedSlice;
+  List<MemorySummaryJob> GetDailyQueueForTests(){if(initialDelayMs>0&&!delayedInit){delayedInit=true;Thread.Sleep(initialDelayMs);}return _memorySummaryQueue;}
+  static double GetDailyMaintenanceFrameBudgetMs()=>configuredBudget;
+  bool IsMemoryEntityEligibleForCompressedMemory(string id){PlanningProbe.OnMain("eligible");return !unavailable.Contains(id);}
+  bool HasMemorySummaryJobStillPending(MemorySummaryJob job){PlanningProbe.OnMain("pending-daily");PlanningProbe.Predicates++;if(allPredicateDelayMs>0){if(firstDelayedSlice==0){firstDelayedSlice=PlanningProbe.Slice;observedFirstSliceRemaining=configuredBudget-_memorySummaryMainThreadElapsedTicks*1000.0/Stopwatch.Frequency;}Thread.Sleep(allPredicateDelayMs);}if(job?.HeroId==slowPredicateId&&slowCalls==0){var timer=Stopwatch.StartNew();Thread.Sleep(20);slowElapsed=timer.Elapsed.TotalMilliseconds;slowCalls++;slowSlice=PlanningProbe.Slice;}return job!=null&&job.RetryCount<3&&job.GameDayIndex>=0&&IsMemoryEntityEligibleForCompressedMemory(job.HeroId);}
+  bool HasMajorActionSummaryJobStillPending(MajorActionSummaryJob job){PlanningProbe.OnMain("pending-major");PlanningProbe.Predicates++;return job!=null&&job.RetryCount<3&&IsMemoryEntityEligibleForCompressedMemory(job.HeroId);}
+  bool HasMemoryOverviewJobStillPending(MemoryOverviewJob job){PlanningProbe.OnMain("pending-overview");PlanningProbe.Predicates++;return job!=null&&job.RetryCount<3&&IsMemoryEntityEligibleForCompressedMemory(job.HeroId);}
+  static MyBehavior Owner(){PlanningProbe.Reset();configuredBudget=1000;var b=new MyBehavior();Instance=b;Campaign.Owner=b;SaveRuntimeGuard.AdvanceGeneration("planning-fixture");return b;}
+  static void Check(bool ok,string text){if(!ok)throw new Exception(text);}
+  void Tick(){PlanningProbe.Tick++;ProcessMemorySummaryMainThreadActions();}
+  void Until(Func<bool> done,Action afterTick=null){var time=Stopwatch.StartNew();var wait=new SpinWait();while(!done()){if(time.ElapsedMilliseconds>15000)throw new Exception("planner continuation timeout");if(_memorySummaryMainThreadActions.IsEmpty){wait.SpinOnce();continue;}wait.Reset();Tick();afterTick?.Invoke();}}
+  T Finish<T>(Task<T> task,Action afterTick=null){Until(()=>task.IsCompleted,afterTick);var result=task.GetAwaiter().GetResult();Check(PlanningProbe.Wrong.IsEmpty,"off-main source access "+string.Join(",",PlanningProbe.Wrong));return result;}
+  Task<List<MemorySummaryPlanEntry>> Scan()=>ScanMemorySummaryQueueAsync(SaveRuntimeGuard.CaptureGeneration(),GetDailyQueueForTests,x=>{_memorySummaryQueue=x;PlanningProbe.Settled++;},HasMemorySummaryJobStillPending,x=>SanitizeMemorySummaryQueue(new[]{x}).FirstOrDefault(),x=>x.HeroId,new HashSet<string>());
+  MemorySummaryJob Job(string id,int day=10,int retry=0,string name=null)=>new(){HeroId=id,HeroName=name??id,GameDayIndex=day,RetryCount=retry};
+  void Seed(int count,bool holes=false){for(int i=0;i<count;i++)_memorySummaryQueue.Add(holes&&i%3==0?null:Job("hero"+i,retry:holes&&i%3==1?3:0));}
+  static void BoundAndLayout(bool allNull,int count=41,bool validTail=false) {
+   var b=Owner();b.Seed(count,true);if(validTail)for(int i=0;i<count;i++)b._memorySummaryQueue[i]=i<count-64?null:b.Job("tail"+i);if(allNull)for(int i=0;i<b._memorySummaryQueue.Count;i++)b._memorySummaryQueue[i]=null;
+   var original=b._memorySummaryQueue.ToArray();var expected=original.Where(x=>x!=null&&x.RetryCount<3).ToArray();var result=b.Finish(b.Scan());
+   Check(b._memorySummaryQueue.SequenceEqual(expected)&&result.Select(x=>x.Job).SequenceEqual(expected),"mixed layout lost/reordered refs");
+   Check(PlanningProbe.Slots.Count(x=>x.Phase=="filter")==count&&PlanningProbe.Slots.Count(x=>x.Phase=="compact")==count,"not all original slots were visited exactly once in both phases");
+   int peak=PlanningProbe.Slots.GroupBy(x=>x.Slice).Max(g=>g.Count());
+   Check(peak<=DailyMaintenanceMaxJobsPerTick,"scan/compact traversed more than the actual per-slice allowance: "+peak);
+   Check(PlanningProbe.Slots.Select(x=>x.Tick).Distinct().Count()>1,"large queue never yielded");
+   Check(PlanningProbe.Slots.GroupBy(x=>x.Tick).Max(g=>g.Count())<=DailyMaintenanceMaxJobsPerTick*MemorySummaryMainThreadActionsPerTick,"mixed inline/queued scanner bypassed shared tick allowance");
+   Console.WriteLine($"PLANNING_OBSERVATION original_slots={count} classified={PlanningProbe.Slots.Count(x=>x.Phase=="filter")} compacted={PlanningProbe.Slots.Count(x=>x.Phase=="compact")} max_slots_per_slice={peak} max_slots_per_tick={PlanningProbe.Slots.GroupBy(x=>x.Tick).Max(g=>g.Count())} slices={PlanningProbe.Slice} ticks={PlanningProbe.Tick} inner_source_record_budget=NOT_PROVEN");
+  }
+  static void AtomicPredicateTimeBudget() {
+   var b=Owner();b.Seed(17);b.slowPredicateId="hero0";configuredBudget=1;var task=b.Scan();
+   b.Until(()=>b.slowCalls==1||task.IsCompleted);
+   Check(b.slowCalls==1&&b.slowElapsed>=1&&PlanningProbe.Slots.Count(x=>x.Slice==b.slowSlice)==1,"a slow atomic predicate did not stop this slice before its second record");
+   var result=b.Finish(task);Check(result.Count==17&&PlanningProbe.Slots.Count==17&&b._memorySummaryQueue.Count==17,"following ticks stranded/lost records after one slow predicate");
+   Console.WriteLine($"PLANNING_ATOMIC_OBSERVATION predicate_ms={b.slowElapsed:F3} configured_budget_ms=1 first_slice_records=1 total_records=17 preemption=false");
+  }
+  static void SliceUsesSharedRemainingTime() {
+   var b=Owner();b.Seed(17);configuredBudget=200;b.initialDelayMs=145;b.allPredicateDelayMs=25;
+   var task=b.Scan();b.Until(()=>b.firstDelayedSlice>0||task.IsCompleted);
+   Check(b.observedFirstSliceRemaining>0&&b.observedFirstSliceRemaining<100,"fixture did not enter a partly spent tick");
+   int actual=PlanningProbe.Slots.Count(x=>x.Slice==b.firstDelayedSlice);int allowed=Math.Max(1,(int)Math.Ceiling(b.observedFirstSliceRemaining/b.allPredicateDelayMs));
+   Check(actual<=allowed,"slice used a fresh full-frame time allowance instead of the remaining shared budget: actual="+actual+" allowed="+allowed);
+   b.allPredicateDelayMs=0;b.Finish(task);Check(PlanningProbe.Slots.Count==17,"remaining-budget slice lost work");
+   Console.WriteLine($"PLANNING_SHARED_TIME remaining_ms={b.observedFirstSliceRemaining:F3} first_slice_records={actual} max_atomic_units={allowed} no_preemption=true");
+  }
+  static void StructuralChange(string mode,bool compactPhase) {
+   var b=Owner();b.Seed(41,compactPhase);var task=b.Scan();
+   b.Until(()=>PlanningProbe.Slots.Any(x=>x.Phase==(compactPhase?"compact":"filter"))||task.IsCompleted);
+   Check(!task.IsCompleted,"fixture failed to pause within scan/compact");
+   var added=b.Job("added");
+   if(mode=="append")b._memorySummaryQueue.Add(added);
+   else if(mode=="replace")b._memorySummaryQueue=new(){added};
+   else if(mode=="slot")b._memorySummaryQueue[b._memorySummaryQueue.Count-1]=added;
+   else b._memorySummaryQueue.RemoveAt(b._memorySummaryQueue.Count-1);
+   var expected=b._memorySummaryQueue.ToArray();var live=b._memorySummaryQueue;int before=PlanningProbe.Slots.Count;
+   var result=b.Finish(task);
+   Check(ReferenceEquals(b._memorySummaryQueue,live)&&b._memorySummaryQueue.SequenceEqual(expected),"stale scan replaced/erased current authoritative queue after "+mode);
+   Check(PlanningProbe.Slots.Count==before,"deferred structural writer was silently rescanned");
+   Check(result!=null,"structural change conflated with lifecycle retirement");
+  }
+  static void FieldChangeDuringCompaction() {
+   var b=Owner();b.Seed(41,true);var task=b.Scan();b.Until(()=>PlanningProbe.Slots.Any(x=>x.Phase=="compact")||task.IsCompleted);Check(!task.IsCompleted,"no compact boundary");
+   var live=b._memorySummaryQueue.Last(x=>x!=null);live.RetryCount=3;live.HeroName="edited";
+   var expected=b._memorySummaryQueue.Where(x=>x!=null).ToArray();int predicates=PlanningProbe.Predicates;
+   b.Finish(task);Check(b._memorySummaryQueue.SequenceEqual(expected)&&b._memorySummaryQueue.Contains(live),"compaction reused/re-evaluated eligibility and dropped live fields");
+   Check(PlanningProbe.Predicates==predicates,"compaction repeated expensive source predicate");
+  }
+  static void ContinuousWritesBounded() {
+   var b=Owner();b.Seed(41);var task=b.Scan();b.Until(()=>PlanningProbe.Slots.Count>0||task.IsCompleted);int before=PlanningProbe.Slots.Count;
+   b._memorySummaryQueue.Add(b.Job("writer-0"));int writes=1;
+   b.Finish(task,()=>{b._memorySummaryQueue.Add(b.Job("writer-"+writes++));});
+   Check(PlanningProbe.Slots.Count==before&&writes<8,"continuous mutation restarted scanner or blocked bounded defer");
+   Check(b._memorySummaryQueue.Any(x=>x.HeroId=="writer-0"),"writer addition lost");
+  }
+  static void PlanOrderingAndExclusion(bool overviewOnly) {
+   var b=Owner();b._memorySummaryQueue=new(){b.Job("daily-b",11,name:"B"),b.Job("daily-a",10,name:"A"),b.Job("daily-a",10,3),b.Job("daily-a",10,name:"duplicate")};
+   b._npcMajorActionSummaryQueue=new(){new(){HeroId="major-b",HeroName="B",TriggerGameDayIndex=10},new(){HeroId="major-a",HeroName="A",TriggerGameDayIndex=10}};
+   b._memoryOverviewQueue=new(){new(){HeroId="daily-a",HeroName="A",TriggerGameDayIndex=10},new(){HeroId="excluded",HeroName="E",TriggerGameDayIndex=10},new(){HeroId="overview",HeroName="O",TriggerGameDayIndex=10}};
+   var plan=b.Finish(b.BuildMemorySummaryPlanAsync(SaveRuntimeGuard.CaptureGeneration(),overviewOnly,new(){"excluded"}));
+   string[] ids=plan.Items.Cast<MemorySummaryPlanEntry>().Select(x=>x.HeroId).ToArray();
+   Check(ids.SequenceEqual(overviewOnly?new[]{"daily-a","overview"}:new[]{"daily-a","daily-b","major-a","major-b","overview"}),"plan ordering, filtering or overview exclusion changed");
+   Check(plan.DailyCount==(overviewOnly?0:2)&&plan.MajorCount==(overviewOnly?0:2)&&plan.OverviewCount==(overviewOnly?2:1),"plan payload counts changed");
+   Check(plan.Items.Cast<MemorySummaryPlanEntry>().All(x=>x.JobFingerprint==ComputeMemorySummaryFingerprint(x.Job)),"job fingerprint not attached to actual plan source");
+  }
+  static void CleanupDoesNotBuildPlan() {
+   var b=Owner();b.Seed(41,true);var expected=b._memorySummaryQueue.Where(x=>x!=null&&x.RetryCount<3).ToArray();
+   var result=b.Finish(b.BuildMemorySummaryPlanAsync(SaveRuntimeGuard.CaptureGeneration(),cleanupOnly:true));
+   Check(result!=null&&result.Items==null&&PlanningProbe.Described==0,"cleanup created unused descriptions/hash/sort plan");
+   Check(b._memorySummaryQueue.SequenceEqual(expected),"cleanup-only scan did not preserve authoritative valid refs");
+  }
+  static void FrozenSortKeys() {
+   var b=Owner();var first=b.Job("first",10,name:"A");var second=b.Job("second",10,name:"B");b._memorySummaryQueue=new(){first,second};PlanningProbe.BlockSort=true;
+   var task=b.BuildMemorySummaryPlanAsync(SaveRuntimeGuard.CaptureGeneration());b.Until(()=>PlanningProbe.SortEntered.IsSet||task.IsCompleted);Check(!task.IsCompleted,"sort gate not reached");
+   first.HeroName="Z";PlanningProbe.SortRelease.Set();var plan=b.Finish(task);
+   Check(ReferenceEquals(((MemorySummaryPlanEntry)plan.Items[0]).Job,first),"background sort read mutated live job name instead of frozen key");
+   Check(((MemorySummaryPlanEntry)plan.Items[0]).Name=="A"&&((MemorySummaryPlanEntry)plan.Items[0]).JobFingerprint!=ComputeMemorySummaryFingerprint(first),"planned identity failed to represent the earlier exact job state");
+  }
+  static void InvalidOwnerCleanup() {
+   var b=Owner();b._memorySummaryQueue.Add(b.Job("dead"));b._npcMajorActionSummaryQueue.Add(new(){HeroId="dead"});b._memoryOverviewQueue.Add(new(){HeroId="dead"});b.unavailable.Add("dead");
+   b._memoryOverviewStates["dead"]=new();b._memoryOverviewStateStorage["dead"]="overview";b._npcMajorActionSummaries["dead"]=new();b._npcMajorActionSummaryStorage["dead"]="major";
+   b._memoryOverviewStates["unrelated"]=new();b._dirtyMemoryOverviewIds.Add("dead");b._pendingMemoryOverviewCandidateScanIdSet.Add("dead");b._pendingMemoryOverviewCandidateScanIds.Enqueue("dead");b._pendingMemoryOverviewCandidateScanIds.Enqueue("keep");b._dailyMemoryDraftSealQueued.Add("dead|10");b._dailyMemoryDraftSealQueuedMajor.Add("dead");
+   var plan=b.Finish(b.BuildMemorySummaryPlanAsync(SaveRuntimeGuard.CaptureGeneration()));
+   Check(plan.Items.Count==0&&PlanningProbe.Cancellations==1,"invalid owner not cancelled once");
+   Check(!b._memoryOverviewStates.ContainsKey("dead")&&!b._memoryOverviewStateStorage.ContainsKey("dead")&&!b._npcMajorActionSummaries.ContainsKey("dead")&&!b._npcMajorActionSummaryStorage.ContainsKey("dead"),"derived invalid-owner state survived");
+   Check(!b._dirtyMemoryOverviewIds.Contains("dead")&&!b._pendingMemoryOverviewCandidateScanIdSet.Contains("dead")&&!b._dailyMemoryDraftSealQueued.Contains("dead|10")&&!b._dailyMemoryDraftSealQueuedMajor.Contains("dead")&&b._pendingMemoryOverviewCandidateScanIds.SequenceEqual(new[]{"keep"}),"invalid-owner secondary queue/index cleanup lost");
+   Check(b._memoryOverviewStates.ContainsKey("unrelated"),"planner expanded cleanup to unqueued owners");
+  }
+  static void LifecycleRetires(bool ownerSwap) {
+   var b=Owner();b.Seed(41);var task=b.Scan();b.Until(()=>PlanningProbe.Slots.Count>0||task.IsCompleted);int count=PlanningProbe.Slots.Count;
+   if(ownerSwap){Instance=new MyBehavior();Campaign.Owner=Instance;}else SaveRuntimeGuard.AdvanceGeneration("planning-load");
+   Check(b.Finish(task)==null&&PlanningProbe.Slots.Count==count,"retired scanner continued work or returned a usable plan");
+  }
+  static int Main(){TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>{("mixed-layout-bound",()=>BoundAndLayout(false)),("all-null-bound",()=>BoundAndLayout(true)),("4096-null-slots",()=>BoundAndLayout(true,4096)),("4096-mixed-slots",()=>BoundAndLayout(false,4096)),("4096-valid-tail",()=>BoundAndLayout(false,4096,true)),("slow-atomic-predicate-yields",AtomicPredicateTimeBudget),("slice-shares-remaining-time",SliceUsesSharedRemainingTime),("compaction-keeps-mutated-live-reference",FieldChangeDuringCompaction),("continuous-write-bounded-defer",ContinuousWritesBounded),("all-kinds-order",()=>PlanOrderingAndExclusion(false)),("overview-only-exclusions",()=>PlanOrderingAndExclusion(true)),("cleanup-skips-plan-hash",CleanupDoesNotBuildPlan),("worker-frozen-sort-keys",FrozenSortKeys),("invalid-owner-real-cleanup",InvalidOwnerCleanup),("generation-retires",()=>LifecycleRetires(false)),("owner-retires",()=>LifecycleRetires(true))};
+   foreach(var phase in new[]{false,true})foreach(var change in new[]{"append","replace","slot","remove"}){bool p=phase;string c=change;cases.Add(((phase?"compact":"filter")+"-concurrent-"+c,()=>StructuralChange(c,p)));}
+   int pass=0,fail=0;foreach(var (name,run) in cases){try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}finally{PlanningProbe.SortRelease.Set();}}
+   Console.WriteLine($"PLANNING_RESULT pass={pass} fail={fail} INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN");return fail==0?0:1;
+  }
+ }
+}

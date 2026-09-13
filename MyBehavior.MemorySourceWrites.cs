@@ -1,12 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
 
 public partial class MyBehavior
 {
+    // Editor callbacks outlive their window and can arrive after a same-owner load.
+    // The caller must capture generation when opening, not when Save is clicked.
+    private bool IsMemorySourceEditorCurrent(long generation)
+    {
+        return TWParallel.IsMainThread() && ReferenceEquals(Instance, this)
+            && SaveRuntimeGuard.IsCurrentGeneration(generation)
+            && ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this);
+    }
+
     // Legacy void facades cannot report durable acceptance. Keep main-thread calls
     // synchronous; background calls only publish owner/generation-bound work.
     private static bool DeferMemorySourceWriteIfNeeded(Action<MyBehavior> write, string source)

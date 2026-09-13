@@ -5,9 +5,9 @@
   "status": "B1_PARTIAL_NOT_HARD_BUDGET_ACCEPTED",
   "limitations": [
     "No live/game/save or actual provider evidence",
-    "Atomic source capture/apply and initial/final scans still lack hard record/time budget",
-    "Writer terminal storage and game rendering remain fixtures; not full persistence proof",
-    "Shared cumulative Stopwatch is cooperative only; a single large atomic operation can overrun. Planner/cleanup/Apply record slicing remains incomplete."
+    "Facade-only writers suite retains terminal fixtures; separate commit_writers evidence executes named actual writers/readback without real saves/game.",
+    "Shared cumulative Stopwatch is cooperative only; a single large atomic operation can overrun. Planner/cleanup/Apply record slicing remains incomplete.",
+    "Queue slot classification/compaction is now bounded, but each HasPending/capture/apply may still traverse an unbounded single source; no hard per-frame source record budget or global writer epoch proof."
   ],
   "declarations": [
     {
@@ -251,7 +251,7 @@
       "signature": "private async Task ProcessMemorySummaryQueueAsync(",
       "baselineSignature": "private async Task ProcessMemorySummaryQueueAsync(",
       "line": 5037,
-      "sha256": "727fc511256a7b5d324b3cf1f37557a5308f39f3d0fa481495db3e9bb00df06e",
+      "sha256": "ec857c19337d100574df16db71a1246a8aad334b0788d1042559ceb00c2cc8d8",
       "baselineSha256": "a8103086c3d6404881820ec5a16aabc342d214bbff269b00d4ac4c5764b38f22",
       "evidence": [
         "completion"
@@ -286,7 +286,7 @@
       "path": "MyBehavior.cs",
       "signature": "private async Task RunDailySummaryQueueItemsAsync(",
       "baselineSignature": "private async Task RunDailySummaryQueueItemsAsync(",
-      "line": 5179,
+      "line": 5167,
       "sha256": "0bcdf7ed55176c47f514d61a4ae8e709d091b70f367b7cb458c207d37d321e3b",
       "baselineSha256": "45f8a4b4df62ed96b7c0949c90a0a0f5525c7e6d2cd286039db0e75f39c52852",
       "evidence": [
@@ -301,10 +301,30 @@
     },
     {
       "path": "MyBehavior.cs",
+      "signature": "private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(",
+      "baselineSignature": "private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(",
+      "evidence": [
+        "captured"
+      ],
+      "line": 5204,
+      "sha256": "4991659ba82a2202fd6b4b579aa0fe951c86f5ac5696fcf9b0fff39c0bce4a8a",
+      "baselineSha256": "1d1c882f052f31927096e81af4a84cdf8aeedb1a410f3be6b95c6a007118f8ff",
+      "targetedCases": [
+        "daily/major/overview planned-unchanged",
+        "daily/major/overview planned-before-dispatch",
+        "daily/major/overview planned-before-capture"
+      ],
+      "mutations": [
+        "drop-plan-expected",
+        "skip-planned-source-check"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
       "baselineSignature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
-      "line": 5274,
-      "sha256": "5debcfce04fe6950db8a14a33b1834b3928ab544ec9c2f0290bea8f275d7f6f9",
+      "line": 5268,
+      "sha256": "3f212546522a7440c4dcd05287a0038fc348652851cb14309f2a126ae94c3799",
       "baselineSha256": "c866fb086270b466bf6b6f29c16eec50d01668e0fb576da5052afcb46417f061",
       "evidence": [
         "captured"
@@ -314,8 +334,8 @@
       "path": "MyBehavior.cs",
       "signature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
       "baselineSignature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
-      "line": 5287,
-      "sha256": "f2f56b05a4eb6415ea35345f8f0b2d648db5b79b05df1d1af778dceb8cf3ff78",
+      "line": 5281,
+      "sha256": "a858fe27238bd1ae685f2c938d02ff071cd43d8e745dc02ee7c455d9f397a56e",
       "baselineSha256": "b1c5ed16bc86f0db00cb40572869abba6ab119fa3147a79a5a291595ffa746c2",
       "evidence": [
         "captured"
@@ -325,8 +345,8 @@
       "path": "MyBehavior.cs",
       "signature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
       "baselineSignature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
-      "line": 5300,
-      "sha256": "9b7944339dacb64943528042d72e0224793da3a0741602c0617b214d0217de61",
+      "line": 5294,
+      "sha256": "f3c5617f737a9efdf533dffd628dd90ce88d4040fb134e7716e17d455f62c5b0",
       "baselineSha256": "f2b125eedad5737ad47b6689d05ea69e0a83ab7677205d0df11def2264aa8720",
       "evidence": [
         "captured"
@@ -336,7 +356,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool ApplyMemoryOverviewSuccess(",
       "baselineSignature": "private void ApplyMemoryOverviewSuccess(",
-      "line": 5447,
+      "line": 5441,
       "sha256": "6004110f183021fcc4d80d93a5f04ce97758f072fcc59b959aada0a494f4dc60",
       "baselineSha256": "1fba9c86af385c75d7c3991f73759931fd99ef40db6510d3ae7076b231bb33d5",
       "evidence": [
@@ -347,7 +367,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool ApplyMajorActionSummarySuccess(",
       "baselineSignature": "private void ApplyMajorActionSummarySuccess(",
-      "line": 5602,
+      "line": 5596,
       "sha256": "04c1b73cc8603b25c084355375ddf5849536cac53c28549e9244babf39470f7f",
       "baselineSha256": "80525b15cde3ba5ecb00e68bbc2c1aaf7bfc2fc5da121cce230d9ba969f3d2ce",
       "evidence": [
@@ -358,7 +378,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool ApplyMemorySummarySuccess(",
       "baselineSignature": "private void ApplyMemorySummarySuccess(",
-      "line": 5828,
+      "line": 5822,
       "sha256": "a86e20672d1748fb66b5804e0096b09549974f5279837209199e0ea721a86c04",
       "baselineSha256": "0a7a8ac5086f3dd87b63811f1414bd469b6bca53e173120997cf57a06f8c97ad",
       "evidence": [
@@ -369,7 +389,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void MarkWeeklyMemoryMaterialTriggerForExternal(",
       "baselineSignature": "public static void MarkWeeklyMemoryMaterialTriggerForExternal(",
-      "line": 14232,
+      "line": 14226,
       "sha256": "2b3276daea4b6b53fb87c972aa60e4ee3abc1d2bf7a64eaa8eccd1c1b5047677",
       "baselineSha256": "8f016d050e9baa05c94b4488d574d9aa545e2937739fbdacb4f57bd696630f8a",
       "evidence": [
@@ -380,7 +400,7 @@
       "path": "MyBehavior.cs",
       "signature": "internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(",
       "baselineSignature": "internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(",
-      "line": 14253,
+      "line": 14247,
       "sha256": "de2e910d4332009421a084e5b3d36ff20ec1085194d2fb959743435714c58087",
       "baselineSha256": "59812424d975891e574f8ea450b0bea458206fe71aad19018c4e092b44ac9739",
       "evidence": [
@@ -405,7 +425,7 @@
         "new-queue-entry-survives-cleanup",
         "worker-admission-no-source-read"
       ],
-      "line": 17879,
+      "line": 17873,
       "sha256": "17da5e8912d2a987d94f302015b25690107b979642d017d6e8a3dea6f7f01e62",
       "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9"
     },
@@ -413,7 +433,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void MigrateNonHeroPartyScopedMemoryForExternal(",
       "baselineSignature": "public static void MigrateNonHeroPartyScopedMemoryForExternal(",
-      "line": 25715,
+      "line": 25709,
       "sha256": "3226c0f4108b318791146c66977bc7c9c1135165e355cf5554ac6f24499465d5",
       "baselineSha256": "814ea20bc0fcc503124fff57c6ef7dba1452a0915526489b0c621686bc711114",
       "evidence": [
@@ -424,7 +444,7 @@
       "path": "MyBehavior.cs",
       "signature": "private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(",
       "baselineSignature": "private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(",
-      "line": 26649,
+      "line": 26618,
       "sha256": "fe7936ac761ffe973c5d62e2ac5341d5cb19a1877f2c7fe1649fcf512b76b89b",
       "baselineSha256": "322763023c4c779d1c06623a1c384f45f5ff497b85cea484aba88ac69874c2d9",
       "evidence": [
@@ -435,7 +455,7 @@
       "path": "MyBehavior.cs",
       "signature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
       "baselineSignature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
-      "line": 26758,
+      "line": 26727,
       "sha256": "2053c26104af1e6a36841b92156fc8e22a17276b573fcf1faa83bc0f6c53c269",
       "baselineSha256": "7caa0014b33ad43e30c9f28e81e1b2a278ad87644b663cc7476a52b59f45cc4d",
       "evidence": [
@@ -446,7 +466,7 @@
       "path": "MyBehavior.cs",
       "signature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
       "baselineSignature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
-      "line": 26839,
+      "line": 26808,
       "sha256": "93b78b9ec3c8dd0934d381e80a8b5ae530d630edca94f735e1c7f654b752275c",
       "baselineSha256": "27c5b5d9c8d33f0ca6fa2b21670dc2d8ac2d9cc2d1db792bf5dc31f72679844b",
       "evidence": [
@@ -457,7 +477,7 @@
       "path": "MyBehavior.cs",
       "signature": "private MemoryOverviewState GetMemoryOverviewState(",
       "baselineSignature": "private MemoryOverviewState GetMemoryOverviewState(",
-      "line": 26964,
+      "line": 26933,
       "sha256": "d7af22ad65fcab2a4a393f9c4d46f9ccc532010398f939235fc92eab11a285dd",
       "baselineSha256": "84c3828a78aeba73b32d273acd83e23bb98f1ffe04fa941b00236d731a636a84",
       "evidence": [
@@ -468,7 +488,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool HasMemoryOverviewPendingBlocks(",
       "baselineSignature": "private bool HasMemoryOverviewPendingBlocks(",
-      "line": 26988,
+      "line": 26957,
       "sha256": "d0b47e3e31779215056fe5f70cbefee01409f10573c0dcadd4ac1faf4aa063e5",
       "baselineSha256": "84068d59abb0f92e6b1d90435656417167320a59a6cdb98bc2b00b89dda4b605",
       "evidence": [
@@ -479,7 +499,7 @@
       "path": "MyBehavior.cs",
       "signature": "private MajorActionSummaryState GetMajorActionSummaryState(",
       "baselineSignature": "private MajorActionSummaryState GetMajorActionSummaryState(",
-      "line": 27070,
+      "line": 27039,
       "sha256": "8d6e83958890000151a72b7407d0ccc4cad33da79362b609c932a9b4876b50da",
       "baselineSha256": "1440f4d53a9c641121b88e1a3c6cb2724dbeac17c274132689885fed86a40065",
       "evidence": [
@@ -490,7 +510,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalDialogueHistory(",
       "baselineSignature": "public static void AppendExternalDialogueHistory(",
-      "line": 27702,
+      "line": 27671,
       "sha256": "4241cdfeb36886e1c73465a80b995ad41bd51fceb3ca6d2b45a6d12c591cf593",
       "baselineSha256": "e0ff60b95a5740d87064a237e644c55daa532b2e8d7238e308fab7795c7ae608",
       "evidence": [
@@ -501,7 +521,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalSceneDialogueHistory(",
-      "line": 27726,
+      "line": 27695,
       "sha256": "be0e4aecf26ca789533fdc23838a6b23ce47b4808f9a45b9aca3ccc72d17492a",
       "baselineSha256": "61b21fe4ab5b041288a52708946ca991ddd3c271a32df2fbb39eee30673db7e1",
       "evidence": [
@@ -512,7 +532,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroDialogueHistory(",
-      "line": 27739,
+      "line": 27708,
       "sha256": "d872c7be4c8c596f282ab852ac2c8d73cf14d7e2641cb9983c982badf2c76985",
       "baselineSha256": "29d45e998b70b8645ce7f5edb049fb6f69856093719bb3166e007b0595c10bf4",
       "evidence": [
@@ -523,11 +543,191 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
-      "line": 27752,
+      "line": 27721,
       "sha256": "00bb71e1de80054398872e1c0849315124db196071ff28d39ab18d263c87dfe0",
       "baselineSha256": "310ec210e62dcb68961e51f8f536567351a9067fa7e5bbf3273af63eb0d056a6",
       "evidence": [
         "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50106,
+      "sha256": "78261bc4882d632f24ae2b5ab00e45dbd8809d693f6de81516580d4bf29efad8",
+      "baselineSha256": "5cc7f21759e292824bb974c4c560759ac77976478243eba2213b2195dad2db44",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineTextEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineTextEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50180,
+      "sha256": "3af489646e2b910040bdda07a79756a34ace55b560a41022bebaf9bba08a7b8b",
+      "baselineSha256": "1d7015d8ac12ce452e64f495722d28a44b70f9680488e57782b94a36d100af42",
+      "verificationLevel": "actual extracted method/closure execution plus structural guards",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineSpeakerEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineSpeakerEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50218,
+      "sha256": "0fb8f92c78b2d89afed8dd7f0c3c451ee08e3d580004c125f5628dd175063762",
+      "baselineSha256": "249754eee4dbe0099b0a1bdd4e0041c6c64daf344bad4d0acb89ec5469507470",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineSceneEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineSceneEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50248,
+      "sha256": "078d20ad099ac6fdab1c6975deebce947cbacd4007e1fe1f96c0b8239199be59",
+      "baselineSha256": "2dc5cf1ed7edd8b81d43eec58f039798c57f67daa2e17277dbc183024a443294",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineHourEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineHourEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50278,
+      "sha256": "5bf19d80b828e436d57f4b7a14dc0128c7006bf58eefb075f65f8a282af0f24f",
+      "baselineSha256": "144f8db4cf2f36dbf3e08228fc5e5590d7f5c0dbcb9e661ad000fd4a791dda4a",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevAddDailyMemoryLine(",
+      "baselineSignature": "private void OpenDevAddDailyMemoryLine(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50348,
+      "sha256": "8d2d58ed846230326e5b56c212323e921b0a8ac1f56d92322304922d04c33814",
+      "baselineSha256": "99dd71d92fd9c25517c34c027bf0b2db231193e35d6ebcdd3580f7a2d3ac09c9",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ConfirmDevDeleteDailyMemoryLine(",
+      "baselineSignature": "private void ConfirmDevDeleteDailyMemoryLine(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50409,
+      "sha256": "31927e9edf1b549e0699fc57a22ff4ddac7cc857444307adbd9447803b7986d3",
+      "baselineSha256": "5b2d2becef7a15335347ad45288a4262ed8d3599911ad4ccd9ad0cecc4c94612",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ConfirmDevDeleteDailyMemoryDraft(",
+      "baselineSignature": "private void ConfirmDevDeleteDailyMemoryDraft(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50441,
+      "sha256": "bf7e6c0f370b3ec05146e9dc6d89a87ecbbac12bc1e1f7d8699ad13adf1d2721",
+      "baselineSha256": "4201867d4b5c62fecff826fb639fa3404635ff20a7f9e6e1d9f6ae7279aacc67",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportSingleNpcDialogueHistoryData(",
+      "baselineSignature": "private void ImportSingleNpcDialogueHistoryData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 55018,
+      "sha256": "9cad101c484d6a8516d41210650f1c83717ea6957d78bc8d95b610afac4a7831",
+      "baselineSha256": "de972b72d399783cfbb3b87972f4e215d8c7c62f10e1316c07f13d7e940dfdc8",
+      "verificationLevel": "actual extracted method/closure execution plus structural guards",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportHeroNpcAllData(",
+      "baselineSignature": "private void ImportHeroNpcAllData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 55215,
+      "sha256": "0dfcaa1289fb5091c5c1afa18308d2dd1a39b7b54286aeb0da04adf90f8af2fd",
+      "baselineSha256": "3a3323995a9e62cb6686588682b698b8c189a6c631dcb6485bbc6a27211a99da",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportDialogueHistoryData(",
+      "baselineSignature": "private void ImportDialogueHistoryData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 57123,
+      "sha256": "8c87cbac510f1c9ce96be601ed0d4abdd0d415f9cdd506fc7374a157597e7f3c",
+      "baselineSha256": "08cf2cf3387a75448450f61b54dfbbecc0ebacde51e73f7891bd0cbc376cabfe",
+      "verificationLevel": "actual extracted method/closure execution plus structural guards",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportAllData(",
+      "baselineSignature": "private void ImportAllData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 57651,
+      "sha256": "1164e21ef32229e6e63bf87afa42b5ea252117f23579951beeee1c81ac7cf48f",
+      "baselineSha256": "443f988853cd789d4fa7ab5e72676ebd95cd622dfc9767212c63f1a6e0dc74b2",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=49 failures=0; consult per-case run.log and added_extraction structure_only flags"
       ]
     }
   ],
@@ -535,26 +735,26 @@
     "completion": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_business.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt",
-      "scope": "Actual Process/Apply/Mark state mutation and accepted counters, stale/owner/generation rejection, terminal cleanup and release; source proof is a scripted completion-layer seam, not a real capture test. Actual TryStart/TryRunCampaignMemoryMaintenance/ShouldScan/QueueAll execute; past-draft sealing, busy/current-day, and candidate-ID terminal remain fixtures. Partial Apply and Mark fault cases preserve published state, stop later work, emit an exception notice and release without replay.",
-      "observed": "BUSINESS_RESULT passed=33 failed=0",
+      "scope": "Actual Process/Apply/Mark state mutation and accepted counters, stale/owner/generation rejection, terminal cleanup and release; source proof is a scripted completion-layer seam, not a real capture test. Actual TryStart/TryRunCampaignMemoryMaintenance/ShouldScan/QueueAll execute; past-draft sealing, busy/current-day, and candidate-ID terminal remain fixtures. Partial Apply and Mark fault cases preserve published state, stop later work, emit an exception notice and release without replay. Uses actual resumable planning module for initial/extra/cleanup. Scripted provider unwraps PlanEntry at its existing external boundary; actual dispatcher planned fingerprint enforcement is covered by captured suite. 64 large failure strings aggregate off-thread, preserving exact message/order and discarding late owner/generation notifications.",
+      "observed": "BUSINESS_RESULT passed=36 failed=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
       "testSourceSha256": {
-        "runner": "7357907a892945d8f4f514d6301d7f2cd8d8db44c83f38d4bbad9b1159547c97",
-        "harness": "0bde312ac7a853ace0098bbf9190ae2692a6fdb0bb19fe0d05aedea20919c2b2"
+        "runner": "c28a99cedd2d14d62c814b577e572722f79d9760cccca6a58c852c745be96fac",
+        "harness": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
       },
-      "extractedProductionEvidence": 47
+      "extractedProductionEvidence": 48
     },
     "captured": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt",
-      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it.",
-      "observed": "CAPTURED_RESULT pass=61 fail=0; copy scalar checks=351; independent mutable nodes=49; exact source field mutations=251; hard budget NOT_PROVEN",
+      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it. Actual PlanEntry/Describe and dispatcher pass frozen job fingerprints into the same guarded Capture callback; same-reference edits before dispatch or while awaiting capture cannot send a stale request.",
+      "observed": "CAPTURED_RESULT pass=70 fail=0; copy scalar checks=351; independent mutable nodes=49; exact source field mutations=251; 9 planned-job unchanged/stale/queued-capture cases; hard budget NOT_PROVEN",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "029e4de6d6364478e0c03be875c712b881078f8751d7be5ef53f1a66625c1b68",
-        "harness": "fc8dd79c5ac8b62ad5ef80c80fff5088b66a28a959566f1bd67c156cfc651a9b"
+        "runner": "a27c4da93f58bfb8668c9a78cb2695ed6314a8fb00426c730e20b1ae466fda1f",
+        "harness": "5421089f9db77531df3bd17b87e0ca4e98f0dfb962d1f940e52647ce52ab1b6d"
       },
-      "extractedProductionEvidence": 84
+      "extractedProductionEvidence": 86
     },
     "writers": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py",
@@ -567,8 +767,51 @@
         "harness": "1329580c92b76e67711ea465278a3dbfa5fe58bd474d7a208e597b32d100b128"
       },
       "extractedProductionEvidence": 19
+    },
+    "planning": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_planning.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/PlanningHarness.cs.txt",
+      "scope": "Actual resumable filter and compaction, including null slots, structural List revision/reference probes, immutable sort keys, queue replacement, repeated mutation, cleanup-only path, and actual invalid-owner cancellation. Source-pending/game eligibility are fixtures. No record hard bound within one source predicate.",
+      "observed": "PLANNING_RESULT pass=24 fail=0; 4096 layouts visit exactly 4096 filter+4096 compact slots; max 8/slice and 16/tick; slow predicate and shared remaining Stopwatch budget proven; 10 runtime mutation controls",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "f00449cca84464f2d6dadbb62e8d4274325af8adc3995fb43d817101e2ea9189",
+        "harness": "65142501661b4c62522ad9acba0e8705d71398b3d9b695c11807a7ad12f8a94f"
+      },
+      "extractedProductionEvidence": 13
+    },
+    "commit_writers": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/CommitWritersHarness.cs.txt",
+      "scope": "Actual commit/daily/recent/readback, text-editor closure, and single/global dialogue-import apply callbacks; remaining editor windows and aggregated all-data import windows are structural guard checks only. No real save/game acceptance.",
+      "observed": "COMMIT_WRITERS_RESULT scenarios=49 failures=0",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "9ea8d93ab9acdd5294699379fdff81e9ed29945e57f5141e3f455e123b4ec114",
+        "harness": "a038c37e341fc666eba6a4bdbbdf4e2d9bb8d637909c97725b1a48ebda3d1769"
+      },
+      "additionalTestSourceSha256": {
+        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "2f0ae4488a0bac2e1168baa4941b2242e465ca48f7802c0a5726abc8f1e3de09",
+        "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "5bfe5d6850feae6fdfc6febd3c393fa6db9be06676a7439bad99aec5e96b02de"
+      },
+      "extractedProductionEvidence": 56
     }
   },
   "testSourceHashNormalization": "utf8-no-bom-lf",
-  "productionFileSha256": "028d0af68dab9f97f26af517b4528ff211cb73a9a2e682c782ac982c92f9dd83"
+  "productionFileSha256": "e86ec86af7660bda774757dbae73d0d59010a3ba8a582f4254f673b686fd55a0",
+  "deletedDeclarations": [
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void CancelUnavailableHeroCompressionQueuedJobs(",
+      "baselineSignature": "private void CancelUnavailableHeroCompressionQueuedJobs(",
+      "baselineSha256": "745fe03f86589e712375a23dcc0ed92ad495f6ef9b3f84b143ab723fc95336f7",
+      "baselineSpanSha256": "b7ac409bcf598f4e880c1f79db7b0e29b6f3379591e93c0d00c72d2daadbedce",
+      "nextSignature": "private void RemoveMemoryEntityDataById(",
+      "nextDeclarationSha256": "76e52fb6268317691e25ef6d35a573de805a3dcf56f4007857208c106a113799",
+      "evidence": [
+        "planning"
+      ],
+      "reason": "No remaining production caller; real sliced scanner retains queued invalid-owner discovery and real CancelUnavailableHeroCompressionWorkById cleanup. Exact deleted body and its next declaration anchor are restored for older whole-source parity only."
+    }
+  ]
 }
