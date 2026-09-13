@@ -1,3 +1,9 @@
+# 当前执行状态（2026-09-14）
+
+用户已明确继续主体重构，手动 B1 / P1 ACTIVE，自动化仍 PAUSED。唯一当前状态见[根 HANDOFF](../../HANDOFF.md)，范围/风险见[实施台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。按第15节先闭合未审 WIP，继续真正主体职责提取；下方 v1.2 暂停是历史，不覆盖当前指示。B1/阶段8未完成，不进入未满足依赖的后续批次。
+
+## 以下为原计划与历史状态
+
 # 当前计划状态 v1.2（2026-09-13，暂停后的审查收口）
 
 **B1 / P1 = PAUSED_WIP / NOT_BATCH_ACCEPTED；自动化仍 PAUSED。最新生产 `c21523f8`，最后完整离线联验 `62abfdb3`。**
