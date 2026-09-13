@@ -4,9 +4,7 @@
 
 ### 当前执行记录
 
-- B1 同批性能续作 ACTIVE（2026-09-13 10:34），基线 `76a3504f` / 生产 `aece8f3d`。先移除 JSON round-trip clone/嵌套序列化指纹成本、补同 Tick 实际协作耗时预算和减少启动重复筛选，并补真实 terminal writer 组合证据；不削减数据/原子性要求，不进 B2。生产统一由主执行者修改，独立测试并行；本批仍待集中门槛，不因本条意图变成已完成。
-
-- **B1 ACTIVE / NOT_BATCH_ACCEPTED：** 生产工作候选 `aece8f3d`，检查点 `0d5857bc`，基线 `90201155`。三类 capture/源检查/接受/八 façade 与查询隔离已实改并完成集中检查；记录/耗时预算未过，继续同一 B1、不进 B2。以下原意图与P1-01记录保留为历史，最新续点见第12节。
+- **B1 ACTIVE / NOT_BATCH_ACCEPTED：生产联合候选 `7f89e18d`，本轮检查点 `30cd916b`（起点 `76a3504f` / 生产 `aece8f3d`）。** 10:34续作已集中完成typed copy/流式指纹、共用实际协作耗时、调度去重筛查、真实terminal组合与部分Apply异常提示；离线和六项Stage通过，单大源/record预算仍未过。继续同一B1，不进B2，准确续点及证据见第12节。下方意图/P1-01记录为历史，不覆盖当前。
 
 - B1 ACTIVE（2026-09-13 09:33 自动运行），检查点基线 `90201155`。主执行者统一改记忆 owner/调度与三类总结接线，独立审查只读并行；预期涉及 `MyBehavior.cs`、`MyBehavior.MemorySummaryMainThread.cs`、直接记忆 partial 与现有相关测试。先保持原 provider/解析/重试/持久化语义，补精确来源接受和实际预算；最后集中真实业务/故障、兼容与六项 Stage。未通过整批门槛不进 B2，不推送/部署/操作真实存档。
 
@@ -16,7 +14,7 @@
 
 编制时只授权写计划；用户随后明确要求自动运行。现有 `af-7-8` 已设为 ACTIVE，每小时在当前任务从 P1 自动推进范围明确且依赖满足的工作，未决定的 API/扩展/融合/实机权限仍须确认。终点为 `READY_FOR_CLOSEOUT_REVIEW`（可进入收尾评审），不是阶段 8 DONE、已发布或零 BUG；到达终点或只剩外部阻塞时自动暂停并交接，不自动执行推送、部署、默认迁移或广泛删旧。
 
-## 1. 目前站在哪里
+## 1. 编制时基线（历史，当前执行见顶部及第12节）
 
 | 项目 | 已核实状态 |
 |---|---|
@@ -56,7 +54,7 @@ P0 是已具备的起点；P1–P6 为本次新计划。每个阶段下的完整
 | 阶段 | 要达到的结果 | 主要依赖 | 出口 / 当前状态 |
 |---|---|---|---|
 | P0 基线与范围 | 锁定功能对照来源、发布范围和可复现构建 | 当前已确认主体范围；D-A/D-B 只阻塞相应外部扩展 | 基线已具备；范围清单待补，不能直接开始删旧 |
-| P1 记忆与线程可靠性 | 真实业务回归、实际处理预算、输入快照与来源重验 | P0 | 完成层真实回归通过；实际预算、捕获与来源一致性仍待实施 |
+| P1 记忆与线程可靠性 | 真实业务回归、实际处理预算、输入快照与来源重验 | P0 | 三类来源/完成/真实writer组合已验证；实际record预算和剩余终端/调用方仍待收口 |
 | P2 三渠道主体闭环 | Native/Scene/Courier、Prompt/标签/记忆/TTS 责任收口 | P1 的共享记忆安全边界；各功能基线 | 原主体功能逐项对齐，真实调用链与失败语义明确；未开始 |
 | P3 内部模块接口稳定 | 明确登记/生命周期、贡献、动作/结果 owner 与薄桥 | P2 的共享协议；现有三组 ports | 所选制作组接缝真实接入且隔离可证明，不改其业务；未开始 |
 | P4 子 MOD 最小可用 API | 经选择的提交/结果/取消及生命周期，兼容旧公开面 | 对应 P2 渠道 + P3 稳定边界；D-A/D-B | 独立示例消费者走完整主体链；未开始，开放范围待确认 |
@@ -312,38 +310,49 @@ P4 的具体方法签名、DTO 和版本扩展方式在实现前定稿，不在�
 - 自动化 `af-7-8` 已更新为上述大批次方式，保持 ACTIVE、每小时、同一任务；未新建重复任务/自动化。当前允许独立只读审查/独立测试并行提速，主执行者统一合并，禁止同文件并行写入。
 - 不自动推送、部署、操作真实存档、切默认、广泛删旧或变更制作组业务。全部可独立完成的获准工作结束/只剩外部阻塞时暂停并交接；更大批次不会把未验项目变成 READY/DONE。
 
-## 12. B1 工作候选与准确续点（未整批合格）
+## 12. B1 联合候选与准确续点（未整批合格）
 
-**生产 `aece8f3d`，检查点 `0d5857bc`，基线 `90201155`。** 这是同一大批次内的可回滚实现检查点，不是 B1 结案。以下对应代码的一基行号、符号、文件 hash 已统一更新在 [33点代码范围图](../architecture/af-framework-code-scope.md) / 同目录 code-map JSON，不再使用旧9040坐标作当前定位。
+**生产/测试 `7f89e18d`；检查点 `30cd916b`，前生产 `aece8f3d`，B1基线 `90201155`。** 这是同一大批次的可回滚工作候选，不是B1结案。[联合验证JSON](../audits/2026-09-13-b1-budget-terminal-candidate.json)和[40点代码范围图](../architecture/af-framework-code-scope.md)绑定本候选。
 
-### 已实改的关联范围
+### 已贯通的改动
 
-- `MyBehavior.MemorySummaryInput.cs` / `CaptureMemorySummaryInput`、`ExecuteCapturedMemorySummaryJobAsync`：三类型主线程完整源深拷贝及内容fingerprint；保留原provider、Build/Parse、retry/RPM。解析仍在所属主线程，不声称已成为纯后台解析器。重试/解析/实际提交前重验；完成后只留接受身份/fingerprint，释放大prompt/源payload，避免一直等其他RPM波次。
-- `MyBehavior.cs` / 三个Execute wrapper、Process、三个bool Apply：逐结果接受；旧成功/失败不覆盖新来源，Apply真实成功才计数。过期overview不在同批重复请求；RunDaily的60秒波次间隔保留起始owner/generation，不重新绑定到新存档发请求。
-- `MyBehavior.MemorySummaryMainThread.cs`：inline/queued共用每Tick两次操作，关闭同步provider绕过限制；**这是job接受改善，不是全部record/time已有硬上限**。
-- `MyBehavior.MemorySourceWrites.cs` / 八个旧façade：主线程仍同步，后台只发布owner/generation绑定工作；Weekly参数的List、DTO、嵌套索引复制。strict Commit/Recovery接受契约未变为假排队成功。两个GetState/HasPending及三个sanitizer的后台净化不再改源对象；主线程sanitizer保留原对象发布责任。
-- `PlayerNotorietyBehavior.cs` / internal `CaptureMemorySummaryHistoryRenderingIdentity`：将无observer公称和实际匿名别名纳入daily解析来源，未开放新的public API或改制作组业务。
+- 10个私有数据模型的`CopyForSummary`加2种列表typed复制，字段/嵌套图完整；完整来源、Prompt、解析依赖流式写SHA256。没有新增存档字段、公开API、配置开关或缩减历史。
+- inline/queued共享既有每Tick数量和`GetDailyMaintenanceFrameBudgetMs`实际累计Stopwatch耗时，超预算后不开始下一操作。TryStart/maintenance不再重复深扫来源；Process唯一初筛，保留无效队列清理、先过滤后去重、强制/节流候选扫描。
+- 沿真实Daily append/Save、Recovery Daily→Recent、Weekly outcome/回读/ledger、Major记录、压缩块Save组合校验在途旧成功/旧失败。Recent-only不虚构为Daily来源变化。
+- 审查发现Apply先发布块/删除草稿后，下游异常曾被helper吞为false导致静默return。本轮用Process专属`RunMemorySummaryCompletionAsync`保留异常，进入原通知、明确可能已有部分写入、停止本轮并释放；**不盲重放、不宣称事务回滚或尾项自动恢复**。旧capture/void façade错误语义保留。
 
-### 集中检查结论
+### 核实代码位置（同一生产提交，一基）
 
-| 门槛 | 本轮结果与边界 |
+| 位置 | 符号与责任 |
 |---|---|
-| 完成层 / helper | 19场景 / 24断言通过；20+4反例编译后运行失败；旧e40实际业务2 PASS / 17 FAIL |
-| 捕获执行 | 57场景通过；真实queue/Execute/Build/Parse/JSON/标签/来源/重试；12类反例各有绑定输入的运行失败日志 |
-| writer façade | 238项与3个故障反例通过；实际8 façade/helper/DTO运行，末端存储/weekly是替身，不冒充完整writer整链 |
-| 相邻验证 | UI85/history852通过；25个B1声明精确逆变换后原全文件/默认校验继续通过，旧断言/hash未删弱 |
-| 构建 / 身份 | 最终Debug/Release × 1.3/1.4/Bootstrap六项Stage通过；API119/并发256、四实现DLL元数据532；146 SyncData键/36 behaviors不变 |
-| 性能 / 实机 | **B1未过门槛**：1000行capture仍是单个同步单元，约58–149ms及9.26MB分配观测（同机有并发负载，不是游戏帧时基准）；LIVE/SAVE/provider/audio/外部DLL加载未测 |
+| `MyBehavior.MemorySummaryInput.cs:42-62` | `private static T CloneMemorySummarySource<T>(` — typed图复制，10模型方法定义保留在MyBehavior对应私有数据模型 |
+| `MyBehavior.MemorySummaryInput.cs:64-139` | `private MemorySummaryInput CaptureMemorySummaryInput(` — 捕获完整来源/Prompt/解析依赖 |
+| `MyBehavior.MemorySummaryInput.cs:143-156` | `private static string ComputeMemorySummaryFingerprint(` — 流式SHA256，省去全量嵌套JSON |
+| `MyBehavior.MemorySummaryMainThread.cs:88-98` | `private async Task<bool> RunMemorySummaryCompletionAsync(` — 部分异常回执转入原Process通知，不动旧void façade错误约定 |
+| `MyBehavior.cs:4975-5015` | `private void TryStartMemorySummaryQueue(` — raw入场，不重复扫描所有source |
+| `MyBehavior.cs:5037-5177` | `private async Task ProcessMemorySummaryQueueAsync(` — 初筛、强制扫描、完成/部分错误、清理和释放 |
+| `MyBehavior.cs:17879-17927` | `private void TryRunCampaignMemoryMaintenance(` — maintenance去除重复来源探测 |
 
-[B1候选证据索引](../audits/2026-09-13-b1-memory-working-candidate.json) 包含源码、产物hash、原始日志与未验证边界。部分反例绑定中途冻结输入，最终波次退休/payload释放另有新反例；不把历史日志冒充同一最终源码全量重跑。完成层/writer所提取声明已复核与最终候选一致，可按不变影响面复用。
+`MyBehavior.MemorySummaryMainThread.cs:20`的`HasMemorySummaryMainThreadAllowance`与`TryApplyMemorySummaryMainThreadAction`负责实际计时；`ProcessMemorySummaryMainThreadActions`每Tick重置。完整导航见code-map，未列代码不代表可删。
 
-Stage初次因SDK探测被沙箱拒绝（MSB4184），LOCALAPPDATA重定向未解决；随后经工具权限审查运行原Stage命令通过，只写项目输出，未改一键脚本或部署。保留失败及最终日志，后续按已证原因处理，不重造构建流程。
+### 集中验收
 
-### 只续同一B1，不重新盘点或进入B2
+| 层 | 结果与边界 |
+|---|---|
+| helper / completion | 32断言 / 33真实业务场景PASS；7 / 27故障反例均编译后运行失败 |
+| 捕获 / 数据图 | 61场景PASS；351标量检查、49可变节点分离、251逐字段来源改变均验证；15反例有效但部分绑定中途输入，manifest保留 |
+| writer / terminal | 238 façade断言 / 47真实terminal组合PASS；3 / 15反例有效。终端发布不是游戏、全普通对话提交或所有编辑导入调用方证明 |
+| 原代码 / 严格逆校验 | e40实际业务4 PASS / 29 FAIL；37声明精确inverse与3反例，保留原全文件/default断言，并绑定runner/harness hash |
+| 相邻 / 构建 | UI85/history852；最终Debug/Release×1.3/1.4/Bootstrap六项Stage；6 marker与stage一致；API119/256并发、四实现DLL元数据532；146 SyncData/36 behaviors保持 |
+| 大来源观察 | 同1000行/134016 Prompt字符，分配9,257,688→1,579,504 bytes；最新约9.591ms，其他运行约10–16ms。机器负载/JIT可变，不作实机帧时承诺，**单原子仍未切分** |
 
-1. 优先处理 `CaptureMemorySummaryInput` / `IsMemorySummaryInputCurrent` 整源序列化、复制、重复Prompt构造成本，采用有一致性证据的快照/发布策略。不能将原子复制拆跨Tick后只逐片比较，就称原子快照；若引入epoch，须涵盖实际writer/原地编辑/修复，不能只挂两个Save。
-2. 将实际job/record/协作式耗时预算覆盖TryStart、初筛/排序、extra规划、cleanup、失败汇总和Apply内部；这些还有全扫。保留顺序、原数据/素材、部分结果与来源重验，不删历史/丢任务换性能。
-3. 补真实terminal writer/恢复/素材接线的同代修改证据，不能仅凭façade stub和独立ledger合约封口。审查曾把无条件早返后的Scene fallback误当活跃，已撤回；未因此改Shout。
-4. 在同批定向修复后再检查五道门槛；B1合格前不启B2，不重做P1-01，不对未变部分重复全构建。
+正常测试与最终构建绑定同一生产文件hash；部分旧反例只按其准确manifest复用，不谎称全部同源重跑。原始日志在项目忽略目录，复现命令见`tools/MemorySummaryMainThreadBoundaryTests/README.md`；Stage仅项目内输出，无游戏覆盖。
 
-仅本地提交，未推送/部署/操作存档；保护文件hash不变、未暂存。需回滚时定向revert `aece8f3d`并同步导航/证据，不重置用户工作树。自动化保持ACTIVE，因为仍有独立可做的B1工作；本节是准确续点，不是提前批次结案。
+### 五道门槛后的剩余问题：继续B1
+
+1. **预算仍不合格：** 单大源capture/check、初筛/排序/extra/cleanup、Apply内循环、空队列候选全ID扫描、maintenance预算前past-draft探测仍存在原子全扫。先做一致性可证明的来源发布/分段策略；不要跨Tick逐片比较后冒称原子快照，也不能只在两个Save计epoch。
+2. **writer责任补齐：** 真实普通`MyBehavior.DialogueHistoryCommit.cs`→Daily/Recent的部分失败、编辑保存/导入/迁移调用方的线程与owner责任仍未整链验证；字段变动会失效不等于这些入口已安全。部分Apply提示不等于尾项恢复解决。
+3. **验收层次：** 真实游戏/provider、旧存档往返、实际UI/audio和子MOD加载仍未测。D-A–D-E/默认/public/广泛删旧等未授权决策不自行执行。
+4. 同一B1继续修复后再集中检查五道门槛，合格才进B2。不要重做P1-01或反复构建未改代码；不要每次重新写一套阶段计划。
+
+自动化`af-7-8`本地回读仍ACTIVE/每小时，同一任务；尚有可独立做的B1工作，不提前暂停。未fetch新远端/推送/部署/操作存档，已知远端快照仍`bd2ed35f`，不是本次联网确认。两份用户草稿和local-only旧简明HANDOFF hash保持，不暂存。回滚需按用户指示定向revert `7f89e18d`并同步文档；不reset用户工作树。
