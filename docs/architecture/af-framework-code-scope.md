@@ -1,6 +1,6 @@
 # AF 框架代码范围图
 
-本图是当前已验证源码 `9040d184` 的定位快照，与 GitHub 原重构分支基线 `e40c92d7` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
+本图是当前已验证源码 `aece8f3d` 的定位快照，与 GitHub 原重构分支基线 `e40c92d7` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
 
 ## 新旧责任分区（不搬动运行代码）
 
@@ -10,13 +10,13 @@
 | `Api/V1/` | 新公开只读接口；未来按需求和兼容证据扩展 |
 | 本次具名 Native / Memory partial 边界 | 已接线的主体局部边界，不代表整个 Native / Memory 完成 |
 | `ShoutBehavior.cs` / `MyBehavior.cs` / `CourierDeliveryBehavior.cs` / `SubModule.cs` | 新旧混合 owner，按符号标界，不能整文件打 DONE |
-| 原 Scene/Courier 默认历史、Native persona/周报/剩余 TTS、压缩记忆前置准备与其他记忆维护 writer | 保留运行责任，未完成部分仍需接续 |
+| 原 Scene/Courier 默认历史、Native persona/周报/剩余 TTS、压缩记忆 record/time 预算与其他尚未验证的维护 writer | 保留运行责任，未完成部分仍需接续 |
 | 政策 / 宴会 / `AnimusForge.SiegeAftermathIntervention` 业务 | 本轮不重写，只处理 AF 侧接口，不误删旧业务 |
 | GitHub 主分支及其他旧版本 | 分支/固定基线隔离，不复制到活动编译目录，不整片覆盖当前重构分支 |
 
 ## 已核实代码坐标
 
-以下一基行号均属于源码 `9040d184`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
+以下一基行号均属于源码 `aece8f3d`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
 
 | 边界 | 源码位置 | 符号 / 责任 | 状态 |
 |---|---|---|---|
@@ -40,14 +40,21 @@
 | `native.dispatch.shared` | `ShoutBehavior.cs:19437-19440` | `private Task<T> RunNativeConversationMainThreadFuncAsync<T>` — 排队/开始/退休，不假称网络已取消 | `mixed-host` |
 | `memory.acceptance` | `MyBehavior.DialogueHistoryCommit.cs:12-15` | `internal static MemoryCommitResult CommitDialogueHistoryWithScene` — 运行期接受，不是磁盘/跨动作事务 | `wired-boundary` |
 | `memory.failure.ui` | `MyBehavior.MemoryFailureNotice.cs:53-56` | `private void ProcessPendingMemoryFailureNotice()` — 原 EngineTick 消费；owner/Campaign/generation/revision | `wired-boundary` |
-| `memory.summary.dispatch` | `MyBehavior.MemorySummaryMainThread.cs:44-47` | `RunMemorySummaryMainThreadAsync` — 后台只发布完成动作；旧 owner/generation 入队前后 fail closed | `wired-boundary` |
-| `memory.summary.drain` | `MyBehavior.MemorySummaryMainThread.cs:92-95` | `ProcessMemorySummaryMainThreadActions` — EngineTick 每次最多接受 2 个动作，并复核主线程/owner/Campaign/generation | `wired-boundary` |
-| `memory.summary.accept` | `MyBehavior.cs:4995-4998` | 首批压缩结果接受 — 成功/失败写入回到当前 Campaign owner；前置准备仍未快照化 | `mixed-host` |
-| `legacy.history` | `MyBehavior.cs:28091-28094` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
-| `legacy.recall` | `MyBehavior.cs:34097-34100` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
+| `memory.summary.dispatch` | `MyBehavior.MemorySummaryMainThread.cs:46-49` | `private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation)` — 主线程剩余额度内直达，否则排队；原 owner/generation/Campaign 与退休门禁保留 | `wired-boundary` |
+| `memory.summary.drain` | `MyBehavior.MemorySummaryMainThread.cs:96-99` | `private void ProcessMemorySummaryMainThreadActions()` — inline/queued 共用每 Tick 两次操作；只约束 job，不是完整 record/time 上限 | `wired-boundary` |
+| `memory.summary.accept` | `MyBehavior.cs:5007-5010` | `if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++;` — daily 代表点：提交前源重验并依据实际 Apply 回执计数；三型同方法，B1 record/time 仍待验 | `mixed-host` |
+| `legacy.history` | `MyBehavior.cs:27923-27926` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
+| `legacy.recall` | `MyBehavior.cs:33929-33932` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
 | `scene.postprocess` | `ShoutBehavior.ScenePostprocess.cs:25-28` | `private sealed class SceneActionPostprocessWorkItem` — 已有完整后处理；非本次重写 Scene 业务 | `mixed-host` |
 | `courier.prepare.reply` | `CourierDeliveryBehavior.cs:4674-4677` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient,` — 回信早期准备待线程审查，未迁快照 | `retained-live` |
 | `courier.prepare.inbound` | `CourierDeliveryBehavior.cs:5102-5105` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(sender,` — 来信早期准备待线程审查，未迁快照 | `retained-live` |
+| `memory.summary.capture` | `MyBehavior.MemorySummaryInput.cs:47-50` | `private MemorySummaryInput CaptureMemorySummaryInput(` — 三类完整来源主线程深拷贝，单大源仍是未切分原子单元 | `mixed-host` |
+| `memory.summary.source-check` | `MyBehavior.MemorySummaryInput.cs:125-128` | `private bool IsMemorySummaryInputCurrent(` — 完整内容/Prompt/解析元数据重验，不靠 Save-only revision | `mixed-host` |
+| `memory.summary.execute` | `MyBehavior.MemorySummaryInput.cs:132-135` | `private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(` — 共用原 provider/Build/Parse；主线程解析、波次/重试退休，完成后释放大 payload | `mixed-host` |
+| `memory.source.facades` | `MyBehavior.MemorySourceWrites.cs:12-15` | `private static bool DeferMemorySourceWriteIfNeeded(` — 旧 void façade 主线程同步、后台 owner/generation 排队；不是持久接受回执 | `mixed-host` |
+| `memory.summary.rendering` | `PlayerNotorietyBehavior.cs:203-206` | `internal static string CaptureMemorySummaryHistoryRenderingIdentity()` — 无 observer 公称/实际匿名别名纳入 daily 解析来源身份 | `mixed-host` |
+
+**B1 仍在进行，尚未通过 record/time 门槛。** 新 capture/源检查/接受与旧 façade 封送已接入并有离线证据，不代表完整存储 writer、实机或全记忆重构完成；原子大源复制与全队列规划/整理仍需处理。
 
 `wired-boundary` 仅局部接线验证；`mixed-host` 是新旧共用 host；`retained-live` 仍有实际调用/兼容责任；`readonly-api` 是当前公开只读面。没有 LIVE/SAVE 标签，因为本轮未运行真实游戏/存档。
 

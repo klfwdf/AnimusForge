@@ -1,15 +1,15 @@
-# AF 总 HANDOFF — 改为完整功能大批次推进（2026-09-13）
+# AF 总 HANDOFF — B1 已实改，整批验收尚未放行（2026-09-13）
 
-## 当前任务：自动接续中，下一批 B1 记忆可靠性完整重构
+## 当前任务：继续同一 B1，不进入 B2
 
-- 最新用户要求是加大单次重构范围、整批做完再集中验收。自动化已更新：B1＝P1-02/03/04＋必要真实回归；合格后 B2＝三渠道主体；再 B3＝内部接缝与可准备候选。完整节奏和五道门槛见当前计划第 11 节。此次只调整执行方式，B1 生产尚未实施完成，不把配置更新当功能进展。
-- 唯一当前计划/执行入口：[AF 主体到收尾评审前计划](docs/phase8/af-core-precloseout-plan-20260913.md)，第 10 节给出本轮实际代码位置、符号、测试范围、回滚与下一步；[验证 JSON](docs/audits/2026-09-13-memory-summary-business-verification.json) 记录结果/hash。
-- P1-01 本轮完成层范围 OFFLINE_VERIFIED：检查点 `9a80c570`，测试提交 `2c90ef8a`，生产仍 `9040d184`。真实 Process + 六个 Apply/Mark/filter/cleanup/release 回放 14/14；旧 `e40c92d7` 编译运行后 2 PASS / 12 FAIL；14 个故障注入全部运行时被拦。原 helper 17、UI 85、history 852 通过。
-- 本轮没有改生产或部署；不是完整三类 Execute、实机/旧档或 P1 整体完成。已确认单 Tick 整批 12 次 Apply 的预算缺口，以及 obsolete 结果未写入仍计入成功提示的问题。下一批 B1 将实际预算/接受计数、三类捕获和来源/writer 一致性一起实施、集中检查。
-- 当前工作区 `G:\AFMOD\AF-REFACTOR`；分支 `codex/af-framework-skill-delivery-20260911`。远端已合并快照 `bd2ed35f` 本轮 fetch 未变。不切原本地归档来源分支，不恢复被排除的本地简明文档历史。
-- 自动化 `af-7-8` 保持 ACTIVE，每小时按双 Skill 以完整大批次推进；不另建用户任务，可按当前宿主规则并行独立只读分析/测试，主执行者统一集成。D-A–D-E 未决定项仍待确认；不自动推送、部署、切默认或广泛删旧。达到收尾前目标或全部剩余依赖外部且无有用工作时再暂停；当前仍可继续 B1。
-- 两份 2026-09-06 用户草稿与旧 local-only 简明 HANDOFF hash 不变，未暂存。最新制作组简明说明位于忽略文件 `.tmp/af-core-precloseout-team-handoff.md`。本轮定向 diff-check 通过；全树检查中用户旧草稿的原有空白不由本轮处理。
-- 下方保留同步/构建及历史交接，旧“未开始/暂停/默认/推送”状态均绑定其历史时点，不覆盖上述当前任务。P1–P6 仍未全部完成，阶段 8 NOT_DONE。
+- **生产工作候选 `aece8f3d`，检查点 `0d5857bc`，基线 `90201155`。** 已接通三类capture/源校验/主线程parse/逐结果接受和准确计数、旧writer façade封送及查询隔离；原provider/格式/存档/API与制作组业务保持。
+- 唯一当前接续：[总计划第12节](docs/phase8/af-core-precloseout-plan-20260913.md)。[候选证据](docs/audits/2026-09-13-b1-memory-working-candidate.json) 与 [代码位置](docs/architecture/af-framework-code-scope.md) 绑定本候选，不再用9040行号当当前。
+- 完成层19、helper24、捕获57、writer238及故障回归已验证；UI85/history852、六项Stage、API/四DLL元数据及146键/36 behaviors通过。均为离线/构建/元数据，不是游戏验收。
+- **B1仍未合格：** 单大源capture/check还是全量同步；1000行有约58–149ms/9.26MB分配观测（有并发负载，非游戏基准）。初筛/整理/Apply的record/time预算和完整writer整链未齐。下次直接修这些，不重做P1-01、不开B2、不把两次操作上限当硬帧预算。
+- 当前唯一工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`。已知远端跟踪快照 `bd2ed35f`，本轮未重新联网确认/融合；未推送、未覆盖游戏或操作真实存档。
+- 自动化 `af-7-8` 保持ACTIVE/每小时，按完整大批次继续；主执行者统一集成。D-A–D-E未决、默认切换和广泛删旧仍不得擅自执行。
+- 两份2026-09-06用户草稿与local-only旧简明HANDOFF保持原hash、未暂存。最新简明说明留项目忽略文件 `.tmp/af-core-precloseout-team-handoff.md`。B1/P1及阶段8均未DONE。
+- 下方是历史同步/交接，不覆盖上述当前任务。SDK探测权限失败及经工具审查后的Stage成功见候选证据，不改构建脚本绕过验收。
 
 ## 已确认基线：最新工程已整合并通过本机构建（启用自动化前）
 
