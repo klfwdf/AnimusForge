@@ -750,8 +750,8 @@
       "observed": "BUSINESS_RESULT passed=36 failed=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
       "testSourceSha256": {
-        "runner": "408277f2093fbf6ddf392879ef01442b3b3406698db08e8c27cb2a64794fcf57",
-        "harness": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
+        "runner": "a0609707e75056e0fc3a5a368046efb833f4f49aa79055cab4c3619015c6ea96",
+        "harness": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 49
     },
@@ -806,8 +806,8 @@
         "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
         "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "408277f2093fbf6ddf392879ef01442b3b3406698db08e8c27cb2a64794fcf57",
-        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "a0609707e75056e0fc3a5a368046efb833f4f49aa79055cab4c3619015c6ea96",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 237
     },
@@ -820,8 +820,8 @@
       "additionalTestSourceSha256": {
         "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "408277f2093fbf6ddf392879ef01442b3b3406698db08e8c27cb2a64794fcf57",
-        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "a0299c5ceaa7d388f6b49cd4793c810ce653b65767655d6cb6a5e5fbe90237a1"
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "a0609707e75056e0fc3a5a368046efb833f4f49aa79055cab4c3619015c6ea96",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 183,
       "testSourceSha256": {
