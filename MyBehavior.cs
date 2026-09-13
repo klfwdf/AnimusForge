@@ -5039,22 +5039,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
 		{
-			List<object> queueItems = null;
+			var plan = await BuildMemorySummaryPlanAsync(runtimeGeneration);
+			if (plan == null) return;
+			List<object> queueItems = plan.Items;
 			int burstSize = 1;
-			var attemptedOverviewIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			var attemptedOverviewIds = plan.OverviewIds;
 			bool accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 			{
-				CancelUnavailableHeroCompressionQueuedJobs("queue_execute");
-				// Filter before deduplication, as the former admission path did: an
-				// exhausted duplicate must not hide a later runnable entry of the same key.
-				var jobs = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending));
-				var majorJobs = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending));
-				var memoryIds = new HashSet<string>(jobs.Select(x => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
-				var pending = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending));
-				if (jobs.Count + majorJobs.Count + pending.Count == 0)
+				if (queueItems.Count == 0)
 				{
-					// Raw admission may consist entirely of stale entries. Preserve the
-					// forced/throttled rescan after filtering, rather than losing the request.
 					if (ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
 					{
 						if (forceOverviewCandidateScan) QueueAllMemoryOverviewCandidatesForDeferredScan();
@@ -5062,16 +5055,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 				}
 				else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-				var overviewJobs = pending.Where(x => !memoryIds.Contains(NormalizeMemoryHeroId(x.HeroId))).ToList();
-				_memorySummaryQueue = jobs;
-				_npcMajorActionSummaryQueue = majorJobs;
-				_memoryOverviewQueue = pending;
-				queueItems = new List<object>();
-				queueItems.AddRange(jobs); queueItems.AddRange(majorJobs); queueItems.AddRange(overviewJobs);
-				foreach (var job in overviewJobs) attemptedOverviewIds.Add(NormalizeMemoryHeroId(job.HeroId));
 				burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
 				if (queueItems.Count > 0)
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + queueItems.Count + " 个；对话记忆 " + jobs.Count + " 个，重大履历 " + majorJobs.Count + " 个，记忆总览 " + overviewJobs.Count + " 个；每分钟上限 " + burstSize + "。"));
+					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + queueItems.Count + " 个；对话记忆 " + plan.DailyCount + " 个，重大履历 " + plan.MajorCount + " 个，记忆总览 " + plan.OverviewCount + " 个；每分钟上限 " + burstSize + "。"));
 				return true;
 			});
 			if (!accepted || queueItems.Count == 0) return;
@@ -5132,29 +5118,31 @@ public partial class MyBehavior : CampaignBehaviorBase
 					if (!accepted) return;
 				}
 				if (wave == 1) break;
-				List<object> extra = null;
 				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 				{
 					QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-					extra = SanitizeMemoryOverviewQueue(_memoryOverviewQueue)
-						.Where(x => HasMemoryOverviewJobStillPending(x) && !attemptedOverviewIds.Contains(NormalizeMemoryHeroId(x.HeroId)))
-						.Cast<object>().ToList();
 					return true;
 				});
-				if (!accepted || extra.Count == 0) break;
+				if (!accepted) return;
+				var extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds);
+				if (extraPlan == null) return;
+				List<object> extra = extraPlan.Items;
+				if (extra.Count == 0) break;
 				await Task.Delay(60000);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay")) return;
 				overviewResults = new List<MemoryOverviewExecutionResult>();
 				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
 			}
+			if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true) == null) return;
+			// Failure text is detached queue-local data; joining a large backlog does
+			// not need to occupy the main-thread notification/acceptance operation.
+			string failureMessage = failures.Count == 0 ? null : await Task.Run(() =>
+				"以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
 			await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
 			{
-				_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
-				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending).ToList());
-				_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending).ToList());
-				if (failures.Count > 0)
-					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。", runtimeGeneration);
+				if (failureMessage != null)
+					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", failureMessage, runtimeGeneration);
 				else if (appliedDaily + appliedMajor + appliedOverview > 0)
 					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + appliedDaily + " 个，重大履历 " + appliedMajor + " 个，记忆总览 " + appliedOverview + " 个。"));
 				return true;
@@ -5216,22 +5204,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item)
 	{
 		DailySummaryQueueResult result = new DailySummaryQueueResult();
+		string expectedJobFingerprint = null;
+		if (item is MemorySummaryPlanEntry planned)
+		{
+			expectedJobFingerprint = planned.JobFingerprint;
+			item = planned.Job;
+		}
 		MemorySummaryJob memoryJob = item as MemorySummaryJob;
 		if (memoryJob != null)
 		{
-			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3);
+			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, expectedJobFingerprint);
 			return result;
 		}
 		MajorActionSummaryJob majorJob = item as MajorActionSummaryJob;
 		if (majorJob != null)
 		{
-			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3);
+			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, expectedJobFingerprint);
 			return result;
 		}
 		MemoryOverviewJob overviewJob = item as MemoryOverviewJob;
 		if (overviewJob != null)
 		{
-			result.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3);
+			result.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, expectedJobFingerprint);
 			return result;
 		}
 		return result;
@@ -5271,9 +5265,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts)
+	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null)
 	{
-		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts);
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);
 		return new MemorySummaryExecutionResult
 		{
 			Job = job,
@@ -5284,9 +5278,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts)
+	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, string expectedJobFingerprint = null)
 	{
-		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts);
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);
 		return new MajorActionSummaryExecutionResult
 		{
 			Job = job,
@@ -5297,9 +5291,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts)
+	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, string expectedJobFingerprint = null)
 	{
-		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts);
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);
 		return new MemoryOverviewExecutionResult
 		{
 			Job = job,
@@ -26477,31 +26471,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("CompressedMemory", "[WARN] unavailable hero compression cancellation after load failed: " + ex.Message);
-		}
-	}
-
-	private void CancelUnavailableHeroCompressionQueuedJobs(string reason)
-	{
-		// Queue sizes are bounded by pending daily work, so validate only queued owners between full load-time scans.
-		HashSet<string> candidateIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
-		{
-			candidateIds.Add(NormalizeMemoryHeroId(job?.HeroId));
-		}
-		foreach (MemoryOverviewJob job2 in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
-		{
-			candidateIds.Add(NormalizeMemoryHeroId(job2?.HeroId));
-		}
-		foreach (MajorActionSummaryJob job3 in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
-		{
-			candidateIds.Add(NormalizeMemoryHeroId(job3?.HeroId));
-		}
-		foreach (string id in candidateIds)
-		{
-			if (!string.IsNullOrWhiteSpace(id) && !IsNonHeroMemoryId(id) && !IsMemoryEntityEligibleForCompressedMemory(id))
-			{
-				CancelUnavailableHeroCompressionWorkById(id, reason);
-			}
 		}
 	}
 
@@ -50136,6 +50105,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevDailyMemoryLineEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
@@ -50143,6 +50114,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
 			new DevLargeSelectionPopup.Option("text", "编辑正文", "打开大文本编辑器修改正文；留空会删除该行。", isPrimary: true),
@@ -50158,6 +50130,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		string body = "正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim());
 		ShowDevLargeSelectionOrInquiry("未压缩记忆行 - " + name, BuildDevDailyMemoryLineSubtitle(line), body, options, delegate(string selectedId)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
@@ -50195,21 +50170,30 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 		});
 	}
 
 	private void OpenDevDailyMemoryLineTextEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑未压缩记忆正文 - " + name, BuildDevDailyMemoryLineSubtitle(line), "请输入新的正文；留空=删除该行。", line.Text ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryLineMutation(npc, dayIndex, lineIndex, returnPage, returnQuery, delegate(DailyMemoryDraft draft, DailyMemoryLine target)
 			{
 				string text = NormalizeDevCompressedMemoryMultilineInput(input);
@@ -50224,62 +50208,89 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "未压缩记忆正文已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineSpeakerEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑未压缩记忆说话人 - " + name, BuildDevDailyMemoryLineSubtitle(line), "请输入说话人；留空=自动使用默认说话人。", line.Speaker ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryLineMutation(npc, dayIndex, lineIndex, returnPage, returnQuery, delegate(DailyMemoryDraft draft, DailyMemoryLine target)
 			{
 				target.Speaker = (input ?? "").Trim();
 			}, "未压缩记忆说话人已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineSceneEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑未压缩记忆场景 - " + name, BuildDevDailyMemoryLineSubtitle(line), "请输入场景；留空=未知场景。", line.Scene ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryLineMutation(npc, dayIndex, lineIndex, returnPage, returnQuery, delegate(DailyMemoryDraft draft, DailyMemoryLine target)
 			{
 				target.Scene = (input ?? "").Trim();
 			}, "未压缩记忆场景已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineHourEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		InformationManager.ShowTextInquiry(new TextInquiryData("编辑未压缩记忆小时", BuildDevDailyMemoryLineSubtitle(line) + "\n请输入 0~23 的整数。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			if (!int.TryParse((input ?? "").Trim(), out var hour) || hour < 0 || hour > 23)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("请输入 0~23 的整数。"));
@@ -50292,6 +50303,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "未压缩记忆小时已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, shouldInputBeObfuscated: false, null, line.GameHour.ToString()));
 	}
@@ -50333,15 +50347,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevAddDailyMemoryLine(Hero npc, int dayIndex, bool isAfef, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryDraft draft = FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex);
 		if (draft == null)
 		{
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(draft);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor(isAfef ? ("新增AFEF行 - " + name) : ("新增普通记忆行 - " + name), BuildDevDailyMemoryDraftSubtitle(draft), "请输入新增行正文；留空=取消。", "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			string text = NormalizeDevCompressedMemoryMultilineInput(input);
 			if (string.IsNullOrWhiteSpace(text))
 			{
@@ -50379,20 +50399,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void ConfirmDevDeleteDailyMemoryLine(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		ShowDevLargeConfirmOrInquiry("确认删除未压缩记忆行", BuildDevDailyMemoryLineSubtitle(line), "正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim()) + "\n\n此操作不可撤销，是否继续？", "确认删除", "取消", delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryDraftMutation(npc, dayIndex, delegate(DailyMemoryDraft draft)
 			{
 				if (draft.Lines != null && lineIndex >= 0 && lineIndex < draft.Lines.Count)
@@ -50402,20 +50431,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "delete_line", "已删除未压缩记忆行。", returnPage, returnQuery, returnToDraftEditor: false);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		});
 	}
 
 	private void ConfirmDevDeleteDailyMemoryDraft(Hero npc, int dayIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryDraft draft = FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex);
 		if (draft == null)
 		{
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(draft);
 		ShowDevLargeConfirmOrInquiry("确认删除未压缩记忆", BuildDevDailyMemoryDraftSubtitle(draft), "将删除该日全部未压缩原始历史，并移除同日待总结队列。\n此操作不可撤销，是否继续？", "确认删除", "取消", delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
 			DailyMemoryDraft targetDraft = FindDevDailyMemoryDraft(drafts, dayIndex);
 			List<DailyMemoryLine> previousLines = CloneDevDailyMemoryLines(targetDraft?.Lines);
@@ -50425,6 +50463,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
 		});
 	}
@@ -54976,6 +55017,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportSingleNpcDialogueHistoryData(string folderName, string heroId)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string text = (folderName ?? "").Trim();
@@ -55050,11 +55093,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: true);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: false);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + heroId));
 			};
@@ -55071,6 +55116,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -55168,6 +55214,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportHeroNpcAllData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string importDir = ResolveImportFolderPath(folderName);
@@ -55287,6 +55335,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			bool flag = num + num3 + num5 > 0;
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (!ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting: true, out var error2))
 				{
 					InformationManager.DisplayMessage(new InformationMessage(error2));
@@ -55336,6 +55385,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (!ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting: false, out var error2))
 				{
 					InformationManager.DisplayMessage(new InformationMessage(error2));
@@ -55395,6 +55445,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -57071,6 +57122,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportDialogueHistoryData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string importDir = ResolveImportFolderPath(folderName);
@@ -57119,6 +57172,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				foreach (KeyValuePair<string, CompressedMemoryExportBundle> item in dict)
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
@@ -57130,6 +57184,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				foreach (KeyValuePair<string, CompressedMemoryExportBundle> item2 in dict)
 				{
 					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
@@ -57152,6 +57207,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -57594,6 +57650,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportAllData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string importDir = ResolveImportFolderPath(folderName);
@@ -57951,6 +58009,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			bool flag2 = num + num3 + num5 + num7 + num9 + num11 + eventWorldDupCount + eventKingdomDupCount + eventRecordDupCount + kingdomProfileDupCount > 0;
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (pbNew != null)
 				{
 					if (_npcPersonaProfiles == null)
@@ -58033,6 +58092,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (pbNew != null)
 				{
 					if (_npcPersonaProfiles == null)
@@ -58124,6 +58184,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}

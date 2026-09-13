@@ -58,7 +58,7 @@ MUTATIONS = ["worker-primary", "worker-extra", "worker-cleanup", "worker-release
              "omit-mark-overview", "duplicate-apply", "accept-obsolete", "ignore-owner",
              "ignore-generation", "ignore-draft-owner", "ignore-source", "miscount-obsolete",
              "worker-initial", "worker-major", "worker-extra-plan", "count-rejected-apply",
-             "admission-rescan", "maintenance-rescan", "drop-forced-rescan", "dedupe-before-filter", "keep-invalid-queue", "swallow-completion-error", "bypass-completion-error-wrapper"]
+             "admission-rescan", "maintenance-rescan", "drop-forced-rescan", "dedupe-before-filter", "keep-invalid-queue", "swallow-completion-error", "bypass-completion-error-wrapper", "main-thread-failure-aggregation", "drop-failure-details"]
 
 
 def replace_exact(text, old, new, count=1):
@@ -112,7 +112,14 @@ def build_sources(original, mutation):
             block = replace_exact(block, "await Task.Delay(60000);", "await WaitOverviewWindowAsync();")
             block = replace_exact(block, "_memorySummaryProcessing = false;",
                                   'Witness.Touch("release"); _memorySummaryProcessing = false;')
-            if mutation and mutation.startswith("worker-"):
+            if not original:
+                aggregate = '"以下日结压缩任务重试 3 次后仍失败：\\n\\n" + string.Join("\\n", failures) + "\\n\\n请修复 API 或调低记忆总结 RPM 后重试。"'
+                block = replace_exact(block, aggregate, "ObserveFailureAggregation(() => " + aggregate + ")")
+                if mutation == "main-thread-failure-aggregation":
+                    block = replace_exact(block, "failures.Count == 0 ? null : await Task.Run(() =>", "failures.Count == 0 ? null : await RunFailureAggregationOnMainForFaultAsync(() =>")
+                elif mutation == "drop-failure-details":
+                    block = replace_exact(block, 'string.Join("\\n", failures)', '""')
+            if mutation and mutation.startswith("worker-") and mutation != "worker-extra-plan":
                 # Mutate the actual caller, not merely the scheduler helper.
                 marker = r"await RunMemorySummary(?:MainThread|Completion)Async\(runtimeGeneration, delegate"
                 matches = list(re.finditer(marker, block))
@@ -124,21 +131,10 @@ def build_sources(original, mutation):
                 block = block[:hit.start()] + "await Task.Run(delegate" + block[hit.end():]
             elif mutation == "bypass-completion-error-wrapper":
                 block = replace_exact(block, "await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate", "await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate", count=6)
-            elif mutation == "dedupe-before-filter":
-                for field, typename, sanitizer, pending in [("_memorySummaryQueue", "MemorySummaryJob", "SanitizeMemorySummaryQueue", "HasMemorySummaryJobStillPending"), ("_npcMajorActionSummaryQueue", "MajorActionSummaryJob", "SanitizeMajorActionSummaryQueue", "HasMajorActionSummaryJobStillPending"), ("_memoryOverviewQueue", "MemoryOverviewJob", "SanitizeMemoryOverviewQueue", "HasMemoryOverviewJobStillPending")]:
-                    block = replace_exact(block, f"{sanitizer}(({field} ?? new List<{typename}>()).Where({pending}))", f"{sanitizer}({field}).Where({pending}).ToList()")
-            elif mutation == "keep-invalid-queue":
-                for assignment in ["_memorySummaryQueue = jobs;", "_npcMajorActionSummaryQueue = majorJobs;", "_memoryOverviewQueue = pending;"]:
-                    block = replace_exact(block, assignment, "/* fault: invalid raw entries stay live */")
             elif mutation == "omit-release":
                 block = replace_exact(block, "_memorySummaryProcessing = false;", "/* fault: no processing release */")
             elif mutation == "omit-cleanup":
-                for field in ["_memorySummaryQueue", "_npcMajorActionSummaryQueue", "_memoryOverviewQueue"]:
-                    # Only the terminal cleanup, not startup filtering or the real Apply remove.
-                    pattern = rf"{field} = Sanitize[^;]+\(\({field}[^;]+;"
-                    block, count = re.subn(pattern, "/* fault: no terminal cleanup */", block)
-                    if count != 1:
-                        raise ValueError(f"Cleanup anchor drift: {field}: {count}")
+                block = replace_exact(block, "if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true) == null) return;", "/* fault: no terminal cleanup */")
             elif mutation and mutation.startswith("omit-mark-"):
                 call = {"omit-mark-daily": "MarkMemorySummaryFailure(result.Job, result.Error);",
                         "omit-mark-major": "MarkMajorActionSummaryFailure(result.Job, result.Error);",
@@ -173,6 +169,13 @@ def build_sources(original, mutation):
         positions.append(dict(file="MyBehavior.MemorySummaryInput.cs", signature="private static T CloneMemorySummarySource<T>(",
             line=helper_source[:helper_source.index(clone)].count("\n") + 1, lines=clone.count("\n") + 1,
             sha256=hashlib.sha256(clone.encode()).hexdigest()))
+        digest = extractor.declaration(helper_source, "private static string ComputeMemorySummaryFingerprint(")
+        declarations.append(digest)
+        positions.append(dict(file="MyBehavior.MemorySummaryInput.cs", signature="private static string ComputeMemorySummaryFingerprint(",
+            line=helper_source[:helper_source.index(digest)].count("\n")+1, lines=digest.count("\n")+1, sha256=hashlib.sha256(digest.encode()).hexdigest()))
+        allowance = re.search(r"private const int DailyMaintenanceMaxJobsPerTick = [^;]+;", source)
+        if allowance is None: raise ValueError("Missing planner allowance")
+        declarations.append(allowance.group())
     boundary = extractor.source("MyBehavior.MemorySummaryMainThread.cs", None)
     if mutation == "swallow-completion-error":
         boundary = replace_exact(boundary, "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")
@@ -181,7 +184,7 @@ def build_sources(original, mutation):
         boundary = boundary.replace("ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this)", "true")
     elif mutation == "ignore-generation":
         boundary = boundary.replace("SaveRuntimeGuard.IsCurrentGeneration(generation)", "true")
-    prefix = "using Newtonsoft.Json; using System; using System.Diagnostics; using System.Collections.Generic; using System.Linq; using System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library;\nnamespace AnimusForge { public partial class MyBehavior {\n"
+    prefix = "using Newtonsoft.Json; using System; using System.IO; using System.Text; using System.Security.Cryptography; using System.Diagnostics; using System.Collections.Generic; using System.Linq; using System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library;\nnamespace AnimusForge { public partial class MyBehavior {\n"
     manifest = dict(source_revision=BASELINE if original else subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         production_file_sha256=hashlib.sha256(source.encode()).hexdigest(), declarations=positions,
@@ -214,6 +217,19 @@ def main():
              "SaveRuntimeGuard.cs": (ROOT / "SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"),
              "Proof.csproj": '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(dependency)) + '</HintPath></Reference></ItemGroup></Project>',
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}
+    if not args.original:
+        planning = (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig")
+        manifest["planning_sha256"] = hashlib.sha256(planning.encode()).hexdigest()
+        if args.mutate == "keep-invalid-queue":
+            planning = replace_exact(planning, "source[index] = null;", "source[index] = job;")
+        elif args.mutate == "dedupe-before-filter":
+            planning = replace_exact(planning, "bool deferred = false, hasHoles = false;", "bool deferred = false, hasHoles = false; var prematureSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);")
+            planning = replace_exact(planning, "bool pending = isPending(job);", "if (!prematureSeen.Add(DescribeMemorySummaryJob(job, index).Key)) { source[index] = null; hasHoles = true; continue; }\n bool pending = isPending(job);")
+        elif args.mutate == "worker-extra-plan":
+            # The extra plan no longer scans inside the coordinator callback. Corrupt
+            # the actual shared scanner's dispatch, not the now-empty old callback.
+            planning = replace_exact(planning, "await RunMemorySummaryCompletionAsync(generation, delegate", "await Task.Run(delegate", count=4)
+        files["Planning.cs"] = planning
     manifest["generated_sha256"] = {name: hashlib.sha256(data.encode()).hexdigest() for name, data in files.items()}
     for name, data in files.items():
         (out / name).write_bytes(data.encode("utf-8"))

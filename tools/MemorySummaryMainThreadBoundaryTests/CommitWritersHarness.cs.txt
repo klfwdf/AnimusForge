@@ -1,0 +1,183 @@
+// Ordinary commit test entry; base terminal fixtures provide actual storage and queue code.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Contracts;
+using Newtonsoft.Json;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.Core {
+ public sealed class InquiryElement { public object Identifier; public InquiryElement(object id,string text,object image){Identifier=id;} }
+ public sealed class MultiSelectionInquiryData {
+  public Action<List<InquiryElement>> Select,Cancel;
+  public MultiSelectionInquiryData(string title,string text,List<InquiryElement> options,bool isExitShown,int min,int max,string positive,string negative,Action<List<InquiryElement>> select,Action<List<InquiryElement>> cancel){Select=select;Cancel=cancel;}
+ }
+ public static class MBInformationManager { public static void ShowMultiSelectionInquiry(MultiSelectionInquiryData data){AnimusForge.Probe.Live("import-choice-popup");AnimusForge.CommitImportProbe.Popup=data;} }
+ public sealed class TextInquiryData { public TextInquiryData(string titleText,string text,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string saveText,string cancelText,Action<string> onSave,Action onCancel,bool shouldInputBeObfuscated,object validator,string placeholder,string initial){} }
+}
+namespace TaleWorlds.Library { public static partial class InformationManager { public static void ShowTextInquiry(TaleWorlds.Core.TextInquiryData data)=>throw new InvalidOperationException("Fallback UI is outside the editor delivery fixture"); } }
+namespace AnimusForge {
+ static class CommitImportProbe {
+  internal static TaleWorlds.Core.MultiSelectionInquiryData Popup;
+  internal static int Applies,Reads;
+  internal static void Reset(){Popup=null;Applies=Reads=0;CommitImportFileBoundary.Documents.Clear();}
+ }
+ static class CommitImportFileBoundary {
+  internal const string Root=@"G:\AFMOD\AF-REFACTOR\.generated-fixture-import";
+  internal static Dictionary<string,string> Documents=new(StringComparer.OrdinalIgnoreCase);
+  internal static bool DirectoryExists(string path){Probe.Live("import-directory-exists");return path==Root||path==Path.Combine(Root,"compressed_memory");}
+  internal static string[] GetFiles(string path,string pattern){Probe.Live("import-enumerate-files");return Documents.Keys.Where(x=>Path.GetDirectoryName(x)==path).OrderBy(x=>x,StringComparer.Ordinal).ToArray();}
+  internal static bool FileExists(string path){Probe.Live("import-file-exists");return Documents.ContainsKey(path);}
+  internal static string ReadAllText(string path,Encoding encoding){Probe.Live("import-read-text");CommitImportProbe.Reads++;return Documents[path];}
+ }
+ public static class DevHistoryEditPopup {
+  internal static Action<string> Save;
+  internal static Action Cancel;
+  public static bool Show(string titleText,string dateText,string originalContentText,string editedText,Action<string> onSave,Action onCancel,string inputHintText=null,string saveText=null,string cancelText=null){Probe.Live("editor-popup-open");Save=onSave;Cancel=onCancel;return true;}
+ }
+ public static partial class ShoutBehavior { public static void SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(Hero hero,object character,string name,int day,List<AnimusForgeDialogueHistoryEntry> previous,List<AnimusForgeDialogueHistoryEntry> current,string reason)=>TerminalProbe.Event("editor-native-sync-boundary"); }
+ static class CommitWriterProbe {
+  internal static int DailySaves,RecentSaves,ThrowDailyOn;
+  internal static bool ThrowRecent,DropRecentSave,DropEligibilityAfterNote;
+  internal static void Reset(){DailySaves=RecentSaves=ThrowDailyOn=0;ThrowRecent=DropRecentSave=DropEligibilityAfterNote=false;}
+ }
+ public partial class MyBehavior {
+  internal static IEnumerable<Hero> CommitFixtureHeroes=>Campaign.Owner is MyBehavior owner?owner.heroes.Values:Enumerable.Empty<Hero>();
+  internal static void CommitFixtureAfterNote(string id){if(CommitWriterProbe.DropEligibilityAfterNote&&Campaign.Owner is MyBehavior owner)owner.heroes.Remove(id);}
+  static void CommitFixtureBeforeDailySave(string id){CommitWriterProbe.DailySaves++;if(CommitWriterProbe.ThrowDailyOn==CommitWriterProbe.DailySaves)throw new InvalidOperationException("ordinary Daily save fault");}
+  static void CommitFixtureBeforeRecentSave(string id){CommitWriterProbe.RecentSaves++;if(CommitWriterProbe.ThrowRecent)throw new InvalidOperationException("ordinary Recent save fault");}
+  static MyBehavior CommitOwner(bool nonHero=false){CommitWriterProbe.Reset();var b=TerminalOwner();if(!nonHero)b.heroes["a"]=new Hero{Id="a",Label="NPC a"};return b;}
+  static MemoryCommitResult Submit(bool nonHero=false,int scene=7,string player="hello",string assistant="world",string fact="confirmed fact")=>CommitDialogueHistoryWithScene(nonHero?"af_nonhero:test":"a",nonHero,nonHero?"Citizen":"ignored hero name",player,assistant,fact,scene);
+  int DailyCount(string id)=>_dailyMemoryDrafts.TryGetValue(id,out var drafts)?drafts.Sum(x=>x.Lines?.Count??0):0;
+  int RecentCount(string id)=>_dialogueHistory.TryGetValue(id,out var days)?days.Sum(x=>x.Lines?.Count??0):0;
+  static void AssertNoWrites(MyBehavior b){Check(CommitWriterProbe.DailySaves==0&&CommitWriterProbe.RecentSaves==0&&b._dailyMemoryDrafts.Count==0&&b._dialogueHistory.Count==0,"rejected commit wrote memory");MainReads();}
+  static void OrdinaryComplete(bool nonHero,int scene){
+   var b=CommitOwner(nonHero);string id=nonHero?"af_nonhero:test":"a",name=nonHero?"Citizen":"NPC a";var result=Submit(nonHero,scene);
+   Check(result.Status==MemoryCommitStatus.Applied&&result.HistoryWritten&&result.ErrorCode=="","ordinary commit not Applied: "+result.ErrorCode);
+   var daily=b._dailyMemoryDrafts[id].Single().Lines;var recent=b._dialogueHistory[id].Single().Lines;
+   string[] expected={"Imperial youth对"+name+"说: hello","[AFEF玩家行为补充] confirmed fact",name+": world"};
+   Check(daily.Select(x=>x.Text).SequenceEqual(expected),"Daily player/fact/assistant order/text changed");Check(recent.SequenceEqual(expected.Select(x=>scene>=0?"[AF_SCENE_SESSION:"+scene+"] "+x:x)),"Recent order/scene tagging changed");
+   Check(daily.Count==3&&daily[0].IsLlmDialogue&&!daily[0].IsAfef&&daily[1].IsAfef&&!daily[1].IsLlmDialogue&&daily[2].IsLlmDialogue&&!daily[2].IsAfef,"Daily roles/AFEF flags changed");
+   Check(daily.All(x=>x.SceneSessionId==scene&&x.DialogueSessionId==(scene>=0?-1:20))&&CommitWriterProbe.DailySaves==3&&CommitWriterProbe.RecentSaves==1&&TerminalProbe.Count("note:"+id)==2,"source identity/write count/Notoriety changed");
+   string[] writes=TerminalProbe.Events.Where(x=>x=="save:"+id||x=="save-recent:"+id).ToArray();Check(writes.SequenceEqual(new[]{"save:"+id,"save:"+id,"save:"+id,"save-recent:"+id}),"Recent ran before all Daily writes");MainReads();
+  }
+  static void Guard(string mode){
+   var b=CommitOwner();MemoryCommitResult result;
+   if(mode=="worker")result=Task.Run(()=>Submit()).GetAwaiter().GetResult();
+   else if(mode=="owner"){Campaign.Owner=null;result=Submit();}
+   else if(mode=="empty")result=Submit(player:" ",assistant:"",fact:null);
+   else if(mode=="invalid-id")result=CommitDialogueHistoryWithScene("",false,"NPC","hello","world","fact",7);
+   else if(mode=="mismatched-kind")result=CommitDialogueHistoryWithScene("a",true,"NPC","hello","world","fact",7);
+   else{b.heroes.Clear();result=Submit();}
+   Check(result.Status==(mode=="owner"?MemoryCommitStatus.Failed:MemoryCommitStatus.Rejected)&&!result.HistoryWritten&&!string.IsNullOrEmpty(result.ErrorCode),"ordinary "+mode+" guard did not reject");AssertNoWrites(b);
+  }
+  static void ActualCampaignOwner(){
+   var previous=CommitOwner();var active=new MyBehavior();active.heroes["a"]=new Hero{Id="a",Label="NPC a"};Campaign.Owner=active;
+   var result=Submit();Check(result.Status==MemoryCommitStatus.Applied&&previous.DailyCount("a")==0&&previous.RecentCount("a")==0&&active.DailyCount("a")==3&&active.RecentCount("a")==3,"commit ignored actual Campaign behavior owner");MainReads();
+  }
+  static void DailyPartial(int failureOn){
+   var b=CommitOwner();CommitWriterProbe.ThrowDailyOn=failureOn;var result=Submit();
+   Check(result.Status==MemoryCommitStatus.Failed&&!result.HistoryWritten&&result.ErrorCode=="memory_owner_write_unconfirmed","Daily partial failure falsely Applied");
+   Check(b.DailyCount("a")== (failureOn==1?0:failureOn)&&CommitWriterProbe.DailySaves==failureOn&&CommitWriterProbe.RecentSaves==0&&b.RecentCount("a")==0,"Daily partial state was rolled back/replayed or continued to Recent");
+   Check(TerminalProbe.Count("note:a")== (failureOn==1?0:1),"Daily partial replayed/missed already accepted auxiliary effect");MainReads();
+  }
+  static void RecentPartial(bool existing,bool silent){
+   var b=CommitOwner();if(existing)b._dialogueHistory["a"]=new(){new DialogueDay{GameDayIndex=10,GameDate="Summer 10",Lines=new(){"existing recent"}}};
+   CommitWriterProbe.ThrowRecent=!silent;CommitWriterProbe.DropRecentSave=silent;var result=Submit();
+   Check(result.Status==MemoryCommitStatus.Failed&&!result.HistoryWritten,"Recent partial/lost readback falsely Applied");Check(b.DailyCount("a")==3&&CommitWriterProbe.DailySaves==3&&CommitWriterProbe.RecentSaves==1&&TerminalProbe.Count("note:a")==2,"Recent failure rolled back/retried Daily effects");
+   Check(b.RecentCount("a")== (existing?4:0),"Recent partial in-place behavior inaccurately treated as transactional");MainReads();
+  }
+  static void DailyRefusedButRecentPublished(){
+   var b=CommitOwner();CommitWriterProbe.DropEligibilityAfterNote=true;var result=Submit();
+   Check(result.Status==MemoryCommitStatus.Failed&&!result.HistoryWritten,"ordinary commit ignored a rejected Daily component");Check(b.DailyCount("a")==1&&b.RecentCount("a")==3&&CommitWriterProbe.DailySaves==1&&CommitWriterProbe.RecentSaves==1,"partial Daily false result lost mature non-short-circuit Recent path");MainReads();
+  }
+  static void SinglePayload(string kind){
+   var b=CommitOwner();var result=Submit(player:kind=="player"?"hello":null,assistant:kind=="assistant"?"[场景喊话] NPC a: hello":null,fact:kind=="fact"?"[AFEF NPC行为补充] confirmed":null);
+   Check(result.HistoryWritten&&b.DailyCount("a")==1&&b.RecentCount("a")==1&&CommitWriterProbe.DailySaves==1&&CommitWriterProbe.RecentSaves==1,"single component commit failed");
+   var line=b._dailyMemoryDrafts["a"].Single().Lines.Single();Check(kind=="fact"?line.Text=="[AFEF NPC行为补充] confirmed"&&line.IsAfef:kind!="assistant"||line.Text=="[场景喊话] NPC a: hello","existing protocol prefix rewritten");MainReads();
+  }
+  static void CommitInvalidatesPendingSummary(bool failure){
+   var b=CommitOwner();b.Seed("daily","a");var task=b.StartTerminal();b.Until(()=>b.requests.Count==1);var receipt=Submit();Check(receipt.HistoryWritten&&b.DailyCount("a")==5&&b.RecentCount("a")==3,"real ordinary commit did not append through both stores");Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));b.Finish(task);
+   Check(b.Completed("a").IsObsolete&&b.requests.Count==1&&!b.HasCompressedMemoryBlock("a",10)&&b.DailyCount("a")==5&&b._dailyMemoryDrafts["a"].Single().SummaryRetryCount==0&&!b._memorySummaryProcessing,"ordinary commit failed to obsolete old summary success/failure");MainReads();
+  }
+  static List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEntriesForDailyMemoryEdit(Hero npc,IEnumerable<DailyMemoryLine> lines)=>new();
+  void OpenDevDailyMemoryDraftList(Hero npc,int page,string query)=>TerminalProbe.Event("editor-navigation-drafts");
+  void OpenDevDailyMemoryLineList(Hero npc,int day,int page,string query)=>TerminalProbe.Event("editor-navigation-lines");
+  void OpenDevDailyMemoryLineEditor(Hero npc,int day,int line,int page,string query)=>TerminalProbe.Event("editor-navigation-line");
+  static MyBehavior EditorOwner(){var b=CommitOwner();b.Seed("daily","a");b._dialogueHistory["a"]=new(){new DialogueDay{GameDayIndex=10,GameDate="Summer 10",Lines=new(){"dialogue source","FACT"}}};return b;}
+  Action<string> OpenActualEditor(){DevHistoryEditPopup.Save=null;OpenDevDailyMemoryLineTextEditor(heroes["a"],10,0,0,"");Check(DevHistoryEditPopup.Save!=null,"actual text editor did not publish a save closure");return DevHistoryEditPopup.Save;}
+  static void EditorActive(bool pendingSummary,bool failure){
+   var b=EditorOwner();Task task=null;if(pendingSummary){task=b.StartTerminal();b.Until(()=>b.requests.Count==1);}var callback=b.OpenActualEditor();callback("  edited source\r\nline  ");
+   Check(b._dailyMemoryDrafts["a"].Single().Lines[0].Text=="edited source\nline"&&b._dialogueHistory["a"].Single().Lines.Contains("edited source\nline")&&!b._dialogueHistory["a"].Single().Lines.Contains("dialogue source"),"real editor save failed Daily/Recent delta or normalization");
+   Check(CommitWriterProbe.DailySaves==1&&CommitWriterProbe.RecentSaves==1&&TerminalProbe.Events.Any(x=>x=="ui:未压缩记忆正文已更新。"),"active editor receipt/navigation was not reached");
+   if(pendingSummary){Release(b.requests.Single(),failure?Failed():Ok("CompressedMemory"));b.Finish(task);Check(b.Completed("a").IsObsolete&&b.requests.Count==1&&!b.HasCompressedMemoryBlock("a",10),"actual edit did not invalidate pending old summary");}MainReads();
+  }
+  static void EditorLateSave(bool replaceOwner){
+   var old=EditorOwner();var callback=old.OpenActualEditor();MyBehavior current=old;
+   if(replaceOwner){current=EditorOwner();current._dailyMemoryDrafts["a"].Single().Lines[0].Text="new owner source";}
+   else{SaveRuntimeGuard.AdvanceGeneration("editor-fixture-load");old._dailyMemoryDrafts["a"].Single().Lines[0].Text="loaded save source";old._dialogueHistory["a"].Single().Lines[0]="loaded save source";}
+   string oldBefore=JsonConvert.SerializeObject(old._dailyMemoryDrafts),currentBefore=JsonConvert.SerializeObject(current._dailyMemoryDrafts);CommitWriterProbe.DailySaves=CommitWriterProbe.RecentSaves=0;TerminalProbe.Events.Clear();
+   callback("stale editor overwrite");
+   Check(oldBefore==JsonConvert.SerializeObject(old._dailyMemoryDrafts)&&currentBefore==JsonConvert.SerializeObject(current._dailyMemoryDrafts)&&CommitWriterProbe.DailySaves==0&&CommitWriterProbe.RecentSaves==0&&!TerminalProbe.Events.Any(x=>x=="ui:未压缩记忆正文已更新。"),"late editor callback wrote after "+(replaceOwner?"owner replacement":"load generation change")+"; actual first line="+old._dailyMemoryDrafts["a"].Single().Lines[0].Text+" saves="+CommitWriterProbe.DailySaves+"/"+CommitWriterProbe.RecentSaves);MainReads();
+  }
+  static void EditorSourceChanged(bool indexShift){
+   var b=EditorOwner();var callback=b.OpenActualEditor();var draft=b._dailyMemoryDrafts["a"].Single();
+   if(indexShift)draft.Lines.Insert(0,new DailyMemoryLine{GameDayIndex=10,GameDate="Summer 10",Text="new inserted line",IsLlmDialogue=true});else draft.Lines[0].Text="same-reference external update";
+   string before=JsonConvert.SerializeObject(b._dailyMemoryDrafts);TerminalProbe.Events.Clear();callback("stale source replacement");
+   Check(before==JsonConvert.SerializeObject(b._dailyMemoryDrafts)&&CommitWriterProbe.DailySaves==0&&CommitWriterProbe.RecentSaves==0&&!TerminalProbe.Events.Any(x=>x=="ui:未压缩记忆正文已更新。"),"editor overwrote "+(indexShift?"shifted index":"same-reference changed source"));MainReads();
+  }
+  static void EditorWorkerCallback(){
+   var b=EditorOwner();var callback=b.OpenActualEditor();string before=JsonConvert.SerializeObject(b._dailyMemoryDrafts);Task.Run(()=>callback("worker replacement")).GetAwaiter().GetResult();Check(before==JsonConvert.SerializeObject(b._dailyMemoryDrafts)&&CommitWriterProbe.DailySaves==0&&CommitWriterProbe.RecentSaves==0,"worker editor callback mutated memory");MainReads();
+  }
+  static void EditorCancel(bool stale){
+   var b=EditorOwner();b.OpenActualEditor();var callback=DevHistoryEditPopup.Cancel;Check(callback!=null,"real editor cancel closure missing");if(stale)SaveRuntimeGuard.AdvanceGeneration("editor-cancel-fixture-load");TerminalProbe.Events.Clear();callback();Check(CommitWriterProbe.DailySaves==0&&CommitWriterProbe.RecentSaves==0&&TerminalProbe.Count("editor-navigation-line")== (stale?0:1),"editor cancel navigated through stale owner/generation or lost current navigation");MainReads();
+  }
+  string ResolveImportFolderPath(string folderName){Probe.Live("import-resolve-folder");return CommitImportFileBoundary.Root;}
+  static string FindNpcJsonByHeroId(string dir,string heroId)=>throw new InvalidOperationException("Single import directory matching is not exercised; use the explicit fixture file");
+  static MyBehavior ImportOwner(bool existing){
+   var b=CommitOwner();CommitImportProbe.Reset();b.heroes["b"]=new Hero{Id="b",Label="NPC b"};
+   if(existing){b.Seed("daily","a");b._compressedMemoryBlocks["a"]=new(){Block("a",7)};b._memoryOverviewStates["a"]=new(){HeroId="a",Summary="existing overview",IncludedBlockIds=new(){"a/7"}};}
+   foreach(string id in new[]{"a","b"}){
+    var bundle=new CompressedMemoryExportBundle{DailyDrafts=new(){new DailyMemoryDraft{HeroId="source",HeroName="Imported "+id,GameDayIndex=10,GameDate="Summer 10",HasLlmDialogue=true,Lines=new(){new DailyMemoryLine{Text="imported "+id,GameDayIndex=10,GameDate="Summer 10",IsLlmDialogue=true}}}},Blocks=new(){Block("source",9)},SummaryQueue=new(){new MemorySummaryJob{HeroId="source",HeroName="Imported "+id,GameDayIndex=10,GameDate="Summer 10"}},Overview=new(){HeroId="source",Summary="imported overview "+id,IncludedBlockIds=new(){"source/9"}},OverviewQueue=new(){new MemoryOverviewJob{HeroId="source",HeroName="Imported "+id,TriggerGameDayIndex=10}}};
+    CommitImportFileBoundary.Documents[Path.Combine(CommitImportFileBoundary.Root,"compressed_memory",id+"__NPC "+id+".json")]=JsonConvert.SerializeObject(bundle);
+   }
+   return b;
+  }
+  void OpenActualImport(bool single){
+   if(single)ImportSingleNpcDialogueHistoryData(Path.Combine(CommitImportFileBoundary.Root,"compressed_memory","a__NPC a.json"),"a");else ImportDialogueHistoryData("fixture-import");
+  }
+  static void ChooseImport(TaleWorlds.Core.MultiSelectionInquiryData popup,bool overwrite){Check(popup!=null,"real import duplicate branch not reached");popup.Select(new(){new TaleWorlds.Core.InquiryElement(overwrite?"__overwrite__":"__skip__","fixture choice",null)});}
+  static string ImportState(MyBehavior b)=>JsonConvert.SerializeObject(new{b._dailyMemoryDrafts,b._compressedMemoryBlocks,b._memorySummaryQueue,b._memoryOverviewStates,b._memoryOverviewQueue});
+  static void ImportNormal(bool single,bool overwrite){
+   var b=ImportOwner(true);string before=ImportState(b);b.OpenActualImport(single);Check(before==ImportState(b)&&CommitImportProbe.Applies==0&&CommitImportProbe.Reads==(single?1:2),"import wrote before real duplicate confirmation or bypassed actual JSON decode");
+   ChooseImport(CommitImportProbe.Popup,overwrite);Check(CommitImportProbe.Applies==(single?1:2),"actual import Apply count changed");
+   Check(b._dailyMemoryDrafts["a"].Single().Lines[0].Text==(overwrite?"imported a":"dialogue source"),"overwrite/merge changed mature Daily semantics");Check(b._compressedMemoryBlocks["a"].Single().GameDayIndex==(overwrite?9:7)&&b._memoryOverviewStates["a"].Summary==(overwrite?"imported overview a":"existing overview"),"overwrite/merge changed existing block/overview semantics");
+   if(!single){Check(b._dailyMemoryDrafts["b"].Single().Lines[0].Text=="imported b"&&b._compressedMemoryBlocks["b"].Single().HeroId=="b","merge failed to fill nonduplicate memory owner");Check(b._memorySummaryQueue.Count(x=>x!=null&&x.HeroId=="b")== (overwrite?1:0),"merge unexpectedly restored imported queues");}
+   Check(TerminalProbe.Events.Any(x=>x.StartsWith("ui:导入完成",StringComparison.Ordinal)),"normal import lost completion feedback");MainReads();
+  }
+  static void ImportNoDuplicate(bool single){var b=ImportOwner(false);b.OpenActualImport(single);Check(CommitImportProbe.Popup==null&&CommitImportProbe.Applies==(single?1:2)&&b._dailyMemoryDrafts["a"].Single().Lines[0].Text=="imported a","no-duplicate import did not execute actual direct Apply branch");MainReads();}
+  static void ImportLate(bool single,bool replaceOwner,bool overwrite){
+   var old=ImportOwner(true);old.OpenActualImport(single);var callback=CommitImportProbe.Popup;Check(callback!=null,"import late test did not capture real duplicate selector");MyBehavior current=old;
+   if(replaceOwner){current=CommitOwner();current.Seed("daily","a");current._dailyMemoryDrafts["a"].Single().Lines[0].Text="new owner source";}else{SaveRuntimeGuard.AdvanceGeneration("import-fixture-load");old._dailyMemoryDrafts["a"].Single().Lines[0].Text="loaded save source";}
+   string oldBefore=ImportState(old),newBefore=ImportState(current);CommitImportProbe.Applies=0;TerminalProbe.Events.Clear();ChooseImport(callback,overwrite);
+   Check(oldBefore==ImportState(old)&&newBefore==ImportState(current)&&CommitImportProbe.Applies==0&&!TerminalProbe.Events.Any(x=>x.StartsWith("ui:导入完成",StringComparison.Ordinal)),"late "+(single?"single":"batch")+" import mutated after "+(replaceOwner?"owner replacement":"generation change")+" choice="+(overwrite?"overwrite":"merge")+" applies="+CommitImportProbe.Applies);MainReads();
+  }
+  static void OrdinaryHasNoOwnDedup(){var b=CommitOwner();Check(Submit().HistoryWritten&&Submit().HistoryWritten&&b.DailyCount("a")==6&&b.RecentCount("a")==6&&TerminalProbe.Count("note:a")==4,"ordinary contract silently changed to recoverable/deduplicated writer");MainReads();}
+  internal static int RunCommitWriterTests(){
+   TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string Name,Action Run)>{("actual-campaign-owner",ActualCampaignOwner),("editor-source-index-shift",()=>EditorSourceChanged(true)),("editor-source-body-update",()=>EditorSourceChanged(false)),("editor-worker-callback",EditorWorkerCallback),("editor-current-cancel",()=>EditorCancel(false)),("editor-stale-cancel",()=>EditorCancel(true)),("editor-active",()=>EditorActive(false,false)),("editor-invalidates-success",()=>EditorActive(true,false)),("editor-invalidates-failure",()=>EditorActive(true,true)),("editor-late-generation",()=>EditorLateSave(false)),("editor-late-owner",()=>EditorLateSave(true)),("partial-daily-reject-recent-published",DailyRefusedButRecentPublished),("ordinary-no-own-dedup",OrdinaryHasNoOwnDedup),("commit-invalidates-old-success",()=>CommitInvalidatesPendingSummary(false)),("commit-invalidates-old-failure",()=>CommitInvalidatesPendingSummary(true))};
+   foreach(bool single in new[]{false,true}){var one=single;cases.Add(($"import-direct-{one}",()=>ImportNoDuplicate(one)));foreach(bool overwrite in new[]{false,true}){var ow=overwrite;cases.Add(($"import-normal-{one}-{ow}",()=>ImportNormal(one,ow)));foreach(bool replaceOwner in new[]{false,true}){var replace=replaceOwner;cases.Add(($"import-late-{one}-{replace}-{ow}",()=>ImportLate(one,replace,ow)));}}}
+   foreach(bool nonHero in new[]{false,true})foreach(int scene in new[]{-1,7}){var n=nonHero;var s=scene;cases.Add(($"complete-{n}-{s}",()=>OrdinaryComplete(n,s)));}
+   foreach(string mode in new[]{"worker","owner","empty","invalid-id","mismatched-kind","ineligible"}){var m=mode;cases.Add(("guard-"+m,()=>Guard(m)));}
+   foreach(int nth in new[]{1,2,3}){var n=nth;cases.Add(("Daily-partial-"+n,()=>DailyPartial(n)));}
+   foreach(bool existing in new[]{false,true})foreach(bool silent in new[]{false,true}){var e=existing;var s=silent;cases.Add(($"Recent-partial-{e}-{s}",()=>RecentPartial(e,s)));}
+   foreach(string kind in new[]{"player","assistant","fact"}){var k=kind;cases.Add(("single-"+k,()=>SinglePayload(k)));}
+   int failures=0;foreach(var c in cases){try{c.Run();Console.WriteLine("PASS "+c.Name);}catch(Exception ex){failures++;Console.WriteLine("FAIL "+c.Name+": "+ex.Message);}}
+   Console.WriteLine($"COMMIT_WRITERS_RESULT scenarios={cases.Count} failures={failures} real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED");return failures==0?0:1;
+  }
+ }
+ public static class CommitWritersProgram { public static int Main()=>MyBehavior.RunCommitWriterTests(); }
+}

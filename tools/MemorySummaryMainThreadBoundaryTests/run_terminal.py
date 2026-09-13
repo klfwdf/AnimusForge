@@ -21,7 +21,7 @@ def main():
     source=read('MyBehavior.cs');snippets=[]
     names=list(dict.fromkeys(capture.NAMES+[re.search(r'(\w+)\($',s).group(1) for s in business.METHODS]+'''AppendDailyMemoryLineById LoadDailyMemoryDraftsById SaveDailyMemoryDraftsById IsDailyMemoryLinePublished AttachPendingWeeklyMemoryMaterialTriggers AddWeeklyMemoryMaterialTriggerToDraft PrunePendingWeeklyMemoryMaterialTriggers LoadCompressedMemoryBlocksById SaveCompressedMemoryBlocksById MarkMemoryOverviewDirty CountDailyMemoryDraftLines HasCompressedMemoryBlock LoadDialogueHistoryById SaveDialogueHistoryById TagSceneSessionHistoryLine RemoveExpiredSingleUseNpcFactLines IsSingleUseNpcFactLine IsFirstMeetingNpcFactBody IsMeaningfulDirectConversationLine IsMeaningfulConversationLine IsSystemFactLine IsLoreInjectionHistoryLine TryStripSceneSessionHistoryMarker CountDialogueHistoryLines RecordNpcMajorAction RecordNpcActionInternal CreateNpcActionEntry GetNpcActionHeroKey NormalizeNpcActionStableKey RemoveInvalidNpcActionEntries ContainsNpcActionStableKey ContainsNpcActionForDay GetNextNpcActionOrder CompareNpcActionTimeline'''.split()))
     # Admission/maintenance scans have their own real business suite, not this terminal scenario.
-    names=[name for name in names if name not in {'TryStartMemorySummaryQueue','ShouldScanMemoryOverviewCandidates','TryRunCampaignMemoryMaintenance','QueueAllMemoryOverviewCandidatesForDeferredScan','IsDailyMaintenanceBudgetExceeded'}]
+    names=[name for name in names if name not in {'TryStartMemorySummaryQueue','ShouldScanMemoryOverviewCandidates','TryRunCampaignMemoryMaintenance','QueueAllMemoryOverviewCandidatesForDeferredScan'}]
     def replace(data,old,new,count=1):
         if data.count(old)!=count:raise ValueError('Terminal extraction anchor drift: '+old)
         return data.replace(old,new)
@@ -30,8 +30,10 @@ def main():
         if name in ['RunDailySummaryQueueItemsAsync','ProcessMemorySummaryQueueAsync']:
             body=replace(body,'await Task.Delay(60000);','await FixtureDelayAsync(60000);')
         if name=='ExecuteDailySummaryQueueItemAsync':
-            for call,field,queue in [('ExecuteMemorySummaryJobAsync(memoryJob, 3)','MemoryResult','terminalCompleted'),('ExecuteMajorActionSummaryJobAsync(majorJob, 3)','MajorActionResult','terminalMajorCompleted'),('ExecuteMemoryOverviewJobAsync(overviewJob, 3)','MemoryOverviewResult','terminalOverviewCompleted')]:
-                anchor='result.'+field+' = await '+call+';';body=replace(body,anchor,anchor+' '+queue+'.Enqueue(result.'+field+');')
+            for method,field,queue in [('ExecuteMemorySummaryJobAsync','MemoryResult','terminalCompleted'),('ExecuteMajorActionSummaryJobAsync','MajorActionResult','terminalMajorCompleted'),('ExecuteMemoryOverviewJobAsync','MemoryOverviewResult','terminalOverviewCompleted')]:
+                matches=list(re.finditer(r'result\.'+field+r' = await '+method+r'\([^;]+;',body))
+                if len(matches)!=1:raise ValueError('Dispatcher receipt probe drift '+field)
+                anchor=matches[0].group();body=replace(body,anchor,anchor+' '+queue+'.Enqueue(result.'+field+');')
         if name.startswith(('Apply','MarkMemorySummaryFailure','MarkMajorActionSummaryFailure','MarkMemoryOverviewFailure','TryParseMemorySummaryResponse')):
             pos=body.index('{')+1;body=body[:pos]+'\n TerminalEvent("'+name+'");'+body[pos:]
         if name=='SaveDailyMemoryDraftsById':
@@ -82,11 +84,11 @@ def main():
     match=re.search(r'private bool IsWeeklyActionOutcomeOwnerActive\(\)[^;]+;',weekly)
     if not match or '=>' not in match.group():raise ValueError('Missing weekly owner readiness guard')
     snippets.append(match.group());manifest.append(dict(file='MyBehavior.WeeklyActionOutcomeReceipts.cs',signature='IsWeeklyActionOutcomeOwnerActive',line=weekly[:match.start()].count('\n')+1,sha256=hashlib.sha256(match.group().encode()).hexdigest()))
-    for data,name in [(recovery,'MaximumPersistedMemoryCommitMarkers'),(weekly,'WeeklyActionOutcomeRetryDelayTicks'),(source,'SceneHistorySessionMarkerPrefix'),(source,'MaxMajorNpcActionEntriesPerHero')]:
+    for data,name in [(recovery,'MaximumPersistedMemoryCommitMarkers'),(weekly,'WeeklyActionOutcomeRetryDelayTicks'),(source,'SceneHistorySessionMarkerPrefix'),(source,'MaxMajorNpcActionEntriesPerHero'),(source,'DailyMaintenanceMaxJobsPerTick')]:
         match=re.search(r'private const [^;]+\b'+name+r'\s*=[^;]+;',data)
         if not match:raise ValueError('Missing actual constant '+name)
         snippets.append(match.group())
-    product='using System; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading; using System.Threading.Tasks; using Newtonsoft.Json; using Newtonsoft.Json.Linq; using AnimusForge.Refactor.Runtime; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
+    product='using System; using System.Diagnostics; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading; using System.Threading.Tasks; using Newtonsoft.Json; using Newtonsoft.Json.Linq; using AnimusForge.Refactor.Runtime; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
     input_code=read('MyBehavior.MemorySummaryInput.cs')
     input_code=replace(input_code,'await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)','await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
     if a.mutate=='ignore-parse-source':input_code=replace(input_code,'if (!IsMemorySummaryInputCurrent(input)) return false;','/* fault: old provider payload may parse */')
@@ -102,7 +104,7 @@ def main():
     files['RecoveryLedger.cs']=read('Refactor/Runtime/InteractionMemoryRecoveryLedger.cs')
     for name in ['Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Contracts/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
-    for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs']:
+    for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
         if (ROOT/extra).exists():files[Path(extra).name]=read(extra)
     deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'
     if not deps.is_file():raise ValueError('Existing Newtonsoft dependency missing')
