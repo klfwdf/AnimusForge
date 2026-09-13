@@ -4,6 +4,8 @@
 
 ### 当前执行记录
 
+- B1 分段调度/直接提交续作 ACTIVE（2026-09-13 11:35），起点 `793f27ee` / 生产 `7f89e18d`。本轮主执行者统一改真实初筛/extra/cleanup为按job分片、当前片逻辑删除与结构验证后的纯引用整理、计划标记在capture同回调验证；补普通Daily/Recent提交和晚UI writer故障。保留完整源校验，单大源/取消索引原子成本仍明确测量，不伪称跨Tick原子或全局epoch。预期MyBehavior.cs、MemorySummaryInput/新Planning partial与独立测试；不进B2、不动默认/业务/游戏，集中复验后统一交接。
+
 - **B1 ACTIVE / NOT_BATCH_ACCEPTED：生产联合候选 `7f89e18d`，本轮检查点 `30cd916b`（起点 `76a3504f` / 生产 `aece8f3d`）。** 10:34续作已集中完成typed copy/流式指纹、共用实际协作耗时、调度去重筛查、真实terminal组合与部分Apply异常提示；离线和六项Stage通过，单大源/record预算仍未过。继续同一B1，不进B2，准确续点及证据见第12节。下方意图/P1-01记录为历史，不覆盖当前。
 
 - B1 ACTIVE（2026-09-13 09:33 自动运行），检查点基线 `90201155`。主执行者统一改记忆 owner/调度与三类总结接线，独立审查只读并行；预期涉及 `MyBehavior.cs`、`MyBehavior.MemorySummaryMainThread.cs`、直接记忆 partial 与现有相关测试。先保持原 provider/解析/重试/持久化语义，补精确来源接受和实际预算；最后集中真实业务/故障、兼容与六项 Stage。未通过整批门槛不进 B2，不推送/部署/操作真实存档。
