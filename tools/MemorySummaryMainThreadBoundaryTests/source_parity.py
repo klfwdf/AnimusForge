@@ -46,6 +46,13 @@ def restore_memory_summary_source(path, source):
         for dependency_path, expected in evidence.get('additionalTestSourceSha256', {}).items():
             text = (ROOT / dependency_path).read_text(encoding='utf-8-sig')
             assert _sha256(text) == expected, 'Unreviewed B1 evidence dependency: ' + dependency_path
+    # New runtime components are reviewed as whole input files, not silently
+    # trusted because only the MyBehavior facade is inverse-transformed.
+    for dependency_path, expected in review.get('productionDependencies', {}).items():
+        text = (ROOT / dependency_path).read_text(encoding='utf-8-sig')
+        assert _sha256(text) == expected, 'Unreviewed B1 production dependency: ' + dependency_path
+    for removed_path in review.get('removedProductionFiles', []):
+        assert not (ROOT / removed_path).exists(), 'Obsolete B1 production file restored: ' + removed_path
     unreviewed = []
     seen = set()
 
@@ -104,6 +111,12 @@ def restore_memory_summary_source(path, source):
         anchor = '\t' + item['nextSignature']
         assert restored.count(anchor) == 1, 'Deleted B1 declaration has ambiguous neighbor anchor'
         restored = restored.replace(anchor, deleted_span + anchor, 1)
+    for item in review.get('addedSourceSpans', []):
+        span = item['text']
+        assert item['path'] == path and item['evidence'], 'Added B1 span lacks scoped evidence'
+        assert _sha256(span) == item['sha256'], 'Added B1 span review changed'
+        assert span not in baseline and restored.count(span) == 1, 'Unreviewed B1 added source span'
+        restored = restored.replace(span, '', 1)
     # No blanket source replacement. Any extra field/method/comment/default drift survives
     # the exact replacements above and fails here, even if all listed hashes still match.
     assert restored == baseline, 'Unreviewed B1 surrounding source changes'
