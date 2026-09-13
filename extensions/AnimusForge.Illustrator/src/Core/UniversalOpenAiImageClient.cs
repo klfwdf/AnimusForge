@@ -36,9 +36,23 @@ namespace AnimusForge.Illustrator.Core
             };
         }
 
+        public static Task<ImageGenerationResult> GenerateImageAsync(
+            string prompt,
+            string inputBase64Image,
+            IllustrationOptions options,
+            CancellationToken cancellationToken = default)
+        {
+            System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> single = null;
+            if (!string.IsNullOrWhiteSpace(inputBase64Image))
+            {
+                single = new[] { new IllustrationReferenceImage(inputBase64Image, "游戏内真实画面参考") };
+            }
+            return GenerateImageAsync(prompt, single, options, cancellationToken);
+        }
+
         public static async Task<ImageGenerationResult> GenerateImageAsync(
             string prompt,
-            string inputBase64Image = null,
+            System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages = null,
             IllustrationOptions options = null,
             CancellationToken cancellationToken = default)
         {
@@ -72,18 +86,24 @@ namespace AnimusForge.Illustrator.Core
             try
             {
                 // 1. 智能协议探测：判断是标准生图端点(/images/generations)还是对话多模态生图(/chat/completions，如 gemini-3.1-flash-image)
+                if (settings.EnableReferenceImageForGeneration == false)
+                {
+                    referenceImages = null;
+                }
+                string negativePrompt = settings.NegativePrompt ?? string.Empty;
+
                 bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
 
                 var (success, imageBytes, imageUrl, errorMessage, shouldFallbackToChat) =
-                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, inputBase64Image, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, referenceImages, negativePrompt, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
 
                 // 2. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
                 if (!success && shouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                 {
                     Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                     string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, inputBase64Image, apiKey, true, cancellationToken).ConfigureAwait(false);
+                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, referenceImages, negativePrompt, apiKey, true, cancellationToken).ConfigureAwait(false);
                     if (chatRetry.Success)
                     {
                         success = true;
@@ -194,7 +214,8 @@ namespace AnimusForge.Illustrator.Core
             string size,
             string quality,
             string style,
-            string inputBase64Image,
+            System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
+            string negativePrompt,
             string apiKey,
             bool isChatProtocol,
             CancellationToken cancellationToken)
@@ -204,29 +225,47 @@ namespace AnimusForge.Illustrator.Core
             {
                 // 针对多模态对话生图模型 (如 Gemini Native Image) 进行宽高比与画风画质提示词及参数注入
                 string effectivePrompt = BuildChatImagePrompt(prompt, size, quality, style);
+                if (!string.IsNullOrWhiteSpace(negativePrompt))
+                {
+                    effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
+                }
 
                 JToken messageContent;
-                if (!string.IsNullOrWhiteSpace(inputBase64Image))
+                bool hasRefs = referenceImages != null && referenceImages.Count > 0;
+                if (hasRefs)
                 {
-                    string mimeType = inputBase64Image.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
-                    string dataUri = inputBase64Image.StartsWith("data:") ? inputBase64Image : $"data:{mimeType};base64,{inputBase64Image}";
-
-                    messageContent = new JArray
+                    var content = new JArray
                     {
                         new JObject
                         {
                             ["type"] = "text",
                             ["text"] = effectivePrompt
-                        },
-                        new JObject
+                        }
+                    };
+                    foreach (var reference in referenceImages)
+                    {
+                        if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
+                        if (!string.IsNullOrWhiteSpace(reference.Label))
+                        {
+                            content.Add(new JObject
+                            {
+                                ["type"] = "text",
+                                ["text"] = "【参考图】" + reference.Label
+                            });
+                        }
+                        string data = reference.Base64Image;
+                        string mimeType = data.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
+                        string dataUri = data.StartsWith("data:") ? data : $"data:{mimeType};base64,{data}";
+                        content.Add(new JObject
                         {
                             ["type"] = "image_url",
                             ["image_url"] = new JObject
                             {
                                 ["url"] = dataUri
                             }
-                        }
-                    };
+                        });
+                    }
+                    messageContent = content;
                 }
                 else
                 {
@@ -283,7 +322,7 @@ namespace AnimusForge.Illustrator.Core
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 }
 
-                Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, hasRefImg={!string.IsNullOrWhiteSpace(inputBase64Image)})...");
+                Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0})...");
 
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false))
                 {

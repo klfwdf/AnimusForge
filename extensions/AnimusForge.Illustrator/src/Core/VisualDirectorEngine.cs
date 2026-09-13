@@ -29,6 +29,8 @@ namespace AnimusForge.Illustrator.Core
             "   - 巴旦尼亚/高地凯尔特：毛呢方格斗篷、青铜环形别针、高地长弓、古老青石要塞；\n" +
             "   - 库赛特/草原游牧：丝绸滚边毛边皮袍、鹰羽尖顶帽、复合骑弓、毡帐与辽阔草浪；\n" +
             "   - 瓦兰迪亚/西欧骑士：严整板甲与锁甲、家族纹章罩袍、哥特石砌主楼堡垒；\n" +
+            "   - 【王权头饰铁律】：君主冠冕必须严格符合其文化形制——阿塞莱为金丝刺绣宝石缠头巾（严禁西式王冠）、库赛特为貂皮尖顶汗冠、斯特吉亚为青铜/暗金环形战冠、巴旦尼亚为凯尔特青铜环冠、帝国为拜占庭黄金月桂冠冕、瓦兰迪亚方可使用西式王室金冠；\n" +
+            "   - 【纹章铁律】：若附带标注为家族纹章的参考图，画面中一切旗帜、盾徽、罩袍与铠甲上的纹章图案与配色必须严格依照该参考图绘制，严禁自行编造其他纹章或调换配色；\n" +
             "3. 【服饰材质与配色绝对忠实（严禁颜色颠倒）】：\n" +
             "   - 严格依照【真实穿戴装备与材质】与【专属服饰底色与刺绣金边】还原人物衣着与护甲！\n" +
             "   - 若数据明确标注为淡紫色布料配金色刺绣，必须明确描摹金色刺绣滚边，绝对严禁画成蓝色！\n" +
@@ -48,21 +50,42 @@ namespace AnimusForge.Illustrator.Core
             return ExpandToDetailedPromptAsync(gameContext, base64ImageData, options, cancellationToken);
         }
 
-        public static async Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData, IllustrationOptions options, CancellationToken cancellationToken = default)
+        public static Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData, IllustrationOptions options, CancellationToken cancellationToken = default)
+        {
+            return ExpandToDetailedPromptAsync(gameContext, WrapSingle(base64ImageData), options, cancellationToken);
+        }
+
+        public static Task<string> ExpandToDetailedPromptAsync(string gameContext, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, CancellationToken cancellationToken = default)
+        {
+            var options = IllustratorRuntime.IsMainThread ? IllustratorRuntime.CaptureOptions() : null;
+            return ExpandToDetailedPromptAsync(gameContext, referenceImages, options, cancellationToken);
+        }
+
+        private static System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> WrapSingle(string base64ImageData)
+        {
+            if (string.IsNullOrWhiteSpace(base64ImageData)) return null;
+            return new[] { new IllustrationReferenceImage(base64ImageData, "游戏内真实画面参考") };
+        }
+
+        public static async Task<string> ExpandToDetailedPromptAsync(string gameContext, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, CancellationToken cancellationToken = default)
         {
             if (options != null && !options.EnableMultimodalVision)
             {
-                base64ImageData = null;
+                referenceImages = null;
+            }
+            if (referenceImages != null && referenceImages.Count == 0)
+            {
+                referenceImages = null;
             }
 
-            int imgLen = !string.IsNullOrEmpty(base64ImageData) ? base64ImageData.Length / 1024 : 0;
-            TaleWorlds.Library.Debug.Print($"[VisualDirector] Starting prompt expansion (MultimodalVision={(options?.EnableMultimodalVision == true ? "ON" : "OFF")}, ImagePayload={imgLen}KB)...");
+            int imgCount = referenceImages?.Count ?? 0;
+            TaleWorlds.Library.Debug.Print($"[VisualDirector] Starting prompt expansion (MultimodalVision={(options?.EnableMultimodalVision == true ? "ON" : "OFF")}, RefImages={imgCount})...");
 
             try
             {
                 if (options != null && options.EnableLlmPromptExpansion && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))
                 {
-                    string llmPrompt = await CallLlmDirectorAsync(gameContext, options.DirectorApiBaseUrl, options.DirectorApiKey, options.DirectorModelName, base64ImageData, cancellationToken).ConfigureAwait(false);
+                    string llmPrompt = await CallLlmDirectorAsync(gameContext, options.DirectorApiBaseUrl, options.DirectorApiKey, options.DirectorModelName, referenceImages, cancellationToken).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(llmPrompt))
                     {
                         TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion successful ({llmPrompt.Length} chars): {llmPrompt.Substring(0, Math.Min(120, llmPrompt.Length))}...");
@@ -179,32 +202,54 @@ namespace AnimusForge.Illustrator.Core
             return false;
         }
 
-        private static async Task<string> CallLlmDirectorAsync(string context, string baseUrl, string apiKey, string model, string base64ImageData, CancellationToken cancellationToken)
+        private static string ResolveImageDataUri(string base64ImageData)
+        {
+            if (string.IsNullOrWhiteSpace(base64ImageData)) return null;
+            if (base64ImageData.StartsWith("data:", StringComparison.OrdinalIgnoreCase)) return base64ImageData;
+            string mimeType = base64ImageData.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
+            return $"data:{mimeType};base64,{base64ImageData}";
+        }
+
+        private static async Task<string> CallLlmDirectorAsync(string context, string baseUrl, string apiKey, string model, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, CancellationToken cancellationToken)
         {
             string endpoint = ResolveChatEndpoint(baseUrl);
+            bool hasImages = referenceImages != null && referenceImages.Count > 0;
 
             JObject userMessage;
-            if (!string.IsNullOrWhiteSpace(base64ImageData))
+            if (hasImages)
             {
+                var content = new JArray
+                {
+                    new JObject
+                    {
+                        ["type"] = "text",
+                        ["text"] = "请结合以下附带的多张游戏内参考图（每张图前均有【参考图】中文标签注明其内容：人物真实3D形象/家族纹章/现场实景等）与上下文数据，100% 精准还原人物真实五官、衣着材质、真实色彩（尤其是金色与布料底色）、家族纹章图案与真实人类血色肉色皮肤，请撰写一段极其详尽生动的古典写实油画【中文生图提示词】：\n\n" + context
+                    }
+                };
+                foreach (var reference in referenceImages)
+                {
+                    if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
+                    if (!string.IsNullOrWhiteSpace(reference.Label))
+                    {
+                        content.Add(new JObject
+                        {
+                            ["type"] = "text",
+                            ["text"] = "【参考图】" + reference.Label
+                        });
+                    }
+                    content.Add(new JObject
+                    {
+                        ["type"] = "image_url",
+                        ["image_url"] = new JObject
+                        {
+                            ["url"] = ResolveImageDataUri(reference.Base64Image)
+                        }
+                    });
+                }
                 userMessage = new JObject
                 {
                     ["role"] = "user",
-                    ["content"] = new JArray
-                    {
-                        new JObject
-                        {
-                            ["type"] = "text",
-                            ["text"] = "请结合附带的游戏内 3D 角色立绘与现场上下文数据，100% 精准还原人物真实衣着材质、真实色彩（尤其是金色与布料底色）、真实人类血色肉色皮肤与面部五官，请撰写一段极其详尽生动的古典写实油画【中文生图提示词】：\n\n" + context
-                        },
-                        new JObject
-                        {
-                            ["type"] = "image_url",
-                            ["image_url"] = new JObject
-                            {
-                                ["url"] = "data:image/jpeg;base64," + base64ImageData
-                            }
-                        }
-                    }
+                    ["content"] = content
                 };
             }
             else
@@ -237,7 +282,7 @@ namespace AnimusForge.Illustrator.Core
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 }
 
-                TaleWorlds.Library.Debug.Print($"[VisualDirector] Sending request to {endpoint} (model={model}, hasImage={!string.IsNullOrWhiteSpace(base64ImageData)})...");
+                TaleWorlds.Library.Debug.Print($"[VisualDirector] Sending request to {endpoint} (model={model}, refImages={referenceImages?.Count ?? 0})...");
 
                 try
                 {
@@ -247,7 +292,7 @@ namespace AnimusForge.Illustrator.Core
                         if (!response.IsSuccessStatusCode)
                         {
                             // 若携带图片返回非200状态码（例如模型不支持Vision参数或400 Bad Request），自动降级为纯文本请求重试
-                            if (!string.IsNullOrWhiteSpace(base64ImageData))
+                            if (hasImages)
                             {
                                 TaleWorlds.Library.Debug.Print($"[VisualDirector] Multimodal request returned {response.StatusCode} ({responseBody}), falling back to pure text...");
                                 return await CallLlmDirectorAsync(context, baseUrl, apiKey, model, null, cancellationToken).ConfigureAwait(false);
@@ -261,7 +306,7 @@ namespace AnimusForge.Illustrator.Core
                         return content;
                     }
                 }
-                catch (Exception ex) when (!string.IsNullOrWhiteSpace(base64ImageData) && !cancellationToken.IsCancellationRequested)
+                catch (Exception ex) when (hasImages && !cancellationToken.IsCancellationRequested)
                 {
                     TaleWorlds.Library.Debug.Print($"[VisualDirector] Multimodal request failed ({ex.Message}), falling back to pure text...");
                     return await CallLlmDirectorAsync(context, baseUrl, apiKey, model, null, cancellationToken).ConfigureAwait(false);
@@ -307,33 +352,41 @@ namespace AnimusForge.Illustrator.Core
             bool isCleanShaven = rawContext.Contains("无任何胡须") || rawContext.IndexOf("Clean-shaven", StringComparison.OrdinalIgnoreCase) >= 0;
 
             string cultureSetting;
+            string regalHeadwear;
             if (rawContext.Contains("阿塞莱") || rawContext.IndexOf("Aserai", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("沙漠") || rawContext.Contains("苏丹") || rawContext.Contains("绿洲"))
             {
                 cultureSetting = "背景为金碧辉煌的东方沙漠王宫，饰有精雕细刻的沙岩马蹄形拱券、复杂几何回纹石雕、垂落的华贵丝绸帘幔与温暖倾泻的金色斜阳";
+                regalHeadwear = "头戴阿塞莱苏丹式样的金丝刺绣宝石华贵缠头巾冠（严禁西式尖顶王冠）";
             }
             else if (rawContext.Contains("库赛特") || rawContext.IndexOf("Khuzait", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("草原") || rawContext.Contains("游牧") || rawContext.Contains("可汗"))
             {
                 cultureSetting = "背景为奢华的草原金顶大帐，铺设华美的手工织毯与羊毛毡壁毯，大帐帷幕敞开，远方呈现苍茫辽阔的高原草浪与万里晴空";
+                regalHeadwear = "头戴库赛特可汗式样的貂皮滚边金饰尖顶汗冠（严禁西式王冠）";
             }
             else if (rawContext.Contains("斯特吉亚") || rawContext.IndexOf("Sturgia", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("瓦良格") || rawContext.Contains("北地") || rawContext.Contains("雪"))
             {
                 cultureSetting = "背景为宏伟粗犷的北境花岗岩与原木领主大厅，燃烧着熊熊烈火的巨大石砌壁炉，雕刻着渡鸦与狼首的厚重木柱，冰冷肃杀的漫天风雪映照长窗";
+                regalHeadwear = "头戴斯特吉亚北境式样的厚重青铜/暗金环形战冠（严禁西式王冠）";
             }
             else if (rawContext.Contains("巴旦尼亚") || rawContext.IndexOf("Battania", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("高地") || rawContext.Contains("凯尔特") || rawContext.Contains("森林"))
             {
                 cultureSetting = "背景为被冷雾笼罩的古老高地石砌堡垒主楼，饰有繁复神秘的凯尔特青铜与绳结石雕，燃烧的生铁火盆，远景隐现幽邃茂密的翡翠原始橡树森林";
+                regalHeadwear = "头戴巴旦尼亚至高王式样的凯尔特青铜环冠（严禁西式王冠）";
             }
             else if (rawContext.Contains("帝国") || rawContext.IndexOf("Empire", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("罗马") || rawContext.Contains("拜占庭") || rawContext.Contains("元老院"))
             {
                 cultureSetting = "背景为恢弘典雅的古典帝国拜占庭式大理石宫殿巴西利卡，高耸直插穹顶的柯林斯式大理石圆柱、璀璨的黄金马赛克穹顶壁画与紫红色悬垂帷幔，温暖的夕阳斜射穿透宏伟拱券长廊";
+                regalHeadwear = "头戴拜占庭式黄金月桂冠冕（饰有宝石垂坠，严禁哥特式尖顶王冠）";
             }
             else if (rawContext.Contains("日本") || rawContext.IndexOf("Japan", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.IndexOf("Sengoku", StringComparison.OrdinalIgnoreCase) >= 0 || rawContext.Contains("幕府") || rawContext.Contains("武士"))
             {
                 cultureSetting = "背景为庄严清幽的武士天守阁本丸评定间，绘有松鹤的精美金箔折叠屏风、光洁明亮的榻榻米地面与推拉障子门，外侧为宁静深邃的枯山水庭院";
+                regalHeadwear = "头戴日式乌帽子/立缨冠（严禁西式王冠）";
             }
             else
             {
                 cultureSetting = "背景为雄伟的中世纪石砌城堡大厅，高耸的石拱穹顶天花板、悬挂各色军旗的铁艺吊灯与巨大的哥特式拱窗";
+                regalHeadwear = "头戴象征至高王权的庄严王冠";
             }
 
             if (isEventScene)
@@ -343,8 +396,8 @@ namespace AnimusForge.Illustrator.Core
             else if (isMonarch)
             {
                 sb.Append(isFemale
-                    ? "一幅令人肃然起敬的帝国女皇/执政女王尊贵肖像。她仪态万方，流露出至高无上的君王统治气魄与政治远谋。身着织锦丝绸与天鹅绒剪裁的御用宫廷礼袍，精工刺绣华美金线并点缀宝石，头戴璀璨的皇家金冠。"
-                    : "一幅威严雄浑的最高封建君王与至尊统治者肖像。目光威严深沉，浑身散发着开疆拓土的王者气象。身着精工刺绣金纹的华贵天鹅绒王袍，外披镶有毛皮滚边的高贵王室斗篷，头戴象征至高王权的庄严王冠。");
+                    ? $"一幅令人肃然起敬的帝国女皇/执政女王尊贵肖像。她仪态万方，流露出至高无上的君王统治气魄与政治远谋。身着织锦丝绸与天鹅绒剪裁的御用宫廷礼袍，精工刺绣华美金线并点缀宝石，{regalHeadwear}。"
+                    : $"一幅威严雄浑的最高封建君王与至尊统治者肖像。目光威严深沉，浑身散发着开疆拓土的王者气象。身着精工刺绣金纹的华贵天鹅绒王袍，外披镶有毛皮滚边的高贵王室斗篷，{regalHeadwear}。");
             }
             else if (isHighLord)
             {

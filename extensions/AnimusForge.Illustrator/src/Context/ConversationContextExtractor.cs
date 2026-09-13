@@ -20,6 +20,7 @@ namespace AnimusForge.Illustrator.Context
         public HeroVisualProfile InterlocutorProfile { get; set; }
         public EnvironmentVisualProfile EnvironmentProfile { get; set; }
         public string SceneDirective { get; set; } = string.Empty;
+        public bool InterlocutorCivilian { get; set; }
 
         public string BuildCompositeContext()
         {
@@ -161,6 +162,7 @@ namespace AnimusForge.Illustrator.Context
             if (partnerHero != null)
             {
                 bool partnerCivilian = isCivilian || partnerHero.IsNoncombatant || (partnerHero.IsWanderer && partnerHero.PartyBelongedTo == null) || partnerHero.IsNotable;
+                context.InterlocutorCivilian = partnerCivilian;
                 context.InterlocutorProfile = HeroVisualExtractor.Extract(partnerHero, useCivilian: partnerCivilian);
             }
 
@@ -247,30 +249,51 @@ namespace AnimusForge.Illustrator.Context
                         $"呈现高低对视的围城谈判气场。";
                 }
             }
-            else if (partnerIsMounted && !playerIsMounted)
-            {
-                poseDirective = $"【骑兵将领与立姿对话构图】{partnerName}跨骑于高大披甲战马之上，居高临下与面前的主角交谈会晤，神采英武威严。";
-            }
             else
             {
-                poseDirective = "【现场互动身姿】二人自然面对面立姿交谈 (Natural standing conversation posture)";
+                // 非围城场景：精确还原双方骑乘/站立组合与对方随行护卫
+                string mountPosture;
+                if (partnerIsMounted && !playerIsMounted)
+                {
+                    mountPosture = $"对方（{partnerName}）跨骑于高大披甲战马之上，居高临下俯视着立于地面的主角（{mainName}）；";
+                }
+                else if (!partnerIsMounted && playerIsMounted)
+                {
+                    mountPosture = $"主角（{mainName}）跨骑于披甲战马之上居高临下，对方（{partnerName}）则步行立于地面，仰头与马上的主角交谈；";
+                }
+                else if (partnerIsMounted && playerIsMounted)
+                {
+                    mountPosture = "双方均跨骑于战马之上，两骑并辔对峙交谈；";
+                }
+                else
+                {
+                    mountPosture = "二人均步行站立于地面面对面交谈；";
+                }
+
+                string guardText = bodyguardCount > 0
+                    ? $"对方身侧肃立着 {bodyguardCount} 名全副武装、身披重甲、手持长矛盾牌的随行精锐护卫；"
+                    : string.Empty;
+
+                string basePose = "【现场互动身姿】二人自然面对面立姿交谈 (Natural standing conversation posture)";
                 try
                 {
                     if (partnerAgent != null)
                     {
                         string actionName = partnerAgent.GetCurrentAction(0).GetName() ?? string.Empty;
-                        poseDirective = MapActionToPoseDirective(actionName);
+                        basePose = MapActionToPoseDirective(actionName);
                     }
                     else if (partnerChar != null)
                     {
                         string idleName = Helpers.CharacterHelper.GetStandingBodyIdle(partnerChar, MobileParty.MainParty?.Party);
-                        poseDirective = MapIdleToPoseDirective(idleName);
+                        basePose = MapIdleToPoseDirective(idleName);
                     }
                 }
                 catch (Exception ex)
                 {
                     TaleWorlds.Library.Debug.Print($"[Illustrator] Failed to resolve conversation pose: {ex.Message}");
                 }
+
+                poseDirective = $"【极其关键构图：双方骑乘与站位关系】\n{mountPosture}{guardText}\n{basePose}";
             }
 
             string specificSceneGuidance = string.Empty;

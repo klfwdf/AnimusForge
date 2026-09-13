@@ -67,7 +67,8 @@ namespace AnimusForge.Illustrator.Context
 
     public static class EnvironmentVisualExtractor
     {
-        public static EnvironmentVisualProfile Extract(Settlement settlement = null)
+        /// <param name="eventAnchored">为 true 时跳过对当前 Mission/菜单位置的实时探测（用于周报等回顾性场景——环境由事件主题决定，而非玩家当前所在位置）。</param>
+        public static EnvironmentVisualProfile Extract(Settlement settlement = null, bool eventAnchored = false)
         {
             var profile = new EnvironmentVisualProfile();
 
@@ -100,11 +101,14 @@ namespace AnimusForge.Illustrator.Context
             profile.TimeOfDay = ResolveTimeOfDay(hour);
             profile.LightingAndAtmosphere = ResolveLighting(hour, seasonIndex);
 
-            // 5. 深度室内/子场景识别 (如酒馆 Tavern、领主大厅 Lordshall、竞技场 Arena、地牢 Prison、围城城墙城门等)
-            ResolveSpecificLocation(profile, settlement);
+            if (!eventAnchored)
+            {
+                // 5. 深度室内/子场景识别 (如酒馆 Tavern、领主大厅 Lordshall、竞技场 Arena、地牢 Prison、围城城墙城门等)
+                ResolveSpecificLocation(profile, settlement);
 
-            // 6. 场景周边人物群像与标志性陈设道具动态提取
-            ResolveSurroundings(profile, settlement);
+                // 6. 场景周边人物群像与标志性陈设道具动态提取
+                ResolveSurroundings(profile, settlement);
+            }
 
             return profile;
         }
@@ -209,6 +213,12 @@ namespace AnimusForge.Illustrator.Context
             {
                 profile.SpecificLocation = "城镇市集街道 (Marketplace / Town Streets)";
                 profile.IndoorOutdoorDetails = "熙熙攘攘的中世纪城镇市集街道：两旁是石木结构的民居店铺与遮阳帆布货摊，平民与巡逻卫兵穿行其间。";
+            }
+            else if (settlement == null)
+            {
+                // 野外遭遇会话（大地图/野战遭遇）：双方在两军阵前的旷野会面，绝非城镇街道
+                profile.SpecificLocation = "两军阵前的开阔旷野会面地 (Field Parley Ground)";
+                profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，双方军队的旌旗仪仗在身后列阵隐约可见，空气中弥漫着战前谈判的紧绷肃杀气息。";
             }
         }
 

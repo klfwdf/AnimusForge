@@ -689,6 +689,7 @@ namespace AnimusForge.Illustrator.Engine
 
         public static string ExtractHeroOffscreenBase64(Hero hero, Widget tableauWidget, int maxDimension = 768)
         {
+            if (!Core.IllustratorRuntime.IsMainThread) return null; // 引擎对象只能在游戏主线程访问
             if (hero == null && tableauWidget == null) return null;
 
             // 1. 优先尝试从现场正在活跃渲染的 TableauWidget 提取
@@ -742,8 +743,150 @@ namespace AnimusForge.Illustrator.Engine
             return null;
         }
 
+        /// <summary>
+        /// 将一段引擎操作调度到游戏主线程执行并返回其结果（调用方在任意线程均安全）。
+        /// </summary>
+        private static Task<T> RunOnGameThreadAsync<T>(Func<T> work)
+        {
+            var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            if (Core.IllustratorRuntime.IsMainThread)
+            {
+                try { tcs.TrySetResult(work()); }
+                catch (Exception ex) { tcs.TrySetException(ex); }
+                return tcs.Task;
+            }
+            bool posted = Core.IllustratorRuntime.Post(() =>
+            {
+                try { tcs.TrySetResult(work()); }
+                catch (Exception ex) { tcs.TrySetException(ex); }
+            });
+            if (!posted) tcs.TrySetResult(default);
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// 通过原版 CharacterThumbnailCache 离屏渲染指定英雄的真实 3D 模型立绘（含真实五官、发型与装备）。
+        /// 引擎创建与像素读取全部在游戏主线程执行，后台仅等待渲染完成回调。
+        /// </summary>
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 2500)
+        {
+            if (hero?.CharacterObject == null) return null;
+            try
+            {
+                var ready = new TaskCompletionSource<TaleWorlds.Engine.Texture>(TaskCreationOptions.RunContinuationsAsynchronously);
+                CharacterThumbnailCreationData creationData = null;
+                var immediate = await RunOnGameThreadAsync(() =>
+                {
+                    var cacheMgr = ThumbnailCacheManager.Current;
+                    if (cacheMgr == null) return null;
+                    var equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
+                    var code = CharacterCode.CreateFrom(hero.CharacterObject, equipment);
+                    if (code == null) return null;
+                    creationData = new CharacterThumbnailCreationData(code, t => ready.TrySetResult(t), () => ready.TrySetResult(null), true, maxDimension, maxDimension);
+                    return cacheMgr.CreateTexture(creationData).Texture;
+                }).ConfigureAwait(false);
+                if (immediate != null) ready.TrySetResult(immediate);
+
+                var winner = await Task.WhenAny(ready.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
+                var rendered = winner == ready.Task ? ready.Task.Result : null;
+                string b64 = null;
+                if (rendered != null)
+                {
+                    b64 = await RunOnGameThreadAsync(() => ConvertEngineTextureToBase64(rendered, maxDimension)).ConfigureAwait(false);
+                }
+                if (creationData != null)
+                {
+                    var data = creationData;
+                    await RunOnGameThreadAsync<object>(() => { try { ThumbnailCacheManager.Current?.DestroyTexture(data); } catch { } return null; }).ConfigureAwait(false);
+                }
+                if (!string.IsNullOrWhiteSpace(b64))
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait thumbnail extracted for {hero.Name} ({b64.Length} chars)");
+                }
+                return b64;
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait offscreen error: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 通过原版 BannerThumbnailCache 离屏渲染真实家族/王国纹章大图 (1024x1024 九宫格 Tableau)。
+        /// setAction 在 GPU 渲染完成后才触发，保证读出的像素是完成的纹章而非空渲染目标。
+        /// </summary>
+        public static async Task<string> ExtractBannerOffscreenAsync(Banner banner, int maxDimension = 512, int timeoutMs = 2500)
+        {
+            if (banner == null) return null;
+            try
+            {
+                var ready = new TaskCompletionSource<TaleWorlds.Engine.Texture>(TaskCreationOptions.RunContinuationsAsynchronously);
+                BannerThumbnailCreationData creationData = null;
+                var immediate = await RunOnGameThreadAsync(() =>
+                {
+                    var cacheMgr = ThumbnailCacheManager.Current;
+                    if (cacheMgr == null || !Banner.IsValidBannerCode(banner.BannerCode)) return null;
+                    creationData = new BannerThumbnailCreationData(banner, t => ready.TrySetResult(t), () => ready.TrySetResult(null), BannerDebugInfo.CreateManual("AnimusForge.Illustrator"), isTableauOrNineGrid: true, isLarge: true);
+                    return cacheMgr.CreateTexture(creationData).Texture;
+                }).ConfigureAwait(false);
+                if (immediate != null) ready.TrySetResult(immediate);
+
+                var winner = await Task.WhenAny(ready.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
+                var rendered = winner == ready.Task ? ready.Task.Result : null;
+                string b64 = null;
+                if (rendered != null)
+                {
+                    b64 = await RunOnGameThreadAsync(() => ConvertEngineTextureToBase64(rendered, maxDimension)).ConfigureAwait(false);
+                }
+                if (creationData != null)
+                {
+                    var data = creationData;
+                    await RunOnGameThreadAsync<object>(() => { try { ThumbnailCacheManager.Current?.DestroyTexture(data); } catch { } return null; }).ConfigureAwait(false);
+                }
+                if (!string.IsNullOrWhiteSpace(b64))
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner tableau extracted ({b64.Length} chars)");
+                }
+                return b64;
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner offscreen error: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 截取游戏窗口中 3D 场景主体区域（去除底部对话 UI 条带），用作会面场景实景参考图。
+        /// </summary>
+        public static string CaptureConversationSceneBase64(int maxDimension = 768, float topBandFraction = 0.62f)
+        {
+            try
+            {
+                IntPtr hWnd = GetForegroundWindow();
+                if (hWnd == IntPtr.Zero) return null;
+                GetWindowThreadProcessId(hWnd, out uint windowPid);
+                if (windowPid != (uint)Process.GetCurrentProcess().Id) return null;
+                if (!GetClientRect(hWnd, out RECT clientRect)) return null;
+
+                int clientWidth = clientRect.Right - clientRect.Left;
+                int clientHeight = clientRect.Bottom - clientRect.Top;
+                if (clientWidth <= 0 || clientHeight <= 0) return null;
+
+                int bandHeight = (int)(clientHeight * topBandFraction);
+                if (bandHeight < 120) bandHeight = clientHeight;
+                return CaptureActiveWindowBase64(new Rectangle(0, 0, clientWidth, bandHeight), maxDimension);
+            }
+            catch
+            {
+                return CaptureActiveWindowBase64(null, maxDimension);
+            }
+        }
+
         public static string ExtractItemOffscreenBase64(ItemObject item, int maxDimension = 512)
         {
+            if (!Core.IllustratorRuntime.IsMainThread) return null;
             if (item == null) return null;
 
             try

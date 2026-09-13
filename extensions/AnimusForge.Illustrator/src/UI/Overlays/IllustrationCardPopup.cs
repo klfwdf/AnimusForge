@@ -62,12 +62,18 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                 string offscreenTempDir = null;
                 string offscreenPrefix = null;
+                Task<string> bannerTask = null;
                 if (IllustratorRuntime.CaptureOptions()?.EnableOffscreenRendering == true)
                 {
                     var view = ScreenCaptureHelper.ResolveTableauView(tableauWidget);
                     if (view != null)
                     {
                         ScreenCaptureHelper.TriggerTableauViewSave(view, out offscreenTempDir, out offscreenPrefix);
+                    }
+                    var clanBanner = hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner;
+                    if (clanBanner != null)
+                    {
+                        bannerTask = ScreenCaptureHelper.ExtractBannerOffscreenAsync(clanBanner);
                     }
                 }
 
@@ -76,6 +82,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     string redrawDir = null;
                     string redrawPrefix = null;
+                    Task<string> redrawBannerTask = null;
                     if (IllustratorRuntime.CaptureOptions()?.EnableOffscreenRendering == true)
                     {
                         var view = ScreenCaptureHelper.ResolveTableauView(tableauWidget);
@@ -83,8 +90,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         {
                             ScreenCaptureHelper.TriggerTableauViewSave(view, out redrawDir, out redrawPrefix);
                         }
+                        var clanBanner = hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner;
+                        if (clanBanner != null)
+                        {
+                            redrawBannerTask = ScreenCaptureHelper.ExtractBannerOffscreenAsync(clanBanner);
+                        }
                     }
-                    _activeInstance?.ExecuteEncyclopediaGeneration(hero, tableauWidget, preCapturedBase64, redrawDir, redrawPrefix);
+                    _activeInstance?.ExecuteEncyclopediaGeneration(hero, tableauWidget, preCapturedBase64, redrawDir, redrawPrefix, redrawBannerTask);
                 });
 
                 string heroName = hero.Name != null ? hero.Name.ToString() : "英雄";
@@ -100,7 +112,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 else
                 {
-                    popup.ExecuteEncyclopediaGeneration(hero, tableauWidget, preCapturedBase64, offscreenTempDir, offscreenPrefix);
+                    popup.ExecuteEncyclopediaGeneration(hero, tableauWidget, preCapturedBase64, offscreenTempDir, offscreenPrefix, bannerTask);
                 }
             }
             catch (Exception ex)
@@ -118,12 +130,39 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             try
             {
-                string preCapturedBase64 = ScreenCaptureHelper.CaptureActiveWindowBase64(null, 768);
+                // 截取 3D 场景主体区域（剔除底部对话 UI 条带），保留现场人物站位与周围预制件环境
+                string preCapturedBase64 = ScreenCaptureHelper.CaptureConversationSceneBase64(768);
+
+                // 主线程发起离屏渲染：对方真实3D肖像 + 其家族纹章
+                Task<string> portraitTask = null;
+                Task<string> bannerTask = null;
+                var interlocutor = convContext.InterlocutorHero;
+                if (IllustratorRuntime.CaptureOptions()?.EnableOffscreenRendering == true && interlocutor != null)
+                {
+                    portraitTask = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(interlocutor, convContext.InterlocutorCivilian);
+                    var clanBanner = interlocutor.Clan?.Banner ?? interlocutor.Clan?.Kingdom?.Banner;
+                    if (clanBanner != null)
+                    {
+                        bannerTask = ScreenCaptureHelper.ExtractBannerOffscreenAsync(clanBanner);
+                    }
+                }
 
                 _activeInstance?.Close();
                 var popup = new IllustrationCardPopup(topScreen, "ConversationIllustrationOverlay", "conversation", () =>
                 {
-                    _activeInstance?.ExecuteConversationGeneration(convContext, preCapturedBase64);
+                    string redrawBase64 = ScreenCaptureHelper.CaptureConversationSceneBase64(768);
+                    Task<string> redrawPortrait = null;
+                    Task<string> redrawBanner = null;
+                    if (IllustratorRuntime.CaptureOptions()?.EnableOffscreenRendering == true && interlocutor != null)
+                    {
+                        redrawPortrait = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(interlocutor, convContext.InterlocutorCivilian);
+                        var clanBanner = interlocutor.Clan?.Banner ?? interlocutor.Clan?.Kingdom?.Banner;
+                        if (clanBanner != null)
+                        {
+                            redrawBanner = ScreenCaptureHelper.ExtractBannerOffscreenAsync(clanBanner);
+                        }
+                    }
+                    _activeInstance?.ExecuteConversationGeneration(convContext, redrawBase64, redrawPortrait, redrawBanner);
                 });
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
@@ -145,7 +184,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 else
                 {
-                    popup.ExecuteConversationGeneration(convContext, preCapturedBase64);
+                    popup.ExecuteConversationGeneration(convContext, preCapturedBase64, portraitTask, bannerTask);
                 }
             }
             catch (Exception ex)
@@ -154,7 +193,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
         }
 
-        private void ExecuteEncyclopediaGeneration(Hero hero, Widget tableauWidget, string preCapturedBase64 = null, string offscreenTempDir = null, string offscreenPrefix = null)
+        private void ExecuteEncyclopediaGeneration(Hero hero, Widget tableauWidget, string preCapturedBase64 = null, string offscreenTempDir = null, string offscreenPrefix = null, Task<string> bannerTask = null)
         {
             _dataSource.SetLoading("AI画师正在细致描摹人物面相骨相与专属构图...");
 
@@ -181,8 +220,23 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 if (string.IsNullOrWhiteSpace(base64Image)) base64Image = preCapturedBase64;
 
-                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, base64Image, options, token).ConfigureAwait(false);
-                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, base64Image, options, token).ConfigureAwait(false);
+                var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
+                if (!string.IsNullOrWhiteSpace(base64Image))
+                {
+                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的真实游戏内3D形象（画面中该人物的五官、发型、装备与衣着必须严格依此还原）"));
+                }
+                if (bannerTask != null)
+                {
+                    string bannerB64 = await bannerTask.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(bannerB64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(bannerB64, "该人物所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制，严禁编造其他纹章）"));
+                    }
+                }
+
+                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, refs, options, token).ConfigureAwait(false);
+                var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {
@@ -289,7 +343,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             return sb.ToString().TrimEnd();
         }
 
-        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null)
+        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, Task<string> portraitTask = null, Task<string> bannerTask = null)
         {
             _dataSource.SetLoading("AI画师正在分析现场交谈与肢体姿势...");
 
@@ -305,9 +359,31 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             _scope.Run(async token =>
             {
-                string base64Image = preCapturedBase64;
-                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, base64Image, options, token).ConfigureAwait(false);
-                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, base64Image, options, token).ConfigureAwait(false);
+                var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
+                if (!string.IsNullOrWhiteSpace(preCapturedBase64))
+                {
+                    refs.Add(new IllustrationReferenceImage(preCapturedBase64, "会面现场的3D实景画面（双方站位、坐骑与周围真实环境布局）"));
+                }
+                if (portraitTask != null)
+                {
+                    string b64 = await portraitTask.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的真实游戏内3D形象（其五官、发型、装备与衣着必须严格依此还原）"));
+                    }
+                }
+                if (bannerTask != null)
+                {
+                    string b64 = await bannerTask.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(b64, "对话对方所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制）"));
+                    }
+                }
+
+                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, refs, options, token).ConfigureAwait(false);
+                var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {

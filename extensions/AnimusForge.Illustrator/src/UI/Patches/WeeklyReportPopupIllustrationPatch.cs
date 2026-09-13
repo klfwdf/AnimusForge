@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -291,10 +292,43 @@ namespace AnimusForge.Illustrator.UI.Patches
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
 
+            // 主线程发起离屏渲染：当事人的真实3D肖像 + 其家族/王国真实纹章（后台线程仅等待结果，绝不触碰引擎）
+            var protagonist = context.ProtagonistHero;
+            Task<string> portraitTask = null;
+            Task<string> bannerTask = null;
+            if (options?.EnableOffscreenRendering == true && protagonist != null)
+            {
+                portraitTask = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist);
+                var banner = protagonist.Clan?.Banner ?? protagonist.Clan?.Kingdom?.Banner;
+                if (banner != null)
+                {
+                    bannerTask = ScreenCaptureHelper.ExtractBannerOffscreenAsync(banner);
+                }
+            }
+
             _scope.Run(async token =>
             {
-                string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextText, null, options, token).ConfigureAwait(false);
-                var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, null, options, token).ConfigureAwait(false);
+                var refs = new List<IllustrationReferenceImage>();
+                if (portraitTask != null)
+                {
+                    string b64 = await portraitTask.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonist.Name}】的真实游戏内3D形象立绘（画面中该人物的五官、发型、装备与衣着必须严格依此还原）"));
+                    }
+                }
+                if (bannerTask != null)
+                {
+                    string b64 = await bannerTask.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(b64, "该人物所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制，严禁编造其他纹章）"));
+                    }
+                }
+
+                string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextText, refs, options, token).ConfigureAwait(false);
+                var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {

@@ -406,7 +406,8 @@ namespace AnimusForge.Illustrator.Context
                 {
                     if (hero.IsFactionLeader)
                     {
-                        profile.EquipmentDetails.Add("头部: 未戴战斗铁盔；面容裸露，额前佩戴象征最高统治者尊贵权柄的华美皇冠/金冠/冠冕或本文化高贵头饰，长发梳理尊贵华丽 (Bareheaded without combat helmet; wearing a magnificent royal crown, diadem, or regal headdress fitting supreme sovereign status)");
+                        string headwear = ResolveRegalHeadwear(hero);
+                        profile.EquipmentDetails.Add($"头部: 未戴战斗铁盔；面容裸露，额前佩戴{headwear}，长发梳理尊贵华丽 (Bareheaded without combat helmet; wearing culturally-accurate regal headwear as described, STRICTLY NO mismatched foreign crown)");
                     }
                     else if (isNobleOrRuler)
                     {
@@ -477,6 +478,37 @@ namespace AnimusForge.Illustrator.Context
             }
 
             profile.EquipmentDetails.Add(desc);
+        }
+
+        private static string ResolveRegalHeadwear(Hero hero)
+        {
+            string cultureCode = hero?.Culture?.StringId?.ToLowerInvariant() ?? "";
+            string cultureName = hero?.Culture?.Name != null ? hero.Culture.Name.ToString() : "";
+            bool isFemale = hero?.IsFemale == true;
+
+            if (cultureCode.Contains("aserai") || cultureName.Contains("阿塞莱"))
+            {
+                return "阿塞莱苏丹式样的金丝刺绣华贵缠头巾/头巾王冠（正中缀以宝石与金链坠饰），【严格符合沙漠文化形制，严禁西式尖顶金冠】 (A majestic gold-embroidered jeweled turban crown of the Sultanate, STRICTLY NO European-style pointed crown)";
+            }
+            if (cultureCode.Contains("khuzait") || cultureName.Contains("库赛特"))
+            {
+                return "库赛特可汗式样的貂皮滚边金饰尖顶汗冠/雄鹰羽冠，【严格符合草原游牧形制，严禁西式王冠】 (A sable-trimmed pointed steppe Khan crown with eagle feathers, STRICTLY NO European-style crown)";
+            }
+            if (cultureCode.Contains("sturgia") || cultureName.Contains("斯特吉亚"))
+            {
+                return "斯特吉亚北境王者式样的厚重青铜/暗金环形战冠（饰有渡鸦或狼首浮雕），【严格符合北境诺斯形制，严禁西式王冠】 (A heavy Nordic bronze/dark-gold ringed war crown with raven or wolf motifs, STRICTLY NO European-style crown)";
+            }
+            if (cultureCode.Contains("battania") || cultureName.Contains("巴旦尼亚"))
+            {
+                return "巴旦尼亚至高王式样的凯尔特青铜环形王冠（饰有绳结与兽首图腾），【严格符合高地凯尔特形制，严禁西式王冠】 (A Celtic bronze torc-style circlet crown with knotwork and beast motifs, STRICTLY NO European-style crown)";
+            }
+            if (cultureCode.Contains("empire") || cultureName.Contains("帝国"))
+            {
+                return isFemale
+                    ? "帝国女皇式样的紫坠黄金月桂冠冕（饰有宝石垂坠），【严格符合拜占庭形制】 (An imperial Byzantine golden laurel diadem with amethyst pendants)"
+                    : "帝国皇帝式样的紫坠黄金月桂冠冕（古典拜占庭式，饰有宝石垂坠），【严格符合拜占庭形制，严禁哥特式尖顶王冠】 (An imperial Byzantine golden laurel wreath diadem with gem pendants, STRICTLY NO gothic pointed crown)";
+            }
+            return "象征最高统治者尊贵权柄的华美皇冠/金冠/冠冕，形制严格符合所属文化的高贵头饰 (A magnificent royal crown/diadem strictly matching their own culture's regal tradition)";
         }
 
         private static string ResolveItemMaterial(ItemObject item, bool isNobleOrRuler)

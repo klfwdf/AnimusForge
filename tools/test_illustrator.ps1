@@ -77,6 +77,52 @@ $result = [string]$synthesize.Invoke($null, [object[]]@('【核心事件】奥�
 Assert-True ($result.Contains('奥尼拉') -and $result.Contains('投石机破城')) 'weekly event and location survive fallback'
 Assert-True (-not $result.Contains('百战勇士肖像')) 'weekly fallback does not become a generic portrait'
 
+# 文化头饰：阿塞莱君主必须使用缠头巾形制，严禁西式王冠
+$result = [string]$synthesize.Invoke($null, [object[]]@('阿塞莱文化，男性，身份：苏丹/最高统治者 (Sovereign Monarch)，身穿丝绸长袍。'))
+Assert-True ($result.Contains('缠头巾')) 'aserai monarch fallback uses turban crown'
+Assert-True (-not ($result.Contains('庄严王冠') -and -not $result.Contains('严禁'))) 'aserai monarch does not fall back to western crown'
+
+$srcDir = Join-Path $module 'src'
+$screenCapture = Get-Content (Join-Path $srcDir 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8
+Assert-True ($screenCapture.Contains('ExtractBannerOffscreenAsync')) 'banner offscreen extraction exists'
+Assert-True ($screenCapture.Contains('ExtractHeroPortraitOffscreenAsync')) 'hero portrait offscreen extraction exists'
+Assert-True ($screenCapture.Contains('CaptureConversationSceneBase64')) 'conversation scene band capture exists'
+Assert-True ($screenCapture.Contains('BannerThumbnailCreationData')) 'banner thumbnail creation data used'
+Assert-True ($screenCapture.Contains('RunOnGameThreadAsync')) 'engine access is dispatched to main thread'
+
+$weeklySrc = Get-Content (Join-Path $srcDir 'Context\WeeklyReportContextExtractor.cs') -Raw -Encoding UTF8
+Assert-True ($weeklySrc.Contains('ResolveProtagonistHero')) 'weekly report resolves protagonist from text'
+Assert-True ($weeklySrc.Contains('AllAliveHeroes')) 'weekly report scans campaign heroes'
+Assert-True ($weeklySrc.Contains('eventAnchored: true')) 'weekly report environment is event-anchored'
+Assert-True ($weeklySrc.Contains('ApplyEventSceneAnchoring')) 'weekly report scene fields anchored by theme'
+
+$directorSrc = Get-Content (Join-Path $srcDir 'Core\VisualDirectorEngine.cs') -Raw -Encoding UTF8
+Assert-True ($directorSrc.Contains('IReadOnlyList<IllustrationReferenceImage>')) 'director accepts labeled reference image list'
+Assert-True ($directorSrc.Contains('纹章铁律')) 'system prompt enforces banner-reference fidelity'
+Assert-True ($directorSrc.Contains('王权头饰铁律')) 'system prompt enforces culture-specific crowns'
+
+$clientSrc = Get-Content (Join-Path $srcDir 'Core\UniversalOpenAiImageClient.cs') -Raw -Encoding UTF8
+Assert-True ($clientSrc.Contains('IReadOnlyList<IllustrationReferenceImage>')) 'image client accepts reference image list'
+Assert-True ($clientSrc.Contains('EnableReferenceImageForGeneration')) 'image client honors reference-image toggle'
+Assert-True ($clientSrc.Contains('negativePrompt')) 'image client injects negative prompt'
+
+$convSrc = Get-Content (Join-Path $srcDir 'Context\ConversationContextExtractor.cs') -Raw -Encoding UTF8
+Assert-True ($convSrc.Contains('playerIsMounted') -and $convSrc.Contains('步行立于地面')) 'conversation pose covers mounted-player vs on-foot partner'
+
+$imageClient = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
+$genOverload = $imageClient.GetMethods([Reflection.BindingFlags]'Public,Static') | Where-Object {
+    $_.Name -eq 'GenerateImageAsync' -and $_.GetParameters().Count -ge 2 -and $_.GetParameters()[1].ParameterType.Name -like 'IReadOnlyList*'
+}
+Assert-True ($null -ne $genOverload) 'GenerateImageAsync multi-reference overload exists'
+
+$directorMethods = $director.GetMethods([Reflection.BindingFlags]'Public,Static') | Where-Object { $_.Name -eq 'ExpandToDetailedPromptAsync' }
+$hasListOverload = $false
+foreach ($m in $directorMethods) {
+    $ps = $m.GetParameters()
+    if ($ps.Count -ge 2 -and $ps[1].ParameterType.Name -like 'IReadOnlyList*') { $hasListOverload = $true }
+}
+Assert-True $hasListOverload 'ExpandToDetailedPromptAsync multi-reference overload exists'
+
 $commandTypes = @(
     'AnimusForge.Illustrator.UI.Overlays.IllustrationCardVM',
     'AnimusForge.Illustrator.UI.Patches.WeeklyReportIllustrationOverlayVM',
