@@ -1994,6 +1994,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private string _eventSourceMaterialJsonStorage = "";
 
 	private Dictionary<string, EventSourceMaterialEntry> _eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
+	private readonly AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding =
+		new AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry>(item => item.Day, item => item.StableKey, BuildEventSourceMaterialIndexKey);
 
 	private Dictionary<string, int> _kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
@@ -13722,7 +13724,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
 		string text2 = NormalizeNpcActionStableKey(stableKey, normalizedLabel + ":" + text);
-		if (!IsEventSourceMaterialIndexCurrent()) RebuildEventSourceMaterialIndex();
+		if (!_eventSourceMaterialIndexBinding.IsCurrent(_eventSourceMaterials, _eventSourceMaterialIndex)) RebuildEventSourceMaterialIndex();
 		string indexKey = BuildEventSourceMaterialIndexKey(currentGameDayIndexSafe, text2);
 		// A complete index owns misses too; a new daily key must not rescan all history.
 		_eventSourceMaterialIndex.TryGetValue(indexKey, out var eventSourceMaterialEntry);
@@ -13759,7 +13761,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_eventSourceMaterialIndex[indexKey] = newEntry;
 		// Publish the new structural binding only after both authoritative append
 		// and index insertion succeed. A failed insert leaves the old probe stale.
-		BindEventSourceMaterialIndex(_eventSourceMaterials, _eventSourceMaterialIndex);
+		_eventSourceMaterialIndexBinding.Bind(_eventSourceMaterials, _eventSourceMaterialIndex);
 	}
 
 	private static bool IsPlayerWeeklySourceMaterial(string materialKind, string actorHeroId, string stableKey)
@@ -17769,8 +17771,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-
-
 	public override void SyncData(IDataStore dataStore)
 	{
 		if (_shownRecords == null)
@@ -20126,20 +20126,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private void RebuildEventSourceMaterialIndex()
 	{
 		var source = _eventSourceMaterials;
-		var rebuilt = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventSourceMaterialEntry item in source ?? new List<EventSourceMaterialEntry>())
-		{
-			if (item == null) continue;
-			string text = (item.StableKey ?? "").Trim();
-			string key = BuildEventSourceMaterialIndexKey(item.Day, text);
-			if (!string.IsNullOrWhiteSpace(text)) rebuilt[key] = item; // Original last-wins for named keys.
-			// The old miss fallback chose the FIRST same-day blank key; it never
-			// queried negative days. Index that exact case rather than append duplicates.
-			else if (item.Day >= 0 && !rebuilt.ContainsKey(key)) rebuilt.Add(key, item);
-		}
+		var rebuilt = _eventSourceMaterialIndexBinding.Build(source);
 		if (!ReferenceEquals(source, _eventSourceMaterials)) throw new InvalidOperationException("Event material source changed during index rebuild.");
 		_eventSourceMaterialIndex = rebuilt;
-		BindEventSourceMaterialIndex(source, rebuilt);
+		_eventSourceMaterialIndexBinding.Bind(source, rebuilt);
 	}
 
 	private void RebuildNpcRecentActionStableKeyIndex()
