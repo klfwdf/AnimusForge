@@ -5926,8 +5926,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
-		long startTimestamp = Stopwatch.GetTimestamp();
+		ResolveDailyMaintenanceBudget(out long startTimestamp, out double budgetMs);
+		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)) return;
 		if (_pendingAutoWeeklyReportBuild != null && !_automaticKingdomRebellionFlowActive)
 		{
 			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessPendingAutoWeeklyReportBuild"))
@@ -17699,17 +17699,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
 				}
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
-			{
-				TryRunCampaignMemoryMaintenance();
-			}
-			if (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())
-			{
-				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
-				{
-					ProcessDeferredDailyMaintenance();
-				}
-			}
+			RunCampaignMemoryMaintenanceCycle(processedWeeklyReportCommits);
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.CachePlayerClanTier"))
 			{
 				int num = 0;
@@ -17740,9 +17730,49 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void RunCampaignMemoryMaintenanceCycle(bool processedWeeklyReportCommits)
+	{
+		var previous = _campaignMemoryMaintenanceBudget;
+		bool previousActive = _campaignMemoryMaintenanceCycleActive;
+		_campaignMemoryMaintenanceCycleActive = true;
+		try
+		{
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
+			{
+				TryRunCampaignMemoryMaintenance();
+			}
+			if (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
+				{
+					ProcessDeferredDailyMaintenance();
+				}
+			}
+		}
+		finally
+		{
+			_campaignMemoryMaintenanceBudget = previous;
+			_campaignMemoryMaintenanceCycleActive = previousActive;
+		}
+	}
+
 	private void TryRunCampaignMemoryMaintenance()
 	{
+		long generation = SaveRuntimeGuard.CaptureGeneration();
+		if (_campaignMemorySummaryStartPending && _campaignMemorySummaryStartGeneration != generation)
+			_campaignMemorySummaryStartPending = false;
 		if (_memorySummaryProcessing) return;
+		if (_campaignMemorySummaryStartPending)
+		{
+			ResolveDailyMaintenanceBudget(out long pendingStart, out double pendingBudget);
+			if (!IsDialogueOrLetterChainBusyForMemorySummary() && !IsDailyMaintenanceBudgetExceeded(pendingStart, pendingBudget))
+			{
+				// This is a deferred admission request, not a replay of accepted side effects.
+				_campaignMemorySummaryStartPending = false;
+				TryStartMemorySummaryQueue();
+			}
+			return;
+		}
 		int currentDay = 0;
 		try { currentDay = (int)CampaignTime.Now.ToDays; } catch { currentDay = 0; }
 		// A paused seal is work even before its first summary job exists. It must
@@ -17751,8 +17781,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		bool sealActive = _dailyMemorySealState != null;
 		if (!sealActive && !hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay) return;
 		if (IsDialogueOrLetterChainBusyForMemorySummary()) return;
-		long startTimestamp = Stopwatch.GetTimestamp();
-		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
+		ResolveDailyMaintenanceBudget(out long startTimestamp, out double budgetMs);
+		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)) return;
 		int observedDay = sealActive ? _dailyMemoryDraftSealTargetDay : currentDay;
 		using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
 		{
@@ -17760,10 +17790,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 			// sharing this deadline. No sealing effects run when that probe is empty.
 			if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return;
 		}
+		if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) return;
 		_lastMemoryMaintenanceObservedGameDay = observedDay;
 		if (!hasQueuedWork && !_dailyMemorySealCompletedPass) return;
+		// Sealing can consume the final raw job just as its window expires.
+		// Keep its one start request across ticks without running sealing again.
+		_campaignMemorySummaryStartPending = true;
+		_campaignMemorySummaryStartGeneration = generation;
 		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
+			_campaignMemorySummaryStartPending = false;
 			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
 			{
 				TryStartMemorySummaryQueue();

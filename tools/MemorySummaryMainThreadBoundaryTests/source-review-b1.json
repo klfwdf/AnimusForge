@@ -428,9 +428,9 @@
         "worker-admission-no-source-read"
       ],
       "line": 17873,
-      "sha256": "037aa99b7a2e9425b1a8da4dfc15b5f27826225be067f356a6982e8e2c6e6fa8",
+      "sha256": "449dcb264159b51203fe2dfe885101576919d5cdf7084b38d285ab6f9b3650dd",
       "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9",
-      "reason": "Resume active same-day sealing without requiring an already-created job; completion receipt preserves original overview/start eligibility. Business fixture and actual sealing suite have separately labelled scopes."
+      "reason": "Use shared deadline/caps and retain one exhausted-window start request with save generation; next cycle dispatches without repeating sealing. Busy/processing gates and actual summary owner remain."
     },
     {
       "path": "MyBehavior.cs",
@@ -788,6 +788,30 @@
         "completion"
       ],
       "reason": "Retire both new transient state and completion receipt alongside the six original transient fields; no persistent schema change."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OnCampaignTick(",
+      "baselineSignature": "private void OnCampaignTick(",
+      "sha256": "57430b6d5b2f376ad1a664bf5cff1b6c9bded6c86eed9fe060c9cae582ee0218",
+      "baselineSha256": "872ef0aed204aea02fa1132ef9e9793cdd499c5ae1d83dbf2c2f4cc379a681bd",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "reason": "Original primary/deferred maintenance callsite invokes one real shared cycle; other Campaign work and weekly-commit skip order remain unchanged."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ProcessDeferredDailyMaintenance(",
+      "baselineSignature": "private void ProcessDeferredDailyMaintenance(",
+      "sha256": "568de6ea43979003f7c2f67625f68b60f56c38f5a408554d663489326db9f2ba",
+      "baselineSha256": "ab146a531ac1a6a575cc09a8225f01ec08f30f008a55459e24bf65561fe3bea3",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "reason": "Use the active Campaign deadline and reject a second domain after exhaustion; standalone calls retain their own deadline. Real old callsite/current/fault replays."
     }
   ],
   "evidence": {
@@ -798,7 +822,7 @@
       "observed": "BUSINESS_RESULT passed=36 failed=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
       "testSourceSha256": {
-        "runner": "a0609707e75056e0fc3a5a368046efb833f4f49aa79055cab4c3619015c6ea96",
+        "runner": "8e02d2b7524bbed8b4f9918d6d3b22eb7010fa7a5a1e4432ddd192272ac048c0",
         "harness": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 49
@@ -854,7 +878,7 @@
         "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
         "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "a0609707e75056e0fc3a5a368046efb833f4f49aa79055cab4c3619015c6ea96",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "8e02d2b7524bbed8b4f9918d6d3b22eb7010fa7a5a1e4432ddd192272ac048c0",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 237
@@ -868,7 +892,7 @@
       "additionalTestSourceSha256": {
         "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "a0609707e75056e0fc3a5a368046efb833f4f49aa79055cab4c3619015c6ea96",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "8e02d2b7524bbed8b4f9918d6d3b22eb7010fa7a5a1e4432ddd192272ac048c0",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 183,
@@ -880,33 +904,32 @@
     "sealing": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
-      "scope": "Actual TrySeal/ContinueDailyMemorySeal/TryRunCampaignMemoryMaintenance over controlled drafts. 30 current cases, original 62abfdb3 contrast, and eight --mutate reds. No live/game/save.",
-      "observed": "SEALING_RESULT pass=30 fail=0; original-62abfdb3 pass=19 fail=11; eight mutations BUILD_PASS EXIT=1",
+      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget.",
+      "observed": "SEALING_RESULT pass=40 fail=0; actual previous 73a6977c pass=35 fail=5; fourteen BUILD_PASS mutation controls EXIT=1.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
       "testSourceSha256": {
-        "runner": "57ba28f794194588a7fc751a72c0e76b96e0116540ea1bcbf0d4c2cf332b6537",
-        "harness": "c960d1f09c4509157525dfb0b9e44205fecb0ee0970ed68229f2c3c8e6fa8cf7"
+        "runner": "8a62c685254f927f63b499857b0527c1994b8b48f49b68a5443e42b46c6ffc2c",
+        "harness": "285a12f41d91d27285b63070af91aa36219039375482a74293602e6c1e0bc8c3"
       },
       "acceptedInverse": true,
-      "counterexampleSummary": ".tmp/b1-sealing-mutate-20260914/summary.json",
+      "counterexampleSummary": ".tmp/b1-campaign-budget-20260914/results.json",
       "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
       "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
       "current": {
-        "pass": 30,
+        "pass": 40,
         "fail": 0,
         "exit": 0
       },
       "original": {
-        "revision": "62abfdb3",
-        "pass": 19,
-        "fail": 11,
+        "revision": "73a6977c",
+        "pass": 35,
+        "fail": 5,
         "exit": 1
       },
       "redMutations": [
         {
           "name": "abandon-incomplete-same-day",
           "exit": 1,
-          "pass": 29,
           "fail": 1,
           "failedCases": [
             "same-day-no-job-resume"
@@ -915,7 +938,6 @@
         {
           "name": "ignore-empty-probe",
           "exit": 1,
-          "pass": 29,
           "fail": 1,
           "failedCases": [
             "probe-empty-no-candidate-start"
@@ -924,7 +946,6 @@
         {
           "name": "ignore-stale-queued-job",
           "exit": 1,
-          "pass": 29,
           "fail": 1,
           "failedCases": [
             "same-reference-indexed-key-change"
@@ -933,7 +954,6 @@
         {
           "name": "ignore-owner-binding",
           "exit": 1,
-          "pass": 29,
           "fail": 1,
           "failedCases": [
             "owner-list-replacement"
@@ -942,7 +962,6 @@
         {
           "name": "ignore-cleanup-identity",
           "exit": 1,
-          "pass": 29,
           "fail": 1,
           "failedCases": [
             "cleanup-same-ref-retarget"
@@ -951,26 +970,26 @@
         {
           "name": "unbounded-metadata",
           "exit": 1,
-          "pass": 28,
-          "fail": 2,
+          "fail": 4,
           "failedCases": [
             "finite-4096-convergence",
-            "same-tick-multiple-callers"
+            "standalone-multiple-callers-compatibility",
+            "campaign-shared-metadata",
+            "campaign-shared-convergence"
           ]
         },
         {
           "name": "unbounded-expensive",
           "exit": 1,
-          "pass": 29,
-          "fail": 1,
+          "fail": 2,
           "failedCases": [
-            "finite-48draft-convergence"
+            "finite-48draft-convergence",
+            "campaign-shared-expensive"
           ]
         },
         {
           "name": "ignore-deadline",
           "exit": 1,
-          "pass": 24,
           "fail": 6,
           "failedCases": [
             "expired-budget-then-sync",
@@ -980,6 +999,64 @@
             "owner-inserted-after-index",
             "major-indexed-key-change"
           ]
+        },
+        {
+          "name": "renew-seal-budget",
+          "exit": 1,
+          "fail": 3,
+          "failedCases": [
+            "campaign-shared-metadata",
+            "campaign-shared-expensive",
+            "campaign-shared-convergence"
+          ]
+        },
+        {
+          "name": "renew-deferred-deadline",
+          "exit": 1,
+          "fail": 4,
+          "failedCases": [
+            "campaign-shared-metadata",
+            "campaign-shared-expensive",
+            "campaign-shared-convergence",
+            "campaign-shared-deadline"
+          ]
+        },
+        {
+          "name": "omit-window-restore",
+          "exit": 1,
+          "fail": 3,
+          "failedCases": [
+            "campaign-shared-convergence",
+            "campaign-deferred-start",
+            "campaign-scope-exception"
+          ]
+        },
+        {
+          "name": "drop-deferred-start",
+          "exit": 1,
+          "fail": 1,
+          "failedCases": [
+            "campaign-deferred-start"
+          ]
+        },
+        {
+          "name": "ignore-pending-generation",
+          "exit": 1,
+          "fail": 1,
+          "failedCases": [
+            "campaign-retired-start"
+          ]
+        },
+        {
+          "name": "ignore-campaign-scope",
+          "exit": 1,
+          "fail": 4,
+          "failedCases": [
+            "campaign-shared-metadata",
+            "campaign-shared-expensive",
+            "campaign-shared-convergence",
+            "campaign-shared-deadline"
+          ]
         }
       ],
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
@@ -987,6 +1064,13 @@
         "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
         "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4"
+      },
+      "historicalOriginal": {
+        "revision": "62abfdb3",
+        "pass": 19,
+        "fail": 11,
+        "exit": 1,
+        "harnessRevision": "73a6977c"
       }
     },
     "materials": {
@@ -1088,7 +1172,7 @@
     }
   },
   "testSourceHashNormalization": "utf8-no-bom-lf",
-  "productionFileSha256": "9ae88fff1e4a60d3e9c83fa24f5832ea1853c7e7fc36c6f736dcfe5db459e4a9",
+  "productionFileSha256": "552fe885ae591adda942c95f736971132660e0e17da2db209011eb1f726cfc2c",
   "deletedDeclarations": [
     {
       "path": "MyBehavior.cs",
@@ -1375,13 +1459,30 @@
         "materials"
       ],
       "reason": "One runtime-only index component per owner; removes the obsolete partial binding fields/methods, no save identity change."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate void RunCampaignMemoryMaintenanceCycle(bool processedWeeklyReportCommits)\n\t{\n\t\tvar previous = _campaignMemoryMaintenanceBudget;\n\t\tbool previousActive = _campaignMemoryMaintenanceCycleActive;\n\t\t_campaignMemoryMaintenanceCycleActive = true;\n\t\ttry\n\t\t{\n\t\t\tusing (PerfProbe.Scope(\"MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance\"))\n\t\t\t{\n\t\t\t\tTryRunCampaignMemoryMaintenance();\n\t\t\t}\n\t\t\tif (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())\n\t\t\t{\n\t\t\t\tusing (PerfProbe.Scope(\"MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance\"))\n\t\t\t\t{\n\t\t\t\t\tProcessDeferredDailyMaintenance();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tfinally\n\t\t{\n\t\t\t_campaignMemoryMaintenanceBudget = previous;\n\t\t\t_campaignMemoryMaintenanceCycleActive = previousActive;\n\t\t}\n\t}\n\n",
+      "sha256": "7e4001fb7934c615260ddd1619a07583db8ac1c51989c717969504b8de51a47d",
+      "evidence": [
+        "sealing"
+      ],
+      "reason": "Real Campaign callsite thin scope owner, lazy shared budget, restores nested/exception scope; no extra source differences permitted."
     }
   ],
   "productionDependencies": {
-    "MyBehavior.MemorySealing.cs": "63ef3f343991f561c66f8147f61c9bc38b04ff1941cee2e750ae2ad2cc2d7c0d",
-    "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c"
+    "MyBehavior.MemorySealing.cs": "5478a2e6e79f8ff08b0cb096a14fa7e9e978b76d042451a30b435a7f2bc9e146",
+    "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
+    "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051"
   },
   "removedProductionFiles": [
     "MyBehavior.EventSourceMaterialIndex.cs"
-  ]
+  ],
+  "campaignBudgetReview": {
+    "status": "SCOPED_INVERSE_REVIEWED_B1_NOT_DONE",
+    "previousProduction": "73a6977c",
+    "coverage": "One actual synchronous Campaign maintenance cycle, not all engine/module callbacks. Explicit unbounded calls and indivisible source/Apply/sort tails are not hard bounded.",
+    "counterexamples": "Five real pre-change failures plus fourteen compiled mutations; original 30 semantics retained among current 40."
+  }
 }
