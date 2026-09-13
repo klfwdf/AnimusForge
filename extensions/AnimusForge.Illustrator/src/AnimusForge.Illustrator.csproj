@@ -1,0 +1,148 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <Deterministic>true</Deterministic>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyName>AnimusForge.Illustrator</AssemblyName>
+    <RootNamespace>AnimusForge.Illustrator</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\bin\Win64_Shipping_Client\</OutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BannerlordGamePath Condition="'$(BannerlordGamePath)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordGamePath>
+    <RepoBinPath>$(MSBuildThisFileDirectory)..\..\..\bin\Debug\net472</RepoBinPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\System.Numerics.Vectors.dll')">$(RepoBinPath)\System.Numerics.Vectors.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll')">$(BannerlordGamePath)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll')">$(RepoBinPath)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MCMv5">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll')">$(BannerlordGamePath)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll')">$(RepoBinPath)\MCMv5.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\Newtonsoft.Json.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\Newtonsoft.Json.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\Newtonsoft.Json.dll')">$(RepoBinPath)\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll')">$(RepoBinPath)\TaleWorlds.CampaignSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Core">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Core.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Core.dll')">$(RepoBinPath)\TaleWorlds.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.DotNet">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll')">$(RepoBinPath)\TaleWorlds.DotNet.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll')">$(RepoBinPath)\TaleWorlds.Engine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll')">$(RepoBinPath)\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll')">$(RepoBinPath)\TaleWorlds.GauntletUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI.Data">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.Data.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.Data.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.Data.dll')">$(RepoBinPath)\TaleWorlds.GauntletUI.Data.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.InputSystem">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll')">$(RepoBinPath)\TaleWorlds.InputSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Library.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Library.dll')">$(RepoBinPath)\TaleWorlds.Library.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll')">$(RepoBinPath)\TaleWorlds.Localization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll')">$(RepoBinPath)\TaleWorlds.MountAndBlade.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.View">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll')">$(RepoBinPath)\TaleWorlds.MountAndBlade.View.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.GauntletUI.Widgets">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll')">$(RepoBinPath)\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll')">$(RepoBinPath)\TaleWorlds.ObjectSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll')">$(RepoBinPath)\TaleWorlds.TwoDimension.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.ScreenSystem.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.ScreenSystem.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.ScreenSystem.dll')">$(RepoBinPath)\TaleWorlds.ScreenSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem.ViewModelCollection">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.ViewModelCollection.dll')">$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.ViewModelCollection.dll')">$(RepoBinPath)\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SandBox.GauntletUI">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.GauntletUI.dll')">$(BannerlordGamePath)\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.GauntletUI.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.GauntletUI.dll')">$(RepoBinPath)\SandBox.GauntletUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SandBox.View">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.View.dll')">$(BannerlordGamePath)\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.View.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.View.dll')">$(RepoBinPath)\SandBox.View.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="AnimusForge">
+      <HintPath Condition="Exists('$(BannerlordGamePath)\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll')">$(BannerlordGamePath)\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll</HintPath>
+      <HintPath Condition="!Exists('$(BannerlordGamePath)\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll')">$(RepoBinPath)\AnimusForge.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

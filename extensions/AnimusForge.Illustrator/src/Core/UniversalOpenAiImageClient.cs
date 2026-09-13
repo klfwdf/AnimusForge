@@ -1,0 +1,568 @@
+using System;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TaleWorlds.Library;
+
+namespace AnimusForge.Illustrator.Core
+{
+    public sealed class ImageGenerationResult
+    {
+        public bool Success { get; set; }
+        public byte[] ImageBytes { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
+        public string ErrorMessage { get; set; } = string.Empty;
+        public string ResolvedPrompt { get; set; } = string.Empty;
+        public long ElapsedMilliseconds { get; set; }
+    }
+
+    public static class UniversalOpenAiImageClient
+    {
+        private static readonly HttpClient HttpClient;
+
+        static UniversalOpenAiImageClient()
+        {
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+            HttpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(120)
+            };
+        }
+
+        public static async Task<ImageGenerationResult> GenerateImageAsync(
+            string prompt,
+            string inputBase64Image = null,
+            string overrideModel = null,
+            string overrideSize = null,
+            string overrideQuality = null,
+            string overrideStyle = null,
+            CancellationToken cancellationToken = default)
+        {
+            var result = new ImageGenerationResult
+            {
+                ResolvedPrompt = prompt ?? string.Empty
+            };
+
+            var settings = IllustratorSettings.Instance;
+            if (settings == null || !settings.EnableImageGeneration)
+            {
+                result.ErrorMessage = "AI 生图系统未启用";
+                return result;
+            }
+
+            string baseUrl = (settings.ApiBaseUrl ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                result.ErrorMessage = "未配置生图 API 端点 (Base URL)";
+                return result;
+            }
+
+            string apiKey = (settings.ApiKey ?? string.Empty).Trim();
+            string model = !string.IsNullOrWhiteSpace(overrideModel) ? overrideModel.Trim() : (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
+            string size = !string.IsNullOrWhiteSpace(overrideSize) ? overrideSize.Trim() : (settings.ImageSize ?? "1024x1024").Trim();
+            string quality = !string.IsNullOrWhiteSpace(overrideQuality) ? overrideQuality.Trim() : (settings.SelectedQuality ?? "");
+            string style = !string.IsNullOrWhiteSpace(overrideStyle) ? overrideStyle.Trim() : (settings.SelectedStyle ?? "");
+
+            var stopwatch = Stopwatch.StartNew();
+
+            try
+            {
+                // 1. 智能协议探测：判断是标准生图端点(/images/generations)还是对话多模态生图(/chat/completions，如 gemini-3.1-flash-image)
+                bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);
+                string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
+
+                var (success, imageBytes, imageUrl, errorMessage, shouldFallbackToChat) =
+                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, inputBase64Image, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+
+                // 2. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
+                if (!success && shouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
+                {
+                    Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
+                    string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
+                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, inputBase64Image, apiKey, true, cancellationToken).ConfigureAwait(false);
+                    if (chatRetry.Success)
+                    {
+                        success = true;
+                        imageBytes = chatRetry.ImageBytes;
+                        imageUrl = chatRetry.ImageUrl;
+                        errorMessage = null;
+                    }
+                    else
+                    {
+                        errorMessage = chatRetry.ErrorMessage;
+                    }
+                }
+
+                if (success && imageBytes != null && imageBytes.Length > 0)
+                {
+                    result.Success = true;
+                    result.ImageBytes = imageBytes;
+                    result.ImageUrl = imageUrl ?? string.Empty;
+                }
+                else
+                {
+                    result.ErrorMessage = errorMessage ?? "未能从服务端响应中提取到有效图像数据";
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                result.ErrorMessage = "生图请求已超时或被取消";
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = "生图通信异常: " + ex.Message;
+                Log($"[Illustrator] Exception during generation: {ex}");
+            }
+            finally
+            {
+                stopwatch.Stop();
+                result.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}");
+            }
+
+            return result;
+        }
+
+        public static bool IsChatCompletionProtocol(string model, string baseUrl, bool useExactUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(baseUrl) && baseUrl.IndexOf("/chat/completions", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(model))
+            {
+                string m = model.ToLowerInvariant();
+                // 常见以对话多模态形式输出图像的模型 (如 Gemini Native Image 系列)
+                if (m.Contains("gemini") && m.Contains("image")) return true;
+                if (m.Contains("chat") && m.Contains("image")) return true;
+            }
+
+            return false;
+        }
+
+        public static string ResolveEndpointUrl(string baseUrl, bool isChatCompletion, bool useExactUrl)
+        {
+            string url = (baseUrl ?? string.Empty).Trim().TrimEnd('/');
+            if (useExactUrl)
+            {
+                return url;
+            }
+
+            if (isChatCompletion)
+            {
+                if (url.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+                {
+                    return url;
+                }
+                if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
+                {
+                    url = url.Substring(0, url.Length - "/images/generations".Length).TrimEnd('/');
+                }
+                if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
+                {
+                    return url + "/chat/completions";
+                }
+                return url + "/v1/chat/completions";
+            }
+            else
+            {
+                if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
+                {
+                    return url;
+                }
+                if (url.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+                {
+                    url = url.Substring(0, url.Length - "/chat/completions".Length).TrimEnd('/');
+                }
+                if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
+                {
+                    return url + "/images/generations";
+                }
+                return url + "/v1/images/generations";
+            }
+        }
+
+        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToChat)> AttemptGenerateOnceAsync(
+            string endpointUrl,
+            string model,
+            string prompt,
+            string size,
+            string quality,
+            string style,
+            string inputBase64Image,
+            string apiKey,
+            bool isChatProtocol,
+            CancellationToken cancellationToken)
+        {
+            JObject payload;
+            if (isChatProtocol)
+            {
+                // 针对多模态对话生图模型 (如 Gemini Native Image) 进行宽高比与画风画质提示词及参数注入
+                string effectivePrompt = BuildChatImagePrompt(prompt, size, quality, style);
+
+                JToken messageContent;
+                if (!string.IsNullOrWhiteSpace(inputBase64Image))
+                {
+                    string mimeType = inputBase64Image.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
+                    string dataUri = inputBase64Image.StartsWith("data:") ? inputBase64Image : $"data:{mimeType};base64,{inputBase64Image}";
+
+                    messageContent = new JArray
+                    {
+                        new JObject
+                        {
+                            ["type"] = "text",
+                            ["text"] = effectivePrompt
+                        },
+                        new JObject
+                        {
+                            ["type"] = "image_url",
+                            ["image_url"] = new JObject
+                            {
+                                ["url"] = dataUri
+                            }
+                        }
+                    };
+                }
+                else
+                {
+                    messageContent = effectivePrompt;
+                }
+
+                payload = new JObject
+                {
+                    ["model"] = model,
+                    ["messages"] = new JArray
+                    {
+                        new JObject
+                        {
+                            ["role"] = "user",
+                            ["content"] = messageContent
+                        }
+                    }
+                };
+
+                // Gemini 等多模态对话生图原生支持 aspect_ratio 顶层字段
+                string ar = ResolveGeminiAspectRatio(size);
+                if (!string.IsNullOrWhiteSpace(ar))
+                {
+                    payload["aspect_ratio"] = ar;
+                }
+            }
+            else
+            {
+                payload = new JObject
+                {
+                    ["model"] = model,
+                    ["prompt"] = prompt,
+                    ["n"] = 1,
+                    ["size"] = size
+                };
+
+                if (!string.IsNullOrWhiteSpace(quality))
+                {
+                    payload["quality"] = quality;
+                }
+
+                if (!string.IsNullOrWhiteSpace(style))
+                {
+                    payload["style"] = style;
+                }
+            }
+
+            using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))
+            {
+                request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+
+                if (!string.IsNullOrWhiteSpace(apiKey))
+                {
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                }
+
+                Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, hasRefImg={!string.IsNullOrWhiteSpace(inputBase64Image)})...");
+
+                using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false))
+                {
+                    string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string errorMsg = ExtractErrorMessage(responseText, (int)response.StatusCode);
+                        Log($"[Illustrator] Request failed: {errorMsg}");
+
+                        bool fallback = false;
+                        if (!isChatProtocol && (
+                            errorMsg.IndexOf("not supported on /v1/images/generations", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            errorMsg.IndexOf("field messages is required", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            errorMsg.IndexOf("not support", StringComparison.OrdinalIgnoreCase) >= 0))
+                        {
+                            fallback = true;
+                        }
+
+                        return (false, null, null, errorMsg, fallback);
+                    }
+
+                    var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
+                    if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
+                    {
+                        return (true, extracted.Bytes, extracted.Url, null, false);
+                    }
+
+                    return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)", false);
+                }
+            }
+        }
+
+        private sealed class ExtractedImage
+        {
+            public byte[] Bytes { get; set; }
+            public string Url { get; set; }
+        }
+
+        private static async Task<ExtractedImage> ExtractImageAsync(string responseText, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(responseText)) return null;
+
+            JObject parsed = JObject.Parse(responseText);
+
+            // 1. 标准 OpenAI Images 格式: "data": [ { "b64_json": "...", "url": "..." } ]
+            if (parsed["data"] is JArray dataArray && dataArray.Count > 0)
+            {
+                JToken firstItem = dataArray[0];
+                string b64 = firstItem["b64_json"]?.ToString();
+                string url = firstItem["url"]?.ToString();
+
+                if (!string.IsNullOrWhiteSpace(b64))
+                {
+                    return new ExtractedImage { Bytes = Convert.FromBase64String(b64) };
+                }
+                if (!string.IsNullOrWhiteSpace(url))
+                {
+                    byte[] bytes = await DownloadImageBytesAsync(url, cancellationToken).ConfigureAwait(false);
+                    return new ExtractedImage { Bytes = bytes, Url = url };
+                }
+            }
+
+            // 2. Chat Completions 图像格式: "choices": [ { "message": { "images": [ ... ], "content": "..." } } ]
+            if (parsed["choices"] is JArray choices && choices.Count > 0)
+            {
+                JToken message = choices[0]["message"];
+                if (message != null)
+                {
+                    // 2a. 检查 message.images 数组 (Gemini/OneAPI 标准多模态出图)
+                    if (message["images"] is JArray images && images.Count > 0)
+                    {
+                        foreach (var imgToken in images)
+                        {
+                            string rawUrl = null;
+                            if (imgToken is JObject imgObj)
+                            {
+                                rawUrl = imgObj["image_url"]?["url"]?.ToString()
+                                         ?? imgObj["url"]?.ToString()
+                                         ?? imgObj["b64_json"]?.ToString()
+                                         ?? imgObj["base64"]?.ToString();
+                            }
+                            else if (imgToken is JValue val)
+                            {
+                                rawUrl = val.ToString();
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(rawUrl))
+                            {
+                                var extracted = await ParseUriOrBase64Async(rawUrl, cancellationToken).ConfigureAwait(false);
+                                if (extracted?.Bytes != null && extracted.Bytes.Length > 0)
+                                    return extracted;
+                            }
+                        }
+                    }
+
+                    // 2b. 检查 message.content 中的 Markdown 图片格式或直接 data:image / URL
+                    string content = message["content"]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(content))
+                    {
+                        var match = Regex.Match(
+                            content,
+                            @"!\[.*?\]\((https?://[^\s\)]+|data:image/[^;]+;base64,[^\s\)]+)\)");
+                        if (match.Success)
+                        {
+                            var extracted = await ParseUriOrBase64Async(match.Groups[1].Value, cancellationToken).ConfigureAwait(false);
+                            if (extracted?.Bytes != null && extracted.Bytes.Length > 0)
+                                return extracted;
+                        }
+
+                        if (content.StartsWith("data:image", StringComparison.OrdinalIgnoreCase) ||
+                            content.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                            content.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var extracted = await ParseUriOrBase64Async(content.Trim(), cancellationToken).ConfigureAwait(false);
+                            if (extracted?.Bytes != null && extracted.Bytes.Length > 0)
+                                return extracted;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static async Task<ExtractedImage> ParseUriOrBase64Async(string uriOrBase64, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(uriOrBase64)) return null;
+
+            uriOrBase64 = uriOrBase64.Trim();
+            if (uriOrBase64.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
+            {
+                int commaIdx = uriOrBase64.IndexOf(',');
+                string b64 = commaIdx >= 0 ? uriOrBase64.Substring(commaIdx + 1) : uriOrBase64;
+                return new ExtractedImage { Bytes = Convert.FromBase64String(b64.Trim()) };
+            }
+
+            if (uriOrBase64.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                uriOrBase64.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                byte[] bytes = await DownloadImageBytesAsync(uriOrBase64, cancellationToken).ConfigureAwait(false);
+                return new ExtractedImage { Bytes = bytes, Url = uriOrBase64 };
+            }
+
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(uriOrBase64);
+                if (bytes != null && bytes.Length > 100)
+                {
+                    return new ExtractedImage { Bytes = bytes };
+                }
+            }
+            catch
+            {
+            }
+
+            return null;
+        }
+
+        private static async Task<byte[]> DownloadImageBytesAsync(string url, CancellationToken cancellationToken)
+        {
+            try
+            {
+                using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(60) })
+                {
+                    return await client.GetByteArrayAsync(url).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"[Illustrator] Failed to download generated image from {url}: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static string ExtractErrorMessage(string responseBody, int statusCode)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(responseBody))
+                {
+                    JObject obj = JObject.Parse(responseBody);
+                    JToken error = obj["error"];
+                    if (error != null)
+                    {
+                        string msg = error["message"]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(msg))
+                        {
+                            return $"HTTP {statusCode}: {msg}";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return $"HTTP {statusCode}: {responseBody}";
+        }
+
+        public static string ResolveGeminiAspectRatio(string size)
+        {
+            if (string.IsNullOrWhiteSpace(size)) return null;
+
+            string s = size.Trim().ToLowerInvariant();
+            string[] parts = s.Split(new[] { 'x', '*', ':' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2 && int.TryParse(parts[0], out int w) && int.TryParse(parts[1], out int h) && h > 0)
+            {
+                double ratio = (double)w / h;
+                // 常见官方比例映射: 1:1, 16:9, 9:16, 4:3, 3:4
+                if (ratio >= 0.95 && ratio <= 1.05) return "1:1";
+                if (ratio >= 1.55 && ratio <= 1.95) return "16:9";
+                if (ratio >= 0.50 && ratio <= 0.65) return "9:16";
+                if (ratio >= 1.25 && ratio <= 1.45) return "4:3";
+                if (ratio >= 0.68 && ratio <= 0.85) return "3:4";
+                if (ratio > 1.05) return "16:9";
+                return "9:16";
+            }
+
+            return null;
+        }
+
+        public static string BuildChatImagePrompt(string prompt, string size, string quality, string style)
+        {
+            var directives = new System.Collections.Generic.List<string>();
+
+            string ar = ResolveGeminiAspectRatio(size);
+            if (!string.IsNullOrWhiteSpace(ar))
+            {
+                directives.Add($"aspect ratio {ar}");
+                if (ar == "16:9") directives.Add("panoramic widescreen landscape format");
+                else if (ar == "9:16") directives.Add("vertical portrait format");
+                else if (ar == "3:4") directives.Add("tall portrait format");
+                else if (ar == "4:3") directives.Add("standard landscape format");
+                else if (ar == "1:1") directives.Add("square format");
+            }
+            if (!string.IsNullOrWhiteSpace(size))
+            {
+                directives.Add($"target resolution {size}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(quality))
+            {
+                if (quality.Equals("hd", StringComparison.OrdinalIgnoreCase))
+                {
+                    directives.Add("ultra-high definition, 4k resolution, hyper-detailed, masterpiece, hd quality");
+                }
+                else if (quality.Equals("standard", StringComparison.OrdinalIgnoreCase))
+                {
+                    directives.Add("standard definition quality");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(style))
+            {
+                if (style.Equals("vivid", StringComparison.OrdinalIgnoreCase))
+                {
+                    directives.Add("vivid style, hyper-real, dramatic cinematic lighting, rich saturated colors");
+                }
+                else if (style.Equals("natural", StringComparison.OrdinalIgnoreCase))
+                {
+                    directives.Add("natural style, authentic realism, soft natural lighting, true to life");
+                }
+            }
+
+            if (directives.Count > 0)
+            {
+                string directiveText = string.Join(", ", directives);
+                return $"{prompt}\n[Format Directive: {directiveText}]";
+            }
+
+            return prompt;
+        }
+
+        private static void Log(string message)
+        {
+            TaleWorlds.Library.Debug.Print(message);
+        }
+    }
+}
