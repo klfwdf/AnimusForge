@@ -1,6 +1,6 @@
 # 当前执行状态（2026-09-14）
 
-用户已明确继续主体重构，手动 B1 / P1 ACTIVE，自动化仍 PAUSED。唯一当前状态见[根 HANDOFF](../../HANDOFF.md)，范围/风险见[实施台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。按第15节先闭合未审 WIP，继续真正主体职责提取；下方 v1.2 暂停是历史，不覆盖当前指示。B1/阶段8未完成，不进入未满足依赖的后续批次。
+本轮生产73a6977c的素材索引独立职责与精确集成已离线验证，B1整体VERIFY（未整批合格），自动化仍PAUSED。9个原未审项不再是当前续点，下一步是第15节的深来源/原子预算。唯一当前状态见[根 HANDOFF](../../HANDOFF.md)，范围/风险见[实施台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。第15节“先闭合未审WIP”的本轮源差异集成已完成，继续真正主体职责提取和剩余预算；下方 v1.2 暂停是历史，不覆盖当前指示。B1/阶段8未完成，不进入未满足依赖的后续批次。
 
 ## 以下为原计划与历史状态
 

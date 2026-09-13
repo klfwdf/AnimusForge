@@ -1,3 +1,22 @@
+# 当前 B1 集成与独立素材索引（2026-09-14）
+
+当前 source inverse 已纳入 **54 个真实 MyBehavior 声明、2 个删除跨度、1 个精确新增装配字段跨度、2 个完整运行时源文件锁**。这只关闭所列源差异的集成门禁，不代表 B1 深来源预算、真实游戏或旧档验收通过。
+
+- 素材的重建/重复键策略与结构绑定已提取到 `Refactor/Runtime/EventSourceMaterialIndex.cs`；旧 `MyBehavior.EventSourceMaterialIndex.cs` 删除。MyBehavior 仍是原始记录/存档与发布的唯一 owner。
+- `run_materials.py` 当前 23/0；`--source-baseline c21523f8` 23/0；`--source-baseline 62abfdb3` 8 个有效旧版红例；七个故障注入仍可检出。只编译本次 manifest 的显式源文件，复用输出目录不会混入旧 Index.cs。
+- `test_source_parity.py` 8 个测试（含 5 个依赖变体），检验完整基线恢复、正文/新增字段漂移、重复字段、未列源改动、恢复已删代码、组件/测试输入篡改和旧 partial 回流。
+- 原 `unreviewedWip` 保存在 `previousUnreviewedWip`，是收到的历史清单；不得把历史的“未审”段落当成本候选状态。当前接受以精确声明/文件 hash、有效对照与最终交接为准，不只把 acceptedInverse 改为 true。
+- 正常/故障验证层级与回滚见[本轮 HANDOFF](../../docs/handoffs/2026-09-14-b1-index-owner-integration-handoff.md)。原旧版结果保留于 Git，不修改为当时已通过。
+
+```powershell
+$env:DOTNET_EXE = 'G:\AFMOD\.dotnet-sdk\dotnet.exe'
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py --source-baseline c21523f8
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/test_source_parity.py
+```
+
+## 以下为历史范围/阶段记录，当前状态以上方及最新交接为准
+
 # Memory summary main-thread boundary tests
 
 ```powershell
