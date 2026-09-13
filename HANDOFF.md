@@ -1,3 +1,14 @@
+# AF 总 HANDOFF — 用户要求暂停，WIP交接并推送（2026-09-13）
+
+**当前指令：停止开发。自动化 `af-7-8` 已 PAUSED，所有实施/测试代理已停止。以下历史ACTIVE/继续B1不再生效；新指示前不恢复。**
+
+- [简明暂停 HANDOFF / 进展表](docs/handoffs/2026-09-13-af-automation-pause-handoff.md)为当前唯一交接入口，含WIP源码坐标和未完成验证。
+- 最后完整离线联验生产 `62abfdb3`；本次暂停现场 `c21523f8` 是 **WIP、未完成最终联验**。不能把前者六项Stage/API等成绩套到后者。
+- 本次用户明确授权推送现有工作及HANDOFF到专门重构分支；仅允许普通快进 `origin/codex/af-main-refactor-continuation-20260831`，不融合分叉、不force/部署/切默认。
+- B1仍未整批合格，B2/B3未进入，阶段8未DONE。两份用户草稿和旧local-only简明版保持；最新制作组简明版留`.tmp/af-core-precloseout-team-handoff.md`。
+
+## 以下为历史记录，不是自动恢复或发布授权
+
 # AF 总 HANDOFF — B1三类重验与入队资格已联验，整批预算仍未放行（2026-09-13）
 
 ## 当前唯一续点：继续同一 B1，不进入 B2

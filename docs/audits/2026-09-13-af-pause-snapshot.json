@@ -1,0 +1,79 @@
+{
+  "status": "PAUSED_WIP",
+  "sourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+  "lastFullyVerifiedProduction": "62abfdb3",
+  "automation": "af-7-8 PAUSED",
+  "sourceEvidence": [
+    {
+      "suite": "materials",
+      "drift": [],
+      "manifestSha256": "3901924553a1c2f414dfeab59a60b969b2774860739b002dd875266d0d9ef039",
+      "lastResult": "MATERIALS_RESULT scenarios=23 failures=0 actual_record_index_sanitize=true game_save=NOT_TESTED"
+    },
+    {
+      "suite": "sealing",
+      "drift": [],
+      "manifestSha256": "47ec8fcd7105564dddf312975b6e0165255cfb0cbf8a63db293187a63c6d8f0a",
+      "lastResult": "SEALING_RESULT pass=30 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    }
+  ],
+  "sourceLocations": [
+    {
+      "path": "MyBehavior.cs",
+      "symbol": "private void RecordEventSourceMaterial(",
+      "start": 13705,
+      "end": 13763,
+      "note": "正常素材追加/更新，移除完整索引下的全史fallback"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "symbol": "private void RebuildEventSourceMaterialIndex(",
+      "start": 20126,
+      "end": 20143,
+      "note": "局部完整重建，named last-wins、空键first-wins"
+    },
+    {
+      "path": "MyBehavior.EventSourceMaterialIndex.cs",
+      "symbol": "private bool IsEventSourceMaterialIndexCurrent(",
+      "start": 16,
+      "end": 25,
+      "note": "绑定source/map引用、count和List结构；同步接口不变"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "symbol": "private bool TrySealPastDailyMemoryDrafts(",
+      "start": 4814,
+      "end": 4833,
+      "note": "封存入口；同步完成或有预算地续跑"
+    },
+    {
+      "path": "MyBehavior.MemorySealing.cs",
+      "symbol": "private bool ContinueDailyMemorySeal(",
+      "start": 198,
+      "end": 315,
+      "note": "7阶段、128便宜操作/8昂贵操作每调用；仍有原子尾步"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "symbol": "private void TryRunCampaignMemoryMaintenance(",
+      "start": 17741,
+      "end": 17770,
+      "note": "同日无job仍续跑，使用完成回执保留原扫描条件"
+    }
+  ],
+  "localFrozenIndex": ".tmp/pause-transfer-20260913/index.json",
+  "frozenFiles": 180,
+  "localFrozenIndexSha256": "ca1f2e93e37ab5f282c82121d27c904ed4b0745efe1051d1512140ef2817dc7a",
+  "notCompleted": [
+    "Sealing mutations after final30",
+    "Shared suite adaptation and strict inverse",
+    "Final adjacent regressions and six Stage builds",
+    "B1 hard-budget gates",
+    "LIVE/SAVE",
+    "B2/B3"
+  ],
+  "pushTarget": "origin/codex/af-main-refactor-continuation-20260831",
+  "remoteFetchedAncestor": "bd2ed35f",
+  "forcePush": false,
+  "gameDeployed": false
+}
