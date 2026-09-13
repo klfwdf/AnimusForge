@@ -312,6 +312,8 @@ P4 的具体方法签名、DTO 和版本扩展方式在实现前定稿，不在�
 
 ## 12. B1 分段调度与真实writer联合候选（未整批放行）
 
+> 当前已由第13节接续；本节保留前候选证据，不再作为下一轮重复捕获优化的待实现清单。
+
 **生产/测试 `e77602f9`，检查点 `637da7f5`，前生产 `7f89e18d`；B1基线 `90201155`。** [本候选JSON](../audits/2026-09-13-b1-resumable-writers-candidate.json)、[49点代码范围图](../architecture/af-framework-code-scope.md)绑定当前。前轮typed复制/完整指纹/部分异常回执继续保留，不重做已通过项。
 
 ### 本轮已经关闭的缺口
@@ -363,3 +365,46 @@ LIVE/SAVE/provider/音频/外部DLL加载、全部窗口UI和完整load/retentio
 ### B1 在途：一次捕获与轻量重验联动（本轮 ACTIVE）
 
 以 `476d3124`（生产 `e77602f9`）为回滚起点，在同一 B1 联动处理三类来源捕获、重试重验、最终 Parse/Apply 门禁及真实 writer 反例。保留完整 raw 内容摘要，把有效设置/名字/场景等上下文单独建模，删除每次重验重建全部 Prompt/深复制的旧路径；同步修复状态 getter 先净化造成的 raw 变动漏检。最终重验仍在主线程原子闭包，不能把 reduced cost 说成深记录硬预算通过。根执行者唯一生产写入，独立测试并行；未改公共接口、游戏部署或默认路径。
+
+## 13. B1 大来源重验 / 原始状态 / overview 入队资格联合候选
+
+**生产/测试 `62abfdb3`，检查点 `c3ffdd25`，前生产 `e77602f9`；B1 仍 NOT_BATCH_ACCEPTED，不进入 B2。** 本节接续并覆盖第12节的当前续点，不重做已通过的分片调度或编辑/导入保护。[本候选 JSON](../audits/2026-09-13-b1-context-admission-candidate.json)记录准确输入、层级、源码与证据。
+
+### 一次联动完成的范围
+
+- Daily / Major / Overview 从捕获、重试、原 Build/Parse 到最终接受共用新的 raw/context 检查。普通成功与第三次成功都仅初捕获一次、每个 Prompt 生成一次；重验不再 Clone/HasPending/Build，原 provider/RPM、失败文字、AFEF/素材/cursor 语义保持。
+- 修复原状态 getter 先净化、后 fingerprint 的真实漏检：raw Summary/Name/Error/负cursor/IncludedBlockIds 的格式变化仍应废弃旧结果；缺失 state 与字典存在但值为 null 也区分。处理副本仍用原 sanitizer，不能拿净化后的正文充当完整原始来源。
+- Daily 保存实际生效字数与有序场景依赖，避免调设置却仍是80字、明确历史场景下玩家移动、空白行重复header等无关变动误退。Major 只复用原来实际解析的实体名字；主体增加新 Build/Parse 依赖时同步扩 context 与对照测试，不把现在写死成永久白名单。
+- 初捕获复用唯一副本做原 pending 条件；初始绑定、retarget、context getter/threshold getter 同步改源都有门禁。最终 fresh raw 检查仍紧接原 Parse/Apply，同主线程无 await；未造 Save-only epoch。
+- Overview 资格查询改为一轮轻量有效ID投影，保留 seen 在内容前占位、原ID不trim计数但trim后匹配Included，以及 `[123][456]` 非幂等清理。真实 enqueue 的必要清理还在，未跨 public/weekly 副作用复用“已净化”列表。
+
+### 核实的代码位置（源码 `62abfdb3`）
+
+| 位置 | 符号 / 责任 |
+|---|---|
+| `MyBehavior.MemorySummaryInput.cs:126-163` | `private MemorySummarySourceView ReadMemorySummarySource(` — 主线程/owner/队列/目标资格，直接读取 raw 字典状态；不把 live view 留给异步请求 |
+| `MyBehavior.MemorySummaryInput.cs:88-112` | `private static void DescribeMemorySummaryDailyContext(` — 首次构建有序 header / 非空正文场景依赖；明确场景和无效设置变动不误退 |
+| `MyBehavior.MemorySummaryInput.cs:205-250` | `private string CaptureMemorySummaryContextFingerprint(` — 实际有效目标字数、写作要求、目标 observer、名字 resolver、解析身份 |
+| `MyBehavior.MemorySummaryInput.cs:252-319` | `private MemorySummaryInput CaptureMemorySummaryInput(` — 三类唯一复制/净化/原 Build，原始来源与上下文分开；初捕获末尾绑定检查 |
+| `MyBehavior.MemorySummaryInput.cs:338-355` | `private bool IsMemorySummaryInputCurrent(` — retarget先拒绝，context/门槛 getter 后重新读取raw；唯一完整raw摘要紧接解析/提交 |
+| `MyBehavior.cs:26957-26988` | `private bool HasMemoryOverviewPendingBlocks(` — 一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图 |
+
+### 集中验收
+
+| 检查 | 结果与边界 |
+|---|---|
+| 主链 / 原行为 | captured109、business36、planning24、writers238、terminal85、commit51、admission54 全绿 |
+| 故障与旧代码 | captured28反例、admission5反例、parse/final两反例均先编译成功再运行红；真实 `e77602f9` Input-only 为30红/55绿，确认旧raw漏检。其他旧反例保留原精确证据，不冒称本轮全部重跑 |
+| 旁路回归 | helper32、UI85、history852、native27；严格50声明+1删除恢复整份`90201155`，3结构+2测试源hash防绕过 |
+| 兼容 / 构建 | 最终Debug/Release × 1.3/1.4/Bootstrap六项Stage，6 DLL/marker/stage hash一致；API119/256并发、预期CS0122、四实现DLL元数据532；SyncData146/behaviors36保持 |
+| 成本 | 1000行重复检查分配约1.57MB→238,912B，Capture/Clone/Build均0；初次新增绑定检查为约18.2ms/1.835MB，不声称初捕获更快。2000块资格查询完整block copy 2000→0，完整sanitizer 1→0，仍有state copy与线性扫描 |
+
+最终原始输入/测试工具/生成源码/日志/实际测试二进制与六份产品DLL，已冻结到忽略目录 `.tmp/b1-20260913/context-admission-62abfdb3/`（971项，SHA256索引）。原重复捕获基线单独保留，不被新current覆盖。耗时受JIT/并行负载影响，最新复验约10.3–16.1ms，**完整raw hash仍不可抢占，硬预算没有过**；不能由分配下降推断实机不卡顿。真实游戏/provider/旧档/完整UI/声音/外部DLL未验。
+
+### 后续只续 B1 剩余完整责任
+
+1. 完整 raw 摘要、首次复制/解析和单结果 Apply 的 record/time 原子成本；若跨Tick，必须先证明全部真实写者覆盖或不可变发布，不用几个Save计数冒充一致性。
+2. `TrySealPastDailyMemoryDrafts` 的初始索引和收尾两队列全量HasPending、maintenance计时前past-draft探测、候选ID与无效owner清理；保留封存未请求时的队列/存档责任，再接既有分片器。
+3. Daily Apply/public/weekly尾部和 `RecordEventSourceMaterial` index miss 后全史扫描；先验证Import/Dev索引维护，再缩小重复扫描。继续保留部分失败通知/停止，不冒充事务恢复。
+
+统一通过B1五道门槛后才进B2；当前更大批次不是跳过未验门禁。自动化 `af-7-8` 只读确认 ACTIVE/每小时，继续同一批；未新fetch/推送/部署/碰存档，远端`bd2ed35f`仍只是已知快照。两份2026-09-06用户草稿和local-only旧简明版hash保持、不暂存。回滚按用户指示定向revert `62abfdb3`，不reset。简明制作组版留`.tmp/af-core-precloseout-team-handoff.md`，不上传。
