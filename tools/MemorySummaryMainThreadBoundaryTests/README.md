@@ -70,6 +70,21 @@ G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/ru
 
 `source_parity.py` / `source-review-b1.json` 只对50个已审声明逆变换，并精确恢复1个已审删除的私有预扫方法，并约束对应 runner/harness hash；随后原 whole-owner/default 校验完整执行。WIP `c21523f8` 记在 `unreviewedWip`，`HasPastDailyMemoryDrafts` 为未审删除；inverse 必须失败并列出全部未审项。不得仅刷新已审 sha256 / `productionFileSha256` 消除未解释变化。
 
+未审 8 个符号和删除的 `HasPastDailyMemoryDrafts` 只挂 sealing/materials 反例指针（mutate 名、变体日志、30/23 里变红的用例）。`acceptedInverse` 仍为 false。未审 evidence 会锁 runner/harness hash，但这不是验收，也不能让 inverse 变绿。
+
+```powershell
+$env:DOTNET_EXE = 'C:\Program Files\dotnet\dotnet.exe'
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --original
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --mutate ignore-empty-probe
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py --source-baseline 62abfdb3
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py --mutate restore-fallback
+```
+
+封存 current 30/0；`--original` `62abfdb3` 19/11；8 个 sealing mutate 必须 BUILD_PASS 且 EXIT=1。素材 current 23/0；baseline 8 红；7 个 materials mutate EXIT=1。日志 `.generated/sealing/<variant>/run.log`、`.generated/materials/<variant>/run.log`；汇总 `.tmp/b1-sealing-mutate-20260914/summary.json` 与 `.tmp/b1-adjacent-20260914/summary.json`。丢掉的绿 mutate 不当红例。
+
+
 ### 实际变化与仍未通过的门槛
 
 - typed copy 分离完整可变图；SHA256 流式接收完整来源/Prompt/解析依赖，不再构造嵌套转义大JSON。1000行源仍全部保留，测试分配由旧9,257,688降到1,579,504 bytes；耗时随机器负载变化，不作游戏帧率承诺。
