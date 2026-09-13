@@ -1,3 +1,16 @@
+# AF 总 HANDOFF — B1三类重验与入队资格已联验，整批预算仍未放行（2026-09-13）
+
+## 当前唯一续点：继续同一 B1，不进入 B2
+
+- **生产/测试 `62abfdb3`，检查点 `c3ffdd25`，前生产 `e77602f9`。** 本轮统一改三类初捕获/重试/最终来源检查、修raw状态漏检，并压掉overview资格判断的整图复制；原Build/Parse/Apply/Mark、Prompt文字、存档与公共ABI不改。
+- **已验证：** captured109 / business36 / planning24 / terminal85 / commit51 / admission54；28+5+2相关故障反例、真实旧Input30红，UI/history/native与最终六项Stage、API/元数据/146键/36 behaviors保持。准确层级、路径/符号/行号和回滚见[计划第13节](docs/phase8/af-core-precloseout-plan-20260913.md)，[候选证据](docs/audits/2026-09-13-b1-context-admission-candidate.json)，[53点代码范围图](docs/architecture/af-framework-code-scope.md)。
+- **玩家可理解的结果：** 请求途中数据改了，旧成功/失败结果不会覆盖新记忆；不再在每次重试/确认时重复生成所有提示词。1000行重复检查分配约1.57MB→0.24MB；2000块资格查询完整块复制2000→0。首次绑定检查增加初捕获成本；未证明实机不卡顿或深记录硬预算。
+- **下一轮只做剩余责任：** 完整raw/首次捕获/Apply原子成本，封存/维护外围全扫，public/weekly尾部index miss全史扫描。不要重做已通过的分片/编辑导入或本次raw/context；B1与阶段8仍非DONE，真实游戏/旧档等继续待验。
+- 工作区`G:\AFMOD\AF-REFACTOR`，分支`codex/af-framework-skill-delivery-20260911`。自动化`af-7-8`只读确认每小时ACTIVE；未新fetch/推送、未覆盖游戏/碰存档，远端`bd2ed35f`仅已知快照。D-A–D-E/public扩展/默认迁移/广泛删旧未擅自执行。
+- 971项最终源码、测试/产品二进制与日志冻结在`.tmp/b1-20260913/context-admission-62abfdb3/`；两份用户草稿及旧local-only简明HANDOFF原hash保持、不暂存。简明版留`.tmp/af-core-precloseout-team-handoff.md`，不上传。
+
+## 历史：前候选接续记录
+
 # AF 总 HANDOFF — B1分段调度/编辑导入已联验，深来源预算未放行（2026-09-13）
 
 ## 当前任务：继续同一B1，不进入B2
