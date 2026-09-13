@@ -560,6 +560,31 @@ namespace AnimusForge.Illustrator.Engine
 
             TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Processing Engine Texture: name={engineTexture.Name}, size=({w}x{h})");
 
+            // 渲染目标纹理（纹章/缩略图缓存产出的 GPU RenderTarget）不能被 CPU 直接读取，
+            // 对其调用 SaveToFile/GetPixelData 会在原生层崩溃（托管 try/catch 拦截不了）。
+            // 必须先转换为资源纹理再读取；转换失败则直接放弃该参考图，绝不再碰这张纹理。
+            bool isRenderTarget = false;
+            try
+            {
+                isRenderTarget = engineTexture.IsRenderTarget;
+            }
+            catch
+            {
+                isRenderTarget = true;
+            }
+            if (isRenderTarget)
+            {
+                try
+                {
+                    engineTexture.TransformRenderTargetToResource("af_res_" + engineTexture.Name);
+                }
+                catch (Exception ex)
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] RenderTarget->Resource transform failed: {ex.Message}; skipping unsafe texture read.");
+                    return null;
+                }
+            }
+
             // 策略 1: 优先使用引擎原生 C++ 提供的 SaveToFile 导出
             // 原生引擎会在显卡内部自动分配 Staging 贴图并处理 Row Pitch 跨度与格式转换，完全杜绝内存越界崩溃
             string tempPngPath = Path.Combine(Path.GetTempPath(), $"af_offscreen_{Guid.NewGuid():N}.png");
@@ -606,10 +631,11 @@ namespace AnimusForge.Illustrator.Engine
             // 策略 2: 显卡行跨度安全对齐的 GetPixelData 缓冲回退 (向上对齐 256 字节并在外层安全保护)
             try
             {
+                // 宽缓冲：部分引擎纹理可能为 16F/8BPP 等更高位深格式，缓冲按 8BPP 上限分配，避免原生层写出界
                 int bytesPerPixel = 4;
                 int rawRowBytes = w * bytesPerPixel;
                 int alignedPitch = ((rawRowBytes + 255) / 256) * 256;
-                int safeBufferSize = Math.Max(w * h * 4, alignedPitch * h) + 65536;
+                int safeBufferSize = Math.Max(w * h * 8, alignedPitch * h) + 65536;
 
                 byte[] rawPixels = new byte[safeBufferSize];
                 engineTexture.GetPixelData(rawPixels);

@@ -100,9 +100,6 @@ namespace AnimusForge.Illustrator.Core
                     customStyleHint = string.Empty;
                     break;
             }
-            string responseFormat = settings.ResponseFormat ?? string.Empty;
-            int timeoutSeconds = settings.RequestTimeoutSeconds > 0 ? settings.RequestTimeoutSeconds : 120;
-
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -118,14 +115,14 @@ namespace AnimusForge.Illustrator.Core
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
 
                 var (success, imageBytes, imageUrl, errorMessage, shouldFallbackToChat) =
-                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, customStyleHint, responseFormat, timeoutSeconds, referenceImages, negativePrompt, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, customStyleHint, referenceImages, negativePrompt, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
 
                 // 2. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
                 if (!success && shouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                 {
                     Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                     string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, customStyleHint, responseFormat, timeoutSeconds, referenceImages, negativePrompt, apiKey, true, cancellationToken).ConfigureAwait(false);
+                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, customStyleHint, referenceImages, negativePrompt, apiKey, true, cancellationToken).ConfigureAwait(false);
                     if (chatRetry.Success)
                     {
                         success = true;
@@ -237,8 +234,6 @@ namespace AnimusForge.Illustrator.Core
             string quality,
             string style,
             string customStyleHint,
-            string responseFormat,
-            int timeoutSeconds,
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
             string negativePrompt,
             string apiKey,
@@ -346,11 +341,6 @@ namespace AnimusForge.Illustrator.Core
                 {
                     payload["style"] = style;
                 }
-
-                if (!string.IsNullOrWhiteSpace(responseFormat))
-                {
-                    payload["response_format"] = responseFormat;
-                }
             }
 
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))
@@ -364,11 +354,8 @@ namespace AnimusForge.Illustrator.Core
 
                 Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0})...");
 
-                using (var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false))
                 {
-                    timeoutCts.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds > 0 ? timeoutSeconds : 120));
-                    using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, timeoutCts.Token).ConfigureAwait(false))
-                    {
                         string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                         if (!response.IsSuccessStatusCode)
@@ -396,7 +383,6 @@ namespace AnimusForge.Illustrator.Core
 
                         return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)", false);
                     }
-                }
             }
         }
 

@@ -116,11 +116,10 @@ Assert-True ($envSrc.Contains('DateLabel') -and $envSrc.Contains('纪元时间')
 $settingsSrc = Get-Content (Join-Path $srcDir 'Settings\IllustratorSettings.cs') -Raw -Encoding UTF8
 Assert-True ($settingsSrc.Contains('dark-epic') -and $settingsSrc.Contains('cinematic') -and $settingsSrc.Contains('custom')) 'style dropdown offers dark-epic/cinematic/custom prompt options'
 Assert-True ($settingsSrc.Contains('CustomStylePrompt')) 'custom style prompt text setting exists'
-Assert-True ($settingsSrc.Contains('RequestTimeoutSeconds') -and $settingsSrc.Contains('SelectedResponseFormat')) 'timeout and response-format settings exist'
+Assert-True ($settingsSrc.Contains('EditCustomStylePrompt') -and $settingsSrc.Contains('EditNegativePrompt')) 'prompt settings use button-opened long-text editors'
+Assert-True ($settingsSrc.Contains('ShowLongTextEditor')) 'prompt editors reuse main-mod long text editor'
 
 Assert-True ($clientSrc.Contains('customStyleHint')) 'image client injects prompt-level style hints'
-Assert-True ($clientSrc.Contains('response_format')) 'image client sends optional response_format'
-Assert-True ($clientSrc.Contains('CancelAfter')) 'image client applies per-request timeout'
 
 $imageClient = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
 $genOverload = $imageClient.GetMethods([Reflection.BindingFlags]'Public,Static') | Where-Object {
