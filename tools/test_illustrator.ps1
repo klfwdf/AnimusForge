@@ -87,7 +87,9 @@ $screenCapture = Get-Content (Join-Path $srcDir 'Engine\ScreenCaptureHelper.cs')
 Assert-True ($screenCapture.Contains('ExtractBannerOffscreenAsync')) 'banner offscreen extraction exists'
 Assert-True ($screenCapture.Contains('ExtractHeroPortraitOffscreenAsync')) 'hero portrait offscreen extraction exists'
 Assert-True ($screenCapture.Contains('CaptureConversationSceneBase64')) 'conversation scene band capture exists'
-Assert-True ($screenCapture.Contains('BannerThumbnailCreationData')) 'banner thumbnail creation data used'
+Assert-True ($screenCapture.Contains('BannerTableau') -and $screenCapture.Contains('CharacterTableau')) 'tableau-view offscreen rendering used for banner/portrait'
+Assert-True ($screenCapture.Contains('IsRenderTarget') -and $screenCapture.Contains('Skipping GPU render-target')) 'render-target textures are never pixel-read directly'
+Assert-True (!$screenCapture.Contains('TransformRenderTargetToResource(')) 'no render-target transform call (crash-prone on shared textures)'
 Assert-True ($screenCapture.Contains('RunOnGameThreadAsync')) 'engine access is dispatched to main thread'
 
 $weeklySrc = Get-Content (Join-Path $srcDir 'Context\WeeklyReportContextExtractor.cs') -Raw -Encoding UTF8

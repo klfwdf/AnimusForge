@@ -560,9 +560,10 @@ namespace AnimusForge.Illustrator.Engine
 
             TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Processing Engine Texture: name={engineTexture.Name}, size=({w}x{h})");
 
-            // 渲染目标纹理（纹章/缩略图缓存产出的 GPU RenderTarget）不能被 CPU 直接读取，
-            // 对其调用 SaveToFile/GetPixelData 会在原生层崩溃（托管 try/catch 拦截不了）。
-            // 必须先转换为资源纹理再读取；转换失败则直接放弃该参考图，绝不再碰这张纹理。
+            // 渲染目标纹理（纹章/缩略图缓存/地图铭牌产出的 GPU RenderTarget）不能被 CPU 直接读取，
+            // 对其调用 SaveToFile/GetPixelData 会在原生层崩溃（托管 try/catch 拦截不了）；
+            // TransformRenderTargetToResource 实测也救不了（转换延迟到渲染同步点，且不能动共享纹理）。
+            // RT 一律跳过：调用方如需取像素必须走 TableauView 异步落盘通道。
             bool isRenderTarget = false;
             try
             {
@@ -574,15 +575,8 @@ namespace AnimusForge.Illustrator.Engine
             }
             if (isRenderTarget)
             {
-                try
-                {
-                    engineTexture.TransformRenderTargetToResource("af_res_" + engineTexture.Name);
-                }
-                catch (Exception ex)
-                {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] RenderTarget->Resource transform failed: {ex.Message}; skipping unsafe texture read.");
-                    return null;
-                }
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Skipping GPU render-target texture read: name={engineTexture.Name}");
+                return null;
             }
 
             // 策略 1: 优先使用引擎原生 C++ 提供的 SaveToFile 导出
@@ -791,85 +785,162 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 通过原版 CharacterThumbnailCache 离屏渲染指定英雄的真实 3D 模型立绘（含真实五官、发型与装备）。
-        /// 引擎创建与像素读取全部在游戏主线程执行，后台仅等待渲染完成回调。
+        /// 自建 TableauView 的逐帧泵状态：OnTick 放行渲染，预热若干帧后触发引擎原生异步落盘，
+        /// 等到 PNG 文件出现后收尾 OnFinalize。全程不触碰渲染目标纹理像素（避免原生崩溃）。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 2500)
+        private sealed class OffscreenTableauPump
         {
-            if (hero?.CharacterObject == null) return null;
+            public Action<float> OnTick;
+            public Func<TaleWorlds.Engine.TableauView> GetView;
+            public Action OnFinalize;
+            public int WarmupTicks;
+            public int MaxTicks;
+            public int Ticks;
+            public bool SaveRequested;
+            public string Dir;
+            public string Prefix;
+            public string SeenPath;
+            public TaskCompletionSource<string> Done;
+        }
+
+        private static string FindOffscreenFile(string dir, string prefix)
+        {
+            if (string.IsNullOrEmpty(dir) || string.IsNullOrEmpty(prefix)) return null;
             try
             {
-                var ready = new TaskCompletionSource<TaleWorlds.Engine.Texture>(TaskCreationOptions.RunContinuationsAsynchronously);
-                CharacterThumbnailCreationData creationData = null;
-                var immediate = await RunOnGameThreadAsync(() =>
-                {
-                    var cacheMgr = ThumbnailCacheManager.Current;
-                    if (cacheMgr == null) return null;
-                    var equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
-                    var code = CharacterCode.CreateFrom(hero.CharacterObject, equipment);
-                    if (code == null) return null;
-                    creationData = new CharacterThumbnailCreationData(code, t => ready.TrySetResult(t), () => ready.TrySetResult(null), true, maxDimension, maxDimension);
-                    return cacheMgr.CreateTexture(creationData).Texture;
-                }).ConfigureAwait(false);
-                if (immediate != null) ready.TrySetResult(immediate);
+                var matches = Directory.GetFiles(dir, prefix + "*");
+                if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0) return matches[0];
+            }
+            catch { }
+            try
+            {
+                var matches = Directory.GetFiles(Path.GetTempPath(), prefix + "*");
+                if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0) return matches[0];
+            }
+            catch { }
+            return null;
+        }
 
-                var winner = await Task.WhenAny(ready.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
-                var rendered = winner == ready.Task ? ready.Task.Result : null;
-                string b64 = null;
-                if (rendered != null)
+        /// <summary>
+        /// 单帧泵步（仅游戏主线程执行）：tick 放行一帧渲染 → 预热完成则请求落盘 → 文件连续两帧存在即完成。
+        /// 文件出现当帧可能是引擎写入中的半成品，须再等一帧确认稳定。
+        /// </summary>
+        private static void PumpOffscreenTableau(OffscreenTableauPump pump)
+        {
+            try
+            {
+                pump.Ticks++;
+                pump.OnTick?.Invoke(0.033f);
+
+                if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks)
                 {
-                    b64 = await RunOnGameThreadAsync(() => ConvertEngineTextureToBase64(rendered, maxDimension)).ConfigureAwait(false);
+                    var view = pump.GetView?.Invoke();
+                    if (view != null && TriggerTableauViewSave(view, out pump.Dir, out pump.Prefix))
+                    {
+                        pump.SaveRequested = true;
+                    }
                 }
-                if (creationData != null)
+
+                if (pump.SaveRequested)
                 {
-                    var data = creationData;
-                    await RunOnGameThreadAsync<object>(() => { try { ThumbnailCacheManager.Current?.DestroyTexture(data); } catch { } return null; }).ConfigureAwait(false);
+                    string path = FindOffscreenFile(pump.Dir, pump.Prefix);
+                    if (path != null)
+                    {
+                        if (path == pump.SeenPath)
+                        {
+                            try { pump.OnFinalize?.Invoke(); } catch { }
+                            pump.Done.TrySetResult(path);
+                            return;
+                        }
+                        pump.SeenPath = path;
+                    }
                 }
-                if (!string.IsNullOrWhiteSpace(b64))
+
+                if (pump.Ticks >= pump.MaxTicks || !Core.IllustratorRuntime.Post(() => PumpOffscreenTableau(pump)))
                 {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait thumbnail extracted for {hero.Name} ({b64.Length} chars)");
+                    try { pump.OnFinalize?.Invoke(); } catch { }
+                    pump.Done.TrySetResult(null);
                 }
-                return b64;
             }
             catch (Exception ex)
             {
-                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait offscreen error: {ex.Message}");
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Tableau pump error: {ex.Message}");
+                try { pump.OnFinalize?.Invoke(); } catch { }
+                pump.Done.TrySetResult(null);
+            }
+        }
+
+        /// <summary>
+        /// 后台读已落盘的 PNG：BGRA→RGB 通道互换 + 缩放 JPEG base64，读取后删除临时文件。
+        /// </summary>
+        private static async Task<string> ReadOffscreenPngBase64(string path, int maxDimension)
+        {
+            if (string.IsNullOrEmpty(path)) return null;
+            try
+            {
+                await Task.Delay(20).ConfigureAwait(false);
+                byte[] pngBytes = File.ReadAllBytes(path);
+                try { File.Delete(path); } catch { }
+                if (pngBytes == null || pngBytes.Length == 0) return null;
+                using (var ms = new MemoryStream(pngBytes))
+                using (var bmp = new Bitmap(ms))
+                {
+                    SwapRedAndBlueInBitmap(bmp);
+                    return ConvertBitmapToBase64(bmp, maxDimension);
+                }
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Read offscreen png failed: {ex.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// 通过原版 BannerThumbnailCache 离屏渲染真实家族/王国纹章大图 (1024x1024 九宫格 Tableau)。
-        /// setAction 在 GPU 渲染完成后才触发，保证读出的像素是完成的纹章而非空渲染目标。
+        /// 自建 BannerTableau 离屏渲染真实家族/王国纹章大图（九宫格构图），经引擎原生落盘取图。
+        /// 不使用 ThumbnailCacheManager：其产物是共享渲染目标纹理，直接读像素会原生崩溃。
         /// </summary>
-        public static async Task<string> ExtractBannerOffscreenAsync(Banner banner, int maxDimension = 512, int timeoutMs = 2500)
+        public static async Task<string> ExtractBannerOffscreenAsync(Banner banner, int maxDimension = 512, int timeoutMs = 3000)
         {
-            if (banner == null) return null;
+            if (banner == null || !Banner.IsValidBannerCode(banner.BannerCode)) return null;
             try
             {
-                var ready = new TaskCompletionSource<TaleWorlds.Engine.Texture>(TaskCreationOptions.RunContinuationsAsynchronously);
-                BannerThumbnailCreationData creationData = null;
-                var immediate = await RunOnGameThreadAsync(() =>
+                var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+                bool started = await RunOnGameThreadAsync(() =>
                 {
-                    var cacheMgr = ThumbnailCacheManager.Current;
-                    if (cacheMgr == null || !Banner.IsValidBannerCode(banner.BannerCode)) return null;
-                    creationData = new BannerThumbnailCreationData(banner, t => ready.TrySetResult(t), () => ready.TrySetResult(null), BannerDebugInfo.CreateManual("AnimusForge.Illustrator"), isTableauOrNineGrid: true, isLarge: true);
-                    return cacheMgr.CreateTexture(creationData).Texture;
+                    try
+                    {
+                        var tableau = new BannerTableau();
+                        tableau.SetIsNineGrid(true);
+                        tableau.SetBannerCode(banner.BannerCode);
+                        tableau.SetTargetSize(maxDimension, maxDimension);
+                        var pump = new OffscreenTableauPump
+                        {
+                            OnTick = tableau.OnTick,
+                            GetView = () => tableau.Texture?.TableauView,
+                            OnFinalize = tableau.OnFinalize,
+                            WarmupTicks = 3,
+                            MaxTicks = 150,
+                            Done = done
+                        };
+                        if (!Core.IllustratorRuntime.Post(() => PumpOffscreenTableau(pump)))
+                        {
+                            try { tableau.OnFinalize(); } catch { }
+                            return false;
+                        }
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner tableau create failed: {ex.Message}");
+                        return false;
+                    }
                 }).ConfigureAwait(false);
-                if (immediate != null) ready.TrySetResult(immediate);
+                if (!started) return null;
 
-                var winner = await Task.WhenAny(ready.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
-                var rendered = winner == ready.Task ? ready.Task.Result : null;
-                string b64 = null;
-                if (rendered != null)
-                {
-                    b64 = await RunOnGameThreadAsync(() => ConvertEngineTextureToBase64(rendered, maxDimension)).ConfigureAwait(false);
-                }
-                if (creationData != null)
-                {
-                    var data = creationData;
-                    await RunOnGameThreadAsync<object>(() => { try { ThumbnailCacheManager.Current?.DestroyTexture(data); } catch { } return null; }).ConfigureAwait(false);
-                }
+                var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
+                string path = winner == done.Task ? done.Task.Result : null;
+                string b64 = await ReadOffscreenPngBase64(path, maxDimension).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
                     TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner tableau extracted ({b64.Length} chars)");
@@ -879,6 +950,79 @@ namespace AnimusForge.Illustrator.Engine
             catch (Exception ex)
             {
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner offscreen error: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 自建 CharacterTableau 离屏渲染指定英雄的真实 3D 立绘（真实五官、发型、装备、家族纹章底色），
+        /// 经引擎原生落盘取图。人物资源加载需要更多预热帧，故 warmup 比纹章长。
+        /// </summary>
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3000)
+        {
+            if (hero?.CharacterObject == null) return null;
+            try
+            {
+                var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+                bool started = await RunOnGameThreadAsync(() =>
+                {
+                    try
+                    {
+                        var character = hero.CharacterObject;
+                        var equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
+                        var tableau = new CharacterTableau();
+                        tableau.SetTargetSize(maxDimension, maxDimension);
+                        tableau.SetBodyProperties(character.GetBodyProperties(character.Equipment, -1).ToString());
+                        tableau.SetIsFemale(hero.IsFemale);
+                        tableau.SetRace(character.Race);
+                        tableau.SetStanceIndex(0);
+                        string equipmentCode = equipment?.CalculateEquipmentCode();
+                        if (!string.IsNullOrEmpty(equipmentCode))
+                        {
+                            tableau.SetEquipmentCode(equipmentCode);
+                        }
+                        if (hero.ClanBanner != null)
+                        {
+                            tableau.SetBannerCode(hero.ClanBanner.BannerCode);
+                        }
+                        tableau.SetArmorColor1(hero.MapFaction?.Color ?? 0);
+                        tableau.SetArmorColor2(hero.MapFaction?.Color2 ?? 0);
+                        var pump = new OffscreenTableauPump
+                        {
+                            OnTick = tableau.OnTick,
+                            GetView = () => tableau.Texture?.TableauView,
+                            OnFinalize = tableau.OnFinalize,
+                            WarmupTicks = 10,
+                            MaxTicks = 240,
+                            Done = done
+                        };
+                        if (!Core.IllustratorRuntime.Post(() => PumpOffscreenTableau(pump)))
+                        {
+                            try { tableau.OnFinalize(); } catch { }
+                            return false;
+                        }
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character tableau create failed: {ex.Message}");
+                        return false;
+                    }
+                }).ConfigureAwait(false);
+                if (!started) return null;
+
+                var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
+                string path = winner == done.Task ? done.Task.Result : null;
+                string b64 = await ReadOffscreenPngBase64(path, maxDimension).ConfigureAwait(false);
+                if (!string.IsNullOrWhiteSpace(b64))
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait tableau extracted for {hero.Name} ({b64.Length} chars)");
+                }
+                return b64;
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait offscreen error: {ex.Message}");
                 return null;
             }
         }
