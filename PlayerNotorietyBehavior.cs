@@ -197,6 +197,21 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return RenderPlayerHistoryTextForPrompt(text, BuildPlayerHistoryDisplayName());
 	}
 
+	// Main-thread-only parse dependency for AF's private summary source check.
+	// Keep this beside the renderer so culture aliases/public-name changes cannot
+	// silently turn a response generated for one identity into another identity.
+	internal static string CaptureMemorySummaryHistoryRenderingIdentity()
+	{
+		string playerName = NormalizeLine(BuildPlayerHistoryDisplayName()).Replace("玩家", "").Trim();
+		if (string.IsNullOrWhiteSpace(playerName)) playerName = BuildPlayerHistoryDisplayName();
+		return JsonConvert.SerializeObject(new
+		{
+			PlayerName = playerName,
+			PublicName = NormalizeLine(MyBehavior.BuildPlayerPublicDisplayNameForExternal()),
+			Aliases = BuildPlayerHistoryAnonymousAliases(playerName).ToArray()
+		});
+	}
+
 	public static string RenderPlayerNamedReferenceForExternal(string text)
 	{
 		return RenderPlayerNamedReference(text, BuildPlayerHistoryDisplayName());

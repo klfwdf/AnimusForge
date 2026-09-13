@@ -1,0 +1,307 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.Library;
+using TaleWorlds.Core;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Workshops;
+
+// Only identity shells: production facade copies must never inspect game objects.
+namespace TaleWorlds.Library
+{
+    public static class TWParallel
+    {
+        public static int MainId;
+        public static bool IsMainThread() => Thread.CurrentThread.ManagedThreadId == MainId;
+    }
+}
+namespace TaleWorlds.Core
+{
+    public class ItemObject { }
+    public struct EquipmentElement { public int Token; }
+}
+namespace TaleWorlds.CampaignSystem.Party { public class PartyBase { } public class MobileParty { } }
+namespace TaleWorlds.CampaignSystem.Settlements { public class Settlement { } }
+namespace TaleWorlds.CampaignSystem.Settlements.Workshops { public class Workshop { } }
+namespace TaleWorlds.CampaignSystem
+{
+    public class Hero { }
+    public class CharacterObject { }
+    public class Clan { }
+    public sealed class Campaign
+    {
+        public static object Owner;
+        public static bool Available = true;
+        public static int OffThreadReads;
+        private static readonly Campaign Value = new Campaign();
+        public static Campaign Current
+        {
+            get
+            {
+                if (!TWParallel.IsMainThread()) Interlocked.Increment(ref OffThreadReads);
+                return Available ? Value : null;
+            }
+        }
+        public T GetCampaignBehavior<T>() where T : class
+        {
+            if (!TWParallel.IsMainThread()) Interlocked.Increment(ref OffThreadReads);
+            return Owner as T;
+        }
+    }
+}
+namespace AnimusForge
+{
+    public static class Logger { public static void Log(string category, string text) { } }
+    public sealed class WriteCall
+    {
+        public string Kind;
+        public object[] Arguments;
+    }
+    public partial class MyBehavior
+    {
+        public static MyBehavior Instance { get; set; }
+        public readonly List<WriteCall> Calls = new List<WriteCall>();
+        public int OffThreadWrites;
+        public int Pending => _memorySummaryMainThreadActions.Count;
+        public void Tick() => ProcessMemorySummaryMainThreadActions();
+        public void Reset() => ResetMemorySummaryMainThreadActions();
+        private void Record(string kind, params object[] args)
+        {
+            if (!TWParallel.IsMainThread()) Interlocked.Increment(ref OffThreadWrites);
+            Calls.Add(new WriteCall { Kind = kind, Arguments = args });
+        }
+        // Explicit terminal seams. Real owner business and persistence are NOT replaced
+        // in production; this fixture only witnesses the facade arguments and thread.
+        private void AppendDialogueHistory(Hero hero, string playerText, string aiText, string fact,
+            int session = -1, int agent = -1, string name = null)
+            => Record("hero", hero, playerText, aiText, fact, session, agent, name);
+        private void AppendDialogueHistoryById(string id, string npc, string player, string ai, string fact,
+            int session = -1, int agent = -1, string name = null)
+            => Record("nonhero", id, npc, player, ai, fact, session, agent, name);
+        private void RecordExternalNpcAction(Hero hero, string text, string key, string kind, bool major,
+            bool recent, Hero target, Settlement settlement, string location, bool nonlord, bool? won)
+            => Record("action", hero, text, key, kind, major, recent, target, settlement, location, nonlord, won);
+        private void MigrateNonHeroPartyScopedMemory(string id, string key) => Record("migrate", id, key);
+        private void MarkWeeklyMemoryMaterialTriggerInternal(Hero hero, string id, string npc, string tags,
+            int scene, int native, int agent, List<RewardSystemBehavior.RewardItemInfo> rewards,
+            List<PartyTransferPromptEntry> troops, List<PartyTransferPromptEntry> prisoners,
+            List<SettlementTransferPromptEntry> settlements, bool suppress,
+            List<PartyTransferPromptEntry> allTroops = null, List<PartyTransferPromptEntry> allPrisoners = null)
+            => Record("weekly", hero, id, npc, tags, scene, native, agent, rewards, troops, prisoners,
+                settlements, suppress, allTroops, allPrisoners);
+    }
+    public static class Program
+    {
+        private static int checks, failures;
+        private static void Check(bool value, string name)
+        {
+            checks++;
+            if (!value) { failures++; Console.WriteLine("FAIL " + name); }
+        }
+        private static MyBehavior NewOwner()
+        {
+            TWParallel.MainId = Thread.CurrentThread.ManagedThreadId;
+            Campaign.Available = true;
+            Campaign.OffThreadReads = 0;
+            var owner = new MyBehavior();
+            MyBehavior.Instance = owner;
+            Campaign.Owner = owner;
+            SaveRuntimeGuard.AdvanceGeneration("writer-fixture");
+            return owner;
+        }
+        private static void Worker(Action action) => Task.Run(action).GetAwaiter().GetResult();
+        private static void Drain(MyBehavior owner)
+        {
+            for (int i = 0; i < 40 && owner.Pending > 0; i++) owner.Tick();
+            Check(owner.Pending == 0, "queued writes terminate within fixture bound");
+        }
+        private static List<(string Name, Action Call, string Kind, object[] Args)> Calls()
+        {
+            var hero = new Hero(); var target = new Hero(); var settlement = new Settlement();
+            return new List<(string, Action, string, object[])>
+            {
+                ("hero", () => MyBehavior.AppendExternalDialogueHistory(hero, "p", "a", "f"),
+                    "hero", new object[] {hero, "p", "a", "f", -1, -1, null}),
+                ("hero-scene", () => MyBehavior.AppendExternalSceneDialogueHistory(hero, "p", "a", "f", 31, 41, "target"),
+                    "hero", new object[] {hero, "p", "a", "f", 31, 41, "target"}),
+                ("nonhero", () => MyBehavior.AppendExternalNonHeroDialogueHistory("id", "npc", "p", "a", "f"),
+                    "nonhero", new object[] {"id", "npc", "p", "a", "f", -1, -1, null}),
+                ("nonhero-scene", () => MyBehavior.AppendExternalNonHeroSceneDialogueHistory("id", "npc", "p", "a", "f", 31, 41, "target"),
+                    "nonhero", new object[] {"id", "npc", "p", "a", "f", 31, 41, "target"}),
+                ("action", () => MyBehavior.RecordNpcActionForExternal(hero, "text", "key", "kind", true, true, target, settlement, "here", true, true),
+                    "action", new object[] {hero, "text", "key", "kind", true, true, target, settlement, "here", true, true}),
+                ("weekly", () => MyBehavior.MarkWeeklyMemoryMaterialTriggerForExternal(hero, "id", "npc", "tag", 31, 32, 41, suppressImplicitDialogueSession: true),
+                    "weekly", new object[] {hero, "id", "npc", "tag", 31, 32, 41, null, null, null, null, true, null, null}),
+                ("weekly-all", () => MyBehavior.MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(hero, "id", "npc", "tag", 31, 32, 41, suppressImplicitDialogueSession: true),
+                    "weekly", new object[] {hero, "id", "npc", "tag", 31, 32, 41, null, null, null, null, true, null, null}),
+                ("migrate", () => MyBehavior.MigrateNonHeroPartyScopedMemoryForExternal("id", "party"),
+                    "migrate", new object[] {"id", "party"})
+            };
+        }
+        private static void EqualCall(WriteCall actual, string kind, object[] args, string label)
+        {
+            Check(actual != null && actual.Kind == kind, label + " terminal owner");
+            if (actual == null) return;
+            Check(actual.Arguments.SequenceEqual(args), label + " exact argument forwarding");
+        }
+        private static IEnumerable<MemberInfo> Members(Type type) => type
+            .GetMembers(BindingFlags.Instance | BindingFlags.Public)
+            .Where(m => m is FieldInfo || m is PropertyInfo p && p.CanRead && p.CanWrite)
+            .OrderBy(m => m.Name, StringComparer.Ordinal);
+        private static Type MemberType(MemberInfo m) => m is FieldInfo f ? f.FieldType : ((PropertyInfo)m).PropertyType;
+        private static object Get(MemberInfo m, object value) => m is FieldInfo f ? f.GetValue(value) : ((PropertyInfo)m).GetValue(value);
+        private static void Set(MemberInfo m, object target, object value)
+        {
+            if (m is FieldInfo f) f.SetValue(target, value); else ((PropertyInfo)m).SetValue(target, value);
+        }
+        private static object ValueFor(Type type, int seed)
+        {
+            if (type == typeof(string)) return "field-" + seed;
+            if (type == typeof(int)) return seed;
+            if (type == typeof(bool)) return seed < 1000;
+            if (type.IsEnum) return Enum.GetValues(type).GetValue(Enum.GetValues(type).Length - 1);
+            if (type == typeof(List<int>)) return new List<int> { seed, seed + 1 };
+            if (type == typeof(EquipmentElement)) return new EquipmentElement { Token = seed };
+            if (type.Namespace != null && type.Namespace.StartsWith("TaleWorlds.", StringComparison.Ordinal))
+                return Activator.CreateInstance(type);
+            throw new InvalidOperationException("New DTO member requires explicit fixture support: " + type);
+        }
+        private static T Populate<T>(int seed) where T : new()
+        {
+            var value = new T();
+            foreach (var member in Members(typeof(T))) Set(member, value, ValueFor(MemberType(member), ++seed));
+            return value;
+        }
+        private static Dictionary<string, object> Snapshot(object value) => Members(value.GetType())
+            .ToDictionary(m => m.Name, m => Get(m, value) is List<int> ints ? (object)ints.ToArray() : Get(m, value));
+        private static void Mutate(object value)
+        {
+            int seed = 2000;
+            foreach (var m in Members(value.GetType()))
+            {
+                if (Get(m, value) is List<int> ints) { ints.Clear(); ints.Add(-100); }
+                Set(m, value, ValueFor(MemberType(m), ++seed));
+            }
+        }
+        private static void CompareDto(object actual, Dictionary<string, object> expected, string label)
+        {
+            Check(actual != null, label + " copied DTO exists");
+            if (actual == null) return;
+            Check(Members(actual.GetType()).Count() == expected.Count, label + " field inventory unchanged");
+            foreach (var member in Members(actual.GetType()))
+            {
+                object value = Get(member, actual), wanted = expected[member.Name];
+                bool equal = wanted is int[] indices
+                    ? value is List<int> actualIndices && indices.SequenceEqual(actualIndices)
+                    : Equals(value, wanted);
+                Check(equal, label + "." + member.Name + " preserved");
+            }
+        }
+        private static void WeeklyCopies(bool all)
+        {
+            var owner = NewOwner();
+            var reward = Populate<RewardSystemBehavior.RewardItemInfo>(10);
+            var troop = Populate<MyBehavior.PartyTransferPromptEntry>(30);
+            var prisoner = Populate<MyBehavior.PartyTransferPromptEntry>(60);
+            var settlement = Populate<MyBehavior.SettlementTransferPromptEntry>(90);
+            var allTroop = Populate<MyBehavior.PartyTransferPromptEntry>(130);
+            var allPrisoner = Populate<MyBehavior.PartyTransferPromptEntry>(160);
+            var rewards = new List<RewardSystemBehavior.RewardItemInfo> { reward, null };
+            var troops = new List<MyBehavior.PartyTransferPromptEntry> { troop, null };
+            var prisoners = new List<MyBehavior.PartyTransferPromptEntry> { prisoner, null };
+            var settlements = new List<MyBehavior.SettlementTransferPromptEntry> { settlement, null };
+            var allTroops = new List<MyBehavior.PartyTransferPromptEntry> { allTroop, null };
+            var allPrisoners = new List<MyBehavior.PartyTransferPromptEntry> { allPrisoner, null };
+            object[] dtos = all ? new object[] {reward, troop, prisoner, settlement, allTroop, allPrisoner}
+                : new object[] {reward, troop, prisoner, settlement};
+            var expected = dtos.Select(Snapshot).ToArray();
+            var playerSettlements = new List<MyBehavior.SettlementTransferPromptEntry> { Populate<MyBehavior.SettlementTransferPromptEntry>(300) };
+            Worker(() =>
+            {
+                if (all) MyBehavior.MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(null, "id", "npc", "tag",
+                    rewardOptions: rewards, partyTransferTroopOptions: troops, partyTransferPrisonerOptions: prisoners,
+                    settlementTransferNpcOptions: settlements, partyTransferAllTroopOptions: allTroops,
+                    partyTransferAllPrisonerOptions: allPrisoners);
+                else MyBehavior.MarkWeeklyMemoryMaterialTriggerForExternal(null, "id", "npc", "tag",
+                    rewardOptions: rewards, partyTransferTroopOptions: troops, partyTransferPrisonerOptions: prisoners,
+                    settlementTransferNpcOptions: settlements, settlementTransferPlayerOptions: playerSettlements);
+            });
+            Check(Campaign.OffThreadReads == 0 && owner.OffThreadWrites == 0 && owner.Calls.Count == 0,
+                "weekly captures without Campaign or terminal access");
+            foreach (object dto in dtos) Mutate(dto);
+            rewards.Clear(); troops.Clear(); prisoners.Clear(); settlements.Clear(); allTroops.Clear(); allPrisoners.Clear(); playerSettlements.Clear();
+            Drain(owner);
+            Check(owner.Calls.Count == 1, "weekly publishes once");
+            if (owner.Calls.Count == 0) return;
+            int[] positions = all ? new[] {7, 8, 9, 10, 12, 13} : new[] {7, 8, 9, 10};
+            for (int i = 0; i < positions.Length; i++)
+            {
+                var list = owner.Calls[0].Arguments[positions[i]] as IList;
+                Check(list != null && list.Count == 2 && list[1] == null, "weekly outer list/null slot snapshot " + i);
+                if (list == null || list.Count == 0) continue;
+                Check(!ReferenceEquals(list[0], dtos[i]), "weekly DTO independently owned " + i);
+                CompareDto(list[0], expected[i], (all ? "all." : "plain.") + dtos[i].GetType().Name + "[" + i + "]");
+            }
+            Check(owner.OffThreadWrites == 0, "weekly terminal stayed main");
+            owner.Tick(); Check(owner.Calls.Count == 1, "weekly cannot replay");
+        }
+        public static int Main()
+        {
+            try
+            {
+                var cases = Calls();
+                var owner = NewOwner();
+                foreach (var item in cases)
+                {
+                    int before = owner.Calls.Count;
+                    item.Call();
+                    Check(owner.Calls.Count == before + 1 && owner.Pending == 0, item.Name + " main remains synchronous");
+                    EqualCall(owner.Calls.LastOrDefault(), item.Kind, item.Args, item.Name + " main");
+                }
+                owner = NewOwner();
+                foreach (var item in cases) Worker(item.Call);
+                Check(owner.Calls.Count == 0 && owner.Pending == 8, "all 8 worker facades only publish");
+                Check(Campaign.OffThreadReads == 0 && owner.OffThreadWrites == 0, "no worker Campaign access or terminal write");
+                Drain(owner);
+                Check(owner.Calls.Count == 8, "all 8 facades reach terminal once");
+                for (int i = 0; i < Math.Min(owner.Calls.Count, cases.Count); i++)
+                    EqualCall(owner.Calls[i], cases[i].Kind, cases[i].Args, cases[i].Name + " queued FIFO");
+                owner.Tick(); Check(owner.Calls.Count == 8, "extra tick cannot duplicate writers");
+                foreach (string retirement in new[] {"generation", "owner", "campaign-owner", "reset", "campaign-missing"})
+                {
+                    owner = NewOwner();
+                    foreach (var item in cases) Worker(item.Call);
+                    var replacement = new MyBehavior();
+                    if (retirement == "generation") SaveRuntimeGuard.AdvanceGeneration("load");
+                    if (retirement == "owner") { MyBehavior.Instance = replacement; Campaign.Owner = replacement; }
+                    if (retirement == "campaign-owner") Campaign.Owner = replacement;
+                    if (retirement == "reset") owner.Reset();
+                    if (retirement == "campaign-missing") Campaign.Available = false;
+                    Drain(owner);
+                    Check(owner.Calls.Count == 0 && replacement.Calls.Count == 0, retirement + " retires all queued writers");
+                }
+                owner = NewOwner(); MyBehavior.Instance = null;
+                foreach (var item in cases) Worker(item.Call);
+                Check(owner.Pending == 0 && owner.Calls.Count == 0 && Campaign.OffThreadReads == 0, "missing Instance does not inspect Campaign on worker");
+                WeeklyCopies(false); WeeklyCopies(true);
+                owner = NewOwner();
+                Worker(() => MyBehavior.AppendExternalDialogueHistory(null, null, null, null));
+                Worker(() => MyBehavior.AppendExternalNonHeroDialogueHistory(null, null, null, null, null));
+                Worker(() => MyBehavior.MigrateNonHeroPartyScopedMemoryForExternal(null, null));
+                Drain(owner);
+                Check(owner.Calls.Count == 3 && owner.Calls.All(x => x.Arguments.Take(x.Kind == "hero" ? 4 : x.Kind == "nonhero" ? 5 : 2).All(a => a == null)), "null arguments preserved without facade invention");
+                foreach (Type type in new[] {typeof(RewardSystemBehavior.RewardItemInfo), typeof(MyBehavior.PartyTransferPromptEntry), typeof(MyBehavior.SettlementTransferPromptEntry)})
+                    Console.WriteLine("DTO_INVENTORY " + type.Name + "=" + string.Join(",", Members(type).Select(x => x.Name)));
+            }
+            catch (Exception ex) { failures++; Console.WriteLine("FAIL fixture exception " + ex); }
+            Console.WriteLine("WRITER_RESULT checks=" + checks + " failures=" + failures);
+            return failures == 0 ? 0 : 1;
+        }
+    }
+}
