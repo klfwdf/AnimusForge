@@ -1,3 +1,24 @@
+# 当前：Campaign维护共享预算（2026-09-14）
+
+有限的Campaign维护周期现在共享一个懒创建窗口：主维护与deferred维护使用同一deadline，封存授予累计128个metadata/8个expensive操作。显式同步/无限调用以及EngineTick摘要预算仍单列；这不是全游戏帧硬上限。
+
+- sealing：原30个语义场景保留，新增10个实际维护周期/生命周期/兼容场景，当前40/0。提取前73a6977c在同40场景中35绿/5红；14个mutant全部BUILD_PASS后EXIT=1。
+- 历史对照使用旧OnCampaignTick中两段真实调用体派生的最薄命名壳；当前执行真实RunCampaignMemoryMaintenanceCycle，并检查实际OnCampaignTick只调用一次，不保留旁路。
+- 原 `same-tick-multiple-callers` 明确更名为 `standalone-multiple-callers-compatibility`：它直接调用私有helper，是原独立调用语义，不是新的实际Campaign周期。新限额证明在 `campaign-shared-*`。
+- 预算运行时组件及接缝单独编入测试；sealing/business runner采用显式Compile输入，旧生成文件不参与当次编译。
+- source inverse当前为56声明、2删除、2新增精确跨度、4个完整组件锁；9个防误放测试。一次更新hash前必须具备本候选实际证据，不能仅依据方法存在。
+- 本轮完整交接：[共享预算HANDOFF](../../docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)。B1深来源/原子尾步与LIVE/SAVE仍未完成。
+
+```powershell
+$env:DOTNET_EXE = 'G:\AFMOD\.dotnet-sdk\dotnet.exe'
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --source-baseline 73a6977c
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --mutate renew-deferred-deadline
+G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --mutate drop-deferred-start
+```
+
+## 以下为前序结果，数字与语义绑定各自当时版本
+
 # 当前 B1 集成与独立素材索引（2026-09-14）
 
 当前 source inverse 已纳入 **54 个真实 MyBehavior 声明、2 个删除跨度、1 个精确新增装配字段跨度、2 个完整运行时源文件锁**。这只关闭所列源差异的集成门禁，不代表 B1 深来源预算、真实游戏或旧档验收通过。
