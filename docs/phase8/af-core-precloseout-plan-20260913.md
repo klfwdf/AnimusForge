@@ -1,6 +1,11 @@
 # AF 主体重构：从当前基线到收尾评审前
 
-版本：v1，2026-09-13。**状态：AUTOMATION_ENABLED / 等待首次执行；P1–P6 尚未完成，D-A–D-E 未决定项继续待审。**
+版本：v1，2026-09-13。**状态：P1-01 ACTIVE / 自动接续中；P1–P6 尚未完成，D-A–D-E 未决定项继续待审。**
+
+### 当前执行记录
+
+- 2026-09-13，单代理 P1-01 ACTIVE，基线 `9153aac9`，生产仍 `9040d184`；fetch 后远端 `bd2ed35f` 未前进。意图：在现有 `tools/MemorySummaryMainThreadBoundaryTests/` 增加实际业务方法红绿回放，owner 为 Memory completion 测试；根 HANDOFF/本计划记录证据。不改生产、Prompt、默认、存档身份、构建或其他作者文件。
+- 验证目标：编译执行旧/新 Process、实际 Apply/Mark/cleanup/release；强制跨线程 await，观察三类状态、失败/迟到/换 owner、额外 overview 波次；业务调用点 mutation 必须在编译成功后运行失败。provider/游戏/底层存储为明确替身，不冒充输入快照、实际 provider、实机或预算已通过。保留原 helper 回归；P1-02/03 仍另有缺口。
 
 编制时只授权写计划；用户随后明确要求自动运行。现有 `af-7-8` 已设为 ACTIVE，每小时在当前任务从 P1 自动推进范围明确且依赖满足的工作，未决定的 API/扩展/融合/实机权限仍须确认。终点为 `READY_FOR_CLOSEOUT_REVIEW`（可进入收尾评审），不是阶段 8 DONE、已发布或零 BUG；到达终点或只剩外部阻塞时自动暂停并交接，不自动执行推送、部署、默认迁移或广泛删旧。
 
