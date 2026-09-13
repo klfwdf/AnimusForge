@@ -1,3 +1,21 @@
+# AF 总 HANDOFF — 用户中断，交给下一位（2026-09-14）
+
+**用户已要求中断。不要恢复自动化，不要进 B2/B3，不要 push/部署/覆盖游戏。新指示前只读交接。**
+
+- 唯一可写工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`（detached）。远端基线 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
+- **生产 C# 未改。** 本轮只动测试/审查表/HANDOFF：`run_sealing.py`、`run_business.py` / `BusinessHarness.cs.txt`、`source-review-b1.json`、`source_parity.py`、`README.md`、本文件。不要改 `E:\Mount-Blade-Bannerlord-AnimusForge-mod-main`（`main@9bfb154a`，有无关脏文件）。
+- 本机提交链（均在 `c2ce7947` 之上，未 push）：`2de78e5d` 审查表九项未审 → `a3aa35d9`/`724a0b02`/`6f424b45`/`c43e3bc2` business 编译适配 → `b3bf2e4a` 封存 `--mutate` → `e377b9b0` 把 sealing/materials 红例挂到未审符号。
+- Inverse 必须继续 **FAIL**，一次列出 9 项：`RecordEventSourceMaterial`、`RebuildEventSourceMaterialIndex`、`IsEventSourceMaterialIndexCurrent`、`BindEventSourceMaterialIndex`、`TrySealPastDailyMemoryDrafts`、`ContinueDailyMemorySeal`、`TryRunCampaignMemoryMaintenance`、`ResetDailyMemoryDraftSealSliceState`、删除 `HasPastDailyMemoryDrafts`。禁止刷新已审 `declarations[].sha256` / `productionFileSha256` / 代码地图让 inverse 变绿。
+- 已离线：封存 current 30/0；`--original` `62abfdb3` 19/11；8 个 sealing mutate 均为 BUILD_PASS EXIT=1。素材 23/0、7 个 mutate EXIT=1。business current 36/0、`--original` 4/32、`--mutate maintenance-rescan` 34/2。LIVE/SAVE=NOT_RUN。
+- 六项 Stage **NOT-RUN**：本机游戏 `Modules` 缺 Harmony/MCM/UIExtenderEx。要用 `一键编译覆盖推送/build_single_module.ps1 -Stage`（不要 `-Deploy`），`BannerlordRoot`=`E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord`，overlay=`./.tmp/build_check/1.3` 与 `1.4`，并传 `-HarmonyCorePath .\.tmp\build_check\1.4\0Harmony.dll`；MCM 仍缺。
+- 旧自动化 `af` 仍 PAUSED。不要给旧 worker `01a0909a` / worktree `cbbb` 发活。不要 hard reset。
+
+回滚：定向 revert 本工作树在 `c2ce7947` 之上的本地提交，保留用户改动，不 hard reset。
+
+下一步（需新的明确指示才做）：补齐 Stage 依赖后跑 Debug/Release×1.3/1.4/Bootstrap；仍不要进 B2/B3，不要把离线 PASS 写成阶段 DONE。
+
+## 以下为历史交接，当前状态以上方入口为准
+
 # AF 总 HANDOFF — B1-P1 步骤 A：WIP 反例挂到未审符号（2026-09-14）
 
 **用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
