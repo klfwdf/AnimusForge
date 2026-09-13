@@ -1,10 +1,10 @@
 # 当前自动实施：B1 队列原子排序（2026-09-14）
 
-- ACTIVE；单代理，唯一写入 G:/AFMOD/AF-REFACTOR；当前 b5940e9f，生产基线9158132c；fresh fetch远端3f00fefa，无新变化。
+- 本切片离线联验完成，整体B1仍VERIFY；单代理，唯一写入 G:/AFMOD/AF-REFACTOR；当前 b5940e9f，生产基线9158132c；fresh fetch远端3f00fefa，无新变化。
 - 意图：将Daily/Major封存尾部的稳定排序提取到有真实消费者的可续跑纯运行时组件，复用Campaign预算；同步调用、先pending再去重、原地净化、引用身份、文化排序及同键稳定次序保持。正常净化仍主线程原子执行，允许净化元数据先于排序发布，不启动第二条总结链。
 - 路径：MyBehavior.cs/MemorySealing、Refactor/Runtime排序组件、直接sealing/business等测试适配及精确inverse/地图/交接。存档DTO不搬迁，Prompt/玩法/public/默认/原构建脚本不改。
 - 风险与验收：不得发布跨tick过期列表/元数据/culture；排序每次实际比较/移动计费、同步可排空；旧915真实执行红例、变异与原40场景、相邻回归和六项Stage/API/存档身份。数组分配/净化/键捕获/最终标量绑定仍原子，不用本切片宣称B1硬预算完成。真实游戏/存档未运行，不部署/推送。
-- 下一步：先冻结旧版预算反例，再完成上述关联实施和统一验证；不要重做Campaign共享窗口，不进入B2。
+- 验证完成：封存60/0，旧915的46/14，20有效故障反例；相邻24/36/109/238/85/51/54/23、UI/history/native/channel、10项strict inverse与最终六项Stage/API/存档身份通过。规划extractor曾缺2个真实helper（编译失败非红例），已补齐并复跑。下一续点是剩余初捕获/raw/净化/绑定/Apply原子成本，不进入B2；本轮详见最终排序HANDOFF。
 
 ## 以下为上一已验证切片（历史）
 

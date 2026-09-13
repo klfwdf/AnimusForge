@@ -29,6 +29,8 @@ METHODS = [
     "private void ApplyMajorActionSummarySuccess(", "private void MarkMajorActionSummaryFailure(",
     "private void ApplyMemoryOverviewSuccess(", "private void MarkMemoryOverviewFailure(",
     "private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(",
+    "private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(",
+    "private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(",
     "private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(",
     "private static List<MemoryOverviewJob> SanitizeMemoryOverviewQueue(",
     "private DailyMemoryDraft FindMemoryDraft(",
@@ -82,6 +84,8 @@ def build_sources(original, mutation):
     declarations = [constant.group(), throttle.group()]
     positions = []
     for signature in signatures:
+        if original and (" NormalizeMemorySummaryQueue(" in signature or " NormalizeMajorActionSummaryQueue(" in signature):
+            continue  # These extractions do not exist in the pinned e40c92d7 source.
         # e40c92d7 Apply methods were void; candidate returns its actual acceptance receipt.
         if not original and signature.startswith("private void Apply"):
             signature = signature.replace("private void Apply", "private bool Apply", 1)

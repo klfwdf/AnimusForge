@@ -26,6 +26,20 @@ class InverseGuards(unittest.TestCase):
     def test_exact_whole_baseline(self):
         self.assertEqual(BASELINE, inverse.restore_memory_summary_source("MyBehavior.cs", SOURCE))
 
+    def test_queue_normalization_body_is_exact_old_semantics(self):
+        spec = importlib.util.spec_from_file_location("normalizer_extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+        extractor = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(extractor)
+        for model, suffix, day in [("MemorySummaryJob", "MemorySummaryQueue", "GameDayIndex"),
+                                   ("MajorActionSummaryJob", "MajorActionSummaryQueue", "TriggerGameDayIndex")]:
+            signature = "private static List<" + model + "> "
+            prior = extractor.declaration(BASELINE, signature + "Sanitize" + suffix + "(")
+            actual = extractor.declaration(SOURCE, signature + "Normalize" + suffix + "(")
+            restored = actual.replace("Normalize" + suffix, "Sanitize" + suffix, 1).replace(
+                "return list;", "return list.OrderBy((" + model + " x) => x." + day +
+                ").ThenBy((" + model + " x) => x.HeroName).ToList();", 1)
+            self.assertEqual(prior, restored)  # No mutation/filter/dedupe body rewrite hidden by wrapper inverse.
+
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),

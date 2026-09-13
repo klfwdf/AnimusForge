@@ -26706,6 +26706,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
 	{
+		return NormalizeMemorySummaryQueue(jobs).OrderBy((MemorySummaryJob x) => x.GameDayIndex).ThenBy((MemorySummaryJob x) => x.HeroName).ToList();
+	}
+
+	private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
+	{
 		List<MemorySummaryJob> list = new List<MemorySummaryJob>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (MemorySummaryJob job in jobs ?? Enumerable.Empty<MemorySummaryJob>())
@@ -26730,7 +26735,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
 			list.Add(job);
 		}
-		return list.OrderBy((MemorySummaryJob x) => x.GameDayIndex).ThenBy((MemorySummaryJob x) => x.HeroName).ToList();
+		return list;
 	}
 
 	private static MemoryOverviewState SanitizeMemoryOverviewState(MemoryOverviewState state)
@@ -26867,6 +26872,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
 	{
+		return NormalizeMajorActionSummaryQueue(jobs).OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex).ThenBy((MajorActionSummaryJob x) => x.HeroName).ToList();
+	}
+
+	private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
+	{
 		List<MajorActionSummaryJob> list = new List<MajorActionSummaryJob>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (MajorActionSummaryJob job in jobs ?? Enumerable.Empty<MajorActionSummaryJob>())
@@ -26891,7 +26901,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
 			list.Add(job);
 		}
-		return list.OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex).ThenBy((MajorActionSummaryJob x) => x.HeroName).ToList();
+		return list;
 	}
 
 	private MajorActionSummaryState GetMajorActionSummaryState(string heroId)
