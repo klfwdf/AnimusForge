@@ -43,7 +43,7 @@ namespace AnimusForge.Illustrator
             base.OnApplicationTick(dt);
             try
             {
-                if (IllustratorRuntime.IsMainThread) IllustratorRuntime.Tick();
+                IllustratorRuntime.Tick();
             }
             catch
             {

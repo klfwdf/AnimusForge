@@ -69,11 +69,12 @@ namespace AnimusForge.Illustrator.Core
         private static int _workers;
         private static bool _running;
         public static string CampaignKey { get; private set; }
-        public static bool IsMainThread => Environment.CurrentManagedThreadId == _mainThread;
+        public static bool IsMainThread => _mainThread != 0 && Environment.CurrentManagedThreadId == _mainThread;
 
         public static void Initialize()
         {
-            _mainThread = Environment.CurrentManagedThreadId;
+            // 注意：OnSubModuleLoad 在 1.4.x 上可能运行于子模块加载线程而非游戏主线程，
+            // 不能在此捕获线程 ID；真正的主线程 ID 由首个 OnApplicationTick -> Tick() 捕获。
             _running = true;
         }
 
@@ -127,6 +128,12 @@ namespace AnimusForge.Illustrator.Core
 
         public static void Tick()
         {
+            // OnApplicationTick 保证在游戏主线程执行；首个 Tick 捕获真实主线程 ID。
+            if (_mainThread == 0)
+            {
+                _mainThread = Environment.CurrentManagedThreadId;
+                Debug.Print("[Illustrator] Captured game main thread id=" + _mainThread);
+            }
             AssertMainThread();
             TickScopes();
             for (int i = 0; i < 2 && Pending.TryDequeue(out var action); i++)
