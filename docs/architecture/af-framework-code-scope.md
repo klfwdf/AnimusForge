@@ -1,6 +1,8 @@
 # AF 框架代码范围图
 
-本图是当前已验证源码 `62abfdb3` 的定位快照，与 GitHub 原重构分支基线 `e40c92d7` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
+本图是当前已验证源码 `73a6977c` 的定位快照，与 GitHub 原重构分支基线 `3f00fefa` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
+
+本轮新增独立事件素材索引组件，删除旧 MyBehavior 索引 partial；原始记录和存档仍在主体。B1 全局预算/真实验收未完成，不能按本地图批量删旧。
 
 ## 新旧责任分区（不搬动运行代码）
 
@@ -16,7 +18,7 @@
 
 ## 已核实代码坐标
 
-以下一基行号均属于源码 `62abfdb3`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
+以下一基行号均属于源码 `73a6977c`，仅为导航，不代表整个方法的改动量。用符号和固定提交重新定位。
 
 | 边界 | 源码位置 | 符号 / 责任 | 状态 |
 |---|---|---|---|
@@ -42,9 +44,9 @@
 | `memory.failure.ui` | `MyBehavior.MemoryFailureNotice.cs:53-56` | `private void ProcessPendingMemoryFailureNotice()` — 原 EngineTick 消费；owner/Campaign/generation/revision | `wired-boundary` |
 | `memory.summary.dispatch` | `MyBehavior.MemorySummaryMainThread.cs:58-61` | `private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation)` — 主线程剩余额度内直达，否则排队；原 owner/generation/Campaign 与退休门禁保留 | `wired-boundary` |
 | `memory.summary.drain` | `MyBehavior.MemorySummaryMainThread.cs:128-131` | `private void ProcessMemorySummaryMainThreadActions()` — inline/queued 共用两次操作和实际累计耗时；超预算不启动下一操作，单原子与record预算仍未完整 | `wired-boundary` |
-| `memory.summary.accept` | `MyBehavior.cs:5077-5080` | `if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++;` — 源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功 | `mixed-host` |
-| `legacy.history` | `MyBehavior.cs:27989-27992` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
-| `legacy.recall` | `MyBehavior.cs:33995-33998` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
+| `memory.summary.accept` | `MyBehavior.cs:4961-4964` | `if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++;` — 源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功 | `mixed-host` |
+| `legacy.history` | `MyBehavior.cs:27799-27802` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
+| `legacy.recall` | `MyBehavior.cs:33805-33808` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
 | `scene.postprocess` | `ShoutBehavior.ScenePostprocess.cs:25-28` | `private sealed class SceneActionPostprocessWorkItem` — 已有完整后处理；非本次重写 Scene 业务 | `mixed-host` |
 | `courier.prepare.reply` | `CourierDeliveryBehavior.cs:4674-4677` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient,` — 回信早期准备待线程审查，未迁快照 | `retained-live` |
 | `courier.prepare.inbound` | `CourierDeliveryBehavior.cs:5102-5105` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(sender,` — 来信早期准备待线程审查，未迁快照 | `retained-live` |
@@ -57,26 +59,27 @@
 | `memory.summary.fingerprint` | `MyBehavior.MemorySummaryInput.cs:323-326` | `private static string ComputeMemorySummaryFingerprint(object identity)` — raw和有效context各自流式SHA256；不再把完整Prompt反复纳入来源digest | `mixed-host` |
 | `memory.summary.time` | `MyBehavior.MemorySummaryMainThread.cs:20-23` | `private bool HasMemorySummaryMainThreadAllowance()` — 复用既有维护毫秒配置，实际Stopwatch累计；非同步抢占 | `mixed-host` |
 | `memory.summary.partial` | `MyBehavior.MemorySummaryMainThread.cs:88-91` | `private async Task<bool> RunMemorySummaryCompletionAsync(long generation, Func<bool> operation)` — 仅协调器传播operation异常，区分拒绝/取消与部分执行失败 | `mixed-host` |
-| `memory.summary.admission` | `MyBehavior.cs:4975-4978` | `private void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan = false)` — raw数量入场；候选ID扫描仍有同步全扫，不代表全部入口已预算 | `mixed-host` |
-| `memory.summary.planner` | `MyBehavior.cs:5037-5040` | `private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)` — 分段初筛/extra/cleanup，冻结metadata排序与失败汇总在worker；仅完整接受才计数 | `mixed-host` |
-| `memory.summary.maintenance` | `MyBehavior.cs:17873-17876` | `private void TryRunCampaignMemoryMaintenance()` — 不在每Tick重复读完整summary来源；past draft检查仍有全扫 | `mixed-host` |
+| `memory.summary.admission` | `MyBehavior.cs:4859-4862` | `private void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan = false)` — raw数量入场；候选ID扫描仍有同步全扫，不代表全部入口已预算 | `mixed-host` |
+| `memory.summary.planner` | `MyBehavior.cs:4921-4924` | `private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)` — 分段初筛/extra/cleanup，冻结metadata排序与失败汇总在worker；仅完整接受才计数 | `mixed-host` |
+| `memory.summary.maintenance` | `MyBehavior.cs:17743-17746` | `private void TryRunCampaignMemoryMaintenance()` — 不在每Tick重复读完整summary来源；past draft检查仍有全扫 | `mixed-host` |
 | `memory.plan.entry` | `MyBehavior.MemorySummaryPlanning.cs:13-16` | `private sealed class MemorySummaryPlanEntry` — 冻结job标记/排序键，Job只作opaque原引用，非新持久owner | `mixed-host` |
 | `memory.plan.scan` | `MyBehavior.MemorySummaryPlanning.cs:69-72` | `private async Task<List<MemorySummaryPlanEntry>> ScanMemorySummaryQueueAsync<T>(` — 每片8槽，当前片tombstone；纯引用compaction在结构仍有效时发布，变化则部分defer | `mixed-host` |
 | `memory.plan.build` | `MyBehavior.MemorySummaryPlanning.cs:159-162` | `private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(` — 独立重验无效owner；worker仅按冻结metadata去重排序，cleanup不建多余计划 | `mixed-host` |
 | `memory.editor.guard` | `MyBehavior.MemorySourceWrites.cs:13-16` | `private bool IsMemorySourceEditorCurrent(long generation)` — 开窗generation、物理主线程、Instance和Campaign owner同时验证 | `mixed-host` |
-| `memory.editor.text` | `MyBehavior.cs:50192-50195` | `private void OpenDevDailyMemoryLineTextEditor(` — 文本保存/取消真实红绿证据；同代记录引用/指纹也须保持 | `mixed-host` |
-| `memory.import.single` | `MyBehavior.cs:55030-55033` | `private void ImportSingleNpcDialogueHistoryData(` — 单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放 | `mixed-host` |
-| `memory.import.batch` | `MyBehavior.cs:57135-57138` | `private void ImportDialogueHistoryData(` — 记忆批量导入生命周期，保留overwrite/merge业务 | `mixed-host` |
-| `memory.import.hero-all` | `MyBehavior.cs:55227-55230` | `private void ImportHeroNpcAllData(` — 仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证 | `mixed-host` |
-| `memory.import.all` | `MyBehavior.cs:57663-57666` | `private void ImportAllData(` — 仅AF全量导入窗口门禁；非全部导入业务已运行验收 | `mixed-host` |
+| `memory.editor.text` | `MyBehavior.cs:50002-50005` | `private void OpenDevDailyMemoryLineTextEditor(` — 文本保存/取消真实红绿证据；同代记录引用/指纹也须保持 | `mixed-host` |
+| `memory.import.single` | `MyBehavior.cs:54840-54843` | `private void ImportSingleNpcDialogueHistoryData(` — 单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放 | `mixed-host` |
+| `memory.import.batch` | `MyBehavior.cs:56945-56948` | `private void ImportDialogueHistoryData(` — 记忆批量导入生命周期，保留overwrite/merge业务 | `mixed-host` |
+| `memory.import.hero-all` | `MyBehavior.cs:55037-55040` | `private void ImportHeroNpcAllData(` — 仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证 | `mixed-host` |
+| `memory.import.all` | `MyBehavior.cs:57473-57476` | `private void ImportAllData(` — 仅AF全量导入窗口门禁；非全部导入业务已运行验收 | `mixed-host` |
 | `memory.summary.raw-view` | `MyBehavior.MemorySummaryInput.cs:126-129` | `private MemorySummarySourceView ReadMemorySummarySource(` — 主线程/owner/队列/目标资格，直接读取 raw 字典状态；不把 live view 留给异步请求 | `mixed-host` |
 | `memory.summary.scene-dependencies` | `MyBehavior.MemorySummaryInput.cs:88-91` | `private static void DescribeMemorySummaryDailyContext(` — 首次构建有序 header / 非空正文场景依赖；明确场景和无效设置变动不误退 | `mixed-host` |
 | `memory.summary.effective-context` | `MyBehavior.MemorySummaryInput.cs:205-208` | `private string CaptureMemorySummaryContextFingerprint(` — 实际有效目标字数、写作要求、目标 observer、名字 resolver、解析身份 | `mixed-host` |
-| `memory.overview.pending-projection` | `MyBehavior.cs:26957-26960` | `private bool HasMemoryOverviewPendingBlocks(` — 一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图 | `mixed-host` |
-
-**B1 仍在进行，尚未通过 record/time 门槛。** 队列分片/纯引用整理、计划标记、普通提交和代表编辑/导入已有真实离线证据；不代表所有窗口实机、全量导入业务或事务恢复。剩余是深来源capture/check/Pending、Apply内部及外围生产/维护入口的原子成本，不再把已完成队列分片记作未做。
-
-`wired-boundary` 仅局部接线验证；`mixed-host` 是新旧共用 host；`retained-live` 仍有实际调用/兼容责任；`readonly-api` 是当前公开只读面。没有 LIVE/SAVE 标签，因为本轮未运行真实游戏/存档。
+| `memory.overview.pending-projection` | `MyBehavior.cs:26767-26770` | `private bool HasMemoryOverviewPendingBlocks(` — 一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图 | `mixed-host` |
+| `memory.material.index-owner` | `Refactor/Runtime/EventSourceMaterialIndex.cs:11-14` | `internal sealed class EventSourceMaterialIndex<T> where T : class` — 独立派生索引/绑定 owner，无游戏和存档写入 | `source-linked-offline-verified` |
+| `memory.material.index-build` | `Refactor/Runtime/EventSourceMaterialIndex.cs:39-42` | `internal Dictionary<string, T> Build(List<T> source)` — 未发布重建、命名last-wins/空键first-wins | `source-linked-offline-verified` |
+| `memory.material.record` | `MyBehavior.cs:13707-13710` | `private void RecordEventSourceMaterial(` — 原记录/追加/发布仍归主体 owner，使用独立索引 | `source-linked-offline-verified` |
+| `memory.material.rebuild` | `MyBehavior.cs:20126-20129` | `private void RebuildEventSourceMaterialIndex()` — 重建后复核来源引用，再发布和绑定 | `source-linked-offline-verified` |
+| `memory.sealing.continue` | `MyBehavior.MemorySealing.cs:198-201` | `private bool ContinueDailyMemorySeal(long startTimestamp, double budgetMs, bool requirePendingProbe)` — 七阶段封存已纳入源差异审查，深原子预算仍未通过 | `source-linked-offline-verified` |
 
 ## 核对或更新
 

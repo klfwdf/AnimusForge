@@ -1,12 +1,13 @@
-# AF 总 HANDOFF — 本机继续 B1 集成与主体职责提取（2026-09-14）
+# AF 总 HANDOFF — B1 索引职责提取与集成已离线验证（2026-09-14）
 
-**当前用户授权恢复源码工作；自动化仍暂停，不部署、不推送。**
+**本轮生产/测试 `73a6977c` 已本地提交；整体阶段 8 / B1 仍 VERIFY、未整批合格。自动化保持暂停，未推送/部署。**
 
-- 当前工作区 `G:/AFMOD/AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`；起点 `3f00fefa`（已同步远端）。下方其他机器路径/依赖缺失和历史“未推送”不选择本机环境。
-- 当前阶段仍为 8 / B1-P1，手动 ACTIVE。先完成现有 9 个未审项的真实集成验证，再按主体职责提取素材索引运行时，不靠挪 partial 凑拆分。
-- 既有复测：business36、sealing30/8反例、materials23及旧版对照；这不是本轮后续修改的验收。当前严格 inverse 仍拒绝 WIP，地图仍绑定 `62abfdb3`。
-- 详细范围/风险/验证在[实施台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)当前段。后续仍沿用[原计划第15节](docs/phase8/af-core-precloseout-plan-20260913.md)，不扩到制作组玩法。
-- 两份用户草稿、本地专用 Native 简明版保留；不修改全局 Skill 或其他工作树。所有完成与不足在本轮最终交接更新。
+- 当前唯一入口：[本轮详细 HANDOFF](docs/handoffs/2026-09-14-b1-index-owner-integration-handoff.md)，包含原行为、源码坐标、验证、剩余问题和回滚。
+- 工作区 `G:/AFMOD/AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`；收到远端 `3f00fefa`，意图检查点 `ebdabd63`。其他机器路径只属历史。
+- 独立事件素材索引组件已接入，删除旧 MyBehavior 索引 partial；主类家族减少45行，不冒称主体整体已拆完。权威记录/存档和制作组玩法不变。
+- 旧9项源差异已通过精确审查纳入：54声明/2删除/组件锁，8个防误放测试；素材23/7反例、封存30/8反例及相邻回归、六项Stage、API532实际DLL断言/持久化身份通过。[验收JSON](docs/audits/2026-09-14-b1-index-owner-integration.json) / [58点定位图](docs/architecture/af-framework-code-map.json)绑定73a6977c。
+- 下一步仍是[原计划第15节](docs/phase8/af-core-precloseout-plan-20260913.md)的 B1 深来源/原子预算；不是重做旧9项，也不进入B2。Courier live读取、完整三渠道/实机/旧档/资产AFEF/音频与所选public能力未完成。
+- 两份用户草稿和指定本地专用 Native 简明版保留；本轮不恢复自动化、不覆盖游戏、不改默认或公开写能力。
 
 ## 以下为历史，当前实施以上方入口为准
 
