@@ -16,9 +16,9 @@
 
 ## 以下为历史交接，当前状态以上方入口为准
 
-# AF 总 HANDOFF — 恢复 B1-P1 步骤 A：WIP 审查表（2026-09-13）
+# AF 总 HANDOFF — 恢复 B1-P1：business 封存夹具适配（2026-09-14）
 
-**用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
+**用户已恢复开发。当前只做阶段 8 / B1-P1，不是阶段 8 DONE，不进入 B2/B3。**
 
 - 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。当前 detached HEAD 为记录提交 `6dd5fbd7`，在审查表切片 `2de78e5d` 之上；远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
 - 本切片改审查表/inverse 适配，并将 `run_sealing.py` 默认 SDK 指到本机 dotnet。**未改生产代码、代码地图 hash、一键脚本**。`productionFileSha256` 与 `TryRunCampaignMemoryMaintenance` 的已审 `sha256` 仍绑 `62abfdb3`。
@@ -27,10 +27,10 @@
 - Inverse **FAIL**，一次列出 9 个未审项（含删除的 `HasPastDailyMemoryDrafts`）。已审 `productionFileSha256` / `TryRunCampaignMemoryMaintenance` hash 未刷新。日志 `.tmp/b1-wip-review-20260913/official-inverse.log`。本机 `Python312\python.exe` 仍拒绝访问，改用 Codex bundled Python 跑同一 `source_parity.py`。
 - 本地提交这 5 个文件：`2de78e5d`（detached HEAD，信息 `docs: inventory unreviewed B1 WIP declarations without accepting inverse`）。未 push、未 hard reset。
 - 封存 30 例已跑。current **30/0**；`--original` `62abfdb3` **19 绿 / 11 红**（新 30 例对旧实现，不是 WIP 回退）。`run_sealing.py` 无 `--mutate`。证据 `.tmp/b1-sealing-20260914/`，绑定 `MyBehavior.cs` sha256 `03afca51…`。LIVE/SAVE=NOT_RUN。
-- 相邻 suite（绑定当前 WIP 源码）：materials current 23/0，7 个 mutation 均 exit=1（有效红例），`62abfdb3` baseline 23 例 8 红；planning 24/0；writers 238/0；commit_writers 51/0；captured 109/0；terminal 85/0。business **EXIT=2 编译失败**（抽出的 `TryRunCampaignMemoryMaintenance` 依赖 `MemorySealing.cs` 字段/`requirePendingProbe`，共享 harness 未纳入该 partial）。未改生产语义。
+- 相邻 suite（绑定当前 WIP 源码）：materials current 23/0，7 个 mutation 均 exit=1（有效红例），`62abfdb3` baseline 23 例 8 红；planning 24/0；writers 238/0；commit_writers 51/0；captured 109/0；terminal 85/0。business current **36/0**；`--original` e40c92d7 **4 绿 / 32 红**（旧实现红例，不是 WIP 回退）；mutation **NOT-RUN**。只改 `BusinessHarness.cs.txt` / `run_business.py`：3 参 `TrySealPastDailyMemoryDrafts` 夹具、`_dailyMemorySealState`/`_dailyMemoryDraftSealTargetDay`/`_dailyMemorySealCompletedPass` 字段、本机 dotnet。未改生产语义。审查表只更新这两个测试文件的 evidence hash，已审生产 `sha256` / `productionFileSha256` 未刷新。
 - 代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。
 
-回滚：定向 `git revert 2de78e5d`，保留其后用户改动，不 hard reset。
+回滚：定向 revert 本切片测试/HANDOFF 提交，再按需 `git revert 2de78e5d`，保留其后用户改动，不 hard reset。下一建议切片：B1 剩余预算/集成，不进 B2/B3。
 
 ## 以下为历史交接，当前状态以上方入口为准
 
