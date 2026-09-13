@@ -1,6 +1,6 @@
 # 当前自动实施：B1 队列原子排序（2026-09-14）
 
-- 本切片离线联验完成，整体B1仍VERIFY；单代理，唯一写入 G:/AFMOD/AF-REFACTOR；当前 b5940e9f，生产基线9158132c；fresh fetch远端3f00fefa，无新变化。
+- 本切片离线联验完成，整体B1仍VERIFY；单代理，唯一写入 G:/AFMOD/AF-REFACTOR；当前生产/测试8bcde78b，前生产9158132c；fresh fetch远端3f00fefa，无新变化。
 - 意图：将Daily/Major封存尾部的稳定排序提取到有真实消费者的可续跑纯运行时组件，复用Campaign预算；同步调用、先pending再去重、原地净化、引用身份、文化排序及同键稳定次序保持。正常净化仍主线程原子执行，允许净化元数据先于排序发布，不启动第二条总结链。
 - 路径：MyBehavior.cs/MemorySealing、Refactor/Runtime排序组件、直接sealing/business等测试适配及精确inverse/地图/交接。存档DTO不搬迁，Prompt/玩法/public/默认/原构建脚本不改。
 - 风险与验收：不得发布跨tick过期列表/元数据/culture；排序每次实际比较/移动计费、同步可排空；旧915真实执行红例、变异与原40场景、相邻回归和六项Stage/API/存档身份。数组分配/净化/键捕获/最终标量绑定仍原子，不用本切片宣称B1硬预算完成。真实游戏/存档未运行，不部署/推送。

@@ -1,13 +1,12 @@
-# AF 总 HANDOFF — Campaign维护共享预算已离线联验（2026-09-14）
+# AF 总 HANDOFF — 封存队列可续跑排序已离线联验（2026-09-14）
 
-**生产/测试9158132c，本輪局部离线完成；整体阶段8/B1仍VERIFY、未整批合格。自动化af-7-8继续ACTIVE。未推送/部署。**
+**生产/测试8bcde78b，本轮局部完成；整体阶段8/B1仍VERIFY、未整批合格。af-7-8每小时ACTIVE，未推送/部署。**
 
-- 当前入口：[共享预算HANDOFF](docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)，含行为变化、源位置、证据、剩余任务及回滚；前生产73a6977c、检查点01e24b9e。
-- 正常有限Campaign维护周期共享deadline及封存128/8授予；空闲懒创建，异常恢复窗口；修复预算耗尽后同日丢失总结启动请求并绑定save generation。
-- 当前40场景/14有效反例、旧73a6977c的35绿5红、相邻回归与六项Stage通过，API/实际DLL/存档身份保持。[验收JSON](docs/audits/2026-09-14-b1-campaign-budget-verification.json) / [63点代码图](docs/architecture/af-framework-code-map.json)。
-- 不把它说成全游戏帧硬预算：EngineTick/其他模块及显式同步调用独立，深来源和原子尾步仍待处理；不进入B2。
-- 下一自动续点按[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)：完整raw/初捕获、单owner净化、全owner绑定/最终排序等；不要重做已关闭的旧9项、素材索引或Campaign共享窗口。
-- 唯一写入区G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；用户草稿/本地专用文档保持。LIVE/SAVE/真实资产AFEF/TTS/子MOD、Courier线程及后续内部/public工作仍未完。
+- 当前入口：[排序HANDOFF](docs/handoffs/2026-09-14-b1-queue-sort-handoff.md)，含源码坐标、真实差异、完整验证和后续；前生产9158132c、实改前检查点99a7dbfe。[前轮共享预算交接](docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)保留。
+- Daily/Major封存尾部接入独立稳定排序组件，复用Campaign累计预算、最终核对列表/字段/culture；同步仍排空。原净化/去重/引用顺序保持，净化元数据允许早于最终排序完成可见。
+- 60场景/20有效反例、旧915的46绿14红、相邻回归与最终六项Stage通过；58声明/4新增span严格inverse与10项守卫、API/实际DLL/存档身份保持。[验收JSON](docs/audits/2026-09-14-b1-queue-sort-verification.json) / [68点代码图](docs/architecture/af-framework-code-map.json)均绑定8bcde78b。
+- 下一续点仍B1初捕获/raw/单owner净化/全owner绑定/Apply等原子成本；本轮normalize/分配/key捕获/最终绑定仍原子，不宣称全帧硬预算，不进入B2。按[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)接续，不重做已完成项。
+- 唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；fresh fetch远端仍3f00fefa，用户草稿/指定本地文档保持。LIVE/SAVE/资产AFEF/TTS/provider/外部DLL及完整三渠道/内部接口后续未完。
 
 ## 以下为历史交付与配置，不覆盖当前续点
 
