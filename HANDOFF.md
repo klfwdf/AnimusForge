@@ -2,7 +2,7 @@
 
 **用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
 
-- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。HEAD 应对齐 `c2ce7947` 或本任务在其上的连续本地提交。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
+- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。当前 detached HEAD 为记录提交 `6dd5fbd7`，在审查表切片 `2de78e5d` 之上；远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
 - 本切片改审查表/inverse 适配，并将 `run_sealing.py` 默认 SDK 指到本机 dotnet。**未改生产代码、代码地图 hash、一键脚本**。`productionFileSha256` 与 `TryRunCampaignMemoryMaintenance` 的已审 `sha256` 仍绑 `62abfdb3`。
 - `tools/MemorySummaryMainThreadBoundaryTests/source-review-b1.json` 新增 `unreviewedWip`（8 个符号）以及未审删除 `HasPastDailyMemoryDrafts`。`source_parity.py` 在恢复旧声明前收集全部未审项并失败。
 - 未审符号（行号只是定位，身份是签名）：`RecordEventSourceMaterial` `MyBehavior.cs:13705`；`RebuildEventSourceMaterialIndex` `MyBehavior.cs:20126`；`IsEventSourceMaterialIndexCurrent` / `BindEventSourceMaterialIndex` `MyBehavior.EventSourceMaterialIndex.cs:16` / `:27`；`TrySealPastDailyMemoryDrafts` `MyBehavior.cs:4814`；`ContinueDailyMemorySeal` `MyBehavior.MemorySealing.cs:198`；`TryRunCampaignMemoryMaintenance` `MyBehavior.cs:17741`；`ResetDailyMemoryDraftSealSliceState` `MyBehavior.cs:4835`；删除 `HasPastDailyMemoryDrafts`（下一锚 `SyncData`，不是业务红例）。
