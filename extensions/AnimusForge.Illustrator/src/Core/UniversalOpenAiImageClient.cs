@@ -80,6 +80,28 @@ namespace AnimusForge.Illustrator.Core
             string size = (settings.ImageSize ?? "1024x1024").Trim();
             string quality = settings.SelectedQuality ?? "";
             string style = settings.SelectedStyle ?? "";
+            // style 仅 vivid/natural 是 API 合法枚举；custom/暗黑史诗/电影级 等走提示词注入，避免非法枚举 400
+            string customStyleHint;
+            switch (style)
+            {
+                case "custom":
+                    customStyleHint = (settings.CustomStylePrompt ?? string.Empty).Trim();
+                    style = null;
+                    break;
+                case "dark-epic":
+                    customStyleHint = "暗黑史诗写实, dark epic realism, grim medieval war chronicle, dramatic chiaroscuro, painterly oil texture";
+                    style = null;
+                    break;
+                case "cinematic":
+                    customStyleHint = "电影级光影, cinematic film still, anamorphic composition, movie-grade dramatic lighting and color grading";
+                    style = null;
+                    break;
+                default:
+                    customStyleHint = string.Empty;
+                    break;
+            }
+            string responseFormat = settings.ResponseFormat ?? string.Empty;
+            int timeoutSeconds = settings.RequestTimeoutSeconds > 0 ? settings.RequestTimeoutSeconds : 120;
 
             var stopwatch = Stopwatch.StartNew();
 
@@ -96,14 +118,14 @@ namespace AnimusForge.Illustrator.Core
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
 
                 var (success, imageBytes, imageUrl, errorMessage, shouldFallbackToChat) =
-                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, referenceImages, negativePrompt, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, customStyleHint, responseFormat, timeoutSeconds, referenceImages, negativePrompt, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
 
                 // 2. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
                 if (!success && shouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                 {
                     Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                     string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, referenceImages, negativePrompt, apiKey, true, cancellationToken).ConfigureAwait(false);
+                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, customStyleHint, responseFormat, timeoutSeconds, referenceImages, negativePrompt, apiKey, true, cancellationToken).ConfigureAwait(false);
                     if (chatRetry.Success)
                     {
                         success = true;
@@ -214,6 +236,9 @@ namespace AnimusForge.Illustrator.Core
             string size,
             string quality,
             string style,
+            string customStyleHint,
+            string responseFormat,
+            int timeoutSeconds,
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
             string negativePrompt,
             string apiKey,
@@ -224,7 +249,7 @@ namespace AnimusForge.Illustrator.Core
             if (isChatProtocol)
             {
                 // 针对多模态对话生图模型 (如 Gemini Native Image) 进行宽高比与画风画质提示词及参数注入
-                string effectivePrompt = BuildChatImagePrompt(prompt, size, quality, style);
+                string effectivePrompt = BuildChatImagePrompt(prompt, size, quality, style, customStyleHint);
                 if (!string.IsNullOrWhiteSpace(negativePrompt))
                 {
                     effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
@@ -294,10 +319,20 @@ namespace AnimusForge.Illustrator.Core
             }
             else
             {
+                string effectivePrompt = prompt;
+                if (!string.IsNullOrWhiteSpace(customStyleHint))
+                {
+                    effectivePrompt += "\n[画风指令: " + customStyleHint + "]";
+                }
+                if (!string.IsNullOrWhiteSpace(negativePrompt))
+                {
+                    effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
+                }
+
                 payload = new JObject
                 {
                     ["model"] = model,
-                    ["prompt"] = prompt,
+                    ["prompt"] = effectivePrompt,
                     ["n"] = 1,
                     ["size"] = size
                 };
@@ -310,6 +345,11 @@ namespace AnimusForge.Illustrator.Core
                 if (!string.IsNullOrWhiteSpace(style))
                 {
                     payload["style"] = style;
+                }
+
+                if (!string.IsNullOrWhiteSpace(responseFormat))
+                {
+                    payload["response_format"] = responseFormat;
                 }
             }
 
@@ -324,34 +364,38 @@ namespace AnimusForge.Illustrator.Core
 
                 Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0})...");
 
-                using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false))
+                using (var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                 {
-                    string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    if (!response.IsSuccessStatusCode)
+                    timeoutCts.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds > 0 ? timeoutSeconds : 120));
+                    using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, timeoutCts.Token).ConfigureAwait(false))
                     {
-                        string errorMsg = ExtractErrorMessage(responseText, (int)response.StatusCode);
-                        Log($"[Illustrator] Request failed: {errorMsg}");
+                        string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                        bool fallback = false;
-                        if (!isChatProtocol && (
-                            errorMsg.IndexOf("not supported on /v1/images/generations", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            errorMsg.IndexOf("field messages is required", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            errorMsg.IndexOf("not support", StringComparison.OrdinalIgnoreCase) >= 0))
+                        if (!response.IsSuccessStatusCode)
                         {
-                            fallback = true;
+                            string errorMsg = ExtractErrorMessage(responseText, (int)response.StatusCode);
+                            Log($"[Illustrator] Request failed: {errorMsg}");
+
+                            bool fallback = false;
+                            if (!isChatProtocol && (
+                                errorMsg.IndexOf("not supported on /v1/images/generations", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                errorMsg.IndexOf("field messages is required", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                errorMsg.IndexOf("not support", StringComparison.OrdinalIgnoreCase) >= 0))
+                            {
+                                fallback = true;
+                            }
+
+                            return (false, null, null, errorMsg, fallback);
                         }
 
-                        return (false, null, null, errorMsg, fallback);
-                    }
+                        var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
+                        if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
+                        {
+                            return (true, extracted.Bytes, extracted.Url, null, false);
+                        }
 
-                    var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
-                    if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
-                    {
-                        return (true, extracted.Bytes, extracted.Url, null, false);
+                        return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)", false);
                     }
-
-                    return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)", false);
                 }
             }
         }
@@ -546,7 +590,7 @@ namespace AnimusForge.Illustrator.Core
             return null;
         }
 
-        public static string BuildChatImagePrompt(string prompt, string size, string quality, string style)
+        public static string BuildChatImagePrompt(string prompt, string size, string quality, string style, string customStyleHint = null)
         {
             var directives = new System.Collections.Generic.List<string>();
 
@@ -567,13 +611,21 @@ namespace AnimusForge.Illustrator.Core
 
             if (!string.IsNullOrWhiteSpace(quality))
             {
-                if (quality.Equals("hd", StringComparison.OrdinalIgnoreCase))
+                if (quality.Equals("hd", StringComparison.OrdinalIgnoreCase) || quality.Equals("high", StringComparison.OrdinalIgnoreCase))
                 {
                     directives.Add("ultra-high definition, 4k resolution, hyper-detailed, masterpiece, hd quality");
                 }
-                else if (quality.Equals("standard", StringComparison.OrdinalIgnoreCase))
+                else if (quality.Equals("standard", StringComparison.OrdinalIgnoreCase) || quality.Equals("auto", StringComparison.OrdinalIgnoreCase))
                 {
                     directives.Add("standard definition quality");
+                }
+                else if (quality.Equals("medium", StringComparison.OrdinalIgnoreCase))
+                {
+                    directives.Add("medium-high definition quality, detailed");
+                }
+                else if (quality.Equals("low", StringComparison.OrdinalIgnoreCase))
+                {
+                    directives.Add("fast draft quality");
                 }
             }
 
@@ -587,6 +639,11 @@ namespace AnimusForge.Illustrator.Core
                 {
                     directives.Add("natural style, authentic realism, soft natural lighting, true to life");
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(customStyleHint))
+            {
+                directives.Add("style: " + customStyleHint.Trim());
             }
 
             if (directives.Count > 0)
