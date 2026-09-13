@@ -4811,138 +4811,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return processed;
 	}
 
-	private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue)
+	private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue, bool requirePendingProbe = false)
 	{
 		try
 		{
-			if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0)
+			if (_dailyMemoryDrafts == null || (_dailyMemoryDrafts.Count <= 0 && _dailyMemorySealState == null))
 			{
 				ResetDailyMemoryDraftSealSliceState();
 				return true;
 			}
-			if (_memorySummaryQueue == null)
-			{
-				_memorySummaryQueue = new List<MemorySummaryJob>();
-			}
-			if (_npcMajorActionSummaryQueue == null)
-			{
-				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
-			}
-			if (_dailyMemoryDraftSealOwnerKeys == null)
-			{
-				_dailyMemoryDraftSealOwnerKeys = _dailyMemoryDrafts.Keys.ToList();
-				_dailyMemoryDraftSealOwnerIndex = 0;
-				_dailyMemoryDraftSealDraftIndex = -1;
-				_dailyMemoryDraftSealTargetDay = (int)CampaignTime.Now.ToDays;
-				_dailyMemoryDraftSealQueued = new HashSet<string>(_memorySummaryQueue.Where((MemorySummaryJob x) => x != null).Select((MemorySummaryJob x) => NormalizeMemoryHeroId(x.HeroId) + "|" + x.GameDayIndex), StringComparer.OrdinalIgnoreCase);
-				_dailyMemoryDraftSealQueuedMajor = new HashSet<string>(_npcMajorActionSummaryQueue.Where((MajorActionSummaryJob x) => x != null).Select((MajorActionSummaryJob x) => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
-			}
-			while (_dailyMemoryDraftSealOwnerIndex < _dailyMemoryDraftSealOwnerKeys.Count)
-			{
-				if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-				{
-					return false;
-				}
-				string ownerKey = _dailyMemoryDraftSealOwnerKeys[_dailyMemoryDraftSealOwnerIndex];
-				if (!_dailyMemoryDrafts.TryGetValue(ownerKey, out var list) || list == null)
-				{
-					_dailyMemoryDraftSealOwnerIndex++;
-					_dailyMemoryDraftSealDraftIndex = -1;
-					continue;
-				}
-				string ownerMemoryId = NormalizeMemoryHeroId(ownerKey);
-				if (!IsMemoryEntityEligibleForCompressedMemory(ownerMemoryId))
-				{
-					// Cancel orphaned work, while preserving source drafts because they can carry weekly-report trigger facts.
-					CancelUnavailableHeroCompressionWorkById(ownerMemoryId, "seal_past_daily_drafts");
-					_dailyMemoryDraftSealOwnerIndex++;
-					_dailyMemoryDraftSealDraftIndex = -1;
-					continue;
-				}
-				if (_dailyMemoryDraftSealDraftIndex < 0)
-				{
-					_dailyMemoryDraftSealDraftIndex = list.Count - 1;
-				}
-				while (_dailyMemoryDraftSealDraftIndex >= 0)
-				{
-					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-					{
-						return false;
-					}
-					int draftIndex = Math.Min(_dailyMemoryDraftSealDraftIndex, list.Count - 1);
-					_dailyMemoryDraftSealDraftIndex = draftIndex - 1;
-					if (draftIndex < 0)
-					{
-						break;
-					}
-					DailyMemoryDraft draft = list[draftIndex];
-					if (draft == null || draft.GameDayIndex >= _dailyMemoryDraftSealTargetDay)
-					{
-						continue;
-					}
-					if (!string.Equals(NormalizeMemoryHeroId(draft.HeroId), ownerMemoryId, StringComparison.OrdinalIgnoreCase))
-					{
-						// Never redirect memory by display name. Skip an untrusted mapping but retain its raw/weekly material.
-						draft.QueuedForSummary = false;
-						Logger.Log("CompressedMemory", "skipped mismatched daily memory draft owner=" + ownerMemoryId + " draftHero=" + NormalizeMemoryHeroId(draft.HeroId) + " day=" + draft.GameDayIndex);
-						continue;
-					}
-					draft.HeroId = ownerMemoryId;
-					bool hasSummarySource = CountDailyMemorySummarySourceChars(draft) > 0;
-					bool hasAfefLines = HasDailyMemoryDraftAfefLines(draft);
-					if (!draft.HasLlmDialogue || !hasSummarySource)
-					{
-						if (!hasAfefLines)
-						{
-							list.RemoveAt(draftIndex);
-						}
-						continue;
-					}
-					// The owner was validated once above, avoiding a repeated Hero registry lookup for each old daily draft.
-					TryEnqueueMajorActionSummaryForDraft(draft, _dailyMemoryDraftSealQueuedMajor, ownerAlreadyEligible: true);
-					if (draft.SummaryRetryCount >= 3)
-					{
-						// Three attempts are terminal for automatic work; preserve the draft and error for manual inspection.
-						draft.QueuedForSummary = false;
-						continue;
-					}
-					string text = ownerMemoryId;
-					string key = text + "|" + draft.GameDayIndex;
-					if (HasCompressedMemoryBlock(text, draft.GameDayIndex))
-					{
-						list.RemoveAt(draftIndex);
-						continue;
-					}
-					if (!_dailyMemoryDraftSealQueued.Contains(key))
-					{
-						_memorySummaryQueue.Add(new MemorySummaryJob
-						{
-							HeroId = text,
-							HeroName = draft.HeroName,
-							GameDayIndex = draft.GameDayIndex,
-							GameDate = draft.GameDate
-						});
-						_dailyMemoryDraftSealQueued.Add(key);
-					}
-					draft.QueuedForSummary = true;
-				}
-				list = SanitizeDailyMemoryDrafts(list);
-				if (list.Count > 0)
-				{
-					_dailyMemoryDrafts[ownerKey] = list;
-				}
-				else
-				{
-					_dailyMemoryDrafts.Remove(ownerKey);
-				}
-				_dailyMemoryDraftSealOwnerIndex++;
-				_dailyMemoryDraftSealDraftIndex = -1;
-			}
-			// Do not persist terminal retries or removed targets just because this sealing slice completed successfully.
-			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue.Where(HasMemorySummaryJobStillPending).ToList());
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue.Where(HasMajorActionSummaryJobStillPending).ToList());
-			ResetDailyMemoryDraftSealSliceState();
-			return true;
+			_memorySummaryQueue = _memorySummaryQueue ?? new List<MemorySummaryJob>();
+			_npcMajorActionSummaryQueue = _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>();
+			return ContinueDailyMemorySeal(startTimestamp, budgetMs, requirePendingProbe);
 		}
 		catch (Exception ex)
 		{
@@ -4960,6 +4840,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_dailyMemoryDraftSealTargetDay = -1;
 		_dailyMemoryDraftSealQueued = null;
 		_dailyMemoryDraftSealQueuedMajor = null;
+		_dailyMemorySealState = null;
+		_dailyMemorySealCompletedPass = false;
 	}
 
 	private bool HasCompressedMemoryBlock(string heroId, int dayIndex)
@@ -13840,20 +13722,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
 		string text2 = NormalizeNpcActionStableKey(stableKey, normalizedLabel + ":" + text);
-		if (_eventSourceMaterialIndex == null)
-		{
-			RebuildEventSourceMaterialIndex();
-		}
+		if (!IsEventSourceMaterialIndexCurrent()) RebuildEventSourceMaterialIndex();
 		string indexKey = BuildEventSourceMaterialIndexKey(currentGameDayIndexSafe, text2);
-		EventSourceMaterialEntry eventSourceMaterialEntry = null;
-		if (_eventSourceMaterialIndex != null)
-		{
-			_eventSourceMaterialIndex.TryGetValue(indexKey, out eventSourceMaterialEntry);
-		}
-		if (eventSourceMaterialEntry == null)
-		{
-			eventSourceMaterialEntry = _eventSourceMaterials.FirstOrDefault((EventSourceMaterialEntry x) => x != null && x.Day == currentGameDayIndexSafe && string.Equals((x.StableKey ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
-		}
+		// A complete index owns misses too; a new daily key must not rescan all history.
+		_eventSourceMaterialIndex.TryGetValue(indexKey, out var eventSourceMaterialEntry);
 		if (eventSourceMaterialEntry != null)
 		{
 			eventSourceMaterialEntry.Label = normalizedLabel;
@@ -13865,10 +13737,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
 			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
 			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
-			if (_eventSourceMaterialIndex != null)
-			{
-				_eventSourceMaterialIndex[indexKey] = eventSourceMaterialEntry;
-			}
 			return;
 		}
 		EventSourceMaterialEntry newEntry = new EventSourceMaterialEntry
@@ -13888,10 +13756,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			IncludeInKingdom = includeInKingdom
 		};
 		_eventSourceMaterials.Add(newEntry);
-		if (_eventSourceMaterialIndex != null)
-		{
-			_eventSourceMaterialIndex[indexKey] = newEntry;
-		}
+		_eventSourceMaterialIndex[indexKey] = newEntry;
+		// Publish the new structural binding only after both authoritative append
+		// and index insertion succeed. A failed insert leaves the old probe stale.
+		BindEventSourceMaterialIndex(_eventSourceMaterials, _eventSourceMaterialIndex);
 	}
 
 	private static bool IsPlayerWeeklySourceMaterial(string materialKind, string actorHeroId, string stableKey)
@@ -17872,45 +17740,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void TryRunCampaignMemoryMaintenance()
 	{
-		if (_memorySummaryProcessing)
-		{
-			return;
-		}
+		if (_memorySummaryProcessing) return;
 		int currentDay = 0;
-		try
-		{
-			currentDay = (int)CampaignTime.Now.ToDays;
-		}
-		catch
-		{
-			currentDay = 0;
-		}
-		// Raw queued work is drained/filtered once by the guarded planner. Do not
-		// re-clone overview blocks or rescan daily text on every campaign tick.
+		try { currentDay = (int)CampaignTime.Now.ToDays; } catch { currentDay = 0; }
+		// A paused seal is work even before its first summary job exists. It must
+		// resume on the same day rather than depending on the raw queue counts.
 		bool hasQueuedWork = (_memorySummaryQueue?.Count ?? 0) > 0 || (_npcMajorActionSummaryQueue?.Count ?? 0) > 0 || (_memoryOverviewQueue?.Count ?? 0) > 0;
-		if (!hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay)
-		{
-			return;
-		}
-		if (IsDialogueOrLetterChainBusyForMemorySummary())
-		{
-			return;
-		}
-		_lastMemoryMaintenanceObservedGameDay = currentDay;
-		bool hasPastDrafts = HasPastDailyMemoryDrafts(currentDay);
-		if (!hasPastDrafts && !hasQueuedWork)
-		{
-			return;
-		}
+		bool sealActive = _dailyMemorySealState != null;
+		if (!sealActive && !hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay) return;
+		if (IsDialogueOrLetterChainBusyForMemorySummary()) return;
 		long startTimestamp = Stopwatch.GetTimestamp();
 		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
-		if (hasPastDrafts)
+		int observedDay = sealActive ? _dailyMemoryDraftSealTargetDay : currentDay;
+		using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
 		{
-			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
-			{
-				TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs);
-			}
+			// The old whole-source HasPast predicate is now a non-mutating phase
+			// sharing this deadline. No sealing effects run when that probe is empty.
+			if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return;
 		}
+		_lastMemoryMaintenanceObservedGameDay = observedDay;
+		if (!hasQueuedWork && !_dailyMemorySealCompletedPass) return;
 		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
@@ -17920,42 +17769,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool HasPastDailyMemoryDrafts(int currentDay)
-	{
-		if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0 || currentDay <= 0)
-		{
-			return false;
-		}
-		try
-		{
-			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts)
-			{
-				string ownerMemoryId = NormalizeMemoryHeroId(item.Key);
-				if (!IsMemoryEntityEligibleForCompressedMemory(ownerMemoryId))
-				{
-					// Validate each owner once; a stale owner must not make every stored draft wake maintenance.
-					continue;
-				}
-				List<DailyMemoryDraft> drafts = item.Value;
-				if (drafts == null || drafts.Count <= 0)
-				{
-					continue;
-				}
-				for (int i = 0; i < drafts.Count; i++)
-				{
-					DailyMemoryDraft draft = drafts[i];
-					if (draft != null && string.Equals(NormalizeMemoryHeroId(draft.HeroId), ownerMemoryId, StringComparison.OrdinalIgnoreCase) && draft.SummaryRetryCount < 3 && draft.GameDayIndex < currentDay && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0 && !HasCompressedMemoryBlock(ownerMemoryId, draft.GameDayIndex))
-					{
-						return true;
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
+
 
 	public override void SyncData(IDataStore dataStore)
 	{
@@ -20311,15 +20125,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void RebuildEventSourceMaterialIndex()
 	{
-		_eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventSourceMaterialEntry item in _eventSourceMaterials ?? new List<EventSourceMaterialEntry>())
+		var source = _eventSourceMaterials;
+		var rebuilt = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
+		foreach (EventSourceMaterialEntry item in source ?? new List<EventSourceMaterialEntry>())
 		{
-			string text = (item?.StableKey ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				_eventSourceMaterialIndex[BuildEventSourceMaterialIndexKey(item.Day, text)] = item;
-			}
+			if (item == null) continue;
+			string text = (item.StableKey ?? "").Trim();
+			string key = BuildEventSourceMaterialIndexKey(item.Day, text);
+			if (!string.IsNullOrWhiteSpace(text)) rebuilt[key] = item; // Original last-wins for named keys.
+			// The old miss fallback chose the FIRST same-day blank key; it never
+			// queried negative days. Index that exact case rather than append duplicates.
+			else if (item.Day >= 0 && !rebuilt.ContainsKey(key)) rebuilt.Add(key, item);
 		}
+		if (!ReferenceEquals(source, _eventSourceMaterials)) throw new InvalidOperationException("Event material source changed during index rebuild.");
+		_eventSourceMaterialIndex = rebuilt;
+		BindEventSourceMaterialIndex(source, rebuilt);
 	}
 
 	private void RebuildNpcRecentActionStableKeyIndex()
