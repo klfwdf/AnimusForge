@@ -1,0 +1,385 @@
+// Fixture-only game/provider/storage boundaries. Business.cs contains extracted production
+// Process + all six Apply/Mark methods + queue filters/models, never reimplemented here.
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Library;
+
+namespace TaleWorlds.Library
+{
+    public static class TWParallel
+    {
+        public static int MainId;
+        public static bool IsMainThread() => Thread.CurrentThread.ManagedThreadId == MainId;
+    }
+    public static class MBMath { public static int ClampInt(int value, int min, int max) => Math.Clamp(value, min, max); }
+    public sealed class InformationMessage { public string Text; public InformationMessage(string text) { Text = text; } }
+    public static class InformationManager
+    {
+        public static void DisplayMessage(InformationMessage message) => AnimusForge.Witness.Touch("ui:" + message.Text);
+    }
+}
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Campaign
+    {
+        private static readonly Campaign Value = new Campaign();
+        public static object Owner;
+        public static Campaign Current { get { AnimusForge.Witness.Touch("campaign-read"); return Value; } }
+        public T GetCampaignBehavior<T>() where T : class => Owner as T;
+    }
+    public sealed class Hero
+    {
+        public string Name;
+        public object CharacterObject = new object();
+        public Settlement CurrentSettlement;
+    }
+}
+namespace TaleWorlds.CampaignSystem.Settlements
+{
+    public sealed class Settlement { public static Settlement CurrentSettlement = new Settlement(); }
+}
+namespace AnimusForge
+{
+    internal static class Witness
+    {
+        internal sealed record Entry(string Name, bool Main, int Tick);
+        internal static readonly ConcurrentQueue<Entry> Events = new ConcurrentQueue<Entry>();
+        internal static int Tick;
+        internal static void Touch(string name) => Events.Enqueue(new Entry(name, TWParallel.IsMainThread(), Volatile.Read(ref Tick)));
+        internal static int Count(string prefix) => Events.Count(x => x.Name.StartsWith(prefix, StringComparison.Ordinal));
+        internal static void Reset() { Events.Clear(); Tick = 0; }
+    }
+    public static class Logger { public static void Log(string area, string text) { } }
+    public static class ShoutBehavior
+    {
+        public static void ClearNativeConversationSessionHistoryForExternal(Hero hero, object character, string name, int day)
+            => Witness.Touch("native-clear:" + name + ":" + day);
+    }
+    public static class PlayerNotorietyBehavior
+    {
+        public static void RecordPublicMemoryForExternal(Hero hero, Settlement settlement, string material,
+            string publicity, string reason, int day, string date) => Witness.Touch("publicity:" + material);
+    }
+    public partial class MyBehavior
+    {
+        public static MyBehavior Instance { get; private set; }
+        private bool _memorySummaryProcessing;
+        private List<MemorySummaryJob> _memorySummaryQueue = new List<MemorySummaryJob>();
+        private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+        private List<MemoryOverviewJob> _memoryOverviewQueue = new List<MemoryOverviewJob>();
+        private Dictionary<string, List<DailyMemoryDraft>> _dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>();
+        private Dictionary<string, List<CompressedMemoryBlock>> _compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>();
+        private Dictionary<string, List<NpcActionEntry>> _npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
+        private Dictionary<string, MajorActionSummaryState> _npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>();
+        private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>();
+        private HashSet<string> _dirtyMemoryOverviewIds = new HashSet<string>();
+        private readonly HashSet<string> failures = new HashSet<string>();
+        private readonly HashSet<string> obsolete = new HashSet<string>();
+        private readonly HashSet<string> unavailable = new HashSet<string>();
+        private readonly HashSet<string> enqueueOverviewAfterDaily = new HashSet<string>();
+        private readonly ConcurrentQueue<ProviderBatch> batches = new ConcurrentQueue<ProviderBatch>();
+        private readonly TaskCompletionSource<bool> clockGate = NewGate();
+        private int clockCalls;
+        private bool providerThrows;
+        private bool includeMalformedResults;
+
+        private sealed class ProviderBatch
+        {
+            internal readonly TaskCompletionSource<bool> Ready = NewGate();
+            internal List<object> Items;
+        }
+        private static TaskCompletionSource<bool> NewGate() => new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        private static string JobKey(object job) => job switch
+        {
+            MemorySummaryJob daily => "daily:" + daily.HeroId + ":" + daily.GameDayIndex,
+            MajorActionSummaryJob major => "major:" + major.HeroId,
+            MemoryOverviewJob overview => "overview:" + overview.HeroId,
+            _ => throw new ArgumentException("Unknown fixture job")
+        };
+        // This is a scripted provider boundary, NOT the real Execute*/network/retry loop.
+        // The incomplete gate forces the actual caller to cross an await on a worker.
+        private async Task RunDailySummaryQueueItemsAsync(List<object> items, int burst,
+            List<MemorySummaryExecutionResult> daily, List<MajorActionSummaryExecutionResult> major,
+            List<MemoryOverviewExecutionResult> overview)
+        {
+            var batch = new ProviderBatch { Items = items };
+            batches.Enqueue(batch);
+            await batch.Ready.Task.ConfigureAwait(false);
+            if (providerThrows) throw new InvalidOperationException("scripted provider failure");
+            foreach (object item in items)
+            {
+                string key = JobKey(item);
+                bool fail = failures.Contains(key), stale = obsolete.Contains(key);
+                if (item is MemorySummaryJob d)
+                    daily.Add(new MemorySummaryExecutionResult { Job = d, Error = " provider-error ", IsObsolete = stale,
+                        Block = fail ? null : Block(d.HeroId, d.GameDayIndex) });
+                else if (item is MajorActionSummaryJob m)
+                    major.Add(new MajorActionSummaryExecutionResult { Job = m, Error = " provider-error ", IsObsolete = stale,
+                        State = fail ? null : new MajorActionSummaryState { Summary = " major-result ", LastSummarizedDay = 10, LastSummarizedSequence = 1 } });
+                else if (item is MemoryOverviewJob o)
+                    overview.Add(new MemoryOverviewExecutionResult { Job = o, Error = " provider-error ", IsObsolete = stale,
+                        State = fail ? null : new MemoryOverviewState { Summary = " overview-result ", IncludedBlockIds = new List<string> { o.HeroId + "/10" } } });
+            }
+            if (includeMalformedResults)
+            {
+                daily.Add(null); daily.Add(new MemorySummaryExecutionResult());
+                major.Add(null); major.Add(new MajorActionSummaryExecutionResult());
+                overview.Add(null); overview.Add(new MemoryOverviewExecutionResult());
+            }
+        }
+        private Task WaitOverviewWindowAsync() { Interlocked.Increment(ref clockCalls); return clockGate.Task; }
+        // These lower storage methods intentionally do not reproduce serialization or caching.
+        private List<CompressedMemoryBlock> LoadCompressedMemoryBlocksById(string id)
+        { Witness.Touch("load-blocks"); return _compressedMemoryBlocks.TryGetValue(id, out var value) ? value.ToList() : new List<CompressedMemoryBlock>(); }
+        private void SaveCompressedMemoryBlocksById(string id, List<CompressedMemoryBlock> value)
+        { Witness.Touch("save-blocks"); _compressedMemoryBlocks[id] = value; }
+        private List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string id)
+        { Witness.Touch("load-drafts"); return _dailyMemoryDrafts[id].ToList(); }
+        private void SaveDailyMemoryDraftsById(string id, List<DailyMemoryDraft> value)
+        { Witness.Touch("save-drafts"); _dailyMemoryDrafts[id] = value; }
+        private bool HasCompressedMemoryBlock(string id, int day)
+        { Witness.Touch("block-exists"); return _compressedMemoryBlocks.TryGetValue(id, out var value) && value.Any(x => x.GameDayIndex == day); }
+        private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks) => blocks.Where(x => x != null).ToList();
+        private static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> actions, bool keepOnlyRecentWindow) => actions.Where(x => x != null).ToList();
+        private Hero FindHeroById(string id)
+        { Witness.Touch("find-hero"); return unavailable.Contains(id) ? null : new Hero { Name = id }; }
+        private static bool IsHeroNpcEligibleForCompressedMemory(Hero hero) => hero != null;
+        private bool IsMemoryEntityEligibleForCompressedMemory(string id)
+        { Witness.Touch("eligibility"); return !unavailable.Contains(id); }
+        private void CancelUnavailableHeroCompressionQueuedJobs(string reason) { Witness.Touch("cancel-unavailable-scan"); }
+        private void CancelUnavailableHeroCompressionWorkById(string id, string reason) { Witness.Touch("cancel-unavailable:" + id); }
+        private static int GetMemorySummaryRequestsPerMinuteFromSettings() => 12;
+        private static int GetMemoryOverviewStartBlockCountFromSettings() => 1;
+        private void EnqueueMemoryOverviewCandidateScanId(string id) => Witness.Touch("deferred-overview:" + id);
+        private void TryEnqueueMemoryOverviewForMemoryId(string id, string name, List<CompressedMemoryBlock> blocks)
+        {
+            Witness.Touch("overview-enqueue-boundary");
+            if (enqueueOverviewAfterDaily.Contains(id) && !_memoryOverviewQueue.Any(x => x.HeroId == id))
+                _memoryOverviewQueue.Add(new MemoryOverviewJob { HeroId = id, HeroName = name, TriggerGameDayIndex = 10 });
+        }
+        private void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block) => Witness.Touch("weekly-public:" + block.Id);
+        private void RecordWeeklyMemoryMaterialForBlock(CompressedMemoryBlock block) => Witness.Touch("weekly:" + block.Id);
+        // Publish is allowed off-thread. Delivery belongs to the separately tested UI owner.
+        private void PublishMemoryFailureNotice(string title, string message, long generation) => Witness.Touch("popup-publish:" + title + ":" + message);
+
+        private static MyBehavior NewOwner()
+        {
+            var owner = new MyBehavior(); Instance = owner; Campaign.Owner = owner; return owner;
+        }
+        private static CompressedMemoryBlock Block(string id, int day) => new CompressedMemoryBlock
+        { Id = id + "/" + day, HeroId = id, HeroName = id, GameDayIndex = day, Summary = "daily-result", PlayerHistoryMaterial = id + "/" + day };
+        private MemorySummaryJob AddDaily(string id, int day = 10)
+        {
+            var job = new MemorySummaryJob { HeroId = id, HeroName = id, GameDayIndex = day };
+            _memorySummaryQueue.Add(job);
+            if (!_dailyMemoryDrafts.TryGetValue(id, out var drafts)) _dailyMemoryDrafts[id] = drafts = new List<DailyMemoryDraft>();
+            drafts.Add(new DailyMemoryDraft { HeroId = id, GameDayIndex = day, HasLlmDialogue = true,
+                Lines = new List<DailyMemoryLine> { new DailyMemoryLine { Text = "player and npc source" } } });
+            return job;
+        }
+        private MajorActionSummaryJob AddMajor(string id)
+        {
+            var job = new MajorActionSummaryJob { HeroId = id, HeroName = id, TriggerGameDayIndex = 10 };
+            _npcMajorActionSummaryQueue.Add(job);
+            _npcMajorActions[id] = new List<NpcActionEntry> { new NpcActionEntry { Day = 10, Sequence = 1, Text = "action" } };
+            return job;
+        }
+        private MemoryOverviewJob AddOverview(string id)
+        {
+            var job = new MemoryOverviewJob { HeroId = id, HeroName = id, TriggerGameDayIndex = 10 };
+            _memoryOverviewQueue.Add(job); _compressedMemoryBlocks[id] = new List<CompressedMemoryBlock> { Block(id, 10) }; return job;
+        }
+        private Task Start() { _memorySummaryProcessing = true; return ProcessMemorySummaryQueueAsync(); }
+        private void Tick() { Interlocked.Increment(ref Witness.Tick); ProcessMemorySummaryMainThreadActions(); }
+        private void ReleaseProviders()
+        {
+            foreach (var batch in batches) Task.Run(() => batch.Ready.TrySetResult(true)).GetAwaiter().GetResult();
+        }
+        private static void Until(Func<bool> done, Action progress = null)
+        {
+            var timer = Stopwatch.StartNew();
+            while (!done())
+            {
+                if (timer.ElapsedMilliseconds > 5000) throw new Exception("Timed out waiting for controlled continuation");
+                progress?.Invoke(); Thread.Sleep(1);
+            }
+        }
+        private void Finish(Task task, bool releaseClock = true)
+        {
+            Until(() => task.IsCompleted, () =>
+            {
+                ReleaseProviders();
+                if (releaseClock) Task.Run(() => clockGate.TrySetResult(true)).GetAwaiter().GetResult();
+                Tick();
+            });
+            task.GetAwaiter().GetResult();
+            Tick(); // A completed/retired request must not leave replayable work.
+        }
+        private void AwaitFirstCompletion(Task task)
+        {
+            ReleaseProviders(); Until(() => task.IsCompleted || !_memorySummaryMainThreadActions.IsEmpty);
+        }
+        private static void Check(bool value, string message) { if (!value) throw new Exception(message); }
+        private static void MainThreadEffects()
+        {
+            var wrong = Witness.Events.Where(x => !x.Main && !x.Name.StartsWith("popup-publish:")).ToList();
+            Check(wrong.Count == 0, "off-main effects: " + string.Join(",", wrong.Take(6).Select(x => x.Name)));
+        }
+        private void CleanQueues() => Check(_memorySummaryQueue.Count + _npcMajorActionSummaryQueue.Count + _memoryOverviewQueue.Count == 0, "terminal queues not cleared");
+        private static int applied => Witness.Count("Apply");
+
+        private static void SuccessAndReentry()
+        {
+            var b = NewOwner(); b.AddDaily("daily"); b.AddMajor("major"); b.AddOverview("overview");
+            b._dirtyMemoryOverviewIds.Add("dirty");
+            var task = b.Start(); b.AwaitFirstCompletion(task);
+            bool untouched = applied == 0 && b._memorySummaryProcessing;
+            b.Finish(task);
+            Check(untouched, "business writes/release happened before a main-thread tick");
+            Check(b._compressedMemoryBlocks["daily"].Single().Summary == "daily-result" && b._dailyMemoryDrafts["daily"].Count == 0, "daily block/draft mutation");
+            Check(b._npcMajorActionSummaries["major"].Summary == "major-result" && b._npcMajorActionSummaries["major"].HeroId == "major", "major state normalization");
+            Check(b._memoryOverviewStates["overview"].Summary == "overview-result" && b._memoryOverviewStates["overview"].HeroId == "overview", "overview state normalization");
+            Check(applied == 3 && Witness.Count("weekly:") == 1 && Witness.Count("weekly-public:") == 1 && Witness.Count("publicity:") == 1 && Witness.Count("native-clear:") == 1, "duplicate or missing daily side effect");
+            Check(Witness.Events.Where(x => x.Name.StartsWith("Apply")).Select(x => x.Name).SequenceEqual(
+                new[] { "ApplyMemorySummarySuccess", "ApplyMajorActionSummarySuccess", "ApplyMemoryOverviewSuccess" }), "business application order changed");
+            Check(Witness.Count("deferred-overview:dirty") == 1 && b._dirtyMemoryOverviewIds.Count == 0, "dirty overview handoff");
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成：对话记忆 1 个，重大履历 1 个，记忆总览 1 个。") == 1, "success UI counts");
+            Check(!b._memorySummaryProcessing, "processing not released"); b.CleanQueues(); MainThreadEffects();
+            int count = applied; var again = b.Start(); b.Finish(again);
+            Check(applied == count && b.batches.Count == 1 && !b._memorySummaryProcessing, "empty reentry repeated provider/effects");
+        }
+        private static void MixedFailures()
+        {
+            var b = NewOwner(); b.AddDaily("daily", 10); var d = b.AddDaily("daily", 11);
+            b.AddMajor("major-ok"); var m = b.AddMajor("major-fail");
+            b.AddOverview("overview-ok"); var o = b.AddOverview("overview-fail");
+            foreach (var job in new object[] { d, m, o }) b.failures.Add(JobKey(job));
+            b.Finish(b.Start());
+            Check(b._compressedMemoryBlocks["daily"].Single().GameDayIndex == 10, "partial success lost");
+            Check(d.RetryCount == 3 && m.RetryCount == 3 && o.RetryCount == 3, "terminal retry marking missing");
+            var draft = b._dailyMemoryDrafts["daily"].Single();
+            Check(draft.GameDayIndex == 11 && draft.SummaryRetryCount == 3 && draft.LastSummaryError == "provider-error", "daily failure not preserved on draft");
+            Check(b._npcMajorActionSummaries["major-fail"].LastError == "provider-error" && b._memoryOverviewStates["overview-fail"].LastError == "provider-error", "failure states missing");
+            Check(applied == 3 && Witness.Count("Mark") == 3 && Witness.Count("popup-publish:日结压缩总结失败") == 1 && Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "failure popup or partial-effect counts");
+            b.CleanQueues(); Check(!b._memorySummaryProcessing, "failure processing not released"); MainThreadEffects();
+        }
+        private static void ObsoleteAndMalformed()
+        {
+            var b = NewOwner(); var d = b.AddDaily("daily"); var m = b.AddMajor("major"); var o = b.AddOverview("overview");
+            b.includeMalformedResults = true;
+            foreach (var job in new object[] { d, m, o }) b.obsolete.Add(JobKey(job));
+            b.Finish(b.Start());
+            Check(applied == 0 && Witness.Count("Mark") == 0 && Witness.Count("weekly:") == 0, "obsolete/malformed results were committed");
+            Check(b._dailyMemoryDrafts["daily"].Count == 1 && b._npcMajorActionSummaries.Count == 0 && b._memoryOverviewStates.Count == 0, "obsolete results changed state");
+            Check(d.RetryCount == 0 && m.RetryCount == 0 && o.RetryCount == 0, "obsolete result consumed retry");
+            Check(!b._memorySummaryProcessing, "obsolete run not released"); MainThreadEffects();
+            // Existing success notification counts stale successful payloads; recorded as a P1 follow-up, not silently fixed by this fixture.
+            Console.WriteLine("STALE_UI_OBSERVATION " + string.Join(" | ", Witness.Events.Where(x => x.Name.StartsWith("ui:AnimusForge 日结压缩完成")).Select(x => x.Name)));
+        }
+        private static void ExtraWave(bool fail)
+        {
+            var b = NewOwner(); b.AddDaily("daily"); b.enqueueOverviewAfterDaily.Add("daily");
+            if (fail) b.failures.Add("overview:daily");
+            var task = b.Start();
+            Until(() => b.clockCalls == 1 || task.IsCompleted, () => { b.ReleaseProviders(); b.Tick(); });
+            bool waited = b.batches.Count == 1 && !task.IsCompleted;
+            b.Finish(task);
+            Check(waited, "extra overview did not await its own clock window");
+            Check(b.batches.Count == 2 && b.batches.Last().Items.All(x => x is MemoryOverviewJob), "extra wave planning/order");
+            Check(b._memoryOverviewStates["daily"].Summary == (fail ? "" : "overview-result"), "extra overview apply/mark not executed");
+            Check(Witness.Count(fail ? "MarkMemoryOverviewFailure" : "ApplyMemoryOverviewSuccess") == 1, "extra wave duplicate or missing commit");
+            Check(Witness.Count("popup-publish:日结压缩总结失败") == (fail ? 1 : 0), "extra failure popup");
+            b.CleanQueues(); Check(!b._memorySummaryProcessing, "extra processing not released"); MainThreadEffects();
+        }
+        private static void StaleQueued(bool ownerChange, bool retire)
+        {
+            var b = NewOwner(); b.AddDaily("daily"); var task = b.Start(); b.AwaitFirstCompletion(task);
+            if (ownerChange) NewOwner(); else SaveRuntimeGuard.AdvanceGeneration("business-fixture-load");
+            if (retire) b.ResetMemorySummaryMainThreadActions();
+            b.Finish(task);
+            Check(applied == 0 && b._dailyMemoryDrafts["daily"].Count == 1, "retired owner/generation accepted old business writes");
+            Check(b._memorySummaryProcessing, "old request released processing outside accepted context");
+            Check(b._memorySummaryMainThreadActions.IsEmpty, "retired work remains queued");
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "stale completion notified success");
+            MainThreadEffects();
+        }
+        private static void LoadDuringExtraDelay()
+        {
+            var b = NewOwner(); b.AddDaily("daily"); b.enqueueOverviewAfterDaily.Add("daily"); var task = b.Start();
+            Until(() => b.clockCalls == 1 || task.IsCompleted, () => { b.ReleaseProviders(); b.Tick(); });
+            SaveRuntimeGuard.AdvanceGeneration("extra-delay-load"); b.Finish(task);
+            Check(b.batches.Count == 1 && b._memoryOverviewStates.Count == 0 && applied == 1, "load during extra delay started/committed later wave");
+            Check(b._memorySummaryProcessing, "stale finally released owner flag"); MainThreadEffects();
+        }
+        private static void ProviderException()
+        {
+            var b = NewOwner(); b.AddDaily("daily"); b.providerThrows = true; b.Finish(b.Start());
+            Check(applied == 0 && Witness.Count("popup-publish:压缩记忆总结异常") == 1, "provider exception presentation/state");
+            Check(!b._memorySummaryProcessing && b._dailyMemoryDrafts["daily"].Count == 1, "exception lost source or stranded processing"); MainThreadEffects();
+        }
+        private static void EmptyFiltering()
+        {
+            var b = NewOwner(); b.AddDaily("exhausted").RetryCount = 3;
+            b.AddMajor("exhausted-major").RetryCount = 3; b.AddOverview("exhausted-overview").RetryCount = 3;
+            b._memorySummaryQueue.Add(null); b._memoryOverviewQueue.Add(null); b._npcMajorActionSummaryQueue.Add(null);
+            b.Finish(b.Start()); b.CleanQueues();
+            Check(b.batches.IsEmpty && Witness.Count("ui:") == 0 && !b._memorySummaryProcessing, "empty snapshot woke provider/UI or leaked processing"); MainThreadEffects();
+        }
+        private static void SourceOwnerMismatch()
+        {
+            var b = NewOwner(); b.AddDaily("daily"); b._dailyMemoryDrafts["daily"][0].HeroId = "other-owner";
+            b.Finish(b.Start()); b.CleanQueues();
+            Check(b.batches.IsEmpty && applied == 0 && b._dailyMemoryDrafts["daily"].Count == 1,
+                "mismatched source owner reached provider or lost source"); MainThreadEffects();
+        }
+        private static void TargetRemovedAfterAwait()
+        {
+            var b = NewOwner(); b.AddDaily("daily"); b.AddMajor("major"); b.AddOverview("overview");
+            var task = b.Start(); b.AwaitFirstCompletion(task);
+            foreach (string id in new[] { "daily", "major", "overview" }) b.unavailable.Add(id);
+            b.Finish(task);
+            Check(Witness.Count("save-blocks") == 0 && Witness.Count("weekly:") == 0 &&
+                b._npcMajorActionSummaries.Count == 0 && b._memoryOverviewStates.Count == 0,
+                "removed target still received derived state");
+            Check(Witness.Count("cancel-unavailable:") == 3, "actual Apply eligibility guard not reached");
+            b.CleanQueues(); MainThreadEffects();
+        }
+        private static void BudgetWitness()
+        {
+            var b = NewOwner(); for (int i = 0; i < 12; i++) b.AddDaily("hero" + i);
+            b.Finish(b.Start()); Check(applied == 12, "backlog lost or duplicated records");
+            var counts = Witness.Events.Where(x => x.Main && x.Name.StartsWith("Apply")).GroupBy(x => x.Tick).Select(x => x.Count()).ToList();
+            Console.WriteLine("BUDGET_OBSERVATION actual_apply_max_per_tick=" + counts.DefaultIfEmpty(0).Max() + " (not a frame-time acceptance)");
+            MainThreadEffects();
+        }
+        private static int Main()
+        {
+            TWParallel.MainId = Thread.CurrentThread.ManagedThreadId;
+            int passed = 0, failed = 0;
+            var cases = new (string Name, Action Run)[]
+            {
+                ("success/reentry/side-effects", SuccessAndReentry), ("mixed-three-type-failures", MixedFailures),
+                ("obsolete/null-results", ObsoleteAndMalformed), ("extra-overview-success", () => ExtraWave(false)),
+                ("extra-overview-failure", () => ExtraWave(true)), ("owner-swap-queued", () => StaleQueued(true, false)),
+                ("generation-change-queued", () => StaleQueued(false, false)), ("load-retirement", () => StaleQueued(false, true)),
+                ("load-during-extra-delay", LoadDuringExtraDelay), ("provider-exception", ProviderException),
+                ("empty-filtered-queues", EmptyFiltering), ("source-owner-mismatch", SourceOwnerMismatch),
+                ("target-removed-after-await", TargetRemovedAfterAwait), ("actual-work-budget-observation", BudgetWitness)
+            };
+            foreach (var test in cases)
+            {
+                Witness.Reset(); SaveRuntimeGuard.AdvanceGeneration("case-" + test.Name);
+                try { test.Run(); passed++; Console.WriteLine("PASS " + test.Name); }
+                catch (Exception ex) { failed++; Console.WriteLine("FAIL " + test.Name + ": " + ex.Message); }
+            }
+            Console.WriteLine($"BUSINESS_RESULT passed={passed} failed={failed}"); return failed == 0 ? 0 : 1;
+        }
+    }
+}
