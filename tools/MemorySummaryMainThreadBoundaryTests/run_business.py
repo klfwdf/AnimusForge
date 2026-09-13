@@ -192,7 +192,7 @@ def build_sources(original, mutation):
         mutation=mutation, test_only_seams=["60s delay -> controlled asynchronous clock gate",
         "entry trace at six actual Apply/Mark methods", "optional test fault after actual MarkDaily queue retry update", "trace before actual processing-release assignment",
         "completion source predicate -> independently invalidatable fixture key (not real hash)",
-        "real TryStart/TryRunMaintenance/ShouldScan/QueueAll; past-draft seal, busy/current-day and candidate-ID terminal are fixtures"],
+        "real TryStart/TryRunMaintenance/ShouldScan/QueueAll; past-draft seal (WIP 3-arg requirePendingProbe plus seal-state/completed-pass fields), busy/current-day and candidate-ID terminal are fixtures"],
         limitations=["Not full MyBehavior/EngineTick", "provider executor and lower game/storage/weekly/UI boundaries are fixtures",
                      "No exact source fingerprint, provider retries/RPM, game/save or record/time budget proof"],
         has_input_source=not original)
@@ -235,7 +235,7 @@ def main():
     for name, data in files.items():
         (out / name).write_bytes(data.encode("utf-8"))
     (out / "manifest.json").write_bytes(json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"))
-    dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT.parent / ".dotnet-sdk/dotnet.exe")))
+    dotnet = Path(os.environ.get("DOTNET_EXE", r"C:/Program Files/dotnet/dotnet.exe"))
     env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
                NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(ROOT / ".tmp/appdata"),
                DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
