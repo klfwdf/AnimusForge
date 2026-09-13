@@ -1,15 +1,14 @@
-# AF 总 HANDOFF — B1 已实改，整批验收尚未放行（2026-09-13）
+# AF 总 HANDOFF — 同一B1联合重构，未整批放行（2026-09-13）
 
-## 当前任务：继续同一 B1，不进入 B2
+## 当前任务：继续B1，不进入B2
 
-- **生产工作候选 `aece8f3d`，检查点 `0d5857bc`，基线 `90201155`。** 已接通三类capture/源校验/主线程parse/逐结果接受和准确计数、旧writer façade封送及查询隔离；原provider/格式/存档/API与制作组业务保持。
-- 唯一当前接续：[总计划第12节](docs/phase8/af-core-precloseout-plan-20260913.md)。[候选证据](docs/audits/2026-09-13-b1-memory-working-candidate.json) 与 [代码位置](docs/architecture/af-framework-code-scope.md) 绑定本候选，不再用9040行号当当前。
-- 完成层19、helper24、捕获57、writer238及故障回归已验证；UI85/history852、六项Stage、API/四DLL元数据及146键/36 behaviors通过。均为离线/构建/元数据，不是游戏验收。
-- **B1仍未合格：** 单大源capture/check还是全量同步；1000行有约58–149ms/9.26MB分配观测（有并发负载，非游戏基准）。初筛/整理/Apply的record/time预算和完整writer整链未齐。下次直接修这些，不重做P1-01、不开B2、不把两次操作上限当硬帧预算。
-- 当前唯一工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`。已知远端跟踪快照 `bd2ed35f`，本轮未重新联网确认/融合；未推送、未覆盖游戏或操作真实存档。
-- 自动化 `af-7-8` 保持ACTIVE/每小时，按完整大批次继续；主执行者统一集成。D-A–D-E未决、默认切换和广泛删旧仍不得擅自执行。
-- 两份2026-09-06用户草稿与local-only旧简明HANDOFF保持原hash、未暂存。最新简明说明留项目忽略文件 `.tmp/af-core-precloseout-team-handoff.md`。B1/P1及阶段8均未DONE。
-- 下方是历史同步/交接，不覆盖上述当前任务。SDK探测权限失败及经工具审查后的Stage成功见候选证据，不改构建脚本绕过验收。
+- **生产/测试 `7f89e18d`，检查点 `30cd916b`，前生产 `aece8f3d`。** 本轮已联动改完来源typed深拷贝/流式指纹、实际协作耗时、调度重复扫描和部分Apply静默异常，并补真实writer整链故障证据；不是只交helper。
+- **集中检查通过：** helper32、业务33、捕获61、façade238、真实terminal47；原行为/故障、UI85/history852、最终六项Stage、API/四DLL元数据、146键/36 behaviors保持。
+- **仍未整批合格：** 单个大源和规划/整理/Apply内部还可超预算；普通提交/编辑/导入完整调用方责任未齐。1000行分配约9.26MB降到1.58MB，但不代表硬帧预算已解决。部分异常现在提示并停止，不是事务回滚/尾项恢复完成。LIVE/SAVE未测，不承诺零BUG。
+- **唯一续点：** [总计划第12节](docs/phase8/af-core-precloseout-plan-20260913.md)，[本候选证据](docs/audits/2026-09-13-b1-budget-terminal-candidate.json)，[当前代码位置和责任](docs/architecture/af-framework-code-scope.md)。继续同一批修缺口，五道门槛合格后才进B2。
+- 唯一工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`。自动化`af-7-8`回读ACTIVE/每小时；未推送、未新fetch/融合、未覆盖游戏或操作存档；远端`bd2ed35f`仅已知跟踪快照。
+- 两份2026-09-06用户草稿和旧local-only简明HANDOFF原hash未变、未暂存。简明版留忽略文件`.tmp/af-core-precloseout-team-handoff.md`，不上传。D-A–D-E/默认切换/广泛删旧仍不得擅自执行。
+- 下方都是历史交接，不覆盖本段。阶段8/B1尚未DONE；需要回滚时定向revert `7f89e18d`，不重置用户工作树。
 
 ## 已确认基线：最新工程已整合并通过本机构建（启用自动化前）
 
