@@ -258,3 +258,35 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 3. 检查关闭/切换周报、重复重绘、跨存档打开同一 NPC 时是否命中正确缓存。
 4. 检查长会话后 `UIResourceManager.SpriteData` 中 Illustrator 动态 Sprite 是否随关闭/换档释放。
 5. 对真实 API 做一次小尺寸测试，确认端点解析、模型回退和错误提示符合预期。
+
+---
+
+## 9. 实机反馈保真修复（第二轮）
+
+针对实机验收暴露的四类保真缺陷完成修复：
+
+### 文化头饰
+- `src/Context/HeroVisualExtractor.cs`：`ResolveRegalHeadwear` 按文化解析君主头饰——阿塞莱=金丝刺绣缠头巾（严禁西式尖顶王冠）、库赛特=貂皮尖顶汗冠、斯特吉亚=环形战冠、巴旦尼亚=凯尔特青铜环冠、帝国=拜占庭月桂冠冕、瓦兰迪亚=西式金冠。
+- `src/Core/VisualDirectorEngine.cs`：系统提示词新增【王权头饰铁律】与【纹章铁律】；`SynthesizeRuleBasedPrompt` 君主模板同样按文化选择头饰。
+
+### 真实纹章与多参考图管线
+- `src/Engine/ScreenCaptureHelper.cs`：新增 `ExtractBannerOffscreenAsync`（`BannerThumbnailCreationData` 九宫格大旗，setAction 在 GPU 渲染完成后才回调）、`ExtractHeroPortraitOffscreenAsync`（`CharacterThumbnailCreationData` 渲染真实五官/装备立绘）、`CaptureConversationSceneBase64`（裁剪掉底部对话 UI 的 3D 场景带）。全部引擎访问经 `RunOnGameThreadAsync` 调度到主线程，后台仅等待结果。
+- 新增 `src/Core/IllustrationReferenceImage.cs`：带中文标签的参考图容器；`VisualDirectorEngine` 与 `UniversalOpenAiImageClient` 均支持 `IReadOnlyList<IllustrationReferenceImage>` 多图混传（保留单图重载）。
+
+### 周报保真
+- `src/Context/WeeklyReportContextExtractor.cs`：`ResolveProtagonistHero` 从正文文本匹配真实英雄（最早出现者优先，君主/族长加权），不再写死 `Hero.MainHero`；`EnvironmentVisualExtractor.Extract(settlement, eventAnchored: true)` 跳过当前 Mission/菜单位置探测，`ApplyEventSceneAnchoring` 按事件主题锁定场景字段——同一份周报多次生成场景不再漂移。
+- `src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs`：主线程发起肖像+纹章离屏任务，后台 await 后随提示词与生图请求一并发送。
+
+### 会面保真
+- `src/Context/ConversationContextExtractor.cs`：补全骑乘组合（玩家骑马对方步行/双方骑马/均步行）与对方随行护卫计数；新增 `InterlocutorCivilian`。
+- `src/UI/Overlays/IllustrationCardPopup.cs`：会面参考图 = 场景实景裁剪 + 对方肖像 + 对方纹章；百科参考图 = Tableau 人物 + 家族纹章。
+
+### 新设置项
+- `向生图模型附带参考图 (垫图/图生图)`（默认开）：控制参考图是否进入生图请求。
+- `负面提示词 (Negative Prompt)`：对话生图通道注入禁止元素指令。
+- 注：提示词中的“克雷格·穆林斯（Craig Mullins）”是画师风格引用，非宗教表述。
+
+### 验证
+- `tools/test_illustrator.ps1`：63 项检查 0 失败（含 1.3/1.4 双编译、阿塞莱缠头巾断言、多图重载反射、源码管线检查）。
+- `deploy_illustrator.ps1 -ValidateOnly` 双 API 通过；`git diff --check` 通过。
+- 未实机验证：纹章/肖像缩略图在真实游戏中的渲染完成率与超时回退表现。

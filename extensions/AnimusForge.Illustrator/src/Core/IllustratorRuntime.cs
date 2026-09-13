@@ -25,6 +25,8 @@ namespace AnimusForge.Illustrator.Core
         public string SelectedQuality { get; }
         public string SelectedStyle { get; }
         public bool UseExactEndpointUrl { get; }
+        public bool EnableReferenceImageForGeneration { get; }
+        public string NegativePrompt { get; }
         public string DirectorApiBaseUrl { get; }
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
@@ -44,6 +46,8 @@ namespace AnimusForge.Illustrator.Core
             SelectedQuality = settings.SelectedQuality;
             SelectedStyle = settings.SelectedStyle;
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
+            EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
+            NegativePrompt = settings.NegativePrompt;
             DirectorApiBaseUrl = directorUrl;
             DirectorApiKey = directorKey;
             DirectorModelName = directorModel;

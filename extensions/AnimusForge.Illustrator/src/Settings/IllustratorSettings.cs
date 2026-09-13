@@ -165,6 +165,14 @@ namespace AnimusForge.Illustrator
             }
         }
 
+        [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘、家族纹章与现场实景参考图将一并发送给生图模型（仅对话多模态生图通道生效，如 Gemini Image 系列）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public bool EnableReferenceImageForGeneration { get; set; } = true;
+
+        [SettingPropertyText("负面提示词 (Negative Prompt)", HintText = "填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。仅对对话多模态生图通道作为禁止指令注入提示词。", Order = 11, RequireRestart = false)]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public string NegativePrompt { get; set; } = "";
+
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
