@@ -109,6 +109,19 @@ Assert-True ($clientSrc.Contains('negativePrompt')) 'image client injects negati
 $convSrc = Get-Content (Join-Path $srcDir 'Context\ConversationContextExtractor.cs') -Raw -Encoding UTF8
 Assert-True ($convSrc.Contains('playerIsMounted') -and $convSrc.Contains('步行立于地面')) 'conversation pose covers mounted-player vs on-foot partner'
 
+$envSrc = Get-Content (Join-Path $srcDir 'Context\EnvironmentVisualExtractor.cs') -Raw -Encoding UTF8
+Assert-True ($envSrc.Contains('GetYear') -and $envSrc.Contains('GetDayOfSeason')) 'environment reads full calendar year and day-of-season'
+Assert-True ($envSrc.Contains('DateLabel') -and $envSrc.Contains('纪元时间')) 'calendar date is included in prompt context summary'
+
+$settingsSrc = Get-Content (Join-Path $srcDir 'Settings\IllustratorSettings.cs') -Raw -Encoding UTF8
+Assert-True ($settingsSrc.Contains('dark-epic') -and $settingsSrc.Contains('cinematic') -and $settingsSrc.Contains('custom')) 'style dropdown offers dark-epic/cinematic/custom prompt options'
+Assert-True ($settingsSrc.Contains('CustomStylePrompt')) 'custom style prompt text setting exists'
+Assert-True ($settingsSrc.Contains('RequestTimeoutSeconds') -and $settingsSrc.Contains('SelectedResponseFormat')) 'timeout and response-format settings exist'
+
+Assert-True ($clientSrc.Contains('customStyleHint')) 'image client injects prompt-level style hints'
+Assert-True ($clientSrc.Contains('response_format')) 'image client sends optional response_format'
+Assert-True ($clientSrc.Contains('CancelAfter')) 'image client applies per-request timeout'
+
 $imageClient = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
 $genOverload = $imageClient.GetMethods([Reflection.BindingFlags]'Public,Static') | Where-Object {
     $_.Name -eq 'GenerateImageAsync' -and $_.GetParameters().Count -ge 2 -and $_.GetParameters()[1].ParameterType.Name -like 'IReadOnlyList*'
@@ -122,6 +135,11 @@ foreach ($m in $directorMethods) {
     if ($ps.Count -ge 2 -and $ps[1].ParameterType.Name -like 'IReadOnlyList*') { $hasListOverload = $true }
 }
 Assert-True $hasListOverload 'ExpandToDetailedPromptAsync multi-reference overload exists'
+
+$buildChatPrompt = $imageClient.GetMethod('BuildChatImagePrompt', [Reflection.BindingFlags]'Public,Static')
+Assert-True ($null -ne $buildChatPrompt) 'BuildChatImagePrompt available'
+$styled = [string]$buildChatPrompt.Invoke($null, [object[]]@('test scene', '1024x1024', 'high', $null, 'dark epic realism'))
+Assert-True ($styled.Contains('dark epic realism') -and $styled.Contains('hyper-detailed')) 'chat prompt injects custom style hint and high quality directive'
 
 $commandTypes = @(
     'AnimusForge.Illustrator.UI.Overlays.IllustrationCardVM',

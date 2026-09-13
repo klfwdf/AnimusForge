@@ -111,10 +111,95 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string ImageSize { get; set; } = "1024x1024";
 
-        private static readonly List<string> _qualityOptions = new List<string> { "默认 (不传)", "standard (标准)", "hd (高清细节)" };
+        private static readonly List<string> _sizePresetOptions = new List<string>
+        {
+            "*手动输入 (上方文本框)*",
+            "1024x1024 (1:1 方形)",
+            "1280x720 (16:9 宽屏横幅)",
+            "720x1280 (9:16 竖幅立绘)",
+            "1344x768 (7:4 史诗宽画幅)",
+            "1024x1536 (2:3 竖版海报)"
+        };
+        private Dropdown<string> _sizePresetDropdown;
+
+        [SettingPropertyDropdown("分辨率快捷预设 (Size Preset)", Order = 7, RequireRestart = false, HintText = "快速选择常用分辨率/画幅比例，选中后自动写入上方 Size 文本框。选“手动输入”时以文本框内容为准。")]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public Dropdown<string> SizePresetDropdown
+        {
+            get
+            {
+                if (_sizePresetDropdown == null)
+                {
+                    int idx = _sizePresetOptions.FindIndex(o => o.StartsWith((ImageSize ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
+                    _sizePresetDropdown = new Dropdown<string>(_sizePresetOptions, idx >= 0 ? idx : 0);
+                }
+                return _sizePresetDropdown;
+            }
+            set
+            {
+                _sizePresetDropdown = value;
+                int idx = value?.SelectedIndex ?? 0;
+                if (idx > 0 && idx < _sizePresetOptions.Count)
+                {
+                    string size = _sizePresetOptions[idx].Split(' ')[0];
+                    if (!string.IsNullOrWhiteSpace(size))
+                    {
+                        ImageSize = size;
+                        if (Instance != null && !ReferenceEquals(Instance, this))
+                        {
+                            Instance.ImageSize = size;
+                        }
+                    }
+                }
+            }
+        }
+
+        [SettingPropertyInteger("生图请求超时秒数", 30, 600, "0 秒", HintText = "单次生图 HTTP 请求的最长等待时间。大尺寸/多参考图时可适当调大，默认 120 秒。", Order = 12, RequireRestart = false)]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public int RequestTimeoutSeconds { get; set; } = 120;
+
+        private static readonly List<string> _responseFormatOptions = new List<string> { "默认 (不传)", "b64_json (内嵌Base64)", "url (图片链接)" };
+        private Dropdown<string> _responseFormatDropdown;
+
+        [SettingPropertyDropdown("响应图片格式 (Response Format)", Order = 13, RequireRestart = false, HintText = "仅 /images/generations 通道生效。部分服务商只支持 b64_json 或只支持 url 返回；选“默认”时由服务端决定。若生成成功但解析不到图，可尝试切换此项。")]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public Dropdown<string> ResponseFormatDropdown
+        {
+            get
+            {
+                if (_responseFormatDropdown == null)
+                    _responseFormatDropdown = new Dropdown<string>(_responseFormatOptions, 0);
+                return _responseFormatDropdown;
+            }
+            set => _responseFormatDropdown = value;
+        }
+
+        public string SelectedResponseFormat
+        {
+            get
+            {
+                if (_responseFormatDropdown == null || _responseFormatDropdown.SelectedIndex <= 0) return "";
+                if (_responseFormatDropdown.SelectedIndex == 1) return "b64_json";
+                if (_responseFormatDropdown.SelectedIndex == 2) return "url";
+                return "";
+            }
+        }
+
+        private static readonly List<string> _qualityOptions = new List<string>
+        {
+            "默认 (不传)",
+            "standard (标准)",
+            "hd (高清细节)",
+            "low (低-最快出图)",
+            "medium (中等)",
+            "high (高-精细渲染)",
+            "auto (交由服务端自动)"
+        };
         private Dropdown<string> _qualityDropdown;
 
-        [SettingPropertyDropdown("生成画质预设 (Quality)", Order = 8, RequireRestart = false, HintText = "仅对支持 quality 参数的服务商/模型生效（如 DALL-E-3、OpenAI 标准中转）。选“默认”时不发送该参数，避免不支持的模型报错。若使用 Gemini 则自动通过提示词与高分指令强化生效。")]
+        private static readonly string[] _qualityTokens = { "", "standard", "hd", "low", "medium", "high", "auto" };
+
+        [SettingPropertyDropdown("生成画质预设 (Quality)", Order = 8, RequireRestart = false, HintText = "standard/hd 对应 DALL-E-3 系；low/medium/high/auto 对应 gpt-image-1 系及支持这些枚举的中转模型。选“默认”时不发送该参数，避免不支持的模型报错。Gemini 等对话生图通道自动换算为画质提示词注入。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> QualityDropdown
         {
@@ -131,24 +216,30 @@ namespace AnimusForge.Illustrator
         {
             get
             {
-                if (_qualityDropdown == null || _qualityDropdown.SelectedIndex <= 0) return "";
-                if (_qualityDropdown.SelectedIndex == 1) return "standard";
-                if (_qualityDropdown.SelectedIndex == 2) return "hd";
-                return "";
+                int idx = _qualityDropdown?.SelectedIndex ?? 0;
+                return (idx > 0 && idx < _qualityTokens.Length) ? _qualityTokens[idx] : "";
             }
         }
 
-        private static readonly List<string> _styleOptions = new List<string> { "默认 (不传)", "vivid (鲜艳生动)", "natural (自然真实)" };
+        private static readonly List<string> _styleOptions = new List<string>
+        {
+            "默认 (不传)",
+            "vivid (鲜艳生动·API枚举)",
+            "natural (自然真实·API枚举)",
+            "暗黑史诗写实 (提示词注入)",
+            "电影级光影 (提示词注入)",
+            "提示词 (自定义画风)"
+        };
         private Dropdown<string> _styleDropdown;
 
-        [SettingPropertyDropdown("生成风格画风 (Style)", Order = 9, RequireRestart = false, HintText = "仅对支持 style 参数的服务商/模型生效（如 DALL-E-3）。选“默认”时不发送该参数。选 vivid 为高对比度鲜艳戏剧感；选 natural 为柔和细腻的古典写实油画质感。若使用 Gemini 则自动通过提示词强化生效。")]
+        [SettingPropertyDropdown("生成风格画风 (Style)", Order = 9, RequireRestart = false, HintText = "vivid/natural 为 OpenAI 官方 style 枚举参数；“暗黑史诗写实/电影级光影/提示词”三项不作为 style 参数发送（避免非法枚举报错），而是作为画风指令注入提示词，对任何模型生效。选“提示词”时使用下方自定义文本。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> StyleDropdown
         {
             get
             {
                 if (_styleDropdown == null)
-                    _styleDropdown = new Dropdown<string>(_styleOptions, 0);
+                    _styleDropdown = new Dropdown<string>(_styleOptions, 2); // 默认 natural
                 return _styleDropdown;
             }
             set => _styleDropdown = value;
@@ -158,12 +249,22 @@ namespace AnimusForge.Illustrator
         {
             get
             {
-                if (_styleDropdown == null || _styleDropdown.SelectedIndex <= 0) return "";
-                if (_styleDropdown.SelectedIndex == 1) return "vivid";
-                if (_styleDropdown.SelectedIndex == 2) return "natural";
-                return "";
+                int idx = _styleDropdown?.SelectedIndex ?? 2;
+                switch (idx)
+                {
+                    case 1: return "vivid";
+                    case 2: return "natural";
+                    case 3: return "dark-epic";
+                    case 4: return "cinematic";
+                    case 5: return "custom";
+                    default: return "";
+                }
             }
         }
+
+        [SettingPropertyText("自定义画风提示词 (Style=提示词 时生效)", HintText = "仅当上方画风预设选“提示词”时生效。玩家可自由编辑的画风指令，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。例如：古典厚涂油画, 水彩淡彩插画, 暗黑史诗写实, 电影级光影, 铅笔素描。", Order = 10, RequireRestart = false)]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public string CustomStylePrompt { get; set; } = "";
 
         [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘、家族纹章与现场实景参考图将一并发送给生图模型（仅对话多模态生图通道生效，如 Gemini Image 系列）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]

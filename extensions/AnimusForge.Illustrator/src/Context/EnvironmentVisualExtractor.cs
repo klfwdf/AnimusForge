@@ -19,6 +19,7 @@ namespace AnimusForge.Illustrator.Context
         public string Season { get; set; } = string.Empty;
         public string Weather { get; set; } = string.Empty;
         public string TimeOfDay { get; set; } = string.Empty;
+        public string DateLabel { get; set; } = string.Empty;
         public string LightingAndAtmosphere { get; set; } = string.Empty;
         public string ConflictStatus { get; set; } = string.Empty;
         public string SurroundingCharacters { get; set; } = string.Empty;
@@ -55,6 +56,10 @@ namespace AnimusForge.Illustrator.Context
             {
                 sb.AppendLine($"【地形与地貌】{TerrainAndLandscape}");
             }
+            if (!string.IsNullOrWhiteSpace(DateLabel))
+            {
+                sb.AppendLine($"【纪元时间】{DateLabel}");
+            }
             sb.AppendLine($"【时令与天候】{Season}，{Weather}");
             sb.AppendLine($"【时辰与光影】{TimeOfDay}，{LightingAndAtmosphere}");
             if (!string.IsNullOrWhiteSpace(ConflictStatus))
@@ -89,9 +94,17 @@ namespace AnimusForge.Illustrator.Context
                 profile.TerrainAndLandscape = "广袤的卡拉迪亚丘陵起伏地带与地平线远山";
             }
 
-            // 2. 季节时令
+            // 2. 纪元日期 + 季节时令（骑砍历法：年 - 季节 - 该季第几日）
             int seasonIndex = (int)CampaignTime.Now.GetSeasonOfYear;
             profile.Season = ResolveSeason(seasonIndex);
+            try
+            {
+                string seasonName = seasonIndex == 0 ? "春" : seasonIndex == 1 ? "夏" : seasonIndex == 2 ? "秋" : "冬";
+                profile.DateLabel = $"卡拉迪亚历 {CampaignTime.Now.GetYear} 年 · {seasonName}季 · 第 {CampaignTime.Now.GetDayOfSeason + 1} 日";
+            }
+            catch
+            {
+            }
 
             // 3. 天气天候
             profile.Weather = ResolveWeather(seasonIndex);
