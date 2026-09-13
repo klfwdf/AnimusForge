@@ -1,0 +1,987 @@
+{
+  "task": "B1",
+  "status": "IN_PROGRESS_NOT_BATCH_ACCEPTED",
+  "productionRevision": "e77602f97d4b4e2ce323884c5243d87e91e7da03",
+  "checkpoint": "637da7f5",
+  "previousProduction": "7f89e18d",
+  "baseline": "90201155",
+  "closedGaps": [
+    "Initial/extra/final queue work is sliced, 8 visited slots per operation including null; same-tick elapsed time deducted",
+    "Immediate main-thread tombstone classification plus version/identity-checked reference-only linear compaction; no stale survivor replacement",
+    "Worker frozen-key sort/count and failure-text joining; original culture/order/content preserved",
+    "Planned job fingerprint checked inside the same actual Capture callback; no preflight-await gap",
+    "Ordinary Commit-to-Daily/Recent-to-readback actual chain verified",
+    "Old editor late callbacks (2) and import late callbacks (8) reproduced then fixed; 8 editor and 4 import window guards added",
+    "Replaced unused queue-wide cancellation pre-scan deleted; authoritative per-owner derived-state/index cleanup preserved"
+  ],
+  "checks": {
+    "business": 36,
+    "captured": 70,
+    "planning": 24,
+    "terminal": 47,
+    "commitWriters": 49,
+    "editorWindowsStructurallyChecked": 8,
+    "importWindowsStructurallyChecked": 4,
+    "ui": 85,
+    "history": 852,
+    "native": 27,
+    "sourceReplacements": 50,
+    "sourceDeletedDeclarations": 1,
+    "strictSourceNegativeControls": 5,
+    "oldBusiness": "e40c92d7 compiled/runtime 4 PASS / 32 FAIL",
+    "sync": [
+      146,
+      146
+    ],
+    "behaviors": [
+      36,
+      36
+    ],
+    "api": 119,
+    "concurrentApiReads": 256,
+    "actualDllMetadata": 532,
+    "stageBuilds": "Debug/Release x 1.3/1.4/Bootstrap PASS",
+    "dllMarkerAndStagePairs": 6
+  },
+  "queueCost": {
+    "layouts": [
+      "4096 null",
+      "4096 alternating",
+      "4096 large valid tail"
+    ],
+    "classifiedSlots": 4096,
+    "compactedSlots": 4096,
+    "maxSlotsPerSlice": 8,
+    "maxSlotsPerTick": 16,
+    "linearReferenceVisits": true,
+    "slowPredicate": "~27ms atomic predicate at 1ms setting: one record then yield, not preempted",
+    "sharedTime": "Prior operation charged; ~49ms remaining permits 2 x 25ms atomic records, then yields"
+  },
+  "sourceCost": {
+    "records": 1000,
+    "capturedRecords": 1000,
+    "allocatedBytes": 1579504,
+    "latestAtomicCaptureMs": 10.98,
+    "promptChars": 134016,
+    "meaning": "Same final normal run; hardware load/JIT dependent, not a game benchmark; whole source remains atomic"
+  },
+  "deferredSemantics": "Structural mutation returns only collected partial plan and leaves live queue for next pass. Sorting is for this captured plan, not an assertion all current backlog was scanned. Original mutable job fields are never treated as protected by the List version probe.",
+  "remainingGates": [
+    "Atomic complete source capture/check/Pending still scan deep records; normal success often 3 full captures/checks and 3-attempt execution can reach 7",
+    "Dirty/all candidate-ID producers, maintenance pre-budget past-draft probe, sealing-end filters and per-owner authority cleanup retain atomic scans",
+    "Actual Apply/Mark nested blocks/drafts/history/weekly work still needs bounded cost assessment; partial/unknown notice is not rollback/tail recovery",
+    "No live game/provider/save/audio/external DLL load acceptance; full-window gameplay/import-all business/load-retention not proven; B2 not started"
+  ],
+  "validationBoundary": "Actual text-editor save/cancel and single explicit-file / memory-batch import execute production bodies and Apply with virtual file/popup boundaries. Other editor windows and aggregate import-all/hero-all only structural guards. No domain gameplay/data import algorithms changed.",
+  "normal": {
+    "business": {
+      "result": "BUSINESS_RESULT passed=36 failed=0",
+      "manifest": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
+        "sha256": "e30b10cbe9bd78e015373af5ff6c67e76cb3ad237fe799bb4ff34e479a91830d"
+      },
+      "log": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/run.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/run.log",
+        "sha256": "286a170e827db18983fd3bae18fdd649ec9b1f4092deceb1764f8285c18adf97"
+      },
+      "buildLog": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/build.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/build.log",
+        "sha256": "29f9033864c30b56a27e6eb4455145088e4b450794462c525d84dd81b5d57dd5"
+      }
+    },
+    "captured": {
+      "result": "CAPTURED_RESULT pass=70 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+      "manifest": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
+        "sha256": "21d39d9f6f781f319fd4bc0eaeedb73f975cc06af76da7ac7588643ffac8569f"
+      },
+      "log": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/run.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/run.log",
+        "sha256": "63aff3ebf7fa1ead24fd854b640fb90a2d771632b13cd9c25e9f7a8e0aa5d2cd"
+      },
+      "buildLog": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/build.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/build.log",
+        "sha256": "55c89ebf68bf529059462f8417a5fb3ec094bbb52139063079ebcbec28ea6493"
+      }
+    },
+    "planning": {
+      "result": "PLANNING_RESULT pass=24 fail=0 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN",
+      "manifest": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/manifest.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/manifest.json",
+        "sha256": "dda54c919cc32b190c968fed706c2140314373c1f671cc62a27a3a790c46bb62"
+      },
+      "log": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/run.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/run.log",
+        "sha256": "b5f704c2d88b45738986daedbeb14464b9fc43ffd5259f3ed1899675f597f903"
+      },
+      "buildLog": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/build.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/build.log",
+        "sha256": "cf6a9ca37ba1e1b1ac1428d5d0e2e8e08fc93822ba07b2e9d06ec8d4e1ed39b6"
+      }
+    },
+    "terminal": {
+      "result": "TERMINAL_RESULT scenarios=47 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+      "manifest": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/current/manifest.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/current/manifest.json",
+        "sha256": "61f274eb14d2ab541c779c9e72d1beb52869d2f85b0a85634e4e18a44401893a"
+      },
+      "log": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/current/run.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/current/run.log",
+        "sha256": "2f69e471eeb87e0aafc33b0ed21d0f509766807640387ef8ba241195e3f51724"
+      },
+      "buildLog": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/current/build.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/current/build.log",
+        "sha256": "0cb7ef1d45b47fdc66265c85aab3ee7fe6cbe65bdc90f2250ac7668e29489abe"
+      }
+    },
+    "commit_writers": {
+      "result": "COMMIT_WRITERS_RESULT scenarios=49 failures=0 real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED",
+      "manifest": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/manifest.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/manifest.json",
+        "sha256": "1b5857ef23bb36adbab219d253d3585eedbf867bb5b82d1597511d03cefdc8b4"
+      },
+      "log": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/run.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/run.log",
+        "sha256": "dabc3b6611a380c2b1dd413f03324f668be025e551856636558bcb6bb30f163b"
+      },
+      "buildLog": {
+        "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/build.log",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/build.log",
+        "sha256": "ec5d0fa4f78139357ddaa2b322b8f8aa6fafa56e037d21339ccb1374225ccf05"
+      }
+    }
+  },
+  "controls": {
+    "business": {
+      "count": 29,
+      "summary": {
+        "original": ".tmp/b1-resumable-controls-business.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-resumable-controls-business.json",
+        "sha256": "bac5c1bfc4aed40cb2efd00bbcaa790e07d96bcf9333a58139eaa66c2c1fa5e9"
+      },
+      "results": [
+        {
+          "name": "current",
+          "exit": 0,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=current",
+            "BUSINESS_RESULT passed=36 failed=0"
+          ]
+        },
+        {
+          "name": "worker-primary",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-primary",
+            "BUSINESS_RESULT passed=9 failed=27"
+          ]
+        },
+        {
+          "name": "worker-extra",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-extra",
+            "BUSINESS_RESULT passed=26 failed=10"
+          ]
+        },
+        {
+          "name": "worker-cleanup",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-cleanup",
+            "BUSINESS_RESULT passed=21 failed=15"
+          ]
+        },
+        {
+          "name": "worker-release",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-release",
+            "BUSINESS_RESULT passed=1 failed=35"
+          ]
+        },
+        {
+          "name": "omit-release",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=omit-release",
+            "BUSINESS_RESULT passed=11 failed=25"
+          ]
+        },
+        {
+          "name": "omit-cleanup",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=omit-cleanup",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "omit-mark-daily",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=omit-mark-daily",
+            "BUSINESS_RESULT passed=31 failed=5"
+          ]
+        },
+        {
+          "name": "omit-mark-major",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=omit-mark-major",
+            "BUSINESS_RESULT passed=35 failed=1"
+          ]
+        },
+        {
+          "name": "omit-mark-overview",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=omit-mark-overview",
+            "BUSINESS_RESULT passed=34 failed=2"
+          ]
+        },
+        {
+          "name": "duplicate-apply",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=duplicate-apply",
+            "BUSINESS_RESULT passed=24 failed=12"
+          ]
+        },
+        {
+          "name": "accept-obsolete",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=accept-obsolete",
+            "BUSINESS_RESULT passed=34 failed=2"
+          ]
+        },
+        {
+          "name": "ignore-owner",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=ignore-owner",
+            "BUSINESS_RESULT passed=34 failed=2"
+          ]
+        },
+        {
+          "name": "ignore-generation",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=ignore-generation",
+            "BUSINESS_RESULT passed=32 failed=4"
+          ]
+        },
+        {
+          "name": "ignore-draft-owner",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=ignore-draft-owner",
+            "BUSINESS_RESULT passed=35 failed=1"
+          ]
+        },
+        {
+          "name": "ignore-source",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=ignore-source",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "miscount-obsolete",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=miscount-obsolete",
+            "BUSINESS_RESULT passed=34 failed=2"
+          ]
+        },
+        {
+          "name": "worker-initial",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-initial",
+            "BUSINESS_RESULT passed=4 failed=32"
+          ]
+        },
+        {
+          "name": "worker-major",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-major",
+            "BUSINESS_RESULT passed=28 failed=8"
+          ]
+        },
+        {
+          "name": "worker-extra-plan",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=worker-extra-plan",
+            "BUSINESS_RESULT passed=1 failed=35"
+          ]
+        },
+        {
+          "name": "count-rejected-apply",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=count-rejected-apply",
+            "BUSINESS_RESULT passed=35 failed=1"
+          ]
+        },
+        {
+          "name": "admission-rescan",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=admission-rescan",
+            "BUSINESS_RESULT passed=31 failed=5"
+          ]
+        },
+        {
+          "name": "maintenance-rescan",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=maintenance-rescan",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "drop-forced-rescan",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=drop-forced-rescan",
+            "BUSINESS_RESULT passed=35 failed=1"
+          ]
+        },
+        {
+          "name": "dedupe-before-filter",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=dedupe-before-filter",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "keep-invalid-queue",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=keep-invalid-queue",
+            "BUSINESS_RESULT passed=29 failed=7"
+          ]
+        },
+        {
+          "name": "swallow-completion-error",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=swallow-completion-error",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "bypass-completion-error-wrapper",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=bypass-completion-error-wrapper",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "main-thread-failure-aggregation",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=main-thread-failure-aggregation",
+            "BUSINESS_RESULT passed=33 failed=3"
+          ]
+        },
+        {
+          "name": "drop-failure-details",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=drop-failure-details",
+            "BUSINESS_RESULT passed=35 failed=1"
+          ]
+        },
+        {
+          "name": "original",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS business=e40c92d7",
+            "BUSINESS_RESULT passed=4 failed=32"
+          ]
+        }
+      ]
+    },
+    "captured": {
+      "count": 17,
+      "summary": {
+        "original": ".tmp/b1-resumable-controls-captured.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-resumable-controls-captured.json",
+        "sha256": "010cd102b89797b1f78d5b51c2accc28e44eea837bc774e5d80522a2084418b6"
+      },
+      "results": [
+        {
+          "name": "current",
+          "exit": 0,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=current",
+            "CAPTURED_RESULT pass=70 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "retain-payload",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=retain-payload",
+            "CAPTURED_RESULT pass=69 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "reuse-source",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=reuse-source",
+            "CAPTURED_RESULT pass=59 fail=11 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "ignore-fingerprint",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=ignore-fingerprint",
+            "CAPTURED_RESULT pass=35 fail=35 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "worker-parse",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=worker-parse",
+            "CAPTURED_RESULT pass=53 fail=17 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "skip-retry-source",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=skip-retry-source",
+            "CAPTURED_RESULT pass=67 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-afef",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-afef",
+            "CAPTURED_RESULT pass=69 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-overview-ids",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-overview-ids",
+            "CAPTURED_RESULT pass=69 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-major-cursor",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-major-cursor",
+            "CAPTURED_RESULT pass=69 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "background-sanitize-alias",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=background-sanitize-alias",
+            "CAPTURED_RESULT pass=67 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "main-sanitize-detach",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=main-sanitize-detach",
+            "CAPTURED_RESULT pass=67 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-source-receipt",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-source-receipt",
+            "CAPTURED_RESULT pass=69 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "ignore-wave-lifetime",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=ignore-wave-lifetime",
+            "CAPTURED_RESULT pass=68 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-nested-copy",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-nested-copy",
+            "CAPTURED_RESULT pass=68 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-scalar-copy",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-scalar-copy",
+            "CAPTURED_RESULT pass=69 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "omit-stream-source",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=omit-stream-source",
+            "CAPTURED_RESULT pass=58 fail=12 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "drop-plan-expected",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=drop-plan-expected",
+            "CAPTURED_RESULT pass=64 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        },
+        {
+          "name": "skip-planned-source-check",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS captured=skip-planned-source-check",
+            "CAPTURED_RESULT pass=64 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+          ]
+        }
+      ]
+    },
+    "planning": {
+      "count": 10,
+      "summary": {
+        "original": ".tmp/b1-resumable-controls-planning.json",
+        "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-resumable-controls-planning.json",
+        "sha256": "0e40a3b5fd6dcc3f164cc7767b58a63194d985b2b6516f39f40906ccfb2a2c90"
+      },
+      "results": [
+        {
+          "name": "current",
+          "exit": 0,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=current",
+            "PLANNING_RESULT pass=24 fail=0 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "unbounded-slices",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=unbounded-slices",
+            "PLANNING_RESULT pass=13 fail=11 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "ignore-structure",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=ignore-structure",
+            "PLANNING_RESULT pass=15 fail=9 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "compact-rechecks-predicate",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=compact-rechecks-predicate",
+            "PLANNING_RESULT pass=23 fail=1 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "restart-on-write",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=restart-on-write",
+            "PLANNING_RESULT pass=15 fail=9 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "omit-unavailable-cleanup",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=omit-unavailable-cleanup",
+            "PLANNING_RESULT pass=23 fail=1 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "ignore-overview-exclusion",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=ignore-overview-exclusion",
+            "PLANNING_RESULT pass=22 fail=2 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "read-live-sort-keys",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=read-live-sort-keys",
+            "PLANNING_RESULT pass=23 fail=1 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ],
+          "priorAttempt": "Initial mutation had generic type inference error; corrected to typed live lookup and recompiled/reran. Initial compiler failure not counted."
+        },
+        {
+          "name": "cleanup-collects-plan",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=cleanup-collects-plan",
+            "PLANNING_RESULT pass=23 fail=1 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "ignore-slice-time",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=ignore-slice-time",
+            "PLANNING_RESULT pass=22 fail=2 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        },
+        {
+          "name": "fresh-slice-budget",
+          "exit": 1,
+          "valid": true,
+          "proof": [
+            "BUILD_PASS planning=fresh-slice-budget",
+            "PLANNING_RESULT pass=23 fail=1 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+          ]
+        }
+      ]
+    }
+  },
+  "otherControls": {
+    "terminal": 15,
+    "editorCommit": 9,
+    "addedImportScope": 1,
+    "importScopeResult": "BUILD_PASS then exactly 8 late-callback failures; remaining 41 cases pass",
+    "binding": "Terminal15/editorCommit9 retain their exact earlier manifests; final normal runs rerun. Do not claim every historical mutant was rerun on final whole-file input."
+  },
+  "redBaselines": [
+    {
+      "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/editor-before-guard-7f89e18d/manifest.json",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/editor-before-guard-7f89e18d/manifest.json",
+      "sha256": "8c0f427852680a28e09bcd39aa30eb888e485fba95abf92a1a39aaf0879fe5ec"
+    },
+    {
+      "original": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/import-before-guard-637da7f5-worktree/manifest.json",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/import-before-guard-637da7f5-worktree/manifest.json",
+      "sha256": "9b27c0bbd954090ea8d836ae1611384a8a47c6008197e11cceb390406b7a1f81"
+    }
+  ],
+  "strictInverse": {
+    "original": ".tmp/b1-resumable-strict-inverse.json",
+    "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-resumable-strict-inverse.json",
+    "sha256": "2728019e3942172b518b11885ba26d5edbb8098a841b41b4e06f1a1ee5486566"
+  },
+  "productionHashNormalization": "utf8-no-bom-lf",
+  "productionSources": [
+    {
+      "path": "MyBehavior.cs",
+      "rawSha256": "a80b370d5ab4dd99d139aeb9787aec27677f75aade6a3d0f6d663217ed1c5b07",
+      "normalizedSha256": "e86ec86af7660bda774757dbae73d0d59010a3ba8a582f4254f673b686fd55a0"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "rawSha256": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0",
+      "normalizedSha256": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "rawSha256": "23de825687153b311f9b0561cd95cfc8a22aa4f65cea11faf935e820d7d14348",
+      "normalizedSha256": "23de825687153b311f9b0561cd95cfc8a22aa4f65cea11faf935e820d7d14348"
+    },
+    {
+      "path": "MyBehavior.MemorySourceWrites.cs",
+      "rawSha256": "d66743492bca356932d3372346b1f6d69a890670a135d4daa7d8d0e30bc15f1b",
+      "normalizedSha256": "5f09b05d19c6c5c087689fe7beb6bfb1ca85a2658ff05b9d1af02104aeeb50a2"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "rawSha256": "5f3e84513b6a450adf575e9a26fb11ae5be7ee30bfd7546aacf1a7866499ac10",
+      "normalizedSha256": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598"
+    }
+  ],
+  "coordinates": [
+    {
+      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "start": 69,
+      "end": 157,
+      "symbol": "private async Task<List<MemorySummaryPlanEntry>> ScanMemorySummaryQueueAsync<T>(",
+      "responsibility": "每片8槽，当前片tombstone；纯引用compaction在结构仍有效时发布，变化则部分defer"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "start": 159,
+      "end": 219,
+      "symbol": "private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(",
+      "responsibility": "独立重验无效owner；worker仅按冻结metadata去重排序，cleanup不建多余计划"
+    },
+    {
+      "path": "MyBehavior.MemorySourceWrites.cs",
+      "start": 13,
+      "end": 18,
+      "symbol": "private bool IsMemorySourceEditorCurrent(long generation)",
+      "responsibility": "开窗generation、物理主线程、Instance和Campaign owner同时验证"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 50180,
+      "end": 50216,
+      "symbol": "private void OpenDevDailyMemoryLineTextEditor(",
+      "responsibility": "文本保存/取消真实红绿证据；同代记录引用/指纹也须保持"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 55018,
+      "end": 55122,
+      "symbol": "private void ImportSingleNpcDialogueHistoryData(",
+      "responsibility": "单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 57123,
+      "end": 57213,
+      "symbol": "private void ImportDialogueHistoryData(",
+      "responsibility": "记忆批量导入生命周期，保留overwrite/merge业务"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 55215,
+      "end": 55451,
+      "symbol": "private void ImportHeroNpcAllData(",
+      "responsibility": "仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 57651,
+      "end": 58190,
+      "symbol": "private void ImportAllData(",
+      "responsibility": "仅AF全量导入窗口门禁；非全部导入业务已运行验收"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 5037,
+      "end": 5165,
+      "symbol": "private async Task ProcessMemorySummaryQueueAsync(",
+      "responsibility": "初筛/extra/final用同一分片器；失败全文worker拼接，实际接受/通知/释放"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 5204,
+      "end": 5232,
+      "symbol": "private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(",
+      "responsibility": "展开计划并传递expectedJobFingerprint至三类型真实Execute"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "start": 64,
+      "end": 143,
+      "symbol": "private MemorySummaryInput CaptureMemorySummaryInput(",
+      "responsibility": "计划指纹、队列成员和来源捕获在同一主线程callback"
+    }
+  ],
+  "codeMap": "docs/architecture/af-framework-code-map.json",
+  "evidenceSnapshot": {
+    "index": {
+      "original": ".tmp/b1-20260913/resumable-evidence-e86ec86a/index.json",
+      "sha256": "622ce215cc074803dbb429c31e270acfac04c54a4d05c535a232cbac56f3dd24",
+      "note": "local stable index/metadata"
+    },
+    "entries": 1210,
+    "scope": "Frozen generated sources/manifests/logs and 6 exact DLL+markers. Current runner directories may refresh later. Original baseline DLLs also remain in separate original-case folders."
+  },
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "68be0bedb2a6eaf21ae38c13c887e14d495f46ccfce6a9b5f9d261e0eae4b38b",
+      "marker": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.build.json",
+      "markerSha256": "e2098982e238b40a89eedebe0b7fe892b22d77ba104fe9b5cf41a2f00748f81b",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "b68a5544fcab7bdb058d188abc8b073abe73a69a1d36712ca142e20b8ebf4a55",
+      "marker": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.build.json",
+      "markerSha256": "e21256e25c62007236cf4f25f42043a29736515ef33d2bce3ed10ed289208b45",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "1238372b8274b91bb92c76c8e9b397c7c23fe253d7c0f490a240317266dd0d4a",
+      "marker": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.build.json",
+      "markerSha256": "c268a8751f902f48d35ba4588022864b48e8011c9fbef91e8be9cf613c63aa1e",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "8d8d054bbd5f4b9afa5134a51c8c71e6f518ec7f88b8ea2ae6393b8113f3159b",
+      "marker": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.build.json",
+      "markerSha256": "cce06030dcc28e66f0911456cb2ebecf63d4be0858fe4b0bb8bf256a57a0c9f9",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "a143a63f1916df6c20f449335af899d349431ab0f476c65cc1d1d3c1840a4ed4",
+      "marker": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.build.json",
+      "markerSha256": "8203d85ca3fb12123f826d3b8bd03c2f58f22c6a019f7a59cbc0306cfc69a9df",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "e27a04e9b8430782637f152288651c25f4748a0a0fdef7dfa1e647f41be0e3b4",
+      "marker": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.build.json",
+      "markerSha256": "83519a81dcb2041d16021d6d188d8ef090f81fe217688a275f4a734b0d3c4c03",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll"
+    }
+  ],
+  "integrationLogs": [
+    {
+      "original": ".tmp/b1-20260913/planning-editor-final-stage-Debug.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-20260913/planning-editor-final-stage-Debug.log",
+      "sha256": "f8eca4dff1ab3b2d40f20be6df6cb88127ecd3d4c68d349c587f93b956a36852"
+    },
+    {
+      "original": ".tmp/b1-20260913/planning-editor-final-stage-Release.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-20260913/planning-editor-final-stage-Release.log",
+      "sha256": "ade15f06c2c56b2a151e29b3213c2198d489b51bc97ddc387a37d4109b240e82"
+    },
+    {
+      "original": ".tmp/b1-20260913/planning-editor-final-api.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-20260913/planning-editor-final-api.log",
+      "sha256": "57a987e27b50103b7f580dd419c1422e0b5a459eafdebbbfbdad5b82865ef494"
+    },
+    {
+      "original": ".tmp/b1-20260913/planning-editor-final-persistence.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/.tmp/b1-20260913/planning-editor-final-persistence.log",
+      "sha256": "c7ffe8ddc4e603d831beec20de5f65e12e1b2d7486cf94cf013dee041cb20b88"
+    },
+    {
+      "original": "tools/MemoryFailureUiBoundaryTests/.generated/current/run.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/MemoryFailureUiBoundaryTests/.generated/current/run.log",
+      "sha256": "c96dd7615e84aa9fbd2ea73e6880719458836d1bed579dd129ee0a82d7b5b874"
+    },
+    {
+      "original": "tools/NativeHistorySnapshotTests/.generated/current/run.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/NativeHistorySnapshotTests/.generated/current/run.log",
+      "sha256": "0aa90f57a04b45de64efb7f6de5841bc4e43cfb5fa32c9a31ffa5458315f1511"
+    },
+    {
+      "original": "tools/NativeHistorySnapshotTests/.generated/native-current/run.log",
+      "snapshot": ".tmp/b1-20260913/resumable-evidence-e86ec86a/tools/NativeHistorySnapshotTests/.generated/native-current/run.log",
+      "sha256": "208510bb190e0e3bed1455d811582c0473af90af22f022030f329eabd4b14479"
+    }
+  ],
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "delivery": {
+    "pushed": false,
+    "deployed": false,
+    "gameSaveTouched": false,
+    "remoteFreshlyFetched": false,
+    "remoteSnapshot": "bd2ed35f",
+    "automation": "af-7-8 remains ACTIVE HOURLY",
+    "localOnlyBrief": ".tmp/af-core-precloseout-team-handoff.md"
+  },
+  "review": "Independent read-only audit covered all three live queue null consumers and the new cursor/probe/compaction/opaque-job worker flow; no confirmed introduced overwrite/loss regression. Deferred means partial plan; single deep atomic costs are still explicit."
+}

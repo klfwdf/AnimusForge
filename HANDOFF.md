@@ -1,14 +1,14 @@
-# AF 总 HANDOFF — 同一B1联合重构，未整批放行（2026-09-13）
+# AF 总 HANDOFF — B1分段调度/编辑导入已联验，深来源预算未放行（2026-09-13）
 
-## 当前任务：继续B1，不进入B2
+## 当前任务：继续同一B1，不进入B2
 
-- **生产/测试 `7f89e18d`，检查点 `30cd916b`，前生产 `aece8f3d`。** 本轮已联动改完来源typed深拷贝/流式指纹、实际协作耗时、调度重复扫描和部分Apply静默异常，并补真实writer整链故障证据；不是只交helper。
-- **集中检查通过：** helper32、业务33、捕获61、façade238、真实terminal47；原行为/故障、UI85/history852、最终六项Stage、API/四DLL元数据、146键/36 behaviors保持。
-- **仍未整批合格：** 单个大源和规划/整理/Apply内部还可超预算；普通提交/编辑/导入完整调用方责任未齐。1000行分配约9.26MB降到1.58MB，但不代表硬帧预算已解决。部分异常现在提示并停止，不是事务回滚/尾项恢复完成。LIVE/SAVE未测，不承诺零BUG。
-- **唯一续点：** [总计划第12节](docs/phase8/af-core-precloseout-plan-20260913.md)，[本候选证据](docs/audits/2026-09-13-b1-budget-terminal-candidate.json)，[当前代码位置和责任](docs/architecture/af-framework-code-scope.md)。继续同一批修缺口，五道门槛合格后才进B2。
-- 唯一工作区 `G:\AFMOD\AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`。自动化`af-7-8`回读ACTIVE/每小时；未推送、未新fetch/融合、未覆盖游戏或操作存档；远端`bd2ed35f`仅已知跟踪快照。
-- 两份2026-09-06用户草稿和旧local-only简明HANDOFF原hash未变、未暂存。简明版留忽略文件`.tmp/af-core-precloseout-team-handoff.md`，不上传。D-A–D-E/默认切换/广泛删旧仍不得擅自执行。
-- 下方都是历史交接，不覆盖本段。阶段8/B1尚未DONE；需要回滚时定向revert `7f89e18d`，不重置用户工作树。
+- **生产/测试 `e77602f9`，检查点 `637da7f5`，前生产 `7f89e18d`。** 本轮联动完成初筛/extra/cleanup槽分片、结构验证后线性整理、计划标记与后台排序/失败汇总，补普通提交/编辑/导入实际链路，并修复旧窗口读档后误写。
+- **集中验证：** 主业务36、捕获70、规划24、terminal47、commit-writers49；4096槽分类/整理各4096访问，最多8槽/片、16槽/Tick。UI/history、最终六项Stage、API/四DLL元数据、146键/36 behaviors保持；旧实际代码/故障反例仍有效。
+- **不混淆边界：** 槽级分片已通过；剩余是完整来源/Pending/Apply内部及外围生产/维护原子成本，不再说整个队列规划仍未做。1000行原子capture仍约11ms观察，不能宣称深记录硬预算已过。部分失败不是事务恢复；LIVE/SAVE仍未测。
+- **唯一准确续点：** [计划第12节](docs/phase8/af-core-precloseout-plan-20260913.md)，[候选证据](docs/audits/2026-09-13-b1-resumable-writers-candidate.json)，[源码位置/责任](docs/architecture/af-framework-code-scope.md)。下一步优先“大源×重复重验”，不重新盘点或重做已通过分片。
+- 唯一工作区`G:\AFMOD\AF-REFACTOR`，分支`codex/af-framework-skill-delivery-20260911`。自动化`af-7-8`每小时ACTIVE；未推送、未新fetch/融合、未覆盖游戏或操作存档，已知远端快照`bd2ed35f`。完整本轮输入/日志/六DLL已保留忽略证据快照，不只依赖会刷新的current目录。
+- 两份2026-09-06用户草稿及旧local-only简明HANDOFF原hash保持、不暂存。简明版留`.tmp/af-core-precloseout-team-handoff.md`，不上传。D-A–D-E及高风险动作仍待授权；回滚按用户指示定向revert `e77602f9`，不reset。
+- 下方历史不覆盖本段；B1及阶段8未DONE，未承诺零BUG。
 
 ## 已确认基线：最新工程已整合并通过本机构建（启用自动化前）
 
