@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-09-13",
+  "reviewStartHead": "007dbeee76b45a6ddd5924487b8df4ccc3a32213",
+  "sourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+  "lastFullyVerifiedProduction": "62abfdb3039b64660f6aebce6ebd4af2a60e719a",
+  "originalBaseline": "d4cb1467376c6e923f4295dcefc7878c11dbc7c1",
+  "baselineParentCsIdentical": true,
+  "state": {
+    "projectStage": 8,
+    "batch": "B1 / P1",
+    "acceptance": "PAUSED_WIP_NOT_BATCH_ACCEPTED",
+    "automation": "af-7-8 PAUSED",
+    "productionEditedThisReview": false,
+    "liveThisReview": "NOT_RUN",
+    "saveThisReview": "NOT_RUN",
+    "fullStageThisReview": "NOT_RUN"
+  },
+  "metrics": [
+    {
+      "revision": "d4cb1467376c6e923f4295dcefc7878c11dbc7c1",
+      "rootCsFiles": 289,
+      "ownerPartialFilesExcludingMains": 0,
+      "refactorCsByDirectory": {},
+      "apiV1CsFiles": 0,
+      "mainOwnerLines": {
+        "MyBehavior.cs": 59365,
+        "ShoutBehavior.cs": 38870,
+        "CourierDeliveryBehavior.cs": 9859
+      }
+    },
+    {
+      "revision": "182da1db4db4199cf65783f911f3cb6d46b18970",
+      "rootCsFiles": 292,
+      "ownerPartialFilesExcludingMains": 0,
+      "refactorCsByDirectory": {
+        "Adapters": 21,
+        "Contracts": 8,
+        "Runtime": 5
+      },
+      "apiV1CsFiles": 0,
+      "mainOwnerLines": {
+        "MyBehavior.cs": 59431,
+        "ShoutBehavior.cs": 39835,
+        "CourierDeliveryBehavior.cs": 10501
+      }
+    },
+    {
+      "revision": "62abfdb3039b64660f6aebce6ebd4af2a60e719a",
+      "rootCsFiles": 317,
+      "ownerPartialFilesExcludingMains": 17,
+      "refactorCsByDirectory": {
+        "Adapters": 21,
+        "Contracts": 9,
+        "Modules": 5,
+        "Runtime": 13
+      },
+      "apiV1CsFiles": 2,
+      "mainOwnerLines": {
+        "MyBehavior.cs": 58975,
+        "ShoutBehavior.cs": 39883,
+        "CourierDeliveryBehavior.cs": 10797
+      }
+    },
+    {
+      "revision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+      "rootCsFiles": 319,
+      "ownerPartialFilesExcludingMains": 19,
+      "refactorCsByDirectory": {
+        "Adapters": 21,
+        "Contracts": 9,
+        "Modules": 5,
+        "Runtime": 13
+      },
+      "apiV1CsFiles": 2,
+      "mainOwnerLines": {
+        "MyBehavior.cs": 58795,
+        "ShoutBehavior.cs": 39883,
+        "CourierDeliveryBehavior.cs": 10797
+      }
+    }
+  ],
+  "metricsScope": "Tracked repository-root C# and named subdirectories; excludes reference dumps. Line counts are not a completion percentage.",
+  "checks": [
+    {
+      "name": "code-map-recorded",
+      "exit_code": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        ".agents/skills/af-core-framework/scripts/verify_code_map.py"
+      ],
+      "log": ".tmp/stage-architecture-review-20260913/code-map-recorded.log",
+      "logSha256": "259bda8a74a9755db2103525aeb053bc6a254e80bce1061b0c62ad560f93f884",
+      "scope": "offline source/extracted-code review; not game acceptance"
+    },
+    {
+      "name": "code-map-working-tree",
+      "exit_code": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        ".agents/skills/af-core-framework/scripts/verify_code_map.py",
+        "--working-tree"
+      ],
+      "log": ".tmp/stage-architecture-review-20260913/code-map-working-tree.log",
+      "logSha256": "b96bd5f376d4f4bc7b7a98548d093c09882bc1b0131fc922a347e42978cecdc7",
+      "scope": "offline source/extracted-code review; not game acceptance"
+    },
+    {
+      "name": "channel-boundary",
+      "exit_code": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "tools/ChannelCutoverBoundaryTests/run.py",
+        "--dotnet",
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "--output-name",
+        "stage-review-20260913"
+      ],
+      "log": ".tmp/stage-architecture-review-20260913/channel-boundary.log",
+      "logSha256": "a54d175881bb83d1ce67dc0ea0b6a2894b0213dd064557c248a7b291943180ee",
+      "scope": "offline source/extracted-code review; not game acceptance"
+    },
+    {
+      "name": "strict-inverse",
+      "exit_code": 1,
+      "log": ".tmp/stage-architecture-review-20260913/strict-inverse.log",
+      "logSha256": "ab464735d3dedb993f871a582db3171641b3d3914ee1c4af0c5f004b2ca0c6ea",
+      "scope": "offline source/extracted-code review; not game acceptance"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "composition",
+      "path": "Refactor/Adapters/LegacyInteractionPipelineComposition.cs",
+      "start": 75,
+      "end": 78,
+      "symbolPrefix": "public static InteractionRequestCoordinator Create(",
+      "fileSha256Utf8Lf": "a3545922181bb51be21e58091c2f86c9c48f03588a1c9730a0e031698620dd91",
+      "responsibility": "配置真实管线；规则、Prompt、后处理仍经 delegates 回到原 owner。"
+    },
+    {
+      "id": "policy-port",
+      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "start": 7,
+      "end": 15,
+      "symbolPrefix": "internal interface IPolicyModulePort",
+      "fileSha256Utf8Lf": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a",
+      "responsibility": "同 DLL 政策 typed 契约；不重写政策算法。"
+    },
+    {
+      "id": "gathering-port",
+      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "start": 17,
+      "end": 25,
+      "symbolPrefix": "internal interface IGatheringModulePort",
+      "fileSha256Utf8Lf": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a",
+      "responsibility": "同 DLL 宴会 typed 契约。"
+    },
+    {
+      "id": "siege-port",
+      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "start": 27,
+      "end": 37,
+      "symbolPrefix": "internal interface ISiegeModulePort",
+      "fileSha256Utf8Lf": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a",
+      "responsibility": "同 DLL GCCZ 接缝；玩法仍归原模块。"
+    },
+    {
+      "id": "framework-init",
+      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "start": 22,
+      "end": 58,
+      "symbolPrefix": "internal static bool Initialize(",
+      "fileSha256Utf8Lf": "4739b5537b5c8a84152a469cfc13d975b4c4930ede2b49dfb22c74545d3e1f5d",
+      "responsibility": "装配与目录 Ready，不是完整 Campaign/Mission Host。"
+    },
+    {
+      "id": "api",
+      "path": "Api/V1/AfApi.cs",
+      "start": 13,
+      "end": 28,
+      "symbolPrefix": "public static class AfApi",
+      "fileSha256Utf8Lf": "6c1d44c72aa8388fab3caf147e524cf66ae10353b25a5acb00f41ab5c86f72ee",
+      "responsibility": "V1 当前只有目录查询可用，六类写/提交/扩展能力 NotSupported。"
+    },
+    {
+      "id": "native-entry",
+      "path": "ShoutBehavior.cs",
+      "start": 18067,
+      "end": 18075,
+      "symbolPrefix": "public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)",
+      "fileSha256Utf8Lf": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f",
+      "responsibility": "普通入口使用 admission/原完整实现；不是新 opt-in 的同义名。"
+    },
+    {
+      "id": "native-implementation",
+      "path": "ShoutBehavior.cs",
+      "start": 20082,
+      "end": 20085,
+      "symbolPrefix": "private async Task<string> SubmitNativeConversationTextInternalAsync(",
+      "fileSha256Utf8Lf": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f",
+      "responsibility": "原 owner 的完整 Native 主体仍在运行，不能整类删除。"
+    },
+    {
+      "id": "native-opt-in",
+      "path": "ShoutBehavior.cs",
+      "start": 17107,
+      "end": 17110,
+      "symbolPrefix": "public static Task<LegacyNativeConversationOptInResult> SubmitNativeConversationRefactorOptInForExternalAsync(",
+      "fileSha256Utf8Lf": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f",
+      "responsibility": "单独 opt-in 接口；不能据此声称普通入口已全部迁移。"
+    },
+    {
+      "id": "scene-completion",
+      "path": "ShoutBehavior.ScenePostprocess.cs",
+      "start": 72,
+      "end": 77,
+      "symbolPrefix": "private static string CompleteSceneUnifiedActionPostprocess(",
+      "fileSha256Utf8Lf": "e58ca40fdab4c4413735d533bbbdfcd9cb6afa465620a5c2bcf829fd063c80fd",
+      "responsibility": "后处理 work item 的单次完成边界。"
+    },
+    {
+      "id": "scene-deferred",
+      "path": "ShoutBehavior.ScenePostprocess.cs",
+      "start": 94,
+      "end": 97,
+      "symbolPrefix": "private Task<int> QueueDeferredScenePostprocessActions(",
+      "fileSha256Utf8Lf": "e58ca40fdab4c4413735d533bbbdfcd9cb6afa465620a5c2bcf829fd063c80fd",
+      "responsibility": "完整后处理、接力与旁听相关责任，非另起缩水执行链。"
+    },
+    {
+      "id": "courier-reply-worker",
+      "path": "CourierDeliveryBehavior.cs",
+      "start": 4527,
+      "end": 4562,
+      "symbolPrefix": "private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(",
+      "fileSha256Utf8Lf": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9",
+      "responsibility": "Task.Run 进入；await 后仍调用读取 live owner 的准备方法。"
+    },
+    {
+      "id": "courier-reply-builder",
+      "path": "CourierDeliveryBehavior.cs",
+      "start": 4668,
+      "end": 4696,
+      "symbolPrefix": "private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(",
+      "fileSha256Utf8Lf": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9",
+      "responsibility": "名称为 OnMainThread 不提供封送；读取历史和游戏目标。"
+    },
+    {
+      "id": "courier-inbound-worker",
+      "path": "CourierDeliveryBehavior.cs",
+      "start": 5028,
+      "end": 5067,
+      "symbolPrefix": "private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(",
+      "fileSha256Utf8Lf": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9",
+      "responsibility": "主动来信后台准备；同样存在 live 读取。"
+    },
+    {
+      "id": "courier-inbound-builder",
+      "path": "CourierDeliveryBehavior.cs",
+      "start": 5092,
+      "end": 5120,
+      "symbolPrefix": "private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(",
+      "fileSha256Utf8Lf": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9",
+      "responsibility": "读取发信人、历史、规则等 live 数据。"
+    },
+    {
+      "id": "memory-current",
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "start": 338,
+      "end": 343,
+      "symbolPrefix": "private bool IsMemorySummaryInputCurrent(",
+      "fileSha256Utf8Lf": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0",
+      "responsibility": "完整 raw 来源及有效上下文重验；不能仅用 Save 调用计数替代。"
+    },
+    {
+      "id": "memory-planning",
+      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "start": 159,
+      "end": 162,
+      "symbolPrefix": "private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(",
+      "fileSha256Utf8Lf": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0",
+      "responsibility": "跨槽规划和冻结计划；不是每条深记录的硬预算。"
+    },
+    {
+      "id": "memory-accept",
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "start": 100,
+      "end": 106,
+      "symbolPrefix": "private bool TryApplyMemorySummaryMainThreadAction(",
+      "fileSha256Utf8Lf": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598",
+      "responsibility": "主线程/current owner/generation 接受边界。"
+    },
+    {
+      "id": "material-record",
+      "path": "MyBehavior.cs",
+      "start": 13705,
+      "end": 13763,
+      "symbolPrefix": "private void RecordEventSourceMaterial(",
+      "fileSha256Utf8Lf": "03afca51f53d7c70c106c89bc3a2f0fc67d488048ec2a233f5019766b53a5742",
+      "responsibility": "WIP 素材追加/更新，保留原重复键语义。"
+    },
+    {
+      "id": "material-index",
+      "path": "MyBehavior.EventSourceMaterialIndex.cs",
+      "start": 16,
+      "end": 25,
+      "symbolPrefix": "private bool IsEventSourceMaterialIndexCurrent(",
+      "fileSha256Utf8Lf": "de93f33124ec2096c941a8e36364e1ba886a74dc7e252534b421de5c260e2870",
+      "responsibility": "WIP source/map/list 绑定，适用已审计串行 writer。"
+    },
+    {
+      "id": "memory-seal",
+      "path": "MyBehavior.MemorySealing.cs",
+      "start": 198,
+      "end": 203,
+      "symbolPrefix": "private bool ContinueDailyMemorySeal(",
+      "fileSha256Utf8Lf": "63ef3f343991f561c66f8147f61c9bc38b04ff1941cee2e750ae2ad2cc2d7c0d",
+      "responsibility": "WIP 七阶段续跑；仍有原子尾步和每调用预算限制。"
+    },
+    {
+      "id": "maintenance",
+      "path": "MyBehavior.cs",
+      "start": 17741,
+      "end": 17770,
+      "symbolPrefix": "private void TryRunCampaignMemoryMaintenance(",
+      "fileSha256Utf8Lf": "03afca51f53d7c70c106c89bc3a2f0fc67d488048ec2a233f5019766b53a5742",
+      "responsibility": "WIP 同日续跑/完成回执；旧严格 inverse 在此拒绝未审变更。"
+    }
+  ],
+  "findings": [
+    {
+      "id": "REV-01",
+      "kind": "confirmed_source_thread_boundary_gap",
+      "priority": "high",
+      "anchors": [
+        "courier-reply-worker",
+        "courier-reply-builder",
+        "courier-inbound-worker",
+        "courier-inbound-builder"
+      ],
+      "gameSymptomReproduced": false,
+      "status": "unfixed"
+    },
+    {
+      "id": "REV-02",
+      "kind": "confirmed_verification_integration_gap",
+      "priority": "delivery_blocker",
+      "signal": "Unreviewed B1 declaration: private void TryRunCampaignMemoryMaintenance(",
+      "status": "unfixed; source map intentionally remains bound to 62abfdb3"
+    },
+    {
+      "id": "REV-03",
+      "kind": "confirmed_budget_limit",
+      "priority": "high",
+      "anchors": [
+        "memory-seal",
+        "memory-current",
+        "maintenance"
+      ],
+      "status": "global hard frame/record budget not established"
+    },
+    {
+      "id": "REV-04",
+      "kind": "incomplete_architecture_not_a_runtime_bug",
+      "priority": "scope_acceptance",
+      "anchors": [
+        "composition",
+        "framework-init",
+        "api"
+      ],
+      "status": "same-owner partials; internal adapters; public catalogue only"
+    },
+    {
+      "id": "REV-05",
+      "kind": "documentation_current_status_conflict",
+      "priority": "medium",
+      "status": "corrected by this review entry; historical records preserved"
+    },
+    {
+      "id": "REV-06",
+      "kind": "missing_candidate_acceptance",
+      "priority": "release_blocker",
+      "status": "current exact candidate LIVE/SAVE/Economy/AFEF/TTS/external-DLL acceptance absent from reviewed evidence"
+    }
+  ],
+  "documentationValidation": {
+    "anchors": 22,
+    "newLocalLinks": 14,
+    "protectedFilesUnchanged": 3,
+    "productionTestsConfigUnchanged": true,
+    "historicalLedgerBytesPreserved": true,
+    "excludedFileAbsentFromTreeAndNewHistory": true,
+    "markdownFencesAndConflictMarkers": "PASS"
+  }
+}
