@@ -1,3 +1,21 @@
+# AF 总 HANDOFF — 恢复 B1-P1 步骤 A：WIP 审查表（2026-09-13）
+
+**用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
+
+- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。HEAD 应对齐 `c2ce7947` 或本任务在其上的连续本地提交。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
+- 本切片改审查表/inverse 适配，并将 `run_sealing.py` 默认 SDK 指到本机 dotnet。**未改生产代码、代码地图 hash、一键脚本**。`productionFileSha256` 与 `TryRunCampaignMemoryMaintenance` 的已审 `sha256` 仍绑 `62abfdb3`。
+- `tools/MemorySummaryMainThreadBoundaryTests/source-review-b1.json` 新增 `unreviewedWip`（8 个符号）以及未审删除 `HasPastDailyMemoryDrafts`。`source_parity.py` 在恢复旧声明前收集全部未审项并失败。
+- 未审符号（行号只是定位，身份是签名）：`RecordEventSourceMaterial` `MyBehavior.cs:13705`；`RebuildEventSourceMaterialIndex` `MyBehavior.cs:20126`；`IsEventSourceMaterialIndexCurrent` / `BindEventSourceMaterialIndex` `MyBehavior.EventSourceMaterialIndex.cs:16` / `:27`；`TrySealPastDailyMemoryDrafts` `MyBehavior.cs:4814`；`ContinueDailyMemorySeal` `MyBehavior.MemorySealing.cs:198`；`TryRunCampaignMemoryMaintenance` `MyBehavior.cs:17741`；`ResetDailyMemoryDraftSealSliceState` `MyBehavior.cs:4835`；删除 `HasPastDailyMemoryDrafts`（下一锚 `SyncData`，不是业务红例）。
+- Inverse **FAIL**，一次列出 9 个未审项（含删除的 `HasPastDailyMemoryDrafts`）。已审 `productionFileSha256` / `TryRunCampaignMemoryMaintenance` hash 未刷新。日志 `.tmp/b1-wip-review-20260913/official-inverse.log`。本机 `Python312\python.exe` 仍拒绝访问，改用 Codex bundled Python 跑同一 `source_parity.py`。
+- 本地提交这 5 个文件：**NOT-RUN**。无 `index.lock` 文件；无法创建 `E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\.git\worktrees\Mount-Blade-Bannerlord-AnimusForge-mod-main2\index.lock`（Permission denied）。未 hard reset。
+- 封存 30 例已跑。current **30/0**；`--original` `62abfdb3` **19 绿 / 11 红**（新 30 例对旧实现，不是 WIP 回退）。`run_sealing.py` 无 `--mutate`。证据 `.tmp/b1-sealing-20260914/`，绑定 `MyBehavior.cs` sha256 `03afca51…`。LIVE/SAVE=NOT_RUN。
+- 相邻 suite（绑定当前 WIP 源码）：materials current 23/0，7 个 mutation 均 exit=1（有效红例），`62abfdb3` baseline 23 例 8 红；planning 24/0；writers 238/0；commit_writers 51/0；captured 109/0；terminal 85/0。business **EXIT=2 编译失败**（抽出的 `TryRunCampaignMemoryMaintenance` 依赖 `MemorySealing.cs` 字段/`requirePendingProbe`，共享 harness 未纳入该 partial）。未改生产语义。
+- 代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。
+
+回滚：定向还原 `source-review-b1.json` / `source_parity.py` / README / `run_sealing.py` / 本 HANDOFF 的未提交工作区改动，不 hard reset。
+
+## 以下为历史交接，当前状态以上方入口为准
+
 # AF 总 HANDOFF — 阶段/架构/功能复现审查（2026-09-13）
 
 **本轮最新请求是审查当前进度、详细交接和 GitHub 上传；不是恢复生产重构。自动化 `af-7-8` 保持 PAUSED。**

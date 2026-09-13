@@ -7,7 +7,8 @@
     "No live/game/save or actual provider evidence",
     "Facade-only writers suite retains terminal fixtures; separate commit_writers evidence executes named actual writers/readback without real saves/game.",
     "Shared cumulative Stopwatch is cooperative only; a single large atomic operation can overrun. Planner/cleanup/Apply record slicing remains incomplete.",
-    "Queue slot classification/compaction is now bounded, but each HasPending/capture/apply may still traverse an unbounded single source; no hard per-frame source record budget or global writer epoch proof."
+    "Queue slot classification/compaction is now bounded, but each HasPending/capture/apply may still traverse an unbounded single source; no hard per-frame source record budget or global writer epoch proof.",
+    "WIP c21523f8 material-index/sealing declarations are inventoried in unreviewedWip and an unreviewed deletedDeclarations entry. Inverse must fail and list all of them; do not refresh reviewed sha256 or productionFileSha256 to make this pass."
   ],
   "declarations": [
     {
@@ -844,6 +845,111 @@
         "planning"
       ],
       "reason": "No remaining production caller; real sliced scanner retains queued invalid-owner discovery and real CancelUnavailableHeroCompressionWorkById cleanup. Exact deleted body and its next declaration anchor are restored for older whole-source parity only."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool HasPastDailyMemoryDrafts(",
+      "baselineSignature": "private bool HasPastDailyMemoryDrafts(",
+      "baselineSha256": "15e0b4826643eace4a765e68c43d4be144568e986b79d18bbb99d3e27d51acd7",
+      "baselineSpanSha256": "b168a8f16c27804201d3fd68de5c3851205f411da07f8bec991ab7cab54c787f",
+      "nextSignature": "public override void SyncData(IDataStore dataStore)",
+      "nextDeclarationSha256": "107e1aa4a75ad989dac0e9c748cba11fef61f9668b9780a544e4ee3f2af53f83",
+      "evidence": [],
+      "reviewed": false,
+      "status": "UNREVIEWED_WIP",
+      "wipSourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+      "reason": "WIP moved the whole-source HasPast predicate into a non-mutating seal probe. Inventory this deletion here. Do not restore it as an accepted inverse, and do not treat the deletion as a business red case."
     }
-  ]
+  ],
+  "wipIntegration": "UNREVIEWED_NOT_INVERSE_ACCEPTED",
+  "unreviewedWip": {
+    "status": "UNREVIEWED_NOT_INVERSE_ACCEPTED",
+    "wipSourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+    "verifiedRevision": "62abfdb3039b64660f6aebce6ebd4af2a60e719a",
+    "identity": "Symbols identify declarations. Line numbers are locating aids only and are not inverse keys.",
+    "note": "These hashes describe the paused WIP. They are not accepted inverse replacements. productionFileSha256 remains the last reviewed MyBehavior.cs at 62abfdb3.",
+    "declarations": [
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void RecordEventSourceMaterial(",
+        "kind": "changed",
+        "currentSha256": "b535ad83b8c3c28918653f3c219afb2b8225b1fe17d84687ca1488787e3d08eb",
+        "baselineSignature": "private void RecordEventSourceMaterial(",
+        "baselineSha256": "11de9a9a4945cc247dd21d5b4f2d5040a332e87964cb39465c48d519034c456c",
+        "currentLine": 13705,
+        "reason": "Complete index owns misses; a new daily key must not rescan all history. Bind only after append and index insert both succeed."
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void RebuildEventSourceMaterialIndex(",
+        "kind": "changed",
+        "currentSha256": "695c11a92724ea4cc336ccc7d23f6205504907589d260ac76c54c2b31723bb10",
+        "baselineSignature": "private void RebuildEventSourceMaterialIndex(",
+        "baselineSha256": "1f5469f22c9091673de3552448a577ed2f651db0ffee68308476d00a98d4a347",
+        "currentLine": 20126,
+        "reason": "Named keys keep last-wins. Same-day blank keys keep first-wins for Day>=0. Throw if the source list changes mid-rebuild, then bind."
+      },
+      {
+        "path": "MyBehavior.EventSourceMaterialIndex.cs",
+        "signature": "private bool IsEventSourceMaterialIndexCurrent(",
+        "kind": "added",
+        "currentSha256": "a70e517165fed7280cebc6fefb6cd9660a4c4a84222a09ffe1e6c6ecb9585d1b",
+        "baselineSignature": null,
+        "baselineSha256": null,
+        "currentLine": 16,
+        "reason": "Runtime-only derived index current-check: source/map reference, count, and List structure probe. Not in inverse baseline 90201155."
+      },
+      {
+        "path": "MyBehavior.EventSourceMaterialIndex.cs",
+        "signature": "private void BindEventSourceMaterialIndex(",
+        "kind": "added",
+        "currentSha256": "27250ac886f91a3adcf8d6479f938e2b9323117d4889b7161f9dd6fe4acd08d6",
+        "baselineSignature": null,
+        "baselineSha256": null,
+        "currentLine": 27,
+        "reason": "Publish the derived index binding after a complete rebuild or successful append+insert. Not in inverse baseline 90201155."
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private bool TrySealPastDailyMemoryDrafts(",
+        "kind": "changed",
+        "currentSha256": "23c688a5db84801e006e1bcfa08234f455e901563a92330dc4d23f3c03814ed3",
+        "baselineSignature": "private bool TrySealPastDailyMemoryDrafts(",
+        "baselineSha256": "0424fc3bd9580b15db03068b78e208017d30eced0818c922985eaa91ad721648",
+        "currentLine": 4814,
+        "reason": "Entry now takes requirePendingProbe and delegates to ContinueDailyMemorySeal. Empty drafts still reset unless a seal state remains."
+      },
+      {
+        "path": "MyBehavior.MemorySealing.cs",
+        "signature": "private bool ContinueDailyMemorySeal(",
+        "kind": "added",
+        "currentSha256": "9dface10f4246f1c233ba6afbb940f20e37ca5106f1eb92218c75c9fcbf7271a",
+        "baselineSignature": null,
+        "baselineSha256": null,
+        "currentLine": 198,
+        "reason": "Seven-phase resumable seal. 128 metadata / 8 expensive operations are per call, not per Tick. Atomic tail steps remain."
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void TryRunCampaignMemoryMaintenance(",
+        "kind": "changed",
+        "currentSha256": "037aa99b7a2e9425b1a8da4dfc15b5f27826225be067f356a6982e8e2c6e6fa8",
+        "reviewedSha256": "17da5e8912d2a987d94f302015b25690107b979642d017d6e8a3dea6f7f01e62",
+        "baselineSignature": "private void TryRunCampaignMemoryMaintenance(",
+        "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9",
+        "currentLine": 17741,
+        "reason": "Same-day resume uses seal state, not raw queue counts. HasPast is a non-mutating probe sharing the deadline. Completion receipt preserves the old post-seal path. Keep declarations[].sha256 at the last reviewed 62abfdb3 body."
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void ResetDailyMemoryDraftSealSliceState(",
+        "kind": "changed",
+        "currentSha256": "91be719a833b52be3ebf815618d13adb3936b00569dbed6514488acdbed5079b",
+        "baselineSignature": "private void ResetDailyMemoryDraftSealSliceState(",
+        "baselineSha256": "731ddf61cd5d7d38622a1979dfaacee7127b0a35b8e5b1f1913419585e4df7d3",
+        "currentLine": 4835,
+        "reason": "Also clears _dailyMemorySealState and _dailyMemorySealCompletedPass."
+      }
+    ]
+  }
 }

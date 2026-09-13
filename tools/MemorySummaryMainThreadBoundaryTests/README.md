@@ -68,7 +68,7 @@ G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/ru
 
 正常返回0；反例必须编译成功后执行断言失败，提取/编译/工具错误不能计成红例。所有 runner 的 `--help` 列出对应故障变体。保存于忽略的 `.generated/<suite>/<variant>/`，保留输入清单、精确提取声明、生成 hash、build/run 日志；历史结果不可冒充当前源码。
 
-`source_parity.py` / `source-review-b1.json` 只对50个已审声明逆变换，并精确恢复1个已删除的私有预扫方法，并约束对应 runner/harness hash；随后原 whole-owner/default 校验完整执行。不得仅刷新hash消除未解释的变化。
+`source_parity.py` / `source-review-b1.json` 只对50个已审声明逆变换，并精确恢复1个已审删除的私有预扫方法，并约束对应 runner/harness hash；随后原 whole-owner/default 校验完整执行。WIP `c21523f8` 记在 `unreviewedWip`，`HasPastDailyMemoryDrafts` 为未审删除；inverse 必须失败并列出全部未审项。不得仅刷新已审 sha256 / `productionFileSha256` 消除未解释变化。
 
 ### 实际变化与仍未通过的门槛
 
