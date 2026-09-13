@@ -1,3 +1,16 @@
+# AF 总 HANDOFF — Campaign维护共享预算已离线联验（2026-09-14）
+
+**生产/测试9158132c，本輪局部离线完成；整体阶段8/B1仍VERIFY、未整批合格。自动化af-7-8继续ACTIVE。未推送/部署。**
+
+- 当前入口：[共享预算HANDOFF](docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)，含行为变化、源位置、证据、剩余任务及回滚；前生产73a6977c、检查点01e24b9e。
+- 正常有限Campaign维护周期共享deadline及封存128/8授予；空闲懒创建，异常恢复窗口；修复预算耗尽后同日丢失总结启动请求并绑定save generation。
+- 当前40场景/14有效反例、旧73a6977c的35绿5红、相邻回归与六项Stage通过，API/实际DLL/存档身份保持。[验收JSON](docs/audits/2026-09-14-b1-campaign-budget-verification.json) / [63点代码图](docs/architecture/af-framework-code-map.json)。
+- 不把它说成全游戏帧硬预算：EngineTick/其他模块及显式同步调用独立，深来源和原子尾步仍待处理；不进入B2。
+- 下一自动续点按[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)：完整raw/初捕获、单owner净化、全owner绑定/最终排序等；不要重做已关闭的旧9项、素材索引或Campaign共享窗口。
+- 唯一写入区G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；用户草稿/本地专用文档保持。LIVE/SAVE/真实资产AFEF/TTS/子MOD、Courier线程及后续内部/public工作仍未完。
+
+## 以下为历史交付与配置，不覆盖当前续点
+
 # AF 总 HANDOFF — 按新计划恢复每小时自动推进（2026-09-14）
 
 用户已授权“设置自动化开做，计划编写好”。现有 `af-7-8` 已通过应用工具恢复为 **ACTIVE，每小时一次**，目标仍为本任务，提示词及原频率已读回核对。生产仍73a6977c，前一轮交接55af6d3e；本轮只更新计划/调度配置，不新增生产修改。
