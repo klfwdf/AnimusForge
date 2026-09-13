@@ -408,3 +408,7 @@ LIVE/SAVE/provider/音频/外部DLL加载、全部窗口UI和完整load/retentio
 3. Daily Apply/public/weekly尾部和 `RecordEventSourceMaterial` index miss 后全史扫描；先验证Import/Dev索引维护，再缩小重复扫描。继续保留部分失败通知/停止，不冒充事务恢复。
 
 统一通过B1五道门槛后才进B2；当前更大批次不是跳过未验门禁。自动化 `af-7-8` 只读确认 ACTIVE/每小时，继续同一批；未新fetch/推送/部署/碰存档，远端`bd2ed35f`仍只是已知快照。两份2026-09-06用户草稿和local-only旧简明版hash保持、不暂存。回滚按用户指示定向revert `62abfdb3`，不reset。简明制作组版留`.tmp/af-core-precloseout-team-handoff.md`，不上传。
+
+### B1 在途：封存/维护与素材索引联动（2026-09-13，本轮 ACTIVE）
+
+回滚起点 `1c36f328`（生产 `62abfdb3`）。继续同一B1处理尚未预算化的外围工作：建立真实封存/maintenance中断与同日续跑反例，分清同步完成与有限预算返回责任；补齐事件素材索引与其列表的绑定，修复异常换表后命中孤立旧entry的丢素材窗口，消除完整索引下的miss全史扫描。原子Apply拆分前须保留发布别名/非幂等sanitizer和public声望不可重放语义，不能为提速直接删旧清理或加异步void桥接。主执行者唯一生产写入，独立测试并行；最终同一候选集中回归与Stage，不跨到B2。
