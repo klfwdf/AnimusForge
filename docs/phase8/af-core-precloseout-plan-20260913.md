@@ -4,9 +4,7 @@
 
 ### 当前执行记录
 
-- B1 分段调度/直接提交续作 ACTIVE（2026-09-13 11:35），起点 `793f27ee` / 生产 `7f89e18d`。本轮主执行者统一改真实初筛/extra/cleanup为按job分片、当前片逻辑删除与结构验证后的纯引用整理、计划标记在capture同回调验证；补普通Daily/Recent提交和晚UI writer故障。保留完整源校验，单大源/取消索引原子成本仍明确测量，不伪称跨Tick原子或全局epoch。预期MyBehavior.cs、MemorySummaryInput/新Planning partial与独立测试；不进B2、不动默认/业务/游戏，集中复验后统一交接。
-
-- **B1 ACTIVE / NOT_BATCH_ACCEPTED：生产联合候选 `7f89e18d`，本轮检查点 `30cd916b`（起点 `76a3504f` / 生产 `aece8f3d`）。** 10:34续作已集中完成typed copy/流式指纹、共用实际协作耗时、调度去重筛查、真实terminal组合与部分Apply异常提示；离线和六项Stage通过，单大源/record预算仍未过。继续同一B1，不进B2，准确续点及证据见第12节。下方意图/P1-01记录为历史，不覆盖当前。
+- **B1 ACTIVE / NOT_BATCH_ACCEPTED：生产联合候选 `e77602f9`，检查点 `637da7f5`（起点 `793f27ee` / 前生产 `7f89e18d`）。** 本轮完成初筛/extra/cleanup真实槽分片、结构验证后线性引用整理、冻结计划标记与后台排序/失败汇总，补普通提交及代表编辑/导入整链，并修复旧窗口跨档误写。代码/离线/六项Stage通过；剩余深来源/Pending/Apply与外围维护原子成本，继续B1不进B2。当前续点第12节，下方为历史。
 
 - B1 ACTIVE（2026-09-13 09:33 自动运行），检查点基线 `90201155`。主执行者统一改记忆 owner/调度与三类总结接线，独立审查只读并行；预期涉及 `MyBehavior.cs`、`MyBehavior.MemorySummaryMainThread.cs`、直接记忆 partial 与现有相关测试。先保持原 provider/解析/重试/持久化语义，补精确来源接受和实际预算；最后集中真实业务/故障、兼容与六项 Stage。未通过整批门槛不进 B2，不推送/部署/操作真实存档。
 
@@ -312,49 +310,52 @@ P4 的具体方法签名、DTO 和版本扩展方式在实现前定稿，不在�
 - 自动化 `af-7-8` 已更新为上述大批次方式，保持 ACTIVE、每小时、同一任务；未新建重复任务/自动化。当前允许独立只读审查/独立测试并行提速，主执行者统一合并，禁止同文件并行写入。
 - 不自动推送、部署、操作真实存档、切默认、广泛删旧或变更制作组业务。全部可独立完成的获准工作结束/只剩外部阻塞时暂停并交接；更大批次不会把未验项目变成 READY/DONE。
 
-## 12. B1 联合候选与准确续点（未整批合格）
+## 12. B1 分段调度与真实writer联合候选（未整批放行）
 
-**生产/测试 `7f89e18d`；检查点 `30cd916b`，前生产 `aece8f3d`，B1基线 `90201155`。** 这是同一大批次的可回滚工作候选，不是B1结案。[联合验证JSON](../audits/2026-09-13-b1-budget-terminal-candidate.json)和[40点代码范围图](../architecture/af-framework-code-scope.md)绑定本候选。
+**生产/测试 `e77602f9`，检查点 `637da7f5`，前生产 `7f89e18d`；B1基线 `90201155`。** [本候选JSON](../audits/2026-09-13-b1-resumable-writers-candidate.json)、[49点代码范围图](../architecture/af-framework-code-scope.md)绑定当前。前轮typed复制/完整指纹/部分异常回执继续保留，不重做已通过项。
 
-### 已贯通的改动
+### 本轮已经关闭的缺口
 
-- 10个私有数据模型的`CopyForSummary`加2种列表typed复制，字段/嵌套图完整；完整来源、Prompt、解析依赖流式写SHA256。没有新增存档字段、公开API、配置开关或缩减历史。
-- inline/queued共享既有每Tick数量和`GetDailyMaintenanceFrameBudgetMs`实际累计Stopwatch耗时，超预算后不开始下一操作。TryStart/maintenance不再重复深扫来源；Process唯一初筛，保留无效队列清理、先过滤后去重、强制/节流候选扫描。
-- 沿真实Daily append/Save、Recovery Daily→Recent、Weekly outcome/回读/ledger、Major记录、压缩块Save组合校验在途旧成功/旧失败。Recent-only不虚构为Daily来源变化。
-- 审查发现Apply先发布块/删除草稿后，下游异常曾被helper吞为false导致静默return。本轮用Process专属`RunMemorySummaryCompletionAsync`保留异常，进入原通知、明确可能已有部分写入、停止本轮并释放；**不盲重放、不宣称事务回滚或尾项自动恢复**。旧capture/void façade错误语义保留。
+- 初筛、extra、final cleanup共用`ScanMemorySummaryQueueAsync`：每片最多8槽，含null，使用同Tick剩余时间。无效slot当片置null；随后分片只复制所有nonnull原引用，list identity和结构探针有效才发布，避免陈旧survivor表覆盖新入队和逐项移动的二次方成本。
+- 结构变化只中止受影响扫描，保留当前live队列和已采集部分计划，下一轮继续；不无限重启。worker只读冻结metadata进行先过滤后去重、稳定排序/计数。Job原引用只作标识；指纹在Capture同一主线程callback校验，变动/移除项不发请求。排序保证本次已采集计划，不声称实时全积压已扫完。
+- 无效owner独立重验后调用原权威清理，保留派生状态/索引责任；已删除无caller的旧`CancelUnavailableHeroCompressionQueuedJobs`。最终失败全文拼接移worker，原文字/顺序、聚合时读档/换owner门禁不变。
+- 普通`CommitDialogueHistoryWithScene`→Daily/Recent→精确回读已真实运行。复现两类旧编辑late保存及8类旧导入late保存：读档/换owner后仍改数据并报完成。本轮8个编辑窗口、4个导入窗口绑定开窗generation/main/Instance/Campaign；编辑还绑定原记录引用/指纹，拒绝同代索引移位/正文变化。
+- 编辑文本保存、单NPC显式文件/记忆批量导入实际运行；其余编辑窗口和2个汇总导入仅结构检查。文件/选择窗口是受控边界，非实机。只加AF导入窗口生命周期，不改overwrite/merge、输入内容或政策/债务等业务owner。
 
-### 核实代码位置（同一生产提交，一基）
+### 代码位置（源码 `e77602f9`，一基）
 
-| 位置 | 符号与责任 |
+| 位置 | 符号及真实责任 |
 |---|---|
-| `MyBehavior.MemorySummaryInput.cs:42-62` | `private static T CloneMemorySummarySource<T>(` — typed图复制，10模型方法定义保留在MyBehavior对应私有数据模型 |
-| `MyBehavior.MemorySummaryInput.cs:64-139` | `private MemorySummaryInput CaptureMemorySummaryInput(` — 捕获完整来源/Prompt/解析依赖 |
-| `MyBehavior.MemorySummaryInput.cs:143-156` | `private static string ComputeMemorySummaryFingerprint(` — 流式SHA256，省去全量嵌套JSON |
-| `MyBehavior.MemorySummaryMainThread.cs:88-98` | `private async Task<bool> RunMemorySummaryCompletionAsync(` — 部分异常回执转入原Process通知，不动旧void façade错误约定 |
-| `MyBehavior.cs:4975-5015` | `private void TryStartMemorySummaryQueue(` — raw入场，不重复扫描所有source |
-| `MyBehavior.cs:5037-5177` | `private async Task ProcessMemorySummaryQueueAsync(` — 初筛、强制扫描、完成/部分错误、清理和释放 |
-| `MyBehavior.cs:17879-17927` | `private void TryRunCampaignMemoryMaintenance(` — maintenance去除重复来源探测 |
+| `MyBehavior.MemorySummaryPlanning.cs:69-157` | `private async Task<List<MemorySummaryPlanEntry>> ScanMemorySummaryQueueAsync<T>(` — 每片8槽，当前片tombstone；纯引用compaction在结构仍有效时发布，变化则部分defer |
+| `MyBehavior.MemorySummaryPlanning.cs:159-219` | `private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(` — 独立重验无效owner；worker仅按冻结metadata去重排序，cleanup不建多余计划 |
+| `MyBehavior.MemorySourceWrites.cs:13-18` | `private bool IsMemorySourceEditorCurrent(long generation)` — 开窗generation、物理主线程、Instance和Campaign owner同时验证 |
+| `MyBehavior.cs:50180-50216` | `private void OpenDevDailyMemoryLineTextEditor(` — 文本保存/取消真实红绿证据；同代记录引用/指纹也须保持 |
+| `MyBehavior.cs:55018-55122` | `private void ImportSingleNpcDialogueHistoryData(` — 单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放 |
+| `MyBehavior.cs:57123-57213` | `private void ImportDialogueHistoryData(` — 记忆批量导入生命周期，保留overwrite/merge业务 |
+| `MyBehavior.cs:55215-55451` | `private void ImportHeroNpcAllData(` — 仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证 |
+| `MyBehavior.cs:57651-58190` | `private void ImportAllData(` — 仅AF全量导入窗口门禁；非全部导入业务已运行验收 |
+| `MyBehavior.cs:5037-5165` | `private async Task ProcessMemorySummaryQueueAsync(` — 初筛/extra/final用同一分片器；失败全文worker拼接，实际接受/通知/释放 |
+| `MyBehavior.cs:5204-5232` | `private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(` — 展开计划并传递expectedJobFingerprint至三类型真实Execute |
+| `MyBehavior.MemorySummaryInput.cs:64-143` | `private MemorySummaryInput CaptureMemorySummaryInput(` — 计划指纹、队列成员和来源捕获在同一主线程callback |
 
-`MyBehavior.MemorySummaryMainThread.cs:20`的`HasMemorySummaryMainThreadAllowance`与`TryApplyMemorySummaryMainThreadAction`负责实际计时；`ProcessMemorySummaryMainThreadActions`每Tick重置。完整导航见code-map，未列代码不代表可删。
+### 集中验证与证据层级
 
-### 集中验收
-
-| 层 | 结果与边界 |
+| 层 | 结果 |
 |---|---|
-| helper / completion | 32断言 / 33真实业务场景PASS；7 / 27故障反例均编译后运行失败 |
-| 捕获 / 数据图 | 61场景PASS；351标量检查、49可变节点分离、251逐字段来源改变均验证；15反例有效但部分绑定中途输入，manifest保留 |
-| writer / terminal | 238 façade断言 / 47真实terminal组合PASS；3 / 15反例有效。终端发布不是游戏、全普通对话提交或所有编辑导入调用方证明 |
-| 原代码 / 严格逆校验 | e40实际业务4 PASS / 29 FAIL；37声明精确inverse与3反例，保留原全文件/default断言，并绑定runner/harness hash |
-| 相邻 / 构建 | UI85/history852；最终Debug/Release×1.3/1.4/Bootstrap六项Stage；6 marker与stage一致；API119/256并发、四实现DLL元数据532；146 SyncData/36 behaviors保持 |
-| 大来源观察 | 同1000行/134016 Prompt字符，分配9,257,688→1,579,504 bytes；最新约9.591ms，其他运行约10–16ms。机器负载/JIT可变，不作实机帧时承诺，**单原子仍未切分** |
+| 主业务 / 捕获 / 分段规划 | 36 / 70 / 24场景PASS；29 / 17 / 10个反例编译成功后运行失败 |
+| writer组合 / 普通提交编辑导入 | terminal47 / commit-writers49 PASS；旧terminal15与editor/commit9反例保留准确输入；新增import绕过反例准确恢复8个late失败，不冒称所有旧反例均最后源码重跑 |
+| 槽预算 | 4096全null/交错/大有效尾：分类4096+整理4096，max8槽/片、max16槽/Tick；慢predicate本片仅1条，前一operation已耗时从本片预算扣除。不抢占单个predicate |
+| 原代码 / 源码审查 | e40旧业务4 PASS/32 FAIL；50声明+1删除精确恢复整个90201155，5负控；不删弱旧whole-file/default断言 |
+| 相邻与身份 | UI85/history852/native27，146 SyncData键/36 behaviors；API119/256并发、四实际DLL元数据532 |
+| 构建 | 最终Debug/Release×1.3/1.4/Bootstrap六项Stage；6 DLL/marker/stage哈希一致，未改构建脚本或部署 |
+| 大来源 | 1000行仍完整保留；约1,579,504 bytes，最新原子capture约10.980ms（负载/JIT可变，非游戏基准）；深记录门槛未过 |
 
-正常测试与最终构建绑定同一生产文件hash；部分旧反例只按其准确manifest复用，不谎称全部同源重跑。原始日志在项目忽略目录，复现命令见`tools/MemorySummaryMainThreadBoundaryTests/README.md`；Stage仅项目内输出，无游戏覆盖。
+真实源码、生成输入、日志和六DLL已另存项目忽略目录`.tmp/b1-20260913/resumable-evidence-e86ec86a/`（索引含SHA256），避免后续current目录刷新冲掉本轮证据。反例/normal各按其精确manifest绑定；结构-only不冒充业务运行。复现入口为`tools/MemorySummaryMainThreadBoundaryTests/README.md`。
 
-### 五道门槛后的剩余问题：继续B1
+### 后续只续这三个方面，不重做分片
 
-1. **预算仍不合格：** 单大源capture/check、初筛/排序/extra/cleanup、Apply内循环、空队列候选全ID扫描、maintenance预算前past-draft探测仍存在原子全扫。先做一致性可证明的来源发布/分段策略；不要跨Tick逐片比较后冒称原子快照，也不能只在两个Save计epoch。
-2. **writer责任补齐：** 真实普通`MyBehavior.DialogueHistoryCommit.cs`→Daily/Recent的部分失败、编辑保存/导入/迁移调用方的线程与owner责任仍未整链验证；字段变动会失效不等于这些入口已安全。部分Apply提示不等于尾项恢复解决。
-3. **验收层次：** 真实游戏/provider、旧存档往返、实际UI/audio和子MOD加载仍未测。D-A–D-E/默认/public/广泛删旧等未授权决策不自行执行。
-4. 同一B1继续修复后再集中检查五道门槛，合格才进B2。不要重做P1-01或反复构建未改代码；不要每次重新写一套阶段计划。
+1. **最高优先：大源×重复重验。** `CaptureMemorySummaryInput`/`IsMemorySummaryInputCurrent`、Pending及Prompt/解析准备仍读完整记录。普通成功通常完整capture/check三次，三次尝试可达七次。先联动压低重复渲染/复制/指纹成本；若把捕获或最终比较跨Tick，必须有覆盖真实writer/原地净化/导入的版本或不可变发布，不能Save-only epoch或逐片检查冒充原子。
+2. **外围原子扫描。** dirty/all候选ID生产、maintenance计时前past-draft探测、封存尾部过滤、无效owner权威清理仍有全扫；区分触发频率，保留全部状态/候选索引责任，不把它们又塞进一个新回调。
+3. **Apply/Mark内部。** 测并缩小blocks/drafts/历史/weekly及队列删除原子单元；保持最终源重验紧接接受。部分/未知错误已通知和停止，不等于事务回滚或完整尾项恢复。随后集中复核B1五道门槛，合格才进B2。
 
-自动化`af-7-8`本地回读仍ACTIVE/每小时，同一任务；尚有可独立做的B1工作，不提前暂停。未fetch新远端/推送/部署/操作存档，已知远端快照仍`bd2ed35f`，不是本次联网确认。两份用户草稿和local-only旧简明HANDOFF hash保持，不暂存。回滚需按用户指示定向revert `7f89e18d`并同步文档；不reset用户工作树。
+LIVE/SAVE/provider/音频/外部DLL加载、全部窗口UI和完整load/retention仍未验；不写阶段8DONE或零BUG。D-A–D-E未决、默认/public扩展、广泛删旧/推送/部署不擅自执行。未fetch新远端、未推送/覆盖游戏/操作存档，远端`bd2ed35f`只是已知快照。自动化`af-7-8`继续ACTIVE/每小时，仍有独立可做的B1工作；两份用户草稿和local-only旧简明版hash保持。回滚需按用户指示定向revert `e77602f9`并同步交接，不reset用户工作树。
