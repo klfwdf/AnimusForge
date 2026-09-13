@@ -2,23 +2,23 @@
 
 **用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
 
-- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。当前 detached HEAD 为测试适配 `a3aa35d9`，起始于 `b78b10a9`（在 `6dd5fbd7` / 审查表 `2de78e5d` 之上）；远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
+- 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。当前 detached HEAD 为 `6f424b45`，测试适配 `a3aa35d9`，hash 锁定 `724a0b02`，起始于 `b78b10a9`（在 `6dd5fbd7` / 审查表 `2de78e5d` 之上）；远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
 - 测试适配提交 `a3aa35d9` 只改 business runner/harness，使抽出的 `TryRunCampaignMemoryMaintenance` 能编译。**未改生产 C#、已审生产 hash、代码地图、一键脚本**。`productionFileSha256` 与 `TryRunCampaignMemoryMaintenance` 的已审 `sha256` 仍绑 `62abfdb3`。
 - 未把 `MyBehavior.MemorySealing.cs` 编进 business：该 suite 的 past-draft seal 仍是 fixture；`--original` `e40c92d7` 与 current 共用同一 harness，旧 `TryRun` 仍调用两参 `TrySeal` / `HasPastDailyMemoryDrafts` stub。编入真实 sealing 会在 completion 用例里跑封存并需要大量额外抽取。
 - 测试替身（`BusinessHarness.cs.txt:85-89`）：`object _dailyMemorySealState`、`int _dailyMemoryDraftSealTargetDay`、`bool _dailyMemorySealCompletedPass`；`TrySealPastDailyMemoryDrafts(long, double, bool requirePendingProbe = false)` 仍 `return true`，不置 completed-pass（保持旧 `HasPast=false` 空队列不 `TryStart`）。`run_business.py:238` 默认 SDK 改为 `C:/Program Files/dotnet/dotnet.exe`，与 `run_sealing.py` 一致。
 - 生产定位（行号只是定位，身份是签名，源码仍是 WIP / 未审）：`TryRunCampaignMemoryMaintenance` `MyBehavior.cs:17741`；`TrySealPastDailyMemoryDrafts(..., requirePendingProbe)` `MyBehavior.cs:4814`；`_dailyMemoryDraftSealTargetDay` `MyBehavior.cs:1926`；`_dailyMemorySealState` / `_dailyMemorySealCompletedPass` `MyBehavior.MemorySealing.cs:13` / `:16`。
 - 验证（`DOTNET_EXE=C:\Program Files\dotnet\dotnet.exe`）：current **BUILD_PASS 36/0 EXIT=0**；`--original` `e40c92d7` **BUILD_PASS 4/32 EXIT=1**（新 36 例对旧实现，不是编译失败）；`--mutate maintenance-rescan` **BUILD_PASS 34/2 EXIT=1**（有效红例，不是 EXIT=2）。证据 `tools/MemorySummaryMainThreadBoundaryTests/.generated/business/{current,original,maintenance-rescan}/`。LIVE/SAVE=NOT_RUN。
-- `source-review-b1.json` 仅锁定 business runner/harness 的 `testSourceSha256`，使 inverse 仍先过测试源码锁再一次列出 9 个未审项；未刷新已审 `productionFileSha256` / 声明 hash。Inverse 未在本机重跑。代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。封存与相邻 suite 数字仍以上一入口为准。
+- `source-review-b1.json` 仅锁定 business runner/harness 的 `testSourceSha256`，使 inverse 仍先过测试源码锁再一次列出 9 个未审项；未刷新已审 `productionFileSha256` / 声明 hash。Inverse 本机 `restore_memory_summary_source` 仍一次列出 9 个未审项。代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。封存与相邻 suite 数字仍以上一入口为准。
 
-回滚：定向 revert `a3aa35d9` 及本次 testSourceSha256/HANDOFF 提交，保留其后用户改动，不 hard reset。
+回滚：定向 revert `6f424b45`/`724a0b02`/`a3aa35d9`，保留其后用户改动，不 hard reset。
 
 下一步：仍停在 B1-P1 步骤 A；不要把 business 绿当成封存/WIP 已审或阶段 8 DONE。
 
 ## 以下为历史交接，当前状态以上方入口为准
 
-# AF 总 HANDOFF — 恢复 B1-P1：business 封存夹具适配（2026-09-14）
+# AF 总 HANDOFF — 恢复 B1-P1 步骤 A：WIP 审查表（2026-09-13）
 
-**用户已恢复开发。当前只做阶段 8 / B1-P1，不是阶段 8 DONE，不进入 B2/B3。**
+**用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
 
 - 工作树：`C:\Users\klfwdf\.codex\worktrees\5d8e\Mount-Blade-Bannerlord-AnimusForge-mod-main`。当前 detached HEAD 为记录提交 `6dd5fbd7`，在审查表切片 `2de78e5d` 之上；远端基线仍是 `origin/codex/af-main-refactor-continuation-20260831`（`c2ce7947`）。生产 WIP 仍是 `c21523f8`；最后完整离线联验仍是 `62abfdb3`。
 - 本切片改审查表/inverse 适配，并将 `run_sealing.py` 默认 SDK 指到本机 dotnet。**未改生产代码、代码地图 hash、一键脚本**。`productionFileSha256` 与 `TryRunCampaignMemoryMaintenance` 的已审 `sha256` 仍绑 `62abfdb3`。
@@ -27,10 +27,10 @@
 - Inverse **FAIL**，一次列出 9 个未审项（含删除的 `HasPastDailyMemoryDrafts`）。已审 `productionFileSha256` / `TryRunCampaignMemoryMaintenance` hash 未刷新。日志 `.tmp/b1-wip-review-20260913/official-inverse.log`。本机 `Python312\python.exe` 仍拒绝访问，改用 Codex bundled Python 跑同一 `source_parity.py`。
 - 本地提交这 5 个文件：`2de78e5d`（detached HEAD，信息 `docs: inventory unreviewed B1 WIP declarations without accepting inverse`）。未 push、未 hard reset。
 - 封存 30 例已跑。current **30/0**；`--original` `62abfdb3` **19 绿 / 11 红**（新 30 例对旧实现，不是 WIP 回退）。`run_sealing.py` 无 `--mutate`。证据 `.tmp/b1-sealing-20260914/`，绑定 `MyBehavior.cs` sha256 `03afca51…`。LIVE/SAVE=NOT_RUN。
-- 相邻 suite（绑定当前 WIP 源码）：materials current 23/0，7 个 mutation 均 exit=1（有效红例），`62abfdb3` baseline 23 例 8 红；planning 24/0；writers 238/0；commit_writers 51/0；captured 109/0；terminal 85/0。business current **36/0**；`--original` e40c92d7 **4 绿 / 32 红**（旧实现红例，不是 WIP 回退）；mutation **NOT-RUN**。只改 `BusinessHarness.cs.txt` / `run_business.py`：3 参 `TrySealPastDailyMemoryDrafts` 夹具、`_dailyMemorySealState`/`_dailyMemoryDraftSealTargetDay`/`_dailyMemorySealCompletedPass` 字段、本机 dotnet。未改生产语义。审查表只更新这两个测试文件的 evidence hash，已审生产 `sha256` / `productionFileSha256` 未刷新。
+- 相邻 suite（绑定当前 WIP 源码）：materials current 23/0，7 个 mutation 均 exit=1（有效红例），`62abfdb3` baseline 23 例 8 红；planning 24/0；writers 238/0；commit_writers 51/0；captured 109/0；terminal 85/0。business **EXIT=2 编译失败**（抽出的 `TryRunCampaignMemoryMaintenance` 依赖 `MemorySealing.cs` 字段/`requirePendingProbe`，共享 harness 未纳入该 partial）。未改生产语义。
 - 代码地图仍 `sourceRevision=62abfdb3`。未推送、未部署、未覆盖游戏、未操作存档。
 
-回滚：定向 revert 本切片测试/HANDOFF 提交，再按需 `git revert 2de78e5d`，保留其后用户改动，不 hard reset。下一建议切片：B1 剩余预算/集成，不进 B2/B3。
+回滚：定向 `git revert 2de78e5d`，保留其后用户改动，不 hard reset。
 
 ## 以下为历史交接，当前状态以上方入口为准
 
