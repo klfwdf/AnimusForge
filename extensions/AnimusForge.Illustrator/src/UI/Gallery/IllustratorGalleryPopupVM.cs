@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
 
 namespace AnimusForge.Illustrator.UI.Gallery
@@ -22,7 +24,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         }
 
         [DataSourceProperty]
-        public string Title => string.IsNullOrWhiteSpace(_item.Title) ? "卡拉迪亚纪事画卷" : _item.Title;
+        public string Title => (string.IsNullOrWhiteSpace(_item.Title) ? "卡拉迪亚纪事画卷" : _item.Title) + (_item.IsDefault ? "【默认】" : string.Empty);
 
         [DataSourceProperty]
         public string DateText => _item.CreatedTime.ToLocalTime().ToString("yyyy/MM/dd HH:mm");
@@ -53,6 +55,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
     public sealed class IllustratorGalleryPopupVM : ViewModel
     {
         private readonly Action _onClose;
+        private readonly string _campaignKey;
         private MBBindingList<IllustrationItemVM> _items = new MBBindingList<IllustrationItemVM>();
         private IllustrationItemVM _selectedItem;
         private bool _hasSelection;
@@ -61,10 +64,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private string _selectedPrompt = string.Empty;
         private string _selectedDate = string.Empty;
         private string _statusText = "欢迎查阅卡拉迪亚纪事画廊";
+        private string _loadedPreviewSpriteName;
 
-        public IllustratorGalleryPopupVM(Action onClose)
+        public IllustratorGalleryPopupVM(Action onClose, string campaignKey)
         {
             _onClose = onClose;
+            _campaignKey = campaignKey;
             RefreshItems();
         }
 
@@ -172,8 +177,9 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         public void RefreshItems()
         {
+            ReleasePreviewSprite();
             Items.Clear();
-            var cached = DiskImageCacheManager.GetAllCachedIllustrations();
+            var cached = DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey);
             foreach (var item in cached)
             {
                 Items.Add(new IllustrationItemVM(item, HandleItemSelect));
@@ -193,24 +199,25 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         private void HandleItemSelect(IllustrationItemVM selected)
         {
+            IllustratorRuntime.AssertMainThread();
             foreach (var item in Items)
             {
                 item.IsSelected = (item == selected);
             }
 
             _selectedItem = selected;
+            ReleasePreviewSprite();
             if (selected != null)
             {
                 HasSelection = true;
-                if (!GauntletTextureLoader.TryGetSprite(selected.SpriteName, out _))
+                string spriteName = "Gallery_" + selected.Item.Key;
+                if (File.Exists(selected.Item?.FilePath))
                 {
-                    if (File.Exists(selected.Item?.FilePath))
-                    {
-                        byte[] bytes = File.ReadAllBytes(selected.Item.FilePath);
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(selected.SpriteName, bytes);
-                    }
+                    byte[] bytes = File.ReadAllBytes(selected.Item.FilePath);
+                    var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
+                    if (sprite != null) _loadedPreviewSpriteName = spriteName;
                 }
-                SelectedSpriteName = selected.SpriteName;
+                SelectedSpriteName = _loadedPreviewSpriteName ?? string.Empty;
                 SelectedTitle = selected.Title;
                 SelectedPrompt = selected.Item?.Prompt ?? string.Empty;
                 SelectedDate = selected.DateText;
@@ -227,7 +234,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
             foreach (var item in Items)
             {
                 if (string.Equals(item.SpriteName, key, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(item.Item?.Key, key, StringComparison.OrdinalIgnoreCase))
+                    string.Equals(item.Item?.Key, key, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(item.Item?.SubjectKey, key, StringComparison.OrdinalIgnoreCase))
                 {
                     HandleItemSelect(item);
                     break;
@@ -235,16 +243,68 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
         }
 
+        public void ExecuteCopyPrompt()
+        {
+            if (_selectedItem?.Item == null || string.IsNullOrWhiteSpace(_selectedItem.Item.Prompt)) return;
+            try
+            {
+                Input.SetClipboardText(_selectedItem.Item.Prompt);
+                StatusText = "提示词已复制到剪贴板";
+            }
+            catch (Exception ex)
+            {
+                StatusText = "复制失败: " + ex.Message;
+            }
+        }
+
+        public void ExecuteSetDefault()
+        {
+            if (_selectedItem?.Item == null) return;
+            if (DiskImageCacheManager.SetDefault(_selectedItem.Item, _campaignKey))
+            {
+                StatusText = "已设为该主题的默认画卷";
+                RefreshItems();
+            }
+            else
+            {
+                StatusText = "设为默认失败";
+            }
+        }
+
+        public void ExecuteDelete()
+        {
+            if (_selectedItem?.Item == null) return;
+            string title = _selectedItem.Title;
+            if (DiskImageCacheManager.DeleteItem(_selectedItem.Item, _campaignKey))
+            {
+                StatusText = $"已删除：{title}（文件已移入回收区）";
+                RefreshItems();
+            }
+            else
+            {
+                StatusText = "删除失败";
+            }
+        }
+
+        public void DisposeVisuals()
+        {
+            ReleasePreviewSprite();
+        }
+
+        private void ReleasePreviewSprite()
+        {
+            if (string.IsNullOrWhiteSpace(_loadedPreviewSpriteName)) return;
+            GauntletTextureLoader.ReleaseSprite(_loadedPreviewSpriteName);
+            _loadedPreviewSpriteName = null;
+        }
+
         public void ExecuteOpenFolder()
         {
             try
             {
-                string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string cacheDir = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
-                if (Directory.Exists(cacheDir))
-                {
-                    Process.Start("explorer.exe", cacheDir);
-                }
+                string cacheDir = Path.Combine(DiskImageCacheManager.CacheRoot, DiskImageCacheManager.SanitizeKey(_campaignKey));
+                Directory.CreateDirectory(cacheDir);
+                Process.Start("explorer.exe", cacheDir);
             }
             catch (Exception ex)
             {

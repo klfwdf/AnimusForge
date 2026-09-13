@@ -20,18 +20,25 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly ScreenBase _screen;
         private readonly MovableGauntletLayer _layer;
         private readonly IllustrationCardVM _dataSource;
+        private readonly IllustrationScope _scope;
+        private readonly string _category;
+        private readonly string _instanceId = Guid.NewGuid().ToString("N").Substring(0, 8);
+        private string _activeSpriteName;
+        private bool _closed;
 
         public static bool IsOpen => _activeInstance != null;
 
-        private IllustrationCardPopup(ScreenBase screen, string movieName, Action onRegenerate)
+        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate)
         {
             _screen = screen;
+            _category = category;
             _dataSource = new IllustrationCardVM(Close, onRegenerate);
             var layer = new MovableGauntletLayer("IllustrationCardOverlay", 4015, false);
             var movieIdentifier = layer.LoadMovie(movieName, _dataSource);
             layer.AutoAttachMovable(movieIdentifier?.Movie, "CardPanel", "TitleBar");
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
             _layer = layer;
+            _scope = new IllustrationScope(screen, category, Close);
 
             try
             {
@@ -44,20 +51,18 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         public static void ShowForEncyclopedia(Hero hero, Widget tableauWidget)
         {
-            if (hero == null) return;
+            IllustratorRuntime.AssertMainThread();
+            if (hero == null || !IllustratorRuntime.IsEnabled("encyclopedia")) return;
             ScreenBase topScreen = ScreenManager.TopScreen;
             if (topScreen == null) return;
 
             try
             {
-                // 【核心时序防遮挡】：在向屏幕挂载面板之前瞬间截取 3D 角色模型！
-                // 此时弹窗面板尚未加入 Screen 渲染管线，绝对 100% 无任何遮挡！
                 string preCapturedBase64 = ScreenCaptureHelper.CaptureWidgetBase64(tableauWidget, 768);
 
-                // 若配置开启了离屏渲染，触发引擎原生异步 TableauView 导出 (利用 GPU 渲染同步点落盘，绝不崩溃)
                 string offscreenTempDir = null;
                 string offscreenPrefix = null;
-                if (IllustratorSettings.Instance?.EnableOffscreenRendering == true)
+                if (IllustratorRuntime.CaptureOptions()?.EnableOffscreenRendering == true)
                 {
                     var view = ScreenCaptureHelper.ResolveTableauView(tableauWidget);
                     if (view != null)
@@ -67,11 +72,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
 
                 _activeInstance?.Close();
-                var popup = new IllustrationCardPopup(topScreen, "EncyclopediaIllustrationOverlay", () =>
+                var popup = new IllustrationCardPopup(topScreen, "EncyclopediaIllustrationOverlay", "encyclopedia", () =>
                 {
                     string redrawDir = null;
                     string redrawPrefix = null;
-                    if (IllustratorSettings.Instance?.EnableOffscreenRendering == true)
+                    if (IllustratorRuntime.CaptureOptions()?.EnableOffscreenRendering == true)
                     {
                         var view = ScreenCaptureHelper.ResolveTableauView(tableauWidget);
                         if (view != null)
@@ -88,18 +93,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _activeInstance = popup;
 
                 string key = $"Hero_{hero.StringId}";
-                var cached = DiskImageCacheManager.LoadImage(key);
-                if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0)
+                var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "encyclopedia");
+                if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
-                    string dynamicSpriteKey = $"{key}_{DateTime.UtcNow.Ticks}";
-                    GauntletTextureLoader.LoadOrRegisterPngBytes(key, cached.ImageData);
-                    GauntletTextureLoader.LoadOrRegisterPngBytes(dynamicSpriteKey, cached.ImageData);
-                    popup._dataSource.SetIllustration(key, dynamicSpriteKey, cached.Prompt);
-                    popup._dataSource.SetReady("已载入最新史诗纪事肖像");
+                    popup._dataSource.SetReady("已载入当前存档的默认纪事肖像");
                 }
                 else
                 {
-                    // 首次打开优先使用离屏渲染，平滑兜底视口裁切
                     popup.ExecuteEncyclopediaGeneration(hero, tableauWidget, preCapturedBase64, offscreenTempDir, offscreenPrefix);
                 }
             }
@@ -111,17 +111,17 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         public static void ShowForConversation(ConversationVisualContext convContext)
         {
-            if (convContext == null) return;
+            IllustratorRuntime.AssertMainThread();
+            if (convContext == null || !IllustratorRuntime.IsEnabled("conversation")) return;
             ScreenBase topScreen = ScreenManager.TopScreen;
             if (topScreen == null) return;
 
             try
             {
-                // 【核心时序防遮挡】：在挂载面板图层前瞬间抓取现场画面，确保零遮挡
                 string preCapturedBase64 = ScreenCaptureHelper.CaptureActiveWindowBase64(null, 768);
 
                 _activeInstance?.Close();
-                var popup = new IllustrationCardPopup(topScreen, "ConversationIllustrationOverlay", () =>
+                var popup = new IllustrationCardPopup(topScreen, "ConversationIllustrationOverlay", "conversation", () =>
                 {
                     _activeInstance?.ExecuteConversationGeneration(convContext, preCapturedBase64);
                 });
@@ -138,18 +138,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                 string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
                 string key = $"Conv_{partnerId}";
-                var cached = DiskImageCacheManager.LoadImage(key);
-                if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0)
+                var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "conversation");
+                if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
-                    string dynamicSpriteKey = $"{key}_{DateTime.UtcNow.Ticks}";
-                    GauntletTextureLoader.LoadOrRegisterPngBytes(key, cached.ImageData);
-                    GauntletTextureLoader.LoadOrRegisterPngBytes(dynamicSpriteKey, cached.ImageData);
-                    popup._dataSource.SetIllustration(key, dynamicSpriteKey, cached.Prompt);
-                    popup._dataSource.SetReady("已载入此前会晤纪事插画");
+                    popup._dataSource.SetReady("已载入当前存档的默认会晤插画");
                 }
                 else
                 {
-                    // 首次打开自动开始生成
                     popup.ExecuteConversationGeneration(convContext, preCapturedBase64);
                 }
             }
@@ -164,62 +159,48 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _dataSource.SetLoading("AI画师正在细致描摹人物面相骨相与专属构图...");
 
             string key = $"Hero_{hero.StringId}";
+            string heroName = hero.Name?.ToString() ?? "英雄";
 
-            // 百科立绘自动判定平民/学者装束
             bool useCivilian = hero.IsNotable || (hero.IsNoncombatant && !hero.IsPartyLeader) || (hero.IsWanderer && hero.PartyBelongedTo == null);
             HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, useCivilian: useCivilian);
 
             var sb = new StringBuilder();
-            sb.AppendLine($"=== 【史诗纪事肖像：{hero.Name}】 ===");
+            sb.AppendLine($"=== 【史诗纪事肖像：{heroName}】 ===");
             sb.AppendLine(GenerateDiversePoseDirective(hero));
             sb.AppendLine("【最高艺术准则】：必须严格还原人物真实面容骨相、胡须发型与尊贵地位，严格依据游戏内实际提取的所属文化风貌、真实穿戴装备（装备名称与材质）进行绘制，严禁张冠李戴！呈现大师级写实油画质感。");
             sb.AppendLine(profile.BuildSummary());
             string contextPrompt = sb.ToString();
+            var options = IllustratorRuntime.CaptureOptions();
 
-            Task.Run(async () =>
+            _scope.Run(async token =>
             {
-                try
+                string base64Image = null;
+                if (!string.IsNullOrEmpty(offscreenPrefix))
                 {
-                    string base64Image = null;
-
-                    // 1. 离屏优先：若配置开启并触发了引擎原生异步离屏渲染，等待 GPU 同步落盘出的纯净 3D 模型
-                    if (!string.IsNullOrEmpty(offscreenPrefix))
-                    {
-                        base64Image = await ScreenCaptureHelper.WaitForOffscreenFileAsync(offscreenTempDir, offscreenPrefix, timeoutMs: 400, maxDimension: 768).ConfigureAwait(false);
-                    }
-
-                    // 2. 兜底回退：若未开启离屏渲染或超时未产生，平滑使用无遮挡瞬间截取的画面
-                    if (string.IsNullOrWhiteSpace(base64Image))
-                    {
-                        base64Image = !string.IsNullOrWhiteSpace(preCapturedBase64)
-                            ? preCapturedBase64
-                            : ScreenCaptureHelper.CaptureWidgetBase64(tableauWidget, 768);
-                    }
-
-                    string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, base64Image).ConfigureAwait(false);
-                    var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, inputBase64Image: base64Image).ConfigureAwait(false);
-                    if (result.Success && result.ImageBytes != null)
-                    {
-                        DiskImageCacheManager.SaveImage(key, result.ImageBytes, detailedPrompt, $"{hero.Name} 纪事肖像", "encyclopedia");
-                        
-                        // 使用带时间戳的动态 Key 彻底解除 Gauntlet UI 同名缓存锁定，确保【重新绘制】立即刷新！
-                        string dynamicSpriteKey = $"{key}_{DateTime.UtcNow.Ticks}";
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(key, result.ImageBytes);
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(dynamicSpriteKey, result.ImageBytes);
-
-                        _dataSource.SetIllustration(key, dynamicSpriteKey, detailedPrompt);
-                        _dataSource.SetReady("纪事肖像绘制完成");
-                    }
-                    else
-                    {
-                        _dataSource.SetReady($"绘制失败: {result.ErrorMessage}");
-                    }
+                    base64Image = await ScreenCaptureHelper.WaitForOffscreenFileAsync(offscreenTempDir, offscreenPrefix, timeoutMs: 400, maxDimension: 768).ConfigureAwait(false);
                 }
-                catch (Exception ex)
+                if (string.IsNullOrWhiteSpace(base64Image)) base64Image = preCapturedBase64;
+
+                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, base64Image, options, token).ConfigureAwait(false);
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, base64Image, options, token).ConfigureAwait(false);
+                CachedIllustrationItem saved = null;
+                if (result.Success && result.ImageBytes != null)
                 {
-                    _dataSource.SetReady($"生成异常: {ex.Message}");
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, detailedPrompt, $"{heroName} 纪事肖像", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200);
                 }
-            });
+                return new GenerationCompletion(result, saved, detailedPrompt);
+            }, completion =>
+            {
+                if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
+                    PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
+                {
+                    _dataSource.SetReady("纪事肖像绘制完成");
+                }
+                else
+                {
+                    _dataSource.SetReady($"绘制失败: {completion.Result?.ErrorMessage ?? "未能保存图像"}");
+                }
+            }, error => _dataSource.SetReady($"生成异常: {error}"));
         }
 
         private static string GenerateDiversePoseDirective(Hero hero)
@@ -314,54 +295,87 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
             string key = $"Conv_{partnerId}";
-
-            // 离屏优先：优先使用在弹窗挂载前截取的无遮挡现场画面；若无则实时截取
-            string base64Image = !string.IsNullOrWhiteSpace(preCapturedBase64)
-                ? preCapturedBase64
-                : ScreenCaptureHelper.CaptureActiveWindowBase64(null, 768);
-
             string contextPrompt = convContext.BuildCompositeContext();
-
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                 ? convContext.InterlocutorHero.Name.ToString()
                 : (convContext.InterlocutorCharacter != null && convContext.InterlocutorCharacter.Name != null
                     ? convContext.InterlocutorCharacter.Name.ToString()
                     : "对方");
+            var options = IllustratorRuntime.CaptureOptions();
 
-            Task.Run(async () =>
+            _scope.Run(async token =>
             {
-                try
+                string base64Image = preCapturedBase64;
+                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, base64Image, options, token).ConfigureAwait(false);
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, base64Image, options, token).ConfigureAwait(false);
+                CachedIllustrationItem saved = null;
+                if (result.Success && result.ImageBytes != null)
                 {
-                    string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextPrompt, base64Image).ConfigureAwait(false);
-                    var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, inputBase64Image: base64Image).ConfigureAwait(false);
-                    if (result.Success && result.ImageBytes != null)
-                    {
-                        DiskImageCacheManager.SaveImage(key, result.ImageBytes, detailedPrompt, $"与 {partnerName} 的会晤纪事", "conversation");
-                        
-                        // 使用带时间戳的动态 Key 彻底解除 Gauntlet UI 同名缓存锁定
-                        string dynamicSpriteKey = $"{key}_{DateTime.UtcNow.Ticks}";
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(key, result.ImageBytes);
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(dynamicSpriteKey, result.ImageBytes);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, detailedPrompt, $"与 {partnerName} 的会晤纪事", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200);
+                }
+                return new GenerationCompletion(result, saved, detailedPrompt);
+            }, completion =>
+            {
+                if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
+                    PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
+                {
+                    _dataSource.SetReady("会晤插画绘制完成");
+                }
+                else
+                {
+                    _dataSource.SetReady($"绘制失败: {completion.Result?.ErrorMessage ?? "未能保存图像"}");
+                }
+            }, error => _dataSource.SetReady($"生成异常: {error}"));
+        }
 
-                        _dataSource.SetIllustration(key, dynamicSpriteKey, detailedPrompt);
-                        _dataSource.SetReady("会晤插画绘制完成");
-                    }
-                    else
-                    {
-                        _dataSource.SetReady($"绘制失败: {result.ErrorMessage}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _dataSource.SetReady($"生成异常: {ex.Message}");
-                }
-            });
+        private bool PublishImage(CachedIllustrationItem item)
+        {
+            return item != null && PublishImage(item, item.ImageData, item.Prompt);
+        }
+
+        private bool PublishImage(CachedIllustrationItem item, byte[] imageBytes, string prompt)
+        {
+            string spriteName = !string.IsNullOrWhiteSpace(item?.Key)
+                ? item.Key + "_" + _instanceId
+                : "Illustration_" + Guid.NewGuid().ToString("N");
+
+            ReleaseActiveSprite();
+            var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
+            if (sprite == null) return false;
+            _activeSpriteName = spriteName;
+            _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);
+            return true;
+        }
+
+        private void ReleaseActiveSprite()
+        {
+            if (string.IsNullOrWhiteSpace(_activeSpriteName)) return;
+            GauntletTextureLoader.ReleaseSprite(_activeSpriteName);
+            _activeSpriteName = null;
+        }
+
+        private sealed class GenerationCompletion
+        {
+            public readonly ImageGenerationResult Result;
+            public readonly CachedIllustrationItem SavedItem;
+            public readonly string Prompt;
+
+            public GenerationCompletion(ImageGenerationResult result, CachedIllustrationItem savedItem, string prompt)
+            {
+                Result = result;
+                SavedItem = savedItem;
+                Prompt = prompt;
+            }
         }
 
         public void Close()
         {
+            if (_closed) return;
+            _closed = true;
             try
             {
+                _scope?.Close();
+                ReleaseActiveSprite();
                 if (_screen != null && _layer != null)
                 {
                     _screen.RemoveLayer(_layer);

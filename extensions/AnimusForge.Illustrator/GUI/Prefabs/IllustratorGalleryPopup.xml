@@ -106,6 +106,21 @@
             <!-- 底部按钮区 -->
             <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="50" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="18" LayoutImp.LayoutMethod="HorizontalLeftToRight">
               <Children>
+                <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteCopyPrompt" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="复制提示词" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteSetDefault" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="设为默认" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="46" MarginRight="12" Brush="Popup.Cancel.Button" Command.Click="ExecuteDelete" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="删除" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="46" MarginRight="16" Brush="Popup.Done.Button" Command.Click="ExecuteOpenFolder" UpdateChildrenStates="true">
                   <Children>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="打开本地图片目录" DoNotAcceptEvents="true" />

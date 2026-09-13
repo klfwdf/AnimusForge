@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -26,6 +27,7 @@ namespace AnimusForge.Illustrator.UI.Patches
     {
         private const string ButtonId = "AnimusForgeHeroIllustrateButton";
         private static readonly ConditionalWeakTable<object, EncyclopediaHeroPageVM> RootDataSources = new ConditionalWeakTable<object, EncyclopediaHeroPageVM>();
+        private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
 
         public static void EnsurePatched(Harmony harmony)
@@ -140,14 +142,21 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void EnsureButton(object root)
         {
-            var settings = IllustratorSettings.Instance;
-            if (settings != null && !settings.EnableEncyclopediaIllustration)
+            var existing = GetExistingButton(root);
+            if (existing != null) TrackButton(existing);
+            if (!IllustratorRuntime.IsEnabled("encyclopedia"))
             {
+                if (existing != null) existing.IsVisible = false;
+                return;
+            }
+            if (existing != null)
+            {
+                existing.IsVisible = true;
                 return;
             }
 
             Widget parent = GetButtonParent(root);
-            if (parent == null || GetExistingButton(root) != null)
+            if (parent == null)
             {
                 return;
             }
@@ -175,6 +184,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 HandleIllustrateClicked(root);
             });
+            TrackButton(button);
 
             TextWidget textWidget = new TextWidget(parent.Context)
             {
@@ -205,8 +215,38 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
         }
 
+        private static void TrackButton(ButtonWidget button)
+        {
+            if (button == null) return;
+            for (int i = InjectedButtons.Count - 1; i >= 0; i--)
+            {
+                if (!InjectedButtons[i].TryGetTarget(out var existing) || ReferenceEquals(existing, button))
+                {
+                    if (ReferenceEquals(existing, button)) return;
+                    InjectedButtons.RemoveAt(i);
+                }
+            }
+            InjectedButtons.Add(new WeakReference<ButtonWidget>(button));
+        }
+
+        public static void RefreshInjectedButtons()
+        {
+            IllustratorRuntime.AssertMainThread();
+            bool visible = IllustratorRuntime.IsEnabled("encyclopedia");
+            for (int i = InjectedButtons.Count - 1; i >= 0; i--)
+            {
+                if (!InjectedButtons[i].TryGetTarget(out var button))
+                {
+                    InjectedButtons.RemoveAt(i);
+                    continue;
+                }
+                button.IsVisible = visible;
+            }
+        }
+
         private static void HandleIllustrateClicked(object root)
         {
+            if (!IllustratorRuntime.IsEnabled("encyclopedia")) return;
             EncyclopediaHeroPageVM vm = GetDataSource(root);
             Hero hero = ResolveHero(vm);
             if (hero == null)

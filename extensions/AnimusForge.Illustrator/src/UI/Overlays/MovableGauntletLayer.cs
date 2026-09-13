@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.GauntletUI.Data;
 using TaleWorlds.InputSystem;
@@ -12,6 +13,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private Widget _panelWidget;
         private Widget _dragHandleWidget;
         private bool _isDragging;
+        private bool _isResizing;
         private TaleWorlds.Library.Vec2 _lastMousePixel;
 
         public MovableGauntletLayer(string name, int localOrder, bool shouldClear = false)
@@ -79,6 +81,24 @@ namespace AnimusForge.Illustrator.UI.Overlays
             var input = base.Input;
             if (input == null) return;
 
+            if (_isResizing)
+            {
+                if (!input.IsKeyDown(InputKey.LeftMouseButton))
+                {
+                    _isResizing = false;
+                    return;
+                }
+
+                TaleWorlds.Library.Vec2 mousePixel = input.GetMousePositionPixel();
+                TaleWorlds.Library.Vec2 delta = mousePixel - _lastMousePixel;
+                _lastMousePixel = mousePixel;
+                float scale = UIContext?.ScaleModifier ?? 1f;
+                if (scale <= 0.001f) scale = 1f;
+                _panelWidget.SuggestedWidth = MathF.Clamp(_panelWidget.SuggestedWidth + delta.X / scale, 320f, 1600f);
+                _panelWidget.SuggestedHeight = MathF.Clamp(_panelWidget.SuggestedHeight + delta.Y / scale, 360f, 1100f);
+                return;
+            }
+
             if (_isDragging)
             {
                 if (!input.IsKeyDown(InputKey.LeftMouseButton))
@@ -102,12 +122,29 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
             else if (input.IsKeyPressed(InputKey.LeftMouseButton))
             {
-                if (CanStartDrag())
+                if (CanStartResize())
+                {
+                    _isResizing = true;
+                    _lastMousePixel = input.GetMousePositionPixel();
+                }
+                else if (CanStartDrag())
                 {
                     _isDragging = true;
                     _lastMousePixel = input.GetMousePositionPixel();
                 }
             }
+        }
+
+        private bool CanStartResize()
+        {
+            if (_panelWidget == null || UIContext?.EventManager == null) return false;
+            if (_panelWidget.WidthSizePolicy != SizePolicy.Fixed || _panelWidget.HeightSizePolicy != SizePolicy.Fixed) return false;
+            var mousePos = UIContext.EventManager.MousePosition;
+            var globalPos = _panelWidget.GlobalPosition;
+            var size = _panelWidget.Size;
+            const float resizeGrip = 24f;
+            return mousePos.X >= globalPos.X + size.X - resizeGrip && mousePos.X <= globalPos.X + size.X &&
+                   mousePos.Y >= globalPos.Y + size.Y - resizeGrip && mousePos.Y <= globalPos.Y + size.Y;
         }
 
         private bool CanStartDrag()

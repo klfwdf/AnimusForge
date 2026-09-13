@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.GauntletUI.Data;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Context;
@@ -139,9 +140,28 @@ namespace AnimusForge.Illustrator.UI.Patches
             ShowPrompt = !ShowPrompt;
         }
 
+        public void ExecuteCopyPrompt()
+        {
+            if (string.IsNullOrWhiteSpace(PromptText)) return;
+            try
+            {
+                Input.SetClipboardText(PromptText);
+                StatusText = "提示词已复制到剪贴板";
+            }
+            catch (Exception ex)
+            {
+                StatusText = "复制失败: " + ex.Message;
+            }
+        }
+
         public void ExecuteOpenGallery()
         {
             IllustratorGalleryPopup.Show();
+        }
+
+        public void ExecuteClose()
+        {
+            WeeklyReportPopupIllustrationPatch.CloseOverlay();
         }
     }
 
@@ -151,6 +171,10 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static WeeklyReportIllustrationOverlayVM _overlayVm;
         private static string _currentEventKey;
         private static WeeklyReportVisualContext _currentContext;
+        private static IllustrationScope _scope;
+        private static ScreenBase _ownerScreen;
+        private static string _activeSpriteName;
+        private static bool _closing;
 
         public static void Patch(Harmony harmony)
         {
@@ -190,8 +214,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 return;
             }
 
-            var settings = IllustratorSettings.Instance;
-            if (settings == null || !settings.EnableImageGeneration)
+            if (!IllustratorRuntime.IsEnabled())
             {
                 return;
             }
@@ -223,6 +246,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
 
             CloseOverlay();
+            _closing = false;
+            _ownerScreen = topScreen;
+            _scope = new IllustrationScope(topScreen, null, CloseOverlay);
 
             _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate);
             var layer = new MovableGauntletLayer("WeeklyReportIllustrationOverlay", 4010, false);
@@ -232,13 +258,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             _overlayLayer = layer;
             topScreen.AddLayer(_overlayLayer);
 
-            // 检查缓存
-            if (DiskImageCacheManager.TryGetCachedImage(_currentEventKey, out byte[] cachedBytes, out _))
+            var cached = DiskImageCacheManager.LoadImage(_currentEventKey, _scope.CampaignKey, "weekly_report");
+            if (cached != null && Publish(cached, cached.Prompt))
             {
-                GauntletTextureLoader.LoadOrRegisterPngBytes(_currentEventKey, cachedBytes);
-                _overlayVm.SpriteName = _currentEventKey;
-                _overlayVm.HasIllustration = true;
-                _overlayVm.IsLoading = false;
                 _overlayVm.StatusText = "【本周纪事油画】";
             }
             else if (IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration)
@@ -254,7 +276,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void TriggerRegenerate()
         {
-            if (_overlayVm == null || _currentContext == null)
+            if (_overlayVm == null || _currentContext == null || _scope == null)
             {
                 return;
             }
@@ -265,59 +287,87 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             string eventKey = _currentEventKey;
             var context = _currentContext;
+            string contextText = context.BuildCompositeContext();
+            var options = IllustratorRuntime.CaptureOptions();
+            string campaignKey = _scope.CampaignKey;
 
-            Task.Run(async () =>
+            _scope.Run(async token =>
             {
-                try
+                string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextText, null, options, token).ConfigureAwait(false);
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, null, options, token).ConfigureAwait(false);
+                CachedIllustrationItem saved = null;
+                if (result.Success && result.ImageBytes != null)
                 {
-                    string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(context.BuildCompositeContext());
-                    _overlayVm.PromptText = prompt;
-                    _overlayVm.StatusText = "AI 画师正在绘制中世纪古典油画...";
-
-                    var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt);
-                    if (result.Success && result.ImageBytes != null)
-                    {
-                        DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, prompt, context.Title, "weekly_report");
-                        string dynamicKey = $"{eventKey}_{DateTime.UtcNow.Ticks}";
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(eventKey, result.ImageBytes);
-                        GauntletTextureLoader.LoadOrRegisterPngBytes(dynamicKey, result.ImageBytes);
-
-                        _overlayVm.SpriteName = dynamicKey;
-                        _overlayVm.HasIllustration = true;
-                        _overlayVm.IsLoading = false;
-                        _overlayVm.StatusText = "【本周纪事油画已绘制完成】";
-                    }
-                    else
-                    {
-                        _overlayVm.IsLoading = false;
-                        _overlayVm.StatusText = "绘制未成功: " + result.ErrorMessage;
-                    }
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, prompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200);
                 }
-                catch (Exception ex)
+                return new { Result = result, Saved = saved, Prompt = prompt };
+            }, completion =>
+            {
+                _overlayVm.PromptText = completion.Prompt;
+                if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
+                {
+                    _overlayVm.StatusText = "【本周纪事油画已绘制完成】";
+                }
+                else
                 {
                     _overlayVm.IsLoading = false;
-                    _overlayVm.StatusText = "异常: " + ex.Message;
+                    _overlayVm.StatusText = "绘制未成功: " + (completion.Result?.ErrorMessage ?? "未能保存图像");
                 }
+            }, error =>
+            {
+                _overlayVm.IsLoading = false;
+                _overlayVm.StatusText = "异常: " + error;
             });
+        }
+
+        private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)
+        {
+            if (item == null && imageBytes == null) return false;
+            if (!string.IsNullOrEmpty(_activeSpriteName))
+            {
+                GauntletTextureLoader.ReleaseSprite(_activeSpriteName);
+                _activeSpriteName = null;
+            }
+            string spriteName = (item?.Key ?? "weekly_" + Guid.NewGuid().ToString("N")) + "_weekly";
+            var bytes = imageBytes ?? item.ImageData;
+            var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
+            if (sprite == null) return false;
+            _activeSpriteName = spriteName;
+            _overlayVm.SpriteName = spriteName;
+            _overlayVm.PromptText = prompt;
+            _overlayVm.HasIllustration = true;
+            _overlayVm.IsLoading = false;
+            return true;
         }
 
         public static void CloseOverlay()
         {
+            if (_closing) return;
+            _closing = true;
             try
             {
-                if (_overlayLayer != null)
+                _scope?.Close();
+                if (!string.IsNullOrEmpty(_activeSpriteName))
                 {
-                    ScreenBase topScreen = ScreenManager.TopScreen;
-                    if (topScreen != null)
-                    {
-                        topScreen.RemoveLayer(_overlayLayer);
-                    }
-                    _overlayLayer = null;
-                    _overlayVm = null;
+                    GauntletTextureLoader.ReleaseSprite(_activeSpriteName);
+                    _activeSpriteName = null;
+                }
+                if (_overlayLayer != null && _ownerScreen != null)
+                {
+                    _ownerScreen.RemoveLayer(_overlayLayer);
                 }
             }
             catch
             {
+            }
+            finally
+            {
+                _overlayLayer = null;
+                _overlayVm = null;
+                _currentContext = null;
+                _currentEventKey = null;
+                _scope = null;
+                _ownerScreen = null;
             }
         }
     }

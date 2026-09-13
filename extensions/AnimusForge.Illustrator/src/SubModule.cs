@@ -7,6 +7,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.UI.Gallery;
 using AnimusForge.Illustrator.UI.Patches;
 
@@ -23,6 +24,7 @@ namespace AnimusForge.Illustrator
 
             try
             {
+                IllustratorRuntime.Initialize();
                 _harmony = new Harmony("AnimusForge.Illustrator");
                 WeeklyReportPopupIllustrationPatch.Patch(_harmony);
                 EncyclopediaHeroIllustrationPatch.EnsurePatched(_harmony);
@@ -36,17 +38,30 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        protected override void OnSubModuleUnloaded()
+        protected override void OnApplicationTick(float dt)
         {
-            base.OnSubModuleUnloaded();
+            base.OnApplicationTick(dt);
             try
             {
-                _harmony?.UnpatchAll("AnimusForge.Illustrator");
-                WeeklyReportPopupIllustrationPatch.CloseOverlay();
+                if (IllustratorRuntime.IsMainThread) IllustratorRuntime.Tick();
             }
             catch
             {
             }
+        }
+
+        protected override void OnSubModuleUnloaded()
+        {
+            try
+            {
+                _harmony?.UnpatchAll("AnimusForge.Illustrator");
+                WeeklyReportPopupIllustrationPatch.CloseOverlay();
+                IllustratorRuntime.Shutdown();
+            }
+            catch
+            {
+            }
+            base.OnSubModuleUnloaded();
         }
 
         protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
@@ -74,7 +89,7 @@ namespace AnimusForge.Illustrator
         {
             try
             {
-                // 在大地图营地菜单 (Camp Menu) 增加一个画廊浏览入口
+                IllustratorRuntime.SetCampaign(Campaign.Current?.UniqueGameId ?? "unknown_campaign");
                 starter.AddGameMenuOption(
                     "camp",
                     "af_illustrator_gallery",
@@ -82,7 +97,7 @@ namespace AnimusForge.Illustrator
                     args =>
                     {
                         args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
-                        return IllustratorSettings.Instance?.EnableImageGeneration ?? true;
+                        return IllustratorRuntime.IsEnabled();
                     },
                     args =>
                     {

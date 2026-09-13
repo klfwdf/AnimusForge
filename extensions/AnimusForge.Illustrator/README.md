@@ -44,23 +44,29 @@
 ## 二、 安装与部署指南
 
 ### 1. 运行依赖
-- 《Mount & Blade II: Bannerlord》（支持 v1.2.x、v1.3.x、v1.4.x）
+- 《Mount & Blade II: Bannerlord》v1.3.x / v1.4.x（本仓库已分别验证 `BannerlordApi=1.3` 与 `BannerlordApi=1.4` 编译；其他版本需另行实测）
 - `Bannerlord.Harmony` (v2.2.2+)
 - `Bannerlord.MCM` (Mod Configuration Menu v5+)
 - `AnimusForge` (本体模组)
 
-### 2. 手动安装或热部署
-- **源码编译**：
-  在项目根目录执行：
-  ```bash
-  dotnet build extensions/AnimusForge.Illustrator/src/AnimusForge.Illustrator.csproj -c Release
-  ```
-- **一键自动化部署**：
-  在 PowerShell 中运行本模组专用的部署脚本：
+### 2. 构建、校验与热部署
+- **1.4 构建**：
   ```powershell
-  .\tools\deploy_illustrator.ps1
+  dotnet build extensions/AnimusForge.Illustrator/src/AnimusForge.Illustrator.csproj -c Release -p:BannerlordApi=1.4
   ```
-  该脚本会自动编译并精准热覆盖至游戏 `Modules/AnimusForge_Illustrator/bin/Win64_Shipping_Client/` 目录。
+- **1.3 兼容性构建**（使用固定的 `Bannerlord.ReferenceAssemblies 1.3.15.110062`）：
+  ```powershell
+  dotnet build extensions/AnimusForge.Illustrator/src/AnimusForge.Illustrator.csproj -c Release -p:BannerlordApi=1.3
+  ```
+- **只校验、不部署**：
+  ```powershell
+  .\tools\deploy_illustrator.ps1 -ValidateOnly -BannerlordApi 1.4
+  ```
+- **显式部署到当前游戏目录**（会先编译、校验模块清单和 prefab，并备份目标模块已有文件）：
+  ```powershell
+  .\tools\deploy_illustrator.ps1 -BannerlordApi auto
+  ```
+  输出位置为 `Modules/AnimusForge_Illustrator/`；该脚本不会复制 TaleWorlds、Harmony、MCM 或 AnimusForge 本体 DLL。
 
 ---
 
@@ -129,9 +135,10 @@
 ### 1. 英雄百科页面（人物专属立绘肖像）
 - 打开游戏内百科（快捷键 `N`），点击任意一位英雄（如伊拉、拉盖娅、阿萨利格等）。
 - 页面右上角会出现 **【查看立绘】 / 【生成立绘】** 按钮。
-- 点击后弹出一个可随意拖动位置的精致卡片：
-  - 实时显示根据该角色当前身上穿戴装备、家族色彩与外貌生成的油画肖像；
-  - 底部提供 **【重新绘制】**（重新调用 AI 生成不同姿态与构图）、**【查看提示词】**、**【保存为默认立绘】** 与 **【关闭】**。
+- 点击后弹出一个可拖动、可从右下角缩放的精致卡片：
+  - 实时显示当前存档缓存中的默认肖像；没有缓存时才发起新的 AI 生成；
+  - 底部提供 **【重新绘制】**、**【提示词】**、**【复制】**、**【纪事画廊】** 与 **【关闭】**；
+  - 在画廊中选择任一历史版本并点击 **【设为默认】**，之后百科卡片会优先显示该版本。
 
 ### 2. 现场面对面对话（场景会晤插画）
 - 在场景中与领主交谈、大地图遭遇谈判、或在地牢会面时，界面右上角会出现 **【场景插画】** 按钮。
@@ -146,7 +153,7 @@
 
 ### 4. 卡拉迪亚纪事画廊（大地图营地菜单）
 - 点击大地图左下角菜单：`营地 (Camp) -> 卡拉迪亚纪事画廊 (AI 画卷)`。
-- 可集中浏览、管理、全屏欣赏所有已经生成的历史立绘与事件纪事插画。
+- 可集中浏览当前存档已经生成的历史立绘与事件纪事插画，支持按条目查看提示词、复制、设为同分类默认图、删除到本地回收区以及打开缓存目录。
 
 ---
 
@@ -201,7 +208,7 @@ DirectX BGRA -> 标准 RGBA 通道反转              │
 - **检查 Base URL**：如果使用的是硅基流动，确保填写的是 `https://api.siliconflow.cn/v1`；不要遗漏最后的 `/v1`。
 
 ### Q2: 提示词是否支持查看和手动调试？
-- 在百科或对话弹出的立绘卡片上，点击 **【查看提示词】** 按钮，可以直接复制大模型生成的中文 Prompt，你可以将其复制到 Web 端 Midjourney、WebUI 或 ComfyUI 中直接出图。
+- 在百科、对话或周报弹出的立绘卡片上，点击 **【提示词】** 展开内容，再点击 **【复制】** 即可复制当前 Prompt；画廊详情区也提供 **【复制提示词】**。
 
 ### Q3: 为什么第一次生成时需要等待几秒钟？
 - 系统包含两段异步请求：
@@ -210,6 +217,8 @@ DirectX BGRA -> 标准 RGBA 通道反转              │
 - 全流程均在后台线程异步执行，游戏主线程绝不卡死、绝不掉帧。生成过的图片会自动落盘到本地缓存，二次查看秒开。
 
 ### Q4: 生成的图片保存在哪里？
-- 保存在用户的本地文档目录下：
-  `此电脑\文档\Mount and Blade II Bannerlord\Configs\AnimusForge\Illustrations\`
-  所有图片均为无损 PNG / 高清 JPG 格式，方便随时导出分享。
+- 保存在用户的本地文档目录下，并按当前存档隔离：
+  `此电脑\文档\Mount and Blade II Bannerlord\AnimusForge\IllustratorCache\<存档标识>\<分类>\`
+- 删除的条目会先移动到：
+  `此电脑\文档\Mount and Blade II Bannerlord\AnimusForge\IllustratorCache\_trash\<存档标识>\`
+- 每张 PNG 都有同名 JSON 元数据（主题、分类、提示词、默认状态和创建时间），不会跨存档命中旧图。

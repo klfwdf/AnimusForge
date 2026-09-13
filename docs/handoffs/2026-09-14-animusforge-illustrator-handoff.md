@@ -1,184 +1,260 @@
-# AnimusForge.Illustrator — 技术架构与研发交接文档 (HANDOFF)
+# AnimusForge.Illustrator — 技术架构与维修交接文档 (HANDOFF)
 
-> **创建日期**：2026-09-14  
-> **当前活动分支**：`codex/af-main-refactor-continuation-20260831`  
-> **所属子模块**：`extensions/AnimusForge.Illustrator`  
-> **部署输出目录**：`F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge_Illustrator\bin\Win64_Shipping_Client\`  
-> **模块程序集**：`AnimusForge.Illustrator.dll`  
-> **编译与部署验证**：`dotnet build` 成功（0 Error, 0 Critical Warning），一键部署脚本 `tools/deploy_illustrator.ps1` 校验通过。
+> **更新日期**：2026-09-14
+> **活动分支**：`codex/af-main-refactor-continuation-20260831`
+> **维修前检查点**：`02b4c5b3 chore: checkpoint Illustrator before lifecycle and fidelity repairs`
+> **子模块源码**：`extensions/AnimusForge.Illustrator`
+> **目标模块 ID**：`AnimusForge_Illustrator`
+> **目标程序集**：`AnimusForge.Illustrator.dll`
+> **本机游戏**：Native `v1.4.8`（changeset `119303`）
+> **本轮状态**：源码已完成生命周期、缓存身份、UI 管理、提示词保真与双版本编译修复；尚未部署到游戏目录，未做真实客户端运行验收。
 
 ---
 
-## 1. 架构定位与交付范围 (Scope & Responsibilities)
+## 1. 当前架构边界
 
-`AnimusForge.Illustrator` 是 AnimusForge 模组生态下的 AI 视觉插画子模组。其核心职责是将《骑马与砍杀2：霸主》游戏底层全量上下文数据（英雄身份传记、FaceGen 骨相、文化风貌、家族纹章识别色、槽位装备、战场围城环境）与前沿多模态视觉大模型、生成式绘图模型（OpenAI 兼容端点 / FLUX / DALL-E / Gemini）桥接，实现游戏内四大场景（**英雄百科专属肖像**、**现场面对面会晤插画**、**每周国家周报纪事大事件画卷**、**大地图营地纪事画廊**）的实时生成、本地持久化与可拖拽 UI 渲染展示。
+`AnimusForge.Illustrator` 是独立 Bannerlord 子模块，不属于统一 `AnimusForge` Bootstrap 版本装载链。它通过 `SubModule.xml` 直接加载 `AnimusForge.Illustrator.dll`，并依赖已安装的 `AnimusForge` 主模块提供 MCM/正文 API 配置桥接。
 
-### 架构依赖图
+### 线程与生命周期边界
+
 ```text
-Bannerlord 引擎层 (DirectX 11 / TableauView / FaceGen / Mission)
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 AnimusForge.Illustrator                     │
-├─────────────────────────────────────────────────────────────┤
-│ 1. Engine 渲染层:                                           │
-│    - ScreenCaptureHelper (TableauView 离屏 GPU 导出)        │
-│    - SwapRedAndBlueInBitmap (DirectX BGRA 通道翻转校准)       │
-│    - GauntletTextureLoader (动态 Sprite / EngineTexture 装载)│
-│    - DiskImageCacheManager (本地文件与元数据持久化/清理)    │
-├─────────────────────────────────────────────────────────────┤
-│ 2. Context 上下文提取层 (全量动态无硬编码):                │
-│    - HeroVisualExtractor (传记/特质/专长/发型发色/装备/HSV)  │
-│    - EnvironmentVisualExtractor (空间/守备/道具/围城/天候)  │
-│    - ConversationContextExtractor (对话双方/情景)          │
-│    - WeeklyReportContextExtractor (周报重大历史头条)        │
-├─────────────────────────────────────────────────────────────┤
-│ 3. Core 核心总监与通信层:                                   │
-│    - VisualDirectorEngine (纯中文提示词系统 / 多模态降级 /   │
-│                           自动复用 AF 正文 API / 规则导演)   │
-│    - UniversalOpenAiImageClient (兼容生图客户端 / 异步防卡死)│
-├─────────────────────────────────────────────────────────────┤
-│ 4. UI 视窗与 Patch 注入层:                                  │
-│    - MovableGauntletLayer (可拖拽/可缩放独立视窗图层)       │
-│    - IllustrationCardPopup / IllustrationCardVM (肖像卡片)  │
-│    - IllustratorGalleryPopup / VM (纪事画廊)                │
-│    - EncyclopediaHeroIllustrationPatch (百科按钮注入)       │
-│    - ConversationIllustrationPatch (对话按钮注入)           │
-│    - WeeklyReportPopupIllustrationPatch (周报覆层注入)      │
-└─────────────────────────────────────────────────────────────┘
+游戏主线程（唯一允许触碰 Bannerlord / Gauntlet 对象）
+  ├─ 冻结 Hero / Campaign / Screen / Settings / UI 上下文
+  ├─ 创建、注册、替换、释放 Texture 与 Sprite
+  ├─ 更新 ViewModel、挂载/移除 Gauntlet Layer
+  ├─ 检查 Campaign、Screen、Scope revision、CancellationToken
+  └─ 每帧最多提交 2 个完成回调，待处理队列上限 32
+
+后台线程
+  ├─ HTTP / 图片 URL 下载
+  ├─ 提示词 LLM 扩写与 JSON 解析
+  ├─ PNG 字节读写、磁盘缓存保存与回收
+  └─ 不直接创建纹理、不直接写 UIResourceManager、不直接改 ViewModel
 ```
 
----
+核心实现：
 
-## 2. 核心源码坐标与职责核实表 (Verified Code Locations & Symbols)
-
-所有源码路径均相对于仓库根目录 `f:/AnimusForge-main/`，行号均为 1-indexed 实测准确坐标：
-
-| 仓库相对路径 | 行号范围 | 核心类 / 方法符号 | 核心职责与设计决策 |
-| :--- | :--- | :--- | :--- |
-| `extensions/AnimusForge.Illustrator/src/SubModule.cs` | 15-60 | `SubModule.OnSubModuleLoad` | 模块入口初始化，集中挂载百科、对话与周报 Harmony Patch；优雅卸载清理 |
-| `extensions/AnimusForge.Illustrator/src/SubModule.cs` | 62-101 | `IllustratorCampaignBehavior.OnSessionLaunched` | 在大地图营地菜单 (`camp`) 注册“卡拉迪亚纪事画廊”入口 |
-| `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs` | 18-180 | `IllustratorSettings` (MCM) | MCM 配置面板（端点 Base URL、API Key、模型名、分辨率尺寸、多模态开关、离屏开关、色道修正） |
-| `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs` | 252-397 | `FetchModelsAsync` | 异步向服务商发起 `GET /models`，自动解析并筛选出图像与绘画模型列表至下拉选单 |
-| `extensions/AnimusForge.Illustrator/src/Engine/ScreenCaptureHelper.cs` | 333-408 | `WaitForOffscreenFileAsync` | 后台异步等待引擎 GPU 渲染落盘 PNG 文件，超时平滑回退，安全无崩 |
-| `extensions/AnimusForge.Illustrator/src/Engine/ScreenCaptureHelper.cs` | 762-792 | `SwapRedAndBlueInBitmap` | **核心修复**：内存级遍历互换红蓝字节（BGRA -> RGBA），杜绝阿凡达蓝皮与黄色变蓝 |
-| `extensions/AnimusForge.Illustrator/src/Engine/ScreenCaptureHelper.cs` | 543-595 | `ConvertEngineTextureToBase64` | 优先通过 `engineTexture.SaveToFile` 显卡导出，回退到 256 字节对齐的安全缓冲区 |
-| `extensions/AnimusForge.Illustrator/src/Context/HeroVisualExtractor.cs` | 90-155 | `HeroVisualExtractor.Extract` | 角色全量信息抽取总入口（文化、地位、传记、特质、技能、发型发色、肤色、装备、坐骑） |
-| `extensions/AnimusForge.Illustrator/src/Context/HeroVisualExtractor.cs` | 575-670 | `ExtractPhysicalFeatures` | 从 `MBBodyProperties` 动态提取 FaceGen 发型索引、梯度发色、岁月斑白痕迹与真实肉色肤质 |
-| `extensions/AnimusForge.Illustrator/src/Context/HeroVisualExtractor.cs` | 1010-1073| `ResolveColorName` | HSV 色相判定算法，将家族 16 进制识别色转为精准中文（丁香淡紫、辉煌灿金等） |
-| `extensions/AnimusForge.Illustrator/src/Context/EnvironmentVisualExtractor.cs` | 68-130 | `EnvironmentVisualExtractor.Extract` | 场景全维感知（建筑风格、地形地貌、时令天候、时辰光影、周围 NPC 数量与职业） |
-| `extensions/AnimusForge.Illustrator/src/Context/EnvironmentVisualExtractor.cs` | 477-493 | `ResolveConflictStatus` | 围城/洗劫/盛世状态动态感知，将战场危急战况注入插画提示词 |
-| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs` | 18-43 | `SystemPrompt` | 顶级艺术总监纯中文系统提示词，强制要求全中文、文化保真、配色铁律、健康肉色皮肤 |
-| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs` | 120-174 | `TryGetHostPrimaryChatConfig` | 核心反射桥接：全自动免密复用 AnimusForge 本体的主力正文对话 API 配置 |
-| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs` | 176-264 | `CallLlmDirectorAsync` | 多模态提示词扩写请求；遇非 200 或不支持视觉时自动平滑回退为纯文本重试 |
-| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs` | 280-373 | `SynthesizeRuleBasedPrompt` | 离线纯中文规则导演组装器（无网或无 LLM 时的顶级古典写实油画保底组装） |
-| `extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs` | 39-126 | `GenerateImageAsync` | OpenAI 生图客户端总调度，支持智能协议自适应（`/images/generations` 与 `/chat/completions`） |
-| `extensions/AnimusForge.Illustrator/src/Engine/DiskImageCacheManager.cs` | 45-160 | `TryGetCachedImage` / `SaveImage` | 本地磁盘缓存读写（图片 + JSON 元数据），LRU 淘汰控制与最大数量限制 |
-| `extensions/AnimusForge.Illustrator/src/Engine/GauntletTextureLoader.cs` | 44-100 | `LoadOrRegisterPngBytes` | 内存中无缝创建 `EngineTexture` 与 `BannerlordUiSprite` 供 Gauntlet 实时渲染 |
-| `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs` | 45-120 | `ShowForEncyclopedia` | 百科肖像弹窗拉起：**核心时序防遮挡**（挂载图层前瞬间提取 3D 模型），异步调度出图 |
-| `extensions/AnimusForge.Illustrator/src/UI/Overlays/MovableGauntletLayer.cs` | 15-85 | `MovableGauntletLayer` | 支持鼠标自由拖动标题栏移动、动态缩放的独立 Gauntlet UI 浮层容器 |
-| `extensions/AnimusForge.Illustrator/src/UI/Patches/EncyclopediaHeroIllustrationPatch.cs` | 31-71 | `EnsurePatched` | 遵循百科案例，通过 `GauntletMovie.Load` 挂钩真 root，拦截 `EncyclopediaData.OnTick` 防热键冲突 |
+- `src/Core/IllustratorRuntime.cs:53-183`：`IllustratorRuntime` 捕获主线程 ID，提供 `AssertMainThread`、`CaptureOptions`、`Post`、`Start<T>` 与 worker/completion 限流。
+- `src/Core/IllustratorRuntime.cs:186-258`：`IllustrationScope` 记录 Campaign、TopScreen、CampaignKey、类别、request revision 与取消令牌；窗口关闭、切屏或换档后，旧结果会被拒绝。
 
 ---
 
-## 3. 关键技术突破与底层细节剖析
+## 2. 已核实源码坐标
 
-### 3.1 DirectX 11 与 Gauntlet UI 出入双向色彩通道校准 (彻底根治偏色与蓝皮)
-在骑砍 2 与生成式 AI 的数据交互链路中，存在**两处方向相反但同等致命的色彩通道翻转点**：
+所有路径均相对 `F:\AnimusForge-main`，行号为当前工作区 1-indexed 坐标。
 
-1. **出方向（游戏 3D 导出 -> 视觉 AI 垫图）：**
-   - **机理**：`TableauView` 导出显卡 RenderTarget 离屏图像时，DirectX 11 原始缓冲区为 BGRA 排列。若不处理直接发给大模型，金黄色（高 R 高 G 低 B）会变成青蓝色（低 R 高 G 高 B）。视觉模型“眼见为实”，会在提示词中写出诸如 `"cobalt-blue silk trim"` 与蓝鹰盾牌。
-   - **修复**：在 [`ScreenCaptureHelper.cs:762-792`](file:///f:/AnimusForge-main/extensions/AnimusForge.Illustrator/src/Engine/ScreenCaptureHelper.cs#L762-L792) 中执行 `SwapRedAndBlueInBitmap`（BGRA -> RGBA），恢复真实金色与健康肉色，使 Vision LLM 识别出精准色彩。
+| 路径 | 行号 | 符号 | 当前职责 |
+| :--- | ---: | :--- | :--- |
+| `extensions/AnimusForge.Illustrator/src/SubModule.cs` | 21-74 | `SubModule` | 初始化运行时、挂载周报/百科/对话 Patch、每帧提交完成回调、卸载时清理 |
+| `extensions/AnimusForge.Illustrator/src/SubModule.cs` | 77-115 | `IllustratorCampaignBehavior` | `OnSessionLaunched` 中设置 `Campaign.Current.UniqueGameId` 并注册营地画廊入口 |
+| `src/Settings/IllustratorSettings.cs` | 39-207 | MCM 开关 | 总开关、多模态、离屏渲染、百科/对话入口与缓存上限 |
+| `src/Settings/IllustratorSettings.cs` | 215-222 | `QueueInjectedButtonRefresh` | 设置变更通过主线程队列刷新已注入按钮显隐 |
+| `src/Settings/IllustratorSettings.cs` | 328-483 | `RequestModelListFetch` / `FetchModelListAsync` / `ApplyFetchedModels` | 主线程发起模型拉取；后台只做 HTTP 与模型缓存；结果回主线程更新 Dropdown/MCM |
+| `src/Engine/ScreenCaptureHelper.cs` | 56-126 | `CaptureActiveWindowBase64` | 只允许截取当前进程前台窗口，非本进程窗口直接返回 `null` |
+| `src/Engine/ScreenCaptureHelper.cs` | 295-418 | `TriggerTableauViewSave` / `WaitForOffscreenFileAsync` | 主线程触发 Tableau 落盘；后台等待并读取临时 PNG |
+| `src/Engine/ScreenCaptureHelper.cs` | 772-804 | `SwapRedAndBlueInBitmap` | 对离屏导出位图执行 R/B 通道互换 |
+| `src/Engine/GauntletTextureLoader.cs` | 22-150 | 动态 Sprite 注册/释放 | 所有访问均断言主线程；同名动态 Sprite 会先释放旧纹理；关闭/换档可全局释放 |
+| `src/Engine/GauntletTextureLoader.cs` | 198-224 | `RuntimeIllustrationSprite` | 持有并释放底层 `PlatformTexture` |
+| `src/Engine/DiskImageCacheManager.cs` | 64-120 | campaign/category 路径与加载 | 按 `IllustratorCache/<campaign>/<category>` 查找，不回退到其他存档 |
+| `src/Engine/DiskImageCacheManager.cs` | 122-155 | `SaveImage` | 保存 PNG + 同名 JSON 元数据，并按当前存档执行数量上限 |
+| `src/Engine/DiskImageCacheManager.cs` | 167-214 | `GetAllCachedIllustrations` | 显式刷新当前存档缓存；支持无元数据 PNG 兜底；结果缓存按 CampaignKey 隔离 |
+| `src/Engine/DiskImageCacheManager.cs` | 232-249 | `SetDefault` | 同一 `SubjectKey + Category` 内设置默认图，不跨分类覆盖 |
+| `src/Engine/DiskImageCacheManager.cs` | 252-291 | `DeleteItem` / `EnforceLimit` | 删除移入 `_trash/<campaign>`；超限先回收非默认旧图，仍超限才回收默认图 |
+| `src/Context/HeroVisualExtractor.cs` | 90-157 | `HeroVisualExtractor.Extract` | 冻结角色身份、文化、年龄、家族、传记、特质、技能、装备与坐骑事实 |
+| `src/Context/ConversationContextExtractor.cs` | 71-299 | `ExtractFromCurrentConversation` | 冻结对话双方、当前语句、围城/敌对状态、坐骑站位与环境 |
+| `src/Context/WeeklyReportContextExtractor.cs` | 74-104 | `ExtractFromWeeklyReport` | 从周报标题/副标题/正文提取事件主题、事件地与主角档案 |
+| `src/Core/VisualDirectorEngine.cs` | 51-85 | `ExpandToDetailedPromptAsync` | 优先 LLM/多模态扩写，失败时走规则保底 |
+| `src/Core/VisualDirectorEngine.cs` | 286-378 | `SynthesizeRuleBasedPrompt` | 不再输出泛化模板，末尾强制保留完整游戏上下文事实 |
+| `src/Core/UniversalOpenAiImageClient.cs` | 39-128 | `GenerateImageAsync` | 生图请求与 `/chat/completions` 自动回退；请求带取消令牌 |
+| `src/Core/UniversalOpenAiImageClient.cs` | 446-461 | `DownloadImageBytesAsync` | 图片 URL 下载遵循请求取消令牌 |
+| `src/UI/Overlays/IllustrationCardPopup.cs` | 52-155 | 百科/对话弹窗入口 | 主线程截图与上下文冻结；先查当前存档默认缓存，未命中才生成 |
+| `src/UI/Overlays/IllustrationCardPopup.cs` | 157-328 | 生图请求 | 背景任务只生成与保存；完成回调在主线程发布纹理和 VM 状态 |
+| `src/UI/Overlays/IllustrationCardPopup.cs` | 331-395 | `PublishImage` / `Close` | 替换前释放旧 Sprite；关闭时取消 scope、释放纹理、移除 layer、清空活动实例 |
+| `src/UI/Overlays/MovableGauntletLayer.cs` | 61-182 | 拖动/缩放 Tick | 标题栏拖动、右下角缩放、UI scale 感知鼠标位移 |
+| `src/UI/Gallery/IllustratorGalleryPopup.cs` | 42-92 | 画廊窗口生命周期 | 注册 scope、延迟加载预览、关闭时释放纹理并移除 layer |
+| `src/UI/Gallery/IllustratorGalleryPopupVM.cs` | 178-229 | 列表与预览 | 显式刷新当前存档条目，选择时才读取文件并注册预览纹理 |
+| `src/UI/Gallery/IllustratorGalleryPopupVM.cs` | 260-318 | 管理操作 | 复制提示词、设为默认、删除到回收区、打开缓存目录、关闭 |
+| `src/UI/Patches/EncyclopediaHeroIllustrationPatch.cs` | 143-259 | 百科按钮 | `GauntletMovie.Load` 捕获真实 root；开关关闭时隐藏按钮；点击后走主线程弹窗 |
+| `src/UI/Patches/ConversationIllustrationPatch.cs` | 73-230 | 对话按钮 | 注入 AnimusForge overlay 与原版 Map/MissionConversation fallback，支持热刷新显隐 |
+| `src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs` | 210-320 | 周报覆层 | 冻结当前周报事件与 VM；后台请求完成后只在同一 scope/revision 下发布 |
+| `src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs` | 323-372 | 周报纹理与关闭 | 替换/关闭时释放动态 Sprite，清空静态 VM/context 引用 |
+| `src/AnimusForge.Illustrator.csproj` | 17-40 | API 选择 | `BannerlordApi=1.3` 使用固定 1.3.15 reference assemblies；`1.4` 使用当前游戏安装 |
+| `src/AnimusForge.Illustrator.csproj` | 66-164 | 引用路由 | Core/Native/SandBox 引用分别路由，避免 1.3/1.4 DLL 混用 |
+| `tools/test_illustrator.ps1` | 1-119 | 离线回归 | 双 API 编译、提示词事实回归、XML、prefab command 绑定与反射依赖解析 |
+| `tools/deploy_illustrator.ps1` | 1-153 | 部署/校验 | `-ValidateOnly`、`-BannerlordApi auto|1.3|1.4`、manifest/prefab/依赖边界校验、部署前备份 |
 
-2. **进方向（AI 生成 PNG -> 游戏 Gauntlet UI 渲染）：**
-   - **机理**：AI 生成的图片与本地缓存是标准 RGBA PNG（在磁盘上肉眼查看绝对正常，如俄洛斯在磁盘上为真实小麦色皮肤、暖橙色火盆）。然而，Bannerlord 原生 `Texture.CreateFromMemory` 装载进显存后，Gauntlet UI 的材质着色器（Material Shader）默认以 BGRA 顺序采样动态贴图。若直接渲染，屏幕上的红蓝将再次对调，导致人物在游戏 UI 中呈现阿凡达般的“蓝皮”与“蓝火”。
-   - **修复**：在 [`GauntletTextureLoader.cs:57-61`](file:///f:/AnimusForge-main/extensions/AnimusForge.Illustrator/src/Engine/GauntletTextureLoader.cs#L57-L61) 中将 `FixColorChannels` 默认设为永久开启（`shouldFixColors = true`），通过 `SwapRedAndBlueInPng` 在向显卡提交纹理前执行预置置换，与 Gauntlet 着色器的对调相互抵消，实现在游戏 UI 中 100% 还原真实血色肉色与金华战袍。
+---
 
-```csharp
-// 内存级快速通道翻转核心代码 (指针操作，0 GC 内存分配)
-var bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-unsafe {
-    byte* ptr = (byte*)bmpData.Scan0.ToPointer();
-    int totalBytes = bmpData.Stride * bmp.Height;
-    for (int i = 0; i < totalBytes; i += 4) {
-        byte temp = ptr[i];      // B
-        ptr[i] = ptr[i + 2];     // R -> B
-        ptr[i + 2] = temp;       // B -> R
-    }
-}
-bmp.UnlockBits(bmpData);
+## 3. 本地缓存契约
+
+实际缓存根目录：
+
+```text
+Documents\Mount and Blade II Bannerlord\AnimusForge\IllustratorCache
 ```
 
-### 3.2 3D TableauView 离屏渲染异步安全落盘管线
-- **时序与防遮挡设计**：
-  在用户点击百科右上角按钮时，若弹窗先被挂载到 `ScreenManager.TopScreen`，弹窗自身的 UI 面板就会挡住背景中的 3D 人物模型。
-  [`IllustrationCardPopup.cs:53-67`](file:///f:/AnimusForge-main/extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs#L53-L67) 采用严格的前置时序控制：
-  1. 在 `AddLayer` 之前的一瞬间，先从 `TableauWidget` 触发 `TriggerTableauViewSave` 并抓取备用视口缓冲；
-  2. 后台开启异步线程等待文件落盘（25ms 轮询，上限 450ms）；
-  3. 拿到干净 PNG 字节后立即将临时文件删除，并执行 `SwapRedAndBlueInBitmap` 校准；
-  4. 绝不在主线程发生同步阻塞等待，游戏帧率丝毫不受影响。
+目录结构：
 
-### 3.3 全量游戏视觉特征感知（零死板硬编码）
-- **绝不依靠硬编码**：
-  `HeroVisualExtractor` 动态读取 `hero.Culture.EncyclopediaText`、`hero.Clan.EncyclopediaText` 以及 `hero.EncyclopediaText`。因此无论是原生卡拉迪亚文化，还是东方日韩、西欧中世纪、指环王中土等大型 MOD，都能**100% 自动兼容其独特的文化建筑、装备与风土人情**。
-- **FaceGen 骨相参数提取**：
-  直接反射原生 `MBBodyProperties.GetParamsFromKey` 与 `MBBodyProperties.GetHairColorGradientPoints`，将年龄、发型、胡须类型与肤色微血管光泽解析为文学级描摹。
-
-### 3.4 提示词系统双引擎与自动配置桥接
-- **自动免密复用本体配置**：
-  玩家在安装并配置好 AnimusForge 本体的聊天 API 后，`AnimusForge.Illustrator` 依靠 [`VisualDirectorEngine.cs:120-174`](file:///f:/AnimusForge-main/extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs#L120-L174) 的无入侵反射，直接提取 `DuelSettings.GetSettings()` 中的 URL、Key 与主力模型，**无需玩家重复输入二次 API 鉴权信息**。
-- **离线规则智能导演（保底机制）**：
-  即便大模型服务不可用，离线引擎 [`VisualDirectorEngine.cs:280-373`](file:///f:/AnimusForge-main/extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs#L280-L373) 依然能把英雄的真实装备材质、文化背景、身处环境组合成大师级的古典写实油画提示词。
-
----
-
-## 4. 覆盖范围与未覆盖责任边界 (Coverage & Boundaries)
-
-### 已完全覆盖并验证 (Covered)
-1. **百科全书（EncyclopediaHeroPage）**：动态注入立绘按钮、离屏截取、UI 展示、重绘、提示词复制；遵循百科防热键冲突规范。
-2. **场景会晤与大地图对话（Conversation）**：对话现场环境感知、双方站位与氛围提取、场景插画卡片浮层。
-3. **周报纪事大事件（WeeklyReport）**：提取重大国家头条事件，自动生成史诗级纪事插画并嵌入周报。
-4. **大地图营地画廊（Gallery）**：大地图营地菜单常驻入口，分类瀑布流查看、设为默认、删除管理。
-5. **DirectX 色彩通道翻转与纯中文提示词系统**：BGRA 像素通道校正，全中文油画风格提词。
-6. **通用生图通信与多格式支持**：兼容标准 `/images/generations` 及对话多模态通道，支持 DALL-E、FLUX、SDXL 等。
-7. **本地磁盘缓存生命周期管理**：自动持久化、限制数量淘汰、元数据存储。
-
-### 明确未覆盖 / 留待未来扩展 (Uncovered)
-1. **战役即时战报插画**：野战或攻城战结算界面（BattleResultScreen）目前尚未注入独立战果纪事按钮（已预留接口，后续可接入）。
-2. **多英雄同框立绘合成**：当前会面场景主要描绘谈话双方的主体对峙与环境，尚未实现复杂的多达 5 人以上的宗族同框全家福。
-3. **ControlNet 姿态精细约束**：当前以垫图图生图与提示词语义约束为主，若未来接入私有本地 ComfyUI，可扩展输出 OpenPose 骨骼数据。
-
----
-
-## 5. 编译、构建与热部署说明
-
-### 构建命令
-```bash
-# 切换到项目根目录
-cd f:\AnimusForge-main
-
-# 构建 AnimusForge.Illustrator 子模组
-dotnet build extensions/AnimusForge.Illustrator/src/AnimusForge.Illustrator.csproj -c Release
+```text
+IllustratorCache\
+  <campaign-key>\
+    encyclopedia\*.png + *.json
+    conversation\*.png + *.json
+    weekly_report\*.png + *.json
+    general\*.png + *.json
+  _trash\
+    <campaign-key>\*.png + *.json
 ```
 
-### 一键部署命令
+- `campaign-key` 来自 `Campaign.Current.UniqueGameId`，由 `IllustratorRuntime.SetCampaign` 在 `OnSessionLaunched` 时设置。
+- JSON 元数据包含 `Key`、`SubjectKey`、`CampaignKey`、`Category`、`Prompt`、`Title`、`IsDefault`、`CreatedTime`。
+- 百科主题键：`Hero_<Hero.StringId>`；对话主题键：`Conv_<Character.StringId>`；周报主题键：`weekly_report:<hash(title:subtitle)>`。
+- 缓存读取必须传入当前 `CampaignKey`，不会跨存档命中。
+- 打开画廊或刷新条目才扫描当前存档目录；正常 Tick 不做全目录扫描。
+
+---
+
+## 4. 本轮修复覆盖
+
+1. **后台线程不再直接触碰引擎/UI**
+   - 生图、LLM、下载、缓存保存均在 `IllustratorRuntime.Start` worker 中执行。
+   - 纹理创建、Sprite 注册、VM 更新与 layer 清理通过 `Post` 回到主线程。
+
+2. **请求失效与取消**
+   - `IllustrationScope` 校验 Campaign、CampaignKey、TopScreen、revision 与 cancellation。
+   - 关闭窗口、切屏、换档、再次重绘都会使旧请求结果失效。
+   - worker 上限 4，完成队列上限 32，每帧最多处理 2 个完成项。
+
+3. **纹理/Sprite 生命周期**
+   - `GauntletTextureLoader` 只释放本模块登记的 `RuntimeIllustrationSprite`。
+   - 同名重绘、切换预览、关闭弹窗、切换存档均释放旧动态纹理。
+   - `Reset` 会清空所有 Illustrator 动态 Sprite。
+
+4. **存档隔离与缓存上限**
+   - 缓存路径和元数据均带 campaign identity。
+   - 删除不直接物理销毁，先移动到 `_trash/<campaign>`。
+   - `MaxCacheCount` 已实际执行，默认图优先保留。
+
+5. **功能缺口补齐**
+   - 卡片支持重新绘制、提示词展开/复制、打开画廊、关闭。
+   - 画廊支持当前存档列表、懒加载预览、按主题选中、复制提示词、设默认、删除、打开目录。
+   - 卡片和画廊支持标题栏拖动与右下角缩放。
+   - MCM 模型列表按钮不再在后台线程更新 UI。
+
+6. **提示词事实保真**
+   - 人物身份、性别、文化、装备、围城/事件地点、周报标题与事件摘要会保留在最终提示词尾部。
+   - 离线保底不再把男性 Lord/Lady 误判为女性，也不再把“和”误判为日本文化。
+
+7. **双版本编译**
+   - `BannerlordApi=1.3`：固定 `Bannerlord.ReferenceAssemblies 1.3.15.110062`。
+   - `BannerlordApi=1.4`：当前游戏 `v1.4.8` 引用。
+   - `BANNERLORD_1_4_OR_GREATER` 仅为 1.4 编译常量；当前源码无需额外 `#if` 分支。
+
+---
+
+## 5. 验证命令与结果
+
+### 双版本构建
+
 ```powershell
-# 运行专用热部署脚本
-.\tools\deploy_illustrator.ps1
+dotnet build extensions/AnimusForge.Illustrator/src/AnimusForge.Illustrator.csproj -c Release `
+  -p:BannerlordApi=1.3 `
+  -p:OutputPath="F:\AnimusForge-main\extensions\AnimusForge.Illustrator\bin\compat\1.3\" `
+  -p:BaseIntermediateOutputPath="F:\AnimusForge-main\extensions\AnimusForge.Illustrator\obj\compat\1.3\"
+
+dotnet build extensions/AnimusForge.Illustrator/src/AnimusForge.Illustrator.csproj -c Release `
+  -p:BannerlordApi=1.4 `
+  -p:OutputPath="F:\AnimusForge-main\extensions\AnimusForge.Illustrator\bin\compat\1.4\" `
+  -p:BaseIntermediateOutputPath="F:\AnimusForge-main\extensions\AnimusForge.Illustrator\obj\compat\1.4\"
 ```
-该脚本执行以下动作：
-1. 校验源码路径与项目文件；
-2. 执行 `dotnet build -c Release`；
-3. 将编译产物 `AnimusForge.Illustrator.dll`、`SubModule.xml` 以及 `GUI/` 界面贴图资源，自动部署至本地游戏目录：
-   `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge_Illustrator\`
-4. 校验输出 DLL 大小与时间戳。
+
+结果：
+
+- `BannerlordApi=1.3`：**0 warnings / 0 errors**
+- `BannerlordApi=1.4`：**0 warnings / 0 errors**
+
+### 离线回归
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\test_illustrator.ps1 -Configuration Release
+```
+
+覆盖内容：
+
+- 1.3 与 1.4 独立构建。
+- 离线规则导演事实保留：男性身份、真实装备、中文连词不误判日本、周报地点/攻城事件保留。
+- `SubModule.xml` 与 4 个 prefab XML 解析。
+- 所有 `Command.Click` 均存在对应 VM `Execute*` 方法。
+
+最终结果：**41 checks / 0 failures**。
+
+### 部署边界校验（未部署）
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy_illustrator.ps1 -ValidateOnly -BannerlordApi 1.3
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy_illustrator.ps1 -ValidateOnly -BannerlordApi 1.4
+```
+
+结果：
+
+- 两种 API 构建均通过。
+- `SubModule.xml`、DLLName、Assemblies、已安装依赖模块、4 个 prefab 均通过校验。
+- 构建输出未发现 TaleWorlds、SandBox、Harmony、MCM、Newtonsoft 或 `AnimusForge.dll` 被复制。
+- `-ValidateOnly` 未向 `Modules\AnimusForge_Illustrator` 写入文件。
 
 ---
 
-## 6. 回滚与安全恢复指南
+## 6. 明确未验证项
 
-- **本轮无破坏性侵入**：
-  所有 Illustrator 的代码均位于独立的 `extensions/AnimusForge.Illustrator/` 子目录与专用 Harmony Patch 中，未修改 AnimusForge 本体的既有存档持久化（`SyncData` 保持 146/146、`CampaignBehavior` 保持 36/36）。
-- **如果需要回退或停用**：
-  1. 在游戏启动器中取消勾选 `AnimusForge.Illustrator` 模块，或直接在 MCM 中将“启用 AI 画卷生图系统”置为 `关`，系统将完全静默且不产生任何性能开销；
-  2. 源码回退使用定向 Git revert，严禁执行 `git reset --hard`。
+以下内容不能由离线编译证明，仍需真实客户端验收：
+
+1. 游戏内 Gauntlet 实际渲染、颜色通道和画面比例。
+2. Harmony Patch 在真实 1.4.8 / 1.3 客户端中的挂载与目标 UI 结构兼容性。
+3. 真实 OpenAI 兼容生图 API、模型列表 API、图片 URL 下载与服务商错误响应。
+4. 快速切存档、切窗口、连点重绘、关闭周报等真实竞态。
+5. 长时间游戏后的 VRAM/内存占用与引擎纹理释放完整性。
+6. 1.3 客户端真实运行时加载；当前只验证了固定 1.3.15 引用集编译。
+7. 营地菜单入口在目标整合包实际菜单结构中的可达性。
+8. 最终图像质量、构图稳定性与特定模型输出效果。
+9. 非 ASCII/中文系统环境下部署脚本与 XML/JSON 编码行为。
+10. 用户授权的正式部署与游戏目录备份/覆盖流程（本轮只运行 `-ValidateOnly`）。
+
+---
+
+## 7. 部署与回滚
+
+### 显式部署（需用户确认后执行）
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy_illustrator.ps1 -BannerlordApi auto
+```
+
+脚本会先构建并校验，再把现有 `Modules\AnimusForge_Illustrator` 文件备份到：
+
+```text
+F:\AnimusForge-main\artifacts\deploy-backups\AnimusForge_Illustrator\<api>\<timestamp>\
+```
+
+然后覆盖：
+
+```text
+Modules\AnimusForge_Illustrator\SubModule.xml
+Modules\AnimusForge_Illustrator\bin\Win64_Shipping_Client\AnimusForge.Illustrator.dll
+Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
+```
+
+### 源码回滚
+
+- Illustrator 维修前本地检查点：`02b4c5b3`。
+- 只应对 Illustrator、专用脚本与相关文档做定向 revert；不得 `git reset --hard`，不得回滚无关 TTS/喊话工作区改动。
+- 当前工作区另有未提交的用户改动：`ShoutBehavior.cs`、`TtsEngine.cs`、`ShoutBehavior.TtsGameContext.cs`、`AnimusForge/GUI/SpriteParts/af_courier/*`、`preview_courier_scroll.html`；这些不属于 Illustrator 回滚范围。
+
+---
+
+## 8. 后续验收建议
+
+1. 先执行 `-ValidateOnly`，再经用户确认后执行真实部署。
+2. 游戏内依次验收：百科按钮、对话按钮、周报覆层、营地画廊入口。
+3. 检查关闭/切换周报、重复重绘、跨存档打开同一 NPC 时是否命中正确缓存。
+4. 检查长会话后 `UIResourceManager.SpriteData` 中 Illustrator 动态 Sprite 是否随关闭/换档释放。
+5. 对真实 API 做一次小尺寸测试，确认端点解析、模型回退和错误提示符合预期。
