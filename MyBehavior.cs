@@ -399,6 +399,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class MemorySummaryExecutionResult
 	{
+		public MemorySummaryInput Source;
+
 		public MemorySummaryJob Job;
 
 		public CompressedMemoryBlock Block;
@@ -443,6 +445,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class MemoryOverviewExecutionResult
 	{
+		public MemorySummaryInput Source;
+
 		public MemoryOverviewJob Job;
 
 		public MemoryOverviewState State;
@@ -489,6 +493,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class MajorActionSummaryExecutionResult
 	{
+		public MemorySummaryInput Source;
+
 		public MajorActionSummaryJob Job;
 
 		public MajorActionSummaryState State;
@@ -2610,6 +2616,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void RecordNpcActionForExternal(Hero actorHero, string text, string stableKey, string actionKind, bool isMajor, bool isRecent, Hero targetHero = null, Settlement settlement = null, string locationText = null, bool allowNonLordHero = false, bool? won = null)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.RecordExternalNpcAction(actorHero, text, stableKey, actionKind, isMajor, isRecent, targetHero, settlement, locationText, allowNonLordHero, won); }, nameof(RecordNpcActionForExternal))) return;
+
 		try
 		{
 			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordExternalNpcAction(actorHero, text, stableKey, actionKind, isMajor, isRecent, targetHero, settlement, locationText, allowNonLordHero, won);
@@ -4959,156 +4967,112 @@ public partial class MyBehavior : CampaignBehaviorBase
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
 		{
-			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-			// A Hero can die or be removed after the scheduler's snapshot; discard those bounded queue entries first.
-			CancelUnavailableHeroCompressionQueuedJobs("queue_execute");
-			List<MemorySummaryJob> jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue).Where(HasMemorySummaryJobStillPending).ToList();
-			List<MajorActionSummaryJob> majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue).Where(HasMajorActionSummaryJobStillPending).ToList();
-			HashSet<string> memoryJobHeroIds = new HashSet<string>(jobs.Where((MemorySummaryJob job) => job != null).Select((MemorySummaryJob job) => NormalizeMemoryHeroId(job.HeroId)), StringComparer.OrdinalIgnoreCase);
-			List<MemoryOverviewJob> pendingOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where(HasMemoryOverviewJobStillPending).ToList();
-			List<MemoryOverviewJob> overviewJobs = pendingOverviewJobs.Where((MemoryOverviewJob job) => !memoryJobHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
-			if (jobs.Count <= 0 && majorJobs.Count <= 0 && overviewJobs.Count <= 0)
-			{
-				// Persist the filtered snapshot so exhausted or obsolete jobs cannot wake maintenance every tick.
-				_memorySummaryQueue = jobs;
-				_npcMajorActionSummaryQueue = majorJobs;
-				_memoryOverviewQueue = pendingOverviewJobs;
-				return;
-			}
-			int burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
-			int totalJobCount = jobs.Count + majorJobs.Count + overviewJobs.Count;
-			InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + totalJobCount + " 个；对话记忆 " + jobs.Count + " 个，重大履历 " + majorJobs.Count + " 个，记忆总览 " + overviewJobs.Count + " 个；每分钟上限 " + burstSize + "。"));
-			List<object> queueItems = new List<object>();
-			queueItems.AddRange(jobs.Cast<object>());
-			queueItems.AddRange(majorJobs.Cast<object>());
-			queueItems.AddRange(overviewJobs.Cast<object>());
-			List<MemorySummaryExecutionResult> results = new List<MemorySummaryExecutionResult>();
-			List<MajorActionSummaryExecutionResult> majorResults = new List<MajorActionSummaryExecutionResult>();
-			List<MemoryOverviewExecutionResult> overviewResults = new List<MemoryOverviewExecutionResult>();
-			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results"))
-			{
-				return;
-			}
-			List<string> failures = new List<string>();
-			List<MemoryOverviewJob> extraOverviewJobs = null;
+			List<object> queueItems = null;
+			int burstSize = 1;
+			var attemptedOverviewIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			bool accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 			{
-				foreach (MemorySummaryExecutionResult result in results)
-				{
-					if (result == null || result.Job == null || result.IsObsolete)
-					{
-						continue;
-					}
-					if (result.Success)
-					{
-						ApplyMemorySummarySuccess(result.Job, result.Block);
-					}
-					else
-					{
-						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
-						MarkMemorySummaryFailure(result.Job, result.Error);
-					}
-				}
-				foreach (MajorActionSummaryExecutionResult result2 in majorResults)
-				{
-					if (result2 == null || result2.Job == null || result2.IsObsolete)
-					{
-						continue;
-					}
-					if (result2.Success)
-					{
-						ApplyMajorActionSummarySuccess(result2.Job, result2.State);
-					}
-					else
-					{
-						failures.Add((result2.Job.HeroName ?? result2.Job.HeroId) + " 重大履历：" + (result2.Error ?? "未知错误"));
-						MarkMajorActionSummaryFailure(result2.Job, result2.Error);
-					}
-				}
-				foreach (MemoryOverviewExecutionResult result3 in overviewResults)
-				{
-					if (result3 == null || result3.Job == null || result3.IsObsolete)
-					{
-						continue;
-					}
-					if (result3.Success)
-					{
-						ApplyMemoryOverviewSuccess(result3.Job, result3.State);
-					}
-					else
-					{
-						failures.Add((result3.Job.HeroName ?? result3.Job.HeroId) + " 记忆总览：" + (result3.Error ?? "未知错误"));
-						MarkMemoryOverviewFailure(result3.Job, result3.Error);
-					}
-				}
 				QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-				HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null && !x.IsObsolete).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
-				extraOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !processedOverviewHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
+				CancelUnavailableHeroCompressionQueuedJobs("queue_execute");
+				var jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue).Where(HasMemorySummaryJobStillPending).ToList();
+				var majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue).Where(HasMajorActionSummaryJobStillPending).ToList();
+				var memoryIds = new HashSet<string>(jobs.Select(x => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
+				var pending = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where(HasMemoryOverviewJobStillPending).ToList();
+				var overviewJobs = pending.Where(x => !memoryIds.Contains(NormalizeMemoryHeroId(x.HeroId))).ToList();
+				_memorySummaryQueue = jobs;
+				_npcMajorActionSummaryQueue = majorJobs;
+				_memoryOverviewQueue = pending;
+				queueItems = new List<object>();
+				queueItems.AddRange(jobs); queueItems.AddRange(majorJobs); queueItems.AddRange(overviewJobs);
+				foreach (var job in overviewJobs) attemptedOverviewIds.Add(NormalizeMemoryHeroId(job.HeroId));
+				burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
+				if (queueItems.Count > 0)
+					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + queueItems.Count + " 个；对话记忆 " + jobs.Count + " 个，重大履历 " + majorJobs.Count + " 个，记忆总览 " + overviewJobs.Count + " 个；每分钟上限 " + burstSize + "。"));
 				return true;
 			});
-			if (!accepted)
+			if (!accepted || queueItems.Count == 0) return;
+			var results = new List<MemorySummaryExecutionResult>();
+			var majorResults = new List<MajorActionSummaryExecutionResult>();
+			var overviewResults = new List<MemoryOverviewExecutionResult>();
+			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results")) return;
+			var failures = new List<string>();
+			int appliedDaily = 0, appliedMajor = 0, appliedOverview = 0;
+			// One accepted business result per dispatched operation; no whole-result foreach inside a callback.
+			foreach (var result in results)
 			{
-				return;
-			}
-			if (extraOverviewJobs.Count > 0)
-			{
-				if (queueItems.Count > 0)
-				{
-					await Task.Delay(60000);
-				}
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay"))
-				{
-					return;
-				}
-				List<MemorySummaryExecutionResult> extraMemoryResults = new List<MemorySummaryExecutionResult>();
-				List<MajorActionSummaryExecutionResult> extraMajorResults = new List<MajorActionSummaryExecutionResult>();
-				List<MemoryOverviewExecutionResult> extraOverviewResults = new List<MemoryOverviewExecutionResult>();
-				await RunDailySummaryQueueItemsAsync(extraOverviewJobs.Cast<object>().ToList(), burstSize, extraMemoryResults, extraMajorResults, extraOverviewResults);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results"))
-				{
-					return;
-				}
 				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 				{
-					foreach (MemoryOverviewExecutionResult result4 in extraOverviewResults)
+					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
+					if (result.Success) { if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++; }
+					else
 					{
-						if (result4 == null || result4.Job == null || result4.IsObsolete)
-						{
-							continue;
-						}
-						if (result4.Success)
-						{
-							ApplyMemoryOverviewSuccess(result4.Job, result4.State);
-						}
-						else
-						{
-							failures.Add((result4.Job.HeroName ?? result4.Job.HeroId) + " 记忆总览：" + (result4.Error ?? "未知错误"));
-							MarkMemoryOverviewFailure(result4.Job, result4.Error);
-						}
+						MarkMemorySummaryFailure(result.Job, result.Error);
+						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
 					}
-					overviewResults.AddRange(extraOverviewResults);
 					return true;
 				});
-				if (!accepted)
+				if (!accepted) return;
+			}
+			foreach (var result in majorResults)
+			{
+				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 				{
-					return;
+					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
+					if (result.Success) { if (ApplyMajorActionSummarySuccess(result.Job, result.State)) appliedMajor++; }
+					else
+					{
+						MarkMajorActionSummaryFailure(result.Job, result.Error);
+						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 重大履历：" + (result.Error ?? "未知错误"));
+					}
+					return true;
+				});
+				if (!accepted) return;
+			}
+			// Initial and extra overview waves share the same acceptance loop. Obsolete work is not re-requested in this run.
+			for (int wave = 0; wave < 2; wave++)
+			{
+				foreach (var result in overviewResults)
+				{
+					accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+					{
+						if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
+						if (result.Success) { if (ApplyMemoryOverviewSuccess(result.Job, result.State)) appliedOverview++; }
+						else
+						{
+							MarkMemoryOverviewFailure(result.Job, result.Error);
+							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 记忆总览：" + (result.Error ?? "未知错误"));
+						}
+						return true;
+					});
+					if (!accepted) return;
 				}
+				if (wave == 1) break;
+				List<object> extra = null;
+				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+				{
+					QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+					extra = SanitizeMemoryOverviewQueue(_memoryOverviewQueue)
+						.Where(x => HasMemoryOverviewJobStillPending(x) && !attemptedOverviewIds.Contains(NormalizeMemoryHeroId(x.HeroId)))
+						.Cast<object>().ToList();
+					return true;
+				});
+				if (!accepted || extra.Count == 0) break;
+				await Task.Delay(60000);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay")) return;
+				overviewResults = new List<MemoryOverviewExecutionResult>();
+				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
 			}
 			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
 			{
-				// Keep only runnable work; terminal retries and invalid targets must not be serialized back into the save.
 				_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
-				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where((MajorActionSummaryJob job) => job != null && HasMajorActionSummaryJobStillPending(job)).ToList());
-				_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
+				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending).ToList());
+				_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending).ToList());
 				if (failures.Count > 0)
-				{
 					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。", runtimeGeneration);
-				}
-				else if (results.Count > 0 || majorResults.Count > 0 || overviewResults.Count > 0)
-				{
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + results.Count((MemorySummaryExecutionResult x) => x != null && x.Success) + " 个，重大履历 " + majorResults.Count((MajorActionSummaryExecutionResult x) => x != null && x.Success) + " 个，记忆总览 " + overviewResults.Count((MemoryOverviewExecutionResult x) => x != null && x.Success) + " 个。"));
-				}
+				else if (appliedDaily + appliedMajor + appliedOverview > 0)
+					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + appliedDaily + " 个，重大履历 " + appliedMajor + " 个，记忆总览 " + appliedOverview + " 个。"));
 				return true;
 			});
 		}
@@ -5116,9 +5080,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
 			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-			{
 				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message, runtimeGeneration);
-			}
 		}
 		finally
 		{
@@ -5132,9 +5094,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		int clampedBurstSize = Math.Max(1, burstSize);
 		for (int i = 0; i < (queueItems?.Count ?? 0); i += clampedBurstSize)
 		{
+			// A spacing delay must not rebind old work to a new save generation.
+			if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;
 			List<object> wave = queueItems.Skip(i).Take(clampedBurstSize).ToList();
 			List<Task<DailySummaryQueueResult>> tasks = wave.Select(ExecuteDailySummaryQueueItemAsync).ToList();
 			DailySummaryQueueResult[] completed = await Task.WhenAll(tasks);
@@ -5224,212 +5189,41 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts)
 	{
-		MemorySummaryExecutionResult result = new MemorySummaryExecutionResult
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts);
+		return new MemorySummaryExecutionResult
 		{
-			Job = job
+			Job = job,
+			Source = captured.Source,
+			Block = captured.Value as CompressedMemoryBlock,
+			Error = captured.Error,
+			IsObsolete = captured.IsObsolete
 		};
-		try
-		{
-			string memoryId = NormalizeMemoryHeroId(job?.HeroId);
-			Hero hero = FindHeroById(memoryId);
-			DailyMemoryDraft draft = FindMemoryDraft(job);
-			bool isEligible = IsNonHeroMemoryId(memoryId) || IsHeroNpcEligibleForCompressedMemory(hero);
-			if (!isEligible || draft == null || draft.Lines == null || draft.Lines.Count <= 0)
-			{
-				// Missing/removed saved sources are stale queue data, not API failures that should block the campaign.
-				result.IsObsolete = true;
-				return result;
-			}
-			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-			{
-				if (!HasMemorySummaryJobStillPending(job))
-				{
-					// The owner or source can vanish during retry backoff; do not send a second request for stale work.
-					result.IsObsolete = true;
-					return result;
-				}
-				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), "CompressedMemory", 0, forceThinkingDisabled: true);
-				if (apiCallResult.Success)
-				{
-					if (TryParseMemorySummaryResponse(apiCallResult.Content, hero, draft, out var block, out var error))
-					{
-						result.Block = block;
-						return result;
-					}
-					result.Error = BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, apiCallResult.Content);
-				}
-				else
-				{
-					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
-				}
-				if (i < maxAttempts)
-				{
-					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
-				}
-			}
-			return result;
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.Message;
-			return result;
-		}
 	}
 
 	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts)
 	{
-		MajorActionSummaryExecutionResult result = new MajorActionSummaryExecutionResult
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts);
+		return new MajorActionSummaryExecutionResult
 		{
-			Job = job
+			Job = job,
+			Source = captured.Source,
+			State = captured.Value as MajorActionSummaryState,
+			Error = captured.Error,
+			IsObsolete = captured.IsObsolete
 		};
-		try
-		{
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			Hero hero = FindHeroById(heroId);
-			if (!IsHeroNpcEligibleForCompressedMemory(hero) || string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var rawActions) || rawActions == null)
-			{
-				// Major-action ledgers are retained for weekly reports, but an unavailable Hero must never reach the LLM.
-				result.IsObsolete = true;
-				return result;
-			}
-			List<NpcActionEntry> allActions = SanitizeNpcActionEntries(rawActions, keepOnlyRecentWindow: false);
-			if (allActions.Count <= 0)
-			{
-				// A queue can outlive its last source action after save repair; discard it silently.
-				result.IsObsolete = true;
-				return result;
-			}
-			MajorActionSummaryState existingState = GetMajorActionSummaryState(heroId);
-			bool hasExistingSummary = existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary);
-			List<NpcActionEntry> sourceActions = hasExistingSummary ? allActions.Where((NpcActionEntry x) => IsNpcActionAfterSummaryCursor(x, existingState)).ToList() : allActions;
-			if (sourceActions.Count <= 0)
-			{
-				if (hasExistingSummary)
-				{
-					result.State = existingState;
-					return result;
-				}
-				// No source material means the persisted work item is obsolete rather than an API error.
-				result.IsObsolete = true;
-				return result;
-			}
-			int targetChars = GetMajorActionSummaryTargetChars(existingState, hero, sourceActions);
-			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-			{
-				if (!HasMajorActionSummaryJobStillPending(job))
-				{
-					// Re-check after retry backoff so a Hero removed between API attempts never receives another request.
-					result.IsObsolete = true;
-					return result;
-				}
-				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), "NpcMajorSummary", 0, forceThinkingDisabled: true);
-				if (apiCallResult.Success)
-				{
-					if (TryParseMajorActionSummaryResponse(apiCallResult.Content, hero, job, allActions, out var state, out var error))
-					{
-						result.State = state;
-						return result;
-					}
-					result.Error = BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, apiCallResult.Content);
-				}
-				else
-				{
-					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
-				}
-				if (i < maxAttempts)
-				{
-					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
-				}
-			}
-			return result;
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.Message;
-			return result;
-		}
 	}
 
 	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts)
 	{
-		MemoryOverviewExecutionResult result = new MemoryOverviewExecutionResult
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts);
+		return new MemoryOverviewExecutionResult
 		{
-			Job = job
+			Job = job,
+			Source = captured.Source,
+			State = captured.Value as MemoryOverviewState,
+			Error = captured.Error,
+			IsObsolete = captured.IsObsolete
 		};
-		try
-		{
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			Hero hero = FindHeroById(heroId);
-			bool isEligible = IsNonHeroMemoryId(heroId) || IsHeroNpcEligibleForCompressedMemory(hero);
-			if (!isEligible || string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var rawBlocks) || rawBlocks == null)
-			{
-				// A removed owner or cleaned block set is stale queue state and must not surface as an API failure.
-				result.IsObsolete = true;
-				return result;
-			}
-			List<CompressedMemoryBlock> allBlocks = SanitizeCompressedMemoryBlocks(rawBlocks);
-			int threshold = GetMemoryOverviewStartBlockCountFromSettings();
-			if (allBlocks.Count < threshold)
-			{
-				// Blocks can be edited or pruned after enqueue; below-threshold work should simply disappear.
-				result.IsObsolete = true;
-				return result;
-			}
-			MemoryOverviewState existingState = GetMemoryOverviewState(heroId);
-			MemoryOverviewState promptExistingState = existingState ?? new MemoryOverviewState
-			{
-				HeroId = heroId,
-				HeroName = (job?.HeroName ?? "").Trim()
-			};
-			bool hasExistingSummary = existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary);
-			HashSet<string> included = new HashSet<string>(hasExistingSummary ? (existingState.IncludedBlockIds ?? new List<string>()) : new List<string>(), StringComparer.OrdinalIgnoreCase);
-			List<CompressedMemoryBlock> sourceBlocks = hasExistingSummary ? allBlocks.Where((CompressedMemoryBlock block) => !IsMemoryBlockIncludedInOverview(block, included)).ToList() : allBlocks;
-			if (sourceBlocks.Count <= 0)
-			{
-				if (hasExistingSummary)
-				{
-					result.State = existingState;
-					return result;
-				}
-				// With no new blocks and no reusable state, there is nothing for the queue worker to call the API for.
-				result.IsObsolete = true;
-				return result;
-			}
-			int targetChars = GetMemoryOverviewTargetCharsFromSettings();
-			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-			{
-				if (!HasMemoryOverviewJobStillPending(job))
-				{
-					// Re-check after retry backoff so removed owners and edited-away blocks cannot trigger another request.
-					result.IsObsolete = true;
-					return result;
-				}
-				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(BuildMemoryOverviewSummarySystemPrompt(targetChars), BuildMemoryOverviewSummaryUserPrompt(hero, promptExistingState, sourceBlocks, targetChars), "MemoryOverview", 0, forceThinkingDisabled: true);
-				if (apiCallResult.Success)
-				{
-					if (TryParseMemoryOverviewResponse(apiCallResult.Content, hero, job, promptExistingState, sourceBlocks, out var state, out var error))
-					{
-						result.State = state;
-						return result;
-					}
-					result.Error = BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, apiCallResult.Content);
-				}
-				else
-				{
-					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
-				}
-				if (i < maxAttempts)
-				{
-					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
-				}
-			}
-			return result;
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.Message;
-			return result;
-		}
 	}
 
 	private static string BuildMemoryOverviewSummarySystemPrompt(int targetChars)
@@ -5566,23 +5360,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyMemoryOverviewSuccess(MemoryOverviewJob job, MemoryOverviewState state)
+	private bool ApplyMemoryOverviewSuccess(MemoryOverviewJob job, MemoryOverviewState state)
 	{
 		if (job == null || state == null || string.IsNullOrWhiteSpace(state.Summary))
 		{
-			return;
+			return false;
 		}
 		string heroId = NormalizeMemoryHeroId(job.HeroId);
 		if (string.IsNullOrWhiteSpace(heroId))
 		{
-			return;
+			return false;
 		}
 		Hero hero = FindHeroById(heroId);
 		if (!IsNonHeroMemoryId(heroId) && !IsHeroNpcEligibleForCompressedMemory(hero))
 		{
 			// The target can disappear while the async API request is in flight; never write its stale result back.
 			CancelUnavailableHeroCompressionWorkById(heroId, "memory_overview_apply");
-			return;
+			return false;
 		}
 		if (_memoryOverviewStates == null)
 		{
@@ -5599,6 +5393,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
 		}
 		Logger.Log("MemoryOverview", "summary_success hero=" + heroId + " blocks=" + (state.IncludedBlockIds?.Count ?? 0));
+		return true;
 	}
 
 	private void MarkMemoryOverviewFailure(MemoryOverviewJob job, string error)
@@ -5720,22 +5515,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyMajorActionSummarySuccess(MajorActionSummaryJob job, MajorActionSummaryState state)
+	private bool ApplyMajorActionSummarySuccess(MajorActionSummaryJob job, MajorActionSummaryState state)
 	{
 		if (job == null || state == null || string.IsNullOrWhiteSpace(state.Summary))
 		{
-			return;
+			return false;
 		}
 		string heroId = NormalizeMemoryHeroId(job.HeroId);
 		if (string.IsNullOrWhiteSpace(heroId))
 		{
-			return;
+			return false;
 		}
 		if (!IsHeroNpcEligibleForCompressedMemory(FindHeroById(heroId)))
 		{
 			// Raw major actions remain for weekly reports, but an in-flight result cannot recreate derived memory for a removed Hero.
 			CancelUnavailableHeroCompressionWorkById(heroId, "major_action_summary_apply");
-			return;
+			return false;
 		}
 		if (_npcMajorActionSummaries == null)
 		{
@@ -5752,6 +5547,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_npcMajorActionSummaryQueue.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
 		}
 		Logger.Log("NpcMajorSummary", "summary_success hero=" + heroId + " day=" + state.LastSummarizedDay + " sequence=" + state.LastSummarizedSequence);
+		return true;
 	}
 
 	private void MarkMajorActionSummaryFailure(MajorActionSummaryJob job, string error)
@@ -5945,11 +5741,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyMemorySummarySuccess(MemorySummaryJob job, CompressedMemoryBlock block)
+	private bool ApplyMemorySummarySuccess(MemorySummaryJob job, CompressedMemoryBlock block)
 	{
 		if (job == null || block == null)
 		{
-			return;
+			return false;
 		}
 		string memoryId = NormalizeMemoryHeroId(job.HeroId);
 		Hero hero = FindHeroById(memoryId);
@@ -5957,7 +5753,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			// The target can disappear while the async API request is in flight; drop the result and stale derived state.
 			CancelUnavailableHeroCompressionWorkById(memoryId, "memory_summary_apply");
-			return;
+			return false;
 		}
 		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocksById(memoryId);
 		blocks.RemoveAll((CompressedMemoryBlock x) => x != null && x.GameDayIndex == job.GameDayIndex);
@@ -5983,6 +5779,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		RecordPublicDailyMemoryWeeklyMaterial(block);
 		RecordWeeklyMemoryMaterialForBlock(block);
 		TryEnqueueMemoryOverviewForMemoryId(memoryId, job.HeroName, blocks);
+		return true;
 	}
 
 	private void MarkMemorySummaryFailure(MemorySummaryJob job, string error)
@@ -14350,6 +14147,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void MarkWeeklyMemoryMaterialTriggerForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, List<SettlementTransferPromptEntry> settlementTransferPlayerOptions = null, bool suppressImplicitDialogueSession = false)
 	{
+		if (!TWParallel.IsMainThread())
+		{
+			var rewards = CopyMemoryRewardOptions(rewardOptions);
+			var troops = CopyMemoryPartyOptions(partyTransferTroopOptions);
+			var prisoners = CopyMemoryPartyOptions(partyTransferPrisonerOptions);
+			var settlements = CopyMemorySettlementOptions(settlementTransferNpcOptions);
+			DeferMemorySourceWriteIfNeeded(owner => owner.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewards, troops, prisoners, settlements, suppressImplicitDialogueSession), nameof(MarkWeeklyMemoryMaterialTriggerForExternal));
+			return;
+		}
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession);
@@ -14361,6 +14168,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false, List<PartyTransferPromptEntry> partyTransferAllTroopOptions = null, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions = null)
 	{
+		if (!TWParallel.IsMainThread())
+		{
+			var rewards = CopyMemoryRewardOptions(rewardOptions);
+			var troops = CopyMemoryPartyOptions(partyTransferTroopOptions);
+			var prisoners = CopyMemoryPartyOptions(partyTransferPrisonerOptions);
+			var settlements = CopyMemorySettlementOptions(settlementTransferNpcOptions);
+			var allTroops = CopyMemoryPartyOptions(partyTransferAllTroopOptions);
+			var allPrisoners = CopyMemoryPartyOptions(partyTransferAllPrisonerOptions);
+			DeferMemorySourceWriteIfNeeded(owner => owner.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewards, troops, prisoners, settlements, suppressImplicitDialogueSession, allTroops, allPrisoners), nameof(MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal));
+			return;
+		}
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
@@ -25810,6 +25629,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void MigrateNonHeroPartyScopedMemoryForExternal(string canonicalMemoryId, string partyKey)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.MigrateNonHeroPartyScopedMemory(canonicalMemoryId, partyKey); }, nameof(MigrateNonHeroPartyScopedMemoryForExternal))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MigrateNonHeroPartyScopedMemory(canonicalMemoryId, partyKey);
@@ -26744,8 +26565,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<WeeklyMemoryMaterialTrigger> list = new List<WeeklyMemoryMaterialTrigger>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (WeeklyMemoryMaterialTrigger trigger in triggers ?? Enumerable.Empty<WeeklyMemoryMaterialTrigger>())
+		foreach (WeeklyMemoryMaterialTrigger sourceEntry in triggers ?? Enumerable.Empty<WeeklyMemoryMaterialTrigger>())
 		{
+			WeeklyMemoryMaterialTrigger trigger = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
 			if (trigger == null)
 			{
 				continue;
@@ -26852,8 +26674,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<DailyMemoryDraft> list = new List<DailyMemoryDraft>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (DailyMemoryDraft draft in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
+		foreach (DailyMemoryDraft sourceEntry in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
 		{
+			DailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
 			if (draft == null)
 			{
 				continue;
@@ -26932,8 +26755,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<CompressedMemoryBlock> list = new List<CompressedMemoryBlock>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
+		foreach (CompressedMemoryBlock sourceEntry in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
 		{
+			CompressedMemoryBlock block = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
 			if (block == null)
 			{
 				continue;
@@ -27061,7 +26885,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (_memoryOverviewStates.TryGetValue(heroId, out var value))
 		{
-			return SanitizeMemoryOverviewState(value);
+			return SanitizeMemoryOverviewState(CloneMemorySummarySource(value));
 		}
 		return null;
 	}
@@ -27078,7 +26902,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool HasMemoryOverviewPendingBlocks(string heroId, List<CompressedMemoryBlock> blocks)
 	{
-		List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(blocks);
+		List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(CloneMemorySummarySource(blocks));
 		if (sanitizedBlocks.Count < GetMemoryOverviewStartBlockCountFromSettings())
 		{
 			return false;
@@ -27167,7 +26991,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcMajorActionSummaries.TryGetValue(heroId, out var value))
 		{
-			return SanitizeMajorActionSummaryState(value);
+			return SanitizeMajorActionSummaryState(CloneMemorySummarySource(value));
 		}
 		return null;
 	}
@@ -27792,6 +27616,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalDialogueHistory(Hero hero, string playerText, string aiText, string extraFact)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistory(hero, playerText, aiText, extraFact); }, nameof(AppendExternalDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistory(hero, playerText, aiText, extraFact);
@@ -27814,6 +27640,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalSceneDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName); }, nameof(AppendExternalSceneDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
@@ -27825,6 +27653,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalNonHeroDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact); }, nameof(AppendExternalNonHeroDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact);
@@ -27836,6 +27666,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalNonHeroSceneDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName); }, nameof(AppendExternalNonHeroSceneDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);

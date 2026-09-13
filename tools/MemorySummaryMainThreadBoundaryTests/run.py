@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--original", action="store_true")
-parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain"])
+parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain", "unbounded-inline"])
 args = parser.parse_args()
 
 boundary_path = ROOT / "MyBehavior.MemorySummaryMainThread.cs"
@@ -32,11 +32,11 @@ process = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
 required_process_fragments = [
     "await RunMemorySummaryMainThreadAsync(runtimeGeneration",
     "ApplyMemorySummarySuccess(result.Job, result.Block)",
-    "ApplyMajorActionSummarySuccess(result2.Job, result2.State)",
-    "ApplyMemoryOverviewSuccess(result3.Job, result3.State)",
+    "ApplyMajorActionSummarySuccess(result.Job, result.State)",
+    "ApplyMemoryOverviewSuccess(result.Job, result.State)",
     "MarkMemorySummaryFailure(result.Job, result.Error)",
-    "MarkMajorActionSummaryFailure(result2.Job, result2.Error)",
-    "MarkMemoryOverviewFailure(result3.Job, result3.Error)",
+    "MarkMajorActionSummaryFailure(result.Job, result.Error)",
+    "MarkMemoryOverviewFailure(result.Job, result.Error)",
 ]
 for fragment in required_process_fragments:
     assert fragment in process, fragment
@@ -46,7 +46,8 @@ assert process.count("ResetMemorySummaryMainThreadActions();") >= 2
 mutations = {
     "ignore-generation": ("|| !SaveRuntimeGuard.IsCurrentGeneration(generation)", "|| false"),
     "ignore-owner": ("ReferenceEquals(Instance, this)", "true"),
-    "unbounded-drain": ("processed < MemorySummaryMainThreadActionsPerTick", "processed < int.MaxValue"),
+    "unbounded-drain": ("while (_memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick", "while (_memorySummaryMainThreadActionsThisTick < int.MaxValue"),
+    "unbounded-inline": ("&& _memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick)", "&& true)"),
 }
 if args.mutate:
     old, new = mutations[args.mutate]
@@ -70,10 +71,18 @@ env.update(DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotn
            NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
            DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_CLI_UI_LANGUAGE="en",
            APPDATA=str(ROOT / ".tmp/appdata"))
-run = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release",
-                      "-p:RestoreConfigFile=" + str(out / "NuGet.Config")],
-                     cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
+# Compilation failure never counts as a successful negative control.
+build = subprocess.run([str(dotnet), "build", str(out / "Proof.csproj"), "-c", "Release", "--nologo",
+                        "-p:RestoreConfigFile=" + str(out / "NuGet.Config")],
+                       cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
+(out / "build.log").write_text(build.stdout + build.stderr, encoding="utf-8")
+if build.returncode:
+    print(build.stdout + build.stderr)
+    raise SystemExit(2)
+run = subprocess.run([str(dotnet), str(out / "bin/Release/net8.0/Proof.dll")],
+                     cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=90)
 log = run.stdout + run.stderr
 (out / "run.log").write_text(log, encoding="utf-8")
+print("BUILD_PASS helper=" + (args.mutate or "current"))
 print(log)
-raise SystemExit(run.returncode)
+raise SystemExit(run.returncode if "MemorySummaryMainThread checks=" in log else 2)

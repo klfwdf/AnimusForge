@@ -10,6 +10,7 @@ namespace AnimusForge;
 public partial class MyBehavior
 {
     private const int MemorySummaryMainThreadActionsPerTick = 2;
+    private int _memorySummaryMainThreadActionsThisTick;
 
     private sealed class MemorySummaryMainThreadAction
     {
@@ -36,8 +37,9 @@ public partial class MyBehavior
         }
     }
 
-    // One low-frequency completion is awaited before the worker can publish another batch.
-    // The per-tick drain cap protects EngineTick without introducing a second memory owner.
+    // A completion now represents one business result, not a foreach over all results.
+    // Inline and queued calls share the same allowance, including synchronous providers.
+    // Large atomic capture/apply internals still require separate record/time accounting.
     private readonly ConcurrentQueue<MemorySummaryMainThreadAction> _memorySummaryMainThreadActions =
         new ConcurrentQueue<MemorySummaryMainThreadAction>();
 
@@ -47,8 +49,10 @@ public partial class MyBehavior
         {
             return Task.FromResult(false);
         }
-        if (TWParallel.IsMainThread())
+        if (TWParallel.IsMainThread() && _memorySummaryMainThreadActions.IsEmpty
+            && _memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick)
         {
+            _memorySummaryMainThreadActionsThisTick++;
             return Task.FromResult(TryApplyMemorySummaryMainThreadAction(generation, operation));
         }
         if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation))
@@ -95,11 +99,11 @@ public partial class MyBehavior
         {
             return;
         }
-        int processed = 0;
-        while (processed < MemorySummaryMainThreadActionsPerTick
+        _memorySummaryMainThreadActionsThisTick = 0;
+        while (_memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick
             && _memorySummaryMainThreadActions.TryDequeue(out MemorySummaryMainThreadAction work))
         {
-            processed++;
+            _memorySummaryMainThreadActionsThisTick++;
             if (work == null || !work.TryClaim())
             {
                 continue;

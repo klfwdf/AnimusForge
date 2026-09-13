@@ -82,13 +82,27 @@ namespace AnimusForge
         private HashSet<string> _dirtyMemoryOverviewIds = new HashSet<string>();
         private readonly HashSet<string> failures = new HashSet<string>();
         private readonly HashSet<string> obsolete = new HashSet<string>();
+        private readonly HashSet<string> invalidSources = new HashSet<string>();
+        private readonly HashSet<string> missingSources = new HashSet<string>();
         private readonly HashSet<string> unavailable = new HashSet<string>();
         private readonly HashSet<string> enqueueOverviewAfterDaily = new HashSet<string>();
         private readonly ConcurrentQueue<ProviderBatch> batches = new ConcurrentQueue<ProviderBatch>();
         private readonly TaskCompletionSource<bool> clockGate = NewGate();
         private int clockCalls;
         private bool providerThrows;
+        private bool providerCompletesSynchronously;
         private bool includeMalformedResults;
+
+        // This seam deliberately does not reproduce Capture/hash/eligibility. A separate
+        // Capture/Execute/Parse suite executes the real source validation; here it can fail
+        // independently to prove Process never writes or counts rejected completions.
+        private sealed class MemorySummaryInput { internal string Key; }
+        private bool IsMemorySummaryInputCurrent(MemorySummaryInput input)
+        {
+            Witness.Touch("source-check");
+            return input != null && !invalidSources.Contains(input.Key);
+        }
+        private MemorySummaryInput FixtureSource(string key) => missingSources.Contains(key) ? null : new MemorySummaryInput { Key = key };
 
         private sealed class ProviderBatch
         {
@@ -111,6 +125,7 @@ namespace AnimusForge
         {
             var batch = new ProviderBatch { Items = items };
             batches.Enqueue(batch);
+            if (providerCompletesSynchronously) batch.Ready.TrySetResult(true);
             await batch.Ready.Task.ConfigureAwait(false);
             if (providerThrows) throw new InvalidOperationException("scripted provider failure");
             foreach (object item in items)
@@ -118,13 +133,25 @@ namespace AnimusForge
                 string key = JobKey(item);
                 bool fail = failures.Contains(key), stale = obsolete.Contains(key);
                 if (item is MemorySummaryJob d)
-                    daily.Add(new MemorySummaryExecutionResult { Job = d, Error = " provider-error ", IsObsolete = stale,
+                    daily.Add(new MemorySummaryExecutionResult { Job = d,
+#if HAS_INPUT_SOURCE
+                        Source = FixtureSource(key),
+#endif
+                        Error = " provider-error ", IsObsolete = stale,
                         Block = fail ? null : Block(d.HeroId, d.GameDayIndex) });
                 else if (item is MajorActionSummaryJob m)
-                    major.Add(new MajorActionSummaryExecutionResult { Job = m, Error = " provider-error ", IsObsolete = stale,
+                    major.Add(new MajorActionSummaryExecutionResult { Job = m,
+#if HAS_INPUT_SOURCE
+                        Source = FixtureSource(key),
+#endif
+                        Error = " provider-error ", IsObsolete = stale,
                         State = fail ? null : new MajorActionSummaryState { Summary = " major-result ", LastSummarizedDay = 10, LastSummarizedSequence = 1 } });
                 else if (item is MemoryOverviewJob o)
-                    overview.Add(new MemoryOverviewExecutionResult { Job = o, Error = " provider-error ", IsObsolete = stale,
+                    overview.Add(new MemoryOverviewExecutionResult { Job = o,
+#if HAS_INPUT_SOURCE
+                        Source = FixtureSource(key),
+#endif
+                        Error = " provider-error ", IsObsolete = stale,
                         State = fail ? null : new MemoryOverviewState { Summary = " overview-result ", IncludedBlockIds = new List<string> { o.HeroId + "/10" } } });
             }
             if (includeMalformedResults)
@@ -224,7 +251,9 @@ namespace AnimusForge
         }
         private void AwaitFirstCompletion(Task task)
         {
-            ReleaseProviders(); Until(() => task.IsCompleted || !_memorySummaryMainThreadActions.IsEmpty);
+            // A faulted initial dispatcher may reach the provider asynchronously. Keep
+            // releasing only the external provider gate, never pump game work here.
+            ReleaseProviders(); Until(() => task.IsCompleted || !_memorySummaryMainThreadActions.IsEmpty, ReleaseProviders);
         }
         private static void Check(bool value, string message) { if (!value) throw new Exception(message); }
         private static void MainThreadEffects()
@@ -280,8 +309,7 @@ namespace AnimusForge
             Check(b._dailyMemoryDrafts["daily"].Count == 1 && b._npcMajorActionSummaries.Count == 0 && b._memoryOverviewStates.Count == 0, "obsolete results changed state");
             Check(d.RetryCount == 0 && m.RetryCount == 0 && o.RetryCount == 0, "obsolete result consumed retry");
             Check(!b._memorySummaryProcessing, "obsolete run not released"); MainThreadEffects();
-            // Existing success notification counts stale successful payloads; recorded as a P1 follow-up, not silently fixed by this fixture.
-            Console.WriteLine("STALE_UI_OBSERVATION " + string.Join(" | ", Witness.Events.Where(x => x.Name.StartsWith("ui:AnimusForge 日结压缩完成")).Select(x => x.Name)));
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "obsolete payload counted as accepted success");
         }
         private static void ExtraWave(bool fail)
         {
@@ -349,14 +377,61 @@ namespace AnimusForge
                 b._npcMajorActionSummaries.Count == 0 && b._memoryOverviewStates.Count == 0,
                 "removed target still received derived state");
             Check(Witness.Count("cancel-unavailable:") == 3, "actual Apply eligibility guard not reached");
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "rejected Apply counted as accepted success");
             b.CleanQueues(); MainThreadEffects();
         }
-        private static void BudgetWitness()
+        private static void RejectedSources(bool missing)
         {
-            var b = NewOwner(); for (int i = 0; i < 12; i++) b.AddDaily("hero" + i);
+            var b = NewOwner(); var d = b.AddDaily("daily"); var m = b.AddMajor("major"); var o = b.AddOverview("overview");
+            if (missing)
+                foreach (var job in new object[] { d, m, o }) b.missingSources.Add(JobKey(job));
+            var task = b.Start(); b.AwaitFirstCompletion(task);
+            if (!missing)
+                foreach (var job in new object[] { d, m, o }) b.invalidSources.Add(JobKey(job));
+            b.Finish(task);
+            Check(applied == 0 && Witness.Count("Mark") == 0 && Witness.Count("weekly:") == 0, "rejected source was committed");
+            Check(b._dailyMemoryDrafts["daily"].Count == 1 && b._npcMajorActionSummaries.Count == 0 && b._memoryOverviewStates.Count == 0,
+                "rejected source changed derived/source state");
+            Check(d.RetryCount == 0 && m.RetryCount == 0 && o.RetryCount == 0, "rejected source exhausted retries");
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0 && Witness.Count("popup-publish:") == 0,
+                "rejected source incorrectly counted or failed");
+            Check(!b._memorySummaryProcessing && b.batches.Count == 1, "rejected source looped or stranded processing"); MainThreadEffects();
+        }
+        private static void RejectedFailureSources()
+        {
+            var b = NewOwner(); var d = b.AddDaily("daily"); var m = b.AddMajor("major"); var o = b.AddOverview("overview");
+            foreach (var job in new object[] { d, m, o }) b.failures.Add(JobKey(job));
+            var task = b.Start(); b.AwaitFirstCompletion(task);
+            foreach (var job in new object[] { d, m, o }) b.invalidSources.Add(JobKey(job));
+            b.Finish(task);
+            Check(applied == 0 && Witness.Count("Mark") == 0 && Witness.Count("popup-publish:") == 0,
+                "stale failed source marked current input as exhausted");
+            Check(d.RetryCount == 0 && m.RetryCount == 0 && o.RetryCount == 0 && !b._memorySummaryProcessing,
+                "stale failure changed retry or processing state"); MainThreadEffects();
+        }
+        private static void MixedAcceptedCounts()
+        {
+            var b = NewOwner(); b.AddDaily("daily-ok"); b.AddMajor("major-ok"); b.AddOverview("overview-ok");
+            var d = b.AddDaily("daily-stale"); var m = b.AddMajor("major-stale"); var o = b.AddOverview("overview-stale");
+            foreach (var job in new object[] { d, m, o }) b.obsolete.Add(JobKey(job));
+            b.Finish(b.Start());
+            Check(applied == 3 && Witness.Count("weekly:") == 1 && Witness.Count("Mark") == 0,
+                "partial accepted/obsolete work misapplied");
+            Check(Witness.Count("ui:AnimusForge 日结压缩完成：对话记忆 1 个，重大履历 1 个，记忆总览 1 个。") == 1,
+                "UI counts payloads instead of actual accepted completions");
+            Check(b._dailyMemoryDrafts["daily-stale"].Count == 1 && !b._npcMajorActionSummaries.ContainsKey("major-stale") &&
+                !b._memoryOverviewStates.ContainsKey("overview-stale") && !b._memorySummaryProcessing,
+                "partial accepted run destroyed rejected input or failed release"); MainThreadEffects();
+        }
+        private static void BudgetWitness(bool synchronous = false)
+        {
+            var b = NewOwner(); b.providerCompletesSynchronously = synchronous;
+            for (int i = 0; i < 12; i++) b.AddDaily("hero" + i);
             b.Finish(b.Start()); Check(applied == 12, "backlog lost or duplicated records");
             var counts = Witness.Events.Where(x => x.Main && x.Name.StartsWith("Apply")).GroupBy(x => x.Tick).Select(x => x.Count()).ToList();
-            Console.WriteLine("BUDGET_OBSERVATION actual_apply_max_per_tick=" + counts.DefaultIfEmpty(0).Max() + " (not a frame-time acceptance)");
+            int peak = counts.DefaultIfEmpty(0).Max();
+            Check(peak <= 2, "completion acceptance exceeds two actual Apply jobs per tick: " + peak);
+            Console.WriteLine("BUDGET_OBSERVATION actual_apply_max_per_tick=" + peak + " (jobs only; not record/time budget acceptance)");
             MainThreadEffects();
         }
         private static int Main()
@@ -371,7 +446,10 @@ namespace AnimusForge
                 ("generation-change-queued", () => StaleQueued(false, false)), ("load-retirement", () => StaleQueued(false, true)),
                 ("load-during-extra-delay", LoadDuringExtraDelay), ("provider-exception", ProviderException),
                 ("empty-filtered-queues", EmptyFiltering), ("source-owner-mismatch", SourceOwnerMismatch),
-                ("target-removed-after-await", TargetRemovedAfterAwait), ("actual-work-budget-observation", BudgetWitness)
+                ("target-removed-after-await", TargetRemovedAfterAwait), ("actual-work-budget-observation", () => BudgetWitness()),
+                ("synchronous-provider-job-budget", () => BudgetWitness(true)),
+                ("same-generation-source-changed", () => RejectedSources(false)), ("missing-source-proof", () => RejectedSources(true)),
+                ("changed-source-failure-discard", RejectedFailureSources), ("mixed-accepted-counts", MixedAcceptedCounts)
             };
             foreach (var test in cases)
             {

@@ -94,6 +94,32 @@ namespace AnimusForge
             }
             {
                 var f = NewOwner(); int applied = 0;
+                var first = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                var second = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                var third = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                Check(first.IsCompleted && first.Result && second.IsCompleted && second.Result && applied == 2,
+                    "two same-tick inline operations share allowance");
+                Check(!third.IsCompleted, "third same-tick inline operation awaits next tick");
+                f.Owner.Tick();
+                Check(third.GetAwaiter().GetResult() && applied == 3, "next tick refreshes inline allowance");
+                var fourth = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                var fifth = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                Check(fourth.IsCompleted && fourth.Result && !fifth.IsCompleted && applied == 4,
+                    "inline operation shares remaining allowance with queued drain");
+                f.Owner.Tick(); Check(fifth.GetAwaiter().GetResult() && applied == 5, "mixed queued/inline operations complete once");
+            }
+            {
+                var f = NewOwner(); var order = new List<string>();
+                Task<bool> worker = Publish(f.Owner, f.Generation, () => { order.Add("worker"); return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
+                var main = f.Owner.Queue(f.Generation, () => { order.Add("main"); return true; });
+                Check(!main.IsCompleted && order.Count == 0, "inline caller cannot overtake queued worker");
+                f.Owner.Tick();
+                Check(worker.GetAwaiter().GetResult() && main.GetAwaiter().GetResult() && order.Count == 2 && order[0] == "worker" && order[1] == "main",
+                    "queued and inline work preserve FIFO on drain");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
                 Task<bool> pending = Publish(f.Owner, f.Generation, () => { applied++; return true; });
                 SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
                 SaveRuntimeGuard.AdvanceGeneration("load"); f.Owner.Tick();

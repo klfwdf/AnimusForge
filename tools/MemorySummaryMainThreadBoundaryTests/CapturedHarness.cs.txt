@@ -1,0 +1,255 @@
+// External seams only. Product.cs contains actual queue dispatch, three Execute wrappers,
+// prompt builders, parsers, sanitizers and models. Input.cs contains real clone/fingerprint.
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library {
+ public static class TWParallel { public static int MainId; public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==MainId; }
+ public static class MBMath { public static int ClampInt(int n,int min,int max)=>Math.Clamp(n,min,max); }
+}
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Campaign {
+  static readonly Campaign Value=new Campaign(); public static object Owner;
+  public static Campaign Current { get { AnimusForge.Probe.Live("campaign"); return Value; } }
+  public T GetCampaignBehavior<T>() where T:class=>Owner as T;
+ }
+ public sealed class Hero {
+  public string Id,Label;
+  public string StringId {get {AnimusForge.Probe.Live("hero-id");return Id;} }
+  public string Name {get {AnimusForge.Probe.Live("hero-name");return Label;} }
+ }
+}
+namespace AnimusForge {
+ static class Probe {
+  public static ConcurrentQueue<string> Wrong=new(); public static int Reads; public static int QueueDispatches;
+  public static void Live(string name) {Interlocked.Increment(ref Reads);if(!TWParallel.IsMainThread())Wrong.Enqueue(name);}
+  public static void Reset() {Wrong.Clear();Reads=0;QueueDispatches=0;}
+ }
+ public static class Logger { public static void Log(string area,string message) {} }
+ public sealed class DuelSettings {
+  static readonly DuelSettings Value=new();
+  public string DailyMemoryCompressionWritingRequirements="daily configured writing";
+  public string MajorActionCompressionWritingRequirements="major configured writing";
+  public string MemoryOverviewCompressionWritingRequirements="overview configured writing";
+  public static DuelSettings GetSettings() { Probe.Live("settings");return Value; }
+ }
+ public sealed class RewardSystemBehavior {
+  static readonly RewardSystemBehavior Value=new(); public static int Trust=50;
+  public static RewardSystemBehavior Instance {get {Probe.Live("reward");return Value;} }
+  public int GetEffectiveTrust(Hero h) {Probe.Live("trust");return Trust;}
+ }
+ public static class PlayerNotorietyBehavior {
+  public static string PlayerName="Alice"; public static string RenderingAlias="Imperial youth";
+  public static string CaptureMemorySummaryHistoryRenderingIdentity(){Probe.Live("history-identity");return PlayerName+"|"+RenderingAlias;}
+  public static string BuildPlayerHistoryNameForExternal() {Probe.Live("player-history-name");return PlayerName;}
+  public static string NormalizeMemoryPublicity(string text,int trust) {Probe.Live("publicity-render");return text.Trim();}
+  public static string RenderPlayerHistoryMaterialForExternal(string text) {Probe.Live("history-render");return text.Replace("{player}",PlayerName);}
+ }
+ public static class LlmRetryPrompt {public static string BuildFailureDetail(string reason,string content)=>reason+"\n"+content;}
+ public partial class MyBehavior {
+  public static MyBehavior Instance;
+  readonly Dictionary<string,Hero> heroes=new();
+  List<MemorySummaryJob> _memorySummaryQueue=new();
+  List<MajorActionSummaryJob> _npcMajorActionSummaryQueue=new();
+  List<MemoryOverviewJob> _memoryOverviewQueue=new();
+  Dictionary<string,List<DailyMemoryDraft>> _dailyMemoryDrafts=new();
+  Dictionary<string,List<NpcActionEntry>> _npcMajorActions=new();
+  Dictionary<string,List<CompressedMemoryBlock>> _compressedMemoryBlocks=new();
+  Dictionary<string,MajorActionSummaryState> _npcMajorActionSummaries=new();
+  Dictionary<string,MemoryOverviewState> _memoryOverviewStates=new();
+  List<MemorySummaryExecutionResult> dailyResults=new();
+  List<MajorActionSummaryExecutionResult> majorResults=new();
+  List<MemoryOverviewExecutionResult> overviewResults=new();
+  ConcurrentQueue<Request> requests=new(); ConcurrentQueue<Delay> delays=new();
+  sealed class ApiCallResult {public bool Success;public string Content,ErrorMessage;public int? RetryAfterSeconds;}
+  sealed class Request {public string System,User,Area;public int Argument;public bool NoThinking;public TaskCompletionSource<ApiCallResult> Done=Gate<ApiCallResult>();}
+  sealed class Delay {public int Ms;public TaskCompletionSource<bool> Done=Gate<bool>();}
+  static TaskCompletionSource<T> Gate<T>()=>new(TaskCreationOptions.RunContinuationsAsynchronously);
+  Task<ApiCallResult> CallAuxiliaryGatewayDetailed(string system,string user,string area,int argument,bool forceThinkingDisabled) {
+   var request=new Request{System=system,User=user,Area=area,Argument=argument,NoThinking=forceThinkingDisabled};requests.Enqueue(request);return request.Done.Task;
+  }
+  Task FixtureDelayAsync(int milliseconds) {var delay=new Delay{Ms=milliseconds};delays.Enqueue(delay);return delay.Done.Task;}
+  Hero FindHeroById(string id) {Probe.Live("find-hero");return id!=null&&heroes.TryGetValue(id,out var h)?h:null;}
+  bool IsMemoryEntityEligibleForCompressedMemory(string id) {Probe.Live("eligible");return heroes.ContainsKey(id)||id.StartsWith("af_nonhero:");}
+  static bool IsHeroNpcEligibleForCompressedMemory(Hero h) {Probe.Live("hero-eligible");return h!=null;}
+  bool HasCompressedMemoryBlock(string id,int day) {Probe.Live("block-store");return _compressedMemoryBlocks.TryGetValue(id,out var blocks)&&blocks.Any(x=>x.GameDayIndex==day);}
+  static int GetMemoryCompressionDenominatorFromSettings(){Probe.Live("denominator");return 8;}
+  static int GetMemoryOverviewStartBlockCountFromSettings(){Probe.Live("threshold");return 1;}
+  static int GetMemoryOverviewTargetCharsFromSettings(){Probe.Live("overview-target");return 400;}
+  static int GetCurrentGameDayIndexSafe(){Probe.Live("day");return 10;}
+  static string ResolveCurrentMemorySceneLabel(){Probe.Live("scene");return "Town";}
+  static bool IsUnknownMemorySceneLabel(string text)=>string.IsNullOrWhiteSpace(text)||text=="未知场景";
+  static string BuildPlayerPublicDisplayNameForPrompt(Hero h){Probe.Live("public-name");return "Imperial youth";}
+  static string StripBattlePlayerMarker(string text)=>text;
+  static string RenderNpcActionPromptText(Hero h,string text){Probe.Live("action-render");return text;}
+  static string BuildNpcActionMetadataNarrativeSuffix(NpcActionEntry entry){Probe.Live("action-metadata");return "|"+entry.SettlementName;}
+  static string RepairLegacyVillageRaidDefenseActionText(NpcActionEntry entry,string text)=>text;
+  static bool ShouldSuppressNpcMajorAction(string kind,string key,string text)=>false;
+  static string NormalizeNpcActionStableKey(string key,string text)=>key??text;
+  static MyBehavior Owner() {Probe.Reset();RewardSystemBehavior.Trust=50;PlayerNotorietyBehavior.PlayerName="Alice";PlayerNotorietyBehavior.RenderingAlias="Imperial youth";var b=new MyBehavior();Instance=b;Campaign.Owner=b;return b;}
+  static WeeklyMemoryMaterialTrigger Trigger(string id)=>new(){MemoryId=id,NpcName=id,GameDayIndex=10,GameDate="Summer 10",FootholdKingdomId="empire",Tags=new(){"[ACTION:GIVE_ITEM:grain:2]"},NormalizedTagText="[ACTION:GIVE_ITEM:grain:2]",StableKey="weekly-fixture",CreatedUtcTicks=100,TriggerReason="reason"};
+  static CompressedMemoryBlock Block(string id,int day)=>new(){Id=id+"/"+day,HeroId=id,HeroName=id,GameDayIndex=day,GameDate="Summer "+day,StartHour=8,EndHour=9,Scenes=new(){"Town"},RichTitle="Trade",Summary="prior summary",AfefLines=new(){"FACT"},WeeklyMaterialTriggers=new(){Trigger(id)}};
+  object Seed(string kind,string id=null) {
+   id??=kind;heroes[id]=new Hero{Id=id,Label="NPC "+id};
+   if(kind=="daily") {
+    var job=new MemorySummaryJob{HeroId=id,HeroName="NPC "+id,GameDayIndex=10,GameDate="Summer 10"};_memorySummaryQueue.Add(job);
+    _dailyMemoryDrafts[id]=new(){new DailyMemoryDraft{HeroId=id,HeroName="NPC "+id,GameDayIndex=10,GameDate="Summer 10",HasLlmDialogue=true,Lines=new(){new DailyMemoryLine{Text="dialogue source",GameDayIndex=10,GameDate="Summer 10",GameHour=8,Scene="Town",Speaker="player",IsLlmDialogue=true},new DailyMemoryLine{Text="FACT",GameDayIndex=10,GameDate="Summer 10",GameHour=9,Scene="Town",Speaker="AFEF",IsAfef=true}},WeeklyMaterialTriggers=new(){Trigger(id)}}};return job;
+   }
+   if(kind=="major") {
+    var job=new MajorActionSummaryJob{HeroId=id,HeroName="NPC "+id,TriggerGameDayIndex=10};_npcMajorActionSummaryQueue.Add(job);
+    _npcMajorActions[id]=new(){new NpcActionEntry{Day=9,Sequence=1,Order=1,Text="old action",GameDate="Summer 9",StableKey="old",RelatedHeroIds=new(){"a"}},new NpcActionEntry{Day=10,Sequence=3,Order=2,Text="new action",GameDate="Summer 10",StableKey="new",RelatedHeroIds=new(){"b"}}};
+    _npcMajorActionSummaries[id]=new(){HeroId=id,HeroName=id,Summary="old summary",LastSummarizedDay=9,LastSummarizedSequence=1};return job;
+   }
+   var overview=new MemoryOverviewJob{HeroId=id,HeroName="NPC "+id,TriggerGameDayIndex=10};_memoryOverviewQueue.Add(overview);_compressedMemoryBlocks[id]=new(){Block(id,9),Block(id,10)};
+   _memoryOverviewStates[id]=new(){HeroId=id,HeroName=id,Summary="old overview",IncludedBlockIds=new(){id+"/9"}};return overview;
+  }
+  Task Start(List<object> jobs,int burst=12)=>Task.Run(()=>RunDailySummaryQueueItemsAsync(jobs,burst,dailyResults,majorResults,overviewResults));
+  void Tick()=>ProcessMemorySummaryMainThreadActions();
+  void Until(Func<bool> done,Action progress=null){var watch=Stopwatch.StartNew();while(!done()){if(watch.ElapsedMilliseconds>6000)throw new Exception("controlled continuation timeout");Tick();progress?.Invoke();Thread.Sleep(1);}}
+  static ApiCallResult Ok(string area)=>new(){Success=true,Content=area=="CompressedMemory"?"[TITLE]Trade[/TITLE]\n[SUMMARY]summary body[/SUMMARY]\n[PUBLICITY]public[/PUBLICITY]\n[PLAYER_HISTORY]{player} traded grain[/PLAYER_HISTORY]\n[REASON]public scene[/REASON]":"[SUMMARY]summary body[/SUMMARY]"};
+  static void Release(Request request,ApiCallResult response)=>Task.Run(()=>request.Done.TrySetResult(response)).GetAwaiter().GetResult();
+  void Finish(Task task) {Until(()=>task.IsCompleted,()=>{foreach(var r in requests)if(!r.Done.Task.IsCompleted)Release(r,Ok(r.Area));foreach(var d in delays)Task.Run(()=>d.Done.TrySetResult(true)).GetAwaiter().GetResult();});task.GetAwaiter().GetResult();Tick();}
+  static void Check(bool value,string message){if(!value)throw new Exception(message);}
+  static void MainReads(){Check(Probe.Wrong.IsEmpty,"off-main live reads: "+string.Join(",",Probe.Wrong.Take(12)));}
+  bool Obsolete(string kind)=>kind=="daily"?dailyResults.Single().IsObsolete:kind=="major"?majorResults.Single().IsObsolete:overviewResults.Single().IsObsolete;
+  bool Success(string kind)=>kind=="daily"?dailyResults.Single().Success:kind=="major"?majorResults.Single().Success:overviewResults.Single().Success;
+  MemorySummaryInput Source(string kind)=>kind=="daily"?dailyResults.Single().Source:kind=="major"?majorResults.Single().Source:overviewResults.Single().Source;
+  string Error(string kind)=>kind=="daily"?dailyResults.Single().Error:kind=="major"?majorResults.Single().Error:overviewResults.Single().Error;
+  static void ThreeKinds() {
+   var b=Owner();var jobs=new List<object>{b.Seed("daily"),b.Seed("major"),b.Seed("overview")};b.Finish(b.Start(jobs));
+   foreach(var kind in new[]{"daily","major","overview"})
+   {
+    Check(b.Success(kind)&&!b.Obsolete(kind)&&b.Source(kind)!=null&&b.IsMemorySummaryInputCurrent(b.Source(kind)),kind+" failed or missing source receipt: "+b.Error(kind));
+    var receipt=b.Source(kind);
+    Check(receipt.Draft==null&&receipt.Actions==null&&receipt.Blocks==null&&receipt.Overview==null&&receipt.SystemPrompt==null&&receipt.UserPrompt==null,kind+" retained completed request payload");
+   }
+   Check(b.requests.Select(x=>x.Area).SequenceEqual(new[]{"CompressedMemory","NpcMajorSummary","MemoryOverview"}),"area dispatch/order");
+   Check(b.requests.All(x=>x.Argument==0&&x.NoThinking),"gateway arguments changed");
+   var block=b.dailyResults.Single().Block;Check(block.HeroId=="daily"&&block.HeroName=="NPC daily"&&block.GameDayIndex==10&&block.GameDate=="Summer 10"&&block.StartHour==8&&block.EndHour==9,"daily metadata");
+   Check(block.AfefLines.Single().Contains("FACT")&&block.Scenes.SequenceEqual(new[]{"Town"}),"AFEF/scene lost");
+   Check(block.PlayerHistoryMaterial=="Alice traded grain"&&block.PlayerPublicity=="public"&&block.PlayerPublicityReason=="public scene","public material");
+   Check(block.WeeklyMaterialTriggers.Single().StableKey=="weekly-fixture","weekly metadata");
+   Check(b.majorResults.Single().State.LastSummarizedDay==10&&b.majorResults.Single().State.LastSummarizedSequence==3,"major cursor");
+   Check(b.overviewResults.Single().State.IncludedBlockIds.SequenceEqual(new[]{"overview/9","overview/10"}),"overview IDs");
+   Check(!b.requests.Single(x=>x.Area=="NpcMajorSummary").User.Contains("old action")&&b.requests.Single(x=>x.Area=="NpcMajorSummary").User.Contains("new action"),"major incremental source");
+   MainReads();
+  }
+  static void Detached() {
+   var b=Owner();foreach(var kind in new[]{"daily","major","overview"}) {
+    var job=b.Seed(kind);var input=b.CaptureMemorySummaryInput(job,SaveRuntimeGuard.CaptureGeneration());Check(input!=null,"capture null "+kind);
+    if(kind=="daily"){b._dailyMemoryDrafts[kind][0].Lines[0].Text="changed";b._dailyMemoryDrafts[kind][0].WeeklyMaterialTriggers[0].Tags.Add("new");Check(input.Draft.Lines[0].Text=="dialogue source"&&input.Draft.WeeklyMaterialTriggers[0].Tags.Count==1,"daily nested alias");}
+    else if(kind=="major"){b._npcMajorActions[kind][0].RelatedHeroIds.Add("mutant");Check(input.Actions[0].RelatedHeroIds.Count==1,"major nested alias");}
+    else {b._compressedMemoryBlocks[kind][1].AfefLines.Add("mutant");b._memoryOverviewStates[kind].IncludedBlockIds.Add("mutant");Check(input.Blocks[0].AfefLines.Count==1&&input.Overview.IncludedBlockIds.Count==1,"overview nested alias");}
+    Check(!b.IsMemorySummaryInputCurrent(input),"fingerprint ignored "+kind);
+   }MainReads();
+  }
+  static void Changed(string kind,string edit,bool failure) {
+   var b=Owner();var job=b.Seed(kind);var task=b.Start(new(){job});b.Until(()=>b.requests.Count==1);int count=b.requests.Count;
+   if(edit=="body") {if(kind=="daily")b._dailyMemoryDrafts[kind][0].Lines[0].Text="changed";else if(kind=="major")b._npcMajorActions[kind][1].Text="changed";else b._compressedMemoryBlocks[kind][1].Summary="changed";}
+   if(edit=="nested") {if(kind=="daily")b._dailyMemoryDrafts[kind][0].WeeklyMaterialTriggers[0].Tags.Add("[ACTION:GIVE_ITEM:wood:1]");else if(kind=="major")b._npcMajorActions[kind][1].RelatedHeroIds.Add("nested");else b._compressedMemoryBlocks[kind][1].WeeklyMaterialTriggers[0].TriggerReason="changed";}
+   if(edit=="list") {if(kind=="daily")b._dailyMemoryDrafts[kind][0].Lines.Add(new(){Text="new",Scene="Town"});else if(kind=="major")b._npcMajorActions[kind].Add(new(){Day=10,Sequence=4,Text="new"});else b._compressedMemoryBlocks[kind].Add(Block(kind,11));}
+   if(edit=="state") {if(kind=="major")b._npcMajorActionSummaries[kind].LastSummarizedSequence=0;else if(kind=="overview")b._memoryOverviewStates[kind].IncludedBlockIds.Clear();else b._dailyMemoryDrafts[kind][0].LastSummaryError="new owner diagnostic";}
+   var r=b.requests.Single();Release(r,failure?new ApiCallResult{Success=false,ErrorMessage="old failure"}:Ok(r.Area));b.Finish(task);
+   Check(b.Obsolete(kind)&&!b.Success(kind)&&b.requests.Count==count,"changed "+kind+" "+edit+" accepted old "+(failure?"failure":"success"));MainReads();
+  }
+  static void Retry(string kind,bool invalidate) {
+   var b=Owner();var job=b.Seed(kind);var task=b.Start(new(){job});b.Until(()=>b.requests.Count==1);Release(b.requests.Single(),new(){Success=false,ErrorMessage="temporary",RetryAfterSeconds=2});
+   b.Until(()=>b.delays.Count==1||task.IsCompleted);Check(b.delays.Single().Ms==2000,"RetryAfter changed");
+   if(invalidate){if(kind=="daily")b._dailyMemoryDrafts[kind][0].Lines[0].Text="changed";else if(kind=="major")b._npcMajorActions[kind][1].Text="changed";else b._compressedMemoryBlocks[kind][1].Summary="changed";}
+   Task.Run(()=>b.delays.Single().Done.TrySetResult(true)).GetAwaiter().GetResult();
+   if(invalidate){b.Finish(task);Check(b.requests.Count==1&&b.Obsolete(kind),"stale source retried");}
+   else {b.Until(()=>b.requests.Count==2);Release(b.requests.Last(),new(){Success=true,Content="missing summary fields"});b.Until(()=>b.delays.Count==2);Check(b.delays.Last().Ms==1500,"parse retry default backoff");b.Finish(task);Check(b.requests.Count==3&&b.Success(kind),"three attempts/parse recovery");}
+   MainReads();
+  }
+  static void TerminalFailures(string kind) {
+   var b=Owner();var task=b.Start(new(){b.Seed(kind)});b.Until(()=>task.IsCompleted,()=>{foreach(var r in b.requests)if(!r.Done.Task.IsCompleted)Release(r,new(){Success=false,ErrorMessage="terminal"});foreach(var d in b.delays)d.Done.TrySetResult(true);});
+   Check(b.requests.Count==3&&!b.Success(kind)&&!b.Obsolete(kind)&&b.Error(kind)=="terminal","terminal retry count/error");MainReads();
+  }
+  static void LateGeneration() {var b=Owner();var task=b.Start(new(){b.Seed("daily"),b.Seed("major"),b.Seed("overview")});b.Until(()=>b.requests.Count==3);SaveRuntimeGuard.AdvanceGeneration("captured-load");b.Finish(task);foreach(var k in new[]{"daily","major","overview"})Check(b.Obsolete(k)&&!b.Success(k),"late generation accepted "+k);MainReads();}
+  static void IdentityChange(string dependency) {var b=Owner();var task=b.Start(new(){b.Seed("daily")});b.Until(()=>b.requests.Count==1);if(dependency=="trust")RewardSystemBehavior.Trust=-50;else if(dependency=="hero")b.heroes["daily"].Label="New name";else if(dependency=="rendering-alias")PlayerNotorietyBehavior.RenderingAlias="Changed anonymous alias";else PlayerNotorietyBehavior.PlayerName="Bob";b.Finish(task);Check(b.Obsolete("daily")&&!b.Success("daily"),"identity changed during provider");MainReads();}
+  static void WaveOrder() {var b=Owner();var jobs=Enumerable.Range(0,5).Select(i=>b.Seed("daily","daily"+i)).ToList();b.Finish(b.Start(jobs,2));Check(b.requests.Count==5&&b.dailyResults.Count==5&&b.dailyResults.All(x=>x.Success),"wave completion");Check(b.delays.Count==2&&b.delays.All(x=>x.Ms==60000),"RPM wave windows");Check(b.dailyResults.Select(x=>x.Job.HeroId).SequenceEqual(Enumerable.Range(0,5).Select(i=>"daily"+i)),"wave order");MainReads();}
+  static void ParseFormats() {
+   string[] inputs={"[TITLE]Trade[/TITLE][SUMMARY]body[/SUMMARY]","```json\n{\"rich_title\":\"Trade\",\"summary_content\":\"body\"}\n```","{\"irrelevant\":true} {\"title\":\"Trade\",\"content\":\"body\"}","{\"title\":\"Trade\",\"summary\":\"body"};
+   foreach(var text in inputs){var b=Owner();var task=b.Start(new(){b.Seed("daily")});b.Until(()=>b.requests.Count==1);Release(b.requests.Single(),new(){Success=true,Content=text});b.Finish(task);Check(b.requests.Count==1&&b.dailyResults.Single().Block.RichTitle=="Trade"&&b.dailyResults.Single().Block.Summary=="body","actual parser format: "+text);MainReads();}
+  }
+  static void CaptureDoesNotRepairSource(string kind) {
+   var b=Owner();var job=b.Seed(kind);
+   if(kind=="major"){b._npcMajorActionSummaries[kind].Summary="  old summary\r\n  ";b._npcMajorActionSummaries[kind].HeroName=" name ";}
+   else {b._compressedMemoryBlocks[kind][1].Summary="  prior summary  ";b._compressedMemoryBlocks[kind][1].Scenes.Add(" Town ");b._memoryOverviewStates[kind].Summary="  old overview\r\n ";}
+   string Before()=>JsonConvert.SerializeObject(new{b._npcMajorActions,b._npcMajorActionSummaries,b._compressedMemoryBlocks,b._memoryOverviewStates});
+   string original=Before();var input=b.CaptureMemorySummaryInput(job,SaveRuntimeGuard.CaptureGeneration());
+   Check(input!=null,"dirty input was not capturable");Check(Before()==original,"capture mutated live source during sanitizer/pending check");
+   Check(b.IsMemorySummaryInputCurrent(input),"unchanged dirty input spuriously stale");Check(Before()==original,"source revalidation mutated live source");MainReads();
+  }
+  static void RetiredQueueJob(string kind) {
+   var b=Owner();var job=b.Seed(kind);var task=b.Start(new(){job});b.Until(()=>b.requests.Count==1);
+   if(kind=="daily")b._memorySummaryQueue=new(){CloneMemorySummarySource((MemorySummaryJob)job)};
+   else if(kind=="major")b._npcMajorActionSummaryQueue=new(){CloneMemorySummarySource((MajorActionSummaryJob)job)};
+   else b._memoryOverviewQueue=new(){CloneMemorySummarySource((MemoryOverviewJob)job)};
+   b.Finish(task);Check(b.Obsolete(kind)&&!b.Success(kind),"replaced queue job accepted old result");MainReads();
+  }
+  static void LateOwner() {var b=Owner();var task=b.Start(new(){b.Seed("daily"),b.Seed("major"),b.Seed("overview")});b.Until(()=>b.requests.Count==3);Instance=new MyBehavior();Campaign.Owner=Instance;b.Finish(task);foreach(var k in new[]{"daily","major","overview"})Check(b.Obsolete(k)&&!b.Success(k),"late owner accepted "+k);MainReads();}
+  static void SanitizeIsolation(string kind,bool background) {
+   var b=Owner();b.Seed("daily");b.Seed("overview");
+   var draft=b._dailyMemoryDrafts["daily"][0];draft.HeroName=" NPC daily ";draft.Lines[0].Text=" dialogue source ";draft.Lines[0].GameHour=99;
+   var block=b._compressedMemoryBlocks["overview"][1];block.Summary=" summary ";block.Scenes.Add(" Town ");block.AfefLines.Add(" FACT ");
+   var trigger=Trigger("daily");trigger.NpcName=" NPC daily ";trigger.TriggerReason=" reason\r\n ";trigger.Tags.Add(" [ACTION:GIVE_ITEM:grain:2] ");
+   string Original()=>JsonConvert.SerializeObject(new{draft,block,trigger});string original=Original();
+   if(kind=="daily") {
+    var clean=background?Task.Run(()=>SanitizeDailyMemoryDrafts(new[]{draft})).GetAwaiter().GetResult().Single():SanitizeDailyMemoryDrafts(new[]{draft}).Single();
+    Check(ReferenceEquals(draft,clean)==!background,"daily publication/copy identity");
+    Check(clean.HeroName=="NPC daily"&&clean.Lines[0].Text=="dialogue source"&&clean.Lines[0].GameHour==23,"daily normalization");
+    if(background){Check(!ReferenceEquals(clean.Lines[0],draft.Lines[0])&&!ReferenceEquals(clean.WeeklyMaterialTriggers[0].Tags,draft.WeeklyMaterialTriggers[0].Tags),"daily nested alias");clean.Lines[0].Text="returned edit";clean.WeeklyMaterialTriggers[0].Tags.Add("edit");}
+   } else if(kind=="blocks") {
+    var clean=background?Task.Run(()=>SanitizeCompressedMemoryBlocks(new[]{block})).GetAwaiter().GetResult().Single():SanitizeCompressedMemoryBlocks(new[]{block}).Single();
+    Check(ReferenceEquals(block,clean)==!background,"block publication/copy identity");
+    Check(clean.Summary=="summary"&&clean.Scenes.SequenceEqual(new[]{"Town"})&&clean.AfefLines.SequenceEqual(new[]{"FACT"}),"block normalization");
+    if(background){Check(!ReferenceEquals(clean.WeeklyMaterialTriggers[0],block.WeeklyMaterialTriggers[0]),"block nested trigger alias");clean.WeeklyMaterialTriggers[0].Tags.Add("edit");clean.AfefLines.Add("edit");}
+   } else {
+    var clean=background?Task.Run(()=>SanitizeWeeklyMemoryMaterialTriggers(new[]{trigger})).GetAwaiter().GetResult().Single():SanitizeWeeklyMemoryMaterialTriggers(new[]{trigger}).Single();
+    Check(ReferenceEquals(trigger,clean)==!background,"weekly publication/copy identity");
+    Check(clean.NpcName=="NPC daily"&&clean.TriggerReason=="reason"&&clean.Tags.Count==1,"weekly normalization");
+    if(background){Check(!ReferenceEquals(clean.Tags,trigger.Tags),"weekly tags alias");clean.Tags.Add("edit");}
+   }
+   if(background)Check(Original()==original,"background sanitizer modified caller data");
+   MainReads();
+  }
+  static void LargeCaptureObservation() {
+   var b=Owner();var job=b.Seed("daily");var draft=b._dailyMemoryDrafts["daily"][0];
+   draft.Lines=Enumerable.Range(0,1000).Select(i=>new DailyMemoryLine{Text="line "+i+" dialogue factual source "+new string('x',70),GameDayIndex=10,GameHour=i%24,GameDate="Summer 10",Scene="Town",Speaker="player",IsLlmDialogue=true}).ToList();
+   long before=GC.GetAllocatedBytesForCurrentThread();var timer=Stopwatch.StartNew();
+   var captured=b.CaptureMemorySummaryInput(job,SaveRuntimeGuard.CaptureGeneration());timer.Stop();long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
+   Check(captured!=null&&captured.Draft.Lines.Count==1000,"large capture lost records");
+   Console.WriteLine($"CAPTURE_OBSERVATION source_records={draft.Lines.Count} captured_records={captured.Draft.Lines.Count} atomic_capture_ms={timer.Elapsed.TotalMilliseconds:F3} allocated_bytes={allocated} prompt_chars={captured.SystemPrompt.Length+captured.UserPrompt.Length} budget_acceptance=NOT_PROVEN one_unsliced_capture=true");MainReads();
+  }
+  static void RetireBetweenWaves(bool ownerChange) {
+   var b=Owner();var jobs=new List<object>{b.Seed("daily","daily-first"),b.Seed("daily","daily-next"),b.Seed("major")};var task=b.Start(jobs,1);
+   b.Until(()=>b.requests.Count==1);var first=b.requests.Single();Release(first,Ok(first.Area));
+   b.Until(()=>b.delays.Count==1);Check(b.delays.Single().Ms==60000&&b.dailyResults.Count==1&&b.dailyResults[0].Success,"first wave did not complete before spacing");
+   Check(Probe.QueueDispatches==1,"later wave dispatched before its clock window");
+   if(ownerChange){Instance=new MyBehavior();Campaign.Owner=Instance;}else SaveRuntimeGuard.AdvanceGeneration("captured-wave-load");
+   Task.Run(()=>b.delays.Single().Done.TrySetResult(true)).GetAwaiter().GetResult();b.Finish(task);
+   Check(b.requests.Count==1&&Probe.QueueDispatches==1,"retired wave started fresh work or HTTP");
+   Check(b.dailyResults.Count==1&&b.majorResults.Count==0&&b.delays.Count==1,"retired wave changed completed results or scheduled further waits");MainReads();
+  }
+  static int Main() {
+   TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>{("three-kinds-metadata",ThreeKinds),("detached-source",Detached),("late-generation",LateGeneration),("late-owner",LateOwner),("major-capture-pure",()=>CaptureDoesNotRepairSource("major")),("overview-capture-pure",()=>CaptureDoesNotRepairSource("overview")),("rpm-wave-order",WaveOrder),("generation-during-wave-spacing",()=>RetireBetweenWaves(false)),("owner-during-wave-spacing",()=>RetireBetweenWaves(true)),("parser-formats",ParseFormats),("large-capture-observation",LargeCaptureObservation)};
+   foreach(var kind in new[]{"daily","blocks","weekly"})foreach(var background in new[]{false,true}){var k=kind;var bg=background;cases.Add((k+(bg?"-background-sanitize":"-main-sanitize"),()=>SanitizeIsolation(k,bg)));}
+   foreach(var kind in new[]{"daily","major","overview"}) {
+    foreach(var edit in new[]{"body","nested","list","state"})foreach(var fail in new[]{false,true}){var k=kind;var e=edit;var f=fail;cases.Add((k+"-"+e+"-"+(f?"failure":"success"),()=>Changed(k,e,f)));}
+    var local=kind;cases.Add((kind+"-retired-queue-job",()=>RetiredQueueJob(local)));cases.Add((kind+"-valid-retry",()=>Retry(local,false)));cases.Add((kind+"-stale-retry",()=>Retry(local,true)));cases.Add((kind+"-terminal-failures",()=>TerminalFailures(local)));
+   }
+   foreach(var dep in new[]{"trust","hero","player","rendering-alias"}){var d=dep;cases.Add(("identity-"+d,()=>IdentityChange(d)));}
+   int pass=0,failures=0;foreach(var (name,run) in cases){try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){failures++;Console.WriteLine("FAIL "+name+": "+ex.Message);}}
+   Console.WriteLine($"CAPTURED_RESULT pass={pass} fail={failures} LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN");return failures==0?0:1;
+  }
+ }
+}
