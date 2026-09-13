@@ -1,3 +1,15 @@
+# AF 总 HANDOFF — 本机继续 B1 集成与主体职责提取（2026-09-14）
+
+**当前用户授权恢复源码工作；自动化仍暂停，不部署、不推送。**
+
+- 当前工作区 `G:/AFMOD/AF-REFACTOR`，分支 `codex/af-framework-skill-delivery-20260911`；起点 `3f00fefa`（已同步远端）。下方其他机器路径/依赖缺失和历史“未推送”不选择本机环境。
+- 当前阶段仍为 8 / B1-P1，手动 ACTIVE。先完成现有 9 个未审项的真实集成验证，再按主体职责提取素材索引运行时，不靠挪 partial 凑拆分。
+- 既有复测：business36、sealing30/8反例、materials23及旧版对照；这不是本轮后续修改的验收。当前严格 inverse 仍拒绝 WIP，地图仍绑定 `62abfdb3`。
+- 详细范围/风险/验证在[实施台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)当前段。后续仍沿用[原计划第15节](docs/phase8/af-core-precloseout-plan-20260913.md)，不扩到制作组玩法。
+- 两份用户草稿、本地专用 Native 简明版保留；不修改全局 Skill 或其他工作树。所有完成与不足在本轮最终交接更新。
+
+## 以下为历史，当前实施以上方入口为准
+
 # AF 总 HANDOFF — B1-P1 步骤 A：未审反例日志指针（2026-09-14）
 
 **用户已恢复开发。当前只做阶段 8 / B1-P1 步骤 A，不是阶段 8 DONE，不进入 B2/B3。**
