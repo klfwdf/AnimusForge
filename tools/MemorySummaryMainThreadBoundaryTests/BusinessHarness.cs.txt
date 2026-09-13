@@ -34,6 +34,7 @@ namespace TaleWorlds.CampaignSystem
         public static Campaign Current { get { AnimusForge.Witness.Touch("campaign-read"); return Value; } }
         public T GetCampaignBehavior<T>() where T : class => Owner as T;
     }
+    public readonly struct CampaignTime { public static CampaignTime Now => new CampaignTime(); public double ToDays => 10; }
     public sealed class Hero
     {
         public string Name;
@@ -56,6 +57,7 @@ namespace AnimusForge
         internal static int Count(string prefix) => Events.Count(x => x.Name.StartsWith(prefix, StringComparison.Ordinal));
         internal static void Reset() { Events.Clear(); Tick = 0; }
     }
+    public static class PerfProbe { private sealed class ScopeToken : IDisposable { public void Dispose() {} } public static IDisposable Scope(string area) => new ScopeToken(); }
     public static class Logger { public static void Log(string area, string text) { } }
     public static class ShoutBehavior
     {
@@ -69,8 +71,17 @@ namespace AnimusForge
     }
     public partial class MyBehavior
     {
+  // Timing belongs to the helper suite; keep count/functional scenarios independent of JIT/load.
+  private static double GetDailyMaintenanceFrameBudgetMs() => 1000.0;
+
         public static MyBehavior Instance { get; private set; }
         private bool _memorySummaryProcessing;
+        private long _lastMemoryOverviewCandidateScanUtcTicks;
+        private int _lastMemoryMaintenanceObservedGameDay = -1;
+        private bool busy;
+        private bool IsDialogueOrLetterChainBusyForMemorySummary() => busy;
+        private bool HasPastDailyMemoryDrafts(int day) { Witness.Touch("past-draft-seam"); return false; }
+        private bool TrySealPastDailyMemoryDrafts(long start, double budget) { Witness.Touch("seal-seam"); return true; }
         private List<MemorySummaryJob> _memorySummaryQueue = new List<MemorySummaryJob>();
         private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
         private List<MemoryOverviewJob> _memoryOverviewQueue = new List<MemoryOverviewJob>();
@@ -90,6 +101,7 @@ namespace AnimusForge
         private readonly TaskCompletionSource<bool> clockGate = NewGate();
         private int clockCalls;
         private bool providerThrows;
+        private bool throwAfterBlockPublish, throwAfterWeeklyPublish, throwAfterRetryMark;
         private bool providerCompletesSynchronously;
         private bool includeMalformedResults;
 
@@ -166,7 +178,7 @@ namespace AnimusForge
         private List<CompressedMemoryBlock> LoadCompressedMemoryBlocksById(string id)
         { Witness.Touch("load-blocks"); return _compressedMemoryBlocks.TryGetValue(id, out var value) ? value.ToList() : new List<CompressedMemoryBlock>(); }
         private void SaveCompressedMemoryBlocksById(string id, List<CompressedMemoryBlock> value)
-        { Witness.Touch("save-blocks"); _compressedMemoryBlocks[id] = value; }
+        { Witness.Touch("save-blocks"); _compressedMemoryBlocks[id] = value; if(throwAfterBlockPublish) throw new InvalidOperationException("scripted failure after block publish"); }
         private List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string id)
         { Witness.Touch("load-drafts"); return _dailyMemoryDrafts[id].ToList(); }
         private void SaveDailyMemoryDraftsById(string id, List<DailyMemoryDraft> value)
@@ -191,7 +203,7 @@ namespace AnimusForge
             if (enqueueOverviewAfterDaily.Contains(id) && !_memoryOverviewQueue.Any(x => x.HeroId == id))
                 _memoryOverviewQueue.Add(new MemoryOverviewJob { HeroId = id, HeroName = name, TriggerGameDayIndex = 10 });
         }
-        private void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block) => Witness.Touch("weekly-public:" + block.Id);
+        private void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block) { Witness.Touch("weekly-public:" + block.Id); if(throwAfterWeeklyPublish) throw new InvalidOperationException("scripted failure after weekly publish"); }
         private void RecordWeeklyMemoryMaterialForBlock(CompressedMemoryBlock block) => Witness.Touch("weekly:" + block.Id);
         // Publish is allowed off-thread. Delivery belongs to the separately tested UI owner.
         private void PublishMemoryFailureNotice(string title, string message, long generation) => Witness.Touch("popup-publish:" + title + ":" + message);
@@ -434,6 +446,107 @@ namespace AnimusForge
             Console.WriteLine("BUDGET_OBSERVATION actual_apply_max_per_tick=" + peak + " (jobs only; not record/time budget acceptance)");
             MainThreadEffects();
         }
+        private static void PartialCompletionException(string stage)
+        {
+            var b=NewOwner();var first=b.AddDaily("first");b.AddDaily("later");
+            b.throwAfterBlockPublish=stage=="block";b.throwAfterWeeklyPublish=stage=="weekly";b.throwAfterRetryMark=stage=="mark";
+            if(stage=="mark")b.failures.Add(JobKey(first));
+            b.Finish(b.Start());
+            Check(Witness.Count("popup-publish:压缩记忆总结异常")==1 && Witness.Count("ui:AnimusForge 日结压缩完成")==0,
+                "partial "+stage+" error was silently rejected or reported complete");
+            Check(Witness.Events.Any(x=>x.Name.Contains("任务可能已有部分写入")),"partial exception did not explain partial execution");
+            Check(!b._memorySummaryProcessing&&b.batches.Count==1&&b._dailyMemoryDrafts["later"].Count==1&&!b._compressedMemoryBlocks.ContainsKey("later"),
+                "partial exception lost release, replayed provider or applied later results");
+            if(stage=="mark") {
+                Check(first.RetryCount==3&&first.LastError=="provider-error"&&b._dailyMemoryDrafts["first"].Single().SummaryRetryCount==0,
+                    "real Mark partial queue state was undone or remaining draft write continued");
+                Check(applied==0&&Witness.Count("Mark")==1,"Mark exception was repeated or applied success");
+            } else {
+                Check(b._compressedMemoryBlocks["first"].Count==1&&applied==1,"published block was lost or replayed");
+                Check(b._dailyMemoryDrafts["first"].Count==(stage=="block"?1:0),"source state does not match the actual failure boundary");
+                Check(Witness.Count("weekly-public:")==(stage=="weekly"?1:0)&&Witness.Count("weekly:")==0,"weekly side effects continued/replayed after failure");
+            }
+            int effects=Witness.Events.Count;for(int i=0;i<5;i++)b.Tick();
+            Check(Witness.Events.Count==effects,"extra ticks replayed stopped partial work");MainThreadEffects();
+        }
+        private void FinishAdmission()
+        {
+            Until(() => !_memorySummaryProcessing, () => { ReleaseProviders(); clockGate.TrySetResult(true); Tick(); });
+            Tick();
+        }
+        private static void AdmissionDefersEligibility(bool maintenance)
+        {
+            var b = NewOwner(); b.AddDaily("daily");
+            b.RunMemorySummaryMainThreadAsync(SaveRuntimeGuard.CaptureGeneration(), () => true).GetAwaiter().GetResult();
+            b.RunMemorySummaryMainThreadAsync(SaveRuntimeGuard.CaptureGeneration(), () => true).GetAwaiter().GetResult();
+            if (maintenance) b.TryRunCampaignMemoryMaintenance(); else b.TryStartMemorySummaryQueue();
+            Check(b._memorySummaryProcessing && b.batches.Count == 0 && Witness.Count("eligibility") == 0,
+                "admission rescanned sources before guarded planner could run");
+            b.FinishAdmission(); Check(applied == 1 && b.batches.Count == 1, "admitted work did not complete once"); MainThreadEffects();
+        }
+        private static void TerminalDuplicateKeepsRunnable(string kind)
+        {
+            var b = NewOwner(); object live;
+            if (kind == "daily") { live = b.AddDaily("daily"); b._memorySummaryQueue.Insert(0,new MemorySummaryJob { HeroId="daily",GameDayIndex=10,RetryCount=3 }); }
+            else if (kind == "major") { live=b.AddMajor("major");b._npcMajorActionSummaryQueue.Insert(0,new MajorActionSummaryJob {HeroId="major",RetryCount=3}); }
+            else { live=b.AddOverview("overview");b._memoryOverviewQueue.Insert(0,new MemoryOverviewJob {HeroId="overview",RetryCount=3}); }
+            b.TryStartMemorySummaryQueue(); b.FinishAdmission();
+            Check(b.batches.Count == 1 && b.batches.Single().Items.Count == 1 && ReferenceEquals(b.batches.Single().Items[0],live),
+                "terminal duplicate masked the later runnable "+kind+" entry");
+            Check(applied == 1, "runnable duplicate not applied");b.CleanQueues();MainThreadEffects();
+        }
+        private static void InvalidOnlyDoesNotSpin()
+        {
+            var b=NewOwner(); b.AddDaily("done").RetryCount=3; b._memorySummaryQueue.Add(null);
+            b.TryRunCampaignMemoryMaintenance();b.FinishAdmission();b.CleanQueues();
+            int scans=Witness.Count("cancel-unavailable-scan"),pastScans=Witness.Count("past-draft-seam");
+            for(int i=0;i<20;i++){b.TryRunCampaignMemoryMaintenance();b.Tick();}
+            Check(b.batches.IsEmpty&&!b._memorySummaryProcessing&&Witness.Count("cancel-unavailable-scan")==scans&&Witness.Count("past-draft-seam")==pastScans,
+                "invalid-only queue restarted maintenance each tick");MainThreadEffects();
+        }
+        private static void ForceRescanAfterInvalidAdmission()
+        {
+            var b=NewOwner();b.AddDaily("done").RetryCount=3;b._compressedMemoryBlocks["candidate"]=new(){Block("candidate",10)};
+            b._lastMemoryOverviewCandidateScanUtcTicks=DateTime.UtcNow.AddMinutes(5).Ticks;
+            b.TryStartMemorySummaryQueue(true);b.FinishAdmission();
+            Check(Witness.Count("deferred-overview:candidate")==1&&b.batches.IsEmpty,"force rescan lost behind invalid raw queue");
+            b.CleanQueues();MainThreadEffects();
+        }
+        private static void EmptyRescanThrottle()
+        {
+            var b=NewOwner();b._compressedMemoryBlocks["candidate"]=new(){Block("candidate",10)};
+            b._dirtyMemoryOverviewIds.Add("candidate");b.TryStartMemorySummaryQueue();
+            Check(Witness.Count("deferred-overview:candidate")==1&&!b._memorySummaryProcessing,"empty dirty candidate scan missing");
+            b._lastMemoryOverviewCandidateScanUtcTicks=DateTime.UtcNow.AddMinutes(5).Ticks;
+            b._dirtyMemoryOverviewIds.Add("candidate");b.TryStartMemorySummaryQueue();
+            Check(Witness.Count("deferred-overview:candidate")==1&&b._dirtyMemoryOverviewIds.Contains("candidate"),"throttle cleared pending dirty input");
+            b.TryStartMemorySummaryQueue(true);
+            Check(Witness.Count("deferred-overview:candidate")==2&&b.batches.IsEmpty,"forced all-candidate scan ignored throttle override");MainThreadEffects();
+        }
+        private static void NewQueueEntrySurvivesCleanup()
+        {
+            var b=NewOwner();b.AddDaily("first");b.TryStartMemorySummaryQueue();
+            Until(()=>b.batches.Count==1,()=>b.Tick());var added=b.AddDaily("later");
+            b.FinishAdmission();
+            Check(b.batches.Count==1&&b._memorySummaryQueue.Count==1&&ReferenceEquals(b._memorySummaryQueue[0],added)&&b._dailyMemoryDrafts["later"].Count==1,
+                "cleanup erased newly enqueued runnable work");
+            b.TryRunCampaignMemoryMaintenance();b.FinishAdmission();
+            Check(b.batches.Count==2&&applied==2,"retained entry did not execute in following batch");MainThreadEffects();
+        }
+        private static void BackgroundAdmissionDoesNotFilter()
+        {
+            var b=NewOwner();b.AddDaily("daily");Task.Run(()=>b.TryStartMemorySummaryQueue()).GetAwaiter().GetResult();
+            Check(b._memorySummaryProcessing&&b.batches.Count==0&&Witness.Count("eligibility")==0&&Witness.Count("cancel-unavailable-scan")==0,
+                "worker admission executed planner or source reads instead of publishing");
+            b.FinishAdmission();Check(applied==1,"worker-published request did not complete");MainThreadEffects();
+        }
+        private static void BusyAdmissionPreservesQueue()
+        {
+            var b=NewOwner();b.AddDaily("daily");b.busy=true;
+            b.TryRunCampaignMemoryMaintenance();b.TryStartMemorySummaryQueue();
+            Check(!b._memorySummaryProcessing&&b.batches.IsEmpty&&b._memorySummaryQueue.Count==1&&Witness.Count("eligibility")==0,
+                "busy caller consumed queued work");b.busy=false;b.TryStartMemorySummaryQueue();b.FinishAdmission();Check(applied==1,"busy deferral lost work");MainThreadEffects();
+        }
         private static int Main()
         {
             TWParallel.MainId = Thread.CurrentThread.ManagedThreadId;
@@ -449,7 +562,15 @@ namespace AnimusForge
                 ("target-removed-after-await", TargetRemovedAfterAwait), ("actual-work-budget-observation", () => BudgetWitness()),
                 ("synchronous-provider-job-budget", () => BudgetWitness(true)),
                 ("same-generation-source-changed", () => RejectedSources(false)), ("missing-source-proof", () => RejectedSources(true)),
-                ("changed-source-failure-discard", RejectedFailureSources), ("mixed-accepted-counts", MixedAcceptedCounts)
+                ("changed-source-failure-discard", RejectedFailureSources), ("mixed-accepted-counts", MixedAcceptedCounts),
+                ("admission-defers-eligibility",()=>AdmissionDefersEligibility(false)),("maintenance-defers-eligibility",()=>AdmissionDefersEligibility(true)),
+                ("daily-terminal-duplicate",()=>TerminalDuplicateKeepsRunnable("daily")),("major-terminal-duplicate",()=>TerminalDuplicateKeepsRunnable("major")),("overview-terminal-duplicate",()=>TerminalDuplicateKeepsRunnable("overview")),
+                ("invalid-only-no-maintenance-spin",InvalidOnlyDoesNotSpin),("force-scan-after-invalid-admission",ForceRescanAfterInvalidAdmission),
+                ("empty-candidate-scan-throttle",EmptyRescanThrottle),("new-queue-entry-survives-cleanup",NewQueueEntrySurvivesCleanup),
+                ("worker-admission-no-source-read",BackgroundAdmissionDoesNotFilter),("busy-admission-retains-work",BusyAdmissionPreservesQueue),
+                ("partial-apply-block-exception",()=>PartialCompletionException("block")),
+                ("partial-apply-weekly-exception",()=>PartialCompletionException("weekly")),
+                ("partial-mark-exception",()=>PartialCompletionException("mark"))
             };
             foreach (var test in cases)
             {

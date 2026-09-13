@@ -47,12 +47,18 @@ METHODS = [
     "private static string NormalizeMemoryHeroId(", "private static bool IsNonHeroMemoryId(",
     "private void QueueDirtyMemoryOverviewCandidatesForDeferredScan(",
     "private void ShowCompressedMemoryBlockingPopup(",
+    "private void TryStartMemorySummaryQueue(",
+    "private bool ShouldScanMemoryOverviewCandidates(",
+    "private void TryRunCampaignMemoryMaintenance(",
+    "private void QueueAllMemoryOverviewCandidatesForDeferredScan(",
+    "private static bool IsDailyMaintenanceBudgetExceeded(",
 ]
 MUTATIONS = ["worker-primary", "worker-extra", "worker-cleanup", "worker-release",
              "omit-release", "omit-cleanup", "omit-mark-daily", "omit-mark-major",
              "omit-mark-overview", "duplicate-apply", "accept-obsolete", "ignore-owner",
              "ignore-generation", "ignore-draft-owner", "ignore-source", "miscount-obsolete",
-             "worker-initial", "worker-major", "worker-extra-plan", "count-rejected-apply"]
+             "worker-initial", "worker-major", "worker-extra-plan", "count-rejected-apply",
+             "admission-rescan", "maintenance-rescan", "drop-forced-rescan", "dedupe-before-filter", "keep-invalid-queue", "swallow-completion-error", "bypass-completion-error-wrapper"]
 
 
 def replace_exact(text, old, new, count=1):
@@ -70,7 +76,9 @@ def build_sources(original, mutation):
     constant = re.search(r'private const string NonHeroMemoryIdPrefix = [^;]+;', source)
     if constant is None:
         raise ValueError("Missing nonhero identity constant")
-    declarations = [constant.group()]
+    throttle = re.search(r'private const double MemoryOverviewCandidateScanThrottleSeconds = [^;]+;', source)
+    if throttle is None: raise ValueError("Missing overview throttle constant")
+    declarations = [constant.group(), throttle.group()]
     positions = []
     for signature in signatures:
         # e40c92d7 Apply methods were void; candidate returns its actual acceptance receipt.
@@ -85,23 +93,43 @@ def build_sources(original, mutation):
             name = re.search(r"(\w+)\($", signature)[1]
             opening = block.index("{") + 1
             block = block[:opening] + f'\n Witness.Touch("{name}");' + block[opening:]
+        if signature == "private void MarkMemorySummaryFailure(":
+            # Fault injection after the real queue retry mutation, not a replacement Mark method.
+            block = replace_exact(block, "DailyMemoryDraft draft = FindMemoryDraft(job);",
+                'if (throwAfterRetryMark) throw new InvalidOperationException("scripted failure after retry mark");\nDailyMemoryDraft draft = FindMemoryDraft(job);')
         if signature == "private DailyMemoryDraft FindMemoryDraft(" and mutation == "ignore-draft-owner":
             block = replace_exact(block,
                 " && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)", "")
+        if signature == "private void TryStartMemorySummaryQueue(":
+            if mutation == "admission-rescan":
+                block = replace_exact(block, "bool hasMemoryJobs = (_memorySummaryQueue?.Count ?? 0) > 0;",
+                    "bool hasMemoryJobs = (_memorySummaryQueue?.Any(HasMemorySummaryJobStillPending) ?? false);")
+            elif mutation == "drop-forced-rescan":
+                block = replace_exact(block, "ProcessMemorySummaryQueueAsync(forceOverviewCandidateScan);", "ProcessMemorySummaryQueueAsync();")
+        if signature == "private void TryRunCampaignMemoryMaintenance(" and mutation == "maintenance-rescan":
+            block = replace_exact(block, "(_memorySummaryQueue?.Count ?? 0) > 0", "(_memorySummaryQueue?.Any(HasMemorySummaryJobStillPending) ?? false)")
         if signature == METHODS[0]:
             block = replace_exact(block, "await Task.Delay(60000);", "await WaitOverviewWindowAsync();")
             block = replace_exact(block, "_memorySummaryProcessing = false;",
                                   'Witness.Touch("release"); _memorySummaryProcessing = false;')
             if mutation and mutation.startswith("worker-"):
                 # Mutate the actual caller, not merely the scheduler helper.
-                marker = "await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate"
-                matches = list(re.finditer(re.escape(marker), block))
+                marker = r"await RunMemorySummary(?:MainThread|Completion)Async\(runtimeGeneration, delegate"
+                matches = list(re.finditer(marker, block))
                 if len(matches) != 7:
                     raise ValueError("Expected initial/daily/major/overview/extra-plan/cleanup/release dispatches")
                 which = {"worker-initial": 0, "worker-primary": 1, "worker-major": 2,
                          "worker-extra": 3, "worker-extra-plan": 4, "worker-cleanup": 5, "worker-release": 6}[mutation]
                 hit = matches[which]
                 block = block[:hit.start()] + "await Task.Run(delegate" + block[hit.end():]
+            elif mutation == "bypass-completion-error-wrapper":
+                block = replace_exact(block, "await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate", "await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate", count=6)
+            elif mutation == "dedupe-before-filter":
+                for field, typename, sanitizer, pending in [("_memorySummaryQueue", "MemorySummaryJob", "SanitizeMemorySummaryQueue", "HasMemorySummaryJobStillPending"), ("_npcMajorActionSummaryQueue", "MajorActionSummaryJob", "SanitizeMajorActionSummaryQueue", "HasMajorActionSummaryJobStillPending"), ("_memoryOverviewQueue", "MemoryOverviewJob", "SanitizeMemoryOverviewQueue", "HasMemoryOverviewJobStillPending")]:
+                    block = replace_exact(block, f"{sanitizer}(({field} ?? new List<{typename}>()).Where({pending}))", f"{sanitizer}({field}).Where({pending}).ToList()")
+            elif mutation == "keep-invalid-queue":
+                for assignment in ["_memorySummaryQueue = jobs;", "_npcMajorActionSummaryQueue = majorJobs;", "_memoryOverviewQueue = pending;"]:
+                    block = replace_exact(block, assignment, "/* fault: invalid raw entries stay live */")
             elif mutation == "omit-release":
                 block = replace_exact(block, "_memorySummaryProcessing = false;", "/* fault: no processing release */")
             elif mutation == "omit-cleanup":
@@ -146,18 +174,21 @@ def build_sources(original, mutation):
             line=helper_source[:helper_source.index(clone)].count("\n") + 1, lines=clone.count("\n") + 1,
             sha256=hashlib.sha256(clone.encode()).hexdigest()))
     boundary = extractor.source("MyBehavior.MemorySummaryMainThread.cs", None)
-    if mutation == "ignore-owner":
+    if mutation == "swallow-completion-error":
+        boundary = replace_exact(boundary, "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")
+    elif mutation == "ignore-owner":
         boundary = boundary.replace("ReferenceEquals(Instance, this)", "true")
         boundary = boundary.replace("ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this)", "true")
     elif mutation == "ignore-generation":
         boundary = boundary.replace("SaveRuntimeGuard.IsCurrentGeneration(generation)", "true")
-    prefix = "using Newtonsoft.Json; using System; using System.Collections.Generic; using System.Linq; using System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library;\nnamespace AnimusForge { public partial class MyBehavior {\n"
+    prefix = "using Newtonsoft.Json; using System; using System.Diagnostics; using System.Collections.Generic; using System.Linq; using System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library;\nnamespace AnimusForge { public partial class MyBehavior {\n"
     manifest = dict(source_revision=BASELINE if original else subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         production_file_sha256=hashlib.sha256(source.encode()).hexdigest(), declarations=positions,
         mutation=mutation, test_only_seams=["60s delay -> controlled asynchronous clock gate",
-        "entry trace at six actual Apply/Mark methods", "trace before actual processing-release assignment",
-        "completion source predicate -> independently invalidatable fixture key (not real hash)"],
+        "entry trace at six actual Apply/Mark methods", "optional test fault after actual MarkDaily queue retry update", "trace before actual processing-release assignment",
+        "completion source predicate -> independently invalidatable fixture key (not real hash)",
+        "real TryStart/TryRunMaintenance/ShouldScan/QueueAll; past-draft seal, busy/current-day and candidate-ID terminal are fixtures"],
         limitations=["Not full MyBehavior/EngineTick", "provider executor and lower game/storage/weekly/UI boundaries are fixtures",
                      "No exact source fingerprint, provider retries/RPM, game/save or record/time budget proof"],
         has_input_source=not original)
@@ -187,7 +218,7 @@ def main():
     for name, data in files.items():
         (out / name).write_bytes(data.encode("utf-8"))
     (out / "manifest.json").write_bytes(json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"))
-    dotnet = Path(os.environ.get("DOTNET_EXE", r"C:\Program Files\dotnet\dotnet.exe"))
+    dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT.parent / ".dotnet-sdk/dotnet.exe")))
     env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
                NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(ROOT / ".tmp/appdata"),
                DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
@@ -212,4 +243,9 @@ def main():
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        result = main()
+    except Exception as exc:
+        print("BUSINESS_TOOL_ERROR " + type(exc).__name__ + ": " + str(exc))
+        result = 2
+    raise SystemExit(result)

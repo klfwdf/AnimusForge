@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -43,6 +44,8 @@ namespace AnimusForge
 
     public partial class MyBehavior
     {
+        public static double BudgetMsForTests = 1000.0;
+        private static double GetDailyMaintenanceFrameBudgetMs() => BudgetMsForTests;
         public static MyBehavior Instance { get; set; }
         public int PendingMemorySummaryMainThreadActionCountForTests => _memorySummaryMainThreadActions.Count;
         public Task<bool> Queue(long generation, Func<bool> operation) =>
@@ -66,6 +69,7 @@ namespace AnimusForge
             TWParallel.MainId = Thread.CurrentThread.ManagedThreadId;
             TaleWorlds.CampaignSystem.Campaign.Available = true;
             TaleWorlds.CampaignSystem.Campaign.OffThreadReads = 0;
+            MyBehavior.BudgetMsForTests = 1000.0;
             var owner = new MyBehavior();
             MyBehavior.Instance = owner;
             TaleWorlds.CampaignSystem.Campaign.Owner = owner;
@@ -172,6 +176,47 @@ namespace AnimusForge
                 SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0, 1000);
                 Task.Run(f.Owner.Tick).GetAwaiter().GetResult(); Check(applied == 0 && !pending.IsCompleted, "wrong-thread drain refuses work");
                 f.Owner.Tick(); Check(pending.GetAwaiter().GetResult() && applied == 1, "valid tick later accepts work");
+            }
+            // Execute the production Stopwatch path. Deliberately slow operations are not
+            // preemptible; the guarantee is that no further work starts in that same Tick.
+            {
+                var f = NewOwner(); int applied = 0;
+                MyBehavior.BudgetMsForTests = 1.0;
+                var slow = f.Owner.Queue(f.Generation, () => { Thread.Sleep(20); applied++; return true; });
+                var next = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                Check(slow.IsCompletedSuccessfully && slow.Result && applied == 1,
+                    "slow inline unit completes atomically without preemption");
+                Check(!next.IsCompleted && applied == 1,
+                    "inline elapsed budget defers second operation despite unused job allowance");
+                f.Owner.Tick();
+                Check(next.Wait(1000) && next.Result && applied == 2, "tick restores time budget after slow inline unit");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                MyBehavior.BudgetMsForTests = 1.0;
+                var slow = Publish(f.Owner, f.Generation, () => { Thread.Sleep(20); applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests == 1, 1000);
+                var next = Publish(f.Owner, f.Generation, () => { applied++; return true; });
+                SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests == 2, 1000);
+                f.Owner.Tick();
+                Check(slow.Wait(1000) && slow.Result && applied == 1 && !next.IsCompleted,
+                    "queued elapsed budget stops drain before second operation");
+                var inline = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                Check(!inline.IsCompleted && applied == 1, "inline cannot escape elapsed budget exhausted by drain");
+                MyBehavior.BudgetMsForTests = 1000.0;
+                f.Owner.Tick();
+                Check(next.Wait(1000) && next.Result && inline.IsCompletedSuccessfully && inline.Result && applied == 3,
+                    "next tick restores shared time allowance without loss or duplicate");
+            }
+            {
+                var f = NewOwner(); int applied = 0;
+                MyBehavior.BudgetMsForTests = 1.0;
+                var slow = f.Owner.Queue(f.Generation, () => { Thread.Sleep(20); throw new InvalidOperationException("timed fixture"); });
+                var next = f.Owner.Queue(f.Generation, () => { applied++; return true; });
+                Check(slow.IsCompletedSuccessfully && !slow.Result && !next.IsCompleted && applied == 0,
+                    "failed operation time still consumes shared budget");
+                f.Owner.Tick();
+                Check(next.Wait(1000) && next.Result && applied == 1, "failed timed operation does not strand later work");
             }
             Console.WriteLine($"{(_failures == 0 ? "PASS" : "FAIL")} MemorySummaryMainThread checks={_checks} failures={_failures} LIVE=NOT_RUN SAVE=NOT_RUN");
             return _failures == 0 ? 0 : 1;

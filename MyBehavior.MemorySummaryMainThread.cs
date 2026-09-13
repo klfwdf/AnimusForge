@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
@@ -11,6 +13,16 @@ public partial class MyBehavior
 {
     private const int MemorySummaryMainThreadActionsPerTick = 2;
     private int _memorySummaryMainThreadActionsThisTick;
+    private long _memorySummaryMainThreadElapsedTicks;
+
+    // Charge actual executed work, not the idle time between producer calls. The
+    // existing maintenance setting is a cooperative limit, not an atomic-work timeout.
+    private bool HasMemorySummaryMainThreadAllowance()
+    {
+        return _memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick
+            && _memorySummaryMainThreadElapsedTicks * 1000.0 / Stopwatch.Frequency
+                < GetDailyMaintenanceFrameBudgetMs();
+    }
 
     private sealed class MemorySummaryMainThreadAction
     {
@@ -39,7 +51,7 @@ public partial class MyBehavior
 
     // A completion now represents one business result, not a foreach over all results.
     // Inline and queued calls share the same allowance, including synchronous providers.
-    // Large atomic capture/apply internals still require separate record/time accounting.
+    // A single atomic capture/apply may overrun; no second operation starts after it does.
     private readonly ConcurrentQueue<MemorySummaryMainThreadAction> _memorySummaryMainThreadActions =
         new ConcurrentQueue<MemorySummaryMainThreadAction>();
 
@@ -50,7 +62,7 @@ public partial class MyBehavior
             return Task.FromResult(false);
         }
         if (TWParallel.IsMainThread() && _memorySummaryMainThreadActions.IsEmpty
-            && _memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick)
+            && HasMemorySummaryMainThreadAllowance())
         {
             _memorySummaryMainThreadActionsThisTick++;
             return Task.FromResult(TryApplyMemorySummaryMainThreadAction(generation, operation));
@@ -70,6 +82,21 @@ public partial class MyBehavior
         return work.Completion.Task;
     }
 
+    // Queue completion must distinguish rejection from a partially executed operation.
+    // Keep legacy writer/capture false-on-error semantics; only the queue coordinator
+    // receives the original exception and reports it, without replaying side effects.
+    private async Task<bool> RunMemorySummaryCompletionAsync(long generation, Func<bool> operation)
+    {
+        Exception failure = null;
+        bool accepted = await RunMemorySummaryMainThreadAsync(generation, delegate
+        {
+            try { return operation(); }
+            catch (Exception ex) { failure = ex; return true; }
+        });
+        if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();
+        return accepted;
+    }
+
     private bool TryApplyMemorySummaryMainThreadAction(long generation, Func<bool> operation)
     {
         if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this)
@@ -77,6 +104,7 @@ public partial class MyBehavior
         {
             return false;
         }
+        long started = Stopwatch.GetTimestamp();
         try
         {
             if (!ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this))
@@ -91,6 +119,10 @@ public partial class MyBehavior
             catch (Exception) { }
             return false;
         }
+        finally
+        {
+            _memorySummaryMainThreadElapsedTicks += Stopwatch.GetTimestamp() - started;
+        }
     }
 
     private void ProcessMemorySummaryMainThreadActions()
@@ -100,7 +132,8 @@ public partial class MyBehavior
             return;
         }
         _memorySummaryMainThreadActionsThisTick = 0;
-        while (_memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick
+        _memorySummaryMainThreadElapsedTicks = 0;
+        while (HasMemorySummaryMainThreadAllowance()
             && _memorySummaryMainThreadActions.TryDequeue(out MemorySummaryMainThreadAction work))
         {
             _memorySummaryMainThreadActionsThisTick++;

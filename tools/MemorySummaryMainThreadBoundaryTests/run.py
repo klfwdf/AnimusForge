@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--original", action="store_true")
-parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain", "unbounded-inline"])
+parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain", "unbounded-inline", "ignore-time-budget", "omit-time-charge", "omit-time-reset"])
 args = parser.parse_args()
 
 boundary_path = ROOT / "MyBehavior.MemorySummaryMainThread.cs"
@@ -46,8 +46,11 @@ assert process.count("ResetMemorySummaryMainThreadActions();") >= 2
 mutations = {
     "ignore-generation": ("|| !SaveRuntimeGuard.IsCurrentGeneration(generation)", "|| false"),
     "ignore-owner": ("ReferenceEquals(Instance, this)", "true"),
-    "unbounded-drain": ("while (_memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick", "while (_memorySummaryMainThreadActionsThisTick < int.MaxValue"),
-    "unbounded-inline": ("&& _memorySummaryMainThreadActionsThisTick < MemorySummaryMainThreadActionsPerTick)", "&& true)"),
+    "unbounded-drain": ("while (HasMemorySummaryMainThreadAllowance()", "while (true"),
+    "unbounded-inline": ("&& HasMemorySummaryMainThreadAllowance())", "&& true)"),
+    "ignore-time-budget": ("< GetDailyMaintenanceFrameBudgetMs();", "< double.MaxValue;"),
+    "omit-time-charge": ("_memorySummaryMainThreadElapsedTicks += Stopwatch.GetTimestamp() - started;", "/* fault: executed time not charged */"),
+    "omit-time-reset": ("_memorySummaryMainThreadElapsedTicks = 0;", "/* fault: elapsed time not reset on tick */"),
 }
 if args.mutate:
     old, new = mutations[args.mutate]
@@ -65,7 +68,7 @@ out.mkdir(parents=True, exist_ok=True)
     '</PropertyGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding="utf-8")
 
-dotnet = Path(os.environ.get("DOTNET_EXE", r"C:\Program Files\dotnet\dotnet.exe"))
+dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT.parent / ".dotnet-sdk/dotnet.exe")))
 env = os.environ.copy()
 env.update(DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
            NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",

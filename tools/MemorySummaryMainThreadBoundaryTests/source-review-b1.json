@@ -6,14 +6,100 @@
   "limitations": [
     "No live/game/save or actual provider evidence",
     "Atomic source capture/apply and initial/final scans still lack hard record/time budget",
-    "Writer terminal storage and game rendering remain fixtures; not full persistence proof"
+    "Writer terminal storage and game rendering remain fixtures; not full persistence proof",
+    "Shared cumulative Stopwatch is cooperative only; a single large atomic operation can overrun. Planner/cleanup/Apply record slicing remains incomplete."
   ],
   "declarations": [
     {
       "path": "MyBehavior.cs",
+      "signature": "private sealed class DailyMemoryLine",
+      "baselineSignature": "private sealed class DailyMemoryLine",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 220,
+      "sha256": "36580ea07fb5832f5d519822ada4eba814eadfdd7a3be65de37c6ad65fabebbb",
+      "baselineSha256": "0ec22fce0590b599a76564bfe61cce6bbb79c2ddbf538eef7ae86e1a04309175"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class DailyMemoryDraft",
+      "baselineSignature": "private sealed class DailyMemoryDraft",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 266,
+      "sha256": "a66965f13795c2342234e2ee2811d60833979d7757b294970c7da1de8238d22b",
+      "baselineSha256": "a403edf51c930b6de71f3e00bf162319cfc44c967dd5e5dc2de71192914af5cd"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class CompressedMemoryBlock",
+      "baselineSignature": "private sealed class CompressedMemoryBlock",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 298,
+      "sha256": "2016c46cfd2e755f7f32a9eb37be3d1a318b46cbb2f8441299c4ac2d6c6f7e75",
+      "baselineSha256": "61714a292506428737644974e78189c3943bbb09cde8c6408dd32c9a4dc9e631"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class WeeklyMemoryMaterialTrigger",
+      "baselineSignature": "private sealed class WeeklyMemoryMaterialTrigger",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 343,
+      "sha256": "591f014e898845f3bc893fdba986d7d8424ee09e3ebd4765130c2a37907a685c",
+      "baselineSha256": "7bc1087f1fe3e6df672d436c98cc3d5e6ab540c30aa10f19ed2096d2b7f27157"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemorySummaryJob",
+      "baselineSignature": "private sealed class MemorySummaryJob",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 410,
+      "sha256": "9388a352ce928589553cdc52134db86d5e921ef414de8389b418d295ebda4dcc",
+      "baselineSha256": "2f42ede03812f12fbfbf5f5e7e8476f99a9a57f02d476be60df4f7c861f88a4e"
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "private sealed class MemorySummaryExecutionResult",
       "baselineSignature": "private sealed class MemorySummaryExecutionResult",
-      "line": 400,
+      "line": 441,
       "sha256": "4062c14bcfc2f58949b44b111f7bd4336813a82db547461b8e146f83c3edf066",
       "baselineSha256": "8865bbc34968bccc97ae7ece99c604bc62e2c9fac997503e610bc7dbe1710b08",
       "evidence": [
@@ -22,9 +108,43 @@
     },
     {
       "path": "MyBehavior.cs",
+      "signature": "private sealed class MemoryOverviewState",
+      "baselineSignature": "private sealed class MemoryOverviewState",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 457,
+      "sha256": "2f3110262e6b2857527a08abcceb8445b051add9eaf379c781a992f4a94edf0c",
+      "baselineSha256": "09a7a1274952ae44aa3124d7efbdb44950d9d9d5e952c319917eb117a1cb7379"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemoryOverviewJob",
+      "baselineSignature": "private sealed class MemoryOverviewJob",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 480,
+      "sha256": "bfcb625e6ea9301ca71c3cc5687d8536bd5b19b94228a53c4845d40ab5ea2589",
+      "baselineSha256": "7105bafdad6229b134533606fd4c3180921fc03a78c00d1294f2a176c712c3ae"
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "private sealed class MemoryOverviewExecutionResult",
       "baselineSignature": "private sealed class MemoryOverviewExecutionResult",
-      "line": 446,
+      "line": 502,
       "sha256": "ecfcd15d849200c428d971408131044cdbe4016b5741c2ff036b86c20eeb9981",
       "baselineSha256": "2d09b1d5880b8aa511812b0fe4ebd33eb725653df63739a830415f09a1be1435",
       "evidence": [
@@ -33,9 +153,43 @@
     },
     {
       "path": "MyBehavior.cs",
+      "signature": "private sealed class MajorActionSummaryState",
+      "baselineSignature": "private sealed class MajorActionSummaryState",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 518,
+      "sha256": "f0d8c18baebd7402e91171d901a563e238fe0dbb14eaed3407303465d32da351",
+      "baselineSha256": "3bfbe12ee653c46f97c835b600d2613fad97fac5e4afc62ff17cabd557736769"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MajorActionSummaryJob",
+      "baselineSignature": "private sealed class MajorActionSummaryJob",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 542,
+      "sha256": "efab0adc601ccad8c97d4d3f6457369d5cdf06b99e36cd7c80294c9e34c079ff",
+      "baselineSha256": "55075cd5b1de43d0f8c5ff9e62c15a6547af5e5dee2e745cf457986416762298"
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "private sealed class MajorActionSummaryExecutionResult",
       "baselineSignature": "private sealed class MajorActionSummaryExecutionResult",
-      "line": 494,
+      "line": 564,
       "sha256": "39c02df5ae1b4d3818e636a3c44005a8e5f513a0c2ff28befb223a5df060c4d1",
       "baselineSha256": "e06e55cc5ba892409575098888d87c05adbd10133a092b60df47619cfeb8f890",
       "evidence": [
@@ -44,9 +198,26 @@
     },
     {
       "path": "MyBehavior.cs",
+      "signature": "private class NpcActionEntry",
+      "baselineSignature": "private class NpcActionEntry",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 602,
+      "sha256": "44f3543ccf9a873c0978826f4e25233984e315bb040e1b566dcc32f78bd77ef4",
+      "baselineSha256": "375046503c3316c0080f07dcbe857aa9534e35de8056f14bfa7779a262796b57"
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "public static void RecordNpcActionForExternal(",
       "baselineSignature": "public static void RecordNpcActionForExternal(",
-      "line": 2617,
+      "line": 2697,
       "sha256": "2523d9b7db58a96144446d166e7c6333fae442624a3f8c5633dd812805c8e154",
       "baselineSha256": "efcc16520eb6967a8f3690876fccec6cc6ecec0f220ff189c0398226a37792ec",
       "evidence": [
@@ -55,20 +226,67 @@
     },
     {
       "path": "MyBehavior.cs",
+      "signature": "private void TryStartMemorySummaryQueue(",
+      "baselineSignature": "private void TryStartMemorySummaryQueue(",
+      "evidence": [
+        "completion"
+      ],
+      "targetedCases": [
+        "admission-defers-eligibility",
+        "maintenance-defers-eligibility",
+        "invalid-only-no-maintenance-spin",
+        "force-scan-after-invalid-admission",
+        "daily-terminal-duplicate",
+        "major-terminal-duplicate",
+        "overview-terminal-duplicate",
+        "new-queue-entry-survives-cleanup",
+        "worker-admission-no-source-read"
+      ],
+      "line": 4975,
+      "sha256": "0ee8ac7a299c5d8f5c7323defb03c54dcb56ee35c8573e668d0bf2d66feec287",
+      "baselineSha256": "c52f2716f083d8f3d87a5dd68e3b9d6f52e210a95c979ccec53f6a1dda2c5c68"
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "private async Task ProcessMemorySummaryQueueAsync(",
       "baselineSignature": "private async Task ProcessMemorySummaryQueueAsync(",
-      "line": 4965,
-      "sha256": "79a500217b24c7710d6db1bc57fae37f97cfb75301ee65f039201f7c4e463298",
+      "line": 5037,
+      "sha256": "727fc511256a7b5d324b3cf1f37557a5308f39f3d0fa481495db3e9bb00df06e",
       "baselineSha256": "a8103086c3d6404881820ec5a16aabc342d214bbff269b00d4ac4c5764b38f22",
       "evidence": [
         "completion"
+      ],
+      "targetedCases": [
+        "success/reentry/side-effects",
+        "mixed-three-type-failures",
+        "daily-terminal-duplicate",
+        "major-terminal-duplicate",
+        "overview-terminal-duplicate",
+        "force-scan-after-invalid-admission",
+        "new-queue-entry-survives-cleanup",
+        "partial-apply-block-exception",
+        "partial-apply-weekly-exception",
+        "partial-mark-exception"
+      ],
+      "mutations": [
+        "dedupe-before-filter",
+        "keep-invalid-queue",
+        "worker-initial",
+        "worker-primary",
+        "worker-major",
+        "worker-extra",
+        "worker-extra-plan",
+        "worker-cleanup",
+        "worker-release",
+        "bypass-completion-error-wrapper",
+        "swallow-completion-error"
       ]
     },
     {
       "path": "MyBehavior.cs",
       "signature": "private async Task RunDailySummaryQueueItemsAsync(",
       "baselineSignature": "private async Task RunDailySummaryQueueItemsAsync(",
-      "line": 5095,
+      "line": 5179,
       "sha256": "0bcdf7ed55176c47f514d61a4ae8e709d091b70f367b7cb458c207d37d321e3b",
       "baselineSha256": "45f8a4b4df62ed96b7c0949c90a0a0f5525c7e6d2cd286039db0e75f39c52852",
       "evidence": [
@@ -85,7 +303,7 @@
       "path": "MyBehavior.cs",
       "signature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
       "baselineSignature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
-      "line": 5187,
+      "line": 5274,
       "sha256": "5debcfce04fe6950db8a14a33b1834b3928ab544ec9c2f0290bea8f275d7f6f9",
       "baselineSha256": "c866fb086270b466bf6b6f29c16eec50d01668e0fb576da5052afcb46417f061",
       "evidence": [
@@ -96,7 +314,7 @@
       "path": "MyBehavior.cs",
       "signature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
       "baselineSignature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
-      "line": 5200,
+      "line": 5287,
       "sha256": "f2f56b05a4eb6415ea35345f8f0b2d648db5b79b05df1d1af778dceb8cf3ff78",
       "baselineSha256": "b1c5ed16bc86f0db00cb40572869abba6ab119fa3147a79a5a291595ffa746c2",
       "evidence": [
@@ -107,7 +325,7 @@
       "path": "MyBehavior.cs",
       "signature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
       "baselineSignature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
-      "line": 5213,
+      "line": 5300,
       "sha256": "9b7944339dacb64943528042d72e0224793da3a0741602c0617b214d0217de61",
       "baselineSha256": "f2b125eedad5737ad47b6689d05ea69e0a83ab7677205d0df11def2264aa8720",
       "evidence": [
@@ -118,7 +336,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool ApplyMemoryOverviewSuccess(",
       "baselineSignature": "private void ApplyMemoryOverviewSuccess(",
-      "line": 5360,
+      "line": 5447,
       "sha256": "6004110f183021fcc4d80d93a5f04ce97758f072fcc59b959aada0a494f4dc60",
       "baselineSha256": "1fba9c86af385c75d7c3991f73759931fd99ef40db6510d3ae7076b231bb33d5",
       "evidence": [
@@ -129,7 +347,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool ApplyMajorActionSummarySuccess(",
       "baselineSignature": "private void ApplyMajorActionSummarySuccess(",
-      "line": 5515,
+      "line": 5602,
       "sha256": "04c1b73cc8603b25c084355375ddf5849536cac53c28549e9244babf39470f7f",
       "baselineSha256": "80525b15cde3ba5ecb00e68bbc2c1aaf7bfc2fc5da121cce230d9ba969f3d2ce",
       "evidence": [
@@ -140,7 +358,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool ApplyMemorySummarySuccess(",
       "baselineSignature": "private void ApplyMemorySummarySuccess(",
-      "line": 5741,
+      "line": 5828,
       "sha256": "a86e20672d1748fb66b5804e0096b09549974f5279837209199e0ea721a86c04",
       "baselineSha256": "0a7a8ac5086f3dd87b63811f1414bd469b6bca53e173120997cf57a06f8c97ad",
       "evidence": [
@@ -151,7 +369,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void MarkWeeklyMemoryMaterialTriggerForExternal(",
       "baselineSignature": "public static void MarkWeeklyMemoryMaterialTriggerForExternal(",
-      "line": 14145,
+      "line": 14232,
       "sha256": "2b3276daea4b6b53fb87c972aa60e4ee3abc1d2bf7a64eaa8eccd1c1b5047677",
       "baselineSha256": "8f016d050e9baa05c94b4488d574d9aa545e2937739fbdacb4f57bd696630f8a",
       "evidence": [
@@ -162,7 +380,7 @@
       "path": "MyBehavior.cs",
       "signature": "internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(",
       "baselineSignature": "internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(",
-      "line": 14166,
+      "line": 14253,
       "sha256": "de2e910d4332009421a084e5b3d36ff20ec1085194d2fb959743435714c58087",
       "baselineSha256": "59812424d975891e574f8ea450b0bea458206fe71aad19018c4e092b44ac9739",
       "evidence": [
@@ -171,9 +389,31 @@
     },
     {
       "path": "MyBehavior.cs",
+      "signature": "private void TryRunCampaignMemoryMaintenance(",
+      "baselineSignature": "private void TryRunCampaignMemoryMaintenance(",
+      "evidence": [
+        "completion"
+      ],
+      "targetedCases": [
+        "admission-defers-eligibility",
+        "maintenance-defers-eligibility",
+        "invalid-only-no-maintenance-spin",
+        "force-scan-after-invalid-admission",
+        "daily-terminal-duplicate",
+        "major-terminal-duplicate",
+        "overview-terminal-duplicate",
+        "new-queue-entry-survives-cleanup",
+        "worker-admission-no-source-read"
+      ],
+      "line": 17879,
+      "sha256": "17da5e8912d2a987d94f302015b25690107b979642d017d6e8a3dea6f7f01e62",
+      "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9"
+    },
+    {
+      "path": "MyBehavior.cs",
       "signature": "public static void MigrateNonHeroPartyScopedMemoryForExternal(",
       "baselineSignature": "public static void MigrateNonHeroPartyScopedMemoryForExternal(",
-      "line": 25627,
+      "line": 25715,
       "sha256": "3226c0f4108b318791146c66977bc7c9c1135165e355cf5554ac6f24499465d5",
       "baselineSha256": "814ea20bc0fcc503124fff57c6ef7dba1452a0915526489b0c621686bc711114",
       "evidence": [
@@ -184,7 +424,7 @@
       "path": "MyBehavior.cs",
       "signature": "private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(",
       "baselineSignature": "private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(",
-      "line": 26561,
+      "line": 26649,
       "sha256": "fe7936ac761ffe973c5d62e2ac5341d5cb19a1877f2c7fe1649fcf512b76b89b",
       "baselineSha256": "322763023c4c779d1c06623a1c384f45f5ff497b85cea484aba88ac69874c2d9",
       "evidence": [
@@ -195,7 +435,7 @@
       "path": "MyBehavior.cs",
       "signature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
       "baselineSignature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
-      "line": 26670,
+      "line": 26758,
       "sha256": "2053c26104af1e6a36841b92156fc8e22a17276b573fcf1faa83bc0f6c53c269",
       "baselineSha256": "7caa0014b33ad43e30c9f28e81e1b2a278ad87644b663cc7476a52b59f45cc4d",
       "evidence": [
@@ -206,7 +446,7 @@
       "path": "MyBehavior.cs",
       "signature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
       "baselineSignature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
-      "line": 26751,
+      "line": 26839,
       "sha256": "93b78b9ec3c8dd0934d381e80a8b5ae530d630edca94f735e1c7f654b752275c",
       "baselineSha256": "27c5b5d9c8d33f0ca6fa2b21670dc2d8ac2d9cc2d1db792bf5dc31f72679844b",
       "evidence": [
@@ -217,7 +457,7 @@
       "path": "MyBehavior.cs",
       "signature": "private MemoryOverviewState GetMemoryOverviewState(",
       "baselineSignature": "private MemoryOverviewState GetMemoryOverviewState(",
-      "line": 26876,
+      "line": 26964,
       "sha256": "d7af22ad65fcab2a4a393f9c4d46f9ccc532010398f939235fc92eab11a285dd",
       "baselineSha256": "84c3828a78aeba73b32d273acd83e23bb98f1ffe04fa941b00236d731a636a84",
       "evidence": [
@@ -228,7 +468,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool HasMemoryOverviewPendingBlocks(",
       "baselineSignature": "private bool HasMemoryOverviewPendingBlocks(",
-      "line": 26900,
+      "line": 26988,
       "sha256": "d0b47e3e31779215056fe5f70cbefee01409f10573c0dcadd4ac1faf4aa063e5",
       "baselineSha256": "84068d59abb0f92e6b1d90435656417167320a59a6cdb98bc2b00b89dda4b605",
       "evidence": [
@@ -239,7 +479,7 @@
       "path": "MyBehavior.cs",
       "signature": "private MajorActionSummaryState GetMajorActionSummaryState(",
       "baselineSignature": "private MajorActionSummaryState GetMajorActionSummaryState(",
-      "line": 26982,
+      "line": 27070,
       "sha256": "8d6e83958890000151a72b7407d0ccc4cad33da79362b609c932a9b4876b50da",
       "baselineSha256": "1440f4d53a9c641121b88e1a3c6cb2724dbeac17c274132689885fed86a40065",
       "evidence": [
@@ -250,7 +490,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalDialogueHistory(",
       "baselineSignature": "public static void AppendExternalDialogueHistory(",
-      "line": 27614,
+      "line": 27702,
       "sha256": "4241cdfeb36886e1c73465a80b995ad41bd51fceb3ca6d2b45a6d12c591cf593",
       "baselineSha256": "e0ff60b95a5740d87064a237e644c55daa532b2e8d7238e308fab7795c7ae608",
       "evidence": [
@@ -261,7 +501,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalSceneDialogueHistory(",
-      "line": 27638,
+      "line": 27726,
       "sha256": "be0e4aecf26ca789533fdc23838a6b23ce47b4808f9a45b9aca3ccc72d17492a",
       "baselineSha256": "61b21fe4ab5b041288a52708946ca991ddd3c271a32df2fbb39eee30673db7e1",
       "evidence": [
@@ -272,7 +512,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroDialogueHistory(",
-      "line": 27651,
+      "line": 27739,
       "sha256": "d872c7be4c8c596f282ab852ac2c8d73cf14d7e2641cb9983c982badf2c76985",
       "baselineSha256": "29d45e998b70b8645ce7f5edb049fb6f69856093719bb3166e007b0595c10bf4",
       "evidence": [
@@ -283,7 +523,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
-      "line": 27664,
+      "line": 27752,
       "sha256": "00bb71e1de80054398872e1c0849315124db196071ff28d39ab18d263c87dfe0",
       "baselineSha256": "310ec210e62dcb68961e51f8f536567351a9067fa7e5bbf3273af63eb0d056a6",
       "evidence": [
@@ -295,24 +535,24 @@
     "completion": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_business.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt",
-      "scope": "Actual Process/Apply/Mark state mutation and accepted counters, stale/owner/generation rejection, terminal cleanup and release; source proof is a scripted completion-layer seam, not a real capture test.",
-      "observed": "BUSINESS_RESULT passed=19 failed=0",
+      "scope": "Actual Process/Apply/Mark state mutation and accepted counters, stale/owner/generation rejection, terminal cleanup and release; source proof is a scripted completion-layer seam, not a real capture test. Actual TryStart/TryRunCampaignMemoryMaintenance/ShouldScan/QueueAll execute; past-draft sealing, busy/current-day, and candidate-ID terminal remain fixtures. Partial Apply and Mark fault cases preserve published state, stop later work, emit an exception notice and release without replay.",
+      "observed": "BUSINESS_RESULT passed=33 failed=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
       "testSourceSha256": {
-        "runner": "fa530371135189238862932746e13043218e1ab81152243b1bb0c90acd98710a",
-        "harness": "e544cbf59eddb8756608509c216c1744d8d47ed97f80f2a01b584506d48cafdb"
+        "runner": "7357907a892945d8f4f514d6301d7f2cd8d8db44c83f38d4bbad9b1159547c97",
+        "harness": "0bde312ac7a853ace0098bbf9190ae2692a6fdb0bb19fe0d05aedea20919c2b2"
       },
-      "extractedProductionEvidence": 42
+      "extractedProductionEvidence": 47
     },
     "captured": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt",
-      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement.",
-      "observed": "CAPTURED_RESULT pass=57 fail=0; hard budget NOT_PROVEN",
+      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it.",
+      "observed": "CAPTURED_RESULT pass=61 fail=0; copy scalar checks=351; independent mutable nodes=49; exact source field mutations=251; hard budget NOT_PROVEN",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "e53b9d5f874af042fd2f55b70eece5a17137fd2890c8038599cf17eea77a8b91",
-        "harness": "c8a1dc9c28e022228d7d07f3c27247291e306fc26475e69fa60335f16316a32e"
+        "runner": "029e4de6d6364478e0c03be875c712b881078f8751d7be5ef53f1a66625c1b68",
+        "harness": "fc8dd79c5ac8b62ad5ef80c80fff5088b66a28a959566f1bd67c156cfc651a9b"
       },
       "extractedProductionEvidence": 84
     },
@@ -324,9 +564,11 @@
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/manifest.json",
       "testSourceSha256": {
         "runner": "13e611d6ace3d67445de476ba840f451bb0809ff311aedd78a278d9bc333e2bc",
-        "harness": "99eb546b0b1dc8ecc8e76b0c79dfe7c04b326764af638c026d4c8cd83681391d"
+        "harness": "1329580c92b76e67711ea465278a3dbfa5fe58bd474d7a208e597b32d100b128"
       },
       "extractedProductionEvidence": 19
     }
-  }
+  },
+  "testSourceHashNormalization": "utf8-no-bom-lf",
+  "productionFileSha256": "028d0af68dab9f97f26af517b4528ff211cb73a9a2e682c782ac982c92f9dd83"
 }
