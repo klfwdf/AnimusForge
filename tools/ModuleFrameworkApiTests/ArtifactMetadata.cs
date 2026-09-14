@@ -85,7 +85,8 @@ internal static class Program
         Check(api.SetEquals(expected), "exact initial V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
-            "InternalModuleDirectory", "ModuleFrameworkRuntime" })
+            "InternalModuleDirectory", "ModuleFrameworkRuntime", "CampaignComposition",
+            "CampaignModelComposition", "TeamModuleRegistration" })
             Check(internalTypes.Contains(name), "actual DLL contains internal " + name);
         lines.Sort(StringComparer.Ordinal);
         Console.WriteLine("ARTIFACT " + path + " SHA256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant());

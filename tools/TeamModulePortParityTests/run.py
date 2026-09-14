@@ -69,6 +69,11 @@ def owner_parity(baseline):
     if len(seen) != 13 or any(count == 0 for count in seen.values()):
         raise AssertionError("Every declared method must have a live owner call, not only a descriptor")
     sub = read("SubModule.cs")
+    # Actual composition moved, not waived: verify its whole-file inverse and unchanged moved bodies.
+    spec = importlib.util.spec_from_file_location("campaign_composition_proof", ROOT / "tools/CampaignCompositionTests/run.py")
+    composition = importlib.util.module_from_spec(spec); spec.loader.exec_module(composition)
+    composition.verify_source()
+    sub = composition.restore_submodule(sub)
     init_block = "\t\t// 只装配同 DLL 的内部接缝与只读 API 目录，不切换任何渠道的默认执行路径。\n\t\tModuleFrameworkRuntime.Initialize(out string moduleFrameworkReason);\n\t\tLogger.LogTrace(\"SubModule\", \">>> Module framework: \" + moduleFrameworkReason);\n"
     if sub.count(init_block) != 1 or sub.count("\t\tModuleFrameworkRuntime.Shutdown();\n") != 1:
         raise AssertionError("Unexpected lifecycle wiring")

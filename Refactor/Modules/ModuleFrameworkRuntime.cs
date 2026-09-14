@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using AnimusForge.Api.V1;
-using AnimusForge.Refactor.Contracts;
-using AnimusForge.Refactor.Runtime;
+using TaleWorlds.Core;
 
 namespace AnimusForge.Refactor.Modules;
 
 /// <summary>
 /// 唯一的首版装配根：显式绑定同 DLL 的真实薄桥，然后发布只读目录。
 /// 目录不是第二套执行器或总开关；旧请求仍由原 owner 校验目标、线程、标签和提交资格。
-/// 本类不读取 Campaign/Mission，不把 adapter 已装配误报成游戏请求可执行。
+/// Campaign 注册另委托无状态装配清单；不读取当前 Campaign/Mission，不把 adapter 已装配误报成游戏请求可执行。
 /// </summary>
 internal static class ModuleFrameworkRuntime
 {
-    private const int InternalContractVersion = 1;
     private static readonly object Sync = new object();
     private static InternalModuleDirectory _directory;
     private static AfFrameworkState _state = AfFrameworkState.NotInitialized;
@@ -32,14 +30,7 @@ internal static class ModuleFrameworkRuntime
             // 每次模块加载最多装配一次；不引入 DLL 发现、反射或每帧扫描。
             try
             {
-                var directory = new InternalModuleDirectory(IsKnownBridge, GetBridgeRejectionReason);
-                RegisterAdapter(directory, "af.team.policy", "af.team.policy.dialogue",
-                    TeamModuleServices.Policy != null);
-                RegisterAdapter(directory, "af.team.gathering", "af.team.gathering.dialogue",
-                    TeamModuleServices.Gathering != null);
-                RegisterAdapter(directory, "af.team.siege", "af.team.siege.dialogue",
-                    TeamModuleServices.Siege != null, FeatureBridgeIds.ConversationSiege);
-
+                var directory = TeamModuleRegistration.CreateDirectory();
                 InternalModuleValidationResult validation = directory.CompleteRegistration();
                 _directory = directory;
                 if (!validation.IsValid)
@@ -68,6 +59,15 @@ internal static class ModuleFrameworkRuntime
             reasonCode = _reason;
             return _state == AfFrameworkState.Ready;
         }
+    }
+
+    /// <summary>
+    /// 引擎 Campaign 回调的唯一委托点。目录降级不阻断原玩法初始化；不新增启动锁或去重。
+    /// 这里只注册实例，不宣告存档就绪，不持有 starter/behavior，也不在 Shutdown 重放副作用。
+    /// </summary>
+    internal static void RegisterCampaign(IGameStarter starterObject)
+    {
+        CampaignComposition.Register(starterObject);
     }
 
     internal static void Shutdown()
@@ -107,31 +107,6 @@ internal static class ModuleFrameworkRuntime
             }
             return new AfFrameworkSnapshot(_state, _reason, publicCapabilities, modules);
         }
-    }
-
-    private static void RegisterAdapter(InternalModuleDirectory directory, string moduleId,
-        string capabilityId, bool adapterBound, params string[] featureBridges)
-    {
-        if (!adapterBound)
-            throw new InvalidOperationException("module.adapter_missing");
-        var definition = new InternalModuleDefinition(moduleId, InternalContractVersion,
-            new[] { new InternalCapabilityDefinition(capabilityId, InternalContractVersion, featureBridges) });
-        if (!directory.TryRegister(definition, out string reason))
-            throw new InvalidOperationException(reason);
-    }
-
-    private static bool IsKnownBridge(string id)
-    {
-        foreach (string knownId in FeatureBridgeIds.All)
-            if (string.Equals(knownId, id, StringComparison.Ordinal))
-                return true;
-        return false;
-    }
-
-    private static string GetBridgeRejectionReason(string id)
-    {
-        FeatureBridgeDecision decision = FeatureBridgeRuntime.Evaluate(id, FeatureBridgeIds.ContractVersion);
-        return decision.Status == FeatureBridgeDecisionStatus.Allowed ? null : decision.ReasonCode;
     }
 
     private static AfModuleCapabilityState MapStatus(InternalCapabilityState state)
