@@ -1,3 +1,22 @@
+# 当前：单draft深line/trigger metadata预算（2026-09-14）
+
+封存末尾单draft的line净化与weekly trigger bind现在消耗共享metadata，不再随一次expensive身份把1024行原子做完。draft身份仍一次expensive；trigger列表sanitize仍一次原子。有限窗口最多128 metadata，实测1×1024行9窗、窗内最多127行。
+
+- sealing：当前76/0；`--source-baseline 40b92e67` 同76例61绿15红；新反例`unbudgeted-line-normalize`（inner-cost红）与`ignore-line-source`（empty-grows/kept-empties/line-change）均BUILD_PASS后EXIT=1。
+- 同步`SanitizeDailyMemoryDraftEntry`与cooperative路径共用`BindDailyMemoryDraftWeeklyTrigger`/`SanitizeDailyMemoryDraftLine`；未完成draft的line/trigger列表保持私有，列表引用/count变化失效重封。
+- `test_source_parity.py` 12/0，含原Where+Select体与bind体精确还原。代码图77锚点绑定生产`4d6994bc`。
+- 本轮完整交接：[深line/trigger HANDOFF](../../docs/handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)。首次capture/copy、全owner绑定、Apply与LIVE/SAVE仍未完成。
+
+```powershell
+$env:DOTNET_EXE = 'C:\Program Files\dotnet\dotnet.exe'
+C:\Users\klfwdf\AppData\Local\Programs\Python\Python312\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py
+C:\Users\klfwdf\AppData\Local\Programs\Python\Python312\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --source-baseline 40b92e67
+C:\Users\klfwdf\AppData\Local\Programs\Python\Python312\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --mutate unbudgeted-line-normalize
+C:\Users\klfwdf\AppData\Local\Programs\Python\Python312\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py --mutate ignore-line-source
+```
+
+## 以下为前序结果，数字与语义绑定各自当时版本
+
 # 当前：Campaign维护共享预算（2026-09-14）
 
 有限的Campaign维护周期现在共享一个懒创建窗口：主维护与deferred维护使用同一deadline，封存授予累计128个metadata/8个expensive操作。显式同步/无限调用以及EngineTick摘要预算仍单列；这不是全游戏帧硬上限。

@@ -1,3 +1,9 @@
+# 当前续点（2026-09-14：深 line/trigger 预算之后）
+
+生产`4d6994bc`已完成单draft深line与trigger bind的共享metadata计费（76/0、旧40b 61/15、新反例有效）；自动化保持PAUSED。当前仍B1，**下一步是首次capture/复制、全owner/raw/最终绑定、Apply等原子成本**，不重做本轮line预算或已完成五项。[最新HANDOFF](../handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)为当前范围与证据入口，第16节的原阶段/权限/停止门槛不变。
+
+## 以下为历史计划与各轮执行结果
+
 # 当前状态：用户暂停开发，整体审查与 GitHub 交接（2026-09-14）
 
 **阶段 8 / B1 未整批验收，生产与自动化 PAUSED。** 最新代码 86805518 不再改动；本次只交付已有代码、详细 HANDOFF 和本地简明版。第 17 节覆盖下方所有历史 ACTIVE/继续实施安排；恢复必须有后续用户明确指示，不因第 16 节仍有工作包自动开工。
@@ -521,7 +527,9 @@ B1 上述两部分是同一整批，不要求每个小 helper 单独向用户交
 
 ### 16.1 已完成基线与第一轮任务
 
-> 最新续点：86805518完成owner逐draft净化计费与过时删减保护（75/0、旧40b62/13、26反例、相邻/最终六Stage/API/身份通过），见[本轮HANDOFF](../handoffs/2026-09-14-b1-owner-normalize-handoff.md)。下一轮直接处理单draft内深line/trigger、首次Capture/复制、全owner/最终来源绑定、Apply等原子成本；1draft1024line仍未切分。不要重做owner记录额度/typed raw/排序/共享窗口；B1保持VERIFY，不进B2。
+> 最新续点：4d6994bc完成单draft深line与trigger bind的共享metadata计费（76/0、旧40b 61/15、新反例unbudgeted-line-normalize与ignore-line-source有效），见[本轮HANDOFF](../handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)。trigger列表sanitize仍原子。下一轮直接处理首次Capture/复制、全owner/raw/最终来源绑定、Apply等原子成本。不要重做本轮line预算/owner记录额度/typed raw/排序/共享窗口；B1保持VERIFY，不进B2。
+
+> 历史续点：86805518完成owner逐draft净化计费与过时删减保护（75/0、旧40b62/13、26反例、相邻/最终六Stage/API/身份通过），见[owner净化HANDOFF](../handoffs/2026-09-14-b1-owner-normalize-handoff.md)。完成owner逐draft净化计费与过时删减保护（75/0、旧40b62/13、26反例、相邻/最终六Stage/API/身份通过），见[本轮HANDOFF](../handoffs/2026-09-14-b1-owner-normalize-handoff.md)。下一轮直接处理单draft内深line/trigger、首次Capture/复制、全owner/最终来源绑定、Apply等原子成本；1draft1024line仍未切分。不要重做owner记录额度/typed raw/排序/共享窗口；B1保持VERIFY，不进B2。
 
 > 当前续点：40b92e67完成完整raw来源的typed编码降成本（116/0、旧8bc112/4、35反例、相邻/最终六Stage/API/身份通过），详见[raw摘要HANDOFF](../handoffs/2026-09-14-b1-raw-digest-handoff.md)。122字段/列表/null/state存在性继续完整检查，未用writer epoch替代；raw仍原子O(N)。下一轮处理首次Capture/复制、owner净化/全部绑定/Apply等剩余成本，不重复typed raw、排序或共享窗口；B1仍VERIFY，不进入B2。
 

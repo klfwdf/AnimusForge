@@ -1,0 +1,90 @@
+{
+  "kind": "B1-deep-line-trigger-budget-verification",
+  "recordedUtc": "2026-09-14T16:40:00+08:00",
+  "productionRevision": "4d6994bc7cf219a2f894377d7262a90b466f9cbe",
+  "previousProduction": "86805518259ee44e3924da787bfba97654208074",
+  "checkpoint": "eb6389f4498fb0cb3d5ae3c579049ddf72143641",
+  "worktree": "C:/Users/klfwdf/.codex/worktrees/8127/Mount-Blade-Bannerlord-AnimusForge-mod-main",
+  "gitState": "detached HEAD",
+  "remoteTarget": "origin/codex/af-main-refactor-continuation-20260831",
+  "state": "Stage8/B1 VERIFY NOT_BATCH_ACCEPTED",
+  "automation": "PAUSED",
+  "sourceFiles": {
+    "MyBehavior.cs": {
+      "rawSha256": "320142ba0756430976607d8465f745a2a006da4697019ef60e58ce57eae23c3d",
+      "normalizedSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
+    },
+    "MyBehavior.MemorySealing.cs": {
+      "rawSha256": "cf0f3612b56a0b9d233051dbc5c34b8de08fa96ad7fef27f9904017cac1e3421",
+      "normalizedSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
+    }
+  },
+  "commands": {
+    "python": "C:\\Users\\klfwdf\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "dotnet": "C:\\Program Files\\dotnet\\dotnet.exe"
+  },
+  "sealing": [
+    {
+      "label": "current",
+      "args": [],
+      "exit": 0,
+      "expectedExit": 0,
+      "result": "SEALING_RESULT pass=76 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+    },
+    {
+      "label": "original-40b92e67",
+      "args": ["--source-baseline", "40b92e67"],
+      "exit": 1,
+      "expectedExit": 1,
+      "result": "SEALING_RESULT pass=61 fail=15 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+    },
+    {
+      "label": "unbudgeted-line-normalize",
+      "args": ["--mutate", "unbudgeted-line-normalize"],
+      "exit": 1,
+      "expectedExit": 1,
+      "result": "SEALING_RESULT pass=75 fail=1; FAIL owner-normalize-inner-cost: one draft normalized 1024 lines in one finite window"
+    },
+    {
+      "label": "ignore-line-source",
+      "args": ["--mutate", "ignore-line-source"],
+      "exit": 1,
+      "expectedExit": 1,
+      "result": "SEALING_RESULT pass=73 fail=3; empty-grows/kept-empties/line-change"
+    }
+  ],
+  "workload": {
+    "ownerRecordsStandalone": 257,
+    "ownerWindowsStandalone": 85,
+    "ownerMaxRecordsPerWindow": 8,
+    "ownerRecordsCampaign": 65,
+    "ownerWindowsCampaign": 33,
+    "innerDrafts": 1,
+    "innerLines": 1024,
+    "innerWindows": 9,
+    "innerMaxLinesPerWindow": 127,
+    "innerTotalLines": 1024,
+    "hardLineBudget": 128
+  },
+  "sourceParity": {
+    "exit": 0,
+    "tests": 12,
+    "failures": 0
+  },
+  "codeMap": {
+    "anchors": 77,
+    "recordedRevision": "PASS",
+    "workingTree": "PASS",
+    "sourceRevision": "4d6994bc7cf219a2f894377d7262a90b466f9cbe"
+  },
+  "notRun": [
+    "run_captured.py full suite",
+    "run_business.py",
+    "six Stage Debug/Release x 1.3/1.4/Bootstrap",
+    "API/save identity",
+    "LIVE",
+    "SAVE"
+  ],
+  "intentionalTiming": "Line and trigger-bind metadata may become visible across windows; trigger-list SanitizeWeeklyMemoryMaterialTriggers remains one atomic call after the bind pass. Not a whole-draft transaction.",
+  "next": "first capture/copy, then full owner/raw/final binding, then Apply/public/weekly tails. Do not redo this line budget or the completed five items. Do not enter B2."
+}
