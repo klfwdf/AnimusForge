@@ -1,3 +1,14 @@
+# GitHub 重构交付回执（2026-09-15）
+
+已正常快进推送代码与详细HANDOFF到 `klfwdf/AnimusForge` 的 `codex/af-main-refactor-continuation-20260831`。远端已核对交付提交 `1345b0bce8c2f73de6a6dfe8a8d87330280de681`；其后本回执提交仅更新文档，生产/测试仍 `f07cb2a2`。
+
+- [最新详细HANDOFF](docs/handoffs/2026-09-15-snapshot-boundary-handoff.md) / [验证清单](docs/audits/2026-09-15-snapshot-boundary-verification.json)。同轮前置修复/装配/记忆调度HANDOFF也已包含。
+- 两份用户草稿未提交；本地专用Native简明版及`.tmp`转交版、构建产物未上传。未改main、未强推、未部署游戏，自动化仍暂停。
+- 阶段8/B1尚未完整验收，实机/旧存档与剩余生命周期/记忆预算门槛保留；推送不表示最终发布或零BUG。
+- 下方“仅本地/未推送”为各实现轮次产生时的历史记录，已由此交付回执更新。
+
+## 以下为实现与历史接续记录
+
 # AF 总 HANDOFF — 内外快照边界已拆、完整对照恢复通过（2026-09-15）
 
 **生产/测试f07cb2a2，本切片离线验证完成；整体阶段8/B1仍未完成。** Runtime不再引用Api.V1，原锁内捕获冻结内部快照、API侧独立投影，公开承诺不变。历史完整制作组测试已通过原B1严格逆变换恢复，不再有上轮的旧方法定位阻断。
