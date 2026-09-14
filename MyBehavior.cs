@@ -26576,79 +26576,82 @@ public partial class MyBehavior : CampaignBehaviorBase
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (DailyMemoryDraft sourceEntry in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
 		{
-			DailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
-			if (draft == null)
-			{
-				continue;
-			}
-			string text = NormalizeMemoryHeroId(draft.HeroId);
-			if (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)
-			{
-				continue;
-			}
-			string key = text + "|" + draft.GameDayIndex;
-			if (!seen.Add(key))
-			{
-				continue;
-			}
-			draft.HeroId = text;
-			draft.HeroName = (draft.HeroName ?? "").Trim();
-			draft.GameDate = (draft.GameDate ?? "").Trim();
-			draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
-			if (draft.WeeklyMaterialTriggers != null)
-			{
-				foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
-				{
-					if (trigger != null)
-					{
-						trigger.MemoryId = text;
-						trigger.GameDayIndex = draft.GameDayIndex;
-						trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
-					}
-				}
-			}
-			draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
-			draft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? "").Trim())).Select(delegate(DailyMemoryLine x)
-			{
-				x.GameDayIndex = draft.GameDayIndex;
-				x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
-				x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
-				x.Scene = (x.Scene ?? "").Trim();
-				x.Speaker = (x.Speaker ?? "").Trim();
-				x.Text = (x.Text ?? "").Trim();
-				x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
-				x.TargetName = (x.TargetName ?? "").Trim();
-				x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
-				x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
-				x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
-				x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
-				x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
-				x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
-				if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
-				{
-					x.MemoryCommitId = "";
-					x.MemoryCommitPart = "";
-					x.MemoryCommitHash = "";
-					x.MemoryCommitOriginGameDay = -1;
-					x.MemoryCommitOriginGameDate = "";
-				}
-				if (x.SceneSessionId < -1)
-				{
-					x.SceneSessionId = -1;
-				}
-				if (x.DialogueSessionId < -1)
-				{
-					x.DialogueSessionId = -1;
-				}
-				return x;
-			}).ToList();
-			draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
-			if (draft.Lines.Count > 0)
-			{
-				list.Add(draft);
-			}
+			DailyMemoryDraft draft = SanitizeDailyMemoryDraftEntry(sourceEntry, seen);
+			if (draft != null) list.Add(draft);
 		}
 		return list.OrderBy((DailyMemoryDraft x) => x.GameDayIndex).ToList();
+	}
+
+	private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)
+	{
+		DailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
+		if (draft == null)
+		{
+			return null;
+		}
+		string text = NormalizeMemoryHeroId(draft.HeroId);
+		if (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)
+		{
+			return null;
+		}
+		string key = text + "|" + draft.GameDayIndex;
+		if (!seen.Add(key))
+		{
+			return null;
+		}
+		draft.HeroId = text;
+		draft.HeroName = (draft.HeroName ?? "").Trim();
+		draft.GameDate = (draft.GameDate ?? "").Trim();
+		draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
+		if (draft.WeeklyMaterialTriggers != null)
+		{
+			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
+			{
+				if (trigger != null)
+				{
+					trigger.MemoryId = text;
+					trigger.GameDayIndex = draft.GameDayIndex;
+					trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
+				}
+			}
+		}
+		draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
+		draft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? "").Trim())).Select(delegate(DailyMemoryLine x)
+		{
+			x.GameDayIndex = draft.GameDayIndex;
+			x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
+			x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
+			x.Scene = (x.Scene ?? "").Trim();
+			x.Speaker = (x.Speaker ?? "").Trim();
+			x.Text = (x.Text ?? "").Trim();
+			x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
+			x.TargetName = (x.TargetName ?? "").Trim();
+			x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
+			x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
+			x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
+			x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
+			x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
+			x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
+			if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
+			{
+				x.MemoryCommitId = "";
+				x.MemoryCommitPart = "";
+				x.MemoryCommitHash = "";
+				x.MemoryCommitOriginGameDay = -1;
+				x.MemoryCommitOriginGameDate = "";
+			}
+			if (x.SceneSessionId < -1)
+			{
+				x.SceneSessionId = -1;
+			}
+			if (x.DialogueSessionId < -1)
+			{
+				x.DialogueSessionId = -1;
+			}
+			return x;
+		}).ToList();
+		draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
+		return draft.Lines.Count > 0 ? draft : null;
 	}
 
 	private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks)

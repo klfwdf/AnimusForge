@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
- 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding']
+ 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding','unbudgeted-owner-normalize','ignore-owner-normalize-key','ignore-owner-normalize-empty','ignore-owner-normalize-kept-empty','skip-owner-normalize-reseal','ignore-owner-normalize-source']
 def module(name,path):
  sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 def exact(s,old,new,count=1):
@@ -32,9 +32,21 @@ def apply_product_mutation(product, mutation):
 def apply_seal_mutation(seal, mutation):
  if not mutation: return seal
  if mutation=='ignore-sort-source':
-  seal=exact(seal,'!Current(current) || ', '')
-  return exact(seal,'!Current(readCurrent()) || ', '')
+  ex=module('queue_sort_mutation',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+  body=ex.declaration(seal,'private sealed class DailyMemorySealQueueTail<T>')
+  changed=exact(body,'!Current(current) || ', '')
+  changed=exact(changed,'!Current(readCurrent()) || ', '')
+  return exact(seal,body,changed)
  if mutation=='ignore-sort-final-binding':return exact(seal,'if (!BindingsCurrent(same)) return false;', '')
+ if mutation=='unbudgeted-owner-normalize':return exact(seal,'if (!budget.Take(source != null)) return false;','')
+ if mutation=='ignore-owner-normalize-key':return exact(seal,'if (NormalizeMemoryHeroId(entry.Source.HeroId) != entry.HeroId || entry.Source.GameDayIndex != entry.Day) return false;','')
+ if mutation=='ignore-owner-normalize-empty':return exact(seal,'if (entry.EmptyWinner && lines > 0) return false;','')
+ if mutation=='ignore-owner-normalize-kept-empty':return exact(seal,'if (entry.Included && lines == 0) return false;','')
+ if mutation=='skip-owner-normalize-reseal':return exact(seal,'state.ActiveOwner = null;\n                        state.Normalization = null;','state.Normalization = null;')
+ if mutation=='ignore-owner-normalize-source':
+  ex=module('owner_normalize_mutation',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+  body=ex.declaration(seal,'private bool Current(List<DailyMemoryDraft> current)')
+  return exact(seal,body,'private bool Current(List<DailyMemoryDraft> current) { return true; }')
  if mutation=='renew-seal-budget':return exact(seal,'var budget = _campaignMemoryMaintenanceBudget;','MemoryMaintenanceWorkBudget budget = null;')
  if mutation=='ignore-empty-probe':
   return exact(seal,'if (!found) { ResetDailyMemoryDraftSealSliceState(); return true; }','if (false) { ResetDailyMemoryDraftSealSliceState(); return true; }')
@@ -52,7 +64,7 @@ def apply_seal_mutation(seal, mutation):
   return exact(seal,'if (IsExceeded) return false;' if 'if (IsExceeded) return false;' in seal else 'if (IsDailyMaintenanceBudgetExceeded(Start, Milliseconds)) return false;','')
  return seal
 def main():
- ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
+ ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
  ex=module('seal_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
@@ -77,12 +89,19 @@ def main():
   if name in ('SanitizeMemorySummaryQueue','SanitizeMajorActionSummaryQueue'):
    body=body.replace('OrderBy((MemorySummaryJob x) => x.GameDayIndex)', 'OrderBy((MemorySummaryJob x) => x.GameDayIndex, SealProbe.SortComparer<int>())').replace('OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex)', 'OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex, SealProbe.SortComparer<int>())')
    body=body.replace('ThenBy((MemorySummaryJob x) => x.HeroName)', 'ThenBy((MemorySummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())').replace('ThenBy((MajorActionSummaryJob x) => x.HeroName)', 'ThenBy((MajorActionSummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())')
+  if name=='SanitizeDailyMemoryDraftEntry':
+   body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
+  if name=='SanitizeDailyMemoryDrafts' and 'DailyMemoryDraft draft = TWParallel.IsMainThread()' in body:
+   body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
+  if name in ('SanitizeDailyMemoryDraftEntry','SanitizeDailyMemoryDrafts') and 'x.GameDayIndex = draft.GameDayIndex;' in body:
+   body=exact(body,'x.GameDayIndex = draft.GameDayIndex;','SealProbe.Hit("owner-normalized-line"); x.GameDayIndex = draft.GameDayIndex;')
   snippets.append(body)
  for name in cap.MODELS:add('private sealed class '+name)
  add('private class NpcActionEntry');add('private enum DailyMaintenanceTaskKind');add('private sealed class DailyMaintenanceJob')
  for helper in ['NormalizeMemorySummaryQueue','NormalizeMajorActionSummaryQueue']:
   if re.search(r'private static List<[^>]+> '+helper+r'\(',source):names.append(helper)
  for name in names:
+  if name=='SanitizeDailyMemoryDraftEntry' and 'private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(' not in source:continue
   if name=='HasPastDailyMemoryDrafts' and 'private bool HasPastDailyMemoryDrafts(' not in source:continue
   hit=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M);assert hit,name;add(hit.group().strip())
  cycle_signature='private void RunCampaignMemoryMaintenanceCycle('
@@ -105,6 +124,10 @@ def main():
  recovery=read('MyBehavior.MemoryRecovery.cs')
  for name in ['IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest']:
   match=re.search(r'private static bool '+name+r'\([^;]+;',recovery);assert match and '=>' in match.group();snippets.append(match.group())
+ oracle=subprocess.check_output(['git','show','40b92e67:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+ oracle_body=ex.declaration(oracle,'private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(')
+ snippets.append(oracle_body.replace('SanitizeDailyMemoryDrafts(', 'SanitizeDailyMemoryDraftsOracle(',1))
+ manifest.append(dict(file='MyBehavior.cs',signature='SanitizeDailyMemoryDrafts oracle',source_revision='40b92e67',sha256=hashlib.sha256(oracle_body.encode()).hexdigest()))
  product='using System; using System.Diagnostics; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading.Tasks; using Newtonsoft.Json.Linq; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior { private const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
  fixture=(HERE/'CapturedHarness.cs.txt').read_text(encoding='utf-8-sig');fixture=fixture[:fixture.index('  static void ThreeKinds() {')]+'\n}}'
  fixture=exact(fixture,'private static double GetDailyMaintenanceFrameBudgetMs() => 1000.0;','private static double GetDailyMaintenanceFrameBudgetMs() { SealProbe.Hit("budget-settings"); return SealProbe.Budget; }')
@@ -135,7 +158,7 @@ def main():
  if 'CooperativeMemoryQueueSort' in files.get('MemorySealing.cs',''):
   path='Refactor/Runtime/CooperativeMemoryQueueSort.cs';sort=read(path)
   manifest.append(dict(file=path,sha256=hashlib.sha256(sort.encode()).hexdigest(),whole_component=True))
-  sort=exact(sort,'if (!budget.Take(false)) return false;','if (!budget.Take(false)) return false; SealProbe.Hit("queue-sort-unit");',2)
+  sort=exact(sort,'if (!budget.Take(false)) return false;','if (!budget.Take(false)) return false; SealProbe.Hit(typeof(T).Name=="DailyMemoryDraft" ? "owner-sort-unit" : "queue-sort-unit");',2)
   if a.mutate=='unbudgeted-sort':sort=exact(sort,'if (!budget.Take(false)) return false;', '',2)
   if a.mutate=='unstable-sort':sort=exact(sort,'Compare(_input[_left], _input[_right]) <= 0','Compare(_input[_left], _input[_right]) < 0')
   if a.mutate=='ordinal-sort':sort=exact(sort,'_compareInfo.Compare(a.Name, b.Name, CompareOptions.None)','string.CompareOrdinal(a.Name, b.Name)')

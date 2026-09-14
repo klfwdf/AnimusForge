@@ -174,3 +174,14 @@ python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py --
 - captured/terminal/sealing编入实际新编码组件；captured的8bc历史输入和terminal的e776历史Input不编当前新组件，显式Compile清单排除残留生成cs。captured旧版读取和hash都绑定同一指定版本，不用现工作树hash伪装历史来源。
 - 严格MyBehavior inverse仍58声明/4新增span/2删除；另把Input的4个具名声明精确反换到8bc，并证明其余完整Input（含原通用JSON摘要、async/parse/release）未改。整文件组件锁增为8，守卫11项。
 - 构建/相邻/最终版本与回滚见根HANDOFF指向的本轮详细交接、`docs/audits/2026-09-14-b1-raw-digest-verification.json`。不把离线fixture/实际DLL元数据当作LIVE/SAVE验收。
+
+
+## B1 owner净化落实到draft预算（2026-09-14）
+
+- `run_sealing.py` 当前75/0，`--source-baseline 40b92e67` 同75例62绿13红；26个mutation均BUILD_PASS/EXIT=1。旧版257/65条草稿一次全净化，新版每有限窗口最多8条，累计沿用Campaign授予；同步调用仍排空。
+- 保留原60例，新增15例覆盖原sanitizer oracle、empty-first占key、同对象/共享line与trigger别名副作用、原引用、源追加/替换/同slot/key变更、空winner长新lines、清空既存lines、重置、异常和发布时替换。过期key必须重走owner封存/队列索引，不能只重新排序。
+- `SanitizeDailyMemoryDraftEntry`精确提取原内层体：只将continue与list.Add变为返回值。根同步入口与cooperative尾部共用，主线程原地/后台clone、标签/AFEF/marker规则不变。`test_source_parity.py`增加精确40b内层体还原，现12项；主文件58声明/5新增span/2删除和Input4声明精确inverse、8组件锁。
+- 元数据按每draft原子操作可提前可见；删/去重/排序后的list保持私有，直到当前owner列表结构、全部key/日期与empty/include条件通过。并非整个owner事务，也没有原子回滚承诺。
+- 新owner排序复用`CooperativeMemoryQueueSort`的day-only+constant-name路径。测试分别记`owner-sort-unit`和`queue-sort-unit`，防止旧队列排序用例误停在新owner排序。原queue fault已限定到QueueTail类；曾因同名guard数量增加而拒绝提取，修正selector后才计入有效红例，不扩大到两个类掩盖失败。
+- 一条含1024行的draft仍在一次record操作里净化；metadata key/empty绑定也仍原子。75/0不代表深line、初捕获、raw、Apply预算或真实游戏完成。
+- 当前captured116、旧8bc112/4及主线程/后台clone两个相关故障再验；另外raw摘要控制保留40b固定版本证据，Input/编码器源码未变，不冒充本轮重新运行全部35个。其余相邻/最终构建结果见当前HANDOFF。

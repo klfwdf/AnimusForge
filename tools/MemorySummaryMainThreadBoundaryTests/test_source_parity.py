@@ -55,6 +55,22 @@ class InverseGuards(unittest.TestCase):
             text = text.replace(current, old, 1)
         self.assertEqual(text, baseline)  # Includes unchanged generic JSON/editor/plan hash and async/parse/release bodies.
 
+    def test_single_draft_entry_is_exact_previous_body(self):
+        spec = importlib.util.spec_from_file_location("draft_entry_extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+        extractor = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(extractor)
+        old = subprocess.check_output(["git", "show", "40b92e67:MyBehavior.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        old = extractor.declaration(old, "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(")
+        begin = old.index("\t\t\tDailyMemoryDraft draft =")
+        end = old.index("\n\t\t}\n\t\treturn list.OrderBy", begin)
+        body = old[begin:end]
+        tail = "\t\t\tif (draft.Lines.Count > 0)\n\t\t\t{\n\t\t\t\tlist.Add(draft);\n\t\t\t}"
+        self.assertEqual(body.count("continue;"), 3)
+        body = body.replace(tail, "\t\t\treturn draft.Lines.Count > 0 ? draft : null;").replace("continue;", "return null;")
+        body = "\n".join(line[1:] if line.startswith("\t") else line for line in body.split("\n"))
+        signature = "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)"
+        self.assertEqual(extractor.declaration(SOURCE, signature), signature + "\n\t{\n" + body + "\n\t}")
+
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),

@@ -459,17 +459,23 @@
       "signature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
       "baselineSignature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
       "line": 26573,
-      "sha256": "2053c26104af1e6a36841b92156fc8e22a17276b573fcf1faa83bc0f6c53c269",
+      "sha256": "10f55c23a4caaa93750b36c79884e232a2de1d3bc672cfc9b3ac95bdf15fbf86",
       "baselineSha256": "7caa0014b33ad43e30c9f28e81e1b2a278ad87644b663cc7476a52b59f45cc4d",
       "evidence": [
-        "captured"
+        "captured",
+        "sealing"
+      ],
+      "targetedCases": [
+        "owner-normalize-contract",
+        "owner-normalize-finite-cost",
+        "owner-normalize-campaign-cost"
       ]
     },
     {
       "path": "MyBehavior.cs",
       "signature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
       "baselineSignature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
-      "line": 26654,
+      "line": 26657,
       "sha256": "93b78b9ec3c8dd0934d381e80a8b5ae530d630edca94f735e1c7f654b752275c",
       "baselineSha256": "27c5b5d9c8d33f0ca6fa2b21670dc2d8ac2d9cc2d1db792bf5dc31f72679844b",
       "evidence": [
@@ -480,7 +486,7 @@
       "path": "MyBehavior.cs",
       "signature": "private MemoryOverviewState GetMemoryOverviewState(",
       "baselineSignature": "private MemoryOverviewState GetMemoryOverviewState(",
-      "line": 26784,
+      "line": 26787,
       "sha256": "d7af22ad65fcab2a4a393f9c4d46f9ccc532010398f939235fc92eab11a285dd",
       "baselineSha256": "84c3828a78aeba73b32d273acd83e23bb98f1ffe04fa941b00236d731a636a84",
       "evidence": [
@@ -491,7 +497,7 @@
       "path": "MyBehavior.cs",
       "signature": "private bool HasMemoryOverviewPendingBlocks(",
       "baselineSignature": "private bool HasMemoryOverviewPendingBlocks(",
-      "line": 26808,
+      "line": 26811,
       "sha256": "89dfecbb0e24c4ecf9ca3553118329dd4bbddea9d6c17f554ca79ad464d86dc5",
       "baselineSha256": "84068d59abb0f92e6b1d90435656417167320a59a6cdb98bc2b00b89dda4b605",
       "evidence": [
@@ -512,7 +518,7 @@
       "path": "MyBehavior.cs",
       "signature": "private MajorActionSummaryState GetMajorActionSummaryState(",
       "baselineSignature": "private MajorActionSummaryState GetMajorActionSummaryState(",
-      "line": 26907,
+      "line": 26910,
       "sha256": "8d6e83958890000151a72b7407d0ccc4cad33da79362b609c932a9b4876b50da",
       "baselineSha256": "1440f4d53a9c641121b88e1a3c6cb2724dbeac17c274132689885fed86a40065",
       "evidence": [
@@ -523,7 +529,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalDialogueHistory(",
       "baselineSignature": "public static void AppendExternalDialogueHistory(",
-      "line": 27539,
+      "line": 27542,
       "sha256": "4241cdfeb36886e1c73465a80b995ad41bd51fceb3ca6d2b45a6d12c591cf593",
       "baselineSha256": "e0ff60b95a5740d87064a237e644c55daa532b2e8d7238e308fab7795c7ae608",
       "evidence": [
@@ -534,7 +540,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalSceneDialogueHistory(",
-      "line": 27563,
+      "line": 27566,
       "sha256": "be0e4aecf26ca789533fdc23838a6b23ce47b4808f9a45b9aca3ccc72d17492a",
       "baselineSha256": "61b21fe4ab5b041288a52708946ca991ddd3c271a32df2fbb39eee30673db7e1",
       "evidence": [
@@ -545,7 +551,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroDialogueHistory(",
-      "line": 27576,
+      "line": 27579,
       "sha256": "d872c7be4c8c596f282ab852ac2c8d73cf14d7e2641cb9983c982badf2c76985",
       "baselineSha256": "29d45e998b70b8645ce7f5edb049fb6f69856093719bb3166e007b0595c10bf4",
       "evidence": [
@@ -556,7 +562,7 @@
       "path": "MyBehavior.cs",
       "signature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
       "baselineSignature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
-      "line": 27589,
+      "line": 27592,
       "sha256": "00bb71e1de80054398872e1c0849315124db196071ff28d39ab18d263c87dfe0",
       "baselineSha256": "310ec210e62dcb68961e51f8f536567351a9067fa7e5bbf3273af63eb0d056a6",
       "evidence": [
@@ -570,7 +576,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 49974,
+      "line": 49977,
       "sha256": "78261bc4882d632f24ae2b5ab00e45dbd8809d693f6de81516580d4bf29efad8",
       "baselineSha256": "5cc7f21759e292824bb974c4c560759ac77976478243eba2213b2195dad2db44",
       "verificationLevel": "structural guards only; no full business execution",
@@ -585,7 +591,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50048,
+      "line": 50051,
       "sha256": "3af489646e2b910040bdda07a79756a34ace55b560a41022bebaf9bba08a7b8b",
       "baselineSha256": "1d7015d8ac12ce452e64f495722d28a44b70f9680488e57782b94a36d100af42",
       "verificationLevel": "actual extracted method/closure execution plus structural guards",
@@ -600,7 +606,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50086,
+      "line": 50089,
       "sha256": "0fb8f92c78b2d89afed8dd7f0c3c451ee08e3d580004c125f5628dd175063762",
       "baselineSha256": "249754eee4dbe0099b0a1bdd4e0041c6c64daf344bad4d0acb89ec5469507470",
       "verificationLevel": "structural guards only; no full business execution",
@@ -615,7 +621,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50116,
+      "line": 50119,
       "sha256": "078d20ad099ac6fdab1c6975deebce947cbacd4007e1fe1f96c0b8239199be59",
       "baselineSha256": "2dc5cf1ed7edd8b81d43eec58f039798c57f67daa2e17277dbc183024a443294",
       "verificationLevel": "structural guards only; no full business execution",
@@ -630,7 +636,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50146,
+      "line": 50149,
       "sha256": "5bf19d80b828e436d57f4b7a14dc0128c7006bf58eefb075f65f8a282af0f24f",
       "baselineSha256": "144f8db4cf2f36dbf3e08228fc5e5590d7f5c0dbcb9e661ad000fd4a791dda4a",
       "verificationLevel": "structural guards only; no full business execution",
@@ -645,7 +651,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50216,
+      "line": 50219,
       "sha256": "8d2d58ed846230326e5b56c212323e921b0a8ac1f56d92322304922d04c33814",
       "baselineSha256": "99dd71d92fd9c25517c34c027bf0b2db231193e35d6ebcdd3580f7a2d3ac09c9",
       "verificationLevel": "structural guards only; no full business execution",
@@ -660,7 +666,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50277,
+      "line": 50280,
       "sha256": "31927e9edf1b549e0699fc57a22ff4ddac7cc857444307adbd9447803b7986d3",
       "baselineSha256": "5b2d2becef7a15335347ad45288a4262ed8d3599911ad4ccd9ad0cecc4c94612",
       "verificationLevel": "structural guards only; no full business execution",
@@ -675,7 +681,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 50309,
+      "line": 50312,
       "sha256": "bf7e6c0f370b3ec05146e9dc6d89a87ecbbac12bc1e1f7d8699ad13adf1d2721",
       "baselineSha256": "4201867d4b5c62fecff826fb639fa3404635ff20a7f9e6e1d9f6ae7279aacc67",
       "verificationLevel": "structural guards only; no full business execution",
@@ -690,7 +696,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 54886,
+      "line": 54889,
       "sha256": "9cad101c484d6a8516d41210650f1c83717ea6957d78bc8d95b610afac4a7831",
       "baselineSha256": "de972b72d399783cfbb3b87972f4e215d8c7c62f10e1316c07f13d7e940dfdc8",
       "verificationLevel": "actual extracted method/closure execution plus structural guards",
@@ -705,7 +711,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 55083,
+      "line": 55086,
       "sha256": "0dfcaa1289fb5091c5c1afa18308d2dd1a39b7b54286aeb0da04adf90f8af2fd",
       "baselineSha256": "3a3323995a9e62cb6686588682b698b8c189a6c631dcb6485bbc6a27211a99da",
       "verificationLevel": "structural guards only; no full business execution",
@@ -720,7 +726,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 56991,
+      "line": 56994,
       "sha256": "8c87cbac510f1c9ce96be601ed0d4abdd0d415f9cdd506fc7374a157597e7f3c",
       "baselineSha256": "08cf2cf3387a75448450f61b54dfbbecc0ebacde51e73f7891bd0cbc376cabfe",
       "verificationLevel": "actual extracted method/closure execution plus structural guards",
@@ -735,7 +741,7 @@
       "evidence": [
         "commit_writers"
       ],
-      "line": 57519,
+      "line": 57522,
       "sha256": "1164e21ef32229e6e63bf87afa42b5ea252117f23579951beeee1c81ac7cf48f",
       "baselineSha256": "443f988853cd789d4fa7ab5e72676ebd95cd622dfc9767212c63f1a6e0dc74b2",
       "verificationLevel": "structural guards only; no full business execution",
@@ -834,7 +840,7 @@
         "daily-queue-contract",
         "major-queue-contract"
       ],
-      "line": 26707,
+      "line": 26710,
       "sha256": "26f2fd6cd18477c90e4b4f76fcf75634f238a667275a57fb17f921b06b987c15",
       "baselineSha256": "0d7133e638e0c20f08cbfd228b243f7e2100d63e13d995597c964e9ad3f43ac1",
       "reason": "Keep the original synchronous sorted entry point; delegate only normalization, exact old mutation order separately checked."
@@ -854,7 +860,7 @@
         "daily-queue-contract",
         "major-queue-contract"
       ],
-      "line": 26873,
+      "line": 26876,
       "sha256": "78c968606109e9e58e9cc2105a895b0410a39e5fe8a060b196717caac754519a",
       "baselineSha256": "aa7643a6f6db58cb73bb46b4197a6cdc2c64d9d860295f9c04ca58bf53aa66e7",
       "reason": "Keep the original synchronous sorted entry point; delegate only normalization, exact old mutation order separately checked."
@@ -880,7 +886,7 @@
       "observed": "Current 116/0; pinned 8bcde78b same116 ->112/4 runtime red (three allocation gates plus distinct raw UTF16);35 BUILD_PASS fault controls EXIT=1;7/0 actual retry/final-check observations. Full 294 recursive source-field mutations remain covered.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "runner": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
         "harness": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
       },
       "extractedProductionEvidence": 98,
@@ -1369,7 +1375,9 @@
             "daily-raw-digest-framing"
           ]
         }
-      ]
+      ],
+      "rawMutationEvidenceSourceRevision": "40b92e67",
+      "currentOwnerSanitizerRevalidation": "Current116/0; pinned8bc112/4; main-sanitize-detach113/3 and background-sanitize-alias113/3 rerun. Other raw35 controls retain explicitly pinned40b evidence: Input/encoder unchanged, extracted entry body exact-old proof added."
     },
     "writers": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py",
@@ -1408,7 +1416,7 @@
       "additionalTestSourceSha256": {
         "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "a1cdf7f3d28ebadda83e4e228632e9d1ae29177d360e2881f6187fa741d997ff",
         "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
         "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
@@ -1422,7 +1430,7 @@
       "observed": "TERMINAL_RESULT mode=admission scenarios=54 failures=0; 5 compiled runtime mutation controls",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/admission-current/manifest.json",
       "additionalTestSourceSha256": {
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
         "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
@@ -1436,33 +1444,32 @@
     "sealing": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
-      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic.",
-      "observed": "Current BUILD_PASS 60/0; pinned 9158132c BUILD_PASS 46/14; all 20 fault variants BUILD_PASS EXIT=1 (preserved prior 14, added 6 sorting faults).",
+      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic. Actual owner normalization counts each draft, no stale key/empty/source list prune, invalidated key reseals before final queues; record-level timing changes documented, no whole-owner transaction or inner-line bound.",
+      "observed": "Current75/0; pinned40b92e67 same75 ->62/13;26 effective BUILD_PASS fault variants EXIT=1; inner 1draft/1024lines still atomic.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
       "testSourceSha256": {
-        "runner": "91c19d35aa42ff123ecc3ecf520440ce38d7a0093d7461964a8fb81171b0cc47",
-        "harness": "363f39ae627d75ef6a1ed9b68ac9cda9a311812ba0c7a91823efe5362d990a8a"
+        "runner": "e012439fcd8abdcb38412806dc584983cef57e17a42b0cdcd108e406f19426c3",
+        "harness": "4fcca1587dd6b15dbc239aa85b28b3c5668bb603dae9bfc1598ae8597abd9817"
       },
       "acceptedInverse": true,
-      "counterexampleSummary": ".tmp/b1-queue-sort-20260914/sealing-runs.json",
+      "counterexampleSummary": ".tmp\\b1-owner-normalize-20260914\\sealing-runs.json",
       "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
       "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
       "current": {
+        "pass": 75,
         "fail": 0,
-        "exit": 0,
-        "pass": 60
+        "exit": 0
       },
       "original": {
-        "revision": "9158132c",
-        "fail": 14,
-        "exit": 1,
-        "pass": 46
+        "revision": "40b92e67",
+        "pass": 62,
+        "fail": 13,
+        "exit": 1
       },
       "redMutations": [
         {
           "name": "abandon-incomplete-same-day",
           "exit": 1,
-          "fail": 1,
           "failedCases": [
             "same-day-no-job-resume"
           ]
@@ -1470,7 +1477,6 @@
         {
           "name": "ignore-empty-probe",
           "exit": 1,
-          "fail": 1,
           "failedCases": [
             "probe-empty-no-candidate-start"
           ]
@@ -1478,7 +1484,6 @@
         {
           "name": "ignore-stale-queued-job",
           "exit": 1,
-          "fail": 1,
           "failedCases": [
             "same-reference-indexed-key-change"
           ]
@@ -1486,7 +1491,6 @@
         {
           "name": "ignore-owner-binding",
           "exit": 1,
-          "fail": 1,
           "failedCases": [
             "owner-list-replacement"
           ]
@@ -1494,7 +1498,6 @@
         {
           "name": "ignore-cleanup-identity",
           "exit": 1,
-          "fail": 7,
           "failedCases": [
             "cleanup-same-ref-retarget",
             "queue-sort-resume-False-name",
@@ -1508,7 +1511,6 @@
         {
           "name": "unbounded-metadata",
           "exit": 1,
-          "fail": 8,
           "failedCases": [
             "finite-4096-convergence",
             "finite-48draft-convergence",
@@ -1517,22 +1519,24 @@
             "campaign-shared-convergence",
             "queue-sort-budget-False",
             "queue-sort-budget-True",
-            "campaign-sort-budget"
+            "campaign-sort-budget",
+            "owner-normalize-finite-cost",
+            "owner-normalize-campaign-cost"
           ]
         },
         {
           "name": "unbounded-expensive",
           "exit": 1,
-          "fail": 2,
           "failedCases": [
             "finite-48draft-convergence",
-            "campaign-shared-expensive"
+            "campaign-shared-expensive",
+            "owner-normalize-finite-cost",
+            "owner-normalize-campaign-cost"
           ]
         },
         {
           "name": "ignore-deadline",
           "exit": 1,
-          "fail": 6,
           "failedCases": [
             "expired-budget-then-sync",
             "same-day-no-job-resume",
@@ -1545,41 +1549,40 @@
         {
           "name": "renew-seal-budget",
           "exit": 1,
-          "fail": 4,
           "failedCases": [
             "campaign-shared-metadata",
             "campaign-shared-expensive",
             "campaign-shared-convergence",
-            "campaign-sort-budget"
+            "campaign-sort-budget",
+            "owner-normalize-campaign-cost"
           ]
         },
         {
           "name": "renew-deferred-deadline",
           "exit": 1,
-          "fail": 5,
           "failedCases": [
             "campaign-shared-metadata",
             "campaign-shared-expensive",
             "campaign-shared-convergence",
             "campaign-shared-deadline",
-            "campaign-sort-budget"
+            "campaign-sort-budget",
+            "owner-normalize-campaign-cost"
           ]
         },
         {
           "name": "omit-window-restore",
           "exit": 1,
-          "fail": 4,
           "failedCases": [
             "campaign-shared-convergence",
             "campaign-deferred-start",
             "campaign-scope-exception",
-            "campaign-sort-budget"
+            "campaign-sort-budget",
+            "owner-normalize-campaign-cost"
           ]
         },
         {
           "name": "drop-deferred-start",
           "exit": 1,
-          "fail": 1,
           "failedCases": [
             "campaign-deferred-start"
           ]
@@ -1587,7 +1590,6 @@
         {
           "name": "ignore-pending-generation",
           "exit": 1,
-          "fail": 1,
           "failedCases": [
             "campaign-retired-start"
           ]
@@ -1595,19 +1597,18 @@
         {
           "name": "ignore-campaign-scope",
           "exit": 1,
-          "fail": 5,
           "failedCases": [
             "campaign-shared-metadata",
             "campaign-shared-expensive",
             "campaign-shared-convergence",
             "campaign-shared-deadline",
-            "campaign-sort-budget"
+            "campaign-sort-budget",
+            "owner-normalize-campaign-cost"
           ]
         },
         {
           "name": "unbudgeted-sort",
           "exit": 1,
-          "fail": 3,
           "failedCases": [
             "queue-sort-budget-False",
             "queue-sort-budget-True",
@@ -1617,7 +1618,6 @@
         {
           "name": "unstable-sort",
           "exit": 1,
-          "fail": 2,
           "failedCases": [
             "queue-sort-budget-False",
             "queue-sort-budget-True"
@@ -1626,7 +1626,6 @@
         {
           "name": "ordinal-sort",
           "exit": 1,
-          "fail": 16,
           "failedCases": [
             "queue-sort-budget-False",
             "queue-sort-resume-False-unchanged",
@@ -1649,7 +1648,6 @@
         {
           "name": "ignore-sort-source",
           "exit": 1,
-          "fail": 3,
           "failedCases": [
             "queue-sort-resume-False-slot",
             "queue-sort-resume-True-append",
@@ -1659,7 +1657,6 @@
         {
           "name": "ignore-sort-culture",
           "exit": 1,
-          "fail": 2,
           "failedCases": [
             "queue-sort-resume-False-culture",
             "queue-sort-resume-True-culture"
@@ -1668,7 +1665,6 @@
         {
           "name": "ignore-sort-final-binding",
           "exit": 1,
-          "fail": 6,
           "failedCases": [
             "queue-sort-resume-False-name",
             "queue-sort-resume-False-retry",
@@ -1677,12 +1673,57 @@
             "queue-sort-resume-True-retry",
             "queue-sort-resume-True-day"
           ]
+        },
+        {
+          "name": "unbudgeted-owner-normalize",
+          "exit": 1,
+          "failedCases": [
+            "finite-48draft-convergence",
+            "owner-normalize-finite-cost",
+            "owner-normalize-campaign-cost"
+          ]
+        },
+        {
+          "name": "ignore-owner-normalize-key",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-change-key",
+            "owner-normalize-change-past-key"
+          ]
+        },
+        {
+          "name": "ignore-owner-normalize-empty",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-change-empty-grows"
+          ]
+        },
+        {
+          "name": "ignore-owner-normalize-kept-empty",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-change-kept-empties"
+          ]
+        },
+        {
+          "name": "skip-owner-normalize-reseal",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-change-past-key"
+          ]
+        },
+        {
+          "name": "ignore-owner-normalize-source",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-publish-race"
+          ]
         }
       ],
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
       "additionalTestSourceSha256": {
         "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
       },
       "historicalOriginal": {
@@ -1698,6 +1739,13 @@
         "fail": 5,
         "exit": 1,
         "harnessRevision": "9158132c"
+      },
+      "historicalQueueSortOriginal": {
+        "revision": "9158132c",
+        "fail": 14,
+        "exit": 1,
+        "pass": 46,
+        "harnessRevision": "40b92e67"
       }
     },
     "materials": {
@@ -1799,7 +1847,7 @@
     }
   },
   "testSourceHashNormalization": "utf8-no-bom-lf",
-  "productionFileSha256": "1181dc6a181c373770623f13b23601f1ace7319cbe3bfdc91119e77580e912bc",
+  "productionFileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7",
   "deletedDeclarations": [
     {
       "path": "MyBehavior.cs",
@@ -2117,10 +2165,20 @@
         "planning"
       ],
       "reason": "Exact old normalize/filter/first-winner dedupe body, shared by synchronous sanitizer and cooperative seal tail; no independent duplicate implementation."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)\n\t{\n\t\tDailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);\n\t\tif (draft == null)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring text = NormalizeMemoryHeroId(draft.HeroId);\n\t\tif (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring key = text + \"|\" + draft.GameDayIndex;\n\t\tif (!seen.Add(key))\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tdraft.HeroId = text;\n\t\tdraft.HeroName = (draft.HeroName ?? \"\").Trim();\n\t\tdraft.GameDate = (draft.GameDate ?? \"\").Trim();\n\t\tdraft.LastSummaryError = (draft.LastSummaryError ?? \"\").Trim();\n\t\tif (draft.WeeklyMaterialTriggers != null)\n\t\t{\n\t\t\tforeach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)\n\t\t\t{\n\t\t\t\tif (trigger != null)\n\t\t\t\t{\n\t\t\t\t\ttrigger.MemoryId = text;\n\t\t\t\t\ttrigger.GameDayIndex = draft.GameDayIndex;\n\t\t\t\t\ttrigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tdraft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);\n\t\tdraft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? \"\").Trim())).Select(delegate(DailyMemoryLine x)\n\t\t{\n\t\t\tx.GameDayIndex = draft.GameDayIndex;\n\t\t\tx.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();\n\t\t\tx.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);\n\t\t\tx.Scene = (x.Scene ?? \"\").Trim();\n\t\t\tx.Speaker = (x.Speaker ?? \"\").Trim();\n\t\t\tx.Text = (x.Text ?? \"\").Trim();\n\t\t\tx.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);\n\t\t\tx.TargetName = (x.TargetName ?? \"\").Trim();\n\t\t\tx.MemorySessionKey = (x.MemorySessionKey ?? \"\").Trim();\n\t\t\tx.MemoryCommitId = (x.MemoryCommitId ?? \"\").Trim();\n\t\t\tx.MemoryCommitPart = (x.MemoryCommitPart ?? \"\").Trim();\n\t\t\tx.MemoryCommitHash = (x.MemoryCommitHash ?? \"\").Trim();\n\t\t\tx.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);\n\t\t\tx.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? \"\").Trim();\n\t\t\tif (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))\n\t\t\t{\n\t\t\t\tx.MemoryCommitId = \"\";\n\t\t\t\tx.MemoryCommitPart = \"\";\n\t\t\t\tx.MemoryCommitHash = \"\";\n\t\t\t\tx.MemoryCommitOriginGameDay = -1;\n\t\t\t\tx.MemoryCommitOriginGameDate = \"\";\n\t\t\t}\n\t\t\tif (x.SceneSessionId < -1)\n\t\t\t{\n\t\t\t\tx.SceneSessionId = -1;\n\t\t\t}\n\t\t\tif (x.DialogueSessionId < -1)\n\t\t\t{\n\t\t\t\tx.DialogueSessionId = -1;\n\t\t\t}\n\t\t\treturn x;\n\t\t}).ToList();\n\t\tdraft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);\n\t\treturn draft.Lines.Count > 0 ? draft : null;\n\t}\n\n",
+      "sha256": "3027f50889ac143c659ce56e3626506f13a19f51a879cae6268934d690361fa9",
+      "evidence": [
+        "sealing",
+        "captured"
+      ],
+      "reason": "Exact previous inner draft normalization body; only old continue/list-add reshaped into one-entry return. Shared by synchronous and cooperative callers; clone, seen-before-empty, triggers and line rules preserved."
     }
   ],
   "productionDependencies": {
-    "MyBehavior.MemorySealing.cs": "28c9cf6be1b5788c207a8a3e3d87e00c71c9b023bae3610c71b41b3b07835076",
+    "MyBehavior.MemorySealing.cs": "ead66bb6a3a53ba4ad9b749859ea51d963a58bfffd9bbf358d14fba9d1dd8628",
     "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
     "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
     "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
@@ -2177,5 +2235,11 @@
     "primitiveOracle": "run_fingerprint.py: 9 BinaryWriter/SHA256 vectors under checked arithmetic and 5 lifetime/list mutation rejection cases",
     "evidence": "docs/audits/2026-09-14-b1-raw-digest-verification.json",
     "notClaimed": "Still atomic full raw scan/capture/Apply work. Not B1 batch accepted, no real game/save/provider."
+  },
+  "ownerNormalizationReview": {
+    "baseline": "40b92e67",
+    "checkpoint": "7c1da946",
+    "scope": "Record-granted owner tail, stable day-only sort and delayed pruning. Key/empty metadata guards remain atomic; single-draft deep sanitation unchanged and atomic.",
+    "evidence": "docs/audits/2026-09-14-b1-owner-normalize-verification.json"
   }
 }
