@@ -1,0 +1,10 @@
+<Prefab>
+  <!-- 离屏渲染舞台：控件被摆到屏幕外但保持 IsVisible，由游戏自身 UI 管线创建并 tick 其 TableauView，
+       运行时只需在 TableauView 上设置落盘标志即可安全取图。IsVisible=false 会阻止 provider tick。 -->
+  <Window>
+    <Children>
+      <BannerTableauWidget Id="OffscreenBanner" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="512" SuggestedHeight="512" PositionXOffset="-3000" PositionYOffset="-3000" IsNineGrid="true" IsVisible="false" DoNotAcceptEvents="true" />
+      <CharacterTableauWidget Id="OffscreenCharacter" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="384" SuggestedHeight="768" PositionXOffset="-3000" PositionYOffset="-3000" IsVisible="false" DoNotAcceptEvents="true" />
+    </Children>
+  </Window>
+</Prefab>
