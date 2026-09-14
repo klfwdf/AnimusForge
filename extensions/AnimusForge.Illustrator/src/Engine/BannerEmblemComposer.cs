@@ -132,7 +132,13 @@ namespace AnimusForge.Illustrator.Engine
                 string materialName = iconData.Value.MaterialName;
                 TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={meshId} texIdx={iconData.Value.TextureIndex} srcTex='{texName}' material='{materialName}'");
 
-                Bitmap atlas = AtlasCache.GetOrAdd(materialName ?? texName,
+                string cacheKey = !string.IsNullOrWhiteSpace(materialName) ? materialName : texName;
+                if (string.IsNullOrWhiteSpace(cacheKey))
+                {
+                    TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={meshId} no resolvable texture/material name, skipped");
+                    return null;
+                }
+                Bitmap atlas = AtlasCache.GetOrAdd(cacheKey,
                     name => LoadAtlasBitmap(texName, materialName));
                 if (atlas == null) return null;
 
@@ -152,7 +158,7 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        /// <summary>按名解析图集纹理：先试纹理名，再走材质→DiffuseMap 通道。</summary>
+        /// <summary>按名解析图集纹理：纹理名→材质名当纹理名→材质 DiffuseMap→slot0，每步留日志。</summary>
         private static Bitmap LoadAtlasBitmap(string textureName, string materialName)
         {
             try
@@ -160,16 +166,26 @@ namespace AnimusForge.Illustrator.Engine
                 BannerlordEngineTexture tex = null;
                 if (!string.IsNullOrWhiteSpace(textureName))
                 {
-                    try { tex = BannerlordEngineTexture.CheckAndGetFromResource(textureName); } catch { }
+                    try { tex = BannerlordEngineTexture.CheckAndGetFromResource(textureName); }
+                    catch (Exception ex) { TaleWorlds.Library.Debug.Print($"[BannerEmblem] CheckAndGetFromResource('{textureName}') threw: {ex.Message}"); }
+                }
+                if (tex == null && !string.IsNullOrWhiteSpace(materialName))
+                {
+                    try { tex = BannerlordEngineTexture.CheckAndGetFromResource(materialName); } catch { }
                 }
                 if (tex == null && !string.IsNullOrWhiteSpace(materialName))
                 {
                     try
                     {
                         var mat = TaleWorlds.Engine.Material.GetFromResource(materialName);
-                        tex = mat?.GetTexture(TaleWorlds.Engine.Material.MBTextureType.DiffuseMap);
+                        if (mat != null)
+                        {
+                            tex = mat.GetTexture(TaleWorlds.Engine.Material.MBTextureType.DiffuseMap)
+                                  ?? mat.GetTextureWithSlot(0);
+                        }
+                        TaleWorlds.Library.Debug.Print($"[BannerEmblem] Material '{materialName}' resolved: mat={(mat != null)} tex={(tex != null)}");
                     }
-                    catch { }
+                    catch (Exception ex) { TaleWorlds.Library.Debug.Print($"[BannerEmblem] Material '{materialName}' threw: {ex.Message}"); }
                 }
                 if (tex == null)
                 {
@@ -177,13 +193,21 @@ namespace AnimusForge.Illustrator.Engine
                     return null;
                 }
                 if (!tex.IsLoaded()) tex.PreloadTexture(true);
-                if (tex.IsRenderTarget || tex.Width < AtlasGridSize || tex.Height < AtlasGridSize) return null;
+                if (tex.IsRenderTarget || tex.Width < AtlasGridSize || tex.Height < AtlasGridSize)
+                {
+                    TaleWorlds.Library.Debug.Print($"[BannerEmblem] Texture '{tex.Name}' unusable: rt={tex.IsRenderTarget} size={tex.Width}x{tex.Height}");
+                    return null;
+                }
 
                 string tmp = Path.Combine(Path.GetTempPath(), $"af_banner_atlas_{Guid.NewGuid():N}.png");
                 try
                 {
                     tex.SaveToFile(tmp, false);
-                    if (!File.Exists(tmp) || new FileInfo(tmp).Length <= 0) return null;
+                    if (!File.Exists(tmp) || new FileInfo(tmp).Length <= 0)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[BannerEmblem] SaveToFile produced no file for '{tex.Name}'");
+                        return null;
+                    }
                     using (var fs = new FileStream(tmp, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         var bmp = new Bitmap(fs);
