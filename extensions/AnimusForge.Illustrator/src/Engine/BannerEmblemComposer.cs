@@ -323,6 +323,8 @@ namespace AnimusForge.Illustrator.Engine
             try { Marshal.Copy(raw, 0, data.Scan0, Math.Min(raw.Length, data.Stride * h)); }
             finally { bmp.UnlockBits(data); }
             SwapRedBlue(bmp);
+            // GetPixelData 按 D3D 惯例返回自下而上行序——垂直翻转回正
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
             return bmp;
         }
 
@@ -374,29 +376,29 @@ namespace AnimusForge.Illustrator.Engine
                 byte[] d = new byte[len];
                 Marshal.Copy(src.Scan0, s, 0, len);
 
-                // 探测 alpha 是否有覆盖率语义（存在明显透明像素则 A=覆盖率）
-                int transparent = 0, samples = 0;
-                for (int i = 3; i < len; i += 256)
-                {
-                    samples++;
-                    if (s[i] < 32) transparent++;
-                }
-                bool alphaMask = transparent > 0;
+                // 覆盖率语义探测（实测反相图集存在：形状区 A=0、底 A=255）：
+                // 图标必然只占格子小半——若按 A 算覆盖率>55% 说明反相，改用 255-A
+                long coveredSum = 0;
+                int pxCount = w * h;
+                for (int i = 3; i < len; i += 4) coveredSum += s[i];
+                bool invertAlpha = coveredSum > (long)(pxCount * 255L * 0.55f);
+                bool hasAlpha = true;
+                if (!invertAlpha && coveredSum > pxCount * 255L * 0.98f) hasAlpha = false; // 全不透明 → 无掩码
 
                 for (int i = 0; i + 3 < len; i += 4)
                 {
                     byte b = s[i], g = s[i + 1], r = s[i + 2], a = s[i + 3];
-                    if (alphaMask)
+                    if (hasAlpha)
                     {
-                        if (a < 4) continue;
-                        // R=副色（描边/细节，优先），G=主色填充
+                        int cover = invertAlpha ? (255 - a) : a;
+                        if (cover < 4) continue;
+                        // R=副色(描边/细节)，G=主色填充，均无信息则主色
                         float m2 = r / 255f, m1 = g / 255f;
-                        if (m2 > 0f) { m1 *= (1f - m2); }
                         float sum = m1 + m2;
                         byte br, bg2, bb;
                         if (sum <= 0.003f)
                         {
-                            br = c1.B; bg2 = c1.G; bb = c1.R; // 覆盖但无通道信息 → 主色
+                            br = c1.B; bg2 = c1.G; bb = c1.R;
                         }
                         else
                         {
@@ -404,7 +406,7 @@ namespace AnimusForge.Illustrator.Engine
                             bg2 = (byte)Math.Min(255, (c1.G * m1 + c2.G * m2) / sum);
                             bb = (byte)Math.Min(255, (c1.R * m1 + c2.R * m2) / sum);
                         }
-                        d[i] = br; d[i + 1] = bg2; d[i + 2] = bb; d[i + 3] = a;
+                        d[i] = br; d[i + 1] = bg2; d[i + 2] = bb; d[i + 3] = (byte)cover;
                     }
                     else
                     {
