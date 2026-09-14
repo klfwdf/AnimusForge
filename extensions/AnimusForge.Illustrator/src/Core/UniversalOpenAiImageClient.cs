@@ -102,6 +102,11 @@ namespace AnimusForge.Illustrator.Core
                     presetNegative = "flat lighting, washed-out colors, cartoon, anime, cluttered composition";
                     style = null;
                     break;
+                case "mosan-art":
+                    customStyleHint = "莫桑艺术, 默兹河流域12世纪罗马式珐琅与手抄本彩饰风格, 景泰蓝式宝石级饱和平涂色块, 金色勾边与装饰性边框纹样, 拉长端庄的程式化人物造型, 浓重黑色轮廓线, 平面化叙事构图, Mosan art, Romanesque manuscript illumination, champleve enamel, jewel-like saturated flat colors, gold outlines, decorative borders";
+                    presetNegative = "photorealism, perspective depth, oil brushwork, 3d render, soft gradients, photographic lighting, cartoon, anime, 写实透视, 油画笔触, 摄影光影, 3D渲染";
+                    style = null;
+                    break;
                 case "classic-oil":
                     customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
                     presetNegative = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";

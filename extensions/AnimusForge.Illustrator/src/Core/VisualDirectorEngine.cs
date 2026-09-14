@@ -373,6 +373,7 @@ namespace AnimusForge.Illustrator.Core
                 case "dark-epic": return "暗黑史诗写实；允许沉郁色调与强烈冲突，但不要强行加入战争元素";
                 case "cinematic": return "电影化叙事光影与镜头语言；光照应服从现场时间和环境";
                 case "classic-oil": return "古典写实历史油画巨作，伦勃朗与克雷格·穆林斯式明暗对照法，戏剧性光影微光，细腻而富有体积感的笔触肌理";
+                case "mosan-art": return "莫桑艺术（默兹河流域罗马式珐琅与手抄本彩饰）：景泰蓝式宝石级饱和平涂色块、金色勾边、装饰性边框纹样、拉长端庄的程式化人物、浓重黑色轮廓线、平面化叙事构图";
                 case "vivid": return "色彩鲜明、叙事清晰，仍保持人物与装备可信";
                 case "natural": return "自然写实、克制可信、材质与环境色彩真实";
                 default: return "不限定媒介或画家，根据事件情绪选择合适的历史叙事插画风格";
