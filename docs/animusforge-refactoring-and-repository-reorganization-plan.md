@@ -1,3 +1,13 @@
+# 当前任务：框架装配职责真实拆分（2026-09-15）
+
+- 用户明确要求“编排好了吗，那开始拆分”。任务 `FRAMEWORK-COMPOSITION-EXTRACTION-20260915` ACTIVE；起点812b34b0，生产基线61d57892；唯一写入G:/AFMOD/AF-REFACTOR。fresh fetch远端af618912，本地8 ahead/0 behind；不融合/推送。
+- 先实现I1装配切片：SubModule原36个CampaignBehavior与4个模型包装注册移到专门装配owner，现有ModuleFrameworkRuntime作为唯一委托入口；制作组typed目录注册从runtime生命周期状态提取。只搬移装配，不搬移领域规则/存档类型，不新增注册器/队列或无消费者接口。
+- 保持原顺序、每次Campaign回调新建实例、最后一个非AF模型作为inner/默认模型fallback、逐模型失败继续与行为注册异常传播；非Campaign/no-op。模型注册成功不等于读档完成，目录Ready语义不改，旧Campaign/Mission清理路径不伪造。
+- 验证：固定旧源码抽取对照、当前真实装配方法+引擎stub执行、顺序/隔离/失败/重复调用/故障反例；既有API/并发/拒绝访问、六项Stage、存档身份与代码坐标。保留未覆盖的完整生命周期/三渠道业务/B1深复制工作。
+- 修改范围：SubModule、Refactor/Modules装配类，相关源码级测试及文档。自动化PAUSED，不部署/操作存档/改默认/制作组玩法；两份用户草稿和指定本地Native简明版不动。
+
+## 以下为历史记录；当前实施以上方为准
+
 # 当前优先级：先做整体框架编排蓝图（2026-09-15）
 
 - 用户最新要求“先进行框架的编排”。任务 `FRAMEWORK-COMPOSITION-BLUEPRINT-20260915` COMPLETE（仅设计/文档，生产编排实现未完成）；本轮暂停继续深复制与细部业务拆分，先厘清装配根、作用域、模块依赖、启动/停止及对话执行编排。不是把B1验收跳过，也不等于已经实现完整Host。
