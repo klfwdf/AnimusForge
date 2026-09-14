@@ -998,7 +998,9 @@ namespace AnimusForge.Illustrator.Engine
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: no top screen");
                         return false;
                     }
-                    layer = new GauntletLayer("IllustratorOffscreenStage", 4005, false);
+                    // 优先级取最低：当前屏幕的正常 UI（百科页/会话面板/周报弹窗等不透明层）画在它上面，
+                    // 盖住舞台控件——AlphaFactor 对 Tableau 自绘纹理可能不生效（实机闪过），靠层级遮挡兜底
+                    layer = new GauntletLayer("IllustratorOffscreenStage", 1, false);
                     movie = layer.LoadMovie("IllustratorOffscreenStage", new StageViewModel());
                     var root = movie?.Movie?.RootWidget;
                     if (root == null)
