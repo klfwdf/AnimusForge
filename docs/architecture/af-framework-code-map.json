@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "4d6994bc7cf219a2f894377d7262a90b466f9cbe",
+  "sourceRevision": "9617f96af8d821bf6317db0e43b8b1fbf1ee7a4d",
   "remoteBaseline": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -638,9 +638,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "有限Campaign窗口共享封存授予；独立/同步调用与深原子成本单列",
-      "start": 451,
-      "end": 454,
-      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
+      "start": 459,
+      "end": 462,
+      "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
     },
     {
       "id": "memory.budget.runtime",
@@ -706,7 +706,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "真实Daily/Major封存消费方；持有私有排序结果、源字段/列表/culture发布门禁，标量绑定仍原子",
-      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
+      "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
     },
     {
       "id": "memory.sort.runtime",
@@ -790,22 +790,22 @@
       "path": "MyBehavior.MemorySealing.cs",
       "symbol": "private sealed class DailyMemoryDraftNormalization",
       "note": "逐draft身份仍一次expensive；line/trigger bind按metadata续跑，结果私有；发布前key/empty/列表guard",
-      "start": 128,
-      "end": 131,
+      "start": 129,
+      "end": 132,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
+      "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
     },
     {
       "id": "memory.owner-normalize.caller",
       "path": "MyBehavior.MemorySealing.cs",
       "symbol": "private bool RunDailyMemorySealDrafts(DailyMemorySealState state, MemoryMaintenanceWorkBudget budget)",
       "note": "真实caller，复用累计授予；失效重新封存/建索引，空owner直接移除",
-      "start": 642,
-      "end": 645,
+      "start": 650,
+      "end": 653,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
+      "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
     },
     {
       "id": "memory.owner-normalize.entry",
@@ -845,11 +845,22 @@
       "path": "MyBehavior.MemorySealing.cs",
       "symbol": "private sealed class DailyMemoryDraftEntryNormalization",
       "note": "单draft可续跑：bind/line metadata，trigger列表仍一次Sanitize；列表ref/count变化失效重封",
-      "start": 218,
-      "end": 221,
+      "start": 219,
+      "end": 222,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
+      "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
+    },
+    {
+      "id": "memory.inner-structure.guard",
+      "path": "MyBehavior.MemorySealing.cs",
+      "start": 337,
+      "end": 340,
+      "symbol": "private bool InnerCurrent()",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "内层lines/trigger bind的List结构版本守卫；同数量变动失效重封，非字段版本/线程安全集合",
+      "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
     }
   ]
 }

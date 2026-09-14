@@ -1,3 +1,9 @@
+# 当前入口：内层结构修复完成，真正职责模块化计划（2026-09-15）
+
+用户本轮授权修复与规划。生产9617f96a已通过本轮影响面离线验证，但阶段8/B1未整批合格；自动化PAUSED、未推送/部署。未来拆分按第18节与[职责计划](af-core-responsibility-decomposition-plan-20260915.md)，下方历史暂停/ACTIVE记录不自动开启工作。
+
+## 以下为原计划与历史执行状态
+
 # 当前续点（2026-09-14：深 line/trigger 预算之后）
 
 生产`4d6994bc`已完成单draft深line与trigger bind的共享metadata计费（76/0、旧40b 61/15、新反例有效）；自动化保持PAUSED。当前仍B1，**下一步是首次capture/复制、全owner/raw/最终绑定、Apply等原子成本**，不重做本轮line预算或已完成五项。[最新HANDOFF](../handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)为当前范围与证据入口，第16节的原阶段/权限/停止门槛不变。
@@ -595,3 +601,16 @@ B1 上述两部分是同一整批，不要求每个小 helper 单独向用户交
 - 最新生产/测试 86805518，原未审集成缺口关闭，五项生产改动有影响面离线证据；阶段 8/B1 仍未整批合格，不进入 B2/B3，不称整体 DONE。结构统计/复现/源码坐标/测试与未验收部分统一看[本次详细 HANDOFF](../handoffs/2026-09-14-af-core-pause-overall-delivery-handoff.md)，不复制一份分叉清单。
 - 恢复后先完成 B1 的深 line/trigger、首次 capture/copy、全 owner/raw/最终绑定和 Apply/public/weekly 尾步，保留全 writer 与过期拒绝责任；不重做已完成五项。B1 整批门槛满足后再 B2 Courier/三渠道，B3 内部组合；public D-A/D-B、LIVE/SAVE 和最终动作保留明确决定/证据门槛。
 - 本轮普通推送仅 origin/codex/af-main-refactor-continuation-20260831；用户草稿与本地专用文档不暂存、不上传，其他分支不融合，不部署或操作真实存档。实际结果以远端回执为准。
+
+
+## 18. 真正职责拆分与收尾前计划（2026-09-15，最新规划入口）
+
+本轮line/trigger内层List结构版本修复生产9617f96a、前4d、检查点b467179b；88/0、旧4d80/8、三个有效故障控制、相邻回归/13守卫/六Stage/API/存档身份已通过。只完成此修复，不放行整体B1。
+
+具体后续以[AF主体真正模块化计划](af-core-responsibility-decomposition-plan-20260915.md)为职责设计，本文仍为原P0–P6执行顺序，不另起阶段或台账。计划定义Memory来源/维护/事实、Conversation、Prompt/规则、Actions、三渠道adapter、展示、持久化/开发工具、内部模块、公开API的实际边界，以及旧符号删除/保留条件。
+
+新增门槛：没有独立owner/状态归属、真实消费者接线、行为/失败回归、已替代旧算法删除，就不能仅凭partial/文件/行数变化报“拆干净”。剩余引擎/存档ABI薄壳须逐符号列明；制作组业务/参考材料HOLD不擅删。
+
+下一完整包仍B1首次capture/copy + writer/最终接受/原子预算，不直接进入B2。af618912捕获检查点只有设计，未来方案不能仅凭列表ref/count判定来源，需覆盖实际结构/字段变动。之后按B2→B3→已选P4→P5/P6同候选验收，到READY_FOR_CLOSEOUT_REVIEW再决策最终发布/默认迁移。
+
+本轮不恢复自动化，不推送/部署、不碰真实存档。后续实施/公开范围/真实验收与最终动作依最新用户授权，不能由本文历史记录自动执行。

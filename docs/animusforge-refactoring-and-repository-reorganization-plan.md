@@ -1,10 +1,15 @@
 # 当前任务：修复内层同数量变动，并细化收尾前职责拆分计划（2026-09-15）
 
-- 用户已明确授权修复本轮已复现的覆盖问题并制定后续模块化计划。任务 `B1-INNER-STRUCTURE-20260915` ACTIVE；单代理，唯一写入 G:/AFMOD/AF-REFACTOR，分支 codex/af-framework-skill-delivery-20260911，起点 af618912 / 生产4d6994bc。自动化仍PAUSED，不推送、部署、操作存档、切默认或开展未经本轮审查的大范围搬迁。
+- 用户已明确授权修复本轮已复现的覆盖问题并制定后续模块化计划。任务 `B1-INNER-STRUCTURE-20260915` OFFLINE_VERIFIED；本轮修复与规划交付COMPLETE（整体B1仍VERIFY）；单代理，唯一写入 G:/AFMOD/AF-REFACTOR，分支 codex/af-framework-skill-delivery-20260911，起点 af618912 / 生产4d6994bc。自动化仍PAUSED，不推送、部署、操作存档、切默认或开展未经本轮审查的大范围搬迁。
 - 旧行为/根因：DailyMemoryDraftEntryNormalization 在跨窗口时只看内层列表引用/count，64→64替换、删补、换位漏失效，最终发布旧_lineResult。上一检查真实抽取封存调用已复现2个对照绿、3种同数量变化红；不是实机症状归因。
 - 意图：在现有内层游标上绑定实际List结构版本（含lines/trigger bind的相邻边界），O(1)校验，变化走既有失效重封；保留同步规则、单权威owner和实际预算，不重写净化规则、不引入无消费者接口。预计改MemorySealing、sealing runner/harness与精确源守卫/地图；按影响面验旧红/新绿/故障反例、相邻回归和原六项Stage。
 - 规划：沿原P0–P6/B1–B3细化高内聚owner/typed端口/调用者迁移/旧符号删除/最终验收，不把partial、空接口或行数减少当拆分完成。补充可审查的职责包及迁移表模板，区分本轮实际修复与未来实施，不改制作组玩法或public范围决定。
 - 兼容/保护：无存档字段/类型、Prompt/API/玩法/默认/原构建脚本变更；两份用户草稿与指定本地Native简明版不改不暂存。代码保持英文，说明/提示词可中文；每阶段在同候选证据和回滚点齐套后才放行，不承诺零Bug。
+
+- 本轮修复结果：内层line/trigger的List结构版本探针已接入，移除两份post-Done无用line发布状态；88/0，旧4d同88例80/8，三个有效故障控制与captured116/business36/terminal85、13项精确源守卫通过。原六项Stage已通过；首次构建选到系统runtime-only dotnet，临时PATH切已有G盘SDK后成功，原失败日志保留，不改脚本。
+- 规划结果：收尾前职责拆分设计已写入 `docs/phase8/af-core-responsibility-decomposition-plan-20260915.md`，沿原P0–P6而非另起阶段；当前仍B1未整批合格。新计划不等于这些职责已迁移，自动化继续PAUSED，本轮不推送。
+
+- 最终候选：9617f96a；本轮API119/并发256、4DLL元数据532、146 SyncData键/36行为保持，六DLL/marker/Stage比对通过；78点导航绑定当前修复。统一交接见 `docs/handoffs/2026-09-15-inner-structure-fix-and-modularization-handoff.md`，原计划第18节链接新的职责拆分设计。无后台任务在继续实施，自动化保持PAUSED；代码/文档均仅本地提交。
 
 ## 以下为历史记录；当前授权及状态以上方为准
 
