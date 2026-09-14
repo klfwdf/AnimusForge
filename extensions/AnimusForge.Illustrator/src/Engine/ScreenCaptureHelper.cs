@@ -16,6 +16,7 @@ using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 using TaleWorlds.MountAndBlade.View.Tableaus;
+using TaleWorlds.ObjectSystem;
 using TaleWorlds.MountAndBlade.View.Tableaus.Thumbnails;
 using TaleWorlds.ScreenSystem;
 
@@ -1198,6 +1199,59 @@ namespace AnimusForge.Illustrator.Engine
             catch (Exception ex)
             {
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character portrait offscreen error: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 离屏渲染"纹章兵"：用已验证稳定的 CharacterTableauWidget 渲染一名持大盾士兵，
+        /// BannerCodeText 会把目标家族真实纹章画在其盾面/罩袍上——替代会原生崩溃的
+        /// BannerTableauWidget，作为旗帜/徽记的图像参考。
+        /// </summary>
+        public static async Task<string> ExtractEmblemOffscreenAsync(string bannerCode, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(bannerCode) || !Banner.IsValidBannerCode(bannerCode)) return null;
+            try
+            {
+                // imperial_legionary 的方形大盾让纹章在画面中占比最大、最端正
+                var bearer = MBObjectManager.Instance?.GetObject<CharacterObject>("imperial_legionary");
+                if (bearer == null)
+                {
+                    TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Emblem bearer 'imperial_legionary' not found");
+                    return null;
+                }
+                string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
+                {
+                    if (widget is CharacterTableauWidget cw)
+                    {
+                        var equipment = bearer.Equipment ?? bearer.FirstBattleEquipment;
+                        cw.BodyProperties = bearer.GetBodyProperties(equipment, -1).ToString();
+                        cw.IsFemale = false;
+                        cw.Race = bearer.Race;
+                        cw.StanceIndex = 0;
+                        string equipmentCode = equipment?.CalculateEquipmentCode();
+                        if (!string.IsNullOrEmpty(equipmentCode))
+                        {
+                            cw.EquipmentCode = equipmentCode;
+                        }
+                        cw.BannerCodeText = bannerCode;
+                        cw.IsVisible = true;
+                    }
+                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken).ConfigureAwait(false);
+                string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
+                if (!string.IsNullOrWhiteSpace(b64))
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Emblem bearer stage render extracted ({b64.Length} chars)");
+                }
+                return b64;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Emblem bearer offscreen error: {ex.Message}");
                 return null;
             }
         }

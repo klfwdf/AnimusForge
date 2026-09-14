@@ -190,9 +190,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感，构图与画风必须重新设计"));
                 }
-                // 纹章不走 BannerTableauWidget 离屏舞台：其 TableauView 原生落盘已实锤崩溃
-                // （该控件正常仅在旗帜编辑器内配合 EditableArea 子控件使用）。
-                // 纹章信息由人物立绘上的盾面/罩袍纹样 + BannerDataList 结构化文字构图承担。
+                // 纹章由"纹章兵"舞台渲染（稳定 CharacterTableauWidget + BannerCodeText）：
+                // 持大盾士兵的盾面即真实家族纹章；BannerTableauWidget 原生落盘实锤崩溃不可用
+                if (!string.IsNullOrWhiteSpace(bannerCode) && options?.EnableOffscreenRendering == true)
+                {
+                    string emblemB64 = await ScreenCaptureHelper.ExtractEmblemOffscreenAsync(bannerCode, cancellationToken: token).ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(emblemB64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(emblemB64, "家族纹章参考图：图中士兵盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜、盾徽与罩袍纹章必须严格依此纹样绘制，严禁编造其他图腾"));
+                    }
+                }
 
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
@@ -310,6 +317,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Task<string> playerStage = null;
                 Task<string> partnerStage = null;
+                Task<string> emblemStage = null;
                 if (options?.EnableOffscreenRendering == true)
                 {
                     if (Hero.MainHero != null)
@@ -324,8 +332,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     {
                         partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token);
                     }
-                    // 纹章不用 BannerTableauWidget 舞台（原生落盘实锤崩溃）：
-                    // 立绘已把家族纹章画在盾面/罩袍上，构图细节由 BannerDataList 文字描述补充
+                    if (!string.IsNullOrWhiteSpace(bannerCode))
+                    {
+                        emblemStage = ScreenCaptureHelper.ExtractEmblemOffscreenAsync(bannerCode, cancellationToken: token);
+                    }
                 }
                 if (playerStage != null)
                 {
@@ -343,6 +353,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
                         var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
+                        directorRefs.Add(r);
+                        genRefs.Add(r);
+                    }
+                }
+                if (emblemStage != null)
+                {
+                    string b64 = await emblemStage.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        var r = new IllustrationReferenceImage(b64, "家族纹章参考图：图中士兵盾面/罩袍上的纹样即对话对方家族的真实纹章，画面中的旗帜、盾徽与罩袍纹章必须严格依此纹样绘制，严禁编造其他图腾");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
