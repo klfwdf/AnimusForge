@@ -88,6 +88,7 @@ $expectedPrefabs = @(
     "ConversationIllustrationOverlay.xml",
     "EncyclopediaIllustrationOverlay.xml",
     "IllustratorGalleryPopup.xml",
+    "IllustratorOffscreenStage.xml",
     "WeeklyReportIllustrationOverlay.xml"
 )
 foreach ($prefabName in $expectedPrefabs) {

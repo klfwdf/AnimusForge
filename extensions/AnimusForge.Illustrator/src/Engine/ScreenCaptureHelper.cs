@@ -227,10 +227,11 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
-                // 1. 若为 CharacterTableauWidget 或其子类 (如 EncyclopediaCharacterTableauWidget)
-                if (widget is CharacterTableauWidget ctw && ctw.TextureProvider != null)
+                // 1. 若为 Tableau 控件或其子类 (如 EncyclopediaCharacterTableauWidget / BannerTableauWidget)
+                if (widget is TextureWidget twTop && twTop.TextureProvider != null &&
+                    (widget is CharacterTableauWidget || widget is BannerTableauWidget))
                 {
-                    var view = ExtractTableauViewFromProvider(ctw.TextureProvider);
+                    var view = ExtractTableauViewFromProvider(twTop.TextureProvider);
                     if (view != null) return view;
                 }
 
@@ -268,17 +269,17 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 var provType = provider.GetType();
-                var field = provType.GetField("_characterTableau", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                if (field != null)
+                // 泛化扫描 provider 实例字段：CharacterTableauTextureProvider 是 _characterTableau，
+                // BannerTableauTextureProvider 是 _bannerTableau——统一取含 Texture 属性的字段值。
+                var fields = provType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                foreach (var field in fields)
                 {
-                    var ct = field.GetValue(provider);
-                    if (ct != null)
+                    object val = field.GetValue(provider);
+                    if (val == null) continue;
+                    var texProp = val.GetType().GetProperty("Texture", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    if (texProp?.GetValue(val) is TaleWorlds.Engine.Texture tex && tex != null)
                     {
-                        var texProp = ct.GetType().GetProperty("Texture", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                        if (texProp?.GetValue(ct) is TaleWorlds.Engine.Texture tex && tex != null)
-                        {
-                            return tex.TableauView;
-                        }
+                        return tex.TableauView;
                     }
                 }
             }
@@ -324,9 +325,13 @@ namespace AnimusForge.Illustrator.Engine
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Triggering native TableauView save to: {safeDir}{fileName}");
 
                 tableauView.SetFilePathToSaveResult(safeDir);
+                TaleWorlds.Library.Debug.Print("[OffscreenRenderer] save path set");
                 tableauView.SetFileNameToSaveResult(fileName);
+                TaleWorlds.Library.Debug.Print("[OffscreenRenderer] save name set");
                 tableauView.SetFileTypeToSave(TaleWorlds.Engine.View.TextureSaveFormat.TextureTypePng);
+                TaleWorlds.Library.Debug.Print("[OffscreenRenderer] save type set");
                 tableauView.SetSaveFinalResultToDisk(true);
+                TaleWorlds.Library.Debug.Print("[OffscreenRenderer] save flag set");
 
                 return true;
             }
@@ -785,14 +790,20 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 自建 TableauView 的逐帧泵状态：OnTick 放行渲染，预热若干帧后触发引擎原生异步落盘，
-        /// 等到 PNG 文件出现后收尾 OnFinalize。全程不触碰渲染目标纹理像素（避免原生崩溃）。
+        /// 离屏舞台泵状态：临时 Gauntlet 层内的 Tableau 控件由游戏自身 UI 管线创建并 tick
+        /// （渲染时机与原版控件完全一致），本类只负责在预热后设落盘标志、等 PNG、拆舞台。
+        /// 绝不自建 Scene/TableauView——手动 OnTick 与渲染线程无同步屏障，已证实会原生崩溃。
         /// </summary>
-        private sealed class OffscreenTableauPump
+        private sealed class StageViewModel : TaleWorlds.Library.ViewModel
         {
-            public Action<float> OnTick;
-            public Func<TaleWorlds.Engine.TableauView> GetView;
-            public Action OnFinalize;
+        }
+
+        private sealed class OffscreenStagePump
+        {
+            public ScreenBase Screen;
+            public GauntletLayer Layer;
+            public GauntletMovieIdentifier Movie;
+            public Widget Widget;
             public int WarmupTicks;
             public int MaxTicks;
             public int Ticks;
@@ -801,6 +812,24 @@ namespace AnimusForge.Illustrator.Engine
             public string Prefix;
             public string SeenPath;
             public TaskCompletionSource<string> Done;
+        }
+
+        /// <summary>
+        /// TextureWidget._isRenderRequestedPreviousFrame：游戏每帧 OnUpdate 末尾会把它重置为 false，
+        /// 只有控件真的被渲染（OnRender 跑到）才会重新置 true。舞台控件摆在屏幕外会被渲染剔除，
+        /// 导致 provider 创建后 SetTargetSize/Tick 永不执行、TableauView 永不生成。
+        /// 泵每 tick 强制置回 true，使 UI 管线的 provider tick 照常运行而画面始终不出屏。
+        /// </summary>
+        private static readonly FieldInfo RenderRequestedField =
+            typeof(TextureWidget).GetField("_isRenderRequestedPreviousFrame", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static void ForceStageRenderRequest(Widget widget)
+        {
+            try
+            {
+                RenderRequestedField?.SetValue(widget, true);
+            }
+            catch { }
         }
 
         private static string FindOffscreenFile(string dir, string prefix)
@@ -822,22 +851,28 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 单帧泵步（仅游戏主线程执行）：tick 放行一帧渲染 → 预热完成则请求落盘 → 文件连续两帧存在即完成。
-        /// 文件出现当帧可能是引擎写入中的半成品，须再等一帧确认稳定。
+        /// 单帧泵步（仅游戏主线程执行）：预热帧后解析舞台控件的 TableauView 并请求落盘 →
+        /// 文件连续两帧存在即完成（出现当帧可能是引擎写入中的半成品，须再等一帧确认稳定）。
         /// </summary>
-        private static void PumpOffscreenTableau(OffscreenTableauPump pump)
+        private static void PumpOffscreenStage(OffscreenStagePump pump)
         {
             try
             {
                 pump.Ticks++;
-                pump.OnTick?.Invoke(0.033f);
+                ForceStageRenderRequest(pump.Widget);
 
                 if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks)
                 {
-                    var view = pump.GetView?.Invoke();
+                    var view = ResolveTableauView(pump.Widget);
                     if (view != null && TriggerTableauViewSave(view, out pump.Dir, out pump.Prefix))
                     {
                         pump.SaveRequested = true;
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage save requested at tick={pump.Ticks}, waiting for file...");
+                    }
+                    else if (pump.Ticks == pump.MaxTicks)
+                    {
+                        var tw = pump.Widget as TextureWidget;
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage never resolved view (provider={(tw?.TextureProvider != null)})");
                     }
                 }
 
@@ -848,7 +883,7 @@ namespace AnimusForge.Illustrator.Engine
                     {
                         if (path == pump.SeenPath)
                         {
-                            try { pump.OnFinalize?.Invoke(); } catch { }
+                            FinishStage(pump);
                             pump.Done.TrySetResult(path);
                             return;
                         }
@@ -856,18 +891,32 @@ namespace AnimusForge.Illustrator.Engine
                     }
                 }
 
-                if (pump.Ticks >= pump.MaxTicks || !Core.IllustratorRuntime.Post(() => PumpOffscreenTableau(pump)))
+                if (pump.Ticks >= pump.MaxTicks || !Core.IllustratorRuntime.Post(() => PumpOffscreenStage(pump)))
                 {
-                    try { pump.OnFinalize?.Invoke(); } catch { }
+                    FinishStage(pump);
                     pump.Done.TrySetResult(null);
                 }
             }
             catch (Exception ex)
             {
-                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Tableau pump error: {ex.Message}");
-                try { pump.OnFinalize?.Invoke(); } catch { }
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage pump error: {ex.Message}");
+                FinishStage(pump);
                 pump.Done.TrySetResult(null);
             }
+        }
+
+        private static void FinishStage(OffscreenStagePump pump)
+        {
+            try
+            {
+                if (pump.Movie != null) pump.Layer?.ReleaseMovie(pump.Movie);
+            }
+            catch { }
+            try
+            {
+                if (pump.Layer != null) pump.Screen?.RemoveLayer(pump.Layer);
+            }
+            catch { }
         }
 
         /// <summary>
@@ -897,53 +946,96 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 自建 BannerTableau 离屏渲染真实家族/王国纹章大图（九宫格构图），经引擎原生落盘取图。
-        /// 不使用 ThumbnailCacheManager：其产物是共享渲染目标纹理，直接读像素会原生崩溃。
+        /// 通用离屏舞台提取：临时挂一个 Gauntlet 层（控件摆屏幕外、IsVisible=true），
+        /// 游戏自身 UI 管线创建并渲染 TableauView，预热后设落盘标志，后台等 PNG。
+        /// 与原版控件同一条渲染路径——不手动 tick 场景、不读渲染目标纹理像素。
+        /// </summary>
+        private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int maxDimension, int timeoutMs)
+        {
+            var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            bool started = await RunOnGameThreadAsync(() =>
+            {
+                GauntletLayer layer = null;
+                GauntletMovieIdentifier movie = null;
+                try
+                {
+                    var top = ScreenManager.TopScreen;
+                    if (top == null)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: no top screen");
+                        return false;
+                    }
+                    layer = new GauntletLayer("IllustratorOffscreenStage", 4005, false);
+                    movie = layer.LoadMovie("IllustratorOffscreenStage", new StageViewModel());
+                    var root = movie?.Movie?.RootWidget;
+                    if (root == null)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: prefab not loaded or empty root");
+                        try { if (movie != null) layer.ReleaseMovie(movie); } catch { }
+                        return false;
+                    }
+                    var widget = FindChildRecursive(root, w => w.Id == widgetId);
+                    if (widget == null)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: widget not found in prefab");
+                        try { layer.ReleaseMovie(movie); } catch { }
+                        return false;
+                    }
+                    configure(widget);
+                    var pump = new OffscreenStagePump
+                    {
+                        Screen = top,
+                        Layer = layer,
+                        Movie = movie,
+                        Widget = widget,
+                        WarmupTicks = warmupTicks,
+                        MaxTicks = maxTicks,
+                        Done = done
+                    };
+                    top.AddLayer(layer);
+                    if (!Core.IllustratorRuntime.Post(() => PumpOffscreenStage(pump)))
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: main-thread queue rejected pump");
+                        FinishStage(pump);
+                        return false;
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage create failed: {ex.Message}");
+                    try { if (movie != null) layer?.ReleaseMovie(movie); } catch { }
+                    return false;
+                }
+            }).ConfigureAwait(false);
+            if (!started) return null;
+
+            var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
+            return winner == done.Task ? done.Task.Result : null;
+        }
+
+        /// <summary>
+        /// 离屏渲染真实家族/王国纹章大图（九宫格构图）。通过隐藏舞台层的 BannerTableauWidget
+        /// 让游戏 UI 管线渲染——绝不直读共享渲染目标纹理。
         /// </summary>
         public static async Task<string> ExtractBannerOffscreenAsync(Banner banner, int maxDimension = 512, int timeoutMs = 3000)
         {
             if (banner == null || !Banner.IsValidBannerCode(banner.BannerCode)) return null;
             try
             {
-                var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-                bool started = await RunOnGameThreadAsync(() =>
+                string path = await ExtractViaStageAsync("OffscreenBanner", widget =>
                 {
-                    try
+                    if (widget is BannerTableauWidget bw)
                     {
-                        var tableau = new BannerTableau();
-                        tableau.SetIsNineGrid(true);
-                        tableau.SetBannerCode(banner.BannerCode);
-                        tableau.SetTargetSize(maxDimension, maxDimension);
-                        var pump = new OffscreenTableauPump
-                        {
-                            OnTick = tableau.OnTick,
-                            GetView = () => tableau.Texture?.TableauView,
-                            OnFinalize = tableau.OnFinalize,
-                            WarmupTicks = 3,
-                            MaxTicks = 150,
-                            Done = done
-                        };
-                        if (!Core.IllustratorRuntime.Post(() => PumpOffscreenTableau(pump)))
-                        {
-                            try { tableau.OnFinalize(); } catch { }
-                            return false;
-                        }
-                        return true;
+                        bw.IsNineGrid = true;
+                        bw.BannerCodeText = banner.BannerCode;
+                        bw.IsVisible = true;
                     }
-                    catch (Exception ex)
-                    {
-                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner tableau create failed: {ex.Message}");
-                        return false;
-                    }
-                }).ConfigureAwait(false);
-                if (!started) return null;
-
-                var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
-                string path = winner == done.Task ? done.Task.Result : null;
+                }, warmupTicks: 8, maxTicks: 150, maxDimension: maxDimension, timeoutMs: timeoutMs).ConfigureAwait(false);
                 string b64 = await ReadOffscreenPngBase64(path, maxDimension).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner tableau extracted ({b64.Length} chars)");
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner stage render extracted ({b64.Length} chars)");
                 }
                 return b64;
             }
@@ -955,68 +1047,42 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 自建 CharacterTableau 离屏渲染指定英雄的真实 3D 立绘（真实五官、发型、装备、家族纹章底色），
-        /// 经引擎原生落盘取图。人物资源加载需要更多预热帧，故 warmup 比纹章长。
+        /// 离屏渲染指定英雄的真实 3D 立绘（真实体型、五官、发型、装备、家族纹章底色）。
+        /// 人物资源加载需要更多预热帧，故 warmup 比纹章长。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3000)
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500)
         {
             if (hero?.CharacterObject == null) return null;
             try
             {
-                var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-                bool started = await RunOnGameThreadAsync(() =>
+                string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
                 {
-                    try
+                    if (widget is CharacterTableauWidget cw)
                     {
                         var character = hero.CharacterObject;
                         var equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
-                        var tableau = new CharacterTableau();
-                        tableau.SetTargetSize(maxDimension, maxDimension);
-                        tableau.SetBodyProperties(character.GetBodyProperties(character.Equipment, -1).ToString());
-                        tableau.SetIsFemale(hero.IsFemale);
-                        tableau.SetRace(character.Race);
-                        tableau.SetStanceIndex(0);
+                        cw.BodyProperties = character.GetBodyProperties(character.Equipment, -1).ToString();
+                        cw.IsFemale = hero.IsFemale;
+                        cw.Race = character.Race;
+                        cw.StanceIndex = 0;
                         string equipmentCode = equipment?.CalculateEquipmentCode();
                         if (!string.IsNullOrEmpty(equipmentCode))
                         {
-                            tableau.SetEquipmentCode(equipmentCode);
+                            cw.EquipmentCode = equipmentCode;
                         }
                         if (hero.ClanBanner != null)
                         {
-                            tableau.SetBannerCode(hero.ClanBanner.BannerCode);
+                            cw.BannerCodeText = hero.ClanBanner.BannerCode;
                         }
-                        tableau.SetArmorColor1(hero.MapFaction?.Color ?? 0);
-                        tableau.SetArmorColor2(hero.MapFaction?.Color2 ?? 0);
-                        var pump = new OffscreenTableauPump
-                        {
-                            OnTick = tableau.OnTick,
-                            GetView = () => tableau.Texture?.TableauView,
-                            OnFinalize = tableau.OnFinalize,
-                            WarmupTicks = 10,
-                            MaxTicks = 240,
-                            Done = done
-                        };
-                        if (!Core.IllustratorRuntime.Post(() => PumpOffscreenTableau(pump)))
-                        {
-                            try { tableau.OnFinalize(); } catch { }
-                            return false;
-                        }
-                        return true;
+                        cw.ArmorColor1 = hero.MapFaction?.Color ?? 0;
+                        cw.ArmorColor2 = hero.MapFaction?.Color2 ?? 0;
+                        cw.IsVisible = true;
                     }
-                    catch (Exception ex)
-                    {
-                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character tableau create failed: {ex.Message}");
-                        return false;
-                    }
-                }).ConfigureAwait(false);
-                if (!started) return null;
-
-                var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
-                string path = winner == done.Task ? done.Task.Result : null;
+                }, warmupTicks: 20, maxTicks: 240, maxDimension: maxDimension, timeoutMs: timeoutMs).ConfigureAwait(false);
                 string b64 = await ReadOffscreenPngBase64(path, maxDimension).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait tableau extracted for {hero.Name} ({b64.Length} chars)");
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait stage render extracted for {hero.Name} ({b64.Length} chars)");
                 }
                 return b64;
             }

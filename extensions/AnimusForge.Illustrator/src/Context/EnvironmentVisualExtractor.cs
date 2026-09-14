@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -24,6 +25,9 @@ namespace AnimusForge.Illustrator.Context
         public string ConflictStatus { get; set; } = string.Empty;
         public string SurroundingCharacters { get; set; } = string.Empty;
         public string SurroundingProps { get; set; } = string.Empty;
+        public string RealSceneName { get; set; } = string.Empty;
+        public string NamedCharacters { get; set; } = string.Empty;
+        public string RealProps { get; set; } = string.Empty;
 
         public string BuildSummary()
         {
@@ -47,6 +51,18 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(SurroundingProps))
             {
                 sb.AppendLine($"【近景与周围陈设道具】{SurroundingProps}");
+            }
+            if (!string.IsNullOrWhiteSpace(RealSceneName))
+            {
+                sb.AppendLine($"【真实场景资源名(引擎实际加载)】{RealSceneName}");
+            }
+            if (!string.IsNullOrWhiteSpace(NamedCharacters))
+            {
+                sb.AppendLine($"【在场具名人物(真实)】{NamedCharacters}");
+            }
+            if (!string.IsNullOrWhiteSpace(RealProps))
+            {
+                sb.AppendLine($"【场景内真实物体预制件(引擎实读，请按名还原其形态)】{RealProps}");
             }
             if (!string.IsNullOrWhiteSpace(ArchitectureStyle))
             {
@@ -121,6 +137,9 @@ namespace AnimusForge.Illustrator.Context
 
                 // 6. 场景周边人物群像与标志性陈设道具动态提取
                 ResolveSurroundings(profile, settlement);
+
+                // 7. 引擎实读：真实场景资源名 + 在场具名人物 + 附近真实预制件道具
+                ProbeLiveScene(profile);
             }
 
             return profile;
@@ -411,6 +430,97 @@ namespace AnimusForge.Illustrator.Context
                     profile.SurroundingCharacters = "身侧肃立着披甲随从与战备护卫，周围是开阔原野与扎营连绵的队伍";
                 }
                 profile.SurroundingProps = "驻扎的行军牛皮帐篷、插在草地上的锋利矛戈与彩绘战盾、余烬微红的野外行军篝火、系在树桩旁的战马与运粮大车";
+            }
+        }
+
+        /// <summary>
+        /// 引擎实读当前 Mission 场景：真实场景资源名、玩家附近具名人物、附近真实物体预制件名。
+        /// 仅主线程、仅在生成插画时一次性扫描（约 20m 半径），不在热路径运行。
+        /// </summary>
+        private static void ProbeLiveScene(EnvironmentVisualProfile profile)
+        {
+            try
+            {
+                var mission = TaleWorlds.MountAndBlade.Mission.Current;
+                if (mission == null) return;
+
+                try
+                {
+                    string sceneName = mission.SceneName;
+                    if (!string.IsNullOrWhiteSpace(sceneName))
+                    {
+                        profile.RealSceneName = sceneName;
+                    }
+                }
+                catch { }
+
+                var mainAgent = mission.MainAgent;
+                Vec3 center = mainAgent != null ? mainAgent.Position : Vec3.Zero;
+                bool hasCenter = center != Vec3.Zero;
+
+                // 在场具名人物（真实 Agent，22m 内，最多 10 名）
+                var named = new List<string>();
+                try
+                {
+                    var agents = mission.Agents;
+                    if (agents != null)
+                    {
+                        foreach (var agent in agents)
+                        {
+                            if (agent == null || !agent.IsActive() || agent == mainAgent) continue;
+                            if (hasCenter && agent.Position.Distance(center) > 22f) continue;
+                            var co = agent.Character as CharacterObject;
+                            if (co?.Name == null) continue;
+                            string name = co.Name.ToString();
+                            if (string.IsNullOrWhiteSpace(name)) continue;
+                            string role = co.IsHero ? "英雄" : co.Occupation.ToString();
+                            named.Add(name + "(" + role + ")");
+                            if (named.Count >= 10) break;
+                        }
+                    }
+                }
+                catch { }
+                if (named.Count > 0)
+                {
+                    profile.NamedCharacters = string.Join("、", named);
+                }
+
+                // 场景内真实可互动物体/预制件（18m 内，按名去重，最多 14 个）
+                var propNames = new List<string>();
+                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                try
+                {
+                    var objects = mission.ActiveMissionObjects;
+                    if (objects != null)
+                    {
+                        foreach (var mo in objects)
+                        {
+                            if (mo == null) continue;
+                            string label = null;
+                            try
+                            {
+                                var ge = mo.GameEntity;
+                                if (ge == null) continue;
+                                if (hasCenter && ge.GlobalPosition.Distance(center) > 18f) continue;
+                                label = ge.GetPrefabName();
+                                if (string.IsNullOrWhiteSpace(label)) label = ge.Name;
+                            }
+                            catch { continue; }
+                            if (string.IsNullOrWhiteSpace(label)) continue;
+                            if (seen.Add(label)) propNames.Add(label);
+                            if (propNames.Count >= 14) break;
+                        }
+                    }
+                }
+                catch { }
+                if (propNames.Count > 0)
+                {
+                    profile.RealProps = string.Join("、", propNames);
+                }
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[Illustrator] Live scene probe failed: {ex.Message}");
             }
         }
 
