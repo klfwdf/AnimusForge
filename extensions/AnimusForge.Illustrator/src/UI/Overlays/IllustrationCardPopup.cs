@@ -200,13 +200,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
 
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
+                IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {
-                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, $"{heroName} 纪事肖像", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, $"{heroName} 纪事肖像", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: true);
                 }
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
@@ -301,32 +302,57 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             _scope.Run(async token =>
             {
-                var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
+                // 参考图分两路：场景实景截图只发导演识图（避免截图质感与UI文字被生图模型复制），
+                // 人物立绘/纹章同时进生图垫图。
+                var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
+                var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(preCapturedBase64))
                 {
-                    refs.Add(new IllustrationReferenceImage(preCapturedBase64, "会面现场的3D实景画面（双方站位、坐骑与周围真实环境布局）"));
+                    directorRefs.Add(new IllustrationReferenceImage(preCapturedBase64,
+                        "会面现场的3D实景画面：仅用于理解双方站位、坐骑、周围真实环境布局与光影方向，画面中禁止出现任何界面元素、对话框、字幕、名牌与文字"));
                 }
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
-                Task<string> portraitStage = null;
+                Task<string> playerStage = null;
+                Task<string> partnerStage = null;
                 Task<string> bannerStage = null;
                 if (options?.EnableOffscreenRendering == true)
                 {
+                    if (Hero.MainHero != null)
+                    {
+                        playerStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(Hero.MainHero, useCivilian: true, cancellationToken: token);
+                    }
                     if (interlocutor != null)
                     {
-                        portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(interlocutor, interlocutorCivilian, cancellationToken: token);
+                        partnerStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(interlocutor, interlocutorCivilian, cancellationToken: token);
+                    }
+                    else if (convContext.InterlocutorCharacter != null)
+                    {
+                        partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token);
                     }
                     if (!string.IsNullOrWhiteSpace(bannerCode))
                     {
                         bannerStage = ScreenCaptureHelper.ExtractBannerOffscreenAsync(bannerCode, cancellationToken: token);
                     }
                 }
-                if (portraitStage != null)
+                if (playerStage != null)
                 {
-                    string b64 = await portraitStage.ConfigureAwait(false);
+                    string b64 = await playerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        refs.Add(new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的真实游戏内3D形象（其五官、发型、装备与衣着必须严格依此还原）"));
+                        var r = new IllustrationReferenceImage(b64, "对话中玩家主角的真实游戏内3D形象（其五官、发型、肤色、装备与衣着必须严格依此还原）");
+                        directorRefs.Add(r);
+                        genRefs.Add(r);
+                    }
+                }
+                if (partnerStage != null)
+                {
+                    string b64 = await partnerStage.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的真实游戏内3D形象（其五官、发型、肤色、装备与衣着必须严格依此还原）");
+                        directorRefs.Add(r);
+                        genRefs.Add(r);
                     }
                 }
                 if (bannerStage != null)
@@ -334,18 +360,21 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await bannerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        refs.Add(new IllustrationReferenceImage(b64, "对话对方所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制）"));
+                        var r = new IllustrationReferenceImage(b64, "对话对方所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制）");
+                        directorRefs.Add(r);
+                        genRefs.Add(r);
                     }
                 }
 
-                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
-                var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
-                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
+                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, directorRefs, options, token).ConfigureAwait(false);
+                IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
+                var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
+                var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {
-                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, $"与 {partnerName} 的会晤纪事", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, $"与 {partnerName} 的会晤纪事", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: true);
                 }
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>

@@ -79,10 +79,10 @@ $result = [string]$synthesize.Invoke($null, [object[]]@('【核心事件】奥�
 Assert-True ($result.Contains('奥尼拉') -and $result.Contains('投石机破城')) 'weekly event and location survive fallback'
 Assert-True (-not $result.Contains('百战勇士肖像')) 'weekly fallback does not become a generic portrait'
 
-# 文化头饰：阿塞莱君主必须使用缠头巾形制，严禁西式王冠
+# 文化头饰：放宽后不再凭空发明头饰；阿塞莱君主事实保留且不得出现西式王冠
 $result = [string]$synthesize.Invoke($null, [object[]]@('阿塞莱文化，男性，身份：苏丹/最高统治者 (Sovereign Monarch)，身穿丝绸长袍。'))
-Assert-True ($result.Contains('缠头巾')) 'aserai monarch fallback uses turban crown'
-Assert-True (-not ($result.Contains('庄严王冠') -and -not $result.Contains('严禁'))) 'aserai monarch does not fall back to western crown'
+Assert-True ($result.Contains('苏丹')) 'aserai monarch facts survive fallback'
+Assert-True (-not $result.Contains('西式王冠') -and -not $result.Contains('庄严王冠')) 'aserai monarch fallback does not invent western crown'
 
 $srcDir = Join-Path $module 'src'
 $screenCapture = Get-Content (Join-Path $srcDir 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8
@@ -127,7 +127,9 @@ Assert-True ($settingsSrc.Contains('ShowLongTextEditor')) 'prompt editors reuse 
 Assert-True ($clientSrc.Contains('customStyleHint')) 'image client injects prompt-level style hints'
 Assert-True ($directorSrc.Contains('IllustrationPromptPlan')) 'director separates hard facts from open art direction'
 Assert-True ($directorSrc.Contains('ComposeFinalPrompt')) 'director programmatically preserves hard facts after LLM expansion'
-Assert-True (-not $directorSrc.Contains('伦勃朗与克雷格·穆林斯')) 'global director prompt no longer hard-locks one artist blend'
+$sysPromptLiteral = [regex]::Match($directorSrc, 'private const string SystemPrompt\s*=\s*([^;]+);').Groups[1].Value
+Assert-True (-not $sysPromptLiteral.Contains('伦勃朗')) 'global director prompt no longer hard-locks one artist blend'
+Assert-True ($directorSrc.Contains('classic-oil')) 'classic oil style available as optional preset branch'
 Assert-True ($clientSrc.Contains('BuildEffectivePrompt')) 'image client exposes the actual final prompt sent to providers'
 Assert-True ($clientSrc.Contains('MultipartFormDataContent') -and $clientSrc.Contains('/images/edits')) 'Images protocol can actually send reference images through edits'
 Assert-True ($clientSrc.Contains('ActualRefImages')) 'generation diagnostics distinguish requested and actually sent references'
