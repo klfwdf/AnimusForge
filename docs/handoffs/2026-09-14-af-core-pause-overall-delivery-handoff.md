@@ -30,6 +30,10 @@
 
 [GitHub 专门重构分支](https://github.com/klfwdf/AnimusForge/tree/codex/af-main-refactor-continuation-20260831)。推送前重新 fetch 并验证祖先关系；实际完成以远端 ref 和最终回执为准，本文不自引用尚未生成的提交号。若远端分叉就停止交付，不擅自融合。
 
+### 实际推送回执
+
+**代码与本篇详细交接已普通推送成功，远端 `refs/heads/codex/af-main-refactor-continuation-20260831` 经 `git ls-remote` 核实为 `dcc17ee70832e2c63725bf08b0a284f9a94429d3`。** [已核实交付提交](https://github.com/klfwdf/AnimusForge/commit/dcc17ee70832e2c63725bf08b0a284f9a94429d3)。此次为 `3f00fefa → dcc17ee7`，19 个提交、41 个差异文件；本段随后仅补写交付状态，生产仍为 86805518。没有强推、融合、部署或上传本地专用材料。
+
 ## 3. 整体进度与原计划的对应
 
 | 范围 | 已落地 | 还差什么 | 当前状态 |

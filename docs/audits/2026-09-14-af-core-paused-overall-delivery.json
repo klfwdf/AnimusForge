@@ -347,7 +347,18 @@
     "existingTrackedTmpReferences": "Already present in remote; unchanged, not newly published or removed.",
     "warning": "Focused publication hygiene check, not a comprehensive security audit."
   },
-  "delivery": "Ready for authorized normal push after final docs validation/refetch; final remote receipt recorded separately after actual push.",
+  "delivery": {
+    "status": "VERIFIED_CODE_AND_HANDOFF_PUSH",
+    "verifiedUtc": "2026-09-14T01:55:30.875691+00:00",
+    "previousRemote": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
+    "codeAndHandoffCommit": "dcc17ee70832e2c63725bf08b0a284f9a94429d3",
+    "lsRemoteObserved": "dcc17ee70832e2c63725bf08b0a284f9a94429d3",
+    "target": "refs/heads/codex/af-main-refactor-continuation-20260831",
+    "commits": 19,
+    "changedFiles": 41,
+    "force": false,
+    "note": "This receipt is a subsequent documentation-only commit. Production remains 86805518; final receipt-only tip is reported separately."
+  },
   "remaining": [
     "B1 single-draft deep normalization, initial capture/full traversal/final binding/Apply atomic work not bounded",
     "B2 Courier off-thread live reads and complete three-channel parity",
