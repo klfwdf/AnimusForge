@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 SOURCES = ["Api/V1/AfApi.cs", "Api/V1/AfApiContracts.cs",
     "Refactor/Modules/InternalModuleDirectory.cs", "Refactor/Modules/ModuleFrameworkRuntime.cs",
-    "Refactor/Contracts/FeatureBridgeContracts.cs"]
+    "Refactor/Contracts/FeatureBridgeContracts.cs", "Refactor/Modules/TeamModuleRegistration.cs"]
 
 
 def environment(dotnet: str) -> dict[str, str]:

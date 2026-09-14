@@ -1,10 +1,15 @@
 # 当前任务：框架装配职责真实拆分（2026-09-15）
 
-- 用户明确要求“编排好了吗，那开始拆分”。任务 `FRAMEWORK-COMPOSITION-EXTRACTION-20260915` ACTIVE；起点812b34b0，生产基线61d57892；唯一写入G:/AFMOD/AF-REFACTOR。fresh fetch远端af618912，本地8 ahead/0 behind；不融合/推送。
+- 用户明确要求“编排好了吗，那开始拆分”。任务 `FRAMEWORK-COMPOSITION-EXTRACTION-20260915` OFFLINE_VERIFIED；起点812b34b0，生产基线61d57892；唯一写入G:/AFMOD/AF-REFACTOR。fresh fetch远端af618912，本地8 ahead/0 behind；不融合/推送。
 - 先实现I1装配切片：SubModule原36个CampaignBehavior与4个模型包装注册移到专门装配owner，现有ModuleFrameworkRuntime作为唯一委托入口；制作组typed目录注册从runtime生命周期状态提取。只搬移装配，不搬移领域规则/存档类型，不新增注册器/队列或无消费者接口。
 - 保持原顺序、每次Campaign回调新建实例、最后一个非AF模型作为inner/默认模型fallback、逐模型失败继续与行为注册异常传播；非Campaign/no-op。模型注册成功不等于读档完成，目录Ready语义不改，旧Campaign/Mission清理路径不伪造。
 - 验证：固定旧源码抽取对照、当前真实装配方法+引擎stub执行、顺序/隔离/失败/重复调用/故障反例；既有API/并发/拒绝访问、六项Stage、存档身份与代码坐标。保留未覆盖的完整生命周期/三渠道业务/B1深复制工作。
 - 修改范围：SubModule、Refactor/Modules装配类，相关源码级测试及文档。自动化PAUSED，不部署/操作存档/改默认/制作组玩法；两份用户草稿和指定本地Native简明版不动。
+
+- 本切片结果：CampaignComposition实际承接36个行为、CampaignModelComposition承接4个包装模型、TeamModuleRegistration承接3组typed目录声明；SubModule净减148行，ModuleFrameworkRuntime净减25行。旧实现已从原位置移除，无第二套清单/注册器，公开接口/Saveable身份未变。
+- 验证：装配42项+5类有效故障反例，原/新整文件逆变换与4个模型方法/注册顺序对照；API119+并发256+外部访问拒绝、4DLL元数据556、Debug/Release×1.3/1.4/Bootstrap六Stage、SyncData146/Behavior36保持。首次Debug因误移除仍被UI使用的PolicyEffects using失败，已恢复并重跑成功，失败日志保留。
+- 已知阻断：历史TeamModulePortParityTests完整入口仍因61d57892就已缺失的ProcessMemorySummaryQueueAsync源码定位失败，未通过/未豁免；独立13签名/308真实port断言与组合后的历史SubModule逆变换通过。不把部分检查写成全仓合格。
+- 详细HANDOFF/创建释放表与代码地图随后绑定本轮生产提交；完整Campaign/Mission生命周期、公共投影进一步分离、三渠道业务拆分和B1深复制仍待办。本轮切片完成不等于阶段8或整个框架DONE。
 
 ## 以下为历史记录；当前实施以上方为准
 

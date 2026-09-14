@@ -9,13 +9,10 @@ using AnimusForge.Refactor.Modules;
 using Bannerlord.UIExtenderEx;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.ComponentInterfaces;
-using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ScreenSystem;
-using AFWarStatsTerminal.Behaviors;
 using AFWarStatsTerminal.UI;
 
 namespace AnimusForge;
@@ -655,101 +652,8 @@ public class SubModule : MBSubModuleBase
 
 	protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
 	{
-		if (starterObject is CampaignGameStarter campaignGameStarter)
-		{
-			RegisterCourierFoodConsumptionModel(campaignGameStarter);
-			RegisterCourierMobilePartyAiModel(campaignGameStarter);
-			RegisterAnimusForgeSettlementAccessModel(campaignGameStarter);
-			RegisterAnimusForgeSettlementLoyaltyModel(campaignGameStarter);
-			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
-			campaignGameStarter.AddBehavior(new MyBehavior());
-			campaignGameStarter.AddBehavior(new KingdomStrategicProfileBehavior());
-			campaignGameStarter.AddBehavior(new ShoutBehavior());
-			campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());
-			campaignGameStarter.AddBehavior(new DuelBehavior());
-			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
-			campaignGameStarter.AddBehavior(new PlayerNotorietyBehavior());
-			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
-			campaignGameStarter.AddBehavior(new AnimusForgeUniqueCosmeticItemBehavior());
-			campaignGameStarter.AddBehavior(new CustomPolicyBehavior());
-			campaignGameStarter.AddBehavior(new NpcRulerPolicyBehavior());
-			campaignGameStarter.AddBehavior(new AnimusForgeWorldEventBehavior());
-			campaignGameStarter.AddBehavior(new WorldMessageTimelineMenuBehavior());
-			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
-			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
-			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
-			campaignGameStarter.AddBehavior(new ProactiveNpcRequestBehavior());
-			campaignGameStarter.AddBehavior(new CompanionProactiveChatBehavior());
-			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
-			campaignGameStarter.AddBehavior(new GcczSettlementCulturePersistenceBehavior());
-			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
-			campaignGameStarter.AddBehavior(new VillageAftermathBehavior());
-			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());
-			campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());
-			campaignGameStarter.AddBehavior(new NoblePrisonerExecutionOrderBehavior());
-			campaignGameStarter.AddBehavior(new VoteDealBehavior());
-			campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior());
-			campaignGameStarter.AddBehavior(new DiplomacyBehavior());
-			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
-			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
-			campaignGameStarter.AddBehavior(new NobleGatheringBehavior());
-			campaignGameStarter.AddBehavior(new VassalageBehavior());
-			campaignGameStarter.AddBehavior(new NpcTributeVassalageBehavior());
-			campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
-			campaignGameStarter.AddBehavior(new AfWarStatsBehavior());
-		}
-	}
-
-	private static void RegisterAnimusForgeSettlementLoyaltyModel(CampaignGameStarter campaignGameStarter)
-	{
-		if (campaignGameStarter == null)
-		{
-			return;
-		}
-		try
-		{
-			SettlementLoyaltyModel inner = null;
-			foreach (GameModel model in campaignGameStarter.Models)
-			{
-				if (model is SettlementLoyaltyModel loyaltyModel && !(loyaltyModel is AnimusForgeSettlementLoyaltyModel))
-				{
-					inner = loyaltyModel;
-				}
-			}
-			inner ??= new DefaultSettlementLoyaltyModel();
-			campaignGameStarter.AddModel<SettlementLoyaltyModel>(new AnimusForgeSettlementLoyaltyModel(inner));
-			Logger.LogTrace("SubModule", ">>> AnimusForge settlement loyalty model registered.");
-		}
-		catch (Exception ex)
-		{
-			Logger.LogTrace("SubModule", ">>> AnimusForge settlement loyalty model registration failed: " + ex);
-		}
-	}
-
-	private static void RegisterAnimusForgeSettlementAccessModel(CampaignGameStarter campaignGameStarter)
-	{
-		if (campaignGameStarter == null)
-		{
-			return;
-		}
-		try
-		{
-			SettlementAccessModel inner = null;
-			foreach (GameModel model in campaignGameStarter.Models)
-			{
-				if (model is SettlementAccessModel accessModel && !(accessModel is AnimusForgeSettlementAccessModel))
-				{
-					inner = accessModel;
-				}
-			}
-			inner ??= new DefaultSettlementAccessModel();
-			campaignGameStarter.AddModel<SettlementAccessModel>(new AnimusForgeSettlementAccessModel(inner));
-			Logger.LogTrace("SubModule", ">>> AnimusForge settlement access model registered.");
-		}
-		catch (Exception ex)
-		{
-			Logger.LogTrace("SubModule", ">>> AnimusForge settlement access model registration failed: " + ex);
-		}
+		// 引擎入口保持原签名；装配由同一框架入口委托，不在此维护第二份清单。
+		ModuleFrameworkRuntime.RegisterCampaign(starterObject);
 	}
 
 	protected override void OnApplicationTick(float dt)
@@ -878,58 +782,6 @@ public class SubModule : MBSubModuleBase
 		using (PerfProbe.Scope(name))
 		{
 			action?.Invoke();
-		}
-	}
-
-	private static void RegisterCourierFoodConsumptionModel(CampaignGameStarter campaignGameStarter)
-	{
-		if (campaignGameStarter == null)
-		{
-			return;
-		}
-		try
-		{
-			MobilePartyFoodConsumptionModel inner = null;
-			foreach (GameModel model in campaignGameStarter.Models)
-			{
-				if (model is MobilePartyFoodConsumptionModel foodModel && !(foodModel is CourierFoodConsumptionModel))
-				{
-					inner = foodModel;
-				}
-			}
-			inner ??= new DefaultMobilePartyFoodConsumptionModel();
-			campaignGameStarter.AddModel<MobilePartyFoodConsumptionModel>(new CourierFoodConsumptionModel(inner));
-			Logger.LogTrace("SubModule", ">>> Courier food consumption model registered.");
-		}
-		catch (Exception ex)
-		{
-			Logger.LogTrace("SubModule", ">>> Courier food consumption model registration failed: " + ex);
-		}
-	}
-
-	private static void RegisterCourierMobilePartyAiModel(CampaignGameStarter campaignGameStarter)
-	{
-		if (campaignGameStarter == null)
-		{
-			return;
-		}
-		try
-		{
-			MobilePartyAIModel inner = null;
-			foreach (GameModel model in campaignGameStarter.Models)
-			{
-				if (model is MobilePartyAIModel aiModel && !(aiModel is CourierMobilePartyAIModel))
-				{
-					inner = aiModel;
-				}
-			}
-			inner ??= new DefaultMobilePartyAIModel();
-			campaignGameStarter.AddModel<MobilePartyAIModel>(new CourierMobilePartyAIModel(inner));
-			Logger.LogTrace("SubModule", ">>> Courier mobile party AI model registered.");
-		}
-		catch (Exception ex)
-		{
-			Logger.LogTrace("SubModule", ">>> Courier mobile party AI model registration failed: " + ex);
 		}
 	}
 
