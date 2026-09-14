@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "9617f96af8d821bf6317db0e43b8b1fbf1ee7a4d",
-  "remoteBaseline": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
+  "sourceRevision": "61d578926329ace61bf6b6ae43e12bf7d89b4696",
+  "remoteBaseline": "af6189129403466aa06101ccc3c522ee797bff38",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
     {
@@ -227,24 +227,24 @@
     {
       "id": "memory.summary.dispatch",
       "path": "MyBehavior.MemorySummaryMainThread.cs",
-      "start": 58,
-      "end": 61,
-      "symbol": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation)",
+      "start": 46,
+      "end": 49,
+      "symbol": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation) =>",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "主线程剩余额度内直达，否则排队；原 owner/generation/Campaign 与退休门禁保留",
-      "fileSha256": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598"
+      "note": "Host稳定私有调用入口，委托唯一dispatcher",
+      "fileSha256": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7"
     },
     {
       "id": "memory.summary.drain",
-      "path": "MyBehavior.MemorySummaryMainThread.cs",
-      "start": 128,
-      "end": 131,
-      "symbol": "private void ProcessMemorySummaryMainThreadActions()",
+      "path": "Refactor/Runtime/MemorySummaryDispatcher.cs",
+      "start": 110,
+      "end": 113,
+      "symbol": "internal void Tick()",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "inline/queued 共用两次操作和实际累计耗时；超预算不启动下一操作，单原子与record预算仍未完整",
-      "fileSha256": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598"
+      "note": "实际队列tick/drain owner；Host仅转发",
+      "fileSha256": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
     },
     {
       "id": "memory.summary.accept",
@@ -391,25 +391,25 @@
     },
     {
       "id": "memory.summary.time",
-      "path": "MyBehavior.MemorySummaryMainThread.cs",
-      "start": 20,
-      "end": 23,
-      "symbol": "private bool HasMemorySummaryMainThreadAllowance()",
+      "path": "Refactor/Runtime/MemorySummaryDispatcher.cs",
+      "start": 36,
+      "end": 39,
+      "symbol": "private bool HasAllowance()",
       "match": "exact",
       "status": "mixed-host",
-      "note": "复用既有维护毫秒配置，实际Stopwatch累计；非同步抢占",
-      "fileSha256": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598"
+      "note": "独立owner的操作/实际耗时限额，不是record硬预算",
+      "fileSha256": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
     },
     {
       "id": "memory.summary.partial",
-      "path": "MyBehavior.MemorySummaryMainThread.cs",
-      "start": 88,
-      "end": 91,
-      "symbol": "private async Task<bool> RunMemorySummaryCompletionAsync(long generation, Func<bool> operation)",
+      "path": "Refactor/Runtime/MemorySummaryDispatcher.cs",
+      "start": 80,
+      "end": 83,
+      "symbol": "internal async Task<bool> SubmitCompletion(long generation, Func<bool> operation)",
       "match": "exact",
       "status": "mixed-host",
-      "note": "仅协调器传播operation异常，区分拒绝/取消与部分执行失败",
-      "fileSha256": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598"
+      "note": "部分完成异常原样抛给协调者，不回滚/重放",
+      "fileSha256": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
     },
     {
       "id": "memory.summary.admission",
@@ -453,7 +453,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "冻结job标记/排序键，Job只作opaque原引用，非新持久owner",
-      "fileSha256": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0"
+      "fileSha256": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b"
     },
     {
       "id": "memory.plan.scan",
@@ -464,7 +464,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "每片8槽，当前片tombstone；纯引用compaction在结构仍有效时发布，变化则部分defer",
-      "fileSha256": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0"
+      "fileSha256": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b"
     },
     {
       "id": "memory.plan.build",
@@ -475,7 +475,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "独立重验无效owner；worker仅按冻结metadata去重排序，cleanup不建多余计划",
-      "fileSha256": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0"
+      "fileSha256": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b"
     },
     {
       "id": "memory.editor.guard",
@@ -861,6 +861,39 @@
       "status": "wired-boundary",
       "note": "内层lines/trigger bind的List结构版本守卫；同数量变动失效重封，非字段版本/线程安全集合",
       "fileSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
+    },
+    {
+      "id": "memory.dispatch.contract",
+      "path": "Refactor/Contracts/IMemorySummaryDispatchHost.cs",
+      "symbol": "internal interface IMemorySummaryDispatchHost",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "同DLL线程/生命周期/设置端口，非对外API",
+      "start": 9,
+      "end": 12,
+      "fileSha256": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6"
+    },
+    {
+      "id": "memory.dispatch.owner",
+      "path": "Refactor/Runtime/MemorySummaryDispatcher.cs",
+      "symbol": "internal sealed class MemorySummaryDispatcher",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "唯一队列/claim/retire/额度/异常owner",
+      "start": 16,
+      "end": 19,
+      "fileSha256": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
+    },
+    {
+      "id": "memory.dispatch.host",
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "symbol": "private sealed class MemorySummaryDispatchHost : IMemorySummaryDispatchHost",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "只适配真实游戏身份/设置/诊断，无第二队列",
+      "start": 32,
+      "end": 35,
+      "fileSha256": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7"
     }
   ]
 }

@@ -1,10 +1,15 @@
 # 当前任务：M1/M2 捕获与接受调度职责提取（2026-09-15）
 
-- 用户授权按职责计划开始实施，接口稳定、细致拆分。本轮任务 `B1-DISPATCH-OWNER-20260915` ACTIVE；唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；起点b7c90201，前生产9617f96a，fresh fetch远端af618912，本地3 ahead/0 behind，不融合/推送。
+- 用户授权按职责计划开始实施，接口稳定、细致拆分。本轮任务 `B1-DISPATCH-OWNER-20260915` OFFLINE_VERIFIED（本切片交付完成，整体B1仍VERIFY）；唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；起点b7c90201，前生产9617f96a，fresh fetch远端af618912，本地3 ahead/0 behind，不融合/推送。
 - 真实前置责任：MyBehavior.MemorySummaryMainThread目前持有捕获/接受共用队列、CAS待办状态、每tick额度/耗时和异常完成。先把它们提取为独立runtime owner + 窄internal host契约，MyBehavior仅留引擎身份/线程/设置/诊断适配和既有调用入口；迁移全部读到旧预算字段的规划调用，不新增第二套队列或兼容死字段。
 - 原行为保持：同步与排队共用2操作/实际执行耗时预算，FIFO/档代和owner拒绝、reset退役未开始任务、部分完成异常准确抛回，不伪造网络取消/事务回滚。公开V1/制作组ports、存档DTO/键、Prompt/动作规则不变；纯runtime不引用游戏程序集。
 - 范围：Refactor Contracts/Runtime新调度owner，原MemorySummaryMainThread适配与MemorySummaryPlanning预算读取；相关实际helper/captured/business/planning/writer/terminal/sealing测试接入新真实组件，源码守卫/地图/交接。验证旧新相同行为、真实故障控制、同候选六项Stage/API/存档身份。
 - 此包是M1/M2的线程接受基础提取，不冒称首次整图capture/copy已分段，也不宣称全部14包完成。深复制/完整writer/原子尾步仍待下一包；B1未合格不进B2。自动化PAUSED，不部署、不操作存档、不改制作组业务。两份用户草稿与指定本地Native简明版保留。
+
+- 当前结果：实际队列/claim-retire/预算/异常完成owner已移出，Host从156行降为57行；规划2处耗时读取改为新owner，未保留旧队列/计数器。原32项共同调度对照绿、当前37项绿、7个有效故障控制；captured116/business36/planning24/writers238/sealing88/terminal85/commit51和六Stage已通过，API/身份及最终材料收口中。
+- 契约说明已写 `docs/architecture/af-memory-dispatch-contract.md`。本包只完成线程接受基础责任；首次capture/copy与深来源/完整writer仍待做，不能标M1/M2整体DONE。
+
+- 最终候选61d57892：API119+并发256、4DLL元数据532、SyncData146/behaviors36保持；81点地图记录/工作树通过，214份冻结材料与六产物hash在新验收JSON。统一入口 `docs/handoffs/2026-09-15-memory-dispatch-owner-handoff.md`，契约在 `docs/architecture/af-memory-dispatch-contract.md`。本轮仅本地提交，未推送/部署，自动化仍PAUSED。
 
 ## 以下为历史任务；当前实施以上方为准
 

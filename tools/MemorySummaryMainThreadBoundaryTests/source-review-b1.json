@@ -877,7 +877,11 @@
         "runner": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
         "harness": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
       },
-      "extractedProductionEvidence": 49
+      "extractedProductionEvidence": 49,
+      "additionalTestSourceSha256": {
+        "tools/MemorySummaryMainThreadBoundaryTests/run.py": "cdf46aff12e86cd8057f068e88c312e6e8597762d8e81c4b20a607ed6ffb8bd8",
+        "tools/MemorySummaryMainThreadBoundaryTests/Harness.cs.txt": "5281e64030406f3584386d439bb9b6da291341d9e853e7b20e637a9e06f9af76"
+      }
     },
     "captured": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
