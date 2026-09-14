@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
- 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding','unbudgeted-owner-normalize','ignore-owner-normalize-key','ignore-owner-normalize-empty','ignore-owner-normalize-kept-empty','skip-owner-normalize-reseal','ignore-owner-normalize-source','unbudgeted-line-normalize','ignore-line-source']
+ 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding','unbudgeted-owner-normalize','ignore-owner-normalize-key','ignore-owner-normalize-empty','ignore-owner-normalize-kept-empty','skip-owner-normalize-reseal','ignore-owner-normalize-source','unbudgeted-line-normalize','ignore-line-source','ignore-line-structure','ignore-trigger-structure']
 def module(name,path):
  sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 def exact(s,old,new,count=1):
@@ -49,8 +49,11 @@ def apply_seal_mutation(seal, mutation):
   return exact(seal,body,'private bool Current(List<DailyMemoryDraft> current) { return true; }')
  if mutation=='unbudgeted-line-normalize':
   return exact(seal,'if (!budget.Take(false)) return false;\n                        if (!InnerCurrent()) return false;\n                        var line = SanitizeDailyMemoryDraftLine(_lineSource[_lineIndex++], _draft);','var line = SanitizeDailyMemoryDraftLine(_lineSource[_lineIndex++], _draft);')
+ if mutation=='ignore-line-structure':return exact(seal,'if (_lineSource != null) _lineStructureProbe.MoveNext();','')
+ if mutation=='ignore-trigger-structure':return exact(seal,'if (!_triggersPublished && _triggerSource != null) _triggerStructureProbe.MoveNext();','')
  if mutation=='ignore-line-source':
-  return exact(seal,'if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n                {\n                    Invalidated = true;\n                    return false;\n                }','')
+  seal=exact(seal,'if (_lineSource != null) _lineStructureProbe.MoveNext();','')
+  return exact(seal,'if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n            {\n                Invalidated = true;\n                return false;\n            }','')
  if mutation=='renew-seal-budget':return exact(seal,'var budget = _campaignMemoryMaintenanceBudget;','MemoryMaintenanceWorkBudget budget = null;')
  if mutation=='ignore-empty-probe':
   return exact(seal,'if (!found) { ResetDailyMemoryDraftSealSliceState(); return true; }','if (false) { ResetDailyMemoryDraftSealSliceState(); return true; }')
@@ -68,7 +71,7 @@ def apply_seal_mutation(seal, mutation):
   return exact(seal,'if (IsExceeded) return false;' if 'if (IsExceeded) return false;' in seal else 'if (IsDailyMaintenanceBudgetExceeded(Start, Milliseconds)) return false;','')
  return seal
 def main():
- ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
+ ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
  ex=module('seal_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
@@ -97,6 +100,8 @@ def main():
    body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
   if name=='SanitizeDailyMemoryDrafts' and 'DailyMemoryDraft draft = TWParallel.IsMainThread()' in body:
    body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
+  if name=='BindDailyMemoryDraftWeeklyTrigger':
+   body=exact(body,'trigger.MemoryId = memoryId;','SealProbe.Hit("owner-bound-trigger"); trigger.MemoryId = memoryId;')
   if name=='SanitizeDailyMemoryDraftLine' and 'x.GameDayIndex = draft.GameDayIndex;' in body:
    body=exact(body,'x.GameDayIndex = draft.GameDayIndex;','SealProbe.Hit("owner-normalized-line"); x.GameDayIndex = draft.GameDayIndex;')
   snippets.append(body)
