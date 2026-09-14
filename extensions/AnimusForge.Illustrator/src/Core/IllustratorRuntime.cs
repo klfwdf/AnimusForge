@@ -27,6 +27,7 @@ namespace AnimusForge.Illustrator.Core
         public string CustomStylePrompt { get; }
         public bool UseExactEndpointUrl { get; }
         public bool EnableReferenceImageForGeneration { get; }
+        public bool AutoCleanTempFiles { get; }
         public string NegativePrompt { get; }
         public string DirectorApiBaseUrl { get; }
         public string DirectorApiKey { get; }
@@ -49,6 +50,7 @@ namespace AnimusForge.Illustrator.Core
             CustomStylePrompt = settings.CustomStylePrompt;
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
+            AutoCleanTempFiles = settings.AutoCleanTempFiles;
             NegativePrompt = settings.NegativePrompt;
             DirectorApiBaseUrl = directorUrl;
             DirectorApiKey = directorKey;
