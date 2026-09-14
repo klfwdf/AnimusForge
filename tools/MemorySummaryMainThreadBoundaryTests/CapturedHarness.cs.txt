@@ -461,6 +461,59 @@ namespace AnimusForge {
    Probe.Calls.Clear();Check(!b.IsMemorySummaryInputCurrent(input),"raw dictionary presence mutation accepted");
    Check(Probe.Count("Capture")==0&&Probe.Count("Clone")==0&&Probe.Count("HasPending")==0,"state-presence check rebuilt source");MainReads();
   }
+  object LegacyRawIdentity(object job,MemorySummarySourceView source){
+   if(job is MemorySummaryJob daily)return new {Job=daily,Draft=source.Draft};
+   if(job is MajorActionSummaryJob major)return new {Job=major,Actions=source.Actions,State=source.MajorState,StatePresent=_npcMajorActionSummaries!=null&&_npcMajorActionSummaries.ContainsKey(source.HeroId)};
+   return new {Job=(MemoryOverviewJob)job,Blocks=source.Blocks,State=source.Overview,StatePresent=_memoryOverviewStates!=null&&_memoryOverviewStates.ContainsKey(source.HeroId)};
+  }
+  static (long Bytes,double Ms) DigestCost(Func<string> digest){
+   for(int i=0;i<3;i++)digest();
+   long before=GC.GetAllocatedBytesForCurrentThread();var watch=Stopwatch.StartNew();
+   for(int i=0;i<12;i++)Check(digest().Length==64,"source digest must remain a SHA256 receipt");
+   watch.Stop();return (GC.GetAllocatedBytesForCurrentThread()-before,watch.Elapsed.TotalMilliseconds);
+  }
+  static void RawDigestCost(string kind){
+   var b=Owner();var job=b.Seed(kind);const int n=1000;
+   if(kind=="daily"){var sample=b._dailyMemoryDrafts[kind][0].Lines[0];b._dailyMemoryDrafts[kind][0].Lines=Enumerable.Range(0,n).Select(i=>{var x=sample.CopyForSummary();x.Text="记忆 " + i + new string('x',70);return x;}).ToList();}
+   else if(kind=="major"){var sample=b._npcMajorActions[kind][0];b._npcMajorActions[kind]=Enumerable.Range(0,n).Select(i=>{var x=sample.CopyForSummary();x.Sequence=i;x.Text="履历 "+i+new string('x',70);return x;}).ToList();}
+   else {var sample=b._compressedMemoryBlocks[kind][0];b._compressedMemoryBlocks[kind]=Enumerable.Range(0,n).Select(i=>{var x=sample.CopyForSummary();x.Id="block"+i;x.Summary="总览 "+i+new string('x',70);return x;}).ToList();}
+   var source=b.ReadMemorySummarySource(job,SaveRuntimeGuard.CaptureGeneration());Check(source!=null,"large raw source missing");var legacy=b.LegacyRawIdentity(job,source);
+   var oldCost=DigestCost(()=>ComputeMemorySummaryFingerprint(legacy));var newCost=DigestCost(()=>RawDigestUnderTest(source));
+   Console.WriteLine($"RAW_DIGEST_COST kind={kind} records={n} repeats=12 old_bytes={oldCost.Bytes} current_bytes={newCost.Bytes} old_ms={oldCost.Ms:F3} current_ms={newCost.Ms:F3} raw_records_not_sliced=true");
+   Check(newCost.Bytes<oldCost.Bytes/2,"full raw hashing still allocates at least half the actual old serializer cost");MainReads();
+  }
+  static void RawDigestFraming(string kind){
+   var b=Owner();var job=b.Seed(kind);long gen=SaveRuntimeGuard.CaptureGeneration();Func<string> digest=()=>RawDigestUnderTest(b.ReadMemorySummarySource(job,gen));
+   void Different(Action left,Action right,string label){left();string a=digest();right();Check(a!=digest(),"raw framing alias: "+kind+"/"+label);}
+   if(kind=="daily"){
+    var d=b._dailyMemoryDrafts[kind][0];var line=d.Lines[0];
+    Different(()=>{d.HeroName="ab";d.GameDate="c";},()=>{d.HeroName="a";d.GameDate="bc";},"adjacent-fields");
+    Different(()=>d.LastSummaryError=null,()=>d.LastSummaryError="","null-empty");
+    Different(()=>line.Text="a\0b",()=>line.Text="ab","embedded-null");
+    Different(()=>line.Text=new string('x',8192),()=>line.Text="y"+line.Text.Substring(1),"flushed-prefix");
+    Different(()=>d.Lines=null,()=>d.Lines=new(),"null-empty-list");
+    Different(()=>d.Lines=new(){line,null},()=>d.Lines=new(){null,line},"null-slot-order");
+    d.Lines=new(){line,line};string alias=digest();d.Lines=new(){line.CopyForSummary(),line.CopyForSummary()};Check(alias==digest(),"same-content reference replacement changed raw equality");
+   }else if(kind=="major"){
+    var x=b._npcMajorActions[kind][0];
+    Different(()=>x.Won=null,()=>x.Won=false,"nullable-bool");
+    Different(()=>x.Won=false,()=>x.Won=true,"bool-value");
+    Different(()=>x.RelatedHeroIds=new(){"ab","c"},()=>x.RelatedHeroIds=new(){"a","bc"},"list-string-framing");
+    Different(()=>x.RelatedHeroIds=null,()=>x.RelatedHeroIds=new(),"null-empty-list");
+    Different(()=>x.RelatedHeroIds=new(){null,""},()=>x.RelatedHeroIds=new(){"",null},"null-slot-order");
+   }else{
+    var x=b._compressedMemoryBlocks[kind][0];
+    Different(()=>x.Scenes=new(){"ab","c"},()=>x.Scenes=new(){"a","bc"},"list-string-framing");
+    Different(()=>x.CreatedUtcTicks=1,()=>x.CreatedUtcTicks=1L+(1L<<40),"long-high-bits");
+    Different(()=>x.WeeklyMaterialTriggers=null,()=>x.WeeklyMaterialTriggers=new(),"null-empty-trigger-list");
+   }
+   MainReads();
+  }
+  static void RawDigestCodeUnits(){
+   var b=Owner();var job=b.Seed("daily");var line=b._dailyMemoryDrafts["daily"][0].Lines[0];long gen=SaveRuntimeGuard.CaptureGeneration();
+   string[] values={"汉字","😀","\ud800","\ud801","\ufffd","\udc00","\udc01",""};var hashes=new HashSet<string>();
+   foreach(string value in values){line.Text=value;Check(hashes.Add(RawDigestUnderTest(b.ReadMemorySummarySource(job,gen))),"different raw UTF16 code units collapsed");}MainReads();
+  }
   static void LargeCaptureObservation() {
    var b=Owner();var job=b.Seed("daily");var draft=b._dailyMemoryDrafts["daily"][0];
    draft.Lines=Enumerable.Range(0,1000).Select(i=>new DailyMemoryLine{Text="line "+i+" dialogue factual source "+new string('x',70),GameDayIndex=10,GameHour=i%24,GameDate="Summer 10",Scene="Town",Speaker="player",IsLlmDialogue=true}).ToList();
@@ -481,7 +534,7 @@ namespace AnimusForge {
    int expectedChecks=attempts*2+1;string prefix=kind=="daily"?"BuildMemorySummary":kind=="major"?"BuildMajorActionSummary":"BuildMemoryOverviewSummary";
    Check(Probe.Count("Capture")==1&&Probe.Count("Check")==expectedChecks&&Probe.Count(prefix+"SystemPrompt")==1&&Probe.Count(prefix+"UserPrompt")==1,"revalidation rebuilt the captured request for "+kind+": "+JsonConvert.SerializeObject(Probe.Calls));
    Check(Probe.Count("Clone")== (kind=="daily"?2:3)&&Probe.Count("HasPending")==0,"revalidation copied source again: "+JsonConvert.SerializeObject(Probe.Calls));
-   Console.WriteLine($"REVALIDATION_OBSERVATION kind={kind} provider_attempts={attempts} captures={Probe.Count("Capture")} checks={Probe.Count("Check")} system_builds={Probe.Count(prefix+"SystemPrompt")} user_builds={Probe.Count(prefix+"UserPrompt")} clone_calls={Probe.Count("Clone")} hashes={Probe.Count("Fingerprint")} actual_final_check=true process_apply=NOT_EXECUTED");MainReads();
+   Console.WriteLine($"REVALIDATION_OBSERVATION kind={kind} provider_attempts={attempts} captures={Probe.Count("Capture")} checks={Probe.Count("Check")} system_builds={Probe.Count(prefix+"SystemPrompt")} user_builds={Probe.Count(prefix+"UserPrompt")} clone_calls={Probe.Count("Clone")} json_hashes={Probe.Count("Fingerprint")} raw_hashes={Probe.Count("RawFingerprint")} actual_final_check=true process_apply=NOT_EXECUTED");MainReads();
   }
   static void ObserveLargeCaptureAndChecks() {
    // Warm the real serializer/Build paths; measurement excludes fixture source allocation.
@@ -510,6 +563,7 @@ namespace AnimusForge {
   static int Main(string[] args) {
    TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>{("all-model-copy-fields",CopyAllFields),("three-kinds-metadata",ThreeKinds),("detached-source",Detached),("late-generation",LateGeneration),("late-owner",LateOwner),("major-capture-pure",()=>CaptureDoesNotRepairSource("major")),("overview-capture-pure",()=>CaptureDoesNotRepairSource("overview")),("rpm-wave-order",WaveOrder),("generation-during-wave-spacing",()=>RetireBetweenWaves(false)),("owner-during-wave-spacing",()=>RetireBetweenWaves(true)),("parser-formats",ParseFormats),("large-capture-observation",LargeCaptureObservation)};
    foreach(var kind in new[]{"daily","major","overview"}){var k=kind;cases.Add((k+"-every-source-field",()=>EverySourceFieldInvalidates(k)));}
+   foreach(var kind in new[]{"daily","major","overview"}){var k=kind;cases.Add((k+"-raw-digest-cost",()=>RawDigestCost(k)));cases.Add((k+"-raw-digest-framing",()=>RawDigestFraming(k)));}cases.Add(("raw-digest-code-units",RawDigestCodeUnits));
    foreach(var kind in new[]{"daily","major","overview"})foreach(var change in new[]{"unchanged","before-dispatch","before-capture"}){var k=kind;var c=change;cases.Add((k+"-planned-"+c,()=>PlannedJobCapture(k,c)));}
    foreach(var kind in new[]{"daily","blocks","weekly"})foreach(var background in new[]{false,true}){var k=kind;var bg=background;cases.Add((k+(bg?"-background-sanitize":"-main-sanitize"),()=>SanitizeIsolation(k,bg)));}
    foreach(var kind in new[]{"daily","major","overview"}) {

@@ -876,14 +876,500 @@
     "captured": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt",
-      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it. Actual PlanEntry/Describe and dispatcher pass frozen job fingerprints into the same guarded Capture callback; same-reference edits before dispatch or while awaiting capture cannot send a stale request. Effective context checks use actual requirement/target getters and entity render resolvers over instrumented game objects, compared to the unchanged six Build methods; explicit/equivalent scene and denominator changes are accepted, effective changes rejected. Revalidation prohibits Capture/Clone/HasPending/Build calls. Initial binding and context/threshold getter mutation probes, retarget-before-observer guard and absent/present-null state identity are covered.",
-      "observed": "CAPTURED_RESULT pass=109 fail=0; reflection scalar checks=351; independent mutable nodes=49; exact raw field mutations=294; 28 compiled runtime mutation controls; observe mode 7 PASS: Capture1/Build1 per prompt across 1 or 3 attempts, checks3/7, clone2 daily or3 major/overview; hard budget NOT_PROVEN",
+      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it. Actual PlanEntry/Describe and dispatcher pass frozen job fingerprints into the same guarded Capture callback; same-reference edits before dispatch or while awaiting capture cannot send a stale request. Effective context checks use actual requirement/target getters and entity render resolvers over instrumented game objects, compared to the unchanged six Build methods; explicit/equivalent scene and denominator changes are accepted, effective changes rejected. Revalidation prohibits Capture/Clone/HasPending/Build calls. Initial binding and context/threshold getter mutation probes, retarget-before-observer guard and absent/present-null state identity are covered. Raw source digest uses complete typed encoding; generic plan/context/editor JSON remains unchanged. List/null/presence/order/UTF16/buffer-prefix and direct primitive SHA oracle are additional checks, not a hard frame budget.",
+      "observed": "Current 116/0; pinned 8bcde78b same116 ->112/4 runtime red (three allocation gates plus distinct raw UTF16);35 BUILD_PASS fault controls EXIT=1;7/0 actual retry/final-check observations. Full 294 recursive source-field mutations remain covered.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
-        "harness": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4"
+        "runner": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "harness": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
       },
-      "extractedProductionEvidence": 98
+      "extractedProductionEvidence": 98,
+      "priorObserved": "CAPTURED_RESULT pass=109 fail=0; reflection scalar checks=351; independent mutable nodes=49; exact raw field mutations=294; 28 compiled runtime mutation controls; observe mode 7 PASS: Capture1/Build1 per prompt across 1 or 3 attempts, checks3/7, clone2 daily or3 major/overview; hard budget NOT_PROVEN",
+      "additionalTestSourceSha256": {
+        "tools/MemorySummaryMainThreadBoundaryTests/run_fingerprint.py": "3f6eebbb0d09a7b19a179bdae6a203e680e8593f709b3b9c04c72fd8c4e8fc78"
+      },
+      "counterexampleSummary": ".tmp/b1-raw-digest-20260914/captured-runs.json",
+      "redMutations": [
+        {
+          "name": "retain-payload",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "reuse-source",
+          "exit": 1,
+          "failedCases": [
+            "all-model-copy-fields",
+            "three-kinds-metadata",
+            "detached-source",
+            "late-generation",
+            "late-owner",
+            "major-capture-pure",
+            "overview-capture-pure",
+            "overview-every-source-field",
+            "overview-planned-unchanged",
+            "daily-background-sanitize",
+            "blocks-background-sanitize",
+            "weekly-background-sanitize",
+            "daily-retired-queue-job",
+            "major-retired-queue-job",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-list-success",
+            "overview-list-failure",
+            "overview-state-success",
+            "overview-state-failure",
+            "overview-retired-queue-job",
+            "overview-valid-retry",
+            "overview-stale-retry",
+            "overview-terminal-failures",
+            "overview-requirements",
+            "overview-target",
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "ignore-fingerprint",
+          "exit": 1,
+          "failedCases": [
+            "detached-source",
+            "daily-every-source-field",
+            "major-every-source-field",
+            "overview-every-source-field",
+            "daily-body-success",
+            "daily-body-failure",
+            "daily-nested-success",
+            "daily-nested-failure",
+            "daily-list-success",
+            "daily-list-failure",
+            "daily-state-success",
+            "daily-state-failure",
+            "daily-stale-retry",
+            "major-body-success",
+            "major-body-failure",
+            "major-nested-success",
+            "major-nested-failure",
+            "major-list-success",
+            "major-list-failure",
+            "major-state-success",
+            "major-state-failure",
+            "major-stale-retry",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-list-success",
+            "overview-list-failure",
+            "overview-state-success",
+            "overview-state-failure",
+            "overview-stale-retry",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "initial-getter-binding",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "worker-parse",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata",
+            "rpm-wave-order",
+            "generation-during-wave-spacing",
+            "owner-during-wave-spacing",
+            "parser-formats",
+            "daily-planned-unchanged",
+            "major-planned-unchanged",
+            "overview-planned-unchanged",
+            "daily-valid-retry",
+            "daily-stale-retry",
+            "daily-terminal-failures",
+            "major-valid-retry",
+            "major-stale-retry",
+            "major-terminal-failures",
+            "overview-valid-retry",
+            "overview-stale-retry",
+            "overview-terminal-failures"
+          ]
+        },
+        {
+          "name": "skip-retry-source",
+          "exit": 1,
+          "failedCases": [
+            "daily-stale-retry",
+            "major-stale-retry",
+            "overview-stale-retry"
+          ]
+        },
+        {
+          "name": "drop-afef",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "drop-overview-ids",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "drop-major-cursor",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "background-sanitize-alias",
+          "exit": 1,
+          "failedCases": [
+            "daily-background-sanitize",
+            "blocks-background-sanitize",
+            "weekly-background-sanitize"
+          ]
+        },
+        {
+          "name": "main-sanitize-detach",
+          "exit": 1,
+          "failedCases": [
+            "daily-main-sanitize",
+            "blocks-main-sanitize",
+            "weekly-main-sanitize"
+          ]
+        },
+        {
+          "name": "drop-source-receipt",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "ignore-wave-lifetime",
+          "exit": 1,
+          "failedCases": [
+            "generation-during-wave-spacing",
+            "owner-during-wave-spacing"
+          ]
+        },
+        {
+          "name": "drop-nested-copy",
+          "exit": 1,
+          "failedCases": [
+            "all-model-copy-fields",
+            "detached-source"
+          ]
+        },
+        {
+          "name": "drop-scalar-copy",
+          "exit": 1,
+          "failedCases": [
+            "all-model-copy-fields"
+          ]
+        },
+        {
+          "name": "omit-stream-source",
+          "exit": 1,
+          "failedCases": [
+            "detached-source",
+            "daily-every-source-field",
+            "major-every-source-field",
+            "overview-every-source-field",
+            "daily-body-success",
+            "daily-body-failure",
+            "daily-nested-success",
+            "daily-nested-failure",
+            "daily-list-success",
+            "daily-list-failure",
+            "daily-state-success",
+            "daily-state-failure",
+            "daily-stale-retry",
+            "major-body-success",
+            "major-body-failure",
+            "major-nested-success",
+            "major-nested-failure",
+            "major-list-success",
+            "major-list-failure",
+            "major-state-success",
+            "major-state-failure",
+            "major-stale-retry",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-list-success",
+            "overview-list-failure",
+            "overview-state-success",
+            "overview-state-failure",
+            "overview-stale-retry",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "initial-getter-binding",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "drop-plan-expected",
+          "exit": 1,
+          "failedCases": [
+            "daily-planned-before-dispatch",
+            "daily-planned-before-capture",
+            "major-planned-before-dispatch",
+            "major-planned-before-capture",
+            "overview-planned-before-dispatch",
+            "overview-planned-before-capture"
+          ]
+        },
+        {
+          "name": "skip-planned-source-check",
+          "exit": 1,
+          "failedCases": [
+            "daily-planned-before-dispatch",
+            "daily-planned-before-capture",
+            "major-planned-before-dispatch",
+            "major-planned-before-capture",
+            "overview-planned-before-dispatch",
+            "overview-planned-before-capture"
+          ]
+        },
+        {
+          "name": "ignore-context",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-effective",
+            "daily-requirements",
+            "major-requirements",
+            "overview-requirements",
+            "overview-target",
+            "daily-observer-name",
+            "daily-unknown-scene",
+            "daily-unknown-day",
+            "major-entity-hero",
+            "major-entity-clan",
+            "major-entity-owner-clan",
+            "major-entity-kingdom",
+            "major-entity-old-kingdom",
+            "major-entity-settlement",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "overview-threshold-getter-raw-edit",
+            "identity-trust",
+            "identity-hero",
+            "identity-player",
+            "identity-rendering-alias"
+          ]
+        },
+        {
+          "name": "rebuild-on-check",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-effective",
+            "daily-denominator-equivalent",
+            "daily-requirements",
+            "major-requirements",
+            "overview-requirements",
+            "overview-target",
+            "daily-observer-name",
+            "daily-unknown-scene",
+            "daily-explicit-scene",
+            "daily-unknown-day",
+            "daily-empty-unknown-day-equivalent",
+            "major-entity-hero",
+            "major-entity-clan",
+            "major-entity-owner-clan",
+            "major-entity-kingdom",
+            "major-entity-old-kingdom",
+            "major-entity-settlement",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "initial-getter-binding",
+            "retarget-no-old-observer-query",
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "clone-on-check",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-effective",
+            "daily-denominator-equivalent",
+            "daily-requirements",
+            "major-requirements",
+            "overview-requirements",
+            "overview-target",
+            "daily-observer-name",
+            "daily-unknown-scene",
+            "daily-explicit-scene",
+            "daily-unknown-day",
+            "daily-empty-unknown-day-equivalent",
+            "major-entity-hero",
+            "major-entity-clan",
+            "major-entity-owner-clan",
+            "major-entity-kingdom",
+            "major-entity-old-kingdom",
+            "major-entity-settlement",
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "stale-pre-getter-view",
+          "exit": 1,
+          "failedCases": [
+            "context-getter-replaces-raw"
+          ]
+        },
+        {
+          "name": "skip-initial-binding",
+          "exit": 1,
+          "failedCases": [
+            "initial-getter-binding"
+          ]
+        },
+        {
+          "name": "skip-retarget-guard",
+          "exit": 1,
+          "failedCases": [
+            "retarget-no-old-observer-query"
+          ]
+        },
+        {
+          "name": "skip-overview-threshold",
+          "exit": 1,
+          "failedCases": [
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit"
+          ]
+        },
+        {
+          "name": "raw-denominator-context",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-equivalent"
+          ]
+        },
+        {
+          "name": "raw-scene-context",
+          "exit": 1,
+          "failedCases": [
+            "daily-explicit-scene",
+            "daily-empty-unknown-day-equivalent"
+          ]
+        },
+        {
+          "name": "ignore-initial-retry",
+          "exit": 1,
+          "failedCases": [
+            "daily-initial-gate-retry",
+            "major-initial-gate-retry",
+            "overview-initial-gate-retry"
+          ]
+        },
+        {
+          "name": "omit-state-presence",
+          "exit": 1,
+          "failedCases": [
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "omit-raw-line-field",
+          "exit": 1,
+          "failedCases": [
+            "daily-every-source-field"
+          ]
+        },
+        {
+          "name": "omit-raw-nested-tags",
+          "exit": 1,
+          "failedCases": [
+            "daily-every-source-field",
+            "overview-every-source-field",
+            "daily-nested-success",
+            "daily-nested-failure"
+          ]
+        },
+        {
+          "name": "unframed-raw-strings",
+          "exit": 1,
+          "failedCases": [
+            "daily-raw-digest-framing",
+            "major-raw-digest-framing",
+            "overview-raw-digest-framing"
+          ]
+        },
+        {
+          "name": "truncate-raw-long",
+          "exit": 1,
+          "failedCases": [
+            "overview-raw-digest-framing"
+          ]
+        },
+        {
+          "name": "repeat-raw-list-head",
+          "exit": 1,
+          "failedCases": [
+            "daily-every-source-field",
+            "major-every-source-field",
+            "overview-every-source-field",
+            "major-body-success",
+            "major-body-failure",
+            "major-nested-success",
+            "major-nested-failure",
+            "major-stale-retry",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-stale-retry",
+            "overview-threshold-getter-raw-edit"
+          ]
+        },
+        {
+          "name": "raw-low-code-unit-only",
+          "exit": 1,
+          "failedCases": [
+            "raw-digest-code-units"
+          ]
+        },
+        {
+          "name": "ignore-full-raw-buffer",
+          "exit": 1,
+          "failedCases": [
+            "daily-raw-digest-framing"
+          ]
+        }
+      ]
     },
     "writers": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py",
@@ -920,10 +1406,10 @@
         "harness": "2fc7214de09f87beed9b24b811e06a726f49fae43a343a3f28af657d13296747"
       },
       "additionalTestSourceSha256": {
-        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "7c1363766cfe639c85d1e9e7e03e38c4014e558683f4b6fbae9b75d7e68623aa",
+        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "a1cdf7f3d28ebadda83e4e228632e9d1ae29177d360e2881f6187fa741d997ff",
         "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
-        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
         "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
@@ -936,14 +1422,14 @@
       "observed": "TERMINAL_RESULT mode=admission scenarios=54 failures=0; 5 compiled runtime mutation controls",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/admission-current/manifest.json",
       "additionalTestSourceSha256": {
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
-        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
         "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
       },
       "extractedProductionEvidence": 183,
       "testSourceSha256": {
-        "runner": "7c1363766cfe639c85d1e9e7e03e38c4014e558683f4b6fbae9b75d7e68623aa",
+        "runner": "a1cdf7f3d28ebadda83e4e228632e9d1ae29177d360e2881f6187fa741d997ff",
         "harness": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab"
       }
     },
@@ -954,7 +1440,7 @@
       "observed": "Current BUILD_PASS 60/0; pinned 9158132c BUILD_PASS 46/14; all 20 fault variants BUILD_PASS EXIT=1 (preserved prior 14, added 6 sorting faults).",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
       "testSourceSha256": {
-        "runner": "fed94775d78d7af212ef3897684ff4b5016242bbc980b0f19d3b5cf9ec9f4c5b",
+        "runner": "91c19d35aa42ff123ecc3ecf520440ce38d7a0093d7461964a8fb81171b0cc47",
         "harness": "363f39ae627d75ef6a1ed9b68ac9cda9a311812ba0c7a91823efe5362d990a8a"
       },
       "acceptedInverse": true,
@@ -1196,8 +1682,8 @@
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
       "additionalTestSourceSha256": {
         "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "58181d4d260775b33344f19146c4cca6f26fd582ef04a539643151c0c98e18da",
-        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "63a8629452b2d4fea52924e26ec42c4effba72edb59f35050200079b214fc5a4"
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "3ee1a8626671fc566708bf068da4c4a3aa5da1715971b8893130d4c2becc86b1",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
       },
       "historicalOriginal": {
         "revision": "62abfdb3",
@@ -1638,7 +2124,10 @@
     "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
     "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
     "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
-    "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a"
+    "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a",
+    "MyBehavior.MemorySummaryInput.cs": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08",
+    "MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684"
   },
   "removedProductionFiles": [
     "MyBehavior.EventSourceMaterialIndex.cs"
@@ -1655,5 +2144,38 @@
     "scope": "New independently consumed stable queue sorting responsibility. Existing DTO identities, pending-before-dedupe, mutation order and synchronous entry points preserved. Normalized metadata may become visible before completed ordering.",
     "notClaimed": "No hard game frame budget, no complete B1 or game/save/provider validation. Other synchronous sanitizers still sort atomically.",
     "evidence": "docs/audits/2026-09-14-b1-queue-sort-verification.json"
+  },
+  "rawSourceFingerprintReview": {
+    "baseline": "8bcde78b",
+    "checkpoint": "9076ab95",
+    "inputPath": "MyBehavior.MemorySummaryInput.cs",
+    "inputDeclarations": [
+      {
+        "signature": "private sealed class MemorySummarySourceView",
+        "sha256": "b93cd120f0ec275eb1b95ea425f23ff21d6f5f51b639c8762451c404bab7da6c",
+        "baselineSha256": "3f303c98f9780101f752a886f8526b5fc98e17013258cb7e909bd8eadea7d071"
+      },
+      {
+        "signature": "private MemorySummarySourceView ReadMemorySummarySource(",
+        "sha256": "ac71db233116af68eb168b3738979bd404a00d87e9270724f05f695993f05944",
+        "baselineSha256": "c869fa62ee0141aa532b5d653613a777b10e9baff95cbc0f5e6628a6005e6314"
+      },
+      {
+        "signature": "private MemorySummaryInput CaptureMemorySummaryInput(",
+        "sha256": "1ef88f425223a871761a8a65dc1b386f3d009c58a74fbe6a6614393aea94388d",
+        "baselineSha256": "ce946ef570e0a1bd4d30a170b66633258110564e94fd64b1da65101999a1a2dc"
+      },
+      {
+        "signature": "private bool IsMemorySummaryInputCurrent(",
+        "sha256": "e3ca8900da8f2c0a15fb6079e65b027c7e72ed620398fde6e85720a2e5b35a89",
+        "baselineSha256": "d02be0d78fdea761b08171f81814d05097831a3fdaff30ad9c32734e63997b4a"
+      }
+    ],
+    "scope": "Runtime-only complete raw source receipt encoding; owner/generation/context/queue rights and original Build/Parse/Apply/Mark, editor/plan/context JSON hash unchanged. No save/ABI format change.",
+    "schemaFields": 122,
+    "sourceFieldMutationChecks": 294,
+    "primitiveOracle": "run_fingerprint.py: 9 BinaryWriter/SHA256 vectors under checked arithmetic and 5 lifetime/list mutation rejection cases",
+    "evidence": "docs/audits/2026-09-14-b1-raw-digest-verification.json",
+    "notClaimed": "Still atomic full raw scan/capture/Apply work. Not B1 batch accepted, no real game/save/provider."
   }
 }

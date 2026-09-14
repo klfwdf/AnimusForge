@@ -1,10 +1,12 @@
 # 当前自动实施：B1 完整raw来源摘要成本（2026-09-14）
 
-- ACTIVE；单代理，唯一写入G:/AFMOD/AF-REFACTOR，当前99af6377，生产基线8bcde78b；fresh fetch远端3f00fefa未变。按计划第16节继续，不重做排序，不进入B2。
+- 本切片离线验证完成，整体B1继续VERIFY；单代理，唯一写入G:/AFMOD/AF-REFACTOR，当前99af6377，生产基线8bcde78b；fresh fetch远端3f00fefa未变。按计划第16节继续，不重做排序，不进入B2。
 - 意图：完整raw来源hash由JSON序列化改为显式字段/列表有界buffer编码，去掉反射装箱/属性名和JSON转义的重复成本；保留所有字段、列表顺序/null元素、null/empty/absent区别。不用不完整writer epoch替代原数据校验，不改变Prompt或权威提交。
 - 预计路径：MyBehavior.MemorySummaryInput及私有DTO编码边界、Refactor/Runtime纯摘要组件，captured/terminal/sealing直接测试适配、原字段反例与严格inverse/地图/交接。原通用ComputeMemorySummaryFingerprint（计划/编辑器/上下文）继续原JSON契约；只有瞬时来源指纹格式改变，存档/API/模型字段身份不变。
 - 风险与验收：字段遗漏、长度/类型分帧冲突、Unicode、state presence、源/owner/generation/重试/接受要有正反例；原8bc真实执行成本对照，不以常量或砍字段伪造提速。未来DTO新字段由反射字段覆盖测试阻止漏编入；摘要仍完整原子O(N)，不当作深记录硬预算。
 - 验证：新旧同数据/全字段变更/明确故障反例、实际capture→execute→final check及相邻commit/封存/规划/UI/history/native、现有六项Stage/API/持久化身份。只本地提交，不推送/部署/碰存档/改原一键脚本或制作组玩法。
+
+- 结果：116/0、旧8bc同套112/4、35有效故障反例、294递归字段修改、9向量/5守卫、相邻回归、11项精确inverse以及最终六项Stage/API/存档身份通过。1000记录×12摘要分配约降96–98%；仍为完整原子O(N)，不进入B2。下一步继续初捕获/净化/owner绑定/Apply预算，不重复本轮typed raw摘要优化。
 
 ## 以下为上一已验证切片（历史）
 

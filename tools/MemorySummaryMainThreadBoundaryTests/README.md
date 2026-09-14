@@ -162,3 +162,15 @@ python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_materials.py --
 - 两个原Sanitize入口保留同步排序责任；新的Normalize仅提取完全相同的原地净化/去重体。`test_source_parity.py`现10项，增加精确反拼原净化体断言；58声明/4新增span/2删除/5组件锁仅覆盖具名变化。
 - 初次测试曾因planning extractor未包含新Normalize而编译失败：已补两个真实声明，不改24例断言、不用stub。business/terminal一并抽取相同函数；旧business e40c92d7跳过不存在的新helper，旧行为对照仍4/32。
 - 限制：队列净化、两次标量绑定、数组分配/key捕获、单个字符串比较、pending内深来源等仍原子。同步Sanitize、整体游戏帧/内存上限、完整B1及LIVE/SAVE没有借此放行。冻结日志及最终版本见根HANDOFF指向的排序交接与验收JSON。
+
+
+## B1 完整raw来源编码（2026-09-14）
+
+- `run_captured.py`现在116/0；`--source-baseline 8bcde78b`在相同116例中112/4，BUILD_PASS后3个分配门槛和1个异常UTF16区分变红。35个`--mutate`都是真实编译后的断言红例（原28保留，新增7个字段/帧/整数/列表/码元/完整buffer反例）。不把编辑器、计划或context的通用JSON摘要改为新格式。
+- 新`MyBehavior.MemorySourceFingerprint.cs`只映射原private DTOs的122字段及状态presence；真实主线程Capture和最终IsCurrent调用独立`Refactor/Runtime/MemorySourceFingerprintWriter.cs`，完整raw内容逐字段进入SHA256，有界4096-byte缓冲。不是只比较count/版本号，不省略未渲染内容，不改变Clone/Build/Parse/Apply/Mark。
+- 反射驱动的三类every-source-field总294次修改继续拒绝旧来源；包括同generation、render等价字段、nested list、状态null/absent。将来新增DTO字段时必须补编码与测试；测试会因未覆盖字段而失败，不能只刷新hash。
+- `run_fingerprint.py`用独立BinaryWriter/MemoryStream/SHA256 oracle验证9个跨buffer向量，开启checked arithmetic；5个finish/dispose/结构变动拒绝守卫。原始UTF16码元逐个编码，因此不同未配对代理项不再在UTF8 replacement fallback中合并。这个修正仅覆盖新的raw来源摘要，非所有通用JSON指纹。
+- 1000记录×12次：新三类raw摘要分配约0.06–0.10MB，旧约1.9–5.1MB；报告实测数字、未锁定耗时或游戏FPS。仍有完整O(N)原子来源遍历、初捕获/净化/Apply，B1不因此通过整批门槛。
+- captured/terminal/sealing编入实际新编码组件；captured的8bc历史输入和terminal的e776历史Input不编当前新组件，显式Compile清单排除残留生成cs。captured旧版读取和hash都绑定同一指定版本，不用现工作树hash伪装历史来源。
+- 严格MyBehavior inverse仍58声明/4新增span/2删除；另把Input的4个具名声明精确反换到8bc，并证明其余完整Input（含原通用JSON摘要、async/parse/release）未改。整文件组件锁增为8，守卫11项。
+- 构建/相邻/最终版本与回滚见根HANDOFF指向的本轮详细交接、`docs/audits/2026-09-14-b1-raw-digest-verification.json`。不把离线fixture/实际DLL元数据当作LIVE/SAVE验收。
