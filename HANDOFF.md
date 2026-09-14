@@ -1,3 +1,15 @@
+# AF 总 HANDOFF — 当前先做整体框架编排（2026-09-15）
+
+用户最新优先级是框架编排，暂不继续深复制细节。本轮完成[整体编排蓝图](docs/architecture/af-core-composition-blueprint-20260915.md)：唯一装配入口、作用域/生命周期、核心依赖和一次对话执行顺序；制作组internal与子MOD public分开。
+
+**这是设计与接续顺序，尚未改动生产装配代码。** 源码仍61d57892、阶段8/B1未整批合格；不把目录Ready当Campaign可接单，不新建第二套注册器/队列/缩水管线。
+
+下一步先核对实例创建/释放表，再演进现有装配入口和最小真实生命周期，编排骨架稳定后继续[14类职责计划](docs/phase8/af-core-responsibility-decomposition-plan-20260915.md)。原深复制/功能对照/存档门槛保留，不勾DONE。
+
+本轮仅文档；两份用户草稿与本地专用文件未改，自动化PAUSED，未推送/部署。已有生产验证和源码坐标见[最近模块HANDOFF](docs/handoffs/2026-09-15-memory-dispatch-owner-handoff.md)。
+
+## 以下为历史实施记录；当前优先级以上方为准
+
 # AF 总 HANDOFF — Memory调度职责已独立提取（2026-09-15）
 
 **当前生产/测试61d57892；M1/M2线程接受基础子包已离线验证，整体阶段8/B1仍未整批合格。自动化PAUSED，仅本地提交，未推送/部署。**
