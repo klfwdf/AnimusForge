@@ -250,8 +250,19 @@ namespace AnimusForge.Illustrator.Engine
                     {
                         canvas.Save(Path.Combine(dbgDir, "emblem_final.png"), ImageFormat.Png);
                         File.WriteAllText(Path.Combine(dbgDir, "meta.txt"), meta.ToString());
+                        int ai = 0;
+                        foreach (var kv in atlasBitmaps)
+                        {
+                            try { DumpAtlasDebug(kv.Value, dbgDir, $"atlas{ai}"); } catch { }
+                            ai++;
+                        }
                     }
                     catch { }
+                }
+                if (!HasVisibleContent(canvas, job.BgColor))
+                {
+                    TaleWorlds.Library.Debug.Print("[BannerEmblem] Composed emblem has no visible icon content — skipped reference image.");
+                    return null;
                 }
                 string b64 = ScreenCaptureHelper.ConvertBitmapToBase64(canvas, job.Canvas);
                 TaleWorlds.Library.Debug.Print($"[BannerEmblem] Composed emblem ({(b64?.Length ?? 0)} chars, pieces={job.Pieces.Count})");
@@ -267,6 +278,77 @@ namespace AnimusForge.Illustrator.Engine
                 canvas.Dispose();
                 foreach (var kv in atlasBitmaps) kv.Value?.Dispose();
             }
+        }
+
+        /// <summary>画布上是否存在与底色明显不同的像素（即图标是否真正画上去了）。</summary>
+        private static bool HasVisibleContent(Bitmap bmp, Color bg)
+        {
+            var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                int stride = Math.Abs(data.Stride);
+                var raw = new byte[stride * bmp.Height];
+                Marshal.Copy(data.Scan0, raw, 0, raw.Length);
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    int row = y * stride;
+                    for (int x = 0; x < bmp.Width; x++)
+                    {
+                        int i = row + x * 4;
+                        if (Math.Abs(raw[i] - bg.B) > 8 || Math.Abs(raw[i + 1] - bg.G) > 8 ||
+                            Math.Abs(raw[i + 2] - bg.R) > 8 || Math.Abs(raw[i + 3] - bg.A) > 8)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            finally { bmp.UnlockBits(data); }
+        }
+
+        /// <summary>调试：图集缩略图 + 8×8 每格内容像素统计，定位格位/朝向问题。</summary>
+        private static void DumpAtlasDebug(Bitmap atlas, string dbgDir, string name)
+        {
+            int thumb = Math.Min(atlas.Width, 512);
+            using (var t = new Bitmap(thumb, thumb, PixelFormat.Format32bppArgb))
+            using (var g = Graphics.FromImage(t))
+            {
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.DrawImage(atlas, 0, 0, thumb, thumb);
+                t.Save(Path.Combine(dbgDir, name + "_thumb.png"), ImageFormat.Png);
+            }
+
+            int cw = atlas.Width / AtlasGridSize, ch = atlas.Height / AtlasGridSize;
+            var map = new System.Text.StringBuilder();
+            var data = atlas.LockBits(new Rectangle(0, 0, atlas.Width, atlas.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                int stride = Math.Abs(data.Stride);
+                var raw = new byte[stride * atlas.Height];
+                Marshal.Copy(data.Scan0, raw, 0, raw.Length);
+                for (int r = 0; r < AtlasGridSize; r++)
+                {
+                    for (int c = 0; c < AtlasGridSize; c++)
+                    {
+                        int content = 0;
+                        for (int y = r * ch; y < (r + 1) * ch; y += 4)
+                        {
+                            int row = y * stride;
+                            for (int x = c * cw; x < (c + 1) * cw; x += 4)
+                            {
+                                int i = row + x * 4;
+                                int lum = (raw[i] + raw[i + 1] + raw[i + 2]) / 3;
+                                if (lum < 220 && raw[i + 3] > 10) content++;
+                            }
+                        }
+                        map.Append(content > 40 ? '#' : '.');
+                    }
+                    map.AppendLine();
+                }
+            }
+            finally { atlas.UnlockBits(data); }
+            File.WriteAllText(Path.Combine(dbgDir, name + "_cells.txt"), map.ToString());
         }
 
         /// <summary>纹理→Bitmap：调用方线程先尝 GetPixelData；失败再回主线程重试，再退 SaveToFile。</summary>
