@@ -1,9 +1,12 @@
 # 当前优先级：先做整体框架编排蓝图（2026-09-15）
 
-- 用户最新要求“先进行框架的编排”。任务 `FRAMEWORK-COMPOSITION-BLUEPRINT-20260915` ACTIVE（设计/文档）；本轮暂停继续深复制与细部业务拆分，先厘清装配根、作用域、模块依赖、启动/停止及对话执行编排。不是把B1验收跳过，也不等于已经实现完整Host。
+- 用户最新要求“先进行框架的编排”。任务 `FRAMEWORK-COMPOSITION-BLUEPRINT-20260915` COMPLETE（仅设计/文档，生产编排实现未完成）；本轮暂停继续深复制与细部业务拆分，先厘清装配根、作用域、模块依赖、启动/停止及对话执行编排。不是把B1验收跳过，也不等于已经实现完整Host。
 - 源码基线61d57892，当前HEAD16af548b；唯一写入G:/AFMOD/AF-REFACTOR。范围为新增编排蓝图与现有计划/总HANDOFF的优先级链接，不改变C#、接口签名、游戏默认或存档，不创建空模块/第二注册器/第二套队列。
 - 实际参照：SubModule的初始化/停止调用、ModuleFrameworkRuntime目录装配、TeamModuleServices三个typed桥、LegacyInteractionPipelineComposition与InteractionRequestCoordinator、MemorySummaryDispatcher及Host。记录已实现/待实现，避免把目录Ready解释成Campaign可接单。
 - 验证：源码坐标/相对链接、编排与原职责计划一致、无生产diff、3个保护文件hash；文档轮不重跑无关构建。自动化仍PAUSED，未授权推送/部署或制作组玩法变化。
+
+- 产出：`docs/architecture/af-core-composition-blueprint-20260915.md` 已区分装配Composition/对话Workflow、已有/目标、四层生命周期与单一owner、启动/停止、内部/public端口与后续实施出口。根HANDOFF/原P0–P6及14类职责清单均链接新优先级，未建立竞争台账或修改代码。
+- 核查：当前C#仍61d57892；蓝图源码坐标/链接和3个保护文件hash检查；不重跑无关构建。后续先实例创建/释放表和现有装配入口演进，不把蓝图当可发布实现；仅本地提交。
 
 ## 以下为历史执行记录；当前优先级以上方为准
 
