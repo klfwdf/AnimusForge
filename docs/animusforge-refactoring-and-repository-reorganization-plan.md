@@ -1,3 +1,13 @@
+# 当前任务：框架内外边界收口与对照链修复（2026-09-15）
+
+- 用户要求“继续直到完美”；继续实际拆分与验证，不承诺零BUG，不自动推送/部署/恢复自动化。任务 `FRAMEWORK-SNAPSHOT-BOUNDARY-20260915` ACTIVE；起点06a457c3，生产955a6be3，唯一写入G:/AFMOD/AF-REFACTOR，保留三份保护文件。
+- 先处理上一轮完整port测试阻断：确认既有Memory source_parity可严格恢复到90201155，接入旧owner比较前；保留完整文件相等与证据哈希门禁，不能略过未审查差异或只刷新hash。
+- 实际拆分：ModuleFrameworkRuntime不再引用Api.V1，持有内部生命周期状态并捕获不带游戏/活目录引用的只读目录快照；Api.V1侧独立投影为既有public DTO。唯一真实Directory/注册入口保留；所有旧枚举、原因码、顺序、Stopped不评估gate、公开表面保持。
+- 生命周期核对：读档generation与Mission结束清理仍归原owner，注册不等于读档可用；本轮不假造统一GameEnd清理。公共投影拆分只处理模块目录快照作用域，不冒称Campaign/Mission生命周期完成。新增中间快照仅在显式API查询分配，小表有界；不引入Tick/轮询/反射。
+- 验证：旧失败/新完整port回归和有效故障；源隔离、快照不可变/并发/旧新public输出、装配回归、六Stage与实际DLL元数据、存档身份、地图/HANDOFF。明确实机和B1原深复制/预算未完。
+
+## 以下为历史记录；当前实施以上方为准
+
 # 当前任务：框架装配职责真实拆分（2026-09-15）
 
 - 用户明确要求“编排好了吗，那开始拆分”。任务 `FRAMEWORK-COMPOSITION-EXTRACTION-20260915` OFFLINE_VERIFIED；起点812b34b0，生产基线61d57892；唯一写入G:/AFMOD/AF-REFACTOR。fresh fetch远端af618912，本地8 ahead/0 behind；不融合/推送。
