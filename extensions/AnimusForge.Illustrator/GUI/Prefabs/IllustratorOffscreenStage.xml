@@ -1,12 +1,13 @@
 <Prefab>
   <!-- 离屏渲染舞台：Gauntlet 只取 Window 的第一个子元素作为根模板，因此必须包一层单一根 Widget。
-       根控件占满屏幕但无贴图（自身不绘制任何像素），子 tableau 控件位于可渲染区域且 AlphaFactor=0，
-       由游戏自身 UI 管线创建并 tick 其 TableauView；IsVisible=false 会阻止 provider tick，故保持 true。 -->
+       根控件占满屏幕但无贴图（自身不绘制任何像素）；子 tableau 控件居中对齐——三个生成流程全程有
+       居中不透明卡片/弹窗遮挡，舞台层优先级也取最低(1)被正常 UI 盖住；AlphaFactor=0 作为额外兜底。
+       IsVisible=false 会阻止 provider tick，故控件保持 IsVisible=true 由代码按需开启。 -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="true" DoNotAcceptEvents="true">
       <Children>
-        <BannerTableauWidget Id="OffscreenBanner" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="512" SuggestedHeight="512" PositionXOffset="0" PositionYOffset="0" AlphaFactor="0" IsNineGrid="true" IsVisible="false" DoNotAcceptEvents="true" />
-        <CharacterTableauWidget Id="OffscreenCharacter" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="384" SuggestedHeight="768" PositionXOffset="0" PositionYOffset="0" AlphaFactor="0" IsVisible="false" DoNotAcceptEvents="true" />
+        <BannerTableauWidget Id="OffscreenBanner" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="512" SuggestedHeight="512" HorizontalAlignment="Center" VerticalAlignment="Center" AlphaFactor="0" IsNineGrid="true" IsVisible="false" DoNotAcceptEvents="true" />
+        <CharacterTableauWidget Id="OffscreenCharacter" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="384" SuggestedHeight="768" HorizontalAlignment="Center" VerticalAlignment="Center" AlphaFactor="0" IsVisible="false" DoNotAcceptEvents="true" />
       </Children>
     </Widget>
   </Window>
