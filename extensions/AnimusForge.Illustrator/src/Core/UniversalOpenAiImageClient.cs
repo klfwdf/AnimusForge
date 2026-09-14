@@ -272,6 +272,8 @@ namespace AnimusForge.Illustrator.Core
         /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
         /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
         /// </summary>
+        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, video game still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark";
+
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false)
         {
             string effectivePrompt = chatProtocol
@@ -281,10 +283,11 @@ namespace AnimusForge.Illustrator.Core
             {
                 effectivePrompt += "\n[画风指令: " + customStyleHint.Trim() + "]";
             }
-            if (!string.IsNullOrWhiteSpace(negativePrompt))
-            {
-                effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
-            }
+            // 内置反截图负面词：无论用户负面词如何配置都生效，避免生图模型复刻游戏渲染质感与界面元素
+            string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
+                ? BuiltinNegativePrompt
+                : BuiltinNegativePrompt + ", " + negativePrompt.Trim();
+            effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
             return effectivePrompt;
         }
 

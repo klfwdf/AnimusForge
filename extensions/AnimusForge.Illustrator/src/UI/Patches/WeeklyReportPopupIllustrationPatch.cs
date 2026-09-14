@@ -312,7 +312,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     string b64 = await portraitStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的真实游戏内3D形象立绘（画面中该人物的五官、发型、装备与衣着必须严格依此还原；其盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜与徽记必须依此纹样绘制）"));
+                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感"));
                     }
                 }
 

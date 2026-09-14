@@ -188,7 +188,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的真实游戏内3D形象（画面中该人物的五官、发型、装备与衣着必须严格依此还原；其盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜与徽记必须依此纹样绘制）"));
+                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感，构图与画风必须重新设计"));
                 }
                 // 纹章不走 BannerTableauWidget 离屏舞台：其 TableauView 原生落盘已实锤崩溃
                 // （该控件正常仅在旗帜编辑器内配合 EditableArea 子控件使用）。
@@ -332,7 +332,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await playerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, "对话中玩家主角的真实游戏内3D形象（其五官、发型、肤色、装备与衣着必须严格依此还原）");
+                        var r = new IllustrationReferenceImage(b64, "对话中玩家主角的身份参考图：仅用于锁定其五官、发型、肤色与装备；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -342,7 +342,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await partnerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的真实游戏内3D形象（其五官、发型、肤色、装备与衣着必须严格依此还原；其盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜与徽记必须依此纹样绘制）");
+                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
