@@ -1,3 +1,11 @@
+# 当前任务：推送已验证重构交付（2026-09-15）
+
+- 用户明确授权“推送到GITHUB”。任务 `GITHUB-DELIVERY-20260915` PUBLISHED；起点1345b0bc，生产f07cb2a2；目标仅origin/codex/af-main-refactor-continuation-20260831（klfwdf/AnimusForge），不触碰main/legacy远端、不强推/改历史。
+- fresh fetch基线af618912，14 ahead/0 behind；已核实快进关系、60条变更路径、无新构建/临时产物，3份保护文件未改变且待推送历史不触及。本地专用Native HANDOFF不在分支树或整个祖先历史中。
+- 同候选既有测试/六Stage证据复用，91点地图与差异空白检查通过，无源码改变不重跑构建。仅发送已提交代码/文档；自动化PAUSED、不部署游戏。已正常快进推送af618912→1345b0bc，ls-remote核对远端完整SHA=1345b0bce8c2f73de6a6dfe8a8d87330280de681；本次再提交当前交付说明，不改变生产源码。
+
+## 以下为历史记录；当前交付以上方为准
+
 # 当前任务：框架内外边界收口与对照链修复（2026-09-15）
 
 - 用户要求“继续直到完美”；继续实际拆分与验证，不承诺零BUG，不自动推送/部署/恢复自动化。任务 `FRAMEWORK-SNAPSHOT-BOUNDARY-20260915` OFFLINE_VERIFIED；起点06a457c3，生产955a6be3，唯一写入G:/AFMOD/AF-REFACTOR，保留三份保护文件。
