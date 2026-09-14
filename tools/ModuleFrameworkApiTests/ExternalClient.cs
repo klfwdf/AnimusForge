@@ -31,6 +31,13 @@ static class Program
 
     static void Main()
     {
+        // Fail deterministically without invoking native crash reporting for expected mutations.
+        try { Run(); }
+        catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
+    }
+
+    private static void Run()
+    {
         Check(HostControl.ServiceInitializations == 0 && HostControl.GateCalls == 0, "host initially untouched");
         AfFrameworkSnapshot before = AfApi.GetSnapshot();
         Check(before.State == AfFrameworkState.NotInitialized, "before load NotInitialized");
@@ -144,6 +151,7 @@ static class Program
             .Select(m => m.Name).Order().ToArray();
         Check(apiMethods.SequenceEqual(new[] { "GetCapability", "GetSnapshot" }), "no undeclared public execution path");
         Check(typeof(AfApi).Assembly != typeof(Program).Assembly, "external client is a separate assembly");
+        Console.WriteLine($"PASS {HostControl.VerifySnapshotBoundary()} snapshot boundary assertions; 128 parallel captures/projections; pinned old/new DTO parity.");
         Console.WriteLine($"PASS {checks} public API assertions; 256 concurrent reads; actual source-linked V1 contracts/runtime.");
         Console.WriteLine("NOT TESTED: Bannerlord host, live saves, economy, gameplay ports, request submission, external DLL load order.");
     }

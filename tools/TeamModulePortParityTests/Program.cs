@@ -99,6 +99,13 @@ internal static class Program
     }
     static void Main()
     {
+        // Fail deterministically without invoking native crash reporting for expected mutations.
+        try { Run(); }
+        catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
+    }
+
+    private static void Run()
+    {
         Check(ReferenceEquals(TeamModuleServices.Policy, TeamModuleServices.Policy)
             && ReferenceEquals(TeamModuleServices.Gathering, TeamModuleServices.Gathering)
             && ReferenceEquals(TeamModuleServices.Siege, TeamModuleServices.Siege), "single cached adapter per port");

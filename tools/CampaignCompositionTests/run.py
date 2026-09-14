@@ -17,7 +17,8 @@ INIT = 'protected override void InitializeGameStarter('
 SOURCES = ['Refactor/Modules/CampaignComposition.cs', 'Refactor/Modules/CampaignModelComposition.cs',
            'Refactor/Modules/ModuleFrameworkRuntime.cs', 'Refactor/Modules/TeamModuleRegistration.cs',
            'Refactor/Modules/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
-           'Api/V1/AfApi.cs', 'Api/V1/AfApiContracts.cs']
+           'Api/V1/AfApi.cs', 'Api/V1/AfApiContracts.cs',
+           'Refactor/Modules/ModuleFrameworkSnapshot.cs', 'Api/Internal/AfV1SnapshotProjection.cs']
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)
@@ -63,6 +64,7 @@ def verify_source():
     expected = '{'+''.join(name+'(campaignGameStarter);' for name in METHODS)+'}'
     assert compact(register[register.index('{'):]) == expected, 'Changed model registration order'
     assert compact(extract(runtime, 'internal static void RegisterCampaign(')) == compact('''internal static void RegisterCampaign(IGameStarter starterObject) { CampaignComposition.Register(starterObject); }'''), 'Parallel campaign gate/cache/owner'
+    runtime = load('snapshot_inverse', 'tools/ModuleFrameworkApiTests/source_boundary.py').restore_runtime(runtime)
     before = old(SOURCES[2])
     for sig in ['private static void RegisterAdapter(', 'private static bool IsKnownBridge(', 'private static string GetBridgeRejectionReason(']:
         method = extract(before,sig)
@@ -121,7 +123,7 @@ def main():
         'drop_behavior': (SOURCES[0], '            campaignGameStarter.AddBehavior(new MyBehavior());',''),
         'reverse_models': (SOURCES[1], '        RegisterCourierFoodConsumptionModel(campaignGameStarter);\n        RegisterCourierMobilePartyAiModel(campaignGameStarter);','        RegisterCourierMobilePartyAiModel(campaignGameStarter);\n        RegisterCourierFoodConsumptionModel(campaignGameStarter);'),
         'discard_inner': (SOURCES[1], 'new CourierFoodConsumptionModel(inner)', 'new CourierFoodConsumptionModel(new DefaultMobilePartyFoodConsumptionModel())'),
-        'gate_on_directory': (SOURCES[2], '        CampaignComposition.Register(starterObject);','        if (_state == AfFrameworkState.Ready) CampaignComposition.Register(starterObject);')}
+        'gate_on_directory': (SOURCES[2], '        CampaignComposition.Register(starterObject);','        if (_state == ModuleFrameworkLifecycleState.Ready) CampaignComposition.Register(starterObject);')}
     # Exact exception body injection, not a compilation failure.
     mutations['abort_model_failure']=(SOURCES[1], 'catch (Exception ex)\n        {','catch (Exception ex)\n        {\n            throw;')
     results=[]

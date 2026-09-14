@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using AnimusForge.Refactor.Modules;
+using AnimusForge.Api.Internal;
 
 namespace AnimusForge.Api.V1;
 
@@ -32,7 +33,7 @@ public static class AfApi
     /// </summary>
     public static AfFrameworkSnapshot GetSnapshot()
     {
-        return ModuleFrameworkRuntime.GetSnapshot(Capabilities);
+        return AfV1SnapshotProjection.Create(ModuleFrameworkRuntime.CaptureSnapshot(), Capabilities);
     }
 
     /// <summary>只探测公共方法的契约，不检查内部模块的玩法资格。ID 使用精确区分大小写匹配。</summary>
