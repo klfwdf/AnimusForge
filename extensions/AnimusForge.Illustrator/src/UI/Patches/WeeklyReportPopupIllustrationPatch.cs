@@ -294,21 +294,15 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             var protagonist = context.ProtagonistHero;
             string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
-            string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
 
             _scope.Run(async token =>
             {
                 var refs = new List<IllustrationReferenceImage>();
                 // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
                 Task<string> portraitStage = null;
-                Task<string> emblemStage = null;
                 if (options?.EnableOffscreenRendering == true && protagonist != null)
                 {
                     portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token);
-                    if (!string.IsNullOrWhiteSpace(bannerCode))
-                    {
-                        emblemStage = ScreenCaptureHelper.ExtractEmblemOffscreenAsync(bannerCode, cancellationToken: token);
-                    }
                 }
                 if (portraitStage != null)
                 {
@@ -316,14 +310,6 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
                         refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感"));
-                    }
-                }
-                if (emblemStage != null)
-                {
-                    string b64 = await emblemStage.ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
-                    {
-                        refs.Add(new IllustrationReferenceImage(b64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾"));
                     }
                 }
 

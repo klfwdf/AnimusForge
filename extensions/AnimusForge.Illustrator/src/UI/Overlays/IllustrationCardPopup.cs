@@ -190,17 +190,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感，构图与画风必须重新设计"));
                 }
-                // 纹章由"纹章兵"舞台渲染（稳定 CharacterTableauWidget + BannerCodeText）：
-                // 持大盾士兵的盾面即真实家族纹章；BannerTableauWidget 原生落盘实锤崩溃不可用
-                if (!string.IsNullOrWhiteSpace(bannerCode) && options?.EnableOffscreenRendering == true)
-                {
-                    string emblemB64 = await ScreenCaptureHelper.ExtractEmblemOffscreenAsync(bannerCode, cancellationToken: token).ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(emblemB64))
-                    {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾"));
-                    }
-                }
-
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
@@ -305,7 +294,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _scope.Run(async token =>
             {
                 // 参考图分两路：场景实景截图只发导演识图（避免截图质感与UI文字被生图模型复制），
-                // 人物立绘/纹章同时进生图垫图。
+                // 人物立绘同时进生图垫图。
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(preCapturedBase64))
@@ -317,7 +306,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Task<string> playerStage = null;
                 Task<string> partnerStage = null;
-                Task<string> emblemStage = null;
                 if (options?.EnableOffscreenRendering == true)
                 {
                     if (Hero.MainHero != null)
@@ -331,10 +319,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     else if (convContext.InterlocutorCharacter != null)
                     {
                         partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token);
-                    }
-                    if (!string.IsNullOrWhiteSpace(bannerCode))
-                    {
-                        emblemStage = ScreenCaptureHelper.ExtractEmblemOffscreenAsync(bannerCode, cancellationToken: token);
                     }
                 }
                 if (playerStage != null)
@@ -357,17 +341,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         genRefs.Add(r);
                     }
                 }
-                if (emblemStage != null)
-                {
-                    string b64 = await emblemStage.ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
-                    {
-                        var r = new IllustrationReferenceImage(b64, "对话对方家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾");
-                        directorRefs.Add(r);
-                        genRefs.Add(r);
-                    }
-                }
-
 
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, directorRefs, options, token).ConfigureAwait(false);
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });

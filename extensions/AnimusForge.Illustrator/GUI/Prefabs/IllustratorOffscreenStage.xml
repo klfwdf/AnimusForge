@@ -6,7 +6,6 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="true" DoNotAcceptEvents="true">
       <Children>
-        <BannerTableauWidget Id="OffscreenBanner" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="512" SuggestedHeight="512" HorizontalAlignment="Center" VerticalAlignment="Center" AlphaFactor="0" IsNineGrid="true" IsVisible="false" DoNotAcceptEvents="true" />
         <CharacterTableauWidget Id="OffscreenCharacter" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="384" SuggestedHeight="768" HorizontalAlignment="Center" VerticalAlignment="Center" AlphaFactor="0" IsVisible="false" DoNotAcceptEvents="true" />
       </Children>
     </Widget>
