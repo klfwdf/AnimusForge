@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
 
 namespace AnimusForge;
 
@@ -122,8 +123,8 @@ public partial class MyBehavior
         { Source = null; Count = Cursor = 0; Entries.Clear(); _sort = null; Deferred = true; }
     }
 
-    // Each draft still normalizes atomically, preserving aliases and the exact
-    // old inner operation order. Whole-list pruning stays private until verified.
+    // Draft identity remains one expensive grant. Lines and trigger binds consume
+    // shared metadata; the draft's line/trigger lists stay private until it finishes.
     private sealed class DailyMemoryDraftNormalization
     {
         private struct Binding
@@ -141,6 +142,8 @@ public partial class MyBehavior
         private readonly List<Binding> _bindings = new List<Binding>();
         private readonly List<DailyMemoryDraft> _result = new List<DailyMemoryDraft>();
         private CooperativeMemoryQueueSort<DailyMemoryDraft> _sort;
+        private DailyMemoryDraftEntryNormalization _entry;
+        private int _entrySeenCount;
         internal bool Invalidated { get; private set; }
 
         internal DailyMemoryDraftNormalization(List<DailyMemoryDraft> source)
@@ -154,16 +157,26 @@ public partial class MyBehavior
             while (_cursor < _count)
             {
                 var source = _source[_cursor];
-                if (!budget.Take(source != null)) return false;
-                _cursor++;
-                int seenCount = _seen.Count;
-                var normalized = SanitizeDailyMemoryDraftEntry(source, _seen);
+                if (_entry == null)
+                {
+                    if (!budget.Take(source != null)) return false;
+                    _entrySeenCount = _seen.Count;
+                    _entry = new DailyMemoryDraftEntryNormalization(source, _seen);
+                }
+                if (!_entry.Step(budget))
+                {
+                    if (_entry.Invalidated) Invalidated = true;
+                    return false;
+                }
+                var normalized = _entry.Result;
                 if (normalized != null) _result.Add(normalized);
                 if (source != null) _bindings.Add(new Binding
                 {
                     Source = source, HeroId = NormalizeMemoryHeroId(source.HeroId), Day = source.GameDayIndex,
-                    EmptyWinner = _seen.Count > seenCount && normalized == null, Included = normalized != null
+                    EmptyWinner = _seen.Count > _entrySeenCount && normalized == null, Included = normalized != null
                 });
+                _cursor++;
+                _entry = null;
             }
             if (_sort == null)
             {
@@ -193,6 +206,166 @@ public partial class MyBehavior
                 int lines = entry.Source.Lines?.Count ?? 0;
                 if (entry.EmptyWinner && lines > 0) return false;
                 if (entry.Included && lines == 0) return false;
+            }
+            return true;
+        }
+    }
+
+    private enum DailyMemoryDraftEntryPhase { BindTriggers, SanitizeTriggers, SanitizeLines, Finalize, Done }
+
+    // Cooperative inner sanitizer for one draft. Identity already paid the expensive
+    // grant. Trigger list sanitizer stays one metadata-backed atomic call.
+    private sealed class DailyMemoryDraftEntryNormalization
+    {
+        private readonly DailyMemoryDraft _source;
+        private readonly DailyMemoryDraft _draft;
+        private readonly string _heroId;
+        private readonly int _day;
+        private readonly List<WeeklyMemoryMaterialTrigger> _triggerSource;
+        private readonly int _boundTriggerCount;
+        private readonly List<DailyMemoryLine> _lineSource;
+        private readonly int _boundLineCount;
+        private readonly List<DailyMemoryLine> _lineResult = new List<DailyMemoryLine>();
+        private DailyMemoryDraftEntryPhase _phase;
+        private int _triggerIndex;
+        private int _lineIndex;
+        private bool _hasLlm;
+        private bool _triggersPublished;
+        private bool _linesPublished;
+        private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;
+        private List<DailyMemoryLine> _publishedLines;
+        internal bool Invalidated { get; private set; }
+        internal DailyMemoryDraft Result { get; private set; }
+
+        internal DailyMemoryDraftEntryNormalization(DailyMemoryDraft source, HashSet<string> seen)
+        {
+            _source = source;
+            _draft = TWParallel.IsMainThread() ? source : CloneMemorySummarySource(source);
+            _heroId = null;
+            _day = -1;
+            _triggerSource = null;
+            _boundTriggerCount = 0;
+            _lineSource = null;
+            _boundLineCount = 0;
+            if (_draft == null)
+            {
+                _phase = DailyMemoryDraftEntryPhase.Done;
+                return;
+            }
+            string text = NormalizeMemoryHeroId(_draft.HeroId);
+            if (string.IsNullOrWhiteSpace(text) || _draft.GameDayIndex < 0)
+            {
+                _phase = DailyMemoryDraftEntryPhase.Done;
+                return;
+            }
+            if (!seen.Add(text + "|" + _draft.GameDayIndex))
+            {
+                _phase = DailyMemoryDraftEntryPhase.Done;
+                return;
+            }
+            _draft.HeroId = text;
+            _draft.HeroName = (_draft.HeroName ?? "").Trim();
+            _draft.GameDate = (_draft.GameDate ?? "").Trim();
+            _draft.LastSummaryError = (_draft.LastSummaryError ?? "").Trim();
+            _heroId = text;
+            _day = _draft.GameDayIndex;
+            _triggerSource = _draft.WeeklyMaterialTriggers;
+            _boundTriggerCount = _triggerSource?.Count ?? 0;
+            _lineSource = _draft.Lines;
+            _boundLineCount = _lineSource?.Count ?? 0;
+            _hasLlm = _draft.HasLlmDialogue;
+            _phase = DailyMemoryDraftEntryPhase.BindTriggers;
+        }
+
+        internal bool Step(MemoryMaintenanceWorkBudget budget)
+        {
+            if (Invalidated) return false;
+            if (_phase == DailyMemoryDraftEntryPhase.Done) return true;
+            if (!InnerCurrent()) return false;
+            if (_phase == DailyMemoryDraftEntryPhase.BindTriggers)
+            {
+                if (_triggerSource != null)
+                {
+                    while (_triggerIndex < _boundTriggerCount)
+                    {
+                        if (!budget.Take(false)) return false;
+                        BindDailyMemoryDraftWeeklyTrigger(_triggerSource[_triggerIndex++], _heroId, _day, _draft.GameDate);
+                    }
+                }
+                _phase = DailyMemoryDraftEntryPhase.SanitizeTriggers;
+            }
+            if (_phase == DailyMemoryDraftEntryPhase.SanitizeTriggers)
+            {
+                if (!budget.Take(false)) return false;
+                if (!InnerCurrent()) return false;
+                _draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(_draft.WeeklyMaterialTriggers);
+                _triggersPublished = true;
+                _publishedTriggers = _draft.WeeklyMaterialTriggers;
+                _phase = DailyMemoryDraftEntryPhase.SanitizeLines;
+            }
+            if (_phase == DailyMemoryDraftEntryPhase.SanitizeLines)
+            {
+                if (_lineSource != null)
+                {
+                    while (_lineIndex < _boundLineCount)
+                    {
+                        if (!budget.Take(false)) return false;
+                        if (!InnerCurrent()) return false;
+                        var line = SanitizeDailyMemoryDraftLine(_lineSource[_lineIndex++], _draft);
+                        if (line == null) continue;
+                        _lineResult.Add(line);
+                        _hasLlm = _hasLlm || (line.IsLlmDialogue && !line.IsAfef);
+                    }
+                }
+                _phase = DailyMemoryDraftEntryPhase.Finalize;
+            }
+            if (_phase == DailyMemoryDraftEntryPhase.Finalize)
+            {
+                if (!budget.Take(false)) return false;
+                if (!InnerCurrent()) return false;
+                _draft.Lines = _lineResult;
+                _draft.HasLlmDialogue = _hasLlm;
+                _linesPublished = true;
+                _publishedLines = _lineResult;
+                Result = _lineResult.Count > 0 ? _draft : null;
+                _phase = DailyMemoryDraftEntryPhase.Done;
+            }
+            return true;
+        }
+
+        private bool InnerCurrent()
+        {
+            if (_draft == null) return true;
+            if (NormalizeMemoryHeroId(_source.HeroId) != _heroId || _source.GameDayIndex != _day)
+            {
+                Invalidated = true;
+                return false;
+            }
+            if (!_triggersPublished)
+            {
+                if (!ReferenceEquals(_source.WeeklyMaterialTriggers, _triggerSource) || (_source.WeeklyMaterialTriggers?.Count ?? 0) != _boundTriggerCount)
+                {
+                    Invalidated = true;
+                    return false;
+                }
+            }
+            else if (!ReferenceEquals(_draft.WeeklyMaterialTriggers, _publishedTriggers))
+            {
+                Invalidated = true;
+                return false;
+            }
+            if (!_linesPublished)
+            {
+                if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)
+                {
+                    Invalidated = true;
+                    return false;
+                }
+            }
+            else if (!ReferenceEquals(_draft.Lines, _publishedLines))
+            {
+                Invalidated = true;
+                return false;
             }
             return true;
         }

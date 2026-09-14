@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
- 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding','unbudgeted-owner-normalize','ignore-owner-normalize-key','ignore-owner-normalize-empty','ignore-owner-normalize-kept-empty','skip-owner-normalize-reseal','ignore-owner-normalize-source']
+ 'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding','unbudgeted-owner-normalize','ignore-owner-normalize-key','ignore-owner-normalize-empty','ignore-owner-normalize-kept-empty','skip-owner-normalize-reseal','ignore-owner-normalize-source','unbudgeted-line-normalize','ignore-line-source']
 def module(name,path):
  sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 def exact(s,old,new,count=1):
@@ -47,6 +47,10 @@ def apply_seal_mutation(seal, mutation):
   ex=module('owner_normalize_mutation',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
   body=ex.declaration(seal,'private bool Current(List<DailyMemoryDraft> current)')
   return exact(seal,body,'private bool Current(List<DailyMemoryDraft> current) { return true; }')
+ if mutation=='unbudgeted-line-normalize':
+  return exact(seal,'if (!budget.Take(false)) return false;\n                        if (!InnerCurrent()) return false;\n                        var line = SanitizeDailyMemoryDraftLine(_lineSource[_lineIndex++], _draft);','var line = SanitizeDailyMemoryDraftLine(_lineSource[_lineIndex++], _draft);')
+ if mutation=='ignore-line-source':
+  return exact(seal,'if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n                {\n                    Invalidated = true;\n                    return false;\n                }','')
  if mutation=='renew-seal-budget':return exact(seal,'var budget = _campaignMemoryMaintenanceBudget;','MemoryMaintenanceWorkBudget budget = null;')
  if mutation=='ignore-empty-probe':
   return exact(seal,'if (!found) { ResetDailyMemoryDraftSealSliceState(); return true; }','if (false) { ResetDailyMemoryDraftSealSliceState(); return true; }')
@@ -69,7 +73,7 @@ def main():
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
  if a.mutate and a.mutate not in ('abandon-incomplete-same-day',) and not new_sealing: raise ValueError('Sealing mutation requires MyBehavior.MemorySealing.cs')
- names=list(dict.fromkeys(cap.NAMES+'''TrySealPastDailyMemoryDrafts ResetDailyMemoryDraftSealSliceState HasPastDailyMemoryDrafts TryRunCampaignMemoryMaintenance HasCompressedMemoryBlock TryEnqueueMajorActionSummaryForDraft HasDailyMemoryDraftAfefLines SanitizeMemorySummaryQueue SanitizeMajorActionSummaryQueue CancelUnavailableHeroCompressionWorkById IsDailyMaintenanceBudgetExceeded HasPendingDeferredDailyMaintenanceWork ProcessDeferredDailyMaintenance ExecuteDailyMaintenanceJob EnqueueDailyMaintenanceJob BuildDailyMaintenanceJobKey'''.split()))
+ names=list(dict.fromkeys(cap.NAMES+'''BindDailyMemoryDraftWeeklyTrigger SanitizeDailyMemoryDraftLine TrySealPastDailyMemoryDrafts ResetDailyMemoryDraftSealSliceState HasPastDailyMemoryDrafts TryRunCampaignMemoryMaintenance HasCompressedMemoryBlock TryEnqueueMajorActionSummaryForDraft HasDailyMemoryDraftAfefLines SanitizeMemorySummaryQueue SanitizeMajorActionSummaryQueue CancelUnavailableHeroCompressionWorkById IsDailyMaintenanceBudgetExceeded HasPendingDeferredDailyMaintenanceWork ProcessDeferredDailyMaintenance ExecuteDailyMaintenanceJob EnqueueDailyMaintenanceJob BuildDailyMaintenanceJobKey'''.split()))
  def add(sig,path='MyBehavior.cs',text=None):
   data=source if text is None else text;body=ex.declaration(data,sig);name=sig.rstrip('(').split()[-1]
   manifest.append(dict(file=path,signature=sig,line=data[:data.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
@@ -93,7 +97,7 @@ def main():
    body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
   if name=='SanitizeDailyMemoryDrafts' and 'DailyMemoryDraft draft = TWParallel.IsMainThread()' in body:
    body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
-  if name in ('SanitizeDailyMemoryDraftEntry','SanitizeDailyMemoryDrafts') and 'x.GameDayIndex = draft.GameDayIndex;' in body:
+  if name=='SanitizeDailyMemoryDraftLine' and 'x.GameDayIndex = draft.GameDayIndex;' in body:
    body=exact(body,'x.GameDayIndex = draft.GameDayIndex;','SealProbe.Hit("owner-normalized-line"); x.GameDayIndex = draft.GameDayIndex;')
   snippets.append(body)
  for name in cap.MODELS:add('private sealed class '+name)
@@ -102,6 +106,8 @@ def main():
   if re.search(r'private static List<[^>]+> '+helper+r'\(',source):names.append(helper)
  for name in names:
   if name=='SanitizeDailyMemoryDraftEntry' and 'private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(' not in source:continue
+  if name=='SanitizeDailyMemoryDraftLine' and 'private static DailyMemoryLine SanitizeDailyMemoryDraftLine(' not in source:continue
+  if name=='BindDailyMemoryDraftWeeklyTrigger' and 'private static void BindDailyMemoryDraftWeeklyTrigger(' not in source:continue
   if name=='HasPastDailyMemoryDrafts' and 'private bool HasPastDailyMemoryDrafts(' not in source:continue
   hit=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M);assert hit,name;add(hit.group().strip())
  cycle_signature='private void RunCampaignMemoryMaintenanceCycle('
@@ -151,6 +157,7 @@ def main():
    manifest.extend(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True) for name in ['MyBehavior.MemoryMaintenanceBudget.cs','Refactor/Runtime/MemoryMaintenanceWorkBudget.cs'])
   else:seal=budget_code
   if 'DailyMemoryDraft draft = list[draftIndex];' in seal:seal=exact(seal,'DailyMemoryDraft draft = list[draftIndex];','DailyMemoryDraft draft = list[draftIndex]; SealProbe.Hit("draft-visited");')
+  if '_entry = new DailyMemoryDraftEntryNormalization(source, _seen);' in seal:seal=exact(seal,'_entry = new DailyMemoryDraftEntryNormalization(source, _seen);','if (source != null) SealProbe.Hit("owner-normalized-record"); _entry = new DailyMemoryDraftEntryNormalization(source, _seen);')
   if 'list = SanitizeDailyMemoryDrafts(list);' in seal:seal=exact(seal,'list = SanitizeDailyMemoryDrafts(list);','SealProbe.Hit("owner-sanitize"); if(list.Count>0) SealProbe.Hit("owner-sanitize-nonempty"); list = SanitizeDailyMemoryDrafts(list);')
   seal=exact(seal,'_dailyMemoryDraftSealOwnerKeys.Add(state.OwnerEnumerator.Current.Key);','_dailyMemoryDraftSealOwnerKeys.Add(state.OwnerEnumerator.Current.Key); SealProbe.Hit("owner-index");')
   seal=exact(seal,'foreach (var owner in state.CompletedOwners)\n        {','foreach (var owner in state.CompletedOwners)\n        { SealProbe.Hit("completed-owner-check");')
@@ -170,7 +177,7 @@ def main():
    manifest.append(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True))
  files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
  for path,text in files.items():(out/path).write_bytes(text.encode())
- meta=dict(source_revision=baseline or 'worktree',mutation=a.mutate,source_sha256=hashlib.sha256(source.encode()).hexdigest(),declarations=manifest,generated_sha256={p:hashlib.sha256(t.encode()).hexdigest() for p,t in files.items()},seams=['Actual Seal/Reset/HasPast/TryRun/sanitizers/pending/major enqueue/cancel execute; game owner identity and summary-start are fixtures','Entry/iteration counters only; controlled entry delay exercises actual Stopwatch budget'],limits=['One owner sanitizer and inner source scan still atomic','No real game/save/provider or overall frame-time acceptance'])
+ meta=dict(source_revision=baseline or 'worktree',mutation=a.mutate,source_sha256=hashlib.sha256(source.encode()).hexdigest(),declarations=manifest,generated_sha256={p:hashlib.sha256(t.encode()).hexdigest() for p,t in files.items()},seams=['Actual Seal/Reset/HasPast/TryRun/sanitizers/pending/major enqueue/cancel execute; game owner identity and summary-start are fixtures','Entry/iteration counters only; controlled entry delay exercises actual Stopwatch budget'],limits=['Owner sanitizer is per-draft; lines/trigger binds use metadata grants, trigger list sanitize stays atomic','No real game/save/provider or overall frame-time acceptance'])
  (out/'manifest.json').write_bytes(json.dumps(meta,ensure_ascii=False,indent=2).encode())
  dotnet=Path(os.environ.get('DOTNET_EXE', r'C:/Program Files/dotnet/dotnet.exe'));env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
  build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);(out/'build.log').write_bytes((build.stdout+build.stderr).encode())
