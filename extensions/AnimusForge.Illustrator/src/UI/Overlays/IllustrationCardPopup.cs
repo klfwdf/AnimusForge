@@ -171,7 +171,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
             bool useCivilian = hero.IsNotable || (hero.IsNoncombatant && !hero.IsPartyLeader) || (hero.IsWanderer && hero.PartyBelongedTo == null);
             HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, useCivilian: useCivilian);
 
-            string hardFacts = profile.BuildSummary();
+            // 百科人物事实缺环境信息——补纪元时间（卡拉迪亚历 NNNN 年）使年代进入提示词事实区
+            string hardFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildSummary();
             string artDirection = GenerateDiversePoseDirective(hero);
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection);
             var options = IllustratorRuntime.CaptureOptions();

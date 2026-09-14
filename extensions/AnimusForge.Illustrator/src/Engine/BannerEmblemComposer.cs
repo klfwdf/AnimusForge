@@ -81,6 +81,8 @@ namespace AnimusForge.Illustrator.Engine
                         }
 
                         // 纹章件按列表顺序叠放（背景在 0 位，其后即绘制顺序）
+                        string dbgDir = DebugDumpDir();
+                        var meta = new System.Text.StringBuilder();
                         for (int i = 0; i < count; i++)
                         {
                             if (i == Banner.BackgroundDataIndex) continue;
@@ -92,10 +94,30 @@ namespace AnimusForge.Illustrator.Engine
 
                             Color c1 = PaletteColor(data.ColorId, Color.White);
                             Color c2 = data.ColorId2 >= 0 ? PaletteColor(data.ColorId2, c1) : c1;
+                            meta.AppendLine($"mesh={data.MeshId} pos=({data.Position.X:0},{data.Position.Y:0}) size=({data.Size.X:0}x{data.Size.Y:0}) rot={data.Rotation * 57.29578f:0}° mirror={data.Mirror} c1=#{c1.R:X2}{c1.G:X2}{c1.B:X2} c2=#{c2.R:X2}{c2.G:X2}{c2.B:X2} stroke={data.DrawStroke} cell={cell.Width}x{cell.Height}");
+                            using (cell)
                             using (var tinted = TintIconCell(cell, c1, c2, data.DrawStroke))
                             {
                                 DrawPiece(g, tinted, data, scale, canvasSize);
+                                if (dbgDir != null)
+                                {
+                                    try
+                                    {
+                                        cell.Save(Path.Combine(dbgDir, $"cell_{data.MeshId}_raw.png"), ImageFormat.Png);
+                                        tinted.Save(Path.Combine(dbgDir, $"cell_{data.MeshId}_tinted.png"), ImageFormat.Png);
+                                    }
+                                    catch { }
+                                }
                             }
+                        }
+                        if (dbgDir != null)
+                        {
+                            try
+                            {
+                                canvas.Save(Path.Combine(dbgDir, "emblem_final.png"), ImageFormat.Png);
+                                File.WriteAllText(Path.Combine(dbgDir, "meta.txt"), meta.ToString());
+                            }
+                            catch { }
                         }
                     }
                     string b64 = ScreenCaptureHelper.ConvertBitmapToBase64(canvas, canvasSize);
@@ -112,6 +134,18 @@ namespace AnimusForge.Illustrator.Engine
                 TaleWorlds.Library.Debug.Print($"[BannerEmblem] Compose error: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>调试落盘目录：temp/AnimusForgeIllustrator/banner_debug，供实机后人工核对合成结果。</summary>
+        private static string DebugDumpDir()
+        {
+            try
+            {
+                string dir = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator", "banner_debug");
+                Directory.CreateDirectory(dir);
+                return dir;
+            }
+            catch { return null; }
         }
 
         /// <summary>加载指定纹章图标的图集切片；图集纹理按名缓存（生成频率极低，常驻无压力）。</summary>

@@ -199,7 +199,8 @@ namespace AnimusForge.Illustrator
             "natural (自然真实·API枚举)",
             "暗黑史诗写实 (提示词注入)",
             "电影级光影 (提示词注入)",
-            "提示词 (自定义画风)"
+            "提示词 (自定义画风)",
+            "莫桑艺术·默兹河珐琅彩饰 (提示词注入)"
         };
         private Dropdown<string> _styleDropdown;
 
@@ -228,6 +229,7 @@ namespace AnimusForge.Illustrator
                     case 3: return "dark-epic";
                     case 4: return "cinematic";
                     case 5: return "custom";
+                    case 6: return "mosan-art";
                     default: return "classic-oil";
                 }
             }
