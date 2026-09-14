@@ -403,6 +403,34 @@ namespace AnimusForge {
    Check(JsonConvert.SerializeObject(b._dailyMemoryDrafts["owner"])==JsonConvert.SerializeObject(expected),"stale line cursor overwrote a grown source list");
    Check(b._dailyMemoryDrafts["owner"][0].Lines.Any(x=>x.Text=="new fact"),"new line pruned by in-progress draft cursor");MainReads();
   }
+  static void OwnerNormalizationInnerStructureChange(string kind,string mode){
+   var b=NormalizationOwner(1);var d=b._dailyMemoryDrafts["owner"][0];var sample=d.Lines[0];
+   if(kind=="lines")d.Lines=Enumerable.Range(0,64).Select(i=>{var line=sample.CopyForSummary();line.Text="original-"+i;return line;}).ToList();
+   else d.WeeklyMaterialTriggers=Enumerable.Range(0,64).Select(i=>{var t=Trigger("unbound");t.StableKey="original-"+i;return t;}).ToList();
+   var input=b._dailyMemoryDrafts["owner"];bool paused=false;string counter=kind=="lines"?"owner-normalized-line":"owner-bound-trigger";
+   int stop=mode=="finalize-slot"?64:8;
+   SealProbe.Hook=key=>{if(key==counter&&SealProbe.Count(key)>=stop&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=false;for(int i=0;i<1024&&!paused;i++)done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);SealProbe.Hook=null;
+   Check(paused&&!done&&ReferenceEquals(b._dailyMemoryDrafts["owner"],input),"inner structure fixture failed to yield actual caller");
+   if(kind=="lines"){
+    var added=sample.CopyForSummary();added.Text="new-fact";
+    if(mode=="slot"||mode=="finalize-slot")d.Lines[0]=added;
+    else if(mode=="remove-add"){d.Lines.RemoveAt(0);d.Lines.Add(added);}
+    else if(mode=="swap"){var x=d.Lines[0];d.Lines[0]=d.Lines[60];d.Lines[60]=x;}
+    else if(mode=="append")d.Lines.Add(added);
+   }else{
+    var added=Trigger("replacement-owner");added.StableKey="new-trigger";
+    if(mode=="slot"||mode=="finalize-slot")d.WeeklyMaterialTriggers[0]=added;
+    else if(mode=="remove-add"){d.WeeklyMaterialTriggers.RemoveAt(0);d.WeeklyMaterialTriggers.Add(added);}
+    else if(mode=="swap"){var x=d.WeeklyMaterialTriggers[0];d.WeeklyMaterialTriggers[0]=d.WeeklyMaterialTriggers[60];d.WeeklyMaterialTriggers[60]=x;}
+    else if(mode=="append")d.WeeklyMaterialTriggers.Add(added);
+   }
+   // Compare to the original synchronous rules over the LIVE graph after the change,
+   // including partially normalized objects, never to the stale captured input.
+   var expected=SanitizeDailyMemoryDraftsOracle(input.Select(x=>x?.CopyForSummary()).ToList());
+   Check(b.TrySealPastDailyMemoryDrafts(),"inner structure restart did not converge");
+   Check(JsonConvert.SerializeObject(b._dailyMemoryDrafts["owner"])==JsonConvert.SerializeObject(expected),"inner "+kind+" "+mode+" published stale data/order/bindings");MainReads();
+  }
   static int Main(){TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>();foreach(var mode in new[]{"normal","afef-only","empty","terminal","mismatch","block","today","invalid-owner"}){var m=mode;cases.Add((m,()=>Semantics(m)));}
    cases.Add(("daily-queue-contract",DailyQueueContract));cases.Add(("major-queue-contract",MajorQueueContract));cases.Add(("expired-budget-then-sync",FiniteThenSynchronous));cases.Add(("same-day-no-job-resume",SameDayResume));cases.Add(("same-reference-indexed-key-change",SameReferenceIndexedKeyChange));cases.Add(("owner-list-replacement",OwnerListReplacement));cases.Add(("cleanup-queue-append",()=>QueueWriteDuringCleanup(false)));cases.Add(("cleanup-queue-replacement",()=>QueueWriteDuringCleanup(true)));cases.Add(("4096-index-final-filter-cost",IndexCost));cases.Add(("finite-4096-convergence",()=>FiniteConvergence(false)));cases.Add(("finite-48draft-convergence",()=>FiniteConvergence(true)));cases.Add(("standalone-multiple-callers-compatibility",StandaloneMultipleCallers));cases.Add(("probe-empty-no-candidate-start",()=>ProbeCompletionReceipt(false)));cases.Add(("probe-terminal-preserves-candidate-start",()=>ProbeCompletionReceipt(true)));cases.Add(("multiple-invalid-owners-sync",MultipleInvalidOwnersSync));cases.Add(("cleanup-same-ref-retarget",CleanupSameReferenceRetarget));cases.Add(("owner-inserted-after-index",OwnerInsertedAfterIndex));cases.Add(("major-indexed-key-change",MajorIndexedKeyChange));foreach(var budget in new[]{0.0,double.NaN,double.PositiveInfinity,double.MaxValue}){double value=budget;cases.Add(("unlimited-sentinel-"+budget,()=>UnlimitedCompatibility(value)));}
    cases.Add(("campaign-shared-metadata",()=>SharedCampaignCaps(false)));cases.Add(("campaign-shared-expensive",()=>SharedCampaignCaps(true)));cases.Add(("campaign-shared-convergence",SharedCampaignConverges));cases.Add(("campaign-shared-deadline",SharedCampaignDeadline));cases.Add(("campaign-deferred-start",()=>DeferredCampaignStart(false)));cases.Add(("campaign-retired-start",()=>DeferredCampaignStart(true)));cases.Add(("campaign-scope-exception",CampaignScopeRestored));cases.Add(("campaign-skip-deferred",CampaignSkipDeferred));cases.Add(("campaign-explicit-sync",CampaignExplicitSync));
@@ -412,6 +440,7 @@ namespace AnimusForge {
    cases.Add(("owner-normalize-finite-cost",()=>OwnerNormalizationCost(false)));cases.Add(("owner-normalize-campaign-cost",()=>OwnerNormalizationCost(true)));cases.Add(("owner-normalize-contract",OwnerNormalizationContract));cases.Add(("owner-normalize-exception",OwnerNormalizationException));
    foreach(string mode in new[]{"unchanged","append","replace","slot","key","past-key","empty-grows","kept-empties","reset"}){string m=mode;cases.Add(("owner-normalize-change-"+m,()=>OwnerNormalizationChange(m)));}
    cases.Add(("owner-normalize-publish-race",OwnerNormalizationPublishRace));cases.Add(("owner-normalize-inner-cost",OwnerNormalizationInnerCost));cases.Add(("owner-normalize-line-change",OwnerNormalizationLineChange));
+   foreach(string kind in new[]{"lines","triggers"})foreach(string mode in new[]{"unchanged","append","slot","remove-add","swap","finalize-slot"}){string k=kind,m=mode;cases.Add(("inner-structure-"+k+"-"+m,()=>OwnerNormalizationInnerStructureChange(k,m)));}
    int pass=0,fail=0;foreach(var (name,run) in cases){var priorCulture=System.Globalization.CultureInfo.CurrentCulture;try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}finally{System.Globalization.CultureInfo.CurrentCulture=priorCulture;}}
    Console.WriteLine($"SEALING_RESULT pass={pass} fail={fail} LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC");return fail==0?0:1;
   }

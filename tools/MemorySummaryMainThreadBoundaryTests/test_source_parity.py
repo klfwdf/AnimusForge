@@ -75,6 +75,14 @@ class InverseGuards(unittest.TestCase):
         self.assertIn("SanitizeDailyMemoryDraftLine(sourceLine, draft);", entry)
         self.assertNotIn(").Where((DailyMemoryLine x)", entry)
 
+    def test_inner_structure_fix_has_narrow_inverse(self):
+        review = REVIEW["innerStructureReview"]
+        baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["path"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        for edit in review["exactEdits"]:
+            self.assertEqual(baseline.count(edit["before"]), 1)
+            baseline = baseline.replace(edit["before"], edit["after"], 1)
+        self.assertEqual(baseline, (ROOT / review["path"]).read_text(encoding="utf-8-sig"))
+
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),

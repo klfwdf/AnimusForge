@@ -1444,286 +1444,47 @@
     "sealing": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
-      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic. Actual owner normalization counts each draft, no stale key/empty/source list prune, invalidated key reseals before final queues; record-level timing changes documented, no whole-owner transaction; inner lines/trigger binds use metadata grants, trigger list sanitize stays atomic.",
-      "observed": "Current76/0; pinned40b92e67 same75 ->62/13;28 effective BUILD_PASS fault variants EXIT=1; 1draft/1024lines max 127 metadata lines/window.",
+      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic. Actual owner normalization counts each draft, no stale key/empty/source list prune, invalidated key reseals before final queues; record-level timing changes documented, no whole-owner transaction; inner lines/trigger binds use metadata grants, trigger list sanitize stays atomic. Inner lines and pre-sanitize trigger lists now bind List structure versions; same-count source changes invalidate and reseal. Does not detect arbitrary in-place element field changes.",
+      "observed": "Current88/0; pinned4d6994bc same88 ->80/8; three focused valid BUILD_PASS mutations EXIT=1. Earlier broad mutation evidence remains pinned in previousReportBeforeInnerStructureFix; not all rerun this slice.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
       "testSourceSha256": {
-        "runner": "0c09887aa9dfb39056cd8020842fae9750687b7d34920f1a171cc31da5795dde",
-        "harness": "3d6e732fffe7c5d58d5a19eb15876340def83b6554c025e9df146c32159c657b"
+        "runner": "06ef9ebe437aaadc016ec9fe5ffd7075aa3fd12f80ce6aa826ede94d24904084",
+        "harness": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205"
       },
       "acceptedInverse": true,
       "counterexampleSummary": ".tmp\\b1-owner-normalize-20260914\\sealing-runs.json",
       "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
       "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
       "current": {
-        "pass": 76,
+        "pass": 88,
         "fail": 0,
         "exit": 0
       },
       "original": {
-        "revision": "40b92e67",
-        "pass": 62,
-        "fail": 13,
+        "revision": "4d6994bc",
+        "pass": 80,
+        "fail": 8,
         "exit": 1
       },
       "redMutations": [
         {
-          "name": "abandon-incomplete-same-day",
+          "name": "ignore-line-structure",
           "exit": 1,
           "failedCases": [
-            "same-day-no-job-resume"
+            "inner-structure-lines-slot",
+            "inner-structure-lines-remove-add",
+            "inner-structure-lines-swap",
+            "inner-structure-lines-finalize-slot"
           ]
         },
         {
-          "name": "ignore-empty-probe",
+          "name": "ignore-trigger-structure",
           "exit": 1,
           "failedCases": [
-            "probe-empty-no-candidate-start"
-          ]
-        },
-        {
-          "name": "ignore-stale-queued-job",
-          "exit": 1,
-          "failedCases": [
-            "same-reference-indexed-key-change"
-          ]
-        },
-        {
-          "name": "ignore-owner-binding",
-          "exit": 1,
-          "failedCases": [
-            "owner-list-replacement"
-          ]
-        },
-        {
-          "name": "ignore-cleanup-identity",
-          "exit": 1,
-          "failedCases": [
-            "cleanup-same-ref-retarget",
-            "queue-sort-resume-False-name",
-            "queue-sort-resume-False-retry",
-            "queue-sort-resume-False-day",
-            "queue-sort-resume-True-name",
-            "queue-sort-resume-True-retry",
-            "queue-sort-resume-True-day"
-          ]
-        },
-        {
-          "name": "unbounded-metadata",
-          "exit": 1,
-          "failedCases": [
-            "finite-4096-convergence",
-            "finite-48draft-convergence",
-            "standalone-multiple-callers-compatibility",
-            "campaign-shared-metadata",
-            "campaign-shared-convergence",
-            "queue-sort-budget-False",
-            "queue-sort-budget-True",
-            "campaign-sort-budget",
-            "owner-normalize-finite-cost",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "unbounded-expensive",
-          "exit": 1,
-          "failedCases": [
-            "finite-48draft-convergence",
-            "campaign-shared-expensive",
-            "owner-normalize-finite-cost",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "ignore-deadline",
-          "exit": 1,
-          "failedCases": [
-            "expired-budget-then-sync",
-            "same-day-no-job-resume",
-            "same-reference-indexed-key-change",
-            "owner-list-replacement",
-            "owner-inserted-after-index",
-            "major-indexed-key-change"
-          ]
-        },
-        {
-          "name": "renew-seal-budget",
-          "exit": 1,
-          "failedCases": [
-            "campaign-shared-metadata",
-            "campaign-shared-expensive",
-            "campaign-shared-convergence",
-            "campaign-sort-budget",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "renew-deferred-deadline",
-          "exit": 1,
-          "failedCases": [
-            "campaign-shared-metadata",
-            "campaign-shared-expensive",
-            "campaign-shared-convergence",
-            "campaign-shared-deadline",
-            "campaign-sort-budget",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "omit-window-restore",
-          "exit": 1,
-          "failedCases": [
-            "campaign-shared-convergence",
-            "campaign-deferred-start",
-            "campaign-scope-exception",
-            "campaign-sort-budget",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "drop-deferred-start",
-          "exit": 1,
-          "failedCases": [
-            "campaign-deferred-start"
-          ]
-        },
-        {
-          "name": "ignore-pending-generation",
-          "exit": 1,
-          "failedCases": [
-            "campaign-retired-start"
-          ]
-        },
-        {
-          "name": "ignore-campaign-scope",
-          "exit": 1,
-          "failedCases": [
-            "campaign-shared-metadata",
-            "campaign-shared-expensive",
-            "campaign-shared-convergence",
-            "campaign-shared-deadline",
-            "campaign-sort-budget",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "unbudgeted-sort",
-          "exit": 1,
-          "failedCases": [
-            "queue-sort-budget-False",
-            "queue-sort-budget-True",
-            "campaign-sort-budget"
-          ]
-        },
-        {
-          "name": "unstable-sort",
-          "exit": 1,
-          "failedCases": [
-            "queue-sort-budget-False",
-            "queue-sort-budget-True"
-          ]
-        },
-        {
-          "name": "ordinal-sort",
-          "exit": 1,
-          "failedCases": [
-            "queue-sort-budget-False",
-            "queue-sort-resume-False-unchanged",
-            "queue-sort-resume-False-name",
-            "queue-sort-resume-False-retry",
-            "queue-sort-resume-False-day",
-            "queue-sort-resume-False-append",
-            "queue-sort-resume-False-replace",
-            "queue-sort-resume-False-slot",
-            "queue-sort-budget-True",
-            "queue-sort-resume-True-unchanged",
-            "queue-sort-resume-True-name",
-            "queue-sort-resume-True-retry",
-            "queue-sort-resume-True-day",
-            "queue-sort-resume-True-append",
-            "queue-sort-resume-True-replace",
-            "queue-sort-resume-True-slot"
-          ]
-        },
-        {
-          "name": "ignore-sort-source",
-          "exit": 1,
-          "failedCases": [
-            "queue-sort-resume-False-slot",
-            "queue-sort-resume-True-append",
-            "queue-sort-resume-True-slot"
-          ]
-        },
-        {
-          "name": "ignore-sort-culture",
-          "exit": 1,
-          "failedCases": [
-            "queue-sort-resume-False-culture",
-            "queue-sort-resume-True-culture"
-          ]
-        },
-        {
-          "name": "ignore-sort-final-binding",
-          "exit": 1,
-          "failedCases": [
-            "queue-sort-resume-False-name",
-            "queue-sort-resume-False-retry",
-            "queue-sort-resume-False-day",
-            "queue-sort-resume-True-name",
-            "queue-sort-resume-True-retry",
-            "queue-sort-resume-True-day"
-          ]
-        },
-        {
-          "name": "unbudgeted-owner-normalize",
-          "exit": 1,
-          "failedCases": [
-            "finite-48draft-convergence",
-            "owner-normalize-finite-cost",
-            "owner-normalize-campaign-cost"
-          ]
-        },
-        {
-          "name": "ignore-owner-normalize-key",
-          "exit": 1,
-          "failedCases": [
-            "owner-normalize-change-key",
-            "owner-normalize-change-past-key"
-          ]
-        },
-        {
-          "name": "ignore-owner-normalize-empty",
-          "exit": 1,
-          "failedCases": [
-            "owner-normalize-change-empty-grows"
-          ]
-        },
-        {
-          "name": "ignore-owner-normalize-kept-empty",
-          "exit": 1,
-          "failedCases": [
-            "owner-normalize-change-kept-empties"
-          ]
-        },
-        {
-          "name": "skip-owner-normalize-reseal",
-          "exit": 1,
-          "failedCases": [
-            "owner-normalize-change-past-key"
-          ]
-        },
-        {
-          "name": "ignore-owner-normalize-source",
-          "exit": 1,
-          "failedCases": [
-            "owner-normalize-publish-race"
-          ]
-        },
-        {
-          "name": "unbudgeted-line-normalize",
-          "exit": 1,
-          "failedCases": [
-            "owner-normalize-inner-cost"
+            "inner-structure-triggers-slot",
+            "inner-structure-triggers-remove-add",
+            "inner-structure-triggers-swap",
+            "inner-structure-triggers-finalize-slot"
           ]
         },
         {
@@ -1732,7 +1493,12 @@
           "failedCases": [
             "owner-normalize-change-empty-grows",
             "owner-normalize-change-kept-empties",
-            "owner-normalize-line-change"
+            "owner-normalize-line-change",
+            "inner-structure-lines-append",
+            "inner-structure-lines-slot",
+            "inner-structure-lines-remove-add",
+            "inner-structure-lines-swap",
+            "inner-structure-lines-finalize-slot"
           ]
         }
       ],
@@ -1762,6 +1528,290 @@
         "exit": 1,
         "pass": 46,
         "harnessRevision": "40b92e67"
+      },
+      "previousReportBeforeInnerStructureFix": {
+        "observed": "Current76/0; pinned40b92e67 same75 ->62/13;28 effective BUILD_PASS fault variants EXIT=1; 1draft/1024lines max 127 metadata lines/window.",
+        "original": {
+          "revision": "40b92e67",
+          "pass": 62,
+          "fail": 13,
+          "exit": 1
+        },
+        "current": {
+          "pass": 76,
+          "fail": 0,
+          "exit": 0
+        },
+        "redMutations": [
+          {
+            "name": "abandon-incomplete-same-day",
+            "exit": 1,
+            "failedCases": [
+              "same-day-no-job-resume"
+            ]
+          },
+          {
+            "name": "ignore-empty-probe",
+            "exit": 1,
+            "failedCases": [
+              "probe-empty-no-candidate-start"
+            ]
+          },
+          {
+            "name": "ignore-stale-queued-job",
+            "exit": 1,
+            "failedCases": [
+              "same-reference-indexed-key-change"
+            ]
+          },
+          {
+            "name": "ignore-owner-binding",
+            "exit": 1,
+            "failedCases": [
+              "owner-list-replacement"
+            ]
+          },
+          {
+            "name": "ignore-cleanup-identity",
+            "exit": 1,
+            "failedCases": [
+              "cleanup-same-ref-retarget",
+              "queue-sort-resume-False-name",
+              "queue-sort-resume-False-retry",
+              "queue-sort-resume-False-day",
+              "queue-sort-resume-True-name",
+              "queue-sort-resume-True-retry",
+              "queue-sort-resume-True-day"
+            ]
+          },
+          {
+            "name": "unbounded-metadata",
+            "exit": 1,
+            "failedCases": [
+              "finite-4096-convergence",
+              "finite-48draft-convergence",
+              "standalone-multiple-callers-compatibility",
+              "campaign-shared-metadata",
+              "campaign-shared-convergence",
+              "queue-sort-budget-False",
+              "queue-sort-budget-True",
+              "campaign-sort-budget",
+              "owner-normalize-finite-cost",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "unbounded-expensive",
+            "exit": 1,
+            "failedCases": [
+              "finite-48draft-convergence",
+              "campaign-shared-expensive",
+              "owner-normalize-finite-cost",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "ignore-deadline",
+            "exit": 1,
+            "failedCases": [
+              "expired-budget-then-sync",
+              "same-day-no-job-resume",
+              "same-reference-indexed-key-change",
+              "owner-list-replacement",
+              "owner-inserted-after-index",
+              "major-indexed-key-change"
+            ]
+          },
+          {
+            "name": "renew-seal-budget",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-metadata",
+              "campaign-shared-expensive",
+              "campaign-shared-convergence",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "renew-deferred-deadline",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-metadata",
+              "campaign-shared-expensive",
+              "campaign-shared-convergence",
+              "campaign-shared-deadline",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "omit-window-restore",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-convergence",
+              "campaign-deferred-start",
+              "campaign-scope-exception",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "drop-deferred-start",
+            "exit": 1,
+            "failedCases": [
+              "campaign-deferred-start"
+            ]
+          },
+          {
+            "name": "ignore-pending-generation",
+            "exit": 1,
+            "failedCases": [
+              "campaign-retired-start"
+            ]
+          },
+          {
+            "name": "ignore-campaign-scope",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-metadata",
+              "campaign-shared-expensive",
+              "campaign-shared-convergence",
+              "campaign-shared-deadline",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "unbudgeted-sort",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-budget-False",
+              "queue-sort-budget-True",
+              "campaign-sort-budget"
+            ]
+          },
+          {
+            "name": "unstable-sort",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-budget-False",
+              "queue-sort-budget-True"
+            ]
+          },
+          {
+            "name": "ordinal-sort",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-budget-False",
+              "queue-sort-resume-False-unchanged",
+              "queue-sort-resume-False-name",
+              "queue-sort-resume-False-retry",
+              "queue-sort-resume-False-day",
+              "queue-sort-resume-False-append",
+              "queue-sort-resume-False-replace",
+              "queue-sort-resume-False-slot",
+              "queue-sort-budget-True",
+              "queue-sort-resume-True-unchanged",
+              "queue-sort-resume-True-name",
+              "queue-sort-resume-True-retry",
+              "queue-sort-resume-True-day",
+              "queue-sort-resume-True-append",
+              "queue-sort-resume-True-replace",
+              "queue-sort-resume-True-slot"
+            ]
+          },
+          {
+            "name": "ignore-sort-source",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-resume-False-slot",
+              "queue-sort-resume-True-append",
+              "queue-sort-resume-True-slot"
+            ]
+          },
+          {
+            "name": "ignore-sort-culture",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-resume-False-culture",
+              "queue-sort-resume-True-culture"
+            ]
+          },
+          {
+            "name": "ignore-sort-final-binding",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-resume-False-name",
+              "queue-sort-resume-False-retry",
+              "queue-sort-resume-False-day",
+              "queue-sort-resume-True-name",
+              "queue-sort-resume-True-retry",
+              "queue-sort-resume-True-day"
+            ]
+          },
+          {
+            "name": "unbudgeted-owner-normalize",
+            "exit": 1,
+            "failedCases": [
+              "finite-48draft-convergence",
+              "owner-normalize-finite-cost",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-key",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-key",
+              "owner-normalize-change-past-key"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-empty",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-empty-grows"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-kept-empty",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-kept-empties"
+            ]
+          },
+          {
+            "name": "skip-owner-normalize-reseal",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-past-key"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-source",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-publish-race"
+            ]
+          },
+          {
+            "name": "unbudgeted-line-normalize",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-inner-cost"
+            ]
+          },
+          {
+            "name": "ignore-line-source",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-empty-grows",
+              "owner-normalize-change-kept-empties",
+              "owner-normalize-line-change"
+            ]
+          }
+        ]
       }
     },
     "materials": {
@@ -2213,7 +2263,7 @@
     }
   ],
   "productionDependencies": {
-    "MyBehavior.MemorySealing.cs": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51",
+    "MyBehavior.MemorySealing.cs": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a",
     "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
     "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
     "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
@@ -2276,5 +2326,44 @@
     "checkpoint": "7c1da946",
     "scope": "Record-granted owner tail, stable day-only sort and delayed pruning. Key/empty metadata guards remain atomic; single-draft deep sanitation unchanged and atomic.",
     "evidence": "docs/audits/2026-09-14-b1-owner-normalize-verification.json"
+  },
+  "innerStructureReview": {
+    "baseline": "4d6994bc",
+    "checkpoint": "b467179b",
+    "path": "MyBehavior.MemorySealing.cs",
+    "scope": "Two O(1) mutable List enumerator probes in the existing active inner cursor; invalidation reuses owner reseal. Remove unreachable post-Done line guard fields; no DTO/prompt/synchronous algorithm changes.",
+    "exactEdits": [
+      {
+        "before": "\npublic partial class MyBehavior\n{\n    // Metadata has no source-text traversal. Keep its independent, measurable cap\n    // higher than the existing expensive-job cap. A Campaign cycle shares both caps\n    // and its deadline; standalone finite calls retain their own allowance.\n    private DailyMemorySealState _dailyMemorySealState;\n    // One-call completion receipt, not a feature switch: maintenance preserves\n    // the old HasPast=true path even when cleanup consumes its last raw job.\n",
+        "after": "\npublic partial class MyBehavior\n{\n    // Metadata grants account for individual lines, trigger binds and sort units.\n    // A single text operation can still be atomic. The Campaign cycle shares caps\n    // and deadline; standalone finite calls retain their own allowance.\n    private DailyMemorySealState _dailyMemorySealState;\n    // One-call completion receipt, not a feature switch: maintenance preserves\n    // the old HasPast=true path even when cleanup consumes its last raw job.\n"
+      },
+      {
+        "before": "    }\n\n    // Draft identity remains one expensive grant. Lines and trigger binds consume\n    // shared metadata; the draft's line/trigger lists stay private until it finishes.\n    private sealed class DailyMemoryDraftNormalization\n    {\n        private struct Binding\n",
+        "after": "    }\n\n    // Draft identity remains one expensive grant. Lines and trigger binds consume\n    // shared metadata. Lines publish after completion; triggers publish after their\n    // bind/sanitize phase. Neither path is a transaction for object field changes.\n    private sealed class DailyMemoryDraftNormalization\n    {\n        private struct Binding\n"
+      },
+      {
+        "before": "        private readonly int _boundTriggerCount;\n        private readonly List<DailyMemoryLine> _lineSource;\n        private readonly int _boundLineCount;\n        private readonly List<DailyMemoryLine> _lineResult = new List<DailyMemoryLine>();\n        private DailyMemoryDraftEntryPhase _phase;\n        private int _triggerIndex;\n        private int _lineIndex;\n        private bool _hasLlm;\n        private bool _triggersPublished;\n        private bool _linesPublished;\n        private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;\n        private List<DailyMemoryLine> _publishedLines;\n        internal bool Invalidated { get; private set; }\n        internal DailyMemoryDraft Result { get; private set; }\n\n",
+        "after": "        private readonly int _boundTriggerCount;\n        private readonly List<DailyMemoryLine> _lineSource;\n        private readonly int _boundLineCount;\n        private List<DailyMemoryLine>.Enumerator _lineStructureProbe;\n        private List<WeeklyMemoryMaterialTrigger>.Enumerator _triggerStructureProbe;\n        private readonly List<DailyMemoryLine> _lineResult = new List<DailyMemoryLine>();\n        private DailyMemoryDraftEntryPhase _phase;\n        private int _triggerIndex;\n        private int _lineIndex;\n        private bool _hasLlm;\n        private bool _triggersPublished;\n        private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;\n        internal bool Invalidated { get; private set; }\n        internal DailyMemoryDraft Result { get; private set; }\n\n"
+      },
+      {
+        "before": "            _boundTriggerCount = _triggerSource?.Count ?? 0;\n            _lineSource = _draft.Lines;\n            _boundLineCount = _lineSource?.Count ?? 0;\n            _hasLlm = _draft.HasLlmDialogue;\n            _phase = DailyMemoryDraftEntryPhase.BindTriggers;\n        }\n",
+        "after": "            _boundTriggerCount = _triggerSource?.Count ?? 0;\n            _lineSource = _draft.Lines;\n            _boundLineCount = _lineSource?.Count ?? 0;\n            _lineStructureProbe = _lineSource == null ? default(List<DailyMemoryLine>.Enumerator) : _lineSource.GetEnumerator();\n            _triggerStructureProbe = _triggerSource == null ? default(List<WeeklyMemoryMaterialTrigger>.Enumerator) : _triggerSource.GetEnumerator();\n            _hasLlm = _draft.HasLlmDialogue;\n            _phase = DailyMemoryDraftEntryPhase.BindTriggers;\n        }\n"
+      },
+      {
+        "before": "                if (!InnerCurrent()) return false;\n                _draft.Lines = _lineResult;\n                _draft.HasLlmDialogue = _hasLlm;\n                _linesPublished = true;\n                _publishedLines = _lineResult;\n                Result = _lineResult.Count > 0 ? _draft : null;\n                _phase = DailyMemoryDraftEntryPhase.Done;\n            }\n",
+        "after": "                if (!InnerCurrent()) return false;\n                _draft.Lines = _lineResult;\n                _draft.HasLlmDialogue = _hasLlm;\n                Result = _lineResult.Count > 0 ? _draft : null;\n                _phase = DailyMemoryDraftEntryPhase.Done;\n            }\n"
+      },
+      {
+        "before": "                Invalidated = true;\n                return false;\n            }\n            if (!_linesPublished)\n            {\n                if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n                {\n                    Invalidated = true;\n                    return false;\n                }\n            }\n            else if (!ReferenceEquals(_draft.Lines, _publishedLines))\n            {\n                Invalidated = true;\n                return false;\n",
+        "after": "                Invalidated = true;\n                return false;\n            }\n            if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n            {\n                Invalidated = true;\n                return false;\n            }\n            // List enumerators check structural versions even after exhaustion:\n            // same-count replacement/removal/reordering must invalidate a saved cursor.\n            // O(1) checks, no reflection/full copy; object field edits are not covered.\n            try\n            {\n                if (_lineSource != null) _lineStructureProbe.MoveNext();\n                // Sanitization legitimately replaces the trigger list. Once published,\n                // it is no longer an input cursor and must not check that obsolete list.\n                if (!_triggersPublished && _triggerSource != null) _triggerStructureProbe.MoveNext();\n            }\n            catch (InvalidOperationException)\n            {\n                Invalidated = true;\n                return false;\n"
+      }
+    ],
+    "evidence": ".tmp/inner-structure-fix-20260915/",
+    "notClaimed": [
+      "in-place field revisions",
+      "trigger-list sanitizer hard budget",
+      "game play reproduction",
+      "whole B1 acceptance"
+    ]
   }
 }

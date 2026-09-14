@@ -9,9 +9,9 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
-    // Metadata has no source-text traversal. Keep its independent, measurable cap
-    // higher than the existing expensive-job cap. A Campaign cycle shares both caps
-    // and its deadline; standalone finite calls retain their own allowance.
+    // Metadata grants account for individual lines, trigger binds and sort units.
+    // A single text operation can still be atomic. The Campaign cycle shares caps
+    // and deadline; standalone finite calls retain their own allowance.
     private DailyMemorySealState _dailyMemorySealState;
     // One-call completion receipt, not a feature switch: maintenance preserves
     // the old HasPast=true path even when cleanup consumes its last raw job.
@@ -124,7 +124,8 @@ public partial class MyBehavior
     }
 
     // Draft identity remains one expensive grant. Lines and trigger binds consume
-    // shared metadata; the draft's line/trigger lists stay private until it finishes.
+    // shared metadata. Lines publish after completion; triggers publish after their
+    // bind/sanitize phase. Neither path is a transaction for object field changes.
     private sealed class DailyMemoryDraftNormalization
     {
         private struct Binding
@@ -225,15 +226,15 @@ public partial class MyBehavior
         private readonly int _boundTriggerCount;
         private readonly List<DailyMemoryLine> _lineSource;
         private readonly int _boundLineCount;
+        private List<DailyMemoryLine>.Enumerator _lineStructureProbe;
+        private List<WeeklyMemoryMaterialTrigger>.Enumerator _triggerStructureProbe;
         private readonly List<DailyMemoryLine> _lineResult = new List<DailyMemoryLine>();
         private DailyMemoryDraftEntryPhase _phase;
         private int _triggerIndex;
         private int _lineIndex;
         private bool _hasLlm;
         private bool _triggersPublished;
-        private bool _linesPublished;
         private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;
-        private List<DailyMemoryLine> _publishedLines;
         internal bool Invalidated { get; private set; }
         internal DailyMemoryDraft Result { get; private set; }
 
@@ -273,6 +274,8 @@ public partial class MyBehavior
             _boundTriggerCount = _triggerSource?.Count ?? 0;
             _lineSource = _draft.Lines;
             _boundLineCount = _lineSource?.Count ?? 0;
+            _lineStructureProbe = _lineSource == null ? default(List<DailyMemoryLine>.Enumerator) : _lineSource.GetEnumerator();
+            _triggerStructureProbe = _triggerSource == null ? default(List<WeeklyMemoryMaterialTrigger>.Enumerator) : _triggerSource.GetEnumerator();
             _hasLlm = _draft.HasLlmDialogue;
             _phase = DailyMemoryDraftEntryPhase.BindTriggers;
         }
@@ -325,8 +328,6 @@ public partial class MyBehavior
                 if (!InnerCurrent()) return false;
                 _draft.Lines = _lineResult;
                 _draft.HasLlmDialogue = _hasLlm;
-                _linesPublished = true;
-                _publishedLines = _lineResult;
                 Result = _lineResult.Count > 0 ? _draft : null;
                 _phase = DailyMemoryDraftEntryPhase.Done;
             }
@@ -354,15 +355,22 @@ public partial class MyBehavior
                 Invalidated = true;
                 return false;
             }
-            if (!_linesPublished)
+            if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)
             {
-                if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)
-                {
-                    Invalidated = true;
-                    return false;
-                }
+                Invalidated = true;
+                return false;
             }
-            else if (!ReferenceEquals(_draft.Lines, _publishedLines))
+            // List enumerators check structural versions even after exhaustion:
+            // same-count replacement/removal/reordering must invalidate a saved cursor.
+            // O(1) checks, no reflection/full copy; object field edits are not covered.
+            try
+            {
+                if (_lineSource != null) _lineStructureProbe.MoveNext();
+                // Sanitization legitimately replaces the trigger list. Once published,
+                // it is no longer an input cursor and must not check that obsolete list.
+                if (!_triggersPublished && _triggerSource != null) _triggerStructureProbe.MoveNext();
+            }
+            catch (InvalidOperationException)
             {
                 Invalidated = true;
                 return false;

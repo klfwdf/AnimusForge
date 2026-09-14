@@ -1,3 +1,18 @@
+## 2026-09-15：内层同数量变动回归
+
+封存新增 12 个实际入口用例：lines/triggers × unchanged、append、slot、remove-add、swap、finalize-slot。中途让出后对实际来源做变更，再用原40b同步净化体对比完整对象图；不是只测helper或故意改坏生产源码。
+
+```powershell
+python run_sealing.py
+python run_sealing.py --source-baseline 4d6994bc
+python run_sealing.py --mutate ignore-line-structure
+python run_sealing.py --mutate ignore-trigger-structure
+```
+
+当前88/0；修复前4d同88例80/8；两个结构守卫反例分别84/4，均BUILD_PASS后EXIT=1。旧ignore-line-source现在移除整个line绑定防护（含版本探针），保持其“全部来源校验失效”的原反例含义；当前80/8。历史全量mutation不是本轮全部重跑。
+
+新增List枚举器只验证结构修改，不代表字段revision或并发集合；trigger整列表sanitize、原子字符串工作、完整B1预算仍有未完成项。两份无用的post-Done line发布标志已删，原同步规则/数据DTO未改。具体交接见 `docs/handoffs/2026-09-15-inner-structure-fix-and-modularization-handoff.md`。
+
 # 当前：单draft深line/trigger metadata预算（2026-09-14）
 
 封存末尾单draft的line净化与weekly trigger bind现在消耗共享metadata，不再随一次expensive身份把1024行原子做完。draft身份仍一次expensive；trigger列表sanitize仍一次原子。有限窗口最多128 metadata，实测1×1024行9窗、窗内最多127行。
