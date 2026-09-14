@@ -240,7 +240,7 @@ namespace AnimusForge.Illustrator
         // 预填古典油画预设内容，供玩家查看/改写；仅在画风预设选“提示词”时生效
         public string CustomStylePrompt { get; set; } = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
 
-        [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘、家族纹章与现场实景参考图将一并发送给生图模型（仅对话多模态生图通道生效，如 Gemini Image 系列）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
+        [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘参考图将一并发送给生图模型（仅对话多模态生图通道生效，如 Gemini Image 系列）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public bool EnableReferenceImageForGeneration { get; set; } = true;
 
