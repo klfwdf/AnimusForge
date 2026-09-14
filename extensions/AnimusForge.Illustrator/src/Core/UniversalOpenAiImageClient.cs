@@ -96,6 +96,10 @@ namespace AnimusForge.Illustrator.Core
                     customStyleHint = "电影级光影, cinematic film still, anamorphic composition, movie-grade dramatic lighting and color grading";
                     style = null;
                     break;
+                case "classic-oil":
+                    customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
+                    style = null;
+                    break;
                 default:
                     customStyleHint = string.Empty;
                     break;

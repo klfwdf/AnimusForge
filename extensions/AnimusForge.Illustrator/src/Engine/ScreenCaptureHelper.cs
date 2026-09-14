@@ -1144,9 +1144,56 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 截取游戏窗口中 3D 场景主体区域（去除底部对话 UI 条带），用作会面场景实景参考图。
+        /// 离屏渲染非英雄 CharacterObject（要人、酒馆店主等没有 Hero 对象的对话方）的真实 3D 立绘。
         /// </summary>
-        public static string CaptureConversationSceneBase64(int maxDimension = 768, float topBandFraction = 0.62f)
+        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default)
+        {
+            if (character == null) return null;
+            string charName = string.Empty;
+            try
+            {
+                string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
+                {
+                    if (widget is CharacterTableauWidget cw)
+                    {
+                        var equipment = character.Equipment ?? character.FirstBattleEquipment;
+                        charName = character.Name?.ToString() ?? character.StringId;
+                        cw.BodyProperties = character.GetBodyProperties(equipment, -1).ToString();
+                        cw.IsFemale = character.IsFemale;
+                        cw.Race = character.Race;
+                        cw.StanceIndex = 0;
+                        string equipmentCode = equipment?.CalculateEquipmentCode();
+                        if (!string.IsNullOrEmpty(equipmentCode))
+                        {
+                            cw.EquipmentCode = equipmentCode;
+                        }
+                        cw.IsVisible = true;
+                    }
+                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken).ConfigureAwait(false);
+                string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
+                if (!string.IsNullOrWhiteSpace(b64))
+                {
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character portrait stage render extracted for {charName} ({b64.Length} chars)");
+                }
+                return b64;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character portrait offscreen error: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 截取游戏窗口中 3D 场景主体区域（去除底部对话 UI 条带），用作会面场景实景参考图。
+        /// topBandFraction 必须避开原会话界面的名牌/字幕条（约自 55% 高度起），默认 0.5。
+        /// 该图仅供导演识图，不进生图模型，避免截图质感与 UI 文字被复制进成图。
+        /// </summary>
+        public static string CaptureConversationSceneBase64(int maxDimension = 768, float topBandFraction = 0.5f)
         {
             try
             {

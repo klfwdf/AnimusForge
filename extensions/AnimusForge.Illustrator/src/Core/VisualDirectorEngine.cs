@@ -370,6 +370,7 @@ namespace AnimusForge.Illustrator.Core
                 case "custom": return (options.CustomStylePrompt ?? string.Empty).Trim();
                 case "dark-epic": return "暗黑史诗写实；允许沉郁色调与强烈冲突，但不要强行加入战争元素";
                 case "cinematic": return "电影化叙事光影与镜头语言；光照应服从现场时间和环境";
+                case "classic-oil": return "古典写实历史油画巨作，伦勃朗与克雷格·穆林斯式明暗对照法，戏剧性光影微光，细腻而富有体积感的笔触肌理";
                 case "vivid": return "色彩鲜明、叙事清晰，仍保持人物与装备可信";
                 case "natural": return "自然写实、克制可信、材质与环境色彩真实";
                 default: return "不限定媒介或画家，根据事件情绪选择合适的历史叙事插画风格";

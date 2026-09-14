@@ -65,6 +65,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private string _selectedDate = string.Empty;
         private string _statusText = "欢迎查阅卡拉迪亚纪事画廊";
         private string _loadedPreviewSpriteName;
+        private int _previewCounter;
 
         public IllustratorGalleryPopupVM(Action onClose, string campaignKey)
         {
@@ -210,7 +211,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
             if (selected != null)
             {
                 HasSelection = true;
-                string spriteName = "Gallery_" + selected.Item.Key;
+                // 预览 sprite 名必须每次唯一：旧纹理已释放，同名复用会让控件继续持有失效对象而不触发属性通知
+                string spriteName = "Gallery_" + selected.Item.Key + "_" + (++_previewCounter);
                 if (File.Exists(selected.Item?.FilePath))
                 {
                     byte[] bytes = File.ReadAllBytes(selected.Item.FilePath);

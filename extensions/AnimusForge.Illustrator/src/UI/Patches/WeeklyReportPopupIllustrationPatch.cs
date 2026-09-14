@@ -328,13 +328,14 @@ namespace AnimusForge.Illustrator.UI.Patches
                 }
 
                 string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
+                IllustratorRuntime.Post(() => { if (_overlayVm != null) _overlayVm.StatusText = "导演构思完成，正在绘制纪事画卷（等待生图模型返回）..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200);
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: true);
                 }
                 return new { Result = result, Saved = saved, Prompt = effectivePrompt };
             }, completion =>

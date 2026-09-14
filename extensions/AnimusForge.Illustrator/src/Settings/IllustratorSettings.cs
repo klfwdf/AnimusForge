@@ -199,7 +199,8 @@ namespace AnimusForge.Illustrator
             "natural (自然真实·API枚举)",
             "暗黑史诗写实 (提示词注入)",
             "电影级光影 (提示词注入)",
-            "提示词 (自定义画风)"
+            "提示词 (自定义画风)",
+            "古典纪事油画 (伦勃朗×穆林斯·提示词注入)"
         };
         private Dropdown<string> _styleDropdown;
 
@@ -210,7 +211,7 @@ namespace AnimusForge.Illustrator
             get
             {
                 if (_styleDropdown == null)
-                    _styleDropdown = new Dropdown<string>(_styleOptions, 2); // 默认 natural
+                    _styleDropdown = new Dropdown<string>(_styleOptions, 6); // 默认 古典纪事油画
                 return _styleDropdown;
             }
             set => _styleDropdown = value;
@@ -220,7 +221,7 @@ namespace AnimusForge.Illustrator
         {
             get
             {
-                int idx = _styleDropdown?.SelectedIndex ?? 2;
+                int idx = _styleDropdown?.SelectedIndex ?? 6;
                 switch (idx)
                 {
                     case 1: return "vivid";
@@ -228,6 +229,7 @@ namespace AnimusForge.Illustrator
                     case 3: return "dark-epic";
                     case 4: return "cinematic";
                     case 5: return "custom";
+                    case 6: return "classic-oil";
                     default: return "";
                 }
             }
