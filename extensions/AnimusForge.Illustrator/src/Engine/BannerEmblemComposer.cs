@@ -120,11 +120,20 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 var manager = BannerManager.Instance;
-                var iconData = manager?.GetIconDataFromIconId(meshId);
-                string texName = manager?.GetIconSourceTextureName(meshId);
-                if (iconData == null || string.IsNullOrWhiteSpace(texName)) return null;
+                BannerIconData? iconData = null;
+                string texName = null;
+                try { iconData = manager?.GetIconDataFromIconId(meshId); } catch { }
+                try { texName = manager?.GetIconSourceTextureName(meshId); } catch { }
+                if (iconData == null)
+                {
+                    TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={meshId} has no BannerIconData (bg pattern?)");
+                    return null;
+                }
+                string materialName = iconData.Value.MaterialName;
+                TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={meshId} texIdx={iconData.Value.TextureIndex} srcTex='{texName}' material='{materialName}'");
 
-                Bitmap atlas = AtlasCache.GetOrAdd(texName, name => LoadAtlasBitmap(name));
+                Bitmap atlas = AtlasCache.GetOrAdd(materialName ?? texName,
+                    name => LoadAtlasBitmap(texName, materialName));
                 if (atlas == null) return null;
 
                 int cellW = atlas.Width / AtlasGridSize;
@@ -143,12 +152,30 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        private static Bitmap LoadAtlasBitmap(string textureName)
+        /// <summary>按名解析图集纹理：先试纹理名，再走材质→DiffuseMap 通道。</summary>
+        private static Bitmap LoadAtlasBitmap(string textureName, string materialName)
         {
             try
             {
-                var tex = BannerlordEngineTexture.CheckAndGetFromResource(textureName);
-                if (tex == null) return null;
+                BannerlordEngineTexture tex = null;
+                if (!string.IsNullOrWhiteSpace(textureName))
+                {
+                    try { tex = BannerlordEngineTexture.CheckAndGetFromResource(textureName); } catch { }
+                }
+                if (tex == null && !string.IsNullOrWhiteSpace(materialName))
+                {
+                    try
+                    {
+                        var mat = TaleWorlds.Engine.Material.GetFromResource(materialName);
+                        tex = mat?.GetTexture(TaleWorlds.Engine.Material.MBTextureType.DiffuseMap);
+                    }
+                    catch { }
+                }
+                if (tex == null)
+                {
+                    TaleWorlds.Library.Debug.Print($"[BannerEmblem] No texture resolved: srcTex='{textureName}' material='{materialName}'");
+                    return null;
+                }
                 if (!tex.IsLoaded()) tex.PreloadTexture(true);
                 if (tex.IsRenderTarget || tex.Width < AtlasGridSize || tex.Height < AtlasGridSize) return null;
 
@@ -161,7 +188,7 @@ namespace AnimusForge.Illustrator.Engine
                     {
                         var bmp = new Bitmap(fs);
                         SwapRedBlue(bmp);
-                        TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas '{textureName}' loaded {bmp.Width}x{bmp.Height}");
+                        TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas '{tex.Name}' loaded {bmp.Width}x{bmp.Height}");
                         return bmp;
                     }
                 }
@@ -172,7 +199,7 @@ namespace AnimusForge.Illustrator.Engine
             }
             catch (Exception ex)
             {
-                TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas '{textureName}' load error: {ex.Message}");
+                TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas load error (tex='{textureName}' mat='{materialName}'): {ex.Message}");
                 return null;
             }
         }
