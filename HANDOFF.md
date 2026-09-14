@@ -1,3 +1,15 @@
+# AF 总 HANDOFF — 内层覆盖修复完成，模块化收尾前计划已细化（2026-09-15）
+
+**本轮修复生产/测试9617f96a，影响面离线验证完成；整体仍阶段8/B1，未整批验收。自动化PAUSED，仅本地提交，未推送/部署。**
+
+- 当前技术入口：[修复与规划HANDOFF](docs/handoffs/2026-09-15-inner-structure-fix-and-modularization-handoff.md)。line/trigger内层List的同数量替换/删补/换位失效检测已修，复用原重封路径；清理两个不可达line发布标志，不改变同步规则/存档身份。
+- 实际验证：88/0、旧4d同88例80/8、3个有效故障控制、captured116/business36/terminal85、13项精确源守卫、六项Stage、API/存档身份通过；[验收JSON](docs/audits/2026-09-15-inner-structure-fix-verification.json)与[78点代码图](docs/architecture/af-framework-code-map.json)绑定该代码。
+- [真正职责拆分计划](docs/phase8/af-core-responsibility-decomposition-plan-20260915.md)细化原P0–P6/B1–B3，要求业务owner/实际调用迁移/旧算法删除/兼容壳和同候选验收；不是只拆partial，不冒称计划已经落地。
+- 下一工作包仍是B1首次capture/copy、完整writer与接受/预算；之后B2三渠道（先Courier）、B3内部生命周期及大类剩余责任、所选public能力、P5/P6收尾前验收。单纯引用/count方案不能再次漏掉同数量变化。
+- 唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；保留两份用户草稿及本地专用文件。未进行实机/旧档/真实资产AFEF/TTS/provider/外部DLL加载，不切默认，不改制作组玩法。
+
+## 以下为历史交接，不覆盖当前修复与计划状态
+
 # AF 总 HANDOFF — 深 line/trigger 预算已离线联验（2026-09-14）
 
 **生产/测试`4d6994bc7cf219a2f894377d7262a90b466f9cbe`，本轮局部完成；阶段8/B1继续VERIFY、未整批合格。** 检查点`eb6389f4`，前生产`86805518`。自动化保持PAUSED；不进入B2；未推送、部署、改默认或操作真实存档。

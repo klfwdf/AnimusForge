@@ -1,3 +1,11 @@
+# 当前补充：内层结构守卫修复与真正模块化计划（2026-09-15）
+
+生产/测试 `9617f96a`：仅MemorySealing内层List结构绑定修复与关联测试，源码定位图78锚点；同步规则/存档/Prompt/API未变。相同数量变动已旧红新绿，不代表深字段修改或B1硬预算全部闭合。
+
+后续职责迁移按[收尾前真正模块化计划](../phase8/af-core-responsibility-decomposition-plan-20260915.md)；这是未来工作包，不把原大类/partial整文件标成已重写。详见[本轮HANDOFF](../handoffs/2026-09-15-inner-structure-fix-and-modularization-handoff.md)。
+
+## 以下为既有覆盖与保留责任
+
 # AF 框架代码范围图
 
 本图是当前已验证源码 `86805518` 的定位快照，与 GitHub 原重构分支基线 `3f00fefa` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。

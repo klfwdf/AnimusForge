@@ -1452,7 +1452,7 @@
         "harness": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205"
       },
       "acceptedInverse": true,
-      "counterexampleSummary": ".tmp\\b1-owner-normalize-20260914\\sealing-runs.json",
+      "counterexampleSummary": "docs/audits/2026-09-15-inner-structure-fix-verification.json",
       "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
       "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
       "current": {
@@ -2325,7 +2325,8 @@
     "baseline": "40b92e67",
     "checkpoint": "7c1da946",
     "scope": "Record-granted owner tail, stable day-only sort and delayed pruning. Key/empty metadata guards remain atomic; single-draft deep sanitation unchanged and atomic.",
-    "evidence": "docs/audits/2026-09-14-b1-owner-normalize-verification.json"
+    "evidence": "docs/audits/2026-09-14-b1-owner-normalize-verification.json",
+    "status": "Historical record-level slice; current line/trigger structure fix is innerStructureReview."
   },
   "innerStructureReview": {
     "baseline": "4d6994bc",
