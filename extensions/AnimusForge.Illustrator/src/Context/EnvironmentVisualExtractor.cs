@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -29,67 +30,48 @@ namespace AnimusForge.Illustrator.Context
         public string NamedCharacters { get; set; } = string.Empty;
         public string RealProps { get; set; } = string.Empty;
 
-        public string BuildSummary()
+        public string BuildHardFactsSummary()
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(SettlementName))
-            {
-                sb.AppendLine($"【定居点】{SettlementName} ({SettlementType})");
-            }
-            if (!string.IsNullOrWhiteSpace(SpecificLocation))
-            {
-                sb.AppendLine($"【所处具体子场景】{SpecificLocation}");
-            }
-            if (!string.IsNullOrWhiteSpace(IndoorOutdoorDetails))
-            {
-                sb.AppendLine($"【场景空间与布局】{IndoorOutdoorDetails}");
-            }
-            if (!string.IsNullOrWhiteSpace(SurroundingCharacters))
-            {
-                sb.AppendLine($"【周围在场人物与动向】{SurroundingCharacters}");
-            }
-            if (!string.IsNullOrWhiteSpace(SurroundingProps))
-            {
-                sb.AppendLine($"【近景与周围陈设道具】{SurroundingProps}");
-            }
-            if (!string.IsNullOrWhiteSpace(RealSceneName))
-            {
-                sb.AppendLine($"【真实场景资源名(引擎实际加载)】{RealSceneName}");
-            }
-            if (!string.IsNullOrWhiteSpace(NamedCharacters))
-            {
-                sb.AppendLine($"【在场具名人物(真实)】{NamedCharacters}");
-            }
-            if (!string.IsNullOrWhiteSpace(RealProps))
-            {
-                sb.AppendLine($"【场景内真实物体预制件(引擎实读，请按名还原其形态)】{RealProps}");
-            }
-            if (!string.IsNullOrWhiteSpace(ArchitectureStyle))
-            {
-                sb.AppendLine($"【建筑风格与风貌】{ArchitectureStyle}");
-            }
-            if (!string.IsNullOrWhiteSpace(TerrainAndLandscape))
-            {
-                sb.AppendLine($"【地形与地貌】{TerrainAndLandscape}");
-            }
-            if (!string.IsNullOrWhiteSpace(DateLabel))
-            {
-                sb.AppendLine($"【纪元时间】{DateLabel}");
-            }
-            sb.AppendLine($"【时令与天候】{Season}，{Weather}");
-            sb.AppendLine($"【时辰与光影】{TimeOfDay}，{LightingAndAtmosphere}");
-            if (!string.IsNullOrWhiteSpace(ConflictStatus))
-            {
-                sb.AppendLine($"【战场与战局状态】{ConflictStatus}");
-            }
+            if (!string.IsNullOrWhiteSpace(SettlementName)) sb.AppendLine($"【定居点】{SettlementName} ({SettlementType})");
+            if (!string.IsNullOrWhiteSpace(SpecificLocation)) sb.AppendLine($"【当前子场景】{SpecificLocation}");
+            if (!string.IsNullOrWhiteSpace(RealSceneName)) sb.AppendLine($"【引擎场景资源名】{RealSceneName}");
+            if (!string.IsNullOrWhiteSpace(NamedCharacters)) sb.AppendLine($"【附近实际角色】{NamedCharacters}");
+            if (!string.IsNullOrWhiteSpace(RealProps)) sb.AppendLine($"【附近实际预制件】{RealProps}");
+            if (!string.IsNullOrWhiteSpace(DateLabel)) sb.AppendLine($"【纪元时间】{DateLabel}");
+            if (!string.IsNullOrWhiteSpace(TimeOfDay)) sb.AppendLine($"【现场时段】{TimeOfDay}");
+            if (!string.IsNullOrWhiteSpace(Weather)) sb.AppendLine($"【现场天气】{Weather}");
+            if (!string.IsNullOrWhiteSpace(ConflictStatus)) sb.AppendLine($"【冲突状态】{ConflictStatus}");
             return sb.ToString().TrimEnd();
+        }
+
+        public string BuildArtDirectionSummary()
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(IndoorOutdoorDetails)) sb.AppendLine($"【空间氛围参考】{IndoorOutdoorDetails}");
+            if (!string.IsNullOrWhiteSpace(SurroundingCharacters)) sb.AppendLine($"【背景人物建议】{SurroundingCharacters}");
+            if (!string.IsNullOrWhiteSpace(SurroundingProps)) sb.AppendLine($"【背景陈设建议】{SurroundingProps}");
+            if (!string.IsNullOrWhiteSpace(ArchitectureStyle)) sb.AppendLine($"【文化建筑参考】{ArchitectureStyle}");
+            if (!string.IsNullOrWhiteSpace(TerrainAndLandscape)) sb.AppendLine($"【地貌参考】{TerrainAndLandscape}");
+            if (!string.IsNullOrWhiteSpace(Season)) sb.AppendLine($"【季节参考】{Season}");
+            if (!string.IsNullOrWhiteSpace(LightingAndAtmosphere)) sb.AppendLine($"【光线建议】{LightingAndAtmosphere}");
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildSummary()
+        {
+            string facts = BuildHardFactsSummary();
+            string direction = BuildArtDirectionSummary();
+            if (string.IsNullOrWhiteSpace(direction)) return facts;
+            if (string.IsNullOrWhiteSpace(facts)) return direction;
+            return facts + "\n" + direction;
         }
     }
 
     public static class EnvironmentVisualExtractor
     {
         /// <param name="eventAnchored">为 true 时跳过对当前 Mission/菜单位置的实时探测（用于周报等回顾性场景——环境由事件主题决定，而非玩家当前所在位置）。</param>
-        public static EnvironmentVisualProfile Extract(Settlement settlement = null, bool eventAnchored = false)
+        public static EnvironmentVisualProfile Extract(Settlement settlement = null, bool eventAnchored = false, string eventDateLabel = null)
         {
             var profile = new EnvironmentVisualProfile();
 
@@ -112,23 +94,25 @@ namespace AnimusForge.Illustrator.Context
 
             // 2. 纪元日期 + 季节时令（骑砍历法：年 - 季节 - 该季第几日）
             int seasonIndex = (int)CampaignTime.Now.GetSeasonOfYear;
-            profile.Season = ResolveSeason(seasonIndex);
-            try
+            if (eventAnchored)
             {
-                string seasonName = seasonIndex == 0 ? "春" : seasonIndex == 1 ? "夏" : seasonIndex == 2 ? "秋" : "冬";
-                profile.DateLabel = $"卡拉迪亚历 {CampaignTime.Now.GetYear} 年 · {seasonName}季 · 第 {CampaignTime.Now.GetDayOfSeason + 1} 日";
+                profile.DateLabel = (eventDateLabel ?? string.Empty).Trim();
             }
-            catch
+            else
             {
+                profile.Season = ResolveSeason(seasonIndex);
+                try
+                {
+                    string seasonName = seasonIndex == 0 ? "春" : seasonIndex == 1 ? "夏" : seasonIndex == 2 ? "秋" : "冬";
+                    profile.DateLabel = $"卡拉迪亚历 {CampaignTime.Now.GetYear} 年 · {seasonName}季 · 第 {CampaignTime.Now.GetDayOfSeason + 1} 日";
+                }
+                catch
+                {
+                }
+                int hour = (int)CampaignTime.Now.GetHourOfDay;
+                profile.TimeOfDay = ResolveTimeOfDay(hour);
+                profile.LightingAndAtmosphere = ResolveLighting(hour, seasonIndex);
             }
-
-            // 3. 天气天候
-            profile.Weather = ResolveWeather(seasonIndex);
-
-            // 4. 时辰与光影
-            int hour = (int)CampaignTime.Now.GetHourOfDay;
-            profile.TimeOfDay = ResolveTimeOfDay(hour);
-            profile.LightingAndAtmosphere = ResolveLighting(hour, seasonIndex);
 
             if (!eventAnchored)
             {
@@ -447,19 +431,27 @@ namespace AnimusForge.Illustrator.Context
                 try
                 {
                     string sceneName = mission.SceneName;
-                    if (!string.IsNullOrWhiteSpace(sceneName))
+                    if (!string.IsNullOrWhiteSpace(sceneName)) profile.RealSceneName = sceneName;
+                    var scene = mission.Scene;
+                    if (scene != null)
                     {
-                        profile.RealSceneName = sceneName;
+                        int sceneHour = (int)scene.TimeOfDay;
+                        profile.TimeOfDay = ResolveTimeOfDay(sceneHour);
+                        profile.LightingAndAtmosphere = ResolveLighting(sceneHour, (int)CampaignTime.Now.GetSeasonOfYear);
+                        float rain = scene.GetRainDensity();
+                        float snow = scene.GetSnowDensity();
+                        profile.Weather = snow > 0.05f ? $"现场降雪，密度约 {snow:0.00}" : rain > 0.05f ? $"现场降雨，密度约 {rain:0.00}" : "现场未检测到明显降雨或降雪";
                     }
                 }
                 catch { }
 
                 var mainAgent = mission.MainAgent;
                 Vec3 center = mainAgent != null ? mainAgent.Position : Vec3.Zero;
-                bool hasCenter = center != Vec3.Zero;
+                bool hasCenter = mainAgent != null;
 
                 // 在场具名人物（真实 Agent，22m 内，最多 10 名）
                 var named = new List<string>();
+                var namedSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 try
                 {
                     var agents = mission.Agents;
@@ -474,7 +466,8 @@ namespace AnimusForge.Illustrator.Context
                             string name = co.Name.ToString();
                             if (string.IsNullOrWhiteSpace(name)) continue;
                             string role = co.IsHero ? "英雄" : co.Occupation.ToString();
-                            named.Add(name + "(" + role + ")");
+                            string label = name + "(" + role + ")";
+                            if (namedSeen.Add(label)) named.Add(label);
                             if (named.Count >= 10) break;
                         }
                     }
@@ -485,9 +478,8 @@ namespace AnimusForge.Illustrator.Context
                     profile.NamedCharacters = string.Join("、", named);
                 }
 
-                // 场景内真实可互动物体/预制件（18m 内，按名去重，最多 14 个）
-                var propNames = new List<string>();
-                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                // 场景内真实可见物体/预制件（24m 内，按名去重，最多 20 个）
+                var propDistances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
                 try
                 {
                     var objects = mission.ActiveMissionObjects;
@@ -496,26 +488,40 @@ namespace AnimusForge.Illustrator.Context
                         foreach (var mo in objects)
                         {
                             if (mo == null) continue;
-                            string label = null;
                             try
                             {
                                 var ge = mo.GameEntity;
                                 if (ge == null) continue;
-                                if (hasCenter && ge.GlobalPosition.Distance(center) > 18f) continue;
-                                label = ge.GetPrefabName();
+                                float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
+                                if (hasCenter && distance > 24f) continue;
+                                string label = ge.GetPrefabName();
                                 if (string.IsNullOrWhiteSpace(label)) label = ge.Name;
+                                if (string.IsNullOrWhiteSpace(label)) continue;
+                                if (!propDistances.TryGetValue(label, out float oldDistance) || distance < oldDistance) propDistances[label] = distance;
                             }
-                            catch { continue; }
-                            if (string.IsNullOrWhiteSpace(label)) continue;
-                            if (seen.Add(label)) propNames.Add(label);
-                            if (propNames.Count >= 14) break;
+                            catch { }
                         }
                     }
                 }
                 catch { }
-                if (propNames.Count > 0)
+                try
                 {
-                    profile.RealProps = string.Join("、", propNames);
+                    var entities = new List<TaleWorlds.Engine.GameEntity>();
+                    mission.Scene?.GetEntities(ref entities);
+                    foreach (var ge in entities)
+                    {
+                        if (ge == null || !ge.IsVisibleIncludeParents()) continue;
+                        float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
+                        if (hasCenter && distance > 24f) continue;
+                        string label = ge.GetPrefabName();
+                        if (string.IsNullOrWhiteSpace(label)) continue;
+                        if (!propDistances.TryGetValue(label, out float oldDistance) || distance < oldDistance) propDistances[label] = distance;
+                    }
+                }
+                catch { }
+                if (propDistances.Count > 0)
+                {
+                    profile.RealProps = string.Join("、", propDistances.OrderBy(pair => pair.Value).ThenBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase).Take(20).Select(pair => pair.Key));
                 }
             }
             catch (Exception ex)
@@ -629,25 +635,16 @@ namespace AnimusForge.Illustrator.Context
             switch (seasonIndex)
             {
                 case 0:
-                    return "春意盎然 (早春残雪消融，嫩草初生)";
+                    return "春季";
                 case 1:
-                    return "盛夏烈日 (日光炽烈，晴空深远)";
+                    return "夏季";
                 case 2:
-                    return "深秋萧瑟 (金黄枫叶与枯草，落叶在秋风中翻滚)";
+                    return "秋季";
                 case 3:
-                    return "凛冬漫天 (极寒严冬，天地银装素裹，积雪深厚)";
+                    return "冬季";
                 default:
                     return "平季";
             }
-        }
-
-        private static string ResolveWeather(int seasonIndex)
-        {
-            if (seasonIndex == 3)
-            {
-                return "狂风卷着雪花在空中呼啸飞扬，寒气逼人";
-            }
-            return "空气澄澈明净，视野开阔，偶尔掠过几缕流云";
         }
 
         private static string ResolveTimeOfDay(int hour)

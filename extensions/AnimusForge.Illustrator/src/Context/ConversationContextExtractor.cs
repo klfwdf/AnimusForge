@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
@@ -20,33 +22,17 @@ namespace AnimusForge.Illustrator.Context
         public HeroVisualProfile InterlocutorProfile { get; set; }
         public EnvironmentVisualProfile EnvironmentProfile { get; set; }
         public string SceneDirective { get; set; } = string.Empty;
+        public string RecentDialogueHistory { get; set; } = string.Empty;
         public bool InterlocutorCivilian { get; set; }
 
-        public string BuildCompositeContext()
+        public string BuildHardFacts()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("=== 【卡拉迪亚现场二人对话与重大交锋会面】 ===");
-            if (!string.IsNullOrWhiteSpace(DialogueSentence))
-            {
-                sb.AppendLine($"【现场对话要旨】\"{DialogueSentence}\"");
-            }
-
-            if (!string.IsNullOrWhiteSpace(SceneDirective))
-            {
-                sb.AppendLine();
-                sb.AppendLine("=== 【画面核心指导原则 (二人面对面交谈/对峙，强烈的戏剧叙事感)】 ===");
-                sb.AppendLine(SceneDirective);
-            }
-
-            sb.AppendLine();
-            sb.AppendLine("=== 【当事人甲 (玩家主角视觉设定)】 ===");
-            if (MainHeroProfile != null)
-            {
-                sb.AppendLine(MainHeroProfile.BuildSummary());
-            }
-
-            sb.AppendLine();
-            sb.AppendLine("=== 【当事人乙 (对话对方视觉设定)】 ===");
+            if (!string.IsNullOrWhiteSpace(DialogueSentence)) sb.AppendLine($"【当前台词】\"{DialogueSentence}\"");
+            if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
+            sb.AppendLine("【玩家主角】");
+            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildSummary());
+            sb.AppendLine("【对话对象】");
             if (InterlocutorProfile != null)
             {
                 sb.AppendLine(InterlocutorProfile.BuildSummary());
@@ -55,15 +41,30 @@ namespace AnimusForge.Illustrator.Context
             {
                 sb.AppendLine($"【人物】{InterlocutorCharacter.Name} ({InterlocutorCharacter.Culture?.Name}文化, {(InterlocutorCharacter.IsFemale ? "女性" : "男性")})");
             }
-
-            sb.AppendLine();
-            sb.AppendLine("=== 【所处时空环境与氛围描写】 ===");
             if (EnvironmentProfile != null)
             {
-                sb.AppendLine(EnvironmentProfile.BuildSummary());
+                sb.AppendLine("【当前现场】");
+                sb.AppendLine(EnvironmentProfile.BuildHardFactsSummary());
             }
-
             return sb.ToString().TrimEnd();
+        }
+
+        public string BuildArtDirection(string sceneVariation = null)
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(SceneDirective)) sb.AppendLine(SceneDirective);
+            if (EnvironmentProfile != null)
+            {
+                string environmentDirection = EnvironmentProfile.BuildArtDirectionSummary();
+                if (!string.IsNullOrWhiteSpace(environmentDirection)) sb.AppendLine(environmentDirection);
+            }
+            if (!string.IsNullOrWhiteSpace(sceneVariation)) sb.AppendLine(sceneVariation);
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildCompositeContext()
+        {
+            return BuildHardFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
         }
     }
 
@@ -175,6 +176,7 @@ namespace AnimusForge.Illustrator.Context
             {
             }
             context.DialogueSentence = CleanText(sentence);
+            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), maxRounds: 3);
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(settlement);
 
             string mainName = mainHero != null && mainHero.Name != null ? mainHero.Name.ToString() : "主角";
@@ -218,107 +220,144 @@ namespace AnimusForge.Illustrator.Context
                 }
                 catch
                 {
-                    playerIsDefender = true; // 遭遇外敌交谈默认居城守卫
                 }
             }
 
             // 4. 生成精准现场身姿与空间交互指令
-            string poseDirective;
-            if (isUnderSiege)
+            string mountPosture;
+            if (partnerIsMounted && !playerIsMounted)
             {
-                if (playerIsDefender)
-                {
-                    string bodyguardText = bodyguardCount > 0
-                        ? $"敌将战马身侧肃立着 {bodyguardCount} 名全副武装、身披重锁甲、手持数米高长矛与战盾的精锐近卫步兵战士严阵护卫；"
-                        : "敌将身侧有警戒甲士手持长矛肃穆护卫；";
-
-                    poseDirective =
-                        $"【极其关键核心构图：城楼俯瞰与城下战马仰视的高低差城墙对峙构图，绝非平地站立！】\n" +
-                        $"空间位置：\n" +
-                        $"- 守城统帅（{mainName}）全副重铠，屹立于上方高耸险峻的城堡石砌城堞垛口/箭垛箭楼之上，单手按在佩剑剑柄，居高临下严峻俯瞰审视城下；\n" +
-                        $"- 敌军统帅（{partnerName}）全副精工战甲战盔，跨骑在一匹雄壮的具装战马鞍座之上，立于下方紧闭的要塞包铁城门与护城河壕沟外数丈开阔泥泞空地，昂首仰望城头守将；\n" +
-                        $"- {bodyguardText}\n" +
-                        $"构图关系：双方纵深与高度差极其鲜明，守城将领在上俯视，攻城统帅在下昂首对视，目光在城门壕沟半空中激烈碰撞交锋，充满战前谈判的火药味与剑拔弩张的大敌压境之势！";
-                }
-                else
-                {
-                    poseDirective =
-                        $"【攻城大军兵临城下对峙构图】\n" +
-                        $"- 攻城统帅（{mainName}）跨骑战马率军立于城外护城壕前；\n" +
-                        $"- 守军将领（{partnerName}）屹立于上方要塞城堞石垛之后向下探身俯瞰喊话；\n" +
-                        $"呈现高低对视的围城谈判气场。";
-                }
+                mountPosture = $"对方（{partnerName}）骑乘，玩家（{mainName}）步行立于地面";
+            }
+            else if (!partnerIsMounted && playerIsMounted)
+            {
+                mountPosture = $"玩家（{mainName}）骑乘，对方（{partnerName}）步行立于地面";
+            }
+            else if (partnerIsMounted && playerIsMounted)
+            {
+                mountPosture = "双方均处于骑乘状态";
             }
             else
             {
-                // 非围城场景：精确还原双方骑乘/站立组合与对方随行护卫
-                string mountPosture;
-                if (partnerIsMounted && !playerIsMounted)
-                {
-                    mountPosture = $"对方（{partnerName}）跨骑于高大披甲战马之上，居高临下俯视着立于地面的主角（{mainName}）；";
-                }
-                else if (!partnerIsMounted && playerIsMounted)
-                {
-                    mountPosture = $"主角（{mainName}）跨骑于披甲战马之上居高临下，对方（{partnerName}）则步行立于地面，仰头与马上的主角交谈；";
-                }
-                else if (partnerIsMounted && playerIsMounted)
-                {
-                    mountPosture = "双方均跨骑于战马之上，两骑并辔对峙交谈；";
-                }
-                else
-                {
-                    mountPosture = "二人均步行站立于地面面对面交谈；";
-                }
-
-                string guardText = bodyguardCount > 0
-                    ? $"对方身侧肃立着 {bodyguardCount} 名全副武装、身披重甲、手持长矛盾牌的随行精锐护卫；"
-                    : string.Empty;
-
-                string basePose = "【现场互动身姿】二人自然面对面立姿交谈 (Natural standing conversation posture)";
-                try
-                {
-                    if (partnerAgent != null)
-                    {
-                        string actionName = partnerAgent.GetCurrentAction(0).GetName() ?? string.Empty;
-                        basePose = MapActionToPoseDirective(actionName);
-                    }
-                    else if (partnerChar != null)
-                    {
-                        string idleName = Helpers.CharacterHelper.GetStandingBodyIdle(partnerChar, MobileParty.MainParty?.Party);
-                        basePose = MapIdleToPoseDirective(idleName);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TaleWorlds.Library.Debug.Print($"[Illustrator] Failed to resolve conversation pose: {ex.Message}");
-                }
-
-                poseDirective = $"【极其关键构图：双方骑乘与站位关系】\n{mountPosture}{guardText}\n{basePose}";
+                mountPosture = "双方均步行立于地面";
             }
 
-            string specificSceneGuidance = string.Empty;
-            if (!string.IsNullOrWhiteSpace(context.EnvironmentProfile?.SpecificLocation))
+            string basePose = "现场动作未能精确识别，可采用符合对话情绪的自然姿态";
+            try
             {
-                specificSceneGuidance += $"【现场具体环境与空间布局】：双方身处【{context.EnvironmentProfile.SpecificLocation}】。\n{context.EnvironmentProfile.IndoorOutdoorDetails}\n";
+                if (partnerAgent != null)
+                {
+                    string actionName = partnerAgent.GetCurrentAction(0).GetName() ?? string.Empty;
+                    basePose = MapActionToPoseDirective(actionName);
+                }
+                else if (partnerChar != null)
+                {
+                    string idleName = Helpers.CharacterHelper.GetStandingBodyIdle(partnerChar, MobileParty.MainParty?.Party);
+                    basePose = MapIdleToPoseDirective(idleName);
+                }
             }
-            if (!string.IsNullOrWhiteSpace(context.EnvironmentProfile?.SurroundingCharacters))
+            catch (Exception ex)
             {
-                specificSceneGuidance += $"【周围在场人物与动向】：{context.EnvironmentProfile.SurroundingCharacters}\n";
+                TaleWorlds.Library.Debug.Print($"[Illustrator] Failed to resolve conversation pose: {ex.Message}");
             }
-            if (!string.IsNullOrWhiteSpace(context.EnvironmentProfile?.SurroundingProps))
-            {
-                specificSceneGuidance += $"【近景与周围陈设道具】：{context.EnvironmentProfile.SurroundingProps}\n";
-            }
+
+            string siegeDirection = isUnderSiege
+                ? (playerIsDefender
+                    ? "当前是围城会面，玩家一方处于守方；可选择城垛上下关系、城门前交涉或贴近人物的紧张过肩镜头"
+                    : "当前是围城会面，玩家一方处于攻方；可选择阵前交涉、城门远景或双方神情近景")
+                : string.Empty;
+            string guardDirection = bodyguardCount > 0 ? $"现场确认对方随行队列中另有 {bodyguardCount} 名角色，可按构图需要收入背景" : "未确认额外随行角色，不必强行添加护卫";
 
             context.SceneDirective =
-                $"【核心要求：生动的二人面对面会晤或要塞战前对峙场景】\n" +
-                $"画面聚焦于在【{locName}】展开的谈判与交锋。两位主角分别为【{mainName}】与【{partnerName}】。\n" +
-                $"{specificSceneGuidance}" +
-                $"画面生动刻画交锋时的神情与眼神交锋，当前对话论题为：\"{context.DialogueSentence}\"。\n" +
-                $"{poseDirective}\n" +
-                $"必须严格还原双方的文化外貌、身着铠甲、真实武器与坐骑，背景精确融入当前所处的真实环境特征。";
+                $"围绕【{mainName}】与【{partnerName}】最近三轮对话选择最能表现关系变化、情绪转折或利益冲突的一个瞬间。\n" +
+                $"已确认空间关系：{mountPosture}；{guardDirection}。\n" +
+                $"现场动作参考：{basePose}。\n" +
+                (string.IsNullOrWhiteSpace(siegeDirection) ? string.Empty : siegeDirection + "。\n") +
+                $"地点为【{locName}】。允许环境占据较大画面，也允许聚焦手势、目光、沉默或转身等细节；不要求每次都正面对称站立。";
 
             return context;
+        }
+
+        /// <summary>
+        /// 主模组原生会话历史的本地镜像行（仅读取 Illustrator 需要的字段）。
+        /// </summary>
+        internal sealed class NativeDialogueLine
+        {
+            public string Kind = "";
+            public string Speaker = "";
+            public string Text = "";
+        }
+
+        /// <summary>
+        /// 通过 *ForExternal 公共契约反射读取主模组会话历史。主模组由他人独立重构，
+        /// 一律走反射：宿主版本偏旧、缺 API 或字段改名时只降级为无历史，绝不抛 MissingMethod。
+        /// 调用频率：每次生成插画一次，最多 24 行，非热路径。
+        /// </summary>
+        private static List<NativeDialogueLine> ReadNativeConversationHistory(int maxLines)
+        {
+            var lines = new List<NativeDialogueLine>();
+            try
+            {
+                var type = HarmonyLib.AccessTools.TypeByName("AnimusForge.ShoutBehavior");
+                var method = HarmonyLib.AccessTools.Method(type, "GetNativeConversationSessionHistoryEntriesForExternal", new[] { typeof(int) });
+                var raw = method?.Invoke(null, new object[] { maxLines }) as System.Collections.IEnumerable;
+                if (raw == null) return lines;
+                foreach (var entry in raw)
+                {
+                    if (entry == null) continue;
+                    var entryType = entry.GetType();
+                    lines.Add(new NativeDialogueLine
+                    {
+                        Kind = (HarmonyLib.AccessTools.Property(entryType, "Kind")?.GetValue(entry) as string) ?? "",
+                        Speaker = (HarmonyLib.AccessTools.Property(entryType, "Speaker")?.GetValue(entry) as string) ?? "",
+                        Text = (HarmonyLib.AccessTools.Property(entryType, "Text")?.GetValue(entry) as string) ?? ""
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[Illustrator] Native conversation history read failed: {ex.Message}");
+            }
+            return lines;
+        }
+
+        internal static string BuildRecentDialogueHistory(IEnumerable<NativeDialogueLine> entries, int maxRounds)
+        {
+            var lines = (entries ?? Enumerable.Empty<NativeDialogueLine>())
+                .Where(entry => entry != null && !string.IsNullOrWhiteSpace(entry.Text) &&
+                    (string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase) || string.Equals(entry.Kind, "npc", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            if (lines.Count == 0 || maxRounds <= 0) return string.Empty;
+
+            var rounds = new List<List<NativeDialogueLine>>();
+            List<NativeDialogueLine> current = null;
+            foreach (var entry in lines)
+            {
+                if (string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase) || current == null)
+                {
+                    current = new List<NativeDialogueLine>();
+                    rounds.Add(current);
+                }
+                current.Add(entry);
+            }
+            rounds = rounds.Skip(Math.Max(0, rounds.Count - maxRounds)).ToList();
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"【最近{rounds.Count}轮对话记录】");
+            for (int i = 0; i < rounds.Count; i++)
+            {
+                sb.AppendLine($"第{i + 1}轮：");
+                foreach (var entry in rounds[i])
+                {
+                    string speaker = string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase)
+                        ? "玩家"
+                        : (!string.IsNullOrWhiteSpace(entry.Speaker) ? entry.Speaker.Trim() : "对方");
+                    string text = CleanText(entry.Text);
+                    if (text.Length > 240) text = text.Substring(0, 240) + "…";
+                    sb.AppendLine(speaker + "：" + text);
+                }
+            }
+            return sb.ToString().TrimEnd();
         }
 
         private static string MapActionToPoseDirective(string actionName)

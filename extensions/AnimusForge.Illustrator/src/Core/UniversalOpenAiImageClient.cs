@@ -110,29 +110,67 @@ namespace AnimusForge.Illustrator.Core
                     referenceImages = null;
                 }
                 string negativePrompt = settings.NegativePrompt ?? string.Empty;
+                int requestedRefImages = referenceImages?.Count ?? 0;
 
                 bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
+                string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol);
 
-                var (success, imageBytes, imageUrl, errorMessage, shouldFallbackToChat) =
-                    await AttemptGenerateOnceAsync(endpointUrl, model, prompt, size, quality, style, customStyleHint, referenceImages, negativePrompt, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+                bool success = false;
+                byte[] imageBytes = null;
+                string imageUrl = null;
+                string errorMessage = null;
 
-                // 2. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
-                if (!success && shouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
+                // 2. Images 协议 + 有参考图 → 先试 /images/edits（multipart 真正携带参考图）。
+                //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
+                if (!isChatProtocol && requestedRefImages > 0 && !settings.UseExactEndpointUrl)
                 {
-                    Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
-                    string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                    var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, prompt, size, quality, style, customStyleHint, referenceImages, negativePrompt, apiKey, true, cancellationToken).ConfigureAwait(false);
-                    if (chatRetry.Success)
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, referenceImages, apiKey, cancellationToken).ConfigureAwait(false);
+                    if (edit.Success)
                     {
                         success = true;
-                        imageBytes = chatRetry.ImageBytes;
-                        imageUrl = chatRetry.ImageUrl;
-                        errorMessage = null;
+                        imageBytes = edit.ImageBytes;
+                        imageUrl = edit.ImageUrl;
+                        result.ResolvedPrompt = effectivePrompt;
                     }
                     else
                     {
-                        errorMessage = chatRetry.ErrorMessage;
+                        Log($"[Illustrator] /images/edits 不可用（{edit.ErrorMessage}），参考图仅供导演识图，回退纯文本 /images/generations。");
+                    }
+                }
+                else if (!isChatProtocol && requestedRefImages > 0 && settings.UseExactEndpointUrl)
+                {
+                    Log("[Illustrator] 启用了精确端点地址，/images/generations 无法携带参考图，参考图仅供导演识图 (ActualRefImages=0)。");
+                }
+
+                if (!success)
+                {
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+                    success = attempt.Success;
+                    imageBytes = attempt.ImageBytes;
+                    imageUrl = attempt.ImageUrl;
+                    errorMessage = attempt.ErrorMessage;
+                    if (success) result.ResolvedPrompt = effectivePrompt;
+
+                    // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
+                    if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
+                    {
+                        Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
+                        string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true);
+                        string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
+                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken).ConfigureAwait(false);
+                        if (chatRetry.Success)
+                        {
+                            success = true;
+                            imageBytes = chatRetry.ImageBytes;
+                            imageUrl = chatRetry.ImageUrl;
+                            errorMessage = null;
+                            result.ResolvedPrompt = chatEffectivePrompt;
+                        }
+                        else
+                        {
+                            errorMessage = chatRetry.ErrorMessage;
+                        }
                     }
                 }
 
@@ -226,30 +264,136 @@ namespace AnimusForge.Illustrator.Core
             }
         }
 
+        /// <summary>
+        /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
+        /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
+        /// </summary>
+        public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false)
+        {
+            string effectivePrompt = chatProtocol
+                ? BuildChatImagePrompt(prompt, size, quality, style, customStyleHint)
+                : (prompt ?? string.Empty);
+            if (!chatProtocol && !string.IsNullOrWhiteSpace(customStyleHint))
+            {
+                effectivePrompt += "\n[画风指令: " + customStyleHint.Trim() + "]";
+            }
+            if (!string.IsNullOrWhiteSpace(negativePrompt))
+            {
+                effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
+            }
+            return effectivePrompt;
+        }
+
+        /// <summary>
+        /// 由基础地址推导 /images/edits 端点（标准 OpenAI 图生图/多参考图编辑端点）。
+        /// </summary>
+        private static string ResolveEditsEndpointUrl(string baseUrl)
+        {
+            string url = (baseUrl ?? string.Empty).Trim().TrimEnd('/');
+            if (url.EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase)) return url;
+            if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
+            {
+                return url.Substring(0, url.Length - "/images/generations".Length).TrimEnd('/') + "/images/edits";
+            }
+            if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) return url + "/images/edits";
+            return url + "/v1/images/edits";
+        }
+
+        /// <summary>
+        /// OpenAI /images/edits multipart 请求：参考图以 image[] 文件流真正上传。
+        /// 与 /images/generations 的 JSON 不同，这是 Images 协议族里唯一能携带参考图的标准通道。
+        /// </summary>
+        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage)> AttemptImagesEditsAsync(
+            string baseUrl,
+            string model,
+            string effectivePrompt,
+            string size,
+            System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
+            string apiKey,
+            CancellationToken cancellationToken)
+        {
+            string editsUrl = ResolveEditsEndpointUrl(baseUrl);
+            try
+            {
+                using (var form = new MultipartFormDataContent())
+                {
+                    form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
+                    form.Add(new StringContent(effectivePrompt ?? string.Empty, Encoding.UTF8), "prompt");
+                    if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
+                    form.Add(new StringContent("1"), "n");
+
+                    int sent = 0;
+                    foreach (var reference in referenceImages)
+                    {
+                        if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
+                        string data = reference.Base64Image;
+                        if (data.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            int comma = data.IndexOf(',');
+                            if (comma < 0) continue;
+                            data = data.Substring(comma + 1);
+                        }
+                        byte[] bytes;
+                        try { bytes = Convert.FromBase64String(data); }
+                        catch { continue; }
+                        if (bytes == null || bytes.Length < 100) continue;
+                        var imageContent = new ByteArrayContent(bytes);
+                        imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                        form.Add(imageContent, "image[]", $"reference_{sent}.png");
+                        sent++;
+                    }
+                    if (sent == 0) return (false, null, null, "no usable reference images");
+
+                    using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = form })
+                    {
+                        if (!string.IsNullOrWhiteSpace(apiKey))
+                        {
+                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                        }
+                        Log($"[Illustrator] Requesting image edit from {editsUrl} (model={model}, protocol=ImagesEdits, ActualRefImages={sent})...");
+                        using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false))
+                        {
+                            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode));
+                            }
+                            var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
+                            if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
+                            {
+                                return (true, extracted.Bytes, extracted.Url, null);
+                            }
+                            return (false, null, null, "edit response contained no image data");
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return (false, null, null, "images/edits request failed: " + ex.Message);
+            }
+        }
+
         private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToChat)> AttemptGenerateOnceAsync(
             string endpointUrl,
             string model,
-            string prompt,
+            string effectivePrompt,
             string size,
             string quality,
             string style,
-            string customStyleHint,
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
-            string negativePrompt,
             string apiKey,
             bool isChatProtocol,
             CancellationToken cancellationToken)
         {
             JObject payload;
+            int actualRefImages = 0;
             if (isChatProtocol)
             {
-                // 针对多模态对话生图模型 (如 Gemini Native Image) 进行宽高比与画风画质提示词及参数注入
-                string effectivePrompt = BuildChatImagePrompt(prompt, size, quality, style, customStyleHint);
-                if (!string.IsNullOrWhiteSpace(negativePrompt))
-                {
-                    effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
-                }
-
                 JToken messageContent;
                 bool hasRefs = referenceImages != null && referenceImages.Count > 0;
                 if (hasRefs)
@@ -284,6 +428,7 @@ namespace AnimusForge.Illustrator.Core
                                 ["url"] = dataUri
                             }
                         });
+                        actualRefImages++;
                     }
                     messageContent = content;
                 }
@@ -314,16 +459,6 @@ namespace AnimusForge.Illustrator.Core
             }
             else
             {
-                string effectivePrompt = prompt;
-                if (!string.IsNullOrWhiteSpace(customStyleHint))
-                {
-                    effectivePrompt += "\n[画风指令: " + customStyleHint + "]";
-                }
-                if (!string.IsNullOrWhiteSpace(negativePrompt))
-                {
-                    effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + negativePrompt;
-                }
-
                 payload = new JObject
                 {
                     ["model"] = model,
@@ -352,7 +487,7 @@ namespace AnimusForge.Illustrator.Core
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 }
 
-                Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0})...");
+                Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...");
 
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken).ConfigureAwait(false))
                 {

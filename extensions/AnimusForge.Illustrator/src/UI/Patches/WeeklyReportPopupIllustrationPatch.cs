@@ -288,53 +288,55 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             string eventKey = _currentEventKey;
             var context = _currentContext;
-            string contextText = context.BuildCompositeContext();
+            var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), context.BuildArtDirection());
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
 
-            // 主线程发起离屏渲染：当事人的真实3D肖像 + 其家族/王国真实纹章（后台线程仅等待结果，绝不触碰引擎）
             var protagonist = context.ProtagonistHero;
-            Task<string> portraitTask = null;
-            Task<string> bannerTask = null;
-            if (options?.EnableOffscreenRendering == true && protagonist != null)
-            {
-                portraitTask = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist);
-                var banner = protagonist.Clan?.Banner ?? protagonist.Clan?.Kingdom?.Banner;
-                if (banner != null)
-                {
-                    bannerTask = ScreenCaptureHelper.ExtractBannerOffscreenAsync(banner);
-                }
-            }
+            string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
+            string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
 
             _scope.Run(async token =>
             {
                 var refs = new List<IllustrationReferenceImage>();
-                if (portraitTask != null)
+                // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
+                Task<string> portraitStage = null;
+                Task<string> bannerStage = null;
+                if (options?.EnableOffscreenRendering == true && protagonist != null)
                 {
-                    string b64 = await portraitTask.ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
+                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token);
+                    if (!string.IsNullOrWhiteSpace(bannerCode))
                     {
-                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonist.Name}】的真实游戏内3D形象立绘（画面中该人物的五官、发型、装备与衣着必须严格依此还原）"));
+                        bannerStage = ScreenCaptureHelper.ExtractBannerOffscreenAsync(bannerCode, cancellationToken: token);
                     }
                 }
-                if (bannerTask != null)
+                if (portraitStage != null)
                 {
-                    string b64 = await bannerTask.ConfigureAwait(false);
+                    string b64 = await portraitStage.ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(b64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的真实游戏内3D形象立绘（画面中该人物的五官、发型、装备与衣着必须严格依此还原）"));
+                    }
+                }
+                if (bannerStage != null)
+                {
+                    string b64 = await bannerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
                         refs.Add(new IllustrationReferenceImage(b64, "该人物所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制，严禁编造其他纹章）"));
                     }
                 }
 
-                string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(contextText, refs, options, token).ConfigureAwait(false);
+                string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
+                string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, prompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200);
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200);
                 }
-                return new { Result = result, Saved = saved, Prompt = prompt };
+                return new { Result = result, Saved = saved, Prompt = effectivePrompt };
             }, completion =>
             {
                 _overlayVm.PromptText = completion.Prompt;

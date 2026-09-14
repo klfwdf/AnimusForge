@@ -7,7 +7,7 @@
 > **目标模块 ID**：`AnimusForge_Illustrator`
 > **目标程序集**：`AnimusForge.Illustrator.dll`
 > **本机游戏**：Native `v1.4.8`（changeset `119303`）
-> **本轮状态**：源码已完成生命周期、缓存身份、UI 管理、提示词保真与双版本编译修复；尚未部署到游戏目录，未做真实客户端运行验收。
+> **本轮状态**：第三轮修复已完成并部署到游戏目录（见第 10 节）：提示词改为"硬事实 + 开放艺术指导 + 画风"三层、会面插画联动最近三轮对话、离屏舞台改为屏幕内全透明控件、Images 协议通过 /images/edits 真正发送参考图、周报改用子模块侧结构化快照。实机验收待做。
 
 ---
 
@@ -290,3 +290,40 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 - `tools/test_illustrator.ps1`：63 项检查 0 失败（含 1.3/1.4 双编译、阿塞莱缠头巾断言、多图重载反射、源码管线检查）。
 - `deploy_illustrator.ps1 -ValidateOnly` 双 API 通过；`git diff --check` 通过。
 - 未实机验证：纹章/肖像缩略图在真实游戏中的渲染完成率与超时回退表现。
+
+---
+
+## 10. 提示词放宽 + 对话联动 + 离屏舞台（第三轮）
+
+### 提示词三层结构
+
+- `src/Core/VisualDirectorEngine.cs`：`IllustrationPromptPlan(Mode, HardFacts, ArtDirection)` 把上下文拆成只读事实区 `<game_facts>` 与开放构图区 `<open_art_direction>`；导演输出经 `ComposeFinalPrompt` 由程序把硬事实重新拼回——LLM 漏写事实也不会丢。
+- 系统提示词全面放宽：删掉"绝对禁止/严禁"式命令与文化刻板模板，只保留事实不可改写、无证据不虚构两条底线；画风服从用户设置，不再锁定"伦勃朗+穆林斯"单一画家混合。
+- 离线规则保底 `SynthesizeRuleBasedPrompt(plan, options)` 同样走事实/建议分层并尊重自定义画风。
+
+### 更多场景与最近三轮对话
+
+- `src/UI/Overlays/IllustrationCardPopup.cs`：`GenerateDiversePoseDirective` 改为 16 条开放构图方向（远景环境肖像、过肩、高低机位、前景遮挡、行进瞬间等）+ 按身份给倾向而非模板；`GenerateConversationSceneVariation` 提供 16 条会面镜头变化。
+- `src/Context/ConversationContextExtractor.cs`：`RecentDialogueHistory` 经 `ReadNativeConversationHistory` **反射**调用主模组 `ShoutBehavior.GetNativeConversationSessionHistoryEntriesForExternal`（主模组由他人重构，反射使旧版宿主/字段改名只降级为无历史，不抛 MissingMethod）；`BuildRecentDialogueHistory` 按"玩家开题为一轮"聚合，取最近 3 轮并按说话人/顺序格式化进硬事实区。
+- `SceneDirective` 要求导演围绕最近三轮对话的关系/情绪转折选瞬间，空间关系（骑乘、随行、围城攻防）作为已确认事实给出。
+
+### 离屏舞台与并发修复
+
+- `GUI/Prefabs/IllustratorOffscreenStage.xml`：`BannerTableauWidget`/`CharacterTableauWidget` 位于 `0,0` 但 `AlphaFactor=0`——处于可渲染区域所以游戏 UI 管线正常创建/tick provider，`OnRender` 每帧执行；玩家看到的只有全透明像素。
+- `src/Engine/ScreenCaptureHelper.cs`：`ExtractViaStageAsync` 临时挂 Gauntlet 层 → 预热 → `SetSaveFinalResultToDisk` 原生落盘 → 后台读 PNG → `FinishStage` 幂等拆层。每请求独立 `af_offscreen_{Guid}` 前缀，并发任务不再互删；全链路携带 `CancellationToken`，取消/切屏/超时立即终止泵并释放舞台。
+- 会面/周报/百科的离屏提取全部移入 `IllustrationScope.Run` 内执行——关闭弹窗或重绘时旧舞台随 scope 取消。
+
+### 周报结构化快照
+
+- `src/Context/WeeklyReportContextExtractor.cs`：新增子模块侧 `WeeklyReportIllustrationSnapshot`（标题/副题/要闻/主题/当事人/事件定居点/发布日期一次解析成型）。`ResolveEventSettlement` 只匹配文本真实提及的定居点，**删除了"主角当前定居点→家乡→玩家位置"的虚构回退**；事件现场标未知而不是冒充。`GenerateSceneDirective`/`ApplyEventSceneAnchoring` 改为"可选取景元素"建议，进艺术指导区而非硬命令。
+- `src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs`：改用 `IllustrationPromptPlan`，离屏任务带 token，缓存保存 `result.ResolvedPrompt`（实际发送的有效提示词）。
+
+### 生图协议参考图修复
+
+- `src/Core/UniversalOpenAiImageClient.cs`：新增 `BuildEffectivePrompt`（实际发送值 = 画风/画幅/负面注入后的提示词，存入缓存与"查看提示词"）；Images 协议有参考图时先走 `/images/edits` multipart（`image[]` 文件流真正上传）；edits 不可用时回退纯文本 generations 并明确记录"参考图仅供导演识图"；日志区分 `refImages`（请求）与 `ActualRefImages`（实际发送）。
+
+### 验证
+
+- `BannerlordApi=1.3` / `1.4` 各 0 警告 0 错误；`tools/test_illustrator.ps1` **86 checks / 0 failures**；`git diff --check` 干净。
+- 已部署 `Modules\AnimusForge_Illustrator`（含新 prefab）。
+- 未实机验证：舞台纹章/立绘真实出图率（AlphaFactor=0 方案）、/images/edits 在用户网关的兼容性、最近三轮对话实际进图效果、取消时舞台释放表现。

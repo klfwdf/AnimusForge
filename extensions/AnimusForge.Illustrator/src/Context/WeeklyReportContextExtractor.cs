@@ -17,8 +17,25 @@ namespace AnimusForge.Illustrator.Context
         General
     }
 
+    /// <summary>
+    /// 子模块侧周报结构化快照：弹窗文本只解析一次，之后人物、地点、主题与日期全部由快照承载，
+    /// 不再在生图链路上二次猜测。地点只在周报文本真实提及定居点时解析，解析不到就标未知，
+    /// 绝不用"主角/玩家当前所在地"冒充事件现场。
+    /// </summary>
+    public sealed class WeeklyReportIllustrationSnapshot
+    {
+        public string Title = string.Empty;
+        public string Subtitle = string.Empty;
+        public string Headline = string.Empty;
+        public WeeklyReportEventTheme Theme = WeeklyReportEventTheme.General;
+        public Hero ProtagonistHero;
+        public Settlement EventSettlement;
+        public string ReportDateLabel = string.Empty;
+    }
+
     public sealed class WeeklyReportVisualContext
     {
+        public WeeklyReportIllustrationSnapshot Snapshot { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Subtitle { get; set; } = string.Empty;
         public string HeadlineSummary { get; set; } = string.Empty;
@@ -28,45 +45,62 @@ namespace AnimusForge.Illustrator.Context
         public HeroVisualProfile ProtagonistProfile { get; set; }
         public EnvironmentVisualProfile EnvironmentProfile { get; set; }
 
-        public string BuildCompositeContext()
+        /// <summary>
+        /// 硬事实区：报文原文、当事人真实档案、已确认的事件定居点与周报发布日期。
+        /// 导演与生图模型不得改写此区内容。
+        /// </summary>
+        public string BuildHardFacts()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("=== 【卡拉迪亚历史纪事核心周报】 ===");
-            if (!string.IsNullOrWhiteSpace(Title))
-            {
-                sb.AppendLine($"【报头】{Title}");
-            }
-            if (!string.IsNullOrWhiteSpace(Subtitle))
-            {
-                sb.AppendLine($"【核心局势】{Subtitle}");
-            }
-            if (!string.IsNullOrWhiteSpace(HeadlineSummary))
-            {
-                sb.AppendLine($"【事件要闻】{HeadlineSummary}");
-            }
+            sb.AppendLine("=== 【卡拉迪亚历史纪事周报】 ===");
+            if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine($"【报头】{Title}");
+            if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine($"【核心局势】{Subtitle}");
+            if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine($"【事件要闻】{HeadlineSummary}");
 
-            if (!string.IsNullOrWhiteSpace(SceneThemeDirective))
-            {
-                sb.AppendLine();
-                sb.AppendLine("=== 【画面核心指导原则 (绝对禁止千篇一律的城墙发呆构图)】 ===");
-                sb.AppendLine(SceneThemeDirective);
-            }
-
-            sb.AppendLine();
-            sb.AppendLine("=== 【登场人物视觉设定 (穿着/装备/外貌)】 ===");
             if (ProtagonistProfile != null)
             {
+                sb.AppendLine();
+                sb.AppendLine("=== 【登场人物真实视觉档案】 ===");
                 sb.AppendLine(ProtagonistProfile.BuildSummary());
             }
 
-            sb.AppendLine();
-            sb.AppendLine("=== 【所处时空环境与氛围描写 (建筑/时辰/光影)】 ===");
             if (EnvironmentProfile != null)
             {
-                sb.AppendLine(EnvironmentProfile.BuildSummary());
+                string facts = EnvironmentProfile.BuildHardFactsSummary();
+                if (!string.IsNullOrWhiteSpace(facts))
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("=== 【事件现场已确认事实】 ===");
+                    sb.AppendLine(facts);
+                }
+            }
+            else if (Snapshot != null && Snapshot.EventSettlement == null)
+            {
+                sb.AppendLine();
+                sb.AppendLine("【事件现场】周报未指明具体定居点，地点由导演按事件要闻合理设定。");
             }
 
             return sb.ToString().TrimEnd();
+        }
+
+        /// <summary>
+        /// 开放艺术指导区：事件主题倾向、可选场景元素与构图方向。全部是建议而非命令。
+        /// </summary>
+        public string BuildArtDirection()
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(SceneThemeDirective)) sb.AppendLine(SceneThemeDirective);
+            if (EnvironmentProfile != null)
+            {
+                string direction = EnvironmentProfile.BuildArtDirectionSummary();
+                if (!string.IsNullOrWhiteSpace(direction)) sb.AppendLine(direction);
+            }
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildCompositeContext()
+        {
+            return BuildHardFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
         }
     }
 
@@ -74,41 +108,68 @@ namespace AnimusForge.Illustrator.Context
     {
         public static WeeklyReportVisualContext ExtractFromWeeklyReport(string title, string subtitle, string body)
         {
-            string cleanTitle = CleanText(title);
-            string cleanSubtitle = CleanText(subtitle);
-            string cleanHeadline = CleanText(ExtractHeadline(body));
-            string fullText = $"{cleanTitle} {cleanSubtitle} {cleanHeadline}";
-
-            // 1. 从周报正文解析真正的当事人英雄（而非默认主角）——周报要闻可能讲述的是其他领主/君主
-            Hero protagonist = ResolveProtagonistHero(fullText);
-            Settlement eventSettlement = ResolveEventSettlement(fullText, protagonist);
-            WeeklyReportEventTheme theme = ClassifyEventTheme(fullText);
-
+            var snapshot = BuildSnapshot(title, subtitle, body);
             var context = new WeeklyReportVisualContext
             {
-                Title = cleanTitle,
-                Subtitle = cleanSubtitle,
-                HeadlineSummary = cleanHeadline,
-                EventTheme = theme,
-                ProtagonistHero = protagonist,
-                SceneThemeDirective = GenerateSceneDirective(theme, eventSettlement, cleanHeadline)
+                Snapshot = snapshot,
+                Title = snapshot.Title,
+                Subtitle = snapshot.Subtitle,
+                HeadlineSummary = snapshot.Headline,
+                EventTheme = snapshot.Theme,
+                ProtagonistHero = snapshot.ProtagonistHero,
+                SceneThemeDirective = GenerateSceneDirective(snapshot.Theme, snapshot.EventSettlement, snapshot.Headline)
             };
 
             // 提取关键人物视觉（严格反映真实穿着与无胡须特征）
-            if (protagonist != null)
+            if (snapshot.ProtagonistHero != null)
             {
-                context.ProtagonistProfile = HeroVisualExtractor.Extract(protagonist, useCivilian: false);
+                context.ProtagonistProfile = HeroVisualExtractor.Extract(snapshot.ProtagonistHero, useCivilian: false);
             }
 
-            // 提取事件发生地的真实环境视觉——按事件主题锚定，严禁按玩家当前所在菜单/位置推断
-            context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(eventSettlement, eventAnchored: true);
-            ApplyEventSceneAnchoring(context, eventSettlement);
+            // 环境只承载已确认事实：定居点（若文本真实提及）与周报发布纪元日期。
+            // 未提及地点时 settlement 为 null——宁可标未知，也不用玩家当前位置冒充事件现场。
+            context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(snapshot.EventSettlement, eventAnchored: true, eventDateLabel: snapshot.ReportDateLabel);
+            ApplyEventSceneAnchoring(context, snapshot.EventSettlement);
 
             return context;
         }
 
         /// <summary>
+        /// 把周报弹窗文本一次性解析为结构化快照：主题分类、当事人、事件定居点、发布日期。
+        /// </summary>
+        private static WeeklyReportIllustrationSnapshot BuildSnapshot(string title, string subtitle, string body)
+        {
+            string cleanTitle = CleanText(title);
+            string cleanSubtitle = CleanText(subtitle);
+            string cleanHeadline = CleanText(ExtractHeadline(body));
+            string fullText = $"{cleanTitle} {cleanSubtitle} {cleanHeadline}";
+
+            var snapshot = new WeeklyReportIllustrationSnapshot
+            {
+                Title = cleanTitle,
+                Subtitle = cleanSubtitle,
+                Headline = cleanHeadline,
+                Theme = ClassifyEventTheme(fullText),
+                ProtagonistHero = ResolveProtagonistHero(fullText),
+                EventSettlement = ResolveEventSettlement(fullText)
+            };
+
+            try
+            {
+                int seasonIndex = (int)CampaignTime.Now.GetSeasonOfYear;
+                string seasonName = seasonIndex == 0 ? "春" : seasonIndex == 1 ? "夏" : seasonIndex == 2 ? "秋" : "冬";
+                snapshot.ReportDateLabel = $"卡拉迪亚历 {CampaignTime.Now.GetYear} 年 · {seasonName}季 · 第 {CampaignTime.Now.GetDayOfSeason + 1} 日（周报发布日，事件发生在本周期内）";
+            }
+            catch
+            {
+            }
+
+            return snapshot;
+        }
+
+        /// <summary>
         /// 在周报文本中查找被提及的英雄：优先取文本中最先出现者，其次阵营领袖/宗族首领。
+        /// 无命中时退回玩家主角（周报本就是呈给玩家的纪事）。
         /// </summary>
         private static Hero ResolveProtagonistHero(string fullText)
         {
@@ -159,7 +220,8 @@ namespace AnimusForge.Illustrator.Context
         }
 
         /// <summary>
-        /// 按周报事件主题锁定画面场景，覆盖实时环境探测结果——保证同一份周报多次生成的场景一致。
+        /// 按事件主题补充可选的场景元素建议（进开放艺术指导区，不是硬事实）。
+        /// 只写"氛围参考/建议"字段；定居点、日期等硬事实由探针/快照承载。
         /// </summary>
         private static void ApplyEventSceneAnchoring(WeeklyReportVisualContext context, Settlement settlement)
         {
@@ -170,55 +232,46 @@ namespace AnimusForge.Illustrator.Context
             switch (context.EventTheme)
             {
                 case WeeklyReportEventTheme.VillageRaid:
-                    profile.SpecificLocation = $"{locName}乡野村落的农田与茅舍之间";
-                    profile.IndoorOutdoorDetails = "遭袭村庄的实况现场：土石茅草的农舍屋顶正燃起熊熊烈焰，滚滚黑烟遮天蔽日，四散奔逃的农夫村民与挥舞火把的掠夺者交错其间。";
-                    profile.SurroundingCharacters = "挥舞火把与弯刀长矛的掠夺骑兵纵马穿行，哭喊奔逃的农夫村民、被拖拽的牲畜散落各处";
-                    profile.SurroundingProps = "燃起烈焰的茅草屋顶、被撞倒的木栅栏、散落一地的谷物麻袋与农具、受惊乱窜的鸡犬牲畜、被践踏的泥泞田垄";
-                    profile.ConflictStatus = "【村庄遇袭·火光冲天】定居点正遭劫掠焚毁，硝烟与火光交织";
+                    profile.SpecificLocation = settlement != null ? $"{locName}周边乡野村落" : "遭袭的乡野村落";
+                    profile.IndoorOutdoorDetails = "可参考的劫掠现场元素：起火的农舍茅顶、升腾黑烟、奔逃的村民、纵马穿行的掠夺者、受惊的牲畜与被撞倒的栅栏。";
+                    profile.ConflictStatus = "【事件性质】定居点遭劫掠袭击";
                     break;
                 case WeeklyReportEventTheme.FieldBattle:
-                    profile.SpecificLocation = $"{locName}外围的开阔旷野战场";
-                    profile.IndoorOutdoorDetails = "大军交锋的旷野战场：尘烟弥漫的起伏原野上，步兵盾墙与骑兵冲锋正面撞击，残破的家族战旗在硝烟中飘扬。";
-                    profile.SurroundingCharacters = "持枪冲锋的重甲骑兵、结成盾墙的重步兵、后排攒射箭雨的弓弩手与奔走的传令兵";
-                    profile.SurroundingProps = "插满箭矢的焦土、倾覆的战旗旗杆、散落的大盾长矛、倒地挣扎的战马与弥漫整个战场的黄褐色尘烟";
-                    profile.ConflictStatus = "【野战交锋·大军对阵】双方主力军团正在旷野上殊死搏杀";
+                    profile.SpecificLocation = settlement != null ? $"{locName}外围旷野" : "开阔旷野战场";
+                    profile.IndoorOutdoorDetails = "可参考的野战元素：尘烟弥漫的原野、盾墙与骑兵冲锋、残破飘扬的战旗、散落的兵器与箭矢。";
+                    profile.ConflictStatus = "【事件性质】野外军团交战";
                     break;
                 case WeeklyReportEventTheme.Siege:
-                    profile.SpecificLocation = $"{locName}要塞城墙与城门外围的围攻阵地";
-                    profile.IndoorOutdoorDetails = "要塞围攻战的惨烈前沿：高耸石砌城墙上架满云梯，城外壕沟间布满攻城塔楼与破城槌，守军在城堞后拼死抵抗。";
-                    profile.SurroundingCharacters = "攀梯而上的攻城士卒、城头倾倒滚油放箭的守军、操作投石机的工兵与督战的双方将领";
-                    profile.SurroundingProps = "斜靠城墙的云梯与攻城塔、抛掷巨石的投石机、冲击城门的破城槌、城下密集的拒马鹿砦与堆积的攻城器械残骸";
-                    profile.ConflictStatus = "【大军围城·攻守血战】要塞正被重兵围攻，城头城下杀声震天";
+                    profile.SpecificLocation = settlement != null ? $"{locName}城墙与围攻阵地" : "要塞围攻阵地";
+                    profile.IndoorOutdoorDetails = "可参考的围城元素：架上城墙的云梯、攻城塔与破城槌、投石机、城堞后的守军与城下拒马壕沟。";
+                    profile.ConflictStatus = "【事件性质】要塞围攻战";
                     break;
                 case WeeklyReportEventTheme.FeastTournament:
-                    profile.SpecificLocation = $"{locName}领主大厅的盛宴厅堂与竞技场地";
-                    profile.IndoorOutdoorDetails = "庆典喧腾的贵族厅堂：长条宴桌上觥筹交错，烛台火光摇曳，或竞技场黄沙飞扬、看台人声鼎沸。";
-                    profile.SurroundingCharacters = "举杯同饮的贵族领主与贵妇、穿梭斟酒的侍从、竞技场上持枪对冲的比武骑士与欢呼的市民观众";
-                    profile.SurroundingProps = "摆满烤肉与美酒的亚麻长桌、成排的银质烛台、悬挂家族纹章的丝绒挂毯、竞技场边缘的木栅栏与彩旗";
-                    profile.ConflictStatus = "【盛事庆典】觥筹交错与比武竞技的欢庆时刻";
+                    profile.SpecificLocation = settlement != null ? $"{locName}厅堂或竞技场" : "庆典厅堂或竞技场";
+                    profile.IndoorOutdoorDetails = "可参考的庆典元素：觥筹交错的宴会、穿梭的侍从、竞技场长矛比武与欢呼看台。";
+                    profile.ConflictStatus = "【事件性质】宴会比武盛事";
                     break;
                 case WeeklyReportEventTheme.Diplomacy:
-                    profile.SpecificLocation = "军事行军大帐与石砌议事厅内的议和谈判现场";
-                    profile.IndoorOutdoorDetails = "庄重凝重的谈判现场：行军大帐或大理石议事厅内，双方使节围绕铺满羊皮纸地图的沙盘长桌对峙商榷，烛火映照着紧绷的神情。";
-                    profile.SurroundingCharacters = "肃立两侧的披甲护卫、记录条款的宫廷书记官、神情凝重的使节与谋士";
-                    profile.SurroundingProps = "摊开的羊皮纸疆域地图与鹅毛笔、封蜡条约卷轴、黄铜烛台、帐外隐约可见的双方仪仗军旗";
-                    profile.ConflictStatus = "【外交博弈·剑拔弩张】议和宣战的重大政治角力时刻";
+                    profile.SpecificLocation = "行军大帐或议事厅";
+                    profile.IndoorOutdoorDetails = "可参考的外交场景元素：铺有羊皮纸地图的长桌、封蜡条约、肃立护卫、凝重的使节与谋士。";
+                    profile.ConflictStatus = "【事件性质】重大外交角力";
                     break;
                 default:
-                    if (string.IsNullOrWhiteSpace(profile.SpecificLocation))
+                    if (string.IsNullOrWhiteSpace(profile.SpecificLocation) && settlement != null)
                     {
-                        profile.SpecificLocation = settlement != null ? $"{locName}城内外" : "卡拉迪亚大地";
+                        profile.SpecificLocation = $"{locName}城内外";
                     }
                     break;
             }
         }
 
-        private static Settlement ResolveEventSettlement(string fullText, Hero protagonist)
+        /// <summary>
+        /// 只在周报文本真实提及定居点名时解析事件地点；无命中返回 null（事件现场标未知）。
+        /// 绝不退回"主角或玩家当前所在地"——回顾性事件的发生地与玩家当下位置无关。
+        /// </summary>
+        private static Settlement ResolveEventSettlement(string fullText)
         {
-            if (string.IsNullOrWhiteSpace(fullText))
-            {
-                return Settlement.CurrentSettlement ?? (protagonist != null ? protagonist.CurrentSettlement : null);
-            }
+            if (string.IsNullOrWhiteSpace(fullText)) return null;
 
             Settlement bestMatch = null;
             int earliestIndex = int.MaxValue;
@@ -247,8 +300,7 @@ namespace AnimusForge.Illustrator.Context
             {
             }
 
-            // 无地名命中时优先取事件主角当前所在的定居点，其次其家乡，最后才是玩家当前位置
-            return bestMatch ?? protagonist?.CurrentSettlement ?? protagonist?.HomeSettlement ?? Settlement.CurrentSettlement;
+            return bestMatch;
         }
 
         private static WeeklyReportEventTheme ClassifyEventTheme(string text)
@@ -301,40 +353,40 @@ namespace AnimusForge.Illustrator.Context
             return WeeklyReportEventTheme.General;
         }
 
+        /// <summary>
+        /// 事件主题对应的开放取景方向：给出可选取景元素与氛围倾向，
+        /// 由导演按要闻自由择取一个最有叙事力的瞬间——不锁定单一构图。
+        /// </summary>
         private static string GenerateSceneDirective(WeeklyReportEventTheme theme, Settlement settlement, string headline)
         {
-            string locName = settlement != null ? (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId) : "卡拉迪亚边境";
+            string locName = settlement != null ? (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId) : "卡拉迪亚";
 
             switch (theme)
             {
                 case WeeklyReportEventTheme.VillageRaid:
-                    return $"【核心事件：村庄遭袭/劫掠 - 严禁画成站在城墙上看风景！】\n" +
-                           $"画面必须聚焦于在【{locName}】发生的突发村落劫掠与袭击实况！" +
-                           $"主要视觉元素应包括：被火光照亮的乡野土石与茅草农舍、滚滚升腾的黑烟与火星、四散奔逃的农夫村民、" +
-                           $"挥舞火把与弯刀长矛的掠夺骑兵、受惊的牲畜、被践踏的农田与泥泞泥道。" +
-                           $"如果画面中出现领主或主角，必须是策马疾驰赶往现场侦察戒备、拔剑迎战或指挥骑兵警戒的战斗/行动态势，绝对不要悠闲平淡地倚墙站立！";
+                    return $"【事件主题：村庄遭袭/劫掠】要闻指向【{locName}】一带的村落劫掠。" +
+                           "可选取景：起火的农舍与黑烟、奔逃村民与掠夺者、散落的谷物农具、赶到现场的领主或骑兵——" +
+                           "任选一个最有冲突张力的瞬间，远近景、动静视角皆可。";
 
                 case WeeklyReportEventTheme.FieldBattle:
-                    return $"【核心事件：野战交锋 - 严禁画成站在城墙上看风景！】\n" +
-                           $"画面必须描绘在【{locName}】周边旷野上展开的真实军队野战冲击瞬间！" +
-                           $"骑兵持枪冲锋、步兵阵线盾墙撞击、飞射的箭矢、残破飘扬的家族旗帜与战场尘土，展现宏大史诗的残酷交战场面。";
+                    return $"【事件主题：野战交锋】要闻指向【{locName}】周边的军队对阵。" +
+                           "可选取景：骑兵冲锋与盾墙撞击、漫天箭雨、倒伏的战旗、或将领在军阵前后的决断瞬间——构图与焦点自由。";
 
                 case WeeklyReportEventTheme.Siege:
-                    return $"【核心事件：城市/城堡围攻血战 - 严禁画成和平站桩！】\n" +
-                           $"画面必须描绘【{locName}】要塞城墙下的惨烈围攻战：高耸城墙上云梯架起、投石机抛掷巨石炸裂碎屑、破城槌冲击城门、" +
-                           $"城头射箭倾倒滚油、浴血拼杀的攻城部队与守军。";
+                    return $"【事件主题：要塞围攻】要闻指向【{locName}】的攻城或守城。" +
+                           "可选取景：云梯登城、投石机轰击、破城槌撞门、城头攻守拉锯、或围城营地的肃杀对峙——任取一个瞬间。";
 
                 case WeeklyReportEventTheme.FeastTournament:
-                    return $"【核心事件：盛大宴会或比武竞技】\n" +
-                           $"画面聚焦于【{locName}】内部的华丽喧闹场景：贵族领主觥筹交错的宴会大厅，或沙石飞扬、看台欢呼鼎沸的骑士竞技长矛比武。";
+                    return $"【事件主题：宴会比武盛事】要闻指向【{locName}】内的庆典。" +
+                           "可选取景：厅堂觥筹交错、竞技场长矛对冲、看台欢呼、或胜者受瞩目的瞬间——欢腾或紧张氛围皆可。";
 
                 case WeeklyReportEventTheme.Diplomacy:
-                    return $"【核心事件：重大外交会晤与宣战议和】\n" +
-                           $"画面聚焦于庄重威严的军事行军大营或大理石议事厅内：领主、使节与谋士围绕羊皮纸地图沙盘对峙商榷，气氛紧绷凝重。";
+                    return "【事件主题：重大外交角力】可选取景：大帐或议事厅内围绕地图的商谈、条约封缄、双方使节对峙、" +
+                           "或会谈间隙的眼神交锋——强调紧绷或凝重的关系张力。";
 
                 default:
-                    return $"【核心要求：紧扣新闻动态动作，拒绝呆板站桩】\n" +
-                           $"画面必须直接反映要闻【{headline}】所描述的实际行为，动态展现当事人物的具体动作与环境互动，避免单调重复的看风景站桩构图。";
+                    return $"【事件主题：以要闻为准】围绕要闻【{headline}】的实际行为自由取景：" +
+                           "可选人物行动瞬间、事件余波、或当事人在环境中的决断姿态——避免千篇一律的看风景站桩。";
             }
         }
 

@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -290,6 +291,26 @@ namespace AnimusForge.Illustrator.Engine
             return null;
         }
 
+        private static int _offscreenCleanupStarted;
+
+        private static void CleanupStaleOffscreenFiles(string tempDir)
+        {
+            if (Interlocked.Exchange(ref _offscreenCleanupStarted, 1) != 0) return;
+            try
+            {
+                DateTime threshold = DateTime.UtcNow.AddDays(-1);
+                foreach (string file in Directory.EnumerateFiles(tempDir, "af_offscreen_*"))
+                {
+                    try
+                    {
+                        if (File.GetLastWriteTimeUtc(file) < threshold) File.Delete(file);
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+
         /// <summary>
         /// 在主线程触发引擎原生安全的异步离屏渲染落盘 (利用引擎 render 同步点，杜绝任何 DirectX 11 冲突)
         /// </summary>
@@ -307,15 +328,7 @@ namespace AnimusForge.Illustrator.Engine
                     Directory.CreateDirectory(tempDir);
                 }
 
-                // 清理旧的遗留临时文件
-                try
-                {
-                    foreach (var f in Directory.GetFiles(tempDir, "af_offscreen_*"))
-                    {
-                        try { File.Delete(f); } catch {}
-                    }
-                }
-                catch {}
+                CleanupStaleOffscreenFiles(tempDir);
 
                 filePrefix = $"af_offscreen_{Guid.NewGuid():N}";
                 string fileName = $"{filePrefix}.png";
@@ -771,9 +784,14 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 将一段引擎操作调度到游戏主线程执行并返回其结果（调用方在任意线程均安全）。
         /// </summary>
-        private static Task<T> RunOnGameThreadAsync<T>(Func<T> work)
+        private static Task<T> RunOnGameThreadAsync<T>(Func<T> work, CancellationToken cancellationToken)
         {
             var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                tcs.TrySetCanceled();
+                return tcs.Task;
+            }
             if (Core.IllustratorRuntime.IsMainThread)
             {
                 try { tcs.TrySetResult(work()); }
@@ -782,6 +800,11 @@ namespace AnimusForge.Illustrator.Engine
             }
             bool posted = Core.IllustratorRuntime.Post(() =>
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    tcs.TrySetCanceled();
+                    return;
+                }
                 try { tcs.TrySetResult(work()); }
                 catch (Exception ex) { tcs.TrySetException(ex); }
             });
@@ -811,25 +834,10 @@ namespace AnimusForge.Illustrator.Engine
             public string Dir;
             public string Prefix;
             public string SeenPath;
+            public long SeenLength;
+            public CancellationToken CancellationToken;
+            public int Finished;
             public TaskCompletionSource<string> Done;
-        }
-
-        /// <summary>
-        /// TextureWidget._isRenderRequestedPreviousFrame：游戏每帧 OnUpdate 末尾会把它重置为 false，
-        /// 只有控件真的被渲染（OnRender 跑到）才会重新置 true。舞台控件摆在屏幕外会被渲染剔除，
-        /// 导致 provider 创建后 SetTargetSize/Tick 永不执行、TableauView 永不生成。
-        /// 泵每 tick 强制置回 true，使 UI 管线的 provider tick 照常运行而画面始终不出屏。
-        /// </summary>
-        private static readonly FieldInfo RenderRequestedField =
-            typeof(TextureWidget).GetField("_isRenderRequestedPreviousFrame", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        private static void ForceStageRenderRequest(Widget widget)
-        {
-            try
-            {
-                RenderRequestedField?.SetValue(widget, true);
-            }
-            catch { }
         }
 
         private static string FindOffscreenFile(string dir, string prefix)
@@ -856,11 +864,17 @@ namespace AnimusForge.Illustrator.Engine
         /// </summary>
         private static void PumpOffscreenStage(OffscreenStagePump pump)
         {
+            if (pump == null || Volatile.Read(ref pump.Finished) != 0) return;
             try
             {
-                pump.Ticks++;
-                ForceStageRenderRequest(pump.Widget);
+                if (pump.CancellationToken.IsCancellationRequested || !ReferenceEquals(ScreenManager.TopScreen, pump.Screen) || pump.Screen.IsFinalized)
+                {
+                    FinishStage(pump);
+                    pump.Done.TrySetCanceled();
+                    return;
+                }
 
+                pump.Ticks++;
                 if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks)
                 {
                     var view = ResolveTableauView(pump.Widget);
@@ -881,13 +895,15 @@ namespace AnimusForge.Illustrator.Engine
                     string path = FindOffscreenFile(pump.Dir, pump.Prefix);
                     if (path != null)
                     {
-                        if (path == pump.SeenPath)
+                        long length = new FileInfo(path).Length;
+                        if (path == pump.SeenPath && length > 0 && length == pump.SeenLength)
                         {
                             FinishStage(pump);
                             pump.Done.TrySetResult(path);
                             return;
                         }
                         pump.SeenPath = path;
+                        pump.SeenLength = length;
                     }
                 }
 
@@ -907,6 +923,7 @@ namespace AnimusForge.Illustrator.Engine
 
         private static void FinishStage(OffscreenStagePump pump)
         {
+            if (pump == null || Interlocked.Exchange(ref pump.Finished, 1) != 0) return;
             try
             {
                 if (pump.Movie != null) pump.Layer?.ReleaseMovie(pump.Movie);
@@ -922,12 +939,12 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 后台读已落盘的 PNG：BGRA→RGB 通道互换 + 缩放 JPEG base64，读取后删除临时文件。
         /// </summary>
-        private static async Task<string> ReadOffscreenPngBase64(string path, int maxDimension)
+        private static async Task<string> ReadOffscreenPngBase64(string path, int maxDimension, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(path)) return null;
             try
             {
-                await Task.Delay(20).ConfigureAwait(false);
+                await Task.Delay(20, cancellationToken).ConfigureAwait(false);
                 byte[] pngBytes = File.ReadAllBytes(path);
                 try { File.Delete(path); } catch { }
                 if (pngBytes == null || pngBytes.Length == 0) return null;
@@ -938,6 +955,10 @@ namespace AnimusForge.Illustrator.Engine
                     return ConvertBitmapToBase64(bmp, maxDimension);
                 }
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Read offscreen png failed: {ex.Message}");
@@ -946,13 +967,14 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 通用离屏舞台提取：临时挂一个 Gauntlet 层（控件摆屏幕外、IsVisible=true），
+        /// 通用离屏舞台提取：临时挂一个 Gauntlet 层（透明控件位于可渲染区域、IsVisible=true），
         /// 游戏自身 UI 管线创建并渲染 TableauView，预热后设落盘标志，后台等 PNG。
         /// 与原版控件同一条渲染路径——不手动 tick 场景、不读渲染目标纹理像素。
         /// </summary>
-        private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int maxDimension, int timeoutMs)
+        private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int timeoutMs, CancellationToken cancellationToken)
         {
             var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            OffscreenStagePump pump = null;
             bool started = await RunOnGameThreadAsync(() =>
             {
                 GauntletLayer layer = null;
@@ -982,7 +1004,7 @@ namespace AnimusForge.Illustrator.Engine
                         return false;
                     }
                     configure(widget);
-                    var pump = new OffscreenStagePump
+                    pump = new OffscreenStagePump
                     {
                         Screen = top,
                         Layer = layer,
@@ -990,6 +1012,7 @@ namespace AnimusForge.Illustrator.Engine
                         Widget = widget,
                         WarmupTicks = warmupTicks,
                         MaxTicks = maxTicks,
+                        CancellationToken = cancellationToken,
                         Done = done
                     };
                     top.AddLayer(layer);
@@ -1007,20 +1030,37 @@ namespace AnimusForge.Illustrator.Engine
                     try { if (movie != null) layer?.ReleaseMovie(movie); } catch { }
                     return false;
                 }
-            }).ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
             if (!started) return null;
 
-            var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs)).ConfigureAwait(false);
-            return winner == done.Task ? done.Task.Result : null;
+            var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs, cancellationToken)).ConfigureAwait(false);
+            if (winner == done.Task) return await done.Task.ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' timed out after {timeoutMs}ms");
+            if (!Core.IllustratorRuntime.Post(() =>
+            {
+                FinishStage(pump);
+                done.TrySetResult(null);
+            }))
+            {
+                done.TrySetResult(null);
+            }
+            return null;
         }
 
         /// <summary>
         /// 离屏渲染真实家族/王国纹章大图（九宫格构图）。通过隐藏舞台层的 BannerTableauWidget
         /// 让游戏 UI 管线渲染——绝不直读共享渲染目标纹理。
         /// </summary>
-        public static async Task<string> ExtractBannerOffscreenAsync(Banner banner, int maxDimension = 512, int timeoutMs = 3000)
+        public static Task<string> ExtractBannerOffscreenAsync(Banner banner, int maxDimension = 512, int timeoutMs = 3000, CancellationToken cancellationToken = default)
         {
-            if (banner == null || !Banner.IsValidBannerCode(banner.BannerCode)) return null;
+            string bannerCode = banner?.BannerCode;
+            return ExtractBannerOffscreenAsync(bannerCode, maxDimension, timeoutMs, cancellationToken);
+        }
+
+        public static async Task<string> ExtractBannerOffscreenAsync(string bannerCode, int maxDimension = 512, int timeoutMs = 3000, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(bannerCode) || !Banner.IsValidBannerCode(bannerCode)) return null;
             try
             {
                 string path = await ExtractViaStageAsync("OffscreenBanner", widget =>
@@ -1028,16 +1068,20 @@ namespace AnimusForge.Illustrator.Engine
                     if (widget is BannerTableauWidget bw)
                     {
                         bw.IsNineGrid = true;
-                        bw.BannerCodeText = banner.BannerCode;
+                        bw.BannerCodeText = bannerCode;
                         bw.IsVisible = true;
                     }
-                }, warmupTicks: 8, maxTicks: 150, maxDimension: maxDimension, timeoutMs: timeoutMs).ConfigureAwait(false);
-                string b64 = await ReadOffscreenPngBase64(path, maxDimension).ConfigureAwait(false);
+                }, warmupTicks: 8, maxTicks: 150, timeoutMs: timeoutMs, cancellationToken: cancellationToken).ConfigureAwait(false);
+                string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
                     TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Banner stage render extracted ({b64.Length} chars)");
                 }
                 return b64;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -1050,18 +1094,20 @@ namespace AnimusForge.Illustrator.Engine
         /// 离屏渲染指定英雄的真实 3D 立绘（真实体型、五官、发型、装备、家族纹章底色）。
         /// 人物资源加载需要更多预热帧，故 warmup 比纹章长。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500)
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default)
         {
-            if (hero?.CharacterObject == null) return null;
+            if (hero == null) return null;
+            string heroName = string.Empty;
             try
             {
                 string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
                 {
                     if (widget is CharacterTableauWidget cw)
                     {
-                        var character = hero.CharacterObject;
+                        var character = hero.CharacterObject ?? throw new InvalidOperationException("Hero character is unavailable.");
                         var equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
-                        cw.BodyProperties = character.GetBodyProperties(character.Equipment, -1).ToString();
+                        heroName = hero.Name?.ToString() ?? hero.StringId;
+                        cw.BodyProperties = character.GetBodyProperties(equipment ?? character.Equipment, -1).ToString();
                         cw.IsFemale = hero.IsFemale;
                         cw.Race = character.Race;
                         cw.StanceIndex = 0;
@@ -1078,13 +1124,17 @@ namespace AnimusForge.Illustrator.Engine
                         cw.ArmorColor2 = hero.MapFaction?.Color2 ?? 0;
                         cw.IsVisible = true;
                     }
-                }, warmupTicks: 20, maxTicks: 240, maxDimension: maxDimension, timeoutMs: timeoutMs).ConfigureAwait(false);
-                string b64 = await ReadOffscreenPngBase64(path, maxDimension).ConfigureAwait(false);
+                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken).ConfigureAwait(false);
+                string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait stage render extracted for {hero.Name} ({b64.Length} chars)");
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait stage render extracted for {heroName} ({b64.Length} chars)");
                 }
                 return b64;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
