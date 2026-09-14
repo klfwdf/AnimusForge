@@ -10,6 +10,8 @@
 - 唯一写入 G:/AFMOD/AF-REFACTOR；本地分支 codex/af-framework-skill-delivery-20260911，指定远端 origin/codex/af-main-refactor-continuation-20260831。两份用户草稿保持 dirty 不暂存，本地专用 Native 简明版不上传。
 - 本地主体简明版：G:/AFMOD/AF-REFACTOR/.tmp/AF主体简明HANDOFF-20260914.md（不提交、不作为 GitHub 文档依赖）。
 
+- 实际交付已核实：源码和详细交接普通推送至 `dcc17ee70832e2c63725bf08b0a284f9a94429d3`（远端 ls-remote 一致）；随后只有回执文档更新，生产仍86805518。自动化保持PAUSED，交付完成不等于重构完成。
+
 ## 以下为历史切片；不覆盖上方暂停状态和当前交接
 
 # AF 总 HANDOFF — owner净化按实际草稿计费已离线联验（2026-09-14）
