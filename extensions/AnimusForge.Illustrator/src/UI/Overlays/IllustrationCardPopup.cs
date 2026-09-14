@@ -197,7 +197,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string emblemB64 = await ScreenCaptureHelper.ExtractEmblemOffscreenAsync(bannerCode, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "家族纹章参考图：图中士兵盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜、盾徽与罩袍纹章必须严格依此纹样绘制，严禁编造其他图腾"));
+                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾"));
                     }
                 }
 
@@ -362,7 +362,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await emblemStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, "家族纹章参考图：图中士兵盾面/罩袍上的纹样即对话对方家族的真实纹章，画面中的旗帜、盾徽与罩袍纹章必须严格依此纹样绘制，严禁编造其他图腾");
+                        var r = new IllustrationReferenceImage(b64, "对话对方家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
