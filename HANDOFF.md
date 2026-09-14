@@ -1,3 +1,17 @@
+# AF 总 HANDOFF — 用户暂停，整体进度与代码交付（2026-09-14）
+
+**生产开发及自动化 PAUSED；当前阶段 8 / B1，未整批合格，整个重构未 DONE。** 本轮只做核查、文档和用户明确授权的专门重构分支普通推送，不部署/操作存档/删旧/切默认。下方历史 ACTIVE 与自动继续安排全部由本入口覆盖。
+
+- 当前唯一详细入口：[整体暂停与 GitHub 交接](docs/handoffs/2026-09-14-af-core-pause-overall-delivery-handoff.md)，含阶段、原 AF 对照、拆分/复现矩阵、源码坐标、验证、风险与恢复顺序。
+- 最新已影响面离线验证生产/测试 `86805518`；源码未因本轮文档改变。[本轮核查 JSON](docs/audits/2026-09-14-af-core-paused-overall-delivery.json) / [原执行证据](docs/audits/2026-09-14-b1-owner-normalize-verification.json)。实际推送提交以远端 ref/回执为准，不把源码 commit 当文档最终 HEAD。
+- 拆分现状：52 个 Refactor C#、20 个核心 owner 额外 partial；三大家族 115,983 行。新组件有真实消费者，但大类仍混合新旧，不是主体彻底拆完或仅剩实机。
+- 原未审 WIP 已完成联验；索引提取、Campaign 共享预算、可续跑排序、完整 raw 摘要低分配和逐 draft 净化已完成局部验证。单 draft 深 line、初 capture/完整绑定/Apply 仍有原子成本；Courier live 读取/完整三渠道、内部生命周期、所选 public 与 LIVE/SAVE 仍未完成。
+- `af-7-8` 已经应用工具暂停并读回，旧 `af` 也 PAUSED；未来实施需用户明确恢复。[原计划第 17 节](docs/phase8/af-core-precloseout-plan-20260913.md)保存此次暂停与后续入口，不重开阶段编号。
+- 唯一写入 G:/AFMOD/AF-REFACTOR；本地分支 codex/af-framework-skill-delivery-20260911，指定远端 origin/codex/af-main-refactor-continuation-20260831。两份用户草稿保持 dirty 不暂存，本地专用 Native 简明版不上传。
+- 本地主体简明版：G:/AFMOD/AF-REFACTOR/.tmp/AF主体简明HANDOFF-20260914.md（不提交、不作为 GitHub 文档依赖）。
+
+## 以下为历史切片；不覆盖上方暂停状态和当前交接
+
 # AF 总 HANDOFF — owner净化按实际草稿计费已离线联验（2026-09-14）
 
 **生产/测试86805518，本轮局部完成；阶段8/B1继续VERIFY、未整批合格。af-7-8每小时ACTIVE，未推送/部署。**

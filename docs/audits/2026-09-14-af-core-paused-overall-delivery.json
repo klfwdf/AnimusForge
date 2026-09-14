@@ -1,0 +1,366 @@
+{
+  "kind": "af-core-paused-overall-delivery-audit",
+  "recordedUtc": "2026-09-14T01:51:44.680207+00:00",
+  "auditStartHead": "ef7432f6dac96c508766c9267a1ec8b034fe2efb",
+  "productionRevision": "86805518259ee44e3924da787bfba97654208074",
+  "originalBaseline": "d4cb1467376c6e923f4295dcefc7878c11dbc7c1",
+  "remoteBaseline": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
+  "localBranch": "codex/af-framework-skill-delivery-20260911",
+  "targetBranch": "codex/af-main-refactor-continuation-20260831",
+  "automation": {
+    "af-7-8": "PAUSED",
+    "af": "PAUSED"
+  },
+  "stage": "8/B1 PAUSED_BY_USER; NOT_BATCH_ACCEPTED",
+  "scope": "Documentation and read-only audit; authorized normal GitHub push; no source/test change, deploy, saves/default switch",
+  "statistics": [
+    {
+      "revision": "d4cb1467376c6e923f4295dcefc7878c11dbc7c1",
+      "rootCs": 289,
+      "refactorFiles": 0,
+      "refactorFolders": {},
+      "apiV1Files": 0,
+      "coreFamilies": {
+        "MyBehavior": {
+          "rootLines": 59365,
+          "extraFiles": 0,
+          "familyLines": 59365,
+          "files": {
+            "MyBehavior.cs": 59365
+          }
+        },
+        "ShoutBehavior": {
+          "rootLines": 38870,
+          "extraFiles": 0,
+          "familyLines": 38870,
+          "files": {
+            "ShoutBehavior.cs": 38870
+          }
+        },
+        "CourierDeliveryBehavior": {
+          "rootLines": 9859,
+          "extraFiles": 0,
+          "familyLines": 9859,
+          "files": {
+            "CourierDeliveryBehavior.cs": 9859
+          }
+        }
+      }
+    },
+    {
+      "revision": "182da1db4db4199cf65783f911f3cb6d46b18970",
+      "rootCs": 292,
+      "refactorFiles": 34,
+      "refactorFolders": {
+        "Adapters": 21,
+        "Contracts": 8,
+        "Runtime": 5
+      },
+      "apiV1Files": 0,
+      "coreFamilies": {
+        "MyBehavior": {
+          "rootLines": 59431,
+          "extraFiles": 0,
+          "familyLines": 59431,
+          "files": {
+            "MyBehavior.cs": 59431
+          }
+        },
+        "ShoutBehavior": {
+          "rootLines": 39835,
+          "extraFiles": 0,
+          "familyLines": 39835,
+          "files": {
+            "ShoutBehavior.cs": 39835
+          }
+        },
+        "CourierDeliveryBehavior": {
+          "rootLines": 10501,
+          "extraFiles": 0,
+          "familyLines": 10501,
+          "files": {
+            "CourierDeliveryBehavior.cs": 10501
+          }
+        }
+      }
+    },
+    {
+      "revision": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
+      "rootCs": 319,
+      "refactorFiles": 48,
+      "refactorFolders": {
+        "Adapters": 21,
+        "Contracts": 9,
+        "Modules": 5,
+        "Runtime": 13
+      },
+      "apiV1Files": 2,
+      "coreFamilies": {
+        "MyBehavior": {
+          "rootLines": 58795,
+          "extraFiles": 11,
+          "familyLines": 62506,
+          "files": {
+            "MyBehavior.DialogueHistoryCommit.cs": 51,
+            "MyBehavior.EventSourceMaterialIndex.cs": 35,
+            "MyBehavior.HistoryPromptSnapshot.cs": 99,
+            "MyBehavior.MemoryFailureNotice.cs": 100,
+            "MyBehavior.MemoryRecovery.cs": 1463,
+            "MyBehavior.MemorySealing.cs": 461,
+            "MyBehavior.MemorySourceWrites.cs": 77,
+            "MyBehavior.MemorySummaryInput.cs": 435,
+            "MyBehavior.MemorySummaryMainThread.cs": 156,
+            "MyBehavior.MemorySummaryPlanning.cs": 220,
+            "MyBehavior.WeeklyActionOutcomeReceipts.cs": 614,
+            "MyBehavior.cs": 58795
+          }
+        },
+        "ShoutBehavior": {
+          "rootLines": 39883,
+          "extraFiles": 6,
+          "familyLines": 41607,
+          "files": {
+            "ShoutBehavior.NativeActionDispatch.cs": 78,
+            "ShoutBehavior.NativeAdmission.cs": 256,
+            "ShoutBehavior.NativeCompletion.cs": 136,
+            "ShoutBehavior.NativePendingHistory.cs": 134,
+            "ShoutBehavior.NativePreparation.cs": 83,
+            "ShoutBehavior.ScenePostprocess.cs": 1037,
+            "ShoutBehavior.cs": 39883
+          }
+        },
+        "CourierDeliveryBehavior": {
+          "rootLines": 10797,
+          "extraFiles": 2,
+          "familyLines": 11509,
+          "files": {
+            "CourierDeliveryBehavior.DetachedPostprocess.cs": 156,
+            "CourierDeliveryBehavior.InboundCompletion.cs": 556,
+            "CourierDeliveryBehavior.cs": 10797
+          }
+        }
+      }
+    },
+    {
+      "revision": "86805518259ee44e3924da787bfba97654208074",
+      "rootCs": 320,
+      "refactorFiles": 52,
+      "refactorFolders": {
+        "Adapters": 21,
+        "Contracts": 9,
+        "Modules": 5,
+        "Runtime": 17
+      },
+      "apiV1Files": 2,
+      "coreFamilies": {
+        "MyBehavior": {
+          "rootLines": 58834,
+          "extraFiles": 12,
+          "familyLines": 62867,
+          "files": {
+            "MyBehavior.DialogueHistoryCommit.cs": 51,
+            "MyBehavior.HistoryPromptSnapshot.cs": 99,
+            "MyBehavior.MemoryFailureNotice.cs": 100,
+            "MyBehavior.MemoryMaintenanceBudget.cs": 30,
+            "MyBehavior.MemoryRecovery.cs": 1463,
+            "MyBehavior.MemorySealing.cs": 562,
+            "MyBehavior.MemorySourceFingerprint.cs": 228,
+            "MyBehavior.MemorySourceWrites.cs": 77,
+            "MyBehavior.MemorySummaryInput.cs": 433,
+            "MyBehavior.MemorySummaryMainThread.cs": 156,
+            "MyBehavior.MemorySummaryPlanning.cs": 220,
+            "MyBehavior.WeeklyActionOutcomeReceipts.cs": 614,
+            "MyBehavior.cs": 58834
+          }
+        },
+        "ShoutBehavior": {
+          "rootLines": 39883,
+          "extraFiles": 6,
+          "familyLines": 41607,
+          "files": {
+            "ShoutBehavior.NativeActionDispatch.cs": 78,
+            "ShoutBehavior.NativeAdmission.cs": 256,
+            "ShoutBehavior.NativeCompletion.cs": 136,
+            "ShoutBehavior.NativePendingHistory.cs": 134,
+            "ShoutBehavior.NativePreparation.cs": 83,
+            "ShoutBehavior.ScenePostprocess.cs": 1037,
+            "ShoutBehavior.cs": 39883
+          }
+        },
+        "CourierDeliveryBehavior": {
+          "rootLines": 10797,
+          "extraFiles": 2,
+          "familyLines": 11509,
+          "files": {
+            "CourierDeliveryBehavior.DetachedPostprocess.cs": 156,
+            "CourierDeliveryBehavior.InboundCompletion.cs": 556,
+            "CourierDeliveryBehavior.cs": 10797
+          }
+        }
+      }
+    }
+  ],
+  "statisticsMethod": "Tracked Git C# paths only; root family Name.cs + Name.*.cs, physical splitlines including comments/blanks; not functional completion percent.",
+  "baselineCsEquals96a1c60f": true,
+  "sourceVerification": {
+    "method": "Git tracked full working-tree diff against validated 86805518: only docs; 74-anchor file hashes plus last candidate source hashes separately verified. No per-file hash claim for reference dumps.",
+    "nonDocumentationDiffFromProduction": []
+  },
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "reusedEvidence": {
+    "path": "docs/audits/2026-09-14-b1-owner-normalize-verification.json",
+    "sha256": "ba58cf441d247e54803bf36da8632c8bbe4ed6590de0054d7041f7b65a69d68d",
+    "sourceHashCheck": "PASS",
+    "frozenFilesChecked": 183,
+    "frozenMismatch": [],
+    "artifacts": [
+      {
+        "path": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+        "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+        "sha256": "2b6e3d72070ea8aa610f2ca1683a681ae6aead837ed458b4ab0f130ff2972137",
+        "status": "MATCH"
+      },
+      {
+        "path": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+        "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+        "sha256": "7b6c89be3b7be5c4ee80334e9f22cf0dd9b861c55f17847b4f98ca25e674008d",
+        "status": "MATCH"
+      },
+      {
+        "path": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+        "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+        "sha256": "1b75cb88f53d1c0fe83e3b2d61b632798067bf692bd994a3944c420113dc454d",
+        "status": "MATCH"
+      },
+      {
+        "path": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+        "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+        "sha256": "1d8eb56610ce81a5bf689d5433d2b103849c2499523dc53e8d6196783bb7f0d2",
+        "status": "MATCH"
+      },
+      {
+        "path": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+        "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+        "sha256": "44253367c40e598c93508453011c154c3fc21cd7f451757af0bdb4d7b808ffcc",
+        "status": "MATCH"
+      },
+      {
+        "path": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+        "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+        "sha256": "7009867abf56ccf4906a947b86eaeca6fb54bb71baaeeba58ea143faea1ea7bf",
+        "status": "MATCH"
+      }
+    ],
+    "note": "Prior test/build execution on unchanged 86805518, hashes freshly verified, not rerun LIVE or builds this documentation turn."
+  },
+  "freshChecks": [
+    {
+      "command": [
+        "G:/Python310/python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        ".agents/skills/af-core-framework/scripts/verify_code_map.py"
+      ],
+      "exit": 0,
+      "result": "PASS code-map anchors=74 mode=recorded-revision source=86805518259ee44e3924da787bfba97654208074; not gameplay verification"
+    },
+    {
+      "command": [
+        "G:/Python310/python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        ".agents/skills/af-core-framework/scripts/verify_code_map.py",
+        "--working-tree"
+      ],
+      "exit": 0,
+      "result": "PASS code-map anchors=74 mode=working-tree source=86805518259ee44e3924da787bfba97654208074; not gameplay verification"
+    }
+  ],
+  "checkInvocationCorrections": [
+    "Map path corrected from missing repo scripts to repo skill scripts; actual both modes passed.",
+    "Git non-ASCII quoted-path invocation corrected; broad reference per-file scan not claimed.",
+    "Whole-tree .tmp ban was overbroad: existing tracked reference artifacts already in remote; verified no outgoing .tmp change/new artifact instead. Not a product test failure."
+  ],
+  "outgoingAuditBeforeFinalDocs": {
+    "commits": 18,
+    "files": [
+      "HANDOFF.md",
+      "MyBehavior.EventSourceMaterialIndex.cs",
+      "MyBehavior.MemoryMaintenanceBudget.cs",
+      "MyBehavior.MemorySealing.cs",
+      "MyBehavior.MemorySourceFingerprint.cs",
+      "MyBehavior.MemorySummaryInput.cs",
+      "MyBehavior.cs",
+      "Refactor/Runtime/CooperativeMemoryQueueSort.cs",
+      "Refactor/Runtime/EventSourceMaterialIndex.cs",
+      "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs",
+      "Refactor/Runtime/MemorySourceFingerprintWriter.cs",
+      "docs/animusforge-refactoring-and-repository-reorganization-plan.md",
+      "docs/architecture/af-event-material-index-runtime.md",
+      "docs/architecture/af-framework-code-map.json",
+      "docs/architecture/af-framework-code-scope.md",
+      "docs/audits/2026-09-14-b1-campaign-budget-verification.json",
+      "docs/audits/2026-09-14-b1-index-owner-integration.json",
+      "docs/audits/2026-09-14-b1-owner-normalize-verification.json",
+      "docs/audits/2026-09-14-b1-queue-sort-verification.json",
+      "docs/audits/2026-09-14-b1-raw-digest-verification.json",
+      "docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md",
+      "docs/handoffs/2026-09-14-b1-index-owner-integration-handoff.md",
+      "docs/handoffs/2026-09-14-b1-owner-normalize-handoff.md",
+      "docs/handoffs/2026-09-14-b1-queue-sort-handoff.md",
+      "docs/handoffs/2026-09-14-b1-raw-digest-handoff.md",
+      "docs/phase8/af-core-precloseout-plan-20260913.md",
+      "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt",
+      "tools/MemorySummaryMainThreadBoundaryTests/README.md",
+      "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_business.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_fingerprint.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_materials.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_planning.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/source-review-b1.json",
+      "tools/MemorySummaryMainThreadBoundaryTests/source_parity.py",
+      "tools/MemorySummaryMainThreadBoundaryTests/test_source_parity.py"
+    ],
+    "newReachableBlobsChecked": 99,
+    "largeBlobsOver2500000": [],
+    "newForbiddenArtifacts": [],
+    "highConfidenceSecretPatterns": [],
+    "excludedDocumentAbsentFromAllNewTreesAndBranchHistory": true,
+    "existingTrackedTmpReferences": "Already present in remote; unchanged, not newly published or removed.",
+    "warning": "Focused publication hygiene check, not a comprehensive security audit."
+  },
+  "delivery": "Ready for authorized normal push after final docs validation/refetch; final remote receipt recorded separately after actual push.",
+  "remaining": [
+    "B1 single-draft deep normalization, initial capture/full traversal/final binding/Apply atomic work not bounded",
+    "B2 Courier off-thread live reads and complete three-channel parity",
+    "B3 actual lifecycle/composition and owner extraction",
+    "Selected public submit/cancel/write/extensions scope not decided; V1 read-only",
+    "Current-candidate Campaign/Mission, old save, assets/AFEF, TTS/provider and external DLL load NOT_RUN",
+    "Final legacy removal/default migration/release not accepted"
+  ],
+  "documentationChecks": {
+    "localLinksChecked": 17,
+    "codeRangesChecked": 31,
+    "extraSymbolsChecked": 4,
+    "newFilesUtf8": "PASS",
+    "status": "PASS"
+  }
+}
