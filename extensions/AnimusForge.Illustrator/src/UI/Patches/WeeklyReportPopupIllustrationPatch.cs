@@ -294,6 +294,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             var protagonist = context.ProtagonistHero;
             string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
+            string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
 
             _scope.Run(async token =>
             {
@@ -310,6 +311,15 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
                         refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感"));
+                    }
+                }
+                // 纹章由纯托管合成（旗帜代码→图集→GDI+），无舞台零闪屏
+                if (!string.IsNullOrWhiteSpace(bannerCode))
+                {
+                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode).ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(emblemB64))
+                    {
+                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾"));
                     }
                 }
 

@@ -87,6 +87,8 @@ Assert-True (-not $result.Contains('西式王冠') -and -not $result.Contains('�
 $srcDir = Join-Path $module 'src'
 $screenCapture = Get-Content (Join-Path $srcDir 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8
 Assert-True (-not $screenCapture.Contains('ExtractBannerOffscreenAsync') -and -not $screenCapture.Contains('ExtractEmblemOffscreenAsync')) 'banner/emblem offscreen stage extraction removed (no visible flash)'
+$composer = Get-Content (Join-Path $srcDir 'Engine\BannerEmblemComposer.cs') -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
+Assert-True ($composer -and $composer.Contains('GetIconSourceTextureName') -and $composer.Contains('BannerDataList')) 'managed banner emblem composer exists (atlas + BannerDataList, zero stage)'
 Assert-True ($screenCapture.Contains('ExtractHeroPortraitOffscreenAsync')) 'hero portrait offscreen extraction exists'
 Assert-True ($screenCapture.Contains('CaptureConversationSceneBase64')) 'conversation scene band capture exists'
 Assert-True ($screenCapture.Contains('BannerTableauWidget') -and $screenCapture.Contains('CharacterTableauWidget')) 'stage-layer widgets used for banner/portrait offscreen render'
