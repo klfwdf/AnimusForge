@@ -35,6 +35,9 @@ internal static class Program
                     name + " stays assembly-internal in actual DLL");
                 internalTypes.Add(name);
             }
+            if (ns == "AnimusForge.Api.Internal")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
+                    name + " API projection remains internal");
             if (ns == "AnimusForge" && name == "MyBehavior")
             {
                 foundMemoryOwner = true;
@@ -86,7 +89,8 @@ internal static class Program
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
             "InternalModuleDirectory", "ModuleFrameworkRuntime", "CampaignComposition",
-            "CampaignModelComposition", "TeamModuleRegistration" })
+            "CampaignModelComposition", "TeamModuleRegistration", "ModuleFrameworkSnapshot",
+            "ModuleBindingSnapshot", "ModuleFrameworkLifecycleState" })
             Check(internalTypes.Contains(name), "actual DLL contains internal " + name);
         lines.Sort(StringComparer.Ordinal);
         Console.WriteLine("ARTIFACT " + path + " SHA256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant());

@@ -1,3 +1,17 @@
+# Snapshot boundary extraction (2026-09-15)
+
+The suite compiles the real internal snapshot capture and the API-side V1 projector. An additional CoreOnly library compiles all selected framework sources **without any API source/reference**. The existing internal/public assemblies and rejection checks remain.
+
+`SnapshotBoundaryChecks.cs` compares complete serialized public DTOs against the actual runtime source pinned at `955a6be3` (namespace/class renamed only in generated test code). It covers freeze across stop/reload, input-container mutation, exhaustive capability mapping, unknown state fail-closed, gate evaluation timing and parallel capture/projection. Public API shape and read-only guarantees remain unchanged.
+
+Three compiled behavioral faults must be rejected: wrong Ready mapping, retaining a caller's mutable list, or re-reading the live directory during projection. Test entrypoints catch assertion exceptions and exit nonzero so expected failures do not enter Windows native crash reporting. This changes failure transport, not assertions.
+
+`source_boundary.py` provides an exact reviewed inverse for original root/entrypoint comparisons. It does not restore arbitrary snapshots or waive lifecycle/registration changes. Module compilation/import direction is tested independently.
+
+These are bounded directory/API checks, not actual Campaign/Mission or old-save acceptance. Intermediate snapshots are created only for explicit queries, never Tick; the original directory bounds still apply.
+
+## Existing test usage
+
 # 模块框架 V1：公共 API 契约验收
 
 ## 这套测试回答什么

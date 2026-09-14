@@ -1,10 +1,15 @@
 # 当前任务：框架内外边界收口与对照链修复（2026-09-15）
 
-- 用户要求“继续直到完美”；继续实际拆分与验证，不承诺零BUG，不自动推送/部署/恢复自动化。任务 `FRAMEWORK-SNAPSHOT-BOUNDARY-20260915` ACTIVE；起点06a457c3，生产955a6be3，唯一写入G:/AFMOD/AF-REFACTOR，保留三份保护文件。
+- 用户要求“继续直到完美”；继续实际拆分与验证，不承诺零BUG，不自动推送/部署/恢复自动化。任务 `FRAMEWORK-SNAPSHOT-BOUNDARY-20260915` OFFLINE_VERIFIED；起点06a457c3，生产955a6be3，唯一写入G:/AFMOD/AF-REFACTOR，保留三份保护文件。
 - 先处理上一轮完整port测试阻断：确认既有Memory source_parity可严格恢复到90201155，接入旧owner比较前；保留完整文件相等与证据哈希门禁，不能略过未审查差异或只刷新hash。
 - 实际拆分：ModuleFrameworkRuntime不再引用Api.V1，持有内部生命周期状态并捕获不带游戏/活目录引用的只读目录快照；Api.V1侧独立投影为既有public DTO。唯一真实Directory/注册入口保留；所有旧枚举、原因码、顺序、Stopped不评估gate、公开表面保持。
 - 生命周期核对：读档generation与Mission结束清理仍归原owner，注册不等于读档可用；本轮不假造统一GameEnd清理。公共投影拆分只处理模块目录快照作用域，不冒称Campaign/Mission生命周期完成。新增中间快照仅在显式API查询分配，小表有界；不引入Tick/轮询/反射。
 - 验证：旧失败/新完整port回归和有效故障；源隔离、快照不可变/并发/旧新public输出、装配回归、六Stage与实际DLL元数据、存档身份、地图/HANDOFF。明确实机和B1原深复制/预算未完。
+
+- 结果：新增纯内部ModuleFrameworkSnapshot/ModuleBindingSnapshot与内部生命周期枚举；Runtime删除Api.V1依赖/公开DTO构造/映射，净减19行；AfV1SnapshotProjection在API侧独立投影。Capture在原装配锁内，投影在锁外，仅按显式查询分配有界小表，无新任务/注册器/游戏引用。
+- 历史port完整链已恢复：接入原B1严格逆变换，4个owner整文件+SubModule历史对照、13签名/31调用点、308断言和3有效故障全部通过，未放宽hash或跳过缺失方法。预期失败曾触发测试进程挂起/EXE占用，改测试Main受控非零退出并只清理核实路径下的失败测试进程；重跑通过，失败日志保留。
+- 本候选：无API引用的CoreOnly真实编译、32快照边界/128并发、119公开API/256并发、3快照故障、42装配/5故障、15记忆逆变换守卫、六Stage、4DLL元数据584、SyncData146/行为36均通过。公开V1语义/存档/默认和制作组业务未改。
+- 工程师差异审查通过：唯一Directory/原状态锁保持，跨停止/重载快照不可变，不在投影时二次求gate；玩家视角只做源码推演与可见API反馈对照，未进行游戏内实测。完整Campaign/Mission生命周期、主体其他职责迁移、B1深复制/预算、实机/旧档/live Economy/AFEF仍未完成，不标项目“完美”。
 
 ## 以下为历史记录；当前实施以上方为准
 

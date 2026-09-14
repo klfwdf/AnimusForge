@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AnimusForge.Api.V1;
 using TaleWorlds.Core;
 
 namespace AnimusForge.Refactor.Modules;
@@ -14,17 +13,17 @@ internal static class ModuleFrameworkRuntime
 {
     private static readonly object Sync = new object();
     private static InternalModuleDirectory _directory;
-    private static AfFrameworkState _state = AfFrameworkState.NotInitialized;
+    private static ModuleFrameworkLifecycleState _state = ModuleFrameworkLifecycleState.NotInitialized;
     private static string _reason = "framework.not_initialized";
 
     internal static bool Initialize(out string reasonCode)
     {
         lock (Sync)
         {
-            if (_state != AfFrameworkState.NotInitialized && _state != AfFrameworkState.Stopped)
+            if (_state != ModuleFrameworkLifecycleState.NotInitialized && _state != ModuleFrameworkLifecycleState.Stopped)
             {
                 reasonCode = _reason;
-                return _state == AfFrameworkState.Ready;
+                return _state == ModuleFrameworkLifecycleState.Ready;
             }
 
             // 每次模块加载最多装配一次；不引入 DLL 发现、反射或每帧扫描。
@@ -35,7 +34,7 @@ internal static class ModuleFrameworkRuntime
                 _directory = directory;
                 if (!validation.IsValid)
                 {
-                    _state = AfFrameworkState.Degraded;
+                    _state = ModuleFrameworkLifecycleState.Degraded;
                     _reason = "framework.registration_invalid";
                 }
                 else
@@ -44,7 +43,7 @@ internal static class ModuleFrameworkRuntime
                     foreach (InternalModuleStatus module in directory.GetSnapshot())
                         directory.UpdateRuntimeState(module.Definition.Id, InternalModuleRuntimeState.Ready,
                             "module.adapter_bound");
-                    _state = AfFrameworkState.Ready;
+                    _state = ModuleFrameworkLifecycleState.Ready;
                     _reason = "framework.adapters_bound";
                 }
             }
@@ -53,11 +52,11 @@ internal static class ModuleFrameworkRuntime
                 // 新目录不能使原有 gameplay 初始化崩溃；也不能对外伪造 Ready。
                 // 不把异常消息/路径等实现细节通过公共 DTO 泄露给子 MOD。
                 _directory = null;
-                _state = AfFrameworkState.Degraded;
+                _state = ModuleFrameworkLifecycleState.Degraded;
                 _reason = "framework.initialization_failed";
             }
             reasonCode = _reason;
-            return _state == AfFrameworkState.Ready;
+            return _state == ModuleFrameworkLifecycleState.Ready;
         }
     }
 
@@ -74,56 +73,37 @@ internal static class ModuleFrameworkRuntime
     {
         lock (Sync)
         {
-            _state = AfFrameworkState.Stopped;
+            _state = ModuleFrameworkLifecycleState.Stopped;
             _reason = "framework.stopped";
             // 保留只含字符串的目录说明；绝不保留当前 Hero/Agent、任务或存档引用。
         }
     }
 
-    internal static AfFrameworkSnapshot GetSnapshot(IReadOnlyList<AfCapabilityInfo> publicCapabilities)
+    internal static ModuleFrameworkSnapshot CaptureSnapshot()
     {
         lock (Sync)
         {
-            var modules = new List<AfModuleInfo>();
+            var modules = new List<ModuleBindingSnapshot>();
             if (_directory != null)
             {
                 foreach (InternalModuleStatus module in _directory.GetSnapshot())
                 {
-                    var capabilities = new List<AfModuleCapabilityInfo>();
+                    var capabilities = new List<InternalCapabilityStatus>();
                     foreach (InternalCapabilityDefinition definition in module.Definition.Capabilities)
                     {
-                        if (_state == AfFrameworkState.Stopped)
+                        if (_state == ModuleFrameworkLifecycleState.Stopped)
                         {
-                            capabilities.Add(new AfModuleCapabilityInfo(definition.Id, definition.ContractVersion,
-                                AfModuleCapabilityState.Unavailable, "framework.stopped"));
+                            capabilities.Add(new InternalCapabilityStatus(definition.Id, module.Definition.Id, definition.ContractVersion,
+                                definition.ContractVersion, InternalCapabilityState.ModuleUnavailable, "framework.stopped"));
                             continue;
                         }
                         InternalCapabilityStatus status = _directory.GetCapabilityStatus(definition.Id, definition.ContractVersion);
-                        capabilities.Add(new AfModuleCapabilityInfo(definition.Id, definition.ContractVersion,
-                            MapStatus(status.State), status.ReasonCode));
+                        capabilities.Add(status);
                     }
-                    modules.Add(new AfModuleInfo(module.Definition.Id, module.Definition.ContractVersion, capabilities));
+                    modules.Add(new ModuleBindingSnapshot(module.Definition, capabilities));
                 }
             }
-            return new AfFrameworkSnapshot(_state, _reason, publicCapabilities, modules);
-        }
-    }
-
-    private static AfModuleCapabilityState MapStatus(InternalCapabilityState state)
-    {
-        switch (state)
-        {
-            case InternalCapabilityState.Available:
-                return AfModuleCapabilityState.Available;
-            case InternalCapabilityState.RegistrationOpen:
-            case InternalCapabilityState.ModuleNotInitialized:
-                return AfModuleCapabilityState.NotInitialized;
-            case InternalCapabilityState.UnknownCapability:
-            case InternalCapabilityState.Blocked:
-            case InternalCapabilityState.VersionMismatch:
-                return AfModuleCapabilityState.InvalidRegistration;
-            default:
-                return AfModuleCapabilityState.Unavailable;
+            return new ModuleFrameworkSnapshot(_state, _reason, modules);
         }
     }
 }

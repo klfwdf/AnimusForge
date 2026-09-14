@@ -17,6 +17,6 @@ python -X utf8 -B tools/CampaignCompositionTests/run.py --source-only
 - Existing V1/API tests independently prove public surface/lifecycle/parallel reads, with `--artifact-root` checking real dual-version DLL metadata. No new public execution capability is declared.
 - **Not live-game validation:** engine constructor side effects, real save loading, Campaign/Mission cleanup and player outcomes remain outside this harness.
 
-`TeamModulePortParityTests` retains its original full-owner gate and now composes this verified inverse before its historical load/unload proof. Its older Native/Memory declaration table currently fails on `ProcessMemorySummaryQueueAsync` already absent at the pinned baseline; this extraction does not waive that failure. Direct port-execution and signature checks can pass independently but are not a full-suite PASS.
+`TeamModulePortParityTests` retains its original full-owner gate and now composes this verified inverse before its historical load/unload proof. The older Native/Memory table is now preceded by the existing strict B1 inverse (`source_parity.py`), which validates reviewed source/evidence and exact whole-file equivalence before recovering the historical method shape. Removed methods are not silently skipped. Snapshot boundary evolution similarly composes its exact inverse before the Campaign root comparison.
 
 Generated fixtures/logs stay under ignored `.generated/`; no reference implementation enters production compilation.

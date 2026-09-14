@@ -29,6 +29,11 @@ def restore_reviewed_nonport_deltas(path, current, prior):
     # Only these hash-frozen, separately behavior-tested declarations can differ; a future edit fails.
     spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
+    # Restore only the separately reviewed B1 migration first. It verifies production and
+    # evidence sources and whole-file equivalence; no removed method is silently skipped.
+    spec = importlib.util.spec_from_file_location("port_memory_inverse", ROOT / "tools/MemorySummaryMainThreadBoundaryTests/source_parity.py")
+    memory = importlib.util.module_from_spec(spec); spec.loader.exec_module(memory)
+    current = memory.restore_memory_summary_source(path, current)
     review = json.loads((HERE / "reviewed-native-admission-deltas.json").read_text(encoding="utf-8"))
     for comment in review.get("commentRewrites", []):
         if comment["path"] == path:
