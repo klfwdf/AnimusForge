@@ -1,3 +1,11 @@
+# 当前增量：Campaign 与制作组目录装配职责（2026-09-15）
+
+源码955a6be3、86点地图：现有ModuleFrameworkRuntime委托CampaignComposition注册36行为、CampaignModelComposition注册4包装模型；TeamModuleRegistration创建原typed目录。SubModule净减148行，Runtime净减25行，不新增注册器/全局Campaign状态或public能力。
+
+[详细HANDOFF/实例创建释放表](../handoffs/2026-09-15-composition-extraction-handoff.md)。本轮仅装配边界，业务/存档/其他UI/Harmony/Tick保留原owner；完整生命周期/公共投影进一步分离/业务拆分未完成，不整文件标DONE。
+
+## 以下为既有定位与保留责任
+
 # 当前增量：独立Memory dispatch owner（2026-09-15）
 
 源码61d57892、81点地图：`Refactor/Runtime/MemorySummaryDispatcher`持有唯一队列/待办/预算/异常完成，internal `IMemorySummaryDispatchHost`隔离游戏读；原Host仅57行薄适配，规划两处耗时读取同步迁移。

@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "955a6be314840be8d20f1320d3c7f23c7a93fe77",
+  "baseline": "61d578926329ace61bf6b6ae43e12bf7d89b4696",
+  "scope": "I1 campaign/team composition extraction only; not stage8/B1 or live-game completion",
+  "sourceBinding": "Stage builds ran from the working tree at checkpoint78711dfb; changed source is identical to committed955a6be3, normalized source and actual artifact hashes recorded. No post-build production edits.",
+  "verification": {
+    "campaignAssertions": 42,
+    "validBehavioralMutations": 5,
+    "exactSourceInverse": "PASS",
+    "apiAssertions": 119,
+    "concurrentReads": 256,
+    "externalInternalAccess": "expected CS0122",
+    "actualDllMetadataAssertions": 556,
+    "stageOutputs": 6,
+    "syncDataKeys": 146,
+    "campaignBehaviorTypes": 36,
+    "independentPortAssertions": 308,
+    "portOwnerSignatures": 13,
+    "historicalSubModuleInverse": "PASS"
+  },
+  "failures": [
+    {
+      "check": "initial Debug build",
+      "status": "FIXED_AND_RETESTED",
+      "detail": "PolicyEffects using still required by UI; restored, Debug/Release six Stage succeeded."
+    },
+    {
+      "check": "TeamModulePortParityTests full owner entry",
+      "status": "PREEXISTING_STILL_FAILING",
+      "detail": "ProcessMemorySummaryQueueAsync declaration missing in MyBehavior.cs already at unchanged61d57892. No waiver; isolated port and composition proofs are not full-suite PASS."
+    }
+  ],
+  "unverified": [
+    "live Campaign/Mission",
+    "actual model/behavior constructor effects",
+    "real old-save loading",
+    "live Economy/AFEF",
+    "full original AF feature parity",
+    "complete lifecycle teardown"
+  ],
+  "sourceFiles": [
+    {
+      "path": "Refactor/Modules/CampaignComposition.cs",
+      "normalizedSha256": "50d9bc192826917dc204d15058146d096fde88fb48e6342faf3d340ea9bb4720"
+    },
+    {
+      "path": "Refactor/Modules/CampaignModelComposition.cs",
+      "normalizedSha256": "0001f2254af3699ad96ba091c3564e5bec7a055c2d89e7356850df50dd3c86f3"
+    },
+    {
+      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "normalizedSha256": "7d3193f5038999aa332a14bed9ab3b037cd3ad983d40f4e2b605d8fa08af6616"
+    },
+    {
+      "path": "Refactor/Modules/TeamModuleRegistration.cs",
+      "normalizedSha256": "2a625d45493c0d796300adabcb2ebbad6b698296146dcf01075eecaad64d1aad"
+    },
+    {
+      "path": "SubModule.cs",
+      "normalizedSha256": "722e6318c0e884dae16a847524cea3bc95397afefa8ad1d96afc4899b14c3c1f"
+    },
+    {
+      "path": "tools/CampaignCompositionTests/HostStubs.cs",
+      "normalizedSha256": "33f240a33d529360371290ac26675cf1993ccfa32180312e76ff2e2d0481c7e5"
+    },
+    {
+      "path": "tools/CampaignCompositionTests/Program.cs",
+      "normalizedSha256": "4326f44f9a9e4dc621913ec76963cc586fd27cbf9d4962a9f5ddc1ce3f122e50"
+    },
+    {
+      "path": "tools/CampaignCompositionTests/run.py",
+      "normalizedSha256": "e5f15c6f46bdbb88c75438dd1647e38133084b880c6f637cf671ac2a2a931290"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/ArtifactMetadata.cs",
+      "normalizedSha256": "843ca5684a86dbf2146e3207d07b62920eee5cd8141eae273c7bb65a73542a06"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/HostStubs.cs",
+      "normalizedSha256": "d3a92fe3f96f577cfc9c72a19532f82567ee99198996d2eaaf23029dd40a953e"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/run.py",
+      "normalizedSha256": "a01f7a2930984d0bcafa74158c9d2ae30eb040221b6be399d7e2adbf112311d3"
+    },
+    {
+      "path": "tools/TeamModulePortParityTests/run.py",
+      "normalizedSha256": "677166de7e5ba2d7f1af96c6a1a40f0f494854c12f0982ba9712a0a6b2409420"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "34a7f71b239f0ef0211804fe7adbb28f83cfdbfc1faccfe468b2fb112d7bc393",
+      "bytes": 43008,
+      "buildMarker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "34A7F71B239F0EF0211804FE7ADBB28F83CFDBFC1FACCFE468B2FB112D7BC393",
+        "CreatedUtc": "2026-09-14T21:46:00.4895863Z"
+      }
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "b94385d776567a47d3b5b4f6ceaba463bc8f08085989c00ee8e1a58f6d2ff7ca",
+      "bytes": 12722176,
+      "buildMarker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "B94385D776567A47D3B5B4F6CEABA463BC8F08085989C00EE8E1A58F6D2FF7CA",
+        "CreatedUtc": "2026-09-14T21:45:39.7299933Z"
+      }
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "794ecf9c882d910131345a92258fd1e90c326580a91e69bb3f5d85a05e99d6d1",
+      "bytes": 12721152,
+      "buildMarker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "794ECF9C882D910131345A92258FD1E90C326580A91E69BB3F5D85A05E99D6D1",
+        "CreatedUtc": "2026-09-14T21:45:57.0709986Z"
+      }
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "3bab3f80a8d2d7be68d911c288ce8174c6655546a653fb85eb1dc45e3a7a333b",
+      "bytes": 41472,
+      "buildMarker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "3BAB3F80A8D2D7BE68D911C288CE8174C6655546A653FB85EB1DC45E3A7A333B",
+        "CreatedUtc": "2026-09-14T21:47:29.9978717Z"
+      }
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "b1884bba63cbbafb821b071c55843a0e0dd8a4e0e7d1b31972e44845a7b8c23c",
+      "bytes": 11805696,
+      "buildMarker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "B1884BBA63CBBAFB821B071C55843A0E0DD8A4E0E7D1B31972E44845A7B8C23C",
+        "CreatedUtc": "2026-09-14T21:47:16.5775368Z"
+      }
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "d7a376b09423b5065c40296af8ae41e1d0ce231546860f20c80cf9c971a443fe",
+      "bytes": 11805184,
+      "buildMarker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "D7A376B09423B5065C40296AF8AE41E1D0CE231546860F20C80CF9C971A443FE",
+        "CreatedUtc": "2026-09-14T21:47:27.5004739Z"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "original": ".tmp/composition-20260915/api-contracts.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/00-api-contracts.log",
+      "sha256": "fcbbb994889f62a8731ee0feb8e8f64fe6181be9f31f9c1a6510246ee335ea34"
+    },
+    {
+      "original": ".tmp/composition-20260915/api-final.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/01-api-final.log",
+      "sha256": "42b6cc939bf723d8e4400212f6ab204a94b7dd7b4a4a17738231764e5e050cad"
+    },
+    {
+      "original": ".tmp/composition-20260915/composition-final.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/02-composition-final.log",
+      "sha256": "deac309a0b28a95aeb3f29d5b95fd54df1aafebef7eed2ab391c4ea0d503382e"
+    },
+    {
+      "original": ".tmp/composition-20260915/composition-tests.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/03-composition-tests.log",
+      "sha256": "deac309a0b28a95aeb3f29d5b95fd54df1aafebef7eed2ab391c4ea0d503382e"
+    },
+    {
+      "original": ".tmp/composition-20260915/ports-focused.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/04-ports-focused.log",
+      "sha256": "ad43dedc97cbe08321d6e68d3a14edbdfff4060f37c29fe95d5c41ffa55249c3"
+    },
+    {
+      "original": ".tmp/composition-20260915/ports.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/05-ports.log",
+      "sha256": "bfe9c6b66590f5898a40198ab7492681a25b87558098834970ab8b0f75a399a1"
+    },
+    {
+      "original": ".tmp/composition-20260915/stage-debug-final.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/06-stage-debug-final.log",
+      "sha256": "93bea93c53b098459b62d1d25c1d4f11d9452a9c6157cd111461d257bece5165"
+    },
+    {
+      "original": ".tmp/composition-20260915/stage-debug.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/07-stage-debug.log",
+      "sha256": "152ca76685e1e59309f3579410d103767befa3d41be4a89abb126d97ff19b776"
+    },
+    {
+      "original": ".tmp/composition-20260915/stage-release.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/08-stage-release.log",
+      "sha256": "a6c87047020355c872b7557d76b492c7baaf72d30a63cede5f6acf385064613a"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/abort_model_failure/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/09-run.log",
+      "sha256": "ba4eeffa4e89f6fbf10978d5d670fa1b125f900d6f665438f0bfa17ac4f520b0"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/current/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/10-run.log",
+      "sha256": "6b1138c3b80804a7c8000efa2742289512e63e8b318eac2b026e943c7636ab34"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/discard_inner/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/11-run.log",
+      "sha256": "1e48c4d2cc07e8dc69f8fa9e60cc13f16cd46bea281a9104911fd34dbd8ba22e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/drop_behavior/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/12-run.log",
+      "sha256": "2245bf2c93a09a7c9100a62e5788c372c1770880cc18447dd6807fbc640b9d2e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/gate_on_directory/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/13-run.log",
+      "sha256": "2245bf2c93a09a7c9100a62e5788c372c1770880cc18447dd6807fbc640b9d2e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/reverse_models/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/14-run.log",
+      "sha256": "2245bf2c93a09a7c9100a62e5788c372c1770880cc18447dd6807fbc640b9d2e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/results.json",
+      "frozen": ".tmp/composition-20260915/final-evidence/15-results.json",
+      "sha256": "d5010e8966897a9902129cc26983bf12c9f4b5ea6deb97abc18939b2ae1010fd"
+    },
+    {
+      "original": ".tmp/composition-20260915/persistence.json",
+      "frozen": ".tmp/composition-20260915/final-evidence/16-persistence.json",
+      "sha256": "be2415729e235a27ebb350aec69b92be7b85d3e6ac7fe28930180317ca63cf31"
+    },
+    {
+      "original": ".tmp/composition-20260915/ports-execution/run.log",
+      "frozen": ".tmp/composition-20260915/final-evidence/17-run.log",
+      "sha256": "4c08014f2532b4811e4fc755f0cbf39473903ac84599813e854f826d4d5e8cba"
+    }
+  ],
+  "push": false,
+  "deployment": false,
+  "automation": "PAUSED"
+}
