@@ -290,7 +290,7 @@ namespace AnimusForge
             // Planning now spans main-thread slices. Pump only until the provider exists;
             // then release it without pumping the actual completion being inspected.
             Until(() => task.IsCompleted || batches.Count > 0, Tick);
-            ReleaseProviders(); Until(() => task.IsCompleted || !_memorySummaryMainThreadActions.IsEmpty, ReleaseProviders);
+            ReleaseProviders(); Until(() => task.IsCompleted || MemorySummaryDispatch.HasPending, ReleaseProviders);
         }
         private static void Check(bool value, string message) { if (!value) throw new Exception(message); }
         private static void MainThreadEffects()
@@ -371,7 +371,7 @@ namespace AnimusForge
             b.Finish(task);
             Check(applied == 0 && b._dailyMemoryDrafts["daily"].Count == 1, "retired owner/generation accepted old business writes");
             Check(b._memorySummaryProcessing, "old request released processing outside accepted context");
-            Check(b._memorySummaryMainThreadActions.IsEmpty, "retired work remains queued");
+            Check(!b.MemorySummaryDispatch.HasPending, "retired work remains queued");
             Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "stale completion notified success");
             MainThreadEffects();
         }

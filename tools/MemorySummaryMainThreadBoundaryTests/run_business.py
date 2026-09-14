@@ -239,6 +239,9 @@ def main():
         for target, relative in [("BudgetBinding.cs", "MyBehavior.MemoryMaintenanceBudget.cs"),
                                  ("BudgetRuntime.cs", "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs")]:
             files[target] = (ROOT / relative).read_text(encoding="utf-8-sig")
+    if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
+        for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     files["Proof.csproj"] = files["Proof.csproj"].replace("<OutputType>", "<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>", 1).replace("</Project>", "<ItemGroup>" + "".join('<Compile Include="' + name + '" />' for name in files if name.endswith(".cs")) + "</ItemGroup></Project>")
     manifest["generated_sha256"] = {name: hashlib.sha256(data.encode()).hexdigest() for name, data in files.items()}
     for name, data in files.items():

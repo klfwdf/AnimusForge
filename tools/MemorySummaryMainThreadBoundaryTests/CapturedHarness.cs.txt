@@ -264,7 +264,7 @@ namespace AnimusForge {
    }
    var task=b.Start(new(){planned});
    if(change=="before-capture") {
-    Check(SpinWait.SpinUntil(()=>b._memorySummaryMainThreadActions.Count>0||task.IsCompleted,1000)&&!task.IsCompleted&&b.requests.IsEmpty,"fixture did not stop before queued capture");
+    Check(SpinWait.SpinUntil(()=>b.MemorySummaryDispatch.PendingCount>0||task.IsCompleted,1000)&&!task.IsCompleted&&b.requests.IsEmpty,"fixture did not stop before queued capture");
     Edit();
    }
    b.Finish(task);

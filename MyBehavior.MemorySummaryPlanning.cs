@@ -92,7 +92,7 @@ public partial class MyBehavior
                 { deferred = true; return true; }
                 long started = Stopwatch.GetTimestamp();
                 double budget = GetDailyMaintenanceFrameBudgetMs()
-                    - _memorySummaryMainThreadElapsedTicks * 1000.0 / Stopwatch.Frequency;
+                    - MemorySummaryDispatchElapsedTicks * 1000.0 / Stopwatch.Frequency;
                 int visited = 0;
                 while (cursor < limit && visited < DailyMaintenanceMaxJobsPerTick
                     && (visited == 0 || !IsDailyMaintenanceBudgetExceeded(started, budget)))
@@ -137,7 +137,7 @@ public partial class MyBehavior
                 { deferred = true; return true; }
                 long started = Stopwatch.GetTimestamp();
                 double budget = GetDailyMaintenanceFrameBudgetMs()
-                    - _memorySummaryMainThreadElapsedTicks * 1000.0 / Stopwatch.Frequency;
+                    - MemorySummaryDispatchElapsedTicks * 1000.0 / Stopwatch.Frequency;
                 int visited = 0;
                 while (cursor < limit && visited < DailyMaintenanceMaxJobsPerTick
                     && (visited == 0 || !IsDailyMaintenanceBudgetExceeded(started, budget)))
