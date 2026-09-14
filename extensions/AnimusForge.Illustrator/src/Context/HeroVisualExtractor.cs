@@ -398,25 +398,12 @@ namespace AnimusForge.Illustrator.Context
         private static void ExtractArmorSlot(HeroVisualProfile profile, Equipment equipment, EquipmentIndex slot, string slotName, Hero hero)
         {
             EquipmentElement element = equipment[slot];
-            bool isNobleOrRuler = hero.IsFactionLeader || hero.IsLord;
 
             if (element.Item == null)
             {
                 if (slot == EquipmentIndex.Head)
                 {
-                    if (hero.IsFactionLeader)
-                    {
-                        string headwear = ResolveRegalHeadwear(hero);
-                        profile.EquipmentDetails.Add($"头部: 未戴战斗铁盔；面容裸露，额前佩戴{headwear}，长发梳理尊贵华丽 (Bareheaded without combat helmet; wearing culturally-accurate regal headwear as described, STRICTLY NO mismatched foreign crown)");
-                    }
-                    else if (isNobleOrRuler)
-                    {
-                        profile.EquipmentDetails.Add("头部: 未戴战盔；面容裸露，佩戴贵族典雅发饰或整齐梳理的发束 (Bareheaded without helmet; wearing noble accessories or neatly styled hair)");
-                    }
-                    else
-                    {
-                        profile.EquipmentDetails.Add("头部: 未戴头盔，面容与发型自然裸露 (Bareheaded, NO helmet)");
-                    }
+                    profile.EquipmentDetails.Add("头部: 该装备栏为空，未佩戴任何头盔、冠冕或头饰；保持游戏人物原本发型自然裸露");
                 }
                 else if (slot == EquipmentIndex.Cape)
                 {
@@ -433,116 +420,38 @@ namespace AnimusForge.Illustrator.Context
             string itemName = item.Name != null ? item.Name.ToString() : item.StringId;
             string modifierStr = element.ItemModifier?.Name != null ? element.ItemModifier.Name.ToString() + "的" : "";
             int tier = (int)item.Tier;
-            int value = item.Value;
 
-            string materialStr = ResolveItemMaterial(item, isNobleOrRuler);
+            string materialStr = ResolveItemMaterial(item);
 
             if (slot == EquipmentIndex.Cape)
             {
-                string bannerColorDesc = "";
-                if (hero.Clan != null)
-                {
-                    string color1Name = ResolveColorName(hero.Clan.Color);
-                    bannerColorDesc = $" (主色调符合家族代表色: {color1Name} {profile.PrimaryBannerColorHex})";
-                }
-                if (isNobleOrRuler)
-                {
-                    profile.EquipmentDetails.Add($"披风/斗篷/颈间围巾: {modifierStr}{itemName} ({materialStr}{bannerColorDesc}, 贵族/将领华贵斗篷披风或彰显宗族身份的丝绸围巾，以精美金属搭扣佩戴于肩，Noble/royal mantle/cloak/scarf draped gracefully)");
-                }
-                else
-                {
-                    profile.EquipmentDetails.Add($"披风/肩部: {modifierStr}{itemName} ({materialStr}{bannerColorDesc})");
-                }
+                profile.EquipmentDetails.Add($"披风/肩部装备: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier})；颜色、纹样与佩戴方式以人物参考图为准");
                 return;
             }
 
-            string desc = $"{slotName}: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier})";
-
-            if (slot == EquipmentIndex.Body)
-            {
-                if (hero.Clan != null)
-                {
-                    string primaryColorName = ResolveColorName(hero.Clan.Color);
-                    string secondaryColorName = ResolveColorName(hero.Clan.Color2);
-                    desc += $" 【极其关键服装配色与纹样】：衣物/战甲主体布料底色为【{primaryColorName}】，领口、袖口、胸前与肩部边缘的刺绣装饰与滚边均为耀眼的【{secondaryColorName}】纹样；【极其关键颜色铁律：黄色/金色刺绣绝对严禁画成蓝色！严禁颠倒服饰颜色！】";
-                }
-
-                if (isNobleOrRuler)
-                {
-                    desc += " [贵族/王室华贵服饰，绝非粗麻破布，STRICTLY NO ragged peasant cloth, NO beggar burlap!]";
-                }
-                else if (item.ArmorComponent != null && item.ArmorComponent.MaterialType == ArmorComponent.ArmorMaterialTypes.Cloth && (tier <= 1 || value < 200))
-                {
-                    desc += " [朴素平民衣着 (Simple rustic civilian attire)]";
-                }
-            }
-
+            string desc = $"{slotName}: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier})；具体颜色与纹样以人物参考图为准";
             profile.EquipmentDetails.Add(desc);
         }
 
-        private static string ResolveRegalHeadwear(Hero hero)
+        private static string ResolveItemMaterial(ItemObject item)
         {
-            string cultureCode = hero?.Culture?.StringId?.ToLowerInvariant() ?? "";
-            string cultureName = hero?.Culture?.Name != null ? hero.Culture.Name.ToString() : "";
-            bool isFemale = hero?.IsFemale == true;
+            if (item == null || item.ArmorComponent == null) return "材质未在装备数据中标明";
 
-            if (cultureCode.Contains("aserai") || cultureName.Contains("阿塞莱"))
-            {
-                return "阿塞莱苏丹式样的金丝刺绣华贵缠头巾/头巾王冠（正中缀以宝石与金链坠饰），【严格符合沙漠文化形制，严禁西式尖顶金冠】 (A majestic gold-embroidered jeweled turban crown of the Sultanate, STRICTLY NO European-style pointed crown)";
-            }
-            if (cultureCode.Contains("khuzait") || cultureName.Contains("库赛特"))
-            {
-                return "库赛特可汗式样的貂皮滚边金饰尖顶汗冠/雄鹰羽冠，【严格符合草原游牧形制，严禁西式王冠】 (A sable-trimmed pointed steppe Khan crown with eagle feathers, STRICTLY NO European-style crown)";
-            }
-            if (cultureCode.Contains("sturgia") || cultureName.Contains("斯特吉亚"))
-            {
-                return "斯特吉亚北境王者式样的厚重青铜/暗金环形战冠（饰有渡鸦或狼首浮雕），【严格符合北境诺斯形制，严禁西式王冠】 (A heavy Nordic bronze/dark-gold ringed war crown with raven or wolf motifs, STRICTLY NO European-style crown)";
-            }
-            if (cultureCode.Contains("battania") || cultureName.Contains("巴旦尼亚"))
-            {
-                return "巴旦尼亚至高王式样的凯尔特青铜环形王冠（饰有绳结与兽首图腾），【严格符合高地凯尔特形制，严禁西式王冠】 (A Celtic bronze torc-style circlet crown with knotwork and beast motifs, STRICTLY NO European-style crown)";
-            }
-            if (cultureCode.Contains("empire") || cultureName.Contains("帝国"))
-            {
-                return isFemale
-                    ? "帝国女皇式样的紫坠黄金月桂冠冕（饰有宝石垂坠），【严格符合拜占庭形制】 (An imperial Byzantine golden laurel diadem with amethyst pendants)"
-                    : "帝国皇帝式样的紫坠黄金月桂冠冕（古典拜占庭式，饰有宝石垂坠），【严格符合拜占庭形制，严禁哥特式尖顶王冠】 (An imperial Byzantine golden laurel wreath diadem with gem pendants, STRICTLY NO gothic pointed crown)";
-            }
-            return "象征最高统治者尊贵权柄的华美皇冠/金冠/冠冕，形制严格符合所属文化的高贵头饰 (A magnificent royal crown/diadem strictly matching their own culture's regal tradition)";
-        }
-
-        private static string ResolveItemMaterial(ItemObject item, bool isNobleOrRuler)
-        {
-            if (item == null || item.ArmorComponent == null) return "中世纪织物";
-
-            int tier = (int)item.Tier;
-            int value = item.Value;
             string name = item.Name != null ? item.Name.ToString() : "";
-
             switch (item.ArmorComponent.MaterialType)
             {
                 case ArmorComponent.ArmorMaterialTypes.Cloth:
-                    if (isNobleOrRuler || tier >= 4 || value >= 2000)
-                    {
-                        return "奢华丝绸、天鹅绒与金银线精细刺绣面料 (Luxurious tailored noble silk, velvet, or fine brocade with intricate embroidery)";
-                    }
-                    if (name.Contains("粗") || name.Contains("麻") || item.StringId.IndexOf("ragged", StringComparison.OrdinalIgnoreCase) >= 0 || item.StringId.IndexOf("burlap", StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        return "粗麻布/粗棉土布 (Coarse homespun linen/burlap)";
-                    }
-                    return "细纺布料/平民羊毛呢长袍 (Fine cloth/wool)";
-
+                    if (name.Contains("丝") || item.StringId.IndexOf("silk", StringComparison.OrdinalIgnoreCase) >= 0) return "丝织物";
+                    if (name.Contains("麻") || item.StringId.IndexOf("linen", StringComparison.OrdinalIgnoreCase) >= 0 || item.StringId.IndexOf("burlap", StringComparison.OrdinalIgnoreCase) >= 0) return "麻布织物";
+                    return "布料织物；具体纤维与纹样未标明";
                 case ArmorComponent.ArmorMaterialTypes.Leather:
-                    return "熟牛皮/鞣制硬皮护甲 (Hardened boiled leather armor)";
-
+                    return "皮革";
                 case ArmorComponent.ArmorMaterialTypes.Chainmail:
-                    return "精制细环铆接金属锁子甲 (Fine riveted metal chainmail)";
-
+                    return "金属锁子甲";
                 case ArmorComponent.ArmorMaterialTypes.Plate:
-                    return "精工锻造重型金属甲胄 (Forged heavy metal armor: plate, heavy scale, or lamellar)";
-
+                    return "金属甲胄";
                 default:
-                    return "复合防护甲胄";
+                    return "复合防护材质";
             }
         }
 
@@ -563,14 +472,7 @@ namespace AnimusForge.Illustrator.Context
                 if (element.Item.ItemType == ItemObject.ItemTypeEnum.Shield)
                 {
                     hasShield = true;
-                    string shieldDesc = $"盾牌: {modifierStr}{itemName}";
-                    if (hero.Clan != null)
-                    {
-                        string primaryColorName = ResolveColorName(hero.Clan.Color);
-                        string secondaryColorName = ResolveColorName(hero.Clan.Color2);
-                        shieldDesc += $" (漆绘{hero.Clan.Name}家族专属纹章，盾面底色为【{primaryColorName} ({profile.PrimaryBannerColorHex})】，中央徽记图腾为耀眼的【{secondaryColorName} ({profile.SecondaryBannerColorHex})】；极其关键：严禁颠倒盾牌与图腾颜色！绝对严禁将金色徽记画成蓝色！)";
-                    }
-                    profile.WeaponDetails.Add(shieldDesc);
+                    profile.WeaponDetails.Add($"盾牌: {modifierStr}{itemName}；盾面颜色与图案以人物或纹章参考图为准，数据未显示时不要自行添加家族徽记");
                 }
                 else if (element.Item.ItemType == ItemObject.ItemTypeEnum.Crossbow)
                 {
@@ -701,7 +603,7 @@ namespace AnimusForge.Illustrator.Context
             }
 
             // 1.5 真实精准提取人类肤色（杜绝任何红蓝反色或怪异变色）
-            string skinToneDesc = "健康自然的温润浅白人类肤色 (Healthy natural fair human skin tone)";
+            string skinToneDesc = "肤色数据未能精确分类，以人物参考图为准";
             try
             {
                 List<uint> skinGradient = MBBodyProperties.GetSkinColorGradientPoints(hero.CharacterObject?.Race ?? 0, isFemale ? 1 : 0, age);
@@ -714,103 +616,43 @@ namespace AnimusForge.Illustrator.Context
                     int sb = (int)(sc & 0xFF);
                     if (sr > 200 && sg > 160)
                     {
-                        skinToneDesc = "白皙透红的自然欧洲/高加索人类肤色，面颊带着自然血色 (Fair Caucasian skin with healthy warm rosy cheeks)";
+                        skinToneDesc = "偏明亮、带暖色血色的自然肤色";
                     }
                     else if (sr > 165 && sg > 125)
                     {
-                        skinToneDesc = "健康温暖的地中海浅小麦色/米色人类肤色 (Warm Mediterranean olive / light beige human skin tone)";
+                        skinToneDesc = "温暖的浅小麦色或米色肤色";
                     }
                     else if (sr > 125)
                     {
-                        skinToneDesc = "阳光晒染的健康棕褐色/古铜色人类肤色 (Warm sun-tanned bronze human skin tone)";
+                        skinToneDesc = "较深的暖棕褐色或古铜色肤色";
                     }
                     else
                     {
-                        skinToneDesc = "深邃健康的深褐色/棕黑人类肤色 (Deep rich dark human skin tone)";
+                        skinToneDesc = "深褐色肤色";
                     }
                 }
             }
             catch
             {
-                skinToneDesc = "健康自然的浅白/浅小麦色人类肤色 (Healthy natural warm human skin tone)";
+                skinToneDesc = "肤色数据读取失败，以人物参考图为准";
             }
 
-            traits.Add($"【真实人类肤色约束】{skinToneDesc}。【极其关键最高艺术准则：必须是完全正常且富有血色的真实人类皮肤，绝对严禁画成蓝色、青色、灰色、紫色等异类怪异皮肤！严禁阿凡达式蓝皮！】(Real natural human skin tone, healthy organic human flesh with warm blood circulation; ABSOLUTELY FORBIDDEN to depict blue, cyan, green, grey, or purple skin! Real human flesh only!)");
+            traits.Add($"【肤色观测】{skinToneDesc}；以人物参考图为最高依据，不要把渲染通道色偏当成角色真实肤色");
 
             // 2. 发型与发长真实动态提取
-            if (isFemale)
+            if (hairIndex == 0)
             {
-                if (hairIndex == 0)
-                {
-                    traits.Add($"【女性发型与发色】发型为干练超短发，发色为{hairColorWithAge}");
-                }
-                else if (hairIndex >= 8 && hairIndex <= 15)
-                {
-                    traits.Add($"【女性发型与发色】柔顺丰盈的波浪长发自然垂落过肩，发色为{hairColorWithAge} (Luxurious long wavy hair cascading gracefully down past shoulders and back)");
-                }
-                else
-                {
-                    traits.Add($"【女性发型与发色】梳理为端庄典雅的中世纪贵妇/女皇发髻，发色为{hairColorWithAge} (Elegant medieval noblewoman/empress hairstyle, hair gracefully gathered or braided under her crown or diadem)");
-                }
+                traits.Add("【头发】游戏面部数据未显示可见头发；不要自行添加长发或发髻");
             }
             else
             {
-                if (hairIndex == 0)
-                {
-                    traits.Add("【发型极其关键】完全光头/剃光头发，额头与头顶光滑裸露 (Completely bald / shaved head, bald exposed scalp, absolutely NO hair on head)");
-                }
-                else if (hairIndex == 4 || hairIndex == 5)
-                {
-                    traits.Add($"【发型极其关键】发际线严重后退、额前高耸微秃、顶部稀疏地中海发型，发色为{hairColorWithAge} (Prominent high receding forehead, balding thinning crown with sparse hair at temples)");
-                }
-                else if (hairIndex == 2 || hairIndex == 10 || hairIndex == 17 || hairIndex == 20 || hairIndex >= 23)
-                {
-                    // 齐肩浓密波浪卷曲长发（如斯特吉亚朗瓦德、狂战士等长发）
-                    traits.Add($"【发型极其关键】齐肩蓬松波浪长发，富有体积感的{hairColorWithAge}长发自然中分并向两侧垂落，发梢垂至双肩与耳畔，充满北境战神与维京部族首领的狂野豪迈长发，【绝非干练贴头皮短发】 (Thick, voluminous, wavy shoulder-length {hairColorWithAge} hair falling naturally past ears down to his shoulders, rugged wild Nordic warrior mane, STRICTLY NOT neat short hair!)");
-                }
-                else if (hairIndex == 6 || hairIndex == 7 || hairIndex == 14 || hairIndex == 15)
-                {
-                    traits.Add($"【发型极其关键】顶部高高束起的战将武士发髻或马尾束发，两侧与脑后铲短剃平，发色为{hairColorWithAge} (Warrior high topknot / ponytail tied at the crown, with shaved undercut temples)");
-                }
-                else if (hairIndex == 11 || hairIndex == 12 || hairIndex == 13)
-                {
-                    traits.Add($"【发型极其关键】编结有细小战团发辫的部族编发，发色为{hairColorWithAge} (Braided warrior locks and small war plaits flowing down the neck)");
-                }
-                else if (hairIndex == 3 || hairIndex == 16)
-                {
-                    traits.Add($"【发型极其关键】中分自然向后梳理的层次中长发，发色为{hairColorWithAge} (Medium-length flowing hair swept back naturally, falling just above shoulders)");
-                }
-                else
-                {
-                    traits.Add($"【发型极其关键】干练利落的中世纪短发，发色为{hairColorWithAge} (Neatly cropped short hair)");
-                }
-
-                // 男性面部毛发与胡须真实动态提取
-                if (beardIndex == 0)
-                {
-                    traits.Add("【面部毛发约束】面容剃得极干净，绝对无任何胡须与胡茬，皮肤平整光洁 (Clean-shaven, smooth skin, absolutely NO beard, NO mustache, NO stubble)");
-                }
-                else if (beardIndex == 3)
-                {
-                    traits.Add("【面部胡须】下颌带有青灰色的刚硬浓重胡茬，无长胡须 (Heavy rugged 5 o'clock stubble across jaw, but NO long beard)");
-                }
-                else if (beardIndex == 6 || beardIndex == 7 || beardIndex == 8)
-                {
-                    traits.Add("【面部胡须】唇上蓄有修剪考究的八字胡髭，下巴与脸颊剃净 (Distinguished classic mustache, clean-shaven cheeks and chin)");
-                }
-                else if (beardIndex == 1 || beardIndex == 5)
-                {
-                    traits.Add("【面部胡须】修剪精细的山羊短胡与唇髭 (Trimmed goatee and neat mustache)");
-                }
-                else if (beardIndex == 14 || beardIndex == 13 || beardIndex == 9 || beardIndex == 10 || beardIndex == 15 || beardIndex >= 28)
-                {
-                    // 极其浓密卷曲的维京大胡子（朗瓦德正是 index 14）
-                    traits.Add($"【面部胡须极其关键】极其浓密蓬松的厚重大胡子、粗犷卷曲的金色维京大腮胡与浓密唇髭，与发色一致的{baseColorName}大胡须饱满浓密地包裹整片下巴、下颌骨与两腮脸颊，犹如雄狮鬃毛般粗犷威严，【极其关键：绝非细细修剪的薄胡子，必须是浓密茂盛的大胡子】 (Magnificent, very thick, bushy, curly full Nordic beard and heavy mustache matching his hair color, dense wild golden-blonde beard completely covering his jaw, chin, and lower cheeks like a lion's mane, rugged barbarian monarch beard, STRICTLY NOT a thin or neatly trimmed beard!)");
-                }
-                else
-                {
-                    traits.Add($"【面部胡须】成熟浓密的中世纪全腮胡与唇髭，与发色一致为{baseColorName} (Mature full beard and mustache matching his hair color)");
-                }
+                traits.Add($"【头发】发色为{hairColorWithAge}；具体长度、发际线、编发与发髻只按人物参考图还原，不根据数字索引猜测");
+            }
+            if (!isFemale)
+            {
+                traits.Add(beardIndex == 0
+                    ? "【面部毛发】游戏面部数据为无胡须；不要添加胡须或胡茬"
+                    : $"【面部毛发】游戏面部数据确认存在胡须，颜色接近{baseColorName}；具体形制与浓密程度只按人物参考图还原");
             }
 
             // 3. 面貌骨相与身份气场（严格基于性别、年龄与社会地位）
@@ -844,30 +686,6 @@ namespace AnimusForge.Illustrator.Context
                 {
                     traits.Add($"【骨相与面貌】约{age}岁坚毅英武的中世纪武士面容 (A seasoned warrior of approximately {age} years)");
                 }
-            }
-
-            // 3.5 所属文化人种骨相与民族风貌特征
-            string cultureCode = hero.Culture?.StringId?.ToLowerInvariant() ?? "";
-            string cultureName = hero.Culture?.Name != null ? hero.Culture.Name.ToString() : "";
-            if (cultureCode.Contains("sturgia") || cultureName.Contains("斯特吉亚"))
-            {
-                traits.Add("【北境斯拉夫/诺斯王者相貌】坚毅冷峻的北境王者骨相，鼻梁宽直高挺，眼窝深邃，目光凛冽如寒冬冰霜，皮肤白皙中带着饱经风霜的红润，轮廓刚强粗犷 (Commanding Slavic/Nordic monarch facial structure, strong broad straight nose, deep-set intense frost-blue or steel-grey eyes, weathered fair complexion with ruddy Nordic cheeks, rugged sculpted jawline, fierce stoic Scandinavian majesty)");
-            }
-            else if (cultureCode.Contains("aserai") || cultureName.Contains("阿塞莱"))
-            {
-                traits.Add("【沙漠绿洲贵胄相貌】深邃明亮如鹰隼般的深褐色眼眸，高挺微曲的鹰钩鼻，深邃内敛的轮廓，健康温暖的浅棕小麦色肌肤 (Distinguished Arabian/Moorish noble features, deep piercing amber-brown eyes, prominent aquiline nose, warm olive-bronze complexion)");
-            }
-            else if (cultureCode.Contains("khuzait") || cultureName.Contains("库赛特"))
-            {
-                traits.Add("【草原游牧王者相貌】高颧骨，深邃细长的坚毅丹凤眼，目光如草原苍鹰般锐利，饱经烈日风沙洗礼的坚韧铜色肌肤 (Distinguished Steppe Nomad / Mongolian warrior features, high prominent cheekbones, sharp intense almond eyes, weather-beaten bronze skin)");
-            }
-            else if (cultureCode.Contains("battania") || cultureName.Contains("巴旦尼亚"))
-            {
-                traits.Add("【凯尔特森林高地部族相貌】坚毅粗犷的高地人骨相，刚硬的下巴，目光如林间猎豹般桀骜不驯，带有浓郁的凯尔特原始野性 (Rugged Highland Celtic facial structure, strong stubborn jaw, fierce wild untamed gaze)");
-            }
-            else if (cultureCode.Contains("empire") || cultureName.Contains("帝国"))
-            {
-                traits.Add("【古典罗马拜占庭高贵相貌】高挺笔直的古典罗马鼻，深邃明锐的双眸，端庄对称的贵族骨相，流露出沉着精明的地中海君阀威仪 (Classical Greco-Roman aristocratic facial structure, straight noble Roman nose, refined symmetrical jawline, Mediterranean poise and commanding presence)");
             }
 
             // 4. 性格神态
@@ -1006,37 +824,7 @@ namespace AnimusForge.Illustrator.Context
             string color1Name = ResolveColorName(hero.Clan.Color);
             string color2Name = ResolveColorName(hero.Clan.Color2);
 
-            var sb = new StringBuilder();
-            sb.Append($"{clanName} 家族旗帜与识别色: 主底色为【{color1Name} ({color1Hex})】，图腾徽记色彩为耀眼的【{color2Name} ({color2Hex})】");
-
-            // 动态解析 Banner 图腾与徽记细节
-            try
-            {
-                var banner = hero.Clan.Banner;
-                if (banner != null && banner.BannerDataList != null && banner.BannerDataList.Count > 1)
-                {
-                    var emblems = new List<string>();
-                    for (int i = 1; i < banner.BannerDataList.Count; i++)
-                    {
-                        var data = banner.BannerDataList[i];
-                        int meshId = data.MeshId;
-                        string emblemName = ResolveBannerIconName(meshId);
-                        if (!string.IsNullOrWhiteSpace(emblemName) && !emblems.Contains(emblemName))
-                        {
-                            emblems.Add(emblemName);
-                        }
-                    }
-
-                    if (emblems.Count > 0)
-                    {
-                        sb.Append($"，中央绘有【{string.Join("与", emblems)}】图腾徽记 (Heraldic emblem: {string.Join(", ", emblems)})");
-                    }
-                }
-            }
-            catch { }
-
-            sb.Append("。其持握盾牌、随行战旗与精工披风搭扣上均鲜明漆绘此专属纹章。");
-            return sb.ToString();
+            return $"{clanName} 家族旗帜识别色：主色【{color1Name} ({color1Hex})】，副色【{color2Name} ({color2Hex})】。具体徽记形状、层级与朝向只能依据纹章参考图；未取得参考图时不要猜测动物、兵器、王冠或其他图腾";
         }
 
         public static string ResolveColorName(uint colorUint)
@@ -1104,29 +892,5 @@ namespace AnimusForge.Illustrator.Context
             return "紫红/品红 (Royal magenta / purple-red)";
         }
 
-        private static string ResolveBannerIconName(int meshId)
-        {
-            try
-            {
-                if (BannerManager.Instance != null)
-                {
-                    foreach (var group in BannerManager.Instance.BannerIconGroups)
-                    {
-                        if (!group.IsPattern && group.AllIcons.ContainsKey(meshId))
-                        {
-                            string groupName = group.Name != null ? group.Name.ToString() : "纹章";
-                            return groupName;
-                        }
-                    }
-                }
-            }
-            catch { }
-
-            if (meshId >= 100 && meshId < 200) return "猛兽/飞禽图腾 (Heraldic beast/bird: eagle, falcon, or wolf)";
-            if (meshId >= 200 && meshId < 300) return "草木花卉纹样 (Heraldic flora: rose, tree, or fleur-de-lis)";
-            if (meshId >= 300 && meshId < 400) return "兵戈器物/王权图腾 (Heraldic weapon/symbol: crown, sword, axe, or fortress)";
-            if (meshId >= 400 && meshId < 500) return "日月星辰天象印记 (Heraldic sign: celestial sun, moon, star, or cross)";
-            return "经典贵族家族图腾徽记 (Heraldic clan coat of arms)";
-        }
     }
 }

@@ -64,7 +64,9 @@ foreach ($name in @('System.Numerics.Vectors', 'Newtonsoft.Json', '0Harmony', 'M
 }
 $assembly = [Reflection.Assembly]::LoadFrom($assemblyPathResolved)
 $director = $assembly.GetType('AnimusForge.Illustrator.Core.VisualDirectorEngine', $true)
-$synthesize = $director.GetMethod('SynthesizeRuleBasedPrompt', [Reflection.BindingFlags]'NonPublic,Static')
+$synthesize = $director.GetMethods([Reflection.BindingFlags]'NonPublic,Static') | Where-Object {
+    $_.Name -eq 'SynthesizeRuleBasedPrompt' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType -eq [string]
+} | Select-Object -First 1
 Assert-True ($null -ne $synthesize) 'rule-based prompt method is available'
 
 $male = '【人物与至高地位】审查角色 (瓦兰迪亚文化, 男性, 约30岁, 身份: 封建贵族领主 (Feudal Noble Lord/Lady))。真实穿戴：黑色锁甲和皮靴。'
@@ -123,6 +125,18 @@ Assert-True ($settingsSrc.Contains('EditCustomStylePrompt') -and $settingsSrc.Co
 Assert-True ($settingsSrc.Contains('ShowLongTextEditor')) 'prompt editors reuse main-mod long text editor'
 
 Assert-True ($clientSrc.Contains('customStyleHint')) 'image client injects prompt-level style hints'
+Assert-True ($directorSrc.Contains('IllustrationPromptPlan')) 'director separates hard facts from open art direction'
+Assert-True ($directorSrc.Contains('ComposeFinalPrompt')) 'director programmatically preserves hard facts after LLM expansion'
+Assert-True (-not $directorSrc.Contains('伦勃朗与克雷格·穆林斯')) 'global director prompt no longer hard-locks one artist blend'
+Assert-True ($clientSrc.Contains('BuildEffectivePrompt')) 'image client exposes the actual final prompt sent to providers'
+Assert-True ($clientSrc.Contains('MultipartFormDataContent') -and $clientSrc.Contains('/images/edits')) 'Images protocol can actually send reference images through edits'
+Assert-True ($clientSrc.Contains('ActualRefImages')) 'generation diagnostics distinguish requested and actually sent references'
+Assert-True (-not $screenCapture.Contains('Directory.GetFiles(tempDir, "af_offscreen_*"')) 'offscreen requests do not delete concurrent request files'
+Assert-True ($screenCapture.Contains('CancellationToken cancellationToken')) 'offscreen stage supports scope cancellation'
+Assert-True ($convSrc.Contains('RecentDialogueHistory') -and $convSrc.Contains('BuildRecentDialogueHistory')) 'conversation illustration includes recent dialogue history'
+Assert-True ($convSrc.Contains('maxRounds: 3')) 'conversation illustration is limited to the most recent three rounds'
+Assert-True ($weeklySrc.Contains('WeeklyReportIllustrationSnapshot')) 'weekly report uses the host structured event snapshot'
+Assert-True (-not $weeklySrc.Contains('protagonist?.CurrentSettlement ?? protagonist?.HomeSettlement ?? Settlement.CurrentSettlement')) 'weekly report never invents retrospective location from current positions'
 
 $imageClient = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
 $genOverload = $imageClient.GetMethods([Reflection.BindingFlags]'Public,Static') | Where-Object {
