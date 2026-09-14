@@ -1,12 +1,13 @@
-# AF 总 HANDOFF — 封存队列可续跑排序已离线联验（2026-09-14）
+# AF 总 HANDOFF — 完整raw来源摘要已降成本并离线联验（2026-09-14）
 
-**生产/测试8bcde78b，本轮局部完成；整体阶段8/B1仍VERIFY、未整批合格。af-7-8每小时ACTIVE，未推送/部署。**
+**生产/测试40b92e67，本轮局部完成；阶段8/B1继续VERIFY、未整批合格。af-7-8每小时ACTIVE，未推送/部署。**
 
-- 当前入口：[排序HANDOFF](docs/handoffs/2026-09-14-b1-queue-sort-handoff.md)，含源码坐标、真实差异、完整验证和后续；前生产9158132c、实改前检查点99a7dbfe。[前轮共享预算交接](docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)保留。
-- Daily/Major封存尾部接入独立稳定排序组件，复用Campaign累计预算、最终核对列表/字段/culture；同步仍排空。原净化/去重/引用顺序保持，净化元数据允许早于最终排序完成可见。
-- 60场景/20有效反例、旧915的46绿14红、相邻回归与最终六项Stage通过；58声明/4新增span严格inverse与10项守卫、API/实际DLL/存档身份保持。[验收JSON](docs/audits/2026-09-14-b1-queue-sort-verification.json) / [68点代码图](docs/architecture/af-framework-code-map.json)均绑定8bcde78b。
-- 下一续点仍B1初捕获/raw/单owner净化/全owner绑定/Apply等原子成本；本轮normalize/分配/key捕获/最终绑定仍原子，不宣称全帧硬预算，不进入B2。按[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)接续，不重做已完成项。
-- 唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；fresh fetch远端仍3f00fefa，用户草稿/指定本地文档保持。LIVE/SAVE/资产AFEF/TTS/provider/外部DLL及完整三渠道/内部接口后续未完。
+- 当前入口：[完整raw摘要HANDOFF](docs/handoffs/2026-09-14-b1-raw-digest-handoff.md)，含源码位置、行为/格式范围、量测与剩余任务；前生产8bcde78b、检查点9076ab95。[上轮排序交接](docs/handoffs/2026-09-14-b1-queue-sort-handoff.md)保留。
+- 初捕获/重试/最终校验的raw摘要接入独立定长buffer/SHA组件，保留122字段及列表/null/state存在性；原JSON plan/context/editor摘要、Clone/Build/Parse/Apply/Mark不变。仍完整遍历，不用Save-only revision跳过检查。
+- 116场景/35有效反例、旧8bc的112绿4红、294字段修改、9向量/5守卫、11项精确源门禁及相邻/六项Stage/API/存档身份通过。[验收JSON](docs/audits/2026-09-14-b1-raw-digest-verification.json) / [71点代码图](docs/architecture/af-framework-code-map.json)绑定40b92e67。
+- 1000记录×12次raw摘要分配约减少96–98%，并修复不同异常UTF16码元的旧摘要合并；不称游戏FPS提升或深记录硬预算达成。
+- 下一续点：[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)的初次capture/复制、owner净化/绑定、Apply等原子成本；不重复已完成的索引/共享窗口/排序/typed raw摘要，不进入B2。
+- 唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；fresh fetch远端仍3f00fefa，受保护3文件保持。LIVE/SAVE/真实资产AFEF/TTS/provider/外部DLL、完整三渠道/内部接口后续未完。
 
 ## 以下为历史交付与配置，不覆盖当前续点
 
