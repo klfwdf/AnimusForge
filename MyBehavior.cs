@@ -26582,6 +26582,56 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return list.OrderBy((DailyMemoryDraft x) => x.GameDayIndex).ToList();
 	}
 
+	private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)
+	{
+		if (trigger == null)
+		{
+			return;
+		}
+		trigger.MemoryId = memoryId;
+		trigger.GameDayIndex = gameDayIndex;
+		trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? gameDate : trigger.GameDate;
+	}
+
+	private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)
+	{
+		if (x == null || string.IsNullOrWhiteSpace((x.Text ?? "").Trim()))
+		{
+			return null;
+		}
+		x.GameDayIndex = draft.GameDayIndex;
+		x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
+		x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
+		x.Scene = (x.Scene ?? "").Trim();
+		x.Speaker = (x.Speaker ?? "").Trim();
+		x.Text = (x.Text ?? "").Trim();
+		x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
+		x.TargetName = (x.TargetName ?? "").Trim();
+		x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
+		x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
+		x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
+		x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
+		x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
+		x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
+		if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
+		{
+			x.MemoryCommitId = "";
+			x.MemoryCommitPart = "";
+			x.MemoryCommitHash = "";
+			x.MemoryCommitOriginGameDay = -1;
+			x.MemoryCommitOriginGameDate = "";
+		}
+		if (x.SceneSessionId < -1)
+		{
+			x.SceneSessionId = -1;
+		}
+		if (x.DialogueSessionId < -1)
+		{
+			x.DialogueSessionId = -1;
+		}
+		return x;
+	}
+
 	private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)
 	{
 		DailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
@@ -26607,50 +26657,24 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
 			{
-				if (trigger != null)
-				{
-					trigger.MemoryId = text;
-					trigger.GameDayIndex = draft.GameDayIndex;
-					trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
-				}
+				BindDailyMemoryDraftWeeklyTrigger(trigger, text, draft.GameDayIndex, draft.GameDate);
 			}
 		}
 		draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
-		draft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? "").Trim())).Select(delegate(DailyMemoryLine x)
+		List<DailyMemoryLine> lines = new List<DailyMemoryLine>();
+		bool hasLlmDialogue = draft.HasLlmDialogue;
+		foreach (DailyMemoryLine sourceLine in draft.Lines ?? new List<DailyMemoryLine>())
 		{
-			x.GameDayIndex = draft.GameDayIndex;
-			x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
-			x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
-			x.Scene = (x.Scene ?? "").Trim();
-			x.Speaker = (x.Speaker ?? "").Trim();
-			x.Text = (x.Text ?? "").Trim();
-			x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
-			x.TargetName = (x.TargetName ?? "").Trim();
-			x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
-			x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
-			x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
-			x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
-			x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
-			x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
-			if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
+			DailyMemoryLine line = SanitizeDailyMemoryDraftLine(sourceLine, draft);
+			if (line == null)
 			{
-				x.MemoryCommitId = "";
-				x.MemoryCommitPart = "";
-				x.MemoryCommitHash = "";
-				x.MemoryCommitOriginGameDay = -1;
-				x.MemoryCommitOriginGameDate = "";
+				continue;
 			}
-			if (x.SceneSessionId < -1)
-			{
-				x.SceneSessionId = -1;
-			}
-			if (x.DialogueSessionId < -1)
-			{
-				x.DialogueSessionId = -1;
-			}
-			return x;
-		}).ToList();
-		draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
+			lines.Add(line);
+			hasLlmDialogue = hasLlmDialogue || (line.IsLlmDialogue && !line.IsAfef);
+		}
+		draft.Lines = lines;
+		draft.HasLlmDialogue = hasLlmDialogue;
 		return draft.Lines.Count > 0 ? draft : null;
 	}
 

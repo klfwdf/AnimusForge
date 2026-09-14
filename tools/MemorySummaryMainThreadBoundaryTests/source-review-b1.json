@@ -886,7 +886,7 @@
       "observed": "Current 116/0; pinned 8bcde78b same116 ->112/4 runtime red (three allocation gates plus distinct raw UTF16);35 BUILD_PASS fault controls EXIT=1;7/0 actual retry/final-check observations. Full 294 recursive source-field mutations remain covered.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
+        "runner": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
         "harness": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
       },
       "extractedProductionEvidence": 98,
@@ -1416,7 +1416,7 @@
       "additionalTestSourceSha256": {
         "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "a1cdf7f3d28ebadda83e4e228632e9d1ae29177d360e2881f6187fa741d997ff",
         "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
         "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
@@ -1430,7 +1430,7 @@
       "observed": "TERMINAL_RESULT mode=admission scenarios=54 failures=0; 5 compiled runtime mutation controls",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/admission-current/manifest.json",
       "additionalTestSourceSha256": {
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
         "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
         "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
@@ -1444,19 +1444,19 @@
     "sealing": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
-      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic. Actual owner normalization counts each draft, no stale key/empty/source list prune, invalidated key reseals before final queues; record-level timing changes documented, no whole-owner transaction or inner-line bound.",
-      "observed": "Current75/0; pinned40b92e67 same75 ->62/13;26 effective BUILD_PASS fault variants EXIT=1; inner 1draft/1024lines still atomic.",
+      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic. Actual owner normalization counts each draft, no stale key/empty/source list prune, invalidated key reseals before final queues; record-level timing changes documented, no whole-owner transaction; inner lines/trigger binds use metadata grants, trigger list sanitize stays atomic.",
+      "observed": "Current76/0; pinned40b92e67 same75 ->62/13;28 effective BUILD_PASS fault variants EXIT=1; 1draft/1024lines max 127 metadata lines/window.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
       "testSourceSha256": {
-        "runner": "e012439fcd8abdcb38412806dc584983cef57e17a42b0cdcd108e406f19426c3",
-        "harness": "4fcca1587dd6b15dbc239aa85b28b3c5668bb603dae9bfc1598ae8597abd9817"
+        "runner": "0c09887aa9dfb39056cd8020842fae9750687b7d34920f1a171cc31da5795dde",
+        "harness": "3d6e732fffe7c5d58d5a19eb15876340def83b6554c025e9df146c32159c657b"
       },
       "acceptedInverse": true,
       "counterexampleSummary": ".tmp\\b1-owner-normalize-20260914\\sealing-runs.json",
       "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
       "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
       "current": {
-        "pass": 75,
+        "pass": 76,
         "fail": 0,
         "exit": 0
       },
@@ -1718,12 +1718,28 @@
           "failedCases": [
             "owner-normalize-publish-race"
           ]
+        },
+        {
+          "name": "unbudgeted-line-normalize",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-inner-cost"
+          ]
+        },
+        {
+          "name": "ignore-line-source",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-change-empty-grows",
+            "owner-normalize-change-kept-empties",
+            "owner-normalize-line-change"
+          ]
         }
       ],
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
       "additionalTestSourceSha256": {
         "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "feb070b0df190be28aab401862df0753c1a35276930612d81f60ddd28fa8ef64",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
         "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
       },
       "historicalOriginal": {
@@ -2168,17 +2184,36 @@
     },
     {
       "path": "MyBehavior.cs",
-      "text": "\tprivate static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)\n\t{\n\t\tDailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);\n\t\tif (draft == null)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring text = NormalizeMemoryHeroId(draft.HeroId);\n\t\tif (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring key = text + \"|\" + draft.GameDayIndex;\n\t\tif (!seen.Add(key))\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tdraft.HeroId = text;\n\t\tdraft.HeroName = (draft.HeroName ?? \"\").Trim();\n\t\tdraft.GameDate = (draft.GameDate ?? \"\").Trim();\n\t\tdraft.LastSummaryError = (draft.LastSummaryError ?? \"\").Trim();\n\t\tif (draft.WeeklyMaterialTriggers != null)\n\t\t{\n\t\t\tforeach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)\n\t\t\t{\n\t\t\t\tif (trigger != null)\n\t\t\t\t{\n\t\t\t\t\ttrigger.MemoryId = text;\n\t\t\t\t\ttrigger.GameDayIndex = draft.GameDayIndex;\n\t\t\t\t\ttrigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tdraft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);\n\t\tdraft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? \"\").Trim())).Select(delegate(DailyMemoryLine x)\n\t\t{\n\t\t\tx.GameDayIndex = draft.GameDayIndex;\n\t\t\tx.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();\n\t\t\tx.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);\n\t\t\tx.Scene = (x.Scene ?? \"\").Trim();\n\t\t\tx.Speaker = (x.Speaker ?? \"\").Trim();\n\t\t\tx.Text = (x.Text ?? \"\").Trim();\n\t\t\tx.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);\n\t\t\tx.TargetName = (x.TargetName ?? \"\").Trim();\n\t\t\tx.MemorySessionKey = (x.MemorySessionKey ?? \"\").Trim();\n\t\t\tx.MemoryCommitId = (x.MemoryCommitId ?? \"\").Trim();\n\t\t\tx.MemoryCommitPart = (x.MemoryCommitPart ?? \"\").Trim();\n\t\t\tx.MemoryCommitHash = (x.MemoryCommitHash ?? \"\").Trim();\n\t\t\tx.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);\n\t\t\tx.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? \"\").Trim();\n\t\t\tif (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))\n\t\t\t{\n\t\t\t\tx.MemoryCommitId = \"\";\n\t\t\t\tx.MemoryCommitPart = \"\";\n\t\t\t\tx.MemoryCommitHash = \"\";\n\t\t\t\tx.MemoryCommitOriginGameDay = -1;\n\t\t\t\tx.MemoryCommitOriginGameDate = \"\";\n\t\t\t}\n\t\t\tif (x.SceneSessionId < -1)\n\t\t\t{\n\t\t\t\tx.SceneSessionId = -1;\n\t\t\t}\n\t\t\tif (x.DialogueSessionId < -1)\n\t\t\t{\n\t\t\t\tx.DialogueSessionId = -1;\n\t\t\t}\n\t\t\treturn x;\n\t\t}).ToList();\n\t\tdraft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);\n\t\treturn draft.Lines.Count > 0 ? draft : null;\n\t}\n\n",
-      "sha256": "3027f50889ac143c659ce56e3626506f13a19f51a879cae6268934d690361fa9",
+      "text": "\tprivate static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)\n\t{\n\t\tif (trigger == null)\n\t\t{\n\t\t\treturn;\n\t\t}\n\t\ttrigger.MemoryId = memoryId;\n\t\ttrigger.GameDayIndex = gameDayIndex;\n\t\ttrigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? gameDate : trigger.GameDate;\n\t}\n\n",
+      "sha256": "2f6b42a3c1acc1eed0540c34dec5395ba75303892b000c8cbcb3d9c5be642328",
+      "evidence": [
+        "sealing"
+      ],
+      "reason": "Exact previous per-trigger MemoryId/day/date bind; shared by synchronous entry and cooperative bind pass."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)\n\t{\n\t\tif (x == null || string.IsNullOrWhiteSpace((x.Text ?? \"\").Trim()))\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tx.GameDayIndex = draft.GameDayIndex;\n\t\tx.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();\n\t\tx.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);\n\t\tx.Scene = (x.Scene ?? \"\").Trim();\n\t\tx.Speaker = (x.Speaker ?? \"\").Trim();\n\t\tx.Text = (x.Text ?? \"\").Trim();\n\t\tx.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);\n\t\tx.TargetName = (x.TargetName ?? \"\").Trim();\n\t\tx.MemorySessionKey = (x.MemorySessionKey ?? \"\").Trim();\n\t\tx.MemoryCommitId = (x.MemoryCommitId ?? \"\").Trim();\n\t\tx.MemoryCommitPart = (x.MemoryCommitPart ?? \"\").Trim();\n\t\tx.MemoryCommitHash = (x.MemoryCommitHash ?? \"\").Trim();\n\t\tx.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);\n\t\tx.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? \"\").Trim();\n\t\tif (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))\n\t\t{\n\t\t\tx.MemoryCommitId = \"\";\n\t\t\tx.MemoryCommitPart = \"\";\n\t\t\tx.MemoryCommitHash = \"\";\n\t\t\tx.MemoryCommitOriginGameDay = -1;\n\t\t\tx.MemoryCommitOriginGameDate = \"\";\n\t\t}\n\t\tif (x.SceneSessionId < -1)\n\t\t{\n\t\t\tx.SceneSessionId = -1;\n\t\t}\n\t\tif (x.DialogueSessionId < -1)\n\t\t{\n\t\t\tx.DialogueSessionId = -1;\n\t\t}\n\t\treturn x;\n\t}\n\n",
+      "sha256": "bbbaa1e2fcd08f66c101943999044892c744845f72272bd9d50815c57160386d",
       "evidence": [
         "sealing",
         "captured"
       ],
-      "reason": "Exact previous inner draft normalization body; only old continue/list-add reshaped into one-entry return. Shared by synchronous and cooperative callers; clone, seen-before-empty, triggers and line rules preserved."
+      "reason": "Exact previous line filter+normalize body; shared by synchronous entry and cooperative line pass."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)\n\t{\n\t\tDailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);\n\t\tif (draft == null)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring text = NormalizeMemoryHeroId(draft.HeroId);\n\t\tif (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring key = text + \"|\" + draft.GameDayIndex;\n\t\tif (!seen.Add(key))\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tdraft.HeroId = text;\n\t\tdraft.HeroName = (draft.HeroName ?? \"\").Trim();\n\t\tdraft.GameDate = (draft.GameDate ?? \"\").Trim();\n\t\tdraft.LastSummaryError = (draft.LastSummaryError ?? \"\").Trim();\n\t\tif (draft.WeeklyMaterialTriggers != null)\n\t\t{\n\t\t\tforeach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)\n\t\t\t{\n\t\t\t\tBindDailyMemoryDraftWeeklyTrigger(trigger, text, draft.GameDayIndex, draft.GameDate);\n\t\t\t}\n\t\t}\n\t\tdraft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);\n\t\tList<DailyMemoryLine> lines = new List<DailyMemoryLine>();\n\t\tbool hasLlmDialogue = draft.HasLlmDialogue;\n\t\tforeach (DailyMemoryLine sourceLine in draft.Lines ?? new List<DailyMemoryLine>())\n\t\t{\n\t\t\tDailyMemoryLine line = SanitizeDailyMemoryDraftLine(sourceLine, draft);\n\t\t\tif (line == null)\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tlines.Add(line);\n\t\t\thasLlmDialogue = hasLlmDialogue || (line.IsLlmDialogue && !line.IsAfef);\n\t\t}\n\t\tdraft.Lines = lines;\n\t\tdraft.HasLlmDialogue = hasLlmDialogue;\n\t\treturn draft.Lines.Count > 0 ? draft : null;\n\t}\n\n",
+      "sha256": "3b2e1b40fc51892d2a6e4ebc710b9bfa1b4c865e2bb018e8279f2038401fef75",
+      "evidence": [
+        "sealing",
+        "captured"
+      ],
+      "reason": "Synchronous draft entry now composes shared bind/line helpers; clone/seen-before-empty and trigger-list sanitizer preserved."
     }
   ],
   "productionDependencies": {
-    "MyBehavior.MemorySealing.cs": "ead66bb6a3a53ba4ad9b749859ea51d963a58bfffd9bbf358d14fba9d1dd8628",
+    "MyBehavior.MemorySealing.cs": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51",
     "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
     "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
     "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
