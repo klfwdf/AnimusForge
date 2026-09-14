@@ -824,7 +824,93 @@ namespace AnimusForge.Illustrator.Context
             string color1Name = ResolveColorName(hero.Clan.Color);
             string color2Name = ResolveColorName(hero.Clan.Color2);
 
-            return $"{clanName} 家族旗帜识别色：主色【{color1Name} ({color1Hex})】，副色【{color2Name} ({color2Hex})】。具体徽记形状、层级与朝向只能依据纹章参考图；未取得参考图时不要猜测动物、兵器、王冠或其他图腾";
+            string composition = string.Empty;
+            try
+            {
+                composition = DescribeBannerComposition(hero.Clan.Banner ?? hero.Clan.Kingdom?.Banner);
+            }
+            catch { }
+
+            return $"{clanName} 家族旗帜识别色：主色【{color1Name} ({color1Hex})】，副色【{color2Name} ({color2Hex})】" +
+                (!string.IsNullOrEmpty(composition)
+                    ? $"；徽记构图（取自旗帜数据）：{composition}。徽记的具体形状以人物参考图中盾面/罩袍上的纹样为准，看不清时按此构图概括绘制，严禁换成其他图腾"
+                    : "。具体徽记形状、层级与朝向只能依据人物参考图中的纹章；未取得参考图时不要猜测动物、兵器、王冠或其他图腾");
+        }
+
+        /// <summary>
+        /// 将 Banner.BannerDataList 结构化数据转成文字构图：每枚纹章的颜色/位置/大小/旋转/镜像与类别。
+        /// 纹章图形本身是图集切片无法转文字，但构图与配色可被文字完整描述。
+        /// </summary>
+        private static string DescribeBannerComposition(Banner banner)
+        {
+            if (banner == null || banner.IsBannerDataListEmpty()) return string.Empty;
+            var manager = BannerManager.Instance;
+            if (manager == null) return string.Empty;
+
+            float full = Math.Max(Banner.BannerFullSize, 1f);
+            int count = banner.GetBannerDataListCount();
+            var parts = new List<string>();
+            for (int i = 0; i < count; i++)
+            {
+                if (i == Banner.BackgroundDataIndex) continue;
+                var data = banner.GetBannerDataAtIndex(i);
+                if (data == null) continue;
+
+                var sb = new StringBuilder($"第{parts.Count + 1}枚：旗面{DescribeBannerRegion(data.Position, full)}的{DescribeBannerScale(data.Size, full)}");
+                if (data.ColorId >= 0)
+                {
+                    uint c = BannerManager.GetColor(data.ColorId);
+                    sb.Append($"{ResolveColorName(c)} (#{(c & 0x00FFFFFF):X6}) ");
+                }
+                string group = ResolveIconGroupName(data.MeshId);
+                if (!string.IsNullOrEmpty(group)) sb.Append(group).Append("类");
+                sb.Append("纹章");
+                if (data.ColorId2 >= 0 && data.ColorId2 != data.ColorId)
+                {
+                    uint c2 = BannerManager.GetColor(data.ColorId2);
+                    sb.Append($"，辅以{ResolveColorName(c2)} (#{(c2 & 0x00FFFFFF):X6})双色");
+                }
+                if (data.DrawStroke) sb.Append("，带描边");
+                float deg = data.Rotation * 57.29578f;
+                if (Math.Abs(deg) > 5f) sb.Append($"，旋转{Math.Round(deg):0}°");
+                if (data.Mirror) sb.Append("，水平镜像");
+                parts.Add(sb.ToString());
+            }
+            return string.Join("；", parts.ToArray());
+        }
+
+        private static string ResolveIconGroupName(int meshId)
+        {
+            try
+            {
+                var groups = BannerManager.Instance?.BannerIconGroups;
+                if (groups == null) return null;
+                foreach (var g in groups)
+                {
+                    if (g?.AllIcons == null || g.IsPattern) continue;
+                    if (g.AllIcons.ContainsKey(meshId)) return g.Name?.ToString();
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static string DescribeBannerRegion(Vec2 pos, float full)
+        {
+            float nx = pos.X / full;
+            float ny = pos.Y / full;
+            string h = nx < 0.33f ? "左" : nx > 0.67f ? "右" : string.Empty;
+            string v = ny < 0.33f ? "上" : ny > 0.67f ? "下" : string.Empty;
+            string region = h + v;
+            return string.IsNullOrEmpty(region) ? "中央" : region;
+        }
+
+        private static string DescribeBannerScale(Vec2 size, float full)
+        {
+            float ratio = Math.Max(size.X, size.Y) / full;
+            if (ratio >= 0.45f) return "大型";
+            if (ratio >= 0.22f) return "中型";
+            return "小型";
         }
 
         public static string ResolveColorName(uint colorUint)

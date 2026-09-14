@@ -301,29 +301,18 @@ namespace AnimusForge.Illustrator.UI.Patches
                 var refs = new List<IllustrationReferenceImage>();
                 // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
                 Task<string> portraitStage = null;
-                Task<string> bannerStage = null;
                 if (options?.EnableOffscreenRendering == true && protagonist != null)
                 {
                     portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token);
-                    if (!string.IsNullOrWhiteSpace(bannerCode))
-                    {
-                        bannerStage = ScreenCaptureHelper.ExtractBannerOffscreenAsync(bannerCode, cancellationToken: token);
-                    }
+                    // 纹章不走 BannerTableauWidget 舞台（原生落盘实锤崩溃）：
+                    // 立绘盾面/罩袍已带真实纹章，构图细节由 BannerDataList 文字描述补充
                 }
                 if (portraitStage != null)
                 {
                     string b64 = await portraitStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的真实游戏内3D形象立绘（画面中该人物的五官、发型、装备与衣着必须严格依此还原）"));
-                    }
-                }
-                if (bannerStage != null)
-                {
-                    string b64 = await bannerStage.ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
-                    {
-                        refs.Add(new IllustrationReferenceImage(b64, "该人物所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制，严禁编造其他纹章）"));
+                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的真实游戏内3D形象立绘（画面中该人物的五官、发型、装备与衣着必须严格依此还原；其盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜与徽记必须依此纹样绘制）"));
                     }
                 }
 

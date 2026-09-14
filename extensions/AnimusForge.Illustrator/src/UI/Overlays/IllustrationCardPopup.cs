@@ -188,16 +188,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的真实游戏内3D形象（画面中该人物的五官、发型、装备与衣着必须严格依此还原）"));
+                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的真实游戏内3D形象（画面中该人物的五官、发型、装备与衣着必须严格依此还原；其盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜与徽记必须依此纹样绘制）"));
                 }
-                if (!string.IsNullOrWhiteSpace(bannerCode) && options?.EnableOffscreenRendering == true)
-                {
-                    string bannerB64 = await ScreenCaptureHelper.ExtractBannerOffscreenAsync(bannerCode, cancellationToken: token).ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(bannerB64))
-                    {
-                        refs.Add(new IllustrationReferenceImage(bannerB64, "该人物所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制，严禁编造其他纹章）"));
-                    }
-                }
+                // 纹章不走 BannerTableauWidget 离屏舞台：其 TableauView 原生落盘已实锤崩溃
+                // （该控件正常仅在旗帜编辑器内配合 EditableArea 子控件使用）。
+                // 纹章信息由人物立绘上的盾面/罩袍纹样 + BannerDataList 结构化文字构图承担。
 
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
@@ -315,7 +310,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Task<string> playerStage = null;
                 Task<string> partnerStage = null;
-                Task<string> bannerStage = null;
                 if (options?.EnableOffscreenRendering == true)
                 {
                     if (Hero.MainHero != null)
@@ -330,10 +324,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     {
                         partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token);
                     }
-                    if (!string.IsNullOrWhiteSpace(bannerCode))
-                    {
-                        bannerStage = ScreenCaptureHelper.ExtractBannerOffscreenAsync(bannerCode, cancellationToken: token);
-                    }
+                    // 纹章不用 BannerTableauWidget 舞台（原生落盘实锤崩溃）：
+                    // 立绘已把家族纹章画在盾面/罩袍上，构图细节由 BannerDataList 文字描述补充
                 }
                 if (playerStage != null)
                 {
@@ -350,21 +342,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await partnerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的真实游戏内3D形象（其五官、发型、肤色、装备与衣着必须严格依此还原）");
+                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的真实游戏内3D形象（其五官、发型、肤色、装备与衣着必须严格依此还原；其盾面/罩袍上的纹样即该家族真实纹章，画面中的旗帜与徽记必须依此纹样绘制）");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
                 }
-                if (bannerStage != null)
-                {
-                    string b64 = await bannerStage.ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
-                    {
-                        var r = new IllustrationReferenceImage(b64, "对话对方所属家族的真实纹章旗帜（画面中一切旗帜、盾徽与罩袍纹章必须严格依此绘制）");
-                        directorRefs.Add(r);
-                        genRefs.Add(r);
-                    }
-                }
+
 
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, directorRefs, options, token).ConfigureAwait(false);
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
