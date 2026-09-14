@@ -1,13 +1,12 @@
-# AF 总 HANDOFF — 完整raw来源摘要已降成本并离线联验（2026-09-14）
+# AF 总 HANDOFF — owner净化按实际草稿计费已离线联验（2026-09-14）
 
-**生产/测试40b92e67，本轮局部完成；阶段8/B1继续VERIFY、未整批合格。af-7-8每小时ACTIVE，未推送/部署。**
+**生产/测试86805518，本轮局部完成；阶段8/B1继续VERIFY、未整批合格。af-7-8每小时ACTIVE，未推送/部署。**
 
-- 当前入口：[完整raw摘要HANDOFF](docs/handoffs/2026-09-14-b1-raw-digest-handoff.md)，含源码位置、行为/格式范围、量测与剩余任务；前生产8bcde78b、检查点9076ab95。[上轮排序交接](docs/handoffs/2026-09-14-b1-queue-sort-handoff.md)保留。
-- 初捕获/重试/最终校验的raw摘要接入独立定长buffer/SHA组件，保留122字段及列表/null/state存在性；原JSON plan/context/editor摘要、Clone/Build/Parse/Apply/Mark不变。仍完整遍历，不用Save-only revision跳过检查。
-- 116场景/35有效反例、旧8bc的112绿4红、294字段修改、9向量/5守卫、11项精确源门禁及相邻/六项Stage/API/存档身份通过。[验收JSON](docs/audits/2026-09-14-b1-raw-digest-verification.json) / [71点代码图](docs/architecture/af-framework-code-map.json)绑定40b92e67。
-- 1000记录×12次raw摘要分配约减少96–98%，并修复不同异常UTF16码元的旧摘要合并；不称游戏FPS提升或深记录硬预算达成。
-- 下一续点：[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)的初次capture/复制、owner净化/绑定、Apply等原子成本；不重复已完成的索引/共享窗口/排序/typed raw摘要，不进入B2。
-- 唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；fresh fetch远端仍3f00fefa，受保护3文件保持。LIVE/SAVE/真实资产AFEF/TTS/provider/外部DLL、完整三渠道/内部接口后续未完。
+- 当前入口：[owner逐记录净化HANDOFF](docs/handoffs/2026-09-14-b1-owner-normalize-handoff.md)，含源码坐标、时序变化、量测、验证及下一步；前生产40b92e67、检查点7c1da946。[前轮raw摘要交接](docs/handoffs/2026-09-14-b1-raw-digest-handoff.md)保留。
+- 257/65记录owner由一次全净化改为有限窗口最多8 draft；原entry规则精确共用，删/去重/排序结果私有且发布前核对key/empty/owner列表；失效重新封存建队列，保留新事实。不是owner事务。
+- 75场景/26有效反例、旧40b62绿13红、12项精确源守卫与相邻/最终六Stage/API/存档身份通过。[验收JSON](docs/audits/2026-09-14-b1-owner-normalize-verification.json) / [74点代码图](docs/architecture/af-framework-code-map.json)绑定86805518。
+- 明确剩余：单draft1024行仍原子处理，key/empty与全owner绑定、首次capture/raw/Apply等未硬切分。[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)直接接这些剩余项，不重做本轮/typed raw/排序/共享窗口，不进入B2。
+- 唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；fresh fetch远端仍3f00fefa，3份受保护文件保持。LIVE/SAVE/资产AFEF/TTS/provider/外部DLL及完整三渠道/内部接缝仍未完。
 
 ## 以下为历史交付与配置，不覆盖当前续点
 

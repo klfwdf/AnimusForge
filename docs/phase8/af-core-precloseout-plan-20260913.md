@@ -513,6 +513,8 @@ B1 上述两部分是同一整批，不要求每个小 helper 单独向用户交
 
 ### 16.1 已完成基线与第一轮任务
 
+> 最新续点：86805518完成owner逐draft净化计费与过时删减保护（75/0、旧40b62/13、26反例、相邻/最终六Stage/API/身份通过），见[本轮HANDOFF](../handoffs/2026-09-14-b1-owner-normalize-handoff.md)。下一轮直接处理单draft内深line/trigger、首次Capture/复制、全owner/最终来源绑定、Apply等原子成本；1draft1024line仍未切分。不要重做owner记录额度/typed raw/排序/共享窗口；B1保持VERIFY，不进B2。
+
 > 当前续点：40b92e67完成完整raw来源的typed编码降成本（116/0、旧8bc112/4、35反例、相邻/最终六Stage/API/身份通过），详见[raw摘要HANDOFF](../handoffs/2026-09-14-b1-raw-digest-handoff.md)。122字段/列表/null/state存在性继续完整检查，未用writer epoch替代；raw仍原子O(N)。下一轮处理首次Capture/复制、owner净化/全部绑定/Apply等剩余成本，不重复typed raw、排序或共享窗口；B1仍VERIFY，不进入B2。
 
 > 最新续点：8bcde78b已完成Daily/Major封存尾部可续跑稳定排序，60/0、旧915的46/14、20反例与相邻/六项Stage/API/身份通过；详见[排序HANDOFF](../handoffs/2026-09-14-b1-queue-sort-handoff.md)。B1仍VERIFY：队列净化/分配/key捕获/最终标量绑定、完整raw/首次捕获/单owner/Apply等原子成本尚未闭合。下一轮只接这些剩余成本，不重新做排序或Campaign窗口，不进入B2。

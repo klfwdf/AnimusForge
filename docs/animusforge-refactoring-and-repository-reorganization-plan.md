@@ -1,6 +1,6 @@
 # 当前自动实施：B1 owner草稿净化记录预算（2026-09-14）
 
-- 本切片离线联验完成，整体B1继续VERIFY；单代理、唯一写入G:/AFMOD/AF-REFACTOR；起点70000835，生产40b92e67，fresh fetch远端3f00fefa未变。按第16节接续，不重做raw摘要/排序/共享窗口，不进入B2。
+- 本切片离线联验完成，整体B1继续VERIFY；单代理、唯一写入G:/AFMOD/AF-REFACTOR；当前生产/测试86805518，前生产40b92e67，fresh fetch远端3f00fefa未变。按第16节接续，不重做raw摘要/排序/共享窗口，不进入B2。
 - 意图：把封存末尾单owner整个草稿列表净化改为按实际draft逐条授予预算，并复用稳定排序组件。原同步Sanitize入口保留；单entry净化体原样提取（主线程原地、后台clone、先占key再判断empty、标签/AFEF/marker规则不改）。
 - 并发/语义：仅规范化元数据可分记录提前可见；源列表的删除/去重/排序结果完成后才发布。持续检查owner列表引用/结构，发布前校验每条key/日期以及空winner是否长出新lines，拒绝过时删除；失效重走原owner封存与索引。保留原引用、别名副作用顺序、同日稳定顺序，不能把整owner改成假事务。
 - 预计路径：MyBehavior.cs的Sanitize与单entry helper、MemorySealing状态与真实caller、captured/sealing/terminal等源提取适配、源码精确inverse/地图与交接。无Prompt/玩法/存档字段/API/默认或原构建脚本变化。
