@@ -1,3 +1,11 @@
+# 实施更新：内外快照依赖已分离（2026-09-15）
+
+f07cb2a2完成现有Runtime内部状态/冻结快照与Api.V1投影分离，保持唯一Directory、原锁/状态与公开语义；CoreOnly无API源码编译和旧新DTO/停止/重载对照通过。[当前HANDOFF](../handoffs/2026-09-15-snapshot-boundary-handoff.md)。
+
+此项只完成目录快照作用域，不代表统一Campaign/Mission生命周期已落地。后续仍依据真实owner的新档/读档/结束与晚回包资格建立接缝，不新造Host假完成。下方历史源码坐标按对应历史提交解释。
+
+## 以下为此前蓝图/实现记录
+
 # 实施更新：装配职责已接线（2026-09-15）
 
 用户已授权开始拆分。955a6be3完成现有装配入口下的Campaign行为/模型清单与制作组目录声明提取，见[实现HANDOFF](../handoffs/2026-09-15-composition-extraction-handoff.md)。本表下面的61d57892坐标与“本轮不改C#”是设计时的历史事实，不再是当前状态。

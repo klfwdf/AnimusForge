@@ -1,3 +1,14 @@
+# AF 总 HANDOFF — 内外快照边界已拆、完整对照恢复通过（2026-09-15）
+
+**生产/测试f07cb2a2，本切片离线验证完成；整体阶段8/B1仍未完成。** Runtime不再引用Api.V1，原锁内捕获冻结内部快照、API侧独立投影，公开承诺不变。历史完整制作组测试已通过原B1严格逆变换恢复，不再有上轮的旧方法定位阻断。
+
+- [详细HANDOFF](docs/handoffs/2026-09-15-snapshot-boundary-handoff.md) / [验证与产物哈希](docs/audits/2026-09-15-snapshot-boundary-verification.json) / [91点代码地图](docs/architecture/af-framework-code-map.json)
+- 结果：完整port308/3故障、Memory逆变换15、CoreOnly无API编译、快照32/并发128/3故障、API119/并发256、Campaign42/5故障、六Stage、实际DLL584、SyncData146/行为36通过。
+- 下一步：真实Campaign/Mission生命周期接缝，随后继续原14类业务职责迁移/B1记忆复制与预算；本次小目录快照不代表记忆深复制已解决，实机/旧存档/live Economy/AFEF未验。
+- 仅本地提交，未推送/部署，自动化PAUSED，三份保护文件不变。下方“完整port测试仍失败/公共投影待拆”为历史状态，以上方更新为准。
+
+## 以下为历史记录；当前实现以上方为准
+
 # AF 总 HANDOFF — 框架装配已开始真实拆分（2026-09-15）
 
 **生产/测试955a6be3；I1 装配切片离线验证完成，阶段8/B1整体仍未合格。** 不再只是蓝图：36个CampaignBehavior与4个包装模型装配移出SubModule，由现有ModuleFrameworkRuntime唯一委托；制作组3组typed目录声明单独提取，玩法/存档/API不变。

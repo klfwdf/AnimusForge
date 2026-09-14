@@ -1,3 +1,11 @@
+# 当前增量：内部目录快照 / V1 投影分离（2026-09-15）
+
+源码f07cb2a2，91点地图。ModuleFrameworkRuntime仅持有内部装配状态、原Directory和冻结捕获；Api/Internal/AfV1SnapshotProjection承接公开版本映射。公开GetSnapshot签名与能力不变，原混杂映射已删除，CoreOnly无API源码编译通过。
+
+[最新接续与验证边界](../handoffs/2026-09-15-snapshot-boundary-handoff.md)：完整制作组对照已修复接线恢复通过；未完成Campaign/Mission完整生命周期、B1记忆深复制/预算和其他领域大类，不整文件标DONE。
+
+## 以下为既有定位与保留责任
+
 # 当前增量：Campaign 与制作组目录装配职责（2026-09-15）
 
 源码955a6be3、86点地图：现有ModuleFrameworkRuntime委托CampaignComposition注册36行为、CampaignModelComposition注册4包装模型；TeamModuleRegistration创建原typed目录。SubModule净减148行，Runtime净减25行，不新增注册器/全局Campaign状态或public能力。
