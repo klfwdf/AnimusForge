@@ -138,8 +138,13 @@ namespace AnimusForge.Illustrator.Engine
                     TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={meshId} no resolvable texture/material name, skipped");
                     return null;
                 }
-                Bitmap atlas = AtlasCache.GetOrAdd(cacheKey,
-                    name => LoadAtlasBitmap(texName, materialName));
+                // 不缓存失败结果：GetOrAdd 会把 null 永久缓存，首次加载失败后本局永远无法重试
+                Bitmap atlas;
+                if (!AtlasCache.TryGetValue(cacheKey, out atlas))
+                {
+                    atlas = LoadAtlasBitmap(texName, materialName);
+                    if (atlas != null) AtlasCache.TryAdd(cacheKey, atlas);
+                }
                 if (atlas == null) return null;
 
                 int cellW = atlas.Width / AtlasGridSize;
@@ -199,10 +204,25 @@ namespace AnimusForge.Illustrator.Engine
                     return null;
                 }
 
+                // 策略 1：GetPixelData 直读像素（同步，最可靠；压缩图集若引擎内部解压缩则直接可用）
+                var viaPixels = TryTexturePixelsToBitmap(tex);
+                if (viaPixels != null)
+                {
+                    TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas '{tex.Name}' loaded via GetPixelData {viaPixels.Width}x{viaPixels.Height}");
+                    return viaPixels;
+                }
+
+                // 策略 2：SaveToFile + 轮询等文件落盘（原生写盘可能是异步入队，立刻检查会误判失败）
                 string tmp = Path.Combine(Path.GetTempPath(), $"af_banner_atlas_{Guid.NewGuid():N}.png");
                 try
                 {
                     tex.SaveToFile(tmp, false);
+                    var deadline = DateTime.UtcNow.AddMilliseconds(1500);
+                    while (DateTime.UtcNow < deadline)
+                    {
+                        if (File.Exists(tmp) && new FileInfo(tmp).Length > 0) break;
+                        System.Threading.Thread.Sleep(50);
+                    }
                     if (!File.Exists(tmp) || new FileInfo(tmp).Length <= 0)
                     {
                         TaleWorlds.Library.Debug.Print($"[BannerEmblem] SaveToFile produced no file for '{tex.Name}'");
@@ -224,6 +244,35 @@ namespace AnimusForge.Illustrator.Engine
             catch (Exception ex)
             {
                 TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas load error (tex='{textureName}' mat='{materialName}'): {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>GetPixelData 直读转 Bitmap：宽缓冲+行距对齐，零内容视为失败返回 null。</summary>
+        private static Bitmap TryTexturePixelsToBitmap(BannerlordEngineTexture tex)
+        {
+            try
+            {
+                int w = tex.Width, h = tex.Height;
+                int alignedPitch = ((w * 4 + 255) / 256) * 256;
+                byte[] raw = new byte[Math.Max(w * h * 8, alignedPitch * h) + 65536];
+                tex.GetPixelData(raw);
+                bool any = false;
+                for (int i = 0; i < w * h * 4 && !any; i += 4)
+                {
+                    if (raw[i] != 0 || raw[i + 1] != 0 || raw[i + 2] != 0) any = true;
+                }
+                if (!any) return null;
+                var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                var data = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+                try { Marshal.Copy(raw, 0, data.Scan0, Math.Min(raw.Length, data.Stride * h)); }
+                finally { bmp.UnlockBits(data); }
+                SwapRedBlue(bmp);
+                return bmp;
+            }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print($"[BannerEmblem] GetPixelData '{tex.Name}' failed: {ex.Message}");
                 return null;
             }
         }
