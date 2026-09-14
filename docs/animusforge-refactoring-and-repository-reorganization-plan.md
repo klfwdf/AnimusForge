@@ -1,6 +1,6 @@
 # 当前自动实施：B1 完整raw来源摘要成本（2026-09-14）
 
-- 本切片离线验证完成，整体B1继续VERIFY；单代理，唯一写入G:/AFMOD/AF-REFACTOR，当前99af6377，生产基线8bcde78b；fresh fetch远端3f00fefa未变。按计划第16节继续，不重做排序，不进入B2。
+- 本切片离线验证完成，整体B1继续VERIFY；单代理，唯一写入G:/AFMOD/AF-REFACTOR，当前生产/测试40b92e67，前生产8bcde78b；fresh fetch远端3f00fefa未变。按计划第16节继续，不重做排序，不进入B2。
 - 意图：完整raw来源hash由JSON序列化改为显式字段/列表有界buffer编码，去掉反射装箱/属性名和JSON转义的重复成本；保留所有字段、列表顺序/null元素、null/empty/absent区别。不用不完整writer epoch替代原数据校验，不改变Prompt或权威提交。
 - 预计路径：MyBehavior.MemorySummaryInput及私有DTO编码边界、Refactor/Runtime纯摘要组件，captured/terminal/sealing直接测试适配、原字段反例与严格inverse/地图/交接。原通用ComputeMemorySummaryFingerprint（计划/编辑器/上下文）继续原JSON契约；只有瞬时来源指纹格式改变，存档/API/模型字段身份不变。
 - 风险与验收：字段遗漏、长度/类型分帧冲突、Unicode、state presence、源/owner/generation/重试/接受要有正反例；原8bc真实执行成本对照，不以常量或砍字段伪造提速。未来DTO新字段由反射字段覆盖测试阻止漏编入；摘要仍完整原子O(N)，不当作深记录硬预算。

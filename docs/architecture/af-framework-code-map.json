@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "8bcde78b9f477a9cc7cdb8ef12b2a4cbf1e60dc3",
+  "sourceRevision": "40b92e671f41beba14e5d4d876195961835dac98",
   "remoteBaseline": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -315,35 +315,35 @@
     {
       "id": "memory.summary.capture",
       "path": "MyBehavior.MemorySummaryInput.cs",
-      "start": 252,
-      "end": 255,
+      "start": 250,
+      "end": 253,
       "symbol": "private MemorySummaryInput CaptureMemorySummaryInput(",
       "match": "contains",
       "status": "mixed-host",
       "note": "三类唯一初捕获/复制/原Build，raw与effective context分离；首次绑定检查，深记录原子成本仍未收口",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.summary.source-check",
       "path": "MyBehavior.MemorySummaryInput.cs",
-      "start": 338,
-      "end": 341,
+      "start": 336,
+      "end": 339,
       "symbol": "private bool IsMemorySummaryInputCurrent(",
       "match": "contains",
       "status": "mixed-host",
-      "note": "不重新Capture/Clone/Build；context后fresh raw摘要与动态资格，retarget先拒绝，不靠Save-only epoch",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "note": "context后fresh raw全字段摘要与动态资格；原owner/retarget/generation门禁，不靠Save-only epoch",
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.summary.execute",
       "path": "MyBehavior.MemorySummaryInput.cs",
-      "start": 357,
-      "end": 360,
+      "start": 355,
+      "end": 358,
       "symbol": "private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(",
       "match": "contains",
       "status": "mixed-host",
       "note": "共用原 provider/Build/Parse；主线程解析、波次/重试退休，完成后释放大 payload",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.source.facades",
@@ -376,18 +376,18 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "10种模型和2种列表的typed复制；各CopyForSummary分离可变图",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.summary.fingerprint",
       "path": "MyBehavior.MemorySummaryInput.cs",
-      "start": 323,
-      "end": 326,
+      "start": 321,
+      "end": 324,
       "symbol": "private static string ComputeMemorySummaryFingerprint(object identity)",
       "match": "exact",
       "status": "mixed-host",
-      "note": "raw和有效context各自流式SHA256；不再把完整Prompt反复纳入来源digest",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "note": "保留原通用JSON SHA256供context/计划/编辑器使用；完整raw来源改由独立编码器处理，不混淆格式",
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.summary.time",
@@ -546,13 +546,13 @@
     {
       "id": "memory.summary.raw-view",
       "path": "MyBehavior.MemorySummaryInput.cs",
-      "start": 126,
-      "end": 129,
+      "start": 127,
+      "end": 130,
       "symbol": "private MemorySummarySourceView ReadMemorySummarySource(",
       "match": "contains",
       "status": "mixed-host",
       "note": "主线程/owner/队列/目标资格，直接读取 raw 字典状态；不把 live view 留给异步请求",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.summary.scene-dependencies",
@@ -563,18 +563,18 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "首次构建有序 header / 非空正文场景依赖；明确场景和无效设置变动不误退",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.summary.effective-context",
       "path": "MyBehavior.MemorySummaryInput.cs",
-      "start": 205,
-      "end": 208,
+      "start": 203,
+      "end": 206,
       "symbol": "private string CaptureMemorySummaryContextFingerprint(",
       "match": "contains",
       "status": "mixed-host",
       "note": "实际有效目标字数、写作要求、目标 observer、名字 resolver、解析身份",
-      "fileSha256": "4ef6fe86821e7f405412300d1e08a1f02763fbfad497e2686c9c47940a4117f0"
+      "fileSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
     },
     {
       "id": "memory.overview.pending-projection",
@@ -751,6 +751,39 @@
       "status": "wired-boundary",
       "note": "原Major净化体原样提取；先pending再dedupe/normalize，保留引用和重试字段",
       "fileSha256": "1181dc6a181c373770623f13b23601f1ace7319cbe3bfdc91119e77580e912bc"
+    },
+    {
+      "id": "memory.source-digest.runtime",
+      "path": "Refactor/Runtime/MemorySourceFingerprintWriter.cs",
+      "symbol": "internal sealed class MemorySourceFingerprintWriter : IDisposable",
+      "note": "真正独立的固定buffer/长度分帧/UTF16/SHA生命周期组件，无游戏对象",
+      "start": 13,
+      "end": 16,
+      "match": "exact",
+      "status": "wired-boundary",
+      "fileSha256": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684"
+    },
+    {
+      "id": "memory.source-digest.schema",
+      "path": "MyBehavior.MemorySourceFingerprint.cs",
+      "symbol": "private static string ComputeMemorySummarySourceFingerprint(MemorySummarySourceView source)",
+      "note": "原private DTO的122字段编码边界；三类真实Capture/IsCurrent消费者，瞬时格式非存档/API",
+      "start": 12,
+      "end": 15,
+      "match": "exact",
+      "status": "wired-boundary",
+      "fileSha256": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad"
+    },
+    {
+      "id": "memory.source-digest.lists",
+      "path": "Refactor/Runtime/MemorySourceFingerprintWriter.cs",
+      "symbol": "internal void WriteList<T>(List<T> values, Action<MemorySourceFingerprintWriter, T> write)",
+      "note": "保留null/count/顺序/元素与List结构变动探针，完整遍历仍原子O(N)",
+      "start": 45,
+      "end": 48,
+      "match": "exact",
+      "status": "wired-boundary",
+      "fileSha256": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684"
     }
   ]
 }
