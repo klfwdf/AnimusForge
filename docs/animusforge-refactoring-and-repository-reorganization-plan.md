@@ -9,7 +9,7 @@
 - 本切片结果：CampaignComposition实际承接36个行为、CampaignModelComposition承接4个包装模型、TeamModuleRegistration承接3组typed目录声明；SubModule净减148行，ModuleFrameworkRuntime净减25行。旧实现已从原位置移除，无第二套清单/注册器，公开接口/Saveable身份未变。
 - 验证：装配42项+5类有效故障反例，原/新整文件逆变换与4个模型方法/注册顺序对照；API119+并发256+外部访问拒绝、4DLL元数据556、Debug/Release×1.3/1.4/Bootstrap六Stage、SyncData146/Behavior36保持。首次Debug因误移除仍被UI使用的PolicyEffects using失败，已恢复并重跑成功，失败日志保留。
 - 已知阻断：历史TeamModulePortParityTests完整入口仍因61d57892就已缺失的ProcessMemorySummaryQueueAsync源码定位失败，未通过/未豁免；独立13签名/308真实port断言与组合后的历史SubModule逆变换通过。不把部分检查写成全仓合格。
-- 详细HANDOFF/创建释放表与代码地图随后绑定本轮生产提交；完整Campaign/Mission生命周期、公共投影进一步分离、三渠道业务拆分和B1深复制仍待办。本轮切片完成不等于阶段8或整个框架DONE。
+- 生产/测试955a6be3；详细入口docs/handoffs/2026-09-15-composition-extraction-handoff.md已记录创建释放表与验证，代码地图86锚点绑定本候选；完整Campaign/Mission生命周期、公共投影进一步分离、三渠道业务拆分和B1深复制仍待办。本轮切片完成不等于阶段8或整个框架DONE。
 
 ## 以下为历史记录；当前实施以上方为准
 

@@ -1,3 +1,15 @@
+# AF 总 HANDOFF — 框架装配已开始真实拆分（2026-09-15）
+
+**生产/测试955a6be3；I1 装配切片离线验证完成，阶段8/B1整体仍未合格。** 不再只是蓝图：36个CampaignBehavior与4个包装模型装配移出SubModule，由现有ModuleFrameworkRuntime唯一委托；制作组3组typed目录声明单独提取，玩法/存档/API不变。
+
+- [详细HANDOFF与实例作用域表](docs/handoffs/2026-09-15-composition-extraction-handoff.md)
+- [验证与产物哈希](docs/audits/2026-09-15-composition-extraction-verification.json) / [86点代码地图](docs/architecture/af-framework-code-map.json)
+- 验证：装配42项+5故障反例、API119/并发256、实际4DLL元数据556、六Stage、SyncData146/Behavior36；历史完整TeamModulePortParityTests仍有已存在的Native/Memory源码定位阻断，独立308port断言通过≠完整套件通过。
+- 下一步先处理真实Campaign/Mission生命周期接缝，随后公共投影分离与原14类职责迁移；不把注册/目录Ready当成读档就绪，不宣称原AF所有功能已完美复现。
+- 仅本地提交，未推送/部署，自动化PAUSED；保护文件未动。蓝图下方“未改C#”为历史状态，已由本次实现替代。
+
+## 以下为历史记录，当前实现以上方为准
+
 # AF 总 HANDOFF — 当前先做整体框架编排（2026-09-15）
 
 用户最新优先级是框架编排，暂不继续深复制细节。本轮完成[整体编排蓝图](docs/architecture/af-core-composition-blueprint-20260915.md)：唯一装配入口、作用域/生命周期、核心依赖和一次对话执行顺序；制作组internal与子MOD public分开。
