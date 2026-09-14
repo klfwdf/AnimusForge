@@ -967,16 +967,26 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
+        /// 全局舞台串行锁：同一时刻只允许一个离屏舞台存在。多个舞台并发时，一个舞台的
+        /// ReleaseMovie/RemoveLayer 会与另一个舞台的原生 PNG 落盘在渲染线程上撞车（已实锤崩溃），
+        /// 且该崩溃发生在原生层、托管 try/catch 接不住。串行代价是参考图多约一秒。
+        /// </summary>
+        private static readonly SemaphoreSlim _stageLock = new SemaphoreSlim(1, 1);
+
+        /// <summary>
         /// 通用离屏舞台提取：临时挂一个 Gauntlet 层（透明控件位于可渲染区域、IsVisible=true），
         /// 游戏自身 UI 管线创建并渲染 TableauView，预热后设落盘标志，后台等 PNG。
         /// 与原版控件同一条渲染路径——不手动 tick 场景、不读渲染目标纹理像素。
         /// </summary>
         private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int timeoutMs, CancellationToken cancellationToken)
         {
-            var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-            OffscreenStagePump pump = null;
-            bool started = await RunOnGameThreadAsync(() =>
+            await _stageLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            try
             {
+                var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+                OffscreenStagePump pump = null;
+                bool started = await RunOnGameThreadAsync(() =>
+                {
                 GauntletLayer layer = null;
                 GauntletMovieIdentifier movie = null;
                 try
@@ -1035,17 +1045,21 @@ namespace AnimusForge.Illustrator.Engine
 
             var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs, cancellationToken)).ConfigureAwait(false);
             if (winner == done.Task) return await done.Task.ConfigureAwait(false);
-            cancellationToken.ThrowIfCancellationRequested();
             TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' timed out after {timeoutMs}ms");
-            if (!Core.IllustratorRuntime.Post(() =>
+            // 无论超时还是取消，都必须等拆台在主线程执行完再释放锁，否则下一个舞台可能与未拆完的舞台重叠
+            await RunOnGameThreadAsync(() =>
             {
                 FinishStage(pump);
                 done.TrySetResult(null);
-            }))
-            {
-                done.TrySetResult(null);
-            }
+                return true;
+            }, CancellationToken.None).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
             return null;
+            }
+            finally
+            {
+                _stageLock.Release();
+            }
         }
 
         /// <summary>
