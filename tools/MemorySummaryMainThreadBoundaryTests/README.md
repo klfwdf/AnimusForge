@@ -1,3 +1,12 @@
+## 2026-09-15：Memory dispatch owner职责提取
+
+队列/待办生命周期/预算/异常完成迁移到 `Refactor/Runtime/MemorySummaryDispatcher.cs`，通过 `IMemorySummaryDispatchHost` 获取游戏身份/设置，原Host仅薄适配。所有相关runner编入两个真实新文件；不保留假的旧队列/计数器让测试变绿。
+
+- `python run.py`：37项（原32项 + 5项惰性/并发/typed port契约）。
+- `python run.py --source-baseline 9617f96a`：原owner共同32项；保持相同断言，不冒称新5项也在旧代码运行。
+- `python run.py --mutate ignore-generation` 等7项：实际Host/runtime单变量故障，BUILD_PASS后断言失败才有效。
+- 生命周期接口与线程前提见 `docs/architecture/af-memory-dispatch-contract.md`。这是调度职责提取，不是首次深来源复制预算完成。
+
 ## 2026-09-15：内层同数量变动回归
 
 封存新增 12 个实际入口用例：lines/triggers × unchanged、append、slot、remove-add、swap、finalize-slot。中途让出后对实际来源做变更，再用原40b同步净化体对比完整对象图；不是只测helper或故意改坏生产源码。

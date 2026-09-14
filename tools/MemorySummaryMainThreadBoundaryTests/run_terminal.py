@@ -142,6 +142,9 @@ def main():
     if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
         for name in ['MyBehavior.MemorySourceFingerprint.cs','Refactor/Runtime/MemorySourceFingerprintWriter.cs']:
             files[Path(name).name]=read(name)
+    if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
+        for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
     variant=('admission-'+(a.admission_mutate or 'current')) if a.admission_only else (('source-baseline-'+a.source_baseline) if a.source_baseline else (a.mutate or 'current'))

@@ -83,6 +83,23 @@ class InverseGuards(unittest.TestCase):
             baseline = baseline.replace(edit["before"], edit["after"], 1)
         self.assertEqual(baseline, (ROOT / review["path"]).read_text(encoding="utf-8-sig"))
 
+    def test_dispatcher_dependency_direction_and_host_shape(self):
+        runtime = (ROOT / "Refactor/Runtime/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig")
+        host = (ROOT / "MyBehavior.MemorySummaryMainThread.cs").read_text(encoding="utf-8-sig")
+        self.assertNotIn("TaleWorlds", runtime)
+        self.assertNotIn("MyBehavior", runtime)
+        self.assertNotIn("ConcurrentQueue", host)
+        self.assertNotIn("TaskCompletionSource", host)
+        self.assertNotIn("HasMemorySummaryMainThreadAllowance", host)
+        self.assertIn("MemorySummaryDispatch.Submit(generation, operation)", host)
+        self.assertIn("MemorySummaryDispatch.SubmitCompletion(generation, operation)", host)
+
+    def test_planner_only_changes_elapsed_owner_read(self):
+        old = subprocess.check_output(["git", "show", "9617f96a:MyBehavior.MemorySummaryPlanning.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        self.assertEqual(old.count("_memorySummaryMainThreadElapsedTicks"), 2)
+        self.assertEqual(old.replace("_memorySummaryMainThreadElapsedTicks", "MemorySummaryDispatchElapsedTicks"),
+                         (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig"))
+
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),

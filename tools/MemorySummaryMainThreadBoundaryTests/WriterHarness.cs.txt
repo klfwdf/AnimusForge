@@ -71,7 +71,7 @@ namespace AnimusForge
         public static MyBehavior Instance { get; set; }
         public readonly List<WriteCall> Calls = new List<WriteCall>();
         public int OffThreadWrites;
-        public int Pending => _memorySummaryMainThreadActions.Count;
+        public int Pending => MemorySummaryDispatch.PendingCount;
         public void Tick() => ProcessMemorySummaryMainThreadActions();
         public void Reset() => ResetMemorySummaryMainThreadActions();
         private void Record(string kind, params object[] args)

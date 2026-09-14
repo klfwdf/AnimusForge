@@ -874,8 +874,8 @@
       "observed": "BUSINESS_RESULT passed=36 failed=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
       "testSourceSha256": {
-        "runner": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
-        "harness": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
+        "runner": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
+        "harness": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
       },
       "extractedProductionEvidence": 49
     },
@@ -886,8 +886,8 @@
       "observed": "Current 116/0; pinned 8bcde78b same116 ->112/4 runtime red (three allocation gates plus distinct raw UTF16);35 BUILD_PASS fault controls EXIT=1;7/0 actual retry/final-check observations. Full 294 recursive source-field mutations remain covered.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
       "testSourceSha256": {
-        "runner": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
-        "harness": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
+        "runner": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "harness": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1"
       },
       "extractedProductionEvidence": 98,
       "priorObserved": "CAPTURED_RESULT pass=109 fail=0; reflection scalar checks=351; independent mutable nodes=49; exact raw field mutations=294; 28 compiled runtime mutation controls; observe mode 7 PASS: Capture1/Build1 per prompt across 1 or 3 attempts, checks3/7, clone2 daily or3 major/overview; hard budget NOT_PROVEN",
@@ -1386,8 +1386,8 @@
       "observed": "WRITER_RESULT checks=238 failures=0",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/manifest.json",
       "testSourceSha256": {
-        "runner": "13e611d6ace3d67445de476ba840f451bb0809ff311aedd78a278d9bc333e2bc",
-        "harness": "1329580c92b76e67711ea465278a3dbfa5fe58bd474d7a208e597b32d100b128"
+        "runner": "8376730a777f6834d7fa5e1a9df17b385e181603bd8fb3499c16485f9ecee2e3",
+        "harness": "5f95b006fdf5e625b368d538060af47ff8b7c51edcb3d41568595dd9d9e4e49a"
       },
       "extractedProductionEvidence": 19
     },
@@ -1398,8 +1398,8 @@
       "observed": "PLANNING_RESULT pass=24 fail=0; 4096 layouts visit exactly 4096 filter+4096 compact slots; max 8/slice and 16/tick; slow predicate and shared remaining Stopwatch budget proven; 10 runtime mutation controls",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/manifest.json",
       "testSourceSha256": {
-        "runner": "ae4a7193eaa05a819edd3193825b86afb3373b50d1d739985b122caecd9a17ad",
-        "harness": "65142501661b4c62522ad9acba0e8705d71398b3d9b695c11807a7ad12f8a94f"
+        "runner": "e0d0de2b1a140f20fbae3f3ef5147e126789902f09b844e9e59e0621abafecb3",
+        "harness": "a1622f275b2e0c4470072213ae74db767bd5136fb6f7c4cb2a7c28a69a372d18"
       },
       "extractedProductionEvidence": 13
     },
@@ -1414,12 +1414,12 @@
         "harness": "2fc7214de09f87beed9b24b811e06a726f49fae43a343a3f28af657d13296747"
       },
       "additionalTestSourceSha256": {
-        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "a1cdf7f3d28ebadda83e4e228632e9d1ae29177d360e2881f6187fa741d997ff",
+        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "be7e18ff64721373d90049f845e6788148269795b5e714247ec9429816297592",
         "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
-        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
-        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
       },
       "extractedProductionEvidence": 237
     },
@@ -1430,14 +1430,14 @@
       "observed": "TERMINAL_RESULT mode=admission scenarios=54 failures=0; 5 compiled runtime mutation controls",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/admission-current/manifest.json",
       "additionalTestSourceSha256": {
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
-        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "d1f045ac81ed0bad8164b918f3e46b55d3e68e032a597b043ce07f1f7b576202",
-        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "cbaae812e36410b934f746dba2948eafdfbfaf9f0363face21f94cc94a579021"
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
       },
       "extractedProductionEvidence": 183,
       "testSourceSha256": {
-        "runner": "a1cdf7f3d28ebadda83e4e228632e9d1ae29177d360e2881f6187fa741d997ff",
+        "runner": "be7e18ff64721373d90049f845e6788148269795b5e714247ec9429816297592",
         "harness": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab"
       }
     },
@@ -1448,7 +1448,7 @@
       "observed": "Current88/0; pinned4d6994bc same88 ->80/8; three focused valid BUILD_PASS mutations EXIT=1. Earlier broad mutation evidence remains pinned in previousReportBeforeInnerStructureFix; not all rerun this slice.",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
       "testSourceSha256": {
-        "runner": "06ef9ebe437aaadc016ec9fe5ffd7075aa3fd12f80ce6aa826ede94d24904084",
+        "runner": "34b476501f519ee1f3702b46f40d022ae4f2314cb18c58eb08cd5fa5f1229ebd",
         "harness": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205"
       },
       "acceptedInverse": true,
@@ -1505,8 +1505,8 @@
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
       "additionalTestSourceSha256": {
         "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
-        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "40bf3e7d70b314101396521c4d6bfdf4ec2daf3b9c66784c9792f7d30667b616",
-        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "66debee7345ac2de17c856164b514c908fc905d9e47dd6f70018d372d8915cd1"
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1"
       },
       "historicalOriginal": {
         "revision": "62abfdb3",
@@ -2270,7 +2270,11 @@
     "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a",
     "MyBehavior.MemorySummaryInput.cs": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08",
     "MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
-    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684"
+    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    "MyBehavior.MemorySummaryMainThread.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    "MyBehavior.MemorySummaryPlanning.cs": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b",
+    "Refactor/Contracts/IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    "Refactor/Runtime/MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
   },
   "removedProductionFiles": [
     "MyBehavior.EventSourceMaterialIndex.cs"
@@ -2365,6 +2369,24 @@
       "trigger-list sanitizer hard budget",
       "game play reproduction",
       "whole B1 acceptance"
+    ]
+  },
+  "dispatchOwnerReview": {
+    "baseline": "9617f96a",
+    "checkpoint": "94e05a2f",
+    "scope": "Move queue, claim/retire state, actual elapsed-time/action allowance and partial-completion exception semantics to MemorySummaryDispatcher; host remains engine/settings identity adapter. Planner reads the same elapsed value from the dispatcher. No capture/copy batching or public API change.",
+    "validation": "Common old/new32 checks PASS; five new lazy/parallel/typed-port checks PASS; seven runtime/host fault controls expose regressions. Adjacent suites and six Stage recorded in final handoff.",
+    "notClaimed": [
+      "Deep source hard budget",
+      "whole M1/M2 owner extraction",
+      "game validation",
+      "new public API capabilities"
+    ],
+    "paths": [
+      "Refactor/Contracts/IMemorySummaryDispatchHost.cs",
+      "Refactor/Runtime/MemorySummaryDispatcher.cs",
+      "MyBehavior.MemorySummaryMainThread.cs",
+      "MyBehavior.MemorySummaryPlanning.cs"
     ]
   }
 }

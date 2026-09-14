@@ -34,7 +34,7 @@ def main():
  elif a.mutate=='restart-on-write':change('{ deferred = true; return true; }','{ source = getQueue(); limit = source?.Count ?? 0; cursor = 0; probe = source.GetEnumerator(); return true; }',2)
  elif a.mutate=='omit-unavailable-cleanup':change('CancelUnavailableHeroCompressionWorkById(id, "queue_execute");','PlanningProbe.MissingCleanup++;')
  elif a.mutate=='ignore-overview-exclusion':change('!(excludedOverviewIds?.Contains(x.HeroId) ?? false)','true')
- elif a.mutate=='fresh-slice-budget':change('GetDailyMaintenanceFrameBudgetMs()\n                    - _memorySummaryMainThreadElapsedTicks * 1000.0 / Stopwatch.Frequency','GetDailyMaintenanceFrameBudgetMs()',2)
+ elif a.mutate=='fresh-slice-budget':change('GetDailyMaintenanceFrameBudgetMs()\n                    - MemorySummaryDispatchElapsedTicks * 1000.0 / Stopwatch.Frequency','GetDailyMaintenanceFrameBudgetMs()',2)
  elif a.mutate=='ignore-slice-time':change('(visited == 0 || !IsDailyMaintenanceBudgetExceeded(started, budget))','true',2)
  elif a.mutate=='cleanup-collects-plan':change('unavailableOwners, !cleanupOnly);','unavailableOwners, true);',3)
  elif a.mutate=='read-live-sort-keys':change('.ThenBy(x => x.Name, StringComparer.Create(culture, false))','.ThenBy(x => (x.Job is MemorySummaryJob daily ? daily.HeroName : x.Job is MajorActionSummaryJob major ? major.HeroName : ((MemoryOverviewJob)x.Job).HeroName), StringComparer.Create(culture, false))')
@@ -42,6 +42,9 @@ def main():
  out=HERE/'.generated/planning'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
  deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll';assert deps.is_file()
  files={'Product.cs':prefix+'\n'+'\n'.join(blocks)+'\n}}','Planning.cs':planning,'Boundary.cs':(ROOT/'MyBehavior.MemorySummaryMainThread.cs').read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'PlanningHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0162</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
+ if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
+     for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+         files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
  for name,text in files.items():(out/name).write_bytes(text.encode())
  meta=dict(mutation=a.mutate,declarations=manifest,planning_sha256=hashlib.sha256(production_planning.encode()).hexdigest(),generated_sha256={k:hashlib.sha256(v.encode()).hexdigest() for k,v in files.items()},seams=['Actual filter/compact slot read and slice-entry counters','Pending/game eligibility and Campaign boundary are fixtures','Actual invalid-owner cancellation modifies queue/state/candidate collections'],limits=['Source record work inside one pending predicate is not bounded by queue-slot budget','No live-game frame time/provider/save proof','Does not substitute for dispatcher expected-job-fingerprint integration tests'])
  (out/'manifest.json').write_bytes(json.dumps(meta,ensure_ascii=False,indent=2).encode())

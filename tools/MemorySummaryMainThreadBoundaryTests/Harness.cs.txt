@@ -47,13 +47,26 @@ namespace AnimusForge
         public static double BudgetMsForTests = 1000.0;
         private static double GetDailyMaintenanceFrameBudgetMs() => BudgetMsForTests;
         public static MyBehavior Instance { get; set; }
-        public int PendingMemorySummaryMainThreadActionCountForTests => _memorySummaryMainThreadActions.Count;
+#if DISPATCH_OWNER
+        public bool HasDispatcherForTests => Volatile.Read(ref _memorySummaryDispatcher) != null;
+#endif
+        public int PendingMemorySummaryMainThreadActionCountForTests => MemorySummaryDispatch.PendingCount;
         public Task<bool> Queue(long generation, Func<bool> operation) =>
             RunMemorySummaryMainThreadAsync(generation, operation);
         public void Tick() => ProcessMemorySummaryMainThreadActions();
         public void Reset() => ResetMemorySummaryMainThreadActions();
     }
 
+#if DISPATCH_OWNER
+    internal sealed class DispatchContractHost : AnimusForge.Refactor.Contracts.IMemorySummaryDispatchHost
+    {
+        public bool IsMainThread => true;
+        public bool IsOwnerGenerationCurrent(long generation) => generation == 1;
+        public bool IsExecutionContextCurrent() => true;
+        public double GetBudgetMilliseconds() => 1000.0;
+        public void ReportFailure(Exception error) { throw new Exception("diagnostic failed"); }
+    }
+#endif
     public static class Program
     {
         private static int _checks;
@@ -218,6 +231,28 @@ namespace AnimusForge
                 f.Owner.Tick();
                 Check(next.Wait(1000) && next.Result && applied == 1, "failed timed operation does not strand later work");
             }
+#if DISPATCH_OWNER
+            {
+                var f = NewOwner(); f.Owner.Tick(); f.Owner.Reset();
+                Check(!f.Owner.HasDispatcherForTests, "idle lifecycle does not allocate dispatcher");
+                int applied = 0;
+                var pending = new Task<bool>[16];
+                for (int i = 0; i < pending.Length; i++)
+                    pending[i] = Task.Run(() => f.Owner.Queue(f.Generation, () => { applied++; return true; }));
+                Check(SpinWait.SpinUntil(() => f.Owner.PendingMemorySummaryMainThreadActionCountForTests == 16, 5000), "parallel first submits share one dispatcher");
+                while (f.Owner.PendingMemorySummaryMainThreadActionCountForTests > 0) f.Owner.Tick();
+                Task.WaitAll(pending);
+                Check(applied == 16 && Array.TrueForAll(pending, x => x.Result), "parallel first submits all settle exactly once");
+            }
+            {
+                var dispatcher = new AnimusForge.Refactor.Runtime.MemorySummaryDispatcher(new DispatchContractHost(), 2);
+                Check(!dispatcher.Submit(1, () => throw new InvalidOperationException("operation")).GetAwaiter().GetResult(), "throwing diagnostics cannot strand failure");
+                var expected = new InvalidOperationException("partial operation"); Exception observed = null;
+                try { dispatcher.SubmitCompletion(1, () => throw expected).GetAwaiter().GetResult(); }
+                catch (Exception error) { observed = error; }
+                Check(ReferenceEquals(observed, expected), "completion preserves exact exception identity through typed port");
+            }
+#endif
             Console.WriteLine($"{(_failures == 0 ? "PASS" : "FAIL")} MemorySummaryMainThread checks={_checks} failures={_failures} LIVE=NOT_RUN SAVE=NOT_RUN");
             return _failures == 0 ? 0 : 1;
         }

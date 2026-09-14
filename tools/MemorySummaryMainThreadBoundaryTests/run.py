@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--original", action="store_true")
+parser.add_argument("--source-baseline", choices=["9617f96a"])
 parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain", "unbounded-inline", "ignore-time-budget", "omit-time-charge", "omit-time-reset"])
 args = parser.parse_args()
 
@@ -27,7 +28,8 @@ if not boundary_path.exists():
     print("FAIL MemorySummaryMainThread missing production boundary")
     raise SystemExit(1)
 
-boundary = boundary_path.read_text(encoding="utf-8-sig")
+boundary = (subprocess.check_output(["git", "show", args.source_baseline + ":MyBehavior.MemorySummaryMainThread.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n") if args.source_baseline else boundary_path.read_text(encoding="utf-8-sig"))
+runtime = (ROOT / "Refactor/Runtime/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig") if "MemorySummaryDispatcher" in boundary else None
 process = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
 required_process_fragments = [
     "await RunMemorySummaryMainThreadAsync(runtimeGeneration",
@@ -43,29 +45,42 @@ for fragment in required_process_fragments:
 assert "ProcessMemorySummaryMainThreadActions();" in process
 assert process.count("ResetMemorySummaryMainThreadActions();") >= 2
 
-mutations = {
-    "ignore-generation": ("|| !SaveRuntimeGuard.IsCurrentGeneration(generation)", "|| false"),
-    "ignore-owner": ("ReferenceEquals(Instance, this)", "true"),
-    "unbounded-drain": ("while (HasMemorySummaryMainThreadAllowance()", "while (true"),
-    "unbounded-inline": ("&& HasMemorySummaryMainThreadAllowance())", "&& true)"),
-    "ignore-time-budget": ("< GetDailyMaintenanceFrameBudgetMs();", "< double.MaxValue;"),
-    "omit-time-charge": ("_memorySummaryMainThreadElapsedTicks += Stopwatch.GetTimestamp() - started;", "/* fault: executed time not charged */"),
-    "omit-time-reset": ("_memorySummaryMainThreadElapsedTicks = 0;", "/* fault: elapsed time not reset on tick */"),
+host_mutations = {
+    "ignore-generation": ("&& SaveRuntimeGuard.IsCurrentGeneration(generation)", "&& true"),
+    "ignore-owner": ("ReferenceEquals(Instance, _owner)", "true"),
+}
+runtime_mutations = {
+    "unbounded-drain": ("while (HasAllowance()", "while (true"),
+    "unbounded-inline": ("&& HasAllowance())", "&& true)"),
+    "ignore-time-budget": ("< _host.GetBudgetMilliseconds();", "< double.MaxValue;"),
+    "omit-time-charge": ("_elapsedTicks += Stopwatch.GetTimestamp() - started;", "/* fault: executed time not charged */"),
+    "omit-time-reset": ("_elapsedTicks = 0;", "/* fault: elapsed time not reset on tick */"),
 }
 if args.mutate:
-    old, new = mutations[args.mutate]
-    assert old in boundary
-    boundary = boundary.replace(old, new)
+    assert not args.source_baseline, 'Baseline and mutation are exclusive'
+    if args.mutate in host_mutations:
+        old, new = host_mutations[args.mutate]; assert old in boundary; boundary = boundary.replace(old, new)
+    else:
+        old, new = runtime_mutations[args.mutate]; assert runtime is not None and old in runtime; runtime = runtime.replace(old, new)
 
-out = HERE / ".generated" / (args.mutate or "current")
+out = HERE / ".generated" / (args.mutate or ("original-" + args.source_baseline if args.source_baseline else "current"))
 out.mkdir(parents=True, exist_ok=True)
 (out / "Boundary.cs").write_text(boundary, encoding="utf-8")
-(out / "Program.cs").write_text((HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig"), encoding="utf-8")
+harness = ("#define DISPATCH_OWNER\n" if runtime is not None else "") + (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
+if args.source_baseline:
+    harness = harness.replace('MemorySummaryDispatch.PendingCount', '_memorySummaryMainThreadActions.Count')
+(out / "Program.cs").write_text(harness, encoding="utf-8")
+extra = ''
+if runtime is not None:
+    (out / 'MemorySummaryDispatcher.cs').write_text(runtime, encoding='utf-8')
+    (out / 'IMemorySummaryDispatchHost.cs').write_text((ROOT / 'Refactor/Contracts/IMemorySummaryDispatchHost.cs').read_text(encoding='utf-8-sig'), encoding='utf-8')
+    extra = '<Compile Include="MemorySummaryDispatcher.cs"/><Compile Include="IMemorySummaryDispatchHost.cs"/>'
+
 (out / "SaveRuntimeGuard.cs").write_text((ROOT / "SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
 (out / "Proof.csproj").write_text(
-    '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
+    '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>Exe</OutputType>'
     '<TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'
-    '</PropertyGroup></Project>', encoding="utf-8")
+    '</PropertyGroup><ItemGroup><Compile Include="Boundary.cs"/><Compile Include="Program.cs"/><Compile Include="SaveRuntimeGuard.cs"/>' + extra + '</ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding="utf-8")
 
 dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT.parent / ".dotnet-sdk/dotnet.exe")))
@@ -86,6 +101,6 @@ run = subprocess.run([str(dotnet), str(out / "bin/Release/net8.0/Proof.dll")],
                      cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=90)
 log = run.stdout + run.stderr
 (out / "run.log").write_text(log, encoding="utf-8")
-print("BUILD_PASS helper=" + (args.mutate or "current"))
+print("BUILD_PASS helper=" + (args.mutate or ("source-baseline-" + args.source_baseline if args.source_baseline else "current")))
 print(log)
 raise SystemExit(run.returncode if "MemorySummaryMainThread checks=" in log else 2)
