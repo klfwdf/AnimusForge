@@ -173,19 +173,6 @@ namespace AnimusForge.Illustrator.Core
                     errorMessage = attempt.ErrorMessage;
                     if (success) result.ResolvedPrompt = effectivePrompt;
 
-                    // 上游偶发返回空 completion (content=null / 0 tokens)——HTTP 200 但无图，自动重试一次兜底
-                    if (!success && errorMessage != null && errorMessage.IndexOf("未能解析", StringComparison.Ordinal) >= 0)
-                    {
-                        Log("[Illustrator] 模型返回空回复或未解析内容，2s 后自动重试一次...");
-                        await Task.Delay(2000, cancellationToken).ConfigureAwait(false);
-                        attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
-                        success = attempt.Success;
-                        imageBytes = attempt.ImageBytes;
-                        imageUrl = attempt.ImageUrl;
-                        errorMessage = attempt.ErrorMessage;
-                        if (success) result.ResolvedPrompt = effectivePrompt;
-                    }
-
                     // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
                     if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                     {
