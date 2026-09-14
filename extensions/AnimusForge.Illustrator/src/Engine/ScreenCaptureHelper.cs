@@ -313,6 +313,47 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
+        /// 生成结束后清理全部生图临时产物：离屏立绘 PNG、纹章图集临时导出、banner_debug 调试落盘。
+        /// 只清 %TEMP% 下已知前缀/目录，绝不触碰画廊缓存与默认插图。
+        /// </summary>
+        public static void CleanupTempArtifacts()
+        {
+            try
+            {
+                string tempRoot = Path.GetTempPath();
+                string tempDir = Path.Combine(tempRoot, "AnimusForgeIllustrator");
+                int deleted = 0;
+
+                foreach (string dir in new[] { tempDir, tempRoot })
+                {
+                    if (!Directory.Exists(dir)) continue;
+                    foreach (string pattern in new[] { "af_offscreen_*", "af_banner_atlas_*" })
+                    {
+                        foreach (string file in Directory.EnumerateFiles(dir, pattern))
+                        {
+                            try { File.Delete(file); deleted++; } catch { }
+                        }
+                    }
+                }
+
+                string debugDir = Path.Combine(tempDir, "banner_debug");
+                if (Directory.Exists(debugDir))
+                {
+                    foreach (string file in Directory.EnumerateFiles(debugDir))
+                    {
+                        try { File.Delete(file); deleted++; } catch { }
+                    }
+                }
+
+                if (deleted > 0)
+                {
+                    TaleWorlds.Library.Debug.Print($"[Illustrator] Auto-cleaned {deleted} temp artifact(s).");
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// 在主线程触发引擎原生安全的异步离屏渲染落盘 (利用引擎 render 同步点，杜绝任何 DirectX 11 冲突)
         /// </summary>
         public static bool TriggerTableauViewSave(TaleWorlds.Engine.TableauView tableauView, out string tempDir, out string filePrefix)

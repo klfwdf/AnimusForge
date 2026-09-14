@@ -59,6 +59,10 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool EnableOffscreenRendering { get; set; } = true;
 
+        [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，每次生图结束（无论成败）自动删除生图过程产生的临时文件：离屏立绘 PNG、纹章图集临时导出与 banner_debug 调试落盘。不影响画廊缓存与默认插图。关闭时保留临时文件便于排查问题。", Order = 3, RequireRestart = false)]
+        [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
+        public bool AutoCleanTempFiles { get; set; } = false;
+
         [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "兼容 OpenAI 格式的生图端点。例如官方端点 https://api.openai.com/v1、硅基流动 https://api.siliconflow.cn/v1 或各种中转站(如 https://yjapi.manqiaotechnology.com/v1)。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://api.siliconflow.cn/v1";

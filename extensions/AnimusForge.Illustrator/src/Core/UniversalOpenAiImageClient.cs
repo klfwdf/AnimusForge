@@ -204,6 +204,7 @@ namespace AnimusForge.Illustrator.Core
                 else
                 {
                     result.ErrorMessage = errorMessage ?? "未能从服务端响应中提取到有效图像数据";
+                    Log($"[Illustrator] Generation failed: {result.ErrorMessage}");
                 }
             }
             catch (OperationCanceledException)
@@ -220,6 +221,11 @@ namespace AnimusForge.Illustrator.Core
                 stopwatch.Stop();
                 result.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}");
+
+                if (settings?.AutoCleanTempFiles == true)
+                {
+                    try { Engine.ScreenCaptureHelper.CleanupTempArtifacts(); } catch { }
+                }
             }
 
             return result;
@@ -540,7 +546,10 @@ namespace AnimusForge.Illustrator.Core
                             return (true, extracted.Bytes, extracted.Url, null, false);
                         }
 
-                        return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)", false);
+                        string preview = string.IsNullOrWhiteSpace(responseText)
+                            ? "(空响应体)"
+                            : responseText.Substring(0, Math.Min(responseText.Length, 400));
+                        return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)。原始响应预览: " + preview, false);
                     }
             }
         }
