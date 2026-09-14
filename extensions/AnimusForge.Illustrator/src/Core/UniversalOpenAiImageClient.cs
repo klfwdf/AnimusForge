@@ -80,24 +80,31 @@ namespace AnimusForge.Illustrator.Core
             string size = (settings.ImageSize ?? "1024x1024").Trim();
             string quality = settings.SelectedQuality ?? "";
             string style = settings.SelectedStyle ?? "";
-            // style 仅 vivid/natural 是 API 合法枚举；custom/暗黑史诗/电影级 等走提示词注入，避免非法枚举 400
+            // style 仅 vivid/natural 是 API 合法枚举；custom/暗黑史诗/电影级/古典油画 等走提示词注入，避免非法枚举 400
+            // 每个提示词注入预设携带专属负面词；自定义画风/负面词两个文本框仅在选“提示词(自定义画风)”预设时生效
             string customStyleHint;
+            string presetNegative = null;
+            bool isCustomPreset = false;
             switch (style)
             {
                 case "custom":
                     customStyleHint = (settings.CustomStylePrompt ?? string.Empty).Trim();
+                    isCustomPreset = true;
                     style = null;
                     break;
                 case "dark-epic":
                     customStyleHint = "暗黑史诗写实, dark epic realism, grim medieval war chronicle, dramatic chiaroscuro, painterly oil texture";
+                    presetNegative = "bright cheerful colors, cartoon, anime, cel shading, modern objects, clean untarnished surfaces";
                     style = null;
                     break;
                 case "cinematic":
                     customStyleHint = "电影级光影, cinematic film still, anamorphic composition, movie-grade dramatic lighting and color grading";
+                    presetNegative = "flat lighting, washed-out colors, cartoon, anime, cluttered composition";
                     style = null;
                     break;
                 case "classic-oil":
                     customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
+                    presetNegative = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
                     style = null;
                     break;
                 default:
@@ -113,7 +120,12 @@ namespace AnimusForge.Illustrator.Core
                 {
                     referenceImages = null;
                 }
-                string negativePrompt = settings.NegativePrompt ?? string.Empty;
+                // 用户自定义负面词仅在选“提示词(自定义画风)”预设时生效，追加在预设负面词之后
+                string userNegative = isCustomPreset ? (settings.NegativePrompt ?? string.Empty).Trim() : string.Empty;
+                string negativePrompt;
+                if (string.IsNullOrWhiteSpace(presetNegative)) negativePrompt = userNegative;
+                else if (string.IsNullOrWhiteSpace(userNegative)) negativePrompt = presetNegative;
+                else negativePrompt = presetNegative + ", " + userNegative;
                 int requestedRefImages = referenceImages?.Count ?? 0;
 
                 bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);

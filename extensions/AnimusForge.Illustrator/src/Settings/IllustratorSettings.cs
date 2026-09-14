@@ -194,24 +194,23 @@ namespace AnimusForge.Illustrator
 
         private static readonly List<string> _styleOptions = new List<string>
         {
-            "默认 (不传)",
+            "古典油画（默认）",
             "vivid (鲜艳生动·API枚举)",
             "natural (自然真实·API枚举)",
             "暗黑史诗写实 (提示词注入)",
             "电影级光影 (提示词注入)",
-            "提示词 (自定义画风)",
-            "古典纪事油画 (伦勃朗×穆林斯·提示词注入)"
+            "提示词 (自定义画风)"
         };
         private Dropdown<string> _styleDropdown;
 
-        [SettingPropertyDropdown("生成风格画风 (Style)", Order = 9, RequireRestart = false, HintText = "vivid/natural 为 OpenAI 官方 style 枚举参数；“暗黑史诗写实/电影级光影/提示词”三项不作为 style 参数发送（避免非法枚举报错），而是作为画风指令注入提示词，对任何模型生效。选“提示词”时使用下方自定义文本。")]
+        [SettingPropertyDropdown("生成风格画风 (Style)", Order = 9, RequireRestart = false, HintText = "vivid/natural 为 OpenAI 官方 style 枚举参数；其余预设不作为 style 参数发送（避免非法枚举报错），而是把画风指令与预设负面词注入提示词，对任何模型生效。选“提示词”时使用下方自定义文本。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> StyleDropdown
         {
             get
             {
                 if (_styleDropdown == null)
-                    _styleDropdown = new Dropdown<string>(_styleOptions, 6); // 默认 古典纪事油画
+                    _styleDropdown = new Dropdown<string>(_styleOptions, 0); // 默认 古典油画
                 return _styleDropdown;
             }
             set => _styleDropdown = value;
@@ -221,7 +220,7 @@ namespace AnimusForge.Illustrator
         {
             get
             {
-                int idx = _styleDropdown?.SelectedIndex ?? 6;
+                int idx = _styleDropdown?.SelectedIndex ?? 0;
                 switch (idx)
                 {
                     case 1: return "vivid";
@@ -229,27 +228,28 @@ namespace AnimusForge.Illustrator
                     case 3: return "dark-epic";
                     case 4: return "cinematic";
                     case 5: return "custom";
-                    case 6: return "classic-oil";
-                    default: return "";
+                    default: return "classic-oil";
                 }
             }
         }
 
-        [SettingPropertyButton("自定义画风提示词 (Style=提示词 时生效)", Content = "打开编辑器", Order = 10, RequireRestart = false, HintText = "点击打开大文本编辑器，自由编辑画风指令。仅当上方画风预设选“提示词”时生效，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。")]
+        [SettingPropertyButton("自定义画风提示词 (Style=提示词 时生效)", Content = "打开编辑器", Order = 10, RequireRestart = false, HintText = "点击打开大文本编辑器，自由编辑画风指令。仅当上方画风预设选“提示词”时生效，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。默认填入古典油画预设内容供参考。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action EditCustomStylePrompt { get; set; }
 
-        public string CustomStylePrompt { get; set; } = "";
+        // 预填古典油画预设内容，供玩家查看/改写；仅在画风预设选“提示词”时生效
+        public string CustomStylePrompt { get; set; } = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
 
         [SettingPropertyBool("向生图模型附带参考图 (垫图/图生图)", HintText = "开启后，截取的人物3D立绘、家族纹章与现场实景参考图将一并发送给生图模型（仅对话多模态生图通道生效，如 Gemini Image 系列）。关闭则仅把参考图用于提示词导演扩写。", Order = 10, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public bool EnableReferenceImageForGeneration { get; set; } = true;
 
-        [SettingPropertyButton("负面提示词 (Negative Prompt)", Content = "打开编辑器", Order = 11, RequireRestart = false, HintText = "点击打开大文本编辑器，填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。作为禁止指令注入提示词。")]
+        [SettingPropertyButton("负面提示词 (Negative Prompt)", Content = "打开编辑器", Order = 11, RequireRestart = false, HintText = "点击打开大文本编辑器，填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。仅在画风预设选“提示词(自定义画风)”时生效，作为禁止指令追加在预设负面词之后。默认填入古典油画预设内容供参考。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action EditNegativePrompt { get; set; }
 
-        public string NegativePrompt { get; set; } = "";
+        // 预填古典油画预设负面词，供玩家查看/改写；仅在画风预设选“提示词(自定义画风)”时生效
+        public string NegativePrompt { get; set; } = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
 
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
