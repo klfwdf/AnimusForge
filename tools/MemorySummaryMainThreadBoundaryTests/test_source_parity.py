@@ -40,6 +40,21 @@ class InverseGuards(unittest.TestCase):
                 ").ThenBy((" + model + " x) => x.HeroName).ToList();", 1)
             self.assertEqual(prior, restored)  # No mutation/filter/dedupe body rewrite hidden by wrapper inverse.
 
+    def test_raw_input_four_declaration_inverse(self):
+        review = REVIEW["rawSourceFingerprintReview"]
+        text = (ROOT / review["inputPath"]).read_text(encoding="utf-8-sig")
+        baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["inputPath"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        spec = importlib.util.spec_from_file_location("raw_input_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+        extractor = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(extractor)
+        for item in review["inputDeclarations"]:
+            current = extractor.declaration(text, item["signature"])
+            old = extractor.declaration(baseline, item["signature"])
+            self.assertEqual(inverse._sha256(current), item["sha256"])
+            self.assertEqual(inverse._sha256(old), item["baselineSha256"])
+            text = text.replace(current, old, 1)
+        self.assertEqual(text, baseline)  # Includes unchanged generic JSON/editor/plan hash and async/parse/release bodies.
+
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),

@@ -139,6 +139,10 @@ def main():
     if not deps.is_file():raise ValueError('Existing Newtonsoft dependency missing')
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
     if a.admission_only:files['Proof.csproj']=files['Proof.csproj'].replace('<NoWarn>','<DefineConstants>ADMISSION_PROOF</DefineConstants><NoWarn>')
+    if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
+        for name in ['MyBehavior.MemorySourceFingerprint.cs','Refactor/Runtime/MemorySourceFingerprintWriter.cs']:
+            files[Path(name).name]=read(name)
+    files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
     variant=('admission-'+(a.admission_mutate or 'current')) if a.admission_only else (('source-baseline-'+a.source_baseline) if a.source_baseline else (a.mutate or 'current'))
     out=HERE/'.generated/terminal'/variant;out.mkdir(parents=True,exist_ok=True)

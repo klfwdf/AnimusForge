@@ -115,7 +115,8 @@ public partial class MyBehavior
     private sealed class MemorySummarySourceView
     {
         internal string HeroId;
-        internal object Identity;
+        internal object Job;
+        internal bool StatePresent;
         internal DailyMemoryDraft Draft;
         internal List<NpcActionEntry> Actions;
         internal MajorActionSummaryState MajorState;
@@ -128,7 +129,7 @@ public partial class MyBehavior
         if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this)
             || !SaveRuntimeGuard.IsCurrentGeneration(generation)
             || !ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this)) return null;
-        var source = new MemorySummarySourceView();
+        var source = new MemorySummarySourceView { Job = queueJob };
         if (queueJob is MemorySummaryJob daily)
         {
             source.HeroId = NormalizeMemoryHeroId(daily.HeroId);
@@ -136,7 +137,6 @@ public partial class MyBehavior
                 || HasCompressedMemoryBlock(source.HeroId, daily.GameDayIndex)) return null;
             source.Draft = FindMemoryDraft(daily);
             if (source.Draft == null) return null;
-            source.Identity = new { Job = daily, Draft = source.Draft };
         }
         else if (queueJob is MajorActionSummaryJob major)
         {
@@ -144,9 +144,8 @@ public partial class MyBehavior
             if (_npcMajorActionSummaryQueue == null || !_npcMajorActionSummaryQueue.Contains(major)
                 || IsNonHeroMemoryId(source.HeroId) || _npcMajorActions == null
                 || !_npcMajorActions.TryGetValue(source.HeroId, out source.Actions) || source.Actions == null) return null;
-            bool statePresent = _npcMajorActionSummaries != null
+            source.StatePresent = _npcMajorActionSummaries != null
                 && _npcMajorActionSummaries.TryGetValue(source.HeroId, out source.MajorState);
-            source.Identity = new { Job = major, Actions = source.Actions, State = source.MajorState, StatePresent = statePresent };
         }
         else if (queueJob is MemoryOverviewJob overview)
         {
@@ -154,9 +153,8 @@ public partial class MyBehavior
             if (_memoryOverviewQueue == null || !_memoryOverviewQueue.Contains(overview)
                 || _compressedMemoryBlocks == null
                 || !_compressedMemoryBlocks.TryGetValue(source.HeroId, out source.Blocks) || source.Blocks == null) return null;
-            bool statePresent = _memoryOverviewStates != null
+            source.StatePresent = _memoryOverviewStates != null
                 && _memoryOverviewStates.TryGetValue(source.HeroId, out source.Overview);
-            source.Identity = new { Job = overview, Blocks = source.Blocks, State = source.Overview, StatePresent = statePresent };
         }
         else return null;
         return IsMemoryEntityEligibleForCompressedMemory(source.HeroId) ? source : null;
@@ -260,7 +258,7 @@ public partial class MyBehavior
         var input = new MemorySummaryInput
         {
             Generation = generation, QueueJob = queueJob, HeroId = source.HeroId,
-            SourceFingerprint = ComputeMemorySummaryFingerprint(source.Identity)
+            SourceFingerprint = ComputeMemorySummarySourceFingerprint(source)
         };
         var hero = FindHeroById(input.HeroId);
         // Validate the same pending facts against the copies we actually render.
@@ -348,7 +346,7 @@ public partial class MyBehavior
         // settings getter must not publish an edit after the source digest.
         if (input.Job is MemoryOverviewJob && input.OverviewBlockCount < GetMemoryOverviewStartBlockCountFromSettings()) return false;
         var source = ReadMemorySummarySource(input.QueueJob, input.Generation);
-        if (source == null || !string.Equals(ComputeMemorySummaryFingerprint(source.Identity),
+        if (source == null || !string.Equals(ComputeMemorySummarySourceFingerprint(source),
             input.SourceFingerprint, StringComparison.Ordinal)) return false;
         return ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(input.Generation)
             && ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this);
