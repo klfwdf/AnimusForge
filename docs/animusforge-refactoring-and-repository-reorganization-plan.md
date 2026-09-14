@@ -1,3 +1,13 @@
+# 当前任务：M1/M2 捕获与接受调度职责提取（2026-09-15）
+
+- 用户授权按职责计划开始实施，接口稳定、细致拆分。本轮任务 `B1-DISPATCH-OWNER-20260915` ACTIVE；唯一写入G:/AFMOD/AF-REFACTOR，分支codex/af-framework-skill-delivery-20260911；起点b7c90201，前生产9617f96a，fresh fetch远端af618912，本地3 ahead/0 behind，不融合/推送。
+- 真实前置责任：MyBehavior.MemorySummaryMainThread目前持有捕获/接受共用队列、CAS待办状态、每tick额度/耗时和异常完成。先把它们提取为独立runtime owner + 窄internal host契约，MyBehavior仅留引擎身份/线程/设置/诊断适配和既有调用入口；迁移全部读到旧预算字段的规划调用，不新增第二套队列或兼容死字段。
+- 原行为保持：同步与排队共用2操作/实际执行耗时预算，FIFO/档代和owner拒绝、reset退役未开始任务、部分完成异常准确抛回，不伪造网络取消/事务回滚。公开V1/制作组ports、存档DTO/键、Prompt/动作规则不变；纯runtime不引用游戏程序集。
+- 范围：Refactor Contracts/Runtime新调度owner，原MemorySummaryMainThread适配与MemorySummaryPlanning预算读取；相关实际helper/captured/business/planning/writer/terminal/sealing测试接入新真实组件，源码守卫/地图/交接。验证旧新相同行为、真实故障控制、同候选六项Stage/API/存档身份。
+- 此包是M1/M2的线程接受基础提取，不冒称首次整图capture/copy已分段，也不宣称全部14包完成。深复制/完整writer/原子尾步仍待下一包；B1未合格不进B2。自动化PAUSED，不部署、不操作存档、不改制作组业务。两份用户草稿与指定本地Native简明版保留。
+
+## 以下为历史任务；当前实施以上方为准
+
 # 当前任务：修复内层同数量变动，并细化收尾前职责拆分计划（2026-09-15）
 
 - 用户已明确授权修复本轮已复现的覆盖问题并制定后续模块化计划。任务 `B1-INNER-STRUCTURE-20260915` OFFLINE_VERIFIED；本轮修复与规划交付COMPLETE（整体B1仍VERIFY）；单代理，唯一写入 G:/AFMOD/AF-REFACTOR，分支 codex/af-framework-skill-delivery-20260911，起点 af618912 / 生产4d6994bc。自动化仍PAUSED，不推送、部署、操作存档、切默认或开展未经本轮审查的大范围搬迁。
