@@ -1,3 +1,11 @@
+# 当前增量：独立Memory dispatch owner（2026-09-15）
+
+源码61d57892、81点地图：`Refactor/Runtime/MemorySummaryDispatcher`持有唯一队列/待办/预算/异常完成，internal `IMemorySummaryDispatchHost`隔离游戏读；原Host仅57行薄适配，规划两处耗时读取同步迁移。
+
+[详细接续](../handoffs/2026-09-15-memory-dispatch-owner-handoff.md) / [接口契约](af-memory-dispatch-contract.md)。本包不覆盖首次整图capture/copy分段、完整writer或全部Memory owner；旧根大类仍有混合责任，不能整文件标DONE。
+
+## 以下为既有定位与保留责任
+
 # 当前补充：内层结构守卫修复与真正模块化计划（2026-09-15）
 
 生产/测试 `9617f96a`：仅MemorySealing内层List结构绑定修复与关联测试，源码定位图78锚点；同步规则/存档/Prompt/API未变。相同数量变动已旧红新绿，不代表深字段修改或B1硬预算全部闭合。

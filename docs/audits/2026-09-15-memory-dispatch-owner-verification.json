@@ -1,0 +1,598 @@
+{
+  "kind": "B1-memory-dispatch-owner-extraction",
+  "recordedUtc": "2026-09-14T20:16:38.750877+00:00",
+  "productionRevision": "61d578926329ace61bf6b6ae43e12bf7d89b4696",
+  "previousProduction": "9617f96af8d821bf6317db0e43b8b1fbf1ee7a4d",
+  "checkpoint": "94e05a2f",
+  "remoteBaseline": "af6189129403466aa06101ccc3c522ee797bff38",
+  "state": "Stage8/B1 VERIFY; dispatch slice offline verified, deep capture/copy still pending",
+  "automation": "PAUSED",
+  "push": false,
+  "deploy": false,
+  "sourceFiles": {
+    "MyBehavior.MemorySummaryMainThread.cs": {
+      "rawSha256": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+      "normalizedSha256": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7"
+    },
+    "MyBehavior.MemorySummaryPlanning.cs": {
+      "rawSha256": "e621c0caf1fb61152ad49ab8063cc84d3cab0bd15a4ca2b9f4e8d6c6d5c08633",
+      "normalizedSha256": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b"
+    },
+    "Refactor/Contracts/IMemorySummaryDispatchHost.cs": {
+      "rawSha256": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+      "normalizedSha256": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6"
+    },
+    "Refactor/Runtime/MemorySummaryDispatcher.cs": {
+      "rawSha256": "4f822dd3df5cb13a5c66219a9e4f2de5db1990c4333d85be51d5e705b4a2e893",
+      "normalizedSha256": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
+    }
+  },
+  "metrics": {
+    "oldHostLines": 156,
+    "newHostLines": 57,
+    "hostFamilyReduction": 99,
+    "newRuntimeLines": 128,
+    "newContractLines": 22,
+    "meaning": "Real queue and mutable scheduling state moved out of MyBehavior, not merely another partial; new runtime+contract increases total code slightly."
+  },
+  "tests": {
+    "helper-final": {
+      "log": ".tmp\\dispatch-owner-20260915\\helper-final.log",
+      "sha256": "c27d85b4e1c7b3bf7fa0a9b4995a7448882f7b9a6c07c8efb204ce260e0e59d8",
+      "summary": [
+        "PASS MemorySummaryMainThread checks=37 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "helper-old-final": {
+      "log": ".tmp\\dispatch-owner-20260915\\helper-old-final.log",
+      "sha256": "9ccf3eb75bd4cfb98871ebd854847ab1a00721a49c83bc2c6ea32ddddacb8395",
+      "summary": [
+        "PASS MemorySummaryMainThread checks=32 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-ignore-generation": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-ignore-generation.log",
+      "sha256": "b8e773e8d09b5a0d91ae1126eae46b36096f72b5c1fcbd24906faa9048715553",
+      "summary": [
+        "FAIL stale generation rejected",
+        "FAIL already-stale worker cannot strand on retired queue",
+        "FAIL MemorySummaryMainThread checks=37 failures=2 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-ignore-owner": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-ignore-owner.log",
+      "sha256": "85644a3caaf163f2173a687d8e697307acda667137ae80b83812834fca532c0c",
+      "summary": [
+        "FAIL replaced instance rejected",
+        "FAIL replaced owner cannot strand worker on retired queue",
+        "FAIL MemorySummaryMainThread checks=37 failures=2 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-unbounded-drain": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-unbounded-drain.log",
+      "sha256": "5224b3e696aaed0d808432e8949b509574d957d3fe0a297d656dde7d7672f18a",
+      "summary": [
+        "FAIL drain is bounded per tick",
+        "FAIL second drain remains bounded",
+        "FAIL queued elapsed budget stops drain before second operation",
+        "FAIL inline cannot escape elapsed budget exhausted by drain",
+        "FAIL MemorySummaryMainThread checks=37 failures=4 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-unbounded-inline": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-unbounded-inline.log",
+      "sha256": "0a65d715ad809af14727f25bd493c0e5dfe1aea864ba4ad1c3b9e77e4360811c",
+      "summary": [
+        "FAIL two same-tick inline operations share allowance",
+        "FAIL third same-tick inline operation awaits next tick",
+        "FAIL inline operation shares remaining allowance with queued drain",
+        "FAIL slow inline unit completes atomically without preemption",
+        "FAIL inline elapsed budget defers second operation despite unused job allowance",
+        "FAIL failed operation time still consumes shared budget",
+        "FAIL MemorySummaryMainThread checks=37 failures=6 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-ignore-time-budget": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-ignore-time-budget.log",
+      "sha256": "0f289caa572876b059d58fe3c22d561d51e5edfa4853850f05d7b9bf7716802e",
+      "summary": [
+        "FAIL slow inline unit completes atomically without preemption",
+        "FAIL inline elapsed budget defers second operation despite unused job allowance",
+        "FAIL queued elapsed budget stops drain before second operation",
+        "FAIL inline cannot escape elapsed budget exhausted by drain",
+        "FAIL failed operation time still consumes shared budget",
+        "FAIL MemorySummaryMainThread checks=37 failures=5 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-omit-time-charge": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-omit-time-charge.log",
+      "sha256": "0b9611aaa003bfa3079d2c1bd2f5de2233dd76a292c1ece132ee9399d37a26ee",
+      "summary": [
+        "FAIL slow inline unit completes atomically without preemption",
+        "FAIL inline elapsed budget defers second operation despite unused job allowance",
+        "FAIL queued elapsed budget stops drain before second operation",
+        "FAIL inline cannot escape elapsed budget exhausted by drain",
+        "FAIL failed operation time still consumes shared budget",
+        "FAIL MemorySummaryMainThread checks=37 failures=5 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "final-omit-time-reset": {
+      "log": ".tmp\\dispatch-owner-20260915\\final-omit-time-reset.log",
+      "sha256": "42c20c9a6ea8034dc80374003561b4a6f25f7a4b248a614cc7843502023bff76",
+      "summary": [
+        "FAIL tick restores time budget after slow inline unit",
+        "FAIL failed timed operation does not strand later work",
+        "FAIL MemorySummaryMainThread checks=37 failures=2 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    "captured": {
+      "log": ".tmp\\dispatch-owner-20260915\\captured.log",
+      "sha256": "a94f66a2451004e1de7a27b8310be8a080070095bd2281ca672b6a1602488526",
+      "summary": [
+        "CAPTURED_RESULT pass=116 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+      ]
+    },
+    "business": {
+      "log": ".tmp\\dispatch-owner-20260915\\business.log",
+      "sha256": "20ba2d1610e1b164e5e980d5bd2c924f6a34f87ff21b538776ccf9d0f6b857f8",
+      "summary": [
+        "BUSINESS_RESULT passed=36 failed=0"
+      ]
+    },
+    "planning": {
+      "log": ".tmp\\dispatch-owner-20260915\\planning.log",
+      "sha256": "5cd52c576a0785ab47d7d8da8cdaaf718385c6dcbaf6c5ac5d19c641558d576f",
+      "summary": [
+        "PLANNING_RESULT pass=24 fail=0 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+      ]
+    },
+    "writers": {
+      "log": ".tmp\\dispatch-owner-20260915\\writers.log",
+      "sha256": "d3908954e755c5cc6e29b2c69f27646ca609331b2a766cd15036840f45c58000",
+      "summary": [
+        "WRITER_RESULT checks=238 failures=0"
+      ]
+    },
+    "sealing": {
+      "log": ".tmp\\dispatch-owner-20260915\\sealing.log",
+      "sha256": "fd582ec3794ab79a7f65ff1a56ef0a34063b9601261753c7083798d887454719",
+      "summary": [
+        "SEALING_RESULT pass=88 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+      ]
+    },
+    "terminal": {
+      "log": ".tmp\\dispatch-owner-20260915\\terminal.log",
+      "sha256": "bb11f83bd32ab55981538e1e844b718ac4e271e0100d586ba785bc8d38f50e9a",
+      "summary": [
+        "TERMINAL_RESULT scenarios=85 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    "commit_writers": {
+      "log": ".tmp\\dispatch-owner-20260915\\commit_writers.log",
+      "sha256": "d13a32458108722fab38ac8d3cc739ee771230bf49c514a48979695f72c52961",
+      "summary": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0 real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED"
+      ]
+    },
+    "api": {
+      "log": ".tmp\\dispatch-owner-20260915\\api.log",
+      "sha256": "62d30f662236461e5410d1f478333176fa1b5d1e757ff1b74bf1ec0cb926ea09",
+      "summary": [
+        "PASS 119 public API assertions; 256 concurrent reads; actual source-linked V1 contracts/runtime.",
+        "PASS expected external internal-access compiler rejection (CS0122)",
+        "PASS 532 actual-DLL metadata assertions; 4 implementation DLLs; public V1/legacy memory signatures match; module ports and scene-aware memory owner remain internal."
+      ]
+    },
+    "persistence": {
+      "log": ".tmp\\dispatch-owner-20260915\\persistence.log",
+      "sha256": "8e36f3e8cd188bcb73ec5f3cfa5b73bbee876980f801fecd2367c981e9f87aa5",
+      "summary": [
+        "{\"baseline\": \"9617f96a\", \"behaviorAdded\": [], \"behaviorBaseline\": 36, \"behaviorCurrent\": 36, \"behaviorRemoved\": [], \"moduleAssemblies\": [\"AnimusForge.Bootstrap.dll\"], \"moduleId\": \"AnimusForge\", \"moduleName\": \"AnimusForge\", \"status\": \"PASS\", \"syncAdded\": [], \"syncBaseline\": 146, \"syncCurrent\": 146, \"syncRemoved\": []}"
+      ]
+    },
+    "parity-final": {
+      "log": ".tmp\\dispatch-owner-20260915\\parity-final.log",
+      "sha256": "1e406dd12946551bae8443aa7995c6478a962db9ba6814e74c9d57aeba1d0e9d",
+      "summary": [
+        "Ran 15 tests in 2.622s",
+        "OK"
+      ]
+    }
+  },
+  "artifacts": [
+    {
+      "path": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "0540798254ec2ce35e4c28d78f9d7bb352470b1b8b78dd9fa6075a386d69c383",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "0540798254EC2CE35E4C28D78F9D7BB352470B1B8B78DD9FA6075A386D69C383",
+        "CreatedUtc": "2026-09-14T20:11:12.5143550Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "1aa56ead3162f16250208592cd521c5481915df2b9c47b51011e7a6d6aec8b90",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "1AA56EAD3162F16250208592CD521C5481915DF2B9C47B51011E7A6D6AEC8B90",
+        "CreatedUtc": "2026-09-14T20:10:50.4505735Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "a721fb59dc3dd919ac1d1a0356489a55d23f57daf3d6cd34e3d0351a341ec80a",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "A721FB59DC3DD919AC1D1A0356489A55D23F57DAF3D6CD34E3D0351A341EC80A",
+        "CreatedUtc": "2026-09-14T20:11:09.6044310Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "path": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "d879d568e4d84d73feedb932bf0678710cf19b803a7cb2c7b19e5930526ecf53",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "D879D568E4D84D73FEEDB932BF0678710CF19B803A7CB2C7B19E5930526ECF53",
+        "CreatedUtc": "2026-09-14T20:11:50.6687068Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "d6f89d7691b18698ac4c6ea06247f423a228474fa2120e908b815a64e8632854",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "D6F89D7691B18698AC4C6EA06247F423A228474FA2120E908B815A64E8632854",
+        "CreatedUtc": "2026-09-14T20:11:34.8521175Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "b27e80cc4fc9a23d750e89d88546c8c21c5f3d6a2be126c2cf29cb23569ee27e",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "B27E80CC4FC9A23D750E89D88546C8C21C5F3D6A2BE126C2CF29CB23569EE27E",
+        "CreatedUtc": "2026-09-14T20:11:47.9155936Z"
+      },
+      "stageMatches": true
+    }
+  ],
+  "codeMap": {
+    "anchors": 81,
+    "sourceRevision": "61d578926329ace61bf6b6ae43e12bf7d89b4696",
+    "recordedRevision": "PASS",
+    "workingTree": "PASS"
+  },
+  "limits": [
+    "Deep first capture/copy and full source/field/writer budget still pending",
+    "Dispatcher limits operations/time, not every nested record or arbitrary synchronous action duration",
+    "No public API/module gameplay/save identity change",
+    "No LIVE/SAVE/real provider/TTS/Economy/AFEF/external DLL load acceptance"
+  ],
+  "builds": [
+    {
+      "configuration": "Debug",
+      "roles": [
+        "1.3",
+        "1.4",
+        "Bootstrap"
+      ],
+      "mode": "Stage",
+      "status": "PASS",
+      "logSha256": "13f97d11a10b723743e8c0a20f431eb4fb63298c7aa3b92101d2622a28014b7a"
+    },
+    {
+      "configuration": "Release",
+      "roles": [
+        "1.3",
+        "1.4",
+        "Bootstrap"
+      ],
+      "mode": "Stage",
+      "status": "PASS",
+      "logSha256": "c35f4f7872ff3cd1507bfb8196a7d64b630e5aa49c89af2a2dc407696aecaf7c"
+    }
+  ],
+  "commands": {
+    "dotnet": "G:/AFMOD/.dotnet-sdk/dotnet.exe",
+    "python": "G:/Python310/python.exe -X utf8 -B",
+    "helper": "tools/MemorySummaryMainThreadBoundaryTests/run.py",
+    "oldHelper": "run.py --source-baseline 9617f96a (32 shared checks; current adds5)",
+    "mutations": "run.py --mutate <name>",
+    "adjacent": "run_captured/business/planning/writers/sealing/terminal/commit_writers.py",
+    "build": "一键编译覆盖推送/build_single_module.ps1",
+    "buildArguments": {
+      "ProjectRoot": "G:/AFMOD/AF-REFACTOR",
+      "BannerlordRoot": "E:/steam/steamapps/common/Mount & Blade II Bannerlord",
+      "Bannerlord13ReferenceDir": "G:/AFMOD/NEW-10/_deps_auto",
+      "Bannerlord14ReferenceDir": "G:/AFMOD/NEW-10/.tmp/build_check/1.4",
+      "WorkshopContentDir": "E:/steam/steamapps/workshop/content/261550",
+      "RuntimeDependencyDir": "G:/AFMOD/NEW-10/AnimusForge/bin/Win64_Shipping_Client",
+      "Configuration": [
+        "Debug",
+        "Release"
+      ],
+      "Stage": true
+    },
+    "environment": "PATH prepends G:/AFMOD/.dotnet-sdk; DOTNET_ROOT same; no install/script change",
+    "api": "tools/ModuleFrameworkApiTests/run.py --dotnet G:/AFMOD/.dotnet-sdk/dotnet.exe --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts",
+    "persistence": "tools/PersistenceIdentityAudit.py --baseline 9617f96a --json"
+  },
+  "testAdaptationNotes": "Initial runner integration omitted dispatcher compile inputs and one qualified test diagnostic negation was malformed. Corrected test wiring, reran affected suites. Those compiler errors are not business negative controls. Seven final negative controls BUILD_PASS and fail actual assertions.",
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "frozenFiles": {
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\9617f96a.log": "9ccf3eb75bd4cfb98871ebd854847ab1a00721a49c83bc2c6ea32ddddacb8395",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\api.log": "62d30f662236461e5410d1f478333176fa1b5d1e757ff1b74bf1ec0cb926ea09",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business.log": "20ba2d1610e1b164e5e980d5bd2c924f6a34f87ff21b538776ccf9d0f6b857f8",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured.log": "a94f66a2451004e1de7a27b8310be8a080070095bd2281ca672b6a1602488526",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers.log": "d13a32458108722fab38ac8d3cc739ee771230bf49c514a48979695f72c52961",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-ignore-generation.log": "b8e773e8d09b5a0d91ae1126eae46b36096f72b5c1fcbd24906faa9048715553",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-ignore-owner.log": "85644a3caaf163f2173a687d8e697307acda667137ae80b83812834fca532c0c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-ignore-time-budget.log": "0f289caa572876b059d58fe3c22d561d51e5edfa4853850f05d7b9bf7716802e",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-omit-time-charge.log": "0b9611aaa003bfa3079d2c1bd2f5de2233dd76a292c1ece132ee9399d37a26ee",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-omit-time-reset.log": "42c20c9a6ea8034dc80374003561b4a6f25f7a4b248a614cc7843502023bff76",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-unbounded-drain.log": "5224b3e696aaed0d808432e8949b509574d957d3fe0a297d656dde7d7672f18a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\final-unbounded-inline.log": "0a65d715ad809af14727f25bd493c0e5dfe1aea864ba4ad1c3b9e77e4360811c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\helper-final.log": "c27d85b4e1c7b3bf7fa0a9b4995a7448882f7b9a6c07c8efb204ce260e0e59d8",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\helper-old-final.log": "9ccf3eb75bd4cfb98871ebd854847ab1a00721a49c83bc2c6ea32ddddacb8395",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\helper.log": "9ccf3eb75bd4cfb98871ebd854847ab1a00721a49c83bc2c6ea32ddddacb8395",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation.log": "d554b343a5bcef51d8b6ce5887ccd953cc34e796ae150c0f6827393bfc705133",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner.log": "6f49c50e212ff31083950dd34131ac5aa568c07ac6bb3315fc3c6d6f877a1d91",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget.log": "a4d8e02f9fa6c5720f52e25067c996e5ca83f936d6fb00e521ab7b112984f3fa",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge.log": "2095d6560a8c164f93de616b31d94344d290da7c78dd273abde277d22b948655",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset.log": "5472de75cba7a106eed9d466ddd55b49bf79346e14d5f8a8adba2f798c00a96f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\parity-final.log": "1e406dd12946551bae8443aa7995c6478a962db9ba6814e74c9d57aeba1d0e9d",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\parity.log": "b215dcefbcf9abdfce693bb9cc6586328caed3e43987e88f1d1d07d9d647bd5b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\persistence.log": "8e36f3e8cd188bcb73ec5f3cfa5b73bbee876980f801fecd2367c981e9f87aa5",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning.log": "5cd52c576a0785ab47d7d8da8cdaaf718385c6dcbaf6c5ac5d19c641558d576f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing.log": "fd582ec3794ab79a7f65ff1a56ef0a34063b9601261753c7083798d887454719",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\stage-Debug.log": "13f97d11a10b723743e8c0a20f431eb4fb63298c7aa3b92101d2622a28014b7a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\stage-Release.log": "c35f4f7872ff3cd1507bfb8196a7d64b630e5aa49c89af2a2dc407696aecaf7c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal.log": "bb11f83bd32ab55981538e1e844b718ac4e271e0100d586ba785bc8d38f50e9a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain.log": "d4f2de5e5495a2a0a1203f8065c52c4ea7cb6212ce3a0a45e71535f5dd8aa2dd",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline.log": "037a32eaf20ab683c5bbdec2e9c64fa138649ba6c7a2ce0853828d99ac3b7d09",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers.log": "d3908954e755c5cc6e29b2c69f27646ca609331b2a766cd15036840f45c58000",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\BudgetRuntime.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\build.log": "550189b9047f4e388c8efb1d5457388b65f78e3b86df6b71a4b6c65b28e99585",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\Business.cs": "585e8a8ec084e31c411775b86ba6f7372b4725827f90221687192a79d22da9de",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\manifest.json": "8b71d4beef131e48b60e1f0e128669bc90477e0c9765cd944bdd88898f337158",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\Planning.cs": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\Program.cs": "1df495dacfd5be7387dd41c8f5a08195a93857ded32f6e12ba4d722a181943b2",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\Proof.csproj": "0454d7941631c9218967f5db72478cc77bca02b17396594382559e6e8801f5e8",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\run.log": "286a170e827db18983fd3bae18fdd649ec9b1f4092deceb1764f8285c18adf97",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\business-current\\SaveRuntimeGuard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\build.log": "435f0ae86923874488412a2042e558a757442d4d838e17bdfdee300d9d1b97a7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\Input.cs": "9221c060ff0140503cf33ff09c812f2f0f0d53478b9f85fea0b9a023dc58da15",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\manifest.json": "0deb2cf1e2ec0e279043a5efa6f427e39f8edfed540534b813e9f7f0cfa8f071",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\MyBehavior.MemorySourceFingerprint.cs": "259e79c7eecec4e04f623f5c1ffe385a516ad09c7e9fa4c48cc62ced273b0b2f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\Product.cs": "4f25f318521265321426c30d9d7596873118d25bd902d7516407376907740131",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\Program.cs": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\Proof.csproj": "6dc0c0e448818d358cd22fc9a432a081b9432632c45f9d416ce17d31bb992af5",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\captured-current\\run.log": "ac56e5de00c6ecb96045f44753000e1f018c914906ae086d80752c3892f0587b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\build.log": "9a17ba0334fea38bc3c7364d4dcbff843bfd86557f1defbef45a10d70dedec7a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\CommitBodies.cs": "582b66e60b8396155a73de0ff94439a6136e04d518eb571f77884432efd3ec68",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\CommitEntry.cs": "c83eac734c9be55050eea528f1b3bed136af1d3acafbf15537e0add3f5ec7886",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\CommitWritersHarness.cs": "2fc7214de09f87beed9b24b811e06a726f49fae43a343a3f28af657d13296747",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\DevTextEditorHelper.cs": "3da32075835772db1a8ddb174e0dac891c0743764d6c2b89bc24cccd62fd31ec",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\DialogueHistoryEntry.cs": "1ac28c71b56e70afc59ad79cf099ce7a183af4c896b68c01f6e69ccc51e768e9",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\EconomyRewardDebtContracts.cs": "94359510eeee679d044b89618446a99cd6527665eb611d946dc42110deb201ee",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\EditorGuard.cs": "fa13baec13700877a73ac15226fcd313db11a884f77e7745643ad5344d900bb5",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Fixture.cs": "8fc1d066d79d59b044dfc0f0a1c4de4cff08025b16cead70469105f1b01677d3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\InteractionContracts.cs": "08af96b6f1e5d2fabaddabd05fe9dbd0609328e564356ffc4140764d1432a296",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\LlmContracts.cs": "d014816048a542458ee2c7c8130a35c25370596d38478e6adea85fba89a80a89",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\manifest.json": "86e5780ff05db989dd9b044dc9cbbf4939192ba48830f66cf2b7af7ee6f3602e",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\MyBehavior.MemorySummaryPlanning.cs": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Product.cs": "c2f25a2b268cf7ac5952fd2f4877ba9f6e4968ba07e014026114afc739f7f076",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Proof.csproj": "69e30c7ccd30d1a1e6be42e3f97e7c63a95e39e425eae42639818d2b6a26e87d",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\RecoveryLedger.cs": "f9a35a4c10fd91b261176956b99780eb136460e25c8069de5c7d92bc6874d75c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\run.log": "4862b8654b321b753bdc708418076946f9ecac69470f790a7c26f15b0502c00b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\Terminal.cs": "3630594e874b29475f90f49400aa402339e1df0a0cb61535d3b07beffb9aecb8",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\TextInputSanitizer.cs": "2b7a7cfc14efda9aaaa310581227967863f8307dd6f4964005a3f53c158b2d96",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\commit_writers-current\\WeeklyMemoryMaterialOutcomeReceipt.cs": "17891664be2fdeb88128926c8be3a51bf2f65f0c0953a998e61d0ae3bb2cf418",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\Boundary.cs": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\build.log": "0e0105b7caf5528021768d66eda56b594efffd66560d35605b0570a8e10c0b15",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\MemorySummaryDispatcher.cs": "4f822dd3df5cb13a5c66219a9e4f2de5db1990c4333d85be51d5e705b4a2e893",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\run.log": "85f2b43d2d9b9dc76478770c21385e2d12dc13f0a80643cd1f480a27ad725184",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\current\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\Boundary.cs": "8b73eda8a921333212e4a777f91ca60c1a118d7221b01a9f3c85d233b3664e79",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\build.log": "748d56e3391d0945e4c30736d899653ea5b9081fc3cf5a9eeb821f864fd7a158",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\MemorySummaryDispatcher.cs": "4f822dd3df5cb13a5c66219a9e4f2de5db1990c4333d85be51d5e705b4a2e893",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\run.log": "bceb536f08d05505633d1ba57aa63883c6301fcb0cbfbc4e97b96f2bb2356768",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-generation\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\Boundary.cs": "3276fa81083a32b9353de76103f5dd6d716f96ac7dab2abffa3477b16807f912",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\build.log": "7315efefa62c07ef26d4f444e4b85370a6f81781491fffa1449b3e5787d6ebee",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\MemorySummaryDispatcher.cs": "4f822dd3df5cb13a5c66219a9e4f2de5db1990c4333d85be51d5e705b4a2e893",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\run.log": "fa55093008f37427fdaccb2f15c85d1bf5cb930ff51cb1d1d0ae3cfc03ce771f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-owner\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\Boundary.cs": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\build.log": "74f934146b22a297c47c85d52f6b932a5897abd40846435b8603ecdecc2ca894",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\MemorySummaryDispatcher.cs": "dd252cc00ccb3b0d8271282880f9116c1b1554c8f4eb8b7811b68ed8362c2e52",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\run.log": "6b913d27dbc3f909f63a38be8ab50d7e38a731414f0aaf79f8eb8847700300ea",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\ignore-time-budget\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\Boundary.cs": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\build.log": "d54b0ef0c3b3d0bfeee8f7e9f3471e1d737a7beed1c8de11c10f48ead3059bbd",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\MemorySummaryDispatcher.cs": "87c3c758d4d7713f59abcc5568e4886cf1dc923866313f7d2140a28822f7bf58",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\run.log": "6b913d27dbc3f909f63a38be8ab50d7e38a731414f0aaf79f8eb8847700300ea",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-charge\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\Boundary.cs": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\build.log": "3f070924b8d981e61d277bcdaf86ef6139718c7d85b88fa6395426cc847e8207",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\MemorySummaryDispatcher.cs": "147f5cb814c64ef1cccdfe3db7ed92873c60f453e6a76dd27897908cea69dee4",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\run.log": "b60693a7db96f44c646ab78053eb66961fcfba2225d0b2d684ecfb80d83b4fea",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\omit-time-reset\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\original-9617f96a\\Boundary.cs": "b5b12b97fe06b99ca1cedf62029cb823cbb091d42a030baeb075179476f7dd13",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\original-9617f96a\\build.log": "6f0921acce62664b7aab389e1108ac9b533f69dbfa7c244b62a80a6917c9283c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\original-9617f96a\\Program.cs": "dc5f97c527d1e767219b3b20a807b9184d93107dbd13d8f2c78b0aa898c014e3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\original-9617f96a\\Proof.csproj": "1d1ff653779f7490ecae26f38075a633fe7011a2799c3238168b9bb6a213215f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\original-9617f96a\\run.log": "d761f5cfa9fb13428dde55d94e541a162659f9db346165af1a67045ff3e10147",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\original-9617f96a\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\build.log": "0918aef8c9e54f711fae019784739610dceebca2423352ec2fba68801442b0a4",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\manifest.json": "00cdb489c5eb132d98549e4ef7c794baba858e9d67cc96db881d426354afdbf3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\Planning.cs": "87b63c1a860593a9de81280b4f2f2b7f380c589433e6b382d634cc6ad16bb5c4",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\Product.cs": "e247b92d2e4d6552c16c988028776312026bc8ef1edcd7bb8d28e34e35693bb4",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\Program.cs": "a1622f275b2e0c4470072213ae74db767bd5136fb6f7c4cb2a7c28a69a372d18",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\Proof.csproj": "35c07dc8db320026d308fbf46db549b1940a8da441c765cf50148d85cdf62f55",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\planning-current\\run.log": "6f9ce8dd8715dd696813f5705c5129940ad70c901722a4899b258e5fa6a7ada5",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\BudgetRuntime.cs": "534a1e4e5517731766ebfec7eec99db175dae7223ee27a3ad95eaf00a967a358",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\build.log": "0bbed4238c390d4671cf6ee2879a6b0f763e6a4d4f9529950059873969a783cb",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Fixture.cs": "88fce3b4a9191a7f8db0683db81171ab1e23e762a1e33e35e7a63923da58a818",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\manifest.json": "b8f89786f09b6c981e62278b3125a98e0ace68c99e111705afc089c6c892c94b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\MemorySealing.cs": "1b8de2d80a78c5cf7306543af6c178147c839eed53c536d4a8106c820d3cb578",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Product.cs": "e8666d7523e5bfd77c236b915e6663ca20129b91018e382b3a2205c847074f22",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Proof.csproj": "617cb9279befff91a718cfc5c8e51a1c0fd2fb645531ae3aed9d4d5df83d2be4",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\QueueSort.cs": "f4dc41fada77a2c51bbd5f49db38081c5c871af952055a020905fe191850c20f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\run.log": "8c303fa4afd99bc08d6bc00f95f7b20ecbc5ab4d34b1cdc28fc629caf5161c01",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\sealing-current\\Sealing.cs": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\build.log": "a3ce4fc352cdd329848811c86f6f52c8b19163133daae9606d57f627a2cb8cfa",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\EconomyRewardDebtContracts.cs": "94359510eeee679d044b89618446a99cd6527665eb611d946dc42110deb201ee",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Fixture.cs": "7413969d04d58e8e596cdaabd768c43c13108340d8108572b7240d53ff44e4d9",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\InteractionContracts.cs": "08af96b6f1e5d2fabaddabd05fe9dbd0609328e564356ffc4140764d1432a296",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\LlmContracts.cs": "d014816048a542458ee2c7c8130a35c25370596d38478e6adea85fba89a80a89",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\manifest.json": "16feb6140790810a114eca0b52f78879536a0e1cc3cbc6a32c8d0edad352a707",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\MyBehavior.MemorySummaryPlanning.cs": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Product.cs": "a004eab4ae009ff3103b2654052acfbe90cdee6c753925f5b47ff5e28b7439eb",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Proof.csproj": "ff034a5c06713f086e2c5fec42265fd5638c554abcfcf9f1da16bf4241e27544",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\RecoveryLedger.cs": "f9a35a4c10fd91b261176956b99780eb136460e25c8069de5c7d92bc6874d75c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\run.log": "d64101fdb96dfa9ead5ca3e38ac66c8dd191d34cca99228b02f798392cd768ed",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\Terminal.cs": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\terminal-current\\WeeklyMemoryMaterialOutcomeReceipt.cs": "17891664be2fdeb88128926c8be3a51bf2f65f0c0953a998e61d0ae3bb2cf418",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\Boundary.cs": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\build.log": "22daf2ab701bf01d93716af39e1e27de0c36582bca856589f34b2ae55a418d53",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\MemorySummaryDispatcher.cs": "522033d5af3adf2a055c00bc640af5edf556160a6442b22e47a0a55dedbc1765",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\run.log": "3cbd48e3c90c7e07ede6f26eaf93d8f94e8e2e4c88edc257e184b156e15d4222",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-drain\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\Boundary.cs": "b29920bfc41f32e86f93496073e8523f3e85c2c1637a143faa491ffb1a00e009",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\build.log": "7bf295eabef5e0ea732142ec78f4874e03ea690478ee18e85597ba654cb2316e",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\IMemorySummaryDispatchHost.cs": "ca75f3b611e8ef0e51a14a0a5f63e328ee495a19f77e476806cb743a0db137a3",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\MemorySummaryDispatcher.cs": "51676c6d8094ad2d54ec352a4f228f92bc1f86a5836d881ebbb85abd0f1c5ad2",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\Program.cs": "92c59b00e4437e4cf607e01ae22a3f136199ddb7a2c6d37ecb4425f1c959762a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\Proof.csproj": "4f70198c4f86f8f68261d3a7fdcef9b487b25a8b2ca07315fe71cbc3fbeb78f6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\run.log": "10a54c930f9b972c25c0a10f63dfb1a04840df3ee3933def61a538df3799acc0",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\unbounded-inline\\SaveRuntimeGuard.cs": "1dd3fc3682fd5c472b2a0fd8e270149adec6da6a9ce977402078762fd5dc7b2a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\Boundary.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\build.log": "255a8027bdf4e46e7610250fe5cb3164b2e3f8c3d8721dbc062d930833ef7e5c",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\Facades.cs": "bbab939de65ec6d30504413d73c41879c8001bc3afec137da17098451613ed76",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\manifest.json": "25f074e04a369c8359e9e2bdd47bdfefc4988f3f1fe9dfe81fca8b7aad7cee9f",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\Program.cs": "5f95b006fdf5e625b368d538060af47ff8b7c51edcb3d41568595dd9d9e4e49a",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\Proof.csproj": "85ed08191d7dabefcc2d9747aa23cc7521618f730b8236e609f4cbb68a2f3536",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\run.log": "f0f160b460bc3afc66f52b2bb5a6f00b25a4a14516e0d065a89e0e3975be67dc",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\SaveRuntimeGuard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\dispatch-owner-20260915\\final-evidence\\writers-current\\Writes.cs": "5f09b05d19c6c5c087689fe7beb6bfb1ca85a2658ff05b9d1af02104aeeb50a2"
+  }
+}

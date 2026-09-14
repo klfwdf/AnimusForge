@@ -1,3 +1,14 @@
+# AF 总 HANDOFF — Memory调度职责已独立提取（2026-09-15）
+
+**当前生产/测试61d57892；M1/M2线程接受基础子包已离线验证，整体阶段8/B1仍未整批合格。自动化PAUSED，仅本地提交，未推送/部署。**
+
+- [本轮详细HANDOFF](docs/handoffs/2026-09-15-memory-dispatch-owner-handoff.md) / [typed内部契约](docs/architecture/af-memory-dispatch-contract.md)：队列/claim-retire/额度/耗时/异常完成迁至独立MemorySummaryDispatcher，Host156→57行，实际规划读取新owner；不保留旧队列算法。
+- 共同旧新32项均过，当前37项含5个新契约；7有效反例；captured116/business36/planning24/writers238/sealing88/terminal85/commit51、15守卫、六Stage、API/存档身份通过。[验收JSON](docs/audits/2026-09-15-memory-dispatch-owner-verification.json) / [81点代码图](docs/architecture/af-framework-code-map.json)。
+- **首次深来源capture/copy尚未分段**，完整writer与原子尾步仍待做。本次是独立调度owner，不是全部Memory模块/主体已拆完；按[职责计划](docs/phase8/af-core-responsibility-decomposition-plan-20260915.md)下一包接首次捕获与接受一致性，不进B2。
+- 工作区G:/AFMOD/AF-REFACTOR；本地分支codex/af-framework-skill-delivery-20260911，fresh fetch远端af618912；三份保护文件原样。公开API/制作组ports、玩法/存档键与默认未改，实机/旧档/真实资产AFEF/TTS/provider/外部DLL未验。
+
+## 以下为历史交接；当前完成范围以上方为准
+
 # AF 总 HANDOFF — 内层覆盖修复完成，模块化收尾前计划已细化（2026-09-15）
 
 **本轮修复生产/测试9617f96a，影响面离线验证完成；整体仍阶段8/B1，未整批验收。自动化PAUSED，仅本地提交，未推送/部署。**

@@ -157,3 +157,10 @@ M/P/V 等包名为本文标签；P0–P6 阶段编号仍以原计划为准，不
 本轮修复验收通过后，下一完整工作包仍是 **B1首次capture/copy + 明确writer与最终接受边界**，并按M1/M2的目标提取真正owner；不是直接跳到默认切换或一口气挪走整个MyBehavior。
 
 每次将本表中的包映射回原台账P1/P2/P3/P4/P5/P6，只更新真实完成项。源码/测试通过、结构已提取、实机已验收是三个不同状态；其中一个PASS不能代替另两个。
+
+
+## 9. 已实施增量：M1/M2线程接受基础（2026-09-15）
+
+- `61d57892`把队列/待办claim-retire/额度与耗时/完成异常迁到独立MemorySummaryDispatcher；新增internal Host契约，原MyBehavior只做引擎适配，规划读取同一owner状态。详见[本轮HANDOFF](../handoffs/2026-09-15-memory-dispatch-owner-handoff.md)。
+- 这一子包已接真实capture/writer/planner/completion并离线验证；**M1首次深复制、M2其余规划/summary业务、M3历史/事实仍未全部迁移**。不把一项Runtime提取勾成整包或整个主体完成。
+- 下一包仍首次capture/copy + source/writer/接受一致性；利用独立dispatcher时间读值，不再向MyBehavior增加另一套队列/额度。公共/内部模块边界保持，未恢复自动化/部署/推送。
