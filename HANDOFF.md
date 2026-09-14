@@ -1,3 +1,15 @@
+# AF 总 HANDOFF — 深 line/trigger 预算已离线联验（2026-09-14）
+
+**生产/测试`4d6994bc7cf219a2f894377d7262a90b466f9cbe`，本轮局部完成；阶段8/B1继续VERIFY、未整批合格。** 检查点`eb6389f4`，前生产`86805518`。自动化保持PAUSED；不进入B2；未推送、部署、改默认或操作真实存档。
+
+- 当前入口：[深line/trigger HANDOFF](docs/handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)，含源码坐标、时序变化、量测、验证及下一步；[验收JSON](docs/audits/2026-09-14-b1-deep-line-trigger-verification.json) / [77点代码图](docs/architecture/af-framework-code-map.json)绑定`4d6994bc`。
+- 单draft 1024行与trigger bind按共享metadata计费；实测1×1024行9窗、窗内最多127行。trigger列表sanitize仍一次原子。同步Sanitize与续跑共用原line/bind规则。
+- 封存76/0，旧40b同76例61绿15红；新反例`unbudgeted-line-normalize`与`ignore-line-source`有效。本轮未重跑captured/六Stage/API/存档身份；LIVE/SAVE=NOT_RUN。
+- 明确剩余：首次capture/复制、全owner/raw/最终绑定、Apply/public/weekly尾步。不重做本轮line预算或已完成五项。[计划第16节](docs/phase8/af-core-precloseout-plan-20260913.md)直接接这些剩余项，不进入B2。
+- 本工作区为 Codex worktree（detached HEAD）；指定远端仍`origin/codex/af-main-refactor-continuation-20260831`。不要占用另一 worktree 上的同名分支。
+
+## 以下为历史暂停与切片；不覆盖上方当前续点
+
 # AF 总 HANDOFF — 用户暂停，整体进度与代码交付（2026-09-14）
 
 **生产开发及自动化 PAUSED；当前阶段 8 / B1，未整批合格，整个重构未 DONE。** 本轮只做核查、文档和用户明确授权的专门重构分支普通推送，不部署/操作存档/删旧/切默认。下方历史 ACTIVE 与自动继续安排全部由本入口覆盖。

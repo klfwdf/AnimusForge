@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "86805518259ee44e3924da787bfba97654208074",
+  "sourceRevision": "4d6994bc7cf219a2f894377d7262a90b466f9cbe",
   "remoteBaseline": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -255,29 +255,29 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "legacy.history",
       "path": "MyBehavior.cs",
-      "start": 27848,
-      "end": 27851,
+      "start": 27872,
+      "end": 27875,
       "symbol": "public static string BuildHistoryContextForExternal(",
       "match": "contains",
       "status": "retained-live",
       "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "legacy.recall",
       "path": "MyBehavior.cs",
-      "start": 33854,
-      "end": 33857,
+      "start": 33878,
+      "end": 33881,
       "symbol": "private string BuildCompressedMemoryContextById(",
       "match": "contains",
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "scene.postprocess",
@@ -420,7 +420,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "raw数量入场；候选ID扫描仍有同步全扫，不代表全部入口已预算",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.summary.planner",
@@ -431,7 +431,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "分段初筛/extra/cleanup，冻结metadata排序与失败汇总在worker；仅完整接受才计数",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.summary.maintenance",
@@ -442,7 +442,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "不在每Tick重复读完整summary来源；past draft检查仍有全扫",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.plan.entry",
@@ -491,57 +491,57 @@
     {
       "id": "memory.editor.text",
       "path": "MyBehavior.cs",
-      "start": 50051,
-      "end": 50054,
+      "start": 50075,
+      "end": 50078,
       "symbol": "private void OpenDevDailyMemoryLineTextEditor(",
       "match": "contains",
       "status": "mixed-host",
       "note": "文本保存/取消真实红绿证据；同代记录引用/指纹也须保持",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.import.single",
       "path": "MyBehavior.cs",
-      "start": 54889,
-      "end": 54892,
+      "start": 54913,
+      "end": 54916,
       "symbol": "private void ImportSingleNpcDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.import.batch",
       "path": "MyBehavior.cs",
-      "start": 56994,
-      "end": 56997,
+      "start": 57018,
+      "end": 57021,
       "symbol": "private void ImportDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "记忆批量导入生命周期，保留overwrite/merge业务",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.import.hero-all",
       "path": "MyBehavior.cs",
-      "start": 55086,
-      "end": 55089,
+      "start": 55110,
+      "end": 55113,
       "symbol": "private void ImportHeroNpcAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.import.all",
       "path": "MyBehavior.cs",
-      "start": 57522,
-      "end": 57525,
+      "start": 57546,
+      "end": 57549,
       "symbol": "private void ImportAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF全量导入窗口门禁；非全部导入业务已运行验收",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.summary.raw-view",
@@ -579,13 +579,13 @@
     {
       "id": "memory.overview.pending-projection",
       "path": "MyBehavior.cs",
-      "start": 26811,
-      "end": 26814,
+      "start": 26835,
+      "end": 26838,
       "symbol": "private bool HasMemoryOverviewPendingBlocks(",
       "match": "contains",
       "status": "mixed-host",
       "note": "一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.material.index-owner",
@@ -618,7 +618,7 @@
       "note": "原记录/追加/发布仍归主体 owner，使用独立索引",
       "start": 13707,
       "end": 13710,
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.material.rebuild",
@@ -629,7 +629,7 @@
       "note": "重建后复核来源引用，再发布和绑定",
       "start": 20162,
       "end": 20165,
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.sealing.continue",
@@ -638,9 +638,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "有限Campaign窗口共享封存授予；独立/同步调用与深原子成本单列",
-      "start": 278,
-      "end": 281,
-      "fileSha256": "ead66bb6a3a53ba4ad9b749859ea51d963a58bfffd9bbf358d14fba9d1dd8628"
+      "start": 451,
+      "end": 454,
+      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
     },
     {
       "id": "memory.budget.runtime",
@@ -673,7 +673,7 @@
       "note": "真实主/deferred维护共享周期与异常/nested恢复",
       "start": 17733,
       "end": 17736,
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.budget.caller",
@@ -684,7 +684,7 @@
       "note": "实际Campaign入口接入共享维护周期，其他顺序保持",
       "start": 17687,
       "end": 17690,
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.budget.deferred",
@@ -695,18 +695,18 @@
       "note": "复用共享deadline，原子超时后不再开始下一维护域",
       "start": 5923,
       "end": 5926,
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.sealing.queue-tail",
       "path": "MyBehavior.MemorySealing.cs",
-      "start": 63,
-      "end": 66,
+      "start": 64,
+      "end": 67,
       "symbol": "private sealed class DailyMemorySealQueueTail<T> where T : class",
       "match": "exact",
       "status": "wired-boundary",
       "note": "真实Daily/Major封存消费方；持有私有排序结果、源字段/列表/culture发布门禁，标量绑定仍原子",
-      "fileSha256": "ead66bb6a3a53ba4ad9b749859ea51d963a58bfffd9bbf358d14fba9d1dd8628"
+      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
     },
     {
       "id": "memory.sort.runtime",
@@ -733,24 +733,24 @@
     {
       "id": "memory.sort.daily-normalize",
       "path": "MyBehavior.cs",
-      "start": 26715,
-      "end": 26718,
+      "start": 26739,
+      "end": 26742,
       "symbol": "private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Daily净化体原样提取；同步Sanitize与分片尾部共用，权威DTO仍在主体",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.sort.major-normalize",
       "path": "MyBehavior.cs",
-      "start": 26881,
-      "end": 26884,
+      "start": 26905,
+      "end": 26908,
       "symbol": "private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Major净化体原样提取；先pending再dedupe/normalize，保留引用和重试字段",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
     },
     {
       "id": "memory.source-digest.runtime",
@@ -789,34 +789,67 @@
       "id": "memory.owner-normalize.state",
       "path": "MyBehavior.MemorySealing.cs",
       "symbol": "private sealed class DailyMemoryDraftNormalization",
-      "note": "逐draft原子规范化，结果私有；发布前key/empty/列表guard，单draft深文本和guard仍原子",
-      "start": 127,
-      "end": 130,
+      "note": "逐draft身份仍一次expensive；line/trigger bind按metadata续跑，结果私有；发布前key/empty/列表guard",
+      "start": 128,
+      "end": 131,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "ead66bb6a3a53ba4ad9b749859ea51d963a58bfffd9bbf358d14fba9d1dd8628"
+      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
     },
     {
       "id": "memory.owner-normalize.caller",
       "path": "MyBehavior.MemorySealing.cs",
       "symbol": "private bool RunDailyMemorySealDrafts(DailyMemorySealState state, MemoryMaintenanceWorkBudget budget)",
       "note": "真实caller，复用累计授予；失效重新封存/建索引，空owner直接移除",
-      "start": 469,
-      "end": 472,
+      "start": 642,
+      "end": 645,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "ead66bb6a3a53ba4ad9b749859ea51d963a58bfffd9bbf358d14fba9d1dd8628"
+      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
     },
     {
       "id": "memory.owner-normalize.entry",
       "path": "MyBehavior.cs",
       "symbol": "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)",
-      "note": "原内层体精确提取；同步/切片共同消费；DTO/clone/AFEF/marker规则保持",
+      "note": "同步入口组合共用bind/line helper；clone/seen/trigger列表规则保持",
+      "start": 26635,
+      "end": 26638,
+      "match": "exact",
+      "status": "wired-boundary",
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
+    },
+    {
+      "id": "memory.owner-normalize.line",
+      "path": "MyBehavior.cs",
+      "symbol": "private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)",
+      "note": "原Where+Select体精确提取；同步与续跑共用，不含第二套规则",
+      "start": 26596,
+      "end": 26599,
+      "match": "exact",
+      "status": "wired-boundary",
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
+    },
+    {
+      "id": "memory.owner-normalize.trigger-bind",
+      "path": "MyBehavior.cs",
+      "symbol": "private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)",
+      "note": "原draft内trigger MemoryId/day/date绑定；按条metadata计费",
       "start": 26585,
       "end": 26588,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7"
+      "fileSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
+    },
+    {
+      "id": "memory.owner-normalize.entry-work",
+      "path": "MyBehavior.MemorySealing.cs",
+      "symbol": "private sealed class DailyMemoryDraftEntryNormalization",
+      "note": "单draft可续跑：bind/line metadata，trigger列表仍一次Sanitize；列表ref/count变化失效重封",
+      "start": 218,
+      "end": 221,
+      "match": "exact",
+      "status": "wired-boundary",
+      "fileSha256": "499fd59230770854bc439236082b9d79b33ea759d3dc54094a94ac0736b5fc51"
     }
   ]
 }

@@ -92,4 +92,4 @@
 
 本轮完整raw摘要接入独立4096-byte buffer writer，私有DTO122字段映射留owner边界；不迁移存档类型，不修改通用JSON摘要/Prompt/权威写入。对应字段与code-unit反例和原版成本对照已验证，但仍完整原子O(N)，不是深来源预算或主体总拆薄完成。
 
-owner封存尾部已逐draft计费并复用稳定排序；原Sanitize内层体精确提取供同步/续跑共用，保留私有源列表的最终key/empty/结构门禁。草稿内部line/trigger、全owner绑定和Apply仍有原子工作；当前不按“大类行数减少”或“全部拆完”交付。
+owner封存尾部已逐draft计费并复用稳定排序；单draft内line净化与weekly trigger bind现按共享metadata计费，同步Sanitize与续跑共用原line/bind规则，未完成draft的列表保持私有。trigger列表sanitize、首次capture/copy、全owner绑定和Apply仍有原子工作；当前不按“大类行数减少”或“全部拆完”交付。

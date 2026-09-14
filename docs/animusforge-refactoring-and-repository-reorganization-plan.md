@@ -1,3 +1,16 @@
+# 当前自动实施：B1 深 line/trigger 预算（2026-09-14）
+
+- 本切片离线联验完成，整体B1继续VERIFY；单代理；写入本 Codex worktree（detached HEAD `4d6994bc`），检查点`eb6389f4`，前生产`86805518`。指定远端仍`origin/codex/af-main-refactor-continuation-20260831`。按第16节接续，不重做owner记录额度/typed raw/排序/共享窗口/索引，不进入B2。
+- 意图：把单draft内1024行净化与weekly trigger bind改为共享metadata计费；draft身份仍一次expensive。抽出`BindDailyMemoryDraftWeeklyTrigger`/`SanitizeDailyMemoryDraftLine`供同步Sanitize与续跑共用。未完成draft的line/trigger列表保持私有，列表引用/count变化失效重封。
+- 并发/语义：line/bind可跨窗口提前可见；trigger列表`SanitizeWeeklyMemoryMaterialTriggers`仍一次原子。不是整draft事务。同步oracle仍是40b92e67原`SanitizeDailyMemoryDrafts`。
+- 预计路径：MyBehavior.cs helpers、MemorySealing entry续跑、sealing harness/runner/parity/审查表、代码图与交接。无Prompt/玩法/存档字段/API/默认或原构建脚本变化。
+- 验证：当前76/0；旧40b同76例61/15；`unbudgeted-line-normalize`与`ignore-line-source` BUILD_PASS后断言红；12项源守卫；代码图77锚点记录提交与工作树通过。本轮未重跑captured/六Stage/API/存档身份；LIVE/SAVE=NOT_RUN。
+- 剩余限制：trigger列表sanitize、首次capture/复制、全owner/raw/最终绑定、Apply仍未硬切分。不用删除数据或只改数字宣告B1完成，不自动推送/部署或操作存档。
+
+- 结果：生产/测试`4d6994bc`；1×1024行9窗、max_lines=127；owner 257/65记录额度不变。下一步直接处理首次capture/copy。自动化保持PAUSED。
+
+## 以下为历史暂停与实施记录；最新续点以上方为准
+
 # 当前状态：用户暂停自动化，整体审查与 GitHub 交接（2026-09-14）
 
 - **生产开发 PAUSED；阶段 8 / B1 未整批验收，不是 DONE。** 最新用户要求关闭自动化、说明整体进度与拆分、上传代码和详细 HANDOFF、保留本地简明版。本入口覆盖下方历史 ACTIVE / 自动继续安排。
