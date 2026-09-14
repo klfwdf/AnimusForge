@@ -1,11 +1,13 @@
 # 当前自动实施：B1 owner草稿净化记录预算（2026-09-14）
 
-- ACTIVE；单代理、唯一写入G:/AFMOD/AF-REFACTOR；起点70000835，生产40b92e67，fresh fetch远端3f00fefa未变。按第16节接续，不重做raw摘要/排序/共享窗口，不进入B2。
+- 本切片离线联验完成，整体B1继续VERIFY；单代理、唯一写入G:/AFMOD/AF-REFACTOR；起点70000835，生产40b92e67，fresh fetch远端3f00fefa未变。按第16节接续，不重做raw摘要/排序/共享窗口，不进入B2。
 - 意图：把封存末尾单owner整个草稿列表净化改为按实际draft逐条授予预算，并复用稳定排序组件。原同步Sanitize入口保留；单entry净化体原样提取（主线程原地、后台clone、先占key再判断empty、标签/AFEF/marker规则不改）。
 - 并发/语义：仅规范化元数据可分记录提前可见；源列表的删除/去重/排序结果完成后才发布。持续检查owner列表引用/结构，发布前校验每条key/日期以及空winner是否长出新lines，拒绝过时删除；失效重走原owner封存与索引。保留原引用、别名副作用顺序、同日稳定顺序，不能把整owner改成假事务。
 - 预计路径：MyBehavior.cs的Sanitize与单entry helper、MemorySealing状态与真实caller、captured/sealing/terminal等源提取适配、源码精确inverse/地图与交接。无Prompt/玩法/存档字段/API/默认或原构建脚本变化。
 - 验证：真实40b旧实现大owner预算反例；主线程与后台净化原行为oracle、empty-first去重/别名/大小序、追加/替换/同slot/修改key/新lines/同步排空/异常和Campaign累计授予；保留既有60/116等语义，对应反例/相邻与最终六Stage/API/存档身份。
 - 剩余限制：一个draft内的lines/trigger文本净化仍原子；key/empty guard、单字符串/全owner绑定和Apply也未硬切分。不用删除数据或只改数字宣告B1完成，不自动推送/部署或操作存档。
+
+- 结果：75/0、旧40b同75例62/13、26有效故障反例、12项精确源守卫与相邻回归/最终六项Stage/API/存档身份通过。257与65记录owner由一次全净化变每窗口最多8；单draft1024行仍原子，深line/初捕获/全owner绑定/Apply继续待做，不进入B2。
 
 ## 以下为上一已验证切片（历史）
 

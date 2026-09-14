@@ -134,7 +134,7 @@ namespace AnimusForge {
    int calls=0,maxIndex=0,maxExpensive=0,maxGrants=0,ownerTotal=0,dailyIndexTotal=0,majorIndexTotal=0,draftTotal=0,dailyFilterTotal=0,majorFilterTotal=0,atomicOwnerChecks=0;bool complete=false;
    while(!complete&&calls<4096){SealProbe.Counts.Clear();complete=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),1000);calls++;
     int indexes=SealProbe.Count("owner-index")+SealProbe.Count("daily-index")+SealProbe.Count("major-index");
-    int expensive=SealProbe.Count("draft-visited")+SealProbe.Count("owner-sanitize-nonempty")+SealProbe.Count("HasMemorySummaryJobStillPending")+SealProbe.Count("HasMajorActionSummaryJobStillPending");
+    int expensive=SealProbe.Count("draft-visited")+SealProbe.Count("owner-normalized-record")+SealProbe.Count("HasMemorySummaryJobStillPending")+SealProbe.Count("HasMajorActionSummaryJobStillPending");
     // Null queue slots consume metadata, not expensive predicate grants.
     maxIndex=Math.Max(maxIndex,indexes);maxExpensive=Math.Max(maxExpensive,Math.Max(expensive,SealProbe.Count("expensive-granted")));maxGrants=Math.Max(maxGrants,SealProbe.Count("metadata-granted"));
     ownerTotal+=SealProbe.Count("owner-index");dailyIndexTotal+=SealProbe.Count("daily-index");majorIndexTotal+=SealProbe.Count("major-index");draftTotal+=SealProbe.Count("draft-visited");dailyFilterTotal+=SealProbe.Count("daily-final-filter");majorFilterTotal+=SealProbe.Count("major-final-filter");atomicOwnerChecks=Math.Max(atomicOwnerChecks,SealProbe.Count("completed-owner-check"));
@@ -322,12 +322,83 @@ namespace AnimusForge {
    while(!complete&&calls++<1024){SealProbe.Counts.Clear();b.RunCampaignMemoryMaintenanceCycle(false);total+=SealProbe.Count("queue-sort-unit");Check(SealProbe.Count("queue-sort-unit")<=128&&SealProbe.Count("metadata-granted")<=128,"Campaign refreshed sort allowance across callers");complete=b.summaryStarts>0;}
    Check(complete&&total>129&&b._memorySummaryQueue.SequenceEqual(expected),"Campaign sort failed to converge preserving queue");MainReads();
   }
+  static MyBehavior NormalizationOwner(int count,bool past=false){
+   var b=NewSealOwner();Probe.GameDay=past?1000:10;var sample=b.AddDraft("owner",20);
+   b._dailyMemoryDrafts["owner"]=Enumerable.Range(0,count).Select(i=>{var d=sample.CopyForSummary();d.GameDayIndex=past?i+1:count+20-i;d.HeroName=" name ";d.Lines[0].Text=" text ";return d;}).ToList();return b;
+  }
+  static void OwnerNormalizationCost(bool campaign){
+   int count=campaign?65:257;var b=NormalizationOwner(count,campaign);var before=b._dailyMemoryDrafts["owner"].ToArray();var expected=before.OrderBy(x=>x.GameDayIndex).ToArray();
+   if(campaign)b.EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts,Probe.GameDay);
+   int calls=0,total=0,max=0;bool done=false;
+   while(!done&&calls++<4096){SealProbe.Counts.Clear();if(campaign){b.RunCampaignMemoryMaintenanceCycle(false);done=b.summaryStarts>0;}else done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),1000);
+    int visited=SealProbe.Count("owner-normalized-record");total+=visited;max=Math.Max(max,visited);Check(visited<=8,"one owner sanitizer normalized "+visited+" drafts in one finite window");Check(SealProbe.Count("expensive-granted")<=8&&SealProbe.Count("metadata-granted")<=128,"normalization renewed shared allowance");}
+   Check(done&&total==count&&b._dailyMemoryDrafts["owner"].SequenceEqual(expected),"normalization lost records/references/stable day order or repeated stable work");
+   Console.WriteLine($"OWNER_NORMALIZATION_COST campaign={campaign} records={count} windows={calls} max_records={max} total_records={total} one_draft_inner=STILL_ATOMIC");MainReads();
+  }
+  static List<DailyMemoryDraft> NormalizationContractData(){
+   var line=new DailyMemoryLine{Text=" line ",GameDate=" ",GameHour=30,Scene=" Town ",MemoryCommitId="bad",MemoryCommitPart="bad",MemoryCommitHash="bad",SceneSessionId=-5,IsLlmDialogue=true};
+   var trigger=Trigger("owner");trigger.GameDate=" ";trigger.CreatedUtcTicks=100;
+   DailyMemoryDraft Draft(string id,int day,List<DailyMemoryLine> lines)=>new(){HeroId=id,HeroName=" name ",GameDayIndex=day,GameDate=" Day "+day+" ",LastSummaryError=" error ",Lines=lines,WeeklyMaterialTriggers=new(){trigger}};
+   var first=Draft(" OWNER ",22,new(){line});var second=Draft("other",21,new(){line});
+   return new(){null,Draft(" ",23,new(){new(){Text="invalid untouched"}}),Draft("owner",20,new(){new(){Text="   "}}),Draft("owner",20,new(){new(){Text="duplicate survives only if wrong"}}),first,second,first};
+  }
+  static void OwnerNormalizationContract(){
+   var b=NewSealOwner();b.heroes["owner"]=new Hero{Id="owner",Label="owner"};var input=NormalizationContractData();b._dailyMemoryDrafts["owner"]=input;
+   var oracleInput=NormalizationContractData();var expected=SanitizeDailyMemoryDraftsOracle(oracleInput);
+   Check(b.TrySealPastDailyMemoryDrafts(),"normalization contract sync incomplete");
+   Check(JsonConvert.SerializeObject(b._dailyMemoryDrafts["owner"])==JsonConvert.SerializeObject(expected),"normalized data differs from real old sanitizer");
+   Check(JsonConvert.SerializeObject(input)==JsonConvert.SerializeObject(oracleInput),"loser/alias mutation order differs from old sanitizer");
+   Check(b._dailyMemoryDrafts["owner"].Count==2&&ReferenceEquals(b._dailyMemoryDrafts["owner"][0],input[5])&&ReferenceEquals(b._dailyMemoryDrafts["owner"][1],input[4]),"empty-first key reservation/ref identity changed");MainReads();
+  }
+  static void OwnerNormalizationChange(string mode){
+   var b=NormalizationOwner(12,mode=="past-key");var input=b._dailyMemoryDrafts["owner"];var first=input[0];
+   if(mode=="empty-grows")first.Lines=new(){new(){Text="  "}};
+   bool paused=false;SealProbe.Hook=key=>{if(key=="owner-normalized-record"&&!paused){paused=true;Thread.Sleep(35);}};
+   bool done=false;for(int i=0;i<1024&&!paused;i++)done=b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),20);SealProbe.Hook=null;
+   Check(paused&&!done&&ReferenceEquals(b._dailyMemoryDrafts["owner"],input),"owner normalization published whole-list deletions before yielding");
+   if(mode=="append"){var added=first.CopyForSummary();added.GameDayIndex=900;input.Add(added);}
+   if(mode=="replace")b._dailyMemoryDrafts["owner"]=input=input.ToList();
+   if(mode=="slot")input[0]=first.CopyForSummary();
+   if(mode=="key")first.GameDayIndex=999;
+   if(mode=="past-key")first.GameDayIndex=80;
+   if(mode=="empty-grows"){first.Lines.Add(new(){Text="new fact",IsLlmDialogue=true});first.HasLlmDialogue=true;}
+   if(mode=="kept-empties")first.Lines=new();
+   if(mode=="reset")b.ResetDailyMemoryDraftSealSliceState();
+   var expected=SanitizeDailyMemoryDraftsOracle(input.Select(x=>x?.CopyForSummary()).ToList());
+   Check(b.TrySealPastDailyMemoryDrafts(),"synchronous normalization resume/restart incomplete");
+   Check(JsonConvert.SerializeObject(b._dailyMemoryDrafts["owner"])==JsonConvert.SerializeObject(expected),"stale normalization overwrote changed key/source or pruned new facts");
+   if(mode=="empty-grows")Check(b._dailyMemoryDrafts["owner"].Contains(first)&&first.Lines.Any(x=>x.Text=="new fact"),"new fact pruned by old empty decision");
+   if(mode=="past-key")Check(b._memorySummaryQueue.Any(x=>x.GameDayIndex==80)&&!b._memorySummaryQueue.Any(x=>x.GameDayIndex==1),"key restart did not revisit sealing/enqueue");MainReads();
+  }
+  static void OwnerNormalizationException(){
+   var b=NormalizationOwner(12);var input=b._dailyMemoryDrafts["owner"];bool thrown=false;
+   SealProbe.Hook=key=>{if(key=="owner-normalized-record"&&!thrown){thrown=true;throw new InvalidOperationException("normalization-fault");}};
+   b.TrySealPastDailyMemoryDrafts();SealProbe.Hook=null;
+   Check(thrown&&b._dailyMemoryDraftSealOwnerKeys==null&&ReferenceEquals(b._dailyMemoryDrafts["owner"],input),"failure retained cursor or published private result");
+   Check(b.TrySealPastDailyMemoryDrafts()&&b._dailyMemoryDrafts["owner"].Count==12,"normalization did not recover without record loss");MainReads();
+  }
+  static void OwnerNormalizationPublishRace(){
+   var b=NormalizationOwner(12);var input=b._dailyMemoryDrafts["owner"];var late=input[0].CopyForSummary();late.GameDayIndex=888;bool changed=false;
+   SealProbe.Hook=key=>{if(key=="owner-sort-unit"&&!changed){changed=true;b._dailyMemoryDrafts["owner"]=input.Concat(new[]{late}).ToList();}};
+   bool done=b.TrySealPastDailyMemoryDrafts();SealProbe.Hook=null;
+   if(!done)done=b.TrySealPastDailyMemoryDrafts();
+   Check(changed&&done&&b._dailyMemoryDrafts["owner"].Contains(late),"normalization published over a newly replaced owner list");MainReads();
+  }
+  static void OwnerNormalizationInnerCost(){
+   var b=NormalizationOwner(1);var d=b._dailyMemoryDrafts["owner"][0];var line=d.Lines[0];d.Lines=Enumerable.Range(0,1024).Select(_=>line.CopyForSummary()).ToList();
+   SealProbe.Counts.Clear();Check(b.TrySealPastDailyMemoryDrafts(Stopwatch.GetTimestamp(),1000),"single-record explicit bound did not finish");
+   Check(SealProbe.Count("owner-normalized-record")==1&&SealProbe.Count("owner-normalized-line")==1024,"inner-record cost witness missed live normalization work");
+   Console.WriteLine("OWNER_NORMALIZATION_INNER records=1 lines=1024 single_draft_atomic=true hard_line_budget=NOT_CLAIMED");MainReads();
+  }
   static int Main(){TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;var cases=new List<(string,Action)>();foreach(var mode in new[]{"normal","afef-only","empty","terminal","mismatch","block","today","invalid-owner"}){var m=mode;cases.Add((m,()=>Semantics(m)));}
    cases.Add(("daily-queue-contract",DailyQueueContract));cases.Add(("major-queue-contract",MajorQueueContract));cases.Add(("expired-budget-then-sync",FiniteThenSynchronous));cases.Add(("same-day-no-job-resume",SameDayResume));cases.Add(("same-reference-indexed-key-change",SameReferenceIndexedKeyChange));cases.Add(("owner-list-replacement",OwnerListReplacement));cases.Add(("cleanup-queue-append",()=>QueueWriteDuringCleanup(false)));cases.Add(("cleanup-queue-replacement",()=>QueueWriteDuringCleanup(true)));cases.Add(("4096-index-final-filter-cost",IndexCost));cases.Add(("finite-4096-convergence",()=>FiniteConvergence(false)));cases.Add(("finite-48draft-convergence",()=>FiniteConvergence(true)));cases.Add(("standalone-multiple-callers-compatibility",StandaloneMultipleCallers));cases.Add(("probe-empty-no-candidate-start",()=>ProbeCompletionReceipt(false)));cases.Add(("probe-terminal-preserves-candidate-start",()=>ProbeCompletionReceipt(true)));cases.Add(("multiple-invalid-owners-sync",MultipleInvalidOwnersSync));cases.Add(("cleanup-same-ref-retarget",CleanupSameReferenceRetarget));cases.Add(("owner-inserted-after-index",OwnerInsertedAfterIndex));cases.Add(("major-indexed-key-change",MajorIndexedKeyChange));foreach(var budget in new[]{0.0,double.NaN,double.PositiveInfinity,double.MaxValue}){double value=budget;cases.Add(("unlimited-sentinel-"+budget,()=>UnlimitedCompatibility(value)));}
    cases.Add(("campaign-shared-metadata",()=>SharedCampaignCaps(false)));cases.Add(("campaign-shared-expensive",()=>SharedCampaignCaps(true)));cases.Add(("campaign-shared-convergence",SharedCampaignConverges));cases.Add(("campaign-shared-deadline",SharedCampaignDeadline));cases.Add(("campaign-deferred-start",()=>DeferredCampaignStart(false)));cases.Add(("campaign-retired-start",()=>DeferredCampaignStart(true)));cases.Add(("campaign-scope-exception",CampaignScopeRestored));cases.Add(("campaign-skip-deferred",CampaignSkipDeferred));cases.Add(("campaign-explicit-sync",CampaignExplicitSync));
    cases.Add(("campaign-idle-no-budget",IdleCampaignBudget));
    foreach(bool major in new[]{false,true}){bool m=major;cases.Add(("queue-sort-budget-"+m,()=>QueueSortConvergence(m)));foreach(string mode in new[]{"unchanged","name","retry","day","append","replace","slot","culture"}){string change=mode;cases.Add(("queue-sort-resume-"+m+"-"+change,()=>QueueSortResume(m,change)));}}
    cases.Add(("queue-normalizer-alias-contract",QueueNormalizerAliasContract));cases.Add(("campaign-sort-budget",CampaignSortConvergence));
+   cases.Add(("owner-normalize-finite-cost",()=>OwnerNormalizationCost(false)));cases.Add(("owner-normalize-campaign-cost",()=>OwnerNormalizationCost(true)));cases.Add(("owner-normalize-contract",OwnerNormalizationContract));cases.Add(("owner-normalize-exception",OwnerNormalizationException));
+   foreach(string mode in new[]{"unchanged","append","replace","slot","key","past-key","empty-grows","kept-empties","reset"}){string m=mode;cases.Add(("owner-normalize-change-"+m,()=>OwnerNormalizationChange(m)));}
+   cases.Add(("owner-normalize-publish-race",OwnerNormalizationPublishRace));cases.Add(("owner-normalize-inner-cost",OwnerNormalizationInnerCost));
    int pass=0,fail=0;foreach(var (name,run) in cases){var priorCulture=System.Globalization.CultureInfo.CurrentCulture;try{run();pass++;Console.WriteLine("PASS "+name);}catch(Exception ex){fail++;Console.WriteLine("FAIL "+name+": "+ex.Message);}finally{System.Globalization.CultureInfo.CurrentCulture=priorCulture;}}
    Console.WriteLine($"SEALING_RESULT pass={pass} fail={fail} LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED");return fail==0?0:1;
   }

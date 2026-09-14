@@ -122,6 +122,82 @@ public partial class MyBehavior
         { Source = null; Count = Cursor = 0; Entries.Clear(); _sort = null; Deferred = true; }
     }
 
+    // Each draft still normalizes atomically, preserving aliases and the exact
+    // old inner operation order. Whole-list pruning stays private until verified.
+    private sealed class DailyMemoryDraftNormalization
+    {
+        private struct Binding
+        {
+            internal DailyMemoryDraft Source;
+            internal string HeroId;
+            internal int Day;
+            internal bool EmptyWinner, Included;
+        }
+        private readonly List<DailyMemoryDraft> _source;
+        private readonly int _count;
+        private List<DailyMemoryDraft>.Enumerator _probe;
+        private int _cursor;
+        private readonly HashSet<string> _seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly List<Binding> _bindings = new List<Binding>();
+        private readonly List<DailyMemoryDraft> _result = new List<DailyMemoryDraft>();
+        private CooperativeMemoryQueueSort<DailyMemoryDraft> _sort;
+        internal bool Invalidated { get; private set; }
+
+        internal DailyMemoryDraftNormalization(List<DailyMemoryDraft> source)
+        { _source = source; _count = source.Count; _probe = source.GetEnumerator(); }
+
+        internal bool Step(Func<List<DailyMemoryDraft>> readCurrent, MemoryMaintenanceWorkBudget budget, out List<DailyMemoryDraft> result)
+        {
+            result = null;
+            var current = readCurrent();
+            if (!Current(current)) { Invalidated = true; return false; }
+            while (_cursor < _count)
+            {
+                var source = _source[_cursor];
+                if (!budget.Take(source != null)) return false;
+                _cursor++;
+                int seenCount = _seen.Count;
+                var normalized = SanitizeDailyMemoryDraftEntry(source, _seen);
+                if (normalized != null) _result.Add(normalized);
+                if (source != null) _bindings.Add(new Binding
+                {
+                    Source = source, HeroId = NormalizeMemoryHeroId(source.HeroId), Day = source.GameDayIndex,
+                    EmptyWinner = _seen.Count > seenCount && normalized == null, Included = normalized != null
+                });
+            }
+            if (_sort == null)
+            {
+                if (!budget.Take(false)) return false;
+                if (!BindingsCurrent()) { Invalidated = true; return false; }
+                // Original draft ordering uses day ONLY. A constant secondary key
+                // reuses the real stable sort without introducing HeroName ordering.
+                _sort = new CooperativeMemoryQueueSort<DailyMemoryDraft>(_result, x => x.GameDayIndex, x => (string)null);
+            }
+            if (!_sort.Step(budget) || !budget.Take(false)) return false;
+            if (!Current(readCurrent()) || !BindingsCurrent()) { Invalidated = true; return false; }
+            result = _sort.Result;
+            return true;
+        }
+        private bool Current(List<DailyMemoryDraft> current)
+        {
+            if (!ReferenceEquals(current, _source) || current == null || current.Count != _count) return false;
+            try { _probe.MoveNext(); return true; } catch (InvalidOperationException) { return false; }
+        }
+        private bool BindingsCurrent()
+        {
+            // Metadata-only atomic tail, not a hard 128-record bound. No stale
+            // duplicate/empty decision may delete a retargeted or newly filled row.
+            foreach (var entry in _bindings)
+            {
+                if (NormalizeMemoryHeroId(entry.Source.HeroId) != entry.HeroId || entry.Source.GameDayIndex != entry.Day) return false;
+                int lines = entry.Source.Lines?.Count ?? 0;
+                if (entry.EmptyWinner && lines > 0) return false;
+                if (entry.Included && lines == 0) return false;
+            }
+            return true;
+        }
+    }
+
     private sealed class DailyMemorySealState
     {
         internal DailyMemorySealPhase Phase;
@@ -131,6 +207,7 @@ public partial class MyBehavior
         internal Dictionary<string, List<DailyMemoryDraft>>.Enumerator OwnerEnumerator;
         internal Dictionary<string, List<DailyMemoryDraft>>.Enumerator OwnerProbe;
         internal DailyMemorySealOwnerBinding ActiveOwner;
+        internal DailyMemoryDraftNormalization Normalization;
         internal readonly Dictionary<string, DailyMemorySealOwnerBinding> CompletedOwners = new Dictionary<string, DailyMemorySealOwnerBinding>(StringComparer.Ordinal);
         internal DailyMemorySealIndex<MemorySummaryJob> DailyIndex;
         internal DailyMemorySealIndex<MajorActionSummaryJob> MajorIndex;
@@ -363,6 +440,7 @@ public partial class MyBehavior
     private void BindDailyMemorySealActiveOwner(DailyMemorySealState state, List<DailyMemoryDraft> list)
     {
         if (state.ActiveOwner != null && state.ActiveOwner.Current(list)) return;
+        state.Normalization = null;
         state.ActiveOwner = new DailyMemorySealOwnerBinding();
         state.ActiveOwner.Bind(list);
         _dailyMemoryDraftSealDraftIndex = list.Count - 1;
@@ -375,6 +453,7 @@ public partial class MyBehavior
         _dailyMemoryDraftSealOwnerIndex++;
         _dailyMemoryDraftSealDraftIndex = -1;
         state.ActiveOwner = null;
+        state.Normalization = null;
     }
 
     private bool DailyMemorySealCompletedOwnersCurrent(DailyMemorySealState state)
@@ -452,11 +531,27 @@ public partial class MyBehavior
                 }
                 draft.QueuedForSummary = true;
             }
-            if (!budget.Take(list.Count > 0)) return false;
-            // An empty owner only needs cheap metadata removal. One nonempty
-            // owner's original deep sanitizer remains atomic. Splitting its
-            // text/AFEF normalization would be a separate semantic change.
-            list = SanitizeDailyMemoryDrafts(list);
+            if (list.Count == 0)
+            {
+                if (!budget.Take(false)) return false;
+            }
+            else
+            {
+                if (state.Normalization == null) state.Normalization = new DailyMemoryDraftNormalization(list);
+                if (!state.Normalization.Step(() => _dailyMemoryDrafts != null && _dailyMemoryDrafts.TryGetValue(ownerKey, out var active) ? active : null, budget, out var normalized))
+                {
+                    if (state.Normalization.Invalidated)
+                    {
+                        // A changed key can require a NEW seal job, not merely a
+                        // re-sort. Revisit this owner and rebuild the live indexes.
+                        state.ActiveOwner = null;
+                        state.Normalization = null;
+                        RestartDailyMemorySealIndexes(state);
+                    }
+                    return false;
+                }
+                list = normalized;
+            }
             if (list.Count > 0) _dailyMemoryDrafts[ownerKey] = list;
             else { _dailyMemoryDrafts.Remove(ownerKey); list = null; }
             state.BindOwners(_dailyMemoryDrafts);
