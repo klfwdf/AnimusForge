@@ -2148,12 +2148,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, int> _townStatWeekBaselineWeekIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
-	private readonly object _npcPersonaAutoGenLock = new object();
-
-	private HashSet<string> _npcPersonaAutoGenInFlight = new HashSet<string>();
-
-	private readonly Dictionary<string, long> _npcPersonaAutoGenRetryAfterUtcTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
-
 	private HashSet<string> _recentlyDefeatedByPlayer = new HashSet<string>();
 
 	private readonly HashSet<string> _playerDefeatedHeroBattleFactKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -2535,11 +2529,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_dirtyMemoryOverviewIds.Clear();
 			_pendingMemoryOverviewCandidateScanIds.Clear();
 			_pendingMemoryOverviewCandidateScanIdSet.Clear();
-			lock (_npcPersonaAutoGenLock)
-			{
-				_npcPersonaAutoGenInFlight.Clear();
-				_npcPersonaAutoGenRetryAfterUtcTicks.Clear();
-			}
+			_npcPersonaGeneration.Reset();
 			Logger.Log("SaveRuntimeGuard", "local_transient_cleared reason=" + (reason ?? ""));
 		}
 		catch (Exception ex)
@@ -19174,53 +19164,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool IsNpcPersonaGenerationInFlight(Hero hero)
 	{
-		string text = (hero?.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		lock (_npcPersonaAutoGenLock)
-		{
-			if (_npcPersonaAutoGenInFlight.Contains(text))
-			{
-				return true;
-			}
-			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(text, out var value))
-			{
-				if (DateTime.UtcNow.Ticks < value)
-				{
-					return true;
-				}
-				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(text);
-			}
-			return false;
-		}
+		_npcPersonaGeneration.GetState((hero?.StringId ?? "").Trim(), out bool active, out bool coolingDown);
+		return active || coolingDown;
 	}
 
 	private void GetNpcPersonaGenerationRuntimeState(Hero hero, out bool active, out bool coolingDown)
 	{
-		active = false;
-		coolingDown = false;
-		string text = (hero?.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		lock (_npcPersonaAutoGenLock)
-		{
-			active = _npcPersonaAutoGenInFlight.Contains(text);
-			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(text, out var value))
-			{
-				if (DateTime.UtcNow.Ticks < value)
-				{
-					coolingDown = true;
-				}
-				else
-				{
-					_npcPersonaAutoGenRetryAfterUtcTicks.Remove(text);
-				}
-			}
-		}
+		_npcPersonaGeneration.GetState((hero?.StringId ?? "").Trim(), out active, out coolingDown);
 	}
 
 	private string GetNpcVoiceId(Hero hero)
@@ -22221,136 +22171,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return text3;
 		}
 		return text + "\n\n" + text3;
-	}
-
-	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero, bool ignoreRetryCooldown = false)
-	{
-		string failureDetail = await GenerateNpcPersonaAsync(hero, ignoreRetryCooldown, overwriteExisting: false);
-		if (!string.IsNullOrWhiteSpace(failureDetail))
-		{
-			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", failureDetail);
-		}
-	}
-
-	private async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
-	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		if (hero == null)
-		{
-			return overwriteExisting ? "找不到要重新生成人设的 NPC。" : "";
-		}
-		string id = hero.StringId;
-		if (string.IsNullOrEmpty(id))
-		{
-			return overwriteExisting ? "该 NPC 没有有效的 HeroId，无法重新生成人设。" : "";
-		}
-		GetNpcPersonaStrings(hero, out var personality, out var background);
-		bool needP = string.IsNullOrWhiteSpace(personality);
-		bool needB = string.IsNullOrWhiteSpace(background);
-		if (!overwriteExisting && !needP && !needB)
-		{
-			return "";
-		}
-		lock (_npcPersonaAutoGenLock)
-		{
-			if (_npcPersonaAutoGenInFlight.Contains(id))
-			{
-				return overwriteExisting ? "该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" : "";
-			}
-			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(id, out var value))
-			{
-				if (!ignoreRetryCooldown && DateTime.UtcNow.Ticks < value)
-				{
-					return overwriteExisting ? "该 NPC 的上次生成请求刚刚失败，请稍后再试。" : "";
-				}
-				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
-			}
-			_npcPersonaAutoGenInFlight.Add(id);
-		}
-		bool flag = false;
-		try
-		{
-			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
-			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
-			string facts = BuildHeroFactsForPersonaGeneration(hero);
-			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
-			if (overwriteExisting)
-			{
-				string oldPersonality = NormalizePersonaPromptSourceText(personality, 500);
-				string oldBackground = NormalizePersonaPromptSourceText(background, 500);
-				user += "\n这是重新生成人设请求：请生成一版不同但仍符合事实的人设，不要照搬旧文本。"
-					+ "\n旧个性（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldPersonality) ? "无" : oldPersonality)
-					+ "\n旧背景（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldBackground) ? "无" : oldBackground);
-			}
-			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, user, "NpcPersona", 0, forceThinkingDisabled: false);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_autogen"))
-			{
-				return "";
-			}
-			string resp = apiCallResult.Content ?? "";
-			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
-			{
-				genP = NormalizeGeneratedPersonaText(genP);
-				genB = NormalizeGeneratedPersonaText(genB);
-				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
-				{
-					genP = genB;
-				}
-				else if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP))
-				{
-					genB = genP;
-				}
-				GetNpcPersonaStrings(hero, out var curP, out var curB);
-				NpcPersonaProfile currentProfile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-				NpcPersonaProfile prof = overwriteExisting
-					? new NpcPersonaProfile
-					{
-						VoiceId = (currentProfile.VoiceId ?? "").Trim()
-					}
-					: currentProfile;
-				prof.Personality = (overwriteExisting || string.IsNullOrWhiteSpace(curP)) ? genP : curP.Trim();
-				prof.Background = (overwriteExisting || string.IsNullOrWhiteSpace(curB)) ? genB : curB.Trim();
-				SaveNpcPersonaProfile(hero, prof);
-				flag = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
-				if (flag && overwriteExisting)
-				{
-					Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(prof.VoiceId) + ".");
-				}
-			}
-			if (!flag)
-			{
-				string failureDetail = apiCallResult.Success
-					? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景模型回复解析失败，未保存人设。", resp, apiCallResult.ResponseBody)
-					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景生成失败。", resp, apiCallResult.ResponseBody));
-				Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + id + ": " + failureDetail);
-				return failureDetail;
-			}
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-			Logger.Log("NpcPersona", "[ERROR] AutoGen failed: " + ex2.Message);
-			return LlmRetryPrompt.BuildFailureDetail(ex2.Message, "");
-		}
-		finally
-		{
-			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-			{
-				lock (_npcPersonaAutoGenLock)
-				{
-					_npcPersonaAutoGenInFlight.Remove(id);
-					if (flag)
-					{
-						_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
-					}
-					else
-					{
-						_npcPersonaAutoGenRetryAfterUtcTicks[id] = DateTime.UtcNow.AddMinutes(5.0).Ticks;
-					}
-				}
-			}
-		}
-		return "";
 	}
 
 	public static async Task GeneratePromotedNonHeroCompanionProfileForExternalAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
@@ -29786,23 +29606,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 			text = "该NPC";
 		}
 		return "正在生成" + text + "的个性与背景，请稍等......";
-	}
-
-	public static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero hero, bool ignoreRetryCooldown = false)
-	{
-		try
-		{
-			MyBehavior inst = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			if (inst != null && hero != null)
-			{
-				await inst.EnsureNpcPersonaGeneratedAsync(hero, ignoreRetryCooldown);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcPersona", "[ERROR] External persona generation failed: " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
-		}
 	}
 
 	public static string BuildCurrentDateFactForExternal()
@@ -48058,6 +47861,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ClearAllDataForCurrentSave()
 	{
+		_npcPersonaGeneration.Reset();
 		CancelWeeklyFullReportCompletions();
 		ResetMemorySummaryMainThreadActions();
 		_shownRecords = new Dictionary<string, HeroShownRecord>();
@@ -49511,23 +49315,27 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			failureDetail = LlmRetryPrompt.BuildFailureDetail(ex.Message, "");
 		}
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_dev_reroll_ui"))
+		await RunMemorySummaryCompletionAsync(runtimeGeneration, () =>
 		{
-			return;
-		}
-		InformationManager.HideInquiry();
-		if (string.IsNullOrWhiteSpace(failureDetail))
-		{
-			EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
-			InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
-			InvokePersonaRerollClosed(onClosed);
-			return;
-		}
-		Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
-		InformationManager.ShowInquiry(new InquiryData("重生个性背景失败", "旧个性、历史背景与音色 ID 均未改动。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? "关闭" : "返回编辑器", "", delegate
-		{
-			InvokePersonaRerollClosed(onClosed);
-		}, null), pauseGameActiveState: true);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_dev_reroll_ui"))
+			{
+				return true;
+			}
+			InformationManager.HideInquiry();
+			if (string.IsNullOrWhiteSpace(failureDetail))
+			{
+				EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+				InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
+				InvokePersonaRerollClosed(onClosed);
+				return true;
+			}
+			Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
+			InformationManager.ShowInquiry(new InquiryData("重生个性背景失败", "未保存本次生成结果，现有个性、历史背景与音色 ID 已保留。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? "关闭" : "返回编辑器", "", delegate
+			{
+				InvokePersonaRerollClosed(onClosed);
+			}, null), pauseGameActiveState: true);
+			return true;
+		}).ConfigureAwait(false);
 	}
 
 	private static void InvokePersonaRerollClosed(Action onClosed)

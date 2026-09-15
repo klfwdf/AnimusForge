@@ -1,0 +1,15 @@
+{
+  "baseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
+  "dependencies": {
+    "MyBehavior.PersonaGeneration.cs": "e4a6a014fc17853586586558e562c5283e32e9b3cffc4b2237890e7ac66592d4",
+    "Refactor/Runtime/NpcPersonaGenerationOwner.cs": "041cf88b5f053be54549080769ea38421c4a537a6733692380e50397950dd4e9",
+    "tools/HeroPersonaGenerationTests/Harness.cs.txt": "512b0db7346ffb9a3e9382f9d0769a32a424a70b3ffc0dc74578df5d65a3027e",
+    "tools/HeroPersonaGenerationTests/Reservations.cs.txt": "b73c660c5a82f98cc033a944e543c6e10f0ab86457b159c438e9b0b63fc0ad8a",
+    "tools/HeroPersonaGenerationTests/run.py": "1df403ec93b7ce8d8a4fb7ae38896f4fbc7c93cd61e2b673c6817563ddd8aa84"
+  },
+  "replacementMethods": {
+    "private bool IsNpcPersonaGenerationInFlight(": "818b6b74cb9d82c996880991fe77b66ed4235e1ca0a999e042203ddb333b27d0",
+    "private void GetNpcPersonaGenerationRuntimeState(": "be2c42b970e903ac01cb96cd2c4123db32e4e07109e60a1d9680ad3368a140e8",
+    "private async Task RunHeroPersonaRerollAsync(": "a8116a342e1b69d8c2cf8ecb55f212cdb6986cec1a122d9c1d2714fee42bc02a"
+  }
+}

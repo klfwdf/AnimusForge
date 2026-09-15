@@ -1,0 +1,14 @@
+  var owner=new NpcPersonaGenerationOwner();
+  var first=owner.TryBegin("hero",false,out bool cooling);Check(first!=null&&!cooling,"first lease admitted");
+  Check(owner.TryBegin("hero",true,out cooling)==null&&!cooling,"busy even ignore cooldown");
+  owner.GetState("hero",out bool active,out cooling);Check(active&&!cooling,"active state");
+  owner.Complete(first,false);owner.GetState("hero",out active,out cooling);Check(!active&&cooling,"failure cooldown");
+  Check(owner.TryBegin("hero",false,out cooling)==null&&cooling,"cooldown rejects automatic request");
+  var second=owner.TryBegin("hero",true,out cooling);Check(second!=null&&!cooling,"explicit retry bypasses cooldown");
+  owner.Complete(first,true);Check(owner.IsCurrent(second),"old finish cannot release replacement");
+  owner.Reset();var third=owner.TryBegin("hero",false,out cooling);
+  Check(!owner.IsCurrent(second)&&owner.IsCurrent(third),"reset retires only old reservation");
+  owner.Complete(second,false);Check(owner.IsCurrent(third),"old failure cannot clear new reservation");
+  owner.Complete(third,true);owner.GetState("hero",out active,out cooling);Check(!active&&!cooling,"success clears cooldown");
+  var retired=owner.TryBegin("hero",false,out cooling);owner.Complete(retired,false,false);owner.GetState("hero",out active,out cooling);Check(!active&&!cooling,"retirement does not penalize future request");
+  owner.GetState(null,out active,out cooling);Check(!active&&!cooling,"null status input");

@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+using AnimusForge.Refactor.Contracts;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library { internal static class TWParallel { internal static int MainId; public static bool IsMainThread()=>Environment.CurrentManagedThreadId==MainId; } }
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Hero { private readonly string id; public Hero(string value){id=value;} public string Name {get{Probe.Read();return "NPC";}} public string StringId {get{Probe.Read();return id;}} }
+ internal static class Campaign { internal static MyCampaign Current=new(); }
+ internal sealed class MyCampaign { internal T GetCampaignBehavior<T>() where T:class {Probe.Read();return AnimusForge.MyBehavior.Instance as T;} }
+}
+internal static class Probe { internal static int OffThread; internal static void Read(){if(!TWParallel.IsMainThread())Interlocked.Increment(ref OffThread);} }
+namespace AnimusForge {
+ internal sealed class InquiryData {internal string Title;internal InquiryData(string title,string text,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string affirmativeText,string negativeText,Action affirmative,Action negative){Title=title;} }
+ internal sealed class InformationMessage {internal InformationMessage(string text){} }
+ internal static class InformationManager {internal static int Refreshed;internal static void ShowInquiry(InquiryData data,bool pauseGameActiveState){Probe.Read();} internal static void HideInquiry(){Probe.Read();} internal static void DisplayMessage(InformationMessage message){Probe.Read();} }
+ internal static class EncyclopediaHeroPersonaPatch {internal static void QueueRefreshForHero(string id){Probe.Read();InformationManager.Refreshed++;} }
+
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>!IsCurrentGeneration(g);}
+ internal static class Logger {internal static void Log(string c,string m){} }
+ internal static class LlmRetryPrompt {internal static string BuildFailureDetail(string m,string r,string raw=null)=>m;internal static void ShowFailurePopup(string t,string d){Probe.Read();}}
+ public partial class MyBehavior {
+  internal static MyBehavior Instance; internal static Hero RegisteredHero;
+  private sealed class ApiCallResult {public bool Success=true;public string Content="P|B",ErrorMessage,ResponseBody;}
+  private sealed class NpcPersonaProfile {public string Personality="",Background="",VoiceId="";}
+  private NpcPersonaProfile profile=new();
+  private readonly object _npcPersonaAutoGenLock=new(); private HashSet<string> _npcPersonaAutoGenInFlight=new(); private readonly Dictionary<string,long> _npcPersonaAutoGenRetryAfterUtcTicks=new(StringComparer.OrdinalIgnoreCase);
+  internal int Calls,Saves;internal string SentSystem,SentUser;private TaskCompletionSource<ApiCallResult> response=new(TaskCreationOptions.RunContinuationsAsynchronously);
+  private readonly MemorySummaryDispatcher dispatcher;
+  internal MyBehavior(){dispatcher=new MemorySummaryDispatcher(new Host(this),2);}
+  private sealed class Host:IMemorySummaryDispatchHost {private readonly MyBehavior o; internal Host(MyBehavior owner){o=owner;} public bool IsMainThread=>TWParallel.IsMainThread();public bool IsOwnerGenerationCurrent(long g)=>ReferenceEquals(Instance,o)&&SaveRuntimeGuard.IsCurrentGeneration(g);public bool IsExecutionContextCurrent()=>ReferenceEquals(Instance,o);public double GetBudgetMilliseconds()=>100;public void ReportFailure(Exception e){throw new Exception("unexpected dispatched error",e);} }
+  private Task<bool> UnsafeDirect(Func<bool> action)=>Task.FromResult(action());
+  private Task<bool> RunMemorySummaryCompletionAsync(long g,Func<bool> action)=>dispatcher.SubmitCompletion(g,action);
+  internal void Tick()=>dispatcher.Tick();
+  private static Hero FindHeroById(string id){Probe.Read();return RegisteredHero;}
+  private void GetNpcPersonaStrings(Hero h,out string p,out string b){Probe.Read();p=profile.Personality;b=profile.Background;}
+  private NpcPersonaProfile GetNpcPersonaProfile(Hero h,bool createIfMissing){Probe.Read();return profile;}
+  private void SaveNpcPersonaProfile(Hero h,NpcPersonaProfile p){Probe.Read();profile=p;Saves++;}
+  private static string AppendNpcPersonaGenerationRequirementsToSystemPrompt(string sys){Probe.Read();return sys+"\ncustom-requirements";}
+  private static string BuildHeroFactsForPersonaGeneration(Hero h){Probe.Read();return "facts:"+h.StringId;}
+  private static string NormalizePersonaPromptSourceText(string s,int n)=>(s??"").Trim();
+  private static string NormalizeGeneratedPersonaText(string s)=>(s??"").Replace("\r\n","\n").Replace('\r','\n').Trim();
+  private static bool TryParsePersonaJson(string s,out string p,out string b){var a=(s??"").Split('|');p=a[0];b=a.Length==2?a[1]:"";return a.Length==2;}
+  private Task<ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled){Probe.Read();SentSystem=sys;SentUser=user;Calls++;return response.Task;}
+  private static void InvokePersonaRerollClosed(Action action){Probe.Read();action?.Invoke();}
+  internal async Task<string> External(Hero h){await EnsureNpcPersonaGeneratedForExternalAsync(h);return "";}
+  internal async Task<string> RerollUi(Hero h){await RunHeroPersonaRerollAsync(h,null);return "";}
+  @@REROLL_UI@@
+  internal Task<string> Generate(Hero h,bool reroll=false,bool ignore=false)=>GenerateNpcPersonaAsync(h,ignore,reroll);
+  internal void Release(string text="P|B",bool success=true,bool fail=false){if(fail)response.TrySetException(new Exception("transport failed"));else response.TrySetResult(new ApiCallResult{Content=text,Success=success,ErrorMessage="transport failed"});}
+  internal void Seed(string p,string b,string voice="voice"){profile=new(){Personality=p,Background=b,VoiceId=voice};}
+  internal string[] Values()=>new[]{profile.Personality,profile.Background,profile.VoiceId};
+  internal void ResetGenerationState(){@@RESET@@;dispatcher.Reset();}
+  internal bool Active(string id){@@ACTIVE@@}
+  internal bool Cooling(string id){@@COOLING@@}
+  @@GENERATOR@@
+ }
+}
+internal static class Program {
+ static int checks,failures;
+ static void Check(bool b,string s){checks++;if(!b){failures++;Console.WriteLine("FAIL "+s);}}
+ static void Pump(AnimusForge.MyBehavior o,Func<bool> done){var start=DateTime.UtcNow;while(!done()){o.Tick();if((DateTime.UtcNow-start).TotalSeconds>8)throw new Exception("fixture timeout");Thread.Sleep(1);} }
+ static void Case(string kind) {
+  Probe.OffThread=0;AnimusForge.InformationManager.Refreshed=0;AnimusForge.SaveRuntimeGuard.Generation=1;
+  var hero=new Hero("hero");var o=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=o;AnimusForge.MyBehavior.RegisteredHero=hero;
+  bool ui=kind.StartsWith("ui_");bool reroll=kind.StartsWith("reroll")||ui;o.Seed(reroll?"oldP":kind=="partial_p"?"keptP":"",reroll?"oldB":kind=="partial_b"?"keptB":"");
+  if(kind=="complete")o.Seed("oldP","oldB");
+  var t=ui?o.RerollUi(hero):kind.StartsWith("external")?Task.Run(()=>o.External(hero)):Task.Run(()=>o.Generate(kind=="null"?null:hero,reroll));Pump(o,()=>o.Calls>0||t.IsCompleted);
+  if(o.Calls>0){
+   if(kind=="owner")AnimusForge.MyBehavior.Instance=new();
+   if(kind=="generation")AnimusForge.SaveRuntimeGuard.Generation++;
+   if(kind=="target")AnimusForge.MyBehavior.RegisteredHero=new Hero("hero");
+   if(kind=="reset" || kind=="reroll_reset" || kind=="ui_reset")o.ResetGenerationState();
+   if(kind=="reroll_edit" || kind=="ui_edit")o.Seed("editedP","editedB");
+   if(kind=="normal_edit")o.Seed("editedP","");
+   if(kind=="reroll_voice")o.Seed("oldP","oldB","newVoice");
+   o.Release((kind=="parse" || kind=="external_failure" || kind=="ui_failure")?"bad":kind=="one_field"?"P|":"P|B",kind!="http",kind=="throw");
+  }
+  Pump(o,()=>t.IsCompleted);string failure=t.GetAwaiter().GetResult();var v=o.Values();
+  Check(Probe.OffThread==0,kind+" all game/config/profile reads and writes on main");
+  bool noSave=kind is "owner" or "generation" or "target" or "reset" or "reroll_reset" or "reroll_edit" or "parse" or "http" or "throw" or "complete" or "null" or "external_failure" or "ui_failure" or "ui_edit" or "ui_reset";
+  Check(o.Saves==(noSave?0:1),kind+" save count");
+  if(!noSave){Check(v[0]==(kind=="partial_p"?"keptP":kind=="normal_edit"?"editedP":"P"),kind+" personality");Check(v[1]==(kind=="partial_b"?"keptB":kind=="one_field"?"P":"B"),kind+" background");Check(v[2]==(kind=="reroll_voice"?"newVoice":"voice"),kind+" voice preserved");}
+  if(ui)Check(AnimusForge.InformationManager.Refreshed==(noSave?0:1),kind+" truthful UI success");
+  if(kind=="reroll_reset")Check(!string.IsNullOrWhiteSpace(failure),"reset must not report reroll success");
+  if(kind=="reroll_edit")Check(v[0]=="editedP"&&v[1]=="editedB"&&!string.IsNullOrWhiteSpace(failure),"reroll protects intervening edit");
+  if(kind is "parse" or "http" or "throw")Check(!string.IsNullOrWhiteSpace(failure)&&o.Cooling("hero"),kind+" failure + cooldown");
+  if(o.Calls>0)Check(o.SentSystem.EndsWith("custom-requirements")&&o.SentUser.Contains("facts:hero"),kind+" original prompt inputs");
+ }
+ static void Reservations(){
+@@RESERVATION_TESTS@@
+ }
+ static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure"})Case(c);Reservations();Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+}

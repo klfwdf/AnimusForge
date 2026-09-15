@@ -7,6 +7,10 @@
 - 先复现正常/单字段/重生/VoiceId保持/失败冷却/重复/编辑/换档/owner替换，再实现；维持原Prompt/辅助Gateway/公开签名与保存类型。正常Hero生成、消费者状态读取与升格同伴生成要分别标覆盖，不能把前者完成冒充整个人设/全部Courier准备完成。
 - 验证：真实新源码+主后台线程/原dispatcher测试，main共同语义与旧缺陷复现、严格MyBehavior整文件逆变换、已有历史/渠道/内部ports/API/六Stage/身份；核实旧默认消费者未断，不拿测试替身冒充实机。
 
+- 首条共享请求路径已OFFLINE_VERIFIED（全范围任务仍ACTIVE）：Hero正常自动生成/原外部入口/编辑器重生在主线程捕获事实和启动异步辅助Gateway，解析后主线程提交/UI；独立NpcPersonaGenerationOwner持有预约/冷却，清理后的旧lease不能覆盖或释放新请求。重生期间文本被编辑时保留新文本并报告失败，最新VoiceId保留。大MyBehavior净减192行，旧3状态字段及旧生成体被真实替代；不是只拆partial文件。
+- 同固定main四个旧执行声明精确相同，旧106断言34失败，新118断言全通过；6有效行为故障、6逆变换守卫、原B1 15守卫与dispatcher37、history852/Native27、渠道132、Courier后处理39/历史122、内部ports308/3故障、V1/API119/快照32/四DLL680元数据、实际Courier Host回放、六Stage和main身份146/36通过。
+- 未覆盖仍明确：Native/Courier外围同步状态轮询、Scene准备外围读取、升格同伴人设/技能、规则/lore、GameEnd完整释放、B1真实成本、内部双向服务及三渠道SDK、实机/旧档。原Prompt文本/解析器和存档接口保持；复用MyBehavior原MemorySummary命名队列，不新增队列，但不把每帧2callback冒充单job硬预算。
+
 ## 以下为历史记录；当前全范围执行以上方为准
 
 # 当前续点：Courier 双向历史捕获边界（2026-09-15）
