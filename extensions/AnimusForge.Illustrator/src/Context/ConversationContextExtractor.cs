@@ -200,6 +200,59 @@ namespace AnimusForge.Illustrator.Context
             {
             }
 
+            // 俘虏处境修正：对话任一方为战俘时，物理现场以关押处为准（地牢/营地囚笼），并注入囚禁动态
+            string captiveDirective = string.Empty;
+            try
+            {
+                Hero captive = (partnerHero != null && partnerHero.IsPrisoner) ? partnerHero
+                    : ((mainHero != null && mainHero.IsPrisoner) ? mainHero : null);
+                if (captive != null && context.EnvironmentProfile != null)
+                {
+                    string captiveName = captive == mainHero ? "玩家"
+                        : (captive.Name != null ? captive.Name.ToString() : "对方");
+                    PartyBase holder = null;
+                    try { holder = captive.PartyBelongedToAsPrisoner; } catch { }
+                    string holderDesc = string.Empty;
+                    bool heldInSettlement = false;
+                    bool heldByParty = false;
+                    if (holder != null)
+                    {
+                        try
+                        {
+                            heldInSettlement = holder.IsSettlement && holder.Settlement != null;
+                            heldByParty = holder.IsMobile && holder.MobileParty != null;
+                            if (heldInSettlement)
+                            {
+                                holderDesc = (holder.Settlement.Name != null ? holder.Settlement.Name.ToString() : holder.Settlement.StringId) + "的地牢";
+                            }
+                            else if (heldByParty)
+                            {
+                                holderDesc = (holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : "一支队伍") + "的队伍";
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    if (heldInSettlement)
+                    {
+                        context.EnvironmentProfile.SpecificLocation = "阴暗地牢囚室 (Settlement Dungeon Cell)";
+                        context.EnvironmentProfile.IndoorOutdoorDetails = "幽暗压抑的石砌地牢：粗粝石墙渗着水汽，铁栅栏门与摇曳火把投下微弱光影，俘虏锁链加身坐于草堆，门外隐约有狱卒卫兵值守。";
+                    }
+                    else if (heldByParty)
+                    {
+                        context.EnvironmentProfile.SpecificLocation = "行军营地旁的囚笼/囚车 (Field Prisoner Cage)";
+                        context.EnvironmentProfile.IndoorOutdoorDetails = "旷野行军营地中的简陋木栅囚笼或囚车：俘虏被锁链看押席地而坐，四周是篝火帐篷、堆放辎重与巡视的武装卫兵。";
+                    }
+                    captiveDirective = $"【俘虏处境】{captiveName}现为阶下囚" + (string.IsNullOrWhiteSpace(holderDesc) ? "" : $"（被关押于{holderDesc}）") +
+                        "：锁链/镣铐加身、武器已被收缴、衣着为被俘后的简朴凌乱装束而非战甲；画面应体现囚禁、看押、审讯或赎买谈判的压抑权力关系，绝非自由平等的会面";
+                }
+            }
+            catch
+            {
+            }
+
             string mainName = mainHero != null && mainHero.Name != null ? mainHero.Name.ToString() : "主角";
             string partnerName = partnerHero != null && partnerHero.Name != null ? partnerHero.Name.ToString() : (partnerChar != null && partnerChar.Name != null ? partnerChar.Name.ToString() : "对方");
             string subLoc = !string.IsNullOrWhiteSpace(context.EnvironmentProfile?.SpecificLocation)
@@ -307,6 +360,7 @@ namespace AnimusForge.Illustrator.Context
             string guardDirection = bodyguardCount > 0 ? $"现场确认对方随行队列中另有 {bodyguardCount} 名角色，可按构图需要收入背景" : "未确认额外随行角色，不必强行添加护卫";
 
             context.SceneDirective =
+                (string.IsNullOrWhiteSpace(captiveDirective) ? string.Empty : captiveDirective + "。\n") +
                 $"围绕【{mainName}】与【{partnerName}】最近三轮对话选择最能表现关系变化、情绪转折或利益冲突的一个瞬间。\n" +
                 $"已确认空间关系：{mountPosture}；{guardDirection}。\n" +
                 $"现场动作参考：{basePose}。\n" +
