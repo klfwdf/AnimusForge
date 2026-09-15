@@ -176,6 +176,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static ScreenBase _ownerScreen;
         private static string _activeSpriteName;
         private static bool _closing;
+        private static int _redrawCount;
 
         public static void Patch(Harmony harmony)
         {
@@ -251,6 +252,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _scope = new IllustrationScope(topScreen, null, CloseOverlay);
             _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
             _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(title + ":" + subtitleText);
+            _redrawCount = 0;
             Debug.Print($"[Illustrator] Weekly report popup opened: '{title}' context={(_currentContext != null)}");
 
             _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate);
@@ -292,7 +294,13 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             string eventKey = _currentEventKey;
             var context = _currentContext;
-            var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), context.BuildArtDirection());
+            // 每次生成都注入随机构图变体；重绘时额外要求导演刻意换镜头，避免同一周报每次出图雷同
+            _redrawCount++;
+            string artDirection = context.BuildArtDirection();
+            string variation = GenerateWeeklyVariation();
+            if (!string.IsNullOrWhiteSpace(variation)) artDirection += "\n" + variation;
+            if (_redrawCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_redrawCount);
+            var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), artDirection);
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
 
@@ -360,6 +368,28 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 _overlayVm.IsLoading = false;
             }
+        }
+
+        /// <summary>周报纪事画的随机构图变体——同一事件每次生成应有不同取景。</summary>
+        private static string GenerateWeeklyVariation()
+        {
+            string[] variations =
+            {
+                "远景史诗画卷：事件全貌与山河城郭交代世界尺度，人物小而可辨",
+                "中景群像：数位当事人同框，以动作与视线关系承担叙事",
+                "低机位仰拍：以天空、城墙或旗帜形成留白，人物庄严",
+                "高位俯拍：展示战场、营地或街巷的空间格局与动线",
+                "决定性瞬间：事件临界点的动作爆发（冲锋、签约、宣旨、点燃）",
+                "余波时刻：事件刚结束后的烟尘、撤离与凝视，不画动作顶点",
+                "前景遮挡构图：门框、旗帜或兵器做前景，人物在中景",
+                "侧面横向构图：人物呈半剪影，让光线与烟尘承担主角",
+                "特写聚焦：一件关键道具、表情或手势承载事件含义",
+                "纵深构图：近景人物背影望向远方的事件现场",
+                "非对称动态构图：披风、烟尘、人群形成方向线",
+                "克制光影版：不强制黄昏火光，以事件事实决定光线氛围"
+            };
+            int seed = Math.Abs(Environment.TickCount ^ Guid.NewGuid().GetHashCode());
+            return "本次构图变化建议：" + variations[seed % variations.Length] + "。这只是构图选项，若与事件事实冲突应舍弃。";
         }
 
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)

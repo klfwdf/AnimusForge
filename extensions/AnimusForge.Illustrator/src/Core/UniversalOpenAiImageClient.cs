@@ -135,7 +135,7 @@ namespace AnimusForge.Illustrator.Core
 
                 bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
-                string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol);
+                string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Similarity);
 
                 bool success = false;
                 byte[] imageBytes = null;
@@ -177,7 +177,7 @@ namespace AnimusForge.Illustrator.Core
                     if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                     {
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
-                        string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true);
+                        string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Similarity);
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
                         var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken).ConfigureAwait(false);
                         if (chatRetry.Success)
@@ -297,7 +297,7 @@ namespace AnimusForge.Illustrator.Core
         /// </summary>
         private const string BuiltinNegativePrompt = "game screenshot, 3D game render, video game still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest";
 
-        public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false)
+        public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int similarity = -1)
         {
             string effectivePrompt = chatProtocol
                 ? BuildChatImagePrompt(prompt, size, quality, style, customStyleHint)
@@ -311,6 +311,17 @@ namespace AnimusForge.Illustrator.Core
                 ? BuiltinNegativePrompt
                 : BuiltinNegativePrompt + ", " + negativePrompt.Trim();
             effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
+            // 相似度滑块：人物特征/纹章永远严格一致；其余部分按百分比还原参考图与事实
+            if (similarity >= 0)
+            {
+                int sim = Math.Max(0, Math.Min(100, similarity));
+                string clause = sim >= 100
+                    ? "画面其余部分（场景布置、构图、装备细节、光影氛围）也须完全还原参考图与游戏事实，不做自由发挥"
+                    : sim <= 0
+                        ? "画面其余部分完全自由艺术创作，仅保留人物特征与事实骨架"
+                        : $"画面其余部分（场景布置、构图、装备细节、光影氛围）以约 {sim}% 的还原度参照参考图与游戏事实，剩余 {100 - sim}% 允许艺术化重构";
+                effectivePrompt += "\n[参考还原度约束]: 人物五官、肤色、发型、体型与家族纹章始终须与参考图及游戏事实严格一致（不受本约束影响）；" + clause + "。";
+            }
             return effectivePrompt;
         }
 

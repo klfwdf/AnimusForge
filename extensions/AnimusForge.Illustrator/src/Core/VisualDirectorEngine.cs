@@ -158,6 +158,17 @@ namespace AnimusForge.Illustrator.Core
             return sb.ToString().Trim();
         }
 
+        /// <summary>
+        /// 重绘变体指令：注入艺术指导区，要求导演刻意切换景别/机位/瞬间，
+        /// 避免与上一版雷同构图。redrawIndex 从 2 开始（首次绘制不注入）。
+        /// </summary>
+        public static string BuildRedrawVariationDirective(int redrawIndex)
+        {
+            return $"【重绘变体 · 第 {redrawIndex} 次绘制】本次为重新绘制：必须刻意选择与上一版不同的镜头语言——" +
+                   "更换景别（远景/中景/特写切换）、机位（平视/俯拍/仰拍切换）、事件瞬间（行动/停顿/过渡切换）与景深层次；" +
+                   "不得沿用与上一版雷同的构图，也避免默认的对称站桩式双人镜头。";
+        }
+
         private static string Preview(string value, int maxChars)
         {
             string text = (value ?? string.Empty).Replace('\r', ' ').Replace('\n', ' ').Trim();
