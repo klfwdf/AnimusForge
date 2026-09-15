@@ -1,3 +1,15 @@
+# 当前全范围收尾续点：Game 生命周期与待办退役（2026-09-15）
+
+**生产/测试29448d1b，仅本地；阶段8全范围收尾仍ACTIVE，不能标DONE。**
+
+- [最新详细HANDOFF](docs/handoffs/2026-09-15-game-lifetime-closeout-handoff.md) / [同候选审计](docs/audits/2026-09-15-game-lifetime-verification.json) / [124点坐标图](docs/architecture/af-framework-code-map.json)。
+- 已接真实Game开始/结束/卸载、旧Game隔离；Native/Courier准备与最终动作/commit待办退役、已claim回执保护；My清理窗口新generation准入与订阅释放。
+- 同候选六Stage、4DLL728元数据、实际Courier Host回放、主体/接口邻接回归和main保存身份146/36通过；不是实机或完整SDK验收。
+- 后续必交仍为规则/lore/角色资产消息准备、B1真实成本、内部双向服务、Native/Scene/Courier版本化提交/结果/取消、main全功能/删旧与LIVE/SAVE。
+- 最后已推送仍10defeb4。未部署/动存档/切默认/恢复自动化；三份用户保护文档不动。本地简明版在.tmp/game-lifetime-20260915/team-handoff.md。
+
+## 以下为此前记录（最新状态以上方为准）
+
 # 当前连续收尾：三渠道人设消费与信使回执（2026-09-15）
 
 **新生产/测试807bc5b9，仅本地；全范围收尾仍ACTIVE。**
