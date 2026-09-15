@@ -35,6 +35,8 @@ namespace AnimusForge {
   private Task<bool> UnsafeDirect(Func<bool> action)=>Task.FromResult(action());
   private Task<bool> RunMemorySummaryCompletionAsync(long g,Func<bool> action)=>dispatcher.SubmitCompletion(g,action);
   internal void Tick()=>dispatcher.Tick();
+  internal bool Pending=>dispatcher.HasPending;
+  internal void UseAllowance(){dispatcher.Submit(1,()=>true);dispatcher.Submit(1,()=>true);}
   private static Hero FindHeroById(string id){Probe.Read();return RegisteredHero;}
   private void GetNpcPersonaStrings(Hero h,out string p,out string b){Probe.Read();p=profile.Personality;b=profile.Background;}
   private NpcPersonaProfile GetNpcPersonaProfile(Hero h,bool createIfMissing){Probe.Read();return profile;}
@@ -68,7 +70,9 @@ internal static class Program {
   var hero=new Hero("hero");var o=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=o;AnimusForge.MyBehavior.RegisteredHero=hero;
   bool ui=kind.StartsWith("ui_");bool reroll=kind.StartsWith("reroll")||ui;o.Seed(reroll?"oldP":kind=="partial_p"?"keptP":"",reroll?"oldB":kind=="partial_b"?"keptB":"");
   if(kind=="complete")o.Seed("oldP","oldB");
-  var t=ui?o.RerollUi(hero):kind.StartsWith("external")?Task.Run(()=>o.External(hero)):Task.Run(()=>o.Generate(kind=="null"?null:hero,reroll));Pump(o,()=>o.Calls>0||t.IsCompleted);
+  if(kind=="ui_reset_before")o.UseAllowance();
+  var t=ui?o.RerollUi(hero):kind.StartsWith("external")?Task.Run(()=>o.External(hero)):Task.Run(()=>o.Generate(kind=="null"?null:hero,reroll));if(kind=="ui_reset_before")o.ResetGenerationState();
+  Pump(o,()=>o.Calls>0||t.IsCompleted);
   if(o.Calls>0){
    if(kind=="owner")AnimusForge.MyBehavior.Instance=new();
    if(kind=="generation")AnimusForge.SaveRuntimeGuard.Generation++;
@@ -79,9 +83,13 @@ internal static class Program {
    if(kind=="reroll_voice")o.Seed("oldP","oldB","newVoice");
    o.Release((kind=="parse" || kind=="external_failure" || kind=="ui_failure")?"bad":kind=="one_field"?"P|":"P|B",kind!="http",kind=="throw");
   }
+  if(kind=="ui_reset_accept"){
+   var deadline=DateTime.UtcNow.AddSeconds(8);while(!o.Pending&&!t.IsCompleted){if(DateTime.UtcNow>deadline)throw new Exception("accept not queued");Thread.Sleep(1);}
+   o.ResetGenerationState();
+  }
   Pump(o,()=>t.IsCompleted);string failure=t.GetAwaiter().GetResult();var v=o.Values();
   Check(Probe.OffThread==0,kind+" all game/config/profile reads and writes on main");
-  bool noSave=kind is "owner" or "generation" or "target" or "reset" or "reroll_reset" or "reroll_edit" or "parse" or "http" or "throw" or "complete" or "null" or "external_failure" or "ui_failure" or "ui_edit" or "ui_reset";
+  bool noSave=kind is "owner" or "generation" or "target" or "reset" or "reroll_reset" or "reroll_edit" or "parse" or "http" or "throw" or "complete" or "null" or "external_failure" or "ui_failure" or "ui_edit" or "ui_reset" or "ui_reset_before" or "ui_reset_accept";
   Check(o.Saves==(noSave?0:1),kind+" save count");
   if(!noSave){Check(v[0]==(kind=="partial_p"?"keptP":kind=="normal_edit"?"editedP":"P"),kind+" personality");Check(v[1]==(kind=="partial_b"?"keptB":kind=="one_field"?"P":"B"),kind+" background");Check(v[2]==(kind=="reroll_voice"?"newVoice":"voice"),kind+" voice preserved");}
   if(ui)Check(AnimusForge.InformationManager.Refreshed==(noSave?0:1),kind+" truthful UI success");
@@ -93,5 +101,5 @@ internal static class Program {
  static void Reservations(){
 @@RESERVATION_TESTS@@
  }
- static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure"})Case(c);Reservations();Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+ static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
 }

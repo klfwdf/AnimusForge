@@ -97,7 +97,7 @@ public partial class MyBehavior
                 work = CaptureNpcPersonaGeneration(hero, ignoreRetryCooldown, overwriteExisting);
                 return true;
             }).ConfigureAwait(false);
-            if (!captured || work == null) return "";
+            if (!captured || work == null) return overwriteExisting ? "请求已失效，未保存新的人设。" : "";
             if (work.Reservation == null) return work.Failure ?? "";
             ApiCallResult response = await work.Response.ConfigureAwait(false);
             if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation)) return "";
@@ -141,7 +141,7 @@ public partial class MyBehavior
                 }
                 return true;
             }).ConfigureAwait(false);
-            return accepted ? failure ?? "" : "";
+            return accepted ? failure ?? "" : overwriteExisting ? "请求已失效，未保存新的人设。" : "";
         }
         catch (Exception error)
         {
