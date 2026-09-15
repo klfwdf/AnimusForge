@@ -40,11 +40,11 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             sb.AppendLine("【玩家主角】");
-            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildSummary());
+            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildVisualSummary());
             sb.AppendLine("【对话对象】");
             if (InterlocutorProfile != null)
             {
-                sb.AppendLine(InterlocutorProfile.BuildSummary());
+                sb.AppendLine(InterlocutorProfile.BuildVisualSummary());
             }
             else if (InterlocutorCharacter != null)
             {
@@ -55,6 +55,16 @@ namespace AnimusForge.Illustrator.Context
                 sb.AppendLine("【当前现场】");
                 sb.AppendLine(EnvironmentProfile.BuildHardFactsSummary());
             }
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildDirectorOnlyFacts()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(BuildDialogueBlock());
+            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildDirectorOnlyFacts());
+            if (InterlocutorProfile != null) sb.AppendLine(InterlocutorProfile.BuildDirectorOnlyFacts());
+            if (EnvironmentProfile != null) sb.AppendLine(EnvironmentProfile.BuildDirectorOnlyFacts());
             return sb.ToString().TrimEnd();
         }
 
@@ -73,7 +83,7 @@ namespace AnimusForge.Illustrator.Context
 
         public string BuildCompositeContext()
         {
-            return BuildHardFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
+            return BuildHardFacts() + "\n\n【导演专属背景】\n" + BuildDirectorOnlyFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
         }
     }
 

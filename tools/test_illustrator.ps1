@@ -278,5 +278,83 @@ finally {
     Remove-Item -LiteralPath $resolvedFixture -Recurse -Force
 }
 
+# Narrative routing: exercise complete contexts and the actual offline/director composition path.
+$router = $assembly.GetType('AnimusForge.Illustrator.Context.NarrativeFactRouter', $true)
+$eventEvidenceMethod = $router.GetMethod('BuildEventEvidence')
+$weeklyContextType = $assembly.GetType('AnimusForge.Illustrator.Context.WeeklyReportVisualContext', $true)
+$weeklyContext = [Activator]::CreateInstance($weeklyContextType)
+$weeklyContext.Title = '暮色中的王国纪事与命运回响'
+$weeklyContext.Subtitle = '诸侯之间的角力仍在继续'
+$weeklyContext.HeadlineSummary = '<a href="hero.secret-id">拉盖娅</a>率军围攻奥尼拉。' + ('后勤队伍沿道路运送粮食。' * 45) + '最终未能攻破城门，拉盖娅撤退，奥尼拉仍由守军控制。'
+$weeklyHard = [string]$weeklyContext.BuildHardFacts()
+$weeklyNarrative = [string]$weeklyContext.BuildDirectorOnlyFacts()
+Assert-True ($weeklyHard.Contains('拉盖娅') -and $weeklyHard.Contains('奥尼拉') -and $weeklyHard.Contains('最终未能攻破城门') -and $weeklyHard.Contains('仍由守军控制')) 'weekly evidence preserves actors location and negative outcome beyond 400 characters'
+Assert-True (!$weeklyHard.Contains('暮色中的王国纪事') -and !$weeklyHard.Contains('href') -and !$weeklyHard.Contains('secret-id') -and $weeklyNarrative.Contains('暮色中的王国纪事')) 'weekly decorative title is director-only and hyperlink internals are removed from facts'
+$speechEvidence = [string]$eventEvidenceMethod.Invoke($null, [object[]]@('', '', '统帅说：“我们已经攻城成功并俘虏了全部守军”。实际围攻尚未开始。'))
+Assert-True (!$speechEvidence.Contains('攻城成功') -and $speechEvidence.Contains('尚未开始')) 'quoted victory claim is not promoted to confirmed event'
+$namedEvidence = [string]$eventEvidenceMethod.Invoke($null, [object[]]@('', '', '守军仍控制名为“银色城堡”的要塞，进攻者未能占领。'))
+Assert-True ($namedEvidence.Contains('银色城堡') -and $namedEvidence.Contains('未能占领')) 'quoted place names and negation remain intact'
+$unknownEvidence = [string]$eventEvidenceMethod.Invoke($null, [object[]]@('', '', ''))
+Assert-True ($unknownEvidence.Contains('未获明确叙述')) 'empty event evidence stays unknown'
+$releaseEvidence = [string]$eventEvidenceMethod.Invoke($null, [object[]]@('俘虏获释', '', '囚徒获释，未被处决。另一路部队停战，没有攻城。'))
+Assert-True ($releaseEvidence.Contains('未被处决') -and $releaseEvidence.Contains('没有攻城')) 'release and ceasefire keep their negative outcomes'
+
+$heroProfile = [Activator]::CreateInstance($assembly.GetType('AnimusForge.Illustrator.Context.HeroVisualProfile', $true))
+$heroProfile.HeroName = '审查角色'
+$heroProfile.Culture = '自定义文化'
+$heroProfile.PhysicalFeatures = '银发、浅色皮肤、尖耳'
+$heroProfile.CurrentStateDetail = '被囚禁，武器已收缴'
+$heroProfile.EquipmentDetails.Add('黑色锁甲')
+$heroProfile.CultureLore = '该族为尖耳精灵，银发而长寿。先祖曾迁徙至远方。'
+$heroProfile.BackgroundLore = '他左眼附近有伤疤。曾担任王国财务官。'
+$heroProfile.TraitsSummary = '审慎而多疑，算度深远'
+$heroProfile.TopSkillsSummary = '战神与神射手'
+$heroHard = [string]$heroProfile.BuildVisualSummary()
+$heroNarrative = [string]$heroProfile.BuildDirectorOnlyFacts()
+Assert-True ($heroHard.Contains('尖耳精灵') -and $heroHard.Contains('左眼附近有伤疤') -and $heroHard.Contains('黑色锁甲') -and $heroHard.Contains('武器已收缴')) 'visual lore and current equipment imprisonment survive background split'
+Assert-True (!$heroHard.Contains('算度深远') -and !$heroHard.Contains('神射手') -and !$heroHard.Contains('财务官') -and $heroNarrative.Contains('算度深远') -and $heroNarrative.Contains('神射手')) 'abstract traits skills and nonvisual biography remain director-only'
+
+$environment = [Activator]::CreateInstance($assembly.GetType('AnimusForge.Illustrator.Context.EnvironmentVisualProfile', $true))
+$environment.DateLabel = '卡拉迪亚历 1084 年 · 冬季 · 第 3 日'
+$environment.SpecificLocation = '野外营地'
+$environment.TimeOfDay = '夜晚'
+$environment.Weather = '小雨'
+$environment.RealSceneName = 'internal_scene_resource_123'
+$environment.HostSceneDescription = '野外营地。玩家骑马，对方步行，身后两名护卫。'
+$environmentHard = [string]$environment.BuildHardFactsSummary()
+Assert-True ($environmentHard.Contains('冬季') -and $environmentHard.Contains('夜晚') -and $environmentHard.Contains('小雨') -and $environmentHard.Contains('两名护卫')) 'season lighting weather and unique host scene details survive routing'
+Assert-True (!$environmentHard.Contains('1084') -and !$environmentHard.Contains('internal_scene_resource_123') -and $environment.BuildDirectorOnlyFacts().Contains('1084')) 'exact date and engine resource name move to director-only context'
+
+$conversation = [Activator]::CreateInstance($assembly.GetType('AnimusForge.Illustrator.Context.ConversationVisualContext', $true))
+$conversation.MainHeroProfile = $heroProfile
+$conversation.EnvironmentProfile = $environment
+$conversation.DialogueSentence = '请把我们的这段约定永远牢记在心中'
+$conversation.RecentDialogueHistory = '玩家：我希望双方暂时停止这场争斗。'
+$convHard = [string]$conversation.BuildHardFacts()
+$convNarrative = [string]$conversation.BuildDirectorOnlyFacts()
+Assert-True (!$convHard.Contains($conversation.DialogueSentence) -and $convNarrative.Contains($conversation.DialogueSentence) -and $convNarrative.Contains('神射手') -and $convHard.Contains('黑色锁甲')) 'conversation routes dialogue and biography to director while preserving visual identity'
+
+$planType = $assembly.GetType('AnimusForge.Illustrator.Core.IllustrationPromptPlan', $true)
+$offlineMethod = $director.GetMethods($privateStatic) | Where-Object { $_.Name -eq 'SynthesizeRuleBasedPrompt' -and $_.GetParameters().Count -eq 2 } | Select-Object -First 1
+$resolveDirector = $director.GetMethod('ResolveDirectorOutput', $privateStatic)
+foreach ($case in @(
+    @{ Name='weekly'; Facts=$weeklyHard; Narrative=$weeklyNarrative; Required='未能攻破城门'; Forbidden=$weeklyContext.Title },
+    @{ Name='encyclopedia'; Facts=$heroHard; Narrative=$heroNarrative; Required='黑色锁甲'; Forbidden='算度深远' },
+    @{ Name='conversation'; Facts=$convHard; Narrative=$convNarrative; Required='两名护卫'; Forbidden=$conversation.DialogueSentence }
+)) {
+    $plan = [Activator]::CreateInstance($planType, [object[]]@([string]$case.Name, [string]$case.Facts, '本次采用高位俯拍。', [string]$case.Narrative))
+    $offline = [string]$offlineMethod.Invoke($null, [object[]]@($plan, $null))
+    Assert-True ($offline.Contains($case.Required) -and $offline.Contains('高位俯拍') -and !$offline.Contains($case.Forbidden)) "offline $($case.Name) preserves visual facts and excludes narrative"
+    Assert-True ($plan.BuildDirectorContext().Contains('<director_only_narrative>') -and $plan.BuildDirectorContext().Contains($case.Forbidden)) "director $($case.Name) still receives complete narrative in separate block"
+}
+$echoPlan = [Activator]::CreateInstance($planType, [object[]]@('会话', '人物穿黑色锁甲。', '高位俯拍。', [string]$convNarrative))
+$echo = [string]$resolveDirector.Invoke($null, [object[]]@([string]('字幕写着：' + [string]$conversation.DialogueSentence), $echoPlan, $null))
+Assert-True (!$echo.Contains($conversation.DialogueSentence) -and $echo.Contains('黑色锁甲') -and $echo.Contains('高位俯拍')) 'verbatim dialogue echo falls back locally without losing facts'
+$validDirector = [string]$resolveDirector.Invoke($null, [object[]]@([string]'夜雨中两人克制地相望，远景留白。', $echoPlan, $null))
+Assert-True ($validDirector.Contains('克制地相望') -and $validDirector.Contains('黑色锁甲')) 'visual paraphrase from director is retained'
+$weeklyPlan = [Activator]::CreateInstance($planType, [object[]]@('周报', $weeklyHard, '高位俯拍。', $weeklyNarrative))
+$titleEcho = [string]$resolveDirector.Invoke($null, [object[]]@([string]('画面标题：' + [string]$weeklyContext.Title), $weeklyPlan, $null))
+Assert-True (!$titleEcho.Contains($weeklyContext.Title) -and $titleEcho.Contains('未能攻破城门')) 'weekly title echo falls back without losing event outcome'
+
 Write-Host "$($script:checks) checks, $($script:failures) failures"
 if ($script:failures -gt 0) { exit 1 }

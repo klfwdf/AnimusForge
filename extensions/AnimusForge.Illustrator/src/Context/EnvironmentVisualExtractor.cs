@@ -36,14 +36,26 @@ namespace AnimusForge.Illustrator.Context
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(SettlementName)) sb.AppendLine($"【定居点】{SettlementName} ({SettlementType})");
             if (!string.IsNullOrWhiteSpace(SpecificLocation)) sb.AppendLine($"【当前子场景】{SpecificLocation}");
-            if (!string.IsNullOrWhiteSpace(RealSceneName)) sb.AppendLine($"【引擎场景资源名】{RealSceneName}");
-            if (!string.IsNullOrWhiteSpace(HostSceneDescription)) sb.AppendLine($"【宿主场景描述】{HostSceneDescription}");
             if (!string.IsNullOrWhiteSpace(NamedCharacters)) sb.AppendLine($"【附近实际角色】{NamedCharacters}");
             if (!string.IsNullOrWhiteSpace(RealProps)) sb.AppendLine($"【附近实际预制件】{RealProps}");
-            if (!string.IsNullOrWhiteSpace(DateLabel)) sb.AppendLine($"【纪元时间】{DateLabel}");
+            // 精确日期只用于导演理解；发布日期中的季节仍作为回顾事件的季节参考。
+            if (string.IsNullOrWhiteSpace(Season))
+                foreach (string season in new[] { "春季", "夏季", "秋季", "冬季" })
+                    if ((DateLabel ?? string.Empty).Contains(season)) { sb.AppendLine("【季节参考】" + season); break; }
             if (!string.IsNullOrWhiteSpace(TimeOfDay)) sb.AppendLine($"【现场时段】{TimeOfDay}");
             if (!string.IsNullOrWhiteSpace(Weather)) sb.AppendLine($"【现场天气】{Weather}");
             if (!string.IsNullOrWhiteSpace(ConflictStatus)) sb.AppendLine($"【冲突状态】{ConflictStatus}");
+            string extraSceneFacts = NarrativeFactRouter.SceneEvidence(HostSceneDescription, sb.ToString());
+            if (!string.IsNullOrWhiteSpace(extraSceneFacts)) sb.AppendLine("【场景补充事实】" + extraSceneFacts);
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildDirectorOnlyFacts()
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(DateLabel)) sb.AppendLine("【纪元时间】" + DateLabel);
+            if (!string.IsNullOrWhiteSpace(RealSceneName)) sb.AppendLine("【引擎场景资源名】" + RealSceneName);
+            if (!string.IsNullOrWhiteSpace(HostSceneDescription)) sb.AppendLine("【宿主场景原文】" + HostSceneDescription);
             return sb.ToString().TrimEnd();
         }
 
