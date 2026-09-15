@@ -1,5 +1,9 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 生图子模块最新设置修正（2026-09-16）
+
+生产/测试提交 `2f978705`：设置改为“随机”0–100，默认 0，不追加随机提示词，正值增强艺术表现变化。双 API 构建通过，160 checks / 0 failures；未部署、未推送、未实机验收。源码位置与边界见 [生图交接第十轮](docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md)。检查点 `bfc1aea`，可定向 revert 生产提交。
+
 ## 当前续作入口
 
 用户在全项目分析后明确要求“开目标模式做吧”，已恢复当前 `F:\AnimusForge-main`、`codex/af-main-refactor-continuation-20260831` 上的本地实现和验证。起点 `bd2ed35f`；执行顺序、边界及状态见 [本轮台账](docs/phase8/local-goal-continuation-20260912.md)。先重新建立当前源码的本机构建基线，再按独立切片推进压缩输入快照、Native、TTS 和 Courier。原有 75 个未跟踪图片/预览文件保留。没有本轮 push、游戏覆盖、真实存档操作或恢复定时自动化授权。

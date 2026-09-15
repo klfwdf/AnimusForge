@@ -487,3 +487,14 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 `IllustratorSettings.SimilarityDropdown` 改为下拉选项，默认“随机（沿用旧版：不附加相似度约束）”，内部 `Similarity=-1`；固定档位为 0/20/40/60/80/100。旧版没有相似度设置时的实际行为就是不追加该提示词段落，不能等同 0%。`UniversalOpenAiImageClient.BuildEffectivePrompt` 对 -1 不添加相似度约束，固定档位只约束有依据的场景表现，不覆盖身份、装备、纹章、硬事实或重绘换镜头。
 
 `tools/test_illustrator.ps1` 最终 **134 checks / 0 failures**，1.3/1.4 构建 0 警告、0 错误，`git diff --check` 通过。未实机验证新提示词在真实模型中的盾牌频率、国王纹章遵循率和旧配置迁移显示；需部署最新 DLL 后再验收。回滚：本轮对应提交 `9dda2fa2` 之前的未含本轮变更基线见 Git 历史，当前修改可定向 `git revert HEAD`（提交 hash 以当前 Git 为准）。
+
+### 第十轮：按用户明确要求改为“随机”数值（2026-09-16）
+
+本节取代第九轮的相似度下拉方案。源码提交 `2f978705`，修改前检查点 `bfc1aea`。当前工作树仍为 `F:\AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`，与根 HANDOFF 当前入口一致。
+
+- `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:260–262`：`Randomness` 为名叫“随机”的 0–100 整数滑块，默认 0，直接显示整数；新配置键不把旧相似度数值误作随机强度。
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:32–56`：`IllustrationOptions` 每次请求捕获 `Randomness`，限制范围 0–100。
+- `extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs:138–180,297–321`：主请求和 Chat 回退统一传递随机强度。`BuildEffectivePrompt` 在 0 时完全省略新增指导段，保留旧版已有随机构图；正值越大越鼓励取景、留白、景深和光影变化，100 表示在已确认事实允许的范围内最大程度探索。身份、装备、纹章、场景空间关系仍须保留。数值是提示词强度，不是模型采样参数。
+- `tools/test_illustrator.ps1:199–229`：真实编译方法覆盖设置 → 快照 → 两种协议提示词，检查 -1/0/1/50/100/150 的默认、范围、零值不追加及正值语义。
+
+性能：仅请求发起时读取配置和拼接一段字符串，无每帧扫描、反射或新缓存。验证：现有测试脚本 Release 下双 API 构建均 0 警告/0 错误，160 checks / 0 failures；diff 格式检查通过。未部署、未推送，未验证真实 MCM 设置持久化和实际模型出图变化程度。回滚使用定向 inverse/revert `2f978705`，保留其他作者修改。
