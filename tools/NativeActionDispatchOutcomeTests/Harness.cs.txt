@@ -39,6 +39,8 @@ namespace AnimusForge
     static class WorldMapPartyCommandBehavior { internal class WorldMapOrderApplyResult { public bool NeedsChannelExit; } }
     public partial class ShoutBehavior
     {
+    private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();
+
         private class NpcDataPacket { public string Name="A"; public int AgentIndex=1; }
         private class SceneSummonPromptTarget {}
         private class SceneGuidePromptTarget {}
@@ -76,6 +78,8 @@ namespace AnimusForge
         private void RollbackNativeConversationPendingPlayerHistory(Hero hero,CharacterObject character,string name,int index,NpcDataPacket npc,long sequence,string reason) {}
         internal void Pump()=>_mainThreadActions.Pump();
         internal int Pending=>_mainThreadActions.Count;
+        internal void Retire()=>_pendingMainThreadFunctions.Seal();
+        internal void ResetPending()=>_pendingMainThreadFunctions.Reset();
     }
 #if !ORIGINAL
     static class LlmRetryPrompt { internal static int Reports; internal static string Message; internal static void ShowFailurePopup(string title,string message) { Reports++;Message=message; } }
@@ -94,6 +98,11 @@ namespace AnimusForge
         { try { return Finish(owner,task); } catch(Exception ex) { throw new Exception("FAIL expected successful dispatch despite diagnostics",ex); } }
         static void Main()
         {
+            try { Run(); }
+            catch(Exception error) { Console.WriteLine(error); Environment.ExitCode=1; }
+        }
+        static void Run()
+        {
 #if TIMEOUT_BASELINE
             Host.Reset();var owner=new ShoutBehavior();var task=owner.Turn();
             Thread.Sleep(Host.QueueTimeoutMs*4);
@@ -108,6 +117,10 @@ namespace AnimusForge
             Host.ThrowDiagnostics=false;owner.Pump();Check(Host.Effects==1,"queued action still ran after caller was already completed");
             Console.WriteLine("Original Native dispatch defects reproduced; actual method executed; game/core=STUBBED.");
 #else
+            Host.Reset();Host.QueueTimeoutMs=30000;var retiredOwner=new ShoutBehavior();var retiredTurn=retiredOwner.Turn();retiredOwner.Retire();
+            Check(SpinWait.SpinUntil(()=>retiredTurn.IsCompleted,2000),"retirement settles Native action before deadline");
+            Check(Success(retiredOwner,retiredTurn)==""&&Host.Effects==0&&Host.History==0,"retired action has no effect/history even on late pump");
+            Host.Main=true;Check(retiredOwner.Turn().GetAwaiter().GetResult()==""&&Host.Effects==0,"retired Native owner rejects new inline actions");
             foreach(bool main in new[]{false,true})
             {
                 Host.Reset(main:main);var owner=new ShoutBehavior();var task=owner.Turn();
@@ -176,6 +189,7 @@ namespace AnimusForge
             try
             {
                 Check(Host.Started.Wait(3000),"physical callback claimed owner before deadline mode="+mode);
+                owner.Retire();
                 Thread.Sleep(Host.QueueTimeoutMs*3);
                 Check(!turn.IsCompleted,"deadline must not abandon already-started owner mode="+mode);
             }

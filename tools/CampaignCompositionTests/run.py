@@ -34,6 +34,7 @@ def compact(s): return re.sub(r'\s+', '', s)
 
 def restore_submodule(current):
     """Whole-file inverse: ONLY reviewed extraction/removed imports may differ from pinned source."""
+    current = load('game_lifetime_inverse', 'tools/GameLifetimeTests/source_parity.py').restore('SubModule.cs', current)
     prior = old('SubModule.cs')
     expected = prior
     for name in METHODS:
@@ -104,7 +105,10 @@ def main():
     assert len(names)==36 and len(set(names))==36
     usings='using System; using AnimusForge; using AnimusForge.PolicyEffects; using AnimusForge.Refactor.Modules; using TaleWorlds.Core; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.ComponentInterfaces; using TaleWorlds.CampaignSystem.GameComponents; using AFWarStatsTerminal.Behaviors;\n'
     hosts=usings
-    for kind,text in [('Current',read('SubModule.cs')),('Original',prior)]:
+    # This suite isolates unchanged ordered composition. Real lifecycle-wrapped callbacks
+    # execute separately in GameLifetimeTests, including partial-registration failure.
+    composed = load('game_lifetime_composition', 'tools/GameLifetimeTests/source_parity.py').restore('SubModule.cs', read('SubModule.cs'))
+    for kind,text in [('Current',composed),('Original',prior)]:
         hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+extract(text,INIT)+'\n'
         if kind=='Original': hosts+='\n'.join(extract(text,'private static void '+n+'(') for n in METHODS)
         hosts+='\n}\n'

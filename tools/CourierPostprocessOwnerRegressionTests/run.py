@@ -27,6 +27,7 @@ SIGNATURES = [
     'private sealed class CourierReplyGenerationRequest',
 ]
 LINKS = [
+    'Refactor/Runtime/PendingOperationRegistry.cs',
     'CourierVisibleLetterSanitizer.cs', 'LlmVisibleReplyNormalizer.cs',
     'Refactor/Contracts/InteractionContracts.cs', 'Refactor/Contracts/LlmContracts.cs',
     'Refactor/Contracts/ProfileConfigContracts.cs', 'Refactor/Contracts/InteractionPipeline.cs',

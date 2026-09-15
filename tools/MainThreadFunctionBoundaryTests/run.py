@@ -28,6 +28,8 @@ if not a.original:
   restored=restored.replace(ex.declaration(restored,signature),ex.declaration(prior,signature),1)
  assert restored==prior, 'Changes outside scheduler and separately reviewed preparation declarations'
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RUN@@',run).replace('@@WAIT@@',wait)
+if not a.original:
+ code=code.replace('public sealed class ShoutBehavior\n{','public sealed class ShoutBehavior\n{\n    private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();',1)
 mutations={
  'drop-claim':('if (Interlocked.CompareExchange(ref state, 1, 0) != 0) return;', 'if (false) return;'),
  'expire-started':('if (Interlocked.CompareExchange(ref state, 2, 0) != 0) return false;', 'if (Interlocked.Exchange(ref state, 2) == 2) return false;'),
@@ -42,6 +44,7 @@ if a.mutate:
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'PreprocessFormatException.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>',encoding='utf-8')
+if not a.original:(out/'PendingOperationRegistry.cs').write_text((ROOT/'Refactor/Runtime/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
 r=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)

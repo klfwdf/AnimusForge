@@ -55,6 +55,10 @@ def restore_memory_summary_source(path, source):
     # trusted because only the MyBehavior facade is inverse-transformed.
     for dependency_path, expected in review.get('productionDependencies', {}).items():
         text = (ROOT / dependency_path).read_text(encoding='utf-8-sig')
+        if dependency_path == 'MyBehavior.MemorySummaryMainThread.cs':
+            life_spec = importlib.util.spec_from_file_location('b1_game_lifetime_inverse', ROOT / 'tools/GameLifetimeTests/source_parity.py')
+            life = importlib.util.module_from_spec(life_spec); life_spec.loader.exec_module(life)
+            text = life.restore(dependency_path, text)
         assert _sha256(text) == expected, 'Unreviewed B1 production dependency: ' + dependency_path
     for removed_path in review.get('removedProductionFiles', []):
         assert not (ROOT / removed_path).exists(), 'Obsolete B1 production file restored: ' + removed_path

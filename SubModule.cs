@@ -98,12 +98,14 @@ public class SubModule : MBSubModuleBase
 	public override void OnGameEnd(Game game)
 	{
 		RemoveMapButtonLayer();
+		AfCampaignRuntimeLifecycle.End(game);
 		base.OnGameEnd(game);
 	}
 
 	protected override void OnSubModuleUnloaded()
 	{
 		RemoveMapButtonLayer();
+		AfCampaignRuntimeLifecycle.Stop();
 		ModuleFrameworkRuntime.Shutdown();
 		SceneActionsIntegrationBoundary.ShutdownRuntime();
 		base.OnSubModuleUnloaded();
@@ -652,8 +654,24 @@ public class SubModule : MBSubModuleBase
 
 	protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
 	{
-		// 引擎入口保持原签名；装配由同一框架入口委托，不在此维护第二份清单。
-		ModuleFrameworkRuntime.RegisterCampaign(starterObject);
+		CampaignGameStarter campaignStarter = starterObject as CampaignGameStarter;
+		if (campaignStarter != null) AfCampaignRuntimeLifecycle.Begin(game);
+		try
+		{
+			ModuleFrameworkRuntime.RegisterCampaign(starterObject);
+			if (campaignStarter != null) AfCampaignRuntimeLifecycle.CaptureOwners(game, campaignStarter);
+		}
+		catch
+		{
+			if (campaignStarter != null)
+			{
+				try { AfCampaignRuntimeLifecycle.CaptureOwners(game, campaignStarter); }
+				catch (Exception) { } // Preserve the original registration failure.
+				try { AfCampaignRuntimeLifecycle.End(game); }
+				catch (Exception) { }
+			}
+			throw;
+		}
 	}
 
 	protected override void OnApplicationTick(float dt)

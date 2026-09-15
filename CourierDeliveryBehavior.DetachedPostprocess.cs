@@ -116,7 +116,9 @@ public sealed partial class CourierDeliveryBehavior
 
     private async Task<T> RunCourierOwnerPhaseAsync<T>(long generation, string source, Func<T> action, CancellationToken cancellationToken)
     {
+        long retirementVersion = _pendingOwnerPhases.Version;
         cancellationToken.ThrowIfCancellationRequested();
+        if (!_pendingOwnerPhases.Accepting) throw new OperationCanceledException("Courier owner retired.");
         var completion = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
         int state = 0;
         void Invoke()
@@ -132,6 +134,11 @@ public sealed partial class CourierDeliveryBehavior
             catch (OperationCanceledException) { completion.TrySetCanceled(); }
             catch (Exception error) { completion.TrySetException(error); }
         }
+        using (IDisposable registration = _pendingOwnerPhases.Register(retirementVersion, () =>
+        {
+            if (Interlocked.CompareExchange(ref state, 2, 0) == 0) completion.TrySetCanceled();
+        }))
+        {
         bool mainThread = false;
         try { mainThread = TWParallel.IsMainThread(); } catch { }
         if (mainThread) Invoke(); else MainThreadActions.Enqueue(Invoke);
@@ -153,6 +160,7 @@ public sealed partial class CourierDeliveryBehavior
             T result = await completion.Task.ConfigureAwait(false);
             if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) throw new OperationCanceledException("Courier owner phase expired.");
             return result;
+        }
         }
     }
 }

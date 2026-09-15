@@ -12,5 +12,5 @@ if a.mutate=='timeout_claimed':method=method.replace('if (winner != completion.T
 if a.mutate=='drop_claim':method=method.replace('if (Interlocked.CompareExchange(ref state, 1, 0) != 0) return;','',1)
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHOD@@',method)
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text('using TaleWorlds.Library;\n'+code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-project=util.project(out,'OwnerPhase', [out/'Program.cs'],executable=True)
+project=util.project(out,'OwnerPhase', [out/'Program.cs',ROOT/'Refactor/Runtime/PendingOperationRegistry.cs'],executable=True)
 code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release'],out);print(log,end='');(out/'run.log').write_text(log,encoding='utf-8');raise SystemExit(code)

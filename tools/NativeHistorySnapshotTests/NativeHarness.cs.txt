@@ -1,6 +1,7 @@
     public class NpcDataPacket {public int AgentIndex;}
     public sealed class ShoutBehavior
     {
+        private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();
         private sealed class NativeConversationAdmission {public int AgentIndex=7;public long Generation;}
         public bool Valid=true;
         public readonly System.Collections.Concurrent.ConcurrentQueue<Action> _mainThreadActions=new();
