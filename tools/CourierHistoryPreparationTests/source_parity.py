@@ -6,11 +6,15 @@ BASELINE='73774a94fc1d2fcbebc69ea221e9a906a4e70b8e'
 spec=importlib.util.spec_from_file_location('decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 def old():return subprocess.check_output(['git','show',BASELINE+':CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def restore(source):
+    persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tools/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
+    source=persona.restore('CourierDeliveryBehavior.cs',source)
     review=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
     for path,expected_hash in review['files'].items():
         text=(ROOT/path).read_text(encoding='utf-8-sig')
         assert hashlib.sha256(text.encode()).hexdigest()==expected_hash,'Unreviewed Courier history dependency: '+path
     phase=m.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(')
+    owner_spec=importlib.util.spec_from_file_location('courier_owner_phase_inverse',ROOT/'tools/CourierOwnerPhaseTests/source_parity.py');owner=importlib.util.module_from_spec(owner_spec);owner_spec.loader.exec_module(owner)
+    phase=owner.restore_method(phase)
     assert hashlib.sha256(phase.encode()).hexdigest()==review['ownerPhaseSha256'],'Owner phase changed without history regression review'
     before=old();expected=before
     for inbound,subject,call in [(False,'recipient','BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration)'),(True,'sender','BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration)')]:

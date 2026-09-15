@@ -20,7 +20,8 @@ if not a.original:
  current=ex.declaration(restored,signature)
  review=json.loads((ROOT/'tools/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
  expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
- live_submit=ex.declaration(s,signature)
+ persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tools/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
+ live_submit=ex.declaration(persona.restore('ShoutBehavior.cs',s),signature)
  assert hashlib.sha256(live_submit.encode()).hexdigest()==expected and 'TeamModuleServices.' not in live_submit
  restored=restored.replace(current,ex.declaration(prior,signature),1)
  for signature in ['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(']:

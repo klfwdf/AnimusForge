@@ -1,0 +1,13 @@
+{
+  "baseline": "4140bd04",
+  "dependencies": {
+    "Refactor/Contracts/NpcPersonaReadinessSnapshot.cs": "2e807eacf0f196f84dd2af921021376526770366496cf4f14fd143378162685f",
+    "MyBehavior.PersonaReadiness.cs": "f9747fc3b702f7aba92ae9aecd0335990e13ec4e098e414ad405e2092e53a910",
+    "ShoutBehavior.PersonaPreparation.cs": "6d082776e9decb666e4313b6ad541dc4d3e8ac9484912cc68165198cc7fe5ab8",
+    "CourierDeliveryBehavior.PreparationAdmission.cs": "3b8a6ff955caeaf804613e2909481535f3ae963d35e36e087d1cd505b27e296d",
+    "tools/ChannelPersonaPreparationTests/Harness.cs.txt": "8e8d5da0dabfe9a167bea3eff0694abac6c5c7351d6bbd5061ab06061f014506",
+    "tools/ChannelPersonaPreparationTests/Extras.cs.txt": "e184c8db1b000b4cb8924abdf6709404500ed727ebe30584dd92130c6889d900",
+    "tools/ChannelPersonaPreparationTests/run.py": "1c32b98443940b3a0cbbbc320a7d0764348c85cfba6ddfc32518b34a67e99e4c",
+    "Refactor/Runtime/PersonaGenerationWaiter.cs": "c63bd223ddac029ca8c00de6bd7d820a4b392dd1f600eaf3ccfc1fb4321b38e0"
+  }
+}

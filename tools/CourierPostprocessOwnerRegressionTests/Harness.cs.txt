@@ -316,7 +316,7 @@ public static class Program
         using var token = new CancellationTokenSource(); using var entered = new ManualResetEventSlim(); using var cancelled = new ManualResetEventSlim(); int effects = 0;
         Task cancel = Task.Run(() => { entered.Wait(); token.Cancel(); cancelled.Set(); });
         Task<int> pending = Task.Run(() => Host.Phase(() => { effects++; entered.Set(); Check(cancelled.Wait(3000), "canceller did not run"); return effects; }, token.Token));
-        Rejected(pending); cancel.GetAwaiter().GetResult(); Check(effects == 1, "fixture must honestly retain already-started effect");
+        Check(Pump(pending) == 1, "already-started effect lost its definitive receipt"); cancel.GetAwaiter().GetResult(); Check(effects == 1, "fixture must honestly retain already-started effect");
     }
     private static void ConcurrentOwners()
     {

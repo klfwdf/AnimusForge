@@ -1,0 +1,21 @@
+{
+  "baseline": "4140bd04",
+  "exactEdits": [
+    [
+      "            Interlocked.CompareExchange(ref state, 2, 0);\n            completion.TrySetCanceled();",
+      "            // A cancellation can retire unclaimed work, not erase an executing action's receipt.\n            if (Interlocked.CompareExchange(ref state, 2, 0) == 0)\n                completion.TrySetCanceled();"
+    ],
+    [
+      "            if (winner != completion.Task)\n            {\n                Interlocked.CompareExchange(ref state, 2, 0);",
+      "            if (winner != completion.Task && Interlocked.CompareExchange(ref state, 2, 0) == 0)\n            {"
+    ],
+    [
+      "            cancellationToken.ThrowIfCancellationRequested();\n            if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) throw new OperationCanceledException(\"Courier owner phase expired.\");\n            return await completion.Task.ConfigureAwait(false);",
+      "            // Once claimed, wait for the real outcome even after timeout/cancellation. Otherwise\n            // callers could retry an action which the game thread is still executing.\n            T result = await completion.Task.ConfigureAwait(false);\n            if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) throw new OperationCanceledException(\"Courier owner phase expired.\");\n            return result;"
+    ]
+  ],
+  "dependencies": {
+    "tools/CourierOwnerPhaseTests/Harness.cs.txt": "56b904a48bbc304dc9f083a3bbc0fb046396923b0830d193f2378a1d78e5e300",
+    "tools/CourierOwnerPhaseTests/run.py": "3cf041d43cfd420d5ca7229f54b824d2a636b17e999add7a7bd6f2699d2a89cd"
+  }
+}

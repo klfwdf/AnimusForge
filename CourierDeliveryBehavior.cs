@@ -4534,28 +4534,12 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			CourierSession session = GetSessionById(sessionId);
-			if (session == null || IsTerminalStage(session))
-			{
-				return;
-			}
-			Hero recipient = ResolveRecipient(session);
-			if (recipient == null || recipient.IsDead)
-			{
-				EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
-				{
-					CourierSession invalidSession = GetSessionById(sessionId);
-					if (invalidSession == null || IsTerminalStage(invalidSession))
-					{
-						return;
-					}
-					invalidSession.ReplyGenerated = true;
-					invalidSession.ReplyGenerationStarted = false;
-					ProcessSessionById(sessionId, "reply_generated_recipient_invalid");
-				}, "reply_generated_recipient_invalid");
-				return;
-			}
-			await EnsureCourierPersonaContextReadyAsync(recipient, "reply").ConfigureAwait(false);
+			CourierPreparationAdmission admission = await RunCourierOwnerPhaseAsync(runtimeGeneration,
+				"courier_reply_admission", () => CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);
+			if (admission == null) return;
+			CourierSession session = admission.Session;
+			Hero recipient = admission.Participant;
+			if (!await EnsureCourierPersonaContextReadyAsync(recipient, "reply", sessionId, session, runtimeGeneration).ConfigureAwait(false)) return;
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_persona_ready"))
 			{
 				return;
@@ -5034,31 +5018,13 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			CourierSession session = GetSessionById(sessionId);
-			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session))
-			{
-				return;
-			}
-			Hero sender = ResolveSender(session);
-			fallbackLetter = NormalizeInboundLetterText(string.IsNullOrWhiteSpace(session.InboundFallbackLetter) ? session.LetterText : session.InboundFallbackLetter, session, sender);
-			if (sender == null || sender.IsDead)
-			{
-				string invalidSenderFallback = fallbackLetter;
-				EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
-				{
-					CourierSession invalidSession = GetSessionById(sessionId);
-					if (invalidSession == null || IsTerminalStage(invalidSession) || !IsInboundToPlayer(invalidSession))
-					{
-						return;
-					}
-					invalidSession.LetterText = invalidSenderFallback;
-					invalidSession.ReplyGenerated = true;
-					invalidSession.ReplyGenerationStarted = false;
-					ProcessSessionById(sessionId, "inbound_letter_generated_sender_invalid");
-				}, "inbound_letter_generated_sender_invalid");
-				return;
-			}
-			await EnsureCourierPersonaContextReadyAsync(sender, "inbound").ConfigureAwait(false);
+			CourierPreparationAdmission admission = await RunCourierOwnerPhaseAsync(runtimeGeneration,
+				"courier_inbound_admission", () => CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);
+			if (admission == null) return;
+			CourierSession session = admission.Session;
+			Hero sender = admission.Participant;
+			fallbackLetter = admission.FallbackLetter;
+			if (!await EnsureCourierPersonaContextReadyAsync(sender, "inbound", sessionId, session, runtimeGeneration).ConfigureAwait(false)) return;
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_inbound_persona_ready"))
 			{
 				return;
@@ -9701,37 +9667,6 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return hits.Any(x => string.Equals((x ?? "").Trim(), value, StringComparison.OrdinalIgnoreCase));
-	}
-
-	private static async Task EnsureCourierPersonaContextReadyAsync(Hero hero, string chain)
-	{
-		if (hero == null || !MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(hero, out var needsGeneration, out var _)
-			|| !needsGeneration)
-		{
-			return;
-		}
-		const int waitTimeoutMs = 180000;
-		string heroId = SafeHeroId(hero);
-		Log("[ContextAlignment] persona_start chain=courier_" + (chain ?? "unknown") + " hero=" + heroId);
-		System.Diagnostics.Stopwatch waitSw = System.Diagnostics.Stopwatch.StartNew();
-		await MyBehavior.EnsureNpcPersonaGeneratedForExternalAsync(hero, ignoreRetryCooldown: true).ConfigureAwait(false);
-		while (waitSw.ElapsedMilliseconds < waitTimeoutMs)
-		{
-			if (!MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(hero, out needsGeneration, out var _)
-				|| !needsGeneration)
-			{
-				Log("[ContextAlignment] persona_ready chain=courier_" + (chain ?? "unknown") + " hero=" + heroId + " waitMs=" + waitSw.ElapsedMilliseconds);
-				return;
-			}
-			MyBehavior.TryGetNpcPersonaGenerationRuntimeStateForExternal(hero, out var active, out var coolingDown);
-			if (!active)
-			{
-				Log("[ContextAlignment] persona_fallback chain=courier_" + (chain ?? "unknown") + " hero=" + heroId + " coolingDown=" + coolingDown + " waitMs=" + waitSw.ElapsedMilliseconds);
-				return;
-			}
-			await Task.Delay(500).ConfigureAwait(false);
-		}
-		Log("[ContextAlignment] persona_timeout_fallback chain=courier_" + (chain ?? "unknown") + " hero=" + heroId + " timeoutMs=" + waitTimeoutMs);
 	}
 
 	private static void LogCourierContextAlignment(string chain, string sessionId, Hero hero, string npcRoleContext, string extras, string entityPostprocessContext, string historyText, IEnumerable<ConversationMessage> persistentMemoryRoleMessages)
