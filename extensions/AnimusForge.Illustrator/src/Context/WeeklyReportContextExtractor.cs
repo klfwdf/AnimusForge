@@ -14,6 +14,10 @@ namespace AnimusForge.Illustrator.Context
         Siege,
         FeastTournament,
         Diplomacy,
+        Naval,
+        PrisonerExecution,
+        SettlementChange,
+        DynastyDeath,
         General
     }
 
@@ -256,6 +260,26 @@ namespace AnimusForge.Illustrator.Context
                     profile.IndoorOutdoorDetails = "可参考的外交场景元素：铺有羊皮纸地图的长桌、封蜡条约、肃立护卫、凝重的使节与谋士。";
                     profile.ConflictStatus = "【事件性质】重大外交角力";
                     break;
+                case WeeklyReportEventTheme.Naval:
+                    profile.SpecificLocation = settlement != null ? $"{locName}外海/港口水域" : "开阔海面战列";
+                    profile.IndoorOutdoorDetails = "可参考的海战元素：战船甲板与接舷跳帮、桅杆帆布、船舷弓弩对射、浪花碎木与远处海岸线。";
+                    profile.ConflictStatus = "【事件性质】海上交战/舰队行动";
+                    break;
+                case WeeklyReportEventTheme.PrisonerExecution:
+                    profile.SpecificLocation = settlement != null ? $"{locName}地牢囚室或行刑广场" : "地牢囚室或行刑场";
+                    profile.IndoorOutdoorDetails = "可参考的囚禁/行刑元素：石砌地牢铁栅、锁链镣铐、行刑台与围观人群、狱卒卫兵、被押解的战俘。";
+                    profile.ConflictStatus = "【事件性质】俘虏囚禁/处决行刑";
+                    break;
+                case WeeklyReportEventTheme.SettlementChange:
+                    profile.SpecificLocation = settlement != null ? $"{locName}城门与市集易主现场" : "城池易主现场";
+                    profile.IndoorOutdoorDetails = "可参考的易主元素：城头更换的旗帜、列队入城的占领军、燃烧的余烬烟尘、围观或撤离的平民、被收缴的武备。";
+                    profile.ConflictStatus = "【事件性质】定居点陷落/易主";
+                    break;
+                case WeeklyReportEventTheme.DynastyDeath:
+                    profile.SpecificLocation = settlement != null ? $"{locName}厅堂或灵堂" : "厅堂/灵堂/继位现场";
+                    profile.IndoorOutdoorDetails = "可参考的丧葬继位元素：素缟帷幔与烛火、肃立默哀的家族成员、传递中的冠冕或权戒、凝重的继位仪式。";
+                    profile.ConflictStatus = "【事件性质】重要人物亡故/权力交接";
+                    break;
                 default:
                     if (string.IsNullOrWhiteSpace(profile.SpecificLocation) && settlement != null)
                     {
@@ -312,6 +336,31 @@ namespace AnimusForge.Illustrator.Context
 
             string lower = text.ToLowerInvariant();
 
+            // 处决/行刑（强信号优先——"劫掠并俘虏"不该盖过处决要闻）
+            if (lower.Contains("处决") || lower.Contains("斩首") || lower.Contains("绞刑") ||
+                lower.Contains("行刑") || lower.Contains("处刑") || lower.Contains("execution") ||
+                lower.Contains("beheaded") || lower.Contains("executed"))
+            {
+                return WeeklyReportEventTheme.PrisonerExecution;
+            }
+
+            // 海上交战/舰队行动
+            if (lower.Contains("海战") || lower.Contains("舰队") || lower.Contains("战船") ||
+                lower.Contains("海上") || lower.Contains("港口") || lower.Contains("水师") ||
+                lower.Contains("naval") || lower.Contains("fleet") || lower.Contains("fleet"))
+            {
+                return WeeklyReportEventTheme.Naval;
+            }
+
+            // 定居点陷落/易主（战后状态，区别于进行中的围攻）
+            if (lower.Contains("陷落") || lower.Contains("失垒") || lower.Contains("易主") ||
+                lower.Contains("失守") || lower.Contains("攻陷") || lower.Contains("占领") ||
+                lower.Contains("收复") || lower.Contains("投降") || lower.Contains("献出") ||
+                lower.Contains("fallen") || lower.Contains("captured") || lower.Contains("surrendered") || lower.Contains("ceded"))
+            {
+                return WeeklyReportEventTheme.SettlementChange;
+            }
+
             // 村庄遭扰、袭击、劫掠
             if (lower.Contains("袭击") || lower.Contains("劫掠") || lower.Contains("烧毁") ||
                 lower.Contains("掠夺") || lower.Contains("遭扰") || lower.Contains("袭扰") ||
@@ -336,6 +385,14 @@ namespace AnimusForge.Illustrator.Context
                 return WeeklyReportEventTheme.FieldBattle;
             }
 
+            // 重要人物亡故/权力交接
+            if (lower.Contains("驾崩") || lower.Contains("逝世") || lower.Contains("薨逝") ||
+                lower.Contains("去世") || lower.Contains("继位") || lower.Contains("继承") ||
+                lower.Contains("died") || lower.Contains("succession") || lower.Contains("abdicated"))
+            {
+                return WeeklyReportEventTheme.DynastyDeath;
+            }
+
             // 宴会、比武竞技
             if (lower.Contains("宴会") || lower.Contains("竞技") || lower.Contains("比武") ||
                 lower.Contains("加冕") || lower.Contains("婚礼") || lower.Contains("tournament") || lower.Contains("feast"))
@@ -348,6 +405,13 @@ namespace AnimusForge.Illustrator.Context
                 lower.Contains("停火") || lower.Contains("进贡") || lower.Contains("peace") || lower.Contains("war") || lower.Contains("treaty"))
             {
                 return WeeklyReportEventTheme.Diplomacy;
+            }
+
+            // 俘虏/囚禁（弱信号，靠后——处决词已在前命中）
+            if (lower.Contains("俘虏") || lower.Contains("囚禁") || lower.Contains("赎俘") ||
+                lower.Contains("越狱") || lower.Contains("captive") || lower.Contains("prisoner"))
+            {
+                return WeeklyReportEventTheme.PrisonerExecution;
             }
 
             return WeeklyReportEventTheme.General;
@@ -383,6 +447,24 @@ namespace AnimusForge.Illustrator.Context
                 case WeeklyReportEventTheme.Diplomacy:
                     return "【事件主题：重大外交角力】可选取景：大帐或议事厅内围绕地图的商谈、条约封缄、双方使节对峙、" +
                            "或会谈间隙的眼神交锋——强调紧绷或凝重的关系张力。";
+
+                case WeeklyReportEventTheme.Naval:
+                    return $"【事件主题：海上交战/舰队行动】要闻指向【{locName}】附近水域。" +
+                           "可选取景：战船接舷跳帮、甲板弓弩对射、船艏破浪的舰队纵队、或落水者攀附碎木——海面广阔，构图自由。";
+
+                case WeeklyReportEventTheme.PrisonerExecution:
+                    return $"【事件主题：俘虏囚禁/处决行刑】要闻指向【{locName}】。" +
+                           "可选取景：地牢铁栅后的囚徒、押赴行刑台的队伍、刽子手与围观人群、或镣铐中的不屈目光——" +
+                           "强调囚禁的压抑与权力威压，绝非自由会面。";
+
+                case WeeklyReportEventTheme.SettlementChange:
+                    return $"【事件主题：定居点陷落/易主】要闻指向【{locName}】。" +
+                           "可选取景：城头旗帜更换、占领军列队入城、余烬烟尘中的街市、撤离的平民车队、或降者献城的俯首瞬间——" +
+                           "事件余波与权力更迭的纪实感。";
+
+                case WeeklyReportEventTheme.DynastyDeath:
+                    return $"【事件主题：重要人物亡故/权力交接】要闻指向【{locName}】。" +
+                           "可选取景：素缟灵堂与烛火、肃立默哀的族人、冠冕权戒的传递、或继位者接受朝拜的瞬间——庄重肃穆。";
 
                 default:
                     return $"【事件主题：以要闻为准】围绕要闻【{headline}】的实际行为自由取景：" +
