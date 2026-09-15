@@ -1,0 +1,42 @@
+using System;
+using System.Diagnostics;
+using System.Threading;
+using AnimusForge;
+using TaleWorlds.Library;
+internal static class Program {
+ static int checks,cases;
+ static void Check(bool value,string message){checks++;if(!value)throw new Exception("FAIL "+message);}
+ static void Pump(){while(CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var a))a();}
+ static void Until(Func<bool> done){var sw=Stopwatch.StartNew();while(!done()){Pump();if(sw.ElapsedMilliseconds>6000)throw new Exception("wait timeout");Thread.Sleep(1);}Pump();}
+ static void Case(bool inbound,string kind){
+  cases++;Probe.Reset();Liveness.Reset();while(CourierDeliveryBehavior.MainThreadActions.TryDequeue(out _)){}
+  var session=new CourierDeliveryBehavior.CourierSession{Inbound=inbound,ReplyGenerationStarted=false};var owner=new CourierDeliveryBehavior{Session=session};CourierDeliveryBehavior.Instance=owner;
+  Probe.Release.Reset();owner.StartReal();Check(session.ReplyGenerationStarted,"actual Start reserves busy");Until(()=>Probe.Entered.IsSet);var oldTask=Liveness.Background;
+  if(kind=="letter"||kind=="old-tags")session.LetterText="edited letter";if(kind=="old-tags"){session.ReplyText="old reply";session.ReplyPostprocessedText="old [ACTION:GIVE_GOLD:100]";}if(kind=="intent")session.InboundIntentText="edited intent";if(kind=="fallback")session.InboundFallbackLetter="new fallback";
+  if(kind=="empty-fallback"){session.InboundFallbackLetter=" ";session.LetterText="latest letter";}
+  if(kind=="replacement"){owner.Session=new(){Inbound=inbound,ReplyGenerationStarted=true};session.LetterText="edited old";}
+  if(kind=="generation"){SaveRuntimeGuard.Generation++;session.LetterText="edited old";}
+  if(kind=="owner"){CourierDeliveryBehavior.Instance=new(){Session=session};session.LetterText="edited old";}
+  bool restart=kind.StartsWith("restart");
+  if(restart){
+   session.LetterText="new run input";session.ReplyGenerationStarted=false;Liveness.HoldNextPersona=true;owner.StartReal();Until(()=>Liveness.PersonaCalls==2);
+   if(kind=="restart-error")Probe.ThrowRouting=true;
+  }
+  Probe.Release.Set();Until(()=>oldTask.IsCompleted);
+  if(restart){
+   Check(session.ReplyGenerationStarted&&!session.ReplyGenerated&&Liveness.Failures==0,"old preparation cannot finish new Start still waiting for persona");
+   Probe.ThrowRouting=false;Liveness.HoldNextPersona=false;Liveness.PersonaRelease.SetResult(true);Until(()=>Liveness.Background.IsCompleted);Pump();
+   Check(Liveness.BodyRequests==1&&session.ReplyGenerated&&!session.ReplyGenerationStarted&&!owner.StillPaused,"replacement run completes exactly once");return;
+  }
+  if(kind is "replacement" or "generation" or "owner"){
+   Check(!session.ReplyGenerated&&Liveness.Failures==0,"stale identity does not terminalize live/new session");Check(Liveness.BodyRequests==0,"stale identity sends no main generation");return;
+  }
+  owner.Tick();
+  Check(session.ReplyGenerated&&!session.ReplyGenerationStarted,"source change terminalizes actual generation; next tick cannot remain busy");
+  Check(!owner.StillPaused&&Liveness.Unpauses>0,"actual next-tick wait branch releases pause");
+  Check(Liveness.Failures==1&&Liveness.BodyRequests==0,"one explicit source-changed failure without obsolete main LLM request");
+  if(kind=="old-tags")Check(Liveness.StaleTagEffects==0&&session.PostprocessConsumed&&session.ReplyText==""&&session.ReplyPostprocessedText=="","source invalidation cannot replay or display old preflight tags");
+  if(inbound)Check(session.LetterText==(kind=="empty-fallback"?"latest letter":kind=="fallback"?"new fallback":"stored"),"current fallback/letter, not stale captured fallback");
+ }
+ static int Main(){TWParallel.MainThread=Environment.CurrentManagedThreadId;try{foreach(bool b in new[]{false,true}){foreach(string c in new[]{"letter","replacement","generation","owner","restart","restart-error"})Case(b,c);if(!b)Case(b,"old-tags");if(b){Case(b,"intent");Case(b,"fallback");Case(b,"empty-fallback");}}Console.WriteLine($"PASS {checks} actual Courier Start/Begin/caller/failure/tick liveness checks / {cases} scenarios; provider and world navigation are fixtures.");return 0;}catch(Exception ex){Console.Error.WriteLine(ex);return 1;}finally{Probe.Release.Set();Liveness.PersonaRelease.TrySetResult(true);}}
+}

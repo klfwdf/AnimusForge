@@ -90,6 +90,9 @@ def check_dependencies():
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
 
 def restore(path,source):
+ if path=='CourierDeliveryBehavior.cs':
+  prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tools/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
+  source=prompt.restore(source)
  if path not in PATHS:return source
  check_dependencies();assert source==expected(path),'Unreviewed game lifetime source change: '+path
  return old(path)
