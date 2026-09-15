@@ -465,3 +465,12 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 `git diff --check` 通过。未验证真实客户端连续切换周报、原生落盘时序、真实 API 出图及新提示词的视觉效果；本轮没有部署授权，也未部署。
 
 源码回滚仅定向 `git revert 9dda2fa2`；不要 hard reset，不要回滚其他作者的 TTS、喊话、信使图片或工具改动。
+### 第七轮：事实路由与叙述回退（2026-09-16，`e86efa18`）
+
+截图中第五轮的事实路由审计已落实。新增 `Context/NarrativeFactRouter.cs:10-119`，对冻结文本做一次线性句段摘录：周报保留行动、地点、否定、计划与结果所在完整证据句；直接引语不升级为已发生事实；空/未知事件明确保持未知。`WeeklyReportContextExtractor.cs:52-115,180-210` 不再截断正文，不再无命中时把玩家主角冒充事件当事人，报头/局势/要闻原文进入导演专属区。
+
+`HeroVisualExtractor.cs:39-91` 将文化/势力/传记中的视觉证据保留在 HardFacts，抽象特质、技能和非视觉传记进入导演专属区。`EnvironmentVisualExtractor.cs:37-70` 将季节、时段、天气、护卫和已确认场景保留；精确日期、引擎资源名与宿主场景原句进入导演专属区。`ConversationContextExtractor.cs:39-82`、`IllustrationCardPopup.cs:180-185,324`、`WeeklyReportPopupIllustrationPatch.cs:305` 已接入三条生图入口。
+
+`VisualDirectorEngine.cs:39-61,112-132,165-176` 为导演原文建立 `<director_only_narrative>` 独立区，并禁止逐字复述、把引语/计划/否定改为结果；`ResolveDirectorOutput` 发现叙述复述时直接走离线保底，不重试、不增加网络请求。离线保底只使用视觉 HardFacts 与开放构图方向。
+
+`tools/test_illustrator.ps1:195-380` 新增 20 项事实路由与导演回退检查。最终 1.3 / 1.4 构建 0 警告、0 错误，**133 checks / 0 failures**；`git diff --check` 通过。当前未验证真实导演模型的改写质量、超长非标点正文、真实存档周报与实机画面；本轮未部署。回滚点：`git revert e86efa18`，前一修复提交 `9dda2fa2`。
