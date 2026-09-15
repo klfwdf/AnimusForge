@@ -1,3 +1,15 @@
+# 当前全范围收尾续点：Courier 失败回执校正（2026-09-15）
+
+**生产/测试51844800，仅本地；阶段8全范围仍ACTIVE，非整个项目DONE。**
+
+- [最新补充HANDOFF](docs/handoffs/2026-09-15-courier-commit-outcome-handoff.md) / [同候选审计](docs/audits/2026-09-15-courier-commit-outcome-verification.json)。[前一完整生命周期交接](docs/handoffs/2026-09-15-game-lifetime-closeout-handoff.md)仍说明此前主体接线。
+- Courier已开始后的异常/空回执明确不可自动重试且效果不确定；真实成功/未开始拒绝不变，入站转译保留效果状态，日志异常不抢占回执。
+- 34检查/4有效反例、邻接回归、六Stage、4DLL728元数据及实际1.4 DLL的回执→Host不重试消费通过；125点代码地图同步。
+- 必交仍是规则/lore/角色资产消息准备、B1真实成本、内部双向服务、外部Native/Scene/Courier提交/结果/取消、main主体核对和当前候选LIVE/SAVE。政策/宴会/GCCZ业务不扩围。
+- 最后已推送仍10defeb4；未部署/动存档/切默认/恢复自动化，三份用户文档受保护。
+
+## 以下为此前候选记录
+
 # 当前全范围收尾续点：Game 生命周期与待办退役（2026-09-15）
 
 **生产/测试29448d1b，仅本地；阶段8全范围收尾仍ACTIVE，不能标DONE。**

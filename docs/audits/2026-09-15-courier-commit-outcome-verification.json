@@ -1,0 +1,129 @@
+{
+  "sourceRevision": "518448004b1fe5983651e8e501ad60040004617c",
+  "baseline": "29448d1b7ec7bc7a92820c8b510aaad56c21ff37",
+  "scope": "Courier commit failure classification only; full closeout ACTIVE",
+  "sourceBinding": "The one changed production C# file is byte-normalization equal to51844800; six Stage outputs built with HEADdd33a7d2 before commit. Test additions after Stage do not change implementation DLLs.",
+  "verification": {
+    "currentChecks": 34,
+    "preservedOriginalQueueChecks": 19,
+    "addedOutcomeChecks": 15,
+    "mutants": 4,
+    "original": "runtime red: partial commit misclassified as no-effect validation rejection",
+    "ownerPhaseChecks": 16,
+    "postprocessChecks": 39,
+    "teamPorts": 308,
+    "teamPortMutants": 3,
+    "api": 119,
+    "snapshot": 32,
+    "actualDllMetadata": 728,
+    "stageOutputs": 6,
+    "actualHostReplay": "PASS including actual DLL unconfirmed classifier -> actual Host terminal no-fallback consumption",
+    "codeMapAnchors": 125
+  },
+  "productionFiles": {
+    "CourierDeliveryBehavior.CommitDispatch.cs": "37a246ab6a4c2840c1c03f5c35b3128d3f5946ba9adbaa90b58f8f9a6add9652"
+  },
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "34a01dca0b410028745b467b41ac3126ba0233fb16525c8a64b3b7e35764565d"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "eeb083ae0e14782c9115a6ef8a2b0d0c3680d7270cce5ccbe332b42a105cec05"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "37e49f289d43b5dbc6b8b37d9162d1b135abc6fdfff29d2e075d96049107bda1"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "0b9b01fe0ddb0a1fc4b9f13c2e7b07eb522fa71034b7f0e6dd5e72f536131603"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "4d6b6a2bd245ef54ab9fb6dbb6950e079c6a0849b473ef537c29c5a1cdb2ae5f"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "e5938bc76eee12a9d16d19ba82dae16d3c580aca61314b0fd7be623327dcd851"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/current-final.log",
+      "sha256": "6e5ebdc37c1d70b1e1403a736beef056f7fa62590adb23c513a6b0924fd28c25"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/original.log",
+      "sha256": "5e9bb9447e09ae136aae37e82f981cb2d909838a6648ecd543677cb6a71ae6ce"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/false_no_effect.log",
+      "sha256": "7864634860faf0921420922203ec3aa99e06d3e2ea53113a92984fc9dae4d2d9"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/retryable_failure.log",
+      "sha256": "e189807384724a146bf32c81a386969d4fd68bc3bf07696dde114fa3b5ada83d"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/lose_inbound_effect.log",
+      "sha256": "aeeaa4d3eb7246e8bfe85b2af0bb5029fd2353a32eab27b80a43b25303b05e07"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/unguarded_diagnostic.log",
+      "sha256": "7b68ad03babe4bec8f09691ac39e2d38c4145ca21f7911a691a92fafb7f1a14d"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/stage-debug.log",
+      "sha256": "0644cd3ad25d42ee31b8994bd0485b4b767eff7e7246f36f51171c03db8bd00c"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/stage-release.log",
+      "sha256": "f6d6a1308b7f77020d28d25e9e4d8fdc33ed745a3b9c48b3ab9b9cf3f214c653"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/api-metadata.log",
+      "sha256": "dc2ae2e16e0f537677426a78dac7bce0bbd6753d5802a23e3d89d601fa2979ca"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/actual-host-replay-final.log",
+      "sha256": "3ac22bc971ffb5f32aab111d5ac26ea62021273b5c4bbe2df7c7cc9cd7098eae"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/CourierCommitOutcomeTests-source_parity.py.log",
+      "sha256": "e3a21e23d4a6312316c8f1ffbfd1cc7a52c3258f0a1a4f9aa9f8b7e690a1355d"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/GameLifetimeTests-source_parity.py.log",
+      "sha256": "066551af726d8380fc556b842d2503e2ba2f6aa2105496bd54df0a4d424b0cf4"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/GameLifetimeTests-run_commit.py.log",
+      "sha256": "4b6845001e707307a08c632f1902d40a6696a6126bebe164ddf06df8a9167d8a"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/CourierOwnerPhaseTests-run.py.log",
+      "sha256": "f42e2497ca20f4886dd1401c76028d90ca43db9f4c582c3657d64ca35467abca"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/CourierPostprocessOwnerRegressionTests-run.py.log",
+      "sha256": "3f5b1e392ee92aa1515a989fbfe722f0312e50a2ae3621d19779526c7816b9e3"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/CourierHistoryPreparationTests-source_parity.py.log",
+      "sha256": "161fe4c5b9c3c505a3740518fa06f2bd6ff3ddfc9455e88c44668789a5832b41"
+    },
+    {
+      "path": ".tmp/courier-commit-outcome-20260915/final-evidence/TeamModulePortParityTests-run.py.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    }
+  ],
+  "remaining": [
+    "Full main core feature parity/owner decomposition and safe old-code removal",
+    "Rule/lore and remaining Native/Scene/Courier preparation live access",
+    "B1 first-copy/whole-backlog/terminal cost bounds",
+    "Internal bidirectional core services and external three-channel submit/result/cancel SDK",
+    "Current candidate LIVE/SAVE/Economy/AFEF/independent sub-MOD acceptance"
+  ]
+}

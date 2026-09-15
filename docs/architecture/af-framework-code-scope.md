@@ -1,3 +1,9 @@
+# 当前增量：Courier不确定回执（2026-09-15）
+
+生产51844800，125点地图。[最新HANDOFF](../handoffs/2026-09-15-courier-commit-outcome-handoff.md)。CourierDeliveryBehavior.CommitDispatch的私有结果分类和入站转译不再将已开始异常/空回执伪装成无副作用；actual Host不回退重试。没有对外新增API、改变其他主体/团队业务或放行整个阶段8。
+
+## 以下为已有范围记录
+
 # 当前增量：实际 Game 生命周期与队列退役（2026-09-15）
 
 源码29448d1b，124点地图。[详细HANDOFF](../handoffs/2026-09-15-game-lifetime-closeout-handoff.md)。SubModule真实回调绑定Game身份；AfCampaignRuntimeLifecycle只掌管主体My/Shout/Courier寿命。PendingOperationRegistry是原队列的退役登记，不是第二个调度队列；已claim副作用保留真实结果。My先关闭准入再清理，避免新generation/旧singleton竞态。
