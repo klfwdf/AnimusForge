@@ -116,6 +116,8 @@ namespace AnimusForge.Illustrator.Core
             AssertMainThread();
             foreach (var scope in Scopes.ToArray()) scope.Close();
             TickScopes();
+            BannerEmblemComposer.Reset();
+            ScreenCaptureHelper.CancelActiveStage();
             GauntletTextureLoader.ReleaseAllSprites();
             CampaignKey = null;
         }

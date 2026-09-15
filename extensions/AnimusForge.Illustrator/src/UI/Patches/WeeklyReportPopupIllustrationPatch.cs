@@ -329,10 +329,10 @@ namespace AnimusForge.Illustrator.UI.Patches
                         refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感"));
                     }
                 }
-                // 纹章由纯托管合成（旗帜代码→图集→GDI+），无舞台零闪屏
+                // 纹章由原生渲染导出，保留完整背景、配色、描边与变换
                 if (!string.IsNullOrWhiteSpace(bannerCode))
                 {
-                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true).ConfigureAwait(false);
+                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
                         refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面因已确认事实出现纹章载体时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体"));

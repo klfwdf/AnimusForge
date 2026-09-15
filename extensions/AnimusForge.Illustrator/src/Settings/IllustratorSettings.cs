@@ -59,7 +59,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool EnableOffscreenRendering { get; set; } = true;
 
-        [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，各提取任务结束时仅清理自己产生的离屏导出残留及纹章调试目录，不清理其他请求或历史调试文件。关闭时保留调试产物便于排查；已读取的立绘与纹章图集临时导出仍按原有流程释放。不影响画廊缓存与默认插图。", Order = 3, RequireRestart = false)]
+        [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，各提取任务结束时仅清理自己产生的离屏导出文件，不清理其他请求或历史调试文件。关闭时保留纹章导出便于排查；已读取的立绘临时文件仍按原有流程释放。不影响画廊缓存与默认插图。", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool AutoCleanTempFiles { get; set; } = false;
 
