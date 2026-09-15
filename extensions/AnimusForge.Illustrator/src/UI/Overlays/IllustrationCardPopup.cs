@@ -176,12 +176,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
             bool useCivilian = hero.IsNotable || (hero.IsNoncombatant && !hero.IsPartyLeader) || (hero.IsWanderer && hero.PartyBelongedTo == null);
             HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, useCivilian: useCivilian);
 
-            // 百科人物事实缺环境信息——补纪元时间（卡拉迪亚历 NNNN 年）使年代进入提示词事实区
-            string hardFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildSummary();
+            string hardFacts = profile.BuildVisualSummary();
+            string directorFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildDirectorOnlyFacts();
             _generationCount++;
             string artDirection = GenerateDiversePoseDirective(hero);
             if (_generationCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
-            var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection);
+            var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
             var options = IllustratorRuntime.CaptureOptions();
 
             _scope.Run(async token =>
@@ -321,7 +321,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
-            var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDialogueBlock());
+            var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDirectorOnlyFacts());
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                 ? convContext.InterlocutorHero.Name.ToString()

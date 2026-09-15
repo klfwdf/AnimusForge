@@ -31,6 +31,7 @@ namespace AnimusForge.Illustrator.Context
         public string Title = string.Empty;
         public string Subtitle = string.Empty;
         public string Headline = string.Empty;
+        public string EventFacts = string.Empty;
         public WeeklyReportEventTheme Theme = WeeklyReportEventTheme.General;
         public Hero ProtagonistHero;
         public Settlement EventSettlement;
@@ -50,22 +51,22 @@ namespace AnimusForge.Illustrator.Context
         public EnvironmentVisualProfile EnvironmentProfile { get; set; }
 
         /// <summary>
-        /// 硬事实区：报文原文、当事人真实档案、已确认的事件定居点与周报发布日期。
+        /// 硬事实区：完整事件证据句、人物视觉事实与已确认场景；报头及背景原文仅给导演。
         /// 导演与生图模型不得改写此区内容。
         /// </summary>
         public string BuildHardFacts()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("=== 【卡拉迪亚历史纪事周报】 ===");
-            if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine($"【报头】{Title}");
-            if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine($"【核心局势】{Subtitle}");
-            if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine($"【事件要闻】{HeadlineSummary}");
+            sb.AppendLine("【事件行动与结果证据】");
+            sb.AppendLine(!string.IsNullOrWhiteSpace(Snapshot?.EventFacts) ? Snapshot.EventFacts
+                : NarrativeFactRouter.BuildEventEvidence(Title, Subtitle, HeadlineSummary));
+            sb.AppendLine("以上是事件内容而非画面文字。保留各句的当事人、地点、否定、计划与结果，不把人物或结果跨事件拼接；未明确的结果保持未知。");
 
             if (ProtagonistProfile != null)
             {
                 sb.AppendLine();
                 sb.AppendLine("=== 【登场人物真实视觉档案】 ===");
-                sb.AppendLine(ProtagonistProfile.BuildSummary());
+                sb.AppendLine(ProtagonistProfile.BuildVisualSummary());
             }
 
             if (EnvironmentProfile != null)
@@ -87,6 +88,17 @@ namespace AnimusForge.Illustrator.Context
             return sb.ToString().TrimEnd();
         }
 
+        public string BuildDirectorOnlyFacts()
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine("【报头原文】" + Title);
+            if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine("【核心局势原文】" + Subtitle);
+            if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine("【事件要闻原文】" + HeadlineSummary);
+            if (ProtagonistProfile != null) sb.AppendLine(ProtagonistProfile.BuildDirectorOnlyFacts());
+            if (EnvironmentProfile != null) sb.AppendLine(EnvironmentProfile.BuildDirectorOnlyFacts());
+            return sb.ToString().TrimEnd();
+        }
+
         /// <summary>
         /// 开放艺术指导区：事件主题倾向、可选场景元素与构图方向。全部是建议而非命令。
         /// </summary>
@@ -104,7 +116,7 @@ namespace AnimusForge.Illustrator.Context
 
         public string BuildCompositeContext()
         {
-            return BuildHardFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
+            return BuildHardFacts() + "\n\n【导演专属背景】\n" + BuildDirectorOnlyFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
         }
     }
 
@@ -153,6 +165,7 @@ namespace AnimusForge.Illustrator.Context
                 Title = cleanTitle,
                 Subtitle = cleanSubtitle,
                 Headline = cleanHeadline,
+                EventFacts = NarrativeFactRouter.BuildEventEvidence(cleanTitle, cleanSubtitle, cleanHeadline),
                 Theme = ClassifyEventTheme(fullText),
                 ProtagonistHero = ResolveProtagonistHero(fullText),
                 EventSettlement = ResolveEventSettlement(fullText)
@@ -173,11 +186,11 @@ namespace AnimusForge.Illustrator.Context
 
         /// <summary>
         /// 在周报文本中查找被提及的英雄：优先取文本中最先出现者，其次阵营领袖/宗族首领。
-        /// 无命中时退回玩家主角（周报本就是呈给玩家的纪事）。
+        /// 无命中时保持未知；收报人不能冒充事件当事人。
         /// </summary>
         private static Hero ResolveProtagonistHero(string fullText)
         {
-            if (string.IsNullOrWhiteSpace(fullText)) return Hero.MainHero;
+            if (string.IsNullOrWhiteSpace(fullText)) return null;
 
             Hero best = null;
             int bestIndex = int.MaxValue;
@@ -208,7 +221,7 @@ namespace AnimusForge.Illustrator.Context
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Weekly report protagonist resolution failed: {ex.Message}");
             }
 
-            return best ?? Hero.MainHero;
+            return best;
         }
 
         private static IEnumerable<Hero> EnumerateHeroes()
@@ -550,7 +563,7 @@ namespace AnimusForge.Illustrator.Context
                            "可选取景：素缟灵堂与烛火、肃立默哀的族人、冠冕权戒的传递、或继位者接受朝拜的瞬间——庄重肃穆。";
 
                 default:
-                    return $"【事件主题：以要闻为准】该要闻未落入预设主题，请直接从要闻【{headline}】的文本推断事件性质与场景类型" +
+                    return "【事件主题：以事件证据为准】该事件未落入预设主题，请依据事件行动与结果证据选择场景类型" +
                            "（行军、狩猎、疫病、贸易、密会、决斗、流亡、庆典等皆可，不必拘泥既定类别），" +
                            "自由取景：可选人物行动瞬间、事件余波、或当事人在环境中的决断姿态——避免千篇一律的看风景站桩。";
             }
@@ -562,18 +575,13 @@ namespace AnimusForge.Illustrator.Context
             {
                 return string.Empty;
             }
-            // 截取前 400 字符作为核心新闻事件概述，去除 Gauntlet 超链接标签
-            string plain = body.Replace("<a href=\"", "").Replace("</a>", "").Replace("\r\n", " ").Replace("\n", " ");
-            if (plain.Length > 400)
-            {
-                return plain.Substring(0, 400) + "...";
-            }
-            return plain;
+            // 按完整句提取证据前不能截断，否则尾部的失败/撤退/未遂会丢失。
+            return NarrativeFactRouter.CleanText(body);
         }
 
         private static string CleanText(string text)
         {
-            return (text ?? string.Empty).Trim();
+            return NarrativeFactRouter.CleanText(text);
         }
     }
 }

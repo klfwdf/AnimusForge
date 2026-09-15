@@ -302,7 +302,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             string variation = GenerateWeeklyVariation();
             if (!string.IsNullOrWhiteSpace(variation)) artDirection += "\n" + variation;
             if (_redrawCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_redrawCount);
-            var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), artDirection);
+            var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), artDirection, context.BuildDirectorOnlyFacts());
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
             var generationScope = _scope;

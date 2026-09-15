@@ -38,30 +38,30 @@ namespace AnimusForge.Illustrator.Context
 
         public string BuildSummary()
         {
+            return BuildVisualSummary() + "\n" + BuildDirectorOnlyFacts();
+        }
+
+        public string BuildDirectorOnlyFacts()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("【人物背景归属】" + HeroName);
+            if (!string.IsNullOrWhiteSpace(CultureLore)) sb.AppendLine("【文化背景原文】" + CultureLore);
+            if (!string.IsNullOrWhiteSpace(FactionLore)) sb.AppendLine("【势力背景原文】" + FactionLore);
+            if (!string.IsNullOrWhiteSpace(BackgroundLore)) sb.AppendLine("【人物生平原文】" + BackgroundLore);
+            if (!string.IsNullOrWhiteSpace(TraitsSummary)) sb.AppendLine("【性格参考】" + TraitsSummary);
+            if (!string.IsNullOrWhiteSpace(TopSkillsSummary)) sb.AppendLine("【专长参考】" + TopSkillsSummary);
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildVisualSummary()
+        {
             var sb = new StringBuilder();
             sb.AppendLine($"【人物与至高地位】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
                 $" ({Culture}文化, {Gender}, 约{Age}岁" + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
 
-            if (!string.IsNullOrWhiteSpace(CultureLore))
-            {
-                sb.AppendLine($"【文化全貌与官方背景】{CultureLore}");
-            }
-            if (!string.IsNullOrWhiteSpace(FactionLore))
-            {
-                sb.AppendLine($"【势力与王国背景】{FactionLore}");
-            }
-            if (!string.IsNullOrWhiteSpace(BackgroundLore))
-            {
-                sb.AppendLine($"【人物生平纪事】{BackgroundLore}");
-            }
-            if (!string.IsNullOrWhiteSpace(TraitsSummary))
-            {
-                sb.AppendLine($"【性格特质与神态气场】{TraitsSummary}");
-            }
-            if (!string.IsNullOrWhiteSpace(TopSkillsSummary))
-            {
-                sb.AppendLine($"【人物顶尖专长】{TopSkillsSummary}");
-            }
+            string visualBackground = NarrativeFactRouter.ExtractVisualEvidence(CultureLore, FactionLore, BackgroundLore);
+            if (!string.IsNullOrWhiteSpace(visualBackground))
+                sb.AppendLine("【背景中的视觉证据】仅在适用时使用，历史描述与文化群体特征不得覆盖此人当前装备、面貌或处境：\n" + visualBackground);
             if (!string.IsNullOrWhiteSpace(ClanName) || !string.IsNullOrWhiteSpace(BannerDescription))
             {
                 string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? $", 所属王国: {KingdomName}" : "";
