@@ -29,7 +29,7 @@ namespace AnimusForge.Illustrator.Core
         public bool EnableReferenceImageForGeneration { get; }
         public bool AutoCleanTempFiles { get; }
         public string NegativePrompt { get; }
-        public int Similarity { get; }
+        public int Randomness { get; }
         public string DirectorApiBaseUrl { get; }
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
@@ -53,7 +53,7 @@ namespace AnimusForge.Illustrator.Core
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
             AutoCleanTempFiles = settings.AutoCleanTempFiles;
             NegativePrompt = settings.NegativePrompt;
-            Similarity = Math.Max(0, Math.Min(100, settings.Similarity));
+            Randomness = Math.Max(0, Math.Min(100, settings.Randomness));
             DirectorApiBaseUrl = directorUrl;
             DirectorApiKey = directorKey;
             DirectorModelName = directorModel;

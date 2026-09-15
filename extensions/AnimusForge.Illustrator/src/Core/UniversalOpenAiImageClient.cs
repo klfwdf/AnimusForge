@@ -135,7 +135,7 @@ namespace AnimusForge.Illustrator.Core
 
                 bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
-                string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Similarity);
+                string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness);
 
                 bool success = false;
                 byte[] imageBytes = null;
@@ -177,7 +177,7 @@ namespace AnimusForge.Illustrator.Core
                     if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                     {
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
-                        string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Similarity);
+                        string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness);
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
                         var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken).ConfigureAwait(false);
                         if (chatRetry.Success)
@@ -294,7 +294,7 @@ namespace AnimusForge.Illustrator.Core
         /// </summary>
         private const string BuiltinNegativePrompt = "game screenshot, 3D game render, video game still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest";
 
-        public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int similarity = -1)
+        public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
             string effectivePrompt = chatProtocol
                 ? BuildChatImagePrompt(prompt, size, quality, style, customStyleHint)
@@ -308,16 +308,14 @@ namespace AnimusForge.Illustrator.Core
                 ? BuiltinNegativePrompt
                 : BuiltinNegativePrompt + ", " + negativePrompt.Trim();
             effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
-            // 相似度只约束艺术表现，不能降低硬事实保真或覆盖身份参考图及重绘的用途约束。
-            if (similarity >= 0)
+            // 0 完全沿用旧版，不追加本段；正数只增加艺术表现变化，不放松硬事实。
+            if (randomness > 0)
             {
-                int sim = Math.Max(0, Math.Min(100, similarity));
-                string clause = sim >= 100
-                    ? "可调整的艺术表现采用最高还原度：忠于有依据的场景空间关系与氛围，镜头、景别和取景仍须服从本次构图与重绘指导"
-                    : sim <= 0
-                        ? "在不改变已确认事实与场景关系的前提下，自由选择留白、景深、光影表现和叙事取景"
-                        : $"可调整的艺术表现以约 {sim}% 还原度贴近有依据的场景关系与氛围，剩余 {100 - sim}% 用于留白、景深和表现手法的艺术化处理";
-                effectivePrompt += "\n[参考还原度约束]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把这些图片的姿势、背景、构图或光影用作场景模板。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何还原度均不要求复制参考图的镜头，重绘必须遵循本次换镜头指导；" + clause + "。";
+                int strength = Math.Min(100, randomness);
+                string clause = strength >= 100
+                    ? "在事实允许的范围内，最大程度探索不同取景、留白、景深与光影表现"
+                    : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
+                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把这些图片的姿势、背景、构图或光影用作场景模板。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何随机强度均须保留有依据的场景空间关系，不得虚构物体、人物或事件，重绘必须遵循本次换镜头指导；" + clause + "。";
             }
             return effectivePrompt;
         }

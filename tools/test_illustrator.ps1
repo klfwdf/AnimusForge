@@ -196,19 +196,33 @@ if (-not $Baseline) {
 $privateStatic = [Reflection.BindingFlags]'NonPublic,Static'
 $privateInstance = [Reflection.BindingFlags]'NonPublic,Instance'
 $settingsType = $assembly.GetType('AnimusForge.Illustrator.IllustratorSettings', $true)
-$similarityDropdownAttribute = $settingsType.GetProperty('SimilarityDropdown').GetCustomAttributesData() | Where-Object { $_.AttributeType.Name -eq 'SettingPropertyDropdownAttribute' } | Select-Object -First 1
-Assert-True ($null -ne $similarityDropdownAttribute -and $settingsType.GetProperty('Similarity').GetValue([Activator]::CreateInstance($settingsType)) -eq -1) 'similarity defaults to random legacy behavior'
-$similarityOptionsField = $settingsType.GetField('SimilarityOptions', $privateStatic)
-Assert-True ($similarityOptionsField.GetValue($null)[0].Contains('随机') -and $similarityOptionsField.GetValue($null)[0].Contains('旧版')) 'similarity dropdown exposes explicit random option'
+$randomProperty = $settingsType.GetProperty('Randomness')
+$randomAttribute = $randomProperty.GetCustomAttributesData() | Where-Object { $_.AttributeType.Name -eq 'SettingPropertyIntegerAttribute' } | Select-Object -First 1
+Assert-True ($null -ne $randomAttribute -and $randomProperty.GetValue([Activator]::CreateInstance($settingsType)) -eq 0) 'randomness integer slider defaults to legacy zero'
+Assert-True ($randomAttribute.ConstructorArguments[0].Value -eq '随机' -and $randomAttribute.ConstructorArguments[1].Value -eq 0 -and $randomAttribute.ConstructorArguments[2].Value -eq 100 -and $randomAttribute.ConstructorArguments[3].Value -eq '0') 'randomness slider uses 0-100 plain integer display'
 $imageClientType = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
 $effectiveMethod = $imageClientType.GetMethod('BuildEffectivePrompt')
+$optionsType = $assembly.GetType('AnimusForge.Illustrator.Core.IllustrationOptions', $true)
+$optionsConstructor = $optionsType.GetConstructors($privateInstance)[0]
 foreach ($chatProtocol in @($false, $true)) {
-    $randomPrompt = [string]$effectiveMethod.Invoke($null, [object[]]@('事实', '1024x1024', '', '', '', '', $chatProtocol, -1))
-    Assert-True (!$randomPrompt.Contains('参考还原度约束')) "random similarity preserves pre-setting prompt behavior (chat=$chatProtocol)"
-    foreach ($similarity in @(0, 80, 100)) {
-        $prompt = [string]$effectiveMethod.Invoke($null, [object[]]@('已确认：黑色锁甲；本次重绘采用俯拍。', '1024x1024', '', '', '', '', $chatProtocol, $similarity))
-        Assert-True ($prompt.Contains('黑色锁甲') -and $prompt.Contains('俯拍') -and $prompt.Contains('重绘必须遵循本次换镜头指导')) "similarity $similarity preserves facts and redraw (chat=$chatProtocol)"
-        Assert-True ($prompt.Contains('人物身份立绘只用于身份与装备') -and $prompt.Contains('缺少场景参考图时，不从身份立绘补造场景') -and !$prompt.Contains('构图、装备细节、光影氛围）也须完全还原')) "similarity $similarity respects reference roles (chat=$chatProtocol)"
+    foreach ($randomness in @(-1, 0, 1, 50, 100, 150)) {
+        $settings = [Activator]::CreateInstance($settingsType)
+        $randomProperty.SetValue($settings, $randomness)
+        $options = $optionsConstructor.Invoke([object[]]@($settings, '', '', ''))
+        $captured = $optionsType.GetProperty('Randomness').GetValue($options)
+        $expected = [Math]::Max(0, [Math]::Min(100, $randomness))
+        Assert-True ($captured -eq $expected) "randomness $randomness is captured and clamped (chat=$chatProtocol)"
+        $basePrompt = '已确认：黑色锁甲；本次重绘采用俯拍。'
+        $prompt = [string]$effectiveMethod.Invoke($null, [object[]]@($basePrompt, '1024x1024', '', '', '', '', $chatProtocol, $captured))
+        if ($expected -eq 0) {
+            $legacy = [string]$effectiveMethod.Invoke($null, [object[]]@($basePrompt, '1024x1024', '', '', '', '', $chatProtocol, [Type]::Missing))
+            Assert-True ($prompt -eq $legacy -and !$prompt.Contains('艺术表现随机指导') -and !$prompt.Contains('参考还原度约束')) "zero preserves legacy prompt without extra clause (chat=$chatProtocol)"
+        } else {
+            Assert-True ($prompt.Contains('黑色锁甲') -and $prompt.Contains('俯拍') -and $prompt.Contains('重绘必须遵循本次换镜头指导')) "randomness $randomness preserves facts and redraw (chat=$chatProtocol)"
+            Assert-True ($prompt.Contains('人物身份立绘只用于身份与装备') -and $prompt.Contains('缺少场景参考图时，不从身份立绘补造场景') -and $prompt.Contains('不得虚构物体、人物或事件')) "randomness $randomness respects reference roles (chat=$chatProtocol)"
+            $intensity = if ($expected -eq 100) { '最大程度探索' } else { "$expected/100" }
+            Assert-True ($prompt.Contains($intensity) -and !$prompt.Contains('参考还原度约束')) "randomness $randomness increases variation instead of similarity (chat=$chatProtocol)"
+        }
     }
 }
 
