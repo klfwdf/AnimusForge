@@ -102,6 +102,10 @@ public static class NativeEmblemPipelineAudit
         using(var rectangle=new Bitmap(128,64)) Check("wrong_dimensions_rejected",Encode(Png(rectangle),128)==null,"Native full banner must be square");
         string fault=Path.Combine(samples,"cell_162_raw.png");
         if(File.Exists(fault))Check("historical_blank_rejected",Encode(File.ReadAllBytes(fault),128)==null,"Actual old failed export fixture");
+        string nativeSample=Path.Combine(samples,"native_banner_before_crash.png");
+        string nativeEncoded=File.Exists(nativeSample)?Encode(File.ReadAllBytes(nativeSample),256):null;
+        Check("actual_native_export_decodes",nativeEncoded!=null,"Actual 341px PNG written before the 2026-09-16 crash; does not verify engine resource retirement");
+        if(nativeEncoded!=null)File.WriteAllBytes(Path.Combine(directory,"actual-native-normalized.png"),Convert.FromBase64String(nativeEncoded));
         int calls=0;
         object cache=NewPipeline((code,size,clean,token)=>{calls++; return Task.FromResult(valid);});
         string first=await Get(cache,"banner-A",128,CancellationToken.None);
@@ -176,6 +180,10 @@ public static class NativeEmblemPipelineAudit
         widget.GetMethod("OnRender",Instance).Invoke(exportWidget,new object[]{null,null});
         FieldInfo requested=widget.BaseType.BaseType.GetField("_isRenderRequestedPreviousFrame",Instance);
         Check("no_screen_blit",(bool)requested.GetValue(exportWidget),"OnRender drives next provider update without touching draw context");
+        Check("runtime_deferred_clear_contract",(bool)widget.GetProperty("SupportsDeferredSceneClear",Static).GetValue(null,null),"Loaded TaleWorlds provider owner and BannerTableau scene fields match the guarded runtime contract");
+        var clear=widget.GetMethod("OnClearTextureProvider",Instance);
+        clear.Invoke(exportWidget,null); clear.Invoke(exportWidget,null);
+        Check("empty_provider_cleanup_idempotent",clear.DeclaringType==widget,"Override handles duplicate pre-initialization cleanup without native resource calls");
 
         // Native stage reset/late completion owner checks without engine objects.
         Type helper=assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper",true);
