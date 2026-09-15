@@ -498,3 +498,25 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 - `tools/test_illustrator.ps1:199–229`：真实编译方法覆盖设置 → 快照 → 两种协议提示词，检查 -1/0/1/50/100/150 的默认、范围、零值不追加及正值语义。
 
 性能：仅请求发起时读取配置和拼接一段字符串，无每帧扫描、反射或新缓存。验证：现有测试脚本 Release 下双 API 构建均 0 警告/0 错误，160 checks / 0 failures；diff 格式检查通过。未部署、未推送，未验证真实 MCM 设置持久化和实际模型出图变化程度。回滚使用定向 inverse/revert `2f978705`，保留其他作者修改。
+
+
+### 第十一轮：未闭环问题的证据审计与修复（2026-09-16）
+
+生产/测试提交 `90a61c9f`；检查点 `aedb8f0`。本节纠正此前“纹章主要是模型不遵循”和“盾牌模板已全部清除”的过度结论。仅本地修改，未部署/推送。
+
+**实际证据**：`C:/ProgramData/Mount and Blade II Bannerlord/logs/rgl_log_24840.txt:4471,4507` 分别在 04:22:37 与 04:23:19 记录 `content:null,completion_tokens:0`，是服务端没有返回图片，不是这两次响应被解析器漏读；无法据此判断服务端内部原因。`4451–4582` 显示 mesh 162、图集索引 11 的纹章被当作成功参考图发送。`C:/Users/29310/AppData/Local/Temp/AnimusForgeIllustrator/banner_debug/emblem_final.png` 实际近乎纯紫色，SHA256 `F3A987D14FD7E201D1F6B3D2E73C7EC2607A2A41748A4033A4D18E26ADEFAECB`；其 `cell_162_raw.png` 仅含一行低透明度残边，图集缩略图重复且下半部为空。此前“有参考图”不代表参考图正确。
+
+| 已核实源码（相对仓库，提交 90a61c9f） | 责任与修复 |
+|---|---|
+| `extensions/AnimusForge.Illustrator/src/Engine/BannerEmblemComposer.cs:81–153,195–325,387–462`，`ResolveJob / ComposeBitmapsAsync / HasVisibleContent / LoadAtlasPixelsAsync / TryReadExportedAtlas / ExtractAtlasCell` | 去掉把未知格式 GetPixelData 缓冲直接解释为 32bpp 的路径；主线程只提交原生 PNG 导出，后台等待与解码，识别 `.png` 与 `.png.png`，按 PNG 尺寸取 4×4 格；克隆图像解除文件流依赖。任意图层缺失/空白拒绝整张参考图；检查不再把纯底透明边缘、单行残边算成徽记。双色背景 mesh 未实现，明确省略参考图。 |
+| 同文件 `464–539`，`TintIconCell` | 修复完全不透明图集的无掩码分支永远无法触发的问题，使用既有亮度回退。 |
+| `extensions/AnimusForge.Illustrator/src/Context/EnvironmentVisualExtractor.cs:32–74,307–310,407–411,513–628`，`BuildArtDirectionSummary / ProbeLiveScene` | Mission 内不再将模板陈设/人物/建筑风格混入实际采样；修复 ActiveMissionObjects 隐藏实体过滤、缺少主角定位点时全场景误报附近、场景实体名称回退与单实体异常隔离；清掉竞技场、守卫残留盾牌和无依据旗帜。仍是距离/可见标志/名称采样，不是视线遮挡或几何重建。 |
+| `extensions/AnimusForge.Illustrator/src/Context/HeroVisualExtractor.cs:916–940`，`ExtractBannerDescription` | 图案以标准纹章参考图优先；删除“看不清按类别概括绘制”的补造许可。 |
+| `extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs:144–175,340–420,572–688`，`GenerateImageAsync / AttemptImagesEditsAsync / IsUnsupportedEditEndpoint / DescribeMissingImageResponse / ExtractImageAsync` | 空结果、鉴权/限流/服务端错误不再无条件丢参考图降级重发；图片解析遍历 data/choices 有效候选，支持 content 图片块和字符串 image_url；空响应/过滤/截断分别诊断，无自动重试。 |
+| `tools/test_illustrator.ps1:377–479` | 增加现场模板隔离、实际空响应结构、图片格式/坏候选、降级限制、透明边缘与残行、opaque 掩码、PNG 第 11 格、双扩展名及文件释放回归。 |
+
+验证：`tools/test_illustrator.ps1 -Configuration Release` 双 API 构建均 0 警告/0 错误，185 checks / 0 failures；`git diff --check` 通过。对上述真实故障 `emblem_final.png` 和 `cell_162_tinted.png` 调用当前编译方法，均返回 `accepted=False`。人工检查真实图集缩略图与空图；这些是旧输出证据，不能当作新原生 PNG 导出已经视觉验收。
+
+性能：环境扫描仍仅每次生成一次，不在 Tick；最多输出 20 个去重物体。每次合成内按纹理复用 Bitmap，后台文件等待最多 1.5 秒/纹理、50ms 异步间隔；主线程不再 Sleep 等文件。解码后尺寸上限 1024，实际原生导出耗时尚未测量。无新增网络请求。
+
+未覆盖：真实游戏 PNG 导出方向/通道、原生 shader 的精确描边和自定义多色背景、酒馆实际采样与最终模型遵循率。尚未保证所有纹章精确还原，未做生成后纹章贴图。回滚用定向 revert `90a61c9f`，不得回滚其他作者工作。
