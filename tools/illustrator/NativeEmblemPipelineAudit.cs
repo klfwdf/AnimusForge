@@ -193,6 +193,22 @@ public static class NativeEmblemPipelineAudit
         clear.Invoke(exportWidget,null); clear.Invoke(exportWidget,null);
         Check("empty_provider_cleanup_idempotent",clear.DeclaringType==widget,"Override handles duplicate pre-initialization cleanup without native resource calls");
 
+        // Real RenderTargetComponent event metadata, with no native pointer or
+        // constructor. Verify one local subscription after the existing callback.
+        var bind=widget.GetMethod("BindExportPaintHandler",Instance);
+        Type componentType=bind.GetParameters()[0].ParameterType;
+        object component=FormatterServices.GetUninitializedObject(componentType);
+        GC.SuppressFinalize(component); // Uninitialized fixture must not alter engine object counters.
+        var paint=componentType.GetEvent("PaintNeeded",Instance);
+        var marker=Delegate.CreateDelegate(paint.EventHandlerType,typeof(NativeEmblemPipelineAudit).GetMethod("FakeVanillaPaint",Static));
+        paint.GetAddMethod(true).Invoke(component,new object[]{marker});
+        bind.Invoke(exportWidget,new[]{component}); bind.Invoke(exportWidget,new[]{component});
+        var callbacks=((Delegate)componentType.GetField("PaintNeeded",Instance).GetValue(component)).GetInvocationList();
+        Check("export_callback_is_local_ordered_and_unique",callbacks.Length==2 && callbacks[0].Equals(marker) && callbacks[1].Target==exportWidget && callbacks[1].Method.Name=="PrepareExportFrame","Vanilla callback retained first; export callback appended exactly once to this component");
+        Check("unprepared_export_is_blocked",!(bool)widget.GetProperty("ReadyForExport",Instance).GetValue(exportWidget,null),"Attaching a handler alone cannot authorize a native save");
+        callbacks[1].DynamicInvoke(new object[]{null,EventArgs.Empty});
+        Check("missing_render_does_not_authorize_export",!(bool)widget.GetProperty("ReadyForExport",Instance).GetValue(exportWidget,null),"No native scene/texture means no readiness advancement");
+
         // Native stage reset/late completion owner checks without engine objects.
         Type helper=assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper",true);
         Type pump=helper.GetNestedType("OffscreenStagePump",BindingFlags.NonPublic);
@@ -252,4 +268,5 @@ public static class NativeEmblemPipelineAudit
         Check("cpu_shader_removed",assembly.GetType("AnimusForge.Illustrator.Engine.BannerEmblemComposer",true).GetMethod("TintIconCell",Static)==null,"No fallback to the known incorrect shader reconstruction");
         return results.ToArray();
     }
+    private static void FakeVanillaPaint(object texture,EventArgs args) { }
 }

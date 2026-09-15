@@ -910,7 +910,8 @@ namespace AnimusForge.Illustrator.Engine
                 }
 
                 pump.Ticks++;
-                if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks)
+                bool nativeBannerReady = !(pump.Widget is NativeBannerExportWidget nativeBanner) || nativeBanner.ReadyForExport;
+                if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks && nativeBannerReady)
                 {
                     var view = ResolveTableauView(pump.Widget);
                     if (view != null && TriggerTableauViewSave(view, out pump.Dir, out pump.Prefix))
@@ -1186,7 +1187,11 @@ namespace AnimusForge.Illustrator.Engine
                         if (info.Length > 16 * 1024 * 1024) return null;
                         byte[] bytes = File.ReadAllBytes(path);
                         token.ThrowIfCancellationRequested();
-                        if (bytes.Length > 0) return bytes;
+                        if (bytes.Length > 0)
+                        {
+                            TaleWorlds.Library.Debug.Print($"[NativeBanner] Reading rendered PNG for reference: bytes={bytes.Length}");
+                            return bytes;
+                        }
                     }
                     catch (IOException) { }
                     await Task.Delay(50, token).ConfigureAwait(false);
