@@ -4,6 +4,7 @@
 > **活动分支**：`codex/af-main-refactor-continuation-20260831`
 > **维修前检查点**：`02b4c5b3 chore: checkpoint Illustrator before lifecycle and fidelity repairs`
 > **第四轮审计修正点**：`fd5657e4`
+> **第五轮提交**：`1698b431`（重绘变体 + 相似度滑块）
 > **子模块源码**：`extensions/AnimusForge.Illustrator`
 > **目标模块 ID**：`AnimusForge_Illustrator`
 > **目标程序集**：`AnimusForge.Illustrator.dll`
@@ -389,3 +390,38 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 - **待实机确认**：劫匪真实脸还原度、台词彻底不入画、纹章 4×4 格位在各类家族的准确性、俘虏/海上/军团场景实际生成效果、周报新主题命中率。
 - **已知上游问题**：生图网关偶发空 completion（`content:null`），非本模块 bug，无自动重试（用户要求）；空回复时卡片显示原因、日志含响应预览。
 - 回滚基线：本轮起点 `3de2e554`（检查点提交）；单点修复均可 `git revert <sha>` 定向回退。
+
+---
+
+## 12. 重绘变体与相似度滑块（第五轮，2026-09-16，提交 `1698b431`）
+
+### 重绘雷同修复
+
+- **根因**：周报 `BuildArtDirection()` 输出完全确定——同一周报重绘提示词逐字相同；会话/百科虽有随机构图种子但仅为软建议。
+- `VisualDirectorEngine.BuildRedrawVariationDirective(redrawIndex)`：注入"必须换景别/机位/瞬间/景深层次"的重绘指令；三条链路各挂计数器（卡片 `_generationCount`、周报 `_redrawCount` 在新周报 attach 时归零），首次生成不注入、点重绘才生效。
+- 周报新增 `GenerateWeeklyVariation()`：12 条纪事构图变体**每次生成**都注入（此前一条没有）。
+
+### MCM 相似度滑块
+
+- `IllustratorSettings.Similarity`：0-100 默认 80（"2. 生图 API 配置"组 Order=12）。
+- `IllustrationOptions.Similarity` clamp 0-100 → `BuildEffectivePrompt(..., similarity)` 追加 `[参考还原度约束]`：人物五官/肤色/发型/纹章**恒严格一致**；其余部分（场景布置/构图/装备细节/氛围）按 N% 还原参考图与事实。100=完全还原，0=仅留事实骨架自由创作。
+- 对 /images 与 /chat 两个协议通道均生效。
+
+### 事实路由审计结论（评估记录，未动代码）
+
+用户问"是否还有事实该只发导演"——逐块评估如下，供下一棒决策：
+
+| 内容 | 当前位置 | 建议 | 理由 |
+| :--- | :--- | :--- | :--- |
+| 当前台词+近三轮对话 | DirectorOnlyFacts | ✅ 保持 | 已实现，防字幕入画 |
+| 周报【报头】【核心局势】【事件要闻】**原文** | HardFacts | ⚠️ 最强候选：提炼版留 HardFacts、原文挪 DirectorOnlyFacts | 叙述性标题文本与台词同性质，有被渲染成画面字的风险；但事件主体（谁/在哪/结果）必须以提炼干形式留在 HardFacts |
+| 性格特质/顶尖专长/官方传记 | HardFacts | ⚠️ 可挪导演专属 | 抽象非视觉（"算度""战神"），导演翻译成神态气质即可；对生图模型是噪声且有轻微误导风险 |
+| 【纪元时间】、宿主场景原句 | HardFacts | 可挪（低风险低价值） | 与 SpecificLocation 重复/非视觉 |
+| 外貌/装备/坐骑/纹章色/处境状态/场景类型/骑乘站位/护卫数 | HardFacts | ✅ 必须留 | 纯视觉事实，且"导演漏写不丢"是本架构的核心保证 |
+
+**关键约束**：离线保底 `SynthesizeRuleBasedPrompt` **只消费 HardFacts**——挪进 DirectorOnlyFacts 的内容在无导演/断网时彻底消失。因此任何迁移必须是"提炼版留 HardFacts + 原文进 DirectorOnlyFacts"的双层写法，不能整段搬走，否则离线模式丢事件主体。
+
+### 验证
+
+- 双版本 0 错误；回归 90 checks / 0 failures；部署备份 `20260916-034050`。
+- 待实机：重绘构图差异化效果、相似度滑块低/高值出图差异。
