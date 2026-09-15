@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "043b62b4318670e602015ac96740de476b5f4224",
+  "sourceRevision": "807bc5b944907a10d2626f3936fa7109aa74422a",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
     },
     {
       "id": "native.history.dispatch",
@@ -178,7 +178,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
     },
     {
       "id": "native.history.accept",
@@ -189,7 +189,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
     },
     {
       "id": "native.dispatch.shared",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "ade0b6aabd96bdfbbced7e3eaf6e7e9dfb40be02158a236c4b2ac064298b0e1f"
+      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
     },
     {
       "id": "memory.acceptance",
@@ -293,24 +293,24 @@
     {
       "id": "courier.prepare.reply",
       "path": "CourierDeliveryBehavior.cs",
-      "start": 4672,
-      "end": 4706,
+      "start": 4656,
+      "end": 4690,
       "symbol": "private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(",
       "match": "contains",
       "status": "mixed-responsibility",
       "note": "历史消费prepared快照；人设/规则/lore/其余live准备尚未收口",
-      "fileSha256": "94da6c4fae29a756ca3f57ac7883c161b9df3379b9b4a6c32429a30b3105f7a1"
+      "fileSha256": "0548b81116a352015d22470f8d6d353c1736cd17874401da1e0cd8d9a011b9e2"
     },
     {
       "id": "courier.prepare.inbound",
       "path": "CourierDeliveryBehavior.cs",
-      "start": 5094,
-      "end": 5128,
+      "start": 5060,
+      "end": 5094,
       "symbol": "private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(",
       "match": "contains",
       "status": "mixed-responsibility",
       "note": "历史消费prepared快照；人设/规则/lore/其余live准备尚未收口",
-      "fileSha256": "94da6c4fae29a756ca3f57ac7883c161b9df3379b9b4a6c32429a30b3105f7a1"
+      "fileSha256": "0548b81116a352015d22470f8d6d353c1736cd17874401da1e0cd8d9a011b9e2"
     },
     {
       "id": "memory.summary.capture",
@@ -1158,6 +1158,83 @@
       "status": "wired-partial",
       "note": "原编辑器入口；异步完成UI回主线程，清理/编辑不报假成功",
       "fileSha256": "deac4f2c9d718f8286f13892a43bf4fa1cb0f48755166ff21a4ce32158f64ee9"
+    },
+    {
+      "id": "persona.readiness",
+      "path": "MyBehavior.PersonaReadiness.cs",
+      "start": 12,
+      "end": 27,
+      "symbol": "internal static NpcPersonaReadinessSnapshot CaptureNpcPersonaReadiness(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "同DLL值快照，所属主线程读取",
+      "fileSha256": "f9747fc3b702f7aba92ae9aecd0335990e13ec4e098e414ad405e2092e53a910"
+    },
+    {
+      "id": "persona.waiter",
+      "path": "Refactor/Runtime/PersonaGenerationWaiter.cs",
+      "start": 11,
+      "end": 32,
+      "symbol": "internal static async Task<bool> WaitAsync(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "协作式退出等待，不取消共享生成",
+      "fileSha256": "c63bd223ddac029ca8c00de6bd7d820a4b392dd1f600eaf3ccfc1fb4321b38e0"
+    },
+    {
+      "id": "native.persona.consumer",
+      "path": "ShoutBehavior.PersonaPreparation.cs",
+      "start": 18,
+      "end": 70,
+      "symbol": "private async Task<bool> EnsureNativeConversationPersonaReadyAsync(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "原admission重验，失败仍中止",
+      "fileSha256": "6d082776e9decb666e4313b6ad541dc4d3e8ac9484912cc68165198cc7fe5ab8"
+    },
+    {
+      "id": "scene.persona.consumer",
+      "path": "ShoutBehavior.PersonaPreparation.cs",
+      "start": 96,
+      "end": 174,
+      "symbol": "private async Task EnsurePersonaForCandidatesAsync(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "按场景/候选捕获及接受，原双空生成/单字段fallback",
+      "fileSha256": "6d082776e9decb666e4313b6ad541dc4d3e8ac9484912cc68165198cc7fe5ab8"
+    },
+    {
+      "id": "courier.admission",
+      "path": "CourierDeliveryBehavior.PreparationAdmission.cs",
+      "start": 20,
+      "end": 44,
+      "symbol": "private CourierPreparationAdmission CaptureCourierPreparationAdmission(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "两方向主线程准入，无效目标保留延迟清理",
+      "fileSha256": "3b8a6ff955caeaf804613e2909481535f3ae963d35e36e087d1cd505b27e296d"
+    },
+    {
+      "id": "courier.persona.consumer",
+      "path": "CourierDeliveryBehavior.PreparationAdmission.cs",
+      "start": 46,
+      "end": 87,
+      "symbol": "private async Task<bool> EnsureCourierPersonaContextReadyAsync(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "两方向等待/降级/失效重验",
+      "fileSha256": "3b8a6ff955caeaf804613e2909481535f3ae963d35e36e087d1cd505b27e296d"
+    },
+    {
+      "id": "courier.phase.receipt",
+      "path": "CourierDeliveryBehavior.DetachedPostprocess.cs",
+      "start": 117,
+      "end": 157,
+      "symbol": "private async Task<T> RunCourierOwnerPhaseAsync<T>(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "未claim可退役，已claim等待真实回执",
+      "fileSha256": "6f9041dd6f2e217e98be1645f6942b15e0ad4d2b5d1a2b44f658def8b03aa075"
     }
   ]
 }
