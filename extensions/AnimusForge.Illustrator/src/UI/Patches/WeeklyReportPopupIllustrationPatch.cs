@@ -326,7 +326,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     string b64 = await portraitStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感"));
+                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感"));
                     }
                 }
                 // 纹章由纯托管合成（旗帜代码→图集→GDI+），无舞台零闪屏
@@ -335,7 +335,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜"));
+                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面因已确认事实出现纹章载体时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体"));
                     }
                 }
 
@@ -384,7 +384,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 "高位俯拍：展示战场、营地或街巷的空间格局与动线",
                 "决定性瞬间：事件临界点的动作爆发（冲锋、签约、宣旨、点燃）",
                 "余波时刻：事件刚结束后的烟尘、撤离与凝视，不画动作顶点",
-                "前景遮挡构图：门框、旗帜或兵器做前景，人物在中景",
+                "前景遮挡构图：门框、建筑构件或兵器做前景，人物在中景",
                 "侧面横向构图：人物呈半剪影，让光线与烟尘承担主角",
                 "特写聚焦：一件关键道具、表情或手势承载事件含义",
                 "纵深构图：近景人物背影望向远方的事件现场",

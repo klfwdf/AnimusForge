@@ -285,7 +285,7 @@ namespace AnimusForge.Illustrator.Context
                     break;
                 case WeeklyReportEventTheme.SettlementChange:
                     profile.SpecificLocation = settlement != null ? $"{locName}城门与市集易主现场" : "城池易主现场";
-                    profile.IndoorOutdoorDetails = "可参考的易主元素：城头更换的旗帜、列队入城的占领军、燃烧的余烬烟尘、围观或撤离的平民、被收缴的武备。";
+                    profile.IndoorOutdoorDetails = "可参考的易主元素：城头更换的军队标识（仅在要闻明确涉及时）、列队入城的占领军、燃烧的余烬烟尘、围观或撤离的平民、被收缴的武备。";
                     profile.ConflictStatus = "【事件性质】定居点陷落/易主";
                     break;
                 case WeeklyReportEventTheme.DynastyDeath:
@@ -530,7 +530,7 @@ namespace AnimusForge.Illustrator.Context
 
                 case WeeklyReportEventTheme.FieldBattle:
                     return $"【事件主题：野战交锋】要闻指向【{locName}】周边的军队对阵。" +
-                           "可选取景：骑兵冲锋与盾墙撞击、漫天箭雨、倒伏的战旗、或将领在军阵前后的决断瞬间——构图与焦点自由。";
+                           "可选取景：骑兵冲锋与阵线碰撞、漫天箭雨、倒伏的军队标识、或将领在军阵前后的决断瞬间——构图与焦点自由。";
 
                 case WeeklyReportEventTheme.Siege:
                     return $"【事件主题：要塞围攻】要闻指向【{locName}】的攻城或守城。" +
@@ -555,7 +555,7 @@ namespace AnimusForge.Illustrator.Context
 
                 case WeeklyReportEventTheme.SettlementChange:
                     return $"【事件主题：定居点陷落/易主】要闻指向【{locName}】。" +
-                           "可选取景：城头旗帜更换、占领军列队入城、余烬烟尘中的街市、撤离的平民车队、或降者献城的俯首瞬间——" +
+                           "可选取景：城头军队标识更换（仅在事件明确涉及时）、占领军列队入城、余烬烟尘中的街市、撤离的平民车队、或降者献城的俯首瞬间——" +
                            "事件余波与权力更迭的纪实感。";
 
                 case WeeklyReportEventTheme.DynastyDeath:

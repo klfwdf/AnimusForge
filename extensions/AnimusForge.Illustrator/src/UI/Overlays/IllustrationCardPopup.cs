@@ -196,7 +196,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感，构图与画风必须重新设计"));
+                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感，构图与画风必须重新设计"));
                 }
                 // 纹章由纯托管合成（旗帜代码→BannerDataList→图集纹理→GDI+ 叠放），零舞台零闪屏
                 if (!string.IsNullOrWhiteSpace(bannerCode))
@@ -204,7 +204,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜"));
+                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面因已确认事实出现纹章载体时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体"));
                     }
                 }
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
@@ -242,7 +242,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             {
                 "环境占主导的远景人物肖像，让建筑、道路或地貌交代人物所处世界，人物不必正对镜头",
                 "三分之二侧身中景，人物刚刚转头或停下动作，形成被历史瞬间捕捉的感觉",
-                "低机位仰拍，但保持自然比例，用天空、穹顶或旗帜形成留白",
+                "低机位仰拍，但保持自然比例，用天空、穹顶或建筑线条形成留白",
                 "高位俯拍人物穿过庭院、街巷、营地或大厅，让空间动线成为叙事主体",
                 "近距离面部与上半身肖像，以细微眼神、呼吸和手势表达身份，不额外添加道具",
                 "从门框、柱廊、帐帘或树枝之间观察人物，形成自然前景层次",
@@ -388,7 +388,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await partnerStage.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与盾面/罩袍上的家族纹章（旗帜徽记依此纹样绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
+                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -398,7 +398,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await pair.Value.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"{pair.Key.Side}一方【{pair.Key.Owner}】的真实纹章标准样图：当画面中属于{pair.Key.Side}的旗帜、盾徽或罩袍纹章出现时，必须以此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜");
+                        var r = new IllustrationReferenceImage(b64, $"{pair.Key.Side}一方【{pair.Key.Owner}】的真实纹章标准样图：当画面中属于{pair.Key.Side}的一处已确认纹章载体出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
