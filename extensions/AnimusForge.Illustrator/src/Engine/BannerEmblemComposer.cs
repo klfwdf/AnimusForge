@@ -16,21 +16,19 @@ namespace AnimusForge.Illustrator.Engine
     /// <summary>
     /// 纯托管家族纹章合成器：不走任何舞台/控件/渲染管线，零可见性零闪屏。
     /// 把 Banner.BannerDataList 当"合成配方"——每枚纹章的图集纹理名（GetIconSourceTextureName）、
-    /// 格位（BannerIconData.TextureIndex，custom_banner_icons_XX 为 8x8 网格 256px 格）、
+    /// 格位（BannerIconData.TextureIndex，custom_banner_icons_XX 为 4x4 网格）、
     /// 调色板颜色（BannerManager.GetColor）、位置/大小/旋转/镜像（BannerData，
     /// 坐标空间 Banner.BannerFullSize=1528）——读出后用 GDI+ 叠放产出真纹章 PNG。
     ///
-    /// 线程模型：只有引擎纹理句柄解析在主线程（快）；GetPixelData 像素拷贝与全部
-    /// GDI+ 合成在调用方线程执行，避免主线程长阻塞（2048x2048 图集读回约百毫秒级）。
+    /// 线程模型：纹理句柄解析与原生 PNG 导出提交在主线程；文件等待、读取和 GDI+ 合成在后台。
     ///
     /// 图集掩码语义（debug 落盘实测）：alpha=覆盖率，G=主色(ColorId)填充区，
     /// R=副色(ColorId2)描边/细节区——R 高优先于 G。
     /// </summary>
     internal static class BannerEmblemComposer
     {
-        // 原版 BannerVisual.ConvertToMultiMesh 实锤：u=(texIdx%4)*0.25, v=1-(texIdx/4)*0.25
-        // → 图集是 4×4 网格（texture_index 实测范围 0-15），行从纹理底部往上数。
-        // 配合 GetPixelData 的自下而上位图行序：bitmap 行 0 = 纹理底 = 索引 0-3。
+        // 原版 BannerVisual 使用 4×4 图集；PNG 已由引擎解码为标准顶行优先布局。
+        // 不把未知格式/行跨度的 GetPixelData 缓冲强行解释为 32bpp。
         private const int AtlasGridSize = 4;
         private const int MaxAtlasBitmapSize = 1024;   // 读回后降采样上限，控制像素工作量
         private static readonly ConcurrentDictionary<string, BannerlordEngineTexture> TextureCache =
@@ -99,7 +97,14 @@ namespace AnimusForge.Illustrator.Engine
 
                 var job = new ComposeJob { Canvas = canvasSize, BgColor = Color.Gray };
                 var bg = banner.GetBannerDataAtIndex(Banner.BackgroundDataIndex);
-                if (bg != null) job.BgColor = PaletteColor(bg.ColorId, Color.Gray);
+                if (bg == null || bg.ColorId < 0) return null;
+                // 分区底纹依赖原生背景 mesh，不能把双色背景冒充纯色“标准图”。
+                if (bg.ColorId2 >= 0 && bg.ColorId != bg.ColorId2)
+                {
+                    TaleWorlds.Library.Debug.Print("[BannerEmblem] Patterned background needs native mesh rendering; standard reference omitted.");
+                    return null;
+                }
+                job.BgColor = PaletteColor(bg.ColorId, Color.Gray);
 
                 for (int i = 0; i < count; i++)
                 {
@@ -114,18 +119,18 @@ namespace AnimusForge.Illustrator.Engine
                     if (iconData == null)
                     {
                         TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={data.MeshId} has no BannerIconData");
-                        continue;
+                        return null; // 缺少任意徽记时拒绝残缺的标准图。
                     }
                     string materialName = iconData.Value.MaterialName;
                     var atlas = ResolveAtlasTexture(texName, materialName);
                     TaleWorlds.Library.Debug.Print($"[BannerEmblem] mesh={data.MeshId} texIdx={iconData.Value.TextureIndex} material='{materialName}' atlas={(atlas != null ? atlas.Name : "null")}");
-                    if (atlas == null) continue;
+                    if (atlas == null) return null;
 
                     job.Pieces.Add(new PieceJob
                     {
                         MeshId = data.MeshId,
                         Atlas = atlas,
-                        CellIndex = Math.Max(0, iconData.Value.TextureIndex),
+                        CellIndex = iconData.Value.TextureIndex,
                         Cx = data.Position.X * scale,
                         Cy = data.Position.Y * scale,
                         W = Math.Max(1f, data.Size.X * scale),
@@ -214,27 +219,20 @@ namespace AnimusForge.Illustrator.Engine
                             atlas = await LoadAtlasPixelsAsync(piece.Atlas).ConfigureAwait(false);
                             atlasBitmaps[piece.Atlas] = atlas;
                         }
-                        if (atlas == null) continue;
+                        if (atlas == null) return null;
 
-                        int cellW = atlas.Width / AtlasGridSize;
-                        int cellH = atlas.Height / AtlasGridSize;
-                        int col = piece.CellIndex % AtlasGridSize;
-                        int row = piece.CellIndex / AtlasGridSize;
-                        if (col * cellW + cellW > atlas.Width || row * cellH + cellH > atlas.Height) continue;
-
-                        Bitmap cell = null;
-                        try
-                        {
-                            cell = atlas.Clone(new Rectangle(col * cellW, row * cellH, cellW, cellH), PixelFormat.Format32bppArgb);
-                            // GetPixelData 行序自下而上：格位索引按原始行序正确，但单格内字形垂直颠倒——裁出后单独翻转回正
-                            cell.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                        }
-                        catch { continue; }
+                        Bitmap cell = ExtractAtlasCell(atlas, piece.CellIndex);
+                        if (cell == null) return null;
 
                         meta.AppendLine($"mesh={piece.MeshId} pos=({piece.Cx:0},{piece.Cy:0}) size=({piece.W:0}x{piece.H:0}) rot={piece.Deg:0} mirror={piece.Mirror} c1=#{piece.C1.R:X2}{piece.C1.G:X2}{piece.C1.B:X2} c2=#{piece.C2.R:X2}{piece.C2.G:X2}{piece.C2.B:X2} stroke={piece.Stroke} cell={cell.Width}x{cell.Height}");
                         using (cell)
                         using (var tinted = TintIconCell(cell, piece.C1, piece.C2, piece.Stroke))
                         {
+                            if (!HasVisibleContent(tinted, Color.Transparent))
+                            {
+                                TaleWorlds.Library.Debug.Print($"[BannerEmblem] Empty icon cell mesh={piece.MeshId}, index={piece.CellIndex}; reference rejected.");
+                                return null;
+                            }
                             DrawPiece(g, tinted, piece);
                             if (dbgDir != null)
                             {
@@ -306,16 +304,19 @@ namespace AnimusForge.Illustrator.Engine
                 int stride = Math.Abs(data.Stride);
                 var raw = new byte[stride * bmp.Height];
                 Marshal.Copy(data.Scan0, raw, 0, raw.Length);
+                int visible = 0;
+                int required = Math.Max(4, bmp.Width * bmp.Height / (bg.A == 0 ? 200 : 500));
                 for (int y = 0; y < bmp.Height; y++)
                 {
                     int row = y * stride;
                     for (int x = 0; x < bmp.Width; x++)
                     {
                         int i = row + x * 4;
+                        if (bg.A == 0 && raw[i + 3] < 8) continue;
                         if (Math.Abs(raw[i] - bg.B) > 8 || Math.Abs(raw[i + 1] - bg.G) > 8 ||
-                            Math.Abs(raw[i + 2] - bg.R) > 8 || Math.Abs(raw[i + 3] - bg.A) > 8)
+                            Math.Abs(raw[i + 2] - bg.R) > 8 || (bg.A == 0 && raw[i + 3] > 128))
                         {
-                            return true;
+                            if (++visible >= required) return true;
                         }
                     }
                 }
@@ -324,7 +325,7 @@ namespace AnimusForge.Illustrator.Engine
             finally { bmp.UnlockBits(data); }
         }
 
-        /// <summary>调试：图集缩略图 + 8×8 每格内容像素统计，定位格位/朝向问题。</summary>
+        /// <summary>调试：图集缩略图 + 4×4 每格内容像素统计，定位格位/朝向问题。</summary>
         private static void DumpAtlasDebug(Bitmap atlas, string dbgDir, string name)
         {
             int thumb = Math.Min(atlas.Width, 512);
@@ -333,7 +334,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.DrawImage(atlas, 0, 0, thumb, thumb);
-                // 画 8×8 网格 + 索引编号，直接读出每个 texIdx 对应的格子内容
+                // 画 4×4 网格 + 索引编号，直接读出每个 texIdx 对应的格子内容
                 int cell = thumb / AtlasGridSize;
                 using (var pen = new Pen(Color.Red, 1))
                 using (var font = new Font("Arial", 9))
@@ -383,93 +384,79 @@ namespace AnimusForge.Illustrator.Engine
             File.WriteAllText(Path.Combine(dbgDir, name + "_cells.txt"), map.ToString());
         }
 
-        /// <summary>纹理→Bitmap：调用方线程先尝 GetPixelData；失败再回主线程重试，再退 SaveToFile。</summary>
+        // 原生导出可能在传入路径后再次追加 .png；只读取/清理本次 GUID 的两个候选文件。
         private static async Task<Bitmap> LoadAtlasPixelsAsync(BannerlordEngineTexture tex)
         {
-            Bitmap bmp = null;
-            try { bmp = TexturePixelsToBitmap(tex); } catch { }
-            if (bmp == null)
-            {
-                bmp = await RunOnGameThreadAsync(() =>
-                {
-                    try { return TexturePixelsToBitmap(tex); } catch { return null; }
-                }).ConfigureAwait(false);
-            }
-            if (bmp == null)
-            {
-                bmp = await RunOnGameThreadAsync(() => TextureSaveToFileToBitmap(tex)).ConfigureAwait(false);
-            }
-            if (bmp == null)
-            {
-                TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas '{tex.Name}' pixels unreadable");
-                return null;
-            }
-            if (bmp.Width > MaxAtlasBitmapSize || bmp.Height > MaxAtlasBitmapSize)
-            {
-                int nw = MaxAtlasBitmapSize, nh = MaxAtlasBitmapSize;
-                var small = new Bitmap(nw, nh, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(small))
-                {
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.DrawImage(bmp, 0, 0, nw, nh);
-                }
-                bmp.Dispose();
-                bmp = small;
-            }
-            TaleWorlds.Library.Debug.Print($"[BannerEmblem] Atlas '{tex.Name}' bitmap {bmp.Width}x{bmp.Height}");
-            return bmp;
-        }
-
-        private static Bitmap TexturePixelsToBitmap(BannerlordEngineTexture tex)
-        {
-            int w = tex.Width, h = tex.Height;
-            int alignedPitch = ((w * 4 + 255) / 256) * 256;
-            byte[] raw = new byte[Math.Max(w * h * 8, alignedPitch * h) + 65536];
-            tex.GetPixelData(raw);
-            bool any = false;
-            for (int i = 0; i < w * h * 4 && !any; i += 4)
-            {
-                if (raw[i] != 0 || raw[i + 1] != 0 || raw[i + 2] != 0) any = true;
-            }
-            if (!any) return null;
-            var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-            var data = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-            try { Marshal.Copy(raw, 0, data.Scan0, Math.Min(raw.Length, data.Stride * h)); }
-            finally { bmp.UnlockBits(data); }
-            SwapRedBlue(bmp);
-            // 注意：不能整图翻转——texIdx 直接对应原始行序（图标实测位于未翻转行区），
-            // 整图翻转会挪走格位导致裁空；字形颠倒在裁出单格后再翻转纠正。
-            return bmp;
-        }
-
-        private static Bitmap TextureSaveToFileToBitmap(BannerlordEngineTexture tex)
-        {
+            string path = Path.Combine(Path.GetTempPath(), $"af_banner_atlas_{Guid.NewGuid():N}.png");
             try
             {
-                string tmp = Path.Combine(Path.GetTempPath(), $"af_banner_atlas_{Guid.NewGuid():N}.png");
+                await RunOnGameThreadAsync(() => { tex.SaveToFile(path, false); return true; }).ConfigureAwait(false);
+                var deadline = DateTime.UtcNow.AddMilliseconds(1500);
+                do
+                {
+                    Bitmap bitmap = TryReadExportedAtlas(path);
+                    if (bitmap != null)
+                    {
+                        if (bitmap.Width % AtlasGridSize != 0 || bitmap.Height % AtlasGridSize != 0)
+                        {
+                            bitmap.Dispose();
+                            return null;
+                        }
+                        if (bitmap.Width > MaxAtlasBitmapSize || bitmap.Height > MaxAtlasBitmapSize)
+                        {
+                            float scale = (float)MaxAtlasBitmapSize / Math.Max(bitmap.Width, bitmap.Height);
+                            int width = Math.Max(4, (int)(bitmap.Width * scale) / 4 * 4);
+                            int height = Math.Max(4, (int)(bitmap.Height * scale) / 4 * 4);
+                            var small = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                            using (var g = Graphics.FromImage(small))
+                            {
+                                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                g.DrawImage(bitmap, 0, 0, width, height);
+                            }
+                            bitmap.Dispose();
+                            bitmap = small;
+                        }
+                        TaleWorlds.Library.Debug.Print($"[BannerEmblem] Exported atlas bitmap {bitmap.Width}x{bitmap.Height}");
+                        return bitmap;
+                    }
+                    await Task.Delay(50).ConfigureAwait(false);
+                } while (DateTime.UtcNow < deadline);
+                TaleWorlds.Library.Debug.Print("[BannerEmblem] PNG export unavailable; reference rejected instead of guessing raw pixel layout.");
+                return null;
+            }
+            finally
+            {
+                foreach (string candidate in new[] { path, path + ".png" })
+                    try { if (File.Exists(candidate)) File.Delete(candidate); } catch { }
+            }
+        }
+
+        private static Bitmap TryReadExportedAtlas(string path)
+        {
+            foreach (string candidate in new[] { path, path + ".png" })
+            {
                 try
                 {
-                    tex.SaveToFile(tmp, false);
-                    var deadline = DateTime.UtcNow.AddMilliseconds(1500);
-                    while (DateTime.UtcNow < deadline)
+                    if (!File.Exists(candidate)) continue;
+                    using (var stream = new FileStream(candidate, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var source = new Bitmap(stream))
                     {
-                        if (File.Exists(tmp) && new FileInfo(tmp).Length > 0) break;
-                        System.Threading.Thread.Sleep(50);
-                    }
-                    if (!File.Exists(tmp) || new FileInfo(tmp).Length <= 0) return null;
-                    using (var fs = new FileStream(tmp, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        var bmp = new Bitmap(fs);
-                        SwapRedBlue(bmp);
-                        return bmp;
+                        // Clone 保留掩码通道，也解除 Bitmap 对已关闭文件流的依赖。
+                        return source.Clone(new Rectangle(0, 0, source.Width, source.Height), PixelFormat.Format32bppArgb);
                     }
                 }
-                finally
-                {
-                    try { if (File.Exists(tmp)) File.Delete(tmp); } catch { }
-                }
+                catch (ArgumentException) { } // 文件尚未写完，后台稍后再读。
+                catch (IOException) { }
             }
-            catch { return null; }
+            return null;
+        }
+
+        private static Bitmap ExtractAtlasCell(Bitmap atlas, int index)
+        {
+            if (atlas == null || index < 0 || index >= AtlasGridSize * AtlasGridSize ||
+                atlas.Width < AtlasGridSize || atlas.Height < AtlasGridSize) return null;
+            int width = atlas.Width / AtlasGridSize, height = atlas.Height / AtlasGridSize;
+            return atlas.Clone(new Rectangle(index % AtlasGridSize * width, index / AtlasGridSize * height, width, height), PixelFormat.Format32bppArgb);
         }
 
         /// <summary>
@@ -495,9 +482,8 @@ namespace AnimusForge.Illustrator.Engine
                 long coveredSum = 0;
                 int pxCount = w * h;
                 for (int i = 3; i < len; i += 4) coveredSum += s[i];
-                bool invertAlpha = coveredSum > (long)(pxCount * 255L * 0.55f);
-                bool hasAlpha = true;
-                if (!invertAlpha && coveredSum > pxCount * 255L * 0.98f) hasAlpha = false; // 全不透明 → 无掩码
+                bool hasAlpha = coveredSum < pxCount * 255L;
+                bool invertAlpha = hasAlpha && coveredSum > (long)(pxCount * 255L * 0.55f);
 
                 for (int i = 0; i + 3 < len; i += 4)
                 {
@@ -593,27 +579,6 @@ namespace AnimusForge.Illustrator.Engine
                 return Color.FromArgb(255, (int)((u >> 16) & 0xFF), (int)((u >> 8) & 0xFF), (int)(u & 0xFF));
             }
             catch { return fallback; }
-        }
-
-        private static void SwapRedBlue(Bitmap bmp)
-        {
-            var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-            var data = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-            try
-            {
-                int len = data.Stride * bmp.Height;
-                byte[] px = new byte[len];
-                Marshal.Copy(data.Scan0, px, 0, len);
-                for (int i = 0; i + 3 < len; i += 4)
-                {
-                    byte t = px[i]; px[i] = px[i + 2]; px[i + 2] = t;
-                }
-                Marshal.Copy(px, 0, data.Scan0, len);
-            }
-            finally
-            {
-                bmp.UnlockBits(data);
-            }
         }
 
         /// <summary>每次合成独占一个 GUID 调试目录，便于保留及按任务清理。</summary>
