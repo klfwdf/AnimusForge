@@ -316,6 +316,21 @@ namespace AnimusForge.Illustrator.Engine
             {
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.DrawImage(atlas, 0, 0, thumb, thumb);
+                // 画 8×8 网格 + 索引编号，直接读出每个 texIdx 对应的格子内容
+                int cell = thumb / AtlasGridSize;
+                using (var pen = new Pen(Color.Red, 1))
+                using (var font = new Font("Arial", 9))
+                using (var brush = new SolidBrush(Color.Red))
+                {
+                    for (int i = 0; i <= AtlasGridSize; i++)
+                    {
+                        g.DrawLine(pen, i * cell, 0, i * cell, thumb);
+                        g.DrawLine(pen, 0, i * cell, thumb, i * cell);
+                    }
+                    for (int r = 0; r < AtlasGridSize; r++)
+                        for (int c = 0; c < AtlasGridSize; c++)
+                            g.DrawString((r * AtlasGridSize + c).ToString(), font, brush, c * cell + 2, r * cell + 2);
+                }
                 t.Save(Path.Combine(dbgDir, name + "_thumb.png"), ImageFormat.Png);
             }
 
