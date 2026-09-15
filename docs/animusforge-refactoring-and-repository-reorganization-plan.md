@@ -1,3 +1,14 @@
+# 当前发布：已推送已验证候选（2026-09-16）
+
+- 用户明确授权“推送到GITHUB”；本轮只发布和更新回执，不继续源码改动、部署或恢复自动化。
+- 执行者：根代理。发布前fresh fetch，专用远端仍10defeb4，本地21 ahead/0 behind；已普通快进推送到origin/codex/af-main-refactor-continuation-20260831，ls-remote确认`6538cc360188b660e697b72bb6ff773b8a8660c9`。
+- 代码/详细HANDOFF/审计已发布；此后只追加本发布说明。核对18生产源、6产物、17有效日志、142点地图与3份保护文件hash；167个变更路径无受排除文档、生成目录或DLL/压缩包；待推送历史也没有夹带排除文件。本轮未重跑构建，复核的是此前同源六Stage证据。
+- 注意：origin/main已由437925b8更新为`0a641aab7bb3f802625e7a06a8667138aaf0c3d2`（fix: consume redirected ally call-to-war proposals）。本次不合并main，现有等价验收仍对固定437925b8，不冒称已包含或回归最新main修复。
+- 整体阶段8依然未完成；本次发布成功不是全项目结项。下一代码工作须先评估新增main提交与现有主体接口的关系，再按最新详细HANDOFF推进。
+- 仅更新根HANDOFF、当前详细HANDOFF、唯一台账及本地简明版；保护草稿保持、无生产源码/游戏/存档/默认开关变化。
+
+## 以下为发布前候选与历史记录
+
 # 当前整体收尾：并行联合包OFFLINE_VERIFIED，阶段8仍ACTIVE（2026-09-16）
 
 - 生产/测试6e419f6d；四包提交79bf1288（summary run）、67fcb3ff（Native接口）、b0a20176（fingerprint）、6e419f6d（Courier准备/失效）。双Skill与main437925b8范围不变；主体与AF桥接，政策/宴会/GCCZ玩法不扩围。
