@@ -224,7 +224,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(titleText, subtitleText, bodyText);
                 _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(titleText + ":" + subtitleText);
-
+                Debug.Print($"[Illustrator] Weekly report popup opened: '{titleText}' context={(_currentContext != null)}");
                 AttachOverlay(titleText);
             }
             catch (Exception ex)
@@ -260,6 +260,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             topScreen.AddLayer(_overlayLayer);
 
             var cached = DiskImageCacheManager.LoadImage(_currentEventKey, _scope.CampaignKey, "weekly_report");
+            Debug.Print($"[Illustrator] Weekly overlay attached: cached={(cached != null)}, autoGen={IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration}");
             if (cached != null && Publish(cached, cached.Prompt))
             {
                 _overlayVm.StatusText = "【本周纪事油画】";
@@ -279,6 +280,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             if (_overlayVm == null || _currentContext == null || _scope == null)
             {
+                Debug.Print($"[Illustrator] Weekly regenerate skipped: vm={(_overlayVm != null)} ctx={(_currentContext != null)} scope={(_scope != null)}");
                 return;
             }
 
@@ -296,8 +298,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
             string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
 
-            _scope.Run(async token =>
+            bool started = _scope.Run(async token =>
             {
+                Debug.Print("[Illustrator] Weekly generation task started.");
                 var refs = new List<IllustrationReferenceImage>();
                 // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
                 Task<string> portraitStage = null;
@@ -351,6 +354,10 @@ namespace AnimusForge.Illustrator.UI.Patches
                 _overlayVm.IsLoading = false;
                 _overlayVm.StatusText = "异常: " + error;
             });
+            if (!started && _overlayVm != null)
+            {
+                _overlayVm.IsLoading = false;
+            }
         }
 
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)
