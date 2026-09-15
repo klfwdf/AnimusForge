@@ -1,3 +1,12 @@
+# 当前连续收尾：三渠道人设消费与信使准入（2026-09-15）
+
+- 用户要求全范围继续直到完成，任务CORE-CLOSEOUT-FULL-20260915保持ACTIVE；本包从4140bd04/生产043b62b4继续，唯一写入AF-REFACTOR，三份保护文件不动。已完成的单次GitHub推送不自动扩展为每批发布；不恢复自动化、不覆盖游戏/操作存档。
+- 本包覆盖同一人设责任的全部消费者：Native等待、Courier回信/来信等待、Scene逐候选读取/失败回退与包更新。主线程读取人物/档案/状态、后台等待生成、主线程重验并接受；Native绑定原admission，Scene绑定原Mission/session/epoch，Courier绑定session/participant/generation。
+- 连带收口信使入口Session/收信人/发信人/失败替代信的主线程准入，删除无调用的Native旧等待方法。保留Native失败中止、Courier失败降级、Scene只在两个字段都空时生成与缺字段事实回退的渠道语义，不另起LLM或队列。
+- 通过实际新源码与原主线程dispatcher的物理线程/异步生成/owner与目标替换/空状态/冷却/失败/退场测试，保留精确全文件逆变换和main共同语义，最后联合双版本/Bootstrap、API、内部ports、身份验证。未修的preprocess/lore/升格同伴/B1/三渠道SDK不记DONE。
+
+## 以下为已完成请求包与历史记录；当前执行以上方为准
+
 # 当前任务：已推送后开始全范围主体收尾（2026-09-15）
 
 - 用户明确授权“推送GITHUB，然后开始全范围收尾”。任务 `CORE-CLOSEOUT-FULL-20260915` ACTIVE；唯一写入G:/AFMOD/AF-REFACTOR，起点10defeb4/生产af754ab6。三份保护文件不动，不部署、不操作存档、不恢复自动化。
