@@ -37,14 +37,14 @@ namespace AnimusForge.Illustrator.Engine
             new ConcurrentDictionary<string, BannerlordEngineTexture>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>将家族旗帜代码合成为 PNG base64；失败/无效输入返回 null（降级静默）。</summary>
-        public static async Task<string> ComposeToBase64Async(string bannerCode, int canvasSize = 256)
+        public static async Task<string> ComposeToBase64Async(string bannerCode, int canvasSize = 256, bool cleanTempFiles = false)
         {
             if (string.IsNullOrWhiteSpace(bannerCode)) return null;
             // 阶段 A（主线程，轻量）：解析旗帜配方 + 图集纹理句柄
             var job = await RunOnGameThreadAsync(() => ResolveJob(bannerCode, canvasSize)).ConfigureAwait(false);
             if (job == null || job.Pieces.Count == 0) return null;
             // 阶段 B（当前线程）：像素读回 + GDI+ 合成，不占主线程
-            return await ComposeBitmapsAsync(job).ConfigureAwait(false);
+            return await ComposeBitmapsAsync(job, cleanTempFiles).ConfigureAwait(false);
         }
 
         private static Task<T> RunOnGameThreadAsync<T>(Func<T> work)
@@ -188,7 +188,7 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>调用方线程：像素读回 + 裁剪着色 + 叠放合成。</summary>
-        private static async Task<string> ComposeBitmapsAsync(ComposeJob job)
+        private static async Task<string> ComposeBitmapsAsync(ComposeJob job, bool cleanTempFiles)
         {
             var atlasBitmaps = new Dictionary<BannerlordEngineTexture, Bitmap>();
             string dbgDir = DebugDumpDir();
@@ -281,7 +281,20 @@ namespace AnimusForge.Illustrator.Engine
             {
                 canvas.Dispose();
                 foreach (var kv in atlasBitmaps) kv.Value?.Dispose();
+                if (cleanTempFiles) CleanupDebugDump(dbgDir);
             }
+        }
+
+        private static void CleanupDebugDump(string directory)
+        {
+            if (string.IsNullOrEmpty(directory)) return;
+            try
+            {
+                // directory 由本次合成独占；只删除其直接文件，不递归进入其他目录。
+                foreach (string file in Directory.EnumerateFiles(directory)) File.Delete(file);
+                Directory.Delete(directory);
+            }
+            catch { }
         }
 
         /// <summary>画布上是否存在与底色明显不同的像素（即图标是否真正画上去了）。</summary>
@@ -603,12 +616,12 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        /// <summary>调试落盘目录：temp/AnimusForgeIllustrator/banner_debug，供实机后人工核对合成结果。</summary>
+        /// <summary>每次合成独占一个 GUID 调试目录，便于保留及按任务清理。</summary>
         private static string DebugDumpDir()
         {
             try
             {
-                string dir = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator", "banner_debug");
+                string dir = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator", "banner_debug", Guid.NewGuid().ToString("N"));
                 Directory.CreateDirectory(dir);
                 return dir;
             }

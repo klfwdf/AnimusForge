@@ -192,5 +192,91 @@ if (-not $Baseline) {
         }
     }
 }
+# Review regressions use the actual compiled methods; no game/native objects are instantiated.
+$privateStatic = [Reflection.BindingFlags]'NonPublic,Static'
+$privateInstance = [Reflection.BindingFlags]'NonPublic,Instance'
+$settingsType = $assembly.GetType('AnimusForge.Illustrator.IllustratorSettings', $true)
+$similarityAttribute = $settingsType.GetProperty('Similarity').GetCustomAttributesData() | Where-Object { $_.AttributeType.Name -eq 'SettingPropertyIntegerAttribute' } | Select-Object -First 1
+$similarityFormat = [string]$similarityAttribute.ConstructorArguments[3].Value
+foreach ($value in @(0, 80, 100)) {
+    Assert-True ($value.ToString($similarityFormat) -eq "$value%") "similarity displays $value percent without scaling"
+}
+$imageClientType = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
+$effectiveMethod = $imageClientType.GetMethod('BuildEffectivePrompt')
+foreach ($chatProtocol in @($false, $true)) {
+    foreach ($similarity in @(0, 80, 100)) {
+        $prompt = [string]$effectiveMethod.Invoke($null, [object[]]@('已确认：黑色锁甲；本次重绘采用俯拍。', '1024x1024', '', '', '', '', $chatProtocol, $similarity))
+        Assert-True ($prompt.Contains('黑色锁甲') -and $prompt.Contains('俯拍') -and $prompt.Contains('重绘必须遵循本次换镜头指导')) "similarity $similarity preserves facts and redraw (chat=$chatProtocol)"
+        Assert-True ($prompt.Contains('人物身份立绘只用于身份与装备') -and $prompt.Contains('缺少场景参考图时，不从身份立绘补造场景') -and !$prompt.Contains('构图、装备细节、光影氛围）也须完全还原')) "similarity $similarity respects reference roles (chat=$chatProtocol)"
+    }
+}
+
+$weeklyPatch = $assembly.GetType('AnimusForge.Illustrator.UI.Patches.WeeklyReportPopupIllustrationPatch', $true)
+$scopeType = $assembly.GetType('AnimusForge.Illustrator.Core.IllustrationScope', $true)
+$runtimeType = $assembly.GetType('AnimusForge.Illustrator.Core.IllustratorRuntime', $true)
+$scopeField = $weeklyPatch.GetField('_scope', $privateStatic)
+$closingField = $weeklyPatch.GetField('_closing', $privateStatic)
+$eventField = $weeklyPatch.GetField('_currentEventKey', $privateStatic)
+$mainThreadField = $runtimeType.GetField('_mainThread', $privateStatic)
+$closeForScope = $weeklyPatch.GetMethod('CloseOverlayForScope', $privateStatic)
+$oldScope = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($scopeType)
+$newScope = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($scopeType)
+$requestSource = New-Object Threading.CancellationTokenSource
+$scopeType.GetField('_request', $privateInstance).SetValue($newScope, $requestSource)
+$savedThread = $mainThreadField.GetValue($null)
+try {
+    $mainThreadField.SetValue($null, [Environment]::CurrentManagedThreadId)
+    $scopeField.SetValue($null, $newScope)
+    $closingField.SetValue($null, $false)
+    $eventField.SetValue($null, 'new-weekly-event')
+    [void]$closeForScope.Invoke($null, [object[]]@($oldScope))
+    Assert-True ([object]::ReferenceEquals($scopeField.GetValue($null), $newScope) -and $eventField.GetValue($null) -eq 'new-weekly-event' -and !$closingField.GetValue($null)) 'late old weekly scope cannot close replacement'
+    [void]$closeForScope.Invoke($null, [object[]]@($newScope))
+    Assert-True ($null -eq $scopeField.GetValue($null) -and $null -eq $eventField.GetValue($null) -and $scopeType.GetField('_closed', $privateInstance).GetValue($newScope) -and $requestSource.IsCancellationRequested) 'current weekly scope still closes and cancels normally'
+    [void]$closeForScope.Invoke($null, [object[]]@($oldScope))
+    Assert-True ($null -eq $scopeField.GetValue($null)) 'late weekly close remains idempotent'
+}
+finally {
+    $scopeField.SetValue($null, $null)
+    $eventField.SetValue($null, $null)
+    $closingField.SetValue($null, $false)
+    $mainThreadField.SetValue($null, $savedThread)
+    $requestSource.Dispose()
+}
+
+$fixtureRoot = Join-Path $root ('artifacts\tests\illustrator-review-' + [Guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($fixtureRoot)
+$prefixA = 'af_offscreen_' + [Guid]::NewGuid().ToString('N')
+$prefixB = 'af_offscreen_' + [Guid]::NewGuid().ToString('N')
+$fileA = Join-Path $fixtureRoot ($prefixA + '.png')
+$fileB = Join-Path $fixtureRoot ($prefixB + '.png')
+$captureType = $assembly.GetType('AnimusForge.Illustrator.Engine.ScreenCaptureHelper', $true)
+$cleanupMethod = $captureType.GetMethod('CleanupTempArtifacts')
+try {
+    [IO.File]::WriteAllText($fileA, 'completed request A')
+    [IO.File]::WriteAllText($fileB, 'request B awaiting read')
+    [void]$cleanupMethod.Invoke($null, [object[]]@([string]$fixtureRoot, [string]$prefixA))
+    Assert-True (!(Test-Path -LiteralPath $fileA) -and [IO.File]::ReadAllText($fileB) -eq 'request B awaiting read') 'cleanup A preserves another request awaiting image read'
+    foreach ($invalidPrefix in @('', 'af_offscreen_*', 'af_offscreen_')) {
+        [void]$cleanupMethod.Invoke($null, [object[]]@([string]$fixtureRoot, [string]$invalidPrefix))
+        Assert-True (Test-Path -LiteralPath $fileB) "cleanup rejects broad prefix [$invalidPrefix]"
+    }
+    $debugA = Join-Path $fixtureRoot 'debug-a'
+    $debugB = Join-Path $fixtureRoot 'debug-b'
+    [void][IO.Directory]::CreateDirectory($debugA)
+    [void][IO.Directory]::CreateDirectory($debugB)
+    [IO.File]::WriteAllText((Join-Path $debugA 'emblem_final.png'), 'A')
+    [IO.File]::WriteAllText((Join-Path $debugB 'emblem_final.png'), 'B')
+    $composerType = $assembly.GetType('AnimusForge.Illustrator.Engine.BannerEmblemComposer', $true)
+    [void]$composerType.GetMethod('CleanupDebugDump', $privateStatic).Invoke($null, [object[]]@([string]$debugA))
+    Assert-True (!(Test-Path -LiteralPath $debugA) -and [IO.File]::ReadAllText((Join-Path $debugB 'emblem_final.png')) -eq 'B') 'emblem cleanup is isolated to its completed job directory'
+}
+finally {
+    $resolvedFixture = [IO.Path]::GetFullPath($fixtureRoot)
+    $allowedFixtures = [IO.Path]::GetFullPath((Join-Path $root 'artifacts\tests')) + [IO.Path]::DirectorySeparatorChar
+    if (!$resolvedFixture.StartsWith($allowedFixtures, [StringComparison]::OrdinalIgnoreCase)) { throw 'Fixture cleanup escaped workspace' }
+    Remove-Item -LiteralPath $resolvedFixture -Recurse -Force
+}
+
 Write-Host "$($script:checks) checks, $($script:failures) failures"
 if ($script:failures -gt 0) { exit 1 }

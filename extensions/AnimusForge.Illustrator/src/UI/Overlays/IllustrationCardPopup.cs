@@ -189,7 +189,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 string base64Image = null;
                 if (!string.IsNullOrEmpty(offscreenPrefix))
                 {
-                    base64Image = await ScreenCaptureHelper.WaitForOffscreenFileAsync(offscreenTempDir, offscreenPrefix, timeoutMs: 400, maxDimension: 768).ConfigureAwait(false);
+                    base64Image = await ScreenCaptureHelper.WaitForOffscreenFileAsync(offscreenTempDir, offscreenPrefix, timeoutMs: 400, maxDimension: 768, cleanTempFiles: options?.AutoCleanTempFiles == true).ConfigureAwait(false);
                 }
                 if (string.IsNullOrWhiteSpace(base64Image)) base64Image = preCapturedBase64;
 
@@ -201,7 +201,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 // 纹章由纯托管合成（旗帜代码→BannerDataList→图集纹理→GDI+ 叠放），零舞台零闪屏
                 if (!string.IsNullOrWhiteSpace(bannerCode))
                 {
-                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode).ConfigureAwait(false);
+                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
                         refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜"));
@@ -354,7 +354,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     {
                         if (spec != null && !string.IsNullOrWhiteSpace(spec.Code))
                         {
-                            emblemTasks.Add(new KeyValuePair<EmblemSpec, Task<string>>(spec, BannerEmblemComposer.ComposeToBase64Async(spec.Code)));
+                            emblemTasks.Add(new KeyValuePair<EmblemSpec, Task<string>>(spec, BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true)));
                         }
                     }
                 }
@@ -362,15 +362,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     if (Hero.MainHero != null)
                     {
-                        playerStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(Hero.MainHero, useCivilian: true, cancellationToken: token);
+                        playerStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(Hero.MainHero, useCivilian: true, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true);
                     }
                     if (interlocutor != null)
                     {
-                        partnerStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(interlocutor, interlocutorCivilian, cancellationToken: token);
+                        partnerStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(interlocutor, interlocutorCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true);
                     }
                     else if (convContext.InterlocutorCharacter != null)
                     {
-                        partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token, bodyProperties: convContext.InterlocutorBodyProperties);
+                        partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token, bodyProperties: convContext.InterlocutorBodyProperties, cleanTempFiles: options?.AutoCleanTempFiles == true);
                     }
                 }
                 if (playerStage != null)

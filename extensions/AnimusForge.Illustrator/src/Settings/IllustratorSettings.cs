@@ -59,7 +59,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool EnableOffscreenRendering { get; set; } = true;
 
-        [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，每次生图结束（无论成败）自动删除生图过程产生的临时文件：离屏立绘 PNG、纹章图集临时导出与 banner_debug 调试落盘。不影响画廊缓存与默认插图。关闭时保留临时文件便于排查问题。", Order = 3, RequireRestart = false)]
+        [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，各提取任务结束时仅清理自己产生的离屏导出残留及纹章调试目录，不清理其他请求或历史调试文件。关闭时保留调试产物便于排查；已读取的立绘与纹章图集临时导出仍按原有流程释放。不影响画廊缓存与默认插图。", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool AutoCleanTempFiles { get; set; } = false;
 
@@ -257,7 +257,7 @@ namespace AnimusForge.Illustrator
         // 预填古典油画预设负面词，供玩家查看/改写；仅在画风预设选“提示词(自定义画风)”时生效
         public string NegativePrompt { get; set; } = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
 
-        [SettingPropertyInteger("参考图相似度", 0, 100, "0%", HintText = "控制除人物特征外的画面还原度（0-100）：人物五官/肤色/发型与家族纹章始终严格一致；相似度越高，场景布置、构图、装备细节与氛围越忠实参照参考图与游戏事实，越低则留给生图模型越大的艺术发挥空间。默认 80。", Order = 12, RequireRestart = false)]
+        [SettingPropertyInteger("参考图相似度", 0, 100, "0'%'", HintText = "控制可调整的艺术表现还原度（0-100，默认80）：人物外貌、装备、纹章和游戏事实始终保持一致；身份立绘与纹章图不提供场景构图。高值忠于有依据的场景关系与氛围，低值允许调整留白、景深和表现手法；所有数值均允许重绘更换镜头。", Order = 12, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public int Similarity { get; set; } = 80;
 
