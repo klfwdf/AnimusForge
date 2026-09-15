@@ -34,6 +34,10 @@ def restore_reviewed_nonport_deltas(path, current, prior):
     spec = importlib.util.spec_from_file_location("port_memory_inverse", ROOT / "tools/MemorySummaryMainThreadBoundaryTests/source_parity.py")
     memory = importlib.util.module_from_spec(spec); spec.loader.exec_module(memory)
     current = memory.restore_memory_summary_source(path, current)
+    if path == "CourierDeliveryBehavior.cs":
+        spec = importlib.util.spec_from_file_location("courier_history_inverse", ROOT / "tools/CourierHistoryPreparationTests/source_parity.py")
+        courier_history = importlib.util.module_from_spec(spec); spec.loader.exec_module(courier_history)
+        current = courier_history.restore(current)
     review = json.loads((HERE / "reviewed-native-admission-deltas.json").read_text(encoding="utf-8"))
     for comment in review.get("commentRewrites", []):
         if comment["path"] == path:

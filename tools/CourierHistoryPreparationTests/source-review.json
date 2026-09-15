@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "baseline": "73774a94fc1d2fcbebc69ea221e9a906a4e70b8e",
+  "meaning": "Exact reviewed inputs to physical-thread history tests and existing render parity; not game/full-Courier acceptance",
+  "files": {
+    "CourierDeliveryBehavior.HistoryPreparation.cs": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877",
+    "MyBehavior.HistoryPromptSnapshot.cs": "bf01837f92bbc18c36d1c079e22467342b65d1c4f4f0d4a89fdcb9094922367f",
+    "tools/CourierHistoryPreparationTests/run.py": "ba0f7928a84c3e238758ce5733d72f2c02c23265d6f3ba2be79d707f7742ee47",
+    "tools/CourierHistoryPreparationTests/Harness.cs.txt": "f8b44a1c5d7e1fed87ec8e5bc45d184b34bbded84b0a44c2ecc942a358b1e62c"
+  },
+  "ownerPhaseSha256": "51921f493c10d423c5a669e8a87c4fbb1ea71b7caed4bd90558a3ae07b44084e"
+}
