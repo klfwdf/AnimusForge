@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.Engine;
 using TaleWorlds.GauntletUI;
@@ -12,13 +13,24 @@ namespace AnimusForge.Illustrator.Engine
     internal sealed class NativeBannerExportWidget : BannerTableauWidget
     {
         private static readonly FieldInfo SceneField = typeof(BannerTableau).GetField("_scene", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly Type ProviderType = Type.GetType("TaleWorlds.MountAndBlade.GauntletUI.TextureProviders.BannerTableauTextureProvider, TaleWorlds.MountAndBlade.GauntletUI", false);
-        private static readonly FieldInfo OwnerField = ProviderType?.GetField("_bannerTableau", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo ProviderTypesField = typeof(TextureProviderFactory).GetField("_textureProvidertypes", BindingFlags.Static | BindingFlags.NonPublic);
+        private static FieldInfo _ownerField;
 
         public NativeBannerExportWidget(UIContext context) : base(context) { }
 
-        internal static bool SupportsDeferredSceneClear => SceneField != null && SceneField.FieldType == typeof(Scene) &&
-            OwnerField != null && OwnerField.FieldType == typeof(BannerTableau);
+        internal static bool SupportsDeferredSceneClear
+        {
+            get
+            {
+                if (SceneField == null || SceneField.FieldType != typeof(Scene)) return false;
+                // Use the exact type Gauntlet will instantiate. Bannerlord's module
+                // load context does not necessarily resolve Assembly.Load by name.
+                if (_ownerField == null && ProviderTypesField?.GetValue(null) is Dictionary<string, Type> providers &&
+                    providers.TryGetValue("BannerTableauTextureProvider", out var provider))
+                    _ownerField = provider.GetField("_bannerTableau", BindingFlags.Instance | BindingFlags.NonPublic);
+                return _ownerField != null && _ownerField.FieldType == typeof(BannerTableau);
+            }
+        }
 
         public override void OnClearTextureProvider()
         {
@@ -28,7 +40,7 @@ namespace AnimusForge.Illustrator.Engine
             // engine clear queue before invoking the normal provider finalizer.
             if (TextureProvider != null)
             {
-                var tableau = OwnerField?.GetValue(TextureProvider) as BannerTableau;
+                var tableau = _ownerField?.GetValue(TextureProvider) as BannerTableau;
                 if (!SupportsDeferredSceneClear || tableau == null)
                     throw new NotSupportedException("Native banner deferred cleanup contract is unavailable.");
                 var scene = SceneField.GetValue(tableau) as Scene;
