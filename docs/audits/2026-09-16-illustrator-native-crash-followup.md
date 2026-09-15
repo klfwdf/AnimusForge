@@ -1,5 +1,7 @@
 # 原生纹章导出崩溃与缺失参考图跟进
 
+> **最新状态：第二次实机仍崩溃，已撤回原生版本部署。** 当前游戏使用 05:47 首次部署前备份，源码 `c55334ed` 的原生路径仍未解决。以下修复尝试保留作历史；以末节为准。
+
 当前生产修订 `c55334ed`，包含清理修正 `0127816d` 和日志修正 `8a52d1b`；检查点 `1299d0b`。用户已授权部署，本轮通过既有 `tools/deploy_illustrator.ps1 -BannerlordApi auto` 覆盖独立生图模块，不修改部署脚本、不覆盖 AF 主体或 TaleWorlds DLL、不推送。
 
 ## 真实证据与结论边界
@@ -32,3 +34,13 @@
 - 直接对最终游戏目录 DLL 再验：通用 **178 / 0**（不含两项构建检查）、专项 **36 / 0**。证据：[部署 DLL 结果](assets/illustrator-native-crash-20260916/deployed-results.json)、[通用结果](assets/illustrator-native-crash-20260916/deployed-regression.txt)。部署 DLL 与构建输出 SHA256 均为 `72600405AB899D4B4BE5C8171D23C1D0BEC750A645FC11B0158C401C2249A347`。
 - 用户当时进程 34808 在 05:56 启动，仍加载首次修正版；磁盘更新不会替换已加载程序集。必须完全退出游戏再启动测试最终修订。尚未验收最终修订的纹章送入模型、延迟清理无崩溃与背景图案正确性。
 - 回滚源码按逆序定向 revert `c55334ed`、`8a52d1b`、`0127816d`；这会回到已报告崩溃的原生版本，不应作为稳定版部署。**恢复此次原生替换之前的部署**使用 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705`。后续 `055535` 备份是崩溃版本，`055711/055948` 为中间修正版，不能混称稳定回滚点。保留其他作者修改。
+
+## 第二次崩溃与撤回（06:04 之后，最新状态）
+
+用户重启后再次报告崩溃。进程 32720 的日志在 06:03:59.632 记录纹章 `Stage save requested at tick=13` 后结束，没有 `Retiring stage`、`Queueing deferred scene clear` 或 `Provider release completed`。Windows 06:04:01 事件再次指向同一个 `TaleWorlds.Native.dll` 偏移 `0x283860`、异常 `0xc0000005`。兼容性检查已允许创建纹章舞台，但清理修正没有消除崩溃，不能继续把清理认定为已证实根因。
+
+watchdog 仍记录未生成转储。现有证据能定位到原生纹章导出阶段，不能提供原生栈或证明内部失败函数；离线图片/生命周期 fixture 无法模拟该异常。后续深入定位需要有效的原生转储及可调试的复现场景，不再以延长等待、追加反射或通过离线检查作为修复成功证据。
+
+已执行受控部署回退，不修改源码/提交历史：先保存当前失败模块至 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-0604-failed-native`，再从 `20260916-054705` 备份恢复 DLL、PDB、SubModule.xml 与五个 prefab。8 项 SHA256 全部与备份一致，恢复后的 DLL SHA256 为 `2DAC0572BD0A79EB6E55DA530D75A37EF3009450012F6B856A64945D7A939896`。没有覆盖游戏本体、AF 主体、其他模块或存档，也未删除用户图片。
+
+证据：[第二次日志](assets/illustrator-native-crash-20260916/second-crash-tail.txt)、[回退记录](assets/illustrator-native-crash-20260916/rollback.json)。这次只验证部署回退的文件一致性；旧版纹章准确性问题仍在，回退后的实际游戏运行也未由代理验收。源码与游戏部署已分离，`tools/deploy_illustrator.ps1` 会编译当前源码，**直接再次运行会重新装回未解决的原生实现**，不能误称修复版。
