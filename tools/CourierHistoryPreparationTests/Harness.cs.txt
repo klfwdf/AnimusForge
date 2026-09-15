@@ -1,0 +1,147 @@
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+
+namespace TaleWorlds.Library
+{
+    internal static class TWParallel { internal static int MainThread; internal static bool IsMainThread() => Environment.CurrentManagedThreadId == MainThread; }
+}
+namespace TaleWorlds.CampaignSystem { public sealed class Hero { internal string Id = "hero"; } }
+namespace AnimusForge
+{
+    internal static class SaveRuntimeGuard
+    {
+        internal static long Generation=1;
+        internal static bool IsCurrentGeneration(long generation) => generation==Generation;
+    }
+    internal static class HistoryProbe
+    {
+        internal static int Captures, Resolves, WrongThread;
+        internal static string Input, Fact, SourceText="history";
+        internal static bool ThrowCapture, ThrowResolve, IncludeScene;
+        internal static ManualResetEventSlim ResolveEntered=new(), ResolveRelease=new(true);
+        internal static void MainOnly() { if(!TaleWorlds.Library.TWParallel.IsMainThread()){Interlocked.Increment(ref WrongThread);throw new Exception("fixture game read on worker");} }
+        internal static void Reset() { Captures=Resolves=WrongThread=0;Input=Fact=null;SourceText="history";ThrowCapture=ThrowResolve=IncludeScene=false;ResolveEntered.Reset();ResolveRelease.Set();SaveRuntimeGuard.Generation=1; }
+    }
+    internal static class DuelSettings { internal static int GetDailyConversationHistoryLineLimitForExternal() => 20; }
+    public partial class MyBehavior
+    {
+        internal static string BuildHistoryContextForExternal(Hero hero,int maxLines,string currentInput,string secondaryInput)
+        { HistoryProbe.MainOnly();HistoryProbe.Input=currentInput;HistoryProbe.Fact=secondaryInput;return HistoryProbe.SourceText; }
+        // The unchanged real capture/render owner is separately exercised by NativeHistorySnapshotTests.
+        internal static Func<string> CaptureHistoryContextWorkForHero(Hero hero,string currentInput,string secondaryInput,bool includeCurrentActiveSceneSession,long generation)
+        {
+            HistoryProbe.MainOnly();HistoryProbe.Captures++;HistoryProbe.Input=currentInput;HistoryProbe.Fact=secondaryInput;HistoryProbe.IncludeScene=includeCurrentActiveSceneSession;
+            if(HistoryProbe.ThrowCapture)throw new Exception("optional capture failure");
+            string frozen=HistoryProbe.SourceText;
+            return () => {
+                Interlocked.Increment(ref HistoryProbe.Resolves);
+                if(TaleWorlds.Library.TWParallel.IsMainThread()){Interlocked.Increment(ref HistoryProbe.WrongThread);throw new Exception("history retrieval blocks main thread");}
+                HistoryProbe.ResolveEntered.Set();
+                if(!HistoryProbe.ResolveRelease.Wait(TimeSpan.FromSeconds(5)))throw new Exception("fixture release timed out");
+                if(HistoryProbe.ThrowResolve)throw new Exception("optional retrieval failure");
+                return frozen;
+            };
+        }
+    }
+    public partial class CourierDeliveryBehavior
+    {
+        internal sealed class CourierSession { internal Hero Participant=new(); internal bool Inbound, Terminal; internal string LetterText="letter", Fact="original-fact"; }
+        internal static CourierDeliveryBehavior Instance;
+        internal static readonly ConcurrentQueue<Action> MainThreadActions=new();
+        internal CourierSession Session;
+        private CourierSession GetSessionById(string id){HistoryProbe.MainOnly();return Session;}
+        private static bool IsTerminalStage(CourierSession s){HistoryProbe.MainOnly();return s.Terminal;}
+        private static bool IsInboundToPlayer(CourierSession s){HistoryProbe.MainOnly();return s.Inbound;}
+        private static Hero ResolveSender(CourierSession s){HistoryProbe.MainOnly();return s.Participant;}
+        private static Hero ResolveRecipient(CourierSession s){HistoryProbe.MainOnly();return s.Participant;}
+        private static string BuildDeliveryFactText(CourierSession s,bool delivered,Hero recipient){HistoryProbe.MainOnly();return s.Fact+":reply:"+delivered;}
+        private static string BuildInboundDeliveryFactText(CourierSession s,bool delivered,Hero sender){HistoryProbe.MainOnly();return s.Fact+":inbound:"+delivered;}
+        private static void Log(string text) { }
+        internal async Task<string[]> Start(CourierSession session,Hero participant,bool inbound)
+        {
+            var result=await PrepareCourierHistoryAsync("session",session,participant,inbound,1).ConfigureAwait(false);
+            return result==null?null:new[]{result.ExtraFact,result.Text};
+        }
+        internal static string[] Legacy(CourierSession session,bool inbound)
+        {var result=CaptureCourierHistoryForLegacyEnvelope(session,session.Participant,inbound);return new[]{result.ExtraFact,result.Text};}
+        @@OWNER_PHASE@@
+    }
+}
+internal static class Program
+{
+    private static int checks;
+    private static void Check(bool ok,string name){if(!ok)throw new Exception("FAIL "+name);checks++;}
+    private static void PumpUntil(Func<bool> ready,bool pump=true)
+    {
+        var clock=Stopwatch.StartNew();while(!ready()){
+            if(pump)while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();
+            if(clock.ElapsedMilliseconds>5000)throw new Exception("FAIL fixture wait timeout");Thread.Sleep(1);
+        }
+    }
+    private static void Case(bool inbound,string scenario)
+    {
+        AnimusForge.HistoryProbe.Reset();
+        while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out _)) { }
+        var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};
+        var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};AnimusForge.CourierDeliveryBehavior.Instance=owner;
+        if(scenario=="empty")AnimusForge.HistoryProbe.SourceText="   ";
+        if(scenario=="capture_error")AnimusForge.HistoryProbe.ThrowCapture=true;
+        if(scenario=="resolve_error")AnimusForge.HistoryProbe.ThrowResolve=true;
+        bool hold=scenario is "snapshot" or "replace_after" or "participant_after" or "generation_after" or "owner_after" or "terminal_after";
+        if(hold)AnimusForge.HistoryProbe.ResolveRelease.Reset();
+        Task<string[]> task=Task.Run(()=>owner.Start(session,session.Participant,inbound));
+        if(scenario is "replace_before" or "generation_before" or "owner_before" or "terminal_before"){
+            PumpUntil(()=>!AnimusForge.CourierDeliveryBehavior.MainThreadActions.IsEmpty,false);
+            if(scenario=="replace_before")owner.Session=new(){Inbound=inbound};
+            if(scenario=="generation_before")AnimusForge.SaveRuntimeGuard.Generation++;
+            if(scenario=="owner_before")AnimusForge.CourierDeliveryBehavior.Instance=new();
+            if(scenario=="terminal_before")session.Terminal=true;
+        }
+        if(hold){
+            PumpUntil(()=>AnimusForge.HistoryProbe.ResolveEntered.IsSet);
+            if(scenario=="snapshot"){session.Fact="new-fact";AnimusForge.HistoryProbe.SourceText="new-history";}
+            if(scenario=="replace_after")owner.Session=new(){Inbound=inbound};
+            if(scenario=="participant_after")session.Participant=new();
+            if(scenario=="generation_after")AnimusForge.SaveRuntimeGuard.Generation++;
+            if(scenario=="owner_after")AnimusForge.CourierDeliveryBehavior.Instance=new();
+            if(scenario=="terminal_after")session.Terminal=true;
+            AnimusForge.HistoryProbe.ResolveRelease.Set();
+        }
+        PumpUntil(()=>task.IsCompleted,scenario!="timeout");
+        if(scenario=="timeout"){
+            Check(task.IsCanceled,"same-owner timeout not propagated");
+            while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();
+            Check(AnimusForge.HistoryProbe.Captures==0,"timed-out queued callback executed later");return;
+        }
+        var result=task.GetAwaiter().GetResult();
+        bool stale=scenario.Contains("before") || scenario.Contains("after");
+        Check((result==null)==stale,scenario+" context acceptance "+inbound);
+        Check(AnimusForge.HistoryProbe.WrongThread==0,scenario+" thread isolation");
+        if(stale){Check(AnimusForge.HistoryProbe.Captures==(scenario.Contains("before")?0:1),scenario+" stale source counts");return;}
+        string fact="original-fact:"+(inbound?"inbound:False":"reply:True");
+        Check(result[0]==fact && AnimusForge.HistoryProbe.Fact==fact,"frozen delivery fact direction");
+        Check(AnimusForge.HistoryProbe.Input==(inbound?null:"letter") && !AnimusForge.HistoryProbe.IncludeScene,"history inputs/scene exclusion unchanged");
+        Check(result[1]==(scenario is "empty" or "capture_error" or "resolve_error"?"":"history"),scenario+" frozen/empty history text");
+        Check(AnimusForge.HistoryProbe.Captures==1 && AnimusForge.HistoryProbe.Resolves==(scenario=="capture_error"?0:1),"exactly one capture/resolve, empty does not recapture");
+    }
+    private static int Main()
+    {
+        TaleWorlds.Library.TWParallel.MainThread=Environment.CurrentManagedThreadId;
+        try {
+            foreach(bool inbound in new[]{false,true})foreach(string scenario in new[]{"normal","empty","snapshot","capture_error","resolve_error","replace_before","generation_before","owner_before","terminal_before","replace_after","participant_after","generation_after","owner_after","terminal_after","timeout"})Case(inbound,scenario);
+            foreach(bool inbound in new[]{false,true}) {
+                AnimusForge.HistoryProbe.Reset();var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};
+                var result=AnimusForge.CourierDeliveryBehavior.Legacy(session,inbound);
+                Check(result[1]=="history" && AnimusForge.HistoryProbe.Input==(inbound?null:"letter"),"legacy synchronous capture compatibility");
+                Check(AnimusForge.HistoryProbe.Fact=="original-fact:"+(inbound?"inbound:False":"reply:True"),"legacy delivery fact parity");
+            }
+            Console.WriteLine($"PASS {checks} Courier history assertions / 30 scenarios; actual owner-phase + new helper, physical thread pump, history/game seams are fixtures.");return 0;
+        }catch(Exception ex){Console.Error.WriteLine("FAIL CourierHistory "+ex);return 1;}
+        finally{AnimusForge.HistoryProbe.ResolveRelease.Set();}
+    }
+}

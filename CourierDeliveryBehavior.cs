@@ -794,7 +794,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		CourierReplyGenerationRequest request = instance.BuildCourierReplyGenerationRequestOnMainThread(
 			session,
 			recipient,
-			SaveRuntimeGuard.CaptureGeneration());
+			SaveRuntimeGuard.CaptureGeneration(),
+			CaptureCourierHistoryForLegacyEnvelope(session, recipient, false));
 		PromptPackage prompt = LegacyPromptPackageAdapter.FromLegacyMessages(
 			request.Messages,
 			MainReplyMaxTokens,
@@ -844,7 +845,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			session,
 			sender,
 			fallbackLetter,
-			SaveRuntimeGuard.CaptureGeneration());
+			SaveRuntimeGuard.CaptureGeneration(),
+			CaptureCourierHistoryForLegacyEnvelope(session, sender, true));
 		PromptPackage prompt = LegacyPromptPackageAdapter.FromLegacyMessages(
 			request.Messages,
 			MainReplyMaxTokens,
@@ -4558,7 +4560,9 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			CourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration);
+			CourierPreparedHistory preparedHistory = await PrepareCourierHistoryAsync(sessionId, session, recipient, false, runtimeGeneration).ConfigureAwait(false);
+			if (preparedHistory == null) return;
+			CourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration, preparedHistory);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_reply_preflight");
 			// Preflight replies must retain their deferred, arrival-time action commit.
 			if (IsCourierBridgeEnabled() && session.DeliveryApplied)
@@ -4665,15 +4669,11 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(CourierSession session, Hero recipient, long runtimeGeneration)
+	private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(CourierSession session, Hero recipient, long runtimeGeneration, CourierPreparedHistory preparedHistory)
 	{
 		Log("llm main start session=" + session.Id + " recipient=" + SafeHeroId(recipient));
-		string extraFact = BuildDeliveryFactText(session, delivered: true, recipient);
-		Log("[MemoryPerf] history_start reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " mode=background_prepare");
-		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
-		string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), session.LetterText, extraFact) ?? "").Trim();
-		historySw.Stop();
-		Log("[MemoryPerf] history_done reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " ms=" + Math.Round(historySw.Elapsed.TotalMilliseconds, 2));
+		string extraFact = preparedHistory.ExtraFact;
+		string historyText = preparedHistory.Text;
 		List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, out var preprocessMentionedEntities, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
 		MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentionedEntities);
 		List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
@@ -5063,7 +5063,9 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			InboundLetterGenerationRequest request = BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration);
+			CourierPreparedHistory preparedHistory = await PrepareCourierHistoryAsync(sessionId, session, sender, true, runtimeGeneration).ConfigureAwait(false);
+			if (preparedHistory == null) return;
+			InboundLetterGenerationRequest request = BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration, preparedHistory);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_inbound_letter_preflight");
 			await GenerateInboundNpcLetterAsync(request).ConfigureAwait(false);
 		}
@@ -5089,19 +5091,15 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(CourierSession session, Hero sender, string fallbackLetter, long runtimeGeneration)
+	private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(CourierSession session, Hero sender, string fallbackLetter, long runtimeGeneration, CourierPreparedHistory preparedHistory)
 	{
 		string seed = string.IsNullOrWhiteSpace(session.InboundIntentText)
 			? (string.IsNullOrWhiteSpace(session.LetterText) ? fallbackLetter : session.LetterText.Trim())
 			: session.InboundIntentText.Trim();
 		string routingInput = "[NPC主动写信意图] " + seed;
 		Log("inbound letter llm start session=" + session.Id + " sender=" + SafeHeroId(sender));
-		string extraFact = BuildInboundDeliveryFactText(session, delivered: false, sender);
-		Log("[MemoryPerf] history_start reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " mode=background_prepare");
-		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
-		string historyText = (MyBehavior.BuildHistoryContextForExternal(sender, DuelSettings.GetDailyConversationHistoryLineLimitForExternal(), null, extraFact) ?? "").Trim();
-		historySw.Stop();
-		Log("[MemoryPerf] history_done reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " ms=" + Math.Round(historySw.Elapsed.TotalMilliseconds, 2));
+		string extraFact = preparedHistory.ExtraFact;
+		string historyText = preparedHistory.Text;
 		List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, routingInput, extraFact, out var preprocessMentionedEntities, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
 		MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(sender, routingInput, extraFact, sender.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentionedEntities);
 		List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);

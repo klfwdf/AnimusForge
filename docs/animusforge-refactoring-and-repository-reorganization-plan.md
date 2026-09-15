@@ -1,10 +1,13 @@
 # 当前续点：Courier 双向历史捕获边界（2026-09-15）
 
-- 用户继续主体收尾；任务 `COURIER-HISTORY-CAPTURE-20260915` ACTIVE，起点f77fe5e4/生产73774a94，唯一写入G:/AFMOD/AF-REFACTOR；main比较基线仍437925b8。外部Native/Scene/Courier全部必交，但当前版本化提交SDK未完成。
+- 用户继续主体收尾；任务 `COURIER-HISTORY-CAPTURE-20260915` OFFLINE_VERIFIED（仅历史子责任；整体收尾ACTIVE），起点f77fe5e4/生产73774a94，唯一写入G:/AFMOD/AF-REFACTOR；main比较基线仍437925b8。外部Native/Scene/Courier全部必交，但当前版本化提交SDK未完成。
 - 实际发现：reply/inbound的Prepare在Task.Run内，两个Build...RequestOnMainThread仍直接执行live历史读取；其中还混有人设和同步preprocess/lore网络，不能把整个builder搬主线程。本切片只完整迁移双向历史捕获/检索责任，明确其余准备仍待办。
 - 实施：persona阶段之后，用原Courier owner phase在主线程捕获交付事实和既有MyBehavior.CaptureHistoryContextWorkForHero快照；后台执行冻结历史检索，再在原owner phase核验session/participant/generation，request builder消费明确的prepared结果（已准备空历史也不重新读取）。删除两个旧历史读取块，不新增队列/复制检索算法/公共API。
 - 验证：双向实际新helper+原owner phase的物理主/后台线程、旧新输入与空值/失效/替换/故障；既有HistorySnapshot、Courier后处理、ChannelCutover、内部ports、API/六Stage/存档身份。受影响整文件parity使用精确逆变换，不刷新hash豁免额外差异。
 - 保留：人设/规则/lore/其余消息构造live读取、Courier运输与资产/事实提交时机不在此包改写；不声称整个Q1或SDK完成。三份保护文件不动，自动化PAUSED，不推送/部署/操作存档。
+
+- 本候选结果：新helper+原owner phase双向122断言/4有效行为故障，整文件逆变换4守卫；既有历史852/Native27、渠道132、Courier后处理39、内部ports308/3故障通过。两个旧同步公开Capture消费者保持签名/默认参数和主线程同步契约；初次构建遗漏参数已修复，最终六Stage与4DLL648项元数据通过，actual Courier Host replay通过。
+- 同固定main存档身份146键/36行为保持。日志位于.tmp/courier-history-20260915；只使用stage-debug-final.log/stage-release.log为最终候选构建证据，初始失败单独保留。旧同步入口可能阻塞、首次历史快照为随历史规模增长的主线程复制，均未冒充性能或整个SDK验收。
 
 ## 以下为历史记录；当前实施以上方为准
 

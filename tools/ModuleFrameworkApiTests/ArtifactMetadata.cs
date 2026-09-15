@@ -24,7 +24,7 @@ internal static class Program
         Check(reader.GetString(reader.GetAssemblyDefinition().Name) == "AnimusForge", "implementation assembly identity");
         var provider = new Names(); var lines = new List<string>();
         var api = new HashSet<string>(); var internalTypes = new HashSet<string>();
-        bool foundMemoryOwner = false;
+        bool foundMemoryOwner = false, foundCourierOwner = false;
         foreach (TypeDefinitionHandle handle in reader.TypeDefinitions)
         {
             TypeDefinition type = reader.GetTypeDefinition(handle);
@@ -38,6 +38,14 @@ internal static class Program
             if (ns == "AnimusForge.Api.Internal")
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
                     name + " API projection remains internal");
+            if (ns == "AnimusForge" && name == "CourierDeliveryBehavior")
+            {
+                foundCourierOwner = true;
+                CheckCourierCaptures(reader, type, provider, lines);
+            }
+            if (name == "CourierPreparedHistory" || name == "CourierHistoryWork")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate,
+                    name + " is not a public game-object API");
             if (ns == "AnimusForge" && name == "MyBehavior")
             {
                 foundMemoryOwner = true;
@@ -85,6 +93,7 @@ internal static class Program
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
             "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo" };
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
+        Check(foundCourierOwner, "actual DLL includes original Courier owner");
         Check(api.SetEquals(expected), "exact initial V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
@@ -119,6 +128,30 @@ internal static class Program
             lines.Add("MEMORY " + name + " " + method.Attributes + " " + signature.ReturnType + "(" + expected + ")");
         }
         Check(found == 2, "one legacy facade and one internal scene-aware memory owner");
+    }
+
+    private static void CheckCourierCaptures(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
+    {
+        int count = 0;
+        foreach (MethodDefinitionHandle handle in type.GetMethods())
+        {
+            MethodDefinition method = reader.GetMethodDefinition(handle);
+            string name = reader.GetString(method.Name);
+            if (name != "CaptureCourierReplyRefactorEnvelopeForExternal" && name != "CaptureCourierInboundRefactorEnvelopeForExternal") continue;
+            count++;
+            MethodSignature<string> signature = method.DecodeSignature(provider, null);
+            Check((method.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Public
+                && (method.Attributes & MethodAttributes.Static) != 0, name + " public static preserved");
+            Check(signature.ReturnType == "AnimusForge.Refactor.Contracts.InteractionEnvelope", name + " synchronous envelope result preserved");
+            Check(string.Join(",", signature.ParameterTypes) == "String,String", name + " exact parameters");
+            var parameters = method.GetParameters().Select(reader.GetParameter).Where(p => p.SequenceNumber > 0).ToArray();
+            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "sessionId,playerText", name + " named arguments preserved");
+            Check((parameters[0].Attributes & ParameterAttributes.Optional) == 0 && parameters[0].GetDefaultValue().IsNil, name + " required session");
+            Check((parameters[1].Attributes & ParameterAttributes.Optional) != 0
+                && Constant(reader, parameters[1].GetDefaultValue()) == "NullReference:00000000", name + " optional null player text");
+            lines.Add("COURIER " + name + " " + signature.ReturnType + "(String sessionId,String playerText=null)");
+        }
+        Check(count == 2, "both original synchronous Courier captures remain available");
     }
 
     private static string Constant(MetadataReader reader, ConstantHandle handle)
