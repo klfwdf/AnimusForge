@@ -480,3 +480,10 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 `HeroVisualProfile` 新增 `SpeciesDescription`，由 `HeroVisualExtractor.ResolveSpeciesDescription` 从角色 ID、文化 ID、文化名称识别兽人、地精、精灵、矮人、鼠人、野兽人、混沌、巨魔等常见语义；无法识别名称但 `CharacterObject.Race != 0` 时标记为自定义非人类，并要求以真实立绘为准。该字段进入视觉 HardFacts，不再只依赖导演阅读百科原文。
 
 这使中古战锤等子 MOD 在提供可读角色/文化标识或非人类 Race 时能稳定把种族语义交给生图模型；若子 MOD 只提供一个无法映射的数值且 Race 仍为原版人类值，则只能依赖人物参考图、文化文本和面貌数据，不能承诺模型凭空识别物种。性能为每次人物快照的一次字符串检查，不在 Tick 或全英雄扫描热路径执行。`tools/test_illustrator.ps1` 的自定义兽人视觉事实检查通过；双版本构建 0 警告、0 错误，133 checks / 0 failures。未实机验证中古战锤实际角色数据映射和具体生图模型效果。
+### 第九轮：纹章载体频率与相似度兼容（2026-09-16）
+
+排查确认盾牌高频来自场景模板/纹章标签的提示词偏置，而非人物装备检测：酒馆、领主厅、竞技场、军营模板曾固定加入盾牌；多处参考图标签反复列举盾徽/旗帜。已移除未经 Mission 实体证据的盾牌物体，纹章标签改为“仅在已确认载体出现时使用”，事件明确涉及军队标识时才保留相关场景建议。人物真实 `EquipmentIndex` 检测到盾牌时仍会保留装备事实。
+
+`IllustratorSettings.SimilarityDropdown` 改为下拉选项，默认“随机（沿用旧版：不附加相似度约束）”，内部 `Similarity=-1`；固定档位为 0/20/40/60/80/100。旧版没有相似度设置时的实际行为就是不追加该提示词段落，不能等同 0%。`UniversalOpenAiImageClient.BuildEffectivePrompt` 对 -1 不添加相似度约束，固定档位只约束有依据的场景表现，不覆盖身份、装备、纹章、硬事实或重绘换镜头。
+
+`tools/test_illustrator.ps1` 最终 **134 checks / 0 failures**，1.3/1.4 构建 0 警告、0 错误，`git diff --check` 通过。未实机验证新提示词在真实模型中的盾牌频率、国王纹章遵循率和旧配置迁移显示；需部署最新 DLL 后再验收。回滚：本轮对应提交 `9dda2fa2` 之前的未含本轮变更基线见 Git 历史，当前修改可定向 `git revert HEAD`（提交 hash 以当前 Git 为准）。
