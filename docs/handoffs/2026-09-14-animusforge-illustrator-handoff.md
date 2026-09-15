@@ -529,3 +529,17 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 1.3 / 1.4 目标 DLL 各 **30 checks / 7 failures**。失败为：大面积 Alpha 掩码反相、注释红通道优先与实际混色矛盾、描边完全透明、90°/270°（含镜像）方向相反。此前 185 项通用检查不构成纹章生成准确性的验收；空图拒绝已修复，但错误的非空纹章仍可能产生。
 
 完整证据、逐项源码位置、DLL hash、执行命令、对照图、原生渲染替代路径与未覆盖责任见 [纹章离线审计](../audits/2026-09-16-illustrator-emblem-offline-audit.md)。建议重做渲染核心，保留发送/缓存/生命周期接口；原生导出、shader、复杂背景与实际出图仍需专门验收。未部署/推送。本轮工具回滚仅定向 revert `5de6e6c9`。
+
+### 第十三轮：按用户授权替换纹章原生渲染核心（2026-09-16）
+
+生产/测试提交 `cf237202`；检查点 `75d116aa`。本节取代第十一、十二轮的生产纹章实现说明，但保留旧审计证据。工作树仍为 `F:\AnimusForge-main`、`codex/af-main-refactor-continuation-20260831`。
+
+- `extensions/AnimusForge.Illustrator/src/Engine/BannerEmblemComposer.cs:7–16` 变为适配器；新 `NativeBannerPipeline.cs:9–102` 负责完整 BannerCode/尺寸缓存、串行、取消与存档重置。限 32 项、PNG 字符串 8MiB；失败不缓存，排队同纹章复用成功结果。
+- 新 `Engine/NativeBannerExportWidget.cs:8–18` 保持 Gauntlet provider 更新但不调用屏幕绘制；`Engine/ScreenCaptureHelper.cs:1053–1205` 通过原版 BannerTableau 完整旗面（`IsNineGrid=true`）异步导出 PNG。原版负责徽记、描边、旋转、镜像与背景，移除已证实错误的 CPU shader 重建。
+- `Engine/NativeBannerImage.cs:13–75` 只校验完整 PNG、交换一次 R/B、必要缩小并无损编码；保守空图检测仍可能省略有效纯色/低覆盖图案，不承诺检测出每个缺失 MOD mesh。
+- `ScreenCaptureHelper.cs:824–846,855–1006` 加入主线程工作准入与舞台退休完成信号，修复取消时尚在创建舞台就提前释放锁的竞态；文件大小需稳定至少 50ms，避免同帧重复观察。队列满时由已排队 pump 或主线程 Reset 退休舞台，不伪装拆层成功。
+- `Core/IllustratorRuntime.cs:114–122` 在 Reset 清纹章缓存并取消活动舞台。百科/会话 `UI/Overlays/IllustrationCardPopup.cs:204,357`、周报 `UI/Patches/WeeklyReportPopupIllustrationPatch.cs:335` 均传入请求 token。人物共用舞台也受调度与清理改动影响，需实机回归。
+
+验证：双 API 子模块 Release 构建各 0 警告/0 错误；`tools/test_illustrator.ps1` **180 checks / 0 failures**；两份目标 DLL 的 `tools/test_illustrator_emblems.ps1` 各 **32 checks / 0 failures**。旧 CPU 方法断言从通用脚本移除，旧独立审计工具和失败证据保留。专项覆盖模拟完整渲染结果的像素保持、缓存、取消、晚结果、无屏幕 Draw、停 Tick 和满队列退休；运行使用本机 TaleWorlds 依赖，不代表启动两版客户端。`git diff --check` 通过。
+
+详细源码责任、实际 DLL SHA256、测试依赖与输出证据、原版链路调查、性能和未覆盖事项见 [原生纹章替换报告](../audits/2026-09-16-illustrator-native-emblem-replacement.md)。真实 GPU 输出颜色/方向、多色或 MOD 纹章、零闪屏、原生落盘与资源释放时序、实际模型遵循率和人物共用导出仍未验收。未部署/推送/调用生图服务。回滚仅定向 `git revert cf237202`，保留其他作者工作。
