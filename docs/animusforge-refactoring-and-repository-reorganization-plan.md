@@ -1,3 +1,12 @@
+# 当前整体收尾：记忆运行 owner 贯穿全链（2026-09-16）
+
+- 用户要求完成整体收尾，继续CORE-CLOSEOUT-FULL，起点155f1b7a/生产51844800；本次唯一写入AF-REFACTOR，保护文档不动，不推送/部署/动存档/恢复自动化。
+- M2明确缺口：共享_memorySummaryProcessing布尔值无法区分同generation重置前后的运行；旧finally的延迟清理可能清掉新运行。替换为独立运行owner/lease，旧lease不能释放新运行；scope显式贯穿规划、网络wave/重试、capture、逐结果接受、错误和完成通知。普通主线程dispatch、摘要文本/排序/限流/存档责任保持。
+- 此为完整摘要运行生命周期责任，不把新增owner等同于全部M1/M2/M3和B1预算完成。继续保留实际首次深复制/终步成本、Prompt/LLM混合线程、内部双向服务和外部三渠道SDK及当前候选LIVE/SAVE为必交。
+- 验证：先复现同代reset/replacement旧finally与迟到响应；实际三类摘要Host/业务/源writer/重试/plan和相关旧断言保持；精确source逆变换、六Stage/API/Host回放/保存身份、两份handoff与当前地图。退出只取消旧运行授权，不假装取消不支持的正在执行网络/已经完成写入。
+
+## 以下为此前候选与历史记录
+
 # 当前补充：Courier 失败回执不得伪装成已确认无副作用（2026-09-15）
 
 - 全范围仍ACTIVE，29448d1b的Game退役已离线验证，接续c40671ea。后续Prompt追踪已确认My770行构造、AIConfig路由资格和KnowledgeLibrary内部live/同步网络混合，不能只把外层挂Task.Run或整体搬主线程。
