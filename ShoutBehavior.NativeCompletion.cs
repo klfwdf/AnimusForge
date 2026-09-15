@@ -116,7 +116,9 @@ public partial class ShoutBehavior
             TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
 
         QueueNativeConversationCompletionExit(scope, result);
-        return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+        string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+        scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);
+        return finalVisible;
     }
 
     private void QueueNativeConversationCompletionExit(NativeConversationCompletionScope scope, NativeConversationGameActionResult result)

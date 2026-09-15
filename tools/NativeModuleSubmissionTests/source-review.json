@@ -1,0 +1,96 @@
+{
+  "baseline": "154f7206",
+  "files": {
+    "Api/V1/AfApi.cs": {
+      "beforeSha256": "926a781ce1b6b2ebbd0b927896b26973cb1aef584eced5ac0474e9200ffc5b3c",
+      "afterSha256": "5e5524aec712fd8b94cd59096301e1cbadae66d231d7cc80f609967b910d205c",
+      "hunks": [
+        {
+          "oldStart": 10,
+          "oldEnd": 11,
+          "newStart": 10,
+          "newEnd": 11,
+          "before": "/// 本初版只有只读能力。不要反射旧 ForExternal 方法来绕过尚未开放的请求边界。\n",
+          "after": "/// V1 提供只读目录和 Native 请求票据；Scene/Courier 仍未开放，不得绕过其未完成边界。\n"
+        },
+        {
+          "oldStart": 21,
+          "oldEnd": 22,
+          "newStart": 21,
+          "newEnd": 22,
+          "before": "            Unsupported(AfCapabilityIds.NativeSubmit),\n",
+          "after": "            new AfCapabilityInfo(AfCapabilityIds.NativeSubmit, AfCapabilityState.Available, \"api.available\"),\n"
+        },
+        {
+          "oldStart": 53,
+          "oldEnd": 53,
+          "newStart": 53,
+          "newEnd": 57,
+          "before": "",
+          "after": "    /// <summary>创建隔离的请求命名空间；不启动游戏、不查询实体、不发送 LLM。</summary>\n    public static AfDialogueClient CreateDialogueClient()\n        => new AfDialogueClient(CoreDialogueServices.CreateClient());\n\n"
+        }
+      ]
+    },
+    "ShoutBehavior.NativeAdmission.cs": {
+      "beforeSha256": "1224e462f3767e20f7b8b5df8256c94b15b8bf55f9fc382f5a2babe5fdbe582a",
+      "afterSha256": "2994455bd73c352e3ea542ff8209fd54a5a81d59118fb7b2f6eefdc8c4e0a5d6",
+      "hunks": [
+        {
+          "oldStart": 3,
+          "oldEnd": 3,
+          "newStart": 3,
+          "newEnd": 4,
+          "before": "",
+          "after": "using AnimusForge.Refactor.Modules;\n"
+        },
+        {
+          "oldStart": 18,
+          "oldEnd": 18,
+          "newStart": 19,
+          "newEnd": 20,
+          "before": "",
+          "after": "        internal CoreDialogueOperation ModuleOperation;\n"
+        },
+        {
+          "oldStart": 65,
+          "oldEnd": 66,
+          "newStart": 67,
+          "newEnd": 68,
+          "before": "        NativeConversationPresentationScope presentationScope = null)\n",
+          "after": "        NativeConversationPresentationScope presentationScope = null, CoreDialogueOperation moduleOperation = null)\n"
+        },
+        {
+          "oldStart": 78,
+          "oldEnd": 78,
+          "newStart": 80,
+          "newEnd": 82,
+          "before": "",
+          "after": "            admission.ModuleOperation = moduleOperation;\n            moduleOperation?.MarkOwnerAdmitted();\n"
+        }
+      ]
+    },
+    "ShoutBehavior.NativeCompletion.cs": {
+      "beforeSha256": "0c0fd4ca19385e4db3e51b7f32f9b8d9a6e658e9cf61083731abb94efc11775a",
+      "afterSha256": "a11d72568e9261b31a51caccaa62eee7a6c302f658155755f6bc3b5a5e1e758a",
+      "hunks": [
+        {
+          "oldStart": 118,
+          "oldEnd": 119,
+          "newStart": 118,
+          "newEnd": 121,
+          "before": "        return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();\n",
+          "after": "        string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();\n        scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);\n        return finalVisible;\n"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "Refactor/Modules/CoreDialogueContracts.cs": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
+    "Refactor/Modules/CoreDialogueOperation.cs": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
+    "Refactor/Modules/CoreDialogueClient.cs": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
+    "Refactor/Modules/CoreDialogueServices.cs": "e3f746979d34a037131f95ef2de6f0eff7068e41c97948c979ce686a7ce51490",
+    "ShoutBehavior.ModuleNativeSubmission.cs": "26538e78762ca3f8aba96abfc6cb9bc5c1a43c5c452de9cdbcb8b6f7046fe9ca",
+    "Api/V1/AfDialogueClient.cs": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe",
+    "Api/Internal/AfV1DialogueProjection.cs": "056c88e02fd05a89a8c6c763dccba303798c4c63653df03ef3cfd2ff19ea59a5"
+  }
+}

@@ -57,3 +57,14 @@ new Directory → TryRegister(definition) → CompleteRegistration()
 ## 性能与兼容
 
 登记/依赖校验在冷启动；实际主体调用通过 typed 单例直达原 adapter，不逐次查字典。公共查询按需构造少量只读快照，不新增每帧扫描或网络请求。框架目录不持久化，不改变任何 SaveableTypeDefiner/SyncData 键。
+
+
+## 制作组 → AF 的 Native 服务（新增）
+
+制作组代码可通过 `CoreDialogueServices.CreateClient()` 取得 **internal** `CoreDialogueClient`，使用 `SubmitNative(requestId, playerText)`、operation 的 `Completion` / `Snapshot` / `Cancel()`；不依赖公共 `Api.V1`。
+
+- 实际链路：`CoreDialogueServices` → `ShoutBehavior.SubmitModuleNativeDialogue` → 原主线程 dispatcher → 原 `SubmitNativeConversationAdmittedAsync` → 唯一动作/记忆收尾。
+- 输入是当前 Native 对话的玩家文本，不接受 Hero、任意 handler、Prompt 或动作委托。业务模块不能借服务冒造 AFEF/改变原资格规则。
+- client 的128票据保留/相同ID去重/容量拒绝、仅开始前取消，与公共投影有相同 owner 语义。内部状态定义与公开enum通过显式映射隔离。
+- 公共 API 是这一真实内部服务的消费者；尚未把政策/宴会/GCCZ的业务调用全部改造成双向服务。此前主体→制作组13方法/31调用贡献port仍是原范围。
+- Scene/Courier 服务仍待完整owner回执，不声称内部双向全模块已完成。

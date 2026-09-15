@@ -12,6 +12,9 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 SOURCES = ["Api/V1/AfApi.cs", "Api/V1/AfApiContracts.cs",
+    "Api/Internal/AfV1DialogueProjection.cs", "Api/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
+    "Refactor/Modules/CoreDialogueOperation.cs", "Refactor/Modules/CoreDialogueClient.cs",
+    "Refactor/Modules/CoreDialogueServices.cs", "tools/ModuleFrameworkApiTests/NativeOwnerStub.cs",
     "Refactor/Modules/InternalModuleDirectory.cs", "Refactor/Modules/ModuleFrameworkRuntime.cs",
     "Refactor/Contracts/FeatureBridgeContracts.cs", "Refactor/Modules/TeamModuleRegistration.cs",
     "Refactor/Modules/ModuleFrameworkSnapshot.cs", "Api/Internal/AfV1SnapshotProjection.cs"]

@@ -44,9 +44,10 @@ static class Program
         Check(before.ReasonCode == "framework.not_initialized" && before.Modules.Count == 0, "before load empty catalog");
         Check(before.ContractVersion == 1 && AfApi.ContractVersion == 1, "V1 contract identity");
         Check(before.PublicCapabilities.Count == 7, "seven declared public capabilities");
-        Check(before.PublicCapabilities.Count(x => x.State == AfCapabilityState.Available) == 1, "only catalog callable");
+        Check(before.PublicCapabilities.Count(x => x.State == AfCapabilityState.Available) == 2, "catalog and Native contract callable, not game readiness");
         Check(AfApi.GetCapability(AfCapabilityIds.CatalogRead).State == AfCapabilityState.Available, "catalog query before load supported");
-        string[] unsupported = { AfCapabilityIds.NativeSubmit, AfCapabilityIds.SceneSubmit,
+        Check(AfApi.GetCapability(AfCapabilityIds.NativeSubmit).State == AfCapabilityState.Available, "Native contract available; real owner checked by Submit");
+        string[] unsupported = { AfCapabilityIds.SceneSubmit,
             AfCapabilityIds.CourierSubmit, AfCapabilityIds.ActionExecute, AfCapabilityIds.MemoryWrite,
             AfCapabilityIds.ExtensionRegister };
         foreach (string id in unsupported)
@@ -149,7 +150,7 @@ static class Program
         }
         string[] apiMethods = typeof(AfApi).GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
             .Select(m => m.Name).Order().ToArray();
-        Check(apiMethods.SequenceEqual(new[] { "GetCapability", "GetSnapshot" }), "no undeclared public execution path");
+        Check(apiMethods.SequenceEqual(new[] { "CreateDialogueClient", "GetCapability", "GetSnapshot" }), "no undeclared public execution path");
         Check(typeof(AfApi).Assembly != typeof(Program).Assembly, "external client is a separate assembly");
         Console.WriteLine($"PASS {HostControl.VerifySnapshotBoundary()} snapshot boundary assertions; 128 parallel captures/projections; pinned old/new DTO parity.");
         Console.WriteLine($"PASS {checks} public API assertions; 256 concurrent reads; actual source-linked V1 contracts/runtime.");

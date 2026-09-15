@@ -8,7 +8,7 @@ namespace AnimusForge.Api.V1;
 
 /// <summary>
 /// 子 MOD 的 V1 入口；与制作组 internal ports 分开，但仍编入 AnimusForge.dll。
-/// 本初版只有只读能力。不要反射旧 ForExternal 方法来绕过尚未开放的请求边界。
+/// V1 提供只读目录和 Native 请求票据；Scene/Courier 仍未开放，不得绕过其未完成边界。
 /// Bootstrap 必须先选中并加载本机游戏版本的唯一 AF 实现；API 不加载另一份 DLL。
 /// </summary>
 public static class AfApi
@@ -19,7 +19,7 @@ public static class AfApi
         new ReadOnlyCollection<AfCapabilityInfo>(new[]
         {
             new AfCapabilityInfo(AfCapabilityIds.CatalogRead, AfCapabilityState.Available, "api.available"),
-            Unsupported(AfCapabilityIds.NativeSubmit),
+            new AfCapabilityInfo(AfCapabilityIds.NativeSubmit, AfCapabilityState.Available, "api.available"),
             Unsupported(AfCapabilityIds.SceneSubmit),
             Unsupported(AfCapabilityIds.CourierSubmit),
             Unsupported(AfCapabilityIds.ActionExecute),
@@ -50,6 +50,10 @@ public static class AfApi
                 return capability;
         return new AfCapabilityInfo(capabilityId, AfCapabilityState.UnknownCapability, "api.unknown_capability");
     }
+
+    /// <summary>创建隔离的请求命名空间；不启动游戏、不查询实体、不发送 LLM。</summary>
+    public static AfDialogueClient CreateDialogueClient()
+        => new AfDialogueClient(CoreDialogueServices.CreateClient());
 
     private static AfCapabilityInfo Unsupported(string id)
     {
