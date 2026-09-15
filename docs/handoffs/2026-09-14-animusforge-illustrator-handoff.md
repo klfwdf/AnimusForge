@@ -1,13 +1,14 @@
 # AnimusForge.Illustrator — 技术架构与维修交接文档 (HANDOFF)
 
-> **更新日期**：2026-09-14
+> **更新日期**：2026-09-16
 > **活动分支**：`codex/af-main-refactor-continuation-20260831`
 > **维修前检查点**：`02b4c5b3 chore: checkpoint Illustrator before lifecycle and fidelity repairs`
+> **第四轮审计修正点**：`fd5657e4`
 > **子模块源码**：`extensions/AnimusForge.Illustrator`
 > **目标模块 ID**：`AnimusForge_Illustrator`
 > **目标程序集**：`AnimusForge.Illustrator.dll`
 > **本机游戏**：Native `v1.4.8`（changeset `119303`）
-> **本轮状态**：第三轮修复已完成并部署到游戏目录（见第 10 节）：提示词改为"硬事实 + 开放艺术指导 + 画风"三层、会面插画联动最近三轮对话、离屏舞台改为屏幕内全透明控件、Images 协议通过 /images/edits 真正发送参考图、周报改用子模块侧结构化快照。实机验收待做。
+> **本轮状态**：第四轮实机反馈修复已完成并部署（见第 11 节）：场景感知纠正（野外/海上/军团/围城阵前/囚禁）、人物处境状态注入、台词只进导演不进生图、纹章图集定为 4×4、周报主题扩至 10 类+场景名词兜底、导演超时 120s、空回复诊断不自动重试。回归基线 90 checks / 0 failures。实机验收持续进行中。
 
 ---
 
@@ -327,3 +328,64 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 - `BannerlordApi=1.3` / `1.4` 各 0 警告 0 错误；`tools/test_illustrator.ps1` **86 checks / 0 failures**；`git diff --check` 干净。
 - 已部署 `Modules\AnimusForge_Illustrator`（含新 prefab）。
 - 未实机验证：舞台纹章/立绘真实出图率（AlphaFactor=0 方案）、/images/edits 在用户网关的兼容性、最近三轮对话实际进图效果、取消时舞台释放表现。
+
+---
+
+## 11. 实机反馈迭代（第四轮，2026-09-15）
+
+第四轮全部针对真实游戏截图与日志暴露的问题，约 35 个提交（`3de2e554`..`fd5657e4`）。按主题归类：
+
+### 11.1 场景感知纠正
+
+| 问题 | 根因 | 修复 | 提交 |
+| :--- | :--- | :--- | :--- |
+| 野外遭遇生成在城镇 | 贴着城镇的野外会话 `Settlement.CurrentSettlement` 仍非空，`settlement.IsTown` 分支误判"市集街道" | `ResolveSpecificLocation` 中 `Mission.Current != null && CampaignMission.Location == null` 排在城镇兜底之前；宿主场景快照含野外词时反向纠正 | `1a0dea8f` |
+| 海上会话无场景 | 此前无海上判定 | `EnvironmentVisualExtractor.ResolveSeaAndArmyContext`：1.4 用 `MobileParty.IsCurrentlyAtSea`（`#if BANNERLORD_1_4_OR_GREATER` 隔离，1.3 走宿主快照兜底）→ "海船甲板"；`MainParty.Army` → 军团联营事实 | `b0282d48` |
+| 围城阵前谈判场景缺失 | 围城会话无专门场景 | `BesiegedSettlement`/`PlayerEncounter` 围城态 → 阵前谈判场景 | `662ed903` |
+| 宿主场景不联动 | 主模组 `ShoutUtils.GetCurrentSceneDescription()` 的结果未被使用 | 反射调用宿主快照进事实区，并与本地判定交叉纠错；`ConvScene host= loc= scene=` 三值诊断日志 | `662ed903`/`69dc488f` |
+
+宿主快照可产出的场景词：平原/森林/山地/海岸、海上、街道/酒馆/地牢/港口/竞技场/大厅。**宿主含野外词而我们判成城镇时以宿主为准**。
+
+### 11.2 人物处境状态注入
+
+`HeroVisualExtractor.ExtractCurrentState`（`b65ce107`）：`Hero.IsPrisoner`（区分定居点地牢关押/队伍押送，附带"武器收缴、锁链镣铐、勿照搬参考图战甲"视觉约束）、`IsWounded`、`StayingInSettlement`、`PartyBelongedTo`、`IsDead`（纪念肖像语境）。经 `BuildSummary` 的 `【当前处境状态】` 进百科/会话/周报全链路。会话层另加囚禁场景修正：任一方为战俘时 `SpecificLocation` 改地牢/囚笼，`SceneDirective` 注入看押语境。
+
+非英雄会话方（劫匪等模板 NPC）：`ConversationContextExtractor` 读取在场 `ConversationAgents[0]` 的 `Agent.BodyPropertiesValue`，经 `ExtractCharacterPortraitOffscreenAsync(..., bodyProperties)` 还原**正在对话的那张脸**，不再从 `CharacterObject` 模板重新随机（`a2bfe177`）。
+
+### 11.3 台词路由与禁文字约束（`d52591ca`）
+
+- `IllustrationPromptPlan` 新增 **`DirectorOnlyFacts`**：并入 `<game_facts>` 给导演，但 `ComposeFinalPrompt` 不拼入生图提示词。
+- `ConversationVisualContext.BuildDialogueBlock()`（当前台词+近三轮历史）从 `BuildHardFacts()` 移出，仅作导演专属——生图模型看不到台词原文，画面不再被画进字幕。
+- `ComposeFinalPrompt` 尾部硬约束：严禁任何文字/字幕/台词/标牌/UI；人物肤色发色五官严格以立绘参考图为准。
+
+### 11.4 纹章管线（真实旗帜合成）
+
+- **`BannerEmblemComposer`**（`8a61eb25` 起）：纯托管 GDI+ 合成——`Banner.BannerDataList` 配方 + `banner_icons` 图集像素读回（`GetPixelData`），主线程只做配方/句柄解析（`RunOnGameThreadAsync`），像素合成在调用线程。彻底摆脱纹章舞台渲染。
+- **图集网格定案 4×4**（`4a8786cd`）：原版 `BannerVisual.ConvertToMultiMesh` 实锤 `u=(texIdx%4)*0.25`、`v=1-(texIdx/4)*0.25`，`texture_index` 实测范围 0-15。先前按 8×8/16×16 裁出的是真格的角部残片；文件名中的 163/510 是 meshId 非 texIdx。
+- **格位/字形翻转**（`58360c85`）：图集不翻转（索引对应原始行序），单格裁出后 `RotateFlip` 回正字形——`GetPixelData` 自下而上位图行序所致。
+- **语义降级为约束**（`69dc488f`）：参考图标签改为"当画面出现纹章载体时必须一致，不要仅为展示纹章强塞盾/旗"——解决盾牌出现频率过高。
+- **双家族纹章**（`938e12a9`）：会话参考图同时发玩家家族与对方家族纹章（BannerCode 去重），标签注明归属方。
+- 空纹章（合成失败/全透明）不发参考图（`deec7e5d`）；调试落盘 `banner_debug/`（`38dded32`）。
+
+### 11.5 周报事件场景
+
+- **卡"构思"修复**：`IllustrationScope.Run` 在 `!IsCurrent` 时静默返回致卡片停初始文案（`6f8acf3b` 回报失败+日志）；`Show` 中上下文先于 `AttachOverlay` 内部 `CloseOverlay()` 提取被清空（`04429495` 提取挪到 CloseOverlay 之后）。
+- **主题扩至 10 类**（`06cf47e1`）：劫掠/野战/围城/庆典比武/外交/**海战/囚禁处决/定居点易主/亡故继位**/通用——每类有专属场景锚定与取景指令。
+- **General 兜底三级递进**（`56cfdf2d`/`fd5657e4`）：预设主题未命中 → 场景名词扫描（酒馆/地牢/渡口/军营等 14 组**复合词**，裸单字"海/山/河"会误中人名地名已收紧）→ 定居点泛指+授权导演从要闻文本自行推断。
+- 事件地点只认正文真实提及的定居点，绝不拿玩家当前位置冒充（`eventAnchored` 模式跳过实时 Mission 探测，也不注入玩家海上/军团实时状态）。
+
+### 11.6 可靠性与舞台可见性
+
+- **导演超时 30s→120s**（`db441a9a`），区分"用户取消"与"上游超时"两种失败文案；带多参考图的多模态调用不再频繁误报超时。
+- **空回复不自动重试**（`f670c82d`，用户明确要求）：`created:0+content:null+completion_tokens:0` 属上游网关瞬时故障；失败原因+原始响应预览进日志，手动重绘即可。
+- **离屏舞台零可见**（`662ed903`/`265ca711`/`782cf160`）：裁剪 2×2、排在正常 UI 层后、串行化渲染防原生崩溃。
+- **MCM 新增**：`生成完成后自动清理临时文件`（默认关）——清理离屏立绘 PNG/纹章图集导出/banner_debug；画风预设扩展为 7 项（古典油画默认/vivid/natural/暗黑史诗/电影级/自定义提示词/莫桑珐琅彩饰），自定义画风与负面词各有独立编辑器；分辨率快捷预设下拉。
+- **画廊**：预览唯一 sprite 名修首点空白；新生成图自动设为该主题默认（`8a40a255`）。
+
+### 11.7 验证与遗留
+
+- 双版本（1.3.15 引用集 / 1.4.8 实机引用）编译 0 警告 0 错误；`tools/test_illustrator.ps1` **90 checks / 0 failures**；已部署（最新备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260915-164726`）。
+- **已实机确认**：野外场景识别（`ConvScene` 三值一致）、纹章合成出真图标、囚禁状态字段编译通过。
+- **待实机确认**：劫匪真实脸还原度、台词彻底不入画、纹章 4×4 格位在各类家族的准确性、俘虏/海上/军团场景实际生成效果、周报新主题命中率。
+- **已知上游问题**：生图网关偶发空 completion（`content:null`），非本模块 bug，无自动重试（用户要求）；空回复时卡片显示原因、日志含响应预览。
+- 回滚基线：本轮起点 `3de2e554`（检查点提交）；单点修复均可 `git revert <sha>` 定向回退。
