@@ -1,3 +1,11 @@
+# 当前增量：共享Hero人设请求owner（2026-09-15）
+
+源码043b62b4，105点地图。`NpcPersonaGenerationOwner`持有预约/冷却；`MyBehavior.PersonaGeneration.cs`持有请求捕获/后台解析/主线程接受编排，真实profile/Saveable仍归MyBehavior。正常Hero外部Ensure及编辑器重生已接线，旧3字段/生成体删除。
+
+[当前HANDOFF](../handoffs/2026-09-15-full-closeout-persona-handoff.md)。消费者外围状态读取、升格同伴与完整生命周期仍未覆盖；共享既有调度不等于B1硬预算完成，不把整个MyBehavior标DONE。
+
+## 以下为已有定位与保留责任
+
 # 当前增量：Courier 双向历史捕获（2026-09-15）
 
 生产 `af754ab6`，100 点地图。`CourierDeliveryBehavior.HistoryPreparation.cs` 提供历史捕获/检索/接受和旧同步兼容；真实两向 Prepare 已接线。两个 request builder 的旧 live 历史块删除，其余人设/规则/lore/消息构造仍混合运行，不能整文件标 DONE。

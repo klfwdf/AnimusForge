@@ -1,3 +1,14 @@
+# 当前全范围收尾：共享Hero人设路径已修复（2026-09-15）
+
+**本地新生产/测试043b62b4；已发布到GitHub的是10defeb4，两者不要混淆。** 全范围主体收尾仍ACTIVE，三渠道提交SDK和实机/B1等必交未完成。
+
+- [最新详细HANDOFF](docs/handoffs/2026-09-15-full-closeout-persona-handoff.md) / [同候选证据](docs/audits/2026-09-15-full-closeout-persona-verification.json)。
+- 正常Hero自动补全/原外部Ensure/编辑器重生已接回主线程捕获与提交；独立预约/冷却owner，保护玩家中途编辑与清理后的新请求；原Prompt和音色语义保持，MyBehavior净减192行。
+- 当前125项、7有效故障、6逆变换守卫及原15守卫通过；相关历史/渠道/内部ports/API回归、4DLL680元数据、六Stage和main身份146/36通过。105点地图绑定同源码。
+- 下一步仍需渠道外围状态/准备、升格同伴、规则/lore、完整生命周期/B1、内部双向服务与三渠道SDK。未部署/动存档/恢复自动化，用户草稿不动。
+
+## 以下为推送回执及此前候选；当前新代码以上方为准
+
 # 当前状态：GitHub已同步，开始全范围主体收尾（2026-09-15）
 
 - 已正常快进推送f03557fb→`10defeb4976f3ffa096a77e847fba254308f6aba`到`origin/codex/af-main-refactor-continuation-20260831`，远端ref已核对。main仍437925b8；本地草稿/专用简明版未上传。
