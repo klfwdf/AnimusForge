@@ -1,3 +1,11 @@
+# 当前增量：Courier 双向历史捕获（2026-09-15）
+
+生产 `af754ab6`，100 点地图。`CourierDeliveryBehavior.HistoryPreparation.cs` 提供历史捕获/检索/接受和旧同步兼容；真实两向 Prepare 已接线。两个 request builder 的旧 live 历史块删除，其余人设/规则/lore/消息构造仍混合运行，不能整文件标 DONE。
+
+[最新 HANDOFF](../handoffs/2026-09-15-courier-history-capture-handoff.md)记录核实范围、兼容消费者与性能缺口；公开 V1 仍只读，全部三渠道提交仍必交。
+
+## 以下为已有定位与保留责任
+
 # 当前增量：共用请求生命周期owner（2026-09-15）
 
 生产73774a94，96点地图。InteractionRequestCoordinator保留公开接入/取消/Dispose，CTS生命周期由内部InteractionRequestLease持有；执行与活动取消回调均结束后释放，旧直接Dispose实现移除。现有facade是真实消费者，三渠道版本化public SDK仍未开放完成。

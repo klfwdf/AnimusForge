@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "73774a94fc1d2fcbebc69ea221e9a906a4e70b8e",
+  "sourceRevision": "af754ab603dfcb7d2141862ce8d8506b21d89f21",
   "remoteBaseline": "af6189129403466aa06101ccc3c522ee797bff38",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -293,24 +293,24 @@
     {
       "id": "courier.prepare.reply",
       "path": "CourierDeliveryBehavior.cs",
-      "start": 4674,
-      "end": 4677,
-      "symbol": "string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient,",
+      "start": 4672,
+      "end": 4706,
+      "symbol": "private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(",
       "match": "contains",
-      "status": "retained-live",
-      "note": "回信早期准备待线程审查，未迁快照",
-      "fileSha256": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9"
+      "status": "mixed-responsibility",
+      "note": "历史消费prepared快照；人设/规则/lore/其余live准备尚未收口",
+      "fileSha256": "94da6c4fae29a756ca3f57ac7883c161b9df3379b9b4a6c32429a30b3105f7a1"
     },
     {
       "id": "courier.prepare.inbound",
       "path": "CourierDeliveryBehavior.cs",
-      "start": 5102,
-      "end": 5105,
-      "symbol": "string historyText = (MyBehavior.BuildHistoryContextForExternal(sender,",
+      "start": 5094,
+      "end": 5128,
+      "symbol": "private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(",
       "match": "contains",
-      "status": "retained-live",
-      "note": "来信早期准备待线程审查，未迁快照",
-      "fileSha256": "c972ca14c79c8156ef7e8214a9f8b72ac750cbb76c7d559855b54283f3fd19c9"
+      "status": "mixed-responsibility",
+      "note": "历史消费prepared快照；人设/规则/lore/其余live准备尚未收口",
+      "fileSha256": "94da6c4fae29a756ca3f57ac7883c161b9df3379b9b4a6c32429a30b3105f7a1"
     },
     {
       "id": "memory.summary.capture",
@@ -1059,6 +1059,50 @@
       "status": "wired-lifetime-boundary",
       "note": "三渠道现有共用facade消费者；不是已开放的Api.V1提交SDK",
       "fileSha256": "727d7a78b078e2f1271162db0ca29a58b0be5cd51c1d362b1a4f573b13e23bcd"
+    },
+    {
+      "id": "courier.history.result",
+      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "start": 12,
+      "end": 21,
+      "symbol": "private sealed class CourierPreparedHistory",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "非空结果含已准备空文本，不回退二次live读取",
+      "fileSha256": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877"
+    },
+    {
+      "id": "courier.history.compat",
+      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "start": 36,
+      "end": 46,
+      "symbol": "private static CourierPreparedHistory CaptureCourierHistoryForLegacyEnvelope(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "两个现有同步公开Capture入口兼容；可能阻塞，不是新SDK",
+      "fileSha256": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877"
+    },
+    {
+      "id": "courier.history.scope",
+      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "start": 48,
+      "end": 57,
+      "symbol": "private bool IsCourierHistoryOwnerCurrent(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "原owner phase内检查会话/participant/方向/终态",
+      "fileSha256": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877"
+    },
+    {
+      "id": "courier.history.prepare",
+      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "start": 59,
+      "end": 116,
+      "symbol": "private async Task<CourierPreparedHistory> PrepareCourierHistoryAsync(",
+      "match": "contains",
+      "status": "wired-partial",
+      "note": "主线程捕获→后台旧快照检索→主线程核验；仅历史子责任",
+      "fileSha256": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877"
     }
   ]
 }

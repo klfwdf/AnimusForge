@@ -1,3 +1,15 @@
+# 当前续点：信使双向历史捕获已接线（2026-09-15）
+
+**生产/测试 `af754ab6`，仅本地；阶段 8 主体收尾仍 ACTIVE。** Native / Scene / Courier 对外提交 SDK 全部必交，目前仍未完成。
+
+- [最新详细 HANDOFF](docs/handoffs/2026-09-15-courier-history-capture-handoff.md) / [同候选验证清单](docs/audits/2026-09-15-courier-history-capture-verification.json)。
+- 正常回信/来信：原主线程 owner phase 捕获交付事实/历史快照，后台复用原检索，再检查会话/目标/档代；已准备空文本不重读。两个旧同步 Capture ABI 保留，不新增队列或公开能力。
+- 122 新边界断言/4 有效故障、4 源码守卫，既有历史852/Native27、渠道132/后处理39、内部ports308、实际DLL648项元数据和Courier回放、六Stage及main存档身份146/36通过。100点地图绑定同源码。
+- 未完成：其余 persona/preprocess/lore/消息准备、B1成本、完整生命周期、内部双向服务、三渠道SDK和实机/旧档。不能写整个信使/主体已完成。
+- 未推送/部署/开启自动化，三份保护文件不变。上次远端交付f03557fb不是本轮发布回执；本轮未重新查询远端。
+
+## 以下为历史记录；当前续点以上方为准
+
 # 当前主体收尾：main对照与三渠道外部接口必交（2026-09-15）
 
 **本轮生产/测试73774a94，整体收尾ACTIVE；仅本地未推送。** 用户已确认Native/Scene/Courier全部对外开放为必交目标，当前Api.V1只读仍未完成该目标。基线冻结origin/main437925b8；制作组政策/宴会/GCCZ玩法排除，只维护AF接缝。
