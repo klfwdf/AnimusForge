@@ -281,12 +281,94 @@ namespace AnimusForge.Illustrator.Context
                     profile.ConflictStatus = "【事件性质】重要人物亡故/权力交接";
                     break;
                 default:
-                    if (string.IsNullOrWhiteSpace(profile.SpecificLocation) && settlement != null)
+                    // 未命中预设主题时，先按要闻中的场所名词锚定（酒馆/渡口/密林等），
+                    // 再退回定居点泛指——绝不用玩家当前位置冒充事件现场。
+                    string nounLoc, nounDetail;
+                    if (TryResolveSceneNoun(context.HeadlineSummary, settlement, out nounLoc, out nounDetail))
+                    {
+                        profile.SpecificLocation = nounLoc;
+                        if (!string.IsNullOrWhiteSpace(nounDetail))
+                        {
+                            profile.IndoorOutdoorDetails = nounDetail;
+                        }
+                    }
+                    else if (string.IsNullOrWhiteSpace(profile.SpecificLocation) && settlement != null)
                     {
                         profile.SpecificLocation = $"{locName}城内外";
                     }
                     break;
             }
+        }
+
+        /// <summary>
+        /// 预设主题未命中时的场景名词兜底：扫描要闻中的明确场所词锚定现场。
+        /// 词条按特异性排序，命中第一条即返回。
+        /// </summary>
+        private static bool TryResolveSceneNoun(string headline, Settlement settlement, out string location, out string detail)
+        {
+            location = string.Empty;
+            detail = string.Empty;
+            if (string.IsNullOrWhiteSpace(headline)) return false;
+            string lower = headline.ToLowerInvariant();
+            string locName = settlement != null && settlement.Name != null ? settlement.Name.ToString() : string.Empty;
+            string prefix = string.IsNullOrWhiteSpace(locName) ? string.Empty : locName;
+
+            // (关键词, 场所, 氛围参考) —— 命中第一条
+            var table = new[]
+            {
+                new[] { "酒馆", "旅店", "tavern", "inn" },
+                new[] { "地牢", "监狱", "牢", "dungeon", "gaol" },
+                new[] { "竞技场", "决斗", "arena", "duel" },
+                new[] { "港口", "码头", "港湾", "port", "harbor" },
+                new[] { "海", "船", "舰", "sea", "ship" },
+                new[] { "市场", "市集", "集市", "商队", "商路", "驿站", "market", "caravan" },
+                new[] { "密林", "森林", "树林", "狩猎", "forest", "hunt" },
+                new[] { "渡", "河", "桥", "river", "ford", "bridge" },
+                new[] { "山", "峡谷", "隘口", "mountain", "pass" },
+                new[] { "营地", "军营", "行营", "大帐", "camp", "tent" },
+                new[] { "王座", "宫廷", "王庭", "throne", "court" },
+                new[] { "教堂", "圣堂", "修道院", "神殿", "church", "temple" },
+                new[] { "农田", "丰收", "疫病", "瘟疫", "harvest", "plague" },
+                new[] { "长城", "城墙", "wall" },
+            };
+            var sceneText = new[]
+            {
+                "酒馆/旅店雅座", "地牢囚室", "竞技场/决斗场", "港口码头", "海船甲板",
+                "市集商路", "林间猎场", "河岸渡口", "山地隘口", "行营大帐",
+                "王座宫廷", "圣堂神殿", "村庄田野", "城墙防线",
+            };
+            var sceneDetail = new[]
+            {
+                "可参考元素：昏暗烛光、橡木长桌与酒盏、穿梭的侍者与低声密谈的酒客",
+                "可参考元素：石砌牢墙、铁栅锁链、火把微光与狱卒",
+                "可参考元素：沙场围栏、欢呼看台、对峙中的斗士与裁判",
+                "可参考元素：停靠的帆船、缆绳跳板、搬运货箱的脚夫与海风",
+                "可参考元素：甲板桅杆、鼓风的帆、起伏的浪与远处海岸线",
+                "可参考元素：货摊帆布、驮货骡马、讨价还价的商贩与尘土飞扬的商路",
+                "可参考元素：密林光影、猎手与猎犬、林间小径与倒伏的猎物",
+                "可参考元素：渡口浅滩、木桥、涉水的人马与河面波光",
+                "可参考元素：崎岖山道、隘口岩壁、盘旋的鹰与远处雪峰",
+                "可参考元素：连绵帐篷、篝火炊烟、巡逻卫兵与堆放的辎重",
+                "可参考元素：高台王座、垂坠帷幔、廷臣仪仗与火炬烛台",
+                "可参考元素：高耸穹顶、彩绘窗光、烛火祭坛与诵经修士",
+                "可参考元素：麦浪田垄、农舍炊烟、劳作的农夫或疫病笼罩的空巷",
+                "可参考元素：高耸城垣、垛口哨兵、城门吊桥与城下关厢",
+            };
+
+            for (int i = 0; i < table.Length; i++)
+            {
+                string[] keys = table[i];
+                bool hit = false;
+                for (int k = 0; k < keys.Length; k++)
+                {
+                    if (lower.Contains(keys[k])) { hit = true; break; }
+                }
+                if (!hit) continue;
+                location = string.IsNullOrWhiteSpace(prefix) ? sceneText[i] : prefix + "的" + sceneText[i];
+                detail = sceneDetail[i];
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -467,8 +549,9 @@ namespace AnimusForge.Illustrator.Context
                            "可选取景：素缟灵堂与烛火、肃立默哀的族人、冠冕权戒的传递、或继位者接受朝拜的瞬间——庄重肃穆。";
 
                 default:
-                    return $"【事件主题：以要闻为准】围绕要闻【{headline}】的实际行为自由取景：" +
-                           "可选人物行动瞬间、事件余波、或当事人在环境中的决断姿态——避免千篇一律的看风景站桩。";
+                    return $"【事件主题：以要闻为准】该要闻未落入预设主题，请直接从要闻【{headline}】的文本推断事件性质与场景类型" +
+                           "（行军、狩猎、疫病、贸易、密会、决斗、流亡、庆典等皆可，不必拘泥既定类别），" +
+                           "自由取景：可选人物行动瞬间、事件余波、或当事人在环境中的决断姿态——避免千篇一律的看风景站桩。";
             }
         }
 
