@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "29448d1b7ec7bc7a92820c8b510aaad56c21ff37",
+  "sourceRevision": "518448004b1fe5983651e8e501ad60040004617c",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1360,13 +1360,24 @@
     {
       "id": "lifetime.courier.commit",
       "path": "CourierDeliveryBehavior.CommitDispatch.cs",
-      "start": 14,
-      "end": 93,
+      "start": 22,
+      "end": 101,
       "symbol": "private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "最终提交原子 claim/待办退役/真实回执",
-      "fileSha256": "87659a17f8426aefd23b2b879a9e3600ebc961cd3a400ef98e63a1dfe24b5200"
+      "fileSha256": "37a246ab6a4c2840c1c03f5c35b3128d3f5946ba9adbaa90b58f8f9a6add9652"
+    },
+    {
+      "id": "courier.commit.unconfirmed",
+      "path": "CourierDeliveryBehavior.CommitDispatch.cs",
+      "start": 16,
+      "end": 20,
+      "symbol": "private static InteractionCommitResult CreateUnconfirmedCourierCommit(string errorCode)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "真实commit后异常/空回执保留不确定性和非重试状态，不用于未开始拒绝",
+      "fileSha256": "37a246ab6a4c2840c1c03f5c35b3128d3f5946ba9adbaa90b58f8f9a6add9652"
     }
   ]
 }
