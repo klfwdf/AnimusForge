@@ -18,12 +18,20 @@ namespace AnimusForge.Illustrator.Core
         public string Mode { get; }
         public string HardFacts { get; }
         public string ArtDirection { get; }
+        /// <summary>只给导演看的事实（如台词原文/对话历史）——不进最终生图提示词，避免被画成画面文字。</summary>
+        public string DirectorOnlyFacts { get; }
 
         public IllustrationPromptPlan(string mode, string hardFacts, string artDirection)
+            : this(mode, hardFacts, artDirection, null)
+        {
+        }
+
+        public IllustrationPromptPlan(string mode, string hardFacts, string artDirection, string directorOnlyFacts)
         {
             Mode = (mode ?? string.Empty).Trim();
             HardFacts = (hardFacts ?? string.Empty).Trim();
             ArtDirection = (artDirection ?? string.Empty).Trim();
+            DirectorOnlyFacts = (directorOnlyFacts ?? string.Empty).Trim();
         }
 
         public string BuildDirectorContext()
@@ -32,6 +40,10 @@ namespace AnimusForge.Illustrator.Core
             if (!string.IsNullOrWhiteSpace(Mode)) sb.AppendLine("【插画类型】" + Mode);
             sb.AppendLine("<game_facts>");
             sb.AppendLine(HardFacts);
+            if (!string.IsNullOrWhiteSpace(DirectorOnlyFacts))
+            {
+                sb.AppendLine(DirectorOnlyFacts);
+            }
             sb.AppendLine("</game_facts>");
             if (!string.IsNullOrWhiteSpace(ArtDirection))
             {

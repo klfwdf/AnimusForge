@@ -27,11 +27,18 @@ namespace AnimusForge.Illustrator.Context
         /// <summary>非英雄对话方（劫匪等）在场 Agent 的真实体型/面容序列化——避免用兵种模板重新随机一张脸。</summary>
         public string InterlocutorBodyProperties { get; set; } = string.Empty;
 
-        public string BuildHardFacts()
+        /// <summary>台词与近三轮对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
+        public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(DialogueSentence)) sb.AppendLine($"【当前台词】\"{DialogueSentence}\"");
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
+            return sb.ToString().TrimEnd();
+        }
+
+        public string BuildHardFacts()
+        {
+            var sb = new StringBuilder();
             sb.AppendLine("【玩家主角】");
             if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildSummary());
             sb.AppendLine("【对话对象】");
