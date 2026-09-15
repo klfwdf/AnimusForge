@@ -197,7 +197,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾"));
+                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜"));
                     }
                 }
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
@@ -292,6 +292,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
             string key = $"Conv_{partnerId}";
             var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(GenerateConversationSceneVariation(convContext)));
+            TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                 ? convContext.InterlocutorHero.Name.ToString()
                 : (convContext.InterlocutorCharacter != null && convContext.InterlocutorCharacter.Name != null
@@ -359,7 +360,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await emblemCompose.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, "对话对方家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体，画面中的旗帜、盾徽与罩袍纹章必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾");
+                        var r = new IllustrationReferenceImage(b64, "对话对方家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
