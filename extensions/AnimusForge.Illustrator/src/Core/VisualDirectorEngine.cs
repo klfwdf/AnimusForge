@@ -141,7 +141,7 @@ namespace AnimusForge.Illustrator.Core
                 if (sb.Length > 0) sb.AppendLine().AppendLine();
                 sb.AppendLine("【不可改写的游戏事实】");
                 sb.Append(hardFacts.Trim());
-                sb.AppendLine().Append("只需在画面中自然体现与构图有关的事实；不得增添与上述事实冲突的人物、装备、纹章、地点或事件结果。");
+                sb.AppendLine().Append("只需在画面中自然体现与构图有关的事实；不得增添与上述事实冲突的人物、装备、纹章、地点或事件结果；画面中严禁出现任何文字、字幕、台词文本、标牌或界面元素；人物肤色、发色与五官严格以立绘参考图为准，不得加深或改色。");
             }
             return sb.ToString().Trim();
         }

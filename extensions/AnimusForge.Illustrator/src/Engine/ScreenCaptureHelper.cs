@@ -1162,7 +1162,7 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 离屏渲染非英雄 CharacterObject（要人、酒馆店主等没有 Hero 对象的对话方）的真实 3D 立绘。
         /// </summary>
-        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default)
+        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null)
         {
             if (character == null) return null;
             string charName = string.Empty;
@@ -1174,7 +1174,11 @@ namespace AnimusForge.Illustrator.Engine
                     {
                         var equipment = character.Equipment ?? character.FirstBattleEquipment;
                         charName = character.Name?.ToString() ?? character.StringId;
-                        cw.BodyProperties = character.GetBodyProperties(equipment, -1).ToString();
+                        // 优先使用会话在场 Agent 的真实 BodyProperties（劫匪等随机 NPC 的实际脸），
+                        // 否则退回兵种模板体型（模板脸型范围内重新随机）
+                        cw.BodyProperties = !string.IsNullOrWhiteSpace(bodyProperties)
+                            ? bodyProperties
+                            : character.GetBodyProperties(equipment, -1).ToString();
                         cw.IsFemale = character.IsFemale;
                         cw.Race = character.Race;
                         cw.StanceIndex = 0;

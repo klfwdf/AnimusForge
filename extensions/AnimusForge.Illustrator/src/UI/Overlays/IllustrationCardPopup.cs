@@ -363,7 +363,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     }
                     else if (convContext.InterlocutorCharacter != null)
                     {
-                        partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token);
+                        partnerStage = ScreenCaptureHelper.ExtractCharacterPortraitOffscreenAsync(convContext.InterlocutorCharacter, cancellationToken: token, bodyProperties: convContext.InterlocutorBodyProperties);
                     }
                 }
                 if (playerStage != null)
