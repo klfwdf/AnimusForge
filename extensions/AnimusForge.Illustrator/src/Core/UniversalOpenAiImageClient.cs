@@ -141,6 +141,7 @@ namespace AnimusForge.Illustrator.Core
                 byte[] imageBytes = null;
                 string imageUrl = null;
                 string errorMessage = null;
+                bool stopAfterEditFailure = false;
 
                 // 2. Images 协议 + 有参考图 → 先试 /images/edits（multipart 真正携带参考图）。
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
@@ -154,6 +155,11 @@ namespace AnimusForge.Illustrator.Core
                         imageUrl = edit.ImageUrl;
                         result.ResolvedPrompt = effectivePrompt;
                     }
+                    else if (!edit.ShouldFallbackToText)
+                    {
+                        errorMessage = edit.ErrorMessage;
+                        stopAfterEditFailure = true;
+                    }
                     else
                     {
                         Log($"[Illustrator] /images/edits 不可用（{edit.ErrorMessage}），参考图仅供导演识图，回退纯文本 /images/generations。");
@@ -164,7 +170,7 @@ namespace AnimusForge.Illustrator.Core
                     Log("[Illustrator] 启用了精确端点地址，/images/generations 无法携带参考图，参考图仅供导演识图 (ActualRefImages=0)。");
                 }
 
-                if (!success)
+                if (!success && !stopAfterEditFailure)
                 {
                     var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
                     success = attempt.Success;
@@ -339,7 +345,7 @@ namespace AnimusForge.Illustrator.Core
         /// OpenAI /images/edits multipart 请求：参考图以 image[] 文件流真正上传。
         /// 与 /images/generations 的 JSON 不同，这是 Images 协议族里唯一能携带参考图的标准通道。
         /// </summary>
-        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage)> AttemptImagesEditsAsync(
+        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToText)> AttemptImagesEditsAsync(
             string baseUrl,
             string model,
             string effectivePrompt,
@@ -378,7 +384,7 @@ namespace AnimusForge.Illustrator.Core
                         form.Add(imageContent, "image[]", $"reference_{sent}.png");
                         sent++;
                     }
-                    if (sent == 0) return (false, null, null, "no usable reference images");
+                    if (sent == 0) return (false, null, null, "no usable reference images", false);
 
                     using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = form })
                     {
@@ -392,14 +398,14 @@ namespace AnimusForge.Illustrator.Core
                             string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                             if (!response.IsSuccessStatusCode)
                             {
-                                return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode));
+                                return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode), IsUnsupportedEditEndpoint((int)response.StatusCode, responseText));
                             }
                             var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
                             if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
                             {
-                                return (true, extracted.Bytes, extracted.Url, null);
+                                return (true, extracted.Bytes, extracted.Url, null, false);
                             }
-                            return (false, null, null, "edit response contained no image data");
+                            return (false, null, null, DescribeMissingImageResponse(responseText), false);
                         }
                     }
                 }
@@ -410,7 +416,7 @@ namespace AnimusForge.Illustrator.Core
             }
             catch (Exception ex)
             {
-                return (false, null, null, "images/edits request failed: " + ex.Message);
+                return (false, null, null, "images/edits request failed: " + ex.Message, false);
             }
         }
 
@@ -552,10 +558,7 @@ namespace AnimusForge.Illustrator.Core
                             return (true, extracted.Bytes, extracted.Url, null, false);
                         }
 
-                        string preview = string.IsNullOrWhiteSpace(responseText)
-                            ? "(空响应体)"
-                            : responseText.Substring(0, Math.Min(responseText.Length, 400));
-                        return (false, null, null, "响应中未能解析到有效的图片数据 (支持 data[] 数组、choices[].message.images 及 Markdown 图链接)。原始响应预览: " + preview, false);
+                        return (false, null, null, DescribeMissingImageResponse(responseText), false);
                     }
             }
         }
@@ -566,89 +569,119 @@ namespace AnimusForge.Illustrator.Core
             public string Url { get; set; }
         }
 
+        private static bool IsUnsupportedEditEndpoint(int status, string body)
+        {
+            if (status == 404 || status == 405 || status == 501) return true;
+            string message = ExtractErrorMessage(body, status);
+            return status == 400 && (message.IndexOf("not support", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                message.IndexOf("unsupported", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private static string DescribeMissingImageResponse(string responseText)
+        {
+            if (string.IsNullOrWhiteSpace(responseText)) return "服务端返回空响应体；未自动重试，请稍后手动重绘。";
+            string reason = "响应未包含可识别的图片数据";
+            try
+            {
+                var parsed = JObject.Parse(responseText);
+                var choice = (parsed["choices"] as JArray)?.First;
+                var message = choice?["message"];
+                if (!string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()) || choice?["finish_reason"]?.ToString() == "content_filter")
+                    reason = "服务端拒绝生成图片或触发内容过滤";
+                else if (choice?["finish_reason"]?.ToString() == "length")
+                    reason = "服务端输出达到长度上限，未取得图片";
+                else if (message != null && string.IsNullOrWhiteSpace(message["content"]?.ToString()) &&
+                    !(message["images"] is JArray images && images.Count > 0))
+                    reason = "服务端返回空回复，未提供文字或图片";
+                else if (!string.IsNullOrWhiteSpace(message?["content"]?.ToString()))
+                    reason = "服务端返回了内容，但未能提取图片；请检查响应格式或模型输出";
+            }
+            catch (JsonException) { }
+            string preview = responseText.Substring(0, Math.Min(responseText.Length, 400));
+            return reason + "；未自动重试。原始响应预览: " + preview;
+        }
+
         private static async Task<ExtractedImage> ExtractImageAsync(string responseText, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(responseText)) return null;
-
             JObject parsed = JObject.Parse(responseText);
-
-            // 1. 标准 OpenAI Images 格式: "data": [ { "b64_json": "...", "url": "..." } ]
-            if (parsed["data"] is JArray dataArray && dataArray.Count > 0)
-            {
-                JToken firstItem = dataArray[0];
-                string b64 = firstItem["b64_json"]?.ToString();
-                string url = firstItem["url"]?.ToString();
-
-                if (!string.IsNullOrWhiteSpace(b64))
+            if (parsed["data"] is JArray dataArray)
+                foreach (var item in dataArray)
                 {
-                    return new ExtractedImage { Bytes = Convert.FromBase64String(b64) };
+                    var image = await ExtractImageTokenAsync(item, cancellationToken).ConfigureAwait(false);
+                    if (image?.Bytes?.Length > 0) return image;
                 }
-                if (!string.IsNullOrWhiteSpace(url))
+            if (parsed["choices"] is JArray choices)
+                foreach (var choice in choices)
                 {
-                    byte[] bytes = await DownloadImageBytesAsync(url, cancellationToken).ConfigureAwait(false);
-                    return new ExtractedImage { Bytes = bytes, Url = url };
-                }
-            }
-
-            // 2. Chat Completions 图像格式: "choices": [ { "message": { "images": [ ... ], "content": "..." } } ]
-            if (parsed["choices"] is JArray choices && choices.Count > 0)
-            {
-                JToken message = choices[0]["message"];
-                if (message != null)
-                {
-                    // 2a. 检查 message.images 数组 (Gemini/OneAPI 标准多模态出图)
-                    if (message["images"] is JArray images && images.Count > 0)
-                    {
-                        foreach (var imgToken in images)
+                    var message = choice["message"];
+                    if (message == null) continue;
+                    if (message["images"] is JArray images)
+                        foreach (var item in images)
                         {
-                            string rawUrl = null;
-                            if (imgToken is JObject imgObj)
-                            {
-                                rawUrl = imgObj["image_url"]?["url"]?.ToString()
-                                         ?? imgObj["url"]?.ToString()
-                                         ?? imgObj["b64_json"]?.ToString()
-                                         ?? imgObj["base64"]?.ToString();
-                            }
-                            else if (imgToken is JValue val)
-                            {
-                                rawUrl = val.ToString();
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(rawUrl))
-                            {
-                                var extracted = await ParseUriOrBase64Async(rawUrl, cancellationToken).ConfigureAwait(false);
-                                if (extracted?.Bytes != null && extracted.Bytes.Length > 0)
-                                    return extracted;
-                            }
+                            var image = await ExtractImageTokenAsync(item, cancellationToken).ConfigureAwait(false);
+                            if (image?.Bytes?.Length > 0) return image;
+                        }
+                    if (message["content"] is JArray blocks)
+                    {
+                        foreach (var block in blocks)
+                        {
+                            var image = await ExtractImageTokenAsync(block, cancellationToken).ConfigureAwait(false);
+                            if (image?.Bytes?.Length > 0) return image;
                         }
                     }
-
-                    // 2b. 检查 message.content 中的 Markdown 图片格式或直接 data:image / URL
-                    string content = message["content"]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(content))
+                    else
                     {
-                        var match = Regex.Match(
-                            content,
-                            @"!\[.*?\]\((https?://[^\s\)]+|data:image/[^;]+;base64,[^\s\)]+)\)");
-                        if (match.Success)
-                        {
-                            var extracted = await ParseUriOrBase64Async(match.Groups[1].Value, cancellationToken).ConfigureAwait(false);
-                            if (extracted?.Bytes != null && extracted.Bytes.Length > 0)
-                                return extracted;
-                        }
-
-                        if (content.StartsWith("data:image", StringComparison.OrdinalIgnoreCase) ||
-                            content.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-                            content.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var extracted = await ParseUriOrBase64Async(content.Trim(), cancellationToken).ConfigureAwait(false);
-                            if (extracted?.Bytes != null && extracted.Bytes.Length > 0)
-                                return extracted;
-                        }
+                        var image = await ExtractImageTextAsync(message["content"]?.ToString(), cancellationToken).ConfigureAwait(false);
+                        if (image?.Bytes?.Length > 0) return image;
                     }
                 }
-            }
+            return null;
+        }
 
+        private static async Task<ExtractedImage> ExtractImageTokenAsync(JToken token, CancellationToken cancellationToken)
+        {
+            if (token is JObject obj)
+            {
+                var imageUrl = obj["image_url"];
+                string[] candidates = {
+                    obj["b64_json"]?.ToString(), obj["base64"]?.ToString(),
+                    imageUrl is JObject imageObject ? imageObject["url"]?.ToString() : imageUrl?.ToString(),
+                    obj["url"]?.ToString()
+                };
+                foreach (string candidate in candidates)
+                {
+                    try
+                    {
+                        var image = await ParseUriOrBase64Async(candidate, cancellationToken).ConfigureAwait(false);
+                        if (image?.Bytes?.Length > 0) return image;
+                    }
+                    catch (FormatException) { } // 一个坏候选不能遮住同响应的有效图。
+                }
+                return await ExtractImageTextAsync(obj["text"]?.ToString(), cancellationToken).ConfigureAwait(false);
+            }
+            if (token is JValue)
+                return await ExtractImageTextAsync(token.ToString(), cancellationToken, true).ConfigureAwait(false);
+            return null;
+        }
+
+        private static async Task<ExtractedImage> ExtractImageTextAsync(string content, CancellationToken cancellationToken, bool allowBase64 = false)
+        {
+            if (string.IsNullOrWhiteSpace(content)) return null;
+            content = content.Trim();
+            foreach (Match match in Regex.Matches(content, @"!\[.*?\]\((https?://[^\s\)]+|data:image/[^;]+;base64,[^\s\)]+)\)"))
+            {
+                try
+                {
+                    var image = await ParseUriOrBase64Async(match.Groups[1].Value, cancellationToken).ConfigureAwait(false);
+                    if (image?.Bytes?.Length > 0) return image;
+                }
+                catch (FormatException) { }
+            }
+            if (allowBase64 || content.StartsWith("data:image", StringComparison.OrdinalIgnoreCase) ||
+                content.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || content.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                try { return await ParseUriOrBase64Async(content, cancellationToken).ConfigureAwait(false); }
+                catch (FormatException) { }
             return null;
         }
 
@@ -697,6 +730,7 @@ namespace AnimusForge.Illustrator.Core
                     return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 }
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 Log($"[Illustrator] Failed to download generated image from {url}: {ex.Message}");

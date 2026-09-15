@@ -29,6 +29,7 @@ namespace AnimusForge.Illustrator.Context
         public string RealSceneName { get; set; } = string.Empty;
         public string NamedCharacters { get; set; } = string.Empty;
         public string RealProps { get; set; } = string.Empty;
+        public bool HasLiveScene { get; set; }
         public string HostSceneDescription { get; set; } = string.Empty;
 
         public string BuildHardFactsSummary()
@@ -62,11 +63,11 @@ namespace AnimusForge.Illustrator.Context
         public string BuildArtDirectionSummary()
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(IndoorOutdoorDetails)) sb.AppendLine($"【空间氛围参考】{IndoorOutdoorDetails}");
-            if (!string.IsNullOrWhiteSpace(SurroundingCharacters)) sb.AppendLine($"【背景人物建议】{SurroundingCharacters}");
-            if (!string.IsNullOrWhiteSpace(SurroundingProps)) sb.AppendLine($"【背景陈设建议】{SurroundingProps}");
-            if (!string.IsNullOrWhiteSpace(ArchitectureStyle)) sb.AppendLine($"【文化建筑参考】{ArchitectureStyle}");
-            if (!string.IsNullOrWhiteSpace(TerrainAndLandscape)) sb.AppendLine($"【地貌参考】{TerrainAndLandscape}");
+            if (!HasLiveScene && !string.IsNullOrWhiteSpace(IndoorOutdoorDetails)) sb.AppendLine($"【空间氛围参考】{IndoorOutdoorDetails}");
+            if (!HasLiveScene && !string.IsNullOrWhiteSpace(SurroundingCharacters)) sb.AppendLine($"【背景人物建议】{SurroundingCharacters}");
+            if (!HasLiveScene && !string.IsNullOrWhiteSpace(SurroundingProps)) sb.AppendLine($"【背景陈设建议】{SurroundingProps}");
+            if (!HasLiveScene && !string.IsNullOrWhiteSpace(ArchitectureStyle)) sb.AppendLine($"【文化建筑参考】{ArchitectureStyle}");
+            if (!HasLiveScene && !string.IsNullOrWhiteSpace(TerrainAndLandscape)) sb.AppendLine($"【地貌参考】{TerrainAndLandscape}");
             if (!string.IsNullOrWhiteSpace(Season)) sb.AppendLine($"【季节参考】{Season}");
             if (!string.IsNullOrWhiteSpace(LightingAndAtmosphere)) sb.AppendLine($"【光线建议】{LightingAndAtmosphere}");
             return sb.ToString().TrimEnd();
@@ -306,7 +307,7 @@ namespace AnimusForge.Illustrator.Context
             else if (locId.Contains("arena"))
             {
                 profile.SpecificLocation = "城镇竞技角斗场 (Town Arena)";
-                profile.IndoorOutdoorDetails = "沙石与黄土飞扬的环形角斗场：四周是层叠木石看台，兵刃与木盾插在沙地边缘，充满竞技角逐的狂热与尘土气息。";
+                profile.IndoorOutdoorDetails = "沙石与黄土飞扬的环形角斗场：四周是层叠木石看台，充满竞技角逐的狂热与尘土气息。";
             }
             else if (locId.Contains("prison"))
             {
@@ -406,7 +407,7 @@ namespace AnimusForge.Illustrator.Context
                     var charSb = new StringBuilder();
                     if (guardCount > 0)
                     {
-                        charSb.Append($"近处有 {guardCount} 名全副武装的戒备守卫手持长戟/盾矛肃穆巡哨警戒；");
+                        charSb.Append($"近处有 {guardCount} 名守卫（具体装备与动作以现场参考为准）；");
                     }
                     if (nobleCount > 0)
                     {
@@ -485,7 +486,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     profile.SurroundingCharacters = "沙地边缘站着手持练习兵刃的比武战士，四周层叠看台上聚集着喧闹呐喊的市民观众";
                 }
-                profile.SurroundingProps = "飞扬的黄土沙砾角斗场、四周环形层叠的木石看台、插在沙地边缘的木质训练器具、随风舞动的比武彩旗与观众席栏杆";
+                profile.SurroundingProps = "飞扬的黄土沙砾角斗场、四周环形层叠的木石看台、插在沙地边缘的木质训练器具、观众席栏杆";
             }
             else if (loc.Contains("center") || loc.Contains("市集") || loc.Contains("街道") || loc.Contains("街"))
             {
@@ -507,7 +508,7 @@ namespace AnimusForge.Illustrator.Context
 
         /// <summary>
         /// 引擎实读当前 Mission 场景：真实场景资源名、玩家附近具名人物、附近真实物体预制件名。
-        /// 仅主线程、仅在生成插画时一次性扫描（约 20m 半径），不在热路径运行。
+        /// 仅主线程、仅在生成插画时一次性扫描（24m 半径），不在热路径运行。
         /// </summary>
         private static void ProbeLiveScene(EnvironmentVisualProfile profile)
         {
@@ -515,6 +516,7 @@ namespace AnimusForge.Illustrator.Context
             {
                 var mission = TaleWorlds.MountAndBlade.Mission.Current;
                 if (mission == null) return;
+                profile.HasLiveScene = true;
 
                 try
                 {
@@ -534,8 +536,10 @@ namespace AnimusForge.Illustrator.Context
                 catch { }
 
                 var mainAgent = mission.MainAgent;
-                Vec3 center = mainAgent != null ? mainAgent.Position : Vec3.Zero;
-                bool hasCenter = mainAgent != null;
+                // 没有玩家定位点不能把整个场景误称为“附近”。
+                if (mainAgent == null) return;
+                Vec3 center = mainAgent.Position;
+                bool hasCenter = true;
 
                 // 在场具名人物（真实 Agent，22m 内，最多 10 名）
                 var named = new List<string>();
@@ -579,7 +583,7 @@ namespace AnimusForge.Illustrator.Context
                             try
                             {
                                 var ge = mo.GameEntity;
-                                if (ge == null) continue;
+                                if (ge == null || !ge.IsVisibleIncludeParents()) continue;
                                 float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
                                 if (hasCenter && distance > 24f) continue;
                                 string label = ge.GetPrefabName();
@@ -598,12 +602,17 @@ namespace AnimusForge.Illustrator.Context
                     mission.Scene?.GetEntities(ref entities);
                     foreach (var ge in entities)
                     {
-                        if (ge == null || !ge.IsVisibleIncludeParents()) continue;
-                        float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
-                        if (hasCenter && distance > 24f) continue;
-                        string label = ge.GetPrefabName();
-                        if (string.IsNullOrWhiteSpace(label)) continue;
-                        if (!propDistances.TryGetValue(label, out float oldDistance) || distance < oldDistance) propDistances[label] = distance;
+                        try
+                        {
+                            if (ge == null || !ge.IsVisibleIncludeParents()) continue;
+                            float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
+                            if (hasCenter && distance > 24f) continue;
+                            string label = ge.GetPrefabName();
+                            if (string.IsNullOrWhiteSpace(label)) label = ge.Name;
+                            if (string.IsNullOrWhiteSpace(label)) continue;
+                            if (!propDistances.TryGetValue(label, out float oldDistance) || distance < oldDistance) propDistances[label] = distance;
+                        }
+                        catch { } // 单个失效实体不能中断余下实体采样。
                     }
                 }
                 catch { }
@@ -611,6 +620,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     profile.RealProps = string.Join("、", propDistances.OrderBy(pair => pair.Value).ThenBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase).Take(20).Select(pair => pair.Key));
                 }
+                TaleWorlds.Library.Debug.Print($"[Illustrator] Live scene probe: nearbyCharacters={named.Count}, uniqueNearbyProps={propDistances.Count}, selectedProps={Math.Min(20, propDistances.Count)}");
             }
             catch (Exception ex)
             {
@@ -674,7 +684,7 @@ namespace AnimusForge.Illustrator.Context
             }
             if (culture.Contains("khuzait"))
             {
-                return "中亚草原游牧穹庐毡帐营地与泥木简易要塞，猎鹰旗帜在呼啸烈风中猎猎作响";
+                return "中亚草原游牧穹庐毡帐营地与泥木简易要塞";
             }
             if (culture.Contains("sturgia"))
             {
@@ -713,7 +723,7 @@ namespace AnimusForge.Illustrator.Context
             }
             if (settlement.Town != null && settlement.Town.Prosperity > 5000)
             {
-                return "【盛世安澜】城内繁盛太平，街道商贩车水马龙，锦旗随风舒卷，呈现出中世纪都会的蓬勃生机";
+                return "【盛世安澜】城内繁盛太平，街道商贩车水马龙，呈现出中世纪都会的蓬勃生机";
             }
             return "平和肃穆的日常城防守备状态";
         }

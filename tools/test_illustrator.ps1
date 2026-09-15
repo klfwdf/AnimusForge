@@ -372,5 +372,108 @@ $weeklyPlan = [Activator]::CreateInstance($planType, [object[]]@('周报', $week
 $titleEcho = [string]$resolveDirector.Invoke($null, [object[]]@([string]('画面标题：' + [string]$weeklyContext.Title), $weeklyPlan, $null))
 Assert-True (!$titleEcho.Contains($weeklyContext.Title) -and $titleEcho.Contains('未能攻破城门')) 'weekly title echo falls back without losing event outcome'
 
+# Scene templates must not override sampled mission facts, even if no props could be named.
+$sceneFixture = [Activator]::CreateInstance($assembly.GetType('AnimusForge.Illustrator.Context.EnvironmentVisualProfile', $true))
+$sceneFixture.HasLiveScene = $true
+$sceneFixture.RealProps = 'tavern_table_a、barrel_b'
+$sceneFixture.IndoorOutdoorDetails = '模板盾牌与壁炉'
+$sceneFixture.SurroundingProps = '模板旗帜'
+$sceneFixture.SurroundingCharacters = '模板乐师'
+Assert-True (!$sceneFixture.BuildArtDirectionSummary().Contains('模板') -and $sceneFixture.BuildHardFactsSummary().Contains('barrel_b')) 'live scene retains real objects without template props or people'
+$sceneFixture.RealProps = ''
+Assert-True (!$sceneFixture.BuildArtDirectionSummary().Contains('模板')) 'unnamed live scene does not invent template objects'
+$sceneFixture.HasLiveScene = $false
+Assert-True ($sceneFixture.BuildArtDirectionSummary().Contains('模板')) 'non-mission scene keeps existing artistic fallback'
+$environmentSource = Get-Content (Join-Path $module 'src\Context\EnvironmentVisualExtractor.cs') -Raw
+Assert-True (!$environmentSource.Contains('木盾插在沙地') -and !$environmentSource.Contains('手持长戟/盾矛')) 'remaining unsupported shields removed'
+
+# Exercise real decoder using image bytes entirely offline.
+Add-Type -AssemblyName System.Drawing
+$testBitmap = New-Object Drawing.Bitmap 32,32
+$graphics = [Drawing.Graphics]::FromImage($testBitmap)
+$graphics.Clear([Drawing.Color]::Gold)
+$graphics.FillRectangle([Drawing.Brushes]::Purple, 0, 0, 16, 16)
+$graphics.Dispose()
+$pngStream = New-Object IO.MemoryStream
+$testBitmap.Save($pngStream, [Drawing.Imaging.ImageFormat]::Png)
+$pngBytes = $pngStream.ToArray()
+$pngBase64 = [Convert]::ToBase64String($pngBytes)
+$pngStream.Dispose()
+$testBitmap.Dispose()
+$dataUri = 'data:image/png;base64,' + $pngBase64
+$extractImage = $imageClientType.GetMethod('ExtractImageAsync', $privateStatic)
+foreach ($fixture in @(
+    @{Name='later data item'; Body=@{data=@(@{b64_json='bad!'}, @{b64_json=$pngBase64})}},
+    @{Name='content image block'; Body=@{choices=@(@{message=@{content=@(@{type='text'; text='done'}, @{type='image_url'; image_url=@{url=$dataUri}})}})}},
+    @{Name='string image_url'; Body=@{choices=@(@{message=@{images=@(@{image_url=$dataUri})}})}},
+    @{Name='later choice'; Body=@{choices=@(@{message=@{content=$null}}, @{message=@{images=@(@{b64_json=$pngBase64})}})}},
+    @{Name='markdown'; Body=@{choices=@(@{message=@{content=('![image](' + $dataUri + ')')}})}},
+    @{Name='bad image before valid'; Body=@{choices=@(@{message=@{images=@(@{url='data:image/png;base64,bad!'}, @{url=$dataUri})}})}}
+)) {
+    $body = ConvertTo-Json -InputObject $fixture.Body -Depth 12 -Compress
+    $task = $extractImage.Invoke($null, [object[]]@([string]$body, [Threading.CancellationToken]::None))
+    $decoded = $task.GetAwaiter().GetResult()
+    Assert-True ($null -ne $decoded -and [Convert]::ToBase64String($decoded.Bytes) -eq $pngBase64) "response parser accepts $($fixture.Name)"
+}
+$emptyResponse = '{"choices":[{"finish_reason":null,"message":{"content":null}}],"created":0,"usage":{"completion_tokens":0}}'
+$emptyTask = $extractImage.Invoke($null, [object[]]@($emptyResponse, [Threading.CancellationToken]::None))
+Assert-True ($null -eq $emptyTask.GetAwaiter().GetResult()) 'actual empty completion cannot fabricate image bytes'
+$diagnose = $imageClientType.GetMethod('DescribeMissingImageResponse', $privateStatic)
+Assert-True ($diagnose.Invoke($null, @($emptyResponse)).Contains('服务端返回空回复')) 'empty completion is distinguished from parser failure'
+Assert-True ($diagnose.Invoke($null, @('{"choices":[{"finish_reason":"content_filter","message":{"content":null}}]}')).Contains('内容过滤')) 'provider refusal has separate diagnosis'
+$fallback = $imageClientType.GetMethod('IsUnsupportedEditEndpoint', $privateStatic)
+foreach ($code in @(200, 401, 429, 500)) {
+    Assert-True (!$fallback.Invoke($null, [object[]]@($code, $emptyResponse))) "edit failure $code cannot silently retry without reference images"
+}
+Assert-True ($fallback.Invoke($null, [object[]]@(404, '{}'))) 'unsupported edit endpoint retains compatibility fallback'
+
+$emblemType = $assembly.GetType('AnimusForge.Illustrator.Engine.BannerEmblemComposer', $true)
+$visibleMethod = $emblemType.GetMethod('HasVisibleContent', $privateStatic)
+$tintMethod = $emblemType.GetMethod('TintIconCell', $privateStatic)
+$cellMethod = $emblemType.GetMethod('ExtractAtlasCell', $privateStatic)
+$readAtlas = $emblemType.GetMethod('TryReadExportedAtlas', $privateStatic)
+$bitmap = New-Object Drawing.Bitmap 256,256
+$g = [Drawing.Graphics]::FromImage($bitmap)
+$g.Clear([Drawing.Color]::Purple)
+$g.Dispose()
+$bitmap.SetPixel(1,1,[Drawing.Color]::Gold)
+Assert-True (!$visibleMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$bitmap, [Drawing.Color]::Purple))) 'single stray pixel is not a valid emblem'
+# Historical blank PNG had hundreds of alpha-only edge pixels and one faint icon row.
+for ($i = 0; $i -lt 256; $i++) { $bitmap.SetPixel($i,0,[Drawing.Color]::FromArgb(128,128,0,128)); $bitmap.SetPixel($i,255,[Drawing.Color]::FromArgb(128,128,0,128)) }
+Assert-True (!$visibleMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$bitmap, [Drawing.Color]::Purple))) 'background alpha edges do not count as heraldry'
+$bitmap.Dispose()
+$emptyCell = New-Object Drawing.Bitmap 256,256
+for ($i = 0; $i -lt 256; $i++) { $emptyCell.SetPixel($i,255,[Drawing.Color]::FromArgb(67,220,167,64)) }
+Assert-True (!$visibleMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$emptyCell, [Drawing.Color]::Transparent))) 'single faint atlas boundary row is not an icon'
+$emptyCell.Dispose()
+$mask = New-Object Drawing.Bitmap 32,32
+$g = [Drawing.Graphics]::FromImage($mask)
+$g.Clear([Drawing.Color]::Black)
+$g.FillRectangle([Drawing.Brushes]::White, 8,8,16,16)
+$g.Dispose()
+$tinted = $tintMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$mask, [Drawing.Color]::Gold, [Drawing.Color]::Gold, $false))
+Assert-True ($tinted.GetPixel(16,16).A -gt 200 -and $tinted.GetPixel(0,0).A -eq 0) 'opaque atlas uses luminance mask instead of inverted empty alpha'
+$tinted.Dispose()
+$mask.Dispose()
+$atlas = New-Object Drawing.Bitmap 64,64
+$g = [Drawing.Graphics]::FromImage($atlas)
+$g.Clear([Drawing.Color]::Transparent)
+$g.FillRectangle([Drawing.Brushes]::Gold,48,32,16,16)
+$g.Dispose()
+$cell = $cellMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$atlas, 11))
+Assert-True ($cell.GetPixel(8,8).ToArgb() -eq [Drawing.Color]::Gold.ToArgb()) 'PNG atlas cell 11 uses third row fourth column'
+Assert-True ($null -eq $cellMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$atlas,16))) 'invalid atlas cell cannot become a partial emblem'
+$cell.Dispose()
+$exportRoot = Join-Path $root ('artifacts\tests\illustrator-export-' + [Guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($exportRoot)
+$exportPath = Join-Path $exportRoot 'atlas.png'
+$atlas.Save($exportPath + '.png', [Drawing.Imaging.ImageFormat]::Png)
+$atlas.Dispose()
+$loaded = $readAtlas.Invoke($null, @([string]$exportPath))
+[IO.File]::Delete($exportPath + '.png')
+Assert-True ($loaded.Width -eq 64 -and $loaded.GetPixel(50,34).ToArgb() -eq [Drawing.Color]::Gold.ToArgb()) 'double-extension PNG uses file dimensions and survives file deletion'
+$loaded.Dispose()
+[IO.Directory]::Delete($exportRoot)
+
 Write-Host "$($script:checks) checks, $($script:failures) failures"
 if ($script:failures -gt 0) { exit 1 }
