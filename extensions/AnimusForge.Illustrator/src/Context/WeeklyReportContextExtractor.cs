@@ -313,18 +313,19 @@ namespace AnimusForge.Illustrator.Context
             string locName = settlement != null && settlement.Name != null ? settlement.Name.ToString() : string.Empty;
             string prefix = string.IsNullOrWhiteSpace(locName) ? string.Empty : locName;
 
-            // (关键词, 场所, 氛围参考) —— 命中第一条
+            // (关键词, 场所, 氛围参考) —— 命中第一条。场所词一律用复合词，
+            // 不用裸单字（"海/山/河"会误中人名地名如"海因茨""山德"）
             var table = new[]
             {
                 new[] { "酒馆", "旅店", "tavern", "inn" },
                 new[] { "地牢", "监狱", "牢", "dungeon", "gaol" },
                 new[] { "竞技场", "决斗", "arena", "duel" },
                 new[] { "港口", "码头", "港湾", "port", "harbor" },
-                new[] { "海", "船", "舰", "sea", "ship" },
+                new[] { "海上", "海面", "海边", "战船", "舰船", "舰队", "sea", "ship" },
                 new[] { "市场", "市集", "集市", "商队", "商路", "驿站", "market", "caravan" },
                 new[] { "密林", "森林", "树林", "狩猎", "forest", "hunt" },
-                new[] { "渡", "河", "桥", "river", "ford", "bridge" },
-                new[] { "山", "峡谷", "隘口", "mountain", "pass" },
+                new[] { "渡口", "河上", "河边", "河口", "桥上", "river", "ford", "bridge" },
+                new[] { "山地", "山区", "山脚", "峡谷", "隘口", "mountain", "pass" },
                 new[] { "营地", "军营", "行营", "大帐", "camp", "tent" },
                 new[] { "王座", "宫廷", "王庭", "throne", "court" },
                 new[] { "教堂", "圣堂", "修道院", "神殿", "church", "temple" },
