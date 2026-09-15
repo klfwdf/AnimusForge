@@ -3,6 +3,7 @@ using System.IO;
 
 string root = FindRepositoryRoot();
 string source = File.ReadAllText(Path.Combine(root, "VoteDealBehavior.MapNotification.cs"));
+string voteDealSource = File.ReadAllText(Path.Combine(root, "VoteDealBehavior.cs"));
 
 string registration = ExtractMethod(source, "private bool TryEnsureAgendaMapNotificationRegistered()");
 Assert(registration.Contains("view.RegisterMapNotificationType", StringComparison.Ordinal),
@@ -19,7 +20,18 @@ Assert(publication.Contains("_publishedAgendaMapNotices.Contains(decision)", Str
     && publication.Contains("_publishedAgendaMapNotices.Add(decision)", StringComparison.Ordinal),
     "agenda publication must retain its one-notice-per-decision guard");
 
-Console.WriteLine("Agenda map notification smoke tests passed: 3");
+string hourlyElection = ExtractMethod(voteDealSource, "private void StartExpiredAgendaElection(Kingdom kingdom, KingdomDecision decision)");
+string patchedElection = ExtractMethod(voteDealSource, "private static bool StartDecisionElectionSafe(Kingdom kingdom, KingdomDecision decision)");
+string callToWarRedirect = ExtractMethod(voteDealSource, "private static void TryConsumeRedirectedPlayerCallToWarProposal(");
+Assert(hourlyElection.Contains("TryConsumeRedirectedPlayerCallToWarProposal(kingdom, decision)", StringComparison.Ordinal)
+    && patchedElection.Contains("TryConsumeRedirectedPlayerCallToWarProposal(kingdom, decision)", StringComparison.Ordinal),
+    "both delayed-election paths must consume redirected player call-to-war proposals");
+Assert(callToWarRedirect.Contains("decision as ProposeCallToWarAgreementDecision", StringComparison.Ordinal)
+    && callToWarRedirect.Contains("proposal.CalledKingdom != playerKingdom", StringComparison.Ordinal)
+    && callToWarRedirect.Contains("kingdom.RemoveDecision(decision)", StringComparison.Ordinal),
+    "redirect cleanup must only consume the foreign source proposal after it targets the player kingdom");
+
+Console.WriteLine("Agenda map notification smoke tests passed: 5");
 
 static string FindRepositoryRoot()
 {
