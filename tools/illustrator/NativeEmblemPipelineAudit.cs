@@ -180,7 +180,15 @@ public static class NativeEmblemPipelineAudit
         widget.GetMethod("OnRender",Instance).Invoke(exportWidget,new object[]{null,null});
         FieldInfo requested=widget.BaseType.BaseType.GetField("_isRenderRequestedPreviousFrame",Instance);
         Check("no_screen_blit",(bool)requested.GetValue(exportWidget),"OnRender drives next provider update without touching draw context");
-        Check("runtime_deferred_clear_contract",(bool)widget.GetProperty("SupportsDeferredSceneClear",Static).GetValue(null,null),"Loaded TaleWorlds provider owner and BannerTableau scene fields match the guarded runtime contract");
+        // Populate only the native factory's registration metadata; no provider
+        // construction and no full type scan/native initialization in offline test.
+        Type factory=widget.BaseType.BaseType.Assembly.GetType("TaleWorlds.GauntletUI.TextureProviderFactory",true);
+        var providerRegistry=(IDictionary)factory.GetField("_textureProvidertypes",Static).GetValue(null);
+        var supported=widget.GetProperty("SupportsDeferredSceneClear",Static);
+        Check("unregistered_provider_rejected",!(bool)supported.GetValue(null,null),"No guessed module Assembly.Load fallback when Gauntlet has not registered the provider");
+        Type providerType=Type.GetType("TaleWorlds.MountAndBlade.GauntletUI.TextureProviders.BannerTableauTextureProvider, TaleWorlds.MountAndBlade.GauntletUI",true);
+        providerRegistry["BannerTableauTextureProvider"]=providerType;
+        Check("runtime_deferred_clear_contract",(bool)supported.GetValue(null,null),"Factory fixture points at real loaded provider type; owner and scene metadata match, without native construction");
         var clear=widget.GetMethod("OnClearTextureProvider",Instance);
         clear.Invoke(exportWidget,null); clear.Invoke(exportWidget,null);
         Check("empty_provider_cleanup_idempotent",clear.DeclaringType==widget,"Override handles duplicate pre-initialization cleanup without native resource calls");
