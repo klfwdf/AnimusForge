@@ -1,3 +1,11 @@
+# 实施更新：请求资源所有权与最终API范围（2026-09-15）
+
+73774a94将共用请求的CTS所有权提取为内部lease，隔离取消异常和完成/释放竞态；不增加第二套队列/注册器，原coordinator公开签名保持。[当前HANDOFF](../handoffs/2026-09-15-main-closeout-lifetime-handoff.md)。
+
+用户已明确外部Native/Scene/Courier三渠道全部必交，现有只读Api.V1不算完成。完整Campaign/Mission生命周期与主线程捕获仍是独立门槛，不能由此次request lease代替。[按main主体对照的收尾矩阵](../phase8/af-core-main-closeout-matrix-20260915.md)。
+
+## 以下为历史蓝图与进度
+
 # 实施更新：内外快照依赖已分离（2026-09-15）
 
 f07cb2a2完成现有Runtime内部状态/冻结快照与Api.V1投影分离，保持唯一Directory、原锁/状态与公开语义；CoreOnly无API源码编译和旧新DTO/停止/重载对照通过。[当前HANDOFF](../handoffs/2026-09-15-snapshot-boundary-handoff.md)。

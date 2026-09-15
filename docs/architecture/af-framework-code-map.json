@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "f07cb2a24d72446f547949ffb1c518f14b573532",
+  "sourceRevision": "73774a94fc1d2fcbebc69ea221e9a906a4e70b8e",
   "remoteBaseline": "af6189129403466aa06101ccc3c522ee797bff38",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1004,6 +1004,61 @@
       "status": "wired-snapshot-boundary",
       "note": "API侧显式V1映射，无二次gate或游戏访问",
       "fileSha256": "c16ec0ce0ef0c4ae4ae63d2505678dee2437970a66dbd7e3eeca700e949dd923"
+    },
+    {
+      "id": "request.execute",
+      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "start": 30,
+      "end": 107,
+      "symbol": "public async Task<InteractionResult> ExecuteAsync(",
+      "match": "contains",
+      "status": "wired-lifetime-boundary",
+      "note": "原公开接入签名；只协调channel/session与pipeline，资源归lease",
+      "fileSha256": "064a5c58879982a4ba6277162647f2537f73d75c6ee1db189fbeb61cb154ff82"
+    },
+    {
+      "id": "request.cancel",
+      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "start": 109,
+      "end": 124,
+      "symbol": "public void Cancel(",
+      "match": "contains",
+      "status": "wired-lifetime-boundary",
+      "note": "原公开取消入口，不提前Dispose在途token",
+      "fileSha256": "064a5c58879982a4ba6277162647f2537f73d75c6ee1db189fbeb61cb154ff82"
+    },
+    {
+      "id": "request.dispose",
+      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "start": 126,
+      "end": 143,
+      "symbol": "public void Dispose()",
+      "match": "contains",
+      "status": "wired-lifetime-boundary",
+      "note": "遍历现有请求、逐个协作取消，回调异常隔离",
+      "fileSha256": "064a5c58879982a4ba6277162647f2537f73d75c6ee1db189fbeb61cb154ff82"
+    },
+    {
+      "id": "request.lease",
+      "path": "Refactor/Runtime/InteractionRequestLease.cs",
+      "start": 12,
+      "end": 81,
+      "symbol": "internal sealed class InteractionRequestLease",
+      "match": "contains",
+      "status": "wired-lifetime-boundary",
+      "note": "内部CTS owner，执行及取消回调都结束才释放",
+      "fileSha256": "593bc46a9816b140c723d32ac530b0f8874c3e0cfae4140079c7d2f496c9839b"
+    },
+    {
+      "id": "request.facade",
+      "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+      "start": 38,
+      "end": 47,
+      "symbol": "public Task<InteractionResult> GenerateAsync(",
+      "match": "contains",
+      "status": "wired-lifetime-boundary",
+      "note": "三渠道现有共用facade消费者；不是已开放的Api.V1提交SDK",
+      "fileSha256": "727d7a78b078e2f1271162db0ca29a58b0be5cd51c1d362b1a4f573b13e23bcd"
     }
   ]
 }
