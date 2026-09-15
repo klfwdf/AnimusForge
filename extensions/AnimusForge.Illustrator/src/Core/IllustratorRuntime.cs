@@ -228,7 +228,12 @@ namespace AnimusForge.Illustrator.Core
         public bool Run<T>(Func<CancellationToken, Task<T>> work, Action<T> complete, Action<string> fail)
         {
             IllustratorRuntime.AssertMainThread();
-            if (!IsCurrent) return false;
+            if (!IsCurrent)
+            {
+                Debug.Print($"[Illustrator] Run rejected: scope not current (closed={_closed}, topScreenMismatch={!ReferenceEquals(_screen, ScreenManager.TopScreen)}, finalized={_screen?.IsFinalized}).");
+                fail("生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。");
+                return false;
+            }
             _request?.Cancel();
             var source = new CancellationTokenSource();
             var token = source.Token;
