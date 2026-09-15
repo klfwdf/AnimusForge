@@ -137,20 +137,22 @@ public sealed partial class CourierDeliveryBehavior
         if (mainThread) Invoke(); else MainThreadActions.Enqueue(Invoke);
         using (cancellationToken.Register(() =>
         {
-            Interlocked.CompareExchange(ref state, 2, 0);
-            completion.TrySetCanceled();
+            // A cancellation can retire unclaimed work, not erase an executing action's receipt.
+            if (Interlocked.CompareExchange(ref state, 2, 0) == 0)
+                completion.TrySetCanceled();
         }))
         {
             Task winner = await Task.WhenAny(completion.Task, Task.Delay(30000)).ConfigureAwait(false);
-            if (winner != completion.Task)
+            if (winner != completion.Task && Interlocked.CompareExchange(ref state, 2, 0) == 0)
             {
-                Interlocked.CompareExchange(ref state, 2, 0);
                 Log("courier owner phase timeout source=" + source);
                 throw new OperationCanceledException("Courier owner phase timed out.");
             }
-            cancellationToken.ThrowIfCancellationRequested();
+            // Once claimed, wait for the real outcome even after timeout/cancellation. Otherwise
+            // callers could retry an action which the game thread is still executing.
+            T result = await completion.Task.ConfigureAwait(false);
             if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) throw new OperationCanceledException("Courier owner phase expired.");
-            return await completion.Task.ConfigureAwait(false);
+            return result;
         }
     }
 }

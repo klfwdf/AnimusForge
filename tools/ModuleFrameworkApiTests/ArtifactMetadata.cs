@@ -45,6 +45,12 @@ internal static class Program
             }
             if (ns == "AnimusForge.Refactor.Runtime" && name == "NpcPersonaGenerationOwner")
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "persona reservation owner stays internal");
+            if (ns == "AnimusForge.Refactor.Runtime" && name == "PersonaGenerationWaiter")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "persona waiter stays internal");
+            if (ns == "AnimusForge.Refactor.Contracts" && name == "NpcPersonaReadinessSnapshot")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "readiness snapshot stays internal");
+            if (name == "ScenePersonaPreparationScope" || name == "ScenePersonaCandidate" || name == "CourierPreparationAdmission")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate, "channel persona identity handle stays private");
             if (name == "NpcPersonaGenerationWork")
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate, "persona work stays private");
             if (name == "CourierPreparedHistory" || name == "CourierHistoryWork")

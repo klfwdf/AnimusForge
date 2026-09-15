@@ -20092,8 +20092,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string npcName = admission.NpcName;
 		ConversationManager nativeRequestConversationManager = admission.ConversationManager;
 		int nativeRequestConversationToken = admission.ConversationToken;
-		Logger.Log("Logic", "[NativePerf] submit_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
-		FreezeWatchdog.Mark("NativeConversation.submit_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length, immediate: true);
+		Logger.Log("Logic", "[NativePerf] submit_start target=" + (npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
+		FreezeWatchdog.Mark("NativeConversation.submit_start", "target=" + (npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length, immediate: true);
 		string npcOpeningExtraFact = "";
 		string npcOpeningPromptText = "";
 		string npcOpeningUserText = "";
@@ -20108,14 +20108,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			npcOpeningSource = admission.OpeningSource;
 			npcOpeningUserText = BuildNpcInitiatedOpeningUserText(npcOpeningExtraFact, npcOpeningPromptText);
 			npcOpeningPersistentFactText = BuildNpcInitiatedOpeningPersistentFactText(npcOpeningExtraFact);
-			Logger.Log("ShoutBehavior", "[NativeConversation] NPC initiated opening consumed source=" + npcOpeningSource + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown"));
+			Logger.Log("ShoutBehavior", "[NativeConversation] NPC initiated opening consumed source=" + npcOpeningSource + " target=" + (npcName ?? "unknown"));
 		}
 		string promptPlayerText = npcInitiatedOpening ? "" : playerText;
 		string routingInput = npcInitiatedOpening ? npcOpeningUserText : promptPlayerText;
 		bool shouldRecordPlayerInput = !npcInitiatedOpening;
-		FreezeWatchdog.Mark("NativeConversation.persona_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown"), immediate: true);
-		bool personaReady = await EnsureNativeConversationPersonaReadyAsync(targetHero, onStreamText).ConfigureAwait(false);
-		FreezeWatchdog.Mark("NativeConversation.persona_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " ready=" + personaReady, immediate: true);
+		FreezeWatchdog.Mark("NativeConversation.persona_start", "target=" + (npcName ?? "unknown"), immediate: true);
+		bool personaReady = await EnsureNativeConversationPersonaReadyAsync(admission, onStreamText).ConfigureAwait(false);
+		FreezeWatchdog.Mark("NativeConversation.persona_done", "target=" + (npcName ?? "unknown") + " ready=" + personaReady, immediate: true);
 		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_persona_ready"))
 		{
 			return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -20163,7 +20163,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (nativeHistoryWork == null) return "";
 		Task<string> persistedHeroHistoryTask = Task.Run(nativeHistoryWork);
 		Stopwatch nativePreprocessSw = Stopwatch.StartNew();
-		FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
+		FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot = await RunNativeConversationMainThreadFuncAsync(
 			"weekly_prompt_snapshot",
 			nativeTargetLog,
@@ -20189,20 +20189,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> postprocessPreprocessHits = ctx?.PreprocessRuleIds ?? new List<string>();
 		string postprocessEntityContext = ctx?.EntityPostprocessContext ?? "";
-		Logger.Log("Logic", "[NativePerf] preprocess_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativePreprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " extrasLen=" + ((ctx?.Extras ?? "").Length));
-		FreezeWatchdog.Mark("NativeConversation.preprocess_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativePreprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)), immediate: true);
+		Logger.Log("Logic", "[NativePerf] preprocess_done target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativePreprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " extrasLen=" + ((ctx?.Extras ?? "").Length));
+		FreezeWatchdog.Mark("NativeConversation.preprocess_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativePreprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)), immediate: true);
 		GetSceneReplyLengthLimits(DuelSettings.GetSettings(), out var minTokens, out var maxTokens);
 		string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
 		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
 		SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 		Stopwatch nativeHistoryJoinSw = Stopwatch.StartNew();
-		FreezeWatchdog.Mark("NativeConversation.history_join_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
+		FreezeWatchdog.Mark("NativeConversation.history_join_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		string persistedHeroHistory = ((await persistedHeroHistoryTask) ?? "").Trim();
 		if (!await RunNativeConversationMainThreadFuncAsync("persisted_history_accept", nativeTargetLog, nativeTargetAgentIndex,
 			() => IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false)) return "";
 		nativeHistoryJoinSw.Stop();
 		Logger.Log("Logic", "[MemoryPerf] parallel_history_join reason=native_conversation target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " hasValue=" + !string.IsNullOrWhiteSpace(persistedHeroHistory) + " waitMs=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2));
-		FreezeWatchdog.Mark("NativeConversation.history_join_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " ms=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+		FreezeWatchdog.Mark("NativeConversation.history_join_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " ms=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
 		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
@@ -20306,12 +20306,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	}
 		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " sharedDailyMemory=" + useSharedDailyMemoryForNpcOpening + " persistentMemoryMessages=" + persistentMemoryRoleMessages.Count + " nativeHistoryMessages=" + nativeHistoryMessages.Count + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
-		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
+		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
 		string output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);
 		output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 		nativeMainApiSw.Stop();
-		Logger.Log("Logic", "[NativePerf] main_reply_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
-		FreezeWatchdog.Mark("NativeConversation.main_reply_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+		Logger.Log("Logic", "[NativePerf] main_reply_done target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
+		FreezeWatchdog.Mark("NativeConversation.main_reply_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_reply"))
 		{
 			return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -20401,7 +20401,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			// Only the completed, normalized main reply is safe to linkify; streamed fragments remain plain text.
 			onMainReplyReady?.Invoke(nativeMainVisibleForTts, targetHero, targetCharacter);
-			Logger.Log("Logic", "[NativePerf] main_reply_display_ready target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + nativeMainVisibleForTts.Length + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
+			Logger.Log("Logic", "[NativePerf] main_reply_display_ready target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + nativeMainVisibleForTts.Length + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		}
 		catch (Exception ex)
 		{
@@ -20496,8 +20496,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string runtimeTargetUnnamedRank = (targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "";
 		string postprocessed;
 		Stopwatch nativePostprocessSw = Stopwatch.StartNew();
-		Logger.Log("Logic", "[NativePerf] postprocess_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
-		FreezeWatchdog.Mark("NativeConversation.postprocess_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)), immediate: true);
+		Logger.Log("Logic", "[NativePerf] postprocess_start target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
+		FreezeWatchdog.Mark("NativeConversation.postprocess_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)), immediate: true);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
@@ -20518,8 +20518,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		}
 		nativePostprocessSw.Stop();
-		Logger.Log("Logic", "[NativePerf] postprocess_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " resultLen=" + ((postprocessed ?? "").Length) + " ms=" + Math.Round(nativePostprocessSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
-		FreezeWatchdog.Mark("NativeConversation.postprocess_done", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " resultLen=" + ((postprocessed ?? "").Length) + " ms=" + Math.Round(nativePostprocessSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+		Logger.Log("Logic", "[NativePerf] postprocess_done target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " resultLen=" + ((postprocessed ?? "").Length) + " ms=" + Math.Round(nativePostprocessSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
+		FreezeWatchdog.Mark("NativeConversation.postprocess_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " resultLen=" + ((postprocessed ?? "").Length) + " ms=" + Math.Round(nativePostprocessSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		if (!string.IsNullOrWhiteSpace(postprocessed))
 		{
 			cleaned = postprocessed.Trim();
@@ -20542,7 +20542,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped completed response because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
-		FreezeWatchdog.Mark("NativeConversation.action_tags_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
+		FreezeWatchdog.Mark("NativeConversation.action_tags_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
 		NativeConversationGameActionResult nativeActionResult = await ApplyNativeConversationGameActionsOnMainThreadAsync(
 			targetHero,
 			targetCharacter,
@@ -20624,107 +20624,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private const int NativeConversationPersonaGenerationWaitTimeoutMs = 180000;
 
 	private const int NativeConversationMainReplyTimeoutMs = 180000;
-
-	private static async Task<bool> EnsureNativeConversationPersonaReadyAsync(Hero targetHero, Action<string> onStreamText)
-	{
-		if (targetHero == null)
-		{
-			return true;
-		}
-		bool needsGeneration;
-		bool inFlight;
-		if (!MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(targetHero, out needsGeneration, out inFlight) || !needsGeneration)
-		{
-			return true;
-		}
-		try
-		{
-			onStreamText?.Invoke(BuildNativeConversationPersonaBackgroundHint(targetHero));
-		}
-		catch
-		{
-		}
-		Stopwatch waitSw = Stopwatch.StartNew();
-		string targetId = (targetHero.StringId ?? "").Trim();
-		bool generationRequested = false;
-		while (waitSw.ElapsedMilliseconds < NativeConversationPersonaGenerationWaitTimeoutMs)
-		{
-			if (!MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(targetHero, out needsGeneration, out inFlight) || !needsGeneration)
-			{
-				Logger.Log("NpcPersona", "[NativeConversation] persona ready before reply hero=" + targetId + " waitMs=" + waitSw.ElapsedMilliseconds);
-				return true;
-			}
-			bool activeGeneration = false;
-			bool coolingDown = false;
-			MyBehavior.TryGetNpcPersonaGenerationRuntimeStateForExternal(targetHero, out activeGeneration, out coolingDown);
-			if (coolingDown && !activeGeneration && generationRequested)
-			{
-				Logger.Log("NpcPersona", "[NativeConversation][WARN] persona generation failed before reply hero=" + targetId + " waitMs=" + waitSw.ElapsedMilliseconds);
-				break;
-			}
-			if (!generationRequested || !activeGeneration)
-			{
-				generationRequested = true;
-				Logger.Log("NpcPersona", "[NativeConversation] queueing persona generation before reply hero=" + targetId + " active=" + activeGeneration + " coolingDown=" + coolingDown);
-				await MyBehavior.EnsureNpcPersonaGeneratedForExternalAsync(targetHero, ignoreRetryCooldown: true).ConfigureAwait(false);
-				if (!MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(targetHero, out needsGeneration, out inFlight) || !needsGeneration)
-				{
-					Logger.Log("NpcPersona", "[NativeConversation] persona generated before reply hero=" + targetId + " waitMs=" + waitSw.ElapsedMilliseconds);
-					return true;
-				}
-				MyBehavior.TryGetNpcPersonaGenerationRuntimeStateForExternal(targetHero, out activeGeneration, out coolingDown);
-				if (coolingDown && !activeGeneration)
-				{
-					Logger.Log("NpcPersona", "[NativeConversation][WARN] persona generation failed before reply hero=" + targetId + " waitMs=" + waitSw.ElapsedMilliseconds);
-					break;
-				}
-			}
-			await Task.Delay(500).ConfigureAwait(false);
-		}
-		Logger.Log("NpcPersona", "[NativeConversation][WARN] persona generation timed out before reply hero=" + targetId + " timeoutMs=" + NativeConversationPersonaGenerationWaitTimeoutMs);
-		try
-		{
-			onStreamText?.Invoke(BuildNativeConversationPersonaGenerationFailedText(targetHero));
-		}
-		catch
-		{
-		}
-		return false;
-	}
-
-	private static string BuildNativeConversationPersonaBackgroundHint(Hero targetHero)
-	{
-		string text = targetHero?.Name?.ToString()?.Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = "该NPC";
-		}
-		return "正在生成" + text + "的个性与背景，请稍等。生成完成后会继续回复你的上一句话。";
-	}
-
-	private static string BuildNativeConversationPersonaGenerationFailedText(Hero targetHero)
-	{
-		string text = targetHero?.Name?.ToString()?.Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = "该NPC";
-		}
-		return text + "的个性与背景暂时生成失败，请稍后再试。";
-	}
-
-	private static async Task WaitForNativeConversationPersonaGenerationAsync(Hero targetHero)
-	{
-		for (int i = 0; i < 60; i++)
-		{
-			bool needsGeneration;
-			bool inFlight;
-			if (!MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(targetHero, out needsGeneration, out inFlight) || !needsGeneration || !inFlight)
-			{
-				return;
-			}
-			await Task.Delay(250).ConfigureAwait(false);
-		}
-	}
 
 	private static async Task<string> CallNativeConversationApiAsync(List<object> messages, Action<string> onStreamText)
 	{
@@ -29965,99 +29864,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
-		}
-	}
-
-	private async Task EnsurePersonaForCandidatesAsync(List<NpcDataPacket> candidates, Dictionary<int, Hero> resolvedHeroes)
-	{
-		if (candidates == null || candidates.Count == 0)
-		{
-			return;
-		}
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (NpcDataPacket npc in candidates)
-		{
-			if (npc == null)
-			{
-				continue;
-			}
-			try
-			{
-				if (npc.IsHero)
-				{
-					Hero hero = null;
-					if (resolvedHeroes != null) resolvedHeroes.TryGetValue(npc.AgentIndex, out hero);
-					if (hero == null)
-					{
-						continue;
-					}
-					MyBehavior.GetNpcPersonaForExternal(hero, out var p, out var b);
-					if (string.IsNullOrWhiteSpace(p) && string.IsNullOrWhiteSpace(b))
-					{
-						string text = (hero.StringId ?? "").Trim();
-						bool flag = string.IsNullOrWhiteSpace(text) || hashSet.Add(text);
-						if (flag)
-						{
-							bool flag2 = !MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(hero, out var needsGeneration, out var inFlightOrCoolingDown) || (needsGeneration && !inFlightOrCoolingDown);
-							if (flag2)
-							{
-								InformationManager.DisplayMessage(new InformationMessage(MyBehavior.BuildNpcPersonaGenerationHintForExternal(hero), new Color(1f, 0.85f, 0.3f)));
-							}
-						}
-						try
-						{
-							await MyBehavior.EnsureNpcPersonaGeneratedForExternalAsync(hero);
-						}
-						catch
-						{
-						}
-						MyBehavior.GetNpcPersonaForExternal(hero, out p, out b);
-					}
-					if (string.IsNullOrWhiteSpace(p) || string.IsNullOrWhiteSpace(b))
-					{
-						BuildHeroPersonaFallback(hero, out var fp, out var fb);
-						if (string.IsNullOrWhiteSpace(p))
-						{
-							p = fp;
-						}
-						if (string.IsNullOrWhiteSpace(b))
-						{
-							b = fb;
-						}
-						fp = null;
-						fb = null;
-					}
-					if (!string.IsNullOrWhiteSpace(p))
-					{
-						npc.PersonalityDesc = p.Trim();
-					}
-					if (!string.IsNullOrWhiteSpace(b))
-					{
-						npc.BackgroundDesc = b.Trim();
-					}
-					p = null;
-					b = null;
-					continue;
-				}
-				string key = (npc.UnnamedKey ?? "").Trim().ToLower();
-				if (!string.IsNullOrEmpty(key))
-				{
-					if (ShoutUtils.TryGetUnnamedPersonaByKey(key, out var up, out var ub))
-					{
-						if (!string.IsNullOrWhiteSpace(up))
-						{
-							npc.PersonalityDesc = up.Trim();
-						}
-						if (!string.IsNullOrWhiteSpace(ub))
-						{
-							npc.BackgroundDesc = ub.Trim();
-						}
-					}
-				}
-			}
-			catch
-			{
-			}
 		}
 	}
 

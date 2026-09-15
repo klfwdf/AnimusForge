@@ -1,0 +1,30 @@
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+namespace TaleWorlds.Library {internal static class TWParallel {internal static int Main;internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==Main;}}
+namespace AnimusForge {
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+ public partial class CourierDeliveryBehavior {
+  internal static CourierDeliveryBehavior Instance;
+  internal static readonly ConcurrentQueue<Action> MainThreadActions=new();
+  private static void Log(string m){}
+  internal Task<int> Invoke(Func<int> action,CancellationToken token)=>RunCourierOwnerPhaseAsync(1,"proof",action,token);
+@@METHOD@@
+ }
+}
+internal static class Program {
+ static int count,fail;static volatile bool stop;static ManualResetEventSlim pump=new(true), paused=new(false);
+ static void Check(bool b,string s){count++;if(!b){fail++;Console.WriteLine("FAIL "+s);}}
+ static void Until(Func<bool> done){var until=DateTime.UtcNow.AddSeconds(4);while(!done()){if(DateTime.UtcNow>until)throw new Exception("fixture timeout");Thread.Sleep(1);}}
+ static void Case(string name){AnimusForge.SaveRuntimeGuard.Generation=1;var o=new AnimusForge.CourierDeliveryBehavior();AnimusForge.CourierDeliveryBehavior.Instance=o;using var cancel=new CancellationTokenSource();using var entered=new ManualResetEventSlim();using var release=new ManualResetEventSlim();int effects=0;
+  bool queued=name.StartsWith("queued");bool running=name.StartsWith("running");if(queued){pump.Reset();Until(()=>paused.IsSet);}
+  Task<int> task=Task.Run(()=>o.Invoke(()=>{Interlocked.Increment(ref effects);entered.Set();if(running)release.Wait();if(name=="throw")throw new InvalidOperationException("original");return 42;},cancel.Token));
+  if(queued){Until(()=>!AnimusForge.CourierDeliveryBehavior.MainThreadActions.IsEmpty);if(name=="queued_cancel")cancel.Cancel();Until(()=>task.IsCompleted);Check(task.IsCanceled,name+" cancelled before claim");pump.Set();Thread.Sleep(20);Check(effects==0,name+" late queue no side effect");return;}
+  if(running){Until(()=>entered.IsSet);if(name=="running_cancel")cancel.Cancel();if(name=="running_generation")AnimusForge.SaveRuntimeGuard.Generation++;
+   Thread.Sleep(name=="running_timeout"?180:20);if(name!="running_generation")Check(!task.IsCompleted,name+" started work retains completion ownership");release.Set();}
+  Until(()=>task.IsCompleted);Check(effects==1,name+" exactly once");
+  if(name=="throw")Check(task.IsFaulted&&task.Exception.InnerException is InvalidOperationException,name+" original failure preserved");else if(name=="running_generation")Check(task.IsCanceled,name+" stale generation rejected after execution");else Check(task.Status==TaskStatus.RanToCompletion&&task.Result==42,name+" definitive result");
+ }
+ static int Main(){var main=new Thread(()=>{TaleWorlds.Library.TWParallel.Main=Environment.CurrentManagedThreadId;while(!stop){if(!pump.IsSet){paused.Set();pump.Wait();paused.Reset();}if(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var a))a();else Thread.Sleep(1);}}){IsBackground=true};main.Start();try{foreach(var n in new[]{"normal","queued_cancel","queued_timeout","running_cancel","running_timeout","running_generation","throw"})Case(n);Console.WriteLine($"CourierOwnerPhase checks={count} failures={fail}; actual method, physical main/worker; no game.");return fail==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}finally{stop=true;pump.Set();}}
+}
