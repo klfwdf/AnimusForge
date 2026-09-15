@@ -9,6 +9,8 @@
 - 本候选结果：新helper+原owner phase双向122断言/4有效行为故障，整文件逆变换4守卫；既有历史852/Native27、渠道132、Courier后处理39、内部ports308/3故障通过。两个旧同步公开Capture消费者保持签名/默认参数和主线程同步契约；初次构建遗漏参数已修复，最终六Stage与4DLL648项元数据通过，actual Courier Host replay通过。
 - 同固定main存档身份146键/36行为保持。日志位于.tmp/courier-history-20260915；只使用stage-debug-final.log/stage-release.log为最终候选构建证据，初始失败单独保留。旧同步入口可能阻塞、首次历史快照为随历史规模增长的主线程复制，均未冒充性能或整个SDK验收。
 
+- 生产/测试提交af754ab6；详细HANDOFF为docs/handoffs/2026-09-15-courier-history-capture-handoff.md，100点地图/审计JSON绑定同源码；只读API与整体收尾状态未冒充完成。
+
 ## 以下为历史记录；当前实施以上方为准
 
 # 当前任务：对照 main 的主体收尾与双层接口（2026-09-15）

@@ -1,3 +1,11 @@
+# 实施更新：Q1 历史子责任（2026-09-15）
+
+`af754ab6` 完成双向历史主线程捕获/后台旧检索/主线程接受，复用现有 owner phase 和 Memory snapshot，无第二队列/存储。两个旧同步公开 Capture 保持；其余 persona/preprocess/lore/消息准备尚未完成，首次快照规模成本仍待验证。
+
+[当前 HANDOFF](../handoffs/2026-09-15-courier-history-capture-handoff.md)。后续先收口剩余 prepare/生命周期与 B1，再落实内部双向服务及 Native/Scene/Courier 三渠道版本化提交；不因局部线程修复放行整体收尾。
+
+## 以下为此前计划与实现记录
+
 # 当前收尾范围已确认（2026-09-15）
 
 以origin/main437925b8主体功能对照；政策/宴会/GCCZ等玩法排除。用户已明确外部Native/Scene/Courier三渠道全部必交，内部贡献ports和制作组调用主体的服务边界都需稳定。当前只读API不是完成标准。
