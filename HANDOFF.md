@@ -1,3 +1,11 @@
+# 当前状态：GitHub已同步，开始全范围主体收尾（2026-09-15）
+
+- 已正常快进推送f03557fb→`10defeb4976f3ffa096a77e847fba254308f6aba`到`origin/codex/af-main-refactor-continuation-20260831`，远端ref已核对。main仍437925b8；本地草稿/专用简明版未上传。
+- 用户已授权开始全范围收尾，执行依旧按[main完整矩阵](docs/phase8/af-core-main-closeout-matrix-20260915.md)和[14职责计划](docs/phase8/af-core-responsibility-decomposition-plan-20260915.md)，不是另开阶段编号。第一完整请求路径为共享Hero人设生成的捕获/网络/提交/重试生命周期；其他范围保持必交。
+- 下面历史“仅本地”说明已由本发布回执更新；后续新实现不能自动当作已推送。仍不部署/操作存档/开启自动化。
+
+## 以下为上一候选实现与验证，当前执行看总台账顶端
+
 # 当前续点：信使双向历史捕获已接线（2026-09-15）
 
 **生产/测试 `af754ab6`，仅本地；阶段 8 主体收尾仍 ACTIVE。** Native / Scene / Courier 对外提交 SDK 全部必交，目前仍未完成。
