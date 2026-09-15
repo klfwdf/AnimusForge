@@ -29,6 +29,7 @@ namespace AnimusForge.Illustrator.Context
         public string RealSceneName { get; set; } = string.Empty;
         public string NamedCharacters { get; set; } = string.Empty;
         public string RealProps { get; set; } = string.Empty;
+        public string HostSceneDescription { get; set; } = string.Empty;
 
         public string BuildHardFactsSummary()
         {
@@ -36,6 +37,7 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(SettlementName)) sb.AppendLine($"【定居点】{SettlementName} ({SettlementType})");
             if (!string.IsNullOrWhiteSpace(SpecificLocation)) sb.AppendLine($"【当前子场景】{SpecificLocation}");
             if (!string.IsNullOrWhiteSpace(RealSceneName)) sb.AppendLine($"【引擎场景资源名】{RealSceneName}");
+            if (!string.IsNullOrWhiteSpace(HostSceneDescription)) sb.AppendLine($"【宿主场景描述】{HostSceneDescription}");
             if (!string.IsNullOrWhiteSpace(NamedCharacters)) sb.AppendLine($"【附近实际角色】{NamedCharacters}");
             if (!string.IsNullOrWhiteSpace(RealProps)) sb.AppendLine($"【附近实际预制件】{RealProps}");
             if (!string.IsNullOrWhiteSpace(DateLabel)) sb.AppendLine($"【纪元时间】{DateLabel}");
@@ -158,6 +160,27 @@ namespace AnimusForge.Illustrator.Context
 
             if (isUnderSiege)
             {
+                // 围城下的会话有两种物理现场：城内/城头（菜单或室内 Location）vs Mission 场景中的阵前旷野谈判。
+                // Mission 存在且 Location 为 null = 野外场景（出城谈判/阵前会晤），绝非城门对峙。
+                bool outdoorMission = false;
+                try
+                {
+                    outdoorMission = TaleWorlds.MountAndBlade.Mission.Current != null
+                        && CampaignMission.Current?.Location == null;
+                }
+                catch
+                {
+                }
+
+                if (outdoorMission)
+                {
+                    profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
+                    profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景旷野上双方使节的旌旗仪仗与随行披甲卫队分列对峙，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
+                    profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
+                    profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困，双方主将使节在两军阵前的旷野上驻马交涉谈判，身后各自肃立着严阵以待的卫队与绵延军营！";
+                    return;
+                }
+
                 profile.SpecificLocation = "被围攻的要塞城门、护城河壕沟与险峻城堞 (Besieged Fortress Walls, Castle Gate & Ramparts)";
                 profile.IndoorOutdoorDetails = "战云密布的中世纪城堡要塞防御前沿：高耸险峻的石砌城堡城堞与箭垛垛口、紧闭包铁的巨型要塞城门与吊桥，城门外是泥泞深邃的护城河壕沟与拒马鹿砦。空气中弥漫着刺鼻的硝烟与大军围城的肃杀死寂。城头守军据险扼守，城下围城大军严阵以待。";
                 profile.LightingAndAtmosphere = "暗沉肃杀的天光，城堞垛口上烈烈燃烧的火把投下跳跃的橘红光斑，城外远景处漫山遍野隐现着围城大军的篝火宿营与攻城器械巨影 (Dramatic War Torches, Siege Campfires & Chiaroscuro)";

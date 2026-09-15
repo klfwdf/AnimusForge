@@ -1,12 +1,19 @@
 <Prefab>
   <!-- 离屏渲染舞台：Gauntlet 只取 Window 的第一个子元素作为根模板，因此必须包一层单一根 Widget。
-       根控件占满屏幕但无贴图（自身不绘制任何像素）；子 tableau 控件居中对齐——三个生成流程全程有
-       居中不透明卡片/弹窗遮挡，舞台层优先级也取最低(1)被正常 UI 盖住；AlphaFactor=0 作为额外兜底。
+       根控件占满屏幕但无贴图（自身不绘制任何像素）。
+       玩家不可见的核心机制：tableau 控件被包在一个 2x2 的 ClipContents 裁剪容器里——
+       裁剪是渲染期 scissor，不影响子控件布局尺寸与 provider tick，TableauView 照常按
+       384x768 全尺寸渲染落盘，但屏幕 blit 被裁剪到 2x2 像素点（视觉上不可见）。
+       AlphaFactor=0 与最低层优先级(1)保留作额外兜底。
        IsVisible=false 会阻止 provider tick，故控件保持 IsVisible=true 由代码按需开启。 -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="true" DoNotAcceptEvents="true">
       <Children>
-        <CharacterTableauWidget Id="OffscreenCharacter" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="384" SuggestedHeight="768" HorizontalAlignment="Center" VerticalAlignment="Center" AlphaFactor="0" IsVisible="false" DoNotAcceptEvents="true" />
+        <Widget ClipContents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="2" SuggestedHeight="2" HorizontalAlignment="Left" VerticalAlignment="Top" DoNotAcceptEvents="true">
+          <Children>
+            <CharacterTableauWidget Id="OffscreenCharacter" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="384" SuggestedHeight="768" HorizontalAlignment="Left" VerticalAlignment="Top" AlphaFactor="0" IsVisible="false" DoNotAcceptEvents="true" />
+          </Children>
+        </Widget>
       </Children>
     </Widget>
   </Window>
