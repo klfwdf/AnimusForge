@@ -1,3 +1,14 @@
+# 当前任务：对照 main 的主体收尾与双层接口（2026-09-15）
+
+- 用户授权开始收尾：仅复现/拆净AF主体，政策/宴会/GCCZ等玩法不重构；内部契约稳定，外部子MOD明确要求Native/Scene/Courier三渠道都开放。任务 `CORE-CLOSEOUT-MAIN-20260915` ACTIVE，唯一写入G:/AFMOD/AF-REFACTOR，起点f03557fb/生产f07cb2a2。
+- fresh fetch：origin/main固定437925b856fae76b4e9ee207e96ba048f35d5a67；重构远端f03557fb与本地0/0。按此main主体功能建立缺口/保留/迁移/证据表，不拿旧测试基线代替main，也不复制main已知缺陷来凑相等。
+- 本切片优先C1共用请求生命周期：InteractionRequestCoordinator与main相同，直接Cancel/Dispose有旧取消回调打断新请求、停机不能遍历其余渠道、在途token提前释放的风险。先旧红复现，再将CTS所有权/取消与完成清理拆到内部lease；协调器保留原公开构造/Execute/Cancel/Dispose签名及渠道/session规则，不新建第二套调度器。
+- 通过真实共享facade接线验证三渠道；契约和普通/失败/档代/重复/取消语义对照main。外部三渠道已纳入必交，但当前Api.V1只读仍是未完成状态，不在闭环前虚报Supported，不新增缩水LLM/动作/记忆链。
+- Courier的background prepare仍含persona/history/preprocess/live读；这是单列待修缺口，不能整段搬主线程造成网络阻塞。本轮不冒称此缺口、B1深复制/预算或Campaign/Mission全部完成。
+- 验证计划：main旧红/当前绿与共同基线、故障注入、既有pipeline/装配/API/存档身份/六Stage，稳定公开签名与只读/制作组契约；更新main功能矩阵/符号迁移与HANDOFF。三份保护文件保持，自动化PAUSED，不推送/部署/改默认，不删除仍有兼容/存档责任的类型。
+
+## 以下为历史记录；当前收尾以上方为准
+
 # 当前任务：推送已验证重构交付（2026-09-15）
 
 - 用户明确授权“推送到GITHUB”。任务 `GITHUB-DELIVERY-20260915` PUBLISHED；起点1345b0bc，生产f07cb2a2；目标仅origin/codex/af-main-refactor-continuation-20260831（klfwdf/AnimusForge），不触碰main/legacy远端、不强推/改历史。
