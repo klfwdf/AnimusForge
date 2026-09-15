@@ -1,3 +1,12 @@
+# 当前连续收尾：真实 GameEnd 与待办退役（2026-09-15）
+
+- 全范围任务仍ACTIVE；继续上一包807bc5b9之后的I1/C1生命周期，不停止于人设消费者完成。新包先绑定实际Game身份，拒绝旧GameEnd误伤新Game；结束/替换先推进generation，再分别退役主体owner及静态订阅。
+- 已证实SubModule.OnGameEnd只有地图按钮移除/base调用。Native与Courier有结果等待的主线程动作在清队列后仍只能靠deadline结束；拟复用现有队列并增加待办退役登记，不新建第二队列。未claim立即结算为失效，已claim保留真实回执；GameEnd永久停止旧owner新提交，读档/Mission重置只结束旧待办。
+- 只处理AF主体和AF侧接线，不清用户存档/素材或修改制作组业务。保持目录Ready=adapter已装配的现有语义，不把GameEnd改成整个模块卸载；下一Game仍走原注册路径。
+- 验证实际生命周期装配/失败隔离/旧结束回调/注册和reset竞态、三渠道守卫及相邻回归，最终六Stage和元数据。GameEnd仍不能替代全部preprocess/lore/B1/SDK/实机验收。
+
+## 以下为前一联合包与历史记录
+
 # 当前连续收尾：三渠道人设消费与信使准入（2026-09-15）
 
 - 用户要求全范围继续直到完成，任务CORE-CLOSEOUT-FULL-20260915保持ACTIVE；本包从4140bd04/生产043b62b4继续，唯一写入AF-REFACTOR，三份保护文件不动。已完成的单次GitHub推送不自动扩展为每批发布；不恢复自动化、不覆盖游戏/操作存档。
