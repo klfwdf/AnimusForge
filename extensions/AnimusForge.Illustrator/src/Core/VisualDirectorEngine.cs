@@ -321,7 +321,7 @@ namespace AnimusForge.Illustrator.Core
                 ["max_tokens"] = 900
             };
 
-            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(30) })
+            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(120) })
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpoint))
             {
                 request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
