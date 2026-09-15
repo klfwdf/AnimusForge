@@ -1,3 +1,9 @@
+# 当前增量：三渠道人设消费/信使准入与执行回执（2026-09-15）
+
+生产807bc5b9，112点地图。主线程值捕获、原admission/Mission/session/candidate重验和共享生成等待；Courier已claim回执不被取消/超时伪装为未执行。[详细范围](../handoffs/2026-09-15-channel-persona-and-courier-receipt-handoff.md)。其他preprocess/lore/消息live读、GameEnd/B1和SDK仍未完成。
+
+## 以下为既有范围记录
+
 # 当前增量：共享Hero人设请求owner（2026-09-15）
 
 源码043b62b4，105点地图。`NpcPersonaGenerationOwner`持有预约/冷却；`MyBehavior.PersonaGeneration.cs`持有请求捕获/后台解析/主线程接受编排，真实profile/Saveable仍归MyBehavior。正常Hero外部Ensure及编辑器重生已接线，旧3字段/生成体删除。
