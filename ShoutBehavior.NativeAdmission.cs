@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Modules;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.MountAndBlade;
@@ -16,6 +17,7 @@ public partial class ShoutBehavior
 
     internal sealed class NativeConversationAdmission
     {
+        internal CoreDialogueOperation ModuleOperation;
         internal long Generation;
         internal long ConversationEpoch;
         internal long PresentationRevision;
@@ -63,7 +65,7 @@ public partial class ShoutBehavior
     private async Task<string> SubmitNativeConversationAdmittedAsync(string playerText,
         Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted,
         Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening,
-        NativeConversationPresentationScope presentationScope = null)
+        NativeConversationPresentationScope presentationScope = null, CoreDialogueOperation moduleOperation = null)
     {
         if (!npcInitiatedOpening && string.IsNullOrWhiteSpace(playerText))
             return "";
@@ -76,6 +78,8 @@ public partial class ShoutBehavior
         try
         {
             // Overlay calls admission on the main thread, before its first stream callback can run.
+            admission.ModuleOperation = moduleOperation;
+            moduleOperation?.MarkOwnerAdmitted();
             presentationScope?.Bind(admission);
             return await Task.Run(async delegate
             {

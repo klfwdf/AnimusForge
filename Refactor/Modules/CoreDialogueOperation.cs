@@ -1,0 +1,100 @@
+using System;
+using System.Threading.Tasks;
+
+namespace AnimusForge.Refactor.Modules;
+
+/// <summary>
+/// One caller-owned operation. Cancellation only wins before the real main-thread owner claims it.
+/// A late cancellation/disposal cannot replace an actual action/history receipt or promise rollback.
+/// </summary>
+internal sealed class CoreDialogueOperation
+{
+    private readonly object _gate = new object();
+    private readonly TaskCompletionSource<CoreDialogueResult> _completion =
+        new TaskCompletionSource<CoreDialogueResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+    private CoreDialogueResult _snapshot;
+    private bool _ownerAdmitted;
+    private string _confirmedReply;
+    private bool _ownerCompleted;
+
+    internal CoreDialogueOperation(string clientId, string requestId, string playerText)
+    {
+        ClientId = clientId; RequestId = requestId; PlayerText = playerText;
+        _snapshot = Result(CoreDialogueState.Queued, CoreDialogueEffectState.NoConfirmedEffect, "dialogue.queued");
+    }
+    internal string ClientId { get; }
+    internal string RequestId { get; }
+    internal string PlayerText { get; }
+    internal Task<CoreDialogueResult> Completion => _completion.Task;
+    internal CoreDialogueResult Snapshot { get { lock (_gate) return _snapshot; } }
+
+    internal bool TryBegin()
+    {
+        lock (_gate)
+        {
+            if (_snapshot.State != CoreDialogueState.Queued) return false;
+            _snapshot = Result(CoreDialogueState.Running, CoreDialogueEffectState.NoConfirmedEffect, "dialogue.starting");
+            return true;
+        }
+    }
+
+    // Called after the existing Native owner accepts its admission, before starting its worker.
+    internal void MarkOwnerAdmitted()
+    {
+        lock (_gate)
+        {
+            if (_snapshot.State != CoreDialogueState.Running) return;
+            _ownerAdmitted = true;
+            _snapshot = Result(CoreDialogueState.Running, CoreDialogueEffectState.UnknownAfterStart, "dialogue.running");
+        }
+    }
+
+    // Called only at the existing successful action + required history completion point.
+    // This is a receipt, not a second writer. The worker still releases its real admission first.
+    internal void RecordOwnerCompletion(string reply)
+    {
+        lock (_gate)
+        {
+            if (!_ownerAdmitted || _snapshot.State != CoreDialogueState.Running || _ownerCompleted) return;
+            _ownerCompleted = true;
+            _confirmedReply = reply ?? "";
+        }
+    }
+
+    internal void Finish(string unconfirmedReason)
+    {
+        lock (_gate)
+        {
+            if (IsTerminal(_snapshot.State)) return;
+            if (_ownerCompleted)
+                SetTerminal(Result(CoreDialogueState.Completed, CoreDialogueEffectState.CompletedByOwner,
+                    "dialogue.completed", _confirmedReply));
+            else
+                SetTerminal(Result(_ownerAdmitted ? CoreDialogueState.Failed : CoreDialogueState.Rejected,
+                    _ownerAdmitted ? CoreDialogueEffectState.UnknownAfterStart : CoreDialogueEffectState.NoConfirmedEffect,
+                    unconfirmedReason));
+        }
+    }
+
+    internal CoreDialogueCancelResult Cancel()
+    {
+        lock (_gate)
+        {
+            if (IsTerminal(_snapshot.State)) return CoreDialogueCancelResult.AlreadyTerminal;
+            if (_snapshot.State != CoreDialogueState.Queued) return CoreDialogueCancelResult.TooLate;
+            SetTerminal(Result(CoreDialogueState.Cancelled, CoreDialogueEffectState.NoConfirmedEffect,
+                "dialogue.cancelled_before_start"));
+            return CoreDialogueCancelResult.CancelledBeforeStart;
+        }
+    }
+
+    private static bool IsTerminal(CoreDialogueState state)
+        => state != CoreDialogueState.Queued && state != CoreDialogueState.Running;
+    private CoreDialogueResult Result(CoreDialogueState state, CoreDialogueEffectState effects, string reason, string reply = "")
+        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply);
+    private void SetTerminal(CoreDialogueResult result)
+    {
+        _snapshot = result;
+        _completion.TrySetResult(result);
+    }
+}

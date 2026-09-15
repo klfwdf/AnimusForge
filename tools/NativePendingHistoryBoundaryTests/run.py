@@ -47,6 +47,7 @@ if not a.original:
  if a.mutate=='keep-failed-publication':pending=pending.replace('if (Interlocked.CompareExchange(ref state, 2, 0) == 0) completion.TrySetException(ex);','completion.TrySetException(ex);',1)
  if a.mutate=='allow-diagnostic-failure':pending=pending.replace('// Optional diagnostics cannot alter queue ownership or report a fake completion.\n            return;','// Mutated observer.\n            throw;',1)
  (out/'PendingHistory.cs').write_text(pending,encoding='utf-8')
+spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')

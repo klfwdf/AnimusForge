@@ -61,6 +61,7 @@ namespace AnimusForge
         public static ShoutBehavior CurrentInstance;
         private const int NativeConversationMainThreadPreprocessTimeoutMs = 40; // Test-only accelerated queue timeout.
         private readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
+        private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new AnimusForge.Refactor.Runtime.PendingOperationRegistry();
         private class NpcDataPacket { public string Name; public int AgentIndex; }
         private class SceneSummonPromptTarget { }
         private class SceneGuidePromptTarget { }

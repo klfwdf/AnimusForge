@@ -118,13 +118,17 @@ internal static class Program
             }
         }
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
-            "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo" };
+            "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo",
+            "AfDialogueClient", "AfDialogueOperation", "AfDialogueResult", "AfDialogueState",
+            "AfDialogueEffectState", "AfDialogueCancelResult" };
         Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(foundCourierOwner, "actual DLL includes original Courier owner");
-        Check(api.SetEquals(expected), "exact initial V1 type surface");
+        Check(api.SetEquals(expected), "exact additive Native V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
+            "CoreDialogueClient", "CoreDialogueOperation", "CoreDialogueResult", "CoreDialogueServices",
+            "CoreDialogueState", "CoreDialogueEffectState", "CoreDialogueCancelResult",
             "InternalModuleDirectory", "ModuleFrameworkRuntime", "CampaignComposition",
             "CampaignModelComposition", "TeamModuleRegistration", "ModuleFrameworkSnapshot",
             "ModuleBindingSnapshot", "ModuleFrameworkLifecycleState" })

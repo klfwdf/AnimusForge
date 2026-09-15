@@ -1,0 +1,100 @@
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+using AnimusForge.Api.V1;
+class Program {
+ static int Checks;
+ static void Check(bool b,string name){if(!b)throw new Exception("FAIL "+name);Checks++;Console.WriteLine("PASS "+name);}
+ static void Until(Func<bool> done){var watch=Stopwatch.StartNew();while(!done()){NativeHost.Pump();if(watch.ElapsedMilliseconds>6000)throw new Exception("FAIL timed out");Thread.Sleep(1);}NativeHost.Pump();}
+ static AfDialogueResult Finish(AfDialogueOperation op){Until(()=>op.Completion.IsCompleted);return op.Completion.GetAwaiter().GetResult();}
+ static AfDialogueOperation Worker(AfDialogueClient client,string id,string text="input")=>Task.Run(()=>client.SubmitNative(id,text)).GetAwaiter().GetResult();
+ static int Main(){try{Run();return 0;}catch(Exception error){Console.WriteLine(error.ToString());return 1;}}
+ static void Run(){
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"cancel");Check(op.GetSnapshot().State==AfDialogueState.Queued,"worker submit queues without game reads");
+   Check(op.Cancel()==AfDialogueCancelResult.CancelledBeforeStart,"cancel before real claim wins");
+   NativeHost.Pump();Check(Finish(op).EffectState==AfDialogueEffectState.NoConfirmedEffect&&NativeHost.Captures==0&&NativeHost.Calls==0&&NativeHost.Effects==0,"cancelled callback performs no work");
+   Check(client.SubmitNative("cancel","input").GetSnapshot().State==AfDialogueState.Cancelled,"retry keeps cancelled operation");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var first=Worker(client,"one");var duplicates=Enumerable.Range(0,32).Select(_=>Task.Run(()=>client.SubmitNative("one","input"))).ToArray();Task.WaitAll(duplicates);
+   Until(()=>NativeHost.Calls==1);Check(first.Cancel()==AfDialogueCancelResult.TooLate,"claimed cancellation cannot replace real outcome");
+   Check(client.SubmitNative("one","different").GetSnapshot().ReasonCode=="dialogue.request_id_conflict","same ID different payload rejected");
+   NativeHost.Duplicate=true;NativeHost.Release.SetResult(true);var result=Finish(first);
+   Check(result.State==AfDialogueState.Completed&&result.Reply=="NPC answer"&&result.EffectState==AfDialogueEffectState.CompletedByOwner,"only original completion receipt means completed");
+   Check(NativeHost.Calls==1&&NativeHost.Effects==1&&NativeHost.Writes==1,"duplicates invoke original worker action and memory exactly once");
+   Check(duplicates.All(t=>Finish(t.Result).State==AfDialogueState.Completed),"all duplicates receive terminal result");
+   Check(first.Cancel()==AfDialogueCancelResult.AlreadyTerminal&&!result.CanRetryAutomatically,"late cancel does not mutate receipt or allow retry");
+   Check(NativeHost.WrongThread==0,"real admission dispatcher and final writes stay main; worker runs off main");
+  }
+  foreach(var mode in new[]{"error","empty"}){
+   NativeHost.Reset();NativeHost.Mode=mode;using(var client=AfApi.CreateDialogueClient()){
+    var op=Worker(client,mode);Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);var r=Finish(op);
+    Check(r.State==AfDialogueState.Failed&&r.Reply==""&&r.ReasonCode=="native.owner_completion_missing","legacy "+mode+" return never becomes success");
+    Check(NativeHost.Effects==0&&NativeHost.Writes==0,"unconfirmed "+mode+" no completion effects");
+   }
+  }
+  foreach(var mode in new[]{"action","memory"}){
+   NativeHost.Reset();NativeHost.ActionFails=mode=="action";NativeHost.MemoryFails=mode=="memory";using(var client=AfApi.CreateDialogueClient()){
+    var op=Worker(client,mode);Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);var r=Finish(op);
+    Check(r.State==AfDialogueState.Failed&&r.EffectState==AfDialogueEffectState.UnknownAfterStart&&r.Reply=="","partial "+mode+" failure stays unknown and private");
+    Check(r.ReasonCode=="native.execution_failed"&&!r.CanRetryAutomatically,"partial "+mode+" not auto retryable");
+   }
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"retired");NativeHost.Retire();var r=Finish(op);
+   Check(r.State==AfDialogueState.Rejected&&r.EffectState==AfDialogueEffectState.NoConfirmedEffect&&NativeHost.Calls==0,"retirement settles queued operation without tick or claim");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"generation");NativeHost.Advance();NativeHost.Release.SetResult(true);var r=Finish(op);
+   Check(r.State==AfDialogueState.Rejected&&NativeHost.Calls==0,"queued stale generation cannot start new-game dialogue");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"conversation");NativeHost.ChangeConversation();NativeHost.Release.SetResult(true);var r=Finish(op);
+   Check(r.State==AfDialogueState.Rejected&&NativeHost.Calls==0&&NativeHost.Effects==0,"queued prior conversation cannot be retargeted into another NPC conversation");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"conversation-after-start");Until(()=>NativeHost.Calls==1);NativeHost.ChangeConversation();NativeHost.Release.SetResult(true);var r=Finish(op);
+   Check(r.State==AfDialogueState.Failed&&NativeHost.Effects==0,"admitted prior conversation cannot commit after target changes");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"prior-round");NativeHost.Mode="empty";Task<string> ui=NativeHost.SubmitLegacy();
+   NativeHost.Release.SetResult(true);var watch=Stopwatch.StartNew();while(!ui.IsCompleted){if(watch.ElapsedMilliseconds>5000)throw new Exception("FAIL UI fixture never completed");Thread.Sleep(1);}
+   Check(ui.GetAwaiter().GetResult()==""&&NativeHost.Calls==1,"default UI can complete before queued module turn");
+   NativeHost.Mode="normal";var r=Finish(op);
+   Check(r.State==AfDialogueState.Rejected&&NativeHost.Calls==1&&NativeHost.Effects==0,"prior queued API cannot follow intervening default UI round");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"active-retired");Until(()=>NativeHost.Calls==1);NativeHost.Retire();NativeHost.Release.SetResult(true);var r=Finish(op);
+   Check(r.State==AfDialogueState.Failed&&r.EffectState==AfDialogueEffectState.UnknownAfterStart&&NativeHost.Effects==0,"retired active worker never commits late reply");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   var op=Worker(client,"replace");NativeHost.ReplaceOwner();var r=Finish(op);
+   Check(r.State==AfDialogueState.Rejected&&NativeHost.Calls==0,"replaced owner's unpumped queue expires without starting");
+  }
+  NativeHost.Reset();using(var a=AfApi.CreateDialogueClient())using(var b=AfApi.CreateDialogueClient()){
+   Check(a.ClientId!=b.ClientId,"different clients are independent opaque namespaces");
+   var one=Worker(a,"same");var other=Worker(b,"same");one.Cancel();Until(()=>NativeHost.Calls==1);NativeHost.Release.SetResult(true);
+   Check(Finish(one).State==AfDialogueState.Cancelled&&Finish(other).State==AfDialogueState.Completed,"one client cannot cancel another's equal request ID");
+  }
+  NativeHost.Reset();using(var client=AfApi.CreateDialogueClient()){
+   Task<string> legacy=NativeHost.SubmitLegacy();Until(()=>NativeHost.Calls==1);var op=client.SubmitNative("busy","input");var r=Finish(op);
+   Check(r.State==AfDialogueState.Rejected&&r.ReasonCode=="native.busy"&&r.EffectState==AfDialogueEffectState.NoConfirmedEffect,"API respects existing UI backend admission");
+   NativeHost.Release.SetResult(true);Until(()=>legacy.IsCompleted);Check(legacy.GetAwaiter().GetResult()=="NPC answer"&&NativeHost.Calls==1,"legacy default path still completes unchanged");
+  }
+  NativeHost.Reset();var disposable=AfApi.CreateDialogueClient();var active=Worker(disposable,"active");Until(()=>NativeHost.Calls==1);var queued=Worker(disposable,"queued");disposable.Dispose();
+  Check(queued.GetSnapshot().State==AfDialogueState.Cancelled,"dispose cancels only pending own operation");NativeHost.Release.SetResult(true);
+  Check(Finish(active).State==AfDialogueState.Completed,"dispose cannot cancel confirmed or active game owner");
+  Check(disposable.SubmitNative("closed","text").GetSnapshot().ReasonCode=="dialogue.client_disposed","disposed client rejects new work");
+  // Engine-free ownership checks run inside a public test-control method, not friend access.
+  bool[] core=NativeHost.CoreCases();
+  string[] coreLabels={"one atomic claim even with duplicate dispatcher","first confirmed receipt survives disposal and later error","capacity rejects rather than evicting processed ID","oldest ID retained at capacity","invalid ID rejected"};
+  for(int i=0;i<core.Length;i++)Check(core[i],coreLabels[i]);
+  Check(AfApi.GetCapability(AfCapabilityIds.NativeSubmit).State==AfCapabilityState.Available,"Native capability corresponds to callable request boundary");
+  Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State==AfCapabilityState.NotSupported&&AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State==AfCapabilityState.NotSupported,"unimplemented group and transport boundaries not falsely advertised");
+  Console.WriteLine("PASS "+Checks+" Native module API checks; actual admission/dispatcher/action-dispatch/completion, fixture provider/game effects; NOT LIVE");
+ }
+}

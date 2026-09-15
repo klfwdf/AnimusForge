@@ -1,0 +1,57 @@
+{
+  "status": "OFFLINE_NATIVE_INTERFACE_VERIFIED_PENDING_ROOT_INTEGRATION",
+  "baseRevision": "154f7206",
+  "productionSourceSha256": {
+    "Api/V1/AfApi.cs": "5e5524aec712fd8b94cd59096301e1cbadae66d231d7cc80f609967b910d205c",
+    "Api/V1/AfDialogueClient.cs": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe",
+    "Api/Internal/AfV1DialogueProjection.cs": "056c88e02fd05a89a8c6c763dccba303798c4c63653df03ef3cfd2ff19ea59a5",
+    "Refactor/Modules/CoreDialogueContracts.cs": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
+    "Refactor/Modules/CoreDialogueOperation.cs": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
+    "Refactor/Modules/CoreDialogueClient.cs": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
+    "Refactor/Modules/CoreDialogueServices.cs": "e3f746979d34a037131f95ef2de6f0eff7068e41c97948c979ce686a7ce51490",
+    "ShoutBehavior.ModuleNativeSubmission.cs": "26538e78762ca3f8aba96abfc6cb9bc5c1a43c5c452de9cdbcb8b6f7046fe9ca",
+    "ShoutBehavior.NativeAdmission.cs": "2994455bd73c352e3ea542ff8209fd54a5a81d59118fb7b2f6eefdc8c4e0a5d6",
+    "ShoutBehavior.NativeCompletion.cs": "a11d72568e9261b31a51caccaa62eee7a6c302f658155755f6bc3b5a5e1e758a"
+  },
+  "newChecks": 41,
+  "validBehaviorMutations": 8,
+  "enumReorderChecks": 41,
+  "existingChecks": {
+    "NativeAdmission": 44,
+    "NativePresentation": 46,
+    "NativeCompletion": 184,
+    "NativePendingHistory": 111,
+    "Catalog": 119,
+    "Snapshot": 32
+  },
+  "evidence": {
+    ".tmp/native-module-api-20260916/native-final.log": "4f08c76e3bdc4ac25d546ded718215cc7db47b97bb8e99be28a16797418a4268",
+    ".tmp/native-module-api-20260916/reordered-final.log": "4370f9b5b1c13af027487e90058f411e0d1b2b3e0b253fd5a0da9b057c12f686",
+    ".tmp/native-module-api-20260916/admission-final.log": "e1d8636744e3dd7183ac42e62a7f195f17385a945ae9623bdf5910e41a28b12c",
+    ".tmp/native-module-api-20260916/presentation-final.log": "be05d211c40213cb3c955090a44be264179457aeb800cbade176af77e819914f",
+    ".tmp/native-module-api-20260916/tools-NativeCompletionBoundaryTests-run.log": "8f73e6336283f04d0c4ecb2fc18853685e5ce71b511c73dcddcbce946c8dd372",
+    ".tmp/native-module-api-20260916/tools-NativePendingHistoryBoundaryTests-run.log": "fa54338ce87eab0bfba612d547cc3f6d93b0d80b75ae062aab6288614a9d9b4c",
+    ".tmp/native-module-api-20260916/catalog-final.log": "40566a8ccb3725e82fa5cb63f6acc83c7d09c7e60a52a5e7d6512b91945f1381",
+    ".tmp/native-module-api-20260916/mutant-ignore-cancel-final.log": "a5893d8885d98eee205339e3fbe5744f213457570c951177ed35509d63aa1f91",
+    ".tmp/native-module-api-20260916/mutant-text-success-final.log": "e0c991a02f58e47e63ac7c6a3acfc6d35e1be0211eafdb30b8ae5721751168dc",
+    ".tmp/native-module-api-20260916/mutant-drop-receipt-final.log": "2b9db6079bcb30c32b8d277e7f1de2a0cc1d87e47c2a1683e0ed4374aa12da8e",
+    ".tmp/native-module-api-20260916/mutant-replace-confirmed-final.log": "f473ea7ceeb1fb6af6ebce5fc6b96f688e6fe95d2b976a8e8c687fee0c1f8de6",
+    ".tmp/native-module-api-20260916/mutant-replay-id-final.log": "d7032faff5868335562e96d0bc4b6071c491bc342476db64cd4aaaa2359bda9a",
+    ".tmp/native-module-api-20260916/mutant-skip-generation-final.log": "edbd65f441f2f8f6a2498f4cb88253ca2cdd72d8f6fd7cb9d19ab870ec7f05f0",
+    ".tmp/native-module-api-20260916/mutant-skip-conversation-final.log": "5a0bd1be58658eae265dc41c861d0db8f55ed3d195882a68f3338fec9062da30",
+    ".tmp/native-module-api-20260916/mutant-skip-revision-final.log": "bdfc542ec30853fb6f794a80be9088622fca805d3d0aa94600a410e10550dccd"
+  },
+  "notClaimed": [
+    "Full Scene/Courier public submission",
+    "All team-to-core services",
+    "Entire Native prompt pipeline thread safety",
+    "Live Bannerlord/old save/economy/AFEF",
+    "Independent submod game loading",
+    "Push/deploy/default entry change"
+  ],
+  "notes": [
+    "new public consumer assembly has no friend access; game/provider ports explicitly fixture",
+    "early non-final timeout/fixture missing-dependency failures excluded",
+    "actual final six Stage and actual DLL metadata are collected by root after peer epoch/revision fixes"
+  ]
+}

@@ -57,6 +57,7 @@ if not a.original:
   dispatch=read('ShoutBehavior.NativeActionDispatch.cs').replace('beforeOwner?.Invoke();\n            ownerStarted = true;','ownerStarted = true;\n            beforeOwner?.Invoke();',1)
   (out/'Dispatch.cs').write_text(dispatch,encoding='utf-8')
  (out/'Completion.cs').write_text(completion,encoding='utf-8')
+spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '<DefineConstants>MEMORY_BASELINE</DefineConstants>' if a.memory_baseline else '')+'</PropertyGroup></Project>',encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'Refactor/Runtime/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
