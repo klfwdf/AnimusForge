@@ -247,7 +247,12 @@ namespace AnimusForge.Illustrator.Core
                 if (!current) return;
                 if (error == null) complete(result);
                 else if (!(error is OperationCanceledException)) fail(error.Message);
-                else fail("请求已取消或超时。");
+                else if (token.IsCancellationRequested) fail("生图请求已取消（界面已切换或发起了新请求）。");
+                else
+                {
+                    Debug.Print($"[Illustrator] Request timed out waiting for upstream ({error.GetType().Name}).");
+                    fail("生成请求超时：上游模型在限定时间内无响应，请稍后重试。");
+                }
             });
             if (!started)
             {
