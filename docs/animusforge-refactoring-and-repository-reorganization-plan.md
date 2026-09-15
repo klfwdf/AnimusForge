@@ -1,3 +1,14 @@
+# 当前任务：已推送后开始全范围主体收尾（2026-09-15）
+
+- 用户明确授权“推送GITHUB，然后开始全范围收尾”。任务 `CORE-CLOSEOUT-FULL-20260915` ACTIVE；唯一写入G:/AFMOD/AF-REFACTOR，起点10defeb4/生产af754ab6。三份保护文件不动，不部署、不操作存档、不恢复自动化。
+- 发布已完成：fresh fetch确认main437925b8不变、专用远端f03557fb；6 ahead/0 behind，排除保护文件和生成物并验证源码/产物/证据后，普通快进推送到origin/codex/af-main-refactor-continuation-20260831，ls-remote核对10defeb4976f3ffa096a77e847fba254308f6aba。此回执只证明上述已验证候选发布，后续新代码另行标明本地状态。
+- 执行范围沿用main矩阵与14职责计划：主体完整功能/清理、三渠道和生命周期、记忆实际预算、内部双向服务/外部三渠道SDK、最终同候选验收与交接；政策/宴会/GCCZ业务与参考资料HOLD不扩围。完整责任包实现→回归→删除替代代码→联合检查，不凭单helper PASS放行整项。
+- 首个真实跨渠道缺口：正常Hero人设自动生成/编辑器重生在await前后直接访问Hero/档案；Courier/Native可从worker调用，共享入口还先读Campaign。拟将事实/配置捕获和档案提交归原MyBehavior主线程队列，网络/解析在后台；拆出生成预约/重试owner，防止同代重置后的旧finally清掉新请求和重生回包覆盖玩家中途编辑。
+- 先复现正常/单字段/重生/VoiceId保持/失败冷却/重复/编辑/换档/owner替换，再实现；维持原Prompt/辅助Gateway/公开签名与保存类型。正常Hero生成、消费者状态读取与升格同伴生成要分别标覆盖，不能把前者完成冒充整个人设/全部Courier准备完成。
+- 验证：真实新源码+主后台线程/原dispatcher测试，main共同语义与旧缺陷复现、严格MyBehavior整文件逆变换、已有历史/渠道/内部ports/API/六Stage/身份；核实旧默认消费者未断，不拿测试替身冒充实机。
+
+## 以下为历史记录；当前全范围执行以上方为准
+
 # 当前续点：Courier 双向历史捕获边界（2026-09-15）
 
 - 用户继续主体收尾；任务 `COURIER-HISTORY-CAPTURE-20260915` OFFLINE_VERIFIED（仅历史子责任；整体收尾ACTIVE），起点f77fe5e4/生产73774a94，唯一写入G:/AFMOD/AF-REFACTOR；main比较基线仍437925b8。外部Native/Scene/Courier全部必交，但当前版本化提交SDK未完成。
