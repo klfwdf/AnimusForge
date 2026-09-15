@@ -821,32 +821,27 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 将一段引擎操作调度到游戏主线程执行并返回其结果（调用方在任意线程均安全）。
         /// </summary>
-        private static Task<T> RunOnGameThreadAsync<T>(Func<T> work, CancellationToken cancellationToken)
+        private static async Task<T> RunOnGameThreadAsync<T>(Func<T> work, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (Core.IllustratorRuntime.IsMainThread) return work();
             var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-            if (cancellationToken.IsCancellationRequested)
+            int admission = 0; // 0 queued, 1 executing, 2 cancelled before admission.
+            using (cancellationToken.Register(() =>
             {
-                tcs.TrySetCanceled();
-                return tcs.Task;
-            }
-            if (Core.IllustratorRuntime.IsMainThread)
+                if (Interlocked.CompareExchange(ref admission, 2, 0) == 0) tcs.TrySetCanceled();
+            }))
             {
-                try { tcs.TrySetResult(work()); }
-                catch (Exception ex) { tcs.TrySetException(ex); }
-                return tcs.Task;
-            }
-            bool posted = Core.IllustratorRuntime.Post(() =>
-            {
-                if (cancellationToken.IsCancellationRequested)
+                if (!Core.IllustratorRuntime.Post(() =>
                 {
-                    tcs.TrySetCanceled();
-                    return;
-                }
-                try { tcs.TrySetResult(work()); }
-                catch (Exception ex) { tcs.TrySetException(ex); }
-            });
-            if (!posted) tcs.TrySetResult(default);
-            return tcs.Task;
+                    if (Interlocked.CompareExchange(ref admission, 1, 0) != 0) return;
+                    // Once admitted, report completion only after work returns. A
+                    // cancelled caller must still receive ownership of a created stage.
+                    try { tcs.TrySetResult(work()); }
+                    catch (Exception ex) { tcs.TrySetException(ex); }
+                })) return default;
+                return await tcs.Task.ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -872,8 +867,11 @@ namespace AnimusForge.Illustrator.Engine
             public string Prefix;
             public string SeenPath;
             public long SeenLength;
+            public int SeenTick;
             public CancellationToken CancellationToken;
             public int Finished;
+            public int CancelRequested;
+            public readonly TaskCompletionSource<bool> Retired = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             public TaskCompletionSource<string> Done;
         }
 
@@ -897,14 +895,14 @@ namespace AnimusForge.Illustrator.Engine
 
         /// <summary>
         /// 单帧泵步（仅游戏主线程执行）：预热帧后解析舞台控件的 TableauView 并请求落盘 →
-        /// 文件连续两帧存在即完成（出现当帧可能是引擎写入中的半成品，须再等一帧确认稳定）。
+        /// 文件大小至少稳定 50ms 后完成；同帧可执行多次队列任务，不能仅按观察次数判断。
         /// </summary>
         private static void PumpOffscreenStage(OffscreenStagePump pump)
         {
             if (pump == null || Volatile.Read(ref pump.Finished) != 0) return;
             try
             {
-                if (pump.CancellationToken.IsCancellationRequested || !ReferenceEquals(ScreenManager.TopScreen, pump.Screen) || pump.Screen.IsFinalized)
+                if (Volatile.Read(ref pump.CancelRequested) != 0 || pump.CancellationToken.IsCancellationRequested || !ReferenceEquals(ScreenManager.TopScreen, pump.Screen) || pump.Screen.IsFinalized)
                 {
                     FinishStage(pump);
                     pump.Done.TrySetCanceled();
@@ -935,12 +933,19 @@ namespace AnimusForge.Illustrator.Engine
                         long length = new FileInfo(path).Length;
                         if (path == pump.SeenPath && length > 0 && length == pump.SeenLength)
                         {
-                            FinishStage(pump);
-                            pump.Done.TrySetResult(path);
-                            return;
+                            if (unchecked((uint)(Environment.TickCount - pump.SeenTick)) >= 50)
+                            {
+                                FinishStage(pump);
+                                pump.Done.TrySetResult(path);
+                                return;
+                            }
                         }
-                        pump.SeenPath = path;
-                        pump.SeenLength = length;
+                        else
+                        {
+                            pump.SeenPath = path;
+                            pump.SeenLength = length;
+                            pump.SeenTick = Environment.TickCount;
+                        }
                     }
                 }
 
@@ -958,9 +963,20 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
+        private static OffscreenStagePump _activeStage;
+
+        internal static void CancelActiveStage()
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            var pump = _activeStage;
+            FinishStage(pump);
+            pump?.Done.TrySetCanceled();
+        }
+
         private static void FinishStage(OffscreenStagePump pump)
         {
             if (pump == null || Interlocked.Exchange(ref pump.Finished, 1) != 0) return;
+            if (ReferenceEquals(_activeStage, pump)) _activeStage = null;
             try
             {
                 if (pump.Movie != null) pump.Layer?.ReleaseMovie(pump.Movie);
@@ -971,6 +987,21 @@ namespace AnimusForge.Illustrator.Engine
                 if (pump.Layer != null) pump.Screen?.RemoveLayer(pump.Layer);
             }
             catch { }
+            pump.Retired.TrySetResult(true);
+        }
+
+        private static Task RetireStageAsync(OffscreenStagePump pump)
+        {
+            if (pump == null) return Task.CompletedTask;
+            Interlocked.Exchange(ref pump.CancelRequested, 1);
+            if (Volatile.Read(ref pump.Finished) == 0)
+            {
+                if (Core.IllustratorRuntime.IsMainThread) FinishStage(pump);
+                else Core.IllustratorRuntime.Post(() => FinishStage(pump));
+                // If the bounded queue is full, the already queued pump observes
+                // CancelRequested. Reset also retires it even when ticks stop.
+            }
+            return pump.Retired.Task;
         }
 
         /// <summary>
@@ -1050,7 +1081,21 @@ namespace AnimusForge.Illustrator.Engine
                         try { if (movie != null) layer.ReleaseMovie(movie); } catch { }
                         return false;
                     }
-                    var widget = FindChildRecursive(root, w => w.Id == widgetId);
+                    Widget widget;
+                    if (widgetId == "NativeBannerExport")
+                    {
+                        // This child must stay in the normal render area so Gauntlet
+                        // ticks its provider. Its OnRender never submits a screen draw.
+                        widget = new NativeBannerExportWidget(root.Context)
+                        {
+                            Id = widgetId,
+                            WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
+                            SuggestedWidth = 512, SuggestedHeight = 512,
+                            IsVisible = true, DoNotAcceptEvents = true
+                        };
+                        root.AddChild(widget);
+                    }
+                    else widget = FindChildRecursive(root, w => w.Id == widgetId);
                     if (widget == null)
                     {
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: widget not found in prefab");
@@ -1069,6 +1114,7 @@ namespace AnimusForge.Illustrator.Engine
                         CancellationToken = cancellationToken,
                         Done = done
                     };
+                    _activeStage = pump;
                     top.AddLayer(layer);
                     if (!Core.IllustratorRuntime.Post(() => PumpOffscreenStage(pump)))
                     {
@@ -1081,7 +1127,8 @@ namespace AnimusForge.Illustrator.Engine
                 catch (Exception ex)
                 {
                     TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage create failed: {ex.Message}");
-                    try { if (movie != null) layer?.ReleaseMovie(movie); } catch { }
+                    if (pump != null) FinishStage(pump);
+                    else try { if (movie != null) layer?.ReleaseMovie(movie); } catch { }
                     return false;
                 }
             }, cancellationToken).ConfigureAwait(false);
@@ -1095,21 +1142,62 @@ namespace AnimusForge.Illustrator.Engine
                 return path;
             }
             TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' timed out after {timeoutMs}ms");
-            // 无论超时还是取消，都必须等拆台在主线程执行完再释放锁，否则下一个舞台可能与未拆完的舞台重叠
-            await RunOnGameThreadAsync(() =>
-            {
-                FinishStage(pump);
-                done.TrySetResult(null);
-                return true;
-            }, CancellationToken.None).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             return null;
             }
             finally
             {
+                // Never release serialization before native UI retirement finishes.
+                await RetireStageAsync(pump).ConfigureAwait(false);
                 if (!delivered && cleanTempFiles && pump != null)
                     CleanupTempArtifacts(pump.Dir, pump.Prefix);
                 _stageLock.Release();
+            }
+        }
+
+        // Full native banner render, never a texture CPU read or atlas reconstruction.
+        internal static async Task<byte[]> RenderNativeBannerPngAsync(string bannerCode, int size, bool cleanTempFiles, CancellationToken token)
+        {
+            string path = null;
+            try
+            {
+                path = await ExtractViaStageAsync("NativeBannerExport", widget =>
+                {
+                    if (!Banner.IsValidBannerCode(bannerCode)) throw new ArgumentException("Invalid banner code.");
+                    var banner = (NativeBannerExportWidget)widget;
+                    banner.SuggestedWidth = size;
+                    banner.SuggestedHeight = size;
+                    banner.IsNineGrid = true; // Full banner canvas, not the UI's center-third crop.
+                    banner.BannerCodeText = bannerCode;
+                }, warmupTicks: 12, maxTicks: 360, timeoutMs: 6000, cancellationToken: token, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
+                if (string.IsNullOrEmpty(path)) return null;
+                // The stage already waited for a stable file. Retry reading only
+                // at the consumer if the native writer still held the file briefly.
+                for (int attempt = 0; attempt < 4; attempt++)
+                {
+                    token.ThrowIfCancellationRequested();
+                    try
+                    {
+                        var info = new FileInfo(path);
+                        if (info.Length > 16 * 1024 * 1024) return null;
+                        byte[] bytes = File.ReadAllBytes(path);
+                        token.ThrowIfCancellationRequested();
+                        if (bytes.Length > 0) return bytes;
+                    }
+                    catch (IOException) { }
+                    await Task.Delay(50, token).ConfigureAwait(false);
+                }
+                return null;
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print("[NativeBanner] Render/export failed: " + ex.Message);
+                return null;
+            }
+            finally
+            {
+                if (cleanTempFiles && path != null) try { File.Delete(path); } catch { }
             }
         }
 

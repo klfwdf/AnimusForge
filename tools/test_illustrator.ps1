@@ -86,9 +86,9 @@ Assert-True (-not $result.Contains('西式王冠') -and -not $result.Contains('�
 
 $srcDir = Join-Path $module 'src'
 $screenCapture = Get-Content (Join-Path $srcDir 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8
-Assert-True (-not $screenCapture.Contains('ExtractBannerOffscreenAsync') -and -not $screenCapture.Contains('ExtractEmblemOffscreenAsync')) 'banner/emblem offscreen stage extraction removed (no visible flash)'
+Assert-True (-not $screenCapture.Contains('ExtractBannerOffscreenAsync') -and -not $screenCapture.Contains('ExtractEmblemOffscreenAsync')) 'legacy banner/emblem stage entry points removed'
 $composer = Get-Content (Join-Path $srcDir 'Engine\BannerEmblemComposer.cs') -Raw -Encoding UTF8 -ErrorAction SilentlyContinue
-Assert-True ($composer -and $composer.Contains('GetIconSourceTextureName') -and $composer.Contains('BannerDataList')) 'managed banner emblem composer exists (atlas + BannerDataList, zero stage)'
+Assert-True ($composer -and $composer.Contains('NativeBannerPipeline') -and !$composer.Contains('TintIconCell')) 'banner reference uses native renderer without CPU shader reconstruction'
 Assert-True ($screenCapture.Contains('ExtractHeroPortraitOffscreenAsync')) 'hero portrait offscreen extraction exists'
 Assert-True ($screenCapture.Contains('CaptureConversationSceneBase64')) 'conversation scene band capture exists'
 Assert-True ($screenCapture.Contains('BannerTableauWidget') -and $screenCapture.Contains('CharacterTableauWidget')) 'stage-layer widgets used for banner/portrait offscreen render'
@@ -276,15 +276,7 @@ try {
         [void]$cleanupMethod.Invoke($null, [object[]]@([string]$fixtureRoot, [string]$invalidPrefix))
         Assert-True (Test-Path -LiteralPath $fileB) "cleanup rejects broad prefix [$invalidPrefix]"
     }
-    $debugA = Join-Path $fixtureRoot 'debug-a'
-    $debugB = Join-Path $fixtureRoot 'debug-b'
-    [void][IO.Directory]::CreateDirectory($debugA)
-    [void][IO.Directory]::CreateDirectory($debugB)
-    [IO.File]::WriteAllText((Join-Path $debugA 'emblem_final.png'), 'A')
-    [IO.File]::WriteAllText((Join-Path $debugB 'emblem_final.png'), 'B')
-    $composerType = $assembly.GetType('AnimusForge.Illustrator.Engine.BannerEmblemComposer', $true)
-    [void]$composerType.GetMethod('CleanupDebugDump', $privateStatic).Invoke($null, [object[]]@([string]$debugA))
-    Assert-True (!(Test-Path -LiteralPath $debugA) -and [IO.File]::ReadAllText((Join-Path $debugB 'emblem_final.png')) -eq 'B') 'emblem cleanup is isolated to its completed job directory'
+
 }
 finally {
     $resolvedFixture = [IO.Path]::GetFullPath($fixtureRoot)
@@ -427,53 +419,16 @@ foreach ($code in @(200, 401, 429, 500)) {
 }
 Assert-True ($fallback.Invoke($null, [object[]]@(404, '{}'))) 'unsupported edit endpoint retains compatibility fallback'
 
-$emblemType = $assembly.GetType('AnimusForge.Illustrator.Engine.BannerEmblemComposer', $true)
-$visibleMethod = $emblemType.GetMethod('HasVisibleContent', $privateStatic)
-$tintMethod = $emblemType.GetMethod('TintIconCell', $privateStatic)
-$cellMethod = $emblemType.GetMethod('ExtractAtlasCell', $privateStatic)
-$readAtlas = $emblemType.GetMethod('TryReadExportedAtlas', $privateStatic)
-$bitmap = New-Object Drawing.Bitmap 256,256
-$g = [Drawing.Graphics]::FromImage($bitmap)
-$g.Clear([Drawing.Color]::Purple)
-$g.Dispose()
-$bitmap.SetPixel(1,1,[Drawing.Color]::Gold)
-Assert-True (!$visibleMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$bitmap, [Drawing.Color]::Purple))) 'single stray pixel is not a valid emblem'
-# Historical blank PNG had hundreds of alpha-only edge pixels and one faint icon row.
-for ($i = 0; $i -lt 256; $i++) { $bitmap.SetPixel($i,0,[Drawing.Color]::FromArgb(128,128,0,128)); $bitmap.SetPixel($i,255,[Drawing.Color]::FromArgb(128,128,0,128)) }
-Assert-True (!$visibleMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$bitmap, [Drawing.Color]::Purple))) 'background alpha edges do not count as heraldry'
-$bitmap.Dispose()
-$emptyCell = New-Object Drawing.Bitmap 256,256
-for ($i = 0; $i -lt 256; $i++) { $emptyCell.SetPixel($i,255,[Drawing.Color]::FromArgb(67,220,167,64)) }
-Assert-True (!$visibleMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$emptyCell, [Drawing.Color]::Transparent))) 'single faint atlas boundary row is not an icon'
-$emptyCell.Dispose()
-$mask = New-Object Drawing.Bitmap 32,32
-$g = [Drawing.Graphics]::FromImage($mask)
-$g.Clear([Drawing.Color]::Black)
-$g.FillRectangle([Drawing.Brushes]::White, 8,8,16,16)
-$g.Dispose()
-$tinted = $tintMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$mask, [Drawing.Color]::Gold, [Drawing.Color]::Gold, $false))
-Assert-True ($tinted.GetPixel(16,16).A -gt 200 -and $tinted.GetPixel(0,0).A -eq 0) 'opaque atlas uses luminance mask instead of inverted empty alpha'
-$tinted.Dispose()
-$mask.Dispose()
-$atlas = New-Object Drawing.Bitmap 64,64
-$g = [Drawing.Graphics]::FromImage($atlas)
-$g.Clear([Drawing.Color]::Transparent)
-$g.FillRectangle([Drawing.Brushes]::Gold,48,32,16,16)
-$g.Dispose()
-$cell = $cellMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$atlas, 11))
-Assert-True ($cell.GetPixel(8,8).ToArgb() -eq [Drawing.Color]::Gold.ToArgb()) 'PNG atlas cell 11 uses third row fourth column'
-Assert-True ($null -eq $cellMethod.Invoke($null, [object[]]@([Drawing.Bitmap]$atlas,16))) 'invalid atlas cell cannot become a partial emblem'
-$cell.Dispose()
-$exportRoot = Join-Path $root ('artifacts\tests\illustrator-export-' + [Guid]::NewGuid().ToString('N'))
-[void][IO.Directory]::CreateDirectory($exportRoot)
-$exportPath = Join-Path $exportRoot 'atlas.png'
-$atlas.Save($exportPath + '.png', [Drawing.Imaging.ImageFormat]::Png)
-$atlas.Dispose()
-$loaded = $readAtlas.Invoke($null, @([string]$exportPath))
-[IO.File]::Delete($exportPath + '.png')
-Assert-True ($loaded.Width -eq 64 -and $loaded.GetPixel(50,34).ToArgb() -eq [Drawing.Color]::Gold.ToArgb()) 'double-extension PNG uses file dimensions and survives file deletion'
-$loaded.Dispose()
-[IO.Directory]::Delete($exportRoot)
+$nativeImageType = $assembly.GetType('AnimusForge.Illustrator.Engine.NativeBannerImage', $true)
+$nativeEncode = $nativeImageType.GetMethod('Encode', $privateStatic)
+Assert-True ($null -eq $nativeEncode.Invoke($null, [object[]]@([byte[]]@(137,80,78,71), 256))) 'native exporter rejects incomplete PNG'
+$blank = [Drawing.Bitmap]::new(128,128)
+$blankStream = [IO.MemoryStream]::new()
+$blank.Save($blankStream, [Drawing.Imaging.ImageFormat]::Png)
+Assert-True ($null -eq $nativeEncode.Invoke($null, [object[]]@($blankStream.ToArray(), 256))) 'native exporter rejects transparent render'
+$blankStream.Dispose()
+$blank.Dispose()
+Assert-True ($screenCapture.Contains('NativeBannerExportWidget') -and $screenCapture.Contains('IsNineGrid = true') -and $screenCapture.Contains('CancelActiveStage')) 'native banner uses full canvas and lifecycle cleanup'
 
 Write-Host "$($script:checks) checks, $($script:failures) failures"
 if ($script:failures -gt 0) { exit 1 }

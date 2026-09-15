@@ -20,19 +20,18 @@ $dependencyDirs = @(
     (Join-Path $BannerlordRoot 'bin\Win64_Shipping_Client'),
     (Join-Path $BannerlordRoot 'Modules\Native\bin\Win64_Shipping_Client')
 )
-$handler = [ResolveEventHandler]{
-    param($sender, $args)
-    $name = (New-Object Reflection.AssemblyName($args.Name)).Name
-    foreach ($directory in $dependencyDirs) {
-        $candidate = Join-Path $directory "$name.dll"
-        if (Test-Path -LiteralPath $candidate) { return [Reflection.Assembly]::LoadFrom($candidate) }
-    }
-    return $null
-}
-[AppDomain]::CurrentDomain.add_AssemblyResolve($handler)
+Add-Type -Path (Join-Path $PSScriptRoot 'illustrator\OfflineAssemblyResolver.cs')
+$resolver = New-Object OfflineAssemblyResolver -ArgumentList (,[string[]]$dependencyDirs)
 try {
-    Add-Type -Path (Join-Path $PSScriptRoot 'illustrator\EmblemOfflineAudit.cs') -ReferencedAssemblies System.Drawing
-    $results = [EmblemOfflineAudit]::Run($AssemblyPath, $OutputDirectory, $SampleDirectory)
+    $assembly = [Reflection.Assembly]::LoadFrom($AssemblyPath)
+    $native = $null -ne $assembly.GetType('AnimusForge.Illustrator.Engine.NativeBannerPipeline')
+    if ($native) {
+        Add-Type -Path (Join-Path $PSScriptRoot 'illustrator\NativeEmblemPipelineAudit.cs') -ReferencedAssemblies System.Drawing
+        $results = [NativeEmblemPipelineAudit]::Run($AssemblyPath, $OutputDirectory, $SampleDirectory)
+    } else {
+        Add-Type -Path (Join-Path $PSScriptRoot 'illustrator\EmblemOfflineAudit.cs') -ReferencedAssemblies System.Drawing
+        $results = [EmblemOfflineAudit]::Run($AssemblyPath, $OutputDirectory, $SampleDirectory)
+    }
     $failures = @($results | Where-Object { !$_.Passed }).Count
     $report = [ordered]@{
         Assembly = $AssemblyPath
@@ -40,7 +39,8 @@ try {
         Api = $BannerlordApi
         Checks = $results.Count
         Failures = $failures
-        Boundary = 'CPU composition only. No native GPU export, shader golden comparison, live game or image API.'
+        Boundary = $(if ($native) { 'Native adapter with simulated GPU output: image preservation, cache, cancellation and no-blit widget. Not live native rendering or shader fidelity acceptance.' } else { 'Legacy CPU composition only. No native GPU export, shader golden comparison, live game or image API.' })
+        RuntimeDependencies = @([AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GetName().Name.StartsWith('TaleWorlds.') } | ForEach-Object { [ordered]@{ Name = $_.GetName().Name; Version = $_.GetName().Version.ToString(); Path = $_.Location } })
         Results = @($results)
     }
     $report | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $OutputDirectory 'results.json') -Encoding UTF8
@@ -48,4 +48,4 @@ try {
     Write-Output "$($results.Count) checks / $failures failures; $OutputDirectory"
     if ($failures -gt 0) { exit 1 }
 }
-finally { [AppDomain]::CurrentDomain.remove_AssemblyResolve($handler) }
+finally { $resolver.Dispose() }
