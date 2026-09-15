@@ -461,13 +461,13 @@ namespace AnimusForge.Illustrator.Context
                 {
                     profile.SurroundingCharacters = "吧台后酒馆老板正在擦拭陶土酒杯，侍女端着木托盘在席间穿梭，围坐的长桌旁有刀口舔血的雇佣兵在掷骰豪饮，角落游吟乐师弹拨着鲁特琴";
                 }
-                profile.SurroundingProps = "粗糙厚重的原木长桌、溢出白色酒沫的陶制大麦酒杯、墙上悬挂的鹿角兽首与盾牌装饰、粗铁链吊起的黑色锻铁烛台吊灯、巨型石砌壁炉中熊熊燃烧的噼啪柴火与烤肉铁架";
+                profile.SurroundingProps = "粗糙厚重的原木长桌、溢出白色酒沫的陶制大麦酒杯、墙面上的鹿角兽首与木制装饰、粗铁链吊起的黑色锻铁烛台吊灯、巨型石砌壁炉中熊熊燃烧的噼啪柴火与烤肉铁架";
             }
             else if (loc.Contains("lord") || loc.Contains("keep") || loc.Contains("正厅") || loc.Contains("主殿"))
             {
                 if (string.IsNullOrEmpty(profile.SurroundingCharacters))
                 {
-                    profile.SurroundingCharacters = "高耸石柱旁立着手持长戟与盾牌的重甲精锐禁卫，大殿阴影里肃立着捧着卷轴的宫廷侍从与低声耳语的封建贵族";
+                    profile.SurroundingCharacters = "高耸石柱旁立着手持长戟的重甲精锐禁卫，大殿阴影里肃立着捧着卷轴的宫廷侍从与低声耳语的封建贵族";
                 }
                 profile.SurroundingProps = "雕刻有家族徽记的高背领主宝座、铺展在长条宴桌上的亚麻桌布与银质烛台高脚杯、垂挂在大理石立柱上的华丽丝绒刺绣挂毯、地面整张灰狼皮与熊皮地毯、熊熊燃烧的巨型暖殿壁炉";
             }
@@ -483,9 +483,9 @@ namespace AnimusForge.Illustrator.Context
             {
                 if (string.IsNullOrEmpty(profile.SurroundingCharacters))
                 {
-                    profile.SurroundingCharacters = "沙地边缘站着手持练习兵刃与木盾的比武战士，四周层叠看台上聚集着喧闹呐喊的市民观众";
+                    profile.SurroundingCharacters = "沙地边缘站着手持练习兵刃的比武战士，四周层叠看台上聚集着喧闹呐喊的市民观众";
                 }
-                profile.SurroundingProps = "飞扬的黄土沙砾角斗场、四周环形层叠的木石看台、插在沙地边缘的木质训练剑与盾牌、随风舞动的比武彩旗与观众席栏杆";
+                profile.SurroundingProps = "飞扬的黄土沙砾角斗场、四周环形层叠的木石看台、插在沙地边缘的木质训练器具、随风舞动的比武彩旗与观众席栏杆";
             }
             else if (loc.Contains("center") || loc.Contains("市集") || loc.Contains("街道") || loc.Contains("街"))
             {
@@ -501,7 +501,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     profile.SurroundingCharacters = "身侧肃立着披甲随从与战备护卫，周围是开阔原野与扎营连绵的队伍";
                 }
-                profile.SurroundingProps = "驻扎的行军牛皮帐篷、插在草地上的锋利矛戈与彩绘战盾、余烬微红的野外行军篝火、系在树桩旁的战马与运粮大车";
+                profile.SurroundingProps = "驻扎的行军牛皮帐篷、插在草地上的锋利矛戈与军需物资、余烬微红的野外行军篝火、系在树桩旁的战马与运粮大车";
             }
         }
 

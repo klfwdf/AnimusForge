@@ -257,9 +257,40 @@ namespace AnimusForge.Illustrator
         // 预填古典油画预设负面词，供玩家查看/改写；仅在画风预设选“提示词(自定义画风)”时生效
         public string NegativePrompt { get; set; } = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
 
-        [SettingPropertyInteger("参考图相似度", 0, 100, "0'%'", HintText = "控制可调整的艺术表现还原度（0-100，默认80）：人物外貌、装备、纹章和游戏事实始终保持一致；身份立绘与纹章图不提供场景构图。高值忠于有依据的场景关系与氛围，低值允许调整留白、景深和表现手法；所有数值均允许重绘更换镜头。", Order = 12, RequireRestart = false)]
+        private static readonly List<string> SimilarityOptions = new List<string>
+        {
+            "随机（沿用旧版：不附加相似度约束）",
+            "0%（自由艺术表现）", "20%", "40%", "60%", "80%", "100%（最高还原）"
+        };
+        private Dropdown<string> _similarityDropdown;
+
+        [SettingPropertyDropdown("参考图相似度（默认：随机）", Order = 12, RequireRestart = false, HintText = "默认随机等同于旧版没有此设置：不追加相似度约束，但人物外貌、装备、纹章和游戏事实始终保持一致。固定百分比只影响有依据的场景关系、留白、景深和表现手法，不会强制复制参考图镜头；重绘仍可更换构图。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public int Similarity { get; set; } = 80;
+        public Dropdown<string> SimilarityDropdown
+        {
+            get
+            {
+                if (_similarityDropdown == null)
+                {
+                    int selected = Similarity < 0 ? 0 : SimilarityOptions.FindIndex(o => o.StartsWith(Similarity.ToString() + "%", StringComparison.Ordinal));
+                    _similarityDropdown = new Dropdown<string>(SimilarityOptions, selected < 0 ? 0 : selected);
+                }
+                return _similarityDropdown;
+            }
+            set
+            {
+                _similarityDropdown = value;
+                if (value == null || value.SelectedIndex <= 0)
+                {
+                    Similarity = -1;
+                    return;
+                }
+                Similarity = new[] { 0, 20, 40, 60, 80, 100 }[Math.Min(value.SelectedIndex - 1, 5)];
+            }
+        }
+
+        // -1 表示随机/旧版行为；该字段不直接暴露为第二个 MCM 控件。
+        public int Similarity { get; set; } = -1;
 
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]

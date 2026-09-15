@@ -196,14 +196,15 @@ if (-not $Baseline) {
 $privateStatic = [Reflection.BindingFlags]'NonPublic,Static'
 $privateInstance = [Reflection.BindingFlags]'NonPublic,Instance'
 $settingsType = $assembly.GetType('AnimusForge.Illustrator.IllustratorSettings', $true)
-$similarityAttribute = $settingsType.GetProperty('Similarity').GetCustomAttributesData() | Where-Object { $_.AttributeType.Name -eq 'SettingPropertyIntegerAttribute' } | Select-Object -First 1
-$similarityFormat = [string]$similarityAttribute.ConstructorArguments[3].Value
-foreach ($value in @(0, 80, 100)) {
-    Assert-True ($value.ToString($similarityFormat) -eq "$value%") "similarity displays $value percent without scaling"
-}
+$similarityDropdownAttribute = $settingsType.GetProperty('SimilarityDropdown').GetCustomAttributesData() | Where-Object { $_.AttributeType.Name -eq 'SettingPropertyDropdownAttribute' } | Select-Object -First 1
+Assert-True ($null -ne $similarityDropdownAttribute -and $settingsType.GetProperty('Similarity').GetValue([Activator]::CreateInstance($settingsType)) -eq -1) 'similarity defaults to random legacy behavior'
+$similarityOptionsField = $settingsType.GetField('SimilarityOptions', $privateStatic)
+Assert-True ($similarityOptionsField.GetValue($null)[0].Contains('随机') -and $similarityOptionsField.GetValue($null)[0].Contains('旧版')) 'similarity dropdown exposes explicit random option'
 $imageClientType = $assembly.GetType('AnimusForge.Illustrator.Core.UniversalOpenAiImageClient', $true)
 $effectiveMethod = $imageClientType.GetMethod('BuildEffectivePrompt')
 foreach ($chatProtocol in @($false, $true)) {
+    $randomPrompt = [string]$effectiveMethod.Invoke($null, [object[]]@('事实', '1024x1024', '', '', '', '', $chatProtocol, -1))
+    Assert-True (!$randomPrompt.Contains('参考还原度约束')) "random similarity preserves pre-setting prompt behavior (chat=$chatProtocol)"
     foreach ($similarity in @(0, 80, 100)) {
         $prompt = [string]$effectiveMethod.Invoke($null, [object[]]@('已确认：黑色锁甲；本次重绘采用俯拍。', '1024x1024', '', '', '', '', $chatProtocol, $similarity))
         Assert-True ($prompt.Contains('黑色锁甲') -and $prompt.Contains('俯拍') -and $prompt.Contains('重绘必须遵循本次换镜头指导')) "similarity $similarity preserves facts and redraw (chat=$chatProtocol)"
