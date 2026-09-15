@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
@@ -123,14 +124,17 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 string preCapturedBase64 = ScreenCaptureHelper.CaptureConversationSceneBase64(768);
 
                 var interlocutor = convContext.InterlocutorHero;
-                string bannerCode = (interlocutor?.Clan?.Banner ?? interlocutor?.Clan?.Kingdom?.Banner)?.BannerCode;
+                // 会话画面里双方都可能出现纹章载体：对方家族与玩家家族各发一张参考样图（同一代码去重）
+                var emblemSpecs = new List<EmblemSpec>();
+                AddEmblemSpec(emblemSpecs, interlocutor, "对话对方");
+                AddEmblemSpec(emblemSpecs, Hero.MainHero, "玩家");
 
                 _activeInstance?.Close();
                 var popup = new IllustrationCardPopup(topScreen, "ConversationIllustrationOverlay", "conversation", () =>
                 {
                     string redrawBase64 = ScreenCaptureHelper.CaptureConversationSceneBase64(768);
                     ConversationVisualContext redrawContext = ConversationContextExtractor.ExtractFromCurrentConversation();
-                    _activeInstance?.ExecuteConversationGeneration(redrawContext ?? convContext, redrawBase64, bannerCode);
+                    _activeInstance?.ExecuteConversationGeneration(redrawContext ?? convContext, redrawBase64, emblemSpecs);
                 });
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
@@ -152,7 +156,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 else
                 {
-                    popup.ExecuteConversationGeneration(convContext, preCapturedBase64, bannerCode);
+                    popup.ExecuteConversationGeneration(convContext, preCapturedBase64, emblemSpecs);
                 }
             }
             catch (Exception ex)
@@ -285,7 +289,26 @@ namespace AnimusForge.Illustrator.UI.Overlays
             return "本次镜头变化建议：" + variations[seed % variations.Length] + "。这只是构图选项，若与游戏事实冲突应舍弃。";
         }
 
-        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, string bannerCode = null)
+        /// <summary>一枚待合成的纹章参考图：旗帜代码 + 归属方标签（画面归因用）。</summary>
+        private sealed class EmblemSpec
+        {
+            public string Code = string.Empty;
+            public string Owner = string.Empty;
+            public string Side = string.Empty;
+        }
+
+        private static void AddEmblemSpec(List<EmblemSpec> specs, Hero hero, string sideLabel)
+        {
+            if (hero == null) return;
+            string code = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner)?.BannerCode;
+            if (string.IsNullOrWhiteSpace(code)) return;
+            if (specs.Exists(s => s.Code == code)) return;
+            string owner = hero.Clan?.Name != null ? hero.Clan.Name.ToString()
+                : (hero.Clan?.Kingdom?.Name != null ? hero.Clan.Kingdom.Name.ToString() : "未知家族");
+            specs.Add(new EmblemSpec { Code = code, Owner = owner, Side = sideLabel });
+        }
+
+        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null)
         {
             _dataSource.SetLoading("AI画师正在分析现场交谈与肢体姿势...");
 
@@ -317,9 +340,17 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Task<string> playerStage = null;
                 Task<string> partnerStage = null;
-                Task<string> emblemCompose = string.IsNullOrWhiteSpace(bannerCode)
-                    ? null
-                    : BannerEmblemComposer.ComposeToBase64Async(bannerCode);
+                var emblemTasks = new List<KeyValuePair<EmblemSpec, Task<string>>>();
+                if (emblemSpecs != null)
+                {
+                    foreach (var spec in emblemSpecs)
+                    {
+                        if (spec != null && !string.IsNullOrWhiteSpace(spec.Code))
+                        {
+                            emblemTasks.Add(new KeyValuePair<EmblemSpec, Task<string>>(spec, BannerEmblemComposer.ComposeToBase64Async(spec.Code)));
+                        }
+                    }
+                }
                 if (options?.EnableOffscreenRendering == true)
                 {
                     if (Hero.MainHero != null)
@@ -355,12 +386,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         genRefs.Add(r);
                     }
                 }
-                if (emblemCompose != null)
+                foreach (var pair in emblemTasks)
                 {
-                    string b64 = await emblemCompose.ConfigureAwait(false);
+                    string b64 = await pair.Value.ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, "对话对方家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜");
+                        var r = new IllustrationReferenceImage(b64, $"{pair.Key.Side}一方【{pair.Key.Owner}】的真实纹章标准样图：当画面中属于{pair.Key.Side}的旗帜、盾徽或罩袍纹章出现时，必须以此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
