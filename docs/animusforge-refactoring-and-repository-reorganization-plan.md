@@ -14,6 +14,11 @@
 - 内外接口包：实际 Native 入口完整接到版本化票据/结果/取消。Scene 现入口只等启动而非全部回复，Courier 含真实运输；二者须继续接真实回执，不能把目录能力改 Available 或另起缩水管线来冒充完成。用户要求三渠道不变。
 - 三代理文件所有权隔离，根统一整合 main 等价、源码证据和六Stage。只本地源码；不自动推送、部署、默认切换或恢复自动化。
 
+- 三路互审追加验收（未放行前）：Native API 排队请求原先只绑定档代，可在A结束/B开始后错投B；已加入入口会话epoch并独立复验拒绝，正在补默认UI回合revision插队守卫。外部V1 enum映射由数值cast改显式switch，以免内部枚举重排破坏公开契约。
+- Courier新文字源检查有liveness风险：活的同会话文字变化后返回null，而既有Started仍true，tick不会重启。已交原owner修复并要求真实Start/失败或重试/下一tick证据；退休/替换不能释放新请求。首次联合六Stage/API1024是互审修复前候选，仅作中间证据，必须最终重建。
+
+- Courier修复范围最窄扩展：Start→原队列→Begin→Prepare贯穿runtime-only reservation，弱引用session不改Saveable/新队列；同活会话仅本轮reservation仍current时由原Fail owner终结源失效并推进等待。两种Start/Begin/Prepare签名传递纳入精确审查，不能只reset共用bool而误伤较新启动。
+
 ## 以下为此前候选与历史记录
 
 # 当前补充：Courier 失败回执不得伪装成已确认无副作用（2026-09-15）
