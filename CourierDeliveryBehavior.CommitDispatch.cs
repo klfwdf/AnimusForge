@@ -11,6 +11,14 @@ namespace AnimusForge;
 // only schedules it, tracks retirement, and preserves the receipt of an already claimed commit.
 public partial class CourierDeliveryBehavior
 {
+    // Entering a commit is not proof of either full success or full rollback. Preserve
+    // uncertainty on an exception/missing receipt; callers must not replay the whole turn.
+    private static InteractionCommitResult CreateUnconfirmedCourierCommit(string errorCode)
+    {
+        return new InteractionCommitResult(InteractionStatus.NonRetryableFailure, false, false,
+            errorCode, ActionExecutionEffectState.UnknownAfterStart);
+    }
+
 	private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(
 		Func<InteractionCommitResult> commit,
 		string targetLog,
@@ -74,11 +82,7 @@ public partial class CourierDeliveryBehavior
 				{
 					try { Log("detached courier commit failed session=" + (sessionId ?? "") + " target=" + (targetLog ?? "") + " error=" + ex.Message); }
 					catch { }
-					completion.TrySetResult(new InteractionCommitResult(
-						InteractionStatus.RejectedByValidation,
-						false,
-						false,
-						"main_thread_commit_exception"));
+					completion.TrySetResult(CreateUnconfirmedCourierCommit("main_thread_commit_exception"));
 				}
 			});
 		}
@@ -102,21 +106,14 @@ public partial class CourierDeliveryBehavior
 		try
 		{
 			result = commit()
-				?? new InteractionCommitResult(
-					InteractionStatus.RejectedByValidation,
-					false,
-					false,
-					"missing_commit_result");
+				?? CreateUnconfirmedCourierCommit("missing_commit_result");
 		}
 		catch (Exception ex)
 		{
-			Log("detached courier commit failed session=" + (sessionId ?? "")
-				+ " target=" + (targetLog ?? "") + " error=" + ex.Message);
-			result = new InteractionCommitResult(
-				InteractionStatus.RejectedByValidation,
-				false,
-				false,
-				"main_thread_commit_exception");
+			try { Log("detached courier commit failed session=" + (sessionId ?? "")
+				+ " target=" + (targetLog ?? "") + " error=" + ex.Message); }
+			catch { } // Diagnostics do not own the commit outcome.
+			result = CreateUnconfirmedCourierCommit("main_thread_commit_exception");
 		}
 		if (abortInboundWithoutReceipt)
 		{
@@ -136,13 +133,15 @@ public partial class CourierDeliveryBehavior
 						InteractionStatus.NonRetryableFailure,
 						result.HistoryWritten,
 						result.ActionsExecuted,
-						"courier_inbound_completion_receipt_missing");
+						"courier_inbound_completion_receipt_missing",
+						result.EffectState);
 				}
 			}
 			catch (Exception ex)
 			{
-				Log("inbound commit cleanup failed session=" + (sessionId ?? "")
-					+ " error=" + ex.Message);
+				try { Log("inbound commit cleanup failed session=" + (sessionId ?? "")
+					+ " error=" + ex.Message); }
+				catch { }
 			}
 		}
 		return result;
