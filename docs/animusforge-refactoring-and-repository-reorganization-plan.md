@@ -5,6 +5,13 @@
 - 此为完整摘要运行生命周期责任，不把新增owner等同于全部M1/M2/M3和B1预算完成。继续保留实际首次深复制/终步成本、Prompt/LLM混合线程、内部双向服务和外部三渠道SDK及当前候选LIVE/SAVE为必交。
 - 验证：先复现同代reset/replacement旧finally与迟到响应；实际三类摘要Host/业务/源writer/重试/plan和相关旧断言保持；精确source逆变换、六Stage/API/Host回放/保存身份、两份handoff与当前地图。退出只取消旧运行授权，不假装取消不支持的正在执行网络/已经完成写入。
 
+## 用户批准三路并行（2026-09-16）
+
+- Prompt/线程包：Courier 双向实际准备先在原 owner phase 捕获输入，后台保留原规则/lore处理，再由原 owner phase 校验 session/participant/generation 并组装角色/资产/消息；共享规则/lore混合函数仍单列。只改批准的四处 Courier builder/caller 和新 partial。
+- 记忆性能包：度量实际 DTO clone/raw fingerprint/最终校验；原生可变字段/List 使分片后删最终原子校验不安全。先验证 UTF-16 指纹分块写入的等价和性能，仍不把 O(chars) 改进声称硬预算完成。
+- 内外接口包：实际 Native 入口完整接到版本化票据/结果/取消。Scene 现入口只等启动而非全部回复，Courier 含真实运输；二者须继续接真实回执，不能把目录能力改 Available 或另起缩水管线来冒充完成。用户要求三渠道不变。
+- 三代理文件所有权隔离，根统一整合 main 等价、源码证据和六Stage。只本地源码；不自动推送、部署、默认切换或恢复自动化。
+
 ## 以下为此前候选与历史记录
 
 # 当前补充：Courier 失败回执不得伪装成已确认无副作用（2026-09-15）
