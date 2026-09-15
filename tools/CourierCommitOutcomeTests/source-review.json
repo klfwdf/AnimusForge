@@ -1,0 +1,35 @@
+{
+  "baseline": "29448d1b7ec7bc7a92820c8b510aaad56c21ff37",
+  "path": "CourierDeliveryBehavior.CommitDispatch.cs",
+  "edits": [
+    [
+      "new InteractionCommitResult(\n\t\t\t\t\t\tInteractionStatus.RejectedByValidation,\n\t\t\t\t\t\tfalse,\n\t\t\t\t\t\tfalse,\n\t\t\t\t\t\t\"main_thread_commit_exception\")",
+      "CreateUnconfirmedCourierCommit(\"main_thread_commit_exception\")"
+    ],
+    [
+      "new InteractionCommitResult(\n\t\t\t\t\tInteractionStatus.RejectedByValidation,\n\t\t\t\t\tfalse,\n\t\t\t\t\tfalse,\n\t\t\t\t\t\"missing_commit_result\")",
+      "CreateUnconfirmedCourierCommit(\"missing_commit_result\")"
+    ],
+    [
+      "new InteractionCommitResult(\n\t\t\t\tInteractionStatus.RejectedByValidation,\n\t\t\t\tfalse,\n\t\t\t\tfalse,\n\t\t\t\t\"main_thread_commit_exception\")",
+      "CreateUnconfirmedCourierCommit(\"main_thread_commit_exception\")"
+    ],
+    [
+      "\"courier_inbound_completion_receipt_missing\");",
+      "\"courier_inbound_completion_receipt_missing\",\n\t\t\t\t\t\tresult.EffectState);"
+    ],
+    [
+      "\tprivate Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(",
+      "    // Entering a commit is not proof of either full success or full rollback. Preserve\n    // uncertainty on an exception/missing receipt; callers must not replay the whole turn.\n    private static InteractionCommitResult CreateUnconfirmedCourierCommit(string errorCode)\n    {\n        return new InteractionCommitResult(InteractionStatus.NonRetryableFailure, false, false,\n            errorCode, ActionExecutionEffectState.UnknownAfterStart);\n    }\n\n\tprivate Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync("
+    ],
+    [
+      "Log(\"detached courier commit failed session=\" + (sessionId ?? \"\")\n\t\t\t\t+ \" target=\" + (targetLog ?? \"\") + \" error=\" + ex.Message);",
+      "try { Log(\"detached courier commit failed session=\" + (sessionId ?? \"\")\n\t\t\t\t+ \" target=\" + (targetLog ?? \"\") + \" error=\" + ex.Message); }\n\t\t\tcatch { } // Diagnostics do not own the commit outcome."
+    ],
+    [
+      "Log(\"inbound commit cleanup failed session=\" + (sessionId ?? \"\")\n\t\t\t\t\t+ \" error=\" + ex.Message);",
+      "try { Log(\"inbound commit cleanup failed session=\" + (sessionId ?? \"\")\n\t\t\t\t\t+ \" error=\" + ex.Message); }\n\t\t\t\tcatch { }"
+    ]
+  ],
+  "originalNormalizedSha256": "87659a17f8426aefd23b2b879a9e3600ebc961cd3a400ef98e63a1dfe24b5200"
+}

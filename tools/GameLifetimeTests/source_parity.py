@@ -4,6 +4,10 @@ import hashlib,importlib.util,json,re,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent;BASELINE='807bc5b9'
 spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
 PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
+def restore_commit(source):
+ spec=importlib.util.spec_from_file_location('courier_outcome_inverse',ROOT/'tools/CourierCommitOutcomeTests/source_parity.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+ return module.restore(source)
+
 def old(path):return subprocess.check_output(['git','show',BASELINE+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def expected(path):
  s=old(path)
@@ -41,7 +45,7 @@ def expected(path):
   moved=[]
   for sig,(before,after) in zip(packet['signatures'],packet['edits']):
    assert e.declaration(s,sig)==before;s=s.replace('\t'+before+'\n\n','',1);moved.append('\t'+after)
-  assert (ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')==packet['header']+'\n\n'.join(moved)+'\n}\n','Unreviewed Courier commit extraction'
+  assert restore_commit((ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig'))==packet['header']+'\n\n'.join(moved)+'\n}\n','Unreviewed Courier commit extraction'
  elif path=='CourierDeliveryBehavior.DetachedPostprocess.cs':
   sig='private async Task<T> RunCourierOwnerPhaseAsync<T>(';before=e.declaration(s,sig);after=before.replace('cancellationToken.ThrowIfCancellationRequested();','long retirementVersion = _pendingOwnerPhases.Version;\n        cancellationToken.ThrowIfCancellationRequested();\n        if (!_pendingOwnerPhases.Accepting) throw new OperationCanceledException("Courier owner retired.");',1)
   after=after.replace('        bool mainThread = false;','''        using (IDisposable registration = _pendingOwnerPhases.Register(retirementVersion, () =>
@@ -80,7 +84,10 @@ def expected(path):
 
 def check_dependencies():
  data=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
- for p,h in data['dependencies'].items():assert hashlib.sha256((ROOT/p).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
+ for p,h in data['dependencies'].items():
+  source=(ROOT/p).read_text(encoding='utf-8-sig')
+  if p=='CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
+  assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
 
 def restore(path,source):
  if path not in PATHS:return source

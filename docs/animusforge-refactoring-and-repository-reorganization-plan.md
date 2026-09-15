@@ -4,6 +4,8 @@
 - 本次先修最终回执复审发现的明确问题：Courier callback已进入后抛异常或返回null，原Invoke把它映射为RejectedByValidation+NoConfirmedEffect。不能证明没有副作用；应明确NonRetryableFailure+UnknownAfterStart，保持原errorCode和已经取得的真实result。入站缺回执转译也必须保留EffectState。
 - 只改最终commit失败语义，不改信使送达/业务owner、不自动重试、不提交失败记忆。沿用原实际19检查并新增部分副作用/空回执/入站清理/诊断故障的结果分类反例；精确逆变换保留29448d1b及之前的旧source证据。完成后同候选六Stage/接口/回放，更新HANDOFF，不推送/部署。
 
+- 当前生产路径已修正：只有进入commit后异常/空回执才归UnknownAfterStart/NonRetryableFailure；未开始准入/队列拒绝不变，真实成功回执原样返回。入站缺回执转译保留EffectState，纯诊断失败不抢占结果。新增34断言（原19+15）、固定29448d1b旧红和4有效故障反例通过；既有19/16/39与内部ports308+3反例及精确源码逆变换通过。最终六Stage通过，实际1.4 DLL也直接验证了新失败分类方法；最终API119/快照32/4DLL728元数据通过；实际1.4 DLL的失败分类→真实Host回执消费链也通过，未进入旧链重试。整体仍未结项。
+
 ## 以下为上包与历史记录
 
 # 当前连续收尾：真实 GameEnd 与待办退役（2026-09-15）
