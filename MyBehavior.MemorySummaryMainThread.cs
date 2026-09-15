@@ -12,6 +12,7 @@ public partial class MyBehavior
 {
     private const int MemorySummaryMainThreadActionsPerTick = 2;
     private MemorySummaryDispatcher _memorySummaryDispatcher;
+    private int _campaignRuntimeRetired;
 
     // Construct once on first submission, without consulting live game state. Concurrent
     // submitters all use the published winner; unused Tick/Reset paths do not allocate.
@@ -35,7 +36,8 @@ public partial class MyBehavior
         internal MemorySummaryDispatchHost(MyBehavior owner) { _owner = owner; }
         public bool IsMainThread => TWParallel.IsMainThread();
         public bool IsOwnerGenerationCurrent(long generation) =>
-            ReferenceEquals(Instance, _owner) && SaveRuntimeGuard.IsCurrentGeneration(generation);
+            Volatile.Read(ref _owner._campaignRuntimeRetired) == 0
+            && ReferenceEquals(Instance, _owner) && SaveRuntimeGuard.IsCurrentGeneration(generation);
         public bool IsExecutionContextCurrent() =>
             ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), _owner);
         public double GetBudgetMilliseconds() => GetDailyMaintenanceFrameBudgetMs();

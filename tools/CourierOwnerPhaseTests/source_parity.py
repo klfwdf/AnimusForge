@@ -7,13 +7,16 @@ def old():return subprocess.check_output(['git','show','4140bd04:'+PATH],cwd=ROO
 def verify():
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in review['dependencies'].items():assert hashlib.sha256((ROOT/p).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed owner phase dependency: '+p
- actual=(ROOT/PATH).read_text(encoding='utf-8-sig');prior=old()
+ life_spec=importlib.util.spec_from_file_location('lifetime_inverse',ROOT/'tools/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
+ actual=life.restore(PATH,(ROOT/PATH).read_text(encoding='utf-8-sig'));prior=old()
  for before,after in review['exactEdits']:
   assert prior.count(before)==1;prior=prior.replace(before,after,1)
  assert actual==prior,'Unreviewed owner phase surrounding change'
  return actual
 def restore_method(method):
  actual=verify();sig='private async Task<T> RunCourierOwnerPhaseAsync<T>('
+ life_spec=importlib.util.spec_from_file_location('lifetime_method_inverse',ROOT/'tools/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
+ method=life.restore_method(PATH,sig,method)
  assert method==e.declaration(actual,sig),'Unreviewed owner phase declaration'
  return e.declaration(old(),sig)
 if __name__=='__main__':verify();print('PASS exact owner phase cancellation/timeout delta; other postprocess code unchanged')

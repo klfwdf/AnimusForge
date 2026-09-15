@@ -1,9 +1,9 @@
 import argparse,importlib.util,subprocess,os,hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--timeout-baseline',action='store_true');p.add_argument('--mutate',choices=['lose-start-boundary','return-null','swallow-owner-failure','allow-diagnostic-failure','drop-queue-claim','keep-failed-queue-live','skip-dispatch-timeout','leave-expired-callback-live','expire-started-dispatch']);args=p.parse_args();assert not (args.original and args.timeout_baseline)
+p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--timeout-baseline',action='store_true');p.add_argument('--retirement-baseline',action='store_true');p.add_argument('--mutate',choices=['lose-start-boundary','return-null','swallow-owner-failure','allow-diagnostic-failure','drop-queue-claim','keep-failed-queue-live','skip-dispatch-timeout','leave-expired-callback-live','expire-started-dispatch']);args=p.parse_args();assert not (args.original and args.timeout_baseline)
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-baseline='646dd987' if args.original else '8da4fbd7' if args.timeout_baseline else None
+baseline='646dd987' if args.original else '8da4fbd7' if args.timeout_baseline else '807bc5b9' if args.retirement_baseline else None
 s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RESULT@@',ex.declaration(s,'private sealed class NativeConversationGameActionResult')).replace('@@QUEUE@@',ex.declaration(s,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('))
@@ -20,11 +20,11 @@ if not args.original:
  code=code.replace('@@UI_FAILURE@@','\n'.join(reports)+'\ninternal bool Report(ShoutBehavior.NativeConversationActionDispatchException ex,bool opening)=>opening?Opening(ex):Normal(ex);')
 else:code=code.replace('@@UI_FAILURE@@','')
 if args.mutate=='drop-queue-claim':code=code.replace('if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)', 'if (false)', 1)
-if args.mutate=='keep-failed-queue-live':code=code.replace('if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)', 'if (true)', 1)
-if args.mutate=='skip-dispatch-timeout':code=code.replace('return AwaitDispatch();','return tcs.Task;',1)
+if args.mutate=='keep-failed-queue-live':code=code.replace('if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)\n\t\t\t\ttcs.TrySetException(new NativeConversationActionDispatchException(false, ex));', 'if (true)\n\t\t\t\ttcs.TrySetException(new NativeConversationActionDispatchException(false, ex));', 1)
+if args.mutate=='skip-dispatch-timeout':code=code.replace('PendingOperationRegistry.AwaitRelease(AwaitDispatch(), registration)','PendingOperationRegistry.AwaitRelease(tcs.Task, registration)',1)
 if args.mutate=='leave-expired-callback-live':code=code.replace('winner != tcs.Task && Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0','winner != tcs.Task && Volatile.Read(ref dispatchState) == 0',1)
 if args.mutate=='expire-started-dispatch':code=code.replace('winner != tcs.Task && Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0','winner != tcs.Task && Interlocked.Exchange(ref dispatchState, 2) != 2',1)
-out=HERE/'.generated'/('original' if args.original else 'timeout-baseline' if args.timeout_baseline else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=HERE/'.generated'/('original' if args.original else 'timeout-baseline' if args.timeout_baseline else 'retirement-baseline' if args.retirement_baseline else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8');enum=ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState');(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+enum,encoding='utf-8')
 if not args.original:
  boundary=subprocess.check_output(['git','show',baseline+':ShoutBehavior.NativeActionDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if args.timeout_baseline else (ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
@@ -35,6 +35,7 @@ if not args.original:
  (out/'Boundary.cs').write_text(boundary,encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tools/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if args.original else '<DefineConstants>TIMEOUT_BASELINE</DefineConstants>' if args.timeout_baseline else '')+'</PropertyGroup></Project>')
+(out/'PendingOperationRegistry.cs').write_text((ROOT/'Refactor/Runtime/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
 r=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)

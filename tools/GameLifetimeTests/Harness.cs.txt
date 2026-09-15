@@ -1,0 +1,89 @@
+using AnimusForge.Refactor.Modules;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.Core;
+using TaleWorlds.CampaignSystem;
+namespace TaleWorlds.Core {public interface IGameStarter{} public sealed class OtherStarter:IGameStarter{} public sealed class Game{} }
+namespace TaleWorlds.Library {internal static class TWParallel {internal static int Main;internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==Main;}}
+namespace TaleWorlds.CampaignSystem {public class CampaignBehaviorBase{} public sealed class CampaignGameStarter:IGameStarter {public List<CampaignBehaviorBase> CampaignBehaviors=new();}}
+namespace AnimusForge {
+ internal static class SaveRuntimeGuard {internal static int Advances;internal static long AdvanceGeneration(string reason){Advances++;return Advances;}}
+ internal static class Logger {internal static void Log(string c,string m){} }
+ public sealed class MyBehavior:CampaignBehaviorBase {internal static MyBehavior Instance;internal int Retired;internal bool Throw;internal void RetireCampaignRuntime(string reason){Retired++;if(Throw)throw new Exception("fixture");}}
+ public sealed class ShoutBehavior:CampaignBehaviorBase {internal int Retired;internal void RetireCampaignRuntime(string reason){Retired++;}}
+ public sealed class CourierDeliveryBehavior:CampaignBehaviorBase {internal static CourierDeliveryBehavior Instance;internal int Retired;internal void RetireCampaignRuntime(string reason){Retired++;}}
+}
+
+namespace AnimusForge.Refactor.Modules {
+ internal static class ModuleFrameworkRuntime {
+  internal static Action<IGameStarter> Register;internal static int ShutDown;
+  internal static void RegisterCampaign(IGameStarter starter)=>Register?.Invoke(starter);
+  internal static void Shutdown()=>ShutDown++;
+ }
+}
+namespace AnimusForge {
+ internal static class SceneActionsIntegrationBoundary {internal static void ShutdownRuntime(){} }
+ internal class StubSubModule {
+  protected virtual void InitializeGameStarter(Game game,IGameStarter starter){}
+  public virtual void OnGameEnd(Game game){} protected virtual void OnSubModuleUnloaded(){}
+ }
+ internal sealed class TestSubModule:StubSubModule {
+  private static void RemoveMapButtonLayer(){}
+  internal void Begin(Game game,IGameStarter starter)=>InitializeGameStarter(game,starter);
+  internal void Unload()=>OnSubModuleUnloaded();
+  @@CALLBACKS@@
+ }
+}
+
+internal static class Program {
+ static int checks;static void Check(bool c,string name){if(!c)throw new Exception("FAIL "+name);checks++;}
+ static void GameIdentity(){var events=new List<string>();var tracker=new GameLifetimeCoordinator(s=>events.Add("advance:"+s),s=>events.Add("retire:"+s));object a=new(),b=new();
+  Check(!tracker.Begin(null)&&!tracker.End(null)&&!tracker.Stop(),"empty lifetime no-op");Check(tracker.Begin(a)&&tracker.IsCurrent(a),"start A");Check(!tracker.Begin(a)&&events.Count==1,"duplicate start no generation churn");
+  Check(tracker.Begin(b)&&!tracker.IsCurrent(a)&&tracker.IsCurrent(b),"replace A with B");Check(events.SequenceEqual(new[]{"advance:campaign_begin","advance:campaign_begin","retire:campaign_replaced"}),"replace invalidates before retirement");
+  Check(!tracker.End(a)&&events.Count==3,"late A end cannot stop B");Check(tracker.End(b)&&events.Count==5,"end B exactly once");Check(!tracker.End(b)&&!tracker.Stop(),"duplicate stop no-op");
+  tracker.Begin(a);Check(tracker.Stop()&&!tracker.IsCurrent(a),"unload stops active game");
+ }
+ static void Registrations(){int retired=0,reported=0;var registry=new PendingOperationRegistry(_=>reported++);long v=registry.Version;
+  IDisposable first=registry.Register(v,()=>retired++);Check(registry.Count==1,"registration tracked");first.Dispose();registry.Reset();Check(retired==0&&registry.Count==0,"completed work not retired");
+  Check(registry.Register(v,()=>retired++)==null&&retired==1,"old version cannot register after reset");
+  v=registry.Version;registry.Register(v,()=>retired++);registry.Reset();Check(retired==2&&registry.Accepting,"reset settles old work but allows next scope");
+  registry.Register(registry.Version,()=>throw new Exception("retire failure"));registry.Register(registry.Version,()=>retired++);registry.Seal();Check(retired==3&&reported==1&&!registry.Accepting&&registry.Count==0,"seal isolates retirement failure");
+  registry.Reset();Check(!registry.Accepting&&registry.Register(registry.Version,()=>retired++)==null&&retired==4,"reset never reopens sealed owner");
+  var release=new PendingOperationRegistry();var registration=release.Register(release.Version,()=>{});Check(PendingOperationRegistry.AwaitRelease(Task.FromResult(42),registration).GetAwaiter().GetResult()==42&&release.Count==0,"success disposes registration");
+  registration=release.Register(release.Version,()=>{});var fault=new InvalidOperationException("same");try{PendingOperationRegistry.AwaitRelease(Task.FromException<int>(fault),registration).GetAwaiter().GetResult();throw new Exception("no error");}catch(InvalidOperationException e){Check(ReferenceEquals(e,fault)&&release.Count==0,"fault disposes and preserves exception");}
+  var concurrent=new PendingOperationRegistry();var counts=new int[128];Parallel.For(0,128,i=>{long version=concurrent.Version;concurrent.Register(version,()=>Interlocked.Increment(ref counts[i]));if(i%7==0)concurrent.Reset();});concurrent.Seal();Check(counts.All(c=>c==1)&&concurrent.Count==0,"concurrent registration/reset no lost or duplicate retirement");
+  var clear=new PendingOperationRegistry();using var clearing=new ManualResetEventSlim();using var finishClear=new ManualResetEventSlim();int expired=0;
+  clear.Register(clear.Version,()=>Interlocked.Increment(ref expired));
+  var reset=Task.Run(()=>clear.ResetAndClear(()=>{clearing.Set();finishClear.Wait();}));clearing.Wait();
+  Check(!clear.Accepting&&clear.Register(clear.Version,()=>Interlocked.Increment(ref expired))==null,"queue-clear window rejects and settles new attempts");
+  finishClear.Set();reset.GetAwaiter().GetResult();Check(clear.Accepting&&expired==2,"queue-clear window resumes only after clearing");
+  var fresh=clear.Register(clear.Version,()=>expired++);Check(fresh!=null&&clear.Count==1,"post-clear work survives in next scope");fresh.Dispose();
+  clear.Seal();clear.ResetAndClear(()=>{});Check(!clear.Accepting,"clear never reopens sealed game owner");
+  var nested=new PendingOperationRegistry();int calls=0;nested.Register(nested.Version,()=>{calls++;nested.Register(nested.Version,()=>calls++);});nested.Reset();Check(calls==1&&nested.Count==1,"retirement callback can register next scope outside lock");nested.Reset();Check(calls==2,"nested work retired next time");
+ }
+ static void Adapter(){TaleWorlds.Library.TWParallel.Main=Environment.CurrentManagedThreadId;var a=new Game();var b=new Game();var my=new MyBehavior{Throw=true};var shout=new ShoutBehavior();var courier=new CourierDeliveryBehavior();MyBehavior.Instance=my;CourierDeliveryBehavior.Instance=courier;
+  var starter=new CampaignGameStarter();starter.CampaignBehaviors.AddRange(new CampaignBehaviorBase[]{my,shout,courier,new CampaignBehaviorBase()});AfCampaignRuntimeLifecycle.Begin(a);AfCampaignRuntimeLifecycle.CaptureOwners(a,starter);AfCampaignRuntimeLifecycle.CaptureOwners(a,starter);
+  AfCampaignRuntimeLifecycle.End(b);Check(my.Retired+shout.Retired+courier.Retired==0,"wrong Game callback ignored");
+  AfCampaignRuntimeLifecycle.End(a);Check(my.Retired==1&&shout.Retired==1&&courier.Retired==1,"actual captured owners retire independently once");AfCampaignRuntimeLifecycle.End(a);Check(my.Retired==1,"duplicate end ignored");
+  var next=new MyBehavior();MyBehavior.Instance=next;CourierDeliveryBehavior.Instance=null;AfCampaignRuntimeLifecycle.Begin(b);AfCampaignRuntimeLifecycle.CaptureOwners(a,starter);AfCampaignRuntimeLifecycle.CaptureOwners(b,new CampaignGameStarter());AfCampaignRuntimeLifecycle.End(a);Check(next.Retired==0,"late old game does not retire new singleton");AfCampaignRuntimeLifecycle.Stop();Check(next.Retired==1,"partially registered constructor singleton retired on unload");
+  bool rejected=Task.Run(()=>{try{AfCampaignRuntimeLifecycle.Begin(new Game());return false;}catch(InvalidOperationException){return true;}}).GetAwaiter().GetResult();Check(rejected,"engine adapter rejects worker transitions");
+ }
+
+ static void Wiring(){var host=new TestSubModule();var game=new Game();var starter=new CampaignGameStarter();var my=new MyBehavior();var shout=new ShoutBehavior();var courier=new CourierDeliveryBehavior();MyBehavior.Instance=null;CourierDeliveryBehavior.Instance=null;
+  int initial=SaveRuntimeGuard.Advances;
+  AnimusForge.Refactor.Modules.ModuleFrameworkRuntime.Register=s=>{Check(SaveRuntimeGuard.Advances==initial+1,"begin invalidates before registration");MyBehavior.Instance=my;CourierDeliveryBehavior.Instance=courier;starter.CampaignBehaviors.AddRange(new CampaignBehaviorBase[]{my,shout,courier});};
+  host.Begin(game,starter);host.OnGameEnd(new Game());Check(my.Retired==0,"actual end wrapper ignores unrelated game");host.OnGameEnd(game);Check(my.Retired==1&&shout.Retired==1&&courier.Retired==1,"actual end wrapper retires registered owners");
+  MyBehavior.Instance=null;CourierDeliveryBehavior.Instance=null;var partial=new MyBehavior();var failure=new InvalidOperationException("registration failure");
+  AnimusForge.Refactor.Modules.ModuleFrameworkRuntime.Register=s=>{MyBehavior.Instance=partial;throw failure;};
+  try {host.Begin(new Game(),new CampaignGameStarter());throw new Exception("FAIL missing registration failure");}catch(InvalidOperationException e){Check(ReferenceEquals(e,failure)&&partial.Retired==1,"partial registration retires published singleton and preserves original exception");}
+  MyBehavior.Instance=null;var active=new ShoutBehavior();var next=new CampaignGameStarter();next.CampaignBehaviors.Add(active);AnimusForge.Refactor.Modules.ModuleFrameworkRuntime.Register=s=>{};host.Begin(new Game(),next);host.Unload();Check(active.Retired==1&&AnimusForge.Refactor.Modules.ModuleFrameworkRuntime.ShutDown==1,"actual unload retires before module shutdown");
+  initial=SaveRuntimeGuard.Advances;host.Begin(new Game(),new OtherStarter());Check(initial==SaveRuntimeGuard.Advances,"noncampaign starter does not create lifetime");
+ }
+
+ static int Main(){try{GameIdentity();Registrations();Adapter();Wiring();Console.WriteLine($"GameLifetime checks={checks} failures=0; real registry/coordinator/engine-adapter; engine owner bodies are fixtures.");return 0;}catch(Exception e){Console.WriteLine("FAIL unexpected lifecycle failure: "+e);return 1;}}
+}

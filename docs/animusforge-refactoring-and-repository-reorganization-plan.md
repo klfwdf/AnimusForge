@@ -5,6 +5,11 @@
 - 只处理AF主体和AF侧接线，不清用户存档/素材或修改制作组业务。保持目录Ready=adapter已装配的现有语义，不把GameEnd改成整个模块卸载；下一Game仍走原注册路径。
 - 验证实际生命周期装配/失败隔离/旧结束回调/注册和reset竞态、三渠道守卫及相邻回归，最终六Stage和元数据。GameEnd仍不能替代全部preprocess/lore/B1/SDK/实机验收。
 
+- 执行扩展到最终副作用队列：Native action 与 Courier 最终 commit 一并登记退役；Courier 引用旧代码只有读 expired、没有原子 claim，已用真实旧声明复现重复回调会二次 commit，改为一次 claim，deadline/退役只处理未 claim，原最终会话/入站清理 owner 未复制。
+- 补充 MyBehavior 退役准入竞态：退出先推进 generation 但旧 singleton 还在清理，worker 可能持新 generation 在清队列后发布新待办。实际 dispatcher + 实际退役方法对照复现，现于清理第一步关闭 owner 准入，兼顾尚未懒加载 dispatcher 的路径。
+- 当前离线证据：生命周期36/12有效反例，Native/Courier退役接线15，My竞态7/1反例，Courier最终commit19/3反例，Native action91/5反例、最终记忆184、待录历史111、历史852+27、主体队列37、三渠道132、人设169、Courier历史122/后处理39/owner phase16、内部ports308/3反例和原Campaign装配42/5反例。旧Game回调/Native退役/Courier重复提交各有旧红；不把编译错误、工具超时或fixture缺失计入行为反例。
+- 最终同候选六Stage/API119+快照32+4DLL728元数据、实际Courier Host回放均通过；My源writer238项也通过。最终交接只采用final日志与产物hash，先前中间失败/工具超时单独保留不计行为反例。整体CORE-CLOSEOUT-FULL-20260915仍ACTIVE，未完成规则/lore/剩余角色资产消息主线程化、B1真实规模预算、外部三渠道SDK、内部双向服务和当前候选LIVE/SAVE。
+
 ## 以下为前一联合包与历史记录
 
 # 当前连续收尾：三渠道人设消费与信使准入（2026-09-15）

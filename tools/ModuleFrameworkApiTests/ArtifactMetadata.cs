@@ -25,10 +25,26 @@ internal static class Program
         var provider = new Names(); var lines = new List<string>();
         var api = new HashSet<string>(); var internalTypes = new HashSet<string>();
         bool foundMemoryOwner = false, foundCourierOwner = false;
+        var lifecycleTypes = new HashSet<string>(); var retirementOwners = new HashSet<string>();
         foreach (TypeDefinitionHandle handle in reader.TypeDefinitions)
         {
             TypeDefinition type = reader.GetTypeDefinition(handle);
             string ns = reader.GetString(type.Namespace), name = reader.GetString(type.Name);
+            if ((ns == "AnimusForge.Refactor.Runtime" && (name == "PendingOperationRegistry" || name == "GameLifetimeCoordinator"))
+                || (ns == "AnimusForge" && name == "AfCampaignRuntimeLifecycle"))
+            {
+                lifecycleTypes.Add(name);
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "lifecycle infrastructure remains internal");
+            }
+            if (ns == "AnimusForge" && (name == "MyBehavior" || name == "ShoutBehavior" || name == "CourierDeliveryBehavior"))
+                foreach (MethodDefinitionHandle retirementHandle in type.GetMethods())
+                {
+                    MethodDefinition retirement = reader.GetMethodDefinition(retirementHandle);
+                    if (reader.GetString(retirement.Name) != "RetireCampaignRuntime") continue;
+                    retirementOwners.Add(name);
+                    Check((retirement.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Assembly
+                        && (retirement.Attributes & MethodAttributes.Static) == 0, "retirement is internal instance-only");
+                }
             if (ns == "AnimusForge.Refactor.Modules")
             {
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
@@ -103,6 +119,7 @@ internal static class Program
         }
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
             "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo" };
+        Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(foundCourierOwner, "actual DLL includes original Courier owner");
         Check(api.SetEquals(expected), "exact initial V1 type surface");

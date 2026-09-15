@@ -31,6 +31,9 @@ static class Logger {internal static void Log(string category,string text){} }
 static class FreezeWatchdog {internal static void Mark(string stage,string text,bool immediate=false){} }
 static class WorldMapPartyCommandBehavior {internal class WorldMapOrderApplyResult {public bool NeedsChannelExit;} }
 public partial class MyBehavior {
+ // This suite executes main-thread completion. Worker write admission is independently
+ // outside this fixture; fail rather than silently fake that path.
+ private static bool DeferMemorySourceWriteIfNeeded(Action<MyBehavior> write,string source){if(!TWParallel.IsMainThread())throw new InvalidOperationException("unexpected worker legacy write in completion fixture");return false;}
  private const string NonHeroMemoryIdPrefix = "af_nonhero:";
  private static Hero FindHeroById(string id)=>Hero.Find(id);
  private bool AppendDialogueHistory(Hero h,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(h.StringId,p,a,f,s);return Host.OwnerAccept;}
@@ -39,6 +42,8 @@ public partial class MyBehavior {
 }
 
 public partial class ShoutBehavior {
+    private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();
+
  private sealed class NpcDataPacket {public string Name="A";public int AgentIndex=1;}
  private class SceneSummonPromptTarget{} private class SceneGuidePromptTarget{}
  private readonly ConcurrentQueue<Action> _mainThreadActions=new ConcurrentQueue<Action>();

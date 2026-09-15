@@ -29,6 +29,8 @@ def expected(path):
 
 def restore(path,source):
  if path not in ('ShoutBehavior.cs','CourierDeliveryBehavior.cs'):return source
+ life_spec=importlib.util.spec_from_file_location('lifetime_inverse',ROOT/'tools/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
+ source=life.restore(path,source)
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in review['dependencies'].items():
   assert hashlib.sha256((ROOT/p).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed channel persona dependency: '+p

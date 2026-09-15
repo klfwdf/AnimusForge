@@ -15,7 +15,7 @@
     ]
   ],
   "dependencies": {
-    "tools/CourierOwnerPhaseTests/Harness.cs.txt": "56b904a48bbc304dc9f083a3bbc0fb046396923b0830d193f2378a1d78e5e300",
-    "tools/CourierOwnerPhaseTests/run.py": "3cf041d43cfd420d5ca7229f54b824d2a636b17e999add7a7bd6f2699d2a89cd"
+    "tools/CourierOwnerPhaseTests/Harness.cs.txt": "5927c569be46fe01fa63c5d840c6600be6f98800260bc9eac83dc7dd3c8ebf6a",
+    "tools/CourierOwnerPhaseTests/run.py": "72fc899829cbd4ae9a56e2296d5a44f692cea42ca51278c3f6852b236177bf98"
   }
 }

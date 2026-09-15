@@ -41,6 +41,7 @@ namespace AnimusForge
     }
     public sealed partial class CourierDeliveryBehavior
     {
+        private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingOwnerPhases = new();
         public static CourierDeliveryBehavior Instance;
         private const int MainReplyMaxTokens = 5000;
         private static readonly string[] CourierExcludedRuleIds = { "scene_only" };

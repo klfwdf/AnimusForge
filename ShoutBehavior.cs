@@ -2587,9 +2587,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				_speechQueue.Clear();
 			}
 			_speechWorkerRunning = false;
-			while (_mainThreadActions.TryDequeue(out var _))
-			{
-			}
+			ResetPendingMainThreadFunctions();
 			_sceneConversationEpoch = 0;
 			_isProcessingShout = false;
 			_shoutProcessingStartedAt = -1f;
@@ -10989,10 +10987,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_speechWorkerRunning = false;
 		_sceneConversationEpoch = 0;
 		_nextProactiveSceneOpeningProbeMissionTime = 0f;
-		Action result;
-		while (_mainThreadActions.TryDequeue(out result))
-		{
-		}
+		ResetPendingMainThreadFunctions();
 		Interlocked.Increment(ref _sceneHistorySessionId);
 		RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start");
 		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start");
@@ -11093,10 +11088,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_speechWorkerRunning = false;
 			_sceneConversationEpoch = 0;
 			_nextProactiveSceneOpeningProbeMissionTime = 0f;
-			Action result;
-			while (_mainThreadActions.TryDequeue(out result))
-			{
-			}
+			ResetPendingMainThreadFunctions();
 			Interlocked.Increment(ref _sceneHistorySessionId);
 		}
 		catch (Exception ex)
@@ -19436,7 +19428,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string operationName, string targetLog, int targetAgentIndex, Func<T> func, T fallback)
     {
-        if (func == null) return Task.FromResult(fallback);
+        long retirementVersion = _pendingMainThreadFunctions.Version;
+        if (func == null || !_pendingMainThreadFunctions.Accepting) return Task.FromResult(fallback);
         string op = string.IsNullOrWhiteSpace(operationName) ? "operation" : operationName.Trim();
         string target = string.IsNullOrWhiteSpace(targetLog) ? "unknown" : targetLog.Trim();
 
@@ -19488,6 +19481,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
         TaskCompletionSource<T> tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
         // 0 queued, 1 claimed, 2 retired: deadline 只能取消未开始的操作。
         int state = 0;
+        bool Retire()
+        {
+            if (Interlocked.CompareExchange(ref state, 2, 0) != 0) return false;
+            tcs.TrySetResult(fallback);
+            return true;
+        }
+        IDisposable registration = _pendingMainThreadFunctions.Register(retirementVersion, () => Retire());
+        if (registration == null) return tcs.Task;
         try
         {
             _mainThreadActions.Enqueue(delegate
@@ -19504,12 +19505,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
             if (Interlocked.CompareExchange(ref state, 2, 0) == 0) tcs.TrySetResult(fallback);
             Observe("queue_exception", error: ex);
         }
-        return AwaitNativeConversationMainThreadFuncAsync(tcs.Task, op, target, targetAgentIndex, () =>
-        {
-            if (Interlocked.CompareExchange(ref state, 2, 0) != 0) return false;
-            tcs.TrySetResult(fallback);
-            return true;
-        });
+        return AnimusForge.Refactor.Runtime.PendingOperationRegistry.AwaitRelease(
+            AwaitNativeConversationMainThreadFuncAsync(tcs.Task, op, target, targetAgentIndex, Retire), registration);
     }
 
 	private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(Task<T> task, string operationName, string targetLog, int targetAgentIndex, Func<bool> tryExpire)
@@ -19550,6 +19547,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken, NativeConversationAdmission admission, NativeConversationCompletionRequest completion = null)
 	{
+		long retirementVersion = _pendingMainThreadFunctions.Version;
+		if (!_pendingMainThreadFunctions.Accepting)
+			return Task.FromResult(new NativeConversationGameActionResult { ResponseDiscarded = true });
 		string initial = content ?? "";
 		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
 		NativeConversationCompletionScope completionScope = null;
@@ -19573,6 +19573,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		var tcs = new TaskCompletionSource<NativeConversationGameActionResult>(TaskCreationOptions.RunContinuationsAsynchronously);
 		int dispatchState = 0; // queued=0, claimed=1, cancelled before claim=2.
+		IDisposable registration = _pendingMainThreadFunctions.Register(retirementVersion, () =>
+		{
+			if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+				tcs.TrySetResult(new NativeConversationGameActionResult { ResponseDiscarded = true });
+		});
+		if (registration == null) return tcs.Task;
 		try
 		{
 			_mainThreadActions.Enqueue(() =>
@@ -19590,10 +19596,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
 				tcs.TrySetException(new NativeConversationActionDispatchException(false, ex));
 			ObserveNativeActionDispatch("queue_exception", targetLog, targetAgentIndex, error: ex);
-			return tcs.Task;
+			return AnimusForge.Refactor.Runtime.PendingOperationRegistry.AwaitRelease(tcs.Task, registration);
 		}
 		ObserveNativeActionDispatch("queued", targetLog, targetAgentIndex);
-		return AwaitDispatch();
+		return AnimusForge.Refactor.Runtime.PendingOperationRegistry.AwaitRelease(AwaitDispatch(), registration);
 
 		async Task<NativeConversationGameActionResult> AwaitDispatch()
 		{
@@ -26629,10 +26635,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ClearPendingNativeSceneTauntFight("reset_runtime:" + (reason ?? ""));
 			_pendingLordsHallMissionEntryAfterSpeech = null;
 			UnregisterPendingLordsHallMissionEntryConversationEndHook();
-			Action result;
-			while (_mainThreadActions.TryDequeue(out result))
-			{
-			}
+			ResetPendingMainThreadFunctions();
 		}
 		catch (Exception ex)
 		{

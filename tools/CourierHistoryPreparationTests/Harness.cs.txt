@@ -50,6 +50,7 @@ namespace AnimusForge
     }
     public partial class CourierDeliveryBehavior
     {
+        private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingOwnerPhases = new();
         internal sealed class CourierSession { internal Hero Participant=new(); internal bool Inbound, Terminal; internal string LetterText="letter", Fact="original-fact"; }
         internal static CourierDeliveryBehavior Instance;
         internal static readonly ConcurrentQueue<Action> MainThreadActions=new();

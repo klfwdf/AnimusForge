@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library {internal static class TWParallel {internal static int Main;internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==Main;}}
+namespace TaleWorlds.CampaignSystem {}
+namespace TaleWorlds.Core {internal static class MBInformationManager {internal static event Action OnRemoveMapNotice;internal static void Raise()=>OnRemoveMapNotice?.Invoke();}}
+namespace AnimusForge {
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+ internal static class Logger {internal static void Log(string c,string m){} }
+ internal static class FreezeWatchdog {internal static void Mark(string s,string d,bool immediate=false){} }
+ public partial class MyBehavior {
+  internal static MyBehavior Instance;private int _campaignRuntimeRetired;internal bool FailLocal;internal int MemoryReset,LocalReset,Notices;
+  private sealed class Persona {internal int Resets;internal void Reset()=>Resets++;}private readonly Persona _npcPersonaGeneration=new();
+  private void ResetMemorySummaryMainThreadActions()=>MemoryReset++;
+  private void ResetLocalTransientRuntimeForLoadedSave(string reason){LocalReset++;if(FailLocal)throw new Exception("reset failed");}
+  private void OnMapNoticeRemoved()=>Notices++;
+  internal void Subscribe()=>TaleWorlds.Core.MBInformationManager.OnRemoveMapNotice+=OnMapNoticeRemoved;
+ }
+ public partial class ShoutBehavior {
+  private const int NativeConversationMainThreadPreprocessTimeoutMs=30000;
+  private readonly ConcurrentQueue<Action> _mainThreadActions=new();
+  private static bool IsBannerlordMainThreadForNativeActions()=>TWParallel.IsMainThread();
+  private void ResetInstanceTransientRuntimeForLoadedSave(string reason)=>ResetPendingMainThreadFunctions();
+  private static void CloseNativeConversationInput(bool clearSessionHistory){}
+  internal Task<int> Submit(Func<int> f)=>RunNativeConversationMainThreadFuncAsync("binding","target",1,f,-1);
+  internal bool Queued=>!_mainThreadActions.IsEmpty;
+  internal Action Take(){_mainThreadActions.TryDequeue(out var a);return a;}
+  internal void Reset()=>ResetPendingMainThreadFunctions();
+  @@NATIVE@@
+  @@WAIT@@
+ }
+ public partial class CourierDeliveryBehavior {
+  internal static CourierDeliveryBehavior Instance;private static readonly ConcurrentQueue<Action> MainThreadActions=new();
+  private static void Log(string m){}
+  private void ResetTransientRuntimeForLoadedSave(string reason){}
+  internal Task<int> Submit(Func<int> f)=>RunCourierOwnerPhaseAsync(1,"binding",f,CancellationToken.None);
+  internal bool Queued=>!MainThreadActions.IsEmpty;
+  internal Action Take(){MainThreadActions.TryDequeue(out var a);return a;}
+  internal void Reset()=>ResetPendingOwnerPhases();
+  @@COURIER@@
+ }
+}
+internal static class Program {
+ static int checks;
+ static void Check(bool b,string name){checks++;if(!b)throw new Exception("FAIL "+name);}
+ static void Until(Func<bool> done){var until=DateTime.UtcNow.AddSeconds(2);while(!done()){if(DateTime.UtcNow>until)throw new Exception("FAIL retirement relied on30s deadline");Thread.Sleep(1);}}
+ static void Native(){var o=new AnimusForge.ShoutBehavior();int effects=0;var t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);var late=o.Take();o.Reset();Until(()=>t.IsCompleted);Check(t.Result==-1&&effects==0,"Native reset settles pending without tick/deadline");late();Check(effects==0,"late retired native callback inert");Check(o.Submit(()=>42).Result==42,"Native next scope remains usable");Check(o.Submit(()=>{o.Reset();return 43;}).Result==43,"claimed native work keeps result across reset");
+  t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);late=o.Take();o.RetireCampaignRuntime("end");Until(()=>t.IsCompleted);Check(t.Result==-1,"Native end settles queued");late();Check(o.Submit(()=>++effects).Result==-1&&effects==0,"sealed native owner rejects new direct work");
+ }
+ static void Courier(){var o=new AnimusForge.CourierDeliveryBehavior();AnimusForge.CourierDeliveryBehavior.Instance=o;int effects=0;var t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);var late=o.Take();o.Reset();Until(()=>t.IsCompleted);Check(t.IsCanceled&&effects==0,"Courier reset settles pending without deadline");late();Check(effects==0,"late retired courier callback inert");Check(o.Submit(()=>42).Result==42,"Courier next scope usable");Check(o.Submit(()=>{o.Reset();return 43;}).Result==43,"claimed courier outcome survives reset");
+  t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);late=o.Take();o.RetireCampaignRuntime("end");Until(()=>t.IsCompleted);Check(t.IsCanceled&&AnimusForge.CourierDeliveryBehavior.Instance==null,"Courier end clears old singleton and pending work");late();var newer=o.Submit(()=>++effects);Until(()=>newer.IsCompleted);Check(newer.IsCanceled&&effects==0,"sealed courier never starts new work");
+ }
+ static void Memory(){var old=new AnimusForge.MyBehavior{FailLocal=true};var newer=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=newer;old.Subscribe();try{old.RetireCampaignRuntime("end");}catch(Exception){}TaleWorlds.Core.MBInformationManager.Raise();Check(old.MemoryReset==1&&old.Notices==0,"My pending tasks and static subscription retired despite local failure");Check(ReferenceEquals(AnimusForge.MyBehavior.Instance,newer),"old My retirement cannot erase new singleton");newer.Subscribe();newer.RetireCampaignRuntime("end");TaleWorlds.Core.MBInformationManager.Raise();Check(AnimusForge.MyBehavior.Instance==null&&newer.Notices==0,"current My singleton/subscription released");}
+ static int Main(){TWParallel.Main=Environment.CurrentManagedThreadId;try{Native();Courier();Memory();Console.WriteLine($"GameLifetimeBindings checks={checks} failures=0; actual dispatch and retirement bodies; engine/reset seams are fixtures.");return 0;}catch(Exception e){Console.WriteLine(e);return 1;}}
+}

@@ -46,6 +46,7 @@ if not a.original:
  if a.mutate=='drop-accept-guard':
   old='() => IsNativeConversationAdmissionCurrent(admission, out _), false)';assert old in code;code=code.replace(old,'() => true, false)',1)
  (out/'Snapshot.cs').write_text(snap,encoding='utf-8')
+if a.native:(out/'PendingOperationRegistry.cs').write_text((ROOT/'Refactor/Runtime/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')

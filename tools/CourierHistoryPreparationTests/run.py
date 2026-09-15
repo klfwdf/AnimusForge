@@ -15,6 +15,6 @@ if args.mutate=='wrong_input':source=source.replace('inbound ? null : expectedSe
 out=HERE/'.generated'/(args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'History.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@OWNER_PHASE@@',phase),encoding='utf-8')
-project=util.project(out,'CourierHistoryChecks',[out/'History.cs',out/'Program.cs'],executable=True)
+project=util.project(out,'CourierHistoryChecks',[out/'History.cs',out/'Program.cs',ROOT/'Refactor/Runtime/PendingOperationRegistry.cs'],executable=True)
 code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)
