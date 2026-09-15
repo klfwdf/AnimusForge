@@ -24,6 +24,9 @@ def _is_reviewed_deleted(item):
 def restore_memory_summary_source(path, source):
     if path != 'MyBehavior.cs':
         return source
+    run_spec = importlib.util.spec_from_file_location('memory_run_inverse', ROOT / 'tools/MemorySummaryRunOwnerTests/source_parity.py')
+    run_inverse = importlib.util.module_from_spec(run_spec); run_spec.loader.exec_module(run_inverse)
+    source = run_inverse.restore(path, source)
     # Undo only the separately tested persona changes; the B1 checks below still reject
     # every other unreviewed delta and verify full-owner equality with their own baseline.
     persona_spec = importlib.util.spec_from_file_location('persona_inverse', ROOT / 'tools/HeroPersonaGenerationTests/source_parity.py')
@@ -46,15 +49,15 @@ def restore_memory_summary_source(path, source):
     for label in labels:
         evidence = review['evidence'][label]
         for role in ('runner', 'harness'):
-            text = (ROOT / evidence[role]).read_text(encoding='utf-8-sig')
+            text = run_inverse.restore(evidence[role], (ROOT / evidence[role]).read_text(encoding='utf-8-sig'))
             assert _sha256(text) == evidence['testSourceSha256'][role], 'Unreviewed B1 evidence source: ' + evidence[role]
         for dependency_path, expected in evidence.get('additionalTestSourceSha256', {}).items():
-            text = (ROOT / dependency_path).read_text(encoding='utf-8-sig')
+            text = run_inverse.restore(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
             assert _sha256(text) == expected, 'Unreviewed B1 evidence dependency: ' + dependency_path
     # New runtime components are reviewed as whole input files, not silently
     # trusted because only the MyBehavior facade is inverse-transformed.
     for dependency_path, expected in review.get('productionDependencies', {}).items():
-        text = (ROOT / dependency_path).read_text(encoding='utf-8-sig')
+        text = run_inverse.restore(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
         if dependency_path == 'MyBehavior.MemorySummaryMainThread.cs':
             life_spec = importlib.util.spec_from_file_location('b1_game_lifetime_inverse', ROOT / 'tools/GameLifetimeTests/source_parity.py')
             life = importlib.util.module_from_spec(life_spec); life_spec.loader.exec_module(life)

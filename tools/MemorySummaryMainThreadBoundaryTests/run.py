@@ -32,7 +32,7 @@ boundary = (subprocess.check_output(["git", "show", args.source_baseline + ":MyB
 runtime = (ROOT / "Refactor/Runtime/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig") if "MemorySummaryDispatcher" in boundary else None
 process = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
 required_process_fragments = [
-    "await RunMemorySummaryMainThreadAsync(runtimeGeneration",
+    "await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration",
     "ApplyMemorySummarySuccess(result.Job, result.Block)",
     "ApplyMajorActionSummarySuccess(result.Job, result.State)",
     "ApplyMemoryOverviewSuccess(result.Job, result.State)",

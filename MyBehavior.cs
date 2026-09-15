@@ -1,3 +1,4 @@
+using AnimusForge.Refactor.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -1868,7 +1869,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private string _memorySummaryQueueJsonStorage = "";
 
-	private bool _memorySummaryProcessing;
 
 	private bool _memorySummaryFailurePopupActive;
 
@@ -2502,7 +2502,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			ClearRuleStickyCarry();
 			_playerDefeatedHeroBattleFactKeys.Clear();
-			_memorySummaryProcessing = false;
+			_memorySummaryRunOwner.Reset();
 			ResetMemoryFailureNotices();
 			_lastMemoryMaintenanceObservedGameDay = -1;
 			_nativeConversationMemorySessionCounter = 0;
@@ -4850,7 +4850,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+			if (_memorySummaryRunOwner.IsRunning || IsDialogueOrLetterChainBusyForMemorySummary())
 			{
 				return;
 			}
@@ -4878,12 +4878,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			_memorySummaryProcessing = true;
 			_ = ProcessMemorySummaryQueueAsync(forceOverviewCandidateScan);
 		}
 		catch (Exception ex)
 		{
-			_memorySummaryProcessing = false;
 			Logger.Log("CompressedMemory", "[ERROR] TryStartMemorySummaryQueue failed: " + ex.Message);
 		}
 	}
@@ -4911,14 +4909,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		var run = _memorySummaryRunOwner.TryBegin(runtimeGeneration);
+		if (run == null) return;
 		try
 		{
-			var plan = await BuildMemorySummaryPlanAsync(runtimeGeneration);
+			var plan = await BuildMemorySummaryPlanAsync(runtimeGeneration, run: run);
 			if (plan == null) return;
 			List<object> queueItems = plan.Items;
 			int burstSize = 1;
 			var attemptedOverviewIds = plan.OverviewIds;
-			bool accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
+			bool accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 			{
 				if (queueItems.Count == 0)
 				{
@@ -4938,14 +4938,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			var results = new List<MemorySummaryExecutionResult>();
 			var majorResults = new List<MajorActionSummaryExecutionResult>();
 			var overviewResults = new List<MemoryOverviewExecutionResult>();
-			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results")) return;
+			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults, run);
+			if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results")) return;
 			var failures = new List<string>();
 			int appliedDaily = 0, appliedMajor = 0, appliedOverview = 0;
 			// One accepted business result per dispatched operation; no whole-result foreach inside a callback.
 			foreach (var result in results)
 			{
-				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
+				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
 					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
 					if (result.Success) { if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++; }
@@ -4960,7 +4960,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (var result in majorResults)
 			{
-				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
+				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
 					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
 					if (result.Success) { if (ApplyMajorActionSummarySuccess(result.Job, result.State)) appliedMajor++; }
@@ -4978,7 +4978,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (var result in overviewResults)
 				{
-					accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
+					accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 					{
 						if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
 						if (result.Success) { if (ApplyMemoryOverviewSuccess(result.Job, result.State)) appliedOverview++; }
@@ -4992,28 +4992,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 					if (!accepted) return;
 				}
 				if (wave == 1) break;
-				accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
+				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
 					QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 					return true;
 				});
 				if (!accepted) return;
-				var extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds);
+				var extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds, run: run);
 				if (extraPlan == null) return;
 				List<object> extra = extraPlan.Items;
 				if (extra.Count == 0) break;
 				await Task.Delay(60000);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay")) return;
+				if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay")) return;
 				overviewResults = new List<MemoryOverviewExecutionResult>();
-				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
+				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults, run);
+				if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
 			}
-			if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true) == null) return;
+			if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true, run: run) == null) return;
 			// Failure text is detached queue-local data; joining a large backlog does
 			// not need to occupy the main-thread notification/acceptance operation.
 			string failureMessage = failures.Count == 0 ? null : await Task.Run(() =>
 				"以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
-			await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate
+			await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 			{
 				if (failureMessage != null)
 					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", failureMessage, runtimeGeneration);
@@ -5025,29 +5025,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
-			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + ex.Message, runtimeGeneration);
+			if (run.IsCurrent && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
+				await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, () =>
+				{
+					ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + ex.Message, runtimeGeneration);
+					return true;
+				});
 		}
 		finally
 		{
-			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
-			{
-				_memorySummaryProcessing = false;
-				return true;
-			});
+			run.Dispose(); // An old completion cannot release a replacement run.
 		}
 	}
 
-	private async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults)
+	private async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults, MemorySummaryRunOwner.Lease run = null)
 	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		long runtimeGeneration = run?.Generation ?? SaveRuntimeGuard.CaptureGeneration();
 		int clampedBurstSize = Math.Max(1, burstSize);
 		for (int i = 0; i < (queueItems?.Count ?? 0); i += clampedBurstSize)
 		{
 			// A spacing delay must not rebind old work to a new save generation.
-			if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;
+			if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;
 			List<object> wave = queueItems.Skip(i).Take(clampedBurstSize).ToList();
-			List<Task<DailySummaryQueueResult>> tasks = wave.Select(ExecuteDailySummaryQueueItemAsync).ToList();
+			List<Task<DailySummaryQueueResult>> tasks = wave.Select(item => ExecuteDailySummaryQueueItemAsync(item, run)).ToList();
 			DailySummaryQueueResult[] completed = await Task.WhenAll(tasks);
 			foreach (DailySummaryQueueResult completedResult in completed)
 			{
@@ -5075,7 +5075,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item)
+	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item, MemorySummaryRunOwner.Lease run = null)
 	{
 		DailySummaryQueueResult result = new DailySummaryQueueResult();
 		string expectedJobFingerprint = null;
@@ -5087,19 +5087,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 		MemorySummaryJob memoryJob = item as MemorySummaryJob;
 		if (memoryJob != null)
 		{
-			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, expectedJobFingerprint);
+			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, expectedJobFingerprint, run);
 			return result;
 		}
 		MajorActionSummaryJob majorJob = item as MajorActionSummaryJob;
 		if (majorJob != null)
 		{
-			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, expectedJobFingerprint);
+			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, expectedJobFingerprint, run);
 			return result;
 		}
 		MemoryOverviewJob overviewJob = item as MemoryOverviewJob;
 		if (overviewJob != null)
 		{
-			result.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, expectedJobFingerprint);
+			result.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, expectedJobFingerprint, run);
 			return result;
 		}
 		return result;
@@ -5139,9 +5139,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null)
+	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
-		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);
 		return new MemorySummaryExecutionResult
 		{
 			Job = job,
@@ -5152,9 +5152,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, string expectedJobFingerprint = null)
+	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
-		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);
 		return new MajorActionSummaryExecutionResult
 		{
 			Job = job,
@@ -5165,9 +5165,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, string expectedJobFingerprint = null)
+	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
-		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);
 		return new MemoryOverviewExecutionResult
 		{
 			Job = job,
@@ -5965,7 +5965,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
 		}
-		if (processedScanCount > 0 && !_memorySummaryProcessing && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (processedScanCount > 0 && !_memorySummaryRunOwner.IsRunning && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			TryStartMemorySummaryQueue();
 		}
@@ -17751,7 +17751,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		long generation = SaveRuntimeGuard.CaptureGeneration();
 		if (_campaignMemorySummaryStartPending && _campaignMemorySummaryStartGeneration != generation)
 			_campaignMemorySummaryStartPending = false;
-		if (_memorySummaryProcessing) return;
+		if (_memorySummaryRunOwner.IsRunning) return;
 		if (_campaignMemorySummaryStartPending)
 		{
 			ResolveDailyMaintenanceBudget(out long pendingStart, out double pendingBudget);
@@ -47874,7 +47874,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_memorySummaryQueue = new List<MemorySummaryJob>();
 		_memorySummaryQueueJsonStorage = "[]";
-		_memorySummaryProcessing = false;
+		_memorySummaryRunOwner.Reset();
 		ResetMemoryFailureNotices();
 		_nativeConversationMemorySessionCounter = 0;
 		_activeNativeConversationMemorySessionId = -1;

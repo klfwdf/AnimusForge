@@ -88,6 +88,8 @@ def main():
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     out = HERE / ".generated/writers" / (args.mutate or "current")
     out.mkdir(parents=True, exist_ok=True)
+    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
+    run_scope.include(files, original=False)
     for name, content in files.items():
         (out / name).write_bytes(content.encode("utf-8"))
     manifest = dict(mutation=args.mutate, extraction=inventory,

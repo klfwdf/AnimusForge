@@ -78,6 +78,11 @@ namespace AnimusForge
 
         public static MyBehavior Instance { get; private set; }
         private bool _memorySummaryProcessing;
+#if HAS_RUN_OWNER
+        private const bool ExpectedRetiredRunBusy = false;
+#else
+        private const bool ExpectedRetiredRunBusy = true;
+#endif
         private long _lastMemoryOverviewCandidateScanUtcTicks;
         private int _lastMemoryMaintenanceObservedGameDay = -1;
         private bool busy;
@@ -370,7 +375,7 @@ namespace AnimusForge
             if (retire) b.ResetMemorySummaryMainThreadActions();
             b.Finish(task);
             Check(applied == 0 && b._dailyMemoryDrafts["daily"].Count == 1, "retired owner/generation accepted old business writes");
-            Check(b._memorySummaryProcessing, "old request released processing outside accepted context");
+            Check(b._memorySummaryProcessing == ExpectedRetiredRunBusy, "completed/retired run ownership state mismatch");
             Check(!b.MemorySummaryDispatch.HasPending, "retired work remains queued");
             Check(Witness.Count("ui:AnimusForge 日结压缩完成") == 0, "stale completion notified success");
             MainThreadEffects();
@@ -381,7 +386,7 @@ namespace AnimusForge
             Until(() => b.clockCalls == 1 || task.IsCompleted, () => { b.ReleaseProviders(); b.Tick(); });
             SaveRuntimeGuard.AdvanceGeneration("extra-delay-load"); b.Finish(task);
             Check(b.batches.Count == 1 && b._memoryOverviewStates.Count == 0 && applied == 1, "load during extra delay started/committed later wave");
-            Check(b._memorySummaryProcessing, "stale finally released owner flag"); MainThreadEffects();
+            Check(b._memorySummaryProcessing == ExpectedRetiredRunBusy, "completed/retired extra-wave run ownership state mismatch"); MainThreadEffects();
         }
         private static void ProviderException()
         {
@@ -500,7 +505,7 @@ namespace AnimusForge
                 string body="以下日结压缩任务重试 3 次后仍失败：\n\n"+string.Join("\n",Enumerable.Range(0,64).Select(i=>"failed-"+i.ToString("D3")+" 第10日："+b.resultError))+"\n\n请修复 API 或调低记忆总结 RPM 后重试。";
                 Check(Witness.Count("popup-publish:日结压缩总结失败:"+body)==1&&!b._memorySummaryProcessing,"aggregated failure detail/order changed or processing stranded");
             }
-            else Check(Witness.Count("popup-publish:")==0&&b._memorySummaryProcessing,"retired aggregate notified or released the replacement context");
+            else Check(Witness.Count("popup-publish:")==0&&b._memorySummaryProcessing==ExpectedRetiredRunBusy,"retired aggregate notified or released the replacement context");
             Check(Witness.Count("ui:AnimusForge 日结压缩完成")==0,"all-failed batch reported successful completion");MainThreadEffects();
         }
         private static void PartialCompletionException(string stage)

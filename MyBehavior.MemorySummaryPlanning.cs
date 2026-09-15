@@ -1,3 +1,4 @@
+using AnimusForge.Refactor.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,14 +70,14 @@ public partial class MyBehavior
     private async Task<List<MemorySummaryPlanEntry>> ScanMemorySummaryQueueAsync<T>(
         long generation, Func<List<T>> getQueue, Action<List<T>> setQueue,
         Func<T, bool> isPending, Func<T, T> normalize, Func<T, string> getHeroId,
-        HashSet<string> unavailableOwners, bool collectPlan = true) where T : class
+        HashSet<string> unavailableOwners, bool collectPlan = true, MemorySummaryRunOwner.Lease run = null) where T : class
     {
         List<T> source = null;
         var probe = default(List<T>.Enumerator);
         int cursor = 0, limit = 0;
         bool deferred = false, hasHoles = false;
         var entries = new List<MemorySummaryPlanEntry>();
-        bool accepted = await RunMemorySummaryCompletionAsync(generation, delegate
+        bool accepted = await RunMemorySummaryRunPhaseAsync(run, generation, delegate
         {
             source = getQueue();
             limit = source?.Count ?? 0;
@@ -86,7 +87,7 @@ public partial class MyBehavior
         if (!accepted) return null;
         while (cursor < limit && !deferred)
         {
-            accepted = await RunMemorySummaryCompletionAsync(generation, delegate
+            accepted = await RunMemorySummaryRunPhaseAsync(run, generation, delegate
             {
                 if (!IsMemorySummaryQueueStructureCurrent(source, getQueue(), ref probe))
                 { deferred = true; return true; }
@@ -131,7 +132,7 @@ public partial class MyBehavior
         cursor = 0;
         while (cursor < limit && !deferred)
         {
-            accepted = await RunMemorySummaryCompletionAsync(generation, delegate
+            accepted = await RunMemorySummaryRunPhaseAsync(run, generation, delegate
             {
                 if (!IsMemorySummaryQueueStructureCurrent(source, getQueue(), ref probe))
                 { deferred = true; return true; }
@@ -157,39 +158,39 @@ public partial class MyBehavior
     }
 
     private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(long generation,
-        bool overviewOnly = false, HashSet<string> excludedOverviewIds = null, bool cleanupOnly = false)
+        bool overviewOnly = false, HashSet<string> excludedOverviewIds = null, bool cleanupOnly = false, MemorySummaryRunOwner.Lease run = null)
     {
         var entries = new List<MemorySummaryPlanEntry>();
         var unavailableOwners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         CultureInfo culture = null;
-        if (!await RunMemorySummaryCompletionAsync(generation, () =>
+        if (!await RunMemorySummaryRunPhaseAsync(run, generation, () =>
         { culture = CultureInfo.CurrentCulture; return true; })) return null;
         if (!overviewOnly)
         {
             var daily = await ScanMemorySummaryQueueAsync(generation,
                 () => _memorySummaryQueue, x => _memorySummaryQueue = x,
                 HasMemorySummaryJobStillPending,
-                x => SanitizeMemorySummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly);
+                x => SanitizeMemorySummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly, run);
             if (daily == null) return null;
             entries.AddRange(daily);
             var major = await ScanMemorySummaryQueueAsync(generation,
                 () => _npcMajorActionSummaryQueue, x => _npcMajorActionSummaryQueue = x,
                 HasMajorActionSummaryJobStillPending,
-                x => SanitizeMajorActionSummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly);
+                x => SanitizeMajorActionSummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly, run);
             if (major == null) return null;
             entries.AddRange(major);
         }
         var overview = await ScanMemorySummaryQueueAsync(generation,
             () => _memoryOverviewQueue, x => _memoryOverviewQueue = x,
             HasMemoryOverviewJobStillPending,
-            x => SanitizeMemoryOverviewQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly);
+            x => SanitizeMemoryOverviewQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly, run);
         if (overview == null) return null;
         entries.AddRange(overview);
         // This existing cancellation also owns derived states and candidate indexes.
         // Keep it outside scanner cursors and re-check eligibility at execution time.
         foreach (string id in unavailableOwners)
         {
-            if (!await RunMemorySummaryCompletionAsync(generation, delegate
+            if (!await RunMemorySummaryRunPhaseAsync(run, generation, delegate
             {
                 if (!IsMemoryEntityEligibleForCompressedMemory(id))
                     CancelUnavailableHeroCompressionWorkById(id, "queue_execute");

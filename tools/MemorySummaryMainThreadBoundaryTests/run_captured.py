@@ -92,8 +92,8 @@ def main():
     elif a.mutate=='drop-plan-expected':product=mutation(product,'expectedJobFingerprint = planned.JobFingerprint;','expectedJobFingerprint = null;')
     elif a.mutate=='skip-planned-source-check':capture=mutation(capture,'if (expectedJobFingerprint != null && !string.Equals(expectedJobFingerprint,','if (false && !string.Equals(expectedJobFingerprint,')
     elif a.mutate=='ignore-fingerprint':capture=mutation(capture,'if (source == null || !string.Equals(ComputeMemorySummarySourceFingerprint(source),\n            input.SourceFingerprint, StringComparison.Ordinal)) return false;','if (source == null) return false;')
-    elif a.mutate=='worker-parse':capture=mutation(capture,'\n                accepted = await RunMemorySummaryMainThreadAsync(generation, delegate','\n                accepted = await Task.Run(delegate')
-    elif a.mutate=='skip-retry-source':capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryMainThreadAsync','false && !await RunMemorySummaryMainThreadAsync')
+    elif a.mutate=='worker-parse':capture=mutation(capture,'\n                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate','\n                accepted = await Task.Run(delegate')
+    elif a.mutate=='skip-retry-source':capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryRunCaptureAsync','false && !await RunMemorySummaryRunCaptureAsync')
     elif a.mutate=='drop-afef':product=mutation(product,'AfefLines = afefLines,','AfefLines = new List<string>(),')
     elif a.mutate=='drop-overview-ids':product=mutation(product,'IncludedBlockIds = includedBlockIds.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),','IncludedBlockIds = new List<string>(),')
     elif a.mutate=='drop-major-cursor':product=mutation(product,'LastSummarizedSequence = sequence,','LastSummarizedSequence = 0,')
@@ -101,7 +101,7 @@ def main():
         assert product.count('Source = captured.Source,')==3
         product=product.replace('Source = captured.Source,','Source = null,')
     elif a.mutate=='ignore-wave-lifetime':
-        product=mutation(product,'if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;','/* fault: ignore wave owner/generation lifetime */')
+        product=mutation(product,'if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;','/* fault: ignore wave owner/generation lifetime */')
     elif a.mutate in ['background-sanitize-alias','main-sanitize-detach']:
         anchor='TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry)'
         assert product.count(anchor)==3
@@ -134,6 +134,8 @@ def main():
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
+    run_scope.include(files, original=bool(a.source_baseline))
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     for name,data in files.items():(out/name).write_bytes(data.encode())
     metadata=dict(source_baseline=a.source_baseline,mutation=a.mutate,observe_rebuilds=a.observe_rebuilds,declarations=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},production_hash_normalization="utf8-no-bom-lf",production_sha256={n:hashlib.sha256(read(n).encode()).hexdigest() for n in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySummaryMainThread.cs','MyBehavior.MemorySummaryPlanning.cs']},seams=['Capture/check/clone/hash and six Build entry call counters without changed business conditions','Queue dispatcher entry count probe without changed conditions','Gateway HTTP boundary scripted TCS','Task.Delay -> controlled clock','TaleWorlds/game rendering/settings lookups are instrumented fixtures','legacy action repair/suppression and public material normalization are fixtures'],limits=['No live provider/game/save or hard frame-time/record budget proof','Does not execute Apply/Mark/final queue Process (separate business suite)'])

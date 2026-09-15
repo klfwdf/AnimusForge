@@ -56,7 +56,7 @@ METHODS = [
     "private void QueueAllMemoryOverviewCandidatesForDeferredScan(",
     "private static bool IsDailyMaintenanceBudgetExceeded(",
 ]
-MUTATIONS = ["worker-primary", "worker-extra", "worker-cleanup", "worker-release",
+MUTATIONS = ["worker-primary", "worker-extra", "worker-cleanup",
              "omit-release", "omit-cleanup", "omit-mark-daily", "omit-mark-major",
              "omit-mark-overview", "duplicate-apply", "accept-obsolete", "ignore-owner",
              "ignore-generation", "ignore-draft-owner", "ignore-source", "miscount-obsolete",
@@ -70,11 +70,11 @@ def replace_exact(text, old, new, count=1):
     return text.replace(old, new)
 
 
-def build_sources(original, mutation):
+def build_sources(original, mutation, run_owner_baseline=False):
     spec = importlib.util.spec_from_file_location("channel_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
-    source = extractor.source("MyBehavior.cs", BASELINE if original else None)
+    source = extractor.source("MyBehavior.cs", "155f1b7a" if run_owner_baseline else BASELINE if original else None)
     signatures = [f"private sealed class {name}" for name in MODELS] + ["private class NpcActionEntry"] + METHODS
     constant = re.search(r'private const string NonHeroMemoryIdPrefix = [^;]+;', source)
     if constant is None:
@@ -115,8 +115,8 @@ def build_sources(original, mutation):
             block = replace_exact(block, "(_memorySummaryQueue?.Count ?? 0) > 0", "(_memorySummaryQueue?.Any(HasMemorySummaryJobStillPending) ?? false)")
         if signature == METHODS[0]:
             block = replace_exact(block, "await Task.Delay(60000);", "await WaitOverviewWindowAsync();")
-            block = replace_exact(block, "_memorySummaryProcessing = false;",
-                                  'Witness.Touch("release"); _memorySummaryProcessing = false;')
+            if original or run_owner_baseline:
+                block = replace_exact(block, "_memorySummaryProcessing = false;", 'Witness.Touch("release"); _memorySummaryProcessing = false;')
             if not original:
                 aggregate = '"以下日结压缩任务重试 3 次后仍失败：\\n\\n" + string.Join("\\n", failures) + "\\n\\n请修复 API 或调低记忆总结 RPM 后重试。"'
                 block = replace_exact(block, aggregate, "ObserveFailureAggregation(() => " + aggregate + ")")
@@ -126,20 +126,20 @@ def build_sources(original, mutation):
                     block = replace_exact(block, 'string.Join("\\n", failures)', '""')
             if mutation and mutation.startswith("worker-") and mutation != "worker-extra-plan":
                 # Mutate the actual caller, not merely the scheduler helper.
-                marker = r"await RunMemorySummary(?:MainThread|Completion)Async\(runtimeGeneration, delegate"
+                marker = r"await RunMemorySummaryRunPhaseAsync\(run, runtimeGeneration, delegate"
                 matches = list(re.finditer(marker, block))
-                if len(matches) != 7:
-                    raise ValueError("Expected initial/daily/major/overview/extra-plan/cleanup/release dispatches")
+                if len(matches) != 6:
+                    raise ValueError("Expected initial/daily/major/overview/extra-plan/notification dispatches")
                 which = {"worker-initial": 0, "worker-primary": 1, "worker-major": 2,
-                         "worker-extra": 3, "worker-extra-plan": 4, "worker-cleanup": 5, "worker-release": 6}[mutation]
+                         "worker-extra": 3, "worker-extra-plan": 4, "worker-cleanup": 5}[mutation]
                 hit = matches[which]
                 block = block[:hit.start()] + "await Task.Run(delegate" + block[hit.end():]
             elif mutation == "bypass-completion-error-wrapper":
-                block = replace_exact(block, "await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate", "await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate", count=6)
+                block = replace_exact(block, "await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate", "await RunMemorySummaryRunCaptureAsync(run, runtimeGeneration, delegate", count=6)
             elif mutation == "omit-release":
-                block = replace_exact(block, "_memorySummaryProcessing = false;", "/* fault: no processing release */")
+                block = replace_exact(block, "run.Dispose();", "/* fault: no processing release */")
             elif mutation == "omit-cleanup":
-                block = replace_exact(block, "if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true) == null) return;", "/* fault: no terminal cleanup */")
+                block = replace_exact(block, "if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true, run: run) == null) return;", "/* fault: no terminal cleanup */")
             elif mutation and mutation.startswith("omit-mark-"):
                 call = {"omit-mark-daily": "MarkMemorySummaryFailure(result.Job, result.Error);",
                         "omit-mark-major": "MarkMajorActionSummaryFailure(result.Job, result.Error);",
@@ -182,7 +182,7 @@ def build_sources(original, mutation):
         if allowance is None: raise ValueError("Missing planner allowance")
         declarations.append(allowance.group())
     boundary = extractor.source("MyBehavior.MemorySummaryMainThread.cs", None)
-    if mutation == "swallow-completion-error":
+    if mutation == "swallow-completion-error" and "MemorySummaryDispatcher" not in boundary:
         boundary = replace_exact(boundary, "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")
     elif mutation == "ignore-owner":
         boundary = boundary.replace("ReferenceEquals(Instance, this)", "true")
@@ -208,10 +208,12 @@ def main():
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--original", action="store_true")
     group.add_argument("--mutate", choices=MUTATIONS)
+    parser.add_argument("--run-scope-cases", action="store_true")
+    parser.add_argument("--run-owner-baseline", action="store_true")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
-    product, boundary, manifest = build_sources(args.original, args.mutate)
-    out = HERE / ".generated/business" / ("original" if args.original else args.mutate or "current")
+    product, boundary, manifest = build_sources(args.original, args.mutate, args.run_owner_baseline)
+    out = HERE / ".generated/business" / ("run-owner-baseline" if args.run_owner_baseline else "scope-cases" if args.run_scope_cases else "original" if args.original else args.mutate or "current")
     out.mkdir(parents=True, exist_ok=True)
     dependency = ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll"
     if not dependency.is_file():
@@ -223,7 +225,7 @@ def main():
              "Proof.csproj": '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(dependency)) + '</HintPath></Reference></ItemGroup></Project>',
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}
     if not args.original:
-        planning = (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig")
+        planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\r\n","\n") if args.run_owner_baseline else (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig")
         manifest["planning_sha256"] = hashlib.sha256(planning.encode()).hexdigest()
         if args.mutate == "keep-invalid-queue":
             planning = replace_exact(planning, "source[index] = null;", "source[index] = job;")
@@ -233,7 +235,7 @@ def main():
         elif args.mutate == "worker-extra-plan":
             # The extra plan no longer scans inside the coordinator callback. Corrupt
             # the actual shared scanner's dispatch, not the now-empty old callback.
-            planning = replace_exact(planning, "await RunMemorySummaryCompletionAsync(generation, delegate", "await Task.Run(delegate", count=4)
+            planning = replace_exact(planning, "await RunMemorySummaryRunPhaseAsync(run, generation, delegate", "await Task.Run(delegate", count=4)
         files["Planning.cs"] = planning
     if not args.original and (ROOT / "MyBehavior.MemoryMaintenanceBudget.cs").is_file():
         for target, relative in [("BudgetBinding.cs", "MyBehavior.MemoryMaintenanceBudget.cs"),
@@ -242,6 +244,16 @@ def main():
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+    if args.mutate == "swallow-completion-error" and "MemorySummaryDispatcher.cs" in files:
+        files["MemorySummaryDispatcher.cs"] = replace_exact(files["MemorySummaryDispatcher.cs"], "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")
+    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
+    run_scope.include(files, original=args.original or args.run_owner_baseline)
+    if args.run_scope_cases:
+        extra=(ROOT/'tools/MemorySummaryRunOwnerTests/BusinessCases.cs.txt').read_text(encoding='utf-8-sig')
+        anchor='        private static void MainThreadEffects()'
+        assert anchor in files['Program.cs'];files['Program.cs']=files['Program.cs'].replace(anchor,extra+'\n'+anchor,1)
+        anchor='("load-during-extra-delay", LoadDuringExtraDelay)'
+        assert anchor in files['Program.cs'];files['Program.cs']=files['Program.cs'].replace(anchor,'("same-generation-run-replaced-success",()=>RunOwnerReplacement(false,false)),("same-generation-run-replaced-failure",()=>RunOwnerReplacement(true,false)),("same-generation-queued-acceptance-retired",()=>RunOwnerReplacement(false,true)),'+anchor,1)
     files["Proof.csproj"] = files["Proof.csproj"].replace("<OutputType>", "<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>", 1).replace("</Project>", "<ItemGroup>" + "".join('<Compile Include="' + name + '" />' for name in files if name.endswith(".cs")) + "</ItemGroup></Project>")
     manifest["generated_sha256"] = {name: hashlib.sha256(data.encode()).hexdigest() for name, data in files.items()}
     for name, data in files.items():
