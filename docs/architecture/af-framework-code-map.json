@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "807bc5b944907a10d2626f3936fa7109aa74422a",
+  "sourceRevision": "29448d1b7ec7bc7a92820c8b510aaad56c21ff37",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -112,18 +112,18 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "模块装配，不是 Campaign Ready",
-      "fileSha256": "722e6318c0e884dae16a847524cea3bc95397afefa8ad1d96afc4899b14c3c1f"
+      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
     },
     {
       "id": "lifecycle.unload",
       "path": "SubModule.cs",
-      "start": 107,
-      "end": 110,
+      "start": 109,
+      "end": 112,
       "symbol": "ModuleFrameworkRuntime.Shutdown();",
       "match": "exact",
       "status": "mixed-host",
       "note": "发布停止状态",
-      "fileSha256": "722e6318c0e884dae16a847524cea3bc95397afefa8ad1d96afc4899b14c3c1f"
+      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
     },
     {
       "id": "native.admission",
@@ -161,46 +161,46 @@
     {
       "id": "native.history.bridge",
       "path": "ShoutBehavior.cs",
-      "start": 16180,
-      "end": 16183,
+      "start": 16172,
+      "end": 16175,
       "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
+      "fileSha256": "6c89b3c8e823467108e09f6a87bf728ef4d61d47ce4ae6b719e01bc9e2a9401a"
     },
     {
       "id": "native.history.dispatch",
       "path": "ShoutBehavior.cs",
-      "start": 20159,
-      "end": 20162,
+      "start": 20165,
+      "end": 20168,
       "symbol": "\"persisted_history_capture\", nativeTargetLog, nativeTargetAgentIndex,",
       "match": "exact",
       "status": "mixed-host",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
+      "fileSha256": "6c89b3c8e823467108e09f6a87bf728ef4d61d47ce4ae6b719e01bc9e2a9401a"
     },
     {
       "id": "native.history.accept",
       "path": "ShoutBehavior.cs",
-      "start": 20201,
-      "end": 20204,
+      "start": 20207,
+      "end": 20210,
       "symbol": "if (!await RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
       "match": "contains",
       "status": "mixed-host",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
+      "fileSha256": "6c89b3c8e823467108e09f6a87bf728ef4d61d47ce4ae6b719e01bc9e2a9401a"
     },
     {
       "id": "native.dispatch.shared",
       "path": "ShoutBehavior.cs",
-      "start": 19437,
-      "end": 19440,
+      "start": 19429,
+      "end": 19432,
       "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
+      "fileSha256": "6c89b3c8e823467108e09f6a87bf728ef4d61d47ce4ae6b719e01bc9e2a9401a"
     },
     {
       "id": "memory.acceptance",
@@ -227,13 +227,13 @@
     {
       "id": "memory.summary.dispatch",
       "path": "MyBehavior.MemorySummaryMainThread.cs",
-      "start": 46,
-      "end": 49,
+      "start": 48,
+      "end": 51,
       "symbol": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation) =>",
       "match": "exact",
       "status": "wired-boundary",
       "note": "Host稳定私有调用入口，委托唯一dispatcher",
-      "fileSha256": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7"
+      "fileSha256": "3e6116f172a56d7644cb0495cfe4611c246a9eba78c06ff738ddbef2cade45d5"
     },
     {
       "id": "memory.summary.drain",
@@ -293,24 +293,24 @@
     {
       "id": "courier.prepare.reply",
       "path": "CourierDeliveryBehavior.cs",
-      "start": 4656,
-      "end": 4690,
+      "start": 4502,
+      "end": 4536,
       "symbol": "private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(",
       "match": "contains",
       "status": "mixed-responsibility",
       "note": "历史消费prepared快照；人设/规则/lore/其余live准备尚未收口",
-      "fileSha256": "0548b81116a352015d22470f8d6d353c1736cd17874401da1e0cd8d9a011b9e2"
+      "fileSha256": "5a730f9b91f8e5ac13f125ed9618bd840c1a2622d4bcd68bf4f7683058039752"
     },
     {
       "id": "courier.prepare.inbound",
       "path": "CourierDeliveryBehavior.cs",
-      "start": 5060,
-      "end": 5094,
+      "start": 4906,
+      "end": 4940,
       "symbol": "private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(",
       "match": "contains",
       "status": "mixed-responsibility",
       "note": "历史消费prepared快照；人设/规则/lore/其余live准备尚未收口",
-      "fileSha256": "0548b81116a352015d22470f8d6d353c1736cd17874401da1e0cd8d9a011b9e2"
+      "fileSha256": "5a730f9b91f8e5ac13f125ed9618bd840c1a2622d4bcd68bf4f7683058039752"
     },
     {
       "id": "memory.summary.capture",
@@ -891,20 +891,20 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "只适配真实游戏身份/设置/诊断，无第二队列",
-      "start": 32,
-      "end": 35,
-      "fileSha256": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7"
+      "start": 33,
+      "end": 36,
+      "fileSha256": "3e6116f172a56d7644cb0495cfe4611c246a9eba78c06ff738ddbef2cade45d5"
     },
     {
       "id": "composition.campaign.entry",
       "path": "SubModule.cs",
-      "start": 653,
-      "end": 657,
+      "start": 655,
+      "end": 659,
       "symbol": "protected override void InitializeGameStarter(",
       "match": "contains",
       "status": "wired-composition",
       "note": "引擎签名不变，唯一委托框架入口",
-      "fileSha256": "722e6318c0e884dae16a847524cea3bc95397afefa8ad1d96afc4899b14c3c1f"
+      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
     },
     {
       "id": "composition.campaign.dispatch",
@@ -1234,7 +1234,139 @@
       "match": "contains",
       "status": "wired-partial",
       "note": "未claim可退役，已claim等待真实回执",
-      "fileSha256": "6f9041dd6f2e217e98be1645f6942b15e0ad4d2b5d1a2b44f658def8b03aa075"
+      "fileSha256": "84fa27b203cd5f65725ae84fec5275a760f9f51758a38238d238e35888be3099"
+    },
+    {
+      "id": "lifetime.engine.begin",
+      "path": "SubModule.cs",
+      "start": 655,
+      "end": 675,
+      "symbol": "protected override void InitializeGameStarter(Game game, IGameStarter starterObject)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "注册前失效，成功/失败后捕获真实实例",
+      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+    },
+    {
+      "id": "lifetime.engine.end",
+      "path": "SubModule.cs",
+      "start": 98,
+      "end": 103,
+      "symbol": "public override void OnGameEnd(Game game)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "真实 GameEnd 入口",
+      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+    },
+    {
+      "id": "lifetime.engine.unload",
+      "path": "SubModule.cs",
+      "start": 105,
+      "end": 112,
+      "symbol": "protected override void OnSubModuleUnloaded()",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "卸载先退役活动 Game",
+      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+    },
+    {
+      "id": "lifetime.adapter.capture",
+      "path": "AfCampaignRuntimeLifecycle.cs",
+      "start": 23,
+      "end": 36,
+      "symbol": "internal static void CaptureOwners(Game game, CampaignGameStarter starter)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "捕获实际注册和半途构造的主体实例",
+      "fileSha256": "72619ceeac845b349f0bfba56a95e2116f53c7480fefa1f3b45196e6fbdfc5c6"
+    },
+    {
+      "id": "lifetime.adapter.retire",
+      "path": "AfCampaignRuntimeLifecycle.cs",
+      "start": 41,
+      "end": 59,
+      "symbol": "private static void RetireOwners(string reason)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "各主体故障隔离、释放持有列表",
+      "fileSha256": "72619ceeac845b349f0bfba56a95e2116f53c7480fefa1f3b45196e6fbdfc5c6"
+    },
+    {
+      "id": "lifetime.identity",
+      "path": "Refactor/Runtime/GameLifetimeCoordinator.cs",
+      "start": 7,
+      "end": 39,
+      "symbol": "internal sealed class GameLifetimeCoordinator",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "引用身份区分旧/新 Game；纯 owner，不持久化",
+      "fileSha256": "ef95cd23825bef3eebd58703749006240670747c12ef97e8e80234454a7bc4a5"
+    },
+    {
+      "id": "lifetime.registry",
+      "path": "Refactor/Runtime/PendingOperationRegistry.cs",
+      "start": 9,
+      "end": 88,
+      "symbol": "internal sealed class PendingOperationRegistry",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "已有队列退役登记，不新增第二队列",
+      "fileSha256": "da2ce6f95a6abebfeeea426981dc8ba260e1e7195a94901203c7df289322d2d9"
+    },
+    {
+      "id": "lifetime.my.retire",
+      "path": "MyBehavior.CampaignLifetime.cs",
+      "start": 10,
+      "end": 27,
+      "symbol": "internal void RetireCampaignRuntime(string reason)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "先停止准入，再退役待办/人设/订阅",
+      "fileSha256": "b72a4875d1ad13a07ec56fd56abc5e030125098c40ebb2259b2fd7c587a4895f"
+    },
+    {
+      "id": "lifetime.my.dispatch",
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "start": 33,
+      "end": 46,
+      "symbol": "private sealed class MemorySummaryDispatchHost : IMemorySummaryDispatchHost",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "旧 singleton 清理窗口的新 generation 也不能准入",
+      "fileSha256": "3e6116f172a56d7644cb0495cfe4611c246a9eba78c06ff738ddbef2cade45d5"
+    },
+    {
+      "id": "lifetime.shout.retire",
+      "path": "ShoutBehavior.CampaignLifetime.cs",
+      "start": 19,
+      "end": 25,
+      "symbol": "internal void RetireCampaignRuntime(string reason)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "准备/动作登记 seal 与原 Scene/Native 清理",
+      "fileSha256": "09efc89fd83e38702b6034d9d51cd4edea3fe67728bc751fb81466921b80ad4f"
+    },
+    {
+      "id": "lifetime.courier.retire",
+      "path": "CourierDeliveryBehavior.CampaignLifetime.cs",
+      "start": 19,
+      "end": 31,
+      "symbol": "internal void RetireCampaignRuntime(string reason)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "owner phase/final commit seal 与原 Courier 清理",
+      "fileSha256": "29894b9d12d00bbf57729eeec3c1d31e3a0209084c509a32670980151136f28e"
+    },
+    {
+      "id": "lifetime.courier.commit",
+      "path": "CourierDeliveryBehavior.CommitDispatch.cs",
+      "start": 14,
+      "end": 93,
+      "symbol": "private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "最终提交原子 claim/待办退役/真实回执",
+      "fileSha256": "87659a17f8426aefd23b2b879a9e3600ebc961cd3a400ef98e63a1dfe24b5200"
     }
   ]
 }
