@@ -1,3 +1,15 @@
+# 当前主体收尾：main对照与三渠道外部接口必交（2026-09-15）
+
+**本轮生产/测试73774a94，整体收尾ACTIVE；仅本地未推送。** 用户已确认Native/Scene/Courier全部对外开放为必交目标，当前Api.V1只读仍未完成该目标。基线冻结origin/main437925b8；制作组政策/宴会/GCCZ玩法排除，只维护AF接缝。
+
+- [主体功能/内外接口收尾矩阵](docs/phase8/af-core-main-closeout-matrix-20260915.md)
+- [详细HANDOFF](docs/handoffs/2026-09-15-main-closeout-lifetime-handoff.md) / [验证清单](docs/audits/2026-09-15-main-closeout-lifetime-verification.json)
+- 已完成C1基础切片：修复main的5类取消/释放缺陷，独立内部request lease，原公开签名保持；普通30项main对照、新51项/3故障、旧编译消费者换新核心、相邻pipeline/Courier/内部ports/API与六Stage通过，main存档身份146/36保持。
+- 未完成：三渠道public提交/结果/取消SDK、内部双向服务边界、完整Campaign/Mission生命周期、Courier线程准备、B1深复制/预算和其他主体职责/实机/旧档验收。不能标整个主体完成。
+- 自动化PAUSED，三份保护文件不变，未部署。下方已推送f03557fb是上次交付，不包含本轮新代码。
+
+## 以下为历史记录；当前收尾以上方为准
+
 # GitHub 重构交付回执（2026-09-15）
 
 已正常快进推送代码与详细HANDOFF到 `klfwdf/AnimusForge` 的 `codex/af-main-refactor-continuation-20260831`。远端已核对交付提交 `1345b0bce8c2f73de6a6dfe8a8d87330280de681`；其后本回执提交仅更新文档，生产/测试仍 `f07cb2a2`。

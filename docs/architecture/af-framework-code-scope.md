@@ -1,3 +1,11 @@
+# 当前增量：共用请求生命周期owner（2026-09-15）
+
+生产73774a94，96点地图。InteractionRequestCoordinator保留公开接入/取消/Dispose，CTS生命周期由内部InteractionRequestLease持有；执行与活动取消回调均结束后释放，旧直接Dispose实现移除。现有facade是真实消费者，三渠道版本化public SDK仍未开放完成。
+
+[main功能矩阵](../phase8/af-core-main-closeout-matrix-20260915.md) / [当前HANDOFF](../handoffs/2026-09-15-main-closeout-lifetime-handoff.md)。本轮不是整个Campaign/Mission或全部主体拆分完成；不得删有活跃调用/序列化/ABI责任的旧owner。
+
+## 以下为已有定位与保留责任
+
 # 当前增量：内部目录快照 / V1 投影分离（2026-09-15）
 
 源码f07cb2a2，91点地图。ModuleFrameworkRuntime仅持有内部装配状态、原Directory和冻结捕获；Api/Internal/AfV1SnapshotProjection承接公开版本映射。公开GetSnapshot签名与能力不变，原混杂映射已删除，CoreOnly无API源码编译通过。

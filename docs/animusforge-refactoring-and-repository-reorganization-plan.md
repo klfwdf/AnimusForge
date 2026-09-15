@@ -11,6 +11,8 @@
 - 实际验证：旧main编译消费者不重编译、换新核心程序集后Native/Scene/Courier调用通过；现有pipeline40/提交边界69/回执39/async18/匿名prompt13/Native失败4、Courier后处理39、内部ports308+3故障、API119/256并发/32快照/3故障、4DLL584元数据、最终源码六Stage及main身份146/36通过。NuGet漏洞数据离线获取有NU1900警告，不声称已完成包漏洞审计。
 - 主体范围与三渠道外部必交矩阵已写docs/phase8/af-core-main-closeout-matrix-20260915.md；只读API没有被改成假Supported，政策/宴会/GCCZ业务未动，外部三渠道SDK、Courier线程准备、完整Campaign/Mission和B1预算/深复制仍未完成。测试与本轮修复不等于整个main主体已完全验收。
 
+- 本轮生产73774a94；详细入口docs/handoffs/2026-09-15-main-closeout-lifetime-handoff.md，96点地图与审计JSON绑定该候选。仅本地，整体收尾仍ACTIVE，未推送/部署。
+
 ## 以下为历史记录；当前收尾以上方为准
 
 # 当前任务：推送已验证重构交付（2026-09-15）
