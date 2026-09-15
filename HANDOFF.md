@@ -1,3 +1,15 @@
+# 当前接续：三路并行整合已验证，整体阶段8仍未完成（2026-09-16）
+
+**生产源码6e419f6d，仅本地。不是“全部代码完成，只差实机”。**
+
+- [最新详细HANDOFF](docs/handoffs/2026-09-16-parallel-closeout-handoff.md) / [同候选证据](docs/audits/2026-09-16-parallel-closeout-verification.json) / [142点代码地图](docs/architecture/af-framework-code-map.json)。
+- 已合并：摘要完整run授权；UTF16指纹等价提速；Native内部服务/公开submit-result-cancel；Courier双向最终准备及同源失效终结。互审修复Native跨会话/跨UI回合错投、Courier卡等待/旧标签重放。
+- 最终六Stage、4DLL1056元数据、实际1.4 Courier Host、Native41/8反例、Courier252+59、记忆95终端、邻接回归、main保存身份146/36通过。详细fixture/LIVE边界见交接。
+- 必交未完成：共享Prompt规则/lore及live线程、记忆记录/字符硬预算、Scene/Courier SDK、完整内部反向服务、主体大类拆净/全功能与当前候选LIVE/SAVE。旧retry生命周期也单列，不把Start reservation当整个Courier授权。
+- 最后已核实推送仍10defeb4；未部署/动存档/切默认/恢复自动化，三份用户文档受保护。本地制作组简版：.tmp/parallel-closeout-20260916/team-handoff.md。
+
+## 以下为历史记录，最新执行状态以上方及唯一台账为准
+
 # 当前全范围收尾续点：Courier 失败回执校正（2026-09-15）
 
 **生产/测试51844800，仅本地；阶段8全范围仍ACTIVE，非整个项目DONE。**

@@ -1,0 +1,136 @@
+{
+  "sourceRevision": "6e419f6d17859fc49fef538e8a2ea5acf922deb3",
+  "baseline": "155f1b7a",
+  "mainBaseline": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+  "lastVerifiedPush": "10defeb4976f3ffa096a77e847fba254308f6aba",
+  "status": "OFFLINE_COMBINED_BATCH_VERIFIED_FULL_CLOSEOUT_ACTIVE",
+  "sourceBinding": "Final Stage started at b0a20176 with frozen Courier WIP; all compiled production sources equal6e419f6d. Initial no-final Stage/API precede peer-review corrections and are not final acceptance.",
+  "sourceHashNormalization": "utf8-no-bom-lf",
+  "productionFiles": {
+    "Api/Internal/AfV1DialogueProjection.cs": "056c88e02fd05a89a8c6c763dccba303798c4c63653df03ef3cfd2ff19ea59a5",
+    "Api/V1/AfApi.cs": "5e5524aec712fd8b94cd59096301e1cbadae66d231d7cc80f609967b910d205c",
+    "Api/V1/AfDialogueClient.cs": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe",
+    "CourierDeliveryBehavior.PromptPreparation.cs": "c40e693a3363498329b264bf62b627f9020c5b7460663691715adb4c46f54591",
+    "CourierDeliveryBehavior.cs": "933885e8d03aa9b702af6a0e5e7dc7f71258c9d964adb9c318bca81de24c7a2a",
+    "MyBehavior.MemorySummaryInput.cs": "ce363f88caf10a10bc115ac9b52f4b9802029937fd358287c67a75f11af8d028",
+    "MyBehavior.MemorySummaryPlanning.cs": "b2cc5a84f95a0da106eb9f803eafd7eed540dea78ae6f31b454a448ea3cf7cbc",
+    "MyBehavior.MemorySummaryRun.cs": "94a2f61df2bf87c86b1ec24a6dc59b63fd52afc23a969973c7968c20487d1634",
+    "MyBehavior.cs": "f51b4fe041247f7e6676f113eb1608f1a081f21cc83fbf6fb1c7c5d52c8c56c5",
+    "Refactor/Modules/CoreDialogueClient.cs": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
+    "Refactor/Modules/CoreDialogueContracts.cs": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
+    "Refactor/Modules/CoreDialogueOperation.cs": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
+    "Refactor/Modules/CoreDialogueServices.cs": "e3f746979d34a037131f95ef2de6f0eff7068e41c97948c979ce686a7ce51490",
+    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "b2776a23b6f1445aac9cb193ebb823f518b1376046b195084451f6160895cbdb",
+    "Refactor/Runtime/MemorySummaryRunOwner.cs": "13c606f98a0a4694dd439d7b80b4dd4777fbc18bcc229ffd5060b3c6d02e1551",
+    "ShoutBehavior.ModuleNativeSubmission.cs": "26538e78762ca3f8aba96abfc6cb9bc5c1a43c5c452de9cdbcb8b6f7046fe9ca",
+    "ShoutBehavior.NativeAdmission.cs": "2994455bd73c352e3ea542ff8209fd54a5a81d59118fb7b2f6eefdc8c4e0a5d6",
+    "ShoutBehavior.NativeCompletion.cs": "a11d72568e9261b31a51caccaa62eee7a6c302f658155755f6bc3b5a5e1e758a"
+  },
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "48c0f880882b46add147623d94b5c692c178da1f5222727d4c9cb120580d1d5a"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "2f5c775f2226e0426fbfc443a0d3b046aa8f47989e208ebee6388baa810902ca"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "fa079ef1e86286769816a1f0428d8023eb8068ee87112bdbfaf0ddf3ac9c5a8c"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "3be05e114b28fce4bf3ca7bfff6c773c602819d3574d51a5ff39192e40ea1098"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "40e849a0784e08a90cf84cb8ac3c73a215aca1574417adc6971e27d52b2b6463"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "7bcf40386bd22012bc9dd3639d9067d62e491ea00a44f389e01a451a2df75ece"
+    }
+  ],
+  "finalEvidence": {
+    ".tmp/parallel-closeout-20260916/stage-debug-final.log": "c591f9fa2d8f68897efadb8aba5e6b479e029e5f4e51cdc1426b82204646eba2",
+    ".tmp/parallel-closeout-20260916/stage-release-final.log": "f12fc0b1aca994e17509ad7b679cd876f8f4abde261caa45156691c70c4e77c2",
+    ".tmp/parallel-closeout-20260916/api-metadata-final.log": "f38d212a89c49f47602665a398c132af87d744c3cf2831b47a5c22e8c1115224",
+    ".tmp/parallel-closeout-20260916/actual-courier-host-final.log": "3ac22bc971ffb5f32aab111d5ac26ea62021273b5c4bbe2df7c7cc9cd7098eae",
+    ".tmp/parallel-closeout-20260916/courier-liveness-final.log": "948a2d55647448dbe1fecb4fa91042214e9e939ec4f5c8f355bf0d1a17dd35b3",
+    ".tmp/parallel-closeout-20260916/memory-terminal-final.log": "26b09ac3aec12467699802f353d5134c4facfd8ed454ed75f613e4bd88e8d7f9",
+    ".tmp/parallel-closeout-20260916/memory-writers-final.log": "d3908954e755c5cc6e29b2c69f27646ca609331b2a766cd15036840f45c58000",
+    ".tmp/parallel-closeout-20260916/NativeModuleSubmissionTests-final.log": "c67d8e72ea6918548e5b6df1dc15a9e32c7a9d94bbfb04a62355e7f8be717a24",
+    ".tmp/parallel-closeout-20260916/NativeConversationAdmissionTests-final.log": "1a8e85d9510a322a6e49a005852a9d6ef26cd5874b03d285620242e1d5c86762",
+    ".tmp/parallel-closeout-20260916/NativeCompletionBoundaryTests-final.log": "8f73e6336283f04d0c4ecb2fc18853685e5ce71b511c73dcddcbce946c8dd372",
+    ".tmp/parallel-closeout-20260916/NativePendingHistoryBoundaryTests-final.log": "fa54338ce87eab0bfba612d547cc3f6d93b0d80b75ae062aab6288614a9d9b4c",
+    ".tmp/parallel-closeout-20260916/ports-final.log": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f",
+    ".tmp/parallel-closeout-20260916/persona-final.log": "feb96f79b0b05569d6af27a8c616c579f795213236a189601b089fe7fc90b20a",
+    ".tmp/parallel-closeout-20260916/history-final.log": "05a4de29ffd2a38ae2d4a3e9550625c1f4ca8dc57d9b2a50c59c95438102302b",
+    ".tmp/parallel-closeout-20260916/native-history-final.log": "4e3eb9baaf3c921ade25f970776cf69b82ffde9637d7a5b6466a91fcbf58b4ba",
+    ".tmp/parallel-closeout-20260916/captured-final.log": "7af52bc7d9c4f46525d525f10a3f0e815f57b45364ea8161054e4a3634e3053a",
+    ".tmp/parallel-closeout-20260916/identity-final.json": "09ae62be767a7577ece5781123e3fa08de7611e0faca981be5577af1a9c1720c"
+  },
+  "verification": {
+    "stageOutputs": 6,
+    "api": 119,
+    "snapshot": 32,
+    "actualDllMetadata": 1056,
+    "codeMapAnchors": 142,
+    "nativeApiChecks": 41,
+    "nativeMutations": 8,
+    "nativeEnumReorder": 41,
+    "courierPromptChecks": 252,
+    "courierPromptScenarios": 58,
+    "courierLivenessChecks": 59,
+    "courierLivenessScenarios": 16,
+    "courierMutations": 9,
+    "memoryRunPrimitiveChecks": 47,
+    "memoryBusiness": 39,
+    "memoryTerminal": 95,
+    "capture": 116,
+    "writer": 238,
+    "fingerprintChecksEachVariant": 65808,
+    "fingerprintSourceDigests": 13,
+    "teamPorts": 308,
+    "syncDataKeys": 146,
+    "campaignBehaviors": 36
+  },
+  "supplementaryEvidence": [
+    "tools/NativeModuleSubmissionTests/verification.json",
+    "tools/CourierPromptPreparationTests/source-review.json",
+    "tools/CourierPromptPreparationTests/liveness-review.json",
+    "tools/MemorySummaryRunOwnerTests/source-review.json",
+    "tools/MemorySummaryBudgetTests/benchmark-summary.json",
+    "tools/MemorySummaryBudgetTests/writer-review.json"
+  ],
+  "preservedUserFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "notVerified": [
+    "Full core decomposition/function parity and removal of all obsolete paths",
+    "Complete shared Prompt/runtime/lore threading",
+    "Record/character hard memory work budget",
+    "Scene and Courier public submit/result/cancel and all internal reverse services",
+    "Entire Courier retry/final-commit lifecycle",
+    "Current candidate game Campaign/Mission, old saves, live Economy/AFEF, independently loaded submod"
+  ],
+  "actionsNotTaken": [
+    "push",
+    "game deployment",
+    "save mutation",
+    "default-entry change",
+    "automation resume"
+  ]
+}

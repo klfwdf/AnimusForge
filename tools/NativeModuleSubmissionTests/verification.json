@@ -53,5 +53,12 @@
     "new public consumer assembly has no friend access; game/provider ports explicitly fixture",
     "early non-final timeout/fixture missing-dependency failures excluded",
     "actual final six Stage and actual DLL metadata are collected by root after peer epoch/revision fixes"
-  ]
+  ],
+  "integration": {
+    "sourceRevision": "6e419f6d17859fc49fef538e8a2ea5acf922deb3",
+    "stageOutputs": 6,
+    "actualDllMetadataChecks": 1056,
+    "audit": "docs/audits/2026-09-16-parallel-closeout-verification.json",
+    "status": "OFFLINE_INTEGRATED_NOT_FULL_CLOSEOUT"
+  }
 }

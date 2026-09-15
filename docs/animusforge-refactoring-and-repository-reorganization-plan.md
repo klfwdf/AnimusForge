@@ -1,3 +1,13 @@
+# 当前整体收尾：并行联合包OFFLINE_VERIFIED，阶段8仍ACTIVE（2026-09-16）
+
+- 生产/测试6e419f6d；四包提交79bf1288（summary run）、67fcb3ff（Native接口）、b0a20176（fingerprint）、6e419f6d（Courier准备/失效）。双Skill与main437925b8范围不变；主体与AF桥接，政策/宴会/GCCZ玩法不扩围。
+- Native新API真正复用原owner回执/动作/必要记忆，去重/取消/容量/epoch/revision与显式enum投影落地；不是全部三渠道SDK完成。三代理互审修复API排队错目标/跨原UI回合、Courier同源失效卡Started和旧标签重放；当前源失效只由当前reservation走原Failure推进。
+- 最终六Stage与4DLL1056元数据、actual1.4 Courier Host、Native41/8mutants/内部enum重排、Courier252+59/9mutants、summary95/源writer238/capture116、ports308/3mutants、history852、channel132/persona169、main身份146/36通过。只采用parallel-closeout-20260916审计明确的final及邻接证据；首次无final构建是互审修正前中间候选。
+- 当前仍不满足整体DONE：共享Prompt混合线程/既有AsyncLocal下游、完整Courier retry/最终commit寿命、记录/字符硬预算、Scene/Courier公开SDK和全部内部双向服务、主体大类责任拆分/功能对照、当前候选LIVE/旧SAVE均继续必交。没有把行数或partial数量当进度。
+- 最新交接docs/handoffs/2026-09-16-parallel-closeout-handoff.md，142点坐标及同候选审计JSON已同步；本地简明版.tmp/parallel-closeout-20260916/team-handoff.md。未推送/部署/存档操作/默认切换/自动化恢复，用户保护文件hash不变。
+
+## 以下为本包实施记录及历史证据
+
 # 当前整体收尾：记忆运行 owner 贯穿全链（2026-09-16）
 
 - 用户要求完成整体收尾，继续CORE-CLOSEOUT-FULL，起点155f1b7a/生产51844800；本次唯一写入AF-REFACTOR，保护文档不动，不推送/部署/动存档/恢复自动化。

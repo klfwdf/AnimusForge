@@ -1,5 +1,8 @@
 # Memory summary run ownership proof
 
+> 根整合状态（2026-09-16）：生产源码 `6e419f6d` 已本地提交，最终六Stage与4DLL1056元数据通过；整体收尾仍ACTIVE。当前边界以[总交接](../../docs/handoffs/2026-09-16-parallel-closeout-handoff.md)为准，以下包内记录保留原验证上下文。
+
+
 Production path: `MyBehavior.ProcessMemorySummaryQueueAsync` obtains one `MemorySummaryRunOwner.Lease`; the same token crosses planning, capture, retry/waves, parse, each Apply/Mark and notification. Reset removes authority; disposal compares the lease, so an old run cannot release its replacement. No persisted identity, HTTP cancellation, extra queue, Prompt or algorithm is introduced.
 
 ## Reproduce

@@ -1,3 +1,11 @@
+# 当前增量：并行整合与Native接口（2026-09-16）
+
+源码6e419f6d，142点地图。[详细交接](../handoffs/2026-09-16-parallel-closeout-handoff.md)。summary run owner独立；原文fingerprint固定缓冲等价优化；Courier原Start级reservation与最终Prompt主线程组装；CoreDialogue内部服务和Api.V1显式投影接实际Native入口。
+
+NativeSubmit现为真实可探测能力，Scene/Courier仍NotSupported且必交；不是把全部内部ports公开。旧Native UI与必要Saveable/ABI保留。共享Prompt/lore、B1硬预算、全部反向服务/SDK及主体大类仍未迁完，不能整文件标DONE。最终六Stage/API1056与fixture回归不代替LIVE/SAVE。
+
+## 以下为历史范围记录
+
 # 当前增量：Courier不确定回执（2026-09-15）
 
 生产51844800，125点地图。[最新HANDOFF](../handoffs/2026-09-15-courier-commit-outcome-handoff.md)。CourierDeliveryBehavior.CommitDispatch的私有结果分类和入站转译不再将已开始异常/空回执伪装成无副作用；actual Host不回退重试。没有对外新增API、改变其他主体/团队业务或放行整个阶段8。
