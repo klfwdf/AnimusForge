@@ -158,20 +158,21 @@ namespace AnimusForge.Illustrator.Context
             {
             }
 
+            // Mission 存在且 Location 为 null = 野外场景（阵前谈判/遭遇会话），即使玩家贴着
+            // 定居点（CurrentSettlement 仍挂值）也绝不能判成城镇街道。
+            bool outdoorMission = false;
+            try
+            {
+                outdoorMission = TaleWorlds.MountAndBlade.Mission.Current != null
+                    && CampaignMission.Current?.Location == null;
+            }
+            catch
+            {
+            }
+
             if (isUnderSiege)
             {
                 // 围城下的会话有两种物理现场：城内/城头（菜单或室内 Location）vs Mission 场景中的阵前旷野谈判。
-                // Mission 存在且 Location 为 null = 野外场景（出城谈判/阵前会晤），绝非城门对峙。
-                bool outdoorMission = false;
-                try
-                {
-                    outdoorMission = TaleWorlds.MountAndBlade.Mission.Current != null
-                        && CampaignMission.Current?.Location == null;
-                }
-                catch
-                {
-                }
-
                 if (outdoorMission)
                 {
                     profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
@@ -248,16 +249,16 @@ namespace AnimusForge.Illustrator.Context
                 profile.SpecificLocation = "城堡地下石牢 (Castle Dungeon / Prison)";
                 profile.IndoorOutdoorDetails = "潮湿阴冷的地下石牢：沉重锈蚀的精铁栅栏，石壁上渗着水渍与青苔，仅有一支插在铁箍里的摇曳火把投射出昏暗跳动的火光。";
             }
-            else if (locId.Contains("center") || (!isIndoor && settlement != null && settlement.IsTown))
+            else if (settlement == null || outdoorMission)
+            {
+                // 野外遭遇会话（大地图/野战遭遇/阵前谈判）：双方在两军阵前的旷野会面，绝非城镇街道
+                profile.SpecificLocation = "两军阵前的开阔旷野会面地 (Field Parley Ground)";
+                profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，双方军队的旌旗仪仗在身后列阵隐约可见，空气中弥漫着战前谈判的紧绷肃杀气息。";
+            }
+            else if (locId.Contains("center") || (!isIndoor && settlement.IsTown))
             {
                 profile.SpecificLocation = "城镇市集街道 (Marketplace / Town Streets)";
                 profile.IndoorOutdoorDetails = "熙熙攘攘的中世纪城镇市集街道：两旁是石木结构的民居店铺与遮阳帆布货摊，平民与巡逻卫兵穿行其间。";
-            }
-            else if (settlement == null)
-            {
-                // 野外遭遇会话（大地图/野战遭遇）：双方在两军阵前的旷野会面，绝非城镇街道
-                profile.SpecificLocation = "两军阵前的开阔旷野会面地 (Field Parley Ground)";
-                profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，双方军队的旌旗仪仗在身后列阵隐约可见，空气中弥漫着战前谈判的紧绷肃杀气息。";
             }
         }
 
