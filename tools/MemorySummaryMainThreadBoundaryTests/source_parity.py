@@ -58,6 +58,9 @@ def restore_memory_summary_source(path, source):
     # trusted because only the MyBehavior facade is inverse-transformed.
     for dependency_path, expected in review.get('productionDependencies', {}).items():
         text = run_inverse.restore(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
+        writer_spec = importlib.util.spec_from_file_location('memory_writer_inverse', ROOT / 'tools/MemorySummaryBudgetTests/source_review.py')
+        writer_inverse = importlib.util.module_from_spec(writer_spec); writer_spec.loader.exec_module(writer_inverse)
+        text = writer_inverse.restore_writer(dependency_path, text)
         if dependency_path == 'MyBehavior.MemorySummaryMainThread.cs':
             life_spec = importlib.util.spec_from_file_location('b1_game_lifetime_inverse', ROOT / 'tools/GameLifetimeTests/source_parity.py')
             life = importlib.util.module_from_spec(life_spec); life_spec.loader.exec_module(life)
