@@ -29,7 +29,10 @@ namespace AnimusForge.Illustrator.Engine
     internal static class BannerEmblemComposer
     {
         // custom_banner_icons_XX 图集实测 8x8 网格（2048 图集 → 256px 格）
-        private const int AtlasGridSize = 8;
+        // 原版 BannerVisual.ConvertToMultiMesh 实锤：u=(texIdx%4)*0.25, v=1-(texIdx/4)*0.25
+        // → 图集是 4×4 网格（texture_index 实测范围 0-15），行从纹理底部往上数。
+        // 配合 GetPixelData 的自下而上位图行序：bitmap 行 0 = 纹理底 = 索引 0-3。
+        private const int AtlasGridSize = 4;
         private const int MaxAtlasBitmapSize = 1024;   // 读回后降采样上限，控制像素工作量
         private static readonly ConcurrentDictionary<string, BannerlordEngineTexture> TextureCache =
             new ConcurrentDictionary<string, BannerlordEngineTexture>(StringComparer.OrdinalIgnoreCase);
