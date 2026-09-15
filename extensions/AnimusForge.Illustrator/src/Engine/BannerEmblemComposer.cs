@@ -224,6 +224,8 @@ namespace AnimusForge.Illustrator.Engine
                         try
                         {
                             cell = atlas.Clone(new Rectangle(col * cellW, row * cellH, cellW, cellH), PixelFormat.Format32bppArgb);
+                            // GetPixelData 行序自下而上：格位索引按原始行序正确，但单格内字形垂直颠倒——裁出后单独翻转回正
+                            cell.RotateFlip(RotateFlipType.RotateNoneFlipY);
                         }
                         catch { continue; }
 
@@ -420,8 +422,8 @@ namespace AnimusForge.Illustrator.Engine
             try { Marshal.Copy(raw, 0, data.Scan0, Math.Min(raw.Length, data.Stride * h)); }
             finally { bmp.UnlockBits(data); }
             SwapRedBlue(bmp);
-            // GetPixelData 按 D3D 惯例返回自下而上行序——垂直翻转回正
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            // 注意：不能整图翻转——texIdx 直接对应原始行序（图标实测位于未翻转行区），
+            // 整图翻转会挪走格位导致裁空；字形颠倒在裁出单格后再翻转纠正。
             return bmp;
         }
 
