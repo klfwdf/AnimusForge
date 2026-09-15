@@ -43,6 +43,10 @@ internal static class Program
                 foundCourierOwner = true;
                 CheckCourierCaptures(reader, type, provider, lines);
             }
+            if (ns == "AnimusForge.Refactor.Runtime" && name == "NpcPersonaGenerationOwner")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "persona reservation owner stays internal");
+            if (name == "NpcPersonaGenerationWork")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate, "persona work stays private");
             if (name == "CourierPreparedHistory" || name == "CourierHistoryWork")
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate,
                     name + " is not a public game-object API");
@@ -50,6 +54,7 @@ internal static class Program
             {
                 foundMemoryOwner = true;
                 CheckMemoryOwner(reader, type, provider, lines);
+                CheckPersonaEntry(reader, type, provider, lines);
             }
             if (ns != "AnimusForge.Api.V1") continue;
             Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public, name + " is published");
@@ -128,6 +133,34 @@ internal static class Program
             lines.Add("MEMORY " + name + " " + method.Attributes + " " + signature.ReturnType + "(" + expected + ")");
         }
         Check(found == 2, "one legacy facade and one internal scene-aware memory owner");
+    }
+
+    private static void CheckPersonaEntry(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
+    {
+        int found = 0;
+        foreach (MethodDefinitionHandle handle in type.GetMethods())
+        {
+            MethodDefinition method = reader.GetMethodDefinition(handle);
+            if (reader.GetString(method.Name) != "EnsureNpcPersonaGeneratedForExternalAsync") continue;
+            found++;
+            Check((method.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Public
+                && (method.Attributes & MethodAttributes.Static) != 0, "persona legacy entry remains public static");
+            var sig = method.DecodeSignature(provider, null);
+            Check(sig.ReturnType == "System.Threading.Tasks.Task", "persona Task result ABI");
+            Check(string.Join(",", sig.ParameterTypes) == "TaleWorlds.CampaignSystem.Hero,Boolean", "persona parameter ABI");
+            foreach (ParameterHandle parameterHandle in method.GetParameters())
+            {
+                var parameter = reader.GetParameter(parameterHandle);
+                if (parameter.SequenceNumber == 0) continue;
+                string name = reader.GetString(parameter.Name);
+                bool optional = (parameter.Attributes & ParameterAttributes.Optional) != 0;
+                string value = Constant(reader, parameter.GetDefaultValue());
+                Check(parameter.SequenceNumber == 1 ? name == "hero" && !optional
+                    : name == "ignoreRetryCooldown" && optional && value == "Boolean:00", "persona parameter names/defaults ABI");
+                lines.Add("PERSONA:" + name + ":" + parameter.Attributes + ":" + value);
+            }
+        }
+        Check(found == 1, "one legacy persona entry in same MyBehavior type");
     }
 
     private static void CheckCourierCaptures(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
