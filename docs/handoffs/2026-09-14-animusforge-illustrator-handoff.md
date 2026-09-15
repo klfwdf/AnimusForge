@@ -543,3 +543,13 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 验证：双 API 子模块 Release 构建各 0 警告/0 错误；`tools/test_illustrator.ps1` **180 checks / 0 failures**；两份目标 DLL 的 `tools/test_illustrator_emblems.ps1` 各 **32 checks / 0 failures**。旧 CPU 方法断言从通用脚本移除，旧独立审计工具和失败证据保留。专项覆盖模拟完整渲染结果的像素保持、缓存、取消、晚结果、无屏幕 Draw、停 Tick 和满队列退休；运行使用本机 TaleWorlds 依赖，不代表启动两版客户端。`git diff --check` 通过。
 
 详细源码责任、实际 DLL SHA256、测试依赖与输出证据、原版链路调查、性能和未覆盖事项见 [原生纹章替换报告](../audits/2026-09-16-illustrator-native-emblem-replacement.md)。真实 GPU 输出颜色/方向、多色或 MOD 纹章、零闪屏、原生落盘与资源释放时序、实际模型遵循率和人物共用导出仍未验收。未部署/推送/调用生图服务。回滚仅定向 `git revert cf237202`，保留其他作者工作。
+
+### 第十四轮：用户部署后的原生崩溃与纹章缺失（2026-09-16）
+
+用户授权部署后，05:48 实际发生 `TaleWorlds.Native.dll + 0x283860 / 0xc0000005`。纹章 PNG 已落盘，但没有转储调用栈。`0127816d` 为纹章控件改用原生延迟场景清理，`8a52d1b` 细化退休日志；首次修正版在进程 34808 中因按程序集名称解析 provider 失败而省略标准纹章，用户截图背景四分图案与实际鹰/城堡纹章不同。此时 `ActualRefImages=1`，不能算读取或清理成功。
+
+最终生产 `c55334ed`：`Engine/NativeBannerExportWidget.cs:15–63` 使用 Gauntlet 注册表实际类型、缓存清理元数据、把场景交给 `AddClearTask` 后解除原版场景所有权；`ScreenCaptureHelper.cs:976–993,1087–1091` 验证契约和打印退休阶段。完整仓库路径前缀为 `extensions/AnimusForge.Illustrator/src/`。
+
+双 API 编译 0 警告/0 错误，通用 180 / 0，两份目标 DLL 专项各 36 / 0。05:59:48 已通过原部署脚本覆盖，直接测试最终游戏 DLL 通用 178 / 0、专项 36 / 0，hash 一致。用户 05:56 启动的进程仍加载旧 DLL，最终修订须完全退出游戏后重启验收。尚未确认原生崩溃被消除、纹章最终送入及模型遵循率。没有推送或改主体 DLL。
+
+源码位置、真实日志/PNG、测试边界、最终 DLL hash 与安全回滚备份见 [崩溃跟进报告](../audits/2026-09-16-illustrator-native-crash-followup.md)。部署前备份为 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705`，后续备份包含崩溃版或中间修正版，不应当作稳定版。
