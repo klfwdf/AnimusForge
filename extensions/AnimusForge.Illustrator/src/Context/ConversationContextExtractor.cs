@@ -178,6 +178,17 @@ namespace AnimusForge.Illustrator.Context
             context.DialogueSentence = CleanText(sentence);
             context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), maxRounds: 3);
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(settlement);
+            try
+            {
+                string hostScene = TryGetHostSceneDescription();
+                if (!string.IsNullOrWhiteSpace(hostScene) && context.EnvironmentProfile != null)
+                {
+                    context.EnvironmentProfile.HostSceneDescription = hostScene;
+                }
+            }
+            catch
+            {
+            }
 
             string mainName = mainHero != null && mainHero.Name != null ? mainHero.Name.ToString() : "主角";
             string partnerName = partnerHero != null && partnerHero.Name != null ? partnerHero.Name.ToString() : (partnerChar != null && partnerChar.Name != null ? partnerChar.Name.ToString() : "对方");
@@ -261,10 +272,27 @@ namespace AnimusForge.Illustrator.Context
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Failed to resolve conversation pose: {ex.Message}");
             }
 
+            bool siegeFieldParley = false;
+            if (isUnderSiege)
+            {
+                try
+                {
+                    siegeFieldParley = TaleWorlds.MountAndBlade.Mission.Current != null
+                        && CampaignMission.Current?.Location == null;
+                }
+                catch
+                {
+                }
+            }
+
             string siegeDirection = isUnderSiege
-                ? (playerIsDefender
-                    ? "当前是围城会面，玩家一方处于守方；可选择城垛上下关系、城门前交涉或贴近人物的紧张过肩镜头"
-                    : "当前是围城会面，玩家一方处于攻方；可选择阵前交涉、城门远景或双方神情近景")
+                ? (siegeFieldParley
+                    ? (playerIsDefender
+                        ? "当前是围城中的阵前旷野谈判，玩家一方为守方出城会面；画面应置于城墙之外的旷野，远处可见被围城池剪影与围城军营篝火，双方驻马交涉"
+                        : "当前是围城中的阵前旷野谈判，玩家一方为攻方；画面应置于围城军营与城墙之间的旷野，远处可见被围城池剪影，双方驻马交涉")
+                    : (playerIsDefender
+                        ? "当前是围城会面，玩家一方处于守方；可选择城垛上下关系、城门前交涉或贴近人物的紧张过肩镜头"
+                        : "当前是围城会面，玩家一方处于攻方；可选择阵前交涉、城门远景或双方神情近景"))
                 : string.Empty;
             string guardDirection = bodyguardCount > 0 ? $"现场确认对方随行队列中另有 {bodyguardCount} 名角色，可按构图需要收入背景" : "未确认额外随行角色，不必强行添加护卫";
 
@@ -276,6 +304,25 @@ namespace AnimusForge.Illustrator.Context
                 $"地点为【{locName}】。允许环境占据较大画面，也允许聚焦手势、目光、沉默或转身等细节；不要求每次都正面对称站立。";
 
             return context;
+        }
+
+        /// <summary>
+        /// 反射读取主模组 AnimusForge.ShoutUtils.GetCurrentSceneDescription() 的场景快照，
+        /// 与主模组聊天提示词的场景注入同源；主模组未加载或失败时返回空串。
+        /// </summary>
+        private static string TryGetHostSceneDescription()
+        {
+            try
+            {
+                var type = HarmonyLib.AccessTools.TypeByName("AnimusForge.ShoutUtils");
+                var method = type?.GetMethod("GetCurrentSceneDescription",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                return (method?.Invoke(null, null) as string ?? string.Empty).Trim();
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
