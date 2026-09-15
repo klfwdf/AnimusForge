@@ -343,7 +343,7 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 在主线程触发引擎原生安全的异步离屏渲染落盘 (利用引擎 render 同步点，杜绝任何 DirectX 11 冲突)
+        /// 在主线程请求原生异步落盘；落盘不构成场景资源释放的渲染同步屏障。
         /// </summary>
         public static bool TriggerTableauViewSave(TaleWorlds.Engine.TableauView tableauView, out string tempDir, out string filePrefix)
         {
@@ -977,6 +977,7 @@ namespace AnimusForge.Illustrator.Engine
         {
             if (pump == null || Interlocked.Exchange(ref pump.Finished, 1) != 0) return;
             if (ReferenceEquals(_activeStage, pump)) _activeStage = null;
+            TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Retiring stage: widget={pump.Widget?.Id}, saveRequested={pump.SaveRequested}, ticks={pump.Ticks}");
             try
             {
                 if (pump.Movie != null) pump.Layer?.ReleaseMovie(pump.Movie);
@@ -986,8 +987,9 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (pump.Layer != null) pump.Screen?.RemoveLayer(pump.Layer);
             }
-            catch { }
+            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[OffscreenRenderer] ReleaseMovie failed: " + ex); }
             pump.Retired.TrySetResult(true);
+            TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Stage retirement completed");
         }
 
         private static Task RetireStageAsync(OffscreenStagePump pump)
@@ -1084,6 +1086,8 @@ namespace AnimusForge.Illustrator.Engine
                     Widget widget;
                     if (widgetId == "NativeBannerExport")
                     {
+                        if (!NativeBannerExportWidget.SupportsDeferredSceneClear)
+                            throw new NotSupportedException("Native banner deferred scene cleanup is unavailable on this runtime.");
                         // This child must stay in the normal render area so Gauntlet
                         // ticks its provider. Its OnRender never submits a screen draw.
                         widget = new NativeBannerExportWidget(root.Context)
