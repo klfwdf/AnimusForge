@@ -121,6 +121,9 @@ namespace AnimusForge.Illustrator.Context
                 // 5. 深度室内/子场景识别 (如酒馆 Tavern、领主大厅 Lordshall、竞技场 Arena、地牢 Prison、围城城墙城门等)
                 ResolveSpecificLocation(profile, settlement);
 
+                // 5b. 海上与军团处境：航行状态覆盖一切陆地子场景；身处军团标注联营
+                ResolveSeaAndArmyContext(profile);
+
                 // 6. 场景周边人物群像与标志性陈设道具动态提取
                 ResolveSurroundings(profile, settlement);
 
@@ -129,6 +132,55 @@ namespace AnimusForge.Illustrator.Context
             }
 
             return profile;
+        }
+
+        /// <summary>
+        /// 海上与军团处境：1.4 航海版用原生 IsCurrentlyAtSea；1.3 与兜底走宿主快照"海上"字样。
+        /// 身处军团时在冲突状态上补充联营事实。海上判定覆盖一切陆地子场景。
+        /// </summary>
+        private static void ResolveSeaAndArmyContext(EnvironmentVisualProfile profile)
+        {
+            try
+            {
+                bool atSea = false;
+#if BANNERLORD_1_4_OR_GREATER
+                try
+                {
+                    atSea = TaleWorlds.CampaignSystem.Party.MobileParty.MainParty?.IsCurrentlyAtSea == true;
+                }
+                catch
+                {
+                }
+#endif
+                if (atSea)
+                {
+                    profile.SpecificLocation = "海船甲板 (Naval Deck)";
+                    profile.IndoorOutdoorDetails = "波涛起伏的辽阔海面：木质战船甲板、桅杆索具与鼓满风的帆布，远处隐现海岸线与海鸟；双方立于甲板或两船接舷处会面，脚下随浪轻微起伏。";
+                    if (string.IsNullOrWhiteSpace(profile.SettlementType) || profile.SettlementType.Contains("荒野"))
+                    {
+                        profile.SettlementType = "开阔海面/航线上";
+                        profile.TerrainAndLandscape = "无垠海面、波涛与远处朦胧海岸线";
+                    }
+                }
+
+                Army army = null;
+                try
+                {
+                    army = TaleWorlds.CampaignSystem.Party.MobileParty.MainParty?.Army;
+                }
+                catch
+                {
+                }
+                if (army != null)
+                {
+                    string armyName = army.Name != null ? army.Name.ToString() : "联合军团";
+                    profile.ConflictStatus = (string.IsNullOrWhiteSpace(profile.ConflictStatus) ? string.Empty : profile.ConflictStatus + "；")
+                        + $"玩家正身处 {armyName} 军团联营之中（多家族旌旗连绵、诸部汇集扎营）";
+                }
+            }
+            catch
+            {
+            }
         }
 
         private static void ResolveSpecificLocation(EnvironmentVisualProfile profile, Settlement settlement)

@@ -184,12 +184,18 @@ namespace AnimusForge.Illustrator.Context
                 if (!string.IsNullOrWhiteSpace(hostScene) && context.EnvironmentProfile != null)
                 {
                     context.EnvironmentProfile.HostSceneDescription = hostScene;
-                    // 宿主快照与聊天提示词同源：若它明确指向野外/海上而我们判成了城镇街道，以宿主为准纠正
-                    bool hostIsWild = hostScene.Contains("野外") || hostScene.Contains("平原") || hostScene.Contains("森林")
-                        || hostScene.Contains("山地") || hostScene.Contains("荒原") || hostScene.Contains("海上") || hostScene.Contains("海岸");
                     string loc = context.EnvironmentProfile.SpecificLocation ?? string.Empty;
+                    bool hostIsSea = hostScene.Contains("海上") || hostScene.Contains("海岸");
+                    bool weSaidSea = loc.Contains("海船") || loc.Contains("Naval") || loc.Contains("海");
+                    bool hostIsWild = hostScene.Contains("野外") || hostScene.Contains("平原") || hostScene.Contains("森林")
+                        || hostScene.Contains("山地") || hostScene.Contains("荒原") || hostScene.Contains("海岸");
                     bool weSaidTown = loc.Contains("城镇") || loc.Contains("市集") || loc.Contains("街道") || loc.Contains("Marketplace");
-                    if (hostIsWild && weSaidTown)
+                    if (hostIsSea && !weSaidSea)
+                    {
+                        context.EnvironmentProfile.SpecificLocation = "海船甲板/海上接舷会面（宿主确认：" + hostScene + "）";
+                        context.EnvironmentProfile.IndoorOutdoorDetails = "波涛起伏的辽阔海面：木质战船甲板、桅杆索具与鼓满风的帆布，远处隐现海岸线与海鸟；双方立于甲板或两船接舷处会面。";
+                    }
+                    else if (hostIsWild && weSaidTown)
                     {
                         context.EnvironmentProfile.SpecificLocation = "开阔旷野会面地（宿主确认：" + hostScene + "）";
                         context.EnvironmentProfile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，双方军队的旌旗仪仗在身后列阵隐约可见，空气中弥漫着战前谈判的紧绷肃杀气息。";
