@@ -1,0 +1,22 @@
+using System;
+using System.Linq;
+namespace AnimusForge {
+ public partial class MyBehavior {
+  static void RetiredSummaryRun(string kind,bool failure,bool retry,bool parsed){
+   var b=TerminalOwner();b.Seed(kind,"run");if(parsed)b.Seed(kind,"hold");var old=b.StartTerminal();b.Until(()=>b.requests.Count==(parsed?2:1));var oldRequests=b.requests.ToArray();
+   if(retry){Release(oldRequests[0],Failed());b.Until(()=>b.delays.Count>0);}
+   if(parsed){Release(oldRequests[0],Ok(oldRequests[0].Area));b.Until(()=>b.terminalCompleted.Count>0);}
+   b._memorySummaryRunOwner.Reset(); // Same owner/generation; all persisted inputs deliberately unchanged.
+   var fresh=b.StartTerminal();b.Until(()=>b.requests.Count==oldRequests.Length*2);
+   foreach(var r in oldRequests)if(!r.Done.Task.IsCompleted)Release(r,failure?Failed():Ok(r.Area));
+   foreach(var delay in b.delays)delay.Done.TrySetResult(true);
+   b.Until(()=>old.IsCompleted);old.GetAwaiter().GetResult();
+   Check(b._memorySummaryRunOwner.IsRunning&&!fresh.IsCompleted,"old summary released replacement run");
+   Check(b.requests.Count==oldRequests.Length*2,"retired summary started another retry/wave");
+   Check(!TerminalProbe.Events.Any(x=>x.StartsWith("Apply")||x.StartsWith("Mark")||x.StartsWith("popup:")||x.StartsWith("ui:AnimusForge 日结压缩完成")),"retired source wrote or notified despite unchanged generation/data");
+   if(!parsed){bool obsolete=kind=="daily"?b.terminalCompleted.Single().IsObsolete:kind=="major"?b.terminalMajorCompleted.Single().IsObsolete:b.terminalOverviewCompleted.Single().IsObsolete;Check(obsolete,"in-flight/retrying old source was not retired");}
+   b.Finish(fresh);string apply=kind=="daily"?"ApplyMemorySummarySuccess":kind=="major"?"ApplyMajorActionSummarySuccess":"ApplyMemoryOverviewSuccess";
+   Check(!b._memorySummaryRunOwner.IsRunning&&TerminalProbe.Count(apply)==oldRequests.Length,"fresh run did not apply exactly once per original job");MainReads();
+  }
+ }
+}

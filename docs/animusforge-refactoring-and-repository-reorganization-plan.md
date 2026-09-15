@@ -5,6 +5,8 @@
 - 此为完整摘要运行生命周期责任，不把新增owner等同于全部M1/M2/M3和B1预算完成。继续保留实际首次深复制/终步成本、Prompt/LLM混合线程、内部双向服务和外部三渠道SDK及当前候选LIVE/SAVE为必交。
 - 验证：先复现同代reset/replacement旧finally与迟到响应；实际三类摘要Host/业务/源writer/重试/plan和相关旧断言保持；精确source逆变换、六Stage/API/Host回放/保存身份、两份handoff与当前地图。退出只取消旧运行授权，不假装取消不支持的正在执行网络/已经完成写入。
 
+- 记忆运行包当前离线结果：owner 47；旧36业务场景保留＋同代替换3例，固定155f1b7a旧36绿/新增3红、当前39全绿；真实capture/parser/terminal/writer联合原85＋新增10共95场景全绿。两个全链owner故障均被新用例检出。dispatcher37、sealing88、capture116、planning24、writer238保持；旧worker写入/错误吞没等7个受影响故障已重新接到真实新调用且有效失败，纯lease worker释放不再被当作游戏线程错误。固定main保存身份146键/36behavior保持。此前六Stage是本记忆源加旧邻接源码，三路合并后仍须重跑同候选构建/API与接口回归。
+
 ## 用户批准三路并行（2026-09-16）
 
 - Prompt/线程包：Courier 双向实际准备先在原 owner phase 捕获输入，后台保留原规则/lore处理，再由原 owner phase 校验 session/participant/generation 并组装角色/资产/消息；共享规则/lore混合函数仍单列。只改批准的四处 Courier builder/caller 和新 partial。

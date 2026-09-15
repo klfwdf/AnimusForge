@@ -1,0 +1,612 @@
+{
+  "baseline": "155f1b7a",
+  "paths": {
+    "MyBehavior.cs": [
+      {
+        "start": 0,
+        "end": 0,
+        "before": "",
+        "after": "using AnimusForge.Refactor.Runtime;\n"
+      },
+      {
+        "start": 1870,
+        "end": 1871,
+        "before": "\tprivate bool _memorySummaryProcessing;\n",
+        "after": ""
+      },
+      {
+        "start": 2504,
+        "end": 2505,
+        "before": "\t\t\t_memorySummaryProcessing = false;\n",
+        "after": "\t\t\t_memorySummaryRunOwner.Reset();\n"
+      },
+      {
+        "start": 4852,
+        "end": 4853,
+        "before": "\t\t\tif (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())\n",
+        "after": "\t\t\tif (_memorySummaryRunOwner.IsRunning || IsDialogueOrLetterChainBusyForMemorySummary())\n"
+      },
+      {
+        "start": 4880,
+        "end": 4881,
+        "before": "\t\t\t_memorySummaryProcessing = true;\n",
+        "after": ""
+      },
+      {
+        "start": 4885,
+        "end": 4886,
+        "before": "\t\t\t_memorySummaryProcessing = false;\n",
+        "after": ""
+      },
+      {
+        "start": 4913,
+        "end": 4913,
+        "before": "",
+        "after": "\t\tvar run = _memorySummaryRunOwner.TryBegin(runtimeGeneration);\n\t\tif (run == null) return;\n"
+      },
+      {
+        "start": 4915,
+        "end": 4916,
+        "before": "\t\t\tvar plan = await BuildMemorySummaryPlanAsync(runtimeGeneration);\n",
+        "after": "\t\t\tvar plan = await BuildMemorySummaryPlanAsync(runtimeGeneration, run: run);\n"
+      },
+      {
+        "start": 4920,
+        "end": 4921,
+        "before": "\t\t\tbool accepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\n",
+        "after": "\t\t\tbool accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\n"
+      },
+      {
+        "start": 4940,
+        "end": 4942,
+        "before": "\t\t\tawait RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults);\n\t\t\tif (SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_results\")) return;\n",
+        "after": "\t\t\tawait RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults, run);\n\t\t\tif (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_results\")) return;\n"
+      },
+      {
+        "start": 4947,
+        "end": 4948,
+        "before": "\t\t\t\taccepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\n",
+        "after": "\t\t\t\taccepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\n"
+      },
+      {
+        "start": 4962,
+        "end": 4963,
+        "before": "\t\t\t\taccepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\n",
+        "after": "\t\t\t\taccepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\n"
+      },
+      {
+        "start": 4980,
+        "end": 4981,
+        "before": "\t\t\t\t\taccepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\n",
+        "after": "\t\t\t\t\taccepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\n"
+      },
+      {
+        "start": 4994,
+        "end": 4995,
+        "before": "\t\t\t\taccepted = await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\n",
+        "after": "\t\t\t\taccepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\n"
+      },
+      {
+        "start": 5000,
+        "end": 5001,
+        "before": "\t\t\t\tvar extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds);\n",
+        "after": "\t\t\t\tvar extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds, run: run);\n"
+      },
+      {
+        "start": 5005,
+        "end": 5006,
+        "before": "\t\t\t\tif (SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_extra_delay\")) return;\n",
+        "after": "\t\t\t\tif (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_extra_delay\")) return;\n"
+      },
+      {
+        "start": 5007,
+        "end": 5009,
+        "before": "\t\t\t\tawait RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults);\n\t\t\t\tif (SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_extra_results\")) return;\n",
+        "after": "\t\t\t\tawait RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults, run);\n\t\t\t\tif (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_extra_results\")) return;\n"
+      },
+      {
+        "start": 5010,
+        "end": 5011,
+        "before": "\t\t\tif (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true) == null) return;\n",
+        "after": "\t\t\tif (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true, run: run) == null) return;\n"
+      },
+      {
+        "start": 5015,
+        "end": 5016,
+        "before": "\t\t\tawait RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\n",
+        "after": "\t\t\tawait RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\n"
+      },
+      {
+        "start": 5027,
+        "end": 5029,
+        "before": "\t\t\tif (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))\n\t\t\t\tShowCompressedMemoryBlockingPopup(\"压缩记忆总结异常\", \"任务可能已有部分写入，本轮已停止；请查看日志后再重试。\\n\\n\" + ex.Message, runtimeGeneration);\n",
+        "after": "\t\t\tif (run.IsCurrent && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))\n\t\t\t\tawait RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, () =>\n\t\t\t\t{\n\t\t\t\t\tShowCompressedMemoryBlockingPopup(\"压缩记忆总结异常\", \"任务可能已有部分写入，本轮已停止；请查看日志后再重试。\\n\\n\" + ex.Message, runtimeGeneration);\n\t\t\t\t\treturn true;\n\t\t\t\t});\n"
+      },
+      {
+        "start": 5032,
+        "end": 5037,
+        "before": "\t\t\tawait RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate\n\t\t\t{\n\t\t\t\t_memorySummaryProcessing = false;\n\t\t\t\treturn true;\n\t\t\t});\n",
+        "after": "\t\t\trun.Dispose(); // An old completion cannot release a replacement run.\n"
+      },
+      {
+        "start": 5040,
+        "end": 5041,
+        "before": "\tprivate async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults)\n",
+        "after": "\tprivate async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 5042,
+        "end": 5043,
+        "before": "\t\tlong runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();\n",
+        "after": "\t\tlong runtimeGeneration = run?.Generation ?? SaveRuntimeGuard.CaptureGeneration();\n"
+      },
+      {
+        "start": 5047,
+        "end": 5048,
+        "before": "\t\t\tif (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_wave\")) return;\n",
+        "after": "\t\t\tif ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_wave\")) return;\n"
+      },
+      {
+        "start": 5049,
+        "end": 5050,
+        "before": "\t\t\tList<Task<DailySummaryQueueResult>> tasks = wave.Select(ExecuteDailySummaryQueueItemAsync).ToList();\n",
+        "after": "\t\t\tList<Task<DailySummaryQueueResult>> tasks = wave.Select(item => ExecuteDailySummaryQueueItemAsync(item, run)).ToList();\n"
+      },
+      {
+        "start": 5077,
+        "end": 5078,
+        "before": "\tprivate async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item)\n",
+        "after": "\tprivate async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 5089,
+        "end": 5090,
+        "before": "\t\t\tresult.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, expectedJobFingerprint);\n",
+        "after": "\t\t\tresult.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 5095,
+        "end": 5096,
+        "before": "\t\t\tresult.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, expectedJobFingerprint);\n",
+        "after": "\t\t\tresult.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 5101,
+        "end": 5102,
+        "before": "\t\t\tresult.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, expectedJobFingerprint);\n",
+        "after": "\t\t\tresult.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 5141,
+        "end": 5142,
+        "before": "\tprivate async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null)\n",
+        "after": "\tprivate async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 5143,
+        "end": 5144,
+        "before": "\t\tCapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);\n",
+        "after": "\t\tCapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 5154,
+        "end": 5155,
+        "before": "\tprivate async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, string expectedJobFingerprint = null)\n",
+        "after": "\tprivate async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 5156,
+        "end": 5157,
+        "before": "\t\tCapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);\n",
+        "after": "\t\tCapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 5167,
+        "end": 5168,
+        "before": "\tprivate async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, string expectedJobFingerprint = null)\n",
+        "after": "\tprivate async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 5169,
+        "end": 5170,
+        "before": "\t\tCapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint);\n",
+        "after": "\t\tCapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 5967,
+        "end": 5968,
+        "before": "\t\tif (processedScanCount > 0 && !_memorySummaryProcessing && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))\n",
+        "after": "\t\tif (processedScanCount > 0 && !_memorySummaryRunOwner.IsRunning && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))\n"
+      },
+      {
+        "start": 17753,
+        "end": 17754,
+        "before": "\t\tif (_memorySummaryProcessing) return;\n",
+        "after": "\t\tif (_memorySummaryRunOwner.IsRunning) return;\n"
+      },
+      {
+        "start": 47876,
+        "end": 47877,
+        "before": "\t\t_memorySummaryProcessing = false;\n",
+        "after": "\t\t_memorySummaryRunOwner.Reset();\n"
+      }
+    ],
+    "MyBehavior.MemorySummaryPlanning.cs": [
+      {
+        "start": 0,
+        "end": 0,
+        "before": "",
+        "after": "using AnimusForge.Refactor.Runtime;\n"
+      },
+      {
+        "start": 71,
+        "end": 72,
+        "before": "        HashSet<string> unavailableOwners, bool collectPlan = true) where T : class\n",
+        "after": "        HashSet<string> unavailableOwners, bool collectPlan = true, MemorySummaryRunOwner.Lease run = null) where T : class\n"
+      },
+      {
+        "start": 78,
+        "end": 79,
+        "before": "        bool accepted = await RunMemorySummaryCompletionAsync(generation, delegate\n",
+        "after": "        bool accepted = await RunMemorySummaryRunPhaseAsync(run, generation, delegate\n"
+      },
+      {
+        "start": 88,
+        "end": 89,
+        "before": "            accepted = await RunMemorySummaryCompletionAsync(generation, delegate\n",
+        "after": "            accepted = await RunMemorySummaryRunPhaseAsync(run, generation, delegate\n"
+      },
+      {
+        "start": 133,
+        "end": 134,
+        "before": "            accepted = await RunMemorySummaryCompletionAsync(generation, delegate\n",
+        "after": "            accepted = await RunMemorySummaryRunPhaseAsync(run, generation, delegate\n"
+      },
+      {
+        "start": 159,
+        "end": 160,
+        "before": "        bool overviewOnly = false, HashSet<string> excludedOverviewIds = null, bool cleanupOnly = false)\n",
+        "after": "        bool overviewOnly = false, HashSet<string> excludedOverviewIds = null, bool cleanupOnly = false, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 164,
+        "end": 165,
+        "before": "        if (!await RunMemorySummaryCompletionAsync(generation, () =>\n",
+        "after": "        if (!await RunMemorySummaryRunPhaseAsync(run, generation, () =>\n"
+      },
+      {
+        "start": 171,
+        "end": 172,
+        "before": "                x => SanitizeMemorySummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly);\n",
+        "after": "                x => SanitizeMemorySummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly, run);\n"
+      },
+      {
+        "start": 177,
+        "end": 178,
+        "before": "                x => SanitizeMajorActionSummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly);\n",
+        "after": "                x => SanitizeMajorActionSummaryQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly, run);\n"
+      },
+      {
+        "start": 184,
+        "end": 185,
+        "before": "            x => SanitizeMemoryOverviewQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly);\n",
+        "after": "            x => SanitizeMemoryOverviewQueue(new[] { x }).FirstOrDefault(), x => x.HeroId, unavailableOwners, !cleanupOnly, run);\n"
+      },
+      {
+        "start": 191,
+        "end": 192,
+        "before": "            if (!await RunMemorySummaryCompletionAsync(generation, delegate\n",
+        "after": "            if (!await RunMemorySummaryRunPhaseAsync(run, generation, delegate\n"
+      }
+    ],
+    "MyBehavior.MemorySummaryInput.cs": [
+      {
+        "start": 0,
+        "end": 0,
+        "before": "",
+        "after": "using AnimusForge.Refactor.Runtime;\n"
+      },
+      {
+        "start": 21,
+        "end": 21,
+        "before": "",
+        "after": "        internal MemorySummaryRunOwner.Lease Run;\n"
+      },
+      {
+        "start": 249,
+        "end": 250,
+        "before": "    private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation, string expectedJobFingerprint = null)\n",
+        "after": "    private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 251,
+        "end": 251,
+        "before": "",
+        "after": "        if (run != null && !run.IsCurrent) return null;\n"
+      },
+      {
+        "start": 259,
+        "end": 260,
+        "before": "            Generation = generation, QueueJob = queueJob, HeroId = source.HeroId,\n",
+        "after": "            Generation = generation, Run = run, QueueJob = queueJob, HeroId = source.HeroId,\n"
+      },
+      {
+        "start": 337,
+        "end": 338,
+        "before": "        if (input == null) return false;\n",
+        "after": "        if (input == null || (input.Run != null && !input.Run.IsCurrent)) return false;\n"
+      },
+      {
+        "start": 350,
+        "end": 351,
+        "before": "        return ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(input.Generation)\n",
+        "after": "        return (input.Run == null || input.Run.IsCurrent) && ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(input.Generation)\n"
+      },
+      {
+        "start": 354,
+        "end": 355,
+        "before": "    private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(object job, int maxAttempts, string expectedJobFingerprint = null)\n",
+        "after": "    private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(object job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)\n"
+      },
+      {
+        "start": 357,
+        "end": 358,
+        "before": "        long generation = SaveRuntimeGuard.CaptureGeneration();\n",
+        "after": "        long generation = run?.Generation ?? SaveRuntimeGuard.CaptureGeneration();\n"
+      },
+      {
+        "start": 360,
+        "end": 361,
+        "before": "            bool accepted = await RunMemorySummaryMainThreadAsync(generation, delegate\n",
+        "after": "            bool accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate\n"
+      },
+      {
+        "start": 362,
+        "end": 363,
+        "before": "                result.Source = CaptureMemorySummaryInput(job, generation, expectedJobFingerprint);\n",
+        "after": "                result.Source = CaptureMemorySummaryInput(job, generation, expectedJobFingerprint, run);\n"
+      },
+      {
+        "start": 368,
+        "end": 369,
+        "before": "                if (attempt > 1 && !await RunMemorySummaryMainThreadAsync(generation,\n",
+        "after": "                if (attempt > 1 && !await RunMemorySummaryRunCaptureAsync(run, generation,\n"
+      },
+      {
+        "start": 373,
+        "end": 374,
+        "before": "                if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation))\n",
+        "after": "                if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation))\n"
+      },
+      {
+        "start": 379,
+        "end": 380,
+        "before": "                accepted = await RunMemorySummaryMainThreadAsync(generation, delegate\n",
+        "after": "                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run.py": [
+      {
+        "start": 34,
+        "end": 35,
+        "before": "    \"await RunMemorySummaryMainThreadAsync(runtimeGeneration\",\n",
+        "after": "    \"await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration\",\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": [
+      {
+        "start": 94,
+        "end": 96,
+        "before": "    elif a.mutate=='worker-parse':capture=mutation(capture,'\\n                accepted = await RunMemorySummaryMainThreadAsync(generation, delegate','\\n                accepted = await Task.Run(delegate')\n    elif a.mutate=='skip-retry-source':capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryMainThreadAsync','false && !await RunMemorySummaryMainThreadAsync')\n",
+        "after": "    elif a.mutate=='worker-parse':capture=mutation(capture,'\\n                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate','\\n                accepted = await Task.Run(delegate')\n    elif a.mutate=='skip-retry-source':capture=mutation(capture,'attempt > 1 && !await RunMemorySummaryRunCaptureAsync','false && !await RunMemorySummaryRunCaptureAsync')\n"
+      },
+      {
+        "start": 103,
+        "end": 104,
+        "before": "        product=mutation(product,'if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_wave\")) return;','/* fault: ignore wave owner/generation lifetime */')\n",
+        "after": "        product=mutation(product,'if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_wave\")) return;','/* fault: ignore wave owner/generation lifetime */')\n"
+      },
+      {
+        "start": 136,
+        "end": 136,
+        "before": "",
+        "after": "    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)\n    run_scope.include(files, original=bool(a.source_baseline))\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run_planning.py": [
+      {
+        "start": 38,
+        "end": 39,
+        "before": " elif a.mutate=='cleanup-collects-plan':change('unavailableOwners, !cleanupOnly);','unavailableOwners, true);',3)\n",
+        "after": " elif a.mutate=='cleanup-collects-plan':change('unavailableOwners, !cleanupOnly, run);','unavailableOwners, true, run);',3)\n"
+      },
+      {
+        "start": 47,
+        "end": 47,
+        "before": "",
+        "after": " run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)\n run_scope.include(files, original=False)\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py": [
+      {
+        "start": 185,
+        "end": 185,
+        "before": "",
+        "after": " run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)\n run_scope.include(files, original=False)\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py": [
+      {
+        "start": 16,
+        "end": 17,
+        "before": "    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['e77602f9']);ap.add_argument('--admission-only',action='store_true');ap.add_argument('--admission-mutate',choices=ADMISSION_MUTATIONS);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')\n",
+        "after": "    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['e77602f9']);ap.add_argument('--admission-only',action='store_true');ap.add_argument('--admission-mutate',choices=ADMISSION_MUTATIONS);ap.add_argument(\"--run-scope-cases\",action=\"store_true\");ap.add_argument(\"--run-mutate\",choices=[\"release-replacement\",\"ignore-run-authority\"]);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')\n    if a.run_mutate and (not a.run_scope_cases or a.mutate or a.source_baseline):raise ValueError('Run mutations require isolated run-scope-cases mode')\n"
+      },
+      {
+        "start": 59,
+        "end": 60,
+        "before": "        if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='swallow-completion-failure':body=replace(body,'RunMemorySummaryCompletionAsync(runtimeGeneration, delegate','RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate',6)\n",
+        "after": "        if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='swallow-completion-failure':body=replace(body,'RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate','RunMemorySummaryRunCaptureAsync(run, runtimeGeneration, delegate',6)\n"
+      },
+      {
+        "start": 147,
+        "end": 147,
+        "before": "",
+        "after": "    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)\n    run_scope.include(files, original=bool(a.source_baseline))\n    if a.run_scope_cases:\n        files['RunScopeCases.cs']=(ROOT/'tools/MemorySummaryRunOwnerTests/TerminalCases.cs.txt').read_text(encoding='utf-8-sig')\n        anchor='   int failures=0;foreach(var test in cases)'\n        index=files['Terminal.cs'].rfind(anchor);assert index>=0\n        extra='   foreach(var kind in new[]{\"daily\",\"major\",\"overview\"}){var k=kind;foreach(bool failure in new[]{false,true}){var f=failure;cases.Add(($\"run-retired-{k}-{f}\",()=>RetiredSummaryRun(k,f,false,false)));}cases.Add((\"run-retired-retry-\"+k,()=>RetiredSummaryRun(k,false,true,false)));}cases.Add((\"run-retired-after-parse\",()=>RetiredSummaryRun(\"daily\",false,false,true)));\\n'\n        files['Terminal.cs']=files['Terminal.cs'][:index]+extra+files['Terminal.cs'][index:]\n\n    if a.run_mutate=='release-replacement':\n        files['MemorySummaryRunOwner.cs']=replace(files['MemorySummaryRunOwner.cs'],'Interlocked.CompareExchange(ref _owner._current, null, this)','Interlocked.Exchange(ref _owner._current, null)')\n    elif a.run_mutate=='ignore-run-authority':\n        files['MemorySummaryRunOwner.cs']=replace(files['MemorySummaryRunOwner.cs'],'ReferenceEquals(Volatile.Read(ref _owner._current), this)','true')\n"
+      },
+      {
+        "start": 149,
+        "end": 150,
+        "before": "    variant=('admission-'+(a.admission_mutate or 'current')) if a.admission_only else (('source-baseline-'+a.source_baseline) if a.source_baseline else (a.mutate or 'current'))\n",
+        "after": "    variant=('admission-'+(a.admission_mutate or 'current')) if a.admission_only else (('source-baseline-'+a.source_baseline) if a.source_baseline else ('run-'+a.run_mutate if a.run_mutate else 'scope-cases' if a.run_scope_cases else a.mutate or 'current'))\n"
+      },
+      {
+        "start": 152,
+        "end": 153,
+        "before": "    metadata=dict(mutation=a.mutate,source_baseline=a.source_baseline,extraction=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},seams=['existing captured game/settings/rendering and provider TCS fixtures; its maintenance budget is not a performance acceptance claim','overview admission/whole-owner candidate scans are explicit non-executing seams; real QueueDirty only enqueues candidate IDs, never fake overview jobs','Task.Delay replaced by controlled clock','actual Save entry has explicit pre-save fault hook (normally no-op)','method-entry witness and completed-result witness only; no business branch replacement except named mutants','downstream weekly publication/overview planning and native-history/Notoriety effects are witness-only; the error notice publish seam is a thread-safe queue, not actual UI display','Major writer uses supplied detached NPC facts, real Record/Create/dedupe/order/storage, with external hero eligibility and unused player/recent branches guarded as fixtures','Recovery uses actual Daily/Recent writer/marker/ledger; retention cleanup/scheduling effects are isolated witnesses','Weekly outcome uses actual wrapper/owner guard/publish/readback/ledger; feature enablement and already-confirmed Economy candidate payload are fixtures'],limits=['Daily legacy, Recovery Daily/Recent, and Weekly outcome terminal execute; not complete external action execution or whole recovery load/retention lifecycle','No real provider/game/save validation; ordinary DialogueHistoryCommit/editor/import caller thread ownership remains outside this suite','Actual source validation, Append, Save, pending trigger attach, publication readback, Process, all Apply/Mark, parsers and sanitizers execute'])\n",
+        "after": "    metadata=dict(run_mutation=a.run_mutate,mutation=a.mutate,source_baseline=a.source_baseline,extraction=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},seams=['existing captured game/settings/rendering and provider TCS fixtures; its maintenance budget is not a performance acceptance claim','overview admission/whole-owner candidate scans are explicit non-executing seams; real QueueDirty only enqueues candidate IDs, never fake overview jobs','Task.Delay replaced by controlled clock','actual Save entry has explicit pre-save fault hook (normally no-op)','method-entry witness and completed-result witness only; no business branch replacement except named mutants','downstream weekly publication/overview planning and native-history/Notoriety effects are witness-only; the error notice publish seam is a thread-safe queue, not actual UI display','Major writer uses supplied detached NPC facts, real Record/Create/dedupe/order/storage, with external hero eligibility and unused player/recent branches guarded as fixtures','Recovery uses actual Daily/Recent writer/marker/ledger; retention cleanup/scheduling effects are isolated witnesses','Weekly outcome uses actual wrapper/owner guard/publish/readback/ledger; feature enablement and already-confirmed Economy candidate payload are fixtures'],limits=['Daily legacy, Recovery Daily/Recent, and Weekly outcome terminal execute; not complete external action execution or whole recovery load/retention lifecycle','No real provider/game/save validation; ordinary DialogueHistoryCommit/editor/import caller thread ownership remains outside this suite','Actual source validation, Append, Save, pending trigger attach, publication readback, Process, all Apply/Mark, parsers and sanitizers execute'])\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py": [
+      {
+        "start": 90,
+        "end": 90,
+        "before": "",
+        "after": "    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)\n    run_scope.include(files, original=False)\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": [
+      {
+        "start": 58,
+        "end": 59,
+        "before": "MUTATIONS = [\"worker-primary\", \"worker-extra\", \"worker-cleanup\", \"worker-release\",\n",
+        "after": "MUTATIONS = [\"worker-primary\", \"worker-extra\", \"worker-cleanup\",\n"
+      },
+      {
+        "start": 72,
+        "end": 73,
+        "before": "def build_sources(original, mutation):\n",
+        "after": "def build_sources(original, mutation, run_owner_baseline=False):\n"
+      },
+      {
+        "start": 76,
+        "end": 77,
+        "before": "    source = extractor.source(\"MyBehavior.cs\", BASELINE if original else None)\n",
+        "after": "    source = extractor.source(\"MyBehavior.cs\", \"155f1b7a\" if run_owner_baseline else BASELINE if original else None)\n"
+      },
+      {
+        "start": 117,
+        "end": 119,
+        "before": "            block = replace_exact(block, \"_memorySummaryProcessing = false;\",\n                                  'Witness.Touch(\"release\"); _memorySummaryProcessing = false;')\n",
+        "after": "            if original or run_owner_baseline:\n                block = replace_exact(block, \"_memorySummaryProcessing = false;\", 'Witness.Touch(\"release\"); _memorySummaryProcessing = false;')\n"
+      },
+      {
+        "start": 128,
+        "end": 129,
+        "before": "                marker = r\"await RunMemorySummary(?:MainThread|Completion)Async\\(runtimeGeneration, delegate\"\n",
+        "after": "                marker = r\"await RunMemorySummaryRunPhaseAsync\\(run, runtimeGeneration, delegate\"\n"
+      },
+      {
+        "start": 130,
+        "end": 132,
+        "before": "                if len(matches) != 7:\n                    raise ValueError(\"Expected initial/daily/major/overview/extra-plan/cleanup/release dispatches\")\n",
+        "after": "                if len(matches) != 6:\n                    raise ValueError(\"Expected initial/daily/major/overview/extra-plan/notification dispatches\")\n"
+      },
+      {
+        "start": 133,
+        "end": 134,
+        "before": "                         \"worker-extra\": 3, \"worker-extra-plan\": 4, \"worker-cleanup\": 5, \"worker-release\": 6}[mutation]\n",
+        "after": "                         \"worker-extra\": 3, \"worker-extra-plan\": 4, \"worker-cleanup\": 5}[mutation]\n"
+      },
+      {
+        "start": 137,
+        "end": 138,
+        "before": "                block = replace_exact(block, \"await RunMemorySummaryCompletionAsync(runtimeGeneration, delegate\", \"await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate\", count=6)\n",
+        "after": "                block = replace_exact(block, \"await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate\", \"await RunMemorySummaryRunCaptureAsync(run, runtimeGeneration, delegate\", count=6)\n"
+      },
+      {
+        "start": 139,
+        "end": 140,
+        "before": "                block = replace_exact(block, \"_memorySummaryProcessing = false;\", \"/* fault: no processing release */\")\n",
+        "after": "                block = replace_exact(block, \"run.Dispose();\", \"/* fault: no processing release */\")\n"
+      },
+      {
+        "start": 141,
+        "end": 142,
+        "before": "                block = replace_exact(block, \"if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true) == null) return;\", \"/* fault: no terminal cleanup */\")\n",
+        "after": "                block = replace_exact(block, \"if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true, run: run) == null) return;\", \"/* fault: no terminal cleanup */\")\n"
+      },
+      {
+        "start": 184,
+        "end": 185,
+        "before": "    if mutation == \"swallow-completion-error\":\n",
+        "after": "    if mutation == \"swallow-completion-error\" and \"MemorySummaryDispatcher\" not in boundary:\n"
+      },
+      {
+        "start": 210,
+        "end": 210,
+        "before": "",
+        "after": "    parser.add_argument(\"--run-scope-cases\", action=\"store_true\")\n    parser.add_argument(\"--run-owner-baseline\", action=\"store_true\")\n"
+      },
+      {
+        "start": 212,
+        "end": 214,
+        "before": "    product, boundary, manifest = build_sources(args.original, args.mutate)\n    out = HERE / \".generated/business\" / (\"original\" if args.original else args.mutate or \"current\")\n",
+        "after": "    product, boundary, manifest = build_sources(args.original, args.mutate, args.run_owner_baseline)\n    out = HERE / \".generated/business\" / (\"run-owner-baseline\" if args.run_owner_baseline else \"scope-cases\" if args.run_scope_cases else \"original\" if args.original else args.mutate or \"current\")\n"
+      },
+      {
+        "start": 225,
+        "end": 226,
+        "before": "        planning = (ROOT / \"MyBehavior.MemorySummaryPlanning.cs\").read_text(encoding=\"utf-8-sig\")\n",
+        "after": "        planning = subprocess.check_output([\"git\",\"show\",\"155f1b7a:MyBehavior.MemorySummaryPlanning.cs\"],cwd=ROOT).decode(\"utf-8-sig\").replace(\"\\r\\n\",\"\\n\") if args.run_owner_baseline else (ROOT / \"MyBehavior.MemorySummaryPlanning.cs\").read_text(encoding=\"utf-8-sig\")\n"
+      },
+      {
+        "start": 235,
+        "end": 236,
+        "before": "            planning = replace_exact(planning, \"await RunMemorySummaryCompletionAsync(generation, delegate\", \"await Task.Run(delegate\", count=4)\n",
+        "after": "            planning = replace_exact(planning, \"await RunMemorySummaryRunPhaseAsync(run, generation, delegate\", \"await Task.Run(delegate\", count=4)\n"
+      },
+      {
+        "start": 244,
+        "end": 244,
+        "before": "",
+        "after": "    if args.mutate == \"swallow-completion-error\" and \"MemorySummaryDispatcher.cs\" in files:\n        files[\"MemorySummaryDispatcher.cs\"] = replace_exact(files[\"MemorySummaryDispatcher.cs\"], \"if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();\", \"/* fault: swallowed partial execution error */\")\n    run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)\n    run_scope.include(files, original=args.original or args.run_owner_baseline)\n    if args.run_scope_cases:\n        extra=(ROOT/'tools/MemorySummaryRunOwnerTests/BusinessCases.cs.txt').read_text(encoding='utf-8-sig')\n        anchor='        private static void MainThreadEffects()'\n        assert anchor in files['Program.cs'];files['Program.cs']=files['Program.cs'].replace(anchor,extra+'\\n'+anchor,1)\n        anchor='(\"load-during-extra-delay\", LoadDuringExtraDelay)'\n        assert anchor in files['Program.cs'];files['Program.cs']=files['Program.cs'].replace(anchor,'(\"same-generation-run-replaced-success\",()=>RunOwnerReplacement(false,false)),(\"same-generation-run-replaced-failure\",()=>RunOwnerReplacement(true,false)),(\"same-generation-queued-acceptance-retired\",()=>RunOwnerReplacement(false,true)),'+anchor,1)\n"
+      }
+    ],
+    "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": [
+      {
+        "start": 80,
+        "end": 80,
+        "before": "",
+        "after": "#if HAS_RUN_OWNER\n        private const bool ExpectedRetiredRunBusy = false;\n#else\n        private const bool ExpectedRetiredRunBusy = true;\n#endif\n"
+      },
+      {
+        "start": 372,
+        "end": 373,
+        "before": "            Check(b._memorySummaryProcessing, \"old request released processing outside accepted context\");\n",
+        "after": "            Check(b._memorySummaryProcessing == ExpectedRetiredRunBusy, \"completed/retired run ownership state mismatch\");\n"
+      },
+      {
+        "start": 383,
+        "end": 384,
+        "before": "            Check(b._memorySummaryProcessing, \"stale finally released owner flag\"); MainThreadEffects();\n",
+        "after": "            Check(b._memorySummaryProcessing == ExpectedRetiredRunBusy, \"completed/retired extra-wave run ownership state mismatch\"); MainThreadEffects();\n"
+      },
+      {
+        "start": 502,
+        "end": 503,
+        "before": "            else Check(Witness.Count(\"popup-publish:\")==0&&b._memorySummaryProcessing,\"retired aggregate notified or released the replacement context\");\n",
+        "after": "            else Check(Witness.Count(\"popup-publish:\")==0&&b._memorySummaryProcessing==ExpectedRetiredRunBusy,\"retired aggregate notified or released the replacement context\");\n"
+      }
+    ]
+  },
+  "dependencies": {
+    "MyBehavior.MemorySummaryRun.cs": "94a2f61df2bf87c86b1ec24a6dc59b63fd52afc23a969973c7968c20487d1634",
+    "Refactor/Runtime/MemorySummaryRunOwner.cs": "13c606f98a0a4694dd439d7b80b4dd4777fbc18bcc229ffd5060b3c6d02e1551",
+    "tools/MemorySummaryRunOwnerTests/fixture_support.py": "acda46e20eb16c6a1e39dbd7a482b901485583a3d5fcaf3feca4a0fbbb08600b",
+    "tools/MemorySummaryRunOwnerTests/BusinessCases.cs.txt": "9e92d9f6a86e710a681a654b02f149de505d1bded243790d43fdd98c14ac7413",
+    "tools/MemorySummaryRunOwnerTests/TerminalCases.cs.txt": "75f1590fc598107b6f540aa0ede85852e056c26c1325c632770770f0ec2ae057",
+    "tools/MemorySummaryRunOwnerTests/run.py": "ad0ae72e517c0c7c830d420fc09bc5ca61dd379300eb511b90cacc4cf14d2315",
+    "tools/MemorySummaryRunOwnerTests/OwnerChecks.cs.txt": "66e70c902a76cba2b63d1e3e53dc6d9cdb03a4d3dd0d87a0ba84dbddd717084d"
+  }
+}

@@ -1,3 +1,4 @@
+using AnimusForge.Refactor.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,6 +20,7 @@ public partial class MyBehavior
     private sealed class MemorySummaryInput
     {
         internal long Generation;
+        internal MemorySummaryRunOwner.Lease Run;
         internal object QueueJob;
         internal object Job;
         internal string HeroId;
@@ -247,8 +249,9 @@ public partial class MyBehavior
         });
     }
 
-    private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation, string expectedJobFingerprint = null)
+    private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
     {
+        if (run != null && !run.IsCurrent) return null;
         var source = ReadMemorySummarySource(queueJob, generation);
         if (source == null) return null;
         // A plan can span ticks. Its job identity and the source are checked in this
@@ -257,7 +260,7 @@ public partial class MyBehavior
             ComputeMemorySummaryFingerprint(queueJob), StringComparison.Ordinal)) return null;
         var input = new MemorySummaryInput
         {
-            Generation = generation, QueueJob = queueJob, HeroId = source.HeroId,
+            Generation = generation, Run = run, QueueJob = queueJob, HeroId = source.HeroId,
             SourceFingerprint = ComputeMemorySummarySourceFingerprint(source)
         };
         var hero = FindHeroById(input.HeroId);
@@ -335,7 +338,7 @@ public partial class MyBehavior
 
     private bool IsMemorySummaryInputCurrent(MemorySummaryInput input)
     {
-        if (input == null) return false;
+        if (input == null || (input.Run != null && !input.Run.IsCurrent)) return false;
         var initialSource = ReadMemorySummarySource(input.QueueJob, input.Generation);
         if (initialSource == null || !string.Equals(initialSource.HeroId, input.HeroId, StringComparison.OrdinalIgnoreCase)) return false;
         // Context getters may synchronously publish knowledge. Re-read the live raw
@@ -348,36 +351,36 @@ public partial class MyBehavior
         var source = ReadMemorySummarySource(input.QueueJob, input.Generation);
         if (source == null || !string.Equals(ComputeMemorySummarySourceFingerprint(source),
             input.SourceFingerprint, StringComparison.Ordinal)) return false;
-        return ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(input.Generation)
+        return (input.Run == null || input.Run.IsCurrent) && ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(input.Generation)
             && ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this);
     }
 
-    private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(object job, int maxAttempts, string expectedJobFingerprint = null)
+    private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(object job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
     {
         var result = new CapturedMemorySummaryResult();
-        long generation = SaveRuntimeGuard.CaptureGeneration();
+        long generation = run?.Generation ?? SaveRuntimeGuard.CaptureGeneration();
         try
         {
-            bool accepted = await RunMemorySummaryMainThreadAsync(generation, delegate
+            bool accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate
             {
-                result.Source = CaptureMemorySummaryInput(job, generation, expectedJobFingerprint);
+                result.Source = CaptureMemorySummaryInput(job, generation, expectedJobFingerprint, run);
                 return result.Source != null;
             });
             if (!accepted) { result.IsObsolete = true; return result; }
             for (int attempt = 1; attempt <= Math.Max(1, maxAttempts); attempt++)
             {
-                if (attempt > 1 && !await RunMemorySummaryMainThreadAsync(generation,
+                if (attempt > 1 && !await RunMemorySummaryRunCaptureAsync(run, generation,
                     () => IsMemorySummaryInputCurrent(result.Source)))
                 { result.IsObsolete = true; return result; }
                 // The dispatcher continuation may resume after another load/owner swap.
                 // Do not renew a retired request merely because its capture used to be valid.
-                if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation))
+                if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation))
                 { result.IsObsolete = true; return result; }
                 var input = result.Source;
                 string area = job is MemorySummaryJob ? "CompressedMemory" : job is MajorActionSummaryJob ? "NpcMajorSummary" : "MemoryOverview";
                 var api = await CallAuxiliaryGatewayDetailed(input.SystemPrompt, input.UserPrompt, area, 0, forceThinkingDisabled: true).ConfigureAwait(false);
                 bool parsed = false;
-                accepted = await RunMemorySummaryMainThreadAsync(generation, delegate
+                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate
                 {
                     if (!IsMemorySummaryInputCurrent(input)) return false;
                     if (!api.Success) { result.Error = api.ErrorMessage ?? "API请求失败"; return true; }
