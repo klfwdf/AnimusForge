@@ -257,6 +257,10 @@ namespace AnimusForge.Illustrator
         // 预填古典油画预设负面词，供玩家查看/改写；仅在画风预设选“提示词(自定义画风)”时生效
         public string NegativePrompt { get; set; } = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
 
+        [SettingPropertyInteger("参考图相似度", 0, 100, "0%", HintText = "控制除人物特征外的画面还原度（0-100）：人物五官/肤色/发型与家族纹章始终严格一致；相似度越高，场景布置、构图、装备细节与氛围越忠实参照参考图与游戏事实，越低则留给生图模型越大的艺术发挥空间。默认 80。", Order = 12, RequireRestart = false)]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public int Similarity { get; set; } = 80;
+
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;

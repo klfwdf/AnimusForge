@@ -26,6 +26,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly string _instanceId = Guid.NewGuid().ToString("N").Substring(0, 8);
         private string _activeSpriteName;
         private bool _closed;
+        private int _generationCount;
 
         public static bool IsOpen => _activeInstance != null;
 
@@ -177,7 +178,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             // 百科人物事实缺环境信息——补纪元时间（卡拉迪亚历 NNNN 年）使年代进入提示词事实区
             string hardFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildSummary();
+            _generationCount++;
             string artDirection = GenerateDiversePoseDirective(hero);
+            if (_generationCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection);
             var options = IllustratorRuntime.CaptureOptions();
 
@@ -315,7 +318,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
             string key = $"Conv_{partnerId}";
             // 台词与近三轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
-            var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(GenerateConversationSceneVariation(convContext)), convContext.BuildDialogueBlock());
+            _generationCount++;
+            string variation = GenerateConversationSceneVariation(convContext);
+            if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
+            var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDialogueBlock());
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                 ? convContext.InterlocutorHero.Name.ToString()
