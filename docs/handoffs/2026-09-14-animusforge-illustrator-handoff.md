@@ -474,3 +474,4 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 `VisualDirectorEngine.cs:39-61,112-132,165-176` 为导演原文建立 `<director_only_narrative>` 独立区，并禁止逐字复述、把引语/计划/否定改为结果；`ResolveDirectorOutput` 发现叙述复述时直接走离线保底，不重试、不增加网络请求。离线保底只使用视觉 HardFacts 与开放构图方向。
 
 `tools/test_illustrator.ps1:195-380` 新增 20 项事实路由与导演回退检查。最终 1.3 / 1.4 构建 0 警告、0 错误，**133 checks / 0 failures**；`git diff --check` 通过。当前未验证真实导演模型的改写质量、超长非标点正文、真实存档周报与实机画面；本轮未部署。回滚点：`git revert e86efa18`，前一修复提交 `9dda2fa2`。
+补充审计（第七轮）：`NarrativeFactRouter` 对周报正文采用完整句证据摘录，不再 400 字截断；引语内容不升级为已确认结果。人物视觉证据与导演专属原文分离，陌生 MOD 种族名称可通过真实文化/百科/面貌字段进入提示词，模型不会被硬编码的人类文化模板覆盖。没有“兽人/精灵”等关键词时也会保留角色真实种族名、文化名、面貌字段和立绘参考图；模型实际识别效果仍取决于子 MOD 是否提供这些数据以及使用的视觉模型。
