@@ -19,6 +19,7 @@ namespace AnimusForge.Illustrator.Context
         public string CultureId { get; set; } = string.Empty;
         public string SocialStatus { get; set; } = string.Empty;
         public string Gender { get; set; } = string.Empty;
+        public string SpeciesDescription { get; set; } = string.Empty;
         public int Age { get; set; }
         public string ClanName { get; set; } = string.Empty;
         public string KingdomName { get; set; } = string.Empty;
@@ -58,6 +59,7 @@ namespace AnimusForge.Illustrator.Context
             var sb = new StringBuilder();
             sb.AppendLine($"【人物与至高地位】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
                 $" ({Culture}文化, {Gender}, 约{Age}岁" + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
+            if (!string.IsNullOrWhiteSpace(SpeciesDescription)) sb.AppendLine("【真实种族/物种】" + SpeciesDescription);
 
             string visualBackground = NarrativeFactRouter.ExtractVisualEvidence(CultureLore, FactionLore, BackgroundLore);
             if (!string.IsNullOrWhiteSpace(visualBackground))
@@ -116,6 +118,7 @@ namespace AnimusForge.Illustrator.Context
                 SocialStatus = socialStatus,
                 Gender = hero.IsFemale ? "女性" : "男性",
                 Age = (int)hero.Age,
+                SpeciesDescription = ResolveSpeciesDescription(hero),
                 ClanName = hero.Clan?.Name != null ? hero.Clan.Name.ToString() : string.Empty,
                 KingdomName = hero.Clan?.Kingdom?.Name != null ? hero.Clan.Kingdom.Name.ToString() : string.Empty
             };
@@ -164,6 +167,18 @@ namespace AnimusForge.Illustrator.Context
             }
 
             return profile;
+        }
+
+        private static string ResolveSpeciesDescription(Hero hero)
+        {
+            if (hero?.CharacterObject == null) return string.Empty;
+            string identity = ((hero.CharacterObject.StringId ?? string.Empty) + " " + (hero.Culture?.StringId ?? string.Empty) + " " + (hero.Culture?.Name?.ToString() ?? string.Empty)).ToLowerInvariant();
+            var known = new[] { new[] { "兽人", "orc", "orcs", "greenskin", "warhammer_orc" }, new[] { "地精", "goblin", "goblins", "snotling" }, new[] { "精灵", "elf", "elves", "elven", "asrai", "druchii" }, new[] { "矮人", "dwarf", "dwarves", "dawi" }, new[] { "鼠人", "skaven" }, new[] { "野兽人", "beastman", "beastmen", "minotaur" }, new[] { "混沌", "chaos", "daemon", "demon" }, new[] { "巨魔", "troll", "ogre" } };
+            foreach (var group in known)
+                foreach (string token in group)
+                    if (identity.Contains(token)) return group[0];
+            if (hero.CharacterObject.Race != 0) return "自定义非人类种族（游戏 Race=" + hero.CharacterObject.Race + "，以真实立绘为准）";
+            return "人类（若 MOD 通过立绘加入特殊物种，以参考图和文化设定为准）";
         }
 
         private static string ExtractCultureLore(Hero hero)

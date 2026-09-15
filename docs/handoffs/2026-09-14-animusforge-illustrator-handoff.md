@@ -475,3 +475,8 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 
 `tools/test_illustrator.ps1:195-380` 新增 20 项事实路由与导演回退检查。最终 1.3 / 1.4 构建 0 警告、0 错误，**133 checks / 0 failures**；`git diff --check` 通过。当前未验证真实导演模型的改写质量、超长非标点正文、真实存档周报与实机画面；本轮未部署。回滚点：`git revert e86efa18`，前一修复提交 `9dda2fa2`。
 补充审计（第七轮）：`NarrativeFactRouter` 对周报正文采用完整句证据摘录，不再 400 字截断；引语内容不升级为已确认结果。人物视觉证据与导演专属原文分离，陌生 MOD 种族名称可通过真实文化/百科/面貌字段进入提示词，模型不会被硬编码的人类文化模板覆盖。没有“兽人/精灵”等关键词时也会保留角色真实种族名、文化名、面貌字段和立绘参考图；模型实际识别效果仍取决于子 MOD 是否提供这些数据以及使用的视觉模型。
+### 第八轮：非人类/自定义种族语义补强（2026-09-16，待提交）
+
+`HeroVisualProfile` 新增 `SpeciesDescription`，由 `HeroVisualExtractor.ResolveSpeciesDescription` 从角色 ID、文化 ID、文化名称识别兽人、地精、精灵、矮人、鼠人、野兽人、混沌、巨魔等常见语义；无法识别名称但 `CharacterObject.Race != 0` 时标记为自定义非人类，并要求以真实立绘为准。该字段进入视觉 HardFacts，不再只依赖导演阅读百科原文。
+
+这使中古战锤等子 MOD 在提供可读角色/文化标识或非人类 Race 时能稳定把种族语义交给生图模型；若子 MOD 只提供一个无法映射的数值且 Race 仍为原版人类值，则只能依赖人物参考图、文化文本和面貌数据，不能承诺模型凭空识别物种。性能为每次人物快照的一次字符串检查，不在 Tick 或全英雄扫描热路径执行。`tools/test_illustrator.ps1` 的自定义兽人视觉事实检查通过；双版本构建 0 警告、0 错误，133 checks / 0 failures。未实机验证中古战锤实际角色数据映射和具体生图模型效果。
