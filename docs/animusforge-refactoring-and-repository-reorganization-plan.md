@@ -1,3 +1,11 @@
+# 当前补充：Courier 失败回执不得伪装成已确认无副作用（2026-09-15）
+
+- 全范围仍ACTIVE，29448d1b的Game退役已离线验证，接续c40671ea。后续Prompt追踪已确认My770行构造、AIConfig路由资格和KnowledgeLibrary内部live/同步网络混合，不能只把外层挂Task.Run或整体搬主线程。
+- 本次先修最终回执复审发现的明确问题：Courier callback已进入后抛异常或返回null，原Invoke把它映射为RejectedByValidation+NoConfirmedEffect。不能证明没有副作用；应明确NonRetryableFailure+UnknownAfterStart，保持原errorCode和已经取得的真实result。入站缺回执转译也必须保留EffectState。
+- 只改最终commit失败语义，不改信使送达/业务owner、不自动重试、不提交失败记忆。沿用原实际19检查并新增部分副作用/空回执/入站清理/诊断故障的结果分类反例；精确逆变换保留29448d1b及之前的旧source证据。完成后同候选六Stage/接口/回放，更新HANDOFF，不推送/部署。
+
+## 以下为上包与历史记录
+
 # 当前连续收尾：真实 GameEnd 与待办退役（2026-09-15）
 
 - 全范围任务仍ACTIVE；继续上一包807bc5b9之后的I1/C1生命周期，不停止于人设消费者完成。新包先绑定实际Game身份，拒绝旧GameEnd误伤新Game；结束/替换先推进generation，再分别退役主体owner及静态订阅。
