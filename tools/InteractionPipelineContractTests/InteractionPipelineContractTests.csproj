@@ -14,6 +14,7 @@
     <Compile Include="..\..\Refactor\Contracts\FullInteractionPipeline.cs" Link="Contracts\FullInteractionPipeline.cs" />
     <Compile Include="..\..\Refactor\Contracts\ProfileConfigContracts.cs" Link="Contracts\ProfileConfigContracts.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionRequestCoordinator.cs" Link="Runtime\InteractionRequestCoordinator.cs" />
+    <Compile Include="..\..\Refactor\Runtime\InteractionRequestLease.cs" Link="Runtime\InteractionRequestLease.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
     <Compile Include="..\..\Refactor\Runtime\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />

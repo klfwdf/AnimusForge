@@ -31,6 +31,7 @@ LINKS = [
     'Refactor/Contracts/InteractionContracts.cs', 'Refactor/Contracts/LlmContracts.cs',
     'Refactor/Contracts/ProfileConfigContracts.cs', 'Refactor/Contracts/InteractionPipeline.cs',
     'Refactor/Contracts/FullInteractionPipeline.cs', 'Refactor/Runtime/InteractionRequestCoordinator.cs',
+    'Refactor/Runtime/InteractionRequestLease.cs',
     'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'Refactor/Adapters/LegacyActionTagParser.cs',
     'Refactor/Adapters/LegacyDetachedPromptComposer.cs', 'Refactor/Adapters/LegacyPromptPackageAdapter.cs',
 ]
