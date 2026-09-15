@@ -1,7 +1,7 @@
 from pathlib import Path
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 s=subprocess.check_output(['git','show','10defeb4:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -24,6 +24,7 @@ if not a.original:
  if a.mutate=='ignore_edit':helper=helper.replace('if (overwriteExisting && (!string.Equals(curP','if (false && (!string.Equals(curP',1)
  if a.mutate=='stale_lease':helper=helper.replace('!_npcPersonaGeneration.IsCurrent(work.Reservation)','false',1)
  if a.mutate=='release_new':owner=owner.replace('|| !ReferenceEquals(current, lease)) return;','|| false) return;',1)
+ if a.mutate=='false_queued_success':helper=helper.replace('return overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return "";',1).replace('return accepted ? failure ?? "" : overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return accepted ? failure ?? "" : "";',1)
  if a.mutate=='drop_voice':helper=helper.replace('VoiceId = (current.VoiceId ?? "").Trim()','VoiceId = ""',1)
  (out/'Persona.cs').write_text(helper,encoding='utf-8');(out/'Owner.cs').write_text(owner,encoding='utf-8');files += [out/'Persona.cs',out/'Owner.cs']
 project=util.project(out,'HeroPersonaProof',files,executable=True)
