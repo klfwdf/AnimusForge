@@ -561,3 +561,11 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 已将游戏子模块回退到 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705`：DLL/PDB、模块清单和五个 prefab 共 8 文件 hash 一致。恢复 DLL SHA256 `2DAC0572BD0A79EB6E55DA530D75A37EF3009450012F6B856A64945D7A939896`。失败版已另备份，源码/提交/其他作者工作均保留，未改存档。
 
 **当前源码不等于当前部署**，不能直接再次运行部署脚本安装尚未解决的原生实现。旧纹章准确性未解决，回退后实机尚未验收；进一步原生定位缺少转储。证据与下一步边界见 [崩溃报告末节](../audits/2026-09-16-illustrator-native-crash-followup.md)。
+
+### 第十六轮：继续修复原生导出初始化（2026-09-16 06:21）
+
+本节更新第十五轮部署状态。用户要求“纹章都生成了不能直接发送参考图吗？修复崩溃啊”。生产 `77caa9f6` 已按授权重新部署；此前两次故障原生 RVA 经本机对应 DLL 只读反汇编，确认位于最终图片保存之后的阴影通道导出访问，passes 文件时间吻合。没有 native 寄存器/调用栈，尚不能断言最终运行结果。
+
+`extensions/AnimusForge.Illustrator/src/Engine/NativeBannerExportWidget.cs:43–88` 的 `OnUpdate / BindExportPaintHandler / PrepareExportFrame` 只给生图自己的 RenderTargetComponent 加一个排在原版之后的回调，初始化完整 postfx/shadow 渲染路径，保留原版图案几何；关闭额外艺术效果并固定曝光。`ScreenCaptureHelper.cs:913–918` 至少两个准备 callback 后才请求保存，`1186–1196` 增加完整 PNG 读取日志。标准 PNG 继续经现有缓存/参考图接口发送，没有禁用纹章，也没有全局 Harmony 修改原版旗帜或写原生 DLL。
+
+双 API 构建 0 警告/0 错误，通用 180 / 0、两目标专项各 39 / 0；直接测最终部署 DLL 178 / 0、39 / 0。06:21:10 部署 hash `A910DD3C9F9A8E89EC78E224266E03227D7CE0CDC2962E2A0F0BF62E930AAF90`，部署时未见游戏进程。实机无崩溃、纹章颜色/方向/发送及模型遵循仍待验收。源码和部署重新对齐。源码坐标、反汇编工具与证据、性能及回滚备份见 [初始化修正报告](../audits/2026-09-16-illustrator-native-export-initialization.md)。

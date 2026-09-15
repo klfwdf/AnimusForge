@@ -1,0 +1,28 @@
+DLL: F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Native.dll
+SHA256: 2A5E0E0B15513EBB7052D747A621B82C50EE834553EBA283B33BBBC33766E12A
+Runtime function: 0x282f60 0x283a37
+Reported crash RVA: 0x283860
+Function string references and instructions near the reported fault:
+0x2831a0 movups xmm0, xmmword ptr [rip + 0x866171] 'GeneratedTextures/'
+0x283553 movsd xmm0, qword ptr [rip + 0x8799a5] 'passes/'
+0x28368b movsd xmm0, qword ptr [rip + 0x879875] 'final.dds'
+0x2837f5 movsd xmm0, qword ptr [rip + 0x8796e3] 'depth.dds'
+0x28383e je 0x180283845
+0x283840 call 0x18074e270
+0x283845 xor esi, esi
+0x283847 mov qword ptr [rbp - 0x61], rsi
+0x28384b mov dword ptr [rbp - 0x51], esi
+0x28384e lea rbx, [rip + 0x7ede2b]
+0x283855 mov qword ptr [rbp - 0x69], rbx
+0x283859 mov rax, qword ptr [r13 + 0xe9e8]
+0x283860 mov rcx, qword ptr [rax + 0x58]
+0x283864 mov rax, qword ptr [rcx - 8]
+0x283868 mov rcx, qword ptr [rax + 0x428]
+0x28386f test rcx, rcx
+0x283872 je 0x1802839e7
+0x283878 call 0x180279f60
+0x28387d mov qword ptr [rbp - 0x19], rax
+0x283881 mov qword ptr [rbp - 0x41], rbx
+0x283885 mov qword ptr [rbp - 0x39], rsi
+0x283978 movsd xmm0, qword ptr [rip + 0x879570] 'shadow.dds'
+Boundary: static bytes only; no crash registers, stack, or live render acceptance.
