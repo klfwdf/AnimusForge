@@ -1,0 +1,66 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+namespace AnimusForge {
+ internal static class Liveness {
+  internal static Task Background;internal static int BodyRequests,Failures,Unpauses,Deliveries,PersonaCalls,StaleTagEffects;
+  internal static bool HoldNextPersona;internal static string LastReason;
+  internal static TaskCompletionSource<bool> PersonaRelease;
+  internal static void Reset(){Background=null;BodyRequests=Failures=Unpauses=Deliveries=PersonaCalls=StaleTagEffects=0;HoldNextPersona=false;LastReason=null;PersonaRelease=new(TaskCreationOptions.RunContinuationsAsynchronously);}
+ }
+ internal sealed class MobileParty {internal static MobileParty MainParty=new();internal bool IsActive=true;}
+ internal enum CourierStage {GeneratingReply,Returning,WaitingSender,Outbound}
+ internal static class ShoutNetwork {internal static void RecordPrimaryRequestBodyForTokenStats(List<object> a,int b,string c){} }
+ internal static class LlmRetryPrompt {internal static void ShowFailurePopup(string a,string b){Probe.MainOnly();} }
+ internal sealed class PromptPackage {} internal sealed class InteractionEnvelope {} internal sealed class LegacyInteractionPipelinePorts {}
+ internal interface ILlmGateway {} internal sealed class LegacyShoutNetworkGateway:ILlmGateway {}
+ internal static class LegacyPromptPackageAdapter {internal static PromptPackage FromLegacyMessages(List<object> a,int b,string c)=>new();}
+ internal static class LegacyActionTagCatalog {internal static string[] DefaultAllowedTagFamilies=Array.Empty<string>();}
+ internal sealed class LegacyChannelInteractionFacade:IDisposable {public void Dispose(){} }
+ internal static class LegacyInteractionSnapshotAdapters {
+  internal static string NativeConversationModuleId="native",LegacyShoutNetworkProviderId="provider";
+  internal static LegacyChannelInteractionFacade CreateCourierInteractionFacade(LegacyInteractionPipelinePorts p,ILlmGateway g,Func<string,InteractionEnvelope> e)=>null;
+ }
+ internal sealed class RuntimeConfigSnapshot {internal Dictionary<string,string> Providers=new();}
+ internal enum InteractionStatus {CancelledAsStale,Executed,Succeeded}
+ internal sealed class DetachedInteractionHostResult {internal InteractionStatus Status;internal bool UsedLegacyFallback;internal string VisibleReply,ErrorCode;}
+ public partial class CourierDeliveryBehavior {
+  private const int MainReplyMaxTokens=100;
+  private bool _courierReplyWaitTimeLocked=true;
+  private sealed class CourierPreparationAdmission {internal CourierSession Session;internal Hero Participant;internal string FallbackLetter;}
+  private CourierPreparationAdmission CaptureCourierPreparationAdmission(string id,bool inbound,long gen){Probe.MainOnly();return ReferenceEquals(Instance,this)&&Session!=null&&!Session.Terminal&&Session.Inbound==inbound?new(){Session=Session,Participant=Session.Participant,FallbackLetter=Session.InboundFallbackLetter}:null;}
+  private Task<bool> EnsureCourierPersonaContextReadyAsync(Hero h,string chain,string id,CourierSession session,long gen){Interlocked.Increment(ref Liveness.PersonaCalls);if(Liveness.HoldNextPersona)return Liveness.PersonaRelease.Task;return Task.FromResult(true);}
+  private Task<CourierPreparedHistory> PrepareCourierHistoryAsync(string id,CourierSession session,Hero h,bool inbound,long gen)=>Task.FromResult(new CourierPreparedHistory("fact","history"));
+  private static bool IsCourierBridgeEnabled()=>false;
+  private InteractionEnvelope CapturePreparedCourierReplyEnvelope(CourierReplyGenerationRequest r,Hero h,PromptPackage p)=>new();
+  private static LegacyInteractionPipelinePorts CreateCourierDetachedPorts(string[] a,bool b,int c,PromptPackage p)=>new();
+  private static RuntimeConfigSnapshot CaptureCourierReplyRefactorConfigurationForExternal()=>new();
+  private static Task<DetachedInteractionHostResult> SubmitCourierReplyRefactorOptInForExternalAsync(LegacyChannelInteractionFacade a,RuntimeConfigSnapshot b,string c,string d,string e,string f,Func<Task<string>> g,CancellationToken t)=>throw new Exception("fixture disabled bridge entered");
+  private void FailDetachedCourierReplyOnMainThread(string id,long gen,string reason)=>FailCourierReplyGenerationOnMainThread(id,gen,reason);
+  private void FinalizeCourierReplyGenerationOnMainThread(CourierReplyGenerationRequest r,string text,string post,string details)=>CompleteFixtureBody(r.SessionId,r.RuntimeGeneration);
+  private Task GenerateNpcReplyAsync(CourierReplyGenerationRequest r){Interlocked.Increment(ref Liveness.BodyRequests);EnqueueMainThreadActionForGeneration(r.RuntimeGeneration,()=>CompleteFixtureBody(r.SessionId,r.RuntimeGeneration),"fixture_reply");return Task.CompletedTask;}
+  private Task GenerateInboundNpcLetterAsync(InboundLetterGenerationRequest r){Interlocked.Increment(ref Liveness.BodyRequests);EnqueueMainThreadActionForGeneration(r.RuntimeGeneration,()=>CompleteFixtureBody(r.SessionId,r.RuntimeGeneration),"fixture_inbound");return Task.CompletedTask;}
+  private void CompleteFixtureBody(string id,long gen){Probe.MainOnly();Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;ProcessSessionById(id,"fixture_body_complete");}
+  private static string NormalizeInboundLetterText(string text,CourierSession session,Hero sender){Probe.MainOnly();return text;}
+  private static void EnqueueMainThreadActionForGeneration(long gen,Action action,string reason){MainThreadActions.Enqueue(()=>{if(SaveRuntimeGuard.IsCurrentGeneration(gen))action();});}
+  private void ProcessSessionById(string id,string reason){Probe.MainOnly();Liveness.LastReason=reason;if(reason.EndsWith("prompt_source_changed"))Liveness.Failures++;Tick();}
+  internal void StartReal(){Probe.MainOnly();if(Session.Inbound)StartInboundLetterGeneration(Session,"test");else StartCourierReplyGeneration(Session,"test");}
+  internal void Tick(){Probe.MainOnly();var session=Session;var courier=new MobileParty();Hero recipient=Session.Participant;var stage=(CourierStage)Enum.Parse(typeof(CourierStage),Session.Stage);if(Session.Inbound){ProcessInboundToPlayerSession(session,courier);return;}@@REPLY_TICK@@}
+  internal bool StillPaused=>_courierReplyWaitTimeLocked;
+  private static void RouteToSafeSettlement(CourierSession s,MobileParty p,string reason){}
+  private static bool IsAtSender(MobileParty a,MobileParty b)=>true;
+  private static bool IsPlayerBusyForInboundLetterDelivery(MobileParty p)=>false;
+  private static void HoldInboundCourierAtPlayer(CourierSession s,MobileParty p){}
+  private static void RouteToSender(CourierSession s,MobileParty p){Probe.MainOnly();}
+  private static bool IsCourierInboundCompletionReadyForDelivery(CourierSession s)=>true;
+  private void EndCourierReplyWaitPause(CourierSession s,string reason){Probe.MainOnly();Liveness.Unpauses++;s.ReplyWaitPopupShown=false;_courierReplyWaitTimeLocked=false;}
+  private void ShowCourierReplyWaitPopupAndPause(CourierSession s,Hero h){Probe.MainOnly();s.ReplyWaitPopupShown=true;_courierReplyWaitTimeLocked=true;}
+  private static void MaintainReplyWaitAtRecipient(CourierSession s,MobileParty p,Hero h){}
+  @@COMMIT_GUARD@@
+  @@INBOUND_PREFIX@@
+  @@METHODS@@
+ }
+}
