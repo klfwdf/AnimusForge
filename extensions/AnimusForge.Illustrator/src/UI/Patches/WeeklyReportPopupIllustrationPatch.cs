@@ -249,7 +249,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             CloseOverlay();
             _closing = false;
             _ownerScreen = topScreen;
-            _scope = new IllustrationScope(topScreen, null, CloseOverlay);
+            IllustrationScope ownerScope = null;
+            ownerScope = new IllustrationScope(topScreen, null, () => CloseOverlayForScope(ownerScope));
+            _scope = ownerScope;
             _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
             _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(title + ":" + subtitleText);
             _redrawCount = 0;
@@ -303,6 +305,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), artDirection);
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
+            var generationScope = _scope;
 
             var protagonist = context.ProtagonistHero;
             string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
@@ -316,7 +319,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 Task<string> portraitStage = null;
                 if (options?.EnableOffscreenRendering == true && protagonist != null)
                 {
-                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token);
+                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true);
                 }
                 if (portraitStage != null)
                 {
@@ -329,7 +332,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 // 纹章由纯托管合成（旗帜代码→图集→GDI+），无舞台零闪屏
                 if (!string.IsNullOrWhiteSpace(bannerCode))
                 {
-                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode).ConfigureAwait(false);
+                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
                         refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面出现旗帜、盾徽或罩袍纹章时必须与此完全一致的形状与配色绘制，严禁编造或改动为其他图腾；但不要仅为展示纹章而强行添加盾牌或旗帜"));
@@ -337,7 +340,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 }
 
                 string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
-                IllustratorRuntime.Post(() => { if (_overlayVm != null) _overlayVm.StatusText = "导演构思完成，正在绘制纪事画卷（等待生图模型返回）..."; });
+                IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _overlayVm != null) _overlayVm.StatusText = "导演构思完成，正在绘制纪事画卷（等待生图模型返回）..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
@@ -410,6 +413,11 @@ namespace AnimusForge.Illustrator.UI.Patches
             _overlayVm.HasIllustration = true;
             _overlayVm.IsLoading = false;
             return true;
+        }
+
+        private static void CloseOverlayForScope(IllustrationScope ownerScope)
+        {
+            if (ownerScope != null && ReferenceEquals(_scope, ownerScope)) CloseOverlay();
         }
 
         public static void CloseOverlay()

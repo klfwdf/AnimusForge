@@ -222,10 +222,7 @@ namespace AnimusForge.Illustrator.Core
                 result.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}");
 
-                if (settings?.AutoCleanTempFiles == true)
-                {
-                    try { Engine.ScreenCaptureHelper.CleanupTempArtifacts(); } catch { }
-                }
+                // 临时产物由各提取任务在消费完毕后按自身路径清理，不能在此全局扫描删除。
             }
 
             return result;
@@ -311,16 +308,16 @@ namespace AnimusForge.Illustrator.Core
                 ? BuiltinNegativePrompt
                 : BuiltinNegativePrompt + ", " + negativePrompt.Trim();
             effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
-            // 相似度滑块：人物特征/纹章永远严格一致；其余部分按百分比还原参考图与事实
+            // 相似度只约束艺术表现，不能降低硬事实保真或覆盖身份参考图及重绘的用途约束。
             if (similarity >= 0)
             {
                 int sim = Math.Max(0, Math.Min(100, similarity));
                 string clause = sim >= 100
-                    ? "画面其余部分（场景布置、构图、装备细节、光影氛围）也须完全还原参考图与游戏事实，不做自由发挥"
+                    ? "可调整的艺术表现采用最高还原度：忠于有依据的场景空间关系与氛围，镜头、景别和取景仍须服从本次构图与重绘指导"
                     : sim <= 0
-                        ? "画面其余部分完全自由艺术创作，仅保留人物特征与事实骨架"
-                        : $"画面其余部分（场景布置、构图、装备细节、光影氛围）以约 {sim}% 的还原度参照参考图与游戏事实，剩余 {100 - sim}% 允许艺术化重构";
-                effectivePrompt += "\n[参考还原度约束]: 人物五官、肤色、发型、体型与家族纹章始终须与参考图及游戏事实严格一致（不受本约束影响）；" + clause + "。";
+                        ? "在不改变已确认事实与场景关系的前提下，自由选择留白、景深、光影表现和叙事取景"
+                        : $"可调整的艺术表现以约 {sim}% 还原度贴近有依据的场景关系与氛围，剩余 {100 - sim}% 用于留白、景深和表现手法的艺术化处理";
+                effectivePrompt += "\n[参考还原度约束]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把这些图片的姿势、背景、构图或光影用作场景模板。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何还原度均不要求复制参考图的镜头，重绘必须遵循本次换镜头指导；" + clause + "。";
             }
             return effectivePrompt;
         }

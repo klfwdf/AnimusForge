@@ -313,33 +313,22 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 生成结束后清理全部生图临时产物：离屏立绘 PNG、纹章图集临时导出、banner_debug 调试落盘。
-        /// 只清 %TEMP% 下已知前缀/目录，绝不触碰画廊缓存与默认插图。
+        /// 只清理调用方已消费完毕的离屏导出前缀。禁止全局通配符，避免误删其他请求。
         /// </summary>
-        public static void CleanupTempArtifacts()
+        public static void CleanupTempArtifacts(string tempDir, string filePrefix)
         {
+            if (string.IsNullOrWhiteSpace(tempDir) || string.IsNullOrWhiteSpace(filePrefix) ||
+                !filePrefix.StartsWith("af_offscreen_", StringComparison.Ordinal) ||
+                !Guid.TryParseExact(filePrefix.Substring("af_offscreen_".Length), "N", out _)) return;
             try
             {
                 string tempRoot = Path.GetTempPath();
-                string tempDir = Path.Combine(tempRoot, "AnimusForgeIllustrator");
                 int deleted = 0;
 
                 foreach (string dir in new[] { tempDir, tempRoot })
                 {
                     if (!Directory.Exists(dir)) continue;
-                    foreach (string pattern in new[] { "af_offscreen_*", "af_banner_atlas_*" })
-                    {
-                        foreach (string file in Directory.EnumerateFiles(dir, pattern))
-                        {
-                            try { File.Delete(file); deleted++; } catch { }
-                        }
-                    }
-                }
-
-                string debugDir = Path.Combine(tempDir, "banner_debug");
-                if (Directory.Exists(debugDir))
-                {
-                    foreach (string file in Directory.EnumerateFiles(debugDir))
+                    foreach (string file in Directory.EnumerateFiles(dir, filePrefix + "*"))
                     {
                         try { File.Delete(file); deleted++; } catch { }
                     }
@@ -400,81 +389,87 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 在后台异步等待引擎在当前/下一帧 GPU 渲染完成后安全落盘出的 PNG 文件
         /// </summary>
-        public static async Task<string> WaitForOffscreenFileAsync(string tempDir, string filePrefix, int timeoutMs = 450, int maxDimension = 768)
+        public static async Task<string> WaitForOffscreenFileAsync(string tempDir, string filePrefix, int timeoutMs = 450, int maxDimension = 768, bool cleanTempFiles = false)
         {
             if (string.IsNullOrEmpty(tempDir) || string.IsNullOrEmpty(filePrefix)) return null;
-
-            int waited = 0;
-            string foundFile = null;
-
-            while (waited < timeoutMs)
+            try
             {
-                await Task.Delay(25).ConfigureAwait(false);
-                waited += 25;
+                int waited = 0;
+                string foundFile = null;
 
-                try
+                while (waited < timeoutMs)
                 {
-                    // 检查指定临时目录
-                    if (Directory.Exists(tempDir))
+                    await Task.Delay(25).ConfigureAwait(false);
+                    waited += 25;
+
+                    try
                     {
-                        var matches = Directory.GetFiles(tempDir, $"{filePrefix}*");
-                        if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0)
+                        // 检查指定临时目录
+                        if (Directory.Exists(tempDir))
                         {
-                            foundFile = matches[0];
+                            var matches = Directory.GetFiles(tempDir, $"{filePrefix}*");
+                            if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0)
+                            {
+                                foundFile = matches[0];
+                                break;
+                            }
+                        }
+
+                        // 兜底检查 Temp 根目录 (以防引擎将路径作为相对路径处理)
+                        string tempRoot = Path.GetTempPath();
+                        var rootMatches = Directory.GetFiles(tempRoot, $"{filePrefix}*");
+                        if (rootMatches.Length > 0 && new FileInfo(rootMatches[0]).Length > 0)
+                        {
+                            foundFile = rootMatches[0];
                             break;
                         }
                     }
-
-                    // 兜底检查 Temp 根目录 (以防引擎将路径作为相对路径处理)
-                    string tempRoot = Path.GetTempPath();
-                    var rootMatches = Directory.GetFiles(tempRoot, $"{filePrefix}*");
-                    if (rootMatches.Length > 0 && new FileInfo(rootMatches[0]).Length > 0)
+                    catch
                     {
-                        foundFile = rootMatches[0];
-                        break;
                     }
                 }
-                catch
-                {
-                }
-            }
 
-            if (foundFile != null)
-            {
-                try
+                if (foundFile != null)
                 {
-                    // 确保文件写入完成并允许读取
-                    await Task.Delay(20).ConfigureAwait(false);
-                    byte[] pngBytes = File.ReadAllBytes(foundFile);
-                    try { File.Delete(foundFile); } catch {}
-
-                    if (pngBytes != null && pngBytes.Length > 0)
+                    try
                     {
-                        using (var ms = new MemoryStream(pngBytes))
-                        using (var bmp = new Bitmap(ms))
+                        // 确保文件写入完成并允许读取
+                        await Task.Delay(20).ConfigureAwait(false);
+                        byte[] pngBytes = File.ReadAllBytes(foundFile);
+                        try { File.Delete(foundFile); } catch {}
+
+                        if (pngBytes != null && pngBytes.Length > 0)
                         {
-                            // 引擎原生导出的 PNG 文件来自显卡 BGRA 渲染目标，需互换红蓝通道恢复 100% 真实肉色与服饰色彩 (杜绝金黄变蓝)
-                            SwapRedAndBlueInBitmap(bmp);
-                            string b64 = ConvertBitmapToBase64(bmp, maxDimension);
-                            if (!string.IsNullOrWhiteSpace(b64))
+                            using (var ms = new MemoryStream(pngBytes))
+                            using (var bmp = new Bitmap(ms))
                             {
-                                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Native TableauView offscreen render SUCCESS ({bmp.Width}x{bmp.Height}) in {waited}ms!");
-                                return b64;
+                                // 引擎原生导出的 PNG 文件来自显卡 BGRA 渲染目标，需互换红蓝通道恢复 100% 真实肉色与服饰色彩 (杜绝金黄变蓝)
+                                SwapRedAndBlueInBitmap(bmp);
+                                string b64 = ConvertBitmapToBase64(bmp, maxDimension);
+                                if (!string.IsNullOrWhiteSpace(b64))
+                                {
+                                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Native TableauView offscreen render SUCCESS ({bmp.Width}x{bmp.Height}) in {waited}ms!");
+                                    return b64;
+                                }
                             }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Error reading generated offscreen file: {ex.Message}");
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Error reading generated offscreen file: {ex.Message}");
+                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Native offscreen file not created within {timeoutMs}ms, falling back to viewport.");
                 }
-            }
-            else
-            {
-                TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Native offscreen file not created within {timeoutMs}ms, falling back to viewport.");
-            }
 
-            return null;
+                return null;
+            }
+            finally
+            {
+                if (cleanTempFiles) CleanupTempArtifacts(tempDir, filePrefix);
+            }
         }
 
         public static TaleWorlds.Engine.Texture ResolveEngineTexture(Widget widget)
@@ -988,7 +983,6 @@ namespace AnimusForge.Illustrator.Engine
             {
                 await Task.Delay(20, cancellationToken).ConfigureAwait(false);
                 byte[] pngBytes = File.ReadAllBytes(path);
-                try { File.Delete(path); } catch { }
                 if (pngBytes == null || pngBytes.Length == 0) return null;
                 using (var ms = new MemoryStream(pngBytes))
                 using (var bmp = new Bitmap(ms))
@@ -1006,6 +1000,11 @@ namespace AnimusForge.Illustrator.Engine
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Read offscreen png failed: {ex.Message}");
                 return null;
             }
+            finally
+            {
+                // 消费者结束后才删除自身文件；取消和解码失败也走相同归属边界。
+                try { File.Delete(path); } catch { }
+            }
         }
 
         /// <summary>
@@ -1020,13 +1019,14 @@ namespace AnimusForge.Illustrator.Engine
         /// 游戏自身 UI 管线创建并渲染 TableauView，预热后设落盘标志，后台等 PNG。
         /// 与原版控件同一条渲染路径——不手动 tick 场景、不读渲染目标纹理像素。
         /// </summary>
-        private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int timeoutMs, CancellationToken cancellationToken)
+        private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int timeoutMs, CancellationToken cancellationToken, bool cleanTempFiles)
         {
             await _stageLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            OffscreenStagePump pump = null;
+            bool delivered = false;
             try
             {
                 var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-                OffscreenStagePump pump = null;
                 bool started = await RunOnGameThreadAsync(() =>
                 {
                 GauntletLayer layer = null;
@@ -1088,7 +1088,12 @@ namespace AnimusForge.Illustrator.Engine
             if (!started) return null;
 
             var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs, cancellationToken)).ConfigureAwait(false);
-            if (winner == done.Task) return await done.Task.ConfigureAwait(false);
+            if (winner == done.Task)
+            {
+                string path = await done.Task.ConfigureAwait(false);
+                delivered = !string.IsNullOrEmpty(path);
+                return path;
+            }
             TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' timed out after {timeoutMs}ms");
             // 无论超时还是取消，都必须等拆台在主线程执行完再释放锁，否则下一个舞台可能与未拆完的舞台重叠
             await RunOnGameThreadAsync(() =>
@@ -1102,6 +1107,8 @@ namespace AnimusForge.Illustrator.Engine
             }
             finally
             {
+                if (!delivered && cleanTempFiles && pump != null)
+                    CleanupTempArtifacts(pump.Dir, pump.Prefix);
                 _stageLock.Release();
             }
         }
@@ -1110,7 +1117,7 @@ namespace AnimusForge.Illustrator.Engine
         /// 离屏渲染指定英雄的真实 3D 立绘（真实体型、五官、发型、装备、家族纹章底色）。
         /// 人物资源加载需要更多预热帧，故 warmup 比纹章长。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default)
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false)
         {
             if (hero == null) return null;
             string heroName = string.Empty;
@@ -1140,7 +1147,7 @@ namespace AnimusForge.Illustrator.Engine
                         cw.ArmorColor2 = hero.MapFaction?.Color2 ?? 0;
                         cw.IsVisible = true;
                     }
-                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
                 string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
@@ -1162,7 +1169,7 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 离屏渲染非英雄 CharacterObject（要人、酒馆店主等没有 Hero 对象的对话方）的真实 3D 立绘。
         /// </summary>
-        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null)
+        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false)
         {
             if (character == null) return null;
             string charName = string.Empty;
@@ -1189,7 +1196,7 @@ namespace AnimusForge.Illustrator.Engine
                         }
                         cw.IsVisible = true;
                     }
-                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
                 string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(b64))
                 {
