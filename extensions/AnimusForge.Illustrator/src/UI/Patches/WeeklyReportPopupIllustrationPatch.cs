@@ -222,10 +222,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             try
             {
-                _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(titleText, subtitleText, bodyText);
-                _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(titleText + ":" + subtitleText);
-                Debug.Print($"[Illustrator] Weekly report popup opened: '{titleText}' context={(_currentContext != null)}");
-                AttachOverlay(titleText);
+                AttachOverlay(titleText, subtitleText, bodyText);
             }
             catch (Exception ex)
             {
@@ -238,7 +235,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             CloseOverlay();
         }
 
-        private static void AttachOverlay(string title)
+        private static void AttachOverlay(string title, string subtitleText, string bodyText)
         {
             ScreenBase topScreen = ScreenManager.TopScreen;
             if (topScreen == null)
@@ -246,10 +243,15 @@ namespace AnimusForge.Illustrator.UI.Patches
                 return;
             }
 
+            // 先关旧 overlay，再提取上下文——CloseOverlay 内部会清空 _currentContext，
+            // 顺序颠倒会导致新生成被 TriggerRegenerate 因 ctx=null 静默跳过
             CloseOverlay();
             _closing = false;
             _ownerScreen = topScreen;
             _scope = new IllustrationScope(topScreen, null, CloseOverlay);
+            _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
+            _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(title + ":" + subtitleText);
+            Debug.Print($"[Illustrator] Weekly report popup opened: '{title}' context={(_currentContext != null)}");
 
             _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate);
             var layer = new MovableGauntletLayer("WeeklyReportIllustrationOverlay", 4010, false);
