@@ -982,12 +982,12 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (pump.Movie != null) pump.Layer?.ReleaseMovie(pump.Movie);
             }
-            catch { }
+            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[OffscreenRenderer] ReleaseMovie failed: " + ex); }
             try
             {
                 if (pump.Layer != null) pump.Screen?.RemoveLayer(pump.Layer);
             }
-            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[OffscreenRenderer] ReleaseMovie failed: " + ex); }
+            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[OffscreenRenderer] RemoveLayer failed: " + ex); }
             pump.Retired.TrySetResult(true);
             TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Stage retirement completed");
         }
