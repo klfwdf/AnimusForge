@@ -1,3 +1,13 @@
+# 当前续点：Courier 双向历史捕获边界（2026-09-15）
+
+- 用户继续主体收尾；任务 `COURIER-HISTORY-CAPTURE-20260915` ACTIVE，起点f77fe5e4/生产73774a94，唯一写入G:/AFMOD/AF-REFACTOR；main比较基线仍437925b8。外部Native/Scene/Courier全部必交，但当前版本化提交SDK未完成。
+- 实际发现：reply/inbound的Prepare在Task.Run内，两个Build...RequestOnMainThread仍直接执行live历史读取；其中还混有人设和同步preprocess/lore网络，不能把整个builder搬主线程。本切片只完整迁移双向历史捕获/检索责任，明确其余准备仍待办。
+- 实施：persona阶段之后，用原Courier owner phase在主线程捕获交付事实和既有MyBehavior.CaptureHistoryContextWorkForHero快照；后台执行冻结历史检索，再在原owner phase核验session/participant/generation，request builder消费明确的prepared结果（已准备空历史也不重新读取）。删除两个旧历史读取块，不新增队列/复制检索算法/公共API。
+- 验证：双向实际新helper+原owner phase的物理主/后台线程、旧新输入与空值/失效/替换/故障；既有HistorySnapshot、Courier后处理、ChannelCutover、内部ports、API/六Stage/存档身份。受影响整文件parity使用精确逆变换，不刷新hash豁免额外差异。
+- 保留：人设/规则/lore/其余消息构造live读取、Courier运输与资产/事实提交时机不在此包改写；不声称整个Q1或SDK完成。三份保护文件不动，自动化PAUSED，不推送/部署/操作存档。
+
+## 以下为历史记录；当前实施以上方为准
+
 # 当前任务：对照 main 的主体收尾与双层接口（2026-09-15）
 
 - 用户授权开始收尾：仅复现/拆净AF主体，政策/宴会/GCCZ等玩法不重构；内部契约稳定，外部子MOD明确要求Native/Scene/Courier三渠道都开放。任务 `CORE-CLOSEOUT-MAIN-20260915` ACTIVE，唯一写入G:/AFMOD/AF-REFACTOR，起点f03557fb/生产f07cb2a2。
