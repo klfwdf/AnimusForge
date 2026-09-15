@@ -520,3 +520,12 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 性能：环境扫描仍仅每次生成一次，不在 Tick；最多输出 20 个去重物体。每次合成内按纹理复用 Bitmap，后台文件等待最多 1.5 秒/纹理、50ms 异步间隔；主线程不再 Sleep 等文件。解码后尺寸上限 1024，实际原生导出耗时尚未测量。无新增网络请求。
 
 未覆盖：真实游戏 PNG 导出方向/通道、原生 shader 的精确描边和自定义多色背景、酒馆实际采样与最终模型遵循率。尚未保证所有纹章精确还原，未做生成后纹章贴图。回滚用定向 revert `90a61c9f`，不得回滚其他作者工作。
+
+
+### 第十二轮：用户要求纹章离线验收（2026-09-16，未通过）
+
+审计工具提交 `5de6e6c9`，检查点 `da48d08`，被测生产源码仍为 `90a61c9f`。新增 `tools/test_illustrator_emblems.ps1:1–51` 与 `tools/illustrator/EmblemOfflineAudit.cs:1–250`，直接调用当前 DLL 的 CPU 图像方法；真实旧空切片已保存在 `tools/illustrator/fixtures/cell_162_raw.png`。未改生产渲染代码。
+
+1.3 / 1.4 目标 DLL 各 **30 checks / 7 failures**。失败为：大面积 Alpha 掩码反相、注释红通道优先与实际混色矛盾、描边完全透明、90°/270°（含镜像）方向相反。此前 185 项通用检查不构成纹章生成准确性的验收；空图拒绝已修复，但错误的非空纹章仍可能产生。
+
+完整证据、逐项源码位置、DLL hash、执行命令、对照图、原生渲染替代路径与未覆盖责任见 [纹章离线审计](../audits/2026-09-16-illustrator-emblem-offline-audit.md)。建议重做渲染核心，保留发送/缓存/生命周期接口；原生导出、shader、复杂背景与实际出图仍需专门验收。未部署/推送。本轮工具回滚仅定向 revert `5de6e6c9`。
