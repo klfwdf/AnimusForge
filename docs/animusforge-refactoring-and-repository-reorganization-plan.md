@@ -7,6 +7,10 @@
 - Courier的background prepare仍含persona/history/preprocess/live读；这是单列待修缺口，不能整段搬主线程造成网络阻塞。本轮不冒称此缺口、B1深复制/预算或Campaign/Mission全部完成。
 - 验证计划：main旧红/当前绿与共同基线、故障注入、既有pipeline/装配/API/存档身份/六Stage，稳定公开签名与只读/制作组契约；更新main功能矩阵/符号迁移与HANDOFF。三份保护文件保持，自动化PAUSED，不推送/部署/改默认，不删除仍有兼容/存档责任的类型。
 
+- 首个C1基础切片已OFFLINE_VERIFIED（整体收尾仍ACTIVE）：对固定main运行30项共同用例通过，5类缺陷旧红；新51项通过、3类有效反例被行为拒绝。原CTS字典/直接释放已替换为独立内部lease，只有请求结束且取消回调结束才释放；取消异常隔离、已取消不启动生成，旧public签名保持。
+- 实际验证：旧main编译消费者不重编译、换新核心程序集后Native/Scene/Courier调用通过；现有pipeline40/提交边界69/回执39/async18/匿名prompt13/Native失败4、Courier后处理39、内部ports308+3故障、API119/256并发/32快照/3故障、4DLL584元数据、最终源码六Stage及main身份146/36通过。NuGet漏洞数据离线获取有NU1900警告，不声称已完成包漏洞审计。
+- 主体范围与三渠道外部必交矩阵已写docs/phase8/af-core-main-closeout-matrix-20260915.md；只读API没有被改成假Supported，政策/宴会/GCCZ业务未动，外部三渠道SDK、Courier线程准备、完整Campaign/Mission和B1预算/深复制仍未完成。测试与本轮修复不等于整个main主体已完全验收。
+
 ## 以下为历史记录；当前收尾以上方为准
 
 # 当前任务：推送已验证重构交付（2026-09-15）

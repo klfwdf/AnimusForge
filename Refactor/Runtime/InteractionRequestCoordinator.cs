@@ -15,8 +15,8 @@ namespace AnimusForge.Refactor.Runtime;
 public sealed class InteractionRequestCoordinator : IDisposable
 {
     private readonly object _gate = new object();
-    private readonly Dictionary<string, CancellationTokenSource> _inFlight =
-        new Dictionary<string, CancellationTokenSource>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, InteractionRequestLease> _inFlight =
+        new Dictionary<string, InteractionRequestLease>(StringComparer.OrdinalIgnoreCase);
     private readonly IInteractionPipeline _pipeline;
     private readonly Func<long> _currentGeneration;
     private bool _disposed;
@@ -60,22 +60,19 @@ public sealed class InteractionRequestCoordinator : IDisposable
         }
 
         string requestKey = BuildRequestKey(envelope.Snapshot.Identity);
-        CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        CancellationTokenSource previous = null;
+        InteractionRequestLease linked;
+        InteractionRequestLease previous;
         lock (_gate)
         {
             ThrowIfDisposed();
-            if (_inFlight.TryGetValue(requestKey, out previous))
-            {
-                _inFlight.Remove(requestKey);
-            }
+            linked = new InteractionRequestLease(cancellationToken);
+            _inFlight.TryGetValue(requestKey, out previous);
             _inFlight[requestKey] = linked;
         }
-        previous?.Cancel();
-        previous?.Dispose();
-
         try
         {
+            previous?.Cancel();
+            linked.Token.ThrowIfCancellationRequested();
             InteractionResult result = await _pipeline.GenerateAsync(
                 envelope,
                 provider,
@@ -99,13 +96,13 @@ public sealed class InteractionRequestCoordinator : IDisposable
         {
             lock (_gate)
             {
-                if (_inFlight.TryGetValue(requestKey, out CancellationTokenSource current)
+                if (_inFlight.TryGetValue(requestKey, out InteractionRequestLease current)
                     && ReferenceEquals(current, linked))
                 {
                     _inFlight.Remove(requestKey);
                 }
             }
-            linked.Dispose();
+            linked.Complete();
         }
     }
 
@@ -115,7 +112,7 @@ public sealed class InteractionRequestCoordinator : IDisposable
         {
             return;
         }
-        CancellationTokenSource source = null;
+        InteractionRequestLease source = null;
         lock (_gate)
         {
             if (_inFlight.TryGetValue(BuildRequestKey(identity), out source))
@@ -124,12 +121,11 @@ public sealed class InteractionRequestCoordinator : IDisposable
             }
         }
         source?.Cancel();
-        source?.Dispose();
     }
 
     public void Dispose()
     {
-        List<CancellationTokenSource> sources;
+        List<InteractionRequestLease> sources;
         lock (_gate)
         {
             if (_disposed)
@@ -137,13 +133,12 @@ public sealed class InteractionRequestCoordinator : IDisposable
                 return;
             }
             _disposed = true;
-            sources = new List<CancellationTokenSource>(_inFlight.Values);
+            sources = new List<InteractionRequestLease>(_inFlight.Values);
             _inFlight.Clear();
         }
-        foreach (CancellationTokenSource source in sources)
+        foreach (InteractionRequestLease source in sources)
         {
             source.Cancel();
-            source.Dispose();
         }
     }
 
