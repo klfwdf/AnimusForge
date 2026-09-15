@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -29,6 +31,7 @@ namespace AnimusForge.Illustrator.Context
         public string TraitsSummary { get; set; } = string.Empty;
         public string TopSkillsSummary { get; set; } = string.Empty;
         public string PhysicalFeatures { get; set; } = string.Empty;
+        public string CurrentStateDetail { get; set; } = string.Empty;
         public List<string> EquipmentDetails { get; set; } = new List<string>();
         public List<string> WeaponDetails { get; set; } = new List<string>();
         public string MountDetail { get; set; } = string.Empty;
@@ -64,6 +67,10 @@ namespace AnimusForge.Illustrator.Context
                 string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? $", 所属王国: {KingdomName}" : "";
                 sb.AppendLine($"【家族与纹章】" + (!string.IsNullOrWhiteSpace(ClanName) ? $"所属家族: {ClanName}{factionPart}" : "") +
                     (!string.IsNullOrWhiteSpace(BannerDescription) ? $" | {BannerDescription}" : $" (识别色: {PrimaryBannerColorHex}/{SecondaryBannerColorHex})"));
+            }
+            if (!string.IsNullOrWhiteSpace(CurrentStateDetail))
+            {
+                sb.AppendLine($"【当前处境状态】{CurrentStateDetail}");
             }
             if (!string.IsNullOrWhiteSpace(PhysicalFeatures))
             {
@@ -127,6 +134,9 @@ namespace AnimusForge.Illustrator.Context
 
             // 5. 提取人物顶尖专长技能 (动态识别战神、神射手、医师、智囊等)
             profile.TopSkillsSummary = ExtractTopSkillsSummary(hero);
+
+            // 5b. 提取当前处境状态 (俘虏关押/负伤/留驻/随军/已故)
+            profile.CurrentStateDetail = ExtractCurrentState(hero);
 
             // 6. 提取纹章识别色与家族旗帜
             if (hero.Clan != null)
@@ -306,6 +316,82 @@ namespace AnimusForge.Illustrator.Context
 
             socialStatus = "知名人物 (Notable Character)";
             return "英雄角色 (Notable Hero)";
+        }
+
+        /// <summary>
+        /// 提取人物当前处境状态：俘虏关押位置与看押方、负伤、留驻、随军、已故。
+        /// 俘虏状态附带装束约束（武器收缴/不披战甲），覆盖百科、会话、周报全部链路。
+        /// </summary>
+        private static string ExtractCurrentState(Hero hero)
+        {
+            try
+            {
+                var states = new List<string>();
+
+                if (hero.IsDead)
+                {
+                    states.Add("已故（画面可作为肃穆的纪念性肖像或生平回顾氛围呈现）");
+                    return string.Join("；", states);
+                }
+
+                if (hero.IsPrisoner)
+                {
+                    var sb = new StringBuilder("阶下囚/战俘状态");
+                    PartyBase holder = null;
+                    try { holder = hero.PartyBelongedToAsPrisoner; } catch { }
+                    if (holder != null)
+                    {
+                        try
+                        {
+                            if (holder.IsSettlement && holder.Settlement != null)
+                            {
+                                Settlement s = holder.Settlement;
+                                string sName = s.Name != null ? s.Name.ToString() : s.StringId;
+                                string sType = s.IsCastle ? "城堡" : (s.IsTown ? "城镇" : "定居点");
+                                sb.Append("：被关押在 ").Append(sName).Append("（").Append(sType).Append("）的地牢囚室中");
+                            }
+                            else if (holder.IsMobile && holder.MobileParty != null)
+                            {
+                                string pName = holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : "一支队伍";
+                                sb.Append("：正被 ").Append(pName).Append(" 的队伍锁链押送随行，居于随行囚车或营地囚笼");
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    sb.Append("；【视觉约束】武器已被收缴、不披挂完整战甲——画面应呈现锁链/镣铐、被俘后的简朴凌乱装束与被看押的压抑处境（参考图中的武器盔甲为被俘前装束，勿照搬）");
+                    states.Add(sb.ToString());
+                }
+                else
+                {
+                    if (hero.IsWounded)
+                    {
+                        states.Add("当前身负重伤（绷带缠绕/行动迟缓的负伤姿态）");
+                    }
+                    try
+                    {
+                        if (hero.StayingInSettlement != null)
+                        {
+                            Settlement s = hero.StayingInSettlement;
+                            states.Add("正留驻/下榻于 " + (s.Name != null ? s.Name.ToString() : s.StringId));
+                        }
+                        else if (hero.PartyBelongedTo != null)
+                        {
+                            states.Add("正随 " + (hero.PartyBelongedTo.Name != null ? hero.PartyBelongedTo.Name.ToString() : "其队伍") + " 行军扎营");
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return string.Join("；", states);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private static string ExtractTopSkillsSummary(Hero hero)
