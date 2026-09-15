@@ -24,6 +24,8 @@ namespace AnimusForge.Illustrator.Context
         public string SceneDirective { get; set; } = string.Empty;
         public string RecentDialogueHistory { get; set; } = string.Empty;
         public bool InterlocutorCivilian { get; set; }
+        /// <summary>非英雄对话方（劫匪等）在场 Agent 的真实体型/面容序列化——避免用兵种模板重新随机一张脸。</summary>
+        public string InterlocutorBodyProperties { get; set; } = string.Empty;
 
         public string BuildHardFacts()
         {
@@ -272,6 +274,19 @@ namespace AnimusForge.Illustrator.Context
             if (convAgents != null && convAgents.Count > 0)
             {
                 partnerAgent = convAgents[0] as TaleWorlds.MountAndBlade.Agent;
+            }
+
+            // 非英雄对话方（劫匪/散兵等）：取会话在场 Agent 的真实 BodyProperties，
+            // 立绘舞台据此还原当前这张脸，而非按兵种模板重新随机生成
+            if (partnerAgent != null && partnerHero == null)
+            {
+                try
+                {
+                    context.InterlocutorBodyProperties = partnerAgent.BodyPropertiesValue.ToString();
+                }
+                catch
+                {
+                }
             }
 
             bool partnerIsMounted = partnerAgent != null && (partnerAgent.HasMount || partnerAgent.MountAgent != null);
