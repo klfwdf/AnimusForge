@@ -1,0 +1,12 @@
+{
+  "Time": "2026-09-16T06:07:19+08:00",
+  "RestoredFrom": "artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705",
+  "Target": "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge_Illustrator",
+  "MatchedFiles": 8,
+  "DllSHA256": "2DAC0572BD0A79EB6E55DA530D75A37EF3009450012F6B856A64945D7A939896",
+  "FailedSourceRevision": "c55334ed",
+  "NativeCrashModule": "TaleWorlds.Native.dll",
+  "Exception": "0xc0000005",
+  "Offset": "0x283860",
+  "LiveAcceptance": "Not verified after restoration; original emblem fidelity issue remains"
+}

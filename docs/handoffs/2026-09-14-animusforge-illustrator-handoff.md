@@ -553,3 +553,11 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 双 API 编译 0 警告/0 错误，通用 180 / 0，两份目标 DLL 专项各 36 / 0。05:59:48 已通过原部署脚本覆盖，直接测试最终游戏 DLL 通用 178 / 0、专项 36 / 0，hash 一致。用户 05:56 启动的进程仍加载旧 DLL，最终修订须完全退出游戏后重启验收。尚未确认原生崩溃被消除、纹章最终送入及模型遵循率。没有推送或改主体 DLL。
 
 源码位置、真实日志/PNG、测试边界、最终 DLL hash 与安全回滚备份见 [崩溃跟进报告](../audits/2026-09-16-illustrator-native-crash-followup.md)。部署前备份为 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705`，后续备份包含崩溃版或中间修正版，不应当作稳定版。
+
+### 第十五轮：第二次实机崩溃，已撤回原生部署（2026-09-16）
+
+`c55334ed` 重启实机仍崩溃。进程 32720 的 06:03:59 日志止于纹章原生 save 请求，未见退休开始；Windows 同样为 `TaleWorlds.Native.dll + 0x283860 / 0xc0000005`。清理修正未生效为完整解决方案，根因未确认，转储未生成。此后没有再部署推测性源码修改。
+
+已将游戏子模块回退到 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705`：DLL/PDB、模块清单和五个 prefab 共 8 文件 hash 一致。恢复 DLL SHA256 `2DAC0572BD0A79EB6E55DA530D75A37EF3009450012F6B856A64945D7A939896`。失败版已另备份，源码/提交/其他作者工作均保留，未改存档。
+
+**当前源码不等于当前部署**，不能直接再次运行部署脚本安装尚未解决的原生实现。旧纹章准确性未解决，回退后实机尚未验收；进一步原生定位缺少转储。证据与下一步边界见 [崩溃报告末节](../audits/2026-09-16-illustrator-native-crash-followup.md)。
