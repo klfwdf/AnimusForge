@@ -8,8 +8,12 @@
 - 验证：真实新源码+主后台线程/原dispatcher测试，main共同语义与旧缺陷复现、严格MyBehavior整文件逆变换、已有历史/渠道/内部ports/API/六Stage/身份；核实旧默认消费者未断，不拿测试替身冒充实机。
 
 - 首条共享请求路径已OFFLINE_VERIFIED（全范围任务仍ACTIVE）：Hero正常自动生成/原外部入口/编辑器重生在主线程捕获事实和启动异步辅助Gateway，解析后主线程提交/UI；独立NpcPersonaGenerationOwner持有预约/冷却，清理后的旧lease不能覆盖或释放新请求。重生期间文本被编辑时保留新文本并报告失败，最新VoiceId保留。大MyBehavior净减192行，旧3状态字段及旧生成体被真实替代；不是只拆partial文件。
-- 同固定main四个旧执行声明精确相同，旧106断言34失败，新118断言全通过；6有效行为故障、6逆变换守卫、原B1 15守卫与dispatcher37、history852/Native27、渠道132、Courier后处理39/历史122、内部ports308/3故障、V1/API119/快照32/四DLL680元数据、实际Courier Host回放、六Stage和main身份146/36通过。
+- 同固定main四个旧执行声明精确相同，旧114断言40失败，新125断言全通过；7有效行为故障、6逆变换守卫、原B1 15守卫与dispatcher37、history852/Native27、渠道132、Courier后处理39/历史122、内部ports308/3故障、V1/API119/快照32/四DLL680元数据、实际Courier Host回放、六Stage和main身份146/36通过。
 - 未覆盖仍明确：Native/Courier外围同步状态轮询、Scene准备外围读取、升格同伴人设/技能、规则/lore、GameEnd完整释放、B1真实成本、内部双向服务及三渠道SDK、实机/旧档。原Prompt文本/解析器和存档接口保持；复用MyBehavior原MemorySummary命名队列，不新增队列，但不把每帧2callback冒充单job硬预算。
+
+- 首包生产/测试043b62b4；105点地图、docs/handoffs/2026-09-15-full-closeout-persona-handoff.md与候选审计JSON已绑定。上一候选10defeb4已推送，新候选仅本地。
+
+- 追加自审闭环：968ca283在扩展125项断言中发现2项排队清理假成功，修复为明确失败；最终043b62b4共125断言/7有效反例、六Stage通过，原114断言40失败仅作旧红证据。只使用带final后缀的最终候选构建/元数据日志。
 
 ## 以下为历史记录；当前全范围执行以上方为准
 
@@ -165,7 +169,7 @@
 - 验证：真实40b旧实现大owner预算反例；主线程与后台净化原行为oracle、empty-first去重/别名/大小序、追加/替换/同slot/修改key/新lines/同步排空/异常和Campaign累计授予；保留既有60/116等语义，对应反例/相邻与最终六Stage/API/存档身份。
 - 剩余限制：一个draft内的lines/trigger文本净化仍原子；key/empty guard、单字符串/全owner绑定和Apply也未硬切分。不用删除数据或只改数字宣告B1完成，不自动推送/部署或操作存档。
 
-- 结果：75/0、旧40b同75例62/13、26有效故障反例、12项精确源守卫与相邻回归/最终六项Stage/API/存档身份通过。257与65记录owner由一次全净化变每窗口最多8；单draft1024行仍原子，深line/初捕获/全owner绑定/Apply继续待做，不进入B2。
+- 结果：75/0、旧40b同75例62/13、27有效故障反例、12项精确源守卫与相邻回归/最终六项Stage/API/存档身份通过。257与65记录owner由一次全净化变每窗口最多8；单draft1024行仍原子，深line/初捕获/全owner绑定/Apply继续待做，不进入B2。
 
 ## 以下为上一已验证切片（历史）
 

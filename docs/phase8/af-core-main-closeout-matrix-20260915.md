@@ -14,6 +14,7 @@
 | Native 普通对话/主动开场/流式（N1/C1） | ShoutBehavior.Native*、原SubmitNative*、Native overlay | 已有接入/展示/历史边界测试；原大类仍混合核心业务 | 普通默认入口与外部入口同语义；忙碌、关窗、换目标、晚结果、主动开场不回归 |
 | Scene 多人对话（S1/C1） | ShoutBehavior / ScenePostprocess | 已有接力/旁听/去重修复；未完成全部owner迁移/实机 | 玩家输入一份，接力完整，旁听记忆完整，动作/事实一次，退场不补交 |
 | Courier 回信与主动来信（Q1） | CourierDeliveryBehavior / DetachedPostprocess | af754ab6双向历史已主线程捕获/后台检索，122断言；后处理39/实际DLL回放通过；persona/preprocess/lore/剩余消息仍后台live读取 | 两向准备在正确线程，已准备空值不重复处理；运输/到达提交时机保持，不把网络搬主线程 |
+| Hero人设自动生成/重生（PR1/D1） | MyBehavior.PersonaGeneration → NpcPersonaGenerationOwner；原profile store | 043b62b4正常Hero/原外部Ensure/编辑器125项及六Stage通过；状态轮询/Scene外围、升格同伴流程未收口 | 主线程事实/配置/写入/UI；保存字段/音色保持，编辑与清理不被旧结果覆盖；全消费者仍需联合验收 |
 | LLM/配置/Prompt（G1/PR1） | ShoutNetwork、Gateway、MyBehavior上下文/规则/记忆构造 | Gateway与prompt契约已有；没有main所有组合的完整对照 | 相同配置/输入拥有同规则来源和前/主/后处理；失败/重试/取消不复制副作用 |
 | 标签/ActionPlan/回执（A1） | ActionPlan、原领域executor、InteractionResultCommitter | 共用提交边界69项、回执39项；不是所有游戏动作实测 | 标签资格/排斥/顺序/未知标签处理对齐；只将已发生结果记事实 |
 | 金币/物品/债务（主体动作） | EconomyRewardDebt契约与原Hero/Party/Merchant owner | 契约/fixture已有，当前候选live未验 | main代表场景实际资产、债务与事实一致；拒绝/部分成功/重试不重复 |
