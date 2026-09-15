@@ -5,6 +5,7 @@
 > **维修前检查点**：`02b4c5b3 chore: checkpoint Illustrator before lifecycle and fidelity repairs`
 > **第四轮审计修正点**：`fd5657e4`
 > **第五轮提交**：`1698b431`（重绘变体 + 相似度滑块）
+> **第六轮本地修复**：`9dda2fa2`（四项审查修复）；检查点 `cf5ccc0`；113 checks / 0 failures，未部署，详见第 13 节。下文此前的部署与实机记录不代表本次修复已实机验收。
 > **子模块源码**：`extensions/AnimusForge.Illustrator`
 > **目标模块 ID**：`AnimusForge_Illustrator`
 > **目标程序集**：`AnimusForge.Illustrator.dll`
@@ -425,3 +426,42 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 
 - 双版本 0 错误；回归 90 checks / 0 failures；部署备份 `20260916-034050`。
 - 待实机：重绘构图差异化效果、相似度滑块低/高值出图差异。
+
+---
+
+## 13. 四项代码审查修复（第六轮，2026-09-16）
+
+源码及测试提交：`9dda2fa2`。修改前本地检查点：`cf5ccc0`。活动目录仍为 `F:\AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`。本轮未推送、未覆盖游戏目录。
+
+### 已修复行为与核实坐标
+
+以下路径均相对 `extensions/AnimusForge.Illustrator/src`，行号对应 `9dda2fa2`：
+
+| 路径 | 行号 | 符号 / 责任 |
+| --- | --- | --- |
+| `UI/Patches/WeeklyReportPopupIllustrationPatch.cs` | 249–254、418–421 | `AttachOverlay` / `CloseOverlayForScope`：关闭回调捕获自身 scope，旧 scope 延迟清理不再关闭新弹窗。 |
+| `UI/Patches/WeeklyReportPopupIllustrationPatch.cs` | 305–343 | `TriggerRegenerate`：中间状态回调也核对 scope 与取消令牌；提取任务接收冻结的清理选项。 |
+| `Engine/ScreenCaptureHelper.cs` | 314–343、392–473 | `CleanupTempArtifacts` / `WaitForOffscreenFileAsync`：只能清理调用方 GUID 前缀，不接受空前缀或全局通配符。 |
+| `Engine/ScreenCaptureHelper.cs` | 979–1008、1022–1115 | `ReadOffscreenPngBase64` / `ExtractViaStageAsync`：消费结束后删除自身图片，取消/失败走自身清理；成功交付文件不能在读取前删除。 |
+| `Engine/BannerEmblemComposer.cs` | 191–300、619–630 | `ComposeBitmapsAsync` / `CleanupDebugDump` / `DebugDumpDir`：每次合成独占 `banner_debug/<guid>`，按设置在合成结束后只清理自身目录。图集导出的唯一临时文件继续由原有 `finally` 清理。 |
+| `Settings/IllustratorSettings.cs` | 62–64、260–262 | `AutoCleanTempFiles` / `Similarity`：更新清理范围说明；使用 `0'%'` 显示整数百分比，80 不再显示为 8000%。 |
+| `Core/UniversalOpenAiImageClient.cs` | 297–323 | `BuildEffectivePrompt`：各相似度均保留身份、装备及全部硬事实；区分身份图、纹章图与场景参考，100 也允许重绘换镜头。生图结束处不再调用全局临时文件清理。 |
+| `UI/Overlays/IllustrationCardPopup.cs` | 192–204、357–373 | 百科与会话参考图调用点传递冻结的 `AutoCleanTempFiles` 选项。 |
+
+### 性能与保留边界
+
+- scope 身份检查为回调时的常数时间比较；不增加 Tick 扫描或轮询。
+- 清理发生于提取任务结束的后台流程，只枚举其唯一前缀或独占调试目录；没有新增全局锁。
+- 清理开关关闭时保留调试产物；成功读取的立绘和图集临时文件沿用原有释放行为。历史调试文件不再由其他请求的结束动作删除。
+- 原生层若在超时清理之后才迟到落盘，仍可能留下本次临时文件；未增加持续轮询或跨请求清扫。现有过期离屏文件维护继续保留。
+- 相似度是文本指导，不是图像模型的数值采样参数；程序保证发送的约束一致，实际图像遵循程度仍需实机验收。
+
+### 验证与回滚
+
+执行 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/test_illustrator.ps1 -Configuration Release`：1.3 / 1.4 构建均 0 警告、0 错误；总计 **113 checks / 0 failures**。
+
+新增测试位于仓库 `tools/test_illustrator.ps1:195–279`，23 项检查覆盖：实际 MCM 属性格式的 0/80/100 输出；两种协议下三个相似度值的事实、重绘与参考用途约束；旧 scope 清理不影响新 scope、当前 scope 正常关闭并取消请求；真实文件夹中清理 A 保留 B、拒绝宽泛前缀、纹章目录隔离。测试直接调用编译后的方法；scope 使用无游戏对象的离线实例，不能代替真实 Gauntlet 验收。
+
+`git diff --check` 通过。未验证真实客户端连续切换周报、原生落盘时序、真实 API 出图及新提示词的视觉效果；本轮没有部署授权，也未部署。
+
+源码回滚仅定向 `git revert 9dda2fa2`；不要 hard reset，不要回滚其他作者的 TTS、喊话、信使图片或工具改动。
