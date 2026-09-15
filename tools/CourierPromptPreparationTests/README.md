@@ -1,5 +1,8 @@
 # Courier 双向最终 Prompt 组装线程边界（2026-09-16）
 
+> 根整合状态（2026-09-16）：生产源码 `6e419f6d` 已本地提交，最终六Stage与4DLL1056元数据通过；整体收尾仍ACTIVE。当前边界以[总交接](../../docs/handoffs/2026-09-16-parallel-closeout-handoff.md)为准，以下包内记录保留原验证上下文。
+
+
 ## 范围与结论
 
 本包封闭的是 **Courier 回信/主动来信在规则处理之后的最终 request/messages 组装**，不是整个 Prompt 线程重构完成，也不是三渠道 SDK 已交付。
