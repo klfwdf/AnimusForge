@@ -1,0 +1,35 @@
+{
+  "baseline": "155f1b7a",
+  "paths": {
+    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": [
+      {
+        "start": 10,
+        "end": 10,
+        "before": "",
+        "after": "/// Characters fill fixed-size byte-buffer segments without per-byte dispatch.\n"
+      },
+      {
+        "start": 38,
+        "end": 39,
+        "before": "        foreach (char character in value)\n",
+        "after": "        int index = 0;\n        while (index < value.Length)\n"
+      },
+      {
+        "start": 40,
+        "end": 42,
+        "before": "            WriteByte((byte)(character & 0xff));\n            WriteByte((byte)(character >> 8));\n",
+        "after": "            // A preceding bool can leave one byte in the buffer. Preserve the\n            // exact low/high framing across that boundary before filling pairs.\n            if (_count == _buffer.Length - 1)\n            {\n                char character = value[index++];\n                WriteByte((byte)(character & 0xff));\n                WriteByte((byte)(character >> 8));\n                continue;\n            }\n            int end = index + Math.Min(value.Length - index, (_buffer.Length - _count) / 2);\n            int destination = _count;\n            while (index < end)\n            {\n                char character = value[index++];\n                _buffer[destination++] = (byte)(character & 0xff);\n                _buffer[destination++] = (byte)(character >> 8);\n            }\n            _count = destination;\n            if (_count == _buffer.Length) FlushBuffer();\n"
+      },
+      {
+        "start": 55,
+        "end": 56,
+        "before": "        if (_count != _buffer.Length) return;\n",
+        "after": "        if (_count == _buffer.Length) FlushBuffer();\n    }\n    private void FlushBuffer()\n    {\n"
+      }
+    ]
+  },
+  "beforeSha256": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+  "afterSha256": "b2776a23b6f1445aac9cb193ebb823f518b1376046b195084451f6160895cbdb",
+  "normalization": "utf8-no-bom-lf",
+  "review": "Only fixed-buffer string encoding plus shared full-buffer flush; no mapper, source checks, main-thread scheduling, DTO or save changes."
+}

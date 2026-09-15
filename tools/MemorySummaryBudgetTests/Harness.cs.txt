@@ -1,0 +1,232 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text.Json;
+using AnimusForge.Refactor.Runtime;
+
+namespace AnimusForge;
+
+public partial class MyBehavior
+{
+    private static int _pass;
+    private static int _fail;
+    private static object _sink;
+    private static readonly List<object> Measurements = new List<object>();
+
+    public static int Main()
+    {
+        try
+        {
+            CheckWriterFraming();
+            CheckRealSourceBindings();
+            foreach (string kind in new[] { "daily", "major", "overview" })
+            {
+                MeasureSource(kind, 128, 256);
+                MeasureSource(kind, 1024, 256);
+                MeasureSource(kind, 4096, 256);
+                MeasureSource(kind, 128, 16384);
+            }
+            MeasureSource("daily", 1, 2000000);
+        }
+        catch (Exception ex) { _fail++; Console.WriteLine("FAIL unhandled: " + ex); }
+        Console.WriteLine("BUDGET_RESULT pass=" + _pass + " fail=" + _fail);
+        return _fail == 0 ? 0 : 1;
+    }
+
+    private static void Check(bool value, string name)
+    {
+        if (value) { _pass++; return; }
+        _fail++; if (_fail <= 20) Console.WriteLine("FAIL " + name);
+    }
+
+    private static string HashBytes(byte[] bytes)
+    {
+        using (var hash = SHA256.Create()) return BitConverter.ToString(hash.ComputeHash(bytes)).Replace("-", "");
+    }
+
+    // Independent wire oracle, never Encoding.Unicode: it can replace lone surrogates.
+    private static string Oracle(string value, int prefixBytes, bool appendTail)
+    {
+        using (var stream = new MemoryStream())
+        using (var binary = new BinaryWriter(stream))
+        {
+            for (int i = 0; i < prefixBytes; i++) binary.Write((byte)1);
+            binary.Write(value == null ? -1 : value.Length);
+            if (value != null)
+                foreach (char character in value)
+                {
+                    binary.Write((byte)(character & 255));
+                    binary.Write((byte)(character >> 8));
+                }
+            if (appendTail) binary.Write(unchecked((long)0xfedcba9876543210));
+            binary.Flush();
+            return HashBytes(stream.ToArray());
+        }
+    }
+
+    private static string Encode(string value, int prefixBytes, bool appendTail)
+    {
+        using (var writer = new MemorySourceFingerprintWriter())
+        {
+            for (int i = 0; i < prefixBytes; i++) writer.Write(true);
+            writer.Write(value);
+            if (appendTail) writer.Write(unchecked((long)0xfedcba9876543210));
+            return writer.Finish();
+        }
+    }
+
+    private static void CheckWriterFraming()
+    {
+        var allUnits = new string(Enumerable.Range(0, 65536).Select(n => (char)n).ToArray());
+        foreach (int prefix in new[] { 0, 1, 2, 3, 4091, 4092, 4093, 4094, 4095 })
+        foreach (string value in new[] { null, "", "\0", "A中", "\ud800", "\udfff", "\ud83d\ude03", allUnits,
+                     new string('汉', 2045), new string('界', 2046), new string('A', 2047),
+                     new string('\ud800', 2048), new string('\udfff', 2049), new string('Z', 65537) })
+            Check(Encode(value, prefix, true) == Oracle(value, prefix, true), "framing prefix="+prefix+" length="+(value?.Length ?? -1));
+        // Each UTF-16 code unit is tested individually, including every isolated surrogate.
+        for (int unit = 0; unit <= ushort.MaxValue; unit++)
+        {
+            string value = new string((char)unit, 1);
+            Check(Encode(value, unit % 5, true) == Oracle(value, unit % 5, true), "unit="+unit);
+        }
+        var random = new Random(72831);
+        for (int i = 0; i < 128; i++)
+        {
+            int length = random.Next(0, 20000);
+            var chars = new char[length];
+            for (int j = 0; j < length; j++) chars[j] = (char)random.Next(0, 65536);
+            string value = new string(chars);
+            int prefix = random.Next(0, 8192);
+            Check(Encode(value, prefix, false) == Oracle(value, prefix, false), "random="+i);
+        }
+        using (var writer = new MemorySourceFingerprintWriter())
+        {
+            writer.Write("done"); writer.Finish();
+            bool threw = false;
+            try { writer.Write("late"); } catch (InvalidOperationException) { threw = true; }
+            Check(threw, "write-after-finish");
+        }
+        Console.WriteLine("FRAMING_OK checks="+_pass);
+    }
+
+    private static MemorySummarySourceView Source(string kind, int count, int chars)
+    {
+        string text = new string('中', chars);
+        var source = new MemorySummarySourceView { HeroId = "test", StatePresent = true };
+        if (kind == "daily")
+        {
+            source.Job = new MemorySummaryJob { HeroId = "test", GameDayIndex = 7 };
+            source.Draft = new DailyMemoryDraft { HeroId = "test", HasLlmDialogue = true, GameDayIndex = 7 };
+            for (int i = 0; i < count; i++) source.Draft.Lines.Add(new DailyMemoryLine
+            { Text = text, GameDayIndex = 7, GameHour = i % 24, IsLlmDialogue = true, TargetName = "npc" });
+        }
+        else if (kind == "major")
+        {
+            source.Job = new MajorActionSummaryJob { HeroId = "test", TriggerGameDayIndex = 7 };
+            source.Actions = new List<NpcActionEntry>();
+            for (int i = 0; i < count; i++) source.Actions.Add(new NpcActionEntry
+            { Text = text, Sequence = i, Day = 7, RelatedHeroIds = new List<string> { "one", "two" }, IsMajor = true });
+            source.MajorState = new MajorActionSummaryState { HeroId = "test" };
+        }
+        else
+        {
+            source.Job = new MemoryOverviewJob { HeroId = "test", TriggerGameDayIndex = 7 };
+            source.Blocks = new List<CompressedMemoryBlock>();
+            for (int i = 0; i < count; i++) source.Blocks.Add(new CompressedMemoryBlock
+            { Summary = text, Id = i.ToString(), Scenes = new List<string> { "town" },
+              WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger> { new WeeklyMemoryMaterialTrigger
+              { Tags = new List<string> { "material" }, NormalizedTagText = "material" } } });
+            source.Overview = new MemoryOverviewState { HeroId = "test", IncludedBlockIds = new List<string> { "old" } };
+        }
+        return source;
+    }
+
+    private static object CopySource(MemorySummarySourceView source)
+    {
+        if (source.Job is MemorySummaryJob) return CloneMemorySummarySource(source.Draft);
+        if (source.Job is MajorActionSummaryJob) return CloneMemorySummarySource(source.Actions);
+        return CloneMemorySummarySource(source.Blocks);
+    }
+
+    private static void CheckRealSourceBindings()
+    {
+        foreach (string kind in new[] { "daily", "major", "overview" })
+        {
+            var source = Source(kind, 4, 16);
+            string before = ComputeMemorySummarySourceFingerprint(source);
+            object detached = CopySource(source);
+            IEnumerator probe;
+            string capturedFirst;
+            if (kind == "daily") { probe = source.Draft.Lines.GetEnumerator(); capturedFirst = source.Draft.Lines[0].Text; }
+            else if (kind == "major") { probe = source.Actions.GetEnumerator(); capturedFirst = source.Actions[0].Text; }
+            else { probe = source.Blocks.GetEnumerator(); capturedFirst = source.Blocks[0].Summary; }
+            Check(probe.MoveNext(), kind+" first slice");
+            // Earlier entry changes after its slice. Root identity/count/List version stay equal.
+            if (kind == "daily") source.Draft.Lines[0].Text = "changed after first slice";
+            else if (kind == "major") source.Actions[0].Text = "changed after first slice";
+            else source.Blocks[0].Summary = "changed after first slice";
+            bool structuralProbeAccepted = true;
+            try { while (probe.MoveNext()) {} } catch (InvalidOperationException) { structuralProbeAccepted = false; }
+            Check(structuralProbeAccepted, kind+" structural probe intentionally misses scalar change");
+            Check(before != ComputeMemorySummarySourceFingerprint(source), kind+" real final digest detects scalar change");
+            string copiedFirst = kind == "daily" ? ((DailyMemoryDraft)detached).Lines[0].Text
+                : kind == "major" ? ((List<NpcActionEntry>)detached)[0].Text
+                : ((List<CompressedMemoryBlock>)detached)[0].Summary;
+            Check(capturedFirst == copiedFirst, kind+" real copy stays detached");
+            if (kind == "daily")
+            {
+                var structural = source.Draft.Lines.GetEnumerator(); structural.MoveNext();
+                source.Draft.Lines[3] = new DailyMemoryLine { Text = "same-count replacement" };
+                bool rejected=false; try { structural.MoveNext(); } catch (InvalidOperationException) { rejected=true; }
+                Check(rejected, "daily root structure control rejects");
+            }
+            else
+            {
+                string raw = ComputeMemorySummarySourceFingerprint(source);
+                IEnumerator rootProbe = kind == "major" ? source.Actions.GetEnumerator() : source.Blocks.GetEnumerator();
+                rootProbe.MoveNext();
+                if (kind == "major") source.Actions[0].RelatedHeroIds[0] = "different nested id";
+                else source.Blocks[0].WeeklyMaterialTriggers[0].Tags[0] = "different nested tag";
+                Check(rootProbe.MoveNext(), kind+" root probe intentionally misses nested mutation");
+                Check(raw != ComputeMemorySummarySourceFingerprint(source), kind+" real final digest detects nested mutation");
+            }
+        }
+        Console.WriteLine("FRESHNESS_COUNTEREXAMPLES_OK exact-final-binding-remains-required");
+    }
+
+    private static void MeasureSource(string kind, int records, int chars)
+    {
+        var source=Source(kind, records, chars);
+        Console.WriteLine("SOURCE_HASH "+JsonSerializer.Serialize(new { kind, records, chars, digest=ComputeMemorySummarySourceFingerprint(source) }));
+        Report(kind, records, chars, "raw-digest", () => _sink=ComputeMemorySummarySourceFingerprint(source));
+        Report(kind, records, chars, "dto-copy", () => _sink=CopySource(source));
+        Report(kind, records, chars, "capture-copy-binding-subset", () =>
+        {
+            _sink=ComputeMemorySummarySourceFingerprint(source);
+            _sink=CopySource(source);
+            _sink=ComputeMemorySummarySourceFingerprint(source);
+        });
+    }
+
+    private static void Report(string kind, int records, int chars, string operation, Action run)
+    {
+        for (int i=0;i<3;i++) run();
+        var elapsed=new double[7]; var allocated=new long[7];
+        for (int i=0;i<elapsed.Length;i++)
+        {
+            long before=GC.GetAllocatedBytesForCurrentThread();
+            var clock=Stopwatch.StartNew(); run(); clock.Stop();
+            elapsed[i]=clock.Elapsed.TotalMilliseconds;
+            allocated[i]=GC.GetAllocatedBytesForCurrentThread()-before;
+        }
+        Array.Sort(elapsed); Array.Sort(allocated);
+        var result=new { kind, records, chars_per_record=chars, source_text_code_units=(long)records*chars,
+            operation, median_ms=elapsed[3], max_ms=elapsed[6], median_allocated_bytes=allocated[3] };
+        Measurements.Add(result); Console.WriteLine("MEASURE "+JsonSerializer.Serialize(result));
+        GC.KeepAlive(_sink);
+    }
+}

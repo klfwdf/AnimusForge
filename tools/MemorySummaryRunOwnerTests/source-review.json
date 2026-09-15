@@ -407,6 +407,12 @@
         "after": "        product=mutation(product,'if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, \"memory_summary_queue_wave\")) return;','/* fault: ignore wave owner/generation lifetime */')\n"
       },
       {
+        "start": 130,
+        "end": 131,
+        "before": "        if a.mutate=='raw-low-code-unit-only':runtime=mutation(runtime,'WriteByte((byte)(character >> 8));','')\n",
+        "after": "        if a.mutate=='raw-low-code-unit-only':\n            runtime=mutation(runtime,'WriteByte((byte)(character >> 8));','')\n            runtime=mutation(runtime,'_buffer[destination++] = (byte)(character >> 8);','')\n"
+      },
+      {
         "start": 136,
         "end": 136,
         "before": "",

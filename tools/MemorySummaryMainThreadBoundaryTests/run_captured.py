@@ -128,7 +128,9 @@ def main():
         if a.mutate=='unframed-raw-strings':runtime=mutation(runtime,'Write(value == null ? -1 : value.Length);','')
         if a.mutate=='truncate-raw-long':runtime=mutation(runtime,'Write(unchecked((int)(value >> 32)));','Write(0);')
         if a.mutate=='repeat-raw-list-head':runtime=mutation(runtime,'foreach (T value in values) write(this, value);','foreach (T value in values) write(this, values[0]);')
-        if a.mutate=='raw-low-code-unit-only':runtime=mutation(runtime,'WriteByte((byte)(character >> 8));','')
+        if a.mutate=='raw-low-code-unit-only':
+            runtime=mutation(runtime,'WriteByte((byte)(character >> 8));','')
+            runtime=mutation(runtime,'_buffer[destination++] = (byte)(character >> 8);','')
         if a.mutate=='ignore-full-raw-buffer':runtime=mutation(runtime,'_hash.TransformBlock(_buffer, 0, _count, _buffer, 0);','')
         files['MyBehavior.MemorySourceFingerprint.cs']=mapper;files['MemorySourceFingerprintWriter.cs']=runtime
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
