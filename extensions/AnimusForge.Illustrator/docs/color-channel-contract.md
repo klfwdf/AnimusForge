@@ -22,7 +22,7 @@
 - UI 使用 `PrepareEncodedImageForUi` 校验并保持标准图片颜色；正常 PNG 字节原样通过。
 - 删除 UI 的 `SwapRedAndBlueInPng` 转换。
 - 从 MCM 移除“修正 UI 显示色彩通道”选项及错误说明。
-- 旧 `FixColorChannels` 属性仅为兼容旧设置/调用保留，不再暴露为 MCM 项；无论保存为 true 还是 false，UI 均不交换颜色。只把默认值改 false 不算修复。
+- 用户明确项目未发布、不需要旧配置兼容：彻底删除 `FixColorChannels` 设置属性、`IllustrationOptions` 字段和读取、loader/准备函数中的 bool 参数，以及三个 UI 调用点的参数传递。无设置、无兼容层、无调用方覆盖入口；只隐藏 MCM 项或改默认值不算完成。
 - 不改写、删除、重新编码真实用户缓存；不修改用户设置文件。
 - 原生舞台导出的适配和编码图片 UI 加载分开。此次没有将修复扩散至未经重新取证的原生导出分支；后续修改这些分支必须单独提交色块/旗帜对照。
 
@@ -67,8 +67,8 @@
 
 `tests/test-full-audit.ps1` 新增：
 
-- 6 个色块（红、蓝、金色、肤色、紫色、半透明）× 旧设置两种取值：精确 RGBA 保持；PNG 字节保持。
-- 实际 UI 加载路径接线检查，旧选项不再具有 MCM SettingProperty 属性。
+- 6 个色块（红、蓝、金色、肤色、紫色、半透明）× 首次加载/缓存重开两条测试路径：精确 RGBA 保持；PNG 字节保持。
+- 实际 UI 加载路径接线；反射确认设置属性和 options 字段不存在，loader/准备函数没有修色参数；全模块 C# 扫描确认没有设置名或 PNG 通道交换函数残留。
 - 真实原生 Equipment 的 Banner 单独分类、普通武器保留、原旗帜槽不变。
 - 实际导演输出决策：百科非法道具回退、自然姿态通过、现场旗帜不受百科规则误伤。
 - 百科约束经过最大随机强度和最终请求组装仍存在，保真契约只出现一次。
@@ -86,8 +86,8 @@
 
 - 工作树：`F:\AnimusForge-main`，分支：`codex/af-main-refactor-continuation-20260831`。
 - 1.3 与 1.4 Release 构建：各 0 警告、0 错误。
-- 每个 API 构建：审查/颜色/构图回归 82/82，全装备 53/53，原有回归 178/178，共 626 次检查。原有 `tools/test_illustrator.ps1` 未修改。
-- 最终矩阵命令：`cmd_1e5e35aa4568b3bfad2b764d10e70d575a28b0829dc2fd7e`，退出 0。
+- 每个 API 构建：审查/颜色/构图回归 85/85，全装备 53/53，原有回归 178/178，共 632 次检查。原有 `tools/test_illustrator.ps1` 未修改。
+- 最终矩阵命令：`cmd_4c7c9891eafdd152323821d5180476fd636a71d2cfa7b8e7`，退出 0。
 - 日志：`obj/fidelity/color-{build,full-audit,fidelity,regression}-{1.3,1.4}.log`；隔离 DLL：`bin/color-fix/{1.3,1.4}/`。
 - 双 API 编译不等于两套游戏实机启动；离线原生依赖来自本机已安装游戏。未用外部付费 API 验收新图。
 - 新增逻辑只在请求准备/结果解析时运行，无每帧扫描；UI 去掉一次无意义的位图交换和重新编码；分类仍为既有固定装备槽遍历。
@@ -98,11 +98,14 @@
 
 | 文件（相对模块根） | 行范围 | SHA-256 |
 |---|---:|---|
-| `src/Engine/GauntletTextureLoader.cs` | 1–184 | `sha256:41ba2cd1c087cafe427f8528001ff3df586f85d221cd0275fc4e1908ef0bddec` |
-| `src/Settings/IllustratorSettings.cs` | 1–621 | `sha256:67571ead5d16daea08abd7c084d3b6b2aeffeb070a66d14492e1bac7e548dbc2` |
+| `src/Engine/GauntletTextureLoader.cs` | 1–184 | `sha256:768d2dc0d48c49d3c43d163a90fe8edd22ac09bc039ce33ebe62d81dec329b6a` |
+| `src/Settings/IllustratorSettings.cs` | 1–618 | `sha256:d9876b6fbf29a002615716d142756f6f86f9ed4cbd7b7b49c4c68baab59d13de` |
+| `src/Core/IllustratorRuntime.cs` | 1–316 | `sha256:a67a79a27aa355e8cf9531ebabe36336f6e6b8052a05c17ffd4fdabb2087d656` |
 | `src/Context/HeroVisualExtractor.cs` | 1–892 | `sha256:cfef3b107170084f22196f89d6a62a14a658d399d2492b3a4a8c2df18f2ae900` |
 | `src/Core/VisualFidelityRules.cs` | 1–20 | `sha256:b801b94e6cb698a670e9baa7454970e26b36ae33694192cbf75ebaeb6f823082` |
 | `src/Core/VisualDirectorEngine.cs` | 1–482 | `sha256:d4604d02da2072e93cae508e111026e133969b9f617738ab4d59d0239ac4a9e2` |
 | `src/Core/UniversalOpenAiImageClient.cs` | 1–887 | `sha256:bd7d61804276a72b311a0e8bd2acbe890853043fd4f0a3a9957d8e7b7089ecca` |
-| `src/UI/Overlays/IllustrationCardPopup.cs` | 1–481 | `sha256:dbc6075425ae3d3d8f4c93861d4db981ebbc4e0df208d244f4a36906feb9fb93` |
-| `tests/test-full-audit.ps1` | 1–223 | `sha256:14e387f1f5335b8bcbb23930034a3e73c0ef3dce641aefbd4435dd89913f2fa6` |
+| `src/UI/Overlays/IllustrationCardPopup.cs` | 1–481 | `sha256:93bdd5cfeac0fb3fd5da6ec486c14e247191f399f219f7f5d0a6fbca7b845956` |
+| `src/UI/Gallery/IllustratorGalleryPopupVM.cs` | 1–341 | `sha256:efb648266bec730da67d0867d9b0e858701583b1af292e166260d680c4973494` |
+| `src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs` | 1–470 | `sha256:eb17b8ca69bf8cde7320de579cbf97a84bfcaa4c9a8257d9bf6991040bdad1fa` |
+| `tests/test-full-audit.ps1` | 1–227 | `sha256:92ddb051c57eabf04ec5efe759c669a9e31188f323dce6624a08ac7ab8fbd6b0` |
