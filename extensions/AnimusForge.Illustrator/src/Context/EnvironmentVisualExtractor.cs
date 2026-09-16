@@ -99,7 +99,7 @@ namespace AnimusForge.Illustrator.Context
                 string cultureCode = settlement.Culture?.StringId?.ToLowerInvariant() ?? "";
                 profile.ArchitectureStyle = ResolveArchitectureStyle(cultureCode, settlement.IsTown, settlement.IsCastle);
                 profile.TerrainAndLandscape = ResolveTerrain(settlement);
-                profile.ConflictStatus = ResolveConflictStatus(settlement);
+                profile.ConflictStatus = eventAnchored ? string.Empty : ResolveConflictStatus(settlement);
             }
             else
             {
@@ -188,7 +188,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     string armyName = army.Name != null ? army.Name.ToString() : "联合军团";
                     profile.ConflictStatus = (string.IsNullOrWhiteSpace(profile.ConflictStatus) ? string.Empty : profile.ConflictStatus + "；")
-                        + $"玩家正身处 {armyName} 军团联营之中（多家族旌旗连绵、诸部汇集扎营）";
+                        + $"玩家正身处 {armyName} 军团联营之中（诸部汇集；是否可见营地道具须依据现场）";
                 }
             }
             catch
@@ -241,7 +241,7 @@ namespace AnimusForge.Illustrator.Context
                 if (outdoorMission)
                 {
                     profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
-                    profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景旷野上双方使节的旌旗仪仗与随行披甲卫队分列对峙，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
+                    profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
                     profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
                     profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困，双方主将使节在两军阵前的旷野上驻马交涉谈判，身后各自肃立着严阵以待的卫队与绵延军营！";
                     return;
@@ -318,7 +318,7 @@ namespace AnimusForge.Illustrator.Context
             {
                 // 野外遭遇会话（大地图/野战遭遇/阵前谈判）：双方在两军阵前的旷野会面，绝非城镇街道
                 profile.SpecificLocation = "两军阵前的开阔旷野会面地 (Field Parley Ground)";
-                profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，双方军队的旌旗仪仗在身后列阵隐约可见，空气中弥漫着战前谈判的紧绷肃杀气息。";
+                profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，人物身后只保留现场确认的景物，不默认添加军旗与仪仗，空气中弥漫着战前谈判的紧绷肃杀气息。";
             }
             else if (locId.Contains("center") || (!isIndoor && settlement.IsTown))
             {

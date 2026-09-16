@@ -1,4 +1,5 @@
 using System;
+using AnimusForge.Illustrator.Engine;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -68,10 +69,11 @@ namespace AnimusForge.Illustrator.Core
             "【文化保真】：使用输入中的文化、装备名称和现场证据；对陌生 MOD 文化不要套用原版文化刻板模板。\n" +
             "【王权头饰铁律】：只有游戏事实或人物参考图明确显示头饰时才描绘，并按证据还原；裸头角色不得凭身份自动加冠。\n" +
             "【纹章铁律】：只有纹章参考图或明确纹章数据存在时才描绘具体图案与配色；没有证据时不得编造动物、武器或王冠徽记。\n" +
-            "【纹章复述】：若提供了纹章标准样图或人物立绘参考图中盾面/罩袍带有可见纹章，应先把所见纹章用一句话复述（底色、徽记主体形状与朝向、配色）。当画面本身需要旗帜、盾徽、罩袍纹章元素时，它们必须与该描述一致；但纹章只是约束条件而非必画主体——不要仅为展示纹章而强行添加盾牌、军旗或仪仗，是否出现旗帜纹章元素由场景与构图需要决定。\n" +
+            "【纹章复述】：若提供了纹章标准样图或人物立绘参考图中盾面/罩袍带有可见纹章，只说明使用哪一归属方的纹章；不要重新创作或推测底色、配色、图腾。当画面本身需要旗帜、盾徽、罩袍纹章元素时，它们必须与该描述一致；但纹章只是约束条件而非必画主体——不要仅为展示纹章而强行添加盾牌、军旗或仪仗，是否出现旗帜纹章元素由场景与构图需要决定。\n" +
             "【人物外观】：以参考图和明确数据为先；人类角色保持自然肤色，非人类或奇幻种族则忠于实际种族设定，不要把渲染色偏当成真实肤色。\n" +
             "【参考图用途】：参考图只用于锁定身份特征（五官、发型、肤色、装备、纹章），绝不复制参考图本身的姿势、取景、背景、光影与游戏渲染质感；构图、机位、环境与画风必须按 <open_art_direction> 与用户画风重新设计。\n" +
             "【画风】：遵循用户提供的画风偏好；没有指定时采用自然、具有历史质感的叙事插画，不锁定特定画家、媒介或固定光照。\n" +
+            VisualFidelityRules.Contract + "\n" +
             "只输出一段可直接交给图像模型的中文提示词，不输出 Markdown、分析、问候或数据标签。";
 
         public static Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData = null, CancellationToken cancellationToken = default)
@@ -151,14 +153,16 @@ namespace AnimusForge.Illustrator.Core
         internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts)
         {
             var sb = new StringBuilder();
+            sb.AppendLine("【绘制优先级】以下导演描述仅供构图；与原始装备快照、纹章标准图或事实区冲突时，舍弃导演描述，不改写原始事实。");
             if (!string.IsNullOrWhiteSpace(directorPrompt)) sb.Append(directorPrompt.Trim());
             if (!string.IsNullOrWhiteSpace(hardFacts))
             {
                 if (sb.Length > 0) sb.AppendLine().AppendLine();
                 sb.AppendLine("【不可改写的游戏事实】");
                 sb.Append(hardFacts.Trim());
-                sb.AppendLine().Append("只需在画面中自然体现与构图有关的事实；不得增添与上述事实冲突的人物、装备、纹章、地点或事件结果；画面中严禁出现任何文字、字幕、台词文本、标牌或界面元素；人物肤色、发色与五官严格以立绘参考图为准，不得加深或改色。");
+                sb.AppendLine().Append("只需在画面中自然体现与构图有关的事实；不得增添与上述事实冲突的人物、装备、纹章、地点或事件结果；画面中严禁出现任何文字、字幕、台词文本、标牌或界面元素；人物肤色、发色与五官严格以立绘参考图为准，不得加深或改色。坐骑只在场景事实、现场参考图或明确动作支持骑乘/牵马时出现；室内、城堡高处、屋顶、城墙巡道和楼台不得凭人物有马匹装备而生成马。");
             }
+            sb.AppendLine().Append(VisualFidelityRules.Contract);
             return sb.ToString().Trim();
         }
 
@@ -294,6 +298,10 @@ namespace AnimusForge.Illustrator.Core
 
         private static async Task<string> CallLlmDirectorAsync(IllustrationPromptPlan plan, IllustrationOptions options, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, CancellationToken cancellationToken)
         {
+            using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+            {
+                deadline.CancelAfter(TimeSpan.FromSeconds(120));
+                cancellationToken = deadline.Token;
             string endpoint = ResolveChatEndpoint(options.DirectorApiBaseUrl);
             bool hasImages = referenceImages != null && referenceImages.Count > 0;
             string stylePreference = BuildDirectorStylePreference(options);
@@ -368,9 +376,9 @@ namespace AnimusForge.Illustrator.Core
                 }
 
                 TaleWorlds.Library.Debug.Print($"[VisualDirector] Sending request to {endpoint} (model={options.DirectorModelName}, refImages={referenceImages?.Count ?? 0})...");
-                using (var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false))
+                using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
-                    string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    string responseBody = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 1048576, cancellationToken).ConfigureAwait(false));
                     if (responseBody != null && responseBody.Length > 1048576)
                     {
                         throw new Exception("Chat API response exceeded 1 MiB.");
@@ -390,6 +398,8 @@ namespace AnimusForge.Illustrator.Core
                     TaleWorlds.Library.Debug.Print($"[VisualDirector] Received response preview: {Preview(content, 180)}");
                     return content;
                 }
+            }
+
             }
         }
 

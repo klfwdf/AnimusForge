@@ -1000,7 +1000,7 @@ namespace AnimusForge.Illustrator.Engine
             if (Volatile.Read(ref pump.Finished) == 0)
             {
                 if (Core.IllustratorRuntime.IsMainThread) FinishStage(pump);
-                else Core.IllustratorRuntime.Post(() => FinishStage(pump));
+                else Core.IllustratorRuntime.PostCritical(() => FinishStage(pump));
                 // If the bounded queue is full, the already queued pump observes
                 // CancelRequested. Reset also retires it even when ticks stop.
             }
@@ -1214,7 +1214,7 @@ namespace AnimusForge.Illustrator.Engine
         /// 离屏渲染指定英雄的真实 3D 立绘（真实体型、五官、发型、装备、家族纹章底色）。
         /// 人物资源加载需要更多预热帧，故 warmup 比纹章长。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false)
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (hero == null) return null;
             string heroName = string.Empty;
@@ -1224,14 +1224,22 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     if (widget is CharacterTableauWidget cw)
                     {
+                        if (appearance != null)
+                        {
+                            ApplyAppearance(cw, appearance);
+                            return;
+                        }
                         var character = hero.CharacterObject ?? throw new InvalidOperationException("Hero character is unavailable.");
-                        var equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
+                        var equipment = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
+                            ? Equipment.CreateFromEquipmentCode(equipmentCodeOverride)
+                            : (useCivilian ? hero.CivilianEquipment : hero.BattleEquipment);
                         heroName = hero.Name?.ToString() ?? hero.StringId;
                         cw.BodyProperties = character.GetBodyProperties(equipment ?? character.Equipment, -1).ToString();
                         cw.IsFemale = hero.IsFemale;
                         cw.Race = character.Race;
                         cw.StanceIndex = 0;
-                        string equipmentCode = equipment?.CalculateEquipmentCode();
+                        string equipmentCode = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
+                            ? equipmentCodeOverride : equipment?.CalculateEquipmentCode();
                         if (!string.IsNullOrEmpty(equipmentCode))
                         {
                             cw.EquipmentCode = equipmentCode;
@@ -1242,6 +1250,16 @@ namespace AnimusForge.Illustrator.Engine
                         }
                         cw.ArmorColor1 = hero.MapFaction?.Color ?? 0;
                         cw.ArmorColor2 = hero.MapFaction?.Color2 ?? 0;
+                        if (appearance != null)
+                        {
+                            cw.EquipmentCode = appearance.EquipmentCode;
+                            cw.BodyProperties = appearance.BodyProperties;
+                            cw.BannerCodeText = appearance.BannerCode ?? string.Empty;
+                            cw.ArmorColor1 = appearance.Color1;
+                            cw.ArmorColor2 = appearance.Color2;
+                            cw.Race = appearance.Race;
+                            cw.IsFemale = appearance.IsFemale;
+                        }
                         cw.IsVisible = true;
                     }
                 }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
@@ -1266,7 +1284,7 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 离屏渲染非英雄 CharacterObject（要人、酒馆店主等没有 Hero 对象的对话方）的真实 3D 立绘。
         /// </summary>
-        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false)
+        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (character == null) return null;
             string charName = string.Empty;
@@ -1276,7 +1294,14 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     if (widget is CharacterTableauWidget cw)
                     {
-                        var equipment = character.Equipment ?? character.FirstBattleEquipment;
+                        if (appearance != null)
+                        {
+                            ApplyAppearance(cw, appearance);
+                            return;
+                        }
+                        var equipment = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
+                            ? Equipment.CreateFromEquipmentCode(equipmentCodeOverride)
+                            : (character.Equipment ?? character.FirstBattleEquipment);
                         charName = character.Name?.ToString() ?? character.StringId;
                         // 优先使用会话在场 Agent 的真实 BodyProperties（劫匪等随机 NPC 的实际脸），
                         // 否则退回兵种模板体型（模板脸型范围内重新随机）
@@ -1286,10 +1311,21 @@ namespace AnimusForge.Illustrator.Engine
                         cw.IsFemale = character.IsFemale;
                         cw.Race = character.Race;
                         cw.StanceIndex = 0;
-                        string equipmentCode = equipment?.CalculateEquipmentCode();
+                        string equipmentCode = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
+                            ? equipmentCodeOverride : equipment?.CalculateEquipmentCode();
                         if (!string.IsNullOrEmpty(equipmentCode))
                         {
                             cw.EquipmentCode = equipmentCode;
+                        }
+                        if (appearance != null)
+                        {
+                            cw.EquipmentCode = appearance.EquipmentCode;
+                            cw.BodyProperties = appearance.BodyProperties;
+                            cw.BannerCodeText = appearance.BannerCode ?? string.Empty;
+                            cw.ArmorColor1 = appearance.Color1;
+                            cw.ArmorColor2 = appearance.Color2;
+                            cw.Race = appearance.Race;
+                            cw.IsFemale = appearance.IsFemale;
                         }
                         cw.IsVisible = true;
                     }
@@ -1317,6 +1353,56 @@ namespace AnimusForge.Illustrator.Engine
         /// topBandFraction 必须避开原会话界面的名牌/字幕条（约自 55% 高度起），默认 0.5。
         /// 该图仅供导演识图，不进生图模型，避免截图质感与 UI 文字被复制进成图。
         /// </summary>
+        private static void ApplyAppearance(CharacterTableauWidget widget, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance)
+        {
+            widget.EquipmentCode = appearance.EquipmentCode;
+            widget.BodyProperties = appearance.BodyProperties;
+            widget.BannerCodeText = appearance.BannerCode ?? string.Empty;
+            widget.ArmorColor1 = appearance.Color1;
+            widget.ArmorColor2 = appearance.Color2;
+            widget.Race = appearance.Race;
+            widget.IsFemale = appearance.IsFemale;
+            widget.IsVisible = true;
+        }
+
+        private static readonly SemaphoreSlim SceneCaptureLock = new SemaphoreSlim(1, 1);
+        internal static async Task<string> CaptureConversationSceneWithoutUiAsync(CancellationToken token)
+        {
+            await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
+            var hidden = new System.Collections.Generic.List<System.Tuple<Widget, bool>>();
+            try
+            {
+                var frameWait = await RunOnGameThreadAsync(() =>
+                {
+                    var roots = new[] { UI.Overlays.IllustrationCardPopup.VisualRoot, UI.Gallery.IllustratorGalleryPopup.VisualRoot, UI.Patches.WeeklyReportPopupIllustrationPatch.VisualRoot };
+                    foreach (var root in roots)
+                        if (root != null) { hidden.Add(System.Tuple.Create(root, root.IsVisible)); root.IsVisible = false; }
+                    return Core.IllustratorRuntime.AfterFramesAsync(2, token);
+                }, token).ConfigureAwait(false);
+                if (frameWait == null) return null;
+                await frameWait.ConfigureAwait(false);
+                return await RunOnGameThreadAsync(() => CaptureConversationSceneBase64(768), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                var restored = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                Core.IllustratorRuntime.PostCritical(() =>
+                {
+                    try
+                    {
+                        foreach (var entry in hidden)
+                        {
+                            try { entry.Item1.IsVisible = entry.Item2; }
+                            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Overlay restore failed: " + ex.Message); }
+                        }
+                    }
+                    finally { restored.TrySetResult(true); }
+                });
+                try { await restored.Task.ConfigureAwait(false); }
+                finally { SceneCaptureLock.Release(); }
+            }
+        }
+
         public static string CaptureConversationSceneBase64(int maxDimension = 768, float topBandFraction = 0.5f)
         {
             try

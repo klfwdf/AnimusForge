@@ -59,17 +59,18 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (Array.IndexOf(invalid, chars[i]) >= 0 || char.IsControl(chars[i])) chars[i] = '_';
             }
-            return new string(chars);
+            string key = new string(chars);
+            return key == "." || key == ".." ? "unknown" : key;
         }
 
         private static string CampaignDirectory(string campaignKey)
         {
-            return Path.Combine(CacheBaseDir, SanitizeKey(campaignKey));
+            return SafeDirectory(Path.Combine(CacheBaseDir, SanitizeKey(campaignKey)));
         }
 
         private static string TrashDirectory(string campaignKey)
         {
-            return Path.Combine(CacheBaseDir, "_trash", SanitizeKey(campaignKey));
+            return SafeDirectory(Path.Combine(CacheBaseDir, "_trash", SanitizeKey(campaignKey)));
         }
 
         public static bool TryGetCachedImage(string key, string campaignKey, out byte[] imageBytes, out string filePath, string category = null)
@@ -85,14 +86,16 @@ namespace AnimusForge.Illustrator.Engine
 
         public static CachedIllustrationItem LoadImage(string subjectKey, string campaignKey, string category = null)
         {
+            lock (CacheLock)
+            {
             if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey)) return null;
             try
             {
-                string[] categories = !string.IsNullOrEmpty(category) ? new[] { category } : Categories;
+                string[] categories = !string.IsNullOrEmpty(category) ? new[] { ValidCategory(category) } : Categories;
                 CachedIllustrationItem fallback = null;
                 foreach (var cat in categories)
                 {
-                    string dir = Path.Combine(CampaignDirectory(campaignKey), cat);
+                    string dir = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), cat));
                     if (!Directory.Exists(dir)) continue;
                     foreach (var metaPath in Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly))
                     {
@@ -103,13 +106,13 @@ namespace AnimusForge.Illustrator.Engine
                         if (!File.Exists(item.FilePath)) continue;
                         if (item.IsDefault)
                         {
-                            item.ImageData = File.ReadAllBytes(item.FilePath);
+                            item.ImageData = ImagePayload.ReadFile(item.FilePath);
                             return item;
                         }
                         if (fallback == null || item.CreatedTime > fallback.CreatedTime) fallback = item;
                     }
                 }
-                if (fallback != null) fallback.ImageData = File.ReadAllBytes(fallback.FilePath);
+                if (fallback != null) fallback.ImageData = ImagePayload.ReadFile(fallback.FilePath);
                 return fallback;
             }
             catch (Exception ex)
@@ -117,14 +120,20 @@ namespace AnimusForge.Illustrator.Engine
                 Debug.Print($"[Illustrator] Failed to load image cache: {ex.Message}");
                 return null;
             }
+
+            }
         }
 
-        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false)
+        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true)
         {
+            try { bytes = ImagePayload.Normalize(bytes); }
+            catch (Exception ex) { Debug.Print("[Illustrator] Rejected cache image: " + ex.Message); return null; }
+            lock (CacheLock)
+            {
             if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey) || bytes == null || bytes.Length == 0) return null;
             try
             {
-                string categoryDir = Path.Combine(CampaignDirectory(campaignKey), string.IsNullOrWhiteSpace(category) ? "general" : category);
+                string categoryDir = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), ValidCategory(category)));
                 Directory.CreateDirectory(categoryDir);
                 string imageId = $"{ComputeHash(subjectKey)}_{DateTime.UtcNow:yyyyMMddHHmmssfff}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                 string filePath = Path.Combine(categoryDir, imageId + ".png");
@@ -135,14 +144,14 @@ namespace AnimusForge.Illustrator.Engine
                     Key = imageId,
                     SubjectKey = subjectKey,
                     CampaignKey = campaignKey,
-                    Category = string.IsNullOrWhiteSpace(category) ? "general" : category,
+                    Category = ValidCategory(category),
                     FilePath = filePath,
                     Prompt = prompt ?? string.Empty,
                     Title = title ?? string.Empty,
                     CreatedTime = DateTime.UtcNow,
-                    IsDefault = makeDefault || LoadImage(subjectKey, campaignKey, category) == null
+                    IsDefault = makeDefault || (allowImplicitDefault && !GetAllCachedIllustrations(campaignKey, true).Any(existing => existing.SubjectKey == subjectKey && existing.Category == ValidCategory(category)))
                 };
-                File.WriteAllText(Path.ChangeExtension(filePath, ".json"), JsonConvert.SerializeObject(item, Formatting.Indented), Encoding.UTF8);
+                AtomicWrite(Path.ChangeExtension(filePath, ".json"), JsonConvert.SerializeObject(item, Formatting.Indented));
                 if (item.IsDefault) SetDefault(item, campaignKey);
                 EnforceLimit(campaignKey, maxCacheCount);
                 InvalidateCache();
@@ -152,6 +161,8 @@ namespace AnimusForge.Illustrator.Engine
             {
                 Debug.Print($"[Illustrator] Failed to save image cache: {ex.Message}");
                 return null;
+            }
+
             }
         }
 
@@ -179,14 +190,14 @@ namespace AnimusForge.Illustrator.Engine
                     string campaignDir = CampaignDirectory(campaignKey);
                     if (Directory.Exists(campaignDir))
                     {
-                        foreach (var jsonFile in Directory.GetFiles(campaignDir, "*.json", SearchOption.AllDirectories))
+                        foreach (var jsonFile in EnumerateCampaignFiles(campaignKey, "*.json"))
                         {
                             var item = ReadMetadata(jsonFile);
                             if (item != null && !item.Deleted && File.Exists(item.FilePath)) list.Add(item);
                         }
                         var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                         foreach (var item in list) visited.Add(item.FilePath);
-                        foreach (var png in Directory.GetFiles(campaignDir, "*.png", SearchOption.AllDirectories))
+                        foreach (var png in EnumerateCampaignFiles(campaignKey, "*.png"))
                         {
                             if (visited.Contains(png)) continue;
                             list.Add(new CachedIllustrationItem
@@ -218,12 +229,21 @@ namespace AnimusForge.Illustrator.Engine
         {
             try
             {
+                if (!IsSafePath(jsonFile, CacheBaseDir)) return null;
                 var item = JsonConvert.DeserializeObject<CachedIllustrationItem>(File.ReadAllText(jsonFile, Encoding.UTF8));
                 if (item == null) return null;
                 string localPng = Path.ChangeExtension(jsonFile, ".png");
-                if (File.Exists(localPng)) item.FilePath = localPng;
+                if (!File.Exists(localPng) || !IsSafePath(localPng, CacheBaseDir)) return null;
+                item.FilePath = localPng;
+                string category = new DirectoryInfo(Path.GetDirectoryName(jsonFile)).Name;
+                string campaign = new DirectoryInfo(Path.GetDirectoryName(Path.GetDirectoryName(jsonFile))).Name;
+                if (!Categories.Contains(category)) return null;
+                item.Category = category;
+                item.CampaignKey = campaign;
                 if (string.IsNullOrEmpty(item.Key)) item.Key = Path.GetFileNameWithoutExtension(jsonFile);
                 if (string.IsNullOrEmpty(item.SubjectKey)) item.SubjectKey = item.Key;
+                string pointer = DefaultPath(campaign, item.Category, item.SubjectKey);
+                if (File.Exists(pointer)) item.IsDefault = File.ReadAllText(pointer, Encoding.UTF8) == item.Key;
                 return item;
             }
             catch { return null; }
@@ -231,36 +251,38 @@ namespace AnimusForge.Illustrator.Engine
 
         public static bool SetDefault(CachedIllustrationItem target, string campaignKey)
         {
-            if (target == null || string.IsNullOrWhiteSpace(target.SubjectKey)) return false;
-            string campaignDir = CampaignDirectory(campaignKey);
-            if (!Directory.Exists(campaignDir)) return false;
-            bool found = false;
-            foreach (var jsonFile in Directory.GetFiles(campaignDir, "*.json", SearchOption.AllDirectories))
+            lock (CacheLock)
             {
-                var item = ReadMetadata(jsonFile);
-                if (item == null || !string.Equals(item.SubjectKey, target.SubjectKey, StringComparison.Ordinal) ||
-                    !string.Equals(item.Category, target.Category, StringComparison.OrdinalIgnoreCase)) continue;
-                bool isTarget = string.Equals(item.Key, target.Key, StringComparison.OrdinalIgnoreCase);
-                item.IsDefault = isTarget;
-                File.WriteAllText(jsonFile, JsonConvert.SerializeObject(item, Formatting.Indented), Encoding.UTF8);
-                found |= isTarget;
+                if (target == null || string.IsNullOrWhiteSpace(target.SubjectKey) ||
+                    !IsSafePath(target.FilePath, CampaignDirectory(campaignKey)) || !File.Exists(target.FilePath)) return false;
+                var actual = ReadMetadata(Path.ChangeExtension(target.FilePath, ".json"));
+                if (actual == null || actual.Key != target.Key || actual.SubjectKey != target.SubjectKey || actual.Category != target.Category) return false;
+                string pointer = DefaultPath(campaignKey, actual.Category, actual.SubjectKey);
+                Directory.CreateDirectory(Path.GetDirectoryName(pointer));
+                AtomicWrite(pointer, actual.Key);
+                InvalidateCache();
+                return true;
             }
-            if (found) InvalidateCache();
-            return found;
         }
 
         public static bool DeleteItem(CachedIllustrationItem item, string campaignKey)
         {
+            lock (CacheLock)
+            {
             if (item == null || string.IsNullOrWhiteSpace(item.FilePath)) return false;
             try
             {
+                if (!IsSafePath(item.FilePath, CampaignDirectory(campaignKey))) return false;
                 string trash = TrashDirectory(campaignKey);
                 Directory.CreateDirectory(trash);
                 string imageTarget = Path.Combine(trash, Path.GetFileName(item.FilePath));
                 string metaSource = Path.ChangeExtension(item.FilePath, ".json");
                 string metaTarget = Path.Combine(trash, Path.GetFileName(metaSource));
+                if (!IsSafePath(metaSource, CampaignDirectory(campaignKey))) return false;
+                if (File.Exists(imageTarget) || File.Exists(metaTarget)) return false;
                 if (File.Exists(item.FilePath)) File.Move(item.FilePath, imageTarget);
-                if (File.Exists(metaSource)) File.Move(metaSource, metaTarget);
+                try { if (File.Exists(metaSource)) File.Move(metaSource, metaTarget); }
+                catch { if (File.Exists(imageTarget)) File.Move(imageTarget, item.FilePath); throw; }
                 InvalidateCache();
                 return true;
             }
@@ -268,6 +290,8 @@ namespace AnimusForge.Illustrator.Engine
             {
                 Debug.Print($"[Illustrator] Failed to move illustration to recycle area: {ex.Message}");
                 return false;
+            }
+
             }
         }
 
@@ -277,13 +301,9 @@ namespace AnimusForge.Illustrator.Engine
             int limit = Math.Max(20, Math.Min(1000, maxCacheCount));
             if (items.Count <= limit) return;
             int remaining = items.Count;
-            foreach (var item in items.Where(i => !i.IsDefault).OrderBy(i => i.CreatedTime))
-            {
-                if (remaining <= limit) break;
-                if (DeleteItem(item, campaignKey)) remaining--;
-            }
-            if (remaining <= limit) return;
-            foreach (var item in items.Where(i => i.IsDefault).OrderBy(i => i.CreatedTime))
+            // Keep the newest generated histories; otherwise an unpromoted new image is
+            // immediately evicted when all older subjects already have a default.
+            foreach (var item in items.OrderBy(i => i.CreatedTime))
             {
                 if (remaining <= limit) break;
                 if (DeleteItem(item, campaignKey)) remaining--;
@@ -292,7 +312,63 @@ namespace AnimusForge.Illustrator.Engine
 
         public static string GetImagePath(string imageId, string campaignKey, string category = "weekly_report")
         {
-            return Path.Combine(CampaignDirectory(campaignKey), category, ComputeHash(imageId) + ".png");
+            return Path.Combine(SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), ValidCategory(category))), ComputeHash(imageId) + ".png");
+        }
+
+        private static string ValidCategory(string category)
+        {
+            if (string.IsNullOrWhiteSpace(category)) return "general";
+            if (!Categories.Contains(category)) throw new ArgumentException("Invalid illustration category.");
+            return category;
+        }
+
+        internal static bool IsSafePath(string path, string root)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(path)) return false;
+                string full = Path.GetFullPath(path);
+                string boundary = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+                if (!full.StartsWith(boundary, StringComparison.OrdinalIgnoreCase)) return false;
+                // Reject junctions/symlinks on every existing ancestor, including the cache root.
+                for (string current = full; !string.IsNullOrEmpty(current); current = Path.GetDirectoryName(current))
+                    if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) return false;
+                return true;
+            }
+            catch { return false; }
+        }
+
+        private static string SafeDirectory(string path)
+        {
+            if (!IsSafePath(path, CacheBaseDir)) throw new IOException("Cache path is outside its ownership boundary.");
+            return path;
+        }
+
+        private static IEnumerable<string> EnumerateCampaignFiles(string campaignKey, string pattern)
+        {
+            foreach (string category in Categories)
+            {
+                string dir = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), category));
+                if (!Directory.Exists(dir)) continue;
+                foreach (string file in Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly))
+                    if (IsSafePath(file, dir)) yield return file;
+            }
+        }
+
+        private static string DefaultPath(string campaign, string category, string subject)
+            => Path.Combine(SafeDirectory(Path.Combine(CampaignDirectory(campaign), "_defaults")), ComputeHash(category + "\n" + subject) + ".txt");
+
+        private static void AtomicWrite(string path, string text)
+        {
+            if (!IsSafePath(path, CacheBaseDir)) throw new IOException("Unsafe cache write.");
+            string temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllText(temporary, text, Encoding.UTF8);
+                if (File.Exists(path)) File.Replace(temporary, path, null);
+                else File.Move(temporary, path);
+            }
+            finally { if (File.Exists(temporary)) File.Delete(temporary); }
         }
 
         public static string ComputeHash(string input)

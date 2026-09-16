@@ -178,6 +178,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         public void RefreshItems()
         {
+            try { RefreshItemsCore(); }
+            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
+        }
+
+        private void RefreshItemsCore()
+        {
             ReleasePreviewSprite();
             Items.Clear();
             var cached = DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey);
@@ -188,8 +194,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
             if (Items.Count > 0)
             {
-                HandleItemSelect(Items[0]);
                 StatusText = $"共收录 {Items.Count} 幅历史画卷";
+                HandleItemSelect(Items[0]);
             }
             else
             {
@@ -199,6 +205,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
         }
 
         private void HandleItemSelect(IllustrationItemVM selected)
+        {
+            try { HandleItemSelectCore(selected); }
+            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
+        }
+
+        private void HandleItemSelectCore(IllustrationItemVM selected)
         {
             IllustratorRuntime.AssertMainThread();
             foreach (var item in Items)
@@ -215,11 +227,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 string spriteName = "Gallery_" + selected.Item.Key + "_" + (++_previewCounter);
                 if (File.Exists(selected.Item?.FilePath))
                 {
-                    byte[] bytes = File.ReadAllBytes(selected.Item.FilePath);
+                    byte[] bytes = ImagePayload.ReadFile(selected.Item.FilePath);
                     var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
                     if (sprite != null) _loadedPreviewSpriteName = spriteName;
                 }
-                SelectedSpriteName = _loadedPreviewSpriteName ?? string.Empty;
+                if (_loadedPreviewSpriteName == null) throw new IOException("图片不存在或无法解码，请刷新画廊。");
+                SelectedSpriteName = _loadedPreviewSpriteName;
                 SelectedTitle = selected.Title;
                 SelectedPrompt = selected.Item?.Prompt ?? string.Empty;
                 SelectedDate = selected.DateText;
@@ -260,6 +273,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
         }
 
         public void ExecuteSetDefault()
+        {
+            try { ExecuteSetDefaultCore(); }
+            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
+        }
+
+        private void ExecuteSetDefaultCore()
         {
             if (_selectedItem?.Item == null) return;
             if (DiskImageCacheManager.SetDefault(_selectedItem.Item, _campaignKey))

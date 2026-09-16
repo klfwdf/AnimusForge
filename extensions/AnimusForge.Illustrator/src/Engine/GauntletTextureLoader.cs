@@ -52,6 +52,7 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
+                bytes = ImagePayload.Normalize(bytes);
                 if (LoadedSprites.TryGetValue(spriteName, out var previous))
                 {
                     ReleaseSprite(spriteName, previous);

@@ -21,8 +21,11 @@ namespace AnimusForge.Illustrator.UI.Gallery
         {
             _screen = screen;
             _scope = new IllustrationScope(screen, null, Close);
+            try
+            {
             _dataSource = new IllustratorGalleryPopupVM(Close, _scope.CampaignKey);
             var layer = new MovableGauntletLayer("IllustratorGalleryPopup", 4020, false);
+            _layer = layer;
             var movieIdentifier = layer.LoadMovie("IllustratorGalleryPopup", _dataSource);
             layer.AutoAttachMovable(movieIdentifier?.Movie, "MainPanel", "TitleBar");
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
@@ -35,8 +38,11 @@ namespace AnimusForge.Illustrator.UI.Gallery
             catch
             {
             }
+            }
+            catch { Close(); throw; }
         }
 
+        internal static TaleWorlds.GauntletUI.BaseTypes.Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
 
         public static void Show(string focusKey = null)
@@ -49,10 +55,11 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 return;
             }
 
+            IllustratorGalleryPopup popup = null;
             try
             {
                 _activeInstance?.Close();
-                var popup = new IllustratorGalleryPopup(topScreen);
+                popup = new IllustratorGalleryPopup(topScreen);
                 if (!string.IsNullOrWhiteSpace(focusKey))
                 {
                     popup._dataSource.SelectByKey(focusKey);
@@ -62,6 +69,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
             catch (Exception ex)
             {
+                popup?.Close();
                 Debug.Print($"[Illustrator] Failed to open gallery popup: {ex.Message}");
             }
         }
