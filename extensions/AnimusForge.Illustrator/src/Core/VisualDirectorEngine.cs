@@ -71,7 +71,7 @@ namespace AnimusForge.Illustrator.Core
             "【纹章铁律】：只有纹章参考图或明确纹章数据存在时才描绘具体图案与配色；没有证据时不得编造动物、武器或王冠徽记。\n" +
             "【纹章复述】：若提供了纹章标准样图或人物立绘参考图中盾面/罩袍带有可见纹章，只说明使用哪一归属方的纹章；不要重新创作或推测底色、配色、图腾。当画面本身需要旗帜、盾徽、罩袍纹章元素时，它们必须与该描述一致；但纹章只是约束条件而非必画主体——不要仅为展示纹章而强行添加盾牌、军旗或仪仗，是否出现旗帜纹章元素由场景与构图需要决定。\n" +
             "【人物外观】：以参考图和明确数据为先；人类角色保持自然肤色，非人类或奇幻种族则忠于实际种族设定，不要把渲染色偏当成真实肤色。\n" +
-            "【参考图用途】：参考图只用于锁定身份特征（五官、发型、肤色、装备、纹章），绝不复制参考图本身的姿势、取景、背景、光影与游戏渲染质感；构图、机位、环境与画风必须按 <open_art_direction> 与用户画风重新设计。\n" +
+            "【参考图用途】：参考图只用于锁定身份特征（五官、发型、肤色、装备、纹章），不照抄界面、背景、光影与游戏渲染质感；可以保留自然姿态，机位与画风可按 <open_art_direction> 调整，但不得为求变化强造动作或道具。百科肖像必须遵循百科肖像构图约束，不展示装备栏记录的旗帜。\n" +
             "【画风】：遵循用户提供的画风偏好；没有指定时采用自然、具有历史质感的叙事插画，不锁定特定画家、媒介或固定光照。\n" +
             VisualFidelityRules.Contract + "\n" +
             "只输出一段可直接交给图像模型的中文提示词，不输出 Markdown、分析、问候或数据标签。";
@@ -168,12 +168,27 @@ namespace AnimusForge.Illustrator.Core
 
         internal static string ResolveDirectorOutput(string output, IllustrationPromptPlan plan, IllustrationOptions options)
         {
+            if (ViolatesPortraitComposition(output, plan))
+            {
+                TaleWorlds.Library.Debug.Print("[VisualDirector] Portrait props/action rejected; using local portrait fallback without retry.");
+                return SynthesizeRuleBasedPrompt(plan, options);
+            }
             if (NarrativeFactRouter.HasNarrativeEcho(output, plan.DirectorOnlyFacts, plan.HardFacts))
             {
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Narrative echo detected; using local visual-fact fallback without retry.");
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             return ComposeFinalPrompt(output, plan.HardFacts);
+        }
+
+        internal static bool ViolatesPortraitComposition(string output, IllustrationPromptPlan plan)
+        {
+            if (plan?.Mode != "人物百科纪事" || string.IsNullOrWhiteSpace(output)) return false;
+            // Conservative text gate; negative mentions may also fall back. Never retry a paid request.
+            // Other modes keep actual scene/event flags. This is not image/anatomy validation.
+            foreach (string token in new[] { "旗", "banner", "flag", "桌", "撑", "扭身", "扭转躯干", "倚案", "扶案", "table", "desk", "contort" })
+                if (output.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            return false;
         }
 
         /// <summary>
@@ -450,7 +465,9 @@ namespace AnimusForge.Illustrator.Core
         {
             var sb = new StringBuilder();
             string style = BuildDirectorStylePreference(options);
-            sb.Append("根据当前游戏事实绘制一个自然、有叙事重点的瞬间。人物、装备、地点与事件关系以事实区为准；构图可按现场情绪自由选择远景、中景、近景、过肩、侧面或动态视角，不必把每项背景信息都塞进画面。");
+            if (plan?.Mode == "人物百科纪事")
+                sb.Append("以人物面部与实际衣甲为视觉中心绘制克制肖像；自然直立或轻微侧身，肩臂放松，背景简洁低对比。无需复杂动作或摆拍道具。");
+            else sb.Append("根据当前游戏事实绘制一个自然、有叙事重点的瞬间。人物、装备、地点与事件关系以事实区为准；构图可按现场情绪自由选择远景、中景、近景、过肩、侧面或动态视角，不必把每项背景信息都塞进画面。");
             if (!string.IsNullOrWhiteSpace(plan?.ArtDirection))
             {
                 sb.AppendLine().Append("可参考但不必逐项照搬的构图方向：").Append(plan.ArtDirection.Trim());

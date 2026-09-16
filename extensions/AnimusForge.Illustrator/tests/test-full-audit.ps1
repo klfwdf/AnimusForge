@@ -160,6 +160,55 @@ Check ($edit.Item1) 'F08 actual edits HTTP path accepts mock image'
 Check ([AuditFixture]::Body.Contains('quality') -and [AuditFixture]::Body.Contains('high')) 'F08 multipart includes chosen quality'
 Check ([AuditFixture]::Body.Contains('玩家家族') -and [AuditFixture]::Body.Contains('对方家族')) 'F08 prompt maps both reference owners'
 Check ([AuditFixture]::PngParts() -eq 2 -and [AuditFixture]::Body.Contains('image/png')) 'F08 both MIME-declared uploads are real PNG bytes'
+# Encoded-color regression: actual UI preparation path must preserve RGB for BOTH persisted toggle values.
+$ui=$a.GetType('AnimusForge.Illustrator.Engine.GauntletTextureLoader',$true)
+$prepare=$ui.GetMethod('PrepareEncodedImageForUi',$static)
+$palette=@([Drawing.Color]::Red,[Drawing.Color]::Blue,[Drawing.Color]::Gold,[Drawing.Color]::FromArgb(255,212,159,121),[Drawing.Color]::FromArgb(255,110,55,160),[Drawing.Color]::FromArgb(128,210,95,30))
+$swatches=[Drawing.Bitmap]::new(6,1)
+for($i=0;$i -lt $palette.Count;$i++){$swatches.SetPixel($i,0,$palette[$i])}
+$colorStream=[IO.MemoryStream]::new();$swatches.Save($colorStream,[Drawing.Imaging.ImageFormat]::Png);$encoded=$colorStream.ToArray()
+foreach($legacy in @($false,$true)) {
+ $prepared=$prepare.Invoke($null,[object[]]@($encoded,$legacy))
+ Check ([Convert]::ToBase64String($prepared) -eq [Convert]::ToBase64String($encoded)) "Color PNG bytes unchanged with legacy toggle=$legacy"
+ $readStream=[IO.MemoryStream]::new([byte[]]$prepared);$decoded=[Drawing.Bitmap]::new($readStream)
+ for($i=0;$i -lt $palette.Count;$i++){Check ($decoded.GetPixel($i,0).ToArgb() -eq $swatches.GetPixel($i,0).ToArgb()) "Color exact RGBA swatch $i with legacy toggle=$legacy"}
+ $decoded.Dispose();$readStream.Dispose()
+}
+$swatches.Dispose();$colorStream.Dispose()
+$uiSource=Get-Content (Join-Path $src 'Engine\GauntletTextureLoader.cs') -Raw -Encoding UTF8
+Check ($uiSource.Contains('bytes = PrepareEncodedImageForUi(bytes, fixColorChannels);') -and !$uiSource.Contains('SwapRedAndBlueInPng')) 'Color actual loader uses tested encoded-color path with no swap'
+$settingsType=$a.GetType('AnimusForge.Illustrator.IllustratorSettings',$true)
+$legacyProperty=$settingsType.GetProperty('FixColorChannels')
+Check (@($legacyProperty.GetCustomAttributes($true)|Where-Object {$_.GetType().Name -like 'SettingProperty*'}).Count -eq 0) 'Color dangerous legacy toggle is no longer offered in MCM'
+# Banner ownership is not a held weapon; keep the complete snapshot but classify separately.
+$bannerItem=[TaleWorlds.Core.ItemObject]::new('discipline_banner');$bannerItem.Type=[TaleWorlds.Core.ItemObject+ItemTypeEnum]::Banner
+$swordItem=[TaleWorlds.Core.ItemObject]::new('real_sword');$swordItem.Type=[TaleWorlds.Core.ItemObject+ItemTypeEnum]::OneHandedWeapon
+$gear=[TaleWorlds.Core.Equipment]::new();$gear[0]=[TaleWorlds.Core.EquipmentElement]::new($swordItem,$null,$null,$false);$gear[4]=[TaleWorlds.Core.EquipmentElement]::new($bannerItem,$null,$null,$false)
+$profile=[Activator]::CreateInstance($a.GetType('AnimusForge.Illustrator.Context.HeroVisualProfile',$true))
+$hero.GetMethod('ExtractWeapons',$static).Invoke($null,[object[]]@($profile,$gear,$null))|Out-Null
+Check ($profile.BannerEquipmentDetails.Count -eq 1 -and !($profile.WeaponDetails -join ',').Contains('discipline_banner')) 'Portrait flag classified outside ordinary weapons'
+Check (($profile.WeaponDetails -join ',').Contains('real_sword')) 'Portrait real weapon remains recorded'
+Check ($gear[4].Item -eq $bannerItem) 'Portrait classification never deletes banner slot from complete equipment'
+Check ($profile.BuildVisualSummary().Contains('非现场可见性证据')) 'Portrait summary distinguishes banner inventory from visibility'
+$director=$a.GetType('AnimusForge.Illustrator.Core.VisualDirectorEngine',$true)
+$planType=$a.GetType('AnimusForge.Illustrator.Core.IllustrationPromptPlan',$true)
+$rules=$a.GetType('AnimusForge.Illustrator.Core.VisualFidelityRules',$true)
+$portraitContract=[string]$rules.GetField('EncyclopediaPortrait',$static).GetRawConstantValue()
+$portraitFacts=[string]($profile.BuildVisualSummary()+$portraitContract)
+$plan=[Activator]::CreateInstance($planType,[object[]]@([string]'人物百科纪事',$portraitFacts,[string]'自然姿态',[string]''))
+$scenePlan=[Activator]::CreateInstance($planType,[object[]]@('现场会话','现场旗手正在举旗','',''))
+$guard=$director.GetMethod('ViolatesPortraitComposition',$static)
+Check ($guard.Invoke($null,@('姿态测试哨兵，一手举旗另一手撑桌',$plan))) 'Portrait rejects flag and table tableau from director'
+Check (!$guard.Invoke($null,@('现场旗手正在举旗',$scenePlan))) 'Portrait guard does not censor actual flags in scene modes'
+Check (!$guard.Invoke($null,@('自然侧身，肩臂放松，以面部为视觉中心',$plan))) 'Portrait accepts natural posture'
+$resolved=[string]$director.GetMethod('ResolveDirectorOutput',$static).Invoke($null,[object[]]@('姿态测试哨兵，一手举旗另一手撑桌',$plan,$null))
+Check (!$resolved.Contains('姿态测试哨兵') -and $resolved.Contains($portraitContract)) 'Portrait actual resolution falls back locally without losing hard constraints'
+$pose=[string]$popupType.GetMethod('GenerateDiversePoseDirective',$static).Invoke($null,[object[]]@($null))
+Check ($pose.Contains('自然') -and !$pose.Contains('迈步') -and !$pose.Contains('下马')) 'Portrait default no longer chooses forced action templates'
+$effective=[string]$client.GetMethod('BuildEffectivePrompt').Invoke($null,[object[]]@($resolved,'1024x1024','high','vivid',$null,$null,$true,100))
+$contract=[string]$rules.GetField('Contract',$static).GetRawConstantValue()
+Check (([regex]::Matches($effective,[regex]::Escape($contract))).Count -eq 1) 'Portrait final request includes fidelity contract once'
+Check ($effective.Contains($portraitContract) -and $effective.Contains('不强制换动作')) 'Portrait constraints survive maximum randomness and final request assembly'
 # Static ownership wiring checks supplement, not substitute for live native tests.
 $popupSource=Get-Content (Join-Path $src 'UI\Overlays\IllustrationCardPopup.cs') -Raw -Encoding UTF8
 $screen=Get-Content (Join-Path $src 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8

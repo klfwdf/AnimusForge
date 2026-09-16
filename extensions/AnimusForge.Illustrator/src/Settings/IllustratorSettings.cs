@@ -298,9 +298,9 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("4. 存储与性能", GroupOrder = 4)]
         public int MaxCacheCount { get; set; } = 200;
 
-        [SettingPropertyBool("修正 UI 显示色彩通道 (修复游戏内红蓝反色/蓝皮)", HintText = "Bannerlord 原生 Gauntlet UI 着色器在渲染内存贴图时默认红蓝通道反置。开启此项自动校正为真实肉色与服饰色彩。默认开启。", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("4. 存储与性能", GroupOrder = 4)]
-        public bool FixColorChannels { get; set; } = true;
+        // Legacy serialized setting only. Hidden from MCM and ignored by the PNG loader.
+        // Do not migrate/rewrite user settings: an old true value must also preserve encoded RGB.
+        public bool FixColorChannels { get; set; } = false;
 
         // 提示词扩写：底层永久自动开启，并全自动复用 AnimusForge 正文对话 API 配置
         public bool EnableLlmPromptExpansion { get; set; } = true;

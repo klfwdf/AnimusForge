@@ -42,7 +42,7 @@ namespace AnimusForge.Illustrator.Engine
             return false;
         }
 
-        public static BannerlordUiSprite LoadOrRegisterPngBytes(string spriteName, byte[] bytes, int fallbackWidth = 1024, int fallbackHeight = 1024, bool fixColorChannels = true)
+        public static BannerlordUiSprite LoadOrRegisterPngBytes(string spriteName, byte[] bytes, int fallbackWidth = 1024, int fallbackHeight = 1024, bool fixColorChannels = false)
         {
             Core.IllustratorRuntime.AssertMainThread();
             if (string.IsNullOrWhiteSpace(spriteName) || bytes == null || bytes.Length == 0)
@@ -52,7 +52,7 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
-                bytes = ImagePayload.Normalize(bytes);
+                bytes = PrepareEncodedImageForUi(bytes, fixColorChannels);
                 if (LoadedSprites.TryGetValue(spriteName, out var previous))
                 {
                     ReleaseSprite(spriteName, previous);
@@ -68,11 +68,6 @@ namespace AnimusForge.Illustrator.Engine
                 byte[] bytesToLoad = bytes;
                 int detectedWidth = 0;
                 int detectedHeight = 0;
-
-                if (fixColorChannels)
-                {
-                    bytesToLoad = SwapRedAndBlueInPng(bytes, out detectedWidth, out detectedHeight);
-                }
 
                 BannerlordEngineTexture engineTexture = BannerlordEngineTexture.CreateFromMemory(bytesToLoad);
                 if (engineTexture == null)
@@ -103,7 +98,7 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 LoadedSprites[spriteName] = sprite;
 
-                Debug.Print($"[Illustrator] Successfully loaded dynamic sprite: {spriteName} ({width}x{height}, colorFixed={fixColorChannels})");
+                Debug.Print($"[Illustrator] Successfully loaded dynamic sprite: {spriteName} ({width}x{height}, colorPolicy=encoded-rgb, legacyFixIgnored={fixColorChannels})");
                 return sprite;
             }
             catch (Exception ex)
@@ -150,50 +145,12 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        private static byte[] SwapRedAndBlueInPng(byte[] pngBytes, out int outWidth, out int outHeight)
+        // Encoded PNG/JPEG are not raw BGRA buffers. CreateFromMemory decodes their color channels.
+        // Keep the legacy argument for callers/saved settings, but NEVER swap a decoded PNG here.
+        // 2026-09-17: same cached portrait was normal RGB; legacy UI swap caused blue skin/gold->blue.
+        internal static byte[] PrepareEncodedImageForUi(byte[] bytes, bool legacyFixColorChannels)
         {
-            outWidth = 0;
-            outHeight = 0;
-            try
-            {
-                using (var inStream = new MemoryStream(pngBytes))
-                using (var bmp = new Bitmap(inStream))
-                {
-                    outWidth = bmp.Width;
-                    outHeight = bmp.Height;
-                    var rect = new Rectangle(0, 0, outWidth, outHeight);
-                    var bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-                    try
-                    {
-                        unsafe
-                        {
-                            byte* ptr = (byte*)bmpData.Scan0.ToPointer();
-                            int totalBytes = bmpData.Stride * outHeight;
-                            for (int i = 0; i < totalBytes; i += 4)
-                            {
-                                byte b = ptr[i];
-                                ptr[i] = ptr[i + 2];
-                                ptr[i + 2] = b;
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        bmp.UnlockBits(bmpData);
-                    }
-
-                    using (var outStream = new MemoryStream())
-                    {
-                        bmp.Save(outStream, ImageFormat.Png);
-                        return outStream.ToArray();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Print($"[Illustrator] SwapRedAndBlueInPng error: {ex.Message}");
-                return pngBytes;
-            }
+            return ImagePayload.Normalize(bytes);
         }
 
         private sealed class RuntimeIllustrationSprite : BannerlordUiSprite

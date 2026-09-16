@@ -35,6 +35,7 @@ namespace AnimusForge.Illustrator.Context
         public string CurrentStateDetail { get; set; } = string.Empty;
         public List<string> EquipmentDetails { get; set; } = new List<string>();
         public List<string> WeaponDetails { get; set; } = new List<string>();
+        public List<string> BannerEquipmentDetails { get; set; } = new List<string>();
         public string MountDetail { get; set; } = string.Empty;
         public CharacterAppearanceSnapshot Appearance { get; set; }
         public string EquipmentCode { get; set; } = string.Empty;
@@ -87,6 +88,11 @@ namespace AnimusForge.Illustrator.Context
             if (WeaponDetails.Count > 0)
             {
                 sb.AppendLine($"【当前装备中的武器与盾牌（不得替换成旗帜）】" + string.Join("，", WeaponDetails));
+            }
+            if (BannerEquipmentDetails.Count > 0)
+            {
+                sb.AppendLine("【旗帜装备栏记录（非普通手持武器、非现场可见性证据）】" + string.Join("，", BannerEquipmentDetails) +
+                    "；完整读取该槽不代表本人正在举旗。百科肖像不展示旗帜；现场或事件插画须另有可见/使用证据，不能因该栏有物品就安排举旗或布置背景旗。");
             }
             if (!string.IsNullOrWhiteSpace(MountDetail))
             {
@@ -590,6 +596,11 @@ namespace AnimusForge.Illustrator.Context
                 string itemName = element.Item.Name != null ? element.Item.Name.ToString() : element.Item.StringId;
                 string modifierStr = element.ItemModifier?.Name != null ? element.ItemModifier.Name.ToString() + "的" : "";
 
+                if (element.Item.ItemType == ItemObject.ItemTypeEnum.Banner)
+                {
+                    profile.BannerEquipmentDetails.Add(modifierStr + itemName);
+                    continue;
+                }
                 if (element.Item.ItemType == ItemObject.ItemTypeEnum.Shield)
                 {
                     hasShield = true;
