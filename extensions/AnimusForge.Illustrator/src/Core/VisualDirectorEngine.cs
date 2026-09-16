@@ -168,9 +168,9 @@ namespace AnimusForge.Illustrator.Core
 
         internal static string ResolveDirectorOutput(string output, IllustrationPromptPlan plan, IllustrationOptions options)
         {
-            if (ViolatesPortraitComposition(output, plan))
+            if (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan))
             {
-                TaleWorlds.Library.Debug.Print("[VisualDirector] Portrait props/action rejected; using local portrait fallback without retry.");
+                TaleWorlds.Library.Debug.Print("[VisualDirector] Unsupported shield/portrait props rejected; using local portrait fallback without retry.");
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             if (NarrativeFactRouter.HasNarrativeEcho(output, plan.DirectorOnlyFacts, plan.HardFacts))
@@ -179,6 +179,17 @@ namespace AnimusForge.Illustrator.Core
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             return ComposeFinalPrompt(output, plan.HardFacts);
+        }
+
+        internal static bool ViolatesShieldVisibility(string output, IllustrationPromptPlan plan)
+        {
+            if (string.IsNullOrWhiteSpace(output)) return false;
+            if (plan?.Mode == "人物百科纪事" &&
+                (output.Contains("盾") || output.IndexOf("shield", StringComparison.OrdinalIgnoreCase) >= 0)) return true;
+            // Text-only conservative gate; also rejects some negative mentions. No extra API retry.
+            return System.Text.RegularExpressions.Regex.IsMatch(output,
+                @"(?:背负|背着|背在|背后|背上|身后|肩后)[^。！？\r\n]{0,40}盾|盾[^。！？\r\n]{0,40}(?:背负|背着|背在|背后|背上|身后|肩后)|shield[^.!?\r\n]{0,60}(?:back|behind|shoulders)|(?:back|behind|shoulders)[^.!?\r\n]{0,60}shield",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
         }
 
         internal static bool ViolatesPortraitComposition(string output, IllustrationPromptPlan plan)
