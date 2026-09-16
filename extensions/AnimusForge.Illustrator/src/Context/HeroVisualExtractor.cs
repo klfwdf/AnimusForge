@@ -604,7 +604,7 @@ namespace AnimusForge.Illustrator.Context
                 if (element.Item.ItemType == ItemObject.ItemTypeEnum.Shield)
                 {
                     hasShield = true;
-                    profile.WeaponDetails.Add($"盾牌: {modifierStr}{itemName}；已在当前装备快照中确认，按现场持握/背负方式保留，非战斗动作可自然背负，不要为了展示纹章把盾牌替换成军旗；盾面是否带纹章以人物参考图为准，有纹章时使用该人物对应的纹章标准图");
+                    profile.WeaponDetails.Add($"盾牌: {modifierStr}{itemName}；仅为装备持有记录，不是展示要求；禁止背负或用作背景摆设，百科肖像默认不画盾牌；其他场景只有明确的实际持盾动作依据才可少量入镜，图案仅在确已入镜时参照本人纹章，不能为展示纹章增加盾牌或军旗");
                 }
                 else if (element.Item.ItemType == ItemObject.ItemTypeEnum.Crossbow)
                 {

@@ -213,6 +213,21 @@ $effective=[string]$client.GetMethod('BuildEffectivePrompt').Invoke($null,[objec
 $contract=[string]$rules.GetField('Contract',$static).GetRawConstantValue()
 Check (([regex]::Matches($effective,[regex]::Escape($contract))).Count -eq 1) 'Portrait final request includes fidelity contract once'
 Check ($effective.Contains($portraitContract) -and $effective.Contains('不强制换动作')) 'Portrait constraints survive maximum randomness and final request assembly'
+# User shield policy: fewer shields, no back-mounted shields in any mode.
+$shieldGuard=$director.GetMethod('ViolatesShieldVisibility',$static)
+foreach($bad in @('他的盾牌自然背负在身后','背后露出一面筝形盾','肩后是一面盾牌','a shield strapped to her back','behind him hangs a shield')) {
+ Check ($shieldGuard.Invoke($null,@($bad,$scenePlan))) "Shield rejects back-mounted description: $bad"
+}
+Check ($shieldGuard.Invoke($null,@('手持盾牌的百科肖像',$plan))) 'Shield portrait rejects even hand-held shields by default'
+Check (!$shieldGuard.Invoke($null,@('现场士兵举盾抵挡攻击',$scenePlan))) 'Shield scene hand-held action is not globally forbidden'
+$shieldResolved=[string]$director.GetMethod('ResolveDirectorOutput',$static).Invoke($null,[object[]]@('背盾测试哨兵，盾牌背负在身后',$plan,$null))
+Check (!$shieldResolved.Contains('背盾测试哨兵') -and $shieldResolved.Contains('所有模式禁止背盾')) 'Shield actual director resolution rejects backed shield and retains policy'
+$shieldItem=[TaleWorlds.Core.ItemObject]::new('owned_shield');$shieldItem.Type=[TaleWorlds.Core.ItemObject+ItemTypeEnum]::Shield
+$gear[1]=[TaleWorlds.Core.EquipmentElement]::new($shieldItem,$null,$null,$false)
+$shieldProfile=[Activator]::CreateInstance($a.GetType('AnimusForge.Illustrator.Context.HeroVisualProfile',$true))
+$hero.GetMethod('ExtractWeapons',$static).Invoke($null,[object[]]@($shieldProfile,$gear,$null))|Out-Null
+Check ($gear[1].Item -eq $shieldItem -and ($shieldProfile.WeaponDetails -join ',').Contains('owned_shield')) 'Shield complete equipment and owned shield record remain intact'
+Check (!($shieldProfile.WeaponDetails -join ',').Contains('自然背负') -and $portraitContract.Contains('默认不画盾牌')) 'Shield metadata no longer instructs default back carrying'
 # Static ownership wiring checks supplement, not substitute for live native tests.
 $popupSource=Get-Content (Join-Path $src 'UI\Overlays\IllustrationCardPopup.cs') -Raw -Encoding UTF8
 $screen=Get-Content (Join-Path $src 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8
