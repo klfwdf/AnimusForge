@@ -58,7 +58,15 @@ namespace AnimusForge.Illustrator.Context
                     appearance = CharacterAppearanceSnapshot.FromAgent(agent, equipment);
                     return equipment;
                 }
-            // Randomized troop templates cannot prove what this particular NPC is wearing.
+            Equipment fallback = character.Equipment ?? character.FirstBattleEquipment;
+            if (fallback != null)
+            {
+                source = "普通NPC标准会话装备（无现场Agent）";
+                var visible = CharacterAppearanceSnapshot.VisibleEquipment(fallback);
+                bodyProperties = character.GetBodyProperties(visible, -1).ToString();
+                appearance = CharacterAppearanceSnapshot.FromCharacter(character, fallback);
+                return new Equipment(fallback);
+            }
             return null;
         }
 

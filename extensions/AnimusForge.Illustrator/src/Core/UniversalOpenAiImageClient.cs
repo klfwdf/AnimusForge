@@ -307,7 +307,7 @@ namespace AnimusForge.Illustrator.Core
         /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
         /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
         /// </summary>
-        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, video game still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest";
+        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, videogame model, 3D polygon mesh, flat game lighting, digital CGI, videogame still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest";
 
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
@@ -475,6 +475,11 @@ namespace AnimusForge.Illustrator.Core
                         {
                             ["type"] = "text",
                             ["text"] = effectivePrompt
+                        },
+                        new JObject
+                        {
+                            ["type"] = "text",
+                            ["text"] = "【重绘指令/Artistic Redraw Mandate】附带的人物参考图仅供提取面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画/细腻艺术笔触从零重新手绘该人物，呈现出美术馆级历史油画/写实画卷质感，杜绝任何游戏截图或3D渲染痕迹。 / Strictly DO NOT replicate the 3D videogame mesh, digital textures, or game engine lighting from the reference image. Completely repaint from scratch with rich oil brushwork and natural chiaroscuro."
                         }
                     };
                     foreach (var reference in referenceImages)

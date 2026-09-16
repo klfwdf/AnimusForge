@@ -480,10 +480,11 @@ namespace AnimusForge.Illustrator.Core
 
         internal static bool ShouldRetryDirectorWithoutImages(int statusCode, string responseBody)
         {
-            if (statusCode != 400 && statusCode != 415 && statusCode != 422) return false;
+            if (statusCode != 400 && statusCode != 415 && statusCode != 422 && statusCode != 500 && statusCode != 502 && statusCode != 503) return false;
             string text = (responseBody ?? string.Empty).ToLowerInvariant();
             return text.Contains("image_url") || text.Contains("vision") || text.Contains("multimodal") ||
-                   text.Contains("image input") || text.Contains("content must be a string") || text.Contains("unsupported content");
+                   text.Contains("image input") || text.Contains("mmproj") || text.Contains("content must be a string") ||
+                   text.Contains("unsupported content") || (text.Contains("image") && text.Contains("not support"));
         }
 
         private static string BuildDirectorStylePreference(IllustrationOptions options)

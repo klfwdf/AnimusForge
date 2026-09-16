@@ -206,7 +206,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；可保留本图中自然放松的姿态；不要复制界面、背景与游戏渲染质感，不要为重新设计构图而发明手持物、撑桌或夸张动作"));
+                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于提取其面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正的古典油画/细腻艺术笔触从零重新手绘该人物，不可有任何游戏截图或3D渲染痕迹；可保留本图中自然放松的姿态；不要为重新设计构图而发明手持物、撑桌或夸张动作"));
                 }
                 // 纹章由原生渲染导出，导出控件不向屏幕绘制；取消信号贯穿请求
                 if (!string.IsNullOrWhiteSpace(bannerCode))
@@ -359,7 +359,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, "对话中玩家主角的身份参考图：仅用于锁定其五官、发型、肤色与装备；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
+                        var r = new IllustrationReferenceImage(b64, "对话中玩家主角的身份参考图：仅用于锁定其面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画笔触从零重新手绘该人物，杜绝任何游戏截图或3D渲染痕迹；严禁复制本图的姿势、取景、背景、光影");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -370,7 +370,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感");
+                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其面部五官轮廓与装备形制或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画笔触从零重新手绘该人物，杜绝任何游戏截图或3D渲染痕迹；严禁复制本图的姿势、取景、背景、光影");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
