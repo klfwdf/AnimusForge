@@ -193,13 +193,28 @@ namespace AnimusForge.Illustrator.Context
                 string source, body;
                 Equipment snapshot = ConversationEquipmentSnapshot.CaptureCharacter(partnerChar, out source, out body, out var appearance);
                 context.InterlocutorBodyProperties = body ?? string.Empty;
+                int age = (int)partnerChar.Age;
+                if (age <= 0) age = 28; // 普通战士/悍匪标准壮年年龄，防止0岁导致大模型臆造成老头
+
                 var profile = new HeroVisualProfile
                 {
                     HeroName = partnerChar.Name?.ToString() ?? partnerChar.StringId,
                     Culture = partnerChar.Culture?.Name?.ToString() ?? "未知文化",
                     Gender = partnerChar.IsFemale ? "女性" : "男性",
-                    Age = (int)partnerChar.Age
+                    Age = age,
+                    PhysicalFeatures = HeroVisualExtractor.ExtractCharacterPhysicalFeatures(partnerChar, snapshot)
                 };
+
+                uint color1 = appearance?.Color1 ?? (partnerChar.Culture != null ? partnerChar.Culture.Color : 0);
+                uint color2 = appearance?.Color2 ?? (partnerChar.Culture != null ? partnerChar.Culture.Color2 : 0);
+                if (color1 != 0)
+                {
+                    string c1Name = HeroVisualExtractor.ResolveColorName(color1);
+                    string c1Hex = "#" + (color1 & 0x00FFFFFF).ToString("X6");
+                    string c2Part = (color2 != 0 && color2 != color1) ? $"，辅以 {HeroVisualExtractor.ResolveColorName(color2)} (#{(color2 & 0x00FFFFFF):X6})" : "";
+                    profile.LiveryColorsSummary = $"所属阵营/兵种布料识别色为【{c1Name}】({c1Hex}){c2Part}；衣甲布料应自然呈现对应色彩，严禁画成全黑或死黑。";
+                }
+
                 HeroVisualExtractor.ApplyEquipmentSnapshot(profile, snapshot, source);
                 profile.Appearance = appearance;
                 context.InterlocutorProfile = profile;

@@ -307,7 +307,7 @@ namespace AnimusForge.Illustrator.Core
         /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
         /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
         /// </summary>
-        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, videogame model, 3D polygon mesh, flat game lighting, digital CGI, videogame still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest";
+        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, videogame model, 3D polygon mesh, flat game lighting, digital CGI, videogame still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest, emblem printed on chestplate, crest on bare armor, wrinkles on young character, old man on warrior, white hair on young man, peasant felt hat replacing helmet, modern objects";
 
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
@@ -480,6 +480,14 @@ namespace AnimusForge.Illustrator.Core
                         {
                             ["type"] = "text",
                             ["text"] = "【重绘指令/Artistic Redraw Mandate】附带的人物参考图仅供提取面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画/细腻艺术笔触从零重新手绘该人物，呈现出美术馆级历史油画/写实画卷质感，杜绝任何游戏截图或3D渲染痕迹。 / Strictly DO NOT replicate the 3D videogame mesh, digital textures, or game engine lighting from the reference image. Completely repaint from scratch with rich oil brushwork and natural chiaroscuro."
+                        },
+                        new JObject
+                        {
+                            ["type"] = "text",
+                            ["text"] = "【角色绑定与装备铁律/Character Binding Mandate】在双人或多人物会面画面中，画面各侧的人物必须与对应编号的人物身份参考图 1:1 严格绑定！\n" +
+                                       "- 画面一方（通常为左侧主角位）必须对应第一张人物参考图：如实还原其五官相貌、实际头戴装备与战甲（若佩戴战盔必须如实画出战盔，严禁画成布帽/毡帽，严禁画成随从或老农）！\n" +
+                                       "- 画面另一方必须对应第二张人物参考图：如实还原其相貌与盔甲！\n" +
+                                       "- 严禁在没有盾牌罩袍时在胸甲表面硬印大纹章图腾；壮年角色绝不可画成白发老头！"
                         }
                     };
                     foreach (var reference in referenceImages)

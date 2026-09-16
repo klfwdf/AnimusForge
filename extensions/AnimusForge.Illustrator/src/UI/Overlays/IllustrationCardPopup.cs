@@ -204,9 +204,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     throw new InvalidOperationException("百科完整装备离屏立绘未取得，已停止生成；请稍后重试。");
 
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
+                var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于提取其面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正的古典油画/细腻艺术笔触从零重新手绘该人物，不可有任何游戏截图或3D渲染痕迹；可保留本图中自然放松的姿态；不要为重新设计构图而发明手持物、撑桌或夸张动作"));
+                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于提取其面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正的古典油画/细腻艺术笔触从零重新手绘该人物，不可有任何游戏截图或3D渲染痕迹；可保留本图中自然放松的姿态；不要为重新设计构图而发明手持物或夸张动作");
+                    refs.Add(r);
+                    genRefsList.Add(r);
                 }
                 // 纹章由原生渲染导出，导出控件不向屏幕绘制；取消信号贯穿请求
                 if (!string.IsNullOrWhiteSpace(bannerCode))
@@ -214,12 +217,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面因已确认事实出现纹章载体时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体"));
+                        var emblemRef = new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：当画面因已确认事实出现盾牌或纹章罩袍时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲表面硬印纹章");
+                        refs.Add(emblemRef);
+                        // 仅当人物实际持有盾牌或穿戴明确纹章布料时，才作为生图垫图；普通甲胄不送垫图，防止模型强行印在胸甲上
+                        bool hasShieldOrTabard = profile.WeaponDetails.Exists(w => w.StartsWith("盾牌: ") && !w.Contains("无盾牌"));
+                        if (hasShieldOrTabard)
+                        {
+                            genRefsList.Add(emblemRef);
+                        }
                     }
                 }
                 string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
-                var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
+                var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefsList;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
@@ -246,8 +256,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private static string GenerateDiversePoseDirective(Hero hero)
         {
-            // Portraits are not action scenes. Variation must not invent props, gestures or locations.
-            return "人物为视觉中心的克制肖像：自然直立或轻微侧身、肩臂放松；优先近景半身，镜头可在正面与轻侧面适度变化；必须描写可辨认的背景空间、材质和光源，环境低对比但不能低曝光成黑底。不为求变化设计复杂持物动作。";
+            string[] poses = new[]
+            {
+                "端庄沉稳的古典半身/七分身肖像：人物目光深邃内敛，身姿挺拔微侧，肩臂自然舒展，以面容神采与真实衣甲为核心，背景层次丰富细腻。",
+                "威严内敛的立姿肖像：人物昂然挺拔，一手自然按于腰际佩剑剑柄之上，神情自信笃定，流露出身经百战或执掌封邑的领袖气度。",
+                "深思笃定的端坐肖像：人物端坐于雕花高背椅或领主座椅之上，身躯微倾，双手从容搭于扶手，流露出沉稳睿智的决策者风度。",
+                "富有纵深感的中近景环境肖像：人物自然放松、神情从容，光线勾勒出面庞轮廓与甲胄材质，背景呈现出静谧而大气的空间氛围。"
+            };
+            int seed = hero != null ? Math.Abs(hero.StringId?.GetHashCode() ?? 0) : 0;
+            return poses[seed % poses.Length] + "必须描写可辨认的背景空间、材质和光源，暗部保留细节绝非黑幕。严禁在胸甲金属表面硬印纹章，无盾无罩袍无需刻意绘制纹章。";
         }
 
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
@@ -329,6 +346,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             bool playerCivilian = convContext.MainHeroCivilian;
             string playerEquipmentCode = convContext.MainHeroProfile?.EquipmentCode;
             string partnerEquipmentCode = convContext.InterlocutorProfile?.EquipmentCode;
+            string playerName = player?.Name != null ? player.Name.ToString() : "玩家主角";
             if (player == null || string.IsNullOrWhiteSpace(playerEquipmentCode) || string.IsNullOrWhiteSpace(partnerEquipmentCode))
             {
                 _dataSource.SetReady("未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。");
@@ -359,7 +377,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, "对话中玩家主角的身份参考图：仅用于锁定其面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画笔触从零重新手绘该人物，杜绝任何游戏截图或3D渲染痕迹；严禁复制本图的姿势、取景、背景、光影");
+                        var r = new IllustrationReferenceImage(b64, $"【角色参考图1 - 画面左侧主角位: {playerName}】这是玩家主角的独家身份与外观参考：仅用于锁定其面部五官轮廓与全身装备形制（包括头盔/战盔护具）；严格绑定在最终画面左侧主角位；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画笔触从零重新手绘该人物；严禁篡改其头盔战盔款式，严禁将玩家降格为随从！");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -370,19 +388,29 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"对话对方【{partnerName}】的身份参考图：仅用于锁定其面部五官轮廓与装备形制或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画笔触从零重新手绘该人物，杜绝任何游戏截图或3D渲染痕迹；严禁复制本图的姿势、取景、背景、光影");
+                        var r = new IllustrationReferenceImage(b64, $"【角色参考图2 - 画面右侧对手位: {partnerName}】这是对话对方的独家身份与外观参考：仅用于锁定其面部五官轮廓与全部装备形制；严格绑定在最终画面右侧对手位；严禁直接复刻或贴图游戏3D多边形网格；必须用纯正古典油画笔触从零重新手绘该人物，严禁将此人与左侧主角混淆，严禁擅自将青年或壮年人物画为白发老翁！");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
                 }
+
+                // 检查双方是否有手持盾牌或身穿明确纹章布料
+                bool anyShieldOrTabard = (convContext.MainHeroProfile?.WeaponDetails?.Exists(w => w.StartsWith("盾牌: ") && !w.Contains("无盾牌")) == true) ||
+                                         (convContext.InterlocutorProfile?.WeaponDetails?.Exists(w => w.StartsWith("盾牌: ") && !w.Contains("无盾牌")) == true) ||
+                                         (convContext.MainHeroProfile?.BannerEquipmentDetails?.Count > 0) ||
+                                         (convContext.InterlocutorProfile?.BannerEquipmentDetails?.Count > 0);
                 foreach (var spec in emblemSpecs ?? new List<EmblemSpec>())
                 {
                     string b64 = await BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体");
+                        var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体（如盾牌或背景军旗）真实出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲金属表面硬印纹章！");
                         directorRefs.Add(r);
-                        genRefs.Add(r);
+                        // 仅当确实有盾牌或明确纹章载体时才加入生图垫图，防止生图模型在普通金属胸甲上生硬印制纹章！
+                        if (anyShieldOrTabard)
+                        {
+                            genRefs.Add(r);
+                        }
                     }
                 }
 

@@ -58,13 +58,48 @@ namespace AnimusForge.Illustrator.Context
                     appearance = CharacterAppearanceSnapshot.FromAgent(agent, equipment);
                     return equipment;
                 }
-            Equipment fallback = character.Equipment ?? character.FirstBattleEquipment;
+
+            // 原版大地图会面算法：按部队成员种子精确选定当前屏幕正在展示的装备变体与面容
+            var party = TaleWorlds.CampaignSystem.Party.MobileParty.ConversationParty?.Party ?? TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.EncounteredParty;
+            int seed = -1;
+            try
+            {
+                if (party != null)
+                {
+                    seed = Helpers.CharacterHelper.GetPartyMemberFaceSeed(party, character, 0);
+                }
+            }
+            catch { }
+            if (seed == -1)
+            {
+                try { seed = character.GetDefaultFaceSeed(0); } catch { seed = 0; }
+            }
+
+            Equipment fallback = null;
+            try
+            {
+                var battleEquipments = character.BattleEquipments;
+                int count = battleEquipments != null ? System.Linq.Enumerable.Count(battleEquipments) : 0;
+                if (count > 0)
+                {
+                    int variantIndex = Math.Abs(character.GetDefaultFaceSeed(0)) % count;
+                    fallback = System.Linq.Enumerable.ElementAt(battleEquipments, variantIndex);
+                }
+            }
+            catch { }
+
+            if (fallback == null)
+            {
+                fallback = character.Equipment ?? character.FirstBattleEquipment;
+            }
+
             if (fallback != null)
             {
-                source = "普通NPC标准会话装备（无现场Agent）";
+                source = "普通NPC大地图标准会话装备（匹配当前会话变体）";
                 var visible = CharacterAppearanceSnapshot.VisibleEquipment(fallback);
-                bodyProperties = character.GetBodyProperties(visible, -1).ToString();
-                appearance = CharacterAppearanceSnapshot.FromCharacter(character, fallback);
+                BodyProperties bp = character.GetBodyProperties(visible, seed);
+                bodyProperties = bp.ToString();
+                appearance = CharacterAppearanceSnapshot.FromCharacter(character, fallback, seed);
                 return new Equipment(fallback);
             }
             return null;
