@@ -47,11 +47,11 @@ namespace AnimusForge.Illustrator.Context
                 hero.ClanBanner?.BannerCode, hero.MapFaction?.Color ?? 0, hero.MapFaction?.Color2 ?? 0, hero.CharacterObject.Race, hero.IsFemale);
         }
 
-        internal static CharacterAppearanceSnapshot FromCharacter(CharacterObject character, Equipment equipment)
+        internal static CharacterAppearanceSnapshot FromCharacter(CharacterObject character, Equipment equipment, int seed = -1)
         {
             if (character == null || equipment == null) return null;
             var visible = VisibleEquipment(equipment);
-            string bodyProperties = character.GetBodyProperties(visible, -1).ToString();
+            string bodyProperties = character.GetBodyProperties(visible, seed).ToString();
             var party = MobileParty.ConversationParty?.Party ?? PlayerEncounter.EncounteredParty;
             var banner = character.HeroObject?.ClanBanner?.BannerCode
                          ?? party?.Banner?.BannerCode

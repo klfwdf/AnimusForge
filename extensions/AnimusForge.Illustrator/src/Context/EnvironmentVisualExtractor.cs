@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -103,8 +104,8 @@ namespace AnimusForge.Illustrator.Context
             }
             else
             {
-                profile.SettlementType = "开阔荒野/野战古战场";
-                profile.TerrainAndLandscape = "广袤的卡拉迪亚丘陵起伏地带与地平线远山";
+                profile.SettlementType = "开阔自然荒野/野外遭遇现场";
+                profile.TerrainAndLandscape = ResolveOverlandTerrain();
             }
 
             // 2. 纪元日期 + 季节时令（骑砍历法：年 - 季节 - 该季第几日）
@@ -498,12 +499,67 @@ namespace AnimusForge.Illustrator.Context
             }
             else
             {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
+                bool isInArmyCamp = false;
+                try
                 {
-                    profile.SurroundingCharacters = "身侧肃立着披甲随从与战备护卫，周围是开阔原野与扎营连绵的队伍";
+                    isInArmyCamp = MobileParty.MainParty?.Army != null;
                 }
-                profile.SurroundingProps = "驻扎的行军牛皮帐篷、插在草地上的锋利矛戈与军需物资、余烬微红的野外行军篝火、系在树桩旁的战马与运粮大车";
+                catch { }
+
+                if (isInArmyCamp)
+                {
+                    if (string.IsNullOrEmpty(profile.SurroundingCharacters))
+                    {
+                        profile.SurroundingCharacters = "身侧有军团随从与各领主战备护卫，周围是扎营连绵的联合军团驻地";
+                    }
+                    profile.SurroundingProps = "驻扎的行军牛皮帐篷、插在草地上的锋利矛戈与军需物资、余烬微红的野外行军篝火、系在树桩旁的战马与运粮大车";
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(profile.SurroundingCharacters))
+                    {
+                        profile.SurroundingCharacters = "周围是开阔原野与自然风光，双方仅保留现场确认的随行戒备人员，不额外虚构密集仪仗";
+                    }
+                    profile.SurroundingProps = "天然风化岩石与碎石、野生杂木灌木丛、开阔草野泥地、野外自然风光；绝无任何军营帐篷、绝无桌案家具等摆设道具 (Natural Wilderness, Rocks, Bushes, NO Tents, NO Furniture)";
+                }
             }
+        }
+
+        private static string ResolveOverlandTerrain()
+        {
+            try
+            {
+                if (Campaign.Current?.MapSceneWrapper != null && MobileParty.MainParty != null)
+                {
+                    TerrainType terrain = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(MobileParty.MainParty.CurrentNavigationFace);
+                    switch (terrain)
+                    {
+                        case TerrainType.Forest:
+                            return "繁茂的中世纪自然森林：苍翠挺拔的白桦树与落叶乔木林立，林间起伏草甸与野生灌木丛生，地面散落着风化巨石与苔藓泥径，远处林隙透出自然天光 (Dense Forest & Birch Trees with Boulders)";
+                        case TerrainType.Mountain:
+                            return "险峻的卡拉迪亚崇山峻岭：巨大裸露的风化岩石崖壁、陡峭碎石斜坡与稀疏耐寒高山草甸，远处连绵巍峨的岩石山脊 (Rugged Mountains & Rocky Cliffs)";
+                        case TerrainType.Snow:
+                            return "覆雪严寒的北国旷野：白雪皑皑的开阔雪原，挂满白霜冰晶的冷杉松柏，脚下踩踏出的泥雪车辙野径 (Snow-covered Plain & Frosty Pines)";
+                        case TerrainType.Desert:
+                            return "炽热无垠的金色荒漠：滚滚起伏的流线型沙丘、干涸碎石砾石滩与偶尔可见的耐旱干枯灌木，热浪微漾的地平线 (Golden Desert Sand Dunes)";
+                        case TerrainType.Steppe:
+                            return "苍茫辽阔的干旱草原：微风吹拂的枯黄草浪、起伏平缓的黄土原野与遥远开阔的荒原地平线 (Vast Arid Steppe & Dry Grasslands)";
+                        case TerrainType.Swamp:
+                            return "潮湿泥泞的沼泽湿地：水洼泥沼交错，丛生的高大芦苇荡与浮萍水草，湿润泥土气息 (Misty Wetland & Marshes)";
+                        case TerrainType.Water:
+                            return "碧波荡漾的湖泊岸边或开阔浅滩水泽：湿润泥沙卵石滩、波光粼粼的水面与对岸浅丘 (Lake Shore & River Shallows)";
+                        case TerrainType.Canyon:
+                            return "险要深邃的峡谷裂谷：刀劈斧削般的两侧陡峭红岩崖壁与谷底蜿蜒的碎石野径 (Rocky Canyon & Ravine)";
+                        case TerrainType.Bridge:
+                            return "河流渡口与古朴石木桥梁前沿：流淌的湍急河水、散落鹅卵石的河滩岸边 (River Crossing & Stone Bridge)";
+                        case TerrainType.Plain:
+                        default:
+                            return "绿意盎然的卡拉迪亚开阔原野：丰茂起伏的绿草草甸、天然散布的风化岩石、低矮灌木与远处隐现的连绵丘陵山脊 (Lush Open Grassland, Boulders & Distant Hills)";
+                    }
+                }
+            }
+            catch { }
+            return "开阔自然的卡拉迪亚原野草甸与远处起伏丘陵 (Open Wilderness & Rolling Hills)";
         }
 
         /// <summary>

@@ -41,6 +41,7 @@ namespace AnimusForge.Illustrator.Context
         public string EquipmentCode { get; set; } = string.Empty;
         public string EquipmentSource { get; set; } = string.Empty;
         public string HeadgearDetail { get; set; } = string.Empty;
+        public string LiveryColorsSummary { get; set; } = string.Empty;
 
         public string BuildSummary()
         {
@@ -70,6 +71,10 @@ namespace AnimusForge.Illustrator.Context
                 string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? $", 所属王国: {KingdomName}" : "";
                 sb.AppendLine($"【家族与纹章】" + (!string.IsNullOrWhiteSpace(ClanName) ? $"所属家族: {ClanName}{factionPart}" : "") +
                     (!string.IsNullOrWhiteSpace(BannerDescription) ? $" | {BannerDescription}" : $" (识别色: {PrimaryBannerColorHex}/{SecondaryBannerColorHex})"));
+            }
+            if (!string.IsNullOrWhiteSpace(LiveryColorsSummary))
+            {
+                sb.AppendLine("【服饰与阵营布料配色】" + LiveryColorsSummary);
             }
             if (!string.IsNullOrWhiteSpace(CurrentStateDetail))
             {
@@ -149,7 +154,20 @@ namespace AnimusForge.Illustrator.Context
             // 5b. 提取当前处境状态 (俘虏关押/负伤/留驻/随军/已故)
             profile.CurrentStateDetail = ExtractCurrentState(hero);
 
-            // 6. 提取纹章识别色与家族旗帜
+            // 6. 提取纹章识别色、家族旗帜与阵营服饰布料主色
+            uint liveryColor1 = hero.Clan != null ? hero.Clan.Color : (hero.MapFaction != null ? hero.MapFaction.Color : 0);
+            uint liveryColor2 = hero.Clan != null ? hero.Clan.Color2 : (hero.MapFaction != null ? hero.MapFaction.Color2 : 0);
+            if (liveryColor1 != 0)
+            {
+                string c1Name = ResolveColorName(liveryColor1);
+                string c1Hex = "#" + (liveryColor1 & 0x00FFFFFF).ToString("X6");
+                string c2Part = "";
+                if (liveryColor2 != 0 && liveryColor2 != liveryColor1)
+                {
+                    c2Part = $"，副色为 {ResolveColorName(liveryColor2)} (#{(liveryColor2 & 0x00FFFFFF):X6})";
+                }
+                profile.LiveryColorsSummary = $"人物所属阵营服饰制服主色为【{c1Name}】({c1Hex}){c2Part}；其身着的披风、斗篷、罩袍长袍及盔甲布料内衬必须鲜明展现此阵营主色调，呈现饱满历史布料质感，严禁涂抹成全黑、暗黑或死黑色。";
+            }
             if (hero.Clan != null)
             {
                 profile.PrimaryBannerColorHex = "#" + (hero.Clan.Color & 0x00FFFFFF).ToString("X6");
@@ -547,7 +565,7 @@ namespace AnimusForge.Illustrator.Context
 
             if (slot == EquipmentIndex.Head)
             {
-                profile.HeadgearDetail = $"已佩戴头部装备：{modifierStr}{itemName}（物品ID: {item.StringId}，{materialStr}）。头部入镜时必须保留该装备，不得为露出发型或五官而摘掉；陌生MOD名称不代表无装备，外形以同一人物装备参考图为准，缺少视觉证据时不要按名字臆造造型。";
+                profile.HeadgearDetail = $"已佩戴头部装备：{modifierStr}{itemName}（物品ID: {item.StringId}，{materialStr}）。【头戴铁律】：头部入镜时必须如实保留该真实装备形制；严格以人物参考图中的真实头盔/头饰为准，严禁凭空替换为布帽、尖顶毡帽、普通头巾，亦不得擅自摘除头盔！";
             }
 
             if (slot == EquipmentIndex.Cape)
@@ -560,17 +578,96 @@ namespace AnimusForge.Illustrator.Context
             profile.EquipmentDetails.Add(desc);
         }
 
+        public static string ExtractCharacterPhysicalFeatures(CharacterObject character, Equipment equipment)
+        {
+            if (character == null) return string.Empty;
+            var sb = new StringBuilder();
+
+            bool isBandit = false;
+            string id = (character.StringId ?? "").ToLowerInvariant();
+            string name = (character.Name?.ToString() ?? "").ToLowerInvariant();
+            if (id.Contains("looter") || id.Contains("bandit") || id.Contains("raider") || id.Contains("outlaw") ||
+                name.Contains("劫匪") || name.Contains("强盗") || name.Contains("山贼") || name.Contains("海寇") || name.Contains("响马"))
+            {
+                isBandit = true;
+            }
+
+            if (isBandit)
+            {
+                sb.Append("体格精悍魁梧、目光凶悍桀骜的荒野壮年匪徒（约26-32岁），面带风霜之色，肌肉紧绷极具战斗力；绝非年迈体衰之辈，严禁画成白发老翁、驼背老樵夫或老农！");
+            }
+            else
+            {
+                sb.Append("正值壮年、身形挺拔结实的战士（约25-35岁），神态坚毅沉稳；绝非老弱，严禁画成白发老翁！");
+            }
+
+            if (equipment != null)
+            {
+                var headItem = equipment[EquipmentIndex.Head].Item;
+                if (headItem != null)
+                {
+                    string hName = (headItem.Name?.ToString() ?? "").ToLowerInvariant();
+                    string hId = (headItem.StringId ?? "").ToLowerInvariant();
+                    if (hName.Contains("面罩") || hName.Contains("巾") || hName.Contains("兜帽") || hId.Contains("headcloth") || hId.Contains("mask") || hId.Contains("hood") || hId.Contains("wrap"))
+                    {
+                        sb.Append(" 头部戴有粗布/亚麻面罩兜帽，紧密遮裹住口鼻与下半张脸，仅露出警惕锐利的双眼与浓密粗眉。");
+                    }
+                }
+
+                var bodyItem = equipment[EquipmentIndex.Body].Item;
+                if (bodyItem != null)
+                {
+                    string bName = (bodyItem.Name?.ToString() ?? "").ToLowerInvariant();
+                    string bId = (bodyItem.StringId ?? "").ToLowerInvariant();
+                    if (bName.Contains("破烂") || bName.Contains("粗布") || bName.Contains("短衫") || bName.Contains("背心") || bId.Contains("rags") || bId.Contains("vest") || bId.Contains("tattered"))
+                    {
+                        sb.Append(" 身着粗麻开襟无袖短衣，袒露出强健结实的胸膛与宽厚胸肌。");
+                    }
+                }
+
+                var gloveItem = equipment[EquipmentIndex.Gloves].Item;
+                if (gloveItem != null)
+                {
+                    string gName = (gloveItem.Name?.ToString() ?? "").ToLowerInvariant();
+                    string gId = (gloveItem.StringId ?? "").ToLowerInvariant();
+                    if (gName.Contains("裹手") || gName.Contains("带") || gId.Contains("wrap") || gId.Contains("bandage"))
+                    {
+                        sb.Append(" 双手与前臂紧紧缠绕着层层粗亚麻布条绷带。");
+                    }
+                }
+            }
+
+            return sb.ToString().Trim();
+        }
+
         private static string ResolveItemMaterial(ItemObject item)
         {
-            if (item == null || item.ArmorComponent == null) return "材质未在装备数据中标明";
+            if (item == null) return "材质未标明";
+            string name = (item.Name != null ? item.Name.ToString() : "").ToLowerInvariant();
+            string id = (item.StringId ?? "").ToLowerInvariant();
 
-            string name = item.Name != null ? item.Name.ToString() : "";
+            // 针对第三方 MOD 装备智能推导
+            if (name.Contains("盔") || name.Contains("胄") || id.Contains("helm") || id.Contains("bascinet") || id.Contains("nasal") || id.Contains("spangenhelm"))
+            {
+                return "金属战斗战盔";
+            }
+            if (name.Contains("冠") || name.Contains("冕") || id.Contains("crown") || id.Contains("circlet") || id.Contains("coronet"))
+            {
+                return "金属冠冕/头饰";
+            }
+            if (name.Contains("兜帽") || name.Contains("面罩") || name.Contains("头巾") || id.Contains("hood") || id.Contains("mask") || id.Contains("headcloth"))
+            {
+                return "织物兜帽/面罩";
+            }
+
+            if (item.ArmorComponent == null) return "防护装备材质";
+
             switch (item.ArmorComponent.MaterialType)
             {
                 case ArmorComponent.ArmorMaterialTypes.Cloth:
-                    if (name.Contains("丝") || item.StringId.IndexOf("silk", StringComparison.OrdinalIgnoreCase) >= 0) return "丝织物";
-                    if (name.Contains("麻") || item.StringId.IndexOf("linen", StringComparison.OrdinalIgnoreCase) >= 0 || item.StringId.IndexOf("burlap", StringComparison.OrdinalIgnoreCase) >= 0) return "麻布织物";
-                    return "布料织物；具体纤维与纹样未标明";
+                    if (name.Contains("丝") || id.Contains("silk")) return "丝织物";
+                    if (name.Contains("麻") || id.Contains("linen") || id.Contains("burlap")) return "麻布织物";
+                    return "布料织物";
                 case ArmorComponent.ArmorMaterialTypes.Leather:
                     return "皮革";
                 case ArmorComponent.ArmorMaterialTypes.Chainmail:
@@ -735,11 +832,11 @@ namespace AnimusForge.Illustrator.Context
             catch { }
 
             // Clan.Color/Color2 are faction/livery metadata, not the actual BannerData background.
-            return $"{clanName} 的纹章图案规格（不是要求添加旗帜或旗杆）：" +
+            return $"{clanName} 的家族纹章标准图案规格（仅供参考，非必画元素）：" +
                 (!string.IsNullOrEmpty(composition)
-                    ? composition + "。颜色HEX来自实际BannerData图层，不得用家族/王国染色字段或导演画面色调替换。"
-                    : "未取得有效纹章图层配色，不从家族或王国染色字段推断底色。") +
-                "完整多色布局、徽记形状与朝向以该归属方的纹章标准参考图为准；人物参考图只确认承载位置，不以光照后的颜色覆盖标准色。无参考图时不得按图集类别猜造徽记。";
+                    ? composition + "。颜色HEX来自实际BannerData图层。"
+                    : "未取得有效纹章图层配色。") +
+                "【纹章载体铁律】：纹章仅供画面中存在盾牌、纹章罩袍或背景军旗等合理载体时作为图腾绘制参考；严禁在普通金属板甲、胸甲或寻常衣物表面硬印纹章图腾！若人物身穿普通盔甲且未手持盾牌，画面中绝不可刻意在胸口添加任何纹章图腾！";
         }
 
         /// <summary>
