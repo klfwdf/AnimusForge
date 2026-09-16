@@ -330,11 +330,15 @@ namespace AnimusForge.Illustrator.Core
                 string clause = strength >= 100
                     ? "在事实允许的范围内，最大程度探索不同取景、留白、景深与光影表现"
                     : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
-                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把这些图片的姿势、背景、构图或光影用作场景模板。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何随机强度均须保留有依据的场景空间关系，不得虚构物体、人物或事件，重绘必须遵循本次换镜头指导；" + clause + "。";
+                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；可保留自然姿态，但不得把身份图的背景、构图或光影用作场景模板；百科肖像只适度变化镜头和光线，不强制换动作。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何随机强度均须保留有依据的场景空间关系，不得虚构物体、人物或事件，重绘必须遵循本次换镜头指导；" + clause + "。";
             }
             // Style/custom negatives must not remove equipped headgear or recolor heraldry.
             if ((prompt ?? string.Empty).Contains("【不可改写的游戏事实】"))
+            {
+                // Keep one final contract instead of repeatedly emphasizing heraldry/flags.
+                effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.Contract, string.Empty).TrimEnd();
                 effectivePrompt += "\n" + VisualFidelityRules.Contract;
+            }
             return effectivePrompt;
         }
 

@@ -182,11 +182,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
             HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, equipmentSnapshot: equipment, equipmentSource: "百科当前人物立绘的完整EquipmentCode（不是现场装备或身份推测）");
             string bannerCode = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner)?.BannerCode;
 
-            string hardFacts = profile.BuildVisualSummary();
+            string hardFacts = profile.BuildVisualSummary() + "\n" + VisualFidelityRules.EncyclopediaPortrait;
             string directorFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildDirectorOnlyFacts();
             _generationCount++;
             string artDirection = GenerateDiversePoseDirective(hero);
-            if (_generationCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
+            if (_generationCount > 1) artDirection += "\n本次重绘只适度改变镜头角度、景别或光线，不强制改变姿势，不增加道具。";
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
             var options = IllustratorRuntime.CaptureOptions();
             if (options?.EnableOffscreenRendering != true)
@@ -206,7 +206,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感，构图与画风必须重新设计"));
+                    refs.Add(new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；可保留本图中自然放松的姿态；不要复制界面、背景与游戏渲染质感，不要为重新设计构图而发明手持物、撑桌或夸张动作"));
                 }
                 // 纹章由原生渲染导出，导出控件不向屏幕绘制；取消信号贯穿请求
                 if (!string.IsNullOrWhiteSpace(bannerCode))
@@ -246,37 +246,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private static string GenerateDiversePoseDirective(Hero hero)
         {
-            if (hero == null) return string.Empty;
-
-            // 动态随机因子：融合英雄ID、TickCount与新Guid，确保同一英雄每次点击【重新绘制】都能随机抽取完全不同的古典构图！
-            int seed = Math.Abs(hero.StringId.GetHashCode() ^ Environment.TickCount ^ Guid.NewGuid().GetHashCode());
-            string[] compositions =
-            {
-                "环境占主导的远景人物肖像，让建筑、道路或地貌交代人物所处世界，人物不必正对镜头",
-                "三分之二侧身中景，人物刚刚转头或停下动作，形成被历史瞬间捕捉的感觉",
-                "低机位仰拍，但保持自然比例，用天空、穹顶或建筑线条形成留白",
-                "高位俯拍人物穿过庭院、街巷、营地或大厅，让空间动线成为叙事主体",
-                "近距离面部与上半身肖像，以细微眼神、呼吸和手势表达身份，不额外添加道具",
-                "从门框、柱廊、帐帘或树枝之间观察人物，形成自然前景层次",
-                "人物位于画面边缘，视线投向画外事件，留下大片环境与悬念空间",
-                "逆光或剪影式构图，仍保留足够面部与装备细节供辨认",
-                "行进中的瞬间：迈步、下马、登阶或穿过人群，但只使用事实中已有的装备与坐骑",
-                "安静停顿的瞬间：人物在窗边、火光旁或露天阴影中思考，避免固定的地图桌动作",
-                "半身侧面与远处活动形成双层叙事，让人物身份通过环境关系而不是夸张姿势表现",
-                "广角近景，前景是人物真实装备细节，中后景只选择一两个与其经历有关的环境元素",
-                "对称构图但加入自然动作和不完全居中，让庄重感不等于僵硬站桩",
-                "非对称动态构图，利用披风、光线、人群或建筑线条形成方向感，不凭空添加物件",
-                "从同伴或侍从视角观察人物，形成有距离感的纪实肖像，背景人物只作轻微陪衬",
-                "天气和光线保持克制，以人物参考图和游戏事实为核心，不强制使用黄昏、火盆或戏剧逆光"
-            };
-            string roleHint = hero.IsFactionLeader
-                ? "可通过空间尺度、周围人的距离或礼仪秩序表现统治身份，不必固定使用王座、王冠或权杖"
-                : hero.IsNotable
-                    ? "可让人物与其真实职业环境发生联系，但不要凭职业猜测衣着和手持物"
-                    : hero.IsWanderer
-                        ? "可强调旅途感、临时停留或观察环境，不必固定放在酒馆与篝火旁"
-                        : "可在肖像、环境人物和行动瞬间之间自由取舍";
-            return "本次可优先尝试以下构图方向，也可由导演根据人物事实选择更合适的方案：" + compositions[seed % compositions.Length] + "。" + roleHint + "。";
+            // Portraits are not action scenes. Variation must not invent props, gestures or locations.
+            return "人物为视觉中心的克制肖像：自然直立或轻微侧身、肩臂放松；镜头可在正面与轻侧面、半身与中景间适度变化，背景简洁低对比。不为求变化设计复杂持物动作。";
         }
 
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
