@@ -298,9 +298,6 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("4. 存储与性能", GroupOrder = 4)]
         public int MaxCacheCount { get; set; } = 200;
 
-        // Legacy serialized setting only. Hidden from MCM and ignored by the PNG loader.
-        // Do not migrate/rewrite user settings: an old true value must also preserve encoded RGB.
-        public bool FixColorChannels { get; set; } = false;
 
         // 提示词扩写：底层永久自动开启，并全自动复用 AnimusForge 正文对话 API 配置
         public bool EnableLlmPromptExpansion { get; set; } = true;

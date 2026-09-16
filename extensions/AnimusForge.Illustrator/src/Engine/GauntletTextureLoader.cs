@@ -42,7 +42,7 @@ namespace AnimusForge.Illustrator.Engine
             return false;
         }
 
-        public static BannerlordUiSprite LoadOrRegisterPngBytes(string spriteName, byte[] bytes, int fallbackWidth = 1024, int fallbackHeight = 1024, bool fixColorChannels = false)
+        public static BannerlordUiSprite LoadOrRegisterPngBytes(string spriteName, byte[] bytes, int fallbackWidth = 1024, int fallbackHeight = 1024)
         {
             Core.IllustratorRuntime.AssertMainThread();
             if (string.IsNullOrWhiteSpace(spriteName) || bytes == null || bytes.Length == 0)
@@ -52,7 +52,7 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
-                bytes = PrepareEncodedImageForUi(bytes, fixColorChannels);
+                bytes = PrepareEncodedImageForUi(bytes);
                 if (LoadedSprites.TryGetValue(spriteName, out var previous))
                 {
                     ReleaseSprite(spriteName, previous);
@@ -98,7 +98,7 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 LoadedSprites[spriteName] = sprite;
 
-                Debug.Print($"[Illustrator] Successfully loaded dynamic sprite: {spriteName} ({width}x{height}, colorPolicy=encoded-rgb, legacyFixIgnored={fixColorChannels})");
+                Debug.Print($"[Illustrator] Successfully loaded dynamic sprite: {spriteName} ({width}x{height}, colorPolicy=encoded-rgb)");
                 return sprite;
             }
             catch (Exception ex)
@@ -146,9 +146,9 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         // Encoded PNG/JPEG are not raw BGRA buffers. CreateFromMemory decodes their color channels.
-        // Keep the legacy argument for callers/saved settings, but NEVER swap a decoded PNG here.
+        // This invariant has NO setting or caller override. NEVER swap a decoded PNG here.
         // 2026-09-17: same cached portrait was normal RGB; legacy UI swap caused blue skin/gold->blue.
-        internal static byte[] PrepareEncodedImageForUi(byte[] bytes, bool legacyFixColorChannels)
+        internal static byte[] PrepareEncodedImageForUi(byte[] bytes)
         {
             return ImagePayload.Normalize(bytes);
         }

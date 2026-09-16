@@ -228,7 +228,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 if (File.Exists(selected.Item?.FilePath))
                 {
                     byte[] bytes = ImagePayload.ReadFile(selected.Item.FilePath);
-                    var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
+                    var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
                     if (sprite != null) _loadedPreviewSpriteName = spriteName;
                 }
                 if (_loadedPreviewSpriteName == null) throw new IOException("图片不存在或无法解码，请刷新画廊。");

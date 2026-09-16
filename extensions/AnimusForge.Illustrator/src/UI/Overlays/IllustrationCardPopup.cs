@@ -425,7 +425,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 : "Illustration_" + Guid.NewGuid().ToString("N");
 
             ReleaseActiveSprite();
-            var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
+            var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes);
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);

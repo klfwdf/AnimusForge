@@ -421,7 +421,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             string spriteName = (item?.Key ?? "weekly_" + Guid.NewGuid().ToString("N")) + "_weekly";
             var bytes = imageBytes ?? item.ImageData;
-            var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes, fixColorChannels: IllustratorRuntime.CaptureOptions()?.FixColorChannels ?? true);
+            var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
             _overlayVm.SpriteName = spriteName;

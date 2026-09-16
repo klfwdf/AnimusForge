@@ -16,7 +16,6 @@ namespace AnimusForge.Illustrator.Core
         public bool EnableMultimodalVision { get; }
         public bool EnableOffscreenRendering { get; }
         public bool EnableLlmPromptExpansion { get; }
-        public bool FixColorChannels { get; }
         public int MaxCacheCount { get; }
         public string ApiBaseUrl { get; }
         public string ApiKey { get; }
@@ -40,7 +39,6 @@ namespace AnimusForge.Illustrator.Core
             EnableMultimodalVision = settings.EnableMultimodalVision;
             EnableOffscreenRendering = settings.EnableOffscreenRendering;
             EnableLlmPromptExpansion = settings.EnableLlmPromptExpansion;
-            FixColorChannels = settings.FixColorChannels;
             MaxCacheCount = Math.Max(20, Math.Min(1000, settings.MaxCacheCount));
             ApiBaseUrl = settings.ApiBaseUrl;
             ApiKey = settings.ApiKey;

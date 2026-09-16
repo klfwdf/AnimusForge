@@ -160,26 +160,30 @@ Check ($edit.Item1) 'F08 actual edits HTTP path accepts mock image'
 Check ([AuditFixture]::Body.Contains('quality') -and [AuditFixture]::Body.Contains('high')) 'F08 multipart includes chosen quality'
 Check ([AuditFixture]::Body.Contains('玩家家族') -and [AuditFixture]::Body.Contains('对方家族')) 'F08 prompt maps both reference owners'
 Check ([AuditFixture]::PngParts() -eq 2 -and [AuditFixture]::Body.Contains('image/png')) 'F08 both MIME-declared uploads are real PNG bytes'
-# Encoded-color regression: actual UI preparation path must preserve RGB for BOTH persisted toggle values.
+# Encoded-color invariant: no setting, options field or caller flag can change RGB.
 $ui=$a.GetType('AnimusForge.Illustrator.Engine.GauntletTextureLoader',$true)
 $prepare=$ui.GetMethod('PrepareEncodedImageForUi',$static)
 $palette=@([Drawing.Color]::Red,[Drawing.Color]::Blue,[Drawing.Color]::Gold,[Drawing.Color]::FromArgb(255,212,159,121),[Drawing.Color]::FromArgb(255,110,55,160),[Drawing.Color]::FromArgb(128,210,95,30))
 $swatches=[Drawing.Bitmap]::new(6,1)
 for($i=0;$i -lt $palette.Count;$i++){$swatches.SetPixel($i,0,$palette[$i])}
 $colorStream=[IO.MemoryStream]::new();$swatches.Save($colorStream,[Drawing.Imaging.ImageFormat]::Png);$encoded=$colorStream.ToArray()
-foreach($legacy in @($false,$true)) {
- $prepared=$prepare.Invoke($null,[object[]]@($encoded,$legacy))
- Check ([Convert]::ToBase64String($prepared) -eq [Convert]::ToBase64String($encoded)) "Color PNG bytes unchanged with legacy toggle=$legacy"
+foreach($load in @('first-load','cache-reopen')) {
+ $prepared=$prepare.Invoke($null,[object[]]@(,$encoded))
+ Check ([Convert]::ToBase64String($prepared) -eq [Convert]::ToBase64String($encoded)) "Color PNG bytes unchanged on $load"
  $readStream=[IO.MemoryStream]::new([byte[]]$prepared);$decoded=[Drawing.Bitmap]::new($readStream)
- for($i=0;$i -lt $palette.Count;$i++){Check ($decoded.GetPixel($i,0).ToArgb() -eq $swatches.GetPixel($i,0).ToArgb()) "Color exact RGBA swatch $i with legacy toggle=$legacy"}
+ for($i=0;$i -lt $palette.Count;$i++){Check ($decoded.GetPixel($i,0).ToArgb() -eq $swatches.GetPixel($i,0).ToArgb()) "Color exact RGBA swatch $i on $load"}
  $decoded.Dispose();$readStream.Dispose()
 }
 $swatches.Dispose();$colorStream.Dispose()
 $uiSource=Get-Content (Join-Path $src 'Engine\GauntletTextureLoader.cs') -Raw -Encoding UTF8
-Check ($uiSource.Contains('bytes = PrepareEncodedImageForUi(bytes, fixColorChannels);') -and !$uiSource.Contains('SwapRedAndBlueInPng')) 'Color actual loader uses tested encoded-color path with no swap'
+Check ($uiSource.Contains('bytes = PrepareEncodedImageForUi(bytes);') -and !$uiSource.Contains('SwapRedAndBlueInPng')) 'Color actual loader uses tested encoded-color path with no swap'
 $settingsType=$a.GetType('AnimusForge.Illustrator.IllustratorSettings',$true)
-$legacyProperty=$settingsType.GetProperty('FixColorChannels')
-Check (@($legacyProperty.GetCustomAttributes($true)|Where-Object {$_.GetType().Name -like 'SettingProperty*'}).Count -eq 0) 'Color dangerous legacy toggle is no longer offered in MCM'
+Check ($null -eq $settingsType.GetProperty('FixColorChannels')) 'Color setting is deleted, not merely hidden'
+$optionsType=$a.GetType('AnimusForge.Illustrator.Core.IllustrationOptions',$true)
+Check ($null -eq $optionsType.GetProperty('FixColorChannels')) 'Color options snapshot has no color override'
+Check ($prepare.GetParameters().Count -eq 1 -and $ui.GetMethod('LoadOrRegisterPngBytes').GetParameters().Count -eq 4) 'Color public loader and preparation have no correction argument'
+$forbidden=@(Get-ChildItem $src -Recurse -Filter '*.cs' | Select-String -Pattern 'FixColorChannels|fixColorChannels|SwapRedAndBlueInPng')
+Check ($forbidden.Count -eq 0) 'Color no setting, override, or PNG swap remains anywhere in module source'
 # Banner ownership is not a held weapon; keep the complete snapshot but classify separately.
 $bannerItem=[TaleWorlds.Core.ItemObject]::new('discipline_banner');$bannerItem.Type=[TaleWorlds.Core.ItemObject+ItemTypeEnum]::Banner
 $swordItem=[TaleWorlds.Core.ItemObject]::new('real_sword');$swordItem.Type=[TaleWorlds.Core.ItemObject+ItemTypeEnum]::OneHandedWeapon

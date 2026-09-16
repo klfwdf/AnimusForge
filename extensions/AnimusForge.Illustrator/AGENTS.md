@@ -5,10 +5,10 @@
 ## 不得再次引入的颜色错误（2026-09-17 实机反例）
 
 - 已编码 PNG/JPEG 不等于原始 BGRA 显存。`Bitmap.LockBits(Format32bppArgb)` 的内存字节次序，不证明 `Texture.CreateFromMemory(encodedBytes)` 会交换红蓝。
-- UI 的 `GauntletTextureLoader.PrepareEncodedImageForUi` 必须保持正常 PNG 的字节/像素；禁止恢复 `SwapRedAndBlueInPng` 或换名的等价转换。旧 `FixColorChannels` true/false 都必须保持颜色，不得只改默认值。
+- UI 的 `GauntletTextureLoader.PrepareEncodedImageForUi` 必须保持正常 PNG 的字节/像素；禁止恢复 `SwapRedAndBlueInPng` 或换名的等价转换。产品未发布：彻底删除 `FixColorChannels` 设置、options 字段及 loader 参数，不保留旧配置兼容层，不得仅隐藏开关或改默认值。编码颜色必须是无配置、无调用方覆盖入口的固定契约。
 - 图像问题先按同一图像身份对比：原生导出→发送的参考图→服务端/缓存原图→游戏截图。不得仅凭“蓝皮”就改所有通道，不得按肤色统计自动猜测 RGB/BGR。
 - 原生导出适配只作用于其已取证的生产者；修改须提供对应导出色块/实际旗帜对照。不得将该适配重复施加到标准缓存、HTTP 结果或 UI 加载。
-- 保留红、蓝、金色、肤色、紫色及半透明色块的精确 RGBA 回归；旧设置两种取值都要测，实际 UI 加载入口必须调用被测试的准备函数。
+- 保留红、蓝、金色、肤色、紫色及半透明色块的精确 RGBA 回归；首次加载与缓存重开都要测；反射与全源码扫描必须证明设置、options、修色参数和 PNG 交换函数不存在，实际 UI 加载入口必须调用被测试的准备函数。
 - 当前用户图的缓存原色正常，UI 交换错误；不得通过删除缓存或要求付费重绘掩盖显示层缺陷。
 - 离线颜色字节测试不能冒充 GPU 实机验收。部署后仍需重启游戏、重新打开旧缓存卡片对照。
 
