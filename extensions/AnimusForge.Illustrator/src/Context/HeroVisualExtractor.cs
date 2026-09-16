@@ -36,6 +36,10 @@ namespace AnimusForge.Illustrator.Context
         public List<string> EquipmentDetails { get; set; } = new List<string>();
         public List<string> WeaponDetails { get; set; } = new List<string>();
         public string MountDetail { get; set; } = string.Empty;
+        public CharacterAppearanceSnapshot Appearance { get; set; }
+        public string EquipmentCode { get; set; } = string.Empty;
+        public string EquipmentSource { get; set; } = string.Empty;
+        public string HeadgearDetail { get; set; } = string.Empty;
 
         public string BuildSummary()
         {
@@ -57,13 +61,9 @@ namespace AnimusForge.Illustrator.Context
         public string BuildVisualSummary()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"【人物与至高地位】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
+            sb.AppendLine($"【人物身份】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
                 $" ({Culture}文化, {Gender}, 约{Age}岁" + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
             if (!string.IsNullOrWhiteSpace(SpeciesDescription)) sb.AppendLine("【真实种族/物种】" + SpeciesDescription);
-
-            string visualBackground = NarrativeFactRouter.ExtractVisualEvidence(CultureLore, FactionLore, BackgroundLore);
-            if (!string.IsNullOrWhiteSpace(visualBackground))
-                sb.AppendLine("【背景中的视觉证据】仅在适用时使用，历史描述与文化群体特征不得覆盖此人当前装备、面貌或处境：\n" + visualBackground);
             if (!string.IsNullOrWhiteSpace(ClanName) || !string.IsNullOrWhiteSpace(BannerDescription))
             {
                 string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? $", 所属王国: {KingdomName}" : "";
@@ -78,17 +78,19 @@ namespace AnimusForge.Illustrator.Context
             {
                 sb.AppendLine($"【面貌骨相与发型】{PhysicalFeatures}");
             }
+            if (!string.IsNullOrWhiteSpace(EquipmentSource)) sb.AppendLine("【装备快照来源】" + EquipmentSource);
+            if (!string.IsNullOrWhiteSpace(HeadgearDetail)) sb.AppendLine("【当前头戴装备】" + HeadgearDetail);
             if (EquipmentDetails.Count > 0)
             {
                 sb.AppendLine($"【真实穿戴装备与材质】" + string.Join("，", EquipmentDetails));
             }
             if (WeaponDetails.Count > 0)
             {
-                sb.AppendLine($"【配戴武器与盾牌】" + string.Join("，", WeaponDetails));
+                sb.AppendLine($"【当前装备中的武器与盾牌（不得替换成旗帜）】" + string.Join("，", WeaponDetails));
             }
             if (!string.IsNullOrWhiteSpace(MountDetail))
             {
-                sb.AppendLine($"【坐骑与马铠】{MountDetail}");
+                sb.AppendLine($"【可用坐骑装备（仅在场景支持骑乘时入画）】{MountDetail}");
             }
             return sb.ToString().TrimEnd();
         }
@@ -96,7 +98,7 @@ namespace AnimusForge.Illustrator.Context
 
     public static class HeroVisualExtractor
     {
-        public static HeroVisualProfile Extract(Hero hero, bool useCivilian = false)
+        public static HeroVisualProfile Extract(Hero hero, bool useCivilian = false, Equipment equipmentSnapshot = null, string equipmentSource = null)
         {
             if (hero == null)
             {
@@ -153,20 +155,32 @@ namespace AnimusForge.Illustrator.Context
             profile.PhysicalFeatures = ExtractPhysicalFeatures(hero);
 
             // 8. 提取装备槽位 (真实反射装备，绝无粗麻学者硬编码)
-            Equipment equipment = useCivilian ? hero.CivilianEquipment : hero.BattleEquipment;
-            if (equipment != null)
-            {
-                ExtractArmorSlot(profile, equipment, EquipmentIndex.Head, "头部", hero);
-                ExtractArmorSlot(profile, equipment, EquipmentIndex.Body, "身甲", hero);
-                ExtractArmorSlot(profile, equipment, EquipmentIndex.Cape, "披风", hero);
-                ExtractArmorSlot(profile, equipment, EquipmentIndex.Gloves, "手部", hero);
-                ExtractArmorSlot(profile, equipment, EquipmentIndex.Leg, "腿部", hero);
+            Equipment equipment = equipmentSnapshot ?? (useCivilian ? hero.CivilianEquipment : hero.BattleEquipment);
+            ApplyEquipmentSnapshot(profile, equipment, equipmentSource ?? (useCivilian ? "人物便服装备栏" : "人物战斗装备栏"));
 
-                ExtractWeapons(profile, equipment, hero);
-                ExtractMount(profile, equipment);
-            }
-
+            TaleWorlds.Library.Debug.Print($"[IllustratorFidelity] hero={hero.StringId}, equipmentSource={profile.EquipmentSource}, head={equipment?[EquipmentIndex.Head].Item?.StringId ?? "empty"}, shield={profile.WeaponDetails.Exists(x => x.StartsWith("盾牌: ") && !x.Contains("无盾牌"))}");
             return profile;
+        }
+
+        internal static void ApplyEquipmentSnapshot(HeroVisualProfile profile, Equipment equipment, string source)
+        {
+            profile.EquipmentSource = source ?? string.Empty;
+            profile.EquipmentDetails.Clear();
+            profile.WeaponDetails.Clear();
+            profile.HeadgearDetail = string.Empty;
+            profile.MountDetail = string.Empty;
+            profile.EquipmentCode = string.Empty;
+            if (equipment == null) return;
+            // Native serialization retains all 12 slots, including empty slots and modifiers.
+            equipment = CharacterAppearanceSnapshot.VisibleEquipment(equipment);
+            profile.EquipmentCode = equipment.CalculateEquipmentCode();
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Head, "头部", null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Body, "身甲", null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Cape, "披风", null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Gloves, "手部", null);
+            ExtractArmorSlot(profile, equipment, EquipmentIndex.Leg, "腿部", null);
+            ExtractWeapons(profile, equipment, null);
+            ExtractMount(profile, equipment);
         }
 
         private static string ResolveSpeciesDescription(Hero hero)
@@ -368,21 +382,21 @@ namespace AnimusForge.Illustrator.Context
                             else if (holder.IsMobile && holder.MobileParty != null)
                             {
                                 string pName = holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : "一支队伍";
-                                sb.Append("：正被 ").Append(pName).Append(" 的队伍锁链押送随行，居于随行囚车或营地囚笼");
+                                sb.Append("：正被 ").Append(pName).Append(" 的队伍看押（具体设施与锁具未确认）");
                             }
                         }
                         catch
                         {
                         }
                     }
-                    sb.Append("；【视觉约束】武器已被收缴、不披挂完整战甲——画面应呈现锁链/镣铐、被俘后的简朴凌乱装束与被看押的压抑处境（参考图中的武器盔甲为被俘前装束，勿照搬）");
+                    sb.Append("；仅确认俘虏身份，不据此推导换装、缴械或镣铐；当前穿戴以本次装备与人物参考图为准");
                     states.Add(sb.ToString());
                 }
                 else
                 {
                     if (hero.IsWounded)
                     {
-                        states.Add("当前身负重伤（绷带缠绕/行动迟缓的负伤姿态）");
+                        states.Add("当前负伤；绷带、伤口与动作须有实际视觉证据");
                     }
                     try
                     {
@@ -504,7 +518,8 @@ namespace AnimusForge.Illustrator.Context
             {
                 if (slot == EquipmentIndex.Head)
                 {
-                    profile.EquipmentDetails.Add("头部: 该装备栏为空，未佩戴任何头盔、冠冕或头饰；保持游戏人物原本发型自然裸露");
+                    profile.HeadgearDetail = "当前所选装备快照的头部槽为空；不得凭身份添加头盔、冠冕或头饰。若现场截图显示不同装备，应报告来源不一致，不把其他装备栏当作当前穿戴。";
+                    profile.EquipmentDetails.Add("头部: 当前装备快照未佩戴头部装备");
                 }
                 else if (slot == EquipmentIndex.Cape)
                 {
@@ -523,6 +538,11 @@ namespace AnimusForge.Illustrator.Context
             int tier = (int)item.Tier;
 
             string materialStr = ResolveItemMaterial(item);
+
+            if (slot == EquipmentIndex.Head)
+            {
+                profile.HeadgearDetail = $"已佩戴头部装备：{modifierStr}{itemName}（物品ID: {item.StringId}，{materialStr}）。头部入镜时必须保留该装备，不得为露出发型或五官而摘掉；陌生MOD名称不代表无装备，外形以同一人物装备参考图为准，缺少视觉证据时不要按名字臆造造型。";
+            }
 
             if (slot == EquipmentIndex.Cape)
             {
@@ -559,7 +579,7 @@ namespace AnimusForge.Illustrator.Context
         private static void ExtractWeapons(HeroVisualProfile profile, Equipment equipment, Hero hero)
         {
             bool hasShield = false;
-            for (EquipmentIndex i = EquipmentIndex.Weapon0; i <= EquipmentIndex.Weapon3; i++)
+            for (EquipmentIndex i = EquipmentIndex.Weapon0; i < EquipmentIndex.NumAllWeaponSlots; i++)
             {
                 EquipmentElement element = equipment[i];
                 if (element.Item == null)
@@ -573,7 +593,7 @@ namespace AnimusForge.Illustrator.Context
                 if (element.Item.ItemType == ItemObject.ItemTypeEnum.Shield)
                 {
                     hasShield = true;
-                    profile.WeaponDetails.Add($"盾牌: {modifierStr}{itemName}；盾面颜色与图案以人物或纹章参考图为准，数据未显示时不要自行添加家族徽记");
+                    profile.WeaponDetails.Add($"盾牌: {modifierStr}{itemName}；已在当前装备快照中确认，按现场持握/背负方式保留，非战斗动作可自然背负，不要为了展示纹章把盾牌替换成军旗；盾面是否带纹章以人物参考图为准，有纹章时使用该人物对应的纹章标准图");
                 }
                 else if (element.Item.ItemType == ItemObject.ItemTypeEnum.Crossbow)
                 {
@@ -609,233 +629,9 @@ namespace AnimusForge.Illustrator.Context
 
         private static string ExtractPhysicalFeatures(Hero hero)
         {
-            var traits = new List<string>();
-
-            int hairIndex = 1;
-            int beardIndex = 0;
-            float hairColorOffset = 0.1f;
-            float skinColorOffset = 0.5f;
-            float ageSlider = hero.Age;
-            bool isFemale = hero.IsFemale;
-
-            try
-            {
-                FaceGenerationParams faceParams = FaceGenerationParams.Create();
-                MBBodyProperties.GetParamsFromKey(ref faceParams, hero.BodyProperties, false, false);
-                hairIndex = faceParams.CurrentHair;
-                beardIndex = faceParams.CurrentBeard;
-                hairColorOffset = faceParams.CurrentHairColorOffset;
-                skinColorOffset = faceParams.CurrentSkinColorOffset;
-                if (faceParams.CurrentAge > 1f)
-                {
-                    ageSlider = faceParams.CurrentAge;
-                }
-            }
-            catch
-            {
-            }
-
-            int age = (int)Math.Max(hero.Age, ageSlider);
-
-            // 1. 真实精准提取发色与自然岁月痕迹
-            string baseColorName = "深栗褐发";
-            try
-            {
-                List<uint> gradient = MBBodyProperties.GetHairColorGradientPoints(hero.CharacterObject?.Race ?? 0, isFemale ? 1 : 0, age);
-                if (gradient != null && gradient.Count > 0)
-                {
-                    int idx = (int)MathF.Round(MathF.Clamp(hairColorOffset, 0f, 1f) * (gradient.Count - 1));
-                    uint c = gradient[MBMath.ClampInt(idx, 0, gradient.Count - 1)];
-                    int r = (int)((c >> 16) & 0xFF);
-                    int g = (int)((c >> 8) & 0xFF);
-                    int b = (int)(c & 0xFF);
-
-                    // 在Bannerlord原生渐变色库中：
-                    // Index 0~3 为浅金/亚麻金/金发 (R>150, G>120)
-                    // Index 4~7 为砂金/浅金棕/赤铜红发
-                    // Index 8~12 为中深棕色
-                    // Index 13~23 为深褐与乌黑
-                    if ((r >= 150 && g >= 120) || hairColorOffset <= 0.20f)
-                    {
-                        baseColorName = "金发/明亮亚麻浅金发 (Lustrous golden-blonde / flaxen-blonde hair)";
-                    }
-                    else if ((r >= 130 && g >= 90) || hairColorOffset <= 0.35f)
-                    {
-                        baseColorName = "暖金棕发/砂金发 (Warm honey-brown / sandy-blonde hair)";
-                    }
-                    else if ((r >= 120 && r > g * 1.35f) || (hairColorOffset > 0.20f && hairColorOffset <= 0.40f && r > 140))
-                    {
-                        baseColorName = "赤铜火红发/红发 (Fiery copper-red / auburn hair)";
-                    }
-                    else if ((r >= 55 || g >= 45) || hairColorOffset <= 0.65f)
-                    {
-                        baseColorName = "深栗褐发/深棕发 (Deep chestnut / dark brunette hair)";
-                    }
-                    else
-                    {
-                        baseColorName = "浓密乌黑发 (Rich deep jet-black hair)";
-                    }
-                }
-            }
-            catch
-            {
-                if (hairColorOffset <= 0.20f) baseColorName = "金发/明亮亚麻浅金发 (Lustrous golden-blonde / flaxen-blonde hair)";
-                else if (hairColorOffset <= 0.35f) baseColorName = "暖金棕发/砂金发 (Warm honey-brown / sandy-blonde hair)";
-                else if (hairColorOffset <= 0.65f) baseColorName = "深栗褐发/深棕发 (Deep chestnut / dark brunette hair)";
-                else baseColorName = "浓密乌黑发 (Rich deep jet-black hair)";
-            }
-
-            string hairColorWithAge;
-            if (age >= 70)
-            {
-                hairColorWithAge = "花白银发 (Silver-white hair with wrinkles of great age)";
-            }
-            else if (age >= 55)
-            {
-                hairColorWithAge = $"{baseColorName}中夹杂斑白发丝 (Salt-and-pepper hair with visible silver streaks, but NOT entirely white)";
-            }
-            else if (age >= 35)
-            {
-                hairColorWithAge = $"{baseColorName}，仅两鬓微染极其轻微的成熟银丝，主体依然保持浓密饱满的原生发色，【极其关键：绝非满头全白或灰白】 (Predominantly rich {baseColorName}, with only faint graceful silver highlights at the temples showing maturity; STRICTLY NOT fully white or grey hair!)";
-            }
-            else
-            {
-                hairColorWithAge = baseColorName;
-            }
-
-            // 1.5 真实精准提取人类肤色（杜绝任何红蓝反色或怪异变色）
-            string skinToneDesc = "肤色数据未能精确分类，以人物参考图为准";
-            try
-            {
-                List<uint> skinGradient = MBBodyProperties.GetSkinColorGradientPoints(hero.CharacterObject?.Race ?? 0, isFemale ? 1 : 0, age);
-                if (skinGradient != null && skinGradient.Count > 0)
-                {
-                    int sIdx = (int)MathF.Round(MathF.Clamp(skinColorOffset, 0f, 1f) * (skinGradient.Count - 1));
-                    uint sc = skinGradient[MBMath.ClampInt(sIdx, 0, skinGradient.Count - 1)];
-                    int sr = (int)((sc >> 16) & 0xFF);
-                    int sg = (int)((sc >> 8) & 0xFF);
-                    int sb = (int)(sc & 0xFF);
-                    if (sr > 200 && sg > 160)
-                    {
-                        skinToneDesc = "偏明亮、带暖色血色的自然肤色";
-                    }
-                    else if (sr > 165 && sg > 125)
-                    {
-                        skinToneDesc = "温暖的浅小麦色或米色肤色";
-                    }
-                    else if (sr > 125)
-                    {
-                        skinToneDesc = "较深的暖棕褐色或古铜色肤色";
-                    }
-                    else
-                    {
-                        skinToneDesc = "深褐色肤色";
-                    }
-                }
-            }
-            catch
-            {
-                skinToneDesc = "肤色数据读取失败，以人物参考图为准";
-            }
-
-            traits.Add($"【肤色观测】{skinToneDesc}；以人物参考图为最高依据，不要把渲染通道色偏当成角色真实肤色");
-
-            // 2. 发型与发长真实动态提取
-            if (hairIndex == 0)
-            {
-                traits.Add("【头发】游戏面部数据未显示可见头发；不要自行添加长发或发髻");
-            }
-            else
-            {
-                traits.Add($"【头发】发色为{hairColorWithAge}；具体长度、发际线、编发与发髻只按人物参考图还原，不根据数字索引猜测");
-            }
-            if (!isFemale)
-            {
-                traits.Add(beardIndex == 0
-                    ? "【面部毛发】游戏面部数据为无胡须；不要添加胡须或胡茬"
-                    : $"【面部毛发】游戏面部数据确认存在胡须，颜色接近{baseColorName}；具体形制与浓密程度只按人物参考图还原");
-            }
-
-            // 3. 面貌骨相与身份气场（严格基于性别、年龄与社会地位）
-            if (isFemale)
-            {
-                if (hero.IsFactionLeader)
-                {
-                    traits.Add($"【女皇/统治者雍容骨相】约{age}岁尊贵的帝国至高女皇/统治者，高贵优雅的成熟女性面容，端庄优美的下颌轮廓（绝非男性胡茬或粗糙棱角），眼神威严中带着深沉柔和的政治洞察力，眉宇间流露尊贵摄政者的神圣威仪与统治魄力，成熟雍容，气度非凡 (A magnificent imperial Empress of {age} years, noble and refined feminine bone structure, graceful elegant jawline, commanding yet deeply poised and intelligent eyes, radiant royal authority and majestic sovereign grace, a mature noblewoman monarch, NOT a frail elder and NOT a masculine face)");
-                }
-                else if (hero.IsLord)
-                {
-                    traits.Add($"【贵族贵妇典雅面容】约{age}岁端庄优雅的中世纪贵妇，面容高贵柔美，眼眸明亮沉静，气度优雅端庄 (An elegant noble lady of {age} years, dignified, poised and refined feminine features)");
-                }
-                else
-                {
-                    traits.Add($"【女性面貌】约{age}岁成熟坚毅的中世纪女性面容 (A mature, dignified woman of approximately {age} years)");
-                }
-            }
-            else
-            {
-                bool isScholar = hero.IsWanderer && (hero.Name?.ToString().Contains("学者") == true || hero.EncyclopediaText?.ToString().Contains("学") == true);
-                if (isScholar)
-                {
-                    traits.Add($"【骨相与面貌】约{age}岁清瘦思辨的成熟学者，额头有明显思索抬头纹，深陷的眼窝，目光锐利深邃，带有坚毅沧桑的知识分子气质 (A mature intellectual scholar of roughly {age} years, deep furrowed brow wrinkles, thoughtful deeply sunken eyes, lean ascetic scholarly face)");
-                }
-                else if (hero.IsFactionLeader || hero.IsLord)
-                {
-                    traits.Add($"【骨相与面貌】约{age}岁威严中世纪封建领主/君王，轮廓如雕刻般沉稳刚毅，眼神沉着具有统御气场 (A commanding feudal lord/monarch of roughly {age} years, strong sculpted jawline, authoritative gaze and sovereign presence)");
-                }
-                else
-                {
-                    traits.Add($"【骨相与面貌】约{age}岁坚毅英武的中世纪武士面容 (A seasoned warrior of approximately {age} years)");
-                }
-            }
-
-            // 4. 性格神态
-            try
-            {
-                TraitObject persona = hero.CharacterObject?.GetPersona();
-                if (persona == DefaultTraits.PersonaCurt)
-                {
-                    traits.Add("神态：冷峻严谨、深思审视神色 (Stern, analytical and reserved expression)");
-                }
-                else if (persona == DefaultTraits.PersonaIronic)
-                {
-                    traits.Add("神态：从容微哂、目光透彻犀利 (Subtle wry, penetrating, confident expression)");
-                }
-                else if (persona == DefaultTraits.PersonaSoftspoken)
-                {
-                    traits.Add("神态：温和内敛、安静观察的从容神态 (Quiet, contemplative and gentle expression)");
-                }
-                else if (persona == DefaultTraits.PersonaEarnest)
-                {
-                    traits.Add("神态：庄重专注、正直坚毅的目光 (Dignified, earnest and focused expression)");
-                }
-            }
-            catch
-            {
-            }
-
-            // 5. 体格特征
-            if (hero.CharacterObject != null)
-            {
-                float weight = hero.Weight;
-                float build = hero.Build;
-
-                if (build > 0.65f)
-                {
-                    traits.Add("体格魁梧强壮");
-                }
-                else if (build < 0.35f)
-                {
-                    traits.Add(isFemale ? "身形窈窕高挑" : "身形清瘦修长");
-                }
-
-                if (weight > 0.7f)
-                {
-                    traits.Add("身材宽厚");
-                }
-            }
-
-            return string.Join("，", traits);
+            // FaceGen indices and age/occupation are not a universal visual vocabulary.
+            // The frozen native portrait is authoritative for arbitrary MOD races/palettes.
+            return "五官、骨相、肤色、发色、头发与胡须均按本次人物参考图；不按年龄、身份、职业或发型数字索引补造外貌，无法观测的细节保持未知。";
         }
 
         private static string ExtractBackgroundLore(Hero hero)
@@ -920,11 +716,6 @@ namespace AnimusForge.Illustrator.Context
             if (hero.Clan == null) return string.Empty;
 
             string clanName = hero.Clan.Name != null ? hero.Clan.Name.ToString() : "家族";
-            string color1Hex = "#" + (hero.Clan.Color & 0x00FFFFFF).ToString("X6");
-            string color2Hex = "#" + (hero.Clan.Color2 & 0x00FFFFFF).ToString("X6");
-            string color1Name = ResolveColorName(hero.Clan.Color);
-            string color2Name = ResolveColorName(hero.Clan.Color2);
-
             string composition = string.Empty;
             try
             {
@@ -932,10 +723,12 @@ namespace AnimusForge.Illustrator.Context
             }
             catch { }
 
-            return $"{clanName} 家族旗帜识别色：主色【{color1Name} ({color1Hex})】，副色【{color2Name} ({color2Hex})】" +
+            // Clan.Color/Color2 are faction/livery metadata, not the actual BannerData background.
+            return $"{clanName} 的纹章图案规格（不是要求添加旗帜或旗杆）：" +
                 (!string.IsNullOrEmpty(composition)
-                    ? $"；徽记构图（取自旗帜数据）：{composition}。徽记的具体形状、朝向与配色优先以标注的纹章标准参考图为准，人物立绘中的可见纹样仅作补充；看不清时不要凭构图类别补造图案，严禁换成其他图腾"
-                    : "。具体徽记形状、层级与朝向优先依据纹章标准参考图，其次依据人物参考图中清晰可见的纹章；未取得参考图时不要猜测动物、兵器、王冠或其他图腾");
+                    ? composition + "。颜色HEX来自实际BannerData图层，不得用家族/王国染色字段或导演画面色调替换。"
+                    : "未取得有效纹章图层配色，不从家族或王国染色字段推断底色。") +
+                "完整多色布局、徽记形状与朝向以该归属方的纹章标准参考图为准；人物参考图只确认承载位置，不以光照后的颜色覆盖标准色。无参考图时不得按图集类别猜造徽记。";
         }
 
         /// <summary>
@@ -953,11 +746,27 @@ namespace AnimusForge.Illustrator.Context
             var parts = new List<string>();
             for (int i = 0; i < count; i++)
             {
-                if (i == Banner.BackgroundDataIndex) continue;
                 var data = banner.GetBannerDataAtIndex(i);
                 if (data == null) continue;
 
-                var sb = new StringBuilder($"第{parts.Count + 1}枚：旗面{DescribeBannerRegion(data.Position, full)}的{DescribeBannerScale(data.Size, full)}");
+                if (i == Banner.BackgroundDataIndex)
+                {
+                    var background = new StringBuilder("底层（实际BannerData，底纹布局按标准图）");
+                    if (data.ColorId >= 0)
+                    {
+                        uint color = BannerManager.GetColor(data.ColorId);
+                        background.Append($"主色#{(color & 0x00FFFFFF):X6}（{ResolveColorName(color)}）");
+                    }
+                    if (data.ColorId2 >= 0 && data.ColorId2 != data.ColorId)
+                    {
+                        uint color = BannerManager.GetColor(data.ColorId2);
+                        background.Append($"，第二底色#{(color & 0x00FFFFFF):X6}（{ResolveColorName(color)}）");
+                    }
+                    parts.Add(background.ToString());
+                    continue;
+                }
+
+                var sb = new StringBuilder($"图层{i}：纹章画布{DescribeBannerRegion(data.Position, full)}的{DescribeBannerScale(data.Size, full)}");
                 if (data.ColorId >= 0)
                 {
                     uint c = BannerManager.GetColor(data.ColorId);
@@ -1049,34 +858,23 @@ namespace AnimusForge.Illustrator.Context
             float s = max > 0.0001f ? (delta / max) : 0f;
             float v = max;
 
+            if (v < 0.16f) return "近黑色";
             if (s < 0.12f)
             {
-                if (v > 0.85f) return "纯白/象牙白 (Ivory white)";
-                if (v > 0.55f) return "银灰/浅灰 (Silver grey)";
-                if (v > 0.25f) return "暗石灰/深灰 (Dark stone grey)";
-                return "漆黑 (Jet black)";
+                if (v > 0.9f) return "近白色";
+                if (v > 0.6f) return "浅灰色";
+                return "灰色";
             }
-
-            if (h >= 345 || h < 15) return "绯红/烈焰深红 (Crimson / scarlet red)";
-            if (h >= 15 && h < 45)
-            {
-                if (s > 0.5f && v > 0.6f) return "辉煌灿金/琥珀金橙 (Radiant amber-gold / orange-gold)";
-                return "暖赭色/深赤金 (Warm russet / copper-gold)";
-            }
-            if (h >= 45 && h < 70) return "辉煌灿金色/明黄 (Lustrous imperial gold / yellow)";
-            if (h >= 70 && h < 165) return "翡翠森林深绿 (Forest emerald green)";
-            if (h >= 165 && h < 200) return "天青/松石青绿 (Turquoise / azure green-blue)";
-            if (h >= 200 && h < 250)
-            {
-                if (v < 0.4f) return "深邃深海藏青/海军蓝 (Deep midnight navy blue)";
-                return "皇家蔚蓝/群青 (Royal cobalt / sapphire blue)";
-            }
-            if (h >= 250 && h < 290)
-            {
-                if (v > 0.6f && s < 0.55f) return "高贵淡雅的丁香紫/淡紫 (Elegant lilac / lavender purple)";
-                return "高贵皇家紫/靛紫 (Royal imperial purple / indigo)";
-            }
-            return "紫红/品红 (Royal magenta / purple-red)";
+            if (s < 0.3f && v > 0.6f && h >= 20f && h < 70f) return "浅米色/灰米色";
+            string tone = v < 0.45f ? "深" : s < 0.35f ? "灰调" : string.Empty;
+            if (h >= 345f || h < 15f) return tone + "红色";
+            if (h < 45f) return v < 0.65f ? "棕褐色" : tone + "橙色";
+            if (h < 70f) return tone + "黄色";
+            if (h < 165f) return tone + "绿色";
+            if (h < 200f) return tone + "青色";
+            if (h < 250f) return tone + "蓝色";
+            if (h < 290f) return tone + "紫色";
+            return tone + "品红色";
         }
 
     }

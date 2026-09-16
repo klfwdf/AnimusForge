@@ -24,6 +24,7 @@ namespace AnimusForge.Illustrator.Context
         public string SceneDirective { get; set; } = string.Empty;
         public string RecentDialogueHistory { get; set; } = string.Empty;
         public bool InterlocutorCivilian { get; set; }
+        public bool MainHeroCivilian { get; set; }
         /// <summary>非英雄对话方（劫匪等）在场 Agent 的真实体型/面容序列化——避免用兵种模板重新随机一张脸。</summary>
         public string InterlocutorBodyProperties { get; set; } = string.Empty;
 
@@ -55,6 +56,9 @@ namespace AnimusForge.Illustrator.Context
                 sb.AppendLine("【当前现场】");
                 sb.AppendLine(EnvironmentProfile.BuildHardFactsSummary());
             }
+            // 空间关系是构图硬约束，不能只放在开放艺术指导中，否则导演可能退化为平地对话。
+            if (!string.IsNullOrWhiteSpace(SceneDirective))
+                sb.AppendLine("【当前人物空间与动作硬事实】" + SceneDirective);
             return sb.ToString().TrimEnd();
         }
 
@@ -160,30 +164,45 @@ namespace AnimusForge.Illustrator.Context
                 }
             }
 
-            // 只有在明确和平时期且非围城、非敌对军阵对峙时，才穿平民便服
-            bool isCivilian = false;
-            if (!isUnderSiege && !isEnemyEncounter)
-            {
-                if (TaleWorlds.MountAndBlade.Mission.Current != null)
-                {
-                    isCivilian = TaleWorlds.MountAndBlade.Mission.Current.DoesMissionRequireCivilianEquipment;
-                }
-                else if (settlement != null)
-                {
-                    isCivilian = true;
-                }
-            }
+            // Actual mission dress code wins even in an enemy or besieged town.
+            // A matched live Agent still overrides this fallback selection below.
+            bool isCivilian = Mission.Current != null
+                ? Mission.Current.DoesMissionRequireCivilianEquipment
+                : settlement != null && !isUnderSiege && !isEnemyEncounter;
 
+            context.MainHeroCivilian = isCivilian;
             if (mainHero != null)
             {
-                context.MainHeroProfile = HeroVisualExtractor.Extract(mainHero, useCivilian: isCivilian);
+                string source;
+                Equipment snapshot = ConversationEquipmentSnapshot.Capture(mainHero, isCivilian, out source, out var appearance);
+                context.MainHeroProfile = HeroVisualExtractor.Extract(mainHero, isCivilian, snapshot, source);
+                context.MainHeroProfile.Appearance = appearance;
             }
 
             if (partnerHero != null)
             {
-                bool partnerCivilian = isCivilian || partnerHero.IsNoncombatant || (partnerHero.IsWanderer && partnerHero.PartyBelongedTo == null) || partnerHero.IsNotable;
+                bool partnerCivilian = isCivilian;
                 context.InterlocutorCivilian = partnerCivilian;
-                context.InterlocutorProfile = HeroVisualExtractor.Extract(partnerHero, useCivilian: partnerCivilian);
+                string source;
+                Equipment snapshot = ConversationEquipmentSnapshot.Capture(partnerHero, partnerCivilian, out source, out var appearance);
+                context.InterlocutorProfile = HeroVisualExtractor.Extract(partnerHero, partnerCivilian, snapshot, source);
+                context.InterlocutorProfile.Appearance = appearance;
+            }
+            else if (partnerChar != null)
+            {
+                string source, body;
+                Equipment snapshot = ConversationEquipmentSnapshot.CaptureCharacter(partnerChar, out source, out body, out var appearance);
+                context.InterlocutorBodyProperties = body ?? string.Empty;
+                var profile = new HeroVisualProfile
+                {
+                    HeroName = partnerChar.Name?.ToString() ?? partnerChar.StringId,
+                    Culture = partnerChar.Culture?.Name?.ToString() ?? "未知文化",
+                    Gender = partnerChar.IsFemale ? "女性" : "男性",
+                    Age = (int)partnerChar.Age
+                };
+                HeroVisualExtractor.ApplyEquipmentSnapshot(profile, snapshot, source);
+                profile.Appearance = appearance;
+                context.InterlocutorProfile = profile;
             }
 
             string sentence = string.Empty;
@@ -204,7 +223,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     context.EnvironmentProfile.HostSceneDescription = hostScene;
                     string loc = context.EnvironmentProfile.SpecificLocation ?? string.Empty;
-                    bool hostIsSea = hostScene.Contains("海上") || hostScene.Contains("海岸");
+                    bool hostIsSea = IsExplicitSeaScene(hostScene);
                     bool weSaidSea = loc.Contains("海船") || loc.Contains("Naval") || loc.Contains("海");
                     bool hostIsWild = hostScene.Contains("野外") || hostScene.Contains("平原") || hostScene.Contains("森林")
                         || hostScene.Contains("山地") || hostScene.Contains("荒原") || hostScene.Contains("海岸");
@@ -217,7 +236,7 @@ namespace AnimusForge.Illustrator.Context
                     else if (hostIsWild && weSaidTown)
                     {
                         context.EnvironmentProfile.SpecificLocation = "开阔旷野会面地（宿主确认：" + hostScene + "）";
-                        context.EnvironmentProfile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，双方军队的旌旗仪仗在身后列阵隐约可见，空气中弥漫着战前谈判的紧绷肃杀气息。";
+                        context.EnvironmentProfile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，人物身后只保留现场确认的景物，不默认添加军旗与仪仗，空气中弥漫着战前谈判的紧绷肃杀气息。";
                     }
                 }
             }
@@ -260,18 +279,8 @@ namespace AnimusForge.Illustrator.Context
                         }
                     }
 
-                    if (heldInSettlement)
-                    {
-                        context.EnvironmentProfile.SpecificLocation = "阴暗地牢囚室 (Settlement Dungeon Cell)";
-                        context.EnvironmentProfile.IndoorOutdoorDetails = "幽暗压抑的石砌地牢：粗粝石墙渗着水汽，铁栅栏门与摇曳火把投下微弱光影，俘虏锁链加身坐于草堆，门外隐约有狱卒卫兵值守。";
-                    }
-                    else if (heldByParty)
-                    {
-                        context.EnvironmentProfile.SpecificLocation = "行军营地旁的囚笼/囚车 (Field Prisoner Cage)";
-                        context.EnvironmentProfile.IndoorOutdoorDetails = "旷野行军营地中的简陋木栅囚笼或囚车：俘虏被锁链看押席地而坐，四周是篝火帐篷、堆放辎重与巡视的武装卫兵。";
-                    }
-                    captiveDirective = $"【俘虏处境】{captiveName}现为阶下囚" + (string.IsNullOrWhiteSpace(holderDesc) ? "" : $"（被关押于{holderDesc}）") +
-                        "：锁链/镣铐加身、武器已被收缴、衣着为被俘后的简朴凌乱装束而非战甲；画面应体现囚禁、看押、审讯或赎买谈判的压抑权力关系，绝非自由平等的会面";
+                    captiveDirective = $"【俘虏处境】{captiveName}当前为俘虏" + (string.IsNullOrWhiteSpace(holderDesc) ? "" : $"（关押方信息：{holderDesc}）") +
+                        "；关押身份不证明当前换装、缴械或镣铐，人物装备和物理现场只遵循本次实际快照";
                 }
             }
             catch
@@ -293,18 +302,7 @@ namespace AnimusForge.Illustrator.Context
                 partnerAgent = convAgents[0] as TaleWorlds.MountAndBlade.Agent;
             }
 
-            // 非英雄对话方（劫匪/散兵等）：取会话在场 Agent 的真实 BodyProperties，
-            // 立绘舞台据此还原当前这张脸，而非按兵种模板重新随机生成
-            if (partnerAgent != null && partnerHero == null)
-            {
-                try
-                {
-                    context.InterlocutorBodyProperties = partnerAgent.BodyPropertiesValue.ToString();
-                }
-                catch
-                {
-                }
-            }
+            // Non-hero face and equipment are frozen together by CaptureCharacter above.
 
             bool partnerIsMounted = partnerAgent != null && (partnerAgent.HasMount || partnerAgent.MountAgent != null);
             TaleWorlds.MountAndBlade.Agent playerAgent = TaleWorlds.MountAndBlade.Mission.Current?.MainAgent;
@@ -392,8 +390,8 @@ namespace AnimusForge.Illustrator.Context
                         ? "当前是围城中的阵前旷野谈判，玩家一方为守方出城会面；画面应置于城墙之外的旷野，远处可见被围城池剪影与围城军营篝火，双方驻马交涉"
                         : "当前是围城中的阵前旷野谈判，玩家一方为攻方；画面应置于围城军营与城墙之间的旷野，远处可见被围城池剪影，双方驻马交涉")
                     : (playerIsDefender
-                        ? "当前是围城会面，玩家一方处于守方；可选择城垛上下关系、城门前交涉或贴近人物的紧张过肩镜头"
-                        : "当前是围城会面，玩家一方处于攻方；可选择阵前交涉、城门远景或双方神情近景"))
+                        ? "当前是围城会面，玩家一方处于守方；保持城墙/城垛与城下的真实高低差，若现场角色分处上下方必须按上下方构图，不得改成平地对话"
+                        : "当前是围城会面，玩家一方处于攻方；保持城墙/城垛与城下的真实高低差，若现场角色分处上下方必须按上下方构图，不得改成平地对话"))
                 : string.Empty;
             string guardDirection = bodyguardCount > 0 ? $"现场确认对方随行队列中另有 {bodyguardCount} 名角色，可按构图需要收入背景" : "未确认额外随行角色，不必强行添加护卫";
 
@@ -412,6 +410,9 @@ namespace AnimusForge.Illustrator.Context
         /// 反射读取主模组 AnimusForge.ShoutUtils.GetCurrentSceneDescription() 的场景快照，
         /// 与主模组聊天提示词的场景注入同源；主模组未加载或失败时返回空串。
         /// </summary>
+        internal static bool IsExplicitSeaScene(string scene)
+            => !string.IsNullOrWhiteSpace(scene) && (scene.Contains("海上航行") || scene.Contains("海船甲板") || scene.Contains("海上接舷"));
+
         private static string TryGetHostSceneDescription()
         {
             try
@@ -572,7 +573,7 @@ namespace AnimusForge.Illustrator.Context
         private static string CleanText(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return string.Empty;
-            return text.Replace("<a href=\"", "").Replace("</a>", "").Replace("\r\n", " ").Replace("\n", " ").Trim();
+            return NarrativeFactRouter.CleanText(text).Replace("\r\n", " ").Replace("\n", " ").Trim();
         }
     }
 }

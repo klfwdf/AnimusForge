@@ -152,7 +152,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void ExecuteRegenerate()
         {
             if (IsLoading) return;
-            _onRegenerate?.Invoke();
+            try { _onRegenerate?.Invoke(); }
+            catch (Exception ex) { SetReady("生成准备失败：" + ex.Message); }
         }
 
         public void ExecuteTogglePrompt()

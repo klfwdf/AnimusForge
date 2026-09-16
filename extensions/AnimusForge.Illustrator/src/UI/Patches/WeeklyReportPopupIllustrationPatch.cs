@@ -1,4 +1,5 @@
 using System;
+using TaleWorlds.GauntletUI.BaseTypes;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -168,6 +169,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
     public static class WeeklyReportPopupIllustrationPatch
     {
+        internal static Widget VisualRoot => _overlayLayer?.UIContext?.Root;
         private static MovableGauntletLayer _overlayLayer;
         private static WeeklyReportIllustrationOverlayVM _overlayVm;
         private static string _currentEventKey;
@@ -227,6 +229,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             catch (Exception ex)
             {
+                CloseOverlay();
                 Debug.Print($"[Illustrator] Error attaching overlay to weekly report: {ex.Message}");
             }
         }
@@ -259,6 +262,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate);
             var layer = new MovableGauntletLayer("WeeklyReportIllustrationOverlay", 4010, false);
+            _overlayLayer = layer;
             var movieIdentifier = layer.LoadMovie("WeeklyReportIllustrationOverlay", _overlayVm);
             layer.AutoAttachMovable(movieIdentifier?.Movie, "CardPanel", "TitleBar");
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
@@ -284,6 +288,15 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void TriggerRegenerate()
         {
+            try { TriggerRegenerateCore(); }
+            catch (Exception ex)
+            {
+                if (_overlayVm != null) { _overlayVm.IsLoading = false; _overlayVm.StatusText = "生成准备失败：" + ex.Message; }
+            }
+        }
+
+        private static void TriggerRegenerateCore()
+        {
             if (_overlayVm == null || _currentContext == null || _scope == null)
             {
                 Debug.Print($"[Illustrator] Weekly regenerate skipped: vm={(_overlayVm != null)} ctx={(_currentContext != null)} scope={(_scope != null)}");
@@ -308,6 +321,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             var generationScope = _scope;
 
             var protagonist = context.ProtagonistHero;
+            var appearance = context.ProtagonistProfile?.Appearance;
             string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
             string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
 
@@ -319,7 +333,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 Task<string> portraitStage = null;
                 if (options?.EnableOffscreenRendering == true && protagonist != null)
                 {
-                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true);
+                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, appearance: appearance);
                 }
                 if (portraitStage != null)
                 {
@@ -347,11 +361,13 @@ namespace AnimusForge.Illustrator.UI.Patches
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
                 {
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: true);
+                    token.ThrowIfCancellationRequested();
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false);
                 }
                 return new { Result = result, Saved = saved, Prompt = effectivePrompt };
             }, completion =>
             {
+                if (completion.Saved != null) DiskImageCacheManager.SetDefault(completion.Saved, campaignKey);
                 _overlayVm.PromptText = completion.Prompt;
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
                 {
@@ -380,7 +396,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 "远景史诗画卷：事件全貌与山河城郭交代世界尺度，人物小而可辨",
                 "中景群像：数位当事人同框，以动作与视线关系承担叙事",
-                "低机位仰拍：以天空、城墙或旗帜形成留白，人物庄严",
+                "低机位仰拍：以天空或已有建筑线条形成留白，人物庄严",
                 "高位俯拍：展示战场、营地或街巷的空间格局与动线",
                 "决定性瞬间：事件临界点的动作爆发（冲锋、签约、宣旨、点燃）",
                 "余波时刻：事件刚结束后的烟尘、撤离与凝视，不画动作顶点",

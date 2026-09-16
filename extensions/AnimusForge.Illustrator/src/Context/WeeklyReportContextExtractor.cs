@@ -140,6 +140,8 @@ namespace AnimusForge.Illustrator.Context
             if (snapshot.ProtagonistHero != null)
             {
                 context.ProtagonistProfile = HeroVisualExtractor.Extract(snapshot.ProtagonistHero, useCivilian: false);
+                context.ProtagonistProfile.CurrentStateDetail = string.Empty;
+                context.ProtagonistProfile.Appearance = CharacterAppearanceSnapshot.FromHero(snapshot.ProtagonistHero, snapshot.ProtagonistHero.BattleEquipment);
             }
 
             // 环境只承载已确认事实：定居点（若文本真实提及）与周报发布纪元日期。
@@ -242,75 +244,10 @@ namespace AnimusForge.Illustrator.Context
         /// </summary>
         private static void ApplyEventSceneAnchoring(WeeklyReportVisualContext context, Settlement settlement)
         {
-            var profile = context?.EnvironmentProfile;
-            if (profile == null) return;
-            string locName = settlement != null && settlement.Name != null ? settlement.Name.ToString() : "卡拉迪亚";
-
-            switch (context.EventTheme)
-            {
-                case WeeklyReportEventTheme.VillageRaid:
-                    profile.SpecificLocation = settlement != null ? $"{locName}周边乡野村落" : "遭袭的乡野村落";
-                    profile.IndoorOutdoorDetails = "可参考的劫掠现场元素：起火的农舍茅顶、升腾黑烟、奔逃的村民、纵马穿行的掠夺者、受惊的牲畜与被撞倒的栅栏。";
-                    profile.ConflictStatus = "【事件性质】定居点遭劫掠袭击";
-                    break;
-                case WeeklyReportEventTheme.FieldBattle:
-                    profile.SpecificLocation = settlement != null ? $"{locName}外围旷野" : "开阔旷野战场";
-                    profile.IndoorOutdoorDetails = "可参考的野战元素：尘烟弥漫的原野、盾墙与骑兵冲锋、残破飘扬的战旗、散落的兵器与箭矢。";
-                    profile.ConflictStatus = "【事件性质】野外军团交战";
-                    break;
-                case WeeklyReportEventTheme.Siege:
-                    profile.SpecificLocation = settlement != null ? $"{locName}城墙与围攻阵地" : "要塞围攻阵地";
-                    profile.IndoorOutdoorDetails = "可参考的围城元素：架上城墙的云梯、攻城塔与破城槌、投石机、城堞后的守军与城下拒马壕沟。";
-                    profile.ConflictStatus = "【事件性质】要塞围攻战";
-                    break;
-                case WeeklyReportEventTheme.FeastTournament:
-                    profile.SpecificLocation = settlement != null ? $"{locName}厅堂或竞技场" : "庆典厅堂或竞技场";
-                    profile.IndoorOutdoorDetails = "可参考的庆典元素：觥筹交错的宴会、穿梭的侍从、竞技场长矛比武与欢呼看台。";
-                    profile.ConflictStatus = "【事件性质】宴会比武盛事";
-                    break;
-                case WeeklyReportEventTheme.Diplomacy:
-                    profile.SpecificLocation = "行军大帐或议事厅";
-                    profile.IndoorOutdoorDetails = "可参考的外交场景元素：铺有羊皮纸地图的长桌、封蜡条约、肃立护卫、凝重的使节与谋士。";
-                    profile.ConflictStatus = "【事件性质】重大外交角力";
-                    break;
-                case WeeklyReportEventTheme.Naval:
-                    profile.SpecificLocation = settlement != null ? $"{locName}外海/港口水域" : "开阔海面战列";
-                    profile.IndoorOutdoorDetails = "可参考的海战元素：战船甲板与接舷跳帮、桅杆帆布、船舷弓弩对射、浪花碎木与远处海岸线。";
-                    profile.ConflictStatus = "【事件性质】海上交战/舰队行动";
-                    break;
-                case WeeklyReportEventTheme.PrisonerExecution:
-                    profile.SpecificLocation = settlement != null ? $"{locName}地牢囚室或行刑广场" : "地牢囚室或行刑场";
-                    profile.IndoorOutdoorDetails = "可参考的囚禁/行刑元素：石砌地牢铁栅、锁链镣铐、行刑台与围观人群、狱卒卫兵、被押解的战俘。";
-                    profile.ConflictStatus = "【事件性质】俘虏囚禁/处决行刑";
-                    break;
-                case WeeklyReportEventTheme.SettlementChange:
-                    profile.SpecificLocation = settlement != null ? $"{locName}城门与市集易主现场" : "城池易主现场";
-                    profile.IndoorOutdoorDetails = "可参考的易主元素：城头更换的军队标识（仅在要闻明确涉及时）、列队入城的占领军、燃烧的余烬烟尘、围观或撤离的平民、被收缴的武备。";
-                    profile.ConflictStatus = "【事件性质】定居点陷落/易主";
-                    break;
-                case WeeklyReportEventTheme.DynastyDeath:
-                    profile.SpecificLocation = settlement != null ? $"{locName}厅堂或灵堂" : "厅堂/灵堂/继位现场";
-                    profile.IndoorOutdoorDetails = "可参考的丧葬继位元素：素缟帷幔与烛火、肃立默哀的家族成员、传递中的冠冕或权戒、凝重的继位仪式。";
-                    profile.ConflictStatus = "【事件性质】重要人物亡故/权力交接";
-                    break;
-                default:
-                    // 未命中预设主题时，先按要闻中的场所名词锚定（酒馆/渡口/密林等），
-                    // 再退回定居点泛指——绝不用玩家当前位置冒充事件现场。
-                    string nounLoc, nounDetail;
-                    if (TryResolveSceneNoun(context.HeadlineSummary, settlement, out nounLoc, out nounDetail))
-                    {
-                        profile.SpecificLocation = nounLoc;
-                        if (!string.IsNullOrWhiteSpace(nounDetail))
-                        {
-                            profile.IndoorOutdoorDetails = nounDetail;
-                        }
-                    }
-                    else if (string.IsNullOrWhiteSpace(profile.SpecificLocation) && settlement != null)
-                    {
-                        profile.SpecificLocation = $"{locName}城内外";
-                    }
-                    break;
-            }
+            // Keyword themes are suggestions, never evidence of outcome or a physical sub-scene.
+            if (context?.EnvironmentProfile == null) return;
+            context.EnvironmentProfile.ConflictStatus = string.Empty;
+            context.EnvironmentProfile.SpecificLocation = string.Empty;
         }
 
         /// <summary>
@@ -519,54 +456,7 @@ namespace AnimusForge.Illustrator.Context
         /// </summary>
         private static string GenerateSceneDirective(WeeklyReportEventTheme theme, Settlement settlement, string headline)
         {
-            string locName = settlement != null ? (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId) : "卡拉迪亚";
-
-            switch (theme)
-            {
-                case WeeklyReportEventTheme.VillageRaid:
-                    return $"【事件主题：村庄遭袭/劫掠】要闻指向【{locName}】一带的村落劫掠。" +
-                           "可选取景：起火的农舍与黑烟、奔逃村民与掠夺者、散落的谷物农具、赶到现场的领主或骑兵——" +
-                           "任选一个最有冲突张力的瞬间，远近景、动静视角皆可。";
-
-                case WeeklyReportEventTheme.FieldBattle:
-                    return $"【事件主题：野战交锋】要闻指向【{locName}】周边的军队对阵。" +
-                           "可选取景：骑兵冲锋与阵线碰撞、漫天箭雨、倒伏的军队标识、或将领在军阵前后的决断瞬间——构图与焦点自由。";
-
-                case WeeklyReportEventTheme.Siege:
-                    return $"【事件主题：要塞围攻】要闻指向【{locName}】的攻城或守城。" +
-                           "可选取景：云梯登城、投石机轰击、破城槌撞门、城头攻守拉锯、或围城营地的肃杀对峙——任取一个瞬间。";
-
-                case WeeklyReportEventTheme.FeastTournament:
-                    return $"【事件主题：宴会比武盛事】要闻指向【{locName}】内的庆典。" +
-                           "可选取景：厅堂觥筹交错、竞技场长矛对冲、看台欢呼、或胜者受瞩目的瞬间——欢腾或紧张氛围皆可。";
-
-                case WeeklyReportEventTheme.Diplomacy:
-                    return "【事件主题：重大外交角力】可选取景：大帐或议事厅内围绕地图的商谈、条约封缄、双方使节对峙、" +
-                           "或会谈间隙的眼神交锋——强调紧绷或凝重的关系张力。";
-
-                case WeeklyReportEventTheme.Naval:
-                    return $"【事件主题：海上交战/舰队行动】要闻指向【{locName}】附近水域。" +
-                           "可选取景：战船接舷跳帮、甲板弓弩对射、船艏破浪的舰队纵队、或落水者攀附碎木——海面广阔，构图自由。";
-
-                case WeeklyReportEventTheme.PrisonerExecution:
-                    return $"【事件主题：俘虏囚禁/处决行刑】要闻指向【{locName}】。" +
-                           "可选取景：地牢铁栅后的囚徒、押赴行刑台的队伍、刽子手与围观人群、或镣铐中的不屈目光——" +
-                           "强调囚禁的压抑与权力威压，绝非自由会面。";
-
-                case WeeklyReportEventTheme.SettlementChange:
-                    return $"【事件主题：定居点陷落/易主】要闻指向【{locName}】。" +
-                           "可选取景：城头军队标识更换（仅在事件明确涉及时）、占领军列队入城、余烬烟尘中的街市、撤离的平民车队、或降者献城的俯首瞬间——" +
-                           "事件余波与权力更迭的纪实感。";
-
-                case WeeklyReportEventTheme.DynastyDeath:
-                    return $"【事件主题：重要人物亡故/权力交接】要闻指向【{locName}】。" +
-                           "可选取景：素缟灵堂与烛火、肃立默哀的族人、冠冕权戒的传递、或继位者接受朝拜的瞬间——庄重肃穆。";
-
-                default:
-                    return "【事件主题：以事件证据为准】该事件未落入预设主题，请依据事件行动与结果证据选择场景类型" +
-                           "（行军、狩猎、疫病、贸易、密会、决斗、流亡、庆典等皆可，不必拘泥既定类别），" +
-                           "自由取景：可选人物行动瞬间、事件余波、或当事人在环境中的决断姿态——避免千篇一律的看风景站桩。";
-            }
+            return "按完整事件证据选择有叙事力的瞬间；保留否定、计划、未遂、释放与未知结果。题材关键词不能证明事件已经发生，不推导行刑、陷落或胜负；未获确认的具体子场景和道具保持未知。";
         }
 
         private static string ExtractHeadline(string body)

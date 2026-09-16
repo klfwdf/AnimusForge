@@ -62,6 +62,27 @@ namespace AnimusForge.Illustrator.Core
 
     public static class IllustratorRuntime
     {
+        // Only accepted workers/stage cleanup use this channel; producer count is bounded by four workers.
+        private static readonly ConcurrentQueue<Action> Critical = new ConcurrentQueue<Action>();
+        private static readonly Queue<KeyValuePair<long, TaskCompletionSource<bool>>> FrameWaiters = new Queue<KeyValuePair<long, TaskCompletionSource<bool>>>();
+        private static long _frame;
+        internal static void PostCritical(Action action) { if (action != null) Critical.Enqueue(action); }
+        internal static Task AfterFramesAsync(int frames, CancellationToken token)
+        {
+            AssertMainThread();
+            var done = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            FrameWaiters.Enqueue(new KeyValuePair<long, TaskCompletionSource<bool>>(_frame + Math.Max(2, frames), done));
+            return AwaitFrameAsync(done.Task, token);
+        }
+        private static async Task AwaitFrameAsync(Task task, CancellationToken token)
+        {
+            var cancelled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            using (token.Register(() => cancelled.TrySetCanceled()))
+            {
+                await await Task.WhenAny(task, cancelled.Task).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+            }
+        }
         private static readonly ConcurrentQueue<Action> Pending = new ConcurrentQueue<Action>();
         private static readonly List<IllustrationScope> Scopes = new List<IllustrationScope>();
         private static int _mainThread;
@@ -126,6 +147,7 @@ namespace AnimusForge.Illustrator.Core
         {
             Reset();
             _running = false;
+            while (FrameWaiters.Count > 0) FrameWaiters.Dequeue().Value.TrySetCanceled();
         }
 
         public static void Tick()
@@ -137,10 +159,17 @@ namespace AnimusForge.Illustrator.Core
                 Debug.Print("[Illustrator] Captured game main thread id=" + _mainThread);
             }
             AssertMainThread();
+            _frame++;
+            while (FrameWaiters.Count > 0 && FrameWaiters.Peek().Key <= _frame) FrameWaiters.Dequeue().Value.TrySetResult(true);
             TickScopes();
-            for (int i = 0; i < 2 && Pending.TryDequeue(out var action); i++)
+            for (int i = 0; i < 2; i++)
             {
-                Interlocked.Decrement(ref _pendingCount);
+                Action action;
+                if (!Critical.TryDequeue(out action))
+                {
+                    if (!Pending.TryDequeue(out action)) break;
+                    Interlocked.Decrement(ref _pendingCount);
+                }
                 try { action(); }
                 catch (Exception ex) { Debug.Print("[Illustrator] Main-thread completion failed: " + ex.GetType().Name); }
             }
@@ -188,15 +217,11 @@ namespace AnimusForge.Illustrator.Core
                 Exception error = null;
                 try { result = await work().ConfigureAwait(false); }
                 catch (Exception ex) { error = ex; }
-                if (!Post(() =>
+                PostCritical(() =>
                 {
                     try { complete(result, error); }
                     finally { Interlocked.Decrement(ref _workers); }
-                }))
-                {
-                    Interlocked.Decrement(ref _workers);
-                    Debug.Print("[Illustrator] Completion queue capacity exceeded.");
-                }
+                });
             });
             return true;
         }
@@ -247,9 +272,14 @@ namespace AnimusForge.Illustrator.Core
             {
                 bool current = IsCurrent && revision == _revision && !token.IsCancellationRequested;
                 if (ReferenceEquals(_request, source)) _request = null;
+                if (error != null) source.Cancel();
                 source.Dispose();
                 if (!current) return;
-                if (error == null) complete(result);
+                if (error == null)
+                {
+                    try { complete(result); }
+                    catch (Exception ex) { fail(ex.Message); }
+                }
                 else if (!(error is OperationCanceledException)) fail(error.Message);
                 else if (token.IsCancellationRequested) fail("生图请求已取消（界面已切换或发起了新请求）。");
                 else
