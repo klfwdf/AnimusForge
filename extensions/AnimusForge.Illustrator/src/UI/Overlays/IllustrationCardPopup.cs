@@ -185,7 +185,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string hardFacts = profile.BuildVisualSummary() + "\n" + VisualFidelityRules.EncyclopediaPortrait;
             string directorFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildDirectorOnlyFacts();
             _generationCount++;
-            string artDirection = GenerateDiversePoseDirective(hero);
+            string artDirection = GenerateDiversePoseDirective(hero) + "\n" + VisualFidelityRules.PortraitFraming(_generationCount);
             if (_generationCount > 1) artDirection += "\n本次重绘只适度改变镜头角度、景别或光线，不强制改变姿势，不增加道具。";
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
             var options = IllustratorRuntime.CaptureOptions();
@@ -247,7 +247,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static string GenerateDiversePoseDirective(Hero hero)
         {
             // Portraits are not action scenes. Variation must not invent props, gestures or locations.
-            return "人物为视觉中心的克制肖像：自然直立或轻微侧身、肩臂放松；镜头可在正面与轻侧面、半身与中景间适度变化，背景简洁低对比。不为求变化设计复杂持物动作。";
+            return "人物为视觉中心的克制肖像：自然直立或轻微侧身、肩臂放松；优先近景半身，镜头可在正面与轻侧面适度变化；必须描写可辨认的背景空间、材质和光源，环境低对比但不能低曝光成黑底。不为求变化设计复杂持物动作。";
         }
 
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)

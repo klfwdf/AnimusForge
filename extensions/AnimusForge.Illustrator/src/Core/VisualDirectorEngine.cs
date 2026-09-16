@@ -55,6 +55,7 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine(ArtDirection);
                 sb.AppendLine("</open_art_direction>");
             }
+            sb.AppendLine("<composition_requirements>").AppendLine(VisualFidelityRules.SceneComposition).AppendLine("</composition_requirements>");
             return sb.ToString().TrimEnd();
         }
     }
@@ -74,7 +75,8 @@ namespace AnimusForge.Illustrator.Core
             "【参考图用途】：参考图只用于锁定身份特征（五官、发型、肤色、装备、纹章），不照抄界面、背景、光影与游戏渲染质感；可以保留自然姿态，机位与画风可按 <open_art_direction> 调整，但不得为求变化强造动作或道具。百科肖像必须遵循百科肖像构图约束，不展示装备栏记录的旗帜。\n" +
             "【画风】：遵循用户提供的画风偏好；没有指定时采用自然、具有历史质感的叙事插画，不锁定特定画家、媒介或固定光照。\n" +
             VisualFidelityRules.Contract + "\n" +
-            "只输出一段可直接交给图像模型的中文提示词，不输出 Markdown、分析、问候或数据标签。";
+            VisualFidelityRules.SceneComposition + "\n" +
+            "输出可直接绘制的中文场景提示词，严格分为四个短段：【人物与镜头】【场景空间】【光线与色彩】【空间关系】。每段写具体视觉描述而不是复述要求；场景空间不少于20个字符，光线与色彩不少于15个字符，空间关系不少于15个字符；后三段合计不少于正文一半。第一段装备最多一句，不罗列装备表。不要输出JSON、Markdown、分析或问候。";
 
         public static Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData = null, CancellationToken cancellationToken = default)
         {
@@ -162,12 +164,14 @@ namespace AnimusForge.Illustrator.Core
                 sb.Append(hardFacts.Trim());
                 sb.AppendLine().Append("只需在画面中自然体现与构图有关的事实；不得增添与上述事实冲突的人物、装备、纹章、地点或事件结果；画面中严禁出现任何文字、字幕、台词文本、标牌或界面元素；人物肤色、发色与五官严格以立绘参考图为准，不得加深或改色。坐骑只在场景事实、现场参考图或明确动作支持骑乘/牵马时出现；室内、城堡高处、屋顶、城墙巡道和楼台不得凭人物有马匹装备而生成马。");
             }
+            sb.AppendLine().Append(VisualFidelityRules.SceneComposition);
             sb.AppendLine().Append(VisualFidelityRules.Contract);
             return sb.ToString().Trim();
         }
 
         internal static string ResolveDirectorOutput(string output, IllustrationPromptPlan plan, IllustrationOptions options)
         {
+            output = output ?? string.Empty;
             if (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan))
             {
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Unsupported shield/portrait props rejected; using local portrait fallback without retry.");
@@ -178,7 +182,52 @@ namespace AnimusForge.Illustrator.Core
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Narrative echo detected; using local visual-fact fallback without retry.");
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
+            if (!HasRequiredSceneDescription(output))
+            {
+                TaleWorlds.Library.Debug.Print("[VisualDirector] Missing scene/light/spatial direction; using local scene fallback without retry.");
+                // Preserve a short usable visual paraphrase while supplying the missing scene sections.
+                // Do not retain equipment lists or long non-conforming output as the main direction.
+                if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
+                    !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                    return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
+                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildDirectorStylePreference(options), plan.HardFacts);
+                return SynthesizeRuleBasedPrompt(plan, options);
+            }
             return ComposeFinalPrompt(output, plan.HardFacts);
+        }
+
+        internal static bool HasRequiredSceneDescription(string output)
+        {
+            if (string.IsNullOrWhiteSpace(output)) return false;
+            if (System.Text.RegularExpressions.Regex.IsMatch(output,
+                @"背景[^。！？\r\n]{0,8}(?:纯黑|漆黑|全黑)|纯黑背景|黑幕|(?:pure|solid|pitch)[ -]?black background",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return false;
+            string[] headings = { "人物与镜头", "场景空间", "光线与色彩", "空间关系" };
+            int[] minimum = { 10, 20, 15, 15 };
+            int subject = 0, environment = 0;
+            for (int i = 0; i < headings.Length; i++)
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(output,
+                    "【" + headings[i] + "】([^【]+)");
+                string value = match.Success ? match.Groups[1].Value.Trim() : string.Empty;
+                if (value.Length < minimum[i]) return false;
+                if (i == 0) subject = value.Length; else environment += value.Length;
+            }
+            // Structure/length checks are a minimum gate, not semantic image validation.
+            return environment >= subject && environment * 2 >= output.Length - 32;
+        }
+
+        internal static string BuildLocalSceneDirection(IllustrationPromptPlan plan)
+        {
+            if (plan?.Mode == "人物百科纪事")
+                return "【人物与镜头】近景半身，头顶至腰部入镜，头戴完整，肩臂放松，以面部和实际衣甲为中心。" +
+                    "【场景空间】设计非具名百科艺术布景，不代表人物真实所在地点：浅灰与暖赭色的有纹理背景面向后退远，转折处形成可辨认纵深，肩部两侧保留环境色与材质。" +
+                    "【光线与色彩】柔和侧光照亮脸部和背景一侧，另一侧有温和反射填充；暗部保留灰阶、色彩与纹理，人物和背景曝光平衡，不把环境压成空黑。" +
+                    "【空间关系】人物位于中前景，近处少量虚化色面形成距离，后方背景转折退入柔和景深；可见的空间和人物形成连续光照关系，不靠道具制造动作。";
+            return "【人物与镜头】按事实区人物数量与实际动作选择清楚的中近景关系，装备只按真实快照概括，不列成展示目录。" +
+                "【场景空间】采用现场参考图或事实中已确认的环境形体，交代近处地面/空间基面与远处环境的延伸；未知部分保持非地标化的有层次环境色面，不凭空添加建筑、陈设或事件。" +
+                "【光线与色彩】遵循已有时间与现场光源，用合理环境光和反射填充保留人物与背景细节；亮部不溢出、暗部可辨认材质，色彩不被整体黑影吞没。" +
+                "【空间关系】保留已确认的人物距离、朝向和地形关系，近景、中景与后景用遮挡和景深区分；未知位置不作具体地名或事件断言，背景仍应可辨。";
         }
 
         internal static bool ViolatesShieldVisibility(string output, IllustrationPromptPlan plan)
@@ -476,9 +525,7 @@ namespace AnimusForge.Illustrator.Core
         {
             var sb = new StringBuilder();
             string style = BuildDirectorStylePreference(options);
-            if (plan?.Mode == "人物百科纪事")
-                sb.Append("以人物面部与实际衣甲为视觉中心绘制克制肖像；自然直立或轻微侧身，肩臂放松，背景简洁低对比。无需复杂动作或摆拍道具。");
-            else sb.Append("根据当前游戏事实绘制一个自然、有叙事重点的瞬间。人物、装备、地点与事件关系以事实区为准；构图可按现场情绪自由选择远景、中景、近景、过肩、侧面或动态视角，不必把每项背景信息都塞进画面。");
+            sb.Append(BuildLocalSceneDirection(plan));
             if (!string.IsNullOrWhiteSpace(plan?.ArtDirection))
             {
                 sb.AppendLine().Append("可参考但不必逐项照搬的构图方向：").Append(plan.ArtDirection.Trim());

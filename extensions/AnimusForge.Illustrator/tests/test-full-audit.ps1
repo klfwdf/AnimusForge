@@ -228,6 +228,30 @@ $shieldProfile=[Activator]::CreateInstance($a.GetType('AnimusForge.Illustrator.C
 $hero.GetMethod('ExtractWeapons',$static).Invoke($null,[object[]]@($shieldProfile,$gear,$null))|Out-Null
 Check ($gear[1].Item -eq $shieldItem -and ($shieldProfile.WeaponDetails -join ',').Contains('owned_shield')) 'Shield complete equipment and owned shield record remain intact'
 Check (!($shieldProfile.WeaponDetails -join ',').Contains('自然背负') -and $portraitContract.Contains('默认不画盾牌')) 'Shield metadata no longer instructs default back carrying'
+# Scene-led direction must not degrade into an equipment-only black-background portrait.
+$sceneCheck=$director.GetMethod('HasRequiredSceneDescription',$static)
+$localScene=[string]$director.GetMethod('BuildLocalSceneDirection',$static).Invoke($null,@($plan))
+Check ($sceneCheck.Invoke($null,@($localScene))) 'Scene local portrait fallback satisfies concrete four-part scene contract'
+Check (!$sceneCheck.Invoke($null,@('人物穿着锁甲和肩甲，佩戴手套和靴子，头部装备完整。'))) 'Scene rejects equipment-only director prose'
+Check (!$sceneCheck.Invoke($null,@('【人物与镜头】自然站立的半身人物【场景空间】环境【光线与色彩】光线【空间关系】关系'))) 'Scene rejects headings with empty boilerplate'
+$black=$localScene.Replace('浅灰与暖赭色的有纹理背景面','背景纯黑而没有可见环境的背景面')
+Check (!$sceneCheck.Invoke($null,@($black))) 'Scene rejects explicit black-background direction'
+$gearHeavy=$localScene.Replace('近景半身，头顶至腰部入镜，头戴完整，肩臂放松，以面部和实际衣甲为中心。',('锁甲肩甲护腕腿甲装备。'*150))
+Check (!$sceneCheck.Invoke($null,@($gearHeavy))) 'Scene rejects direction dominated by equipment even with valid headings'
+$sceneResolved=[string]$director.GetMethod('ResolveDirectorOutput',$static).Invoke($null,[object[]]@('装备清单测试哨兵，描述所有武器盔甲',$plan,$null))
+Check (!$sceneResolved.Contains('装备清单测试哨兵') -and $sceneResolved.Contains('【场景空间】') -and $sceneResolved.Contains('【光线与色彩】')) 'Scene actual director resolution falls back locally when scene is missing'
+$emptyScene=[string]$director.GetMethod('ResolveDirectorOutput',$static).Invoke($null,[object[]]@($null,$plan,$null))
+Check ($emptyScene.Contains('【场景空间】') -and $emptyScene.Contains('【光线与色彩】')) 'Scene null director output safely falls back locally'
+$acceptedScene=[string]$director.GetMethod('ResolveDirectorOutput',$static).Invoke($null,[object[]]@($localScene,$plan,$null))
+Check ($acceptedScene.Contains($localScene)) 'Scene complete direction is retained'
+Check ($localScene.Contains('不代表人物真实所在地点')) 'Scene encyclopedia art backdrop is not asserted as live location'
+$framing=$rules.GetMethod('PortraitFraming',$static)
+Check (([string]$framing.Invoke($null,@(1))).Contains('近景半身')) 'Scene first portrait includes close half-body framing'
+Check (([string]$framing.Invoke($null,@(2))).Contains('近景半身') -and ([string]$framing.Invoke($null,@(3))).Contains('中景环境半身')) 'Scene framing varies without mandatory action or props'
+$sceneContract=[string]$rules.GetField('SceneComposition',$static).GetRawConstantValue()
+$sceneEffective=[string]$client.GetMethod('BuildEffectivePrompt').Invoke($null,[object[]]@($acceptedScene,'1024x1024','high','vivid','dark chiaroscuro',$null,$true,100))
+Check (($sceneEffective.LastIndexOf($sceneContract) -gt $sceneEffective.LastIndexOf('dark chiaroscuro')) -and ([regex]::Matches($sceneEffective,[regex]::Escape($sceneContract))).Count -eq 1) 'Scene visibility contract survives dark style and maximum randomness once in final priority block'
+Check ($sceneEffective.Contains('所有模式禁止背盾') -and $sceneEffective.Contains('默认不画盾牌')) 'Scene direction does not weaken shield restrictions'
 # Static ownership wiring checks supplement, not substitute for live native tests.
 $popupSource=Get-Content (Join-Path $src 'UI\Overlays\IllustrationCardPopup.cs') -Raw -Encoding UTF8
 $screen=Get-Content (Join-Path $src 'Engine\ScreenCaptureHelper.cs') -Raw -Encoding UTF8

@@ -319,7 +319,7 @@ $heroProfile.TraitsSummary = '审慎而多疑，算度深远'
 $heroProfile.TopSkillsSummary = '战神与神射手'
 $heroHard = [string]$heroProfile.BuildVisualSummary()
 $heroNarrative = [string]$heroProfile.BuildDirectorOnlyFacts()
-Assert-True ($heroHard.Contains('兽人') -and $heroHard.Contains('尖耳精灵') -and $heroHard.Contains('左眼附近有伤疤') -and $heroHard.Contains('黑色锁甲') -and $heroHard.Contains('武器已收缴')) 'custom species visual identity and current equipment imprisonment survive background split'
+Assert-True ($heroHard.Contains('兽人') -and $heroHard.Contains('尖耳') -and !$heroHard.Contains('尖耳精灵') -and !$heroHard.Contains('左眼附近有伤疤') -and $heroHard.Contains('黑色锁甲') -and $heroHard.Contains('武器已收缴')) 'custom species visual identity and current equipment survive background split'
 Assert-True (!$heroHard.Contains('算度深远') -and !$heroHard.Contains('神射手') -and !$heroHard.Contains('财务官') -and $heroNarrative.Contains('算度深远') -and $heroNarrative.Contains('神射手')) 'abstract traits skills and nonvisual biography remain director-only'
 
 $environment = [Activator]::CreateInstance($assembly.GetType('AnimusForge.Illustrator.Context.EnvironmentVisualProfile', $true))

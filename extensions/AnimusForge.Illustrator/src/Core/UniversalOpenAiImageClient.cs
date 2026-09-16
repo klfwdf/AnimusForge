@@ -339,6 +339,13 @@ namespace AnimusForge.Illustrator.Core
                 effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.Contract, string.Empty).TrimEnd();
                 effectivePrompt += "\n" + VisualFidelityRules.Contract;
             }
+            if ((prompt ?? string.Empty).Contains(VisualFidelityRules.SceneComposition))
+            {
+                effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.SceneComposition, string.Empty).TrimEnd();
+                effectivePrompt += "\n" + VisualFidelityRules.SceneComposition;
+                if (effectivePrompt.Contains(VisualFidelityRules.Contract))
+                    effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.Contract, string.Empty).TrimEnd() + "\n" + VisualFidelityRules.Contract;
+            }
             return effectivePrompt;
         }
 
