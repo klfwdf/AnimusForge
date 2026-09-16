@@ -1,5 +1,7 @@
 using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 
@@ -43,6 +45,26 @@ namespace AnimusForge.Illustrator.Context
             var visible = VisibleEquipment(equipment);
             return new CharacterAppearanceSnapshot(visible.CalculateEquipmentCode(), hero.CharacterObject.GetBodyProperties(visible, -1).ToString(),
                 hero.ClanBanner?.BannerCode, hero.MapFaction?.Color ?? 0, hero.MapFaction?.Color2 ?? 0, hero.CharacterObject.Race, hero.IsFemale);
+        }
+
+        internal static CharacterAppearanceSnapshot FromCharacter(CharacterObject character, Equipment equipment)
+        {
+            if (character == null || equipment == null) return null;
+            var visible = VisibleEquipment(equipment);
+            string bodyProperties = character.GetBodyProperties(visible, -1).ToString();
+            var party = MobileParty.ConversationParty?.Party ?? PlayerEncounter.EncounteredParty;
+            var banner = character.HeroObject?.ClanBanner?.BannerCode
+                         ?? party?.Banner?.BannerCode
+                         ?? string.Empty;
+            uint color1 = character.HeroObject?.MapFaction?.Color
+                          ?? party?.MapFaction?.Color
+                          ?? (character.Culture != null ? character.Culture.Color : 0);
+            uint color2 = character.HeroObject?.MapFaction?.Color2
+                          ?? party?.MapFaction?.Color2
+                          ?? (character.Culture != null ? character.Culture.Color2 : 0);
+
+            return new CharacterAppearanceSnapshot(visible.CalculateEquipmentCode(), bodyProperties,
+                banner, color1, color2, character.Race, character.IsFemale);
         }
 
         internal static CharacterAppearanceSnapshot FromTableau(CharacterTableauWidget widget)
