@@ -1,3 +1,9 @@
+<a id="parallel-controller-handover"></a>
+
+## 当前调度：交接新总控，J01 已完成 / 下一波未实施
+
+用户最新要求先交接再创建新总控任务，采用 3 个 Sol 实施工作包 + 1 个独立核验代理、Astra 统一规划整合；详见[交接文件](handoffs/2026-09-17-j01-parallel-controller-handoff.md)。本次 intent 仅该交接及两入口链接，不改生产/测试/构建，不在旧任务续包。并行只能用于依赖满足且文件不重叠的包；Git 索引/提交/共享输出归总控独占。原 G0.7 及各类 HOLD 保留，新任务先用有界核验给出门禁事实和可执行波次，不将 J02–J17 路线当直接批量搬迁许可。下方 J01_OFFLINE_VERIFIED 结论保持；新任务接管不是历史工作已完成或高风险授权的替代证据。
+
 <a id="j01-current-status"></a>
 
 ## 当前状态：J01_OFFLINE_VERIFIED / STOPPED_AFTER_J01 / J02_NOT_STARTED
