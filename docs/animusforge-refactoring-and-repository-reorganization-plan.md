@@ -1,5 +1,23 @@
 <a id="parallel-controller-handover"></a>
 
+<a id="j02-full-completion"></a>
+
+## 当前任务：完整 J02 连续完成（2026-09-17，ACTIVE）
+
+用户最新明确要求“那你做完J02啊”。本节取代下方停在目录生命周期子包的状态：本轮一次完成 J02 原行约定的 Foundation/宿主通用责任与路径/消费者闭包，再集中离线验收，不在每个子包后停止。起点 `3706e87dfc4be2cf150b9f45f029e7f105a28fd3`，同一工作区/分支，六份既有dirty与空索引保持；本地检查点后才写生产。J01与102eab84目录状态提取不重做，不把J05业务记忆预算/J07会话队列或全生命周期模块平台强塞本包，也不把J02剩余通用状态改名排除。
+
+| 并行包/owner | 精确生产范围与真实职责 | 接线/验收与残余边界 |
+| --- | --- | --- |
+| A Diagnostics / Foundation + 原根适配 | 修改`Logger.cs`、`PerfProbe.cs`、`FreezeWatchdog.cs`；新`src/AF.Foundation.Runtime/Diagnostics/{DiagnosticTraceContext,MetricWindow,BoundedLogWriteQueue,PerformanceWindow,FreezeWatchState}.cs`真正持有trace上下文、指标窗口、日志队列/背压/worker门控、性能窗口及freeze通用心跳/scope/ring状态 | 原公开门面与日志路径/文本、MCM、游戏现场/OSdump/文件sink保持；不把通用排队遗留后宣称全部。独有`tools/J02DiagnosticsBoundaryTests/`合成old/new/逆变换及故障反例，无真实日志/dump/玩家数据。热路径不得新增每次delegate/反射/全量扫描；旧4096/8192背压、时间窗口/阈值保持 |
+| B Lifecycle/Scheduling / Foundation + GameAdapter | 既有真实owner `SaveRuntimeGuard.cs`、`Refactor/Runtime/GameLifetimeCoordinator.cs`→`src/AF.Foundation.Runtime/Lifecycle/`，`Refactor/Runtime/PendingOperationRegistry.cs`→`src/AF.Foundation.Runtime/Scheduling/`；`AfCampaignRuntimeLifecycle.cs`→`src/AF.GameAdapter.Bannerlord/Composition/` | 保持generation/主线程Game身份/唯一owner退役、reset-clear竞态/已claim结果，不重写历史算法。更新实际非共享test runner路径及overlay的SaveGuard host路径；旧raw字节/归一内容、完整成员集、GameLifetime/Bindings/Commit/Native/Memory等真实消费者验证。领域存档/队列/事务留原业务owner，不能声称这些J05/J07已完成 |
+| C Host/Composition / GameAdapter | 独占`SubModule.cs`；既有`Refactor/Modules/{CampaignComposition,CampaignModelComposition,TeamModuleRegistration,TeamModuleServices,ModuleFrameworkRuntime}.cs`→`src/AF.GameAdapter.Bannerlord/Composition/`；新增`StartupPatchComposition.cs`、`ApplicationTickComposition.cs`，移交真实启动patch顺序与fast/watched tick装配算法 | 引擎override/base、namespace/ABI/注册顺序/每组catch/失败重抛保持，UI欢迎/WarStats/mission桥保必要适配；不新Host/重排tick/领域玩法。无每tick临时委托或列表。共享Campaign/API/Native/Team及GameLifetime source inverse由C统一接线，先严格逆组3706e87d再复用历史链，不删原断言 |
+
+总控独占索引/提交、原台账/HANDOFF/map/scope/owner、集成构建；第四个Sol只读核验全J02责任覆盖/消费者/反例。测试输出互不重叠：A为`artifacts/tests/j02-diagnostics-a/`，B/C新证据分别归`artifacts/workspace-j02-completion-20260917/{b-lifecycle,c-composition}/`；固定runner `.generated` 由所属执行者协调串行，完整Stage等待源码冻结后总控串行。已明确批准的六个固定生成根受控重建与本地Stage可复用（不扩大），旧验证日志保留；Stage含PlayerExports仅本地私密验证，源数据不变。
+
+完整退出条件：三包真实owner+实际消费者、旧源码/故障回归、支持双API+Bootstrap的Debug/Release原Stage、当次DLL ABI/布局/完整Compile与资源映射、代码地图/一基坐标及逐责任清单全部合格。既有资产/许可/用户数据/全仓cleanup HOLD与LIVE/旧SAVE/provider分开；不推送、部署、打包、改一键流程、全局安装或外仓写入。若真实失败先修本包而非停在下一个子包；不能用离线证据冒称实机。
+
+## 以下为 J02 目录生命周期子包与此前历史
+
 ### 当前回执：局部源码准入闭合，J02-Lifecycle OFFLINE_VERIFIED（2026-09-17）
 
 - 已从盘点转入交付：分类工具提交 `648bb084`，生产/测试切片 `102eab84134ee8e2ab2edb2e25d9f9aa7f560837`；本包真实状态 owner 提取、接线、两源归位及完整离线验证完成。**不是完整 J02 或全仓 G0.7 完成**，不得解锁未核实的后续宽包。下方 ACTIVE/意图为过程记录，以本回执为准；本轮不留虚假 ACTIVE。
