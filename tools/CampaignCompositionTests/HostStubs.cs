@@ -93,3 +93,19 @@ namespace TaleWorlds.CampaignSystem.ComponentInterfaces { public abstract class 
 namespace TaleWorlds.CampaignSystem.GameComponents { public sealed class DefaultSettlementLoyaltyModel : ComponentInterfaces.SettlementLoyaltyModel { } }
 internal sealed class CustomSettlementLoyaltyModel : TaleWorlds.CampaignSystem.ComponentInterfaces.SettlementLoyaltyModel { }
 namespace AnimusForge.PolicyEffects { internal sealed class AnimusForgeSettlementLoyaltyModel : TaleWorlds.CampaignSystem.ComponentInterfaces.SettlementLoyaltyModel, IWrapped { public GameModel Inner { get; } internal AnimusForgeSettlementLoyaltyModel(TaleWorlds.CampaignSystem.ComponentInterfaces.SettlementLoyaltyModel inner) { Inner = HostProbe.Wrap(nameof(AnimusForgeSettlementLoyaltyModel), inner); } } }
+
+// This suite exercises AfApi.GetSnapshot only; Native submission is covered by its own source-linked tests.
+namespace AnimusForge.Api.V1
+{
+    public sealed class AfDialogueClient
+    {
+        internal AfDialogueClient(object _) => throw new InvalidOperationException("composition.native_api_not_executed");
+    }
+}
+namespace AnimusForge.Refactor.Modules
+{
+    internal static class CoreDialogueServices
+    {
+        internal static object CreateClient() => throw new InvalidOperationException("composition.native_api_not_executed");
+    }
+}
