@@ -1,6 +1,6 @@
 # AnimusForge 逐文件 Owner Matrix（第一版）
 
-> 用于重构前导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。以当前 `d4cb1467` 及后续已记录的准备文档为基线。
+> 用于重构前导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。初版基线为历史 `d4cb1467`；当前J02源码为 `9d14a1ec`，以本表增量及唯一台账为准。
 
 ## 使用规则
 
@@ -10,24 +10,28 @@
 - 生产程序集暂时仍为单一 `AnimusForge.dll`；物理 DLL 拆分延后。
 - 任何涉及 `SyncData`、Harmony、Mission、UI、Tick 或 LLM 动作的切片，都要在这里补充影响和验收记录。
 
+## J02 当前覆盖
+
+完整责任/已核实坐标与未覆盖边界见[当前范围图](architecture/af-framework-code-scope.md)及[唯一台账](animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)。J02_OFFLINE_VERIFIED不解除全仓G0.7或LIVE/旧SAVE门禁。
+
 ## 运行与基础设施
 
 | 当前文件/路径 | 当前职责 | 目标 owner | 迁移策略 | 风险/验收 |
 |---|---|---|---|---|
 | `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` | 目录生命周期4字段及加载/停止/冻结捕获的唯一状态/算法 | Foundation / ModuleDirectory | J02有限包已真实提取；源码 `102eab84`，不是新游戏Host | 同锁、重入、固定失败码、Stopped保留目录与冻结快照；双版Stage/反例已验，LIVE未验 |
 | `src/AF.Foundation.Runtime/ModuleDirectory/{InternalModuleDirectory,ModuleFrameworkSnapshot}.cs` | 原注册/依赖/能力状态与冻结快照 | Foundation / ModuleDirectory | Git 100%归位，声明/程序集身份保持；原工作树字节hash无迁前对照 | 目录44、API及实际DLL元数据；不声明完整模块生命周期Host |
-| `Refactor/Modules/ModuleFrameworkRuntime.cs:11-36` | Team工厂选择、旧静态门面、原Campaign注册转接 | GameAdapter / Composition facade | 目录状态与算法已退出；注册壳保留且不受目录门控 | 原API签名/注册顺序/无第二状态owner；SubModule其余混合责任未迁 |
+| `src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs:11-36` | Team工厂选择、旧静态门面、原Campaign注册转接 | GameAdapter / Composition facade | 目录状态与算法已退出；注册壳保留且不受目录门控 | 原API签名/注册顺序/无第二状态owner；Startup/Tick已迁，UI/Mission等必要引擎适配保留 |
 | `AnimusForge/SubModule.xml` | 统一模块声明、Bootstrap-only 加载、Items XML | Bootstrap / Host | 保持不变；只允许 Bootstrap DLL | Id/Name/版本/资源路径；不得声明实现 DLL |
 | `AnimusForge.Bootstrap/BootstrapSubModule.cs` | 生命周期转发、启动失败处理 | Bootstrap | 保持独立 | 启动、卸载、类型注册、1.3/1.4 |
 | `AnimusForge.Bootstrap/BootstrapRuntime.cs` | API 线检测、实现 DLL 选择/加载、resolver | Bootstrap | 保持最小 | 只加载一个实现；版本歧义 fail-closed |
 | `AnimusForge.Bootstrap/BootstrapLog.cs` | Bootstrap 诊断 | Bootstrap | 保持独立 | 输出实际版本、路径、实现版本 |
-| `SubModule.cs` | 所有行为/模型/Harmony/Mission/每帧调度的组合根 | Host/Composition | 先按注册、Patch、Tick、模型、外部集成分组；保持顺序 | 任何一帧成本、注册顺序、失败隔离 |
+| `SubModule.cs`、`src/AF.GameAdapter.Bannerlord/Composition/` | 薄引擎override；Startup/Tick与已有Campaign/Team装配独立owner | GameAdapter/Composition | J02源码离线完成，原注册/catch/tick顺序与ABI保留 | 整SubModule逆向、故障变异、双版Stage；LIVE未验 |
 | `AnimusForge.csproj` | 单实现项目、1.3/1.4 条件编译、依赖解析、资源嵌入 | Host/Build boundary | 暂不重排；先建立包含/资源/依赖清单 | 两 API 线、资源嵌入、链接源码 |
 | `AnimusForgeModulePaths.cs` | 活动模块根、legacy 只读迁移路径 | Foundation/GameAdapter | 提取路径端口，保留迁移规则 | 不把 legacy 目录当活动输出 |
-| `Logger.cs`, `TraceHelper.cs`, `FeatureDiagnosticLogFile.cs` | 日志、trace、功能诊断 | Foundation/Diagnostics | 统一 trace 与有界日志 | 不记录 API key/无限制玩家文本 |
-| `PerfProbe.cs`, `FreezeWatchdog.cs`, `CampaignTickDiagnosticsPatch.cs` | 性能、冻结和 Tick 诊断 | Foundation/Runtime Safety | 保持低分配；按阶段抽取 | 每帧预算、队列深度、丢弃/过期统计 |
+| `src/AF.Foundation.Runtime/Diagnostics/{DiagnosticTraceContext,MetricWindow,BoundedLogWriteQueue}.cs` + `Logger.cs`门面 | trace、180秒指标、4096/8192通用日志队列已独占 | Foundation/Diagnostics | J02真实状态/算法接线完成；路径/UTF8/MCM留根适配 | 旧新oracle/6反例/双版Stage；hit-rate和token dump仍领域责任，不声称隐私问题全修 |
+| `src/AF.Foundation.Runtime/Diagnostics/{PerformanceWindow,FreezeWatchState}.cs` + Perf/Freeze门面 | 通用窗口/心跳/scope/ring唯一owner | Foundation/Runtime Safety | J02完成；实际线程/OSdump/游戏读取/MCM缓存不移入Foundation | 关键时序/旧新oracle/反例通过，无新增fast path分配；LIVE未验 |
 | `BannerlordExceptionSentinel.cs`, `NonBlockingErrorReport.cs` | 原版异常边界和错误报告 | Compatibility/Safety | 与功能 owner 分离；保留 fail-open/native fallback 语义 | 不因 AF 关闭而吞掉原版逻辑 |
-| `SaveRuntimeGuard.cs` | 存档/加载 generation 和 stale work 防护 | Foundation/Persistence | 作为所有异步模块的公共端口 | load 后 stale completion 必须被拒绝 |
+| `src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs` | 存档/加载 generation 和 stale work 防护 | Foundation/Persistence | 作为所有异步模块的公共端口 | load 后 stale completion 必须被拒绝 |
 
 ## 交互、AI、记忆和动作
 

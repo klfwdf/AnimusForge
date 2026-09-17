@@ -2,21 +2,36 @@
 
 <a id="j02-full-completion"></a>
 
-## 当前任务：完整 J02 连续完成（2026-09-17，ACTIVE）
+## 当前回执：完整 J02 源码与离线验收完成（2026-09-18，J02_OFFLINE_VERIFIED）
 
-用户最新明确要求“那你做完J02啊”。本节取代下方停在目录生命周期子包的状态：本轮一次完成 J02 原行约定的 Foundation/宿主通用责任与路径/消费者闭包，再集中离线验收，不在每个子包后停止。起点 `3706e87dfc4be2cf150b9f45f029e7f105a28fd3`，同一工作区/分支，六份既有dirty与空索引保持；本地检查点后才写生产。J01与102eab84目录状态提取不重做，不把J05业务记忆预算/J07会话队列或全生命周期模块平台强塞本包，也不把J02剩余通用状态改名排除。
+用户要求“那你做完J02啊”，本节取代下方仅目录生命周期子包/ACTIVE状态。J02原行约定的Foundation/宿主通用责任、实际消费者、有限目录归位均完成；不是完整项目、G0.7全仓清理或实机验收完成。起点3706e87d，意图5c97bfb0/overlay补充108a7c15；本地生产切片B `82660997`、C `469e3712`、A `9d14a1ec`。同一工作区/分支，原六份dirty正文保留；不推送、部署、打包、改一键流程或源玩家数据。
 
-| 并行包/owner | 精确生产范围与真实职责 | 接线/验收与残余边界 |
+### 原J02逐责任闭包
+
+| 责任 / 已核实路径和一基坐标（源码 `9d14a1ec`） | 实际迁移与消费者 | 保留 / 未覆盖 |
 | --- | --- | --- |
-| A Diagnostics / Foundation + 原根适配 | 修改`Logger.cs`、`PerfProbe.cs`、`FreezeWatchdog.cs`；新`src/AF.Foundation.Runtime/Diagnostics/{DiagnosticTraceContext,MetricWindow,BoundedLogWriteQueue,PerformanceWindow,FreezeWatchState}.cs`真正持有trace上下文、指标窗口、日志队列/背压/worker门控、性能窗口及freeze通用心跳/scope/ring状态 | 原公开门面与日志路径/文本、MCM、游戏现场/OSdump/文件sink保持；不把通用排队遗留后宣称全部。独有`tools/J02DiagnosticsBoundaryTests/`合成old/new/逆变换及故障反例，无真实日志/dump/玩家数据。热路径不得新增每次delegate/反射/全量扫描；旧4096/8192背压、时间窗口/阈值保持 |
-| B Lifecycle/Scheduling / Foundation + GameAdapter | 既有真实owner `SaveRuntimeGuard.cs`、`Refactor/Runtime/GameLifetimeCoordinator.cs`→`src/AF.Foundation.Runtime/Lifecycle/`，`Refactor/Runtime/PendingOperationRegistry.cs`→`src/AF.Foundation.Runtime/Scheduling/`；`AfCampaignRuntimeLifecycle.cs`→`src/AF.GameAdapter.Bannerlord/Composition/` | 保持generation/主线程Game身份/唯一owner退役、reset-clear竞态/已claim结果，不重写历史算法。更新实际非共享test runner路径及overlay的SaveGuard host路径；旧raw字节/归一内容、完整成员集、GameLifetime/Bindings/Commit/Native/Memory等真实消费者验证。领域存档/队列/事务留原业务owner，不能声称这些J05/J07已完成 |
-| C Host/Composition / GameAdapter | 独占`SubModule.cs`；既有`Refactor/Modules/{CampaignComposition,CampaignModelComposition,TeamModuleRegistration,TeamModuleServices,ModuleFrameworkRuntime}.cs`→`src/AF.GameAdapter.Bannerlord/Composition/`；新增`StartupPatchComposition.cs`、`ApplicationTickComposition.cs`，移交真实启动patch顺序与fast/watched tick装配算法 | 引擎override/base、namespace/ABI/注册顺序/每组catch/失败重抛保持，UI欢迎/WarStats/mission桥保必要适配；不新Host/重排tick/领域玩法。无每tick临时委托或列表。共享Campaign/API/Native/Team及GameLifetime source inverse由C统一接线，先严格逆组3706e87d再复用历史链，不删原断言 |
+| `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` | 目录4状态字段、Initialize/Shutdown/CaptureSnapshot唯一owner；Runtime门面接入；本项沿用102eab84并已集成复验 | 目录不等于通用插件热卸载Host |
+| `src/AF.Foundation.Runtime/Diagnostics/DiagnosticTraceContext.cs:6-54`、`MetricWindow.cs:6-57` | Logger的AsyncLocal trace/父scope及180秒指标窗口真实退出旧根；Logger BeginTrace:280、Metric:508调用 | Logger记录文本/路径/MCM、TraceScope输出门面保留；RecordHitRate:522-616为J03/J06领域观测 |
+| `src/AF.Foundation.Runtime/Diagnostics/BoundedLogWriteQueue.cs:10-147` | 4096/8192背压、drop计数/摘要节流、唯一worker门控/批量/排空；Logger EnqueueLogWrite:1366调用 | UTF8文件sink/清理原位置；Logger tokenStats队列:769-845属J08 LLM消息dump，隐私与领域队列不冒称已解决 |
+| `src/AF.Foundation.Runtime/Diagnostics/PerformanceWindow.cs:8-264`、`FreezeWatchState.cs:9-215` | Perf帧/桶/事件/30秒窗口与Freeze心跳、scope、256事件环/缓存唯一owner；根门面接入 | Perf保250ms MCM缓存；Freeze保唯一实际监控线程、游戏现场读取、OS dump、文件sink；无新逐tick委托/扫描 |
+| `src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs:6-65`、`GameLifetimeCoordinator.cs:7-39`；`src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs:9-88` | 已提取owner原字节归位：generation、实际Game身份、退役/准入暂停/Seal/reset-clear不重写；四迁移raw SHA相同 | Registry不是第二业务队列；J05记忆预算/J07渠道调度/请求lease与业务SyncData不在J02 |
+| `src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs:11-65` | 实际My/Shout/Courier实例捕获/退役；SubModule GameEnd:98-103、Unload:105-112、InitializeGameStarter:120-140继续接线 | 不接管团队业务存档/整个游戏生命周期平台 |
+| `src/AF.GameAdapter.Bannerlord/Composition/{CampaignComposition,CampaignModelComposition,TeamModuleRegistration,TeamModuleServices,ModuleFrameworkRuntime}.cs` | 五原owner归位，namespace/类型/内容不变；Runtime:11-36仍工厂与静态兼容门面，未造第二Host | Git100% rename/归一原文证明；迁前raw SHA未捕获，不冒称双向raw哈希 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:7-548`、`ApplicationTickComposition.cs:7-137` | Startup注册顺序/逐组catch与36相位fast/watched/异常finally/WarStats真实移交；SubModule:114-118、142-145仅引擎壳 | SubModule UIExtender/欢迎/Mission/WarStats适配仍必要引擎或J13领域责任；不重写玩法，不改公开ABI |
 
-总控独占索引/提交、原台账/HANDOFF/map/scope/owner、集成构建；第四个Sol只读核验全J02责任覆盖/消费者/反例。测试输出互不重叠：A为`artifacts/tests/j02-diagnostics-a/`，B/C新证据分别归`artifacts/workspace-j02-completion-20260917/{b-lifecycle,c-composition}/`；固定runner `.generated` 由所属执行者协调串行，完整Stage等待源码冻结后总控串行。已明确批准的六个固定生成根受控重建与本地Stage可复用（不扩大），旧验证日志保留；Stage含PlayerExports仅本地私密验证，源数据不变。
+### 本次真实验证与证据
 
-消费者闭包补充（2026-09-18）：实际 overlay 清单已包含 Logger/SubModule，须同时携带本轮从二者抽出的 DiagnosticTraceContext、MetricWindow、BoundedLogWriteQueue、StartupPatchComposition、ApplicationTickComposition 五个直接正文 owner；B 仅增这五项 host_integration 并保 SaveGuard 路径映射，使用 build_file_set 集合差验证，不调用 create_package/dist。旧 overlay 未纳入的 Perf/Freeze 或其他宿主依赖仍是历史非独立工程边界，不借本包扩整树或宣称完整可编译 overlay。
+- B：四迁移前后raw SHA一致；24个非overlay runner仅逆路径替换、5个历史校验适配保留原hash。隔离GameLifetime 36 checks+12编译后变异、bindings15、commit19、真实SaveGuard8及Courier/Memory历史链通过。证据 `artifacts/g0-closure-20260917/j02-b-lifecycle/verification.json`。bindings旧默认G: SDK不可用，隔离wrapper只注入本仓SDK/HERE/原fixture；不声称旧入口直接通过。首次Guard缺本地DOTNET_CLI_HOME失败，改本地环境后通过，原失败日志保留。
+- C：完整SubModule严格逆组3706e87d后接旧历史链；五composition归一原文相等；36相位Tick replay+5编译后指定反例、Campaign42+5、Team308+3、Scene71、Native正常/enum重排各41+8指定反例通过。证据 `artifacts/workspace-j02-host-composition/after/{receipt,native-mutation-results}.json`。这不证明真实Harmony/游戏运行。
+- A：新owner合成控制6组、24个旧Logger/Freeze声明的可执行旧新oracle4组、6个编译成功且指定行为失败的突变通过；总控独立复跑均exit0。受保护领域/平台区段原文、Perf4方法体及操作顺序检查通过；**不是三根整个文件严格inverse**。实测涵盖异步trace、窗口清理、背压/drop/worker失败重启、scope/ring；不执行真实日志、玩家文本或OS dump。证据 `artifacts/workspace-j02-completion-20260917/integration/diagnostics-parent-verification.json` 及其日志，底层oracle/mutations在 `artifacts/tests/j02-diagnostics-a/`。
+- 原脚本完整Debug与Release各1.3+1.4+Bootstrap+本地Stage成功（已授权六固定生成根，重验不越界/无reparse）；两侧日志有Build/Stage success，invocationStatus=true/scriptThrew=false。JSON保留的lastExternalExitCode=1是robocopy复制成功返回值，不能把此字段写成0；外层执行结束0。6组artifact/Stage DLL SHA一致，两实现不同，XML只载Bootstrap。源码与构建归一SHA相等；Logger仅恢复原混合换行，raw SHA不同明确记账。
+- 双API各762 Compile/7 EmbeddedResource=旧755+7新owner+9路径映射；完整Identity/Link/LogicalName和既有Reference HintPath等集，Bootstrap3/0。实际当次4实现DLL/1060 API元数据、API snapshot36/public119与并发128/256、5 API变异通过。证据集中 `artifacts/workspace-j02-completion-20260917/integration/{stage-debug,stage-release,fresh-after-artifacts,member-set-verification,api-actual-artifacts}.json` 及日志。
+- overlay只调用build_file_set：J01的297→302，精确SaveGuard路径映射+从已列Logger/SubModule抽出的5个直接正文owner，类别等集；未调用create_package/写dist。旧overlay非独立完整工程，未额外扩整树。`tools/HostCompositionTests/.generated/`新增精确ignore，生成物不提交、不清理。
+- 代码地图绑定源码 `9d14a1eca2c25075975134605c24d48666ee123a`，185锚点recorded/working-tree两模式均PASS；旧167中17定位更新、150项逐字段保留，新增18个owner/门面/残余边界锚点。独立只读复核未发现本包离线结项阻断。
 
-完整退出条件：三包真实owner+实际消费者、旧源码/故障回归、支持双API+Bootstrap的Debug/Release原Stage、当次DLL ABI/布局/完整Compile与资源映射、代码地图/一基坐标及逐责任清单全部合格。既有资产/许可/用户数据/全仓cleanup HOLD与LIVE/旧SAVE/provider分开；不推送、部署、打包、改一键流程、全局安装或外仓写入。若真实失败先修本包而非停在下一个子包；不能用离线证据冒称实机。
+### 保留风险与停止边界
+
+J02源码/离线完成，LIVE、代表性旧SAVE、provider网络、真实Harmony与纯1.3运行环境仍NOT-RUN；既有1.3混合引用只证明原选择与本次构建，不冒称纯1.3实机。资产/许可/用户数据/全仓cleanup HOLD未解除；Stage含PlayerExports私密本地副本，严禁打包/上传。历史ae8e6b89仍含本地专用记录，本分支禁止推送/发布；回退只可按A/C/B做聚焦inverse提交，不reset/rebase。下一计划包J03需另按原依赖/门禁细化，不在本次自动启动。
 
 ## 以下为 J02 目录生命周期子包与此前历史
 
