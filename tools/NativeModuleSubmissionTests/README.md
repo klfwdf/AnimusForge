@@ -37,9 +37,9 @@
 
 ```powershell
 $dotnet = (Resolve-Path .\local\dotnet\8.0.425\dotnet.exe).Path
-python -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet
-python -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet --reorder-core-enums
-python -B tools/NativeModuleSubmissionTests/source_boundary.py
+python -X utf8 -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet
+python -X utf8 -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet --reorder-core-enums
+python -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
 ```
 
 `--dotnet` 也可省略并使用 `DOTNET_EXE` 环境变量，最后才查找 PATH 中的 `dotnet`；路径不存在时在生成测试目录前退出。B0/B1 验证必须显式传入同一个本地 SDK 路径。
