@@ -1,11 +1,13 @@
-# 当前接续：J01c BLOCKED，J01b 已提取并独立验收
+# 当前接续：J01c/J01d 离线验收通过；J01e 待执行
 
-- 当前结论以本段及[台账当前状态](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)为准，下方 ACTIVE / NOT_STARTED 是被取代的过程记录。源码提取提交 `156e6836`，停止诊断提交 `b9092c27`；13 协议用例及 7 变异通过，双版本完整 Stage 仅为提取前基线，提取后的完整构建、两文件迁移与 J01 整包验收尚未完成。
-- 阻断是 overlay 的三条陈旧 runtime_assets 路径，实际 Policy 资源仍存在；不豁免文件集门禁、不扩改打包清单。原六份 dirty 文档保留，未推送、部署或操作旧存档。下一步先精确处理该清单范围，再恢复 J01c；LIVE / 旧 SAVE / 真实网络保持 NOT-RUN。
+- 唯一当前状态：[台账 J01 当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)；`J01c_J01d_OFFLINE_VERIFIED / J01e_NOT_STARTED / J01_OFFLINE_NOT_COMPLETE`，取代下方 BLOCKED/ACTIVE 过程记录。用户明确授权修 overlay 三条陈旧 `runtime_assets` 清单并保留 J01 后续有界许可；解阻提交 `0e6be296` 仅两 Policy 路径替换/一废弃旧根项删除，真实 `build_file_set()` 迁前/迁后均 297 文件/类别且按单一 Compat 路径映射全等。未调用 `create_package()`、写 dist 或动提示词/loader。
+- 源码提交 `02f1747c4e226d9c8e187f2503c6197ed6148156`：`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:1-720` 与 `LlmVisibleReplyNormalizer.cs:1-485`（`StreamFilter:62-144`）原始字节迁移、根副本退出；原 SHA-256 分别 `95911a1ffbb2324529e4fa1156a864e13091d3c2020555c30194f76a8b1b8a74` / `76a660ee99846d4c4251dc00bf4af1a1ec472d7772f53d06765eefc48533e440`。Courier runner `:31`/单测 `:26`、overlay host_files `:102` 仅更新物理路径。J01b 的 `PrimaryChatMessagePolicy.cs:9-235` 及 `ShoutNetwork.cs` 13 接线算法不变；旧宿主传输、配置/统计/姓名责任仍未提取。
+- 两 API 完整 Compile 753→754（两路径映射+policy）和 7 资源全等；协议 relocated 13 PASS/7 变异拒绝，Courier 39 PASS/8 原变异与单测 8 OK，LegacyShout 3 OK；fresh Debug/Release 各 1.3+1.4+Bootstrap+Stage、API 实物四 DLL/1056、Composition 42+5、Native 41/重排41/8变异均通过。所有真实退出码、六 DLL SHA 及单次生成日志在 `artifacts/workspace-j01-llm-protocol/after/`，协议日志在 `artifacts/tests/llm-protocol/j01cd_*`；Debug/Courier 首次**包装层**误判已留原日志，最终真实脚本/runner 成功与产品失败区分清楚。Stage 私密副本不上网、未部署。
+- Astra 已独立验收 J01c/J01d；J01e 地图/owner/recorded 与 working-tree 回执待执行；目前不得报 J01 整包完成。LIVE/旧 SAVE/真实 provider 网络未验证。用户要求 **J01 完成即停，J02 NOT_STARTED**；不推送/发布/部署/建自动化。原六份 dirty 文档受保护。
 
 ## 以下为本轮过程记录
 
-# 最新发布回执（2026-09-16）
+# 当前接续：Astra 全仓路线与 J01 联合包计划（2026-09-17）
 
 > 当前执行入口更新：用户已批准台账 [J01a 限定基线](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01a-执行意图2026-09-17active)；本地 J01a 为 ACTIVE，尚无新测试/构建通过回执。仅准备协议测试与 fresh before 证据，不提取/迁移生产算法，不续跑 J01b。以下原计划状态属于批准前记录。
 
@@ -19,6 +21,66 @@
 
 > **J01c_BLOCKED / J01b_EXTRACTED_VERIFIED / J01_OFFLINE_NOT_COMPLETE（2026-09-17，取代上方 ACTIVE/STOPPED 初报）。** 真实 `build_file_set()` 退出 `1`，日志与退出码：`artifacts/workspace-j01-llm-protocol/after/overlay-build-file-set-before.{log,json}`。既有 overlay `runtime_assets` 三旧路径需对齐已跟踪 Policy 资源：`AnimusForge/CustomPrompts/CustomPolicyEvaluatorPrompt.json` → `AnimusForge/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json`；`AnimusForge/CustomPrompts/NpcRulerPolicyPrompt.json` → `AnimusForge/CustomPrompts/Policy/NpcRulerPolicyPrompt.json`；`CustomPrompts/CustomPolicyEvaluatorPrompt.json` → 同一 Policy/CustomPolicyEvaluatorPrompt 候选且无独立 tracked 根文件，去重/意图待核。这是路径清单陈旧，不是用户资产丢失。J3 当前只准改 `host_files` Compat 路径，未授权修 `runtime_assets` 或豁免真实 `build_file_set()`；需另行精确扩 J3 后再验证。两协议源未迁移/哈希未变，未跑 Stage；迁移索引未写，仅本阻断回执写入文档索引并提交。
 
+- 唯一当前入口：[全仓联合路线与首包执行单](docs/animusforge-refactoring-and-repository-reorganization-plan.md#workspace-joint-execution-plan)，首包详见 [J01](docs/animusforge-refactoring-and-repository-reorganization-plan.md#joint-j01-execution)。本轮仅补台账/HANDOFF，静态验证通过；`ROADMAP_READY / J01_PLAN_READY / EXECUTION_NOT_AUTHORIZED`。未修改生产/游戏 Prompt/测试/Skill，未构建、迁移、提交、推送、部署或派发代理。
+- 计划给出 G0 各项缺口/解除条件、J01–J17 依赖与 owner、J01 精确路径/状态/调用者/验证/回滚。后续包是路线而非已审完的实施清单；全仓清理 gate 尚未 CLOSED，历史数据/参考/产物 HOLD 不因局部计划解除。B0 和五文件 B1 已离线验证，不重做。
+- J01 是 `AF.Module.Llm/Protocol` 子域：两文件原字节归位，8 方法/4 常量从 ShoutNetwork 真正提取，13 处原调用直接接新 owner。仅协议职责，不等于网络/SSE 调度、共享 Prompt、Memory 或三渠道完成；实际算法、结构、离线构建、LIVE/旧SAVE 分栏验收。发现的测试 Newtonsoft 旧路径缺失已给固定 SDK DLL 参数方案；旧 Primary replay 的历史引用/副作用隔离留 J08，不伪装为本包已跑。
+- 起点 HEAD `99360142b9b4fa5ca309cadf2cf62b627b1cdda8`，分支 `codex/af-main-refactor-continuation-20260831`；原六份 dirty 文档保护、暂存区为空。Sol 下一步须获得 J6 的限定执行批准（含本地切片提交、生成物和六个指定输出根重置）；只读批准只能核验 G0，不允许自动实施或续跑 J02。
+
+| 本轮核实源码坐标（均为 HEAD `99360142`，一基范围） | 符号 / 计划覆盖 | 仍未覆盖 |
+| --- | --- | --- |
+| `ShoutNetwork.cs:251-344,364-394,451-467,486-496,602-667` | 4 常量；HasEmptyResponseRetryMarker、IsBattleSpeechRequest、GetLastMessageRole、EnsureFinalUserTurn、BuildEmptyResponseRetryMessages、ContainsAnyIgnoreCase、LooksLikeThinkingControlError、TryReadMessage；精确分段与 13 接线点见台账 J2 | `24-217` transport override/实时姓名过滤、`889-1590` 实际普通/流调用及其他混合责任；本轮未修改 |
+| `LlmApiCompat.cs:1-720` | LlmApiCompat 请求/响应协议与认证头；拟原字节归位，现有 namespace/public 成员不变 | 供应商真实网络兼容、认证行为改动不在本包 |
+| `LlmVisibleReplyNormalizer.cs:1-485`，`StreamFilter:62-144` | 可见回复解析与每流实例状态；现有 Courier/Scene/RpItem 消费者核实，拟原字节归位 | 不代表动作权威/三渠道执行或流缓冲性能缺口已解决 |
+
+本轮最终静态验证回执见台账 J7；新增测试、生产构建/迁移、LIVE/旧SAVE 均非本轮执行结果。下方 B0/B1 源码基线 `64eaa7a8` 与地图记录仍保留其原含义，不改写历史通过数字。
+
+## 以下为已完成的 R2 B0/B1 验收记录；当前任务以上方为准
+
+# R2 B0 与五文件 B1 结构切片已离线验证（2026-09-17）
+
+- 唯一计划为 [WORKSPACE-STRUCTURE-20260917 / P9](docs/animusforge-refactoring-and-repository-reorganization-plan.md#workspace-structure-r2-execution)。B0 初次组合编译缺口已按用户追加授权，仅在 `tools/CampaignCompositionTests/HostStubs.cs` 增加未执行的 Native API 编译桩；组合正常路径 42 项及 5 个反例通过。Native 正常/枚举重排各 41 项通过，8 个独立反例均编译成功且被运行断言拒绝。机器默认 cp936，原 UTF-8 fixture 按 `python -X utf8 -B` 运行；未改 Host/断言。
+- B0a–B0e **VERIFIED**：Debug/Release 各 1.3+1.4+Bootstrap+Stage；API CoreOnly、3 反例、外部拒绝及 4 DLL/1056 元数据、142 地图记录/工作树与两项 inverse 均通过。SDK8.0.425、1.4.7 的 63 引用 manifest 和日志在 ignored 的 `local/` / `artifacts/workspace-structure-20260917/before/`。本地检查点 `e3a02cc5` 与 `aab6a5de` 仅含 B0 文件；原六份 dirty 文档仍保留且未暂存。
+- 五份 V1 源文件按 P3 原字节迁移，源码/消费者提交 `64eaa7a819fcb5746a9b7ceda1e93a5040a8f0d8`，142 点当前地图提交 `99360142` 并以该源码提交为 `sourceRevision`；记录/工作树模式及两项源码 inverse 通过。1.3/1.4 Compile 各 753 项按映射完全一致、7 项资源 LogicalName 不变；迁后六 Stage、API 实际 DLL 1056 元数据、组合及 Native 正常/重排和全部预期反例通过。迁前后 DLL 原始 SHA-256 不同但大小相同，未声称 DLL 字节相等；验证依据是原始源字节、完整成员集、资源和实际 ABI 元数据。
+
+| 已核实源码坐标（均为 `64eaa7a8`、一基行号） | 符号 / 当前责任与消费者 | 未覆盖 |
+|---|---|---|
+| `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs:1-116` | `AfCapabilityIds:35-38` 与 V1 ID/DTO 纯契约；AfApi、两个投影及外部 client 消费 | 不代表独立契约 DLL 或新能力 |
+| `src/modules/AF.Module.PublicApi/V1/AfApi.cs:14-17,34-37,55-57` | `AfApi.GetSnapshot` 调 `ModuleFrameworkRuntime.CaptureSnapshot` 与投影；`CreateDialogueClient` 调 `CoreDialogueServices` | 不代表 Scene/Courier 可提交 |
+| `src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs:34-36,53-64` | `AfDialogueOperation` / `AfDialogueClient` 转发内部 Native 提交、结果与取消 | 不代表真实子 MOD 的游戏内加载 |
+| `src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs:12-57` | `AfV1SnapshotProjection.Create` 将内部冻结快照投影为 V1 DTO；AfApi 与快照边界测试消费 | 不拥有框架原状态/捕获 |
+| `src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs:7-39` | `AfV1DialogueProjection` 显式映射内部对话枚举；客户端与 enum 重排测试消费 | 不改变内部服务协议 |
+
+- 本包仅目录迁移，运行频率及新增扫描/分配/锁成本为零，namespace、程序集、公开 ABI、存档和协议身份不改。原六份 dirty 文档未整份暂存；本 HANDOFF 与台账的当前状态留在其既有工作区差异中。未推送、部署、操作游戏/存档或上传含 PlayerExports 的 Stage；LIVE/旧SAVE 仍独立 NOT-RUN，业务职责拆分、B2–B7 与整体 B1 深预算未完成。
+
+## 以下为 Astra R2 规划状态与历史记录；执行进度以上方为准
+
+# 历史接续：Astra R2 已具体化 B0 准备方案，待批准由 Sol 执行（2026-09-17）
+
+- 唯一当前计划：[WORKSPACE-STRUCTURE-20260917 / R2执行单P9](docs/animusforge-refactoring-and-repository-reorganization-plan.md#workspace-structure-r2-execution)，全局结构/P3首包映射仍在同一台账。工作区 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，HEAD `d92c4b3e`；本轮只更新台账与本链接式摘要，保留已有六份dirty文档，不提交/推送。
+- 原 `src/content/tests/tools/scripts/docs/references/design/local/artifacts` 标准不变。首包修正为纯公开契约→Contracts、其余四个门面/投影→建议的 PublicApi 适配目录；具体五文件路径、已核实行号/符号/源码版本/调用者与未覆盖责任见 P3，不把混合大类搬目录当拆分完成。
+- 已修正D盘bin直接作1.4引用目录的错误：P9固定从当前1.4.7安装按63项真实引用生成本地平铺目录，不混旧1.4.6。SDK固定官方8.0.425 ZIP，URL/SHA-512与仓库内解压路径已列明；不是把已有8.0.25当成满足旧SDK10的8.0.30要求。local排除、Native runner最小补丁、完整命令/反例/6个Stage重置根均已具体化。
+- 下一步一次确认P9.7的B0→B1范围，Sol即可按固定路线先准备验证再迁五文件；不需要重新设计引用目录/SDK方案。本轮没有下载二进制、生成依赖目录、迁移、构建、安装、部署、恢复自动化或续跑旧业务；计划可执行不等于B0已验证或LIVE/旧SAVE已验收。
+
+## 以下为 Sol 初盘历史；首包归属与环境判断以上方链接计划为准
+
+# 历史接续：模块化工作区整理盘点，结构迁移待门禁（2026-09-17）
+
+- 当前 Git 根 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，起点 HEAD `d92c4b3e`；本轮新写入仅[原执行台账的 `WORKSPACE-STRUCTURE-20260917` 盘点/映射](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与本摘要。上一任务 5 个未提交说明文件保留，不回滚、不作为本轮产品成果。
+- 按原 `src/content/tests/tools/scripts/docs/references/design/local/artifacts` 标准建立真实 owner/消费关系、类别/HOLD 和首包旧→新路径方案。公共 V1 `Api/V1` 3 文件及 `Api/Internal` 2 文件是首个**候选**结构切片，仍编入单一 `AnimusForge.dll`；本轮未移动/删除/取消跟踪任何文件，也未提取业务责任。`MyBehavior`、`ShoutBehavior`、`CourierDeliveryBehavior` 仍为混合过渡 owner。
+- 迁移前静态成员诊断：默认 1.3 与 1.4 各 753 个 Compile、0 重复；142 点代码地图的记录提交与工作树模式、API 源码逆变换 PASS。诊断使用临时 MSBuild 属性绕开本机 Windows SDK 路径读取拒绝，**不等于构建通过**。公共 API 聚焦 runner 因缺 net8.0 8.0.30 ref packs 报 NU1100；官方 1.3/1.4/Bootstrap Stage 因游戏根与完整私有 runtime 依赖缺失未运行，历史产物不可复用为本机基线。
+- 下一步：在合法既有来源恢复依赖/测试 SDK 后，用原一键 Stage 和聚焦测试建立迁移前基线；再按台账精确五文件及受影响消费者清单请求成批移动确认。PlayerExports、原版参考树、许可/依赖、隐私日志与保护交接继续分类 HOLD。不推送、不部署、不改游戏或真实存档；当前目录盘点不表示阶段 8 业务重构完成。
+
+## 以下为上一任务及历史记录
+
+# 本机接续说明（2026-09-17，仅 AGENTS / Skill 文档调整）
+
+- 当前核实工作区为 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，修改前 HEAD 为 `d92c4b3e`；下方 G 盘路径和其他本地分支属于历史环境，不作为本机操作目标。
+- 本轮仅修正 AGENTS 工作区/分支定位、两处 API 只读说明及代码地图校验命令；生产源码和整体阶段不变，不安装外部 Skill、不推送或部署。
+- 后续方向已调整为先按真实模块归属整理工作区，而非立即继续 Prompt 业务拆分。本轮仅将职责/消费者盘点、路径映射、迁移前基线、结构与行为分离验收写入既有 Skill；先形成完整结构方案，再选择可验证的模块迁移切片，不能用少量图片归档替代目标。现阶段未移动/删除/取消跟踪任何文件；历史 HOLD 按具体类别和后续明确授权处理，不一概解除。
+- 本机只读核查：审计列出的 18 个生产源哈希匹配，142 个代码坐标在记录提交与工作树模式均通过；历史 6 个产物及 17 个最终日志本机缺失，未重跑构建/功能测试。此前约 60% 的口头估计不是正式验收进度。
+- 本地 `origin/main` 为 `96a1c60f`，与下方历史回执不同；本轮未联网核实远端，不据此推断已同步 main。整体阶段 8 仍未完成，后续生产工作继续按最新详细 HANDOFF 和原计划推进。
+
+# 最新发布回执（2026-09-16）
 
 **代码及详细HANDOFF已推送到专用重构分支，远端已核对`6538cc36`；本发布说明为后续文档追加，生产源码仍6e419f6d。**
 
