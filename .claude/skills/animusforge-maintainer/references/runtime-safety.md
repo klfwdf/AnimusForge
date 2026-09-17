@@ -17,7 +17,7 @@ External bridge/process
 Save/load boundary
 ```
 
-Each module manifest declares which domains it touches.
+Document the runtime domains actually touched; use a manifest only when an implemented consumer requires it.
 
 ## Main-thread rule
 
@@ -41,7 +41,7 @@ Tests should force a genuine asynchronous yield, source mutation during retry, o
 
 ## Module lifecycle ownership
 
-Every module owns:
+For each contribution actually introduced or moved, identify the owner of applicable resources (not a requirement to create every resource):
 
 - cancellation source/generation;
 - event/listener registrations;
@@ -52,7 +52,7 @@ Every module owns:
 - health/invariant report;
 - Harmony patches it declares.
 
-The foundation can dispose reversible registrations. Module docs must name non-reversible or restart-required effects.
+The actual lifecycle owner disposes reversible registrations it owns; a directory or state enum alone provides no disposal guarantee. Module docs must name non-reversible or restart-required effects.
 
 Start is transactional for reversible contributions. A partial start failure disposes started contributions before state becomes `Failed`.
 
@@ -65,7 +65,7 @@ Business modules should not scatter `AccessTools`, `GetMethod`, `GetField` and p
 - Resolve/cache reflection outside hot paths.
 - Log an important missing member once with version/module/feature context.
 - Do not rely on patch application order as an undocumented arbitration system.
-- Profile resolution should detect known exclusive/conflicting hooks before campaign load.
+- Actual composition should detect known exclusive/conflicting hooks before campaign load; do not add a profile subsystem solely for this check.
 - Never promise safe runtime unpatch unless focused lifecycle and in-game tests prove it.
 
 ## Tick scheduler
@@ -116,11 +116,11 @@ Health is not “method exists.” Check authoritative relationships:
 - scheduler tasks are owned by active module;
 - declared required provider is present and compatible;
 - no orphan listener/queue remains after safe toggle;
-- persistence namespace/schema matches manifest;
+- persistence namespace/schema matches the actual storage contract;
 - patch conflict/target status is known;
 - runtime queue/budget/stale counters remain within defined bounds.
 
-State includes `Discovered`, `Disabled`, `Blocked`, `Starting`, `Active`, `Degraded`, `Failed`, and `RestartRequired`.
+For a separately implemented module Host, these may be useful states: `Discovered`, `Disabled`, `Blocked`, `Starting`, `Active`, `Degraded`, `Failed`, `RestartRequired`. They are not a mandatory enum retrofit for existing components.
 
 ## Diagnostics
 
@@ -143,6 +143,6 @@ Do not log API keys, unrestricted player conversations/prompts/model responses, 
 
 Rate-limit repeated compatibility/tick/UI failures. Preserve the first full stack and aggregate repetitions.
 
-## SafeMode
+## SafeMode (separately scoped capability)
 
 SafeMode is a recovery profile, not a universal repair engine. It must preserve unknown module data, report failed/disabled modules and avoid optional gameplay. Any destructive repair requires a separate explicit action, backup and owner-specific migration.

@@ -25,7 +25,9 @@ USAGE
 
 host="both"
 mode="symlink"
-source="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+script_dir="${BASH_SOURCE[0]%/*}"
+[[ "$script_dir" != "${BASH_SOURCE[0]}" ]] || script_dir=.
+source="$(cd "$script_dir/.." && pwd)"
 dry_run=false
 
 while [[ $# -gt 0 ]]; do
@@ -83,7 +85,7 @@ install_one() {
   local label="$1"
   local destination="$2"
   local parent
-  parent="$(dirname "$destination")"
+  parent="${destination%/*}"
 
   if [[ -e "$destination" || -L "$destination" ]]; then
     if [[ -L "$destination" ]] && [[ "$(cd "$destination" && pwd)" == "$source" ]]; then

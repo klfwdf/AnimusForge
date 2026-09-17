@@ -1,4 +1,6 @@
-# J01 完成后的并行总控交接（2026-09-17）
+# 历史交接原件：J01 完成后（2026-09-17，已失效）
+
+本文仅保留当时请求、调度与证据，全部内容不再作为执行指令；代理数量、模型分工、总控和核验安排已退出现行规范。当前任务与规则见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#skill-restructure-20260918)，J01/J02 历史验收结论不由本次规则更新改写。
 
 这是交接，不是第二份总计划。唯一台账仍是 [原计划](../animusforge-refactoring-and-repository-reorganization-plan.md#parallel-controller-handover)。
 

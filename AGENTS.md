@@ -3,8 +3,9 @@
 ## AF skill coordination
 
 - For verified AF development/maintenance, read the single repository copy at `.claude/skills/animusforge-maintainer/SKILL.md`; select its workflow for the actual task, not a permanent whole-project refactor agenda.
+- The selected maintenance source is `D:/下载/af-skill/af-skill` (version 0.2.0). This repository reads its reviewed local copy, not that external path at runtime. Merge shared-file updates deliberately; preserve the local framework coordination adaptation and other authors' changes. Do not install or overwrite other copies implicitly.
 - For AF core/framework/internal-module/public-API work, also read `.agents/skills/af-core-framework/SKILL.md`. Reconcile them through `.claude/skills/animusforge-maintainer/references/framework-coordination.md`: same-DLL internal ports and versioned external public API remain separate; logical Foundation/Module/Bridge names do not mandate separate DLLs or expand the user's task scope.
-- HANDOFF must include verified source paths, one-based line ranges, symbols, source revisions and covered/uncovered responsibilities. Resolve current status from actual Git plus the latest request and explicit supersession links, not stale ledger titles or historical machine paths.
+- Keep current state and detailed evidence in the existing main ledger; HANDOFF links a short summary to that entry and the verified code map. Code evidence includes source paths, one-based line ranges, symbols, revisions and covered/uncovered responsibilities without duplicating the full table. Resolve status from actual Git, the latest request and explicit supersession links.
 - Skill-only changes do not authorize product changes, global installation, push/deployment or automation recovery. Existing global safety/cleanup skills remain applicable; this routing does not install or mutate them.
 
 ## Local refactor continuation boundary

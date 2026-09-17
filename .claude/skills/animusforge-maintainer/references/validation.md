@@ -1,151 +1,43 @@
-# AF validation strategy
+# AF 验证：变化、风险与证据
 
-Choose evidence according to the changed surface. A single successful compile is never proof of save, Harmony, interaction, profile or package correctness.
+## 在开工时确定完成条件
 
-## Validation layers
+先写清本包应保持的行为、批准的变化、直接风险与必要验收；只因新证据暴露风险才补充条件。复用有效证据必须绑定相同源码/依赖/配置及相关输入；改变这些输入或候选产物后重新验证受影响项。
 
-| Layer | Environment | Proves |
+## 按变化选择验证
+
+| 变化 | 直接验证 |
+| --- | --- |
+| 仅文档 / Skill | YAML、结构、链接/锚点、模板、路由/校验工具行为；确认产品源码未变，不跑游戏构建 |
+| 原样迁移 | 内容保持、真实引用和 loader 路径、完整 Compile/资源集合无重复遗漏、双版本构建 |
+| 职责抽取 | 原行为或批准变化、算法/状态归属、真实消费者、关键错误路径；双版本编译 |
+| 状态 / 异步 | 所属线程、强制 yield、同代输入变化、owner/generation 变化、取消、晚结果、重复副作用及生命周期 |
+| 调度 / 性能 | 实际 jobs/records 与耗时、单回调大批量、积压/背压、跨帧顺序；不只计 callback 数 |
+| 公开接口 / 存档 | 旧消费者 ABI、能力与失败语义、类型/键/枚举、代表性旧格式、迁移/重复执行/坏数据边界 |
+| 交互链路 | 受影响渠道的资格→Prompt/history→后处理→执行→可见输出→AFEF 回读；共同机制核对三渠道 |
+| 正式模块 / Bridge | 实际启动/资源清理/依赖缺失/故障隔离与组合矩阵；仅对实际实现的 Host/profile 承诺测试 |
+| 资源 / UI / 配置 | 真实 loader、默认值、用户覆盖、资源身份/白名单；必要的输入焦点、展示及实机场景 |
+
+源码逆向、行为对照、变异测试是可选手段，按其能发现的风险选取，不要求三套同时叠加。优先验证真实生产实现，标明 source-derived spans、wrappers、fakes 和其盲区。已有回归/历史校验保留；需要迁移时给出对应差异及替代证据，不能删除断言或只刷新 hash 凑 PASS。
+
+## 双版本与证据层级
+
+AF 持续支持 1.3.x / 1.4.x，不是可选开关或未来目标。生产代码/兼容改动使用原构建入口验证两个实现；Bootstrap 按原流程或受影响程度验证。记录实际参考来源、精确版本、配置、命令、退出码及候选修订，不把 API 线名称当成任意补丁版本已验。
+
+| 证据 | 能证明 | 不能替代 |
 | --- | --- | --- |
-| Contract/unit | Standard .NET | Manifest/schema, dependency graph, capability DTO, tag parser, action/prompt/config/persistence pure behavior. |
-| Foundation composition | Standard .NET where possible | No-op module lifecycle, state/inventory, dependency blocking, failure isolation, profile resolution, disposer behavior. |
-| Module/bridge composition | Standard .NET + fakes | Module-alone/dependency/optional capability and bridge matrix. |
-| Compatibility/build | Windows + legitimate pinned game refs | 1.3, 1.4, Bootstrap, GameAdapter/patch compile targets. |
-| Stage/package | Windows/build artifacts | Unified module layout, profile DLL/content closure, allowlist, marker/hash, forbidden entries. |
-| Save migration | Fixtures + in-game | Old key/type/schema reads, current writes, missing/corrupt behavior, user-data preservation. |
-| In-game | Supported Bannerlord 1.3/1.4 | Campaign/Mission/Encounter/Harmony/Gauntlet/thread/lifecycle behavior. |
-| Interaction | Keyless fixtures + optional real API/in-game | Rule/prompt/postprocess/action/history alignment and visible output. |
+| 源码坐标 / hash | 定位和内容绑定 | 行为正确 |
+| MSBuild Compile/资源求值 | 编译/资源成员集合 | 编译、依赖闭包 |
+| 两 API / Bootstrap 构建 | 对实际引用的编译成功 | 真实加载、Harmony、实机兼容 |
+| PE/契约/fixture | 类型形状或所测逻辑 | CLR 加载、完整游戏和外部 MOD |
+| 本地 Stage | 当前候选文件布局、唯一 Bootstrap、两实现与 hash | 安装、发布许可、实机/旧档 |
+| 实机 | 所测版本与场景的真实行为 | 未测版本/场景或旧存档迁移 |
+| 代表性旧档 | 指定旧类型/键/数据的读取与迁移 | 所有存档或全部游戏行为 |
 
-## Bind claims to the evidence actually collected
+Stage、游戏部署、ZIP 和上传是独立动作；按任务需要及授权执行，不为每次内部改动打包。发布时才完成所需版本/依赖、文件白名单、hash、许可和隐私检查。不得覆盖原版 DLL；Stage 中的玩家内容不能随报告上传。
 
-Record the requested branch and exact source revision; do not combine another branch's uncommitted cleanup, an older Stage or a different machine's run into the candidate result. Historical committed build logs are reported evidence, not a build rerun by the current reviewer.
+## 报告与停点
 
-- A source coordinate/hash map proves location and content binding, not semantics or gameplay.
-- MSBuild `Compile` item evaluation proves inclusion, not a complete build or resolved dependency closure.
-- Design/catalog fixtures prove validation rules, not a production ModuleHost or live activation.
-- Source-derived tests must identify exact extracted spans, wrappers and fakes; passing them does not mean the whole host compiled or ran. Keep negative controls for missing/changed declarations and for the defect under test.
-- PE metadata checks prove assembly shape, not CLR/Bootstrap loading, third-party MOD upgrades or gameplay.
-- A read-only review may inspect or run genuinely read-only checks. If an existing runner writes fixed repository-local outputs, requires unavailable history/dependencies or invokes game/provider behavior, report that limitation instead of modifying the runner or installing dependencies to manufacture a pass.
-- In sparse/shallow audit clones, use the Git tree for repository membership. An excluded file or unavailable historical commit is a review-environment limitation, not a source deletion/regression. Mixed pass/error results remain partial, never an all-pass summary.
+检查失败先诊断实际信号；保留失败与修复后的结果。未执行标 `NOT-RUN` 并说明缺少环境/依赖、未证明风险和所需下一动作。相关验收必需项未完成时用 `VERIFY` / `BLOCKED` 或明确 `OFFLINE_VERIFIED`，不声称产品 DONE；非本包验收项不阻止该包按限定范围完成。
 
-## Manifest and profile tests
-
-Test:
-
-- invalid/duplicate IDs and persistence namespaces;
-- missing owner, entry type or contract version;
-- required/optional dependency behavior;
-- dependency and capability cycles;
-- incompatible module/capability/Bannerlord versions;
-- conflicting Harmony/hook declarations;
-- profile closure and undeclared DLL/content;
-- invalid runtime-toggle claim for Harmony/save/persistent module;
-- SafeMode excludes optional gameplay and preserves data metadata.
-
-## Lifecycle and failure isolation
-
-At least one real Loader/host composition should prove:
-
-```text
-start succeeds → contributions visible → stop/dispose removes reversible contributions
-start partly fails → reversible contributions removed → module Failed
-required dependency fails → dependent Blocked
-unrelated module remains Active
-optional provider missing → explicit Degraded or documented behavior
-stale generation completion → ignored/rejected
-```
-
-Hand-constructing objects without the actual module host is insufficient for product-visible lifecycle behavior. Check that production lifecycle/error paths actually report state changes and release owned resources; testing a manually updated directory state is not proof of runtime fault propagation.
-
-For scheduled completions, test actual records/jobs handled per tick and backlog behavior, not only queued delegate count. For asynchronous snapshots, force a yield and mutate inputs within the same generation as well as replacing the owner or loading a save.
-
-## Bridge matrix
-
-Every bridge tests:
-
-- A only;
-- B only;
-- A+B, bridge absent;
-- A+B+bridge;
-- bridge dependency version mismatch;
-- bridge start/runtime failure;
-- bridge disabled and saved bridge data preserved;
-- SafeMode;
-- both supported Bannerlord API lines where game behavior is involved.
-
-## Three-channel interaction
-
-For each applicable action:
-
-```text
-preprocess/eligibility
-prompt block order and role semantics
-history/AFEF inputs
-postprocess rules/capabilities
-RAW and normalized FINAL
-ActionPlan
-main-thread execution/rejection
-visible tag removal
-AFEF/history readback
-```
-
-Compare scene shout, native/free conversation and courier. Non-applicability requires explicit exclusion reason and test.
-
-## Persistence
-
-Cover:
-
-- representative old saves/schema fixtures;
-- existing `SyncData` key/type compatibility;
-- UTF-8 chunk exact boundaries, multibyte text, missing/corrupt chunks and count limits;
-- module/bridge namespace collision;
-- absent/disabled/failed module data preservation;
-- migration idempotency/commit point;
-- PlayerExports merge and deployment rollback;
-- save size and timing diagnostics.
-
-## Build/package matrix
-
-Record exact commands and versions for:
-
-1. 1.3 reference provenance verification;
-2. 1.3 implementation build;
-3. 1.4 game root/reference verification;
-4. 1.4 implementation build;
-5. Bootstrap build;
-6. Foundation/module/bridge profile closure;
-7. staged module validation;
-8. ZIP allowlist/manifest/hash/marker;
-9. absence of direct implementation declaration, TaleWorlds DLLs, forbidden ONNX and accidental logs/artifacts.
-
-Do not deploy as a side effect of build validation.
-
-## In-game scenario record
-
-Record:
-
-```text
-Game/API version
-AF/module/profile versions and inventory
-Save identity or new campaign
-Scene/menu/mission
-Steps
-Expected result
-Observed result
-Relevant trace/log path
-Cleanup/rollback
-```
-
-A screenshot is useful for UI but does not replace state/action/save evidence.
-
-## Reporting unavailable checks
-
-Use:
-
-```text
-NOT-RUN: <exact check>
-Reason: <missing Windows/game/ref/API credential/etc.>
-Risk: <what remains unproven>
-Required next environment/action: <specific>
-```
-
-If acceptance depends on the check, keep ledger state `VERIFY` or `BLOCKED`, not `DONE`.
+只读审查不改源码、测试、默认路由或安装依赖来制造通过。稀疏检出和浅克隆缺少文件/历史时区分环境限制与产品缺陷。所有结果集中在[台账](ledger-and-handoff.md)，不在多个入口复制完整表格。

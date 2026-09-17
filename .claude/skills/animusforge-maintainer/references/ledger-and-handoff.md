@@ -1,109 +1,27 @@
-# Execution ledger and handoff
+# 一个当前入口，一份详细证据
 
-The AF execution ledger is the rolling source of current task truth. This skill owns durable method; the ledger owns live state.
+## 职责
 
-## Locate the ledger
+项目已有 `animusforge-refactoring-and-repository-reorganization-plan.md` 主台账时沿用，不新建竞争台账。用当前用户任务、Git 根/分支/HEAD/dirty 和明确替代链接确认有效状态，不用旧标题或机器路径选工作树。
 
-Preferred filename:
+- 主台账：当前任务、范围、状态、依赖、必要验收及详细证据。
+- HANDOFF：当前摘要、台账/代码范围图链接、剩余风险及下一动作。
+- 架构/模块说明：稳定责任与实际契约，不维护另一份进度表。
+- 历史审查/交接：保留原修订、失败与结论，明确不再发出执行指令。
+- 本地 artifacts：完整命令输出和检查报告，私密数据不提交或上传。
 
-```text
-animusforge-refactoring-and-repository-reorganization-plan.md
-```
+## 任务记录
 
-It may temporarily live outside the canonical Git worktree while the repository is being reconciled. Do not create a second independent ledger. If moving it into the repository, record the move, old-location disposition, and synchronization rule in the ledger first.
+非平凡工作开始时一次记录目标、非目标、修改范围、风险和完成条件，核实既有改动；同一工作包内不记逐操作流水账。包完成、范围/关键依赖变化、实质阻塞或交接时更新。日常小修只更新受影响记录；只读任务不改台账；独立 Skill 更新不要求访问产品仓库或启动其重构计划。
 
-## One current status entry
+完成证据包含：实际路径/旧新映射、真实 owner 和消费者、应保持及有意变化、命令/结果、修订与产物绑定、NOT-RUN 及风险、可逆恢复点。涉及代码时记录核实的一基行号、符号和源码修订；可放在已有代码范围图，由台账/HANDOFF链接，不重复抄表。
 
-When the project has accumulated a root HANDOFF, the original execution plan and newer phase ledgers:
+## 状态含义
 
-1. Identify the current canonical status entry using the latest user request, checked Git revision and explicit supersession links. Do not assume the newest filename or an old machine path is authoritative.
-2. Keep one current summary of scope, revision, task state and next gate. Other entry documents link to it rather than maintaining competing copies.
-3. After an authorized status update, mark superseded “current/latest/not started” sections as historical and point to their replacement. Preserve the original audit/results instead of rewriting history as if later fixes had already existed.
-4. Map any scope change back to the original checklist: implemented, partial, deferred/HOLD, owner-transferred or explicitly out of scope. State which original acceptance requirements remain open.
-5. If the request is read-only, report contradictory status entries and the evidence-based reading; do not fix documentation or resume work without authorization.
+只在实际执行时使用 ACTIVE；必要验收未完成留 VERIFY/BLOCKED，暂停记 PAUSED。目录完成、源码离线完成、实机、旧档和发布分别记录；被延期、转交或排除不等于已实现。完成本次 Skill 不改变产品 J 项、旧档、许可或全仓整理的结论。
 
-A handoff's historical authorization is context, not authorization for this session. `PAUSED`, `VERIFY`, `OFFLINE_COMPLETE` and `TRANSFER_READY` are not synonyms for product `DONE`.
+旧“当前”记录整体标历史并链接新入口，保留原报告，不改写成当时已经修复。历史授权不授予本轮清理、外仓写入、部署或发布权限。后续任务按真实依赖和最新请求选取，不自动执行历史施工顺序。
 
-## Before any repository or source write
+## 同步与冲突
 
-1. Read current status, active tasks, phase gates, change records and handoff snapshot.
-2. Verify canonical worktree, branch, HEAD and dirty status.
-3. Select an existing task ID or add a scoped task with dependencies and acceptance criteria.
-4. Change its state to `ACTIVE`.
-5. Add an intent row containing:
-   - executor;
-   - purpose and non-goals;
-   - paths expected to change;
-   - module/foundation/bridge owner;
-   - save/profile/channel/1.3-1.4/user-data risks;
-   - validation plan.
-6. Only then write files.
-
-## Meaningful checkpoints
-
-Update the ledger when:
-
-- a vertical slice or module extraction completes;
-- a manifest, capability, profile, bridge or persistence decision changes;
-- validation passes or fails;
-- scope expands or splits;
-- a blocker appears;
-- work is rolled back or abandoned;
-- another person/model/session will continue;
-- the requested task completes.
-
-Tiny edits within the same active slice do not need one ledger row each. The ledger should remain an execution ledger, not a keystroke diary.
-
-## Completion evidence
-
-A completed row must state:
-
-- actual paths changed, including old → new moves; key code locations include verified one-based line ranges, symbols, source revision, actual caller/owner and covered versus uncovered behavior;
-- exact checks run and results;
-- `NOT-RUN` checks and concrete reasons;
-- logs/artifacts/commit SHA where available;
-- save/profile/channel/1.3-1.4/user-data impact;
-- remaining risk and rollback;
-- next exact task.
-
-A task remains `VERIFY` or `BLOCKED` when an acceptance-required check cannot run; use `ACTIVE` only while work is actually executing. On a user-requested pause, preserve unresolved acceptance and record the pause rather than leaving a false active task. Do not mark `DONE` from reasoning alone.
-
-## Handoff snapshot
-
-Before stopping, leave:
-
-```text
-Current task and state
-Canonical worktree + branch + HEAD
-Files actually changed
-Git status summary
-Validation run + result
-Validation not run + reason
-Current blocker/risk
-One exact next action
-Actions that remain unsafe
-```
-
-If no work remains active, remove stale active intent and point to the next ledger task.
-
-## Conflict handling
-
-The latest user request and current disk/Git state outrank stale ledger text. When a file changed outside the current session:
-
-- read the current file;
-- preserve deliberate changes;
-- do not restore an older skill/ledger snapshot over it;
-- reconcile task status and intent;
-- note the mismatch if it changes scope or safety.
-
-## Division of durable knowledge
-
-| Knowledge | Home |
-| --- | --- |
-| Current objective, progress, blocker, validation, next step | Execution ledger |
-| Stable AF workflow and architecture rules | This skill/reference set |
-| User-requested historical review checklist | Dated, revision-bound skill reference; revalidate before use, never a competing live ledger |
-| Irreversible design decision and alternatives | Repository ADR |
-| Module-specific API, ownership, config, lifecycle, save schema | Module/bridge README and manifest |
-| Human installation/use/release behavior | Repository docs/README/release notes |
-| Full logs, builds, packages, diagnostics | Ignored artifact plane |
+编辑前核对当前文件及未提交差异；保护其他作者内容，不从主源目录批量覆盖仓库定制。Skill 规则变化与源码缺口修复分别记账。提交与交付只包含本任务差异；含本地私密记录的 Git 历史不能因为当前文件已删除就推送。
