@@ -14,6 +14,9 @@
 
 | 当前文件/路径 | 当前职责 | 目标 owner | 迁移策略 | 风险/验收 |
 |---|---|---|---|---|
+| `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` | 目录生命周期4字段及加载/停止/冻结捕获的唯一状态/算法 | Foundation / ModuleDirectory | J02有限包已真实提取；源码 `102eab84`，不是新游戏Host | 同锁、重入、固定失败码、Stopped保留目录与冻结快照；双版Stage/反例已验，LIVE未验 |
+| `src/AF.Foundation.Runtime/ModuleDirectory/{InternalModuleDirectory,ModuleFrameworkSnapshot}.cs` | 原注册/依赖/能力状态与冻结快照 | Foundation / ModuleDirectory | Git 100%归位，声明/程序集身份保持；原工作树字节hash无迁前对照 | 目录44、API及实际DLL元数据；不声明完整模块生命周期Host |
+| `Refactor/Modules/ModuleFrameworkRuntime.cs:11-36` | Team工厂选择、旧静态门面、原Campaign注册转接 | GameAdapter / Composition facade | 目录状态与算法已退出；注册壳保留且不受目录门控 | 原API签名/注册顺序/无第二状态owner；SubModule其余混合责任未迁 |
 | `AnimusForge/SubModule.xml` | 统一模块声明、Bootstrap-only 加载、Items XML | Bootstrap / Host | 保持不变；只允许 Bootstrap DLL | Id/Name/版本/资源路径；不得声明实现 DLL |
 | `AnimusForge.Bootstrap/BootstrapSubModule.cs` | 生命周期转发、启动失败处理 | Bootstrap | 保持独立 | 启动、卸载、类型注册、1.3/1.4 |
 | `AnimusForge.Bootstrap/BootstrapRuntime.cs` | API 线检测、实现 DLL 选择/加载、resolver | Bootstrap | 保持最小 | 只加载一个实现；版本歧义 fail-closed |

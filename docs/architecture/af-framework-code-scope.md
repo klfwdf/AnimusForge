@@ -1,3 +1,13 @@
+# 当前增量：J02 目录生命周期真实 owner 提取（2026-09-17）
+
+- 源码修订 `102eab84134ee8e2ab2edb2e25d9f9aa7f560837`；[代码地图](af-framework-code-map.json) 167 锚点在 recorded/working-tree 两模式通过。仅更新本包 7 个既有定位并新增 4 个 owner/转接锚点，其他 156 项保持；一切以[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#parallel-controller-handover)为当前状态。
+- `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` 唯一持有 4 个状态字段，`Initialize:14-56`、`Shutdown:58-66`、`CaptureSnapshot:68-94` 原同锁算法已退出宿主；`Refactor/Modules/ModuleFrameworkRuntime.cs:11-36` 只选择制作组工厂并保留原静态转接，`RegisterCampaign:22-25` 不受目录状态门控。运行频率为加载/卸载/显式查询，无 tick 扫描或第二 Host。
+- 同目录 `InternalModuleDirectory.cs:8-420`、`ModuleFrameworkSnapshot.cs:8-47` 为 Git 100% rename，namespace/type 不变；没有迁前工作树 raw SHA，严格证据为同卷移动、Git 内容相同及归一 inverse，不声称物理字节哈希已对比。新增 owner 与旧门面严格逆组回 `60072f07` 后继续原历史 inverse，不能靠刷新 hash 放行漂移。
+- Directory 44、API snapshot36/public119 与并发128/256、Composition42、Native正常/重排各41通过；5 API+5 Composition+8 Native 指定变异均编译成功后被行为断言拒绝。双 API 各 755 Compile/7资源（原754+新owner、两路径映射），Debug/Release 双实现+Bootstrap+Stage通过；当次4实现 DLL API元数据1060通过，6组 artifact/Stage hash一致、XML仅Bootstrap。源码/契约/产物证据不等于 LIVE/旧 SAVE/provider 验收。
+- 仍未覆盖：完整 J02 的游戏生命周期、队列/generation/诊断等其他 owner，以及 J03/J05/J08 依赖的剩余职责；本包不解锁全仓广泛提取。资产/用户数据/许可仍 HOLD，1.3 既有混合引用只证明本次选择一致，不证明纯1.3依赖或实机兼容。没有推送、打包、部署或数据迁移。
+
+## 以下为历史范围记录；当前状态以上方为准
+
 # 当前增量：J01 LLM Protocol 原样提取与路径归位（2026-09-17）
 
 - 源码修订 `02f1747c4e226d9c8e187f2503c6197ed6148156`；当前[代码地图](af-framework-code-map.json)的 163 个锚点在 recorded/working-tree 两模式均通过，其中原 142 项逐字段保持，新增 21 项标注协议 owner 与旧宿主实际发送边界。当前结论和完整命令见[根 HANDOFF](../../HANDOFF.md)与[执行台账 J01 当前状态](../animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)；地图仅导航，不等于功能/实机验收。
