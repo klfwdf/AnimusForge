@@ -15,6 +15,23 @@ def _sha256(text):
     return hashlib.sha256(text.encode()).hexdigest()
 
 
+def _restore_j02_guard_source_path(path, text):
+    path = str(path).replace('\\', '/')
+    if path in {
+        'tools/MemorySummaryMainThreadBoundaryTests/run.py',
+        'tools/MemorySummaryMainThreadBoundaryTests/run_business.py',
+        'tools/MemorySummaryMainThreadBoundaryTests/run_captured.py',
+        'tools/MemorySummaryMainThreadBoundaryTests/run_planning.py',
+        'tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py',
+        'tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py',
+        'tools/MemorySummaryMainThreadBoundaryTests/run_writers.py',
+    }:
+        new = 'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'
+        assert text.count(new) == 1, 'B1 runner guard path drift: ' + path
+        return text.replace(new, 'SaveRuntimeGuard.cs', 1)
+    return text
+
+
 def _is_reviewed_deleted(item):
     if item.get('reviewed') is False:
         return False
@@ -49,10 +66,12 @@ def restore_memory_summary_source(path, source):
     for label in labels:
         evidence = review['evidence'][label]
         for role in ('runner', 'harness'):
-            text = run_inverse.restore(evidence[role], (ROOT / evidence[role]).read_text(encoding='utf-8-sig'))
+            text = _restore_j02_guard_source_path(evidence[role], (ROOT / evidence[role]).read_text(encoding='utf-8-sig'))
+            text = run_inverse.restore(evidence[role], text)
             assert _sha256(text) == evidence['testSourceSha256'][role], 'Unreviewed B1 evidence source: ' + evidence[role]
         for dependency_path, expected in evidence.get('additionalTestSourceSha256', {}).items():
-            text = run_inverse.restore(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
+            text = _restore_j02_guard_source_path(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
+            text = run_inverse.restore(dependency_path, text)
             assert _sha256(text) == expected, 'Unreviewed B1 evidence dependency: ' + dependency_path
     # New runtime components are reviewed as whole input files, not silently
     # trusted because only the MyBehavior facade is inverse-transformed.

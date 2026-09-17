@@ -76,7 +76,7 @@ if runtime is not None:
     (out / 'IMemorySummaryDispatchHost.cs').write_text((ROOT / 'Refactor/Contracts/IMemorySummaryDispatchHost.cs').read_text(encoding='utf-8-sig'), encoding='utf-8')
     extra = '<Compile Include="MemorySummaryDispatcher.cs"/><Compile Include="IMemorySummaryDispatchHost.cs"/>'
 
-(out / "SaveRuntimeGuard.cs").write_text((ROOT / "SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
+(out / "SaveRuntimeGuard.cs").write_text((ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
 (out / "Proof.csproj").write_text(
     '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>Exe</OutputType>'
     '<TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'

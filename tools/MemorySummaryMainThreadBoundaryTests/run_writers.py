@@ -79,7 +79,7 @@ def main():
     production = prefix + "\n\n".join(extracted) + "\n} public partial class RewardSystemBehavior {" + reward_model + "} }"
     files = {"Facades.cs": production, "Writes.cs": writes,
              "Boundary.cs": read("MyBehavior.MemorySummaryMainThread.cs"),
-             "SaveRuntimeGuard.cs": read("SaveRuntimeGuard.cs"),
+             "SaveRuntimeGuard.cs": read("src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs"),
              "Program.cs": (HERE / "WriterHarness.cs.txt").read_text(encoding="utf-8-sig"),
              "Proof.csproj": '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup></Project>',
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}

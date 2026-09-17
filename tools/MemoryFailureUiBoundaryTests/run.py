@@ -47,7 +47,7 @@ if not a.original:
  if a.mutate:
   old,new=mutations[a.mutate];assert old in ui;ui=ui.replace(old,new,1)
  (out/'Notice.cs').write_text(ui,encoding='utf-8')
-(out/'Program.cs').write_text(code,encoding='utf-8');(out/'SaveRuntimeGuard.cs').write_text(read('SaveRuntimeGuard.cs'),encoding='utf-8')
+(out/'Program.cs').write_text(code,encoding='utf-8');(out/'SaveRuntimeGuard.cs').write_text(read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')
 env=os.environ.copy();env.update(DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1',APPDATA=str(ROOT/'.tmp/appdata'))

@@ -16,7 +16,12 @@ def restore(source):
  live=(ROOT/review['path']).read_text(encoding='utf-8-sig')
  assert live==expected,'Unreviewed Courier prompt source outside approved Start/Begin/Prepare/prompt boundaries'
  for path,digest in review['dependencies'].items():
-  assert hashlib.sha256((ROOT/path).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest,'Unreviewed Courier prompt dependency: '+path
+  text=(ROOT/path).read_text(encoding='utf-8-sig')
+  if path in ('tools/CourierPromptPreparationTests/run.py','tools/CourierPromptPreparationTests/run_liveness.py'):
+   new='src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'
+   assert text.count(new)==1,'Courier prompt runner path drift: '+path
+   text=text.replace(new,'Refactor/Runtime/PendingOperationRegistry.cs',1)
+  assert hashlib.sha256(text.encode()).hexdigest()==digest,'Unreviewed Courier prompt dependency: '+path
  assert source in (expected,before),'Unexpected Courier prompt inverse input'
  return before
 
