@@ -1,6 +1,6 @@
 # Internal module directory contract tests
 
-This executable links the actual production file `Refactor/Modules/InternalModuleDirectory.cs`. It does not copy the registry algorithm, load Bannerlord, install modules, execute handlers, call network services or change FeatureBridge switches.
+This executable links the actual production file `src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs`. It does not copy the registry algorithm, load Bannerlord, install modules, execute handlers, call network services or change FeatureBridge switches.
 
 ## Run
 

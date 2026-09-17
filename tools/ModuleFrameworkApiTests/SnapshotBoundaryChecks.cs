@@ -21,6 +21,10 @@ internal static class SnapshotBoundaryChecks
         }
         OriginalFrameworkRuntime.Shutdown(); ModuleFrameworkRuntime.Shutdown();
         Check(OriginalFrameworkRuntime.Initialize(out _) && ModuleFrameworkRuntime.Initialize(out _), "both roots initialized");
+        TeamModuleServices.Policy=null;
+        Check(OriginalFrameworkRuntime.Initialize(out _) && ModuleFrameworkRuntime.Initialize(out _), "ready reentry does not rebuild missing adapter");
+        Same("ready reentry");
+        TeamModuleServices.Policy=new object();
         Same("ready");
         foreach (bool disabled in new[]{true,false})
         {
@@ -37,7 +41,10 @@ internal static class SnapshotBoundaryChecks
         Check(calls==StubObservations.GateCalls,"stopped query does not evaluate gate");
         TeamModuleServices.Policy=null;
         Check(!OriginalFrameworkRuntime.Initialize(out _) && !ModuleFrameworkRuntime.Initialize(out _),"both degraded"); Same("degraded");
-        TeamModuleServices.Policy=new object(); OriginalFrameworkRuntime.Shutdown(); ModuleFrameworkRuntime.Shutdown();
+        TeamModuleServices.Policy=new object();
+        Check(!OriginalFrameworkRuntime.Initialize(out _) && !ModuleFrameworkRuntime.Initialize(out _),"degraded reentry does not retry restored adapter");
+        Same("degraded reentry");
+        OriginalFrameworkRuntime.Shutdown(); ModuleFrameworkRuntime.Shutdown();
         OriginalFrameworkRuntime.Initialize(out _); ModuleFrameworkRuntime.Initialize(out _); Same("reload");
         Check(JsonSerializer.Serialize(AfV1SnapshotProjection.Create(frozen,publicCaps))==rendered,"capture detached from reload");
         var definition=new InternalModuleDefinition("test.module",3,Array.Empty<InternalCapabilityDefinition>());
