@@ -2,6 +2,8 @@
 
 > 当前执行入口更新：用户已批准台账 [J01a 限定基线](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01a-执行意图2026-09-17active)；本地 J01a 为 ACTIVE，尚无新测试/构建通过回执。仅准备协议测试与 fresh before 证据，不提取/迁移生产算法，不续跑 J01b。以下原计划状态属于批准前记录。
 
+> **J01a 最新回执（2026-09-17）：BASELINE_VERIFIED，J01b NOT_STARTED。** 本段取代上行 ACTIVE 及下方 `EXECUTION_NOT_AUTHORIZED` 批准前快照；完整命令/退出码/范围/已知原缺陷见[台账 J01a 基线回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01a-基线回执2026-09-17baseline_verifiedj01b-not_started)。意图提交 `1d7d2cbf`，测试切片 `26444eb0`；固定/当前 before 各 13 PASS、7 变异运行拒绝，Courier 39 PASS/8 变异及单测 8 OK，LegacyShout 3 OK；fresh Debug/Release 双 API+Bootstrap+Stage 及 API/Composition/Native 原门禁通过。三生产文件未改，13 接线仍在旧 owner；迁后、LIVE、旧 SAVE、provider 网络未执行。证据根 `artifacts/workspace-j01-llm-protocol/before/`，Stage 含私密副本不可上传。等待独立验收及 J01b 单独调度，不自动续迁。
+
 
 **代码及详细HANDOFF已推送到专用重构分支，远端已核对`6538cc36`；本发布说明为后续文档追加，生产源码仍6e419f6d。**
 
