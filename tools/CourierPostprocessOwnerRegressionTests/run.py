@@ -28,7 +28,7 @@ SIGNATURES = [
 ]
 LINKS = [
     'Refactor/Runtime/PendingOperationRegistry.cs',
-    'CourierVisibleLetterSanitizer.cs', 'LlmVisibleReplyNormalizer.cs',
+    'CourierVisibleLetterSanitizer.cs', 'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs',
     'Refactor/Contracts/InteractionContracts.cs', 'Refactor/Contracts/LlmContracts.cs',
     'Refactor/Contracts/ProfileConfigContracts.cs', 'Refactor/Contracts/InteractionPipeline.cs',
     'Refactor/Contracts/FullInteractionPipeline.cs', 'Refactor/Runtime/InteractionRequestCoordinator.cs',

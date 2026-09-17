@@ -99,7 +99,7 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
         "AnimusForgeTextInputSanitizer.cs",
         "SaveRuntimeGuard.cs",
         "Logger.cs",
-        "LlmApiCompat.cs",
+        "src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs",
         "LlmRetryPrompt.cs",
     ]
     for relative in host_files:
