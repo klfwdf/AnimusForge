@@ -1,5 +1,8 @@
 # 最新发布回执（2026-09-16）
 
+> 当前执行入口更新：用户已批准台账 [J01a 限定基线](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01a-执行意图2026-09-17active)；本地 J01a 为 ACTIVE，尚无新测试/构建通过回执。仅准备协议测试与 fresh before 证据，不提取/迁移生产算法，不续跑 J01b。以下原计划状态属于批准前记录。
+
+
 **代码及详细HANDOFF已推送到专用重构分支，远端已核对`6538cc36`；本发布说明为后续文档追加，生产源码仍6e419f6d。**
 
 - 目标：`origin/codex/af-main-refactor-continuation-20260831`，普通快进，不推main、不强推。

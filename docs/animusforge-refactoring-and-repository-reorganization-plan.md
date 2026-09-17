@@ -1,5 +1,13 @@
 # 当前发布：已推送已验证候选（2026-09-16）
 
+## J01a 执行意图（2026-09-17，ACTIVE）
+
+- 最新用户已批准 J01/J3/J5 限定范围、本地切片提交和六个指定输出根的受控重置；本步仅执行 J01a 基线，不提取/迁移生产算法，不修改地图或 overlay，不自动继续 J01b/J02。执行者 Sol；owner 为 `AF.Module.Llm/Protocol` 测试准备。
+- 本步写入白名单：`AnimusForge.csproj` 的 tests Compile 排除；`tests/modules/AF.Module.Llm/Protocol/{run.py,Program.cs}`；Courier runner/test 的 Newtonsoft 参数与缺失校验；本台账与 `HANDOFF.md` 的增量 hunk。可写产物仅 J5 指定测试/证据根、原 runner 本轮 `.generated`、固定 SDK 缓存及六个指定构建输出根；不动游戏、PlayerExports 源、外仓、全局配置。
+- 起点为分支 `codex/af-main-refactor-continuation-20260831`、HEAD `99360142b9b4fa5ca309cadf2cf62b627b1cdda8`；六份既有 dirty 文档保护且暂存区为空。三生产文件原始 SHA-256 与 J3:88 一致；五个新目标不存在。先冻结六文档 hash、依赖来源、迁前 Compile/资源成员，再做仅本意图的本地检查点。
+- 验证门槛：原 revision 与当前 before、合成协议行为和 7 个可编译且被指定断言拒绝的变异；Courier 原 8 个变异与单测；fresh Debug/Release × 1.3/1.4/Bootstrap+Stage、API/Composition/Native 既有门禁。任何来源、路径、正常断言、变异、输出根或依赖失败按 J6 停止。LIVE、旧 SAVE、真实 provider 网络独立 NOT-RUN；Stage 视为含私密副本，不上传。
+
+
 - 用户明确授权“推送到GITHUB”；本轮只发布和更新回执，不继续源码改动、部署或恢复自动化。
 - 执行者：根代理。发布前fresh fetch，专用远端仍10defeb4，本地21 ahead/0 behind；已普通快进推送到origin/codex/af-main-refactor-continuation-20260831，ls-remote确认`6538cc360188b660e697b72bb6ff773b8a8660c9`。
 - 代码/详细HANDOFF/审计已发布；此后只追加本发布说明。核对18生产源、6产物、17有效日志、142点地图与3份保护文件hash；167个变更路径无受排除文档、生成目录或DLL/压缩包；待推送历史也没有夹带排除文件。本轮未重跑构建，复核的是此前同源六Stage证据。
