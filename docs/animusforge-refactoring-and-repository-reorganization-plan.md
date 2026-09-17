@@ -1,3 +1,11 @@
+<a id="j01-current-status"></a>
+
+## 当前状态：J01c_BLOCKED / J01b_EXTRACTED_VERIFIED / J01_OFFLINE_NOT_COMPLETE
+
+Astra 已独立验收 J01a 与 J01b：实际协议 DLL 13 用例、12 块及整宿主 inverse、成员/资源与基线产物哈希均核验；源码提取提交 `156e6836`，停止诊断提交 `b9092c27`。J01c 迁前 `build_file_set()` 真实退出 1，三条陈旧 runtime_assets 路径的诊断和证据见下方 J01c 回执。两协议文件仍在根且原始哈希未变；提取后的完整 Stage、路径迁移及 J01e 地图收口尚未完成。清单修复超出原 J3 的 host_files 单处路径改动，未扩大白名单或豁免门禁。下方各 ACTIVE / NOT_STARTED / EXECUTION_NOT_AUTHORIZED 为过程与历史状态，由本段取代；后续从清单阻断继续，不重做已验收 B0/B1/J01a/J01b。
+
+## 以下为本轮过程与原计划
+
 # 当前发布：已推送已验证候选（2026-09-16）
 
 ## J01a 执行意图（2026-09-17，ACTIVE）

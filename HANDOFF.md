@@ -1,3 +1,10 @@
+# 当前接续：J01c BLOCKED，J01b 已提取并独立验收
+
+- 当前结论以本段及[台账当前状态](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)为准，下方 ACTIVE / NOT_STARTED 是被取代的过程记录。源码提取提交 `156e6836`，停止诊断提交 `b9092c27`；13 协议用例及 7 变异通过，双版本完整 Stage 仅为提取前基线，提取后的完整构建、两文件迁移与 J01 整包验收尚未完成。
+- 阻断是 overlay 的三条陈旧 runtime_assets 路径，实际 Policy 资源仍存在；不豁免文件集门禁、不扩改打包清单。原六份 dirty 文档保留，未推送、部署或操作旧存档。下一步先精确处理该清单范围，再恢复 J01c；LIVE / 旧 SAVE / 真实网络保持 NOT-RUN。
+
+## 以下为本轮过程记录
+
 # 最新发布回执（2026-09-16）
 
 > 当前执行入口更新：用户已批准台账 [J01a 限定基线](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01a-执行意图2026-09-17active)；本地 J01a 为 ACTIVE，尚无新测试/构建通过回执。仅准备协议测试与 fresh before 证据，不提取/迁移生产算法，不续跑 J01b。以下原计划状态属于批准前记录。
