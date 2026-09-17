@@ -14,6 +14,8 @@
 
 总控独占索引/提交、原台账/HANDOFF/map/scope/owner、集成构建；第四个Sol只读核验全J02责任覆盖/消费者/反例。测试输出互不重叠：A为`artifacts/tests/j02-diagnostics-a/`，B/C新证据分别归`artifacts/workspace-j02-completion-20260917/{b-lifecycle,c-composition}/`；固定runner `.generated` 由所属执行者协调串行，完整Stage等待源码冻结后总控串行。已明确批准的六个固定生成根受控重建与本地Stage可复用（不扩大），旧验证日志保留；Stage含PlayerExports仅本地私密验证，源数据不变。
 
+消费者闭包补充（2026-09-18）：实际 overlay 清单已包含 Logger/SubModule，须同时携带本轮从二者抽出的 DiagnosticTraceContext、MetricWindow、BoundedLogWriteQueue、StartupPatchComposition、ApplicationTickComposition 五个直接正文 owner；B 仅增这五项 host_integration 并保 SaveGuard 路径映射，使用 build_file_set 集合差验证，不调用 create_package/dist。旧 overlay 未纳入的 Perf/Freeze 或其他宿主依赖仍是历史非独立工程边界，不借本包扩整树或宣称完整可编译 overlay。
+
 完整退出条件：三包真实owner+实际消费者、旧源码/故障回归、支持双API+Bootstrap的Debug/Release原Stage、当次DLL ABI/布局/完整Compile与资源映射、代码地图/一基坐标及逐责任清单全部合格。既有资产/许可/用户数据/全仓cleanup HOLD与LIVE/旧SAVE/provider分开；不推送、部署、打包、改一键流程、全局安装或外仓写入。若真实失败先修本包而非停在下一个子包；不能用离线证据冒称实机。
 
 ## 以下为 J02 目录生命周期子包与此前历史
