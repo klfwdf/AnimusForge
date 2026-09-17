@@ -73,8 +73,8 @@ def verify():
     assert FOUNDATION_OWNER.is_file(), 'Foundation directory lifecycle owner missing'
     owner = FOUNDATION_OWNER.read_text(encoding='utf-8-sig')
     assert 'TeamModuleRegistration' not in owner and 'IGameStarter' not in owner and 'CampaignComposition' not in owner, 'Foundation owner depends on team/game composition'
-    restore_runtime((ROOT/'Refactor/Modules/ModuleFrameworkRuntime.cs').read_text(encoding='utf-8-sig'))
-    for path in list((ROOT/'Refactor/Modules').glob('*.cs')) + list(FOUNDATION_DIRECTORY.glob('*.cs')):
+    restore_runtime((ROOT/'src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs').read_text(encoding='utf-8-sig'))
+    for path in list((ROOT/'Refactor/Modules').glob('*.cs')) + list(FOUNDATION_DIRECTORY.glob('*.cs')) + list((ROOT/'src/AF.GameAdapter.Bannerlord/Composition').glob('*.cs')):
         assert 'using AnimusForge.Api' not in path.read_text(encoding='utf-8-sig'), 'Internal module depends on public API: '+str(path)
     print('PASS snapshot source inverse / unchanged V1 capability mapping / no Modules -> API import')
 

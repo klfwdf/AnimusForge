@@ -11,7 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCES = ["Refactor/Modules/TeamModulePorts.cs", "Refactor/Modules/TeamModuleAdapters.cs", "Refactor/Modules/TeamModuleServices.cs"]
+SOURCES = ["Refactor/Modules/TeamModulePorts.cs", "Refactor/Modules/TeamModuleAdapters.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs"]
 MAP = {
     "Policy": ("KingdomAgendaCustomPolicyBehavior", ["IsEligibleTargetForExternal", "BuildRuntimePostprocessRulesForExternal", "TryProcessAcceptedAgendaTag"]),
     "Gathering": ("NobleGatheringBehavior", ["BuildRuntimePostprocessRulesForExternal", "BuildPostprocessContextForExternal", "NormalizeNobleGatheringPostprocessTagsForExternal", "BuildFeastAttendanceContext", "TryApplyNobleGatheringTagsForExternal"]),

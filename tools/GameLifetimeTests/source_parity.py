@@ -4,6 +4,16 @@ import hashlib,importlib.util,json,re,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent;BASELINE='807bc5b9'
 spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
 PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
+MOVED_DEPENDENCIES={
+ 'Refactor/Runtime/PendingOperationRegistry.cs':'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
+ 'Refactor/Runtime/GameLifetimeCoordinator.cs':'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs',
+ 'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
+}
+RUNNER_PATH_EDITS={
+ 'Refactor/Runtime/PendingOperationRegistry.cs':'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
+ 'Refactor/Runtime/GameLifetimeCoordinator.cs':'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs',
+ 'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
+}
 def restore_commit(source):
  spec=importlib.util.spec_from_file_location('courier_outcome_inverse',ROOT/'tools/CourierCommitOutcomeTests/source_parity.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
  return module.restore(source)
@@ -85,14 +95,20 @@ def expected(path):
 def check_dependencies():
  data=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in data['dependencies'].items():
-  source=(ROOT/p).read_text(encoding='utf-8-sig')
+  source=(ROOT/MOVED_DEPENDENCIES.get(p,p)).read_text(encoding='utf-8-sig')
   if p=='CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
+  if p in ('tools/GameLifetimeTests/run.py','tools/GameLifetimeTests/run_bindings.py','tools/GameLifetimeTests/run_commit.py'):
+   for historical,current in RUNNER_PATH_EDITS.items():
+    source=source.replace(current,historical)
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
 
 def restore(path,source):
  if path=='CourierDeliveryBehavior.cs':
   prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tools/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
   source=prompt.restore(source)
+ if path=='SubModule.cs':
+  spec=importlib.util.spec_from_file_location('j02_host_inverse',ROOT/'tools/HostCompositionTests/source_inverse.py');host=importlib.util.module_from_spec(spec);spec.loader.exec_module(host)
+  source=host.restore_submodule(source)
  if path not in PATHS:return source
  check_dependencies();assert source==expected(path),'Unreviewed game lifetime source change: '+path
  return old(path)

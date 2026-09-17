@@ -16,7 +16,7 @@ def team_module_project_items():
     # Compile production thin adapters unchanged; old and new paths share the same domain stubs.
     from xml.sax.saxutils import escape
     return '<ItemGroup>' + ''.join(
-        '<Compile Include="' + escape(str(ROOT / 'Refactor/Modules' / name)) + '" Link="' + name + '" />'
+        '<Compile Include="' + escape(str(ROOT / ('src/AF.GameAdapter.Bannerlord/Composition' if name == 'TeamModuleServices.cs' else 'Refactor/Modules') / name)) + '" Link="' + name + '" />'
         for name in TEAM_MODULE_FILES) + '</ItemGroup>'
 
 

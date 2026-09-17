@@ -14,8 +14,8 @@ BASELINE = '61d578926329ace61bf6b6ae43e12bf7d89b4696'
 METHODS = ['RegisterCourierFoodConsumptionModel', 'RegisterCourierMobilePartyAiModel',
            'RegisterAnimusForgeSettlementAccessModel', 'RegisterAnimusForgeSettlementLoyaltyModel']
 INIT = 'protected override void InitializeGameStarter('
-SOURCES = ['Refactor/Modules/CampaignComposition.cs', 'Refactor/Modules/CampaignModelComposition.cs',
-            'Refactor/Modules/ModuleFrameworkRuntime.cs', 'Refactor/Modules/TeamModuleRegistration.cs',
+SOURCES = ['src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs', 'src/AF.GameAdapter.Bannerlord/Composition/CampaignModelComposition.cs',
+            'src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs', 'src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
             'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
@@ -67,7 +67,7 @@ def verify_source():
     assert compact(register[register.index('{'):]) == expected, 'Changed model registration order'
     assert compact(extract(runtime, 'internal static void RegisterCampaign(')) == compact('''internal static void RegisterCampaign(IGameStarter starterObject) { CampaignComposition.Register(starterObject); }'''), 'Parallel campaign gate/cache/owner'
     runtime = load('snapshot_inverse', 'tools/ModuleFrameworkApiTests/source_boundary.py').restore_runtime(runtime)
-    before = old(SOURCES[2])
+    before = old('Refactor/Modules/ModuleFrameworkRuntime.cs')
     for sig in ['private static void RegisterAdapter(', 'private static bool IsKnownBridge(', 'private static string GetBridgeRejectionReason(']:
         method = extract(before,sig)
         assert extract(team,sig) == method, 'Changed bridge binding policy'
