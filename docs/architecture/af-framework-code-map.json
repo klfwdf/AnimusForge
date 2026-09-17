@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "02f1747c4e226d9c8e187f2503c6197ed6148156",
+  "sourceRevision": "102eab84134ee8e2ab2edb2e25d9f9aa7f560837",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -61,7 +61,7 @@
     },
     {
       "id": "internal.directory",
-      "path": "Refactor/Modules/InternalModuleDirectory.cs",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs",
       "start": 137,
       "end": 140,
       "symbol": "internal sealed class InternalModuleDirectory",
@@ -73,13 +73,13 @@
     {
       "id": "internal.runtime",
       "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
-      "start": 12,
-      "end": 15,
+      "start": 11,
+      "end": 16,
       "symbol": "internal static class ModuleFrameworkRuntime",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "装配与只读投影，不是第二套执行器",
-      "fileSha256": "556151bd23ae8d03004bc54807e692ba8f5da448be175c45b5b663f8424e90ff"
+      "note": "工厂选择与静态兼容门面，不再持有目录状态",
+      "fileSha256": "70ab9b87ed204b57fc6108345cfe972afe7d57ccb3fafe70dc6cddfc0b200e45"
     },
     {
       "id": "public.api",
@@ -909,13 +909,13 @@
     {
       "id": "composition.campaign.dispatch",
       "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
-      "start": 67,
-      "end": 70,
+      "start": 22,
+      "end": 25,
       "symbol": "internal static void RegisterCampaign(",
       "match": "contains",
       "status": "wired-composition",
       "note": "不读取当前Campaign/不新增目录门禁或静态Campaign实例",
-      "fileSha256": "556151bd23ae8d03004bc54807e692ba8f5da448be175c45b5b663f8424e90ff"
+      "fileSha256": "70ab9b87ed204b57fc6108345cfe972afe7d57ccb3fafe70dc6cddfc0b200e45"
     },
     {
       "id": "composition.campaign.behaviors",
@@ -952,18 +952,18 @@
     },
     {
       "id": "framework.snapshot.capture",
-      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
-      "start": 82,
-      "end": 108,
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+      "start": 68,
+      "end": 94,
       "symbol": "internal static ModuleFrameworkSnapshot CaptureSnapshot()",
       "match": "exact",
       "status": "wired-snapshot-boundary",
-      "note": "原状态锁内捕获，无public DTO或活目录泄露",
-      "fileSha256": "556151bd23ae8d03004bc54807e692ba8f5da448be175c45b5b663f8424e90ff"
+      "note": "唯一目录 owner 同锁捕获冻结结果，停止后不求值 gate",
+      "fileSha256": "8d14aefe219a391f76fb0ee07116447c9846bdcbd59afd46578e2938d13bdfd0"
     },
     {
       "id": "framework.snapshot.state",
-      "path": "Refactor/Modules/ModuleFrameworkSnapshot.cs",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs",
       "start": 8,
       "end": 14,
       "symbol": "internal enum ModuleFrameworkLifecycleState",
@@ -974,7 +974,7 @@
     },
     {
       "id": "framework.snapshot.model",
-      "path": "Refactor/Modules/ModuleFrameworkSnapshot.cs",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs",
       "start": 20,
       "end": 33,
       "symbol": "internal sealed class ModuleFrameworkSnapshot",
@@ -985,7 +985,7 @@
     },
     {
       "id": "framework.snapshot.binding",
-      "path": "Refactor/Modules/ModuleFrameworkSnapshot.cs",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs",
       "start": 36,
       "end": 47,
       "symbol": "internal sealed class ModuleBindingSnapshot",
@@ -1796,6 +1796,50 @@
       "status": "mixed-host",
       "note": "原宿主 SSE/回调/重试/取消/姓名过滤保留，非三渠道完成",
       "fileSha256": "c77d3ea1af3e9df2531702de571b92752868ef72a459e1f0177dd6f301024571"
+    },
+    {
+      "id": "framework.directory.lifecycle.owner",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+      "start": 7,
+      "end": 12,
+      "symbol": "internal static class ModuleDirectoryLifecycleOwner",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "四字段唯一状态 owner；非游戏 Host",
+      "fileSha256": "8d14aefe219a391f76fb0ee07116447c9846bdcbd59afd46578e2938d13bdfd0"
+    },
+    {
+      "id": "framework.directory.lifecycle.initialize",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+      "start": 14,
+      "end": 56,
+      "symbol": "internal static bool Initialize(Func<InternalModuleDirectory> createDirectory, out string reasonCode)",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "同锁工厂调用、重入及失败语义保持",
+      "fileSha256": "8d14aefe219a391f76fb0ee07116447c9846bdcbd59afd46578e2938d13bdfd0"
+    },
+    {
+      "id": "framework.directory.lifecycle.shutdown",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+      "start": 58,
+      "end": 66,
+      "symbol": "internal static void Shutdown()",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "停止状态保留目录，不重放游戏副作用",
+      "fileSha256": "8d14aefe219a391f76fb0ee07116447c9846bdcbd59afd46578e2938d13bdfd0"
+    },
+    {
+      "id": "framework.snapshot.facade",
+      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "start": 32,
+      "end": 35,
+      "symbol": "internal static ModuleFrameworkSnapshot CaptureSnapshot()",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "旧查询入口仅转发唯一状态 owner",
+      "fileSha256": "70ab9b87ed204b57fc6108345cfe972afe7d57ccb3fafe70dc6cddfc0b200e45"
     }
   ]
 }

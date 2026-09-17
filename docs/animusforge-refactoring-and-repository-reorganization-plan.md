@@ -1,6 +1,16 @@
 <a id="parallel-controller-handover"></a>
 
-### 新总控接管 / G0 证据闭合与有限源码包（2026-09-17，ACTIVE）
+### 当前回执：局部源码准入闭合，J02-Lifecycle OFFLINE_VERIFIED（2026-09-17）
+
+- 已从盘点转入交付：分类工具提交 `648bb084`，生产/测试切片 `102eab84134ee8e2ab2edb2e25d9f9aa7f560837`；本包真实状态 owner 提取、接线、两源归位及完整离线验证完成。**不是完整 J02 或全仓 G0.7 完成**，不得解锁未核实的后续宽包。下方 ACTIVE/意图为过程记录，以本回执为准；本轮不留虚假 ACTIVE。
+- G0 可机械证据已落地：分类 7 tests 通过，标准库 trace 工具行覆盖 193/209（92.34%，非分支覆盖）；初始索引 22,186 项 UNKNOWN=0，业务 owner 单独标 UNVERIFIED，不用文件平面替代职责证明。依赖 SHA/来源、原参数求值、隔离离线 Restore+ReferencePath 全通过：1.3/1.4/Bootstrap 分别 86/87/15 个实际引用（含机器框架），无工程或构建脚本修改；1.3混合版本引用/未知分发许可仍明确保留。
+- 源码坐标均绑定 `102eab84`：`src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95`（4字段，Initialize:14-56、Shutdown:58-66、CaptureSnapshot:68-94）；旧 `Refactor/Modules/ModuleFrameworkRuntime.cs:11-36` 仅工厂/静态转接、RegisterCampaign:22-25保留。两既有源 `InternalModuleDirectory.cs:8-420`、`ModuleFrameworkSnapshot.cs:8-47` 迁入同目录，Git 100% rename；未捕获迁前工作树 raw SHA，不将归一正文相等冒称物理hash对照。旧API/类型/namespace/程序集/存档身份保持；加载/卸载/显式查询频率不变，无tick扫描/新Host。
+- 聚焦回执 `artifacts/workspace-j02-directory-lifecycle/after/receipt.json`：目录44、API snapshot36/public119及并发128/256、Composition42、Native正常/重排各41通过；5 API+5 Composition+8 Native变异均编译成功后指定行为拒绝。总控独立复跑 API与Campaign源码inverse通过，新owner/门面严格逆组60072f07后继续955a原历史守卫；独立Sol实diff核验无源码阻断。
+- **当次集成通过：** 用户再次明确授权六个固定生成根重建及本地Stage（不改源数据/游戏/打包上传）后，原脚本 Debug→Release 均 invocationStatus=true、无throw、总命令exit0；每侧1.3/1.4/Bootstrap完整构建与Stage success。首次UTF-8管道助手错误发生在脚本启动前，修正编码后才执行；没有绕过权限。六组artifact/Stage DLL SHA一致、两个实现不同、XML只载Bootstrap；`stage-{debug,release}.{json,log}`及`fresh-after-artifacts.json`记录证据，Stage私密副本不上传。
+- 总控当次 `ModuleFrameworkApiTests/run.py --dotnet local/dotnet/8.0.425/dotnet.exe --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts` exit0：4实现DLL/1060元数据及5行为反例通过（实参为工作区绝对路径，见`api-actual-artifacts.json`）。原参数迁后成员集合：两API各755 Compile/7资源=迁前754+新owner/两路径映射，Bootstrap3/0，无重复且全部Reference HintPath不变，见`member-set-verification.json`。地图绑定源码修订，7定位更新+4新增，其余156项不变；recorded/working-tree各167 PASS。
+- 边界/下一包：资产/个人设置/日志/PlayerExports/原版参考/ONNX/工具产物原位HOLD；无清理/停跟踪/全局安装/推送/部署/ZIP。LIVE/旧SAVE/provider均NOT-RUN；本次本机混合引用构建不等于纯1.3或真实游戏验收。下一精确任务为 **J02余项的游戏生命周期/调度预算 owner闭包**（以SubModule真实消费者及既有runtime组件为起点），不是重做目录状态；先核既有实现和依赖，再派完整有限包，不以这次局部完成直接启动J03/J05/J08或宣称全仓gate已关。
+
+#### 以下为本轮意图与门禁过程记录
 
 最新用户要求“把他闭合再继续做”，取代本轮仅只读等待的执行状态。现在直接完成可验证的分类/本地依赖证据，再推进无资产/用户数据变更的具名源码子域；不逐微步请求继续。该决定不生成第三方分发权，也不批准递归清理、资产/玩家数据迁移、外仓写入或发布。G0 全仓结项与本轮有限源码准入分开记录，未解决的许可/数据/产物 HOLD 不谎报 CLOSED。
 
@@ -12,7 +22,15 @@
 
 首轮不写生产、测试、资源、索引或共享产物；不读玩家文本，不移动/删除/停跟踪文件，不操作游戏/存档/外仓。后续源码实施须先明确包边界与相关门禁；G0.7 及各 HOLD 未自动解除。总控独占后续索引/提交/集成构建，本分支仍禁止推送/发布。J02 尚未实施，LIVE/旧 SAVE/provider 仍 NOT-RUN。
 
-#### J02-Lifecycle 有限联合包执行意图（2026-09-17，PREPARE）
+#### G0-CLOSE 门禁事实与本轮源码准入（2026-09-17）
+
+- 路径平面分类已可重放：`python -X utf8 -B tools/repository_source_inventory.py` 对接管索引 22,186 项逐项互斥归类，UNKNOWN=0；敏感 HOLD 优先，3,586 项虽命中 ignore 仍被跟踪。7 项聚焦测试与总控独立复跑通过。旧 P2 的 22,182 是历史分母，不回写历史。这里只闭合文件平面证据，不把 source 类别冒充逐符号业务 owner；本包 Runtime→Foundation 的 owner/消费者另按下段精确闭合。
+- 依赖证据 `artifacts/g0-closure-20260917/dependencies/{verification,references-evaluated-original}.json`：固定 SDK 8.0.425/官方 ZIP、63 个 1.4 manifest DLL 与原来源、18 个 1.3 overlay DLL、Bootstrap 与运行时来源 hash 已复验。无平台属性绕过的真实提权 `msbuild -getItem:Reference,Compile,EmbeddedResource` 三项目求值 exit 0；双 API 各 754 Compile/7资源，Bootstrap 3/0，迁前集合冻结。诊断中的 SDK 访问拒绝和临时属性求值另留记录，不冒充原参数成功。
+- **来源边界：** 1.3 的 71 个 HintPath 中仅 18 个来自 1.3 overlay，其余 49 个来自当前游戏/模组、4 个来自 AF 私有运行时；1.4 的 72 个为 overlay63+游戏/模组5+私有4。这是既有选择，不在本包替换依赖或修改工程；可核实本次前后来源一致，但不能声称纯 1.3 依赖、clean-clone 或实机兼容。未知分发权均 `UNKNOWN_LOCAL_ONLY`。
+- 数据/产物隔离决定：原版参考树、PlayerExports、ONNX、资产来源、tracked缓存/工具dist/个人设置等继续原位 HOLD，不移动/删除/停跟踪。`deploy_module.ps1:720-733` 的 Stage 复制 PlayerExports，`package_mod.ps1:752-764` 的 ZIP 过滤不排它；因此 Stage 按私密本地验证副本处理，本轮禁 ZIP/上传/发布。未读取玩家载荷或凭据。
+- **本轮有限源码准入已具备，J02-Lifecycle ACTIVE。** 用户最新闭合后继续指令、明确源码 owner/无数据接触、固定依赖与迁前输入、检查点 `60072f07` 构成这个包的准入；不再等待全仓资产处置。G0.7 全仓整理/clean-source/分发结项仍未 CLOSED，剩余 HOLD 不被这个局部决定豁免，也不阻断此具名纯源码包。后续各包继续按真实依赖判断，不机械推导 J03 等已放行。
+
+#### J02-Lifecycle 有限联合包执行意图（2026-09-17，ACTIVE）
 
 用户本轮要求闭合后继续；本包仅拆清现有目录生命周期 owner，不启动全 J02 或 J03/J05/J08。基础源码 `41a12bbb` 的 `Refactor/Modules/ModuleFrameworkRuntime.cs:14-17,19-61,74-109` 四状态字段及 Initialize/Shutdown/CaptureSnapshot 实现转入 `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs`；原 Runtime 保留同签名静态门面、`TeamModuleRegistration.CreateDirectory` 工厂选择与 `RegisterCampaign:65-71` 原样接线。`Refactor/Modules/{InternalModuleDirectory,ModuleFrameworkSnapshot}.cs` 原字节归位同目录，namespace/type/程序集/存档身份不改。目录上限、锁覆盖、Ready/Degraded 重入、Stopped 保留目录、冻结快照与失败码不变；不新增 Host/反射/扫描/队列。Initialize 为加载频率、Shutdown 为卸载频率、Snapshot 为显式查询，非 tick 热路径。
 

@@ -1,3 +1,9 @@
+# 当前接续：J02 目录生命周期联合包已离线验证
+
+唯一状态见[原台账 G0-CLOSE / J02-Lifecycle](docs/animusforge-refactoring-and-repository-reorganization-plan.md#parallel-controller-handover)。分类工具 `648bb084`、生产/测试 `102eab84134ee8e2ab2edb2e25d9f9aa7f560837` 已本地提交；3个Sol包完成分类/本地依赖/真实owner提取，另1个独立核验。Foundation `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` 唯一持有4字段与Initialize:14-56、Shutdown:58-66、CaptureSnapshot:68-94；旧Runtime:11-36仅工厂和转接（RegisterCampaign:22-25）。两目录/快照源Git 100%归位，非新Host/全J02完成，迁前物理字节hash未捕获。
+
+已验证：分类7 tests/UNKNOWN=0；源码inverse、目录44、API36/119、Composition42、Native41/重排41及18个行为反例；双API各755 Compile/7资源；用户具名批准六生成根后，Debug/Release各1.3+1.4+Bootstrap+Stage通过、6组hash一致；当次4 DLL/1060 API元数据、地图两模式167通过。日志仅在本地`artifacts/workspace-j02-directory-lifecycle/after/`。资产/许可/用户数据/旧缓存仍HOLD，G0.7全仓结项未关闭；Stage含PlayerExports，禁止打包/上传/发布，本分支禁推送不变。LIVE/旧SAVE/provider未验，1.3既有混合引用不构成纯1.3/实机证明。下一包为J02余项真实游戏生命周期/调度预算owner闭包；六份既有dirty原文保留。下方为J01及交接历史。
+
 # 新任务交接：三实施包 + 独立核验（2026-09-17）
 
 用户要求本任务写交接后创建新总控任务；详见[并行总控交接](docs/handoffs/2026-09-17-j01-parallel-controller-handoff.md)与[唯一台账的交接入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#parallel-controller-handover)。新任务采用 Astra 总控、最多 3 个 Sol 实施包 + 1 个 Sol 核验代理；总控独占 Git 索引/集成构建。J01 已离线完成，本任务不再实施；新任务先核门禁与冲突，不能据此跳过 G0/HOLD、推送或部署。以下 J01 停止回执仍是已完成范围，不表示 J02 已开工。
