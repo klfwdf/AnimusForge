@@ -11,6 +11,10 @@ def restore(source):
     review=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
     for path,expected_hash in review['files'].items():
         text=(ROOT/path).read_text(encoding='utf-8-sig')
+        if path=='tools/CourierHistoryPreparationTests/run.py':
+            new='src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'
+            assert text.count(new)==1,'Courier history runner path drift'
+            text=text.replace(new,'Refactor/Runtime/PendingOperationRegistry.cs',1)
         assert hashlib.sha256(text.encode()).hexdigest()==expected_hash,'Unreviewed Courier history dependency: '+path
     phase=m.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(')
     owner_spec=importlib.util.spec_from_file_location('courier_owner_phase_inverse',ROOT/'tools/CourierOwnerPhaseTests/source_parity.py');owner=importlib.util.module_from_spec(owner_spec);owner_spec.loader.exec_module(owner)

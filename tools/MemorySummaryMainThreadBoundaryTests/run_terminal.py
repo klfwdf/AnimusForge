@@ -128,7 +128,7 @@ def main():
     if count!=1:raise ValueError('Shared fixture stable-key lookup anchor drift')
     fixture=replace(fixture,'public static class PlayerNotorietyBehavior {','public static partial class PlayerNotorietyBehavior {')
     # The shared helper uses its own isolated reset. Keep terminal instrumentation separate.
-    files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Terminal.cs':read('tools/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt')}
+    files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Terminal.cs':read('tools/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt')}
     if a.admission_only:
         files['Terminal.cs']=replace(files['Terminal.cs'],'  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);\n','')
     files['RecoveryLedger.cs']=read('Refactor/Runtime/InteractionMemoryRecoveryLedger.cs')

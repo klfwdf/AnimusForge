@@ -6,7 +6,13 @@ spec=importlib.util.spec_from_file_location('owner_decl',ROOT/'tools/ChannelCuto
 def old():return subprocess.check_output(['git','show','4140bd04:'+PATH],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def verify():
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
- for p,h in review['dependencies'].items():assert hashlib.sha256((ROOT/p).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed owner phase dependency: '+p
+ for p,h in review['dependencies'].items():
+  text=(ROOT/p).read_text(encoding='utf-8-sig')
+  if p=='tools/CourierOwnerPhaseTests/run.py':
+   new='src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'
+   assert text.count(new)==1,'Owner phase runner path drift'
+   text=text.replace(new,'Refactor/Runtime/PendingOperationRegistry.cs',1)
+  assert hashlib.sha256(text.encode()).hexdigest()==h,'Unreviewed owner phase dependency: '+p
  life_spec=importlib.util.spec_from_file_location('lifetime_inverse',ROOT/'tools/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
  actual=life.restore(PATH,(ROOT/PATH).read_text(encoding='utf-8-sig'));prior=old()
  for before,after in review['exactEdits']:

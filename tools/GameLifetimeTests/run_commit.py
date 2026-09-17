@@ -18,5 +18,5 @@ contracts=(ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding
 (out/'Enums.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+'\n'.join(ex.declaration(contracts,s) for s in ['public enum InteractionStatus','public enum ActionExecutionEffectState']),encoding='utf-8')
 (out/'Receipt.cs').write_text('using AnimusForge.Refactor.Contracts;\nnamespace AnimusForge.Refactor.Runtime;\n'+ex.declaration((ROOT/'Refactor/Runtime/InteractionResultCommitter.cs').read_text(encoding='utf-8-sig'),'public sealed class InteractionCommitResult'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-project=util.project(out,'CourierCommit',[out/f for f in ['Dispatch.cs','Program.cs','Enums.cs','Receipt.cs']]+[ROOT/'Refactor/Runtime/PendingOperationRegistry.cs'],executable=True)
+project=util.project(out,'CourierCommit',[out/f for f in ['Dispatch.cs','Program.cs','Enums.cs','Receipt.cs']]+[ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'],executable=True)
 status,log=util.run_dotnet(os.environ.get('DOTNET_EXE',r'G:\AFMOD\.dotnet-sdk\dotnet.exe'),['run','--project',str(project),'-c','Release'],out);(out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(status)

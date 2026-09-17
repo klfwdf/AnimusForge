@@ -19,7 +19,7 @@ args = p.parse_args()
 
 def read(path): return (ROOT/path).read_text(encoding='utf-8-sig')
 
-sources = ['Refactor/Runtime/PendingOperationRegistry.cs', 'Refactor/Runtime/GameLifetimeCoordinator.cs', 'AfCampaignRuntimeLifecycle.cs']
+sources = ['src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs', 'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs', 'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs']
 submodule = (subprocess.check_output(['git','show','807bc5b9:SubModule.cs'], cwd=ROOT).decode('utf-8-sig')
              if args.original_callbacks else read('SubModule.cs'))
 callbacks = '\n'.join(ex.declaration(submodule, sig) for sig in ['protected override void InitializeGameStarter(', 'public override void OnGameEnd(', 'protected override void OnSubModuleUnloaded('])

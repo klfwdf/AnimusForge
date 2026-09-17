@@ -221,7 +221,7 @@ def main():
     files = {"Business.cs": product, "Boundary.cs": boundary,
              "Program.cs": ("#define HAS_INPUT_SOURCE\n" if manifest["has_input_source"] else "") +
                  (HERE / "BusinessHarness.cs.txt").read_text(encoding="utf-8-sig"),
-             "SaveRuntimeGuard.cs": (ROOT / "SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"),
+             "SaveRuntimeGuard.cs": (ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"),
              "Proof.csproj": '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(dependency)) + '</HintPath></Reference></ItemGroup></Project>',
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}
     if not args.original:
