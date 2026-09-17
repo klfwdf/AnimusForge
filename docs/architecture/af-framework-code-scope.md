@@ -1,3 +1,11 @@
+# 当前增量：J01 LLM Protocol 原样提取与路径归位（2026-09-17）
+
+- 源码修订 `02f1747c4e226d9c8e187f2503c6197ed6148156`；当前[代码地图](af-framework-code-map.json)的 163 个锚点在 recorded/working-tree 两模式均通过，其中原 142 项逐字段保持，新增 21 项标注协议 owner 与旧宿主实际发送边界。当前结论和完整命令见[根 HANDOFF](../../HANDOFF.md)与[执行台账 J01 当前状态](../animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)；地图仅导航，不等于功能/实机验收。
+- `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs:9-235` 真正持有 8 方法/4 常量、无共享可变状态；`ShoutNetwork.cs:260,381,408,424,450,670,751,793,800,911,1018,1253,1256` 的 13 处调用直接接新 owner。`LlmApiCompat.cs:1-720` 与 `LlmVisibleReplyNormalizer.cs:1-485` 原始字节迁入同目录；`StreamFilter:62-144` 状态仍每实例独占。namespace、同 DLL、公开 API/存档身份不变。
+- 旧 `ShoutNetwork.cs:133-159,665-905,906-1365` 仍持有真实 HTTP 发送、普通/SSE 调度、取消/重试、配置/统计/姓名过滤，未拆成传输 owner；Scene/Courier/Native 三渠道共享执行/历史/记忆也非 J01 完成项。13 协议用例与 7 变异、Courier/Legacy 和 Debug/Release 双 API+Bootstrap+Stage、实际 DLL ABI 等为**离线**通过；逐字符 Unicode 流发射旧缺陷保留未修。LIVE、旧 SAVE、真实 provider 网络均 NOT-RUN，J02 NOT_STARTED。
+
+## 以下为历史范围记录；当前 J01 状态以上方为准
+
 # 当前增量：并行整合与Native接口（2026-09-16）
 
 源码6e419f6d，142点地图。[详细交接](../handoffs/2026-09-16-parallel-closeout-handoff.md)。summary run owner独立；原文fingerprint固定缓冲等价优化；Courier原Start级reservation与最终Prompt主线程组装；CoreDialogue内部服务和Api.V1显式投影接实际Native入口。
