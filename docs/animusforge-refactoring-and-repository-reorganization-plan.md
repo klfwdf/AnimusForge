@@ -7,6 +7,15 @@
 - 起点为分支 `codex/af-main-refactor-continuation-20260831`、HEAD `99360142b9b4fa5ca309cadf2cf62b627b1cdda8`；六份既有 dirty 文档保护且暂存区为空。三生产文件原始 SHA-256 与 J3:88 一致；五个新目标不存在。先冻结六文档 hash、依赖来源、迁前 Compile/资源成员，再做仅本意图的本地检查点。
 - 验证门槛：原 revision 与当前 before、合成协议行为和 7 个可编译且被指定断言拒绝的变异；Courier 原 8 个变异与单测；fresh Debug/Release × 1.3/1.4/Bootstrap+Stage、API/Composition/Native 既有门禁。任何来源、路径、正常断言、变异、输出根或依赖失败按 J6 停止。LIVE、旧 SAVE、真实 provider 网络独立 NOT-RUN；Stage 视为含私密副本，不上传。
 
+### J01a 基线回执（2026-09-17，BASELINE_VERIFIED；J01b NOT_STARTED）
+
+- 本段为当前授权与执行状态，**取代下方批准前的 `EXECUTION_NOT_AUTHORIZED` 规划快照**；仅 J01a 完成，不声明 J01 生产提取或全仓 G0.7 完成。意图提交 `1d7d2cbf`，代码/测试切片 `26444eb0f7f6731c11a65336328455eb67c228d4`。白名单实改仅 `AnimusForge.csproj` tests Compile 排除、`tests/modules/AF.Module.Llm/Protocol/{run.py,Program.cs}`、Courier runner/test 的 Newtonsoft 参数与缺失校验；三生产文件未改，原六份 dirty 文档保留。源码基准仍为 `99360142`；12 个提取块、13 接线、原三文件 SHA-256 与 J3:88 一致。
+- 协议 runner 以固定原 revision 与当前源码分别运行 before：`baseline_04`、`baseline_current_04` 均 restore/build/run 退出 `0/0/0`，13 组合成断言 PASS，12 块 hash 与 Program 指纹一致。当前 before 的 7 个变异均 restore/build `0/0`、run `1` 且命中各自指定 `FAIL`，未用编译失败冒充行为拒绝。`after` extracted/relocated/inverse 入口已实现，但生产目标尚不存在，**未执行迁后正常测试**。失效依赖/非法输出名/缺迁后目标/无效 Git ref 均先于写入退出 `2`；祖先与既有子项 reparse 的无写 mock 反例均拒绝。
+- Courier `test_extraction.py` 8 OK；原 runner 正常 39 PASS，8 个原变异均编译成功并按预期运行拒绝；LegacyShout compatibility 3 OK。`python -X utf8 -B` AST 检查与 `git diff --check` 退出 `0`。测试仅用固定本机 SDK `local/dotnet/8.0.425/dotnet.exe`、其 Newtonsoft.Json.dll（SHA-256 `dd8c541806cea6ed4bfd32ba772ce18100c6b5c887f00e7e7c1ac360b5e3b9a0`），清空 NuGet sources，不访问真实 provider/玩家文本。
+- 迁前 1.3/1.4 Compile 均 753、EmbeddedResource 均 7；排除前后完整 `Identity/Link/LogicalName` 集合全等，tests 不进入生产输入。1.3/1.4 各 18 个引用解析通过；`local/bannerlord-refs/1.4.7.117484/manifest.json` 的 63 DLL 与来源/目标大小及 SHA 全等。manifest `projectSha256=777b719f1cc43525613a679e7cd2f172d59f327dbef476360345cbb00997de67` 复算匹配 B0 `e3a02cc5` 项目原始字节（UTF-8 BOM，第 12 行 LF，其余 CRLF）；`99360142` 的 Git 项目内容与该版相同，当前项目新增测试排除不刷新 manifest。六输出根重置前记录元数据且无 reparse，范围未扩张；Stage 含私密 PlayerExports 副本，证据不上传。
+- 原 `build_single_module.ps1 -Stage` fresh Debug/Release 各完成 1.3、1.4、Bootstrap 与 Stage，退出均 `0`，六 DLL 的 artifact/Stage SHA 逐一相等且 XML 只载 Bootstrap。API 门禁退出 `0`（4 实际 DLL、1056 元数据、3 反例与外部拒绝）；Composition 退出 `0`（42 断言、5 反例）；Native 当前/重排退出 `0`（各 41 断言），8 反例均编译成功并运行拒绝。日志与 JSON：`artifacts/workspace-j01-llm-protocol/before/`；协议生成证据：`artifacts/tests/llm-protocol/`。首次未提升沙箱的 MSBuild/Stage 因 Windows SDK 路径 Access denied 退出非零，诊断后经审批按原命令重跑成功；原失败日志保留，不充作产品回归。
+- 已知原行为：逐字符 Unicode 转义流会发射 `a4F6`，虽然最终 `NormalizedText` 是 `a你\nq`；`baseline_03` 原断言失败记录保留，`baseline_04` 锁定该既有行为且正常 `hello` 分片仍验无重复。本包不修生产协议。LIVE、旧 SAVE、真实 provider 网络与迁后验证均 NOT-RUN；等待独立验收后另行调度 J01b，不自动继续。
+
 
 - 用户明确授权“推送到GITHUB”；本轮只发布和更新回执，不继续源码改动、部署或恢复自动化。
 - 执行者：根代理。发布前fresh fetch，专用远端仍10defeb4，本地21 ahead/0 behind；已普通快进推送到origin/codex/af-main-refactor-continuation-20260831，ls-remote确认`6538cc360188b660e697b72bb6ff773b8a8660c9`。
