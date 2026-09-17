@@ -8,6 +8,10 @@
 
 > **J01b 最新：EXTRACTION_VERIFIED / J01c NOT_STARTED（源码 `156e6836`）。** 新 owner `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs:9-235` 拥有 4 常量和 8 原方法（逐项坐标见[台账 J01b 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01b-extraction)）；`ShoutNetwork.cs:260,381,408,424,450,670,751,793,800,911,1018,1253,1256` 共 13 接线，旧普通/流传输、配置/统计/姓名责任未提取。实际 after/extracted 13 PASS、7 变异指定拒绝、12 块原文与旧宿主整文件 inverse 通过；两协议文件仍在根，迁移/Stage/LIVE/旧 SAVE/provider 网络未跑。仅此切片完成，待 Astra 独立验收后另派 J01c。
 
+> **J01c/J01d ACTIVE（2026-09-17）：** Astra 已独立验收 J01b；起点 `5611ad88`，只迁两份协议原文件与 Courier/overlay 的已列路径，运行迁后聚焦/完整离线门禁。地图/owner 文档留 J01e，Stage 私密不上网；LIVE、旧 SAVE、provider 网络仍 NOT-RUN。
+
+> **J01c/J01d STOPPED（迁前来源）：** overlay `build_file_set()` 因仓库缺失且未跟踪的 `AnimusForge/CustomPrompts/CustomPolicyEvaluatorPrompt.json` 抛 `FileNotFoundError`；源码未移动、Stage 未运行、索引未写，不能把该门禁标通过。仅留空的 `artifacts/workspace-j01-llm-protocol/after/`；等待明确处置，不自行跳过/补资产。
+
 
 **代码及详细HANDOFF已推送到专用重构分支，远端已核对`6538cc36`；本发布说明为后续文档追加，生产源码仍6e419f6d。**
 
