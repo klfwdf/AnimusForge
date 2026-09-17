@@ -1,10 +1,13 @@
 """Actual public consumer -> service -> Native queue/admission/commit receipt; game/provider ports are fixtures."""
 from pathlib import Path
-import argparse, importlib.util, os, subprocess, sys
+import argparse, importlib.util, os, shutil, subprocess, sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[2]; HERE=Path(__file__).parent
 sys.stdout.reconfigure(encoding='utf-8')
-p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));a=p.parse_args()
+dotnet=Path(a.dotnet) if Path(a.dotnet).is_absolute() else Path(shutil.which(a.dotnet) or '')
+if not dotnet.is_file():p.error('dotnet executable not found: '+a.dotnet)
+dotnet=dotnet.resolve()
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 out=HERE/'.generated'/('reordered' if a.reorder_core_enums else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
@@ -36,13 +39,13 @@ def project(name,srcs,refs=(),exe=False):
 library=project('NativeModuleUnderTest',sources)
 (out/'Client.cs').write_text((HERE/'Client.cs.txt').read_text(),encoding='utf-8');client=project('NativeModuleClient',[out/'Client.cs'],[library],True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1')
-result=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(client),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1')
+result=subprocess.run([str(dotnet),'run','--project',str(client),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=result.stdout+result.stderr
 if result.returncode==0:
  (out/'Denied.cs').write_text('class Denied { static void Main() { AnimusForge.Refactor.Modules.CoreDialogueServices.CreateClient(); } }',encoding='utf-8')
  denied=project('NativeModuleDenied',[out/'Denied.cs'],[library],True)
- probe=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','build',str(denied),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+ probe=subprocess.run([str(dotnet),'build',str(denied),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
  denied_log=probe.stdout+probe.stderr;(out/'denied.log').write_text(denied_log,encoding='utf-8')
  assert probe.returncode!=0 and 'CS0122' in denied_log and 'CoreDialogueServices' in denied_log, 'Internal service was not rejected from unrelated external assembly'
  log+='PASS unrelated external client cannot use internal CoreDialogueServices (CS0122)\n'

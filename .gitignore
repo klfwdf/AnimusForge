@@ -32,6 +32,7 @@ tools/PreprocessTopicPromptLab/dist/
 _codex_tmp/
 .codex_tmp/
 artifacts/
+/local/
 AnimusForge/PlayerExports/
 FUYONG/
 

@@ -36,10 +36,13 @@
 ## 执行
 
 ```powershell
-G:\Python310\python.exe -X utf8 -B tools/NativeModuleSubmissionTests/run.py
-G:\Python310\python.exe -X utf8 -B tools/NativeModuleSubmissionTests/run.py --reorder-core-enums
-G:\Python310\python.exe -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
+$dotnet = (Resolve-Path .\local\dotnet\8.0.425\dotnet.exe).Path
+python -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet
+python -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet --reorder-core-enums
+python -B tools/NativeModuleSubmissionTests/source_boundary.py
 ```
+
+`--dotnet` 也可省略并使用 `DOTNET_EXE` 环境变量，最后才查找 PATH 中的 `dotnet`；路径不存在时在生成测试目录前退出。B0/B1 验证必须显式传入同一个本地 SDK 路径。
 
 有效反例命令用 `--mutate`：`ignore-cancel`、`text-success`、`drop-receipt`、`replace-confirmed`、`replay-id`（破坏相同ID的终态复用，不声称是真实provider重复提交）、`skip-generation`、`skip-conversation`、`skip-revision`。只有编译成功后的明确行为断言 FAIL 计有效；工具超时、fixture缺类型、编译失败不计。测试入口catch异常后返回失败码，避免未捕获进程异常影响反例回收。
 
