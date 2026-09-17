@@ -1,5 +1,6 @@
 """Source-boundary checks supplement executable Courier owner tests."""
 import unittest
+from pathlib import Path
 import run
 
 
@@ -24,6 +25,10 @@ class ExtractionTests(unittest.TestCase):
         self.assertIn("Refactor/Adapters/LegacyActionTagParser.cs", run.LINKS)
         self.assertIn("LlmVisibleReplyNormalizer.cs", run.LINKS)
         self.assertIn("CourierVisibleLetterSanitizer.cs", run.LINKS)
+
+    def test_newtonsoft_dependency_missing_fails_closed(self):
+        with self.assertRaises(FileNotFoundError):
+            run.resolve_newtonsoft(Path(__file__).parent / 'missing-newtonsoft.dll')
 
     def test_raw_reply_not_display_text_feeds_owner(self):
         prepare = run.ex.declaration(self.blocks["PARTIAL"], "private static async Task<PromptPackage> PrepareCourierDetachedPostprocessAsync(")

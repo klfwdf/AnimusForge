@@ -15,9 +15,9 @@
     <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Standalone extension projects and rollback artifacts live under the repo root,
+    <!-- Standalone extension projects, focused tests and rollback artifacts live under the repo root,
          but they are not part of either AnimusForge implementation assembly. -->
-    <Compile Remove="extensions\**\*.cs;artifacts\**\*.cs" />
+    <Compile Remove="extensions\**\*.cs;artifacts\**\*.cs;tests\**\*.cs" />
   </ItemGroup>
   <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
     <DefineConstants>$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
