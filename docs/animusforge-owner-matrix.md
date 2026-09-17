@@ -34,7 +34,10 @@
 | `ShoutBehavior.cs` | 场景喊话、Native Conversation、Prompt、后处理、动作、TTS、Mission、目标 | Conversation orchestration；Scene/Action adapter | 保留为过渡编排器；先抽 DTO、目标解析、ActionPlan | 三渠道、主线程、可见文本、stale target |
 | `AIConfigHandler.cs` | Prompt 配置、preprocess、guardrail、postprocess、AFEF normalization、辅助 LLM | Prompt/Rule + LLM Gateway + ActionPostprocess | 分成纯配置/规则、网络、归一化三个边界；不放领域副作用 | JSON/C# 标签同步、超时、fallback |
 | `PromptComposer.cs`, `PromptListRetrievalService.cs`, `IntentQueryOptimizer.cs` | Prompt 组合、规则/知识候选检索、意图优化 | Prompt/Retrieval | 保持纯输入输出；缓存和批量策略明确 | 不做热路径全量扫描 |
-| `LlmApiCompat.cs`, `LlmRetryPrompt.cs`, `LlmVisibleReplyNormalizer.cs` | LLM API 兼容、重试、可见回复清理 | LLM Gateway/Safety | 统一请求/结果状态和 trace | 不把内部标签泄露给玩家 |
+| `src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs` | API URL/payload、认证头、普通/流响应协议兼容；J01 原字节迁入 | AF.Module.Llm/Protocol | 保持既有 public 类/namespace/同 DLL；不代替实际 provider 网络验收 | 双 API Stage/协议离线通过；真实网络 NOT-RUN |
+| `src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs` | 可见回复 envelope 清理；`StreamFilter:62-144` 的候选/预览/透传/发射长度为每实例状态 | AF.Module.Llm/Protocol | 原字节迁入，不共享跨流实例、不改变旧 Unicode 逐字符行为 | 协议离线通过；逐字符 Unicode 旧缺陷未修 |
+| `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs` | 8 个消息/重试策略方法与 4 常量；13 处原宿主调用直连，无共享可变状态 | AF.Module.Llm/Protocol | J01 真提取，仅 policy 内部可见性调整，不引入新 public API/每 Tick 扫描 | 13 协议用例/7 变异及双版本 Stage；不代表网络调度已迁 |
+| `LlmRetryPrompt.cs` | 原重试提示/失败详情与交互 | LLM Gateway/Safety | 本次不迁、不改行为 | 真实 provider/LIVE 未验 |
 | `Guardrail*.cs`, `AnimusForgeTextInputSanitizer.cs` | 输入/规则安全和文本清理 | Safety/Prompt | 与领域动作分离 | 关闭 AF 时不改变原版行为 |
 | `OnnxEmbeddingEngine.cs`, `OnnxCrossEncoderReranker.cs`, `RagWarmupCoordinator.cs`, `WorldEntityRetrievalService.cs` | 本地 embedding/rerank/RAG | Knowledge/Retrieval | 通过 provider 接口使用；模型运行时不进入 Foundation | ONNX 资源/线程/缓存/热路径 |
 | `KnowledgeLibraryBehavior.cs` | 知识文件、RAG 索引、知识存档、导入导出 | Knowledge/Persistence | 先抽 storage codec/index facade；保留旧 chunk key | 自定义 chunk 协议、SemanticPrototypes 丢弃行为 |
@@ -46,7 +49,7 @@
 | `AnimusForgeNativeConversationOverlay*.cs` | Native 对话 UI、输入、提交、历史/动作入口 | UI + Conversation adapter | UI 只持有公开 Conversation session | 主线程、输入焦点、关闭后 stale work |
 | `ConversationVMCapturePatch.cs`, `NativeConversationAnswerAreaController.cs` | 原版 VM/回答区接入 | UI/GameAdapter | 保持 UI patch 薄 | Gauntlet 版本差异、事件抢占 |
 | `ConversationHelper.cs`, `ConversationMessage.cs` | 会话消息和辅助逻辑 | Conversation.Contracts | 先冻结 role/AFEF 语义 | user=玩家，assistant=NPC |
-| `ShoutNetwork.cs` | 场景/对话网络调用和消息请求 | LLM Gateway adapter | 与渠道编排分离 | 后台请求不可携带 live game object |
+| `ShoutNetwork.cs` | 保留普通/流实际 SendAsync、SSE/取消/重试调度、配置/统计/姓名与渠道接入；13 处直调新 policy | LLM Gateway adapter（过渡混合宿主） | J01 仅移出 8 方法/4 常量，不能把全类标完成；后续网络责任另包 | 后台请求不可携带 live game object；LIVE/旧 SAVE/真实 provider 未验 |
 | `ShoutUtils.cs` | 场景辅助、Persona、历史和数据导入导出 | Conversation/Knowledge compatibility | 按功能拆 facade，不整体搬迁 | 外部 JSON 与 save authority |
 | `ActionPostprocessConfigModel.cs`, `PreprocessPromptsConfigModel.cs`, `AIConfigModel.cs` | 配置 DTO | Prompt/Contracts | 纯模型，禁止游戏副作用 | 配置版本和 unknown fields |
 | `GiveAssetTagCodec.cs`, `TransferQuantitySpec.cs` | 资产动作标签/参数编解码 | Action/Asset transfer | 纯 parser 先独立测试 | 规则、parser、executor 三方一致 |

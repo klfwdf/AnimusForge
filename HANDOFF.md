@@ -1,9 +1,10 @@
-# 当前接续：J01c/J01d 离线验收通过；J01e 待执行
+# 当前接续：J01 离线验收完成并停止；J02 未开始
 
-- 唯一当前状态：[台账 J01 当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)；`J01c_J01d_OFFLINE_VERIFIED / J01e_NOT_STARTED / J01_OFFLINE_NOT_COMPLETE`，取代下方 BLOCKED/ACTIVE 过程记录。用户明确授权修 overlay 三条陈旧 `runtime_assets` 清单并保留 J01 后续有界许可；解阻提交 `0e6be296` 仅两 Policy 路径替换/一废弃旧根项删除，真实 `build_file_set()` 迁前/迁后均 297 文件/类别且按单一 Compat 路径映射全等。未调用 `create_package()`、写 dist 或动提示词/loader。
+- 唯一当前状态：[台账 J01 当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)；`J01_OFFLINE_VERIFIED / STOPPED_AFTER_J01 / J02_NOT_STARTED`，取代下方 BLOCKED/ACTIVE 过程记录。用户明确授权修 overlay 三条陈旧 `runtime_assets` 清单并保留 J01 后续有界许可；解阻提交 `0e6be296` 仅两 Policy 路径替换/一废弃旧根项删除，真实 `build_file_set()` 迁前/迁后均 297 文件/类别且按单一 Compat 路径映射全等。未调用 `create_package()`、写 dist 或动提示词/loader。
 - 源码提交 `02f1747c4e226d9c8e187f2503c6197ed6148156`：`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:1-720` 与 `LlmVisibleReplyNormalizer.cs:1-485`（`StreamFilter:62-144`）原始字节迁移、根副本退出；原 SHA-256 分别 `95911a1ffbb2324529e4fa1156a864e13091d3c2020555c30194f76a8b1b8a74` / `76a660ee99846d4c4251dc00bf4af1a1ec472d7772f53d06765eefc48533e440`。Courier runner `:31`/单测 `:26`、overlay host_files `:102` 仅更新物理路径。J01b 的 `PrimaryChatMessagePolicy.cs:9-235` 及 `ShoutNetwork.cs` 13 接线算法不变；旧宿主传输、配置/统计/姓名责任仍未提取。
 - 两 API 完整 Compile 753→754（两路径映射+policy）和 7 资源全等；协议 relocated 13 PASS/7 变异拒绝，Courier 39 PASS/8 原变异与单测 8 OK，LegacyShout 3 OK；fresh Debug/Release 各 1.3+1.4+Bootstrap+Stage、API 实物四 DLL/1056、Composition 42+5、Native 41/重排41/8变异均通过。所有真实退出码、六 DLL SHA 及单次生成日志在 `artifacts/workspace-j01-llm-protocol/after/`，协议日志在 `artifacts/tests/llm-protocol/j01cd_*`；Debug/Courier 首次**包装层**误判已留原日志，最终真实脚本/runner 成功与产品失败区分清楚。Stage 私密副本不上网、未部署。
-- Astra 已独立验收 J01c/J01d；J01e 地图/owner/recorded 与 working-tree 回执待执行；目前不得报 J01 整包完成。LIVE/旧 SAVE/真实 provider 网络未验证。用户要求 **J01 完成即停，J02 NOT_STARTED**；不推送/发布/部署/建自动化。原六份 dirty 文档受保护。
+- J01e 以源码修订 `02f1747c4e226d9c8e187f2503c6197ed6148156` 更新[代码地图](docs/architecture/af-framework-code-map.json)、[范围图](docs/architecture/af-framework-code-scope.md)与[owner matrix](docs/animusforge-owner-matrix.md)：原 142 项逐字段不变，新增 21 项协议/宿主边界锚点，recorded/working-tree 两模式各 163 PASS、exit 0；不将旧 ShoutNetwork 的真实 HTTP/SSE 调度、配置/统计/姓名、三渠道业务算作完成。已知逐字符 Unicode 流发射旧缺陷保留，LIVE/旧 SAVE/真实 provider 均 NOT-RUN。
+- **本地 Git 修正与停止：** `ae8e6b89` 误把既有 dirty 文档增量纳入本地提交，`3a57007d` focused inverse 已还原该部分，工作树字节未变、六 dirty 恢复、索引空；但误提交仍在历史，含本地专用材料，**本分支禁止推送/发布**，从未取得新推送授权。J01e 本轮只编辑工作树，定向索引/提交由独立验收方负责。用户要求 J01 后停，**J02 NOT_STARTED**；不部署/建自动化。
 
 ## 以下为本轮过程记录
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "64eaa7a819fcb5746a9b7ceda1e93a5040a8f0d8",
+  "sourceRevision": "02f1747c4e226d9c8e187f2503c6197ed6148156",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1565,6 +1565,237 @@
       "start": 46,
       "end": 48,
       "fileSha256": "c40e693a3363498329b264bf62b627f9020c5b7460663691715adb4c46f54591"
+    },
+    {
+      "id": "llm.protocol.primary-policy",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 9,
+      "end": 235,
+      "symbol": "internal static class PrimaryChatMessagePolicy",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "J01 真正提取 8 方法/4 常量；仅 internal policy，13 个原调用直接接线；无共享可变状态",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.constant.empty-retry-marker",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 11,
+      "end": 11,
+      "symbol": "private const string EmptyResponseRetryMarker = \"[AF_EMPTY_RESPONSE_RETRY]\";",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "空回复仅一次补救标记；原文本不变",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.constant.empty-retry-instruction",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 13,
+      "end": 13,
+      "symbol": "private const string EmptyResponseRetryInstruction = EmptyResponseRetryMarker + \" 上一次模型响应为空白。请严格按既有角色、格式和字数要求，直接输出NPC本轮回复；禁止只输出空白、换行或无内容。\";",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "空回复补救指令；原文本不变",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.constant.generic-continuation",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 33,
+      "end": 34,
+      "symbol": "private const string GenericContinuationInstruction =",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "普通最终 user turn 续写指令；跨行常量原样",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.constant.battle-continuation",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 36,
+      "end": 37,
+      "symbol": "private const string BattleSpeechContinuationInstruction =",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "阵前演讲续写指令；跨行常量原样",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.has-empty-retry-marker",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 15,
+      "end": 31,
+      "symbol": "internal static bool HasEmptyResponseRetryMarker(List<object> messages)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "原请求中检测已加补救标记；原异常语义保留",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.is-battle-speech",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 39,
+      "end": 55,
+      "symbol": "internal static bool IsBattleSpeechRequest(IEnumerable<object> messages)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "识别阵前演讲协议消息；不重写 gameplay",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.last-message-role",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 57,
+      "end": 77,
+      "symbol": "internal static string GetLastMessageRole(",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "按既有多形状消息读取尾部 role/content",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.ensure-final-user-turn",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 79,
+      "end": 105,
+      "symbol": "internal static List<object> EnsureFinalUserTurn(",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "必要时补最终 user turn，不原地改输入集合",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.build-empty-retry-messages",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 107,
+      "end": 137,
+      "symbol": "internal static List<object> BuildEmptyResponseRetryMessages(List<object> messages)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "拷贝消息并仅一次加 system 补救指令",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.contains-any-ignore-case",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 139,
+      "end": 155,
+      "symbol": "private static bool ContainsAnyIgnoreCase(string text, params string[] patterns)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "仅 policy 内 private 字符串判别",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.thinking-control-error",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 157,
+      "end": 167,
+      "symbol": "internal static bool LooksLikeThinkingControlError(string responseBody)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "保留 thinking 控制参数错误判别",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.method.try-read-message",
+      "path": "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs",
+      "start": 169,
+      "end": 234,
+      "symbol": "internal static bool TryReadMessage(object message, out string role, out string content)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "JObject/dictionary/属性反射读取；保留原部分失败和大小写语义",
+      "fileSha256": "ce2dbde17ce5055c94c5fee677360cc7cef3c48e840a90c7fe59670fa50fc059"
+    },
+    {
+      "id": "llm.protocol.api-compat",
+      "path": "src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs",
+      "start": 11,
+      "end": 720,
+      "symbol": "public static class LlmApiCompat",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "原字节迁移；URL/认证头/普通与流响应协议兼容，非真实 provider 网络验收",
+      "fileSha256": "67c41d56d1bd91c51b4f3bd0561f8f3bba7a7bf4d058bb97354548774b4f60e6"
+    },
+    {
+      "id": "llm.protocol.visible-normalizer",
+      "path": "src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs",
+      "start": 12,
+      "end": 485,
+      "symbol": "public static class LlmVisibleReplyNormalizer",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "原字节迁移；可见回复 envelope 归一化，不持跨流共享状态",
+      "fileSha256": "41b45cf6c4b9609653e355aa9b0e990321da4dce9e9925341b0fc7973a266578"
+    },
+    {
+      "id": "llm.protocol.visible-stream-filter",
+      "path": "src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs",
+      "start": 62,
+      "end": 144,
+      "symbol": "public sealed class StreamFilter",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "每实例 _candidate/_lastPreview/_passThrough/_emittedLength；Unicode 逐字符旧缺陷未修",
+      "fileSha256": "41b45cf6c4b9609653e355aa9b0e990321da4dce9e9925341b0fc7973a266578"
+    },
+    {
+      "id": "llm.host.send-nonstream",
+      "path": "ShoutNetwork.cs",
+      "start": 133,
+      "end": 145,
+      "symbol": "private static Task<HttpResponseMessage> SendPrimaryNonStreamingRequestAsync(",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "原宿主保留真实非流式 SendAsync/DEBUG override；不是 policy owner",
+      "fileSha256": "c77d3ea1af3e9df2531702de571b92752868ef72a459e1f0177dd6f301024571"
+    },
+    {
+      "id": "llm.host.send-stream",
+      "path": "ShoutNetwork.cs",
+      "start": 147,
+      "end": 159,
+      "symbol": "private static Task<HttpResponseMessage> SendPrimaryStreamingRequestAsync(",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "原宿主保留真实流式 SendAsync/DEBUG override；不是 policy owner",
+      "fileSha256": "c77d3ea1af3e9df2531702de571b92752868ef72a459e1f0177dd6f301024571"
+    },
+    {
+      "id": "llm.host.normalized-tail-log",
+      "path": "ShoutNetwork.cs",
+      "start": 251,
+      "end": 268,
+      "symbol": "private static void LogNormalizedMessageTail(",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "旧宿主日志与消息尾部统计，调用新 policy；不视作全类提取",
+      "fileSha256": "c77d3ea1af3e9df2531702de571b92752868ef72a459e1f0177dd6f301024571"
+    },
+    {
+      "id": "llm.host.call-nonstream",
+      "path": "ShoutNetwork.cs",
+      "start": 665,
+      "end": 904,
+      "symbol": "public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "原宿主普通请求/重试/取消/配置/统计保留，13 调用中的非流分支已接新 policy",
+      "fileSha256": "c77d3ea1af3e9df2531702de571b92752868ef72a459e1f0177dd6f301024571"
+    },
+    {
+      "id": "llm.host.call-stream",
+      "path": "ShoutNetwork.cs",
+      "start": 906,
+      "end": 1365,
+      "symbol": "public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)",
+      "match": "exact",
+      "status": "mixed-host",
+      "note": "原宿主 SSE/回调/重试/取消/姓名过滤保留，非三渠道完成",
+      "fileSha256": "c77d3ea1af3e9df2531702de571b92752868ef72a459e1f0177dd6f301024571"
     }
   ]
 }

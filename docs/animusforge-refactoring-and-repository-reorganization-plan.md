@@ -1,15 +1,24 @@
 <a id="j01-current-status"></a>
 
-## 当前状态：J01c_J01d_OFFLINE_VERIFIED / J01e_NOT_STARTED / J01_OFFLINE_NOT_COMPLETE
+## 当前状态：J01_OFFLINE_VERIFIED / STOPPED_AFTER_J01 / J02_NOT_STARTED
 
 用户最新“你直接改呗”明确扩大本次 J3 白名单：`tools/package_policy_system_source_overlay.py` 的 `runtime_assets` 两条旧路径改为 `AnimusForge/CustomPrompts/Policy/{CustomPolicyEvaluatorPrompt,NpcRulerPolicyPrompt}.json`，删除 `CustomPrompts/CustomPolicyEvaluatorPrompt.json` 已废弃重复项；原 J01c/d/e 有界授权保持。本段取代旧 BLOCKED/ACTIVE 当前入口，下方过程记录不回写。该修复仅固定文件清单，不改提示词 JSON、Policy loader/玩法、`create_package()`、dist、打包或一键脚本；未访问玩家文本。历史 `4c3e8d94` 为两资源迁入 Policy 子目录并删除三旧项，`DuelSettings.cs:5030-5055` 路由到 Policy，Policy ContractTests `Program.cs:8958-8974` 禁止旧根副本。
+
+| J01 验收维度 | 当前状态 | 边界 |
+| --- | --- | --- |
+| 结构 | VERIFIED | 两协议原字节归位、根旧副本退出；地图源绑定 `02f1747c`，原 142 锚点不改 |
+| 职责 | VERIFIED（仅协议） | 8 方法/4 常量归 policy、13 直连；旧宿主真实网络/SSE/配置/姓名仍混合 |
+| 离线 | VERIFIED | 协议正常/变异、Courier/Legacy、双 API Stage 与 ABI/Composition/Native；地图两模式 163 PASS |
+| LIVE / 旧 SAVE / 真实 provider | NOT-RUN | Stage/合成测试不可替代实机、历史存档或真实网络验收 |
 
 - 解阻脚本提交 `0e6be2963a1d6aaea8e1b99f57d69608cfe5c011` 仅两路径替换/一重复项删除；迁前失败 `build_file_set()` exit 1 的日志仍保留。修复后迁前/迁后真实 `build_file_set()` 均 exit 0、297 文件/297 类别，两 Policy 资源各唯一且为 `runtime_assets`；迁后只把 `LlmApiCompat.cs` → `src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs` 的 `host_integration` 路径映射，完整集合/类别相等。证据 `artifacts/workspace-j01-llm-protocol/after/overlay-{pre,post}-relocation.json`；未调用 `create_package()`。
 - 迁移与消费者源码提交 `02f1747c4e226d9c8e187f2503c6197ed6148156` 仅两份 100% Git rename 与三处路径替换：Compat `src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:1-720`（原始 SHA-256 `95911a1ffbb2324529e4fa1156a864e13091d3c2020555c30194f76a8b1b8a74`）、Normalizer `src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs:1-485`、`StreamFilter:62-144`（原始 SHA-256 `76a660ee99846d4c4251dc00bf4af1a1ec472d7772f53d06765eefc48533e440`）；根旧副本退出。`CourierPostprocessOwnerRegressionTests/run.py:31`、`test_extraction.py:26` 与 overlay `host_files:102` 只改物理路径，namespace/公开 API 与 J01b policy 算法未动。旧 `ShoutNetwork` 网络/配置/姓名/统计及 Scene/Courier/Npc 消费者不因本次迁移扩写；完整责任/13 接线见上方 J01b 回执。
 - 固定 SDK 8.0.425 求值两 API 的完整 `Compile Identity/Link`：迁前 753 经两路径映射并仅加入 policy = 迁后 754，无重复/遗漏、tests 未混入；7 个 `EmbeddedResource Identity/Link/LogicalName` 全等。真实 after/relocated 同一 Program restore/build/run `0/0/0`、13 PASS，7 个独立变异各 restore/build `0/0`、run `1` 且指定 `FAIL`；12 块及宿主整文件 inverse 通过。Courier 单测 8、LegacyShout 3、Courier 正常 39 PASS，8 原变异均成功编译/运行指定拒绝。首个 Courier 变异验收包装层误以为必须抛异常的假失败保留，已按原 runner 的 `PASS/FAIL` 汇总格式复核，未改断言/源码。证据在 `after/member-set-verification.json`、`artifacts/tests/llm-protocol/j01cd_*` 和 `after/courier-*`。
 - 原 `build_single_module.ps1 -Stage` 的 fresh Debug/Release 均完成 1.3、1.4、Bootstrap，各 0 错误，Stage success；直接脚本 `$?=true`、无 throw，最终命令各退出 0。Debug 首次包装层把 `deploy_module.ps1` 成功 robocopy 剩余 `LASTEXITCODE=1` 错判为失败，原日志保留；重新预检 Debug 三根并用正确的直接脚本状态重跑通过，Release 同样通过。六个产物/Stage DLL SHA 一一相等、1.3 与 1.4 不同、`SubModule.xml` 只加载 Bootstrap；全部六个完整 SHA 与日志在 `after/fresh-after-artifacts.json`、`stage-{debug,release}-final.{log,json}`。六输出根每次重置前逐级/内部检查无 reparse 或未知项，旧 before DLL hash 已冻结；Stage 含私密 PlayerExports 副本，不上传，也未 Deploy/写游戏。
 - 使用上述**当次** Debug/Release artifact-root 的 API runner exit 0：4 实际 DLL、1056 ABI 元数据、3 snapshot 反例与外部 `CS0122`；Composition exit 0：42 断言与 5 反例；Native 正常/重排各 exit 0、41 断言与外部 `CS0122`，8 原变异各 exit 1、与迁前相同指定运行 `FAIL` 且无编译错误。各真实命令/退出/日志在 `after/gate-*.{log,json}`。此为离线源码/产物验收，不等于实机加载或真实三渠道网络行为。
-- **未覆盖/后续：** J01e 地图/owner 文档、recorded/working-tree 两模式及最终交接尚未执行，故 J01 整包仍 `OFFLINE_NOT_COMPLETE`；LIVE、旧 SAVE、真实 provider、游戏目录部署、清理/发布/推送均 NOT-RUN。Astra 已独立验收此源码切片；下一步仅执行 J01e；用户明确 J01 后停止，**J02 NOT_STARTED**，不建自动化或新任务。原六份 dirty 文档保留且只暂存本包 hunk。
+- **J01e 结构/责任回执：** [163 点代码地图](architecture/af-framework-code-map.json)的 `sourceRevision=02f1747c4e226d9c8e187f2503c6197ed6148156`，历史 `remoteBaseline` 不动；原 142 锚点逐字段保持，新增 21 项覆盖 policy 8 方法/4 常量、Compat/Normalizer/每流 StreamFilter 与旧宿主实际 send/入口保留。`python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py` 的 recorded 与 `--working-tree` 两模式均 `anchors=163`、exit 0。 [代码范围图](architecture/af-framework-code-scope.md)和[owner matrix](animusforge-owner-matrix.md)仅更新本包职责；ShoutNetwork 仍是混合宿主，不将 transport、三渠道或整个 LLM 标完成。
+- **离线验收/停止点：** 真实源码算法提取、两文件原字节路径迁移与 13 接线均完成；13 协议用例/7 可编译变异、Courier/Legacy、双 API 完整 Debug/Release+Bootstrap+Stage、实际 DLL ABI/Composition/Native 均已离线验收，上述 after 日志与源码 hash 绑定。逐字符 Unicode 流发射 `a4F6` 的既有缺陷保留未修；LIVE、旧 SAVE、真实 provider 网络、游戏部署均 NOT-RUN，不由 Stage 冒充。用户要求完成 J01 后停止，**J02 NOT_STARTED**，不自动续包、推送、发布、部署或建自动化。
+- **本地 Git 安全回执：** 文档 `ae8e6b89` 因 `git commit -- paths` 意外纳入既有 dirty 文档增量，`3a57007d` 已用 focused inverse 撤销该部分，保留本包顶部回执；两文档工作树 SHA-256 纠正前后不变，六份原 dirty 恢复、索引空，净提交差异仅顶部 14 增/5 删。误提交仍在本地历史且含本地专用材料，**本分支禁止推送/发布**；修正不代表新的推送授权。J01e 本轮只改代码地图/范围图/owner matrix/台账及 HANDOFF 五个白名单文件，由独立验收方负责定向索引/提交。
 
 ## 以下为本轮过程与原计划
 
