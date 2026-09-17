@@ -15,10 +15,11 @@ METHODS = ['RegisterCourierFoodConsumptionModel', 'RegisterCourierMobilePartyAiM
            'RegisterAnimusForgeSettlementAccessModel', 'RegisterAnimusForgeSettlementLoyaltyModel']
 INIT = 'protected override void InitializeGameStarter('
 SOURCES = ['Refactor/Modules/CampaignComposition.cs', 'Refactor/Modules/CampaignModelComposition.cs',
-           'Refactor/Modules/ModuleFrameworkRuntime.cs', 'Refactor/Modules/TeamModuleRegistration.cs',
-           'Refactor/Modules/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
-           'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
-           'Refactor/Modules/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs']
+            'Refactor/Modules/ModuleFrameworkRuntime.cs', 'Refactor/Modules/TeamModuleRegistration.cs',
+            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs',
+            'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
+            'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
+            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs']
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)
@@ -127,7 +128,7 @@ def main():
         'drop_behavior': (SOURCES[0], '            campaignGameStarter.AddBehavior(new MyBehavior());',''),
         'reverse_models': (SOURCES[1], '        RegisterCourierFoodConsumptionModel(campaignGameStarter);\n        RegisterCourierMobilePartyAiModel(campaignGameStarter);','        RegisterCourierMobilePartyAiModel(campaignGameStarter);\n        RegisterCourierFoodConsumptionModel(campaignGameStarter);'),
         'discard_inner': (SOURCES[1], 'new CourierFoodConsumptionModel(inner)', 'new CourierFoodConsumptionModel(new DefaultMobilePartyFoodConsumptionModel())'),
-        'gate_on_directory': (SOURCES[2], '        CampaignComposition.Register(starterObject);','        if (_state == ModuleFrameworkLifecycleState.Ready) CampaignComposition.Register(starterObject);')}
+        'gate_on_directory': (SOURCES[2], '        CampaignComposition.Register(starterObject);','        if (ModuleDirectoryLifecycleOwner.CaptureSnapshot().State == ModuleFrameworkLifecycleState.Ready) CampaignComposition.Register(starterObject);')}
     # Exact exception body injection, not a compilation failure.
     mutations['abort_model_failure']=(SOURCES[1], 'catch (Exception ex)\n        {','catch (Exception ex)\n        {\n            throw;')
     results=[]
