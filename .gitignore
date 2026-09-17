@@ -26,6 +26,7 @@ AnimusForge/ONNX/reranker/
 _codex_tmp/
 .codex_tmp/
 artifacts/
+/local/
 AnimusForge/PlayerExports/
 FUYONG/
 
