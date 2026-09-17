@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "102eab84134ee8e2ab2edb2e25d9f9aa7f560837",
+  "sourceRevision": "9d14a1eca2c25075975134605c24d48666ee123a",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -50,7 +50,7 @@
     },
     {
       "id": "internal.services",
-      "path": "Refactor/Modules/TeamModuleServices.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs",
       "start": 5,
       "end": 8,
       "symbol": "internal static class TeamModuleServices",
@@ -72,7 +72,7 @@
     },
     {
       "id": "internal.runtime",
-      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
       "start": 11,
       "end": 16,
       "symbol": "internal static class ModuleFrameworkRuntime",
@@ -112,7 +112,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "模块装配，不是 Campaign Ready",
-      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     },
     {
       "id": "lifecycle.unload",
@@ -123,7 +123,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "发布停止状态",
-      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     },
     {
       "id": "native.admission",
@@ -898,17 +898,17 @@
     {
       "id": "composition.campaign.entry",
       "path": "SubModule.cs",
-      "start": 655,
-      "end": 659,
+      "start": 120,
+      "end": 124,
       "symbol": "protected override void InitializeGameStarter(",
       "match": "contains",
       "status": "wired-composition",
       "note": "引擎签名不变，唯一委托框架入口",
-      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     },
     {
       "id": "composition.campaign.dispatch",
-      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
       "start": 22,
       "end": 25,
       "symbol": "internal static void RegisterCampaign(",
@@ -919,7 +919,7 @@
     },
     {
       "id": "composition.campaign.behaviors",
-      "path": "Refactor/Modules/CampaignComposition.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs",
       "start": 14,
       "end": 56,
       "symbol": "internal static void Register(",
@@ -930,7 +930,7 @@
     },
     {
       "id": "composition.campaign.models",
-      "path": "Refactor/Modules/CampaignModelComposition.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/CampaignModelComposition.cs",
       "start": 17,
       "end": 23,
       "symbol": "internal static void Register(",
@@ -941,7 +941,7 @@
     },
     {
       "id": "composition.team.registration",
-      "path": "Refactor/Modules/TeamModuleRegistration.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
       "start": 16,
       "end": 27,
       "symbol": "internal static InternalModuleDirectory CreateDirectory(",
@@ -1239,13 +1239,13 @@
     {
       "id": "lifetime.engine.begin",
       "path": "SubModule.cs",
-      "start": 655,
-      "end": 675,
+      "start": 120,
+      "end": 140,
       "symbol": "protected override void InitializeGameStarter(Game game, IGameStarter starterObject)",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "注册前失效，成功/失败后捕获真实实例",
-      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     },
     {
       "id": "lifetime.engine.end",
@@ -1256,7 +1256,7 @@
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "真实 GameEnd 入口",
-      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     },
     {
       "id": "lifetime.engine.unload",
@@ -1267,11 +1267,11 @@
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "卸载先退役活动 Game",
-      "fileSha256": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d"
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     },
     {
       "id": "lifetime.adapter.capture",
-      "path": "AfCampaignRuntimeLifecycle.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs",
       "start": 23,
       "end": 36,
       "symbol": "internal static void CaptureOwners(Game game, CampaignGameStarter starter)",
@@ -1282,7 +1282,7 @@
     },
     {
       "id": "lifetime.adapter.retire",
-      "path": "AfCampaignRuntimeLifecycle.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs",
       "start": 41,
       "end": 59,
       "symbol": "private static void RetireOwners(string reason)",
@@ -1293,7 +1293,7 @@
     },
     {
       "id": "lifetime.identity",
-      "path": "Refactor/Runtime/GameLifetimeCoordinator.cs",
+      "path": "src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs",
       "start": 7,
       "end": 39,
       "symbol": "internal sealed class GameLifetimeCoordinator",
@@ -1304,7 +1304,7 @@
     },
     {
       "id": "lifetime.registry",
-      "path": "Refactor/Runtime/PendingOperationRegistry.cs",
+      "path": "src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs",
       "start": 9,
       "end": 88,
       "symbol": "internal sealed class PendingOperationRegistry",
@@ -1832,7 +1832,7 @@
     },
     {
       "id": "framework.snapshot.facade",
-      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
       "start": 32,
       "end": 35,
       "symbol": "internal static ModuleFrameworkSnapshot CaptureSnapshot()",
@@ -1840,6 +1840,204 @@
       "status": "wired-boundary",
       "note": "旧查询入口仅转发唯一状态 owner",
       "fileSha256": "70ab9b87ed204b57fc6108345cfe972afe7d57ccb3fafe70dc6cddfc0b200e45"
+    },
+    {
+      "id": "diagnostics.trace.owner",
+      "path": "src/AF.Foundation.Runtime/Diagnostics/DiagnosticTraceContext.cs",
+      "start": 6,
+      "end": 54,
+      "symbol": "internal sealed class DiagnosticTraceContext",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "AsyncLocal trace与父scope唯一owner，Logger保留输出门面",
+      "fileSha256": "34484725995361163f9c129f10d576256b95133f2dea0ece73f87de1048002ff"
+    },
+    {
+      "id": "diagnostics.metric.owner",
+      "path": "src/AF.Foundation.Runtime/Diagnostics/MetricWindow.cs",
+      "start": 6,
+      "end": 57,
+      "symbol": "internal sealed class MetricWindow",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "180秒指标窗口与桶唯一owner，Logger保格式/输出",
+      "fileSha256": "6e0c17d02ef36330da9361c81e630c7b114ea786727e8bedf3545d773f122237"
+    },
+    {
+      "id": "diagnostics.log-queue.owner",
+      "path": "src/AF.Foundation.Runtime/Diagnostics/BoundedLogWriteQueue.cs",
+      "start": 10,
+      "end": 147,
+      "symbol": "internal sealed class BoundedLogWriteQueue",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "通用4096/8192背压、丢弃计数及worker唯一owner；领域token dump队列不在本包",
+      "fileSha256": "7fb382d7a78d3a88bd1c22274dd13b39eebd87071378ac32590d7ac0094fc4e4"
+    },
+    {
+      "id": "diagnostics.performance.owner",
+      "path": "src/AF.Foundation.Runtime/Diagnostics/PerformanceWindow.cs",
+      "start": 8,
+      "end": 264,
+      "symbol": "internal sealed class PerformanceWindow",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "性能帧/桶/事件/30秒窗口唯一owner；MCM与游戏context留适配",
+      "fileSha256": "945d60d6e77c7336ee548ee0d4476e1bffd4342870aab3ef613f1b4a958e40e8"
+    },
+    {
+      "id": "diagnostics.freeze.owner",
+      "path": "src/AF.Foundation.Runtime/Diagnostics/FreezeWatchState.cs",
+      "start": 9,
+      "end": 215,
+      "symbol": "internal sealed class FreezeWatchState",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "256事件环、主线程心跳/scope/缓存现场状态owner；实际线程与文件dump留门面",
+      "fileSha256": "2b78f14f12e149614c62c910b47f40686e513b09d2ad9c4a4243405e6688dbbf"
+    },
+    {
+      "id": "lifetime.save-generation.owner",
+      "path": "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs",
+      "start": 6,
+      "end": 65,
+      "symbol": "internal static class SaveRuntimeGuard",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "原Save generation唯一owner原字节归位；领域SyncData未动",
+      "fileSha256": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7"
+    },
+    {
+      "id": "scheduling.retirement.owner",
+      "path": "src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs",
+      "start": 9,
+      "end": 88,
+      "symbol": "internal sealed class PendingOperationRegistry",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "原退役登记/准入暂停/Seal唯一owner；不是第二业务队列",
+      "fileSha256": "da2ce6f95a6abebfeeea426981dc8ba260e1e7195a94901203c7df289322d2d9"
+    },
+    {
+      "id": "composition.startup.owner",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 7,
+      "end": 548,
+      "symbol": "internal static class StartupPatchComposition",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "原patch注册/逐组catch/服务启动原顺序移交，SubModule保base调用",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "composition.tick.owner",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs",
+      "start": 7,
+      "end": 137,
+      "symbol": "internal static class ApplicationTickComposition",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "36 phase fast/watched/异常finally/WarStats原顺序装配，无新增fast path分配",
+      "fileSha256": "5f627261f6d9c91674a4ceb18c85e3663943cb7463a017d6196ad00ce76957cd"
+    },
+    {
+      "id": "diagnostics.trace.facade",
+      "path": "Logger.cs",
+      "start": 280,
+      "end": 283,
+      "symbol": "public static IDisposable BeginTrace(string channel, string heroId = null, string npcName = null, string traceId = null)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "trace上下文接唯一owner，TraceScope继续负责Obs输出/Dispose门面",
+      "fileSha256": "e909fcf8f54945cf51adb632dd3fe04996274a28b3c52ae7aa5f5d16884dbe5e"
+    },
+    {
+      "id": "diagnostics.metric.facade",
+      "path": "Logger.cs",
+      "start": 508,
+      "end": 511,
+      "symbol": "public static void Metric(string metric, bool ok = true, double latencyMs = -1.0)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "接MetricWindow，不改观察输出",
+      "fileSha256": "e909fcf8f54945cf51adb632dd3fe04996274a28b3c52ae7aa5f5d16884dbe5e"
+    },
+    {
+      "id": "diagnostics.log-queue.facade",
+      "path": "Logger.cs",
+      "start": 1366,
+      "end": 1369,
+      "symbol": "private static void EnqueueLogWrite(string path, string content, bool isVerbose = false, bool bypassBackpressure = false)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "接BoundedLogWriteQueue，drop摘要仍根sink",
+      "fileSha256": "e909fcf8f54945cf51adb632dd3fe04996274a28b3c52ae7aa5f5d16884dbe5e"
+    },
+    {
+      "id": "diagnostics.performance.facade",
+      "path": "PerfProbe.cs",
+      "start": 9,
+      "end": 12,
+      "symbol": "internal static class PerfProbe",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "MCM250ms缓存、ScopeToken及输出/context适配；通用窗口已迁",
+      "fileSha256": "76be25b7ca7f05c226fb758ee8469ae47f0524f9614b2bd64c9283e1893860d2"
+    },
+    {
+      "id": "diagnostics.freeze.facade",
+      "path": "FreezeWatchdog.cs",
+      "start": 15,
+      "end": 18,
+      "symbol": "internal static class FreezeWatchdog",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "保留唯一监控线程、MCM/游戏现场/平台dump与文件sink；通用状态已迁",
+      "fileSha256": "39f9bc5653a6212a60b21299512562fd28add760fcb3be5372f5be9ed7617135"
+    },
+    {
+      "id": "diagnostics.query-telemetry.residual",
+      "path": "Logger.cs",
+      "start": 522,
+      "end": 525,
+      "symbol": "public static void RecordHitRate(string domain, string tag, bool hit, string detail = null, string inputText = null)",
+      "match": "exact",
+      "status": "residual-domain",
+      "note": "query/话题命中与输入去重为J03/J06领域责任，非本包通用日志队列",
+      "fileSha256": "e909fcf8f54945cf51adb632dd3fe04996274a28b3c52ae7aa5f5d16884dbe5e"
+    },
+    {
+      "id": "diagnostics.llm-telemetry.residual",
+      "path": "Logger.cs",
+      "start": 788,
+      "end": 791,
+      "symbol": "private static void ProcessTokenStatsWriteQueue()",
+      "match": "exact",
+      "status": "residual-domain",
+      "note": "LLM token/消息dump领域队列留J08，日志隐私/限额不由本包闭合",
+      "fileSha256": "e909fcf8f54945cf51adb632dd3fe04996274a28b3c52ae7aa5f5d16884dbe5e"
+    },
+    {
+      "id": "composition.startup.facade",
+      "path": "SubModule.cs",
+      "start": 114,
+      "end": 117,
+      "symbol": "protected override void OnBeforeInitialModuleScreenSetAsRoot()",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "引擎身份/base调用保留，转发唯一startup组合",
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
+    },
+    {
+      "id": "composition.tick.facade",
+      "path": "SubModule.cs",
+      "start": 142,
+      "end": 145,
+      "symbol": "protected override void OnApplicationTick(float dt)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "引擎override仅调用ApplicationTickComposition.Run(this,dt)",
+      "fileSha256": "b34dec59423e21f10307969abed89ef95b3d0af2267717ae049915b1025c62e8"
     }
   ]
 }

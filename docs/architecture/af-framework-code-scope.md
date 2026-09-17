@@ -1,3 +1,22 @@
+# 当前增量：完整 J02 Foundation/宿主源码离线完成（2026-09-18）
+
+源码 `9d14a1eca2c25075975134605c24d48666ee123a`，185锚点在记录/工作树两模式通过。当前状态以[唯一台账J02](../animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)为准；下方仅目录生命周期子包是历史，不再代表完整J02未完成。
+
+| 责任 / 已核实路径和一基坐标（源码 `9d14a1ec`） | 实际迁移与消费者 | 保留 / 未覆盖 |
+| --- | --- | --- |
+| `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` | 目录4状态字段、Initialize/Shutdown/CaptureSnapshot唯一owner；Runtime门面接入；本项沿用102eab84并已集成复验 | 目录不等于通用插件热卸载Host |
+| `src/AF.Foundation.Runtime/Diagnostics/DiagnosticTraceContext.cs:6-54`、`MetricWindow.cs:6-57` | Logger的AsyncLocal trace/父scope及180秒指标窗口真实退出旧根；Logger BeginTrace:280、Metric:508调用 | Logger记录文本/路径/MCM、TraceScope输出门面保留；RecordHitRate:522-616为J03/J06领域观测 |
+| `src/AF.Foundation.Runtime/Diagnostics/BoundedLogWriteQueue.cs:10-147` | 4096/8192背压、drop计数/摘要节流、唯一worker门控/批量/排空；Logger EnqueueLogWrite:1366调用 | UTF8文件sink/清理原位置；Logger tokenStats队列:769-845属J08 LLM消息dump，隐私与领域队列不冒称已解决 |
+| `src/AF.Foundation.Runtime/Diagnostics/PerformanceWindow.cs:8-264`、`FreezeWatchState.cs:9-215` | Perf帧/桶/事件/30秒窗口与Freeze心跳、scope、256事件环/缓存唯一owner；根门面接入 | Perf保250ms MCM缓存；Freeze保唯一实际监控线程、游戏现场读取、OS dump、文件sink；无新逐tick委托/扫描 |
+| `src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs:6-65`、`GameLifetimeCoordinator.cs:7-39`；`src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs:9-88` | 已提取owner原字节归位：generation、实际Game身份、退役/准入暂停/Seal/reset-clear不重写；四迁移raw SHA相同 | Registry不是第二业务队列；J05记忆预算/J07渠道调度/请求lease与业务SyncData不在J02 |
+| `src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs:11-65` | 实际My/Shout/Courier实例捕获/退役；SubModule GameEnd:98-103、Unload:105-112、InitializeGameStarter:120-140继续接线 | 不接管团队业务存档/整个游戏生命周期平台 |
+| `src/AF.GameAdapter.Bannerlord/Composition/{CampaignComposition,CampaignModelComposition,TeamModuleRegistration,TeamModuleServices,ModuleFrameworkRuntime}.cs` | 五原owner归位，namespace/类型/内容不变；Runtime:11-36仍工厂与静态兼容门面，未造第二Host | Git100% rename/归一原文证明；迁前raw SHA未捕获，不冒称双向raw哈希 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:7-548`、`ApplicationTickComposition.cs:7-137` | Startup注册顺序/逐组catch与36相位fast/watched/异常finally/WarStats真实移交；SubModule:114-118、142-145仅引擎壳 | SubModule UIExtender/欢迎/Mission/WarStats适配仍必要引擎或J13领域责任；不重写玩法，不改公开ABI |
+
+验证覆盖：C全SubModule严格inverse；B四raw迁移哈希；A关键旧新可执行oracle而非全三门面inverse；指定编译后反例、双API Debug/Release/Bootstrap/本地Stage、4实际DLL/1060、762 Compile/7资源通过。源坐标/契约/构建不等于LIVE/旧SAVE/provider或全模块平台证明。1.3原混合引用与资产许可/用户数据HOLD未解除，不推送/打包/部署。详见台账证据回执。
+
+## 以下为历史范围记录
+
 # 当前增量：J02 目录生命周期真实 owner 提取（2026-09-17）
 
 - 源码修订 `102eab84134ee8e2ab2edb2e25d9f9aa7f560837`；[代码地图](af-framework-code-map.json) 167 锚点在 recorded/working-tree 两模式通过。仅更新本包 7 个既有定位并新增 4 个 owner/转接锚点，其他 156 项保持；一切以[唯一台账](../animusforge-refactoring-and-repository-reorganization-plan.md#parallel-controller-handover)为当前状态。
