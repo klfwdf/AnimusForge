@@ -3,6 +3,24 @@
 日期：2026-09-17。修复前版本：`4b3fb931`；本轮意图检查点：`fdcc8d2e`。
 本文与模块根 `AGENTS.md` 是后续修改必须阅读的持久记录，不依赖聊天记忆。
 
+## 0. PNG 颜色类型盲区（2026-09-18 追加实机反例）
+
+用户报告：同一版本 DLL 下，chat 协议（gemini-3.1-flash-image）生成图游戏内颜色正常，images 协议（gpt-image-2.5-exact via /images/edits）生成图游戏内**整体红蓝反置**；缓存文件在资源管理器中颜色正常。
+
+实机取证（同一战役、同一会话、同一 DLL、同一加载器）：
+
+| 缓存文件 | 生成通道 | PNG IHDR |
+|---|---|---|
+| `…_20260917212151192_6d590e.png` | chat/completions | **ct=6 RGBA8** → 游戏内正常 |
+| `…_20260917212819557_b33960.png` | images/edits | **ct=2 RGB8（无 alpha）** → 游戏内蓝 |
+| `…_20260917212931611_ffffb0.png` | images/edits | **ct=2 RGB8** → 游戏内蓝 |
+
+- 全缓存 262 张 PNG 无一发蓝；两条协议产物在字节层均过 `ImagePayload.Normalize`，显示层共用 `LoadOrRegisterPngBytes`（无任何换通道代码，符合第 1 节契约）。
+- 根因：`Normalize` 对 **所有** PNG 原样透传，但 `CreateFromMemory` 对 `ct=2`（24bit RGB，3 字节/像素）与 `ct=6`（32bit RGBA）走**不同解码分支**——3 字节源转 BGRA 纹理时通道次序被引擎按另一套处理。此前契约只在 RGBA 上取证，`ct=2` 是盲区。
+- 修复（`ImagePayload.Normalize`）：仅 `bd==8 && ct==6 && interlace==0` 的 PNG 原样透传；其余 PNG 变体（RGB/灰度/调色板/16bit/隔行）经 GDI+ **无损重编码**为 RGBA8 再交付。**这不是通道交换**——像素值逐一保留（实测 25 采样点 0 差异），只是把输入统一到已验证的解码契约格式。
+- 旧缓存自愈：`DiskImageCacheManager` 经 `ImagePayload.ReadFile → Normalize` 读取，存量 ct=2 文件下次显示时自动转码，磁盘原文件不改写。
+- 维护约束沿用：禁止在 UI 加载路径恢复任何换通道逻辑；新发现的颜色异常仍按"同一图像身份"逐段取证，不得凭"蓝色"症状直接改通道。
+
 ## 1. 蓝皮不是本次缓存原图的颜色
 
 用户提供俄洛斯和拉盖娅的游戏截图：皮肤蓝色，原本金色的纹章也变蓝。

@@ -29,12 +29,17 @@ namespace AnimusForge.Illustrator.Engine
             using (var image = Image.FromStream(input, false, true))
             {
                 ValidateDimensions(image.Width, image.Height);
+                // 只有"8bit RGBA 非隔行"PNG 原样透传——这是引擎 CreateFromMemory 已验证的解码契约。
+                // IHDR: bytes[24]=位深 bytes[25]=颜色类型 bytes[28]=隔行方式。
+                // RGB(ct=2)/灰度/调色板/16bit/隔行 PNG 在引擎里走另一解码分支：3字节/像素源转
+                // BGRA 纹理时通道次序不同（2026-09-18 实机：images 协议产物 ct=2 游戏内红蓝反置）。
+                // 此处只做格式归一化（GDI+ 无损重编码为 RGBA8），绝不交换颜色通道。
+                if (png && bytes[24] == 8 && bytes[25] == 6 && bytes[28] == 0) return bytes;
                 using (var bitmap = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb))
                 using (var graphics = Graphics.FromImage(bitmap))
                 using (var output = new MemoryStream())
                 {
                     graphics.DrawImageUnscaled(image, 0, 0);
-                    if (png) return bytes; // Already fully decoded; avoid repeated PNG recompression.
                     bitmap.Save(output, ImageFormat.Png);
                     if (output.Length > MaxBytes) throw new InvalidDataException("规范化图片超过24 MiB限制。");
                     return output.ToArray();
