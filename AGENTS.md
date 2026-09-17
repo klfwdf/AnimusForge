@@ -10,12 +10,12 @@
 
 ## Local refactor continuation boundary
 
-- Use `G:\AFMOD\AF-REFACTOR` for this local continuation; the current HANDOFF records the active delivery branch and its approved remote target. The original local continuation history is retained separately and must not be pushed when it contains the excluded local-only handoff. Historical NEW-087 and F-drive labels below do not select this machine's worktree.
+- Resolve the current workspace and branch from `git rev-parse --show-toplevel` and `git branch --show-current`, together with the latest user request. Historical machine paths do not select this worktree. HANDOFF records delivery history, not new push authorization; histories containing excluded local-only handoffs must not be pushed.
 - Preserve existing NEW-10, GCCZ, other worktrees and authors' changes. Writes outside the task workspace require explicit approval for the exact change; keep proposals local otherwise.
 - Create local checkpoint/intent commits before substantial changes and commit each verified slice. Roll back with focused inverse commits, never hard reset or rewritten history.
 - Do not push, deploy to the game, install global skills, or change the default interaction entry points without explicit authorization. Keep contract/replay evidence separate from live-game acceptance.
 
-本仓库是 Mount & Blade II: Bannerlord 的 AnimusForge mod，当前目标分支/目录是 `animusforge-1.3.x`。
+本仓库是 Mount & Blade II: Bannerlord 的 AnimusForge mod；当前工作分支以实际 Git 状态为准，`animusforge-1.3.x` 是历史标签，不是切换分支或目录的指令。
 
 ## 必须遵循
 - 所有代码编写必须优先顾虑性能：识别并避免热路径中的全量扫描、重复计算、重复反射、无效分配、无意义锁竞争和空转轮询；新增功能必须说明其运行频率与缓存/分批策略，且不得以牺牲既有规则或功能为代价进行优化。

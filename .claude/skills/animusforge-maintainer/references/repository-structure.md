@@ -1,114 +1,43 @@
-# AF repository structure and cleanup
+# AF 仓库结构与按风险适用的前置条件
 
-Use this reference for inventory, cleanup, directory migration, large assets, tracked artifacts, docs organization and reproducible-build boundaries.
+## 先确定什么真正阻塞当前工作
 
-## Cleanup precedes broad decomposition
+| 未决事项 | 阻塞范围 |
+| --- | --- |
+| 当前工作区、文件归属或作者改动不明 | 相关文件修改 |
+| 依赖来源、实际版本或构建输入不明 | 相关构建和迁移验收；不阻止独立只读调查 |
+| 玩家数据、资源写入者或部署消费者未分类 | 相关搬迁、清理及分发 |
+| 分发权或许可证未明确 | 相关打包、上传、发布 |
+| 不相关目录的历史 HOLD | 保持原状，不自动阻塞具名源码工作包 |
 
-This gate concerns cleanup and broad architectural extraction. It is not a blanket prohibition on authorized feature development, bug fixes, UI/content/configuration maintenance or compatibility work within an existing owner. Those tasks follow [mod-development.md](mod-development.md) and their directly affected safety/acceptance rules; they do not silently turn into the full repository refactor.
+按真实依赖列出当前包的准入条件。局部条件闭合不等于全仓整理、clean-clone、许可或发布门禁完成；未决项保留在台账。也不以“清理尚未全部完成”无限阻塞不触及相关风险的已授权工作。
 
-Do not broadly extract modules until the repository gate in the execution ledger is complete. Cleanup establishes:
+## 区分内容平面，不把目录图变成搬迁指令
 
-- one canonical worktree;
-- recoverable baseline and representative user/save data;
-- tracked-asset inventory and ownership;
-- license/distribution decisions;
-- reproducible local dependency preparation;
-- artifact/user-data separation;
-- package/stage baseline;
-- target directory and module-owner mapping.
+- 源码：已有职责目录与编译项目；逻辑 Foundation/GameAdapter/modules/bridges 不强制拆 DLL。
+- 运行内容：实际 loader 使用的模块 XML、GUI、Prompt、语言和数据；只有核对消费者后才移动。
+- 测试、工具源码、构建脚本、文档：遵循现有布局，避免一次任务重新组织整个仓库。
+- 参考与本地依赖：可重现来源、版本、hash、许可；原版 DLL/反编译树不当作 AF 生产代码或发布内容。
+- 产物与用户数据：Stage、日志、缓存、工具 dist 与 PlayerExports 分别分类，不能按扩展名推断可删除。
 
-## Target planes
+目录是手段。对源码明确 namespace/类型/程序集保持，对内容明确 loader/资源名/发布白名单保持。ONNX、二进制和原始素材按当前打包规则、运行需要及授权处理，不自动迁移到 LFS 或发行包。
 
-```text
-src/
-  AF.Contracts/
-  AF.Foundation.Runtime/
-  AF.GameAdapter.Bannerlord/
-  AF.Persistence/
-  AF.Bootstrap/
-  modules/AF.Module.<Name>/
-  bridges/AF.Bridge.<A><B>/
+<a id="joint-module-packages"></a>
 
-content/
-  foundation/
-  modules/<module-id>/
-  bridges/<bridge-id>/
-  profiles/
+## 目录归位与职责拆分的联合工作包
 
-tests/
-  contracts/
-  foundation/
-  modules/<module-id>/
-  bridges/<bridge-id>/
-  composition/
-  persistence/
-  compatibility/
-  fixtures/
+用户同时要求二者时，同包规划原职责、新 owner、实际调用者、目录/资源映射、兼容边界和验收。可先提取再迁移，也可先原样归位再抽取，以保持差异可审查为准；不在每个机械步骤后重新申请继续。
 
-tools/        source only
-scripts/      build/deploy/package/development/verification
-docs/         architecture/modules/operations/compatibility/cases/handoffs/reference/archive
-references/   manifests and reproducible local-extraction/verification scripts
-design/       licensed source assets
-local/        ignored machine-local game refs/private settings/reference snapshots
-artifacts/    ignored stage/packages/logs/test output/diagnostics/tool distributions
-```
+仅获准结构迁移时不借机重写行为。结构完成与职责完成分别记录；真实算法和状态转移、消费者接线后才能宣称模块化。保留旧门面必须说明调用/ABI/存档责任，旧混合类按符号标界。不要复制一整棵旧源码到新的编译目录来“隔离”。
 
-Directory diagrams are targets, not permission for bulk moves. A user-authorized HOLD on cleanup must be preserved: retained references, caches or distributions are evidence of an open repository gate, not permission to delete them or proof of unauthorized drift. Record which cleanup requirements remain deferred and what bounded work, if any, is explicitly allowed. HOLD, a narrower task or a successful local build does not make clean-clone/provenance/package gates complete, and does not authorize broad decomposition by implication.
+验收核对完整 Compile/资源集合与运行路径，不只核对文件数量；遵守一套源码双实现的原构建流程。路径消费者包括测试、工具和打包清单，不因源码能编译而忽略它们。
 
-## Classification table
+## 整理与数据安全
 
-| Current content | Default decision | Must verify first |
-| --- | --- | --- |
-| Root production C# | Assign owner, then move by one module/facade slice | Save type identity, build include, reflection paths, 1.3/1.4, tests |
-| `AnimusForge/ModuleData` and GUI | Move to owning foundation/module/bridge content | Runtime paths, package map, user-writable vs static |
-| PlayerExports | Split curated shipped data from user-mutated data | Deploy merge, backup, ownership, save references |
-| Original/decompiled game sources and TaleWorlds DLLs | Prefer ignored local extraction + version/hash manifest | License/distribution rights and pinned 1.3 build provenance |
-| `_deps_auto` | Generate/validate locally | Unified build's fail-closed 1.3 reference requirements |
-| ONNX models | Decide Release/LFS/local installer separately | License, runtime requirement, current package rule excluding ONNX |
-| Tool `dist`, EXE, DLL, RAR/ZIP | Remove from source tracking; rebuild or publish artifact | Source reproducibility and release channel |
-| `.tmp`, `tmp`, `.codex_tmp`, `.dotnet*`, browser profiles | Ignore and stop tracking in approved batches | Accidental build/runtime dependency |
-| Logs, JSONL, TRN, crash archives | Artifact plane; inspect for secrets/privacy before removal | Player text, prompts, API endpoints/keys, personal paths |
-| Design previews/generated images | Keep licensed source only; outputs to artifacts | Which files ship at runtime |
+需要清理时，先盘点本包涉及的跟踪状态、读写者、来源与可恢复性，再选择保留、复制、合并、迁移、忽略或停止跟踪。保留用户修改、未知记录和原始证据。`git rm --cached` 也需明确分类及授权，不等于数据已备份或历史已清除。
 
-## Safe cleanup order
+递归删除、批量移动/覆盖、外仓写入、历史改写和发布遵守独立审批边界。既有产物不因新目录规则而自动删除；构建脚本内部清理也须核对精确生成根。Stage 可能包含私密玩家数据，不能因为是构建产物就上传。
 
-1. Confirm worktree and backups.
-2. Inventory tracked/untracked files, sizes, extensions and consumers.
-3. Mark user data and no-delete paths.
-4. Audit source/license/distribution/reproducibility.
-5. Add/merge ignore, `local/`, and `artifacts/` rules.
-6. Prove build/stage does not rely on accidental caches.
-7. Stop tracking one approved category at a time, preserving local backups.
-8. Validate clean-clone preparation and package layout.
-9. Reorganize docs/scripts/content in small mapped batches.
-10. Consider Git-history rewriting only in a separate announced maintenance window.
+## 文档职责
 
-`git rm --cached` changes the index, not local data. It still requires ledger intent, approved classification, backup and validation.
-
-## Source and artifact planes
-
-Static analysis, docs, manifests and pure tests should pass on a clean source tree. Checks that consume built DLLs or a staged module must explicitly depend on the artifact-producing step. Never allow a stale artifact to make a source check pass.
-
-## Module content ownership
-
-Every shipped resource must belong to exactly one of:
-
-- foundation;
-- one module;
-- one bridge;
-- one profile composition file.
-
-Shared content is not automatically foundation content. Promote only stable, truly cross-module assets with an owner and current consumers. Modules must not overwrite another module's content path.
-
-## Documentation organization
-
-- `docs/architecture`: foundation/contracts/global decisions and ADRs.
-- `docs/modules`: generated/current module catalog, owner map, capabilities, profiles and bridge matrix.
-- `docs/operations`: environment, build, stage, deploy, package, recovery.
-- `docs/compatibility`: Bannerlord API lines and game-specific adapters.
-- `docs/cases`: reusable validated maintenance cases.
-- `docs/handoffs`: time-bound handoffs, not authority for current architecture.
-- `docs/archive`: frozen historical decisions/handoffs.
-
-One fact should have one authoritative home. Other docs link to it instead of copying it.
+架构说明维护稳定边界，模块说明维护实际契约，台账维护当前状态与详细证据，HANDOFF 只给接续摘要和链接。历史交接/审查保留原语境，不作为新操作授权或当前缺陷清单。
