@@ -22,9 +22,9 @@ SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/Publ
     "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs", "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
     "Refactor/Modules/CoreDialogueOperation.cs", "Refactor/Modules/CoreDialogueClient.cs",
     "Refactor/Modules/CoreDialogueServices.cs", "tools/ModuleFrameworkApiTests/NativeOwnerStub.cs",
-    "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs", "Refactor/Modules/ModuleFrameworkRuntime.cs",
+    "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs", "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
-    "Refactor/Contracts/FeatureBridgeContracts.cs", "Refactor/Modules/TeamModuleRegistration.cs",
+    "Refactor/Contracts/FeatureBridgeContracts.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs", "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs"]
 assert API_SOURCES <= set(SOURCES)
 
@@ -66,7 +66,7 @@ def snapshot_mutations(dotnet: str, out: Path):
         "map_ready_as_degraded": ("src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Ready;", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Degraded;"),
         "share_snapshot_container": ("src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs", "new ReadOnlyCollection<ModuleBindingSnapshot>(modules.ToArray())", "new ReadOnlyCollection<ModuleBindingSnapshot>((IList<ModuleBindingSnapshot>)modules)"),
         "projection_rereads_live_directory": ("src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs", "in snapshot.Modules)", "in ModuleFrameworkRuntime.CaptureSnapshot().Modules)"),
-        "skip_shutdown_forward": ("Refactor/Modules/ModuleFrameworkRuntime.cs", "ModuleDirectoryLifecycleOwner.Shutdown();", ";"),
+        "skip_shutdown_forward": ("src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs", "ModuleDirectoryLifecycleOwner.Shutdown();", ";"),
         "force_factory_rebuild": ("src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs", "if (_state != ModuleFrameworkLifecycleState.NotInitialized && _state != ModuleFrameworkLifecycleState.Stopped)", "if (false)")
     }
     for name, (path, before, after) in mutations.items():
