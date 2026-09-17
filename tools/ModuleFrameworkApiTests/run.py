@@ -11,13 +11,21 @@ from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCES = ["Api/V1/AfApi.cs", "Api/V1/AfApiContracts.cs",
-    "Api/Internal/AfV1DialogueProjection.cs", "Api/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
+API_SOURCES = {
+    "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
+    "src/modules/AF.Module.PublicApi/V1/AfApi.cs",
+    "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs",
+}
+SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs", "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
     "Refactor/Modules/CoreDialogueOperation.cs", "Refactor/Modules/CoreDialogueClient.cs",
     "Refactor/Modules/CoreDialogueServices.cs", "tools/ModuleFrameworkApiTests/NativeOwnerStub.cs",
     "Refactor/Modules/InternalModuleDirectory.cs", "Refactor/Modules/ModuleFrameworkRuntime.cs",
     "Refactor/Contracts/FeatureBridgeContracts.cs", "Refactor/Modules/TeamModuleRegistration.cs",
-    "Refactor/Modules/ModuleFrameworkSnapshot.cs", "Api/Internal/AfV1SnapshotProjection.cs"]
+    "Refactor/Modules/ModuleFrameworkSnapshot.cs", "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs"]
+assert API_SOURCES <= set(SOURCES)
 
 
 def environment(dotnet: str) -> dict[str, str]:
@@ -54,9 +62,9 @@ def run_dotnet(dotnet: str, args: list[str], cwd: Path):
 
 def snapshot_mutations(dotnet: str, out: Path):
     mutations = {
-        "map_ready_as_degraded": ("Api/Internal/AfV1SnapshotProjection.cs", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Ready;", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Degraded;"),
+        "map_ready_as_degraded": ("src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Ready;", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Degraded;"),
         "share_snapshot_container": ("Refactor/Modules/ModuleFrameworkSnapshot.cs", "new ReadOnlyCollection<ModuleBindingSnapshot>(modules.ToArray())", "new ReadOnlyCollection<ModuleBindingSnapshot>((IList<ModuleBindingSnapshot>)modules)"),
-        "projection_rereads_live_directory": ("Api/Internal/AfV1SnapshotProjection.cs", "in snapshot.Modules)", "in ModuleFrameworkRuntime.CaptureSnapshot().Modules)")
+        "projection_rereads_live_directory": ("src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs", "in snapshot.Modules)", "in ModuleFrameworkRuntime.CaptureSnapshot().Modules)")
     }
     for name, (path, before, after) in mutations.items():
         folder = out / name; folder.mkdir(exist_ok=True)
@@ -92,7 +100,7 @@ def main():
     control = project(out / "Control", "ModuleFrameworkControl", [HERE / "HostControl.cs", HERE / "SnapshotBoundaryChecks.cs", out / "OriginalRuntime.cs"], [library])
     client = project(out / "Client", "ModuleFrameworkExternalClient", [HERE / "ExternalClient.cs"], [library, control], True)
     denied = project(out / "Denied", "ModuleFrameworkDeniedClient", [HERE / "DeniedClient.cs"], [library], True)
-    core = project(out / "CoreOnly", "ModuleFrameworkCoreOnly", [ROOT / p for p in SOURCES if not p.startswith("Api/")] + [HERE / "HostStubs.cs"])
+    core = project(out / "CoreOnly", "ModuleFrameworkCoreOnly", [ROOT / p for p in SOURCES if p not in API_SOURCES] + [HERE / "HostStubs.cs"])
     core_status, core_log = run_dotnet(args.dotnet, ["build", str(core), "-c", "Release", "--nologo"], out)
     (out / "core-only.log").write_text(core_log, encoding="utf-8")
     if core_status: print(core_log); return core_status

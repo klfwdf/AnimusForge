@@ -3,10 +3,19 @@ from pathlib import Path
 import hashlib,json,subprocess
 ROOT=Path(__file__).resolve().parents[2]
 REVIEW=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
+CURRENT_PATHS={
+    'Api/V1/AfApiContracts.cs':'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
+    'Api/V1/AfApi.cs':'src/modules/AF.Module.PublicApi/V1/AfApi.cs',
+    'Api/V1/AfDialogueClient.cs':'src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs',
+    'Api/Internal/AfV1SnapshotProjection.cs':'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs',
+    'Api/Internal/AfV1DialogueProjection.cs':'src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs',
+}
+def current_path(old_path):
+    return CURRENT_PATHS.get(old_path,old_path)
 def restore(path,current):
     path=str(path).replace('\\','/')
     for dependency,expected_hash in REVIEW.get('dependencies',{}).items():
-        assert hashlib.sha256((ROOT/dependency).read_text(encoding='utf-8-sig').encode()).hexdigest()==expected_hash, 'Unreviewed Native API dependency: '+dependency
+        assert hashlib.sha256((ROOT/current_path(dependency)).read_text(encoding='utf-8-sig').encode()).hexdigest()==expected_hash, 'Unreviewed Native API dependency: '+dependency
     evidence=REVIEW['files'].get(path)
     if evidence is None: return current
     old=subprocess.check_output(['git','show',REVIEW['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -17,9 +26,9 @@ def restore(path,current):
         expected[h['oldStart']:h['oldEnd']]=h['after'].splitlines(keepends=True)
     expected=''.join(expected)
     assert hashlib.sha256(expected.encode()).hexdigest()==evidence['afterSha256'], 'Native API candidate hash mismatch: '+path
-    assert (ROOT/path).read_text(encoding='utf-8-sig')==expected, 'Unreviewed Native API live source: '+path
+    assert (ROOT/current_path(path)).read_text(encoding='utf-8-sig')==expected, 'Unreviewed Native API live source: '+path
     assert current in (old,expected), 'Unexpected Native API proof input: '+path
     return old
 if __name__=='__main__':
-    for path in REVIEW['files']:restore(path,(ROOT/path).read_text(encoding='utf-8-sig'))
+    for path in REVIEW['files']:restore(path,(ROOT/current_path(path)).read_text(encoding='utf-8-sig'))
     print('PASS exact Native API inverse: '+str(len(REVIEW['files']))+' reviewed production files')

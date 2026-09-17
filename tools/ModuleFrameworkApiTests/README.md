@@ -18,7 +18,7 @@ These are bounded directory/API checks, not actual Campaign/Mission or old-save 
 
 **子 MOD 看得到什么、看不到什么；框架状态是否如实报告。** 不加载 Bannerlord，不操作游戏或存档。
 
-- 实际源码链接：`Api/V1/AfApi.cs`、`AfApiContracts.cs`、`ModuleFrameworkRuntime.cs`、`InternalModuleDirectory.cs` 与原 `FeatureBridgeContracts.cs`。
+- 实际源码链接：`src/modules/AF.Module.PublicApi/V1/AfApi.cs`、`src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`、`ModuleFrameworkRuntime.cs`、`InternalModuleDirectory.cs` 与原 `FeatureBridgeContracts.cs`。
 - `ModuleFrameworkUnderTest` 是独立测试 library；`ModuleFrameworkExternalClient` 是另一程序集，仅通过 `AnimusForge.Api.V1` 使用生产公开接口。
 - `ModuleFrameworkControl` 是测试专用 friend 控制库，用于模拟宿主启动/停止、门禁和缺失适配器；**生产 DLL 没有增加 friend 权限**。
 - `TeamModuleServices`、`FeatureBridgeRuntime` 是明确标注的测试 stub；本套不据此声称真实模块业务通过。
@@ -28,14 +28,15 @@ These are bounded directory/API checks, not actual Campaign/Mission or old-save 
 在仓库根目录：
 
 ```powershell
-python tools/ModuleFrameworkApiTests/run.py
+$dotnet = (Resolve-Path .\local\dotnet\8.0.425\dotnet.exe).Path
+python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet
 # 同时检查实际构建产物，不加载 DLL，只读 PE 元数据：
-python tools/ModuleFrameworkApiTests/run.py `
+python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet `
   --artifact-root bin/Debug/single_module_artifacts `
   --artifact-root bin/Release/single_module_artifacts
 ```
 
-默认使用 `G:/AFMOD/.dotnet-sdk/dotnet.exe`，可传 `--dotnet`。仅需 SDK 8，无 NuGet 网络包；复用仓库 `.tmp/dotnet-cli` 与 `.tmp/nuget-packages`，禁用开发证书生成。生成物和原始日志留在本工具 `.generated/current/`，已忽略，不提交产物。
+本次 B0/B1 显式传入仓库内固定 SDK 8.0.425；不依赖 runner 的历史默认路径。无需 NuGet 网络包；复用仓库 `.tmp/dotnet-cli` 与 `.tmp/nuget-packages`，禁用开发证书生成。生成物和原始日志留在本工具 `.generated/current/`，已忽略，不提交产物。
 
 ## 已覆盖
 

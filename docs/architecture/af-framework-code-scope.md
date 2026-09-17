@@ -84,7 +84,17 @@ Courier最终commit调度从大类迁入CourierDeliveryBehavior.CommitDispatch.c
 
 # AF 框架代码范围图
 
-本图是当前已验证源码 `86805518` 的定位快照，与 GitHub 原重构分支基线 `3f00fefa` 区分。不是完整功能完成清单，也不把未列到的代码当成可删垃圾。实际行号/符号和逐文件摘要见同目录 `af-framework-code-map.json`；主体调整后更新当前图，而不是把路径或方法名永久锁死。
+当前 R2 B1 仅迁移五个 V1 API 源文件的物理位置，保留字节、namespace、程序集与公开 ABI。实际行号/符号见同目录 `af-framework-code-map.json`；以下旧版本记录仍按其原提交解释，不用新路径改写历史证据。此图不是完整功能完成清单，也不把未列到的代码当成可删垃圾。
+
+| 当前责任 | 物理位置 | 对应代码图锚点 |
+|---|---|---|
+| 纯公开契约 | `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs` | `public.ids` |
+| 同 DLL 公开门面与 Native 客户端 | `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs` | `public.api`、`public.dialogue.client`、`public.dialogue.operation` |
+| 内部状态到 V1 的投影 | `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs` | `api.snapshot.projection`、`public.dialogue.projection` |
+
+## 以下为原源码版本的历史定位快照
+
+原图是源码 `86805518` 相对于 GitHub 基线 `3f00fefa` 的记录。它不覆盖当前代码图绑定的提交。
 
 当前已包含独立素材索引、Campaign共享预算、稳定队列排序和完整raw摘要写入组件；封存Daily/Major尾部实际消费排序组件。旧索引partial/嵌套预算类及封存原子排序路径已替换；仍被同步调用的Sanitize保留，不误删。主体家族本次为可靠性增加净化边界与状态，不能用这一步宣称大类整体已拆薄。B1深来源/原子净化与真实验收未完成。
 
