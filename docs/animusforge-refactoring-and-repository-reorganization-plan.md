@@ -12,6 +12,14 @@
 
 首轮不写生产、测试、资源、索引或共享产物；不读玩家文本，不移动/删除/停跟踪文件，不操作游戏/存档/外仓。后续源码实施须先明确包边界与相关门禁；G0.7 及各 HOLD 未自动解除。总控独占后续索引/提交/集成构建，本分支仍禁止推送/发布。J02 尚未实施，LIVE/旧 SAVE/provider 仍 NOT-RUN。
 
+#### J02-Lifecycle 有限联合包执行意图（2026-09-17，PREPARE）
+
+用户本轮要求闭合后继续；本包仅拆清现有目录生命周期 owner，不启动全 J02 或 J03/J05/J08。基础源码 `41a12bbb` 的 `Refactor/Modules/ModuleFrameworkRuntime.cs:14-17,19-61,74-109` 四状态字段及 Initialize/Shutdown/CaptureSnapshot 实现转入 `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs`；原 Runtime 保留同签名静态门面、`TeamModuleRegistration.CreateDirectory` 工厂选择与 `RegisterCampaign:65-71` 原样接线。`Refactor/Modules/{InternalModuleDirectory,ModuleFrameworkSnapshot}.cs` 原字节归位同目录，namespace/type/程序集/存档身份不改。目录上限、锁覆盖、Ready/Degraded 重入、Stopped 保留目录、冻结快照与失败码不变；不新增 Host/反射/扫描/队列。Initialize 为加载频率、Shutdown 为卸载频率、Snapshot 为显式查询，非 tick 热路径。
+
+Sol C 白名单：上述生产文件；`tools/InternalModuleDirectoryTests/InternalModuleDirectoryTests.csproj`；`tools/ModuleFrameworkApiTests/{run.py,source_boundary.py,SnapshotBoundaryChecks.cs}`；`tools/CampaignCompositionTests/run.py`；`tools/NativeModuleSubmissionTests/run.py`。测试先于提取补齐重入/工厂失败/停止转发反例；保留原源码逆变换链，不刷新 hash 掩盖漂移。总控独占相关现存 README/内部指南、代码地图/范围图/owner matrix/台账/HANDOFF 与集成验证。固定 `.generated` 和共享 bin/obj/Stage 串行；新证据根 `artifacts/workspace-j02-directory-lifecycle/`，不重置旧 J01 证据，不打包/部署/上传。路径移动仅以上两源码，非目录批量搬迁。
+
+准入/退出：实际本地依赖与无敏感内容变更闭合后实施；迁前/迁后源码 inverse、完整 Compile/资源集合、目录/API/Composition/Native 正常及编译成功后指定变异、双 API+Bootstrap 原 Stage 验证。资料/缓存/许可仍隔离 HOLD，局部源码通过不记全仓 G0.7 CLOSED；LIVE/旧 SAVE/provider 保持 NOT-RUN。检查点 `67971c97`；失败保留证据并定向逆补丁，不 reset 或删除输出。
+
 ## 当前调度：交接新总控，J01 已完成 / 下一波未实施
 
 用户最新要求先交接再创建新总控任务，采用 3 个 Sol 实施工作包 + 1 个独立核验代理、Astra 统一规划整合；详见[交接文件](handoffs/2026-09-17-j01-parallel-controller-handoff.md)。本次 intent 仅该交接及两入口链接，不改生产/测试/构建，不在旧任务续包。并行只能用于依赖满足且文件不重叠的包；Git 索引/提交/共享输出归总控独占。原 G0.7 及各类 HOLD 保留，新任务先用有界核验给出门禁事实和可执行波次，不将 J02–J17 路线当直接批量搬迁许可。下方 J01_OFFLINE_VERIFIED 结论保持；新任务接管不是历史工作已完成或高风险授权的替代证据。
