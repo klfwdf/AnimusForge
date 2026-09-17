@@ -23,7 +23,7 @@ class ExtractionTests(unittest.TestCase):
         shout = run.ex.source("ShoutBehavior.cs", None)
         self.assertIn(self.blocks["WORK_ITEM"], shout)
         self.assertIn("Refactor/Adapters/LegacyActionTagParser.cs", run.LINKS)
-        self.assertIn("LlmVisibleReplyNormalizer.cs", run.LINKS)
+        self.assertIn("src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs", run.LINKS)
         self.assertIn("CourierVisibleLetterSanitizer.cs", run.LINKS)
 
     def test_newtonsoft_dependency_missing_fails_closed(self):
