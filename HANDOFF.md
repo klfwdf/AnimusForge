@@ -10,7 +10,7 @@
 
 > **J01c/J01d ACTIVE（2026-09-17）：** Astra 已独立验收 J01b；起点 `5611ad88`，只迁两份协议原文件与 Courier/overlay 的已列路径，运行迁后聚焦/完整离线门禁。地图/owner 文档留 J01e，Stage 私密不上网；LIVE、旧 SAVE、provider 网络仍 NOT-RUN。
 
-> **J01c/J01d STOPPED（迁前来源）：** overlay `build_file_set()` 因仓库缺失且未跟踪的 `AnimusForge/CustomPrompts/CustomPolicyEvaluatorPrompt.json` 抛 `FileNotFoundError`；源码未移动、Stage 未运行、索引未写，不能把该门禁标通过。仅留空的 `artifacts/workspace-j01-llm-protocol/after/`；等待明确处置，不自行跳过/补资产。
+> **J01c_BLOCKED / J01b_EXTRACTED_VERIFIED / J01_OFFLINE_NOT_COMPLETE（2026-09-17，取代上方 ACTIVE/STOPPED 初报）。** 真实 `build_file_set()` 退出 `1`，日志与退出码：`artifacts/workspace-j01-llm-protocol/after/overlay-build-file-set-before.{log,json}`。既有 overlay `runtime_assets` 三旧路径需对齐已跟踪 Policy 资源：`AnimusForge/CustomPrompts/CustomPolicyEvaluatorPrompt.json` → `AnimusForge/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json`；`AnimusForge/CustomPrompts/NpcRulerPolicyPrompt.json` → `AnimusForge/CustomPrompts/Policy/NpcRulerPolicyPrompt.json`；`CustomPrompts/CustomPolicyEvaluatorPrompt.json` → 同一 Policy/CustomPolicyEvaluatorPrompt 候选且无独立 tracked 根文件，去重/意图待核。这是路径清单陈旧，不是用户资产丢失。J3 当前只准改 `host_files` Compat 路径，未授权修 `runtime_assets` 或豁免真实 `build_file_set()`；需另行精确扩 J3 后再验证。两协议源未迁移/哈希未变，未跑 Stage；迁移索引未写，仅本阻断回执写入文档索引并提交。
 
 
 **代码及详细HANDOFF已推送到专用重构分支，远端已核对`6538cc36`；本发布说明为后续文档追加，生产源码仍6e419f6d。**
