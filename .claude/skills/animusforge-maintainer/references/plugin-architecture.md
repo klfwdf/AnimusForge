@@ -1,203 +1,44 @@
-# AF foundation, modules and bridges
+# AF 架构：运行现状、职责边界与独立目标
 
-This is AF's DSH-inspired plugin architecture adapted to Bannerlord/C# constraints.
+## 1. 已落地的运行约束
 
-## Adopted ideas
+AF 共用一套源码，分别构建 1.3.x / 1.4.x 两个 `AnimusForge.dll`。一个 `Modules/AnimusForge` 模块由 Bootstrap 选择唯一实现，不能双载或恢复双模块发布。命名空间、程序集、Saveable 类型、SyncData 键及资源身份不随目录整理改变。构建细节见[兼容性](bannerlord-compatibility.md)。
 
-From DSH/Cordis, AF adopts:
+检查当前源码和真实装配点后才能声称某能力存在；本文件不是已实现类名或 API 清单。
 
-- behavior contributes through modules rather than direct foundation edits;
-- service/capability Definition, Provider and Consumer roles;
-- declared required/optional dependencies instead of scan/load order;
-- stable module identity, immutable package/build version, and distinct runtime generation;
-- observable inventory and health/failure state;
-- profile/bundle-like static compositions;
-- explicit provider/default resolution;
-- typed services for calls and typed events for observations;
-- lifecycle-owned reversible registrations where the host can actually reverse them;
-- generated dependency/capability/owner/profile catalogs and CI gates.
+## 2. 职责划分原则
 
-AF does not adopt:
-
-- arbitrary JS/C# source execution in the game;
-- network-downloaded runtime DLLs;
-- an assumption that every contribution can be hot-reloaded/unloaded;
-- browser Host/Client topology as a substitute for Bannerlord's real runtime domains;
-- DSH's package granularity as a target assembly count.
-
-## Foundation boundary
-
-Foundation owns platform safety and composition:
-
-```text
-AF.Contracts
-AF.ModuleRegistry
-AF.Settings
-AF.Diagnostics
-AF.Scheduler
-AF.Persistence facade
-AF.GameAdapter ports
-SafeMode/profile resolution
-```
-
-Foundation does not own gameplay rules, module-private prompts/action tags/save models/UI, or pair-specific integration.
-
-An abstraction belongs in `AF.Contracts` only when current independent consumers need a stable seam. A hypothetical future use is not enough.
-
-## Manifest
-
-Each module/bridge requires a validated manifest resembling:
-
-```yaml
-id: af.module.example
-kind: module
-version: 1.0.0
-contractVersion: 1
-entryType: AnimusForge.Example.ExampleModule
-owner:
-  team: example
-  maintainers: [account]
-profiles: [single-player, developer]
-requiredModules:
-  - id: af.foundation.runtime
-    version: ">=1.0.0 <2.0.0"
-optionalModules: []
-requiresCapabilities: [game-state.read]
-providesCapabilities: [example.read]
-persistence:
-  namespace: example
-  schemaVersion: 1
-lifecycle:
-  activation: save-load-boundary
-  harmonyPatches: false
-  runtimeUnload: unsupported
-compatibility:
-  bannerlord: ["1.3", "1.4"]
-```
-
-Validate before entry-point invocation:
-
-- unique, stable ID and persistence namespace;
-- version/contract/version-range syntax;
-- owner and maintainers;
-- required/optional module graph and cycles;
-- capability provider availability and version compatibility;
-- profile membership and conflicts;
-- Bannerlord API support;
-- lifecycle claims versus declared Harmony/save/UI/tick effects;
-- DLL/content closure in the staged package.
-
-## Capability seam
-
-| Role | Contract |
-| --- | --- |
-| Definition | Stable interface, DTO and event in `AF.Contracts`; no private TaleWorlds object or module type. |
-| Provider | Module/foundation implementation registered under one capability ID/version. |
-| Consumer | Declares capability in manifest and resolves it through `ModuleContext`; never imports provider implementation. |
-| Bridge | Consumer of participating modules' public capabilities; owner of cross-module behavior/state. |
-
-Calls/queries use services. Notifications use typed events. Decisions that can be intercepted require an explicit arbitration contract defining order, short-circuiting, failure and ownership; do not create a generic middleware chain by default.
-
-## Internal ports, external API and transitional adapters
-
-Same-DLL collaboration may use typed `internal` ports; independent sub-MODs use a separately versioned public contract. “Public capability” means the provider's supported cross-owner surface, not that every internal interface must become C# `public`. Keep live game types in explicit main-thread adapters; do not expose them through background snapshots or the external API.
-
-A small composition root and temporary adapter may reference an existing implementation to preserve behavior. Keep that knowledge at the adapter/composition boundary, record the remaining direct callers, and do not spread it back through the shared pipeline. A thin adapter is not automatically a jointly owned gameplay Bridge. New cross-domain behavior still requires the actual co-owner/capability/state/composition gates.
-
-A read-only external API is a valid limited release when unsupported submission/write/registration capabilities report that fact explicitly. It does not complete a planned request/action API or prove external MOD loading and binary compatibility. Internal and external callers must ultimately use the same authoritative execution/fact owners, not a second shortened pipeline.
-
-## Catalog readiness is not module-host readiness
-
-Check these layers separately:
-
-| Layer | Required evidence |
-| --- | --- |
-| Directory/registry | Unique declarations, dependency/version/cycle checks and truthful query results. |
-| Adapter wiring | Actual callers reach typed providers with preserved arguments/results and explicit legacy coverage. |
-| Runtime ModuleHost | Real module activation, owned registrations/tasks/resources, stop or restart policy, partial-start cleanup, failure reporting and dependency propagation. |
-| Composition | Failure/absence/disablement of A leaves unrelated B usable; profiles and save data remain valid. |
-
-`Ready` may mean only adapter construction if documented that narrowly. Do not infer runtime health from `provider != null`, a declaration existing, an offline fixture passing or a manually assigned state. Likewise, a registry's dependency algorithm is real progress, but unused production dependency declarations do not prove real profile/module closure.
-
-A shutdown that only changes a status string is not resource disposal. A directory's `Failed` state is not fault isolation unless actual failures update that state, block affected dependents and allow unrelated contributions to continue. Review real registration/Tick/dispatch call paths, not just status enums. Preserve existing behavior during a scoped adapter slice, but leave missing host guarantees explicitly unfinished.
-
-## Lifecycle states
-
-```text
-Discovered → Disabled | Blocked | Starting → Active | Degraded | Failed | RestartRequired
-```
-
-- `Disabled`: profile/settings intent.
-- `Blocked`: required dependency/capability missing, incompatible version, cycle or conflict.
-- `Degraded`: optional capability absent and an explicit fallback was selected.
-- `Failed`: load/runtime/health failure; dependents become blocked; unrelated modules continue.
-- `RestartRequired`: unsafe to apply the configuration in the current process/campaign.
-
-Activation classes:
-
-| Class | Examples | Rule |
+| 归属 | 应负责 | 不应吸收 |
 | --- | --- | --- |
-| `boot-only` | Bootstrap, global compatibility/save-type owners | Decide before process startup; change requires restart. |
-| `save-load-boundary` | CampaignBehavior/gameplay/persistent/Harmony modules | Decide before new/load campaign; change requires campaign exit/reload or restart. |
-| `runtime-toggle-safe` | Pure UI/diagnostic contributions with no patch/save/thread residue | May toggle only with disposer and composition test. |
+| Foundation | 跨领域的生命周期保护、调度机制、诊断等基础安全能力 | 对话策略、提示词、交易/政策/攻城业务 |
+| GameAdapter | TaleWorlds、Harmony、版本差异和所属线程上的游戏接入 | 领域决策、第二份业务状态 |
+| 主体领域 | Conversation、LLM、Prompt、Action、Memory 各自的算法与权威状态 | 仅因处于主 DLL 就归入 Foundation |
+| 制作组业务 | 政策、宴会、GCCZ 等领域规则、数值和业务存档 | 宿主框架暗中重写业务 |
+| 跨域协作 | 参与领域明确约定的组合行为和自有状态 | 复制某一方算法或绕过其权威入口 |
 
-A module start is transactional for reversible contributions. `ModuleHandle` owns service/event/UI/timer/task registrations. On failure it disposes what is safely reversible. It must not claim to reverse engine state it cannot restore.
+这些是逻辑边界，不是必须新增的目录、项目或 DLL。已有 owner 能完整承担的行为留在那里；有实际独立消费者才提炼共享契约。避免通用 service locator、无消费者接口和全量反射发现。
 
-## Inventory
+### 内部接口、公开 API 与适配器
 
-Expose at least:
+同 DLL 的制作组协作可使用 typed `internal` 接口；独立子 MOD 使用单独版本化的 `public` API。外部 DTO 不泄露游戏活对象、私有 Behavior、VM、原始存档字典或凭据。两者最终进入相同的权威执行和事实提交路径。
 
-```text
-ModuleId, kind, version, contractVersion
-owner/maintainers, profile membership, enabled intent
-required/optional modules and capabilities
-provided capabilities
-activation class and Bannerlord lines
-state, run generation, start time, health
-failure stage/message/trace ID
-persistence namespace/schema
-```
+API 的可用能力以当前实现为准；未支持操作明确返回不支持，不能假成功。破坏性公开变化需要新版本或迁移及旧消费者验证。
 
-Read the registry's live authoritative state; do not build a second stale cache without a clear reason.
+薄适配器可以在装配边界引用旧实现以保持行为，但应列明真实消费者及残余职责。它不自动成为正式 Bridge；只有跨域组合行为、参与 owner、状态归属和失败语义都明确时，才按[Bridge 工作包](module-and-bridge-workflow.md)验收。
 
-## Profiles
+## 3. 需要单独立项和实现的能力
 
-- `single-player`: foundation + supported normal modules/bridges.
-- `safe-mode`: foundation, GameAdapter, persistence and diagnostics; only explicit recovery modules.
-- `developer`: adds inventory, trace, contract checker and test hooks.
-- `server`: only explicitly server-safe components; do not infer current modules are compatible.
+通用模块生命周期 Host、运行 manifest、profile、SafeMode、动态能力注册和独立 DLL 是可选目标，不是普通内部抽取的先决条件。是否已有局部实现由源码决定；未实现部分明确标记，不要求填占位文件。
 
-Profiles are validated static compositions included in a release. They do not download or execute unknown plugins.
+若当前任务明确建设这些能力，分别完成真实验收：
 
-## SafeMode
+- manifest/依赖：存在实际读取者；ID、版本、required/optional 依赖、环和能力冲突决定真实装配，而非仅 fixture。
+- Host：真实启动/部分失败/停止路径拥有注册、任务、队列和资源；可逆部分被释放，不可逆效果明确要求重启。状态枚举变化不等于处置完成。
+- profile/SafeMode：实际组合能够运行；缺失、禁用或失败的可选业务不删除存档、不自动替换玩法。声明文件不等于故障隔离。
+- 独立 DLL：有独立发行、依赖或生命周期价值；验证双版本依赖、加载、ABI、程序集/存档身份和发布闭包。同 DLL 不是过渡失败。
 
-SafeMode must load enough foundation/persistence metadata to diagnose optional-module failures and protect saves. It must not:
+不承诺任意 DLL 热卸载，不下载未知 DLL 或执行生成的 C#。受 Harmony、CampaignBehavior、持久状态影响的变化按真实引擎边界启动或重启。
 
-- delete unknown module data;
-- pretend disabling a module preserves identical gameplay state;
-- auto-migrate a module's data without its migration owner;
-- silently activate replacement gameplay.
+## 如何判断完成
 
-## Provider and fallback resolution
-
-One owner resolves provider selection explicitly:
-
-```text
-configured compatible provider
-→ registered profile default
-→ explicit unavailable/degraded result
-```
-
-Record provider/fallback identity and reason in diagnostics. Consumers must not hide defaults inside execution methods.
-
-## Assembly granularity
-
-A logical module may begin as a project/namespace inside the existing implementation assembly. Split a physical DLL only when it has real independent ownership plus at least one of:
-
-- independent release/load;
-- dependency closure;
-- lifecycle/replacement;
-- permission/isolation;
-- focused tests/maintenance.
-
-Do not create dozens of tiny assemblies merely to mirror DSH packages.
+目录/注册表、真实消费者接线、运行生命周期、模块组合分别需要证据。`Ready`、provider 非空、地图/元数据通过只能证明其声明的那一层，不能代替游戏可调用、故障传播或旧档验收。

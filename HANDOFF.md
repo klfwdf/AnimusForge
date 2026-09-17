@@ -1,3 +1,11 @@
+# 当前接续：AF Skill 与配套文档重整
+
+唯一当前状态及验收证据见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#skill-restructure-20260918)。维护 Skill 0.2.0 的主源/仓库副本、框架协调与入口已对齐；两份工具回归各 11 tests / OK，三个 Skill 元数据校验通过。当前为 SKILL_VERIFIED，仅修改 Skill、文档、模板与校验工具；保持 1.3/1.4 双版本，产品源码和构建流程未改。
+
+产品最近验收仍是[J02 源码与离线完成](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)，不等于实机/旧档验收或 G0.7 完成。无推送、部署、打包、全局安装授权；本分支含本地私密历史，不得发布。
+
+## 以下为历史交接原文，不是当前执行或调度指令
+
 # 当前接续：完整 J02 源码与离线验收完成（2026-09-18）
 
 唯一当前状态为[台账 J02_OFFLINE_VERIFIED](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)，取代下方仅目录子包/ACTIVE历史。生产本地提交 B `82660997`、C `469e3712`、A `9d14a1eca2c25075975134605c24d48666ee123a`；没有推送、部署或打包。

@@ -1,3 +1,27 @@
+<a id="skill-restructure-20260918"></a>
+
+## 当前任务：AF Skill 与配套文档重整（2026-09-18，SKILL_VERIFIED）
+
+本节是唯一当前执行入口。用户已批准以 `D:/下载/af-skill/af-skill` 为主源重整维护规则，并对齐本仓库实际读取的维护 Skill、框架 Skill 与入口；不修改产品代码、工程配置、一键构建或 J01/J02 的历史结果。保留已落地的一套源码、1.3/1.4 双实现、单模块与 Bootstrap 唯一选择约束。
+
+本地起点 `aea89eb5`，空检查点 `56fc1205`；修改前六份既有 dirty 文档及相关 Skill 已保存至 `artifacts/af-skill-restructure-20260918/before/`，原差异见同目录 `preexisting.patch`。验收为结构/链接/YAML/模板、脚本语法、五类真实路由及失败反例、主源与仓库副本的一致性和源码未变。完成证据集中在本节与该私有本地产物目录，HANDOFF 只链接摘要。
+
+以下所有旧“当前/调度/执行意图”段落均为历史，不再发出操作指令；其中代理数量、模型分工、总控及核验安排不再适用，不由另一套人数规则替代。生产状态仍为下方 J02_OFFLINE_VERIFIED；J03 不自动启动，LIVE/旧 SAVE/provider 未验、G0.7 与许可/用户数据 HOLD 不变。本分支历史含本地私密记录，仍禁止推送/发布；本次不部署、打包或全局安装。
+
+### 本轮完成与验证
+
+- 主源与仓库维护副本更新为 0.2.0；主入口只作识别/约束/路由。架构区分双版本运行现状、逻辑职责和独立平台目标；工作包、仓库依赖、验证、台账与模板已统一。两份历史审查分别原字节保存到各自 `references/history/*.txt`，不再作为默认执行清单。仓库保留 framework coordination 定制；`agents/openai.yaml` 的发现策略未改。
+- 主源/仓库 27 个非入口共享文件按规范化文本一致，入口差异仅为仓库协调元数据与链接；四份历史快照与各自修改前原件 SHA 一致。当前入口与框架的 8 处 Markdown 链接/锚点通过；原 HANDOFF/台账全文仍作为历史后缀保留。
+- 主源与仓库各执行 `scripts/test-af-skill.py`：**11 tests / OK**（包含五类路由、身份拒绝、坏相对链接与锚点、错误版本/YAML/双版本模板、措辞替换、脚本语法、相对入口、安装 dry-run 与拒绝覆盖）。完整日志为 `artifacts/af-skill-restructure-20260918/{master,repository}-tests-verified.log`；fixture 均隔离本地，未实际安装。
+- 三个 Skill 的 `quick_validate.py` 均输出 `Skill is valid!`；`git diff --check` 通过。原校验器对新文档依赖九条固定英文措辞，迁移前回归记录为 6 failures，已由结构/解析/行为检查替代；没有删掉失败用例来通过。
+- 另一次直接 PowerShell 启动非登录 Git Bash 暴露 `dirname: command not found`，已把 Skill 脚本路径/大小写处理改成 Bash 内建；直接入口与回归复验成功。Skill 内 `.gitattributes` 仅固定 `*.sh eol=lf`，避免 Windows 检出破坏工具入口，不修改产品/全局 Git 配置。
+- 变更范围与 SHA 记录见本地产物 `audit.json`；产品 C#、工程、模块 XML、一键构建、资源和玩家数据未改。源码地图内容未变，不为说明更新重跑 185 项产品地图或游戏构建。实际宿主重新发现、实机、旧档、部署、ZIP、上传、全局安装均 NOT-RUN；这些不是本次 Skill 验收项。
+- 提交只包含干净文件和能独立应用于原索引的本轮 hunk。框架 SKILL、framework-coordination 与 repository-structure 三份文件和先前未提交修改重叠，已在工作树完成合并但不整份暂存；其余原有 dirty 内容也不混入提交。不得把单个提交误称为包含全部本地定制的可发布包。
+
+恢复时使用本轮修改前精确文件备份核对并生成定向逆补丁；不恢复整个目录、不覆盖后续作者改动、不改写历史。本任务规则与工具已完成，下一产品工作仍按新的明确请求选择，不自动启动 J03。
+
+## 历史执行与验收记录（保留原文）
+
 <a id="parallel-controller-handover"></a>
 
 <a id="j02-full-completion"></a>

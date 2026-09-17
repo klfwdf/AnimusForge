@@ -1,85 +1,32 @@
-# Claude Code and Codex compatibility
+# Skill 主源、仓库采用与宿主发现
 
-`af-skill/` is one shared source directory for two hosts. `SKILL.md` is the only instruction authority; both hosts discover skills from a directory containing that file and YAML frontmatter with the same `name`.
+## 主源与采用关系
 
-## Shared contract
+主源由本次用户明确指定，不内置某台机器的绝对路径。Skill 标识保持 `animusforge-maintainer`；`metadata.version` 是维护规则版本，不是 AF 产品/API/存档版本。
 
-| Item | Shared rule |
-| --- | --- |
-| Directory name | Source directory may be `af-skill`; installed directory is `animusforge-maintainer`, matching frontmatter `name`. |
-| Entrypoint | `SKILL.md` must start with valid YAML frontmatter. Keep `name` lowercase hyphen-case and quote descriptions containing punctuation. |
-| Discovery metadata | `name`, `description`, and the optional short `metadata` map must remain portable YAML. Do not add host-exclusive frontmatter fields without checking both hosts. |
-| Instruction semantics | `SKILL.md` and `references/` contain host-neutral Markdown instructions. Never assume a proprietary tool exists when a standard file/shell/Git check can decide the issue. |
-| Manual invocation | Use `$animusforge-maintainer` where the host supports skill invocation. A host may additionally offer a slash/UI invocation, but it is not part of the shared contract. |
-| Automatic selection | It is intentionally allowed only for positively identified AnimusForge work. This is a routing boundary, not permission to edit an ambiguous source copy. |
-| UI metadata | `agents/openai.yaml` is optional host UI metadata. It may improve Codex UI presentation; the skill remains valid if Claude Code ignores it. |
+本项目通过根 AGENTS 明确读取仓库内维护副本；单独修改外部主源不会自动更新该副本。同步时逐文件比较版本与内容，保留仓库定制协调说明和其他作者差异；有冲突先合并，不整目录覆盖。框架 Skill 仅补内部/外部边界，不复制整套维护规范。
 
-## Installation layouts
+`agents/openai.yaml` 是展示、调用提示和发现策略元数据，不是任务调度配置。保留当前 `allow_implicit_invocation: true`；宿主真实加载结果必须独立观察，文件校验通过不证明会话已经重新发现。
 
-The source is the explicitly selected directory containing this `SKILL.md`, not a fixed path on the author's machine. This repository keeps the maintained copy under `.claude/skills/animusforge-maintainer/`; its AGENTS routes Codex to that same copy and to the specialized framework skill when applicable. No duplicated full rule tree is required.
+## 校验
 
-For an explicitly authorized global installation, run the helper from that selected source or pass `--source`. Resolve the actual path first; do not infer a source or write target from another computer's drive/volume or an unreviewed ZIP. Project-local integration does not require running the installer.
-
-Install the source under the common skill identifier for each host:
-
-```text
-Claude Code: ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/animusforge-maintainer
-Codex:       ${CODEX_HOME:-$HOME/.codex}/skills/animusforge-maintainer
-```
-
-Use the maintained helper from the source directory:
+在选定主源或仓库副本中运行：
 
 ```bash
-./scripts/install-af-skill.sh --host both --mode symlink --dry-run
-./scripts/install-af-skill.sh --host both --mode symlink
+bash scripts/verify-af-skill.sh .
+python3 scripts/test-af-skill.py --skill .
 ```
 
-`symlink` is preferred so both hosts load the same source and future source changes remain synchronized. `copy` is available only when symlinks are unsuitable; copied installations must then be refreshed deliberately.
+需要 Bash、Python 3 和 PyYAML；缺少必要解析器明确报 NOT-RUN 并以非零退出，不安装依赖。可用时另运行宿主的 `quick_validate.py`。验证当前 Markdown/YAML、模板、路由和失败反例；`references/history/*.txt` 是原文档快照，不按当前指令或当前相对链接解释。
 
-The helper:
+## 可选安装（另需明确授权）
 
-- validates the source before installation;
-- refuses to overwrite a real directory, an unrelated link, or another skill installation;
-- can target one host with `--host claude` or `--host codex`;
-- never touches an AF worktree, source, Git index, build, asset, save, or package;
-- requires a new turn/session after installation before discovery is tested.
-
-Do not use the helper to replace a pre-existing installation without first inspecting that installation and explicitly deciding its disposition.
-
-## Validation in both hosts
-
-Run the portable source validator first:
+保留现有 helper 接口与拒绝覆盖行为，从所选源运行；先 dry-run：
 
 ```bash
-./scripts/verify-af-skill.sh
+bash scripts/install-af-skill.sh --host codex --mode copy --source . --dry-run
 ```
 
-When Codex tooling is available, additionally run Codex's structural validator:
+helper 支持 `claude|codex|both`、`symlink|copy`，默认 source 为脚本父目录；目的位置由 `CLAUDE_CONFIG_DIR` / `CODEX_HOME` 或各自 HOME 默认确定。dry-run 仍会拒绝已有非同源链接目的地，不清理旧安装。实际安装不是 Skill 编辑的隐含步骤；不修改宿主全局配置或覆盖其他副本。
 
-```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" .
-```
-
-After installation and a new host turn/session, test both hosts with:
-
-1. a verified AnimusForge task, such as a Bootstrap 1.3/1.4 packaging or courier action pipeline request;
-2. a generic Bannerlord task, which must not automatically select the AF skill;
-3. a Minecraft Forge task, which must not select the AF skill;
-4. an explicit `$animusforge-maintainer` invocation on a known AF copy, which must still require canonical-worktree confirmation before edits.
-
-Record actual host/version/discovery observations in the AF execution ledger. Do not claim host discovery passed merely because source validation passed.
-
-## Host-specific boundaries
-
-- **Claude Code:** this source is compatible with standard `SKILL.md` discovery. Whether the current Claude Code environment scans global skills, project skills, or a plugin-provided directory depends on that installation; verify after linking.
-- **Codex:** Codex discovers user skills from `${CODEX_HOME:-$HOME/.codex}/skills`. Its `agents/openai.yaml` metadata and `quick_validate.py` are supported aids, not a separate instruction source.
-- Do not put Claude-specific slash-command, plugin-manifest, hook, or model-routing syntax into portable frontmatter.
-- Do not put Codex-specific configuration in `SKILL.md` that would alter AF maintenance semantics in Claude Code.
-
-## Updating the shared source
-
-1. Edit only the selected canonical skill source after the current task permits the change; the folder may be named `animusforge-maintainer` rather than `af-skill`. Preserve the input ZIP separately and record deliberate local adaptations.
-2. Run `verify-af-skill.sh` and, when available, Codex `quick_validate.py`.
-3. If installed via symlink, verify both destinations still resolve to the source.
-4. If installed via copy, refresh each copied destination through an explicit, reviewed update; do not silently overwrite it.
-5. Record changed paths, validators, host discovery results or `NOT-RUN` reasons, and rollback in the execution ledger.
+安装后按实际宿主环境检查发现与作用域：AF 请求、非 AF Bannerlord、Minecraft 和显式调用分别验证。未做宿主发现测试记 NOT-RUN，不由静态校验推断兼容成功。

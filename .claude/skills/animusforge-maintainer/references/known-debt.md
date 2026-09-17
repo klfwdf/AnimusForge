@@ -1,106 +1,17 @@
-# AF known debt and strangler order
+# AF 技术债识别方法
 
-This reference summarizes durable debt categories from the 2026-08-29 read-only audit. Re-verify counts and paths in the canonical worktree before using them as current facts.
+只在当前任务涉及债务盘点或具体风险时使用。旧文件大小、旧冻结名单与固定拆分顺序不作为日常开发指令。
 
-## Audit snapshot
+## 从当前实现定位问题
 
-Approximate maintained-code hotspots in the audited remote revision:
+沿真实调用链检查算法/状态是否混合、多个 owner 是否竞争、热路径是否无界、反射/版本适配是否散落、错误是否静默丢失、后台是否读取游戏活对象、存档身份是否耦合、三渠道是否出现私有捷径。行数只是调查线索，不能证明缺陷或决定施工顺序。
 
-| File | Lines | Mixed responsibilities |
-| --- | ---: | --- |
-| `MyBehavior.cs` | 57,864 | Events, memory, save, prompt/context, import/export, LLM support. |
-| `ShoutBehavior.cs` | 38,156 | Three-channel runtime, scene/native UI, postprocess, TTS, threading. |
-| `RewardSystemBehavior.cs` | 22,091 | Items/gold/debt/join/asset/action tags/reflection. |
-| `WorldDiplomacyBehavior.cs` | 18,967 | Diplomacy state, LLM, history compression, legality, UI, execution. |
-| `SiegeAiInterventionBehavior.cs` | 16,958 | Siege runtime, AI, reflection, action and persistence. |
-| `KnowledgeLibraryBehavior.cs` | 13,682 | Retrieval, storage/context and HTTP/LLM. |
-| `CustomPolicyBehavior.cs` | 12,688 | Policy generation, lifecycle, effects, persistence and UI. |
-| `SceneTauntBehavior.cs` | 10,228 | Peace-scene combat/taunt/damage/Mission/conversation blocking. |
-| `WorldMapPartyCommandBehavior.cs` | 9,993 | Tags, commands, task state, execution and memory. |
-| `CourierDeliveryBehavior.cs` | 9,855 | Courier state machine, parties, LLM, UI and persistence. |
+拒绝假完成：搬大类不等于模块化，目录 Ready 不等于运行生命周期，回调数量不等于工作预算，写回主线程不证明早先读取安全，延期或移交不算已实现。
 
-Other systemic debt:
+## 记录和排序
 
-- root-level production sources and mixed repository planes;
-- original/decompiled game references, DLLs, logs, temporary caches, tool distributions and archives tracked together;
-- broad static singleton/global state and many public static APIs;
-- reflection/Harmony/version adaptation scattered through business code;
-- numerous broad/silent exception catches;
-- weak automated CI/review/release evidence relative to project size;
-- source-text smoke tests standing in for behavioral tests;
-- three-channel consistency maintained partly by documentation/manual discipline;
-- oversized shared postprocess signatures with many boolean rule flags;
-- save logic and business state tightly coupled in Behavior classes.
+记录当前源码修订/符号、可复现影响或明确未测风险、真实 owner、依赖、延后原因和关闭证据。按当前任务、真实依赖与风险选包，不把整个旧大类冻结，也不要求先完成插件平台再抽取算法。进度只放项目主台账。
 
-## Freeze rule
+## 历史原件
 
-Until ownership and strangler paths are established, avoid adding new business behavior directly to:
-
-```text
-MyBehavior.cs
-ShoutBehavior.cs
-RewardSystemBehavior.cs
-AIConfigHandler.cs
-DuelSettings.cs
-```
-
-Allowed changes are focused bug/compatibility fixes, tests, diagnostics, facades and implementation extraction. Record justified exceptions in the ledger.
-
-## Strangler order
-
-1. Repository identity/cleanup/reproducibility gate.
-2. Module catalog and owner map.
-3. `AF.Contracts`, manifest/profile/registry and no-op composition tests.
-4. Foundation/GameAdapter/SafeMode and dual-version package closure.
-5. `AF.Module.Conversation` shared interaction seam.
-6. Domain manifests before code movement.
-7. Low-risk action handlers (`GIVE_GOLD`, `GIVE_ITEM`, debt).
-8. `AF.Module.Memory` with legacy save facade.
-9. Courier/RewardsDebt/WorldMap/Duel/Policy/Diplomacy/Siege one owner at a time.
-10. Co-owned bridges after participating public capabilities stabilize.
-11. Patch/tick registration and God Object facade cleanup.
-12. Root source removal and optional Git-history maintenance.
-
-## Common false refactors
-
-Avoid:
-
-- moving a 50k-line class unchanged into `modules/` and calling it modular;
-- creating `AF.Contracts` that exports every existing private type;
-- putting all behavior into Foundation services;
-- letting modules discover one another via reflection/static singleton;
-- adding bridge behavior as `if (OtherModule.Instance != null)`;
-- splitting every helper into a DLL without independent ownership/lifecycle value;
-- renaming save types/keys during directory cleanup;
-- replacing visible bool parameters with an untyped dictionary/service locator;
-- claiming failure isolation while module exceptions still escape application tick or save load;
-- marking repository cleanup complete while old artifacts remain required for builds.
-
-## Original-plan review follow-ups
-
-Use [refactor-review-checklist.md](refactor-review-checklist.md) for the revision-bound 2026-09-12 review and its acceptance checklist. It separates confirmed budget/status gaps from explicitly unfinished module-host/snapshot work and recorded scope/HOLD decisions. Recheck every item against the current source; it is not a permanent assertion about later revisions or authority to resume implementation.
-
-Additional false-completion patterns to reject:
-
-- equating AF core/body with Foundation and silently absorbing domain policy;
-- calling adapter construction/catalog `Ready` complete module lifecycle or fault isolation;
-- treating a scoped, same-DLL thin adapter as an automatically approved gameplay Bridge;
-- limiting callback count while an individual callback drains an entire backlog;
-- treating main-thread writes as proof all earlier reads/inputs are detached;
-- marking removed/deferred scope as implemented, or keeping conflicting “current” status entries;
-- treating a read-only API or a source-map/metadata check as an end-to-end extension acceptance.
-
-## Technical-debt record format
-
-For durable debt record:
-
-```text
-Owner module/foundation/bridge
-Current evidence and impact
-Why it is deferred
-Safe extension/avoidance rule
-Prerequisite task/decision
-Validation needed before removal
-```
-
-Put live scheduling/status in the execution ledger. Put module-specific limitations in its README. Put irreversible decisions in ADRs.
+[0.1.1 技术债原文](history/known-debt-0.1.1.txt)保留 2026-08-29 快照及当时建议；其中顺序、数量、冻结和待办均不再作为执行规则。与[复核方法](refactor-review-checklist.md)配合，重查新修订后才能形成当前结论。

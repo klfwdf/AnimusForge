@@ -18,7 +18,7 @@ Directory or class cleanup is not permission to rename these. Keep legacy Behavi
 
 ## Per-module persistence ownership
 
-Every module/bridge manifest declares a unique namespace and schema version:
+When a module/bridge actually owns persistent data, document its existing identity, keys and schema. A new namespace is not required for a stateless component or a behavior-preserving extraction; never rename legacy identities merely to match a template. If a runtime manifest is consumed, it may describe persistence as follows:
 
 ```yaml
 persistence:
@@ -40,11 +40,11 @@ Representative fixture/saves
 Rollback/disable behavior
 ```
 
-Foundation/Persistence supplies namespace registration, conflict detection, chunking, migration catalog, diagnostics and size guardrails. It does not interpret or discard module business data.
+Shared Persistence may supply namespace checks, chunking, migration and diagnostics where implemented; verify actual providers rather than requiring a new registry for every extraction. It does not interpret or discard module business data.
 
-Bridges use their own namespace. They never write into either participating module's private save keys.
+New persistent Bridge state has its own owner/namespace; existing serialized identities require compatible migration rather than cosmetic renaming. They never write into either participating module's private save keys.
 
-## SafeMode and missing modules
+## Missing modules and SafeMode (when implemented)
 
 When a module is disabled/missing/failed:
 
@@ -105,7 +105,7 @@ Module content belongs under that module's content mapping. A module cannot over
 - Module settings have an owned schema/namespace and immutable request snapshot.
 - Reload affects future operations; in-flight operations keep their starting snapshot.
 - Credential references/values never enter save files, module manifests, normal logs or public fixtures.
-- Move HTTP clients/provider config out of `DuelSettings` into the LLM capability/provider layer without losing MCM migration behavior.
+- When extracting provider configuration, keep it with its actual LLM owner and preserve MCM migration behavior; this is not an automatic task to rewrite `DuelSettings`.
 
 ## Cleanup and deployment
 
