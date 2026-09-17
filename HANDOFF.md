@@ -4,6 +4,10 @@
 
 > **J01a 最新回执（2026-09-17）：BASELINE_VERIFIED，J01b NOT_STARTED。** 本段取代上行 ACTIVE 及下方 `EXECUTION_NOT_AUTHORIZED` 批准前快照；完整命令/退出码/范围/已知原缺陷见[台账 J01a 基线回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01a-基线回执2026-09-17baseline_verifiedj01b-not_started)。意图提交 `1d7d2cbf`，测试切片 `26444eb0`；固定/当前 before 各 13 PASS、7 变异运行拒绝，Courier 39 PASS/8 变异及单测 8 OK，LegacyShout 3 OK；fresh Debug/Release 双 API+Bootstrap+Stage 及 API/Composition/Native 原门禁通过。三生产文件未改，13 接线仍在旧 owner；迁后、LIVE、旧 SAVE、provider 网络未执行。证据根 `artifacts/workspace-j01-llm-protocol/before/`，Stage 含私密副本不可上传。等待独立验收及 J01b 单独调度，不自动续迁。
 
+> **J01b ACTIVE（2026-09-17）：** J01a 已经 Astra 独立验收；沿用 `1d7d2cbf` 检查点，仅按台账 J2 将 8 方法/4 常量从 `ShoutNetwork.cs` 提取至新 `PrimaryChatMessagePolicy.cs` 并重接 13 调用。两个协议文件暂留根，不动 tests/csproj/overlay/地图；真实 after/extracted 与 7 变异/inverse 合格后提交，等待独立验收再迁移。
+
+> **J01b 最新：EXTRACTION_VERIFIED / J01c NOT_STARTED（源码 `156e6836`）。** 新 owner `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs:9-235` 拥有 4 常量和 8 原方法（逐项坐标见[台账 J01b 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01b-extraction)）；`ShoutNetwork.cs:260,381,408,424,450,670,751,793,800,911,1018,1253,1256` 共 13 接线，旧普通/流传输、配置/统计/姓名责任未提取。实际 after/extracted 13 PASS、7 变异指定拒绝、12 块原文与旧宿主整文件 inverse 通过；两协议文件仍在根，迁移/Stage/LIVE/旧 SAVE/provider 网络未跑。仅此切片完成，待 Astra 独立验收后另派 J01c。
+
 
 **代码及详细HANDOFF已推送到专用重构分支，远端已核对`6538cc36`；本发布说明为后续文档追加，生产源码仍6e419f6d。**
 
