@@ -106,10 +106,9 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
         add_file(relative, "host_integration")
 
     runtime_assets = [
-        "AnimusForge/CustomPrompts/CustomPolicyEvaluatorPrompt.json",
-        "AnimusForge/CustomPrompts/NpcRulerPolicyPrompt.json",
+        "AnimusForge/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+        "AnimusForge/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
         "AnimusForge/CustomPrompts/WorldDiplomacyPrompt.json",
-        "CustomPrompts/CustomPolicyEvaluatorPrompt.json",
         "AnimusForge/ModuleData/PreprocessPrompts.json",
         "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
         "AnimusForge/ModuleData/ActionPostprocessPrompts.json",
