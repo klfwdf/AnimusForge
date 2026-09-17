@@ -15,7 +15,7 @@ def old(path):
 def restore_runtime(current):
     prior=old('Refactor/Modules/ModuleFrameworkRuntime.cs')
     mapper=declaration(prior,'private static AfModuleCapabilityState MapStatus(')
-    projection=(ROOT/'Api/Internal/AfV1SnapshotProjection.cs').read_text(encoding='utf-8-sig')
+    projection=(ROOT/'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs').read_text(encoding='utf-8-sig')
     assert declaration(projection,'private static AfModuleCapabilityState MapStatus(')==mapper, 'V1 capability mapping changed'
     original=declaration(prior,'internal static AfFrameworkSnapshot GetSnapshot(')
     capture=declaration(current,'internal static ModuleFrameworkSnapshot CaptureSnapshot()')
@@ -29,7 +29,7 @@ def restore_runtime(current):
     assert restored==original, 'Snapshot capture differs beyond typed boundary extraction'
     expected=prior.replace(original,capture).replace('\n    '+mapper+'\n','').replace('using AnimusForge.Api.V1;\n','').replace('AfFrameworkState','ModuleFrameworkLifecycleState')
     assert current==expected, 'Unreviewed root lifecycle/registration delta'
-    api=(ROOT/'Api/V1/AfApi.cs').read_text(encoding='utf-8-sig')
+    api=(ROOT/'src/modules/AF.Module.PublicApi/V1/AfApi.cs').read_text(encoding='utf-8-sig')
     api_spec=importlib.util.spec_from_file_location('native_api_inverse',ROOT/'tools/NativeModuleSubmissionTests/source_boundary.py')
     api_inverse=importlib.util.module_from_spec(api_spec);api_spec.loader.exec_module(api_inverse)
     api=api_inverse.restore('Api/V1/AfApi.cs',api)

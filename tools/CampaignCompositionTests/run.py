@@ -17,8 +17,8 @@ INIT = 'protected override void InitializeGameStarter('
 SOURCES = ['Refactor/Modules/CampaignComposition.cs', 'Refactor/Modules/CampaignModelComposition.cs',
            'Refactor/Modules/ModuleFrameworkRuntime.cs', 'Refactor/Modules/TeamModuleRegistration.cs',
            'Refactor/Modules/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
-           'Api/V1/AfApi.cs', 'Api/V1/AfApiContracts.cs',
-           'Refactor/Modules/ModuleFrameworkSnapshot.cs', 'Api/Internal/AfV1SnapshotProjection.cs']
+           'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
+           'Refactor/Modules/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs']
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)

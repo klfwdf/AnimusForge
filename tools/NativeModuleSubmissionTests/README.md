@@ -54,9 +54,9 @@ python -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
 
 | 源码位置（一基） | 符号 | 责任 |
 |---|---|---|
-| `Api/V1/AfApi.cs:55` | `public static AfDialogueClient CreateDialogueClient()` | 公共V1创建入口；旧查询/身份不变 |
-| `Api/V1/AfDialogueClient.cs:53` | `public sealed class AfDialogueClient` | 独立子MOD namespace/submit/取消/结果DTO |
-| `Api/Internal/AfV1DialogueProjection.cs:7` | `internal static class AfV1DialogueProjection` | 显式外部协议投影，不绑定内部enum数值 |
+| `src/modules/AF.Module.PublicApi/V1/AfApi.cs:55` | `public static AfDialogueClient CreateDialogueClient()` | 公共V1创建入口；旧查询/身份不变 |
+| `src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs:53` | `public sealed class AfDialogueClient` | 独立子MOD namespace/submit/取消/结果DTO |
+| `src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs:7` | `internal static class AfV1DialogueProjection` | 显式外部协议投影，不绑定内部enum数值 |
 | `Refactor/Modules/CoreDialogueClient.cs:10` | `internal sealed class CoreDialogueClient` | 每client有界128去重、不同payload拒绝、不静默淘汰 |
 | `Refactor/Modules/CoreDialogueOperation.cs:10` | `internal sealed class CoreDialogueOperation` | 单次claim、开始前取消、回执优先 |
 | `Refactor/Modules/CoreDialogueServices.cs:7` | `internal static class CoreDialogueServices` | 同DLL内部服务复用真实Native owner |

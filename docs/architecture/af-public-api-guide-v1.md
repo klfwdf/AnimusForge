@@ -4,6 +4,8 @@
 
 **目录查询与 Native 提交/结果/开始前取消已接线；Scene / Courier 仍未开放。三渠道全部开放仍是整体收尾必交，不因 Native 完成而缩小任务。**
 
+当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。仅目录变更，`AnimusForge.Api.V1` namespace 与外部 ABI 不变。
+
 | 能力 | 状态 | 实际含义 |
 |---|---|---|
 | `CatalogRead` | Available | 任意线程查询框架装配、只读模块接缝目录 |
