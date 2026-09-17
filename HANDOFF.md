@@ -1,3 +1,7 @@
+# 新任务交接：三实施包 + 独立核验（2026-09-17）
+
+用户要求本任务写交接后创建新总控任务；详见[并行总控交接](docs/handoffs/2026-09-17-j01-parallel-controller-handoff.md)与[唯一台账的交接入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#parallel-controller-handover)。新任务采用 Astra 总控、最多 3 个 Sol 实施包 + 1 个 Sol 核验代理；总控独占 Git 索引/集成构建。J01 已离线完成，本任务不再实施；新任务先核门禁与冲突，不能据此跳过 G0/HOLD、推送或部署。以下 J01 停止回执仍是已完成范围，不表示 J02 已开工。
+
 # 当前接续：J01 离线验收完成并停止；J02 未开始
 
 - 唯一当前状态：[台账 J01 当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j01-current-status)；`J01_OFFLINE_VERIFIED / STOPPED_AFTER_J01 / J02_NOT_STARTED`，取代下方 BLOCKED/ACTIVE 过程记录。用户明确授权修 overlay 三条陈旧 `runtime_assets` 清单并保留 J01 后续有界许可；解阻提交 `0e6be296` 仅两 Policy 路径替换/一废弃旧根项删除，真实 `build_file_set()` 迁前/迁后均 297 文件/类别且按单一 Compat 路径映射全等。未调用 `create_package()`、写 dist 或动提示词/loader。
