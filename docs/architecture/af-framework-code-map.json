@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "6e419f6d17859fc49fef538e8a2ea5acf922deb3",
+  "sourceRevision": "64eaa7a819fcb5746a9b7ceda1e93a5040a8f0d8",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -83,7 +83,7 @@
     },
     {
       "id": "public.api",
-      "path": "Api/V1/AfApi.cs",
+      "path": "src/modules/AF.Module.PublicApi/V1/AfApi.cs",
       "start": 14,
       "end": 17,
       "symbol": "public static class AfApi",
@@ -94,7 +94,7 @@
     },
     {
       "id": "public.ids",
-      "path": "Api/V1/AfApiContracts.cs",
+      "path": "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
       "start": 35,
       "end": 38,
       "symbol": "public static class AfCapabilityIds",
@@ -996,7 +996,7 @@
     },
     {
       "id": "api.snapshot.projection",
-      "path": "Api/Internal/AfV1SnapshotProjection.cs",
+      "path": "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs",
       "start": 12,
       "end": 57,
       "symbol": "internal static class AfV1SnapshotProjection",
@@ -1502,7 +1502,7 @@
     },
     {
       "id": "public.dialogue.client",
-      "path": "Api/V1/AfDialogueClient.cs",
+      "path": "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
       "symbol": "public sealed class AfDialogueClient",
       "match": "contains",
       "status": "wired-boundary",
@@ -1513,7 +1513,7 @@
     },
     {
       "id": "public.dialogue.operation",
-      "path": "Api/V1/AfDialogueClient.cs",
+      "path": "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
       "symbol": "public sealed class AfDialogueOperation",
       "match": "contains",
       "status": "wired-boundary",
@@ -1524,7 +1524,7 @@
     },
     {
       "id": "public.dialogue.projection",
-      "path": "Api/Internal/AfV1DialogueProjection.cs",
+      "path": "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs",
       "symbol": "internal static class AfV1DialogueProjection",
       "match": "contains",
       "status": "wired-boundary",
