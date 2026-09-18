@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Path = System.IO.Path;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screens;
@@ -17,6 +18,12 @@ namespace AnimusForge.Illustrator.Engine
         private static PanoramaSession _activePanorama;
         internal const int PanoramaDirectionCount = 4;
         private const float PanoramaFov = 100f * (float)Math.PI / 180f;
+
+        internal static void CancelSceneCapture(Mission mission)
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (_activePanorama?.BelongsTo(mission) == true) _activePanorama.Restore();
+        }
 
         // Rotate in place: no teleporting agents, moving through walls or creating a second Scene.
         internal static MatrixFrame BuildPanoramaFrame(MatrixFrame original, int index)
@@ -47,47 +54,68 @@ namespace AnimusForge.Illustrator.Engine
                 "采集期间人物可能轻微移动，以当前视角和文字现场事实为准；忽略UI、字幕、血条和名牌，不将界面内容画入作品。";
         }
 
-        internal static bool IsUsablePanoramaFrame(MatrixFrame expected, MatrixFrame actual, float horizontalFov)
-        {
-            return Vec3.DotProduct(expected.rotation.u, actual.rotation.u) > 0.999f &&
-                expected.origin.DistanceSquared(actual.origin) < 0.01f && horizontalFov >= (float)Math.PI / 2f;
-        }
-
         internal static async Task<IReadOnlyList<IllustrationReferenceImage>> CaptureConversationSceneReferencesAsync(CancellationToken token)
         {
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
             PanoramaSession session = null;
             var references = new List<IllustrationReferenceImage>(5);
+            using var budget = CancellationTokenSource.CreateLinkedTokenSource(token);
+            budget.CancelAfter(12000);
+            var captureToken = budget.Token;
+            bool stageAcquired = false;
             try
             {
+                // The native final-image exporter also dumps shared diagnostic passes.
+                // Serialize with the existing portrait/banner exporter, not just scene requests.
+                await _stageLock.WaitAsync(captureToken).ConfigureAwait(false);
+                stageAcquired = true;
                 session = await RunOnGameThreadAsync(() =>
                 {
                     var created = new PanoramaSession();
                     _activePanorama = created;
-                    try { created.HideOverlays(); }
+                    try { created.BeginPanorama(); }
                     catch { created.Restore(); throw; }
                     return created;
-                }, token).ConfigureAwait(false);
+                }, captureToken).ConfigureAwait(false);
                 if (session == null) return references;
-                await WaitForSceneFramesAsync(token).ConfigureAwait(false);
-                string initial = await RunOnGameThreadAsync(() => session.IsCurrent ? CaptureConversationSceneBase64() : null, token).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(initial)) return references;
-                references.Add(new IllustrationReferenceImage(initial, SceneReferenceLabel(-1), IllustrationReferenceKind.Scene));
-                bool started = await RunOnGameThreadAsync(() => session.BeginPanorama(), token).ConfigureAwait(false);
-                if (started)
+                if (session.HasView)
                 {
-                    for (int index = 0; index < PanoramaDirectionCount; index++)
+                    // The first image uses the original FOV/pitch; the four following
+                    // images rotate only our private camera, never MissionScreen's camera.
+                    for (int index = -1; index < PanoramaDirectionCount; index++)
                     {
-                        token.ThrowIfCancellationRequested();
-                        bool placed = await RunOnGameThreadAsync(() => session.SetDirection(index), token).ConfigureAwait(false);
+                        captureToken.ThrowIfCancellationRequested();
+                        bool placed = await RunOnGameThreadAsync(() => session.SetDirection(index), captureToken).ConfigureAwait(false);
                         if (!placed) break;
-                        await WaitForSceneFramesAsync(token).ConfigureAwait(false);
-                        string capture = await RunOnGameThreadAsync(() => session.IsRenderedDirection(index) ? CaptureConversationSceneBase64() : null, token).ConfigureAwait(false);
-                        if (string.IsNullOrWhiteSpace(capture)) break;
-                        references.Add(new IllustrationReferenceImage(capture, SceneReferenceLabel(index), IllustrationReferenceKind.Scene));
+                        bool ready = false;
+                        for (int warmup = 0; warmup < 10 && !ready; warmup++)
+                        {
+                            await WaitForSceneFramesAsync(captureToken).ConfigureAwait(false);
+                            ready = await RunOnGameThreadAsync(() => session.Ready, captureToken).ConfigureAwait(false);
+                        }
+                        if (!ready) break;
+                        string path = await RunOnGameThreadAsync(() => session.RequestExport(index), captureToken).ConfigureAwait(false);
+                        if (path == null) break;
+                        byte[] png = await ReadSceneExportAsync(path, captureToken).ConfigureAwait(false);
+                        await RunOnGameThreadAsync(() => { session.StopExport(); return true; }, captureToken).ConfigureAwait(false);
+                        if (png == null) break;
+                        references.Add(new IllustrationReferenceImage(Convert.ToBase64String(png), SceneReferenceLabel(index), IllustrationReferenceKind.Scene));
                     }
                 }
-                TaleWorlds.Library.Debug.Print($"[Illustrator] Scene references captured={references.Count}, panoramicDirections={references.Count - 1}");
+                if (references.Count == 0)
+                {
+                    // Unsupported/unready offscreen rendering and map conversations:
+                    // keep one actual view without hiding UI or moving the player camera.
+                    string initial = await RunOnGameThreadAsync(() => session.IsCurrent ? CaptureConversationSceneBase64() : null, captureToken).ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(initial))
+                        references.Add(new IllustrationReferenceImage(initial, SceneReferenceLabel(-1), IllustrationReferenceKind.Scene));
+                }
+                TaleWorlds.Library.Debug.Print($"[Illustrator] Scene references captured={references.Count}, offscreen={session.HasView}, playerCameraUntouched=True");
+                return references;
+            }
+            catch (OperationCanceledException) when (!token.IsCancellationRequested)
+            {
+                TaleWorlds.Library.Debug.Print("[Illustrator] Offscreen scene capture budget expired; retaining completed views.");
                 return references;
             }
             catch (OperationCanceledException) { throw; }
@@ -98,15 +126,39 @@ namespace AnimusForge.Illustrator.Engine
             }
             finally
             {
-                var restored = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                IllustratorRuntime.PostCritical(() =>
+                if (session != null && !session.Retired.IsCompleted)
                 {
-                    try { session?.Restore(); }
-                    finally { restored.TrySetResult(true); }
-                });
-                try { await restored.Task.ConfigureAwait(false); }
-                finally { SceneCaptureLock.Release(); }
+                    IllustratorRuntime.PostCritical(session.Restore);
+                    await session.Retired.ConfigureAwait(false);
+                }
+                session?.CleanupFiles();
+                if (stageAcquired) _stageLock.Release();
+                SceneCaptureLock.Release();
             }
+        }
+
+        private static async Task<byte[]> ReadSceneExportAsync(string path, CancellationToken token)
+        {
+            long previousLength = -1;
+            for (int attempt = 0; attempt < 25; attempt++)
+            {
+                token.ThrowIfCancellationRequested();
+                try
+                {
+                    var file = new FileInfo(path);
+                    if (!file.Exists) file = new FileInfo(path + ".png");
+                    if (file.Exists && file.Length > 0)
+                    {
+                        if (file.Length > ImagePayload.MaxBytes) return null;
+                        if (file.Length == previousLength) return ImagePayload.ReadFile(file.FullName);
+                        previousLength = file.Length;
+                    }
+                }
+                catch (IOException) { }
+                catch (ArgumentException) { } // A partial PNG is not a finished export.
+                await Task.Delay(80, token).ConfigureAwait(false);
+            }
+            return null;
         }
 
         private static async Task WaitForSceneFramesAsync(CancellationToken token)
@@ -116,89 +168,130 @@ namespace AnimusForge.Illustrator.Engine
             await wait.ConfigureAwait(false);
         }
 
-        // Created, mutated and restored only on the main thread, including Reset/Shutdown.
+        // Owns only a SceneView, render target and private camera. The borrowed Mission
+        // scene is never ticked, mutated or cleared here, even on cancel/Reset/Shutdown.
         private sealed class PanoramaSession
         {
             private readonly ScreenBase _owner = ScreenManager.TopScreen;
             private readonly Mission _mission = Mission.Current;
-            private readonly List<Tuple<Widget, bool>> _hidden = new List<Tuple<Widget, bool>>();
-            private MissionScreen _screen;
+            private readonly Scene _scene = Mission.Current?.Scene;
+            private readonly TaskCompletionSource<bool> _retired = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            private readonly List<string> _files = new List<string>(5);
+            private SceneView _view;
+            private Texture _target;
             private Camera _camera;
             private MatrixFrame _originalFrame;
-            private float _originalFov, _near, _far;
+            private float _originalFov, _aspect, _near, _far;
+            private string _directory;
             private bool _finished;
 
-            internal bool IsCurrent => !_finished && ReferenceEquals(_owner, ScreenManager.TopScreen) && ReferenceEquals(_mission, Mission.Current);
-            internal bool OwnsCamera => IsCurrent && _camera != null && ReferenceEquals(_screen?.CustomCamera, _camera);
-
-            internal void HideOverlays()
-            {
-                foreach (var root in new[] { UI.Overlays.IllustrationCardPopup.VisualRoot, UI.Gallery.IllustratorGalleryPopup.VisualRoot, UI.Patches.WeeklyReportPopupIllustrationPatch.VisualRoot })
-                    if (root != null) { _hidden.Add(Tuple.Create(root, root.IsVisible)); root.IsVisible = false; }
-            }
+            internal bool IsCurrent => !_finished && _owner != null && !_owner.IsFinalized &&
+                ReferenceEquals(_owner, ScreenManager.TopScreen) && ReferenceEquals(_mission, Mission.Current) &&
+                (_mission == null || (_mission.CurrentState != Mission.State.EndingNextFrame && _mission.CurrentState != Mission.State.Over && ReferenceEquals(_scene, _mission.Scene)));
+            internal bool HasView => _view != null;
+            internal bool BelongsTo(Mission mission) => ReferenceEquals(_mission, mission);
+            internal Task Retired => _retired.Task;
+            internal bool Ready => IsCurrent && _view != null && _view.CheckSceneReadyToRender() && _view.ReadyToRender();
 
             internal bool BeginPanorama()
             {
-                _screen = _owner as MissionScreen;
-                if (!IsCurrent || _mission == null || _screen?.CombatCamera == null ||
-                    !ReferenceEquals(_screen.Mission, _mission) || _screen.CustomCamera != null || !_screen.MissionStartedRendering()) return false;
-                _originalFrame = _screen.CombatCamera.Frame;
-                _originalFov = _screen.CombatCamera.HorizontalFov;
-                _near = _screen.CombatCamera.Near;
-                _far = _screen.CombatCamera.Far;
+                var screen = _owner as MissionScreen;
+                if (!IsCurrent || _mission?.Scene == null || screen?.CombatCamera == null ||
+                    !ReferenceEquals(screen.Mission, _mission) || !screen.MissionStartedRendering()) return false;
+                _originalFrame = screen.CombatCamera.Frame;
+                _originalFov = screen.CombatCamera.HorizontalFov;
+                _near = screen.CombatCamera.Near;
+                _far = screen.CombatCamera.Far;
+                _aspect = Math.Max(0.5f, Math.Min(3f, Screen.AspectRatio));
+                int width = _aspect >= 1 ? 1024 : (int)(1024 * _aspect);
+                int height = _aspect >= 1 ? (int)(1024 / _aspect) : 1024;
+                _directory = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator", "scene_" + Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(_directory);
                 _camera = Camera.CreateCamera();
-                _camera.SetFovHorizontal(PanoramaFov, Screen.AspectRatio, _near, _far);
+                _camera.SetFovHorizontal(_originalFov, _aspect, _near, _far);
                 _camera.Frame = _originalFrame;
-                _screen.CustomCamera = _camera;
+                _target = Texture.CreateRenderTarget("af_scene_" + Guid.NewGuid().ToString("N"), width, height, false, false);
+                _view = SceneView.CreateSceneView();
+                _view.SetEnable(false);
+                _view.SetRenderTarget(_target);
+                _view.SetAutoDepthTargetCreation(true);
+                _view.SetScene(_scene);
+                _view.SetCamera(_camera);
+                _view.SetSceneUsesSkybox(true);
+                _view.SetSceneUsesShadows(true);
+                _view.SetSceneUsesContour(false);
+                _view.SetAcceptGlobalDebugRenderObjects(false);
+                _view.SetClearColor(0xff000000);
+                _view.SetClearGbuffer(true);
+                // The native exporter also accesses depth/shadow passes. Keep the
+                // full render path initialized; never CPU-read a GPU render target.
+                _view.SetRenderWithPostfx(true);
+                _view.SetPostfxConfigParams(0);
+                var shadowCenter = _originalFrame.origin;
+                _view.SetFocusedShadowmap(true, ref shadowCenter, 30f);
+                _view.SetRenderOnDemand(false);
+                _view.SetEnable(true);
                 return true;
             }
 
             internal bool SetDirection(int index)
             {
-                if (!OwnsCamera) return false;
-                _camera.Frame = BuildPanoramaFrame(_originalFrame, index);
+                if (!IsCurrent || _view == null) return false;
+                _view.SetSaveFinalResultToDisk(false);
+                _camera.Frame = index < 0 ? _originalFrame : BuildPanoramaFrame(_originalFrame, index);
+                _camera.SetFovHorizontal(index < 0 ? _originalFov : PanoramaFov, _aspect, _near, _far);
                 return true;
             }
 
-            internal bool IsRenderedDirection(int index)
+            internal string RequestExport(int index)
             {
-                if (!OwnsCamera || _screen.CombatCamera == null) return false;
-                var expected = BuildPanoramaFrame(_originalFrame, index);
-                var actual = _screen.CombatCamera.Frame;
-                // Fixed/zoom/custom camera controllers may have prevented the requested view.
-                // Do not mislabel repeated screenshots as different panoramic directions.
-                return IsUsablePanoramaFrame(expected, actual, _screen.CombatCamera.HorizontalFov);
+                if (!Ready) return null;
+                string name = "view_" + (index + 1) + ".png";
+                string path = Path.Combine(_directory, name);
+                _files.Add(path);
+                _files.Add(path + ".png"); // Some native exporters append the selected format again.
+                _view.SetFilePathToSaveResult(_directory + Path.DirectorySeparatorChar);
+                _view.SetFileNameToSaveResult(name);
+                _view.SetFileTypeToSave(View.TextureSaveFormat.TextureTypePng);
+                _view.SetSaveFinalResultToDisk(true);
+                return path;
             }
+
+            internal void StopExport() { if (!_finished) _view?.SetSaveFinalResultToDisk(false); }
 
             internal void Restore()
             {
                 IllustratorRuntime.AssertMainThread();
                 if (_finished) return;
-                bool restoreNative = OwnsCamera;
                 _finished = true;
                 if (ReferenceEquals(_activePanorama, this)) _activePanorama = null;
                 try
                 {
-                    // Managed owner check: never overwrite a camera acquired by another system.
-                    if (_camera != null && ReferenceEquals(_screen?.CustomCamera, _camera)) _screen.CustomCamera = null;
-                    if (restoreNative && _screen.CombatCamera != null)
-                    {
-                        _screen.CombatCamera.Frame = _originalFrame;
-                        _screen.CombatCamera.SetFovHorizontal(_originalFov, Screen.AspectRatio, _near, _far);
-                    }
+                    _view?.SetSaveFinalResultToDisk(false);
+                    _view?.SetEnable(false);
+                    // true is essential: the scene belongs to Mission, not this view.
+                    _view?.AddClearTask(clearOnlySceneview: true);
                 }
                 catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Scene camera restore: " + ex.Message); }
                 finally
                 {
-                    // MissionScreen copies CustomCamera parameters into CombatCamera; the renderer
-                    // never receives this temporary camera or a new Scene/TableauView.
                     try { _camera?.ReleaseCamera(); }
                     catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Scene camera release: " + ex.Message); }
                     _camera = null;
-                    foreach (var entry in _hidden)
-                        try { entry.Item1.IsVisible = entry.Item2; }
-                        catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Scene overlay restore: " + ex.Message); }
+                    try { _target?.Release(); }
+                    catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Scene target release: " + ex.Message); }
+                    _target = null;
+                    _view = null;
+                    _retired.TrySetResult(true);
                 }
+            }
+
+            internal void CleanupFiles()
+            {
+                foreach (string path in _files)
+                    try { File.Delete(path); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+                if (_directory != null)
+                    try { Directory.Delete(_directory, false); } catch (IOException) { } catch (UnauthorizedAccessException) { }
             }
         }
     }

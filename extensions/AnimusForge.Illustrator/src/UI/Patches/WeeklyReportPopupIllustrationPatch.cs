@@ -134,6 +134,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         public void ExecuteRegenerate()
         {
+            if (IsLoading) return;
             _onRegenerate?.Invoke();
         }
 

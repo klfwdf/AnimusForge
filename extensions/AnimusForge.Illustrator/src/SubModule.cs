@@ -50,6 +50,20 @@ namespace AnimusForge.Illustrator
             }
         }
 
+        public override void OnBeforeMissionBehaviorInitialize(Mission mission)
+        {
+            base.OnBeforeMissionBehaviorInitialize(mission);
+            mission.AddMissionBehavior(new SceneCaptureLifetimeBehavior());
+        }
+
+        // Mission invokes this before removing agents and freeing its shared scene.
+        // No per-frame work or gameplay behavior is introduced.
+        private sealed class SceneCaptureLifetimeBehavior : MissionLogic
+        {
+            protected override void OnEndMission() => Engine.ScreenCaptureHelper.CancelSceneCapture(Mission);
+            public override void OnRemoveBehavior() => Engine.ScreenCaptureHelper.CancelSceneCapture(Mission);
+        }
+
         protected override void OnSubModuleUnloaded()
         {
             try

@@ -68,6 +68,7 @@ namespace AnimusForge.Illustrator.Core
             "<director_only_narrative> 供你理解角色的性格、生平背景与气象，不得在正文中直接引用原文，严禁要求在画面中出现文字、字幕或标牌。\n" +
             "【事实与创作边界】：人物数量、种族、外观、装备、事件结果与现场空间关系以明确事实和对应参考图为准；只在事实留白处推导艺术表现，不能把建议当成已发生事实。百科背景为非具名艺术布景；会话与周报保持已确认现场和事件。百科不添加武器、盾牌、旗帜或坐骑，所有模式不描绘背盾。\n" +
             "【导演职责】：场景空间、陈设细节、光影氛围、人物姿态与镜头语言全部由你依据事实自由推导创作——\n" +
+            "【描述分配】：场景空间、光线与色彩、空间关系三段合计至少占四段正文的一半；人物段写清行动与可见外观，不扩写成装备目录。未知环境用克制的空间表达，不为凑篇幅编造事实。\n" +
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
             "【现场环境还原】：若提供现场截图，先对照各视角建立同一空间关系，再选择画面机位。墙面材质与主色、楼梯所在墙面及走向、门窗和拱洞、层高、桌椅分布以可见现场为准；地点名只用于理解用途，不据酒馆或大厅等名称重新设计建筑。多个环视图是同一拍摄点转向，不是多个房间或额外人物；画风可重绘材质笔触，不能替换建筑布局或给现场添加无依据的纹章旗帜。\n" +
@@ -223,7 +224,7 @@ namespace AnimusForge.Illustrator.Core
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
-                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildDirectorStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
+                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             fallback = false;
@@ -245,14 +246,18 @@ namespace AnimusForge.Illustrator.Core
                 @"背景[^。！？\r\n]{0,8}(?:纯黑|漆黑|全黑)|纯黑背景|黑幕|(?:pure|solid|pitch)[ -]?black background",
                 System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return false;
             int[] minimum = { 8, 12, 10, 10 };
+            int[] lengths = new int[RequiredSectionPatterns.Length];
             for (int i = 0; i < RequiredSectionPatterns.Length; i++)
             {
                 var match = System.Text.RegularExpressions.Regex.Match(output,
                     "【" + RequiredSectionPatterns[i] + "】([^【]+)");
                 string value = match.Success ? match.Groups[1].Value.Trim() : string.Empty;
                 if (value.Length < minimum[i]) return false;
+                // Count description, not headings, whitespace or title/theme metadata.
+                foreach (char character in value)
+                    if (!char.IsWhiteSpace(character)) lengths[i]++;
             }
-            return true;
+            return lengths[1] + lengths[2] + lengths[3] >= lengths[0];
         }
 
         internal static string BuildLocalSceneDirection(IllustrationPromptPlan plan)
@@ -563,18 +568,14 @@ namespace AnimusForge.Illustrator.Core
 
         private static string BuildDirectorStylePreference(IllustrationOptions options)
         {
-            if (options == null) return "古典写实历史画质感，明暗对照微光(Chiaroscuro)，细腻而富有体积感的艺术笔触肌理";
-            switch (options.SelectedStyle)
-            {
-                case "custom": return (options.CustomStylePrompt ?? string.Empty).Trim();
-                case "dark-epic": return "暗黑史诗写实，沉郁色调与中世纪凝重历史氛围";
-                case "cinematic": return "电影化叙事光影与镜头语言，光照服从现场时间和环境";
-                case "classic-oil": return "古典写实历史油画巨作，伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro)，戏剧性光影微光，细腻而富有体积感的厚重笔触肌理";
-                case "mosan-art": return "莫桑艺术（默兹河流域罗马式珐琅与手抄本彩饰）：景泰蓝式宝石级饱和平涂色块、金色勾边、装饰性边框纹样、拉长端庄的程式化人物、浓重黑色轮廓线、平面化叙事构图";
-                case "vivid": return "色彩鲜明、叙事清晰，材质与空间层次丰富可信";
-                case "natural": return "自然写实、克制可信、材质与环境色彩真实";
-                default: return (options.CustomStylePrompt ?? string.Empty).Trim();
-            }
+            return IllustrationStylePresets.Resolve(options?.SelectedStyle, options?.CustomStylePrompt).DirectorPrompt;
+        }
+
+        private static string BuildImageStylePreference(IllustrationOptions options)
+        {
+            var preset = IllustrationStylePresets.Resolve(options?.SelectedStyle, options?.CustomStylePrompt);
+            // Native vivid/natural styles have no image-text override; keep their short descriptive fallback.
+            return preset.ImagePrompt ?? preset.DirectorPrompt;
         }
 
         private static string ResolveChatEndpoint(string baseUrl)
@@ -599,7 +600,7 @@ namespace AnimusForge.Illustrator.Core
         private static string SynthesizeRuleBasedPrompt(IllustrationPromptPlan plan, IllustrationOptions options)
         {
             var sb = new StringBuilder();
-            string style = BuildDirectorStylePreference(options);
+            string style = BuildImageStylePreference(options);
             sb.Append(BuildLocalSceneDirection(plan));
             if (!string.IsNullOrWhiteSpace(plan?.ArtDirection))
             {

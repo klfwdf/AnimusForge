@@ -71,7 +71,7 @@
                             <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="520" SuggestedHeight="520" HorizontalAlignment="Left" VerticalAlignment="Top" MarginTop="40">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="6" ExtendTop="6" ExtendRight="6" ExtendBottom="6" AlphaFactor="0.7" DoNotAcceptEvents="true" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SelectedSpriteName" DoNotAcceptEvents="true" />
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SelectedSpriteName" ImageFit.Type="Contain" DoNotAcceptEvents="true" />
                               </Children>
                             </Widget>
 
@@ -79,7 +79,8 @@
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="546" MarginTop="40">
                               <Children>
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="16" Text="@SelectedDate" DoNotAcceptEvents="true" />
-                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="36" ClipRect="PromptClip" InnerPanel="PromptClip\PromptInner" AutoHideScrollBars="true">
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80" VerticalAlignment="Top" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="15" Text="@SelectedTheme" CanBreakWords="true" DoNotAcceptEvents="true" />
+                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="124" ClipRect="PromptClip" InnerPanel="PromptClip\PromptInner" AutoHideScrollBars="true">
                                   <Children>
                                     <Widget Id="PromptClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                                       <Children>

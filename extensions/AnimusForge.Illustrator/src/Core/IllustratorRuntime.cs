@@ -272,7 +272,10 @@ namespace AnimusForge.Illustrator.Core
             _request = source;
             bool started = IllustratorRuntime.Start(() => work(token), (result, error) =>
             {
-                bool current = IsCurrent && revision == _revision && !token.IsCancellationRequested;
+                // Capture the caller's cancellation state before cancelling child work for cleanup.
+                // HttpClient/local deadlines can throw TaskCanceledException while this token is live.
+                bool requestCancelled = token.IsCancellationRequested;
+                bool current = IsCurrent && revision == _revision && !requestCancelled;
                 if (ReferenceEquals(_request, source)) _request = null;
                 if (error != null) source.Cancel();
                 source.Dispose();
@@ -283,7 +286,7 @@ namespace AnimusForge.Illustrator.Core
                     catch (Exception ex) { fail(ex.Message); }
                 }
                 else if (!(error is OperationCanceledException)) fail(error.Message);
-                else if (token.IsCancellationRequested) fail("生图请求已取消（界面已切换或发起了新请求）。");
+                else if (requestCancelled) fail("生图请求已取消（界面已切换或发起了新请求）。");
                 else
                 {
                     Debug.Print($"[Illustrator] Request timed out waiting for upstream ({error.GetType().Name}).");

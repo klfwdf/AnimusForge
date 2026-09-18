@@ -74,12 +74,21 @@ public static class PromptRoutingAudit
             object rotation = frameType.GetField("rotation").GetValue(frames[i]);
             object axis = rotation.GetType().GetField("u").GetValue(rotation);
             Check(Math.Abs((float)vectorType.GetField("z").GetValue(axis)) < 0.0001f, "panorama levels vertical initial view: " + i);
-            Check((bool)Call(capture, "IsUsablePanoramaFrame", frames[i], frames[i], 1.74533f), "matching rendered camera accepted: " + i);
         }
-        Check(!(bool)Call(capture, "IsUsablePanoramaFrame", frames[1], frames[0], 1.74533f), "unchanged rendered view is not mislabeled as next direction");
-        Check(!(bool)Call(capture, "IsUsablePanoramaFrame", frames[0], frames[0], 0.8f), "zoomed camera cannot masquerade as panoramic coverage");
         Check(((string)Call(capture, "SceneReferenceLabel", 2)).Contains("同一空间") && ((string)Call(capture, "SceneReferenceLabel", -1)).Contains("当前玩家视角"), "scene views distinguish current context from environment sweep");
         Type heroExtractor = assembly.GetType("AnimusForge.Illustrator.Context.HeroVisualExtractor", true);
+        Check(((string)Call(heroExtractor, "DescribeSpecies", "野兽人", 7)).StartsWith("野兽人"), "specific beastmen label is not swallowed by orc substring");
+        Check(((string)Call(heroExtractor, "DescribeSpecies", "warhammer_orc_lord", 7)).StartsWith("兽人"), "separated mod orc identifier remains recognized");
+        Check(((string)Call(heroExtractor, "DescribeSpecies", "sorcerer", 7)).Contains("未确认"), "sorcerer is not falsely recognized as an orc");
+        Check((int)Call(heroExtractor, "ResolveAppearanceAge", 0f, null) == 0, "unknown NPC age is not invented as 28");
+        Check((int)Call(heroExtractor, "ResolveAppearanceAge", 65f, null) == 65, "known NPC age is retained without a warrior age template");
+        foreach (int age in new[] { 0, 24, 67 })
+        foreach (bool hiddenHair in new[] { false, true })
+        foreach (bool hiddenBeard in new[] { false, true })
+        {
+            string appearance = (string)Call(heroExtractor, "BuildPhysicalFeaturesDescription", age, hiddenHair, hiddenBeard);
+            Check(!appearance.Contains("微卷") && !appearance.Contains("短髭") && !appearance.Contains("霜白") && appearance.Contains("参考"), "appearance never infers hairstyle/beard/color from age or color offset: " + age + "/" + hiddenHair + "/" + hiddenBeard);
+        }
         foreach (bool hair in new[] { false, true })
         foreach (bool beard in new[] { false, true })
         {
@@ -99,6 +108,8 @@ public static class PromptRoutingAudit
             "【场景空间】环境材质向远处延展，形成清晰且柔和的空间层次。" +
             "【光线与色彩】自然光与环境反光协调过渡，暗部纹理清晰可辨。" +
             "【空间关系】近处与远处通过遮挡和景深形成连续纵深关系。";
+        Check((bool)Call(director, "HasRequiredSceneDescription", valid), "balanced concrete direction is accepted");
+        Check(!(bool)Call(director, "HasRequiredSceneDescription", valid.Replace("人物身着现有衣物", new string('甲', 1000))), "equipment catalogue cannot crowd out environment even with four headings");
         Type directionType = assembly.GetType(core + "IllustrationDirection", true);
         object metadataPlan = Activator.CreateInstance(planType, new object[] { "人物百科纪事", facts, "", "" });
         string withMetadata = "【画作标题】灯下裁决【画作主题】战前权衡【人物行动】俯身审视地图，一手指向路线，视线落在指尖。" + valid;
@@ -199,7 +210,7 @@ public static class PromptRoutingAudit
             object profile = Activator.CreateInstance(profileType);
             Call(extractor, "ResolveBesiegedLocation", profile, outdoor, "", false);
             string location = (string)profileType.GetProperty("SpecificLocation").GetValue(profile);
-            Check(location.Contains(outdoor ? "旷野谈判" : "城门"), "siege outdoor routing: " + outdoor);
+            Check(location.Contains(outdoor ? "旷野谈判" : "具体地点未确认"), "siege requires evidence before asserting a gate/wall parley: " + outdoor);
         }
 
         Type reference = assembly.GetType(core + "IllustrationReferenceImage", true);

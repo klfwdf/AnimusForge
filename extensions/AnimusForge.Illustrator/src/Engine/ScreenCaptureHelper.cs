@@ -1215,7 +1215,7 @@ namespace AnimusForge.Illustrator.Engine
         /// 离屏渲染指定英雄的真实 3D 立绘（真实体型、五官、发型、装备、家族纹章底色）。
         /// 人物资源加载需要更多预热帧，故 warmup 比纹章长。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (hero == null) return null;
             string heroName = hero?.Name?.ToString() ?? hero?.StringId ?? string.Empty;
@@ -1276,7 +1276,7 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 离屏渲染非英雄 CharacterObject（要人、酒馆店主等没有 Hero 对象的对话方）的真实 3D 立绘。
         /// </summary>
-        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
+        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (character == null) return null;
             string charName = character?.Name?.ToString() ?? character?.StringId ?? string.Empty;

@@ -196,16 +196,18 @@ namespace AnimusForge.Illustrator.Context
                 string source, body;
                 Equipment snapshot = ConversationEquipmentSnapshot.CaptureCharacter(partnerChar, out source, out body, out var appearance);
                 context.InterlocutorBodyProperties = body ?? string.Empty;
-                int age = (int)partnerChar.Age;
-                if (age <= 0) age = 28; // 普通战士/悍匪标准壮年年龄，防止0岁导致大模型臆造成老头
+                int age = HeroVisualExtractor.ResolveAppearanceAge(partnerChar.Age, appearance?.BodyProperties);
 
                 var profile = new HeroVisualProfile
                 {
                     HeroName = partnerChar.Name?.ToString() ?? partnerChar.StringId,
                     Culture = partnerChar.Culture?.Name?.ToString() ?? "未知文化",
                     Gender = partnerChar.IsFemale ? "女性" : "男性",
+                    SpeciesDescription = HeroVisualExtractor.DescribeSpecies(
+                        (partnerChar.StringId ?? string.Empty) + " " + (partnerChar.Culture?.StringId ?? string.Empty) + " " + (partnerChar.Culture?.Name?.ToString() ?? string.Empty),
+                        appearance?.Race ?? partnerChar.Race),
                     Age = age,
-                    PhysicalFeatures = HeroVisualExtractor.ExtractCharacterPhysicalFeatures(partnerChar, snapshot)
+                    PhysicalFeatures = HeroVisualExtractor.ExtractCharacterPhysicalFeatures(partnerChar, snapshot, age)
                 };
 
                 uint color1 = (appearance != null && appearance.Color1 != 0)

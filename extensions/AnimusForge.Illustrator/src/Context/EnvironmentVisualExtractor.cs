@@ -46,7 +46,8 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(NamedCharacters)) sb.AppendLine($"【附近实际角色】{NamedCharacters}");
             if (!string.IsNullOrWhiteSpace(RealProps)) sb.AppendLine($"【附近实际预制件】{RealProps}");
             // 精确日期只用于导演理解；发布日期中的季节仍作为回顾事件的季节参考。
-            if (string.IsNullOrWhiteSpace(Season))
+            if (!string.IsNullOrWhiteSpace(Season)) sb.AppendLine("【当前季节】" + Season);
+            else
                 foreach (string season in new[] { "春季", "夏季", "秋季", "冬季" })
                     if ((DateLabel ?? string.Empty).Contains(season)) { sb.AppendLine("【季节参考】" + season); break; }
             if (!string.IsNullOrWhiteSpace(TimeOfDay)) sb.AppendLine($"【现场时段】{TimeOfDay}");
@@ -120,7 +121,7 @@ namespace AnimusForge.Illustrator.Context
                 if (settlementTerrain.HasValue) profile.TerrainTag = TerrainTagOf(settlementTerrain.Value);
                 profile.ConflictStatus = eventAnchored ? string.Empty : ResolveConflictStatus(settlement);
             }
-            else
+            else if (!eventAnchored)
             {
                 profile.SettlementType = "开阔自然荒野/野外遭遇现场";
                 profile.TerrainAndLandscape = ResolveOverlandTerrain();
@@ -264,10 +265,14 @@ namespace AnimusForge.Illustrator.Context
                 return;
             }
 
-            profile.SpecificLocation = "被围攻的要塞城门、护城河壕沟与险峻城堞 (Besieged Fortress Walls, Castle Gate & Ramparts)";
-            profile.IndoorOutdoorDetails = "战云密布的中世纪城堡要塞防御前沿：高耸险峻的石砌城堡城堞与箭垛垛口、紧闭包铁的巨型要塞城门与吊桥，城门外是泥泞深邃的护城河壕沟与拒马鹿砦。空气中弥漫着刺鼻的硝烟与大军围城的肃杀死寂。城头守军据险扼守，城下围城大军严阵以待。";
-            profile.LightingAndAtmosphere = "暗沉肃杀的天光，城堞垛口上烈烈燃烧的火把投下跳跃的橘红光斑，城外远景处漫山遍野隐现着围城大军的篝火宿营与攻城器械巨影 (Dramatic War Torches, Siege Campfires & Chiaroscuro)";
-            profile.ConflictStatus = "【大军围城 · 剑拔弩张】城池正被敌国大军水泄不通地严密围困，城头守将与城下敌将隔着城堞与护城壕进行紧张压迫的战前谈判与意志对决！";
+            // Siege state establishes a blockade, not a gate/parapet location or a parley.
+            // Explicit host scene evidence is retained separately in HostSceneDescription.
+            profile.SpecificLocation = locId.Contains("center")
+                ? "围城中的城镇街道 (Besieged Town Streets)"
+                : "围城中的室外空间（具体地点未确认）";
+            profile.IndoorOutdoorDetails = string.Empty;
+            profile.LightingAndAtmosphere = string.Empty;
+            profile.ConflictStatus = "所在定居点正被围困；当前人物活动及双方高低关系须依据现场记录和实景参考，围城状态本身不能证明正在谈判。";
             return;
         }
 
