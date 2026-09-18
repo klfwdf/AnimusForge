@@ -217,7 +217,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             catch { }
             string artDirection = GenerateDiversePoseDirective();
             if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
-            if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——本次必须选择与此完全不同的场景空间、动作瞬间与镜头关系。";
+            if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——本次选择不同的场景母题或镜头光线组合，不必为变化强行更换人物动作。";
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
             var options = IllustratorRuntime.CaptureOptions();
             if (options?.EnableOffscreenRendering != true)
@@ -238,7 +238,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其面部五官轮廓、发型肤色与装备形制；本图的光照、色调、背景与姿势构图一律舍弃，画面姿态由导演按情境全新演绎；人物必须按新场景光源重新布光渲染，与环境光影、色温、笔触完全融合并呈现落地投影与环境反光，严禁保留原图光照造成贴纸抠像感；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘，不可有任何游戏截图或3D渲染痕迹", IllustrationReferenceKind.Character);
+                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其面部五官轮廓、发型肤色与装备形制；本图用于身份识别，不是待保留的人物剪影；根据导演选择的新镜头和光线重新绘制人物体积与衣褶，体态以自然可信为先，允许站立或坐姿；人物必须按新场景光源重新布光渲染，与环境光影、色温、笔触完全融合并呈现落地投影与环境反光，严禁保留原图光照造成贴纸抠像感；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘，不可有任何游戏截图或3D渲染痕迹", IllustrationReferenceKind.Character);
                     refs.Add(r);
                     genRefsList.Add(r);
                 }
@@ -287,9 +287,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private static string GenerateDiversePoseDirective()
         {
-            // 景别、机位、身姿、神情全部交给导演按人物身份与情境自由推导，
-            // 只留元级约束：叙事瞬间、反直立展示默认、肖像纯净性。
-            return "【构图与身姿自由创作】：镜头景别、机位角度、取景构图与人物的体态、手脚摆放、头部朝向、视线神情由导演根据该人物的身份地位、性格气质与画面情境全权自主设计演绎，须呈现一个有叙事感的动作瞬间而非展示摆拍；【姿势物理一致性】：体态须与场景支撑物物理一致——坐姿须真正落座、凭倚须真正接触凭靠物，严禁悬空错位或上下身体态矛盾；【姿势自主推导】：直立站姿是未经思考的默认答案而非创作——除非你明确判断叙事确需站立，否则应推导出更能体现人物此刻状态的体态，严禁证件照式摆拍，严禁与上一版重复同一构图与姿势；持物与陈设仅在服务于场景叙事时出现；单人独立肖像不画马匹动物。";
+            // 只限定成图质量，不以强迫动作变化制造差异。
+            return "【百科构图自主推导】：依据身份、性格与情绪选取一个自然可信的瞬间，镜头与取景由导演决定。" +
+                "站立、坐姿或轻微动作均可；用神情、视线、镜头和光线表达人物，不把复杂动作当成创作要求。" +
+                "需要坐靠时使用清楚且合理的支撑，避免一边跨坐一边踮脚、扭腰或同时撑扶多处。" +
+                "在新的非具名艺术布景中统一重绘人物与环境；即使仍选站姿，也须按新机位和光线构建人物，而非沿用原立绘像素。" +
+                "单人独立肖像不添加武器、盾牌、旗帜或坐骑，服饰和身份细节按事实保持。";
         }
 
         /// <summary>从已存提示词中截取【场景空间】开头作为场景母题，用于跨版本去重。</summary>

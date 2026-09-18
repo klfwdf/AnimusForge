@@ -23,8 +23,24 @@ public static class PromptRoutingAudit
     private sealed class CaptureHandler : HttpMessageHandler
     {
         public string Body;
+        public readonly Dictionary<string, string> Fields = new Dictionary<string, string>();
+        public readonly List<string> Images = new List<string>();
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
         {
+            Fields.Clear(); Images.Clear();
+            var multipart = request.Content as MultipartFormDataContent;
+            if (multipart != null)
+            {
+                foreach (HttpContent part in multipart)
+                {
+                    var disposition = part.Headers.ContentDisposition;
+                    string name = disposition.Name.Trim('"');
+                    if (name == "image[]")
+                        Images.Add(disposition.FileName.Trim('"'));
+                    else
+                        Fields[name] = await part.ReadAsStringAsync().ConfigureAwait(false);
+                }
+            }
             Body = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
             return new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent("offline audit") };
         }
@@ -36,6 +52,14 @@ public static class PromptRoutingAudit
         string core = "AnimusForge.Illustrator.Core.";
         Type director = assembly.GetType(core + "VisualDirectorEngine", true);
         Type planType = assembly.GetType(core + "IllustrationPromptPlan", true);
+        string system = (string)director.GetField("SystemPrompt", Static).GetRawConstantValue();
+        Check(system.Contains("成图质量底线") && system.Contains("每个人物只选择一个清楚的主要体态"), "director receives simple physically coherent pose constraint");
+        Check(system.Contains("不能仅保留立绘轮廓再更换背景") && system.Contains("环境反光"), "director must reconstruct figure and scene together");
+        Type popup = assembly.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
+        string pose = (string)Call(popup, "GenerateDiversePoseDirective");
+        Check(pose.Contains("站立、坐姿") && !pose.Contains("未经思考") && !pose.Contains("严禁与上一版重复"), "portrait input permits natural standing without compulsory pose change");
+        string variation = (string)Call(director, "BuildRedrawVariationDirective", 3);
+        Check(variation.Contains("不要求每次换动作"), "redraw can vary camera and light without contorting pose");
         string facts = "青年女性平民，裸头，无甲，穿布衣。FACT_SENTINEL";
         string[] modes = { "人物百科纪事", "周报历史纪事插画", "最近三轮对话联动的场景插画", "通用插画" };
         string valid = "【人物与镜头】人物身着现有衣物，自然呈现神情与动作。" +
@@ -123,6 +147,31 @@ public static class PromptRoutingAudit
                 Check(body.Contains("现场3D实景采光与地形参考"), "scene gets scene mandate");
                 Check(body.Contains("人物与镜头") && body.Contains("data:image/"), "director prompt and reference image sent together");
                 Check(!body.Contains("四层纵深") && !body.Contains("生动舒展") && !body.Contains("身着真实战甲"), "transport does not impose pose, layers or armor");
+                Check(body.Contains("整幅重新绘制"), "Chat receives whole-image repaint contract");
+
+                // Exercise the real multipart adapter with valid PNG reference files.
+                string png;
+                using (var bitmap = new System.Drawing.Bitmap(8, 8))
+                using (var stream = new System.IO.MemoryStream())
+                {
+                    bitmap.SetPixel(0, 0, System.Drawing.Color.Red);
+                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                    png = Convert.ToBase64String(stream.ToArray());
+                }
+                for (int i = 0; i < refs.Length; i++)
+                    refs.SetValue(Activator.CreateInstance(reference, new object[] { png, labels[i], Enum.Parse(kind, kinds[i]) }), i);
+                var editTask = (Task)Call(client, "AttemptImagesEditsAsync", "http://offline.invalid/v1", "audit", valid,
+                    "1024x1024", "", "", refs, "", CancellationToken.None);
+                editTask.GetAwaiter().GetResult();
+                Check(handler.Images.Count == 3 && handler.Images[0] == "reference_0.png", "Edits sends all reference files in order");
+                Check(!handler.Fields.ContainsKey("mask"), "identity redraw does not synthesize a repair mask");
+                string editPrompt = handler.Fields["prompt"];
+                Check(editPrompt.Contains("整幅重新绘制") && editPrompt.Contains("不是保留人物像素的换背景"), "Edits explicitly requests full figure repaint");
+                Check(editPrompt.Contains("人物身份参考：") && editPrompt.Contains("纹章样图：") && editPrompt.Contains("现场参考："), "Edits reference roles remain distinct despite label keywords");
+                Check(editPrompt.Contains(valid) && editPrompt.Contains("光源") && editPrompt.Contains("衣褶"), "Edits retains director composition and unified figure lighting");
+                object tuple = editTask.GetType().GetProperty("Result").GetValue(editTask);
+                string resolved = (string)tuple.GetType().GetField("Item6").GetValue(tuple);
+                Check(resolved == editPrompt, "returned Edits prompt equals exact multipart prompt");
             }
             finally { httpField.SetValue(null, original); }
         }
