@@ -24,7 +24,49 @@ internal static class Program
         StickyCarry();
         TopicRouter();
         PreprocessIdAssembler();
+        ExtrasComposer();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void ExtrasComposer()
+    {
+        Check(PromptExtrasComposer.Compose(null) == "" && PromptExtrasComposer.Compose(new PromptExtrasSections()) == "", "empty sections compose to empty");
+        var sections = new PromptExtrasSections
+        {
+            LoanDueDateReference = "due",
+            LoanDebtHint = "   ",           // legacy IsNullOrEmpty: whitespace-only Reward output still appended
+            TrustPrompt = null,
+            SettlementMerchantDebtHint = "  ", // legacy IsNullOrWhiteSpace: skipped
+            DuelResultLine = "duel",
+            FeastAttendanceContext = "feast",
+            ClarificationHint = "clarify",
+            TriggeredRuleInstructions = "rules",
+            WeeklyFullReports = "full",
+            LoreContext = "lore",
+            EntityMainPromptBlock = "entity",
+            AgendaMainPromptBlock = "agenda"
+        };
+        string extras = PromptExtrasComposer.Compose(sections);
+        var lines = extras.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        Check(lines.SequenceEqual(new[] { "due", "   ", "duel", "feast", "clarify", "rules", "full", "lore", "entity", "agenda", "" }), "canonical order, blank policy per section, trailing newline: " + string.Join("|", lines));
+        var ordered = new PromptExtrasSections { WeeklyShortReports = "short", ActivePolicyContext = "policy", TriggeredRuleInstructions = "rules", WeeklyFullReports = "full", LoreContext = "lore", ResidentRecentActions = "recent", NearbySettlementsDetail = "nearby", HeroArmyRuntimeFact = "army", PlayerArmyRuntimeFact = "parmy" };
+        Check(PromptExtrasComposer.Compose(ordered).Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).SequenceEqual(new[] { "army", "parmy", "recent", "nearby", "short", "policy", "rules", "full", "lore" }), "world/weekly/policy/rules/full/lore ordering");
+
+        Check(PromptExtrasComposer.BuildDuelResultLine(true, " ").StartsWith("【战斗结果】你刚刚在一场正式的决斗中输给了玩家。"), "duel loss with default player name");
+        Check(PromptExtrasComposer.BuildDuelResultLine(false, "阿尔文").Contains("打败了阿尔文。你可以据此调整对阿尔文的态度，或提醒阿尔文履行"), "duel win uses display name three times");
+        Check(PromptExtrasComposer.BuildVanillaBattleDefeatLine(null).StartsWith("【原版战斗结果】你刚刚在一场战斗中被玩家击败了。"), "vanilla defeat line");
+        Check(PromptExtrasComposer.BuildReleasedPrisonerLine("X").StartsWith("【释放通知】你之前被X俘虏关押"), "released prisoner line");
+
+        Check(PromptExtrasComposer.MergePostprocessBlock("", "b") == "b" && PromptExtrasComposer.MergePostprocessBlock("a \n", "b") == "a\nb" && PromptExtrasComposer.MergePostprocessBlock("a", " ") == "a" && PromptExtrasComposer.MergePostprocessBlock(null, null) == "", "postprocess block merge");
+
+        var ids = PromptExtrasComposer.BuildEntityRetrievalRuleIds(new[] { " marriage ", "", null }, true, false, true, false);
+        Check(ids.SetEquals(new[] { "marriage", "reward", "party_transfer" }), "entity retrieval rule ids");
+        Check(PromptExtrasComposer.BuildEntityRetrievalRuleIds(null, false, true, false, true).SetEquals(new[] { "loan", "worldmap_party_command" }), "entity retrieval rule ids without auxiliary");
+
+        var markers = PromptExtrasComposer.DetectMarkers("x【附加规则:DUEL】y【NPC近期行动（近10天，常驻）】【原版任务上下文：z【附加规则:npc_major_actions】");
+        Check(markers.Duel && !markers.Reward && !markers.Loan && !markers.WorldMap && markers.NpcMajor && markers.ResidentRecentActions && markers.VanillaIssueRuntimeBlock && !markers.VanillaIssue, "marker detection (rule blocks case-insensitive, resident header ordinal)");
+        Check(!PromptExtrasComposer.DetectMarkers(null).Duel && !PromptExtrasComposer.DetectMarkers("").ResidentRecentActions, "markers on empty extras");
+        Check(PromptExtrasComposer.HasRuleBlock("【附加规则:loan】", "LOAN") && !PromptExtrasComposer.HasRuleBlock("【附加规则:loan】", "loa"), "HasRuleBlock exact id with delimiters");
     }
 
     private static void PreprocessIdAssembler()

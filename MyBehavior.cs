@@ -30786,7 +30786,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
-		StringBuilder stringBuilder = new StringBuilder();
 		MentionedWorldEntities mentionedEntities = directPreprocessMentionedEntities.Clone();
 		if (!suppressDynamicRuleAndLore)
 		{
@@ -30821,37 +30820,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 		}
 		LogShoutPromptContextStage("lore_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "source=" + loreCtxSource + " loreLen=" + ((loreContext ?? "").Length));
+		PromptExtrasSections extrasSections = new PromptExtrasSections();
 		if (RewardSystemBehavior.Instance != null && targetHero != null)
 		{
 			if (flag8)
 			{
-				string value4 = RewardSystemBehavior.Instance.BuildDueDateReferenceForAI();
-				if (!string.IsNullOrEmpty(value4))
-				{
-					stringBuilder.AppendLine(value4);
-				}
-				string value5 = RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero);
-				if (!string.IsNullOrEmpty(value5))
-				{
-					stringBuilder.AppendLine(value5);
-				}
+				extrasSections.LoanDueDateReference = RewardSystemBehavior.Instance.BuildDueDateReferenceForAI();
+				extrasSections.LoanDebtHint = RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero);
 			}
 			if (!flag8 && !flag7)
 			{
-				string value6 = RewardSystemBehavior.Instance.BuildTrustPromptForAI(targetHero);
-				if (!string.IsNullOrEmpty(value6))
-				{
-					stringBuilder.AppendLine(value6);
-				}
+				extrasSections.TrustPrompt = RewardSystemBehavior.Instance.BuildTrustPromptForAI(targetHero);
 			}
 		}
 		if (RewardSystemBehavior.Instance != null && flag7 && targetHero == null && targetCharacter != null)
 		{
-			string value6a = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
-			if (!string.IsNullOrWhiteSpace(value6a))
-			{
-				stringBuilder.AppendLine(value6a);
-			}
+			extrasSections.SettlementMerchantDebtHint = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
 		}
 		bool includeDuelStakeContext = false;
 		bool playerWonLastDuelForRule = false;
@@ -30859,74 +30843,31 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			includeDuelStakeContext = true;
 			playerWonLastDuelForRule = playerWon;
-			string playerDisplayName = BuildPlayerPublicDisplayNameForPrompt(targetHero);
-			if (string.IsNullOrWhiteSpace(playerDisplayName))
+			extrasSections.DuelResultLine = PromptExtrasComposer.BuildDuelResultLine(playerWon, BuildPlayerPublicDisplayNameForPrompt(targetHero));
+			if (AIConfigHandler.RewardEnabled)
 			{
-				playerDisplayName = "玩家";
-			}
-			if (playerWon)
-			{
-				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了" + playerDisplayName + "。无论失败来自倒地、低血量、逃跑或撤退，这都已经按决斗失败结算；你可以不甘、恼怒或嘴硬，但不能否认自己输了。请认真考虑履行你在决斗前约定的赌注或补偿。");
-				if (AIConfigHandler.RewardEnabled)
-				{
-					flag7 = true;
-				}
-			}
-			else
-			{
-				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中打败了" + playerDisplayName + "。你可以据此调整对" + playerDisplayName + "的态度，或提醒" + playerDisplayName + "履行之前约定的赌注。");
-				if (AIConfigHandler.RewardEnabled)
-				{
-					flag7 = true;
-				}
+				flag7 = true;
 			}
 		}
 		if (targetHero != null && !string.IsNullOrEmpty(targetHero.StringId))
 		{
 			string playerDisplayName2 = BuildPlayerPublicDisplayNameForPrompt(targetHero);
-			if (string.IsNullOrWhiteSpace(playerDisplayName2))
-			{
-				playerDisplayName2 = "玩家";
-			}
 			if (_recentlyDefeatedByPlayer.Contains(targetHero.StringId))
 			{
-				stringBuilder.AppendLine("【原版战斗结果】你刚刚在一场战斗中被" + playerDisplayName2 + "击败了。你的军队溃败，你必须承认这个事实。根据你的性格，你可以表现得愤怒、不甘、恳求或傲慢，但不能否认战败的事实。");
+				extrasSections.VanillaBattleDefeatLine = PromptExtrasComposer.BuildVanillaBattleDefeatLine(playerDisplayName2);
 			}
 			if (_recentlyReleasedPrisoners.Contains(targetHero.StringId))
 			{
-				stringBuilder.AppendLine("【释放通知】你之前被" + playerDisplayName2 + "俘虏关押，现在刚刚获得了自由。你应该意识到自己曾经是囚犯这个事实，并根据你的性格做出适当反应（感激、愤恨、或不屑等）。");
+				extrasSections.ReleasedPrisonerLine = PromptExtrasComposer.BuildReleasedPrisonerLine(playerDisplayName2);
 			}
-			string activePrisonerStatusLine = BuildHeroPrisonerStatusPromptLineForExternal(targetHero);
-			if (!string.IsNullOrWhiteSpace(activePrisonerStatusLine))
-			{
-				stringBuilder.AppendLine(activePrisonerStatusLine);
-			}
+			extrasSections.ActivePrisonerStatusLine = BuildHeroPrisonerStatusPromptLineForExternal(targetHero);
 		}
-		LogShoutPromptContextStage("relationship_blocks_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
-		string feastContext = TeamModuleServices.Gathering.BuildFeastAttendanceContext(targetHero);
-		if (!string.IsNullOrWhiteSpace(feastContext))
-		{
-			stringBuilder.AppendLine(feastContext);
-		}
-		if (!string.IsNullOrWhiteSpace(value))
-		{
-			stringBuilder.AppendLine(value);
-		}
-		string armyRuntimeFact = BuildHeroArmyRuntimeFactForPrompt(targetHero);
-		if (!string.IsNullOrWhiteSpace(armyRuntimeFact))
-		{
-			stringBuilder.AppendLine(armyRuntimeFact);
-		}
-		string playerArmyRuntimeFact = BuildPlayerArmyRuntimeFactForPrompt(targetHero, targetCharacter, targetAgentIndex);
-		if (!string.IsNullOrWhiteSpace(playerArmyRuntimeFact))
-		{
-			stringBuilder.AppendLine(playerArmyRuntimeFact);
-		}
-		string residentRecentActionsPrompt = BuildResidentRecentActionsPrompt(targetHero, targetCharacter, targetAgentIndex);
-		if (!string.IsNullOrWhiteSpace(residentRecentActionsPrompt))
-		{
-			stringBuilder.AppendLine(residentRecentActionsPrompt);
-		}
+		LogShoutPromptContextStage("relationship_blocks_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
+		extrasSections.FeastAttendanceContext = TeamModuleServices.Gathering.BuildFeastAttendanceContext(targetHero);
+		extrasSections.ClarificationHint = value;
+		extrasSections.HeroArmyRuntimeFact = BuildHeroArmyRuntimeFactForPrompt(targetHero);
+		extrasSections.PlayerArmyRuntimeFact = BuildPlayerArmyRuntimeFactForPrompt(targetHero, targetCharacter, targetAgentIndex);
+		extrasSections.ResidentRecentActions = BuildResidentRecentActionsPrompt(targetHero, targetCharacter, targetAgentIndex);
 		if (flag5)
 		{
 			bool flag9 = false;
@@ -30950,82 +30891,34 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			if (flag9)
 			{
-				string value7 = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos, targetHero);
-				if (!string.IsNullOrWhiteSpace(value7))
-				{
-					stringBuilder.AppendLine(value7);
-				}
+				extrasSections.NearbySettlementsDetail = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos, targetHero);
 			}
 		}
-		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
+		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
 		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		FreezeWatchdog.Mark("ShoutPromptContext.weekly_short_exclusion_done", "excludeNpcKingdom=" + excludeNpcShortReport2 + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2, weeklyPromptSnapshot);
-		if (!string.IsNullOrWhiteSpace(value8a))
-		{
-			stringBuilder.AppendLine(value8a);
-		}
-		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((value8a ?? "").Length));
+		extrasSections.WeeklyShortReports = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2, weeklyPromptSnapshot);
+		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((extrasSections.WeeklyShortReports ?? "").Length));
 		LogShoutPromptContextStage("policy_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		string activePolicyContext = AfGcczShoutBridge.IsActive()
+		extrasSections.ActivePolicyContext = AfGcczShoutBridge.IsActive()
 			? string.Empty
 			: TeamModuleServices.Policy.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
-		if (!string.IsNullOrWhiteSpace(activePolicyContext))
-		{
-			stringBuilder.AppendLine(activePolicyContext);
-		}
-		LogShoutPromptContextStage("policy_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "policyLen=" + ((activePolicyContext ?? "").Length));
-		if (!string.IsNullOrWhiteSpace(value8))
-		{
-			stringBuilder.AppendLine(value8);
-		}
+		LogShoutPromptContextStage("policy_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "policyLen=" + ((extrasSections.ActivePolicyContext ?? "").Length));
+		extrasSections.TriggeredRuleInstructions = value8;
 		LogShoutPromptContextStage("weekly_full_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		string value8b = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
-		if (!string.IsNullOrWhiteSpace(value8b))
-		{
-			stringBuilder.AppendLine(value8b);
-		}
-		if (!string.IsNullOrEmpty(loreContext))
-		{
-			stringBuilder.AppendLine(loreContext);
-		}
-		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((value8b ?? "").Length) + " chars=" + stringBuilder.Length);
+		extrasSections.WeeklyFullReports = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
+		extrasSections.LoreContext = loreContext;
+		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((extrasSections.WeeklyFullReports ?? "").Length));
 		if (!suppressDynamicRuleAndLore)
 		{
 			bool includeResidentKingdomEntities = PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
 			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
 			bool includeResidentPlayerEntities = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
-			HashSet<string> entityRetrievalRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (auxiliaryRuleHitIds != null)
-			{
-				foreach (string ruleId in auxiliaryRuleHitIds)
-				{
-					if (!string.IsNullOrWhiteSpace(ruleId))
-					{
-						entityRetrievalRuleIds.Add(ruleId.Trim());
-					}
-				}
-			}
-			if (flag7)
-			{
-				entityRetrievalRuleIds.Add("reward");
-			}
-			if (flag8)
-			{
-				entityRetrievalRuleIds.Add("loan");
-			}
-			if (partyTransferHit)
-			{
-				entityRetrievalRuleIds.Add("party_transfer");
-			}
-			if (worldMapPartyCommandHit)
-			{
-				entityRetrievalRuleIds.Add("worldmap_party_command");
-			}
+			HashSet<string> entityRetrievalRuleIds = PromptExtrasComposer.BuildEntityRetrievalRuleIds(auxiliaryRuleHitIds, flag7, flag8, partyTransferHit, worldMapPartyCommandHit);
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
 			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities);
 			shoutPromptContext.ExplicitMentionedKingdomIds = entityPromptContext?.ExplicitMentionedKingdomIds?
@@ -31034,10 +30927,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				.ToList() ?? new List<string>();
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
-				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
-				{
-					stringBuilder.AppendLine(entityPromptContext.MainPromptBlock);
-				}
+				extrasSections.EntityMainPromptBlock = entityPromptContext.MainPromptBlock;
 				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
 				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " residentPlayerEntities=" + includeResidentPlayerEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
 			}
@@ -31046,22 +30936,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 				WorldEntityPromptContext agendaPromptContext = VoteDealBehavior.BuildUnifiedAgendaPromptContextForExternal(entityContextHero, mentionedEntities);
 				if (agendaPromptContext != null && agendaPromptContext.HasContent)
 				{
-					if (!string.IsNullOrWhiteSpace(agendaPromptContext.MainPromptBlock)) stringBuilder.AppendLine(agendaPromptContext.MainPromptBlock);
-					if (!string.IsNullOrWhiteSpace(agendaPromptContext.PostprocessPromptBlock))
-					{
-						shoutPromptContext.EntityPostprocessContext = string.IsNullOrWhiteSpace(shoutPromptContext.EntityPostprocessContext)
-							? agendaPromptContext.PostprocessPromptBlock
-							: (shoutPromptContext.EntityPostprocessContext.TrimEnd() + "\n" + agendaPromptContext.PostprocessPromptBlock);
-					}
+					extrasSections.AgendaMainPromptBlock = agendaPromptContext.MainPromptBlock;
+					shoutPromptContext.EntityPostprocessContext = PromptExtrasComposer.MergePostprocessBlock(shoutPromptContext.EntityPostprocessContext, agendaPromptContext.PostprocessPromptBlock);
 				}
 			}
-			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + (entityPromptContext != null && entityPromptContext.HasContent) + " chars=" + stringBuilder.Length);
+			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + (entityPromptContext != null && entityPromptContext.HasContent));
 		}
 		bool includeTradePricing = flag7 || flag8;
 		bool includeMarriageCandidates = targetHero != null && marriageHit;
 		RomanceSystemBehavior.SetMarriagePostprocessContextEnabled(targetHero, includeMarriageCandidates);
 		bool includeRuleGatedFields = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
-		shoutPromptContext.Extras = stringBuilder.ToString();
+		shoutPromptContext.Extras = PromptExtrasComposer.Compose(extrasSections);
 		shoutPromptContext.UseDuelContext = flag2;
 		shoutPromptContext.UseRewardContext = flag7;
 		shoutPromptContext.IsLoanContext = flag8;
@@ -31089,14 +30974,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		LogShoutPromptContextStage("gccz_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
 		shoutPromptContext.Extras = AppendPlayerPartySharedResourcePrompt(shoutPromptContext.Extras, targetHero, targetCharacter);
 		LogShoutPromptContextStage("shared_resource_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
-		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasWorldMapRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasNpcMajorRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasResidentRecentActions = (shoutPromptContext.Extras?.IndexOf("【NPC近期行动（近10天，常驻）】", StringComparison.Ordinal)).GetValueOrDefault() >= 0;
-		bool extrasHasVanillaIssueRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasVanillaIssueRuntimeBlock = (shoutPromptContext.Extras?.IndexOf("【原版任务上下文", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		PromptExtrasMarkers extrasMarkers = PromptExtrasComposer.DetectMarkers(shoutPromptContext.Extras);
+		bool extrasHasDuelRule = extrasMarkers.Duel;
+		bool extrasHasRewardRule = extrasMarkers.Reward;
+		bool extrasHasLoanRule = extrasMarkers.Loan;
+		bool extrasHasWorldMapRule = extrasMarkers.WorldMap;
+		bool extrasHasNpcMajorRule = extrasMarkers.NpcMajor;
+		bool extrasHasResidentRecentActions = extrasMarkers.ResidentRecentActions;
+		bool extrasHasVanillaIssueRule = extrasMarkers.VanillaIssue;
+		bool extrasHasVanillaIssueRuntimeBlock = extrasMarkers.VanillaIssueRuntimeBlock;
 		bool extrasHasSiegeInterventionRule = AfGcczShoutBridge.HasInjectedRuleBlock(shoutPromptContext.Extras);
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasResidentRecentActions={extrasHasResidentRecentActions} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 		LogShoutPromptContextStage("complete", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length), immediate: true);

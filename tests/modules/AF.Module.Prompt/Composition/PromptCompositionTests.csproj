@@ -14,5 +14,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/BuiltInRuleStickyCarry.cs" Link="BuiltInRuleStickyCarry.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptBuiltInTopicRouter.cs" Link="PromptBuiltInTopicRouter.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptPreprocessRuleIdAssembler.cs" Link="PromptPreprocessRuleIdAssembler.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs" Link="PromptExtrasComposer.cs" />
   </ItemGroup>
 </Project>
