@@ -25,6 +25,8 @@ public object CaptureReplay(Agent[] framed,Agent primary){var method=GetType().G
 private void CancelShoutHotkeyCharge(string s){} private float GetShoutProcessingElapsedSeconds()=>0;private void ResumeTtsAfterShoutUi(){}
 private static bool ContainsLiteralKeywordHit(string x,string y)=>false;
 private void DeactivateMultiSceneMovementSuppression(){}private void ClearPendingSceneConversationAttentionRelease(){}private void ResetStaringBehavior(){}private void ClearQueuedSceneSpeech(){ClearedSpeech++;}private void StopAllLipSyncPlaybackAndCleanup(){}
+// The extracted fixture does not include the unrelated native-action registry.
+private void ResetPendingMainThreadFunctions(){}
 public void Open(params Agent[] targets){BeginShoutProcessing("fixture_open");_activeShoutTargetingContext=new ShoutTargetingContext{CandidateAgentIndices=targets.Select(x=>x.Index).ToList(),PreviewCandidateAgents=targets.ToList(),PrimaryAgentIndex=targets.Length>0?targets[0].Index:-1};_isProcessingShout=true;}
 public void Register(Task t)=>RegisterScenePostprocessGateTask(t);public Task Wait(string x)=>WaitForScenePostprocessGateAsync(x); public Task Gate()=>GetScenePostprocessGateTask();
 public void NewSession(){ResetSceneShoutRuntimeOnMissionEnd("fixture_mission_end");}
