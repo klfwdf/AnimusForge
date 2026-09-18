@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,6 +150,18 @@ internal static class Program
         VerifyYieldedScopeAsync().GetAwaiter().GetResult();
         Check(PromptRetrievalContextOwner.Hero.Value == "parent" && (string)latest.Value == "parent mention,child mention",
             "async child does not mutate caller execution context");
+        int ReturnInsideScope()
+        {
+            using (PromptRetrievalContextOwner.BeginScope((parent, child) => parent + "," + child))
+            {
+                PromptRetrievalContextOwner.Hero.Value = "early-return child";
+                latest.Value = "early-return mention";
+                return 7;
+            }
+        }
+        Check(ReturnInsideScope() == 7 && PromptRetrievalContextOwner.Hero.Value == "parent"
+            && (string)latest.Value == "parent mention,child mention,early-return mention",
+            "early return restores target and delivers mentions");
         var mutableSeeds = new[] { "duel", "reward" };
         var warmup = new PromptSemanticWarmupSeedBatch(5, mutableSeeds);
         mutableSeeds[0] = "changed";
@@ -482,6 +495,37 @@ internal static class Program
             && AIConfigHandler.ReceivedWarmupSource == "rag_warmup_complete"
             && AIConfigHandler.ReceivedWarmupThread != missionThread,
             "coordinator background callback passes caller-captured seed without recapturing game state");
+        const int cacheOperations = 20000;
+        var measuredCache = new PromptSingleEvaluationCache<string>();
+        measuredCache.Publish("same", "value", 1, 1);
+        var stopwatch = Stopwatch.StartNew();
+        for (int i = 0; i < cacheOperations; i++) measuredCache.TryGet("same", 1, out _);
+        double hitMs = stopwatch.Elapsed.TotalMilliseconds;
+        stopwatch.Restart();
+        for (int i = 0; i < cacheOperations; i++) measuredCache.TryGet("other", 1, out _);
+        double missMs = stopwatch.Elapsed.TotalMilliseconds;
+        stopwatch.Restart();
+        for (int i = 0; i < cacheOperations; i++)
+        {
+            measuredCache.Clear();
+            measuredCache.Publish("same", "value", i + 2, i + 2);
+        }
+        double reloadMs = stopwatch.Elapsed.TotalMilliseconds;
+        var largeCandidates = Enumerable.Range(0, 5000)
+            .Select(i => new PromptCandidateDescriptor(i, new[] { i == 4999 ? "target sword" : "candidate " + i }))
+            .ToArray();
+        stopwatch.Restart();
+        var selectedLarge = PromptCandidateSelection.SelectIndices(largeCandidates, new[] { "target sword" }, 10, true);
+        double largeMs = stopwatch.Elapsed.TotalMilliseconds;
+        Check(selectedLarge.Count == 10 && selectedLarge[0] == 4999, "large candidate list retains ranking and fallback without truncating input");
+        int warmedWork = 0;
+        var measuredSeeds = new PromptSemanticWarmupSeedBatch(9, Enumerable.Range(0, 100).Select(i => "seed" + i));
+        stopwatch.Restart();
+        var measuredWarmup = PromptSemanticWarmupExecutor.Run(measuredSeeds, () => 9,
+            (_, _) => { warmedWork++; return true; });
+        double warmupMs = stopwatch.Elapsed.TotalMilliseconds;
+        Check(measuredWarmup.Warmed == 100 && warmedWork == 100, "warmup processes every seed without feature truncation");
+        Console.WriteLine($"PromptJ03 perf cacheOps={cacheOperations} hitMs={hitMs:F3} missMs={missMs:F3} reloadMs={reloadMs:F3} candidateCount=5000 selected={selectedLarge.Count} largeMs={largeMs:F3} warmupSeeds={warmedWork} warmupMs={warmupMs:F3}");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
