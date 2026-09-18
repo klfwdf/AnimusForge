@@ -1,0 +1,144 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using AnimusForge;
+
+namespace AnimusForge;
+
+@@PORTS@@
+
+internal sealed class GuardrailRulePromptConfig
+{
+    internal string Id = "", Group = "", Instruction = "", TopicLabel = "", Code = "";
+    internal int TopicNumber;
+    internal bool IsEnabled = true;
+    internal List<string> TriggerKeywords = new List<string>();
+}
+
+internal sealed class MentionedWorldEntities
+{
+    internal List<string> Entities = new List<string>();
+    internal bool IsEmpty => Entities.Count == 0;
+    internal MentionedWorldEntities Clone() => new MentionedWorldEntities { Entities = new List<string>(Entities) };
+    internal void Merge(MentionedWorldEntities other) { foreach (string item in other.Entities) if (!Entities.Contains(item)) Entities.Add(item); }
+}
+internal sealed class PreprocessFormatException : Exception { }
+internal sealed class DuelSettings
+{
+    internal bool UseAuxiliaryRuleApi, KnowledgeRetrievalEnabled = true, KnowledgeSemanticFirst = true;
+    internal int MemoryPreprocessMode, KnowledgeDirectTopN = 2, KnowledgeSemanticTopK = 2, GuardrailDirectTopN = 2;
+}
+internal static class Logger
+{
+    internal static void Log(string category, string message) { }
+    internal static void RecordHitRate(string area, string tag, bool hit, string detail, string input) { }
+}
+internal sealed class OnnxCrossEncoderReranker
+{
+    internal static OnnxCrossEncoderReranker Instance => throw new Exception("live reranker reached");
+    internal bool IsAvailable => false;
+    internal bool TryScoreBatch(string query, IReadOnlyList<string> texts, out List<float> scores) { scores = null; return false; }
+}
+
+public static class AIConfigHandler
+{
+    private static readonly object _promptConfigurationReloadLock = new object();
+    private static readonly RevisionedPromptConfigurationStore<string> _promptConfiguration = new RevisionedPromptConfigurationStore<string>("one");
+    private static readonly PromptSingleEvaluationCache<GuardrailEvalSnapshot> _guardrailEvalCache = new PromptSingleEvaluationCache<GuardrailEvalSnapshot>();
+    private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetKingdomId = PromptRetrievalContextOwner.Kingdom;
+    private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetHeroId = PromptRetrievalContextOwner.Hero;
+    private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetCharacterId = PromptRetrievalContextOwner.Character;
+    private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetTroopId = PromptRetrievalContextOwner.Troop;
+    private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetUnnamedRank = PromptRetrievalContextOwner.UnnamedRank;
+    private static readonly PromptRetrievalContextSlot<int> _guardrailRuntimeTargetAgentIndex = PromptRetrievalContextOwner.AgentIndex;
+    private static DuelSettings Settings = new DuelSettings();
+    private static int Checks;
+    private static int InputCalls, PhraseCalls, AuxiliaryCalls, RerankCalls;
+    private static List<GuardrailRulePromptConfig> Eligible = new List<GuardrailRulePromptConfig>();
+    private static bool GuardrailKnowledgeEnabled => true;
+    private static bool GuardrailKnowledgeSemanticFirst => true;
+    private static int GuardrailKnowledgeTopK => 2;
+    private static DuelSettings TryGetMcmSettings() => Settings;
+    private static string GetRuntimeGuardrailContext() => "";
+    private static string GetAuxiliarySceneDialogueHistoryContext() => "";
+    private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> ids, bool auto) => new HashSet<string>(ids ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+    private static int ClampKnowledgeTopK(int value) => Math.Max(1, value);
+    private static int ClampGuardrailReturnCap(int value) => Math.Max(1, value);
+    private static string BuildGuardrailEvalKey(string input, string context, string secondary) => input + "|" + context + "|" + secondary;
+    private static string NormalizeSemanticText(string input) => input ?? "";
+    private static string BuildSemanticHitRateDetail(string detail, string secondary) => detail;
+    private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts() => throw new Exception("live eligibility reached");
+    private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string input, string context, string secondary, string key,
+        out GuardrailEvalSnapshot snapshot, List<GuardrailRulePromptConfig> rules, int cap, HashSet<string> excluded, bool auto)
+        => throw new Exception("live auxiliary reached");
+    private static bool TryGetInputEmbedding(string input, out float[] vector) => throw new Exception("live input provider reached");
+    private static bool TryGetPhraseEmbedding(string input, out float[] vector) => throw new Exception("live phrase provider reached");
+    private static float DotProductNormalized(float[] a, float[] b) => a.Zip(b, (x, y) => x * y).Sum();
+    private static void Check(bool condition, string message) { Checks++; if (!condition) throw new Exception(message); }
+
+    @@ENTRY@@
+
+    private static PromptRuleEvaluationPorts Ports()
+    {
+        return new PromptRuleEvaluationPorts
+        {
+            EligibleRules = () => Eligible,
+            InputEmbedding = text => { InputCalls++; return text.Contains("duel") ? new[] { 1f, 0f } : text.Contains("reward") ? new[] { 0f, 1f } : null; },
+            PhraseEmbedding = text => { PhraseCalls++; return text.Contains("duel") ? new[] { 1f, 0f } : text.Contains("reward") ? new[] { 0f, 1f } : null; },
+            Rerank = (query, texts) => { RerankCalls++; return texts.Select(t => t.Contains("duel") ? 0.9f : 0.2f).ToList(); },
+            AuxiliarySnapshot = (key, cap) => { AuxiliaryCalls++; return new GuardrailEvalSnapshot { Key = key, MatchMode = "auxiliary", ReturnCap = cap, Rules = new Dictionary<string, GuardrailRuleEval> { ["duel"] = new GuardrailRuleEval { RuleTag = "duel", Hit = true } } }; }
+        };
+    }
+
+    public static void Main()
+    {
+        Eligible = new List<GuardrailRulePromptConfig>
+        {
+            new GuardrailRulePromptConfig { Id = "duel", Instruction = "duel", TriggerKeywords = new List<string> { "duel" } },
+            new GuardrailRulePromptConfig { Id = "reward", Instruction = "reward", TriggerKeywords = new List<string> { "reward" } }
+        };
+        var ports = Ports();
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var first, null, true, ports) && first.MatchMode.StartsWith("rerank"), "semantic entry uses deterministic embedding and rerank");
+        Check(InputCalls > 0 && PhraseCalls > 0 && RerankCalls > 0, "semantic provider callbacks were used");
+        int inputAtHit = InputCalls;
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var hit, null, true, ports) && ReferenceEquals(first, hit) && InputCalls == inputAtHit, "same-key cache hit bypasses provider");
+        Settings.GuardrailDirectTopN = 3;
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var mcm, null, true, ports) && !ReferenceEquals(first, mcm), "MCM hot edit invalidates cache key");
+        _guardrailRuntimeTargetHeroId.Value = "hero-two";
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var target, null, true, ports) && !ReferenceEquals(mcm, target), "target identity isolates cache");
+        Eligible = Eligible.Take(1).ToList();
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var eligible, null, true, ports) && !ReferenceEquals(target, eligible) && eligible.Rules.Count == 1, "eligibility isolates cache");
+        TryGetGuardrailEvalSnapshot("duel", "", out var excluded, new[] { "duel" }, true, ports);
+        Check(!ReferenceEquals(eligible, excluded) && (excluded == null || !excluded.Rules.ContainsKey("duel")), "exclusion isolates cache and suppresses rule");
+        Settings.UseAuxiliaryRuleApi = true;
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var aux, null, true, ports) && aux.MatchMode == "auxiliary" && AuxiliaryCalls == 1, "auxiliary entry uses deterministic callback");
+        _guardrailEvalCache.Clear();
+        ports.AuxiliarySnapshot = (key, cap) => { AuxiliaryCalls++; return null; };
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var auxFallback, null, true, ports) && auxFallback.MatchMode.StartsWith("rerank") && AuxiliaryCalls == 2,
+            "failed auxiliary result falls back to semantic pipeline");
+        Settings.UseAuxiliaryRuleApi = false;
+        _guardrailEvalCache.Clear();
+        ports.Rerank = (query, texts) => new[] { 0.9f };
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var rerankFallback, null, true, ports) && rerankFallback.Rules.ContainsKey("duel"),
+            "invalid rerank result retains semantic rule evidence");
+        ports.Rerank = null;
+        _guardrailEvalCache.Clear();
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var semanticOnly, null, true, ports) && semanticOnly.MatchMode.StartsWith("semantic"),
+            "unavailable reranker uses semantic-only entry");
+        _guardrailEvalCache.Clear();
+        bool reloaded = false;
+        ports.PhraseEmbedding = text =>
+        {
+            if (!reloaded) { reloaded = true; _promptConfiguration.Reload(() => "two", _ => "default"); }
+            return new[] { 1f, 0f };
+        };
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var old, null, true, ports) && reloaded, "in-flight old revision returns local result");
+        Check(!_guardrailEvalCache.TryGet(old.Key, 1, out _), "late old revision cannot publish evaluation cache");
+        Check(TryGetGuardrailEvalSnapshot("duel", "", out var current, null, true, ports) && !ReferenceEquals(old, current), "new revision computes its own result");
+        _guardrailEvalCache.Clear();
+        ports.InputEmbedding = _ => throw new InvalidOperationException("provider failed");
+        Check(!TryGetGuardrailEvalSnapshot("duel", "", out _, null, true, ports), "provider exception uses existing failure return");
+        Console.WriteLine("PromptJ03 production evaluation checks=" + Checks);
+    }
+}

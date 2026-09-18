@@ -32,6 +32,16 @@ using TaleWorlds.MountAndBlade.Missions;
 
 namespace AnimusForge;
 
+// Explicit per-call boundaries keep deterministic rule tests out of process-wide provider state.
+internal sealed class PromptRuleEvaluationPorts
+{
+	internal Func<List<GuardrailRulePromptConfig>> EligibleRules;
+	internal Func<string, float[]> InputEmbedding;
+	internal Func<string, float[]> PhraseEmbedding;
+	internal Func<string, IReadOnlyList<string>, IReadOnlyList<float>> Rerank;
+	internal Func<string, int, GuardrailEvalSnapshot> AuxiliarySnapshot;
+}
+
 public static class AIConfigHandler
 {
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
@@ -4707,7 +4717,7 @@ public static class AIConfigHandler
 		return TryGetGuardrailEvalSnapshot(userText, secondaryText, out snapshot, excludedRuleIds, applyRuntimeAutoExclusions: true);
 	}
 
-	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
+	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, PromptRuleEvaluationPorts ports = null)
 	{
 		using IDisposable configurationScope = _promptConfiguration.BeginCapture();
 		long configurationRevision = _promptConfiguration.Read().Revision;
@@ -4736,7 +4746,7 @@ public static class AIConfigHandler
 				catch { semanticTopK = 4; }
 				try { returnCap = ClampGuardrailReturnCap(retrievalSettings.GuardrailDirectTopN); } catch { }
 			}
-			List<GuardrailRulePromptConfig> eligibleRules = GetAllEnabledRulePrompts();
+			List<GuardrailRulePromptConfig> eligibleRules = ports == null ? GetAllEnabledRulePrompts() : ports.EligibleRules?.Invoke() ?? new List<GuardrailRulePromptConfig>();
 			string eligibilityKey = string.Join(",", eligibleRules.Select(rule => rule.Id.Length + ":" + rule.Id));
 			string targetKey = _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
 				+ ":" + _guardrailRuntimeTargetTroopId.Value + ":" + _guardrailRuntimeTargetUnnamedRank.Value + ":" + _guardrailRuntimeTargetAgentIndex.Value;
@@ -4748,7 +4758,18 @@ public static class AIConfigHandler
 			{
 				return snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
-			if (useAuxiliary && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, eligibleRules, returnCap, excluded, applyRuntimeAutoExclusions))
+			bool auxiliaryMatched = false;
+			if (useAuxiliary)
+			{
+				if (ports == null)
+					auxiliaryMatched = TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, eligibleRules, returnCap, excluded, applyRuntimeAutoExclusions);
+				else
+				{
+					snapshot = ports.AuxiliarySnapshot?.Invoke(text, returnCap);
+					auxiliaryMatched = snapshot != null;
+				}
+			}
+			if (auxiliaryMatched)
 			{
 				lock (_promptConfigurationReloadLock)
 				{
@@ -4757,7 +4778,7 @@ public static class AIConfigHandler
 				return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
 			PromptRuleIntentInputBatch batch = PromptRuleIntentInputBatch.Collect(userText, secondaryText,
-				input => TryGetInputEmbedding(input, out var vector) ? vector : null);
+				input => ports == null ? (TryGetInputEmbedding(input, out var vector) ? vector : null) : ports.InputEmbedding?.Invoke(input));
 			List<PromptRuleRecallIntent> list = batch.Intents;
 			List<string> list2 = batch.Texts;
 			if (list.Count <= 0)
@@ -4784,7 +4805,8 @@ public static class AIConfigHandler
 			float[] vec2 = null;
 			if (!string.IsNullOrWhiteSpace(runtimeGuardrailContext))
 			{
-				TryGetInputEmbedding(runtimeGuardrailContext, out vec2);
+				if (ports == null) TryGetInputEmbedding(runtimeGuardrailContext, out vec2);
+				else vec2 = ports.InputEmbedding?.Invoke(runtimeGuardrailContext);
 			}
 			List<GuardrailRulePromptConfig> allEnabledRulePrompts = eligibleRules;
 			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
@@ -4800,23 +4822,26 @@ public static class AIConfigHandler
 					: new PromptRuleRetrievalRule(rule.Id, rule.Group, rule.Instruction, rule.TriggerKeywords));
 			}
 			OnnxCrossEncoderReranker onnxCrossEncoderReranker = null;
-			bool flag2 = false;
-			try
+			bool flag2 = ports?.Rerank != null;
+			if (ports == null)
 			{
-				onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
-				flag2 = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
-			}
-			catch
-			{
-				flag2 = false;
+				try
+				{
+					onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
+					flag2 = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
+				}
+				catch
+				{
+					flag2 = false;
+				}
 			}
 			PromptRuleRetrievalResult result = PromptRuleRetrievalPipeline.Run(text, list, detachedRules, vec2,
-				returnCap, flag2, seed => TryGetPhraseEmbedding(seed, out var vector) ? vector : null,
-				DotProductNormalized, flag2 ? (Func<string, IReadOnlyList<string>, IReadOnlyList<float>>)((query, texts) =>
+				returnCap, flag2, seed => ports == null ? (TryGetPhraseEmbedding(seed, out var vector) ? vector : null) : ports.PhraseEmbedding?.Invoke(seed),
+				DotProductNormalized, ports?.Rerank ?? (flag2 ? (Func<string, IReadOnlyList<string>, IReadOnlyList<float>>)((query, texts) =>
 			{
 				List<float> scores;
 				return onnxCrossEncoderReranker.TryScoreBatch(query, texts, out scores) ? scores : null;
-			}) : null);
+			}) : null));
 			GuardrailEvalSnapshot guardrailEvalSnapshot = result.Snapshot;
 			int guardrailReturnCapFromMcm = returnCap;
 			int num6 = guardrailEvalSnapshot.IntentCount;
