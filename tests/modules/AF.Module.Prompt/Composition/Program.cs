@@ -28,7 +28,40 @@ internal static class Program
         RuntimeTargetBinding();
         RuleBlockText();
         RoutingStage();
+        ExclusionSets();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void ExclusionSets()
+    {
+        int runtimeCalls = 0, preprocessCalls = 0;
+        PromptExclusionSets.Build(new[] { " Duel ", "" }, null,
+            set => { runtimeCalls++; set.Add("worldmap_party_command"); },
+            set => { preprocessCalls++; set.Add("gccz_rule"); },
+            out var explicitSet, out var runtimeSet, out var preprocessSet, out bool complete);
+        Check(explicitSet.SetEquals(new[] { "Duel" }) && runtimeSet.SetEquals(new[] { "Duel", "worldmap_party_command" }), "explicit and runtime sets");
+        Check(complete && preprocessSet.SetEquals(new[] { "Duel", "worldmap_party_command", "gccz_rule", "noble_deference" }), "caller passed no preprocess list → copy runtime + preprocess-only additions");
+        Check(runtimeCalls == 1 && preprocessCalls == 1, "host callbacks invoked once each");
+
+        PromptExclusionSets.Build(new[] { "duel" }, new[] { "loan" }, set => set.Add("worldmap_party_command"), null,
+            out _, out runtimeSet, out preprocessSet, out complete);
+        Check(!complete && preprocessSet.SetEquals(new[] { "loan", "duel", "noble_deference" }) && !preprocessSet.Contains("worldmap_party_command"), "caller list is not merged with runtime set, explicit ids re-added");
+
+        var set2 = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "a" });
+        // Legacy passes the raw configured id to the availability check and trims only on insertion.
+        PromptExclusionSets.AddUnavailableConfiguredRules(set2, new[] { "kingdom_service", " marriage ", "", "duel" }, id => id.Trim() != "marriage" && id != "duel");
+        Check(set2.SetEquals(new[] { "a", "marriage", "duel" }), "unavailable configured rules excluded, trimmed");
+        PromptExclusionSets.AddUnavailableConfiguredRules(null, new[] { "x" }, _ => false);
+        PromptExclusionSets.AddUnavailableConfiguredRules(set2, null, _ => false);
+        Check(set2.Count == 3, "null arguments are no-ops");
+        var ordered = PromptExclusionSets.ToOrderedList(new HashSet<string>(new[] { " b ", "", "a", "B" }, StringComparer.Ordinal));
+        Check(ordered.Count == 2 && ordered.Contains("b") && ordered.Contains("a"), "ordered list trims/dedupes case-insensitively: " + string.Join(",", ordered));
+        Check(PromptExclusionSets.ToOrderedList(null).Count == 0, "null set → empty list");
+
+        var request = new PromptBuildRequest { Input = " ", ExtraFact = null, PlayerClanTier = 2, MinimumClanTier = 3, SuppressDynamicRuleAndLore = false, BypassRulePreprocess = true, UsePrefetchedLoreContext = true, PrefetchedLoreContext = " " };
+        Check(request.IsEmpty && !request.IsQualified && !request.AllowRulePreprocess && !request.HasPrefetchedLore, "request derived flags");
+        request.PlayerClanTier = 3; request.BypassRulePreprocess = false; request.PrefetchedLoreContext = "lore"; request.Input = "hi";
+        Check(!request.IsEmpty && request.IsQualified && request.AllowRulePreprocess && request.HasPrefetchedLore, "request derived flags (positive)");
     }
 
     private static PromptRoutingInput RoutingInput(bool allow = true, bool useAux = true, IEnumerable<string> forced = null, string input = "我要和你决斗")

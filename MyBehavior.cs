@@ -19858,6 +19858,34 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	/// <summary>Cached tier first; live Clan/MainHero read only when the cache is cold. Game-thread read.</summary>
+	private static int ResolvePlayerClanTierForPrompt()
+	{
+		int tier = _cachedPlayerClanTier;
+		if (tier > 0)
+		{
+			return tier;
+		}
+		try
+		{
+			tier = Clan.PlayerClan?.Tier ?? 0;
+		}
+		catch
+		{
+		}
+		if (tier <= 0)
+		{
+			try
+			{
+				tier = (Hero.MainHero?.Clan?.Tier).GetValueOrDefault();
+			}
+			catch
+			{
+			}
+		}
+		return tier;
+	}
+
 	private PromptRoutingPorts CreatePromptRoutingPorts()
 	{
 		return new PromptRoutingPorts
@@ -30463,25 +30491,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Stopwatch promptContextStageSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
 		LogShoutPromptContextStage("start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "inputLen=" + ((input ?? "").Length) + " extraLen=" + ((extraFact ?? "").Length) + " suppressDynamic=" + suppressDynamicRuleAndLore + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		HashSet<string> explicitExcludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
-		HashSet<string> excludedRuleIdSet = new HashSet<string>(explicitExcludedRuleIdSet, StringComparer.OrdinalIgnoreCase);
-		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
-		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet);
 		// These are topics removed from the candidate list before routing. They are
 		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
-		bool completeRuntimeExcludedRuleIds = preprocessExcludedRuleIds == null;
-		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : PromptRuleIdPolicy.BuildRuleIdSet(preprocessExcludedRuleIds);
-		foreach (string excludedRuleId in explicitExcludedRuleIdSet)
-		{
-			if (!string.IsNullOrWhiteSpace(excludedRuleId))
+		PromptExclusionSets.Build(excludedRuleIds, preprocessExcludedRuleIds,
+			set =>
 			{
-				preprocessExcludedRuleIdSet.Add(excludedRuleId.Trim());
-			}
-		}
-		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
-		PromptRuleIdPolicy.AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
+				AddPlayerCompanionOrFamilyRuleExclusionsForTarget(set, targetHero, targetCharacter);
+				AddWorldMapCommandRuleExclusionForTarget(set, targetHero, targetCharacter, targetAgentIndex);
+				AddSceneMoveRuleExclusionForCurrentMission(set);
+				AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(set);
+			},
+			set => AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(set),
+			out HashSet<string> explicitExcludedRuleIdSet, out HashSet<string> excludedRuleIdSet, out HashSet<string> preprocessExcludedRuleIdSet, out bool completeRuntimeExcludedRuleIds);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
@@ -30489,22 +30510,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			if (!suppressDynamicRuleAndLore && completeRuntimeExcludedRuleIds)
 			{
-				foreach (string configuredRuleId in AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal())
-				{
-					if (!string.IsNullOrWhiteSpace(configuredRuleId)
-						&& !AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(configuredRuleId, hasAnyHero))
-					{
-						preprocessExcludedRuleIdSet.Add(configuredRuleId.Trim());
-					}
-				}
+				PromptExclusionSets.AddUnavailableConfiguredRules(preprocessExcludedRuleIdSet, AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal(),
+					id => AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(id, hasAnyHero));
 			}
 			if (!suppressDynamicRuleAndLore)
 			{
-				shoutPromptContext.PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet
-					.Where((string ruleId) => !string.IsNullOrWhiteSpace(ruleId))
-					.Select((string ruleId) => ruleId.Trim())
-					.Distinct(StringComparer.OrdinalIgnoreCase)
-					.ToList();
+				shoutPromptContext.PreprocessExcludedRuleIds = PromptExclusionSets.ToOrderedList(preprocessExcludedRuleIdSet);
 				shoutPromptContext.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(shoutPromptContext.PreprocessExcludedRuleIds);
 			}
 			if (!suppressDynamicRuleAndLore)
@@ -30514,28 +30525,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string guardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact);
 			AIConfigHandler.SetGuardrailSemanticContext(guardrailSemanticContext);
 			LogShoutPromptContextStage("runtime_init_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "semanticContextLen=" + ((guardrailSemanticContext ?? "").Length) + " targetKingdom=" + (targetKingdomId ?? ""));
-		string text = ((!string.IsNullOrEmpty(cultureIdOverride)) ? cultureIdOverride : (targetHero?.Culture?.StringId ?? "neutral"));
-		int num = _cachedPlayerClanTier;
-		if (num <= 0)
-		{
-			try
-			{
-				num = Clan.PlayerClan?.Tier ?? 0;
-			}
-			catch
-			{
-			}
-			if (num <= 0)
-			{
-				try
-				{
-					num = (Hero.MainHero?.Clan?.Tier).GetValueOrDefault();
-				}
-				catch
-				{
-				}
-			}
-		}
+		int num = ResolvePlayerClanTierForPrompt();
 		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
 		bool isQualified = num >= num2;
 		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
