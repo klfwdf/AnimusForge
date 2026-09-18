@@ -22,6 +22,8 @@ namespace AnimusForge.Illustrator.Context
         public string Season { get; set; } = string.Empty;
         public string Weather { get; set; } = string.Empty;
         public string TimeOfDay { get; set; } = string.Empty;
+        public bool HasSceneTime { get; set; }
+        public string TimeEvidence { get; set; } = string.Empty;
         public string DateLabel { get; set; } = string.Empty;
         public string LightingAndAtmosphere { get; set; } = string.Empty;
         public string ConflictStatus { get; set; } = string.Empty;
@@ -48,6 +50,7 @@ namespace AnimusForge.Illustrator.Context
                 foreach (string season in new[] { "春季", "夏季", "秋季", "冬季" })
                     if ((DateLabel ?? string.Empty).Contains(season)) { sb.AppendLine("【季节参考】" + season); break; }
             if (!string.IsNullOrWhiteSpace(TimeOfDay)) sb.AppendLine($"【现场时段】{TimeOfDay}");
+            if (!string.IsNullOrWhiteSpace(TimeEvidence)) sb.AppendLine($"【时段来源】{TimeEvidence}");
             if (!string.IsNullOrWhiteSpace(Weather)) sb.AppendLine($"【现场天气】{Weather}");
             if (!string.IsNullOrWhiteSpace(CultureTag)) sb.AppendLine($"【文化归属】{CultureTag}");
             if (!string.IsNullOrWhiteSpace(TerrainTag)) sb.AppendLine($"【地貌类型】{TerrainTag}");
@@ -56,6 +59,19 @@ namespace AnimusForge.Illustrator.Context
             string extraSceneFacts = NarrativeFactRouter.SceneEvidence(HostSceneDescription, sb.ToString());
             if (!string.IsNullOrWhiteSpace(extraSceneFacts)) sb.AppendLine("【场景补充事实】" + extraSceneFacts);
             return sb.ToString().TrimEnd();
+        }
+
+        internal void UseConversationTimeEvidence()
+        {
+            if (HasSceneTime)
+            {
+                TimeEvidence = "当前 Mission 场景时间";
+                return;
+            }
+            // Map conversation tableaus need not use the campaign clock's lighting.
+            TimeOfDay = string.Empty;
+            LightingAndAtmosphere = string.Empty;
+            TimeEvidence = "未读取到会话渲染场景时间；战役时钟不作为现场昼夜证据。若提供当前现场截图，以其中可辨认的昼夜与采光为准；否则时段未确认。";
         }
 
         public string BuildDirectorOnlyFacts()
@@ -680,9 +696,14 @@ namespace AnimusForge.Illustrator.Context
                     var scene = mission.Scene;
                     if (scene != null)
                     {
-                        int sceneHour = (int)scene.TimeOfDay;
-                        profile.TimeOfDay = ResolveTimeOfDay(sceneHour);
-                        profile.LightingAndAtmosphere = ResolveLighting(sceneHour, (int)CampaignTime.Now.GetSeasonOfYear);
+                        float sceneTime = scene.TimeOfDay;
+                        if (!float.IsNaN(sceneTime) && sceneTime >= 0f && sceneTime <= 24f)
+                        {
+                            int sceneHour = (int)sceneTime;
+                            profile.TimeOfDay = ResolveTimeOfDay(sceneHour);
+                            profile.LightingAndAtmosphere = ResolveLighting(sceneHour, (int)CampaignTime.Now.GetSeasonOfYear);
+                            profile.HasSceneTime = true;
+                        }
                         float rain = scene.GetRainDensity();
                         float snow = scene.GetSnowDensity();
                         profile.Weather = snow > 0.05f ? $"现场降雪，密度约 {snow:0.00}" : rain > 0.05f ? $"现场降雨，密度约 {rain:0.00}" : "现场未检测到明显降雨或降雪";

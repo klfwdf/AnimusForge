@@ -2,6 +2,18 @@ namespace AnimusForge.Illustrator.Core
 {
     internal static class VisualFidelityRules
     {
+        internal const string DirectorAppearanceFidelity =
+            "【外观转写】：先逐人辨认对应参考图，再构思镜头。人物与镜头段中，用简短具体的形状描述保留入镜的外观识别点：" +
+            "头部装备的盔壳轮廓、面部实际覆盖范围及可见护鼻/护颊/羽饰；肩颈服饰的宽窄、覆盖位置、主色和叠穿层次；面部轮廓与胡须形状。" +
+            "只写参考中确实可辨认的特征，不套用上述部件清单添加装备，看不清的部位不猜测。" +
+            "物品名称、ID、文化和头衔只辅助识别，不是造型证据；名含战冠/crown仍须按图中盔壳和护具转写，不能概括成另一种王冠；" +
+            "披肩不能概括成内衬，服饰固有颜色不能换成阵营惯用色。衣褶、透视和受光可随构图重建，装备结构与覆盖范围保持一致。" +
+            "输出前逐人对照参考图检查这些特征，删除不符的修饰；只输出修正后的四段画面描述。";
+
+        internal const string CharacterAppearancePriority =
+            "人物身份参考：入镜装备的形制、覆盖范围、披肩轮廓、衣着主色和面容以此人参考图为准；" +
+            "若文字概括与可见外观冲突，保留参考图外观。姿态、镜头、衣褶与受光按导演描述重新绘制，不保留原图像素。";
+
         internal const string DirectorQualityFloor =
             "【成图质量底线】：以自然可信、清楚易画为先；站立、坐姿或轻微动作均可，不以动作幅度证明创作。" +
             "每个人物只选择一个清楚的主要体态，重心稳定，躯干与骨盆朝向协调，关节活动合理；" +
@@ -23,7 +35,7 @@ namespace AnimusForge.Illustrator.Core
             switch (kind)
             {
                 case IllustrationReferenceKind.Character:
-                    return "人物身份参考：保留此人的容貌与实际穿戴；姿态、镜头、笔触与光照以导演描述重新绘制。";
+                    return CharacterAppearancePriority;
                 case IllustrationReferenceKind.Emblem:
                     return "纹章样图：仅在已有纹章载体入画时还原图案与颜色，不把样图当成人物或背景。";
                 case IllustrationReferenceKind.Scene:
