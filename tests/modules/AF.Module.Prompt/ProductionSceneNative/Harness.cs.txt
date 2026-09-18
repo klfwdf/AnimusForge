@@ -1,0 +1,55 @@
+using System;
+using System.Collections.Generic;
+
+namespace AnimusForge;
+
+internal sealed class NpcDataPacket { internal int AgentIndex; }
+internal sealed class Hero { }
+internal sealed class MentionedWorldEntities { internal string Marker; }
+internal static class AfGcczShoutBridge
+{
+    internal static string BuildOrdinarySpeakerVoiceContext(Hero hero, NpcDataPacket npc) => "";
+}
+
+internal static class ShoutBehavior
+{
+    private static MentionedWorldEntities LastMentions;
+    private static bool LastInventory, LastTradePricing, LastPartyTransfer;
+    private static int Calls, Checks;
+    private static void Check(bool condition, string message) { Checks++; if (!condition) throw new Exception(message); }
+    private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs,
+        bool includeInventorySummary, bool includeTradePricing, bool partyTransferTopicSelected, MentionedWorldEntities promptMentions)
+    {
+        LastMentions = promptMentions;
+        LastInventory = includeInventorySummary;
+        LastTradePricing = includeTradePricing;
+        LastPartyTransfer = partyTransferTopicSelected;
+        Calls++;
+        return "stable|runtime";
+    }
+    private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero, out string stable, out string runtime)
+    {
+        string[] parts = fullIntro.Split('|');
+        stable = parts[0]; runtime = parts[1];
+    }
+    private static string BuildSceneCompositeUserBlock(string first, string second, string third) => second + third;
+    private static string BuildSceneAgentSelfActionFactForPrompt(NpcDataPacket npc, Hero hero) => "";
+
+    @@TOP@@
+    @@RUNTIME@@
+
+    public static void Main()
+    {
+        var npc = new NpcDataPacket { AgentIndex = 7 };
+        var hero = new Hero();
+        var mentions = new MentionedWorldEntities { Marker = "apple" };
+        string stable = BuildSceneSystemTopPromptIntroForSingle(npc, hero, new[] { npc }, true, true, true, mentions);
+        Check(stable == "stable" && ReferenceEquals(LastMentions, mentions) && LastInventory && LastTradePricing && LastPartyTransfer,
+            "Scene top wrapper forwards mentions, trade/private flag and candidate context");
+        string runtime = BuildSceneUserRuntimeContextForSingle(npc, hero, new[] { npc }, true, false, false, mentions);
+        Check(runtime == "runtime" && ReferenceEquals(LastMentions, mentions) && LastInventory && !LastTradePricing && !LastPartyTransfer,
+            "Native runtime wrapper forwards the same mentions while preserving its flags");
+        Check(Calls == 2, "both production wrappers call one role intro owner");
+        Console.WriteLine("PromptJ03 production Scene/Native wrapper checks=" + Checks);
+    }
+}

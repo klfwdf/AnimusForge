@@ -1,0 +1,77 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
+
+namespace AnimusForge;
+
+public sealed class MentionedWorldEntities
+{
+    public List<string> Entities = new List<string>();
+}
+
+public partial class RewardSystemBehavior
+{
+    private static List<RewardItemInfo> Inventory = new List<RewardItemInfo>();
+    private static List<RewardItemInfo> Visible = new List<RewardItemInfo>();
+    private static List<RewardItemInfo> Merchant = new List<RewardItemInfo>();
+    private static int Checks;
+    private static void Check(bool condition, string message) { Checks++; if (!condition) throw new Exception(message); }
+    private List<RewardItemInfo> BuildHeroRewardPostprocessItems(Hero hero) => Inventory;
+    private List<RewardItemInfo> GetHeroVisibleEquipmentItemsForPrompt(Hero hero) => Visible;
+    private List<RewardItemInfo> BuildSettlementMerchantPostprocessItems(CharacterObject character, Settlement settlement) => Merchant;
+    private static string GetItemPromptTypeLabel(ItemObject item) => "item";
+    private static int GetVisibleEquipmentActualUnitValue(RewardItemInfo item) => 1;
+    private static bool IsNotableMarketHero(Hero hero, Settlement settlement) => false;
+    private static Settlement ResolveNotableMarketSettlement(Hero hero) => null;
+    private static int GetRewardPostprocessGoldForHero(Hero hero) => 0;
+    private static int GetHeroGold(Hero hero) => 0;
+    private static int GetSettlementMarketTradeGold(Settlement settlement) => 0;
+    private static string BuildFilteredItemSummaryForAI(List<RewardItemInfo> options, int gold, bool guide, List<RewardItemInfo> all, string owner)
+        => "shown=" + string.Join(",", options.Select(item => item.StringId)) + ";all=" + string.Join(",", all.Select(item => item.StringId));
+
+    @@METHODS@@
+
+    public static void Main()
+    {
+        var subject = new RewardSystemBehavior();
+        var hero = new Hero { StringId = "npc-a", CharacterObject = new CharacterObject { StringId = "npc-a-char" } };
+        Inventory = new List<RewardItemInfo>
+        {
+            new RewardItemInfo { Name = "sword", StringId = "sword", PromptStringId = "sword", Item = new ItemObject { StringId = "sword" } },
+            new RewardItemInfo { Name = "cloak", StringId = "cloak", PromptStringId = "cloak", Item = new ItemObject { StringId = "cloak" }, IsPrivateEquipment = true },
+            new RewardItemInfo { Name = "apple", StringId = "apple", PromptStringId = "apple", Item = new ItemObject { StringId = "apple" } }
+        };
+        var mentions = new MentionedWorldEntities { Entities = new List<string> { "apple" } };
+        string withPrivate = subject.BuildFilteredInventorySummaryForAI(hero, mentions, 1, includePrivateBattleEquipment: true);
+        Check(withPrivate.Contains("shown=apple,cloak") && withPrivate.Contains("all=sword,cloak,apple"), "private equipment remains authorized outside display cap");
+        Check(PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, hero, hero.CharacterObject, -1, out var authorized)
+            && authorized.Count == 3, "full NPC scope keeps all original authorized items");
+        Check(PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, hero, hero.CharacterObject, -1, out var displayed)
+            && displayed.Select(item => item.StringId).SequenceEqual(new[] { "apple", "cloak" }), "display scope records ranked item plus private item");
+        string publicOnly = subject.BuildFilteredInventorySummaryForAI(hero, mentions, 1, includePrivateBattleEquipment: false);
+        Check(publicOnly.Contains("shown=apple") && !publicOnly.Contains("shown=apple,cloak"), "public display omits private equipment");
+        Visible = new List<RewardItemInfo>(Inventory);
+        PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero.CharacterObject, -1,
+            new[] { Inventory[0] });
+        Check(subject.BuildVisibleEquipmentPostprocessListForAI(hero, mentions, 1).Contains("sword")
+            && !subject.BuildVisibleEquipmentPostprocessListForAI(hero, mentions, 1).Contains("apple"), "visible equipment consumer reads captured scope before fallback");
+        var otherHero = new Hero { StringId = "npc-b", CharacterObject = new CharacterObject { StringId = "npc-b-char" } };
+        string otherVisible = subject.BuildVisibleEquipmentPostprocessListForAI(otherHero, mentions, 1);
+        Check(otherVisible.Contains("cloak") && !otherVisible.Contains("sword"), "different target cannot borrow captured visible scope and retains private-equipment fallback");
+        var merchant = new CharacterObject { StringId = "merchant-a" };
+        Settlement.CurrentSettlement = new Settlement { StringId = "town-a" };
+        Merchant = new List<RewardItemInfo>(Inventory);
+        string merchantSummary = subject.BuildFilteredSettlementMerchantInventorySummaryForAI(merchant, mentions, 1);
+        Check(merchantSummary.Contains("shown=cloak") && merchantSummary.Contains("all=sword,cloak,apple"), "merchant consumer separates display and full scopes while retaining private-equipment priority");
+        Check(PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, merchant, -1, out var merchantAll)
+            && merchantAll.Count == 3, "merchant full scope is retained");
+        Settlement.CurrentSettlement = new Settlement { StringId = "town-b" };
+        Check(!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, merchant, -1, out _),
+            "settlement change isolates merchant snapshot");
+        Console.WriteLine("PromptJ03 production Reward consumer checks=" + Checks);
+    }
+}

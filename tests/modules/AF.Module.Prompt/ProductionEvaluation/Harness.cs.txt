@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AnimusForge;
 
 namespace AnimusForge;
@@ -31,14 +35,28 @@ internal sealed class DuelSettings
 }
 internal static class Logger
 {
-    internal static void Log(string category, string message) { }
+    internal static string LastWarmupMessage;
+    internal static readonly ConcurrentBag<string> WarmupMessages = new ConcurrentBag<string>();
+    internal static void Log(string category, string message)
+    {
+        if (category == "GuardrailWarmup") { LastWarmupMessage = message; WarmupMessages.Add(message); }
+    }
     internal static void RecordHitRate(string area, string tag, bool hit, string detail, string input) { }
 }
 internal sealed class OnnxCrossEncoderReranker
 {
-    internal static OnnxCrossEncoderReranker Instance => throw new Exception("live reranker reached");
-    internal bool IsAvailable => false;
+    internal static bool WarmupAllowed;
+    internal static OnnxCrossEncoderReranker Instance => WarmupAllowed ? new OnnxCrossEncoderReranker() : throw new Exception("live reranker reached");
+    internal bool IsAvailable => WarmupAllowed;
+    internal string LastError => "";
+    internal bool TryScore(string query, string document, out float score) { score = 1f; return true; }
     internal bool TryScoreBatch(string query, IReadOnlyList<string> texts, out List<float> scores) { scores = null; return false; }
+}
+internal sealed class OnnxEmbeddingEngine
+{
+    internal static OnnxEmbeddingEngine Instance { get; } = new OnnxEmbeddingEngine();
+    internal string LastError => "";
+    internal bool TryGetEmbedding(string input, out float[] vector) { vector = new[] { 1f, 0f }; return true; }
 }
 
 public static class AIConfigHandler
@@ -46,6 +64,13 @@ public static class AIConfigHandler
     private static readonly object _promptConfigurationReloadLock = new object();
     private static readonly RevisionedPromptConfigurationStore<string> _promptConfiguration = new RevisionedPromptConfigurationStore<string>("one");
     private static readonly PromptSingleEvaluationCache<GuardrailEvalSnapshot> _guardrailEvalCache = new PromptSingleEvaluationCache<GuardrailEvalSnapshot>();
+    private static int _guardrailWarmupState;
+    private static long _guardrailWarmupVersion = -1L;
+    private static int Warmed, WarmupWorkerThread, CaptureThread;
+    private static int BlockWarmupRevision = -1;
+    private static readonly ManualResetEventSlim BlockedWarmupEntered = new ManualResetEventSlim();
+    private static readonly ManualResetEventSlim ReleaseBlockedWarmup = new ManualResetEventSlim();
+    private static bool AllowWarmupEligibility;
     private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetKingdomId = PromptRetrievalContextOwner.Kingdom;
     private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetHeroId = PromptRetrievalContextOwner.Hero;
     private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetCharacterId = PromptRetrievalContextOwner.Character;
@@ -68,16 +93,38 @@ public static class AIConfigHandler
     private static string BuildGuardrailEvalKey(string input, string context, string secondary) => input + "|" + context + "|" + secondary;
     private static string NormalizeSemanticText(string input) => input ?? "";
     private static string BuildSemanticHitRateDetail(string detail, string secondary) => detail;
-    private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts() => throw new Exception("live eligibility reached");
+    private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()
+    {
+        if (!AllowWarmupEligibility) throw new Exception("live eligibility reached");
+        CaptureThread = Environment.CurrentManagedThreadId;
+        return Eligible;
+    }
     private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string input, string context, string secondary, string key,
         out GuardrailEvalSnapshot snapshot, List<GuardrailRulePromptConfig> rules, int cap, HashSet<string> excluded, bool auto)
         => throw new Exception("live auxiliary reached");
     private static bool TryGetInputEmbedding(string input, out float[] vector) => throw new Exception("live input provider reached");
     private static bool TryGetPhraseEmbedding(string input, out float[] vector) => throw new Exception("live phrase provider reached");
+    private static bool TryGetPhraseEmbedding(string input, out float[] vector, long revision)
+    {
+        WarmupWorkerThread = Environment.CurrentManagedThreadId;
+        if (revision == Volatile.Read(ref BlockWarmupRevision))
+        {
+            BlockedWarmupEntered.Set();
+            ReleaseBlockedWarmup.Wait(TimeSpan.FromSeconds(5));
+        }
+        if (revision != _promptConfiguration.Capture().Revision) { vector = null; return false; }
+        Interlocked.Increment(ref Warmed);
+        vector = new[] { 1f, 0f };
+        return true;
+    }
     private static float DotProductNormalized(float[] a, float[] b) => a.Zip(b, (x, y) => x * y).Sum();
     private static void Check(bool condition, string message) { Checks++; if (!condition) throw new Exception(message); }
 
     @@ENTRY@@
+    @@CAPTURE@@
+    @@SESSION_START@@
+    @@START@@
+    @@COMPLETE@@
 
     private static PromptRuleEvaluationPorts Ports()
     {
@@ -139,6 +186,47 @@ public static class AIConfigHandler
         _guardrailEvalCache.Clear();
         ports.InputEmbedding = _ => throw new InvalidOperationException("provider failed");
         Check(!TryGetGuardrailEvalSnapshot("duel", "", out _, null, true, ports), "provider exception uses existing failure return");
+        AllowWarmupEligibility = true;
+        int callerThread = Environment.CurrentManagedThreadId;
+        var missionSeeds = CaptureGuardrailSemanticWarmupSeeds();
+        Check(CaptureThread == callerThread && missionSeeds.Revision == _promptConfiguration.Capture().Revision && missionSeeds.Seeds.Count > 0,
+            "mission seed capture stays on owning caller and pins revision");
+        TryStartBackgroundSemanticWarmup("mission_start", missionSeeds);
+        Check(SpinWait.SpinUntil(() => Volatile.Read(ref _guardrailWarmupState) == 2, TimeSpan.FromSeconds(5)) && Warmed > 0 && WarmupWorkerThread != callerThread,
+            "mission warmup embeds on worker only after caller captures seed");
+        int warmedBeforeStale = Warmed;
+        Interlocked.Exchange(ref _guardrailWarmupState, 0);
+        TryStartBackgroundSemanticWarmup("stale_mission", new PromptSemanticWarmupSeedBatch(1, new[] { "duel" }));
+        Check(Volatile.Read(ref _guardrailWarmupState) == 0 && Warmed == warmedBeforeStale, "old revision seed cannot enter warmup gate");
+        Interlocked.Exchange(ref _guardrailWarmupState, 0);
+        TryStartBackgroundSemanticWarmup("session_launch");
+        Check(SpinWait.SpinUntil(() => Volatile.Read(ref _guardrailWarmupState) == 2, TimeSpan.FromSeconds(5)) && CaptureThread == callerThread,
+            "session entry captures seed on caller before scheduling worker");
+        Interlocked.Exchange(ref _guardrailWarmupState, 0);
+        OnnxCrossEncoderReranker.WarmupAllowed = true;
+        RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start", missionSeeds);
+        Check(SpinWait.SpinUntil(() => Volatile.Read(ref _guardrailWarmupState) == 2
+            && Logger.LastWarmupMessage?.Contains("source=rag_warmup_complete") == true, TimeSpan.FromSeconds(5)),
+            "RAG completion forwards the caller-captured mission seed to semantic warmup");
+        long oldRevision = _promptConfiguration.Capture().Revision;
+        Volatile.Write(ref BlockWarmupRevision, (int)oldRevision);
+        Interlocked.Exchange(ref _guardrailWarmupState, 0);
+        TryStartBackgroundSemanticWarmup("old_worker", new PromptSemanticWarmupSeedBatch(oldRevision, new[] { "duel" }));
+        Check(BlockedWarmupEntered.Wait(TimeSpan.FromSeconds(5)), "old worker entered embedding before reload");
+        lock (_promptConfigurationReloadLock)
+        {
+            _promptConfiguration.Reload(() => "three", _ => "default");
+            Interlocked.Exchange(ref _guardrailWarmupState, 0);
+            Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+        }
+        long newRevision = _promptConfiguration.Capture().Revision;
+        TryStartBackgroundSemanticWarmup("new_worker", new PromptSemanticWarmupSeedBatch(newRevision, new[] { "reward" }));
+        ReleaseBlockedWarmup.Set();
+        Check(SpinWait.SpinUntil(() => Volatile.Read(ref _guardrailWarmupState) == 2
+            && Logger.WarmupMessages.Any(message => message.Contains("complete source=old_worker"))
+            && Logger.WarmupMessages.Any(message => message.Contains("complete source=new_worker")), TimeSpan.FromSeconds(5))
+            && Volatile.Read(ref _guardrailWarmupVersion) == newRevision,
+            "late old worker cannot overwrite new revision warmup gate");
         Console.WriteLine("PromptJ03 production evaluation checks=" + Checks);
     }
 }
