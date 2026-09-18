@@ -18,6 +18,10 @@ namespace AnimusForge.Illustrator.Engine
         public string FilePath { get; set; } = string.Empty;
         public string Prompt { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
+        public string Theme { get; set; } = string.Empty;
+        public string ActionSummary { get; set; } = string.Empty;
+        [JsonIgnore]
+        public string ThemeText => string.IsNullOrWhiteSpace(Theme) ? "纪事画卷" : "主题：" + Theme;
         public bool IsDefault { get; set; }
         public bool Deleted { get; set; }
         public DateTime CreatedTime { get; set; }
@@ -124,7 +128,7 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true)
+        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null)
         {
             try { bytes = ImagePayload.Normalize(bytes); }
             catch (Exception ex) { Debug.Print("[Illustrator] Rejected cache image: " + ex.Message); return null; }
@@ -148,6 +152,8 @@ namespace AnimusForge.Illustrator.Engine
                     FilePath = filePath,
                     Prompt = prompt ?? string.Empty,
                     Title = title ?? string.Empty,
+                    Theme = theme ?? string.Empty,
+                    ActionSummary = actionSummary ?? string.Empty,
                     CreatedTime = DateTime.UtcNow,
                     IsDefault = makeDefault || (allowImplicitDefault && !GetAllCachedIllustrations(campaignKey, true).Any(existing => existing.SubjectKey == subjectKey && existing.Category == ValidCategory(category)))
                 };

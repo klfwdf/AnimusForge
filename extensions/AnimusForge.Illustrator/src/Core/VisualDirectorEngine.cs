@@ -71,11 +71,11 @@ namespace AnimusForge.Illustrator.Core
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
             "【现场采光来源】：会话采用已读取的真实场景时段；未读取到时，依据明确标记的当前现场截图辨认昼夜与采光。人物离屏立绘的照明不代表现场。现场图也缺失或无法辨认时，不虚构月亮、日落或夜间火把作为事实。画风和重绘变化不能把白天改成夜晚。\n" +
-            "1. 【人物与镜头】：交代机位距离与人物姿势神情。依据身份性格与情境选择自然可信的体态，安静站立也可承载叙事；身份参考图不是固定机位和光照模板；装备按实际穿戴与现场使用证据表现，持有不等于必须入画；全身像须全身完整入画；单人百科肖像不出现马匹动物；双人会面交代双方位置朝向与自然交谈对峙交互。\n" +
+            "1. 【人物与镜头】：先决定人物此刻正在做什么，再推导姿态、手部动作和视线，最后选择机位。正文开头交代一个简单明确的行动或注意对象、入镜双手的位置与视线落点；装备描述服务于这个瞬间。自然站立可以承载行动，但双手下垂展示装备不是默认答案。会话与周报的行动必须服从已有事实，不能为了变化改写事件；百科可推导符合人物的非史实艺术情境。身份参考图不是姿态模板；装备持有不等于必须入画；全身像须全身完整入画；双人会面交代双方位置朝向与交互。\n" +
             "2. 【场景空间】：依据事实中的地点、文化、纪元、地貌、季节与时段，推导契合人物身份地位的场景与陈设（严禁将一国领袖降格为低阶哨所杂兵）；建筑形制、材质与陈设须与纪元时代和文化风貌相符，不得出现该时代不存在的器物或建筑风格；事实未覆盖的细节可自由创作，但不得与事实冲突。\n" +
             "3. 【光影与色彩】：依据现场时间与天气描摹自然光影与色彩氛围；须具体写明光线落在人物身上的受光方向、实际衣着材质受光与环境染色，使人物融入场景光照而非自带独立打光。\n" +
             "4. 【空间关系】：交代画面纵深层次与主次关系。\n" +
-            "【输出规范】：直接输出中文生图场景提示词，篇幅约 600~900 汉字，严格按以下四个段落输出：\n" +
+            "【输出规范】：先输出三个简短字段：【画作标题】4至12字的作品名；【画作主题】一句20字以内的主题；【人物行动】简要记录人物正在做什么、手部动作及视线，供后续重绘参考。这些是作品记录，不能要求把标题主题写进画面。随后输出约600至900汉字的四段生图正文，行动也须在正文中具体体现：\n" +
             "【人物与镜头】机位构图、姿势体态、神情目光与动作瞬间为先，角色外观与装备细节如实转写\n" +
             "【场景空间】契合事实与身份的丰富空间与时代陈设\n" +
             "【光影与色彩】契合时间天气的自然光影明暗与色彩氛围\n" +
@@ -112,6 +112,11 @@ namespace AnimusForge.Illustrator.Core
 
         public static async Task<string> ExpandToDetailedPromptAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, CancellationToken cancellationToken = default)
         {
+            return (await CreateDirectionAsync(plan, referenceImages, options, cancellationToken).ConfigureAwait(false)).Prompt;
+        }
+
+        public static async Task<IllustrationDirection> CreateDirectionAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, CancellationToken cancellationToken = default)
+        {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
             if (options != null && !options.EnableMultimodalVision)
             {
@@ -132,9 +137,9 @@ namespace AnimusForge.Illustrator.Core
                     string llmPrompt = await CallLlmDirectorAsync(plan, options, referenceImages, cancellationToken).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(llmPrompt))
                     {
-                        string finalPrompt = ResolveDirectorOutput(llmPrompt, plan, options);
-                        TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion successful ({finalPrompt.Length} chars): {Preview(finalPrompt, 120)}");
-                        return finalPrompt;
+                        var direction = ResolveDirection(llmPrompt, plan, options);
+                        TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion resolved ({direction.Prompt.Length} chars): {Preview(direction.Prompt, 120)}");
+                        return direction;
                     }
                 }
                 else
@@ -153,7 +158,7 @@ namespace AnimusForge.Illustrator.Core
 
             string rulePrompt = SynthesizeRuleBasedPrompt(plan, options);
             TaleWorlds.Library.Debug.Print($"[VisualDirector] Using rule-based prompt ({rulePrompt.Length} chars): {Preview(rulePrompt, 120)}");
-            return rulePrompt;
+            return new IllustrationDirection { Prompt = rulePrompt, Theme = "人物与情境", ActionSummary = IllustrationDirection.ExtractActionSummary(rulePrompt) };
         }
 
         internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false)
@@ -174,6 +179,29 @@ namespace AnimusForge.Illustrator.Core
 
         internal static string ResolveDirectorOutput(string output, IllustrationPromptPlan plan, IllustrationOptions options)
         {
+            return ResolveDirection(output, plan, options).Prompt;
+        }
+
+        internal static IllustrationDirection ResolveDirection(string output, IllustrationPromptPlan plan, IllustrationOptions options)
+        {
+            var direction = IllustrationDirection.SplitMetadata(output);
+            bool fallback;
+            direction.Prompt = ResolveDirectorBody(direction.Prompt, plan, options, out fallback);
+            if (fallback)
+            {
+                direction.Title = string.Empty;
+                direction.Theme = "人物与情境";
+                direction.ActionSummary = string.Empty;
+            }
+            if (string.IsNullOrWhiteSpace(direction.ActionSummary))
+                direction.ActionSummary = IllustrationDirection.ExtractActionSummary(direction.Prompt);
+            if (string.IsNullOrWhiteSpace(direction.Theme)) direction.Theme = "人物与情境";
+            return direction;
+        }
+
+        private static string ResolveDirectorBody(string output, IllustrationPromptPlan plan, IllustrationOptions options, out bool fallback)
+        {
+            fallback = true;
             output = output ?? string.Empty;
             if (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan))
             {
@@ -197,6 +225,7 @@ namespace AnimusForge.Illustrator.Core
                         "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildDirectorStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
+            fallback = false;
             return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
         }
 
@@ -272,8 +301,8 @@ namespace AnimusForge.Illustrator.Core
         /// </summary>
         public static string BuildRedrawVariationDirective(int redrawIndex)
         {
-            return $"【重绘变体 · 第 {redrawIndex} 次绘制】本次为重新绘制：优先通过镜头、取景、光线或空间层次形成与前版有辨识度的变化；" +
-                   "人物姿态按情境自然选择，允许站立或延续合理体态，不要求每次换动作，不用复杂肢体动作凑变化；" +
+            return $"【重绘变体 · 第 {redrawIndex} 次绘制】先检查本次行动意图与近期作品，再推导姿态、手部动作、视线和镜头；减少双手下垂展示姿势的重复。" +
+                   "会话或事件已有行动事实时保持该事实，以取景或叙事瞬间变化；百科结合近期行动选择不同的自然瞬间，不强迫复杂动作，也不禁止有情境依据的站立；" +
                    "【人物与装备细节绝对锁定】：人物真实装备、相貌、发色与纹章细节须与参考图完全一致，不得因重绘而增减改动！";
         }
 

@@ -84,7 +84,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "encyclopedia");
                 if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
-                    popup._dataSource.SetReady("已载入当前存档的默认纪事肖像");
+                    popup._dataSource.SetReady(cached.ThemeText);
                 }
                 else
                 {
@@ -144,7 +144,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "conversation");
                 if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
-                    popup._dataSource.SetReady("已载入当前存档的默认会晤插画");
+                    popup._dataSource.SetReady(cached.ThemeText);
                 }
                 else
                 {
@@ -197,6 +197,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             // 必须统计本存档已留存的百科肖像版本，并把已用过的场景母题回传导演避让。
             int priorVersions = 0;
             var usedMotifs = new List<string>();
+            string recentActions = string.Empty;
             try
             {
                 var priorItems = DiskImageCacheManager.GetAllCachedIllustrations(_scope.CampaignKey)
@@ -205,6 +206,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     .OrderByDescending(i => i.CreatedTime)
                     .ToList();
                 priorVersions = priorItems?.Count ?? 0;
+                recentActions = IllustrationDirection.BuildActionHistory(priorItems);
                 foreach (string motif in (priorItems ?? new List<CachedIllustrationItem>())
                     .Select(i => ExtractSceneMotif(i.Prompt))
                     .Where(m => !string.IsNullOrWhiteSpace(m))
@@ -216,8 +218,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
             catch { }
             string artDirection = GenerateDiversePoseDirective();
+            if (!string.IsNullOrWhiteSpace(recentActions)) artDirection += "\n" + recentActions;
             if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
-            if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——本次选择不同的场景母题或镜头光线组合，不必为变化强行更换人物动作。";
+            if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——结合本次人物行动选择场景与镜头，不仅更换背景。";
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
             var options = IllustratorRuntime.CaptureOptions();
             if (options?.EnableOffscreenRendering != true)
@@ -238,7 +241,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其面部五官轮廓、发型肤色与装备形制；本图用于身份识别，不是待保留的人物剪影；根据导演选择的新镜头和光线重新绘制人物体积与衣褶，体态以自然可信为先，允许站立或坐姿；人物必须按新场景光源重新布光渲染，与环境光影、色温、笔触完全融合并呈现落地投影与环境反光，严禁保留原图光照造成贴纸抠像感；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘，不可有任何游戏截图或3D渲染痕迹", IllustrationReferenceKind.Character);
+                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：锁定容貌、发型肤色与实际装备；人物行动、手势、视线和机位由导演重新构思；依据新场景重建人物体积、衣褶、透视与受光，以统一艺术画风完整重绘。", IllustrationReferenceKind.Character);
                     refs.Add(r);
                     genRefsList.Add(r);
                 }
@@ -258,7 +261,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         }
                     }
                 }
-                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
+                var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
+                string detailedPrompt = direction.Prompt;
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefsList;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
@@ -267,7 +271,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, $"{heroName} 纪事肖像", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? $"{heroName} 纪事肖像" : direction.Title, _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary);
                 }
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
@@ -276,7 +280,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
-                    _dataSource.SetReady("纪事肖像绘制完成");
+                    _dataSource.SetReady(completion.SavedItem?.ThemeText ?? "纪事肖像绘制完成");
                 }
                 else
                 {
@@ -287,11 +291,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private static string GenerateDiversePoseDirective()
         {
-            // 只限定成图质量，不以强迫动作变化制造差异。
-            return "【百科构图自主推导】：依据身份、性格与情绪选取一个自然可信的瞬间，镜头与取景由导演决定。" +
-                "站立、坐姿或轻微动作均可；用神情、视线、镜头和光线表达人物，不把复杂动作当成创作要求。" +
+            return "【百科构图自主推导】：先依据身份、性格与情绪决定人物此刻正在做什么，再推导姿态、手部动作和视线，最后选择镜头与取景。" +
+                "站立、坐姿或轻微动作均可；让行动具有清楚的注意对象，不把双手下垂展示装备作为默认构图，不把复杂动作当成创作要求。" +
                 "需要坐靠时使用清楚且合理的支撑，避免一边跨坐一边踮脚、扭腰或同时撑扶多处。" +
-                "在新的非具名艺术布景中统一重绘人物与环境；即使仍选站姿，也须按新机位和光线构建人物，而非沿用原立绘像素。" +
+                "在非具名艺术布景中统一重绘人物与环境；参考近期行动避免重复的展示姿势，站立时同样明确手势和视线所服务的行动。" +
                 "单人独立肖像不添加武器、盾牌、旗帜或坐骑，服饰和身份细节按事实保持。";
         }
 
@@ -350,6 +353,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             // 台词与近三轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
+            variation += "\n" + IllustrationDirection.ReadEventActionHistory(_scope.CampaignKey, key, _category);
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
             var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDirectorOnlyFacts());
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
@@ -437,7 +441,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     }
                 }
 
-                string detailedPrompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, directorRefs, options, token).ConfigureAwait(false);
+                var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, directorRefs, options, token).ConfigureAwait(false);
+                string detailedPrompt = direction.Prompt;
                 IllustratorRuntime.Post(() => { if (!_closed) _dataSource.StatusText = "构思完成，正在绘制画卷（等待生图模型返回）..."; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
@@ -446,7 +451,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, $"与 {partnerName} 的会晤纪事", _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? $"与 {partnerName} 的会晤纪事" : direction.Title, _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary);
                 }
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
@@ -455,7 +460,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
-                    _dataSource.SetReady("会晤插画绘制完成");
+                    _dataSource.SetReady(completion.SavedItem?.ThemeText ?? "会晤插画绘制完成");
                 }
                 else
                 {
@@ -479,6 +484,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes);
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
+            if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = item.Title;
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);
             return true;
         }
