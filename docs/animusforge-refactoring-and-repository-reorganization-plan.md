@@ -1,3 +1,34 @@
+<a id="j04-slice2-20260919"></a>
+
+## J04 第二批切片回执：J04_PARTIAL / 五阶段边界已显式化（2026-09-19）
+
+**本节叠加于下方首批回执；J04 仍未 OFFLINE_VERIFIED。** 生产切片 `6315fd26`→`d6824d9d`（6 个提交），地图绑定 `d6824d9d`，241 锚点 recorded / working-tree 均通过。同一分支，未推送、未 Stage/Deploy/打包。
+
+### 本批迁出（源码 `d6824d9d`，一基行号）
+
+| 新 owner / 坐标 | 真实迁移与接线 | 旧实现处置 |
+| --- | --- | --- |
+| `Composition/PromptRuleBlockText.cs:11` | `【附加规则:id】` 块格式唯一 owner：Append/Has/Count/ReplaceBody/Remove/AppendIfMissing/PrependDisclaimer；`BuildExtraRuleInstructions`、`BuildTriggeredRuleInstructions` 及 36 处调用改用 | MyBehavior 6 个 helper 与 6 处内联标记字符串删除 |
+| `Composition/PromptTopicRoutingStage.cs:58,26` | 辅助路由→强制预选→八话题→sticky 消费/prime 成为一个阶段；输入 `PromptRoutingInput` 全部 detached，网络/ONNX/门控/日志经 `PromptRoutingPorts` 五个委托由 host 提供；`PreprocessFormatException` 透传、其他辅助失败回退语义路由 | 主链 ~80 行路由/日志块删除；host 只建输入、供 ports、写日志 |
+| `Composition/PromptBuildRequest.cs:12,49` | `PromptBuildRequest` 承载一次构建的 detached 身份/标志/排除集合；`PromptExclusionSets` 拥有 explicit/runtime/preprocess 三层布局、不可用配置规则过滤、有序列表 | 主链内联集合构造删除；host 只提供四个游戏派生 adder；玩家部族等级读取收为 `ResolvePlayerClanTierForPrompt` |
+| `Composition/PromptContextDecisions.cs:29` | reward/loan 提升（party transfer 资格、已消费决斗结果）、澄清提示门控、lore 来源选择与旧诊断标签、语义触发日志行 | 主链对应分支删除；决斗结果消费保留在旧位置以维持 TrustPrompt 判定不变 |
+| `Composition/PromptAssemblyStage.cs:35` | 纯装配：Extras、后处理块合并、显式王国 ID、上下文标志、preprocess ID | 主链尾部装配删除；实体/议程检索结果由 host 捕获成 `PromptEntityCapture` |
+| `MyBehavior.cs:30474` orchestrator；`:30557` `CapturePromptBuildRequest`；`:30648` `CapturePromptSections`；`:30862` `ApplyPromptRuntimeAppendices` | 共享 builder 拆为五阶段：捕获请求（游戏读）→ 路由（detached）→ 捕获段落（游戏读）→ 纯装配 → 运行时追加（游戏读）；orchestrator 80 行 | 原 771 行单体不再存在；**执行仍在调用线程顺序进行，行为不变** |
+
+### 本机实际验证（全部退出码 0）
+
+- Composition 契约 142 项（新增 RuleBlockText 12、RoutingStage 14、ExclusionSets 10、ContextDecisions 12、AssemblyStage 8）；`sticky-limit`、`router-excluded` 两个变异仍拒收。
+- 新增 `tests/modules/AF.Module.Prompt/BuildPhases/run.py` 源码接线契约：orchestrator 五阶段顺序、orchestrator 不直接读游戏服务、三个捕获阶段不跑规则检索、Composition 目录不引用 TaleWorlds/AIConfigHandler/Logger；`--mutate assembly-reads-game`、`--mutate routing-before-request` 均拒收。
+- J03 六契约、Courier 252/59/39、Scene 71/37/30、Native 589/44/184/111/852、HeroAsset 67 在每个切片后复跑 PASS。
+- 原脚本 Debug + Release × 1.3/1.4/Bootstrap 六项 0 警告/0 错误（无 Stage/Deploy）。
+
+### 未完成 / 不能外推
+
+- **线程边界只是显式化，尚未搬移执行位置。** Native 仍在 `RunNativeConversationBackgroundPreprocessAsync` 后台线程执行整个五阶段，Courier 仍在 `Task.Run` 内；`CapturePromptBuildRequest`/`CapturePromptSections`/`ApplyPromptRuntimeAppendices` 里的 Hero/Clan/Reward/Duel/Party 读取因此仍发生在后台。下一切片：渠道调度改为“主线程阶段 1 → 后台阶段 2 → 主线程阶段 3/5（含 generation/owner 重验）→ 后台/任意线程阶段 4”，并把 `AIConfigHandler.GetLoreContext`、`GetAuxiliaryMentionedEntitiesForExternal` 从阶段 3 拆到阶段 2 或独立后台阶段。
+- `BuildTriggeredRuleInstructions`（141 行）与 `BuildExtraRuleInstructions`（~100 行）仍在 MyBehavior，含 Reward/Duel/Taunt 实时读取；已改用 `PromptRuleBlockText`，未段落化。
+- `AIConfigHandler.IsRuleCurrentlyEligibleForRag` / `ResolveConversationTargetHero` 在规则检索内部通过 ambient 目标 ID 做 `Hero.FindFirst` / `Campaign.Current.ConversationManager` 读取——这是 J03 遗留的检索侧 live 读，不在本包。
+- 实机、旧档、真实 provider `NOT-RUN`；Scene/Courier 公开提交未开放。
+
 <a id="j04-slice1-20260918"></a>
 
 ## J04 首批切片回执：J04_PARTIAL / OFFLINE_VERIFIED_SLICE（2026-09-18）

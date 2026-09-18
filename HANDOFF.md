@@ -1,3 +1,9 @@
+# 当前接续：J04 第二批切片 J04_PARTIAL，五阶段边界已显式化（2026-09-19）
+
+同分支 `codex/af-modularize-j04-20260918`，生产切片 `6315fd26`→`d6824d9d`。共享 Prompt builder 从 771 行单体拆为 80 行 orchestrator + 五阶段：`CapturePromptBuildRequest`（游戏读）→ `PromptTopicRoutingStage`（detached 输入 + host ports）→ `CapturePromptSections`（游戏读）→ `PromptAssemblyStage`（纯）→ `ApplyPromptRuntimeAppendices`（游戏读）；新增 `PromptRuleBlockText`、`PromptBuildRequest`/`PromptExclusionSets`、`PromptContextDecisions`、`PromptAssemblyStage` 五个 owner，旧实现删除。Composition 契约 142 项 + BuildPhases 源码接线契约（各 2 变异拒收）、J03 六契约与三渠道全部 runner 复跑 PASS、原脚本 Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误、241 锚点地图两模式通过。**J04 仍未 OFFLINE_VERIFIED：阶段边界已显式化但执行位置未搬，Native/Courier 仍在后台线程跑全部阶段；`BuildTriggeredRuleInstructions` 未段落化。** 实机/旧档/provider `NOT-RUN`；未推送。详见[主台账第二批回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice2-20260919)与[范围图](docs/architecture/af-framework-code-scope.md)。
+
+## 以下为 J04 首批回执
+
 # 当前接续：J04 首批切片 J04_PARTIAL（2026-09-18）
 
 分支 `codex/af-modularize-j04-20260918`（基线 `25a89cea`），生产切片 `e0aa8142`→`2a191526`，测试/工具/地图 `11f90fec`。共享 Prompt 组合的规则 ID 策略、内置话题路由、duel/reward/loan sticky 状态、preprocess ID 收敛、Extras 段落组合与目标身份发布已迁入 `src/modules/AF.Module.Prompt/Composition`（7 个 owner），旧实现删除，`PromptComposer.cs` 死代码删除；MyBehavior/Shout/AIConfigHandler 净 −680 行。新契约 86 项 + 2 变异拒收，J03 六契约与 Courier/Scene/Native/HeroAsset 全部 runner 复跑 PASS，原脚本 Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误（无 Stage/Deploy），231 锚点地图两模式通过。**J04 未 OFFLINE_VERIFIED**：共享 builder 线程边界与 `BuildTriggeredRuleInstructions` 段落化未做；实机/旧档/provider `NOT-RUN`。用户要求的 Scene/Courier 公开提交已登记映射 J10+J14，本轮未实现。未推送。详见[主台账 J04 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice1-20260918)与[范围图](docs/architecture/af-framework-code-scope.md)。
