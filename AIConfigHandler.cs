@@ -5799,120 +5799,33 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static int GetGuardrailRerankBudget(int returnCap)
-	{
-		int num = Math.Max(1, returnCap) * 3;
-		if (num < 8)
-		{
-			num = 8;
-		}
-		if (num > 36)
-		{
-			num = 36;
-		}
-		return num;
-	}
+	private static int GetGuardrailRerankBudget(int returnCap) => PromptRuleRanking.RerankBudget(returnCap);
 
-	private static int GetGuardrailPerIntentRerank(int rerankBudget, int intentCount)
-	{
-		int num = ((intentCount > 0) ? intentCount : 1);
-		int num2 = (int)Math.Round((double)rerankBudget / (double)num, MidpointRounding.AwayFromZero);
-		if (num2 < 4)
-		{
-			num2 = 4;
-		}
-		if (num2 > 12)
-		{
-			num2 = 12;
-		}
-		return num2;
-	}
+	private static int GetGuardrailPerIntentRerank(int rerankBudget, int intentCount) =>
+		PromptRuleRanking.PerIntentRerank(rerankBudget, intentCount);
 
-	private static int GetGuardrailPerIntentRecall(int rerankPerIntent)
-	{
-		int num = (int)Math.Round((double)rerankPerIntent * 2.5, MidpointRounding.AwayFromZero);
-		if (num < 10)
-		{
-			num = 10;
-		}
-		if (num > 30)
-		{
-			num = 30;
-		}
-		return num;
-	}
+	private static int GetGuardrailPerIntentRecall(int rerankPerIntent) =>
+		PromptRuleRanking.PerIntentRecall(rerankPerIntent);
 
 	private static List<GuardrailRuleScore> SelectGuardrailCandidateScores(List<GuardrailRuleScore> scored, string source, string input, int topK)
 	{
-		List<GuardrailRuleScore> list = new List<GuardrailRuleScore>();
+		List<GuardrailRuleScore> result = new List<GuardrailRuleScore>();
 		try
 		{
-			int num = ((topK <= 0) ? 4 : topK);
-			float num2 = 0.21f;
-			List<GuardrailRuleScore> list2 = (from x in scored
-				where x?.Rule != null && !float.IsNaN(x.FinalScore)
-				orderby x.FinalScore descending, x.RawScore descending
-				select x).ThenBy((GuardrailRuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-			if (list2.Count <= 0)
-			{
-				return list;
-			}
-			float num3 = ((list2.Count > 0) ? list2[0].FinalScore : 0f);
-			float num4 = ((list2.Count > 1) ? list2[1].FinalScore : 0f);
-			float num5 = ((list2.Count > 0) ? list2[0].RawScore : 0f);
-			float num6 = ((list2.Count > 1) ? list2[1].RawScore : 0f);
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			int num7 = 0;
-			for (int i = 0; i < list2.Count; i++)
-			{
-				if (list.Count >= num)
-				{
-					break;
-				}
-				GuardrailRuleScore guardrailRuleScore = list2[i];
-				if (guardrailRuleScore?.Rule == null || guardrailRuleScore.FinalScore < num2)
-				{
-					continue;
-				}
-				string text = (guardrailRuleScore.Rule.Id ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text) || hashSet.Add(text))
-				{
-					list.Add(guardrailRuleScore);
-					num7++;
-				}
-			}
-			if (list.Count < num)
-			{
-				for (int j = 0; j < list2.Count; j++)
-				{
-					if (list.Count >= num)
-					{
-						break;
-					}
-					GuardrailRuleScore guardrailRuleScore2 = list2[j];
-					if (guardrailRuleScore2?.Rule == null)
-					{
-						continue;
-					}
-					string text2 = (guardrailRuleScore2.Rule.Id ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text2) || hashSet.Add(text2))
-					{
-						list.Add(guardrailRuleScore2);
-					}
-				}
-			}
+			List<PromptRuleCandidate> candidates = (scored ?? new List<GuardrailRuleScore>())
+				.Select((score, index) => score?.Rule == null ? null :
+					new PromptRuleCandidate(index, score.Rule.Id, score.RawScore, score.FinalScore))
+				.ToList();
+			PromptRuleSelection selection = PromptRuleRanking.Select(candidates, topK);
+			for (int i = 0; i < selection.Indices.Count; i++) result.Add(scored[selection.Indices[i]]);
 			try
 			{
-				Logger.Log("GuardrailSemantic", $"semantic_accept source={source} mode=scored selected={list.Count} strictSelected={num7} topN={num} minScore={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
+				Logger.Log("GuardrailSemantic", $"semantic_accept source={source} mode=scored selected={result.Count} strictSelected={selection.StrictCount} topN={((topK <= 0) ? 4 : topK)} minScore={0.21f:0.000} bestRaw={selection.BestFinal:0.000} second={selection.SecondFinal:0.000} bestEvidence={selection.BestRaw:0.000} secondEvidence={selection.SecondRaw:0.000}");
 			}
-			catch
-			{
-			}
+			catch { }
 		}
-		catch
-		{
-		}
-		return list;
+		catch { }
+		return result;
 	}
 
 	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null)
@@ -6131,37 +6044,8 @@ public static class AIConfigHandler
 
 	private static bool TryLexicalRuleKeywordHit(string input, string secondaryInput, List<string> triggerKeywords, out string matchedKeyword)
 	{
-		matchedKeyword = "";
-		try
-		{
-			if (triggerKeywords == null || triggerKeywords.Count <= 0)
-			{
-				return false;
-			}
-			string text = NormalizeSemanticText(input);
-			string text2 = NormalizeSemanticText(secondaryInput);
-			if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
-			{
-				return false;
-			}
-			for (int i = 0; i < triggerKeywords.Count; i++)
-			{
-				string text3 = NormalizeSemanticText(triggerKeywords[i]);
-				if (string.IsNullOrWhiteSpace(text3))
-				{
-					continue;
-				}
-				if ((!string.IsNullOrWhiteSpace(text) && text.IndexOf(text3, StringComparison.OrdinalIgnoreCase) >= 0) || (!string.IsNullOrWhiteSpace(text2) && text2.IndexOf(text3, StringComparison.OrdinalIgnoreCase) >= 0))
-				{
-					matchedKeyword = text3;
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
+		try { return PromptRuleRanking.TryLexicalHit(input, secondaryInput, triggerKeywords, out matchedKeyword); }
+		catch { matchedKeyword = ""; return false; }
 	}
 
 	private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false, IEnumerable<string> excludedRuleIds = null)
