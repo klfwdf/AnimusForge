@@ -5660,6 +5660,18 @@ public static class AIConfigHandler
 		}
 	}
 
+	/// <summary>Publish one detached target binding into the ambient retrieval context (legacy six-setter order).</summary>
+	internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding)
+	{
+		binding.Apply(SetGuardrailRuntimeTargetKingdom, SetGuardrailRuntimeTargetHero, SetGuardrailRuntimeTargetCharacter, SetGuardrailRuntimeTargetTroop, SetGuardrailRuntimeTargetUnnamedRank, SetGuardrailRuntimeTargetAgentIndex);
+	}
+
+	/// <summary>Legacy finally-block reset; the enclosing BeginGuardrailRuntimeScope restores the parent context afterwards.</summary>
+	internal static void ClearGuardrailRuntimeTarget()
+	{
+		ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding.Cleared);
+	}
+
 	internal static int GetGuardrailRuntimeTargetAgentIndexForExternal()
 	{
 		try

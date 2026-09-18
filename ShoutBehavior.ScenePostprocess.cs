@@ -186,12 +186,7 @@ public partial class ShoutBehavior
 				}
 				finally
 				{
-					AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-					AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-					AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-					AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-					AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-					AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+					AIConfigHandler.ClearGuardrailRuntimeTarget();
 				}
 			}
 			// Preserve this request's AsyncLocal mentioned-entity snapshot while restoring

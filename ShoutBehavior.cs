@@ -19955,12 +19955,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		try
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-			AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHeroId);
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacterId);
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacterId);
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+			AIConfigHandler.ApplyGuardrailRuntimeTarget(MyBehavior.CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
 			foreach (string ruleId in allRuleIds)
 			{
 				string id = (ruleId ?? "").Trim();
@@ -19976,12 +19971,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
 		return excluded.ToList();
 	}
@@ -20519,12 +20509,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
 		nativePostprocessSw.Stop();
 		Logger.Log("Logic", "[NativePerf] postprocess_done target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " resultLen=" + ((postprocessed ?? "").Length) + " ms=" + Math.Round(nativePostprocessSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
@@ -22984,12 +22969,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			finally
 			{
-				AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-				AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-				AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-				AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+				AIConfigHandler.ClearGuardrailRuntimeTarget();
 			}
 		}
 	}
@@ -23509,12 +23489,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
 	}
 
