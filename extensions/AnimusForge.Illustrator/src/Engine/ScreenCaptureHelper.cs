@@ -22,7 +22,7 @@ using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge.Illustrator.Engine
 {
-    public static class ScreenCaptureHelper
+    public static partial class ScreenCaptureHelper
     {
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -969,6 +969,7 @@ namespace AnimusForge.Illustrator.Engine
         internal static void CancelActiveStage()
         {
             Core.IllustratorRuntime.AssertMainThread();
+            _activePanorama?.Restore();
             var pump = _activeStage;
             FinishStage(pump);
             pump?.Done.TrySetCanceled();
@@ -1386,7 +1387,7 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        public static string CaptureConversationSceneBase64(int maxDimension = 768, float topBandFraction = 0.5f)
+        public static string CaptureConversationSceneBase64(int maxDimension = 1024, float topBandFraction = 1.0f)
         {
             try
             {
