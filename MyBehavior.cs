@@ -30596,10 +30596,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		float score2 = rewardRoute.Score;
 		float score3 = loanRoute.Score;
 		float score4 = surroundingsRoute.Score;
-		bool flag2;
-		flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
-		bool flag7 = flag3;
-		bool flag8 = flag4;
 		bool persistentAdpDebtPostprocess = false;
 		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
 		{
@@ -30612,26 +30608,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 				persistentAdpDebtPostprocess = false;
 			}
 		}
-		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex))
-		{
-			flag7 = flag7 || AIConfigHandler.RewardEnabled;
-			flag8 = flag8 || AIConfigHandler.LoanEnabled;
-		}
+		// Pre-duel flags: the duel result is consumed later at its legacy position so the Reward
+		// TrustPrompt decision still sees the un-promoted reward flag.
+		bool partyTransferEligible = partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex);
+		PromptContextFlags contextFlags = PromptContextDecisions.ResolveFlags(routing,
+			HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex),
+			partyTransferEligible,
+			AIConfigHandler.RewardEnabled, AIConfigHandler.LoanEnabled, persistentAdpDebtPostprocess, hasDuelResult: false, playerWonLastDuel: false);
+		bool flag2 = contextFlags.UseDuelContext;
+		bool flag7 = contextFlags.UseRewardContext;
+		bool flag8 = contextFlags.IsLoanContext;
 		string value = "";
-		if (allowRulePreprocess && !flag2 && !flag7 && !flag8 && !flag5)
+		if (PromptContextDecisions.ShouldBuildClarificationHint(allowRulePreprocess, contextFlags, flag5))
 		{
 			value = AIConfigHandler.BuildGuardrailClarificationHint(input, flag, score, flag3, score2, flag4, score3, flag5, score4);
 		}
-		string text2 = duelRoute.Describe();
-		string text3 = rewardRoute.Describe();
-		string text4 = loanRoute.Describe();
-		string text5 = surroundingsRoute.Describe();
-		string text6 = kingdomServiceRoute.Describe();
-		string text8 = marriageRoute.Describe();
-		string text9 = partyTransferRoute.Describe();
-		string text10 = worldMapRoute.Describe();
-		string text7 = targetHero?.Name?.ToString() ?? "某人";
-		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
+		Logger.Log("Logic", PromptContextDecisions.DescribeSemanticTrigger(routing, npcLastUtterance, input, targetHero?.Name?.ToString() ?? "某人"));
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
 		MentionedWorldEntities mentionedEntities = directPreprocessMentionedEntities.Clone();
@@ -30643,22 +30635,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 		shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
 		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
 		string loreContext = "";
-		string loreCtxSource = "none";
 		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + (usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext)));
-		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext))
+		PromptLoreSource loreSource = PromptContextDecisions.SelectLoreSource(suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, targetHero != null, targetCharacter != null);
+		string loreCtxSource = PromptContextDecisions.DescribeLoreSource(loreSource, usePrefetchedLoreContext, prefetchedLoreContext);
+		switch (loreSource)
 		{
+		case PromptLoreSource.Prefetched:
 			loreContext = prefetchedLoreContext ?? "";
-			loreCtxSource = "prefetched";
-		}
-		else if (!suppressDynamicRuleAndLore && targetHero != null)
-		{
+			break;
+		case PromptLoreSource.Hero:
 			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance, mentionedEntities);
-			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_hero" : "hero");
-		}
-		else if (!suppressDynamicRuleAndLore && targetCharacter != null)
-		{
+			break;
+		case PromptLoreSource.Character:
 			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance, mentionedEntities);
-			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_character" : "character");
+			break;
 		}
 		try
 		{
@@ -30685,18 +30675,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			extrasSections.SettlementMerchantDebtHint = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
 		}
-		bool includeDuelStakeContext = false;
-		bool playerWonLastDuelForRule = false;
-		if (targetHero != null && DuelBehavior.TryConsumeLastDuelResult(targetHero, out var playerWon))
+		bool playerWon = false;
+		bool hasDuelResult = targetHero != null && DuelBehavior.TryConsumeLastDuelResult(targetHero, out playerWon);
+		if (hasDuelResult)
 		{
-			includeDuelStakeContext = true;
-			playerWonLastDuelForRule = playerWon;
+			contextFlags = PromptContextDecisions.ResolveFlags(routing, flag2, partyTransferEligible,
+				AIConfigHandler.RewardEnabled, AIConfigHandler.LoanEnabled, persistentAdpDebtPostprocess, hasDuelResult: true, playerWonLastDuel: playerWon);
+			flag7 = contextFlags.UseRewardContext;
 			extrasSections.DuelResultLine = PromptExtrasComposer.BuildDuelResultLine(playerWon, BuildPlayerPublicDisplayNameForPrompt(targetHero));
-			if (AIConfigHandler.RewardEnabled)
-			{
-				flag7 = true;
-			}
 		}
+		bool includeDuelStakeContext = contextFlags.IncludeDuelStakeContext;
+		bool playerWonLastDuelForRule = contextFlags.PlayerWonLastDuel;
 		if (targetHero != null && !string.IsNullOrEmpty(targetHero.StringId))
 		{
 			string playerDisplayName2 = BuildPlayerPublicDisplayNameForPrompt(targetHero);
