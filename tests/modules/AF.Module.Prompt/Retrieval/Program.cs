@@ -121,6 +121,22 @@ internal static class Program
         using (PromptRetrievalContextOwner.BeginScope((_, _) => throw new InvalidOperationException()))
             latest.Value = "failing continuation";
         Check((string)latest.Value == "parent mention,child mention", "merge failure still restores parent");
+        var mutableSeeds = new[] { "duel", "reward" };
+        var warmup = new PromptSemanticWarmupSeedBatch(5, mutableSeeds);
+        mutableSeeds[0] = "changed";
+        Check(warmup.Seeds[0] == "duel", "warmup captures detached seed values");
+        long currentWarmupRevision = 5;
+        var warmedSeeds = new List<string>();
+        var warmupResult = PromptSemanticWarmupExecutor.Run(warmup, () => currentWarmupRevision, (revision, seed) =>
+        {
+            warmedSeeds.Add(seed);
+            currentWarmupRevision = 6;
+            return revision == 5;
+        });
+        Check(warmupResult.Stale && warmedSeeds.SequenceEqual(new[] { "duel" }), "stale warmup stops before second embedding");
+        Check(warmupResult.SeedCount == 2 && warmupResult.Warmed == 1, "warmup reports captured count and completed work");
+        Check(PromptSemanticWarmupExecutor.Run(warmup, () => 6, (_, _) => throw new Exception("must not embed")).Stale,
+            "old revision is rejected before embedding");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

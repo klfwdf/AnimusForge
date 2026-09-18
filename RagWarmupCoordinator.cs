@@ -9,7 +9,7 @@ internal static class RagWarmupCoordinator
 {
 	private static int _warmupState;
 
-	public static void TryStartBackgroundWarmup(string source)
+	public static void TryStartBackgroundWarmup(string source, PromptSemanticWarmupSeedBatch semanticSeeds)
 	{
 		if (Interlocked.CompareExchange(ref _warmupState, 1, 0) != 0)
 		{
@@ -19,11 +19,11 @@ internal static class RagWarmupCoordinator
 		Logger.Log("RagWarmup", "start source=" + warmupSource);
 		Task.Run((Action)delegate
 		{
-			RunWarmup(warmupSource);
+			RunWarmup(warmupSource, semanticSeeds);
 		});
 	}
 
-	private static void RunWarmup(string source)
+	private static void RunWarmup(string source, PromptSemanticWarmupSeedBatch semanticSeeds)
 	{
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		bool embeddingOk = false;
@@ -54,7 +54,7 @@ internal static class RagWarmupCoordinator
 		{
 			try
 			{
-				AIConfigHandler.TryStartBackgroundSemanticWarmup("rag_warmup_complete");
+				AIConfigHandler.TryStartBackgroundSemanticWarmup("rag_warmup_complete", semanticSeeds);
 			}
 			catch
 			{

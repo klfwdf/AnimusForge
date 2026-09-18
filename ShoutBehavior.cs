@@ -10989,8 +10989,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_nextProactiveSceneOpeningProbeMissionTime = 0f;
 		ResetPendingMainThreadFunctions();
 		Interlocked.Increment(ref _sceneHistorySessionId);
-		RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start");
-		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start");
+		PromptSemanticWarmupSeedBatch semanticWarmupSeeds = AIConfigHandler.CaptureGuardrailSemanticWarmupSeeds();
+		RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start", semanticWarmupSeeds);
+		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start", semanticWarmupSeeds);
 		currentMission.AddMissionBehavior(new ShoutMissionBehavior(this));
 		currentMission.AddMissionBehavior(new FloatingTextMissionView());
 		currentMission.AddMissionBehavior(new TownAmbientDialogueMissionBehavior());
