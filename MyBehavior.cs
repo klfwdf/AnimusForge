@@ -30467,6 +30467,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
+	// Phase layout (J04): capture request (game reads) → routing (network/ONNX on detached input) →
+	// capture sections (game reads) → pure assembly → runtime appendices (game reads).
+	// The phases still execute sequentially on the caller's thread; channels schedule the whole
+	// build today, so the split makes the boundary explicit without changing behavior.
 	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
@@ -30491,6 +30495,67 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Stopwatch promptContextStageSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
 		LogShoutPromptContextStage("start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "inputLen=" + ((input ?? "").Length) + " extraLen=" + ((extraFact ?? "").Length) + " suppressDynamic=" + suppressDynamicRuleAndLore + " thread=" + Thread.CurrentThread.ManagedThreadId);
+		PromptBuildRequest request = CapturePromptBuildRequest(targetHero, targetCharacter, input, extraFact, cultureIdOverride, kingdomIdOverride, targetAgentIndex, hasAnyHero, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(request.Target);
+		try
+		{
+			if (!request.SuppressDynamicRuleAndLore && request.CompleteRuntimeExcludedRuleIds)
+			{
+				PromptExclusionSets.AddUnavailableConfiguredRules(request.PreprocessExcludedRuleIds, AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal(),
+					id => AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(id, request.HasAnyHero));
+			}
+			if (!request.SuppressDynamicRuleAndLore)
+			{
+				shoutPromptContext.PreprocessExcludedRuleIds = PromptExclusionSets.ToOrderedList(request.PreprocessExcludedRuleIds);
+				shoutPromptContext.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(shoutPromptContext.PreprocessExcludedRuleIds);
+				AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
+			}
+			AIConfigHandler.SetGuardrailSemanticContext(request.GuardrailSemanticContext);
+			LogShoutPromptContextStage("runtime_init_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "semanticContextLen=" + ((request.GuardrailSemanticContext ?? "").Length) + " targetKingdom=" + (request.TargetKingdomId ?? ""));
+			if (request.BypassRulePreprocess)
+			{
+				Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null"));
+			}
+			PromptRoutingInput routingInput = CreatePromptRoutingInput(request);
+			PromptRoutingResult routing = PromptTopicRoutingStage.Run(routingInput, CreatePromptRoutingPorts());
+			directPreprocessMentionedEntities.Merge(routing.AuxiliaryMentions);
+			LogPromptRoutingDiagnostics(request, routing, routingInput, targetHero, targetCharacter);
+			LogShoutPromptContextStage("aux_preprocess_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "auxHits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds) + " forcedHits=" + PromptTopicRoutingStage.DescribeHits(routing.ForcedRuleHitIds, "(none)"));
+			PromptContextFlags contextFlags;
+			PromptExtrasSections extrasSections;
+			PromptEntityCapture entityCapture;
+			MentionedWorldEntities mentionedEntities;
+			CapturePromptSections(request, routing, directPreprocessMentionedEntities, targetHero, targetCharacter, weeklyPromptSnapshot, promptContextTotalSw, promptContextStageSw,
+				out contextFlags, out extrasSections, out entityCapture, out mentionedEntities);
+			shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
+			PromptAssembly assembly = PromptAssemblyStage.Assemble(extrasSections, entityCapture, routing, contextFlags, request.IsQualified, request.SuppressDynamicRuleAndLore, request.PreprocessExcludedRuleIds);
+			shoutPromptContext.Extras = assembly.Extras;
+			shoutPromptContext.EntityPostprocessContext = assembly.EntityPostprocessContext;
+			shoutPromptContext.ExplicitMentionedKingdomIds = assembly.ExplicitMentionedKingdomIds;
+			shoutPromptContext.UseDuelContext = assembly.UseDuelContext;
+			shoutPromptContext.UseRewardContext = assembly.UseRewardContext;
+			shoutPromptContext.IsLoanContext = assembly.IsLoanContext;
+			shoutPromptContext.IsQualified = assembly.IsQualified;
+			shoutPromptContext.PreprocessRuleIds = assembly.PreprocessRuleIds;
+			LogShoutPromptContextStage("extras_assigned", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " useRewardContext=" + assembly.UseRewardContext + " useLoanContext=" + assembly.IsLoanContext);
+			LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
+				"ids=" + PromptTopicRoutingStage.DescribeHits(shoutPromptContext.PreprocessRuleIds, "(none)")
+				+ " excluded=" + PromptTopicRoutingStage.DescribeHits(shoutPromptContext.PreprocessExcludedRuleIds, "(none)")
+				+ " excludedBlockLen=" + ((shoutPromptContext.PreprocessExcludedRuleBlock ?? "").Length));
+			ApplyPromptRuntimeAppendices(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride, promptContextTotalSw, promptContextStageSw);
+			LogShoutPromptContextStage("complete", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length), immediate: true);
+			return shoutPromptContext;
+		}
+		finally
+		{
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
+		}
+	}
+
+	/// <summary>Phase 1: identity, exclusion sets, qualification, history context. Game-thread reads only; no network.</summary>
+	private PromptBuildRequest CapturePromptBuildRequest(Hero targetHero, CharacterObject targetCharacter, string input, string extraFact, string cultureIdOverride, string kingdomIdOverride, int targetAgentIndex, bool hasAnyHero, bool suppressDynamicRuleAndLore, bool usePrefetchedLoreContext, string prefetchedLoreContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preprocessExcludedRuleIds, IEnumerable<string> forcedPreprocessRuleIds)
+	{
 		// These are topics removed from the candidate list before routing. They are
 		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
 		PromptExclusionSets.Build(excludedRuleIds, preprocessExcludedRuleIds,
@@ -30504,100 +30569,108 @@ public partial class MyBehavior : CampaignBehaviorBase
 			set => AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(set),
 			out HashSet<string> explicitExcludedRuleIdSet, out HashSet<string> excludedRuleIdSet, out HashSet<string> preprocessExcludedRuleIdSet, out bool completeRuntimeExcludedRuleIds);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
-		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
-		try
-		{
-			if (!suppressDynamicRuleAndLore && completeRuntimeExcludedRuleIds)
-			{
-				PromptExclusionSets.AddUnavailableConfiguredRules(preprocessExcludedRuleIdSet, AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal(),
-					id => AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(id, hasAnyHero));
-			}
-			if (!suppressDynamicRuleAndLore)
-			{
-				shoutPromptContext.PreprocessExcludedRuleIds = PromptExclusionSets.ToOrderedList(preprocessExcludedRuleIdSet);
-				shoutPromptContext.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(shoutPromptContext.PreprocessExcludedRuleIds);
-			}
-			if (!suppressDynamicRuleAndLore)
-			{
-				AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
-			}
-			string guardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact);
-			AIConfigHandler.SetGuardrailSemanticContext(guardrailSemanticContext);
-			LogShoutPromptContextStage("runtime_init_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "semanticContextLen=" + ((guardrailSemanticContext ?? "").Length) + " targetKingdom=" + (targetKingdomId ?? ""));
-		int num = ResolvePlayerClanTierForPrompt();
-		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
-		bool isQualified = num >= num2;
-		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
 		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex);
-		bool allowRulePreprocess = !suppressDynamicRuleAndLore && !bypassRulePreprocess;
-		if (bypassRulePreprocess)
-		{
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null"));
-		}
-		PromptRoutingInput routingInput = new PromptRoutingInput
+		return new PromptBuildRequest
 		{
 			Input = input,
-			NpcLastUtterance = npcLastUtterance,
+			ExtraFact = extraFact,
+			CultureId = cultureIdOverride,
+			KingdomIdOverride = kingdomIdOverride,
+			TargetKingdomId = targetKingdomId,
+			Target = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex),
+			TargetHeroId = targetHero?.StringId,
+			TargetCharacterId = targetCharacter?.StringId,
+			TargetDisplayName = targetHero?.Name?.ToString() ?? "某人",
+			TargetAgentIndex = targetAgentIndex,
 			HasAnyHero = hasAnyHero,
-			AllowRulePreprocess = allowRulePreprocess,
+			HasTargetHero = targetHero != null,
+			HasTargetCharacter = targetCharacter != null,
+			SuppressDynamicRuleAndLore = suppressDynamicRuleAndLore,
 			BypassRulePreprocess = bypassRulePreprocess,
+			PlayerClanTier = ResolvePlayerClanTierForPrompt(),
+			MinimumClanTier = DuelSettings.GetSettings()?.MinimumClanTier ?? 0,
+			NpcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex),
+			GuardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact),
+			UsePrefetchedLoreContext = usePrefetchedLoreContext,
+			PrefetchedLoreContext = prefetchedLoreContext,
+			ExplicitExcludedRuleIds = explicitExcludedRuleIdSet,
+			ExcludedRuleIds = excludedRuleIdSet,
+			PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet,
+			CompleteRuntimeExcludedRuleIds = completeRuntimeExcludedRuleIds,
+			ForcedPreprocessRuleIds = forcedPreprocessRuleIds,
+			StickyTargetKey = ResolveBuiltInRuleStickyTargetKey(targetHero, targetCharacter)
+		};
+	}
+
+	private static PromptRoutingInput CreatePromptRoutingInput(PromptBuildRequest request)
+	{
+		return new PromptRoutingInput
+		{
+			Input = request.Input,
+			NpcLastUtterance = request.NpcLastUtterance,
+			HasAnyHero = request.HasAnyHero,
+			AllowRulePreprocess = request.AllowRulePreprocess,
+			BypassRulePreprocess = request.BypassRulePreprocess,
 			UseAuxiliaryRuleApi = AIConfigHandler.UseAuxiliaryRuleApiRetrieval,
 			AuxiliaryReturnCap = AIConfigHandler.GuardrailRuleReturnCap,
 			RewardEnabled = AIConfigHandler.RewardEnabled,
 			LoanEnabled = AIConfigHandler.LoanEnabled,
 			SurroundingsEnabled = AIConfigHandler.SurroundingsEnabled,
-			ExcludedRuleIds = excludedRuleIdSet,
-			PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet,
-			ForcedPreprocessRuleIds = forcedPreprocessRuleIds,
-			StickyTargetKey = ResolveBuiltInRuleStickyTargetKey(targetHero, targetCharacter)
+			ExcludedRuleIds = request.ExcludedRuleIds,
+			PreprocessExcludedRuleIds = request.PreprocessExcludedRuleIds,
+			ForcedPreprocessRuleIds = request.ForcedPreprocessRuleIds,
+			StickyTargetKey = request.StickyTargetKey
 		};
-		PromptRoutingResult routing = PromptTopicRoutingStage.Run(routingInput, CreatePromptRoutingPorts());
-		directPreprocessMentionedEntities.Merge(routing.AuxiliaryMentions);
-		List<string> auxiliaryRuleHitIds = routing.AuxiliaryRuleHitIds;
-		bool useAuxiliaryRuleHitSet = routing.UseAuxiliaryRuleHitSet;
+	}
+
+	private static void LogPromptRoutingDiagnostics(PromptBuildRequest request, PromptRoutingResult routing, PromptRoutingInput routingInput, Hero targetHero, CharacterObject targetCharacter)
+	{
+		string who = "targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null");
 		if (routing.AuxiliaryFailure != null)
 		{
 			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess failed=" + routing.AuxiliaryFailure);
 		}
-		else if (allowRulePreprocess && routingInput.UseAuxiliaryRuleApi)
+		else if (request.AllowRulePreprocess && routingInput.UseAuxiliaryRuleApi)
 		{
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + PromptTopicRoutingStage.DescribeHits(auxiliaryRuleHitIds, "(none)"));
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess " + who + " hits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds, "(none)"));
 		}
 		if (routing.ForcedRuleHitIds.Count > 0)
 		{
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + string.Join(",", routing.ForcedRuleHitIds));
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess " + who + " hits=" + string.Join(",", routing.ForcedRuleHitIds));
 		}
-		LogShoutPromptContextStage("aux_preprocess_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "auxHits=" + PromptTopicRoutingStage.DescribeHits(auxiliaryRuleHitIds) + " forcedHits=" + PromptTopicRoutingStage.DescribeHits(routing.ForcedRuleHitIds, "(none)"));
 		if (routing.StickySuppressed)
 		{
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=sticky_suppressed targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " carryDuel=" + routing.CarryDuel + " carryReward=" + routing.CarryReward + " carryLoan=" + routing.CarryLoan + " auxiliaryHits=" + PromptTopicRoutingStage.DescribeHits(auxiliaryRuleHitIds, "(none)"));
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=sticky_suppressed " + who + " carryDuel=" + routing.CarryDuel + " carryReward=" + routing.CarryReward + " carryLoan=" + routing.CarryLoan + " auxiliaryHits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds, "(none)"));
 		}
-		PromptTopicRoute duelRoute = routing.Duel;
-		PromptTopicRoute rewardRoute = routing.Reward;
-		PromptTopicRoute loanRoute = routing.Loan;
-		PromptTopicRoute surroundingsRoute = routing.Surroundings;
-		PromptTopicRoute kingdomServiceRoute = routing.KingdomService;
-		PromptTopicRoute marriageRoute = routing.Marriage;
-		PromptTopicRoute partyTransferRoute = routing.PartyTransfer;
-		PromptTopicRoute worldMapRoute = routing.WorldMapPartyCommand;
-		bool liveDuelSemanticHit = routing.LiveDuelSemanticHit;
-		bool liveRewardSemanticHit = routing.LiveRewardSemanticHit;
-		bool liveLoanSemanticHit = routing.LiveLoanSemanticHit;
-		bool flag = duelRoute.Hit;
-		bool flag3 = rewardRoute.Hit;
-		bool flag4 = loanRoute.Hit;
-		bool flag5 = surroundingsRoute.Hit;
-		bool flag6 = kingdomServiceRoute.Hit;
-		bool marriageHit = marriageRoute.Hit;
-		bool partyTransferHit = partyTransferRoute.Hit;
-		bool worldMapPartyCommandHit = worldMapRoute.Hit;
-		float score = duelRoute.Score;
-		float score2 = rewardRoute.Score;
-		float score3 = loanRoute.Score;
-		float score4 = surroundingsRoute.Score;
+	}
+
+	/// <summary>Phase 3: context flags, mentions, lore and every Extras section, captured in legacy order. Game-thread reads.</summary>
+	private void CapturePromptSections(PromptBuildRequest request, PromptRoutingResult routing, MentionedWorldEntities directPreprocessMentionedEntities, Hero targetHero, CharacterObject targetCharacter, WeeklyPromptSnapshot weeklyPromptSnapshot, Stopwatch promptContextTotalSw, Stopwatch promptContextStageSw,
+		out PromptContextFlags contextFlags, out PromptExtrasSections extrasSections, out PromptEntityCapture entityCapture, out MentionedWorldEntities mentionedEntities)
+	{
+		string input = request.Input;
+		string kingdomIdOverride = request.KingdomIdOverride;
+		int targetAgentIndex = request.TargetAgentIndex;
+		bool hasAnyHero = request.HasAnyHero;
+		bool suppressDynamicRuleAndLore = request.SuppressDynamicRuleAndLore;
+		bool allowRulePreprocess = request.AllowRulePreprocess;
+		string npcLastUtterance = request.NpcLastUtterance;
+		bool isQualified = request.IsQualified;
+		List<string> auxiliaryRuleHitIds = routing.AuxiliaryRuleHitIds;
+		bool flag = routing.Duel.Hit;
+		bool flag3 = routing.Reward.Hit;
+		bool flag4 = routing.Loan.Hit;
+		bool flag5 = routing.Surroundings.Hit;
+		bool flag6 = routing.KingdomService.Hit;
+		bool marriageHit = routing.Marriage.Hit;
+		bool partyTransferHit = routing.PartyTransfer.Hit;
+		bool worldMapPartyCommandHit = routing.WorldMapPartyCommand.Hit;
+		float score = routing.Duel.Score;
+		float score2 = routing.Reward.Score;
+		float score3 = routing.Loan.Score;
+		float score4 = routing.Surroundings.Score;
 		bool persistentAdpDebtPostprocess = false;
-		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(request.PreprocessExcludedRuleIds, "loan") && RewardSystemBehavior.Instance != null)
 		{
 			try
 			{
@@ -30611,7 +30684,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		// Pre-duel flags: the duel result is consumed later at its legacy position so the Reward
 		// TrustPrompt decision still sees the un-promoted reward flag.
 		bool partyTransferEligible = partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex);
-		PromptContextFlags contextFlags = PromptContextDecisions.ResolveFlags(routing,
+		contextFlags = PromptContextDecisions.ResolveFlags(routing,
 			HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex),
 			partyTransferEligible,
 			AIConfigHandler.RewardEnabled, AIConfigHandler.LoanEnabled, persistentAdpDebtPostprocess, hasDuelResult: false, playerWonLastDuel: false);
@@ -30623,25 +30696,24 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			value = AIConfigHandler.BuildGuardrailClarificationHint(input, flag, score, flag3, score2, flag4, score3, flag5, score4);
 		}
-		Logger.Log("Logic", PromptContextDecisions.DescribeSemanticTrigger(routing, npcLastUtterance, input, targetHero?.Name?.ToString() ?? "某人"));
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
+		Logger.Log("Logic", PromptContextDecisions.DescribeSemanticTrigger(routing, npcLastUtterance, input, request.TargetDisplayName));
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={routing.LiveDuelSemanticHit} liveReward={routing.LiveRewardSemanticHit} liveLoan={routing.LiveLoanSemanticHit} auxRuleHits={PromptTopicRoutingStage.DescribeHits(auxiliaryRuleHitIds)} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
-		MentionedWorldEntities mentionedEntities = directPreprocessMentionedEntities.Clone();
+		mentionedEntities = directPreprocessMentionedEntities.Clone();
 		if (!suppressDynamicRuleAndLore)
 		{
-			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext));
+			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, request.GuardrailSemanticContext));
 			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 		}
-		shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
 		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
 		string loreContext = "";
-		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + (usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext)));
-		PromptLoreSource loreSource = PromptContextDecisions.SelectLoreSource(suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, targetHero != null, targetCharacter != null);
-		string loreCtxSource = PromptContextDecisions.DescribeLoreSource(loreSource, usePrefetchedLoreContext, prefetchedLoreContext);
+		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + request.HasPrefetchedLore);
+		PromptLoreSource loreSource = PromptContextDecisions.SelectLoreSource(suppressDynamicRuleAndLore, request.UsePrefetchedLoreContext, request.PrefetchedLoreContext, targetHero != null, targetCharacter != null);
+		string loreCtxSource = PromptContextDecisions.DescribeLoreSource(loreSource, request.UsePrefetchedLoreContext, request.PrefetchedLoreContext);
 		switch (loreSource)
 		{
 		case PromptLoreSource.Prefetched:
-			loreContext = prefetchedLoreContext ?? "";
+			loreContext = request.PrefetchedLoreContext ?? "";
 			break;
 		case PromptLoreSource.Hero:
 			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance, mentionedEntities);
@@ -30658,7 +30730,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 		}
 		LogShoutPromptContextStage("lore_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "source=" + loreCtxSource + " loreLen=" + ((loreContext ?? "").Length));
-		PromptExtrasSections extrasSections = new PromptExtrasSections();
+		extrasSections = new PromptExtrasSections();
 		if (RewardSystemBehavior.Instance != null && targetHero != null)
 		{
 			if (flag8)
@@ -30733,7 +30805,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
-		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
+		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, request.PlayerClanTier, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, request.ExcludedRuleIds, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds, "meeting_taunt")) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
@@ -30750,7 +30822,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		extrasSections.WeeklyFullReports = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		extrasSections.LoreContext = loreContext;
 		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((extrasSections.WeeklyFullReports ?? "").Length));
-		PromptEntityCapture entityCapture = null;
+		entityCapture = null;
 		if (!suppressDynamicRuleAndLore)
 		{
 			bool includeResidentKingdomEntities = PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
@@ -30779,50 +30851,24 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + entityCapture.HasContent);
 		}
-		bool includeTradePricing = flag7 || flag8;
 		bool includeMarriageCandidates = targetHero != null && marriageHit;
 		RomanceSystemBehavior.SetMarriagePostprocessContextEnabled(targetHero, includeMarriageCandidates);
-		bool includeRuleGatedFields = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
 		contextFlags.UseRewardContext = flag7;
 		contextFlags.IsLoanContext = flag8;
 		contextFlags.UseDuelContext = flag2;
-		PromptAssembly assembly = PromptAssemblyStage.Assemble(extrasSections, entityCapture, routing, contextFlags, isQualified, suppressDynamicRuleAndLore, preprocessExcludedRuleIdSet);
-		shoutPromptContext.Extras = assembly.Extras;
-		shoutPromptContext.EntityPostprocessContext = assembly.EntityPostprocessContext;
-		shoutPromptContext.ExplicitMentionedKingdomIds = assembly.ExplicitMentionedKingdomIds;
-		shoutPromptContext.UseDuelContext = assembly.UseDuelContext;
-		shoutPromptContext.UseRewardContext = assembly.UseRewardContext;
-		shoutPromptContext.IsLoanContext = assembly.IsLoanContext;
-		shoutPromptContext.IsQualified = assembly.IsQualified;
-		shoutPromptContext.PreprocessRuleIds = assembly.PreprocessRuleIds;
-		LogShoutPromptContextStage("extras_assigned", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " includeTradePricing=" + includeTradePricing + " includeMarriageCandidates=" + includeMarriageCandidates + " includeRuleGatedFields=" + includeRuleGatedFields);
-		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
-			"ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds))
-			+ " excluded=" + ((shoutPromptContext.PreprocessExcludedRuleIds == null || shoutPromptContext.PreprocessExcludedRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessExcludedRuleIds))
-			+ " excludedBlockLen=" + ((shoutPromptContext.PreprocessExcludedRuleBlock ?? "").Length));
+	}
+
+	/// <summary>Phase 5: team-module runtime prompt (GCCZ) and shared party resource appendices; diagnostics. Game-thread reads.</summary>
+	private void ApplyPromptRuntimeAppendices(ShoutPromptContext shoutPromptContext, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string cultureIdOverride, Stopwatch promptContextTotalSw, Stopwatch promptContextStageSw)
+	{
 		LogShoutPromptContextStage("gccz_runtime_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 		LogShoutPromptContextStage("gccz_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
 		shoutPromptContext.Extras = AppendPlayerPartySharedResourcePrompt(shoutPromptContext.Extras, targetHero, targetCharacter);
 		LogShoutPromptContextStage("shared_resource_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
 		PromptExtrasMarkers extrasMarkers = PromptExtrasComposer.DetectMarkers(shoutPromptContext.Extras);
-		bool extrasHasDuelRule = extrasMarkers.Duel;
-		bool extrasHasRewardRule = extrasMarkers.Reward;
-		bool extrasHasLoanRule = extrasMarkers.Loan;
-		bool extrasHasWorldMapRule = extrasMarkers.WorldMap;
-		bool extrasHasNpcMajorRule = extrasMarkers.NpcMajor;
-		bool extrasHasResidentRecentActions = extrasMarkers.ResidentRecentActions;
-		bool extrasHasVanillaIssueRule = extrasMarkers.VanillaIssue;
-		bool extrasHasVanillaIssueRuntimeBlock = extrasMarkers.VanillaIssueRuntimeBlock;
 		bool extrasHasSiegeInterventionRule = AfGcczShoutBridge.HasInjectedRuleBlock(shoutPromptContext.Extras);
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasResidentRecentActions={extrasHasResidentRecentActions} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
-		LogShoutPromptContextStage("complete", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length), immediate: true);
-		return shoutPromptContext;
-		}
-		finally
-		{
-			AIConfigHandler.ClearGuardrailRuntimeTarget();
-		}
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasMarkers.Duel} extrasHasRewardRule={extrasMarkers.Reward} extrasHasLoanRule={extrasMarkers.Loan} extrasHasWorldMapRule={extrasMarkers.WorldMap} extrasHasVanillaIssueRule={extrasMarkers.VanillaIssue} extrasHasVanillaIssueRuntimeBlock={extrasMarkers.VanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasMarkers.NpcMajor} extrasHasResidentRecentActions={extrasMarkers.ResidentRecentActions} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 	}
 
 	public static void AppendExternalLoreHistory(Hero hero, string loreText)
