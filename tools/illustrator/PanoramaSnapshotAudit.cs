@@ -61,13 +61,6 @@ public static class PanoramaSnapshotAudit
             correct &= (bool)eligible.Invoke(null, new object[] { valid, visible, marker, animated, agent }) == (valid && visible && !marker && !animated && !agent);
         }
         Check(correct, "all 32 eligibility combinations preserve only actual visible safe entities");
-        MethodInfo mode = helper.GetMethod("SelectPanoramaCopyMode", All);
-        Func<bool, bool, bool, int> select = (a, b, c) => (int)mode.Invoke(null, new object[] { a, b, c });
-        Check(select(true, false, false) == 1, "safe static prefab keeps its complete current subtree");
-        Check(select(true, true, false) == 2, "mixed parent retains own static meshes instead of dropping the building");
-        Check(select(false, true, false) == 0, "animated branch itself is excluded");
-        Check(select(true, false, true) == 0, "a child of an already copied subtree is not duplicated");
-        Check(select(true, false, false) == 1, "safe sibling under split parent remains selectable");
         MethodInfo budget = helper.GetMethod("ContinuePanoramaSnapshotBatch", All);
         Check((bool)budget.Invoke(null, new object[] { 7, 3.9 }) && !(bool)budget.Invoke(null, new object[] { 8, 0d }), "eight native copies is the hard per-batch count cap");
         Check(!(bool)budget.Invoke(null, new object[] { 1, 4d }) && (bool)budget.Invoke(null, new object[] { 0, 5d }), "4ms soft budget yields after the first indivisible copy");
@@ -80,13 +73,10 @@ public static class PanoramaSnapshotAudit
         var calls = methods.SelectMany(ReadIl).Select(i => i.Item2).OfType<MethodBase>().ToArray();
         Check(calls.Any(m => m.DeclaringType.FullName == "TaleWorlds.Engine.Scene" && m.Name == "CreateNewScene"), "production creates an independent Scene");
         Check(calls.Any(m => m.Name == "GetRootEntities") && !calls.Any(m => m.Name == "GetEntities"), "production enumerates native roots once, not repeated flattened scene scans");
-        Check(calls.Any(m => m.Name == "CopyFrom" && m.DeclaringType.FullName == "TaleWorlds.Engine.GameEntity"), "production copies actual GameEntity instances");
-        var copyIl = ReadIl(builder.GetMethod("CopyBatch", All));
-        int copyIndex = copyIl.FindIndex(i => i.Item2 is MethodBase && ((MethodBase)i.Item2).Name == "CopyFrom");
-        Check(copyIndex >= 2 && copyIl[copyIndex - 1].Item1 == OpCodes.Ldc_I4_0 && copyIl[copyIndex - 2].Item1 == OpCodes.Ldc_I4_0,
-            "native entity copy disables physics and script callbacks");
-        Check(calls.Any(m => m.DeclaringType.FullName == "TaleWorlds.Engine.MetaMesh" && m.Name == "CreateCopy"), "mixed-parent meshes copy current mesh data instead of resolving asset names");
-        Check(calls.Any(m => m.Name == "GetGlobalFrame") && calls.Any(m => m.Name == "SetFrame"), "detached safe subtrees keep their global placement");
+        Check(!calls.Any(m => m.Name == "CopyFrom" && m.DeclaringType.FullName == "TaleWorlds.Engine.GameEntity"), "whole native entities and light shadow state are never copied");
+        Check(calls.Any(m => m.Name == "AddItemEntity") && !calls.Any(m => m.Name == "AddLight"), "visual meshes use vanilla tableau attachment without source light components");
+        Check(calls.Any(m => m.DeclaringType.FullName == "TaleWorlds.Engine.MetaMesh" && m.Name == "CreateCopy"), "snapshot copies current mesh data instead of resolving asset names");
+        Check(calls.Any(m => m.Name == "GetGlobalFrame") && calls.Any(m => m.Name == "UpdateGlobalBounds") && calls.Any(m => m.Name == "UpdateVisibilityMask"), "detached mesh carriers preserve placement and initialize bounds");
         Check(!calls.Any(m => m.Name == "Tick" || m.Name == "OnTick" || m.Name == "Read" || m.Name == "Instantiate"), "snapshot never manually ticks or reloads template scenes or prefabs");
         Check(!calls.Any(m => m.Name == "SetCamera" || m.Name == "set_CustomCamera" || m.Name == "SetCameraFrame" || m.Name == "SetVisible"), "snapshot never changes live cameras or character visibility");
         Check(calls.Any(m => m.Name == "SetDoNotAddEntitiesToTickList") && calls.Any(m => m.Name == "SetClothSimulationState"), "private scene suppresses script ticking and cloth simulation");
