@@ -24,7 +24,7 @@ namespace AnimusForge.Illustrator.Engine
         internal Scene Scene { get; private set; }
         internal int CopiedRoots { get; set; }
         internal int SkippedAnimated { get; set; }
-        internal int SplitNodes { get; set; }
+        internal int SkippedNonGeometry { get; set; }
         internal int InspectedNodes { get; set; }
         internal int SourceRoots { get; set; }
         internal int Batches { get; set; }
@@ -32,11 +32,11 @@ namespace AnimusForge.Illustrator.Engine
         internal double MaxBatchMilliseconds { get; set; }
         internal bool TerrainOmitted { get; private set; }
         internal string Notes =>
-            "多镜头来自当前现场可见实体的独立冻结副本；保留建筑、门窗、陈设和实体材质的空间关系。" +
-            "环境快照主动省略人物、坐骑及含骨骼的动态实体，不能据此推断现场人数；人物位置以现场事实与当前画面为准。" +
-            "全景用于识别网格形态、布局、装饰和材质图案；采用中性材质观察光与固定曝光，保留可复制的局部灯光，但不代表现场采光。" +
+            "多镜头来自当前现场可见静态网格的独立冻结副本；保留建筑、门窗、陈设和实体材质的空间关系。" +
+            "环境快照主动省略人物、坐骑及含骨骼或布料模拟的动态实体，不能据此推断现场人数；人物位置以现场事实与当前画面为准。" +
+            "全景用于识别网格形态、布局、装饰和材质图案；采用中性材质观察光与固定曝光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
             "完整天空、环境光、烘焙间接光和曝光无法从引擎公开接口精确回读；现场昼夜、光照及颜色以附加的真实当前画面为准。" +
-            (SplitNodes > 0 ? "混合骨骼父节点已拆分保留自身静态网格与安全子树，其自身粒子、布料及特殊灯光组件未复制。" : string.Empty) +
+            (SkippedNonGeometry > 0 ? "没有普通静态网格的特殊组件已省略，不以空缺推断现场没有装饰。" : string.Empty) +
             (TerrainOmitted ? "本现场含原生地形，副本没有复制地形高度场、地形混合材质和水面；这些空缺不是悬空、平地或室内的证据。" : string.Empty);
 
         internal PanoramaSceneSnapshot(Scene scene, UIntPtr sourcePointer, bool terrainOmitted)
@@ -97,10 +97,6 @@ namespace AnimusForge.Illustrator.Engine
         internal static bool PanoramaSnapshotRootCountAllowed(int roots)
             => roots >= 0 && roots <= PanoramaSnapshotMaxRoots;
 
-        // 0: omit, 1: copy complete safe subtree, 2: preserve only this mixed parent's own meshes.
-        internal static int SelectPanoramaCopyMode(bool canCopy, bool hasAnimatedSubtree, bool ancestorCopied)
-            => !canCopy || ancestorCopied ? 0 : hasAnimatedSubtree ? 2 : 1;
-
         internal static async Task<PanoramaSceneSnapshot> CreatePanoramaSnapshotAsync(Mission mission, CancellationToken token)
         {
             PanoramaSnapshotBuilder builder = null;
@@ -135,10 +131,14 @@ namespace AnimusForge.Illustrator.Engine
                         var retired = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                         IllustratorRuntime.PostCritical(() =>
                         {
-                            try { cleanup(); retired.TrySetResult(true); }
-                            catch (Exception ex) { retired.TrySetException(ex); }
+                            try { cleanup(); }
+                            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Snapshot cleanup failed: " + ex.GetType().Name); }
+                            finally { retired.TrySetResult(true); }
                         });
-                        await retired.Task.ConfigureAwait(false);
+                        // Shutdown can synchronously retire the registered snapshot and stop
+                        // ticks before this queued callback runs. Either acknowledgement releases us.
+                        Task retirement = await Task.WhenAny(retired.Task, builder.Snapshot.Retirement).ConfigureAwait(false);
+                        await retirement.ConfigureAwait(false);
                     }
                 }
             }
@@ -149,16 +149,12 @@ namespace AnimusForge.Illustrator.Engine
             private sealed class EntitySelection
             {
                 internal GameEntity Entity;
-                internal int Parent;
                 internal bool CanCopy;
-                internal bool HasAnimatedSubtree;
-                internal bool Covered;
             }
             private struct PendingEntity
             {
                 internal GameEntity Entity;
-                internal int Parent;
-                internal PendingEntity(GameEntity entity, int parent) { Entity = entity; Parent = parent; }
+                internal PendingEntity(GameEntity entity) { Entity = entity; }
             }
             private readonly Mission _mission;
             private readonly Scene _source;
@@ -168,8 +164,10 @@ namespace AnimusForge.Illustrator.Engine
             private readonly HashSet<UIntPtr> _agentRoots;
             private readonly Stack<PendingEntity> _pending = new Stack<PendingEntity>();
             private readonly List<EntitySelection> _nodes = new List<EntitySelection>();
-            private int _phase; // collect once, propagate unsafe children once, copy maximal safe subtrees
+            private int _phase; // inspect once, then copy individual static mesh components
             private int _nodeIndex;
+            private int _meshIndex;
+            private MatrixFrame _nodeFrame;
             private readonly Stopwatch _totalWatch = Stopwatch.StartNew();
             internal PanoramaSceneSnapshot Snapshot { get; }
             internal bool RootsReleased => _roots == null;
@@ -209,7 +207,10 @@ namespace AnimusForge.Illustrator.Engine
                             agents.Add((entity.Root ?? entity).Pointer);
                     }
                     token.ThrowIfCancellationRequested();
-                    owned = Scene.CreateNewScene(initialize_physics: false, enable_decals: true,
+                    TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Preparing mesh-only private scene.");
+                    // Match vanilla Item/BannerTableau infrastructure. This creates no source
+                    // bodies: only visual meshes are attached to this otherwise empty scene.
+                    owned = Scene.CreateNewScene(initialize_physics: true, enable_decals: false,
                         sceneName: "af_environment_snapshot_" + Guid.NewGuid().ToString("N"));
                     snapshot = new PanoramaSceneSnapshot(owned, source.Pointer, source.ContainsTerrain || source.HasTerrainHeightmap);
                     _pendingPanoramaSnapshot = snapshot;
@@ -219,6 +220,8 @@ namespace AnimusForge.Illustrator.Engine
                     owned.SetUseConstantTime(true);
                     owned.TimeSpeed = 0;
                     owned.TimeOfDay = source.TimeOfDay;
+                    owned.DisableStaticShadows(true);
+                    owned.SetAtmosphereWithName("character_menu_a");
                     // Only the private copy gets neutral inspection lighting. This is deliberately
                     // labelled in Notes rather than misrepresented as the mission's real exposure.
                     owned.SetDefaultLighting();
@@ -227,10 +230,9 @@ namespace AnimusForge.Illustrator.Engine
                     owned.SetTargetExposure(0f);
                     Vec3 sunDirection = source.GetSunDirection();
                     owned.SetSunDirection(ref sunDirection);
-                    owned.SetRainDensity(source.GetRainDensity());
-                    owned.SetSnowDensity(source.GetSnowDensity());
-                    owned.SetWinterTimeFactor(source.GetWinterTimeFactor());
-                    owned.SetUpgradeLevelVisibility(source.GetUpgradeLevelMask());
+                    // Visibility was resolved against the source already. New mesh carriers
+                    // use their default upgrade level; do not hide them with a copied level mask.
+                    // Do not create weather/particle simulation in a geometry reference scene.
                     owned.EnsurePostfxSystem();
                     return new PanoramaSnapshotBuilder(mission, source, roots, snapshot, agents);
                 }
@@ -270,7 +272,7 @@ namespace AnimusForge.Illustrator.Engine
                 int work = 0, copies = 0;
                 // Inspection is bounded separately from costly native copies. A single native copy
                 // cannot be interrupted, so 4ms is a soft budget, not a maximum frame duration.
-                while (_phase < 3 && work < 64 && ContinuePanoramaSnapshotBatch(copies, watch.Elapsed.TotalMilliseconds) &&
+                while (_phase < 2 && work < 64 && ContinuePanoramaSnapshotBatch(copies, watch.Elapsed.TotalMilliseconds) &&
                     (work == 0 || watch.Elapsed.TotalMilliseconds < PanoramaSnapshotBatchMilliseconds))
                 {
                     token.ThrowIfCancellationRequested();
@@ -278,52 +280,35 @@ namespace AnimusForge.Illustrator.Engine
                     if (_phase == 0)
                     {
                         if (_pending.Count == 0 && _nextRoot < _rootCount)
-                            _pending.Push(new PendingEntity(_roots.GetElementAt(_nextRoot++) as GameEntity, -1));
-                        if (_pending.Count == 0) { _phase = 1; _nodeIndex = _nodes.Count - 1; continue; }
+                            _pending.Push(new PendingEntity(_roots.GetElementAt(_nextRoot++) as GameEntity));
+                        if (_pending.Count == 0) { _phase = 1; _nodeIndex = 0; continue; }
                         InspectOne(_pending.Pop(), token);
-                    }
-                    else if (_phase == 1)
-                    {
-                        if (_nodeIndex < 0) { _phase = 2; _nodeIndex = 0; continue; }
-                        EntitySelection node = _nodes[_nodeIndex--];
-                        if (node.HasAnimatedSubtree && node.Parent >= 0) _nodes[node.Parent].HasAnimatedSubtree = true;
                     }
                     else
                     {
-                        if (_nodeIndex >= _nodes.Count) { _phase = 3; continue; }
-                        EntitySelection node = _nodes[_nodeIndex++];
-                        node.Covered = node.Parent >= 0 && _nodes[node.Parent].Covered;
-                        int mode = SelectPanoramaCopyMode(node.CanCopy, node.HasAnimatedSubtree, node.Covered);
-                        if (mode == 0) continue;
-                        if (Snapshot.CopiedRoots >= PanoramaSnapshotMaxCopies)
-                            throw new InvalidOperationException("环境快照超过1024个实际预制体副本，已停止，不能将局部覆盖标为完整全景。");
+                        if (_nodeIndex >= _nodes.Count) { _phase = 2; continue; }
+                        EntitySelection node = _nodes[_nodeIndex];
                         GameEntity source = node.Entity;
-                        if (!source.WeakEntity.IsValid || source.Scene?.Pointer != _source.Pointer || !source.IsVisibleIncludeParents()) continue;
-                        GameEntity copied;
-                        if (mode == 2)
+                        if (!node.CanCopy || !source.WeakEntity.IsValid || source.Scene?.Pointer != _source.Pointer || !source.IsVisibleIncludeParents())
                         {
-                            Snapshot.SplitNodes++;
-                            copied = CopyOwnStaticMeshes(source);
-                            if (copied == null) continue;
+                            _nodeIndex++; _meshIndex = 0; continue;
                         }
-                        else copied = GameEntity.CopyFrom(Snapshot.Scene, source, createPhysics: false, callScriptCallbacks: false);
-                        if (copied == null || copied.Scene?.Pointer != Snapshot.Scene.Pointer || copied.Pointer == source.Pointer)
-                            throw new InvalidOperationException("环境实体副本没有正确进入独立场景。");
-                        // Split static subtrees retain their global placement, not the former parent's local frame.
-                        MatrixFrame frame = source.GetGlobalFrame();
-                        copied.SetFrame(ref frame);
-                        copied.EntityFlags |= EntityFlags.DoNotTick | EntityFlags.DontTickChildren;
-                        node.Covered = mode == 1;
-                        Snapshot.CopiedRoots++;
-                        copies++;
+                        int count = source.MultiMeshComponentCount;
+                        if (_meshIndex >= count)
+                        { if (count == 0) Snapshot.SkippedNonGeometry++; _nodeIndex++; _meshIndex = 0; continue; }
+                        if (Snapshot.CopiedRoots >= PanoramaSnapshotMaxCopies)
+                            throw new InvalidOperationException("环境快照超过1024个静态网格副本，已停止，不能将局部覆盖标为完整全景。");
+                        if (_meshIndex == 0) _nodeFrame = source.GetGlobalFrame();
+                        if (CopyStaticMesh(source, _meshIndex++, _nodeFrame)) { Snapshot.CopiedRoots++; copies++; }
                     }
                 }
                 ValidateMission(_mission, _source, token);
                 Snapshot.Batches++;
                 Snapshot.TotalMilliseconds = _totalWatch.Elapsed.TotalMilliseconds;
                 Snapshot.MaxBatchMilliseconds = Math.Max(Snapshot.MaxBatchMilliseconds, watch.Elapsed.TotalMilliseconds);
-                if (_phase < 3) return false;
+                if (_phase < 2) return false;
                 if (Snapshot.CopiedRoots == 0) throw new InvalidOperationException("没有可复制的现场环境实体，不能生成空白全景。");
+                TaleWorlds.Library.Debug.Print($"[IllustratorPanorama] Mesh snapshot ready: meshes={Snapshot.CopiedRoots}, nodes={Snapshot.InspectedNodes}, batches={Snapshot.Batches}, elapsedMs={Snapshot.TotalMilliseconds:F0}; no source light/physics/script components copied.");
                 ReleaseRoots();
                 return true;
             }
@@ -336,11 +321,10 @@ namespace AnimusForge.Illustrator.Engine
                 if (_nodes.Count >= PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
                 bool visible = entity.IsVisibleIncludeParents();
                 bool agent = _agentRoots.Contains(entity.Pointer);
-                bool animated = entity.Skeleton != null;
+                bool animated = entity.Skeleton != null || entity.ClothSimulatorComponentCount > 0;
                 bool helper = (entity.EntityFlags & (EntityFlags.IsHelper | EntityFlags.Ignore)) != 0;
-                int index = _nodes.Count;
-                _nodes.Add(new EntitySelection { Entity = entity, Parent = pending.Parent,
-                    CanCopy = ShouldCopyPanoramaRoot(valid, visible, helper, animated, agent), HasAnimatedSubtree = agent || animated });
+                _nodes.Add(new EntitySelection { Entity = entity,
+                    CanCopy = ShouldCopyPanoramaRoot(valid, visible, helper, animated, agent) });
                 Snapshot.InspectedNodes = _nodes.Count;
                 if (agent || animated) { Snapshot.SkippedAnimated++; return; }
                 int children = entity.ChildCount;
@@ -348,28 +332,46 @@ namespace AnimusForge.Illustrator.Engine
                 for (int i = children - 1; i >= 0; i--)
                 {
                     token.ThrowIfCancellationRequested();
-                    _pending.Push(new PendingEntity(entity.GetChild(i), index));
+                    _pending.Push(new PendingEntity(entity.GetChild(i)));
                 }
             }
 
             private static void ThrowTooManyNodes() => throw new InvalidOperationException(
                 "当前环境实体层级超过32768个节点，已停止快照，不能将不完整副本标为完整全景。");
 
-            private GameEntity CopyOwnStaticMeshes(GameEntity source)
+            private bool CopyStaticMesh(GameEntity source, int index, MatrixFrame frame)
             {
-                int count = source.MultiMeshComponentCount;
-                if (count == 0) return null;
-                var copy = GameEntity.CreateEmpty(Snapshot.Scene, isModifiableFromEditor: false,
-                    createPhysics: false, callScriptCallbacks: false);
-                for (int i = 0; i < count; i++)
+                MetaMesh original = source.GetMetaMesh(index);
+                if (original == null) return false;
+                MetaMesh mesh = original.CreateCopy();
+                if (mesh == null || mesh.Pointer == UIntPtr.Zero || mesh.Pointer == original.Pointer)
+                    throw new InvalidOperationException("无法取得独立的现场静态网格副本。");
+                GameEntity entity = null;
+                bool attached = false;
+                try
                 {
-                    MetaMesh original = source.GetMetaMesh(i);
-                    if (original == null) continue;
-                    MetaMesh mesh = original.CreateCopy();
                     mesh.Frame = original.Frame;
-                    copy.AddMultiMesh(mesh, updateVisMask: false);
+                    // The same native attachment path used by BannerTableau: no copied
+                    // light shadow maps, particle emitters, script instances or physics state.
+                    entity = Snapshot.Scene.AddItemEntity(ref frame, mesh);
+                    if (entity == null || entity.Scene?.Pointer != Snapshot.Scene.Pointer || entity.Pointer == source.Pointer)
+                        throw new InvalidOperationException("静态网格没有正确进入独立场景。");
+                    attached = true;
+                    entity.EntityFlags |= EntityFlags.DoNotTick | EntityFlags.DontTickChildren;
+                    entity.RecomputeBoundingBox();
+                    entity.UpdateGlobalBounds();
+                    entity.UpdateVisibilityMask();
+                    return true;
                 }
-                return copy;
+                finally
+                {
+                    // After AddItemEntity the scene owns the entity/mesh, as in vanilla BannerTableau.
+                    if (attached)
+                    {
+                        try { entity.ManualInvalidate(); }
+                        finally { mesh.ManualInvalidate(); }
+                    }
+                }
             }
 
             internal void ReleaseRoots()

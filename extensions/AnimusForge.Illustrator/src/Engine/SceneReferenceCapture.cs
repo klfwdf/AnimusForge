@@ -74,6 +74,8 @@ namespace AnimusForge.Illustrator.Engine
                 }, captureToken).ConfigureAwait(false);
                 if (context == null) throw new InvalidOperationException("无法调度全景采集。");
                 snapshot = await CreatePanoramaSnapshotAsync(context.Item1, captureToken).ConfigureAwait(false);
+                GenerationDiagnostics.Current?.RecordStage("panorama_snapshot_ready", new JObject { ["meshes"] = snapshot.CopiedRoots,
+                    ["nodes"] = snapshot.InspectedNodes, ["omittedNonGeometry"] = snapshot.SkippedNonGeometry, ["elapsedMs"] = watch.ElapsedMilliseconds });
                 renderer = await RunOnGameThreadAsync(() =>
                 {
                     var created = IsolatedPanoramaRenderer.Create(snapshot, context.Item2, 512);
@@ -82,9 +84,11 @@ namespace AnimusForge.Illustrator.Engine
                     return created;
                 }, captureToken).ConfigureAwait(false);
                 if (renderer == null) throw new InvalidOperationException("全景渲染器未建立。");
+                GenerationDiagnostics.Current?.RecordStage("panorama_renderer_ready");
                 for (int face = 0; face < 6; face++)
                 {
                     var faceWatch = Stopwatch.StartNew();
+                    GenerationDiagnostics.Current?.RecordStage("panorama_face_start", new JObject { ["face"] = face });
                     bool selected = await RunOnGameThreadAsync(() => renderer.SelectFace(face), captureToken).ConfigureAwait(false);
                     if (!selected) throw new InvalidOperationException("全景镜头切换被未完成的导出阻止。");
                     bool ready = false;

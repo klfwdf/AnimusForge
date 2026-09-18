@@ -110,6 +110,7 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 Directory.CreateDirectory(renderer._directory);
+                TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Creating private cameras and vanilla tableau render target.");
                 for (int i = 0; i < frames.Length; i++)
                 {
                     var camera = Camera.CreateCamera();
@@ -125,6 +126,7 @@ namespace AnimusForge.Illustrator.Engine
                 scene.SetMotionBlurMode(false);
                 scene.SetBloom(false);
                 scene.SetShadow(true);
+                TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Allocating isolated tableau (no copied scene light components).");
                 renderer._texture = TableauView.AddTableau("AF_IsolatedPanorama_" + Guid.NewGuid().ToString("N"), renderer.Paint, scene, size, size);
                 renderer._view = renderer._texture.TableauView;
                 renderer._view.SetEnable(false);
@@ -133,12 +135,13 @@ namespace AnimusForge.Illustrator.Engine
                 renderer._sceneTransferred = true;
                 renderer._view.SetRenderWithPostfx(true);
                 renderer._view.SetPostfxConfigParams(0);
-                renderer._view.SetSceneUsesSkybox(true);
+                renderer._view.SetSceneUsesSkybox(false);
                 renderer._view.SetSceneUsesShadows(true);
                 renderer._view.SetShadowmapResolutionMultiplier(0.5f);
                 renderer._view.SetSceneUsesContour(false);
                 renderer._view.SetClearColor(0xff000000);
                 renderer._view.SetDeleteAfterRendering(false);
+                TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Isolated tableau initialized.");
                 return renderer;
             }
             catch
@@ -155,6 +158,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (_paintFailure != null || !_sequence.Select(index)) return false;
                 _renderActive = true;
+                TaleWorlds.Library.Debug.Print($"[IllustratorPanorama] Starting face={index}.");
                 _view.SetSaveFinalResultToDisk(false);
                 _view.SetCamera(_cameras[index]);
                 _view.SetContinuousRendering(true);
@@ -182,7 +186,7 @@ namespace AnimusForge.Illustrator.Engine
                     view.SetCamera(camera);
                     view.SetRenderWithPostfx(true);
                     view.SetPostfxConfigParams(0);
-                    view.SetSceneUsesSkybox(true);
+                    view.SetSceneUsesSkybox(false);
                     view.SetSceneUsesShadows(true);
                     // The native final-result dump also accesses the shadow pass.
                     // Match the verified character/banner export initialization on
@@ -211,6 +215,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (!_renderActive || _paintFailure != null || !_sequence.BeginExport(index)) return null;
                 _exportPath = Path.Combine(_directory, "face_" + index + ".png");
+                TaleWorlds.Library.Debug.Print($"[IllustratorPanorama] Exporting prepared face={index}.");
                 _view.SetFilePathToSaveResult(_directory + Path.DirectorySeparatorChar);
                 _view.SetFileNameToSaveResult(Path.GetFileName(_exportPath));
                 _view.SetFileTypeToSave(View.TextureSaveFormat.TextureTypePng);
