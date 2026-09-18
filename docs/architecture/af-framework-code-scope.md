@@ -1,5 +1,7 @@
 # 当前增量：J03 继续实施，离线验收未达成（2026-09-18）
 
+本次生产配置切片 `01dd8267`：`src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs:7-49` 在发布与普通读取边界隔离六份嵌套模型；`AIConfigHandler.cs:103-108` 只在旧 owner 内借用已发布对象，不使热路径每次 JSON 拷贝。实际提取的 `AIConfigHandler.cs:5010` 命中入口与 `BuildRulePromptRegistry` 接同 revision 生产测试，配置 36、检索 132、入口 7（去 pin 反例拒收）。借用模型本身仍可变；五类消费者、双 provider 入口及具名 scope 全链路尚未全部验收。代码地图 `a3d6c3d2` 更新两份变化源码的准确行号和摘要，共 220 锚点 recorded／working-tree 通过，`sourceRevision=2c741536`（其后的 `a3d6c3d2` 只含测试/地图）。Debug／Release 双 API 加 Bootstrap 六项 0 警告/0 错误；各版 789 Compile／7 EmbeddedResource，未 Stage/Deploy。当前状态以[主台账 J03](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)为准，仍 `PARTIAL / NOT_ACCEPTED`。
+
 生产源码修订 `9242bcfaf3920d07ef2dca6a25b680c1d3c413eb`；[代码地图](af-framework-code-map.json)共 220 锚点，recorded／working-tree 均通过。地图只用于导航，不是 gameplay 或 J03 整体验收。`0916b60c`→`9242bcfa` 的真实差异还包括意图拆分／输入批次与完整召回→rerank→聚合→评估编排迁出旧类、规则后处理 getter 改为副本，以及命中结果与规则正文的外层同 revision pin；不是只刷新源码 hash。
 
 | 责任 / 一基源码坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
