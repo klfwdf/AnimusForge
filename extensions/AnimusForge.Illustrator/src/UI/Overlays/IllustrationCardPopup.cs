@@ -378,13 +378,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
-                // 全部现场方向供导演理解空间；生图保留一张现场锚点和各人物身份/头肩参考。
+                // 私有预制体快照六面合成全景，另附真实当前画面校验颜色/人物关系；不渲染运行中的Mission。
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneReferences = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(token).ConfigureAwait(false);
                 directorRefs.AddRange(sceneReferences);
-                var sceneAnchor = IllustrationReferenceRouting.SelectSceneAnchor(sceneReferences);
-                if (sceneAnchor != null) genRefs.Add(sceneAnchor);
+                IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneReferences);
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Func<Task<CharacterPortraitReferences>> playerStage = player == null ? (Func<Task<CharacterPortraitReferences>>)null : () => ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(player, useCivilian: playerCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: playerEquipmentCode, appearance: convContext.MainHeroProfile.Appearance);

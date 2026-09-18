@@ -3,6 +3,14 @@
 日期：2026-09-17。修复前版本：`4b3fb931`；本轮意图检查点：`fdcc8d2e`。
 本文与模块根 `AGENTS.md` 是后续修改必须阅读的持久记录，不依赖聊天记忆。
 
+## 2026-09-19 原生场景导出反例
+
+`1c92decf` 实机记录 `20260918T203953_a098443ab2634860955703ce0cb42c3e` 中，实际送出的五张原生 SceneView PNG 已整体发蓝，人物 JPEG 正常；用户现场截图是暖棕色。对同一原生 PNG 做 R/B 对照后墙体、帷幕和火光恢复到对应暖色。证据位于 `artifacts/illustrator-scene-regression-20260919/evidence/`，生成脚本 `tools/illustrator/inspect_scene_reference_regression.py` 只写对照，不修改原图。
+
+这是新原生场景导出生产者没有经过通道适配，不能通过修改 UI 或对整张已生成成图交换通道解决。新 `PanoramaProjection.Compose` 只接收六张原生场景导出 PNG，在投影合成前一次 R/B 适配；标准截图、HTTP结果、缓存图、UI准备函数和人物导出链保持原有契约。全景合成后的 PNG 已是标准RGBA，后续禁止再换色。
+
+六张不同镜头还须验证实际导出覆盖；旧版五张实图是同一视角且一张人物破面，不能把数学矩阵测试通过当成原生采集正确。私有预制体快照、引擎调度与完整验收范围见当轮 HANDOFF。
+
 ## 0. PNG 颜色类型盲区（2026-09-18 追加实机反例）
 
 用户报告：同一版本 DLL 下，chat 协议（gemini-3.1-flash-image）生成图游戏内颜色正常，images 协议（gpt-image-2.5-exact via /images/edits）生成图游戏内**整体红蓝反置**；缓存文件在资源管理器中颜色正常。

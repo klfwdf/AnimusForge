@@ -6,7 +6,8 @@ namespace AnimusForge.Illustrator.Core
         Character,
         Emblem,
         Scene,
-        CharacterDetail
+        CharacterDetail,
+        ScenePanorama
     }
 
     /// <summary>

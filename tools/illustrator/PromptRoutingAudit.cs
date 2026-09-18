@@ -71,21 +71,9 @@ public static class PromptRoutingAudit
         Type capture = assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper", true);
         var screenshotDefaults = capture.GetMethod("CaptureConversationSceneBase64", Static).GetParameters();
         Check((float)screenshotDefaults[1].DefaultValue == 1f && (int)screenshotDefaults[0].DefaultValue == 1024, "scene screenshot includes ground and foreground at full height");
-        Type frameType = capture.GetMethod("BuildPanoramaFrame", Static).GetParameters()[0].ParameterType;
-        object originalFrame = frameType.GetProperty("Identity", Static).GetValue(null);
-        Type vectorType = frameType.GetField("origin").FieldType;
-        frameType.GetField("origin").SetValue(originalFrame, Activator.CreateInstance(vectorType, new object[] { 12f, 25f, 3f, -1f }));
-        var frames = new object[4];
-        for (int i = 0; i < 4; i++)
-        {
-            frames[i] = Call(capture, "BuildPanoramaFrame", originalFrame, i);
-            object origin = frameType.GetField("origin").GetValue(frames[i]);
-            Check((float)vectorType.GetField("x").GetValue(origin) == 12f && (float)vectorType.GetField("y").GetValue(origin) == 25f && (float)vectorType.GetField("z").GetValue(origin) == 3f, "panorama rotates in place without camera translation: " + i);
-            object rotation = frameType.GetField("rotation").GetValue(frames[i]);
-            object axis = rotation.GetType().GetField("u").GetValue(rotation);
-            Check(Math.Abs((float)vectorType.GetField("z").GetValue(axis)) < 0.0001f, "panorama levels vertical initial view: " + i);
-        }
-        Check(((string)Call(capture, "SceneReferenceLabel", 2)).Contains("同一空间") && ((string)Call(capture, "SceneReferenceLabel", -1)).Contains("当前玩家视角"), "scene views distinguish current context from environment sweep");
+        Check(capture.GetMethod("BuildPanoramaFrame", Static) == null, "failed shared-scene panorama production path is removed");
+        string sceneLabel = (string)Call(capture, "SceneReferenceLabel");
+        Check(sceneLabel.Contains("当前玩家视角") && sceneLabel.Contains("单张") && sceneLabel.Contains("不是全景"), "scene reference reports actual single-view coverage");
         Type heroExtractor = assembly.GetType("AnimusForge.Illustrator.Context.HeroVisualExtractor", true);
         Check(((string)Call(heroExtractor, "DescribeSpecies", "野兽人", 7)).StartsWith("野兽人"), "specific beastmen label is not swallowed by orc substring");
         Check(((string)Call(heroExtractor, "DescribeSpecies", "warhammer_orc_lord", 7)).StartsWith("兽人"), "separated mod orc identifier remains recognized");
