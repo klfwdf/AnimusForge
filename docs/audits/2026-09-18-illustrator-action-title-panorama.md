@@ -1,7 +1,7 @@
 # 导演行动、作品命名与多视角现场参考
 
 工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`。
-行动/命名生产提交 `987fa696`，intent `ac0a33c`；场景生产提交 `192098f2`，修改前检查点 `ec38ea99`（保存此前 ScreenCaptureHelper 用户改动）。未部署、未推送。当前游戏仍是此前 15:48 部署。
+行动/命名生产提交 `987fa696`，intent `ac0a33c`；场景生产提交 `192098f2`，修改前检查点 `ec38ea99`（保存此前 ScreenCaptureHelper 用户改动）。已于 2026-09-18 16:36:53 按用户授权部署，未推送；详情见部署节。
 
 ## 行动与标题主题
 
@@ -52,4 +52,13 @@
 
 两次历史空回复未保存完整失败请求，现有证据只确认服务端 completion_tokens=0；删除冲突负面词不等于证明已修复服务端空回复。新版本未对供应商稳定性作结论。
 
-回滚只定向、按逆序撤销 `192098f2` 和 `987fa696`；不要撤销保存用户改动的 `ec38ea99` 或重置工作树。游戏部署未变，无本轮游戏端回滚需求。
+源码回滚只定向、按逆序撤销 `192098f2` 和 `987fa696`；不要撤销保存用户改动的 `ec38ea99` 或重置工作树。游戏端回滚使用下节备份。
+
+## 部署（2026-09-18 16:36:53）
+
+- 用户明确授权后运行原 `tools/deploy_illustrator.ps1 -Configuration Release -BannerlordApi auto`，识别游戏 v1.4.8 / API 1.4，构建 0 警告/0 错误。只覆盖独立模块 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge_Illustrator`。
+- DLL/PDB、SubModule.xml 和五个 prefab 共 8 文件与部署来源 SHA256 一致。DLL SHA256：`4939DEBD704A8B775302773C5BD634A59218ED50E948CE5D8383E3C23EC70371`。
+- 将实际部署 DLL/PDB 复制到 `artifacts/illustrator-panorama/deployed-verification/`，确认 DLL 哈希相同后对副本执行审计，结果 **131 PASS / 0 FAIL**。缓存测试只写本地验证目录，没有向游戏目录写测试缓存，也没有真实模型调用。
+- 证据：`artifacts/illustrator-panorama/deploy.txt`、`deployed-hashes.json`、`audit-deployed.txt`。
+- 脚本覆盖前备份：`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-163653`，包含上一版模块文件。回滚时从该目录恢复对应 DLL/PDB、清单和五个 prefab，再核对哈希。
+- 部署构建包含当前工作区已有依赖改动；单个生产提交不是完整发布快照。无关未提交改动保留，未推送、未启动游戏。GPU、多向转镜与取消/切场景恢复、标题主题布局、真实模型姿态和环境还原效果仍未实机验收。
