@@ -1,4 +1,18 @@
-# 当前增量：J03 继续实施，离线验收未达成（2026-09-18）
+# 当前范围：J03_OFFLINE_VERIFIED（2026-09-18）
+
+当前源码 `e6c82d8d`，导航[代码地图](af-framework-code-map.json)为 221 锚点，recorded/working-tree 均通过（记录源码 `7d8b8d0b`；之后 `d1d3407a` 只补 Scene 测试/地图）。地图是源码坐标证据，不是实机验收；唯一状态与命令见[主台账 J03](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。
+
+| 责任 / 当前一基源码坐标 | 已验证的归属和调用 | 保留适配与非离线范围 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs:7-49`；`AIConfigHandler.cs:113-118,1831,1839,7553` | 六份真实模型发布/兼容读取深层隔离，loader/registry/store 同代；配置 36、真实模型 18、命中入口 7，去 pin 变异拒收 | 内部借用模型保持可变但仅旧 owner 读取；实机配置/旧档未跑 |
+| `src/modules/AF.Module.Prompt/Retrieval/PromptRuleRetrievalPipeline.cs:36`；`AIConfigHandler.cs:36,4720` | 唯一语义/辅助规则管线；逐调用内部确定性资格/provider 接缝；生产评估 22 覆盖回退、MCM/目标/资格 key、旧代晚结果 | 旧类留真实 ONNX/辅助网络、游戏资格、日志/缓存发布；真实 provider `NOT-RUN` |
+| `PromptListRetrievalService.cs:12,190-286`；`MyBehavior.cs:24041-24094,24407-24521`；`RewardSystemBehavior.cs:18449-18530` | 唯一候选 owner；My 生产固定资产消费者 4、Reward 生产装备/商人 11、Scene 原始 hero/merchant 片段直接执行，全量/展示/私装/原顺序/target 与 settlement 隔离；检索 135 | 游戏库存、人物授权和实际转移仍由原 adapter 读取；不以 fixture 代实机 |
+| `ShoutBehavior.cs:5664,5733,5763,7136,7232,20090,20221,23011,23235`；`PolicySystem/History/PolicyHistoryRetrievalService.cs:214` | Scene/Native 生产包装 3 验证 mentions 与 trade 标志交付，五类消费者源码调用契约含三个断线变异；Policy 实际程序集 history 1115 | Native/Scene 大方法的游戏域/网络部分仍有替身，旧档/实机不在离线结论 |
+| `src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs:25`；`AIConfigHandler.cs:1903,1925,1950,2709`；`RagWarmupCoordinator.cs:11,23` | scope 嵌套、异常、提前返回、真实 yield 与 mentions 交付；session/mission/RAG seed 所属线程及旧 worker 跨 reload 门控；检索 fixture 135、评估/warmup 22 | J04 全渠道线程改造不在此包；真实 provider/游戏帧耗时另验 |
+
+Debug/Release 的 Bannerlord 1.3、1.4 和 Bootstrap 六项按原脚本在获准目录预检后均 0 警告/0 错误；两 API 各 789 Compile/7 EmbeddedResource，未 Stage/Deploy/打包。离线性能样本与全部回归数量见主台账；实机、旧档、真实 provider 均 `NOT-RUN`。
+
+## 以下为 J03 历史部分实施范围记录
 
 本次生产配置切片 `01dd8267`：`src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs:7-49` 在发布与普通读取边界隔离六份嵌套模型；`AIConfigHandler.cs:103-108` 只在旧 owner 内借用已发布对象，不使热路径每次 JSON 拷贝。实际提取的 `AIConfigHandler.cs:5010` 命中入口与 `BuildRulePromptRegistry` 接同 revision 生产测试，配置 36、检索 132、入口 7（去 pin 反例拒收）。借用模型本身仍可变；五类消费者、双 provider 入口及具名 scope 全链路尚未全部验收。代码地图 `a3d6c3d2` 更新两份变化源码的准确行号和摘要，共 220 锚点 recorded／working-tree 通过，`sourceRevision=2c741536`（其后的 `a3d6c3d2` 只含测试/地图）。Debug／Release 双 API 加 Bootstrap 六项 0 警告/0 错误；各版 789 Compile／7 EmbeddedResource，未 Stage/Deploy。当前状态以[主台账 J03](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)为准，仍 `PARTIAL / NOT_ACCEPTED`。
 
