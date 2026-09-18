@@ -1,5 +1,11 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 生图全量审查、画风与无可见转镜采集（2026-09-19）
+
+当前工作区仍为 `F:/AnimusForge-main` / `codex/af-main-refactor-continuation-20260831`。检查点 `cd1b1cfa` 保存原有生图改动；生产与测试 `d7061300`，场景事实复查收尾 `e337754a`。已统一古典油画导演长版/生图短版，移除须发和普通 NPC 外观伪事实，修正物种误判；场景采集改为独立相机+SceneView借用 Mission Scene，玩家相机与界面不修改，并接入 Mission 结束清理。全量审查 33 C# / 5 GUI 及项目清单，修复精确 Edits、实际 Chat 提示词记录、重复请求/超时、事件地点与围城误判、图片拉伸和画廊主题等问题；无 Location 不再判定平地谈判。
+
+双 API Release 0 警告/0 错误，两份 DLL 各 **299 PASS / 0 FAIL**（PromptRouting 144、ClientEndpoint 108、ModuleReview 33、SceneCapture 14）。**未部署、未推送、未付费调用；游戏仍是下方 9 月 18 日 16:36 版本**。GPU 离屏导出与取消/切场景、帧率、实际 UI 布局及发型/画风成图未实机验收。已核实源码坐标、证据、性能与回滚见 [全量审查报告](docs/audits/2026-09-19-illustrator-full-review.md)。回滚按逆序定向 revert `e337754a`、`d7061300`，保留检查点和其他作者改动。
+
 ## 导演行动、命名与四向场景参考（2026-09-18 后续）
 
 本地生产 `987fa696`（精简负面词，导演先行动后姿态，标题/主题单独显示与缓存，最近三张动作参考）和 `192098f2`（完整当前视图＋最多四向环境参考，仅发导演，现有 Mission 相机采集及恢复）。双 API 构建通过，最终两份 DLL 各 131 PASS/0 FAIL；缓存、HTTP 与相机数学离线验证，GPU/真实转镜恢复/成图/界面尚未验收。**已于 2026-09-18 16:36:53 按用户授权部署，未推送**：原脚本识别游戏 v1.4.8，API 1.4 Release 构建 0 警告/0 错误，8 文件哈希一致，部署 DLL 同字节副本 131 PASS/0 FAIL。DLL SHA256 `4939DEBD704A8B775302773C5BD634A59218ED50E948CE5D8383E3C23EC70371`；旧版备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-163653`。intent `ac0a33c`，渲染器修改前检查点 `ec38ea99`。核实坐标、适用边界、性能和定向回滚见 [本轮报告](docs/audits/2026-09-18-illustrator-action-title-panorama.md)。
