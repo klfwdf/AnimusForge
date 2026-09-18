@@ -43,6 +43,8 @@ namespace AnimusForge.Illustrator.Core
                     return "纹章样图：仅在已有纹章载体入画时还原图案与颜色，不把样图当成人物或背景。";
                 case IllustrationReferenceKind.Scene:
                     return "现场参考：保留已确认的地形、位置和空间关系，以指定画风重新绘制。";
+                case IllustrationReferenceKind.ScenePanorama:
+                    return "环境全景参考：这是同一个空间的360度展开，辨认预制体网格、材质图案和陈设位置；不是多个房间，不照搬展开畸变作为最终构图。颜色采光优先对照当前真实视角，副本未覆盖的地形与动态物体保持未知。";
                 default:
                     return "参考用途以标签为准，不据此添加未确认的人物或场景内容。";
             }

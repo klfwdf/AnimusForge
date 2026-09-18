@@ -94,6 +94,8 @@ public static class ReferenceRoutingAudit
             }
             if (item.Code.OperandType == OperandType.InlineMethod)
                 item.Operand = method.Module.ResolveMethod(BitConverter.ToInt32(bytes, i), method.DeclaringType.GetGenericArguments(), method.IsGenericMethod ? method.GetGenericArguments() : null);
+            if (item.Code.OperandType == OperandType.InlineString)
+                item.Operand = method.Module.ResolveString(BitConverter.ToInt32(bytes, i));
             if (item.Code.OperandType == OperandType.InlineBrTarget) item.Target = i + size + BitConverter.ToInt32(bytes, i);
             if (item.Code.OperandType == OperandType.ShortInlineBrTarget) item.Target = i + size + (sbyte)bytes[i];
             result.Add(item); i += size;
@@ -124,8 +126,20 @@ public static class ReferenceRoutingAudit
         }
         Check(encyclopedia.Any(i => IsCall(i, "ExtractHeroPortraitReferencesAsync")) && report.Any(i => IsCall(i, "ExtractHeroPortraitReferencesAsync")),
             "encyclopedia and weekly report request the new paired native captures");
-        Check(conversation.Any(i => IsCall(i, "CaptureConversationSceneReferencesAsync")) && conversation.Any(i => IsCall(i, "AddRange")) && conversation.Any(i => IsCall(i, "SelectSceneAnchor")),
-            "conversation includes the panorama list and separately selects one image anchor");
+        Check(conversation.Any(i => IsCall(i, "CaptureConversationSceneReferencesAsync")) && conversation.Any(i => IsCall(i, "AddRange")) && conversation.Any(i => IsCall(i, "AddSceneReferences")),
+            "conversation sends captured references to the director and routes panorama plus current view to the image client");
+        var capture = Workflow(assembly, "AnimusForge.Illustrator.Engine.ScreenCaptureHelper", "CaptureConversationSceneReferencesAsync");
+        int compose = capture.FindIndex(i => IsCall(i, "Compose") && ((MethodBase)i.Operand).DeclaringType.Name == "PanoramaProjection");
+        int panoramaReference = capture.FindIndex(Math.Max(0, compose), i => i.Code == OpCodes.Newobj && i.Operand is ConstructorInfo &&
+            ((ConstructorInfo)i.Operand).DeclaringType == reference && ((ConstructorInfo)i.Operand).GetParameters().Length == 3);
+        Check(compose >= 0 && panoramaReference > compose && capture[panoramaReference - 1].Code == OpCodes.Ldc_I4_5 &&
+            capture.Skip(compose + 1).Take(panoramaReference - compose - 1).Any(i => IsCall(i, "ToBase64String")),
+            "capture encodes the real composed image as ScenePanorama before the UI receives it");
+        Check(capture.Any(i => IsCall(i, "ReadPanoramaFaceAsync")) && capture.Any(i => i.Code == OpCodes.Ldc_I4_6) &&
+            Convert.ToInt32(assembly.GetType("AnimusForge.Illustrator.Engine.PanoramaProjection", true).GetField("FaceCount", All).GetRawConstantValue()) == 6,
+            "production capture reads six face exports for the panorama compositor");
+        Check(capture.Any(i => IsCall(i, "CreateCapturedSceneReferences")) && !capture.Any(i => IsCall(i, "SceneReferenceLabel")),
+            "capture adds a current-view calibration through the existing single-scene helper");
         int gate = encyclopedia.FindIndex(i => IsCall(i, "get_HasHeraldicArmor"));
         int render = encyclopedia.FindIndex(i => IsCall(i, "ComposeToBase64Async"));
         Check(gate >= 0 && render > gate && encyclopedia.Skip(gate + 1).Take(3)
@@ -169,8 +183,9 @@ public static class ReferenceRoutingAudit
         Check(imageRefs[0].GetType().GetProperty("Kind").GetValue(imageRefs[0]).ToString() == "Character" &&
             imageRefs[1].GetType().GetProperty("Kind").GetValue(imageRefs[1]).ToString() == "CharacterDetail",
             "head detail uses its own role and never increments full-body person count");
-        Check(Convert.ToInt32(Enum.Parse(kind, "Character")) == 1 && Convert.ToInt32(Enum.Parse(kind, "Emblem")) == 2 && Convert.ToInt32(Enum.Parse(kind, "Scene")) == 3,
-            "adding detail role preserves previously recorded reference-kind values");
+        Check(new[] { "Unspecified", "Character", "Emblem", "Scene", "CharacterDetail", "ScenePanorama" }
+            .Select(name => Convert.ToInt32(Enum.Parse(kind, name))).SequenceEqual(new[] { 0, 1, 2, 3, 4, 5 }),
+            "ScenePanorama is appended as value five without changing any recorded reference-kind values");
         var shared = Refs(); Character(shared, shared, "full", "head", "人物");
         Check(shared.Count == 2, "aliased destination lists never duplicate either reference");
         var missing = Refs(); Character(missing, null, null, "orphan head", "人物");
@@ -178,21 +193,37 @@ public static class ReferenceRoutingAudit
         Character(missing, null, "full", null, "人物"); Check(missing.Count == 1, "full-body-only fallback stays usable");
         Check(Call(routing, "SelectSceneAnchor", new object[] { null }) == null && Call(routing, "SelectSceneAnchor", Refs()) == null,
             "unavailable scene does not invent an anchor");
+        var projection = assembly.GetType("AnimusForge.Illustrator.Engine.PanoramaProjection", true);
+        byte[][] faces = Enumerable.Range(1, 6).Select(i => Convert.FromBase64String(Png(i))).ToArray();
+        string panoramaData = Convert.ToBase64String((byte[])Call(projection, "Compose", faces, 64, 32));
+        var captureWorkflow = Workflow(assembly, "AnimusForge.Illustrator.Engine.ScreenCaptureHelper", "CaptureConversationSceneReferencesAsync");
+        string panoramaLabel = captureWorkflow.Select(i => i.Operand as string).First(s => s != null && s.Contains("360×180"));
+        var panorama = Ref(panoramaData, panoramaLabel, "ScenePanorama");
         var scenes = Refs(); scenes.Add(null); scenes.Add(Ref("wrong", "identity", "Character")); scenes.Add(Ref(" ", "empty scene", "Scene"));
-        var current = Ref(Png(1), "当前玩家视角", "Scene"); scenes.Add(current);
+        scenes.Add(Ref(" ", "empty panorama", "ScenePanorama")); scenes.Add(panorama);
+        var helper = assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper", true);
+        var current = ((IEnumerable)Call(helper, "CreateCapturedSceneReferences", Png(1))).Cast<object>().Single();
+        scenes.Add(current);
         for (int i = 2; i <= 5; i++) scenes.Add(Ref(Png(i), "ENVIRONMENT_VIEW_" + i, "Scene"));
+        scenes.Add(Ref(Png(11), "EXTRA_PANORAMA_MUST_NOT_SEND", "ScenePanorama"));
         var anchor = Call(routing, "SelectSceneAnchor", scenes);
         Check(Text(anchor, "Base64Image") == Text(current, "Base64Image") && !ReferenceEquals(anchor, current), "first valid real scene becomes an independent annotated anchor");
         Check(Text(anchor, "Label").Contains("实际建筑布局") && Text(anchor, "Label").Contains("不复制UI") && Text(anchor, "Label").Contains("不作为必须保留的像素底图"),
             "scene anchor requests reconstruction without screenshot copying");
 
         directorRefs = Refs(); imageRefs = Refs();
-        foreach (var scene in scenes.Cast<object>().Skip(3)) directorRefs.Add(scene);
-        imageRefs.Add(anchor);
+        directorRefs.Add(panorama); directorRefs.Add(current);
+        Call(routing, "AddSceneReferences", imageRefs, scenes);
+        Check(imageRefs.Count == 2 && ReferenceEquals(imageRefs[0], panorama) &&
+            Text(imageRefs[1], "Base64Image") == Text(current, "Base64Image"),
+            "excess scene inputs are reduced to one composed panorama plus one current-view calibration");
+        var noSceneRefs = Refs(); Call(routing, "AddSceneReferences", noSceneRefs, null);
+        Check(noSceneRefs.Count == 0, "missing captured scene collection adds no invented reference");
         Character(directorRefs, imageRefs, Png(6), Png(7), "玩家");
         Character(directorRefs, imageRefs, Png(8), Png(9), "对话对象");
         directorRefs.Add(Ref(Png(10), "双方已确认载体的纹章", "Emblem")); imageRefs.Add(directorRefs[directorRefs.Count - 1]);
-        Check(directorRefs.Count == 10 && imageRefs.Count == 6, "five scene views go to director and one scene with four character views plus emblem go to image");
+        Check(directorRefs.Count == 7 && imageRefs.Count == 7,
+            "both endpoints receive two scene references, two full-body identities, two head views and one emblem");
 
         var options = FormatterServices.GetUninitializedObject(optionsType);
         Option(options, "EnableImageGeneration", true); Option(options, "EnableReferenceImageForGeneration", true);
@@ -205,8 +236,10 @@ public static class ReferenceRoutingAudit
         var directorPayload = Call(director, "BuildDirectorPayload", plan, options, directorRefs, false);
         var directorParts = ChatParts(directorPayload.ToString(), 1);
         var directorImages = ChatImages(directorParts);
-        Check(directorImages.Count == 10 && directorImages.Distinct().Count() == 10, "actual director payload keeps every supplied camera and identity exactly once");
-        Check(ChatText(directorParts).Contains("ENVIRONMENT_VIEW_5") && ChatText(directorParts).Contains("同一个人"), "director payload preserves view labels and same-person head labels");
+        Check(directorImages.Count == 7 && directorImages.Distinct().Count() == 7, "actual director payload keeps panorama, calibration and identities exactly once");
+        Check(ChatText(directorParts).Contains("不是六个房间") && ChatText(directorParts).Contains("当前玩家视角") &&
+            ChatText(directorParts).Contains("同一个人") && !ChatText(directorParts).Contains("ENVIRONMENT_VIEW_5"),
+            "director receives the production panorama role, current-view calibration and same-person head labels");
 
         var client = assembly.GetType("AnimusForge.Illustrator.Core.UniversalOpenAiImageClient", true);
         var generate = client.GetMethod("GenerateImageAsync", All, null, new[] { typeof(string), typeof(IReadOnlyList<>).MakeGenericType(reference), optionsType, typeof(CancellationToken) }, null);
@@ -226,20 +259,27 @@ public static class ReferenceRoutingAudit
                     if (route.StartsWith("chat"))
                     {
                         var parts = ChatParts(handler.JsonBody, 0); var images = ChatImages(parts); var prompt = ChatText(parts);
-                        Check(images.Count == 6 && images.Distinct().Count() == 6, "Chat sends one scene, four distinct character views and the emblem once");
-                        Check(images.Any(x => x.EndsWith(Png(1))) && !images.Any(x => x.EndsWith(Png(5))), "Chat includes only the current-scene anchor");
+                        Check(images.Count == 7 && images.Distinct().Count() == 7, "Chat sends panorama, calibration, four character views and emblem once");
+                        Check(images.Any(x => x.EndsWith(panoramaData)) && images.Any(x => x.EndsWith(Png(1))) &&
+                            !images.Any(x => x.EndsWith(Png(5))) && !images.Any(x => x.EndsWith(Png(11))),
+                            "Chat includes the actual composed panorama and current view while excluding excess scenes");
                         Check(prompt.Contains("同一个人") && prompt.Contains("保留装备遮挡") && prompt.Contains("实际建筑布局"), "Chat keeps identity pairing and scene geometry labels");
+                        Check(prompt.Contains("环境全景参考") && prompt.Contains("不是多个房间") && prompt.Contains("不照搬展开畸变"),
+                            "Chat identifies the panorama as one environment rather than extra rooms or final composition");
                         Check(prompt.Contains("【人物身份参考图 1】") && prompt.Contains("【人物身份参考图 2】") && !prompt.Contains("【人物身份参考图 3】") &&
                             prompt.Split(new[] { "【同名人物头肩细节补充，不增加人物数量】" }, StringSplitOptions.None).Length - 1 == 2,
                             "Chat identifies exactly two people and labels their two detail images separately");
                     }
                     else
                     {
-                        Check(handler.Images.Count == 6, "Edits uploads six real image parts");
+                        Check(handler.Images.Count == 7, "Edits uploads seven real image parts");
                         Check(handler.Images.Select(Convert.ToBase64String).SequenceEqual(imageRefs.Cast<object>().Select(x => Text(x, "Base64Image"))),
                             "Edits uploads exactly the routed bytes in reference-label order");
                         Check(handler.Prompt.Contains("同一个人") && handler.Prompt.Contains("实际建筑布局") && !handler.Prompt.Contains("ENVIRONMENT_VIEW_5"),
-                            "Edits labels head views as same identity and exposes only one scene");
+                            "Edits keeps identity pairing and filters excess scene inputs");
+                        Check(handler.Prompt.Contains("环境全景参考") && handler.Prompt.Contains("不是多个房间") &&
+                            handler.Prompt.Contains("不照搬展开畸变") && !handler.Prompt.Contains("EXTRA_PANORAMA_MUST_NOT_SEND"),
+                            "Edits labels the actual panorama as one environment without adding rooms or people");
                         Check(handler.Prompt.Split(new[] { "同名人物头肩细节补充，不增加画面人物数量。" }, StringSplitOptions.None).Length - 1 == 2,
                             "Edits gives both head images a detail role without introducing new people");
                     }

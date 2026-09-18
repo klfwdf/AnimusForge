@@ -969,7 +969,7 @@ namespace AnimusForge.Illustrator.Engine
         internal static void CancelActiveStage()
         {
             Core.IllustratorRuntime.AssertMainThread();
-            _activePanorama?.Restore();
+            CancelIsolatedPanorama();
             var pump = _activeStage;
             FinishStage(pump);
             pump?.Done.TrySetCanceled();
@@ -1097,6 +1097,20 @@ namespace AnimusForge.Illustrator.Engine
                             Id = widgetId,
                             WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
                             SuggestedWidth = 512, SuggestedHeight = 512,
+                            IsVisible = true, DoNotAcceptEvents = true
+                        };
+                        root.AddChild(widget);
+                    }
+                    else if (widgetId == "OffscreenCharacter")
+                    {
+                        // Do not activate the prefab's legacy clipped placeholder.
+                        // The export subclass lets Gauntlet tick the native provider
+                        // but never submits the portrait to the player's screen.
+                        widget = new NativeCharacterExportWidget(root.Context)
+                        {
+                            Id = "NativeCharacterExport",
+                            WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
+                            SuggestedWidth = 384, SuggestedHeight = 768,
                             IsVisible = true, DoNotAcceptEvents = true
                         };
                         root.AddChild(widget);

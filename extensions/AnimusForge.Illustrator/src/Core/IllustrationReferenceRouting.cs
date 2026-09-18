@@ -29,5 +29,13 @@ namespace AnimusForge.Illustrator.Core
                 scene.Label + " 生图环境参考：保持实际建筑布局、墙面材质与固有色、门窗楼梯及人物高低关系；" +
                 "依导演选择的机位和画风重新绘制，参考图不作为必须保留的像素底图，不复制UI或截图渲染质感。", IllustrationReferenceKind.Scene);
         }
+
+        internal static void AddSceneReferences(List<IllustrationReferenceImage> image, IReadOnlyList<IllustrationReferenceImage> scenes)
+        {
+            var panorama = scenes?.FirstOrDefault(x => x != null && x.Kind == IllustrationReferenceKind.ScenePanorama && !string.IsNullOrWhiteSpace(x.Base64Image));
+            if (panorama != null) image.Add(panorama);
+            var current = SelectSceneAnchor(scenes);
+            if (current != null) image.Add(current);
+        }
     }
 }
