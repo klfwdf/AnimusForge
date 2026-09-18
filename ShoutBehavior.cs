@@ -19951,6 +19951,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string targetKingdomId = TryGetKingdomIdOverrideFromAgent(agent);
 		string targetHeroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
 		string targetCharacterId = (targetCharacter?.StringId ?? "").Trim();
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		try
 		{
 			AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
@@ -20504,6 +20505,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Stopwatch nativePostprocessSw = Stopwatch.StartNew();
 		Logger.Log("Logic", "[NativePerf] postprocess_start target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		FreezeWatchdog.Mark("NativeConversation.postprocess_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)), immediate: true);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
@@ -22963,6 +22965,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return FallbackText;
 			}
+			using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 			try
 			{
 				AIConfigHandler.SetGuardrailRuntimeTargetKingdom(_runtimeTargetKingdomId);
@@ -23015,6 +23018,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string runtimeTargetCharacterId = (targetCharacter?.StringId ?? "").Trim();
 		string runtimeTargetTroopId = runtimeTargetCharacterId.ToLowerInvariant();
 		string runtimeTargetUnnamedRank = (targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "";
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
@@ -27994,6 +27998,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							text34 = "";
 						}
+						using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 						try
 						{
 							AIConfigHandler.SetGuardrailRuntimeTargetKingdom(text34);

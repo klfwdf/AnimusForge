@@ -228,6 +228,17 @@ public static class VassalageDiagnosticLog
 public static class DiplomacyBehavior {public static bool CanUseIndependentClanPeaceForExternal(Hero h,CharacterObject c){Q.AssertMain("peace eligibility");return false;}}
 public static class AIConfigHandler
 {
+    private sealed class Scope : IDisposable
+    {
+        private readonly string _kingdom=Q.Kingdom.Value,_hero=Q.HeroTarget.Value,_character=Q.CharacterTarget.Value,
+            _troop=Q.Troop.Value,_rank=Q.Rank.Value,_agent=Q.Runtime.Value;
+        public void Dispose()
+        {
+            Q.Kingdom.Value=_kingdom;Q.HeroTarget.Value=_hero;Q.CharacterTarget.Value=_character;
+            Q.Troop.Value=_troop;Q.Rank.Value=_rank;Q.Runtime.Value=_agent;
+        }
+    }
+    public static IDisposable BeginGuardrailRuntimeScope()=>new Scope();
     public static string ActionPostprocessFallbackMoodTag=>"[ACTION:MOOD:CALM]";
     public static bool CanUseAuxiliaryActionPostprocess(){Q.AssertMain("aux eligibility");return true;}
     public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero h){Q.AssertMain("royal eligibility");return false;}

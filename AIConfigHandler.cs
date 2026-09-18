@@ -299,19 +299,13 @@ public static class AIConfigHandler
 
 	private const int GuardrailInputVecCacheMax = 256;
 
-	private static readonly AsyncLocal<string> _guardrailSemanticRuntimeContext = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetKingdomId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetHeroId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetCharacterId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetTroopId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetUnnamedRank = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<int> _guardrailRuntimeTargetAgentIndex = new AsyncLocal<int>();
+	private static readonly PromptRetrievalContextSlot<string> _guardrailSemanticRuntimeContext = PromptRetrievalContextOwner.Semantic;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetKingdomId = PromptRetrievalContextOwner.Kingdom;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetHeroId = PromptRetrievalContextOwner.Hero;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetCharacterId = PromptRetrievalContextOwner.Character;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetTroopId = PromptRetrievalContextOwner.Troop;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetUnnamedRank = PromptRetrievalContextOwner.UnnamedRank;
+	private static readonly PromptRetrievalContextSlot<int> _guardrailRuntimeTargetAgentIndex = PromptRetrievalContextOwner.AgentIndex;
 
 	private static readonly object _stickyGuardrailRuleLock = new object();
 
@@ -335,7 +329,9 @@ public static class AIConfigHandler
 
 	private static readonly Queue<string> _auxiliaryMentionedEntitiesCacheOrder = new Queue<string>();
 
-	private static readonly AsyncLocal<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest = new AsyncLocal<MentionedWorldEntities>();
+	private static readonly PromptRetrievalContextSlot<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest =
+		PromptRetrievalContextOwner.CreateSlot<MentionedWorldEntities>(context => (MentionedWorldEntities)context.LatestEntities,
+			(context, value) => context.LatestEntities = value);
 
 	private const int AuxiliaryMentionedEntitiesCacheMax = 64;
 
@@ -3521,6 +3517,16 @@ public static class AIConfigHandler
 		}
 	}
 
+	internal static IDisposable BeginGuardrailRuntimeScope() => PromptRetrievalContextOwner.BeginScope((parent, child) =>
+	{
+		MentionedWorldEntities merged = (parent as MentionedWorldEntities)?.Clone() ?? new MentionedWorldEntities();
+		if (child is MentionedWorldEntities newMentions)
+		{
+			merged.Merge(newMentions);
+		}
+		return merged;
+	});
+
 	private static LlmGenerateResult GenerateConfiguredGatewayResult(
 		IEnumerable<object> messages,
 		string apiUrl,
@@ -5189,13 +5195,9 @@ public static class AIConfigHandler
 			{
 				return;
 			}
-			MentionedWorldEntities latest = _auxiliaryMentionedEntitiesLatest.Value;
-			if (latest == null)
-			{
-				latest = new MentionedWorldEntities();
-				_auxiliaryMentionedEntitiesLatest.Value = latest;
-			}
+			MentionedWorldEntities latest = _auxiliaryMentionedEntitiesLatest.Value?.Clone() ?? new MentionedWorldEntities();
 			latest.Merge(entities);
+			_auxiliaryMentionedEntitiesLatest.Value = latest;
 		}
 		catch
 		{

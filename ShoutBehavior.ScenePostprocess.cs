@@ -173,6 +173,7 @@ public partial class ShoutBehavior
 			T result = default(T);
 			void Invoke()
 			{
+				using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 				AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
 				AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
 				AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
