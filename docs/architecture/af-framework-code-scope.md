@@ -1,14 +1,16 @@
-# 当前增量：J03 部分实施，尚未完成（2026-09-18）
+# 当前增量：J03 继续实施，离线验收未达成（2026-09-18）
 
-源码修订 `d11eb572dad1f0d8f7ca57d9fc234733fc2091a8`；[代码地图](af-framework-code-map.json)新增 12 个 J03 锚点，共 197 点，recorded/working-tree 均通过。地图按实际变更文件重新定位并更新哈希，不代表 J03 全项验收。
+源码修订 `2f11b09e33eb8b6299beb444ee1cba04ee4d4c2c`；[代码地图](af-framework-code-map.json)共 210 锚点，recorded／working-tree 均通过。地图只用于导航，不是 gameplay 或 J03 整体验收。
 
-| 责任 / 已核实路径和一基坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
+| 责任 / 一基源码坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
 | --- | --- | --- |
-| `src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs:19-73`、`PromptConfigurationSnapshot.cs:4-27`；`AIConfigHandler.cs:245-259,9189-9330` | 六模型加载到本地值后按单次引用发布，含异常回退的 revision 换代；既有 getter/reload 入口保留 | 六份加载算法仍在 `AIConfigHandler`；模型深层可变性、真实旧红配置矩阵未闭合 |
-| `src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs:9`、`PromptCandidateSelection.cs:24-198`、`PromptCandidateSnapshotIndex.cs:8-52`；`PromptListRetrievalService.cs:12-231` | 意图算法唯一迁入；候选纯匹配排序与 80-key/10 分钟元数据迁入，旧类准备游戏别名和 payload | 候选 payload、授权与展示 scope 仍留薄适配层；完整消费者契约回归未闭合 |
-| `src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs:25-105`；`AIConfigHandler.cs:3520`；`MyBehavior.cs:28780,30666,30838`、`ShoutBehavior.cs:19954,20508,22968,23021,28001`、`ShoutBehavior.ScenePostprocess.cs:176` | copy-on-write ambient 和可嵌套 scope；旧入口开始/退出时恢复父上下文，mentions 子结果合并 | 规则召回/评分、派生缓存、sticky、辅助实体缓存仍归旧类；warmup 所属线程 seed 捕获尚未实施 |
+| `PromptConfigurationLoader.cs:54`、`PromptRuleRegistry.cs:8`、`RevisionedPromptConfigurationStore.cs:19`、`PromptRevisionedDerivedCache.cs:6`；`AIConfigHandler.cs:2159` | 六份生产 loader 与同 ID 覆盖归 Configuration，完整 replacement 原子换代；静态 registry 和排除提示列表按 revision 懒建，旧 getter/reload 不变 | 配置模型仍内部可变，深层只读未证明；六份 loader 的旧红矩阵仍不足 |
+| `PromptCandidateSelection.cs:24`、`PromptCandidateSnapshotIndex.cs:8`、`IntentQueryOptimizer.cs:9`、`PromptListRetrievalService.cs:12` | 唯一意图算法、纯候选排序及 80-key／10 分钟 store 接旧候选门面 | 游戏对象别名、授权 payload、全量与展示 scope 留适配；My/Reward/Scene/Native/Policy 全消费者生产契约未齐 |
+| `PromptRuleSemanticRecall.cs:25`、`PromptRuleAggregation.cs:15`、`PromptRuleRanking.cs:43`、`PromptSingleEvaluationCache.cs:6`；`AIConfigHandler.cs:5222` | seed/vector 对比只算一次，跨意图聚合、rerank 预算、候选排序及单评估缓存归 Retrieval；MCM 单次捕获与实时资格列表进入 key | ONNX 调用、最终命中判定及评估编排仍在 `AIConfigHandler`，真实 provider 路径未验 |
+| `PromptAuxiliaryMentionStore.cs:7`、`PromptStickyRuleStore.cs:20`、`PromptSemanticVectorCache.cs:6`、`PromptSemanticWarmupSeedBatch.cs:8`；`AIConfigHandler.cs:2298,2345,6035` | 64 实体 FIFO、三轮 sticky 衰减、1024/256 向量缓存与 seed 捕获归 Retrieval；sticky 跨 reload 保留、旧代结果拒收 | sticky 目标总量原本无上限；实际辅助网络/游戏资格仍留旧适配，实机未验 |
+| `PromptRetrievalContextOwner.cs:25`、`PromptRetrievalOperationScope.cs:7`、`AIConfigHandler.cs:3104`；`ShoutBehavior.cs`／`MyBehavior.cs` 具名入口 | AsyncLocal 嵌套 scope 与配置 pin；退出恢复父值，mentions 有显式交付接缝 | 全具名入口的异常/yield/mentions 生产闭包未完整证明，J04 完整三渠道线程捕获不在此包 |
 
-局部 34 检查、Scene parity 71、Scene queue 37、Debug/Release 原双 API+Bootstrap 构建曾通过；不是 J03 全量离线验收。实机、旧档、真实 provider 均 `NOT-RUN`。详细当前状态以[主台账 J03 实施状态](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)为准。
+离线已跑：配置 22、检索 84、Courier prompt 252/59、Courier postprocess 39、Scene parity 71／queue 37／lifetime 30、Native preparation 589／admission 44／completion 184／pending 111／history 852，以及 Debug／Release 原脚本 1.3／1.4／Bootstrap（无 Stage/Deploy）。PersistenceProfileConfigContract 仍失败 `extra=['synthetic-only-key']`，不能算通过。J03 维持 `PARTIAL / NOT_ACCEPTED`；实机、旧档、真实 provider 均 `NOT-RUN`。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。
 
 ## 以下为 J02 历史范围记录
 
