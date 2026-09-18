@@ -1,5 +1,9 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 导演行动、命名与四向场景参考（2026-09-18 后续）
+
+本地生产 `987fa696`（精简负面词，导演先行动后姿态，标题/主题单独显示与缓存，最近三张动作参考）和 `192098f2`（完整当前视图＋最多四向环境参考，仅发导演，现有 Mission 相机采集及恢复）。双 API 构建通过，最终两份 DLL 各 131 PASS/0 FAIL；缓存、HTTP 与相机数学离线验证，GPU/真实转镜恢复/成图/界面尚未验收。**未部署、未推送**，游戏仍用下方 15:48 版本。intent `ac0a33c`，渲染器修改前检查点 `ec38ea99`。核实坐标、适用边界、性能和定向回滚见 [本轮报告](docs/audits/2026-09-18-illustrator-action-title-panorama.md)。
+
 ## 生图部署更新（2026-09-18 15:48:59）
 
 用户授权后，已通过原独立生图部署脚本将含 `b36fe53b` 的当前工作区构建部署到游戏 `v1.4.8` 的 `Modules/AnimusForge_Illustrator`。构建 0 warning/error，8 文件哈希一致，实际部署 DLL 96 PASS/0 FAIL；DLL SHA256 `8A841CFED9EC939DDE8C84704DCEB2F69DD37EA65A977A6A21C524CC2B69AC79`。旧版备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-154859`。未推送、未启动游戏，真实出图仍待验收；详见 [外观保真报告部署节](docs/audits/2026-09-18-illustrator-appearance-fidelity.md)。下方“未部署”为此前修复完成时状态。
