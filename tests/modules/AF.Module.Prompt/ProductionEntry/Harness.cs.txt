@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AnimusForge;
+
+namespace AnimusForge
+{
+    internal sealed class MentionedWorldEntities
+    {
+        internal List<string> Entities = new List<string>();
+        internal MentionedWorldEntities Clone() => new MentionedWorldEntities { Entities = new List<string>(Entities) };
+    }
+    internal sealed class GuardrailRuleEval
+    {
+        internal bool Hit;
+        internal float AmpScore;
+        internal string MatchedSeed;
+    }
+    internal sealed class GuardrailEvalSnapshot
+    {
+        internal Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>();
+        internal MentionedWorldEntities MentionedEntities = new MentionedWorldEntities();
+    }
+    internal sealed class PreprocessFormatException : Exception { }
+    internal sealed class NoopScope : IDisposable { public void Dispose() { } }
+
+    internal static class AIConfigHandler
+    {
+        private static readonly RevisionedPromptConfigurationStore<PromptConfigurationSnapshot> _promptConfiguration =
+            new RevisionedPromptConfigurationStore<PromptConfigurationSnapshot>(Snapshot("old text", "other text"));
+        private static readonly PromptRevisionedDerivedCache<Dictionary<string, GuardrailRulePromptConfig>> _ruleRegistryCache =
+            new PromptRevisionedDerivedCache<Dictionary<string, GuardrailRulePromptConfig>>();
+        internal static Action OnEvaluate;
+        internal static GuardrailEvalSnapshot Evaluation;
+        internal static bool ThrowFormat;
+        internal static int GuardrailRuleReturnCap => 4;
+        private static int ClampGuardrailReturnCap(int count) => Math.Max(1, Math.Min(12, count));
+        private static string NormalizeSemanticText(string text) => (text ?? "").Trim();
+        private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> ids, bool _) =>
+            new HashSet<string>(ids ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+        private static bool IsBuiltInRuleTag(string _) => false;
+        private static bool IsRuleCurrentlyEligibleForRag(string _) => true;
+        private static bool TryGetGuardrailEvalSnapshot(string input, string secondary, out GuardrailEvalSnapshot result,
+            IEnumerable<string> excluded, bool autoExclude)
+        {
+            OnEvaluate?.Invoke();
+            if (ThrowFormat) throw new PreprocessFormatException();
+            result = Evaluation;
+            return result != null;
+        }
+        private static PromptConfigurationSnapshot Snapshot(string text, string other) =>
+            new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel
+            {
+                RulePrompts = new List<GuardrailRulePromptConfig>
+                {
+                    new GuardrailRulePromptConfig { Id = "custom", IsEnabled = true, Instruction = text, Priority = 2 },
+                    new GuardrailRulePromptConfig { Id = "other", IsEnabled = true, Instruction = other, Priority = 1 }
+                }
+            }, new ActionPostprocessConfigModel(), new PreprocessPromptsConfigModel(),
+            new ProactiveNpcRequestPromptsConfigModel(), new RpItemIntroductionPromptsConfigModel(), "");
+        internal static void Reload(string text, string other) => _promptConfiguration.Reload(() => Snapshot(text, other), _ => Snapshot("fallback", "fallback"));
+        internal static List<GuardrailRuleHit> GetHits(string text, IEnumerable<string> excluded, out MentionedWorldEntities mentions) =>
+            GetGuardrailSemanticRuleHits(text, "", 1, true, excluded, false, out mentions);
+        internal static long ReadRevision() => _promptConfiguration.Read().Revision;
+        internal static long LiveRevision() => _promptConfiguration.Capture().Revision;
+        @@REGISTRY@@
+        @@HITS@@
+    }
+}
+
+internal static class Program
+{
+    private static int checks;
+    private static void Check(bool value, string name) { checks++; if (!value) throw new Exception(name); }
+    private static GuardrailEvalSnapshot Evaluation(params string[] ids)
+    {
+        var result = new GuardrailEvalSnapshot();
+        foreach (var id in ids) result.Rules[id] = new GuardrailRuleEval { Hit = true, AmpScore = 0.8f, MatchedSeed = id };
+        result.MentionedEntities.Entities.Add("mention");
+        return result;
+    }
+    private static void Main()
+    {
+        AIConfigHandler.Evaluation = Evaluation("custom");
+        AIConfigHandler.OnEvaluate = () => AIConfigHandler.Reload("new text", "new other");
+        var hits = AIConfigHandler.GetHits("input", null, out var mentions);
+        Check(hits.Count == 1 && hits[0].Instruction == "old text", "evaluation and rule body stay on one captured revision");
+        Check(mentions.Entities.SequenceEqual(new[] { "mention" }), "mentions delivered from evaluation snapshot");
+        mentions.Entities.Clear();
+        Check(AIConfigHandler.Evaluation.MentionedEntities.Entities.Count == 1, "mentions do not leak mutable evaluation state");
+        Check(AIConfigHandler.ReadRevision() == AIConfigHandler.LiveRevision(), "capture released after normal return");
+        AIConfigHandler.OnEvaluate = null;
+        AIConfigHandler.Evaluation = Evaluation("custom", "other");
+        hits = AIConfigHandler.GetHits("input", new[] { "custom" }, out _);
+        Check(hits.Count == 1 && hits[0].RuleId == "other", "exclusion and return cap apply after registry lookup");
+        AIConfigHandler.ThrowFormat = true;
+        try { AIConfigHandler.GetHits("input", null, out _); throw new Exception("format exception swallowed"); }
+        catch (PreprocessFormatException) { }
+        Check(AIConfigHandler.ReadRevision() == AIConfigHandler.LiveRevision(), "capture released after exception");
+        AIConfigHandler.ThrowFormat = false;
+        hits = AIConfigHandler.GetHits("", null, out _);
+        Check(hits.Count == 0 && AIConfigHandler.ReadRevision() == AIConfigHandler.LiveRevision(), "empty input releases capture");
+        Console.WriteLine("PromptJ03 production rule-hit checks=" + checks);
+    }
+}
