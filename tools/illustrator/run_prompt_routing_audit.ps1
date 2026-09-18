@@ -16,6 +16,6 @@ $dirs = @(
 )
 $resolver = New-Object OfflineAssemblyResolver -ArgumentList (,([string[]]$dirs))
 try {
-    Add-Type -Path (Join-Path $PSScriptRoot 'PromptRoutingAudit.cs') -ReferencedAssemblies 'System.Net.Http.dll'
+    Add-Type -Path (Join-Path $PSScriptRoot 'PromptRoutingAudit.cs') -ReferencedAssemblies 'System.Net.Http.dll','System.Drawing.dll'
     [PromptRoutingAudit]::Run((Resolve-Path $AssemblyPath).Path)
 } finally { $resolver.Dispose() }

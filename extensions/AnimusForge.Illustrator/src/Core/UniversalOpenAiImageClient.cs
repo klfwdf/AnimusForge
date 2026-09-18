@@ -164,12 +164,12 @@ namespace AnimusForge.Illustrator.Core
                 if (!isChatProtocol && requestedRefImages > 0 && !settings.UseExactEndpointUrl)
                 {
                     var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken).ConfigureAwait(false);
+                    result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
                         success = true;
                         imageBytes = edit.ImageBytes;
                         imageUrl = edit.ImageUrl;
-                        result.ResolvedPrompt = effectivePrompt;
                     }
                     else if (!edit.ShouldFallbackToText)
                     {
@@ -346,36 +346,6 @@ namespace AnimusForge.Illustrator.Core
         }
 
         /// <summary>
-        /// 读取 PNG IHDR 宽高（字节 16-23，大端），用于生成与参考图同尺寸的 mask。
-        /// </summary>
-        private static void TryReadPngDimensions(byte[] png, out int width, out int height)
-        {
-            width = 0; height = 0;
-            if (png == null || png.Length < 24) return;
-            if (png[0] != 0x89 || png[1] != 0x50) return;
-            width = (png[16] << 24) | (png[17] << 16) | (png[18] << 8) | png[19];
-            height = (png[20] << 24) | (png[21] << 16) | (png[22] << 8) | png[23];
-        }
-
-        /// <summary>
-        /// 生成全透明 PNG mask：32bppArgb 默认像素全为透明黑，即"整幅允许编辑"。
-        /// </summary>
-        private static byte[] BuildTransparentMaskPng(int width, int height)
-        {
-            if (width <= 0 || height <= 0 || width > 8192 || height > 8192) return null;
-            try
-            {
-                using (var bmp = new System.Drawing.Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-                using (var ms = new System.IO.MemoryStream())
-                {
-                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    return ms.ToArray();
-                }
-            }
-            catch { return null; }
-        }
-
-        /// <summary>
         /// 由基础地址推导 /images/edits 端点（标准 OpenAI 图生图/多参考图编辑端点）。
         /// </summary>
         private static string ResolveEditsEndpointUrl(string baseUrl)
@@ -394,7 +364,7 @@ namespace AnimusForge.Illustrator.Core
         /// OpenAI /images/edits multipart 请求：参考图以 image[] 文件流真正上传。
         /// 与 /images/generations 的 JSON 不同，这是 Images 协议族里唯一能携带参考图的标准通道。
         /// </summary>
-        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToText)> AttemptImagesEditsAsync(
+        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToText, string ResolvedPrompt)> AttemptImagesEditsAsync(
             string baseUrl,
             string model,
             string effectivePrompt,
@@ -406,19 +376,20 @@ namespace AnimusForge.Illustrator.Core
             CancellationToken cancellationToken)
         {
             string editsUrl = ResolveEditsEndpointUrl(baseUrl);
+            string sentPrompt = effectivePrompt ?? string.Empty;
             try
             {
                 using (var form = new MultipartFormDataContent())
                 {
                     form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
-                    var labels = new StringBuilder(effectivePrompt ?? string.Empty);
+                    var labels = new StringBuilder(VisualFidelityRules.ReferenceRepaint);
+                    labels.AppendLine().AppendLine(effectivePrompt ?? string.Empty);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(style)) labels.Append("\n画风要求：").Append(style);
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
                     form.Add(new StringContent("1"), "n");
 
                     int sent = 0;
-                    int firstWidth = 0, firstHeight = 0;
                     foreach (var reference in referenceImages)
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
@@ -433,24 +404,17 @@ namespace AnimusForge.Illustrator.Core
                         try { bytes = Convert.FromBase64String(data); }
                         catch { continue; }
                         bytes = ImagePayload.Normalize(bytes);
-                        if (sent == 0) TryReadPngDimensions(bytes, out firstWidth, out firstHeight);
-                        labels.Append("\n参考图 ").Append(sent + 1).Append("（reference_").Append(sent).Append(".png）：").Append(reference.Label);
+                        labels.Append("\n参考图 ").Append(sent + 1).Append("（reference_").Append(sent).Append(".png）：").Append(VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)).Append(" ").Append(reference.Label);
                         var imageContent = new ByteArrayContent(bytes);
                         imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
                         form.Add(imageContent, "image[]", $"reference_{sent}.png");
                         sent++;
                     }
-                    if (sent == 0) return (false, null, null, "no usable reference images", false);
-                    // 全透明 mask：按 OpenAI 规范"透明区域=允许编辑区"，整幅可改 = 参考图仅作身份参照、不作构图底，
-                    // 用于削弱 edits 协议对首张参考图姿势/构图的锚定；不支持的网关会忽略该字段。
-                    byte[] maskPng = BuildTransparentMaskPng(firstWidth, firstHeight);
-                    if (maskPng != null)
-                    {
-                        var maskContent = new ByteArrayContent(maskPng);
-                        maskContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-                        form.Add(maskContent, "mask", "mask.png");
-                    }
-                    form.Add(new StringContent(labels.ToString(), Encoding.UTF8), "prompt");
+                    if (sent == 0) return (false, null, null, "no usable reference images", false, sentPrompt);
+                    // Identity-reference redraw is not a masked local repair. Do not synthesize a mask:
+                    // an all-transparent mask does not provide identity-only conditioning.
+                    sentPrompt = labels.ToString();
+                    form.Add(new StringContent(sentPrompt, Encoding.UTF8), "prompt");
 
                     using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = form })
                     {
@@ -464,14 +428,14 @@ namespace AnimusForge.Illustrator.Core
                             string responseText = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxResponseBytes, cancellationToken).ConfigureAwait(false));
                             if (!response.IsSuccessStatusCode)
                             {
-                                return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode), IsUnsupportedEditEndpoint((int)response.StatusCode, responseText));
+                                return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode), IsUnsupportedEditEndpoint((int)response.StatusCode, responseText), sentPrompt);
                             }
                             var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
                             if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
                             {
-                                return (true, extracted.Bytes, extracted.Url, null, false);
+                                return (true, extracted.Bytes, extracted.Url, null, false, sentPrompt);
                             }
-                            return (false, null, null, DescribeMissingImageResponse(responseText), false);
+                            return (false, null, null, DescribeMissingImageResponse(responseText), false, sentPrompt);
                         }
                     }
                 }
@@ -482,7 +446,7 @@ namespace AnimusForge.Illustrator.Core
             }
             catch (Exception ex)
             {
-                return (false, null, null, "images/edits request failed: " + ex.Message, false);
+                return (false, null, null, "images/edits request failed: " + ex.Message, false, sentPrompt);
             }
         }
 
@@ -507,7 +471,10 @@ namespace AnimusForge.Illustrator.Core
                 bool hasRefs = referenceImages != null && referenceImages.Count > 0;
                 if (hasRefs)
                 {
-                    var content = new JArray();
+                    var content = new JArray
+                    {
+                        new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.ReferenceRepaint }
+                    };
 
                     // 1. 统计真实人物参考图数量
                     int heroCount = 0;
