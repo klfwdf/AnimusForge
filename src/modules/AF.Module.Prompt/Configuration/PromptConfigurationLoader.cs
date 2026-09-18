@@ -60,13 +60,13 @@ internal sealed class PromptConfigurationLoader
 
     private readonly IPromptConfigurationFiles _files;
     private readonly Lazy<JObject> _preprocessDefaults;
-    private readonly Lazy<RpItemIntroductionPromptsConfigModel> _rpDefaults;
+    private readonly Lazy<string> _rpDefaults;
 
     internal PromptConfigurationLoader(IPromptConfigurationFiles files)
     {
         _files = files ?? throw new ArgumentNullException(nameof(files));
         _preprocessDefaults = new Lazy<JObject>(LoadEmbeddedPreprocess);
-        _rpDefaults = new Lazy<RpItemIntroductionPromptsConfigModel>(LoadEmbeddedRpIntroduction);
+        _rpDefaults = new Lazy<string>(LoadEmbeddedRpIntroduction);
     }
 
     internal PromptConfigurationLoadResult Load()
@@ -196,20 +196,19 @@ internal sealed class PromptConfigurationLoader
         {
             usedDefaults = true;
             fallbackReason = ex.Message;
-            var embedded = _rpDefaults.Value;
+            var embedded = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(_rpDefaults.Value);
+            if (embedded == null) throw new InvalidDataException("程序集内置 RpItemIntroductionPrompts.json 内容为空或不是对象");
             ValidateRpIntroduction(embedded, "程序集内置 RpItemIntroductionPrompts.json");
             return embedded;
         }
     }
 
-    private RpItemIntroductionPromptsConfigModel LoadEmbeddedRpIntroduction()
+    private string LoadEmbeddedRpIntroduction()
     {
         using Stream stream = _files.OpenResource(RpIntroductionResource);
         if (stream == null) throw new MissingManifestResourceException("找不到程序集内置 RP物品介绍提示词资源: " + RpIntroductionResource);
         using StreamReader reader = new StreamReader(stream, StrictUtf8, detectEncodingFromByteOrderMarks: false);
-        var config = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(reader.ReadToEnd());
-        if (config == null) throw new InvalidDataException("程序集内置 RpItemIntroductionPrompts.json 内容为空或不是对象");
-        return config;
+        return reader.ReadToEnd();
     }
 
     private string ReadStrictUtf8NoBom(string path, string displayName)

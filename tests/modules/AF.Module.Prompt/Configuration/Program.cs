@@ -97,8 +97,13 @@ internal static class Program
         io.Resource("AnimusForge.Defaults.PreprocessPrompts.json", ValidPreprocess(2));
 
         io.Files.Remove("RpItemIntroductionPrompts.json");
-        var rpMissing = new PromptConfigurationLoader(io).Load();
+        var rpMissing = loader.Load();
         Check(rpMissing.RpUsedEmbeddedDefaults && rpMissing.Snapshot.RpItemIntroduction.SystemPrompt == "embedded", "missing RP uses embedded");
+        rpMissing.Snapshot.RpItemIntroduction.SystemPrompt = "mutated-old-revision";
+        var rpNext = loader.Load();
+        Check(rpNext.Snapshot.RpItemIntroduction.SystemPrompt == "embedded"
+            && !ReferenceEquals(rpMissing.Snapshot.RpItemIntroduction, rpNext.Snapshot.RpItemIntroduction),
+            "embedded RP fallback must be a fresh model per replacement generation");
         io.Files["RpItemIntroductionPrompts.json"] = new byte[] { 0xef, 0xbb, 0xbf }.Concat(Encoding.UTF8.GetBytes("{}" )).ToArray();
         Check(new PromptConfigurationLoader(io).Load().RpUsedEmbeddedDefaults, "RP BOM uses embedded");
         io.Resources.Remove("AnimusForge.Defaults.RpItemIntroductionPrompts.json");
@@ -114,6 +119,37 @@ internal static class Program
         io.Files.Remove("AIConfig.json");
         var missingMain = new PromptConfigurationLoader(io).Load();
         Check(missingMain.Snapshot.Main.Marker == "default" && missingMain.Snapshot.Guardrail.Marker == "rule-user", "missing main alone preserves other configs");
+        io = FullFiles();
+        io.Put("AIConfig.json", "not-json");
+        Check(new PromptConfigurationLoader(io).Load().Snapshot.Guardrail.Marker == "default", "corrupt main triggers original outer all-default fallback");
+        io = FullFiles();
+        io.Files.Remove("RuleBehaviorPrompts.json");
+        var missingRule = new PromptConfigurationLoader(io).Load();
+        Check(missingRule.Snapshot.Guardrail.Marker == "default" && missingRule.Snapshot.ActionPostprocess.Marker == "action-user",
+            "missing guardrail alone preserves later files");
+        io = FullFiles();
+        io.Files.Remove("ActionPostprocessPrompts.json");
+        var missingAction = new PromptConfigurationLoader(io).Load();
+        Check(missingAction.Snapshot.ActionPostprocess.Marker == "default" && missingAction.Snapshot.Preprocess.Version == 2,
+            "missing action alone preserves later files");
+        io = FullFiles();
+        io.Put("ActionPostprocessPrompts.json", "not-json");
+        Check(new PromptConfigurationLoader(io).Load().Snapshot.Guardrail.Marker == "default",
+            "corrupt action retains outer all-default failure semantics");
+        io = FullFiles();
+        io.Files.Remove("ProactiveNpcRequestPrompts.json");
+        var missingProactive = new PromptConfigurationLoader(io).Load();
+        Check(missingProactive.Snapshot.ProactiveRequest.Marker == "default" && missingProactive.Snapshot.Main.Marker == "main-user",
+            "missing proactive uses its own fallback without replacing main");
+        io = FullFiles();
+        io.Put("ProactiveNpcRequestPrompts.json", "not-json");
+        Check(new PromptConfigurationLoader(io).Load().Snapshot.ProactiveRequest.Marker == "default",
+            "corrupt proactive uses its own fallback");
+        io = FullFiles();
+        io.Put("RpItemIntroductionPrompts.json", "not-json");
+        var corruptRp = new PromptConfigurationLoader(io).Load();
+        Check(corruptRp.RpUsedEmbeddedDefaults && corruptRp.Snapshot.RpItemIntroduction.SystemPrompt == "embedded",
+            "corrupt RP file uses embedded fallback");
         var rules = new GuardrailConfigModel
         {
             Duel = new DuelConfig { TriggerInstruction = "legacy duel", AcceptKeywords = new List<string> { "  duel  ", "DUEL" } },
@@ -148,6 +184,12 @@ internal static class Program
         io.Put("RuleBehaviorPrompts.json", "not-json");
         var failure = store.Reload(() => loader.Load().Snapshot, _ => throw new Exception("unexpected"));
         Check(failure.Revision == before.Revision + 2 && failure.Value.Main.Marker == "default", "production outer failure also replaces and advances revision");
+        var exceptionFallback = store.Reload(() => throw new IOException("loader failed"),
+            _ => new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel(),
+                new ActionPostprocessConfigModel(), new PreprocessPromptsConfigModel(),
+                new ProactiveNpcRequestPromptsConfigModel(), new RpItemIntroductionPromptsConfigModel(), "fallback"));
+        Check(exceptionFallback.Revision == failure.Revision + 1 && exceptionFallback.Value.PreprocessLoadError == "fallback",
+            "exceptional default replacement also advances generation");
         Console.WriteLine("PromptJ03 configuration loader checks=" + _checks);
     }
 }
