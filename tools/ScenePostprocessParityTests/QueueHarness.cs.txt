@@ -248,6 +248,8 @@ public static class AIConfigHandler
     public static void SetGuardrailRuntimeTargetTroop(string s){Q.AssertMain("target troop");Q.Troop.Value=s;}
     public static void SetGuardrailRuntimeTargetUnnamedRank(string s){Q.AssertMain("target rank");Q.Rank.Value=s;}
     public static void SetGuardrailRuntimeTargetAgentIndex(int id){Q.AssertMain("target agent");Q.Runtime.Value="agent:"+id;}
+    internal static void ApplyGuardrailRuntimeTarget(AnimusForge.PromptRuntimeTargetBinding b){SetGuardrailRuntimeTargetKingdom(b.KingdomId);SetGuardrailRuntimeTargetHero(b.HeroId);SetGuardrailRuntimeTargetCharacter(b.CharacterId);SetGuardrailRuntimeTargetTroop(b.TroopId);SetGuardrailRuntimeTargetUnnamedRank(b.UnnamedRank);SetGuardrailRuntimeTargetAgentIndex(b.AgentIndex);}
+    internal static void ClearGuardrailRuntimeTarget(){ApplyGuardrailRuntimeTarget(AnimusForge.PromptRuntimeTargetBinding.Cleared);}
     public static bool TryCallAuxiliaryActionPostprocess(string system,string user,int tokens,float temperature,out string content,out string error)
     {
         Q.Check(Thread.CurrentThread.ManagedThreadId!=Q.MainThreadId,"network blocked main thread");

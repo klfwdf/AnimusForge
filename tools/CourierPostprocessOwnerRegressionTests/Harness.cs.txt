@@ -41,6 +41,8 @@ namespace AnimusForge
         public static void SetGuardrailRuntimeTargetTroop(string value) => Set("troop", value);
         public static void SetGuardrailRuntimeTargetUnnamedRank(string value) => Set("rank", value);
         public static void SetGuardrailRuntimeTargetAgentIndex(int value) => Set("agent", value.ToString());
+        internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding b) { SetGuardrailRuntimeTargetKingdom(b.KingdomId); SetGuardrailRuntimeTargetHero(b.HeroId); SetGuardrailRuntimeTargetCharacter(b.CharacterId); SetGuardrailRuntimeTargetTroop(b.TroopId); SetGuardrailRuntimeTargetUnnamedRank(b.UnnamedRank); SetGuardrailRuntimeTargetAgentIndex(b.AgentIndex); }
+        internal static void ClearGuardrailRuntimeTarget() => ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding.Cleared);
     }
     public sealed class CourierSession
     {
