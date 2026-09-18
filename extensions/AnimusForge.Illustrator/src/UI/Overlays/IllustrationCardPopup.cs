@@ -378,7 +378,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
-                // 私有预制体快照六面合成全景，另附真实当前画面校验颜色/人物关系；不渲染运行中的Mission。
+                // 玩家附近30米预制体快照采前后双视角，另附真实画面校验；不渲染运行中的Mission。
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneReferences = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(token).ConfigureAwait(false);

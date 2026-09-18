@@ -8,6 +8,8 @@ using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.View.Screens;
+using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge.Illustrator.Engine
 {
@@ -25,6 +27,10 @@ namespace AnimusForge.Illustrator.Engine
         internal int CopiedRoots { get; set; }
         internal int SkippedAnimated { get; set; }
         internal int SkippedNonGeometry { get; set; }
+        internal int SkippedByRadius { get; set; }
+        internal int SkippedInvalidBounds { get; set; }
+        internal Vec3 CaptureCenter { get; set; }
+        internal bool CenterFromPlayer { get; set; }
         internal int InspectedNodes { get; set; }
         internal int SourceRoots { get; set; }
         internal int Batches { get; set; }
@@ -32,11 +38,14 @@ namespace AnimusForge.Illustrator.Engine
         internal double MaxBatchMilliseconds { get; set; }
         internal bool TerrainOmitted { get; private set; }
         internal string Notes =>
+            (CenterFromPlayer ? "只采集玩家现场位置周围约30米的静态网格。" : "未取得玩家实体，以当前镜头位置为中心采集约30米范围。") +
+            "按网格所属实体包围盒与范围相交筛选，跨越边界的大墙或屋顶保留整块；画面外与范围外内容保持未知。" +
             "多镜头来自当前现场可见静态网格的独立冻结副本；保留建筑、门窗、陈设和实体材质的空间关系。" +
             "环境快照主动省略人物、坐骑及含骨骼或布料模拟的动态实体，不能据此推断现场人数；人物位置以现场事实与当前画面为准。" +
             "全景用于识别网格形态、布局、装饰和材质图案；采用中性材质观察光与固定曝光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
             "完整天空、环境光、烘焙间接光和曝光无法从引擎公开接口精确回读；现场昼夜、光照及颜色以附加的真实当前画面为准。" +
             (SkippedNonGeometry > 0 ? "没有普通静态网格的特殊组件已省略，不以空缺推断现场没有装饰。" : string.Empty) +
+            (SkippedInvalidBounds > 0 ? "部分网格边界无法确认，已省略，不能据此断言现场不存在该物体。" : string.Empty) +
             (TerrainOmitted ? "本现场含原生地形，副本没有复制地形高度场、地形混合材质和水面；这些空缺不是悬空、平地或室内的证据。" : string.Empty);
 
         internal PanoramaSceneSnapshot(Scene scene, UIntPtr sourcePointer, bool terrainOmitted)
@@ -81,11 +90,30 @@ namespace AnimusForge.Illustrator.Engine
     public static partial class ScreenCaptureHelper
     {
         internal static PanoramaSceneSnapshot _pendingPanoramaSnapshot;
+        private static int _nextPanoramaSceneId;
         internal const int PanoramaSnapshotMaxRoots = 4096;
         internal const int PanoramaSnapshotBatchRoots = 8;
         internal const double PanoramaSnapshotBatchMilliseconds = 4;
         internal const int PanoramaSnapshotMaxNodes = 32768;
         internal const int PanoramaSnapshotMaxCopies = 1024;
+        internal const float PanoramaCaptureRadius = 30f;
+
+        internal static bool HasUsablePanoramaBounds(Vec3 minimum, Vec3 maximum)
+            => FinitePanoramaVector(minimum) && FinitePanoramaVector(maximum) &&
+                minimum.x <= maximum.x && minimum.y <= maximum.y && minimum.z <= maximum.z;
+
+        private static bool FinitePanoramaVector(Vec3 value)
+            => !float.IsNaN(value.x) && !float.IsInfinity(value.x) && !float.IsNaN(value.y) && !float.IsInfinity(value.y) &&
+                !float.IsNaN(value.z) && !float.IsInfinity(value.z);
+
+        internal static bool IntersectsPanoramaRadius(Vec3 minimum, Vec3 maximum, Vec3 center)
+        {
+            if (!HasUsablePanoramaBounds(minimum, maximum) || !FinitePanoramaVector(center)) return false;
+            double dx = Math.Max(Math.Max(minimum.x - center.x, 0), center.x - maximum.x);
+            double dy = Math.Max(Math.Max(minimum.y - center.y, 0), center.y - maximum.y);
+            double dz = Math.Max(Math.Max(minimum.z - center.z, 0), center.z - maximum.z);
+            return dx * dx + dy * dy + dz * dz <= PanoramaCaptureRadius * PanoramaCaptureRadius;
+        }
 
         internal static bool ShouldCopyPanoramaRoot(bool valid, bool visible, bool helper, bool animated, bool agent)
             => valid && visible && !helper && !animated && !agent;
@@ -207,13 +235,25 @@ namespace AnimusForge.Illustrator.Engine
                             agents.Add((entity.Root ?? entity).Pointer);
                     }
                     token.ThrowIfCancellationRequested();
-                    TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Preparing mesh-only private scene.");
+                    // The native GBuffer builder repeats this name in 128-byte labels.
+                    // Keep this ASCII identifier <=16 bytes; never put a full GUID here.
+                    string nativeSceneName = "afi_s" + Interlocked.Increment(ref _nextPanoramaSceneId).ToString("x8");
+                    if (nativeSceneName.Length > 16) throw new InvalidOperationException("原生全景场景名称超过安全长度。");
+                    TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Preparing mesh-only private scene name=" + nativeSceneName);
                     // Match vanilla Item/BannerTableau infrastructure. This creates no source
                     // bodies: only visual meshes are attached to this otherwise empty scene.
                     owned = Scene.CreateNewScene(initialize_physics: true, enable_decals: false,
-                        sceneName: "af_environment_snapshot_" + Guid.NewGuid().ToString("N"));
+                        sceneName: nativeSceneName);
                     snapshot = new PanoramaSceneSnapshot(owned, source.Pointer, source.ContainsTerrain || source.HasTerrainHeightmap);
                     _pendingPanoramaSnapshot = snapshot;
+                    var player = mission.MainAgent;
+                    var screen = ScreenManager.TopScreen as MissionScreen;
+                    if (player != null)
+                    { snapshot.CaptureCenter = player.Position; snapshot.CenterFromPlayer = true; }
+                    else if (screen != null && ReferenceEquals(screen.Mission, mission) && screen.CombatCamera != null)
+                        snapshot.CaptureCenter = screen.CombatCamera.Frame.origin;
+                    else throw new InvalidOperationException("无法确定玩家附近环境的采集中心。");
+                    if (!FinitePanoramaVector(snapshot.CaptureCenter)) throw new InvalidOperationException("环境采集中心无效。");
                     owned.SetDoNotAddEntitiesToTickList(true);
                     owned.SetClothSimulationState(false);
                     owned.SetPlaySoundEventsAfterReadyToRender(false);
@@ -298,7 +338,13 @@ namespace AnimusForge.Illustrator.Engine
                         { if (count == 0) Snapshot.SkippedNonGeometry++; _nodeIndex++; _meshIndex = 0; continue; }
                         if (Snapshot.CopiedRoots >= PanoramaSnapshotMaxCopies)
                             throw new InvalidOperationException("环境快照超过1024个静态网格副本，已停止，不能将局部覆盖标为完整全景。");
-                        if (_meshIndex == 0) _nodeFrame = source.GetGlobalFrame();
+                        if (_meshIndex == 0)
+                        {
+                            BoundingBox bounds = source.GetGlobalBoundingBox();
+                            if (!IntersectsPanoramaRadius(bounds.min, bounds.max, Snapshot.CaptureCenter))
+                            { Snapshot.SkippedByRadius++; _nodeIndex++; continue; }
+                            _nodeFrame = source.GetGlobalFrame();
+                        }
                         if (CopyStaticMesh(source, _meshIndex++, _nodeFrame)) { Snapshot.CopiedRoots++; copies++; }
                     }
                 }
@@ -316,19 +362,27 @@ namespace AnimusForge.Illustrator.Engine
             private void InspectOne(PendingEntity pending, CancellationToken token)
             {
                 GameEntity entity = pending.Entity;
+                if (Snapshot.InspectedNodes >= PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
+                Snapshot.InspectedNodes++;
                 bool valid = entity != null && entity.WeakEntity.IsValid && entity.Scene?.Pointer == _source.Pointer;
                 if (!valid) return;
-                if (_nodes.Count >= PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
                 bool visible = entity.IsVisibleIncludeParents();
                 bool agent = _agentRoots.Contains(entity.Pointer);
                 bool animated = entity.Skeleton != null || entity.ClothSimulatorComponentCount > 0;
                 bool helper = (entity.EntityFlags & (EntityFlags.IsHelper | EntityFlags.Ignore)) != 0;
-                _nodes.Add(new EntitySelection { Entity = entity,
-                    CanCopy = ShouldCopyPanoramaRoot(valid, visible, helper, animated, agent) });
-                Snapshot.InspectedNodes = _nodes.Count;
+                bool eligible = ShouldCopyPanoramaRoot(valid, visible, helper, animated, agent);
+                if (eligible && entity.MultiMeshComponentCount > 0)
+                {
+                    BoundingBox bounds = entity.GetGlobalBoundingBox();
+                    if (!HasUsablePanoramaBounds(bounds.min, bounds.max)) Snapshot.SkippedInvalidBounds++;
+                    else if (!IntersectsPanoramaRadius(bounds.min, bounds.max, Snapshot.CaptureCenter)) Snapshot.SkippedByRadius++;
+                    else _nodes.Add(new EntitySelection { Entity = entity, CanCopy = true });
+                }
+                else if (eligible) Snapshot.SkippedNonGeometry++;
                 if (agent || animated) { Snapshot.SkippedAnimated++; return; }
+                if (!visible) return;
                 int children = entity.ChildCount;
-                if ((long)_nodes.Count + _pending.Count + children > PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
+                if ((long)Snapshot.InspectedNodes + _pending.Count + children > PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
                 for (int i = children - 1; i >= 0; i--)
                 {
                     token.ThrowIfCancellationRequested();

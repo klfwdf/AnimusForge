@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
 using TaleWorlds.Engine;
@@ -12,6 +13,7 @@ namespace AnimusForge.Illustrator.Engine
     // There is no Mission reference and no manual scene tick or texture CPU readback.
     internal sealed class IsolatedPanoramaRenderer
     {
+        private static int _nextRendererId;
         // Kept independent of native objects so cancellation/face/export ordering
         // can be exercised offline. The renderer serializes access with _gate.
         internal sealed class FaceSequence
@@ -100,12 +102,13 @@ namespace AnimusForge.Illustrator.Engine
             _directory = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator", "panorama_" + Guid.NewGuid().ToString("N"));
         }
 
-        internal static IsolatedPanoramaRenderer Create(PanoramaSceneSnapshot snapshot, MatrixFrame[] frames, int size)
+        internal static IsolatedPanoramaRenderer Create(PanoramaSceneSnapshot snapshot, MatrixFrame[] frames, int size, float horizontalFov = (float)Math.PI / 2f)
         {
             IllustratorRuntime.AssertMainThread();
             if (snapshot == null || snapshot.Scene == null) throw new ArgumentNullException(nameof(snapshot));
             if (frames == null || frames.Length == 0 || frames.Length > 6) throw new ArgumentException("A panorama requires one to six camera frames.", nameof(frames));
             if (size < 256 || size > 1024) throw new ArgumentOutOfRangeException(nameof(size));
+            if (float.IsNaN(horizontalFov) || horizontalFov < 0.5f || horizontalFov > 2.7f) throw new ArgumentOutOfRangeException(nameof(horizontalFov));
             var renderer = new IsolatedPanoramaRenderer(snapshot, frames.Length);
             try
             {
@@ -115,7 +118,9 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     var camera = Camera.CreateCamera();
                     renderer._cameras[i] = camera;
-                    camera.SetFovHorizontal((float)Math.PI / 2f, 1f, 0.05f, 2000f);
+                    float offset = (float)Math.Sqrt(frames[i].origin.DistanceSquared(snapshot.CaptureCenter));
+                    float far = Math.Max(1f, ScreenCaptureHelper.PanoramaCaptureRadius + offset + 2f);
+                    camera.SetFovHorizontal(horizontalFov, 1f, 0.05f, far);
                     camera.Frame = frames[i];
                 }
                 // Initialize the snapshot's postfx/shadow context before requesting
@@ -127,7 +132,12 @@ namespace AnimusForge.Illustrator.Engine
                 scene.SetBloom(false);
                 scene.SetShadow(true);
                 TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Allocating isolated tableau (no copied scene light components).");
-                renderer._texture = TableauView.AddTableau("AF_IsolatedPanorama_" + Guid.NewGuid().ToString("N"), renderer.Paint, scene, size, size);
+                // Native debug/resource labels have fixed-size buffers. A short process-local
+                // counter is unique without allowing GUID-based names to overflow those labels.
+                string nativeName = "afi_v" + Interlocked.Increment(ref _nextRendererId).ToString("x8");
+                if (nativeName.Length > 16) throw new InvalidOperationException("原生全景渲染名称超过安全长度。");
+                TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Native render target name=" + nativeName);
+                renderer._texture = TableauView.AddTableau(nativeName, renderer.Paint, scene, size, size);
                 renderer._view = renderer._texture.TableauView;
                 renderer._view.SetEnable(false);
                 renderer._view.SetScene(scene);
@@ -192,7 +202,7 @@ namespace AnimusForge.Illustrator.Engine
                     // Match the verified character/banner export initialization on
                     // this owned view before counting the callback as ready.
                     Vec3 shadowCenter = camera.Frame.origin;
-                    view.SetFocusedShadowmap(true, ref shadowCenter, 100f);
+                    view.SetFocusedShadowmap(true, ref shadowCenter, Math.Min(100f, Math.Max(10f, camera.Far)));
                     view.SetDeleteAfterRendering(false);
                     view.SetContinuousRendering(true);
                     _sequence.Painted(generation);

@@ -32,7 +32,7 @@ namespace AnimusForge.Illustrator.Core
 
         internal static void AddSceneReferences(List<IllustrationReferenceImage> image, IReadOnlyList<IllustrationReferenceImage> scenes)
         {
-            var panorama = scenes?.FirstOrDefault(x => x != null && x.Kind == IllustrationReferenceKind.ScenePanorama && !string.IsNullOrWhiteSpace(x.Base64Image));
+            var panorama = scenes?.FirstOrDefault(x => x != null && (x.Kind == IllustrationReferenceKind.SceneViews || x.Kind == IllustrationReferenceKind.ScenePanorama) && !string.IsNullOrWhiteSpace(x.Base64Image));
             if (panorama != null) image.Add(panorama);
             var current = SelectSceneAnchor(scenes);
             if (current != null) image.Add(current);
