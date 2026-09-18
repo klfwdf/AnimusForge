@@ -5009,6 +5009,7 @@ public static class AIConfigHandler
 
 	private static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, out MentionedWorldEntities mentionedEntities)
 	{
+		using IDisposable configurationScope = _promptConfiguration.BeginCapture();
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		mentionedEntities = new MentionedWorldEntities();
 		try
