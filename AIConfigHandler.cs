@@ -5020,7 +5020,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, HashSet<string> excludedRuleIds = null, bool applyRuntimeEligibility = true)
+	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, List<GuardrailRulePromptConfig> allEnabledRulePrompts, int returnCap, HashSet<string> excludedRuleIds = null, bool applyRuntimeEligibility = true)
 	{
 		snapshot = null;
 		try
@@ -5029,7 +5029,6 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
-			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
 			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
 			{
 				return false;
@@ -5038,7 +5037,7 @@ public static class AIConfigHandler
 			{
 				Key = cacheKey,
 				MatchMode = "auxiliary_api",
-				ReturnCap = GuardrailRuleReturnCap
+				ReturnCap = returnCap
 			};
 			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
 			{
@@ -5278,17 +5277,38 @@ public static class AIConfigHandler
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
 			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 			string excludeKey = excluded.Count == 0 ? "" : ("|exclude:" + string.Join(",", excluded.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
-			bool useAuxiliary = UseAuxiliaryRuleApiRetrieval;
+			DuelSettings retrievalSettings = TryGetMcmSettings();
+			bool useAuxiliary = false;
+			bool retrievalEnabled = GuardrailKnowledgeEnabled;
+			bool semanticFirst = GuardrailKnowledgeSemanticFirst;
+			int semanticTopK = GuardrailKnowledgeTopK;
+			int returnCap = 4;
+			if (retrievalSettings != null)
+			{
+				try { useAuxiliary = retrievalSettings.UseAuxiliaryRuleApi || retrievalSettings.MemoryPreprocessMode == 1 || retrievalSettings.MemoryPreprocessMode == 2; } catch { }
+				try { retrievalEnabled = retrievalSettings.KnowledgeRetrievalEnabled; } catch { retrievalEnabled = true; }
+				try { semanticFirst = retrievalSettings.KnowledgeSemanticFirst; } catch { semanticFirst = true; }
+				try
+				{
+					int directTopN = retrievalSettings.KnowledgeDirectTopN;
+					semanticTopK = ClampKnowledgeTopK(directTopN > 0 ? directTopN : retrievalSettings.KnowledgeSemanticTopK);
+				}
+				catch { semanticTopK = 4; }
+				try { returnCap = ClampGuardrailReturnCap(retrievalSettings.GuardrailDirectTopN); } catch { }
+			}
+			List<GuardrailRulePromptConfig> eligibleRules = GetAllEnabledRulePrompts();
+			string eligibilityKey = string.Join(",", eligibleRules.Select(rule => rule.Id.Length + ":" + rule.Id));
 			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (useAuxiliary ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText)
 				+ (useAuxiliary ? "|aux" : "|rag") + excludeKey + "|revision=" + configurationRevision + "|autoExclude=" + applyRuntimeAutoExclusions
-				+ "|options=" + KnowledgeRetrievalEnabled + ":" + KnowledgeSemanticFirst + ":" + KnowledgeSemanticTopK + ":" + GuardrailRuleReturnCap
+				+ "|options=" + retrievalEnabled + ":" + semanticFirst + ":" + semanticTopK + ":" + returnCap
+				+ "|eligible=" + eligibilityKey
 				+ "|target=" + _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
 				+ ":" + _guardrailRuntimeTargetTroopId.Value + ":" + _guardrailRuntimeTargetUnnamedRank.Value + ":" + _guardrailRuntimeTargetAgentIndex.Value;
 			if (_guardrailEvalCache.TryGet(text, configurationRevision, out snapshot))
 			{
 				return snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
-			if (useAuxiliary && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded, applyRuntimeAutoExclusions))
+			if (useAuxiliary && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, eligibleRules, returnCap, excluded, applyRuntimeAutoExclusions))
 			{
 				lock (_promptConfigurationReloadLock)
 				{
@@ -5329,7 +5349,7 @@ public static class AIConfigHandler
 				TryGetInputEmbedding(runtimeGuardrailContext, out vec2);
 			}
 			bool flag = vec2 != null && vec2.Length != 0;
-			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
+			List<GuardrailRulePromptConfig> allEnabledRulePrompts = eligibleRules;
 			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
 			{
 				return false;
@@ -5406,7 +5426,7 @@ public static class AIConfigHandler
 				dictionary[id] = guardrailRulePromptConfig;
 				guardrailEvalSnapshot.Rules[id] = guardrailRuleEval;
 			}
-			int guardrailReturnCapFromMcm = GuardrailRuleReturnCap;
+			int guardrailReturnCapFromMcm = returnCap;
 			int num6 = Math.Max(1, list.Count);
 			int guardrailRerankBudget = GetGuardrailRerankBudget(guardrailReturnCapFromMcm);
 			int guardrailPerIntentRerank = GetGuardrailPerIntentRerank(guardrailRerankBudget, num6);
