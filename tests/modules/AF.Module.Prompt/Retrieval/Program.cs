@@ -200,12 +200,50 @@ internal static class Program
         Check(derived.GetOrBuild(2, () => liveRevision, () => "second") == "second", "new revision rebuilds derived value");
         Check(derived.GetOrBuild(1, () => liveRevision, () => "late-old") == "late-old", "old caller retains its local result");
         Check(derived.GetOrBuild(2, () => liveRevision, () => throw new Exception("stale result overwrote live cache")) == "second", "late old result cannot replace current cache");
+        var sticky = new PromptStickyRuleStore();
+        var stickyRules = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["kingdom_service"] = new GuardrailRulePromptConfig { IsEnabled = true, Instruction = "kingdom", TriggerKeywords = new List<string> { "效忠" } }
+        };
+        var noExclusions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        long stickyRevision = 1;
+        List<GuardrailRuleHit> StickyMerge(string target, string input, List<GuardrailRuleHit> live, bool eligible, bool completed, long revision = 1)
+            => sticky.Merge(revision, () => stickyRevision, target, input, live, 3, noExclusions, stickyRules,
+                _ => completed, _ => new PromptStickyEvidence(true, true, false, false, 1, 0.7f), _ => eligible, out _);
+        var liveSticky = new List<GuardrailRuleHit> { new GuardrailRuleHit { RuleId = "kingdom_service", Score = 0.7f, Priority = 5, Instruction = "kingdom" } };
+        Check(StickyMerge("hero:a", "效忠", liveSticky, true, false).Count == 1, "sticky begins from live hit");
+        Check(StickyMerge("hero:b", "继续", null, true, false).Count == 0, "sticky target isolation");
+        Check(Math.Abs(StickyMerge("hero:a", "继续", null, true, false).Single().Score - 0.546f) < 0.0001f, "first carry decays to 78 percent");
+        Check(StickyMerge("hero:a", "继续", null, true, false).Count == 1, "second follow-up carries");
+        Check(StickyMerge("hero:a", "继续", null, true, false).Count == 1, "third follow-up carries");
+        Check(StickyMerge("hero:a", "继续", null, true, false).Count == 0, "carry expires after three turns");
+        StickyMerge("hero:a", "效忠", liveSticky, true, false);
+        Check(StickyMerge("hero:a", "继续", null, false, false).Count == 0, "target ineligibility blocks carried output");
+        stickyRevision = 2;
+        Check(StickyMerge("hero:a", "继续", null, true, false, 2).Count == 0, "reload clears sticky state");
+        Check(StickyMerge("hero:a", "效忠", liveSticky, true, false, 1).Count == 1, "old caller retains live hit only");
+        Check(StickyMerge("hero:a", "继续", null, true, false, 2).Count == 0, "old caller cannot publish sticky state into new revision");
+        Check(StickyMerge("hero:a", "效忠", liveSticky, true, true, 2).Count == 1 && StickyMerge("hero:a", "继续", null, true, false, 2).Count == 0,
+            "completed action cannot initiate sticky rule");
+        var racingSticky = new PromptStickyRuleStore();
+        long racingRevision = 1;
+        racingSticky.Merge(1, () => racingRevision, "hero:a", "效忠", liveSticky, 3, noExclusions, stickyRules,
+            _ => false, _ => { racingRevision = 2; return new PromptStickyEvidence(true, true, false, false, 1, 0.7f); }, _ => true, out _);
+        Check(racingSticky.Merge(2, () => racingRevision, "hero:a", "继续", null, 3, noExclusions, stickyRules,
+            _ => false, _ => default, _ => true, out _).Count == 0, "reload during evidence prevents stale sticky publication");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
 
 namespace AnimusForge
 {
+    public sealed class GuardrailRulePromptConfig
+    {
+        public bool IsEnabled;
+        public string Instruction = "";
+        public List<string> TriggerKeywords = new List<string>();
+    }
+
     public sealed class MentionedWorldEntities
     {
         public List<string> Entities = new List<string>();

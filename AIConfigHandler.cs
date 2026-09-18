@@ -183,25 +183,6 @@ public static class AIConfigHandler
 		public string MatchedIntent;
 	}
 
-	private sealed class StickyGuardrailRuleState
-	{
-		public string RuleId = "";
-
-		public string Group = "";
-
-		public int Priority;
-
-		public float LastScore;
-
-		public string MatchedSeed = "";
-
-		public int RemainingCarryTurns;
-
-		public int MaxCarryTurns;
-
-		public int CarryTurnIndex;
-	}
-
 	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
 	{
 		string text = (detail ?? "").Trim();
@@ -296,17 +277,7 @@ public static class AIConfigHandler
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetUnnamedRank = PromptRetrievalContextOwner.UnnamedRank;
 	private static readonly PromptRetrievalContextSlot<int> _guardrailRuntimeTargetAgentIndex = PromptRetrievalContextOwner.AgentIndex;
 
-	private static readonly object _stickyGuardrailRuleLock = new object();
-
-	private static readonly Dictionary<string, List<StickyGuardrailRuleState>> _stickyGuardrailRules = new Dictionary<string, List<StickyGuardrailRuleState>>(StringComparer.OrdinalIgnoreCase);
-
-	private static readonly string[] StickyGuardrailFollowUpPhrases = new string[17]
-	{
-		"然后", "然后呢", "接着呢", "接下来呢", "那然后呢", "那接下来呢", "那我该怎么办", "我该怎么办", "下一步呢", "下一步怎么做",
-		"具体怎么做", "具体呢", "细说", "继续说", "继续", "展开说说", "后面呢"
-	};
-
-	private const int MaxStickyGuardrailRulesPerTarget = 3;
+	private static readonly PromptStickyRuleStore _stickyGuardrailRuleStore = new PromptStickyRuleStore();
 
 	private static readonly PromptSingleEvaluationCache<GuardrailEvalSnapshot> _guardrailEvalCache =
 		new PromptSingleEvaluationCache<GuardrailEvalSnapshot>();
@@ -6169,41 +6140,6 @@ public static class AIConfigHandler
 		return "";
 	}
 
-	private static int GetStickyGuardrailTurnLimit(string ruleId)
-	{
-		string text = (ruleId ?? "").Trim().ToLowerInvariant();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return 0;
-		}
-		switch (text)
-		{
-		case "kingdom_service":
-		case "marriage":
-			return 3;
-		default:
-			return 0;
-		}
-	}
-
-	private static bool IsStickyGuardrailFollowUpInput(string input)
-	{
-		string text = NormalizeSemanticText(input);
-		if (string.IsNullOrWhiteSpace(text) || text.Length > 24)
-		{
-			return false;
-		}
-		for (int i = 0; i < StickyGuardrailFollowUpPhrases.Length; i++)
-		{
-			string value = StickyGuardrailFollowUpPhrases[i];
-			if (!string.IsNullOrWhiteSpace(value) && text.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private static bool DidGuardrailRuleRecentlyComplete(string ruleId, string secondaryInput)
 	{
 		string text = (secondaryInput ?? "").Trim();
@@ -6237,216 +6173,27 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool ShouldStartStickyGuardrailRule(string input, string secondaryInput, GuardrailRuleHit hit, int rank, IEnumerable<string> excludedRuleIds = null)
-	{
-		if (hit == null)
-		{
-			return false;
-		}
-		string text = (hit.RuleId ?? "").Trim();
-		if (GetStickyGuardrailTurnLimit(text) <= 0 || DidGuardrailRuleRecentlyComplete(text, secondaryInput))
-		{
-			return false;
-		}
-		if (hit.Score >= 0.999f)
-		{
-			return true;
-		}
-		if (TryGetRuleEval(input, secondaryInput, text, out var eval, excludedRuleIds) && eval != null && eval.Hit)
-		{
-			if (eval.ForceHit || eval.HighAmpHit || eval.AbsHit)
-			{
-				return true;
-			}
-			if (eval.Rank <= 1 && eval.AmpScore >= 0.48f)
-			{
-				return true;
-			}
-		}
-		if (rank == 0 && hit.Score >= 0.56f)
-		{
-			return true;
-		}
-		return hit.Score >= 0.62f;
-	}
-
-	private static bool ShouldContinueStickyGuardrailRule(StickyGuardrailRuleState state, GuardrailRulePromptConfig rule, string input, int currentLiveCount, string secondaryInput)
-	{
-		if (state == null || rule == null || state.RemainingCarryTurns <= 0 || DidGuardrailRuleRecentlyComplete(state.RuleId, secondaryInput))
-		{
-			return false;
-		}
-		if (currentLiveCount > 0)
-		{
-			return false;
-		}
-		if (TryLexicalRuleKeywordHit(input, null, rule.TriggerKeywords, out var _))
-		{
-			return true;
-		}
-		string text = NormalizeSemanticText(input);
-		string text2 = NormalizeSemanticText(state.MatchedSeed);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return true;
-		}
-		return IsStickyGuardrailFollowUpInput(input);
-	}
-
-	private static float ApplyStickyGuardrailScoreDecay(float score, int maxCarryTurns, int carryTurnIndex)
-	{
-		float num = ((score > 0f) ? score : 0.6f);
-		float num2;
-		if (maxCarryTurns >= 3)
-		{
-			num2 = ((carryTurnIndex <= 1) ? 0.78f : ((carryTurnIndex == 2) ? 0.58f : 0.36f));
-		}
-		else
-		{
-			num2 = ((carryTurnIndex <= 1) ? 0.72f : 0.45f);
-		}
-		return Math.Max(0.18f, num * num2);
-	}
-
 	private static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input, string secondaryInput, List<GuardrailRuleHit> liveHits, int maxCount, IEnumerable<string> excludedRuleIds = null)
 	{
 		HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
-		List<GuardrailRuleHit> list = (liveHits ?? new List<GuardrailRuleHit>()).Where((GuardrailRuleHit x) => x != null && !string.IsNullOrWhiteSpace(x.RuleId) && !excluded.Contains((x.RuleId ?? "").Trim())).OrderByDescending((GuardrailRuleHit x) => x.Priority).ThenByDescending((GuardrailRuleHit x) => x.Score).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
-		int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
-		string text = ResolveGuardrailStickyTargetKey();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return (num > 0 && list.Count > num) ? list.Take(num).ToList() : list;
-		}
-		Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
-		if (dictionary == null || dictionary.Count <= 0)
-		{
-			return (num > 0 && list.Count > num) ? list.Take(num).ToList() : list;
-		}
-		HashSet<string> hashSet = new HashSet<string>(list.Select((GuardrailRuleHit x) => (x.RuleId ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
-		List<StickyGuardrailRuleState> list2 = new List<StickyGuardrailRuleState>();
-		lock (_stickyGuardrailRuleLock)
-		{
-			_stickyGuardrailRules.TryGetValue(text, out var value);
-			value = value ?? new List<StickyGuardrailRuleState>();
-			List<StickyGuardrailRuleState> list3 = new List<StickyGuardrailRuleState>();
-			for (int i = 0; i < value.Count; i++)
+		int cap = maxCount > 0 ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap;
+		string target = ResolveGuardrailStickyTargetKey();
+		Dictionary<string, GuardrailRulePromptConfig> rules = string.IsNullOrWhiteSpace(target) ? null : BuildRulePromptRegistry();
+		List<GuardrailRuleHit> result = _stickyGuardrailRuleStore.Merge(_promptConfiguration.Read().Revision,
+			() => _promptConfiguration.Capture().Revision, target, input, liveHits, cap, excluded, rules,
+			ruleId => DidGuardrailRuleRecentlyComplete(ruleId, secondaryInput),
+			ruleId =>
 			{
-				StickyGuardrailRuleState stickyGuardrailRuleState = value[i];
-				if (stickyGuardrailRuleState == null || string.IsNullOrWhiteSpace(stickyGuardrailRuleState.RuleId))
-				{
-					continue;
-				}
-				string text2 = stickyGuardrailRuleState.RuleId.Trim();
-				if (excluded.Contains(text2))
-				{
-					list3.Add(stickyGuardrailRuleState);
-					continue;
-				}
-				if (hashSet.Contains(stickyGuardrailRuleState.RuleId))
-				{
-					continue;
-				}
-				if (GetStickyGuardrailTurnLimit(text2) <= 0 || !dictionary.TryGetValue(text2, out var value2) || value2 == null || !value2.IsEnabled)
-				{
-					continue;
-				}
-				if (!ShouldContinueStickyGuardrailRule(stickyGuardrailRuleState, value2, input, list.Count, secondaryInput))
-				{
-					continue;
-				}
-				stickyGuardrailRuleState.CarryTurnIndex = Math.Max(1, stickyGuardrailRuleState.MaxCarryTurns - stickyGuardrailRuleState.RemainingCarryTurns + 1);
-				list2.Add(new StickyGuardrailRuleState
-				{
-					RuleId = text2,
-					Group = stickyGuardrailRuleState.Group,
-					Priority = stickyGuardrailRuleState.Priority,
-					LastScore = stickyGuardrailRuleState.LastScore,
-					MatchedSeed = stickyGuardrailRuleState.MatchedSeed,
-					RemainingCarryTurns = stickyGuardrailRuleState.RemainingCarryTurns,
-					MaxCarryTurns = stickyGuardrailRuleState.MaxCarryTurns,
-					CarryTurnIndex = stickyGuardrailRuleState.CarryTurnIndex
-				});
-				stickyGuardrailRuleState.RemainingCarryTurns = Math.Max(0, stickyGuardrailRuleState.RemainingCarryTurns - 1);
-				if (stickyGuardrailRuleState.RemainingCarryTurns > 0)
-				{
-					list3.Add(stickyGuardrailRuleState);
-				}
-			}
-			for (int j = 0; j < list.Count; j++)
-			{
-				GuardrailRuleHit guardrailRuleHit = list[j];
-				if (!ShouldStartStickyGuardrailRule(input, secondaryInput, guardrailRuleHit, j, excluded))
-				{
-					continue;
-				}
-				string text3 = (guardrailRuleHit.RuleId ?? "").Trim();
-				int stickyGuardrailTurnLimit = GetStickyGuardrailTurnLimit(text3);
-				StickyGuardrailRuleState stickyGuardrailRuleState2 = list3.FirstOrDefault((StickyGuardrailRuleState x) => x != null && string.Equals(x.RuleId, text3, StringComparison.OrdinalIgnoreCase));
-				if (stickyGuardrailRuleState2 == null)
-				{
-					list3.Add(new StickyGuardrailRuleState
-					{
-						RuleId = text3,
-						Group = (guardrailRuleHit.Group ?? ""),
-						Priority = guardrailRuleHit.Priority,
-						LastScore = guardrailRuleHit.Score,
-						MatchedSeed = (guardrailRuleHit.MatchedSeed ?? ""),
-						RemainingCarryTurns = stickyGuardrailTurnLimit,
-						MaxCarryTurns = stickyGuardrailTurnLimit
-					});
-					continue;
-				}
-				stickyGuardrailRuleState2.Group = (guardrailRuleHit.Group ?? stickyGuardrailRuleState2.Group);
-				stickyGuardrailRuleState2.Priority = guardrailRuleHit.Priority;
-				stickyGuardrailRuleState2.LastScore = guardrailRuleHit.Score;
-				stickyGuardrailRuleState2.MatchedSeed = (guardrailRuleHit.MatchedSeed ?? stickyGuardrailRuleState2.MatchedSeed);
-				stickyGuardrailRuleState2.RemainingCarryTurns = stickyGuardrailTurnLimit;
-				stickyGuardrailRuleState2.MaxCarryTurns = stickyGuardrailTurnLimit;
-			}
-			list3 = list3.OrderByDescending((StickyGuardrailRuleState x) => x.Priority).ThenByDescending((StickyGuardrailRuleState x) => x.LastScore).ThenBy((StickyGuardrailRuleState x) => x.RuleId, StringComparer.OrdinalIgnoreCase).Take(MaxStickyGuardrailRulesPerTarget).ToList();
-			if (list3.Count > 0)
-			{
-				_stickyGuardrailRules[text] = list3;
-			}
-			else
-			{
-				_stickyGuardrailRules.Remove(text);
-			}
-		}
-		if (list2.Count > 0)
+				if (!TryGetRuleEval(input, secondaryInput, ruleId, out var eval, excluded) || eval == null)
+					return default;
+				return new PromptStickyEvidence(eval.Hit, eval.ForceHit, eval.HighAmpHit, eval.AbsHit, eval.Rank, eval.AmpScore);
+			}, IsRuleCurrentlyEligibleForRag, out int carriedCount);
+		if (!string.IsNullOrWhiteSpace(target) && rules != null && rules.Count > 0)
 		{
-			for (int k = 0; k < list2.Count; k++)
-			{
-				StickyGuardrailRuleState stickyGuardrailRuleState3 = list2[k];
-				if (stickyGuardrailRuleState3 == null || hashSet.Contains(stickyGuardrailRuleState3.RuleId) || !IsRuleCurrentlyEligibleForRag(stickyGuardrailRuleState3.RuleId) || !dictionary.TryGetValue(stickyGuardrailRuleState3.RuleId, out var value3) || value3 == null)
-				{
-					continue;
-				}
-				list.Add(new GuardrailRuleHit
-				{
-					RuleId = stickyGuardrailRuleState3.RuleId,
-					Group = stickyGuardrailRuleState3.Group,
-					Priority = stickyGuardrailRuleState3.Priority,
-					Score = ApplyStickyGuardrailScoreDecay(stickyGuardrailRuleState3.LastScore, stickyGuardrailRuleState3.MaxCarryTurns, stickyGuardrailRuleState3.CarryTurnIndex),
-					MatchedSeed = (stickyGuardrailRuleState3.MatchedSeed ?? ""),
-					Instruction = (value3.Instruction ?? "")
-				});
-			}
+			try { Logger.Log("GuardrailSemantic", $"sticky_rule_merge target={target} live={(liveHits?.Count ?? 0)} sticky={carriedCount} final={result.Count}"); }
+			catch { }
 		}
-		list = list.OrderByDescending((GuardrailRuleHit x) => x.Priority).ThenByDescending((GuardrailRuleHit x) => x.Score).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
-		if (num > 0 && list.Count > num)
-		{
-			list = list.Take(num).ToList();
-		}
-		try
-		{
-			Logger.Log("GuardrailSemantic", $"sticky_rule_merge target={text} live={hashSet.Count} sticky={list2.Count} final={list.Count}");
-		}
-		catch
-		{
-		}
-		return list;
+		return result;
 	}
 
 	private static string BuildExtraRuleHitDebugDetail(string input, string secondaryInput, GuardrailRuleHit hit, IEnumerable<string> excludedRuleIds = null)

@@ -18,5 +18,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalOperationScope.cs" Link="PromptRetrievalOperationScope.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleRanking.cs" Link="PromptRuleRanking.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptSingleEvaluationCache.cs" Link="PromptSingleEvaluationCache.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptStickyRuleStore.cs" Link="PromptStickyRuleStore.cs" />
+    <Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
   </ItemGroup>
 </Project>
