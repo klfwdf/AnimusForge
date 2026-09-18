@@ -231,6 +231,19 @@ internal static class Program
             _ => false, _ => { racingRevision = 2; return new PromptStickyEvidence(true, true, false, false, 1, 0.7f); }, _ => true, out _);
         Check(racingSticky.Merge(2, () => racingRevision, "hero:a", "继续", null, 3, noExclusions, stickyRules,
             _ => false, _ => default, _ => true, out _).Count == 0, "reload during evidence prevents stale sticky publication");
+        int embeddedSeeds = 0;
+        var semanticRecall = PromptRuleSemanticRecall.Compute(
+            new[] { new PromptRuleRecallIntent("first", new[] { 1f, 0f }, 0.5f), new PromptRuleRecallIntent("second", new[] { 0f, 1f }, 1f) },
+            new[] { new PromptRuleRecallRule(new[] { "a", "b" }), new PromptRuleRecallRule(new[] { "missing" }) },
+            new[] { 1f, 0f },
+            seed => { embeddedSeeds++; return seed == "a" ? new[] { 1f, 0f } : seed == "b" ? new[] { 0f, 1f } : null; },
+            (a, b) => a[0] * b[0] + a[1] * b[1]);
+        Check(embeddedSeeds == 3, "semantic recall embeds each seed once across intents");
+        Check(semanticRecall.Score(0, 0) == 0.5f && semanticRecall.Seed(0, 0) == "a", "first weighted intent recalls first seed");
+        Check(semanticRecall.Score(1, 0) == 1f && semanticRecall.Seed(1, 0) == "b", "second intent recalls second seed");
+        Check(semanticRecall.BestInput[0] == 1f && semanticRecall.BestIntent[0] == "second" && semanticRecall.BestContext[0] == 1f,
+            "aggregate and context use the same scoring evidence");
+        Check(semanticRecall.BestInput[1] == 0f && semanticRecall.Seed(0, 1) == "", "unavailable embedding preserves zero-score fallback");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
