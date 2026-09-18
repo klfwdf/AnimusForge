@@ -5319,7 +5319,6 @@ public static class AIConfigHandler
 			{
 				TryGetInputEmbedding(runtimeGuardrailContext, out vec2);
 			}
-			bool flag = vec2 != null && vec2.Length != 0;
 			List<GuardrailRulePromptConfig> allEnabledRulePrompts = eligibleRules;
 			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
 			{
@@ -5330,72 +5329,34 @@ public static class AIConfigHandler
 				Key = text
 			};
 			List<GuardrailRuleEval> list4 = new List<GuardrailRuleEval>();
-			Dictionary<string, GuardrailRulePromptConfig> dictionary = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
+			List<PromptRuleRecallIntent> recallIntents = list.Select(intent => intent == null
+				? new PromptRuleRecallIntent("", null, 0f)
+				: new PromptRuleRecallIntent(intent.Text, intent.Vector, intent.Weight)).ToList();
+			List<PromptRuleRecallRule> recallRules = new List<PromptRuleRecallRule>(allEnabledRulePrompts.Count);
 			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
 			{
-				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[j];
-				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
+				GuardrailRulePromptConfig rule = allEnabledRulePrompts[j];
+				recallRules.Add(rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
+					? new PromptRuleRecallRule(null)
+					: new PromptRuleRecallRule(BuildRuleSemanticSeeds(rule.Id, rule.Instruction ?? "", rule.TriggerKeywords)));
+			}
+			PromptRuleSemanticRecall recall = PromptRuleSemanticRecall.Compute(recallIntents, recallRules, vec2,
+				seed => TryGetPhraseEmbedding(seed, out var vector) ? vector : null, DotProductNormalized);
+			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
+			{
+				GuardrailRulePromptConfig rule = allEnabledRulePrompts[j];
+				if (rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)) continue;
+				string id = rule.Id;
+				float rawInput = recall.BestInput[j];
+				float rawContext = recall.BestContext[j];
+				float mixedRaw = rawInput; // Existing context blend weight is zero.
+				GuardrailRuleEval eval = new GuardrailRuleEval
 				{
-					continue;
-				}
-				string id = guardrailRulePromptConfig.Id;
-				if (excluded.Contains(id))
-				{
-					continue;
-				}
-				string ruleInstruction = guardrailRulePromptConfig.Instruction ?? "";
-				List<string> list5 = BuildRuleSemanticSeeds(id, ruleInstruction, guardrailRulePromptConfig.TriggerKeywords);
-				float num = 0f;
-				float num2 = 0f;
-				string matchedSeed = "";
-				string matchedIntent = "";
-				for (int k = 0; k < list5.Count; k++)
-				{
-					string text3 = list5[k];
-					if (string.IsNullOrWhiteSpace(text3) || !TryGetPhraseEmbedding(text3, out var vec3) || vec3 == null || vec3.Length == 0)
-					{
-						continue;
-					}
-					for (int l = 0; l < list.Count; l++)
-					{
-						GuardrailIntentInput guardrailIntentInput2 = list[l];
-						if (guardrailIntentInput2?.Vector == null || guardrailIntentInput2.Vector.Length == 0)
-						{
-							continue;
-						}
-						float num3 = DotProductNormalized(guardrailIntentInput2.Vector, vec3) * Math.Max(0f, guardrailIntentInput2.Weight);
-						if (num3 > num)
-						{
-							num = num3;
-							matchedSeed = text3;
-							matchedIntent = guardrailIntentInput2.Text;
-						}
-					}
-					if (flag)
-					{
-						float num4 = DotProductNormalized(vec2, vec3);
-						if (num4 > num2)
-						{
-							num2 = num4;
-						}
-					}
-				}
-				float num5 = 0f;
-				float mixedRaw = (flag ? (num * (1f - num5) + num2 * num5) : num);
-				GuardrailRuleEval guardrailRuleEval = new GuardrailRuleEval
-				{
-					RuleTag = id,
-					MatchedSeed = matchedSeed,
-					MatchedIntent = matchedIntent,
-					RawInput = num,
-					RawContext = num2,
-					MixedRaw = mixedRaw,
-					AmpScore = mixedRaw,
-					RerankScore = mixedRaw
+					RuleTag = id, MatchedSeed = recall.BestSeed[j] ?? "", MatchedIntent = recall.BestIntent[j] ?? "",
+					RawInput = rawInput, RawContext = rawContext, MixedRaw = mixedRaw,
+					AmpScore = mixedRaw, RerankScore = mixedRaw
 				};
-				list4.Add(guardrailRuleEval);
-				dictionary[id] = guardrailRulePromptConfig;
-				guardrailEvalSnapshot.Rules[id] = guardrailRuleEval;
+				list4.Add(eval); guardrailEvalSnapshot.Rules[id] = eval;
 			}
 			int guardrailReturnCapFromMcm = returnCap;
 			int num6 = Math.Max(1, list.Count);
@@ -5430,44 +5391,13 @@ public static class AIConfigHandler
 				List<GuardrailRuleScore> list5 = new List<GuardrailRuleScore>();
 				for (int l = 0; l < allEnabledRulePrompts.Count; l++)
 				{
-					GuardrailRulePromptConfig guardrailRulePromptConfig2 = allEnabledRulePrompts[l];
-					if (guardrailRulePromptConfig2 == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig2.Id))
-					{
-						continue;
-					}
-					string id2 = guardrailRulePromptConfig2.Id;
-					if (excluded.Contains(id2))
-					{
-						continue;
-					}
-					guardrailEvalSnapshot.Rules.TryGetValue(id2, out var value);
-					List<string> list6 = BuildRuleSemanticSeeds(id2, guardrailRulePromptConfig2.Instruction ?? "", guardrailRulePromptConfig2.TriggerKeywords);
-					float num7 = 0f;
-					string text5 = "";
-					for (int m = 0; m < list6.Count; m++)
-					{
-						string text6 = list6[m];
-						if (string.IsNullOrWhiteSpace(text6) || !TryGetPhraseEmbedding(text6, out var vec3) || vec3 == null || vec3.Length == 0)
-						{
-							continue;
-						}
-						float num8 = DotProductNormalized(guardrailIntentInput.Vector, vec3) * Math.Max(0f, guardrailIntentInput.Weight);
-						if (num8 > num7)
-						{
-							num7 = num8;
-							text5 = text6;
-						}
-					}
-					float num9 = ((flag && value != null) ? value.RawContext : 0f);
-					float num10 = 0f;
-					float num11 = (flag ? (num7 * (1f - num10) + num9 * num10) : num7);
+					GuardrailRulePromptConfig rule = allEnabledRulePrompts[l];
+					if (rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)) continue;
+					float rawScore = recall.Score(k, l);
 					list5.Add(new GuardrailRuleScore
 					{
-						Rule = guardrailRulePromptConfig2,
-						RawScore = num11,
-						FinalScore = num11,
-						MatchedSeed = text5,
-						MatchedIntent = guardrailIntentInput.Text
+						Rule = rule, RawScore = rawScore, FinalScore = rawScore,
+						MatchedSeed = recall.Seed(k, l), MatchedIntent = guardrailIntentInput.Text
 					});
 				}
 				list5 = list5.OrderByDescending((GuardrailRuleScore x) => x.RawScore).ThenBy((GuardrailRuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).Take(guardrailPerIntentRecall).ToList();
