@@ -1,3 +1,20 @@
+# 当前范围：J04 第二批切片 J04_PARTIAL（2026-09-19）
+
+当前源码 `d6824d9d`，[代码地图](af-framework-code-map.json) 241 锚点两模式通过。唯一状态与命令见[主台账 J04 第二批回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice2-20260919)。
+
+| 责任 / 一基坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
+| --- | --- | --- |
+| `Composition/PromptRuleBlockText.cs:11` | 注入规则块格式唯一 owner；MyBehavior 36 处调用 | `AfGcczShoutBridge`、`CourierDeliveryBehavior:9550`、`DiplomacyBehavior:902` 仍各自内联标记字符串（领域侧，J11/J12） |
+| `Composition/PromptTopicRoutingStage.cs:58,26` | 路由阶段 + host ports | `AIConfigHandler.IsGuardrailSemanticHit` / `GetGuardrailSemanticRuleHitsForPreprocess` 内部 live 资格读取（J03 遗留） |
+| `Composition/PromptBuildRequest.cs:12,49` | detached 请求 DTO + 三层排除集合 | 四个游戏派生 Add* adder 仍在 MyBehavior |
+| `Composition/PromptContextDecisions.cs:29` | 上下文标志/澄清门控/lore 来源 | — |
+| `Composition/PromptAssemblyStage.cs:35` | 纯装配 | — |
+| `MyBehavior.cs:30474` orchestrator；`:30557/:30648/:30862` 三个捕获/追加阶段 | 五阶段显式化，行为不变 | **执行位置未搬**：Native 后台线程 / Courier `Task.Run` 仍跑全部阶段；`BuildTriggeredRuleInstructions`/`BuildExtraRuleInstructions` 未段落化 |
+
+Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误；Composition 契约 142 + BuildPhases 源码契约（各 2 变异拒收）；J03 六契约与三渠道 runner 复跑 PASS；实机、旧档、真实 provider `NOT-RUN`。
+
+## 以下为 J04 首批范围记录
+
 # 当前范围：J04 首批切片 J04_PARTIAL（2026-09-18）
 
 当前源码 `11f90fec`，[代码地图](af-framework-code-map.json) 231 锚点两模式通过。唯一状态与命令见[主台账 J04 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice1-20260918)。
