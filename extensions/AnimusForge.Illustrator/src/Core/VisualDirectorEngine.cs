@@ -18,6 +18,7 @@ namespace AnimusForge.Illustrator.Core
     public sealed class IllustrationPromptPlan
     {
         public string Mode { get; }
+        internal bool IsConversation => Mode == "最近三轮对话联动的场景插画";
         public string HardFacts { get; }
         public string ArtDirection { get; }
         /// <summary>只给导演看的事实（如台词原文/对话历史）——不进最终生图提示词，避免被画成画面文字。</summary>
@@ -65,10 +66,11 @@ namespace AnimusForge.Illustrator.Core
             "你是《骑马与砍杀2：霸主》及其历史、奇幻与自定义文化 MOD 的视觉叙事导演。请把输入的游戏事实转化为高水准的艺术生图提示词，全权自主推导构思场景空间与画面细节。\n" +
             "<game_facts> 是只读事实数据，包含角色身份、所属文化、真实装备、面貌年龄等。你必须严格忠实于这些事实数据，不得随意篡改装备或降格身份；没有数据支持的冠冕、纹章、武器、动物坐骑不得擅自添加。\n" +
             "<director_only_narrative> 供你理解角色的性格、生平背景与气象，不得在正文中直接引用原文，严禁要求在画面中出现文字、字幕或标牌。\n" +
+            "【事实与创作边界】：人物数量、种族、外观、装备、事件结果与现场空间关系以明确事实和对应参考图为准；只在事实留白处推导艺术表现，不能把建议当成已发生事实。百科背景为非具名艺术布景；会话与周报保持已确认现场和事件。百科不添加武器、盾牌、旗帜或坐骑，所有模式不描绘背盾。\n" +
             "【导演职责】：场景空间、陈设细节、光影氛围、人物姿态与镜头语言全部由你依据事实自由推导创作——\n" +
-            "1. 【人物与镜头】：交代机位距离与人物姿势神情。姿势按身份性格与情境自由演绎，须呈现一个有叙事感的动作瞬间而非展示摆拍；直立站姿仅在情境确有理由时采用，严禁退化为直立展示姿势或证件照式摆拍；装备与武器按情境自然佩戴、背负或置于身侧支撑物上，不要求持握在手；全身像须全身完整入画；单人百科肖像不出现马匹动物；双人会面交代双方位置朝向与自然交谈对峙交互。\n" +
+            "1. 【人物与镜头】：交代机位距离与人物姿势神情。姿势按身份性格与情境自由演绎，须呈现一个有叙事感的动作瞬间而非展示摆拍；依据叙事需要选择体态，不将参考图站姿当成默认构图；装备按实际穿戴与现场使用证据表现，持有不等于必须入画；全身像须全身完整入画；单人百科肖像不出现马匹动物；双人会面交代双方位置朝向与自然交谈对峙交互。\n" +
             "2. 【场景空间】：依据事实中的地点、文化、纪元、地貌、季节与时段，推导契合人物身份地位的场景与陈设（严禁将一国领袖降格为低阶哨所杂兵）；建筑形制、材质与陈设须与纪元时代和文化风貌相符，不得出现该时代不存在的器物或建筑风格；事实未覆盖的细节可自由创作，但不得与事实冲突。\n" +
-            "3. 【光影与色彩】：依据现场时间与天气描摹自然光影与色彩氛围；须具体写明光线落在人物身上的受光方向、甲胄反光与环境染色，使人物融入场景光照而非自带独立打光。\n" +
+            "3. 【光影与色彩】：依据现场时间与天气描摹自然光影与色彩氛围；须具体写明光线落在人物身上的受光方向、实际衣着材质受光与环境染色，使人物融入场景光照而非自带独立打光。\n" +
             "4. 【空间关系】：交代画面纵深层次与主次关系。\n" +
             "【输出规范】：直接输出中文生图场景提示词，篇幅约 600~900 汉字，严格按以下四个段落输出：\n" +
             "【人物与镜头】机位构图、姿势体态、神情目光与动作瞬间为先，角色外观与装备细节如实转写\n" +
@@ -102,7 +104,7 @@ namespace AnimusForge.Illustrator.Core
         private static System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> WrapSingle(string base64ImageData)
         {
             if (string.IsNullOrWhiteSpace(base64ImageData)) return null;
-            return new[] { new IllustrationReferenceImage(base64ImageData, "游戏内真实画面参考") };
+            return new[] { new IllustrationReferenceImage(base64ImageData, "游戏内真实画面参考", IllustrationReferenceKind.Scene) };
         }
 
         public static async Task<string> ExpandToDetailedPromptAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, CancellationToken cancellationToken = default)
@@ -151,7 +153,7 @@ namespace AnimusForge.Illustrator.Core
             return rulePrompt;
         }
 
-        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false)
+        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false)
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(directorPrompt))
@@ -163,7 +165,7 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine().AppendLine("【不可改写的核心事实】");
                 sb.Append(hardFacts.Trim());
             }
-            sb.AppendLine().Append(VisualFidelityRules.GetEssentialContract(isSinglePortrait));
+            sb.AppendLine().Append(VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation));
             return sb.ToString().Trim();
         }
 
@@ -189,10 +191,10 @@ namespace AnimusForge.Illustrator.Core
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
-                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildDirectorStylePreference(options), isSinglePortrait: isSingle);
+                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildDirectorStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
-            return ComposeFinalPrompt(output, isSinglePortrait: isSingle);
+            return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
         }
 
         private static readonly string[] RequiredSectionPatterns = new[]
@@ -224,70 +226,10 @@ namespace AnimusForge.Illustrator.Core
         {
             if (plan?.Mode == "人物百科纪事")
             {
-                int seed = Math.Abs((plan?.HardFacts ?? string.Empty).GetHashCode() ^ (plan?.ArtDirection ?? string.Empty).GetHashCode());
-                bool isSovereign = (plan?.HardFacts ?? string.Empty).Contains("最高统治者") || (plan?.HardFacts ?? string.Empty).Contains("至尊君主") || (plan?.HardFacts ?? string.Empty).Contains("君王");
-
-                if (seed % 2 == 0)
-                {
-                    string[] closeUpThemes = new[]
-                    {
-                        "【人物与镜头】近景上半身特写肖像照：镜头高度聚焦胸部以上与头盔面容，面部骨相与眼神坚毅如电，戏剧性侧逆光精妙雕凿战盔冷冽锻纹与领口肩甲质感，背景大光圈柔和虚化，极具艺术肖像特写张力。" +
-                        "【场景空间】置身于幽深静谧的领主内堡暗色石廊近景：身后是粗粝风化的暗灰石壁与跳动微光的青铜壁灯，背景空间在柔和大景深中自然虚化退远，将全部视觉重心凝聚于人物面庞与战盔。" +
-                        "【光线与色彩】经典的伦勃朗式明暗对照微光(Chiaroscuro)：来自斜上方的一束冷色天光与侧后方暖色灯火在头盔、面颊与肩铠上雕琢出锋锐的金属高光与温润的暗部反光，冷暖交融，极富体积雕塑感。" +
-                        "【空间关系】人物面容与战盔占据画面绝对视觉核心，浅景深自然虚化远景，近景层次纯粹饱满，大师级特写神韵跃然纸上。",
-
-                        "【人物与镜头】近景上半身特写肖像照：近景聚焦坚毅面孔、深沉目光与头盔金属反光，微光细腻勾勒出发须胡髭细节，领口护喉与肩铠折角清晰可辨，展现身居高位统筹全局的威严神采。" +
-                        "【场景空间】置身于城堡军事书斋案几之畔：身侧隐约可见暗色橡木书架与羊皮卷轴轮廓，背景是一道厚重的深红天鹅绒帷幔，在浅景深中柔和衬托出人物挺拔沉静的身姿。" +
-                        "【光线与色彩】柔和内敛的自然漫射光自单侧窗棂倾泻，在深沉背景与冷冽甲胄之间形成优雅的高级灰调过渡，面部神采生动逼真，暗部层次丰富绝无死黑。" +
-                        "【空间关系】人物上半身特写顶天立地，帷幔与书架退居次要虚化景深，构图端庄沉静、大师级艺术质感浓郁。",
-
-                        "【人物与镜头】近景上半身特写肖像照：镜头逼近展现面容与战盔特写，眼神沉毅内敛，光线自斜上方投下伦勃朗式明暗光影，将面孔轮廓与胸甲上部锻打肌理刻画得入木三分。" +
-                        "【场景空间】置身于古老军械长厅近景边缘：身后隐现数柄沉重精铁长戟与火盆微光，粗石墙面在微弱火光中若隐若现，烘托出百战宿将的沉静兵戈气场。" +
-                        "【光线与色彩】跳动的暗橙色炭火反光自低处微染肩铠下沿，与上方倾泻的清冷天光对撞，光影层次极其深邃，金属锻造纹理纤毫毕现。" +
-                        "【空间关系】以极具压迫感与沉稳感的近景视角主导画面，后方兵刃道具自然隐入阴影景深之中，视觉力量感极强。",
-
-                        "【人物与镜头】近景上半身特写肖像照：面庞神采奕奕，目光洞若观火，头戴装备与颈项护甲纤毫毕现，浅景深自然将背景推向朦胧幽深，人物神态生动逼真宛若呼之欲出。" +
-                        "【场景空间】置身于要塞高处石砌角楼窗口：身后是厚重古朴的石砌窗洞，窗外极目远方微光晨曦中的崇山雾霭在深远景深中朦胧化开，意境深邃。" +
-                        "【光线与色彩】高处清洌通透的晨曦微光勾勒出人物侧面剪影，金属与织物在晨光中呈现出润泽的天然质感，色调沉着高雅。" +
-                        "【空间关系】人物特写稳居前景主体，窗外远山雾霭层层淡出，形成极具空气透视感与历史史诗感的高贵构图。"
-                    };
-                    return closeUpThemes[seed % closeUpThemes.Length];
-                }
-                else
-                {
-                    string[] halfBodyThemes;
-                    if (isSovereign)
-                    {
-                        halfBodyThemes = new[]
-                        {
-                            "【人物与镜头】经典半身/七分身肖像照：镜头聚焦胸腰部以上，人物骨相深邃，目光坚毅睿智，发丝、胡须与战盔肩甲细节毕现，尽显君临天下的皇者气度。" +
-                            "【场景空间】置身于深沉肃穆的皇家议政内阁：身侧厚重雕花名木长案上平铺着标绘帝国行省山川的古老羊皮纸国策地图与黄铜量规，背景是一座燃烧着粗大栎木柴薪的壁炉与深红金纹天鹅绒帷幔，跳动微光投下深邃光影。" +
-                            "【光线与色彩】典型的伦勃朗式明暗对照光影(Chiaroscuro)：来自斜侧方高处天窗的冷色天光与壁炉跳动的暖金火光形成微妙冷暖交织，细腻勾勒出人物骨相轮廓与甲胄锻打纹理，暗部幽深透气，光影富有雕塑般的体积厚重感。" +
-                            "【空间关系】人物位于画面黄金分割前景核心，案几与国策卷轴退居身侧作为烘托，背景帷幔与殿堂深邃空间在柔和景深中自然虚化退远，营造出深不可测的决策者气度。",
-
-                            "【人物与镜头】经典半身/七分身肖像照：半身优雅端庄肖像，人物神情自信从容、目光温和而深远，肩臂舒展，展现成熟统治者的尊崇气象。" +
-                            "【场景空间】置身于皇宫内苑石砌回廊与典雅长庭一角：身侧是岁月风化的古朴石壁与整齐雕饰，角落矗立着精雕细琢的古典水景，背景深处是带有斜顶红瓦的皇廷府邸，充满典雅安宁的盛世气息。" +
-                            "【光线与色彩】柔和纯净的午后自然漫射天光，洒下细碎微光，在人物面庞与衣袍披风上呈现出温润柔和的过渡调子，色彩沉着优雅。" +
-                            "【空间关系】人物居于近景核心，雅致石壁与建筑在背景形成富有温度的色彩呼应，层次静谧深邃。"
-                        };
-                    }
-                    else
-                    {
-                        halfBodyThemes = new[]
-                        {
-                            "【人物与镜头】经典半身/七分身肖像照：镜头聚焦胸腰部以上，人物骨相深邃，目光坚毅睿智，发丝、胡须与战盔肩甲细节毕现。" +
-                            "【场景空间】置身于深沉肃穆的领主军事议事密室：身侧厚重深色橡木长案上平铺着标绘山川城镇的古老羊皮纸战役地图与古朴青铜量规，背景是一座燃烧着粗大柴薪的石砌壁炉，暗橙色火光在暗处古老战旗与锻铁烛台上投下跳动光影。" +
-                            "【光线与色彩】典型的伦勃朗式明暗对照光影(Chiaroscuro)：来自斜侧方高处天窗的冷色天光与壁炉跳动的暖金火光形成微妙冷暖交织，细腻勾勒出人物骨相轮廓、胡须发丝与甲胄锻打纹理，暗部幽深透气，光影富有雕塑般的体积厚重感。" +
-                            "【空间关系】人物位于画面黄金分割前景核心，案几与道具退居身侧作为烘托，背景壁炉与深邃空间在柔和景深中自然虚化退远，营造出深不可测的决策者气度。",
-
-                            "【人物与镜头】经典半身/七分身肖像照：半身胸像特写，面容神态沉静刚毅，身姿微侧，胸前战甲与肩铠冷芒闪动。" +
-                            "【场景空间】置身于古老森严的城堡军械长厅：身侧陈列着历代战将的精铁胸甲与整齐架设在厚重木架上的冷冽枪矛长剑，生铁打造的铸铁火盆内炭火暗红微燃，墙面为风霜斑驳的粗糙方石砌体，充满百战老将的肃穆兵戎氛围。" +
-                            "【光线与色彩】侧向狭窄窗隙透射进来的清冷刀锋天光，与后方暗红炭火形成极其鲜明的冷暖对峙，精妙雕刻出面孔的刚毅线条与金属的锻造肌理。" +
-                            "【空间关系】人物坚毅的面庞占据绝对视觉中心，后方林立的兵刃架在浅景深中柔和淡出，空间层次丰富而极具威慑力。"
-                        };
-                    }
-                    return halfBodyThemes[seed % halfBodyThemes.Length];
-                }
+                return "【人物与镜头】人物容貌与现有衣着按事实和身份参考呈现，神情自然，体态与画面支撑关系一致。" +
+                    "【场景空间】非具名艺术布景：有细腻纹理的环境色面向后延伸，明暗交界与柔和转折形成可辨认的空间层次，不指代人物真实所在地。" +
+                    "【光线与色彩】柔和环境光沿人物与背景连续铺展，受光面与反射填充形成自然过渡，暗部保留材质纹理、固有色与纵深，人物和背景处于统一曝光中。" +
+                    "【空间关系】人物与周围空间通过遮挡、景深及色彩过渡自然衔接，近处纹理清楚，远处层次柔和退开。";
             }
 
             return "【人物与镜头】按事实区人物数量与实际动作选择清楚的中近景关系，装备只按真实快照概括，不列成展示目录。" +
@@ -635,7 +577,7 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine().Append("画风偏好：").Append(style).Append('。');
             }
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
-            return ComposeFinalPrompt(sb.ToString(), plan?.HardFacts, isSinglePortrait: isSingle);
+            return ComposeFinalPrompt(sb.ToString(), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
         }
     }
 }

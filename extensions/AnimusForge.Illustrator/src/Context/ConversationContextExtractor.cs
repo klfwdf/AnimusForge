@@ -22,6 +22,7 @@ namespace AnimusForge.Illustrator.Context
         public HeroVisualProfile InterlocutorProfile { get; set; }
         public EnvironmentVisualProfile EnvironmentProfile { get; set; }
         public string SceneDirective { get; set; } = string.Empty;
+        public string SceneFacts { get; set; } = string.Empty;
         public string RecentDialogueHistory { get; set; } = string.Empty;
         public bool InterlocutorCivilian { get; set; }
         public bool MainHeroCivilian { get; set; }
@@ -59,8 +60,8 @@ namespace AnimusForge.Illustrator.Context
                 sb.AppendLine(EnvironmentProfile.BuildHardFactsSummary());
             }
             // 空间关系是构图硬约束，不能只放在开放艺术指导中，否则导演可能退化为平地对话。
-            if (!string.IsNullOrWhiteSpace(SceneDirective))
-                sb.AppendLine("【当前人物空间与动作硬事实】" + SceneDirective);
+            if (!string.IsNullOrWhiteSpace(SceneFacts))
+                sb.AppendLine("【当前人物空间与动作硬事实】" + SceneFacts);
             return sb.ToString().TrimEnd();
         }
 
@@ -364,23 +365,8 @@ namespace AnimusForge.Illustrator.Context
             }
 
             // 4. 生成精准现场身姿与空间交互指令
-            string mountPosture;
-            if (partnerIsMounted && !playerIsMounted)
-            {
-                mountPosture = $"对方（{partnerName}）骑乘，玩家（{mainName}）步行立于地面";
-            }
-            else if (!partnerIsMounted && playerIsMounted)
-            {
-                mountPosture = $"玩家（{mainName}）骑乘，对方（{partnerName}）步行立于地面";
-            }
-            else if (partnerIsMounted && playerIsMounted)
-            {
-                mountPosture = "双方均处于骑乘状态";
-            }
-            else
-            {
-                mountPosture = "双方均步行立于地面";
-            }
+            string mountPosture = DescribeMountState(mainName, playerAgent != null, playerIsMounted) + "；" +
+                DescribeMountState(partnerName, partnerAgent != null, partnerIsMounted);
 
             string basePose = "现场动作未能精确识别，可采用符合对话情绪的自然姿态";
             try
@@ -401,37 +387,21 @@ namespace AnimusForge.Illustrator.Context
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Failed to resolve conversation pose: {ex.Message}");
             }
 
-            bool siegeFieldParley = false;
-            if (isUnderSiege)
-            {
-                try
-                {
-                    siegeFieldParley = TaleWorlds.MountAndBlade.Mission.Current != null
-                        && CampaignMission.Current?.Location == null;
-                }
-                catch
-                {
-                }
-            }
-
-            string siegeDirection = isUnderSiege
-                ? (siegeFieldParley
-                    ? (playerIsDefender
-                        ? "当前是围城中的阵前旷野谈判，玩家一方为守方出城会面；画面应置于城墙之外的旷野，远处可见被围城池剪影与围城军营篝火，双方驻马交涉"
-                        : "当前是围城中的阵前旷野谈判，玩家一方为攻方；画面应置于围城军营与城墙之间的旷野，远处可见被围城池剪影，双方驻马交涉")
-                    : (playerIsDefender
-                        ? "当前是围城会面，玩家一方处于守方；保持城墙/城垛与城下的真实高低差，若现场角色分处上下方必须按上下方构图，不得改成平地对话"
-                        : "当前是围城会面，玩家一方处于攻方；保持城墙/城垛与城下的真实高低差，若现场角色分处上下方必须按上下方构图，不得改成平地对话"))
+            string siegeFacts = isUnderSiege
+                ? $"当前处于围城情境，玩家一方为{(playerIsDefender ? "守方" : "攻方")}；具体地形与双方高低关系以现场记录和实景参考图为准"
                 : string.Empty;
-            string guardDirection = bodyguardCount > 0 ? $"现场确认对方随行队列中另有 {bodyguardCount} 名角色，可按构图需要收入背景" : "未确认额外随行角色，不必强行添加护卫";
+            string guardFacts = bodyguardCount > 0 ? $"现场对方随行队列中另有 {bodyguardCount} 名角色" : "未确认额外随行角色";
 
-            context.SceneDirective =
+            context.SceneFacts =
                 (string.IsNullOrWhiteSpace(captiveDirective) ? string.Empty : captiveDirective + "。\n") +
-                $"围绕【{mainName}】与【{partnerName}】最近三轮对话选择最能表现关系变化、情绪转折或利益冲突的一个瞬间。\n" +
-                $"已确认空间关系：{mountPosture}；{guardDirection}。\n" +
-                $"现场动作参考：{basePose}。\n" +
-                (string.IsNullOrWhiteSpace(siegeDirection) ? string.Empty : siegeDirection + "。\n") +
-                $"地点为【{locName}】。允许环境占据较大画面，也允许聚焦手势、目光、沉默或侧身转身等细节；【构图交互铁律】：画面中双方角色应呈自然微侧向或对角朝向彼此，视线互相对视交汇，带有生动的交谈、沉思或戒备姿态互动，绝不可双双正对镜头像模特在展台前呆板站立！";
+                $"参与会话者：【{mainName}】与【{partnerName}】。\n" +
+                $"现场状态：{mountPosture}；{guardFacts}。\n" +
+                (string.IsNullOrWhiteSpace(siegeFacts) ? string.Empty : siegeFacts + "。\n") +
+                $"地点为【{locName}】。";
+            context.SceneDirective =
+                "依据最近三轮对话推导能表现双方情绪与关系的瞬间，镜头和姿势由导演设计，保留已确认的骑乘状态与空间关系。" +
+                "若实景或现场记录显示双方分处城墙上下，须保留高低差，不能改成平地会面。\n" +
+                $"【动作线索（启发用，不作为硬事实）】{basePose}。";
 
             return context;
         }
@@ -538,6 +508,11 @@ namespace AnimusForge.Illustrator.Context
                 }
             }
             return sb.ToString().TrimEnd();
+        }
+
+        internal static string DescribeMountState(string name, bool hasAgent, bool mounted)
+        {
+            return $"{name}：" + (!hasAgent ? "现场骑乘状态未确认" : mounted ? "现场处于骑乘状态" : "现场未骑乘");
         }
 
         private static string MapActionToPoseDirective(string actionName)
