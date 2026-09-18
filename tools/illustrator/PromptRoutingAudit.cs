@@ -55,6 +55,16 @@ public static class PromptRoutingAudit
         string system = (string)director.GetField("SystemPrompt", Static).GetRawConstantValue();
         Check(system.Contains("成图质量底线") && system.Contains("每个人物只选择一个清楚的主要体态"), "director receives simple physically coherent pose constraint");
         Check(system.Contains("不能仅保留立绘轮廓再更换背景") && system.Contains("环境反光"), "director must reconstruct figure and scene together");
+        Check(system.Contains("头部装备的盔壳轮廓") && system.Contains("面部实际覆盖范围") && system.Contains("披肩不能概括成内衬"), "director describes visible equipment landmarks instead of generic costume");
+        Check(system.Contains("物品名称、ID、文化和头衔只辅助识别") && system.Contains("不能把白天改成夜晚"), "names and painting style cannot override observed appearance or time");
+        Type heroExtractor = assembly.GetType("AnimusForge.Illustrator.Context.HeroVisualExtractor", true);
+        foreach (bool hair in new[] { false, true })
+        foreach (bool beard in new[] { false, true })
+        {
+            string head = (string)Call(heroExtractor, "BuildHeadgearDescription", "羽饰战冠", "empire_battle_crown_north", "金属甲胄", hair, beard);
+            Check(head.Contains("装备标记隐藏全部头发") == hair && head.Contains("装备标记隐藏全部胡须") == beard, "hair and beard visibility flags stay independent: " + hair + "/" + beard);
+            Check(head.Contains("遮发/遮须标记不等于面部全遮覆") && !head.Contains("完全遮蔽住整张面孔"), "mesh hiding never asserts full face coverage: " + hair + "/" + beard);
+        }
         Type popup = assembly.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
         string pose = (string)Call(popup, "GenerateDiversePoseDirective");
         Check(pose.Contains("站立、坐姿") && !pose.Contains("未经思考") && !pose.Contains("严禁与上一版重复"), "portrait input permits natural standing without compulsory pose change");
@@ -103,6 +113,24 @@ public static class PromptRoutingAudit
         Check(((string)Call(conversationExtractor, "DescribeMountState", "玩家", true, true)).Contains("处于骑乘"), "mounted state preserved");
 
         Type profileType = assembly.GetType("AnimusForge.Illustrator.Context.EnvironmentVisualProfile", true);
+        // A real mission may exist without a successfully read scene clock.
+        foreach (bool hasMission in new[] { false, true })
+        foreach (bool hasSceneTime in new[] { false, true })
+        {
+            object timing = Activator.CreateInstance(profileType);
+            profileType.GetProperty("HasLiveScene").SetValue(timing, hasMission);
+            profileType.GetProperty("HasSceneTime").SetValue(timing, hasSceneTime);
+            profileType.GetProperty("TimeOfDay").SetValue(timing, "沉寂夜幕 (Midnight)");
+            profileType.GetProperty("LightingAndAtmosphere").SetValue(timing, "月光");
+            profileType.GetMethod("UseConversationTimeEvidence", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(timing, null);
+            string timingFacts = (string)profileType.GetMethod("BuildHardFactsSummary").Invoke(timing, null);
+            Check(timingFacts.Contains("【现场时段】沉寂夜幕") == hasSceneTime, "only verified scene clock supplies conversation time: " + hasMission + "/" + hasSceneTime);
+            Check(((string)profileType.GetProperty("LightingAndAtmosphere").GetValue(timing) == "月光") == hasSceneTime, "unverified campaign lighting is removed: " + hasMission + "/" + hasSceneTime);
+            Check(timingFacts.Contains(hasSceneTime ? "当前 Mission 场景时间" : "否则时段未确认"), "time source is explicit: " + hasMission + "/" + hasSceneTime);
+        }
+        object historical = Activator.CreateInstance(profileType);
+        profileType.GetProperty("TimeOfDay").SetValue(historical, "事件记录中的夜晚");
+        Check(((string)profileType.GetMethod("BuildHardFactsSummary").Invoke(historical, null)).Contains("事件记录中的夜晚"), "non-conversation historical time remains intact");
         Type extractor = assembly.GetType("AnimusForge.Illustrator.Context.EnvironmentVisualExtractor", true);
         string[] locations = { "tavern", "prison", "lordshall", "keep", "mod_room", "" };
         string[] expected = { "酒馆", "石牢", "议事正厅", "议事正厅", "用途未确认", "用途未确认" };
@@ -148,6 +176,7 @@ public static class PromptRoutingAudit
                 Check(body.Contains("人物与镜头") && body.Contains("data:image/"), "director prompt and reference image sent together");
                 Check(!body.Contains("四层纵深") && !body.Contains("生动舒展") && !body.Contains("身着真实战甲"), "transport does not impose pose, layers or armor");
                 Check(body.Contains("整幅重新绘制"), "Chat receives whole-image repaint contract");
+                Check(body.Contains("若文字概括与可见外观冲突，保留参考图外观") && body.Contains("披肩轮廓"), "Chat keeps reference appearance above conflicting director paraphrase");
 
                 // Exercise the real multipart adapter with valid PNG reference files.
                 string png;
@@ -169,6 +198,7 @@ public static class PromptRoutingAudit
                 Check(editPrompt.Contains("整幅重新绘制") && editPrompt.Contains("不是保留人物像素的换背景"), "Edits explicitly requests full figure repaint");
                 Check(editPrompt.Contains("人物身份参考：") && editPrompt.Contains("纹章样图：") && editPrompt.Contains("现场参考："), "Edits reference roles remain distinct despite label keywords");
                 Check(editPrompt.Contains(valid) && editPrompt.Contains("光源") && editPrompt.Contains("衣褶"), "Edits retains director composition and unified figure lighting");
+                Check(editPrompt.Contains("若文字概括与可见外观冲突，保留参考图外观") && editPrompt.Contains("披肩轮廓"), "Edits uses the same appearance precedence as Chat");
                 object tuple = editTask.GetType().GetProperty("Result").GetValue(editTask);
                 string resolved = (string)tuple.GetType().GetField("Item6").GetValue(tuple);
                 Check(resolved == editPrompt, "returned Edits prompt equals exact multipart prompt");

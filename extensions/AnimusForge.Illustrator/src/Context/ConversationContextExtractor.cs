@@ -247,6 +247,7 @@ namespace AnimusForge.Illustrator.Context
             context.DialogueSentence = CleanText(sentence);
             context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), maxRounds: 3);
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(settlement);
+            context.EnvironmentProfile.UseConversationTimeEvidence();
             try
             {
                 string hostScene = TryGetHostSceneDescription();

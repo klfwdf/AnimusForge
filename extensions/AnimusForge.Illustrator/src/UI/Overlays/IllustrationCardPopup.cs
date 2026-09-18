@@ -353,6 +353,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
             var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDirectorOnlyFacts());
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
+            TaleWorlds.Library.Debug.Print($"[Illustrator] ConvLight sceneTime={convContext.EnvironmentProfile?.HasSceneTime == true}, time='{convContext.EnvironmentProfile?.TimeOfDay ?? ""}'");
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                 ? convContext.InterlocutorHero.Name.ToString()
                 : (convContext.InterlocutorCharacter != null && convContext.InterlocutorCharacter.Name != null
@@ -387,7 +388,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (!string.IsNullOrWhiteSpace(preCapturedBase64))
                 {
                     directorRefs.Add(new IllustrationReferenceImage(preCapturedBase64,
-                        "会面现场的3D实景画面：仅用于理解双方站位、坐骑、周围真实环境布局与光影方向，画面中禁止出现任何界面元素、对话框、字幕、名牌与文字", IllustrationReferenceKind.Scene));
+                        "会面现场的3D实景画面：用于确认可辨认的昼夜、采光、环境布局、站位及当前人物可见装备外观；与人物立绘按身份对应核对，不把背景士兵装备移给会话对象。未读取到场景时间时，以此现场画面判断昼夜；禁止绘制界面、对话框、字幕、名牌与文字", IllustrationReferenceKind.Scene));
                 }
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台

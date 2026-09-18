@@ -524,7 +524,7 @@ namespace AnimusForge.Illustrator.Core
                                 ? $"【人物身份参考图 {heroIndex}】"
                                 : "【核心人物官方真实视觉基准图】";
 
-                            string fidelityMandate = $"{roleHint}：仅依据上图锁定该人物的五官、发型发色、肤色、体型与实际穿戴形制；姿态、机位、背景和光照按导演描述重新绘制，与新场景自然融合。参考图不是画中画或额外人物。";
+                            string fidelityMandate = roleHint + "：" + VisualFidelityRules.CharacterAppearancePriority + "参考图不是画中画或额外人物。";
                             content.Add(new JObject
                             {
                                 ["type"] = "text",

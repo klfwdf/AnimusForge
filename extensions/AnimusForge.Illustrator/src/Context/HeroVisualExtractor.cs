@@ -596,35 +596,38 @@ namespace AnimusForge.Illustrator.Context
             {
                 string hId = (item.StringId ?? "").ToLowerInvariant();
                 string hName = (itemName ?? "").ToLowerInvariant();
-                bool isFullCover = (item.ArmorComponent != null &&
-                                    item.ArmorComponent.HairCoverType == ArmorComponent.HairCoverTypes.All &&
-                                    item.ArmorComponent.BeardCoverType == ArmorComponent.BeardCoverTypes.All)
-                                   || hId.Contains("daimao") || hId.Contains("mask") || hId.Contains("head_full")
-                                   || hName.Contains("呆喵") || hName.Contains("面具") || hName.Contains("头套");
-
                 if (hId.Contains("daimao") || hName.Contains("呆喵"))
                 {
                     profile.HeadgearDetail = $"已佩戴头部装备：呆喵（物品ID: {item.StringId}，全包覆立体蓝白猫咪头饰）。标志性的蓝白双色立体猫咪头饰（前脸为纯白底色的呆萌猫猫面具表情，后脑与猫耳为天蓝色），完全笼罩整个头部与脸庞，完整呈现参考图中的猫咪头套原貌。";
                 }
-                else if (isFullCover)
-                {
-                    profile.HeadgearDetail = $"已佩戴头部装备：{modifierStr}{itemName}（物品ID: {item.StringId}，{materialStr}，全包覆面具/战盔）。该装备为全包覆式，完全遮蔽住整张面孔与头部，完整保留参考图中该头盔/面具原貌造型与材质。";
-                }
                 else
                 {
-                    profile.HeadgearDetail = $"已佩戴头部装备：{modifierStr}{itemName}（物品ID: {item.StringId}，{materialStr}）。头部入镜时如实呈现该真实装备形制，严格吻合人物参考图中的真实头盔/头饰。";
+                    profile.HeadgearDetail = BuildHeadgearDescription(modifierStr + itemName, item.StringId, materialStr,
+                        item.ArmorComponent?.HairCoverType == ArmorComponent.HairCoverTypes.All,
+                        item.ArmorComponent?.BeardCoverType == ArmorComponent.BeardCoverTypes.All);
                 }
             }
 
             if (slot == EquipmentIndex.Cape)
             {
-                profile.EquipmentDetails.Add($"披风/肩部装备: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier})；颜色、纹样与佩戴方式以人物参考图为准");
+                profile.EquipmentDetails.Add($"披风/肩部装备: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier})；按人物参考图保留肩颈覆盖范围、轮廓宽窄、扣合位置、固有主色与叠穿关系；名称不代表具体形状，不将披肩改写成内衬或金属肩甲");
                 return;
             }
 
             string heraldicNote = (isHeraldic && slot == EquipmentIndex.Body) ? "，身覆家族纹章图案/罩袍" : "";
             string desc = $"{slotName}: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier}{heraldicNote})；具体颜色与纹样以人物参考图为准";
             profile.EquipmentDetails.Add(desc);
+        }
+
+        internal static string BuildHeadgearDescription(string name, string id, string material, bool hidesHair, bool hidesBeard)
+        {
+            // HairCover/BeardCover control hidden hair meshes, not face visibility.
+            // The native reference renderer still applies those flags through the unchanged equipment.
+            return $"已佩戴头部装备：{name}（物品ID: {id}，{material}）。名称仅供识别，不能据名称另造款式；" +
+                "头部入镜时按人物参考图转写实际盔壳、面部覆盖范围与可见护具，保留其轮廓和装饰位置。" +
+                "遮发/遮须标记不等于面部全遮覆；全包覆头盔按参考图保持完整遮覆，开放式头盔保留实际露出的面部范围。" +
+                (hidesHair ? "装备标记隐藏全部头发，不补画被隐藏的头发。" : "") +
+                (hidesBeard ? "装备标记隐藏全部胡须，不补画被隐藏的胡须。" : "");
         }
 
         public static string ExtractCharacterPhysicalFeatures(CharacterObject character, Equipment equipment)
@@ -653,7 +656,7 @@ namespace AnimusForge.Illustrator.Context
                         string hId = (headItem.StringId ?? "").ToLowerInvariant();
                         if (hName.Contains("面罩") || hName.Contains("兜帽") || hId.Contains("mask") || hId.Contains("hood"))
                         {
-                            sb.Append(" 头部戴有粗布面罩兜帽，紧密遮裹住口鼻，仅露出警惕凶狠的双眼。");
+                            sb.Append(" 头部装备的材质、形状与口鼻实际覆盖范围以本人参考图为准，不按兜帽或面罩名称推断遮面程度。");
                         }
                     }
 
@@ -694,20 +697,7 @@ namespace AnimusForge.Illustrator.Context
             string name = (item.Name != null ? item.Name.ToString() : "").ToLowerInvariant();
             string id = (item.StringId ?? "").ToLowerInvariant();
 
-            // 针对第三方 MOD 装备智能推导
-            if (name.Contains("盔") || name.Contains("胄") || id.Contains("helm") || id.Contains("bascinet") || id.Contains("nasal") || id.Contains("spangenhelm"))
-            {
-                return "金属战斗战盔";
-            }
-            if (name.Contains("冠") || name.Contains("冕") || id.Contains("crown") || id.Contains("circlet") || id.Contains("coronet"))
-            {
-                return "金属冠冕/头饰";
-            }
-            if (name.Contains("兜帽") || name.Contains("面罩") || name.Contains("头巾") || id.Contains("hood") || id.Contains("mask") || id.Contains("headcloth"))
-            {
-                return "织物兜帽/面罩";
-            }
-
+            // Material metadata must not turn a name such as battle_crown into a shape claim.
             if (item.ArmorComponent == null) return "防护装备材质";
 
             switch (item.ArmorComponent.MaterialType)
@@ -797,19 +787,9 @@ namespace AnimusForge.Illustrator.Context
             {
                 string hId = (headItem.StringId ?? "").ToLowerInvariant();
                 string hName = (headItem.Name?.ToString() ?? "").ToLowerInvariant();
-                bool isFullCover = (headItem.ArmorComponent != null &&
-                                    headItem.ArmorComponent.HairCoverType == ArmorComponent.HairCoverTypes.All &&
-                                    headItem.ArmorComponent.BeardCoverType == ArmorComponent.BeardCoverTypes.All)
-                                   || hId.Contains("daimao") || hId.Contains("mask") || hId.Contains("head_full")
-                                   || hName.Contains("呆喵") || hName.Contains("面具") || hName.Contains("头套");
-
-                if (isFullCover)
+                if (hId.Contains("daimao") || hName.Contains("呆喵"))
                 {
-                    if (hId.Contains("daimao") || hName.Contains("呆喵"))
-                    {
-                        return "【头部全包覆猫咪头饰】：人物头部佩戴着标志性的蓝白色呆喵立体猫猫头饰（正脸为白色猫猫面具表情，后脑与猫耳为天蓝色），完全遮覆住整张面孔与头部，完整呈现该蓝白猫咪头饰本身的标志形态与色彩。";
-                    }
-                    return $"【头部全包覆遮面】：人物头部佩戴着【{headItem.Name}】全包覆头盔/面具，完全包裹遮蔽住整张面孔与五官，外形、结构与金属/皮革材质严格以参考图为准。";
+                    return "【头部全包覆猫咪头饰】：人物头部佩戴着标志性的蓝白色呆喵立体猫猫头饰（正脸为白色猫猫面具表情，后脑与猫耳为天蓝色），完全遮覆住整张面孔与头部，完整呈现该蓝白猫咪头饰本身的标志形态与色彩。";
                 }
             }
 
@@ -874,7 +854,11 @@ namespace AnimusForge.Illustrator.Context
                 return $"【面貌骨相与发色胡须】：{ageTone}；发色、胡须样式与五官骨相完全以人物参考图为最高依据，不凭身份或猜测补造发色胡须。";
             }
 
-            return $"【面貌骨相与发色胡须】：{ageTone}；发色为【{hairColorDesc}】；胡须为【{beardDesc}】；五官神态与须发色彩完全与参考图保持高度一致。";
+            if (headItem?.ArmorComponent?.HairCoverType == ArmorComponent.HairCoverTypes.All)
+                hairColorDesc = "当前装备隐藏头发";
+            if (headItem?.ArmorComponent?.BeardCoverType == ArmorComponent.BeardCoverTypes.All)
+                beardDesc = "当前装备隐藏胡须";
+            return $"【面貌骨相与发色胡须】：{ageTone}；发色为【{hairColorDesc}】；胡须为【{beardDesc}】；仅表现参考图中实际露出的五官与须发，不为展示面貌移除或打开头盔护具。";
         }
 
         private static string ExtractBackgroundLore(Hero hero)
