@@ -1,6 +1,45 @@
+<a id="j04-slice1-20260918"></a>
+
+## J04 首批切片回执：J04_PARTIAL / OFFLINE_VERIFIED_SLICE（2026-09-18）
+
+**本节取代上方 J04 意图节的 ACTIVE 状态，仅限源码与离线验收；不是 J04 整包完成。** 生产切片 `e0aa8142`、`be91c047`、`27ec5e26`、`2a191526`，测试/工具 `11f90fec`，地图绑定 `11f90fec`。分支 `codex/af-modularize-j04-20260918`，基线 `25a89cea`；未推送、未 Stage/Deploy/打包、未写游戏目录。
+
+### 已迁职责（源码 `11f90fec`，一基行号；符号为追踪依据）
+
+| 新 owner / 坐标 | 真实迁移与消费者 | 旧实现处置 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Composition/PromptRuleIdPolicy.cs:12` `PromptRuleIdPolicy` | 规则 ID 集合/排除/规范化、运行时门控、companion/family 四项排除、`noble_deference` 排除、Courier 命中排序、辅助命中收集与强制合并；MyBehavior 39+ 调用点及 `RunCourierRulePreprocessInternal` 接新 owner | MyBehavior 8 个 private static helper 删除，两段内联 LINQ 删除 |
+| `.../BuiltInRuleStickyCarry.cs:12` `BuiltInRuleStickyCarry` | duel/reward/loan 跨回合 carry 的唯一状态 owner（短确认识别、目标 key、2/2/3 回合上限、消费/prime/clear）；MyBehavior 持一实例，存档加载 `ResetLocalTransientRuntimeForLoadedSave` 调 `Clear()` | `_ruleSticky*` 四字段、`IsShortAckForRuleFollowup`、`ResolveRuleStickyTargetKey`、`GetBuiltInRuleStickyTurnLimit`、`ClearRuleStickyCarry`、`TryConsumeRuleStickyCarry`、`UpdateRuleStickyCarryFromHits` 删除；与 J03 `PromptStickyRuleStore`（kingdom_service/marriage）是不同状态，未合并 |
+| `.../PromptBuiltInTopicRouter.cs:24` `PromptBuiltInTopicRouter` | 8 个内置话题（duel/reward/loan/surroundings/kingdom_service/marriage/party_transfer/worldmap_party_command）的“辅助路由权威 → 语义评估 → sticky 兜底”算法；语义评估通过 `PromptTopicSemanticEvaluator` 委托仍由 `AIConfigHandler.IsGuardrailSemanticHit` 提供 | 主链内 ~170 行八段重复 if/else 删除 |
+| `.../PromptPreprocessRuleIdAssembler.cs:17` | preprocess 规则 ID 收敛（辅助 ID + 路由标志 + `persistent_adp_debt` + `noble_gathering` 注入块检测 + 排除集合差集）；`ShoutBehavior.PersistentAdpDebtPostprocessRuleId` 由此常量取值 | 主链 11 处 `preprocessRuleIds.Add` 删除 |
+| `.../PromptExtrasComposer.cs:12,47` `PromptExtrasSections` / `PromptExtrasComposer` | Extras 21 段 canonical 顺序、每段空白策略（保留旧 IsNullOrEmpty / IsNullOrWhiteSpace 差异）、决斗/原版战败/释放三条固定模板、实体检索规则集、后处理块合并、8 个注入标记检测 | 主链 22 处 `stringBuilder.AppendLine` 与三条内联模板删除；host 按原顺序捕获段落文本 |
+| `.../PromptRuntimeTargetBinding.cs:10` `PromptRuntimeTargetBinding`；`AIConfigHandler.cs:5666` `ApplyGuardrailRuntimeTarget` / `ClearGuardrailRuntimeTarget` | 六值检索目标身份（hero 回退、troop=character、soldier/commoner rank）唯一派生与发布口；MyBehavior 3 处、ShoutBehavior 4 处、ScenePostprocess 1 处接线 | 8 组六 setter 发布/清理块删除；旧 public setter 保留给现有 `ShoutBehavior.cs:28008` 等四 setter 局部调用 |
+| 删除 `PromptComposer.cs` | `git grep` 零调用者（仅 owner matrix 文档提及） | 死代码删除 |
+
+`MyBehavior.cs` 58,669 → 58,078；`ShoutBehavior.cs` 39,698 → 39,673；四文件净 −680 行。共享 builder `MyBehavior.cs:30526` `BuildShoutPromptContextForExternalInternal` 现约 470 行，仍为 `mixed-host`。
+
+### 本机实际验证（全部退出码 0；命令见 `.tmp/reg/`、`artifacts/tests/prompt-j04-composition/`）
+
+- 新契约 `tests/modules/AF.Module.Prompt/Composition/run.py`：直接编译七个生产 owner 文件，86 项断言；`--mutate sticky-limit`（loan 上限 3→2）、`--mutate router-excluded`（去掉排除门控）均编译成功后断言失败（退出码非 0）。
+- J03 生产契约复跑：ProductionEntry 7、ProductionEvaluation 22、ProductionMy 4、ProductionReward 11、ProductionSceneNative 3、ProductionConsumers 五类源码边界；均 PASS。
+- 三渠道回归复跑：Courier prompt 252 / liveness 59 / postprocess 39；Scene parity 71 / queue 37 / lifetime 30；Native preparation 589 / admission 44 / completion 184 / pending 111 / history 852 及 `--native` 27；HeroAssetScope 67；均 PASS。`tools/GameLifetimeTests/source_parity.py` 增加 J04 精确逆变换（1 apply + 4 clear + 1 常量），Scene queue / Courier postprocess 桩增加 Apply/Clear 并链接 binding 源；未改任何生产断言。
+- 原脚本 `一键编译覆盖推送/build_single_module.ps1` Debug 与 Release 的 Bannerlord 1.3、1.4、Bootstrap 六项各 0 警告/0 错误，未带 `-Stage/-Deploy`。本机参数：SDK `G:/AFMOD/.dotnet-sdk` 8.0.422、1.3 引用 `_deps_auto` 1.3.15.110062、1.4 引用 `G:/AFMOD/AF-REFACTOR/.tmp/build_check/1.4` v1.4.6.115628、Harmony 取 Workshop 2859188632；与制作组记录的 8.0.425 / 1.4.7 不是同一安装，仅证明本机双 API 编译通过。
+- 231 锚点[代码地图](architecture/af-framework-code-map.json) recorded / working-tree 两模式通过；26 个既有锚点仅因行号漂移按符号重定位并刷新文件 hash，无符号/路径/状态改动。
+
+### 环境偏差（不是产品失败，已记录不掩盖）
+
+J03 runner 硬编码 `local/dotnet/8.0.425` 与 `.tmp/nuget-packages` Newtonsoft 路径在本机不存在；以内存替换（`.tmp/run_with_local_sdk.py`，未改 tracked runner）指向 `G:/AFMOD/.dotnet-sdk` 与 SDK 自带 `Newtonsoft.Json.dll` 后通过。`NativeHistorySnapshotTests` 默认 `DOTNET_EXE` 指向 `C:\Program Files\dotnet`（仅运行时），需显式环境变量。
+
+### 未完成 / 不能外推
+
+- **J04 未 OFFLINE_VERIFIED。** 共享 builder 仍在调用线程内直接读取 Hero/Clan/Reward/Duel/MobileParty/TeamModuleServices/WorldEntityRetrievalService 并调用 lore 检索；Native 后台执行、Courier `Task.Run` 执行的线程现状未改变。下一切片：`PromptExtrasSections` 之前的“主线程捕获输入 DTO → 后台组合 → 主线程重验接受”边界，以及 `BuildTriggeredRuleInstructions`（约 560 行）的段落化。
+- `RunCourierRulePreprocessInternal` 与主链的规则排除集合构造仍各自内联（同一四个 Add* helper），未合并为一个 owner。
+- 未触碰 Scene/Courier 公开提交、Memory、Knowledge、Actions；`AfApi` 能力表不变。实机、旧档、真实 provider `NOT-RUN`。
+- 本地专用脚本 `.tmp/build-local.ps1`、`.tmp/run_with_local_sdk.py`、`.tmp/refresh_code_map.py`、`.tmp/j04*_rewire.py` 不入库；不改一键脚本。
+
 <a id="j04-intent-20260918"></a>
 
-## J04 执行意图：共享 Prompt 组合责任闭包（2026-09-18，ACTIVE）
+## J04 执行意图：共享 Prompt 组合责任闭包（2026-09-18，历史；状态见上节）
 
 工作区 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，分支 `codex/af-modularize-j04-20260918`，基线 `25a89cea`（= 当时 `origin/codex/af-main-refactor-continuation-20260831`）。旧工作区 `G:/AFMOD/AF-REFACTOR` 及其两份未提交草稿不动、不合并。用户本轮授权：继续按 J01–J17 路线拆分 AF 主体；未授权推送、部署、Stage、打包、写游戏目录、安装全局 Skill。
 

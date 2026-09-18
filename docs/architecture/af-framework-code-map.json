@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "7d8b8d0b44a065bb637d06cead4bce8d6ad92264",
+  "sourceRevision": "11f90fec758dec3507b17952684febc18eef5ebf",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,29 +167,29 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
+      "fileSha256": "af945d0b675845ec6c161035c705def095d65dfc9671251aeb3087f37159d62f"
     },
     {
       "id": "native.history.dispatch",
       "path": "ShoutBehavior.cs",
-      "start": 20167,
-      "end": 20170,
+      "start": 20157,
+      "end": 20160,
       "symbol": "\"persisted_history_capture\", nativeTargetLog, nativeTargetAgentIndex,",
       "match": "exact",
       "status": "mixed-host",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
+      "fileSha256": "af945d0b675845ec6c161035c705def095d65dfc9671251aeb3087f37159d62f"
     },
     {
       "id": "native.history.accept",
       "path": "ShoutBehavior.cs",
-      "start": 20209,
-      "end": 20212,
+      "start": 20199,
+      "end": 20202,
       "symbol": "if (!await RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
       "match": "contains",
       "status": "mixed-host",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
+      "fileSha256": "af945d0b675845ec6c161035c705def095d65dfc9671251aeb3087f37159d62f"
     },
     {
       "id": "native.dispatch.shared",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
+      "fileSha256": "af945d0b675845ec6c161035c705def095d65dfc9671251aeb3087f37159d62f"
     },
     {
       "id": "memory.acceptance",
@@ -249,35 +249,35 @@
     {
       "id": "memory.summary.accept",
       "path": "MyBehavior.cs",
-      "start": 4951,
-      "end": 4954,
+      "start": 4945,
+      "end": 4948,
       "symbol": "if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++;",
       "match": "contains",
       "status": "mixed-host",
       "note": "源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "legacy.history",
       "path": "MyBehavior.cs",
-      "start": 27692,
-      "end": 27695,
+      "start": 27554,
+      "end": 27557,
       "symbol": "public static string BuildHistoryContextForExternal(",
       "match": "contains",
       "status": "retained-live",
       "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "legacy.recall",
       "path": "MyBehavior.cs",
-      "start": 33684,
-      "end": 33687,
+      "start": 33093,
+      "end": 33096,
       "symbol": "private string BuildCompressedMemoryContextById(",
       "match": "contains",
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "scene.postprocess",
@@ -288,7 +288,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "已有完整后处理；非本次重写 Scene 业务",
-      "fileSha256": "454e02627f90991bcd44eaab5859c4a6a5c83bc40a10dfb2631ace5739cb76f4"
+      "fileSha256": "e0a9d31288cc29c9754e3b2b54b0061d58806085b8fa57b773a5f5bca386a2c5"
     },
     {
       "id": "courier.prepare.reply",
@@ -414,35 +414,35 @@
     {
       "id": "memory.summary.admission",
       "path": "MyBehavior.cs",
-      "start": 4849,
-      "end": 4852,
+      "start": 4843,
+      "end": 4846,
       "symbol": "private void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan = false)",
       "match": "exact",
       "status": "mixed-host",
       "note": "raw数量入场；候选ID扫描仍有同步全扫，不代表全部入口已预算",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.summary.planner",
       "path": "MyBehavior.cs",
-      "start": 4909,
-      "end": 4912,
+      "start": 4903,
+      "end": 4906,
       "symbol": "private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)",
       "match": "exact",
       "status": "mixed-host",
       "note": "分段初筛/extra/cleanup，冻结metadata排序与失败汇总在worker；仅完整接受才计数",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.summary.maintenance",
       "path": "MyBehavior.cs",
-      "start": 17749,
-      "end": 17752,
+      "start": 17743,
+      "end": 17746,
       "symbol": "private void TryRunCampaignMemoryMaintenance()",
       "match": "exact",
       "status": "mixed-host",
       "note": "不在每Tick重复读完整summary来源；past draft检查仍有全扫",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.plan.entry",
@@ -491,57 +491,57 @@
     {
       "id": "memory.editor.text",
       "path": "MyBehavior.cs",
-      "start": 49886,
-      "end": 49889,
+      "start": 49295,
+      "end": 49298,
       "symbol": "private void OpenDevDailyMemoryLineTextEditor(",
       "match": "contains",
       "status": "mixed-host",
       "note": "文本保存/取消真实红绿证据；同代记录引用/指纹也须保持",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.import.single",
       "path": "MyBehavior.cs",
-      "start": 54724,
-      "end": 54727,
+      "start": 54133,
+      "end": 54136,
       "symbol": "private void ImportSingleNpcDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.import.batch",
       "path": "MyBehavior.cs",
-      "start": 56829,
-      "end": 56832,
+      "start": 56238,
+      "end": 56241,
       "symbol": "private void ImportDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "记忆批量导入生命周期，保留overwrite/merge业务",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.import.hero-all",
       "path": "MyBehavior.cs",
-      "start": 54921,
-      "end": 54924,
+      "start": 54330,
+      "end": 54333,
       "symbol": "private void ImportHeroNpcAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.import.all",
       "path": "MyBehavior.cs",
-      "start": 57357,
-      "end": 57360,
+      "start": 56766,
+      "end": 56769,
       "symbol": "private void ImportAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF全量导入窗口门禁；非全部导入业务已运行验收",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.summary.raw-view",
@@ -579,13 +579,13 @@
     {
       "id": "memory.overview.pending-projection",
       "path": "MyBehavior.cs",
-      "start": 26655,
-      "end": 26658,
+      "start": 26517,
+      "end": 26520,
       "symbol": "private bool HasMemoryOverviewPendingBlocks(",
       "match": "contains",
       "status": "mixed-host",
       "note": "一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.material.index-owner",
@@ -616,9 +616,9 @@
       "match": "contains",
       "status": "source-linked-offline-verified",
       "note": "原记录/追加/发布仍归主体 owner，使用独立索引",
-      "start": 13697,
-      "end": 13700,
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "start": 13691,
+      "end": 13694,
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.material.rebuild",
@@ -627,9 +627,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "重建后复核来源引用，再发布和绑定",
-      "start": 20112,
-      "end": 20115,
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "start": 19974,
+      "end": 19977,
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.sealing.continue",
@@ -671,9 +671,9 @@
       "match": "contains",
       "status": "source-linked-offline-verified",
       "note": "真实主/deferred维护共享周期与异常/nested恢复",
-      "start": 17723,
-      "end": 17726,
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "start": 17717,
+      "end": 17720,
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.budget.caller",
@@ -682,9 +682,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "实际Campaign入口接入共享维护周期，其他顺序保持",
-      "start": 17677,
-      "end": 17680,
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "start": 17671,
+      "end": 17674,
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.budget.deferred",
@@ -693,9 +693,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "复用共享deadline，原子超时后不再开始下一维护域",
-      "start": 5913,
-      "end": 5916,
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "start": 5907,
+      "end": 5910,
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.sealing.queue-tail",
@@ -733,24 +733,24 @@
     {
       "id": "memory.sort.daily-normalize",
       "path": "MyBehavior.cs",
-      "start": 26559,
-      "end": 26562,
+      "start": 26421,
+      "end": 26424,
       "symbol": "private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Daily净化体原样提取；同步Sanitize与分片尾部共用，权威DTO仍在主体",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.sort.major-normalize",
       "path": "MyBehavior.cs",
-      "start": 26725,
-      "end": 26728,
+      "start": 26587,
+      "end": 26590,
       "symbol": "private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Major净化体原样提取；先pending再dedupe/normalize，保留引用和重试字段",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.source-digest.runtime",
@@ -812,33 +812,33 @@
       "path": "MyBehavior.cs",
       "symbol": "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)",
       "note": "同步入口组合共用bind/line helper；clone/seen/trigger列表规则保持",
-      "start": 26455,
-      "end": 26458,
+      "start": 26317,
+      "end": 26320,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.owner-normalize.line",
       "path": "MyBehavior.cs",
       "symbol": "private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)",
       "note": "原Where+Select体精确提取；同步与续跑共用，不含第二套规则",
-      "start": 26416,
-      "end": 26419,
+      "start": 26278,
+      "end": 26281,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.owner-normalize.trigger-bind",
       "path": "MyBehavior.cs",
       "symbol": "private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)",
       "note": "原draft内trigger MemoryId/day/date绑定；按条metadata计费",
-      "start": 26405,
-      "end": 26408,
+      "start": 26267,
+      "end": 26270,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "memory.owner-normalize.entry-work",
@@ -1151,13 +1151,13 @@
     {
       "id": "persona.reroll.ui",
       "path": "MyBehavior.cs",
-      "start": 49302,
-      "end": 49342,
+      "start": 48711,
+      "end": 48751,
       "symbol": "private async Task RunHeroPersonaRerollAsync(",
       "match": "contains",
       "status": "wired-partial",
       "note": "原编辑器入口；异步完成UI回主线程，清理/编辑不报假成功",
-      "fileSha256": "20f242651003230405345b9f8101837a56b024966fbe59dcebaad66e547a2b73"
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
     },
     {
       "id": "persona.readiness",
@@ -2070,18 +2070,18 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "旧 getter/reload 与游戏、网络窄适配仍保留；部分评估编排仍在旧类",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     },
     {
       "id": "j03.config.reload",
       "path": "AIConfigHandler.cs",
-      "start": 7555,
-      "end": 7555,
+      "start": 7567,
+      "end": 7567,
       "symbol": "public static void ReloadConfig()",
       "match": "exact",
       "status": "wired-boundary",
       "note": "旧签名转接 PromptConfigurationLoader 与 revisioned store",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     },
     {
       "id": "j03.retrieval.intent",
@@ -2147,7 +2147,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "配置 revision 与请求上下文共同 pin；退出恢复父 scope",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     },
     {
       "id": "j03.retrieval.rules.remaining",
@@ -2158,7 +2158,7 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "按目标资格过滤与游戏读取仍在旧类；评估编排及 ONNX 调用未全迁",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     },
     {
       "id": "j03.retrieval.warmup.remaining",
@@ -2169,7 +2169,7 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "已捕获 seed 后的 embedding 调用与门控保留；旧代迟到结果拒收",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     },
     {
       "id": "j03.config.loader",
@@ -2312,7 +2312,7 @@
       "match": "exact",
       "status": "remaining-owner",
       "note": "旧入口只保留 MCM/资格/ONNX与辅助网络适配、日志、缓存发布；新增逐调用内部确定性 provider/资格接缝，纯算法归唯一 Retrieval 管线",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     },
     {
       "id": "j03.retrieval.final",
@@ -2433,7 +2433,117 @@
       "match": "exact",
       "status": "internal-test-seam",
       "note": "逐调用窄接缝，仅内部测试传入确定性资格、embedding、rerank及辅助结果；正常游戏入口传 null，避免进程级可变 provider",
-      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
+    },
+    {
+      "id": "j04.rule.id.policy",
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptRuleIdPolicy.cs",
+      "start": 12,
+      "end": 12,
+      "symbol": "internal static class PromptRuleIdPolicy",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "规则 ID 集合/规范化/运行时门控/命中排序纯策略；MyBehavior 与 Courier 前处理消费",
+      "fileSha256": "61cdcdec4098f37277f5f0ccdfd7e3d25cb13f9833033af1191f46cbb8704fbe"
+    },
+    {
+      "id": "j04.sticky.builtin",
+      "path": "src/modules/AF.Module.Prompt/Composition/BuiltInRuleStickyCarry.cs",
+      "start": 12,
+      "end": 12,
+      "symbol": "internal sealed class BuiltInRuleStickyCarry",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "duel/reward/loan 跨回合 carry 状态唯一 owner；MyBehavior 持一实例，存档加载 Clear",
+      "fileSha256": "4cef6341628059b20b4550b5f2813d08a063eda1c7b3dd0fe0fe41ae04e01b10"
+    },
+    {
+      "id": "j04.topic.router",
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptBuiltInTopicRouter.cs",
+      "start": 24,
+      "end": 24,
+      "symbol": "internal static class PromptBuiltInTopicRouter",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "辅助路由权威 / 语义评估 / sticky 兜底的内置话题路由；语义评估经委托留旧 owner",
+      "fileSha256": "2707568c7b9332c7b89961e7c34325efc717b9ccdba1ccdcfabd1082c2b11c24"
+    },
+    {
+      "id": "j04.preprocess.ids",
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptPreprocessRuleIdAssembler.cs",
+      "start": 17,
+      "end": 17,
+      "symbol": "internal static class PromptPreprocessRuleIdAssembler",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "preprocess 规则 ID 收敛；ShoutBehavior.PersistentAdpDebtPostprocessRuleId 由此取值",
+      "fileSha256": "a59417e45ef85d3d78c2ef818e12e112ad958ed4e199d31dca9312a924429e07"
+    },
+    {
+      "id": "j04.extras.composer",
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs",
+      "start": 47,
+      "end": 47,
+      "symbol": "internal static class PromptExtrasComposer",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "Extras 段落顺序/固定模板/实体规则集/标记检测；段落文本由 host 按原调用域捕获",
+      "fileSha256": "df8f491e9f9ed96b20f6e6969cfc78b202a6e69b5f3babfbdbbd1202db958d4b"
+    },
+    {
+      "id": "j04.extras.sections",
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs",
+      "start": 12,
+      "end": 12,
+      "symbol": "internal sealed class PromptExtrasSections",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "detached 段落 DTO；不含游戏对象",
+      "fileSha256": "df8f491e9f9ed96b20f6e6969cfc78b202a6e69b5f3babfbdbbd1202db958d4b"
+    },
+    {
+      "id": "j04.target.binding",
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs",
+      "start": 10,
+      "end": 10,
+      "symbol": "internal readonly struct PromptRuntimeTargetBinding",
+      "match": "exact",
+      "status": "wired-owner",
+      "note": "六值检索目标身份；AIConfigHandler.Apply/ClearGuardrailRuntimeTarget 唯一发布口",
+      "fileSha256": "c168935cb1466cd90f26e8b40ae40b9d6fb98766eff1afa04f17571a624b208d"
+    },
+    {
+      "id": "j04.host.builder",
+      "path": "MyBehavior.cs",
+      "start": 30526,
+      "end": 30526,
+      "symbol": "private ShoutPromptContext BuildShoutPromptContextForExternalInternal(",
+      "match": "contains",
+      "status": "mixed-host",
+      "note": "共享主链 builder 仍持有 live 游戏读取、lore/实体检索调用与日志；已改为捕获段落→Compose；线程边界留后续切片",
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
+    },
+    {
+      "id": "j04.host.courier.preprocess",
+      "path": "MyBehavior.cs",
+      "start": 30399,
+      "end": 30399,
+      "symbol": "private List<string> RunCourierRulePreprocessInternal(",
+      "match": "contains",
+      "status": "mixed-host",
+      "note": "Courier 前处理入口；命中排序归 PromptRuleIdPolicy.OrderPreprocessHitIds",
+      "fileSha256": "0fcf561039eaf9ce519c33998e793a66c9b1c889a286ed63c122607227403a0b"
+    },
+    {
+      "id": "j04.host.target.apply",
+      "path": "AIConfigHandler.cs",
+      "start": 5666,
+      "end": 5666,
+      "symbol": "internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding)",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "六 setter 唯一发布口；旧 public setter 保留给现有调用者",
+      "fileSha256": "a50435baf749fd73a352c4ccc12e7ed0311c530a84fe1613ec9e72951ca230e3"
     }
   ]
 }

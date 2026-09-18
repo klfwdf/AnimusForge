@@ -1,3 +1,21 @@
+# 当前范围：J04 首批切片 J04_PARTIAL（2026-09-18）
+
+当前源码 `11f90fec`，[代码地图](af-framework-code-map.json) 231 锚点两模式通过。唯一状态与命令见[主台账 J04 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice1-20260918)。
+
+| 责任 / 一基坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Composition/PromptRuleIdPolicy.cs:12` | 规则 ID 集合/排除/规范化/门控/命中排序纯策略；MyBehavior 与 Courier 前处理消费，旧 helper 删除 | 读游戏对象的 `AddPlayerCompanionOrFamilyRuleExclusionsForTarget` 等四个 Add* 适配仍在 MyBehavior |
+| `.../BuiltInRuleStickyCarry.cs:12` | duel/reward/loan 跨回合 carry 唯一 owner；存档加载 Clear | 与 J03 `PromptStickyRuleStore` 分别管理，未统一 |
+| `.../PromptBuiltInTopicRouter.cs:24` | 八话题路由 + sticky 兜底；语义评估经委托 | `AIConfigHandler.IsGuardrailSemanticHit` 真实 ONNX/关键词评估未迁 |
+| `.../PromptPreprocessRuleIdAssembler.cs:17` | preprocess 规则 ID 收敛 | — |
+| `.../PromptExtrasComposer.cs:12,47` | Extras 段序/模板/实体规则集/标记检测；host 捕获段落 | 段落文本仍在调用线程 live 读取（Reward/Duel/Army/Weekly/Policy/Lore/Entity） |
+| `.../PromptRuntimeTargetBinding.cs:10`；`AIConfigHandler.cs:5666` | 六值目标身份唯一派生/发布口；8 组 setter 块收敛 | `ShoutBehavior.cs` 四 setter 局部调用保留 |
+| `MyBehavior.cs:30526` `BuildShoutPromptContextForExternalInternal` | 现约 470 行：排除集合 → 目标发布 → 路由 → 段落捕获 → Compose → ID 收敛 | 线程边界（主线程捕获 → 后台组合 → 重验接受）未做；`BuildTriggeredRuleInstructions` 未段落化 |
+
+Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误（本机 SDK 8.0.422 / 1.4.6 引用，非制作组安装）；J03 六契约、三渠道全部 runner 复跑 PASS；实机、旧档、真实 provider `NOT-RUN`。
+
+## 以下为 J03 历史范围记录
+
 # 当前范围：J03_OFFLINE_VERIFIED（2026-09-18）
 
 当前源码 `e6c82d8d`，导航[代码地图](af-framework-code-map.json)为 221 锚点，recorded/working-tree 均通过（记录源码 `7d8b8d0b`；之后 `d1d3407a` 只补 Scene 测试/地图）。地图是源码坐标证据，不是实机验收；唯一状态与命令见[主台账 J03](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。
