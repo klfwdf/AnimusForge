@@ -167,6 +167,23 @@ internal static class Program
             Check(store.Read().Value == "later" && PromptRetrievalContextOwner.Hero.Value == "operation-child", "operation pins configuration and target together");
         }
         Check(store.Read().Value == "new-live" && PromptRetrievalContextOwner.Hero.Value == "operation-parent", "operation restores both ambient owners");
+        Check(PromptRuleRanking.RerankBudget(1) == 8 && PromptRuleRanking.RerankBudget(20) == 36, "rerank total budget clamps to 8..36");
+        Check(PromptRuleRanking.PerIntentRerank(36, 4) == 9 && PromptRuleRanking.PerIntentRerank(8, 4) == 4, "per-intent rerank clamps to 4..12");
+        Check(PromptRuleRanking.PerIntentRecall(4) == 10 && PromptRuleRanking.PerIntentRecall(12) == 30, "per-intent recall clamps to 10..30");
+        var scores = new[]
+        {
+            new PromptRuleCandidate(0, "low", 0.10f, 0.10f),
+            new PromptRuleCandidate(1, "duel", 0.70f, 0.80f),
+            new PromptRuleCandidate(2, "DUEL", 0.60f, 0.75f),
+            new PromptRuleCandidate(3, "reward", 0.60f, 0.60f)
+        };
+        var ranked = PromptRuleRanking.Select(scores, 3);
+        Check(ranked.Indices.SequenceEqual(new[] { 1, 3, 0 }) && ranked.StrictCount == 2, "rule ranking dedups ID then fills below threshold");
+        Check(ranked.BestFinal == 0.80f && ranked.SecondRaw == 0.60f, "rule ranking reports actual top evidence");
+        Check(PromptRuleRanking.Select(new[] { new PromptRuleCandidate(0, "bad", 1f, float.NaN), scores[3] }, 1).Indices.Single() == 3,
+            "rule ranking excludes NaN and keeps source index");
+        Check(PromptRuleRanking.TryLexicalHit("", "请谈长剑", new[] { "短剑", " 长剑 " }, out var keyword) && keyword == "长剑",
+            "lexical rule matcher checks secondary input and preserves keyword order");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

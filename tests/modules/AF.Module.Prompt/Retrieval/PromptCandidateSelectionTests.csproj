@@ -15,5 +15,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptAuxiliaryMentionStore.cs" Link="PromptAuxiliaryMentionStore.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptSemanticVectorCache.cs" Link="PromptSemanticVectorCache.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalOperationScope.cs" Link="PromptRetrievalOperationScope.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleRanking.cs" Link="PromptRuleRanking.cs" />
   </ItemGroup>
 </Project>
