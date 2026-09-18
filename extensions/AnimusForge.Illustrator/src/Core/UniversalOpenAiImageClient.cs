@@ -47,7 +47,7 @@ namespace AnimusForge.Illustrator.Core
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> single = null;
             if (!string.IsNullOrWhiteSpace(inputBase64Image))
             {
-                single = new[] { new IllustrationReferenceImage(inputBase64Image, "游戏内真实画面参考") };
+                single = new[] { new IllustrationReferenceImage(inputBase64Image, "游戏内真实画面参考", IllustrationReferenceKind.Scene) };
             }
             return GenerateImageAsync(prompt, single, options, cancellationToken);
         }
@@ -514,8 +514,7 @@ namespace AnimusForge.Illustrator.Core
                     foreach (var r in referenceImages)
                     {
                         if (r == null || string.IsNullOrWhiteSpace(r.Base64Image)) continue;
-                        string lbl = r.Label ?? string.Empty;
-                        if (!lbl.Contains("纹章") && !lbl.Contains("实景") && !lbl.Contains("现场"))
+                        if (r.Kind == IllustrationReferenceKind.Character)
                             heroCount++;
                     }
 
@@ -525,9 +524,9 @@ namespace AnimusForge.Illustrator.Core
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
                         string label = reference.Label ?? string.Empty;
-                        bool isEmblem = label.Contains("纹章") || label.Contains("徽记");
-                        bool isScene = label.Contains("现场") || label.Contains("实景");
-                        bool isHero = !isEmblem && !isScene;
+                        bool isEmblem = reference.Kind == IllustrationReferenceKind.Emblem;
+                        bool isScene = reference.Kind == IllustrationReferenceKind.Scene;
+                        bool isHero = reference.Kind == IllustrationReferenceKind.Character;
 
                         string data = reference.Base64Image;
                         string mimeType = data.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
@@ -555,10 +554,10 @@ namespace AnimusForge.Illustrator.Core
                         {
                             heroIndex++;
                             string roleHint = (heroCount > 1)
-                                ? (heroIndex == 1 ? "【第一张人物身份参考图 · 画面左侧主角】" : "【第二张人物身份参考图 · 画面右侧会晤对象】")
+                                ? $"【人物身份参考图 {heroIndex}】"
                                 : "【核心人物官方真实视觉基准图】";
 
-                            string fidelityMandate = $"{roleHint}：画面中该人物的面貌轮廓五官、真实发色与胡须样式颜色（必须绝对忠实还原参考图中的真实色彩，若图中为浅金发须绝不可随意画黑，若为深黑发须亦不可擅自漂浅）、以及身着真实战甲（战盔、肩甲、身甲）必须100%严格以此参考图为准！严禁把壮年画成白发老翁，严禁将全包覆头套面具偷换成人类脸庞或阿拉伯头巾！请直接将该人物绘制在整幅历史画卷的主场景中，绝对严禁在画布中绘制任何画中画小框、对比缩略图或角色设定立绘板！";
+                            string fidelityMandate = $"{roleHint}：仅依据上图锁定该人物的五官、发型发色、肤色、体型与实际穿戴形制；姿态、机位、背景和光照按导演描述重新绘制，与新场景自然融合。参考图不是画中画或额外人物。";
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
@@ -602,10 +601,10 @@ namespace AnimusForge.Illustrator.Core
                         ["type"] = "text",
                         ["text"] = "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
                                    styleClause +
-                                   "2. 人物发色、胡须、五官相貌与盔甲形制细节100%严格与参考图完全一致，锁定真实装备形制与容貌特征，不擅自改动装备部件。\n" +
-                                   "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一沉浸式宏大画卷，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
-                                   "4. 生动自然体态：画面人物展现生动舒展的身姿或自然的视线交汇，呈现历史画卷张力。\n" +
-                                   "5. 背景空间与场景氛围严格遵循前文提示词中的生动环境描写创作，自然展现四层纵深。"
+                                   "2. 人物容貌与实际衣着装备以对应身份参考图为准，人物数量、动作、站位和环境按导演描述呈现。\n" +
+                                   "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
+                                   "4. 姿态与互动遵循导演描述，与支撑物和空间关系保持物理一致。\n" +
+                                   "5. 背景空间、光线与景深遵循导演描述，不额外指定场所、陈设或构图层数。"
                     });
 
                     messageContent = content;

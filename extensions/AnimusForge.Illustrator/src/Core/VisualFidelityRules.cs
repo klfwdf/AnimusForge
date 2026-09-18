@@ -2,11 +2,13 @@ namespace AnimusForge.Illustrator.Core
 {
     internal static class VisualFidelityRules
     {
-        internal static string GetEssentialContract(bool isSinglePortrait)
+        internal static string GetEssentialContract(bool isSinglePortrait, bool isConversation = false)
         {
             string poseRule = isSinglePortrait
                 ? "2. 【单人肖像纯粹性】：纯粹人物独立肖像，画面中不出现马匹动物；人物体态动作与神情自然生动，不拘泥于直立站桩姿势。\n"
-                : "2. 【双人动态交互】：双方处于面对面真实交互情境（侧向对角朝向彼此、视线互相对视、带有交谈或按剑戒备姿态），展现富有张力的临场感。\n";
+                : isConversation
+                    ? "2. 【双人动态交互】：双方身份保持对应；站位、高低关系与动作按导演依据现场事实生成的描述呈现，不另外固定机位或姿势。\n"
+                    : "2. 【事件人物关系】：人物数量、动作与相互关系依据已确认事件事实呈现，取景服务于事件本身。\n";
 
             return "【画面呈现规范】\n" +
                 "1. 【单幅完整画卷】：整幅画面为单一沉浸式艺术画卷，无画中画，无参考缩略图小方框，无角色立绘拆解板（Single unified canvas, no inset boxes, no concept sheet collage）；人物与场景的光源方向、色温、笔触质感与透视必须统一融合，人物受现场环境光影响并呈现落地投影与环境反光，严禁贴纸抠像感或人物悬浮感。\n" +

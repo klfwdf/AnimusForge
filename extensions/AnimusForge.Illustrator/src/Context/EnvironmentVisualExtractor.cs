@@ -201,6 +201,60 @@ namespace AnimusForge.Illustrator.Context
             }
         }
 
+        // Pure routing over the captured location; no additional game queries.
+        internal static void ResolveBesiegedLocation(EnvironmentVisualProfile profile, bool outdoorMission, string locId, bool isIndoor)
+        {
+            locId = (locId ?? string.Empty).ToLowerInvariant();
+            if (outdoorMission)
+            {
+                profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
+                profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
+                profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
+                profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困；双方骑乘、随行人员与军营可见性以现场记录为准。";
+                return;
+            }
+
+            if (locId.Contains("lordshall") || locId.Contains("keep"))
+            {
+                profile.SpecificLocation = "围城封锁下的要塞内堡议事正厅 (Besieged Keep Council Hall)";
+                profile.IndoorOutdoorDetails = "大军严密围困下的要塞内堡正厅：厚重石墙严密封闭，暖殿石砌壁炉内柴火沉稳燃烧，长案上摊开防御部署图卷，室外隐隐透入城防喧嚣与战鼓声，气氛凝重紧绷。";
+                profile.LightingAndAtmosphere = "室内封闭的暖色壁炉柴火与青铜烛台微光，高处狭小石窗透入一线冷冽天光，浓郁的伦勃朗式明暗光影 (Tense Chiaroscuro & Indoor Firelight)";
+                profile.ConflictStatus = "【大军围城 · 内堡正厅】城外处于围城状态，当前位于内堡正厅；具体活动未确认。";
+                return;
+            }
+
+            if (locId.Contains("prison"))
+            {
+                profile.SpecificLocation = "围城中的要塞地下石牢 (Besieged Fortress Dungeon)";
+                profile.IndoorOutdoorDetails = "大军围城下阴冷潮湿的地下石牢：沉重精铁栅栏，渗水石壁与单支插在铁箍里的摇曳火把，幽闭压抑。";
+                profile.LightingAndAtmosphere = "地下昏暗阴冷的单支火把跳跃照明，深邃厚重的阴影包裹 (Dim Dungeon Torchlight & Deep Shadows)";
+                profile.ConflictStatus = "【大军围城 · 牢狱关押】城外战云密布，地牢中昏暗压抑。";
+                return;
+            }
+
+            if (locId.Contains("tavern"))
+            {
+                profile.SpecificLocation = "围城战火下的内城庇护所与酒馆 (Besieged Town Refuge)";
+                profile.IndoorOutdoorDetails = "大军围城下门窗加固紧闭的城镇酒馆：粗木长桌、跳动的壁炉火光，平民与守兵聚集于此暂避战火。";
+                profile.LightingAndAtmosphere = "室内紧闭门窗后的昏黄壁炉火光与微弱烛光 (Dim Refuge Firelight)";
+                profile.ConflictStatus = "【大军围城 · 避难处境】城外大军围困，当前位于城内酒馆，是否用作避难所未确认。";
+                return;
+            }
+
+            if (isIndoor)
+            {
+                profile.SpecificLocation = "围城中的室内空间（具体用途未确认）";
+                profile.ConflictStatus = "所在定居点正被围困；当前室内活动未确认";
+                return;
+            }
+
+            profile.SpecificLocation = "被围攻的要塞城门、护城河壕沟与险峻城堞 (Besieged Fortress Walls, Castle Gate & Ramparts)";
+            profile.IndoorOutdoorDetails = "战云密布的中世纪城堡要塞防御前沿：高耸险峻的石砌城堡城堞与箭垛垛口、紧闭包铁的巨型要塞城门与吊桥，城门外是泥泞深邃的护城河壕沟与拒马鹿砦。空气中弥漫着刺鼻的硝烟与大军围城的肃杀死寂。城头守军据险扼守，城下围城大军严阵以待。";
+            profile.LightingAndAtmosphere = "暗沉肃杀的天光，城堞垛口上烈烈燃烧的火把投下跳跃的橘红光斑，城外远景处漫山遍野隐现着围城大军的篝火宿营与攻城器械巨影 (Dramatic War Torches, Siege Campfires & Chiaroscuro)";
+            profile.ConflictStatus = "【大军围城 · 剑拔弩张】城池正被敌国大军水泄不通地严密围困，城头守将与城下敌将隔着城堞与护城壕进行紧张压迫的战前谈判与意志对决！";
+            return;
+        }
+
         private static void ResolveSpecificLocation(EnvironmentVisualProfile profile, Settlement settlement)
         {
             // 优先检测围城/攻城对峙前沿 (杜绝围城谈判定性为市集街道)
@@ -284,46 +338,7 @@ namespace AnimusForge.Illustrator.Context
             // 1. 围城情形判定：区分旷野阵前谈判、室内据点议事与城防前沿
             if (isUnderSiege)
             {
-                if (outdoorMission)
-                {
-                    profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
-                    profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
-                    profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
-                    profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困，双方主将使节在两军阵前的旷野上驻马交涉谈判，身后各自肃立着严阵以待的卫队与绵延军营！";
-                    return;
-                }
-
-                if (isIndoor || locId.Contains("lordshall") || locId.Contains("keep"))
-                {
-                    profile.SpecificLocation = "围城封锁下的要塞内堡议事正厅 (Besieged Keep Council Hall)";
-                    profile.IndoorOutdoorDetails = "大军严密围困下的要塞内堡正厅：厚重石墙严密封闭，暖殿石砌壁炉内柴火沉稳燃烧，长案上摊开防御部署图卷，室外隐隐透入城防喧嚣与战鼓声，气氛凝重紧绷。";
-                    profile.LightingAndAtmosphere = "室内封闭的暖色壁炉柴火与青铜烛台微光，高处狭小石窗透入一线冷冽天光，浓郁的伦勃朗式明暗光影 (Tense Chiaroscuro & Indoor Firelight)";
-                    profile.ConflictStatus = "【大军围城 · 内堡议事】城外大军围攻，主将在坚固内堡正厅中紧张谋划战局！";
-                    return;
-                }
-
-                if (isIndoor || locId.Contains("prison"))
-                {
-                    profile.SpecificLocation = "围城中的要塞地下石牢 (Besieged Fortress Dungeon)";
-                    profile.IndoorOutdoorDetails = "大军围城下阴冷潮湿的地下石牢：沉重精铁栅栏，渗水石壁与单支插在铁箍里的摇曳火把，幽闭压抑。";
-                    profile.LightingAndAtmosphere = "地下昏暗阴冷的单支火把跳跃照明，深邃厚重的阴影包裹 (Dim Dungeon Torchlight & Deep Shadows)";
-                    profile.ConflictStatus = "【大军围城 · 牢狱关押】城外战云密布，地牢中昏暗压抑。";
-                    return;
-                }
-
-                if (isIndoor || locId.Contains("tavern"))
-                {
-                    profile.SpecificLocation = "围城战火下的内城庇护所与酒馆 (Besieged Town Refuge)";
-                    profile.IndoorOutdoorDetails = "大军围城下门窗加固紧闭的城镇酒馆：粗木长桌、跳动的壁炉火光，平民与守兵聚集于此暂避战火。";
-                    profile.LightingAndAtmosphere = "室内紧闭门窗后的昏黄壁炉火光与微弱烛光 (Dim Refuge Firelight)";
-                    profile.ConflictStatus = "【大军围城 · 避难处境】城外大军围困，城内酒馆作为战时避难所。";
-                    return;
-                }
-
-                profile.SpecificLocation = "被围攻的要塞城门、护城河壕沟与险峻城堞 (Besieged Fortress Walls, Castle Gate & Ramparts)";
-                profile.IndoorOutdoorDetails = "战云密布的中世纪城堡要塞防御前沿：高耸险峻的石砌城堡城堞与箭垛垛口、紧闭包铁的巨型要塞城门与吊桥，城门外是泥泞深邃的护城河壕沟与拒马鹿砦。空气中弥漫着刺鼻的硝烟与大军围城的肃杀死寂。城头守军据险扼守，城下围城大军严阵以待。";
-                profile.LightingAndAtmosphere = "暗沉肃杀的天光，城堞垛口上烈烈燃烧的火把投下跳跃的橘红光斑，城外远景处漫山遍野隐现着围城大军的篝火宿营与攻城器械巨影 (Dramatic War Torches, Siege Campfires & Chiaroscuro)";
-                profile.ConflictStatus = "【大军围城 · 剑拔弩张】城池正被敌国大军水泄不通地严密围困，城头守将与城下敌将隔着城堞与护城壕进行紧张压迫的战前谈判与意志对决！";
+                ResolveBesiegedLocation(profile, outdoorMission, locId, isIndoor);
                 return;
             }
 

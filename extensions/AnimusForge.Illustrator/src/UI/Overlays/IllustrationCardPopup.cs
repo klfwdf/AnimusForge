@@ -238,7 +238,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其面部五官轮廓、发型肤色与装备形制；本图的光照、色调、背景与姿势构图一律舍弃，画面姿态由导演按情境全新演绎；人物必须按新场景光源重新布光渲染，与环境光影、色温、笔触完全融合并呈现落地投影与环境反光，严禁保留原图光照造成贴纸抠像感；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘，不可有任何游戏截图或3D渲染痕迹");
+                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其面部五官轮廓、发型肤色与装备形制；本图的光照、色调、背景与姿势构图一律舍弃，画面姿态由导演按情境全新演绎；人物必须按新场景光源重新布光渲染，与环境光影、色温、笔触完全融合并呈现落地投影与环境反光，严禁保留原图光照造成贴纸抠像感；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘，不可有任何游戏截图或3D渲染痕迹", IllustrationReferenceKind.Character);
                     refs.Add(r);
                     genRefsList.Add(r);
                 }
@@ -248,7 +248,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        var emblemRef = new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：当画面因已确认事实出现盾牌或纹章罩袍时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲表面硬印纹章");
+                        var emblemRef = new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：当画面因已确认事实出现盾牌或纹章罩袍时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲表面硬印纹章", IllustrationReferenceKind.Emblem);
                         refs.Add(emblemRef);
                         // 仅当人物实际穿戴明确纹章罩袍布料时，才作为生图垫图；普通甲胄不送垫图，防止模型强行在胸甲金属表面硬印大纹章
                         bool hasHeraldicCloth = profile.HasHeraldicArmor || profile.BannerEquipmentDetails.Count > 0;
@@ -384,7 +384,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (!string.IsNullOrWhiteSpace(preCapturedBase64))
                 {
                     directorRefs.Add(new IllustrationReferenceImage(preCapturedBase64,
-                        "会面现场的3D实景画面：仅用于理解双方站位、坐骑、周围真实环境布局与光影方向，画面中禁止出现任何界面元素、对话框、字幕、名牌与文字"));
+                        "会面现场的3D实景画面：仅用于理解双方站位、坐骑、周围真实环境布局与光影方向，画面中禁止出现任何界面元素、对话框、字幕、名牌与文字", IllustrationReferenceKind.Scene));
                 }
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
@@ -398,7 +398,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"【角色参考图1 - 画面左侧主角位: {playerName}】这是玩家主角的独家身份与外观参考：仅用于锁定其面部五官轮廓与全身装备形制（包括头盔/战盔护具）；严格绑定在最终画面左侧主角位；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘该人物；严禁篡改其头盔战盔款式，严禁将玩家降格为随从！");
+                        var r = new IllustrationReferenceImage(b64, $"【角色参考图1 - 玩家: {playerName}】这是玩家主角的独家身份与外观参考：仅用于锁定其面部五官轮廓与全身装备形制（包括头盔/战盔护具）；人物位置与姿态由导演依据现场空间关系推导；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘该人物；严禁篡改其头盔战盔款式，严禁将玩家降格为随从！", IllustrationReferenceKind.Character);
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -409,7 +409,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"【角色参考图2 - 画面右侧对手位: {partnerName}】这是对话对方的独家身份与外观参考：仅用于锁定其面部五官轮廓与全部装备形制；严格绑定在最终画面右侧对手位；严禁直接复刻或贴图游戏3D多边形网格；必须从零重新进行纯正艺术手绘该人物，严禁将此人与左侧主角混淆，严禁擅自将青年或壮年人物画为白发老翁！");
+                        var r = new IllustrationReferenceImage(b64, $"【角色参考图2 - 对话对象: {partnerName}】这是对话对方的独家身份与外观参考：仅用于锁定其面部五官轮廓与全部装备形制；人物位置与姿态由导演依据现场空间关系推导；严禁直接复刻或贴图游戏3D多边形网格；必须从零重新进行纯正艺术手绘该人物，严禁将此人与玩家混淆，严禁擅自将青年或壮年人物画为白发老翁！", IllustrationReferenceKind.Character);
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -420,7 +420,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体（如盾牌或背景军旗）真实出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲金属表面硬印纹章！");
+                        var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体（如盾牌或背景军旗）真实出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲金属表面硬印纹章！", IllustrationReferenceKind.Emblem);
                         directorRefs.Add(r);
                         // 仅当该方人物确实身穿纹章罩袍或持有明确纹章盾牌时，才加入生图垫图，防止生图模型在普通金属胸甲上硬印纹章！
                         bool isPlayerSide = spec.Side == "玩家";
