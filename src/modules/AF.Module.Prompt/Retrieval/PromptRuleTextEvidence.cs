@@ -7,7 +7,7 @@ namespace AnimusForge;
 
 internal static class PromptRuleTextEvidence
 {
-    internal static List<string> SemanticSeeds(string ruleTag, string ruleInstruction, List<string> triggerKeywords)
+    internal static List<string> SemanticSeeds(string ruleTag, string ruleInstruction, IReadOnlyList<string> triggerKeywords)
     {
         var seeds = new List<string>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -30,7 +30,7 @@ internal static class PromptRuleTextEvidence
         }
     }
 
-    internal static string RerankText(string id, string group, string instruction, List<string> triggerKeywords)
+    internal static string RerankText(string id, string group, string instruction, IReadOnlyList<string> triggerKeywords)
     {
         try
         {
