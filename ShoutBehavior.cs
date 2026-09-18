@@ -2165,7 +2165,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private const string SiegeSurrenderActionTag = NpcSurrenderActionTag;
 
-	public const string PersistentAdpDebtPostprocessRuleId = "persistent_adp_debt";
+	public const string PersistentAdpDebtPostprocessRuleId = PromptPreprocessRuleIdAssembler.PersistentAdpDebtRuleId;
 
 	private const string CustomPolicyAgendaPostprocessRuleId = "kingdom_agenda";
 

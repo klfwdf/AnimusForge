@@ -23,7 +23,30 @@ internal static class Program
         RuleIdPolicy();
         StickyCarry();
         TopicRouter();
+        PreprocessIdAssembler();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void PreprocessIdAssembler()
+    {
+        var excluded = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "loan", "marriage" });
+        var flags = new PromptRoutedTopicFlags { Duel = true, Reward = true, Loan = true, PersistentAdpDebt = true, Surroundings = true, KingdomService = true, Marriage = true, PartyTransfer = true, WorldMapPartyCommand = true };
+        var ids = PromptPreprocessRuleIdAssembler.Assemble(new[] { " Kingdom_Vassalage ", "loan", "", null, "custom_topic" }, flags, excluded, "【附加规则:noble_gathering】...");
+        Check(ids.Contains("Kingdom_Vassalage") && ids.Contains("custom_topic"), "auxiliary ids kept trimmed");
+        Check(!ids.Contains("loan") && !ids.Contains("persistent_adp_debt") && !ids.Contains("marriage"), "excluded topics gate both loan and persistent debt");
+        foreach (string id in new[] { "duel", "reward", "surroundings", "kingdom_service", "party_transfer", "worldmap_party_command", "noble_gathering" })
+            Check(ids.Contains(id), "routed topic present: " + id);
+        Check(ids.Count == 9, "no duplicates and only routed ids: " + string.Join(",", ids));
+        var none = PromptPreprocessRuleIdAssembler.Assemble(null, default(PromptRoutedTopicFlags), null, "");
+        Check(none.Count == 0, "nothing routed yields empty list");
+        // Legacy quirk preserved: a null instruction block evaluates (null?.IndexOf).GetValueOrDefault() >= 0 as true.
+        // Production always passes "" or a real block, never null.
+        Check(PromptPreprocessRuleIdAssembler.Assemble(null, default(PromptRoutedTopicFlags), null, null).SequenceEqual(new[] { "noble_gathering" }), "null block keeps legacy null-coalescing behavior");
+        var debt = PromptPreprocessRuleIdAssembler.Assemble(null, new PromptRoutedTopicFlags { PersistentAdpDebt = true }, new HashSet<string>(StringComparer.OrdinalIgnoreCase), "no block");
+        Check(debt.SequenceEqual(new[] { "persistent_adp_debt" }), "persistent debt id emitted without loan hit");
+        var dupe = PromptPreprocessRuleIdAssembler.Assemble(new[] { "DUEL" }, new PromptRoutedTopicFlags { Duel = true }, null, "");
+        Check(dupe.Count == 1, "auxiliary and routed duel collapse case-insensitively");
+        Check(PromptPreprocessRuleIdAssembler.PersistentAdpDebtRuleId == "persistent_adp_debt", "persistent debt id constant is the legacy ShoutBehavior value");
     }
 
     private static void RuleIdPolicy()
