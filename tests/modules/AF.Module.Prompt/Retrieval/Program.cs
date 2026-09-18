@@ -87,6 +87,40 @@ internal static class Program
             Task.Run(async () => { await Task.Yield(); Check(ReferenceEquals(pinned, store.Read()), "capture crosses a real async yield"); }).GetAwaiter().GetResult();
         }
         Check(store.Read().Value == "later", "scope restores live configuration");
+        PromptRetrievalContextOwner.Hero.Value = "parent";
+        PromptRetrievalContextOwner.Semantic.Value = "parent context";
+        using (PromptRetrievalContextOwner.BeginScope())
+        {
+            PromptRetrievalContextOwner.Hero.Value = "child";
+            PromptRetrievalContextOwner.Semantic.Value = "child context";
+            Check(PromptRetrievalContextOwner.Hero.Value == "child", "child target set");
+            using (PromptRetrievalContextOwner.BeginScope())
+            {
+                PromptRetrievalContextOwner.Hero.Value = "grandchild";
+                Check(PromptRetrievalContextOwner.Hero.Value == "grandchild", "nested target set");
+            }
+            Check(PromptRetrievalContextOwner.Hero.Value == "child", "nested target restored");
+            Task.Run(async () => { await Task.Yield(); Check(PromptRetrievalContextOwner.Semantic.Value == "child context", "context crosses async yield"); }).GetAwaiter().GetResult();
+        }
+        Check(PromptRetrievalContextOwner.Hero.Value == "parent" && PromptRetrievalContextOwner.Semantic.Value == "parent context", "outer scope restored");
+        try
+        {
+            using (PromptRetrievalContextOwner.BeginScope())
+            {
+                PromptRetrievalContextOwner.Hero.Value = "exception";
+                throw new InvalidOperationException();
+            }
+        }
+        catch (InvalidOperationException) { }
+        Check(PromptRetrievalContextOwner.Hero.Value == "parent", "exception restores parent");
+        var latest = PromptRetrievalContextOwner.CreateSlot<object>(context => context.LatestEntities, (context, value) => context.LatestEntities = value);
+        latest.Value = "parent mention";
+        using (PromptRetrievalContextOwner.BeginScope((parent, child) => parent + "," + child))
+            latest.Value = "child mention";
+        Check((string)latest.Value == "parent mention,child mention", "mentions explicitly continue into parent");
+        using (PromptRetrievalContextOwner.BeginScope((_, _) => throw new InvalidOperationException()))
+            latest.Value = "failing continuation";
+        Check((string)latest.Value == "parent mention,child mention", "merge failure still restores parent");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

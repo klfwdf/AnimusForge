@@ -28777,6 +28777,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(text3);
@@ -30662,6 +30663,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return result;
 		}
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
@@ -30833,6 +30835,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
 		AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		string runtimeTargetHeroId = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
