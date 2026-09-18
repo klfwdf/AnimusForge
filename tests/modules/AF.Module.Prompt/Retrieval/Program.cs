@@ -134,6 +134,21 @@ internal static class Program
         using (PromptRetrievalContextOwner.BeginScope((_, _) => throw new InvalidOperationException()))
             latest.Value = "failing continuation";
         Check((string)latest.Value == "parent mention,child mention", "merge failure still restores parent");
+        async Task VerifyYieldedScopeAsync()
+        {
+            using (PromptRetrievalContextOwner.BeginScope((parent, child) => parent + "," + child))
+            {
+                PromptRetrievalContextOwner.Hero.Value = "yielded child";
+                await Task.Yield();
+                Check(PromptRetrievalContextOwner.Hero.Value == "yielded child", "scope target survives real async yield");
+                latest.Value = "yielded mention";
+            }
+            Check(PromptRetrievalContextOwner.Hero.Value == "parent", "yielded scope restores parent target");
+            Check((string)latest.Value == "parent mention,child mention,yielded mention", "yielded scope delivers mentions after await");
+        }
+        VerifyYieldedScopeAsync().GetAwaiter().GetResult();
+        Check(PromptRetrievalContextOwner.Hero.Value == "parent" && (string)latest.Value == "parent mention,child mention",
+            "async child does not mutate caller execution context");
         var mutableSeeds = new[] { "duel", "reward" };
         var warmup = new PromptSemanticWarmupSeedBatch(5, mutableSeeds);
         mutableSeeds[0] = "changed";
