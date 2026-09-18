@@ -480,7 +480,7 @@ public static class AIConfigHandler
 		try
 		{
 			GuardrailRulePromptConfig rulePromptByTag = GetRulePromptByTag(ruleTag);
-			return rulePromptByTag?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+			return CopyPostprocessRules(rulePromptByTag?.PostprocessRules);
 		}
 		catch
 		{
@@ -4887,14 +4887,6 @@ public static class AIConfigHandler
 		}
 
 	}
-
-	private static int GetGuardrailRerankBudget(int returnCap) => PromptRuleRanking.RerankBudget(returnCap);
-
-	private static int GetGuardrailPerIntentRerank(int rerankBudget, int intentCount) =>
-		PromptRuleRanking.PerIntentRerank(rerankBudget, intentCount);
-
-	private static int GetGuardrailPerIntentRecall(int rerankPerIntent) =>
-		PromptRuleRanking.PerIntentRecall(rerankPerIntent);
 
 	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null)
 	{
