@@ -29,9 +29,11 @@ namespace AnimusForge.Illustrator.Core
         public bool AutoCleanTempFiles { get; }
         public string NegativePrompt { get; }
         public int Randomness { get; }
+        public bool PreferChatImageProtocol { get; }
         public string DirectorApiBaseUrl { get; }
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
+        public int DirectorMaxTokens { get; }
 
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
         {
@@ -52,9 +54,11 @@ namespace AnimusForge.Illustrator.Core
             AutoCleanTempFiles = settings.AutoCleanTempFiles;
             NegativePrompt = settings.NegativePrompt;
             Randomness = Math.Max(0, Math.Min(100, settings.Randomness));
+            PreferChatImageProtocol = settings.PreferChatImageProtocol;
             DirectorApiBaseUrl = directorUrl;
             DirectorApiKey = directorKey;
             DirectorModelName = directorModel;
+            DirectorMaxTokens = Math.Max(600, Math.Min(2000, settings.DirectorMaxTokens));
         }
     }
 

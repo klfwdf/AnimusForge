@@ -139,9 +139,10 @@ namespace AnimusForge.Illustrator.Context
             // 提取关键人物视觉（严格反映真实穿着与无胡须特征）
             if (snapshot.ProtagonistHero != null)
             {
-                context.ProtagonistProfile = HeroVisualExtractor.Extract(snapshot.ProtagonistHero, useCivilian: false);
+                var app = CharacterAppearanceSnapshot.FromHero(snapshot.ProtagonistHero, snapshot.ProtagonistHero.BattleEquipment);
+                context.ProtagonistProfile = HeroVisualExtractor.Extract(snapshot.ProtagonistHero, useCivilian: false, appearance: app);
                 context.ProtagonistProfile.CurrentStateDetail = string.Empty;
-                context.ProtagonistProfile.Appearance = CharacterAppearanceSnapshot.FromHero(snapshot.ProtagonistHero, snapshot.ProtagonistHero.BattleEquipment);
+                context.ProtagonistProfile.Appearance = app;
             }
 
             // 环境只承载已确认事实：定居点（若文本真实提及）与周报发布纪元日期。
@@ -250,77 +251,6 @@ namespace AnimusForge.Illustrator.Context
             context.EnvironmentProfile.SpecificLocation = string.Empty;
         }
 
-        /// <summary>
-        /// 预设主题未命中时的场景名词兜底：扫描要闻中的明确场所词锚定现场。
-        /// 词条按特异性排序，命中第一条即返回。
-        /// </summary>
-        private static bool TryResolveSceneNoun(string headline, Settlement settlement, out string location, out string detail)
-        {
-            location = string.Empty;
-            detail = string.Empty;
-            if (string.IsNullOrWhiteSpace(headline)) return false;
-            string lower = headline.ToLowerInvariant();
-            string locName = settlement != null && settlement.Name != null ? settlement.Name.ToString() : string.Empty;
-            string prefix = string.IsNullOrWhiteSpace(locName) ? string.Empty : locName;
-
-            // (关键词, 场所, 氛围参考) —— 命中第一条。场所词一律用复合词，
-            // 不用裸单字（"海/山/河"会误中人名地名如"海因茨""山德"）
-            var table = new[]
-            {
-                new[] { "酒馆", "旅店", "tavern", "inn" },
-                new[] { "地牢", "监狱", "牢", "dungeon", "gaol" },
-                new[] { "竞技场", "决斗", "arena", "duel" },
-                new[] { "港口", "码头", "港湾", "port", "harbor" },
-                new[] { "海上", "海面", "海边", "战船", "舰船", "舰队", "sea", "ship" },
-                new[] { "市场", "市集", "集市", "商队", "商路", "驿站", "market", "caravan" },
-                new[] { "密林", "森林", "树林", "狩猎", "forest", "hunt" },
-                new[] { "渡口", "河上", "河边", "河口", "桥上", "river", "ford", "bridge" },
-                new[] { "山地", "山区", "山脚", "峡谷", "隘口", "mountain", "pass" },
-                new[] { "营地", "军营", "行营", "大帐", "camp", "tent" },
-                new[] { "王座", "宫廷", "王庭", "throne", "court" },
-                new[] { "教堂", "圣堂", "修道院", "神殿", "church", "temple" },
-                new[] { "农田", "丰收", "疫病", "瘟疫", "harvest", "plague" },
-                new[] { "长城", "城墙", "wall" },
-            };
-            var sceneText = new[]
-            {
-                "酒馆/旅店雅座", "地牢囚室", "竞技场/决斗场", "港口码头", "海船甲板",
-                "市集商路", "林间猎场", "河岸渡口", "山地隘口", "行营大帐",
-                "王座宫廷", "圣堂神殿", "村庄田野", "城墙防线",
-            };
-            var sceneDetail = new[]
-            {
-                "可参考元素：昏暗烛光、橡木长桌与酒盏、穿梭的侍者与低声密谈的酒客",
-                "可参考元素：石砌牢墙、铁栅锁链、火把微光与狱卒",
-                "可参考元素：沙场围栏、欢呼看台、对峙中的斗士与裁判",
-                "可参考元素：停靠的帆船、缆绳跳板、搬运货箱的脚夫与海风",
-                "可参考元素：甲板桅杆、鼓风的帆、起伏的浪与远处海岸线",
-                "可参考元素：货摊帆布、驮货骡马、讨价还价的商贩与尘土飞扬的商路",
-                "可参考元素：密林光影、猎手与猎犬、林间小径与倒伏的猎物",
-                "可参考元素：渡口浅滩、木桥、涉水的人马与河面波光",
-                "可参考元素：崎岖山道、隘口岩壁、盘旋的鹰与远处雪峰",
-                "可参考元素：连绵帐篷、篝火炊烟、巡逻卫兵与堆放的辎重",
-                "可参考元素：高台王座、垂坠帷幔、廷臣仪仗与火炬烛台",
-                "可参考元素：高耸穹顶、彩绘窗光、烛火祭坛与诵经修士",
-                "可参考元素：麦浪田垄、农舍炊烟、劳作的农夫或疫病笼罩的空巷",
-                "可参考元素：高耸城垣、垛口哨兵、城门吊桥与城下关厢",
-            };
-
-            for (int i = 0; i < table.Length; i++)
-            {
-                string[] keys = table[i];
-                bool hit = false;
-                for (int k = 0; k < keys.Length; k++)
-                {
-                    if (lower.Contains(keys[k])) { hit = true; break; }
-                }
-                if (!hit) continue;
-                location = string.IsNullOrWhiteSpace(prefix) ? sceneText[i] : prefix + "的" + sceneText[i];
-                detail = sceneDetail[i];
-                return true;
-            }
-            return false;
-        }
 
         /// <summary>
         /// 只在周报文本真实提及定居点名时解析事件地点；无命中返回 null（事件现场标未知）。
