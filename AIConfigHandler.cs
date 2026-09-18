@@ -2544,27 +2544,50 @@ public static class AIConfigHandler
 
 	internal static void TryStartBackgroundSemanticWarmup(string source)
 	{
+		try { TryStartBackgroundSemanticWarmup(source, CaptureGuardrailSemanticWarmupSeeds()); }
+		catch { }
+	}
+
+	internal static PromptSemanticWarmupSeedBatch CaptureGuardrailSemanticWarmupSeeds()
+	{
+		using (_promptConfiguration.BeginCapture())
+		{
+			long revision = _promptConfiguration.Read().Revision;
+			HashSet<string> seeds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			List<GuardrailRulePromptConfig> rules = GetAllEnabledRulePrompts();
+			for (int i = 0; i < rules.Count; i++)
+			{
+				GuardrailRulePromptConfig rule = rules[i];
+				if (rule == null || string.IsNullOrWhiteSpace(rule.Id)) continue;
+				List<string> ruleSeeds = BuildRuleSemanticSeeds(rule.Id, rule.Instruction ?? "", rule.TriggerKeywords);
+				for (int j = 0; j < ruleSeeds.Count; j++)
+				{
+					string seed = NormalizeSemanticText(ruleSeeds[j]);
+					if (!string.IsNullOrWhiteSpace(seed)) seeds.Add(seed);
+				}
+			}
+			return new PromptSemanticWarmupSeedBatch(revision, seeds);
+		}
+	}
+
+	internal static void TryStartBackgroundSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)
+	{
 		try
 		{
-			long num = _promptConfiguration.Capture().Revision;
-			if (num <= 0)
+			if (seeds == null) return;
+			long num = seeds.Revision;
+			lock (_promptConfigurationReloadLock)
 			{
-				num = 1L;
+				if (num != _promptConfiguration.Capture().Revision ||
+					(Volatile.Read(ref _guardrailWarmupState) == 2 && Volatile.Read(ref _guardrailWarmupVersion) == num) ||
+					Interlocked.CompareExchange(ref _guardrailWarmupState, 1, 0) != 0) return;
+				Interlocked.Exchange(ref _guardrailWarmupVersion, num);
 			}
-			if (Volatile.Read(ref _guardrailWarmupState) == 2 && Volatile.Read(ref _guardrailWarmupVersion) == num)
-			{
-				return;
-			}
-			if (Interlocked.CompareExchange(ref _guardrailWarmupState, 1, 0) != 0)
-			{
-				return;
-			}
-			Interlocked.Exchange(ref _guardrailWarmupVersion, num);
 			string warmupSource = string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
 			Logger.Log("GuardrailWarmup", $"start source={warmupSource} version={num}");
 			Task.Run(delegate
 			{
-				RunGuardrailSemanticWarmup(warmupSource, num);
+				RunGuardrailSemanticWarmup(warmupSource, seeds);
 			});
 		}
 		catch
@@ -2572,59 +2595,39 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static void RunGuardrailSemanticWarmup(string source, long version)
+	private static void RunGuardrailSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)
 	{
+		long version = seeds.Revision;
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		int num = 0;
 		int num2 = 0;
 		string text = "";
 		try
 		{
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
-			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
-			{
-				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[i];
-				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
-				{
-					continue;
-				}
-				List<string> list = BuildRuleSemanticSeeds(guardrailRulePromptConfig.Id, guardrailRulePromptConfig.Instruction ?? "", guardrailRulePromptConfig.TriggerKeywords);
-				for (int j = 0; j < list.Count; j++)
-				{
-					string item = NormalizeSemanticText(list[j]);
-					if (!string.IsNullOrWhiteSpace(item))
-					{
-						hashSet.Add(item);
-					}
-				}
-			}
-			num = hashSet.Count;
-			foreach (string item3 in hashSet)
-			{
-				if (TryGetPhraseEmbedding(item3, out var vec) && vec != null && vec.Length != 0)
-				{
-					num2++;
-				}
-			}
+			PromptSemanticWarmupResult result = PromptSemanticWarmupExecutor.Run(seeds,
+				() => _promptConfiguration.Capture().Revision,
+				(revision, seed) => TryGetPhraseEmbedding(seed, out var vec, revision) && vec != null && vec.Length != 0);
+			num = result.SeedCount;
+			num2 = result.Warmed;
 		}
 		catch (Exception ex)
 		{
 			text = ex.Message ?? "guardrail warmup exception";
 		}
 		stopwatch.Stop();
-		bool flag = _promptConfiguration.Capture().Revision != version;
-		if (flag)
+		bool flag;
+		lock (_promptConfigurationReloadLock)
 		{
+			flag = _promptConfiguration.Capture().Revision != version;
 			if (Volatile.Read(ref _guardrailWarmupVersion) == version)
 			{
-				Interlocked.Exchange(ref _guardrailWarmupState, 0);
-				Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+				if (flag)
+				{
+					Interlocked.Exchange(ref _guardrailWarmupState, 0);
+					Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+				}
+				else Interlocked.Exchange(ref _guardrailWarmupState, 2);
 			}
-		}
-		else
-		{
-			Interlocked.Exchange(ref _guardrailWarmupState, 2);
 		}
 		Logger.Log("GuardrailWarmup", $"complete source={source} version={version} stale={flag} ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} seedCount={num} warmed={num2} error={text}");
 	}
@@ -2658,12 +2661,9 @@ public static class AIConfigHandler
 		}
 		lock (_guardrailSemanticLock)
 		{
-			if (_guardrailInputVecCache.Count >= 256)
-			{
-				_guardrailInputVecCache.Clear();
-			}
 			if (_promptConfiguration.Capture().Revision == cacheRevision)
 			{
+				if (_guardrailInputVecCache.Count >= 256) _guardrailInputVecCache.Clear();
 				_guardrailInputVecCache[cacheKey] = vector;
 			}
 		}
@@ -2671,7 +2671,7 @@ public static class AIConfigHandler
 		return true;
 	}
 
-	private static bool TryGetPhraseEmbedding(string phraseSeed, out float[] vec)
+	private static bool TryGetPhraseEmbedding(string phraseSeed, out float[] vec, long expectedRevision = 0L)
 	{
 		vec = null;
 		string text = NormalizeSemanticText(phraseSeed);
@@ -2679,7 +2679,8 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		long cacheRevision = _promptConfiguration.Read().Revision;
+		long cacheRevision = expectedRevision > 0L ? expectedRevision : _promptConfiguration.Read().Revision;
+		if (expectedRevision > 0L && _promptConfiguration.Capture().Revision != expectedRevision) return false;
 		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
 		lock (_guardrailSemanticLock)
 		{
@@ -2700,12 +2701,9 @@ public static class AIConfigHandler
 		}
 		lock (_guardrailSemanticLock)
 		{
-			if (_guardrailPhraseVecCache.Count >= 1024)
-			{
-				_guardrailPhraseVecCache.Clear();
-			}
 			if (_promptConfiguration.Capture().Revision == cacheRevision)
 			{
+				if (_guardrailPhraseVecCache.Count >= 1024) _guardrailPhraseVecCache.Clear();
 				_guardrailPhraseVecCache[cacheKey] = vector;
 			}
 		}

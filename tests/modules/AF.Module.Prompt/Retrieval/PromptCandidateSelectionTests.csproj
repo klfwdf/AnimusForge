@@ -11,5 +11,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs" Link="PromptCandidateSnapshotIndex.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs" Link="PromptRetrievalContextOwner.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptSemanticWarmupSeedBatch.cs" Link="PromptSemanticWarmupSeedBatch.cs" />
   </ItemGroup>
 </Project>
