@@ -9,5 +9,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs" Link="PromptCandidateSelection.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs" Link="IntentQueryOptimizer.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs" Link="PromptCandidateSnapshotIndex.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />
   </ItemGroup>
 </Project>

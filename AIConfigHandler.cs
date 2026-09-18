@@ -41,7 +41,7 @@ public static class AIConfigHandler
 	private static readonly Lazy<JObject> EmbeddedPreprocessPromptsDefaults = new Lazy<JObject>(LoadEmbeddedDefaultPreprocessPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
 	private static readonly Lazy<RpItemIntroductionPromptsConfigModel> EmbeddedRpItemIntroductionPromptsDefaults = new Lazy<RpItemIntroductionPromptsConfigModel>(LoadEmbeddedDefaultRpItemIntroductionPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
 	private static readonly Encoding StrictUtf8Encoding = new UTF8Encoding(false, true);
-	private static volatile string _preprocessPromptsLoadError = "";
+	private static string _preprocessPromptsLoadError => _promptConfiguration.Read().Value.PreprocessLoadError;
 	private static int _rpItemIntroductionPromptsFallbackLogged;
 	private static int _rpItemIntroductionPromptBuildFailureLogged;
 	private sealed class ActionPostprocessHistoryEntry
@@ -242,17 +242,30 @@ public static class AIConfigHandler
 		public float AnchorRawFloor;
 	}
 
-	private static AIConfigModel _config;
+	private static readonly RevisionedPromptConfigurationStore<PromptConfigurationSnapshot> _promptConfiguration =
+		new RevisionedPromptConfigurationStore<PromptConfigurationSnapshot>(new PromptConfigurationSnapshot(null, null, null, null, null, null, ""));
+	private static readonly object _promptConfigurationReloadLock = new object();
 
-	private static GuardrailConfigModel _guardrail;
+	private static AIConfigModel _config => _promptConfiguration.Read().Value.Main;
+	private static GuardrailConfigModel _guardrail => _promptConfiguration.Read().Value.Guardrail;
+	private static ActionPostprocessConfigModel _actionPostprocess => _promptConfiguration.Read().Value.ActionPostprocess;
+	private static PreprocessPromptsConfigModel _preprocessPrompts => _promptConfiguration.Read().Value.Preprocess;
+	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts => _promptConfiguration.Read().Value.ProactiveRequest;
+	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts => _promptConfiguration.Read().Value.RpItemIntroduction;
 
-	private static ActionPostprocessConfigModel _actionPostprocess;
+	private static List<string> CopyConfigList(List<string> values) => values == null ? new List<string>() : new List<string>(values);
 
-	private static PreprocessPromptsConfigModel _preprocessPrompts;
+	private static Dictionary<string, string> CopyConfigMap(Dictionary<string, string> values) =>
+		values == null ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) : new Dictionary<string, string>(values, values.Comparer);
 
-	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts;
-
-	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts;
+	private static List<PostprocessRuleEntry> CopyPostprocessRules(List<PostprocessRuleEntry> rules) =>
+		(rules ?? new List<PostprocessRuleEntry>()).Select(rule => rule == null ? null : new PostprocessRuleEntry
+		{
+			Tag = rule.Tag,
+			Description = rule.Description,
+			SingleFramedNpcDescription = rule.SingleFramedNpcDescription,
+			RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues == null ? null : new HashSet<string>(rule.RuntimeAllowedParameterValues, rule.RuntimeAllowedParameterValues.Comparer)
+		}).ToList();
 
 	private static readonly Regex PreprocessTemplateVariableRegex = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
@@ -275,7 +288,6 @@ public static class AIConfigHandler
 
 	private static long _guardrailWarmupVersion = -1L;
 
-	private static long _guardrailConfigVersion = 1L;
 
 	private static readonly object _preprocessExcludedPromptCacheLock = new object();
 
@@ -385,19 +397,19 @@ public static class AIConfigHandler
 		return text.Replace("{npcName}", name).Replace("{healthPercent}", percent).Replace("{healthRatio}", percent);
 	}
 
-	public static List<string> DuelTriggerKeywords => _guardrail?.Duel?.AcceptKeywords ?? new List<string>();
+	public static List<string> DuelTriggerKeywords => CopyConfigList(_guardrail?.Duel?.AcceptKeywords);
 
-	public static List<PostprocessRuleEntry> DuelPostprocessRules => _guardrail?.Duel?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> DuelPostprocessRules => CopyPostprocessRules(_guardrail?.Duel?.PostprocessRules);
 
 	public static bool RewardEnabled => _guardrail?.Reward?.IsEnabled == true;
 
 	public static string RewardInstruction => BuildRewardInstructionForExternal();
 
-	public static List<PostprocessRuleEntry> RewardPostprocessRules => _guardrail?.Reward?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> RewardPostprocessRules => CopyPostprocessRules(_guardrail?.Reward?.PostprocessRules);
 
-	public static List<string> RewardTriggerKeywords => _guardrail?.Reward?.TriggerKeywords ?? new List<string>();
+	public static List<string> RewardTriggerKeywords => CopyConfigList(_guardrail?.Reward?.TriggerKeywords);
 
-	public static Dictionary<string, string> RewardRuntimeInstructionTemplates => _guardrail?.Reward?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	public static Dictionary<string, string> RewardRuntimeInstructionTemplates => CopyConfigMap(_guardrail?.Reward?.RuntimeInstructionTemplates);
 
 	public static bool IsPlayerCompanionOrFamilyTradeTarget(Hero targetHero)
 	{
@@ -603,17 +615,17 @@ public static class AIConfigHandler
 
 	public static string LoanInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Loan?.Instruction ?? "");
 
-	public static List<PostprocessRuleEntry> LoanPostprocessRules => _guardrail?.Loan?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> LoanPostprocessRules => CopyPostprocessRules(_guardrail?.Loan?.PostprocessRules);
 
-	public static List<string> LoanTriggerKeywords => _guardrail?.Loan?.TriggerKeywords ?? new List<string>();
+	public static List<string> LoanTriggerKeywords => CopyConfigList(_guardrail?.Loan?.TriggerKeywords);
 
-	public static Dictionary<string, string> LoanRuntimeInstructionTemplates => _guardrail?.Loan?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	public static Dictionary<string, string> LoanRuntimeInstructionTemplates => CopyConfigMap(_guardrail?.Loan?.RuntimeInstructionTemplates);
 
 	public static bool SurroundingsEnabled => _guardrail?.Surroundings?.IsEnabled == true;
 
 	public static string SurroundingsInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Surroundings?.Instruction ?? "");
 
-	public static List<string> SurroundingsTriggerKeywords => _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>();
+	public static List<string> SurroundingsTriggerKeywords => CopyConfigList(_guardrail?.Surroundings?.TriggerKeywords);
 
 	public static string DuelNonHeroInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.NonHeroInstruction ?? "");
 
@@ -807,13 +819,13 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static List<PostprocessRuleEntry> WildernessPostprocessRules => _actionPostprocess?.WildernessPostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> WildernessPostprocessRules => CopyPostprocessRules(_actionPostprocess?.WildernessPostprocessRules);
 
-	public static List<PostprocessRuleEntry> RoyalPostprocessRules => _actionPostprocess?.RoyalPostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> RoyalPostprocessRules => CopyPostprocessRules(_actionPostprocess?.RoyalPostprocessRules);
 
-	public static List<PostprocessRuleEntry> IntimacyPostprocessRules => _actionPostprocess?.IntimacyPostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> IntimacyPostprocessRules => CopyPostprocessRules(_actionPostprocess?.IntimacyPostprocessRules);
 
-	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => CopyPostprocessRules(_actionPostprocess?.MoodRules);
 
 	public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero targetHero)
 	{
@@ -2538,7 +2550,7 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			long num = Volatile.Read(ref _guardrailConfigVersion);
+			long num = _promptConfiguration.Capture().Revision;
 			if (num <= 0)
 			{
 				num = 1L;
@@ -2605,11 +2617,14 @@ public static class AIConfigHandler
 			text = ex.Message ?? "guardrail warmup exception";
 		}
 		stopwatch.Stop();
-		bool flag = Volatile.Read(ref _guardrailConfigVersion) != version;
+		bool flag = _promptConfiguration.Capture().Revision != version;
 		if (flag)
 		{
-			Interlocked.Exchange(ref _guardrailWarmupState, 0);
-			Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+			if (Volatile.Read(ref _guardrailWarmupVersion) == version)
+			{
+				Interlocked.Exchange(ref _guardrailWarmupState, 0);
+				Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+			}
 		}
 		else
 		{
@@ -2626,9 +2641,11 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		long cacheRevision = _promptConfiguration.Read().Revision;
+		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
 		lock (_guardrailSemanticLock)
 		{
-			if (_guardrailInputVecCache.TryGetValue(text, out var value) && value != null && value.Length != 0)
+			if (_guardrailInputVecCache.TryGetValue(cacheKey, out var value) && value != null && value.Length != 0)
 			{
 				vec = value;
 				return true;
@@ -2649,7 +2666,10 @@ public static class AIConfigHandler
 			{
 				_guardrailInputVecCache.Clear();
 			}
-			_guardrailInputVecCache[text] = vector;
+			if (_promptConfiguration.Capture().Revision == cacheRevision)
+			{
+				_guardrailInputVecCache[cacheKey] = vector;
+			}
 		}
 		vec = vector;
 		return true;
@@ -2663,9 +2683,11 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		long cacheRevision = _promptConfiguration.Read().Revision;
+		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
 		lock (_guardrailSemanticLock)
 		{
-			if (_guardrailPhraseVecCache.TryGetValue(text, out var value) && value != null && value.Length != 0)
+			if (_guardrailPhraseVecCache.TryGetValue(cacheKey, out var value) && value != null && value.Length != 0)
 			{
 				vec = value;
 				return true;
@@ -2686,7 +2708,10 @@ public static class AIConfigHandler
 			{
 				_guardrailPhraseVecCache.Clear();
 			}
-			_guardrailPhraseVecCache[text] = vector;
+			if (_promptConfiguration.Capture().Revision == cacheRevision)
+			{
+				_guardrailPhraseVecCache[cacheKey] = vector;
+			}
 		}
 		vec = vector;
 		return true;
@@ -3182,24 +3207,24 @@ public static class AIConfigHandler
 		}).Trim();
 	}
 
-	private static void ValidateLoadedPreprocessPrompts()
+	private static void ValidateLoadedPreprocessPrompts(PreprocessPromptsConfigModel config)
 	{
-		RequirePreprocessPromptValue(StrictPreprocessJsonSystemPrompt, "StrictJson.SystemPrompt");
-		JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
+		RequirePreprocessPromptValue(config?.StrictJson?.SystemPrompt, "StrictJson.SystemPrompt");
+		JObject schema = config?.StrictJson?.MentionedEntitiesSchema;
 		if (!(schema?["entities"] is JArray))
 		{
 			throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema.entities");
 		}
-		RequirePreprocessPromptValue(_preprocessPrompts?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
-		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
-		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
-		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
-		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
+		RequirePreprocessPromptValue(config?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
+		ValidatePreprocessTemplateVariables(config?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
+		RequirePreprocessPromptValue(config?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
+		RequirePreprocessPromptValue(config?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
+		RequirePreprocessPromptValue(config?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
+		ValidatePreprocessTemplateVariables(config?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
+		ValidatePreprocessTemplateVariables(config?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
+		ValidatePreprocessTemplateVariables(config?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
+		RequirePreprocessPromptValue(config?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
+		ValidatePreprocessTemplateVariables(config?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
 	}
 
 	private static void ValidatePreprocessTemplateVariables(string template, string configPath, params string[] requiredVariables)
@@ -3721,7 +3746,7 @@ public static class AIConfigHandler
 
 	private static List<PreprocessExcludedPromptEntry> GetConfiguredPreprocessExcludedPromptEntries()
 	{
-		long version = Volatile.Read(ref _guardrailConfigVersion);
+		long version = _promptConfiguration.Read().Revision;
 		if (Volatile.Read(ref _preprocessExcludedPromptCacheVersion) == version)
 		{
 			List<PreprocessExcludedPromptEntry> snapshot = _preprocessExcludedPromptCache;
@@ -5631,6 +5656,8 @@ public static class AIConfigHandler
 
 	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
 	{
+		using IDisposable configurationScope = _promptConfiguration.BeginCapture();
+		long configurationRevision = _promptConfiguration.Read().Revision;
 		snapshot = null;
 		List<GuardrailIntentInput> list = new List<GuardrailIntentInput>();
 		List<string> list2 = new List<string>();
@@ -5639,7 +5666,12 @@ public static class AIConfigHandler
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
 			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 			string excludeKey = excluded.Count == 0 ? "" : ("|exclude:" + string.Join(",", excluded.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
-			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (UseAuxiliaryRuleApiRetrieval ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText) + (UseAuxiliaryRuleApiRetrieval ? "|aux" : "|rag") + excludeKey;
+			bool useAuxiliary = UseAuxiliaryRuleApiRetrieval;
+			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (useAuxiliary ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText)
+				+ (useAuxiliary ? "|aux" : "|rag") + excludeKey + "|revision=" + configurationRevision + "|autoExclude=" + applyRuntimeAutoExclusions
+				+ "|options=" + KnowledgeRetrievalEnabled + ":" + KnowledgeSemanticFirst + ":" + KnowledgeSemanticTopK + ":" + GuardrailRuleReturnCap
+				+ "|target=" + _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
+				+ ":" + _guardrailRuntimeTargetTroopId.Value + ":" + _guardrailRuntimeTargetUnnamedRank.Value + ":" + _guardrailRuntimeTargetAgentIndex.Value;
 			lock (_guardrailSemanticLock)
 			{
 				if (_lastGuardrailEval != null && string.Equals(_lastGuardrailEval.Key, text, StringComparison.Ordinal))
@@ -5648,11 +5680,14 @@ public static class AIConfigHandler
 					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 				}
 			}
-			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded, applyRuntimeAutoExclusions))
+			if (useAuxiliary && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded, applyRuntimeAutoExclusions))
 			{
 				lock (_guardrailSemanticLock)
 				{
-					_lastGuardrailEval = snapshot;
+					if (_promptConfiguration.Capture().Revision == configurationRevision)
+					{
+						_lastGuardrailEval = snapshot;
+					}
 				}
 				return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
@@ -6046,7 +6081,10 @@ public static class AIConfigHandler
 			}
 			lock (_guardrailSemanticLock)
 			{
-				_lastGuardrailEval = guardrailEvalSnapshot;
+				if (_promptConfiguration.Capture().Revision == configurationRevision)
+				{
+					_lastGuardrailEval = guardrailEvalSnapshot;
+				}
 			}
 			snapshot = guardrailEvalSnapshot;
 			return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
@@ -9148,19 +9186,28 @@ public static class AIConfigHandler
 
 	public static void ReloadConfig()
 	{
+		lock (_promptConfigurationReloadLock)
+		{
+		AIConfigModel config = null;
+		GuardrailConfigModel guardrail = null;
+		ActionPostprocessConfigModel actionPostprocess = null;
+		PreprocessPromptsConfigModel preprocessPrompts = null;
+		ProactiveNpcRequestPromptsConfigModel proactiveNpcRequestPrompts = null;
+		RpItemIntroductionPromptsConfigModel rpItemIntroductionPrompts = null;
+		string preprocessPromptsLoadError = "";
 		try
 		{
-			_preprocessPromptsLoadError = "";
+			preprocessPromptsLoadError = "";
 			string path = ResolveModuleDataFilePath("AIConfig.json");
 			if (!File.Exists(path))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 AIConfig.json");
-				_config = new AIConfigModel();
+				config = new AIConfigModel();
 			}
 			else
 			{
 				string value = File.ReadAllText(path);
-				_config = JsonConvert.DeserializeObject<AIConfigModel>(value) ?? new AIConfigModel();
+				config = JsonConvert.DeserializeObject<AIConfigModel>(value) ?? new AIConfigModel();
 			}
 			string path2 = ResolveModuleDataFilePath("RuleBehaviorPrompts.json");
 			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
@@ -9170,22 +9217,22 @@ public static class AIConfigHandler
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
-				_guardrail = new GuardrailConfigModel();
+				guardrail = new GuardrailConfigModel();
 			}
 			else
 			{
 				string value2 = File.ReadAllText(path2);
-				_guardrail = JsonConvert.DeserializeObject<GuardrailConfigModel>(value2) ?? new GuardrailConfigModel();
+				guardrail = JsonConvert.DeserializeObject<GuardrailConfigModel>(value2) ?? new GuardrailConfigModel();
 			}
 			if (!File.Exists(path3))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 ActionPostprocessPrompts.json");
-				_actionPostprocess = new ActionPostprocessConfigModel();
+				actionPostprocess = new ActionPostprocessConfigModel();
 			}
 			else
 			{
 				string value3 = File.ReadAllText(path3);
-				_actionPostprocess = JsonConvert.DeserializeObject<ActionPostprocessConfigModel>(value3) ?? new ActionPostprocessConfigModel();
+				actionPostprocess = JsonConvert.DeserializeObject<ActionPostprocessConfigModel>(value3) ?? new ActionPostprocessConfigModel();
 			}
 			try
 			{
@@ -9193,8 +9240,8 @@ public static class AIConfigHandler
 				{
 					throw new FileNotFoundException("找不到 PreprocessPrompts.json", path4);
 				}
-				_preprocessPrompts = LoadPreprocessPromptsConfig(path4, out var usedEmbeddedDefaults, out var sourceVersion, out var defaultVersion);
-				ValidateLoadedPreprocessPrompts();
+				preprocessPrompts = LoadPreprocessPromptsConfig(path4, out var usedEmbeddedDefaults, out var sourceVersion, out var defaultVersion);
+				ValidateLoadedPreprocessPrompts(preprocessPrompts);
 				if (usedEmbeddedDefaults)
 				{
 					Logger.Log("AIConfig", string.Format("[兼容] 检测到旧版 PreprocessPrompts.json (v{0})，其输出 schema 与 v{1} 不兼容；本次运行已采用程序集内置 v{1} 默认提示词，磁盘文件未改写。", sourceVersion, defaultVersion));
@@ -9202,8 +9249,8 @@ public static class AIConfigHandler
 			}
 			catch (Exception preprocessEx)
 			{
-				_preprocessPrompts = new PreprocessPromptsConfigModel();
-				_preprocessPromptsLoadError = preprocessEx.Message;
+				preprocessPrompts = new PreprocessPromptsConfigModel();
+				preprocessPromptsLoadError = preprocessEx.Message;
 				Logger.Log("AIConfig", "[错误] 前处理提示词配置加载失败: " + preprocessEx.Message);
 			}
 			try
@@ -9213,16 +9260,16 @@ public static class AIConfigHandler
 					throw new FileNotFoundException("找不到 ProactiveNpcRequestPrompts.json", path5);
 				}
 				string value5 = File.ReadAllText(path5, Encoding.UTF8);
-				_proactiveNpcRequestPrompts = JsonConvert.DeserializeObject<ProactiveNpcRequestPromptsConfigModel>(value5) ?? new ProactiveNpcRequestPromptsConfigModel();
+				proactiveNpcRequestPrompts = JsonConvert.DeserializeObject<ProactiveNpcRequestPromptsConfigModel>(value5) ?? new ProactiveNpcRequestPromptsConfigModel();
 			}
 			catch (Exception proactivePromptEx)
 			{
 				Logger.Log("AIConfig", "[错误] 载入 ProactiveNpcRequestPrompts.json 失败: " + proactivePromptEx.Message);
-				_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
+				proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
 			}
 			try
 			{
-				_rpItemIntroductionPrompts = LoadRpItemIntroductionPromptsConfig(path6, out var usedEmbeddedDefaults2, out var fallbackReason);
+				rpItemIntroductionPrompts = LoadRpItemIntroductionPromptsConfig(path6, out var usedEmbeddedDefaults2, out var fallbackReason);
 				Interlocked.Exchange(ref _rpItemIntroductionPromptBuildFailureLogged, 0);
 				if (usedEmbeddedDefaults2)
 				{
@@ -9238,52 +9285,49 @@ public static class AIConfigHandler
 			}
 			catch (Exception rpItemIntroductionPromptEx)
 			{
-				_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
+				rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
 				if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
 				{
 					Logger.Log("AIConfig", "[错误] RP物品介绍提示词配置及其内置默认值均不可用，自动介绍已停用: " + rpItemIntroductionPromptEx.Message);
 				}
 			}
-			lock (_guardrailSemanticLock)
-			{
-				_guardrailPhraseVecCache.Clear();
-				_guardrailInputVecCache.Clear();
-				_lastGuardrailEval = null;
-			}
-			long num = Interlocked.Increment(ref _guardrailConfigVersion);
-			Interlocked.Exchange(ref _guardrailWarmupState, 0);
-			Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
-			_guardrailSemanticRuntimeContext.Value = "";
-			_guardrailRuntimeTargetKingdomId.Value = "";
-			int valueOrDefault = (_guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault2 = (_guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault3 = (_guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault4 = (_guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault5 = (_guardrail?.RulePrompts?.Count).GetValueOrDefault();
-			int num2 = 0;
-			try
-			{
-				num2 = GetAllEnabledRulePrompts().Count;
-			}
-			catch
-			{
-				num2 = 0;
-			}
-			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
-			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
 			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3 + " PreprocessPrompts=" + path4 + " RpItemIntroductionPrompts=" + path6);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("AIConfig", "[错误] 加载失败: " + ex.Message);
-			_config = new AIConfigModel();
-			_guardrail = new GuardrailConfigModel();
-			_actionPostprocess = new ActionPostprocessConfigModel();
-			_preprocessPrompts = new PreprocessPromptsConfigModel();
-			_preprocessPromptsLoadError = ex.Message;
-			_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
-			_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
+			config = new AIConfigModel();
+			guardrail = new GuardrailConfigModel();
+			actionPostprocess = new ActionPostprocessConfigModel();
+			preprocessPrompts = new PreprocessPromptsConfigModel();
+			preprocessPromptsLoadError = ex.Message;
+			proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
+			rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
 		}
+		lock (_guardrailSemanticLock)
+		{
+			_guardrailPhraseVecCache.Clear();
+			_guardrailInputVecCache.Clear();
+			_lastGuardrailEval = null;
+		}
+		_promptConfiguration.Reload(() => new PromptConfigurationSnapshot(config, guardrail, actionPostprocess, preprocessPrompts,
+			proactiveNpcRequestPrompts, rpItemIntroductionPrompts, preprocessPromptsLoadError),
+			_ => new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel(), new ActionPostprocessConfigModel(),
+				new PreprocessPromptsConfigModel(), new ProactiveNpcRequestPromptsConfigModel(), new RpItemIntroductionPromptsConfigModel(), preprocessPromptsLoadError));
+		Interlocked.Exchange(ref _guardrailWarmupState, 0);
+		Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+		_guardrailSemanticRuntimeContext.Value = "";
+		_guardrailRuntimeTargetKingdomId.Value = "";
+		try
+		{
+			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。",
+				(guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault(), (guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault(),
+				(guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault(), (guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault(),
+				(guardrail?.RulePrompts?.Count).GetValueOrDefault(), GetAllEnabledRulePrompts().Count, GetGuardrailReturnCapFromMcm(),
+				KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail", KnowledgeRetrievalEnabled ? "开启" : "关闭",
+				KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
+		}
+		catch { }
 		try
 		{
 			// Publish only a new immutable detached snapshot. In-flight requests
@@ -9294,6 +9338,7 @@ public static class AIConfigHandler
 		{
 			// The legacy configuration reload must remain authoritative even if
 			// the optional detached snapshot store is unavailable.
+		}
 		}
 	}
 

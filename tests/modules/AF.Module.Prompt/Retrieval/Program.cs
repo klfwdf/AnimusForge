@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AnimusForge;
 
 internal static class Program
@@ -60,6 +62,31 @@ internal static class Program
         Check(index.IsFresh("key80", now.AddMinutes(10)), "exact TTL boundary remains fresh");
         Check(!index.IsFresh("key80", now.AddMinutes(11).AddTicks(1)), "expired key rejected");
         Check(!index.IsFresh("key0", now.AddMinutes(1)), "evicted key rejected");
-        Console.WriteLine("PromptCandidateSelection checks=" + _checks);
+        var store = new RevisionedPromptConfigurationStore<string>("initial");
+        var first = store.Capture();
+        using (var entered = new ManualResetEventSlim())
+        using (var release = new ManualResetEventSlim())
+        {
+            var loading = Task.Run(() => store.Reload(() => { entered.Set(); release.Wait(); return "new"; }, _ => "default"));
+            Check(entered.Wait(TimeSpan.FromSeconds(5)), "reload must begin");
+            Check(ReferenceEquals(first, store.Capture()), "in-flight reload retains complete previous snapshot");
+            release.Set();
+            Check(loading.GetAwaiter().GetResult().Revision == first.Revision + 1, "successful reload advances revision");
+        }
+        Check(first.Value == "initial" && store.Capture().Value == "new", "captured old value remains stable");
+        var failed = store.Reload(() => throw new InvalidOperationException("bad config"), _ => "default");
+        Check(failed.Value == "default" && failed.Revision == first.Revision + 2, "fallback replacement also advances revision");
+        using (store.BeginCapture())
+        {
+            var pinned = store.Read();
+            store.Reload(() => "later", _ => "default");
+            Check(ReferenceEquals(pinned, store.Read()), "one operation retains captured revision");
+            using (store.BeginCapture())
+                Check(ReferenceEquals(pinned, store.Read()), "nested scope inherits parent revision");
+            Check(ReferenceEquals(pinned, store.Read()), "nested scope restores parent revision");
+            Task.Run(async () => { await Task.Yield(); Check(ReferenceEquals(pinned, store.Read()), "capture crosses a real async yield"); }).GetAwaiter().GetResult();
+        }
+        Check(store.Read().Value == "later", "scope restores live configuration");
+        Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
