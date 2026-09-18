@@ -31067,59 +31067,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 		shoutPromptContext.IsLoanContext = flag8;
 		shoutPromptContext.IsQualified = isQualified;
 		LogShoutPromptContextStage("extras_assigned", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " includeTradePricing=" + includeTradePricing + " includeMarriageCandidates=" + includeMarriageCandidates + " includeRuleGatedFields=" + includeRuleGatedFields);
-		HashSet<string> preprocessRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (auxiliaryRuleHitIds != null)
+		PromptRoutedTopicFlags routedTopicFlags = new PromptRoutedTopicFlags
 		{
-			foreach (string ruleId in auxiliaryRuleHitIds)
-			{
-				if (!string.IsNullOrWhiteSpace(ruleId) && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, ruleId))
-				{
-					preprocessRuleIds.Add(ruleId.Trim());
-				}
-			}
-		}
-		if (flag && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "duel"))
-		{
-			preprocessRuleIds.Add("duel");
-		}
-		if (flag3 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "reward"))
-		{
-			preprocessRuleIds.Add("reward");
-		}
-		if (flag4 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan"))
-		{
-			preprocessRuleIds.Add("loan");
-		}
-		if (persistentAdpDebtPostprocess && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan"))
-		{
-			preprocessRuleIds.Add(ShoutBehavior.PersistentAdpDebtPostprocessRuleId);
-		}
-		if (flag5 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "surroundings"))
-		{
-			preprocessRuleIds.Add("surroundings");
-		}
-		if (flag6 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "kingdom_service"))
-		{
-			preprocessRuleIds.Add("kingdom_service");
-		}
-		if (marriageHit && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "marriage"))
-		{
-			preprocessRuleIds.Add("marriage");
-		}
-		if (partyTransferHit && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "party_transfer"))
-		{
-			preprocessRuleIds.Add("party_transfer");
-		}
-		if (worldMapPartyCommandHit && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "worldmap_party_command"))
-		{
-			preprocessRuleIds.Add("worldmap_party_command");
-		}
-		if (!PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "noble_gathering") && (value8?.IndexOf("【附加规则:noble_gathering】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0)
-		{
-			preprocessRuleIds.Add("noble_gathering");
-		}
-		preprocessRuleIds.ExceptWith(preprocessExcludedRuleIdSet);
-		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
+			Duel = flag,
+			Reward = flag3,
+			Loan = flag4,
+			PersistentAdpDebt = persistentAdpDebtPostprocess,
+			Surroundings = flag5,
+			KingdomService = flag6,
+			Marriage = marriageHit,
+			PartyTransfer = partyTransferHit,
+			WorldMapPartyCommand = worldMapPartyCommandHit
+		};
+		shoutPromptContext.PreprocessRuleIds = PromptPreprocessRuleIdAssembler.Assemble(auxiliaryRuleHitIds, routedTopicFlags, preprocessExcludedRuleIdSet, value8);
 		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
 			"ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds))
 			+ " excluded=" + ((shoutPromptContext.PreprocessExcludedRuleIds == null || shoutPromptContext.PreprocessExcludedRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessExcludedRuleIds))
