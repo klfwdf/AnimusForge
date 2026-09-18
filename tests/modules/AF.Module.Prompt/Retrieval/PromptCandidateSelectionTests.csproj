@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs" Link="PromptCandidateSelection.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs" Link="IntentQueryOptimizer.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs" Link="PromptCandidateSnapshotIndex.cs" />
+  </ItemGroup>
+</Project>
