@@ -356,6 +356,20 @@ internal static class Program
             null, 1, true, EmbedRule, (a, b) => a[0] * b[0], (_, _) => null);
         Check(failedPipeline.Snapshot.Rules["reward"].Hit && failedPipeline.Snapshot.MatchMode == "rerank"
             && !failedPipeline.IntentSelections.Single().Reranked, "production pipeline keeps semantic failure fallback and mode");
+        var mutableKeywords = new List<string> { "gift" };
+        var detachedRule = new PromptRuleRetrievalRule("reward", "trade", "", mutableKeywords);
+        mutableKeywords[0] = "changed";
+        Check(detachedRule.TriggerKeywords.Single() == "gift", "pipeline detaches configuration keywords before provider callbacks");
+        var multiPipeline = PromptRuleRetrievalPipeline.Run("multi-key", new[]
+        {
+            new PromptRuleRecallIntent("first", new[] { 1f, 0f }, 1f),
+            new PromptRuleRecallIntent("second", new[] { 0f, 1f }, 1f)
+        }, pipelineRules, null, 2, false,
+            seed => seed == "gift" ? new[] { 1f, 0f } : seed == "marriage" ? new[] { 0f, 1f } : null,
+            (a, b) => a[0] * b[0] + a[1] * b[1], null);
+        Check(multiPipeline.Snapshot.MatchMode == "semantic_multi" && multiPipeline.Snapshot.IntentCount == 2
+            && multiPipeline.Snapshot.Rules["reward"].Hit && multiPipeline.Snapshot.Rules["marriage"].Hit,
+            "production pipeline aggregates two captured intents without cross-intent loss");
         var aggregate = new PromptRuleAggregation();
         aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
         aggregate.Add("marriage", 0.6f, 1, "second", "intent b");
