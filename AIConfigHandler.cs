@@ -48,80 +48,6 @@ public static class AIConfigHandler
 		public bool IsRoleMessage;
 	}
 
-	private sealed class GuardrailRuleEval
-	{
-		public string RuleTag;
-
-		public string MatchedSeed;
-
-		public string MatchedIntent;
-
-		public float RawInput;
-
-		public float RawContext;
-
-		public float MixedRaw;
-
-		public float AmpScore;
-
-		public float RerankScore;
-
-		public float Delta;
-
-		public float Mean;
-
-		public float MaxOther;
-
-		public string MaxOtherTag;
-
-		public int Rank;
-
-		public bool Candidate;
-
-		public bool AbsHit;
-
-		public bool RelHit;
-
-		public bool HighAmpHit;
-
-		public bool ForceHit;
-
-		public float TopGap;
-
-		public float IntentEvidence;
-
-		public float IntentGate;
-
-		public string IntentSeed;
-
-		public bool LexicalAnchor;
-
-		public string RejectReason;
-
-		public string MatchMode;
-
-		public bool Hit;
-	}
-
-	private sealed class GuardrailEvalSnapshot
-	{
-		public string Key;
-
-		public string MatchMode = "none";
-
-		public int IntentCount;
-
-		public int RecallPerIntent;
-
-		public int RerankPerIntent;
-
-		public int ReturnCap;
-
-		public MentionedWorldEntities MentionedEntities = new MentionedWorldEntities();
-
-		public Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>(StringComparer.OrdinalIgnoreCase);
-	}
-
 	private sealed class GuardrailAuxiliaryTopic
 	{
 		public int Number;
@@ -5227,11 +5153,6 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
-			GuardrailEvalSnapshot guardrailEvalSnapshot = new GuardrailEvalSnapshot
-			{
-				Key = text
-			};
-			List<GuardrailRuleEval> list4 = new List<GuardrailRuleEval>();
 			List<PromptRuleRecallIntent> recallIntents = list.Select(intent => intent == null
 				? new PromptRuleRecallIntent("", null, 0f)
 				: new PromptRuleRecallIntent(intent.Text, intent.Vector, intent.Weight)).ToList();
@@ -5245,22 +5166,11 @@ public static class AIConfigHandler
 			}
 			PromptRuleSemanticRecall recall = PromptRuleSemanticRecall.Compute(recallIntents, recallRules, vec2,
 				seed => TryGetPhraseEmbedding(seed, out var vector) ? vector : null, DotProductNormalized);
-			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
-			{
-				GuardrailRulePromptConfig rule = allEnabledRulePrompts[j];
-				if (rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)) continue;
-				string id = rule.Id;
-				float rawInput = recall.BestInput[j];
-				float rawContext = recall.BestContext[j];
-				float mixedRaw = rawInput; // Existing context blend weight is zero.
-				GuardrailRuleEval eval = new GuardrailRuleEval
-				{
-					RuleTag = id, MatchedSeed = recall.BestSeed[j] ?? "", MatchedIntent = recall.BestIntent[j] ?? "",
-					RawInput = rawInput, RawContext = rawContext, MixedRaw = mixedRaw,
-					AmpScore = mixedRaw, RerankScore = mixedRaw
-				};
-				list4.Add(eval); guardrailEvalSnapshot.Rules[id] = eval;
-			}
+			List<PromptRuleIntentDescriptor> descriptors = allEnabledRulePrompts.Select(rule =>
+				rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
+					? new PromptRuleIntentDescriptor("")
+					: new PromptRuleIntentDescriptor(rule.Id)).ToList();
+			GuardrailEvalSnapshot guardrailEvalSnapshot = PromptRuleEvaluationAssembler.Create(text, descriptors, recall);
 			int guardrailReturnCapFromMcm = returnCap;
 			int num6 = Math.Max(1, list.Count);
 			int guardrailRerankBudget = GetGuardrailRerankBudget(guardrailReturnCapFromMcm);
@@ -5284,10 +5194,6 @@ public static class AIConfigHandler
 			string text4 = (flag2 ? ((list.Count > 1) ? "rerank_multi" : "rerank") : ((list.Count > 1) ? "semantic_multi" : "semantic"));
 			guardrailEvalSnapshot.MatchMode = text4;
 			PromptRuleAggregation aggregatedScores = new PromptRuleAggregation();
-			List<PromptRuleIntentDescriptor> descriptors = allEnabledRulePrompts.Select(rule =>
-				rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
-					? new PromptRuleIntentDescriptor("")
-					: new PromptRuleIntentDescriptor(rule.Id)).ToList();
 			for (int k = 0; k < list.Count; k++)
 			{
 				GuardrailIntentInput intent = list[k];
@@ -5315,46 +5221,10 @@ public static class AIConfigHandler
 					aggregatedScores.Add(id, score.FinalScore, rank + 1, score.MatchedSeed, score.MatchedIntent);
 				}
 			}
-			for (int num15 = 0; num15 < list4.Count; num15++)
-			{
-				GuardrailRuleEval guardrailRuleEval2 = list4[num15];
-				if (guardrailRuleEval2 != null)
-				{
-					guardrailRuleEval2.Candidate = false;
-					guardrailRuleEval2.AmpScore = guardrailRuleEval2.MixedRaw;
-					guardrailRuleEval2.RerankScore = guardrailRuleEval2.MixedRaw;
-					guardrailRuleEval2.MatchMode = text4;
-				}
-			}
-			List<PromptRuleAggregatedScore> rankedAggregates = aggregatedScores.Select(guardrailReturnCapFromMcm, guardrailPerIntentRerank, list.Count);
-			int num16 = rankedAggregates.Count;
-			for (int num18 = 0; num18 < rankedAggregates.Count; num18++)
-			{
-				PromptRuleAggregatedScore aggregate = rankedAggregates[num18];
-				if (!guardrailEvalSnapshot.Rules.TryGetValue(aggregate.RuleId, out var eval)) continue;
-				eval.Candidate = true;
-				eval.AmpScore = aggregate.AmpScore;
-				eval.RerankScore = aggregate.BestScore;
-				eval.MatchMode = text4;
-				if (!string.IsNullOrWhiteSpace(aggregate.MatchedSeed)) eval.MatchedSeed = aggregate.MatchedSeed;
-				if (!string.IsNullOrWhiteSpace(aggregate.MatchedIntent)) eval.MatchedIntent = aggregate.MatchedIntent;
-			}
-			List<PromptRuleFinalCandidate> finalCandidates = list4.Select((eval, index) =>
-				new PromptRuleFinalCandidate(index, eval.RuleTag, eval.Candidate, eval.AmpScore, eval.MixedRaw)).ToList();
-			List<PromptRuleFinalResult> finalRanking = PromptRuleFinalRanking.Rank(finalCandidates, guardrailReturnCapFromMcm, text4);
-			list4 = finalRanking.Select(result => list4[result.SourceIndex]).ToList();
-			for (int i = 0; i < finalRanking.Count; i++)
-			{
-				PromptRuleFinalResult result = finalRanking[i];
-				GuardrailRuleEval eval = list4[i];
-				eval.Mean = result.Mean; eval.Rank = result.Rank;
-				eval.MaxOther = result.MaxOther; eval.MaxOtherTag = result.MaxOtherTag;
-				eval.Delta = result.Delta; eval.TopGap = result.TopGap;
-				eval.IntentEvidence = 0f; eval.IntentGate = 0f; eval.IntentSeed = "";
-				eval.LexicalAnchor = false; eval.AbsHit = result.Hit;
-				eval.RelHit = false; eval.HighAmpHit = false; eval.ForceHit = false;
-				eval.RejectReason = result.RejectReason; eval.MatchMode = text4; eval.Hit = result.Hit;
-			}
+			PromptRuleEvaluationResult evaluated = PromptRuleEvaluationAssembler.Finish(guardrailEvalSnapshot,
+				aggregatedScores, guardrailReturnCapFromMcm, guardrailPerIntentRerank, list.Count, text4);
+			List<GuardrailRuleEval> list4 = evaluated.Ranked;
+			int num16 = evaluated.CandidatePoolCount;
 			try
 			{
 				Logger.Log("GuardrailSemantic", $"candidate_pool mode={text4} returnCap={guardrailReturnCapFromMcm} rerankBudget={guardrailRerankBudget} rerankPerIntent={guardrailPerIntentRerank} recallPerIntent={guardrailPerIntentRecall} intents={num6} got={num16}");
