@@ -51,7 +51,7 @@
 | `MyBehavior.cs` | 自由对话、记忆、事件、Persona、AFEF、周报、外部 facade、巨大 `SyncData` | Conversation facade + Memory/Persistence 子域 | 不整体移动；先从公开 facade、保存镜像和纯转换器开始 | 旧 key/type、三渠道历史、save/load |
 | `ShoutBehavior.cs` | 场景喊话、Native Conversation、Prompt、后处理、动作、TTS、Mission、目标 | Conversation orchestration；Scene/Action adapter | 保留为过渡编排器；先抽 DTO、目标解析、ActionPlan | 三渠道、主线程、可见文本、stale target |
 | `AIConfigHandler.cs` | Prompt 配置、preprocess、guardrail、postprocess、AFEF normalization、辅助 LLM | Prompt/Rule + LLM Gateway + ActionPostprocess | 分成纯配置/规则、网络、归一化三个边界；不放领域副作用 | JSON/C# 标签同步、超时、fallback |
-| `PromptComposer.cs`, `PromptListRetrievalService.cs`, `IntentQueryOptimizer.cs` | Prompt 组合、规则/知识候选检索、意图优化 | Prompt/Retrieval | 保持纯输入输出；缓存和批量策略明确 | 不做热路径全量扫描 |
+| `src/modules/AF.Module.Prompt/Composition/*.cs`, `PromptListRetrievalService.cs`, `src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs` | Prompt 组合（规则 ID 策略、内置话题路由、sticky、Extras 段落、目标身份）、规则/知识候选检索、意图优化；原 `PromptComposer.cs` 零调用者已删除 | Prompt/Composition + Prompt/Retrieval | 保持纯输入输出；缓存和批量策略明确 | 不做热路径全量扫描 |
 | `src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs` | API URL/payload、认证头、普通/流响应协议兼容；J01 原字节迁入 | AF.Module.Llm/Protocol | 保持既有 public 类/namespace/同 DLL；不代替实际 provider 网络验收 | 双 API Stage/协议离线通过；真实网络 NOT-RUN |
 | `src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs` | 可见回复 envelope 清理；`StreamFilter:62-144` 的候选/预览/透传/发射长度为每实例状态 | AF.Module.Llm/Protocol | 原字节迁入，不共享跨流实例、不改变旧 Unicode 逐字符行为 | 协议离线通过；逐字符 Unicode 旧缺陷未修 |
 | `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs` | 8 个消息/重试策略方法与 4 常量；13 处原宿主调用直连，无共享可变状态 | AF.Module.Llm/Protocol | J01 真提取，仅 policy 内部可见性调整，不引入新 public API/每 Tick 扫描 | 13 协议用例/7 变异及双版本 Stage；不代表网络调度已迁 |

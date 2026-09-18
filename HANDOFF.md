@@ -1,3 +1,9 @@
+# 当前接续：J04 首批切片 J04_PARTIAL（2026-09-18）
+
+分支 `codex/af-modularize-j04-20260918`（基线 `25a89cea`），生产切片 `e0aa8142`→`2a191526`，测试/工具/地图 `11f90fec`。共享 Prompt 组合的规则 ID 策略、内置话题路由、duel/reward/loan sticky 状态、preprocess ID 收敛、Extras 段落组合与目标身份发布已迁入 `src/modules/AF.Module.Prompt/Composition`（7 个 owner），旧实现删除，`PromptComposer.cs` 死代码删除；MyBehavior/Shout/AIConfigHandler 净 −680 行。新契约 86 项 + 2 变异拒收，J03 六契约与 Courier/Scene/Native/HeroAsset 全部 runner 复跑 PASS，原脚本 Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误（无 Stage/Deploy），231 锚点地图两模式通过。**J04 未 OFFLINE_VERIFIED**：共享 builder 线程边界与 `BuildTriggeredRuleInstructions` 段落化未做；实机/旧档/provider `NOT-RUN`。用户要求的 Scene/Courier 公开提交已登记映射 J10+J14，本轮未实现。未推送。详见[主台账 J04 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice1-20260918)与[范围图](docs/architecture/af-framework-code-scope.md)。
+
+## 以下为 J03 交付与历史
+
 # 当前交付：J03 源码、测试与完整规划/验收文档（2026-09-18）
 
 用户本轮明确要求全部推送远端；本次包含下方 J03 已完成源码、测试、地图及此前未提交的两份规划/验收文档，目标为 `origin/codex/af-main-refactor-continuation-20260831`，不操作 main、不强推。范围核实见[台账交付记录](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-delivery-20260918)。`.dotnet-cli-home/`、构建产物和玩家数据不上传；下方“未推送”保留为当时实施记录，实际发布结果以远端 ref 核对为准。产品状态仍为 J03_OFFLINE_VERIFIED，不代表实机/旧档通过。
