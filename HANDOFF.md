@@ -1,3 +1,9 @@
+# 当前接续：精简规划与执行规则补充（2026-09-18）
+
+仓库维护 Skill 的工作包指南已补充规划与执行分工，验证见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#skill-plan-execution-20260918)。仅仓库副本和交接说明变化；外部主源/全局副本未同步，产品仍为 J02_OFFLINE_VERIFIED，本轮不启动 J03、不推送或部署。
+
+## 以下为既有交付与实施历史，不构成本轮执行或发布授权
+
 # 当前交付：R2、J01、J02 源码与 Skill 0.2.0（2026-09-18）
 
 用户已明确要求将已完成源码与本轮重构文档一起推送，而非仅交付 Skill。完整范围、历史核实与验证见[唯一当前台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-delivery-20260918)。目标为 `origin/codex/af-main-refactor-continuation-20260831`，普通快进；不推 main、不强推、不改写历史，不部署游戏或上传本地产物。
