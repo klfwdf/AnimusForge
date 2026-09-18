@@ -172,6 +172,27 @@ public static class ModuleReviewAudit
                 Check(confirmed.Contains("玩家站在城墙上，对方站在城墙下"),
                     "confirmed host scene still supplies wall height relationship: " + location);
             }
+            foreach (string location in new[] { "", "tavern", "prison" })
+            {
+                object profile = Activator.CreateInstance(environment);
+                Call(extractor, "ResolveBesiegedLocation", null, profile, location == "", location, location != "");
+                string facts = (string)Call(environment, "BuildHardFactsSummary", profile);
+                Check(!facts.Contains("旷野") && !facts.Contains("阵前谈判") && !facts.Contains("庇护所") &&
+                    !facts.Contains("避难处境") && !facts.Contains("牢狱关押"),
+                    "siege location metadata does not invent physical setting or activity: " + location);
+            }
+            object unspecified = Activator.CreateInstance(environment);
+            Call(extractor, "ResolveSpecificLocation", null, unspecified, null);
+            string unspecifiedFacts = (string)Call(environment, "BuildHardFactsSummary", unspecified);
+            Check(unspecifiedFacts.Contains("具体子场景位置未确认") && !unspecifiedFacts.Contains("两军阵前"),
+                "missing ordinary conversation location does not imply a field parley");
+            object unsentTemplates = Activator.CreateInstance(environment);
+            foreach (string field in new[] { "IndoorOutdoorDetails", "LightingAndAtmosphere", "SurroundingCharacters", "SurroundingProps" })
+                SetProperty(environment, field, unsentTemplates, "UNCONFIRMED_TEMPLATE_SENTINEL");
+            string routedTemplates = (string)Call(environment, "BuildSummary", unsentTemplates) +
+                (string)Call(environment, "BuildDirectorOnlyFacts", unsentTemplates);
+            Check(!routedTemplates.Contains("UNCONFIRMED_TEMPLATE_SENTINEL"),
+                "legacy descriptive template fields are not routed to director or image facts");
 
             Type fitType = Assembly.Load("TaleWorlds.GauntletUI").GetType("TaleWorlds.GauntletUI.ImageFit", true);
             PropertyInfo fitMode = fitType.GetProperty("Type");

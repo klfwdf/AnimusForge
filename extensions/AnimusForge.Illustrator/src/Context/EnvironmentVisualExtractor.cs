@@ -224,10 +224,10 @@ namespace AnimusForge.Illustrator.Context
             locId = (locId ?? string.Empty).ToLowerInvariant();
             if (outdoorMission)
             {
-                profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
+                profile.SpecificLocation = "围城相关场景（未读取到子场景位置，具体地形与双方高低关系未确认）";
                 profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
                 profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
-                profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困；双方骑乘、随行人员与军营可见性以现场记录为准。";
+                profile.ConflictStatus = "相关定居点正被围困；当前人物活动、骑乘及空间关系以现场记录为准。";
                 return;
             }
 
@@ -242,19 +242,19 @@ namespace AnimusForge.Illustrator.Context
 
             if (locId.Contains("prison"))
             {
-                profile.SpecificLocation = "围城中的要塞地下石牢 (Besieged Fortress Dungeon)";
+                profile.SpecificLocation = "围城中的牢房 (Besieged Prison)";
                 profile.IndoorOutdoorDetails = "大军围城下阴冷潮湿的地下石牢：沉重精铁栅栏，渗水石壁与单支插在铁箍里的摇曳火把，幽闭压抑。";
                 profile.LightingAndAtmosphere = "地下昏暗阴冷的单支火把跳跃照明，深邃厚重的阴影包裹 (Dim Dungeon Torchlight & Deep Shadows)";
-                profile.ConflictStatus = "【大军围城 · 牢狱关押】城外战云密布，地牢中昏暗压抑。";
+                profile.ConflictStatus = "所在定居点正被围困；当前位于牢房，人物是否被关押及其活动以实际记录为准。";
                 return;
             }
 
             if (locId.Contains("tavern"))
             {
-                profile.SpecificLocation = "围城战火下的内城庇护所与酒馆 (Besieged Town Refuge)";
+                profile.SpecificLocation = "围城中的城镇酒馆 (Besieged Town Tavern)";
                 profile.IndoorOutdoorDetails = "大军围城下门窗加固紧闭的城镇酒馆：粗木长桌、跳动的壁炉火光，平民与守兵聚集于此暂避战火。";
                 profile.LightingAndAtmosphere = "室内紧闭门窗后的昏黄壁炉火光与微弱烛光 (Dim Refuge Firelight)";
-                profile.ConflictStatus = "【大军围城 · 避难处境】城外大军围困，当前位于城内酒馆，是否用作避难所未确认。";
+                profile.ConflictStatus = "所在定居点正被围困；当前位于酒馆，人物活动及该场所用途以现场记录为准。";
                 return;
             }
 
@@ -303,8 +303,8 @@ namespace AnimusForge.Illustrator.Context
             {
             }
 
-            // Mission 存在且 Location 为 null = 野外场景（阵前谈判/遭遇会话），即使玩家贴着
-            // 定居点（CurrentSettlement 仍挂值）也绝不能判成城镇街道。
+            // Mission 存在且 Location 为 null 仅说明缺少子场景元数据，
+            // 不能据此判成平地、阵前谈判或城镇街道。
             bool outdoorMission = false;
             try
             {
@@ -389,8 +389,7 @@ namespace AnimusForge.Illustrator.Context
             }
             else if (settlement == null || outdoorMission)
             {
-                // 野外遭遇会话（大地图/野战遭遇/阵前谈判）：双方在两军阵前的旷野会面，绝非城镇街道
-                profile.SpecificLocation = "两军阵前的开阔旷野会面地 (Field Parley Ground)";
+                profile.SpecificLocation = "会话场景（具体子场景位置未确认，地形与人物空间关系以现场记录为准）";
                 profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，人物身后只保留现场确认的景物，不默认添加军旗与仪仗，空气中弥漫着战前谈判的紧绷肃杀气息。";
             }
             else if (locId.Contains("center") || (!isIndoor && settlement.IsTown))
