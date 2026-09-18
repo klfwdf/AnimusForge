@@ -220,9 +220,9 @@ internal static class Program
         StickyMerge("hero:a", "效忠", liveSticky, true, false);
         Check(StickyMerge("hero:a", "继续", null, false, false).Count == 0, "target ineligibility blocks carried output");
         stickyRevision = 2;
-        Check(StickyMerge("hero:a", "继续", null, true, false, 2).Count == 0, "reload clears sticky state");
+        Check(StickyMerge("hero:a", "继续", null, true, false, 2).Count == 1, "reload preserves cross-call sticky carry");
         Check(StickyMerge("hero:a", "效忠", liveSticky, true, false, 1).Count == 1, "old caller retains live hit only");
-        Check(StickyMerge("hero:a", "继续", null, true, false, 2).Count == 0, "old caller cannot publish sticky state into new revision");
+        Check(StickyMerge("hero:a", "继续", null, true, false, 2).Count == 1, "old caller cannot replace new revision's sticky state");
         Check(StickyMerge("hero:a", "效忠", liveSticky, true, true, 2).Count == 1 && StickyMerge("hero:a", "继续", null, true, false, 2).Count == 0,
             "completed action cannot initiate sticky rule");
         var racingSticky = new PromptStickyRuleStore();
