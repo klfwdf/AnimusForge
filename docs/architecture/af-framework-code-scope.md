@@ -1,16 +1,16 @@
 # 当前增量：J03 继续实施，离线验收未达成（2026-09-18）
 
-源码修订 `e4f94429068af012dad29955afe7c6d2279c4fd4`；[代码地图](af-framework-code-map.json)共 211 锚点，recorded／working-tree 均通过。地图只用于导航，不是 gameplay 或 J03 整体验收。
+生产源码修订 `3ff315ba440498b3a3d78842dc0fc37468d592f6`；[代码地图](af-framework-code-map.json)共 217 锚点，recorded／working-tree 均通过。地图只用于导航，不是 gameplay 或 J03 整体验收。新增 owner 的一基坐标与旧类残余责任如下；`0916b60c`→`3ff315ba` 的真实源码差异包括从旧类删除逐意图排序、规则文本 seed、最终命中组装、辅助评分，并修复内置 RP fallback 跨 revision 共享模型，不是只刷新源码 hash。
 
 | 责任 / 一基源码坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
 | --- | --- | --- |
-| `PromptConfigurationLoader.cs:54`、`PromptRuleRegistry.cs:8`、`RevisionedPromptConfigurationStore.cs:19`、`PromptRevisionedDerivedCache.cs:6`；`AIConfigHandler.cs:2159` | 六份生产 loader 与同 ID 覆盖归 Configuration，完整 replacement 原子换代；静态 registry 和排除提示列表按 revision 懒建，旧 getter/reload 不变 | 配置模型仍内部可变，深层只读未证明；六份 loader 的旧红矩阵仍不足 |
+| `PromptConfigurationLoader.cs:54,63`、`PromptRuleRegistry.cs:8`、`RevisionedPromptConfigurationStore.cs:19`、`PromptRevisionedDerivedCache.cs:6`；`AIConfigHandler.cs:2069,7838` | 六份生产 loader 与同 ID 覆盖归 Configuration，完整 replacement 原子换代；内置 RP 文本只缓存原文、每次 fallback 重新建模，避免旧代修改污染新代；静态 registry 和排除提示列表按 revision 懒建，旧 getter/reload 不变 | 配置模型仍内部可变，深层只读未证明；所有旧红／真实 getter 并发契约未全覆盖 |
 | `PromptCandidateSelection.cs:24`、`PromptCandidateSnapshotIndex.cs:8`、`IntentQueryOptimizer.cs:9`、`PromptListRetrievalService.cs:12` | 唯一意图算法、纯候选排序及 80-key／10 分钟 store 接旧候选门面 | 游戏对象别名、授权 payload、全量与展示 scope 留适配；My/Reward/Scene/Native/Policy 全消费者生产契约未齐 |
-| `PromptRuleSemanticRecall.cs:25`、`PromptRuleAggregation.cs:15`、`PromptRuleFinalRanking.cs:30`、`PromptRuleRanking.cs:43`、`PromptSingleEvaluationCache.cs:6`；`AIConfigHandler.cs:5222` | seed/vector 对比只算一次，跨意图聚合、最终命中/诊断、rerank 预算、候选排序及单评估缓存归 Retrieval；MCM 单次捕获与实时资格列表进入 key | ONNX/辅助网络调用及评估编排仍在 `AIConfigHandler`，真实 provider 路径未验 |
+| `PromptRuleSemanticRecall.cs:25`、`PromptRuleIntentSelection.cs:45`、`PromptRuleTextEvidence.cs:8`、`PromptRuleEvaluationAssembler.cs:18`、`PromptRuleEvaluationModels.cs:61`、`PromptAuxiliaryRuleEvaluation.cs:15`、`PromptRuleEvaluationCacheKey.cs:3`；`AIConfigHandler.cs:4950` | seed/vector、逐意图重排/失败回退、跨意图聚合、最终命中诊断和辅助评分均归 Retrieval；MCM 单次捕获、目标资格与 revision 进入唯一 key，旧入口接新 owner | `AIConfigHandler.TryGetGuardrailEvalSnapshot` 仍编排真实 ONNX／辅助网络、游戏资格、日志及缓存发布；真实 provider 路径未验，尚不能把它标成完全薄适配 |
 | `PromptAuxiliaryMentionStore.cs:7`、`PromptStickyRuleStore.cs:20`、`PromptSemanticVectorCache.cs:6`、`PromptSemanticWarmupSeedBatch.cs:8`；`AIConfigHandler.cs:2298,2345,6035` | 64 实体 FIFO、三轮 sticky 衰减、1024/256 向量缓存与 seed 捕获归 Retrieval；sticky 跨 reload 保留、旧代结果拒收 | sticky 目标总量原本无上限；实际辅助网络/游戏资格仍留旧适配，实机未验 |
 | `PromptRetrievalContextOwner.cs:25`、`PromptRetrievalOperationScope.cs:7`、`AIConfigHandler.cs:3104`；`ShoutBehavior.cs`／`MyBehavior.cs` 具名入口 | AsyncLocal 嵌套 scope 与配置 pin；退出恢复父值，mentions 有显式交付接缝 | 全具名入口的异常/yield/mentions 生产闭包未完整证明，J04 完整三渠道线程捕获不在此包 |
 
-离线已跑：配置 22、检索 88、Courier prompt 252/59、Courier postprocess 39、Scene parity 71／queue 37／lifetime 30、Native preparation 589／admission 44／completion 184／pending 111／history 852，以及 Debug／Release 原脚本 1.3／1.4／Bootstrap（无 Stage/Deploy）。PersistenceProfileConfigContract 仍失败 `extra=['synthetic-only-key']`，不能算通过。J03 维持 `PARTIAL / NOT_ACCEPTED`；实机、旧档、真实 provider 均 `NOT-RUN`。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。
+离线已跑：配置 31（含内置 RP 共享旧红）、检索 119（直接编译生产候选 facade 与 warmup coordinator）、Courier prompt 252/59、Courier postprocess 39、Scene parity 71／queue 37／lifetime 30、Native preparation 589／admission 44／completion 184／pending 111／history 852，以及最终生产源码 Debug／Release 原脚本 1.3／1.4／Bootstrap（无 Stage/Deploy）。PersistenceProfileConfigContract 仍失败 `extra=['synthetic-only-key']`：runner 的全仓源码扫描将 `tests/modules/AF.Module.Llm/Protocol/Program.cs` 中合成 key 算进存档 catalog；不能算通过或放宽断言。J03 维持 `PARTIAL / NOT_ACCEPTED`；实机、旧档、真实 provider 均 `NOT-RUN`。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。
 
 ## 以下为 J02 历史范围记录
 
