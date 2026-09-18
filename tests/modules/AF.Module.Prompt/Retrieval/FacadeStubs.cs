@@ -51,6 +51,32 @@ namespace TaleWorlds.Core
 
 namespace AnimusForge
 {
+    internal static class Logger { internal static void Log(string category, string message) { } }
+    internal sealed class OnnxEmbeddingEngine
+    {
+        internal static readonly OnnxEmbeddingEngine Instance = new OnnxEmbeddingEngine();
+        internal string LastError => "";
+        internal bool TryGetEmbedding(string text, out float[] vector) { vector = new[] { 1f }; return true; }
+    }
+    internal sealed class OnnxCrossEncoderReranker
+    {
+        internal static readonly OnnxCrossEncoderReranker Instance = new OnnxCrossEncoderReranker();
+        internal string LastError => "";
+        internal bool TryScore(string query, string document, out float score) { score = 1f; return true; }
+    }
+    internal static class AIConfigHandler
+    {
+        internal static PromptSemanticWarmupSeedBatch ReceivedWarmupSeeds;
+        internal static string ReceivedWarmupSource;
+        internal static int ReceivedWarmupThread;
+        internal static void TryStartBackgroundSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)
+        {
+            ReceivedWarmupSeeds = seeds;
+            ReceivedWarmupSource = source;
+            ReceivedWarmupThread = Environment.CurrentManagedThreadId;
+        }
+    }
+
     internal sealed class DuelSettings
     {
         internal int PromptListCandidateMaxCount = 10;

@@ -412,6 +412,15 @@ internal static class Program
             "production settlement-transfer scopes keep full authorization separate from display");
         Check(PromptListRetrievalService.BuildMentionTerms(new MentionedWorldEntities { Entities = new List<string> { "政策", "政策", " 王国 " } })
             .SequenceEqual(new[] { "政策", "王国" }), "policy mention consumer shares production normalization");
+        var missionSeed = new PromptSemanticWarmupSeedBatch(42, new[] { "seed-at-mission-start" });
+        int missionThread = Environment.CurrentManagedThreadId;
+        RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start", missionSeed);
+        Check(SpinWait.SpinUntil(() => Volatile.Read(ref AIConfigHandler.ReceivedWarmupSeeds) != null,
+                TimeSpan.FromSeconds(5)), "production coordinator completes bounded background warmup");
+        Check(ReferenceEquals(AIConfigHandler.ReceivedWarmupSeeds, missionSeed)
+            && AIConfigHandler.ReceivedWarmupSource == "rag_warmup_complete"
+            && AIConfigHandler.ReceivedWarmupThread != missionThread,
+            "coordinator background callback passes caller-captured seed without recapturing game state");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
