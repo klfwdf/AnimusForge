@@ -35,3 +35,11 @@
 - 未验证：真实导演/生图服从率、原生 GPU 导出、实际遮发遮须显示及新的成图。未增加自动视觉对照校验；离线测试仅证明请求和事实路由，不证明模型一定准确还原。还需用同一尼丰装备以及开面/全包覆头盔实机对照。
 
 回滚仅定向 `git revert b36fe53b`；不得回滚检查点中保留的用户原有工作或重置整个工作树。
+
+## 用户授权部署（2026-09-18 15:48:59）
+
+用户随后明确要求部署。通过原 `tools/deploy_illustrator.ps1 -Configuration Release -BannerlordApi auto` 重建并覆盖独立 `Modules/AnimusForge_Illustrator`，自动识别游戏 `v1.4.8` / API 1.4，0 warning/error。未覆盖主模块或游戏原版 DLL。部署时未检测到 Bannerlord 进程。
+
+实际部署 DLL SHA256：`8A841CFED9EC939DDE8C84704DCEB2F69DD37EA65A977A6A21C524CC2B69AC79`。DLL/PDB、SubModule.xml、5 个 prefab 共 8 文件均与部署构建来源哈希一致；对游戏目录中的实际 DLL 执行 **96 PASS / 0 FAIL**。记录在 `artifacts/illustrator-appearance-fidelity/deploy.txt`、`deployed-hashes.json`、`audit-deployed.txt`。部署重建路径不同，PDB/确定性产物以本次部署构建为核对对象。
+
+旧模块完整备份：`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-154859`。需要游戏端回滚时，从此备份定向恢复模块文件；源码回滚仍使用上方提交。旧缓存图片不会因部署改变；须启动游戏并重新生成，尚未完成 GPU/真实模型成图验收。

@@ -1,5 +1,9 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 生图部署更新（2026-09-18 15:48:59）
+
+用户授权后，已通过原独立生图部署脚本将含 `b36fe53b` 的当前工作区构建部署到游戏 `v1.4.8` 的 `Modules/AnimusForge_Illustrator`。构建 0 warning/error，8 文件哈希一致，实际部署 DLL 96 PASS/0 FAIL；DLL SHA256 `8A841CFED9EC939DDE8C84704DCEB2F69DD37EA65A977A6A21C524CC2B69AC79`。旧版备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-154859`。未推送、未启动游戏，真实出图仍待验收；详见 [外观保真报告部署节](docs/audits/2026-09-18-illustrator-appearance-fidelity.md)。下方“未部署”为此前修复完成时状态。
+
 ## 会话外观与现场时段保真（2026-09-18）
 
 `b36fe53b` 修复按装备名称推断冠冕造型、遮发遮须误推全脸遮覆、会话战役时间冒充现场日夜；导演须转写可见装备特征，Chat/Edits 共用参考外观优先规则。游戏隐藏须发标记和原生装备渲染保持。双 API 构建各 0 warning/error，实际 DLL 各 96 PASS/0 FAIL；未付费生图、未部署、未推送，尚无新成图/原生渲染验收。检查点 `5eca84eb`，回滚只定向 revert `b36fe53b`。核实源码坐标、日志证据、性能与边界见 [外观保真报告](docs/audits/2026-09-18-illustrator-appearance-fidelity.md)。
