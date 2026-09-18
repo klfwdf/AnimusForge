@@ -244,6 +244,17 @@ internal static class Program
         Check(semanticRecall.BestInput[0] == 1f && semanticRecall.BestIntent[0] == "second" && semanticRecall.BestContext[0] == 1f,
             "aggregate and context use the same scoring evidence");
         Check(semanticRecall.BestInput[1] == 0f && semanticRecall.Seed(0, 1) == "", "unavailable embedding preserves zero-score fallback");
+        var aggregate = new PromptRuleAggregation();
+        aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
+        aggregate.Add("marriage", 0.6f, 1, "second", "intent b");
+        aggregate.Add("kingdom_service", 0.58f, 1, "other", "intent b");
+        var aggregates = aggregate.Select(2, 4, 2);
+        Check(aggregates.Count == 2 && aggregates[0].RuleId == "marriage" && Math.Abs(aggregates[0].AmpScore - 0.63f) < 0.0001f,
+            "cross-intent aggregation applies repeat bonus and stable ranking");
+        Check(aggregates[0].BestScore == 0.6f && aggregates[0].BestRank == 1 && aggregates[0].MatchedSeed == "second",
+            "aggregation preserves highest-scoring seed, intent and best rank");
+        aggregate.Add("MARRIAGE", 0.8f, 1, "third", "intent c");
+        Check(aggregate.Select(2, 4, 3)[0].HitCount == 3, "same rule ID aggregates case-insensitively");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

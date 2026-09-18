@@ -166,23 +166,6 @@ public static class AIConfigHandler
 		public string MatchedIntent;
 	}
 
-	private sealed class GuardrailRuleAggregate
-	{
-		public GuardrailRuleEval Eval;
-
-		public float ScoreSum;
-
-		public int HitCount;
-
-		public int BestRank = int.MaxValue;
-
-		public float BestScore;
-
-		public string MatchedSeed;
-
-		public string MatchedIntent;
-	}
-
 	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
 	{
 		string text = (detail ?? "").Trim();
@@ -5380,7 +5363,7 @@ public static class AIConfigHandler
 			}
 			string text4 = (flag2 ? ((list.Count > 1) ? "rerank_multi" : "rerank") : ((list.Count > 1) ? "semantic_multi" : "semantic"));
 			guardrailEvalSnapshot.MatchMode = text4;
-			Dictionary<string, GuardrailRuleAggregate> dictionary2 = new Dictionary<string, GuardrailRuleAggregate>(StringComparer.OrdinalIgnoreCase);
+			PromptRuleAggregation aggregatedScores = new PromptRuleAggregation();
 			for (int k = 0; k < list.Count; k++)
 			{
 				GuardrailIntentInput guardrailIntentInput = list[k];
@@ -5444,36 +5427,11 @@ public static class AIConfigHandler
 				List<GuardrailRuleScore> list8 = SelectGuardrailCandidateScores(list7, (flag2 && flag3) ? "cross_encoder" : "recall_fallback", guardrailIntentInput.Text, num12);
 				for (int num14 = 0; num14 < list8.Count; num14++)
 				{
-					GuardrailRuleScore guardrailRuleScore2 = list8[num14];
-					if (guardrailRuleScore2?.Rule == null)
-					{
-						continue;
-					}
-					string text8 = (guardrailRuleScore2.Rule.Id ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text8) || !guardrailEvalSnapshot.Rules.TryGetValue(text8, out var value2))
-					{
-						continue;
-					}
-					if (!dictionary2.TryGetValue(text8, out var value3))
-					{
-						value3 = new GuardrailRuleAggregate
-						{
-							Eval = value2
-						};
-					}
-					value3.ScoreSum += guardrailRuleScore2.FinalScore;
-					value3.HitCount++;
-					if (num14 + 1 < value3.BestRank)
-					{
-						value3.BestRank = num14 + 1;
-					}
-					if (guardrailRuleScore2.FinalScore >= value3.BestScore)
-					{
-						value3.BestScore = guardrailRuleScore2.FinalScore;
-						value3.MatchedSeed = guardrailRuleScore2.MatchedSeed;
-						value3.MatchedIntent = guardrailRuleScore2.MatchedIntent;
-					}
-					dictionary2[text8] = value3;
+					GuardrailRuleScore score = list8[num14];
+					if (score?.Rule == null) continue;
+					string id = (score.Rule.Id ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(id) || !guardrailEvalSnapshot.Rules.ContainsKey(id)) continue;
+					aggregatedScores.Add(id, score.FinalScore, num14 + 1, score.MatchedSeed, score.MatchedIntent);
 				}
 			}
 			for (int num15 = 0; num15 < list4.Count; num15++)
@@ -5487,47 +5445,18 @@ public static class AIConfigHandler
 					guardrailRuleEval2.MatchMode = text4;
 				}
 			}
-			int num16 = 0;
-			if (dictionary2.Count > 0)
+			List<PromptRuleAggregatedScore> rankedAggregates = aggregatedScores.Select(guardrailReturnCapFromMcm, guardrailPerIntentRerank, list.Count);
+			int num16 = rankedAggregates.Count;
+			for (int num18 = 0; num18 < rankedAggregates.Count; num18++)
 			{
-				int num17 = Math.Max(guardrailReturnCapFromMcm * 2, guardrailPerIntentRerank * Math.Min(list.Count, 3));
-				if (num17 < guardrailReturnCapFromMcm)
-				{
-					num17 = guardrailReturnCapFromMcm;
-				}
-				if (num17 > 24)
-				{
-					num17 = 24;
-				}
-				List<GuardrailRuleAggregate> list9 = (from x in dictionary2.Values
-					orderby Math.Min(1f, x.ScoreSum / (float)Math.Max(1, x.HitCount) + (float)(x.HitCount - 1) * 0.08f) descending, x.BestRank
-					select x).ThenBy((GuardrailRuleAggregate x) => x?.Eval?.RuleTag ?? "", StringComparer.OrdinalIgnoreCase).Take(num17).ToList();
-				num16 = list9.Count;
-				for (int num18 = 0; num18 < list9.Count; num18++)
-				{
-					GuardrailRuleAggregate guardrailRuleAggregate = list9[num18];
-					if (guardrailRuleAggregate?.Eval == null)
-					{
-						continue;
-					}
-					float num19 = guardrailRuleAggregate.ScoreSum / (float)Math.Max(1, guardrailRuleAggregate.HitCount) + (float)(guardrailRuleAggregate.HitCount - 1) * 0.08f;
-					if (num19 > 1f)
-					{
-						num19 = 1f;
-					}
-					guardrailRuleAggregate.Eval.Candidate = true;
-					guardrailRuleAggregate.Eval.AmpScore = num19;
-					guardrailRuleAggregate.Eval.RerankScore = guardrailRuleAggregate.BestScore;
-					guardrailRuleAggregate.Eval.MatchMode = text4;
-					if (!string.IsNullOrWhiteSpace(guardrailRuleAggregate.MatchedSeed))
-					{
-						guardrailRuleAggregate.Eval.MatchedSeed = guardrailRuleAggregate.MatchedSeed;
-					}
-					if (!string.IsNullOrWhiteSpace(guardrailRuleAggregate.MatchedIntent))
-					{
-						guardrailRuleAggregate.Eval.MatchedIntent = guardrailRuleAggregate.MatchedIntent;
-					}
-				}
+				PromptRuleAggregatedScore aggregate = rankedAggregates[num18];
+				if (!guardrailEvalSnapshot.Rules.TryGetValue(aggregate.RuleId, out var eval)) continue;
+				eval.Candidate = true;
+				eval.AmpScore = aggregate.AmpScore;
+				eval.RerankScore = aggregate.BestScore;
+				eval.MatchMode = text4;
+				if (!string.IsNullOrWhiteSpace(aggregate.MatchedSeed)) eval.MatchedSeed = aggregate.MatchedSeed;
+				if (!string.IsNullOrWhiteSpace(aggregate.MatchedIntent)) eval.MatchedIntent = aggregate.MatchedIntent;
 			}
 			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.Candidate ? 1 : 0).ThenByDescending((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
 			float num20 = ((list4.Count > 0) ? list4.Average((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw) : 0f);
