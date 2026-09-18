@@ -27,7 +27,7 @@
 | `Core/VisualDirectorEngine.cs:225–239` | `BuildLocalSceneDirection`；中性百科回退 |
 | `Core/VisualFidelityRules.cs:5–22` | `GetEssentialContract`；按模式限定人物关系规则 |
 | `Context/ConversationContextExtractor.cs:42–85,368–405,513–516` | `BuildHardFacts`、`BuildArtDirection`、`DescribeMountState`；事实与指导分离 |
-| `Context/EnvironmentVisualExtractor.cs:205–262,339–343` | `ResolveBesiegedLocation` 与生产接线；围城场景分类 |
+| `Context/EnvironmentVisualExtractor.cs:205–256,339–343` | `ResolveBesiegedLocation` 与生产接线；围城场景分类 |
 | `UI/Overlays/IllustrationCardPopup.cs:231–264,384–432` | 百科、会话参考图显式标记；移除固定左右机位要求 |
 | `UI/Patches/WeeklyReportPopupIllustrationPatch.cs:331–359` | 周报人物图、纹章图显式标记 |
 
