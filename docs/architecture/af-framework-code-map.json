@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "d11eb572dad1f0d8f7ca57d9fc234733fc2091a8",
+  "sourceRevision": "2f11b09e33eb8b6299beb444ee1cba04ee4d4c2c",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -161,46 +161,46 @@
     {
       "id": "native.history.bridge",
       "path": "ShoutBehavior.cs",
-      "start": 16172,
-      "end": 16175,
+      "start": 16173,
+      "end": 16176,
       "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "59f45fa3d95a80eaefefe50c7db0c18a4f391aa0f3725b8f1602e07abcb117ce"
+      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
     },
     {
       "id": "native.history.dispatch",
       "path": "ShoutBehavior.cs",
-      "start": 20166,
-      "end": 20169,
+      "start": 20167,
+      "end": 20170,
       "symbol": "\"persisted_history_capture\", nativeTargetLog, nativeTargetAgentIndex,",
       "match": "exact",
       "status": "mixed-host",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "59f45fa3d95a80eaefefe50c7db0c18a4f391aa0f3725b8f1602e07abcb117ce"
+      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
     },
     {
       "id": "native.history.accept",
       "path": "ShoutBehavior.cs",
-      "start": 20208,
-      "end": 20211,
+      "start": 20209,
+      "end": 20212,
       "symbol": "if (!await RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
       "match": "contains",
       "status": "mixed-host",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "59f45fa3d95a80eaefefe50c7db0c18a4f391aa0f3725b8f1602e07abcb117ce"
+      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
     },
     {
       "id": "native.dispatch.shared",
       "path": "ShoutBehavior.cs",
-      "start": 19429,
-      "end": 19432,
+      "start": 19430,
+      "end": 19433,
       "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "59f45fa3d95a80eaefefe50c7db0c18a4f391aa0f3725b8f1602e07abcb117ce"
+      "fileSha256": "7c3b1c096dfe99535321fd9e4fce531c36247afe26c907fee0b8d0233e071d34"
     },
     {
       "id": "memory.acceptance",
@@ -2057,8 +2057,8 @@
       "end": 19,
       "symbol": "internal sealed class RevisionedPromptConfigurationStore<T> where T : class",
       "match": "exact",
-      "status": "partial-owner",
-      "note": "串行发布、revision、AsyncLocal 捕获；实际六份 loader 仍在旧门面",
+      "status": "owner",
+      "note": "串行完整替换与 revision 发布；模型内部仍可变，需补深层不可变证明",
       "fileSha256": "d6b9c7af61336a020ee4aa9ca43fd77b6ed4e760617f8f313a4eaf7886e5f44e"
     },
     {
@@ -2068,20 +2068,20 @@
       "end": 35,
       "symbol": "public static class AIConfigHandler",
       "match": "exact",
-      "status": "remaining-facade",
-      "note": "保留公开入口；六份加载算法及规则召回评分仍在此类",
-      "fileSha256": "afe16caaa0fc980b3b4fa332f17607613991e7b253459c97906941fbd525835d"
+      "status": "remaining-adapter",
+      "note": "旧 getter/reload 与游戏、网络窄适配仍保留；部分评估编排仍在旧类",
+      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
     },
     {
       "id": "j03.config.reload",
       "path": "AIConfigHandler.cs",
-      "start": 9191,
-      "end": 9191,
+      "start": 8301,
+      "end": 8301,
       "symbol": "public static void ReloadConfig()",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "六份本地加载后发布快照；异常回退换代",
-      "fileSha256": "afe16caaa0fc980b3b4fa332f17607613991e7b253459c97906941fbd525835d"
+      "note": "旧签名转接 PromptConfigurationLoader 与 revisioned store",
+      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
     },
     {
       "id": "j03.retrieval.intent",
@@ -2134,42 +2134,185 @@
       "end": 25,
       "symbol": "internal static class PromptRetrievalContextOwner",
       "match": "exact",
-      "status": "partial-owner",
-      "note": "ambient copy-on-write 与嵌套 scope；规则检索与 sticky 尚未迁移",
+      "status": "owner",
+      "note": "copy-on-write ambient 与可嵌套 scope，mentions 显式交付仍需消费者全覆盖",
       "fileSha256": "ec79930cd56b6f0e09f2f04b11738d805fa9e7f6ba2512a188da6760b54ea816"
     },
     {
       "id": "j03.retrieval.scope",
       "path": "AIConfigHandler.cs",
-      "start": 3520,
-      "end": 3520,
-      "symbol": "internal static IDisposable BeginGuardrailRuntimeScope() => PromptRetrievalContextOwner.BeginScope((parent, child) =>",
+      "start": 3104,
+      "end": 3104,
+      "symbol": "internal static IDisposable BeginGuardrailRuntimeScope()",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "旧门面合并 mentions；My/Scene/Native 使用 finally 恢复",
-      "fileSha256": "afe16caaa0fc980b3b4fa332f17607613991e7b253459c97906941fbd525835d"
+      "note": "配置 revision 与请求上下文共同 pin；退出恢复父 scope",
+      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
     },
     {
       "id": "j03.retrieval.rules.remaining",
       "path": "AIConfigHandler.cs",
-      "start": 2420,
-      "end": 2420,
+      "start": 2167,
+      "end": 2167,
       "symbol": "private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()",
       "match": "exact",
-      "status": "remaining-owner",
-      "note": "规则选择仍在旧类，J03d 未完成",
-      "fileSha256": "afe16caaa0fc980b3b4fa332f17607613991e7b253459c97906941fbd525835d"
+      "status": "remaining-adapter",
+      "note": "按目标资格过滤与游戏读取仍在旧类；评估编排/最终命中判断亦未全迁",
+      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
     },
     {
       "id": "j03.retrieval.warmup.remaining",
       "path": "AIConfigHandler.cs",
-      "start": 2575,
-      "end": 2575,
-      "symbol": "private static void RunGuardrailSemanticWarmup(string source, long version)",
+      "start": 2345,
+      "end": 2345,
+      "symbol": "private static void RunGuardrailSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)",
+      "match": "exact",
+      "status": "remaining-adapter",
+      "note": "已捕获 seed 后的 embedding 调用与门控保留；旧代迟到结果拒收",
+      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+    },
+    {
+      "id": "j03.config.loader",
+      "path": "src/modules/AF.Module.Prompt/Configuration/PromptConfigurationLoader.cs",
+      "start": 54,
+      "end": 54,
+      "symbol": "internal sealed class PromptConfigurationLoader",
+      "match": "exact",
+      "status": "owner",
+      "note": "六份真实配置加载与各自回退，磁盘/资源通过生产文件端口",
+      "fileSha256": "9e61e4bf5f2ec8558397cd2ea00630bcc5328daf67aba540d9dc4ff47e28f0ad"
+    },
+    {
+      "id": "j03.config.registry",
+      "path": "src/modules/AF.Module.Prompt/Configuration/PromptRuleRegistry.cs",
+      "start": 8,
+      "end": 8,
+      "symbol": "internal static class PromptRuleRegistry",
+      "match": "exact",
+      "status": "owner",
+      "note": "静态规则归一化、同 ID 覆盖",
+      "fileSha256": "51e716d056393b563b0f11d56e42f389565365d062c010f9de9330f596b8fbd3"
+    },
+    {
+      "id": "j03.config.derived",
+      "path": "src/modules/AF.Module.Prompt/Configuration/PromptRevisionedDerivedCache.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal sealed class PromptRevisionedDerivedCache<T> where T : class",
+      "match": "exact",
+      "status": "owner",
+      "note": "版本派生值懒建；旧代结果不覆盖新代",
+      "fileSha256": "d44fc8a21b6faf92a85325758dd2baa0740a40b0bf439797b1ef128d73f44fd6"
+    },
+    {
+      "id": "j03.retrieval.operation",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalOperationScope.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class PromptRetrievalOperationScope : IDisposable",
+      "match": "exact",
+      "status": "owner",
+      "note": "嵌套请求 scope 同时 pin 配置与上下文",
+      "fileSha256": "d09a8fb5863fd999092dcd5f9ef52e855c0a05d89ce4893afd9c760ee9ae4150"
+    },
+    {
+      "id": "j03.retrieval.warmup-seed",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptSemanticWarmupSeedBatch.cs",
+      "start": 8,
+      "end": 8,
+      "symbol": "internal sealed class PromptSemanticWarmupSeedBatch",
+      "match": "exact",
+      "status": "owner",
+      "note": "所属线程捕获 detached seed 与 revision",
+      "fileSha256": "bba402f4f67dbb20db2d8c1eb4d1e08046c6d75d5c2cd693cc0e8a0327de1aac"
+    },
+    {
+      "id": "j03.retrieval.auxiliary",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptAuxiliaryMentionStore.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class PromptAuxiliaryMentionStore",
+      "match": "exact",
+      "status": "owner",
+      "note": "64 FIFO、clone 与 merge；网络和游戏对象不进入 owner",
+      "fileSha256": "8630f2be522a955ee776a669a25aac7c3ba5228227df44197f279dc3e593a644"
+    },
+    {
+      "id": "j03.retrieval.vectors",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptSemanticVectorCache.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal sealed class PromptSemanticVectorCache",
+      "match": "exact",
+      "status": "owner",
+      "note": "1024 phrase / 256 input 缓存与旧代拒收",
+      "fileSha256": "2df9dc9e45cc8e0af742ee02d91f9d092916db563f2e6b824b0a2957c8a7ceda"
+    },
+    {
+      "id": "j03.retrieval.eval-cache",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptSingleEvaluationCache.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal sealed class PromptSingleEvaluationCache<T> where T : class",
+      "match": "exact",
+      "status": "owner",
+      "note": "单条评估缓存，revision 与资格/MCM key 由旧适配构造",
+      "fileSha256": "6e99ee9181138feb785f9f39d16a0b2c06f7fbde7cf17b8f889126375040d196"
+    },
+    {
+      "id": "j03.retrieval.ranking",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptRuleRanking.cs",
+      "start": 43,
+      "end": 43,
+      "symbol": "internal static class PromptRuleRanking",
+      "match": "exact",
+      "status": "owner",
+      "note": "预算、候选排序和词面命中纯算法",
+      "fileSha256": "90c51055c69ba0ea65155a4e154c6b2204ed944f81ee0c76c470ff0e74332006"
+    },
+    {
+      "id": "j03.retrieval.recall",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptRuleSemanticRecall.cs",
+      "start": 25,
+      "end": 25,
+      "symbol": "internal sealed class PromptRuleSemanticRecall",
+      "match": "exact",
+      "status": "owner",
+      "note": "单次 seed/vector 语义召回矩阵，供每意图及聚合共用",
+      "fileSha256": "9d19eaa0ef68e2e52a22b4d0eec995a40e8f5fb24e5a0ac0d97f6692534045d8"
+    },
+    {
+      "id": "j03.retrieval.aggregate",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptRuleAggregation.cs",
+      "start": 15,
+      "end": 15,
+      "symbol": "internal sealed class PromptRuleAggregation",
+      "match": "exact",
+      "status": "owner",
+      "note": "跨意图得分、repeat bonus、pool 排序",
+      "fileSha256": "c4b074d4b3f0fb2a6bb60da58f242726f54a79eb0446206314582ab7753ed2cb"
+    },
+    {
+      "id": "j03.retrieval.sticky",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptStickyRuleStore.cs",
+      "start": 20,
+      "end": 20,
+      "symbol": "internal sealed class PromptStickyRuleStore",
+      "match": "exact",
+      "status": "owner",
+      "note": "目标 sticky 状态、三轮衰减及资格拒收；跨 reload 保留",
+      "fileSha256": "a9e94cff3f8c6782058c64b825f62e29b59911c8afe8c2a9a62cf51fe9e1223d"
+    },
+    {
+      "id": "j03.retrieval.eval.remaining",
+      "path": "AIConfigHandler.cs",
+      "start": 5224,
+      "end": 5224,
+      "symbol": "private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)",
       "match": "exact",
       "status": "remaining-owner",
-      "note": "warmup 旧类实现；seed 所属线程捕获尚未完成",
-      "fileSha256": "afe16caaa0fc980b3b4fa332f17607613991e7b253459c97906941fbd525835d"
+      "note": "rerank 网络接缝、最终命中判定与评估编排尚在旧类",
+      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
     }
   ]
 }
