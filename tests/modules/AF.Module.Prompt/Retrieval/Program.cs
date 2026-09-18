@@ -285,6 +285,36 @@ internal static class Program
         Check(!evalSnapshot.Rules["reward"].Hit && evalSnapshot.Rules["reward"].RejectReason == "rerank_recall_miss"
             && evalSnapshot.Rules["marriage"].MatchedIntent == "request",
             "production evaluator preserves miss reason and matched intent in shared snapshot");
+        var auxSnapshot = PromptAuxiliaryRuleEvaluation.Create("aux", "  hello\nworld  ", 2,
+            new[] { "reward", "marriage", "unselected" });
+        var auxTopics = new[]
+        {
+            new GuardrailAuxiliaryTopic { Number = 1, Code = "REWARD", RuleId = "reward", Label = "Rewards" },
+            new GuardrailAuxiliaryTopic { Number = 2, Code = "MARRIAGE", RuleId = "marriage", Label = "Marriage" }
+        };
+        var auxSelected = PromptAuxiliaryRuleEvaluation.Apply(auxSnapshot, auxTopics,
+            new[] { "REWARD", "REWARD", "MARRIAGE", "UNKNOWN" });
+        Check(auxSelected.SequenceEqual(new[] { "reward", "marriage" }) && auxSnapshot.Rules["reward"].Hit
+            && auxSnapshot.Rules["marriage"].Rank == 2, "auxiliary path deduplicates codes and respects return cap");
+        Check(Math.Abs(auxSnapshot.Rules["reward"].TopGap - 0.08f) < 0.0001f
+            && auxSnapshot.Rules["marriage"].MaxOtherTag == "reward"
+            && auxSnapshot.Rules["unselected"].RejectReason == "auxiliary_api_miss",
+            "auxiliary path preserves score diagnostics and miss fallback");
+        Check(auxSnapshot.Rules["reward"].MatchedIntent == "hello world"
+            && auxSnapshot.Rules["reward"].MatchedSeed == "Rewards", "auxiliary evaluation retains detached evidence");
+        var configuredTopics = new[]
+        {
+            new GuardrailRulePromptConfig { Id = "marriage", TopicNumber = 3, TopicLabel = " Marriage ", Code = "MARRIAGE" },
+            new GuardrailRulePromptConfig { Id = "reward", TopicNumber = 1, TopicLabel = "Rewards", Code = "REWARD" },
+            new GuardrailRulePromptConfig { Id = "hidden", TopicNumber = 2, TopicLabel = "Hidden", Code = "HIDDEN" }
+        };
+        var eligibleTopics = PromptAuxiliaryRuleEvaluation.EligibleTopics(configuredTopics,
+            new[] { "reward", "marriage", "hidden" }, true, (code, _, _) => code, id => id != "hidden");
+        Check(eligibleTopics.Select(topic => topic.RuleId).SequenceEqual(new[] { "reward", "marriage" })
+            && eligibleTopics[1].Label == "Marriage", "auxiliary topics respect captured eligibility and topic order");
+        Check(PromptAuxiliaryRuleEvaluation.EligibleTopics(configuredTopics, new[] { "hidden" }, false,
+            (code, _, _) => code, _ => throw new Exception("eligibility bypass must not inspect game state")).Single().RuleId == "hidden",
+            "auxiliary topics bypass runtime eligibility for explicit full scope");
         var aggregate = new PromptRuleAggregation();
         aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
         aggregate.Add("marriage", 0.6f, 1, "second", "intent b");
@@ -317,6 +347,10 @@ namespace AnimusForge
 {
     public sealed class GuardrailRulePromptConfig
     {
+        public string Id = "";
+        public string TopicLabel = "";
+        public int TopicNumber;
+        public string Code = "";
         public bool IsEnabled;
         public string Instruction = "";
         public List<string> TriggerKeywords = new List<string>();
