@@ -184,6 +184,14 @@ internal static class Program
             "rule ranking excludes NaN and keeps source index");
         Check(PromptRuleRanking.TryLexicalHit("", "请谈长剑", new[] { "短剑", " 长剑 " }, out var keyword) && keyword == "长剑",
             "lexical rule matcher checks secondary input and preserves keyword order");
+        var evalCache = new PromptSingleEvaluationCache<string>();
+        evalCache.Publish("target-a", "old", 1, 1);
+        Check(evalCache.TryGet("target-a", 1, out var cached) && cached == "old", "evaluation cache hit matches key and revision");
+        Check(!evalCache.TryGet("target-b", 1, out _) && !evalCache.TryGet("target-a", 2, out _), "evaluation cache isolates targets and revisions");
+        evalCache.Publish("target-a", "late", 1, 2);
+        Check(evalCache.TryGet("target-a", 1, out cached) && cached == "old", "late evaluation cannot replace current entry");
+        evalCache.Clear();
+        Check(!evalCache.TryGet("target-a", 1, out _), "reload clears derived evaluation");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
