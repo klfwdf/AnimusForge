@@ -181,6 +181,19 @@ internal static class Program
             Check(pending.GetAwaiter().GetResult().Value.Guardrail.Marker == "new-rule", "production reload publishes complete replacement");
         }
         io.BlockedPath = null;
+        var hitStore = new RevisionedPromptConfigurationStore<PromptConfigurationSnapshot>(before.Value);
+        using (hitStore.BeginCapture())
+        {
+            var pinned = hitStore.Read();
+            Task.Run(() => hitStore.Reload(() => store.Capture().Value,
+                _ => throw new Exception("unexpected"))).GetAwaiter().GetResult();
+            Check(hitStore.Capture().Revision != pinned.Revision && hitStore.Read().Revision == pinned.Revision,
+                "outer hit scope keeps evaluation and registry on one revision across reload");
+            Check(hitStore.Read().Value.Guardrail.Marker == "rule-user"
+                && hitStore.Capture().Value.Guardrail.Marker == "new-rule",
+                "outer hit scope reads old rule text while next revision is live");
+        }
+        Check(hitStore.Read().Value.Guardrail.Marker == "new-rule", "outer hit scope releases pinned revision");
         io.Put("RuleBehaviorPrompts.json", "not-json");
         var failure = store.Reload(() => loader.Load().Snapshot, _ => throw new Exception("unexpected"));
         Check(failure.Revision == before.Revision + 2 && failure.Value.Main.Marker == "default", "production outer failure also replaces and advances revision");
