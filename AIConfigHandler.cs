@@ -100,12 +100,12 @@ public static class AIConfigHandler
 		new PromptConfigurationLoader(new ProductionPromptConfigurationFiles());
 	private static readonly object _promptConfigurationReloadLock = new object();
 
-	private static AIConfigModel _config => _promptConfiguration.Read().Value.Main;
-	private static GuardrailConfigModel _guardrail => _promptConfiguration.Read().Value.Guardrail;
-	private static ActionPostprocessConfigModel _actionPostprocess => _promptConfiguration.Read().Value.ActionPostprocess;
-	private static PreprocessPromptsConfigModel _preprocessPrompts => _promptConfiguration.Read().Value.Preprocess;
-	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts => _promptConfiguration.Read().Value.ProactiveRequest;
-	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts => _promptConfiguration.Read().Value.RpItemIntroduction;
+	private static AIConfigModel _config => _promptConfiguration.Read().Value.ReadMainForOwner();
+	private static GuardrailConfigModel _guardrail => _promptConfiguration.Read().Value.ReadGuardrailForOwner();
+	private static ActionPostprocessConfigModel _actionPostprocess => _promptConfiguration.Read().Value.ReadActionPostprocessForOwner();
+	private static PreprocessPromptsConfigModel _preprocessPrompts => _promptConfiguration.Read().Value.ReadPreprocessForOwner();
+	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts => _promptConfiguration.Read().Value.ReadProactiveRequestForOwner();
+	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts => _promptConfiguration.Read().Value.ReadRpItemIntroductionForOwner();
 
 	private static List<string> CopyConfigList(List<string> values) => values == null ? new List<string>() : new List<string>(values);
 
@@ -1823,7 +1823,7 @@ public static class AIConfigHandler
 		var revision = _promptConfiguration.Read();
 		return _ruleRegistryCache.GetOrBuild(revision.Revision,
 			() => _promptConfiguration.Capture().Revision,
-			() => PromptRuleRegistry.Build(revision.Value.Guardrail));
+			() => PromptRuleRegistry.Build(revision.Value.ReadGuardrailForOwner()));
 	}
 
 	private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()
@@ -7568,7 +7568,7 @@ public static class AIConfigHandler
 			_guardrailRuntimeTargetKingdomId.Value = "";
 			try
 			{
-				GuardrailConfigModel guardrail = replacement.Guardrail;
+				GuardrailConfigModel guardrail = replacement.ReadGuardrailForOwner();
 				Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。",
 					(guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault(), (guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault(),
 					(guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault(), (guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault(),
