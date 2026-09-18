@@ -32,6 +32,9 @@ namespace AnimusForge.Illustrator.Context
         public string RealProps { get; set; } = string.Empty;
         public bool HasLiveScene { get; set; }
         public string HostSceneDescription { get; set; } = string.Empty;
+        public bool IsIndoor { get; set; }
+        public string CultureTag { get; set; } = string.Empty;
+        public string TerrainTag { get; set; } = string.Empty;
 
         public string BuildHardFactsSummary()
         {
@@ -46,6 +49,9 @@ namespace AnimusForge.Illustrator.Context
                     if ((DateLabel ?? string.Empty).Contains(season)) { sb.AppendLine("【季节参考】" + season); break; }
             if (!string.IsNullOrWhiteSpace(TimeOfDay)) sb.AppendLine($"【现场时段】{TimeOfDay}");
             if (!string.IsNullOrWhiteSpace(Weather)) sb.AppendLine($"【现场天气】{Weather}");
+            if (!string.IsNullOrWhiteSpace(CultureTag)) sb.AppendLine($"【文化归属】{CultureTag}");
+            if (!string.IsNullOrWhiteSpace(TerrainTag)) sb.AppendLine($"【地貌类型】{TerrainTag}");
+            if (IsIndoor) sb.AppendLine("【现场空间】室内");
             if (!string.IsNullOrWhiteSpace(ConflictStatus)) sb.AppendLine($"【冲突状态】{ConflictStatus}");
             string extraSceneFacts = NarrativeFactRouter.SceneEvidence(HostSceneDescription, sb.ToString());
             if (!string.IsNullOrWhiteSpace(extraSceneFacts)) sb.AppendLine("【场景补充事实】" + extraSceneFacts);
@@ -63,15 +69,9 @@ namespace AnimusForge.Illustrator.Context
 
         public string BuildArtDirectionSummary()
         {
-            var sb = new StringBuilder();
-            if (!HasLiveScene && !string.IsNullOrWhiteSpace(IndoorOutdoorDetails)) sb.AppendLine($"【空间氛围参考】{IndoorOutdoorDetails}");
-            if (!HasLiveScene && !string.IsNullOrWhiteSpace(SurroundingCharacters)) sb.AppendLine($"【背景人物建议】{SurroundingCharacters}");
-            if (!HasLiveScene && !string.IsNullOrWhiteSpace(SurroundingProps)) sb.AppendLine($"【背景陈设建议】{SurroundingProps}");
-            if (!HasLiveScene && !string.IsNullOrWhiteSpace(ArchitectureStyle)) sb.AppendLine($"【文化建筑参考】{ArchitectureStyle}");
-            if (!HasLiveScene && !string.IsNullOrWhiteSpace(TerrainAndLandscape)) sb.AppendLine($"【地貌参考】{TerrainAndLandscape}");
-            if (!string.IsNullOrWhiteSpace(Season)) sb.AppendLine($"【季节参考】{Season}");
-            if (!string.IsNullOrWhiteSpace(LightingAndAtmosphere)) sb.AppendLine($"【光线建议】{LightingAndAtmosphere}");
-            return sb.ToString().TrimEnd();
+            // 开放创作授权：不再预写场景散文；细节、陈设、光影由导演依据事实区与人物身份自由推导。
+            return "【开放创作授权】：场景细节、时代陈设、光影氛围与人物姿态由你依据事实区与人物身份全权自由推导创作；" +
+                "事实未覆盖之处可自由发挥，但不得编造与事实冲突的地点、人物、装备或事件结果。";
         }
 
         public string BuildSummary()
@@ -97,15 +97,19 @@ namespace AnimusForge.Illustrator.Context
                 profile.SettlementName = settlement.Name != null ? settlement.Name.ToString() : settlement.StringId;
                 profile.SettlementType = settlement.IsTown ? "雄伟巨城" : (settlement.IsCastle ? "险要要塞城堡" : "乡野村落");
 
-                string cultureCode = settlement.Culture?.StringId?.ToLowerInvariant() ?? "";
-                profile.ArchitectureStyle = ResolveArchitectureStyle(cultureCode, settlement.IsTown, settlement.IsCastle);
+                profile.ArchitectureStyle = ResolveArchitectureStyle(settlement);
                 profile.TerrainAndLandscape = ResolveTerrain(settlement);
+                profile.CultureTag = settlement.Culture?.Name?.ToString() ?? string.Empty;
+                var settlementTerrain = TryGetSettlementTerrain(settlement);
+                if (settlementTerrain.HasValue) profile.TerrainTag = TerrainTagOf(settlementTerrain.Value);
                 profile.ConflictStatus = eventAnchored ? string.Empty : ResolveConflictStatus(settlement);
             }
             else
             {
                 profile.SettlementType = "开阔自然荒野/野外遭遇现场";
                 profile.TerrainAndLandscape = ResolveOverlandTerrain();
+                var overlandTerrain = TryGetOverlandTerrain();
+                if (overlandTerrain.HasValue) profile.TerrainTag = TerrainTagOf(overlandTerrain.Value);
             }
 
             // 2. 纪元日期 + 季节时令（骑砍历法：年 - 季节 - 该季第几日）
@@ -236,25 +240,6 @@ namespace AnimusForge.Illustrator.Context
             {
             }
 
-            if (isUnderSiege)
-            {
-                // 围城下的会话有两种物理现场：城内/城头（菜单或室内 Location）vs Mission 场景中的阵前旷野谈判。
-                if (outdoorMission)
-                {
-                    profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
-                    profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
-                    profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
-                    profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困，双方主将使节在两军阵前的旷野上驻马交涉谈判，身后各自肃立着严阵以待的卫队与绵延军营！";
-                    return;
-                }
-
-                profile.SpecificLocation = "被围攻的要塞城门、护城河壕沟与险峻城堞 (Besieged Fortress Walls, Castle Gate & Ramparts)";
-                profile.IndoorOutdoorDetails = "战云密布的中世纪城堡要塞防御前沿：高耸险峻的石砌城堡城堞与箭垛垛口、紧闭包铁的巨型要塞城门与吊桥，城门外是泥泞深邃的护城河壕沟与拒马鹿砦。空气中弥漫着刺鼻的硝烟与大军围城的肃杀死寂。城头守军据险扼守，城下围城大军严阵以待。";
-                profile.LightingAndAtmosphere = "暗沉肃杀的天光，城堞垛口上烈烈燃烧的火把投下跳跃的橘红光斑，城外远景处漫山遍野隐现着围城大军的篝火宿营与攻城器械巨影 (Dramatic War Torches, Siege Campfires & Chiaroscuro)";
-                profile.ConflictStatus = "【大军围城 · 剑拔弩张】城池正被敌国大军水泄不通地严密围困，城头守将与城下敌将隔着城堞与护城壕进行紧张压迫的战前谈判与意志对决！";
-                return;
-            }
-
             string locId = string.Empty;
             bool isIndoor = false;
 
@@ -294,6 +279,55 @@ namespace AnimusForge.Illustrator.Context
                 }
             }
 
+            profile.IsIndoor = !outdoorMission && (isIndoor || locId.Contains("tavern") || locId.Contains("lordshall") || locId.Contains("keep") || locId.Contains("prison"));
+
+            // 1. 围城情形判定：区分旷野阵前谈判、室内据点议事与城防前沿
+            if (isUnderSiege)
+            {
+                if (outdoorMission)
+                {
+                    profile.SpecificLocation = "围城对峙下的两军阵前旷野谈判地 (Field Parley under Siege)";
+                    profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
+                    profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
+                    profile.ConflictStatus = "【大军围城 · 阵前谈判】城池正被围困，双方主将使节在两军阵前的旷野上驻马交涉谈判，身后各自肃立着严阵以待的卫队与绵延军营！";
+                    return;
+                }
+
+                if (isIndoor || locId.Contains("lordshall") || locId.Contains("keep"))
+                {
+                    profile.SpecificLocation = "围城封锁下的要塞内堡议事正厅 (Besieged Keep Council Hall)";
+                    profile.IndoorOutdoorDetails = "大军严密围困下的要塞内堡正厅：厚重石墙严密封闭，暖殿石砌壁炉内柴火沉稳燃烧，长案上摊开防御部署图卷，室外隐隐透入城防喧嚣与战鼓声，气氛凝重紧绷。";
+                    profile.LightingAndAtmosphere = "室内封闭的暖色壁炉柴火与青铜烛台微光，高处狭小石窗透入一线冷冽天光，浓郁的伦勃朗式明暗光影 (Tense Chiaroscuro & Indoor Firelight)";
+                    profile.ConflictStatus = "【大军围城 · 内堡议事】城外大军围攻，主将在坚固内堡正厅中紧张谋划战局！";
+                    return;
+                }
+
+                if (isIndoor || locId.Contains("prison"))
+                {
+                    profile.SpecificLocation = "围城中的要塞地下石牢 (Besieged Fortress Dungeon)";
+                    profile.IndoorOutdoorDetails = "大军围城下阴冷潮湿的地下石牢：沉重精铁栅栏，渗水石壁与单支插在铁箍里的摇曳火把，幽闭压抑。";
+                    profile.LightingAndAtmosphere = "地下昏暗阴冷的单支火把跳跃照明，深邃厚重的阴影包裹 (Dim Dungeon Torchlight & Deep Shadows)";
+                    profile.ConflictStatus = "【大军围城 · 牢狱关押】城外战云密布，地牢中昏暗压抑。";
+                    return;
+                }
+
+                if (isIndoor || locId.Contains("tavern"))
+                {
+                    profile.SpecificLocation = "围城战火下的内城庇护所与酒馆 (Besieged Town Refuge)";
+                    profile.IndoorOutdoorDetails = "大军围城下门窗加固紧闭的城镇酒馆：粗木长桌、跳动的壁炉火光，平民与守兵聚集于此暂避战火。";
+                    profile.LightingAndAtmosphere = "室内紧闭门窗后的昏黄壁炉火光与微弱烛光 (Dim Refuge Firelight)";
+                    profile.ConflictStatus = "【大军围城 · 避难处境】城外大军围困，城内酒馆作为战时避难所。";
+                    return;
+                }
+
+                profile.SpecificLocation = "被围攻的要塞城门、护城河壕沟与险峻城堞 (Besieged Fortress Walls, Castle Gate & Ramparts)";
+                profile.IndoorOutdoorDetails = "战云密布的中世纪城堡要塞防御前沿：高耸险峻的石砌城堡城堞与箭垛垛口、紧闭包铁的巨型要塞城门与吊桥，城门外是泥泞深邃的护城河壕沟与拒马鹿砦。空气中弥漫着刺鼻的硝烟与大军围城的肃杀死寂。城头守军据险扼守，城下围城大军严阵以待。";
+                profile.LightingAndAtmosphere = "暗沉肃杀的天光，城堞垛口上烈烈燃烧的火把投下跳跃的橘红光斑，城外远景处漫山遍野隐现着围城大军的篝火宿营与攻城器械巨影 (Dramatic War Torches, Siege Campfires & Chiaroscuro)";
+                profile.ConflictStatus = "【大军围城 · 剑拔弩张】城池正被敌国大军水泄不通地严密围困，城头守将与城下敌将隔着城堞与护城壕进行紧张压迫的战前谈判与意志对决！";
+                return;
+            }
+
+            // 2. 常规场景判定（含室内专属光照保护）
             if (locId.Contains("tavern"))
             {
                 profile.SpecificLocation = "城镇酒馆旅店内部 (Tavern / Inn)";
@@ -303,7 +337,8 @@ namespace AnimusForge.Illustrator.Context
             else if (locId.Contains("lordshall") || locId.Contains("keep"))
             {
                 profile.SpecificLocation = "领主城堡正厅主殿 (Lord's Keep / Throne Hall)";
-                profile.IndoorOutdoorDetails = "庄严高耸的领主城堡主殿：大理石立柱与高耸哥特拱券穹顶，两侧悬挂着带有家族图腾的华贵刺绣丝绒挂毯，地面铺着厚重兽皮，铁铸长烛台与壁炉火光在冷硬石墙上投下肃穆阴影。";
+                profile.IndoorOutdoorDetails = "庄严深邃的领主城堡主殿：雕花原木挑梁穹顶，厚重古朴的古老石砌墙面，墙上垂挂着厚重丝绒刺绣挂毯与古朴青铜烛台，地面铺设整洁平整的磨光石砖与整张巨兽皮地毯，巨型石雕暖殿壁炉内跃动着沉稳火光；大殿主厅空间开阔庄重。";
+                profile.LightingAndAtmosphere = "庄严深邃的室内光影：高侧窗倾泻的自然柔和天光与室内石雕壁炉柴火、青铜烛台微光冷暖交融，暗部通透富有层次 (Atmospheric Chiaroscuro, Warm Firelight & Soft Window Light)";
             }
             else if (locId.Contains("arena"))
             {
@@ -314,6 +349,7 @@ namespace AnimusForge.Illustrator.Context
             {
                 profile.SpecificLocation = "城堡地下石牢 (Castle Dungeon / Prison)";
                 profile.IndoorOutdoorDetails = "潮湿阴冷的地下石牢：沉重锈蚀的精铁栅栏，石壁上渗着水渍与青苔，仅有一支插在铁箍里的摇曳火把投射出昏暗跳动的火光。";
+                profile.LightingAndAtmosphere = "昏暗幽闭的地下光影：单一铁箍火把投射出昏暗跳动的橘红火焰，大面积沉入深邃阴影之中，极富质感与压迫力 (Dim Dungeon Torchlight & Deep Chiaroscuro Shadows)";
             }
             else if (settlement == null || outdoorMission)
             {
@@ -469,9 +505,9 @@ namespace AnimusForge.Illustrator.Context
             {
                 if (string.IsNullOrEmpty(profile.SurroundingCharacters))
                 {
-                    profile.SurroundingCharacters = "高耸石柱旁立着手持长戟的重甲精锐禁卫，大殿阴影里肃立着捧着卷轴的宫廷侍从与低声耳语的封建贵族";
+                    profile.SurroundingCharacters = "殿堂侧翼肃立着手持长戟的重甲精锐禁卫，侧方站立着捧着羊皮纸文卷的文书侍从与低声商议的封建封臣";
                 }
-                profile.SurroundingProps = "雕刻有家族徽记的高背领主宝座、铺展在长条宴桌上的亚麻桌布与银质烛台高脚杯、垂挂在大理石立柱上的华丽丝绒刺绣挂毯、地面整张灰狼皮与熊皮地毯、熊熊燃烧的巨型暖殿壁炉";
+                profile.SurroundingProps = "雕刻有家族徽记的高背领主宝座、垂挂在厚重石壁上的华美织锦丝绒挂毯、长条案几上铺展的羊皮纸地图与银质烛台、地面整张厚实毛皮地毯、熊熊燃烧的巨型暖殿石壁炉";
             }
             else if (loc.Contains("prison") || loc.Contains("牢") || loc.Contains("dungeon"))
             {
@@ -520,8 +556,56 @@ namespace AnimusForge.Illustrator.Context
                     {
                         profile.SurroundingCharacters = "周围是开阔原野与自然风光，双方仅保留现场确认的随行戒备人员，不额外虚构密集仪仗";
                     }
-                    profile.SurroundingProps = "天然风化岩石与碎石、野生杂木灌木丛、开阔草野泥地、野外自然风光；绝无任何军营帐篷、绝无桌案家具等摆设道具 (Natural Wilderness, Rocks, Bushes, NO Tents, NO Furniture)";
+                    profile.SurroundingProps = "天然风化岩石与碎石、野生杂木灌木丛、开阔草野泥地与苍茫天际线，纯粹自然旷野地貌 (Natural Wilderness, Wild Rocks, Bushes, Open Earth and Sky)";
                 }
+            }
+        }
+
+        /// <summary>定居点位置的地图地貌枚举（事实用短标签）。</summary>
+        private static TerrainType? TryGetSettlementTerrain(Settlement settlement)
+        {
+            try
+            {
+                if (Campaign.Current?.MapSceneWrapper != null && settlement != null &&
+                    (settlement.GatePosition.X != 0f || settlement.GatePosition.Y != 0f))
+                {
+                    PathFaceRecord face = Campaign.Current.MapSceneWrapper.GetFaceIndex(settlement.GatePosition);
+                    return Campaign.Current.MapSceneWrapper.GetFaceTerrainType(face);
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        /// <summary>玩家当前脚下的大地地形貌枚举（野外遭遇事实用）。</summary>
+        private static TerrainType? TryGetOverlandTerrain()
+        {
+            try
+            {
+                if (Campaign.Current?.MapSceneWrapper != null && MobileParty.MainParty != null)
+                {
+                    return Campaign.Current.MapSceneWrapper.GetFaceTerrainType(MobileParty.MainParty.CurrentNavigationFace);
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static string TerrainTagOf(TerrainType terrain)
+        {
+            switch (terrain)
+            {
+                case TerrainType.Snow: return "雪原冻土";
+                case TerrainType.Desert: return "荒漠";
+                case TerrainType.Steppe: return "草原";
+                case TerrainType.Mountain: return "山地";
+                case TerrainType.Forest: return "森林";
+                case TerrainType.Swamp: return "沼泽湿地";
+                case TerrainType.Water: return "水岸浅滩";
+                case TerrainType.Canyon: return "峡谷";
+                case TerrainType.Bridge: return "渡口桥梁";
+                case TerrainType.Plain:
+                default: return "平原旷野";
             }
         }
 
@@ -535,26 +619,26 @@ namespace AnimusForge.Illustrator.Context
                     switch (terrain)
                     {
                         case TerrainType.Forest:
-                            return "繁茂的中世纪自然森林：苍翠挺拔的白桦树与落叶乔木林立，林间起伏草甸与野生灌木丛生，地面散落着风化巨石与苔藓泥径，远处林隙透出自然天光 (Dense Forest & Birch Trees with Boulders)";
+                            return "生机繁茂的中世纪古老自然森林：脚下是覆满湿润落叶与青苔的林间泥径，身侧是苍劲挺拔的古橡树、山毛榉与密集灌木丛，风化青石散布其间，晨曦或树隙微光穿透繁茂枝叶投下斑驳光束，林木层叠延伸至深远背景 (Ancient Dense Forest, Mossy Mud Path, Gnarled Oak Trees & Sunbeams)";
                         case TerrainType.Mountain:
-                            return "险峻的卡拉迪亚崇山峻岭：巨大裸露的风化岩石崖壁、陡峭碎石斜坡与稀疏耐寒高山草甸，远处连绵巍峨的岩石山脊 (Rugged Mountains & Rocky Cliffs)";
+                            return "险峻雄奇的卡拉迪亚崇山绝壁：脚下是风化剥落的碎石高山斜坡与苍凉岩隙，身侧是犬牙差互的巨大陡峭岩壁与冷杉，极目远眺连绵巍峨的险峰雪线隐入苍茫云海，冷冽天光倾泻而下 (Dramatic Mountain Ridge, Weathered Boulders, Scree Slopes & Distant Peaks)";
                         case TerrainType.Snow:
-                            return "覆雪严寒的北国旷野：白雪皑皑的开阔雪原，挂满白霜冰晶的冷杉松柏，脚下踩踏出的泥雪车辙野径 (Snow-covered Plain & Frosty Pines)";
+                            return "覆雪严寒的北国莽莽雪原：脚下是踩踏出坚实冰晶与泥雪车辙的雪径，身侧是挂满白霜树挂的厚重冷杉松林，开阔雪野在寒光下绵延起伏，远方天际线泛着幽蓝与冰白的光辉 (Vast Snowy Wilderness, Frosty Evergreens, Snow Tracks & Frozen Vistas)";
                         case TerrainType.Desert:
-                            return "炽热无垠的金色荒漠：滚滚起伏的流线型沙丘、干涸碎石砾石滩与偶尔可见的耐旱干枯灌木，热浪微漾的地平线 (Golden Desert Sand Dunes)";
+                            return "炽热浩瀚的金色沙海荒漠：脚下是风纹细腻的起伏金红沙丘与干燥砾石，身侧偶见耐旱棘刺灌木与风蚀岩丘，热浪微微扭曲着遥远的地平线，漫天霞光将沙脊勾勒出锐利金边 (Vast Golden Desert Dunes, Wind Ripples, Arid Rocks & Mirage Horizons)";
                         case TerrainType.Steppe:
-                            return "苍茫辽阔的干旱草原：微风吹拂的枯黄草浪、起伏平缓的黄土原野与遥远开阔的荒原地平线 (Vast Arid Steppe & Dry Grasslands)";
+                            return "苍茫无垠的辽阔干旱草原：脚下是野草漫漫的起伏土丘与深邃车马辙印，身侧是微风吹拂如波浪起伏的枯黄草海，辽阔无遮的天穹下延伸至极目尽头的地平线 (Boundless Steppe Grasslands, Windblown Plains, Earth Tracks & Endless Sky)";
                         case TerrainType.Swamp:
-                            return "潮湿泥泞的沼泽湿地：水洼泥沼交错，丛生的高大芦苇荡与浮萍水草，湿润泥土气息 (Misty Wetland & Marshes)";
+                            return "多雾深邃的潮湿泥泞沼泽：脚下是泥泞水洼交错的湿地草甸与漂浮水草，身侧是丛生的高大芦苇荡与虬曲枯木，薄雾弥漫在水泽之间，水面反射着冷寂微光 (Misty Marshes, Muddy Shallows, Tall Reeds & Subdued Reflection)";
                         case TerrainType.Water:
-                            return "碧波荡漾的湖泊岸边或开阔浅滩水泽：湿润泥沙卵石滩、波光粼粼的水面与对岸浅丘 (Lake Shore & River Shallows)";
+                            return "碧波轻漾的湖岸河畔浅滩：脚下是湿润细软的沙石河滩与圆润鹅卵石，身侧是清澈流淌的湍急水流与低矮灌木，极目远眺开阔水面波光粼粼，对岸浅丘与水天相接 (River Shallows, Pebble Shoreline, Sparkling Waters & Distant Banks)";
                         case TerrainType.Canyon:
-                            return "险要深邃的峡谷裂谷：刀劈斧削般的两侧陡峭红岩崖壁与谷底蜿蜒的碎石野径 (Rocky Canyon & Ravine)";
+                            return "险要深邃的红岩峡谷裂谷：脚下是巨石与碎石堆积的蜿蜒谷底窄径，两侧是刀削斧劈般高耸直插天际的赭红岩石断崖，峡口漏下戏剧性侧向天光 (Dramatic Rocky Canyon, Sheer Red Sandstone Cliffs & Narrow Trail)";
                         case TerrainType.Bridge:
-                            return "河流渡口与古朴石木桥梁前沿：流淌的湍急河水、散落鹅卵石的河滩岸边 (River Crossing & Stone Bridge)";
+                            return "奔腾河流渡口与古朴石木渡桥：脚下是带有马蹄印与车辙的风化石砌引桥地面，身侧是粗粝石砌桥拱与奔腾白浪，两岸延伸向葱郁原野与远方烽燧哨所 (Rushing River, Stone Arch Bridge, Riverbanks & Countryside)";
                         case TerrainType.Plain:
                         default:
-                            return "绿意盎然的卡拉迪亚开阔原野：丰茂起伏的绿草草甸、天然散布的风化岩石、低矮灌木与远处隐现的连绵丘陵山脊 (Lush Open Grassland, Boulders & Distant Hills)";
+                            return "广袤丰饶的卡拉迪亚开阔原野：脚下是绿意盎然、野花点缀的起伏草甸与泥土步道，身侧是天然散布的风化巨石与葱郁树丛，极目远眺连绵丘陵山脊在晨昏光影下层层展开 (Lush Rolling Grasslands, Weathered Rocks, Scenic Wildflowers & Distant Hills)";
                     }
                 }
             }
@@ -684,87 +768,105 @@ namespace AnimusForge.Illustrator.Context
             }
         }
 
-        private static string ResolveArchitectureStyle(string culture, bool isTown, bool isCastle)
+        private static string ResolveArchitectureStyle(Settlement settlement)
         {
-            // 若为乡村聚落，真实反映田园乡野民居，而非宏伟城墙穹顶
-            if (!isTown && !isCastle)
-            {
-                if (culture.Contains("empire"))
-                {
-                    return "帝国的地中海风情乡野村落：白石泥墙农舍、红陶瓦坡屋顶、石砌水井与粮仓，四周环绕着金黄麦田、葡萄架与木栅栏";
-                }
-                if (culture.Contains("vlandia"))
-                {
-                    return "西欧诺曼式庄园村落：茅草土坯木屋、谷仓磨坊、蜿蜒泥泞的乡间小道与绿意盎然的放牧草场";
-                }
-                if (culture.Contains("battania"))
-                {
-                    return "高地原始林间聚落：粗糙原木茅舍、苔藓覆盖的石围墙、袅袅炊烟与茂密的古橡树林";
-                }
-                if (culture.Contains("aserai"))
-                {
-                    return "荒漠绿洲泥砖村庄：平顶晒台泥舍、水渠井台、高耸的椰枣树与漫卷黄沙边缘的骆驼围栏";
-                }
-                if (culture.Contains("khuzait"))
-                {
-                    return "草原游牧集居地：星罗棋布的圆形毛毡蒙古包毡帐、木质马厩、牛羊围栏与广袤无垠的草甸";
-                }
-                if (culture.Contains("sturgia"))
-                {
-                    return "北境渔猎雪村：厚重原木长屋、烟熏木制干燥棚、避风港湾里停泊的小木舟与覆盖着厚雪的林缘小径";
-                }
-                return "宁静淳朴的中世纪乡村聚落：茅草屋、木栅栏与起伏农田";
-            }
+            if (settlement == null) return "中世纪要塞或历史建筑风貌";
 
-            if (culture.Contains("empire"))
+            bool isTown = settlement.IsTown;
+            bool isCastle = settlement.IsCastle;
+            var culture = settlement.Culture;
+            string cultureName = culture?.Name?.ToString() ?? "当地";
+
+            // 1. 【第一优先级】：动态读取 MOD 或游戏底层为该文化编写的官方百科传记 (彻底兼容所有第三方全面替换 MOD)
+            try
             {
-                return isCastle
-                    ? "拜占庭与罗马式险要依山要塞城堡，层叠重石要塞、高耸箭塔与巡道城垛"
-                    : "拜占庭与罗马式巨石古典都会，恢弘的大理石圆顶大教堂、斑驳的罗马石砌拱券长廊与巍峨重石城墙";
+                if (culture?.EncyclopediaText != null)
+                {
+                    string lore = culture.EncyclopediaText.ToString().Trim();
+                    if (!string.IsNullOrWhiteSpace(lore))
+                    {
+                        lore = System.Text.RegularExpressions.Regex.Replace(lore, "<.*?>", string.Empty).Trim();
+                        if (lore.Length > 150) lore = lore.Substring(0, 150) + "...";
+                        string role = isTown ? "都会名城" : (isCastle ? "险要要塞城堡" : "乡村聚落");
+                        return $"{cultureName}文化的{role}：融合该文化官方设定风貌（{lore}），建筑造型与风土人情严格遵循其官方设定";
+                    }
+                }
             }
-            if (culture.Contains("vlandia"))
+            catch { }
+
+            // 2. 【第二优先级】：基于地理与生态特征（大地图地形 TerrainType + 气候）动态自适应
+            try
             {
-                return isCastle
-                    ? "西欧诺曼哥特式高耸方石古堡，带有角楼巡道、射击狭缝与悬台要塞，冷峻威严"
-                    : "繁华的诺曼式封建中世纪城市，砖石商行、双层拱顶行会大厅与高耸钟楼";
+                if (Campaign.Current?.MapSceneWrapper != null && (settlement.GatePosition.X != 0f || settlement.GatePosition.Y != 0f))
+                {
+                    PathFaceRecord face = Campaign.Current.MapSceneWrapper.GetFaceIndex(settlement.GatePosition);
+                    TerrainType terrain = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(face);
+                    switch (terrain)
+                    {
+                        case TerrainType.Snow:
+                            return isCastle
+                                ? $"{cultureName}北境严寒要塞：厚重黑石垒砌的防风雪高墙，覆满积雪与冰棱的角楼巡道，依山傍雪险阻天成"
+                                : (isTown ? $"{cultureName}北境都会：厚重圆木长屋与石木建筑错落，烟气袅袅，白雪皑皑的街道与坚固防雪石墙" : $"{cultureName}北境雪村：厚重原木长屋、烟熏木制干燥棚与积雪林间小道");
+                        case TerrainType.Desert:
+                            return isCastle
+                                ? $"{cultureName}沙漠边陲石塞：高耸的干燥泥石哨塔与箭楼，抵御风沙侵蚀的厚重夯土与石砌城堞"
+                                : (isTown ? $"{cultureName}沙漠绿洲都会：平顶晒台泥砖民居、马蹄形拱券门廊、遮阳帐幔与香料集市" : $"{cultureName}绿洲泥砖村落：平顶晒台、椰枣树与黄沙边缘的蓄水井台");
+                        case TerrainType.Steppe:
+                            return isCastle
+                                ? $"{cultureName}草原要塞：依附山岭缓坡的坚固石木营垒与高耸望楼"
+                                : (isTown ? $"{cultureName}草原商贸名城：穹庐毡帐与土木民居交错，马厩与开阔集市广场并存" : $"{cultureName}游牧集居地：星罗棋布的圆形毛毡毡帐、马厩与旷野牧场");
+                        case TerrainType.Forest:
+                            return isCastle
+                                ? $"{cultureName}林间古堡要塞：青苔覆盖的粗粝巨石堡垒，高耸木石箭楼隐于郁郁葱葱的参天古木之间"
+                                : (isTown ? $"{cultureName}林海都会：石木混合建筑、木梁斜顶工坊与林间商贸石板大道" : $"{cultureName}林间聚落：粗糙原木茅舍、苔藓石围墙与古木环抱的自然小道");
+                        case TerrainType.Mountain:
+                            return isCastle
+                                ? $"{cultureName}崇山险隘要塞：依附垂直绝壁而建的重石碉楼与高耸箭塔，地势险峻拔俗"
+                                : (isTown ? $"{cultureName}山城都会：依山势层叠递升的厚重石街石阶、石砌府邸与俯瞰深谷的城墙" : $"{cultureName}山野聚落：石块垒砌的坚实山舍、碎石梯阶与山涧木桥");
+                    }
+                }
             }
-            if (culture.Contains("battania"))
-            {
-                return "凯尔特高地风格的粗犷原木与巨石垒砌要塞，青苔覆石，幽深冷杉密林环绕";
-            }
-            if (culture.Contains("aserai"))
-            {
-                return isCastle
-                    ? "沙漠边陲巨石要塞，高耸圆柱形瞭望哨塔与干燥坚硬的泥砖雉堞"
-                    : "阿拉伯与马穆鲁克风泥坯平顶都会、精美马蹄形镂空拱券、集市挂满色彩斑斓的羊毛地毯与香料帐幔";
-            }
-            if (culture.Contains("khuzait"))
-            {
-                return "中亚草原游牧穹庐毡帐营地与泥木简易要塞";
-            }
-            if (culture.Contains("sturgia"))
-            {
-                return "斯拉夫与维京式重木大厅（Mead Hall），圆木墙体包裹厚重兽皮，积雪倾覆屋顶";
-            }
-            return isCastle ? "坚不可摧的欧式中世纪石堡" : "熙熙攘攘的典型中世纪城市";
+            catch { }
+
+            // 3. 【第三优先级】：通用历史/奇幻风貌保底 (绝不写死任何原版势力名称)
+            if (!isTown && !isCastle)
+                return $"{cultureName}风格的乡野村落：古朴民居、木栅农庄与自然田园沃野";
+            return isCastle
+                ? $"{cultureName}风格的险要要塞城堡：巍峨坚固的方石城墙、高耸箭楼与城堞巡道"
+                : $"{cultureName}风格的中世纪都会名城：错落有致的斜顶府邸商行、开阔石板广场与繁华集市街巷";
         }
 
         private static string ResolveTerrain(Settlement settlement)
         {
-            string culture = settlement.Culture?.StringId?.ToLowerInvariant() ?? "";
-            if (culture.Contains("aserai"))
+            if (settlement == null) return "开阔自然的平原农田与起伏山峦";
+            try
             {
-                return "漫无边际的起伏红砂荒漠与灼热沙丘，点缀着微风拂动的棕榈绿洲";
+                if (Campaign.Current?.MapSceneWrapper != null && (settlement.GatePosition.X != 0f || settlement.GatePosition.Y != 0f))
+                {
+                    PathFaceRecord face = Campaign.Current.MapSceneWrapper.GetFaceIndex(settlement.GatePosition);
+                    TerrainType terrain = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(face);
+                    switch (terrain)
+                    {
+                        case TerrainType.Snow:
+                            return "被积雪终年覆盖的北境冻土雪原、苍茫深邃的针叶黑松林与冷冽结冰河流 (Frozen Snowy Tundra & Frosty Pines)";
+                        case TerrainType.Desert:
+                            return "漫无边际的起伏金色荒漠与炽热沙丘，点缀着耐旱棘刺灌木与干燥碎石 (Vast Arid Desert & Golden Dunes)";
+                        case TerrainType.Steppe:
+                            return "苍茫辽阔的干燥草甸草原、起伏平缓的黄土原野与遥远开阔的地平线 (Endless Steppe Grasslands)";
+                        case TerrainType.Mountain:
+                            return "崇山峻岭环抱的险峻山谷、嶙峋裸露的巨大岩壁与冷冽高山溪流 (Dramatic Mountain Valley & Rugged Cliffs)";
+                        case TerrainType.Forest:
+                            return "多雾潮湿的青翠林海、苍劲挺拔的参天古木与繁茂野生灌木林地 (Lush Misty Woodlands & Ancient Forest)";
+                        case TerrainType.Swamp:
+                            return "水网交错的潮湿湿地泽国、丛生的高大芦苇荡与浮萍水草 (Misty Wetland & Marshes)";
+                        case TerrainType.Water:
+                            return "碧波荡漾的水泽湖泊或开阔海湾滩涂、湿润沙石河滩 (Scenic Lake Shore & Coastal Shallows)";
+                    }
+                }
             }
-            if (culture.Contains("sturgia"))
-            {
-                return "被积雪终年冰封的北境冻土原野、苍茫深邃的黑松林与冷冽河流";
-            }
-            if (culture.Contains("battania"))
-            {
-                return "多雾潮湿的青翠高地群山、嶙峋岩壁与古老橡树密林";
-            }
-            return "广袤丰饶的欧式平原农田、起伏丘陵与远处起伏的山脊地平线";
+            catch { }
+
+            return "广袤丰饶的起伏平原草野、开阔田园与远处隐现的起伏山峦地平线 (Scenic Rolling Countryside & Distant Hills)";
         }
 
         private static string ResolveConflictStatus(Settlement settlement)

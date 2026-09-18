@@ -100,7 +100,7 @@ namespace AnimusForge.Illustrator.Core
                     break;
                 case "dark-epic":
                     customStyleHint = "暗黑史诗写实, dark epic realism, grim medieval war chronicle, dramatic chiaroscuro, painterly oil texture";
-                    presetNegative = "bright cheerful colors, cartoon, anime, cel shading, modern objects, clean untarnished surfaces";
+                    presetNegative = "bright cheerful colors, cartoon, anime, cel shading, clean untarnished surfaces";
                     style = null;
                     break;
                 case "cinematic":
@@ -110,16 +110,25 @@ namespace AnimusForge.Illustrator.Core
                     break;
                 case "mosan-art":
                     customStyleHint = "莫桑艺术, 默兹河流域12世纪罗马式珐琅与手抄本彩饰风格, 景泰蓝式宝石级饱和平涂色块, 金色勾边与装饰性边框纹样, 拉长端庄的程式化人物造型, 浓重黑色轮廓线, 平面化叙事构图, Mosan art, Romanesque manuscript illumination, champleve enamel, jewel-like saturated flat colors, gold outlines, decorative borders";
-                    presetNegative = "photorealism, perspective depth, oil brushwork, 3d render, soft gradients, photographic lighting, cartoon, anime, 写实透视, 油画笔触, 摄影光影, 3D渲染";
+                    presetNegative = "photorealism, soft gradients, photographic lighting, cartoon, anime, 摄影光影";
                     style = null;
                     break;
                 case "classic-oil":
                     customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
-                    presetNegative = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
+                    presetNegative = "2d flat vector art, cheap cel-shading, lineart sketch, anime, cartoon, 卡通, 动漫风";
                     style = null;
                     break;
+                case "vivid":
+                    customStyleHint = null; // 由 API 原生 style 参数或 Chat 指令直接处理，不硬塞古典油画
+                    presetNegative = "dull colors, washed out, cartoon, anime";
+                    break;
+                case "natural":
+                    customStyleHint = null; // 由 API 原生 style 参数或 Chat 指令直接处理，不硬塞古典油画
+                    presetNegative = "oversaturated, cartoon, anime";
+                    break;
                 default:
-                    customStyleHint = string.Empty;
+                    customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
+                    presetNegative = "2d flat vector art, cheap cel-shading, lineart sketch, anime, cartoon, 卡通, 动漫风";
                     break;
             }
             var stopwatch = Stopwatch.StartNew();
@@ -139,7 +148,8 @@ namespace AnimusForge.Illustrator.Core
                 else negativePrompt = presetNegative + ", " + userNegative;
                 int requestedRefImages = referenceImages?.Count ?? 0;
 
-                bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl);
+                bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
+                    || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl);
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness);
 
@@ -178,7 +188,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -191,7 +201,7 @@ namespace AnimusForge.Illustrator.Core
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                         string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness);
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken).ConfigureAwait(false);
+                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint).ConfigureAwait(false);
                         if (chatRetry.Success)
                         {
                             success = true;
@@ -307,7 +317,7 @@ namespace AnimusForge.Illustrator.Core
         /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
         /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
         /// </summary>
-        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, videogame model, 3D polygon mesh, flat game lighting, digital CGI, videogame still, HUD, user interface, UI elements, dialogue box, subtitles, overlay text, watermark, incorrect emblem, invented heraldry, mismatched crest, emblem printed on chestplate, crest on bare armor, wrinkles on young character, old man on warrior, white hair on young man, peasant felt hat replacing helmet, modern objects";
+        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, videogame model, 3D polygon mesh, flat game lighting, digital CGI, videogame still, low quality, blurry, deformed fingers, extra limbs, bad anatomy, plastic skin, oversaturated, HUD, user interface, UI elements, dialogue box, subtitles, speech bubbles, overlay text, watermark, 对话框, 字幕, 对话气泡, 水印, modern objects, 现代物品, unwanted bare face when masked, bare human face under mascot, exposed face with full helmet, headband instead of mascot head, 露脸, 头饰发箍";
 
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
@@ -330,23 +340,39 @@ namespace AnimusForge.Illustrator.Core
                 string clause = strength >= 100
                     ? "在事实允许的范围内，最大程度探索不同取景、留白、景深与光影表现"
                     : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
-                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；可保留自然姿态，但不得把身份图的背景、构图或光影用作场景模板；百科肖像只适度变化镜头和光线，不强制换动作。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何随机强度均须保留有依据的场景空间关系，不得虚构物体、人物或事件，重绘必须遵循本次换镜头指导；" + clause + "。";
+                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何随机强度均须保留有依据的场景空间关系，不得虚构物体、人物或事件，重绘必须遵循本次换镜头指导；" + clause + "。";
             }
-            // Style/custom negatives must not remove equipped headgear or recolor heraldry.
-            if ((prompt ?? string.Empty).Contains("【不可改写的游戏事实】"))
+            return effectivePrompt.Trim();
+        }
+
+        /// <summary>
+        /// 读取 PNG IHDR 宽高（字节 16-23，大端），用于生成与参考图同尺寸的 mask。
+        /// </summary>
+        private static void TryReadPngDimensions(byte[] png, out int width, out int height)
+        {
+            width = 0; height = 0;
+            if (png == null || png.Length < 24) return;
+            if (png[0] != 0x89 || png[1] != 0x50) return;
+            width = (png[16] << 24) | (png[17] << 16) | (png[18] << 8) | png[19];
+            height = (png[20] << 24) | (png[21] << 16) | (png[22] << 8) | png[23];
+        }
+
+        /// <summary>
+        /// 生成全透明 PNG mask：32bppArgb 默认像素全为透明黑，即"整幅允许编辑"。
+        /// </summary>
+        private static byte[] BuildTransparentMaskPng(int width, int height)
+        {
+            if (width <= 0 || height <= 0 || width > 8192 || height > 8192) return null;
+            try
             {
-                // Keep one final contract instead of repeatedly emphasizing heraldry/flags.
-                effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.Contract, string.Empty).TrimEnd();
-                effectivePrompt += "\n" + VisualFidelityRules.Contract;
+                using (var bmp = new System.Drawing.Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                using (var ms = new System.IO.MemoryStream())
+                {
+                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    return ms.ToArray();
+                }
             }
-            if ((prompt ?? string.Empty).Contains(VisualFidelityRules.SceneComposition))
-            {
-                effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.SceneComposition, string.Empty).TrimEnd();
-                effectivePrompt += "\n" + VisualFidelityRules.SceneComposition;
-                if (effectivePrompt.Contains(VisualFidelityRules.Contract))
-                    effectivePrompt = effectivePrompt.Replace(VisualFidelityRules.Contract, string.Empty).TrimEnd() + "\n" + VisualFidelityRules.Contract;
-            }
-            return effectivePrompt;
+            catch { return null; }
         }
 
         /// <summary>
@@ -392,6 +418,7 @@ namespace AnimusForge.Illustrator.Core
                     form.Add(new StringContent("1"), "n");
 
                     int sent = 0;
+                    int firstWidth = 0, firstHeight = 0;
                     foreach (var reference in referenceImages)
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
@@ -406,14 +433,24 @@ namespace AnimusForge.Illustrator.Core
                         try { bytes = Convert.FromBase64String(data); }
                         catch { continue; }
                         bytes = ImagePayload.Normalize(bytes);
+                        if (sent == 0) TryReadPngDimensions(bytes, out firstWidth, out firstHeight);
                         labels.Append("\n参考图 ").Append(sent + 1).Append("（reference_").Append(sent).Append(".png）：").Append(reference.Label);
                         var imageContent = new ByteArrayContent(bytes);
                         imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
                         form.Add(imageContent, "image[]", $"reference_{sent}.png");
                         sent++;
                     }
-                    form.Add(new StringContent(labels.ToString(), Encoding.UTF8), "prompt");
                     if (sent == 0) return (false, null, null, "no usable reference images", false);
+                    // 全透明 mask：按 OpenAI 规范"透明区域=允许编辑区"，整幅可改 = 参考图仅作身份参照、不作构图底，
+                    // 用于削弱 edits 协议对首张参考图姿势/构图的锚定；不支持的网关会忽略该字段。
+                    byte[] maskPng = BuildTransparentMaskPng(firstWidth, firstHeight);
+                    if (maskPng != null)
+                    {
+                        var maskContent = new ByteArrayContent(maskPng);
+                        maskContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                        form.Add(maskContent, "mask", "mask.png");
+                    }
+                    form.Add(new StringContent(labels.ToString(), Encoding.UTF8), "prompt");
 
                     using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = form })
                     {
@@ -459,7 +496,8 @@ namespace AnimusForge.Illustrator.Core
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
             string apiKey,
             bool isChatProtocol,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            string customStyleHint = null)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -469,41 +507,32 @@ namespace AnimusForge.Illustrator.Core
                 bool hasRefs = referenceImages != null && referenceImages.Count > 0;
                 if (hasRefs)
                 {
-                    var content = new JArray
+                    var content = new JArray();
+
+                    // 1. 统计真实人物参考图数量
+                    int heroCount = 0;
+                    foreach (var r in referenceImages)
                     {
-                        new JObject
-                        {
-                            ["type"] = "text",
-                            ["text"] = effectivePrompt
-                        },
-                        new JObject
-                        {
-                            ["type"] = "text",
-                            ["text"] = "【重绘指令/Artistic Redraw Mandate】附带的人物参考图仅供提取面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画/细腻艺术笔触从零重新手绘该人物，呈现出美术馆级历史油画/写实画卷质感，杜绝任何游戏截图或3D渲染痕迹。 / Strictly DO NOT replicate the 3D videogame mesh, digital textures, or game engine lighting from the reference image. Completely repaint from scratch with rich oil brushwork and natural chiaroscuro."
-                        },
-                        new JObject
-                        {
-                            ["type"] = "text",
-                            ["text"] = "【角色绑定与装备铁律/Character Binding Mandate】在双人或多人物会面画面中，画面各侧的人物必须与对应编号的人物身份参考图 1:1 严格绑定！\n" +
-                                       "- 画面一方（通常为左侧主角位）必须对应第一张人物参考图：如实还原其五官相貌、实际头戴装备与战甲（若佩戴战盔必须如实画出战盔，严禁画成布帽/毡帽，严禁画成随从或老农）！\n" +
-                                       "- 画面另一方必须对应第二张人物参考图：如实还原其相貌与盔甲！\n" +
-                                       "- 严禁在没有盾牌罩袍时在胸甲表面硬印大纹章图腾；壮年角色绝不可画成白发老头！"
-                        }
-                    };
+                        if (r == null || string.IsNullOrWhiteSpace(r.Base64Image)) continue;
+                        string lbl = r.Label ?? string.Empty;
+                        if (!lbl.Contains("纹章") && !lbl.Contains("实景") && !lbl.Contains("现场"))
+                            heroCount++;
+                    }
+
+                    // 2. 将视觉参考图放在最前（多模态视觉模型优先感知）
+                    int heroIndex = 0;
                     foreach (var reference in referenceImages)
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
-                        if (!string.IsNullOrWhiteSpace(reference.Label))
-                        {
-                            content.Add(new JObject
-                            {
-                                ["type"] = "text",
-                                ["text"] = "【参考图】" + reference.Label
-                            });
-                        }
+                        string label = reference.Label ?? string.Empty;
+                        bool isEmblem = label.Contains("纹章") || label.Contains("徽记");
+                        bool isScene = label.Contains("现场") || label.Contains("实景");
+                        bool isHero = !isEmblem && !isScene;
+
                         string data = reference.Base64Image;
                         string mimeType = data.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
                         string dataUri = data.StartsWith("data:") ? data : $"data:{mimeType};base64,{data}";
+
                         content.Add(new JObject
                         {
                             ["type"] = "image_url",
@@ -512,8 +541,73 @@ namespace AnimusForge.Illustrator.Core
                                 ["url"] = dataUri
                             }
                         });
+
+                        if (!string.IsNullOrWhiteSpace(label))
+                        {
+                            content.Add(new JObject
+                            {
+                                ["type"] = "text",
+                                ["text"] = "【上图专属约束】" + label
+                            });
+                        }
+
+                        if (isHero)
+                        {
+                            heroIndex++;
+                            string roleHint = (heroCount > 1)
+                                ? (heroIndex == 1 ? "【第一张人物身份参考图 · 画面左侧主角】" : "【第二张人物身份参考图 · 画面右侧会晤对象】")
+                                : "【核心人物官方真实视觉基准图】";
+
+                            string fidelityMandate = $"{roleHint}：画面中该人物的面貌轮廓五官、真实发色与胡须样式颜色（必须绝对忠实还原参考图中的真实色彩，若图中为浅金发须绝不可随意画黑，若为深黑发须亦不可擅自漂浅）、以及身着真实战甲（战盔、肩甲、身甲）必须100%严格以此参考图为准！严禁把壮年画成白发老翁，严禁将全包覆头套面具偷换成人类脸庞或阿拉伯头巾！请直接将该人物绘制在整幅历史画卷的主场景中，绝对严禁在画布中绘制任何画中画小框、对比缩略图或角色设定立绘板！";
+                            content.Add(new JObject
+                            {
+                                ["type"] = "text",
+                                ["text"] = fidelityMandate
+                            });
+                        }
+                        else if (isEmblem)
+                        {
+                            content.Add(new JObject
+                            {
+                                ["type"] = "text",
+                                ["text"] = "【家族纹章图案样板】：上图仅为家族纹章图案标准样板；仅当画面中自然出现盾牌或纹章罩袍时参照此图案绘制，绝不是人物相貌，也绝不可在普通金属板甲胸甲表面硬印该图案！"
+                            });
+                        }
+                        else if (isScene)
+                        {
+                            content.Add(new JObject
+                            {
+                                ["type"] = "text",
+                                ["text"] = "【现场3D实景采光与地形参考】：上图为现场实景参考，严禁照抄低模3D多边形网格，须转化为高水准艺术画卷质感！"
+                            });
+                        }
                         actualRefImages++;
                     }
+
+                    // 3. 追加详细场景与构图描述
+                    content.Add(new JObject
+                    {
+                        ["type"] = "text",
+                        ["text"] = effectivePrompt
+                    });
+
+                    // 4. 追加艺术重绘与画风铁律
+                    string resolvedStyle = !string.IsNullOrWhiteSpace(customStyleHint) ? customStyleHint.Trim() : (!string.IsNullOrWhiteSpace(style) ? style.Trim() : null);
+                    string styleClause = !string.IsNullOrWhiteSpace(resolvedStyle)
+                        ? $"1. 严格遵循指定的画风要求（{resolvedStyle}），从零进行纯正艺术手绘创作，彻底杜绝任何3D建模多边形或游戏截图痕迹！\n"
+                        : "1. 严格呈现高水准艺术画卷质感，细腻刻画光影与材质，彻底杜绝任何3D建模多边形或游戏截图痕迹！\n";
+
+                    content.Add(new JObject
+                    {
+                        ["type"] = "text",
+                        ["text"] = "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
+                                   styleClause +
+                                   "2. 人物发色、胡须、五官相貌与盔甲形制细节100%严格与参考图完全一致，锁定真实装备形制与容貌特征，不擅自改动装备部件。\n" +
+                                   "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一沉浸式宏大画卷，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
+                                   "4. 生动自然体态：画面人物展现生动舒展的身姿或自然的视线交汇，呈现历史画卷张力。\n" +
+                                   "5. 背景空间与场景氛围严格遵循前文提示词中的生动环境描写创作，自然展现四层纵深。"
+                    });
+
                     messageContent = content;
                 }
                 else

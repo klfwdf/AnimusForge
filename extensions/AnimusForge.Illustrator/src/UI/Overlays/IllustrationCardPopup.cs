@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
@@ -179,14 +180,44 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string equipmentCode = portrait.EquipmentCode;
             var appearance = CharacterAppearanceSnapshot.FromTableau(portrait);
             Equipment equipment = Equipment.CreateFromEquipmentCode(equipmentCode);
-            HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, equipmentSnapshot: equipment, equipmentSource: "百科当前人物立绘的完整EquipmentCode（不是现场装备或身份推测）");
+            // 百科肖像清空全部武器槽（用户指定）：武器不入画——事实区与离屏立绘同步无武器，
+            // 消除长兵器竖持对姿势构图的锚定；盾牌同属武器槽一并清除，符合"百科不画盾"规则。
+            for (EquipmentIndex slot = EquipmentIndex.Weapon0; slot < EquipmentIndex.NumAllWeaponSlots; slot++)
+            {
+                equipment[slot] = EquipmentElement.Invalid;
+            }
+            equipmentCode = equipment.CalculateEquipmentCode().ToString();
+            HeroVisualProfile profile = HeroVisualExtractor.Extract(hero, equipmentSnapshot: equipment, equipmentSource: "百科当前人物立绘的完整EquipmentCode（不是现场装备或身份推测，武器槽已按百科肖像规则清空）", appearance: appearance);
             string bannerCode = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner)?.BannerCode;
 
-            string hardFacts = profile.BuildVisualSummary() + "\n" + VisualFidelityRules.EncyclopediaPortrait;
+            string hardFacts = profile.BuildVisualSummary(includeMount: false);
             string directorFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildDirectorOnlyFacts();
             _generationCount++;
-            string artDirection = GenerateDiversePoseDirective(hero) + "\n" + VisualFidelityRules.PortraitFraming(_generationCount);
-            if (_generationCount > 1) artDirection += "\n本次重绘只适度改变镜头角度、景别或光线，不强制改变姿势，不增加道具。";
+            // 跨会话变体去重：_generationCount 是弹窗实例字段，重开弹窗即归零，
+            // 必须统计本存档已留存的百科肖像版本，并把已用过的场景母题回传导演避让。
+            int priorVersions = 0;
+            var usedMotifs = new List<string>();
+            try
+            {
+                var priorItems = DiskImageCacheManager.GetAllCachedIllustrations(_scope.CampaignKey)
+                    ?.Where(i => string.Equals(i.SubjectKey, $"Hero_{hero.StringId}", StringComparison.OrdinalIgnoreCase)
+                              && string.Equals(i.Category, "encyclopedia", StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(i => i.CreatedTime)
+                    .ToList();
+                priorVersions = priorItems?.Count ?? 0;
+                foreach (string motif in (priorItems ?? new List<CachedIllustrationItem>())
+                    .Select(i => ExtractSceneMotif(i.Prompt))
+                    .Where(m => !string.IsNullOrWhiteSpace(m))
+                    .Distinct()
+                    .Take(3))
+                {
+                    usedMotifs.Add(motif);
+                }
+            }
+            catch { }
+            string artDirection = GenerateDiversePoseDirective();
+            if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
+            if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——本次必须选择与此完全不同的场景空间、动作瞬间与镜头关系。";
             var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
             var options = IllustratorRuntime.CaptureOptions();
             if (options?.EnableOffscreenRendering != true)
@@ -207,7 +238,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 if (!string.IsNullOrWhiteSpace(base64Image))
                 {
-                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于提取其面部五官轮廓与装备形制；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正的古典油画/细腻艺术笔触从零重新手绘该人物，不可有任何游戏截图或3D渲染痕迹；可保留本图中自然放松的姿态；不要为重新设计构图而发明手持物或夸张动作");
+                    var r = new IllustrationReferenceImage(base64Image, $"人物【{heroName}】的身份参考图：仅用于锁定其面部五官轮廓、发型肤色与装备形制；本图的光照、色调、背景与姿势构图一律舍弃，画面姿态由导演按情境全新演绎；人物必须按新场景光源重新布光渲染，与环境光影、色温、笔触完全融合并呈现落地投影与环境反光，严禁保留原图光照造成贴纸抠像感；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘，不可有任何游戏截图或3D渲染痕迹");
                     refs.Add(r);
                     genRefsList.Add(r);
                 }
@@ -219,9 +250,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     {
                         var emblemRef = new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：当画面因已确认事实出现盾牌或纹章罩袍时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲表面硬印纹章");
                         refs.Add(emblemRef);
-                        // 仅当人物实际持有盾牌或穿戴明确纹章布料时，才作为生图垫图；普通甲胄不送垫图，防止模型强行印在胸甲上
-                        bool hasShieldOrTabard = profile.WeaponDetails.Exists(w => w.StartsWith("盾牌: ") && !w.Contains("无盾牌"));
-                        if (hasShieldOrTabard)
+                        // 仅当人物实际穿戴明确纹章罩袍布料时，才作为生图垫图；普通甲胄不送垫图，防止模型强行在胸甲金属表面硬印大纹章
+                        bool hasHeraldicCloth = profile.HasHeraldicArmor || profile.BannerEquipmentDetails.Count > 0;
+                        if (hasHeraldicCloth)
                         {
                             genRefsList.Add(emblemRef);
                         }
@@ -254,42 +285,32 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }, error => _dataSource.SetReady($"生成异常: {error}"));
         }
 
-        private static string GenerateDiversePoseDirective(Hero hero)
+        private static string GenerateDiversePoseDirective()
         {
-            string[] poses = new[]
-            {
-                "端庄沉稳的古典半身/七分身肖像：人物目光深邃内敛，身姿挺拔微侧，肩臂自然舒展，以面容神采与真实衣甲为核心，背景层次丰富细腻。",
-                "威严内敛的立姿肖像：人物昂然挺拔，一手自然按于腰际佩剑剑柄之上，神情自信笃定，流露出身经百战或执掌封邑的领袖气度。",
-                "深思笃定的端坐肖像：人物端坐于雕花高背椅或领主座椅之上，身躯微倾，双手从容搭于扶手，流露出沉稳睿智的决策者风度。",
-                "富有纵深感的中近景环境肖像：人物自然放松、神情从容，光线勾勒出面庞轮廓与甲胄材质，背景呈现出静谧而大气的空间氛围。"
-            };
-            int seed = hero != null ? Math.Abs(hero.StringId?.GetHashCode() ?? 0) : 0;
-            return poses[seed % poses.Length] + "必须描写可辨认的背景空间、材质和光源，暗部保留细节绝非黑幕。严禁在胸甲金属表面硬印纹章，无盾无罩袍无需刻意绘制纹章。";
+            // 景别、机位、身姿、神情全部交给导演按人物身份与情境自由推导，
+            // 只留元级约束：叙事瞬间、反直立展示默认、肖像纯净性。
+            return "【构图与身姿自由创作】：镜头景别、机位角度、取景构图与人物的体态、手脚摆放、头部朝向、视线神情由导演根据该人物的身份地位、性格气质与画面情境全权自主设计演绎，须呈现一个有叙事感的动作瞬间而非展示摆拍；【姿势物理一致性】：体态须与场景支撑物物理一致——坐姿须真正落座、凭倚须真正接触凭靠物，严禁悬空错位或上下身体态矛盾；【姿势自主推导】：直立站姿是未经思考的默认答案而非创作——除非你明确判断叙事确需站立，否则应推导出更能体现人物此刻状态的体态，严禁证件照式摆拍，严禁与上一版重复同一构图与姿势；持物与陈设仅在服务于场景叙事时出现；单人独立肖像不画马匹动物。";
+        }
+
+        /// <summary>从已存提示词中截取【场景空间】开头作为场景母题，用于跨版本去重。</summary>
+        private static string ExtractSceneMotif(string prompt)
+        {
+            if (string.IsNullOrWhiteSpace(prompt)) return string.Empty;
+            const string marker = "【场景空间】";
+            int idx = prompt.IndexOf(marker, StringComparison.Ordinal);
+            if (idx < 0) return string.Empty;
+            int start = idx + marker.Length;
+            int end = prompt.IndexOf("【", start, StringComparison.Ordinal);
+            string section = (end > start ? prompt.Substring(start, end - start) : prompt.Substring(start)).Trim();
+            if (section.Length > 40) section = section.Substring(0, 40);
+            return section.TrimEnd('，', '。', '；', '、', '：', ' ');
         }
 
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
         {
-            string[] variations =
-            {
-                "使用宽幅环境双人镜头，人物在真实场景中保持可辨识，但环境可以承担主要叙事",
-                "使用玩家肩后看向对方的过肩镜头，让对方当前神情和手势成为重点",
-                "使用对方肩后看向玩家的反向过肩镜头，体现双方地位和空间距离",
-                "采用两人侧面同框的横向构图，以视线和身体朝向表现关系",
-                "采用三分之二侧面中景，捕捉一句话刚说完后的停顿，不要求人物看向镜头",
-                "采用较低机位，让建筑或天空参与构图，但人物比例保持自然",
-                "采用轻微俯视，展示双方、随行者和附近真实道具的空间关系",
-                "让一名人物处于近景边缘，另一名人物位于中景，形成有纵深的对话镜头",
-                "聚焦双方手势、握缰、扶剑或放松姿态等实际可见细节，面部仍保持可辨认",
-                "选择转身、迈步、下马或准备离开的过渡瞬间；若现场事实不支持这些动作则改用安静停顿",
-                "利用门框、柱廊、帐帘、树木或街道摊位形成前景，但只采用真实场景中存在的元素",
-                "以当前现场实景参考图为构图骨架，允许改变镜头高度和焦段，不照抄界面裁剪",
-                "采用更亲近的双人半身镜头，突出最近三轮对话造成的情绪变化",
-                "采用保持距离的广角镜头，让沉默、戒备或外交礼节通过留白体现",
-                "从随行者视角观察会面，让背景人物虚化，双方关系清晰",
-                "用自然现场光塑造层次，不强制黄昏、火把、逆光或对称站桩"
-            };
-            int seed = Math.Abs(Environment.TickCount ^ Guid.NewGuid().GetHashCode() ^ (context?.DialogueSentence ?? string.Empty).GetHashCode());
-            return "本次镜头变化建议：" + variations[seed % variations.Length] + "。这只是构图选项，若与游戏事实冲突应舍弃。";
+            // 构图全权交给导演：只给自由创作授权 + 双人交互事实约束，不再提供预写取景句式。
+            return "【构图自由创作】：镜头景别、机位角度、前景运用与双方瞬间姿态由你依据现场事实与近三轮对话氛围全权自由创作，" +
+                "不拘泥任何固定构图模板。【双人交互事实】：两人处于面对面真实交谈情境中。";
         }
 
         /// <summary>一枚待合成的纹章参考图：旗帜代码 + 归属方标签（画面归因用）。</summary>
@@ -377,7 +398,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"【角色参考图1 - 画面左侧主角位: {playerName}】这是玩家主角的独家身份与外观参考：仅用于锁定其面部五官轮廓与全身装备形制（包括头盔/战盔护具）；严格绑定在最终画面左侧主角位；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须用纯正古典油画笔触从零重新手绘该人物；严禁篡改其头盔战盔款式，严禁将玩家降格为随从！");
+                        var r = new IllustrationReferenceImage(b64, $"【角色参考图1 - 画面左侧主角位: {playerName}】这是玩家主角的独家身份与外观参考：仅用于锁定其面部五官轮廓与全身装备形制（包括头盔/战盔护具）；严格绑定在最终画面左侧主角位；严禁直接复刻或贴图游戏3D多边形网格、平坦贴图光影与建模质感；必须从零重新进行纯正艺术手绘该人物；严禁篡改其头盔战盔款式，严禁将玩家降格为随从！");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
@@ -388,17 +409,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (string.IsNullOrWhiteSpace(b64)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"【角色参考图2 - 画面右侧对手位: {partnerName}】这是对话对方的独家身份与外观参考：仅用于锁定其面部五官轮廓与全部装备形制；严格绑定在最终画面右侧对手位；严禁直接复刻或贴图游戏3D多边形网格；必须用纯正古典油画笔触从零重新手绘该人物，严禁将此人与左侧主角混淆，严禁擅自将青年或壮年人物画为白发老翁！");
+                        var r = new IllustrationReferenceImage(b64, $"【角色参考图2 - 画面右侧对手位: {partnerName}】这是对话对方的独家身份与外观参考：仅用于锁定其面部五官轮廓与全部装备形制；严格绑定在最终画面右侧对手位；严禁直接复刻或贴图游戏3D多边形网格；必须从零重新进行纯正艺术手绘该人物，严禁将此人与左侧主角混淆，严禁擅自将青年或壮年人物画为白发老翁！");
                         directorRefs.Add(r);
                         genRefs.Add(r);
                     }
                 }
 
-                // 检查双方是否有手持盾牌或身穿明确纹章布料
-                bool anyShieldOrTabard = (convContext.MainHeroProfile?.WeaponDetails?.Exists(w => w.StartsWith("盾牌: ") && !w.Contains("无盾牌")) == true) ||
-                                         (convContext.InterlocutorProfile?.WeaponDetails?.Exists(w => w.StartsWith("盾牌: ") && !w.Contains("无盾牌")) == true) ||
-                                         (convContext.MainHeroProfile?.BannerEquipmentDetails?.Count > 0) ||
-                                         (convContext.InterlocutorProfile?.BannerEquipmentDetails?.Count > 0);
                 foreach (var spec in emblemSpecs ?? new List<EmblemSpec>())
                 {
                     string b64 = await BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
@@ -406,8 +422,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     {
                         var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体（如盾牌或背景军旗）真实出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲金属表面硬印纹章！");
                         directorRefs.Add(r);
-                        // 仅当确实有盾牌或明确纹章载体时才加入生图垫图，防止生图模型在普通金属胸甲上生硬印制纹章！
-                        if (anyShieldOrTabard)
+                        // 仅当该方人物确实身穿纹章罩袍或持有明确纹章盾牌时，才加入生图垫图，防止生图模型在普通金属胸甲上硬印纹章！
+                        bool isPlayerSide = spec.Side == "玩家";
+                        var targetProfile = isPlayerSide ? convContext.MainHeroProfile : convContext.InterlocutorProfile;
+                        bool sideHasHeraldic = targetProfile != null && (targetProfile.HasHeraldicArmor || targetProfile.HasHeraldicShield || targetProfile.BannerEquipmentDetails.Count > 0);
+                        if (sideHasHeraldic)
                         {
                             genRefs.Add(r);
                         }

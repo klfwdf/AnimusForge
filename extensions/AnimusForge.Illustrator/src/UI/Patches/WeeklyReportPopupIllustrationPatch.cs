@@ -392,23 +392,9 @@ namespace AnimusForge.Illustrator.UI.Patches
         /// <summary>周报纪事画的随机构图变体——同一事件每次生成应有不同取景。</summary>
         private static string GenerateWeeklyVariation()
         {
-            string[] variations =
-            {
-                "远景史诗画卷：事件全貌与山河城郭交代世界尺度，人物小而可辨",
-                "中景群像：数位当事人同框，以动作与视线关系承担叙事",
-                "低机位仰拍：以天空或已有建筑线条形成留白，人物庄严",
-                "高位俯拍：展示战场、营地或街巷的空间格局与动线",
-                "决定性瞬间：事件临界点的动作爆发（冲锋、签约、宣旨、点燃）",
-                "余波时刻：事件刚结束后的烟尘、撤离与凝视，不画动作顶点",
-                "前景遮挡构图：门框、建筑构件或兵器做前景，人物在中景",
-                "侧面横向构图：人物呈半剪影，让光线与烟尘承担主角",
-                "特写聚焦：一件关键道具、表情或手势承载事件含义",
-                "纵深构图：近景人物背影望向远方的事件现场",
-                "非对称动态构图：披风、烟尘、人群形成方向线",
-                "克制光影版：不强制黄昏火光，以事件事实决定光线氛围"
-            };
-            int seed = Math.Abs(Environment.TickCount ^ Guid.NewGuid().GetHashCode());
-            return "本次构图变化建议：" + variations[seed % variations.Length] + "。这只是构图选项，若与事件事实冲突应舍弃。";
+            // 构图全权交给导演：只给自由创作授权，不再提供预写取景句式。
+            return "【构图自由创作】：取景景别、机位角度、叙事瞬间与前景运用由你依据事件要闻与事实区全权自由创作，" +
+                "挑选最有叙事力的瞬间，不拘泥任何固定构图模板。";
         }
 
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)
