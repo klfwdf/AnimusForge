@@ -1,3 +1,17 @@
+# 当前增量：J03 部分实施，尚未完成（2026-09-18）
+
+源码修订 `d11eb572dad1f0d8f7ca57d9fc234733fc2091a8`；[代码地图](af-framework-code-map.json)新增 12 个 J03 锚点，共 197 点，recorded/working-tree 均通过。地图按实际变更文件重新定位并更新哈希，不代表 J03 全项验收。
+
+| 责任 / 已核实路径和一基坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs:19-73`、`PromptConfigurationSnapshot.cs:4-27`；`AIConfigHandler.cs:245-259,9189-9330` | 六模型加载到本地值后按单次引用发布，含异常回退的 revision 换代；既有 getter/reload 入口保留 | 六份加载算法仍在 `AIConfigHandler`；模型深层可变性、真实旧红配置矩阵未闭合 |
+| `src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs:9`、`PromptCandidateSelection.cs:24-198`、`PromptCandidateSnapshotIndex.cs:8-52`；`PromptListRetrievalService.cs:12-231` | 意图算法唯一迁入；候选纯匹配排序与 80-key/10 分钟元数据迁入，旧类准备游戏别名和 payload | 候选 payload、授权与展示 scope 仍留薄适配层；完整消费者契约回归未闭合 |
+| `src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs:25-105`；`AIConfigHandler.cs:3520`；`MyBehavior.cs:28780,30666,30838`、`ShoutBehavior.cs:19954,20508,22968,23021,28001`、`ShoutBehavior.ScenePostprocess.cs:176` | copy-on-write ambient 和可嵌套 scope；旧入口开始/退出时恢复父上下文，mentions 子结果合并 | 规则召回/评分、派生缓存、sticky、辅助实体缓存仍归旧类；warmup 所属线程 seed 捕获尚未实施 |
+
+局部 34 检查、Scene parity 71、Scene queue 37、Debug/Release 原双 API+Bootstrap 构建曾通过；不是 J03 全量离线验收。实机、旧档、真实 provider 均 `NOT-RUN`。详细当前状态以[主台账 J03 实施状态](../animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)为准。
+
+## 以下为 J02 历史范围记录
+
 # 当前增量：完整 J02 Foundation/宿主源码离线完成（2026-09-18）
 
 源码 `9d14a1eca2c25075975134605c24d48666ee123a`，185锚点在记录/工作树两模式通过。当前状态以[唯一台账J02](../animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)为准；下方仅目录生命周期子包是历史，不再代表完整J02未完成。
