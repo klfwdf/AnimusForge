@@ -50,3 +50,19 @@
 ## 回滚
 
 定向 `git revert ec0d13fb` 仅撤销本轮生产修复与测试。`d3149346` 保存最初七个目标文件的修改前检查点，`6370d4b2` 保存会话提示词追加修复前检查点；不要重置整棵工作树或回滚其他用户改动。
+
+## 自然体态与 Edits 重绘后续修正
+
+源码/测试 `6d5cb827`，修改前检查点 `b7fc2409`。用户反馈 Edits 5 张中 3 张维持立绘站姿、2 张稍作变化；这是用户观察，不是本轮对照试验结果。
+
+- `src/Core/VisualFidelityRules.cs` 的 `DirectorQualityFloor`、`ReferenceRepaint`、`ReferenceRoleInstruction`：导演限制复杂肢体动作、明确机位与人物朝向、重心和接触支撑；生图端要求根据导演描述重新构建人物体积、衣褶、透视、光照及环境反光。保留身份与实际装备，不保留原立绘像素。站立和坐姿均允许。
+- `src/Core/VisualDirectorEngine.cs:71,271–277`：质量要求进入实际导演 system prompt，重绘优先通过镜头光线变化，不强制换动作。
+- `src/UI/Overlays/IllustrationCardPopup.cs:218–241,288–297`：清除“直立是未经思考”“严禁重复姿势”等旧压力，替换为自然体态和统一重绘；依然传入历史场景母题。
+- `src/Core/UniversalOpenAiImageClient.cs:165–173,367–451,474–477`：Edits 真正上传人物/纹章/现场图，添加类型说明和与 Chat 共用的整幅重绘要求；删除自动 mask 及其 Bitmap/PNG 分配。`ResolvedPrompt` 返回实际 multipart prompt，调用方据此保存画廊记录。
+- `extensions/AnimusForge.Illustrator/AGENTS.md` 已依据本轮用户要求覆盖旧的反站姿/强制动作变化要求。
+
+以上 `src/` 路径以 `extensions/AnimusForge.Illustrator/` 为前缀。共用文本每次生成拼接一次、参考图处理仍是有界线性遍历；不新增逐帧工作、反射或缓存。
+
+验证：1.3 / 1.4 Release 子模块均 0 warning / 0 error；实际 DLL 各 **71 PASS / 0 FAIL**，日志在 `artifacts/illustrator-natural-pose/audit-1.3.txt`、`audit-1.4.txt`。新增测试通过内存 HTTP handler 检查真实 multipart：三张图的文件顺序、明确用途、完整导演描述、整幅重绘要求、无 mask，以及返回的提示词与发送文本一致。保留前轮 60 项覆盖。
+
+边界：移除全透明 mask 是取消无证据的身份分离假设，不等于证明 mask 导致坏图；本轮没有实际供应商 A/B、视觉结果评估、GPU/游戏验收，没有部署或改动用户 API/随机设置。原有协议降级仍存在，网关不支持 Edits 时依旧按原策略处理。提示词约束不能保证模型执行，须在同一模型、同一参考图下复验人物重绘、支撑自然度及身份保真。回滚只需定向 `git revert 6d5cb827`，不撤销其他未提交改动。
