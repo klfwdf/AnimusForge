@@ -103,6 +103,17 @@ def check_dependencies():
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
 
 def restore(path,source):
+ if path=='ShoutBehavior.cs':
+  # J03 exact inverse: d11eb572 added five request scopes; 2aa4edb7 moved
+  # mission warmup seed capture to this call site. No other source drift is allowed.
+  warmup_new='''\t\tPromptSemanticWarmupSeedBatch semanticWarmupSeeds = AIConfigHandler.CaptureGuardrailSemanticWarmupSeeds();
+\t\tRagWarmupCoordinator.TryStartBackgroundWarmup("mission_start", semanticWarmupSeeds);
+\t\tAIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start", semanticWarmupSeeds);'''
+  warmup_old='''\t\tRagWarmupCoordinator.TryStartBackgroundWarmup("mission_start");
+\t\tAIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start");'''
+  assert source.count(warmup_new)==1,'Unreviewed J03 warmup source';source=source.replace(warmup_new,warmup_old,1)
+  source,count=re.subn(r'(?m)^\t+using IDisposable guardrailScopeJ03 = AIConfigHandler\.BeginGuardrailRuntimeScope\(\);\n','',source)
+  assert count==5,'Unreviewed J03 Shout scope count'
  if path=='CourierDeliveryBehavior.cs':
   prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tools/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
   source=prompt.restore(source)
