@@ -244,6 +244,34 @@ internal static class Program
         Check(semanticRecall.BestInput[0] == 1f && semanticRecall.BestIntent[0] == "second" && semanticRecall.BestContext[0] == 1f,
             "aggregate and context use the same scoring evidence");
         Check(semanticRecall.BestInput[1] == 0f && semanticRecall.Seed(0, 1) == "", "unavailable embedding preserves zero-score fallback");
+        var intentRules = new[] { new PromptRuleIntentDescriptor("reward"), new PromptRuleIntentDescriptor("marriage") };
+        var intentRecall = PromptRuleSemanticRecall.Compute(
+            new[] { new PromptRuleRecallIntent("request", new[] { 1f, 0f }, 1f) },
+            new[] { new PromptRuleRecallRule(new[] { "reward" }), new PromptRuleRecallRule(new[] { "marriage" }) },
+            null, seed => seed == "reward" ? new[] { 0.8f, 0f } : new[] { 0.6f, 0f },
+            (a, b) => a[0] * b[0] + a[1] * b[1]);
+        var rerankedIntent = PromptRuleIntentSelector.Select(intentRecall, 0, "request", 0.5f, intentRules, 2, 2,
+            index => index == 0 ? "reward text" : "marriage text",
+            (_, texts) => new[] { 0.2f, 0.9f });
+        Check(rerankedIntent.Reranked && rerankedIntent.Scores.Select(score => score.RuleId).SequenceEqual(new[] { "marriage", "reward" }),
+            "production intent selector reranks detached evidence with stable rule identity");
+        Check(Math.Abs(rerankedIntent.Scores[0].FinalScore - 0.45f) < 0.0001f,
+            "rerank score applies captured intent weight");
+        var fallbackIntent = PromptRuleIntentSelector.Select(intentRecall, 0, "request", 1f, intentRules, 2, 2,
+            _ => "text", (_, _) => new[] { 0.9f });
+        Check(!fallbackIntent.Reranked && fallbackIntent.Scores[0].RuleId == "reward" && fallbackIntent.Scores[0].FinalScore == 0.8f,
+            "failed ONNX batch retains semantic ordering and raw scores");
+        var unavailableIntent = PromptRuleIntentSelector.Select(intentRecall, 0, "request", 1f, intentRules, 2, 1,
+            _ => throw new Exception("unavailable reranker should not build text"), null);
+        Check(!unavailableIntent.Reranked && unavailableIntent.Scores.Single().RuleId == "reward",
+            "unavailable reranker avoids text construction and respects cap");
+        Check(PromptRuleTextEvidence.SemanticSeeds("reward", "奖励。其余说明", new List<string> { " 赏赐 ", "赏赐" })
+            .SequenceEqual(new[] { "赏赐", "reward 奖励" }), "reward retains keyword and instruction seeds without duplicate");
+        Check(PromptRuleTextEvidence.SemanticSeeds("ordinary", "ignored", new List<string>()).Single() == "ordinary",
+            "rule ID remains fallback seed when no keyword exists");
+        Check(PromptRuleTextEvidence.RerankText("reward", "group", "奖励。其余说明", new List<string> { "礼物", "礼物" })
+            .Contains("用途: reward 奖励") && PromptRuleTextEvidence.RerankText("reward", "group", "", null).Contains("规则组: group"),
+            "rerank document retains group, ID, instruction and deduplicated keywords");
         var aggregate = new PromptRuleAggregation();
         aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
         aggregate.Add("marriage", 0.6f, 1, "second", "intent b");
