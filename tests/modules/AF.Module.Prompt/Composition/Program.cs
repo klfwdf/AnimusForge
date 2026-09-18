@@ -25,7 +25,24 @@ internal static class Program
         TopicRouter();
         PreprocessIdAssembler();
         ExtrasComposer();
+        RuntimeTargetBinding();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void RuntimeTargetBinding()
+    {
+        var hero = PromptRuntimeTargetBinding.Create("K", "hero_1", "char_1", "hero_1", true, true, 7);
+        Check(hero.KingdomId == "K" && hero.HeroId == "hero_1" && hero.CharacterId == "char_1" && hero.TroopId == "char_1" && hero.UnnamedRank == "" && hero.AgentIndex == 7, "hero target: troop=character, no unnamed rank");
+        var soldier = PromptRuntimeTargetBinding.Create(null, null, "troop_a", null, false, true, -1);
+        Check(soldier.KingdomId == "" && soldier.HeroId == "" && soldier.UnnamedRank == "soldier" && soldier.TroopId == "troop_a", "non-hero soldier binding");
+        var commoner = PromptRuntimeTargetBinding.Create("", null, "npc_b", "hero_of_b", false, false, 3);
+        Check(commoner.HeroId == "hero_of_b" && commoner.UnnamedRank == "commoner", "non-hero commoner falls back to character hero id");
+        var nothing = PromptRuntimeTargetBinding.Create("K", null, null, null, false, false, -1);
+        Check(nothing.HeroId == "" && nothing.CharacterId == "" && nothing.UnnamedRank == "", "no character yields empty rank");
+        var order = new List<string>();
+        hero.Apply(v => order.Add("k=" + v), v => order.Add("h=" + v), v => order.Add("c=" + v), v => order.Add("t=" + v), v => order.Add("r=" + v), v => order.Add("a=" + v));
+        Check(order.SequenceEqual(new[] { "k=K", "h=hero_1", "c=char_1", "t=char_1", "r=", "a=7" }), "apply order kingdom,hero,character,troop,rank,agent");
+        Check(PromptRuntimeTargetBinding.Cleared.AgentIndex == -1 && PromptRuntimeTargetBinding.Cleared.KingdomId == "" && PromptRuntimeTargetBinding.Cleared.HeroId == "", "cleared binding is legacy reset values");
     }
 
     private static void ExtrasComposer()

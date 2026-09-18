@@ -19858,6 +19858,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	internal static PromptRuntimeTargetBinding CreatePromptRuntimeTargetBinding(string kingdomId, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		return PromptRuntimeTargetBinding.Create(kingdomId, targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId, targetHero != null, targetCharacter != null && targetCharacter.IsSoldier, targetAgentIndex);
+	}
+
 	private static string ResolveBuiltInRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
 	{
 		return BuiltInRuleStickyCarry.ResolveTargetKey(targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId);
@@ -28532,13 +28537,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(text3);
-		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
 		try
 		{
 			text = preselectedRuleIds == null
@@ -28582,12 +28581,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
 		if (!string.IsNullOrWhiteSpace(text2) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0) && CountInjectedRuleBlocks(text) < num)
 		{
@@ -30418,12 +30412,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
 		try
 		{
 			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
@@ -30435,12 +30424,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 			AIConfigHandler.SetGuardrailSemanticContext("");
 		}
 	}
@@ -30584,13 +30568,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		PromptRuleIdPolicy.AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string runtimeTargetHeroId = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
-		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
 		try
 		{
 			if (!suppressDynamicRuleAndLore && completeRuntimeExcludedRuleIds)
@@ -30990,12 +30968,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
 	}
 
