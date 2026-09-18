@@ -159,6 +159,14 @@ internal static class Program
         Check(vectors.TryGetInput("v2|input", out _) && !vectors.TryGetInput("v1|late", out _), "stale input result does not evict live cache");
         vectors.Clear();
         Check(!vectors.TryGetPhrase("v2|c", out _) && !vectors.TryGetInput("v2|input", out _), "reload clears both vector caches");
+        PromptRetrievalContextOwner.Hero.Value = "operation-parent";
+        using (var operation = new PromptRetrievalOperationScope(PromptRetrievalContextOwner.BeginScope(), store.BeginCapture()))
+        {
+            PromptRetrievalContextOwner.Hero.Value = "operation-child";
+            store.Reload(() => "new-live", _ => "default");
+            Check(store.Read().Value == "later" && PromptRetrievalContextOwner.Hero.Value == "operation-child", "operation pins configuration and target together");
+        }
+        Check(store.Read().Value == "new-live" && PromptRetrievalContextOwner.Hero.Value == "operation-parent", "operation restores both ambient owners");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

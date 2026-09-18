@@ -3144,15 +3144,25 @@ public static class AIConfigHandler
 		}
 	}
 
-	internal static IDisposable BeginGuardrailRuntimeScope() => PromptRetrievalContextOwner.BeginScope((parent, child) =>
+	internal static IDisposable BeginGuardrailRuntimeScope()
 	{
-		MentionedWorldEntities merged = (parent as MentionedWorldEntities)?.Clone() ?? new MentionedWorldEntities();
-		if (child is MentionedWorldEntities newMentions)
+		IDisposable configuration = _promptConfiguration.BeginCapture();
+		try
 		{
-			merged.Merge(newMentions);
+			IDisposable context = PromptRetrievalContextOwner.BeginScope((parent, child) =>
+			{
+				MentionedWorldEntities merged = (parent as MentionedWorldEntities)?.Clone() ?? new MentionedWorldEntities();
+				if (child is MentionedWorldEntities newMentions) merged.Merge(newMentions);
+				return merged;
+			});
+			return new PromptRetrievalOperationScope(context, configuration);
 		}
-		return merged;
-	});
+		catch
+		{
+			configuration.Dispose();
+			throw;
+		}
+	}
 
 	private static LlmGenerateResult GenerateConfiguredGatewayResult(
 		IEnumerable<object> messages,
