@@ -63,6 +63,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private string _selectedTitle = string.Empty;
         private string _selectedPrompt = string.Empty;
         private string _selectedDate = string.Empty;
+        private string _selectedTheme = string.Empty;
         private string _statusText = "欢迎查阅卡拉迪亚纪事画廊";
         private string _loadedPreviewSpriteName;
         private int _previewCounter;
@@ -163,6 +164,20 @@ namespace AnimusForge.Illustrator.UI.Gallery
         }
 
         [DataSourceProperty]
+        public string SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                if (value != _selectedTheme)
+                {
+                    _selectedTheme = value;
+                    OnPropertyChangedWithValue(value, nameof(SelectedTheme));
+                }
+            }
+        }
+
+        [DataSourceProperty]
         public string StatusText
         {
             get => _statusText;
@@ -236,6 +251,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 SelectedTitle = selected.Title;
                 SelectedPrompt = selected.Item?.Prompt ?? string.Empty;
                 SelectedDate = selected.DateText;
+                SelectedTheme = string.IsNullOrWhiteSpace(selected.Item.Theme) ? "主题：未记录" : selected.Item.ThemeText;
                 StatusText = selected.Item.ThemeText;
             }
             else

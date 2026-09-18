@@ -7,7 +7,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge.Illustrator.Context
 {
@@ -66,7 +65,7 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             sb.AppendLine($"【人物身份】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
-                $" ({Culture}文化, {Gender}, 约{Age}岁" + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
+                $" ({Culture}文化, {Gender}, " + (Age > 0 ? $"约{Age}岁" : "年龄未确认") + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
             if (!string.IsNullOrWhiteSpace(SpeciesDescription)) sb.AppendLine("【真实种族/物种】" + SpeciesDescription);
             if (!string.IsNullOrWhiteSpace(ClanName) || !string.IsNullOrWhiteSpace(BannerDescription))
             {
@@ -204,7 +203,7 @@ namespace AnimusForge.Illustrator.Context
             ApplyEquipmentSnapshot(profile, equipment, equipmentSource ?? (useCivilian ? "人物便服装备栏" : "人物战斗装备栏"));
 
             // 8. 提取生理与面部特征 (根据头部全遮蔽状态智能调整)
-            profile.PhysicalFeatures = ExtractPhysicalFeatures(hero, equipment, appearance);
+            profile.PhysicalFeatures = ExtractPhysicalFeatures(hero, equipment);
 
             TaleWorlds.Library.Debug.Print($"[IllustratorFidelity] hero={hero.StringId}, equipmentSource={profile.EquipmentSource}, head={equipment?[EquipmentIndex.Head].Item?.StringId ?? "empty"}, shield={profile.WeaponDetails.Exists(x => x.StartsWith("盾牌: ") && !x.Contains("无盾牌"))}");
             return profile;
@@ -234,13 +233,43 @@ namespace AnimusForge.Illustrator.Context
         private static string ResolveSpeciesDescription(Hero hero)
         {
             if (hero?.CharacterObject == null) return string.Empty;
-            string identity = ((hero.CharacterObject.StringId ?? string.Empty) + " " + (hero.Culture?.StringId ?? string.Empty) + " " + (hero.Culture?.Name?.ToString() ?? string.Empty)).ToLowerInvariant();
-            var known = new[] { new[] { "兽人", "orc", "orcs", "greenskin", "warhammer_orc" }, new[] { "地精", "goblin", "goblins", "snotling" }, new[] { "精灵", "elf", "elves", "elven", "asrai", "druchii" }, new[] { "矮人", "dwarf", "dwarves", "dawi" }, new[] { "鼠人", "skaven" }, new[] { "野兽人", "beastman", "beastmen", "minotaur" }, new[] { "混沌", "chaos", "daemon", "demon" }, new[] { "巨魔", "troll", "ogre" } };
-            foreach (var group in known)
+            string identity = (hero.CharacterObject.StringId ?? string.Empty) + " " + (hero.Culture?.StringId ?? string.Empty) + " " + (hero.Culture?.Name?.ToString() ?? string.Empty);
+            return DescribeSpecies(identity, hero.CharacterObject.Race);
+        }
+
+        private static readonly string[][] KnownSpeciesTokens =
+        {
+            // More specific labels must precede their substrings (野兽人 contains 兽人).
+            new[] { "野兽人", "beastman", "beastmen", "minotaur" },
+            new[] { "兽人", "orc", "orcs", "greenskin", "warhammer_orc" },
+            new[] { "地精", "goblin", "goblins", "snotling" },
+            new[] { "精灵", "elf", "elves", "elven", "asrai", "druchii" },
+            new[] { "矮人", "dwarf", "dwarves", "dawi" },
+            new[] { "鼠人", "skaven" },
+            new[] { "混沌", "chaos", "daemon", "demon" },
+            new[] { "巨魔", "troll", "ogre" }
+        };
+
+        internal static string DescribeSpecies(string identity, int race)
+        {
+            identity = (identity ?? string.Empty).ToLowerInvariant();
+            foreach (var group in KnownSpeciesTokens)
                 foreach (string token in group)
-                    if (identity.Contains(token)) return group[0];
-            if (hero.CharacterObject.Race != 0) return "自定义非人类种族（游戏 Race=" + hero.CharacterObject.Race + "，以真实立绘为准）";
-            return "人类（若 MOD 通过立绘加入特殊物种，以参考图和文化设定为准）";
+                    if (token[0] > 127 ? identity.Contains(token) : ContainsIdentityToken(identity, token)) return group[0];
+            return "种族/物种未确认（游戏 Race=" + race + "，以真实立绘和已确认文化设定为准）";
+        }
+
+        private static bool ContainsIdentityToken(string identity, string token)
+        {
+            int start = 0;
+            while ((start = identity.IndexOf(token, start, StringComparison.Ordinal)) >= 0)
+            {
+                int end = start + token.Length;
+                if ((start == 0 || !char.IsLetterOrDigit(identity[start - 1])) &&
+                    (end == identity.Length || !char.IsLetterOrDigit(identity[end]))) return true;
+                start = end;
+            }
+            return false;
         }
 
         private static string ExtractCultureLore(Hero hero)
@@ -630,65 +659,21 @@ namespace AnimusForge.Illustrator.Context
                 (hidesBeard ? "装备标记隐藏全部胡须，不补画被隐藏的胡须。" : "");
         }
 
-        public static string ExtractCharacterPhysicalFeatures(CharacterObject character, Equipment equipment)
+        public static string ExtractCharacterPhysicalFeatures(CharacterObject character, Equipment equipment, int? resolvedAge = null)
         {
             if (character == null) return string.Empty;
-            var sb = new StringBuilder();
+            var headItem = equipment?[EquipmentIndex.Head].CosmeticItem ?? equipment?[EquipmentIndex.Head].Item;
+            return BuildPhysicalFeaturesDescription(resolvedAge ?? ResolveAppearanceAge(character.Age, null),
+                headItem?.ArmorComponent?.HairCoverType == ArmorComponent.HairCoverTypes.All,
+                headItem?.ArmorComponent?.BeardCoverType == ArmorComponent.BeardCoverTypes.All);
+        }
 
-            bool isBandit = false;
-            string id = (character.StringId ?? "").ToLowerInvariant();
-            string name = (character.Name?.ToString() ?? "").ToLowerInvariant();
-            if (id.Contains("looter") || id.Contains("bandit") || id.Contains("raider") || id.Contains("outlaw") ||
-                name.Contains("劫匪") || name.Contains("强盗") || name.Contains("山贼") || name.Contains("海寇") || name.Contains("响马"))
-            {
-                isBandit = true;
-            }
-
-            if (isBandit)
-            {
-                sb.Append("体格精悍魁梧、目光凶悍桀骜的荒野壮年战士（约26-32岁），面带风霜之色，肌肉紧绷强健。");
-                if (equipment != null)
-                {
-                    var headItem = equipment[EquipmentIndex.Head].Item;
-                    if (headItem != null)
-                    {
-                        string hName = (headItem.Name?.ToString() ?? "").ToLowerInvariant();
-                        string hId = (headItem.StringId ?? "").ToLowerInvariant();
-                        if (hName.Contains("面罩") || hName.Contains("兜帽") || hId.Contains("mask") || hId.Contains("hood"))
-                        {
-                            sb.Append(" 头部装备的材质、形状与口鼻实际覆盖范围以本人参考图为准，不按兜帽或面罩名称推断遮面程度。");
-                        }
-                    }
-
-                    var bodyItem = equipment[EquipmentIndex.Body].Item;
-                    if (bodyItem != null && bodyItem.Tier <= 0 && bodyItem.ArmorComponent?.MaterialType == ArmorComponent.ArmorMaterialTypes.Cloth)
-                    {
-                        string bName = (bodyItem.Name?.ToString() ?? "").ToLowerInvariant();
-                        string bId = (bodyItem.StringId ?? "").ToLowerInvariant();
-                        if (bName.Contains("破烂") || bName.Contains("粗布短衫") || bId.Contains("rags") || bId.Contains("tattered"))
-                        {
-                            sb.Append(" 身着粗麻开襟无袖短衣，袒露出强健结实的胸膛与宽厚胸肌。");
-                        }
-                    }
-
-                    var gloveItem = equipment[EquipmentIndex.Gloves].Item;
-                    if (gloveItem != null && gloveItem.Tier <= 0)
-                    {
-                        string gName = (gloveItem.Name?.ToString() ?? "").ToLowerInvariant();
-                        string gId = (gloveItem.StringId ?? "").ToLowerInvariant();
-                        if (gName.Contains("裹手") || gId.Contains("bandage"))
-                        {
-                            sb.Append(" 双手与前臂紧紧缠绕着层层粗亚麻布条绷带。");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                sb.Append("正值壮年、身形挺拔结实的战士（约25-35岁），神态坚毅沉稳、英武健硕。");
-            }
-
-            return sb.ToString().Trim();
+        internal static int ResolveAppearanceAge(float fallbackAge, string bodyProperties)
+        {
+            float age = fallbackAge;
+            if (!string.IsNullOrWhiteSpace(bodyProperties) && BodyProperties.FromString(bodyProperties, out var body))
+                age = body.Age;
+            return !float.IsNaN(age) && !float.IsInfinity(age) && age > 0 && age < int.MaxValue ? (int)age : 0;
         }
 
         private static string ResolveItemMaterial(ItemObject item)
@@ -780,9 +765,9 @@ namespace AnimusForge.Illustrator.Context
             }
         }
 
-        private static string ExtractPhysicalFeatures(Hero hero, Equipment equipment, CharacterAppearanceSnapshot appearance = null)
+        private static string ExtractPhysicalFeatures(Hero hero, Equipment equipment)
         {
-            var headItem = equipment?[EquipmentIndex.Head].Item;
+            var headItem = equipment?[EquipmentIndex.Head].CosmeticItem ?? equipment?[EquipmentIndex.Head].Item;
             if (headItem != null)
             {
                 string hId = (headItem.StringId ?? "").ToLowerInvariant();
@@ -793,72 +778,21 @@ namespace AnimusForge.Illustrator.Context
                 }
             }
 
-            // 提取人物真实发色、发型、胡须及年龄特征
-            string hairColorDesc = "深色发丝";
-            string beardDesc = hero.IsFemale ? "面容干净无胡须" : "修剪整齐的短胡须";
-            bool hairExtracted = false;
+            // BodyProperties stays intact in the appearance snapshot used by the native portrait.
+            // A hair-color offset indexes a race/gender/age-specific palette; it is neither
+            // an absolute color nor evidence for curl, length, beard style or greying.
+            return BuildPhysicalFeaturesDescription((int)hero.Age,
+                headItem?.ArmorComponent?.HairCoverType == ArmorComponent.HairCoverTypes.All,
+                headItem?.ArmorComponent?.BeardCoverType == ArmorComponent.BeardCoverTypes.All);
+        }
 
-            try
-            {
-                BodyProperties bp = hero.BodyProperties;
-                if (appearance != null && !string.IsNullOrWhiteSpace(appearance.BodyProperties))
-                {
-                    BodyProperties.FromString(appearance.BodyProperties, out bp);
-                }
-
-#if BANNERLORD_1_4_OR_GREATER
-                var faceParams = FaceGenerationParams.Create();
-                MBBodyProperties.GetParamsFromKey(ref faceParams, bp, false, false);
-                float hairOffset = faceParams.CurrentHairColorOffset;
-                int beardIndex = faceParams.CurrentBeard;
-                hairExtracted = true;
-
-                if (hairOffset < 0.22f)
-                    hairColorDesc = "金黄色发丝（亚麻金发/亮金色微卷发丝）";
-                else if (hairOffset < 0.40f)
-                    hairColorDesc = "浅棕色/暖栗色发丝";
-                else if (hairOffset < 0.58f)
-                    hairColorDesc = "赤褐色/红棕色发丝";
-                else if (hairOffset < 0.78f)
-                    hairColorDesc = "深棕色/深褐色发丝";
-                else
-                    hairColorDesc = "乌黑/深黑色发丝";
-
-                if (hero.IsFemale || beardIndex <= 0)
-                {
-                    beardDesc = "面部剃刮干净无胡须";
-                }
-                else
-                {
-                    string bColor = hairOffset < 0.22f ? "金黄色" : (hairOffset < 0.40f ? "浅棕色" : (hairOffset < 0.58f ? "红棕色" : (hairOffset < 0.78f ? "深褐色" : "黑色")));
-                    beardDesc = $"修剪利落的{bColor}胡须（与发色一致的{bColor}短髭与八字胡/下巴胡，呈现纯正{bColor}光泽）";
-                }
-#endif
-            }
-            catch
-            {
-            }
-
-            string ageTone;
-            if (hero.Age >= 60)
-                ageTone = $"约{(int)hero.Age}岁长者，两鬓与须发微霜斑白，眼神深邃坚毅";
-            else if (hero.Age >= 40)
-                ageTone = $"约{(int)hero.Age}岁成熟统帅，面庞沉稳威严、骨相深邃、正值鼎盛之年";
-            else if (hero.Age >= 28)
-                ageTone = $"约{(int)hero.Age}岁壮年将领/勇士，英姿挺拔、面庞棱角分明紧致、极富力量感";
-            else
-                ageTone = $"约{(int)hero.Age}岁青年骑士/贵族，身姿挺拔修长、肤色健康平滑";
-
-            if (!hairExtracted)
-            {
-                return $"【面貌骨相与发色胡须】：{ageTone}；发色、胡须样式与五官骨相完全以人物参考图为最高依据，不凭身份或猜测补造发色胡须。";
-            }
-
-            if (headItem?.ArmorComponent?.HairCoverType == ArmorComponent.HairCoverTypes.All)
-                hairColorDesc = "当前装备隐藏头发";
-            if (headItem?.ArmorComponent?.BeardCoverType == ArmorComponent.BeardCoverTypes.All)
-                beardDesc = "当前装备隐藏胡须";
-            return $"【面貌骨相与发色胡须】：{ageTone}；发色为【{hairColorDesc}】；胡须为【{beardDesc}】；仅表现参考图中实际露出的五官与须发，不为展示面貌移除或打开头盔护具。";
+        internal static string BuildPhysicalFeaturesDescription(int age, bool hidesHair, bool hidesBeard)
+        {
+            return "【面貌骨相与发型】：" + (age > 0 ? $"约{age}岁" : "年龄未确认") + "；五官、肤色、发型轮廓与须发颜色以本人身份参考图为准。" +
+                "先辨认有无可见头发与胡须，再转写可辨的长短、分缝、束发方式与胡须形状；秃头、无须及非人类外观照图保留，看不清的部分不补造。年龄、性别、文化和头衔不能推导发型、须型或白发。" +
+                (hidesHair ? "当前装备隐藏全部头发，不补画被隐藏的头发。" : "") +
+                (hidesBeard ? "当前装备隐藏全部胡须，不补画被隐藏的胡须。" : "") +
+                "仅表现参考图中实际露出的五官与须发，不为展示面貌移除或打开头盔护具。";
         }
 
         private static string ExtractBackgroundLore(Hero hero)

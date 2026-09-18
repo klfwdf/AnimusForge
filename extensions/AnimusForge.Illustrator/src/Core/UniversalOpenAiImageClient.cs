@@ -85,52 +85,13 @@ namespace AnimusForge.Illustrator.Core
             string model = (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
             string size = (settings.ImageSize ?? "1024x1024").Trim();
             string quality = settings.SelectedQuality ?? "";
-            string style = settings.SelectedStyle ?? "";
             // style 仅 vivid/natural 是 API 合法枚举；custom/暗黑史诗/电影级/古典油画 等走提示词注入，避免非法枚举 400
             // 每个提示词注入预设携带专属负面词；自定义画风/负面词两个文本框仅在选“提示词(自定义画风)”预设时生效
-            string customStyleHint;
-            string presetNegative = null;
-            bool isCustomPreset = false;
-            switch (style)
-            {
-                case "custom":
-                    customStyleHint = (settings.CustomStylePrompt ?? string.Empty).Trim();
-                    isCustomPreset = true;
-                    style = null;
-                    break;
-                case "dark-epic":
-                    customStyleHint = "暗黑史诗写实, dark epic realism, grim medieval war chronicle, dramatic chiaroscuro, painterly oil texture";
-                    presetNegative = "bright cheerful colors, cartoon, anime, cel shading, clean untarnished surfaces";
-                    style = null;
-                    break;
-                case "cinematic":
-                    customStyleHint = "电影级光影, cinematic film still, anamorphic composition, movie-grade dramatic lighting and color grading";
-                    presetNegative = "flat lighting, washed-out colors, cartoon, anime, cluttered composition";
-                    style = null;
-                    break;
-                case "mosan-art":
-                    customStyleHint = "莫桑艺术, 默兹河流域12世纪罗马式珐琅与手抄本彩饰风格, 景泰蓝式宝石级饱和平涂色块, 金色勾边与装饰性边框纹样, 拉长端庄的程式化人物造型, 浓重黑色轮廓线, 平面化叙事构图, Mosan art, Romanesque manuscript illumination, champleve enamel, jewel-like saturated flat colors, gold outlines, decorative borders";
-                    presetNegative = "photorealism, soft gradients, photographic lighting, cartoon, anime, 摄影光影";
-                    style = null;
-                    break;
-                case "classic-oil":
-                    customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
-                    presetNegative = "2d flat vector art, cheap cel-shading, lineart sketch, anime, cartoon, 卡通, 动漫风";
-                    style = null;
-                    break;
-                case "vivid":
-                    customStyleHint = null; // 由 API 原生 style 参数或 Chat 指令直接处理，不硬塞古典油画
-                    presetNegative = "dull colors, washed out, cartoon, anime";
-                    break;
-                case "natural":
-                    customStyleHint = null; // 由 API 原生 style 参数或 Chat 指令直接处理，不硬塞古典油画
-                    presetNegative = "oversaturated, cartoon, anime";
-                    break;
-                default:
-                    customStyleHint = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
-                    presetNegative = "2d flat vector art, cheap cel-shading, lineart sketch, anime, cartoon, 卡通, 动漫风";
-                    break;
-            }
+            var stylePreset = IllustrationStylePresets.Resolve(settings.SelectedStyle, settings.CustomStylePrompt);
+            string style = stylePreset.ApiStyle;
+            string customStyleHint = stylePreset.ImagePrompt;
+            string presetNegative = stylePreset.NegativePrompt;
+            bool isCustomPreset = stylePreset.IsCustom;
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -148,10 +109,16 @@ namespace AnimusForge.Illustrator.Core
                 else negativePrompt = presetNegative + ", " + userNegative;
                 int requestedRefImages = referenceImages?.Count ?? 0;
 
-                bool isChatProtocol = IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
-                    || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl);
+                bool exactEditsEndpoint = settings.UseExactEndpointUrl && IsImagesEditsEndpointUrl(baseUrl);
+                bool isChatProtocol = !exactEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
+                    || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness);
+                if (exactEditsEndpoint && requestedRefImages == 0)
+                {
+                    result.ErrorMessage = "精确 images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
+                    return result;
+                }
 
                 bool success = false;
                 byte[] imageBytes = null;
@@ -161,7 +128,7 @@ namespace AnimusForge.Illustrator.Core
 
                 // 2. Images 协议 + 有参考图 → 先试 /images/edits（multipart 真正携带参考图）。
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
-                if (!isChatProtocol && requestedRefImages > 0 && !settings.UseExactEndpointUrl)
+                if (!isChatProtocol && requestedRefImages > 0 && (!settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
                     var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
@@ -171,7 +138,7 @@ namespace AnimusForge.Illustrator.Core
                         imageBytes = edit.ImageBytes;
                         imageUrl = edit.ImageUrl;
                     }
-                    else if (!edit.ShouldFallbackToText)
+                    else if (settings.UseExactEndpointUrl || !edit.ShouldFallbackToText)
                     {
                         errorMessage = edit.ErrorMessage;
                         stopAfterEditFailure = true;
@@ -193,7 +160,7 @@ namespace AnimusForge.Illustrator.Core
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
                     errorMessage = attempt.ErrorMessage;
-                    if (success) result.ResolvedPrompt = effectivePrompt;
+                    result.ResolvedPrompt = attempt.ResolvedPrompt;
 
                     // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
                     if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
@@ -202,13 +169,13 @@ namespace AnimusForge.Illustrator.Core
                         string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness);
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
                         var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint).ConfigureAwait(false);
+                        result.ResolvedPrompt = chatRetry.ResolvedPrompt;
                         if (chatRetry.Success)
                         {
                             success = true;
                             imageBytes = chatRetry.ImageBytes;
                             imageUrl = chatRetry.ImageUrl;
                             errorMessage = null;
-                            result.ResolvedPrompt = chatEffectivePrompt;
                         }
                         else
                         {
@@ -273,11 +240,12 @@ namespace AnimusForge.Illustrator.Core
 
         public static string ResolveEndpointUrl(string baseUrl, bool isChatCompletion, bool useExactUrl)
         {
-            string url = (baseUrl ?? string.Empty).Trim().TrimEnd('/');
+            string url = (baseUrl ?? string.Empty).Trim();
             if (useExactUrl)
             {
                 return url;
             }
+            url = url.TrimEnd('/');
 
             if (isChatCompletion)
             {
@@ -350,14 +318,22 @@ namespace AnimusForge.Illustrator.Core
         /// </summary>
         private static string ResolveEditsEndpointUrl(string baseUrl)
         {
-            string url = (baseUrl ?? string.Empty).Trim().TrimEnd('/');
-            if (url.EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase)) return url;
+            string url = (baseUrl ?? string.Empty).Trim();
+            // A complete edit URL may carry routing/authentication query parameters. Preserve it verbatim.
+            if (IsImagesEditsEndpointUrl(url)) return url;
+            url = url.TrimEnd('/');
             if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
             {
                 return url.Substring(0, url.Length - "/images/generations".Length).TrimEnd('/') + "/images/edits";
             }
             if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) return url + "/images/edits";
             return url + "/v1/images/edits";
+        }
+
+        private static bool IsImagesEditsEndpointUrl(string url)
+        {
+            return Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+                uri.AbsolutePath.TrimEnd('/').EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -450,7 +426,7 @@ namespace AnimusForge.Illustrator.Core
             }
         }
 
-        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToChat)> AttemptGenerateOnceAsync(
+        private static async Task<(bool Success, byte[] ImageBytes, string ImageUrl, string ErrorMessage, bool ShouldFallbackToChat, string ResolvedPrompt)> AttemptGenerateOnceAsync(
             string endpointUrl,
             string model,
             string effectivePrompt,
@@ -465,6 +441,7 @@ namespace AnimusForge.Illustrator.Core
         {
             JObject payload;
             int actualRefImages = 0;
+            string sentPrompt = effectivePrompt ?? string.Empty;
             if (isChatProtocol)
             {
                 JToken messageContent;
@@ -580,6 +557,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     messageContent = effectivePrompt;
                 }
+                sentPrompt = ExtractChatPromptText(messageContent);
 
                 payload = new JObject
                 {
@@ -651,18 +629,36 @@ namespace AnimusForge.Illustrator.Core
                                 fallback = true;
                             }
 
-                            return (false, null, null, errorMsg, fallback);
+                            return (false, null, null, errorMsg, fallback, sentPrompt);
                         }
 
                         var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
                         if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
                         {
-                            return (true, extracted.Bytes, extracted.Url, null, false);
+                            return (true, extracted.Bytes, extracted.Url, null, false, sentPrompt);
                         }
 
-                        return (false, null, null, DescribeMissingImageResponse(responseText), false);
+                        return (false, null, null, DescribeMissingImageResponse(responseText), false, sentPrompt);
                     }
             }
+        }
+
+        private static string ExtractChatPromptText(JToken messageContent)
+        {
+            if (messageContent == null) return string.Empty;
+            if (messageContent.Type == JTokenType.String) return messageContent.Value<string>() ?? string.Empty;
+            var content = messageContent as JArray;
+            if (content == null) return string.Empty;
+            var text = new StringBuilder();
+            foreach (var part in content)
+            {
+                if (part?["type"]?.Value<string>() != "text") continue;
+                string value = part["text"]?.Value<string>();
+                if (value == null) continue;
+                if (text.Length > 0) text.AppendLine();
+                text.Append(value);
+            }
+            return text.ToString();
         }
 
         private sealed class ExtractedImage
