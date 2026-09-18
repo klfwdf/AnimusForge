@@ -1,3 +1,14 @@
+<a id="skill-plan-execution-20260918"></a>
+
+## 当前任务：精简规划与执行规则补充（2026-09-18，SKILL_VERIFIED）
+
+- 基线 `4ae94412`，工作区干净；仅补充仓库维护 Skill 的 `references/module-and-bridge-workflow.md` 及本台账/HANDOFF，不新建 Skill 或竞争计划。
+- 规则：只请求计划不自动实施；计划解决关键设计而不逐行翻译代码；近期细化、远期保留路线；获准执行者自行处理普通实现/回归，改变设计、行为或授权范围才请求决策，不削弱验收。
+- 验证：`python -X utf8 -B .claude/skills/animusforge-maintainer/scripts/verify-af-skill.py` 和系统 `skill-creator/scripts/quick_validate.py` 对仓库维护 Skill 均 exit 0；`git diff --check` 通过。仅验证结构、元数据、链接与差异格式，未做独立模型行为测试，未重跑 Bash 全套或产品构建。
+- 本次为仓库局部补充，外部主源与全局副本未同步；原安全、性能及兼容约束不变。生产仍为 J02_OFFLINE_VERIFIED；J03、实机/旧档、全仓 HOLD 状态不变，不推送、部署、打包或安装。
+
+## 以下为既有交付与实施历史，不构成本轮执行或发布授权
+
 <a id="full-delivery-20260918"></a>
 
 ## 当前交付：R2 / J01 / J02 与 Skill 0.2.0 完整源码文档（2026-09-18）
