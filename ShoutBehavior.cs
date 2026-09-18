@@ -20168,12 +20168,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			nativeTargetAgentIndex,
 			() => MyBehavior.CaptureWeeklyPromptSnapshotForExternal(targetHero, targetCharacter),
 			MyBehavior.WeeklyPromptSnapshot.Empty).ConfigureAwait(false) ?? MyBehavior.WeeklyPromptSnapshot.Empty;
-		Task<MyBehavior.ShoutPromptContext> nativePreprocessTask = RunNativeConversationBackgroundPreprocessAsync(
-			nativeTargetLog,
-			nativeTargetAgentIndex,
-			runtimeGeneration,
-			() => MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds, weeklyPromptSnapshot: weeklyPromptSnapshot));
-		MyBehavior.ShoutPromptContext ctx = await AwaitNativeConversationBackgroundPreprocessAsync(nativePreprocessTask, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration).ConfigureAwait(false);
+		MyBehavior.ShoutPromptContext ctx = await BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration, targetHero, targetCharacter, routingInput, extraFact, cultureId, npc.IsHero, preprocessExcludedRuleIds, weeklyPromptSnapshot).ConfigureAwait(false);
 		nativePreprocessSw.Stop();
 		if (ctx == null)
 		{

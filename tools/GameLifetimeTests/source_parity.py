@@ -131,6 +131,15 @@ def restore(path,source):
   j04_const_new='	public const string PersistentAdpDebtPostprocessRuleId = PromptPreprocessRuleIdAssembler.PersistentAdpDebtRuleId;'
   j04_const_old='	public const string PersistentAdpDebtPostprocessRuleId = "persistent_adp_debt";'
   assert source.count(j04_const_new)==1,'Unreviewed J04 Shout debt rule id';source=source.replace(j04_const_new,j04_const_old,1)
+  # J04f exact inverse: the Native call site schedules the shared prompt build as three steps.
+  j04f_new='\t\tMyBehavior.ShoutPromptContext ctx = await BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration, targetHero, targetCharacter, routingInput, extraFact, cultureId, npc.IsHero, preprocessExcludedRuleIds, weeklyPromptSnapshot).ConfigureAwait(false);\n'
+  j04f_old=('\t\tTask<MyBehavior.ShoutPromptContext> nativePreprocessTask = RunNativeConversationBackgroundPreprocessAsync(\n'
+   '\t\t\tnativeTargetLog,\n'
+   '\t\t\tnativeTargetAgentIndex,\n'
+   '\t\t\truntimeGeneration,\n'
+   '\t\t\t() => MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds, weeklyPromptSnapshot: weeklyPromptSnapshot));\n'
+   '\t\tMyBehavior.ShoutPromptContext ctx = await AwaitNativeConversationBackgroundPreprocessAsync(nativePreprocessTask, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration).ConfigureAwait(false);\n')
+  assert source.count(j04f_new)==1,'Unreviewed J04f Native prompt build call';source=source.replace(j04f_new,j04f_old,1)
  if path=='CourierDeliveryBehavior.cs':
   prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tools/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
   source=prompt.restore(source)

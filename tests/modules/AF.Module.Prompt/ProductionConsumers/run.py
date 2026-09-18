@@ -54,8 +54,15 @@ scene_group = method("ShoutBehavior.cs", "private async Task HandleGroupResponse
 assert "BeginGuardrailRuntimeScope()" in scene_group and "ctx?.MentionedEntities" in scene_group
 
 native = method("ShoutBehavior.cs", "private async Task<string> SubmitNativeConversationTextInternalAsync(")
-ordered(native, "BuildShoutPromptContextForExternal(targetHero, routingInput", "BeginGuardrailRuntimeScope()", "TryRunSceneUnifiedActionPostprocess(")
-assert "targetAgentIndex: nativeTargetAgentIndex" in native and "SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex)" in native
+ordered(native, "BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex", "BeginGuardrailRuntimeScope()", "TryRunSceneUnifiedActionPostprocess(")
+assert "SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex)" in native
+scheduled = method("ShoutBehavior.NativePromptBuild.cs", "private async Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsync(")
+# J04f: step 1 and 3 run through the main-thread scheduler with admission re-validation; step 2 through the background slot.
+ordered(scheduled, "RunNativeConversationMainThreadFuncAsync(\"prompt_build_begin\"", "IsNativeConversationAdmissionCurrent(admission, out _)", "owner.BeginSharedPromptBuild(",
+        "RunNativeConversationBackgroundPreprocessAsync(", "owner.RunSharedPromptRouting(phases)", "AwaitNativeConversationBackgroundPreprocessAsync(",
+        "RunNativeConversationMainThreadFuncAsync(\"prompt_build_complete\"", "owner.CompleteSharedPromptBuild(phases")
+assert scheduled.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 2, "admission must be re-validated on both game-thread steps"
+assert scheduled.count("SaveRuntimeGuard.IsStale(runtimeGeneration") == 2, "generation checked after each hop"
 
 policy = method("PolicySystem/History/PolicyHistoryRetrievalService.cs", "internal static bool TryRetrieveDialogueByMentions(")
 if args.mutate == "remove-policy-terms":

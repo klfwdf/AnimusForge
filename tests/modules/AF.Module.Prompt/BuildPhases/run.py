@@ -16,30 +16,34 @@ parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+game_services = re.compile(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|WorldEntityRetrievalService\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.MainParty|Clan\.PlayerClan|Hero\.MainHero|RomanceSystemBehavior\.)")
 orchestrator = extract.declaration(source, "private ShoutPromptContext BuildShoutPromptContextForExternalInternal(")
 capture_request = extract.declaration(source, "private PromptBuildRequest CapturePromptBuildRequest(")
 capture_sections = extract.declaration(source, "private void CapturePromptSections(")
 appendices = extract.declaration(source, "private void ApplyPromptRuntimeAppendices(")
-if args.mutate == "routing-before-request":
-    a = orchestrator.index("CapturePromptBuildRequest("); b = orchestrator.index("PromptTopicRoutingStage.Run(")
-    orchestrator = orchestrator[:a] + orchestrator[b:] + orchestrator[a:b]
 
 def ordered(body, *fragments):
     positions = [body.find(f) for f in fragments]
     assert all(p >= 0 for p in positions), [f for f, p in zip(fragments, positions) if p < 0]
     assert positions == sorted(positions), list(zip(fragments, positions))
 
+begin = extract.declaration(source, "internal PromptBuildPhases BeginSharedPromptBuild(")
+routing = extract.declaration(source, "internal void RunSharedPromptRouting(")
+complete = extract.declaration(source, "internal ShoutPromptContext CompleteSharedPromptBuild(")
+if args.mutate == "routing-before-request":
+    orchestrator = orchestrator.replace("BeginSharedPromptBuild(", "X(", 1).replace("RunSharedPromptRouting(phases)", "BeginSharedPromptBuild(", 1).replace("X(", "RunSharedPromptRouting(", 1)
 ordered(orchestrator,
-        "CapturePromptBuildRequest(",
+        "BeginSharedPromptBuild(",
         "AIConfigHandler.BeginGuardrailRuntimeScope()",
-        "AIConfigHandler.ApplyGuardrailRuntimeTarget(request.Target)",
-        "PromptTopicRoutingStage.Run(",
-        "CapturePromptSections(",
-        "PromptAssemblyStage.Assemble(",
-        "ApplyPromptRuntimeAppendices(",
+        "AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target)",
+        "RunSharedPromptRouting(phases)",
+        "CompleteSharedPromptBuild(phases",
         "AIConfigHandler.ClearGuardrailRuntimeTarget()")
+ordered(begin, "CapturePromptBuildRequest(", "PromptExclusionSets.AddUnavailableConfiguredRules(", "BuildPreprocessExcludedRuleBlockForExternal(")
+ordered(routing, "SetGuardrailSemanticContext(", "PromptTopicRoutingStage.Run(", "GetAuxiliaryMentionedEntitiesForExternal(")
+ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "ApplyPromptRuntimeAppendices(")
+assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
 
-game_services = re.compile(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|WorldEntityRetrievalService\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.MainParty|Clan\.PlayerClan|Hero\.MainHero|RomanceSystemBehavior\.)")
 assert not game_services.search(orchestrator), "orchestrator must not read game services directly: " + game_services.search(orchestrator).group(0)
 assert game_services.search(capture_sections), "section capture is the game-reading phase"
 for name, body in (("CapturePromptBuildRequest", capture_request), ("CapturePromptSections", capture_sections), ("ApplyPromptRuntimeAppendices", appendices)):
