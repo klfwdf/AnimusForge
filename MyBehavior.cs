@@ -28512,7 +28512,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				AppendRuleBlock(sb, ruleId, body);
+				PromptRuleBlockText.Append(sb, ruleId, body);
 				added++;
 			}
 			return sb.ToString().Trim();
@@ -28543,29 +28543,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 			text = preselectedRuleIds == null
 				? AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet)
 				: BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-			encounterReleaseRuleSelected = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			encounterReleaseRuleSelected = PromptRuleBlockText.Has(text, "encounter_release_player");
+			if (PromptRuleBlockText.Has(text, "party_transfer"))
 			{
 				string partyTransferRuntimeInstructionForExternal = BuildPartyTransferRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(partyTransferRuntimeInstructionForExternal))
 				{
-					text = ReplaceSingleRuleBlockBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
+					text = PromptRuleBlockText.ReplaceBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
 				}
 			}
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (PromptRuleBlockText.Has(text, "vanilla_issue"))
 			{
 				string vanillaIssueRuntimeInstruction = VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(targetHero ?? targetCharacter?.HeroObject);
 				if (!string.IsNullOrWhiteSpace(vanillaIssueRuntimeInstruction))
 				{
-					text = ReplaceSingleRuleBlockBody(text, "vanilla_issue", vanillaIssueRuntimeInstruction);
+					text = PromptRuleBlockText.ReplaceBody(text, "vanilla_issue", vanillaIssueRuntimeInstruction);
 				}
 			}
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (PromptRuleBlockText.Has(text, "npc_major_actions"))
 			{
 				string npcMajorActionsRuntimeInstruction = BuildNpcMajorActionsRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(npcMajorActionsRuntimeInstruction))
 				{
-					text = ReplaceSingleRuleBlockBody(text, "npc_major_actions", npcMajorActionsRuntimeInstruction);
+					text = PromptRuleBlockText.ReplaceBody(text, "npc_major_actions", npcMajorActionsRuntimeInstruction);
 				}
 			}
 			if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "lords_hall_access"))
@@ -28583,34 +28583,24 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
-		if (!string.IsNullOrWhiteSpace(text2) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0) && CountInjectedRuleBlocks(text) < num)
-		{
-			string text4 = "【附加规则:lords_hall_access】" + Environment.NewLine + text2;
-			text = string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
-		}
-		bool hasEncounterReleaseRuleBlock = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
+		text = PromptRuleBlockText.AppendIfMissing(text, "lords_hall_access", text2, num);
+		bool hasEncounterReleaseRuleBlock = PromptRuleBlockText.Has(text, "encounter_release_player");
 		if (hasEncounterReleaseRuleBlock)
 		{
 			if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
 			{
-				text = ReplaceSingleRuleBlockBody(text, "encounter_release_player", encounterReleaseInstruction);
+				text = PromptRuleBlockText.ReplaceBody(text, "encounter_release_player", encounterReleaseInstruction);
 			}
 			else
 			{
-				text = RemoveSingleRuleBlock(text, "encounter_release_player");
+				text = PromptRuleBlockText.Remove(text, "encounter_release_player");
 			}
 		}
-		else if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
+		else
 		{
-			string text5 = "【附加规则:encounter_release_player】" + Environment.NewLine + encounterReleaseInstruction;
-			text = string.IsNullOrWhiteSpace(text) ? text5 : (text.TrimEnd() + Environment.NewLine + text5);
+			text = PromptRuleBlockText.AppendIfMissing(text, "encounter_release_player", encounterReleaseInstruction, int.MaxValue);
 		}
-		string nobleDeferenceInstruction = BuildNobleDeferenceRuntimeInstruction(hasAnyHero);
-		if (!string.IsNullOrWhiteSpace(nobleDeferenceInstruction) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:noble_deference】", StringComparison.OrdinalIgnoreCase) < 0))
-		{
-			string text6 = "【附加规则:noble_deference】" + Environment.NewLine + nobleDeferenceInstruction;
-			text = string.IsNullOrWhiteSpace(text) ? text6 : (text.TrimEnd() + Environment.NewLine + text6);
-		}
+		text = PromptRuleBlockText.AppendIfMissing(text, "noble_deference", BuildNobleDeferenceRuntimeInstruction(hasAnyHero), int.MaxValue);
 		if (!string.IsNullOrWhiteSpace(restrictedReferralHint) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【转介】", StringComparison.OrdinalIgnoreCase) < 0))
 		{
 			text = string.IsNullOrWhiteSpace(text) ? restrictedReferralHint : (text.TrimEnd() + Environment.NewLine + restrictedReferralHint);
@@ -28619,7 +28609,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			text = ReplaceSceneMechanismRuleForFollowing(text);
 		}
-		return PrependExtraRuleDisclaimer(text);
+		return PromptRuleBlockText.PrependDisclaimer(text);
 	}
 
 	private static string BuildRestrictedRuleReferralHint(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, HashSet<string> excludedRuleIdSet)
@@ -28726,68 +28716,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return "";
 	}
 
-	private static string ReplaceSingleRuleBlockBody(string text, string ruleId, string newBody)
-	{
-		string text2 = (text ?? "").Trim();
-		string text3 = (ruleId ?? "").Trim();
-		string text4 = (newBody ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4))
-		{
-			return text2;
-		}
-		string value = "【附加规则:" + text3 + "】";
-		int num = text2.IndexOf(value, StringComparison.OrdinalIgnoreCase);
-		if (num < 0)
-		{
-			return text2;
-		}
-		int num2 = text2.IndexOf("【附加规则:", num + value.Length, StringComparison.Ordinal);
-		string text5 = text2.Substring(0, num).TrimEnd();
-		string text6 = value;
-		string text7 = ((num2 >= 0) ? text2.Substring(num2).TrimStart() : "");
-		StringBuilder stringBuilder = new StringBuilder();
-		if (!string.IsNullOrWhiteSpace(text5))
-		{
-			stringBuilder.AppendLine(text5);
-		}
-		stringBuilder.AppendLine(text6);
-		stringBuilder.Append(text4.Trim());
-		if (!string.IsNullOrWhiteSpace(text7))
-		{
-			stringBuilder.AppendLine();
-			stringBuilder.Append(text7);
-		}
-		return stringBuilder.ToString().Trim();
-	}
-
-	private static string RemoveSingleRuleBlock(string text, string ruleId)
-	{
-		string text2 = (text ?? "").Trim();
-		string text3 = (ruleId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
-		{
-			return text2;
-		}
-		string value = "【附加规则:" + text3 + "】";
-		int num = text2.IndexOf(value, StringComparison.OrdinalIgnoreCase);
-		if (num < 0)
-		{
-			return text2;
-		}
-		int num2 = text2.IndexOf("【附加规则:", num + value.Length, StringComparison.Ordinal);
-		string text4 = text2.Substring(0, num).TrimEnd();
-		string text5 = ((num2 >= 0) ? text2.Substring(num2).TrimStart() : "");
-		if (string.IsNullOrWhiteSpace(text4))
-		{
-			return text5.Trim();
-		}
-		if (string.IsNullOrWhiteSpace(text5))
-		{
-			return text4.Trim();
-		}
-		return (text4 + Environment.NewLine + text5).Trim();
-	}
-
 	private static bool IsSceneFollowingAgentForRules(int targetAgentIndex)
 	{
 		try
@@ -28833,45 +28761,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text.Substring(0, num).TrimEnd() + Environment.NewLine + replacement + Environment.NewLine + text.Substring(num2).TrimStart();
 	}
 
-	private static int CountInjectedRuleBlocks(string text)
-	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return 0;
-		}
-		int num = 0;
-		int num2 = 0;
-		while (num2 >= 0 && num2 < text.Length)
-		{
-			num2 = text.IndexOf("【附加规则:", num2, StringComparison.Ordinal);
-			if (num2 < 0)
-			{
-				break;
-			}
-			num++;
-			num2 += 6;
-		}
-		return num;
-	}
-
-	private static string PrependExtraRuleDisclaimer(string text)
-	{
-		const string disclaimer = "【说明】你不必提到附加规则内的内容，除非有人问起。";
-		if (string.IsNullOrWhiteSpace(text) || CountInjectedRuleBlocks(text) <= 0)
-		{
-			return text;
-		}
-		if (text.IndexOf(disclaimer, StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return text;
-		}
-		return disclaimer + Environment.NewLine + text.TrimStart();
-	}
-
 	private static string AppendPlayerPartySharedResourcePrompt(string text, Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		const string marker = "【队内资源共享限制】";
-		if (string.IsNullOrWhiteSpace(text) || CountInjectedRuleBlocks(text) <= 0)
+		if (string.IsNullOrWhiteSpace(text) || PromptRuleBlockText.Count(text) <= 0)
 		{
 			return text;
 		}
@@ -28891,20 +28784,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		string prompt = marker + "由于你是" + playerName + "的队内成员，你和" + playerName + "的大部分资源都共享，例如定居点、工坊、商队和部队。正文中不要把部队转移或固定资产转移当作你与" + playerName + "之间需要谈判或执行的交易；如果被问到，应自然说明队内资源共享，不要提出部队转移或固定资产转移。";
 		return text.TrimEnd() + Environment.NewLine + prompt;
-	}
-
-	private static void AppendRuleBlock(StringBuilder sb, string ruleId, string body)
-	{
-		if (sb != null)
-		{
-			string text = (ruleId ?? "").Trim();
-			string value = (body ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
-			{
-				sb.AppendLine("【附加规则:" + text + "】");
-				sb.AppendLine(value);
-			}
-		}
 	}
 
 	private static Agent ResolveDuelRuntimeTargetAgent(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -28997,7 +28876,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					string value = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
 					if (!string.IsNullOrWhiteSpace(value))
 					{
-						AppendRuleBlock(stringBuilder, "duel", value);
+						PromptRuleBlockText.Append(stringBuilder, "duel", value);
 					}
 				}
 				else
@@ -29007,7 +28886,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					{
 						text10 = "玩家";
 					}
-					AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
+					PromptRuleBlockText.Append(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
 				}
 			}
 			if (AIConfigHandler.RewardEnabled && useRewardContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward"))
@@ -29030,11 +28909,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					text = AIConfigHandler.RewardInstruction;
 				}
-				AppendRuleBlock(stringBuilder, "reward", text);
+				PromptRuleBlockText.Append(stringBuilder, "reward", text);
 				if (AIConfigHandler.DuelStakeEnabled && includeDuelStakeContext)
 				{
 					string body = (playerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction);
-					AppendRuleBlock(stringBuilder, "duel_stake", body);
+					PromptRuleBlockText.Append(stringBuilder, "duel_stake", body);
 				}
 			}
 			if (AIConfigHandler.LoanEnabled && isLoanContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan"))
@@ -29045,26 +28924,27 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = AIConfigHandler.LoanInstruction;
 				}
-				AppendRuleBlock(stringBuilder, "loan", text2);
+				PromptRuleBlockText.Append(stringBuilder, "loan", text2);
 			}
 			if (AIConfigHandler.SurroundingsEnabled && isSurroundingsContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "surroundings"))
 			{
-				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
+				PromptRuleBlockText.Append(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
 			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds);
-			if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command") && (string.IsNullOrWhiteSpace(text3) || text3.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0) && stringBuilder.ToString().IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0)
+			if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command") && !PromptRuleBlockText.Has(text3, "worldmap_party_command") && !PromptRuleBlockText.Has(stringBuilder.ToString(), "worldmap_party_command"))
 			{
 				string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
 				if (string.IsNullOrWhiteSpace(worldMapInstruction))
 				{
 					worldMapInstruction = AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command");
 				}
-				AppendRuleBlock(stringBuilder, "worldmap_party_command", worldMapInstruction);
+				PromptRuleBlockText.Append(stringBuilder, "worldmap_party_command", worldMapInstruction);
 			}
-			if (IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex) && !string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex) && PromptRuleBlockText.Has(text3, "party_transfer"))
 			{
-				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
-				bool flag13 = stringBuilder.ToString().IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
+				string alreadyInjected = stringBuilder.ToString();
+				bool flag12 = PromptRuleBlockText.Has(alreadyInjected, "reward");
+				bool flag13 = PromptRuleBlockText.Has(alreadyInjected, "loan");
 				if (AIConfigHandler.RewardEnabled && !flag12 && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward"))
 				{
 					string rewardText = "";
@@ -29087,7 +28967,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 					if (!string.IsNullOrWhiteSpace(rewardText))
 					{
-						AppendRuleBlock(stringBuilder, "reward", rewardText);
+						PromptRuleBlockText.Append(stringBuilder, "reward", rewardText);
 					}
 				}
 				if (AIConfigHandler.LoanEnabled && !flag13 && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan"))
@@ -29100,7 +28980,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 					if (!string.IsNullOrWhiteSpace(text5))
 					{
-						AppendRuleBlock(stringBuilder, "loan", text5);
+						PromptRuleBlockText.Append(stringBuilder, "loan", text5);
 					}
 				}
 			}
@@ -29113,7 +28993,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(text4))
 				{
-					AppendRuleBlock(stringBuilder, "meeting_taunt", text4);
+					PromptRuleBlockText.Append(stringBuilder, "meeting_taunt", text4);
 				}
 			}
 			return stringBuilder.ToString().Trim();
@@ -42279,17 +42159,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text2.Trim();
 	}
 
-	private static bool HasInjectedRuleBlock(string instructions, string ruleId)
-	{
-		string text = (instructions ?? "").Trim();
-		string text2 = (ruleId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-		{
-			return false;
-		}
-		return text.IndexOf("【附加规则:" + text2 + "】", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
 	private WeeklyPromptSnapshot CaptureWeeklyPromptSnapshot(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
 	{
 		using FreezeWatchdog.ScopeToken scopeToken = FreezeWatchdog.Scope("WeeklyPrompt.Capture.mainthread");
@@ -42518,8 +42387,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildTriggeredWeeklyFullReportsPromptBlockFromSnapshot(string triggeredRuleInstructions, WeeklyPromptSnapshot weeklyPromptSnapshot)
 	{
-		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
-		bool flag2 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
+		bool flag = PromptRuleBlockText.Has(triggeredRuleInstructions, "npc_major_actions");
+		bool flag2 = PromptRuleBlockText.Has(triggeredRuleInstructions, "surroundings");
 		if (!flag && !flag2)
 		{
 			return "";
@@ -43238,8 +43107,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		FreezeWatchdog.Mark("WeeklyPrompt.Full.start", "thread=" + Thread.CurrentThread.ManagedThreadId);
-		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
-		bool flag3 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
+		bool flag = PromptRuleBlockText.Has(triggeredRuleInstructions, "npc_major_actions");
+		bool flag3 = PromptRuleBlockText.Has(triggeredRuleInstructions, "surroundings");
 		if (!flag && !flag3)
 		{
 			FreezeWatchdog.Mark("WeeklyPrompt.Full.skip", "reason=no_triggered_weekly_rule");
@@ -43296,11 +43165,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
-		if (HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions"))
+		if (PromptRuleBlockText.Has(triggeredRuleInstructions, "npc_major_actions"))
 		{
 			return true;
 		}
-		if (HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings"))
+		if (PromptRuleBlockText.Has(triggeredRuleInstructions, "surroundings"))
 		{
 			if (weeklyPromptSnapshot != null)
 			{

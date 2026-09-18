@@ -26,7 +26,36 @@ internal static class Program
         PreprocessIdAssembler();
         ExtrasComposer();
         RuntimeTargetBinding();
+        RuleBlockText();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void RuleBlockText()
+    {
+        var sb = new System.Text.StringBuilder();
+        PromptRuleBlockText.Append(sb, " duel ", " body ");
+        PromptRuleBlockText.Append(sb, "", "x");
+        PromptRuleBlockText.Append(sb, "loan", "  ");
+        PromptRuleBlockText.Append(null, "loan", "y");
+        string text = sb.ToString();
+        Check(text.Replace("\r\n", "\n") == "【附加规则:duel】\nbody\n", "append trims id/body and skips blanks: " + text);
+        Check(PromptRuleBlockText.Has(text, "DUEL") && !PromptRuleBlockText.Has(text, "due") && !PromptRuleBlockText.Has(null, "duel") && !PromptRuleBlockText.Has(text, " "), "has is case-insensitive and delimited");
+        Check(PromptRuleBlockText.Count("【附加规则:a】x【附加规则:b】y") == 2 && PromptRuleBlockText.Count("") == 0 && PromptRuleBlockText.Count("no blocks") == 0, "count");
+
+        string doc = "intro\n【附加规则:reward】\nold reward\n【附加规则:loan】\nloan body";
+        string replaced = PromptRuleBlockText.ReplaceBody(doc, "REWARD", "new reward");
+        Check(replaced.Replace("\r\n", "\n") == "intro\n【附加规则:REWARD】\nnew reward\n【附加规则:loan】\nloan body", "replace body keeps neighbours: " + replaced);
+        Check(PromptRuleBlockText.ReplaceBody(doc, "missing", "z") == doc.Trim() && PromptRuleBlockText.ReplaceBody(doc, "reward", " ") == doc.Trim(), "replace no-ops");
+        string removed = PromptRuleBlockText.Remove(doc, "reward");
+        Check(removed.Replace("\r\n", "\n") == "intro\n【附加规则:loan】\nloan body", "remove middle block: " + removed);
+        Check(PromptRuleBlockText.Remove("【附加规则:only】\nbody", "only") == "" && PromptRuleBlockText.Remove(doc, "loan").Replace("\r\n", "\n") == "intro\n【附加规则:reward】\nold reward", "remove sole/last block");
+
+        Check(PromptRuleBlockText.AppendIfMissing("", "a", "body", 4).Replace("\r\n", "\n") == "【附加规则:a】\nbody", "append to empty");
+        Check(PromptRuleBlockText.AppendIfMissing("x", "a", " ", 4) == "x" && PromptRuleBlockText.AppendIfMissing(doc, "reward", "again", 4) == doc, "blank body or existing block is no-op");
+        Check(PromptRuleBlockText.AppendIfMissing(doc, "third", "t", 2) == doc && PromptRuleBlockText.Count(PromptRuleBlockText.AppendIfMissing(doc, "third", "t", 3)) == 3, "cap gates append");
+        Check(PromptRuleBlockText.PrependDisclaimer("plain") == "plain" && PromptRuleBlockText.PrependDisclaimer("").Length == 0, "disclaimer only with blocks");
+        string withDisclaimer = PromptRuleBlockText.PrependDisclaimer(doc);
+        Check(withDisclaimer.StartsWith(PromptRuleBlockText.Disclaimer) && PromptRuleBlockText.PrependDisclaimer(withDisclaimer) == withDisclaimer, "disclaimer idempotent");
     }
 
     private static void RuntimeTargetBinding()
