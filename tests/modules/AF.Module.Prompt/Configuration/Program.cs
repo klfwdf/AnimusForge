@@ -203,6 +203,52 @@ internal static class Program
                 new ProactiveNpcRequestPromptsConfigModel(), new RpItemIntroductionPromptsConfigModel(), "fallback"));
         Check(exceptionFallback.Revision == failure.Revision + 1 && exceptionFallback.Value.PreprocessLoadError == "fallback",
             "exceptional default replacement also advances generation");
+        var mutableRule = new GuardrailConfigModel
+        {
+            RulePrompts = new List<GuardrailRulePromptConfig>
+            {
+                new GuardrailRulePromptConfig
+                {
+                    Id = "reward", TriggerKeywords = new List<string> { "initial" },
+                    RuntimeInstructionTemplates = new Dictionary<string, string> { ["item"] = "initial" },
+                    PostprocessRules = new List<PostprocessRuleEntry> { new PostprocessRuleEntry { Tag = "[TEST]" } }
+                }
+            }
+        };
+        var mutableMain = new AIConfigModel { DuelSettings = new DuelConfig { AcceptKeywords = new List<string> { "initial" } } };
+        var mutableAction = new ActionPostprocessConfigModel { MoodRules = new List<PostprocessRuleEntry> { new PostprocessRuleEntry { Tag = "[MOOD]" } } };
+        var mutablePreprocess = new PreprocessPromptsConfigModel
+        {
+            TemplateVariables = new Dictionary<string, string> { ["name"] = "initial" },
+            StrictJson = new StrictJsonConfig { MentionedEntitiesSchema = JObject.Parse("{\"entities\":[\"initial\"]}") }
+        };
+        var mutableProactive = new ProactiveNpcRequestPromptsConfigModel
+        {
+            Requests = new Dictionary<string, ProactiveNpcRequestPromptEntry> { ["need"] = new ProactiveNpcRequestPromptEntry { OpeningPrompt = "initial" } }
+        };
+        var mutableRp = new RpItemIntroductionPromptsConfigModel { SystemPrompt = "initial" };
+        var immutable = new PromptConfigurationSnapshot(mutableMain, mutableRule, mutableAction, mutablePreprocess,
+            mutableProactive, mutableRp, "");
+        mutableMain.DuelSettings.AcceptKeywords[0] = "source-mutated";
+        mutableRule.RulePrompts[0].TriggerKeywords[0] = "source-mutated";
+        mutableAction.MoodRules[0].Tag = "source-mutated";
+        mutablePreprocess.StrictJson.MentionedEntitiesSchema["entities"][0] = "source-mutated";
+        mutableProactive.Requests["need"].OpeningPrompt = "source-mutated";
+        mutableRp.SystemPrompt = "source-mutated";
+        Check(immutable.Main.DuelSettings.AcceptKeywords[0] == "initial"
+            && immutable.Guardrail.RulePrompts[0].TriggerKeywords[0] == "initial"
+            && immutable.ActionPostprocess.MoodRules[0].Tag == "[MOOD]"
+            && (string)immutable.Preprocess.StrictJson.MentionedEntitiesSchema["entities"][0] == "initial"
+            && immutable.ProactiveRequest.Requests["need"].OpeningPrompt == "initial"
+            && immutable.RpItemIntroduction.SystemPrompt == "initial", "published snapshot detaches all six model roots");
+        immutable.Main.DuelSettings.AcceptKeywords[0] = "reader-mutated";
+        immutable.Guardrail.RulePrompts[0].PostprocessRules[0].Tag = "reader-mutated";
+        immutable.Preprocess.TemplateVariables["name"] = "reader-mutated";
+        immutable.ProactiveRequest.Requests["need"].OpeningPrompt = "reader-mutated";
+        Check(immutable.Main.DuelSettings.AcceptKeywords[0] == "initial"
+            && immutable.Guardrail.RulePrompts[0].PostprocessRules[0].Tag == "[TEST]"
+            && immutable.Preprocess.TemplateVariables["name"] == "initial"
+            && immutable.ProactiveRequest.Requests["need"].OpeningPrompt == "initial", "snapshot reads never leak mutable nested models");
         Console.WriteLine("PromptJ03 configuration loader checks=" + _checks);
     }
 }

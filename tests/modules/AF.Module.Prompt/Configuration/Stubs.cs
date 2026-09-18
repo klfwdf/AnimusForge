@@ -13,7 +13,11 @@ internal static class Logger
     internal static void Log(string category, string message) { }
 }
 
-public class AIConfigModel { public string Marker { get; set; } = "default"; }
+public class AIConfigModel
+{
+    public string Marker { get; set; } = "default";
+    public DuelConfig DuelSettings { get; set; } = new DuelConfig();
+}
 public class GuardrailConfigModel
 {
     public string Marker { get; set; } = "default";
@@ -69,8 +73,17 @@ public class GuardrailRulePromptConfig
     public Dictionary<string, string> RuntimeInstructionTemplates { get; set; } = new Dictionary<string, string>();
     public Dictionary<string, string> RuntimeConstraintTemplates { get; set; } = new Dictionary<string, string>();
 }
-public class ActionPostprocessConfigModel { public string Marker { get; set; } = "default"; }
-public class ProactiveNpcRequestPromptsConfigModel { public string Marker { get; set; } = "default"; }
+public class ActionPostprocessConfigModel
+{
+    public string Marker { get; set; } = "default";
+    public List<PostprocessRuleEntry> MoodRules { get; set; } = new List<PostprocessRuleEntry>();
+}
+public class ProactiveNpcRequestPromptsConfigModel
+{
+    public string Marker { get; set; } = "default";
+    public Dictionary<string, ProactiveNpcRequestPromptEntry> Requests { get; set; } = new Dictionary<string, ProactiveNpcRequestPromptEntry>();
+}
+public class ProactiveNpcRequestPromptEntry { public string OpeningPrompt { get; set; } = ""; }
 public class RpItemIntroductionPromptsConfigModel
 {
     public int Version { get; set; } = 1;
@@ -80,6 +93,7 @@ public class RpItemIntroductionPromptsConfigModel
 public class PreprocessPromptsConfigModel
 {
     public int Version { get; set; }
+    public Dictionary<string, string> TemplateVariables { get; set; } = new Dictionary<string, string>();
     public StrictJsonConfig StrictJson { get; set; } = new StrictJsonConfig();
     public TopicRoutingConfig TopicRouting { get; set; } = new TopicRoutingConfig();
     public MemorySelectionConfig MemorySelection { get; set; } = new MemorySelectionConfig();
