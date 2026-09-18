@@ -477,7 +477,7 @@ namespace AnimusForge.Illustrator.Core
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
                         string label = reference.Label ?? string.Empty;
                         bool isEmblem = reference.Kind == IllustrationReferenceKind.Emblem;
-                        bool isScene = reference.Kind == IllustrationReferenceKind.Scene || reference.Kind == IllustrationReferenceKind.ScenePanorama;
+                        bool isScene = reference.Kind == IllustrationReferenceKind.Scene || reference.Kind == IllustrationReferenceKind.ScenePanorama || reference.Kind == IllustrationReferenceKind.SceneViews;
                         bool isDetail = reference.Kind == IllustrationReferenceKind.CharacterDetail;
                         bool isHero = reference.Kind == IllustrationReferenceKind.Character || isDetail;
 
@@ -529,7 +529,7 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = (reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【现场3D实景采光与地形参考】") +
+                                ["text"] = (reference.Kind == IllustrationReferenceKind.SceneViews ? "【场景前后双视角参考】" : reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【现场3D实景采光与地形参考】") +
                                     VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " 按导演画风重绘，不复制UI或游戏渲染质感。"
                             });
                         }

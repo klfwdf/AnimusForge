@@ -45,6 +45,8 @@ namespace AnimusForge.Illustrator.Core
                     return "现场参考：保留已确认的地形、位置和空间关系，以指定画风重新绘制。";
                 case IllustrationReferenceKind.ScenePanorama:
                     return "环境全景参考：这是同一个空间的360度展开，辨认预制体网格、材质图案和陈设位置；不是多个房间，不照搬展开畸变作为最终构图。颜色采光优先对照当前真实视角，副本未覆盖的地形与动态物体保持未知。";
+                case IllustrationReferenceKind.SceneViews:
+                    return "环境前后视角参考：左半是同一位置的前方，右半是转180度后的后方，各水平视野120度；不是完整360全景，不把两半接缝当作相邻建筑。方向栏只供识别，不画进作品；最终按导演构图绘制单幅自然视角。以实际画面校验颜色采光，未覆盖方向和动态物体保持未知。";
                 default:
                     return "参考用途以标签为准，不据此添加未确认的人物或场景内容。";
             }

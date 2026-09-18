@@ -17,6 +17,8 @@ namespace AnimusForge.Illustrator.Engine
     internal static class PanoramaProjection
     {
         internal const int FaceCount = 6;
+        internal const int FrontBackViewCount = 2;
+        internal const int FrontBackHeaderHeight = 32;
         internal const int MaximumFaceDimension = 2048;
         private const long MaximumInputPixels = 16L * 1024 * 1024;
         private const int MaximumFaceBytes = 16 * 1024 * 1024;
@@ -167,6 +169,56 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     bitmap.Save(stream, ImageFormat.Png);
                     return stream.ToArray();
+                }
+            }
+        }
+
+        internal static MatrixFrame[] BuildFrontBackCameraFrames(MatrixFrame original)
+        {
+            var directions = BuildCameraFrames(original);
+            return new[] { directions[0], directions[2] };
+        }
+
+        // Two opposite perspective views are a reference sheet, not a fabricated 360 panorama.
+        // Reuse only the verified native-producer color adapter, without spherical reprojection.
+        internal static byte[] ComposeFrontBack(IReadOnlyList<byte[]> nativeViews)
+        {
+            if (nativeViews == null || nativeViews.Count != FrontBackViewCount)
+                throw new ArgumentException("Front/back reference requires exactly two views.", nameof(nativeViews));
+            int size = ReadSquarePngDimension(nativeViews[0]);
+            if (ReadSquarePngDimension(nativeViews[1]) != size ||
+                (long)nativeViews[0].Length + nativeViews[1].Length > MaximumInputBytes ||
+                2L * size * size > MaximumInputPixels)
+                throw new InvalidDataException("Front/back reference dimensions or byte budget are invalid.");
+            byte[] front = DecodeNativeFace(nativeViews[0], size);
+            byte[] back = DecodeNativeFace(nativeViews[1], size);
+            if (NearlyIdentical(front, back))
+                throw new InvalidDataException("前后两张环境图近乎相同，未确认取得不同方向，已停止生成。");
+            int width = size * 2, height = size + FrontBackHeaderHeight;
+            using (var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+            {
+                var data = bitmap.LockBits(new Rectangle(0, FrontBackHeaderHeight, width, size), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+                try
+                {
+                    for (int y = 0; y < size; y++)
+                    {
+                        IntPtr row = IntPtr.Add(data.Scan0, y * data.Stride);
+                        Marshal.Copy(front, y * size * 4, row, size * 4);
+                        Marshal.Copy(back, y * size * 4, IntPtr.Add(row, size * 4), size * 4);
+                    }
+                }
+                finally { bitmap.UnlockBits(data); }
+                using (var graphics = Graphics.FromImage(bitmap))
+                using (var font = new Font(FontFamily.GenericSansSerif, 16f, FontStyle.Bold, GraphicsUnit.Pixel))
+                {
+                    graphics.FillRectangle(Brushes.DimGray, 0, 0, width, FrontBackHeaderHeight);
+                    graphics.DrawString("FRONT", font, Brushes.White, 10, 6);
+                    graphics.DrawString("BACK", font, Brushes.White, size + 10, 6);
+                }
+                using (var output = new MemoryStream())
+                {
+                    bitmap.Save(output, ImageFormat.Png);
+                    return output.ToArray();
                 }
             }
         }
