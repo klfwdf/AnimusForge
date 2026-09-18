@@ -277,9 +277,7 @@ public static class AIConfigHandler
 
 	private static readonly object _guardrailSemanticLock = new object();
 
-	private static readonly Dictionary<string, float[]> _guardrailPhraseVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
-
-	private static readonly Dictionary<string, float[]> _guardrailInputVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
+	private static readonly PromptSemanticVectorCache _guardrailVectors = new PromptSemanticVectorCache(1024, 256);
 
 	private static int _guardrailWarmupState;
 
@@ -292,9 +290,6 @@ public static class AIConfigHandler
 
 	private static List<PreprocessExcludedPromptEntry> _preprocessExcludedPromptCache = new List<PreprocessExcludedPromptEntry>();
 
-	private const int GuardrailPhraseVecCacheMax = 1024;
-
-	private const int GuardrailInputVecCacheMax = 256;
 
 	private static readonly PromptRetrievalContextSlot<string> _guardrailSemanticRuntimeContext = PromptRetrievalContextOwner.Semantic;
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetKingdomId = PromptRetrievalContextOwner.Kingdom;
@@ -320,11 +315,8 @@ public static class AIConfigHandler
 
 	private static readonly Regex AuxiliaryGuardrailNumberRegex = new Regex("\\d+", RegexOptions.Compiled);
 
-	private static readonly object _auxiliaryMentionedEntitiesLock = new object();
-
-	private static readonly Dictionary<string, MentionedWorldEntities> _auxiliaryMentionedEntitiesCache = new Dictionary<string, MentionedWorldEntities>(StringComparer.Ordinal);
-
-	private static readonly Queue<string> _auxiliaryMentionedEntitiesCacheOrder = new Queue<string>();
+	private static readonly PromptAuxiliaryMentionStore _auxiliaryMentionedEntitiesStore =
+		new PromptAuxiliaryMentionStore(AuxiliaryMentionedEntitiesCacheMax);
 
 	private static readonly PromptRetrievalContextSlot<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest =
 		PromptRetrievalContextOwner.CreateSlot<MentionedWorldEntities>(context => (MentionedWorldEntities)context.LatestEntities,
@@ -2440,13 +2432,10 @@ public static class AIConfigHandler
 		}
 		long cacheRevision = _promptConfiguration.Read().Revision;
 		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
-		lock (_guardrailSemanticLock)
+		if (_guardrailVectors.TryGetInput(cacheKey, out var value))
 		{
-			if (_guardrailInputVecCache.TryGetValue(cacheKey, out var value) && value != null && value.Length != 0)
-			{
-				vec = value;
-				return true;
-			}
+			vec = value;
+			return true;
 		}
 		OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
 		if (instance == null || !instance.IsAvailable)
@@ -2457,13 +2446,9 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		lock (_guardrailSemanticLock)
+		lock (_promptConfigurationReloadLock)
 		{
-			if (_promptConfiguration.Capture().Revision == cacheRevision)
-			{
-				if (_guardrailInputVecCache.Count >= 256) _guardrailInputVecCache.Clear();
-				_guardrailInputVecCache[cacheKey] = vector;
-			}
+			_guardrailVectors.PublishInput(cacheKey, vector, cacheRevision, _promptConfiguration.Capture().Revision);
 		}
 		vec = vector;
 		return true;
@@ -2480,13 +2465,10 @@ public static class AIConfigHandler
 		long cacheRevision = expectedRevision > 0L ? expectedRevision : _promptConfiguration.Read().Revision;
 		if (expectedRevision > 0L && _promptConfiguration.Capture().Revision != expectedRevision) return false;
 		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
-		lock (_guardrailSemanticLock)
+		if (_guardrailVectors.TryGetPhrase(cacheKey, out var value))
 		{
-			if (_guardrailPhraseVecCache.TryGetValue(cacheKey, out var value) && value != null && value.Length != 0)
-			{
-				vec = value;
-				return true;
-			}
+			vec = value;
+			return true;
 		}
 		OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
 		if (instance == null || !instance.IsAvailable)
@@ -2497,13 +2479,9 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		lock (_guardrailSemanticLock)
+		lock (_promptConfigurationReloadLock)
 		{
-			if (_promptConfiguration.Capture().Revision == cacheRevision)
-			{
-				if (_guardrailPhraseVecCache.Count >= 1024) _guardrailPhraseVecCache.Clear();
-				_guardrailPhraseVecCache[cacheKey] = vector;
-			}
+			_guardrailVectors.PublishPhrase(cacheKey, vector, cacheRevision, _promptConfiguration.Capture().Revision);
 		}
 		vec = vector;
 		return true;
@@ -4760,24 +4738,7 @@ public static class AIConfigHandler
 				Logger.Log("AuxiliaryEntity", "mentioned_entities latest_only reason=empty_key " + FormatMentionedEntitiesCounts(entities));
 				return entities.Clone();
 			}
-			lock (_auxiliaryMentionedEntitiesLock)
-			{
-				if (!_auxiliaryMentionedEntitiesCache.TryGetValue(key, out var existing) || existing == null)
-				{
-					existing = new MentionedWorldEntities();
-					_auxiliaryMentionedEntitiesCache[key] = existing;
-					_auxiliaryMentionedEntitiesCacheOrder.Enqueue(key);
-				}
-				existing.Merge(entities);
-				while (_auxiliaryMentionedEntitiesCache.Count > AuxiliaryMentionedEntitiesCacheMax && _auxiliaryMentionedEntitiesCacheOrder.Count > 0)
-				{
-					string oldKey = _auxiliaryMentionedEntitiesCacheOrder.Dequeue();
-					if (!string.Equals(oldKey, key, StringComparison.Ordinal))
-					{
-						_auxiliaryMentionedEntitiesCache.Remove(oldKey);
-					}
-				}
-			}
+			_auxiliaryMentionedEntitiesStore.Publish(key, entities);
 			Logger.Log("AuxiliaryEntity", "mentioned_entities published key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
 			return entities.Clone();
 		}
@@ -4808,13 +4769,11 @@ public static class AIConfigHandler
 			{
 				return new MentionedWorldEntities();
 			}
-			lock (_auxiliaryMentionedEntitiesLock)
+			MentionedWorldEntities entities = _auxiliaryMentionedEntitiesStore.Get(key);
+			if (entities != null)
 			{
-				if (_auxiliaryMentionedEntitiesCache.TryGetValue(key, out var entities) && entities != null)
-				{
-					Logger.Log("AuxiliaryEntity", "mentioned_entities get hit key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
-					return entities.Clone();
-				}
+				Logger.Log("AuxiliaryEntity", "mentioned_entities get hit key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
+				return entities;
 			}
 			Logger.Log("AuxiliaryEntity", "mentioned_entities get miss key=" + HashAuxiliaryMentionKey(key));
 		}
@@ -8868,8 +8827,7 @@ public static class AIConfigHandler
 			}
 			lock (_guardrailSemanticLock)
 			{
-				_guardrailPhraseVecCache.Clear();
-				_guardrailInputVecCache.Clear();
+				_guardrailVectors.Clear();
 				_lastGuardrailEval = null;
 			}
 			_promptConfiguration.Reload(() => replacement,
