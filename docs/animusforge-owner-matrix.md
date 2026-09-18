@@ -1,6 +1,6 @@
 # AnimusForge 逐文件 Owner Matrix（第一版）
 
-> 用于重构前导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。初版基线为历史 `d4cb1467`；当前 J03 源码修订为 `2f11b09e`，以本表增量及唯一台账为准。
+> 用于重构前导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。初版基线为历史 `d4cb1467`；当前 J03 源码修订为 `e4f94429`，以本表增量及唯一台账为准。
 
 ## 使用规则
 
@@ -15,8 +15,8 @@
 | 当前生产路径 | 唯一责任 / 调用频率 | 旧入口与残留 | 离线证据及风险 |
 | --- | --- | --- | --- |
 | `src/modules/AF.Module.Prompt/Configuration/{PromptConfigurationLoader,PromptRuleRegistry,RevisionedPromptConfigurationStore,PromptRevisionedDerivedCache}.cs` | 六配置加载、同 ID 规则覆盖、reload 换代及配置派生值；仅加载/显式 reload 与检索懒建 | `AIConfigHandler` 保留原 getter/reload；模型内部可变、深层只读未闭合 | 22 项生产 loader 契约、Debug/Release 双 API/Bootstrap；旧红矩阵仍不足 |
-| `src/modules/AF.Module.Prompt/Retrieval/{IntentQueryOptimizer,PromptCandidateSelection,PromptCandidateSnapshotIndex}.cs` | 唯一意图规范化、纯候选排序、80-key/10 分钟索引；对话/请求时调用，无 Tick 扫描 | `PromptListRetrievalService` 保留游戏别名、授权 payload、全量/展示 scope | 聚焦 84 项含排序/TTL；跨 My/Reward/Scene/Native/Policy 完整生产契约未闭合 |
-| `src/modules/AF.Module.Prompt/Retrieval/{PromptRuleSemanticRecall,PromptRuleAggregation,PromptRuleRanking,PromptSingleEvaluationCache}.cs` | seed/vector 只算一次、跨意图聚合/预算/排序与 revision+MCM+资格评估缓存；请求时调用 | `AIConfigHandler.TryGetGuardrailEvalSnapshot` 仍编排 ONNX、网络回退和最终命中 | 真实 provider 与完整语义/辅助双路径测试仍缺，不能标 J03 完成 |
+| `src/modules/AF.Module.Prompt/Retrieval/{IntentQueryOptimizer,PromptCandidateSelection,PromptCandidateSnapshotIndex}.cs` | 唯一意图规范化、纯候选排序、80-key/10 分钟索引；对话/请求时调用，无 Tick 扫描 | `PromptListRetrievalService` 保留游戏别名、授权 payload、全量/展示 scope | 聚焦 88 项含排序/TTL；跨 My/Reward/Scene/Native/Policy 完整生产契约未闭合 |
+| `src/modules/AF.Module.Prompt/Retrieval/{PromptRuleSemanticRecall,PromptRuleAggregation,PromptRuleFinalRanking,PromptRuleRanking,PromptSingleEvaluationCache}.cs` | seed/vector 只算一次、跨意图聚合/预算/最终命中与 revision+MCM+资格评估缓存；请求时调用 | `AIConfigHandler.TryGetGuardrailEvalSnapshot` 仍编排 ONNX 与网络回退 | 真实 provider 与完整语义/辅助双路径测试仍缺，不能标 J03 完成 |
 | `src/modules/AF.Module.Prompt/Retrieval/{PromptAuxiliaryMentionStore,PromptStickyRuleStore,PromptSemanticVectorCache,PromptSemanticWarmupSeedBatch,PromptRetrievalContextOwner}.cs` | 64 实体 FIFO、三轮 sticky、1024/256 向量缓存、请求 scope 与 warmup seed；只在请求/会话/Mission 入口使用 | 旧类保留游戏资格、embedding 调用及原 public 接口；sticky 总目标数仍无硬上限 | scope 嵌套/yield、旧代拒收与跨 reload carry 有聚焦测试；实机/旧档 `NOT-RUN` |
 
 当前精确坐标见[代码地图与范围图](architecture/af-framework-code-scope.md)，未覆盖项和 runner 失败见[主台账](animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。不新增 DLL、Host、public API，也不迁 J04/J06。
