@@ -25,6 +25,8 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleSemanticRecall.cs" Link="PromptRuleSemanticRecall.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleIntentSelection.cs" Link="PromptRuleIntentSelection.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleTextEvidence.cs" Link="PromptRuleTextEvidence.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleIntentSplitter.cs" Link="PromptRuleIntentSplitter.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleIntentInputBatch.cs" Link="PromptRuleIntentInputBatch.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationModels.cs" Link="PromptRuleEvaluationModels.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationAssembler.cs" Link="PromptRuleEvaluationAssembler.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptAuxiliaryRuleEvaluation.cs" Link="PromptAuxiliaryRuleEvaluation.cs" />

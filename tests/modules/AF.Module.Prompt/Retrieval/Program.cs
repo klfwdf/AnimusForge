@@ -53,6 +53,19 @@ internal static class Program
         Check(IntentQueryOptimizer.OptimizeSplitIntents(new[] { "你好", "告诉我长剑的来历", "长剑的来历", "城堡在哪里" }, 2)
             .SequenceEqual(new[] { "告诉我长剑的来历", "城堡在哪里" }), "shared intent normalization and per-speaker cap");
         Check(IntentQueryOptimizer.MaxCombinedIntentCount == 4, "combined intent cap");
+        Check(PromptRuleIntentSplitter.Split("先给我剑，然后谈婚事。再说城堡", 2).Count == 2,
+            "production guardrail splitter respects per-speaker cap after conjunction splitting");
+        int combinedSplits = PromptRuleIntentSplitter.Split("剑。马。城堡。村庄。商队", 4).Count;
+        Check(combinedSplits > 0 && combinedSplits <= 4,
+            "production guardrail splitter respects combined cap");
+        int embeddedInputs = 0;
+        var intentBatch = PromptRuleIntentInputBatch.Collect("先给我剑，然后谈婚事。再说城堡", "先给我马，然后谈封地。再说商队",
+            _ => { embeddedInputs++; return new[] { 1f }; });
+        Check(intentBatch.Intents.Count == 4 && intentBatch.Texts.Count == 4
+            && intentBatch.Intents.All(intent => intent.Weight == 1f),
+            "production input collector enforces 2+2 intent budget with detached vectors");
+        Check(embeddedInputs >= 4 && PromptRuleIntentInputBatch.Collect("请求", "请求", _ => null).Intents.Count == 0,
+            "missing embeddings preserve semantic fallback and duplicate secondary is skipped");
         var now = new DateTime(2026, 9, 18, 0, 0, 0, DateTimeKind.Utc);
         var index = new PromptCandidateSnapshotIndex(80, TimeSpan.FromMinutes(10));
         for (int i = 0; i < 80; i++) index.Publish("key" + i, now);
