@@ -4980,12 +4980,12 @@ public static class AIConfigHandler
 			}
 			List<GuardrailRulePromptConfig> eligibleRules = GetAllEnabledRulePrompts();
 			string eligibilityKey = string.Join(",", eligibleRules.Select(rule => rule.Id.Length + ":" + rule.Id));
-			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (useAuxiliary ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText)
-				+ (useAuxiliary ? "|aux" : "|rag") + excludeKey + "|revision=" + configurationRevision + "|autoExclude=" + applyRuntimeAutoExclusions
-				+ "|options=" + retrievalEnabled + ":" + semanticFirst + ":" + semanticTopK + ":" + returnCap
-				+ "|eligible=" + eligibilityKey
-				+ "|target=" + _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
+			string targetKey = _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
 				+ ":" + _guardrailRuntimeTargetTroopId.Value + ":" + _guardrailRuntimeTargetUnnamedRank.Value + ":" + _guardrailRuntimeTargetAgentIndex.Value;
+			string text = PromptRuleEvaluationCacheKey.Build(
+				BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (useAuxiliary ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText),
+				useAuxiliary, excludeKey, configurationRevision, applyRuntimeAutoExclusions,
+				retrievalEnabled, semanticFirst, semanticTopK, returnCap, eligibilityKey, targetKey);
 			if (_guardrailEvalCache.TryGet(text, configurationRevision, out snapshot))
 			{
 				return snapshot.Rules != null && snapshot.Rules.Count > 0;
