@@ -82,7 +82,7 @@ namespace AnimusForge.Illustrator.Context
             else if (Snapshot != null && Snapshot.EventSettlement == null)
             {
                 sb.AppendLine();
-                sb.AppendLine("【事件现场】周报未指明具体定居点，地点由导演按事件要闻合理设定。");
+                sb.AppendLine("【事件现场】周报未指明具体定居点；只保留事件已确认的环境与空间关系，未知地点、具体建筑和陈设不补造。");
             }
 
             return sb.ToString().TrimEnd();
