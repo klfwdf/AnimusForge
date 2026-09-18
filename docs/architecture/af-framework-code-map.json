@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "9242bcfaf3920d07ef2dca6a25b680c1d3c413eb",
+  "sourceRevision": "2c7415364633315f9d42c192bcd9de591fcd6646",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -2042,13 +2042,13 @@
     {
       "id": "j03.config.snapshot",
       "path": "src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs",
-      "start": 4,
-      "end": 4,
+      "start": 6,
+      "end": 6,
       "symbol": "internal sealed class PromptConfigurationSnapshot",
       "match": "exact",
       "status": "partial-owner",
-      "note": "六模型与加载错误的单次发布值；模型内部深层可变性尚未全面封装",
-      "fileSha256": "4b5795dc4d628044d1ede8b999fe580928abd0b79a1d8c5a21b9a5c43fc1018f"
+      "note": "六模型发布时深拷贝；兼容 getter 每次返回副本，owner 读取独占借用模型；全消费者契约仍未完成",
+      "fileSha256": "c7f20e6c08bb066a2b22a508ce161c8ed7c5144aae7f7f16fc586000b6400cc5"
     },
     {
       "id": "j03.config.store",
@@ -2058,7 +2058,7 @@
       "symbol": "internal sealed class RevisionedPromptConfigurationStore<T> where T : class",
       "match": "exact",
       "status": "owner",
-      "note": "串行完整替换与 revision 发布；模型内部仍可变，需补深层不可变证明",
+      "note": "串行完整替换与 revision 发布；已捕获旧值稳定，异常默认换代由配置契约覆盖",
       "fileSha256": "d6b9c7af61336a020ee4aa9ca43fd77b6ed4e760617f8f313a4eaf7886e5f44e"
     },
     {
@@ -2070,7 +2070,7 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "旧 getter/reload 与游戏、网络窄适配仍保留；部分评估编排仍在旧类",
-      "fileSha256": "5e734ab296a6d405bc083a07d758a60b0e4b8e745fb835e0c90e517565bd11c8"
+      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
     },
     {
       "id": "j03.config.reload",
@@ -2081,7 +2081,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "旧签名转接 PromptConfigurationLoader 与 revisioned store",
-      "fileSha256": "5e734ab296a6d405bc083a07d758a60b0e4b8e745fb835e0c90e517565bd11c8"
+      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
     },
     {
       "id": "j03.retrieval.intent",
@@ -2147,7 +2147,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "配置 revision 与请求上下文共同 pin；退出恢复父 scope",
-      "fileSha256": "5e734ab296a6d405bc083a07d758a60b0e4b8e745fb835e0c90e517565bd11c8"
+      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
     },
     {
       "id": "j03.retrieval.rules.remaining",
@@ -2158,7 +2158,7 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "按目标资格过滤与游戏读取仍在旧类；评估编排及 ONNX 调用未全迁",
-      "fileSha256": "5e734ab296a6d405bc083a07d758a60b0e4b8e745fb835e0c90e517565bd11c8"
+      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
     },
     {
       "id": "j03.retrieval.warmup.remaining",
@@ -2169,7 +2169,7 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "已捕获 seed 后的 embedding 调用与门控保留；旧代迟到结果拒收",
-      "fileSha256": "5e734ab296a6d405bc083a07d758a60b0e4b8e745fb835e0c90e517565bd11c8"
+      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
     },
     {
       "id": "j03.config.loader",
@@ -2312,7 +2312,7 @@
       "match": "exact",
       "status": "remaining-owner",
       "note": "ONNX/辅助网络接缝、游戏资格与评估编排尚在旧类；最终命中纯算法已迁出",
-      "fileSha256": "5e734ab296a6d405bc083a07d758a60b0e4b8e745fb835e0c90e517565bd11c8"
+      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
     },
     {
       "id": "j03.retrieval.final",
