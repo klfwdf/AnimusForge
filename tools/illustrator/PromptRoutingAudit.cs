@@ -106,8 +106,9 @@ public static class PromptRoutingAudit
             "【场景空间】环境材质向远处延展，形成清晰且柔和的空间层次。" +
             "【光线与色彩】自然光与环境反光协调过渡，暗部纹理清晰可辨。" +
             "【空间关系】近处与远处通过遮挡和景深形成连续纵深关系。";
-        Check((bool)Call(director, "HasRequiredSceneDescription", valid), "balanced concrete direction is accepted");
-        Check(!(bool)Call(director, "HasRequiredSceneDescription", valid.Replace("人物身着现有衣物", new string('甲', 1000))), "equipment catalogue cannot crowd out environment even with four headings");
+        Check((bool)Call(director, "HasRequiredSceneDescription", valid), "complete four-section direction is accepted");
+        string detailedFigure = "近景从人物左前方观察，她侧身专注聆听画外的交谈对象，视线平稳。右手轻拢腰侧衣褶，左手处于取景外。头部按身份参考保留裸头轮廓与原有须发，布衣的领口、叠穿关系和固有颜色清楚可辨，肩颈随朝向形成自然转折。";
+        Check((bool)Call(director, "HasRequiredSceneDescription", valid.Replace("人物身着现有衣物，自然呈现神情与动作。", detailedFigure)), "complete concise scene sections remain valid when figure description is longer");
         Type directionType = assembly.GetType(core + "IllustrationDirection", true);
         object metadataPlan = Activator.CreateInstance(planType, new object[] { "人物百科纪事", facts, "", "" });
         string withMetadata = "【画作标题】灯下裁决【画作主题】战前权衡【人物行动】俯身审视地图，一手指向路线，视线落在指尖。" + valid;
