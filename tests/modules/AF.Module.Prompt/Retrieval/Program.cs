@@ -315,6 +315,15 @@ internal static class Program
         Check(PromptAuxiliaryRuleEvaluation.EligibleTopics(configuredTopics, new[] { "hidden" }, false,
             (code, _, _) => code, _ => throw new Exception("eligibility bypass must not inspect game state")).Single().RuleId == "hidden",
             "auxiliary topics bypass runtime eligibility for explicit full scope");
+        string RuleKey(long revision = 1, bool enabled = true, string eligible = "reward", string target = "hero:a")
+            => PromptRuleEvaluationCacheKey.Build("input", false, "", revision, true, enabled, true, 4, 3, eligible, target);
+        Check(RuleKey() == "input|rag|revision=1|autoExclude=True|options=True:True:4:3|eligible=reward|target=hero:a",
+            "production evaluation key preserves existing wire layout");
+        Check(RuleKey() != RuleKey(revision: 2) && RuleKey() != RuleKey(enabled: false)
+            && RuleKey() != RuleKey(eligible: "marriage") && RuleKey() != RuleKey(target: "hero:b"),
+            "evaluation cache isolates reload, captured MCM, eligibility and target changes");
+        Check(PromptRuleEvaluationCacheKey.Build("input", true, "|exclude:duel", 1, false, true, false, 2, 4, "reward", "hero:a")
+            != RuleKey(), "evaluation cache isolates auxiliary route and exclusions");
         var aggregate = new PromptRuleAggregation();
         aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
         aggregate.Add("marriage", 0.6f, 1, "second", "intent b");
