@@ -348,6 +348,70 @@ internal static class Program
             "max other uses actual score even when noncandidate ranks last");
         Check(Math.Abs(finals[0].Mean - 2f / 3f) < 0.0001f && finals[2].RejectReason == "semantic_recall_miss",
             "final diagnostics retain mean and miss reason");
+        DuelSettings.Current.PromptListCandidateMaxCount = 2;
+        Check(PromptListRetrievalService.GetMaxCandidateCount() == 2, "production facade reads current MCM candidate cap");
+        DuelSettings.Current.PromptListCandidateMaxCount = 1;
+        Check(PromptListRetrievalService.GetMaxCandidateCount() == 1, "production facade sees MCM hot edit without reload");
+        var npc = new TaleWorlds.CampaignSystem.Hero { StringId = "npc-j03" };
+        var publicReward = new RewardSystemBehavior.RewardItemInfo { Name = "剑", StringId = "sword" };
+        var otherReward = new RewardSystemBehavior.RewardItemInfo { Name = "马", StringId = "horse" };
+        var privateA = new RewardSystemBehavior.RewardItemInfo { Name = "盔", IsPrivateEquipment = true };
+        var privateB = new RewardSystemBehavior.RewardItemInfo { Name = "甲", IsPrivateEquipment = true };
+        var allRewards = new[] { publicReward, otherReward, privateA, privateB };
+        var selectedRewards = PromptListRetrievalService.FilterNpcRewardItemsForAssetTransfer(allRewards,
+            new MentionedWorldEntities("剑"), 1);
+        Check(selectedRewards.Count == 3 && selectedRewards[0] == publicReward
+            && selectedRewards.Contains(privateA) && selectedRewards.Contains(privateB),
+            "production NPC reward facade keeps private equipment outside display cap");
+        Check(PromptListRetrievalService.FilterRewardItems(allRewards, null, 1).Count == 1,
+            "normal reward display still enforces cap");
+        PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope,
+            npc, null, -1, allRewards);
+        PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope,
+            npc, null, -1, new[] { publicReward });
+        bool hasAuthorized = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope,
+            npc, null, -1, out var authorized);
+        bool hasDisplayed = PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope,
+            npc, null, -1, out var displayed);
+        Check(hasAuthorized && authorized.Count == 4 && hasDisplayed && displayed.Count == 1,
+            "production candidate store isolates full authorization and display scopes");
+        displayed.Clear();
+        Check(PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope,
+            npc, null, -1, out var displayedAgain) && displayedAgain.Count == 1,
+            "snapshot getter does not leak its mutable list container");
+        for (int i = 0; i < 81; i++)
+            PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope,
+                npc, null, -1, new[] { publicReward }, "key-" + i);
+        Check(!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope,
+            npc, null, -1, out _, "key-0")
+            && PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope,
+                npc, null, -1, out _, "key-80"), "production candidate facade enforces global 80-key index");
+        var troopA = new MyBehavior.PartyTransferPromptEntry { DisplayName = "步兵" };
+        var troopB = new MyBehavior.PartyTransferPromptEntry { DisplayName = "弓手" };
+        PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope,
+            npc, null, 7, new[] { troopA, troopB });
+        PromptListRetrievalService.PublishPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope,
+            npc, null, 7, new[] { troopB });
+        Check(PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope,
+            npc, null, 7, out var allTroops) && allTroops.Count == 2
+            && PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferTroopsSnapshotScope,
+                npc, null, 7, out var shownTroops) && shownTroops.Single() == troopB,
+            "production party-transfer scopes keep full authorization separate from shown entries");
+        Check(!PromptListRetrievalService.TryGetPartyTransferSnapshot(PromptListRetrievalService.PartyTransferAllTroopsSnapshotScope,
+            npc, null, 8, out _), "production candidate key isolates agent index");
+        var settlementA = new MyBehavior.SettlementTransferPromptEntry { DisplayName = "城镇", AssetId = "town-a" };
+        var settlementB = new MyBehavior.SettlementTransferPromptEntry { DisplayName = "城堡", AssetId = "castle-b" };
+        PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope,
+            npc, null, -1, new[] { settlementA, settlementB });
+        PromptListRetrievalService.PublishSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope,
+            npc, null, -1, new[] { settlementB });
+        Check(PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope,
+            npc, null, -1, out var allSettlements) && allSettlements.Count == 2
+            && PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope,
+                npc, null, -1, out var shownSettlements) && shownSettlements.Single() == settlementB,
+            "production settlement-transfer scopes keep full authorization separate from display");
+        Check(PromptListRetrievalService.BuildMentionTerms(new MentionedWorldEntities { Entities = new List<string> { "政策", "政策", " 王国 " } })
+            .SequenceEqual(new[] { "政策", "王国" }), "policy mention consumer shares production normalization");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }
