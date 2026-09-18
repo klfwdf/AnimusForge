@@ -167,9 +167,11 @@ public partial class CourierDeliveryBehavior
             }, CancellationToken.None).ConfigureAwait(false);
             if (input == null) return null;
 
-            // Only routing can perform synchronous LLM/lore I/O. The final assembly below uses the
+            // J04f: the shared prompt build runs as owner phases (game thread) and thread-pool retrieval
+            // steps; see CourierDeliveryBehavior.PromptSchedule.cs. The final assembly below still uses the
             // existing live role/assets/history-message builders and therefore belongs to this owner.
-            CourierPreparedPrompt prepared = await Task.Run(() => BuildCourierPreparedPrompt(input)).ConfigureAwait(false);
+            CourierPreparedPrompt prepared = await BuildCourierPreparedPromptScheduledAsync(input, promptRun, generation, source).ConfigureAwait(false);
+            if (prepared == null) return null;
             return await RunCourierOwnerPhaseAsync(generation, source + "_assemble", () =>
             {
                 if (!IsCourierPromptRunCurrent(promptRun)) return null;

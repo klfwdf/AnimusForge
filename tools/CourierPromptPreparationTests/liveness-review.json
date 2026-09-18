@@ -1,303 +1,319 @@
 {
-  "baselineKind": "uncommitted first Courier Prompt candidate, not fixed main",
-  "files": {
-    "CourierDeliveryBehavior.cs": {
-      "beforeSha256": "763ca592713982d93a56a848a888ce642befe9f9afc7ba61b8ae09394413f631",
-      "afterSha256": "933885e8d03aa9b702af6a0e5e7dc7f71258c9d964adb9c318bca81de24c7a2a",
-      "hunks": [
-        {
-          "beforeStart": 4297,
-          "afterStart": 4297,
-          "before": [
-            "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration), \"reply_prepare\");\n"
-          ],
-          "after": [
-            "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
-            "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"reply_prepare\");\n"
-          ]
-        },
-        {
-          "beforeStart": 4310,
-          "afterStart": 4311,
-          "before": [
-            "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration), \"inbound_prepare\");\n"
-          ],
-          "after": [
-            "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
-            "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"inbound_prepare\");\n"
-          ]
-        },
-        {
-          "beforeStart": 4357,
-          "afterStart": 4359,
-          "before": [
-            "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
-          ],
-          "after": [
-            "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-          ]
-        },
-        {
-          "beforeStart": 4365,
-          "afterStart": 4367,
-          "before": [
-            "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration));\n"
-          ],
-          "after": [
-            "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
-            "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
-          ]
-        },
-        {
-          "beforeStart": 4370,
-          "afterStart": 4373,
-          "before": [
-            "\t\t\tFailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
-          ],
-          "after": [
-            "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
-          ]
-        },
-        {
-          "beforeStart": 4374,
-          "afterStart": 4377,
-          "before": [
-            "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
-          ],
-          "after": [
-            "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-          ]
-        },
-        {
-          "beforeStart": 4383,
-          "afterStart": 4386,
-          "before": [
-            "\t\t\t\t\"courier_reply_admission\", () => CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
-          ],
-          "after": [
-            "\t\t\t\t\"courier_reply_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
-          ]
-        },
-        {
-          "beforeStart": 4394,
-          "afterStart": 4397,
-          "before": [
-            "\t\t\tCourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);\n"
-          ],
-          "after": [
-            "\t\t\tCourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, promptRun, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);\n"
-          ]
-        },
-        {
-          "beforeStart": 4485,
-          "afterStart": 4488,
-          "before": [],
-          "after": [
-            "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
-          ]
-        },
-        {
-          "beforeStart": 4498,
-          "afterStart": 4502,
-          "before": [
-            "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"), \"reply_prepare_failed\");\n"
-          ],
-          "after": [
-            "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"); }, \"reply_prepare_failed\");\n"
-          ]
-        },
-        {
-          "beforeStart": 4806,
-          "afterStart": 4810,
-          "before": [
-            "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
-          ],
-          "after": [
-            "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-          ]
-        },
-        {
-          "beforeStart": 4814,
-          "afterStart": 4818,
-          "before": [
-            "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration));\n"
-          ],
-          "after": [
-            "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
-            "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
-          ]
-        },
-        {
-          "beforeStart": 4819,
-          "afterStart": 4824,
-          "before": [
-            "\t\t\tFailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
-          ],
-          "after": [
-            "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
-          ]
-        },
-        {
-          "beforeStart": 4823,
-          "afterStart": 4828,
-          "before": [
-            "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
-          ],
-          "after": [
-            "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-          ]
-        },
-        {
-          "beforeStart": 4833,
-          "afterStart": 4838,
-          "before": [
-            "\t\t\t\t\"courier_inbound_admission\", () => CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
-          ],
-          "after": [
-            "\t\t\t\t\"courier_inbound_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
-          ]
-        },
-        {
-          "beforeStart": 4845,
-          "afterStart": 4850,
-          "before": [
-            "\t\t\tInboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);\n"
-          ],
-          "after": [
-            "\t\t\tInboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, promptRun, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);\n"
-          ]
-        },
-        {
-          "beforeStart": 4855,
-          "afterStart": 4860,
-          "before": [],
-          "after": [
-            "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
-          ]
-        },
-        {
-          "beforeStart": 4868,
-          "afterStart": 4874,
-          "before": [
-            "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"), \"inbound_letter_prepare_failed\");\n"
-          ],
-          "after": [
-            "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"); }, \"inbound_letter_prepare_failed\");\n"
-          ]
-        }
-      ]
+ "baselineKind": "uncommitted first Courier Prompt candidate, not fixed main",
+ "files": {
+  "CourierDeliveryBehavior.cs": {
+   "beforeSha256": "763ca592713982d93a56a848a888ce642befe9f9afc7ba61b8ae09394413f631",
+   "afterSha256": "933885e8d03aa9b702af6a0e5e7dc7f71258c9d964adb9c318bca81de24c7a2a",
+   "hunks": [
+    {
+     "beforeStart": 4297,
+     "afterStart": 4297,
+     "before": [
+      "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration), \"reply_prepare\");\n"
+     ],
+     "after": [
+      "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
+      "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"reply_prepare\");\n"
+     ]
     },
-    "CourierDeliveryBehavior.PromptPreparation.cs": {
-      "beforeSha256": "5921a40fbe07c3d767b66ea4778d54904c3d1fafe7121c6925261b323a2c9ae9",
-      "afterSha256": "c40e693a3363498329b264bf62b627f9020c5b7460663691715adb4c46f54591",
-      "hunks": [
-        {
-          "beforeStart": 3,
-          "afterStart": 3,
-          "before": [],
-          "after": [
-            "using System.Runtime.CompilerServices;\n"
-          ]
-        },
-        {
-          "beforeStart": 11,
-          "afterStart": 12,
-          "before": [],
-          "after": [
-            "    // A runtime-only reservation begins at the actual Start, before persona/history/network work.\n",
-            "    // Weak keys do not extend a session lifetime or add fields to the saved CourierSession schema.\n",
-            "    private readonly ConditionalWeakTable<CourierSession, CourierPromptRun> _courierPromptRuns =\n",
-            "        new ConditionalWeakTable<CourierSession, CourierPromptRun>();\n",
-            "\n",
-            "    private sealed class CourierPromptRun\n",
-            "    {\n",
-            "        internal CourierPromptRun(CourierSession session, long generation)\n",
-            "        { Session = session; Generation = generation; }\n",
-            "        internal CourierSession Session { get; }\n",
-            "        internal long Generation { get; }\n",
-            "    }\n",
-            "\n",
-            "    private CourierPromptRun BeginCourierPromptRun(CourierSession session, long generation)\n",
-            "    {\n",
-            "        if (!TWParallel.IsMainThread()) throw new InvalidOperationException(\"Courier run reservation requires the game thread.\");\n",
-            "        var run = new CourierPromptRun(session, generation);\n",
-            "        // All replacements and checks use the original game-thread owner, not a worker lock.\n",
-            "        _courierPromptRuns.Remove(session);\n",
-            "        _courierPromptRuns.Add(session, run);\n",
-            "        return run;\n",
-            "    }\n",
-            "\n",
-            "    private bool IsCourierPromptRunCurrent(CourierPromptRun run)\n",
-            "    {\n",
-            "        if (!TWParallel.IsMainThread()) throw new InvalidOperationException(\"Courier run validation requires the game thread.\");\n",
-            "        return run != null && ReferenceEquals(Instance, this) && _pendingOwnerPhases.Accepting\n",
-            "            && SaveRuntimeGuard.IsCurrentGeneration(run.Generation)\n",
-            "            && ReferenceEquals(GetSessionById(run.Session.Id), run.Session)\n",
-            "            && _courierPromptRuns.TryGetValue(run.Session, out CourierPromptRun current) && ReferenceEquals(current, run)\n",
-            "            && run.Session.ReplyGenerationStarted && !run.Session.ReplyGenerated;\n",
-            "    }\n",
-            "\n",
-            "    private void CompleteCourierPromptSourceChanged(CourierPromptRun run, CourierPromptInput input)\n",
-            "    {\n",
-            "        // Do not release a new run on the same object, including one still in persona/history work.\n",
-            "        if (!IsCourierPromptRunCurrent(run)\n",
-            "            || !IsCourierHistoryOwnerCurrent(input.SessionId, input.Session, input.Participant, input.Inbound)\n",
-            "            || input.Participant.IsDead) return;\n",
-            "        _courierPromptRuns.Remove(input.Session);\n",
-            "        // No actions were submitted. Use the original failure owner to finish generation and advance\n",
-            "        // the actual transport/wait state machine; never leave Started=true or invent an LLM success.\n",
-            "        if (input.Inbound)\n",
-            "            FailInboundLetterGenerationOnMainThread(input.SessionId, input.Generation,\n",
-            "                input.Session.InboundFallbackLetter, \"inbound_prompt_source_changed\");\n",
-            "        else\n",
-            "        {\n",
-            "            // A previous preflight/recovery may have left reply tags on the same saved session.\n",
-            "            // Source invalidation must not let the failure tick execute or display those old tags.\n",
-            "            input.Session.ReplyText = string.Empty;\n",
-            "            input.Session.ReplyPostprocessedText = string.Empty;\n",
-            "            input.Session.PostprocessConsumed = true;\n",
-            "            FailCourierReplyGenerationOnMainThread(input.SessionId, input.Generation, \"reply_prompt_source_changed\");\n",
-            "        }\n",
-            "    }\n",
-            "\n"
-          ]
-        },
-        {
-          "beforeStart": 100,
-          "afterStart": 157,
-          "before": [
-            "        CourierPreparedHistory history, Func<CourierPromptInput, CourierPreparedPrompt, T> assemble) where T : class\n"
-          ],
-          "after": [
-            "        CourierPreparedHistory history, CourierPromptRun promptRun, Func<CourierPromptInput, CourierPreparedPrompt, T> assemble) where T : class\n"
-          ]
-        },
-        {
-          "beforeStart": 107,
-          "afterStart": 164,
-          "before": [
-            "                if (!IsCourierHistoryOwnerCurrent(sessionId, session, participant, inbound) || participant.IsDead) return null;\n"
-          ],
-          "after": [
-            "                if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierHistoryOwnerCurrent(sessionId, session, participant, inbound) || participant.IsDead) return null;\n"
-          ]
-        },
-        {
-          "beforeStart": 117,
-          "afterStart": 174,
-          "before": [
-            "                if (!IsCourierPromptInputCurrent(input)) return null;\n"
-          ],
-          "after": [
-            "                if (!IsCourierPromptRunCurrent(promptRun)) return null;\n",
-            "                if (!IsCourierPromptInputCurrent(input))\n",
-            "                {\n",
-            "                    CompleteCourierPromptSourceChanged(promptRun, input);\n",
-            "                    return null;\n",
-            "                }\n"
-          ]
-        }
-      ]
+    {
+     "beforeStart": 4310,
+     "afterStart": 4311,
+     "before": [
+      "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration), \"inbound_prepare\");\n"
+     ],
+     "after": [
+      "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
+      "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"inbound_prepare\");\n"
+     ]
+    },
+    {
+     "beforeStart": 4357,
+     "afterStart": 4359,
+     "before": [
+      "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
+     ],
+     "after": [
+      "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+     ]
+    },
+    {
+     "beforeStart": 4365,
+     "afterStart": 4367,
+     "before": [
+      "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration));\n"
+     ],
+     "after": [
+      "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
+      "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
+     ]
+    },
+    {
+     "beforeStart": 4370,
+     "afterStart": 4373,
+     "before": [
+      "\t\t\tFailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
+     ],
+     "after": [
+      "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
+     ]
+    },
+    {
+     "beforeStart": 4374,
+     "afterStart": 4377,
+     "before": [
+      "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
+     ],
+     "after": [
+      "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+     ]
+    },
+    {
+     "beforeStart": 4383,
+     "afterStart": 4386,
+     "before": [
+      "\t\t\t\t\"courier_reply_admission\", () => CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
+     ],
+     "after": [
+      "\t\t\t\t\"courier_reply_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
+     ]
+    },
+    {
+     "beforeStart": 4394,
+     "afterStart": 4397,
+     "before": [
+      "\t\t\tCourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);\n"
+     ],
+     "after": [
+      "\t\t\tCourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, promptRun, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);\n"
+     ]
+    },
+    {
+     "beforeStart": 4485,
+     "afterStart": 4488,
+     "before": [],
+     "after": [
+      "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
+     ]
+    },
+    {
+     "beforeStart": 4498,
+     "afterStart": 4502,
+     "before": [
+      "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"), \"reply_prepare_failed\");\n"
+     ],
+     "after": [
+      "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"); }, \"reply_prepare_failed\");\n"
+     ]
+    },
+    {
+     "beforeStart": 4806,
+     "afterStart": 4810,
+     "before": [
+      "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
+     ],
+     "after": [
+      "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+     ]
+    },
+    {
+     "beforeStart": 4814,
+     "afterStart": 4818,
+     "before": [
+      "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration));\n"
+     ],
+     "after": [
+      "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
+      "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
+     ]
+    },
+    {
+     "beforeStart": 4819,
+     "afterStart": 4824,
+     "before": [
+      "\t\t\tFailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
+     ],
+     "after": [
+      "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
+     ]
+    },
+    {
+     "beforeStart": 4823,
+     "afterStart": 4828,
+     "before": [
+      "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
+     ],
+     "after": [
+      "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+     ]
+    },
+    {
+     "beforeStart": 4833,
+     "afterStart": 4838,
+     "before": [
+      "\t\t\t\t\"courier_inbound_admission\", () => CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
+     ],
+     "after": [
+      "\t\t\t\t\"courier_inbound_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
+     ]
+    },
+    {
+     "beforeStart": 4845,
+     "afterStart": 4850,
+     "before": [
+      "\t\t\tInboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);\n"
+     ],
+     "after": [
+      "\t\t\tInboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, promptRun, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);\n"
+     ]
+    },
+    {
+     "beforeStart": 4855,
+     "afterStart": 4860,
+     "before": [],
+     "after": [
+      "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
+     ]
+    },
+    {
+     "beforeStart": 4868,
+     "afterStart": 4874,
+     "before": [
+      "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"), \"inbound_letter_prepare_failed\");\n"
+     ],
+     "after": [
+      "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"); }, \"inbound_letter_prepare_failed\");\n"
+     ]
     }
+   ]
+  },
+  "CourierDeliveryBehavior.PromptPreparation.cs": {
+   "beforeSha256": "5921a40fbe07c3d767b66ea4778d54904c3d1fafe7121c6925261b323a2c9ae9",
+   "afterSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a",
+   "hunks": [
+    {
+     "beforeStart": 3,
+     "afterStart": 3,
+     "before": [],
+     "after": [
+      "using System.Runtime.CompilerServices;\n"
+     ]
+    },
+    {
+     "beforeStart": 11,
+     "afterStart": 12,
+     "before": [],
+     "after": [
+      "    // A runtime-only reservation begins at the actual Start, before persona/history/network work.\n",
+      "    // Weak keys do not extend a session lifetime or add fields to the saved CourierSession schema.\n",
+      "    private readonly ConditionalWeakTable<CourierSession, CourierPromptRun> _courierPromptRuns =\n",
+      "        new ConditionalWeakTable<CourierSession, CourierPromptRun>();\n",
+      "\n",
+      "    private sealed class CourierPromptRun\n",
+      "    {\n",
+      "        internal CourierPromptRun(CourierSession session, long generation)\n",
+      "        { Session = session; Generation = generation; }\n",
+      "        internal CourierSession Session { get; }\n",
+      "        internal long Generation { get; }\n",
+      "    }\n",
+      "\n",
+      "    private CourierPromptRun BeginCourierPromptRun(CourierSession session, long generation)\n",
+      "    {\n",
+      "        if (!TWParallel.IsMainThread()) throw new InvalidOperationException(\"Courier run reservation requires the game thread.\");\n",
+      "        var run = new CourierPromptRun(session, generation);\n",
+      "        // All replacements and checks use the original game-thread owner, not a worker lock.\n",
+      "        _courierPromptRuns.Remove(session);\n",
+      "        _courierPromptRuns.Add(session, run);\n",
+      "        return run;\n",
+      "    }\n",
+      "\n",
+      "    private bool IsCourierPromptRunCurrent(CourierPromptRun run)\n",
+      "    {\n",
+      "        if (!TWParallel.IsMainThread()) throw new InvalidOperationException(\"Courier run validation requires the game thread.\");\n",
+      "        return run != null && ReferenceEquals(Instance, this) && _pendingOwnerPhases.Accepting\n",
+      "            && SaveRuntimeGuard.IsCurrentGeneration(run.Generation)\n",
+      "            && ReferenceEquals(GetSessionById(run.Session.Id), run.Session)\n",
+      "            && _courierPromptRuns.TryGetValue(run.Session, out CourierPromptRun current) && ReferenceEquals(current, run)\n",
+      "            && run.Session.ReplyGenerationStarted && !run.Session.ReplyGenerated;\n",
+      "    }\n",
+      "\n",
+      "    private void CompleteCourierPromptSourceChanged(CourierPromptRun run, CourierPromptInput input)\n",
+      "    {\n",
+      "        // Do not release a new run on the same object, including one still in persona/history work.\n",
+      "        if (!IsCourierPromptRunCurrent(run)\n",
+      "            || !IsCourierHistoryOwnerCurrent(input.SessionId, input.Session, input.Participant, input.Inbound)\n",
+      "            || input.Participant.IsDead) return;\n",
+      "        _courierPromptRuns.Remove(input.Session);\n",
+      "        // No actions were submitted. Use the original failure owner to finish generation and advance\n",
+      "        // the actual transport/wait state machine; never leave Started=true or invent an LLM success.\n",
+      "        if (input.Inbound)\n",
+      "            FailInboundLetterGenerationOnMainThread(input.SessionId, input.Generation,\n",
+      "                input.Session.InboundFallbackLetter, \"inbound_prompt_source_changed\");\n",
+      "        else\n",
+      "        {\n",
+      "            // A previous preflight/recovery may have left reply tags on the same saved session.\n",
+      "            // Source invalidation must not let the failure tick execute or display those old tags.\n",
+      "            input.Session.ReplyText = string.Empty;\n",
+      "            input.Session.ReplyPostprocessedText = string.Empty;\n",
+      "            input.Session.PostprocessConsumed = true;\n",
+      "            FailCourierReplyGenerationOnMainThread(input.SessionId, input.Generation, \"reply_prompt_source_changed\");\n",
+      "        }\n",
+      "    }\n",
+      "\n"
+     ]
+    },
+    {
+     "beforeStart": 100,
+     "afterStart": 157,
+     "before": [
+      "        CourierPreparedHistory history, Func<CourierPromptInput, CourierPreparedPrompt, T> assemble) where T : class\n"
+     ],
+     "after": [
+      "        CourierPreparedHistory history, CourierPromptRun promptRun, Func<CourierPromptInput, CourierPreparedPrompt, T> assemble) where T : class\n"
+     ]
+    },
+    {
+     "beforeStart": 107,
+     "afterStart": 164,
+     "before": [
+      "                if (!IsCourierHistoryOwnerCurrent(sessionId, session, participant, inbound) || participant.IsDead) return null;\n"
+     ],
+     "after": [
+      "                if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierHistoryOwnerCurrent(sessionId, session, participant, inbound) || participant.IsDead) return null;\n"
+     ]
+    },
+    {
+     "beforeStart": 117,
+     "afterStart": 174,
+     "before": [
+      "                if (!IsCourierPromptInputCurrent(input)) return null;\n"
+     ],
+     "after": [
+      "                if (!IsCourierPromptRunCurrent(promptRun)) return null;\n",
+      "                if (!IsCourierPromptInputCurrent(input))\n",
+      "                {\n",
+      "                    CompleteCourierPromptSourceChanged(promptRun, input);\n",
+      "                    return null;\n",
+      "                }\n"
+     ]
+    },
+    {
+     "afterStart": 169,
+     "before": [
+      "            // Only routing can perform synchronous LLM/lore I/O. The final assembly below uses the\n",
+      "            // existing live role/assets/history-message builders and therefore belongs to this owner.\n",
+      "            CourierPreparedPrompt prepared = await Task.Run(() => BuildCourierPreparedPrompt(input)).ConfigureAwait(false);\n"
+     ],
+     "after": [
+      "            // J04f: the shared prompt build runs as owner phases (game thread) and thread-pool retrieval\n",
+      "            // steps; see CourierDeliveryBehavior.PromptSchedule.cs. The final assembly below still uses the\n",
+      "            // existing live role/assets/history-message builders and therefore belongs to this owner.\n",
+      "            CourierPreparedPrompt prepared = await BuildCourierPreparedPromptScheduledAsync(input, promptRun, generation, source).ConfigureAwait(false);\n",
+      "            if (prepared == null) return null;\n"
+     ],
+     "note": "J04f: scheduled prompt build (PromptSchedule.cs)"
+    }
+   ]
   }
+ }
 }
