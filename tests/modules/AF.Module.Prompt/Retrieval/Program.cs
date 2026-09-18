@@ -137,6 +137,45 @@ internal static class Program
         Check(warmupResult.SeedCount == 2 && warmupResult.Warmed == 1, "warmup reports captured count and completed work");
         Check(PromptSemanticWarmupExecutor.Run(warmup, () => 6, (_, _) => throw new Exception("must not embed")).Stale,
             "old revision is rejected before embedding");
+        var mentionsStore = new PromptAuxiliaryMentionStore(64);
+        for (int i = 0; i < 64; i++) mentionsStore.Publish("key" + i, new MentionedWorldEntities("name" + i));
+        Check(mentionsStore.Get("key0")?.Entities.Single() == "name0", "64 auxiliary keys remain available");
+        mentionsStore.Publish("key0", new MentionedWorldEntities("second"));
+        Check(mentionsStore.Get("key0")?.Entities.Count == 2, "same-key auxiliary mentions merge");
+        var detached = mentionsStore.Get("key0");
+        detached.Entities.Clear();
+        Check(mentionsStore.Get("key0")?.Entities.Count == 2, "auxiliary get does not expose stored mutable value");
+        mentionsStore.Publish("key64", new MentionedWorldEntities("latest"));
+        Check(mentionsStore.Get("key0") == null && mentionsStore.Get("key1") != null, "65th auxiliary key evicts FIFO oldest");
+        var vectors = new PromptSemanticVectorCache(2, 1);
+        vectors.PublishPhrase("v1|a", new[] { 1f }, 1, 1);
+        vectors.PublishPhrase("v1|b", new[] { 2f }, 1, 1);
+        vectors.PublishPhrase("v1|stale", new[] { 9f }, 1, 2);
+        Check(vectors.TryGetPhrase("v1|a", out _) && !vectors.TryGetPhrase("v1|stale", out _), "stale phrase result does not evict live cache");
+        vectors.PublishPhrase("v2|c", new[] { 3f }, 2, 2);
+        Check(!vectors.TryGetPhrase("v1|a", out _) && vectors.TryGetPhrase("v2|c", out _), "phrase cache clears at capacity");
+        vectors.PublishInput("v2|input", new[] { 4f }, 2, 2);
+        vectors.PublishInput("v1|late", new[] { 8f }, 1, 2);
+        Check(vectors.TryGetInput("v2|input", out _) && !vectors.TryGetInput("v1|late", out _), "stale input result does not evict live cache");
+        vectors.Clear();
+        Check(!vectors.TryGetPhrase("v2|c", out _) && !vectors.TryGetInput("v2|input", out _), "reload clears both vector caches");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
+    }
+}
+
+namespace AnimusForge
+{
+    public sealed class MentionedWorldEntities
+    {
+        public List<string> Entities = new List<string>();
+        public bool IsEmpty => Entities.Count == 0;
+        public MentionedWorldEntities() { }
+        public MentionedWorldEntities(string name) { Entities.Add(name); }
+        public MentionedWorldEntities Clone() => new MentionedWorldEntities { Entities = new List<string>(Entities) };
+        public void Merge(MentionedWorldEntities other)
+        {
+            foreach (string name in other.Entities)
+                if (!Entities.Contains(name, StringComparer.OrdinalIgnoreCase)) Entities.Add(name);
+        }
     }
 }
