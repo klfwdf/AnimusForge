@@ -35,6 +35,7 @@ LINKS = [
     'Refactor/Runtime/InteractionRequestLease.cs',
     'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'Refactor/Adapters/LegacyActionTagParser.cs',
     'Refactor/Adapters/LegacyDetachedPromptComposer.cs', 'Refactor/Adapters/LegacyPromptPackageAdapter.cs',
+    'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs',
 ]
 
 def extract():

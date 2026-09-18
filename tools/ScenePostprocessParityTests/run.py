@@ -17,7 +17,7 @@ def team_module_project_items():
     from xml.sax.saxutils import escape
     return '<ItemGroup>' + ''.join(
         '<Compile Include="' + escape(str(ROOT / ('src/AF.GameAdapter.Bannerlord/Composition' if name == 'TeamModuleServices.cs' else 'Refactor/Modules') / name)) + '" Link="' + name + '" />'
-        for name in TEAM_MODULE_FILES) + '</ItemGroup>'
+        for name in TEAM_MODULE_FILES) + '<Compile Include="' + escape(str(ROOT / 'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs')) + '" Link="PromptRuntimeTargetBinding.cs" />' + '</ItemGroup>'
 
 
 def stub_helpers(old_source, method):

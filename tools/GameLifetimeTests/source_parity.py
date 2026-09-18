@@ -114,6 +114,23 @@ def restore(path,source):
   assert source.count(warmup_new)==1,'Unreviewed J03 warmup source';source=source.replace(warmup_new,warmup_old,1)
   source,count=re.subn(r'(?m)^\t+using IDisposable guardrailScopeJ03 = AIConfigHandler\.BeginGuardrailRuntimeScope\(\);\n','',source)
   assert count==5,'Unreviewed J03 Shout scope count'
+  # J04 exact inverse: 2a191526 collapsed one six-setter publish and four six-setter clears
+  # into PromptRuntimeTargetBinding apply/clear. Only these exact blocks may differ.
+  j04_apply_new='\t\t\tAIConfigHandler.ApplyGuardrailRuntimeTarget(MyBehavior.CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));\n'
+  j04_apply_old=('\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);\n'
+   '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetHero(targetHeroId);\n'
+   '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacterId);\n'
+   '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacterId);\n'
+   '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");\n'
+   '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);\n')
+  assert source.count(j04_apply_new)==1,'Unreviewed J04 Shout target apply';source=source.replace(j04_apply_new,j04_apply_old,1)
+  def j04_clear(m):
+   i=m.group(1);return ''.join(i+'AIConfigHandler.SetGuardrailRuntimeTarget'+x+'\n' for x in ('Kingdom("");','Hero("");','Character("");','Troop("");','UnnamedRank("");','AgentIndex(-1);'))
+  source,count=re.subn(r'(?m)^(\t+)AIConfigHandler\.ClearGuardrailRuntimeTarget\(\);\n',j04_clear,source)
+  assert count==4,'Unreviewed J04 Shout target clear count'
+  j04_const_new='	public const string PersistentAdpDebtPostprocessRuleId = PromptPreprocessRuleIdAssembler.PersistentAdpDebtRuleId;'
+  j04_const_old='	public const string PersistentAdpDebtPostprocessRuleId = "persistent_adp_debt";'
+  assert source.count(j04_const_new)==1,'Unreviewed J04 Shout debt rule id';source=source.replace(j04_const_new,j04_const_old,1)
  if path=='CourierDeliveryBehavior.cs':
   prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tools/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
   source=prompt.restore(source)
