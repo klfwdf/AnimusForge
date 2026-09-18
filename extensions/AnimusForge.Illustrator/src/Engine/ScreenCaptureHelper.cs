@@ -1217,7 +1217,7 @@ namespace AnimusForge.Illustrator.Engine
         public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (hero == null) return null;
-            string heroName = string.Empty;
+            string heroName = hero?.Name?.ToString() ?? hero?.StringId ?? string.Empty;
             try
             {
                 string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
@@ -1227,13 +1227,14 @@ namespace AnimusForge.Illustrator.Engine
                         if (appearance != null)
                         {
                             ApplyAppearance(cw, appearance);
+                            if (!string.IsNullOrWhiteSpace(equipmentCodeOverride))
+                                cw.EquipmentCode = equipmentCodeOverride;
                             return;
                         }
                         var character = hero.CharacterObject ?? throw new InvalidOperationException("Hero character is unavailable.");
                         var equipment = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
                             ? Equipment.CreateFromEquipmentCode(equipmentCodeOverride)
                             : (useCivilian ? hero.CivilianEquipment : hero.BattleEquipment);
-                        heroName = hero.Name?.ToString() ?? hero.StringId;
                         cw.BodyProperties = character.GetBodyProperties(equipment ?? character.Equipment, -1).ToString();
                         cw.IsFemale = hero.IsFemale;
                         cw.Race = character.Race;
@@ -1250,16 +1251,6 @@ namespace AnimusForge.Illustrator.Engine
                         }
                         cw.ArmorColor1 = hero.MapFaction?.Color ?? 0;
                         cw.ArmorColor2 = hero.MapFaction?.Color2 ?? 0;
-                        if (appearance != null)
-                        {
-                            cw.EquipmentCode = appearance.EquipmentCode;
-                            cw.BodyProperties = appearance.BodyProperties;
-                            cw.BannerCodeText = appearance.BannerCode ?? string.Empty;
-                            cw.ArmorColor1 = appearance.Color1;
-                            cw.ArmorColor2 = appearance.Color2;
-                            cw.Race = appearance.Race;
-                            cw.IsFemale = appearance.IsFemale;
-                        }
                         cw.IsVisible = true;
                     }
                 }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
@@ -1287,7 +1278,7 @@ namespace AnimusForge.Illustrator.Engine
         public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 512, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (character == null) return null;
-            string charName = string.Empty;
+            string charName = character?.Name?.ToString() ?? character?.StringId ?? string.Empty;
             try
             {
                 string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
@@ -1297,12 +1288,13 @@ namespace AnimusForge.Illustrator.Engine
                         if (appearance != null)
                         {
                             ApplyAppearance(cw, appearance);
+                            if (!string.IsNullOrWhiteSpace(equipmentCodeOverride))
+                                cw.EquipmentCode = equipmentCodeOverride;
                             return;
                         }
                         var equipment = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
                             ? Equipment.CreateFromEquipmentCode(equipmentCodeOverride)
                             : (character.Equipment ?? character.FirstBattleEquipment);
-                        charName = character.Name?.ToString() ?? character.StringId;
                         // 优先使用会话在场 Agent 的真实 BodyProperties（劫匪等随机 NPC 的实际脸），
                         // 否则退回兵种模板体型（模板脸型范围内重新随机）
                         cw.BodyProperties = !string.IsNullOrWhiteSpace(bodyProperties)
@@ -1316,16 +1308,6 @@ namespace AnimusForge.Illustrator.Engine
                         if (!string.IsNullOrEmpty(equipmentCode))
                         {
                             cw.EquipmentCode = equipmentCode;
-                        }
-                        if (appearance != null)
-                        {
-                            cw.EquipmentCode = appearance.EquipmentCode;
-                            cw.BodyProperties = appearance.BodyProperties;
-                            cw.BannerCodeText = appearance.BannerCode ?? string.Empty;
-                            cw.ArmorColor1 = appearance.Color1;
-                            cw.ArmorColor2 = appearance.Color2;
-                            cw.Race = appearance.Race;
-                            cw.IsFemale = appearance.IsFemale;
                         }
                         cw.IsVisible = true;
                     }
@@ -1362,6 +1344,7 @@ namespace AnimusForge.Illustrator.Engine
             widget.ArmorColor2 = appearance.Color2;
             widget.Race = appearance.Race;
             widget.IsFemale = appearance.IsFemale;
+            widget.StanceIndex = 0;
             widget.IsVisible = true;
         }
 
