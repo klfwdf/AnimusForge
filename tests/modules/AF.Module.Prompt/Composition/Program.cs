@@ -1,0 +1,137 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AnimusForge;
+
+// Contract for the J04a Composition owners. These compile the production files directly;
+// behaviors below are the legacy MyBehavior semantics that must survive the extraction.
+internal static class Program
+{
+    private static int _checks;
+
+    private static void Check(bool condition, string message)
+    {
+        _checks++;
+        if (!condition) throw new Exception("FAIL: " + message);
+    }
+
+    private static GuardrailRuleHit Hit(string id, int priority = 0, float score = 0f)
+        => new GuardrailRuleHit { RuleId = id, Priority = priority, Score = score };
+
+    private static void Main()
+    {
+        RuleIdPolicy();
+        StickyCarry();
+        TopicRouter();
+        Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void RuleIdPolicy()
+    {
+        var set = PromptRuleIdPolicy.BuildRuleIdSet(new[] { " Duel ", "", null, "reward", "DUEL" });
+        Check(set.Count == 2 && set.Contains("duel") && set.Contains("REWARD"), "rule-id set trims, drops blanks, case-insensitive");
+        Check(PromptRuleIdPolicy.BuildRuleIdSet(null).Count == 0, "null enumerable yields empty set");
+        Check(PromptRuleIdPolicy.IsExcluded(set, " duel "), "excluded lookup trims");
+        Check(!PromptRuleIdPolicy.IsExcluded(set, "loan") && !PromptRuleIdPolicy.IsExcluded(null, "duel") && !PromptRuleIdPolicy.IsExcluded(set, " "), "excluded negative cases");
+
+        var limited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        PromptRuleIdPolicy.AddPlayerPartyTradeLimitedExclusions(limited);
+        Check(limited.SetEquals(new[] { "loan", "kingdom_agenda", "diplomacy", "party_transfer" }), "companion/family exclusions are exactly the legacy four");
+        PromptRuleIdPolicy.AddPlayerPartyTradeLimitedExclusions(null);
+        var resident = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        PromptRuleIdPolicy.AddPreprocessOnlyResidentRuleExclusions(resident);
+        Check(resident.SetEquals(new[] { "noble_deference" }), "preprocess-only resident rule is noble_deference");
+
+        Check(PromptRuleIdPolicy.IsBuiltInRuleIdForExtraInjection(" Reward ") && !PromptRuleIdPolicy.IsBuiltInRuleIdForExtraInjection("marriage"), "built-in ids for extra injection");
+        var normalized = PromptRuleIdPolicy.NormalizePreselectedRuleIds(new[] { " Marriage", "duel", "MARRIAGE", null, "  " });
+        Check(normalized.SequenceEqual(new[] { "marriage", "duel" }), "normalization lower-cases, dedupes, keeps first order");
+        Check(PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(true, null), "kingdom_service hit includes resident kingdoms");
+        Check(PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(false, new[] { "reward", "Kingdom_Vassalage" }), "kingdom_vassalage preselection includes resident kingdoms");
+        Check(!PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(false, new[] { "reward" }), "unrelated preselection excludes resident kingdoms");
+        foreach (string gated in new[] { "kingdom_vassalage", "diplomacy", "world_diplomacy_discussion", "kingdom_agenda" })
+            Check(PromptRuleIdPolicy.IsRuntimeGatedPreprocessRuleId(" " + gated.ToUpperInvariant() + " "), "runtime gated: " + gated);
+        Check(!PromptRuleIdPolicy.IsRuntimeGatedPreprocessRuleId("kingdom_service"), "kingdom_service is not runtime gated");
+
+        var ordered = PromptRuleIdPolicy.OrderPreprocessHitIds(new[] { Hit("Loan", 1, 0.9f), null, Hit(" ", 9), Hit("duel", 5, 0.1f), Hit("REWARD", 5, 0.7f), Hit("loan", 1, 0.95f) });
+        Check(ordered.SequenceEqual(new[] { "reward", "duel", "loan" }), "courier preprocess ordering: priority desc, score desc, distinct lower-case");
+        Check(PromptRuleIdPolicy.OrderPreprocessHitIds(null).Count == 0, "null hits order to empty");
+
+        var excluded = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "loan" });
+        var aux = PromptRuleIdPolicy.CollectAuxiliaryHitIds(new[] { Hit("Marriage", 9), Hit("loan", 8), Hit("duel", 1), Hit("MARRIAGE", 0), null }, excluded);
+        Check(aux.SequenceEqual(new[] { "marriage", "duel" }), "auxiliary hits keep router order, drop excluded and duplicates");
+        PromptRuleIdPolicy.MergeForcedHitIds(aux, new[] { "DUEL", "reward" });
+        Check(aux.SequenceEqual(new[] { "marriage", "duel", "reward" }), "forced merge appends new ids only");
+        PromptRuleIdPolicy.MergeForcedHitIds(null, new[] { "x" });
+        PromptRuleIdPolicy.MergeForcedHitIds(aux, null);
+        Check(aux.Count == 3, "null merge arguments are no-ops");
+    }
+
+    private static void StickyCarry()
+    {
+        Check(BuiltInRuleStickyCarry.IsShortAck("好的") && BuiltInRuleStickyCarry.IsShortAck("我选雇佣兵") && BuiltInRuleStickyCarry.IsShortAck(" 继续 "), "short acknowledgements");
+        Check(!BuiltInRuleStickyCarry.IsShortAck("") && !BuiltInRuleStickyCarry.IsShortAck("我想和你谈谈关于城堡的事情，还有很多其他细节"), "long or empty input is not a short ack");
+        Check(BuiltInRuleStickyCarry.TurnLimit("Duel") == 2 && BuiltInRuleStickyCarry.TurnLimit("reward") == 2 && BuiltInRuleStickyCarry.TurnLimit("loan") == 3 && BuiltInRuleStickyCarry.TurnLimit("marriage") == 0, "turn limits");
+        Check(BuiltInRuleStickyCarry.ResolveTargetKey(" Hero_A ", "char", "heroB") == "hero_a", "hero id wins");
+        Check(BuiltInRuleStickyCarry.ResolveTargetKey("", "Char_1", "heroB") == "char_1", "character id second");
+        Check(BuiltInRuleStickyCarry.ResolveTargetKey(null, " ", "HeroB") == "herob", "character hero id third");
+        Check(BuiltInRuleStickyCarry.ResolveTargetKey(null, null, null) == "", "no ids yields empty key");
+
+        var carry = new BuiltInRuleStickyCarry();
+        Check(!carry.Prime("t1", false, false, false, out _) && carry.TargetKey == null, "no hits leave carry unset");
+        Check(carry.Prime("t1", true, false, true, out string primeLog) && primeLog.Contains("duel=2") && primeLog.Contains("loan=3") && primeLog.Contains("reward=0"), "prime sets per-topic rounds");
+        Check(!carry.TryConsume("t1", "我想聊点别的很长的话题啊啊啊啊啊啊啊啊啊啊啊", out _, out _, out _, out _) && carry.TargetKey == null, "non-ack input clears carry");
+        carry.Prime("t1", true, false, true, out _);
+        Check(!carry.TryConsume("t2", "好的", out _, out _, out _, out _) && carry.TargetKey == null, "target mismatch clears carry");
+        carry.Prime("t1", true, true, true, out _);
+        Check(carry.TryConsume("t1", "好的", out bool d1, out bool r1, out bool l1, out string log1) && d1 && r1 && l1 && log1.Contains("left=(1,1,2)"), "first ack consumes all three");
+        Check(carry.TryConsume("t1", "嗯", out bool d2, out bool r2, out bool l2, out _) && d2 && r2 && l2 && carry.DuelRoundsLeft == 0 && carry.LoanRoundsLeft == 1, "second ack consumes remaining");
+        Check(carry.TryConsume("t1", "是", out bool d3, out bool r3, out bool l3, out _) && !d3 && !r3 && l3 && carry.TargetKey == null, "third ack only loan, then auto-clear at zero");
+        Check(!carry.TryConsume("t1", "是", out _, out _, out _, out _), "exhausted carry returns false");
+        carry.Prime("t1", true, false, false, out _);
+        Check(!carry.Prime("", true, true, true, out _) && carry.TargetKey == null, "priming with empty key clears");
+        carry.Prime("t1", false, true, false, out _);
+        Check(!carry.Prime("t1", false, false, false, out _) && carry.RewardRoundsLeft == 2, "prime without hits keeps existing carry");
+        carry.Clear();
+        Check(carry.TargetKey == null && carry.RewardRoundsLeft == 0, "clear resets");
+    }
+
+    private static void TopicRouter()
+    {
+        var excluded = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "loan" });
+        var auxSet = new HashSet<string>(new[] { "duel", "loan" }, StringComparer.OrdinalIgnoreCase);
+        int evaluations = 0;
+        PromptTopicSemanticEvaluator evaluator = (string tag, out string kw, out float sc) => { evaluations++; kw = "kw:" + tag; sc = 0.42f; return tag == "reward"; };
+
+        var duel = PromptBuiltInTopicRouter.Route("duel", true, true, excluded, true, auxSet, evaluator);
+        Check(duel.Hit && duel.MatchedKeyword == "auxiliary_router" && duel.Score == 1f && duel.Describe() == "auxiliary_router@1.00", "auxiliary router hit is authoritative");
+        var reward = PromptBuiltInTopicRouter.Route("reward", true, true, excluded, true, auxSet, evaluator);
+        Check(!reward.Hit && reward.Describe() == "" && evaluations == 0, "auxiliary miss does not consult semantic evaluator");
+        var loan = PromptBuiltInTopicRouter.Route("loan", true, true, excluded, true, auxSet, evaluator);
+        Check(!loan.Hit, "excluded topic never hits even when router lists it");
+        var live = PromptBuiltInTopicRouter.Route("reward", true, true, excluded, false, null, evaluator);
+        Check(live.Hit && live.MatchedKeyword == "kw:reward" && Math.Abs(live.Score - 0.42f) < 1e-6 && live.Describe() == "kw:reward@0.42" && evaluations == 1, "live semantic path");
+        var disabled = PromptBuiltInTopicRouter.Route("reward", true, false, excluded, false, null, evaluator);
+        Check(!disabled.Hit && evaluations == 1, "disabled topic skips evaluation");
+        var suppressed = PromptBuiltInTopicRouter.Route("reward", false, true, excluded, false, null, evaluator);
+        Check(!suppressed.Hit && evaluations == 1, "suppressed preprocess skips evaluation");
+        var noEval = PromptBuiltInTopicRouter.Route("reward", true, true, excluded, false, null, null);
+        Check(!noEval.Hit && noEval.MatchedKeyword == "", "missing evaluator is a miss");
+
+        var route = PromptBuiltInTopicRouter.Route("duel", true, true, excluded, false, null, evaluator);
+        Check(!route.Hit && Math.Abs(route.Score - 0.42f) < 1e-6, "duel live miss before sticky keeps its evaluated score");
+        PromptBuiltInTopicRouter.ApplyStickyFallback(ref route, true, true, excluded, "duel");
+        Check(route.Hit && route.MatchedKeyword == "sticky" && Math.Abs(route.Score - 0.42f) < 1e-6, "sticky fallback promotes carry and keeps max(score, 0.18)");
+        var lowRoute = default(PromptTopicRoute);
+        PromptBuiltInTopicRouter.ApplyStickyFallback(ref lowRoute, true, true, excluded, "duel");
+        Check(lowRoute.Hit && lowRoute.Score == 0.18f && lowRoute.Describe() == "sticky@0.18", "sticky floor score is 0.18");
+        var auxRoute = PromptBuiltInTopicRouter.Route("duel", true, true, excluded, false, null, evaluator);
+        PromptBuiltInTopicRouter.ApplyStickyFallback(ref auxRoute, false, true, excluded, "duel");
+        Check(!auxRoute.Hit, "sticky suppressed when router authoritative");
+        var loanRoute = default(PromptTopicRoute);
+        PromptBuiltInTopicRouter.ApplyStickyFallback(ref loanRoute, true, true, excluded, "loan");
+        Check(!loanRoute.Hit, "sticky never resurrects an excluded topic");
+        var already = new PromptTopicRoute { Hit = true, MatchedKeyword = "kw", Score = 0.9f };
+        PromptBuiltInTopicRouter.ApplyStickyFallback(ref already, true, true, excluded, "duel");
+        Check(already.MatchedKeyword == "kw" && already.Score == 0.9f, "existing hit keeps its own evidence");
+    }
+}
