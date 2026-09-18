@@ -9,7 +9,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="Stubs.cs" />
     <Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
+    <Compile Include="../../../../PreprocessFormatException.cs" Link="PreprocessFormatException.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptTopicRoutingStage.cs" Link="PromptTopicRoutingStage.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleIdPolicy.cs" Link="PromptRuleIdPolicy.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/BuiltInRuleStickyCarry.cs" Link="BuiltInRuleStickyCarry.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptBuiltInTopicRouter.cs" Link="PromptBuiltInTopicRouter.cs" />
