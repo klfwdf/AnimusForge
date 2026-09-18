@@ -192,6 +192,14 @@ internal static class Program
         Check(evalCache.TryGet("target-a", 1, out cached) && cached == "old", "late evaluation cannot replace current entry");
         evalCache.Clear();
         Check(!evalCache.TryGet("target-a", 1, out _), "reload clears derived evaluation");
+        var derived = new PromptRevisionedDerivedCache<string>();
+        long liveRevision = 1;
+        Check(derived.GetOrBuild(1, () => liveRevision, () => "first") == "first", "derived value built for current revision");
+        Check(derived.GetOrBuild(1, () => liveRevision, () => throw new Exception("unnecessary rebuild")) == "first", "same revision reuses derived value");
+        liveRevision = 2;
+        Check(derived.GetOrBuild(2, () => liveRevision, () => "second") == "second", "new revision rebuilds derived value");
+        Check(derived.GetOrBuild(1, () => liveRevision, () => "late-old") == "late-old", "old caller retains its local result");
+        Check(derived.GetOrBuild(2, () => liveRevision, () => throw new Exception("stale result overwrote live cache")) == "second", "late old result cannot replace current cache");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

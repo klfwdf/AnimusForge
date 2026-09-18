@@ -282,11 +282,10 @@ public static class AIConfigHandler
 	private static long _guardrailWarmupVersion = -1L;
 
 
-	private static readonly object _preprocessExcludedPromptCacheLock = new object();
-
-	private static long _preprocessExcludedPromptCacheVersion = -1L;
-
-	private static List<PreprocessExcludedPromptEntry> _preprocessExcludedPromptCache = new List<PreprocessExcludedPromptEntry>();
+	private static readonly PromptRevisionedDerivedCache<Dictionary<string, GuardrailRulePromptConfig>> _ruleRegistryCache =
+		new PromptRevisionedDerivedCache<Dictionary<string, GuardrailRulePromptConfig>>();
+	private static readonly PromptRevisionedDerivedCache<List<PreprocessExcludedPromptEntry>> _preprocessExcludedPromptCache =
+		new PromptRevisionedDerivedCache<List<PreprocessExcludedPromptEntry>>();
 
 
 	private static readonly PromptRetrievalContextSlot<string> _guardrailSemanticRuntimeContext = PromptRetrievalContextOwner.Semantic;
@@ -2203,8 +2202,13 @@ public static class AIConfigHandler
 	private static string NormalizeRuleCode(string code, string id, string label = null) =>
 		PromptRuleRegistry.NormalizeRuleCode(code, id, label);
 
-	private static Dictionary<string, GuardrailRulePromptConfig> BuildRulePromptRegistry() =>
-		PromptRuleRegistry.Build(_guardrail);
+	private static Dictionary<string, GuardrailRulePromptConfig> BuildRulePromptRegistry()
+	{
+		var revision = _promptConfiguration.Read();
+		return _ruleRegistryCache.GetOrBuild(revision.Revision,
+			() => _promptConfiguration.Capture().Revision,
+			() => PromptRuleRegistry.Build(revision.Value.Guardrail));
+	}
 
 	private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()
 	{
@@ -3389,17 +3393,9 @@ public static class AIConfigHandler
 	private static List<PreprocessExcludedPromptEntry> GetConfiguredPreprocessExcludedPromptEntries()
 	{
 		long version = _promptConfiguration.Read().Revision;
-		if (Volatile.Read(ref _preprocessExcludedPromptCacheVersion) == version)
-		{
-			List<PreprocessExcludedPromptEntry> snapshot = _preprocessExcludedPromptCache;
-			if (snapshot != null)
-			{
-				return snapshot;
-			}
-		}
-		lock (_preprocessExcludedPromptCacheLock)
-		{
-			if (_preprocessExcludedPromptCacheVersion != version || _preprocessExcludedPromptCache == null)
+		return _preprocessExcludedPromptCache.GetOrBuild(version,
+			() => _promptConfiguration.Capture().Revision,
+			() =>
 			{
 				Dictionary<string, GuardrailRulePromptConfig> registry = BuildRulePromptRegistry();
 				IEnumerable<GuardrailRulePromptConfig> configuredRules = registry != null
@@ -3418,11 +3414,8 @@ public static class AIConfigHandler
 					.ThenByDescending((PreprocessExcludedPromptEntry entry) => entry.Priority)
 					.ThenBy((PreprocessExcludedPromptEntry entry) => entry.RuleId, StringComparer.OrdinalIgnoreCase)
 					.ToList();
-				_preprocessExcludedPromptCache = rebuilt;
-				Volatile.Write(ref _preprocessExcludedPromptCacheVersion, version);
-			}
-			return _preprocessExcludedPromptCache;
-		}
+				return rebuilt;
+			});
 	}
 
 	public static List<string> GetConfiguredEnabledGuardrailRuleIdsForExternal()
