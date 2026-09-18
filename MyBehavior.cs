@@ -1795,13 +1795,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _shownRecordStorage = new Dictionary<string, string>();
 
-	private string _ruleStickyTargetKey;
-
-	private int _ruleStickyDuelRoundsLeft;
-
-	private int _ruleStickyRewardRoundsLeft;
-
-	private int _ruleStickyLoanRoundsLeft;
+	private readonly BuiltInRuleStickyCarry _builtInRuleStickyCarry = new BuiltInRuleStickyCarry();
 
 	private bool _overlayQuickTalkDisableHooked;
 
@@ -2500,7 +2494,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ResetMemorySummaryMainThreadActions();
 			ResetTailPersistenceTransientState(reason);
 			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
-			ClearRuleStickyCarry();
+			_builtInRuleStickyCarry.Clear();
 			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryRunOwner.Reset();
 			ResetMemoryFailureNotices();
@@ -19838,32 +19832,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
-	private static bool IsShortAckForRuleFollowup(string input)
-	{
-		string text = (input ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (text.Length > 20)
-		{
-			return false;
-		}
-		string[] array = new string[17]
-		{
-			"好", "好的", "行", "可以", "同意", "确认", "就这样", "继续", "嗯", "是",
-			"对", "我选雇佣兵", "雇佣兵", "我选封臣", "封臣", "那就按这个", "那就这么办"
-		};
-		for (int i = 0; i < array.Length; i++)
-		{
-			if (ContainsIgnoreCase(text, array[i]))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private static bool IsNpcAskingForConfirmation(string npcText)
 	{
 		string text = StripActionTags(npcText ?? "").Trim();
@@ -19890,120 +19858,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static string ResolveRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
+	private static string ResolveBuiltInRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
 	{
-		string text = targetHero?.StringId ?? "";
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = targetCharacter?.StringId ?? "";
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = targetCharacter?.HeroObject?.StringId ?? "";
-		}
-		return (text ?? "").Trim().ToLowerInvariant();
-	}
-
-	private static int GetBuiltInRuleStickyTurnLimit(string ruleId)
-	{
-		switch ((ruleId ?? "").Trim().ToLowerInvariant())
-		{
-		case "duel":
-		case "reward":
-			return 2;
-		case "loan":
-			return 3;
-		default:
-			return 0;
-		}
-	}
-
-	private void ClearRuleStickyCarry()
-	{
-		_ruleStickyTargetKey = null;
-		_ruleStickyDuelRoundsLeft = 0;
-		_ruleStickyRewardRoundsLeft = 0;
-		_ruleStickyLoanRoundsLeft = 0;
-	}
-
-	private bool TryConsumeRuleStickyCarry(Hero targetHero, CharacterObject targetCharacter, string playerInput, out bool duel, out bool reward, out bool loan)
-	{
-		duel = false;
-		reward = false;
-		loan = false;
-		string text = ResolveRuleStickyTargetKey(targetHero, targetCharacter);
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(_ruleStickyTargetKey) || (_ruleStickyDuelRoundsLeft <= 0 && _ruleStickyRewardRoundsLeft <= 0 && _ruleStickyLoanRoundsLeft <= 0))
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (!string.Equals(_ruleStickyTargetKey, text, StringComparison.Ordinal))
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (!IsShortAckForRuleFollowup(playerInput))
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (_ruleStickyDuelRoundsLeft > 0)
-		{
-			duel = true;
-			_ruleStickyDuelRoundsLeft--;
-		}
-		if (_ruleStickyRewardRoundsLeft > 0)
-		{
-			reward = true;
-			_ruleStickyRewardRoundsLeft--;
-		}
-		if (_ruleStickyLoanRoundsLeft > 0)
-		{
-			loan = true;
-			_ruleStickyLoanRoundsLeft--;
-		}
-		if (!duel && !reward && !loan)
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (_ruleStickyDuelRoundsLeft <= 0 && _ruleStickyRewardRoundsLeft <= 0 && _ruleStickyLoanRoundsLeft <= 0)
-		{
-			ClearRuleStickyCarry();
-		}
-		try
-		{
-			Logger.Log("GuardrailSemantic", $"builtin_rule_sticky_consume target={text} duel={duel} reward={reward} loan={loan} left=({_ruleStickyDuelRoundsLeft},{_ruleStickyRewardRoundsLeft},{_ruleStickyLoanRoundsLeft})");
-		}
-		catch
-		{
-		}
-		return true;
-	}
-
-	private void UpdateRuleStickyCarryFromHits(Hero targetHero, CharacterObject targetCharacter, bool duel, bool reward, bool loan)
-	{
-		string text = ResolveRuleStickyTargetKey(targetHero, targetCharacter);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			ClearRuleStickyCarry();
-			return;
-		}
-		if (!(duel || reward || loan))
-		{
-			return;
-		}
-		_ruleStickyTargetKey = text;
-		_ruleStickyDuelRoundsLeft = (duel ? GetBuiltInRuleStickyTurnLimit("duel") : 0);
-		_ruleStickyRewardRoundsLeft = (reward ? GetBuiltInRuleStickyTurnLimit("reward") : 0);
-		_ruleStickyLoanRoundsLeft = (loan ? GetBuiltInRuleStickyTurnLimit("loan") : 0);
-		try
-		{
-			Logger.Log("GuardrailSemantic", $"builtin_rule_sticky_prime target={text} duel={_ruleStickyDuelRoundsLeft} reward={_ruleStickyRewardRoundsLeft} loan={_ruleStickyLoanRoundsLeft}");
-		}
-		catch
-		{
-		}
+		return BuiltInRuleStickyCarry.ResolveTargetKey(targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId);
 	}
 
 	public void OnEngineTick()
@@ -28480,31 +28337,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return ResolveRuleTargetKey(targetHero, targetCharacter, targetAgentIndex);
 	}
 
-	private static HashSet<string> BuildPromptRuleIdSet(IEnumerable<string> ruleIds)
-	{
-		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			foreach (string ruleId in ruleIds ?? Enumerable.Empty<string>())
-			{
-				string text = (ruleId ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					set.Add(text);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return set;
-	}
-
-	private static bool IsPromptRuleExcluded(HashSet<string> excludedRuleIds, string ruleId)
-	{
-		return excludedRuleIds != null && !string.IsNullOrWhiteSpace(ruleId) && excludedRuleIds.Contains(ruleId.Trim());
-	}
-
 	private static void AddPlayerCompanionOrFamilyRuleExclusionsForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		if (excludedRuleIds == null)
@@ -28514,11 +28346,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
 		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero))
 		{
-			excludedRuleIds.Add("loan");
-			excludedRuleIds.Add("kingdom_agenda");
-			excludedRuleIds.Add("diplomacy");
-			excludedRuleIds.Add("party_transfer");
-			return;
+			PromptRuleIdPolicy.AddPlayerPartyTradeLimitedExclusions(excludedRuleIds);
 		}
 	}
 
@@ -28567,80 +28395,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			excludedRuleIds.Add("scene_mechanism_actions");
 		}
-	}
-
-	private static void AddPreprocessOnlyResidentRuleExclusions(HashSet<string> excludedRuleIds)
-	{
-		if (excludedRuleIds == null)
-		{
-			return;
-		}
-		excludedRuleIds.Add("noble_deference");
-	}
-
-	private static bool IsBuiltInPromptRuleIdForExtraInjection(string ruleId)
-	{
-		string id = (ruleId ?? "").Trim().ToLowerInvariant();
-		return id == "duel" || id == "reward" || id == "loan" || id == "surroundings";
-	}
-
-	private static List<string> NormalizePreselectedPromptRuleIds(IEnumerable<string> ruleIds)
-	{
-		List<string> result = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			foreach (string ruleId in ruleIds ?? Enumerable.Empty<string>())
-			{
-				string id = (ruleId ?? "").Trim().ToLowerInvariant();
-				if (!string.IsNullOrWhiteSpace(id) && seen.Add(id))
-				{
-					result.Add(id);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return result;
-	}
-
-	private static bool ShouldIncludeResidentKingdomEntities(bool kingdomServiceHit, IEnumerable<string> preselectedRuleIds)
-	{
-		if (kingdomServiceHit)
-		{
-			return true;
-		}
-		try
-		{
-			foreach (string ruleId in preselectedRuleIds ?? Enumerable.Empty<string>())
-			{
-				if (IsKingdomEntityPreprocessRuleId(ruleId))
-				{
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
-
-	private static bool IsKingdomEntityPreprocessRuleId(string ruleId)
-	{
-		string id = (ruleId ?? "").Trim();
-		return string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsRuntimeGatedPreprocessRuleId(string ruleId)
-	{
-		string id = (ruleId ?? "").Trim();
-		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string ResolvePreselectedRuleInstructionBody(string ruleId, string body, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -28720,7 +28474,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			List<string> ruleIds = NormalizePreselectedPromptRuleIds(preselectedRuleIds);
+			List<string> ruleIds = PromptRuleIdPolicy.NormalizePreselectedRuleIds(preselectedRuleIds);
 			if (ruleIds.Count == 0)
 			{
 				return "";
@@ -28734,11 +28488,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					break;
 				}
-				if (IsBuiltInPromptRuleIdForExtraInjection(ruleId) || IsPromptRuleExcluded(excludedRuleIdSet, ruleId))
+				if (PromptRuleIdPolicy.IsBuiltInRuleIdForExtraInjection(ruleId) || PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, ruleId))
 				{
 					continue;
 				}
-				if (IsRuntimeGatedPreprocessRuleId(ruleId)
+				if (PromptRuleIdPolicy.IsRuntimeGatedPreprocessRuleId(ruleId)
 					&& !AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(ruleId, hasAnyHero))
 				{
 					continue;
@@ -28772,7 +28526,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		string restrictedReferralHint = "";
 		bool encounterReleaseRuleSelected = false;
 		int num = AIConfigHandler.GuardrailRuleReturnCap;
-		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
+		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
@@ -28815,12 +28569,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 					text = ReplaceSingleRuleBlockBody(text, "npc_major_actions", npcMajorActionsRuntimeInstruction);
 				}
 			}
-			if (!IsPromptRuleExcluded(excludedRuleIdSet, "lords_hall_access"))
+			if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "lords_hall_access"))
 			{
 				// Always keep this rule present for the lords-hall gate guard, regardless of semantic hits.
 				text2 = (AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal() ?? "").Trim();
 			}
-			if (!IsPromptRuleExcluded(excludedRuleIdSet, "encounter_release_player"))
+			if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "encounter_release_player"))
 			{
 				encounterReleaseInstruction = (LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, encounterReleaseRuleSelected) ?? "").Trim();
 			}
@@ -28867,7 +28621,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			text = string.IsNullOrWhiteSpace(text) ? restrictedReferralHint : (text.TrimEnd() + Environment.NewLine + restrictedReferralHint);
 		}
-		if (!IsPromptRuleExcluded(excludedRuleIdSet, "scene_mechanism_actions") && IsSceneFollowingAgentForRules(targetAgentIndex))
+		if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "scene_mechanism_actions") && IsSceneFollowingAgentForRules(targetAgentIndex))
 		{
 			text = ReplaceSceneMechanismRuleForFollowing(text);
 		}
@@ -28939,7 +28693,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (IsPromptRuleExcluded(excludedRuleIdSet, id))
+		if (PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, id))
 		{
 			return true;
 		}
@@ -29237,12 +28991,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
+			HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 			AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 			AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 			StringBuilder stringBuilder = new StringBuilder();
-			if (useDuelContext && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
+			if (useDuelContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "duel"))
 			{
 				if (isQualified)
 				{
@@ -29262,7 +29016,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
 				}
 			}
-			if (AIConfigHandler.RewardEnabled && useRewardContext && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
+			if (AIConfigHandler.RewardEnabled && useRewardContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward"))
 			{
 				string text = "";
 				if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
@@ -29289,7 +29043,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					AppendRuleBlock(stringBuilder, "duel_stake", body);
 				}
 			}
-			if (AIConfigHandler.LoanEnabled && isLoanContext && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
+			if (AIConfigHandler.LoanEnabled && isLoanContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan"))
 			{
 				bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
 				string text2 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
@@ -29299,12 +29053,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				AppendRuleBlock(stringBuilder, "loan", text2);
 			}
-			if (AIConfigHandler.SurroundingsEnabled && isSurroundingsContext && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
+			if (AIConfigHandler.SurroundingsEnabled && isSurroundingsContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "surroundings"))
 			{
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
 			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds);
-			if (worldMapPartyCommandContext && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command") && (string.IsNullOrWhiteSpace(text3) || text3.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0) && stringBuilder.ToString().IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0)
+			if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command") && (string.IsNullOrWhiteSpace(text3) || text3.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0) && stringBuilder.ToString().IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0)
 			{
 				string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
 				if (string.IsNullOrWhiteSpace(worldMapInstruction))
@@ -29317,7 +29071,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
 				bool flag13 = stringBuilder.ToString().IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
-				if (AIConfigHandler.RewardEnabled && !flag12 && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
+				if (AIConfigHandler.RewardEnabled && !flag12 && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward"))
 				{
 					string rewardText = "";
 					if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
@@ -29342,7 +29096,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 						AppendRuleBlock(stringBuilder, "reward", rewardText);
 					}
 				}
-				if (AIConfigHandler.LoanEnabled && !flag13 && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
+				if (AIConfigHandler.LoanEnabled && !flag13 && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan"))
 				{
 					bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
 					string text5 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
@@ -30652,11 +30406,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<string> result = new List<string>();
 		mentionedEntities = new MentionedWorldEntities();
-		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
+		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet, targetAgentIndex);
-		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
+		PromptRuleIdPolicy.AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
 		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex))
 		{
 			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
@@ -30675,13 +30429,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
 			string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
 			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet, out mentionedEntities);
-			result = (hits ?? new List<GuardrailRuleHit>())
-				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
-				.OrderByDescending(x => x.Priority)
-				.ThenByDescending(x => x.Score)
-				.Select(x => x.RuleId.Trim().ToLowerInvariant())
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.ToList();
+			result = PromptRuleIdPolicy.OrderPreprocessHitIds(hits);
 			Logger.Log("CourierDelivery", "[Preprocess] targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " npcRecall=" + (string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on") + " hits=" + (result.Count == 0 ? "(none)" : string.Join(",", result)));
 			return result;
 		}
@@ -30815,7 +30563,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Stopwatch promptContextStageSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
 		LogShoutPromptContextStage("start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "inputLen=" + ((input ?? "").Length) + " extraLen=" + ((extraFact ?? "").Length) + " suppressDynamic=" + suppressDynamicRuleAndLore + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		HashSet<string> explicitExcludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
+		HashSet<string> explicitExcludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 		HashSet<string> excludedRuleIdSet = new HashSet<string>(explicitExcludedRuleIdSet, StringComparer.OrdinalIgnoreCase);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
@@ -30824,7 +30572,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		// These are topics removed from the candidate list before routing. They are
 		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
 		bool completeRuntimeExcludedRuleIds = preprocessExcludedRuleIds == null;
-		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
+		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : PromptRuleIdPolicy.BuildRuleIdSet(preprocessExcludedRuleIds);
 		foreach (string excludedRuleId in explicitExcludedRuleIdSet)
 		{
 			if (!string.IsNullOrWhiteSpace(excludedRuleId))
@@ -30833,7 +30581,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
-		AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
+		PromptRuleIdPolicy.AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
@@ -30912,12 +30660,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				List<GuardrailRuleHit> auxiliaryHits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, true, preprocessExcludedRuleIdSet, out var auxiliaryMentionedEntities);
 				directPreprocessMentionedEntities.Merge(auxiliaryMentionedEntities);
-				auxiliaryRuleHitIds = (auxiliaryHits ?? new List<GuardrailRuleHit>())
-					.Where((GuardrailRuleHit x) => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
-					.Select((GuardrailRuleHit x) => x.RuleId.Trim().ToLowerInvariant())
-					.Where((string x) => !string.IsNullOrWhiteSpace(x) && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
-					.Distinct(StringComparer.OrdinalIgnoreCase)
-					.ToList();
+				auxiliaryRuleHitIds = PromptRuleIdPolicy.CollectAuxiliaryHitIds(auxiliaryHits, preprocessExcludedRuleIdSet);
 				auxiliaryRuleHitIdSet = new HashSet<string>(auxiliaryRuleHitIds, StringComparer.OrdinalIgnoreCase);
 				useAuxiliaryRuleHitSet = true;
 				Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)));
@@ -30936,9 +30679,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		List<string> forcedRuleHitIds = bypassRulePreprocess
 			? new List<string>()
-			: NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
-				.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
-				.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
+			: PromptRuleIdPolicy.NormalizePreselectedRuleIds(forcedPreprocessRuleIds)
+				.Where((string x) => !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, x))
+				.Where((string x) => !PromptRuleIdPolicy.IsRuntimeGatedPreprocessRuleId(x)
 					|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
 				.ToList();
 		if (forcedRuleHitIds.Count > 0)
@@ -30947,188 +30690,37 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				auxiliaryRuleHitIds = new List<string>();
 			}
-			foreach (string ruleId in forcedRuleHitIds)
-			{
-				if (!auxiliaryRuleHitIds.Any((string x) => string.Equals((x ?? "").Trim(), ruleId, StringComparison.OrdinalIgnoreCase)))
-				{
-					auxiliaryRuleHitIds.Add(ruleId);
-				}
-			}
+			PromptRuleIdPolicy.MergeForcedHitIds(auxiliaryRuleHitIds, forcedRuleHitIds);
 			auxiliaryRuleHitIdSet = new HashSet<string>(auxiliaryRuleHitIds, StringComparer.OrdinalIgnoreCase);
 			useAuxiliaryRuleHitSet = true;
 			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + string.Join(",", forcedRuleHitIds));
 		}
 		LogShoutPromptContextStage("aux_preprocess_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "auxHits=" + ((auxiliaryRuleHitIds == null) ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds))) + " forcedHits=" + ((forcedRuleHitIds == null || forcedRuleHitIds.Count == 0) ? "(none)" : string.Join(",", forcedRuleHitIds)));
-		List<string> duelTriggerKeywords = AIConfigHandler.DuelTriggerKeywords;
-		bool flag = false;
-		string matchedKeyword = "";
-		float score = 0f;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
+		PromptTopicSemanticEvaluator liveSemantic = (string ruleTag, out string matchedKeyword, out float score) =>
+			AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, ruleTag, AIConfigHandler.GetGuardrailRuleInstruction(ruleTag), AIConfigHandler.GetGuardrailRuleKeywords(ruleTag), out matchedKeyword, out score, excludedRuleIdSet);
+		PromptTopicSemanticEvaluator duelSemantic = (string ruleTag, out string matchedKeyword, out float score) =>
+			AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, ruleTag, AIConfigHandler.DuelInstruction, AIConfigHandler.DuelTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
+		PromptTopicSemanticEvaluator rewardSemantic = (string ruleTag, out string matchedKeyword, out float score) =>
+			AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, ruleTag, AIConfigHandler.RewardInstruction, AIConfigHandler.RewardTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
+		PromptTopicSemanticEvaluator loanSemantic = (string ruleTag, out string matchedKeyword, out float score) =>
+			AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, ruleTag, AIConfigHandler.LoanInstruction, AIConfigHandler.LoanTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
+		PromptTopicSemanticEvaluator surroundingsSemantic = (string ruleTag, out string matchedKeyword, out float score) =>
+			AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, ruleTag, AIConfigHandler.SurroundingsInstruction, AIConfigHandler.SurroundingsTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
+		PromptTopicRoute duelRoute = PromptBuiltInTopicRouter.Route("duel", allowRulePreprocess, true, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, duelSemantic);
+		bool liveDuelSemanticHit = duelRoute.Hit;
+		PromptTopicRoute rewardRoute = PromptBuiltInTopicRouter.Route("reward", allowRulePreprocess, AIConfigHandler.RewardEnabled, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, rewardSemantic);
+		bool liveRewardSemanticHit = rewardRoute.Hit;
+		PromptTopicRoute loanRoute = PromptBuiltInTopicRouter.Route("loan", allowRulePreprocess, AIConfigHandler.LoanEnabled, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, loanSemantic);
+		bool liveLoanSemanticHit = loanRoute.Hit;
+		PromptTopicRoute surroundingsRoute = PromptBuiltInTopicRouter.Route("surroundings", allowRulePreprocess, AIConfigHandler.SurroundingsEnabled, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, surroundingsSemantic);
+		PromptTopicRoute kingdomServiceRoute = PromptBuiltInTopicRouter.Route("kingdom_service", allowRulePreprocess, true, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, liveSemantic);
+		PromptTopicRoute marriageRoute = PromptBuiltInTopicRouter.Route("marriage", allowRulePreprocess, true, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, liveSemantic);
+		PromptTopicRoute partyTransferRoute = PromptBuiltInTopicRouter.Route("party_transfer", allowRulePreprocess, true, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, liveSemantic);
+		PromptTopicRoute worldMapRoute = PromptBuiltInTopicRouter.Route("worldmap_party_command", allowRulePreprocess, true, excludedRuleIdSet, useAuxiliaryRuleHitSet, auxiliaryRuleHitIdSet, liveSemantic);
+		string builtInStickyTargetKey = ResolveBuiltInRuleStickyTargetKey(targetHero, targetCharacter);
+		if (allowRulePreprocess && _builtInRuleStickyCarry.TryConsume(builtInStickyTargetKey, input, out var carryDuel, out var carryReward, out var carryLoan, out string stickyConsumeLog))
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag = auxiliaryRuleHitIdSet.Contains("duel");
-				if (flag)
-				{
-					matchedKeyword = "auxiliary_router";
-					score = 1f;
-				}
-			}
-			else
-			{
-				flag = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
-			}
-		}
-		bool liveDuelSemanticHit = flag;
-		bool flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
-		List<string> rewardTriggerKeywords = AIConfigHandler.RewardTriggerKeywords;
-		bool flag3 = false;
-		string matchedKeyword2 = "";
-		float score2 = 0f;
-		if (allowRulePreprocess && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag3 = auxiliaryRuleHitIdSet.Contains("reward");
-				if (flag3)
-				{
-					matchedKeyword2 = "auxiliary_router";
-					score2 = 1f;
-				}
-			}
-			else
-			{
-				flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2, excludedRuleIdSet);
-			}
-		}
-		bool liveRewardSemanticHit = flag3;
-		List<string> loanTriggerKeywords = AIConfigHandler.LoanTriggerKeywords;
-		bool flag4 = false;
-		string matchedKeyword3 = "";
-		float score3 = 0f;
-		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag4 = auxiliaryRuleHitIdSet.Contains("loan");
-				if (flag4)
-				{
-					matchedKeyword3 = "auxiliary_router";
-					score3 = 1f;
-				}
-			}
-			else
-			{
-				flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3, excludedRuleIdSet);
-			}
-		}
-		bool liveLoanSemanticHit = flag4;
-		List<string> surroundingsTriggerKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
-		bool flag5 = false;
-		string matchedKeyword4 = "";
-		float score4 = 0f;
-		if (allowRulePreprocess && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag5 = auxiliaryRuleHitIdSet.Contains("surroundings");
-				if (flag5)
-				{
-					matchedKeyword4 = "auxiliary_router";
-					score4 = 1f;
-				}
-			}
-			else
-			{
-				flag5 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsTriggerKeywords, out matchedKeyword4, out score4, excludedRuleIdSet);
-			}
-		}
-		string guardrailRuleInstruction = AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service");
-		List<string> guardrailRuleKeywords = AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service");
-		string matchedKeyword5 = "";
-		float score5 = 0f;
-		bool flag6 = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag6 = auxiliaryRuleHitIdSet.Contains("kingdom_service");
-				if (flag6)
-				{
-					matchedKeyword5 = "auxiliary_router";
-					score5 = 1f;
-				}
-			}
-			else
-			{
-				flag6 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5, excludedRuleIdSet);
-			}
-		}
-		string guardrailMarriageInstruction = AIConfigHandler.GetGuardrailRuleInstruction("marriage");
-		List<string> guardrailMarriageKeywords = AIConfigHandler.GetGuardrailRuleKeywords("marriage");
-		string matchedKeyword6 = "";
-		float score6 = 0f;
-		bool marriageHit = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				marriageHit = auxiliaryRuleHitIdSet.Contains("marriage");
-				if (marriageHit)
-				{
-					matchedKeyword6 = "auxiliary_router";
-					score6 = 1f;
-				}
-			}
-			else
-			{
-				marriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6, excludedRuleIdSet);
-			}
-		}
-		string guardrailPartyTransferInstruction = AIConfigHandler.GetGuardrailRuleInstruction("party_transfer");
-		List<string> guardrailPartyTransferKeywords = AIConfigHandler.GetGuardrailRuleKeywords("party_transfer");
-		string matchedKeyword7 = "";
-		float score7 = 0f;
-		bool partyTransferHit = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				partyTransferHit = auxiliaryRuleHitIdSet.Contains("party_transfer");
-				if (partyTransferHit)
-				{
-					matchedKeyword7 = "auxiliary_router";
-					score7 = 1f;
-				}
-			}
-			else
-			{
-				partyTransferHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", guardrailPartyTransferInstruction, guardrailPartyTransferKeywords, out matchedKeyword7, out score7, excludedRuleIdSet);
-			}
-		}
-		string guardrailWorldMapInstruction = AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command");
-		List<string> guardrailWorldMapKeywords = AIConfigHandler.GetGuardrailRuleKeywords("worldmap_party_command");
-		string matchedKeyword8 = "";
-		float score8 = 0f;
-		bool worldMapPartyCommandHit = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				worldMapPartyCommandHit = auxiliaryRuleHitIdSet.Contains("worldmap_party_command");
-				if (worldMapPartyCommandHit)
-				{
-					matchedKeyword8 = "auxiliary_router";
-					score8 = 1f;
-				}
-			}
-			else
-			{
-				worldMapPartyCommandHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "worldmap_party_command", guardrailWorldMapInstruction, guardrailWorldMapKeywords, out matchedKeyword8, out score8, excludedRuleIdSet);
-			}
-		}
-		if (allowRulePreprocess && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
-		{
+			try { Logger.Log("GuardrailSemantic", stickyConsumeLog); } catch { }
 			// A completed auxiliary/preselected routing result is authoritative for this turn.
 			// A generic short acknowledgement must not resurrect a stale topic that the router omitted.
 			bool allowStickyFallback = !useAuxiliaryRuleHitSet;
@@ -31136,34 +30728,32 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("Logic", "[RuleInjectionDebug] stage=sticky_suppressed targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " carryDuel=" + carryDuel + " carryReward=" + carryReward + " carryLoan=" + carryLoan + " auxiliaryHits=" + ((auxiliaryRuleHitIds == null || auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)));
 			}
-			if (allowStickyFallback && !flag && carryDuel && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
-			{
-				flag = true;
-				matchedKeyword = "sticky";
-				score = Math.Max(score, 0.18f);
-			}
-			if (allowStickyFallback && !flag3 && carryReward && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
-			{
-				flag3 = true;
-				matchedKeyword2 = "sticky";
-				score2 = Math.Max(score2, 0.18f);
-			}
-			if (allowStickyFallback && !flag4 && carryLoan && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
-			{
-				flag4 = true;
-				matchedKeyword3 = "sticky";
-				score3 = Math.Max(score3, 0.18f);
-			}
+			PromptBuiltInTopicRouter.ApplyStickyFallback(ref duelRoute, allowStickyFallback, carryDuel, excludedRuleIdSet, "duel");
+			PromptBuiltInTopicRouter.ApplyStickyFallback(ref rewardRoute, allowStickyFallback, carryReward, excludedRuleIdSet, "reward");
+			PromptBuiltInTopicRouter.ApplyStickyFallback(ref loanRoute, allowStickyFallback, carryLoan, excludedRuleIdSet, "loan");
 		}
-		if (allowRulePreprocess)
+		if (allowRulePreprocess && _builtInRuleStickyCarry.Prime(builtInStickyTargetKey, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit, out string stickyPrimeLog))
 		{
-			UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
+			try { Logger.Log("GuardrailSemantic", stickyPrimeLog); } catch { }
 		}
+		bool flag = duelRoute.Hit;
+		bool flag3 = rewardRoute.Hit;
+		bool flag4 = loanRoute.Hit;
+		bool flag5 = surroundingsRoute.Hit;
+		bool flag6 = kingdomServiceRoute.Hit;
+		bool marriageHit = marriageRoute.Hit;
+		bool partyTransferHit = partyTransferRoute.Hit;
+		bool worldMapPartyCommandHit = worldMapRoute.Hit;
+		float score = duelRoute.Score;
+		float score2 = rewardRoute.Score;
+		float score3 = loanRoute.Score;
+		float score4 = surroundingsRoute.Score;
+		bool flag2;
 		flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
 		bool flag7 = flag3;
 		bool flag8 = flag4;
 		bool persistentAdpDebtPostprocess = false;
-		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
 		{
 			try
 			{
@@ -31184,14 +30774,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			value = AIConfigHandler.BuildGuardrailClarificationHint(input, flag, score, flag3, score2, flag4, score3, flag5, score4);
 		}
-		string text2 = (string.IsNullOrWhiteSpace(matchedKeyword) ? "" : $"{matchedKeyword}@{score:0.00}");
-		string text3 = (string.IsNullOrWhiteSpace(matchedKeyword2) ? "" : $"{matchedKeyword2}@{score2:0.00}");
-		string text4 = (string.IsNullOrWhiteSpace(matchedKeyword3) ? "" : $"{matchedKeyword3}@{score3:0.00}");
-		string text5 = (string.IsNullOrWhiteSpace(matchedKeyword4) ? "" : $"{matchedKeyword4}@{score4:0.00}");
-		string text6 = (string.IsNullOrWhiteSpace(matchedKeyword5) ? "" : $"{matchedKeyword5}@{score5:0.00}");
-		string text8 = (string.IsNullOrWhiteSpace(matchedKeyword6) ? "" : $"{matchedKeyword6}@{score6:0.00}");
-		string text9 = (string.IsNullOrWhiteSpace(matchedKeyword7) ? "" : $"{matchedKeyword7}@{score7:0.00}");
-		string text10 = (string.IsNullOrWhiteSpace(matchedKeyword8) ? "" : $"{matchedKeyword8}@{score8:0.00}");
+		string text2 = duelRoute.Describe();
+		string text3 = rewardRoute.Describe();
+		string text4 = loanRoute.Describe();
+		string text5 = surroundingsRoute.Describe();
+		string text6 = kingdomServiceRoute.Describe();
+		string text8 = marriageRoute.Describe();
+		string text9 = partyTransferRoute.Describe();
+		string text10 = worldMapRoute.Describe();
 		string text7 = targetHero?.Name?.ToString() ?? "某人";
 		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
@@ -31369,7 +30959,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
-		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
+		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
@@ -31406,7 +30996,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((value8b ?? "").Length) + " chars=" + stringBuilder.Length);
 		if (!suppressDynamicRuleAndLore)
 		{
-			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
+			bool includeResidentKingdomEntities = PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
 			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
 			bool includeResidentPlayerEntities = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
 			HashSet<string> entityRetrievalRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -31482,49 +31072,49 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			foreach (string ruleId in auxiliaryRuleHitIds)
 			{
-				if (!string.IsNullOrWhiteSpace(ruleId) && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, ruleId))
+				if (!string.IsNullOrWhiteSpace(ruleId) && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, ruleId))
 				{
 					preprocessRuleIds.Add(ruleId.Trim());
 				}
 			}
 		}
-		if (flag && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "duel"))
+		if (flag && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "duel"))
 		{
 			preprocessRuleIds.Add("duel");
 		}
-		if (flag3 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "reward"))
+		if (flag3 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "reward"))
 		{
 			preprocessRuleIds.Add("reward");
 		}
-		if (flag4 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
+		if (flag4 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan"))
 		{
 			preprocessRuleIds.Add("loan");
 		}
-		if (persistentAdpDebtPostprocess && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
+		if (persistentAdpDebtPostprocess && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "loan"))
 		{
 			preprocessRuleIds.Add(ShoutBehavior.PersistentAdpDebtPostprocessRuleId);
 		}
-		if (flag5 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "surroundings"))
+		if (flag5 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "surroundings"))
 		{
 			preprocessRuleIds.Add("surroundings");
 		}
-		if (flag6 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "kingdom_service"))
+		if (flag6 && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "kingdom_service"))
 		{
 			preprocessRuleIds.Add("kingdom_service");
 		}
-		if (marriageHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "marriage"))
+		if (marriageHit && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "marriage"))
 		{
 			preprocessRuleIds.Add("marriage");
 		}
-		if (partyTransferHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "party_transfer"))
+		if (partyTransferHit && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "party_transfer"))
 		{
 			preprocessRuleIds.Add("party_transfer");
 		}
-		if (worldMapPartyCommandHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "worldmap_party_command"))
+		if (worldMapPartyCommandHit && !PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "worldmap_party_command"))
 		{
 			preprocessRuleIds.Add("worldmap_party_command");
 		}
-		if (!IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "noble_gathering") && (value8?.IndexOf("【附加规则:noble_gathering】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0)
+		if (!PromptRuleIdPolicy.IsExcluded(preprocessExcludedRuleIdSet, "noble_gathering") && (value8?.IndexOf("【附加规则:noble_gathering】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0)
 		{
 			preprocessRuleIds.Add("noble_gathering");
 		}
