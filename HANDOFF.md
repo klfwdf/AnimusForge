@@ -1,3 +1,9 @@
+# 当前接续：J04f 完成，Native/Courier 执行位置已搬（2026-09-19，J04_PARTIAL）
+
+生产 `72f8d342`（Native）、`52247a51`（Courier），250 锚点地图两模式通过。共享 Prompt 构建拆为三个可调度步骤（Begin 游戏线程 / Routing 任意线程 / Complete 游戏线程），Native 经 `ShoutBehavior.NativePromptBuild.cs` 用主线程调度器 + 后台 slot 运行，Courier 经 `CourierDeliveryBehavior.PromptSchedule.cs` 用 owner 阶段 + `Task.Run` 运行，两者在每次线程跳转后重验 admission/run/source 与 generation；旧整段后台调用删除。Courier prompt 252/59 + 5 变异、Native 八组 runner、Scene/J03/Composition/BuildPhases/Consumers 契约全部复跑 PASS，Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误。**J04 剩 J04g（lore 后台化、规则指令段落化）与 J04h（验收）；Scene 五个调用点按总计划归 J10。** 实机/旧档/provider `NOT-RUN`；未推送。详见[J04f 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04f-receipt-20260919)与[总计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#modularization-master-plan-20260919)。
+
+## 以下为总计划入口
+
 # 当前入口：AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）
 
 用户要求按三份仓库 Skill 一次性写出整体拆分计划。计划位于[主台账总计划节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#modularization-master-plan-20260919)：基于源码 `d6824d9d` 的实际盘点（三大类方法簇统计、30 个 Saveable 文件、Harmony 密度、`Refactor/` 44 文件），给出 J04f–h → J05 Memory → J06 Knowledge → J07 Conversation/Native → J08 LLM 传输 → J09 Actions → J10 Scene/Courier → J11 制作组桥 → J12 Economy/Diplomacy/WorldMap → J13 其他领域（Weekly 首包）→ J14 public API（含用户授权的 Scene/Courier 开放）→ J15/J16/J17 结项，每包列真实入口坐标、目标 owner、切片与验收 runner。本节只是计划，不改变 J04_PARTIAL 状态，不授权推送/部署。下一执行切片为 J04f（Native/Courier 执行位置搬移）。

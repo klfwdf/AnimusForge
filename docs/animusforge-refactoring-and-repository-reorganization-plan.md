@@ -1,3 +1,32 @@
+<a id="j04f-receipt-20260919"></a>
+
+## J04f 回执：Native/Courier 执行位置已搬移（2026-09-19，J04_PARTIAL）
+
+**叠加于总计划与前两批回执；J04 仍未 OFFLINE_VERIFIED（剩 J04g/J04h）。** 生产 `72f8d342`（Native）、`52247a51`（Courier）；地图绑定 `52247a51`，250 锚点两模式通过。未推送、未 Stage/Deploy。
+
+### 已迁
+
+| 坐标（源码 `52247a51`） | 内容 |
+| --- | --- |
+| `MyBehavior.cs` `BeginSharedPromptBuild` / `RunSharedPromptRouting` / `CompleteSharedPromptBuild`（`internal`） | 共享构建拆为三个可调度步骤：步骤1 游戏线程捕获请求 + 排除列表；步骤2 任意线程话题路由 + mention 检索（`PromptRetrievalCapture` 预取）；步骤3 游戏线程段落捕获 + 纯装配 + 追加。旧 `BuildShoutPromptContextForExternalInternal` 变为三步顺序组合，Scene 八个调用点与静态门面行为不变 |
+| `ShoutBehavior.NativePromptBuild.cs` `BuildNativePromptContextScheduledAsync` | Native：`RunNativeConversationMainThreadFuncAsync("prompt_build_begin")` → 后台 slot（复用既有超时/迟到完成守卫，以 marker 实例占位）→ `RunNativeConversationMainThreadFuncAsync("prompt_build_complete")`；两次 `IsNativeConversationAdmissionCurrent` 重验、两次 `SaveRuntimeGuard.IsStale`。旧 `RunNativeConversationBackgroundPreprocessAsync(() => BuildShoutPromptContextForExternal(...))` 整段后台调用删除 |
+| `MyBehavior.cs` `BeginCourierRulePreprocess` / `RunCourierRulePreprocessRetrieval` | Courier 前处理同样拆为游戏线程捕获 + 任意线程检索；旧 `RunCourierRulePreprocessInternal` 变为顺序组合 |
+| `CourierDeliveryBehavior.PromptSchedule.cs` `BuildCourierPreparedPromptScheduledAsync` | Courier：owner 阶段（前处理请求）→ `Task.Run`（检索）→ owner 阶段（共享请求）→ `Task.Run`（路由）→ owner 阶段（段落/装配）；每个 owner 阶段重验 `IsCourierPromptRunCurrent` + `IsCourierPromptInputCurrent`。`PromptPreparation.cs:172` 的单个 `Task.Run(() => BuildCourierPreparedPrompt(input))` 删除 |
+
+### 验证（本机，全部退出码 0）
+
+- Courier prompt 252 / liveness 59；harness 桩改为断言每步线程位置（Begin/Complete 必须主线程，Retrieval/Routing 必须工作线程），Program 断言不变；五个变异（`worker_assembly`/`main_preprocess`/`skip_accept`/`wrong_direction`/`skip_source`）仍拒收，`main_preprocess` 已重定向到调度器；`source_review.py` 与 `liveness_review.py` 精确逆变换通过（新增 J04f hunk）。
+- Native 八组 runner（preparation 589 / admission 44 / completion 184 / pending 111 / history 852+27 / module submission / action dispatch / TTS 14）PASS；`GameLifetimeTests/source_parity.py` 新增 J04f 精确逆变换。
+- Scene parity 71 / queue 37 / lifetime 30、Courier history/owner-phase/commit、HeroAsset 67、J03 六契约、Composition 142、BuildPhases（改为三步形状，2 变异拒收）、ProductionConsumers（新增 Native/Courier 调度形状断言）PASS。
+- 原脚本 Debug + Release × 1.3/1.4/Bootstrap 六项 0 警告/0 错误。
+
+### 未完成
+
+- 步骤3 仍在游戏线程调用 `AIConfigHandler.GetLoreContext`（ONNX/lore 检索）与 `WorldEntityRetrievalService.BuildPromptContext`；lore 依赖步骤3 内合并后的 mentions，需先把 mentions 合并前移到步骤2 才能把 lore 也搬到后台（J04g 一并处理）。
+- `BuildTriggeredRuleInstructions` / `BuildExtraRuleInstructions` 未段落化（J04g）。
+- Scene 五个调用点未接三步调度（它们各自在 async 流程中，无 Native/Courier 那样的 owner 调度器；按总计划归 J10）。
+- 实机、旧档、真实 provider `NOT-RUN`。
+
 <a id="modularization-master-plan-20260919"></a>
 
 # AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）

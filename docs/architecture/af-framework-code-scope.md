@@ -1,3 +1,17 @@
+# 当前范围：J04f 完成，Native/Courier 执行位置已搬（2026-09-19，J04_PARTIAL）
+
+当前源码 `52247a51`，[代码地图](af-framework-code-map.json) 250 锚点两模式通过。唯一状态见[主台账 J04f 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04f-receipt-20260919)。
+
+| 责任 / 坐标 | 已迁与接线 | 仍在旧类 / 未覆盖 |
+| --- | --- | --- |
+| `MyBehavior.cs` `BeginSharedPromptBuild` / `RunSharedPromptRouting` / `CompleteSharedPromptBuild` | 三个可调度步骤；旧 builder 为其顺序组合 | 步骤3 内 `GetLoreContext` / `WorldEntityRetrievalService` 仍在游戏线程（J04g） |
+| `ShoutBehavior.NativePromptBuild.cs` | 主线程步骤1 → 后台 slot 步骤2 → 主线程步骤3，两次 admission + generation 重验 | — |
+| `CourierDeliveryBehavior.PromptSchedule.cs`；`MyBehavior.cs` `BeginCourierRulePreprocess` / `RunCourierRulePreprocessRetrieval` | owner 阶段 × 3 + `Task.Run` × 2，每阶段重验 run/source | — |
+| `Composition/PromptRetrievalCapture.cs` | 步骤2 预取 mentions；`PromptBuildPhases` 载体 | lore 预取未做 |
+| Scene 八个调用点 | 继续走顺序组合，行为不变 | 无 owner 调度器，J10 处理 |
+
+## 以下为 J04 第二批范围记录
+
 # 当前范围：J04 第二批切片 J04_PARTIAL（2026-09-19）
 
 当前源码 `d6824d9d`，[代码地图](af-framework-code-map.json) 241 锚点两模式通过。唯一状态与命令见[主台账 J04 第二批回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice2-20260919)。
