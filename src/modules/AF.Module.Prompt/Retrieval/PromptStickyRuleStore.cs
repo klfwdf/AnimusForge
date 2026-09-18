@@ -91,7 +91,9 @@ internal sealed class PromptStickyRuleStore
         lock (_gate)
         {
             if (revision != currentRevision()) return cap > 0 ? result.Take(cap).ToList() : result;
-            if (_revision != revision) { _byTarget.Clear(); _revision = revision; }
+            // Sticky is cross-call conversation state, not a configuration cache.
+            // Keep the target's carry across reload while rejecting late old workers.
+            if (_revision != revision) _revision = revision;
             _byTarget.TryGetValue(target, out var previous);
             var next = new List<State>();
             foreach (State state in previous ?? Enumerable.Empty<State>())
