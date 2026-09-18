@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "2f11b09e33eb8b6299beb444ee1cba04ee4d4c2c",
+  "sourceRevision": "e4f94429068af012dad29955afe7c6d2279c4fd4",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -2070,18 +2070,18 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "旧 getter/reload 与游戏、网络窄适配仍保留；部分评估编排仍在旧类",
-      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+      "fileSha256": "aa9db4b5f11478559b71a2a556b784314a6ece693c68a9c3f0dd6556d69fc735"
     },
     {
       "id": "j03.config.reload",
       "path": "AIConfigHandler.cs",
-      "start": 8301,
-      "end": 8301,
+      "start": 8269,
+      "end": 8269,
       "symbol": "public static void ReloadConfig()",
       "match": "exact",
       "status": "wired-boundary",
       "note": "旧签名转接 PromptConfigurationLoader 与 revisioned store",
-      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+      "fileSha256": "aa9db4b5f11478559b71a2a556b784314a6ece693c68a9c3f0dd6556d69fc735"
     },
     {
       "id": "j03.retrieval.intent",
@@ -2147,7 +2147,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "配置 revision 与请求上下文共同 pin；退出恢复父 scope",
-      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+      "fileSha256": "aa9db4b5f11478559b71a2a556b784314a6ece693c68a9c3f0dd6556d69fc735"
     },
     {
       "id": "j03.retrieval.rules.remaining",
@@ -2157,8 +2157,8 @@
       "symbol": "private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()",
       "match": "exact",
       "status": "remaining-adapter",
-      "note": "按目标资格过滤与游戏读取仍在旧类；评估编排/最终命中判断亦未全迁",
-      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+      "note": "按目标资格过滤与游戏读取仍在旧类；评估编排及 ONNX 调用未全迁",
+      "fileSha256": "aa9db4b5f11478559b71a2a556b784314a6ece693c68a9c3f0dd6556d69fc735"
     },
     {
       "id": "j03.retrieval.warmup.remaining",
@@ -2169,7 +2169,7 @@
       "match": "exact",
       "status": "remaining-adapter",
       "note": "已捕获 seed 后的 embedding 调用与门控保留；旧代迟到结果拒收",
-      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+      "fileSha256": "aa9db4b5f11478559b71a2a556b784314a6ece693c68a9c3f0dd6556d69fc735"
     },
     {
       "id": "j03.config.loader",
@@ -2311,8 +2311,19 @@
       "symbol": "private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)",
       "match": "exact",
       "status": "remaining-owner",
-      "note": "rerank 网络接缝、最终命中判定与评估编排尚在旧类",
-      "fileSha256": "66adc74e46d752c9d36d80fe2555ec7dc761ae942fd3ef82bd481f6078e195c9"
+      "note": "ONNX/辅助网络接缝、游戏资格与评估编排尚在旧类；最终命中纯算法已迁出",
+      "fileSha256": "aa9db4b5f11478559b71a2a556b784314a6ece693c68a9c3f0dd6556d69fc735"
+    },
+    {
+      "id": "j03.retrieval.final",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptRuleFinalRanking.cs",
+      "start": 30,
+      "end": 30,
+      "symbol": "internal static class PromptRuleFinalRanking",
+      "match": "exact",
+      "status": "owner",
+      "note": "最终候选优先、命中 cap、相对分数与诊断纯算法",
+      "fileSha256": "751067aa730c08b6e7200186d0b0d803220a56cca1eeec200135599ffe3021fc"
     }
   ]
 }
