@@ -1,3 +1,150 @@
+<a id="j03-delivery-20260918"></a>
+
+## J03 远端交付范围核实（2026-09-18）
+
+用户明确要求将当前完成内容全部推送；目标 `origin/codex/af-main-refactor-continuation-20260831`，fetch 后远端基线 `4ae94412fd23f8e20b20107bbe5f5f67acda3cc5`，本地代码/地图 HEAD `3c1ae5aa`，远端落后 52 提交且为本地祖先。本次将工作树中 HANDOFF 与本台账的 J03 规划/过程/最终验收增量一并提交，不遗漏源码或文档。此前实施阶段的“未推送”不是本次禁止交付指令；历史正文保留。
+
+已检查这 52 个提交新增可达的 164 个 blob：未命中受保护本地交接、PlayerExports、Stage、`.dotnet-cli-home/`、二进制/归档/日志路径或所检查的私钥/provider token/AWS key 模式；这是有限发布筛查，不是完整秘密审计。未跟踪 `.dotnet-cli-home/` 保持本地，不做清理或批量暂存。当前代码地图 working-tree 221 锚点 PASS，文档差异检查通过；沿用同源 J03 离线验收，不重跑产品构建，不声明实机、旧档或真实 provider 已验证。只普通快进推送当前分支，不推 main、不部署/Stage/打包；最终成功以推送退出码及远端 ref 与提交相等为准。
+
+<a id="j03-implementation-status-20260918"></a>
+
+## J03 实施现状：J03_OFFLINE_VERIFIED（2026-09-18）
+
+### 最终离线验收回执（生产 `e6c82d8d`；测试 `d1d3407a`）
+
+**本节取代下方所有 `PARTIAL / NOT_ACCEPTED` 的历史实施回执，仅限源码与离线验收。** 从起点 `602df8fa` 经意图检查点 `7fe79311`，`01dd8267` 在 `PromptConfigurationSnapshot.cs:7-49` 对六份模型发布时及兼容读取时作深拷贝，原有 public 签名及 JSON/资源身份不变，`AIConfigHandler.cs:113-118` 的旧 owner 热路径只借用内部视图，避免逐次 JSON 分配。真实六模型（含 `JObject`）18 项 JSON 身份、源修改/读者修改隔离通过；直接编译生产 loader/store/registry 的配置 36 项覆盖六文件缺失/损坏 fallback、磁盘覆盖顺序、同 ID 末项覆盖、并发 reload、异常默认换代、捕获旧 revision 稳定。生产规则命中入口 7 项验证命中与规则正文同代；去掉外层 pin 的变异编译成功、断言失败（预期退出码 1）。
+
+`AIConfigHandler.cs:36-43,4720-4883` 的 `PromptRuleEvaluationPorts` 是**仅内部、逐调用**的确定性资格/embedding/rerank/辅助结果接缝；普通游戏调用传 `null`，仍走原 ONNX/辅助网络、游戏资格和日志适配，无进程级全局测试 provider。实际提取并编译该生产方法及完整 Retrieval owner 的 22 项契约覆盖语义与辅助入口、辅助/重排失败回退、provider 异常、MCM/目标/资格/排除 cache key、缓存 hit、旧代晚结果不发布。session 调用、mission 所属线程 seed、RAG 完成回传及旧 worker 跨 reload 门控/缓存隔离均按生产 warmup 方法与 coordinator 执行。检索 owner 135 项另覆盖嵌套、异常、提前返回、真实 `Task.Yield()` 后的 scope 恢复、mentions 交付、80-key、私装超展示 cap、排序/原索引及 agent/settlement 隔离。
+
+具名消费者分别验收：My 实际提取 `BuildSettlementTransferRuntimeInstructionForExternal` 4 项（全量/展示 scope 与原授权顺序），Reward 实际提取三个候选方法并执行 Scene 原始 hero/merchant 候选片段 11 项（公私装备、候选 cap、授权全量、scope 隔离）；Scene/Native 实际提取两个角色包装方法 3 项验证同一 mentions 与 trade/party 标志交付，且原始 Native 调用处及 My/Reward/Scene/Policy 生产调用边界由 `ProductionConsumers/run.py` 逐条核对，三个断线变异均被断言拒绝（预期退出码 1）。Policy `PolicyHistoryRetrievalService.TryRetrieveDialogueByMentions` 在实际 1.4 生产程序集上以 `--policy-history-only` 通过 1115 项断言；原 source-wiring 契约不冒充整段游戏域可执行测试。Reward/My/Scene 的游戏物品/角色读取、Native 大方法及真实 provider 保留边界替身，实机另列未运行。
+
+代表性最终命令均退出码 0：`python -X utf8 -B tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py`（22）、`ProductionEntry/run.py`（7）、`ProductionMy/run.py`（4）、`ProductionReward/run.py`（11）、`ProductionSceneNative/run.py`（3）、`ProductionConsumers/run.py`（五类源码边界）；SDK 8.0.425 的 `dotnet build`/运行 `ProductionModels/PromptProductionModelsTests.csproj`（18）、`Configuration/PromptConfigurationLoaderTests.csproj`（36）与 `Retrieval/PromptCandidateSelectionTests.csproj`（135）。Policy 测试 `tools/PolicyEffectModule.ContractTests/bin/Release/net472/PolicyEffectModule.ContractTests.exe --assembly bin/Release/net472/AnimusForge.dll --policy-history-only`（1115）。Courier prompt 252/liveness 59/postprocess 39、Scene parity 71/queue 37/lifetime 30、Native preparation 589/admission 44/completion 184/pending 111/history 852及 `--native` 27、HeroAssetScope 67、PersistenceProfile 严格 runner，最后均退出码 0；fixture/game-domain 边界仍按各 runner 输出保留 `STUBBED`。旧机器硬编码 SDK 路径的几个 runner 仅在内存中改为仓库 SDK 路径执行，未改断言或生产源码。
+
+检索 Release net8 本机样本：同规模单值缓存各 20,000 次 hit 9.728 ms、miss 0.347 ms、clear+publish 0.700 ms；5,000 候选输入选 10 项用 31.030 ms，100 seed 暖启动工作项用 0.047 ms。仅为离线 fixture 量测，不当作游戏帧预算或稳定基准；候选未截断、sticky 与私装规则保持。构建前逐一预检获准的四个精确生成目录均在工作区、非重解析点且只含可再生产物；随后原 `build_single_module.ps1` 不带 `-Stage/-Deploy` 的 Debug/Release Bannerlord 1.3/1.4/Bootstrap 六项各 0 警告/0 错误，无打包。两 API 的 MSBuild 实际求值各 789 Compile/7 EmbeddedResource，两 Prompt LogicalName 及其余五项集合原样。221 锚点[代码地图](architecture/af-framework-code-map.json) recorded/working-tree 通过；当前责任/残余见[范围图](architecture/af-framework-code-scope.md)。所有切片仅本地提交；起点已未提交的本台账/HANDOFF 差异保留叠加，`.dotnet-cli-home/` 未跟踪且未清理；未推送、部署、Stage 或写游戏目录。**实机、旧档、真实 provider 均 `NOT-RUN`**，此状态不解除任何资产/许可 HOLD，也不扩展 J04/J06。
+
+### 以下为 J03 历史部分实施回执
+
+### 本次继续实施回执（起点 `602df8fa`；生产 `01dd8267`，契约 `2c741536`）
+
+本次先作本地意图检查点 `7fe79311`。`PromptConfigurationSnapshot.cs:7-49` 现在发布六份模型时逐一深拷贝，普通属性读取再次拷贝，避免源模型或 getter 调用者改动已发布 revision；`AIConfigHandler.cs:103-108` 的六个私有热路径入口改用 owner 独占借用，避免每次提示词读取触发 JSON 分配。配置契约先以源/读者修改六模型嵌套成员旧红复现，再修复，最终 36 项通过；同 ID 覆盖、六配置缺失/损坏回退、并发 reload、异常默认换代、已捕获旧代、命中正文同代由该契约与 `tests/modules/AF.Module.Prompt/ProductionEntry` 的实际提取方法共同覆盖。后者直接编译生产 `BuildRulePromptRegistry`、`GetGuardrailSemanticRuleHits` 及配置 store，7 项通过；移除外层 revision pin 的编译成功变异被同代断言拒绝（预期退出码 1）。借用对象仍是内部可变模型，尚不能声称编译期深层不可变视图或完整真实 getter 并发契约。
+
+检索契约直接编译生产 facade、管线、warmup coordinator，新增真实 `Task.Yield()` 后 scope/mentions 交付与父上下文恢复，合计 132 项通过。Courier prompt 252／liveness 59／postprocess 39、Scene parity 71／queue 37／lifetime 30、Native preparation 589／admission 44／completion 184／pending 111／history 852 与 `--native` 27、PersistenceProfile 严格 runner 均退出码 0。Courier prompt/liveness 及四个 Native runner 仅在内存中把已不存在的 `G:\AFMOD\.dotnet-sdk` 路径替换为仓库 `local/dotnet/8.0.425`；未改生产源码或断言。Courier postprocess 的 Newtonsoft 路径指向现有 `local/bannerlord-refs/1.4.7.117484/Newtonsoft.Json.dll`。这些替身契约不等于 My／Reward／Scene／Native／Policy 每个生产候选调用链的端到端验收。
+
+按用户限定范围逐一预检 `bin/Debug/single_module_artifacts`、`bin/Release/single_module_artifacts`、`obj/single_module/Debug`、`obj/single_module/Release` 均在工作区内、非重解析点且只含可再生产物，才由原 `一键编译覆盖推送/build_single_module.ps1` 重置。使用 SDK 8.0.425、`_deps_auto` 1.3.15.110062 与 `local/bannerlord-refs/1.4.7.117484`，Debug/Release 的 Bannerlord 1.3、1.4、Bootstrap 六项均退出码 0、各 0 警告/0 错误；未带 `-Stage`/`-Deploy`，未打包。两版 MSBuild 求值各 789 Compile／7 EmbeddedResource，七个 LogicalName 未改变。220 锚点地图 recorded/working-tree 均通过；源码职责及残余见[范围图](architecture/af-framework-code-scope.md)。起初无离线 NuGet 配置的基线遇 `NU1301`，改用仓库离线 NuGet.Config；首次默认 sandbox 生产构建/项目求值因现有 Windows SDK 读取权限报 `MSB4184`，获工具权限后原命令成功，未采用伪造 SDK 属性绕过。最初 Courier postprocess 缺失旧 Newtonsoft 包路径、配置测试项目名写错，定位并改用现有确切路径/项目后通过。
+
+**仍为 `PARTIAL / NOT_ACCEPTED`，不得写 `J03_OFFLINE_VERIFIED`。** `AIConfigHandler.TryGetGuardrailEvalSnapshot` 的确定性 provider/资格内部接缝、真实语义与辅助入口完整故障矩阵、五类消费者的实际生产候选链及全部具名 scope 闭包、session/mission/RAG 三入口真实线程与迟到 worker、同规模 hit/miss/reload/暖启动/大候选性能数据尚未齐。实机、旧档、真实 provider 均 `NOT-RUN`。原有未提交的本台账和 HANDOFF 改动继续保留，`.dotnet-cli-home/` 未跟踪且未清理；本次只聚焦提交代码/测试/地图，无推送、Stage、Deploy、打包或外部写入。
+
+### 最新继续实施回执（生产源码 `9242bcfa`，地图 `81b6de2a`）
+
+在下方已验证切片之上，`313b6133` 把生产意图拆分与 2+2 输入 embedding 批次迁往 Prompt Retrieval，并删掉旧类未被调用的 built-in 证据私有实现；`52cd7e47` 将召回、逐意图重排、跨意图聚合和最终评估编排接成唯一 `PromptRuleRetrievalPipeline`，生产 `AIConfigHandler.TryGetGuardrailEvalSnapshot` 只负责 MCM／资格／provider 回调、日志及缓存发布；`3586331e` 修复公开后处理规则 getter 返回内部可变列表的问题。`9242bcfa` 修复跨 reload 时评估命中与规则正文可能混用两代 registry 的外层入口：整个 `GetGuardrailSemanticRuleHits` 固定一个 revision，配置契约增至 34。检索管线直接编译生产文件，以确定性 embedding／rerank 验证语义选择、重排与失败回退，`d34d74f3` 再补双意图聚合与配置关键词脱离契约，检索检查总数 128。Courier prompt 252／liveness 59／postprocess 39、Scene parity 71／queue 37／lifetime 30、Native preparation 589／admission 44／completion 184／pending 111 均复跑通过；Native History 原 runner 因本机 apphost 8.0.30 包缺失失败；`dfe6b12c` 只改 runner 构建／启动方式、不改断言，现原 runner 普通 852 项与 `--native` 27 项均 PASS。PersistenceProfile 严格 runner 复跑 PASS。原构建脚本预检精确生成目录后，最终生产源码 Debug／Release 的 1.3、1.4、Bootstrap 六项均 0 警告／0 错误，未 Stage/Deploy。源码 Compile glob 自动纳入三个新 `.cs`，既有 EmbeddedResource LogicalName 未动；220 锚点代码地图 recorded／working-tree 均通过，详情见[范围图](architecture/af-framework-code-scope.md)。
+
+**仍为 `PARTIAL / NOT_ACCEPTED`。** 新管线已真实接线，但六份模型的深层只读性、所有 My／Reward／Scene／Native／Policy 消费者端到端契约、真实辅助网络／provider、所有具名 scope 的异常／yield／mentions 生产闭包仍未充分验证。实机、旧档、真实 provider 分别 `NOT-RUN`，不能标记 `J03_OFFLINE_VERIFIED`。本节叠加于任务起点已未提交的主台账差异；未整文件暂存，未跟踪 `.dotnet-cli-home/` 未删除/提交，无推送或部署。
+
+### 最新接续增量（生产源码 `3ff315ba`，测试 `79c6dbb8`）
+
+在既有切片之上，本轮本地提交 `0916b60c`、`d74f3e0c`、`3085f8cd` 将逐意图召回截断／重排失败回退、规则 seed／rerank 文本、评估模型与最终命中组装、辅助主题资格与评分迁至 Prompt Retrieval owner；旧类删除相应重复算法并接通新 owner，保留真实游戏资格、ONNX／辅助网络、日志及版本化缓存发布。`3ff315ba` 将实际捕获的 revision、MCM、资格、目标与路由输入交唯一缓存键 owner。`84e65df7` 修复内置 RP 默认模型被 Lazy 跨代共享：旧红用例先失败，再改为只缓存资源原文、每次 fallback 新建模型。`c707b476` 直接编译完整生产 `PromptListRetrievalService`，验证 MCM 热改、全量授权／展示 scope、私装超 cap、81 keys 和目标 agent 隔离；`79c6dbb8` 直接编译生产 `RagWarmupCoordinator` 验证 mission seed 由所属调用者传入后台完成回调。无新 public API、DLL、Host、资源或用户数据变化，未推送／部署。
+
+配置生产 loader 31、Retrieval 119、Courier 252／59／39、Scene 71／37／30、Native 589／44／184／111／852 均通过。最终生产源码按原 `build_single_module.ps1` 先预检精确生成目录，Debug／Release 的 Bannerlord 1.3、1.4 和 Bootstrap 六项均 `0 warning / 0 error`，无 `-Stage`／`-Deploy`；原 Prompt EmbeddedResource LogicalName 仍由 `AnimusForge.csproj:81-86` 明定且未修改。[代码范围图](architecture/af-framework-code-scope.md)与 217 锚点地图按上述真实删除／新增迁移更新，recorded／working-tree 两模式通过。PersistenceProfileConfigContract 起初报 `extra=['synthetic-only-key']`，定位为全仓 `*.cs` 扫描误纳入未编译的 `tests/modules/AF.Module.Llm/Protocol/Program.cs`；排除测试源码后暴露 52 个旧行号漂移。`de6bd963` 只修生产扫描边界，并在 168 条 key/ref/type/source 完全相同前提下刷新精确行号，严格断言、行号／类型反例均保留；最终 runner **PASS**，未更改生产存档实现。
+
+**继续 `PARTIAL / NOT_ACCEPTED`，不记 `J03_OFFLINE_VERIFIED`。** 生产六配置的深层只读发布仍未闭合，完整旧红矩阵及真实 getter 并发契约不足；My／Reward／Scene／Native／Policy 的端到端候选调用链、语义／辅助真实网络入口和所有 scope/mentions 异常闭包仍未逐条生产契约覆盖；`AIConfigHandler.TryGetGuardrailEvalSnapshot` 仍有网络、游戏资格及评估编排残余。实机、旧档、真实 provider 分别 `NOT-RUN`。本节与 HANDOFF 的原未提交规划内容继续保留，未被任一本地切片整文件暂存；未跟踪 `.dotnet-cli-home/` 未删除或提交。
+
+### 继续实施回执（源码 `e4f94429068af012dad29955afe7c6d2279c4fd4`）
+
+从 `3e180ca0` 后已作本地逐片提交：`2aa4edb7` warmup 所属线程 seed／旧代门控，`aeee48f1` 六配置生产 loader 与规则 registry，`517e87ed` 辅助实体和向量缓存，`6dfec4c1` 请求配置 pin，`76fb1c46` 排序预算，`6532fbc8` 单评估缓存，`00178d28` 派生缓存，`bca67d26` 单次 MCM/目标资格 cache key，`cb8f83ec` sticky，`0e22a7d7` 语义召回，`2d2b2a31` 跨意图聚合，`2f11b09e` 保留 sticky 跨 reload，`e4f94429` 最终命中／诊断排序。`a39cc411` 精确逆变换审查 Scene 生命周期源码；`9c57d392`、`a75bbb21` 分别修正 Scene/Courier 的狭窄测试 fixture，未更改生产断言。单 DLL/旧 public 签名、JSON 与资源路径身份未改；MSBuild 两线各 780 Compile／7 EmbeddedResource，两个 Prompt LogicalName 原样。
+
+验证：生产 loader 22、Retrieval 88、Courier prompt 252／liveness 59／postprocess 39、Scene parity 71／queue 37／request lifetime 30、Native preparation 589／admission 44／completion 184／pending 111／history 852；Debug／Release 原 `build_single_module.ps1` 的 1.3、1.4、Bootstrap 均成功，运行前检查精确生成目录，**无 `-Stage`／`-Deploy`**。代码地图 211 锚点 recorded／working-tree 通过。PersistenceProfileConfigContract 首个失败仍为 `extra=['synthetic-only-key']`（runner 扫入测试合成 key）；临时排除此目录后还出现 `typed SyncData binding catalog drifted`，试验改动已撤销，未放宽生产断言，不能把该 runner 算通过。
+
+**仍为 `PARTIAL / NOT_ACCEPTED`，不可写 `J03_OFFLINE_VERIFIED`。** 六份 loader 的完整旧红／并发生产契约、配置模型深层只读、My/Reward/Scene/Native/Policy 候选消费者完整契约、语义与辅助真实入口双路径及所有 mentions/scope 异常闭包未全覆盖；`AIConfigHandler.TryGetGuardrailEvalSnapshot` 仍掌握 ONNX／辅助网络接缝和评估编排。实机、旧档、真实 provider 均 `NOT-RUN`。sticky 目标总量保持既有无硬上限，未擅自淘汰。未推送、部署、迁资源/用户数据或扩展 J04/J06。原先未提交的本节与 HANDOFF 规划差异仍留工作树，未纳入任何本地代码提交；`.dotnet-cli-home/` 亦未跟踪、未删除。
+
+### 以下为较早的三切片部分实施回执（历史）
+
+本节取代下方规划标题的“IMPLEMENTATION_NOT_STARTED”状态；下方规划原文保留为实施范围，不视为已全部完成。基线 `062c5939` 后有三个已核实本地切片：`3ef5e7e9` 候选纯匹配排序、80-key/10 分钟索引及唯一 `IntentQueryOptimizer` 归位；`848fc4c2` 六模型本地加载后原子发布 revisioned 快照，配置门面及公开签名保留；`d11eb572` 请求 ambient/scope 归位并在 My/Scene/Native 入口接线，子 scope 的 mentions 合并后恢复父值。均为同 DLL 内部接缝，未推送、部署、Stage 或改资源路径。
+
+**未完成，不能标 `J03_OFFLINE_VERIFIED`：** 六份 loader/错误回退的真实生产矩阵与旧红用例尚缺；模型深层只读性未闭合；规则召回、评分、配置派生缓存、辅助实体 store 与 sticky 仍在 `AIConfigHandler`，warmup seed 所属线程捕获未实施；MCM/目标资格全量缓存隔离、所有 Courier/Reward/Policy 消费者及并发 reload/warmup 的实际生产行为未完整证明。J04 全线程改造与 J06 知识索引仍不在本包。
+
+**已验证范围：** PromptJ03 Release 聚焦 `34` 检查通过；Scene postprocess parity `71` fixtures、deferred queue `37` fixtures 通过，后者 game-domain helpers 为 `STUBBED`；Debug/Release 原 `build_single_module.ps1` 的 `BannerlordApi=1.3/1.4` 与 Bootstrap 均已执行成功，未带 `-Stage/-Deploy`，运行前核查脚本重置的精确生成目录。地图 `197` 锚点以源码 `d11eb572` 两模式通过，旧锚点仅针对源码真实变化重定位/重算哈希，新增锚点明确残留 owner。Courier 源检查通过；PersistenceProfileConfigContract runner 当前失败 `extra=['synthetic-only-key']`（测试合成 fixture 被扫描），不能计入通过；其他受影响回归尚未全跑。实机、旧档、真实 provider：`NOT-RUN`。这些通过项不替代 J03a–J03e 整体验收。
+
+本节及根 HANDOFF 在本任务开始前已有未提交规划改动，新增状态直接叠加于工作树，未将原改动纳入本任务切片提交；后续提交须保护原作者差异。下一步继续按下方 J03a–J03e 清单迁移旧 owner、补真实回归，再做全量验收。当前保留所有原用户改动。
+
+<a id="j03-current-plan"></a>
+
+## J03 当前计划：Prompt 配置与检索（2026-09-18，PLAN_READY / IMPLEMENTATION_NOT_STARTED）
+
+本节取代下方路线表 J03 的粗粒度描述，作为执行模型直接接续的工作单；历史回执不改写。调查基线：工作区 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，HEAD `062c5939ddf436ccab81f6e7eec33d67906701a3`，开始时工作树干净。依赖复用 [J02 源码/离线验收](#j02-full-completion)，不重做 J02 或为无关 HOLD 开全仓盘点。**本轮只交付计划，产品尚未实施；接手实施的模型核对工作区后直接执行 J03a–J03e，不先返回重写计划、申请开始或逐包等待调度。**
+
+### 1. 目标与非目标
+
+- 在同一 `AnimusForge.dll` 内，把配置加载/版本/只读视图归到 `src/modules/AF.Module.Prompt/Configuration`，把意图规范化、规则召回/排序、请求上下文和检索缓存归到 `src/modules/AF.Module.Prompt/Retrieval`。迁移真实算法与状态并接通旧入口，不以 partial、目录或反向转发壳报完成。
+- 保留 `AIConfigHandler`、`PromptListRetrievalService` 的既有签名及 JSON/资源身份作为兼容入口；它们仍含必要游戏适配或未迁职责，不能整文件标为已模块化。
+- 非目标：J04 的完整 Prompt 组合/三渠道主线程捕获改造，J06 的知识库/索引，J05 记忆和 J08 网络传输；不重写资格/玩法/标签，不新增 public API、独立 DLL、Host 或 manifest。默认资源先确认归属和引用，**本包不搬运行 ModuleData、PlayerExports、ONNX 或改一键脚本**；物理内容布局留 J15，不阻塞本源码包。
+
+### 2. 已核实代码与真实消费者
+
+以下为基线修订的一基行范围，符号为追踪依据；不是逐方法搬迁清单。
+
+| 源码 / 符号 | J03 责任及真实消费者 | 保留接缝 |
+| --- | --- | --- |
+| `AIConfigHandler.cs:240-328,2301-2426,3031-3140,9024-9303`：六配置字段、`BuildRulePromptRegistry`、两内置默认 loader、`ReloadConfig` | Configuration；`MyBehavior.cs:18863-18864` 会话加载、`:57900-57944` 导入后 reload；`SubModule.cs:221-225` 控制台 reload；DuelSettings 辅助连接测试仍消费原入口 | 文件定位依赖 `AnimusForgeModulePaths.cs:29-43`；导入写盘不归配置 reader |
+| `AIConfigHandler.cs:1672-1779,2537-2701,3722-3759,5063-5269,5386-6191,6360-6995`：意图拆分、warmup、向量/排除提示缓存、辅助实体、评估与 sticky 合并 | Retrieval；`MyBehavior.cs:30650-30696,30792-31561` 前处理与共享 builder，后续正文和后处理读取同一话题结果 | `IsRuleCurrentlyEligibleForRag:2107`、runtime instruction/constraint、辅助 HTTP、Lore 调用不能随大段代码混入纯计算 owner |
+| `AIConfigHandler.cs:290-302,326,2031-2058,7187-7258`：七个 guardrail AsyncLocal 与 latest entities | 请求级 owner；MyBehavior 上述入口及 `:28780-28835`；`ShoutBehavior.ScenePostprocess.cs:176-193`，`ShoutBehavior.cs:19956-19982,20507-20524,22968-22988,23018-23512,27999-28010` 都有 set/finally-clear | `MyBehavior.cs:31552-31560` 只清目标而未清 semantic；不能宣称现有 finally 已完整隔离。latest entities 另有显式 clear 和跨步骤读取 |
+| `PromptListRetrievalService.cs:16-219,221-318,320-413,415-1093`：候选缓存、匹配/排序、资产策略及别名 | Retrieval 接收纯候选描述；生产链含 `MyBehavior.cs:24064-24086,24436-24509,24773-24776`、`RewardSystemBehavior.cs:18114-18549,19836-19874`、`ShoutBehavior.ScenePostprocess.cs:731-891`；`PolicySystem/History/PolicyHistoryRetrievalService.cs:225` 复用 mention terms | 原 payload 是 RewardItemInfo / MyBehavior 嵌套条目，含游戏句柄且只复制 List，不是深不可变快照；全量授权与展示清单不可混并 |
+| `IntentQueryOptimizer.cs:9-228`：`OptimizeSplitIntents`、2/4 意图上限 | 实际被 AIConfigHandler 拆分和 `MyBehavior.cs:32187-32248` 历史召回共同消费，保持同一实现 | `git grep IntentAnalyzer` 只命中旧路线文字：**不存在该生产类/文件**，不凭名字新建另一分析器 |
+| `Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs:24-111` 与 `Refactor/Runtime/RuntimeConfigSnapshotStore.cs` | 已有 Native/Courier detached provider 配置快照；reload 后保留原通知 | 不是六份 Prompt 配置快照，不能复用其“失败保留旧值”替换 AIConfigHandler 的失败默认值策略 |
+
+### 3. 职责、状态与关键设计决定
+
+**Configuration：一个权威 owner，不再分散六个可变全局根。** loader 负责既有解析、校验、默认/错误结果和静态 registry 规范化；提供内部 `CaptureConfiguration()` / `ReloadConfiguration()` 形态的窄读写口（名称由执行者定），返回带 revision 的只读配置集合。原模型类型/字段身份保留，发布后的集合不向消费者暴露可修改引用；原 getter 需要 List 时返回兼容副本。registry 只缓存静态规范化，不缓存当前场景资格。
+
+- 当前事实：reload 顺序写六字段，无总发布锁；成功路径清两向量 cache 和单条 `_lastGuardrailEval`，再递增 `_guardrailConfigVersion`、重置 warmup；外层异常直接换六个默认模型，跳过这段失效。该 version 不是 JSON schema version，也不保证一致快照。
+- 计划选定：低频 reload 在独立串行加载边界构造完整 replacement，随后一次发布配置及其 revision；任何实际替换（包括既有异常默认结果）都换代。读取不长时间持锁，既有 in-flight 检索只持本次捕获引用；旧版本计算只能写旧版本缓存，不能污染新版本。**这是本计划明确的并发一致性修正，不冒称旧代码已有保证**；不改变合法配置结果与各类失败 fallback。只固定单次检索/构建操作，不在 J03 强行把整个三段对话钉死到一个配置版本。
+- 不把 credential、MCM 对象或游戏活对象塞进快照；现有 provider 配置通知继续走原 adapter，两个 revision 不互相冒充。reload 不写用户文件，不做自动修复/覆盖。
+
+**覆盖顺序不能统一成臆造的“默认→用户→MCM”。** 实际是：活动模块 `ModuleData` 文件→各 loader 专有回退；registry 先四类 legacy，再按 `RulePrompts` 顺序同 ID 覆盖。Preprocess 读严格 UTF-8，磁盘 schema 旧于内置版本时整份用内置；缺失/损坏保持错误状态，不能误改成一律默认。RP introduction 缺失/无效可用内置默认，内置也坏则停用。知识开关/semanticFirst/topK 在 MCM 可读时优先，其中 DirectTopN>0 优先于 SemanticTopK，夹到 1–12；无 MCM 才用 Guardrail。规则 cap 来自 MCM、默认 4、夹到 1–12；候选 cap 默认 10、夹到 1–30。辅助路由由 UseAuxiliaryRuleApi 或 MemoryPreprocessMode 1/2 决定。MCM 值按操作捕获，不因文件 revision 未变而永远缓存。用户导入是 `ImportKnowledgeFromDir` 按 overwriteExisting 复制 `knowledge/AIConfig.json` 后 reload，不是 loader 自动 merge PlayerExports；保留这一顺序及用户选择。
+
+**Retrieval：按状态寿命分 owner，而非一个万能缓存。**
+
+- 配置派生：语义 phrase/input cache、单条评估 cache、排除提示列表及 warmup 门控归检索 owner，绑定所捕获的配置 revision。锁只保护读写/发布，不包 HTTP、embedding、rerank 或游戏回调；不把原多个锁合成全局大锁。评估 key 保留输入/secondary/context、aux/rag、排除列表，补充实际影响结果的捕获 MCM 值、目标/资格签名与 revision，防跨目标或热改配置误复用；不是靠每次清空取消缓存收益。
+- 请求态：内部 detached `PromptRetrievalContext` 持 semantic 文本、六目标标识（agent 缺省 -1）、必要资格值与本次 options；一个 AsyncLocal scope 负责保存/恢复父上下文，正常/异常/提前返回均经 finally/Dispose。兼容 Set/Get 暂留但转接唯一 owner；迁完具名 set/clear 消费者才算闭包，不能换成 ThreadStatic。可变 latest entities 不共享父子引用，应 clone/显式返回；保留原跨步骤累计效果，先把结果通过现有 out `mentionedEntities` / prompt context 接到后续清单和后处理，再退出 scope，不能因“自动清理”丢失 mentions。
+- 跨调用态：辅助实体 FIFO（64）及 sticky 按目标状态归 Retrieval；保持现有 merge、clone、回合衰减与排除语义，**不顺便随 reload 清空它们**。sticky 每目标最多 3 项，但目标总数无硬上限；这属于已发现的既有容量风险，不偷偷新增淘汰而丢规则。当前 J03 不承诺解决全局 sticky 生命周期。
+- 候选态：匹配核心用 ID/原序号/别名/计数/私装标志等 detached 描述，返回选择 ID/索引；别名中 Hero/ItemObject/CharacterObject/Settlement 读取和有效性判断留薄 adapter。TTL/80-key 容器逻辑抽入专用候选 store，但带游戏句柄的兼容 payload 仍由 adapter 持有并只按原调用域使用；不得把它标为后台安全、配置快照或新增动作授权。J03 不改 key 的 scope/entity/agent/settlement/discriminator 语义，不把所有 scope 拆成各 80 个。
+
+**J04/J06 依赖止于接口。** J04 将消费配置视图、detached 检索输入、RuleSelection（规则 ID/命中数据/mentions）、scope 和候选选择结果；资格捕获、完整主线程→后台流水与正文/后处理组合仍归 J04。暂留旧适配调用域并标注现有 Courier/shared builder 的后台 live-read 风险，不在 J03 偷换 Task.Run/dispatcher。J06 继续通过现有 `GetLoreContext → KnowledgeLibraryBehavior.BuildLoreContext`、embedding/reranker 服务接缝消费 options；不迁知识索引、ONNX 生命周期或 Memory 状态。纯检索 owner 不反调旧 AIConfigHandler 算法，允许暂由旧适配器提供资格结果、网络结果和游戏描述，禁止“新服务全部转回旧大类”。
+
+### 4. 有依赖顺序的小包
+
+| 顺序 | 完整交付单元 | 完成边界 |
+| --- | --- | --- |
+| J03a 基线/契约 | 固定当前合法输出、坏配置 fallback、覆盖顺序、排序/容量与真实消费者；为三类状态写针对性生产切片测试，标出上述并发修正的旧红用例；记录本地实施意图 | 测试不读真实用户配置、不发网络；不重复 J02。将当前源码证据与待改行为分开 |
+| J03b Configuration | 提取 loader/静态 registry/配置发布 owner，转接全部旧配置 getter 和 reload；保留原 path、JSON 类型、7 个 EmbeddedResource 集合及两 Prompt LogicalName | 原配置状态退出旧类；并发 reload、异常默认换代、捕获引用稳定与 MCM 覆盖可测；不迁资源文件 |
+| J03c 纯检索与候选 | 归位 IntentQueryOptimizer；提取意图/候选规范化、匹配排序及候选 store 机制，薄适配器承接原 payload/别名/授权名单；接通 MyBehavior、Reward、Scene/Native 后处理和 Policy consumers | 公私装备、全量/展示 scope、fallback 和原索引稳定；共享历史召回仍用同一 optimizer，不归入 J05 |
+| J03d 规则检索/上下文 | 在 b/c 上迁规则评分/召回/rerank、配置派生缓存与 warmup、辅助实体/sticky 状态；接通配置版本、请求 scope、目标/资格/网络窄接缝及所有原 set/finally 消费者 | 旧类不再拥有已迁状态/算法；完整 mentions 传递、嵌套/yield/异常恢复、迟到 warmup 不污染新代；不搬 shared builder 和 HTTP 实现 |
+| J03e 集成收口 | 聚焦回归、双 API 原构建与 Compile/资源集合验证；补 owner matrix/代码地图/本节回执，HANDOFF 仅摘要 | 分别标结构、职责、离线与实机；遗留游戏适配、J04/J06/J08 符号仍明确。普通接线/编译/回归由执行者处理，不逐步重问规划者 |
+
+执行模型先核对实际 Git 与本节基线差异，保留本轮两份规划文档和其他作者改动，记录本地意图检查点，然后连续完成 a→b→c→d→e，每个验证切片本地提交。包间不设置人工验收等待点，也不因名称、拆文件方式、内部 DTO 形状、测试桩、接线或普通编译/回归问题返回规划者；执行者在本节契约内自行解决并复验。b/d 中的原子发布、换代拒收、scope 恢复和 cache key 完整性已作出设计决定，直接落实。出现业务输出差异时先按既有行为修正适配与算法，不自行扩大为玩法改写；只有无法同时满足本节明确约束的真实矛盾才记录具体反例与受阻项，继续其余独立工作，不以泛泛“待确认”代替实施。
+
+### 5. 必须保持的行为、性能、线程与兼容约束
+
+- 规则 ID/code、优先级/分组、资格和排除、正文/`PostprocessRules` 同源、辅助 API 失败后的原召回退路均保持；不拿 LLM 结果当动作事实，不触碰唯一执行/AFEF 提交。
+- 查询发生于对话/前处理/后处理，不新增 Tick 轮询。配置只在既有加载/显式 reload/导入时读盘；warmup 入口为 session_launch、mission_start、rag_warmup_complete（`MyBehavior.cs:18864`、`ShoutBehavior.cs:10993`、`RagWarmupCoordinator.cs:57`），仍按版本门控，后台只用预先捕获 seeds，不在 worker 调 `GetAllEnabledRulePrompts` 读取实时资格。尤其 RagWarmupCoordinator 的完成入口本身在 worker，不能简单把捕获前移一层便称主线程安全：复用所属线程调度做一次带版本检查的 seed 捕获，再后台计算；不等待网络、不新增逐帧扫描。旧 worker 不得将新代 warmup 门控清回 0。
+- 保持向量 cache phrase 1024/input 256 的满容量清空策略、单条 eval、64 实体 FIFO；排除提示按版本懒建。每说话者最多 2 intents、合计 4；rerank 总预算 clamp(3×returnCap,8,36)，每意图 4–12，召回 10–30。这些是实际工作量边界，不是整次耗时保证。
+- 候选 store 为 80 keys / 10 分钟，publish 时淘汰、get 时查过期；不是每个列表最多 80 项。候选选择保 0.66 匹配阈值、score→mention priority→原序号、fallback 原顺序；`FilterNpcRewardItemsForAssetTransfer` 的私装在普通 cap 之外，不能用硬截 30 项改变玩法。单列表、alias 和 sticky 目标总数现无全局硬上限，性能测量须报告输入规模，不伪称已有严格帧预算。
+- 不在锁内捕获游戏对象/做网络；不新增跨线程读取。已有混合共享 builder 的线程缺口按 J04 接口留下，不因此把请求网络搬主线程；对仍混合游戏读取的入口，采用“旧适配器按原调用域准备输入→新 owner 执行纯算法→旧适配器继续原业务”的过渡接线，完成 J03 所列算法/状态转移；不把尚待 J04 的完整捕获阶段迁移当作 J03 的常规停工点，也不把旧线程风险冒称已解决。
+- 同 DLL、namespace/既有 public 签名/模型 JSON 身份、原资源 LogicalName/安装路径、双 1.3/1.4 和单 Bootstrap 保持。无存档迁移；不把 RAG/候选缓存变成持久化数据；不扩增记录玩家全文或凭据的日志。
+
+### 6. 验证与完成标准
+
+实施时新增的聚焦测试必须运行**实际迁移实现**：配置六文件缺失/损坏/旧 schema/内置失败；legacy→custom 同 ID 覆盖和 MCM 有/无/热改；reload 与请求/warmup barrier 交错（旧结果晚返回、失败换代）；scope 嵌套、真实异步 yield、异常及提前返回、mentions 跨步骤消费；候选 TTL/81 keys/全量与展示隔离、私装超 cap、稳定排序；语义/aux 两路径、排除/sticky、2+2 intents 和预算。网络/embedding/游戏捕获用确定性 fake，不能只测新 DTO 或更新 source hash。
+
+受影响回归复用 `tools/CourierPromptPreparationTests/{run.py,run_liveness.py,source_review.py}`（其 shared builder 是 stub，不能代替新检索测试）、`tools/ScenePostprocessParityTests`、Native/coordinator 既有测试；`tools/PersistenceProfileConfigContractTests` 只证明原配置/身份契约，不能证明新 Prompt 快照。PromptLab 可作格式补充，不用其网络评测替代生产接线测试。性能比较缓存 hit/miss/reload、同规模大候选列表与暖启动的实际工作项/耗时，不设未经测量的毫秒承诺。
+
+全部具名消费者接入唯一 owner、兼容壳有清晰残余职责、上述行为/并发测试及两个 BannerlordApi 构建通过，才记 `J03_OFFLINE_VERIFIED`。集成验证固定使用 `一键编译覆盖推送/build_single_module.ps1`，分别完成 Debug/Release 的双 API 与 Bootstrap；不带 `-Stage` / `-Deploy`，不打包。执行者从 J02 既有构建证据读取参考目录与依赖参数并核实当前存在性，不要求用户重新提供已在仓库可查的信息。该脚本会重置仓库内 `bin/{Debug,Release}/single_module_artifacts` 与 `obj/single_module/{Debug,Release}` 并修剪生成物；调用前核对这些精确路径只含可再生成产物、非重解析点，工具层必要安全审批按环境处理，不另设规划回问。日志/测试输出留仓库忽略的 artifacts 或 runner 生成目录，不写系统临时查询文件。绝不把过去 J02 的构建当作变更后 J03 构建。更新代码地图并运行 recorded/working-tree 两模式；实机、旧档、真实 provider 仍单列 NOT-RUN，许可/玩家数据 HOLD 不解除。
+
+**直接执行结论：** 本包没有要求执行模型返回规划者选择的关键设计项；按上述范围、顺序和完成标准做到 J03 源码/离线验收收口，再报告实际结果，不只交付下一份计划或停在首个小包。J04/J06 不构成等待条件。不存在待寻找的 IntentAnalyzer 或待选择的全局用户配置合并方案。sticky 总目标限额/跨游戏候选生命周期、完整三渠道线程捕获明确不在本包，保留原行为并登记后续责任，不借此缩减本包已列实现与验证。
+
+本轮未实施上述任何 owner、并发修正或测试。规划验证：`git diff --check` 通过；新增显式源码路径/行范围、当前入口锚点与 HANDOFF 链接已检查；两文件原历史正文按换行归一后完整保留；Git 差异仅本台账与 HANDOFF，HEAD 未变。没有执行游戏构建或产品测试。调查时曾误把源码引用查询结果重定向到系统临时文件 `C:/Users/PC/AppData/Local/Temp/af-j03-refs.txt`，这是违反本轮仓库外只读约束的操作偏差；未继续修改或擅自清理该文件，不声称全程零仓库外写入。
+
+## 以下为既有规则、交付与实施历史；J03 当前计划以上节为准
+
 <a id="skill-plan-execution-20260918"></a>
 
 ## 当前任务：精简规划与执行规则补充（2026-09-18，SKILL_VERIFIED）

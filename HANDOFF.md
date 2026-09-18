@@ -1,3 +1,39 @@
+# 当前交付：J03 源码、测试与完整规划/验收文档（2026-09-18）
+
+用户本轮明确要求全部推送远端；本次包含下方 J03 已完成源码、测试、地图及此前未提交的两份规划/验收文档，目标为 `origin/codex/af-main-refactor-continuation-20260831`，不操作 main、不强推。范围核实见[台账交付记录](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-delivery-20260918)。`.dotnet-cli-home/`、构建产物和玩家数据不上传；下方“未推送”保留为当时实施记录，实际发布结果以远端 ref 核对为准。产品状态仍为 J03_OFFLINE_VERIFIED，不代表实机/旧档通过。
+
+# 当前交接：J03_OFFLINE_VERIFIED（2026-09-18）
+
+起点 `602df8fa` 的 J03a–J03e 源码与离线验收现已收口：`01dd8267` 隔离六份真实配置模型的源/兼容读取方修改，`e6c82d8d` 给生产评估入口增加仅内部逐调用的确定性 provider/资格接缝；My、Reward、Scene、Native、Policy 候选边界按实际提取方法、源码调用护栏和 Policy 实际程序集分别核对。配置 36、真实模型 18、检索 135、生产命中 7、评估/warmup 22、My 4、Reward/Scene 原片段 11、Scene/Native 包装 3、Policy 历史 1115；Courier、Scene、Native、HeroAsset 和 PersistenceProfile 回归均通过。四个获准生成目录逐一预检后，原脚本 Debug/Release 的 Bannerlord 1.3、1.4、Bootstrap 六项 0 警告/0 错误，无 Stage/Deploy/打包；两版各 789 Compile/7 EmbeddedResource，221 锚点地图 recorded/working-tree 通过。**状态仅 `J03_OFFLINE_VERIFIED`；实机、旧档、真实 provider 各 `NOT-RUN`，游戏域 fixture 不冒充实机。** 未推送，未改 J04/J06；原未提交文档差异与 `.dotnet-cli-home/` 保留。完整命令、失败反例、性能样本、源码坐标及剩余适配见[主台账 J03](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)和[范围图](docs/architecture/af-framework-code-scope.md)。
+
+## 以下为 J03 历史部分实施交接
+
+本次从 `602df8fa` 接续，`01dd8267` 隔离六份发布配置的源/读取方嵌套修改，`2c741536` 增加实际生产命中入口跨代契约，`a3d6c3d2` 补真实 async yield scope/mentions 检查及 220 锚点地图。配置 36、检索 132、生产入口 7，去 revision pin 的变异被拒收；相关 Courier、Scene、Native、PersistenceProfile 回归通过。预检获准的四个生成目录后，原脚本 Debug／Release 的 Bannerlord 1.3／1.4 与 Bootstrap 均 0 警告/0 错误，未 Stage/Deploy；两版各 789 Compile／7 资源，地图两模式通过。五类消费者完整生产调用链、确定性 provider/资格接缝、所有 warmup 入口及性能测量仍缺，**J03 保持 `PARTIAL / NOT_ACCEPTED`**；实机、旧档、真实 provider `NOT-RUN`。详见[主台账 J03 最新回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)和[范围图](docs/architecture/af-framework-code-scope.md)。原未提交文档差异与 `.dotnet-cli-home/` 均保留，未推送、Stage、Deploy 或打包。
+
+最新本地切片 `313b6133`、`52cd7e47`、`3586331e` 将意图拆分／2+2 输入批次与完整规则检索编排迁入 Prompt Retrieval，生产 `AIConfigHandler` 已改为调用唯一管线，后处理规则 getter 不再泄露可变列表；`9242bcfa` 进一步为命中结果与规则正文加同 revision 外层 pin。`81b6de2a` 更新 220 锚点代码地图及范围图，两模式通过；`d34d74f3` 补双意图与配置关键词脱离契约。配置 34／检索 128；Courier、Scene、Native 相关回归与 PersistenceProfile 已复跑。最终 Debug／Release 各 1.3、1.4、Bootstrap 均 0 警告／0 错误，无 Stage/Deploy。Native History 原 runner 曾遇本机 SDK apphost 8.0.30 缺包；`dfe6b12c` 仅修构建／启动方式、未改断言，现原 runner 普通 852 项和 `--native` 27 项均通过。消费者全链路、深层不可变配置、真实 provider 与实机／旧档仍无充分证据，故 **J03 `PARTIAL / NOT_ACCEPTED`，不可记 `J03_OFFLINE_VERIFIED`**。本文件和主台账原先的未提交改动仍只作保留式增量；`.dotnet-cli-home/` 保持未跟踪。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)及[范围图](docs/architecture/af-framework-code-scope.md)。
+
+## 以下为本轮较早的 J03 接续回执
+
+# 当前接续：J03 部分实施，尚未验收（2026-09-18）
+
+**最新增量（生产 `3ff315ba`，测试 `79c6dbb8`／`de6bd963`）：** 真实逐意图重排、规则文本、最终评估与辅助评分进一步归 Retrieval owner；内置 RP fallback 跨 revision 共享模型已用旧红修复。配置 31、Retrieval 119（含完整生产候选 facade 与 warmup coordinator 直接编译）、Courier 252／59／39、Scene 71／37／30、Native 589／44／184／111／852；最终生产 Debug／Release 双 Bannerlord API 加 Bootstrap 均按原脚本成功，无 Stage/Deploy。[代码范围图](docs/architecture/af-framework-code-scope.md)和 217 锚点地图两模式通过。PersistenceProfile runner 的非编译测试 key 误扫及 52 个纯行号漂移已在保留严格断言下修正，最终 **PASS**；真实 provider／实机／旧档 `NOT-RUN`。配置深层只读、端到端消费者与网络入口契约及旧类残余编排未收口，故 **`PARTIAL / NOT_ACCEPTED`，不得标 `J03_OFFLINE_VERIFIED`**。详见[主台账最新回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。原先未提交的本文件与台账规划改动只作保留式增量，不整文件并入本地代码提交；`.dotnet-cli-home/` 未跟踪、未删除。
+
+继续实施至源码 `e4f94429`：六配置 loader／registry、revisioned 配置与派生缓存、候选纯算法与 80-key 索引、语义召回/跨意图聚合/最终命中、辅助实体、sticky、请求 scope 和所属线程 warmup seed 均已作本地验证切片；地图 211 锚点两模式通过。生产 loader 22、Retrieval 88、Courier 252/59/39、Scene 71/37/30、Native 589/44/184/111/852；Debug/Release 原脚本 1.3/1.4/Bootstrap 成功，无 Stage/Deploy。**J03 仍 `PARTIAL / NOT_ACCEPTED`**：完整生产契约、深层只读及旧类剩余 ONNX/辅助网络与评估编排未闭合，PersistenceProfileConfigContract 仍报 `extra=['synthetic-only-key']`；实机、旧档、真实 provider `NOT-RUN`。当前详见[主台账实施回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)与[范围图](docs/architecture/af-framework-code-scope.md)。原有未提交规划差异继续保留，不整文件纳入本地代码提交；无推送/部署。
+
+## 以下为较早的三切片部分实施回执（历史）
+
+以[主台账当前实施状态](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)为准。三个本地切片 `3ef5e7e9`、`848fc4c2`、`d11eb572` 已将意图规范化、纯候选排序与索引、revisioned 六配置快照、请求 ambient/scope 归位并接旧入口；`AIConfigHandler` 仍持有六份 loader、规则召回/评分、sticky、辅助实体缓存及 warmup，故 **J03 PARTIAL / NOT_ACCEPTED**。197 点代码地图两模式通过；局部 34、Scene 71、queue 37 通过，Debug/Release 双 API+Bootstrap 原脚本构建通过且未 Stage/Deploy。真实配置旧红矩阵与全部消费者回归未齐，PersistenceProfileConfigContract runner 的 `extra=['synthetic-only-key']` 失败未掩盖。实机、旧档、真实 provider 均 `NOT-RUN`。未推送、部署或修改游戏目录。本任务起点已有的两份未提交规划文档改动受保护，不能误并入切片提交。
+
+## 以下为 J03 规划前的历史交接
+
+# 当前接续：J03 配置与检索计划就绪，尚未实施（2026-09-18）
+
+当前入口为[主台账 J03 计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j03-current-plan)：实际基线 `062c5939`，已调查配置/缓存/AsyncLocal/候选与真实消费者；`IntentAnalyzer` 不存在，实际为 `IntentQueryOptimizer`。顺序为基线契约→配置 owner→纯检索/候选→规则检索/上下文→集成验收。计划已细化到可直接执行：接手模型连续完成 J03a–J03e，自行处理普通实现、接线与回归，不逐包返回规划者等待调度。本轮仍仅修改规划文档，产品尚未实施；不改产品、不构建、不派代理或发布。
+
+产品仍为 [J02_OFFLINE_VERIFIED](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)，[现有代码范围图](docs/architecture/af-framework-code-scope.md)不因计划改写。J04/J06 只定义接缝；完整线程捕获、实机/旧档及容量遗留风险保持台账所列边界。
+
+## 以下为既有规划与交付历史，不构成本轮实施授权
+
 # 当前接续：精简规划与执行规则补充（2026-09-18）
 
 仓库维护 Skill 的工作包指南已补充规划与执行分工，验证见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#skill-plan-execution-20260918)。仅仓库副本和交接说明变化；外部主源/全局副本未同步，产品仍为 J02_OFFLINE_VERIFIED，本轮不启动 J03、不推送或部署。
