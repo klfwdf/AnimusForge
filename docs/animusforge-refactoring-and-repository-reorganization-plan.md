@@ -1,3 +1,25 @@
+<a id="j04-intent-20260918"></a>
+
+## J04 执行意图：共享 Prompt 组合责任闭包（2026-09-18，ACTIVE）
+
+工作区 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，分支 `codex/af-modularize-j04-20260918`，基线 `25a89cea`（= 当时 `origin/codex/af-main-refactor-continuation-20260831`）。旧工作区 `G:/AFMOD/AF-REFACTOR` 及其两份未提交草稿不动、不合并。用户本轮授权：继续按 J01–J17 路线拆分 AF 主体；未授权推送、部署、Stage、打包、写游戏目录、安装全局 Skill。
+
+**用户已明确的目标差异（登记，不静默降级）：** 用户此前要求 Native / Scene / Courier 三渠道对外开放。远端 J14 默认“只接已开放能力，Scene/Courier 不因整理开放”与此不同；本台账将 Scene/Courier 公开提交登记为已授权目标，映射到 J10（渠道真实生命周期与结果）+ J14（公开能力开放，须完整调用链、线程/生命周期/失败语义、可探测能力与兼容证据）。J04 不实现该开放。
+
+**J04 已核实入口（源码 `25a89cea`，一基行号）：**
+
+| 源码 / 符号 | 责任 | 真实消费者 |
+| --- | --- | --- |
+| `MyBehavior.cs:30794-31564` `BuildShoutPromptContextForExternalInternal` | 共享主链 Prompt 上下文：规则排除集合、辅助/语义/强制话题路由、内置 sticky 兜底、关系/军队/周报/政策/规则/lore/实体 Extras 组装、preprocess 规则 ID 收敛 | `ShoutBehavior.cs:13831,17831,20185,20760,27415,27906,30727,38869`；`CourierDeliveryBehavior.PromptPreparation.cs:149` |
+| `MyBehavior.cs:30651-30698` `RunCourierRulePreprocessInternal` | Courier 前处理话题命中并按优先级/分数排序 | `CourierDeliveryBehavior.PromptPreparation.cs:146` |
+| `MyBehavior.cs:28483-28644` 规则 ID 集合/排除/规范化/运行时门控静态 helper | 纯字符串集合算法，被 MyBehavior 内 39+ 处调用 | `BuildTriggeredRuleInstructions`、preselected 规则注入等 |
+| `MyBehavior.cs:1798-1804,19841-19865,19893-20007` `_ruleSticky*` 与 `TryConsumeRuleStickyCarry`/`UpdateRuleStickyCarryFromHits`/`ClearRuleStickyCarry` | 内置 duel/reward/loan 话题跨回合 sticky 状态（与 J03 的 `PromptStickyRuleStore` 是不同状态：后者管 kingdom_service/marriage） | 主链 `:31130,31160`；存档加载复位 `:2503` |
+| `PromptComposer.cs:7-76` | 固定层缓存/拼接；`git grep` 零调用者 | 无（死代码候选） |
+
+**线程现状（不冒称已解决）：** Native 在 `RunNativeConversationBackgroundPreprocessAsync` 后台执行整段构建，只有 WeeklyPromptSnapshot 在主线程预捕获；Courier 在 `Task.Run` 中执行；Scene 调用点位于各自 async 流程。整段仍有大量 live 游戏读取（Hero/Clan/Reward/Duel/MobileParty/TeamModuleServices）。本包采用 J03 计划已定的过渡接线：旧适配器按原调用域准备输入 → 新 owner 执行纯算法/持有状态 → 旧适配器继续原业务；完整“主线程捕获→后台→主线程接受”改造按切片推进，不在首切片一次完成。
+
+**J04 切片顺序：** J04a 规则 ID 策略 + 内置话题路由 + sticky 状态 owner（纯算法/状态迁出，旧实现删除，接通主链与 Courier 前处理；删除零调用者 `PromptComposer`）→ J04b Extras 分段组装与 preprocess ID 收敛 owner → J04c 主线程捕获输入 DTO 与后台组合边界 → J04d 集成：契约测试、Courier/Scene/Native 回归、原脚本 Debug/Release 双 API + Bootstrap（无 Stage/Deploy）、地图/范围图/回执。每切片本地提交，可用定向 inverse 回滚。
+
 <a id="j03-delivery-20260918"></a>
 
 ## J03 远端交付范围核实（2026-09-18）
