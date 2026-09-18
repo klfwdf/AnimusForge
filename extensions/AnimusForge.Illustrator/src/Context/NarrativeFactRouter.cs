@@ -97,7 +97,7 @@ namespace AnimusForge.Illustrator.Context
             foreach (string candidate in candidates)
             {
                 string text = candidate.Trim(' ', '。', '！', '？', '!', '?', '"', '“', '”');
-                if (text.Length < 8) continue; // 短人名/地名共享是合法的，不作泄漏判定。
+                if (text.Length < 16) continue; // 提高阈值至16字符（整句引用），避免常规生平/地名/身份描述短语误杀整篇导演扩写。
                 if (output.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0 &&
                     (hardFacts ?? string.Empty).IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0) return true;
             }

@@ -43,8 +43,26 @@ namespace AnimusForge.Illustrator.Context
         {
             if (hero == null || equipment == null) return null;
             var visible = VisibleEquipment(equipment);
+            uint color1 = (hero.Clan?.Kingdom != null && hero.Clan.Kingdom.Color != 0)
+                ? hero.Clan.Kingdom.Color
+                : (hero.MapFaction != null && hero.MapFaction.Color != 0)
+                    ? hero.MapFaction.Color
+                    : (hero.Clan != null && hero.Clan.Color != 0)
+                        ? hero.Clan.Color
+                        : (hero.Culture != null ? hero.Culture.Color : 0);
+
+            uint color2 = (hero.Clan?.Kingdom != null && hero.Clan.Kingdom.Color2 != 0)
+                ? hero.Clan.Kingdom.Color2
+                : (hero.MapFaction != null && hero.MapFaction.Color2 != 0)
+                    ? hero.MapFaction.Color2
+                    : (hero.Clan != null && hero.Clan.Color2 != 0)
+                        ? hero.Clan.Color2
+                        : (hero.Culture != null ? hero.Culture.Color2 : 0);
+
+            string bannerCode = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner ?? hero.ClanBanner)?.BannerCode;
+
             return new CharacterAppearanceSnapshot(visible.CalculateEquipmentCode(), hero.CharacterObject.GetBodyProperties(visible, -1).ToString(),
-                hero.ClanBanner?.BannerCode, hero.MapFaction?.Color ?? 0, hero.MapFaction?.Color2 ?? 0, hero.CharacterObject.Race, hero.IsFemale);
+                bannerCode, color1, color2, hero.CharacterObject.Race, hero.IsFemale);
         }
 
         internal static CharacterAppearanceSnapshot FromCharacter(CharacterObject character, Equipment equipment, int seed = -1)

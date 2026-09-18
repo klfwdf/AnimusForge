@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using MCM.Abstractions;
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
@@ -22,16 +23,22 @@ namespace AnimusForge.Illustrator
         public override string Id => "AnimusForge_Illustrator_v1";
         public override string DisplayName => "AnimusForge - AI 画卷生图系统 (Illustrator)";
         public override string FolderName => "AnimusForge";
-        public override string FormatType => "json2";
+        public override string FormatType => "json";
 
         private static List<string> _modelOptions = new List<string> { "*手动输入*" };
         private static Dropdown<string> _modelDropdown;
         private static readonly object _modelLock = new object();
         private static string _cachedModelsFilePath;
 
+        private static List<string> _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+        private static Dropdown<string> _directorModelDropdown;
+        private static readonly object _directorModelLock = new object();
+        private static string _cachedDirectorModelsFilePath;
+
         public IllustratorSettings()
         {
             FetchModelList = RequestModelListFetch;
+            FetchDirectorModelList = RequestDirectorModelListFetch;
             EditCustomStylePrompt = OpenCustomStylePromptEditor;
             EditNegativePrompt = OpenNegativePromptEditor;
         }
@@ -79,9 +86,21 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
+        private string _modelName = "black-forest-labs/FLUX.1-schnell";
+
         [SettingPropertyText("生图模型名称 (Model)", HintText = "生图模型名称。支持常规生图模型（如 FLUX.1-schnell、dall-e-3、gpt-image-1.5 等）以及对话原生多模态出图模型（如 gemini-3.1-flash-image 等，系统会自动识别并走对话图生图通道）。", Order = 5, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public string ModelName { get; set; } = "black-forest-labs/FLUX.1-schnell";
+        public string ModelName
+        {
+            get => _modelName;
+            set
+            {
+                string trimmed = (value ?? string.Empty).Trim();
+                if (_modelName == trimmed) return;
+                _modelName = trimmed;
+                SyncModelDropdownWithModelName(_modelName);
+            }
+        }
 
         [SettingPropertyDropdown("选择生图模型 (下拉选单)", Order = 6, RequireRestart = false, HintText = "点击上方“拉取生图模型列表”后，可从本下拉菜单中直接快速点选可用模型。若选“*手动输入*”，则使用上方文本框中输入的模型名称。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
@@ -96,20 +115,31 @@ namespace AnimusForge.Illustrator
             {
                 lock (_modelLock)
                 {
+                    _modelDropdown = value;
                     if (value != null && _modelOptions != null && value.SelectedIndex >= 0 && value.SelectedIndex < _modelOptions.Count)
                     {
                         string selected = _modelOptions[value.SelectedIndex];
                         if (!string.IsNullOrWhiteSpace(selected) && selected != "*手动输入*")
                         {
-                            ModelName = selected;
+                            _modelName = selected;
                             if (Instance != null && !ReferenceEquals(Instance, this))
                             {
                                 Instance.ModelName = selected;
                             }
                         }
                     }
-                    _modelDropdown = value;
                 }
+            }
+        }
+
+        private void SyncModelDropdownWithModelName(string modelName)
+        {
+            lock (_modelLock)
+            {
+                EnsureModelDropdown();
+                if (_modelOptions == null || _modelOptions.Count == 0 || _modelDropdown == null) return;
+                int idx = _modelOptions.IndexOf(modelName);
+                _modelDropdown.SelectedIndex = idx >= 0 ? idx : 0;
             }
         }
 
@@ -259,17 +289,110 @@ namespace AnimusForge.Illustrator
 
         [SettingPropertyInteger("随机", 0, 100, "0", Order = 12, RequireRestart = false, HintText = "0 沿用旧版，不追加随机提示词。数值越高，越鼓励取景、留白、景深与光影表现的变化；人物外貌、装备、纹章和已确认游戏事实仍须保持一致。这是提示词指导强度，不是模型采样参数。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public int Randomness { get; set; } = 0;
+        public int Randomness { get; set; } = 50;
+
+        [SettingPropertyBool("优先对话多模态生图通道 (/chat/completions)", HintText = "开启后生图请求走 /chat/completions 多模态通道：参考图随消息发送、整幅画面一次性生成，避免 /images/edits 以参考图为底的姿势与光照锚定。需要模型支持多模态生图（如 gemini-3.1-flash-image）。关闭则按端点与模型自动判定（默认先试 /images/edits）。启用精确端点地址时此项不生效。", Order = 13, RequireRestart = false)]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public bool PreferChatImageProtocol { get; set; } = false;
+
+        private string _directorModelName = "";
+
+        [SettingPropertyText("导演 API 端点地址 (Base URL)", HintText = "视觉导演 API 端点地址。留空时自动复用主模块正文对话 API 端点；若需指定独立的 LLM 模型或第三方中转作为提示词扩写导演，请在此填写 Base URL（如 https://api.openai.com/v1）。", Order = 1, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public string DirectorApiBaseUrl { get; set; } = "";
+
+        [SettingPropertyText("导演 API 密钥 (API Key)", HintText = "视觉导演 API 密钥 (Key)。留空时自动复用主模块正文对话 API Key。", Order = 2, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public string DirectorApiKey { get; set; } = "";
+
+        [SettingPropertyButton("拉取导演模型列表", Content = "点击拉取", Order = 3, RequireRestart = false, HintText = "向填写的导演 Base URL 发起查询拉取可用模型列表。若未填写导演 Base URL，则向主模块正文 API 发起拉取。")]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public Action FetchDirectorModelList { get; set; }
+
+        [SettingPropertyText("导演模型名称 (Model)", HintText = "视觉导演模型名称（如 gpt-4o、qwen-plus、deepseek-chat 等）。留空时自动复用主模块正文对话模型。", Order = 4, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public string DirectorModelName
+        {
+            get => _directorModelName;
+            set
+            {
+                string trimmed = (value ?? string.Empty).Trim();
+                if (_directorModelName == trimmed) return;
+                _directorModelName = trimmed;
+                SyncDirectorModelDropdownWithModelName(_directorModelName);
+            }
+        }
+
+        [SettingPropertyDropdown("选择导演模型 (下拉选单)", Order = 5, RequireRestart = false, HintText = "点击上方“拉取导演模型列表”后可从下拉菜单点选。若选“*手动输入*”，则使用上方文本框输入的模型名；若选“*默认(复用正文API)*”，则留空复用主模块。")]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public Dropdown<string> DirectorModelDropdown
+        {
+            get
+            {
+                EnsureDirectorModelDropdown();
+                return _directorModelDropdown;
+            }
+            set
+            {
+                lock (_directorModelLock)
+                {
+                    _directorModelDropdown = value;
+                    if (value != null && _directorModelOptions != null && value.SelectedIndex >= 0 && value.SelectedIndex < _directorModelOptions.Count)
+                    {
+                        string selected = _directorModelOptions[value.SelectedIndex];
+                        if (selected == "*默认(复用正文API)*")
+                        {
+                            _directorModelName = "";
+                            if (Instance != null && !ReferenceEquals(Instance, this))
+                            {
+                                Instance.DirectorModelName = "";
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(selected) && selected != "*手动输入*")
+                        {
+                            _directorModelName = selected;
+                            if (Instance != null && !ReferenceEquals(Instance, this))
+                            {
+                                Instance.DirectorModelName = selected;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SyncDirectorModelDropdownWithModelName(string modelName)
+        {
+            lock (_directorModelLock)
+            {
+                EnsureDirectorModelDropdown();
+                if (_directorModelOptions == null || _directorModelOptions.Count == 0 || _directorModelDropdown == null) return;
+                if (string.IsNullOrWhiteSpace(modelName))
+                {
+                    int defaultIdx = _directorModelOptions.IndexOf("*默认(复用正文API)*");
+                    _directorModelDropdown.SelectedIndex = defaultIdx >= 0 ? defaultIdx : 0;
+                }
+                else
+                {
+                    int idx = _directorModelOptions.IndexOf(modelName);
+                    _directorModelDropdown.SelectedIndex = idx >= 0 ? idx : 0;
+                }
+            }
+        }
+
+        [SettingPropertyInteger("导演提词最大 Token 上限 (Max Tokens)", 600, 2000, "0 Token", HintText = "视觉导演大语言模型生成提示词的最大 Token 上限（建议 1000~1500）。过小会导致长篇画卷描述被截断，过大可能导致部分模型生成冗余或超时。", Order = 6, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public int DirectorMaxTokens { get; set; } = 1500;
 
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
+        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
 
         private bool _enableEncyclopediaIllustration = true;
         private bool _enableConversationIllustration = true;
 
         [SettingPropertyBool("英雄百科页注入【纪事插画】按钮", HintText = "开启后，在英雄百科页面将注入【纪事插画】按钮，可点击针对该英雄的 3D 模型与身份生平生成史诗级肖像立绘。", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
+        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool EnableEncyclopediaIllustration
         {
             get => _enableEncyclopediaIllustration;
@@ -282,7 +405,7 @@ namespace AnimusForge.Illustrator
         }
 
         [SettingPropertyBool("现场对话界面注入【场景插画】按钮", HintText = "开启后，在地图对话与场景面对面对话时注入【场景插画】按钮，可点击根据现场双方站姿与对话语境生成生动的会晤史诗插画。", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup("3. 周报与展示场景", GroupOrder = 3)]
+        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool EnableConversationIllustration
         {
             get => _enableConversationIllustration;
@@ -295,15 +418,11 @@ namespace AnimusForge.Illustrator
         }
 
         [SettingPropertyInteger("本地缓存最大保留张数", 20, 1000, "0 张", HintText = "生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("4. 存储与性能", GroupOrder = 4)]
+        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
         public int MaxCacheCount { get; set; } = 200;
 
-
-        // 提示词扩写：底层永久自动开启，并全自动复用 AnimusForge 正文对话 API 配置
+        // 提示词扩写：底层永久自动开启，无 MCM 开关
         public bool EnableLlmPromptExpansion { get; set; } = true;
-        public string DirectorApiBaseUrl { get; set; } = "";
-        public string DirectorApiKey { get; set; } = "";
-        public string DirectorModelName { get; set; } = "";
 
         private void OpenCustomStylePromptEditor()
         {
@@ -611,8 +730,324 @@ namespace AnimusForge.Illustrator
                 }
             }
 
+            SaveCurrentSettings();
             RequestMcmRefresh();
             InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 成功获取 {result.Models.Count} 个可用模型！已优先选中: {ModelName}，下拉选单已即时刷新。", Color.FromUint(4278255360u)));
+        }
+
+        public static void SaveCurrentSettings()
+        {
+            try
+            {
+                if (BaseSettingsProvider.Instance != null)
+                {
+                    var target = Instance ?? (BaseSettingsProvider.Instance.GetSettings("AnimusForge_Illustrator_v1") as IllustratorSettings);
+                    if (target != null)
+                    {
+                        BaseSettingsProvider.Instance.SaveSettings(target);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] SaveCurrentSettings failed: {ex.Message}");
+            }
+        }
+
+        private void EnsureDirectorModelDropdown()
+        {
+            lock (_directorModelLock)
+            {
+                if (_directorModelDropdown == null)
+                {
+                    TryLoadCachedDirectorModels();
+
+                    if (_directorModelOptions == null || _directorModelOptions.Count == 0)
+                    {
+                        _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+                    }
+                    if (!string.IsNullOrWhiteSpace(DirectorModelName) && !_directorModelOptions.Contains(DirectorModelName))
+                    {
+                        _directorModelOptions.Add(DirectorModelName);
+                    }
+                    int idx = string.IsNullOrWhiteSpace(DirectorModelName)
+                        ? _directorModelOptions.IndexOf("*默认(复用正文API)*")
+                        : _directorModelOptions.IndexOf(DirectorModelName);
+                    _directorModelDropdown = new Dropdown<string>(_directorModelOptions, idx >= 0 ? idx : 0);
+                }
+            }
+        }
+
+        private bool _directorModelFetchInProgress;
+
+        private void RequestDirectorModelListFetch()
+        {
+            if (!IllustratorRuntime.IsMainThread)
+            {
+                IllustratorRuntime.Post(RequestDirectorModelListFetch);
+                return;
+            }
+
+            if (_directorModelFetchInProgress)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 导演模型列表正在拉取中，请稍候。", Color.FromUint(4294967040u)));
+                return;
+            }
+
+            string baseUrl = (DirectorApiBaseUrl ?? string.Empty).Trim().TrimEnd('/');
+            string apiKey = (DirectorApiKey ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                if (TryGetHostChatEndpointForFetch(out string hostUrl, out string hostKey))
+                {
+                    baseUrl = hostUrl.TrimEnd('/');
+                    if (string.IsNullOrWhiteSpace(apiKey))
+                    {
+                        apiKey = hostKey;
+                    }
+                    InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 未配置独立端点，正在向主模块正文 API 拉取模型列表...", Color.FromUint(4294967040u)));
+                }
+                else
+                {
+                    InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 请先填写导演 API 端点地址，或在主模块配置正文 API！", Color.FromUint(4294901760u)));
+                    return;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(apiKey) && TryGetHostChatEndpointForFetch(out _, out string hostKey))
+                {
+                    apiKey = hostKey;
+                }
+                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 正在向独立导演 API 端点拉取模型列表...", Color.FromUint(4294967040u)));
+            }
+
+            _directorModelFetchInProgress = true;
+
+            bool started = IllustratorRuntime.Start(() => FetchDirectorModelListAsync(baseUrl, apiKey), (result, error) =>
+            {
+                _directorModelFetchInProgress = false;
+                if (error != null)
+                {
+                    InformationManager.DisplayMessage(new InformationMessage($"[视觉导演] 拉取模型异常: {error.Message}", Color.FromUint(4294901760u)));
+                    return;
+                }
+                ApplyFetchedDirectorModels(result);
+            });
+
+            if (!started)
+            {
+                _directorModelFetchInProgress = false;
+                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 后台任务繁忙，请稍后重试。", Color.FromUint(4294901760u)));
+            }
+        }
+
+        private static async Task<ModelListFetchResult> FetchDirectorModelListAsync(string baseUrl, string apiKey)
+        {
+            try
+            {
+                string modelsUrl = baseUrl;
+                if (modelsUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+                    modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/chat/completions".Length).TrimEnd('/');
+                if (modelsUrl.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
+                    modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/images/generations".Length).TrimEnd('/');
+
+                if (!modelsUrl.EndsWith("/models", StringComparison.OrdinalIgnoreCase))
+                {
+                    modelsUrl = modelsUrl.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)
+                        ? modelsUrl + "/models"
+                        : modelsUrl + "/v1/models";
+                }
+
+                using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) })
+                using (var request = new HttpRequestMessage(HttpMethod.Get, modelsUrl))
+                {
+                    if (!string.IsNullOrWhiteSpace(apiKey))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+                    }
+
+                    using (var resp = await client.SendAsync(request).ConfigureAwait(false))
+                    {
+                        string json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            return new ModelListFetchResult { Error = $"拉取失败 (HTTP {(int)resp.StatusCode}): {json}" };
+                        }
+
+                        JObject parsed = JObject.Parse(json);
+                        JArray data = parsed["data"] as JArray;
+                        if (data == null || data.Count == 0)
+                        {
+                            return new ModelListFetchResult { Error = "接口返回成功，但未解析到可用模型数据。" };
+                        }
+
+                        var list = new List<string>();
+                        foreach (var item in data)
+                        {
+                            string id = item["id"]?.ToString();
+                            if (!string.IsNullOrWhiteSpace(id))
+                            {
+                                list.Add(id);
+                            }
+                        }
+
+                        list.Sort((a, b) =>
+                        {
+                            bool aIsChat = a.IndexOf("gpt", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("qwen", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("deepseek", StringComparison.OrdinalIgnoreCase) >= 0 || a.IndexOf("claude", StringComparison.OrdinalIgnoreCase) >= 0;
+                            bool bIsChat = b.IndexOf("gpt", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("qwen", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("deepseek", StringComparison.OrdinalIgnoreCase) >= 0 || b.IndexOf("claude", StringComparison.OrdinalIgnoreCase) >= 0;
+                            if (aIsChat && !bIsChat) return -1;
+                            if (!aIsChat && bIsChat) return 1;
+                            return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
+                        });
+
+                        SaveCachedDirectorModels(list);
+                        return new ModelListFetchResult { Models = list };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ModelListFetchResult { Error = ex.Message };
+            }
+        }
+
+        private void ApplyFetchedDirectorModels(ModelListFetchResult result)
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (result == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 拉取模型异常: 空结果", Color.FromUint(4294901760u)));
+                return;
+            }
+            if (!string.IsNullOrWhiteSpace(result.Error))
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"[视觉导演] {result.Error}", Color.FromUint(4294901760u)));
+                return;
+            }
+
+            lock (_directorModelLock)
+            {
+                _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+                _directorModelOptions.AddRange(result.Models);
+
+                int selectedIdx = string.IsNullOrWhiteSpace(DirectorModelName)
+                    ? 1
+                    : _directorModelOptions.IndexOf(DirectorModelName);
+                if (selectedIdx < 0) selectedIdx = 0;
+
+                _directorModelDropdown = new Dropdown<string>(_directorModelOptions, selectedIdx);
+            }
+
+            SaveCurrentSettings();
+            RequestMcmRefresh();
+            InformationManager.DisplayMessage(new InformationMessage($"[视觉导演] 成功获取 {result.Models.Count} 个可用模型！下拉选单已即时刷新。", Color.FromUint(4278255360u)));
+        }
+
+        private static string GetDirectorCacheFilePath()
+        {
+            if (string.IsNullOrEmpty(_cachedDirectorModelsFilePath))
+            {
+                try
+                {
+                    string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    string configDir = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "Configs", "AnimusForge");
+                    if (!Directory.Exists(configDir))
+                    {
+                        Directory.CreateDirectory(configDir);
+                    }
+                    _cachedDirectorModelsFilePath = Path.Combine(configDir, "illustrator_director_models_cache.json");
+                }
+                catch
+                {
+                    _cachedDirectorModelsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "illustrator_director_models_cache.json");
+                }
+            }
+            return _cachedDirectorModelsFilePath;
+        }
+
+        private static void TryLoadCachedDirectorModels()
+        {
+            try
+            {
+                string path = GetDirectorCacheFilePath();
+                if (File.Exists(path))
+                {
+                    string json = File.ReadAllText(path, Encoding.UTF8);
+                    var cached = JsonConvert.DeserializeObject<List<string>>(json);
+                    if (cached != null && cached.Count > 0)
+                    {
+                        if (_directorModelOptions == null)
+                        {
+                            _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+                        }
+                        foreach (var m in cached)
+                        {
+                            if (!string.IsNullOrWhiteSpace(m) && !_directorModelOptions.Contains(m))
+                            {
+                                _directorModelOptions.Add(m);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] Failed to load cached director models: {ex.Message}");
+            }
+        }
+
+        private static void SaveCachedDirectorModels(List<string> models)
+        {
+            try
+            {
+                string path = GetDirectorCacheFilePath();
+                string json = JsonConvert.SerializeObject(models, Formatting.Indented);
+                File.WriteAllText(path, json, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] Failed to save cached director models: {ex.Message}");
+            }
+        }
+
+        private static bool TryGetHostChatEndpointForFetch(out string apiUrl, out string apiKey)
+        {
+            apiUrl = string.Empty;
+            apiKey = string.Empty;
+            try
+            {
+                Type duelSettingsType = HarmonyLib.AccessTools.TypeByName("AnimusForge.DuelSettings");
+                if (duelSettingsType != null)
+                {
+                    System.Reflection.MethodInfo getSettingsMethod = HarmonyLib.AccessTools.Method(duelSettingsType, "GetSettings");
+                    object hostSettings = getSettingsMethod?.Invoke(null, null);
+                    if (hostSettings != null)
+                    {
+                        System.Reflection.PropertyInfo apiKeyProp = HarmonyLib.AccessTools.Property(duelSettingsType, "ApiKey");
+                        System.Reflection.PropertyInfo apiUrlProp = HarmonyLib.AccessTools.Property(duelSettingsType, "ApiUrl");
+                        System.Reflection.MethodInfo getEffectiveUrlMethod = HarmonyLib.AccessTools.Method(duelSettingsType, "GetEffectiveApiUrl", new[] { typeof(string) });
+
+                        apiKey = (apiKeyProp?.GetValue(hostSettings) as string ?? string.Empty).Trim();
+                        string rawUrl = (apiUrlProp?.GetValue(hostSettings) as string ?? string.Empty).Trim();
+                        if (getEffectiveUrlMethod != null)
+                        {
+                            apiUrl = (getEffectiveUrlMethod.Invoke(null, new object[] { rawUrl }) as string ?? rawUrl).Trim();
+                        }
+                        else
+                        {
+                            apiUrl = rawUrl;
+                        }
+                        return !string.IsNullOrWhiteSpace(apiUrl);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] TryGetHostChatEndpointForFetch failed: {ex.Message}");
+            }
+            return false;
         }
     }
 }
