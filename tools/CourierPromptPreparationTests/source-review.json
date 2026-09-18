@@ -1,265 +1,269 @@
 {
-  "baseline": "154f720698e3813b3276b9f301b06b395c26a1dd",
-  "main": "437925b856fae76b4e9ee207e96ba048f35d5a67",
-  "path": "CourierDeliveryBehavior.cs",
-  "beforeSha256": "5a730f9b91f8e5ac13f125ed9618bd840c1a2622d4bcd68bf4f7683058039752",
-  "afterSha256": "933885e8d03aa9b702af6a0e5e7dc7f71258c9d964adb9c318bca81de24c7a2a",
-  "hunks": [
-    {
-      "start": 4297,
-      "before": [
-        "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration), \"reply_prepare\");\n"
-      ],
-      "after": [
-        "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
-        "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"reply_prepare\");\n"
-      ]
-    },
-    {
-      "start": 4310,
-      "before": [
-        "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration), \"inbound_prepare\");\n"
-      ],
-      "after": [
-        "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
-        "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"inbound_prepare\");\n"
-      ]
-    },
-    {
-      "start": 4357,
-      "before": [
-        "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
-      ],
-      "after": [
-        "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-      ]
-    },
-    {
-      "start": 4365,
-      "before": [
-        "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration));\n"
-      ],
-      "after": [
-        "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
-        "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
-      ]
-    },
-    {
-      "start": 4370,
-      "before": [
-        "\t\t\tFailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
-      ],
-      "after": [
-        "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
-      ]
-    },
-    {
-      "start": 4374,
-      "before": [
-        "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
-      ],
-      "after": [
-        "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-      ]
-    },
-    {
-      "start": 4383,
-      "before": [
-        "\t\t\t\t\"courier_reply_admission\", () => CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
-      ],
-      "after": [
-        "\t\t\t\t\"courier_reply_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
-      ]
-    },
-    {
-      "start": 4394,
-      "before": [
-        "\t\t\tCourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration, preparedHistory);\n"
-      ],
-      "after": [
-        "\t\t\tCourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, promptRun, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);\n",
-        "\t\t\tif (request == null) return;\n"
-      ]
-    },
-    {
-      "start": 4484,
-      "before": [],
-      "after": [
-        "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
-      ]
-    },
-    {
-      "start": 4497,
-      "before": [
-        "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"), \"reply_prepare_failed\");\n"
-      ],
-      "after": [
-        "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"); }, \"reply_prepare_failed\");\n"
-      ]
-    },
-    {
-      "start": 4501,
-      "before": [
-        "\tprivate CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(CourierSession session, Hero recipient, long runtimeGeneration, CourierPreparedHistory preparedHistory)\n",
-        "\t{\n",
-        "\t\tLog(\"llm main start session=\" + session.Id + \" recipient=\" + SafeHeroId(recipient));\n",
-        "\t\tstring extraFact = preparedHistory.ExtraFact;\n",
-        "\t\tstring historyText = preparedHistory.Text;\n",
-        "\t\tList<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, out var preprocessMentionedEntities, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);\n",
-        "\t\tMyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? \"neutral\", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentionedEntities);\n",
-        "\t\tList<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);\n",
-        "\t\tselectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();\n",
-        "\t\tstring extras = (ctx?.Extras ?? \"\").Trim();\n",
-        "\t\textras = AppendCourierPlayerRecentActions(extras, recipient);\n",
-        "\t\tif (HasPreprocessRuleHit(selectedRuleHits, \"worldmap_party_command\") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, \"worldmap_party_command\"))\n",
-        "\t\t{\n",
-        "\t\t\tstring commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(recipient, recipient.CharacterObject, -1);\n",
-        "\t\t\textras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + \"\\n\" + commandTasks);\n",
-        "\t\t}\n",
-        "\t\tList<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(recipient, -1, includeCurrentActiveSceneSession: false);\n",
-        "\t\tstring npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(recipient);\n",
-        "\t\tList<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);\n",
-        "\t\tLogCourierContextAlignment(\"reply\", session.Id, recipient, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);\n",
-        "\t\treturn new CourierReplyGenerationRequest\n",
-        "\t\t{\n",
-        "\t\t\tSessionId = session.Id,\n",
-        "\t\t\tRuntimeGeneration = runtimeGeneration,\n",
-        "\t\t\tRecipientHeroId = SafeHeroId(recipient),\n",
-        "\t\t\tRecipientName = recipient.Name?.ToString() ?? \"NPC\",\n",
-        "\t\t\tLetterText = session.LetterText ?? \"\",\n",
-        "\t\t\tExtraFact = extraFact ?? \"\",\n",
-        "\t\t\tHistoryText = historyText,\n",
-        "\t\t\tExtras = extras ?? \"\",\n",
-        "\t\t\tEntityPostprocessContext = ctx?.EntityPostprocessContext ?? \"\",\n",
-        "\t\t\tSelectedRuleHits = selectedRuleHits,\n",
-        "\t\t\tMessages = messages ?? new List<object>()\n",
-        "\t\t};\n",
-        "\t}\n"
-      ],
-      "after": []
-    },
-    {
-      "start": 4840,
-      "before": [
-        "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
-      ],
-      "after": [
-        "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-      ]
-    },
-    {
-      "start": 4848,
-      "before": [
-        "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration));\n"
-      ],
-      "after": [
-        "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
-        "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
-      ]
-    },
-    {
-      "start": 4853,
-      "before": [
-        "\t\t\tFailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
-      ],
-      "after": [
-        "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
-      ]
-    },
-    {
-      "start": 4857,
-      "before": [
-        "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
-      ],
-      "after": [
-        "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
-      ]
-    },
-    {
-      "start": 4867,
-      "before": [
-        "\t\t\t\t\"courier_inbound_admission\", () => CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
-      ],
-      "after": [
-        "\t\t\t\t\"courier_inbound_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
-      ]
-    },
-    {
-      "start": 4879,
-      "before": [
-        "\t\t\tInboundLetterGenerationRequest request = BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration, preparedHistory);\n"
-      ],
-      "after": [
-        "\t\t\tInboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, promptRun, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);\n",
-        "\t\t\tif (request == null) return;\n"
-      ]
-    },
-    {
-      "start": 4888,
-      "before": [],
-      "after": [
-        "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
-      ]
-    },
-    {
-      "start": 4901,
-      "before": [
-        "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"), \"inbound_letter_prepare_failed\");\n"
-      ],
-      "after": [
-        "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"); }, \"inbound_letter_prepare_failed\");\n"
-      ]
-    },
-    {
-      "start": 4905,
-      "before": [
-        "\tprivate InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(CourierSession session, Hero sender, string fallbackLetter, long runtimeGeneration, CourierPreparedHistory preparedHistory)\n",
-        "\t{\n",
-        "\t\tstring seed = string.IsNullOrWhiteSpace(session.InboundIntentText)\n",
-        "\t\t\t? (string.IsNullOrWhiteSpace(session.LetterText) ? fallbackLetter : session.LetterText.Trim())\n",
-        "\t\t\t: session.InboundIntentText.Trim();\n",
-        "\t\tstring routingInput = \"[NPC主动写信意图] \" + seed;\n",
-        "\t\tLog(\"inbound letter llm start session=\" + session.Id + \" sender=\" + SafeHeroId(sender));\n",
-        "\t\tstring extraFact = preparedHistory.ExtraFact;\n",
-        "\t\tstring historyText = preparedHistory.Text;\n",
-        "\t\tList<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, routingInput, extraFact, out var preprocessMentionedEntities, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);\n",
-        "\t\tMyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(sender, routingInput, extraFact, sender.Culture?.StringId ?? \"neutral\", hasAnyHero: true, targetCharacter: sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentionedEntities);\n",
-        "\t\tList<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);\n",
-        "\t\tselectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();\n",
-        "\t\tstring extras = (ctx?.Extras ?? \"\").Trim();\n",
-        "\t\textras = AppendCourierPlayerRecentActions(extras, sender);\n",
-        "\t\tif (HasPreprocessRuleHit(selectedRuleHits, \"worldmap_party_command\") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, \"worldmap_party_command\"))\n",
-        "\t\t{\n",
-        "\t\t\tstring commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);\n",
-        "\t\t\textras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + \"\\n\" + commandTasks);\n",
-        "\t\t}\n",
-        "\t\tList<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);\n",
-        "\t\tstring npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(sender);\n",
-        "\t\tList<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);\n",
-        "\t\tLogCourierContextAlignment(\"inbound\", session.Id, sender, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);\n",
-        "\t\treturn new InboundLetterGenerationRequest\n",
-        "\t\t{\n",
-        "\t\t\tSessionId = session.Id,\n",
-        "\t\t\tRuntimeGeneration = runtimeGeneration,\n",
-        "\t\t\tSenderHeroId = SafeHeroId(sender),\n",
-        "\t\t\tSeed = seed ?? \"\",\n",
-        "\t\t\tFallbackLetter = fallbackLetter ?? \"\",\n",
-        "\t\t\tSelectedRuleHits = selectedRuleHits,\n",
-        "\t\t\tMessages = messages ?? new List<object>()\n",
-        "\t\t};\n",
-        "\t}\n"
-      ],
-      "after": []
-    }
-  ],
-  "dependencies": {
-    "CourierDeliveryBehavior.PromptPreparation.cs": "c40e693a3363498329b264bf62b627f9020c5b7460663691715adb4c46f54591",
-    "tools/CourierPromptPreparationTests/run.py": "c5eaa7ddbc558fb31fade684d542e504c308178cfde956c003f5d7cc94e5d0e0",
-    "tools/CourierPromptPreparationTests/Harness.cs.txt": "3f528f1b32d10fb041feea89d759378a93a4073b320a5bb0273ac889880c21b2",
-    "tools/CourierPromptPreparationTests/run_liveness.py": "673b660184161bb92e27c47dcb666338de218ec8c97020701aba8ed8971e8d97",
-    "tools/CourierPromptPreparationTests/LivenessHooks.cs.txt": "a9ce176c74d8674029eface8ded2eb4f5b36a68e4a4657bec4812f020f69b69e",
-    "tools/CourierPromptPreparationTests/LivenessCases.cs.txt": "1f5d28dcf2c53d180d3063791499a26bd6fae308718308c3eb90c72b21561b0f",
-    "tools/CourierPromptPreparationTests/liveness-review.json": "0a714bc0559cc5cb8bf9ebd13c61f6b73b7e25147a2156a8a6f9844679e4c8e7",
-    "tools/CourierPromptPreparationTests/liveness_review.py": "abea7086532a98d07f2ce5b11895a268d34e305b1fab34524c9f54c7de724614"
+ "baseline": "154f720698e3813b3276b9f301b06b395c26a1dd",
+ "main": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+ "path": "CourierDeliveryBehavior.cs",
+ "beforeSha256": "5a730f9b91f8e5ac13f125ed9618bd840c1a2622d4bcd68bf4f7683058039752",
+ "afterSha256": "933885e8d03aa9b702af6a0e5e7dc7f71258c9d964adb9c318bca81de24c7a2a",
+ "hunks": [
+  {
+   "start": 4297,
+   "before": [
+    "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration), \"reply_prepare\");\n"
+   ],
+   "after": [
+    "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
+    "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"reply_prepare\");\n"
+   ]
+  },
+  {
+   "start": 4310,
+   "before": [
+    "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration), \"inbound_prepare\");\n"
+   ],
+   "after": [
+    "\t\tCourierPromptRun promptRun = BeginCourierPromptRun(session, runtimeGeneration);\n",
+    "\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => BeginInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, promptRun), \"inbound_prepare\");\n"
+   ]
+  },
+  {
+   "start": 4357,
+   "before": [
+    "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
+   ],
+   "after": [
+    "\tprivate void BeginCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+   ]
+  },
+  {
+   "start": 4365,
+   "before": [
+    "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration));\n"
+   ],
+   "after": [
+    "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
+    "\t\t\t_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
+   ]
+  },
+  {
+   "start": 4370,
+   "before": [
+    "\t\t\tFailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
+   ],
+   "after": [
+    "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\");\n"
+   ]
+  },
+  {
+   "start": 4374,
+   "before": [
+    "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
+   ],
+   "after": [
+    "\tprivate async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+   ]
+  },
+  {
+   "start": 4383,
+   "before": [
+    "\t\t\t\t\"courier_reply_admission\", () => CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
+   ],
+   "after": [
+    "\t\t\t\t\"courier_reply_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
+   ]
+  },
+  {
+   "start": 4394,
+   "before": [
+    "\t\t\tCourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration, preparedHistory);\n"
+   ],
+   "after": [
+    "\t\t\tCourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, promptRun, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);\n",
+    "\t\t\tif (request == null) return;\n"
+   ]
+  },
+  {
+   "start": 4484,
+   "before": [],
+   "after": [
+    "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
+   ]
+  },
+  {
+   "start": 4497,
+   "before": [
+    "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"), \"reply_prepare_failed\");\n"
+   ],
+   "after": [
+    "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, \"reply_generation_failed\"); }, \"reply_prepare_failed\");\n"
+   ]
+  },
+  {
+   "start": 4501,
+   "before": [
+    "\tprivate CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(CourierSession session, Hero recipient, long runtimeGeneration, CourierPreparedHistory preparedHistory)\n",
+    "\t{\n",
+    "\t\tLog(\"llm main start session=\" + session.Id + \" recipient=\" + SafeHeroId(recipient));\n",
+    "\t\tstring extraFact = preparedHistory.ExtraFact;\n",
+    "\t\tstring historyText = preparedHistory.Text;\n",
+    "\t\tList<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, out var preprocessMentionedEntities, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);\n",
+    "\t\tMyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? \"neutral\", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentionedEntities);\n",
+    "\t\tList<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);\n",
+    "\t\tselectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();\n",
+    "\t\tstring extras = (ctx?.Extras ?? \"\").Trim();\n",
+    "\t\textras = AppendCourierPlayerRecentActions(extras, recipient);\n",
+    "\t\tif (HasPreprocessRuleHit(selectedRuleHits, \"worldmap_party_command\") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, \"worldmap_party_command\"))\n",
+    "\t\t{\n",
+    "\t\t\tstring commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(recipient, recipient.CharacterObject, -1);\n",
+    "\t\t\textras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + \"\\n\" + commandTasks);\n",
+    "\t\t}\n",
+    "\t\tList<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(recipient, -1, includeCurrentActiveSceneSession: false);\n",
+    "\t\tstring npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(recipient);\n",
+    "\t\tList<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);\n",
+    "\t\tLogCourierContextAlignment(\"reply\", session.Id, recipient, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);\n",
+    "\t\treturn new CourierReplyGenerationRequest\n",
+    "\t\t{\n",
+    "\t\t\tSessionId = session.Id,\n",
+    "\t\t\tRuntimeGeneration = runtimeGeneration,\n",
+    "\t\t\tRecipientHeroId = SafeHeroId(recipient),\n",
+    "\t\t\tRecipientName = recipient.Name?.ToString() ?? \"NPC\",\n",
+    "\t\t\tLetterText = session.LetterText ?? \"\",\n",
+    "\t\t\tExtraFact = extraFact ?? \"\",\n",
+    "\t\t\tHistoryText = historyText,\n",
+    "\t\t\tExtras = extras ?? \"\",\n",
+    "\t\t\tEntityPostprocessContext = ctx?.EntityPostprocessContext ?? \"\",\n",
+    "\t\t\tSelectedRuleHits = selectedRuleHits,\n",
+    "\t\t\tMessages = messages ?? new List<object>()\n",
+    "\t\t};\n",
+    "\t}\n"
+   ],
+   "after": []
+  },
+  {
+   "start": 4840,
+   "before": [
+    "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration)\n"
+   ],
+   "after": [
+    "\tprivate void BeginInboundLetterGenerationOnMainThread(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+   ]
+  },
+  {
+   "start": 4848,
+   "before": [
+    "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration));\n"
+   ],
+   "after": [
+    "\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n",
+    "\t\t\t_ = Task.Run(() => PrepareAndGenerateInboundLetterOffMainThreadAsync(sessionId, runtimeGeneration, promptRun));\n"
+   ]
+  },
+  {
+   "start": 4853,
+   "before": [
+    "\t\t\tFailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
+   ],
+   "after": [
+    "\t\t\tif (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, null, \"inbound_letter_generation_failed\");\n"
+   ]
+  },
+  {
+   "start": 4857,
+   "before": [
+    "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration)\n"
+   ],
+   "after": [
+    "\tprivate async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)\n"
+   ]
+  },
+  {
+   "start": 4867,
+   "before": [
+    "\t\t\t\t\"courier_inbound_admission\", () => CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration), CancellationToken.None).ConfigureAwait(false);\n"
+   ],
+   "after": [
+    "\t\t\t\t\"courier_inbound_admission\", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);\n"
+   ]
+  },
+  {
+   "start": 4879,
+   "before": [
+    "\t\t\tInboundLetterGenerationRequest request = BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration, preparedHistory);\n"
+   ],
+   "after": [
+    "\t\t\tInboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, promptRun, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);\n",
+    "\t\t\tif (request == null) return;\n"
+   ]
+  },
+  {
+   "start": 4888,
+   "before": [],
+   "after": [
+    "\t\t\t\tif (!IsCourierPromptRunCurrent(promptRun)) return;\n"
+   ]
+  },
+  {
+   "start": 4901,
+   "before": [
+    "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"), \"inbound_letter_prepare_failed\");\n"
+   ],
+   "after": [
+    "\t\t\tEnqueueMainThreadActionForGeneration(runtimeGeneration, () => { if (IsCourierPromptRunCurrent(promptRun)) FailInboundLetterGenerationOnMainThread(sessionId, runtimeGeneration, fallbackLetter, \"inbound_letter_generation_failed\"); }, \"inbound_letter_prepare_failed\");\n"
+   ]
+  },
+  {
+   "start": 4905,
+   "before": [
+    "\tprivate InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(CourierSession session, Hero sender, string fallbackLetter, long runtimeGeneration, CourierPreparedHistory preparedHistory)\n",
+    "\t{\n",
+    "\t\tstring seed = string.IsNullOrWhiteSpace(session.InboundIntentText)\n",
+    "\t\t\t? (string.IsNullOrWhiteSpace(session.LetterText) ? fallbackLetter : session.LetterText.Trim())\n",
+    "\t\t\t: session.InboundIntentText.Trim();\n",
+    "\t\tstring routingInput = \"[NPC主动写信意图] \" + seed;\n",
+    "\t\tLog(\"inbound letter llm start session=\" + session.Id + \" sender=\" + SafeHeroId(sender));\n",
+    "\t\tstring extraFact = preparedHistory.ExtraFact;\n",
+    "\t\tstring historyText = preparedHistory.Text;\n",
+    "\t\tList<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, routingInput, extraFact, out var preprocessMentionedEntities, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);\n",
+    "\t\tMyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(sender, routingInput, extraFact, sender.Culture?.StringId ?? \"neutral\", hasAnyHero: true, targetCharacter: sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentionedEntities);\n",
+    "\t\tList<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);\n",
+    "\t\tselectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds) ?? new List<string>();\n",
+    "\t\tstring extras = (ctx?.Extras ?? \"\").Trim();\n",
+    "\t\textras = AppendCourierPlayerRecentActions(extras, sender);\n",
+    "\t\tif (HasPreprocessRuleHit(selectedRuleHits, \"worldmap_party_command\") || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, \"worldmap_party_command\"))\n",
+    "\t\t{\n",
+    "\t\t\tstring commandTasks = WorldMapPartyCommandBehavior.BuildCurrentNpcCommandTasksPromptForExternal(sender, sender.CharacterObject, -1);\n",
+    "\t\t\textras = string.IsNullOrWhiteSpace(extras) ? commandTasks : (extras.TrimEnd() + \"\\n\" + commandTasks);\n",
+    "\t\t}\n",
+    "\t\tList<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);\n",
+    "\t\tstring npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(sender);\n",
+    "\t\tList<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);\n",
+    "\t\tLogCourierContextAlignment(\"inbound\", session.Id, sender, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);\n",
+    "\t\treturn new InboundLetterGenerationRequest\n",
+    "\t\t{\n",
+    "\t\t\tSessionId = session.Id,\n",
+    "\t\t\tRuntimeGeneration = runtimeGeneration,\n",
+    "\t\t\tSenderHeroId = SafeHeroId(sender),\n",
+    "\t\t\tSeed = seed ?? \"\",\n",
+    "\t\t\tFallbackLetter = fallbackLetter ?? \"\",\n",
+    "\t\t\tSelectedRuleHits = selectedRuleHits,\n",
+    "\t\t\tMessages = messages ?? new List<object>()\n",
+    "\t\t};\n",
+    "\t}\n"
+   ],
+   "after": []
   }
+ ],
+ "dependencies": {
+  "CourierDeliveryBehavior.PromptPreparation.cs": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a",
+  "tools/CourierPromptPreparationTests/run.py": "7f12eef86eb5360dfc7ed920c6288b64f04e3ec0bf064cec08f08cd76be10ed2",
+  "tools/CourierPromptPreparationTests/Harness.cs.txt": "bd3202afeee93208df9aafa9758b79b96a83dabd921ebabb264b763557ce1f4d",
+  "tools/CourierPromptPreparationTests/run_liveness.py": "a8b9304c3ace06163b7d108937118fcba43ad5283438cbadf18e4748469973d4",
+  "tools/CourierPromptPreparationTests/LivenessHooks.cs.txt": "a9ce176c74d8674029eface8ded2eb4f5b36a68e4a4657bec4812f020f69b69e",
+  "tools/CourierPromptPreparationTests/LivenessCases.cs.txt": "1f5d28dcf2c53d180d3063791499a26bd6fae308718308c3eb90c72b21561b0f",
+  "tools/CourierPromptPreparationTests/liveness-review.json": "6572eea7d553a16e1a8ea6e821e70634277f365bbe39bf2cb4a5ec7902dd907a",
+  "tools/CourierPromptPreparationTests/liveness_review.py": "abea7086532a98d07f2ce5b11895a268d34e305b1fab34524c9f54c7de724614",
+  "CourierDeliveryBehavior.PromptSchedule.cs": "10e5be80035997f9996bb5951ddd50d334fc9ce774fce09f1676de6ff394f83e"
+ },
+ "reviewNotes": [
+  "J04f 2026-09-19: PromptPreparation.cs replaces the single Task.Run over BuildCourierPreparedPrompt with BuildCourierPreparedPromptScheduledAsync (new partial PromptSchedule.cs: owner phases on game thread, preprocess retrieval + shared routing on thread pool). Harness stubs assert the thread placement; Program assertions unchanged."
+ ]
 }

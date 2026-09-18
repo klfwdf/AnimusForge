@@ -30352,8 +30352,40 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private List<string> RunCourierRulePreprocessInternal(Hero targetHero, string input, string extraFact, out MentionedWorldEntities mentionedEntities, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, IEnumerable<string> excludedRuleIds)
 	{
-		List<string> result = new List<string>();
-		mentionedEntities = new MentionedWorldEntities();
+		CourierPreprocessRequest request = BeginCourierRulePreprocess(targetHero, input, extraFact, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIds);
+		if (request == null)
+		{
+			mentionedEntities = new MentionedWorldEntities();
+			return new List<string>();
+		}
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(request.Target);
+		try
+		{
+			return RunCourierRulePreprocessRetrieval(request, out mentionedEntities);
+		}
+		finally
+		{
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
+			AIConfigHandler.SetGuardrailSemanticContext("");
+		}
+	}
+
+	/// <summary>Detached input for the Courier preprocess retrieval; captured on the game thread.</summary>
+	internal sealed class CourierPreprocessRequest
+	{
+		internal string Input;
+		internal string TargetHeroId;
+		internal string TargetCharacterId;
+		internal PromptRuntimeTargetBinding Target;
+		internal HashSet<string> ExcludedRuleIds;
+		internal string GuardrailSemanticContext;
+		internal string NpcLastUtterance;
+	}
+
+	/// <summary>Step 1 (game thread): exclusion set, target binding, history context. Null when the GCCZ scene bypasses preprocess.</summary>
+	internal CourierPreprocessRequest BeginCourierRulePreprocess(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, IEnumerable<string> excludedRuleIds)
+	{
 		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
@@ -30362,25 +30394,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex))
 		{
 			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
-			return result;
+			return null;
 		}
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
-		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
-		try
+		return new CourierPreprocessRequest
 		{
-			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
-			string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
-			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet, out mentionedEntities);
-			result = PromptRuleIdPolicy.OrderPreprocessHitIds(hits);
-			Logger.Log("CourierDelivery", "[Preprocess] targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " npcRecall=" + (string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on") + " hits=" + (result.Count == 0 ? "(none)" : string.Join(",", result)));
-			return result;
-		}
-		finally
-		{
-			AIConfigHandler.ClearGuardrailRuntimeTarget();
-			AIConfigHandler.SetGuardrailSemanticContext("");
-		}
+			Input = input,
+			TargetHeroId = targetHero?.StringId,
+			TargetCharacterId = targetCharacter?.StringId,
+			Target = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex),
+			ExcludedRuleIds = excludedRuleIdSet,
+			GuardrailSemanticContext = BuildGuardrailSemanticContext(targetHero, extraFact),
+			NpcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex)
+		};
+	}
+
+	/// <summary>Step 2 (any thread): semantic rule retrieval on the detached request. Caller applies the target binding to the ambient context.</summary>
+	internal List<string> RunCourierRulePreprocessRetrieval(CourierPreprocessRequest request, out MentionedWorldEntities mentionedEntities)
+	{
+		AIConfigHandler.SetGuardrailSemanticContext(request.GuardrailSemanticContext);
+		List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(request.Input, request.NpcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, request.ExcludedRuleIds, out mentionedEntities);
+		List<string> result = PromptRuleIdPolicy.OrderPreprocessHitIds(hits);
+		Logger.Log("CourierDelivery", "[Preprocess] targetHero=" + (request.TargetHeroId ?? "null") + " targetCharacter=" + (request.TargetCharacterId ?? "null") + " npcRecall=" + (string.IsNullOrWhiteSpace(request.NpcLastUtterance) ? "off" : "on") + " hits=" + (result.Count == 0 ? "(none)" : string.Join(",", result)));
+		return result;
 	}
 
 	public static string BuildHeroPrisonerStatusPromptLineForExternal(Hero hero)

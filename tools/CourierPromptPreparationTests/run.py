@@ -11,7 +11,14 @@ source=(ROOT/'CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding=
 phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 if args.mutate=='worker_assembly':
  source=source.replace('return await RunCourierOwnerPhaseAsync(generation, source + "_assemble", () =>','return await Task.Run(() =>').replace('                return assemble(input, prepared);\n            }, CancellationToken.None).ConfigureAwait(false);','                return assemble(input, prepared);\n            }).ConfigureAwait(false);')
-if args.mutate=='main_preprocess':source=source.replace('await Task.Run(() => BuildCourierPreparedPrompt(input))','await RunCourierOwnerPhaseAsync(generation, source + "_unsafe_preprocess", () => BuildCourierPreparedPrompt(input), CancellationToken.None)')
+schedule=(ROOT/'CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig')
+# J04f: the unsafe mutation moves the Courier preprocess retrieval (network/ONNX) onto an owner phase.
+if args.mutate=='main_preprocess':
+ old_run='CourierPreprocessRetrievalResult retrieved = await Task.Run(() =>';assert schedule.count(old_run)==1
+ schedule=schedule.replace(old_run,'CourierPreprocessRetrievalResult retrieved = await RunCourierOwnerPhaseAsync(generation, source + "_unsafe_preprocess", () =>')
+ nl='\r\n' if '\r\n' in schedule else '\n'
+ tail='\t\t\t}).ConfigureAwait(false);'+nl+'\t\t\tpreprocessRuleHits'
+ assert schedule.count(tail)==1;schedule=schedule.replace(tail,tail.replace('}).ConfigureAwait','}, CancellationToken.None).ConfigureAwait'),1)
 if args.mutate=='skip_accept':source=source.replace('if (!IsCourierPromptInputCurrent(input))','if (false)')
 if args.mutate=='wrong_direction':source=source.replace('inbound ? "[NPC主动写信意图] " + Seed : LetterText','inbound ? LetterText : "[NPC主动写信意图] " + Seed')
 if args.mutate=='skip_source':source=source.replace('return string.Equals(input.Session.LetterText, input.LetterText, StringComparison.Ordinal)','return true || string.Equals(input.Session.LetterText, input.LetterText, StringComparison.Ordinal)')
@@ -26,6 +33,7 @@ if args.old_worker:harness='#define OLD_WORKER\n'+harness
 out=HERE/'.generated'/('old-worker' if args.old_worker else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'Prompt.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text(harness,encoding='utf-8')
-project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'],executable=True)
+(out/'Schedule.cs').write_text(schedule,encoding='utf-8')
+project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Schedule.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'],executable=True)
 code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

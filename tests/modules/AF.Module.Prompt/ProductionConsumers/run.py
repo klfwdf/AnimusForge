@@ -64,6 +64,18 @@ ordered(scheduled, "RunNativeConversationMainThreadFuncAsync(\"prompt_build_begi
 assert scheduled.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 2, "admission must be re-validated on both game-thread steps"
 assert scheduled.count("SaveRuntimeGuard.IsStale(runtimeGeneration") == 2, "generation checked after each hop"
 
+courier_sched = method("CourierDeliveryBehavior.PromptSchedule.cs", "private async Task<CourierPreparedPrompt> BuildCourierPreparedPromptScheduledAsync(")
+# J04f: Courier owner phases (game thread) bracket two thread-pool retrieval steps; each owner phase re-checks run + source.
+ordered(courier_sched,
+        'RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"', "owner.BeginCourierRulePreprocess(",
+        "await Task.Run(", "owner.RunCourierRulePreprocessRetrieval(",
+        'RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"', "owner.BeginSharedPromptBuild(",
+        "owner.RunSharedPromptRouting(phases)",
+        'RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"', "owner.CompleteSharedPromptBuild(phases")
+assert courier_sched.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 3, "all three Courier owner phases re-validate run and source"
+courier_prep = method("CourierDeliveryBehavior.PromptPreparation.cs", "private async Task<T> PrepareCourierPromptRequestAsync<T>(")
+assert "BuildCourierPreparedPromptScheduledAsync(input, promptRun, generation, source)" in courier_prep and "Task.Run(() => BuildCourierPreparedPrompt(input))" not in courier_prep, "Courier no longer runs the whole builder in one Task.Run"
+
 policy = method("PolicySystem/History/PolicyHistoryRetrievalService.cs", "internal static bool TryRetrieveDialogueByMentions(")
 if args.mutate == "remove-policy-terms":
     policy = policy.replace("PromptListRetrievalService.BuildMentionTerms(mentionedEntities)", "new List<string>()")

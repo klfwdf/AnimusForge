@@ -35,19 +35,51 @@ namespace AnimusForge {
   internal static void MainOnly(){if(!TWParallel.IsMainThread()){Interlocked.Increment(ref WrongThread);throw new Exception("fixture game read on worker");}Reads++;}
   internal static void Reset(){WrongThread=Routing=Contexts=Assemblies=Reads=0;SyncAllowed=ThrowRouting=ThrowAssembly=NullContext=NullHits=Command=EmptyExtras=EmptyHistory=false;Input=Culture=Facts=PreviousFacts=null;Character=null;Entered.Reset();Release.Set();SaveRuntimeGuard.Generation=1;}
  }
- public partial class MyBehavior {
+  public partial class MyBehavior {
   public sealed class ShoutPromptContext { public string Extras="extras",EntityPostprocessContext="entities",PreprocessExcludedRuleBlock="excluded";public List<string> PreprocessRuleIds=new(){"ctx"}; }
-  internal static List<string> RunCourierRulePreprocessForExternal(Hero hero,string input,string extraFact,out object entities,CharacterObject character,int targetAgentIndex,IEnumerable<string> excludedRuleIds){
+  internal static MyBehavior Instance=new();
+  internal static ShoutPromptContext CreateEmptyShoutPromptContext()=>new(){Extras="",PreprocessRuleIds=new()};
+  internal sealed class CourierPreprocessRequest { internal string Input,ExtraFact; internal CharacterObject Character; internal AnimusForge.PromptRuntimeTargetBinding Target; }
+  // Step 1 (game thread): the legacy synchronous facade and the scheduled Begin both capture here.
+  internal CourierPreprocessRequest BeginCourierRulePreprocess(Hero hero,string input,string extraFact,CharacterObject character,string kingdomIdOverride,int targetAgentIndex,IEnumerable<string> excludedRuleIds){
+   Probe.MainOnly();return new(){Input=input,ExtraFact=extraFact,Character=character};
+  }
+  // Step 2 (worker): counts as the single routing I/O; the same probe gates the legacy Task.Run shape.
+  internal List<string> RunCourierRulePreprocessRetrieval(CourierPreprocessRequest request,out MentionedWorldEntities entities){
    if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("routing I/O on main thread");}
-   Interlocked.Increment(ref Probe.Routing);Probe.Input=input;Probe.Facts=extraFact;Probe.Character=character;entities=new object();Probe.Entered.Set();
+   Interlocked.Increment(ref Probe.Routing);Probe.Input=request.Input;Probe.Facts=request.ExtraFact;Probe.Character=request.Character;entities=new MentionedWorldEntities();Probe.Entered.Set();
    if(!Probe.Release.Wait(5000))throw new Exception("fixture routing timed out");if(Probe.ThrowRouting)throw new PreprocessFormatException();
    return Probe.NullHits?null:new(){"route","ban"};
   }
-  internal static ShoutPromptContext BuildShoutPromptContextForExternal(Hero hero,string input,string extraFact,string cultureId,bool hasAnyHero,CharacterObject targetCharacter,int targetAgentIndex,IEnumerable<string> excludedRuleIds,IEnumerable<string> forcedPreprocessRuleIds,object preprocessMentionedEntities){
-   Probe.Contexts++;Probe.Culture=cultureId;return Probe.NullContext?null:new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
+  internal static List<string> RunCourierRulePreprocessForExternal(Hero hero,string input,string extraFact,out MentionedWorldEntities entities,CharacterObject character,int targetAgentIndex,IEnumerable<string> excludedRuleIds){
+   var request=Instance.BeginCourierRulePreprocess(hero,input,extraFact,character,null,targetAgentIndex,excludedRuleIds);return Instance.RunCourierRulePreprocessRetrieval(request,out entities);
+  }
+  public sealed class WeeklyPromptSnapshot { }
+  internal PromptBuildPhases BeginSharedPromptBuild(Hero hero,string input,string extraFact,string cultureId,bool hasAnyHero,CharacterObject targetCharacter,string kingdomIdOverride,int targetAgentIndex,bool suppressDynamicRuleAndLore,bool usePrefetchedLoreContext,string prefetchedLoreContext,IEnumerable<string> excludedRuleIds,IEnumerable<string> preprocessExcludedRuleIds,IEnumerable<string> forcedPreprocessRuleIds,MentionedWorldEntities preprocessMentionedEntities){
+   Probe.MainOnly();return new(){Culture=cultureId};
+  }
+  internal void RunSharedPromptRouting(PromptBuildPhases phases){ if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared routing on main thread");} }
+  internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly){
+   Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;return Probe.NullContext?null:new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
+  }
+  internal static ShoutPromptContext BuildShoutPromptContextForExternal(Hero hero,string input,string extraFact,string cultureId,bool hasAnyHero,CharacterObject targetCharacter,int targetAgentIndex,IEnumerable<string> excludedRuleIds,IEnumerable<string> forcedPreprocessRuleIds,MentionedWorldEntities preprocessMentionedEntities){
+   var phases=Instance.BeginSharedPromptBuild(hero,input,extraFact,cultureId,hasAnyHero,targetCharacter,null,targetAgentIndex,false,false,null,excludedRuleIds,null,forcedPreprocessRuleIds,preprocessMentionedEntities);
+   if(phases==null)return null;Instance.RunSharedPromptRouting(phases);return Instance.CompleteSharedPromptBuild(phases,hero,targetCharacter,null);
   }
   internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForExternal(Hero hero,int index,bool includeCurrentActiveSceneSession){Probe.MainOnly();if(includeCurrentActiveSceneSession)throw new Exception("scene included");return new(){new()};}
  }
+ internal readonly struct PromptRuntimeTargetBinding { }
+ public sealed class MentionedWorldEntities { }
+ internal sealed class PromptBuildPhases { internal string Culture; internal PromptBuildRequestStub Request=new(); }
+ internal sealed class PromptBuildRequestStub { internal PromptRuntimeTargetBinding Target; }
+ internal static class AIConfigHandler {
+  internal static IDisposable BeginGuardrailRuntimeScope()=>new Scope();
+  private sealed class Scope:IDisposable{public void Dispose(){}}
+  internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding b){}
+  internal static void ClearGuardrailRuntimeTarget(){}
+  internal static void SetGuardrailSemanticContext(string s){}
+ }
+ internal static class Logger { internal static void Log(string c,string m){} }
  public partial class ShoutBehavior {
   internal static bool HasInjectedRuleBlockForExternal(string extras,string rule)=>false;
   internal static string BuildHeroStableRoleContextForExternal(Hero hero){Probe.MainOnly();return "role:"+hero.Id;}
