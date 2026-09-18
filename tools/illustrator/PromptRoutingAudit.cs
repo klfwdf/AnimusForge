@@ -197,7 +197,7 @@ public static class PromptRoutingAudit
         Check(((string)profileType.GetMethod("BuildHardFactsSummary").Invoke(historical, null)).Contains("事件记录中的夜晚"), "non-conversation historical time remains intact");
         Type extractor = assembly.GetType("AnimusForge.Illustrator.Context.EnvironmentVisualExtractor", true);
         string[] locations = { "tavern", "prison", "lordshall", "keep", "mod_room", "" };
-        string[] expected = { "酒馆", "石牢", "议事正厅", "议事正厅", "用途未确认", "用途未确认" };
+        string[] expected = { "酒馆", "牢房", "议事正厅", "议事正厅", "用途未确认", "用途未确认" };
         for (int i = 0; i < locations.Length; i++)
         {
             object profile = Activator.CreateInstance(profileType);
@@ -210,7 +210,7 @@ public static class PromptRoutingAudit
             object profile = Activator.CreateInstance(profileType);
             Call(extractor, "ResolveBesiegedLocation", profile, outdoor, "", false);
             string location = (string)profileType.GetProperty("SpecificLocation").GetValue(profile);
-            Check(location.Contains(outdoor ? "旷野谈判" : "具体地点未确认"), "siege requires evidence before asserting a gate/wall parley: " + outdoor);
+            Check(location.Contains(outdoor ? "未读取到子场景" : "具体地点未确认"), "siege requires evidence before asserting a gate/wall parley: " + outdoor);
         }
 
         Type reference = assembly.GetType(core + "IllustrationReferenceImage", true);
