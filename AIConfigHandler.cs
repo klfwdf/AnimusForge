@@ -4791,30 +4791,14 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
-			List<PromptRuleRecallRule> recallRules = new List<PromptRuleRecallRule>(allEnabledRulePrompts.Count);
+			List<PromptRuleRetrievalRule> detachedRules = new List<PromptRuleRetrievalRule>(allEnabledRulePrompts.Count);
 			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
 			{
 				GuardrailRulePromptConfig rule = allEnabledRulePrompts[j];
-				recallRules.Add(rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
-					? new PromptRuleRecallRule(null)
-					: new PromptRuleRecallRule(PromptRuleTextEvidence.SemanticSeeds(rule.Id, rule.Instruction ?? "", rule.TriggerKeywords)));
+				detachedRules.Add(rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
+					? new PromptRuleRetrievalRule("", "", "", null)
+					: new PromptRuleRetrievalRule(rule.Id, rule.Group, rule.Instruction, rule.TriggerKeywords));
 			}
-			PromptRuleSemanticRecall recall = PromptRuleSemanticRecall.Compute(list, recallRules, vec2,
-				seed => TryGetPhraseEmbedding(seed, out var vector) ? vector : null, DotProductNormalized);
-			List<PromptRuleIntentDescriptor> descriptors = allEnabledRulePrompts.Select(rule =>
-				rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
-					? new PromptRuleIntentDescriptor("")
-					: new PromptRuleIntentDescriptor(rule.Id)).ToList();
-			GuardrailEvalSnapshot guardrailEvalSnapshot = PromptRuleEvaluationAssembler.Create(text, descriptors, recall);
-			int guardrailReturnCapFromMcm = returnCap;
-			int num6 = Math.Max(1, list.Count);
-			int guardrailRerankBudget = GetGuardrailRerankBudget(guardrailReturnCapFromMcm);
-			int guardrailPerIntentRerank = GetGuardrailPerIntentRerank(guardrailRerankBudget, num6);
-			int guardrailPerIntentRecall = GetGuardrailPerIntentRecall(guardrailPerIntentRerank);
-			guardrailEvalSnapshot.IntentCount = num6;
-			guardrailEvalSnapshot.ReturnCap = guardrailReturnCapFromMcm;
-			guardrailEvalSnapshot.RerankPerIntent = guardrailPerIntentRerank;
-			guardrailEvalSnapshot.RecallPerIntent = guardrailPerIntentRecall;
 			OnnxCrossEncoderReranker onnxCrossEncoderReranker = null;
 			bool flag2 = false;
 			try
@@ -4826,40 +4810,31 @@ public static class AIConfigHandler
 			{
 				flag2 = false;
 			}
-			string text4 = (flag2 ? ((list.Count > 1) ? "rerank_multi" : "rerank") : ((list.Count > 1) ? "semantic_multi" : "semantic"));
-			guardrailEvalSnapshot.MatchMode = text4;
-			PromptRuleAggregation aggregatedScores = new PromptRuleAggregation();
-			for (int k = 0; k < list.Count; k++)
+			PromptRuleRetrievalResult result = PromptRuleRetrievalPipeline.Run(text, list, detachedRules, vec2,
+				returnCap, flag2, seed => TryGetPhraseEmbedding(seed, out var vector) ? vector : null,
+				DotProductNormalized, flag2 ? (Func<string, IReadOnlyList<string>, IReadOnlyList<float>>)((query, texts) =>
 			{
-				PromptRuleRecallIntent intent = list[k];
-				if (intent.Vector == null || intent.Vector.Length == 0) continue;
-				PromptRuleIntentSelection selected = PromptRuleIntentSelector.Select(recall, k, intent.Text,
-					intent.Weight, descriptors, guardrailPerIntentRecall, guardrailPerIntentRerank,
-					index => PromptRuleTextEvidence.RerankText(allEnabledRulePrompts[index].Id, allEnabledRulePrompts[index].Group, allEnabledRulePrompts[index].Instruction, allEnabledRulePrompts[index].TriggerKeywords),
-					flag2 ? (Func<string, IReadOnlyList<string>, IReadOnlyList<float>>)((query, texts) =>
-					{
-						List<float> scores;
-						return onnxCrossEncoderReranker.TryScoreBatch(query, texts, out scores) ? scores : null;
-					}) : null);
-				if (selected.Scores.Count == 0) continue;
+				List<float> scores;
+				return onnxCrossEncoderReranker.TryScoreBatch(query, texts, out scores) ? scores : null;
+			}) : null);
+			GuardrailEvalSnapshot guardrailEvalSnapshot = result.Snapshot;
+			int guardrailReturnCapFromMcm = returnCap;
+			int num6 = guardrailEvalSnapshot.IntentCount;
+			int guardrailRerankBudget = result.RerankBudget;
+			int guardrailPerIntentRerank = result.PerIntentRerank;
+			int guardrailPerIntentRecall = result.PerIntentRecall;
+			string text4 = guardrailEvalSnapshot.MatchMode;
+			foreach (PromptRuleIntentSelection selected in result.IntentSelections)
+			{
 				try
 				{
 					PromptRuleSelection evidence = selected.Selection;
 					Logger.Log("GuardrailSemantic", $"semantic_accept source={(flag2 && selected.Reranked ? "cross_encoder" : "recall_fallback")} mode=scored selected={selected.Scores.Count} strictSelected={evidence.StrictCount} topN={guardrailPerIntentRerank} minScore={0.21f:0.000} bestRaw={evidence.BestFinal:0.000} second={evidence.SecondFinal:0.000} bestEvidence={evidence.BestRaw:0.000} secondEvidence={evidence.SecondRaw:0.000}");
 				}
 				catch { }
-				for (int rank = 0; rank < selected.Scores.Count; rank++)
-				{
-					PromptRuleIntentScore score = selected.Scores[rank];
-					string id = (score.RuleId ?? "").Trim();
-					if (id.Length == 0 || !guardrailEvalSnapshot.Rules.ContainsKey(id)) continue;
-					aggregatedScores.Add(id, score.FinalScore, rank + 1, score.MatchedSeed, score.MatchedIntent);
-				}
 			}
-			PromptRuleEvaluationResult evaluated = PromptRuleEvaluationAssembler.Finish(guardrailEvalSnapshot,
-				aggregatedScores, guardrailReturnCapFromMcm, guardrailPerIntentRerank, list.Count, text4);
-			List<GuardrailRuleEval> list4 = evaluated.Ranked;
-			int num16 = evaluated.CandidatePoolCount;
+			List<GuardrailRuleEval> list4 = result.Evaluated.Ranked;
+			int num16 = result.Evaluated.CandidatePoolCount;
 			try
 			{
 				Logger.Log("GuardrailSemantic", $"candidate_pool mode={text4} returnCap={guardrailReturnCapFromMcm} rerankBudget={guardrailRerankBudget} rerankPerIntent={guardrailPerIntentRerank} recallPerIntent={guardrailPerIntentRecall} intents={num6} got={num16}");

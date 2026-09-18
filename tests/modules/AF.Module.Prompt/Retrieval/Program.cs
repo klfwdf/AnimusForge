@@ -337,6 +337,25 @@ internal static class Program
             "evaluation cache isolates reload, captured MCM, eligibility and target changes");
         Check(PromptRuleEvaluationCacheKey.Build("input", true, "|exclude:duel", 1, false, true, false, 2, 4, "reward", "hero:a")
             != RuleKey(), "evaluation cache isolates auxiliary route and exclusions");
+        var pipelineRules = new[]
+        {
+            new PromptRuleRetrievalRule("reward", "trade", "", new[] { "gift" }),
+            new PromptRuleRetrievalRule("marriage", "social", "", new[] { "marriage" })
+        };
+        var pipelineIntents = new[] { new PromptRuleRecallIntent("request", new[] { 1f }, 1f) };
+        float[] EmbedRule(string seed) => seed == "gift" ? new[] { 0.8f } : seed == "marriage" ? new[] { 0.6f } : null;
+        var semanticPipeline = PromptRuleRetrievalPipeline.Run("semantic-key", pipelineIntents, pipelineRules,
+            null, 1, false, EmbedRule, (a, b) => a[0] * b[0], null);
+        Check(semanticPipeline.Snapshot.Rules["reward"].Hit && !semanticPipeline.Snapshot.Rules["marriage"].Hit
+            && semanticPipeline.Snapshot.MatchMode == "semantic", "production pipeline selects semantic recall without ONNX");
+        var rerankPipeline = PromptRuleRetrievalPipeline.Run("rerank-key", pipelineIntents, pipelineRules,
+            null, 1, true, EmbedRule, (a, b) => a[0] * b[0], (_, _) => new[] { 0.2f, 0.9f });
+        Check(rerankPipeline.Snapshot.Rules["marriage"].Hit && !rerankPipeline.Snapshot.Rules["reward"].Hit
+            && rerankPipeline.IntentSelections.Single().Reranked, "production pipeline honors deterministic reranker evidence");
+        var failedPipeline = PromptRuleRetrievalPipeline.Run("failure-key", pipelineIntents, pipelineRules,
+            null, 1, true, EmbedRule, (a, b) => a[0] * b[0], (_, _) => null);
+        Check(failedPipeline.Snapshot.Rules["reward"].Hit && failedPipeline.Snapshot.MatchMode == "rerank"
+            && !failedPipeline.IntentSelections.Single().Reranked, "production pipeline keeps semantic failure fallback and mode");
         var aggregate = new PromptRuleAggregation();
         aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
         aggregate.Add("marriage", 0.6f, 1, "second", "intent b");

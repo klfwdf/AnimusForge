@@ -31,6 +31,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationAssembler.cs" Link="PromptRuleEvaluationAssembler.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptAuxiliaryRuleEvaluation.cs" Link="PromptAuxiliaryRuleEvaluation.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationCacheKey.cs" Link="PromptRuleEvaluationCacheKey.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleRetrievalPipeline.cs" Link="PromptRuleRetrievalPipeline.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleAggregation.cs" Link="PromptRuleAggregation.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleFinalRanking.cs" Link="PromptRuleFinalRanking.cs" />
     <Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
