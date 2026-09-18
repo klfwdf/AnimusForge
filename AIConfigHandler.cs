@@ -59,15 +59,6 @@ public static class AIConfigHandler
 		public string Instruction;
 	}
 
-	private sealed class GuardrailIntentInput
-	{
-		public string Text;
-
-		public float[] Vector;
-
-		public float Weight = 1f;
-	}
-
 	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
 	{
 		string text = (detail ?? "").Trim();
@@ -1520,112 +1511,6 @@ public static class AIConfigHandler
 		return text2.Replace("\r", " ").Replace("\n", " ").Trim();
 	}
 
-	private static List<string> SplitGuardrailIntents(string input, int maxParts = IntentQueryOptimizer.MaxCombinedIntentCount)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			string text = NormalizeSemanticText(input);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return list;
-			}
-			List<string> list2 = new List<string>();
-			StringBuilder stringBuilder = new StringBuilder();
-			foreach (char c in text)
-			{
-				if (c == '。' || c == '！' || c == '!' || c == '？' || c == '?' || c == '；' || c == ';' || c == '，' || c == ',' || c == '、' || c == '\n' || c == '\r')
-				{
-					string text2 = stringBuilder.ToString().Trim();
-					if (!string.IsNullOrWhiteSpace(text2))
-					{
-						list2.Add(text2);
-					}
-					stringBuilder.Clear();
-				}
-				else
-				{
-					stringBuilder.Append(c);
-				}
-			}
-			string text3 = stringBuilder.ToString().Trim();
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				list2.Add(text3);
-			}
-			if (list2.Count <= 0)
-			{
-				list2.Add(text);
-			}
-			List<string> list3 = new List<string>();
-			string[] array = new string[13]
-			{
-				"然后", "顺便", "另外", "再说", "并且", "而且", "以及", "同时", "还有", "再加上",
-				"顺带", "并且还", "以及还"
-			};
-			for (int j = 0; j < list2.Count; j++)
-			{
-				string text4 = (list2[j] ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text4))
-				{
-					continue;
-				}
-				bool flag = false;
-				foreach (string text5 in array)
-				{
-					int num = text4.IndexOf(text5, StringComparison.Ordinal);
-					if (num > 1 && num < text4.Length - text5.Length - 1)
-					{
-						string text6 = text4.Substring(0, num).Trim();
-						string text7 = text4.Substring(num + text5.Length).Trim();
-						if (text6.Length >= 2)
-						{
-							list3.Add(text6);
-						}
-						if (text7.Length >= 2)
-						{
-							list3.Add(text7);
-						}
-						flag = true;
-						break;
-					}
-				}
-				if (!flag)
-				{
-					list3.Add(text4);
-				}
-			}
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			list.Add(text);
-			hashSet.Add(text);
-			for (int l = 0; l < list3.Count; l++)
-			{
-				if (list.Count >= Math.Max(1, maxParts))
-				{
-					break;
-				}
-				string text8 = NormalizeSemanticText(list3[l]);
-				if (!string.IsNullOrWhiteSpace(text8) && text8.Length >= 2 && hashSet.Add(text8))
-				{
-					list.Add(text8);
-				}
-			}
-		}
-		catch
-		{
-		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts));
-		if (list.Count <= 0)
-		{
-			string text9 = NormalizeSemanticText(input);
-			if (!string.IsNullOrWhiteSpace(text9))
-			{
-				list = IntentQueryOptimizer.OptimizeSplitIntents(new List<string> { text9 }, 1);
-			}
-		}
-		return list;
-	}
-
 	private static float DotProductNormalized(float[] a, float[] b)
 	{
 		try
@@ -1736,131 +1621,6 @@ public static class AIConfigHandler
 			result.AnchorRawFloor = 0.95f;
 		}
 		return result;
-	}
-
-	private static List<string> GetBuiltInIntentAnchorSeeds(string ruleTag)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			string text = (ruleTag ?? "").Trim().ToLowerInvariant();
-			List<string> guardrailKeywordsByTag = GetGuardrailKeywordsByTag(ruleTag);
-			if (guardrailKeywordsByTag != null && guardrailKeywordsByTag.Count > 0)
-			{
-				list.AddRange(guardrailKeywordsByTag);
-			}
-			switch (text)
-			{
-			case "reward":
-				list.Add("我想和你做点生意");
-				list.Add("我想和你交易");
-				list.Add("我们谈谈买卖");
-				list.Add("我想买东西");
-				list.Add("我想卖东西");
-				list.Add("看看你有什么货");
-				list.Add("谈个价格");
-				list.Add("交换物品");
-				break;
-			case "loan":
-				list.Add("我想借钱周转");
-				list.Add("我想赊账");
-				list.Add("我欠你钱");
-				list.Add("还款期限怎么定");
-				list.Add("谈还款日");
-				break;
-			case "duel":
-				list.Add("我想和你决斗");
-				list.Add("我们单挑");
-				list.Add("来比试一场");
-				list.Add("你敢不敢决斗");
-				break;
-			case "surroundings":
-				list.Add("这里是哪里");
-				list.Add("附近有什么地方");
-				list.Add("离哪座城最近");
-				list.Add("这地方属于谁");
-				list.Add("往北往南有什么");
-				break;
-			}
-		}
-		catch
-		{
-		}
-		return NormalizeStringList(list, 96);
-	}
-
-	private static float GetBuiltInIntentEvidenceGate(string ruleTag, int inputLen)
-	{
-		float num = 0.52f;
-		switch ((ruleTag ?? "").Trim().ToLowerInvariant())
-		{
-		case "duel":
-			num = 0.52f;
-			break;
-		case "reward":
-			num = 0.47f;
-			break;
-		case "loan":
-			num = 0.52f;
-			break;
-		case "surroundings":
-			num = 0.56f;
-			break;
-		}
-		if (num < 0.2f)
-		{
-			num = 0.2f;
-		}
-		if (num > 0.92f)
-		{
-			num = 0.92f;
-		}
-		return num;
-	}
-
-	private static float ComputeBuiltInIntentSemanticEvidence(string ruleTag, List<GuardrailIntentInput> queryInputs, out string bestSeed)
-	{
-		bestSeed = "";
-		try
-		{
-			if (queryInputs == null || queryInputs.Count <= 0)
-			{
-				return 0f;
-			}
-			List<string> builtInIntentAnchorSeeds = GetBuiltInIntentAnchorSeeds(ruleTag);
-			if (builtInIntentAnchorSeeds == null || builtInIntentAnchorSeeds.Count <= 0)
-			{
-				return 0f;
-			}
-			float num = 0f;
-			for (int i = 0; i < builtInIntentAnchorSeeds.Count; i++)
-			{
-				string text = NormalizeSemanticText(builtInIntentAnchorSeeds[i]);
-				if (string.IsNullOrWhiteSpace(text) || !TryGetPhraseEmbedding(text, out var vec) || vec == null || vec.Length == 0)
-				{
-					continue;
-				}
-				for (int j = 0; j < queryInputs.Count; j++)
-				{
-					GuardrailIntentInput guardrailIntentInput = queryInputs[j];
-					if (guardrailIntentInput?.Vector == null || guardrailIntentInput.Vector.Length == 0)
-					{
-						continue;
-					}
-					float num2 = DotProductNormalized(guardrailIntentInput.Vector, vec) * Math.Max(0f, guardrailIntentInput.Weight);
-					if (num2 > num)
-					{
-						num = num2;
-						bestSeed = text;
-					}
-				}
-			}
-			return num;
-		}
-		catch
-		{
-			return 0f;
-		}
 	}
 
 	private static float ApplyGuardrailAmplifiedScore(float raw, float maxOther, float meanAll, GuardrailGateProfile p)
@@ -4952,8 +4712,6 @@ public static class AIConfigHandler
 		using IDisposable configurationScope = _promptConfiguration.BeginCapture();
 		long configurationRevision = _promptConfiguration.Read().Revision;
 		snapshot = null;
-		List<GuardrailIntentInput> list = new List<GuardrailIntentInput>();
-		List<string> list2 = new List<string>();
 		try
 		{
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
@@ -4998,12 +4756,10 @@ public static class AIConfigHandler
 				}
 				return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
-			appendInputs(SplitGuardrailIntents(userText, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
-			string text2 = NormalizeSemanticText(secondaryText);
-			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
-			{
-				appendInputs(SplitGuardrailIntents(text2, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
-			}
+			PromptRuleIntentInputBatch batch = PromptRuleIntentInputBatch.Collect(userText, secondaryText,
+				input => TryGetInputEmbedding(input, out var vector) ? vector : null);
+			List<PromptRuleRecallIntent> list = batch.Intents;
+			List<string> list2 = batch.Texts;
 			if (list.Count <= 0)
 			{
 				try
@@ -5035,9 +4791,6 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
-			List<PromptRuleRecallIntent> recallIntents = list.Select(intent => intent == null
-				? new PromptRuleRecallIntent("", null, 0f)
-				: new PromptRuleRecallIntent(intent.Text, intent.Vector, intent.Weight)).ToList();
 			List<PromptRuleRecallRule> recallRules = new List<PromptRuleRecallRule>(allEnabledRulePrompts.Count);
 			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
 			{
@@ -5046,7 +4799,7 @@ public static class AIConfigHandler
 					? new PromptRuleRecallRule(null)
 					: new PromptRuleRecallRule(PromptRuleTextEvidence.SemanticSeeds(rule.Id, rule.Instruction ?? "", rule.TriggerKeywords)));
 			}
-			PromptRuleSemanticRecall recall = PromptRuleSemanticRecall.Compute(recallIntents, recallRules, vec2,
+			PromptRuleSemanticRecall recall = PromptRuleSemanticRecall.Compute(list, recallRules, vec2,
 				seed => TryGetPhraseEmbedding(seed, out var vector) ? vector : null, DotProductNormalized);
 			List<PromptRuleIntentDescriptor> descriptors = allEnabledRulePrompts.Select(rule =>
 				rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
@@ -5078,8 +4831,8 @@ public static class AIConfigHandler
 			PromptRuleAggregation aggregatedScores = new PromptRuleAggregation();
 			for (int k = 0; k < list.Count; k++)
 			{
-				GuardrailIntentInput intent = list[k];
-				if (intent?.Vector == null || intent.Vector.Length == 0) continue;
+				PromptRuleRecallIntent intent = list[k];
+				if (intent.Vector == null || intent.Vector.Length == 0) continue;
 				PromptRuleIntentSelection selected = PromptRuleIntentSelector.Select(recall, k, intent.Text,
 					intent.Weight, descriptors, guardrailPerIntentRecall, guardrailPerIntentRerank,
 					index => PromptRuleTextEvidence.RerankText(allEnabledRulePrompts[index].Id, allEnabledRulePrompts[index].Group, allEnabledRulePrompts[index].Instruction, allEnabledRulePrompts[index].TriggerKeywords),
@@ -5158,37 +4911,6 @@ public static class AIConfigHandler
 			return false;
 		}
 
-		void appendInputs(List<string> intents, int perSourceLimit, float weight)
-		{
-			if (intents == null || intents.Count <= 0 || weight <= 0f || perSourceLimit <= 0)
-			{
-				return;
-			}
-			int num = 0;
-			for (int i = 0; i < intents.Count; i++)
-			{
-				if (list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
-				{
-					break;
-				}
-				string text4 = NormalizeSemanticText(intents[i]);
-				if (!string.IsNullOrWhiteSpace(text4) && TryGetInputEmbedding(text4, out var vec) && vec != null && vec.Length != 0)
-				{
-					num++;
-					if (num > perSourceLimit)
-					{
-						break;
-					}
-					list2.Add(text4);
-					list.Add(new GuardrailIntentInput
-					{
-						Text = text4,
-						Vector = vec,
-						Weight = weight
-					});
-				}
-			}
-		}
 	}
 
 	private static int GetGuardrailRerankBudget(int returnCap) => PromptRuleRanking.RerankBudget(returnCap);
