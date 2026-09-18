@@ -1218,54 +1218,12 @@ namespace AnimusForge.Illustrator.Engine
         public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (hero == null) return null;
-            string heroName = hero?.Name?.ToString() ?? hero?.StringId ?? string.Empty;
             try
             {
-                string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
-                {
-                    if (widget is CharacterTableauWidget cw)
-                    {
-                        if (appearance != null)
-                        {
-                            ApplyAppearance(cw, appearance);
-                            if (!string.IsNullOrWhiteSpace(equipmentCodeOverride))
-                                cw.EquipmentCode = equipmentCodeOverride;
-                            return;
-                        }
-                        var character = hero.CharacterObject ?? throw new InvalidOperationException("Hero character is unavailable.");
-                        var equipment = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
-                            ? Equipment.CreateFromEquipmentCode(equipmentCodeOverride)
-                            : (useCivilian ? hero.CivilianEquipment : hero.BattleEquipment);
-                        cw.BodyProperties = character.GetBodyProperties(equipment ?? character.Equipment, -1).ToString();
-                        cw.IsFemale = hero.IsFemale;
-                        cw.Race = character.Race;
-                        cw.StanceIndex = 0;
-                        string equipmentCode = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
-                            ? equipmentCodeOverride : equipment?.CalculateEquipmentCode();
-                        if (!string.IsNullOrEmpty(equipmentCode))
-                        {
-                            cw.EquipmentCode = equipmentCode;
-                        }
-                        if (hero.ClanBanner != null)
-                        {
-                            cw.BannerCodeText = hero.ClanBanner.BannerCode;
-                        }
-                        cw.ArmorColor1 = hero.MapFaction?.Color ?? 0;
-                        cw.ArmorColor2 = hero.MapFaction?.Color2 ?? 0;
-                        cw.IsVisible = true;
-                    }
-                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
-                string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
-                if (!string.IsNullOrWhiteSpace(b64))
-                {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait stage render extracted for {heroName} ({b64.Length} chars)");
-                }
-                return b64;
+                var frozen = await PrepareHeroPortraitAppearanceAsync(hero, useCivilian, equipmentCodeOverride, appearance, cancellationToken).ConfigureAwait(false);
+                return frozen == null ? null : await ExtractAppearancePortraitAsync(frozen, false, maxDimension, timeoutMs, cancellationToken, cleanTempFiles).ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Hero portrait offscreen error: {ex.Message}");
@@ -1279,51 +1237,12 @@ namespace AnimusForge.Illustrator.Engine
         public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (character == null) return null;
-            string charName = character?.Name?.ToString() ?? character?.StringId ?? string.Empty;
             try
             {
-                string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
-                {
-                    if (widget is CharacterTableauWidget cw)
-                    {
-                        if (appearance != null)
-                        {
-                            ApplyAppearance(cw, appearance);
-                            if (!string.IsNullOrWhiteSpace(equipmentCodeOverride))
-                                cw.EquipmentCode = equipmentCodeOverride;
-                            return;
-                        }
-                        var equipment = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
-                            ? Equipment.CreateFromEquipmentCode(equipmentCodeOverride)
-                            : (character.Equipment ?? character.FirstBattleEquipment);
-                        // 优先使用会话在场 Agent 的真实 BodyProperties（劫匪等随机 NPC 的实际脸），
-                        // 否则退回兵种模板体型（模板脸型范围内重新随机）
-                        cw.BodyProperties = !string.IsNullOrWhiteSpace(bodyProperties)
-                            ? bodyProperties
-                            : character.GetBodyProperties(equipment, -1).ToString();
-                        cw.IsFemale = character.IsFemale;
-                        cw.Race = character.Race;
-                        cw.StanceIndex = 0;
-                        string equipmentCode = !string.IsNullOrWhiteSpace(equipmentCodeOverride)
-                            ? equipmentCodeOverride : equipment?.CalculateEquipmentCode();
-                        if (!string.IsNullOrEmpty(equipmentCode))
-                        {
-                            cw.EquipmentCode = equipmentCode;
-                        }
-                        cw.IsVisible = true;
-                    }
-                }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: cancellationToken, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
-                string b64 = await ReadOffscreenPngBase64(path, maxDimension, cancellationToken).ConfigureAwait(false);
-                if (!string.IsNullOrWhiteSpace(b64))
-                {
-                    TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character portrait stage render extracted for {charName} ({b64.Length} chars)");
-                }
-                return b64;
+                var frozen = await PrepareCharacterPortraitAppearanceAsync(character, bodyProperties, equipmentCodeOverride, appearance, cancellationToken).ConfigureAwait(false);
+                return frozen == null ? null : await ExtractAppearancePortraitAsync(frozen, false, maxDimension, timeoutMs, cancellationToken, cleanTempFiles).ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
+            catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Character portrait offscreen error: {ex.Message}");
@@ -1331,11 +1250,7 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        /// <summary>
-        /// 截取游戏窗口中 3D 场景主体区域（去除底部对话 UI 条带），用作会面场景实景参考图。
-        /// topBandFraction 必须避开原会话界面的名牌/字幕条（约自 55% 高度起），默认 0.5。
-        /// 该图仅供导演识图，不进生图模型，避免截图质感与 UI 文字被复制进成图。
-        /// </summary>
+        /// <summary>Apply the immutable identity, equipment and colours shared by all views of a character.</summary>
         private static void ApplyAppearance(CharacterTableauWidget widget, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance)
         {
             widget.EquipmentCode = appearance.EquipmentCode;

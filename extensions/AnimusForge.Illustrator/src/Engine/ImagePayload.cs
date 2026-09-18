@@ -74,6 +74,13 @@ namespace AnimusForge.Illustrator.Engine
 
         internal static byte[] ReadFile(string path)
         {
+            return Normalize(ReadEncodedFile(path, CancellationToken.None));
+        }
+
+        // Read only; consumers preparing a UI image call the fixed color contract exactly once.
+        internal static byte[] ReadEncodedFile(string path, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
             using (var input = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 if (input.Length > MaxBytes) throw new InvalidDataException("缓存图片超过大小限制。");
@@ -81,11 +88,13 @@ namespace AnimusForge.Illustrator.Engine
                 int offset = 0;
                 while (offset < bytes.Length)
                 {
-                    int read = input.Read(bytes, offset, bytes.Length - offset);
+                    token.ThrowIfCancellationRequested();
+                    int read = input.Read(bytes, offset, Math.Min(65536, bytes.Length - offset));
                     if (read == 0) throw new EndOfStreamException();
                     offset += read;
                 }
-                return Normalize(bytes);
+                token.ThrowIfCancellationRequested();
+                return bytes;
             }
         }
 

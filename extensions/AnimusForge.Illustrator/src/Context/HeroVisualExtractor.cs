@@ -616,7 +616,7 @@ namespace AnimusForge.Illustrator.Context
 
             string materialStr = ResolveItemMaterial(item);
             bool isHeraldic = item.IsUsingTableau;
-            if (slot == EquipmentIndex.Body && isHeraldic)
+            if (IsHeraldicArmorSlot(slot, isHeraldic))
             {
                 profile.HasHeraldicArmor = true;
             }
@@ -637,13 +637,14 @@ namespace AnimusForge.Illustrator.Context
                 }
             }
 
+            string heraldicNote = IsHeraldicArmorSlot(slot, isHeraldic)
+                ? "，此处实际穿戴物使用家族纹章图案；图案位置与面积以人物参考图为准" : "";
             if (slot == EquipmentIndex.Cape)
             {
-                profile.EquipmentDetails.Add($"披风/肩部装备: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier})；按人物参考图保留肩颈覆盖范围、轮廓宽窄、扣合位置、固有主色与叠穿关系；名称不代表具体形状，不将披肩改写成内衬或金属肩甲");
+                profile.EquipmentDetails.Add($"披风/肩部装备: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier}{heraldicNote})；按人物参考图保留肩颈覆盖范围、轮廓宽窄、扣合位置、固有主色与叠穿关系；名称不代表具体形状，不将披肩改写成内衬或金属肩甲");
                 return;
             }
 
-            string heraldicNote = (isHeraldic && slot == EquipmentIndex.Body) ? "，身覆家族纹章图案/罩袍" : "";
             string desc = $"{slotName}: {modifierStr}{itemName} ({materialStr}, 等阶Tier {tier}{heraldicNote})；具体颜色与纹样以人物参考图为准";
             profile.EquipmentDetails.Add(desc);
         }
@@ -674,6 +675,12 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(bodyProperties) && BodyProperties.FromString(bodyProperties, out var body))
                 age = body.Age;
             return !float.IsNaN(age) && !float.IsInfinity(age) && age > 0 && age < int.MaxValue ? (int)age : 0;
+        }
+
+        internal static bool IsHeraldicArmorSlot(EquipmentIndex slot, bool isUsingTableau)
+        {
+            return isUsingTableau && (slot == EquipmentIndex.Head || slot == EquipmentIndex.Body ||
+                slot == EquipmentIndex.Leg || slot == EquipmentIndex.Gloves || slot == EquipmentIndex.Cape);
         }
 
         private static string ResolveItemMaterial(ItemObject item)

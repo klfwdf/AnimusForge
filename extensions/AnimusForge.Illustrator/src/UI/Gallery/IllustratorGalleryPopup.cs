@@ -23,7 +23,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             _scope = new IllustrationScope(screen, null, Close);
             try
             {
-            _dataSource = new IllustratorGalleryPopupVM(Close, _scope.CampaignKey);
+            _dataSource = new IllustratorGalleryPopupVM(Close, _scope.CampaignKey, () => _scope.IsCurrent);
             var layer = new MovableGauntletLayer("IllustratorGalleryPopup", 4020, false);
             _layer = layer;
             var movieIdentifier = layer.LoadMovie("IllustratorGalleryPopup", _dataSource);

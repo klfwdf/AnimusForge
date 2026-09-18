@@ -19,7 +19,17 @@ public static class PromptRoutingAudit
         Console.WriteLine("PASS " + name);
     }
     private static object Call(Type type, string name, params object[] args)
-    { return type.GetMethod(name, Static).Invoke(null, args); }
+    {
+        var method = type.GetMethod(name, Static);
+        var parameters = method.GetParameters();
+        if (args.Length < parameters.Length)
+        {
+            int supplied = args.Length;
+            Array.Resize(ref args, parameters.Length);
+            for (int i = supplied; i < args.Length; i++) args[i] = parameters[i].DefaultValue;
+        }
+        return method.Invoke(null, args);
+    }
     private sealed class CaptureHandler : HttpMessageHandler
     {
         public string Body;

@@ -30,7 +30,8 @@ namespace AnimusForge.Illustrator
                 EncyclopediaHeroIllustrationPatch.EnsurePatched(_harmony);
                 ConversationIllustrationPatch.EnsurePatched(_harmony);
 
-                Debug.Print("[AnimusForge.Illustrator] SubModule and all illustration patches loaded successfully.");
+                Debug.Print("[AnimusForge.Illustrator] SubModule and all illustration patches loaded successfully. implementationMvid=" +
+                    typeof(SubModule).Module.ModuleVersionId + ", sceneCapture=independent-SceneView, characterReferences=full-body+head-detail");
             }
             catch (Exception ex)
             {
@@ -44,6 +45,7 @@ namespace AnimusForge.Illustrator
             try
             {
                 IllustratorRuntime.Tick();
+                Engine.ScreenCaptureHelper.ObserveSceneCaptureFrame(dt);
             }
             catch
             {

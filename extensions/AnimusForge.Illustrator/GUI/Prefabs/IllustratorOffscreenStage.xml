@@ -3,7 +3,7 @@
        根控件占满屏幕但无贴图（自身不绘制任何像素）。
        玩家不可见的核心机制：tableau 控件被包在一个 2x2 的 ClipContents 裁剪容器里——
        裁剪是渲染期 scissor，不影响子控件布局尺寸与 provider tick，TableauView 照常按
-       384x768 全尺寸渲染落盘，但屏幕 blit 被裁剪到 2x2 像素点（视觉上不可见）。
+       全尺寸渲染落盘（全身 384x768；原生 EmphasizeFace 头肩视图 768x768），屏幕 blit 裁剪到 2x2 像素。
        AlphaFactor=0 与最低层优先级(1)保留作额外兜底。
        IsVisible=false 会阻止 provider tick，故控件保持 IsVisible=true 由代码按需开启。 -->
   <Window>

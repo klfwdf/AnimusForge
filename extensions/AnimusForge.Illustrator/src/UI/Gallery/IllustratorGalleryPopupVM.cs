@@ -67,12 +67,21 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private string _statusText = "欢迎查阅卡拉迪亚纪事画廊";
         private string _loadedPreviewSpriteName;
         private int _previewCounter;
+        private readonly GalleryPreviewLoader _previewLoader;
+        private bool _disposed;
 
         public IllustratorGalleryPopupVM(Action onClose, string campaignKey)
+            : this(onClose, campaignKey, () => string.Equals(campaignKey, IllustratorRuntime.CampaignKey, StringComparison.Ordinal))
+        {
+        }
+
+        internal IllustratorGalleryPopupVM(Action onClose, string campaignKey, Func<bool> isCurrent)
         {
             _onClose = onClose;
             _campaignKey = campaignKey;
-            RefreshItems();
+            _previewLoader = new GalleryPreviewLoader(() => !_disposed && isCurrent(),
+                IllustratorRuntime.PostCritical, GauntletTextureLoader.ReadPreparedImageForUi);
+            RefreshItems(false);
         }
 
         [DataSourceProperty]
@@ -193,15 +202,23 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         public void RefreshItems()
         {
-            try { RefreshItemsCore(); }
+            RefreshItems(true);
+        }
+
+        private void RefreshItems(bool forceRefresh)
+        {
+            try { RefreshItemsCore(forceRefresh); }
             catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
         }
 
-        private void RefreshItemsCore()
+        private void RefreshItemsCore(bool forceRefresh)
         {
+            _previewLoader.Cancel();
             ReleasePreviewSprite();
+            SelectedSpriteName = string.Empty;
+            _selectedItem = null;
             Items.Clear();
-            var cached = DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey);
+            var cached = DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey, forceRefresh);
             foreach (var item in cached)
             {
                 Items.Add(new IllustrationItemVM(item, HandleItemSelect));
@@ -234,25 +251,36 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
 
             _selectedItem = selected;
+            _previewLoader.Cancel();
             ReleasePreviewSprite();
+            SelectedSpriteName = string.Empty;
             if (selected != null)
             {
                 HasSelection = true;
                 // 预览 sprite 名必须每次唯一：旧纹理已释放，同名复用会让控件继续持有失效对象而不触发属性通知
                 string spriteName = "Gallery_" + selected.Item.Key + "_" + (++_previewCounter);
-                if (File.Exists(selected.Item?.FilePath))
-                {
-                    byte[] bytes = ImagePayload.ReadFile(selected.Item.FilePath);
-                    var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
-                    if (sprite != null) _loadedPreviewSpriteName = spriteName;
-                }
-                if (_loadedPreviewSpriteName == null) throw new IOException("图片不存在或无法解码，请刷新画廊。");
-                SelectedSpriteName = _loadedPreviewSpriteName;
                 SelectedTitle = selected.Title;
                 SelectedPrompt = selected.Item?.Prompt ?? string.Empty;
                 SelectedDate = selected.DateText;
-                SelectedTheme = string.IsNullOrWhiteSpace(selected.Item.Theme) ? "主题：未记录" : selected.Item.ThemeText;
-                StatusText = selected.Item.ThemeText;
+                SelectedTheme = selected.Item.DisplayStatusText;
+                StatusText = "正在载入画卷…";
+                _previewLoader.Select(selected.Item.FilePath, prepared =>
+                {
+                    var sprite = GauntletTextureLoader.LoadOrRegisterPreparedImage(spriteName, prepared);
+                    if (sprite == null)
+                    {
+                        HasSelection = false;
+                        StatusText = "图片纹理加载失败，请刷新画廊。";
+                        return;
+                    }
+                    _loadedPreviewSpriteName = spriteName;
+                    SelectedSpriteName = spriteName;
+                    StatusText = selected.Item.DisplayStatusText;
+                }, error =>
+                {
+                    HasSelection = false;
+                    StatusText = "画卷载入失败：" + error;
+                });
             }
             else
             {
@@ -326,6 +354,9 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         public void DisposeVisuals()
         {
+            _disposed = true;
+            _previewLoader.Dispose();
+            SelectedSpriteName = string.Empty;
             ReleasePreviewSprite();
         }
 

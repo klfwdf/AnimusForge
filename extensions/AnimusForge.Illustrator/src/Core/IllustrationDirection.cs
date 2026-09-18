@@ -12,6 +12,28 @@ namespace AnimusForge.Illustrator.Core
         public string Title { get; internal set; } = string.Empty;
         public string Theme { get; internal set; } = string.Empty;
         public string ActionSummary { get; internal set; } = string.Empty;
+        // Generation metadata is stored/displayed separately and never appended to Prompt.
+        public string DirectionStatus { get; internal set; } = "complete";
+        public string FallbackReason { get; internal set; } = string.Empty;
+        public string FinishReason { get; internal set; } = string.Empty;
+        public bool UsedLocalFallback { get; internal set; }
+        public bool VisionUnsupported { get; internal set; }
+        public int? PromptTokens { get; internal set; }
+        public int? CompletionTokens { get; internal set; }
+        public int? TotalTokens { get; internal set; }
+        public string StatusText
+        {
+            get
+            {
+                if (DirectionStatus == "truncated") return "导演输出截断，已使用本地构图";
+                if (UsedLocalFallback || DirectionStatus == "local_fallback")
+                    return VisionUnsupported ? "导演不支持识图且文字构思不可用，已使用本地构图" : "已使用本地构图";
+                if (VisionUnsupported || DirectionStatus == "vision_unsupported")
+                    return "导演不支持识图，已使用文字构思";
+                return string.IsNullOrWhiteSpace(FinishReason)
+                    ? "导演正文已校验（接口未返回结束标记）" : "导演构思完成";
+            }
+        }
 
         internal static IllustrationDirection SplitMetadata(string output)
         {

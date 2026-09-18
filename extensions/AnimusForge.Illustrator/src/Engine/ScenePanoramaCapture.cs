@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 using Path = System.IO.Path;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +20,8 @@ namespace AnimusForge.Illustrator.Engine
         private static PanoramaSession _activePanorama;
         internal const int PanoramaDirectionCount = 4;
         private const float PanoramaFov = 100f * (float)Math.PI / 180f;
+
+        internal static void ObserveSceneCaptureFrame(float dt) => _activePanorama?.ObserveFrame(dt);
 
         internal static void CancelSceneCapture(Mission mission)
         {
@@ -59,6 +63,7 @@ namespace AnimusForge.Illustrator.Engine
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
             PanoramaSession session = null;
             var references = new List<IllustrationReferenceImage>(5);
+            var totalWatch = Stopwatch.StartNew();
             using var budget = CancellationTokenSource.CreateLinkedTokenSource(token);
             budget.CancelAfter(12000);
             var captureToken = budget.Token;
@@ -84,6 +89,7 @@ namespace AnimusForge.Illustrator.Engine
                     // images rotate only our private camera, never MissionScreen's camera.
                     for (int index = -1; index < PanoramaDirectionCount; index++)
                     {
+                        var viewWatch = Stopwatch.StartNew();
                         captureToken.ThrowIfCancellationRequested();
                         bool placed = await RunOnGameThreadAsync(() => session.SetDirection(index), captureToken).ConfigureAwait(false);
                         if (!placed) break;
@@ -94,12 +100,15 @@ namespace AnimusForge.Illustrator.Engine
                             ready = await RunOnGameThreadAsync(() => session.Ready, captureToken).ConfigureAwait(false);
                         }
                         if (!ready) break;
+                        long renderWaitMs = viewWatch.ElapsedMilliseconds;
                         string path = await RunOnGameThreadAsync(() => session.RequestExport(index), captureToken).ConfigureAwait(false);
                         if (path == null) break;
                         byte[] png = await ReadSceneExportAsync(path, captureToken).ConfigureAwait(false);
                         await RunOnGameThreadAsync(() => { session.StopExport(); return true; }, captureToken).ConfigureAwait(false);
                         if (png == null) break;
                         references.Add(new IllustrationReferenceImage(Convert.ToBase64String(png), SceneReferenceLabel(index), IllustrationReferenceKind.Scene));
+                        GenerationDiagnostics.Current?.RecordStage("scene_view", new JObject { ["direction"] = index, ["renderWaitMs"] = renderWaitMs,
+                            ["exportWaitMs"] = viewWatch.ElapsedMilliseconds - renderWaitMs, ["bytes"] = png.Length });
                     }
                 }
                 if (references.Count == 0)
@@ -134,6 +143,9 @@ namespace AnimusForge.Illustrator.Engine
                 session?.CleanupFiles();
                 if (stageAcquired) _stageLock.Release();
                 SceneCaptureLock.Release();
+                GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject { ["views"] = references.Count, ["totalMs"] = totalWatch.ElapsedMilliseconds,
+                    ["sampledFrames"] = session?.SampledFrames ?? 0, ["maxApplicationFrameMs"] = session?.MaxFrameMs ?? 0,
+                    ["meanApplicationFrameMs"] = session?.MeanFrameMs ?? 0 });
             }
         }
 
@@ -184,6 +196,18 @@ namespace AnimusForge.Illustrator.Engine
             private float _originalFov, _aspect, _near, _far;
             private string _directory;
             private bool _finished;
+            private double _totalFrameMs;
+            internal int SampledFrames { get; private set; }
+            internal double MaxFrameMs { get; private set; }
+            internal double MeanFrameMs => SampledFrames == 0 ? 0 : _totalFrameMs / SampledFrames;
+            internal void ObserveFrame(float dt)
+            {
+                if (_finished || _view == null || dt < 0 || float.IsNaN(dt) || float.IsInfinity(dt)) return;
+                double milliseconds = dt * 1000d;
+                SampledFrames++;
+                _totalFrameMs += milliseconds;
+                MaxFrameMs = Math.Max(MaxFrameMs, milliseconds);
+            }
 
             internal bool IsCurrent => !_finished && _owner != null && !_owner.IsFinalized &&
                 ReferenceEquals(_owner, ScreenManager.TopScreen) && ReferenceEquals(_mission, Mission.Current) &&

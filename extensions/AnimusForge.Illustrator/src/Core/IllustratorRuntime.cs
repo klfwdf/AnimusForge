@@ -270,7 +270,21 @@ namespace AnimusForge.Illustrator.Core
             var token = source.Token;
             long revision = ++_revision;
             _request = source;
-            bool started = IllustratorRuntime.Start(() => work(token), (result, error) =>
+            bool started = IllustratorRuntime.Start(async () =>
+            {
+                using (var diagnostics = GenerationDiagnostics.Begin(CampaignKey, _category))
+                {
+                    try
+                    {
+                        var value = await work(token).ConfigureAwait(false);
+                        token.ThrowIfCancellationRequested();
+                        diagnostics?.Finish("completed");
+                        return value;
+                    }
+                    catch (OperationCanceledException) { diagnostics?.Finish("cancelled"); throw; }
+                    catch (Exception ex) { diagnostics?.Finish("failed", ex.Message); throw; }
+                }
+            }, (result, error) =>
             {
                 // Capture the caller's cancellation state before cancelling child work for cleanup.
                 // HttpClient/local deadlines can throw TaskCanceledException while this token is live.

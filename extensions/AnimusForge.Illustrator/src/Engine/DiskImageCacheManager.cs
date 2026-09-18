@@ -20,13 +20,28 @@ namespace AnimusForge.Illustrator.Engine
         public string Title { get; set; } = string.Empty;
         public string Theme { get; set; } = string.Empty;
         public string ActionSummary { get; set; } = string.Empty;
+        public string DiagnosticId { get; set; } = string.Empty;
+        public string DirectorStatus { get; set; } = string.Empty;
+        public string DirectorStatusText { get; set; } = string.Empty;
+        public string DirectorFallbackReason { get; set; } = string.Empty;
         [JsonIgnore]
         public string ThemeText => string.IsNullOrWhiteSpace(Theme) ? "纪事画卷" : "主题：" + Theme;
+        [JsonIgnore]
+        public string DisplayStatusText => ThemeText +
+            (!string.IsNullOrWhiteSpace(DirectorStatus) && !string.Equals(DirectorStatus, "complete", StringComparison.Ordinal) &&
+             !string.IsNullOrWhiteSpace(DirectorStatusText) ? "\n" + DirectorStatusText : string.Empty);
         public bool IsDefault { get; set; }
         public bool Deleted { get; set; }
         public DateTime CreatedTime { get; set; }
         [JsonIgnore]
         public byte[] ImageData { get; set; }
+
+        internal CachedIllustrationItem CopyMetadata()
+        {
+            var copy = (CachedIllustrationItem)MemberwiseClone();
+            copy.ImageData = null;
+            return copy;
+        }
     }
 
     public static class DiskImageCacheManager
@@ -35,6 +50,10 @@ namespace AnimusForge.Illustrator.Engine
         private static readonly object CacheLock = new object();
         private static List<CachedIllustrationItem> _cachedIllustrations;
         private static string _cachedCampaignKey;
+        // One campaign in memory. Each category indexes both subject ids and individual image
+        // ids; repeated card openings never enumerate unrelated metadata or keep decoded images.
+        private static Dictionary<string, Dictionary<string, List<CachedIllustrationItem>>> _cachedLookup;
+        private static long[] _cachedDirectoryStamps;
         private static readonly string[] Categories = { "encyclopedia", "conversation", "weekly_report", "general" };
 
         static DiskImageCacheManager()
@@ -90,45 +109,41 @@ namespace AnimusForge.Illustrator.Engine
 
         public static CachedIllustrationItem LoadImage(string subjectKey, string campaignKey, string category = null)
         {
-            lock (CacheLock)
-            {
             if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey)) return null;
             try
             {
-                string[] categories = !string.IsNullOrEmpty(category) ? new[] { ValidCategory(category) } : Categories;
-                CachedIllustrationItem fallback = null;
-                foreach (var cat in categories)
+                CachedIllustrationItem result;
+                lock (CacheLock)
                 {
-                    string dir = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), cat));
-                    if (!Directory.Exists(dir)) continue;
-                    foreach (var metaPath in Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly))
+                    EnsureMetadataIndex(campaignKey, false);
+                    string[] categories = !string.IsNullOrEmpty(category) ? new[] { ValidCategory(category) } : Categories;
+                    CachedIllustrationItem fallback = null;
+                    CachedIllustrationItem preferred = null;
+                    foreach (var cat in categories)
                     {
-                        var item = ReadMetadata(metaPath);
-                        if (item == null || item.Deleted) continue;
-                        if (!string.Equals(item.SubjectKey, subjectKey, StringComparison.Ordinal) &&
-                            !string.Equals(item.Key, subjectKey, StringComparison.Ordinal)) continue;
-                        if (!File.Exists(item.FilePath)) continue;
-                        if (item.IsDefault)
+                        if (!_cachedLookup.TryGetValue(cat, out var subjects) || !subjects.TryGetValue(subjectKey, out var candidates)) continue;
+                        foreach (var item in candidates)
                         {
-                            item.ImageData = ImagePayload.ReadFile(item.FilePath);
-                            return item;
+                            if (!File.Exists(item.FilePath)) continue;
+                            if (item.IsDefault) { preferred = item; break; }
+                            if (fallback == null || item.CreatedTime > fallback.CreatedTime) fallback = item;
                         }
-                        if (fallback == null || item.CreatedTime > fallback.CreatedTime) fallback = item;
+                        if (preferred != null) break;
                     }
+                    result = (preferred ?? fallback)?.CopyMetadata();
                 }
-                if (fallback != null) fallback.ImageData = ImagePayload.ReadFile(fallback.FilePath);
-                return fallback;
+                // Do not hold the metadata lock while reading or decoding up to 24 MiB.
+                if (result != null) result.ImageData = ImagePayload.ReadFile(result.FilePath);
+                return result;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[Illustrator] Failed to load image cache: {ex.Message}");
                 return null;
             }
-
-            }
         }
 
-        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null)
+        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null, string diagnosticId = null, string directorStatus = null, string directorStatusText = null, string directorFallbackReason = null)
         {
             try { bytes = ImagePayload.Normalize(bytes); }
             catch (Exception ex) { Debug.Print("[Illustrator] Rejected cache image: " + ex.Message); return null; }
@@ -139,6 +154,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 string categoryDir = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), ValidCategory(category)));
                 Directory.CreateDirectory(categoryDir);
+                bool isDefault = makeDefault || (allowImplicitDefault && !HasIndexedSubject(campaignKey, ValidCategory(category), subjectKey));
                 string imageId = $"{ComputeHash(subjectKey)}_{DateTime.UtcNow:yyyyMMddHHmmssfff}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                 string filePath = Path.Combine(categoryDir, imageId + ".png");
                 File.WriteAllBytes(filePath, bytes);
@@ -154,13 +170,17 @@ namespace AnimusForge.Illustrator.Engine
                     Title = title ?? string.Empty,
                     Theme = theme ?? string.Empty,
                     ActionSummary = actionSummary ?? string.Empty,
+                    DiagnosticId = diagnosticId ?? string.Empty,
+                    DirectorStatus = directorStatus ?? string.Empty,
+                    DirectorStatusText = directorStatusText ?? string.Empty,
+                    DirectorFallbackReason = directorFallbackReason ?? string.Empty,
                     CreatedTime = DateTime.UtcNow,
-                    IsDefault = makeDefault || (allowImplicitDefault && !GetAllCachedIllustrations(campaignKey, true).Any(existing => existing.SubjectKey == subjectKey && existing.Category == ValidCategory(category)))
+                    IsDefault = isDefault
                 };
                 AtomicWrite(Path.ChangeExtension(filePath, ".json"), JsonConvert.SerializeObject(item, Formatting.Indented));
+                InvalidateCache();
                 if (item.IsDefault) SetDefault(item, campaignKey);
                 EnforceLimit(campaignKey, maxCacheCount);
-                InvalidateCache();
                 return item;
             }
             catch (Exception ex)
@@ -178,6 +198,8 @@ namespace AnimusForge.Illustrator.Engine
             {
                 _cachedIllustrations = null;
                 _cachedCampaignKey = null;
+                _cachedLookup = null;
+                _cachedDirectoryStamps = null;
             }
         }
 
@@ -185,24 +207,35 @@ namespace AnimusForge.Illustrator.Engine
         {
             lock (CacheLock)
             {
-                if (!forceRefresh && _cachedIllustrations != null && string.Equals(_cachedCampaignKey, campaignKey, StringComparison.Ordinal))
-                {
-                    return new List<CachedIllustrationItem>(_cachedIllustrations);
-                }
+                EnsureMetadataIndex(campaignKey, forceRefresh);
+                return _cachedIllustrations.Select(item => item.CopyMetadata()).ToList();
+            }
+        }
 
+        private static void EnsureMetadataIndex(string campaignKey, bool forceRefresh)
+        {
+                string normalizedCampaign = SanitizeKey(campaignKey);
+                if (!forceRefresh && _cachedIllustrations != null && _cachedLookup != null &&
+                    string.Equals(_cachedCampaignKey, normalizedCampaign, StringComparison.Ordinal) && DirectoryStampsMatch(campaignKey)) return;
                 var list = new List<CachedIllustrationItem>();
+                bool complete = true;
+                var stamps = new long[Categories.Length + 1];
                 try
                 {
+                    // Capture before enumeration: a concurrent external addition must cause the
+                    // next lookup to retry, not be hidden behind a post-enumeration timestamp.
+                    for (int i = 0; i < stamps.Length; i++) stamps[i] = DirectoryStamp(campaignKey, i);
                     string campaignDir = CampaignDirectory(campaignKey);
                     if (Directory.Exists(campaignDir))
                     {
+                        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                         foreach (var jsonFile in EnumerateCampaignFiles(campaignKey, "*.json"))
                         {
                             var item = ReadMetadata(jsonFile);
-                            if (item != null && !item.Deleted && File.Exists(item.FilePath)) list.Add(item);
+                            if (item == null) continue;
+                            visited.Add(item.FilePath);
+                            if (!item.Deleted && File.Exists(item.FilePath)) list.Add(item);
                         }
-                        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        foreach (var item in list) visited.Add(item.FilePath);
                         foreach (var png in EnumerateCampaignFiles(campaignKey, "*.png"))
                         {
                             if (visited.Contains(png)) continue;
@@ -210,7 +243,7 @@ namespace AnimusForge.Illustrator.Engine
                             {
                                 Key = Path.GetFileNameWithoutExtension(png),
                                 SubjectKey = Path.GetFileNameWithoutExtension(png),
-                                CampaignKey = campaignKey,
+                                CampaignKey = normalizedCampaign,
                                 Category = new DirectoryInfo(Path.GetDirectoryName(png)).Name,
                                 FilePath = png,
                                 Title = "卡拉迪亚历史画卷",
@@ -219,16 +252,60 @@ namespace AnimusForge.Illustrator.Engine
                             });
                         }
                     }
-                    list.Sort((a, b) => b.CreatedTime.CompareTo(a.CreatedTime));
-                    _cachedIllustrations = list;
-                    _cachedCampaignKey = campaignKey;
-                    return new List<CachedIllustrationItem>(list);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return list;
+                    complete = false;
+                    Debug.Print("[Illustrator] Failed to refresh image metadata: " + ex.Message);
                 }
+                list.Sort((a, b) => b.CreatedTime.CompareTo(a.CreatedTime));
+                var lookup = new Dictionary<string, Dictionary<string, List<CachedIllustrationItem>>>(StringComparer.Ordinal);
+                foreach (var item in list)
+                {
+                    if (!lookup.TryGetValue(item.Category, out var subjects))
+                        lookup[item.Category] = subjects = new Dictionary<string, List<CachedIllustrationItem>>(StringComparer.Ordinal);
+                    AddIndexItem(subjects, item.SubjectKey, item);
+                    if (!string.Equals(item.Key, item.SubjectKey, StringComparison.Ordinal)) AddIndexItem(subjects, item.Key, item);
+                }
+                _cachedIllustrations = list;
+                // A transient failed enumeration must not freeze a partial index for the session.
+                _cachedCampaignKey = complete ? normalizedCampaign : null;
+                _cachedLookup = lookup;
+                _cachedDirectoryStamps = stamps;
+        }
+
+        private static bool DirectoryStampsMatch(string campaignKey)
+        {
+            if (_cachedDirectoryStamps == null) return false;
+            try
+            {
+                // Five directory stats per query, independent of gallery size. No file-system
+                // watcher or per-frame polling; manual additions/restores invalidate the index.
+                for (int i = 0; i < _cachedDirectoryStamps.Length; i++)
+                    if (_cachedDirectoryStamps[i] != DirectoryStamp(campaignKey, i)) return false;
+                return true;
             }
+            catch { return false; }
+        }
+
+        private static long DirectoryStamp(string campaignKey, int index)
+        {
+            string directory = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), index < Categories.Length ? Categories[index] : "_defaults"));
+            return Directory.GetLastWriteTimeUtc(directory).Ticks;
+        }
+
+        private static bool HasIndexedSubject(string campaignKey, string category, string subject)
+        {
+            EnsureMetadataIndex(campaignKey, false);
+            return _cachedLookup.TryGetValue(category, out var subjects) && subjects.TryGetValue(subject, out var items) &&
+                items.Any(item => string.Equals(item.SubjectKey, subject, StringComparison.Ordinal) && File.Exists(item.FilePath));
+        }
+
+        private static void AddIndexItem(Dictionary<string, List<CachedIllustrationItem>> subjects, string key, CachedIllustrationItem item)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            if (!subjects.TryGetValue(key, out var values)) subjects[key] = values = new List<CachedIllustrationItem>();
+            values.Add(item);
         }
 
         private static CachedIllustrationItem ReadMetadata(string jsonFile)
@@ -303,7 +380,7 @@ namespace AnimusForge.Illustrator.Engine
 
         private static void EnforceLimit(string campaignKey, int maxCacheCount)
         {
-            var items = GetAllCachedIllustrations(campaignKey, true);
+            var items = GetAllCachedIllustrations(campaignKey);
             int limit = Math.Max(20, Math.Min(1000, maxCacheCount));
             if (items.Count <= limit) return;
             int remaining = items.Count;

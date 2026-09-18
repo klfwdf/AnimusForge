@@ -73,6 +73,12 @@ public static class ModuleReviewAudit
     {
         checks = 0;
         Assembly module = Assembly.LoadFrom(dllPath);
+        Type cache = module.GetType("AnimusForge.Illustrator.Engine.DiskImageCacheManager", true);
+        FieldInfo cacheRoot = cache.GetField("CacheBaseDir", All);
+        object originalCacheRoot = cacheRoot.GetValue(null);
+        string auditRoot = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dllPath), "module-audit-" + Guid.NewGuid().ToString("N"));
+        System.IO.Directory.CreateDirectory(auditRoot);
+        cacheRoot.SetValue(null, auditRoot);
         runtime = module.GetType("AnimusForge.Illustrator.Core.IllustratorRuntime", true);
         scopeType = module.GetType("AnimusForge.Illustrator.Core.IllustrationScope", true);
         Type campaign = scopeType.GetField("_campaign", All).FieldType;
@@ -214,8 +220,17 @@ public static class ModuleReviewAudit
             Type galleryVm = module.GetType("AnimusForge.Illustrator.UI.Gallery.IllustratorGalleryPopupVM", true);
             Check(galleryVm.GetProperty("SelectedTheme") != null &&
                 File.ReadAllText(Path.Combine(repoRoot, "extensions/AnimusForge.Illustrator/src/UI/Gallery/IllustratorGalleryPopupVM.cs"))
-                    .Contains("SelectedTheme = string.IsNullOrWhiteSpace(selected.Item.Theme)"),
+                    .Contains("SelectedTheme = selected.Item.DisplayStatusText"),
                 "gallery theme binding is populated from selected cached artwork");
+            var cachedType = module.GetType("AnimusForge.Illustrator.Engine.CachedIllustrationItem", true);
+            var artwork = Activator.CreateInstance(cachedType);
+            cachedType.GetProperty("Theme").SetValue(artwork, "主题验收", null);
+            cachedType.GetProperty("DirectorStatus").SetValue(artwork, "truncated", null);
+            cachedType.GetProperty("DirectorStatusText").SetValue(artwork, "导演输出截断，已使用本地构图", null);
+            string shown = (string)cachedType.GetProperty("DisplayStatusText").GetValue(artwork, null);
+            Check(shown.Contains("主题验收") && shown.Contains("导演输出截断"), "selected artwork keeps theme and director fallback status visible");
+            cachedType.GetProperty("DirectorStatus").SetValue(artwork, "complete", null);
+            Check(!((string)cachedType.GetProperty("DisplayStatusText").GetValue(artwork, null)).Contains("截断"), "complete director does not show stale degradation text");
             XmlElement promptPanel = (XmlElement)theme.ParentNode.SelectSingleNode("ScrollablePanel");
             Check(float.Parse(promptPanel.GetAttribute("MarginTop")) >=
                 float.Parse(theme.GetAttribute("MarginTop")) + float.Parse(theme.GetAttribute("SuggestedHeight")),
@@ -240,6 +255,7 @@ public static class ModuleReviewAudit
             SetProperty(campaign, "Current", null, oldCampaign);
             SetProperty(screenManager, "TopScreen", null, oldScreen);
             SetProperty(runtime, "CampaignKey", null, oldKey);
+            cacheRoot.SetValue(null, originalCacheRoot);
         }
     }
 }
