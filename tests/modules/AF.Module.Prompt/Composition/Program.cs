@@ -29,7 +29,31 @@ internal static class Program
         RuleBlockText();
         RoutingStage();
         ExclusionSets();
+        ContextDecisions();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void ContextDecisions()
+    {
+        var routing = new PromptRoutingResult { Duel = new PromptTopicRoute { Hit = true }, Reward = new PromptTopicRoute { Hit = false }, Loan = new PromptTopicRoute { Hit = false }, PartyTransfer = new PromptTopicRoute { Hit = true } };
+        var f = PromptContextDecisions.ResolveFlags(routing, hasDuelRuntimeTarget: false, partyTransferEligible: false, rewardEnabled: true, loanEnabled: true, persistentAdpDebt: true, hasDuelResult: false, playerWonLastDuel: false);
+        Check(!f.UseDuelContext && !f.UseRewardContext && !f.IsLoanContext && f.PersistentAdpDebtPostprocess && !f.IncludeDuelStakeContext, "duel hit without runtime target; ineligible party transfer promotes nothing");
+        f = PromptContextDecisions.ResolveFlags(routing, true, true, true, false, false, false, false);
+        Check(f.UseDuelContext && f.UseRewardContext && !f.IsLoanContext, "eligible party transfer promotes reward only when loan disabled");
+        f = PromptContextDecisions.ResolveFlags(routing, false, false, false, true, false, true, true);
+        Check(!f.UseRewardContext && f.IncludeDuelStakeContext && f.PlayerWonLastDuel, "duel result without reward enabled keeps stake context but no reward promotion");
+        f = PromptContextDecisions.ResolveFlags(routing, false, false, true, true, false, true, false);
+        Check(f.UseRewardContext && f.IncludeDuelStakeContext && !f.PlayerWonLastDuel, "duel result with reward enabled promotes reward");
+        Check(PromptContextDecisions.ShouldBuildClarificationHint(true, default(PromptContextFlags), false) && !PromptContextDecisions.ShouldBuildClarificationHint(false, default(PromptContextFlags), false), "clarification requires preprocess");
+        Check(!PromptContextDecisions.ShouldBuildClarificationHint(true, new PromptContextFlags { IsLoanContext = true }, false) && !PromptContextDecisions.ShouldBuildClarificationHint(true, default(PromptContextFlags), true), "any strong context suppresses clarification");
+
+        Check(PromptContextDecisions.SelectLoreSource(true, true, "x", true, true) == PromptLoreSource.None, "suppressed → none");
+        Check(PromptContextDecisions.SelectLoreSource(false, true, "x", true, true) == PromptLoreSource.Prefetched, "prefetched wins");
+        Check(PromptContextDecisions.SelectLoreSource(false, true, " ", true, false) == PromptLoreSource.Hero && PromptContextDecisions.DescribeLoreSource(PromptLoreSource.Hero, true, " ") == "prefetch_empty_fallback_hero", "empty prefetch falls back to hero with legacy label");
+        Check(PromptContextDecisions.SelectLoreSource(false, false, null, false, true) == PromptLoreSource.Character && PromptContextDecisions.DescribeLoreSource(PromptLoreSource.Character, false, null) == "character", "character source");
+        Check(PromptContextDecisions.SelectLoreSource(false, false, null, false, false) == PromptLoreSource.None && PromptContextDecisions.DescribeLoreSource(PromptLoreSource.None, false, null) == "none", "no target → none");
+        string line = PromptContextDecisions.DescribeSemanticTrigger(routing, "", "hi", "阿尔文");
+        Check(line.StartsWith("[SemanticTrigger-Shout] DuelHit=True") && line.Contains("NpcRecall=off Input='hi' NPC='阿尔文'"), "semantic trigger diagnostics: " + line);
     }
 
     private static void ExclusionSets()
