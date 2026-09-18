@@ -30,7 +30,41 @@ internal static class Program
         RoutingStage();
         ExclusionSets();
         ContextDecisions();
+        AssemblyStage();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void AssemblyStage()
+    {
+        var routing = new PromptRoutingResult
+        {
+            AuxiliaryRuleHitIds = new List<string> { "custom" },
+            Duel = new PromptTopicRoute { Hit = true }, Reward = new PromptTopicRoute { Hit = false }, Loan = new PromptTopicRoute { Hit = true },
+            Surroundings = new PromptTopicRoute { Hit = true }, KingdomService = default(PromptTopicRoute), Marriage = new PromptTopicRoute { Hit = true },
+            PartyTransfer = default(PromptTopicRoute), WorldMapPartyCommand = default(PromptTopicRoute)
+        };
+        var flags = new PromptContextFlags { UseDuelContext = true, UseRewardContext = true, IsLoanContext = false, PersistentAdpDebtPostprocess = true };
+        var sections = new PromptExtrasSections { TriggeredRuleInstructions = "【附加规则:noble_gathering】x", LoreContext = "lore" };
+        var entity = new PromptEntityCapture
+        {
+            HasContent = true, MainPromptBlock = "entity-main", PostprocessPromptBlock = "entity-post",
+            ExplicitMentionedKingdomIds = new[] { " K1 ", "", "k1", "K2" },
+            AgendaHasContent = true, AgendaMainPromptBlock = "agenda-main", AgendaPostprocessPromptBlock = "agenda-post"
+        };
+        var excluded = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "marriage" });
+        var a = PromptAssemblyStage.Assemble(sections, entity, routing, flags, isQualified: false, suppressDynamicRuleAndLore: false, preprocessExcludedRuleIds: excluded);
+        Check(a.Extras.Replace("\r\n", "\n") == "【附加规则:noble_gathering】x\nlore\nentity-main\nagenda-main\n", "extras composed with entity and agenda blocks: " + a.Extras);
+        Check(a.EntityPostprocessContext == "entity-post\nagenda-post", "postprocess blocks merged");
+        Check(a.ExplicitMentionedKingdomIds.Count == 2 && a.ExplicitMentionedKingdomIds.Contains("K1") && a.ExplicitMentionedKingdomIds.Contains("K2"), "explicit kingdom ids trimmed/deduped: " + string.Join(",", a.ExplicitMentionedKingdomIds));
+        Check(a.UseDuelContext && a.UseRewardContext && !a.IsLoanContext && !a.IsQualified, "context flags copied from decisions, not routing");
+        Check(a.PreprocessRuleIds.Contains("custom") && a.PreprocessRuleIds.Contains("duel") && a.PreprocessRuleIds.Contains("loan") && a.PreprocessRuleIds.Contains("persistent_adp_debt") && a.PreprocessRuleIds.Contains("surroundings") && a.PreprocessRuleIds.Contains("noble_gathering") && !a.PreprocessRuleIds.Contains("marriage") && !a.PreprocessRuleIds.Contains("reward"), "preprocess ids follow routing hits (loan from routing even though loan context off): " + string.Join(",", a.PreprocessRuleIds));
+
+        var suppressed = PromptAssemblyStage.Assemble(new PromptExtrasSections { LoreContext = "l" }, entity, routing, flags, true, suppressDynamicRuleAndLore: true, preprocessExcludedRuleIds: null);
+        Check(suppressed.Extras.Replace("\r\n", "\n") == "l\n" && suppressed.EntityPostprocessContext == "" && suppressed.ExplicitMentionedKingdomIds.Count == 0, "suppressed dynamic ignores entity capture");
+        var noEntity = PromptAssemblyStage.Assemble(new PromptExtrasSections(), null, routing, flags, true, false, null);
+        Check(noEntity.Extras == "" && noEntity.EntityPostprocessContext == "" && noEntity.ExplicitMentionedKingdomIds.Count == 0, "null entity capture");
+        var emptyEntity = PromptAssemblyStage.Assemble(new PromptExtrasSections(), new PromptEntityCapture { HasContent = false, PostprocessPromptBlock = "ignored", ExplicitMentionedKingdomIds = null }, routing, flags, true, false, null);
+        Check(emptyEntity.EntityPostprocessContext == "" && emptyEntity.ExplicitMentionedKingdomIds.Count == 0, "entity without content contributes nothing");
     }
 
     private static void ContextDecisions()

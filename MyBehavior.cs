@@ -30750,6 +30750,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		extrasSections.WeeklyFullReports = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		extrasSections.LoreContext = loreContext;
 		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((extrasSections.WeeklyFullReports ?? "").Length));
+		PromptEntityCapture entityCapture = null;
 		if (!suppressDynamicRuleAndLore)
 		{
 			bool includeResidentKingdomEntities = PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
@@ -30758,50 +30759,43 @@ public partial class MyBehavior : CampaignBehaviorBase
 			HashSet<string> entityRetrievalRuleIds = PromptExtrasComposer.BuildEntityRetrievalRuleIds(auxiliaryRuleHitIds, flag7, flag8, partyTransferHit, worldMapPartyCommandHit);
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
 			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities);
-			shoutPromptContext.ExplicitMentionedKingdomIds = entityPromptContext?.ExplicitMentionedKingdomIds?
-				.Where(value => !string.IsNullOrWhiteSpace(value))
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.ToList() ?? new List<string>();
-			if (entityPromptContext != null && entityPromptContext.HasContent)
+			entityCapture = new PromptEntityCapture
 			{
-				extrasSections.EntityMainPromptBlock = entityPromptContext.MainPromptBlock;
-				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
+				MainPromptBlock = entityPromptContext?.MainPromptBlock,
+				PostprocessPromptBlock = entityPromptContext?.PostprocessPromptBlock,
+				ExplicitMentionedKingdomIds = entityPromptContext?.ExplicitMentionedKingdomIds,
+				HasContent = entityPromptContext != null && entityPromptContext.HasContent
+			};
+			if (entityCapture.HasContent)
+			{
 				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " residentPlayerEntities=" + includeResidentPlayerEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
 			}
 			if (entityRetrievalRuleIds.Contains("kingdom_agenda"))
 			{
 				WorldEntityPromptContext agendaPromptContext = VoteDealBehavior.BuildUnifiedAgendaPromptContextForExternal(entityContextHero, mentionedEntities);
-				if (agendaPromptContext != null && agendaPromptContext.HasContent)
-				{
-					extrasSections.AgendaMainPromptBlock = agendaPromptContext.MainPromptBlock;
-					shoutPromptContext.EntityPostprocessContext = PromptExtrasComposer.MergePostprocessBlock(shoutPromptContext.EntityPostprocessContext, agendaPromptContext.PostprocessPromptBlock);
-				}
+				entityCapture.AgendaHasContent = agendaPromptContext != null && agendaPromptContext.HasContent;
+				entityCapture.AgendaMainPromptBlock = agendaPromptContext?.MainPromptBlock;
+				entityCapture.AgendaPostprocessPromptBlock = agendaPromptContext?.PostprocessPromptBlock;
 			}
-			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + (entityPromptContext != null && entityPromptContext.HasContent));
+			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + entityCapture.HasContent);
 		}
 		bool includeTradePricing = flag7 || flag8;
 		bool includeMarriageCandidates = targetHero != null && marriageHit;
 		RomanceSystemBehavior.SetMarriagePostprocessContextEnabled(targetHero, includeMarriageCandidates);
 		bool includeRuleGatedFields = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
-		shoutPromptContext.Extras = PromptExtrasComposer.Compose(extrasSections);
-		shoutPromptContext.UseDuelContext = flag2;
-		shoutPromptContext.UseRewardContext = flag7;
-		shoutPromptContext.IsLoanContext = flag8;
-		shoutPromptContext.IsQualified = isQualified;
+		contextFlags.UseRewardContext = flag7;
+		contextFlags.IsLoanContext = flag8;
+		contextFlags.UseDuelContext = flag2;
+		PromptAssembly assembly = PromptAssemblyStage.Assemble(extrasSections, entityCapture, routing, contextFlags, isQualified, suppressDynamicRuleAndLore, preprocessExcludedRuleIdSet);
+		shoutPromptContext.Extras = assembly.Extras;
+		shoutPromptContext.EntityPostprocessContext = assembly.EntityPostprocessContext;
+		shoutPromptContext.ExplicitMentionedKingdomIds = assembly.ExplicitMentionedKingdomIds;
+		shoutPromptContext.UseDuelContext = assembly.UseDuelContext;
+		shoutPromptContext.UseRewardContext = assembly.UseRewardContext;
+		shoutPromptContext.IsLoanContext = assembly.IsLoanContext;
+		shoutPromptContext.IsQualified = assembly.IsQualified;
+		shoutPromptContext.PreprocessRuleIds = assembly.PreprocessRuleIds;
 		LogShoutPromptContextStage("extras_assigned", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " includeTradePricing=" + includeTradePricing + " includeMarriageCandidates=" + includeMarriageCandidates + " includeRuleGatedFields=" + includeRuleGatedFields);
-		PromptRoutedTopicFlags routedTopicFlags = new PromptRoutedTopicFlags
-		{
-			Duel = flag,
-			Reward = flag3,
-			Loan = flag4,
-			PersistentAdpDebt = persistentAdpDebtPostprocess,
-			Surroundings = flag5,
-			KingdomService = flag6,
-			Marriage = marriageHit,
-			PartyTransfer = partyTransferHit,
-			WorldMapPartyCommand = worldMapPartyCommandHit
-		};
-		shoutPromptContext.PreprocessRuleIds = PromptPreprocessRuleIdAssembler.Assemble(auxiliaryRuleHitIds, routedTopicFlags, preprocessExcludedRuleIdSet, value8);
 		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
 			"ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds))
 			+ " excluded=" + ((shoutPromptContext.PreprocessExcludedRuleIds == null || shoutPromptContext.PreprocessExcludedRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessExcludedRuleIds))
