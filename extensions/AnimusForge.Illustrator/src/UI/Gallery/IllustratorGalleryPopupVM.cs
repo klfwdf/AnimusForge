@@ -236,6 +236,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 SelectedTitle = selected.Title;
                 SelectedPrompt = selected.Item?.Prompt ?? string.Empty;
                 SelectedDate = selected.DateText;
+                StatusText = selected.Item.ThemeText;
             }
             else
             {

@@ -317,7 +317,7 @@ namespace AnimusForge.Illustrator.Core
         /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
         /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
         /// </summary>
-        private const string BuiltinNegativePrompt = "game screenshot, 3D game render, videogame model, 3D polygon mesh, flat game lighting, digital CGI, videogame still, low quality, blurry, deformed fingers, extra limbs, bad anatomy, plastic skin, oversaturated, HUD, user interface, UI elements, dialogue box, subtitles, speech bubbles, overlay text, watermark, 对话框, 字幕, 对话气泡, 水印, modern objects, 现代物品, unwanted bare face when masked, bare human face under mascot, exposed face with full helmet, headband instead of mascot head, 露脸, 头饰发箍";
+        private const string BuiltinNegativePrompt = "extra limbs, malformed hands, bad anatomy, unwanted text, watermark, UI overlay, reference image collage";
 
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
@@ -328,7 +328,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 effectivePrompt += "\n[画风指令: " + customStyleHint.Trim() + "]";
             }
-            // 内置反截图负面词：无论用户负面词如何配置都生效，避免生图模型复刻游戏渲染质感与界面元素
+            // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
             string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
                 ? BuiltinNegativePrompt
                 : BuiltinNegativePrompt + ", " + negativePrompt.Trim();

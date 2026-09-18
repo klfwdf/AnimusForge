@@ -69,13 +69,44 @@ public static class PromptRoutingAudit
         string pose = (string)Call(popup, "GenerateDiversePoseDirective");
         Check(pose.Contains("站立、坐姿") && !pose.Contains("未经思考") && !pose.Contains("严禁与上一版重复"), "portrait input permits natural standing without compulsory pose change");
         string variation = (string)Call(director, "BuildRedrawVariationDirective", 3);
-        Check(variation.Contains("不要求每次换动作"), "redraw can vary camera and light without contorting pose");
+        Check(variation.Contains("行动意图") && variation.Contains("不强迫复杂动作") && variation.Contains("保持该事实"), "redraw varies activity without contortion or overriding event facts");
+        Check(system.Contains("先决定人物此刻正在做什么，再推导姿态、手部动作和视线") && pose.Contains("不把双手下垂展示装备作为默认"), "director chooses activity before pose instead of default display stance");
         string facts = "青年女性平民，裸头，无甲，穿布衣。FACT_SENTINEL";
         string[] modes = { "人物百科纪事", "周报历史纪事插画", "最近三轮对话联动的场景插画", "通用插画" };
         string valid = "【人物与镜头】人物身着现有衣物，自然呈现神情与动作。" +
             "【场景空间】环境材质向远处延展，形成清晰且柔和的空间层次。" +
             "【光线与色彩】自然光与环境反光协调过渡，暗部纹理清晰可辨。" +
             "【空间关系】近处与远处通过遮挡和景深形成连续纵深关系。";
+        Type directionType = assembly.GetType(core + "IllustrationDirection", true);
+        object metadataPlan = Activator.CreateInstance(planType, new object[] { "人物百科纪事", facts, "", "" });
+        string withMetadata = "【画作标题】灯下裁决【画作主题】战前权衡【人物行动】俯身审视地图，一手指向路线，视线落在指尖。" + valid;
+        object named = Call(director, "ResolveDirection", withMetadata, metadataPlan, null);
+        string namedPrompt = (string)directionType.GetProperty("Prompt").GetValue(named);
+        Check((string)directionType.GetProperty("Title").GetValue(named) == "灯下裁决" && (string)directionType.GetProperty("Theme").GetValue(named) == "战前权衡", "director title and theme parsed independently");
+        Check(!namedPrompt.Contains("灯下裁决") && !namedPrompt.Contains("战前权衡") && !namedPrompt.Contains("【人物行动】"), "metadata never enters image prompt");
+        Check(namedPrompt.Contains(valid) && !namedPrompt.Contains("FACT_SENTINEL"), "named artwork retains director body without reinjecting raw facts");
+        object rejected = Call(director, "ResolveDirection", "【画作标题】错误标题【画作主题】错误主题【人物行动】错误动作正文", metadataPlan, null);
+        Check((string)directionType.GetProperty("Title").GetValue(rejected) == "" && !(string.Concat(directionType.GetProperty("ActionSummary").GetValue(rejected))).Contains("错误"), "fallback discards metadata from rejected direction");
+        object sanitized = Call(directionType, "SplitMetadata", "【画作标题】<b>作品</b>{bad}【画作主题】主题\n" + valid);
+        Check((string)directionType.GetProperty("Title").GetValue(sanitized) == "作品", "UI labels strip markup");
+
+        Type cachedType = assembly.GetType("AnimusForge.Illustrator.Engine.CachedIllustrationItem", true);
+        Array past = Array.CreateInstance(cachedType, 5);
+        for (int i = 0; i < past.Length; i++)
+        {
+            object item = Activator.CreateInstance(cachedType);
+            cachedType.GetProperty("CreatedTime").SetValue(item, new DateTime(2026, 9, 18).AddMinutes(i));
+            cachedType.GetProperty("ActionSummary").SetValue(item, "行动" + i);
+            cachedType.GetProperty("Prompt").SetValue(item, "【人物与镜头】旧画双手下垂，目视前方。【场景空间】旧布景");
+            if (i == 3) cachedType.GetProperty("ActionSummary").SetValue(item, "");
+            if (i == 4) cachedType.GetProperty("Deleted").SetValue(item, true);
+            past.SetValue(item, i);
+        }
+        string history = (string)Call(directionType, "BuildActionHistory", past, false);
+        Check(history.Contains("旧画双手下垂") && history.Contains("行动2") && history.Contains("行动1") && !history.Contains("行动0") && !history.Contains("行动4"), "redraw uses three newest surviving actions with legacy prompt fallback");
+        Check(history.Contains("不是本次现场事实") && history.Contains("不能仅换背景"), "previous poses are variation context, not new hard facts");
+        string eventHistory = (string)Call(directionType, "BuildActionHistory", past, true);
+        Check(eventHistory.Contains("不能为动作去重改变事件") && !eventHistory.Contains("选择符合人物的新行动"), "conversation and weekly redraw history cannot rewrite events");
         foreach (string mode in modes)
         {
             object plan = Activator.CreateInstance(planType, new object[] { mode, facts, "META_SENTINEL", "NARRATIVE_SENTINEL" });
@@ -189,6 +220,31 @@ public static class PromptRoutingAudit
                 }
                 for (int i = 0; i < refs.Length; i++)
                     refs.SetValue(Activator.CreateInstance(reference, new object[] { png, labels[i], Enum.Parse(kind, kinds[i]) }), i);
+
+                // Isolate actual cache save/load in the audit artifact directory, never a player cache.
+                Type cache = assembly.GetType("AnimusForge.Illustrator.Engine.DiskImageCacheManager", true);
+                string fixtureRoot = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dllPath), "cache-audit-" + Guid.NewGuid().ToString("N"));
+                cache.GetField("CacheBaseDir", Static).SetValue(null, fixtureRoot);
+                object saved = Call(cache, "SaveImage", "hero-audit", Convert.FromBase64String(png), namedPrompt, "灯下裁决", "encyclopedia", "offline-fixture", 10, false, false, "战前权衡", "指向地图");
+                Check(saved != null, "artwork metadata saved with valid image in isolated cache");
+                object loaded = Call(cache, "LoadImage", "hero-audit", "offline-fixture", "encyclopedia");
+                Check((string)cachedType.GetProperty("Title").GetValue(loaded) == "灯下裁决" && (string)cachedType.GetProperty("Theme").GetValue(loaded) == "战前权衡" && (string)cachedType.GetProperty("ActionSummary").GetValue(loaded) == "指向地图", "title theme and activity survive cache reload");
+                Check((string)cachedType.GetProperty("Prompt").GetValue(loaded) == namedPrompt, "cache prompt remains only the image request text");
+                Check((string)cachedType.GetProperty("ThemeText").GetValue(loaded) == "主题：战前权衡", "theme display text available after reload");
+                string metadataPath = System.IO.Path.ChangeExtension((string)cachedType.GetProperty("FilePath").GetValue(saved), ".json");
+                string legacyJson = System.Text.RegularExpressions.Regex.Replace(System.IO.File.ReadAllText(metadataPath), @"\s*""(?:Theme|ActionSummary)""\s*:\s*""[^""]*"",?", "");
+                System.IO.File.WriteAllText(metadataPath, legacyJson);
+                Call(cache, "InvalidateCache");
+                object legacy = Call(cache, "LoadImage", "hero-audit", "offline-fixture", "encyclopedia");
+                Check(legacy != null && (string)cachedType.GetProperty("ThemeText").GetValue(legacy) == "纪事画卷", "legacy metadata without new fields still loads");
+
+                foreach (bool chat in new[] { false, true })
+                {
+                    string effective = (string)Call(client, "BuildEffectivePrompt", "裸头人物露出面容", "1024x1024", "", "", "", null, chat, 0);
+                    Check(!effective.Contains("露脸") && !effective.Contains("mascot") && !effective.Contains("full helmet") && effective.Contains("extra limbs"), "generic negatives no longer conflict with open face: " + chat);
+                    string custom = (string)Call(client, "BuildEffectivePrompt", "主体", "1024x1024", "", "", "", "CUSTOM_NEGATIVE", chat, 0);
+                    Check(custom.Contains("CUSTOM_NEGATIVE"), "user custom negatives preserved: " + chat);
+                }
                 var editTask = (Task)Call(client, "AttemptImagesEditsAsync", "http://offline.invalid/v1", "audit", valid,
                     "1024x1024", "", "", refs, "", CancellationToken.None);
                 editTask.GetAwaiter().GetResult();

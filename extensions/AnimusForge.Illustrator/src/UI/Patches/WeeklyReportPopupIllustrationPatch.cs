@@ -273,7 +273,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             Debug.Print($"[Illustrator] Weekly overlay attached: cached={(cached != null)}, autoGen={IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration}");
             if (cached != null && Publish(cached, cached.Prompt))
             {
-                _overlayVm.StatusText = "【本周纪事油画】";
+                _overlayVm.StatusText = cached.ThemeText;
             }
             else if (IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration)
             {
@@ -312,6 +312,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             // 每次生成都注入随机构图变体；重绘时额外要求导演刻意换镜头，避免同一周报每次出图雷同
             _redrawCount++;
             string artDirection = context.BuildArtDirection();
+            artDirection += "\n" + IllustrationDirection.ReadEventActionHistory(_scope.CampaignKey, eventKey, "weekly_report");
             string variation = GenerateWeeklyVariation();
             if (!string.IsNullOrWhiteSpace(variation)) artDirection += "\n" + variation;
             if (_redrawCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_redrawCount);
@@ -353,7 +354,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                     }
                 }
 
-                string prompt = await VisualDirectorEngine.ExpandToDetailedPromptAsync(promptPlan, refs, options, token).ConfigureAwait(false);
+                var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
+                string prompt = direction.Prompt;
                 IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _overlayVm != null) _overlayVm.StatusText = "导演构思完成，正在绘制纪事画卷（等待生图模型返回）..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
@@ -362,7 +364,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, context.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false);
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary);
                 }
                 return new { Result = result, Saved = saved, Prompt = effectivePrompt };
             }, completion =>
@@ -371,7 +373,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 _overlayVm.PromptText = completion.Prompt;
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
                 {
-                    _overlayVm.StatusText = "【本周纪事油画已绘制完成】";
+                    _overlayVm.StatusText = completion.Saved?.ThemeText ?? "【本周纪事油画已绘制完成】";
                 }
                 else
                 {
@@ -410,6 +412,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
+            if (!string.IsNullOrWhiteSpace(item?.Title)) _overlayVm.TitleText = item.Title;
             _overlayVm.SpriteName = spriteName;
             _overlayVm.PromptText = prompt;
             _overlayVm.HasIllustration = true;
