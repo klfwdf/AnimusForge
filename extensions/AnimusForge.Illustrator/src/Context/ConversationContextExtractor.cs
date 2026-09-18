@@ -32,7 +32,8 @@ namespace AnimusForge.Illustrator.Context
         public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(DialogueSentence)) sb.AppendLine($"【当前台词】\"{DialogueSentence}\"");
+            sb.AppendLine("【会话台词与历史记录（仅供理解人物情绪、关系演进与现场氛围，严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
+            if (!string.IsNullOrWhiteSpace(DialogueSentence)) sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
             return sb.ToString().TrimEnd();
         }
@@ -40,12 +41,13 @@ namespace AnimusForge.Illustrator.Context
         public string BuildHardFacts()
         {
             var sb = new StringBuilder();
+            bool allowMount = EnvironmentProfile == null || !EnvironmentProfile.IsIndoor;
             sb.AppendLine("【玩家主角】");
-            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildVisualSummary());
+            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildVisualSummary(includeMount: allowMount));
             sb.AppendLine("【对话对象】");
             if (InterlocutorProfile != null)
             {
-                sb.AppendLine(InterlocutorProfile.BuildVisualSummary());
+                sb.AppendLine(InterlocutorProfile.BuildVisualSummary(includeMount: allowMount));
             }
             else if (InterlocutorCharacter != null)
             {
@@ -175,7 +177,7 @@ namespace AnimusForge.Illustrator.Context
             {
                 string source;
                 Equipment snapshot = ConversationEquipmentSnapshot.Capture(mainHero, isCivilian, out source, out var appearance);
-                context.MainHeroProfile = HeroVisualExtractor.Extract(mainHero, isCivilian, snapshot, source);
+                context.MainHeroProfile = HeroVisualExtractor.Extract(mainHero, isCivilian, snapshot, source, appearance: appearance);
                 context.MainHeroProfile.Appearance = appearance;
             }
 
@@ -185,7 +187,7 @@ namespace AnimusForge.Illustrator.Context
                 context.InterlocutorCivilian = partnerCivilian;
                 string source;
                 Equipment snapshot = ConversationEquipmentSnapshot.Capture(partnerHero, partnerCivilian, out source, out var appearance);
-                context.InterlocutorProfile = HeroVisualExtractor.Extract(partnerHero, partnerCivilian, snapshot, source);
+                context.InterlocutorProfile = HeroVisualExtractor.Extract(partnerHero, partnerCivilian, snapshot, source, appearance: appearance);
                 context.InterlocutorProfile.Appearance = appearance;
             }
             else if (partnerChar != null)
@@ -205,8 +207,21 @@ namespace AnimusForge.Illustrator.Context
                     PhysicalFeatures = HeroVisualExtractor.ExtractCharacterPhysicalFeatures(partnerChar, snapshot)
                 };
 
-                uint color1 = appearance?.Color1 ?? (partnerChar.Culture != null ? partnerChar.Culture.Color : 0);
-                uint color2 = appearance?.Color2 ?? (partnerChar.Culture != null ? partnerChar.Culture.Color2 : 0);
+                uint color1 = (appearance != null && appearance.Color1 != 0)
+                    ? appearance.Color1
+                    : (partnerChar.HeroObject?.Clan?.Kingdom != null && partnerChar.HeroObject.Clan.Kingdom.Color != 0)
+                        ? partnerChar.HeroObject.Clan.Kingdom.Color
+                        : (partnerChar.HeroObject?.MapFaction != null && partnerChar.HeroObject.MapFaction.Color != 0)
+                            ? partnerChar.HeroObject.MapFaction.Color
+                            : (partnerChar.Culture != null ? partnerChar.Culture.Color : 0);
+
+                uint color2 = (appearance != null && appearance.Color2 != 0)
+                    ? appearance.Color2
+                    : (partnerChar.HeroObject?.Clan?.Kingdom != null && partnerChar.HeroObject.Clan.Kingdom.Color2 != 0)
+                        ? partnerChar.HeroObject.Clan.Kingdom.Color2
+                        : (partnerChar.HeroObject?.MapFaction != null && partnerChar.HeroObject.MapFaction.Color2 != 0)
+                            ? partnerChar.HeroObject.MapFaction.Color2
+                            : (partnerChar.Culture != null ? partnerChar.Culture.Color2 : 0);
                 if (color1 != 0)
                 {
                     string c1Name = HeroVisualExtractor.ResolveColorName(color1);
@@ -416,7 +431,7 @@ namespace AnimusForge.Illustrator.Context
                 $"已确认空间关系：{mountPosture}；{guardDirection}。\n" +
                 $"现场动作参考：{basePose}。\n" +
                 (string.IsNullOrWhiteSpace(siegeDirection) ? string.Empty : siegeDirection + "。\n") +
-                $"地点为【{locName}】。允许环境占据较大画面，也允许聚焦手势、目光、沉默或转身等细节；不要求每次都正面对称站立。";
+                $"地点为【{locName}】。允许环境占据较大画面，也允许聚焦手势、目光、沉默或侧身转身等细节；【构图交互铁律】：画面中双方角色应呈自然微侧向或对角朝向彼此，视线互相对视交汇，带有生动的交谈、沉思或戒备姿态互动，绝不可双双正对镜头像模特在展台前呆板站立！";
 
             return context;
         }
@@ -527,62 +542,62 @@ namespace AnimusForge.Illustrator.Context
 
         private static string MapActionToPoseDirective(string actionName)
         {
-            if (string.IsNullOrWhiteSpace(actionName)) return "【现场互动身姿】二人自然面对面立姿交谈";
+            if (string.IsNullOrWhiteSpace(actionName)) return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
             if (actionName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || actionName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿(关键)】对话对方双臂交叠紧紧环抱于胸前，神态严谨审视 (Both arms crossed tightly across chest, standing in a reserved, skeptical, or analytical scholarly posture)";
+                return "【现场互动身姿】对方双臂交叠环抱于胸前，神态严谨审视，身姿沉静内敛";
             }
             if (actionName.IndexOf("hip", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】对话对方单手叉腰，身形放松自信 (One hand casually resting on hip, confident stance)";
+                return "【现场互动身姿】对方单手自然扶腰带，身形从容放松、自信笃定";
             }
             if (actionName.IndexOf("aggressive", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】身躯前倾，姿态迫人威严 (Leaning forward in an intense, commanding or aggressive stance)";
+                return "【现场互动身姿】对方身躯微倾前逼，姿态威严迫人、带有强烈气场";
             }
             if (actionName.IndexOf("warrior", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】机警戒备的战士立姿，单手微搭在佩剑腰带侧 (Alert warrior stance, hand resting near belt or sword hilt)";
+                return "【现场互动身姿】机警戒备的防守立姿，身体重心微侧，处于随时应对突发的沉着备战状态";
             }
             if (actionName.IndexOf("demure", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】双手交叠于身前，谦逊守礼 (Hands folded politely in front, humble and composed posture)";
+                return "【现场互动身姿】双手自然交叠于身前，体态谦逊端庄、从容知礼";
             }
             if (actionName.IndexOf("weary", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】身形略显疲惫松弛 (Weary, slightly slumped posture)";
+                return "【现场互动身姿】身形略显风霜疲惫，体态松弛深沉";
             }
-            return "【现场互动身姿】二人自然面对面立姿交谈 (Natural standing conversation posture)";
+            return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
         }
 
         private static string MapIdleToPoseDirective(string idleName)
         {
-            if (string.IsNullOrWhiteSpace(idleName)) return "【现场互动身姿】二人自然面对面立姿交谈";
+            if (string.IsNullOrWhiteSpace(idleName)) return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
             if (idleName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || idleName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿(关键)】对话对方双臂交叠紧紧环抱于胸前，神态严谨审视 (Both arms crossed tightly across chest, standing in a reserved, skeptical, or analytical scholarly posture)";
+                return "【现场互动身姿】对方双臂交叠环抱于胸前，神态严谨审视，身姿沉静内敛";
             }
             if (idleName.IndexOf("hip", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】对话对方单手叉腰，身形放松自信 (One hand casually resting on hip, confident stance)";
+                return "【现场互动身姿】对方单手自然扶腰带，身形从容放松、自信笃定";
             }
             if (idleName.IndexOf("aggressive", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】身躯前倾，姿态迫人威严 (Leaning forward in an intense, commanding or aggressive stance)";
+                return "【现场互动身姿】对方身躯微倾前逼，姿态威严迫人、带有强烈气场";
             }
             if (idleName.IndexOf("warrior", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】机警戒备的战士立姿，单手微搭在佩剑腰带侧 (Alert warrior stance, hand resting near belt or sword hilt)";
+                return "【现场互动身姿】机警戒备的防守立姿，身体重心微侧，处于随时应对突发的沉着备战状态";
             }
             if (idleName.IndexOf("demure", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】双手交叠于身前，谦逊守礼 (Hands folded politely in front, humble and composed posture)";
+                return "【现场互动身姿】双手自然交叠于身前，体态谦逊端庄、从容知礼";
             }
             if (idleName.IndexOf("weary", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动动作与身姿】身形略显疲惫松弛 (Weary, slightly slumped posture)";
+                return "【现场互动身姿】身形略显风霜疲惫，体态松弛深沉";
             }
-            return "【现场互动身姿】二人自然面对面立姿交谈 (Natural standing conversation posture)";
+            return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
         }
 
         private static string CleanText(string text)
