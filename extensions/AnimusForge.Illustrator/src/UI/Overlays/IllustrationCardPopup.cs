@@ -388,12 +388,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 // 人物立绘同时进生图垫图。
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
-                preCapturedBase64 = await ScreenCaptureHelper.CaptureConversationSceneWithoutUiAsync(token).ConfigureAwait(false);
-                if (!string.IsNullOrWhiteSpace(preCapturedBase64))
-                {
-                    directorRefs.Add(new IllustrationReferenceImage(preCapturedBase64,
-                        "会面现场的3D实景画面：用于确认可辨认的昼夜、采光、环境布局、站位及当前人物可见装备外观；与人物立绘按身份对应核对，不把背景士兵装备移给会话对象。未读取到场景时间时，以此现场画面判断昼夜；禁止绘制界面、对话框、字幕、名牌与文字", IllustrationReferenceKind.Scene));
-                }
+                var sceneReferences = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(token).ConfigureAwait(false);
+                directorRefs.AddRange(sceneReferences);
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Func<Task<string>> playerStage = player == null ? (Func<Task<string>>)null : () => ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(player, useCivilian: playerCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: playerEquipmentCode, appearance: convContext.MainHeroProfile.Appearance);

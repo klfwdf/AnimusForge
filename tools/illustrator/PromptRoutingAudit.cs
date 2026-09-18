@@ -57,6 +57,28 @@ public static class PromptRoutingAudit
         Check(system.Contains("不能仅保留立绘轮廓再更换背景") && system.Contains("环境反光"), "director must reconstruct figure and scene together");
         Check(system.Contains("头部装备的盔壳轮廓") && system.Contains("面部实际覆盖范围") && system.Contains("披肩不能概括成内衬"), "director describes visible equipment landmarks instead of generic costume");
         Check(system.Contains("物品名称、ID、文化和头衔只辅助识别") && system.Contains("不能把白天改成夜晚"), "names and painting style cannot override observed appearance or time");
+        Check(system.Contains("楼梯所在墙面及走向") && system.Contains("不据酒馆或大厅等名称重新设计建筑"), "director reconstructs scene topology instead of a generic location template");
+        Type capture = assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper", true);
+        var screenshotDefaults = capture.GetMethod("CaptureConversationSceneBase64", Static).GetParameters();
+        Check((float)screenshotDefaults[1].DefaultValue == 1f && (int)screenshotDefaults[0].DefaultValue == 1024, "scene screenshot includes ground and foreground at full height");
+        Type frameType = capture.GetMethod("BuildPanoramaFrame", Static).GetParameters()[0].ParameterType;
+        object originalFrame = frameType.GetProperty("Identity", Static).GetValue(null);
+        Type vectorType = frameType.GetField("origin").FieldType;
+        frameType.GetField("origin").SetValue(originalFrame, Activator.CreateInstance(vectorType, new object[] { 12f, 25f, 3f, -1f }));
+        var frames = new object[4];
+        for (int i = 0; i < 4; i++)
+        {
+            frames[i] = Call(capture, "BuildPanoramaFrame", originalFrame, i);
+            object origin = frameType.GetField("origin").GetValue(frames[i]);
+            Check((float)vectorType.GetField("x").GetValue(origin) == 12f && (float)vectorType.GetField("y").GetValue(origin) == 25f && (float)vectorType.GetField("z").GetValue(origin) == 3f, "panorama rotates in place without camera translation: " + i);
+            object rotation = frameType.GetField("rotation").GetValue(frames[i]);
+            object axis = rotation.GetType().GetField("u").GetValue(rotation);
+            Check(Math.Abs((float)vectorType.GetField("z").GetValue(axis)) < 0.0001f, "panorama levels vertical initial view: " + i);
+            Check((bool)Call(capture, "IsUsablePanoramaFrame", frames[i], frames[i], 1.74533f), "matching rendered camera accepted: " + i);
+        }
+        Check(!(bool)Call(capture, "IsUsablePanoramaFrame", frames[1], frames[0], 1.74533f), "unchanged rendered view is not mislabeled as next direction");
+        Check(!(bool)Call(capture, "IsUsablePanoramaFrame", frames[0], frames[0], 0.8f), "zoomed camera cannot masquerade as panoramic coverage");
+        Check(((string)Call(capture, "SceneReferenceLabel", 2)).Contains("同一空间") && ((string)Call(capture, "SceneReferenceLabel", -1)).Contains("当前玩家视角"), "scene views distinguish current context from environment sweep");
         Type heroExtractor = assembly.GetType("AnimusForge.Illustrator.Context.HeroVisualExtractor", true);
         foreach (bool hair in new[] { false, true })
         foreach (bool beard in new[] { false, true })
