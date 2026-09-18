@@ -275,8 +275,6 @@ public static class AIConfigHandler
 		"dialogue"
 	};
 
-	private static readonly object _guardrailSemanticLock = new object();
-
 	private static readonly PromptSemanticVectorCache _guardrailVectors = new PromptSemanticVectorCache(1024, 256);
 
 	private static int _guardrailWarmupState;
@@ -311,7 +309,8 @@ public static class AIConfigHandler
 
 	private const int MaxStickyGuardrailRulesPerTarget = 3;
 
-	private static GuardrailEvalSnapshot _lastGuardrailEval;
+	private static readonly PromptSingleEvaluationCache<GuardrailEvalSnapshot> _guardrailEvalCache =
+		new PromptSingleEvaluationCache<GuardrailEvalSnapshot>();
 
 	private static readonly Regex AuxiliaryGuardrailNumberRegex = new Regex("\\d+", RegexOptions.Compiled);
 
@@ -5292,22 +5291,15 @@ public static class AIConfigHandler
 				+ "|options=" + KnowledgeRetrievalEnabled + ":" + KnowledgeSemanticFirst + ":" + KnowledgeSemanticTopK + ":" + GuardrailRuleReturnCap
 				+ "|target=" + _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
 				+ ":" + _guardrailRuntimeTargetTroopId.Value + ":" + _guardrailRuntimeTargetUnnamedRank.Value + ":" + _guardrailRuntimeTargetAgentIndex.Value;
-			lock (_guardrailSemanticLock)
+			if (_guardrailEvalCache.TryGet(text, configurationRevision, out snapshot))
 			{
-				if (_lastGuardrailEval != null && string.Equals(_lastGuardrailEval.Key, text, StringComparison.Ordinal))
-				{
-					snapshot = _lastGuardrailEval;
-					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
-				}
+				return snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
 			if (useAuxiliary && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded, applyRuntimeAutoExclusions))
 			{
-				lock (_guardrailSemanticLock)
+				lock (_promptConfigurationReloadLock)
 				{
-					if (_promptConfiguration.Capture().Revision == configurationRevision)
-					{
-						_lastGuardrailEval = snapshot;
-					}
+					_guardrailEvalCache.Publish(text, snapshot, configurationRevision, _promptConfiguration.Capture().Revision);
 				}
 				return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
@@ -5699,12 +5691,9 @@ public static class AIConfigHandler
 			catch
 			{
 			}
-			lock (_guardrailSemanticLock)
+			lock (_promptConfigurationReloadLock)
 			{
-				if (_promptConfiguration.Capture().Revision == configurationRevision)
-				{
-					_lastGuardrailEval = guardrailEvalSnapshot;
-				}
+				_guardrailEvalCache.Publish(text, guardrailEvalSnapshot, configurationRevision, _promptConfiguration.Capture().Revision);
 			}
 			snapshot = guardrailEvalSnapshot;
 			return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
@@ -8719,11 +8708,8 @@ public static class AIConfigHandler
 				}
 				else Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 0);
 			}
-			lock (_guardrailSemanticLock)
-			{
-				_guardrailVectors.Clear();
-				_lastGuardrailEval = null;
-			}
+			_guardrailVectors.Clear();
+			_guardrailEvalCache.Clear();
 			_promptConfiguration.Reload(() => replacement,
 				_ => new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel(),
 					new ActionPostprocessConfigModel(), new PreprocessPromptsConfigModel(),
