@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "2c7415364633315f9d42c192bcd9de591fcd6646",
+  "sourceRevision": "7d8b8d0b44a065bb637d06cead4bce8d6ad92264",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -2064,24 +2064,24 @@
     {
       "id": "j03.config.facade",
       "path": "AIConfigHandler.cs",
-      "start": 35,
-      "end": 35,
+      "start": 45,
+      "end": 45,
       "symbol": "public static class AIConfigHandler",
       "match": "exact",
       "status": "remaining-adapter",
       "note": "旧 getter/reload 与游戏、网络窄适配仍保留；部分评估编排仍在旧类",
-      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     },
     {
       "id": "j03.config.reload",
       "path": "AIConfigHandler.cs",
-      "start": 7530,
-      "end": 7530,
+      "start": 7555,
+      "end": 7555,
       "symbol": "public static void ReloadConfig()",
       "match": "exact",
       "status": "wired-boundary",
       "note": "旧签名转接 PromptConfigurationLoader 与 revisioned store",
-      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     },
     {
       "id": "j03.retrieval.intent",
@@ -2141,35 +2141,35 @@
     {
       "id": "j03.retrieval.scope",
       "path": "AIConfigHandler.cs",
-      "start": 2699,
-      "end": 2699,
+      "start": 2709,
+      "end": 2709,
       "symbol": "internal static IDisposable BeginGuardrailRuntimeScope()",
       "match": "exact",
       "status": "wired-boundary",
       "note": "配置 revision 与请求上下文共同 pin；退出恢复父 scope",
-      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     },
     {
       "id": "j03.retrieval.rules.remaining",
       "path": "AIConfigHandler.cs",
-      "start": 1829,
-      "end": 1829,
+      "start": 1839,
+      "end": 1839,
       "symbol": "private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()",
       "match": "exact",
       "status": "remaining-adapter",
       "note": "按目标资格过滤与游戏读取仍在旧类；评估编排及 ONNX 调用未全迁",
-      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     },
     {
       "id": "j03.retrieval.warmup.remaining",
       "path": "AIConfigHandler.cs",
-      "start": 1940,
-      "end": 1940,
+      "start": 1950,
+      "end": 1950,
       "symbol": "private static void RunGuardrailSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)",
       "match": "exact",
       "status": "remaining-adapter",
       "note": "已捕获 seed 后的 embedding 调用与门控保留；旧代迟到结果拒收",
-      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     },
     {
       "id": "j03.config.loader",
@@ -2306,13 +2306,13 @@
     {
       "id": "j03.retrieval.eval.remaining",
       "path": "AIConfigHandler.cs",
-      "start": 4712,
-      "end": 4712,
-      "symbol": "private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)",
+      "start": 4722,
+      "end": 4722,
+      "symbol": "private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, PromptRuleEvaluationPorts ports = null)",
       "match": "exact",
       "status": "remaining-owner",
-      "note": "ONNX/辅助网络接缝、游戏资格与评估编排尚在旧类；最终命中纯算法已迁出",
-      "fileSha256": "a7a79722924327b1987a1a4c1eaa7ffb29f8c2c17ac5736ec66b269430175cc0"
+      "note": "旧入口只保留 MCM/资格/ONNX与辅助网络适配、日志、缓存发布；新增逐调用内部确定性 provider/资格接缝，纯算法归唯一 Retrieval 管线",
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     },
     {
       "id": "j03.retrieval.final",
@@ -2423,6 +2423,17 @@
       "status": "wired-owner",
       "note": "召回、逐意图重排、聚合与命中唯一编排 owner",
       "fileSha256": "c3a81739a052ab20f062ad883aadf4298d174945e4e9e690b794e6de9523f335"
+    },
+    {
+      "id": "j03.retrieval.ports",
+      "path": "AIConfigHandler.cs",
+      "start": 36,
+      "end": 36,
+      "symbol": "internal sealed class PromptRuleEvaluationPorts",
+      "match": "exact",
+      "status": "internal-test-seam",
+      "note": "逐调用窄接缝，仅内部测试传入确定性资格、embedding、rerank及辅助结果；正常游戏入口传 null，避免进程级可变 provider",
+      "fileSha256": "4b90456c876fb69fc3c7e022c268c3c85b4f874c84787b8ef93a80c5d74a8f4d"
     }
   ]
 }

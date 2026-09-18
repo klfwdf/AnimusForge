@@ -16,6 +16,10 @@ methods = "\n\n".join(extract.declaration(source, marker) for marker in (
     "public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions",
     "public string BuildFilteredInventorySummaryForAI(",
     "public string BuildFilteredSettlementMerchantInventorySummaryForAI("))
+scene_role = extract.declaration((ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig"),
+                                 "private static string BuildSceneNpcRoleIntroForPrompt(")
+scene_hero = extract.declaration(scene_role, "if (includeInventorySummary && RewardSystemBehavior.Instance != null)")
+scene_merchant = extract.declaration(scene_role, "if (includeInventorySummary && RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind")
 stubs = (ROOT / "tests/modules/AF.Module.Prompt/Retrieval/FacadeStubs.cs").read_text(encoding="utf-8")
 assert stubs.count("public static class RewardSystemBehavior") == 1
 stubs = stubs.replace("public static class RewardSystemBehavior", "public partial class RewardSystemBehavior")
@@ -25,7 +29,8 @@ output = ROOT / "artifacts/tests/prompt-j03-production-reward/current"
 output.mkdir(parents=True, exist_ok=True)
 (output / "Stubs.cs").write_text(stubs, encoding="utf-8")
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
-(output / "Program.cs").write_text(template.replace("@@METHODS@@", methods), encoding="utf-8")
+(output / "Program.cs").write_text(template.replace("@@METHODS@@", methods)
+                                  .replace("@@SCENE_HERO@@", scene_hero).replace("@@SCENE_MERCHANT@@", scene_merchant), encoding="utf-8")
 links = [ROOT / "PromptListRetrievalService.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs",
