@@ -27,6 +27,13 @@ namespace AnimusForge
     public static class AIConfigHandler
     {
         public static readonly Dictionary<string, string> Targets = new();
+        public static IDisposable BeginGuardrailRuntimeScope() => new TargetScope(new Dictionary<string, string>(Targets));
+        private sealed class TargetScope : IDisposable
+        {
+            private readonly Dictionary<string, string> _parent;
+            public TargetScope(Dictionary<string, string> parent) { _parent = parent; }
+            public void Dispose() { Targets.Clear(); foreach (var entry in _parent) Targets[entry.Key] = entry.Value; }
+        }
         private static void Set(string key, string value) { Program.CheckMain(); Targets[key] = value; }
         public static void SetGuardrailRuntimeTargetKingdom(string value) => Set("kingdom", value);
         public static void SetGuardrailRuntimeTargetHero(string value) => Set("hero", value);
@@ -256,11 +263,12 @@ public static class Program
     }
     private static void NormalizedOnly()
     {
+        AIConfigHandler.Targets["hero"] = "parent";
         var request = Request(); Pump(Prepare(request)); Task<ActionPlan> pending = Complete(request); WaitQueued();
         Check(!pending.IsCompleted && ShoutBehavior.Completed.Count == 0, "raw model tags escaped before main-thread normalizer");
         ActionPlan plan = Pump(pending);
         Check(plan.Actions.Count == 1 && plan.Actions[0].Tag == "ACTION:GIVE_GOLD" && plan.Actions[0].TargetId == "7" && !plan.RawPostprocessId.Contains("999"), "parser consumed raw unqualified tags instead of normalized output");
-        Check(ShoutBehavior.Completed.Count == 1 && AIConfigHandler.Targets["hero"] == "", "normalization count/runtime cleanup wrong");
+        Check(ShoutBehavior.Completed.Count == 1 && AIConfigHandler.Targets["hero"] == "parent", "normalization count/runtime scope restoration wrong");
         Check(Pump(Complete(request)).Actions.Count == 0 && ShoutBehavior.Completed.Count == 1, "completed owner reentered");
     }
     private static void Unbound()
