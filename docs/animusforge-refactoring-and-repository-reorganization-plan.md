@@ -1,3 +1,131 @@
+<a id="modularization-master-plan-20260919"></a>
+
+# AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）
+
+本节是用户要求的"一次大任务"总计划：按三份仓库 Skill（maintainer 0.2.0、af-core-framework、policy-effect-module）把 AF 主体拆完，最终交付 J17 全仓结项。它替代上方 2026-09-17 路线表的粗粒度描述，**不替代各包实施时的详细执行单**；每包开工前仍按 J03/J04 的做法写意图节、逐切片提交、逐切片回归。基线：分支 `codex/af-modularize-j04-20260918`，源码 `d6824d9d`，241 锚点地图两模式通过；原始基线 `25a89cea`。
+
+## 0. 不变约束（来自 Skill，不重复解释）
+
+1. 一套源码 → `AnimusForge.dll` 双版本（1.3/1.4）+ Bootstrap 唯一加载；`AF.Foundation/Module/Bridge` 是逻辑分层，**不拆 DLL**，namespace/程序集/存档类型/SaveableTypeDefiner 身份不变。
+2. 三层架构：AF 主体 → 同 DLL typed `internal` 制作组接缝（`Refactor/Modules/TeamModulePorts.cs` 的 `IPolicyModulePort`/`IGatheringModulePort`/`ISiegeModulePort`）→ 独立版本化 public API（`src/AF.Contracts/PublicApi/V1` + `src/modules/AF.Module.PublicApi`）。政策/宴会/GCCZ 玩法不重写。
+3. 每包必须：真实算法+状态迁到新 owner → 接通全部真实消费者 → 删除旧实现（不留转发壳）→ 直接编译生产源码的契约 + 变异拒收 → 相关三渠道 runner 复跑 → 原脚本 Debug/Release 双 API + Bootstrap → 代码地图两模式 → 台账回执。Stage/Deploy/打包/推送分别授权。
+4. 游戏对象读写在所属线程；后台只处理 detached 输入；回写重验 owner/generation/目标。
+5. 三渠道（Native/Scene/Courier）共享同一话题、规则、历史、记忆、后处理、动作、AFEF 语义。**用户已授权 Scene/Courier 公开提交为最终目标（J10+J14）**，与远端 J14 默认范围不同，不静默降级。
+6. 性能按真实频率与工作量判断；不新增 tick 轮询、全量扫描、重复反射；不为普通抽取制造 manifest/Host/热卸载。
+
+## 1. 现状盘点（源码 `d6824d9d`，本轮实际统计）
+
+| 家族 | 行数 | 已迁出 owner | 主要残余簇（按方法名聚类，方法数/行数） |
+| --- | ---: | --- | --- |
+| `MyBehavior.cs` + 16 partial | 62,325 | Memory dispatch/summary/sealing/budget partial、Prompt Composition 12 owner、Persona owner | Weekly 352/9.7k、Memory 252/6.8k、Kingdom 120/3.2k、Dev/Import/Export 159/6.3k、Prompt 79/2.4k、Persona 63/2.2k、History 72/2.1k、Party 72/2.1k、UI 92/2.1k、Settlement 67/1.5k、Action 59/1.4k、Sync 7/1.4k |
+| `ShoutBehavior.cs` + 9 partial | 41,656 | Native admission/preparation/pending/completion/dispatch partial、ScenePostprocess partial | Scene 313/9.4k、Native 115/4.4k、Prompt 95/3.2k、History 61/2.6k、Postprocess 42/1.9k、Group 21/1.6k、Party 37/1.1k、TTS 19/0.9k、Passive 19/0.7k、Memory 25/0.7k |
+| `CourierDeliveryBehavior.cs` + 7 partial | 11,925 | PromptPreparation/HistoryPreparation/CommitDispatch/InboundCompletion/DetachedPostprocess partial | Courier 141/4.1k、Party 32/0.7k、UI 20/0.6k、Npc 15/0.6k、Load 9/0.5k |
+| `ShoutNetwork.cs` | 1,367 | Protocol 三文件（J01） | 真实 HTTP 发送 `:133-158`、普通/流调用、取消/重试、姓名过滤 |
+| `AIConfigHandler.cs` | 7,717 | Configuration 5 owner、Retrieval 23 owner | ONNX/辅助网络适配、`IsRuleCurrentlyEligibleForRag:1728`、`ResolveConversationTargetHero:6352` live 读 |
+| `KnowledgeLibraryBehavior.cs` | 13,791 | — | ONNX 索引 `EnsureOnnxIndex:1390`、`BuildLoreContext:5670`、Saveable |
+| `Refactor/Runtime` 22 文件 | 9,883 | 已是 owner 形态 | 四个 OutcomeReceipt（2.1k/1.6k/1.5k/0.4k）、`InteractionResultCommitter`、`DetachedInteractionHost`、`FeatureBridgeRuntime` 待归位到 `src/` |
+| `Refactor/Adapters` 21 文件 | — | Legacy* 适配器 | 待按 owner 归位或删除 |
+| 领域大类 | Reward 22.6k、WorldDiplomacy 20.5k、SiegeAi 17.2k、SceneTaunt 10.6k、WorldMapParty 10.0k、LordEncounter 9.4k、Duel 8.6k、Vassalage 8.6k、ProactiveNpc 8.2k、NobleGathering 5.9k、VoteDeal 4.8k | — | 30 个文件含 SyncData/Saveable；Harmony 密集：MilitaryExercise 17、Duel 13、TroopInspection 12 |
+
+## 2. 包序列（依赖顺序；每包给出真实入口、目标 owner、完成边界、验收）
+
+### J04 Prompt 组合（ACTIVE，剩余三切片）
+
+| 切片 | 内容 | 完成边界 |
+| --- | --- | --- |
+| J04f 执行位置 | Native：`ShoutBehavior.cs:20080` `SubmitNativeConversationTextInternalAsync` 改为 主线程 `CapturePromptBuildRequest` → 后台 `PromptTopicRoutingStage`（+ lore/mentions 检索）→ 主线程 `CapturePromptSections`/`ApplyPromptRuntimeAppendices`（重验 admission/generation）→ 任意线程 `PromptAssemblyStage`；沿用 `RunNativeConversationMainThreadFuncAsync`。Courier：`CourierDeliveryBehavior.PromptPreparation.cs:156` 的 `Task.Run` 改为同样分段，沿用 `RunCourierOwnerPhaseAsync`。Scene 五个调用点（`13831/17831/20760/27415/27906/30727/38869`）按现有线程语义接入，不改 Scene 多人接力/旁听。 | 后台阶段零 Hero/Clan/Reward/Duel 读；`GetLoreContext`/`GetAuxiliaryMentionedEntitiesForExternal` 从阶段 3 移到后台阶段；三渠道 runner 全绿 |
+| J04g 规则指令段落化 | `BuildTriggeredRuleInstructions`（141 行）、`BuildExtraRuleInstructions`（~100 行）拆为"host 捕获规则正文 → `PromptRuleInstructionComposer` 纯拼装"；Reward/Loan/Duel/Taunt 运行时正文由 host 捕获 | 与 `PromptRuleBlockText` 合并为一个 owner；旧两方法删除 |
+| J04h 验收 | Courier 前处理与主链共用 `PromptExclusionSets` + `CapturePromptBuildRequest`；更新地图/范围图/回执；记 `J04_OFFLINE_VERIFIED` | 全部具名消费者接唯一 owner；Composition 契约 + BuildPhases 契约 + 三渠道 runner + 双版本构建 |
+
+### J05 Memory / Persistence
+
+- **真实入口**：`MyBehavior.DialogueHistoryCommit.cs:12` `CommitDialogueHistoryWithScene`（唯一运行期接受）；`MyBehavior.cs:15451` `RecordNpcRecentAction` / `RecordNpcMajorAction`；`MyBehavior.cs:30874` `AppendExternalLoreHistory`；`MyBehavior.MemorySummary*.cs`（已有 dispatcher/run/planning/input/sealing/budget owner）；`MyBehavior.MemoryRecovery.cs:1463`；`Refactor/Runtime/MemorySummaryDispatcher.cs`、`InteractionMemoryRecoveryLedger.cs`、`InteractionResultCommitter.cs:718`。
+- **目标 owner**：`src/modules/AF.Module.Memory/{Records,Summary,Recovery,Afef}`；`src/AF.Persistence/` 只放通用保存基础（chunk replay、identity audit 已有工具契约）。存档类型/key/`MyBehaviorSaveableTypeDefiner:58658` 原地保留，只迁算法。
+- **切片**：J05a 记录写入（Recent/Major/Dialogue/Lore 四类写者收敛为一个 `MemoryRecordWriter`，AFEF 事实语义统一）→ J05b 摘要（已有 owner 归位到 `src/`，逐 record/字符/耗时预算落实，替换"每帧 N 回调"）→ J05c 恢复账本 → J05d 导入/导出/Dev 编辑器（`Import*`/`Export*`/`OpenDev*` 159 方法 6.3k 行）只做窗口门禁与 owner 接线，不重写 UI。
+- **验收**：`tools/PersistenceProfileConfigContractTests`、`PersistenceChunkReplayTests`、`PersistenceIdentityAudit` 严格 runner 保持 PASS；旧档字段/类型审计不变；新契约覆盖四类写者去重、预算、恢复幂等；三渠道 memory 写入契约相同。
+
+### J06 Knowledge
+
+- **真实入口**：`KnowledgeLibraryBehavior.cs:5670` `BuildLoreContext`、`:1390` `EnsureOnnxIndex`、`AIConfigHandler.cs:7630-7640` `GetLoreContext`；`WorldEntityRetrievalService.cs`（4.2k）`BuildPromptContext`；`Refactor/Adapters/LegacyKnowledgeRagGateway.cs`。
+- **目标 owner**：`src/modules/AF.Module.Knowledge/{Index,Lore,Entities}`；ONNX 引擎生命周期归 `Index`，静态知识/百科归 `Lore`，世界实体检索归 `Entities`。ONNX 文件与 `ModuleData` 不随源码搬（J15）。
+- **切片**：J06a 索引构建/失效/只读查询 owner（脱离 `KnowledgeLibraryBehavior` 的 Campaign 生命周期）→ J06b Lore 检索纯算法 + host 适配 → J06c 实体检索 → J06d `AIConfigHandler.IsRuleCurrentlyEligibleForRag:1728` / `ResolveConversationTargetHero:6352` 的 live 读改为 J04 `PromptRuntimeTargetBinding` 传入的 detached 资格（消除 J03 遗留）。
+- **验收**：Lore/实体检索确定性 fake embedding 契约；J04 BuildPhases 契约扩展"后台阶段可调用 Knowledge"；`HeroAssetScopeRegressionTests` 保持。
+
+### J07 Conversation 核心 / Native
+
+- **真实入口**：`ShoutBehavior.cs:20080` `SubmitNativeConversationTextInternalAsync`（Native 回合唯一编排）；`ShoutBehavior.Native*.cs` 五个 partial（admission 260/preparation 83/pending 134/completion 138/dispatch 78）；`ShoutBehavior.ModuleNativeSubmission.cs`；`Refactor/Runtime/InteractionRequestCoordinator.cs`、`InteractionRequestLease.cs`、`DetachedInteractionHost.cs:389`；`Refactor/Adapters/LegacyNativeConversationFacade.cs`、`LegacyNativeConversationOptInRunner.cs`。
+- **目标 owner**：`src/modules/AF.Module.Conversation/{Internal,Channels/Native}`；`Internal` 持会话/请求/lease/generation/取消；`Native` 持准入、准备、pending 历史、完成、动作派发。UI 覆盖层 `AnimusForgeNativeConversationOverlay*.cs` 留 adapter。
+- **切片**：J07a 请求生命周期（coordinator/lease/host 归位 `src/`）→ J07b Native 五 partial 归位并把 `SubmitNativeConversationTextInternalAsync` 拆为"准入 → J04 五阶段 → LLM（J08 接缝）→ 后处理（J09 接缝）→ 提交"→ J07c 主动开场/关窗/失败文案保持。
+- **验收**：Native 五组 runner（589/44/184/111/852+27）+ `NativeModuleSubmissionTests`、`NativeActionDispatchOutcomeTests`、`NativeTtsFallbackBoundaryTests` 全绿；`AfDialogueClient` 契约不变。
+
+### J08 LLM 传输 / 模型目录
+
+- **真实入口**：`ShoutNetwork.cs:133-158` 两个 Send、`:889-1128` 普通调用、`:1130-1590` 流调用（含 400 thinking fallback、空回复一次补救、SSE 回调时点、逐字符 Unicode 旧缺陷）；`Refactor/Adapters/LegacyConfiguredChatGateway.cs`、`LegacyModelCatalogGateway.cs`、`LegacyPolicyLlmGateway.cs`、`LegacyWorldDiplomacyLlmGateway.cs`、`LegacyVolcTtsGateway.cs`；`DuelSettings.GlobalClient`；`Logger` token 统计队列 `:769-845`。
+- **目标 owner**：`src/modules/AF.Module.Llm/{Transport,Streaming,ModelCatalog,Tts}`；唯一请求/重试/超时/取消/流状态 owner；配置与实时姓名过滤分界。
+- **切片**：J08a 非流传输 → J08b 流传输 + `LlmVisibleReplyNormalizer.StreamFilter` 接线 → J08c 五个 Legacy*Gateway 收敛到一个 typed gateway 接口（Policy/WorldDiplomacy 只保留各自 prompt，不复制第二条链）→ J08d TTS。
+- **验收**：J01 协议 13 用例 + 7 变异保持；新增传输契约用确定性 fake `HttpMessageHandler` 覆盖取消/超时/重试/400 fallback/空回复；真实 provider `NOT-RUN` 单列。
+
+### J09 Actions / 事实提交
+
+- **真实入口**：`Refactor/Adapters/LegacyActionTagParser.cs`、`LegacyActionTagCatalog.cs`、`LegacyNativeActionPlanExecutor.cs`；`ShoutBehavior.ScenePostprocess.cs:1033`（Scene 唯一权威后处理 work item）；`ShoutBehavior.cs:22991` `TryPrepareCourierActionPostprocessForExternal`；`CourierDeliveryBehavior.DetachedPostprocess.cs`；`Refactor/Runtime/InteractionResultCommitter.cs`、`InteractionCommitReceiptCache.cs` 及四个 `*OutcomeReceipt.cs`；`docs/directive_tag_output_case.md`。
+- **目标 owner**：`src/modules/AF.Module.Actions/{Tags,Plan,Execute,Receipts}` + 领域 typed 执行端口（`AF.Contracts/Internal`）。规则资格 → `tag_rules` → 解析 → 唯一执行 → AFEF/receipt 全链保留；计划/执行/失败/部分成功分清。
+- **切片**：J09a 标签目录/解析 owner（三渠道共用同一解析）→ J09b 计划/执行/回执 owner，四个 OutcomeReceipt 归位 → J09c Scene/Courier 后处理调用改接唯一执行入口，删除各自重复解析。
+- **验收**：`ScenePostprocessParityTests` 71/37 + `run_mutations`、`CourierPostprocessOwnerRegressionTests` 39 + 8 变异、`CourierCommitOutcomeTests`、`NativeActionDispatchOutcomeTests` 全绿；新增"三渠道同一标签同一执行"契约。
+
+### J10 Scene / Courier 渠道整包
+
+- **真实入口**：Scene：`ShoutBehavior.cs:27280` `HandleGroupResponse`、`:27693` `HandleGroupResponsePerHeroIndependent`（接力/旁听/去重）、`:20715` `GetPassiveNpcResponse`、`:13796` `GenerateGroupConversationTurnLineAsync`、`:30685` 即时反应、TTS 19 方法 0.9k；Courier：`CourierDeliveryBehavior.cs:4398/4851` 两个生成入口、`PromptPreparation.cs:156` `PrepareCourierPromptRequestAsync`、`CommitDispatch.cs`、`InboundCompletion.cs:556`、旧 retry 按钮。
+- **目标 owner**：`src/modules/AF.Module.Conversation/Channels/{Scene,Courier}`；各渠道保留自己的队列/会话/代际/提交时点，共享 J04–J09 主体。Scene pending AFEF 消费、玩家去重/距离/旁听不能纯函数化；Courier 到达提交不改为预生成提交。
+- **切片**：J10a Scene 会话 owner（group/relay/passive/reaction 四条链归位；可等待的生命周期与真实结果）→ J10b Courier 会话 owner（运输/预生成/到达/来信/retry 身份收拢；删除剩余后台 session live 读）→ J10c 三渠道对齐审计（`docs/free_conversation_scene_shout_alignment.md`）。
+- **验收**：Scene parity/queue/lifetime + Courier 五组 runner 全绿；新增"独立调用方可等待 Scene 请求真实结果"与"Courier 旧 retry 不改新会话"契约；**为 J14 开放 SceneSubmit/CourierSubmit 准备完整调用链证据**。
+
+### J11 制作组接缝（Policy / Gathering / Siege）
+
+- **真实入口**：`Refactor/Modules/TeamModulePorts.cs:7,17,27` 三个 internal port、`TeamModuleAdapters.cs`、`src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs`；`PolicySystem/`（77 文件，policy-effect-module Skill 权威）、`NobleGatheringBehavior.cs`、`AnimusForge.SiegeAftermathIntervention/` + `AfGcczShoutBridge.cs` + `Gccz*Bridge.cs`；`Refactor/Runtime/FeatureBridgeRuntime.cs:421`。
+- **目标 owner**：internal 契约 → `src/AF.Contracts/Internal`，薄桥 → `src/bridges/{Policy,Gathering,Siege}`，玩法仍在各自根目录（不迁 PolicySystem 内部结构，不改 MCM 检索语义）。
+- **切片**：J11a Policy 桥（`AfGcczShoutBridge` 中 AF 侧调用与 `IPolicyModulePort` 归位）→ J11b Gathering 桥 → J11c Siege 桥（`AfGcczShoutBridge` 的 prompt 注入/排除/bypass 改用 J04 ports）。`G:/AFMOD/GCCZ` 同步另获授权。
+- **验收**：`PolicyEffectModule.ContractTests --policy-all-modules-contract-only` + `--policy-history-only` 1115 保持；`CampaignCompositionTests` 42+5、`CompositionMatrixContractTests`；三桥各自源码接线契约。
+
+### J12 Economy / Diplomacy / WorldMap
+
+- **真实入口**：`RewardSystemBehavior.cs`（22.6k + `PlayerRpCrafting` 3.7k）、`DebtPromiseQuest.cs`、`Refactor/Adapters/LegacyEconomyRewardDebt*.cs`、`Refactor/Contracts/EconomyRewardDebtContracts.cs`；`WorldDiplomacyBehavior.cs`（20.5k）+ `WorldDiplomacy*Rules.cs` 四个 + `WorldDiplomacyLlmClient.cs`、`DiplomacyBehavior.cs`、`VassalageBehavior.cs`、`VoteDealBehavior.cs`、`KingdomAnnexationBehavior.cs`、`KingdomStrategicProfileBehavior.cs`；`WorldMapPartyCommandBehavior.cs`（10.0k）、`WorldMap*Patch.cs`。
+- **目标 owner**：`src/modules/AF.Module.{Economy,Diplomacy,WorldMap}`；以权威交易/债务/外交/地图状态为界，领域状态不进通用 Actions；J04 Extras 的 Reward/Loan 段落与 J09 执行端口是唯一接缝。
+- **切片**：J12a Economy（Reward/Debt/Trust 只读投影 + 交易/债务执行端口）→ J12b Diplomacy（四个 Rules 已是纯规则，归位；`WorldDiplomacyLlmClient` 接 J08）→ J12c WorldMap（命令解析/执行端口）。每域先做只读投影再做执行端口。
+- **验收**：`ProductionReward` 11、`HeroAssetScope` 67 保持；各域新增执行端口契约（幂等、失败不改状态）；Harmony 补丁不迁，只核对调用点。
+
+### J13 其他领域
+
+- **真实入口**：WorldEvents/WarStats（`AFWarStatsTerminal` 适配）、`PlayerNotorietyBehavior.cs`（3.9k）、`RomanceSystemBehavior.cs`（3.7k）、`DuelBehavior.cs`（8.6k，13 Harmony）、`SceneTauntBehavior.cs`（10.6k）、`LordEncounterBehavior.cs`（9.4k）、`SettlementEntryTroopSelectionBehavior.cs`、`TroopInspectionBehavior.cs`（12 Harmony）、`MilitaryExerciseBehavior.cs`（17 Harmony）、`ProactiveNpcRequestBehavior.cs`（8.2k）、`MeetingBattleLockMissionBehavior.cs`、`ModOnboardingBehavior.cs`、Weekly 报告（MyBehavior Weekly 簇 352 方法 9.7k）、Kingdom 簇 120/3.2k、UI 簇。
+- **目标 owner**：各领域独立子包 `src/modules/AF.Module.{Social,Duel,Encounter,Settlement,Weekly,Onboarding,...}`；UI 只适配。**Weekly 簇是 MyBehavior 最大残余，单列 J13a 首包**；伤害/敌对/百科/军团目标四个案例文档作为对应包的验收清单。
+- **切片**：J13a Weekly 报告（`MyBehavior` 352 方法 → `AF.Module.Weekly`，`WeeklyMemoryMaterialOutcomeReceipt` 归位）→ J13b Kingdom 簇 → J13c Persona（已有 owner 归位 + 63 方法）→ J13d Social/Notoriety/Romance → J13e Duel/Taunt/Encounter/Settlement/Exercise（按案例文档逐包）→ J13f UI/Overlay/Onboarding 适配层。
+- **验收**：每包一个源码接线契约 + 相关 runner；Harmony 补丁调用点核对表；不迁 Harmony 类本身。
+
+### J14 public API 收尾（含用户授权的三渠道开放）
+
+- **真实入口**：`src/modules/AF.Module.PublicApi/V1/AfApi.cs:14-62`（`SceneSubmit`/`CourierSubmit`/`ActionExecute`/`MemoryWrite`/`ExtensionRegister` 现 NotSupported）、`AfDialogueClient.cs`、两个 Projection；`src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；`ShoutBehavior.ModuleNativeSubmission.cs`。
+- **目标**：在 J07/J09/J10 完成后，按 af-core-framework Skill 门槛开放 `SceneSubmit`、`CourierSubmit`：完整调用链、线程/生命周期/失败语义、可探测能力、兼容证据齐全才把 `Unsupported` 改为 `Available`；`ActionExecute`/`MemoryWrite`/`ExtensionRegister` 未获授权不开放。
+- **切片**：J14a Scene 公开提交（票据/结果/取消，复用 J10a 可等待结果）→ J14b Courier 公开提交（区分运输阶段与实际提交阶段）→ J14c 契约版本与投影回归。
+- **验收**：`NativeModuleSubmissionTests` 扩展为三渠道；能力快照契约；不破坏 `ContractVersion = 1` 语义（若需破坏性变化另开 V2）。
+
+### J15 content / profile
+
+- 静态资源（`AnimusForge/ModuleData`、GUI、7 项 EmbeddedResource、prompt JSON、ONNX）按 owner 唯一归属到 `content/`；运行/安装路径与 `LogicalName` 默认保持；PlayerExports 分 curated/用户变更且先闭合 G0.3；不全量覆盖用户配置。
+
+### J16 tests / tools / scripts / docs / Bootstrap
+
+- 测试随 owner 迁 `tests/`（`tools/*Tests` 中已有 30+ runner 逐包归位）；工具只留源码，输出进 `artifacts/`；文档一事实一权威入口；**一键脚本与 Bootstrap 只在另获授权时迁**；`.tmp/build-local.ps1` 类机器专用包装不入库。
+
+### J17 全仓结项
+
+- 重新分类全部 tracked/untracked/ignored，UNASSIGNED=0；`Refactor/` 目录清空（全部归位 `src/`）；混合大类剩余职责逐符号清零或写明兼容壳；无双核心/重复编译；offline/LIVE/旧 SAVE 单列；仍 HOLD 的资产明确"全仓未完成"。
+
+## 3. 执行方式
+
+- **顺序**：J04f→J04g→J04h → J05 → J06 → J07 → J08 → J09 → J10 → J11 → J12 → J13a（Weekly，可与 J11/J12 并行）→ J13b–f → J14 → J15 → J16 → J17。J05/J06 可并行；J11/J12/J13 可并行但各自独立提交。
+- **每切片**：意图检查点提交 → 实施提交 → 契约/回归/双版本构建 → 地图/范围图/回执提交。回滚用定向 inverse，不 reset。
+- **不做**：不推送、不 Stage/Deploy/打包、不写游戏目录/存档、不安装全局 Skill、不改一键脚本、不清理未知资产，除非用户另行授权。
+- **本机环境记录**：SDK `G:/AFMOD/.dotnet-sdk` 8.0.422、1.3 引用 `_deps_auto`、1.4 引用 `G:/AFMOD/AF-REFACTOR/.tmp/build_check/1.4`、Harmony Workshop 2859188632；J03 runner 的 `local/dotnet/8.0.425` 路径以内存替换运行。
+
 <a id="j04-slice2-20260919"></a>
 
 ## J04 第二批切片回执：J04_PARTIAL / 五阶段边界已显式化（2026-09-19）

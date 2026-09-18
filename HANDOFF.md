@@ -1,3 +1,9 @@
+# 当前入口：AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）
+
+用户要求按三份仓库 Skill 一次性写出整体拆分计划。计划位于[主台账总计划节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#modularization-master-plan-20260919)：基于源码 `d6824d9d` 的实际盘点（三大类方法簇统计、30 个 Saveable 文件、Harmony 密度、`Refactor/` 44 文件），给出 J04f–h → J05 Memory → J06 Knowledge → J07 Conversation/Native → J08 LLM 传输 → J09 Actions → J10 Scene/Courier → J11 制作组桥 → J12 Economy/Diplomacy/WorldMap → J13 其他领域（Weekly 首包）→ J14 public API（含用户授权的 Scene/Courier 开放）→ J15/J16/J17 结项，每包列真实入口坐标、目标 owner、切片与验收 runner。本节只是计划，不改变 J04_PARTIAL 状态，不授权推送/部署。下一执行切片为 J04f（Native/Courier 执行位置搬移）。
+
+## 以下为 J04 第二批回执
+
 # 当前接续：J04 第二批切片 J04_PARTIAL，五阶段边界已显式化（2026-09-19）
 
 同分支 `codex/af-modularize-j04-20260918`，生产切片 `6315fd26`→`d6824d9d`。共享 Prompt builder 从 771 行单体拆为 80 行 orchestrator + 五阶段：`CapturePromptBuildRequest`（游戏读）→ `PromptTopicRoutingStage`（detached 输入 + host ports）→ `CapturePromptSections`（游戏读）→ `PromptAssemblyStage`（纯）→ `ApplyPromptRuntimeAppendices`（游戏读）；新增 `PromptRuleBlockText`、`PromptBuildRequest`/`PromptExclusionSets`、`PromptContextDecisions`、`PromptAssemblyStage` 五个 owner，旧实现删除。Composition 契约 142 项 + BuildPhases 源码接线契约（各 2 变异拒收）、J03 六契约与三渠道全部 runner 复跑 PASS、原脚本 Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误、241 锚点地图两模式通过。**J04 仍未 OFFLINE_VERIFIED：阶段边界已显式化但执行位置未搬，Native/Courier 仍在后台线程跑全部阶段；`BuildTriggeredRuleInstructions` 未段落化。** 实机/旧档/provider `NOT-RUN`；未推送。详见[主台账第二批回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04-slice2-20260919)与[范围图](docs/architecture/af-framework-code-scope.md)。
