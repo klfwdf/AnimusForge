@@ -255,6 +255,19 @@ internal static class Program
             "aggregation preserves highest-scoring seed, intent and best rank");
         aggregate.Add("MARRIAGE", 0.8f, 1, "third", "intent c");
         Check(aggregate.Select(2, 4, 3)[0].HitCount == 3, "same rule ID aggregates case-insensitively");
+        var finals = PromptRuleFinalRanking.Rank(new[]
+        {
+            new PromptRuleFinalCandidate(0, "noncandidate", false, 0f, 0.9f),
+            new PromptRuleFinalCandidate(1, "marriage", true, 0.6f, 0.2f),
+            new PromptRuleFinalCandidate(2, "kingdom_service", true, 0.5f, 0.1f)
+        }, 1, "semantic");
+        Check(finals.Select(x => x.SourceIndex).SequenceEqual(new[] { 1, 2, 0 }), "candidate-first final ranking is stable");
+        Check(finals[0].Hit && finals[0].RejectReason == "semantic_return(1/1)" && !finals[1].Hit && finals[1].RejectReason == "semantic_return_overflow",
+            "final hit and overflow preserve return cap");
+        Check(finals[0].MaxOther == 0.9f && finals[0].MaxOtherTag == "noncandidate" && Math.Abs(finals[0].TopGap - 0.1f) < 0.0001f,
+            "max other uses actual score even when noncandidate ranks last");
+        Check(Math.Abs(finals[0].Mean - 2f / 3f) < 0.0001f && finals[2].RejectReason == "semantic_recall_miss",
+            "final diagnostics retain mean and miss reason");
         Console.WriteLine("PromptJ03 focused checks=" + _checks);
     }
 }

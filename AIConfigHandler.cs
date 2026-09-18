@@ -5458,53 +5458,21 @@ public static class AIConfigHandler
 				if (!string.IsNullOrWhiteSpace(aggregate.MatchedSeed)) eval.MatchedSeed = aggregate.MatchedSeed;
 				if (!string.IsNullOrWhiteSpace(aggregate.MatchedIntent)) eval.MatchedIntent = aggregate.MatchedIntent;
 			}
-			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.Candidate ? 1 : 0).ThenByDescending((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
-			float num20 = ((list4.Count > 0) ? list4.Average((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw) : 0f);
-			float num21 = ((list4.Count > 1) ? ((list4[0].Candidate ? list4[0].AmpScore : list4[0].MixedRaw) - (list4[1].Candidate ? list4[1].AmpScore : list4[1].MixedRaw)) : 1f);
-			for (int num22 = 0; num22 < list4.Count; num22++)
+			List<PromptRuleFinalCandidate> finalCandidates = list4.Select((eval, index) =>
+				new PromptRuleFinalCandidate(index, eval.RuleTag, eval.Candidate, eval.AmpScore, eval.MixedRaw)).ToList();
+			List<PromptRuleFinalResult> finalRanking = PromptRuleFinalRanking.Rank(finalCandidates, guardrailReturnCapFromMcm, text4);
+			list4 = finalRanking.Select(result => list4[result.SourceIndex]).ToList();
+			for (int i = 0; i < finalRanking.Count; i++)
 			{
-				GuardrailRuleEval guardrailRuleEval3 = list4[num22];
-				guardrailRuleEval3.Mean = num20;
-				guardrailRuleEval3.Rank = num22 + 1;
-				float num23 = -1f;
-				string maxOtherTag = "";
-				for (int num24 = 0; num24 < list4.Count; num24++)
-				{
-					if (num24 == num22)
-					{
-						continue;
-					}
-					GuardrailRuleEval guardrailRuleEval4 = list4[num24];
-					float num25 = (guardrailRuleEval4.Candidate ? guardrailRuleEval4.AmpScore : guardrailRuleEval4.MixedRaw);
-					if (num25 > num23)
-					{
-						num23 = num25;
-						maxOtherTag = guardrailRuleEval4.RuleTag;
-					}
-				}
-				float num26 = guardrailRuleEval3.Candidate ? guardrailRuleEval3.AmpScore : guardrailRuleEval3.MixedRaw;
-				float delta = ((num23 < -0.5f) ? num26 : (num26 - num23));
-				float num27 = 0f;
-				float num28 = 0f;
-				string bestSeed = "";
-				bool lexicalAnchor = false;
-				bool flag3 = guardrailRuleEval3.Candidate && guardrailRuleEval3.Rank <= guardrailReturnCapFromMcm;
-				string rejectReason = (flag3 ? (text4 + "_return(" + guardrailRuleEval3.Rank + "/" + guardrailReturnCapFromMcm + ")") : (guardrailRuleEval3.Candidate ? (text4 + "_return_overflow") : (text4 + "_recall_miss")));
-				guardrailRuleEval3.MaxOther = num23;
-				guardrailRuleEval3.MaxOtherTag = maxOtherTag;
-				guardrailRuleEval3.Delta = delta;
-				guardrailRuleEval3.TopGap = num21;
-				guardrailRuleEval3.IntentEvidence = num27;
-				guardrailRuleEval3.IntentGate = num28;
-				guardrailRuleEval3.IntentSeed = bestSeed;
-				guardrailRuleEval3.LexicalAnchor = lexicalAnchor;
-				guardrailRuleEval3.AbsHit = flag3;
-				guardrailRuleEval3.RelHit = false;
-				guardrailRuleEval3.HighAmpHit = false;
-				guardrailRuleEval3.ForceHit = false;
-				guardrailRuleEval3.RejectReason = rejectReason;
-				guardrailRuleEval3.MatchMode = text4;
-				guardrailRuleEval3.Hit = flag3;
+				PromptRuleFinalResult result = finalRanking[i];
+				GuardrailRuleEval eval = list4[i];
+				eval.Mean = result.Mean; eval.Rank = result.Rank;
+				eval.MaxOther = result.MaxOther; eval.MaxOtherTag = result.MaxOtherTag;
+				eval.Delta = result.Delta; eval.TopGap = result.TopGap;
+				eval.IntentEvidence = 0f; eval.IntentGate = 0f; eval.IntentSeed = "";
+				eval.LexicalAnchor = false; eval.AbsHit = result.Hit;
+				eval.RelHit = false; eval.HighAmpHit = false; eval.ForceHit = false;
+				eval.RejectReason = result.RejectReason; eval.MatchMode = text4; eval.Hit = result.Hit;
 			}
 			try
 			{

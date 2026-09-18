@@ -21,6 +21,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptStickyRuleStore.cs" Link="PromptStickyRuleStore.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleSemanticRecall.cs" Link="PromptRuleSemanticRecall.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleAggregation.cs" Link="PromptRuleAggregation.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleFinalRanking.cs" Link="PromptRuleFinalRanking.cs" />
     <Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
   </ItemGroup>
 </Project>
