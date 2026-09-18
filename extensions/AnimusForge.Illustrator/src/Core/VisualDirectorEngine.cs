@@ -119,6 +119,13 @@ namespace AnimusForge.Illustrator.Core
 
         public static async Task<IllustrationDirection> CreateDirectionAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, CancellationToken cancellationToken = default)
         {
+            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(120) })
+                return await CreateDirectionWithClientAsync(plan, referenceImages, options, client, cancellationToken).ConfigureAwait(false);
+        }
+
+        // The caller owns client; the same request/parse path is exercised by the offline HTTP audit.
+        internal static async Task<IllustrationDirection> CreateDirectionWithClientAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, HttpClient client, CancellationToken cancellationToken)
+        {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
             if (options != null && !options.EnableMultimodalVision)
             {
@@ -132,35 +139,76 @@ namespace AnimusForge.Illustrator.Core
             int imgCount = referenceImages?.Count ?? 0;
             TaleWorlds.Library.Debug.Print($"[VisualDirector] Starting prompt expansion (MultimodalVision={(options?.EnableMultimodalVision == true ? "ON" : "OFF")}, RefImages={imgCount})...");
 
+            IllustrationDirection direction;
+            string fallbackReason = "导演未启用或接口未配置";
+            DirectorResponse reply = null;
             try
             {
                 if (options != null && options.EnableLlmPromptExpansion && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))
                 {
-                    string llmPrompt = await CallLlmDirectorAsync(plan, options, referenceImages, cancellationToken).ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(llmPrompt))
+                    reply = await CallLlmDirectorResponseAsync(plan, options, referenceImages, client, cancellationToken).ConfigureAwait(false);
+                    if (string.IsNullOrWhiteSpace(reply.FailureReason))
                     {
-                        var direction = ResolveDirection(llmPrompt, plan, options);
-                        TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion resolved ({direction.Prompt.Length} chars): {Preview(direction.Prompt, 120)}");
-                        return direction;
+                        direction = ResolveDirection(reply.Content, plan, options);
+                        ApplyResponseMetadata(direction, reply);
+                        return RecordDirection(direction);
                     }
+                    fallbackReason = reply.FailureReason;
                 }
                 else
                 {
                     TaleWorlds.Library.Debug.Print("[VisualDirector] Chat expansion disabled or unavailable, falling back to rule-based synthesis.");
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
                 throw;
             }
+            catch (OperationCanceledException)
+            {
+                fallbackReason = "导演请求超时";
+            }
             catch (Exception ex)
             {
-                TaleWorlds.Library.Debug.Print($"[VisualDirector] LLM expansion fallback triggered: {ex.Message}");
+                // Raw provider errors may contain request text or credentials; diagnostics handle the raw response.
+                fallbackReason = "导演请求失败（" + ex.GetType().Name + "）";
             }
 
             string rulePrompt = SynthesizeRuleBasedPrompt(plan, options);
             TaleWorlds.Library.Debug.Print($"[VisualDirector] Using rule-based prompt ({rulePrompt.Length} chars): {Preview(rulePrompt, 120)}");
-            return new IllustrationDirection { Prompt = rulePrompt, Theme = "人物与情境", ActionSummary = IllustrationDirection.ExtractActionSummary(rulePrompt) };
+            direction = new IllustrationDirection
+            {
+                Prompt = rulePrompt,
+                Theme = "人物与情境",
+                ActionSummary = IllustrationDirection.ExtractActionSummary(rulePrompt),
+                DirectionStatus = "local_fallback",
+                UsedLocalFallback = true,
+                FallbackReason = fallbackReason
+            };
+            ApplyResponseMetadata(direction, reply);
+            return RecordDirection(direction);
+        }
+
+        private static IllustrationDirection RecordDirection(IllustrationDirection direction)
+        {
+            TaleWorlds.Library.Debug.Print($"[VisualDirector] {direction.StatusText}; status={direction.DirectionStatus}, finish_reason={direction.FinishReason}, reason={direction.FallbackReason}, tokens={direction.TotalTokens}; prompt={direction.Prompt.Length} chars.");
+            GenerationDiagnostics.Current?.RecordDirection(direction);
+            return direction;
+        }
+
+        private static void ApplyResponseMetadata(IllustrationDirection direction, DirectorResponse reply)
+        {
+            if (reply == null) return;
+            direction.FinishReason = reply.FinishReason;
+            direction.PromptTokens = reply.PromptTokens;
+            direction.CompletionTokens = reply.CompletionTokens;
+            direction.TotalTokens = reply.TotalTokens;
+            direction.VisionUnsupported = reply.VisionUnsupported;
+            if (reply.Truncated) direction.DirectionStatus = "truncated";
+            else if (!direction.UsedLocalFallback && reply.VisionUnsupported) direction.DirectionStatus = "vision_unsupported";
+            if (reply.VisionUnsupported)
+                direction.FallbackReason = "接口明确不支持图片输入，已尝试一次文字构思" +
+                    (string.IsNullOrWhiteSpace(direction.FallbackReason) ? string.Empty : "；" + direction.FallbackReason);
         }
 
         internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false)
@@ -187,10 +235,13 @@ namespace AnimusForge.Illustrator.Core
         internal static IllustrationDirection ResolveDirection(string output, IllustrationPromptPlan plan, IllustrationOptions options)
         {
             var direction = IllustrationDirection.SplitMetadata(output);
-            bool fallback;
-            direction.Prompt = ResolveDirectorBody(direction.Prompt, plan, options, out fallback);
-            if (fallback)
+            string fallbackReason;
+            direction.Prompt = ResolveDirectorBody(direction.Prompt, plan, options, out fallbackReason);
+            if (!string.IsNullOrWhiteSpace(fallbackReason))
             {
+                direction.DirectionStatus = "local_fallback";
+                direction.UsedLocalFallback = true;
+                direction.FallbackReason = fallbackReason;
                 direction.Title = string.Empty;
                 direction.Theme = "人物与情境";
                 direction.ActionSummary = string.Empty;
@@ -201,23 +252,26 @@ namespace AnimusForge.Illustrator.Core
             return direction;
         }
 
-        private static string ResolveDirectorBody(string output, IllustrationPromptPlan plan, IllustrationOptions options, out bool fallback)
+        private static string ResolveDirectorBody(string output, IllustrationPromptPlan plan, IllustrationOptions options, out string fallbackReason)
         {
-            fallback = true;
+            fallbackReason = string.Empty;
             output = output ?? string.Empty;
             if (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan))
             {
+                fallbackReason = "导演输出含无依据盾牌、旗帜或不合要求的肖像动作";
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Unsupported shield/portrait props rejected; using local portrait fallback without retry.");
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             if (NarrativeFactRouter.HasNarrativeEcho(output, plan.DirectorOnlyFacts, plan.HardFacts))
             {
+                fallbackReason = "导演输出复述叙事原文，未转化为画面";
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Narrative echo detected; using local visual-fact fallback without retry.");
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
             if (!HasRequiredSceneDescription(output))
             {
+                fallbackReason = string.IsNullOrWhiteSpace(output) ? "导演返回空正文" : "导演正文缺少完整场景、光线与空间描述，或构图不合要求";
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Missing scene/light/spatial direction; using local scene fallback without retry.");
                 // Preserve a short usable visual paraphrase while supplying the missing scene sections.
                 // Do not retain equipment lists or long non-conforming output as the main direction.
@@ -227,7 +281,6 @@ namespace AnimusForge.Illustrator.Core
                         "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
-            fallback = false;
             return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
         }
 
@@ -452,18 +505,76 @@ namespace AnimusForge.Illustrator.Core
 
         private static async Task<string> CallLlmDirectorAsync(IllustrationPromptPlan plan, IllustrationOptions options, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, CancellationToken cancellationToken)
         {
-            using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(120) })
             {
-                deadline.CancelAfter(TimeSpan.FromSeconds(120));
-                cancellationToken = deadline.Token;
-            string endpoint = ResolveChatEndpoint(options.DirectorApiBaseUrl);
-            bool hasImages = referenceImages != null && referenceImages.Count > 0;
+                var reply = await CallLlmDirectorResponseAsync(plan, options, referenceImages, client, cancellationToken).ConfigureAwait(false);
+                return string.IsNullOrWhiteSpace(reply.FailureReason) ? reply.Content : string.Empty;
+            }
+        }
+
+        private sealed class DirectorResponse
+        {
+            public string Content = string.Empty;
+            public string FinishReason = string.Empty;
+            public string FailureReason = string.Empty;
+            public bool Truncated;
+            public bool VisionUnsupported;
+            public int? PromptTokens;
+            public int? CompletionTokens;
+            public int? TotalTokens;
+        }
+
+        private static DirectorResponse ParseDirectorResponse(string responseBody)
+        {
+            JObject json = JObject.Parse(responseBody);
+            JToken choice = json["choices"] is JArray choices && choices.Count > 0 ? choices[0] : null;
+            JToken message = choice?["message"];
+            var reply = new DirectorResponse
+            {
+                FinishReason = choice?["finish_reason"]?.Type == JTokenType.String ? choice["finish_reason"].Value<string>().Trim() : string.Empty,
+                PromptTokens = ReadTokenCount(json["usage"]?["prompt_tokens"]),
+                CompletionTokens = ReadTokenCount(json["usage"]?["completion_tokens"]),
+                TotalTokens = ReadTokenCount(json["usage"]?["total_tokens"])
+            };
+            string reason = reply.FinishReason.ToLowerInvariant();
+            reply.Truncated = reason == "length" || reason == "max_tokens" || reason == "max_output_tokens";
+            if (reply.Truncated) reply.FailureReason = "导演输出达到令牌上限而截断，未采用残缺正文";
+            else if (reason == "content_filter" || !string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()))
+                reply.FailureReason = "导演拒绝或过滤了本次输出";
+            else if (reason.Length > 0 && reason != "stop" && reason != "end_turn" && reason != "completed")
+                reply.FailureReason = "导演未正常结束正文";
+
+            JToken content = message?["content"];
+            if (content?.Type == JTokenType.String) reply.Content = content.Value<string>();
+            else if (content is JArray parts)
+            {
+                var text = new StringBuilder();
+                foreach (JToken part in parts)
+                    if (part is JObject && part["type"]?.Value<string>() == "text" && part["text"]?.Type == JTokenType.String)
+                        text.Append(part["text"].Value<string>());
+                reply.Content = text.ToString();
+            }
+            if (string.IsNullOrWhiteSpace(reply.FailureReason) && string.IsNullOrWhiteSpace(reply.Content))
+                reply.FailureReason = "导演返回空正文";
+            return reply;
+        }
+
+        private static int? ReadTokenCount(JToken token)
+        {
+            int value;
+            return token != null && int.TryParse(token.ToString(), out value) && value >= 0 ? (int?)value : null;
+        }
+
+        private static JObject BuildDirectorPayload(IllustrationPromptPlan plan, IllustrationOptions options, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, bool textFallback)
+        {
             string stylePreference = BuildDirectorStylePreference(options);
             string requestText = "请依据游戏事实构思一个清晰、有变化且可直接绘制的瞬间。开放构图建议可以取舍，不要把建议改写成不存在的事实。" +
                 (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext();
+            if (textFallback)
+                requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的外观和环境细节保持未知，不声称已经看过参考图。";
 
             JObject userMessage;
-            if (hasImages)
+            if (referenceImages != null && referenceImages.Count > 0)
             {
                 var content = new JArray
                 {
@@ -508,7 +619,7 @@ namespace AnimusForge.Illustrator.Core
                 };
             }
 
-            var payload = new JObject
+            return new JObject
             {
                 ["model"] = options.DirectorModelName,
                 ["messages"] = new JArray
@@ -520,40 +631,64 @@ namespace AnimusForge.Illustrator.Core
                 ["max_tokens"] = options != null && options.DirectorMaxTokens > 0 ? options.DirectorMaxTokens : 1500
             };
 
-            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(120) })
-            using (var request = new HttpRequestMessage(HttpMethod.Post, endpoint))
+        }
+
+        private static async Task<DirectorResponse> CallLlmDirectorResponseAsync(IllustrationPromptPlan plan, IllustrationOptions options, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, HttpClient client, CancellationToken cancellationToken)
+        {
+            var reply = new DirectorResponse();
+            using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
-                request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
-                if (!string.IsNullOrWhiteSpace(options.DirectorApiKey))
+                deadline.CancelAfter(TimeSpan.FromSeconds(120));
+                string endpoint = ResolveChatEndpoint(options.DirectorApiBaseUrl);
+                GenerationDiagnostics.Current?.RegisterSecret(options.DirectorApiKey);
+                try
                 {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.DirectorApiKey);
-                }
-
-                TaleWorlds.Library.Debug.Print($"[VisualDirector] Sending request to {endpoint} (model={options.DirectorModelName}, refImages={referenceImages?.Count ?? 0})...");
-                using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
-                {
-                    string responseBody = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 1048576, cancellationToken).ConfigureAwait(false));
-                    if (responseBody != null && responseBody.Length > 1048576)
+                    // Only an explicit unsupported-image response permits a second request.
+                    // Both attempts share one deadline; truncation, empty output and transport errors do not retry.
+                    for (int attempt = 0; attempt < 2; attempt++)
                     {
-                        throw new Exception("Chat API response exceeded 1 MiB.");
-                    }
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        if (hasImages && ShouldRetryDirectorWithoutImages((int)response.StatusCode, responseBody))
+                        bool hasImages = referenceImages != null && referenceImages.Count > 0;
+                        JObject payload = BuildDirectorPayload(plan, options, referenceImages, reply.VisionUnsupported);
+                        GenerationDiagnostics.Current?.RecordDirectorRequest(endpoint, options.DirectorModelName, payload, referenceImages);
+                        using (var request = new HttpRequestMessage(HttpMethod.Post, endpoint))
                         {
-                            TaleWorlds.Library.Debug.Print($"[VisualDirector] Vision payload unsupported ({response.StatusCode}); retrying once without images.");
-                            return await CallLlmDirectorAsync(plan, options, null, cancellationToken).ConfigureAwait(false);
+                            request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+                            if (!string.IsNullOrWhiteSpace(options.DirectorApiKey))
+                                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.DirectorApiKey);
+                            TaleWorlds.Library.Debug.Print($"[VisualDirector] Sending request (model={options.DirectorModelName}, refImages={referenceImages?.Count ?? 0}, attempt={attempt + 1})...");
+                            using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, deadline.Token).ConfigureAwait(false))
+                            {
+                                string responseBody = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 1048576, deadline.Token).ConfigureAwait(false));
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty);
+                                    if (hasImages && attempt == 0 && ShouldRetryDirectorWithoutImages((int)response.StatusCode, responseBody))
+                                    {
+                                        reply.VisionUnsupported = true;
+                                        referenceImages = null;
+                                        continue;
+                                    }
+                                    reply.FailureReason = "导演接口返回 HTTP " + (int)response.StatusCode;
+                                    return reply;
+                                }
+                                DirectorResponse parsed;
+                                try { parsed = ParseDirectorResponse(responseBody); }
+                                catch
+                                {
+                                    GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty);
+                                    throw;
+                                }
+                                GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, parsed.FinishReason);
+                                parsed.VisionUnsupported = reply.VisionUnsupported;
+                                return parsed;
+                            }
                         }
-                        throw new Exception($"Chat API returned {(int)response.StatusCode}: {Preview(responseBody, 500)}");
                     }
-
-                    JObject json = JObject.Parse(responseBody);
-                    string content = json["choices"]?[0]?["message"]?["content"]?.ToString();
-                    TaleWorlds.Library.Debug.Print($"[VisualDirector] Received response preview: {Preview(content, 180)}");
-                    return content;
                 }
-            }
-
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+                catch (OperationCanceledException) { reply.FailureReason = "导演请求超时"; }
+                catch (Exception ex) { reply.FailureReason = "导演请求或响应解析失败（" + ex.GetType().Name + "）"; }
+                return reply;
             }
         }
 
@@ -561,9 +696,13 @@ namespace AnimusForge.Illustrator.Core
         {
             if (statusCode != 400 && statusCode != 415 && statusCode != 422 && statusCode != 500 && statusCode != 502 && statusCode != 503) return false;
             string text = (responseBody ?? string.Empty).ToLowerInvariant();
-            return text.Contains("image_url") || text.Contains("vision") || text.Contains("multimodal") ||
-                   text.Contains("image input") || text.Contains("mmproj") || text.Contains("content must be a string") ||
-                   text.Contains("unsupported content") || (text.Contains("image") && text.Contains("not support"));
+            if (text.Contains("content must be a string") || text.Contains("content should be a string")) return true;
+            bool imageContext = text.Contains("image") || text.Contains("vision") || text.Contains("multimodal") || text.Contains("mmproj") || text.Contains("图片");
+            bool explicitlyUnsupported = text.Contains("not support") || text.Contains("unsupported") ||
+                text.Contains("text-only") || text.Contains("text only") || text.Contains("does not accept") ||
+                text.Contains("cannot accept") || text.Contains("only support") || text.Contains("不支持") ||
+                (text.Contains("mmproj") && (text.Contains("missing") || text.Contains("required")));
+            return imageContext && explicitlyUnsupported;
         }
 
         private static string BuildDirectorStylePreference(IllustrationOptions options)

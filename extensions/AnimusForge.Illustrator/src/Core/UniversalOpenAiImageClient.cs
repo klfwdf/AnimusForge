@@ -23,6 +23,7 @@ namespace AnimusForge.Illustrator.Core
         public string ErrorMessage { get; set; } = string.Empty;
         public string ResolvedPrompt { get; set; } = string.Empty;
         public long ElapsedMilliseconds { get; set; }
+        public string DiagnosticId { get; set; } = string.Empty;
     }
 
     public static class UniversalOpenAiImageClient
@@ -64,13 +65,15 @@ namespace AnimusForge.Illustrator.Core
                 cancellationToken = deadline.Token;
             var result = new ImageGenerationResult
             {
-                ResolvedPrompt = prompt ?? string.Empty
+                ResolvedPrompt = prompt ?? string.Empty,
+                DiagnosticId = GenerationDiagnostics.Current?.Id ?? string.Empty
             };
 
             var settings = options;
             if (settings == null || !settings.EnableImageGeneration)
             {
                 result.ErrorMessage = "AI 生图系统未启用";
+                GenerationDiagnostics.Current?.RecordImageResult(result);
                 return result;
             }
 
@@ -78,10 +81,12 @@ namespace AnimusForge.Illustrator.Core
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
                 result.ErrorMessage = "未配置生图 API 端点 (Base URL)";
+                GenerationDiagnostics.Current?.RecordImageResult(result);
                 return result;
             }
 
             string apiKey = (settings.ApiKey ?? string.Empty).Trim();
+            GenerationDiagnostics.Current?.RegisterSecret(apiKey);
             string model = (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
             string size = (settings.ImageSize ?? "1024x1024").Trim();
             string quality = settings.SelectedQuality ?? "";
@@ -210,6 +215,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 stopwatch.Stop();
                 result.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                GenerationDiagnostics.Current?.RecordImageResult(result);
                 Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}");
 
                 // 临时产物由各提取任务在消费完毕后按自身路径清理，不能在此全局扫描删除。
@@ -399,9 +405,11 @@ namespace AnimusForge.Illustrator.Core
                             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                         }
                         Log($"[Illustrator] Requesting image edit from {editsUrl} (model={model}, protocol=ImagesEdits, ActualRefImages={sent})...");
+                        if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, "ImagesEdits").ConfigureAwait(false);
                         using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                         {
                             string responseText = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxResponseBytes, cancellationToken).ConfigureAwait(false));
+                            GenerationDiagnostics.Current?.RecordImageResponse(responseText, (int)response.StatusCode);
                             if (!response.IsSuccessStatusCode)
                             {
                                 return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode), IsUnsupportedEditEndpoint((int)response.StatusCode, responseText), sentPrompt);
@@ -470,7 +478,8 @@ namespace AnimusForge.Illustrator.Core
                         string label = reference.Label ?? string.Empty;
                         bool isEmblem = reference.Kind == IllustrationReferenceKind.Emblem;
                         bool isScene = reference.Kind == IllustrationReferenceKind.Scene;
-                        bool isHero = reference.Kind == IllustrationReferenceKind.Character;
+                        bool isDetail = reference.Kind == IllustrationReferenceKind.CharacterDetail;
+                        bool isHero = reference.Kind == IllustrationReferenceKind.Character || isDetail;
 
                         string data = reference.Base64Image;
                         string mimeType = data.StartsWith("iVBORw0KGgo") ? "image/png" : "image/jpeg";
@@ -496,10 +505,9 @@ namespace AnimusForge.Illustrator.Core
 
                         if (isHero)
                         {
-                            heroIndex++;
-                            string roleHint = (heroCount > 1)
-                                ? $"【人物身份参考图 {heroIndex}】"
-                                : "【核心人物官方真实视觉基准图】";
+                            if (!isDetail) heroIndex++;
+                            string roleHint = isDetail ? "【同名人物头肩细节补充，不增加人物数量】" : (heroCount > 1)
+                                ? $"【人物身份参考图 {heroIndex}】" : "【核心人物官方真实视觉基准图】";
 
                             string fidelityMandate = roleHint + "：" + VisualFidelityRules.CharacterAppearancePriority + "参考图不是画中画或额外人物。";
                             content.Add(new JObject
@@ -610,10 +618,12 @@ namespace AnimusForge.Illustrator.Core
                 }
 
                 Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...");
+                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
 
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
                         string responseText = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxResponseBytes, cancellationToken).ConfigureAwait(false));
+                        GenerationDiagnostics.Current?.RecordImageResponse(responseText, (int)response.StatusCode);
 
                         if (!response.IsSuccessStatusCode)
                         {

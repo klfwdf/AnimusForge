@@ -274,7 +274,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             Debug.Print($"[Illustrator] Weekly overlay attached: cached={(cached != null)}, autoGen={IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration}");
             if (cached != null && Publish(cached, cached.Prompt))
             {
-                _overlayVm.StatusText = cached.ThemeText;
+                _overlayVm.StatusText = cached.DisplayStatusText;
             }
             else if (IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration)
             {
@@ -330,20 +330,19 @@ namespace AnimusForge.Illustrator.UI.Patches
             bool started = _scope.Run(async token =>
             {
                 Debug.Print("[Illustrator] Weekly generation task started.");
+                GenerationDiagnostics.Current?.SetSubject(eventKey);
                 var refs = new List<IllustrationReferenceImage>();
                 // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
-                Task<string> portraitStage = null;
+                Task<CharacterPortraitReferences> portraitStage = null;
                 if (options?.EnableOffscreenRendering == true && protagonist != null)
                 {
-                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitOffscreenAsync(protagonist, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, appearance: appearance);
+                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(protagonist, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, appearance: appearance);
                 }
                 if (portraitStage != null)
                 {
-                    string b64 = await portraitStage.ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
-                    {
-                        refs.Add(new IllustrationReferenceImage(b64, $"登场人物【{protagonistName}】的身份参考图：仅用于锁定其五官、发型、肤色、装备与服饰或其他实际纹章载体上的家族纹章（仅在画面确有该载体时绘制）；严禁复制本图的姿势、取景、背景、光影与游戏渲染质感", IllustrationReferenceKind.Character));
-                    }
+                    var portraits = await portraitStage.ConfigureAwait(false);
+                    IllustrationReferenceRouting.AddCharacter(refs, null, portraits, protagonistName,
+                        $"登场人物【{protagonistName}】的身份参考图：锁定五官、须发和实际装备；与同名头肩图属于同一人。行动与现场按事件事实重构，不复制原立绘姿势、背景和游戏渲染质感。");
                 }
                 // 纹章由原生渲染导出，保留完整背景、配色、描边与变换
                 if (!string.IsNullOrWhiteSpace(bannerCode))
@@ -357,7 +356,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string prompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _overlayVm != null) _overlayVm.StatusText = "导演构思完成，正在绘制纪事画卷（等待生图模型返回）..."; });
+                IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _overlayVm != null) _overlayVm.StatusText = direction.StatusText + "，正在绘制纪事画卷..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
@@ -365,7 +364,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary);
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason);
                 }
                 return new { Result = result, Saved = saved, Prompt = effectivePrompt };
             }, completion =>
@@ -374,7 +373,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 _overlayVm.PromptText = completion.Prompt;
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
                 {
-                    _overlayVm.StatusText = completion.Saved?.ThemeText ?? "【本周纪事油画已绘制完成】";
+                    _overlayVm.StatusText = completion.Saved?.DisplayStatusText ?? "【本周纪事油画已绘制完成】";
                 }
                 else
                 {

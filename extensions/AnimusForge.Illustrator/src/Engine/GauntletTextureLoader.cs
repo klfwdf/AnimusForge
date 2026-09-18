@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Concurrent;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
+using System.Threading;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.Library;
@@ -52,7 +50,32 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
-                bytes = PrepareEncodedImageForUi(bytes);
+                return PreparedImage.FromBytes(bytes).Register(spriteName, fallbackWidth, fallbackHeight);
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"[Illustrator] Failed to prepare PNG sprite {spriteName}: {ex.Message}");
+                return null;
+            }
+        }
+
+        internal static PreparedImage ReadPreparedImageForUi(string path, CancellationToken token)
+        {
+            return PreparedImage.FromFile(path, token);
+        }
+
+        internal static BannerlordUiSprite LoadOrRegisterPreparedImage(string spriteName, PreparedImage image)
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            if (image == null || string.IsNullOrWhiteSpace(spriteName)) return null;
+            return image.Register(spriteName, 1024, 1024);
+        }
+
+        private static BannerlordUiSprite RegisterPreparedBytes(string spriteName, byte[] bytes, int detectedWidth, int detectedHeight, int fallbackWidth, int fallbackHeight)
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            try
+            {
                 if (LoadedSprites.TryGetValue(spriteName, out var previous))
                 {
                     ReleaseSprite(spriteName, previous);
@@ -65,11 +88,7 @@ namespace AnimusForge.Illustrator.Engine
                     runtimeSprite.ReleaseTexture();
                 }
 
-                byte[] bytesToLoad = bytes;
-                int detectedWidth = 0;
-                int detectedHeight = 0;
-
-                BannerlordEngineTexture engineTexture = BannerlordEngineTexture.CreateFromMemory(bytesToLoad);
+                BannerlordEngineTexture engineTexture = BannerlordEngineTexture.CreateFromMemory(bytes);
                 if (engineTexture == null)
                 {
                     Debug.Print($"[Illustrator] CreateFromMemory returned null for {spriteName}");
@@ -151,6 +170,40 @@ namespace AnimusForge.Illustrator.Engine
         internal static byte[] PrepareEncodedImageForUi(byte[] bytes)
         {
             return ImagePayload.Normalize(bytes);
+        }
+
+        // Only these factories can create an instance; raw/unvalidated bytes never enter GPU
+        // registration. The encoded buffer is privately owned and is not exposed to callers.
+        internal sealed class PreparedImage
+        {
+            private readonly byte[] _encoded;
+            internal int Width { get; }
+            internal int Height { get; }
+
+            private PreparedImage(byte[] ownedBytes)
+            {
+                _encoded = PrepareEncodedImageForUi(ownedBytes);
+                Width = (_encoded[16] << 24) | (_encoded[17] << 16) | (_encoded[18] << 8) | _encoded[19];
+                Height = (_encoded[20] << 24) | (_encoded[21] << 16) | (_encoded[22] << 8) | _encoded[23];
+            }
+
+            internal static PreparedImage FromBytes(byte[] bytes)
+            {
+                if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+                return new PreparedImage((byte[])bytes.Clone());
+            }
+
+            internal static PreparedImage FromFile(string path, CancellationToken token)
+            {
+                var result = new PreparedImage(ImagePayload.ReadEncodedFile(path, token));
+                token.ThrowIfCancellationRequested();
+                return result;
+            }
+
+            internal BannerlordUiSprite Register(string spriteName, int fallbackWidth, int fallbackHeight)
+            {
+                return RegisterPreparedBytes(spriteName, _encoded, Width, Height, fallbackWidth, fallbackHeight);
+            }
         }
 
         private sealed class RuntimeIllustrationSprite : BannerlordUiSprite

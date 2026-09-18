@@ -37,6 +37,8 @@ namespace AnimusForge.Illustrator.Core
             {
                 case IllustrationReferenceKind.Character:
                     return CharacterAppearancePriority;
+                case IllustrationReferenceKind.CharacterDetail:
+                    return "同名人物头肩细节补充，不增加画面人物数量。" + CharacterAppearancePriority;
                 case IllustrationReferenceKind.Emblem:
                     return "纹章样图：仅在已有纹章载体入画时还原图案与颜色，不把样图当成人物或背景。";
                 case IllustrationReferenceKind.Scene:
