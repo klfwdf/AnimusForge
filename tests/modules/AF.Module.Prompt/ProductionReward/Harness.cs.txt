@@ -15,6 +15,7 @@ public sealed class MentionedWorldEntities
 
 public partial class RewardSystemBehavior
 {
+    public static RewardSystemBehavior Instance = new RewardSystemBehavior();
     private static List<RewardItemInfo> Inventory = new List<RewardItemInfo>();
     private static List<RewardItemInfo> Visible = new List<RewardItemInfo>();
     private static List<RewardItemInfo> Merchant = new List<RewardItemInfo>();
@@ -30,10 +31,25 @@ public partial class RewardSystemBehavior
     private static int GetRewardPostprocessGoldForHero(Hero hero) => 0;
     private static int GetHeroGold(Hero hero) => 0;
     private static int GetSettlementMarketTradeGold(Settlement settlement) => 0;
+    public bool TryGetSettlementMerchantKind(CharacterObject character, out string kind) { kind = "merchant"; return true; }
     private static string BuildFilteredItemSummaryForAI(List<RewardItemInfo> options, int gold, bool guide, List<RewardItemInfo> all, string owner)
         => "shown=" + string.Join(",", options.Select(item => item.StringId)) + ";all=" + string.Join(",", all.Select(item => item.StringId));
 
     @@METHODS@@
+
+    private static string RunSceneHeroCandidate(Hero hero, MentionedWorldEntities inventoryMentions, bool includeInventorySummary, bool includeTradePricing)
+    {
+        string inventorySummary = "";
+        @@SCENE_HERO@@
+        return inventorySummary;
+    }
+
+    private static string RunSceneMerchantCandidate(CharacterObject characterObject, MentionedWorldEntities inventoryMentions, bool includeInventorySummary)
+    {
+        string inventorySummary = "";
+        @@SCENE_MERCHANT@@
+        return inventorySummary;
+    }
 
     public static void Main()
     {
@@ -72,6 +88,16 @@ public partial class RewardSystemBehavior
         Settlement.CurrentSettlement = new Settlement { StringId = "town-b" };
         Check(!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, merchant, -1, out _),
             "settlement change isolates merchant snapshot");
+        DuelSettings.Current.PromptListCandidateMaxCount = 1;
+        var sceneHero = new Hero { StringId = "scene-npc", CharacterObject = new CharacterObject { StringId = "scene-npc-char" } };
+        string sceneHeroSummary = RunSceneHeroCandidate(sceneHero, mentions, true, true);
+        Check(sceneHeroSummary.Contains("shown=apple,cloak")
+            && PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsAllSnapshotScope, sceneHero, sceneHero.CharacterObject, -1, out var sceneAuthorized)
+            && sceneAuthorized.Count == 3, "production Scene hero fragment reaches Reward full/private candidate pipeline");
+        string sceneMerchantSummary = RunSceneMerchantCandidate(merchant, mentions, true);
+        Check(sceneMerchantSummary.Contains("shown=cloak")
+            && PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsAllSnapshotScope, null, merchant, -1, out var sceneMerchantAll)
+            && sceneMerchantAll.Count == 3, "production Scene merchant fragment reaches Reward scoped pipeline");
         Console.WriteLine("PromptJ03 production Reward consumer checks=" + Checks);
     }
 }
