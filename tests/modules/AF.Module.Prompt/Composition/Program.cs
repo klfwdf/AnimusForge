@@ -27,7 +27,77 @@ internal static class Program
         ExtrasComposer();
         RuntimeTargetBinding();
         RuleBlockText();
+        RoutingStage();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static PromptRoutingInput RoutingInput(bool allow = true, bool useAux = true, IEnumerable<string> forced = null, string input = "我要和你决斗")
+        => new PromptRoutingInput
+        {
+            Input = input, NpcLastUtterance = "", HasAnyHero = true, AllowRulePreprocess = allow, BypassRulePreprocess = !allow && false,
+            UseAuxiliaryRuleApi = useAux, AuxiliaryReturnCap = 4, RewardEnabled = true, LoanEnabled = true, SurroundingsEnabled = false,
+            ExcludedRuleIds = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "marriage" }),
+            PreprocessExcludedRuleIds = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "marriage", "kingdom_agenda" }),
+            ForcedPreprocessRuleIds = forced, StickyTargetKey = "hero_a"
+        };
+
+    private static void RoutingStage()
+    {
+        var logs = new List<string>();
+        int semanticCalls = 0;
+        var carry = new BuiltInRuleStickyCarry();
+        var ports = new PromptRoutingPorts
+        {
+            AuxiliaryHits = (text, secondary, cap, excluded, mentions) =>
+            {
+                mentions.Entities.Add("城堡");
+                return new List<GuardrailRuleHit> { Hit("Duel", 5, 0.9f), Hit("marriage", 9), Hit("party_transfer", 1, 0.5f) };
+            },
+            SemanticEvaluator = (tag, text, secondary, excluded) => (string ruleTag, out string kw, out float sc) => { semanticCalls++; kw = "kw"; sc = 0.5f; return ruleTag == "loan"; },
+            CanInjectGatedRule = (id, hasHero) => id == "kingdom_vassalage",
+            StickyCarry = carry,
+            Log = (c, m) => logs.Add(c + ":" + m)
+        };
+
+        // 1. auxiliary router authoritative
+        var r = PromptTopicRoutingStage.Run(RoutingInput(), ports);
+        Check(r.UseAuxiliaryRuleHitSet && r.AuxiliaryRuleHitIds.SequenceEqual(new[] { "duel", "party_transfer" }), "aux ids collected and excluded marriage dropped: " + string.Join(",", r.AuxiliaryRuleHitIds));
+        Check(r.AuxiliaryMentions.Entities.SequenceEqual(new[] { "城堡" }), "aux mentions delivered");
+        Check(r.Duel.Hit && r.Duel.MatchedKeyword == "auxiliary_router" && r.PartyTransfer.Hit && !r.Loan.Hit && !r.Marriage.Hit && semanticCalls == 0, "router authoritative, no semantic evaluation");
+        Check(r.LiveDuelSemanticHit && !r.LiveLoanSemanticHit, "live flags mirror router");
+        Check(carry.DuelRoundsLeft == 2 && carry.TargetKey == "hero_a" && logs.Any(l => l.Contains("builtin_rule_sticky_prime")), "sticky primed from live hits");
+
+        // 2. short ack with router active → sticky suppressed, carry consumed but not applied
+        logs.Clear();
+        ports.AuxiliaryHits = (text, secondary, cap, excluded, mentions) => new List<GuardrailRuleHit>();
+        r = PromptTopicRoutingStage.Run(RoutingInput(input: "好的"), ports);
+        Check(r.StickySuppressed && r.CarryDuel && !r.Duel.Hit && carry.DuelRoundsLeft == 1, "router omission suppresses sticky resurrection");
+
+        // 3. live semantic path (no aux) → sticky fallback applies, loan via evaluator
+        r = PromptTopicRoutingStage.Run(RoutingInput(useAux: false, input: "好的"), ports);
+        Check(!r.UseAuxiliaryRuleHitSet && r.Duel.Hit && r.Duel.MatchedKeyword == "sticky" && r.Loan.Hit && r.Loan.MatchedKeyword == "kw" && semanticCalls > 0, "sticky fallback + live semantic loan");
+        Check(!r.Surroundings.Hit, "disabled topic not evaluated");
+
+        // 4. forced preselection: excluded/gated filtering and merge
+        carry.Clear();
+        r = PromptTopicRoutingStage.Run(RoutingInput(useAux: false, forced: new[] { "Kingdom_Vassalage", "diplomacy", "marriage", "worldmap_party_command", "duel" }), ports);
+        Check(r.ForcedRuleHitIds.SequenceEqual(new[] { "kingdom_vassalage", "worldmap_party_command", "duel" }), "forced: gated diplomacy and excluded marriage dropped: " + string.Join(",", r.ForcedRuleHitIds));
+        Check(r.UseAuxiliaryRuleHitSet && r.WorldMapPartyCommand.Hit && r.Duel.Hit && r.Duel.MatchedKeyword == "auxiliary_router", "forced ids become authoritative router set");
+
+        // 5. auxiliary failure falls back to live semantic; PreprocessFormatException propagates
+        ports.AuxiliaryHits = (text, secondary, cap, excluded, mentions) => throw new InvalidOperationException("boom");
+        r = PromptTopicRoutingStage.Run(RoutingInput(), ports);
+        Check(r.AuxiliaryFailure == "boom" && !r.UseAuxiliaryRuleHitSet && r.Loan.Hit, "aux failure recorded, live routing continues");
+        ports.AuxiliaryHits = (text, secondary, cap, excluded, mentions) => throw new PreprocessFormatException("bad format");
+        bool propagated = false;
+        try { PromptTopicRoutingStage.Run(RoutingInput(), ports); } catch (PreprocessFormatException) { propagated = true; }
+        Check(propagated, "PreprocessFormatException propagates");
+
+        // 6. preprocess not allowed → nothing routes, sticky untouched
+        carry.Prime("hero_a", true, false, false, out _);
+        r = PromptTopicRoutingStage.Run(RoutingInput(allow: false), ports);
+        Check(!r.Duel.Hit && r.AuxiliaryRuleHitIds == null && carry.DuelRoundsLeft == 2, "suppressed preprocess routes nothing and keeps carry");
+        Check(PromptTopicRoutingStage.DescribeHits(null) == "(skip)" && PromptTopicRoutingStage.DescribeHits(new List<string>(), "(none)") == "(none)" && PromptTopicRoutingStage.DescribeHits(new List<string> { "a", "b" }) == "a,b", "describe hits");
     }
 
     private static void RuleBlockText()

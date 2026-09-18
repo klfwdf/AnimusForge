@@ -33,7 +33,7 @@ output = ROOT / "artifacts/tests/prompt-j04-composition" / (args.mutate or "curr
 if output.exists():
     shutil.rmtree(output)
 output.mkdir(parents=True)
-for name in ("Program.cs", "PromptCompositionTests.csproj"):
+for name in ("Program.cs", "Stubs.cs", "PromptCompositionTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "PromptCompositionTests.csproj").read_text(encoding="utf-8").replace("../../../../", (str(ROOT) + "/").replace("\\", "/"))
 if args.mutate:
