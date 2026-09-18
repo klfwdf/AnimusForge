@@ -272,6 +272,19 @@ internal static class Program
         Check(PromptRuleTextEvidence.RerankText("reward", "group", "奖励。其余说明", new List<string> { "礼物", "礼物" })
             .Contains("用途: reward 奖励") && PromptRuleTextEvidence.RerankText("reward", "group", "", null).Contains("规则组: group"),
             "rerank document retains group, ID, instruction and deduplicated keywords");
+        var evalSnapshot = PromptRuleEvaluationAssembler.Create("key", intentRules, intentRecall);
+        evalSnapshot.IntentCount = 1; evalSnapshot.ReturnCap = 1;
+        evalSnapshot.RerankPerIntent = 2; evalSnapshot.RecallPerIntent = 2;
+        Check(evalSnapshot.OrderedRules.Count == 2 && evalSnapshot.Rules["reward"].RawInput == 0.8f,
+            "production evaluator initializes ordered rules from shared recall evidence");
+        var evalAggregate = new PromptRuleAggregation();
+        evalAggregate.Add("marriage", 0.45f, 1, "marriage", "request");
+        var evaluated = PromptRuleEvaluationAssembler.Finish(evalSnapshot, evalAggregate, 1, 2, 1, "rerank");
+        Check(evaluated.CandidatePoolCount == 1 && evaluated.Ranked[0].RuleTag == "marriage" && evaluated.Ranked[0].Hit,
+            "production evaluator gives selected rule priority over higher raw-only evidence");
+        Check(!evalSnapshot.Rules["reward"].Hit && evalSnapshot.Rules["reward"].RejectReason == "rerank_recall_miss"
+            && evalSnapshot.Rules["marriage"].MatchedIntent == "request",
+            "production evaluator preserves miss reason and matched intent in shared snapshot");
         var aggregate = new PromptRuleAggregation();
         aggregate.Add("marriage", 0.5f, 2, "first", "intent a");
         aggregate.Add("marriage", 0.6f, 1, "second", "intent b");
