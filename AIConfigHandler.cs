@@ -48,17 +48,6 @@ public static class AIConfigHandler
 		public bool IsRoleMessage;
 	}
 
-	private sealed class GuardrailAuxiliaryTopic
-	{
-		public int Number;
-
-		public string Label;
-
-		public string Code;
-
-		public string RuleId;
-	}
-
 	private sealed class PreprocessExcludedPromptEntry
 	{
 		public string RuleId;
@@ -3288,36 +3277,11 @@ public static class AIConfigHandler
 
 	private static List<GuardrailAuxiliaryTopic> GetEligibleAuxiliaryGuardrailTopics(IEnumerable<string> availableRuleIds, bool applyRuntimeEligibility)
 	{
-		HashSet<string> hashSet = new HashSet<string>((availableRuleIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
-		List<GuardrailAuxiliaryTopic> list = new List<GuardrailAuxiliaryTopic>();
-		Dictionary<string, GuardrailRulePromptConfig> dictionary = null;
-		try
-		{
-			dictionary = BuildRulePromptRegistry();
-		}
-		catch
-		{
-			dictionary = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
-		}
-		foreach (GuardrailRulePromptConfig value in dictionary.Values)
-		{
-			string text = (value?.Id ?? "").Trim();
-			string text2 = (value?.TopicLabel ?? "").Trim();
-			int num = value?.TopicNumber ?? 0;
-			string text3 = NormalizeRuleCode(value?.Code, text, text2);
-			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3) && hashSet.Contains(text) && (!applyRuntimeEligibility || IsRuleCurrentlyEligibleForRag(text)))
-			{
-				list.Add(new GuardrailAuxiliaryTopic
-				{
-					Number = num,
-					Label = text2,
-					Code = text3,
-					RuleId = text
-				});
-			}
-		}
-		list = list.OrderBy((GuardrailAuxiliaryTopic x) => x.Number).ToList();
-		return list;
+		Dictionary<string, GuardrailRulePromptConfig> registry;
+		try { registry = BuildRulePromptRegistry(); }
+		catch { registry = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase); }
+		return PromptAuxiliaryRuleEvaluation.EligibleTopics(registry.Values, availableRuleIds,
+			applyRuntimeEligibility, NormalizeRuleCode, IsRuleCurrentlyEligibleForRag);
 	}
 
 	private static string BuildAuxiliaryGuardrailHistoryBlock(string runtimeGuardrailContext, string secondaryText, string latestPlayerText, out string latestNpcText)
@@ -4833,33 +4797,9 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
-			snapshot = new GuardrailEvalSnapshot
-			{
-				Key = cacheKey,
-				MatchMode = "auxiliary_api",
-				ReturnCap = returnCap
-			};
-			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
-			{
-				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[i];
-				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
-				{
-					continue;
-				}
-				string text = guardrailRulePromptConfig.Id.Trim();
-				if (excludedRuleIds != null && excludedRuleIds.Contains(text))
-				{
-					continue;
-				}
-				snapshot.Rules[text] = new GuardrailRuleEval
-				{
-					RuleTag = text,
-					MatchedIntent = NormalizeSemanticText(userText),
-					MatchMode = "auxiliary_api",
-					Rank = int.MaxValue,
-					RejectReason = "auxiliary_api_miss"
-				};
-			}
+			snapshot = PromptAuxiliaryRuleEvaluation.Create(cacheKey, userText, returnCap,
+				allEnabledRulePrompts.Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.Id)
+					&& (excludedRuleIds == null || !excludedRuleIds.Contains(rule.Id.Trim()))).Select(rule => rule.Id));
 			List<GuardrailAuxiliaryTopic> list = GetEligibleAuxiliaryGuardrailTopics(snapshot.Rules.Keys, applyRuntimeEligibility);
 			if (list.Count <= 0)
 			{
@@ -4897,69 +4837,11 @@ public static class AIConfigHandler
 				snapshot = null;
 				return false;
 			}
-			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			List<string> list3 = new List<string>();
-			for (int j = 0; j < list2.Count; j++)
-			{
-				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(NormalizeRuleCode(x.Code, x.RuleId, x.Label), list2[j], StringComparison.OrdinalIgnoreCase));
-				string text3 = guardrailAuxiliaryTopic?.RuleId ?? "";
-				if (!string.IsNullOrWhiteSpace(text3) && hashSet2.Add(text3))
-				{
-					list3.Add(text3);
-				}
-				if (list3.Count >= snapshot.ReturnCap)
-				{
-					break;
-				}
-			}
+			List<string> list3 = PromptAuxiliaryRuleEvaluation.Apply(snapshot, list, list2);
 			if (list3.Count <= 0)
 			{
 				snapshot = null;
 				return false;
-			}
-			float num = 0f;
-			for (int k = 0; k < list3.Count; k++)
-			{
-				string text4 = list3[k];
-				if (!snapshot.Rules.TryGetValue(text4, out var value2))
-				{
-					continue;
-				}
-				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic2 = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(x.RuleId, text4, StringComparison.OrdinalIgnoreCase));
-				float num2 = Math.Max(0.2f, 1f - (float)k * 0.08f);
-				value2.MatchedSeed = guardrailAuxiliaryTopic2?.Label ?? ("topic_" + (k + 1));
-				value2.RawInput = num2;
-				value2.MixedRaw = num2;
-				value2.AmpScore = num2;
-				value2.RerankScore = num2;
-				value2.Candidate = true;
-				value2.AbsHit = true;
-				value2.Hit = true;
-				value2.Rank = k + 1;
-				value2.RejectReason = $"auxiliary_api_return({k + 1}/{snapshot.ReturnCap})";
-				num += num2;
-			}
-			float num3 = (list3.Count > 0) ? (num / (float)list3.Count) : 0f;
-			for (int l = 0; l < list3.Count; l++)
-			{
-				string text5 = list3[l];
-				if (!snapshot.Rules.TryGetValue(text5, out var value3))
-				{
-					continue;
-				}
-				value3.Mean = num3;
-				if (l == 0 && list3.Count > 1 && snapshot.Rules.TryGetValue(list3[1], out var value4))
-				{
-					value3.TopGap = Math.Max(0f, value3.AmpScore - value4.AmpScore);
-					value3.MaxOther = value4.AmpScore;
-					value3.MaxOtherTag = value4.RuleTag;
-				}
-				else if (list3.Count > 0)
-				{
-					value3.TopGap = 1f;
-					value3.MaxOther = (l > 0 && snapshot.Rules.TryGetValue(list3[0], out var value5)) ? value5.AmpScore : 0f;
-					value3.MaxOtherTag = ((l > 0) ? list3[0] : "");
-				}
 			}
 			Logger.Log("GuardrailSemantic", $"auxiliary_router success returnCap={snapshot.ReturnCap} raw={JsonConvert.ToString(content ?? "")} selected={string.Join(",", list3)}");
 			return true;
