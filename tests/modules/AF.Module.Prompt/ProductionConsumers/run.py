@@ -60,8 +60,9 @@ scheduled = method("ShoutBehavior.NativePromptBuild.cs", "private async Task<MyB
 # J06: begin/capture/complete run on the main thread; routing/retrieval use the guarded background slot.
 ordered(scheduled, "RunNativeConversationMainThreadFuncAsync(\"prompt_build_begin\"", "IsNativeConversationAdmissionCurrent(admission, out _)", "owner.BeginSharedPromptBuild(",
         "RunNativeConversationBackgroundPreprocessAsync(", "owner.RunSharedPromptRouting(phases)", "AwaitNativeConversationBackgroundPreprocessAsync(",
-		"prompt_build_knowledge_capture", "owner.CaptureSharedKnowledgeSnapshot(phases,", "owner.RunSharedKnowledgeRetrieval(phases)",
+		"prompt_build_knowledge_capture", "owner.CaptureSharedKnowledgeSnapshot(phases,", "MyBehavior.CreateSharedKnowledgeWorkInput(phases)", "MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput)",
         "RunNativeConversationMainThreadFuncAsync(\"prompt_build_complete\"", "owner.CompleteSharedPromptBuild(phases")
+assert scheduled.index("MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowledgeResult)") < scheduled.index("owner.CompleteSharedPromptBuild(phases"), "Native publishes Knowledge only in final owner phase"
 assert scheduled.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "admission must be re-validated on all three game-thread steps"
 assert scheduled.count("SaveRuntimeGuard.IsStale(runtimeGeneration") == 4, "generation checked after each hop"
 
@@ -72,8 +73,9 @@ ordered(courier_sched,
         "await Task.Run(", "owner.RunCourierRulePreprocessRetrieval(",
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"', "owner.BeginSharedPromptBuild(",
         "owner.RunSharedPromptRouting(phases)",
-		'source + "_knowledge_capture"', "owner.CaptureSharedKnowledgeSnapshot(phases,", "owner.RunSharedKnowledgeRetrieval(phases)",
+		'source + "_knowledge_capture"', "owner.CaptureSharedKnowledgeSnapshot(phases,", "MyBehavior.CreateSharedKnowledgeWorkInput(phases)", "MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput)",
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"', "owner.CompleteSharedPromptBuild(phases")
+assert courier_sched.index("MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowledgeResult)") < courier_sched.index("owner.CompleteSharedPromptBuild(phases"), "Courier publishes Knowledge only in final owner phase"
 assert courier_sched.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "all four Courier owner phases re-validate run and source"
 courier_prep = method("CourierDeliveryBehavior.PromptPreparation.cs", "private async Task<T> PrepareCourierPromptRequestAsync<T>(")
 assert "BuildCourierPreparedPromptScheduledAsync(input, promptRun, generation, source)" in courier_prep and "Task.Run(() => BuildCourierPreparedPrompt(input))" not in courier_prep, "Courier no longer runs the whole builder in one Task.Run"
