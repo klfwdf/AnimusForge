@@ -1821,7 +1821,7 @@
     "materials": {
       "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_materials.py",
       "harness": "tools/MemorySummaryMainThreadBoundaryTests/MaterialsHarness.cs.txt",
-      "scope": "Actual event-source material index append/rebuild/current-check. 23 current cases, 62abfdb3 baseline 8 reds, seven --mutate reds. No live/game/save. Current index binding/rebuild policy executes the whole independent Refactor/Runtime/EventSourceMaterialIndex.cs component. Explicit Compile items exclude stale generated sources.",
+      "scope": "Actual event-source material index append/rebuild/current-check. 23 current cases, 62abfdb3 baseline 8 reds, seven --mutate reds. No live/game/save. Current index binding/rebuild policy executes the whole independent src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs component. Explicit Compile items exclude stale generated sources.",
       "observed": "MATERIALS_RESULT scenarios=23 failures=0; source-baseline-62abfdb3 failures=8; seven mutations EXIT=1",
       "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/current/manifest.json",
       "testSourceSha256": {
@@ -2268,17 +2268,17 @@
   ],
   "productionDependencies": {
     "MyBehavior.MemorySealing.cs": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a",
-    "Refactor/Runtime/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
+    "src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
     "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
-    "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
-    "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a",
+    "src/modules/AF.Module.Memory/Summary/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
+    "src/modules/AF.Module.Memory/Summary/CooperativeMemoryQueueSort.cs": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a",
     "MyBehavior.MemorySummaryInput.cs": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08",
     "MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
-    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    "src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
     "MyBehavior.MemorySummaryMainThread.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
     "MyBehavior.MemorySummaryPlanning.cs": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b",
-    "Refactor/Contracts/IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
-    "Refactor/Runtime/MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
+    "src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
   },
   "removedProductionFiles": [
     "MyBehavior.EventSourceMaterialIndex.cs"
@@ -2387,8 +2387,8 @@
       "new public API capabilities"
     ],
     "paths": [
-      "Refactor/Contracts/IMemorySummaryDispatchHost.cs",
-      "Refactor/Runtime/MemorySummaryDispatcher.cs",
+      "src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs",
+      "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs",
       "MyBehavior.MemorySummaryMainThread.cs",
       "MyBehavior.MemorySummaryPlanning.cs"
     ]

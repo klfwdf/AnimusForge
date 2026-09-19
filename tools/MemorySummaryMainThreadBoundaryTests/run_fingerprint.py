@@ -38,7 +38,7 @@ class Program {
 '''
 def main():
  out=HERE/'.generated/fingerprint';out.mkdir(parents=True,exist_ok=True)
- source=ROOT/'Refactor/Runtime/MemorySourceFingerprintWriter.cs'
+ source=ROOT/'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs'
  files={'Program.cs':HARNESS,'NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>','Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><CheckForOverflowUnderflow>true</CheckForOverflowUnderflow></PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="'+escape(str(source))+'"/></ItemGroup></Project>'}
  for name,data in files.items():(out/name).write_bytes(data.encode())
  dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT.parent/'.dotnet-sdk/dotnet.exe')));env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false')

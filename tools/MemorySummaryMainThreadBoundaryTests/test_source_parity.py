@@ -84,7 +84,7 @@ class InverseGuards(unittest.TestCase):
         self.assertEqual(baseline, (ROOT / review["path"]).read_text(encoding="utf-8-sig"))
 
     def test_dispatcher_dependency_direction_and_host_shape(self):
-        runtime = (ROOT / "Refactor/Runtime/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig")
+        runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig")
         host = (ROOT / "MyBehavior.MemorySummaryMainThread.cs").read_text(encoding="utf-8-sig")
         self.assertNotIn("TaleWorlds", runtime)
         self.assertNotIn("MyBehavior", runtime)

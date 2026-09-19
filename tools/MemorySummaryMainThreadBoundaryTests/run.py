@@ -29,7 +29,7 @@ if not boundary_path.exists():
     raise SystemExit(1)
 
 boundary = (subprocess.check_output(["git", "show", args.source_baseline + ":MyBehavior.MemorySummaryMainThread.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n") if args.source_baseline else boundary_path.read_text(encoding="utf-8-sig"))
-runtime = (ROOT / "Refactor/Runtime/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig") if "MemorySummaryDispatcher" in boundary else None
+runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig") if "MemorySummaryDispatcher" in boundary else None
 process = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
 required_process_fragments = [
     "await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration",
@@ -73,7 +73,7 @@ if args.source_baseline:
 extra = ''
 if runtime is not None:
     (out / 'MemorySummaryDispatcher.cs').write_text(runtime, encoding='utf-8')
-    (out / 'IMemorySummaryDispatchHost.cs').write_text((ROOT / 'Refactor/Contracts/IMemorySummaryDispatchHost.cs').read_text(encoding='utf-8-sig'), encoding='utf-8')
+    (out / 'IMemorySummaryDispatchHost.cs').write_text((ROOT / 'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs').read_text(encoding='utf-8-sig'), encoding='utf-8')
     extra = '<Compile Include="MemorySummaryDispatcher.cs"/><Compile Include="IMemorySummaryDispatchHost.cs"/>'
 
 (out / "SaveRuntimeGuard.cs").write_text((ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")

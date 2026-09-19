@@ -131,7 +131,7 @@ def main():
     files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Terminal.cs':read('tools/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt')}
     if a.admission_only:
         files['Terminal.cs']=replace(files['Terminal.cs'],'  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);\n','')
-    files['RecoveryLedger.cs']=read('Refactor/Runtime/InteractionMemoryRecoveryLedger.cs')
+    files['RecoveryLedger.cs']=read('src/modules/AF.Module.Memory/Recovery/InteractionMemoryRecoveryLedger.cs')
     for name in ['Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Contracts/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
     for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
@@ -141,10 +141,10 @@ def main():
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
     if a.admission_only:files['Proof.csproj']=files['Proof.csproj'].replace('<NoWarn>','<DefineConstants>ADMISSION_PROOF</DefineConstants><NoWarn>')
     if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
-        for name in ['MyBehavior.MemorySourceFingerprint.cs','Refactor/Runtime/MemorySourceFingerprintWriter.cs']:
+        for name in ['MyBehavior.MemorySourceFingerprint.cs','src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']:
             files[Path(name).name]=read(name)
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
-        for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+        for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
     run_scope.include(files, original=bool(a.source_baseline))

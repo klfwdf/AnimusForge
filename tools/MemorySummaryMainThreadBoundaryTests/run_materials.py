@@ -17,7 +17,7 @@ def main():
     def change(text,old,new,count=1):
         if text.count(old)!=count:raise ValueError('Materials mutation anchor drift: '+old)
         return text.replace(old,new)
-    component_path=ROOT/'Refactor/Runtime/EventSourceMaterialIndex.cs'
+    component_path=ROOT/'src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs'
     uses_component=not a.source_baseline and component_path.is_file()
     source=read('MyBehavior.cs')
     if a.source_baseline:source=subprocess.run(['git','show',a.source_baseline+':MyBehavior.cs'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',check=True).stdout
@@ -51,7 +51,7 @@ def main():
     partial=ROOT/'MyBehavior.EventSourceMaterialIndex.cs'
     if uses_component:
         runtime=component_path.read_text(encoding='utf-8-sig')
-        manifest.append(dict(file='Refactor/Runtime/EventSourceMaterialIndex.cs',sha256=digest(runtime),source_revision='working-tree'))
+        manifest.append(dict(file='src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs',sha256=digest(runtime),source_revision='working-tree'))
         if a.mutate=='ignore-structure':runtime=change(runtime,'_structureProbe.MoveNext();','/* fault: ignore same-count mutation */')
         if a.mutate=='ignore-map-binding':runtime=change(runtime,'|| !ReferenceEquals(_map, map)','')
         if a.mutate=='ignore-source-binding':runtime=change(runtime,'|| !ReferenceEquals(_source, source)','')

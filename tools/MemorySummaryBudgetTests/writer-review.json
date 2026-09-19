@@ -1,7 +1,7 @@
 {
   "baseline": "155f1b7a",
   "paths": {
-    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": [
+    "src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs": [
       {
         "start": 10,
         "end": 10,

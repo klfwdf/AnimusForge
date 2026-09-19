@@ -15,7 +15,7 @@ code=code.replace('@@REROLL_UI@@',ex.declaration(ui_source,'private async Task R
 code=code.replace('@@RESERVATION_TESTS@@','' if a.original else (HERE/'Reservations.cs.txt').read_text(encoding='utf-8'))
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-files=[out/'Program.cs',ROOT/'Refactor/Runtime/MemorySummaryDispatcher.cs',ROOT/'Refactor/Contracts/IMemorySummaryDispatchHost.cs']
+files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
 if not a.original:
  helper=(ROOT/'MyBehavior.PersonaGeneration.cs').read_text(encoding='utf-8-sig');owner=(ROOT/'Refactor/Runtime/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')
  if a.mutate in ('worker_capture','worker_commit'):

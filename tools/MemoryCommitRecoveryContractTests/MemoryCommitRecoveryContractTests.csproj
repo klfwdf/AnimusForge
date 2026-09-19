@@ -6,6 +6,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\Refactor\Runtime\InteractionMemoryRecoveryLedger.cs" Link="Runtime\InteractionMemoryRecoveryLedger.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\InteractionMemoryRecoveryLedger.cs" Link="Runtime\InteractionMemoryRecoveryLedger.cs" />
   </ItemGroup>
 </Project>

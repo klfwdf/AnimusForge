@@ -24,5 +24,5 @@ def include(files, original=False):
         if name in ('Program.cs','Fixture.cs'):
             text=text.replace('List<MemoryOverviewExecutionResult> overview)', 'List<MemoryOverviewExecutionResult> overview, AnimusForge.Refactor.Runtime.MemorySummaryRunOwner.Lease run = null)')
         files[name]=text
-    for path in ['MyBehavior.MemorySummaryRun.cs','Refactor/Runtime/MemorySummaryRunOwner.cs']:
+    for path in ['MyBehavior.MemorySummaryRun.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryRunOwner.cs']:
         files[Path(path).name]=(ROOT/path).read_text(encoding='utf-8-sig')

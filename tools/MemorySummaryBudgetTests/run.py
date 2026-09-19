@@ -9,7 +9,7 @@ HERE = Path(__file__).resolve().parent
 MODELS = ['DailyMemoryLine', 'DailyMemoryDraft', 'CompressedMemoryBlock',
           'WeeklyMemoryMaterialTrigger', 'MemorySummaryJob', 'MemoryOverviewState',
           'MemoryOverviewJob', 'MajorActionSummaryState', 'MajorActionSummaryJob', 'NpcActionEntry']
-WRITER = 'Refactor/Runtime/MemorySourceFingerprintWriter.cs'
+WRITER = 'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs'
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)

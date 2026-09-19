@@ -608,7 +608,7 @@
   },
   "dependencies": {
     "MyBehavior.MemorySummaryRun.cs": "94a2f61df2bf87c86b1ec24a6dc59b63fd52afc23a969973c7968c20487d1634",
-    "Refactor/Runtime/MemorySummaryRunOwner.cs": "13c606f98a0a4694dd439d7b80b4dd4777fbc18bcc229ffd5060b3c6d02e1551",
+    "src/modules/AF.Module.Memory/Summary/MemorySummaryRunOwner.cs": "13c606f98a0a4694dd439d7b80b4dd4777fbc18bcc229ffd5060b3c6d02e1551",
     "tools/MemorySummaryRunOwnerTests/fixture_support.py": "acda46e20eb16c6a1e39dbd7a482b901485583a3d5fcaf3feca4a0fbbb08600b",
     "tools/MemorySummaryRunOwnerTests/BusinessCases.cs.txt": "9e92d9f6a86e710a681a654b02f149de505d1bded243790d43fdd98c14ac7413",
     "tools/MemorySummaryRunOwnerTests/TerminalCases.cs.txt": "75f1590fc598107b6f540aa0ede85852e056c26c1325c632770770f0ec2ae057",
