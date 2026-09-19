@@ -1,3 +1,34 @@
+<a id="j06-differential-green-20260919"></a>
+
+## J06 接续：远端红测已修复，最终请求差分全绿；仍 VERIFY / NOT_ACCEPTED（2026-09-19）
+
+**接续基线**：本地 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918` 由 `1c45ba3d` 快进（`--ff-only`，无冲突、未 reset/rebase）到 GitHub `origin/codex/af-main-refactor-continuation-20260831` 终点 `2946bf3d`；产品源码终点仍为 `70db6ec2`，本轮**未改任何产品源码**，291 锚点代码地图继续绑定 `70db6ec2`。
+
+### 红测根因与修复（测试提交 `08699b4f`）
+
+| 项 | 现象 | 根因 | 修复 |
+| --- | --- | --- | --- |
+| `EntityTextDifferential` | 远端 HANDOFF 记录的“非空输入下生产 `BuildPromptContext` 主文/后处理变空（main=0/134, post=0/49）” | `2946bf3d` 把 `latestInput` 从 `""` 改为含“Alda the King”的整句，但 harness 里 `FindRawRulerTitleMatches` 仍是 `throw` 桩；生产 `BuildPromptContext` 的外层 `catch` 吞掉异常返回空上下文，旧/新两侧同时为空、期望非空 | 两侧改为提取各自基线（`77a3d234` / 当前）的真实 `FindRawRulerTitleMatches`、`FindBestRawQualifiedRulerTitleAlias`、`IsRawRulerTitleShadowed`（其依赖的 `RawTextContainsEntityPhrase`、`BuildRulerTitleCandidates` 等本已在提取集内）。Hero 直接/称谓两例主文、后处理、计数、显式王国 ID 旧新逐字节一致；`drop-hero-main` / `drop-hero-post` / `drop-capture-fallback` 三项变异仍拒收 |
+| `SharedCompletionDifferential` | 同上（它以子进程复用实体差分 JSON） | 同上 | 修复后 12 场景 PASS：共享 `CompleteSharedPromptBuild` + Courier 完整请求 + Native 最终消息用生产派生 Lore/实体/规则文本一致；`drop-lore` / `drop-entity` / `drop-rule` 三项变异均 `EXPECTED_REJECT`（Courier 与 Native 最终请求同时差异） |
+| `Knowledge/Index` | 本机 `error CS0246 Newtonsoft` | `66abbdbd` 在 csproj 硬编码 `local/dotnet/8.0.425/.../Newtonsoft.Json.dll`，本机不存在 | csproj 改 `@@NEWTONSOFT@@` 占位，runner 按 `AF_NEWTONSOFT` → 仓库本地 SDK 解析（与 `tests/AF.Persistence` 同约定）；70 项 PASS |
+| `PersistenceProfileConfigContractTests` | `typed SyncData binding catalog drifted` | 远端 `MyBehavior.cs` 编辑使两条绑定行号漂移，catalog 未刷新 | 只刷新 2 条 `line`，168 条 source/key/ref/type 身份断言不变；PASS |
+
+### 本机实际验证（全部退出码 0）
+
+- 构建：`.tmp/build-local.ps1`（等价原 `build_single_module.ps1`，无 -Stage/-Deploy）Debug + Release × 1.3/1.4/Bootstrap 六项。
+- Knowledge：Index/Lore/Import 70、Entities、EntityAllocationParity、PublishedSnapshot、CapturePerformance、LoreTextDifferential、EntityTextDifferential（+3 变异拒收）。
+- Prompt：Composition、BuildPhases、CaptureEligibility、KnowledgePhases、ExtraRuleFallback、ExtraRuleTextDifferential、NativeKnowledgeSchedule、NativeFinalRequestDifferential、SharedCompletionDifferential（+3 变异拒收）、ProductionEntry/Evaluation/My/Reward/SceneNative/Consumers。
+- 渠道：CourierPromptPreparation 550/76、CourierOwnerPhase、NativeConversationAdmission 44、NativeCompletionBoundary 184、ScenePostprocessParity 71、ChannelCutoverBoundary、CourierHistoryPreparation、NativePendingHistoryBoundary、NativeHistorySnapshot。
+- Memory/Persistence：MemorySummaryMainThreadBoundary/RunOwner/Budget、GameLifetime memory、Records 34、OwnerJsonStorageCodec、PlayerExports、PersistenceProfileConfig、IdentityAuditContract、MigrationContract。
+- HeroAssetScope、HeroPersonaGeneration。
+
+### 为什么仍不标 `J06_OFFLINE_VERIFIED`
+
+远端上一节列出的三项阻塞中，②“Lore/实体/规则进入最终 Prompt 的完整生产文本对照”已由本轮 `SharedCompletionDifferential` 全绿闭合；③ 原一键脚本六项构建由本机等价 wrapper 完成（远端已记录用户授权后原脚本通过，本机未再重置固定生成目录）。仍开放：① 逐候选关系/距离捕获的**实机帧耗时**样本（`CapturePerformance` 是离线方法级观察值，不是游戏帧证据）；实体差分仅覆盖中性 Hero 直接/称谓两例，定居点/家族/王国正文、可见队伍、常驻实体仍靠 fixture；实机、旧档、真实 provider `NOT-RUN`。因此 J06 维持 `VERIFY / NOT_ACCEPTED`，下一包按总计划进入 **J07 Conversation 核心 / Native**，J06 剩余为实机验证项而非源码项。
+
+
+## 以下为远端交接与历史
+
 <a id="j06-retrieval-cutover-20260919"></a>
 
 ## J06 检索线程收口进度：VERIFY / NOT_ACCEPTED（2026-09-19）
