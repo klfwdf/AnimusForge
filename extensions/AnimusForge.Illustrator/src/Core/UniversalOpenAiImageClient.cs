@@ -688,7 +688,7 @@ namespace AnimusForge.Illustrator.Core
 
         private static string DescribeMissingImageResponse(string responseText)
         {
-            if (string.IsNullOrWhiteSpace(responseText)) return "服务端返回空响应体；未自动重试，请稍后手动重绘。";
+            if (string.IsNullOrWhiteSpace(responseText)) return FormatMissingImageError("服务端返回空响应体");
             string reason = "响应未包含可识别的图片数据";
             try
             {
@@ -706,8 +706,17 @@ namespace AnimusForge.Illustrator.Core
                     reason = "服务端返回了内容，但未能提取图片；请检查响应格式或模型输出";
             }
             catch (JsonException) { }
-            string preview = responseText.Substring(0, Math.Min(responseText.Length, 400));
-            return reason + "；未自动重试。原始响应预览: " + preview;
+            // The complete sanitized response was recorded before parsing. Keep provider
+            // JSON out of the in-game status overlay; use the diagnostic suffix to find it.
+            return FormatMissingImageError(reason);
+        }
+
+        private static string FormatMissingImageError(string reason)
+        {
+            string id = GenerationDiagnostics.Current?.Id;
+            string diagnostic = string.IsNullOrEmpty(id) ? string.Empty :
+                " 诊断：" + id.Substring(Math.Max(0, id.Length - 8));
+            return reason + "；未自动重试，可稍后手动重绘。" + diagnostic;
         }
 
         private static async Task<ExtractedImage> ExtractImageAsync(string responseText, CancellationToken cancellationToken)
