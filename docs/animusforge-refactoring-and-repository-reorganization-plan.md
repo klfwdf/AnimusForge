@@ -2,6 +2,8 @@
 
 ## J06 检索线程收口进度：VERIFY / NOT_ACCEPTED（2026-09-19）
 
+**Lore 生产方法差分新增 `1cd0b9df`**：`tests/modules/AF.Module.Knowledge/LoreTextDifferential` 从 `77a3d234` 与当前源码各自提取 `KnowledgeRuleIndex`、`LoreCandidateRetriever`、`KnowledgeLibraryBehavior` 的 Hero 命中/正文格式化方法及 `AIConfigHandler` 入口；相同假 Hero、同一条 Praven 规则、相同 mention 下，旧同步、当前预选、当前版本过期回退的非空 Lore 正文逐字节相同。检索调用次数验证预选与过期回退分支；仅新路径忽略版本检查、删除 Lore 正文两项变异均失败。假游戏端口不覆盖玩家外观、技能、文本映射或真实 TaleWorlds 读取；尚未接实体、额外规则和 Native/Courier 最终请求，故保持 `VERIFY / NOT_ACCEPTED`。
+
 `da677af3` 在同一个生产捕获方法测试中增加硬预算停止契约：stub budget 于首次 64 项检查后标记超限，生产 `CaptureCandidates` 恰好返回 64 项、只检查一次；原两项负向变异继续失败。2,000 项耗时为不同运行间会波动的离线方法观察值，不作为实机帧预算证明。
 
 **后续 Courier 全请求增量 `1fa1a4e1`**：现有生产请求体回放使用生产 `PromptExtrasComposer` 将六类 Lore/实体/额外规则 fixture 文本带入旧同步和新调度路径，对两方向的完整序列化请求逐字节比较；76 场景、390 检查通过。只在新请求体删去 Lore 文本的变异于 `knowledge_text_lore_hit` 被拒收。它覆盖 Courier 最终请求体的组装/调度回归，但游戏读取与知识检索结果仍是 fixture；Native 最终请求全文、真实生产 Lore/实体结果的旧新同输入文本对照仍未完成，故 J06 继续 `VERIFY / NOT_ACCEPTED`。
