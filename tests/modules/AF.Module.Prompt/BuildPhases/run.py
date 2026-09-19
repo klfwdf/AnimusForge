@@ -108,6 +108,7 @@ if args.mutate == "entity-worker-live-read":
 entity_final = extract.declaration(entity, "internal static WorldEntityPromptContext BuildPromptContext(")
 assert "CaptureEntityCandidates(" in knowledge_capture and "MatchDetachedCandidates(" in knowledge_worker, "entity capture/matching must cross game/worker boundary"
 assert "BuildVisiblePartyCandidates(contextHero)" in entity_capture and "GetHeroCandidates()" in entity_capture and "GetKingdomCandidates()" in entity_capture, "entity game capture must reuse existing enumerations"
+assert "WorldEntityRetrievalBudget budget" in entity_capture and "CanContinueWorldEntityMatch(" in entity_capture and "EntityRetrievalBudgetCheckInterval" in extract.declaration(entity, "private static void CaptureCandidates<T>("), "entity capture must preserve a bounded game-thread budget"
 assert "BuildPromptContext(" in capture_sections and "retrieval?.EntityMatches" in capture_sections, "final section must consume matched entities"
 assert "capture == null ? GetHeroCandidates().ToList() : RestoreCandidates(" in entity_final and "capture == null ? GetKingdomCandidates().ToList() : RestoreCandidates(" in entity_final, "successful capture must not repeat full candidate enumeration"
 assert "detachedMatches == null ? FindMatches(" in entity_final and "RestoreMatches(detachedMatches.Kingdoms, capture.Kingdoms)" in entity_final, "successful worker retrieval must not repeat entity scoring"

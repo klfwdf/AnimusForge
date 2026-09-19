@@ -262,33 +262,41 @@ public static class WorldEntityRetrievalService
 	internal static EntityCapture CaptureEntityCandidates(MentionedWorldEntities mentions, string latestInput, Hero contextHero)
 	{
 		EntityCapture capture = new EntityCapture { MaxInjectedEntities = GetMaxInjectedEntitiesFromSettings() };
+		WorldEntityRetrievalBudget budget = new WorldEntityRetrievalBudget(Stopwatch.StartNew());
 		if (Campaign.Current == null)
 		{
 			return capture;
 		}
 		capture.VisibleParties = BuildVisiblePartyCandidates(contextHero);
 		bool hasMentions = EntityMentionList.BuildUnified(mentions?.Entities).Count > 0;
-		if (hasMentions)
+		if (hasMentions && CanContinueWorldEntityMatch("hero_capture", budget))
 		{
 			CaptureCandidates(GetHeroCandidates(), capture.Candidates.Heroes, capture.Heroes,
-				GetHeroAliases, x => "hero:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Hero"));
-			CaptureCandidates(GetSettlementCandidates(), capture.Candidates.Settlements, capture.Settlements,
-				GetSettlementAliases, x => "settlement:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Settlement"));
-			CaptureCandidates(GetClanCandidates(), capture.Candidates.Clans, capture.Clans,
-				GetClanAliases, x => "clan:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Clan"));
+				GetHeroAliases, x => "hero:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Hero"), budget);
 		}
-		if (hasMentions || !string.IsNullOrWhiteSpace(latestInput))
+		if (hasMentions && CanContinueWorldEntityMatch("settlement_capture", budget))
+		{
+			CaptureCandidates(GetSettlementCandidates(), capture.Candidates.Settlements, capture.Settlements,
+				GetSettlementAliases, x => "settlement:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Settlement"), budget);
+		}
+		if (hasMentions && CanContinueWorldEntityMatch("clan_capture", budget))
+		{
+			CaptureCandidates(GetClanCandidates(), capture.Candidates.Clans, capture.Clans,
+				GetClanAliases, x => "clan:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Clan"), budget);
+		}
+		if ((hasMentions || !string.IsNullOrWhiteSpace(latestInput)) && CanContinueWorldEntityMatch("kingdom_capture", budget))
 		{
 			CaptureCandidates(GetKingdomCandidates(), capture.Candidates.Kingdoms, capture.Kingdoms,
-				GetKingdomAliases, x => "kingdom:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Kingdom"));
+				GetKingdomAliases, x => "kingdom:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Kingdom"), budget);
 			capture.Candidates.Rulers = BuildRulerTitleCandidates(RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms), capture.Heroes);
 		}
 		return capture;
 	}
 
 	private static void CaptureCandidates<T>(IEnumerable<T> source, List<DetachedEntityCandidate> detached,
-		Dictionary<DetachedEntityCandidate, T> live, Func<T, IEnumerable<string>> aliases, Func<T, string> id, Func<T, string> name) where T : class
+		Dictionary<DetachedEntityCandidate, T> live, Func<T, IEnumerable<string>> aliases, Func<T, string> id, Func<T, string> name, WorldEntityRetrievalBudget budget) where T : class
 	{
+		int scanned = 0;
 		foreach (T value in source ?? Enumerable.Empty<T>())
 		{
 			if (value == null)
@@ -303,6 +311,15 @@ public static class WorldEntityRetrievalService
 			};
 			detached.Add(candidate);
 			live.Add(candidate, value);
+			if (++scanned % EntityRetrievalBudgetCheckInterval == 0)
+			{
+				LogSoftBudgetOnceIfNeeded("candidate_capture", "", "", scanned, 0, detached.Count, budget);
+				if (IsHardBudgetExceeded(budget))
+				{
+					LogWorldEntityBudgetStop("candidate_capture", "", "", scanned, 0, detached.Count, budget);
+					break;
+				}
+			}
 		}
 	}
 
