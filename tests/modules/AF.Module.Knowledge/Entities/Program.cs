@@ -17,7 +17,26 @@ internal static class Program
         Matcher();
         Mentions();
         Allocator();
+        PerformanceSample();
         Console.WriteLine("PASS knowledge-entities checks=" + _checks);
+    }
+
+    private static void PerformanceSample()
+    {
+        // Same production profile/score primitives; timing is observational, not a flaky gate.
+        var candidates = Enumerable.Range(0, 2000)
+            .Select(i => EntityNameMatcher.BuildAliasProfiles(new[] { "Hero " + i, "hero_" + i }))
+            .ToList();
+        var mentions = new[] { "Hero 12", "Hero 1999", "hero_510", "unmatched" }
+            .Select(EntityNameMatcher.BuildProfile).ToList();
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        int hits = 0;
+        foreach (var mention in mentions)
+            foreach (var candidate in candidates)
+                if (EntityNameMatcher.BestScore(mention, candidate) >= 0.72f) hits++;
+        watch.Stop();
+        Check(hits > 0 && hits < candidates.Count * mentions.Count, "bounded matcher sample yields selective hits");
+        Console.WriteLine("SAMPLE knowledge-entities candidates=2000 mentions=4 scored=8000 hits=" + hits + " elapsedMs=" + watch.ElapsedMilliseconds);
     }
 
     private static void Matcher()

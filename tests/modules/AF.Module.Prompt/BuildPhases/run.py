@@ -83,6 +83,7 @@ if args.mutate == "drop-knowledge-worker":
 if args.mutate == "drop-entity-worker":
     knowledge_worker = knowledge_worker.replace("WorldEntityRetrievalService.MatchDetachedCandidates(", "WorldEntityRetrievalService.X(", 1)
 assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
+assert "owner.RunSharedKnowledgeRetrieval(phases);" in native_schedule, "Native must execute the knowledge worker"
 assert "ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility)" in courier_schedule and "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in courier_schedule, "Courier workers must publish detached eligibility"
 assert native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_begin"') < native_schedule.index('RunNativeConversationBackgroundPreprocessAsync(') < native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_complete"'), "Native capture/routing/complete thread order"
 assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"') < courier_schedule.index('Task.Run(() =>') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"'), "Courier owner/worker thread order"
@@ -92,9 +93,13 @@ assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.
 entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 entity_capture = extract.declaration(entity, "internal static EntityCapture CaptureEntityCandidates(")
 entity_worker = extract.declaration(entity, "internal static DetachedEntityMatches MatchDetachedCandidates(")
+entity_final = extract.declaration(entity, "internal static WorldEntityPromptContext BuildPromptContext(")
 assert "CaptureEntityCandidates(" in knowledge_capture and "MatchDetachedCandidates(" in knowledge_worker, "entity capture/matching must cross game/worker boundary"
 assert "BuildVisiblePartyCandidates(contextHero)" in entity_capture and "GetHeroCandidates()" in entity_capture and "GetKingdomCandidates()" in entity_capture, "entity game capture must reuse existing enumerations"
 assert "BuildPromptContext(" in capture_sections and "retrieval?.EntityMatches" in capture_sections, "final section must consume matched entities"
+assert "capture == null ? GetHeroCandidates().ToList() : RestoreCandidates(" in entity_final and "capture == null ? GetKingdomCandidates().ToList() : RestoreCandidates(" in entity_final, "successful capture must not repeat full candidate enumeration"
+assert "detachedMatches == null ? FindMatches(" in entity_final and "RestoreMatches(detachedMatches.Kingdoms, capture.Kingdoms)" in entity_final, "successful worker retrieval must not repeat entity scoring"
+assert "capture?.VisibleParties ?? BuildVisiblePartyCandidates(contextHero)" in entity_final, "successful capture must not repeat visible-party scan"
 for forbidden_live in ("Hero.", "Kingdom.", "Settlement.", "Clan.", "MobileParty.", "Campaign.Current", "GetHeroCandidates(", "GetKingdomCandidates(", "BuildVisiblePartyCandidates("):
     assert forbidden_live not in entity_worker, "entity worker must not read live game object: " + forbidden_live
 assert "FindRulerTitleMatches(" in entity_worker and "FindRawRulerTitleMatches(" in entity_worker and "FindDetachedMatches(" in entity_worker, "ruler/direct matching must run on worker"
