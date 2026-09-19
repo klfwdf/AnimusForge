@@ -40,59 +40,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public string Value;
 	}
 
-	private struct RankedVectorCandidateCacheItem
-	{
-		public long Version;
-
-		public long Ticks;
-
-		public List<RuleScore> Scores;
-	}
-
-	private class VectorDoc
-	{
-		public LoreRule Rule;
-
-		public Dictionary<string, int> Tf;
-
-		public bool IsEvidence;
-	}
-
-	private class VectorRuleEntry
-	{
-		public LoreRule Rule;
-
-		public string Seed;
-
-		public Dictionary<string, float> Weights;
-
-		public float Norm;
-
-		public bool IsEvidence;
-	}
-
-	private class OnnxRuleEntry
-	{
-		public LoreRule Rule;
-
-		public string Seed;
-
-		public float[] Vector;
-
-		public bool IsEvidence;
-	}
-
-	private class RuleScore
-	{
-		public LoreRule Rule;
-
-		public float RawScore;
-
-		public float EvidenceScore;
-
-		public float RerankScore;
-	}
-
 	private class CandidateRules
 	{
 		public string MatchMode = "none";
@@ -548,33 +495,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static Dictionary<string, SkillObject> _skillByIdCache;
 
-	private static long _ruleDataVersion = 1L;
-
-	private static readonly object _vectorIndexLock = new object();
-
-	private static List<VectorRuleEntry> _vectorRuleEntries;
-
-	private static Dictionary<string, float> _vectorIdf;
-
-	private static long _vectorIndexVersion = -1L;
-
-	private static readonly object _onnxIndexLock = new object();
-
-	private static List<OnnxRuleEntry> _onnxRuleEntries;
-
-	private static long _onnxIndexVersion = -1L;
-
 	private static readonly object _loreContextCacheLock = new object();
 
 	private static Dictionary<string, LoreContextCacheItem> _loreContextCache = new Dictionary<string, LoreContextCacheItem>();
 
 	private const int LoreContextCacheMax = 256;
-
-	private static readonly object _rankedVectorCandidateCacheLock = new object();
-
-	private static Dictionary<string, RankedVectorCandidateCacheItem> _rankedVectorCandidateCache = new Dictionary<string, RankedVectorCandidateCacheItem>();
-
-	private const int RankedVectorCandidateCacheMax = 512;
 
 		private const int RuleListPageSize = 60;
 
@@ -583,6 +508,30 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	private List<RuleIndexItem> _ruleIndexCache;
 
 	private bool _loadedSaveIndexBuildAttempted;
+
+	private sealed class IndexPorts : IKnowledgeIndexPorts
+	{
+		public bool EmbeddingAvailable => OnnxEmbeddingEngine.Instance?.IsAvailable == true;
+		public bool TryGetEmbedding(string text, out float[] vector)
+		{
+			OnnxEmbeddingEngine engine = OnnxEmbeddingEngine.Instance;
+			vector = null;
+			return engine != null && engine.TryGetEmbedding(text, out vector);
+		}
+		public bool RerankerAvailable => OnnxCrossEncoderReranker.Instance?.IsAvailable == true;
+		public bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores)
+		{
+			OnnxCrossEncoderReranker reranker = OnnxCrossEncoderReranker.Instance;
+			scores = null;
+			return reranker != null && reranker.TryScoreBatch(query, documents, out scores);
+		}
+		public int SemanticTopK => AIConfigHandler.KnowledgeSemanticTopK;
+		public float SemanticMinScore => AIConfigHandler.KnowledgeSemanticMinScore;
+		public void Log(string channel, string message) => Logger.Log(channel, message);
+	}
+
+	// Single retrieval index (sparse + ONNX + ranked cache). Static like the legacy caches: one rule library per process.
+	private static readonly KnowledgeRuleIndex Index = new KnowledgeRuleIndex(new IndexPorts(), () => Instance?._file?.Rules);
 
 	public static KnowledgeLibraryBehavior Instance { get; private set; }
 
@@ -655,63 +604,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		sb.AppendLine(text);
 	}
 
-	private static string Hash8(string s)
-	{
-		uint num = 2166136261u;
-		string text = s ?? "";
-		for (int i = 0; i < text.Length; i++)
-		{
-			num ^= text[i];
-			num *= 16777619;
-		}
-		return num.ToString("x8");
-	}
-
 	private static void TouchRuleData()
 	{
-		_ruleDataVersion++;
-		if (_ruleDataVersion <= 0)
-		{
-			_ruleDataVersion = 1L;
-		}
+		Index.Touch();
 		try
 		{
 			lock (_loreContextCacheLock)
 			{
 				_loreContextCache.Clear();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			lock (_rankedVectorCandidateCacheLock)
-			{
-				_rankedVectorCandidateCache.Clear();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			lock (_vectorIndexLock)
-			{
-				_vectorRuleEntries = null;
-				_vectorIdf = null;
-				_vectorIndexVersion = -1L;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			lock (_onnxIndexLock)
-			{
-				_onnxRuleEntries = null;
-				_onnxIndexVersion = -1L;
 			}
 		}
 		catch
@@ -918,1117 +818,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsAsciiWordChar(char ch)
-	{
-		return ch < '\u0080' && (char.IsLetterOrDigit(ch) || ch == '_');
-	}
-
-	private static bool IsCjkChar(char ch)
-	{
-		return (ch >= '\u4E00' && ch <= '\u9FFF') || (ch >= '\u3400' && ch <= '\u4DBF');
-	}
-
-	private static void AppendCjkTokens(StringBuilder seq, List<string> tokens)
-	{
-		if (seq == null || seq.Length <= 0 || tokens == null)
-		{
-			return;
-		}
-		if (seq.Length == 1)
-		{
-			tokens.Add("c1:" + seq[0]);
-			return;
-		}
-		for (int i = 0; i < seq.Length - 1; i++)
-		{
-			tokens.Add("c2:" + seq.ToString(i, 2));
-		}
-		for (int j = 0; j < seq.Length; j++)
-		{
-			tokens.Add("c1:" + seq[j]);
-		}
-	}
-
-	private static List<string> ExtractVectorTokens(string text)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			string text2 = (text ?? "").ToLowerInvariant();
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				return list;
-			}
-			StringBuilder stringBuilder = new StringBuilder();
-			StringBuilder stringBuilder2 = new StringBuilder();
-			for (int i = 0; i < text2.Length; i++)
-			{
-				char c = text2[i];
-				if (IsAsciiWordChar(c))
-				{
-					stringBuilder.Append(c);
-					if (stringBuilder2.Length > 0)
-					{
-						AppendCjkTokens(stringBuilder2, list);
-						stringBuilder2.Clear();
-					}
-					continue;
-				}
-				if (stringBuilder.Length > 0)
-				{
-					if (stringBuilder.Length >= 2)
-					{
-						list.Add("w:" + stringBuilder.ToString());
-					}
-					else
-					{
-						list.Add("w1:" + stringBuilder[0]);
-					}
-					stringBuilder.Clear();
-				}
-				if (IsCjkChar(c))
-				{
-					stringBuilder2.Append(c);
-					continue;
-				}
-				if (stringBuilder2.Length > 0)
-				{
-					AppendCjkTokens(stringBuilder2, list);
-					stringBuilder2.Clear();
-				}
-				if (char.IsLetterOrDigit(c))
-				{
-					list.Add("u:" + c);
-				}
-			}
-			if (stringBuilder.Length > 0)
-			{
-				if (stringBuilder.Length >= 2)
-				{
-					list.Add("w:" + stringBuilder.ToString());
-				}
-				else
-				{
-					list.Add("w1:" + stringBuilder[0]);
-				}
-			}
-			if (stringBuilder2.Length > 0)
-			{
-				AppendCjkTokens(stringBuilder2, list);
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private static Dictionary<string, int> CountTokens(List<string> tokens)
-	{
-		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.Ordinal);
-		try
-		{
-			if (tokens == null)
-			{
-				return dictionary;
-			}
-			for (int i = 0; i < tokens.Count; i++)
-			{
-				string text = (tokens[i] ?? "").Trim();
-				if (!string.IsNullOrEmpty(text))
-				{
-					if (dictionary.TryGetValue(text, out var value))
-					{
-						dictionary[text] = value + 1;
-					}
-					else
-					{
-						dictionary[text] = 1;
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return dictionary;
-	}
-
-	private static Dictionary<string, float> BuildVectorWeights(Dictionary<string, int> tf, Dictionary<string, float> idf, out float norm)
-	{
-		norm = 0f;
-		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.Ordinal);
-		try
-		{
-			if (tf == null || tf.Count <= 0)
-			{
-				return dictionary;
-			}
-			double num = 0.0;
-			foreach (KeyValuePair<string, int> item in tf)
-			{
-				string text = item.Key ?? "";
-				if (string.IsNullOrEmpty(text))
-				{
-					continue;
-				}
-				int value = item.Value;
-				if (value > 0)
-				{
-					float num2 = 1f;
-					if (idf != null && idf.TryGetValue(text, out var value2))
-					{
-						num2 = value2;
-					}
-					float num3 = 1f + (float)Math.Log(1.0 + (double)value);
-					float num4 = (dictionary[text] = num3 * num2);
-					num += (double)num4 * (double)num4;
-				}
-			}
-			norm = ((num > 0.0) ? ((float)Math.Sqrt(num)) : 0f);
-		}
-		catch
-		{
-			norm = 0f;
-		}
-		return dictionary;
-	}
-
-	private static float DotProduct(Dictionary<string, float> a, Dictionary<string, float> b)
-	{
-		try
-		{
-			if (a == null || b == null || a.Count <= 0 || b.Count <= 0)
-			{
-				return 0f;
-			}
-			if (a.Count > b.Count)
-			{
-				Dictionary<string, float> dictionary = a;
-				a = b;
-				b = dictionary;
-			}
-			double num = 0.0;
-			foreach (KeyValuePair<string, float> item in a)
-			{
-				if (b.TryGetValue(item.Key, out var value))
-				{
-					num += (double)item.Value * (double)value;
-				}
-			}
-			return (float)num;
-		}
-		catch
-		{
-			return 0f;
-		}
-	}
-
-	private static string BuildRuleSearchText(LoreRule rule)
-	{
-		try
-		{
-			if (rule == null)
-			{
-				return "";
-			}
-			StringBuilder stringBuilder = new StringBuilder();
-			if (rule.Keywords != null)
-			{
-				for (int i = 0; i < rule.Keywords.Count; i++)
-				{
-					string value = (rule.Keywords[i] ?? "").Trim();
-					if (!string.IsNullOrEmpty(value))
-					{
-						stringBuilder.Append(value).Append(' ');
-					}
-				}
-			}
-			if (rule.RagShortTexts != null && rule.RagShortTexts.Count > 0)
-			{
-				for (int j = 0; j < rule.RagShortTexts.Count; j++)
-				{
-					string value2 = (rule.RagShortTexts[j] ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-					if (!string.IsNullOrEmpty(value2))
-					{
-						stringBuilder.Append(value2).Append(' ');
-					}
-				}
-			}
-			return stringBuilder.ToString().Trim();
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static void AddSemanticSeed(List<string> list, HashSet<string> seen, string raw, int maxLen = 260)
-	{
-		try
-		{
-			string text = (raw ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				if (text.Length > maxLen)
-				{
-					text = text.Substring(0, maxLen);
-				}
-				if (seen.Add(text))
-				{
-					list.Add(text);
-				}
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private static List<string> GetRuleTopicSeeds(LoreRule rule)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			if (rule == null)
-			{
-				return list;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (rule.Keywords != null)
-			{
-				for (int i = 0; i < rule.Keywords.Count; i++)
-				{
-					string text = (rule.Keywords[i] ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text))
-					{
-						AddSemanticSeed(list, seen, text, 120);
-					}
-				}
-			}
-			if (rule.RagShortTexts != null)
-			{
-				for (int j = 0; j < rule.RagShortTexts.Count; j++)
-				{
-					string text2 = (rule.RagShortTexts[j] ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text2))
-					{
-						AddSemanticSeed(list, seen, text2, 220);
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private static List<string> GetRuleEvidenceSeeds(LoreRule rule)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			if (rule == null)
-			{
-				return list;
-			}
-			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (rule.Keywords != null)
-			{
-				for (int i = 0; i < rule.Keywords.Count; i++)
-				{
-					string text = (rule.Keywords[i] ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text))
-					{
-						AddSemanticSeed(list, seen, text, 120);
-						AddSemanticSeed(list, seen, "关于" + text, 160);
-					}
-				}
-			}
-			if (rule.RagShortTexts != null)
-			{
-				for (int j = 0; j < rule.RagShortTexts.Count; j++)
-				{
-					string text2 = (rule.RagShortTexts[j] ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text2))
-					{
-						AddSemanticSeed(list, seen, text2, 180);
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private void EnsureVectorIndex()
-	{
-		try
-		{
-			if (_vectorRuleEntries != null && _vectorIndexVersion == _ruleDataVersion)
-			{
-				return;
-			}
-			lock (_vectorIndexLock)
-			{
-				if (_vectorRuleEntries != null && _vectorIndexVersion == _ruleDataVersion)
-				{
-					return;
-				}
-				List<VectorDoc> docs = new List<VectorDoc>();
-				Dictionary<string, int> df = new Dictionary<string, int>(StringComparer.Ordinal);
-				if (_file != null && _file.Rules != null)
-				{
-					foreach (LoreRule rule in _file.Rules)
-					{
-						LoreRule r = rule;
-						if (r != null)
-						{
-							List<string> ruleTopicSeeds = GetRuleTopicSeeds(r);
-							List<string> ruleEvidenceSeeds = GetRuleEvidenceSeeds(r);
-							addSeeds(ruleTopicSeeds, isEvidence: false);
-							addSeeds(ruleEvidenceSeeds, isEvidence: true);
-						}
-						void addSeeds(IEnumerable<string> seeds, bool isEvidence)
-						{
-							if (seeds == null)
-							{
-								return;
-							}
-							foreach (string seed2 in seeds)
-							{
-								string text = (seed2 ?? "").Trim();
-								if (!string.IsNullOrWhiteSpace(text))
-								{
-									List<string> tokens = ExtractVectorTokens(text);
-									Dictionary<string, int> dictionary3 = CountTokens(tokens);
-									if (dictionary3.Count > 0)
-									{
-										docs.Add(new VectorDoc
-										{
-											Rule = r,
-											Tf = dictionary3,
-											IsEvidence = isEvidence
-										});
-										HashSet<string> hashSet = new HashSet<string>(dictionary3.Keys, StringComparer.Ordinal);
-										foreach (string item in hashSet)
-										{
-											if (df.TryGetValue(item, out var value2))
-											{
-												df[item] = value2 + 1;
-											}
-											else
-											{
-												df[item] = 1;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				int count = docs.Count;
-				Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.Ordinal);
-				if (count > 0)
-				{
-					foreach (KeyValuePair<string, int> item2 in df)
-					{
-						float value = 1f + (float)Math.Log(((double)count + 1.0) / ((double)item2.Value + 1.0));
-						dictionary[item2.Key] = value;
-					}
-				}
-				List<VectorRuleEntry> list = new List<VectorRuleEntry>();
-				for (int i = 0; i < docs.Count; i++)
-				{
-					VectorDoc vectorDoc = docs[i];
-					if (vectorDoc == null || vectorDoc.Rule == null || vectorDoc.Tf == null || vectorDoc.Tf.Count <= 0)
-					{
-						continue;
-					}
-					float norm = 0f;
-					Dictionary<string, float> dictionary2 = BuildVectorWeights(vectorDoc.Tf, dictionary, out norm);
-					if (dictionary2.Count <= 0 || norm <= 0f)
-					{
-						continue;
-					}
-					string seed = "";
-					try
-					{
-						if (vectorDoc.Tf != null && vectorDoc.Tf.Count > 0)
-						{
-							seed = string.Join(" ", from x in vectorDoc.Tf.OrderByDescending((KeyValuePair<string, int> x) => x.Value).Take(6)
-								select x.Key);
-						}
-					}
-					catch
-					{
-						seed = "";
-					}
-					list.Add(new VectorRuleEntry
-					{
-						Rule = vectorDoc.Rule,
-						Seed = seed,
-						Weights = dictionary2,
-						Norm = norm,
-						IsEvidence = vectorDoc.IsEvidence
-					});
-				}
-				_vectorRuleEntries = list;
-				_vectorIdf = dictionary;
-				_vectorIndexVersion = _ruleDataVersion;
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private void EnsureOnnxIndex()
-	{
-		try
-		{
-			if (_onnxRuleEntries != null && _onnxIndexVersion == _ruleDataVersion)
-			{
-				return;
-			}
-			lock (_onnxIndexLock)
-			{
-				if (_onnxRuleEntries != null && _onnxIndexVersion == _ruleDataVersion)
-				{
-					return;
-				}
-				List<OnnxRuleEntry> entries = new List<OnnxRuleEntry>();
-				int num = 0;
-				bool flag = false;
-				try
-				{
-					OnnxEmbeddingEngine engine = OnnxEmbeddingEngine.Instance;
-					flag = engine != null && engine.IsAvailable;
-					if (flag && _file != null && _file.Rules != null)
-					{
-						for (int i = 0; i < _file.Rules.Count; i++)
-						{
-							LoreRule r = _file.Rules[i];
-							if (r != null)
-							{
-								List<string> ruleTopicSeeds = GetRuleTopicSeeds(r);
-								List<string> ruleEvidenceSeeds = GetRuleEvidenceSeeds(r);
-								addSeeds(ruleTopicSeeds, isEvidence: false);
-								addSeeds(ruleEvidenceSeeds, isEvidence: true);
-							}
-							void addSeeds(IEnumerable<string> seeds, bool isEvidence)
-							{
-								if (seeds == null)
-								{
-									return;
-								}
-								foreach (string seed in seeds)
-								{
-									string text = (seed ?? "").Trim();
-									if (!string.IsNullOrWhiteSpace(text))
-									{
-										num++;
-										if (engine.TryGetEmbedding(text, out var vector) && vector != null && vector.Length != 0)
-										{
-											entries.Add(new OnnxRuleEntry
-											{
-												Rule = r,
-												Seed = text,
-												Vector = vector,
-												IsEvidence = isEvidence
-											});
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				catch
-				{
-				}
-				bool flag2 = _file == null || _file.Rules == null || _file.Rules.Count == 0;
-				bool flag3 = num <= 0;
-				if (!flag)
-				{
-					_onnxRuleEntries = null;
-					_onnxIndexVersion = -1L;
-				}
-				else if (entries.Count > 0 || flag2 || flag3)
-				{
-					_onnxRuleEntries = entries;
-					_onnxIndexVersion = _ruleDataVersion;
-				}
-				else
-				{
-					_onnxRuleEntries = null;
-					_onnxIndexVersion = -1L;
-				}
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private static float DotProduct(float[] a, float[] b)
-	{
-		try
-		{
-			if (a == null || b == null || a.Length == 0 || b.Length == 0)
-			{
-				return 0f;
-			}
-			int num = ((a.Length < b.Length) ? a.Length : b.Length);
-			double num2 = 0.0;
-			for (int i = 0; i < num; i++)
-			{
-				num2 += (double)a[i] * (double)b[i];
-			}
-			return (float)num2;
-		}
-		catch
-		{
-			return 0f;
-		}
-	}
-
-	private static int GetSemanticResultHardCap(int topK)
-	{
-		if (topK <= 0)
-		{
-			return 20;
-		}
-		return Math.Min(topK, 20);
-	}
-
-	private static int GetKnowledgeReturnCap()
-	{
-		try
-		{
-			int num = AIConfigHandler.KnowledgeSemanticTopK;
-			if (num < 1)
-			{
-				num = 1;
-			}
-			if (num > 12)
-			{
-				num = 12;
-			}
-			return num;
-		}
-		catch
-		{
-			return 4;
-		}
-	}
-
-	private static int GetKnowledgeRerankBudget(int returnCap)
-	{
-		int num = Math.Max(1, returnCap) * 3;
-		if (num < 8)
-		{
-			num = 8;
-		}
-		if (num > 36)
-		{
-			num = 36;
-		}
-		return num;
-	}
-
-	private static int GetKnowledgePerEntityRerank(int rerankBudget, int entityCount)
-	{
-		int num = ((entityCount > 0) ? entityCount : 1);
-		int num2 = (int)Math.Round((double)rerankBudget / (double)num, MidpointRounding.AwayFromZero);
-		if (num2 < 4)
-		{
-			num2 = 4;
-		}
-		if (num2 > 12)
-		{
-			num2 = 12;
-		}
-		return num2;
-	}
-
-	private static int GetKnowledgePerEntityRecall(int rerankPerEntity)
-	{
-		int num = (int)Math.Round((double)rerankPerEntity * 2.5, MidpointRounding.AwayFromZero);
-		if (num < 10)
-		{
-			num = 10;
-		}
-		if (num > 30)
-		{
-			num = 30;
-		}
-		return num;
-	}
-
-	private static int GetLoreInjectLimit(int returnCap)
-	{
-		if (returnCap < 1)
-		{
-			returnCap = 1;
-		}
-		if (returnCap > 12)
-		{
-			returnCap = 12;
-		}
-		return returnCap;
-	}
-
-	private static string BuildRuleRerankText(LoreRule rule)
-	{
-		try
-		{
-			string text = BuildRuleSearchText(rule);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return "";
-			}
-			text = text.Replace("\r", " ").Replace("\n", " ").Trim();
-			if (text.Length > 480)
-			{
-				text = text.Substring(0, 480);
-			}
-			return text;
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static List<RuleScore> CollapseRuleScoresByMax(List<RuleScore> scored)
-	{
-		List<RuleScore> list = new List<RuleScore>();
-		try
-		{
-			if (scored == null || scored.Count <= 0)
-			{
-				return list;
-			}
-			Dictionary<string, RuleScore> dictionary = new Dictionary<string, RuleScore>(StringComparer.OrdinalIgnoreCase);
-			for (int i = 0; i < scored.Count; i++)
-			{
-				RuleScore ruleScore = scored[i];
-				if (ruleScore?.Rule == null)
-				{
-					continue;
-				}
-				string text = (ruleScore.Rule.Id ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					text = "rule_" + i.ToString(CultureInfo.InvariantCulture);
-				}
-				float num = (float.IsNaN(ruleScore.RawScore) ? float.NegativeInfinity : ruleScore.RawScore);
-				float num2 = (float.IsNaN(ruleScore.EvidenceScore) ? float.NegativeInfinity : ruleScore.EvidenceScore);
-				if (!dictionary.TryGetValue(text, out var value) || value == null)
-				{
-					dictionary[text] = new RuleScore
-					{
-						Rule = ruleScore.Rule,
-						RawScore = num,
-						EvidenceScore = num2
-					};
-					continue;
-				}
-				float num3 = (float.IsNaN(value.RawScore) ? float.NegativeInfinity : value.RawScore);
-				float num4 = (float.IsNaN(value.EvidenceScore) ? float.NegativeInfinity : value.EvidenceScore);
-				if (num > num3)
-				{
-					num3 = num;
-				}
-				if (num2 > num4)
-				{
-					num4 = num2;
-				}
-				dictionary[text] = new RuleScore
-				{
-					Rule = ruleScore.Rule,
-					RawScore = num3,
-					EvidenceScore = num4
-				};
-			}
-			foreach (KeyValuePair<string, RuleScore> item in dictionary)
-			{
-				RuleScore value2 = item.Value;
-				if (value2 != null && value2.Rule != null)
-				{
-					float num5 = (float.IsNaN(value2.RawScore) ? float.NegativeInfinity : value2.RawScore);
-					float num6 = (float.IsNaN(value2.EvidenceScore) ? float.NegativeInfinity : value2.EvidenceScore);
-					if (float.IsNegativeInfinity(num5) && !float.IsNegativeInfinity(num6))
-					{
-						num5 = num6;
-					}
-					if (float.IsNegativeInfinity(num5))
-					{
-						num5 = 0f;
-					}
-					if (float.IsNegativeInfinity(num6))
-					{
-						num6 = 0f;
-					}
-					list.Add(new RuleScore
-					{
-						Rule = value2.Rule,
-						RawScore = num5,
-						EvidenceScore = num6
-					});
-				}
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private List<RuleScore> SelectSemanticCandidateScores(List<RuleScore> scored, string source, string input, int topK)
-	{
-		List<RuleScore> list = new List<RuleScore>();
-		try
-		{
-			if (scored == null || scored.Count <= 0)
-			{
-				return list;
-			}
-			int num = ((topK <= 0) ? 2 : topK);
-			int semanticResultHardCap = GetSemanticResultHardCap(num);
-			if (semanticResultHardCap > 0 && semanticResultHardCap < num)
-			{
-				num = semanticResultHardCap;
-			}
-			if (num < 1)
-			{
-				num = 1;
-			}
-			float num2 = 0f;
-			try
-			{
-				num2 = AIConfigHandler.KnowledgeSemanticMinScore;
-			}
-			catch
-			{
-				num2 = 0.21f;
-			}
-			List<RuleScore> list2 = (from x in scored
-				where x?.Rule != null && !float.IsNaN(x.RawScore)
-				orderby x.RawScore descending, x.EvidenceScore descending
-				select x).ThenBy((RuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-			if (list2.Count <= 0)
-			{
-				return list;
-			}
-			float num3 = ((list2.Count > 0) ? list2[0].RawScore : 0f);
-			float num4 = ((list2.Count > 1) ? list2[1].RawScore : 0f);
-			float num5 = ((list2.Count > 0) ? list2[0].EvidenceScore : 0f);
-			float num6 = ((list2.Count > 1) ? list2[1].EvidenceScore : 0f);
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			int num7 = 0;
-			for (int i = 0; i < list2.Count; i++)
-			{
-				if (list.Count >= num)
-				{
-					break;
-				}
-				RuleScore ruleScore = list2[i];
-				if (ruleScore?.Rule == null || ruleScore.RawScore < num2)
-				{
-					continue;
-				}
-				string text = (ruleScore.Rule.Id ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text) || hashSet.Add(text))
-				{
-					list.Add(ruleScore);
-					num7++;
-				}
-			}
-			if (list.Count < num)
-			{
-				for (int j = 0; j < list2.Count; j++)
-				{
-					if (list.Count >= num)
-					{
-						break;
-					}
-					RuleScore ruleScore2 = list2[j];
-					if (ruleScore2?.Rule == null)
-					{
-						continue;
-					}
-					string text2 = (ruleScore2.Rule.Id ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text2) || hashSet.Add(text2))
-					{
-						list.Add(ruleScore2);
-					}
-				}
-			}
-			try
-			{
-				Logger.Log("LoreMatch", $"semantic_accept source={source} mode=scored selected={list.Count} strictSelected={num7} topN={num} minScore={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
-			}
-			catch
-			{
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private List<LoreRule> SelectSemanticCandidates(List<RuleScore> scored, string source, string input, int topK)
-	{
-		List<LoreRule> list = new List<LoreRule>();
-		try
-		{
-			List<RuleScore> list2 = SelectSemanticCandidateScores(scored, source, input, topK);
-			for (int i = 0; i < list2.Count; i++)
-			{
-				if (list2[i]?.Rule != null)
-				{
-					list.Add(list2[i].Rule);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private List<RuleScore> FindOnnxCandidateScores(string input, int topK)
-	{
-		List<RuleScore> result = new List<RuleScore>();
-		try
-		{
-			long version = _ruleDataVersion;
-			List<OnnxRuleEntry> entries = _onnxRuleEntries;
-			if (entries == null || entries.Count <= 0 || _onnxIndexVersion != version)
-			{
-				return result;
-			}
-			OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
-			if (instance == null || !instance.IsAvailable)
-			{
-				return result;
-			}
-			if (!instance.TryGetEmbedding(input, out var vector) || vector == null || vector.Length == 0)
-			{
-				return result;
-			}
-			List<RuleScore> list = new List<RuleScore>();
-			for (int i = 0; i < entries.Count; i++)
-			{
-				OnnxRuleEntry onnxRuleEntry = entries[i];
-				if (onnxRuleEntry != null && onnxRuleEntry.Rule != null && onnxRuleEntry.Vector != null && onnxRuleEntry.Vector.Length != 0)
-				{
-					float num = DotProduct(vector, onnxRuleEntry.Vector);
-					if (onnxRuleEntry.IsEvidence)
-					{
-						list.Add(new RuleScore
-						{
-							Rule = onnxRuleEntry.Rule,
-							RawScore = float.NaN,
-							EvidenceScore = num
-						});
-					}
-					else
-					{
-						list.Add(new RuleScore
-						{
-							Rule = onnxRuleEntry.Rule,
-							RawScore = num,
-							EvidenceScore = float.NaN
-						});
-					}
-				}
-			}
-			if (list.Count <= 0)
-			{
-				return result;
-			}
-			list = CollapseRuleScoresByMax(list);
-			if (list.Count <= 0)
-			{
-				return result;
-			}
-			list = list.OrderByDescending((RuleScore x) => x.RawScore).ThenBy((RuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-			result = SelectSemanticCandidateScores(list, "onnx", input, topK);
-		}
-		catch
-		{
-		}
-		return result;
-	}
-
-	private List<RuleScore> FindSparseCandidateScores(string input, int topK)
-	{
-		List<RuleScore> result = new List<RuleScore>();
-		try
-		{
-			long version = _ruleDataVersion;
-			List<VectorRuleEntry> entries = _vectorRuleEntries;
-			Dictionary<string, float> idf = _vectorIdf;
-			if (entries == null || entries.Count <= 0 || idf == null || _vectorIndexVersion != version)
-			{
-				return result;
-			}
-			List<string> list = ExtractVectorTokens(input);
-			if (list == null || list.Count <= 0)
-			{
-				return result;
-			}
-			Dictionary<string, int> dictionary = CountTokens(list);
-			if (dictionary.Count <= 0)
-			{
-				return result;
-			}
-			float norm;
-			Dictionary<string, float> dictionary2 = BuildVectorWeights(dictionary, idf, out norm);
-			if (dictionary2.Count <= 0 || norm <= 0f)
-			{
-				return result;
-			}
-			List<RuleScore> list2 = new List<RuleScore>();
-			for (int i = 0; i < entries.Count; i++)
-			{
-				VectorRuleEntry vectorRuleEntry = entries[i];
-				if (vectorRuleEntry == null || vectorRuleEntry.Rule == null || vectorRuleEntry.Weights == null || vectorRuleEntry.Weights.Count <= 0 || vectorRuleEntry.Norm <= 0f)
-				{
-					continue;
-				}
-				float num = DotProduct(dictionary2, vectorRuleEntry.Weights);
-				if (!(num <= 0f))
-				{
-					float num2 = num / (norm * vectorRuleEntry.Norm);
-					if (vectorRuleEntry.IsEvidence)
-					{
-						list2.Add(new RuleScore
-						{
-							Rule = vectorRuleEntry.Rule,
-							RawScore = float.NaN,
-							EvidenceScore = num2
-						});
-					}
-					else
-					{
-						list2.Add(new RuleScore
-						{
-							Rule = vectorRuleEntry.Rule,
-							RawScore = num2,
-							EvidenceScore = float.NaN
-						});
-					}
-				}
-			}
-			if (list2.Count <= 0)
-			{
-				return result;
-			}
-			list2 = CollapseRuleScoresByMax(list2);
-			if (list2.Count <= 0)
-			{
-				return result;
-			}
-			list2 = list2.OrderByDescending((RuleScore x) => x.RawScore).ThenBy((RuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-			result = SelectSemanticCandidateScores(list2, "sparse", input, topK);
-		}
-		catch
-		{
-		}
-		return result;
-	}
-
-	private List<RuleScore> FindVectorCandidateScores(string input, int topK)
-	{
-		try
-		{
-			List<RuleScore> list = FindOnnxCandidateScores(input, topK);
-			if (list != null && list.Count > 0)
-			{
-				try
-				{
-					Logger.Log("LoreMatch", $"semantic_source=onnx top={list.Count}");
-				}
-				catch
-				{
-				}
-				return list;
-			}
-		}
-		catch
-		{
-		}
-		List<RuleScore> list2 = FindSparseCandidateScores(input, topK);
-		if (list2 != null && list2.Count > 0)
-		{
-			try
-			{
-				Logger.Log("LoreMatch", $"semantic_source=sparse top={list2.Count}");
-			}
-			catch
-			{
-			}
-		}
-		return list2;
-	}
-
-	private List<RuleScore> FindRankedVectorCandidateScores(string input, int recallTopK, int rerankTopK, float scoreWeight)
-	{
-		string normalizedInput = (input ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(normalizedInput))
-		{
-			return new List<RuleScore>();
-		}
-		long version = _ruleDataVersion;
-		bool embeddingAvailable = false;
-		bool rerankerAvailable = false;
-		try
-		{
-			embeddingAvailable = OnnxEmbeddingEngine.Instance?.IsAvailable == true;
-		}
-		catch
-		{
-		}
-		try
-		{
-			rerankerAvailable = OnnxCrossEncoderReranker.Instance?.IsAvailable == true;
-		}
-		catch
-		{
-		}
-		string key = Hash8(version.ToString(CultureInfo.InvariantCulture)
-			+ "|input=" + normalizedInput
-			+ "|recall=" + Math.Max(0, recallTopK).ToString(CultureInfo.InvariantCulture)
-			+ "|rerank=" + Math.Max(0, rerankTopK).ToString(CultureInfo.InvariantCulture)
-			+ "|weight=" + scoreWeight.ToString("R", CultureInfo.InvariantCulture)
-			+ "|embedding=" + (embeddingAvailable ? "1" : "0")
-			+ "|reranker=" + (rerankerAvailable ? "1" : "0"));
-		if (TryGetRankedVectorCandidateCache(key, version, out List<RuleScore> cached))
-		{
-			return cached;
-		}
-		List<RuleScore> recalled = FindVectorCandidateScores(normalizedInput, recallTopK);
-		if (recalled == null || recalled.Count == 0)
-		{
-			return new List<RuleScore>();
-		}
-		List<RuleScore> ranked = RerankCandidateScores(normalizedInput, recalled, rerankTopK, scoreWeight);
-		if (ranked != null && ranked.Count > 0 && version == _ruleDataVersion)
-		{
-			PutRankedVectorCandidateCache(key, version, ranked);
-		}
-		return ranked ?? new List<RuleScore>();
-	}
-
 	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputsFromMentions(MentionedWorldEntities mentionedEntities, int maxQueryCount, out int mentionTermCount)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
@@ -2131,9 +920,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				return "mentions=empty";
 			}
-			int returnCap = GetLoreInjectLimit(GetKnowledgeReturnCap());
+			int returnCap = KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap());
 			string joined = string.Join("|", terms.Select((string x) => (x ?? "").Trim().ToLowerInvariant()));
-			return "mentions=" + Hash8(joined) + ":" + terms.Count + ":cap" + returnCap;
+			return "mentions=" + KnowledgeRuleIndex.Hash8(joined) + ":" + terms.Count + ":cap" + returnCap;
 		}
 		catch
 		{
@@ -2159,84 +948,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? value : (text + " " + value);
 	}
 
-	private List<RuleScore> RerankCandidateScores(string input, List<RuleScore> recalled, int rerankTopK, float scoreWeight = 1f)
-	{
-		List<RuleScore> list = new List<RuleScore>();
-		try
-		{
-			List<RuleScore> list2 = (recalled ?? new List<RuleScore>()).Where((RuleScore x) => x?.Rule != null).OrderByDescending((RuleScore x) => x.RawScore).ThenByDescending((RuleScore x) => x.EvidenceScore).ThenBy((RuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-			if (list2.Count <= 0)
-			{
-				return list;
-			}
-			int num = ((rerankTopK <= 0) ? 4 : rerankTopK);
-			if (num > list2.Count)
-			{
-				num = list2.Count;
-			}
-			list2 = list2.Take(num).ToList();
-			OnnxCrossEncoderReranker onnxCrossEncoderReranker = null;
-			bool flag = false;
-			try
-			{
-				onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
-				flag = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
-			}
-			catch
-			{
-				flag = false;
-			}
-			List<string> list3 = null;
-			List<float> list4 = null;
-			bool flag2 = false;
-			if (flag)
-			{
-				list3 = new List<string>(list2.Count);
-				for (int i = 0; i < list2.Count; i++)
-				{
-					list3.Add((list2[i]?.Rule == null) ? "" : BuildRuleRerankText(list2[i].Rule));
-				}
-				flag2 = onnxCrossEncoderReranker.TryScoreBatch(input, list3, out list4) && list4 != null && list4.Count == list2.Count;
-			}
-			float num2 = Math.Max(0f, scoreWeight);
-			for (int i = 0; i < list2.Count; i++)
-			{
-				RuleScore ruleScore = list2[i];
-				if (ruleScore?.Rule == null)
-				{
-					continue;
-				}
-				float num3 = ruleScore.RawScore;
-				if (float.IsNaN(num3) || float.IsNegativeInfinity(num3))
-				{
-					num3 = ruleScore.EvidenceScore;
-				}
-				if (float.IsNaN(num3) || float.IsNegativeInfinity(num3))
-				{
-					num3 = 0f;
-				}
-				float num4 = num3 * num2;
-				float num5 = num4;
-				if (flag && flag2 && list3 != null && i < list3.Count && !string.IsNullOrWhiteSpace(list3[i]) && list4 != null && i < list4.Count)
-				{
-					num5 = list4[i] * num2;
-				}
-				list.Add(new RuleScore
-				{
-					Rule = ruleScore.Rule,
-					RawScore = num5,
-					EvidenceScore = num4,
-					RerankScore = num5
-				});
-			}
-			list = SelectSemanticCandidateScores(list, (flag && flag2) ? "cross_encoder" : "recall_fallback", input, num);
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
 	private List<LoreRule> SelectVectorRulesPerEntity(List<WeightedKnowledgeInput> entityInputs, int totalEntityCount, int recallTopK, int rerankTopK, int injectLimit, out string matchMode)
 	{
 		List<LoreRule> result = new List<LoreRule>();
@@ -2258,22 +969,22 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				flag = false;
 			}
 			matchMode = flag ? "rerank_per_entity" : "semantic_per_entity";
-			List<List<RuleScore>> rankedCandidates = new List<List<RuleScore>>(list.Count);
+			List<List<KnowledgeRuleScore>> rankedCandidates = new List<List<KnowledgeRuleScore>>(list.Count);
 			for (int num = 0; num < list.Count; num++)
 			{
 				WeightedKnowledgeInput weightedKnowledgeInput = list[num];
-				List<RuleScore> list3 = FindRankedVectorCandidateScores(weightedKnowledgeInput.Text, recallTopK, rerankTopK, weightedKnowledgeInput.Weight);
+				List<KnowledgeRuleScore> list3 = Index.FindRankedVectorCandidateScores(weightedKnowledgeInput.Text, recallTopK, rerankTopK, weightedKnowledgeInput.Weight);
 				if (list3 == null || list3.Count <= 0)
 				{
-					rankedCandidates.Add(new List<RuleScore>());
+					rankedCandidates.Add(new List<KnowledgeRuleScore>());
 					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0");
 					continue;
 				}
-				rankedCandidates.Add(list3.Where((RuleScore x) => x?.Rule != null).ToList());
-				RuleScore best = rankedCandidates[num].FirstOrDefault();
+				rankedCandidates.Add(list3.Where((KnowledgeRuleScore x) => x?.Rule != null).ToList());
+				KnowledgeRuleScore best = rankedCandidates[num].FirstOrDefault();
 				Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates={rankedCandidates[num].Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}");
 			}
-			int limit = GetLoreInjectLimit(injectLimit);
+			int limit = KnowledgeRuleIndex.GetLoreInjectLimit(injectLimit);
 			HashSet<LoreRule> selectedRules = new HashSet<LoreRule>();
 			HashSet<string> selectedRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int primarySelected = 0;
@@ -2300,7 +1011,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			int secondarySelected = 0;
 			if (allowLowerRanks && result.Count < limit)
 			{
-				int maxRankCount = rankedCandidates.Count <= 0 ? 0 : rankedCandidates.Max((List<RuleScore> x) => x?.Count ?? 0);
+				int maxRankCount = rankedCandidates.Count <= 0 ? 0 : rankedCandidates.Max((List<KnowledgeRuleScore> x) => x?.Count ?? 0);
 				for (int rank = 1; rank < maxRankCount && result.Count < limit; rank++)
 				{
 					for (int entityIndex = 0; entityIndex < rankedCandidates.Count && result.Count < limit; entityIndex++)
@@ -2322,85 +1033,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private static List<RuleScore> CloneRuleScores(IEnumerable<RuleScore> scores)
-	{
-		List<RuleScore> result = new List<RuleScore>();
-		foreach (RuleScore score in scores ?? Enumerable.Empty<RuleScore>())
-		{
-			if (score?.Rule == null)
-			{
-				continue;
-			}
-			result.Add(new RuleScore
-			{
-				Rule = score.Rule,
-				RawScore = score.RawScore,
-				EvidenceScore = score.EvidenceScore,
-				RerankScore = score.RerankScore
-			});
-		}
-		return result;
-	}
-
-	private static bool TryGetRankedVectorCandidateCache(string key, long version, out List<RuleScore> scores)
-	{
-		scores = null;
-		try
-		{
-			lock (_rankedVectorCandidateCacheLock)
-			{
-				if (_rankedVectorCandidateCache != null
-					&& _rankedVectorCandidateCache.TryGetValue(key, out RankedVectorCandidateCacheItem item)
-					&& item.Version == version
-					&& item.Scores != null
-					&& item.Scores.Count > 0)
-				{
-					item.Ticks = DateTime.UtcNow.Ticks;
-					_rankedVectorCandidateCache[key] = item;
-					scores = CloneRuleScores(item.Scores);
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
-
-	private static void PutRankedVectorCandidateCache(string key, long version, IEnumerable<RuleScore> scores)
-	{
-		List<RuleScore> copy = CloneRuleScores(scores);
-		if (copy.Count == 0)
-		{
-			return;
-		}
-		try
-		{
-			lock (_rankedVectorCandidateCacheLock)
-			{
-				if (_rankedVectorCandidateCache == null)
-				{
-					_rankedVectorCandidateCache = new Dictionary<string, RankedVectorCandidateCacheItem>();
-				}
-				if (_rankedVectorCandidateCache.Count >= RankedVectorCandidateCacheMax)
-				{
-					_rankedVectorCandidateCache.Clear();
-				}
-				_rankedVectorCandidateCache[key] = new RankedVectorCandidateCacheItem
-				{
-					Version = version,
-					Ticks = DateTime.UtcNow.Ticks,
-					Scores = copy
-				};
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private static bool TryAddFirstUniqueRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<RuleScore> candidates, out int selectedRank)
+	private static bool TryAddFirstUniqueRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<KnowledgeRuleScore> candidates, out int selectedRank)
 	{
 		selectedRank = -1;
 		if (candidates == null)
@@ -2418,7 +1051,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static bool TryAddRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<RuleScore> candidates, int rank)
+	private static bool TryAddRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<KnowledgeRuleScore> candidates, int rank)
 	{
 		if (result == null || selectedRules == null || selectedRuleIds == null || candidates == null || rank < 0 || rank >= candidates.Count)
 		{
@@ -2460,8 +1093,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				return result;
 			}
-			int knowledgeReturnCap = GetKnowledgeReturnCap();
-			int loreInjectLimit = GetLoreInjectLimit(knowledgeReturnCap);
+			int knowledgeReturnCap = Index.GetKnowledgeReturnCap();
+			int loreInjectLimit = KnowledgeRuleIndex.GetLoreInjectLimit(knowledgeReturnCap);
 			List<WeightedKnowledgeInput> entityQueries = BuildKnowledgeQueryInputsFromMentions(mentionedEntities, loreInjectLimit, out var mentionTermCount);
 			if (entityQueries.Count <= 0)
 			{
@@ -2481,10 +1114,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			int rerankBudget = GetKnowledgeRerankBudget(knowledgeReturnCap);
+			int rerankBudget = KnowledgeRuleIndex.GetKnowledgeRerankBudget(knowledgeReturnCap);
 			int num = Math.Max(1, entityQueries.Count);
-			int knowledgePerEntityRerank = GetKnowledgePerEntityRerank(rerankBudget, num);
-			int knowledgePerEntityRecall = GetKnowledgePerEntityRecall(knowledgePerEntityRerank);
+			int knowledgePerEntityRerank = KnowledgeRuleIndex.GetKnowledgePerEntityRerank(rerankBudget, num);
+			int knowledgePerEntityRecall = KnowledgeRuleIndex.GetKnowledgePerEntityRecall(knowledgePerEntityRerank);
 			result.EntityQueryCount = num;
 			result.RerankPerEntity = knowledgePerEntityRerank;
 			result.RecallPerEntity = knowledgePerEntityRecall;
@@ -2964,7 +1597,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_ruleIndexCache != null && _ruleIndexCacheVersion == _ruleDataVersion)
+			if (_ruleIndexCache != null && _ruleIndexCacheVersion == Index.Version)
 			{
 				return;
 			}
@@ -3013,14 +1646,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 			}
 			_ruleIndexCache = list;
-			_ruleIndexCacheVersion = _ruleDataVersion;
+			_ruleIndexCacheVersion = Index.Version;
 		}
 		catch
 		{
 			try
 			{
 				_ruleIndexCache = _ruleIndexCache ?? new List<RuleIndexItem>();
-				_ruleIndexCacheVersion = _ruleDataVersion;
+				_ruleIndexCacheVersion = Index.Version;
 			}
 			catch
 			{
@@ -3081,7 +1714,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		try
 		{
 			string text = TrimPreview(input, 80);
-			string key = tag + ":" + Hash8(text) + ":" + heroId + ":" + cultureId + ":" + kingdomId + ":" + role;
+			string key = tag + ":" + KnowledgeRuleIndex.Hash8(text) + ":" + heroId + ":" + cultureId + ":" + kingdomId + ":" + role;
 			if (ShouldLogLore(key, TimeSpan.FromMilliseconds(1500.0).Ticks))
 			{
 				Logger.Log("LoreMatch", string.Format("{0} rules={1} hero={2} culture={3} kingdom={4} role={5} input={6}", tag, ruleCount, heroId ?? "", cultureId ?? "", kingdomId ?? "", role ?? "", text));
@@ -3104,7 +1737,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text6 = (settlementId ?? "").Trim().ToLowerInvariant();
 			string text7 = (role ?? "").Trim().ToLowerInvariant();
 			string text8 = (kingdomOverride ?? "").Trim().ToLowerInvariant();
-			string text9 = Hash8(inputText ?? "");
+			string text9 = KnowledgeRuleIndex.Hash8(inputText ?? "");
 			Logger.Log("LoreMatch", $"lore_ctx source={text} invalid={invalidContext} hero={text2} char={text3} culture={text4} kingdom={text5} settlement={text6} role={text7} female={isFemale} clanLeader={isClanLeader} kingdomOverride={text8} inputHash={text9}");
 		}
 		catch
@@ -3131,7 +1764,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		_loadedSaveIndexBuildAttempted = true;
 		try
 		{
-			long version = _ruleDataVersion;
+			long version = Index.Version;
 			if (version <= 0)
 			{
 				version = 1L;
@@ -3156,9 +1789,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text2 = "";
 		try
 		{
-			EnsureVectorIndex();
-			flag = _vectorRuleEntries != null && _vectorIndexVersion == version;
-			num = _vectorRuleEntries?.Count ?? 0;
+			Index.EnsureVectorIndex();
+			flag = Index.SparseReady && Index.Version == version;
+			num = Index.SparseEntryCount;
 		}
 		catch (Exception ex)
 		{
@@ -3166,17 +1799,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			EnsureOnnxIndex();
+			Index.EnsureOnnxIndex();
 			bool flag5 = _file == null || _file.Rules == null || _file.Rules.Count == 0;
-			num2 = _onnxRuleEntries?.Count ?? 0;
-			flag2 = _onnxRuleEntries != null && _onnxIndexVersion == version && (num2 > 0 || flag5);
+			num2 = Index.OnnxEntryCount;
+			flag2 = Index.OnnxReady && Index.Version == version && (num2 > 0 || flag5);
 		}
 		catch (Exception ex2)
 		{
 			text2 = ex2.Message ?? "onnx index warmup exception";
 		}
 		stopwatch.Stop();
-		bool flag3 = _ruleDataVersion != version;
+		bool flag3 = Index.Version != version;
 		Logger.Log("KnowledgeIndexWarmup", $"complete source=save_load version={version} stale={flag3} retryPending=False ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} sparseOk={flag} sparseEntries={num} onnxOk={flag2} onnxEntries={num2} sparseError={text} onnxError={text2}");
 	}
 
@@ -5684,7 +4317,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public long GetRuleDataVersionForExternal()
 	{
-		return _ruleDataVersion;
+		return Index.Version;
 	}
 
 	private string BuildLoreContextInternal(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, bool includePlayerContext)
@@ -5771,10 +4404,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
-		long ruleDataVersion = _ruleDataVersion;
+		long ruleDataVersion = Index.Version;
 		bool allowLoreContextCache = !HasAnyTextMappings();
 		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
-		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_context={(includePlayerContext ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
+		string key = KnowledgeRuleIndex.Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_context={(includePlayerContext ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -5815,7 +4448,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int loreInjectLimit = candidateRules?.InjectLimit ?? 0;
 		if (loreInjectLimit <= 0)
 		{
-			loreInjectLimit = GetLoreInjectLimit(GetKnowledgeReturnCap());
+			loreInjectLimit = KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap());
 		}
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
@@ -6204,10 +4837,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		string text8 = (text7 ?? "").Replace("|", " ").Trim();
 		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
-		long ruleDataVersion = _ruleDataVersion;
+		long ruleDataVersion = Index.Version;
 		bool allowLoreContextCache = !HasAnyTextMappings();
 		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
-		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
+		string key = KnowledgeRuleIndex.Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -6245,7 +4878,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
 		CandidateRules candidateRules = CollectCandidateRules(loreMentionedEntities);
-		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
+		int loreInjectLimit = candidateRules?.InjectLimit ?? KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
