@@ -22,26 +22,27 @@ internal static class EntityInjectionAllocator
 internal static partial class WorldEntityRetrievalService
 {
     private const int EntityRetrievalBudgetCheckInterval = 64;
-    private sealed class WorldEntityRetrievalBudget { }
+    private sealed class WorldEntityRetrievalBudget { internal int StopAfterChecks; }
     private static int _budgetChecks;
     private static void LogSoftBudgetOnceIfNeeded(string phase, string category, string mention, int scanned, int total, int selected, WorldEntityRetrievalBudget budget)
     { _budgetChecks++; }
-    private static bool IsHardBudgetExceeded(WorldEntityRetrievalBudget budget) => false;
+    private static bool IsHardBudgetExceeded(WorldEntityRetrievalBudget budget)
+        => budget.StopAfterChecks > 0 && _budgetChecks >= budget.StopAfterChecks;
     private static void LogWorldEntityBudgetStop(string phase, string category, string mention, int scanned, int total, int selected, WorldEntityRetrievalBudget budget)
-    { throw new Exception("unexpected hard stop"); }
+    { }
     private static string SafeSelectorValue<T>(Func<T, string> selector, T value) where T : class => selector(value);
     private static IEnumerable<string> SafeAliases<T>(Func<T, IEnumerable<string>> selector, T value) where T : class => selector(value);
     private static string NormalizeScopeEntityId(string value) => value ?? "";
     private static Kingdom ResolveHeroKingdomForResidentEntity(Hero hero, Clan clan) => clan?.Kingdom;
     private static bool TryResolveHeroCampaignPosition(Hero hero, out CampaignVec2 position)
     { position = new CampaignVec2(hero.Distance); return true; }
-    internal static (int Captured, int Scopes, int Distances, int Checks, double Milliseconds) Measure(Hero[] heroes, bool metadata)
+    internal static (int Captured, int Scopes, int Distances, int Checks, double Milliseconds) Measure(Hero[] heroes, bool metadata, int stopAfterChecks = 0)
     {
         var detached = new List<DetachedEntityCandidate>();
         var live = new Dictionary<DetachedEntityCandidate, Hero>();
         _budgetChecks = 0;
         var watch = Stopwatch.StartNew();
-        CaptureCandidates(heroes, detached, live, x => new[] { "alias" }, x => "hero", x => "Name", new WorldEntityRetrievalBudget(),
+        CaptureCandidates(heroes, detached, live, x => new[] { "alias" }, x => "hero", x => "Name", new WorldEntityRetrievalBudget { StopAfterChecks = stopAfterChecks },
             metadata ? (Action<Hero, DetachedEntityCandidate>)((hero, candidate) => CaptureDetachedMetadata(candidate, hero, new CampaignVec2(0))) : null);
         watch.Stop();
         return (detached.Count, detached.Count(x => x.HeroClanId == "c1" && x.HeroKingdomId == "k1"),
@@ -71,6 +72,9 @@ internal static class Program
                 plain += baseline.Milliseconds;
                 captured += actual.Milliseconds;
             }
+            var bounded = WorldEntityRetrievalService.Measure(heroes, true, stopAfterChecks: 1);
+            Check(bounded.Captured == 64 && bounded.Checks == 1,
+                "hard budget stops after first 64-candidate batch");
             Console.WriteLine($"PASS knowledge-j06-capture-performance candidates={count} scopeMetadata={count} distanceMetadata={count} budgetChecks={count / 64} runs=9 baselineMeanMs={plain / 9:F3} metadataMeanMs={captured / 9:F3} deltaMeanMs={(captured - plain) / 9:F3} source=production-capture-methods game=stubbed");
             return 0;
         }
