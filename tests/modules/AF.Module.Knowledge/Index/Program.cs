@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AnimusForge;
 using LoreRule = AnimusForge.KnowledgeLibraryBehavior.LoreRule;
@@ -38,7 +39,36 @@ internal static class Program
         RerankAndCache();
         Budgets();
         Retriever();
+        ImportSupport();
         Console.WriteLine("PASS knowledge-index+lore-retriever checks=" + _checks);
+    }
+
+    private static void ImportSupport()
+    {
+        var rule = Rule("one", "  long\n  sword ", "LONG SWORD", "shield");
+        Check(KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(rule).SequenceEqual(new[] { "long sword", "shield" }), "import keywords normalize and dedupe without mutating source");
+        Check(rule.Keywords[0].Contains("\n"), "keyword source remains unchanged");
+        Check(KnowledgeImportSupport.NormalizeWhenStringListForImport(new List<string> { " B ", "a", "b", " " }).SequenceEqual(new[] { "a", "B" }), "condition strings trim, case-dedupe and sort");
+        Check(KnowledgeImportSupport.NormalizeWhenSkillMinForImport(new Dictionary<string, int> { ["Riding"] = 2, ["bad"] = -1, ["athletics"] = 3 }).Select(x => x.Key).SequenceEqual(new[] { "athletics", "Riding" }), "skill requirements ignore negatives and sort");
+        var variants = Rule("variant");
+        variants.Variants.Add(new KnowledgeLibraryBehavior.LoreVariant { When = null });
+        variants.Variants.Add(new KnowledgeLibraryBehavior.LoreVariant { When = new KnowledgeLibraryBehavior.LoreWhen() });
+        Check(KnowledgeImportSupport.TryFindDuplicateKnowledgeVariantCondition(variants, out int first, out int second) && first == 0 && second == 1, "generic condition duplicate retains original indices");
+        variants.Variants[1].When.HeroIds = new List<string> { "hero_1" };
+        Check(!KnowledgeImportSupport.TryFindDuplicateKnowledgeVariantCondition(variants, out _, out _), "different condition is not duplicate");
+
+        string dir = Path.Combine(AppContext.BaseDirectory, "import-fixture-" + Guid.NewGuid().ToString("N"));
+        string rules = Path.Combine(dir, "knowledge", "rules");
+        Directory.CreateDirectory(rules);
+        File.WriteAllText(Path.Combine(rules, "one.json"), "{\"Id\":\"one\",\"Keywords\":[\"first\"]}");
+        File.WriteAllText(Path.Combine(rules, "bad.json"), "{bad json");
+        File.WriteAllText(Path.Combine(dir, "knowledge", "KnowledgeRules.json"), "{\"Rules\":[{\"Id\":\"one\",\"Keywords\":[\"later\"]},{\"Id\":\"two\"}]}");
+        Check(Newtonsoft.Json.JsonConvert.DeserializeObject<LoreRule>(File.ReadAllText(Path.Combine(rules, "one.json")))?.Id == "one", "fixture Newtonsoft deserialization available");
+        var loaded = KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(dir);
+        Check(loaded.Select(x => x.Id).SequenceEqual(new[] { "one", "two" }) && loaded[0].Keywords.Single() == "first", "single-rule files precede aggregate and duplicate ID keeps first: " + string.Join(",", loaded.Select(x => x.Id + "/" + string.Join("|", x.Keywords))));
+        Check(KnowledgeImportSupport.FindKnowledgeRuleJsonById(rules, "one") == Path.Combine(rules, "one.json"), "direct rule filename resolution");
+        Check(KnowledgeImportSupport.FindKnowledgeRuleJsonById(rules, "absent") == null, "missing rule lookup is null");
+        Check(KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(Path.Combine(dir, "missing")) == null, "missing import folder fails closed");
     }
 
     private static void Tokens()
