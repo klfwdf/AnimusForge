@@ -1,5 +1,8 @@
 # Claude Code 中断后的 AF 模块化详细 HANDOFF
 
+> GitHub更新：本文、J04/J05/J06a-c及J06d WIP checkpoint已普通推送到[`codex/af-modularize-j04-20260918`](https://github.com/klfwdf/AnimusForge/tree/codex/af-modularize-j04-20260918)；首次远端核对`858de66e052d663c79b9c9888590449b178eeaaf`。WIP/NOT-RUN边界不因发布改变。
+
+
 日期：2026-09-19。此文件是中断恢复与发布交接；详细执行状态继续以同仓库主台账为唯一权威入口。
 
 ## 1. 结论

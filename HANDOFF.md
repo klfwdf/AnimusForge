@@ -1,3 +1,11 @@
+# GitHub交付回执（2026-09-19）
+
+- 已创建并普通推送专用分支 `codex/af-modularize-j04-20260918`；首次远端核对 `858de66e052d663c79b9c9888590449b178eeaaf`。GitHub：https://github.com/klfwdf/AnimusForge/tree/codex/af-modularize-j04-20260918。
+- 推送包含基线25a89cea后的J04/J05/J06a-c、明确标WIP的J06d checkpoint及详细交接；不包含本地人工转发版、`.tmp`、日志、DLL或玩家数据。
+- 本次发布不改变下方状态：J06d仍WIP，J06及全项目未完成；没有main合并、force push、Stage/部署/存档/默认切换/自动化恢复。
+
+## 以下为本次已发布的当前接续
+
 # 当前接续：Claude Code断线，J06d WIP已封存（2026-09-19）
 
 - 工作区 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，分支 `codex/af-modularize-j04-20260918`；基线25a89cea后30个提交。Claude最后正常提交157dc7f2（J06c），断开时9文件已原样保存为`bd2582aa` WIP checkpoint。

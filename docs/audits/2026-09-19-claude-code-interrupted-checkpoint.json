@@ -237,5 +237,13 @@
     "default entry switch",
     "automation resume",
     "global skill install"
-  ]
+  ],
+  "publication": {
+    "branch": "codex/af-modularize-j04-20260918",
+    "url": "https://github.com/klfwdf/AnimusForge/tree/codex/af-modularize-j04-20260918",
+    "firstVerifiedRemoteHead": "858de66e052d663c79b9c9888590449b178eeaaf",
+    "forcePush": false,
+    "mainModified": false,
+    "localDirectHandoffUploaded": false
+  }
 }
