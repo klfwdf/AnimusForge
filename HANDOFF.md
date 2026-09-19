@@ -1,6 +1,7 @@
 # GitHub交付回执（2026-09-19）
 
-- 已创建并普通推送专用分支 `codex/af-modularize-j04-20260918`；首次远端核对 `858de66e052d663c79b9c9888590449b178eeaaf`。GitHub：https://github.com/klfwdf/AnimusForge/tree/codex/af-modularize-j04-20260918。
+- 已按用户指定将成果普通快进到原重构分支 `codex/af-main-refactor-continuation-20260831`：`25a89cea` → `f6ddd565`。GitHub：https://github.com/klfwdf/AnimusForge/tree/codex/af-main-refactor-continuation-20260831。
+- 早先因目标理解偏差创建的辅助分支 `codex/af-modularize-j04-20260918` 暂保留在 `f6ddd565`，不再作为权威交付入口；未获明确授权不删除远端分支。
 - 推送包含基线25a89cea后的J04/J05/J06a-c、明确标WIP的J06d checkpoint及详细交接；不包含本地人工转发版、`.tmp`、日志、DLL或玩家数据。
 - 本次发布不改变下方状态：J06d仍WIP，J06及全项目未完成；没有main合并、force push、Stage/部署/存档/默认切换/自动化恢复。
 
@@ -8,12 +9,12 @@
 
 # 当前接续：Claude Code断线，J06d WIP已封存（2026-09-19）
 
-- 工作区 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，分支 `codex/af-modularize-j04-20260918`；基线25a89cea后30个提交。Claude最后正常提交157dc7f2（J06c），断开时9文件已原样保存为`bd2582aa` WIP checkpoint。
+- 工作区 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，本地施工分支 `codex/af-modularize-j04-20260918`，权威远端交付分支 `codex/af-main-refactor-continuation-20260831`；截至`f6ddd565`为基线25a89cea后32个提交。Claude最后正常提交157dc7f2（J06c），断开时9文件已原样保存为`bd2582aa` WIP checkpoint。
 - [中断详细HANDOFF](docs/handoffs/2026-09-19-claude-code-interrupted-modularization-handoff.md) / [checkpoint审计](docs/audits/2026-09-19-claude-code-interrupted-checkpoint.json)。本地人工转发版：`G:/AFMOD/AF-REFACTOR/.tmp/claude-code-direct-handoff-20260919.md`，不上传。
 - J04、J05为限定范围OFFLINE_VERIFIED；J06a/b/c源码已提交，J06父包未完成。J06d仅可编译WIP：Composition现有155项和Debug/Release双API+Bootstrap通过，但无新增资格行为/线程隔离/三渠道完整回归。
 - 262点地图只对d903df67 recorded PASS；当前working-tree因J06变化stale FAIL，不能刷新hash冒充验收。LIVE、旧档、真实provider均NOT-RUN。
 - 下一步只完成J06d旧新行为、live-read禁用、ambient隔离及实际消费者矩阵，再更新地图/范围图并评估J06_OFFLINE_VERIFIED；之后按J07–J17继续。用户要求最终Native/Scene/Courier三渠道public API，政策/宴会/GCCZ玩法不重写。
-- 本轮获准推送到新专用分支；不推main/旧重构分支、不强推。未Stage/部署/打包/动存档/改默认/恢复自动化。
+- 本轮按用户纠正后的目标普通快进到原重构分支；不推main、不强推。未Stage/部署/打包/动存档/改默认/恢复自动化。
 
 ## 以下为此前已提交回执与历史；当前状态以上方为准
 

@@ -1,6 +1,6 @@
 # Claude Code 中断后的 AF 模块化详细 HANDOFF
 
-> GitHub更新：本文、J04/J05/J06a-c及J06d WIP checkpoint已普通推送到[`codex/af-modularize-j04-20260918`](https://github.com/klfwdf/AnimusForge/tree/codex/af-modularize-j04-20260918)；首次远端核对`858de66e052d663c79b9c9888590449b178eeaaf`。WIP/NOT-RUN边界不因发布改变。
+> GitHub更新：本文、J04/J05/J06a-c及J06d WIP checkpoint已按用户指定普通快进到[`codex/af-main-refactor-continuation-20260831`](https://github.com/klfwdf/AnimusForge/tree/codex/af-main-refactor-continuation-20260831)；首次正确目标远端核对`f6ddd56567fa0aa13fc585a3792d423c6dca8279`。WIP/NOT-RUN边界不因发布改变。
 
 
 日期：2026-09-19。此文件是中断恢复与发布交接；详细执行状态继续以同仓库主台账为唯一权威入口。
@@ -8,7 +8,7 @@
 ## 1. 结论
 
 - 真正的施工工作区不是旧 `G:/AFMOD/AF-REFACTOR`，而是 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`。
-- 分支：`codex/af-modularize-j04-20260918`；GitHub：`https://github.com/klfwdf/AnimusForge`；发布目标：`origin/codex/af-modularize-j04-20260918`。
+- 本地施工分支：`codex/af-modularize-j04-20260918`；GitHub：`https://github.com/klfwdf/AnimusForge`；权威发布目标：`origin/codex/af-main-refactor-continuation-20260831`。
 - 基线：远端重构提交 `25a89cea9e1a45d5108f5f6680ad159ae54ff080`。Claude Code 已在其上完成29个本地提交，最后已提交切片为 `157dc7f21ec98f3cddff96d5548c470a526aacfb`（J06c）。
 - 断开时有9个未提交生产/项目文件，内容属于 **J06d规则资格事实捕获**。本交接代理没有继续实现，只原样封存为 `bd2582aa776d9763002c85d75509ed9ccdb7b424`：`wip(prompt): checkpoint interrupted J06d eligibility capture`。
 - **J04_OFFLINE_VERIFIED、J05_OFFLINE_VERIFIED；J06a/b/c代码已提交；J06父包未完成；J06d仍WIP/NOT_ACCEPTED。** 实机、旧档、真实provider均未验证。
@@ -22,8 +22,8 @@
 | 共享Git目录 | `G:/AFMOD/NEW-10/.git`；worktree gitdir 为其 `worktrees/modularize-20260918` |
 | 分支 | `codex/af-modularize-j04-20260918` |
 | GitHub仓库 | `https://github.com/klfwdf/AnimusForge`，仓库owner `klfwdf` |
-| 原远端重构分支 | `origin/codex/af-main-refactor-continuation-20260831`，本包基线25a89cea |
-| 新发布分支 | `origin/codex/af-modularize-j04-20260918`；只推此分支，不推main、不强推 |
+| 权威远端重构分支 | `origin/codex/af-main-refactor-continuation-20260831`；本包基线25a89cea，已普通快进到f6ddd565 |
+| 辅助远端分支 | `origin/codex/af-modularize-j04-20260918`；早先因目标理解偏差创建，暂保留在f6ddd565，不作为权威入口 |
 | 当前checkpoint | `bd2582aa776d9763002c85d75509ed9ccdb7b424` |
 | Claude最后已提交代码 | `157dc7f21ec98f3cddff96d5548c470a526aacfb`，J06c |
 | 本地Git作者 | 提交记录为`GM`；这不是GitHub登录账号证明 |
@@ -195,8 +195,9 @@
 
 ## 9. 推送/回滚/协作边界
 
-- 发布到新专用分支`codex/af-modularize-j04-20260918`，不覆盖`main`或旧`codex/af-main-refactor-continuation-20260831`。
-- 推送前fetch并要求目标分支不存在或是本地祖先；禁止force push。
+- 按用户指定发布到原重构分支`codex/af-main-refactor-continuation-20260831`，不修改`main`。
+- 推送前fetch确认目标`25a89cea`是本地`f6ddd565`祖先，比较为本地领先32、落后0；全程普通快进，禁止force push。
+- 辅助分支`codex/af-modularize-j04-20260918`因早先目标理解偏差而存在，未获明确授权前不删除；后续交付与比较只认原重构分支。
 - 回退J06d用focused revert `bd2582aa`；回退J06c/b/a依次为`157dc7f2`、`e66ba0d7`、`8337f0b7`。不要hard reset共享历史。
 - 不提交`.tmp`、bin/obj、日志、DLL、玩家配置或本地直发版。
 - 旧工作区两份用户草稿不在此工作树，本轮未改；不要因新分支干净就清理旧目录。
@@ -204,4 +205,4 @@
 
 ## 10. 直接启动语
 
-> 请在 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918` 工作，分支`codex/af-modularize-j04-20260918`。先读AGENTS、三份仓库SKILL、根HANDOFF、本详细交接、主台账J04–J06和范围图。当前HEAD `bd2582aa776d9763002c85d75509ed9ccdb7b424` 是J06d中断WIP checkpoint，不是验收完成。先补PromptRuleEligibility旧新行为、线程/ambient隔离与真实消费者测试，确认无live读/副作用，再跑J03/J04/Knowledge/三渠道/双版本矩阵并更新262点之后的新地图。未获新授权不部署游戏、操作存档、安装全局Skill、切默认或恢复自动化。用户要求三渠道public API最终开放，政策/宴会/GCCZ玩法不重写。
+> 请在 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918` 工作；本地施工分支是`codex/af-modularize-j04-20260918`，权威GitHub交付/比较分支是`codex/af-main-refactor-continuation-20260831`。先读AGENTS、三份仓库SKILL、根HANDOFF、本详细交接、主台账J04–J06和范围图。`bd2582aa776d9763002c85d75509ed9ccdb7b424` 是J06d中断WIP checkpoint，不是验收完成；当前HEAD应以`git rev-parse HEAD`为准。先补PromptRuleEligibility旧新行为、线程/ambient隔离与真实消费者测试，确认无live读/副作用，再跑J03/J04/Knowledge/三渠道/双版本矩阵并更新262点之后的新地图。未获新授权不部署游戏、操作存档、安装全局Skill、切默认或恢复自动化。用户要求三渠道public API最终开放，政策/宴会/GCCZ玩法不重写。
