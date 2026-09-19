@@ -1,5 +1,7 @@
 # 当前范围：J06 检索收口仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
+新增独立 Lore 方法差分：旧 `77a3d234` 与当前 `KnowledgeRuleIndex` / `LoreCandidateRetriever` / `BuildLoreContextInternal` / `AIConfigHandler.GetLoreContext*` 在相同假 Hero、规则、mention 上生成相同非空正文，当前过期候选回退也相同；版本守卫和正文丢失变异拒收。这是 Lore 一条具名样例，不覆盖实体/规则或最终模型请求，生产源码及 291 锚点地图未变。
+
 `da677af3` 为生产 `CaptureCandidates` 增加 fake hard-budget 首个 64 项批次立即停止契约；没有更改产品源码/代码地图。
 
 追加 `1fa1a4e1`：Courier 旧同步/新调度生产请求体已在生产 `PromptExtrasComposer` 的六类知识文本 fixture 下比较完整序列化请求（两方向 76 场景 / 390 检查，Lore 丢失变异拒收）。这不覆盖游戏端知识结果或 Native 最终模型请求全文；产品源码与 291 锚点地图未变。

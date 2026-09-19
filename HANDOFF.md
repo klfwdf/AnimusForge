@@ -1,5 +1,7 @@
 # 当前接续：J06 原构建通过，最终 Prompt 对照仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
+- 新增 `tests/modules/AF.Module.Knowledge/LoreTextDifferential`：独立编译 `77a3d234` 与当前生产 Lore 检索、Hero 正文格式化及 AI 入口；同输入旧同步／新预选／新过期回退非空正文逐字节相同，版本检查与 Lore 正文丢失变异均拒收。游戏属性为假端口，尚未完成实体、规则与 Native/Courier 最终请求真实检索全文差分，**J06 仍 `VERIFY / NOT_ACCEPTED`**。产品源码未变，不重跑已通过的原脚本六项构建；未推送、Stage 或部署。
+
 - 本次 Courier 契约加固：`tools/CourierPromptPreparationTests/run.py` 的旧请求 wrapper **及最终组装方法**均提取自指定旧基线 `77a3d234`；正常两方向 76 场景 / 390 检查通过，三项仅新侧丢 Lore/实体/预选规则文本的变异分别在请求全文比较中拒收。仍未让两侧生产 Lore/实体/规则检索在相同假游戏输入下产生真实文本，也未运行 Native 生产最终请求全文差分，故 J06 **仍 `VERIFY / NOT_ACCEPTED`**，不标 `J06_OFFLINE_VERIFIED`。产品源码未变，原脚本 Debug/Release 六项既有构建结果仍有效；实机/旧档/provider 为 `NOT-RUN`。无 push、Stage、部署、J07/J10 扩展或 `.dotnet-cli-home/` 清理。
 
 - `da677af3` 再验证生产候选捕获的硬预算停止：假端口在首个 64 项检查后触发，恰好捕获 64 项、检查 1 次；无元数据/元数据 2,000 项微基准随机器状态波动，台账数值仅为当次离线观察值，不是固定性能门槛。
