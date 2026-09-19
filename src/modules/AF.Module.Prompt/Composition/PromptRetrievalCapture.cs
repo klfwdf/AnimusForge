@@ -5,18 +5,12 @@ namespace AnimusForge;
 /// <summary>
 /// Retrieval results that may be computed off the game thread (network/ONNX/cache) once the
 /// request and routing are known, so the game-thread section capture only reads game state.
-/// Null fields mean "not prefetched": the capture phase falls back to its legacy inline call.
+/// Lore and entity retrieval stay in the game-thread step because their owners read Hero state (J06).
 /// </summary>
 internal sealed class PromptRetrievalCapture
 {
-	/// <summary>Auxiliary mentions merged from the router and the mention store for this input.</summary>
+	/// <summary>Complete mention set for the build: caller-supplied + router-discovered + mention store + latest.</summary>
 	internal MentionedWorldEntities AuxiliaryMentions;
-	/// <summary>Lore text already resolved for the selected source (host still logs the source label).</summary>
-	internal string LoreContext;
-	internal bool LoreResolved;
-	/// <summary>Matched extra-rule instruction text from semantic retrieval when routing produced no authoritative id set.</summary>
-	internal string MatchedExtraRuleInstructions;
-	internal bool MatchedExtraRuleInstructionsResolved;
 }
 
 /// <summary>

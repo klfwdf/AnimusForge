@@ -31,7 +31,47 @@ internal static class Program
         ExclusionSets();
         ContextDecisions();
         AssemblyStage();
+        RuleInstructionComposer();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
+    }
+
+    private static void RuleInstructionComposer()
+    {
+        Check(PromptRuleInstructionComposer.Compose(null) == "", "null sections compose to empty");
+        Check(PromptRuleInstructionComposer.BuildUnqualifiedDuelBody(" ", 2).StartsWith("玩家触发了决斗相关话题，但等级(2)过低"), "unqualified duel body default name");
+        Check(PromptRuleInstructionComposer.ResolveRewardInstruction(false, "merchant", "runtime", null, "nonhero", "default") == "runtime\nmerchant", "merchant + runtime joined");
+        Check(PromptRuleInstructionComposer.ResolveRewardInstruction(false, "merchant", " ", null, "nonhero", "default") == "merchant", "merchant alone when runtime blank");
+        Check(PromptRuleInstructionComposer.ResolveRewardInstruction(true, "merchant", "x", "hero-runtime", "nonhero", "default") == "hero-runtime", "hero ignores merchant");
+        Check(PromptRuleInstructionComposer.ResolveRewardInstruction(false, null, null, null, " ", "default") == "default", "non-hero falls to default");
+        Check(PromptRuleInstructionComposer.ResolveLoanInstruction(false, true, "runtime", "nonhero", "default") == "runtime" && PromptRuleInstructionComposer.ResolveLoanInstruction(false, false, "runtime", "nonhero", "default") == "nonhero" && PromptRuleInstructionComposer.ResolveLoanInstruction(true, false, "", "nonhero", "default") == "default", "loan chain");
+
+        var excluded = PromptRuleIdPolicy.BuildRuleIdSet(new[] { "surroundings" });
+        var s = new PromptRuleInstructionSections
+        {
+            ExcludedRuleIds = excluded,
+            UseDuelContext = true, IsQualified = false, PlayerTier = 1, PlayerDisplayName = "阿尔文",
+            UseRewardContext = true, RewardInstruction = "R", IncludeDuelStake = true, DuelStakeInstruction = "S",
+            IsLoanContext = true, LoanInstruction = "L",
+            IsSurroundingsContext = true, SurroundingsInstruction = "SUR",
+            ExtraRuleInstructions = "【附加规则:party_transfer】\nPT",
+            WorldMapPartyCommandContext = true, WorldMapInstruction = "WM",
+            PartyTransferEligible = true,
+            AllowMeetingTaunt = true, MeetingTauntInstruction = "T", MeetingTauntMarker = "【附加规则:meeting_taunt】"
+        };
+        string text = PromptRuleInstructionComposer.Compose(s).Replace("\r\n", "\n");
+        var headers = text.Split('\n').Where(l => l.StartsWith("【附加规则:")).ToList();
+        Check(headers.SequenceEqual(new[] { "【附加规则:duel】", "【附加规则:reward】", "【附加规则:duel_stake】", "【附加规则:loan】", "【附加规则:worldmap_party_command】", "【附加规则:party_transfer】", "【附加规则:meeting_taunt】" }), "legacy block order, excluded surroundings skipped, party-transfer promotion does not duplicate reward/loan: " + string.Join(",", headers));
+        Check(text.Contains("阿尔文触发了决斗相关话题，但等级(1)过低"), "unqualified duel uses captured name");
+
+        var s2 = new PromptRuleInstructionSections { ExcludedRuleIds = null, ExtraRuleInstructions = "【附加规则:party_transfer】\nPT", PartyTransferEligible = true, RewardInstruction = "R", LoanInstruction = "L" };
+        string t2 = PromptRuleInstructionComposer.Compose(s2).Replace("\r\n", "\n");
+        var h2 = t2.Split('\n').Where(l => l.StartsWith("【附加规则:")).ToList();
+        Check(h2.SequenceEqual(new[] { "【附加规则:reward】", "【附加规则:loan】", "【附加规则:party_transfer】" }), "party-transfer promotion injects reward and loan before extra: " + string.Join(",", h2));
+        var s3 = new PromptRuleInstructionSections { WorldMapPartyCommandContext = true, WorldMapInstruction = "WM", ExtraRuleInstructions = "【附加规则:worldmap_party_command】\nfrom-extra" };
+        Check(PromptRuleInstructionComposer.Compose(s3).Replace("\r\n", "\n").Split('\n').Count(l => l == "【附加规则:worldmap_party_command】") == 1, "worldmap not duplicated when extra already has it");
+        var s4 = new PromptRuleInstructionSections { AllowMeetingTaunt = true, MeetingTauntInstruction = "T", MeetingTauntMarker = "MARK", ExtraRuleInstructions = "x MARK y" };
+        Check(!PromptRuleInstructionComposer.Compose(s4).Contains("meeting_taunt"), "meeting taunt suppressed when marker already present");
+        Check(PromptRuleInstructionComposer.Compose(new PromptRuleInstructionSections { UseRewardContext = true, RewardInstruction = " " }) == "", "blank body appends nothing");
     }
 
     private static void AssemblyStage()

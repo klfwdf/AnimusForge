@@ -28928,144 +28928,106 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
-			AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-			AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
-			StringBuilder stringBuilder = new StringBuilder();
-			if (useDuelContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "duel"))
-			{
-				if (isQualified)
-				{
-					string value = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
-					if (!string.IsNullOrWhiteSpace(value))
-					{
-						PromptRuleBlockText.Append(stringBuilder, "duel", value);
-					}
-				}
-				else
-				{
-					string text10 = BuildPlayerPublicDisplayNameForPrompt(targetHero ?? targetCharacter?.HeroObject);
-					if (string.IsNullOrWhiteSpace(text10))
-					{
-						text10 = "玩家";
-					}
-					PromptRuleBlockText.Append(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
-				}
-			}
-			if (AIConfigHandler.RewardEnabled && useRewardContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward"))
-			{
-				string text = "";
-				if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
-				{
-					string settlementMerchantRewardInstruction = RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter);
-					if (!string.IsNullOrWhiteSpace(settlementMerchantRewardInstruction))
-					{
-						string rewardInstruction = AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
-						text = (string.IsNullOrWhiteSpace(rewardInstruction) ? settlementMerchantRewardInstruction : (rewardInstruction.Trim() + "\n" + settlementMerchantRewardInstruction.Trim()));
-					}
-				}
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					text = (hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.RewardNonHeroInstruction);
-				}
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					text = AIConfigHandler.RewardInstruction;
-				}
-				PromptRuleBlockText.Append(stringBuilder, "reward", text);
-				if (AIConfigHandler.DuelStakeEnabled && includeDuelStakeContext)
-				{
-					string body = (playerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction);
-					PromptRuleBlockText.Append(stringBuilder, "duel_stake", body);
-				}
-			}
-			if (AIConfigHandler.LoanEnabled && isLoanContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan"))
-			{
-				bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
-				string text2 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
-				if (string.IsNullOrWhiteSpace(text2))
-				{
-					text2 = AIConfigHandler.LoanInstruction;
-				}
-				PromptRuleBlockText.Append(stringBuilder, "loan", text2);
-			}
-			if (AIConfigHandler.SurroundingsEnabled && isSurroundingsContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "surroundings"))
-			{
-				PromptRuleBlockText.Append(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
-			}
-			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds);
-			if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command") && !PromptRuleBlockText.Has(text3, "worldmap_party_command") && !PromptRuleBlockText.Has(stringBuilder.ToString(), "worldmap_party_command"))
-			{
-				string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
-				if (string.IsNullOrWhiteSpace(worldMapInstruction))
-				{
-					worldMapInstruction = AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command");
-				}
-				PromptRuleBlockText.Append(stringBuilder, "worldmap_party_command", worldMapInstruction);
-			}
-			if (IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex) && PromptRuleBlockText.Has(text3, "party_transfer"))
-			{
-				string alreadyInjected = stringBuilder.ToString();
-				bool flag12 = PromptRuleBlockText.Has(alreadyInjected, "reward");
-				bool flag13 = PromptRuleBlockText.Has(alreadyInjected, "loan");
-				if (AIConfigHandler.RewardEnabled && !flag12 && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward"))
-				{
-					string rewardText = "";
-					if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
-					{
-						string settlementMerchantRewardInstruction = RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter);
-						if (!string.IsNullOrWhiteSpace(settlementMerchantRewardInstruction))
-						{
-							string rewardInstruction = AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
-							rewardText = (string.IsNullOrWhiteSpace(rewardInstruction) ? settlementMerchantRewardInstruction : (rewardInstruction.Trim() + "\n" + settlementMerchantRewardInstruction.Trim()));
-						}
-					}
-					if (string.IsNullOrWhiteSpace(rewardText))
-					{
-						rewardText = (hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.RewardNonHeroInstruction);
-					}
-					if (string.IsNullOrWhiteSpace(rewardText))
-					{
-						rewardText = AIConfigHandler.RewardInstruction;
-					}
-					if (!string.IsNullOrWhiteSpace(rewardText))
-					{
-						PromptRuleBlockText.Append(stringBuilder, "reward", rewardText);
-					}
-				}
-				if (AIConfigHandler.LoanEnabled && !flag13 && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan"))
-				{
-					bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
-					string text5 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
-					if (string.IsNullOrWhiteSpace(text5))
-					{
-						text5 = AIConfigHandler.LoanInstruction;
-					}
-					if (!string.IsNullOrWhiteSpace(text5))
-					{
-						PromptRuleBlockText.Append(stringBuilder, "loan", text5);
-					}
-				}
-			}
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				stringBuilder.AppendLine(text3.Trim());
-			}
-			if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId) && !suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf(AfGcczShoutBridge.MeetingTauntRuleBlockMarker, StringComparison.OrdinalIgnoreCase) < 0)
-			{
-				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
-				if (!string.IsNullOrWhiteSpace(text4))
-				{
-					PromptRuleBlockText.Append(stringBuilder, "meeting_taunt", text4);
-				}
-			}
-			return stringBuilder.ToString().Trim();
+			return PromptRuleInstructionComposer.Compose(CaptureRuleInstructionSections(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuel, worldMapPartyCommandContext, excludedRuleIds, preselectedRuleIds, suppressForcedMeetingTaunt));
 		}
 		catch
 		{
 			return "";
 		}
+	}
+
+	/// <summary>
+	/// Game-thread capture of every runtime rule body the triggered-rule block can contain. Bodies are
+	/// resolved only when their topic applies (legacy laziness), so no extra Reward/Duel reads happen.
+	/// Matched extra rules (semantic retrieval when no preselection) are captured here too; moving that
+	/// retrieval to the background step is J06 scope because BuildExtraRuleInstructions reads Hero state.
+	/// </summary>
+	private PromptRuleInstructionSections CaptureRuleInstructionSections(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, string npcLastUtterance, bool includeDuelStakeContext, bool playerWonLastDuel, bool worldMapPartyCommandContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preselectedRuleIds, bool suppressForcedMeetingTaunt)
+	{
+		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
+		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
+		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
+		PromptRuleInstructionSections s = new PromptRuleInstructionSections
+		{
+			ExcludedRuleIds = excludedRuleIdSet,
+			UseDuelContext = useDuelContext,
+			IsQualified = isQualified,
+			PlayerTier = playerTier,
+			IsSurroundingsContext = AIConfigHandler.SurroundingsEnabled && isSurroundingsContext,
+			WorldMapPartyCommandContext = worldMapPartyCommandContext
+		};
+		if (useDuelContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "duel"))
+		{
+			if (isQualified)
+			{
+				s.DuelInstruction = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
+			}
+			else
+			{
+				s.PlayerDisplayName = BuildPlayerPublicDisplayNameForPrompt(targetHero ?? targetCharacter?.HeroObject);
+			}
+		}
+		bool rewardWanted = AIConfigHandler.RewardEnabled && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward");
+		bool loanWanted = AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan");
+		s.UseRewardContext = rewardWanted && useRewardContext;
+		s.IsLoanContext = loanWanted && isLoanContext;
+		if (s.UseRewardContext)
+		{
+			s.RewardInstruction = ResolveRewardInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+			s.IncludeDuelStake = AIConfigHandler.DuelStakeEnabled && includeDuelStakeContext;
+			s.DuelStakeInstruction = playerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction;
+		}
+		if (s.IsLoanContext)
+		{
+			s.LoanInstruction = ResolveLoanInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+		}
+		if (s.IsSurroundingsContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "surroundings"))
+		{
+			s.SurroundingsInstruction = AIConfigHandler.SurroundingsInstruction;
+		}
+		s.ExtraRuleInstructions = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds);
+		if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command"))
+		{
+			string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
+			s.WorldMapInstruction = string.IsNullOrWhiteSpace(worldMapInstruction) ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : worldMapInstruction;
+		}
+		if (PromptRuleBlockText.Has(s.ExtraRuleInstructions, "party_transfer") && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex))
+		{
+			s.PartyTransferEligible = true;
+			if (rewardWanted && s.RewardInstruction == null)
+			{
+				s.RewardInstruction = ResolveRewardInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+			}
+			if (loanWanted && s.LoanInstruction == null)
+			{
+				s.LoanInstruction = ResolveLoanInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+			}
+			if (!rewardWanted) s.RewardInstruction = null;
+			if (!loanWanted) s.LoanInstruction = null;
+		}
+		if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId) && !suppressForcedMeetingTaunt)
+		{
+			s.AllowMeetingTaunt = true;
+			s.MeetingTauntMarker = AfGcczShoutBridge.MeetingTauntRuleBlockMarker;
+			s.MeetingTauntInstruction = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
+		}
+		return s;
+	}
+
+	private static string ResolveRewardInstructionForPrompt(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter)
+	{
+		string merchant = (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter) : null;
+		string runtimeForMerchant = string.IsNullOrWhiteSpace(merchant) ? null : AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
+		string runtime = hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : null;
+		return PromptRuleInstructionComposer.ResolveRewardInstruction(hasAnyHero, merchant, runtimeForMerchant, runtime, AIConfigHandler.RewardNonHeroInstruction, AIConfigHandler.RewardInstruction);
+	}
+
+	private static string ResolveLoanInstructionForPrompt(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter)
+	{
+		bool merchantKind = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
+		string runtime = (hasAnyHero || merchantKind) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : null;
+		return PromptRuleInstructionComposer.ResolveLoanInstruction(hasAnyHero, merchantKind, runtime, AIConfigHandler.LoanNonHeroInstruction, AIConfigHandler.LoanInstruction);
 	}
 
 	public static List<Hero> GetDevEditableHeroListForExternal()
@@ -30613,7 +30575,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		PromptRetrievalCapture retrieval = new PromptRetrievalCapture();
 		if (!request.SuppressDynamicRuleAndLore)
 		{
-			MentionedWorldEntities mentions = new MentionedWorldEntities();
+			// Full mention set for this build: caller-supplied + router-discovered + mention store + latest.
+			// Step 3 consumes it as-is; lore retrieval (J06 owner) still runs in step 3 because it reads Hero state.
+			MentionedWorldEntities mentions = phases.DirectPreprocessMentions.Clone();
 			mentions.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(request.Input, request.NpcLastUtterance, request.GuardrailSemanticContext));
 			mentions.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 			retrieval.AuxiliaryMentions = mentions;
@@ -30806,19 +30770,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Logger.Log("Logic", PromptContextDecisions.DescribeSemanticTrigger(routing, npcLastUtterance, input, request.TargetDisplayName));
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={routing.LiveDuelSemanticHit} liveReward={routing.LiveRewardSemanticHit} liveLoan={routing.LiveLoanSemanticHit} auxRuleHits={PromptTopicRoutingStage.DescribeHits(auxiliaryRuleHitIds)} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
-		mentionedEntities = directPreprocessMentionedEntities.Clone();
-		if (!suppressDynamicRuleAndLore)
-		{
-			if (retrieval?.AuxiliaryMentions != null)
-			{
-				mentionedEntities.Merge(retrieval.AuxiliaryMentions);
-			}
-			else
-			{
-				mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, request.GuardrailSemanticContext));
-				mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
-			}
-		}
+		// Mentions were fully resolved in step 2 (routing); step 3 only clones the detached set.
+		mentionedEntities = (retrieval?.AuxiliaryMentions ?? directPreprocessMentionedEntities).Clone();
 		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
 		string loreContext = "";
 		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + request.HasPrefetchedLore);
