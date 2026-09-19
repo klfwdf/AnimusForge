@@ -513,6 +513,7 @@ public static class WorldEntityRetrievalService
 
 	internal static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities, EntityCapture capture, DetachedEntityMatches detachedMatches)
 	{
+		if (capture == null) detachedMatches = null;
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
 		Stopwatch totalSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.BuildPromptContext");
@@ -543,17 +544,17 @@ public static class WorldEntityRetrievalService
 				List<Settlement> settlementCandidates = new List<Settlement>();
 				List<Clan> clanCandidates = new List<Clan>();
 				List<Kingdom> kingdomCandidates = new List<Kingdom>();
-				if (allMentions.Count > 0)
+				if (detachedMatches == null && allMentions.Count > 0)
 				{
 					heroCandidates = capture == null ? GetHeroCandidates().ToList() : RestoreCandidates(capture.Candidates.Heroes, capture.Heroes);
 					settlementCandidates = capture == null ? GetSettlementCandidates().ToList() : RestoreCandidates(capture.Candidates.Settlements, capture.Settlements);
 					clanCandidates = capture == null ? GetClanCandidates().ToList() : RestoreCandidates(capture.Candidates.Clans, capture.Clans);
 				}
-				if (allMentions.Count > 0 || hasRawInput)
+				if (detachedMatches == null && (allMentions.Count > 0 || hasRawInput))
 				{
 					kingdomCandidates = capture == null ? GetKingdomCandidates().ToList() : RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms);
 				}
-				Logger.Log("WorldEntityRetrieval", "entities total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " names=" + EntityMentionList.FormatForLog(allMentions));
+				Logger.Log("WorldEntityRetrieval", "entities total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + (detachedMatches == null ? heroCandidates.Count : capture.Candidates.Heroes.Count) + " settlement=" + (detachedMatches == null ? settlementCandidates.Count : capture.Candidates.Settlements.Count) + " clan=" + (detachedMatches == null ? clanCandidates.Count : capture.Candidates.Clans.Count) + " kingdom=" + (detachedMatches == null ? kingdomCandidates.Count : capture.Candidates.Kingdoms.Count) + " names=" + EntityMentionList.FormatForLog(allMentions));
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] candidates_ready ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 				Dictionary<string, int> mentionPriority = EntityMentionList.BuildPriority(allMentions);
 				Dictionary<DetachedEntityCandidate, Hero> rulerLiveHeroes = capture?.Heroes ?? new Dictionary<DetachedEntityCandidate, Hero>();
@@ -572,8 +573,14 @@ public static class WorldEntityRetrievalService
 						detachedRulers = MergeEntityMatches(detachedRulers, rawRulerTitleMatches.Matches);
 					}
 				}
-				List<EntityMatch<Hero>> rulerTitleMatches = RestoreMatches(detachedRulers, rulerLiveHeroes);
-				heroes = detachedMatches == null ? MergeEntityMatches(heroes, rulerTitleMatches) : RestoreMatches(detachedMatches.Heroes, capture.Heroes);
+				if (detachedMatches == null)
+				{
+					heroes = MergeEntityMatches(heroes, RestoreMatches(detachedRulers, rulerLiveHeroes));
+				}
+				else
+				{
+					heroes = RestoreMatches(detachedMatches.Heroes, capture.Heroes);
+				}
 				if (allMentions.Count > 0)
 				{
 					if (detachedMatches == null && CanContinueWorldEntityMatch("hero", budget))
