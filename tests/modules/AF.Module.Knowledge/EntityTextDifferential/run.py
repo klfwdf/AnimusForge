@@ -107,12 +107,18 @@ for name in ("old", "current"):
     variant_markers = (
         (
             "private static List<EntityMatch<Hero>> FindRulerTitleMatches(",
+            "private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string rawInput, IEnumerable<Kingdom> kingdoms, WorldEntityRetrievalBudget budget)",
+            "private static string FindBestRawQualifiedRulerTitleAlias(",
+            "private static bool IsRawRulerTitleShadowed(",
             "private static List<RulerTitleCandidate> BuildRulerTitleCandidates(IEnumerable<Kingdom> kingdoms)",
             "public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities = false)",
         )
         if name == "old" else
         (
             "private static List<EntityMatch<DetachedEntityCandidate>> FindRulerTitleMatches(",
+            "private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string rawInput, List<RulerTitleCandidate> candidates, WorldEntityRetrievalBudget budget)",
+            "private static string FindBestRawQualifiedRulerTitleAlias(",
+            "private static bool IsRawRulerTitleShadowed(",
             "private static List<RulerTitleCandidate> BuildRulerTitleCandidates(IEnumerable<Kingdom> kingdoms, Dictionary<DetachedEntityCandidate, Hero> liveHeroes)",
             "internal static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities, EntityCapture capture, DetachedEntityMatches detachedMatches)",
             "internal static EntityCapture CaptureEntityCandidates(",

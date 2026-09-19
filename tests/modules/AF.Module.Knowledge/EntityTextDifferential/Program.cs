@@ -100,11 +100,7 @@ namespace AnimusForge
         private static IEnumerable<Clan> GetClanCandidates() => Array.Empty<Clan>();
         private static IEnumerable<Kingdom> GetKingdomCandidates() => Kingdom.All;
         private static bool CanContinueWorldEntityMatch(string category, WorldEntityRetrievalBudget budget) => !budget.IsHardExceeded;
-#if CURRENT
-        private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string input, List<RulerTitleCandidate> candidates, WorldEntityRetrievalBudget budget) => throw new Exception("raw-title route not requested");
-#else
-        private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string input, IEnumerable<Kingdom> kingdoms, WorldEntityRetrievalBudget budget) => throw new Exception("raw-title route not requested");
-#endif
+        // FindRawRulerTitleMatches and its helpers are production methods (raw input carries "Alda the King").
         private static void AddResidentEntityMatches(Hero contextHero, bool includeResidentKingdoms, bool includeResidentPlayerEntities, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
         { if (contextHero != null || includeResidentKingdoms || includeResidentPlayerEntities) throw new Exception("resident fixture not neutral"); }
         private static void AddPostprocessResidentEntityMatches(Hero contextHero, bool includeResidentPlayerEntities, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
