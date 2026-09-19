@@ -1,14 +1,14 @@
 # 当前范围：J06d 验证中 / J06 未验收（2026-09-19）
 
-生产修正终点 `61ff0875`；[代码地图](af-framework-code-map.json) 274 锚点 recorded/working-tree 通过。状态与验证信号集中在[主台账 J06d 当前节](../animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)，下方 J05/J04 为历史完成范围。
+生产修正 `61ff0875`、导入归属 `66abbdbd`、捕获异常隔离 `dc9c49fb`（契约 `d93bb1e9`）；[代码地图](af-framework-code-map.json) 276 锚点 recorded/working-tree 通过。状态与验证信号集中在[主台账 J06d 当前节](../animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)，下方 J05/J04 为历史完成范围。
 
 | 责任 / 一基坐标 | 已接线 | 仍在旧类或未覆盖 |
 | --- | --- | --- |
-| `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs:39`；`KnowledgeLibraryBehavior.cs:508` | J06a Index owner 接 host live 规则/engine ports，规则版本失效/召回/512 缓存；Index/Lore 59 契约 | Campaign、ONNX 生命周期、知识存档、Hero 内容仍在 KnowledgeLibrary host |
+| `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs:39`；`KnowledgeLibraryBehavior.cs:508` | J06a Index owner 接 host live 规则/engine ports，规则版本失效/召回/512 缓存；Index/Lore/Import 70 契约 | Campaign、ONNX 生命周期、知识存档、Hero 内容仍在 KnowledgeLibrary host |
 | `src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs:30`；`KnowledgeLibraryBehavior.cs:521` | J06b mention/候选/round-robin 纯检索接真实 host | Lore 文本、人物事实与最终格式化留 host；真实 provider 未跑 |
 | `src/modules/AF.Module.Knowledge/Entities/{EntityNameMatcher.cs:21,EntityMentionList.cs:8,EntityInjectionAllocator.cs:44}`；`WorldEntityRetrievalService.cs:421` | J06c 纯匹配/mention/分配接消费者，Entities 31 契约 | 游戏候选、位置/距离、称谓和最终块留 host，实机容量未测 |
-| `AIConfigHandler.cs:1734,5602–5750,7326`；`PromptRuleEligibility.cs:12`；`MyBehavior.cs:19672,30058,30344` | J06d 11 资格事实在游戏线程捕获，worker 纯判断；目标 setter 变动清旧事实；Native/Courier DTO 接线 | 旧 live 分支仍供 Scene/同步 setter-only 调用；异常/提前评估生产对照不足，J10 Scene 调度未做 |
-| `MyBehavior.cs:54807–55162,57051–57193` | 已复核 Knowledge 导入纯规则/文件 I/O/游戏 owner 混合责任 | 尚未迁移及新增坏文件/覆盖行为测试，阻止 J06 父包验收 |
+| `AIConfigHandler.cs:1734,5602–5760,7336`；`PromptRuleEligibility.cs:12`；`MyBehavior.cs:19672,30058,30344` | J06d 11 资格事实在游戏线程捕获，worker 纯判断；异常各门控隔离，排除事实 fail-closed；目标 setter 变动清旧事实；Native/Courier DTO 接线 | 旧 live 分支仍供 Scene/同步 setter-only 调用；真实游戏异常/提前评估副作用未测，J10 Scene 调度未做 |
+| `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs:12`；`MyBehavior.cs` 12 个导入调用点 | 8 个纯规则/文件读取方法原样迁入，旧体删除；Import fixture 覆盖关键词/When 去重、文件优先级、坏 JSON、缺目录 | `ValidateKnowledgeKeywordsForSingleRuleImport`/`ValidateKnowledgeKeywordsForImport`/`BuildKnowledgeRuleImportFailureMessage` 需当前 Campaign/KnowledgeLibrary，留游戏线程 host；真实玩家数据/旧档未测 |
 
 ## 以下为 J05 完成范围与历史
 

@@ -16,8 +16,8 @@
 | --- | --- | --- |
 | 知识规则索引、Lore 候选 | `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs`、`Lore/LoreCandidateRetriever.cs`；`KnowledgeLibraryBehavior.Index`/`Retriever` 接入 | `KnowledgeLibraryBehavior` 仍负责 Campaign/ONNX 生命周期、知识存档与 Hero 事实；索引 512 项缓存、Lore 32 mention term/12 entity query 边界已离线测，实机耗时未测 |
 | 世界实体纯算法 | `Entities/{EntityNameMatcher,EntityMentionList,EntityInjectionAllocator}.cs`；`WorldEntityRetrievalService` 消费匹配、mention 排序与分配 | 游戏候选枚举、位置/距离、称谓及最终 Prompt 块留 host；不把整个旧类标为已迁 |
-| Prompt 检索资格 | `AIConfigHandler.CapturePromptRuleEligibility` 在游戏线程读 11 事实，`PromptRuleEligibility` 提供 worker 纯判断；Native/Courier 请求 DTO/ambient 消费 | 旧 setter-only 同步消费仍用 live fallback；Scene 调度属于 J10；捕获异常/提前计算的生产对照不足，J06d 未验收 |
-| Knowledge 导入 | `MyBehavior` 仍有关键词/When 纯校验、文件读取、Campaign/KnowledgeLibrary 导出/错误文案混合静态簇 | 先按纯规则、文件 I/O、游戏 owner 三类分离并做坏文件/覆盖对照；不能只移文件或留转发壳后标 J06 完成 |
+| Prompt 检索资格 | `AIConfigHandler.CapturePromptRuleEligibility` 在游戏线程读 11 事实，正向门控独立失效、排除事实异常默认拒绝；`PromptRuleEligibility` 提供 worker 纯判断；Native/Courier 请求 DTO/ambient 消费 | 旧 setter-only 同步消费仍用 live fallback；Scene 调度属于 J10；仅生产方法提取 + fake 游戏端口异常契约，真实游戏异常/提前计算副作用未实测，J06d 未验收 |
+| Knowledge 导入 | `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs` 拥有 8 个关键词/When 纯规则与来源文件读取方法；`MyBehavior` 12 个调用点直接接 owner、旧方法删除 | `ValidateKnowledgeKeywordsForSingleRuleImport`/`ValidateKnowledgeKeywordsForImport`/`BuildKnowledgeRuleImportFailureMessage` 仍依赖当前 Campaign/KnowledgeLibrary 导出和原中文错误语义，保留游戏线程 host 适配；真实玩家文件/旧档未测 |
 
 精确路径/一基坐标在[代码范围图与地图](architecture/af-framework-code-scope.md)，证据和状态见[主台账 J06d 当前节](animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)。
 
