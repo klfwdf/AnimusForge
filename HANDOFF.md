@@ -1,4 +1,12 @@
-# 当前接续：J06d 验证中，J06 未验收（2026-09-19）
+# 当前接续：J06 检索线程收口仍 VERIFY / NOT_ACCEPTED（2026-09-19）
+
+- 当前工作树 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`；本轮产品 `34b033de`、`8ca6c27e`、`0bf579f8`、`5bcb518d`、`0a0f7e54`、`eae59e63`，测试 `bacaaa92`、`30c817c2`、`30afb8f7`，注释 `8f576dc8`。Lore 候选、MCM 数值快照和每版本一次的脱离原对象规则快照、无预选额外规则、直接/称谓实体评分已接到 Native/Courier 的游戏捕获→后台检索→游戏完成阶段；Scene 仍同步，完整调度归 J10。详细代码责任、验证和具体阻塞见[主台账当前节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06-retrieval-cutover-20260919)及[范围图](docs/architecture/af-framework-code-scope.md)；[287 锚点代码地图](docs/architecture/af-framework-code-map.json) recorded/working-tree PASS。
+- J03/J04/Knowledge/Courier/Native/Scene 聚焦契约以及 11 个负向线程/快照边界变异已复跑；当前 `eae59e63` 的 Debug/Release × 1.3/1.4/Bootstrap 六个**非删除性直接构建**均 0 警告/0 错误，不冒充原脚本验收。原 `build_single_module.ps1` 的 Debug 运行因会递归重置四个工作区固定生成目录，被自动审核以“本次缺明确授权”拒绝；没有绕过或尝试 Release。NativePreparation 旧 source-parity 断言另有已记录的既有失败。
+- **J06 不标 `OFFLINE_VERIFIED`**：实体实时关系/距离排名仍在最终游戏阶段；新检索阶段的缓存/版本/异常/迟到与 Prompt 文本生产对照未齐；当前源码原脚本 Debug/Release 六项未跑。实机、旧档、真实 provider `NOT-RUN` **不是**离线验收门槛。未 push、Stage、部署、改 J07/J10 或清理 `.dotnet-cli-home/`。
+
+## 以下为 J06d 历史交接
+
+# J06d 验证中、J06 当时未验收（2026-09-19）
 
 - 本工作树 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`，从 `1c45ba3d` 继续；J06d 修正 `61ff0875`、Knowledge 导入归属 `66abbdbd`、捕获异常隔离 `dc9c49fb`、负向变异契约 `d93bb1e9`。实际状态、旧新资格对照、验证及未覆盖项以[主台账当前节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)为准；[276 点代码地图](docs/architecture/af-framework-code-map.json)两模式通过，[范围图](docs/architecture/af-framework-code-scope.md)区分已接线与保留责任。
 - 已修领主大厅捕获读旧 ambient 目标、旧 setter-only 消费者继承 stale 资格、附庸捕获提前诊断事件。11 资格位纯契约、ambient 隔离、worker source-linked/变异及 J03/J04/Knowledge/Courier/Scene 聚焦矩阵部分通过；经用户授权，原 `build_single_module.ps1` 不带 Stage/Deploy 的 Debug/Release 双 API + Bootstrap 六项均成功，引用版本、flavor、PDB、标记通过。
