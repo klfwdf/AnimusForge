@@ -1,0 +1,499 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Contracts;
+using Newtonsoft.Json;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.GameState;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
+
+namespace AnimusForge.CoupSystem;
+
+// A temporary, version-probed adapter to the installed AF owner. All eligibility,
+// naming/provider calls and political execution remain AF's existing implementations.
+internal sealed class CoupRebellionBridge : CampaignBehaviorBase
+{
+    private enum RequestState { Queued, Naming, Ready, NamingFailed, Completed }
+
+    private sealed class Request
+    {
+        public string Id;
+        public string KingdomId;
+        public string RulingClanId;
+        public string RulerId;
+        public string ClanId;
+        public string ClanLeaderId;
+        public List<string> Followers = new List<string>();
+        public int Week;
+        public int Relation;
+        public int Towns;
+        public int Castles;
+        public RequestState State;
+        public string NamingJson;
+        public string Message;
+    }
+
+    private sealed class Outcome
+    {
+        public string HeroId;
+        public string SettlementId;
+        public string KingdomId;
+        public bool Success;
+        public bool Captured;
+        public string NpcText;
+        public string PlayerText;
+        public int Day;
+        public string Date;
+        public bool HistoryQueued;
+        public string RecoveryId;
+        public string RecoveryHash;
+        public bool NpcRecorded;
+        public bool PlayerRecorded;
+        public bool WeeklyRecorded;
+    }
+
+    private sealed class NamingCompletion
+    {
+        public string Id;
+        public long Generation;
+        public MyBehavior Owner;
+        public Campaign Campaign;
+        public string Json;
+        public string Error;
+    }
+
+    private sealed class AfAccess
+    {
+        private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+        internal readonly MethodInfo Resolve = Method("ResolveKingdomRebellion", 4);
+        internal readonly MethodInfo BuildPrompt = Method("BuildRebelKingdomNamingRequest", 6);
+        internal readonly MethodInfo Generate = Method("GenerateRebelKingdomNamingFromPrompts", 4);
+        internal readonly MethodInfo Execute = Method("TryExecuteKingdomRebellionWithNaming", 10);
+        internal readonly MethodInfo ValidateClan = Method("TryValidateClanForKingdomRebellion", 7);
+        internal readonly MethodInfo ValidateFollower = Method("TryValidateClanForRebelFollower", 9);
+        internal readonly MethodInfo FollowerEligible = Method("IsEligibleRebelFollowerByStandardRules", 3);
+        internal readonly MethodInfo NamingSucceeded = Method("IsRebelKingdomNamingSuccess", 1);
+        internal readonly MethodInfo Weekly = Method("RecordEventSourceMaterial", 12);
+        internal readonly MethodInfo PrepareMemory = Method("TryPrepareExternalDialogueHistoryRecoveryIdentity", 6);
+        internal readonly MethodInfo CommitMemory = Method("CommitExternalDialogueHistoryRecoverable", 3);
+        internal readonly MethodInfo MemoryStatus = Method("GetExternalDialogueHistoryRecoveryStatus", 3);
+        internal readonly Type NamingType = typeof(MyBehavior).GetNestedType("RebelKingdomNamingResult", BindingFlags.NonPublic)
+            ?? throw new MissingMemberException("AF RebelKingdomNamingResult");
+        internal readonly FieldInfo SelectedClan = ResultField("SelectedClan");
+        internal readonly FieldInfo SelectedFollowers = ResultField("SelectedFollowerClans");
+        internal readonly FieldInfo ResolutionMessage = ResultField("Message");
+        internal readonly FieldInfo NamingFailure = typeof(MyBehavior).GetNestedType("RebelKingdomNamingResult", BindingFlags.NonPublic)?.GetField("FailureReason", All)
+            ?? throw new MissingFieldException("AF naming result", "FailureReason");
+        internal readonly int NamingAttempts = (int)(typeof(MyBehavior).GetField("RebelKingdomNamingMaxAttempts", All)
+            ?? throw new MissingFieldException("AF", "RebelKingdomNamingMaxAttempts")).GetRawConstantValue();
+        internal readonly FieldInfo[] Busy = new[]
+        {
+            Field("_automaticKingdomRebellionFlowActive"), Field("_automaticKingdomRebellionInProgress"),
+            Field("_devForcedKingdomRebellionInProgress"), Field("_weeklyReportGenerationInProgress")
+        };
+        internal readonly ConstructorInfo MemoryConstructor = typeof(InteractionMemoryCommit).GetConstructor(All, null,
+            new[] { typeof(string), typeof(InteractionChannel), typeof(string), typeof(string), typeof(string), typeof(string),
+                typeof(IEnumerable<FactRecord>), typeof(long), typeof(long), typeof(string), typeof(int), typeof(int),
+                typeof(string), typeof(int), typeof(int), typeof(string) }, null)
+            ?? throw new MissingMethodException("AF recoverable domain memory constructor");
+
+        internal AfAccess()
+        {
+            Type byRefString = typeof(string).MakeByRefType(), byRefInt = typeof(int).MakeByRefType();
+            Require(Resolve, SelectedClan.DeclaringType, false, typeof(Kingdom), typeof(int), typeof(bool), typeof(bool));
+            Require(BuildPrompt, typeof(void), false, typeof(Clan), typeof(Kingdom), typeof(int), typeof(IEnumerable<Clan>), byRefString, byRefString);
+            Require(Generate, NamingType, false, typeof(string), typeof(string), typeof(string), typeof(int));
+            Require(Execute, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(int), typeof(bool), typeof(int), typeof(int), typeof(int), NamingType, typeof(List<Clan>), byRefString);
+            Require(ValidateClan, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(bool), byRefString, byRefInt, byRefInt, byRefInt);
+            Require(ValidateFollower, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(Clan), typeof(bool), byRefString, byRefInt, byRefInt, byRefInt, byRefInt);
+            Require(FollowerEligible, typeof(bool), true, typeof(int), typeof(int), typeof(float));
+            Require(NamingSucceeded, typeof(bool), true, NamingType);
+            Require(Weekly, typeof(void), false, typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(int), typeof(string));
+            Require(PrepareMemory, typeof(bool), true, typeof(InteractionMemoryCommit), typeof(bool), typeof(string), byRefString, byRefString, byRefString);
+            Require(CommitMemory, typeof(MemoryCommitResult), true, typeof(InteractionMemoryCommit), typeof(bool), typeof(string));
+            Require(MemoryStatus, MemoryStatus.ReturnType, true, typeof(string), typeof(string), typeof(string));
+            if (!MemoryStatus.ReturnType.IsEnum || MemoryStatus.ReturnType.FullName != "AnimusForge.Refactor.Runtime.InteractionMemoryRecoveryLookupStatus"
+                || SelectedClan.FieldType != typeof(Clan) || SelectedFollowers.FieldType != typeof(List<Clan>) || ResolutionMessage.FieldType != typeof(string)
+                || NamingFailure.FieldType != typeof(string) || Busy.Any(field => field.IsStatic || field.FieldType != typeof(bool)))
+                throw new MissingMemberException("AF rebellion/memory result or busy-field shape changed");
+        }
+
+        private static void Require(MethodInfo method, Type result, bool isStatic, params Type[] parameters)
+        {
+            if (method.IsStatic != isStatic || method.ReturnType != result || !method.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters))
+                throw new MissingMethodException("AF signature changed: " + method.Name);
+        }
+
+        private static MethodInfo Method(string name, int count)
+        {
+            MethodInfo method = typeof(MyBehavior).GetMethods(All).SingleOrDefault(m => m.Name == name && m.GetParameters().Length == count);
+            return method ?? throw new MissingMethodException("AF " + name + "/" + count);
+        }
+        private static FieldInfo Field(string name) => typeof(MyBehavior).GetField(name, All) ?? throw new MissingFieldException("AF", name);
+        private static FieldInfo ResultField(string name) => typeof(MyBehavior).GetNestedType("KingdomRebellionResolutionResult", BindingFlags.NonPublic)?.GetField(name, All)
+            ?? throw new MissingFieldException("AF rebellion result", name);
+        internal bool IsBusy(MyBehavior owner)
+        {
+            foreach (FieldInfo field in Busy) if ((bool)field.GetValue(owner)) return true;
+            return false;
+        }
+    }
+
+    private static AfAccess _af;
+    private static long _epoch;
+    internal static CoupRebellionBridge Instance { get; private set; }
+    internal static bool IsAvailable { get; private set; }
+    private Dictionary<string, Request> _requests = new Dictionary<string, Request>(StringComparer.Ordinal);
+    private Dictionary<string, Outcome> _outcomes = new Dictionary<string, Outcome>(StringComparer.Ordinal);
+    private readonly ConcurrentQueue<NamingCompletion> _completions = new ConcurrentQueue<NamingCompletion>();
+    private string _requestsJson;
+    private string _outcomesJson;
+    private bool _saveValid = true;
+    private bool _hasWork;
+    private long _generation;
+    private float _tickDelay;
+    private string _runningId;
+    private string _progressId;
+    private string _choiceId;
+    private Campaign _campaign;
+    private MyBehavior _owner;
+
+    internal static bool Initialize()
+    {
+        if (_af != null) return IsAvailable;
+        try
+        {
+            _af = new AfAccess();
+            IsAvailable = true;
+            Logger.Log("Coup", "Installed AF rebellion/memory seam ready; MVID=" + typeof(MyBehavior).Assembly.ManifestModule.ModuleVersionId);
+        }
+        catch (Exception ex) { IsAvailable = false; Logger.Log("Coup", "Installed AF seam unavailable: " + ex); }
+        return IsAvailable;
+    }
+
+    public override void RegisterEvents()
+    {
+        Instance = this;
+        Initialize();
+        ResetRuntime();
+        CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGame);
+        CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
+    }
+
+    private void ResetRuntime()
+    {
+        _generation = Interlocked.Increment(ref _epoch);
+        _campaign = Campaign.Current;
+        _owner = null;
+        _runningId = _progressId = _choiceId = null;
+        _tickDelay = 0f;
+        while (_completions.TryDequeue(out _)) { }
+    }
+
+    private void OnNewGame(CampaignGameStarter starter)
+    {
+        ResetRuntime();
+        _requests.Clear(); _outcomes.Clear();
+        _requestsJson = _outcomesJson = null;
+        _saveValid = true; _hasWork = false;
+    }
+
+    private void OnGameLoaded(CampaignGameStarter starter)
+    {
+        ResetRuntime();
+        if (!_saveValid) { Show("政变后叛乱存档异常，已停用自动重放并保留原始记录。"); return; }
+        foreach (Request request in _requests.Values)
+            if (request.State == RequestState.Naming) request.State = RequestState.Queued;
+        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed);
+    }
+
+    public override void SyncData(IDataStore store)
+    {
+        if (store.IsSaving && _saveValid)
+        {
+            _requestsJson = JsonConvert.SerializeObject(_requests);
+            _outcomesJson = JsonConvert.SerializeObject(_outcomes);
+        }
+        if (store.IsLoading) { ResetRuntime(); _requestsJson = _outcomesJson = null; _hasWork = false; }
+        store.SyncData("_afCoupRebellionBridge_v1", ref _requestsJson);
+        store.SyncData("_afCoupOutcomeBridge_v1", ref _outcomesJson);
+        if (!store.IsLoading) return;
+        try
+        {
+            _requests = JsonConvert.DeserializeObject<Dictionary<string, Request>>(_requestsJson ?? "{}") ?? new Dictionary<string, Request>(StringComparer.Ordinal);
+            _outcomes = JsonConvert.DeserializeObject<Dictionary<string, Outcome>>(_outcomesJson ?? "{}") ?? new Dictionary<string, Outcome>(StringComparer.Ordinal);
+            _saveValid = _requests.All(p => p.Value != null && p.Key == p.Value.Id && !string.IsNullOrWhiteSpace(p.Value.KingdomId)
+                && p.Value.Followers != null && Enum.IsDefined(typeof(RequestState), p.Value.State))
+                && _outcomes.All(p => !string.IsNullOrWhiteSpace(p.Key) && p.Value != null);
+        }
+        catch (Exception ex) { _saveValid = false; Logger.Log("Coup", "Bridge save rejected; original JSON retained: " + ex); }
+    }
+
+    internal bool TryQueueCoupRebellion(string coupId, Kingdom kingdom, out string message)
+    {
+        message = "";
+        MyBehavior owner = MyBehavior.Instance;
+        if (!Ready(owner) || string.IsNullOrWhiteSpace(coupId) || kingdom == null)
+        { message = "AF 叛乱接缝、存档或王国尚未就绪。"; return false; }
+        coupId = coupId.Trim();
+        if (_requests.TryGetValue(coupId, out Request existing))
+        { message = existing.Message; return existing.KingdomId == kingdom.StringId; }
+        try
+        {
+            int week = Math.Max(0, (int)CampaignTime.Now.ToDays / 7);
+            object result = _af.Resolve.Invoke(owner, new object[] { kingdom, week, false, true });
+            Clan clan = _af.SelectedClan.GetValue(result) as Clan;
+            var request = new Request
+            {
+                Id = coupId, KingdomId = kingdom.StringId, RulingClanId = kingdom.RulingClan?.StringId,
+                RulerId = kingdom.Leader?.StringId, ClanId = clan?.StringId, ClanLeaderId = clan?.Leader?.StringId,
+                Week = week, State = clan == null ? RequestState.Completed : RequestState.Queued,
+                Message = _af.ResolutionMessage.GetValue(result) as string,
+                Followers = ((_af.SelectedFollowers.GetValue(result) as IEnumerable<Clan>) ?? Enumerable.Empty<Clan>())
+                    .Where(c => c != null && c != clan).Select(c => c.StringId).Distinct(StringComparer.Ordinal).ToList()
+            };
+            _requests.Add(coupId, request);
+            if (clan != null) { _hasWork = true; request.Message = "政变后的一次叛乱判定已登记，将使用 AF 原命名与建国流程；忙时顺序等待。"; }
+            message = request.Message;
+            Logger.Log("Coup", "rebellion_registered coup=" + coupId + " state=" + request.State);
+            return true;
+        }
+        catch (Exception ex) { message = "政变后叛乱登记失败：" + Error(ex); Logger.Log("Coup", message); return false; }
+    }
+
+    private bool Ready(MyBehavior owner)
+    {
+        if (!IsAvailable || !_saveValid || !TWParallel.IsMainThread() || !ReferenceEquals(Instance, this)
+            || owner == null || _campaign == null || !ReferenceEquals(Campaign.Current, _campaign)) return false;
+        // Resolve the active owner once per load, not by scanning campaign behaviors every frame.
+        if (_owner == null) _owner = _campaign.GetCampaignBehavior<MyBehavior>();
+        return ReferenceEquals(owner, _owner);
+    }
+
+    private bool Validate(Request request, MyBehavior owner, out Kingdom kingdom, out Clan clan, out List<Clan> followers, out string message)
+    {
+        kingdom = MBObjectManager.Instance.GetObject<Kingdom>(request.KingdomId);
+        clan = MBObjectManager.Instance.GetObject<Clan>(request.ClanId);
+        followers = new List<Clan>();
+        message = "";
+        if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled()) { message = "AF 王国稳定度与叛乱已关闭，本次结束。"; return false; }
+        if (kingdom != null && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)) { message = "玩家王国叛乱免疫已开启，本次结束。"; return false; }
+        if (kingdom == null || kingdom.IsEliminated || Campaign.Current.KingdomManager == null
+            || kingdom.RulingClan?.StringId != request.RulingClanId || kingdom.Leader?.StringId != request.RulerId
+            || clan?.Leader?.StringId != request.ClanLeaderId)
+        { message = "王国、统治者或原候选族长已变化，本次结束，不重选家族。"; return false; }
+        object[] args = { clan, kingdom, false, null, 0, 0, 0 };
+        if (!(bool)_af.ValidateClan.Invoke(owner, args)) { message = "原候选家族不再符合 AF 规则：" + args[3] + " 本次结束。"; return false; }
+        request.Relation = (int)args[4]; request.Towns = (int)args[5]; request.Castles = (int)args[6];
+        foreach (string id in request.Followers)
+        {
+            Clan follower = MBObjectManager.Instance.GetObject<Clan>(id);
+            object[] followerArgs = { follower, kingdom, clan, false, null, 0, 0, 0, 0 };
+            if ((bool)_af.ValidateFollower.Invoke(owner, followerArgs)
+                && (bool)_af.FollowerEligible.Invoke(null, new object[] { followerArgs[5], followerArgs[6], 0f })) followers.Add(follower);
+        }
+        return true;
+    }
+
+    // Real engine time: campaign TickEvent stops while a town/menu is paused.
+    internal void OnEngineTick(float dt)
+    {
+        if (!_hasWork || !Ready(MyBehavior.Instance)) return;
+        _tickDelay -= dt;
+        if (_tickDelay > 0f) return;
+        _tickDelay = 0.25f;
+        MyBehavior owner = MyBehavior.Instance;
+        try
+        {
+            if (_completions.TryDequeue(out NamingCompletion completion))
+            {
+                if (completion.Generation == _generation && ReferenceEquals(completion.Owner, owner)
+                    && ReferenceEquals(completion.Campaign, Campaign.Current) && _requests.TryGetValue(completion.Id, out Request finished)
+                    && finished.State == RequestState.Naming)
+                {
+                    finished.NamingJson = completion.Json;
+                    finished.Message = completion.Error;
+                    finished.State = string.IsNullOrEmpty(completion.Json) ? RequestState.NamingFailed : RequestState.Ready;
+                    _runningId = null;
+                }
+            }
+            if (_runningId != null || _choiceId != null || Mission.Current != null
+                || !(Game.Current?.GameStateManager?.ActiveState is MapState) || _af.IsBusy(owner)
+                || (InformationManager.IsAnyInquiryActive() && _progressId == null)) return;
+            Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed);
+            if (request == null) { _hasWork = false; return; }
+            if (!Validate(request, owner, out Kingdom kingdom, out Clan clan, out List<Clan> followers, out string note))
+            { Complete(request, note); return; }
+            if (request.State == RequestState.NamingFailed) { ShowNamingFailure(request); return; }
+            if (request.State == RequestState.Ready)
+            {
+                object naming = JsonConvert.DeserializeObject(request.NamingJson, _af.NamingType);
+                if (naming == null || !(bool)_af.NamingSucceeded.Invoke(null, new[] { naming }))
+                {
+                    request.Message = naming == null ? "AF 命名结果为空。" : _af.NamingFailure.GetValue(naming) as string;
+                    request.State = RequestState.NamingFailed; ShowNamingFailure(request); return;
+                }
+                // A partial political mutation cannot be safely replayed on load.
+                request.State = RequestState.Completed;
+                request.Message = "政变后叛乱开始执行，本次判定已消费。";
+                object[] args = { clan, kingdom, request.Week, true, request.Relation, request.Towns, request.Castles, naming, followers, null };
+                try { bool success = (bool)_af.Execute.Invoke(owner, args); Complete(request, (success ? "" : "叛乱未完成：") + args[9]); }
+                catch (Exception ex) { Complete(request, "叛乱结算异常，已发生变化保留且不会重复建国：" + Error(ex)); }
+                return;
+            }
+            StartNaming(request, owner, kingdom, clan, followers);
+        }
+        catch (Exception ex)
+        {
+            Logger.Log("Coup", "bridge_tick_failed: " + ex);
+            Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed);
+            if (request != null && _runningId == null) Complete(request, "政变后叛乱接缝异常，本次结束：" + Error(ex));
+        }
+    }
+
+    private void StartNaming(Request request, MyBehavior owner, Kingdom kingdom, Clan clan, List<Clan> followers)
+    {
+        object[] args = { clan, kingdom, request.Week, followers, null, null };
+        _af.BuildPrompt.Invoke(owner, args);
+        string system = (string)args[4], user = (string)args[5];
+        string requestId = request.Id;
+        string logTarget = "政变后叛乱建国命名 - " + request.ClanId;
+        int attempts = _af.NamingAttempts;
+        long generation = _generation;
+        Campaign campaign = Campaign.Current;
+        request.State = RequestState.Naming;
+        _runningId = _progressId = request.Id;
+        InformationManager.ShowInquiry(new InquiryData("正在生成政变后叛乱命名", "正在使用 AF 原有命名服务生成国名与简介。完成后才会执行家族反出与建国。", false, false, "", "", null, null), true);
+        Task.Run(() =>
+        {
+            var result = new NamingCompletion { Id = requestId, Generation = generation, Owner = owner, Campaign = campaign };
+            try
+            {
+                // Exactly the existing AF naming algorithm/gateway; no new request body or provider.
+                object naming = _af.Generate.Invoke(owner, new object[] { system, user, logTarget, attempts });
+                result.Json = JsonConvert.SerializeObject(naming);
+            }
+            catch (Exception ex) { result.Error = Error(ex); }
+            _completions.Enqueue(result);
+        });
+    }
+
+    private void ShowNamingFailure(Request request)
+    {
+        HideProgress(request.Id);
+        _choiceId = request.Id;
+        long generation = _generation;
+        Campaign campaign = Campaign.Current;
+        Func<bool> current = () => ReferenceEquals(Instance, this) && _generation == generation && ReferenceEquals(Campaign.Current, campaign)
+            && _requests.TryGetValue(request.Id, out Request live) && ReferenceEquals(live, request) && request.State == RequestState.NamingFailed;
+        InformationManager.ShowInquiry(new InquiryData("政变后叛乱命名未成功", "AF 未返回可用的国名与简介，本次尚未迁移家族或建国。可重试原命名服务，或跳过这一次叛乱。"
+            + (string.IsNullOrEmpty(request.Message) ? "" : "\n" + request.Message), true, true, "重新生成命名", "跳过本次",
+            () => { if (!current()) return; _choiceId = null; request.NamingJson = null; request.State = RequestState.Queued; },
+            () => { if (!current()) return; _choiceId = null; Complete(request, "已跳过这一次政变后叛乱，不重新选择家族。"); }), true);
+    }
+
+    private void HideProgress(string id)
+    {
+        if (_progressId != id) return;
+        InformationManager.HideInquiry();
+        _progressId = null;
+    }
+
+    private void Complete(Request request, string message)
+    {
+        HideProgress(request.Id);
+        request.State = RequestState.Completed;
+        request.Message = message;
+        if (_runningId == request.Id) _runningId = null;
+        Logger.Log("Coup", "rebellion_completed coup=" + request.Id + " result=" + message);
+        Show(message);
+        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed);
+    }
+
+    internal bool TryRecordCoupOutcome(string coupId, Hero formerKing, Settlement settlement, bool success, bool captured, out string message)
+    {
+        message = "";
+        MyBehavior owner = MyBehavior.Instance;
+        if (!Ready(owner) || string.IsNullOrWhiteSpace(coupId) || formerKing == null || settlement == null
+            || Hero.MainHero == null || PlayerNotorietyBehavior.Instance == null)
+        { message = "AF 政变事实接缝或存档尚未就绪。"; return false; }
+        coupId = coupId.Trim();
+        if (!_outcomes.TryGetValue(coupId, out Outcome receipt))
+        {
+            string place = settlement.Name.ToString(), king = formerKing.Name.ToString(), player = Hero.MainHero.Name.ToString();
+            receipt = new Outcome
+            {
+                HeroId = formerKing.StringId, SettlementId = settlement.StringId, KingdomId = (settlement.MapFaction as Kingdom)?.StringId ?? "",
+                Success = success, Captured = captured, Day = (int)CampaignTime.Now.ToDays, Date = CampaignTime.Now.ToString(),
+                NpcText = success ? player + "在" + place + "发动武装政变并击败了你；这次政变已经成功。" : player + "在" + place + "针对你发动武装政变，但突击失败，随后撤回留守部队。",
+                PlayerText = success ? "你在" + place + "针对" + king + "发动武装政变并取得成功。" : "你在" + place + "针对" + king + "发动武装政变失败，撤回留守部队。"
+            };
+            _outcomes.Add(coupId, receipt);
+        }
+        if (receipt.HeroId != formerKing.StringId || receipt.SettlementId != settlement.StringId || receipt.Success != success || receipt.Captured != captured)
+        { message = "同一政变编号的事实不同，拒绝重复覆盖。"; return false; }
+        string key = "coup:" + coupId;
+        try
+        {
+            if (!receipt.HistoryQueued)
+            {
+                if (!string.IsNullOrEmpty(receipt.RecoveryId))
+                {
+                    string state = MemoryStatus(receipt);
+                    receipt.HistoryQueued = state == "Pending" || state == "Completed";
+                }
+                if (!receipt.HistoryQueued)
+                {
+                    var commit = (InteractionMemoryCommit)_af.MemoryConstructor.Invoke(new object[] { key, InteractionChannel.Domain, key, receipt.HeroId, "", "",
+                        new[] { new FactRecord("coup_outcome", receipt.HeroId, receipt.NpcText) }, 0L, 0L, key, receipt.Day, 0, receipt.SettlementId, -1, -1, "" });
+                    object[] identity = { commit, false, formerKing.Name.ToString(), null, null, null };
+                    if (!(bool)_af.PrepareMemory.Invoke(null, identity)) { message = "政变记忆未接受：" + identity[5]; return false; }
+                    if (!string.IsNullOrEmpty(receipt.RecoveryId) && (receipt.RecoveryId != (string)identity[3] || receipt.RecoveryHash != (string)identity[4]))
+                    { message = "政变记忆恢复身份发生变化，拒绝重复写入。"; return false; }
+                    receipt.RecoveryId = (string)identity[3]; receipt.RecoveryHash = (string)identity[4];
+                    var result = (MemoryCommitResult)_af.CommitMemory.Invoke(null, new object[] { commit, false, formerKing.Name.ToString() });
+                    string state = MemoryStatus(receipt);
+                    receipt.HistoryQueued = result.HistoryWritten || state == "Pending";
+                    if (!receipt.HistoryQueued)
+                    {
+                        if (state == "Missing") receipt.RecoveryId = receipt.RecoveryHash = null;
+                        message = "政变记忆未完成：" + result.ErrorCode; return false;
+                    }
+                }
+            }
+            // Only the causal coup fact is added. Vanilla ruling/capture/land events
+            // already create their own facts and must not be manually emitted again.
+            if (!receipt.NpcRecorded)
+            {
+                MyBehavior.RecordNpcActionForExternal(formerKing, receipt.NpcText, key + ":npc", "coup_outcome", true, true, Hero.MainHero, settlement, settlement.Name.ToString(), false, !success);
+                receipt.NpcRecorded = true;
+            }
+            if (!receipt.PlayerRecorded)
+            {
+                MyBehavior.RecordPlayerActionForExternal(receipt.PlayerText, key + ":player", "coup_outcome", true, formerKing, settlement, settlement.Name.ToString(), success);
+                receipt.PlayerRecorded = true;
+            }
+            if (!receipt.WeeklyRecorded)
+            {
+                _af.Weekly.Invoke(owner, new object[] { "player_coup", "武装政变 - " + settlement.Name, receipt.PlayerText, key + ":weekly", receipt.KingdomId,
+                    receipt.SettlementId, true, true, Hero.MainHero.StringId, (Hero.MainHero.MapFaction as Kingdom)?.StringId ?? "", receipt.Day, receipt.Date });
+                receipt.WeeklyRecorded = true;
+            }
+            message = "政变事实已由 AF 原行动、记忆与周报入口登记。";
+            return true;
+        }
+        catch (Exception ex) { message = "政变事实登记未完成：" + Error(ex); Logger.Log("Coup", message); return false; }
+    }
+
+    private static string MemoryStatus(Outcome receipt) => _af.MemoryStatus.Invoke(null, new object[] { receipt.RecoveryId, receipt.HeroId, receipt.RecoveryHash })?.ToString() ?? "Unavailable";
+    private static string Error(Exception ex) => (ex is TargetInvocationException && ex.InnerException != null ? ex.InnerException : ex).Message;
+    private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】" + message)); }
+}
