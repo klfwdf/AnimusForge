@@ -14,6 +14,7 @@ using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Context;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Illustrator.UI.Overlays
 {
@@ -134,7 +135,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     AddEmblemSpec(redrawEmblems, current.InterlocutorHero, "对话对方");
                     AddEmblemSpec(redrawEmblems, current.MainHero, "玩家");
                     _activeInstance?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems);
-                }, probeSource == null ? (Action)null : () => popup?.ExecuteSharedSceneProbe(probeSource));
+                }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource));
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                     ? convContext.InterlocutorHero.Name.ToString()
@@ -344,32 +345,62 @@ namespace AnimusForge.Illustrator.UI.Overlays
             catch (Exception ex) { _dataSource.SetReady("生成准备失败：" + ex.Message); }
         }
 
-        private void ExecuteSharedSceneProbe(ScreenCaptureHelper.ConversationSceneCaptureSource source)
+        private void ExecuteIsolatedSceneProbe(ScreenCaptureHelper.ConversationSceneCaptureSource source)
         {
             try
             {
                 if (_closed || _dataSource.IsLoading || source == null || source.IsMapConversation) return;
                 source.EnsureCurrent(System.Threading.CancellationToken.None);
-                _dataSource.SetLoading("正在试采当前场景的单个离屏镜头...");
+                _dataSource.SetLoading("正在重建附近环境并采集前后两个镜头...");
                 _scope.Run(async token =>
                 {
                     await source.EnsureCurrentAsync(token).ConfigureAwait(false);
-                    var imageBytes = await ScreenCaptureHelper.CaptureSharedSceneProbeAsync(source, token).ConfigureAwait(false);
-                    await source.EnsureCurrentAsync(token).ConfigureAwait(false);
-                    return imageBytes;
+                    var diagnostics = GenerationDiagnostics.Current;
+                    diagnostics?.SetSubject("isolated-scene-probe");
+                    diagnostics?.RecordStage("isolated_scene_probe_start", new JObject
+                    {
+                        ["views"] = 2, ["faceSize"] = 512, ["radiusMeters"] = 30,
+                        ["providerRequests"] = 0, ["sceneCopy"] = true, ["sourceMissionViews"] = 0
+                    });
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    bool captured = false;
+                    try
+                    {
+                        // Reuse the production private-scene capture and its locks/retirement.
+                        // The optional presented-frame reference is not the probe preview.
+                        var capture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
+                        await source.EnsureCurrentAsync(token).ConfigureAwait(false);
+                        var reference = capture?.References?.FirstOrDefault(image => image?.Kind == IllustrationReferenceKind.SceneViews);
+                        if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image))
+                            throw new InvalidOperationException("独立场景未返回完整的前后参考拼图。");
+                        byte[] imageBytes = Convert.FromBase64String(reference.Base64Image);
+                        token.ThrowIfCancellationRequested();
+                        if (imageBytes.Length == 0) throw new InvalidOperationException("独立场景返回了空的参考拼图。");
+                        diagnostics?.RecordIsolatedSceneProbeImage(imageBytes);
+                        captured = true;
+                        return imageBytes;
+                    }
+                    finally
+                    {
+                        diagnostics?.RecordStage("isolated_scene_probe_end", new JObject
+                        {
+                            ["totalMs"] = watch.ElapsedMilliseconds, ["referenceSheet"] = captured,
+                            ["providerRequests"] = 0, ["sourceMissionViews"] = 0
+                        });
+                    }
                 }, imageBytes =>
                 {
                     try
                     {
                         source.EnsureCurrent(System.Threading.CancellationToken.None);
-                        const string probeNote = "【单镜头试采预览】直接借用当前 Mission 场景，由独立离屏相机导出单张参考；不是正式插画，也不是前后拼图。未调用导演或生图模型，未写入图库或设为默认图。";
+                        const string probeNote = "【独立场景试采预览】在独立场景中重建玩家附近约30米的静态环境，左图为前方，右图为后方；不是完整360度全景。人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。";
                         if (imageBytes == null || imageBytes.Length == 0 || !PublishImage(null, imageBytes, probeNote))
                         {
                             SetSceneProbeFailure("未能显示导出的预览");
                             return;
                         }
-                        _dataSource.TitleText = "【单镜头试采预览】";
-                        _dataSource.SetReady("试采完成：仅预览，未调用模型");
+                        _dataSource.TitleText = "【独立场景 · 前后试采】";
+                        _dataSource.SetReady("前后试采完成：仅预览，未调用模型");
                     }
                     catch (Exception ex) { SetSceneProbeFailure(ex.Message); }
                 }, SetSceneProbeFailure);

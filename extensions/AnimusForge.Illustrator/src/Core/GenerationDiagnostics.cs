@@ -18,7 +18,7 @@ namespace AnimusForge.Illustrator.Core
 {
     // Opt-in by generation scope, not global HTTP logging. Headers/credentials are never serialized.
     // At most 12 request directories, 15 MiB references + 512 KiB metadata + 2 MiB
-    // optional scene inventory (and atomic temp files) each.
+    // each optional scene inventory/resource supplement (and atomic temp files).
     internal sealed class GenerationDiagnostics : IDisposable
     {
         internal const int MaxRecords = 12;
@@ -138,15 +138,50 @@ namespace AnimusForge.Illustrator.Core
             });
         }
 
-        internal void RecordSceneProbeImages(byte[] nativePng, byte[] previewPng)
+        internal void RecordIsolatedSceneProbeImage(byte[] previewPng)
         {
-            Safe(() => AddEvent("shared_scene_probe_images", new JObject
+            Safe(() => AddEvent("isolated_scene_probe_image", new JObject
             {
-                ["native"] = StoreReference(nativePng, "probe_front_native.png"),
-                ["preview"] = StoreReference(previewPng, "probe_front_preview.png"),
-                ["views"] = 1, ["sentToModels"] = false,
-                ["purpose"] = "Manual single-camera shared-scene probe; native before producer RGB adaptation, preview after adaptation."
+                ["preview"] = StoreReference(previewPng, "isolated_front_back_preview.png"),
+                ["views"] = 2, ["sentToModels"] = false,
+                ["purpose"] = "Manual private-scene front/back preview; no view renders the live mission scene."
             }));
+        }
+
+        internal void RecordSceneResourceSupplement(JObject details)
+        {
+            if (details == null) return;
+            Safe(() =>
+            {
+                var document = (JObject)Sanitize(details, false);
+                var records = document["records"] as JArray ?? new JArray();
+                int dropped = 0;
+                byte[] bytes;
+                while (true)
+                {
+                    document["omittedForByteBudget"] = dropped;
+                    bytes = Encoding.UTF8.GetBytes(document.ToString(Formatting.None));
+                    if (bytes.Length <= MaxSceneInventoryBytes) break;
+                    if (records.Count == 0) throw new IOException("Resource inventory exceeds metadata budget.");
+                    int remove = Math.Max(1, records.Count / 4);
+                    for (int i = 0; i < remove; i++) records.RemoveAt(records.Count - 1);
+                    dropped += remove;
+                }
+                string path = Path.Combine(_directory, "scene-resource-supplement.json");
+                string temporary = path + ".tmp";
+                try
+                {
+                    File.WriteAllBytes(temporary, bytes);
+                    if (File.Exists(path)) File.Replace(temporary, path, null); else File.Move(temporary, path);
+                }
+                finally { if (File.Exists(temporary)) File.Delete(temporary); }
+                AddEvent("scene_resource_supplement", new JObject
+                {
+                    ["file"] = "scene-resource-supplement.json", ["bytes"] = bytes.Length,
+                    ["copied"] = document["copied"], ["complete"] = document["complete"],
+                    ["missingResources"] = document["missingResources"], ["omittedForByteBudget"] = dropped
+                });
+            });
         }
 
         internal void RecordDirectorResponse(string rawResponse, string finishReason)

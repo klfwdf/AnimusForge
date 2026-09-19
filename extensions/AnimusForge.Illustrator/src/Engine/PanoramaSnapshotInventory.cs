@@ -47,6 +47,9 @@ namespace AnimusForge.Illustrator.Engine
             public string Name { get; set; }
             public int? SubMeshCount { get; set; }
             public float[] LocalFrame { get; set; }
+            public float[] TargetFrame { get; set; }
+            public float[] TargetBoundsMin { get; set; }
+            public float[] TargetBoundsMax { get; set; }
             public string Result { get; set; } = "copy_pending";
             public string MetadataError { get; set; }
         }
@@ -95,6 +98,8 @@ namespace AnimusForge.Illustrator.Engine
                 ["sourceScene"] = Limit(SourceSceneName),
                 ["sourceRoots"] = snapshot.SourceRoots, ["inspectedNodes"] = snapshot.InspectedNodes,
                 ["copiedMetaMeshComponents"] = snapshot.CopiedRoots,
+                ["runtimeCopiedComponents"] = snapshot.CopiedRoots - snapshot.ResourceCopiedComponents,
+                ["resourceCopiedComponents"] = snapshot.ResourceCopiedComponents,
                 ["center"] = new JArray(Vector(snapshot.CaptureCenter)), ["radiusMeters"] = ScreenCaptureHelper.PanoramaCaptureRadius,
                 ["entryLimit"] = MaximumEntries, ["meshDetailLimitPerEntry"] = MaximumMeshesPerEntry,
                 ["omittedEntries"] = _omittedEntries,

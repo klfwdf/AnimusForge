@@ -52,10 +52,10 @@
           </Children>
         </Widget>
 
-        <!-- 仅真实 Mission 会话显示；试采独立于正式生成，加载中禁止重复点击。 -->
+        <!-- 仅真实 Mission 会话显示；试采独立场景前后拼图，不调用模型，加载中禁止重复点击。 -->
         <ButtonWidget IsVisible="@CanProbeScene" IsEnabled="@CanExecuteSceneProbe" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="152" SuggestedHeight="32" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="66" Brush="Popup.Done.Button" Command.Click="ExecuteSceneProbe" UpdateChildrenStates="true">
           <Children>
-            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="单镜头试采" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="独立场景试采" DoNotAcceptEvents="true" />
           </Children>
         </ButtonWidget>
 

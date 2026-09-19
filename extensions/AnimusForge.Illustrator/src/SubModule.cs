@@ -45,7 +45,6 @@ namespace AnimusForge.Illustrator
             try
             {
                 IllustratorRuntime.Tick();
-                Engine.ScreenCaptureHelper.TickSharedSceneProbe(dt);
                 Engine.ScreenCaptureHelper.ObservePanoramaFrame(dt);
             }
             catch
