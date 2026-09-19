@@ -1,3 +1,16 @@
+# 当前范围：J05_OFFLINE_VERIFIED（2026-09-19）
+
+当前源码 `d903df67`，[代码地图](af-framework-code-map.json) 262 锚点（9 个搬迁文件的 14 个旧锚点已按新路径重绑，无悬空路径）。唯一状态见[主台账 J05 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j05-offline-verified-20260919)。
+
+| 责任 | 已迁与接线 | 保留（归属包） |
+| --- | --- | --- |
+| `src/modules/AF.Module.Memory/Records/` `NpcActionLedger`、`DialogueHistoryLedger`（+搬入 `EventSourceMaterialIndex`） | 行为账本与对话历史账本规则唯一 owner；`MyBehavior` 11 个 helper 删除，Record/Append/Expire/Recovery 四入口改调 | 五个记忆记录类型与 `Sanitize*` 仍是 `MyBehavior` 私有嵌套存档类型（J16/J17 存档类型评估） |
+| `src/modules/AF.Module.Memory/Summary/`（6 文件）、`Recovery/`（2 文件） | 由 `Refactor/Runtime|Contracts` 纯 rename，命名空间不变，24 个 tool 工程路径更新 | 逐 record/字符/耗时预算替换每帧回调未实施（需实机数据，J07/J13 复评） |
+| `src/AF.Persistence/OwnerJsonStorageCodec` | SyncData 七处 owner→JSON 循环收敛；键策略/空列表/sanitize/失败隔离参数化；key/chunk/字段/日志不变 | `CompressedMemoryExportBundle` 构造/应用直接读写 5 个 host 字段（随存档类型评估） |
+| `src/AF.Persistence/PlayerExportsStore`、`NpcDataFileName` | 三 host 重复副本删除（MyBehavior 16、ModOnboarding 3、KingdomStrategicProfile.DevUi 2）；Hero 名解析唯一留 host | 159 个 Import/Export/OpenDev 方法体未重写；Knowledge 导入校验 8 静态方法（J06） |
+
+## 以下为 J04 范围记录
+
 # 当前范围：J04_OFFLINE_VERIFIED（2026-09-19）
 
 当前源码 `8faf5fbe`，[代码地图](af-framework-code-map.json) 253 锚点两模式通过。唯一状态见[主台账 J04 最终回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04-offline-verified-20260919)。
