@@ -45,7 +45,7 @@ public partial class CourierDeliveryBehavior
 			CourierPreprocessRetrievalResult retrieved = await Task.Run(() =>
 			{
 				using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
-				AIConfigHandler.ApplyGuardrailRuntimeTarget(begin.Preprocess.Target);
+				AIConfigHandler.ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility);
 				try
 				{
 					List<string> hits = owner.RunCourierRulePreprocessRetrieval(begin.Preprocess, out MentionedWorldEntities mentions);
@@ -88,7 +88,7 @@ public partial class CourierDeliveryBehavior
 		await Task.Run(() =>
 		{
 			using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
-			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target);
+			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 			try { owner.RunSharedPromptRouting(phases); }
 			finally { AIConfigHandler.ClearGuardrailRuntimeTarget(); }
 		}).ConfigureAwait(false);
@@ -99,7 +99,7 @@ public partial class CourierDeliveryBehavior
 		{
 			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
 			using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
-			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target);
+			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 			try { return new CourierPreparedPrompt(preprocessRuleHits, owner.CompleteSharedPromptBuild(phases, input.Participant, input.Character, null)); }
 			finally { AIConfigHandler.ClearGuardrailRuntimeTarget(); }
 		}, CancellationToken.None).ConfigureAwait(false);

@@ -158,6 +158,7 @@ public static class AIConfigHandler
 	private static readonly PromptRetrievalContextSlot<string> _guardrailSemanticRuntimeContext = PromptRetrievalContextOwner.Semantic;
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetKingdomId = PromptRetrievalContextOwner.Kingdom;
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetHeroId = PromptRetrievalContextOwner.Hero;
+	private static readonly PromptRetrievalContextSlot<object> _guardrailRuntimeEligibility = PromptRetrievalContextOwner.Eligibility;
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetCharacterId = PromptRetrievalContextOwner.Character;
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetTroopId = PromptRetrievalContextOwner.Troop;
 	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetUnnamedRank = PromptRetrievalContextOwner.UnnamedRank;
@@ -322,6 +323,11 @@ public static class AIConfigHandler
 	{
 		try
 		{
+			PromptRuleEligibility captured = CapturedRuleEligibility;
+			if (captured != null && captured.IsCaptured)
+			{
+				return captured.TargetIsPlayerPartyTradeLimited;
+			}
 			return IsPlayerPartyTradeLimitedTarget(ResolveConversationTargetHero());
 		}
 		catch
@@ -1731,6 +1737,11 @@ public static class AIConfigHandler
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
+		}
+		PromptRuleEligibility captured = CapturedRuleEligibility;
+		if (captured != null && captured.IsCaptured)
+		{
+			return captured.IsRuleEligibleForRag(text);
 		}
 		if (ShouldExcludeRuntimeRuleForConversationTarget(text))
 		{
@@ -5663,7 +5674,64 @@ public static class AIConfigHandler
 	/// <summary>Publish one detached target binding into the ambient retrieval context (legacy six-setter order).</summary>
 	internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding)
 	{
+		ApplyGuardrailRuntimeTarget(binding, null);
+	}
+
+	/// <summary>Publish the binding plus the eligibility facts captured on the game thread; null facts keep legacy live resolution.</summary>
+	internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding, PromptRuleEligibility eligibility)
+	{
 		binding.Apply(SetGuardrailRuntimeTargetKingdom, SetGuardrailRuntimeTargetHero, SetGuardrailRuntimeTargetCharacter, SetGuardrailRuntimeTargetTroop, SetGuardrailRuntimeTargetUnnamedRank, SetGuardrailRuntimeTargetAgentIndex);
+		try
+		{
+			_guardrailRuntimeEligibility.Value = eligibility;
+		}
+		catch
+		{
+		}
+	}
+
+	private static PromptRuleEligibility CapturedRuleEligibility
+	{
+		get
+		{
+			try
+			{
+				return _guardrailRuntimeEligibility.Value as PromptRuleEligibility;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+	}
+
+	/// <summary>Game thread: resolve every live fact the RAG eligibility decisions need for the bound target.</summary>
+	internal static PromptRuleEligibility CapturePromptRuleEligibility(Hero targetHero, CharacterObject targetCharacter, PromptRuntimeTargetBinding binding)
+	{
+		PromptRuleEligibility result = new PromptRuleEligibility();
+		try
+		{
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (hero == null && !string.IsNullOrWhiteSpace(binding.HeroId))
+			{
+				hero = Hero.Find(binding.HeroId.Trim());
+			}
+			result.TargetIsPlayerPartyTradeLimited = IsPlayerPartyTradeLimitedTarget(hero);
+			result.SceneMoveRuleExcludedForMission = ShouldExcludeSceneMoveRuleForCurrentMission();
+			result.GcczSiegeAftermathActive = AfGcczShoutBridge.IsActive();
+			result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForExternal(hero, targetCharacter);
+			result.DiplomacyEligible = DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(hero, targetCharacter);
+			result.WorldDiplomacyEligible = WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(hero);
+			result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter);
+			result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero));
+			result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero));
+			result.LordsHallAccessEligible = !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal());
+			result.HasAnyTargetIdentity = hero != null || targetCharacter != null || !string.IsNullOrWhiteSpace(binding.TroopId) || !string.IsNullOrWhiteSpace(binding.UnnamedRank);
+		}
+		catch
+		{
+		}
+		return result;
 	}
 
 	/// <summary>Legacy finally-block reset; the enclosing BeginGuardrailRuntimeScope restores the parent context afterwards.</summary>
@@ -7254,6 +7322,26 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return false;
+			}
+			PromptRuleEligibility captured = CapturedRuleEligibility;
+			if (captured != null && captured.IsCaptured)
+			{
+				bool allowed = captured.CanInjectRuleTopicIntoPreprocess(text);
+				if (string.Equals(text, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
+				{
+					VassalageDiagnosticLog.Event("preprocess.gate", new Dictionary<string, object>
+					{
+						["ruleId"] = text,
+						["hasAnyHero"] = hasAnyHero,
+						["targetHeroId"] = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim(),
+						["targetCharacterId"] = (_guardrailRuntimeTargetCharacterId.Value ?? "").Trim(),
+						["runtimeEligible"] = allowed,
+						["allowRuleIntoPreprocess"] = allowed,
+						["reason"] = allowed ? "player_and_target_are_rulers" : "requires_player_and_target_rulers",
+						["source"] = "captured"
+					});
+				}
+				return allowed;
 			}
 			switch (text)
 			{

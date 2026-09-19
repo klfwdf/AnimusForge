@@ -33,6 +33,7 @@ internal static class PromptRetrievalContextOwner
         internal string Troop;
         internal string UnnamedRank;
         internal int AgentIndex = -1;
+        internal object Eligibility;
         internal object LatestEntities;
 
         internal Context Clone() => (Context)MemberwiseClone();
@@ -60,6 +61,7 @@ internal static class PromptRetrievalContextOwner
     internal static readonly PromptRetrievalContextSlot<string> Troop = CreateSlot(context => context.Troop, (context, value) => context.Troop = value);
     internal static readonly PromptRetrievalContextSlot<string> UnnamedRank = CreateSlot(context => context.UnnamedRank, (context, value) => context.UnnamedRank = value);
     internal static readonly PromptRetrievalContextSlot<int> AgentIndex = CreateSlot(context => context.AgentIndex, (context, value) => context.AgentIndex = value);
+    internal static readonly PromptRetrievalContextSlot<object> Eligibility = CreateSlot(context => context.Eligibility, (context, value) => context.Eligibility = value);
 
     internal static IDisposable BeginScope(Func<object, object, object> mergeLatest = null)
     {

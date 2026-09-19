@@ -17,6 +17,7 @@ internal sealed class PromptBuildRequest
 	internal string KingdomIdOverride;
 	internal string TargetKingdomId;
 	internal PromptRuntimeTargetBinding Target;
+	internal PromptRuleEligibility Eligibility;
 	internal string TargetHeroId;
 	internal string TargetCharacterId;
 	internal string TargetDisplayName;

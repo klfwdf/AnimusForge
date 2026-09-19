@@ -56,7 +56,7 @@ public partial class ShoutBehavior
 		Task<MyBehavior.ShoutPromptContext> routingTask = RunNativeConversationBackgroundPreprocessAsync(target, targetAgentIndex, runtimeGeneration, () =>
 		{
 			using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
-			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target);
+			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 			try
 			{
 				owner.RunSharedPromptRouting(phases);
@@ -87,7 +87,7 @@ public partial class ShoutBehavior
 					return null;
 				}
 				using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
-				AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target);
+				AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 				try
 				{
 					return owner.CompleteSharedPromptBuild(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
