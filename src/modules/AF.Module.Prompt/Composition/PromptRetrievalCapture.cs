@@ -14,6 +14,7 @@ internal sealed class PromptRetrievalCapture
 	internal MentionedWorldEntities AuxiliaryMentions;
 	internal long LoreRuleVersion;
 	internal LoreCandidateRules LoreCandidates;
+	internal List<GuardrailRuleHit> FallbackExtraRuleHits;
 }
 
 /// <summary>

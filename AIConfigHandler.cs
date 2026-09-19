@@ -4924,10 +4924,10 @@ public static class AIConfigHandler
 
 	}
 
-	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null)
+	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null, bool applyRuntimeAutoExclusions = true)
 	{
 		eval = null;
-		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot, excludedRuleIds) || snapshot == null || snapshot.Rules == null)
+		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot, excludedRuleIds, applyRuntimeAutoExclusions) || snapshot == null || snapshot.Rules == null)
 		{
 			return false;
 		}
@@ -5145,13 +5145,13 @@ public static class AIConfigHandler
 		catch { matchedKeyword = ""; return false; }
 	}
 
-	private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false, IEnumerable<string> excludedRuleIds = null)
+	private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false, IEnumerable<string> excludedRuleIds = null, bool applyRuntimeAutoExclusions = true)
 	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		try
 		{
 			int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
-			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
 			if (dictionary == null || dictionary.Count <= 0)
 			{
@@ -5264,6 +5264,21 @@ public static class AIConfigHandler
 		return "";
 	}
 
+	/// <summary>Game thread: resolve the legacy sticky identity before background retrieval.</summary>
+	internal static string CaptureGuardrailStickyTargetKey(PromptRuntimeTargetBinding binding)
+	{
+		using IDisposable scope = BeginGuardrailRuntimeScope();
+		try
+		{
+			ApplyGuardrailRuntimeTarget(binding);
+			return ResolveGuardrailStickyTargetKey();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static bool DidGuardrailRuleRecentlyComplete(string ruleId, string secondaryInput)
 	{
 		string text = (secondaryInput ?? "").Trim();
@@ -5297,18 +5312,18 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input, string secondaryInput, List<GuardrailRuleHit> liveHits, int maxCount, IEnumerable<string> excludedRuleIds = null)
+	private static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input, string secondaryInput, List<GuardrailRuleHit> liveHits, int maxCount, IEnumerable<string> excludedRuleIds = null, string capturedTargetKey = null, bool applyRuntimeAutoExclusions = true)
 	{
-		HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+		HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 		int cap = maxCount > 0 ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap;
-		string target = ResolveGuardrailStickyTargetKey();
+		string target = capturedTargetKey ?? ResolveGuardrailStickyTargetKey();
 		Dictionary<string, GuardrailRulePromptConfig> rules = string.IsNullOrWhiteSpace(target) ? null : BuildRulePromptRegistry();
 		List<GuardrailRuleHit> result = _stickyGuardrailRuleStore.Merge(_promptConfiguration.Read().Revision,
 			() => _promptConfiguration.Capture().Revision, target, input, liveHits, cap, excluded, rules,
 			ruleId => DidGuardrailRuleRecentlyComplete(ruleId, secondaryInput),
 			ruleId =>
 			{
-				if (!TryGetRuleEval(input, secondaryInput, ruleId, out var eval, excluded) || eval == null)
+				if (!TryGetRuleEval(input, secondaryInput, ruleId, out var eval, excluded, applyRuntimeAutoExclusions) || eval == null)
 					return default;
 				return new PromptStickyEvidence(eval.Hit, eval.ForceHit, eval.HighAmpHit, eval.AbsHit, eval.Rank, eval.AmpScore);
 			}, IsRuleCurrentlyEligibleForRag, out int carriedCount);
@@ -5387,10 +5402,42 @@ public static class AIConfigHandler
 				guardrailSemanticRuleHits = GetGuardrailLexicalRuleHits(input, secondaryInput, maxRules, includeBuiltInRules: false, excludedRuleIds: excluded);
 			}
 			guardrailSemanticRuleHits = MergeStickyGuardrailRuleHits(input, secondaryInput, guardrailSemanticRuleHits, maxRules, excluded);
+			return FormatMatchedExtraRuleInstructions(input, secondaryInput, hasAnyHero, excluded, guardrailSemanticRuleHits);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	/// <summary>Worker-only fallback selection; runtime instruction formatting stays on the game thread.</summary>
+	internal static List<GuardrailRuleHit> GetMatchedExtraRuleHitsForWorker(string input, string secondaryInput, int maxRules, IEnumerable<string> excludedRuleIds, string capturedStickyTargetKey)
+	{
+		try
+		{
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions: false);
+			List<GuardrailRuleHit> hits = GetGuardrailSemanticRuleHits(input, secondaryInput, maxRules, includeBuiltInRules: false, excluded, applyRuntimeAutoExclusions: false);
+			if (hits == null || hits.Count == 0)
+			{
+				hits = GetGuardrailLexicalRuleHits(input, secondaryInput, maxRules, includeBuiltInRules: false, excluded, applyRuntimeAutoExclusions: false);
+			}
+			return MergeStickyGuardrailRuleHits(input, secondaryInput, hits, maxRules, excluded, capturedStickyTargetKey ?? "", applyRuntimeAutoExclusions: false);
+		}
+		catch
+		{
+			return new List<GuardrailRuleHit>();
+		}
+	}
+
+	internal static string FormatMatchedExtraRuleInstructions(string input, string secondaryInput, bool hasAnyHero, IEnumerable<string> excludedRuleIds, List<GuardrailRuleHit> guardrailSemanticRuleHits)
+	{
+		try
+		{
 			if (guardrailSemanticRuleHits == null || guardrailSemanticRuleHits.Count <= 0)
 			{
 				return "";
 			}
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
 			Dictionary<string, GuardrailRulePromptConfig> dictionary = (hasAnyHero ? null : BuildRulePromptRegistry());
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < guardrailSemanticRuleHits.Count; i++)

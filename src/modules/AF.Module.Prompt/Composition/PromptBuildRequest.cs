@@ -42,6 +42,7 @@ internal sealed class PromptBuildRequest
 	internal bool CompleteRuntimeExcludedRuleIds;
 	internal IEnumerable<string> ForcedPreprocessRuleIds;
 	internal string StickyTargetKey;
+	internal string GuardrailStickyTargetKey;
 
 	internal bool IsEmpty => string.IsNullOrWhiteSpace(Input) && string.IsNullOrWhiteSpace(ExtraFact);
 }
