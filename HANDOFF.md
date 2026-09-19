@@ -1,3 +1,9 @@
+# 当前接续：远端 J06 红测已修复，差分全绿；J06 仍 VERIFY / NOT_ACCEPTED，下一包 J07（2026-09-19）
+
+本地 `codex/af-modularize-j04-20260918` 已 `--ff-only` 快进到 GitHub `codex/af-main-refactor-continuation-20260831` 终点 `2946bf3d`，产品源码终点不变 `70db6ec2`（291 锚点地图有效）。远端 HANDOFF 记录的“实体差分非空输入下主文/后处理变空”根因是 harness 的 `FindRawRulerTitleMatches` 仍为 throw 桩、被生产 `BuildPromptContext` 外层 catch 吞成空上下文；`08699b4f` 改为两侧提取真实 raw 称谓匹配方法后，`EntityTextDifferential` 与依赖它的 `SharedCompletionDifferential`（12 场景，Courier + Native 最终请求含生产派生三类文本）全部 PASS，六项负向变异全部拒收。同提交修了 Index harness 的硬编码 Newtonsoft 路径和 2 条 SyncData 绑定行号（168 条身份不变）。本机 Debug/Release × 1.3/1.4/Bootstrap 六项 0 错误；Knowledge/Prompt 全部 22 套、Courier/Native/Scene/Cutover 渠道 runner、Memory/Persistence 全部 PASS。**未推送、未部署、未动存档、未改产品源码。** J06 剩余开放项只有实机帧耗时与非 Hero 类别真实文本（离线不可闭合），故不标 `J06_OFFLINE_VERIFIED`，按总计划进入 **J07 Conversation 核心 / Native**。详见[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06-differential-green-20260919)。
+
+## 以下为远端 J06 暂停交接
+
 # 当前接续：J06 已暂停，最终 Prompt 对照仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
 - 本轮暂停点：新增 `SharedCompletionDifferential`、`NativeFinalRequestDifferential`，并修改 Lore／实体／额外规则差分 runner 与 Courier harness；一次集成回放曾报告 12 组共享上下文及 Native／Courier 请求一致，三类仅新侧文本丢失变异均被拒收。但随后为统一请求身份和输入所做的修改尚未复验，实体回放的非空输入目前在生产 `BuildPromptContext` 对照处失败（主文/后处理变空）；原因待核实，不能沿用此前 PASS 宣称最终验收。本轮将这些测试源码作为 **WIP 接续点**提交推送；`.dotnet-cli-home/` 仍保留本地，不上传。
