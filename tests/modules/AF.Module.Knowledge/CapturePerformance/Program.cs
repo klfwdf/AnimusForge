@@ -35,7 +35,7 @@ internal static partial class WorldEntityRetrievalService
     private static Kingdom ResolveHeroKingdomForResidentEntity(Hero hero, Clan clan) => clan?.Kingdom;
     private static bool TryResolveHeroCampaignPosition(Hero hero, out CampaignVec2 position)
     { position = new CampaignVec2(hero.Distance); return true; }
-    internal static (int Captured, int Distances, int Checks, double Milliseconds) Measure(Hero[] heroes, bool metadata)
+    internal static (int Captured, int Scopes, int Distances, int Checks, double Milliseconds) Measure(Hero[] heroes, bool metadata)
     {
         var detached = new List<DetachedEntityCandidate>();
         var live = new Dictionary<DetachedEntityCandidate, Hero>();
@@ -44,7 +44,8 @@ internal static partial class WorldEntityRetrievalService
         CaptureCandidates(heroes, detached, live, x => new[] { "alias" }, x => "hero", x => "Name", new WorldEntityRetrievalBudget(),
             metadata ? (Action<Hero, DetachedEntityCandidate>)((hero, candidate) => CaptureDetachedMetadata(candidate, hero, new CampaignVec2(0))) : null);
         watch.Stop();
-        return (detached.Count, detached.Count(x => x.HeroDistance != float.MaxValue), _budgetChecks, watch.Elapsed.TotalMilliseconds);
+        return (detached.Count, detached.Count(x => x.HeroClanId == "c1" && x.HeroKingdomId == "k1"),
+            detached.Count(x => x.HeroDistance != float.MaxValue), _budgetChecks, watch.Elapsed.TotalMilliseconds);
     }
 }
 internal static class Program
@@ -64,12 +65,13 @@ internal static class Program
             {
                 var baseline = WorldEntityRetrievalService.Measure(heroes, false);
                 var actual = WorldEntityRetrievalService.Measure(heroes, true);
-                Check(actual.Captured == count && actual.Distances == count, "all candidates retain distance metadata");
+                Check(actual.Captured == count && actual.Scopes == count && actual.Distances == count,
+                    "all candidates retain scope and distance metadata");
                 Check(actual.Checks == count / 64, "budget is checked at each 64 candidates");
                 plain += baseline.Milliseconds;
                 captured += actual.Milliseconds;
             }
-            Console.WriteLine($"PASS knowledge-j06-capture-performance candidates={count} distanceMetadata={count} budgetChecks={count / 64} runs=9 baselineMeanMs={plain / 9:F3} metadataMeanMs={captured / 9:F3} deltaMeanMs={(captured - plain) / 9:F3} source=production-capture-methods game=stubbed");
+            Console.WriteLine($"PASS knowledge-j06-capture-performance candidates={count} scopeMetadata={count} distanceMetadata={count} budgetChecks={count / 64} runs=9 baselineMeanMs={plain / 9:F3} metadataMeanMs={captured / 9:F3} deltaMeanMs={(captured - plain) / 9:F3} source=production-capture-methods game=stubbed");
             return 0;
         }
         catch (Exception ex) { Console.Error.WriteLine(ex.Message); return 1; }
