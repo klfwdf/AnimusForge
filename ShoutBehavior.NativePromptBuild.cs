@@ -78,7 +78,7 @@ public partial class ShoutBehavior
 			return null;
 		}
 
-		// Step 3: game thread. Prepare the versioned Lore index after routing discovered mentions.
+		// Step 3: game thread. Prepare Lore and capture entity candidates after routing discovered mentions.
 		PromptBuildPhases prepared = await RunNativeConversationMainThreadFuncAsync("prompt_build_knowledge_capture", target, targetAgentIndex,
 			() =>
 			{
@@ -92,7 +92,7 @@ public partial class ShoutBehavior
 			return null;
 		}
 
-		// Step 4: background candidate retrieval, with the same slot/timeout guard as routing.
+		// Step 4: background Lore/entity/rule retrieval, with the same slot/timeout guard as routing.
 		MyBehavior.ShoutPromptContext knowledgeMarker = new MyBehavior.ShoutPromptContext();
 		Task<MyBehavior.ShoutPromptContext> knowledgeTask = RunNativeConversationBackgroundPreprocessAsync(target, targetAgentIndex, runtimeGeneration, () =>
 		{
