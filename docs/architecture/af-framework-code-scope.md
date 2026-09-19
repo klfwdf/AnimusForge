@@ -1,3 +1,15 @@
+# 当前范围：J04_OFFLINE_VERIFIED（2026-09-19）
+
+当前源码 `8faf5fbe`，[代码地图](af-framework-code-map.json) 253 锚点两模式通过。唯一状态见[主台账 J04 最终回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04-offline-verified-20260919)。
+
+| 责任 | 已迁与接线 | 保留（归属包） |
+| --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Composition/` 13 owner | 规则 ID/sticky/路由/ID 收敛/Extras/目标绑定/规则块文本/路由阶段/请求+排除/上下文决策/装配/检索捕获/规则指令拼装；目录零 TaleWorlds/AIConfigHandler/Logger 引用 | — |
+| `MyBehavior.cs` Begin/Routing/Complete 三步 + Capture*/Apply* 阶段 | 步骤2 完整 mention 解析；步骤3 段落捕获 207 行全为游戏读 | lore/实体/extra-rule 检索在步骤3（J06）；四个 Add*Exclusions adapter（J07） |
+| `ShoutBehavior.NativePromptBuild.cs` / `CourierDeliveryBehavior.PromptSchedule.cs` | 主线程/后台分段 + 逐跳重验 | Scene 五调用点（J10） |
+
+## 以下为 J04f 范围记录
+
 # 当前范围：J04f 完成，Native/Courier 执行位置已搬（2026-09-19，J04_PARTIAL）
 
 当前源码 `52247a51`，[代码地图](af-framework-code-map.json) 250 锚点两模式通过。唯一状态见[主台账 J04f 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j04f-receipt-20260919)。
