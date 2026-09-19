@@ -8,7 +8,10 @@ namespace AnimusForge.Illustrator.Core
         Scene,
         CharacterDetail,
         ScenePanorama,
-        SceneViews
+        SceneViews,
+        MapConversationScene,
+        EventCharacter,
+        EventEmblem
     }
 
     /// <summary>

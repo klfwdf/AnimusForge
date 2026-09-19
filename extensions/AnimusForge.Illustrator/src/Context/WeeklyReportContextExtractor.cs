@@ -22,8 +22,9 @@ namespace AnimusForge.Illustrator.Context
     }
 
     /// <summary>
-    /// 子模块侧周报结构化快照：弹窗文本只解析一次，之后人物、地点、主题与日期全部由快照承载，
-    /// 不再在生图链路上二次猜测。地点只在周报文本真实提及定居点时解析，解析不到就标未知，
+    /// 子模块侧周报结构化快照：弹窗文本只解析一次，人物、地点候选及其来源句与日期由快照承载。
+    /// 导演在同一次请求中选择事件；最早提及的人物与地点不是已选中的主角和现场。
+    /// 地点只在周报文本真实提及定居点时解析，解析不到就标未知，
     /// 绝不用"主角/玩家当前所在地"冒充事件现场。
     /// </summary>
     public sealed class WeeklyReportIllustrationSnapshot
@@ -34,7 +35,9 @@ namespace AnimusForge.Illustrator.Context
         public string EventFacts = string.Empty;
         public WeeklyReportEventTheme Theme = WeeklyReportEventTheme.General;
         public Hero ProtagonistHero;
+        public string ProtagonistEvidence = string.Empty;
         public Settlement EventSettlement;
+        public string EventSettlementEvidence = string.Empty;
         public string ReportDateLabel = string.Empty;
     }
 
@@ -65,24 +68,30 @@ namespace AnimusForge.Illustrator.Context
             if (ProtagonistProfile != null)
             {
                 sb.AppendLine();
-                sb.AppendLine("=== 【登场人物真实视觉档案】 ===");
+                sb.AppendLine("=== 【本期提及人物的可选身份资料】 ===");
+                if (!string.IsNullOrWhiteSpace(Snapshot?.ProtagonistEvidence))
+                    sb.AppendLine("【此人对应原文】" + Snapshot.ProtagonistEvidence);
+                sb.AppendLine("此人为本期正文中识别到的参考人物，并非预先指定的画面主角。只有选中的事件确实涉及此人时才使用其身份资料；选择其他事件时不必让他入画。没有参考图的参与方仍按所选事件表达，参考图数量不决定画中人数。");
                 sb.AppendLine(ProtagonistProfile.BuildVisualSummary());
             }
 
-            if (EnvironmentProfile != null)
+            if (EnvironmentProfile != null && (Snapshot == null || Snapshot.EventSettlement != null))
             {
                 string facts = EnvironmentProfile.BuildHardFactsSummary();
                 if (!string.IsNullOrWhiteSpace(facts))
                 {
                     sb.AppendLine();
-                    sb.AppendLine("=== 【事件现场已确认事实】 ===");
+                    sb.AppendLine("=== 【本期提及地点资料，并非已选事件现场】 ===");
+                    if (!string.IsNullOrWhiteSpace(Snapshot?.EventSettlementEvidence))
+                        sb.AppendLine("【此地点对应原文】" + Snapshot.EventSettlementEvidence);
+                    sb.AppendLine("只在所选事件原文明确关联此地点时使用其资料；提及地点不等于行动发生于此，不能把其他事件的地点、文化或地貌移入本画。未采集该历史现场的实际场景图。");
                     sb.AppendLine(facts);
                 }
             }
-            else if (Snapshot != null && Snapshot.EventSettlement == null)
+            if (Snapshot != null && Snapshot.EventSettlement == null)
             {
                 sb.AppendLine();
-                sb.AppendLine("【事件现场】周报未指明具体定居点；只保留事件已确认的环境与空间关系，未知地点、具体建筑和陈设不补造。");
+                sb.AppendLine("【地点证据边界】未解析到具体定居点；所选事件的发生地以原文为准，不能用玩家或参考人物当前所在地替代。允许设计与该事件及时代相容的非具名艺术环境，但不得声称是实际地点的精确还原。");
             }
 
             return sb.ToString().TrimEnd();
@@ -94,7 +103,11 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine("【报头原文】" + Title);
             if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine("【核心局势原文】" + Subtitle);
             if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine("【事件要闻原文】" + HeadlineSummary);
-            if (ProtagonistProfile != null) sb.AppendLine(ProtagonistProfile.BuildDirectorOnlyFacts());
+            if (ProtagonistProfile != null)
+            {
+                sb.AppendLine("【可选参考人物背景】以下仅补充该人物的身份；生平、地位与装备不构成本期事件，也不要求将其作为主角。");
+                sb.AppendLine(ProtagonistProfile.BuildDirectorOnlyFacts());
+            }
             if (EnvironmentProfile != null) sb.AppendLine(EnvironmentProfile.BuildDirectorOnlyFacts());
             return sb.ToString().TrimEnd();
         }
@@ -106,11 +119,7 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(SceneThemeDirective)) sb.AppendLine(SceneThemeDirective);
-            if (EnvironmentProfile != null)
-            {
-                string direction = EnvironmentProfile.BuildArtDirectionSummary();
-                if (!string.IsNullOrWhiteSpace(direction)) sb.AppendLine(direction);
-            }
+            // 周报是历史事件的艺术再现，不复用实时会话中“未知陈设一律不补”的现场复原规则。
             return sb.ToString().TrimEnd();
         }
 
@@ -136,7 +145,7 @@ namespace AnimusForge.Illustrator.Context
                 SceneThemeDirective = GenerateSceneDirective(snapshot.Theme, snapshot.EventSettlement, snapshot.Headline)
             };
 
-            // 提取关键人物视觉（严格反映真实穿着与无胡须特征）
+            // 提取一位已提及人物的可选身份基准；是否登场以及画面重心由所选事件决定。
             if (snapshot.ProtagonistHero != null)
             {
                 var app = CharacterAppearanceSnapshot.FromHero(snapshot.ProtagonistHero, snapshot.ProtagonistHero.BattleEquipment);
@@ -145,8 +154,7 @@ namespace AnimusForge.Illustrator.Context
                 context.ProtagonistProfile.Appearance = app;
             }
 
-            // 环境只承载已确认事实：定居点（若文本真实提及）与周报发布纪元日期。
-            // 未提及地点时 settlement 为 null——宁可标未知，也不用玩家当前位置冒充事件现场。
+            // 地点资料保留对应原文，不能将整期最早出现的地点直接绑定为导演选中事件的现场。
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(snapshot.EventSettlement, eventAnchored: true, eventDateLabel: snapshot.ReportDateLabel);
             ApplyEventSceneAnchoring(context, snapshot.EventSettlement);
 
@@ -161,18 +169,20 @@ namespace AnimusForge.Illustrator.Context
             string cleanTitle = CleanText(title);
             string cleanSubtitle = CleanText(subtitle);
             string cleanHeadline = CleanText(ExtractHeadline(body));
-            string fullText = $"{cleanTitle} {cleanSubtitle} {cleanHeadline}";
+            string eventFacts = NarrativeFactRouter.BuildEventEvidence(cleanTitle, cleanSubtitle, cleanHeadline);
 
             var snapshot = new WeeklyReportIllustrationSnapshot
             {
                 Title = cleanTitle,
                 Subtitle = cleanSubtitle,
                 Headline = cleanHeadline,
-                EventFacts = NarrativeFactRouter.BuildEventEvidence(cleanTitle, cleanSubtitle, cleanHeadline),
-                Theme = ClassifyEventTheme(fullText),
-                ProtagonistHero = ResolveProtagonistHero(fullText),
-                EventSettlement = ResolveEventSettlement(fullText)
+                EventFacts = eventFacts,
+                Theme = ClassifyEventTheme(eventFacts),
+                ProtagonistHero = ResolveProtagonistHero(eventFacts),
+                EventSettlement = ResolveEventSettlement(eventFacts)
             };
+            snapshot.ProtagonistEvidence = FindMentionEvidence(eventFacts, snapshot.ProtagonistHero?.Name?.ToString());
+            snapshot.EventSettlementEvidence = FindMentionEvidence(eventFacts, snapshot.EventSettlement?.Name?.ToString());
 
             try
             {
@@ -188,8 +198,8 @@ namespace AnimusForge.Illustrator.Context
         }
 
         /// <summary>
-        /// 在周报文本中查找被提及的英雄：优先取文本中最先出现者，其次阵营领袖/宗族首领。
-        /// 无命中时保持未知；收报人不能冒充事件当事人。
+        /// 在证据正文中选一位可供身份图的已提及英雄；不预选事件或要求此人登场。
+        /// 无命中时保持未知；收报人不能冒充事件当事人。只在打开周报时扫描一次。
         /// </summary>
         private static Hero ResolveProtagonistHero(string fullText)
         {
@@ -237,6 +247,15 @@ namespace AnimusForge.Illustrator.Context
             {
                 foreach (var hero in Hero.DeadOrDisabledHeroes) yield return hero;
             }
+        }
+
+        private static string FindMentionEvidence(string eventFacts, string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return string.Empty;
+            // BuildEventEvidence 已保留完整句并按行分隔；只附回来源句，不按关键词重组事件。
+            foreach (string sentence in (eventFacts ?? string.Empty).Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                if (sentence.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0) return sentence.Trim();
+            return string.Empty;
         }
 
         /// <summary>
@@ -386,7 +405,12 @@ namespace AnimusForge.Illustrator.Context
         /// </summary>
         private static string GenerateSceneDirective(WeeklyReportEventTheme theme, Settlement settlement, string headline)
         {
-            return "按完整事件证据选择有叙事力的瞬间；保留否定、计划、未遂、释放与未知结果。题材关键词不能证明事件已经发生，不推导行刑、陷落或胜负；未获确认的具体子场景和道具保持未知。";
+            return "【周报事件纪事管线】从本期完整正文中自主选定一个明确事件及一个有叙事力的瞬间，再推导行动、空间关系和机位。" +
+                "让画面通过参与方正在做什么、事件如何发生及已知结果说明本期纪事；不能仅让领主站立或骑马展示，再把事件地点缩成远处布景。" +
+                "并非每次都要战斗、群像或广角：安静的谈判、重整、交接等瞬间也可以，只要确实属于选中事件，画面的关系与行动能让人读懂发生了什么。" +
+                "人物与环境篇幅随事件需要决定，不罗列整套装备；图中的具名人物、参与阵营、地点关联、计划、否定、未遂与胜负结局必须有正文依据，不把不同要闻拼成一次事件。" +
+                "允许自由设计与事件、文化和时代相容的非具名建筑细部、地貌、生活痕迹、材质、必要的匿名参与者与氛围，使环境参与叙事；这些是艺术再现，不是假称实测的现场。" +
+                "艺术细节不能新增关键行动、特定参与者、伤亡、胜败或历史结果。已有结果只按证据表现，未知结果不替报道作结论。";
         }
 
         private static string ExtractHeadline(string body)

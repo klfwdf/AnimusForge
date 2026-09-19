@@ -374,16 +374,20 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _dataSource.SetReady("未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。");
                 return;
             }
+            var sceneSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
 
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
-                // 玩家附近30米预制体快照采前后双视角，另附真实画面校验；不渲染运行中的Mission。
+                // 按实际owner分流：Mission用附近30米双镜头，地图对话只读当前展示画面。
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
-                var sceneReferences = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(token).ConfigureAwait(false);
-                directorRefs.AddRange(sceneReferences);
-                IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneReferences);
+                var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
+                directorRefs.AddRange(sceneCapture.References);
+                IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture.References);
+                var scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts, promptPlan.ArtDirection,
+                    promptPlan.DirectorOnlyFacts + "\n【本次环境参考覆盖】" + sceneCapture.DirectorNote);
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "，正在整理人物参考..."; });
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
                 Func<Task<CharacterPortraitReferences>> playerStage = player == null ? (Func<Task<CharacterPortraitReferences>>)null : () => ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(player, useCivilian: playerCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: playerEquipmentCode, appearance: convContext.MainHeroProfile.Appearance);
@@ -423,11 +427,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     }
                 }
 
-                var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, directorRefs, options, token).ConfigureAwait(false);
+                await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
+                var direction = await VisualDirectorEngine.CreateDirectionAsync(scenePromptPlan, directorRefs, options, token).ConfigureAwait(false);
                 string detailedPrompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = direction.StatusText + "，正在绘制画卷..."; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "；" + direction.StatusText + "，正在绘制画卷..."; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
+                await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
+                await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
@@ -438,6 +445,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
+                sceneSource.EnsureCurrent(System.Threading.CancellationToken.None);
                 if (completion.SavedItem != null) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))

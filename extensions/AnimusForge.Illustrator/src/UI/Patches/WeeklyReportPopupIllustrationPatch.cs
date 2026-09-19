@@ -254,7 +254,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _closing = false;
             _ownerScreen = topScreen;
             IllustrationScope ownerScope = null;
-            ownerScope = new IllustrationScope(topScreen, null, () => CloseOverlayForScope(ownerScope));
+            ownerScope = new IllustrationScope(topScreen, "weekly_report", () => CloseOverlayForScope(ownerScope));
             _scope = ownerScope;
             _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
             _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(title + ":" + subtitleText);
@@ -306,17 +306,17 @@ namespace AnimusForge.Illustrator.UI.Patches
 
             _overlayVm.IsLoading = true;
             _overlayVm.HasIllustration = false;
-            _overlayVm.StatusText = "正在通过艺术导演提取人物装备与环境描写，构思画卷...";
+            _overlayVm.StatusText = "正在从本周要闻中选择事件与关键瞬间，构思纪事画卷...";
 
             string eventKey = _currentEventKey;
             var context = _currentContext;
-            // 每次生成都注入随机构图变体；重绘时额外要求导演刻意换镜头，避免同一周报每次出图雷同
+            // 周报重绘围绕事件叙事变化，不复用百科肖像的动作与镜头变体。
             _redrawCount++;
             string artDirection = context.BuildArtDirection();
             artDirection += "\n" + IllustrationDirection.ReadEventActionHistory(_scope.CampaignKey, eventKey, "weekly_report");
             string variation = GenerateWeeklyVariation();
             if (!string.IsNullOrWhiteSpace(variation)) artDirection += "\n" + variation;
-            if (_redrawCount > 1) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_redrawCount);
+            if (_redrawCount > 1) artDirection += "\n" + BuildWeeklyRedrawDirective(_redrawCount);
             var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), artDirection, context.BuildDirectorOnlyFacts());
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
@@ -342,7 +342,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     var portraits = await portraitStage.ConfigureAwait(false);
                     IllustrationReferenceRouting.AddCharacter(refs, null, portraits, protagonistName,
-                        $"登场人物【{protagonistName}】的身份参考图：锁定五官、须发和实际装备；与同名头肩图属于同一人。行动与现场按事件事实重构，不复制原立绘姿势、背景和游戏渲染质感。");
+                        $"本期提及人物【{protagonistName}】的可选身份参考：仅在导演选中的事件确实涉及他且需要他入画时，锁定五官、须发和实际穿戴；与同名头肩图属于同一人。供图不指定主角、人数、景别或骑乘动作；正文未选此人时不要把他加入其他事件。人物参与事件的行动与环境按导演纪事描述统一重绘，不复制原立绘姿势、背景和游戏渲染质感。", eventReference: true);
                 }
                 // 纹章由原生渲染导出，保留完整背景、配色、描边与变换
                 if (!string.IsNullOrWhiteSpace(bannerCode))
@@ -350,7 +350,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, "该家族真实纹章标准样图：其底色与徽记形状、配色即纹章本体；当画面因已确认事实出现纹章载体时，必须与此一致绘制，严禁编造或改动图腾；没有载体证据时不要添加纹章载体", IllustrationReferenceKind.Emblem));
+                        refs.Add(new IllustrationReferenceImage(emblemB64, $"参考人物【{protagonistName}】所属家族的真实纹章标准样图，不代表本期所有事件的阵营：只有所选事件确实涉及该家族且存在有依据的纹章载体时使用，底色、徽记形状和配色须一致；不将该纹章贴给其他参与方，不因提供样图新增盾牌或旗帜载体", IllustrationReferenceKind.EventEmblem));
                     }
                 }
 
@@ -397,6 +397,12 @@ namespace AnimusForge.Illustrator.UI.Patches
             // 构图全权交给导演：只给自由创作授权，不再提供预写取景句式。
             return "【构图自由创作】：取景景别、机位角度、叙事瞬间与前景运用由你依据事件要闻与事实区全权自由创作，" +
                 "挑选最有叙事力的瞬间，不拘泥任何固定构图模板。";
+        }
+
+        private static string BuildWeeklyRedrawDirective(int redrawIndex)
+        {
+            return $"【纪事重绘 · 第 {redrawIndex} 次绘制】参考本期最近作品的事件与行动摘要，自主选择同一事件的另一可信瞬间、观察位置或叙事重点，也可从本期正文另选一则明确事件。" +
+                "保留所选事件的参与方、地点关联和已知结果；不能为变化编造新事件，不能用更换领主展示姿势代替事件叙事。旧作品与人物参考不是发生事实，身份装备只在对应人物实际入画时生效。";
         }
 
         private static bool Publish(CachedIllustrationItem item, string prompt, byte[] imageBytes = null)
