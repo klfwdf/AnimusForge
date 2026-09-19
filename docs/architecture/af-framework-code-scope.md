@@ -1,5 +1,7 @@
 # 当前范围：J06 检索收口仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
+额外规则文本新增旧/新生产方法差分：`AIConfigHandler` 语义命中与词法回退选择、sticky 合并及正文格式化在同一假配置下产出相同规则 ID/文本；正文丢失、漏词法回退变异拒收。未覆盖运行时特殊规则补文、实体事实或最终请求全文；生产源码/地图未变。
+
 新增独立 Lore 方法差分：旧 `77a3d234` 与当前 `KnowledgeRuleIndex` / `LoreCandidateRetriever` / `BuildLoreContextInternal` / `AIConfigHandler.GetLoreContext*` 在相同假 Hero、规则、mention 上生成相同非空正文，当前过期候选回退也相同；版本守卫和正文丢失变异拒收。这是 Lore 一条具名样例，不覆盖实体/规则或最终模型请求，生产源码及 291 锚点地图未变。
 
 `da677af3` 为生产 `CaptureCandidates` 增加 fake hard-budget 首个 64 项批次立即停止契约；没有更改产品源码/代码地图。
