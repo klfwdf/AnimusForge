@@ -113,6 +113,10 @@ internal static class Program
         Write("PATCH_TOTAL targets=" + targetCount + " prefixes=" + prefixCount + " transpilers=" + transpilerCount);
         bool unchanged = beforeAf == Hash(_afPath) && beforeCoup == Hash(_coupPath);
         Write("SOURCE_DLLS_UNCHANGED " + unchanged);
+        foreach (Assembly loaded in AppDomain.CurrentDomain.GetAssemblies().Where(a =>
+            a.GetName().Name == "TaleWorlds.CampaignSystem" || a.GetName().Name == "TaleWorlds.MountAndBlade"
+            || a.GetName().Name == "SandBox" || a.GetName().Name == "0Harmony"))
+            Write("RUNTIME_DEPENDENCY " + loaded.GetName().Name + " MVID=" + loaded.ManifestModule.ModuleVersionId + " path=" + loaded.Location);
         Write("Game/Campaign/mission not started; no LLM provider invoked; registration only.");
         Write(ready && unchanged && targetCount > 0 ? "PASS registration smoke" : "FAIL registration smoke");
         // Keep log redirection until process exit: AF may flush its background log queue.
