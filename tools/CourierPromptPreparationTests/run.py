@@ -6,8 +6,12 @@ def load(name,path):
  spec=importlib.util.spec_from_file_location(name,path);result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 ex=load('decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
 util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
 source=(ROOT/'CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
+if args.mutate=='drop-knowledge-text':
+ needle='string extras = (ctx?.Extras ?? "").Trim();'
+ assert source.count(needle)==2
+ source=source.replace(needle,'string extras = (ctx?.Extras ?? "").Trim().Replace("【Lore】命中正文", "").Replace("【Lore】兼容回退正文", "");')
 phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 if args.mutate=='worker_assembly':
  source=source.replace('return await RunCourierOwnerPhaseAsync(generation, source + "_assemble", () =>','return await Task.Run(() =>').replace('                return assemble(input, prepared);\n            }, CancellationToken.None).ConfigureAwait(false);','                return assemble(input, prepared);\n            }).ConfigureAwait(false);')
@@ -39,7 +43,7 @@ out=HERE/'.generated'/('old-worker' if args.old_worker else args.mutate or 'curr
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'Prompt.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text(harness,encoding='utf-8')
 (out/'Schedule.cs').write_text(schedule,encoding='utf-8')
-project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Schedule.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'],executable=True)
+project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Schedule.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs'],executable=True)
 dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')
 code,log=util.run_dotnet(dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)
