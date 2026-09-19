@@ -42,7 +42,7 @@ namespace AnimusForge.Illustrator.Engine
             "按网格所属实体包围盒与范围相交筛选，跨越边界的大墙或屋顶保留整块；画面外与范围外内容保持未知。" +
             "多镜头来自当前现场可见静态网格的独立冻结副本；保留建筑、门窗、陈设和实体材质的空间关系。" +
             "环境快照主动省略人物、坐骑及含骨骼或布料模拟的动态实体，不能据此推断现场人数；人物位置以现场事实与当前画面为准。" +
-            "全景用于识别网格形态、布局、装饰和材质图案；采用中性材质观察光与固定曝光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
+            "前后参考用于识别家具、建筑、布局和材质图案；采用中性观察光、三盏无阴影补光与固定曝光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
             "完整天空、环境光、烘焙间接光和曝光无法从引擎公开接口精确回读；现场昼夜、光照及颜色以附加的真实当前画面为准。" +
             (SkippedNonGeometry > 0 ? "没有普通静态网格的特殊组件已省略，不以空缺推断现场没有装饰。" : string.Empty) +
             (SkippedInvalidBounds > 0 ? "部分网格边界无法确认，已省略，不能据此断言现场不存在该物体。" : string.Empty) +
@@ -129,9 +129,11 @@ namespace AnimusForge.Illustrator.Engine
         {
             PanoramaSnapshotBuilder builder = null;
             bool handedToCaller = false;
+            var diagnostics = GenerationDiagnostics.Current;
+            var inventory = diagnostics == null ? null : new PanoramaSnapshotInventory();
             try
             {
-                builder = await RunOnGameThreadAsync(() => PanoramaSnapshotBuilder.Begin(mission, token), token).ConfigureAwait(false);
+                builder = await RunOnGameThreadAsync(() => PanoramaSnapshotBuilder.Begin(mission, token, inventory), token).ConfigureAwait(false);
                 if (builder == null) throw new InvalidOperationException("无法在游戏线程创建环境快照。");
                 while (!await RunOnGameThreadAsync(() => builder.CopyBatch(token), token).ConfigureAwait(false))
                 {
@@ -145,6 +147,9 @@ namespace AnimusForge.Illustrator.Engine
             }
             finally
             {
+                // All game-thread batches have returned. Persist managed records once, on
+                // this worker, including partial/cancelled copies and before native rendering.
+                if (builder != null) diagnostics?.RecordSceneInventory(inventory, builder.Snapshot, handedToCaller);
                 if (builder != null && !(builder.RootsReleased && (handedToCaller || builder.Snapshot.Retirement.IsCompleted)))
                 {
                     Action cleanup = () =>
@@ -178,14 +183,17 @@ namespace AnimusForge.Illustrator.Engine
             {
                 internal GameEntity Entity;
                 internal bool CanCopy;
+                internal PanoramaSnapshotInventory.Entry InventoryEntry;
             }
             private struct PendingEntity
             {
                 internal GameEntity Entity;
-                internal PendingEntity(GameEntity entity) { Entity = entity; }
+                internal int ParentNode;
+                internal PendingEntity(GameEntity entity, int parentNode = 0) { Entity = entity; ParentNode = parentNode; }
             }
             private readonly Mission _mission;
             private readonly Scene _source;
+            private readonly PanoramaSnapshotInventory _inventory;
             private NativeObjectArray _roots;
             private readonly int _rootCount;
             private int _nextRoot;
@@ -201,20 +209,24 @@ namespace AnimusForge.Illustrator.Engine
             internal bool RootsReleased => _roots == null;
 
             private PanoramaSnapshotBuilder(Mission mission, Scene source, NativeObjectArray roots,
-                PanoramaSceneSnapshot snapshot, HashSet<UIntPtr> agents)
+                PanoramaSceneSnapshot snapshot, HashSet<UIntPtr> agents, PanoramaSnapshotInventory inventory)
             {
                 _mission = mission; _source = source; _roots = roots;
+                _inventory = inventory;
                 _rootCount = roots.Count; Snapshot = snapshot; _agentRoots = agents;
                 snapshot.SourceRoots = _rootCount;
                 snapshot.ReleaseSourceHandles = ReleaseRoots;
             }
 
-            internal static PanoramaSnapshotBuilder Begin(Mission mission, CancellationToken token)
+            internal static PanoramaSnapshotBuilder Begin(Mission mission, CancellationToken token, PanoramaSnapshotInventory inventory)
             {
                 IllustratorRuntime.AssertMainThread();
                 token.ThrowIfCancellationRequested();
                 Scene source = mission?.Scene;
                 ValidateMission(mission, source, token);
+                if (inventory != null)
+                    try { inventory.SourceSceneName = mission.SceneName; }
+                    catch (Exception) { /* Scene identity metadata is optional. */ }
                 if (!PanoramaSnapshotRootCountAllowed(source.RootEntityCount)) ThrowTooManyRoots();
                 NativeObjectArray roots = null;
                 Scene owned = null;
@@ -274,7 +286,7 @@ namespace AnimusForge.Illustrator.Engine
                     // use their default upgrade level; do not hide them with a copied level mask.
                     // Do not create weather/particle simulation in a geometry reference scene.
                     owned.EnsurePostfxSystem();
-                    return new PanoramaSnapshotBuilder(mission, source, roots, snapshot, agents);
+                    return new PanoramaSnapshotBuilder(mission, source, roots, snapshot, agents, inventory);
                 }
                 catch
                 {
@@ -329,23 +341,40 @@ namespace AnimusForge.Illustrator.Engine
                         if (_nodeIndex >= _nodes.Count) { _phase = 2; continue; }
                         EntitySelection node = _nodes[_nodeIndex];
                         GameEntity source = node.Entity;
+                        var entry = node.InventoryEntry;
                         if (!node.CanCopy || !source.WeakEntity.IsValid || source.Scene?.Pointer != _source.Pointer || !source.IsVisibleIncludeParents())
                         {
+                            if (entry != null) entry.CopyState = "source_invalid_or_hidden_before_copy";
                             _nodeIndex++; _meshIndex = 0; continue;
                         }
                         int count = source.MultiMeshComponentCount;
                         if (_meshIndex >= count)
-                        { if (count == 0) Snapshot.SkippedNonGeometry++; _nodeIndex++; _meshIndex = 0; continue; }
+                        {
+                            if (count == 0) Snapshot.SkippedNonGeometry++;
+                            if (entry != null) entry.CopyState = count == 0 ? "source_meshes_removed_before_copy" :
+                                entry.MissingComponents > 0 ? "finished_with_missing_components" : "copied";
+                            _nodeIndex++; _meshIndex = 0; continue;
+                        }
                         if (Snapshot.CopiedRoots >= PanoramaSnapshotMaxCopies)
                             throw new InvalidOperationException("环境快照超过1024个静态网格副本，已停止，不能将局部覆盖标为完整全景。");
                         if (_meshIndex == 0)
                         {
                             BoundingBox bounds = source.GetGlobalBoundingBox();
                             if (!IntersectsPanoramaRadius(bounds.min, bounds.max, Snapshot.CaptureCenter))
-                            { Snapshot.SkippedByRadius++; _nodeIndex++; continue; }
+                            {
+                                if (entry != null) entry.CopyState = "outside_radius_or_invalid_bounds_before_copy";
+                                Snapshot.SkippedByRadius++; _nodeIndex++; continue;
+                            }
                             _nodeFrame = source.GetGlobalFrame();
+                            if (entry != null) entry.FrozenFrame = PanoramaSnapshotInventory.Frame(_nodeFrame);
                         }
-                        if (CopyStaticMesh(source, _meshIndex++, _nodeFrame)) { Snapshot.CopiedRoots++; copies++; }
+                        if (entry != null) entry.CopyState = "copy_in_progress";
+                        if (CopyStaticMesh(source, _meshIndex++, _nodeFrame, entry))
+                        {
+                            Snapshot.CopiedRoots++; copies++;
+                            if (entry != null) entry.CopiedComponents++;
+                        }
+                        else if (entry != null) entry.MissingComponents++;
                     }
                 }
                 ValidateMission(_mission, _source, token);
@@ -364,19 +393,50 @@ namespace AnimusForge.Illustrator.Engine
                 GameEntity entity = pending.Entity;
                 if (Snapshot.InspectedNodes >= PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
                 Snapshot.InspectedNodes++;
+                int nodeNumber = Snapshot.InspectedNodes;
                 bool valid = entity != null && entity.WeakEntity.IsValid && entity.Scene?.Pointer == _source.Pointer;
+                var entry = _inventory?.Inspect(entity, nodeNumber, pending.ParentNode, valid);
                 if (!valid) return;
                 bool visible = entity.IsVisibleIncludeParents();
                 bool agent = _agentRoots.Contains(entity.Pointer);
                 bool animated = entity.Skeleton != null || entity.ClothSimulatorComponentCount > 0;
-                bool helper = (entity.EntityFlags & (EntityFlags.IsHelper | EntityFlags.Ignore)) != 0;
+                EntityFlags flags = entity.EntityFlags;
+                bool helper = (flags & (EntityFlags.IsHelper | EntityFlags.Ignore)) != 0;
                 bool eligible = ShouldCopyPanoramaRoot(valid, visible, helper, animated, agent);
-                if (eligible && entity.MultiMeshComponentCount > 0)
+                int meshCount = eligible ? entity.MultiMeshComponentCount : 0;
+                if (entry != null)
+                {
+                    entry.Flags = (uint)flags; entry.Visible = visible;
+                    if (eligible) entry.MetaMeshComponents = meshCount;
+                    else
+                        try { entry.MetaMeshComponents = entity.MultiMeshComponentCount; }
+                        catch (Exception ex) { entry.MetadataError = ex.GetType().Name; }
+                    entry.Selection = agent ? "agent_branch" : animated ? "animated_or_cloth_branch" :
+                        !visible ? "not_visible_branch" : helper ? "helper_or_ignored" : "no_meta_mesh";
+                }
+                if (eligible && meshCount > 0)
                 {
                     BoundingBox bounds = entity.GetGlobalBoundingBox();
-                    if (!HasUsablePanoramaBounds(bounds.min, bounds.max)) Snapshot.SkippedInvalidBounds++;
-                    else if (!IntersectsPanoramaRadius(bounds.min, bounds.max, Snapshot.CaptureCenter)) Snapshot.SkippedByRadius++;
-                    else _nodes.Add(new EntitySelection { Entity = entity, CanCopy = true });
+                    if (entry != null)
+                    {
+                        entry.BoundsMin = PanoramaSnapshotInventory.Vector(bounds.min);
+                        entry.BoundsMax = PanoramaSnapshotInventory.Vector(bounds.max);
+                    }
+                    if (!HasUsablePanoramaBounds(bounds.min, bounds.max))
+                    {
+                        Snapshot.SkippedInvalidBounds++;
+                        if (entry != null) entry.Selection = "invalid_bounds";
+                    }
+                    else if (!IntersectsPanoramaRadius(bounds.min, bounds.max, Snapshot.CaptureCenter))
+                    {
+                        Snapshot.SkippedByRadius++;
+                        if (entry != null) entry.Selection = "outside_radius";
+                    }
+                    else
+                    {
+                        if (entry != null) { entry.Selection = "selected"; entry.CopyState = "pending"; }
+                        _nodes.Add(new EntitySelection { Entity = entity, CanCopy = true, InventoryEntry = entry });
+                    }
                 }
                 else if (eligible) Snapshot.SkippedNonGeometry++;
                 if (agent || animated) { Snapshot.SkippedAnimated++; return; }
@@ -386,24 +446,26 @@ namespace AnimusForge.Illustrator.Engine
                 for (int i = children - 1; i >= 0; i--)
                 {
                     token.ThrowIfCancellationRequested();
-                    _pending.Push(new PendingEntity(entity.GetChild(i)));
+                    _pending.Push(new PendingEntity(entity.GetChild(i), nodeNumber));
                 }
             }
 
             private static void ThrowTooManyNodes() => throw new InvalidOperationException(
                 "当前环境实体层级超过32768个节点，已停止快照，不能将不完整副本标为完整全景。");
 
-            private bool CopyStaticMesh(GameEntity source, int index, MatrixFrame frame)
+            private bool CopyStaticMesh(GameEntity source, int index, MatrixFrame frame, PanoramaSnapshotInventory.Entry entry)
             {
                 MetaMesh original = source.GetMetaMesh(index);
+                var detail = PanoramaSnapshotInventory.BeginMesh(entry, index, original);
                 if (original == null) return false;
-                MetaMesh mesh = original.CreateCopy();
-                if (mesh == null || mesh.Pointer == UIntPtr.Zero || mesh.Pointer == original.Pointer)
-                    throw new InvalidOperationException("无法取得独立的现场静态网格副本。");
+                MetaMesh mesh = null;
                 GameEntity entity = null;
                 bool attached = false;
                 try
                 {
+                    mesh = original.CreateCopy();
+                    if (mesh == null || mesh.Pointer == UIntPtr.Zero || mesh.Pointer == original.Pointer)
+                        throw new InvalidOperationException("无法取得独立的现场静态网格副本。");
                     mesh.Frame = original.Frame;
                     // The same native attachment path used by BannerTableau: no copied
                     // light shadow maps, particle emitters, script instances or physics state.
@@ -415,7 +477,14 @@ namespace AnimusForge.Illustrator.Engine
                     entity.RecomputeBoundingBox();
                     entity.UpdateGlobalBounds();
                     entity.UpdateVisibilityMask();
+                    if (detail != null) detail.Result = "copied";
                     return true;
+                }
+                catch (Exception ex)
+                {
+                    if (entry != null) entry.CopyState = "copy_failed:" + ex.GetType().Name;
+                    if (detail != null) detail.Result = "copy_failed:" + ex.GetType().Name;
+                    throw;
                 }
                 finally
                 {
