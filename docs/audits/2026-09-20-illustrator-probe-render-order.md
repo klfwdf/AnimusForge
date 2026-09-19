@@ -1,5 +1,7 @@
 # 单镜头试采人物短暂消失：渲染顺序试验
 
+> **最新实机结论：排序试验未通过。** 用户再次确认人物仍在试采期间消失、结束恢复。07:02:09/10/12/13四条诊断均加载本次MVID `0341c278-a944-4269-99fc-7b3176ccdbbe` 且记录 `renderOrder=-2001`；PNG成功导出、总耗时322/334/423/419ms、无退休错误。证据为 `artifacts/illustrator-probe-render-order-20260920/render-order-failed-evidence.json`。以下“待验收”为部署当时状态，不能覆盖这条失败结果。此后仅更新文档，未再改代码或部署。
+
 工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`。检查点 `9bca4d7`，源码 **`8dc8053e7a56ceb05931a74c1361879cc71ad4ff`**。
 
 用户实机反馈：原场景单镜头已经能导出墙地、家具和人物，但主画面人物在试采期间消失，采集结束后恢复。原版加载MVID `7dbaf06b-e752-4469-8e56-7973435c6a62`。
