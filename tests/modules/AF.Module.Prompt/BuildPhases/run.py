@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -67,8 +67,12 @@ courier_begin = extract.declaration(source, "internal CourierPreprocessRequest B
 assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in courier_begin, "courier request must capture eligibility on game thread"
 native_schedule = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
 courier_schedule = (ROOT / "CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
+if args.mutate == "drop-worker-eligibility":
+    native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
 assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
 assert "ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility)" in courier_schedule and "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in courier_schedule, "Courier workers must publish detached eligibility"
+assert native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_begin"') < native_schedule.index('RunNativeConversationBackgroundPreprocessAsync(') < native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_complete"'), "Native capture/routing/complete thread order"
+assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"') < courier_schedule.index('Task.Run(() =>') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"'), "Courier owner/worker thread order"
 for label, body in (("Native", native_schedule), ("Courier", courier_schedule)):
     for live_call in ("Hero.Find(", "Mission.Current", "CanInjectVassalageRuleForExternal(", "CanInjectDiplomacyRuleForExternal(", "CanDiscussWorldDiplomacyForExternal("):
         assert live_call not in body, label + " worker schedule must not resolve live eligibility: " + live_call

@@ -1,3 +1,11 @@
+# 当前接续：J06d 验证中，J06 未验收（2026-09-19）
+
+- 本工作树 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`，从 `1c45ba3d` 继续；J06d 修正提交 `61ff0875`。实际状态、旧新资格对照、验证及未覆盖项以[主台账当前节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)为准；[274 点代码地图](docs/architecture/af-framework-code-map.json)两模式通过，[范围图](docs/architecture/af-framework-code-scope.md)区分已接线与保留责任。
+- 已修领主大厅捕获读旧 ambient 目标、旧 setter-only 消费者继承 stale 资格、附庸捕获提前诊断事件。11 资格位纯契约、ambient 隔离、worker source-linked/变异及 J03/J04/Knowledge/Courier/Scene 聚焦矩阵部分通过；Debug/Release 双 API + Bootstrap 直接编译六项通过，但非原一键脚本验收。
+- **J06 仍 `VERIFY / NOT_ACCEPTED`**：导入校验簇尚未迁归 Knowledge，捕获异常/提前评估的真实生产旧红不充分，Native/Courier/Scene 邻接矩阵未全复跑。原一键脚本会递归重置固定生成目录，待精确确认后才运行。实机、旧档、真实 provider `NOT-RUN`。未 push、Stage、部署、打包或改 J07；`.dotnet-cli-home/` 保留。
+
+## 以下为先前 GitHub 交付与历史
+
 # GitHub交付回执（2026-09-19）
 
 - 已按用户指定将成果普通快进到原重构分支 `codex/af-main-refactor-continuation-20260831`：`25a89cea` → `f6ddd565`。GitHub：https://github.com/klfwdf/AnimusForge/tree/codex/af-main-refactor-continuation-20260831。

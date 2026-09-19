@@ -1,3 +1,18 @@
+<a id="j06d-current-verification-20260919"></a>
+
+## 当前状态：J06d 验证中，J06 父包未验收（2026-09-19）
+
+本轮实际工作树 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，从 `1c45ba3d` 继续；J06d 修正切片 `61ff0875`。此节取代下面的“断线/WIP 当前状态”标题，但不改写其历史结论。未跟踪 `.dotnet-cli-home/` 保留，未推送、Stage、部署、打包或操作存档。
+
+- **旧行为对照与已修复缺口**：RAG 先判四个玩家同阵营排除，再判场景移动，再判 GCCZ、附庸/外交/世界外交/王国议程，`scene_auto_group_relay` 与 `noble_deference` 禁用，`vanilla_issue` 要有真实目标，其余默认允许。前处理独立门控 GCCZ、附庸、外交、世界外交、王国议程、婚姻、`vanilla_issue`、NPC 重大行动、领主大厅；`kingdom_service` 始终允许，relay 在前处理仍按默认允许。新纯资格契约逐项覆盖上述顺序和差异（Composition 184 项；此前曾把 relay 误认为两个入口都禁用，红测据旧 switch 修正）。捕获领主大厅原先读到旧 ambient 目标，现临时绑定当前目标并恢复父 scope；六个旧 setter-only 入口改变目标时清除旧资格，仍走合法同步 live fallback。附庸资格捕获改用同一只读谓词，不在每次 Prompt 捕获时提前写 per-topic 诊断事件。相关源码锚点在[274 点代码地图](architecture/af-framework-code-map.json)，线程/回退 source-linked 契约和去 worker 资格变异已执行。
+- **线程与 ambient 边界**：Native/Courier 的 Begin/Capture 和 Complete 经游戏线程调度；worker 只接 `PromptRuntimeTargetBinding` + `PromptRuleEligibility`，先走 captured 分支，不通过 `Hero.Find`/Mission/附庸等 live 资格。Scene 仍是同步/旧 setter 消费者，其完整调度属于 J10，不能借 J06 宣称三渠道线程重写。Retrieval 149 项含 eligibility 嵌套、异常、真实 yield、12 并发子请求、Clear 与 setter-only 隔离；BuildPhases source contract PASS，删除 worker eligibility 的变异按预期 FAIL。源码证明不代替实机主线程调度测量。
+- **J06a/b/c owner 与容量**：`KnowledgeLibraryBehavior` 以 `Index`/`Retriever` 消费 `KnowledgeRuleIndex`/`LoreCandidateRetriever`，仍持有 Campaign、规则存储、ONNX 生命周期及 Hero 文本事实；`WorldEntityRetrievalService` 消费 `EntityNameMatcher`、`EntityMentionList`、`EntityInjectionAllocator`，仍持有游戏候选枚举/位置与最终文本。Index 候选缓存上限 512、语义结果 hard cap 20；Lore mention term 上限 32、单词查询 80 字符、实体 query 数夹到 1–12；Entity 分配按配置夹限。检索只在请求/索引重建而非 Tick，每请求捕获一次资格，Courier 因前处理与正文各捕获一次；这些是源码容量边界，未量到游戏帧耗时。Knowledge Index/Lore 59、Entities 31、HeroAsset 67 项通过。
+- **导入归属复核，尚未迁移**：`MyBehavior.cs:54807–55162,57051–57193` 实际有不止“8 个”相关静态方法：关键词/When 规范化及重复条件判定是可抽出的 Knowledge 纯规则；`LoadKnowledgeRulesFromImportDir`、`TryLoadKnowledgeRulesFromRuleFiles`、`FindKnowledgeRuleJsonById` 是导入文件 I/O；`ValidateKnowledgeKeywordsForSingleRuleImport`、`ValidateKnowledgeKeywordsForImport`、`BuildKnowledgeRuleImportFailureMessage` 还耦合当前 `KnowledgeLibraryBehavior`/Campaign 导出和中文失败语义。不能机械批移或以转发壳冒充归属完成；本轮未迁这簇，也未新增其行为/坏文件契约，因此 J06 父包保持 `VERIFY / NOT_ACCEPTED`。
+- **本轮实际验证**：J03 Configuration 36、ProductionModels 18、Retrieval 149、ProductionEntry 7、ProductionEvaluation 22、My 4、Reward 11、Scene/Native 3、Consumers PASS；J04 Composition 184、BuildPhases PASS；Courier Prompt 252/58、OwnerPhase 16、Scene Postprocess 71、Knowledge 59+31、HeroAsset 67 PASS。若 runner 自带 fixture `CS0649` 警告，不当作生产零警告。Debug/Release 的 BannerlordApi 1.3 与 1.4 加 Bootstrap 均用原项目和原 MSBuild 参数在独立工作区输出编译，六项各 0 warning / 0 error；不是一键脚本的引用版本/产物标记验收。脚本自身会递归清理固定生成目录，等待该精确动作确认，未运行。地图 recorded/working-tree 均 274 PASS，仅证明源码定位。真实 Campaign/Mission、旧档、真实 provider、官方脚本产物验证均 `NOT-RUN`。
+- **剩余门槛**：为捕获异常/提前评估逐资格补真实生产旧红与无副作用证明；完成导入簇 Knowledge 归属和坏文件对照；跑官方脚本及缺失 Native/Courier/Scene 邻接矩阵、重验本轮最终源码；只在这些通过后才可标 `J06_OFFLINE_VERIFIED`。旧 `IsRuleCurrentlyEligibleForRag` 和 `CanInjectRuleTopicIntoPreprocessForExternal` live 分支仍供明确同步 setter-only 消费者使用，不能删掉；J10 Scene 调度不在 J06。
+
+## 以下为本轮前已发布的交接与历史
+
 <a id="j06d-github-delivery-20260919"></a>
 
 ## J06d 中断checkpoint GitHub交付（2026-09-19）

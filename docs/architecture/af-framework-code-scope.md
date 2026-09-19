@@ -1,3 +1,17 @@
+# 当前范围：J06d 验证中 / J06 未验收（2026-09-19）
+
+生产修正终点 `61ff0875`；[代码地图](af-framework-code-map.json) 274 锚点 recorded/working-tree 通过。状态与验证信号集中在[主台账 J06d 当前节](../animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)，下方 J05/J04 为历史完成范围。
+
+| 责任 / 一基坐标 | 已接线 | 仍在旧类或未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs:39`；`KnowledgeLibraryBehavior.cs:508` | J06a Index owner 接 host live 规则/engine ports，规则版本失效/召回/512 缓存；Index/Lore 59 契约 | Campaign、ONNX 生命周期、知识存档、Hero 内容仍在 KnowledgeLibrary host |
+| `src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs:30`；`KnowledgeLibraryBehavior.cs:521` | J06b mention/候选/round-robin 纯检索接真实 host | Lore 文本、人物事实与最终格式化留 host；真实 provider 未跑 |
+| `src/modules/AF.Module.Knowledge/Entities/{EntityNameMatcher.cs:21,EntityMentionList.cs:8,EntityInjectionAllocator.cs:44}`；`WorldEntityRetrievalService.cs:421` | J06c 纯匹配/mention/分配接消费者，Entities 31 契约 | 游戏候选、位置/距离、称谓和最终块留 host，实机容量未测 |
+| `AIConfigHandler.cs:1734,5602–5750,7326`；`PromptRuleEligibility.cs:12`；`MyBehavior.cs:19672,30058,30344` | J06d 11 资格事实在游戏线程捕获，worker 纯判断；目标 setter 变动清旧事实；Native/Courier DTO 接线 | 旧 live 分支仍供 Scene/同步 setter-only 调用；异常/提前评估生产对照不足，J10 Scene 调度未做 |
+| `MyBehavior.cs:54807–55162,57051–57193` | 已复核 Knowledge 导入纯规则/文件 I/O/游戏 owner 混合责任 | 尚未迁移及新增坏文件/覆盖行为测试，阻止 J06 父包验收 |
+
+## 以下为 J05 完成范围与历史
+
 # 当前范围：J05_OFFLINE_VERIFIED（2026-09-19）
 
 当前源码 `d903df67`，[代码地图](af-framework-code-map.json) 262 锚点（9 个搬迁文件的 14 个旧锚点已按新路径重绑，无悬空路径）。唯一状态见[主台账 J05 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j05-offline-verified-20260919)。
