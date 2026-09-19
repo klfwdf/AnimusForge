@@ -40,32 +40,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public string Value;
 	}
 
-	private class CandidateRules
-	{
-		public string MatchMode = "none";
-
-		public List<LoreRule> OrderedRules = new List<LoreRule>();
-
-		public int InjectLimit = 2;
-
-		public int RecallPerEntity;
-
-		public int RerankPerEntity;
-
-		public int EntityQueryCount = 1;
-	}
-
-	private sealed class WeightedKnowledgeInput
-	{
-		public string Text;
-
-		public float Weight = 1f;
-	}
-
-	private const int KnowledgeMentionTermHardCap = 32;
-
-	private const int KnowledgeMentionQueryMaxChars = 80;
-
 	public class RuleIndexItem
 	{
 		public string Id;
@@ -532,6 +506,19 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	// Single retrieval index (sparse + ONNX + ranked cache). Static like the legacy caches: one rule library per process.
 	private static readonly KnowledgeRuleIndex Index = new KnowledgeRuleIndex(new IndexPorts(), () => Instance?._file?.Rules);
+	private static bool KnowledgeRetrievalEnabledSafe()
+	{
+		try
+		{
+			return AIConfigHandler.KnowledgeRetrievalEnabled;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static readonly LoreCandidateRetriever Retriever = new LoreCandidateRetriever(Index, Logger.Log);
 
 	public static KnowledgeLibraryBehavior Instance { get; private set; }
 
@@ -818,127 +805,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputsFromMentions(MentionedWorldEntities mentionedEntities, int maxQueryCount, out int mentionTermCount)
-	{
-		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		mentionTermCount = 0;
-		try
-		{
-			List<string> terms = BuildKnowledgeMentionTerms(mentionedEntities);
-			mentionTermCount = terms.Count;
-			if (terms.Count <= 0)
-			{
-				return list;
-			}
-			int queryLimit = Math.Max(1, Math.Min(12, maxQueryCount));
-			for (int i = 0; i < terms.Count; i++)
-			{
-				if (list.Count >= queryLimit)
-				{
-					break;
-				}
-				string term = (terms[i] ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(term))
-				{
-					continue;
-				}
-				if (term.Length > KnowledgeMentionQueryMaxChars)
-				{
-					term = term.Substring(0, KnowledgeMentionQueryMaxChars).Trim();
-				}
-				if (string.IsNullOrWhiteSpace(term) || !hashSet.Add(term))
-				{
-					continue;
-				}
-				list.Add(new WeightedKnowledgeInput
-				{
-					Text = term,
-					Weight = 1f
-				});
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private static List<string> BuildKnowledgeMentionTerms(MentionedWorldEntities mentionedEntities)
-	{
-		List<string> result = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			append(mentionedEntities?.Entities);
-		}
-		catch
-		{
-		}
-		return result;
-
-		void append(IEnumerable<string> values)
-		{
-			if (values == null)
-			{
-				return;
-			}
-			foreach (string value in values)
-			{
-				if (result.Count >= KnowledgeMentionTermHardCap)
-				{
-					return;
-				}
-				string text = NormalizeKeywordForCompare(value);
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					continue;
-				}
-				if (text.Length > 80)
-				{
-					text = text.Substring(0, 80).Trim();
-				}
-				if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
-				{
-					result.Add(text);
-				}
-			}
-		}
-	}
-
-	private static int CountKnowledgeMentionTerms(MentionedWorldEntities mentionedEntities)
-	{
-		return BuildKnowledgeMentionTerms(mentionedEntities).Count;
-	}
-
-	private static string BuildKnowledgeMentionSignature(MentionedWorldEntities mentionedEntities)
-	{
-		try
-		{
-			List<string> terms = BuildKnowledgeMentionTerms(mentionedEntities);
-			if (terms.Count <= 0)
-			{
-				return "mentions=empty";
-			}
-			int returnCap = KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap());
-			string joined = string.Join("|", terms.Select((string x) => (x ?? "").Trim().ToLowerInvariant()));
-			return "mentions=" + KnowledgeRuleIndex.Hash8(joined) + ":" + terms.Count + ":cap" + returnCap;
-		}
-		catch
-		{
-			return "mentions=error";
-		}
-	}
-
-	private static string FormatKnowledgeMentionCounts(MentionedWorldEntities mentionedEntities)
-	{
-		if (mentionedEntities == null)
-		{
-			return "entities=0";
-		}
-		return "entities=" + (mentionedEntities.Entities?.Count ?? 0);
-	}
-
 	private static string BuildKnowledgeHitRateDetail(string detail, string secondaryInput)
 	{
 		string text = (detail ?? "").Trim();
@@ -946,202 +812,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text3 = string.IsNullOrWhiteSpace(text2) ? "off" : "on";
 		string value = $"npcRecall={text3} secondaryLen={(string.IsNullOrWhiteSpace(text2) ? 0 : text2.Length)}";
 		return string.IsNullOrWhiteSpace(text) ? value : (text + " " + value);
-	}
-
-	private List<LoreRule> SelectVectorRulesPerEntity(List<WeightedKnowledgeInput> entityInputs, int totalEntityCount, int recallTopK, int rerankTopK, int injectLimit, out string matchMode)
-	{
-		List<LoreRule> result = new List<LoreRule>();
-		matchMode = "none";
-		try
-		{
-			List<WeightedKnowledgeInput> list = (entityInputs ?? new List<WeightedKnowledgeInput>()).Where((WeightedKnowledgeInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
-			if (list.Count <= 0)
-			{
-				return result;
-			}
-			bool flag = false;
-			try
-			{
-				flag = OnnxCrossEncoderReranker.Instance.IsAvailable;
-			}
-			catch
-			{
-				flag = false;
-			}
-			matchMode = flag ? "rerank_per_entity" : "semantic_per_entity";
-			List<List<KnowledgeRuleScore>> rankedCandidates = new List<List<KnowledgeRuleScore>>(list.Count);
-			for (int num = 0; num < list.Count; num++)
-			{
-				WeightedKnowledgeInput weightedKnowledgeInput = list[num];
-				List<KnowledgeRuleScore> list3 = Index.FindRankedVectorCandidateScores(weightedKnowledgeInput.Text, recallTopK, rerankTopK, weightedKnowledgeInput.Weight);
-				if (list3 == null || list3.Count <= 0)
-				{
-					rankedCandidates.Add(new List<KnowledgeRuleScore>());
-					Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates=0");
-					continue;
-				}
-				rankedCandidates.Add(list3.Where((KnowledgeRuleScore x) => x?.Rule != null).ToList());
-				KnowledgeRuleScore best = rankedCandidates[num].FirstOrDefault();
-				Logger.Log("LoreMatch", $"entity_query priority={num + 1} noun={JsonConvert.ToString(weightedKnowledgeInput.Text)} candidates={rankedCandidates[num].Count} best={(best?.Rule?.Id ?? "(none)")} score={(best?.RawScore ?? 0f):0.000}");
-			}
-			int limit = KnowledgeRuleIndex.GetLoreInjectLimit(injectLimit);
-			HashSet<LoreRule> selectedRules = new HashSet<LoreRule>();
-			HashSet<string> selectedRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			int primarySelected = 0;
-			int primaryCollisionFallbacks = 0;
-			List<string> allocationDetails = new List<string>(rankedCandidates.Count);
-			for (int entityIndex = 0; entityIndex < rankedCandidates.Count && result.Count < limit; entityIndex++)
-			{
-				if (TryAddFirstUniqueRankedEntityCandidate(result, selectedRules, selectedRuleIds, rankedCandidates[entityIndex], out var selectedRank))
-				{
-					primarySelected++;
-					if (selectedRank > 0)
-					{
-						primaryCollisionFallbacks++;
-					}
-					string selectedRuleId = result.LastOrDefault()?.Id ?? "(none)";
-					allocationDetails.Add($"{entityIndex + 1}:{list[entityIndex].Text}->{selectedRuleId}@{selectedRank + 1}");
-				}
-				else
-				{
-					allocationDetails.Add($"{entityIndex + 1}:{list[entityIndex].Text}->(none)");
-				}
-			}
-			bool allowLowerRanks = limit > Math.Max(0, totalEntityCount);
-			int secondarySelected = 0;
-			if (allowLowerRanks && result.Count < limit)
-			{
-				int maxRankCount = rankedCandidates.Count <= 0 ? 0 : rankedCandidates.Max((List<KnowledgeRuleScore> x) => x?.Count ?? 0);
-				for (int rank = 1; rank < maxRankCount && result.Count < limit; rank++)
-				{
-					for (int entityIndex = 0; entityIndex < rankedCandidates.Count && result.Count < limit; entityIndex++)
-					{
-						if (TryAddRankedEntityCandidate(result, selectedRules, selectedRuleIds, rankedCandidates[entityIndex], rank))
-						{
-							secondarySelected++;
-						}
-					}
-				}
-			}
-			string allocationSummary = $"entity_allocation nounsTotal={totalEntityCount} nounsQueried={rankedCandidates.Count} injectLimit={limit} primary={primarySelected} collisionFallbacks={primaryCollisionFallbacks} secondary={secondarySelected} allowLowerRanks={allowLowerRanks} selected={result.Count} assignments={string.Join("|", allocationDetails)}";
-			Logger.Log("LoreMatch", allocationSummary);
-			Logger.Log("KnowledgeRetrieval", allocationSummary);
-		}
-		catch
-		{
-		}
-		return result;
-	}
-
-	private static bool TryAddFirstUniqueRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<KnowledgeRuleScore> candidates, out int selectedRank)
-	{
-		selectedRank = -1;
-		if (candidates == null)
-		{
-			return false;
-		}
-		for (int rank = 0; rank < candidates.Count; rank++)
-		{
-			if (TryAddRankedEntityCandidate(result, selectedRules, selectedRuleIds, candidates, rank))
-			{
-				selectedRank = rank;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static bool TryAddRankedEntityCandidate(List<LoreRule> result, HashSet<LoreRule> selectedRules, HashSet<string> selectedRuleIds, List<KnowledgeRuleScore> candidates, int rank)
-	{
-		if (result == null || selectedRules == null || selectedRuleIds == null || candidates == null || rank < 0 || rank >= candidates.Count)
-		{
-			return false;
-		}
-		LoreRule rule = candidates[rank]?.Rule;
-		if (rule == null || selectedRules.Contains(rule))
-		{
-			return false;
-		}
-		string ruleId = (rule.Id ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(ruleId) && selectedRuleIds.Contains(ruleId))
-		{
-			return false;
-		}
-		selectedRules.Add(rule);
-		if (!string.IsNullOrWhiteSpace(ruleId))
-		{
-			selectedRuleIds.Add(ruleId);
-		}
-		result.Add(rule);
-		return true;
-	}
-
-	private CandidateRules CollectCandidateRules(MentionedWorldEntities mentionedEntities)
-	{
-		CandidateRules result = new CandidateRules();
-		try
-		{
-			bool semanticEnabled = true;
-			try
-			{
-				semanticEnabled = AIConfigHandler.KnowledgeRetrievalEnabled;
-			}
-			catch
-			{
-			}
-			if (!semanticEnabled)
-			{
-				return result;
-			}
-			int knowledgeReturnCap = Index.GetKnowledgeReturnCap();
-			int loreInjectLimit = KnowledgeRuleIndex.GetLoreInjectLimit(knowledgeReturnCap);
-			List<WeightedKnowledgeInput> entityQueries = BuildKnowledgeQueryInputsFromMentions(mentionedEntities, loreInjectLimit, out var mentionTermCount);
-			if (entityQueries.Count <= 0)
-			{
-				try
-				{
-					Logger.Log("LoreMatch", "knowledge_mentions skip reason=no_mentions " + FormatKnowledgeMentionCounts(mentionedEntities));
-				}
-				catch
-				{
-				}
-				return result;
-			}
-			try
-			{
-				Logger.Log("LoreMatch", $"knowledge_mentions terms={mentionTermCount} entityQueries={entityQueries.Count} returnCap={loreInjectLimit} {FormatKnowledgeMentionCounts(mentionedEntities)} signature={BuildKnowledgeMentionSignature(mentionedEntities)}");
-			}
-			catch
-			{
-			}
-			int rerankBudget = KnowledgeRuleIndex.GetKnowledgeRerankBudget(knowledgeReturnCap);
-			int num = Math.Max(1, entityQueries.Count);
-			int knowledgePerEntityRerank = KnowledgeRuleIndex.GetKnowledgePerEntityRerank(rerankBudget, num);
-			int knowledgePerEntityRecall = KnowledgeRuleIndex.GetKnowledgePerEntityRecall(knowledgePerEntityRerank);
-			result.EntityQueryCount = num;
-			result.RerankPerEntity = knowledgePerEntityRerank;
-			result.RecallPerEntity = knowledgePerEntityRecall;
-			result.InjectLimit = loreInjectLimit;
-			List<LoreRule> list4 = SelectVectorRulesPerEntity(entityQueries, mentionTermCount, knowledgePerEntityRecall, knowledgePerEntityRerank, loreInjectLimit, out var matchMode);
-			if (list4 != null && list4.Count > 0)
-			{
-				result.MatchMode = "mentions_" + matchMode;
-				result.OrderedRules = list4.Where((LoreRule x) => x != null).ToList();
-				try
-				{
-					Logger.Log("LoreMatch", $"candidate_pool mode={result.MatchMode} returnCap={loreInjectLimit} rerankBudget={rerankBudget} rerankPerEntity={knowledgePerEntityRerank} recallPerEntity={knowledgePerEntityRecall} mentionTerms={mentionTermCount} entityQueries={num} got={result.OrderedRules.Count}");
-				}
-				catch
-				{
-				}
-				return result;
-			}
-			return result;
-		}
-		catch
-		{
-		}
-		return result;
 	}
 
 	private static string SanitizeRuleIdPart(string s)
@@ -1181,47 +851,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string NormalizeKeywordForCompare(string keyword)
-	{
-		try
-		{
-			string text = (keyword ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (string.IsNullOrEmpty(text))
-			{
-				return "";
-			}
-			StringBuilder stringBuilder = new StringBuilder(text.Length);
-			bool flag = false;
-			foreach (char c in text)
-			{
-				if (char.IsWhiteSpace(c))
-				{
-					if (!flag)
-					{
-						stringBuilder.Append(' ');
-					}
-					flag = true;
-				}
-				else
-				{
-					stringBuilder.Append(c);
-					flag = false;
-				}
-			}
-			return stringBuilder.ToString().Trim();
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
 	private bool TryFindRuleIdByKeyword(string keyword, string excludeRuleId, out string foundRuleId)
 	{
 		foundRuleId = null;
 		try
 		{
-			string text = NormalizeKeywordForCompare(keyword);
+			string text = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
 			if (string.IsNullOrEmpty(text))
 			{
 				return false;
@@ -1244,7 +879,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				foreach (string keyword2 in rule.Keywords)
 				{
-					string text4 = NormalizeKeywordForCompare(keyword2);
+					string text4 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword2);
 					if (string.IsNullOrEmpty(text4) || !string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
 					{
 						continue;
@@ -1265,7 +900,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		matchedRule = null;
 		try
 		{
-			string text = NormalizeKeywordForCompare(keyword);
+			string text = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
 			if (string.IsNullOrEmpty(text) || _file == null || _file.Rules == null)
 			{
 				return false;
@@ -1283,7 +918,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				foreach (string keyword2 in rule.Keywords)
 				{
-					string text3 = NormalizeKeywordForCompare(keyword2);
+					string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword2);
 					if (!string.IsNullOrEmpty(text3) && string.Equals(text3, text, StringComparison.OrdinalIgnoreCase))
 					{
 						matchedRule = rule;
@@ -1394,7 +1029,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static string BuildExactKeywordSlotCacheSignature()
 	{
-		string text = NormalizeKeywordForCompare(GetPlayerKeywordSlotKeyword());
+		string text = LoreCandidateRetriever.NormalizeKeywordForCompare(GetPlayerKeywordSlotKeyword());
 		return string.IsNullOrEmpty(text) ? "player_slot=off" : ("player_slot=" + text);
 	}
 
@@ -4406,7 +4041,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
 		long ruleDataVersion = Index.Version;
 		bool allowLoreContextCache = !HasAnyTextMappings();
-		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
+		string mentionSignature = LoreCandidateRetriever.BuildMentionSignature(loreMentionedEntities.Entities, KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap()));
 		string key = KnowledgeRuleIndex.Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_context={(includePlayerContext ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
@@ -4444,7 +4079,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
-		CandidateRules candidateRules = CollectCandidateRules(loreMentionedEntities);
+		LoreCandidateRules candidateRules = Retriever.CollectCandidateRules(loreMentionedEntities.Entities, KnowledgeRetrievalEnabledSafe());
 		int loreInjectLimit = candidateRules?.InjectLimit ?? 0;
 		if (loreInjectLimit <= 0)
 		{
@@ -4460,7 +4095,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			// recall so a shared culture name (for example, all three Imperial realms)
 			// cannot displace the named kingdom. This path is cached by the caller and by
 			// the lore-context cache, so the bounded exact scan is not on a daily hot path.
-			foreach (string entityTerm in BuildKnowledgeMentionTerms(loreMentionedEntities))
+			foreach (string entityTerm in LoreCandidateRetriever.BuildMentionTerms(loreMentionedEntities.Entities))
 			{
 				if (num3 >= loreInjectLimit)
 				{
@@ -4504,7 +4139,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
 			try
 			{
-				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}");
+				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode} mentionTerms={LoreCandidateRetriever.CountMentionTerms(loreMentionedEntities.Entities)}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={LoreCandidateRetriever.CountMentionTerms(loreMentionedEntities.Entities)}");
 				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail(value2, secondaryInput), text);
 			}
 			catch
@@ -4515,7 +4150,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={LoreCandidateRetriever.CountMentionTerms(loreMentionedEntities.Entities)}", secondaryInput), text);
 			}
 			catch
 			{
@@ -4839,7 +4474,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
 		long ruleDataVersion = Index.Version;
 		bool allowLoreContextCache = !HasAnyTextMappings();
-		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
+		string mentionSignature = LoreCandidateRetriever.BuildMentionSignature(loreMentionedEntities.Entities, KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap()));
 		string key = KnowledgeRuleIndex.Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|player_persona={(includePlayerPersona ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
@@ -4877,7 +4512,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
-		CandidateRules candidateRules = CollectCandidateRules(loreMentionedEntities);
+		LoreCandidateRules candidateRules = Retriever.CollectCandidateRules(loreMentionedEntities.Entities, KnowledgeRetrievalEnabledSafe());
 		int loreInjectLimit = candidateRules?.InjectLimit ?? KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
@@ -4912,7 +4547,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
 			try
 			{
-				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}");
+				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode} mentionTerms={LoreCandidateRetriever.CountMentionTerms(loreMentionedEntities.Entities)}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={LoreCandidateRetriever.CountMentionTerms(loreMentionedEntities.Entities)}");
 				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail(value2, secondaryInput), text);
 			}
 			catch
@@ -4923,7 +4558,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={LoreCandidateRetriever.CountMentionTerms(loreMentionedEntities.Entities)}", secondaryInput), text);
 			}
 			catch
 			{
@@ -4967,7 +4602,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			for (int i = 0; i < rule.RagShortTexts.Count; i++)
 			{
-				if (!string.IsNullOrWhiteSpace(NormalizeKeywordForCompare(rule.RagShortTexts[i])))
+				if (!string.IsNullOrWhiteSpace(LoreCandidateRetriever.NormalizeKeywordForCompare(rule.RagShortTexts[i])))
 				{
 					num++;
 				}
@@ -4995,7 +4630,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				for (int i = 0; i < rule.RagShortTexts.Count; i++)
 				{
-					string text = NormalizeKeywordForCompare(rule.RagShortTexts[i]);
+					string text = LoreCandidateRetriever.NormalizeKeywordForCompare(rule.RagShortTexts[i]);
 					if (string.IsNullOrWhiteSpace(text))
 					{
 						continue;
@@ -5420,7 +5055,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				foreach (string keyword in loreRule.Keywords ?? Enumerable.Empty<string>())
 				{
-					string text3 = NormalizeKeywordForCompare(keyword);
+					string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
 					if (!string.IsNullOrWhiteSpace(text3))
 					{
 						dictionary[text3] = PlayerPersonaRuleId;
@@ -5431,7 +5066,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				foreach (string keyword2 in loreRule2.Keywords ?? Enumerable.Empty<string>())
 				{
-					string text4 = NormalizeKeywordForCompare(keyword2);
+					string text4 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword2);
 					if (string.IsNullOrWhiteSpace(text4))
 					{
 						continue;
@@ -6121,7 +5756,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			rule.Keywords = new List<string>();
 		}
 		string playerPersonaForcedKeyword = GetPlayerPersonaForcedKeyword();
-		string text = NormalizeKeywordForCompare(playerPersonaForcedKeyword);
+		string text = LoreCandidateRetriever.NormalizeKeywordForCompare(playerPersonaForcedKeyword);
 		if (string.IsNullOrEmpty(text))
 		{
 			return false;
@@ -6130,14 +5765,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		rule.Keywords.RemoveAll((string x) => string.IsNullOrWhiteSpace(x));
 		for (int num = rule.Keywords.Count - 1; num >= 0; num--)
 		{
-			string text2 = NormalizeKeywordForCompare(rule.Keywords[num]);
+			string text2 = LoreCandidateRetriever.NormalizeKeywordForCompare(rule.Keywords[num]);
 			if (!string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
 			{
 				continue;
 			}
 			if (num == 0)
 			{
-				while (rule.Keywords.Count > 1 && string.Equals(NormalizeKeywordForCompare(rule.Keywords[1]), text, StringComparison.OrdinalIgnoreCase))
+				while (rule.Keywords.Count > 1 && string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(rule.Keywords[1]), text, StringComparison.OrdinalIgnoreCase))
 				{
 					rule.Keywords.RemoveAt(1);
 					flag = true;
@@ -6176,11 +5811,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			return list;
 		}
-		string text = NormalizeKeywordForCompare(GetPlayerPersonaForcedKeyword());
+		string text = LoreCandidateRetriever.NormalizeKeywordForCompare(GetPlayerPersonaForcedKeyword());
 		foreach (string keyword in rule.Keywords)
 		{
-			string text2 = NormalizeKeywordForCompare(keyword);
-			if (!string.IsNullOrEmpty(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase) && !list.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), text2, StringComparison.OrdinalIgnoreCase)))
+			string text2 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
+			if (!string.IsNullOrEmpty(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase) && !list.Any((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), text2, StringComparison.OrdinalIgnoreCase)))
 			{
 				list.Add(keyword.Trim());
 			}
@@ -6226,7 +5861,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					InformationManager.ShowTextInquiry(new TextInquiryData("添加额外称呼", "请输入一个额外称呼；玩家本名已由系统自动保留，无需重复输入。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 					{
 						string text2 = (input ?? "").Trim();
-						string kwNorm = NormalizeKeywordForCompare(text2);
+						string kwNorm = LoreCandidateRetriever.NormalizeKeywordForCompare(text2);
 						if (string.IsNullOrEmpty(kwNorm))
 						{
 							OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
@@ -6236,7 +5871,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							bool flag = false;
 							try
 							{
-								flag = rule.Keywords.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), kwNorm, StringComparison.OrdinalIgnoreCase));
+								flag = rule.Keywords.Any((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), kwNorm, StringComparison.OrdinalIgnoreCase));
 							}
 							catch
 							{
@@ -6318,7 +5953,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string text = selected[0].Identifier as string;
 				if (!string.IsNullOrWhiteSpace(text))
 				{
-					rule.Keywords.RemoveAll((string x) => string.Equals(NormalizeKeywordForCompare(x), NormalizeKeywordForCompare(text), StringComparison.OrdinalIgnoreCase));
+					rule.Keywords.RemoveAll((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), LoreCandidateRetriever.NormalizeKeywordForCompare(text), StringComparison.OrdinalIgnoreCase));
 					TouchRuleData();
 				}
 				OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
@@ -8534,7 +8169,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					InformationManager.ShowTextInquiry(new TextInquiryData("添加关键词", "请输入一个关键词：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 					{
 						string text2 = (input ?? "").Trim();
-						string kwNorm = NormalizeKeywordForCompare(text2);
+						string kwNorm = LoreCandidateRetriever.NormalizeKeywordForCompare(text2);
 						if (string.IsNullOrEmpty(kwNorm))
 						{
 							OpenKeywordMenu(rule, onReturn);
@@ -8544,7 +8179,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							bool flag = false;
 							try
 							{
-								flag = rule.Keywords.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), kwNorm, StringComparison.OrdinalIgnoreCase));
+								flag = rule.Keywords.Any((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), kwNorm, StringComparison.OrdinalIgnoreCase));
 							}
 							catch
 							{
@@ -8660,7 +8295,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		foreach (string ragShortText in rule.RagShortTexts)
 		{
-			string text = NormalizeKeywordForCompare(ragShortText);
+			string text = LoreCandidateRetriever.NormalizeKeywordForCompare(ragShortText);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				list.Add(new InquiryElement("__r__" + text, "RAG短句：" + text, null));
@@ -8680,7 +8315,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				{
 					InformationManager.ShowTextInquiry(new TextInquiryData("添加RAG专用短句", "请输入一条RAG专用短句（最多 " + RagShortTextMaxLength + " 字符）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 					{
-						string text3 = NormalizeKeywordForCompare(input);
+						string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(input);
 						if (string.IsNullOrEmpty(text3))
 						{
 							OpenRagShortTextMenu(rule, onReturn);
@@ -8695,7 +8330,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 							bool flag = false;
 							try
 							{
-								flag = rule.RagShortTexts.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), text3, StringComparison.OrdinalIgnoreCase));
+								flag = rule.RagShortTexts.Any((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), text3, StringComparison.OrdinalIgnoreCase));
 							}
 							catch
 							{
@@ -8757,7 +8392,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		List<InquiryElement> list = new List<InquiryElement>();
 		foreach (string ragShortText in rule.RagShortTexts)
 		{
-			string text = NormalizeKeywordForCompare(ragShortText);
+			string text = LoreCandidateRetriever.NormalizeKeywordForCompare(ragShortText);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				list.Add(new InquiryElement(text, text, null));
@@ -8771,10 +8406,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			else
 			{
-				string text2 = NormalizeKeywordForCompare(selected[0].Identifier as string);
+				string text2 = LoreCandidateRetriever.NormalizeKeywordForCompare(selected[0].Identifier as string);
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
-					rule.RagShortTexts.RemoveAll((string x) => string.Equals(NormalizeKeywordForCompare(x), text2, StringComparison.OrdinalIgnoreCase));
+					rule.RagShortTexts.RemoveAll((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), text2, StringComparison.OrdinalIgnoreCase));
 					TouchRuleData();
 				}
 				OpenRagShortTextMenu(rule, onReturn);
@@ -8816,7 +8451,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				{
 					foreach (string keyword in rule.Keywords)
 					{
-						string text2 = NormalizeKeywordForCompare(keyword);
+						string text2 = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
 						if (!string.IsNullOrEmpty(text2))
 						{
 							list.Add(text2);
@@ -8840,7 +8475,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				{
 					foreach (string item in enumerable)
 					{
-						string text3 = NormalizeKeywordForCompare(item);
+						string text3 = LoreCandidateRetriever.NormalizeKeywordForCompare(item);
 						if (!string.IsNullOrEmpty(text3))
 						{
 							list2.Add(text3);
@@ -9060,7 +8695,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				return string.Empty;
 			}
-			text = NormalizeKeywordForCompare(text);
+			text = LoreCandidateRetriever.NormalizeKeywordForCompare(text);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return string.Empty;
@@ -9104,7 +8739,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				foreach (string keyword in rule.Keywords)
 				{
-					string text = NormalizeKeywordForCompare(keyword);
+					string text = LoreCandidateRetriever.NormalizeKeywordForCompare(keyword);
 					if (!string.IsNullOrWhiteSpace(text))
 					{
 						list2.Add(text);
@@ -9182,7 +8817,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				foreach (string ragShortText in rule.RagShortTexts)
 				{
-					string text = NormalizeKeywordForCompare(ragShortText);
+					string text = LoreCandidateRetriever.NormalizeKeywordForCompare(ragShortText);
 					if (!string.IsNullOrWhiteSpace(text) && !list.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase)))
 					{
 						list.Add(text);
@@ -9216,7 +8851,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			foreach (string item in list2)
 			{
 				string text3 = NormalizeRagShortTextCandidate(item);
-				if (string.IsNullOrWhiteSpace(text3) || rule.RagShortTexts.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), text3, StringComparison.OrdinalIgnoreCase)))
+				if (string.IsNullOrWhiteSpace(text3) || rule.RagShortTexts.Any((string x) => string.Equals(LoreCandidateRetriever.NormalizeKeywordForCompare(x), text3, StringComparison.OrdinalIgnoreCase)))
 				{
 					continue;
 				}
