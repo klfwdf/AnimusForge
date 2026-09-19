@@ -1,5 +1,5 @@
 from pathlib import Path
-import argparse, importlib.util, subprocess
+import argparse, importlib.util, os, subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 
 def load(name,path):
@@ -35,5 +35,6 @@ out=HERE/'.generated'/('old-worker' if args.old_worker else args.mutate or 'curr
 (out/'Prompt.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text(harness,encoding='utf-8')
 (out/'Schedule.cs').write_text(schedule,encoding='utf-8')
 project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Schedule.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'],executable=True)
-code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release'],out)
+dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')
+code,log=util.run_dotnet(dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

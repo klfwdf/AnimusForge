@@ -5601,6 +5601,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetKingdom(string kingdomId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetKingdomId.Value = ((kingdomId ?? "").Trim().ToLowerInvariant() ?? "");
@@ -5613,6 +5614,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetHero(string heroId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetHeroId.Value = (heroId ?? "").Trim();
@@ -5625,6 +5627,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetCharacter(string characterId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetCharacterId.Value = (characterId ?? "").Trim();
@@ -5637,6 +5640,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetTroop(string troopId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetTroopId.Value = ((troopId ?? "").Trim().ToLowerInvariant() ?? "");
@@ -5649,6 +5653,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetUnnamedRank(string unnamedRank)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetUnnamedRank.Value = ((unnamedRank ?? "").Trim().ToLowerInvariant() ?? "");
@@ -5661,6 +5666,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetAgentIndex(int agentIndex)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetAgentIndex.Value = agentIndex;
@@ -5668,6 +5674,14 @@ public static class AIConfigHandler
 		catch
 		{
 			_guardrailRuntimeTargetAgentIndex.Value = -1;
+		}
+	}
+
+	private static void ClearCapturedEligibilityOnTargetMutation()
+	{
+		if (_guardrailRuntimeEligibility.Value != null)
+		{
+			_guardrailRuntimeEligibility.Value = null;
 		}
 	}
 
@@ -5709,8 +5723,12 @@ public static class AIConfigHandler
 	internal static PromptRuleEligibility CapturePromptRuleEligibility(Hero targetHero, CharacterObject targetCharacter, PromptRuntimeTargetBinding binding)
 	{
 		PromptRuleEligibility result = new PromptRuleEligibility();
+		// Lords-hall eligibility reads the ambient target. Bind this request only for the
+		// capture, then restore the caller's target (including its eligibility facts).
+		using IDisposable scope = BeginGuardrailRuntimeScope();
 		try
 		{
+			ApplyGuardrailRuntimeTarget(binding);
 			Hero hero = targetHero ?? targetCharacter?.HeroObject;
 			if (hero == null && !string.IsNullOrWhiteSpace(binding.HeroId))
 			{
@@ -5719,7 +5737,7 @@ public static class AIConfigHandler
 			result.TargetIsPlayerPartyTradeLimited = IsPlayerPartyTradeLimitedTarget(hero);
 			result.SceneMoveRuleExcludedForMission = ShouldExcludeSceneMoveRuleForCurrentMission();
 			result.GcczSiegeAftermathActive = AfGcczShoutBridge.IsActive();
-			result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForExternal(hero, targetCharacter);
+			result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForPromptCapture(hero, targetCharacter);
 			result.DiplomacyEligible = DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(hero, targetCharacter);
 			result.WorldDiplomacyEligible = WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(hero);
 			result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter);

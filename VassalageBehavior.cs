@@ -2354,6 +2354,13 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		return result;
 	}
 
+	// J06 capture runs for every prompt, not only when this topic is evaluated.
+	// Reuse the read-only predicate without emitting the legacy per-topic diagnostic event.
+	internal static bool CanInjectVassalageRuleForPromptCapture(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		return TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out _, out _, out _);
+	}
+
 	public static string BuildRuntimeVassalageInstructionForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var playerKingdom, out var targetKingdom, out var speaker))

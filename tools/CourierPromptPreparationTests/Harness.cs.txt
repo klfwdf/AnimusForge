@@ -39,7 +39,7 @@ namespace AnimusForge {
   public sealed class ShoutPromptContext { public string Extras="extras",EntityPostprocessContext="entities",PreprocessExcludedRuleBlock="excluded";public List<string> PreprocessRuleIds=new(){"ctx"}; }
   internal static MyBehavior Instance=new();
   internal static ShoutPromptContext CreateEmptyShoutPromptContext()=>new(){Extras="",PreprocessRuleIds=new()};
-  internal sealed class CourierPreprocessRequest { internal string Input,ExtraFact; internal CharacterObject Character; internal AnimusForge.PromptRuntimeTargetBinding Target; }
+  internal sealed class CourierPreprocessRequest { internal string Input,ExtraFact; internal CharacterObject Character; internal AnimusForge.PromptRuntimeTargetBinding Target; internal PromptRuleEligibility Eligibility=new(); }
   // Step 1 (game thread): the legacy synchronous facade and the scheduled Begin both capture here.
   internal CourierPreprocessRequest BeginCourierRulePreprocess(Hero hero,string input,string extraFact,CharacterObject character,string kingdomIdOverride,int targetAgentIndex,IEnumerable<string> excludedRuleIds){
    Probe.MainOnly();return new(){Input=input,ExtraFact=extraFact,Character=character};
@@ -71,11 +71,12 @@ namespace AnimusForge {
  internal readonly struct PromptRuntimeTargetBinding { }
  public sealed class MentionedWorldEntities { }
  internal sealed class PromptBuildPhases { internal string Culture; internal PromptBuildRequestStub Request=new(); }
- internal sealed class PromptBuildRequestStub { internal PromptRuntimeTargetBinding Target; }
+ internal sealed class PromptBuildRequestStub { internal PromptRuntimeTargetBinding Target; internal PromptRuleEligibility Eligibility=new(); }
+ internal sealed class PromptRuleEligibility { }
  internal static class AIConfigHandler {
   internal static IDisposable BeginGuardrailRuntimeScope()=>new Scope();
   private sealed class Scope:IDisposable{public void Dispose(){}}
-  internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding b){}
+  internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding b,PromptRuleEligibility eligibility){if(eligibility==null)throw new Exception("worker received no detached eligibility");}
   internal static void ClearGuardrailRuntimeTarget(){}
   internal static void SetGuardrailSemanticContext(string s){}
  }
