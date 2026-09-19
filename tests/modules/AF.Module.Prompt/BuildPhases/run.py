@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation", "drop-entity-allocation-worker"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-knowledge-eligibility", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation", "drop-entity-allocation-worker"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -30,7 +30,13 @@ def ordered(body, *fragments):
 begin = extract.declaration(source, "internal PromptBuildPhases BeginSharedPromptBuild(")
 routing = extract.declaration(source, "internal void RunSharedPromptRouting(")
 knowledge_capture = extract.declaration(source, "internal void CaptureSharedKnowledgeSnapshot(")
-knowledge_worker = extract.declaration(source, "internal void RunSharedKnowledgeRetrieval(")
+knowledge_input = extract.declaration(source, "internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(")
+knowledge_worker = extract.declaration(source, "internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(")
+if args.mutate == "drop-knowledge-eligibility":
+    knowledge_worker = knowledge_worker.replace("AIConfigHandler.ApplyGuardrailRuntimeTarget(input.Target, input.Eligibility)", "AIConfigHandler.X(input.Target, input.Eligibility)", 1)
+knowledge_apply = extract.declaration(source, "internal static void ApplySharedKnowledgeRetrieval(")
+knowledge_types = (ROOT / "src/modules/AF.Module.Prompt/Composition/PromptRetrievalCapture.cs").read_text(encoding="utf-8-sig")
+knowledge_dto = extract.declaration(knowledge_types, "internal sealed class PromptKnowledgeWorkInput")
 if args.mutate == "drop-extra-worker":
     knowledge_worker = knowledge_worker.replace("AIConfigHandler.GetMatchedExtraRuleHitsForWorker(", "AIConfigHandler.X(", 1)
 complete = extract.declaration(source, "internal ShoutPromptContext CompleteSharedPromptBuild(")
@@ -50,9 +56,14 @@ ordered(routing, "SetGuardrailSemanticContext(", "PromptTopicRoutingStage.Run(",
 ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "ApplyPromptRuntimeAppendices(")
 assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
 assert "PreparePromptLoreRetrieval(" in knowledge_capture and "CollectPromptLoreCandidates(" in knowledge_worker
-assert "CapturePromptLoreSettings(" in knowledge_capture and "phases.Retrieval.LoreSettings" in knowledge_worker, "Lore MCM settings must be detached on game thread"
+assert "CapturePromptLoreSettings(" in knowledge_capture and "input.LoreSettings" in knowledge_worker, "Lore MCM settings must be detached on game thread"
 assert "PreparePromptLoreRetrieval(" not in knowledge_worker and not re.search(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.|Clan\.|Hero\.|RomanceSystemBehavior\.)", knowledge_worker), "knowledge worker must not prepare indexes or read game services"
-assert "GetMatchedExtraRuleHitsForWorker(" in knowledge_worker and "phases.Routing?.AuxiliaryRuleHitIds == null" in knowledge_worker, "legacy no-preselection rule retrieval must run on worker"
+assert not re.search(r"\b(?:Hero|Campaign|MobileParty|Settlement|Kingdom|Clan|PromptBuildPhases|EntityCapture)\b", knowledge_dto + knowledge_worker), "worker input and body must not carry live game objects"
+assert "phases.Retrieval.EntityCapture" not in knowledge_worker and "phases." not in knowledge_worker, "worker must not receive mixed game capture"
+assert "Eligibility = phases.Request.Eligibility" in knowledge_input and "Target = phases.Request.Target" in knowledge_input, "knowledge input must carry detached target eligibility"
+assert "AIConfigHandler.ApplyGuardrailRuntimeTarget(input.Target, input.Eligibility)" in knowledge_worker and "AIConfigHandler.ClearGuardrailRuntimeTarget()" in knowledge_worker, "fallback rule worker must use captured eligibility and restore ambient scope"
+assert "input.ExtraRuleReturnCap" in knowledge_worker and "AIConfigHandler.GuardrailRuleReturnCap" not in knowledge_worker, "worker must not read live MCM rule cap"
+assert "GetMatchedExtraRuleHitsForWorker(" in knowledge_worker and "input.NeedsFallbackExtraRules" in knowledge_worker and "phases.Routing?.AuxiliaryRuleHitIds == null" in knowledge_input, "legacy no-preselection rule retrieval must run on worker"
 
 # J06d: only game-thread capture may call the live eligibility functions. Both
 # worker entries must publish their request's detached facts before retrieval.
@@ -80,22 +91,23 @@ courier_schedule = (ROOT / "CourierDeliveryBehavior.PromptSchedule.cs").read_tex
 if args.mutate == "drop-worker-eligibility":
     native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
 if args.mutate == "drop-knowledge-worker":
-    native_schedule = native_schedule.replace("owner.RunSharedKnowledgeRetrieval(phases);", "", 1)
+    native_schedule = native_schedule.replace("MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);", "", 1)
 if args.mutate == "drop-native-knowledge-guard":
     native_schedule = native_schedule.replace('SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")', "false", 1)
 if args.mutate == "drop-courier-knowledge-guard":
-    courier_schedule = courier_schedule.replace("if (!ReferenceEquals(prepared, phases)) return null;", "", 1)
+    courier_schedule = courier_schedule.replace("if (knowledgeInput == null) return null;", "", 1)
 if args.mutate == "drop-entity-worker":
     knowledge_worker = knowledge_worker.replace("WorldEntityRetrievalService.MatchDetachedCandidates(", "WorldEntityRetrievalService.X(", 1)
 assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
-assert "owner.RunSharedKnowledgeRetrieval(phases);" in native_schedule, "Native must execute the knowledge worker"
+assert "ApplySharedKnowledgeRetrieval(phases, knowledgeResult)" in native_schedule and "ApplySharedKnowledgeRetrieval(phases, knowledgeResult)" in courier_schedule, "only final game-owner phases may publish worker results"
+assert "MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);" in native_schedule, "Native must execute the knowledge worker"
 assert "ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility)" in courier_schedule and "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in courier_schedule, "Courier workers must publish detached eligibility"
 assert native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_begin"') < native_schedule.index('RunNativeConversationBackgroundPreprocessAsync(') < native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_complete"'), "Native capture/routing/complete thread order"
 assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"') < courier_schedule.index('Task.Run(() =>') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"'), "Courier owner/worker thread order"
-assert native_schedule.index('"prompt_build_knowledge_capture"') < native_schedule.index('owner.RunSharedKnowledgeRetrieval(phases);') < native_schedule.index('"prompt_build_complete"'), "Native knowledge capture/worker/complete order"
-assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedule.index('owner.RunSharedKnowledgeRetrieval(phases)') < courier_schedule.index('source + "_prompt_complete"'), "Courier knowledge capture/worker/complete order"
+assert native_schedule.index('"prompt_build_knowledge_capture"') < native_schedule.index('MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);') < native_schedule.index('"prompt_build_complete"'), "Native knowledge capture/worker/complete order"
+assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedule.index('MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput)') < courier_schedule.index('source + "_prompt_complete"'), "Courier knowledge capture/worker/complete order"
 assert 'SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")' in native_schedule and native_schedule.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "Native must reject stale or replaced knowledge results"
-assert 'if (!ReferenceEquals(prepared, phases)) return null;' in courier_schedule and courier_schedule.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "Courier must reject stale owner/source after knowledge capture and before final use"
+assert 'if (knowledgeInput == null) return null;' in courier_schedule and courier_schedule.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "Courier must reject stale owner/source after knowledge capture and before final use"
 assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
 entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 knowledge_host = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")

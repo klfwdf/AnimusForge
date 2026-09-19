@@ -60,7 +60,10 @@ namespace AnimusForge {
   }
   internal void RunSharedPromptRouting(PromptBuildPhases phases){ if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared routing on main thread");} }
   internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases,Hero hero){ Probe.MainOnly(); }
-  internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases){ if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared retrieval on main thread");} }
+  internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(PromptBuildPhases phases){Probe.MainOnly();return new();}
+  internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input){if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared retrieval on main thread");}return new();}
+  internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases phases,PromptKnowledgeWorkResult result){Probe.MainOnly();if(result==null)throw new Exception("missing knowledge result");}
+  internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases){ApplySharedKnowledgeRetrieval(phases,RunSharedKnowledgeRetrieval(CreateSharedKnowledgeWorkInput(phases)));}
   internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly){
    Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;return Probe.NullContext?null:new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
   }
@@ -73,6 +76,8 @@ namespace AnimusForge {
  internal readonly struct PromptRuntimeTargetBinding { }
  public sealed class MentionedWorldEntities { }
  internal sealed class PromptBuildPhases { internal string Culture; internal PromptBuildRequestStub Request=new(); }
+ internal sealed class PromptKnowledgeWorkInput { }
+ internal sealed class PromptKnowledgeWorkResult { }
  internal sealed class PromptBuildRequestStub { internal PromptRuntimeTargetBinding Target; internal PromptRuleEligibility Eligibility=new(); }
  internal sealed class PromptRuleEligibility { }
  internal static class AIConfigHandler {
