@@ -59,6 +59,8 @@ namespace AnimusForge {
    Probe.MainOnly();return new(){Culture=cultureId};
   }
   internal void RunSharedPromptRouting(PromptBuildPhases phases){ if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared routing on main thread");} }
+  internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases,Hero hero){ Probe.MainOnly(); }
+  internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases){ if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared retrieval on main thread");} }
   internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly){
    Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;return Probe.NullContext?null:new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
   }
