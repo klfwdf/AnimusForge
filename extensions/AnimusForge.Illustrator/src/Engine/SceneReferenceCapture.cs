@@ -42,9 +42,25 @@ namespace AnimusForge.Illustrator.Engine
             return new[] { new IllustrationReferenceImage(image, SceneReferenceLabel(), IllustrationReferenceKind.Scene) };
         }
 
+        internal static async Task<ConversationSceneReferenceCapture> CaptureConversationSceneReferencesAsync(
+            ConversationSceneCaptureSource source, CancellationToken token)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            await source.EnsureCurrentAsync(token).ConfigureAwait(false);
+            GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
+            { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-front-back-30m" });
+            if (source.IsMapConversation)
+                return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
+            var references = await CaptureMissionSceneReferencesAsync(source, token).ConfigureAwait(false);
+            return new ConversationSceneReferenceCapture(references,
+                "本次依据已加载Mission的玩家附近30米静态网格前后双镜头参考；这是局部环境参考，不是完整360度全景。真实当前画面如有附加，用于校验光照与人物关系。",
+                "任务场景：附近30米前后双镜头参考");
+        }
+
         // Front/back cameras render a private nearby environment copy, never Mission.Scene.
         // Presented pixels are an additional lighting/person-position check.
-        internal static async Task<IReadOnlyList<IllustrationReferenceImage>> CaptureConversationSceneReferencesAsync(CancellationToken token)
+        private static async Task<IReadOnlyList<IllustrationReferenceImage>> CaptureMissionSceneReferencesAsync(
+            ConversationSceneCaptureSource source, CancellationToken token)
         {
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
             var watch = Stopwatch.StartNew();
@@ -64,10 +80,11 @@ namespace AnimusForge.Illustrator.Engine
                 stageHeld = true;
                 var context = await RunOnGameThreadAsync(() =>
                 {
-                    var mission = Mission.Current;
-                    var screen = ScreenManager.TopScreen as MissionScreen;
+                    source.EnsureCurrent(captureToken);
+                    var mission = source.Mission;
+                    var screen = source.MissionScreen;
                     if (mission?.Scene == null || screen?.CombatCamera == null || !ReferenceEquals(screen.Mission, mission) || !screen.MissionStartedRendering())
-                        throw new InvalidOperationException("当前没有可采集全景的已加载场景，请进入实际场景后重试。");
+                        throw new InvalidOperationException("当前任务场景尚未完成渲染，暂时无法采集附近环境，请稍后重试。");
                     frameStats = new PanoramaFrameStats();
                     _activePanoramaFrameStats = frameStats;
                     return Tuple.Create(mission, PanoramaProjection.BuildFrontBackCameraFrames(screen.CombatCamera.Frame), CaptureUnobstructedConversationSceneBase64());
@@ -167,7 +184,7 @@ namespace AnimusForge.Illustrator.Engine
                     if (stageHeld) _stageLock.Release();
                     SceneCaptureLock.Release();
                     if (ReferenceEquals(_activePanoramaFrameStats, frameStats)) _activePanoramaFrameStats = null;
-                    GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject { ["faces"] = rawFaces.Count,
+                    GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject { ["route"] = "mission-front-back-30m", ["faces"] = rawFaces.Count,
                         ["totalMs"] = watch.ElapsedMilliseconds, ["sourceMissionViews"] = 0, ["referenceSheet"] = composed, ["panorama"] = false,
                         ["sampledFrames"] = frameStats?.Count ?? 0, ["maxApplicationFrameMs"] = frameStats?.MaxMs ?? 0,
                         ["meanApplicationFrameMs"] = frameStats == null || frameStats.Count == 0 ? 0 : frameStats.TotalMs / frameStats.Count });

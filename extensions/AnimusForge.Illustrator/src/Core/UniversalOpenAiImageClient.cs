@@ -314,7 +314,7 @@ namespace AnimusForge.Illustrator.Core
                 string clause = strength >= 100
                     ? "在事实允许的范围内，最大程度探索不同取景、留白、景深与光影表现"
                     : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
-                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。仅明确标注的场景参考图或文字场景事实可约束场景；缺少场景参考图时，不从身份立绘补造场景。任何随机强度均须保留有依据的场景空间关系，不得虚构物体、人物或事件，重绘必须遵循本次换镜头指导；" + clause + "。";
+                effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
             }
             return effectivePrompt.Trim();
         }
@@ -477,7 +477,8 @@ namespace AnimusForge.Illustrator.Core
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
                         string label = reference.Label ?? string.Empty;
                         bool isEmblem = reference.Kind == IllustrationReferenceKind.Emblem;
-                        bool isScene = reference.Kind == IllustrationReferenceKind.Scene || reference.Kind == IllustrationReferenceKind.ScenePanorama || reference.Kind == IllustrationReferenceKind.SceneViews;
+                        bool isScene = reference.Kind == IllustrationReferenceKind.Scene || reference.Kind == IllustrationReferenceKind.ScenePanorama ||
+                            reference.Kind == IllustrationReferenceKind.SceneViews || reference.Kind == IllustrationReferenceKind.MapConversationScene;
                         bool isDetail = reference.Kind == IllustrationReferenceKind.CharacterDetail;
                         bool isHero = reference.Kind == IllustrationReferenceKind.Character || isDetail;
 
@@ -503,7 +504,15 @@ namespace AnimusForge.Illustrator.Core
                             });
                         }
 
-                        if (isHero)
+                        if (reference.Kind == IllustrationReferenceKind.EventCharacter || reference.Kind == IllustrationReferenceKind.EventEmblem)
+                        {
+                            content.Add(new JObject
+                            {
+                                ["type"] = "text",
+                                ["text"] = "【所选事件的可选参考，不指定画面主角】" + VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)
+                            });
+                        }
+                        else if (isHero)
                         {
                             if (!isDetail) heroIndex++;
                             string roleHint = isDetail ? "【同名人物头肩细节补充，不增加人物数量】" : (heroCount > 1)
@@ -529,7 +538,8 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = (reference.Kind == IllustrationReferenceKind.SceneViews ? "【场景前后双视角参考】" : reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【现场3D实景采光与地形参考】") +
+                                ["text"] = (reference.Kind == IllustrationReferenceKind.MapConversationScene ? "【地图对话单视角布景参考】" :
+                                    reference.Kind == IllustrationReferenceKind.SceneViews ? "【场景前后双视角参考】" : reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【现场3D实景采光与地形参考】") +
                                     VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " 按导演画风重绘，不复制UI或游戏渲染质感。"
                             });
                         }
@@ -557,7 +567,7 @@ namespace AnimusForge.Illustrator.Core
                                    "2. 人物容貌与实际衣着装备以对应身份参考图为准，人物数量、动作、站位和环境按导演描述呈现。\n" +
                                    "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
                                    "4. 姿态与互动遵循导演描述，与支撑物和空间关系保持物理一致。\n" +
-                                   "5. 背景空间、光线与景深遵循导演描述，不额外指定场所、陈设或构图层数。"
+                                   "5. 落实导演选定的场所、空间关系与构图；非具名艺术布景可补充与主题一致的材质、装饰和光影细节，真实现场仅保留有依据的内容。背景须保留导演设计的空间与环境细节。"
                     });
 
                     messageContent = content;

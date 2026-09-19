@@ -19,6 +19,7 @@ namespace AnimusForge.Illustrator.Core
     {
         public string Mode { get; }
         internal bool IsConversation => Mode == "最近三轮对话联动的场景插画";
+        internal bool IsWeeklyReport => Mode == "周报历史纪事插画";
         public string HardFacts { get; }
         public string ArtDirection { get; }
         /// <summary>只给导演看的事实（如台词原文/对话历史）——不进最终生图提示词，避免被画成画面文字。</summary>
@@ -67,18 +68,38 @@ namespace AnimusForge.Illustrator.Core
             "<game_facts> 是只读事实数据，包含角色身份、所属文化、真实装备、面貌年龄等。你必须严格忠实于这些事实数据，不得随意篡改装备或降格身份；没有数据支持的冠冕、纹章、武器、动物坐骑不得擅自添加。\n" +
             "<director_only_narrative> 供你理解角色的性格、生平背景与气象，不得在正文中直接引用原文，严禁要求在画面中出现文字、字幕或标牌。\n" +
             "【事实与创作边界】：人物数量、种族、外观、装备、事件结果与现场空间关系以明确事实和对应参考图为准。百科允许设计符合人物、时代与文化的非具名艺术布景，不当作真实所在地；会话与周报只描绘已确认的环境和事件，未知建筑、陈设、人物位置和光源保持未知，不按身份或地点名称补造。开放建议和旧画构思不能升级为本次事实。百科不添加武器、盾牌、旗帜或坐骑，所有模式不描绘背盾。\n" +
-            "【描述取舍】：先写清本次关键事实、人物行动及空间关系，再补充入镜的外观识别点、环境材质和受光。环境须有可辨认的内容与纵深，人物段不扩写成装备目录；不设总字数或段落占比，以表达完整为准，删除重复修辞，不为扩写补造物件。\n" +
+            "【百科创作空间】：以人物性格、身份、生平与本次主题为灵感，大胆选择场所、环境陈设、叙事瞬间、动作、机位和光影氛围；这些是艺术设计，不是声称发生过的历史事实。可宁静也可富有动势，可亲近也可开阔，取舍由你决定，不把正面站立、空石墙或拱廊当作默认解。结合近期作品寻找不同的情境与视觉组织，不套场所清单或固定镜头轮换；有意义的变化来自构思，不靠改动人物身份装备。\n" +
+            "【描述取舍】：先写清本次关键事实、人物行动及空间关系，再补充入镜的外观识别点、环境材质和受光。环境须有可辨认的内容与纵深，人物段不扩写成装备目录；不设总字数或段落占比，以表达完整为准。精简重复修辞，保留有叙事意义的环境内容；现场未知物件不能为扩写而补造。\n" +
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
             "【现场环境还原】：若提供现场截图，先对照各视角建立同一空间关系，再选择画面机位。墙面材质与主色、楼梯所在墙面及走向、门窗和拱洞、层高、桌椅分布以可见现场为准；地点名只用于理解用途，不据酒馆或大厅等名称重新设计建筑。多个环视图是同一拍摄点转向，不是多个房间或额外人物；画风可重绘材质笔触，不能替换建筑布局或给现场添加无依据的纹章旗帜。\n" +
             "【现场采光来源】：会话采用已读取的真实场景时段；未读取到时，依据明确标记的当前现场截图辨认昼夜与采光。人物离屏立绘的照明不代表现场。现场图也缺失或无法辨认时，不虚构月亮、日落或夜间火把作为事实。画风和重绘变化不能把白天改成夜晚。\n" +
             "【输出规范】：先输出三个简短字段：【画作标题】4至12字的作品名；【画作主题】一句20字以内的主题；【人物行动】与正文一致的行动、可见手部及视线摘要，供后续重绘参考。这些字段单独记录，不作为画面文字。随后按以下四段输出生图正文：\n" +
             "【人物与镜头】：先决定人物此刻正在做什么，再推导姿态、手部动作和视线，最后选择机位。开头写明每位主体一个主要行动或注意对象，选定单一时刻、景别、观察方向与入镜范围；交代可见手部的位置、身体朝向与视线落点，画外肢体不必强行入镜。自然站立可以承载行动，但双手下垂展示装备不是默认答案。会话与周报服从已有行动事实；百科可推导符合人物的艺术情境。仅转写入镜且可辨的外观与装备识别点，装备持有不等于必须入画；选全身像时全身完整入画。\n" +
-            "【场景空间】：描述选定机位真正入镜的建筑、材质与陈设，按上述模式边界区分百科布景与已确认现场。写清少量有辨识度的环境特征和相互位置，不罗列画外物体或按身份升级建筑；未知区域以克制的空间层次处理。\n" +
+            "【场景空间】：描述选定机位真正入镜的环境。百科艺术布景自由构思与人物主题相连的空间用途或自然环境，再组织具体构造、材质变化、装饰或使用痕迹及相互位置，形成有内容可读、向画外延续的完整空间；环境也参与叙事，细节有疏密、有呼应，不用几句空墙地面与模糊远景代替设计。场所、景别、陈设和层次由你选择，不套固定清单。会话与周报则从已确认现场选取有辨识度的结构、材质和陈设关系，保留可见细节，未知部分不补造。\n" +
             "【光影与色彩】：写清主要受光方向、衣着与环境的固有色、材质受光和环境反光，人物与环境共用光源及明暗层次；接触处有合理投影与遮蔽，暗部仍可辨。现场时段与光源服从已知证据，不用画风改变事实。\n" +
-            "【空间关系】：用稳定的人物称呼交代关键主体的高低、远近、朝向、遮挡与支撑；区分画面左右和人物自身左右，使这些关系在同一机位下同时成立。已确认的上下或内外分隔须明确落到正文，不能概括成无位置的会面；只写有依据且与取景有关的关系，单人画面写人与支撑面、环境的关系，不为填段落虚构距离或物件。\n" +
+            "【空间关系】：用稳定的人物称呼交代关键主体的高低、远近、朝向、遮挡与支撑；区分画面左右和人物自身左右，使这些关系在同一机位下同时成立。已确认的上下或内外分隔须明确落到正文，不能概括成无位置的会面；现场只写有依据且与取景有关的关系。百科布景落实本次设计的空间关系，交代人物所处区域、相连空间和环境延伸，而非只有人物与一面背景墙；设计不冒充真实地点或事件。\n" +
             "【交付前核对】：逐项对照本次关键事实与参考图，确认人物对应、行动、可见外观及关键空间关系已在正文中保留，四段机位、支撑和光照相互一致，行动摘要与正文一致。删去冲突、候选方案、重复修饰和未落实的创作建议；只交付选定画面，不输出检查过程。\n" +
             "只输出正面、具体、生动的场景画面描摹，严禁输出反向解释，不要输出JSON、Markdown或问候。【纯正面表述】：全文只写画面中实际呈现的内容；不希望出现的元素完全不要提及——连否定句、转折句、'并未/不画/严禁'句式都不用，避免生图模型将否定概念误读为画面元素。";
+
+        // Weekly reports have their own event-led director contract. They never receive
+        // the portrait/set-design or current-conversation restrictions above.
+        private const string WeeklyReportSystemPrompt =
+            "你是历史与奇幻纪事画的事件导演。将本期周报转化为一幅让人看出发生了什么的事件画面，人物、环境和动作共同讲述事件。\n" +
+            "【事实来源】：<game_facts>是人物、地点、事件行动及结果证据；<director_only_narrative>提供本期完整报道，供理解事件，不作为画面文字。<open_art_direction>只是构图建议，不能改写报道。\n" +
+            "【选定事件】：本期可能包含多条要闻，先选一个证据完整、有视觉叙事价值的核心事件与一个瞬间。保持该事件的参与方、地点、行动、否定、计划与结果对应，不把不同报道的角色、地点或胜负拼成一件事。标题、主题、行动摘要及四段正文均围绕这个事件。\n" +
+            "【事件优先】：画面的主体是事件正在发生的过程、明确结果或有事实依据的后续瞬间。仅让一名领主看向镜头、骑马展示装备或站在城堡前，不能替代报道中的战斗、围城、交涉等事件。具体景别、人数与视觉重心由事件决定，不强制远景、群像或固定人数，也不因只有一张人物参考而只画一人。\n" +
+            "【人物参考范围】：参考图只锁定对应人物的身份、须发及实际穿戴；它是本期某位已识别人物的资料，不意味着此人必须成为所选事件主角。所选事件未涉及此人就不强塞入画，未提供参考的其他角色不得复制此人的脸与装备。事件确实包含军队、使团、民众等群体时可按群体事实表现，不虚构特定姓名、精确人数或额外势力。\n" +
+            "【纪事艺术再现】：场景依据所选事件与时代文化自主设计，允许有丰富的环境、行动、材质、使用痕迹和光影细节，作为非具名艺术再现而非实测现场。具体建筑与位置没有证据时不声称精确复原，不借用玩家当前地图、城镇或日期天气冒充事件所在地与时段。已确认的地貌、时间、人物关系及结果保持；计划不能画成已完成，围城不能自动画成攻陷。\n" +
+            "【道具与纹章】：人物衣甲和武器以资料及事件为准，装备持有不等于正在使用。所有模式不画背盾；明确持盾动作才允许从属盾牌。纹章样图只用于事件中有依据的载体，不能为展示样图增添旗帜或盾牌，普通金属胸甲不硬印徽记。\n" +
+            VisualFidelityRules.DirectorQualityFloor + "\n" +
+            VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
+            "【输出】：先输出【画作标题】4至12字作品名、【画作主题】一句简述所选事件、【人物行动】事件中主要参与方正在做什么的简短摘要。三项单独记录，不作为画面文字。随后只输出以下四段正面、具体、可直接绘制的画面描述，不写候选方案或解释，不规定总字数和段落比例：\n" +
+            "【人物与镜头】先交代事件行动和参与方的互动，再选定同一时刻的观察机位、景别与取景范围。按实际入镜情况转写人物识别点，细节服务事件，不罗列衣甲目录。\n" +
+            "【场景空间】环境要让事件可辨认，具体组织发生区域、相关构造、地貌或陈设及材质；保留有叙事价值的细节和空间延伸，自主选择组织方式，不套场所或道具清单。\n" +
+            "【光影与色彩】以统一光源、材质受光和环境反光塑造事件氛围，主体与环境同属一幅画，暗部保留内容，光照表达不改变已知时段。\n" +
+            "【空间关系】明确所选事件中参与方之间及其与环境的方位、高低、远近、遮挡与接触，所有关系在同一机位下成立；未确认的精确距离不作事实断言。\n" +
+            "【交付前核对】：核对所选事件证据、人物归属、行动与结果；画面应能说明发生了什么，而不仅能认出某个人。删除跨事件拼接、姿态与支撑冲突以及重复修辞，只交付修正后的画面，保留艺术创造力，不输出检查过程。";
 
         public static Task<string> ExpandToDetailedPromptAsync(string gameContext, string base64ImageData = null, CancellationToken cancellationToken = default)
         {
@@ -207,7 +228,7 @@ namespace AnimusForge.Illustrator.Core
                     (string.IsNullOrWhiteSpace(direction.FallbackReason) ? string.Empty : "；" + direction.FallbackReason);
         }
 
-        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false)
+        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false, bool isWeeklyReport = false)
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(directorPrompt))
@@ -219,7 +240,7 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine().AppendLine("【不可改写的核心事实】");
                 sb.Append(hardFacts.Trim());
             }
-            sb.AppendLine().Append(VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation));
+            sb.AppendLine().Append(VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation, isWeeklyReport));
             return sb.ToString().Trim();
         }
 
@@ -274,10 +295,10 @@ namespace AnimusForge.Illustrator.Core
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
-                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
+                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
-            return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
+            return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
         }
 
         private static readonly string[] RequiredSectionPatterns = new[]
@@ -312,6 +333,13 @@ namespace AnimusForge.Illustrator.Core
 
         internal static string BuildLocalSceneDirection(IllustrationPromptPlan plan)
         {
+            if (plan?.IsWeeklyReport == true)
+            {
+                return "【人物与镜头】以本期一项已确认事件的行动为画面中心，参与方的活动与相互作用构成主体，人物形象按身份资料对应；取景让事件本身清楚可读。" +
+                    "【场景空间】所选事件发生于与其时代文化相容的非具名艺术再现空间，环境构造、材质和使用痕迹服务于事件，不借用玩家当前所在地。" +
+                    "【光线与色彩】参与方与环境处于统一照明和色彩关系中，受光、投影与环境反光连贯，暗部保留事件细节，已知时段保持。" +
+                    "【空间关系】同一事件的参与方、行动对象与相关环境相互关联，前后遮挡和接触关系自然，保持事实中的高低、位置和事件结果。";
+            }
             if (plan?.Mode == "人物百科纪事")
             {
                 return "【人物与镜头】人物容貌与现有衣着按事实和身份参考呈现，神情自然，体态与画面支撑关系一致。" +
@@ -568,7 +596,7 @@ namespace AnimusForge.Illustrator.Core
             string requestText = "请依据游戏事实构思一个清晰、有变化且可直接绘制的瞬间。开放构图建议可以取舍，不要把建议改写成不存在的事实。" +
                 (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext();
             if (textFallback)
-                requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的外观和环境细节保持未知，不声称已经看过参考图。";
+                requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
 
             JObject userMessage;
             if (referenceImages != null && referenceImages.Count > 0)
@@ -621,7 +649,7 @@ namespace AnimusForge.Illustrator.Core
                 ["model"] = options.DirectorModelName,
                 ["messages"] = new JArray
                 {
-                    new JObject { ["role"] = "system", ["content"] = SystemPrompt },
+                    new JObject { ["role"] = "system", ["content"] = plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : SystemPrompt },
                     userMessage
                 },
                 ["temperature"] = 0.85,
@@ -747,7 +775,7 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine().Append("画风偏好：").Append(style).Append('。');
             }
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
-            return ComposeFinalPrompt(sb.ToString(), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true);
+            return ComposeFinalPrompt(sb.ToString(), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
         }
     }
 }

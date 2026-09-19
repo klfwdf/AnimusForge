@@ -67,7 +67,7 @@ namespace AnimusForge.Illustrator.Core
             return section.Length <= 360 ? section : section.Substring(0, 180) + "…" + section.Substring(section.Length - 179);
         }
 
-        internal static string BuildActionHistory(IEnumerable<CachedIllustrationItem> items, bool eventAnchored = false)
+        internal static string BuildActionHistory(IEnumerable<CachedIllustrationItem> items, bool eventAnchored = false, bool weeklyReport = false)
         {
             var summaries = (items ?? Enumerable.Empty<CachedIllustrationItem>())
                 .Where(i => i != null && !i.Deleted).OrderByDescending(i => i.CreatedTime).Take(3)
@@ -75,7 +75,9 @@ namespace AnimusForge.Illustrator.Core
                 .Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => CleanLabel(s, 360)).Distinct().ToArray();
             return summaries.Length == 0 ? string.Empty :
                 "【近期人物行动参考】以下是旧画构思，不是本次现场事实：\n" + string.Join("\n", summaries) +
-                (eventAnchored
+                (weeklyReport
+                    ? "\n以上仅是旧纪事画的构思，不是本期事件证据。依据本期正文选择事件与叙事瞬间，保留所选事件参与方、地点关联、行动和结果；艺术环境与陈设可围绕事件重新设计，不因旧图是领主肖像就沿用肖像构图。"
+                    : eventAnchored
                     ? "\n当前现场与事件事实优先，旧画行动不作为本次事实；在当前事实允许的叙事瞬间内推导手势、视线和机位，不能为动作去重改变事件或添加道具。"
                     : "\n本次先选择符合人物的新行动意图，再推导姿态、手部动作与视线；减少重复的双手下垂展示姿势，不能仅换背景。保留合理自然站姿，不强迫复杂动作。");
         }
@@ -84,7 +86,8 @@ namespace AnimusForge.Illustrator.Core
         {
             return BuildActionHistory(DiskImageCacheManager.GetAllCachedIllustrations(campaignKey)
                 .Where(i => string.Equals(i.SubjectKey, subjectKey, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(i.Category, category, StringComparison.OrdinalIgnoreCase)), true);
+                    string.Equals(i.Category, category, StringComparison.OrdinalIgnoreCase)), true,
+                string.Equals(category, "weekly_report", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

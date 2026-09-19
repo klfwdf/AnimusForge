@@ -21,7 +21,7 @@ namespace AnimusForge.Illustrator.Core
             "需要坐靠或扶持时说明真实接触位置，避免叠加扭腰、跨坐、踮脚和多个支撑动作。" +
             "按选定镜头重建人物体积、衣褶、遮挡和透视，不能仅保留立绘轮廓再更换背景。" +
             "人物与环境共用光源方向、色温和明暗层次；按接触位置表现投影、遮蔽与环境反光。" +
-            "复杂而不确定的动作应简化，保留与当前情境一致的自然体态，不为变化叠加动作。";
+            "动作幅度由情境决定，安静体态与鲜明动态都可采用；动作即使复杂也须有明确意图与可信支撑，不强迫复杂动作，也不把简化姿势当作默认。";
 
         internal const string ReferenceRepaint =
             "【整幅重新绘制】：本次任务是依据参考图绘制一张完整的新作品，不是保留人物像素的换背景或局部修补。" +
@@ -46,18 +46,26 @@ namespace AnimusForge.Illustrator.Core
                     return "环境全景参考：这是同一个空间的360度展开，辨认预制体网格、材质图案和陈设位置；不是多个房间，不照搬展开畸变作为最终构图。颜色采光优先对照当前真实视角，副本未覆盖的地形与动态物体保持未知。";
                 case IllustrationReferenceKind.SceneViews:
                     return "环境前后视角参考：左半是同一位置的前方，右半是转180度后的后方，各水平视野120度；不是完整360全景，不把两半接缝当作相邻建筑。方向栏只供识别，不画进作品；最终按导演构图绘制单幅自然视角。以实际画面校验颜色采光，未覆盖方向和动态物体保持未知。";
+                case IllustrationReferenceKind.MapConversationScene:
+                    return "地图对话布景参考：只提供当前单视角可见的地貌、植被、材质与采光，不代表完整战场或周围30米地形。人物展示位置、特写距离不能当作双方实际站位证据；按会话事实与导演构图重新绘制。";
+                case IllustrationReferenceKind.EventCharacter:
+                    return "事件候选人物资料：仅在导演选中的事件涉及此人且需要其入画时，依据此图保持本人身份、须发与实际穿戴；供图不指定主角、人数、景别、坐骑或姿势，不把此人的面貌装备复制给其他角色。事件行动与环境是构图依据。";
+                case IllustrationReferenceKind.EventEmblem:
+                    return "事件候选纹章资料：仅在所选事件涉及对应家族且有明确纹章载体时还原图案配色；不指定事件阵营、不把纹章用于其他参与方，不因供图添加旗帜或盾牌。";
                 default:
                     return "参考用途以标签为准，不据此添加未确认的人物或场景内容。";
             }
         }
 
-        internal static string GetEssentialContract(bool isSinglePortrait, bool isConversation = false)
+        internal static string GetEssentialContract(bool isSinglePortrait, bool isConversation = false, bool isWeeklyReport = false)
         {
             string poseRule = isSinglePortrait
-                ? "2. 【单人肖像纯粹性】：单人肖像不出现马匹动物；动作、手势和视线遵循导演描写，体态自然、支撑关系清楚。\n"
+                ? "2. 【单人肖像纯粹性】：单人肖像不出现马匹动物；动作、手势和视线遵循导演描写，体态自然、支撑关系清楚。背景是导演设计的非具名艺术布景，按其主题描绘场所与陈设并保留环境内容，不当作真实地点记录。\n"
                 : isConversation
                     ? "2. 【双人动态交互】：双方身份保持对应；站位、高低关系与动作按导演依据现场事实生成的描述呈现，不另外固定机位或姿势。\n"
-                    : "2. 【事件人物关系】：人物数量、动作与相互关系依据已确认事件事实呈现，取景服务于事件本身。\n";
+                    : isWeeklyReport
+                        ? "2. 【事件人物关系】：本次是周报事件插画，事件行动与参与方互动构成画面主体，不能以领主展示或骑马肖像替代事件。人物参考只锁对应身份，不规定主角、人数和构图。场景是依据所选事件的非具名艺术再现，可丰富环境与材质细节，但参与方、地点归属、计划与结果不得跨事件拼接或改写。\n"
+                        : "2. 【事件人物关系】：人物数量、动作与相互关系依据已确认事件事实呈现，取景服务于事件本身。\n";
 
             return "【画面呈现规范】\n" +
                 "1. 【单幅完整画卷】：整幅画面为单一沉浸式艺术画卷，无画中画，无参考缩略图小方框，无角色立绘拆解板（Single unified canvas, no inset boxes, no concept sheet collage）；人物与场景的光源方向、色温、笔触质感与透视必须统一融合，人物受现场环境光影响并呈现落地投影与环境反光，严禁贴纸抠像感或人物悬浮感。\n" +
