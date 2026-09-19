@@ -152,7 +152,9 @@ namespace AnimusForge.Illustrator.Engine
                 renderer._view.SetSceneUsesShadows(true);
                 renderer._view.SetShadowmapResolutionMultiplier(0.5f);
                 renderer._view.SetSceneUsesContour(false);
-                renderer._view.SetClearColor(0xff000000);
+                // A neutral clear area distinguishes missing geometry from a dark surface.
+                // Reference notes explicitly mark this uniform gray as unknown coverage.
+                renderer._view.SetClearColor(0xff404040);
                 renderer._view.SetDeleteAfterRendering(false);
                 TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Isolated tableau initialized.");
                 return renderer;

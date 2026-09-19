@@ -969,7 +969,6 @@ namespace AnimusForge.Illustrator.Engine
         internal static void CancelActiveStage()
         {
             Core.IllustratorRuntime.AssertMainThread();
-            CancelSharedSceneProbe();
             CancelIsolatedPanorama();
             var pump = _activeStage;
             FinishStage(pump);

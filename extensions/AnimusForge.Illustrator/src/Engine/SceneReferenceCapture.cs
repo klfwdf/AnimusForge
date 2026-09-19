@@ -92,6 +92,7 @@ namespace AnimusForge.Illustrator.Engine
                 if (context == null) throw new InvalidOperationException("无法调度全景采集。");
                 snapshot = await CreatePanoramaSnapshotAsync(context.Item1, captureToken).ConfigureAwait(false);
                 GenerationDiagnostics.Current?.RecordStage("panorama_snapshot_ready", new JObject { ["meshes"] = snapshot.CopiedRoots,
+                    ["resourceMeshes"] = snapshot.ResourceCopiedComponents,
                     ["nodes"] = snapshot.InspectedNodes, ["omittedNonGeometry"] = snapshot.SkippedNonGeometry, ["elapsedMs"] = watch.ElapsedMilliseconds });
                 renderer = await RunOnGameThreadAsync(() =>
                 {
@@ -144,7 +145,8 @@ namespace AnimusForge.Illustrator.Engine
                 GenerationDiagnostics.Current?.RecordStage("panorama_composed", new JObject { ["faces"] = 2, ["layout"] = "front-back-sheet", ["width"] = 1024, ["height"] = 544,
                     ["radiusMeters"] = PanoramaCaptureRadius, ["centerFromPlayer"] = snapshot.CenterFromPlayer,
                     ["excludedByRadius"] = snapshot.SkippedByRadius, ["invalidBounds"] = snapshot.SkippedInvalidBounds,
-                    ["copiedRoots"] = snapshot.CopiedRoots, ["skippedAnimated"] = snapshot.SkippedAnimated, ["terrainOmitted"] = snapshot.TerrainOmitted,
+                    ["copiedRoots"] = snapshot.CopiedRoots, ["resourceMeshes"] = snapshot.ResourceCopiedComponents,
+                    ["clearColorRgb"] = "#404040", ["skippedAnimated"] = snapshot.SkippedAnimated, ["terrainOmitted"] = snapshot.TerrainOmitted,
                     ["notes"] = snapshot.Notes, ["totalMs"] = watch.ElapsedMilliseconds, ["sourceRoots"] = snapshot.SourceRoots,
                     ["inspectedNodes"] = snapshot.InspectedNodes, ["copyBatches"] = snapshot.Batches,
                     ["copyTotalMs"] = snapshot.TotalMilliseconds, ["copyMaxBatchMs"] = snapshot.MaxBatchMilliseconds });

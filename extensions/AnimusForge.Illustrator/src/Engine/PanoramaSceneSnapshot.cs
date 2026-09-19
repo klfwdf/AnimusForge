@@ -25,6 +25,7 @@ namespace AnimusForge.Illustrator.Engine
         internal Action ReleaseSourceHandles { get; set; }
         internal Scene Scene { get; private set; }
         internal int CopiedRoots { get; set; }
+        internal int ResourceCopiedComponents { get; set; }
         internal int SkippedAnimated { get; set; }
         internal int SkippedNonGeometry { get; set; }
         internal int SkippedByRadius { get; set; }
@@ -41,6 +42,7 @@ namespace AnimusForge.Illustrator.Engine
             (CenterFromPlayer ? "只采集玩家现场位置周围约30米的静态网格。" : "未取得玩家实体，以当前镜头位置为中心采集约30米范围。") +
             "按网格所属实体包围盒与范围相交筛选，跨越边界的大墙或屋顶保留整块；画面外与范围外内容保持未知。" +
             "多镜头来自当前现场可见静态网格的独立冻结副本；保留建筑、门窗、陈设和实体材质的空间关系。" +
+            "缺少的静态建筑几何可由当前场景实际资源文件补齐，按文件中的资产与摆放还原；这部分不代表已确认的实时破坏状态，脚本或动态变体不作补造。均匀中灰底色代表没有覆盖的区域，不是墙面或地面。" +
             "环境快照主动省略人物、坐骑及含骨骼或布料模拟的动态实体，不能据此推断现场人数；人物位置以现场事实与当前画面为准。" +
             "前后参考用于识别家具、建筑、布局和材质图案；采用中性观察光、三盏无阴影补光与固定曝光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
             "完整天空、环境光、烘焙间接光和曝光无法从引擎公开接口精确回读；现场昼夜、光照及颜色以附加的真实当前画面为准。" +
@@ -82,8 +84,12 @@ namespace AnimusForge.Illustrator.Engine
             _disposed = true;
             Scene owned = Scene;
             Scene = null;
-            try { ReleaseSourceHandles?.Invoke(); owned.ClearAll(); }
-            finally { try { owned.ManualInvalidate(); } finally { _retirement.TrySetResult(true); } }
+            try { ReleaseSourceHandles?.Invoke(); }
+            finally
+            {
+                try { owned.ClearAll(); }
+                finally { try { owned.ManualInvalidate(); } finally { _retirement.TrySetResult(true); } }
+            }
         }
     }
 
@@ -128,12 +134,29 @@ namespace AnimusForge.Illustrator.Engine
         internal static async Task<PanoramaSceneSnapshot> CreatePanoramaSnapshotAsync(Mission mission, CancellationToken token)
         {
             PanoramaSnapshotBuilder builder = null;
+            PanoramaResourceSupplement supplement = null;
             bool handedToCaller = false;
             var diagnostics = GenerationDiagnostics.Current;
             var inventory = diagnostics == null ? null : new PanoramaSnapshotInventory();
             try
             {
-                builder = await RunOnGameThreadAsync(() => PanoramaSnapshotBuilder.Begin(mission, token, inventory), token).ConfigureAwait(false);
+                var resourceInput = await RunOnGameThreadAsync(() =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (mission == null || !ReferenceEquals(Mission.Current, mission) || mission.Scene == null)
+                        throw new InvalidOperationException("当前场景已切换，不能读取其资源。");
+                    if (!Utilities.TryGetFullFilePathOfScene(mission.SceneName, out string sceneFile))
+                        throw new InvalidOperationException("未能解析当前场景实际资源文件，已停止环境重建。");
+                    return Tuple.Create(sceneFile, mission.Scene.GetUpgradeLevelMask(), mission.Scene.Pointer);
+                }, token).ConfigureAwait(false);
+                if (resourceInput == null) throw new InvalidOperationException("场景资源读取调度已停止。");
+                var resourcePlan = await Task.Run(() => SceneResourceGeometryPlan.Load(resourceInput.Item1, resourceInput.Item2, token), token).ConfigureAwait(false);
+                builder = await RunOnGameThreadAsync(() =>
+                {
+                    if (mission.Scene?.Pointer != resourceInput.Item3 || mission.Scene.GetUpgradeLevelMask() != resourceInput.Item2)
+                        throw new InvalidOperationException("场景或可见等级在资源读取期间改变，请重新采集。");
+                    return PanoramaSnapshotBuilder.Begin(mission, token, inventory);
+                }, token).ConfigureAwait(false);
                 if (builder == null) throw new InvalidOperationException("无法在游戏线程创建环境快照。");
                 while (!await RunOnGameThreadAsync(() => builder.CopyBatch(token), token).ConfigureAwait(false))
                 {
@@ -141,6 +164,29 @@ namespace AnimusForge.Illustrator.Engine
                     if (nextFrame == null) throw new InvalidOperationException("环境快照分帧调度已停止。");
                     await nextFrame.ConfigureAwait(false);
                 }
+                supplement = await RunOnGameThreadAsync(() =>
+                {
+                    builder.ValidateCurrent(token);
+                    var created = new PanoramaResourceSupplement(builder.Snapshot, resourcePlan, builder.CopiedGeometry, builder.ObservedPlacements);
+                    Action releaseLiveHandles = builder.Snapshot.ReleaseSourceHandles;
+                    builder.Snapshot.ReleaseSourceHandles = () =>
+                    {
+                        try { releaseLiveHandles?.Invoke(); }
+                        finally { created.DisposeTemplates(); }
+                    };
+                    return created;
+                }, token).ConfigureAwait(false);
+                if (supplement == null) throw new InvalidOperationException("场景资源补齐调度已停止。");
+                while (!await RunOnGameThreadAsync(() => { builder.ValidateCurrent(token); return supplement.CopyBatch(token); }, token).ConfigureAwait(false))
+                {
+                    var nextFrame = await RunOnGameThreadAsync(() => IllustratorRuntime.AfterFramesAsync(1, token), token).ConfigureAwait(false);
+                    if (nextFrame == null) throw new InvalidOperationException("场景资源补齐分帧调度已停止。");
+                    await nextFrame.ConfigureAwait(false);
+                }
+                bool templatesRetired = await RunOnGameThreadAsync(() => { supplement.DisposeTemplates(); return true; }, token).ConfigureAwait(false);
+                if (!templatesRetired) throw new InvalidOperationException("场景模板清理调度已停止。");
+                if (builder.Snapshot.CopiedRoots == 0)
+                    throw new InvalidOperationException("现场与资源中均没有可用静态几何，不能生成空白环境参考。");
                 token.ThrowIfCancellationRequested();
                 handedToCaller = true;
                 return builder.Snapshot;
@@ -150,6 +196,8 @@ namespace AnimusForge.Illustrator.Engine
                 // All game-thread batches have returned. Persist managed records once, on
                 // this worker, including partial/cancelled copies and before native rendering.
                 if (builder != null) diagnostics?.RecordSceneInventory(inventory, builder.Snapshot, handedToCaller);
+                try { if (supplement != null) diagnostics?.RecordSceneResourceSupplement(supplement.Describe()); }
+                catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Resource diagnostic skipped: " + ex.GetType().Name); }
                 if (builder != null && !(builder.RootsReleased && (handedToCaller || builder.Snapshot.Retirement.IsCompleted)))
                 {
                     Action cleanup = () =>
@@ -193,6 +241,7 @@ namespace AnimusForge.Illustrator.Engine
             }
             private readonly Mission _mission;
             private readonly Scene _source;
+            private readonly uint _sourceLevelMask;
             private readonly PanoramaSnapshotInventory _inventory;
             private NativeObjectArray _roots;
             private readonly int _rootCount;
@@ -206,12 +255,21 @@ namespace AnimusForge.Illustrator.Engine
             private MatrixFrame _nodeFrame;
             private readonly Stopwatch _totalWatch = Stopwatch.StartNew();
             internal PanoramaSceneSnapshot Snapshot { get; }
+            internal Dictionary<string, List<MatrixFrame>> CopiedGeometry { get; } = new Dictionary<string, List<MatrixFrame>>(StringComparer.Ordinal);
+            internal Dictionary<string, List<MatrixFrame>> ObservedPlacements { get; } = new Dictionary<string, List<MatrixFrame>>(StringComparer.Ordinal);
             internal bool RootsReleased => _roots == null;
+            internal void ValidateCurrent(CancellationToken token)
+            {
+                ValidateMission(_mission, _source, token);
+                if (_source.GetUpgradeLevelMask() != _sourceLevelMask)
+                    throw new InvalidOperationException("场景可见等级在采集期间改变，请重新采集。");
+            }
 
             private PanoramaSnapshotBuilder(Mission mission, Scene source, NativeObjectArray roots,
                 PanoramaSceneSnapshot snapshot, HashSet<UIntPtr> agents, PanoramaSnapshotInventory inventory)
             {
                 _mission = mission; _source = source; _roots = roots;
+                _sourceLevelMask = source.GetUpgradeLevelMask();
                 _inventory = inventory;
                 _rootCount = roots.Count; Snapshot = snapshot; _agentRoots = agents;
                 snapshot.SourceRoots = _rootCount;
@@ -318,7 +376,7 @@ namespace AnimusForge.Illustrator.Engine
             internal bool CopyBatch(CancellationToken token)
             {
                 IllustratorRuntime.AssertMainThread();
-                ValidateMission(_mission, _source, token);
+                ValidateCurrent(token);
                 if (Snapshot.IsDisposed) throw new OperationCanceledException("环境快照已取消。", token);
                 var watch = Stopwatch.StartNew();
                 int work = 0, copies = 0;
@@ -377,12 +435,11 @@ namespace AnimusForge.Illustrator.Engine
                         else if (entry != null) entry.MissingComponents++;
                     }
                 }
-                ValidateMission(_mission, _source, token);
+                ValidateCurrent(token);
                 Snapshot.Batches++;
                 Snapshot.TotalMilliseconds = _totalWatch.Elapsed.TotalMilliseconds;
                 Snapshot.MaxBatchMilliseconds = Math.Max(Snapshot.MaxBatchMilliseconds, watch.Elapsed.TotalMilliseconds);
                 if (_phase < 2) return false;
-                if (Snapshot.CopiedRoots == 0) throw new InvalidOperationException("没有可复制的现场环境实体，不能生成空白全景。");
                 TaleWorlds.Library.Debug.Print($"[IllustratorPanorama] Mesh snapshot ready: meshes={Snapshot.CopiedRoots}, nodes={Snapshot.InspectedNodes}, batches={Snapshot.Batches}, elapsedMs={Snapshot.TotalMilliseconds:F0}; no source light/physics/script components copied.");
                 ReleaseRoots();
                 return true;
@@ -398,6 +455,15 @@ namespace AnimusForge.Illustrator.Engine
                 var entry = _inventory?.Inspect(entity, nodeNumber, pending.ParentNode, valid);
                 if (!valid) return;
                 bool visible = entity.IsVisibleIncludeParents();
+                {
+                    // Runtime instances are authoritative, even when hidden or stripped
+                    // of meshes. Resources only supplement instances absent from enumeration.
+                    MatrixFrame observedFrame = entity.GetGlobalFrame();
+                    string prefab = entity.GetPrefabName();
+                    string entityName = entity.Name;
+                    if (!string.IsNullOrWhiteSpace(prefab)) PanoramaResourceSupplement.RegisterGeometry(ObservedPlacements, "prefab:" + prefab, observedFrame);
+                    if (!string.IsNullOrWhiteSpace(entityName)) PanoramaResourceSupplement.RegisterGeometry(ObservedPlacements, "entity:" + entityName, observedFrame);
+                }
                 bool agent = _agentRoots.Contains(entity.Pointer);
                 bool animated = entity.Skeleton != null || entity.ClothSimulatorComponentCount > 0;
                 EntityFlags flags = entity.EntityFlags;
@@ -412,7 +478,7 @@ namespace AnimusForge.Illustrator.Engine
                         try { entry.MetaMeshComponents = entity.MultiMeshComponentCount; }
                         catch (Exception ex) { entry.MetadataError = ex.GetType().Name; }
                     entry.Selection = agent ? "agent_branch" : animated ? "animated_or_cloth_branch" :
-                        !visible ? "not_visible_branch" : helper ? "helper_or_ignored" : "no_meta_mesh";
+                        !visible ? "not_visible" : helper ? "helper_or_ignored" : "no_meta_mesh";
                 }
                 if (eligible && meshCount > 0)
                 {
@@ -440,7 +506,8 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 else if (eligible) Snapshot.SkippedNonGeometry++;
                 if (agent || animated) { Snapshot.SkippedAnimated++; return; }
-                if (!visible) return;
+                // Hidden containers still contribute observed child placements. They
+                // remain ineligible for copying, but must suppress authored fallback.
                 int children = entity.ChildCount;
                 if ((long)Snapshot.InspectedNodes + _pending.Count + children > PanoramaSnapshotMaxNodes) ThrowTooManyNodes();
                 for (int i = children - 1; i >= 0; i--)
@@ -477,7 +544,19 @@ namespace AnimusForge.Illustrator.Engine
                     entity.RecomputeBoundingBox();
                     entity.UpdateGlobalBounds();
                     entity.UpdateVisibilityMask();
+                    PanoramaResourceSupplement.RegisterGeometry(CopiedGeometry, original.GetName(), frame.TransformToParent(original.Frame));
                     if (detail != null) detail.Result = "copied";
+                    if (detail != null)
+                    {
+                        try
+                        {
+                            var targetBounds = entity.GetGlobalBoundingBox();
+                            detail.TargetFrame = PanoramaSnapshotInventory.Frame(entity.GetGlobalFrame());
+                            detail.TargetBoundsMin = PanoramaSnapshotInventory.Vector(targetBounds.min);
+                            detail.TargetBoundsMax = PanoramaSnapshotInventory.Vector(targetBounds.max);
+                        }
+                        catch (Exception ex) { detail.MetadataError = ex.GetType().Name; }
+                    }
                     return true;
                 }
                 catch (Exception ex)
