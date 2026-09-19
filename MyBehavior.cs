@@ -1817,11 +1817,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private const int HistoryArchiveRecallMaxItems = 12;
 
-	private const int RecentNpcActionWindowDays = 10;
+	private const int RecentNpcActionWindowDays = NpcActionLedger.RecentWindowDays;
 
-	private const int MaxRecentNpcActionEntriesPerHero = 96;
+	private const int MaxRecentNpcActionEntriesPerHero = NpcActionLedger.MaxRecentEntriesPerHero;
 
-	private const int MaxMajorNpcActionEntriesPerHero = 160;
+	private const int MaxMajorNpcActionEntriesPerHero = NpcActionLedger.MaxMajorEntriesPerHero;
 
 	private const int MajorNpcBattleTroopThreshold = 500;
 
@@ -4279,7 +4279,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string baseKey = "player_execution:" + NormalizeNpcActionStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
+		string baseKey = "player_execution:" + NpcActionLedger.NormalizeStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
 		string label = victim == player ? "玩家被处决 - " + GetHeroDisplayName(killer) : "玩家处决英雄 - " + GetHeroDisplayName(victim);
 		RecordEventSourceMaterial(
 			"player_execution",
@@ -4434,7 +4434,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					continue;
 				}
 				string kingdomId = GetKingdomId(kingdom);
-				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				string stableKey = NpcActionLedger.NormalizeStableKey("kingdom_destroyed:" + kingdomId, "");
 				if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(stableKey) || existingStableKeys.Contains(stableKey))
 				{
 					continue;
@@ -4451,7 +4451,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool HasEventSourceMaterialStableKey(string stableKey)
 	{
-		string text = NormalizeNpcActionStableKey(stableKey, "");
+		string text = NpcActionLedger.NormalizeStableKey(stableKey, "");
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
@@ -6574,7 +6574,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				Kingdom kingdom = _missedStrategicWorldEventMaintenanceKingdoms[_missedStrategicWorldEventMaintenanceCursor++];
 				string kingdomId = GetKingdomId(kingdom);
-				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				string stableKey = NpcActionLedger.NormalizeStableKey("kingdom_destroyed:" + kingdomId, "");
 				if (kingdom != null && kingdom.IsEliminated && !string.IsNullOrWhiteSpace(stableKey) && !_missedStrategicWorldEventMaintenanceStableKeys.Contains(stableKey))
 				{
 					RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
@@ -10893,17 +10893,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string NormalizeNpcActionStableKey(string stableKey, string fallbackText)
-	{
-		string text = (stableKey ?? fallbackText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "" : text.ToLowerInvariant();
-	}
-
 
 	private static string BuildPrefixedEventSourceStableKey(string prefix, string stableKey, string fallbackText)
 	{
-		string cleanPrefix = NormalizeNpcActionStableKey(prefix, "").TrimEnd(':');
-		string normalizedKey = NormalizeNpcActionStableKey(stableKey, fallbackText);
+		string cleanPrefix = NpcActionLedger.NormalizeStableKey(prefix, "").TrimEnd(':');
+		string normalizedKey = NpcActionLedger.NormalizeStableKey(stableKey, fallbackText);
 		if (string.IsNullOrWhiteSpace(cleanPrefix))
 		{
 			return normalizedKey;
@@ -13707,7 +13701,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 		}
 		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
-		string text2 = NormalizeNpcActionStableKey(stableKey, normalizedLabel + ":" + text);
+		string text2 = NpcActionLedger.NormalizeStableKey(stableKey, normalizedLabel + ":" + text);
 		if (!_eventSourceMaterialIndexBinding.IsCurrent(_eventSourceMaterials, _eventSourceMaterialIndex)) RebuildEventSourceMaterialIndex();
 		string indexKey = BuildEventSourceMaterialIndexKey(currentGameDayIndexSafe, text2);
 		// A complete index owns misses too; a new daily key must not rescan all history.
@@ -13982,7 +13976,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string key = "player_kingdom_rename:" + NormalizeNpcActionStableKey(stableKey, cleanOldName + ":" + cleanNewName);
+		string key = "player_kingdom_rename:" + NpcActionLedger.NormalizeStableKey(stableKey, cleanOldName + ":" + cleanNewName);
 		RecordEventSourceMaterial(
 			"player_kingdom_rename",
 			"玩家王国更名 - " + cleanNewName,
@@ -14060,7 +14054,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : "的" + location);
 		string snapshot = "玩家和平场景攻击/犯罪素材。地点：" + place + "。履历摘要：" + summary + " 周报约束：这是和平定居点场景内由玩家主动攻击和平单位或触发犯罪造成的事件，不按战场、攻城、竞技场或训练场战斗理解。";
-		string key = "player_peace_scene_crime:" + NormalizeNpcActionStableKey(stableKey, summary);
+		string key = "player_peace_scene_crime:" + NpcActionLedger.NormalizeStableKey(stableKey, summary);
 		RecordEventSourceMaterial(
 			"player_peace_scene_crime",
 			"玩家和平场景冲突 - " + resolvedSettlementName,
@@ -15265,7 +15259,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Sequence = Math.Max(0, sequence),
 			GameDate = GetCurrentGameDateTextSafe(),
 			Text = (text ?? "").Trim(),
-			StableKey = NormalizeNpcActionStableKey(stableKey, text),
+			StableKey = NpcActionLedger.NormalizeStableKey(stableKey, text),
 			ActionKind = (npcActionFacts.ActionKind ?? "").Trim(),
 			ActorHeroId = (npcActionFacts.ActorHeroId ?? "").Trim(),
 			ActorClanId = (npcActionFacts.ActorClanId ?? "").Trim(),
@@ -15390,7 +15384,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				Sequence = ((item.Sequence > 0) ? item.Sequence : (++num4)),
 				GameDate = (item.GameDate ?? "").Trim(),
 				Text = text,
-				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
+				StableKey = NpcActionLedger.NormalizeStableKey(item.StableKey, text),
 				ActionKind = (item.ActionKind ?? "").Trim(),
 				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
 				ActorClanId = (item.ActorClanId ?? "").Trim(),
@@ -15523,46 +15517,38 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string npcActionHeroKey = GetNpcActionHeroKey(hero);
-			string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			string text2 = NpcActionLedger.NormalizeText(text);
 			if (string.IsNullOrWhiteSpace(npcActionHeroKey) || string.IsNullOrWhiteSpace(text2))
 			{
 				return;
 			}
-			string text3 = NormalizeNpcActionStableKey(stableKey, text2);
+			string text3 = NpcActionLedger.NormalizeStableKey(stableKey, text2);
 			int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 			if (!storage.TryGetValue(npcActionHeroKey, out var value) || value == null)
 			{
 				value = new List<NpcActionEntry>();
 				storage[npcActionHeroKey] = value;
 			}
-			bool entriesChanged = RemoveInvalidNpcActionEntries(value, keepOnlyRecentWindow ? currentGameDayIndexSafe - RecentNpcActionWindowDays + 1 : int.MinValue, keepOnlyRecentWindow);
+			bool entriesChanged = NpcActionLedger.RemoveInvalid(value, keepOnlyRecentWindow ? NpcActionLedger.RecentWindowMinimumDay(currentGameDayIndexSafe) : int.MinValue, keepOnlyRecentWindow, e => e.Text, e => e.Day);
 			if (keepOnlyRecentWindow && entriesChanged)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
 			}
 			if (dedupeAcrossWindow)
 			{
-				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || ContainsNpcActionStableKey(value, text3))
+				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || NpcActionLedger.ContainsStableKey(value, text3, e => e.StableKey))
 				{
 					return;
 				}
 			}
-			else if (ContainsNpcActionForDay(value, currentGameDayIndexSafe, text3, text2))
+			else if (NpcActionLedger.ContainsForDay(value, currentGameDayIndexSafe, text3, text2, e => e.Day, e => e.StableKey, e => e.Text))
 			{
 				return;
 			}
-			int order = GetNextNpcActionOrder(value, currentGameDayIndexSafe);
+			int order = NpcActionLedger.NextOrder(value, currentGameDayIndexSafe, e => e.Day, e => e.Order);
 			int sequence = ++_npcActionGlobalOrderCounter;
 			NpcActionEntry npcActionEntry = CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor);
-			value.Add(npcActionEntry);
-			if (value.Count > 1 && CompareNpcActionTimeline(value[value.Count - 2], npcActionEntry) > 0)
-			{
-				value.Sort(CompareNpcActionTimeline);
-			}
-			if (maxEntries > 0 && value.Count > maxEntries)
-			{
-				value.RemoveRange(0, value.Count - maxEntries);
-			}
+			NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareNpcActionTimeline);
 			if (keepOnlyRecentWindow)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
@@ -15577,7 +15563,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private bool HasRecentNpcActionStableKeyWithinWindow(Hero hero, string stableKey, int currentDay)
 	{
 		string heroKey = GetNpcActionHeroKey(hero);
-		string normalizedStableKey = NormalizeNpcActionStableKey(stableKey, "");
+		string normalizedStableKey = NpcActionLedger.NormalizeStableKey(stableKey, "");
 		if (string.IsNullOrWhiteSpace(heroKey)
 			|| string.IsNullOrWhiteSpace(normalizedStableKey)
 			|| _npcRecentActions == null
@@ -15601,104 +15587,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static bool RemoveInvalidNpcActionEntries(List<NpcActionEntry> entries, int minimumDay, bool keepOnlyRecentWindow)
-	{
-		if (entries == null || entries.Count == 0)
-		{
-			return false;
-		}
-		bool removedAny = false;
-		for (int index = entries.Count - 1; index >= 0; index--)
-		{
-			NpcActionEntry entry = entries[index];
-			if (entry == null || string.IsNullOrWhiteSpace(entry.Text) || (keepOnlyRecentWindow && entry.Day < minimumDay))
-			{
-				entries.RemoveAt(index);
-				removedAny = true;
-			}
-		}
-		return removedAny;
-	}
-
-	private static bool ContainsNpcActionStableKey(List<NpcActionEntry> entries, string stableKey)
-	{
-		if (entries == null)
-		{
-			return false;
-		}
-		for (int index = 0; index < entries.Count; index++)
-		{
-			NpcActionEntry entry = entries[index];
-			if (entry != null && string.Equals(entry.StableKey ?? "", stableKey, StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static bool ContainsNpcActionForDay(List<NpcActionEntry> entries, int day, string stableKey, string text)
-	{
-		if (entries == null)
-		{
-			return false;
-		}
-		for (int index = 0; index < entries.Count; index++)
-		{
-			NpcActionEntry entry = entries[index];
-			if (entry != null
-				&& entry.Day == day
-				&& (string.Equals(entry.StableKey ?? "", stableKey, StringComparison.OrdinalIgnoreCase) || string.Equals((entry.Text ?? "").Trim(), text, StringComparison.Ordinal)))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static int GetNextNpcActionOrder(List<NpcActionEntry> entries, int day)
-	{
-		int highestOrder = 0;
-		if (entries != null)
-		{
-			for (int index = 0; index < entries.Count; index++)
-			{
-				NpcActionEntry entry = entries[index];
-				if (entry != null && entry.Day == day && entry.Order > highestOrder)
-				{
-					highestOrder = entry.Order;
-				}
-			}
-		}
-		return highestOrder + 1;
-	}
-
 	private static int CompareNpcActionTimeline(NpcActionEntry left, NpcActionEntry right)
 	{
-		if (ReferenceEquals(left, right))
-		{
-			return 0;
-		}
-		if (left == null)
-		{
-			return -1;
-		}
-		if (right == null)
-		{
-			return 1;
-		}
-		int result = left.Day.CompareTo(right.Day);
-		if (result != 0)
-		{
-			return result;
-		}
-		result = (left.Sequence > 0 ? left.Sequence : int.MaxValue).CompareTo(right.Sequence > 0 ? right.Sequence : int.MaxValue);
-		if (result != 0)
-		{
-			return result;
-		}
-		result = left.Order.CompareTo(right.Order);
-		return result != 0 ? result : string.Compare(left.GameDate ?? "", right.GameDate ?? "", StringComparison.Ordinal);
+		if (ReferenceEquals(left, right)) return 0;
+		if (left == null) return -1;
+		if (right == null) return 1;
+		return NpcActionLedger.CompareTimeline(left.Day, left.Sequence, left.Order, left.GameDate, right.Day, right.Sequence, right.Order, right.GameDate);
 	}
 
 	private static string GetArmyDisplayName(Army army)
@@ -16561,40 +16455,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return AppendPlayerCustomPromptRuleToSystemPrompt(systemPrompt);
 	}
 
-	private const string SceneHistorySessionMarkerPrefix = "[AF_SCENE_SESSION:";
-
-	private static string TagSceneSessionHistoryLine(string line, int sceneSessionId)
-	{
-		string text = (line ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || sceneSessionId < 0)
-		{
-			return text;
-		}
-		return $"{SceneHistorySessionMarkerPrefix}{sceneSessionId}] {text}";
-	}
-
-	private static bool TryStripSceneSessionHistoryMarker(string line, out string stripped, out int sceneSessionId)
-	{
-		stripped = (line ?? "").Trim();
-		sceneSessionId = -1;
-		if (string.IsNullOrWhiteSpace(stripped) || !stripped.StartsWith(SceneHistorySessionMarkerPrefix, StringComparison.Ordinal))
-		{
-			return false;
-		}
-		int num = stripped.IndexOf(']');
-		if (num <= SceneHistorySessionMarkerPrefix.Length)
-		{
-			return false;
-		}
-		string s = stripped.Substring(SceneHistorySessionMarkerPrefix.Length, num - SceneHistorySessionMarkerPrefix.Length).Trim();
-		if (!int.TryParse(s, out sceneSessionId))
-		{
-			sceneSessionId = -1;
-			return false;
-		}
-		stripped = stripped.Substring(num + 1).TrimStart();
-		return true;
-	}
+	private const string SceneHistorySessionMarkerPrefix = DialogueHistoryLedger.SceneSessionMarkerPrefix;
 
 	private static bool IsActiveSceneSessionHistoryLine(string line)
 	{
@@ -16602,7 +16463,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!TryStripSceneSessionHistoryMarker(line, out var _, out var sceneSessionId))
+		if (!DialogueHistoryLedger.TryStripSceneSessionMarker(line, out var _, out var sceneSessionId))
 		{
 			return false;
 		}
@@ -16814,7 +16675,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		string firstMeetingFact = NormalizeFirstMeetingNpcFactForPrompt(text);
 		if (!string.IsNullOrWhiteSpace(firstMeetingFact))
 		{
@@ -16841,7 +16702,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("玩家:", StringComparison.Ordinal))
 		{
 			stripped = text.Substring("玩家:".Length).Trim();
@@ -27220,7 +27081,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			foreach (string line in record.Lines)
 			{
 				string text2 = (line ?? "").Trim();
-				TryStripSceneSessionHistoryMarker(text2, out text2, out var _);
+				DialogueHistoryLedger.TryStripSceneSessionMarker(text2, out text2, out var _);
 				if (string.Equals(text2, text, StringComparison.Ordinal))
 				{
 					return true;
@@ -27420,21 +27281,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
-				string memoryFact = extraFact.Trim();
-				if (!memoryFact.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) && !memoryFact.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-				{
-					memoryFact = "[AFEF玩家行为补充] " + memoryFact;
-				}
-				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", DialogueHistoryLedger.NormalizeAfefFact(extraFact), isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				string memoryAiText = aiText.Trim();
-				if (!memoryAiText.StartsWith("[场景喊话]", StringComparison.Ordinal))
-				{
-					memoryAiText = npcNameForMemory + ": " + memoryAiText;
-				}
-				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, DialogueHistoryLedger.NormalizeNpcLine(npcNameForMemory, aiText), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			List<DialogueDay> list = LoadDialogueHistoryById(normalizedMemoryId);
 			int beforeLines = CountDialogueHistoryLines(list);
@@ -27454,72 +27305,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
 				string text2 = BuildPlayerAddressedInputForName(npcNameForMemory, playerText, null, playerTargetName);
-				dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text2, sceneSessionId) : text2);
+				dialogueDay.Lines.Add((sceneSessionId >= 0) ? DialogueHistoryLedger.TagSceneSession(text2, sceneSessionId) : text2);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
-				string text3 = extraFact.Trim();
-				if (text3.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text3.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-				{
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text3, sceneSessionId) : text3);
-				}
-				else
-				{
-					string text4 = "[AFEF玩家行为补充] " + text3;
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text4, sceneSessionId) : text4);
-				}
+				dialogueDay.Lines.Add(DialogueHistoryLedger.TagSceneSession(DialogueHistoryLedger.NormalizeAfefFact(extraFact), sceneSessionId));
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				string text5 = aiText.Trim();
-				if (text5.StartsWith("[场景喊话]", StringComparison.Ordinal))
-				{
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text5, sceneSessionId) : text5);
-				}
-				else
-				{
-					string text6 = text + ": " + text5;
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text6, sceneSessionId) : text6);
-				}
+				dialogueDay.Lines.Add(DialogueHistoryLedger.TagSceneSession(DialogueHistoryLedger.NormalizeNpcLine(text, aiText), sceneSessionId));
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
 				RemoveExpiredSingleUseNpcFactLines(list);
 			}
-			List<(int, string, string)> list2 = new List<(int, string, string)>();
-			foreach (DialogueDay item in list)
-			{
-				if (item.Lines == null)
-				{
-					continue;
-				}
-				foreach (string line in item.Lines)
-				{
-					if (!string.IsNullOrWhiteSpace(line))
-					{
-						list2.Add((item.GameDayIndex, item.GameDate, line));
-					}
-				}
-			}
-			if (list2.Count > 260)
-			{
-				list2 = list2.Skip(list2.Count - 260).ToList();
-			}
-			List<DialogueDay> list3 = new List<DialogueDay>();
-			foreach (var entry in list2)
-			{
-				DialogueDay dialogueDay2 = list3.FirstOrDefault((DialogueDay x) => x.GameDayIndex == entry.Item1);
-				if (dialogueDay2 == null)
-				{
-					dialogueDay2 = new DialogueDay
-					{
-						GameDayIndex = entry.Item1,
-						GameDate = entry.Item2
-					};
-					list3.Add(dialogueDay2);
-				}
-				dialogueDay2.Lines.Add(entry.Item3);
-			}
+			var trimmed = DialogueHistoryLedger.TrimToNewest(DialogueHistoryLedger.Flatten(list, d => d.GameDayIndex, d => d.GameDate, d => d.Lines), DialogueHistoryLedger.MaxLines);
+			List<DialogueDay> list3 = DialogueHistoryLedger.Regroup(trimmed, (day, date) => new DialogueDay { GameDayIndex = day, GameDate = date }, d => d.GameDayIndex, d => d.Lines);
 			CopyMemoryCommitMarkers(list, list3);
 			SaveDialogueHistoryById(normalizedMemoryId, list3);
 			if (IsNonHeroMemoryId(normalizedMemoryId))
@@ -27601,7 +27402,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		return text.TrimStart().StartsWith("[场景喊话]", StringComparison.Ordinal);
 	}
 
@@ -27764,7 +27565,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					TryStripSceneSessionHistoryMarker(line, out line, out var _);
+					DialogueHistoryLedger.TryStripSceneSessionMarker(line, out line, out var _);
 					if (string.IsNullOrWhiteSpace(line))
 					{
 						continue;
@@ -29925,13 +29726,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 				_npcRecentActions[ownerKey] = entries;
 			}
 			int day = GetCurrentGameDayIndexSafe();
-			RemoveInvalidNpcActionEntries(entries, day - RecentNpcActionWindowDays + 1, true);
-			string normalizedKey = NormalizeNpcActionStableKey(stableKey, cleanText);
-			if (ContainsNpcActionStableKey(entries, normalizedKey)) return;
+			NpcActionLedger.RemoveInvalid(entries, NpcActionLedger.RecentWindowMinimumDay(day), true, e => e.Text, e => e.Day);
+			string normalizedKey = NpcActionLedger.NormalizeStableKey(stableKey, cleanText);
+			if (NpcActionLedger.ContainsStableKey(entries, normalizedKey, e => e.StableKey)) return;
 			entries.Add(new NpcActionEntry
 			{
 				Day = day,
-				Order = GetNextNpcActionOrder(entries, day),
+				Order = NpcActionLedger.NextOrder(entries, day, e => e.Day, e => e.Order),
 				Sequence = ++_npcActionGlobalOrderCounter,
 				GameDate = GetCurrentGameDateTextSafe(),
 				Text = cleanText,
@@ -31053,36 +30854,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 	}
 
 	private static bool IsSingleUseNpcFactLine(string line)
 	{
-		string text = (line ?? "").Trim();
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
-		if (!text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-		{
-			return false;
-		}
-		string text2 = text.Substring("[AFEF NPC行为补充]".Length).Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return false;
-		}
-		if (IsFirstMeetingNpcFactBody(text2))
-		{
-			return true;
-		}
-		if (text2.StartsWith("今天稍早时候刚与", StringComparison.Ordinal) && text2.EndsWith("见过面。", StringComparison.Ordinal))
-		{
-			return true;
-		}
-		if (text2.StartsWith("距离你上次与", StringComparison.Ordinal) && text2.Contains("见面，已有") && text2.EndsWith("天了。", StringComparison.Ordinal))
-		{
-			return true;
-		}
-		return false;
+		return DialogueHistoryLedger.IsSingleUseNpcFactLine(line, IsFirstMeetingNpcFactBody);
 	}
 
 	private static bool IsFirstMeetingNpcFactLine(string line)
@@ -31092,7 +30870,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 		{
 			text = text.Substring("[AFEF NPC行为补充]".Length).Trim();
@@ -31135,64 +30913,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		List<(int Day, string Date, string Line)> list = new List<(int, string, string)>();
-		foreach (DialogueDay record in records)
-		{
-			if (record?.Lines == null)
-			{
-				continue;
-			}
-			foreach (string line in record.Lines)
-			{
-				string text = (line ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					list.Add((record.GameDayIndex, record.GameDate, text));
-				}
-			}
-		}
-		if (list.Count == 0)
+		var flat = DialogueHistoryLedger.Flatten(records, d => d.GameDayIndex, d => d.GameDate, d => d.Lines);
+		var kept = DialogueHistoryLedger.ExpireSingleUseFacts(flat, IsSingleUseNpcFactLine, IsMeaningfulDirectConversationLine);
+		if (kept == null)
 		{
 			return false;
 		}
-		bool flag = false;
-		bool flag2 = false;
-		List<(int Day, string Date, string Line)> list2 = new List<(int, string, string)>(list.Count);
-		for (int num = list.Count - 1; num >= 0; num--)
-		{
-			var item = list[num];
-			if (flag2 && IsSingleUseNpcFactLine(item.Line))
-			{
-				flag = true;
-				continue;
-			}
-			list2.Add(item);
-			if (IsMeaningfulDirectConversationLine(item.Line))
-			{
-				flag2 = true;
-			}
-		}
-		if (!flag)
-		{
-			return false;
-		}
-		list2.Reverse();
 		List<DialogueDay> memoryCommitMarkerSource = records.ToList();
 		records.Clear();
-		foreach (var item2 in list2)
-		{
-			DialogueDay dialogueDay = records.FirstOrDefault((DialogueDay x) => x.GameDayIndex == item2.Day);
-			if (dialogueDay == null)
-			{
-				dialogueDay = new DialogueDay
-				{
-					GameDayIndex = item2.Day,
-					GameDate = item2.Date
-				};
-				records.Add(dialogueDay);
-			}
-			dialogueDay.Lines.Add(item2.Line);
-		}
+		records.AddRange(DialogueHistoryLedger.Regroup(kept, (day, date) => new DialogueDay { GameDayIndex = day, GameDate = date }, d => d.GameDayIndex, d => d.Lines));
 		CopyMemoryCommitMarkers(memoryCommitMarkerSource, records);
 		return true;
 	}
@@ -31375,7 +31104,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("- ", StringComparison.Ordinal))
 		{
 			text = text.Substring(2).TrimStart();
@@ -31407,7 +31136,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("- ", StringComparison.Ordinal))
 		{
 			text = text.Substring(2).TrimStart();
@@ -36632,7 +36361,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				MaterialKind = (item.MaterialKind ?? "").Trim(),
 				Label = (item.Label ?? "").Trim(),
 				SnapshotText = text,
-				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
+				StableKey = NpcActionLedger.NormalizeStableKey(item.StableKey, text),
 				KingdomId = (item.KingdomId ?? "").Trim(),
 				SettlementId = (item.SettlementId ?? "").Trim(),
 				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
@@ -49841,7 +49570,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		int sceneSessionId = line?.SceneSessionId ?? -1;
-		return sceneSessionId >= 0 ? TagSceneSessionHistoryLine(text, sceneSessionId) : text;
+		return sceneSessionId >= 0 ? DialogueHistoryLedger.TagSceneSession(text, sceneSessionId) : text;
 	}
 
 	private static string NormalizeDialogueHistoryLineForDailyMemorySync(string line)
@@ -49851,7 +49580,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		return (text ?? "").Replace("\r", "").Trim();
 	}
 

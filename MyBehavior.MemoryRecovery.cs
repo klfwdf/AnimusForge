@@ -779,7 +779,7 @@ public partial class MyBehavior
             throw new InteractionMemoryRecoveryPermanentException("memory_recovery_marker_capacity_exceeded");
         }
         string recentLine = work.SceneSessionId >= 0
-            ? TagSceneSessionHistoryLine(work.RecentText, work.SceneSessionId)
+            ? DialogueHistoryLedger.TagSceneSession(work.RecentText, work.SceneSessionId)
             : work.RecentText;
         day.Lines.Add(recentLine);
         day.MemoryCommitMarkers[markerKey] = work.PayloadHash;
