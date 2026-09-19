@@ -115,6 +115,11 @@ namespace AnimusForge.Illustrator.Engine
         private sealed class SharedSceneProbeSession
         {
             private static int _nextId;
+            // ScreenManager.RefreshGlobalOrder starts active screen views at -2000.
+            // This unlayered offscreen view must have an explicit earlier order so
+            // the live Mission view renders afterwards. Native agent-cache isolation
+            // is still experimental; ordering alone is not proof of a visual fix.
+            private const int ProbeRenderOrder = -2001;
             private readonly ConversationSceneCaptureSource _source;
             private readonly CancellationToken _token;
             private readonly TaskCompletionSource<bool> _retired = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -165,6 +170,7 @@ namespace AnimusForge.Illustrator.Engine
                 _target = Texture.CreateRenderTarget(_nativeName, 512, 512, false, false);
                 _view = SceneView.CreateSceneView();
                 _view.SetEnable(false);
+                _view.SetRenderOrder(ProbeRenderOrder);
                 _view.SetRenderTarget(_target);
                 _view.SetAutoDepthTargetCreation(true);
                 _view.SetScene(_borrowedScene);
@@ -244,6 +250,7 @@ namespace AnimusForge.Illustrator.Engine
                 ["horizontalFov"] = _fov, ["near"] = _near, ["far"] = _far,
                 ["sharedScene"] = true, ["sourceSceneParameterWrites"] = false, ["screenPixels"] = false,
                 ["focusedShadowRequested"] = false,
+                ["renderOrder"] = ProbeRenderOrder, ["orderPolicy"] = "before_active_screen_views",
                 ["note"] = "Experimental shared-scene render; independent camera does not establish native render-state isolation. Readiness is not a GPU completion fence."
             };
 
