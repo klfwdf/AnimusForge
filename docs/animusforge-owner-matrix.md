@@ -12,6 +12,8 @@
 
 ## J06 当前责任边界（VERIFY / NOT_ACCEPTED）
 
+`1fa1a4e1` 追加 Courier 最终序列化请求体的旧同步/新调度六类知识文本 fixture 对照与 Lore 丢失变异；生产请求体和 `PromptExtrasComposer` 参与，知识结果/游戏读取为假端口。Native 最终请求全文与真实知识结果仍未闭合，不改变本矩阵状态。
+
 接续验证：产品 owner/源码未变；`ae2cb4f4` 的生产候选/元数据捕获方法样本（fake Hero 2,000，9 轮）与两项变异通过，`db9a899e` 的生产 `PromptAssemblyStage` 完整 `Extras` 八组合及三项变异通过。原脚本 Debug/Release 六项已获授权执行并成功；尚缺旧同步与新捕获路径的**最终模型请求 Prompt 全文**对照，故本矩阵仍为 `VERIFY / NOT_ACCEPTED`。旧下方“原脚本拒绝”仅是先前历史状态。
 
 | 责任 | 当前 owner 与真实消费者 | 保留责任 / 验收缺口 |

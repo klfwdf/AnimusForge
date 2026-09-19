@@ -1,5 +1,7 @@
 # 当前接续：J06 原构建通过，最终 Prompt 对照仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
+- 追加 `1fa1a4e1`：Courier 生产请求体回放接入生产 `PromptExtrasComposer`，对 Lore 命中/回退、实体有/无、额外规则预选/回退六种 fixture 文本分别沿旧同步与新调度路径比较完整序列化请求；双方向 76 场景 / 390 检查 PASS，删去新路径 Lore 文本的负向变异在 `knowledge_text_lore_hit` 按预期拒收。游戏读取和知识结果仍为 fixture；Native 最终请求全文及真实 Lore/实体结果旧新对照未闭合，J06 状态不变。
+
 - 本次从 `c2ba9ad1` 继续，测试提交 `ae2cb4f4`、`7dd969d9`（生产捕获方法的 2,000 Hero 假游戏端口耗时样本及两项负向变异）、`db9a899e`（完整 `Extras` 文本 8 组合及 Lore/实体/规则三项负向变异）；**没有产品源码变更**。最终样本 9 轮均值：仅名称/别名捕获 0.397 ms、加范围/距离元数据 1.436 ms、差值 1.039 ms，每轮 31 次预算检查、2,000 项范围与距离捕获；这是 stubbed 离线方法样本，不是游戏帧数据。J03/J04/Knowledge/Native/Courier/Scene 聚焦复跑通过；Scene 初次未指定 `--dotnet` 报 `WinError 2`，指定本地 SDK 后 71 fixture 通过。
 - 用户明确授权四个工作区生成目录重置后，原 `build_single_module.ps1` 不带 Stage/Deploy 的 Debug/Release × 1.3/1.4/Bootstrap **六项均成功，0 警告/0 错误**；1.3 引用 v1.3.15.110062，1.4 引用 v1.4.7.117484。预检四目录仅含构建产物且无 reparse。此结果取代下方“原脚本未跑”的历史阻塞。
 - **仍不标 `J06_OFFLINE_VERIFIED`**：新测试只证明真实 `PromptAssemblyStage` 的完整 `Extras` 文本，尚未将旧同步与新捕获路径的 Lore/实体/额外规则在最终**模型请求 Prompt 全文**上逐字节对照；实体样本也未覆盖真实 TaleWorlds 属性成本。实机、旧档、真实 provider 仍 `NOT-RUN`，不是离线阻塞。详见[主台账当前节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06-retrieval-cutover-20260919)。未 push、Stage、部署或改 J07/J10；`.dotnet-cli-home/` 保留。
