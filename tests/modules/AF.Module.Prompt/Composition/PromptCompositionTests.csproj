@@ -16,6 +16,8 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptBuildRequest.cs" Link="PromptBuildRequest.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptContextDecisions.cs" Link="PromptContextDecisions.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptAssemblyStage.cs" Link="PromptAssemblyStage.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleInstructionComposer.cs" Link="PromptRuleInstructionComposer.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRetrievalCapture.cs" Link="PromptRetrievalCapture.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleIdPolicy.cs" Link="PromptRuleIdPolicy.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/BuiltInRuleStickyCarry.cs" Link="BuiltInRuleStickyCarry.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptBuiltInTopicRouter.cs" Link="PromptBuiltInTopicRouter.cs" />
