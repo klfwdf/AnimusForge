@@ -64,9 +64,9 @@ def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
     constant_pattern = re.compile(r"\b(?:private|internal|public|protected)?\s*(?:static\s+)?const\s+string\s+(\w+)\s*=\s*\"([^\"]+)\"")
     source_paths = []
     for source_path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
-        if any("原版游戏本体代码" in part for part in source_path.parts):
+        if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
         source_paths.append(source_path)
     constant_values: dict[str, set[str]] = {}
@@ -139,9 +139,9 @@ DECLARATION_PATTERN = re.compile(
 def discover_typed_bindings() -> list[dict]:
     rows: list[dict] = []
     for source_path in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
-        if any("原版游戏本体代码" in part for part in source_path.parts):
+        if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
         source = source_path.read_text(encoding="utf-8")
         declarations = list(DECLARATION_PATTERN.finditer(source))
@@ -205,9 +205,9 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(any(item["status"] == "inventory-required" for item in catalog["symbolicKeyFamilies"]), "symbolic key debt was hidden")
     symbolic_sources = []
     for source in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.relative_to(ROOT).parts):
             continue
-        if any("原版游戏本体代码" in part for part in source.parts):
+        if any("原版游戏本体代码" in part for part in source.relative_to(ROOT).parts):
             continue
         if SYMBOLIC_PATTERN.search(source.read_text(encoding="utf-8")):
             symbolic_sources.append(source.relative_to(ROOT).as_posix())
