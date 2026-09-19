@@ -1,3 +1,9 @@
+# 当前接续：J04_OFFLINE_VERIFIED；下一包 J05 Memory（2026-09-19）
+
+分支 `codex/af-modularize-j04-20260918`，生产终点 `8faf5fbe`，253 锚点地图两模式通过，基线 `25a89cea` 起 20 个本地提交。共享 Prompt 组合已收口：13 个 Composition owner、三个可调度步骤、Native/Courier 在正确线程运行并逐跳重验；旧 771 行单体与全部被替代实现删除。Composition 155 + BuildPhases + Courier 252/59 + Native 八组 + Scene 三组 + J03 六契约复跑 PASS，Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误。**仅离线验收**：实机/旧档/provider `NOT-RUN`；lore/实体/extra-rule 检索仍在游戏线程（J06），Scene 五调用点无调度器（J10）。`PersistenceProfileConfigContractTests` 在未改动的 `25a89cea` 快照上同样失败（13 个 chunked key 缺失），与 J04 无关，登记为 J05 首项。未推送。详见[J04 最终回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04-offline-verified-20260919)与[总计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#modularization-master-plan-20260919)。
+
+## 以下为 J04f 回执
+
 # 当前接续：J04f 完成，Native/Courier 执行位置已搬（2026-09-19，J04_PARTIAL）
 
 生产 `72f8d342`（Native）、`52247a51`（Courier），250 锚点地图两模式通过。共享 Prompt 构建拆为三个可调度步骤（Begin 游戏线程 / Routing 任意线程 / Complete 游戏线程），Native 经 `ShoutBehavior.NativePromptBuild.cs` 用主线程调度器 + 后台 slot 运行，Courier 经 `CourierDeliveryBehavior.PromptSchedule.cs` 用 owner 阶段 + `Task.Run` 运行，两者在每次线程跳转后重验 admission/run/source 与 generation；旧整段后台调用删除。Courier prompt 252/59 + 5 变异、Native 八组 runner、Scene/J03/Composition/BuildPhases/Consumers 契约全部复跑 PASS，Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误。**J04 剩 J04g（lore 后台化、规则指令段落化）与 J04h（验收）；Scene 五个调用点按总计划归 J10。** 实机/旧档/provider `NOT-RUN`；未推送。详见[J04f 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04f-receipt-20260919)与[总计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#modularization-master-plan-20260919)。

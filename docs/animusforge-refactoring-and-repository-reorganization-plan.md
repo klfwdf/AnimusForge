@@ -1,3 +1,38 @@
+<a id="j04-offline-verified-20260919"></a>
+
+## J04 最终离线回执：J04_OFFLINE_VERIFIED（2026-09-19）
+
+**本节取代上方所有 J04_PARTIAL 状态，仅限源码与离线验收；实机、旧档、真实 provider 均 `NOT-RUN`。** 分支 `codex/af-modularize-j04-20260918`，生产终点 `8faf5fbe`，地图绑定同提交（253 锚点两模式通过）。基线 `25a89cea` 至今 20 个本地提交，未推送、未 Stage/Deploy/打包、未写游戏目录。
+
+### J04 完成边界（对照总计划 J04 三条完成标准）
+
+| 标准 | 证据 |
+| --- | --- |
+| 三个默认渠道入口调用唯一组合 owner，旧算法退出、无第二副本 | Native `ShoutBehavior.NativePromptBuild.cs`、Courier `CourierDeliveryBehavior.PromptSchedule.cs`、Scene 八个调用点与两个静态门面均经 `BeginSharedPromptBuild / RunSharedPromptRouting / CompleteSharedPromptBuild`；`git grep` 无第二套路由/装配实现；`PromptComposer.cs`、8 个规则 ID helper、7 个 sticky 成员、6 个规则块 helper、3 个大内联块全部删除 |
+| worker 内零 live 游戏对象读写；owner/generation/目标重验后才接受 | 步骤2（`RunSharedPromptRouting`）只读 detached `PromptBuildRequest` + 配置/缓存/网络；BuildPhases 契约断言该步骤不含 Reward/Duel/Team/Entity/MobileParty/Clan/Hero.MainHero 读取；Native 两次 admission + 两次 generation、Courier 三次 run/source 重验由 ProductionConsumers 契约断言 |
+| 原话题/规则资格/历史结构/记忆注入/PostprocessRules 同源/故障回退/Scene 多人语义保持 | Courier 252/59 + 5 变异（harness 改为断言每步线程位置）、Scene 71/37/30、Native 八组 runner、J03 六契约、HeroAsset 67 在每个切片后复跑 PASS；Composition 契约 155 项 + 2 变异、BuildPhases 契约 + 2 变异；`GameLifetimeTests`、`CourierPromptPreparationTests` 两套精确逆变换均记录 J04 差异 |
+
+### 13 个 Composition owner（`src/modules/AF.Module.Prompt/Composition/`）
+
+`PromptRuleIdPolicy`、`BuiltInRuleStickyCarry`、`PromptBuiltInTopicRouter`、`PromptPreprocessRuleIdAssembler`、`PromptExtrasComposer`(+`PromptExtrasSections`)、`PromptRuntimeTargetBinding`、`PromptRuleBlockText`、`PromptTopicRoutingStage`(+`PromptRoutingInput/Ports/Result`)、`PromptBuildRequest`(+`PromptExclusionSets`)、`PromptContextDecisions`、`PromptAssemblyStage`(+`PromptEntityCapture`)、`PromptRetrievalCapture`(+`PromptBuildPhases`)、`PromptRuleInstructionComposer`(+`PromptRuleInstructionSections`)。目录不引用 TaleWorlds / AIConfigHandler / Logger（BuildPhases 契约断言）。
+
+### 行数
+
+`MyBehavior.cs` 58,669 → 58,033；`ShoutBehavior.cs` 39,698 → 39,668；`AIConfigHandler.cs` 7,707 → 7,717（+两个发布口）；新增 `ShoutBehavior.NativePromptBuild.cs` 110、`CourierDeliveryBehavior.PromptSchedule.cs` 122。共享 builder 771 行单体 → 三步 + 五阶段，最大阶段 `CapturePromptSections` 207 行（全部为游戏线程段落捕获）。
+
+### 明确保留（归后续包，不在 J04）
+
+- `CapturePromptSections` 内 `AIConfigHandler.GetLoreContext`（ONNX lore，`KnowledgeLibraryBehavior.BuildLoreContextInternal` 读 12 处 Hero 状态）与 `WorldEntityRetrievalService.BuildPromptContext` 仍在游戏线程 → **J06 Knowledge**。
+- `BuildExtraRuleInstructions` 中 `AIConfigHandler.BuildMatchedExtraRuleInstructions` 语义检索仍在游戏线程（它依赖 `ResolveConversationTargetHero` 的 `Hero.FindFirst` live 读）→ **J06d**。
+- Scene 五个 async 调用点无 owner 调度器，继续走三步顺序组合 → **J10a**。
+- `BuiltInRuleStickyCarry`（duel/reward/loan）与 J03 `PromptStickyRuleStore`（kingdom_service/marriage）仍是两个状态 → J06 或 J07 合并评估。
+- 四个游戏派生 `Add*RuleExclusions*` adapter 仍在 MyBehavior（读 Hero/Mission）→ 随 J07 归 Conversation 适配层。
+
+### 环境偏差记录
+
+- `tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py` 在本 worktree 报 `symbolic SyncData source inventory drifted`：原因是排除集合按绝对路径 parts 匹配，而本 worktree 路径含 `.tmp`，导致全部源码被排除。以内存改为相对路径后，本 worktree 与**未改动的 `25a89cea` 快照**报同一 `chunked key mismatch: missing=[13 keys]`——即该 runner 在远端基线上已不通过，与 J04 无关（`git diff 25a89cea` 四个大文件 SyncData 行数变化 = 0）。登记为 J05 首项待查，不在本包修改 runner 或 catalog。
+- J03 runner 的 `local/dotnet/8.0.425` 路径、`NativeTtsFallbackBoundaryTests` 的 `ROOT.parent/.dotnet-sdk` 路径以内存替换运行；未改 tracked 文件。
+
 <a id="j04f-receipt-20260919"></a>
 
 ## J04f 回执：Native/Courier 执行位置已搬移（2026-09-19，J04_PARTIAL）
