@@ -13,6 +13,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs" Link="KnowledgeRuleIndex.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs" Link="LoreCandidateRetriever.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs" Link="KnowledgeImportSupport.cs" />
-    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>@@NEWTONSOFT@@</HintPath></Reference>
   </ItemGroup>
 </Project>

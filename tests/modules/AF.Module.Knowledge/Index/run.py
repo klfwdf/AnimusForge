@@ -1,6 +1,7 @@
 """Build and run the Knowledge rule index contract (fake embedding/reranker ports) against the production owner files.
 
 SDK resolution: AF_DOTNET env var, then repository local/dotnet/8.0.425, then dotnet on PATH.
+Newtonsoft: AF_NEWTONSOFT env var, then the repository local SDK copy (same convention as tests/AF.Persistence runners).
 Exit code is the harness exit code; mutation switches prove the assertions are live.
 """
 from __future__ import annotations
@@ -36,6 +37,8 @@ output.mkdir(parents=True)
 for name in ("Program.cs", "Stubs.cs", "KnowledgeIndexTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "KnowledgeIndexTests.csproj").read_text(encoding="utf-8").replace("../../../../", (str(ROOT) + "/").replace("\\", "/"))
+newtonsoft = os.environ.get("AF_NEWTONSOFT") or str(ROOT / "local/dotnet/8.0.425/sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll")
+project = project.replace("@@NEWTONSOFT@@", newtonsoft.replace("\\", "/"))
 if args.mutate:
     src_dir = output / "mutated"
     src_dir.mkdir()
