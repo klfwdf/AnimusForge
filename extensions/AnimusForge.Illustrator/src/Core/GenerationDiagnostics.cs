@@ -138,6 +138,17 @@ namespace AnimusForge.Illustrator.Core
             });
         }
 
+        internal void RecordSceneProbeImages(byte[] nativePng, byte[] previewPng)
+        {
+            Safe(() => AddEvent("shared_scene_probe_images", new JObject
+            {
+                ["native"] = StoreReference(nativePng, "probe_front_native.png"),
+                ["preview"] = StoreReference(previewPng, "probe_front_preview.png"),
+                ["views"] = 1, ["sentToModels"] = false,
+                ["purpose"] = "Manual single-camera shared-scene probe; native before producer RGB adaptation, preview after adaptation."
+            }));
+        }
+
         internal void RecordDirectorResponse(string rawResponse, string finishReason)
         { RecordResponse("director_response", rawResponse, null, finishReason); }
 

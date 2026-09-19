@@ -9,6 +9,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
     {
         private readonly Action _onClose;
         private readonly Action _onRegenerate;
+        private readonly Action _onSceneProbe;
         private string _titleText = string.Empty;
         private string _statusText = string.Empty;
         private string _promptText = string.Empty;
@@ -18,10 +19,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _isLoading;
         private bool _showPrompt;
 
-        public IllustrationCardVM(Action onClose, Action onRegenerate)
+        public IllustrationCardVM(Action onClose, Action onRegenerate, Action onSceneProbe = null)
         {
             _onClose = onClose;
             _onRegenerate = onRegenerate;
+            _onSceneProbe = onSceneProbe;
         }
 
         [DataSourceProperty]
@@ -104,9 +106,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _isLoading = value;
                     OnPropertyChangedWithValue(value, nameof(IsLoading));
+                    OnPropertyChanged(nameof(CanExecuteSceneProbe));
                 }
             }
         }
+
+        [DataSourceProperty]
+        public bool CanProbeScene => _onSceneProbe != null;
+
+        [DataSourceProperty]
+        public bool CanExecuteSceneProbe => CanProbeScene && !IsLoading;
 
         [DataSourceProperty]
         public bool ShowPrompt
@@ -154,6 +163,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (IsLoading) return;
             try { _onRegenerate?.Invoke(); }
             catch (Exception ex) { SetReady("生成准备失败：" + ex.Message); }
+        }
+
+        public void ExecuteSceneProbe()
+        {
+            if (!CanExecuteSceneProbe) return;
+            try { _onSceneProbe?.Invoke(); }
+            catch (Exception ex) { SetReady("试采准备失败：" + ex.Message); }
         }
 
         public void ExecuteTogglePrompt()
