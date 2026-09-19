@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation", "drop-entity-allocation-worker"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -116,6 +116,8 @@ entity_capture = extract.declaration(entity, "internal static EntityCapture Capt
 entity_worker = extract.declaration(entity, "internal static DetachedEntityMatches MatchDetachedCandidates(")
 if args.mutate == "entity-worker-live-read":
     entity_worker += "\nHero.MainHero"
+if args.mutate == "drop-entity-allocation-worker":
+    entity_worker = entity_worker.replace("ApplyDetachedGlobalInjectionLimit(", "X(", 1)
 entity_final = extract.declaration(entity, "internal static WorldEntityPromptContext BuildPromptContext(")
 assert "CaptureEntityCandidates(" in knowledge_capture and "MatchDetachedCandidates(" in knowledge_worker, "entity capture/matching must cross game/worker boundary"
 assert "BuildVisiblePartyCandidates(contextHero)" in entity_capture and "GetHeroCandidates()" in entity_capture and "GetKingdomCandidates()" in entity_capture, "entity game capture must reuse existing enumerations"
@@ -127,6 +129,9 @@ assert "capture?.VisibleParties ?? BuildVisiblePartyCandidates(contextHero)" in 
 for forbidden_live in ("Hero.", "Kingdom.", "Settlement.", "Clan.", "MobileParty.", "Campaign.Current", "GetHeroCandidates(", "GetKingdomCandidates(", "BuildVisiblePartyCandidates("):
     assert forbidden_live not in entity_worker, "entity worker must not read live game object: " + forbidden_live
 assert "FindRulerTitleMatches(" in entity_worker and "FindRawRulerTitleMatches(" in entity_worker and "FindDetachedMatches(" in entity_worker, "ruler/direct matching must run on worker"
+assert "ApplyDetachedGlobalInjectionLimit(" in entity_worker and "EntityInjectionAllocator.Select(" in extract.declaration(entity, "private static void ApplyDetachedGlobalInjectionLimit("), "global entity allocation must run on worker"
+assert "CaptureDetachedMetadata(candidate, x" in entity_capture and "CaptureDetachedMetadata(ruler.Leader, leader" in entity_capture, "game capture must detach scope and distance for direct and ruler heroes"
+assert "if (detachedMatches == null)" in entity_final and "ApplyGlobalInjectionLimit(" in entity_final, "final game stage must allocate only for legacy synchronous fallback"
 for marker in ("private static List<EntityMatch<DetachedEntityCandidate>> FindRulerTitleMatches(", "private static RawRulerTitleMatchResult FindRawRulerTitleMatches(", "private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches(", "private static List<EntityMatch<T>> FindMatches<T>("):
     body = extract.declaration(entity, marker)
     assert not re.search(r"\b(?:Hero|Kingdom|Settlement|Clan|MobileParty|Campaign|Mission)\s*\.", body), "entity scorer reads game state: " + marker

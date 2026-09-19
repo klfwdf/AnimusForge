@@ -237,6 +237,13 @@ public static class WorldEntityRetrievalService
 		internal string Id;
 		internal string Name;
 		internal List<string> Aliases;
+		internal string SourceStringId;
+		internal string HeroClanId;
+		internal string HeroKingdomId;
+		internal string ScopeClanId;
+		internal string ScopeKingdomId;
+		internal float HeroDistance = float.MaxValue;
+		internal float HeroDistanceBonus;
 	}
 
 	internal sealed class EntityCapture
@@ -257,6 +264,7 @@ public static class WorldEntityRetrievalService
 		internal List<EntityMatch<DetachedEntityCandidate>> Settlements;
 		internal List<EntityMatch<DetachedEntityCandidate>> Clans;
 		internal List<EntityMatch<DetachedEntityCandidate>> Kingdoms;
+		internal List<string> ExplicitMentionedKingdomIds;
 	}
 
 	internal static EntityCapture CaptureEntityCandidates(MentionedWorldEntities mentions, string latestInput, Hero contextHero)
@@ -268,11 +276,14 @@ public static class WorldEntityRetrievalService
 			return capture;
 		}
 		capture.VisibleParties = BuildVisiblePartyCandidates(contextHero);
+		CampaignVec2 contextPosition;
+		bool hasContextPosition = TryResolveHeroCampaignPosition(contextHero, out contextPosition);
 		bool hasMentions = EntityMentionList.BuildUnified(mentions?.Entities).Count > 0;
 		if (hasMentions && CanContinueWorldEntityMatch("hero_capture", budget))
 		{
 			CaptureCandidates(GetHeroCandidates(), capture.Candidates.Heroes, capture.Heroes,
-				GetHeroAliases, x => "hero:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Hero"), budget);
+				GetHeroAliases, x => "hero:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Hero"), budget,
+				(x, candidate) => CaptureDetachedMetadata(candidate, x, hasContextPosition ? contextPosition : (CampaignVec2?)null));
 		}
 		if (hasMentions && CanContinueWorldEntityMatch("settlement_capture", budget))
 		{
@@ -282,19 +293,29 @@ public static class WorldEntityRetrievalService
 		if (hasMentions && CanContinueWorldEntityMatch("clan_capture", budget))
 		{
 			CaptureCandidates(GetClanCandidates(), capture.Candidates.Clans, capture.Clans,
-				GetClanAliases, x => "clan:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Clan"), budget);
+				GetClanAliases, x => "clan:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Clan"), budget,
+				(x, candidate) => CaptureDetachedMetadata(candidate, x));
 		}
 		if ((hasMentions || !string.IsNullOrWhiteSpace(latestInput)) && CanContinueWorldEntityMatch("kingdom_capture", budget))
 		{
 			CaptureCandidates(GetKingdomCandidates(), capture.Candidates.Kingdoms, capture.Kingdoms,
-				GetKingdomAliases, x => "kingdom:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Kingdom"), budget);
+				GetKingdomAliases, x => "kingdom:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Kingdom"), budget,
+				(x, candidate) => CaptureDetachedMetadata(candidate, x));
 			capture.Candidates.Rulers = BuildRulerTitleCandidates(RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms), capture.Heroes);
+			foreach (RulerTitleCandidate ruler in capture.Candidates.Rulers)
+			{
+				if (ruler?.Leader != null && capture.Heroes.TryGetValue(ruler.Leader, out Hero leader))
+				{
+					CaptureDetachedMetadata(ruler.Leader, leader, hasContextPosition ? contextPosition : (CampaignVec2?)null);
+				}
+			}
 		}
 		return capture;
 	}
 
 	private static void CaptureCandidates<T>(IEnumerable<T> source, List<DetachedEntityCandidate> detached,
-		Dictionary<DetachedEntityCandidate, T> live, Func<T, IEnumerable<string>> aliases, Func<T, string> id, Func<T, string> name, WorldEntityRetrievalBudget budget) where T : class
+		Dictionary<DetachedEntityCandidate, T> live, Func<T, IEnumerable<string>> aliases, Func<T, string> id, Func<T, string> name, WorldEntityRetrievalBudget budget,
+		Action<T, DetachedEntityCandidate> captureMetadata = null) where T : class
 	{
 		int scanned = 0;
 		foreach (T value in source ?? Enumerable.Empty<T>())
@@ -309,6 +330,7 @@ public static class WorldEntityRetrievalService
 				Name = SafeSelectorValue(name, value),
 				Aliases = SafeAliases(aliases, value).ToList()
 			};
+			try { captureMetadata?.Invoke(value, candidate); } catch { }
 			detached.Add(candidate);
 			live.Add(candidate, value);
 			if (++scanned % EntityRetrievalBudgetCheckInterval == 0)
@@ -320,6 +342,32 @@ public static class WorldEntityRetrievalService
 					break;
 				}
 			}
+		}
+	}
+
+	private static void CaptureDetachedMetadata(DetachedEntityCandidate candidate, object value, CampaignVec2? contextPosition = null)
+	{
+		if (candidate == null || value == null) return;
+		if (value is Hero hero)
+		{
+			Clan clan = hero.Clan;
+			candidate.HeroClanId = NormalizeScopeEntityId(clan?.StringId);
+			candidate.HeroKingdomId = NormalizeScopeEntityId(ResolveHeroKingdomForResidentEntity(hero, clan)?.StringId);
+			if (contextPosition.HasValue && contextPosition.Value.IsValid() && TryResolveHeroCampaignPosition(hero, out CampaignVec2 heroPosition))
+			{
+				float distance = heroPosition.Distance(contextPosition.Value);
+				float? bonus = EntityInjectionAllocator.ComputeDistanceBonus(distance);
+				if (bonus.HasValue) { candidate.HeroDistance = distance; candidate.HeroDistanceBonus = bonus.Value; }
+			}
+		}
+		else if (value is Clan clanScope)
+		{
+			candidate.ScopeClanId = NormalizeScopeEntityId(clanScope.StringId);
+		}
+		else if (value is Kingdom kingdomScope)
+		{
+			candidate.SourceStringId = (kingdomScope.StringId ?? "").Trim();
+			candidate.ScopeKingdomId = NormalizeScopeEntityId(kingdomScope.StringId);
 		}
 	}
 
@@ -344,14 +392,42 @@ public static class WorldEntityRetrievalService
 			}
 			rulers = MergeEntityMatches(rulers, raw.Matches);
 		}
+		List<EntityMatch<DetachedEntityCandidate>> heroes = ConcatEntityMatchCandidates(
+			MergeEntityMatches(new List<EntityMatch<DetachedEntityCandidate>>(), rulers),
+			FindDetachedMatches("hero", allMentions, priority, candidates.Heroes, maxInjectedEntities, budget));
+		List<EntityMatch<DetachedEntityCandidate>> settlements = FindDetachedMatches("settlement", allMentions, priority, candidates.Settlements, maxInjectedEntities, budget);
+		List<EntityMatch<DetachedEntityCandidate>> clans = FindDetachedMatches("clan", allMentions, priority, candidates.Clans, maxInjectedEntities, budget);
+		List<EntityMatch<DetachedEntityCandidate>> kingdoms = FindDetachedMatches("kingdom", allMentions, priority, candidates.Kingdoms, maxInjectedEntities, budget);
+		List<string> explicitKingdomIds = kingdoms.Where(match => !string.IsNullOrWhiteSpace(match?.Value?.SourceStringId))
+			.Select(match => match.Value.SourceStringId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		ApplyDetachedGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, ref heroes, ref settlements, ref clans, ref kingdoms);
 		return new DetachedEntityMatches
 		{
 			Rulers = rulers,
-			Heroes = FindDetachedMatches("hero", allMentions, priority, candidates.Heroes, maxInjectedEntities, budget),
-			Settlements = FindDetachedMatches("settlement", allMentions, priority, candidates.Settlements, maxInjectedEntities, budget),
-			Clans = FindDetachedMatches("clan", allMentions, priority, candidates.Clans, maxInjectedEntities, budget),
-			Kingdoms = FindDetachedMatches("kingdom", allMentions, priority, candidates.Kingdoms, maxInjectedEntities, budget)
+			Heroes = heroes,
+			Settlements = settlements,
+			Clans = clans,
+			Kingdoms = kingdoms,
+			ExplicitMentionedKingdomIds = explicitKingdomIds
 		};
+	}
+
+	private static void ApplyDetachedGlobalInjectionLimit(int maxCount, int mentionCount,
+		ref List<EntityMatch<DetachedEntityCandidate>> heroes, ref List<EntityMatch<DetachedEntityCandidate>> settlements,
+		ref List<EntityMatch<DetachedEntityCandidate>> clans, ref List<EntityMatch<DetachedEntityCandidate>> kingdoms)
+	{
+		List<GlobalEntityCandidate> candidates = new List<GlobalEntityCandidate>();
+		AddGlobalLimitItems(candidates, "hero", 0, heroes);
+		AddGlobalLimitItems(candidates, "settlement", 1, settlements);
+		AddGlobalLimitItems(candidates, "clan", 2, clans);
+		AddGlobalLimitItems(candidates, "kingdom", 3, kingdoms);
+		List<GlobalEntityCandidate> selected = EntityInjectionAllocator.Select(candidates,
+			EntityInjectionAllocator.ClampMaxInjectedEntities(maxCount), Math.Max(0, mentionCount), out string allocationSummary);
+		heroes = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "hero");
+		settlements = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "settlement");
+		clans = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "clan");
+		kingdoms = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "kingdom");
+		Logger.Log("WorldEntityRetrieval", allocationSummary);
 	}
 
 	private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches(string category, List<string> mentions,
@@ -497,14 +573,12 @@ public static class WorldEntityRetrievalService
 					}
 				}
 				List<EntityMatch<Hero>> rulerTitleMatches = RestoreMatches(detachedRulers, rulerLiveHeroes);
-				heroes = MergeEntityMatches(heroes, rulerTitleMatches);
+				heroes = detachedMatches == null ? MergeEntityMatches(heroes, rulerTitleMatches) : RestoreMatches(detachedMatches.Heroes, capture.Heroes);
 				if (allMentions.Count > 0)
 				{
-					if (CanContinueWorldEntityMatch("hero", budget))
+					if (detachedMatches == null && CanContinueWorldEntityMatch("hero", budget))
 					{
-						List<EntityMatch<Hero>> directHeroMatches = detachedMatches == null
-							? FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"), maxInjectedEntities, budget)
-							: RestoreMatches(detachedMatches.Heroes, capture.Heroes);
+						List<EntityMatch<Hero>> directHeroMatches = FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"), maxInjectedEntities, budget);
 						heroes = ConcatEntityMatchCandidates(heroes, directHeroMatches);
 					}
 					if (CanContinueWorldEntityMatch("settlement", budget))
@@ -521,13 +595,16 @@ public static class WorldEntityRetrievalService
 					}
 				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
-				result.ExplicitMentionedKingdomIds = kingdoms
+				result.ExplicitMentionedKingdomIds = detachedMatches?.ExplicitMentionedKingdomIds ?? kingdoms
 					.Where(match => match?.Value != null && !string.IsNullOrWhiteSpace(match.Value.StringId))
 					.Select(match => match.Value.StringId.Trim())
 					.Distinct(StringComparer.OrdinalIgnoreCase)
 					.ToList();
 				stageSw.Restart();
-				ApplyGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, contextHero, ref heroes, ref settlements, ref clans, ref kingdoms);
+				if (detachedMatches == null)
+				{
+					ApplyGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, contextHero, ref heroes, ref settlements, ref clans, ref kingdoms);
+				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 			}
 			else if (visibleParties.Count > 0)
@@ -637,8 +714,20 @@ public static class WorldEntityRetrievalService
 				ExactNameMatch = EntityNameMatcher.IsExactNameMatch(match.Mention, match.Name),
 				Match = match
 			};
-			PopulateGlobalEntityScopeIds(candidate, match.Value);
-			PopulateGlobalEntityDistanceMetadata(candidate, match.Value as Hero, contextPosition);
+			if (match.Value is DetachedEntityCandidate detached)
+			{
+				candidate.HeroClanId = detached.HeroClanId;
+				candidate.HeroKingdomId = detached.HeroKingdomId;
+				candidate.ScopeClanId = detached.ScopeClanId;
+				candidate.ScopeKingdomId = detached.ScopeKingdomId;
+				candidate.HeroDistance = detached.HeroDistance;
+				candidate.HeroDistanceBonus = detached.HeroDistanceBonus;
+			}
+			else
+			{
+				PopulateGlobalEntityScopeIds(candidate, match.Value);
+				PopulateGlobalEntityDistanceMetadata(candidate, match.Value as Hero, contextPosition);
+			}
 			target.Add(candidate);
 		}
 	}
