@@ -1,3 +1,9 @@
+# 当前接续：J05_OFFLINE_VERIFIED；下一包 J06 Knowledge（2026-09-19）
+
+分支 `codex/af-modularize-j04-20260918`，生产终点 `d903df67`，262 锚点地图绑定同提交，基线 `25a89cea` 起 25 个本地提交。J05 四切片全部落地：J05a `NpcActionLedger`/`DialogueHistoryLedger`（34 项契约 + 2 变异）、J05b 九个既有 memory owner 纯 rename 到 `src/modules/AF.Module.Memory/{Summary,Records,Recovery}`、J05c `OwnerJsonStorageCodec` 收敛 SyncData 七处循环（8 项 + 1 变异；binding catalog 168 条身份不变只刷行号）、J05d `PlayerExportsStore`/`NpcDataFileName` 取代三 host 的重复副本（25 项 + 2 变异）。`MyBehavior.cs` 58,033 → 57,378。每切片后 Debug/Release × 1.3/1.4/Bootstrap 退出码 0；Persistence 四 runner、Memory 五 runner、Prompt 两契约、Courier/Native 边界 runner 复跑 PASS。**仅离线验收**：实机/旧档/provider `NOT-RUN`。明确保留：记忆记录类型与 `Sanitize*` 仍为 host 私有嵌套存档类型（Saveable 身份不可随路径改，归 J16/J17）；Import/Export/OpenDev 方法体未重写；Knowledge 导入校验归 J06。预先存在失败（`PersistenceIdentityAudit.py`、`MemoryFailureUiBoundaryTests`）在未改动 `25a89cea` 快照同样失败，未修改。未推送、未部署、未动存档。详见[J05 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j05-offline-verified-20260919)。下一包 **J06 Knowledge**：`AF.Module.Knowledge`，lore/实体/extra-rule 检索从 `CapturePromptSections` 与 `BuildExtraRuleInstructions` 离开游戏线程，Knowledge 导入校验 8 静态方法归位。
+
+## 以下为 J04 回执
+
 # 当前接续：J04_OFFLINE_VERIFIED；下一包 J05 Memory（2026-09-19）
 
 分支 `codex/af-modularize-j04-20260918`，生产终点 `8faf5fbe`，253 锚点地图两模式通过，基线 `25a89cea` 起 20 个本地提交。共享 Prompt 组合已收口：13 个 Composition owner、三个可调度步骤、Native/Courier 在正确线程运行并逐跳重验；旧 771 行单体与全部被替代实现删除。Composition 155 + BuildPhases + Courier 252/59 + Native 八组 + Scene 三组 + J03 六契约复跑 PASS，Debug/Release 双 API + Bootstrap 六项 0 警告/0 错误。**仅离线验收**：实机/旧档/provider `NOT-RUN`；lore/实体/extra-rule 检索仍在游戏线程（J06），Scene 五调用点无调度器（J10）。`PersistenceProfileConfigContractTests` 在未改动的 `25a89cea` 快照上同样失败（13 个 chunked key 缺失），与 J04 无关，登记为 J05 首项。未推送。详见[J04 最终回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j04-offline-verified-20260919)与[总计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#modularization-master-plan-20260919)。

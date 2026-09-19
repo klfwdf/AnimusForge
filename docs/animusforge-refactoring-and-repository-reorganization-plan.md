@@ -1,3 +1,44 @@
+<a id="j05-offline-verified-20260919"></a>
+
+## J05 离线回执：J05_OFFLINE_VERIFIED（2026-09-19）
+
+**仅限源码与离线验收；实机、旧档读写、真实 provider 均 `NOT-RUN`。** 分支 `codex/af-modularize-j04-20260918`，生产终点 `d903df67`，地图绑定同提交（262 锚点，无悬空路径）。基线 `25a89cea` 至今 25 个本地提交，未推送、未 Stage/Deploy/打包、未写游戏目录、未动存档。
+
+### 对照总计划 J05 四切片
+
+| 切片 | 完成边界 | 证据 |
+| --- | --- | --- |
+| J05a 记录写入 | `NpcActionLedger`（常量/规范化/10 日窗口/跨窗口去重/同日序号/时间线比较/有序追加）与 `DialogueHistoryLedger`（场景会话标记、AFEF/NPC 行前缀、一次性事实过期、260 行扁平-截断-重组）成为唯一 owner；`MyBehavior` 11 个私有 helper 删除，`RecordNpcActionInternal`/`AppendDialogueHistoryById`/`RemoveExpiredSingleUseNpcFactLines`/`MemoryRecovery.TagSceneSession` 全部改调 owner | `tests/modules/AF.Module.Memory/Records` 34 项 + 变异 `window-off-by-one`、`expiry-keeps-old` 被拒；提交 `3cc6f0d7` |
+| J05b 摘要 owner 归位 | 9 个已有 owner 由 `Refactor/Runtime|Contracts` 纯 rename（git 100% 相似度）到 `src/modules/AF.Module.Memory/{Summary,Records,Recovery}`；24 个 tool 工程路径更新；命名空间/类型名不变 | `MemorySummaryMainThreadBoundary`、`MemorySummaryRunOwner`、`MemorySummaryBudget`、`NativeHistorySnapshot`、`GameLifetime run_memory` PASS；提交 `8b712247` |
+| J05c 保存编解码 | `src/AF.Persistence/OwnerJsonStorageCodec`：SyncData 七处 owner→JSON 列表循环收敛为一处，键策略（IsNullOrEmpty/IsNullOrWhiteSpace）、空列表跳过、预存 sanitize、键规范化、逐 owner 失败隔离全部参数化保持原样；存档 key/chunk helper/字段/日志通道不变；`syncdata-binding-catalog.json` 只刷新行号（168 条 source/key/ref/type 身份断言不变） | `tests/AF.Persistence/OwnerJsonStorageCodec` 8 项 + 变异 `abort-on-error` 被拒；`PersistenceProfileConfig`/`ChunkReplay`/`IdentityAuditContract`/`MigrationContract` PASS；提交 `321c7318` |
+| J05d 导入/导出/Dev 编辑器 | 只做 owner 接线：`PlayerExportsStore`（模块根/PlayerExports/文件夹名/JSON 读写清理/最新导出/导入路径解析）与 `NpcDataFileName`（`heroId__name.json` 解析/构造/兼容规则）成为唯一 owner；`MyBehavior` 16 个 helper、`ModOnboardingBehavior` 3 个、`KingdomStrategicProfileBehavior.DevUi` 2 个重复副本删除；菜单/询问框/各 scope 导入导出正文未改 | `tests/AF.Persistence/PlayerExports` 25 项 + 变异 `name-mismatch-passes`、`latest-oldest` 被拒；提交 `d903df67` |
+
+### 行数
+
+`MyBehavior.cs` 58,033 → 57,378（−655）；`ModOnboardingBehavior.cs` −58；`KingdomStrategicProfileBehavior.DevUi.cs` −47。新增 owner：`NpcActionLedger` 123、`DialogueHistoryLedger` 179、`OwnerJsonStorageCodec` 98、`PlayerExportsStore` 200、`NpcDataFileName` 128。
+
+### 构建
+
+每个切片后 `.tmp/build-local.ps1`（等价 `build_single_module.ps1`，无 -Stage/-Deploy）Debug + Release × 1.3/1.4/Bootstrap 退出码 0，产物在 `bin/<Config>/single_module_artifacts/versions/{1.3,1.4}` 与 `bootstrap/`。
+
+### 明确保留（不在 J05）
+
+- `SanitizeDailyMemoryDrafts`/`SanitizeCompressedMemoryBlocks`/`SanitizeMemorySummaryQueue`/`SanitizeMemoryOverview*` 与五个记录类型（`DailyMemoryDraft` 等）仍是 `MyBehavior` 私有嵌套类型：它们是存档类型（`MyBehaviorSaveableTypeDefiner`），Skill 要求 Saveable 身份不变，且 sanitize 内含 `TWParallel.IsMainThread` 分支与 `CloneMemorySummarySource`。移动它们需先解决嵌套类型的存档命名，归 **J16/J17 存档类型评估**，不在本包冒进。
+- `BuildCompressedMemoryExportBundle`/`ApplyCompressedMemoryExportBundle`/`HasCompressedMemoryDataForHero` 直接读写 5 个 `MyBehavior` 字段并调用 `MarkMemoryOverviewDirty`，随上条。
+- 159 个 `Import*/Export*/OpenDev*` 方法体（约 6k 行）按总计划只做 owner 接线，未重写 UI；`OpenDevRootMenu`/`ReturnToDevRootMenu` 门禁原样。
+- `MemorySummaryDispatcher` 等 owner 只搬位置，"逐 record/字符/耗时预算替换每帧 N 回调"未在本包实施（现有 `MemoryMaintenanceWorkBudget` 已是 record 级预算，替换收益需实机数据），保留到 J07/J13 复评。
+- `KnowledgeLibraryBehavior` 导入校验（`ValidateKnowledgeKeywordsForImport` 等 8 个静态方法）留在 MyBehavior → **J06 Knowledge**。
+
+### 预先存在的失败（与 J05 无关，未修改）
+
+- `tools/PersistenceIdentityAudit.py`：在未改动的 `25a89cea` 快照同样失败（基线 `d4cb1467` 清单缺 WarStats 键）。
+- `tools/MemoryFailureUiBoundaryTests`：在 `25a89cea` 快照同样失败（memory-run parity 期望）。
+- `validate_persistence_profile_config.py` 的绝对路径 `.tmp` 排除已在 `416da085` 改为仓库相对（tracked runner 的唯一修改，行为对远端布局等价）。
+
+### 环境偏差
+
+同 J04：`local/dotnet/8.0.425` 与 Newtonsoft 路径以 `AF_DOTNET`/`AF_NEWTONSOFT` 环境变量或内存替换提供；`PersistenceChunkReplayTests` 直接以本机 SDK `dotnet run`。
+
 <a id="j04-offline-verified-20260919"></a>
 
 ## J04 最终离线回执：J04_OFFLINE_VERIFIED（2026-09-19）
