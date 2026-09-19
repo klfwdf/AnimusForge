@@ -6,6 +6,7 @@ it does not execute Bannerlord or the actual module eligibility implementations.
 from __future__ import annotations
 
 import importlib.util
+import argparse
 import os
 import subprocess
 from pathlib import Path
@@ -18,6 +19,17 @@ spec.loader.exec_module(extract)
 
 source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 capture = extract.declaration(source, "internal static PromptRuleEligibility CapturePromptRuleEligibility(")
+parser = argparse.ArgumentParser()
+parser.add_argument("--mutate", choices=("shared-catch", "open-exclusion"))
+args = parser.parse_args()
+if args.mutate == "shared-catch":
+    line = "try { result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForPromptCapture(hero, targetCharacter); } catch { }"
+    assert line in capture
+    capture = capture.replace(line, line.removeprefix("try { ").removesuffix(" } catch { }"))
+elif args.mutate == "open-exclusion":
+    line = "TargetIsPlayerPartyTradeLimited = true,"
+    assert line in capture
+    capture = capture.replace(line, "TargetIsPlayerPartyTradeLimited = false,", 1)
 output = ROOT / "artifacts/tests/prompt-j06-eligibility-capture"
 output.mkdir(parents=True, exist_ok=True)
 (output / "Program.cs").write_text((HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig").replace("@@CAPTURE@@", capture), encoding="utf-8")
