@@ -5,9 +5,9 @@
 | 责任 / 一基坐标 | 本轮实际接线 | 尚未宣称完成 |
 | --- | --- | --- |
 | `KnowledgeLibraryBehavior.cs:508-635,711,1535`、`MyBehavior.cs:30285-30386` | Lore 每版本一次的规则快照、索引准备及 MCM 数值快照在游戏线程、候选召回在后台；Hero 文本补文留最终阶段 | Index 版本/缓存与每版本规则快照已有可执行契约；冷索引耗时和最终文本生产对照未齐 |
-| `WorldEntityRetrievalService.cs:270-445,514-650,668`、`MyBehavior.cs:30325,30656` | 世界候选和可见队伍一次捕获（每 64 项检查原 3 秒预算）；DTO 名称/称谓匹配及唯一全局分配在后台，同步入口保留 | 关系/距离同趟捕获可能增加游戏线程耗时；最终事实格式仍在游戏线程，缺新旧文本和捕获性能对照 |
-| `AIConfigHandler.cs:5414-5432`、`MyBehavior.cs:30335` | 无预选 ID 的额外规则检索后台化，游戏线程按旧顺序补运行时规则正文 | 失败/迟到的生产回放与文本对照需补 |
-| `src/modules/AF.Module.Prompt/Composition/PromptRetrievalCapture.cs:34-57`、`ShoutBehavior.NativePromptBuild.cs:82-123`、`CourierDeliveryBehavior.PromptSchedule.cs:97-120` | Native/Courier 新捕获→纯 DTO 检索→最终 owner 发布与重验；Scene 顺序组合 | Scene 完整异步化归 J10；Courier 知识阶段迟到已回放；Native 新阶段迟到/异常回放未齐 |
+| `WorldEntityRetrievalService.cs:270-445,514-650,668`、`MyBehavior.cs:30325,30656` | 世界候选和可见队伍一次捕获（每 64 项检查原 3 秒预算）；DTO 名称/称谓匹配及唯一全局分配在后台，同步入口保留；生产分配方法新旧排序/分数 4 项对照与两项变异已跑 | 关系/距离同趟捕获可能增加游戏线程耗时；最终事实格式仍在游戏线程，缺完整文本和捕获性能对照 |
+| `AIConfigHandler.cs:5414-5432`、`MyBehavior.cs:30335` | 无预选 ID 的额外规则检索后台化，游戏线程按旧顺序补运行时规则正文；实际回退方法 21 项与两项变异已跑 | 最终 Prompt 文本对照需补 |
+| `src/modules/AF.Module.Prompt/Composition/PromptRetrievalCapture.cs:34-57`、`ShoutBehavior.NativePromptBuild.cs:82-123`、`CourierDeliveryBehavior.PromptSchedule.cs:97-120` | Native/Courier 新捕获→纯 DTO 检索→最终 owner 发布与重验；Scene 顺序组合；Courier 迟到和 Native 实际调度方法迟到/异常回放已跑 | Scene 完整异步化归 J10；最终 Prompt 文本对照未齐 |
 
 当前 `70db6ec2` 的非删除性 Debug/Release 双 API + Bootstrap 直接构建六项通过；原一键脚本在固定目录递归重置处被自动审核拒绝，**当前源码未完成官方构建验收**。无 push、Stage 或部署。实机、旧档、真实 provider `NOT-RUN`，不当作本次离线阻塞原因。
 
