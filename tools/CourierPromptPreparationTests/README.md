@@ -1,5 +1,7 @@
 # Courier 双向最终 Prompt 组装线程边界（2026-09-16）
 
+> J06 差分补强（2026-09-19）：`run.py` 现在还从 `77a3d234` 和当前 `CourierDeliveryBehavior.cs` 分别提取回信/主动来信最终消息构建器及其历史消息转换 helpers，先断言双方源码相同，再实际编译运行。76 场景比较完整 request JSON，并检查 system、上下文/历史 user、当前信件 user 的顺序；正常 550 checks PASS，Lore／实体／规则三项仅新侧文本丢失变异拒收。Hero/规则/共享上下文输入仍为 fixture，故这不满足 J06 的三类生产检索接入及 Native 全文门槛；J06 保持 `VERIFY / NOT_ACCEPTED`。
+
 > 根整合状态（2026-09-16）：生产源码 `6e419f6d` 已本地提交，最终六Stage与4DLL1056元数据通过；整体收尾仍ACTIVE。当前边界以[总交接](../../docs/handoffs/2026-09-16-parallel-closeout-handoff.md)为准，以下包内记录保留原验证上下文。
 
 

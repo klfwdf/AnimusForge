@@ -254,14 +254,14 @@
  ],
  "dependencies": {
   "CourierDeliveryBehavior.PromptPreparation.cs": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a",
-  "tools/CourierPromptPreparationTests/run.py": "7f12eef86eb5360dfc7ed920c6288b64f04e3ec0bf064cec08f08cd76be10ed2",
-  "tools/CourierPromptPreparationTests/Harness.cs.txt": "bd3202afeee93208df9aafa9758b79b96a83dabd921ebabb264b763557ce1f4d",
-  "tools/CourierPromptPreparationTests/run_liveness.py": "a8b9304c3ace06163b7d108937118fcba43ad5283438cbadf18e4748469973d4",
+  "tools/CourierPromptPreparationTests/run.py": "10dff7dc91e4964c6e54707dc43ce8815eb5e5a76be900f7ea0cee6ac001bb16",
+  "tools/CourierPromptPreparationTests/Harness.cs.txt": "36d8e6b402ecf169eadbab3a2dc36664fbb285579cbc7437712e8efdd3145bb5",
+  "tools/CourierPromptPreparationTests/run_liveness.py": "e88b64ad286b24434fadae508f4b8e56a38c555ab18a557f0567b244d68d727f",
   "tools/CourierPromptPreparationTests/LivenessHooks.cs.txt": "a9ce176c74d8674029eface8ded2eb4f5b36a68e4a4657bec4812f020f69b69e",
   "tools/CourierPromptPreparationTests/LivenessCases.cs.txt": "1f5d28dcf2c53d180d3063791499a26bd6fae308718308c3eb90c72b21561b0f",
   "tools/CourierPromptPreparationTests/liveness-review.json": "6572eea7d553a16e1a8ea6e821e70634277f365bbe39bf2cb4a5ec7902dd907a",
   "tools/CourierPromptPreparationTests/liveness_review.py": "abea7086532a98d07f2ce5b11895a268d34e305b1fab34524c9f54c7de724614",
-  "CourierDeliveryBehavior.PromptSchedule.cs": "10e5be80035997f9996bb5951ddd50d334fc9ce774fce09f1676de6ff394f83e"
+  "CourierDeliveryBehavior.PromptSchedule.cs": "5bac6990a995ef1342b2c9403289f933f60371e70c037f921808e255eded8c4e"
  },
  "reviewNotes": [
   "J04f 2026-09-19: PromptPreparation.cs replaces the single Task.Run over BuildCourierPreparedPrompt with BuildCourierPreparedPromptScheduledAsync (new partial PromptSchedule.cs: owner phases on game thread, preprocess retrieval + shared routing on thread pool). Harness stubs assert the thread placement; Program assertions unchanged."
