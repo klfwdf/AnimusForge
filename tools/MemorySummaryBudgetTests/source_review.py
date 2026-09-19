@@ -6,7 +6,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-WRITER_PATH = 'Refactor/Runtime/MemorySourceFingerprintWriter.cs'
+WRITER_PATH = 'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs'
 
 
 def restore_writer(path, source):

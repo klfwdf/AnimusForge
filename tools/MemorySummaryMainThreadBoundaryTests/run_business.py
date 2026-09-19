@@ -239,10 +239,10 @@ def main():
         files["Planning.cs"] = planning
     if not args.original and (ROOT / "MyBehavior.MemoryMaintenanceBudget.cs").is_file():
         for target, relative in [("BudgetBinding.cs", "MyBehavior.MemoryMaintenanceBudget.cs"),
-                                 ("BudgetRuntime.cs", "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs")]:
+                                 ("BudgetRuntime.cs", "src/modules/AF.Module.Memory/Summary/MemoryMaintenanceWorkBudget.cs")]:
             files[target] = (ROOT / relative).read_text(encoding="utf-8-sig")
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
-        for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+        for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     if args.mutate == "swallow-completion-error" and "MemorySummaryDispatcher.cs" in files:
         files["MemorySummaryDispatcher.cs"] = replace_exact(files["MemorySummaryDispatcher.cs"], "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")

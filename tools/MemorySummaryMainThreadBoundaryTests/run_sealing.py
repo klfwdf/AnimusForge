@@ -153,13 +153,13 @@ def main():
   seal=exact(seal,'T job = current[index.Cursor++];','T job = current[index.Cursor++]; SealProbe.Hit(typeof(T)==typeof(MemorySummaryJob)?"daily-index":"major-index");')
   seal=exact(seal,'int index = Cursor++;','int index = Cursor++; SealProbe.Hit(typeof(T)==typeof(MemorySummaryJob)?"daily-final-filter":"major-final-filter");')
   shared_budget='MemoryMaintenanceWorkBudget' in seal
-  budget_code=read('Refactor/Runtime/MemoryMaintenanceWorkBudget.cs') if shared_budget else seal
+  budget_code=read('src/modules/AF.Module.Memory/Summary/MemoryMaintenanceWorkBudget.cs') if shared_budget else seal
   budget_code=exact(budget_code,'Expensive--;','Expensive--; SealProbe.Hit("expensive-granted");')
   budget_code=exact(budget_code,'Metadata--;','Metadata--; SealProbe.Hit("metadata-granted");')
   if shared_budget:
    files['BudgetBinding.cs']=read('MyBehavior.MemoryMaintenanceBudget.cs')
    files['BudgetRuntime.cs']=apply_seal_mutation(budget_code,a.mutate if a.mutate in ('unbounded-metadata','unbounded-expensive','ignore-deadline') else None)
-   manifest.extend(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True) for name in ['MyBehavior.MemoryMaintenanceBudget.cs','Refactor/Runtime/MemoryMaintenanceWorkBudget.cs'])
+   manifest.extend(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True) for name in ['MyBehavior.MemoryMaintenanceBudget.cs','src/modules/AF.Module.Memory/Summary/MemoryMaintenanceWorkBudget.cs'])
   else:seal=budget_code
   if 'DailyMemoryDraft draft = list[draftIndex];' in seal:seal=exact(seal,'DailyMemoryDraft draft = list[draftIndex];','DailyMemoryDraft draft = list[draftIndex]; SealProbe.Hit("draft-visited");')
   if '_entry = new DailyMemoryDraftEntryNormalization(source, _seen);' in seal:seal=exact(seal,'_entry = new DailyMemoryDraftEntryNormalization(source, _seen);','if (source != null) SealProbe.Hit("owner-normalized-record"); _entry = new DailyMemoryDraftEntryNormalization(source, _seen);')
@@ -168,7 +168,7 @@ def main():
   seal=exact(seal,'foreach (var owner in state.CompletedOwners)\n        {','foreach (var owner in state.CompletedOwners)\n        { SealProbe.Hit("completed-owner-check");')
   files['MemorySealing.cs']=apply_seal_mutation(seal, None if shared_budget and a.mutate in ('unbounded-metadata','unbounded-expensive','ignore-deadline') else a.mutate)
  if 'CooperativeMemoryQueueSort' in files.get('MemorySealing.cs',''):
-  path='Refactor/Runtime/CooperativeMemoryQueueSort.cs';sort=read(path)
+  path='src/modules/AF.Module.Memory/Summary/CooperativeMemoryQueueSort.cs';sort=read(path)
   manifest.append(dict(file=path,sha256=hashlib.sha256(sort.encode()).hexdigest(),whole_component=True))
   sort=exact(sort,'if (!budget.Take(false)) return false;','if (!budget.Take(false)) return false; SealProbe.Hit(typeof(T).Name=="DailyMemoryDraft" ? "owner-sort-unit" : "queue-sort-unit");',2)
   if a.mutate=='unbudgeted-sort':sort=exact(sort,'if (!budget.Take(false)) return false;', '',2)
@@ -177,11 +177,11 @@ def main():
   if a.mutate=='ignore-sort-culture':sort=exact(sort,'_compareInfo.Equals(CultureInfo.CurrentCulture.CompareInfo)','true')
   files['QueueSort.cs']=sort
  if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
-  for name in ['MyBehavior.MemorySourceFingerprint.cs','Refactor/Runtime/MemorySourceFingerprintWriter.cs']:
+  for name in ['MyBehavior.MemorySourceFingerprint.cs','src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']:
    files[Path(name).name]=read(name)
    manifest.append(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True))
  if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
-     for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+     for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
          files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
  run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
  run_scope.include(files, original=False)

@@ -7,5 +7,5 @@ out=HERE/'.generated'/('memory-missing-retirement' if a.mutate else 'memory-curr
 source=(ROOT/'MyBehavior.MemorySummaryMainThread.cs').read_text(encoding='utf-8-sig')
 if a.mutate:source=source.replace('Volatile.Read(ref _owner._campaignRuntimeRetired) == 0','true')
 (out/'Boundary.cs').write_text(source,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-project=util.project(out,'MemoryRetirement',[out/'Boundary.cs',HERE/'MemoryRetirement.cs.txt',ROOT/'MyBehavior.CampaignLifetime.cs',ROOT/'Refactor/Runtime/MemorySummaryDispatcher.cs',ROOT/'Refactor/Contracts/IMemorySummaryDispatchHost.cs'],executable=True)
+project=util.project(out,'MemoryRetirement',[out/'Boundary.cs',HERE/'MemoryRetirement.cs.txt',ROOT/'MyBehavior.CampaignLifetime.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs'],executable=True)
 status,log=util.run_dotnet(os.environ.get('DOTNET_EXE',r'G:\AFMOD\.dotnet-sdk\dotnet.exe'),['run','--project',str(project),'-c','Release'],out);(out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(status)

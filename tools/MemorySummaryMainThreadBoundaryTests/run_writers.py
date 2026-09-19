@@ -84,7 +84,7 @@ def main():
              "Proof.csproj": '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup></Project>',
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
-        for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+        for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     out = HERE / ".generated/writers" / (args.mutate or "current")
     out.mkdir(parents=True, exist_ok=True)

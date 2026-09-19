@@ -43,7 +43,7 @@ def main():
  deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll';assert deps.is_file()
  files={'Product.cs':prefix+'\n'+'\n'.join(blocks)+'\n}}','Planning.cs':planning,'Boundary.cs':(ROOT/'MyBehavior.MemorySummaryMainThread.cs').read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'PlanningHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0162</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
  if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
-     for relative in ['Refactor/Contracts/IMemorySummaryDispatchHost.cs','Refactor/Runtime/MemorySummaryDispatcher.cs']:
+     for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
          files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
  run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tools/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
  run_scope.include(files, original=False)
