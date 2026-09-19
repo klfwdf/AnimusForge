@@ -29,12 +29,12 @@ namespace AnimusForge {
  public sealed class ConversationMessage { public string Role="assistant",Content="memory"; }
  internal static class Probe {
   internal static int WrongThread, Routing, Contexts, Assemblies, Reads, KnowledgeApplies;internal static bool SyncAllowed, ThrowRouting, ThrowAssembly, NullContext, NullHits, Command, EmptyExtras, EmptyHistory, BlockKnowledge;
-  internal static string Input, Culture, Facts, PreviousFacts;
+  internal static string Input, Culture, Facts, PreviousFacts, KnowledgeVariant;
   internal static CharacterObject Character;
   internal static ManualResetEventSlim Entered=new(),Release=new(true);
   internal static ManualResetEventSlim KnowledgeEntered=new(),KnowledgeRelease=new(true);
   internal static void MainOnly(){if(!TWParallel.IsMainThread()){Interlocked.Increment(ref WrongThread);throw new Exception("fixture game read on worker");}Reads++;}
-  internal static void Reset(){WrongThread=Routing=Contexts=Assemblies=Reads=KnowledgeApplies=0;SyncAllowed=ThrowRouting=ThrowAssembly=NullContext=NullHits=Command=EmptyExtras=EmptyHistory=BlockKnowledge=false;Input=Culture=Facts=PreviousFacts=null;Character=null;Entered.Reset();Release.Set();KnowledgeEntered.Reset();KnowledgeRelease.Set();SaveRuntimeGuard.Generation=1;}
+  internal static void Reset(){WrongThread=Routing=Contexts=Assemblies=Reads=KnowledgeApplies=0;SyncAllowed=ThrowRouting=ThrowAssembly=NullContext=NullHits=Command=EmptyExtras=EmptyHistory=BlockKnowledge=false;Input=Culture=Facts=PreviousFacts=KnowledgeVariant=null;Character=null;Entered.Reset();Release.Set();KnowledgeEntered.Reset();KnowledgeRelease.Set();SaveRuntimeGuard.Generation=1;}
  }
   public partial class MyBehavior {
   public sealed class ShoutPromptContext { public string Extras="extras",EntityPostprocessContext="entities",PreprocessExcludedRuleBlock="excluded";public List<string> PreprocessRuleIds=new(){"ctx"}; }
@@ -66,7 +66,16 @@ namespace AnimusForge {
   internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases phases,PromptKnowledgeWorkResult result){Probe.MainOnly();if(result==null)throw new Exception("missing knowledge result");Probe.KnowledgeApplies++;}
   internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases){ApplySharedKnowledgeRetrieval(phases,RunSharedKnowledgeRetrieval(CreateSharedKnowledgeWorkInput(phases)));}
   internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly){
-   Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;return Probe.NullContext?null:new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
+   Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;
+   if(Probe.NullContext)return null;
+   if(Probe.KnowledgeVariant!=null){
+    bool loreHit=Probe.KnowledgeVariant.Contains("lore_hit");
+    bool entityHit=Probe.KnowledgeVariant.Contains("entity_hit");
+    bool preselected=Probe.KnowledgeVariant.Contains("rule_preselected");
+    var sections=new PromptExtrasSections{TrustPrompt="固定前缀",TriggeredRuleInstructions=preselected?"【附加规则:trade】预选正文":"【附加规则:trade】回退正文",LoreContext=loreHit?"【Lore】命中正文":"【Lore】兼容回退正文",EntityMainPromptBlock=entityHit?"【实体】完整事实块":null};
+    return new(){Extras=PromptExtrasComposer.Compose(sections),EntityPostprocessContext=entityHit?"【实体后处理】完整事实块":"",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
+   }
+   return new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
   }
   internal static ShoutPromptContext BuildShoutPromptContextForExternal(Hero hero,string input,string extraFact,string cultureId,bool hasAnyHero,CharacterObject targetCharacter,int targetAgentIndex,IEnumerable<string> excludedRuleIds,IEnumerable<string> forcedPreprocessRuleIds,MentionedWorldEntities preprocessMentionedEntities){
    var phases=Instance.BeginSharedPromptBuild(hero,input,extraFact,cultureId,hasAnyHero,targetCharacter,null,targetAgentIndex,false,false,null,excludedRuleIds,null,forcedPreprocessRuleIds,preprocessMentionedEntities);
@@ -147,11 +156,12 @@ namespace AnimusForge {
 }
 internal static class Program {
  static int checks,cases;static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);}
+ static IEnumerable<string> Strings(JsonElement value){if(value.ValueKind==JsonValueKind.String){yield return value.GetString();yield break;}if(value.ValueKind==JsonValueKind.Object){foreach(var property in value.EnumerateObject())foreach(string text in Strings(property.Value))yield return text;}else if(value.ValueKind==JsonValueKind.Array){foreach(var item in value.EnumerateArray())foreach(string text in Strings(item))yield return text;}}
  static void PumpUntil(Func<bool> done,bool pump=true){var watch=Stopwatch.StartNew();while(!done()){if(pump)while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>5000)throw new Exception("fixture wait timeout");Thread.Sleep(1);}}
  static void Case(bool inbound,string scenario){
   cases++;AnimusForge.Probe.Reset();while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out _)){}
   var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};AnimusForge.CourierDeliveryBehavior.Instance=owner;owner.ReserveTestRun();
-  AnimusForge.Probe.NullContext=scenario=="null_context";AnimusForge.Probe.NullHits=scenario=="null_hits";AnimusForge.Probe.Command=scenario=="commands";AnimusForge.Probe.EmptyExtras=scenario=="empty_extras";AnimusForge.Probe.EmptyHistory=scenario=="empty_history";AnimusForge.Probe.ThrowRouting=scenario=="routing_error";AnimusForge.Probe.ThrowAssembly=scenario=="assembly_error";
+  AnimusForge.Probe.NullContext=scenario=="null_context";AnimusForge.Probe.NullHits=scenario=="null_hits";AnimusForge.Probe.Command=scenario=="commands";AnimusForge.Probe.EmptyExtras=scenario=="empty_extras";AnimusForge.Probe.EmptyHistory=scenario=="empty_history";AnimusForge.Probe.ThrowRouting=scenario=="routing_error";AnimusForge.Probe.ThrowAssembly=scenario=="assembly_error";AnimusForge.Probe.KnowledgeVariant=scenario.StartsWith("knowledge_text_")?scenario:null;
   if(scenario=="letter_seed")session.InboundIntentText=" ";if(scenario=="fallback_seed"){session.InboundIntentText=null;session.LetterText=null;}
   if(scenario=="null_input")session.LetterText=null;
   bool knowledgeAfter=scenario.EndsWith("_knowledge_after");bool after=scenario.EndsWith("_after");bool before=scenario.EndsWith("_before");
@@ -175,6 +185,12 @@ internal static class Program {
   string result=task.GetAwaiter().GetResult();Check((result==null)==(after||before),scenario+" acceptance "+inbound);Check(AnimusForge.Probe.WrongThread==0,scenario+" no wrong physical thread");
   if(after||before){Check(AnimusForge.Probe.Assemblies==0&&AnimusForge.Probe.Contexts==0&&AnimusForge.Probe.KnowledgeApplies==0,scenario+" no stale context or knowledge publication");return;}
   Check(result==old,scenario+" actual async result equals old request");Check(AnimusForge.Probe.Routing==1&&AnimusForge.Probe.Contexts==1&&AnimusForge.Probe.Assemblies==1,scenario+" exactly once each stage");
+  if(AnimusForge.Probe.KnowledgeVariant!=null){
+   using var json=JsonDocument.Parse(result);string fullText=string.Join("\n",Strings(json.RootElement));
+   Check(fullText.Contains("固定前缀")&&fullText.Contains("【Lore】")&&fullText.Contains("【附加规则:trade】"),scenario+" full request retains composed knowledge text");
+   Check(fullText.Contains("【实体】完整事实块")==scenario.Contains("entity_hit"),scenario+" entity text presence");
+   Check(fullText.Contains("预选正文")==scenario.Contains("rule_preselected"),scenario+" selected/fallback rule text");
+  }
   string seed=string.IsNullOrWhiteSpace(session.InboundIntentText)?(string.IsNullOrWhiteSpace(session.LetterText)?"fallback":session.LetterText.Trim()):session.InboundIntentText.Trim();
   Check(AnimusForge.Probe.Input==(inbound?"[NPC主动写信意图] "+seed:session.LetterText),scenario+" original direction/seed");Check(AnimusForge.Probe.Culture=="culture"&&ReferenceEquals(AnimusForge.Probe.Character,session.Participant.Character)&&AnimusForge.Probe.Facts=="fact","captured routing input");
  }
@@ -184,6 +200,7 @@ internal static class Program {
  static int Main(){TWParallel.MainThread=Environment.CurrentManagedThreadId;try{
   foreach(bool inbound in new[]{false,true}){
    foreach(string s in new[]{"normal","main_caller","null_context","null_hits","commands","empty_extras","empty_history","letter_seed","fallback_seed","null_input","routing_error","assembly_error","timeout","owner_before","generation_before","session_before","terminal_before","participant_before","dead_before","direction_before","owner_after","generation_after","session_after","terminal_after","participant_after","direction_after","dead_after","letter_after"})Case(inbound,s);
+   foreach(string s in new[]{"knowledge_text_lore_hit","knowledge_text_lore_fallback","knowledge_text_entity_hit","knowledge_text_entity_fallback","knowledge_text_rule_preselected","knowledge_text_rule_fallback"})Case(inbound,s);
    if(inbound){Case(inbound,"intent_after");Case(inbound,"fallback_after");}
    foreach(string s in new[]{"owner_knowledge_after","generation_knowledge_after","participant_knowledge_after"})Case(inbound,s);
   }
