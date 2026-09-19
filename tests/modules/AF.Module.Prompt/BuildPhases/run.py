@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -99,6 +99,17 @@ assert 'if (!ReferenceEquals(prepared, phases)) return null;' in courier_schedul
 assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
 entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 knowledge_host = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+if args.mutate == "drop-lore-publication":
+    knowledge_host = knowledge_host.replace("PublishPromptRules();", "", 1)
+if args.mutate == "drop-lore-invalidation":
+    knowledge_host = knowledge_host.replace("_publishedRulesVersion = -1L;\n\t\ttry", "try", 1)
+prepare_lore = extract.declaration(knowledge_host, "internal static long PreparePromptLoreRetrieval(")
+publish_lore = extract.declaration(knowledge_host, "private static void PublishPromptRules(")
+touch_lore = extract.declaration(knowledge_host, "private static void TouchRuleData(")
+assert prepare_lore.index("PublishPromptRules();") < prepare_lore.index("Index.EnsureVectorIndex()"), "Lore snapshot must publish before cold index build"
+assert "_publishedRulesVersion == version" in publish_lore and "new List<LoreRule>(source?.Count ?? 0)" in publish_lore, "Lore rules must be copied once per version, not per prompt"
+assert all(field in publish_lore for field in ("new List<string>(rule.Keywords)", "new List<string>(rule.RagShortTexts)", "new List<string>(rule.SemanticPrototypes)", "new Dictionary<string, int>(variant.When.SkillMin, variant.When.SkillMin.Comparer)", "new LoreTextMapping")), "Lore snapshot must detach mutable rule fields"
+assert "_publishedRulesVersion = -1L;" in touch_lore and "Index.Touch();" in touch_lore, "rule edit must invalidate published snapshot and index"
 lore_worker = extract.declaration(knowledge_host, "internal static LoreCandidateRules CollectPromptLoreCandidates(")
 assert "settings.Enabled" in lore_worker and "PromptLoreSettingsScope.Value = settings" in lore_worker and "KnowledgeRetrievalEnabledSafe()" not in lore_worker, "Lore worker must not read live MCM settings"
 entity_capture = extract.declaration(entity, "internal static EntityCapture CaptureEntityCandidates(")

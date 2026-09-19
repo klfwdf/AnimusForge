@@ -505,8 +505,67 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	}
 
 	// Single retrieval index (sparse + ONNX + ranked cache). Static like the legacy caches: one rule library per process.
-	private static readonly KnowledgeRuleIndex Index = new KnowledgeRuleIndex(new IndexPorts(), () => Instance?._file?.Rules);
+	private static readonly KnowledgeRuleIndex Index = new KnowledgeRuleIndex(new IndexPorts(), GetPublishedRulesForIndex);
 	private static readonly AsyncLocal<PromptLoreSettings> PromptLoreSettingsScope = new AsyncLocal<PromptLoreSettings>();
+	private static IReadOnlyList<LoreRule> _publishedRules;
+	private static long _publishedRulesVersion = -1L;
+
+	private static IReadOnlyList<LoreRule> GetPublishedRulesForIndex()
+	{
+		return _publishedRulesVersion == Index.Version ? _publishedRules : Instance?._file?.Rules;
+	}
+
+	// Called on the game thread at most once per data version, never once per prompt.
+	private static void PublishPromptRules()
+	{
+		long version = Index.Version;
+		if (_publishedRulesVersion == version)
+		{
+			return;
+		}
+		List<LoreRule> source = Instance?._file?.Rules;
+		List<LoreRule> snapshot = new List<LoreRule>(source?.Count ?? 0);
+		if (source != null)
+		{
+			foreach (LoreRule rule in source)
+			{
+				if (rule == null) { snapshot.Add(null); continue; }
+				LoreRule copy = new LoreRule
+				{
+					Id = rule.Id,
+					Keywords = rule.Keywords == null ? null : new List<string>(rule.Keywords),
+					RagShortTexts = rule.RagShortTexts == null ? null : new List<string>(rule.RagShortTexts),
+					SemanticPrototypes = rule.SemanticPrototypes == null ? null : new List<string>(rule.SemanticPrototypes),
+					Variants = rule.Variants == null ? null : rule.Variants.Select(variant => variant == null ? null : new LoreVariant
+					{
+						Priority = variant.Priority,
+						Content = variant.Content,
+						When = variant.When == null ? null : new LoreWhen
+						{
+							HeroIds = variant.When.HeroIds == null ? null : new List<string>(variant.When.HeroIds),
+							Cultures = variant.When.Cultures == null ? null : new List<string>(variant.When.Cultures),
+							KingdomIds = variant.When.KingdomIds == null ? null : new List<string>(variant.When.KingdomIds),
+							SettlementIds = variant.When.SettlementIds == null ? null : new List<string>(variant.When.SettlementIds),
+							Roles = variant.When.Roles == null ? null : new List<string>(variant.When.Roles),
+							IdentityIds = variant.When.IdentityIds == null ? null : new List<string>(variant.When.IdentityIds),
+							IsFemale = variant.When.IsFemale,
+							IsClanLeader = variant.When.IsClanLeader,
+							SkillMin = variant.When.SkillMin == null ? null : new Dictionary<string, int>(variant.When.SkillMin, variant.When.SkillMin.Comparer)
+						}
+					}).ToList(),
+					TextMappings = rule.TextMappings == null ? null : rule.TextMappings.Select(mapping => mapping == null ? null : new LoreTextMapping
+					{
+						SourceText = mapping.SourceText, Kind = mapping.Kind, TargetId = mapping.TargetId,
+						AgeMin = mapping.AgeMin, AgeMax = mapping.AgeMax, EmptyValueText = mapping.EmptyValueText,
+						TrueText = mapping.TrueText, FalseText = mapping.FalseText
+					}).ToList()
+				};
+				snapshot.Add(copy);
+			}
+		}
+		_publishedRules = snapshot;
+		_publishedRulesVersion = version;
+	}
 
 	internal static PromptLoreSettings CapturePromptLoreSettings()
 	{
@@ -547,6 +606,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			PublishPromptRules();
 			if (!Index.SparseReady) Index.EnsureVectorIndex();
 			if (!Index.OnnxReady && OnnxEmbeddingEngine.Instance?.IsAvailable == true) Index.EnsureOnnxIndex();
 			return Index.SparseReady ? Index.Version : 0L;
@@ -651,6 +711,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	private static void TouchRuleData()
 	{
 		Index.Touch();
+		_publishedRules = null;
+		_publishedRulesVersion = -1L;
 		try
 		{
 			lock (_loreContextCacheLock)
@@ -1481,6 +1543,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text2 = "";
 		try
 		{
+			PublishPromptRules();
 			Index.EnsureVectorIndex();
 			flag = Index.SparseReady && Index.Version == version;
 			num = Index.SparseEntryCount;
