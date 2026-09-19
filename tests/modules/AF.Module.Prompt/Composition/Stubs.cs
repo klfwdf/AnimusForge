@@ -15,4 +15,14 @@ namespace AnimusForge
             foreach (string e in other.Entities) if (!Entities.Contains(e)) Entities.Add(e);
         }
     }
+
+    // The phase envelope is source-linked here; the entity service itself is exercised
+    // by the production build and its boundary contract, not by this pure composition test.
+    public static class WorldEntityRetrievalService
+    {
+        internal sealed class EntityCapture { }
+        internal sealed class DetachedEntityCandidates { }
+        internal sealed class DetachedEntityMatches { }
+    }
+    internal sealed class LoreCandidateRules { }
 }
