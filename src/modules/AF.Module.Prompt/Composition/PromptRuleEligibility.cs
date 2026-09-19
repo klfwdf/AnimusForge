@@ -48,7 +48,7 @@ internal sealed class PromptRuleEligibility
 
 	/// <summary>
 	/// Legacy <c>IsRuleCurrentlyEligibleForRag</c> decision over captured facts. Same order and outcomes as the
-	/// live version: target exclusions, scene move, GCCZ, four gated topics, relay/deference always off,
+	/// live version: target exclusions, scene move, GCCZ, gated topics, relay/deference off for RAG,
 	/// vanilla_issue needs a bound target, everything else eligible.
 	/// </summary>
 	internal bool IsRuleEligibleForRag(string ruleId)

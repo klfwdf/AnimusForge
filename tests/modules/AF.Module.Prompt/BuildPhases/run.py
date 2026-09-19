@@ -35,7 +35,7 @@ if args.mutate == "routing-before-request":
 ordered(orchestrator,
         "BeginSharedPromptBuild(",
         "AIConfigHandler.BeginGuardrailRuntimeScope()",
-        "AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target)",
+        "AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)",
         "RunSharedPromptRouting(phases)",
         "CompleteSharedPromptBuild(phases",
         "AIConfigHandler.ClearGuardrailRuntimeTarget()")
@@ -43,6 +43,35 @@ ordered(begin, "CapturePromptBuildRequest(", "PromptExclusionSets.AddUnavailable
 ordered(routing, "SetGuardrailSemanticContext(", "PromptTopicRoutingStage.Run(", "GetAuxiliaryMentionedEntitiesForExternal(")
 ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "ApplyPromptRuntimeAppendices(")
 assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
+
+# J06d: only game-thread capture may call the live eligibility functions. Both
+# worker entries must publish their request's detached facts before retrieval.
+ai = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+capture_eligibility = extract.declaration(ai, "internal static PromptRuleEligibility CapturePromptRuleEligibility(")
+rag_gate = extract.declaration(ai, "private static bool IsRuleCurrentlyEligibleForRag(")
+preprocess_gate = extract.declaration(ai, "public static bool CanInjectRuleTopicIntoPreprocessForExternal(")
+for target_field in ("Kingdom", "Hero", "Character", "Troop", "UnnamedRank", "AgentIndex"):
+    setter = extract.declaration(ai, "public static void SetGuardrailRuntimeTarget" + target_field + "(")
+    assert "ClearCapturedEligibilityOnTargetMutation();" in setter, "setter-only consumers must not inherit stale captured eligibility: " + target_field
+apply_target = extract.declaration(ai, "internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding, PromptRuleEligibility eligibility)")
+assert apply_target.index("binding.Apply(") < apply_target.index("_guardrailRuntimeEligibility.Value = eligibility"), "binding must invalidate old facts before publishing its new facts"
+assert "ApplyGuardrailRuntimeTarget(binding);" in capture_eligibility and "BeginGuardrailRuntimeScope()" in capture_eligibility, "capture must bind and restore the request target before ambient lords-hall read"
+assert "CanInjectVassalageRuleForPromptCapture(hero, targetCharacter)" in capture_eligibility and "CanInjectVassalageRuleForExternal(hero, targetCharacter)" not in capture_eligibility, "eager capture must not emit per-topic vassalage diagnostics"
+vassalage = (ROOT / "VassalageBehavior.cs").read_text(encoding="utf-8-sig")
+silent_vassalage = extract.declaration(vassalage, "internal static bool CanInjectVassalageRuleForPromptCapture(")
+assert "TryBuildVassalageRuntimeState(" in silent_vassalage and "VassalageDiagnosticLog.Event(" not in silent_vassalage, "capture predicate must be read-only"
+assert "captured.IsRuleEligibleForRag(text)" in rag_gate and rag_gate.index("captured.IsRuleEligibleForRag(text)") < rag_gate.index("ShouldExcludeRuntimeRuleForConversationTarget(text)"), "RAG must consult captured facts before live Hero/Mission fallback"
+assert "captured.CanInjectRuleTopicIntoPreprocess(text)" in preprocess_gate and preprocess_gate.index("captured.CanInjectRuleTopicIntoPreprocess(text)") < preprocess_gate.index("VassalageBehavior.CanInjectVassalageRuleForExternal("), "preprocess must consult captured facts before live module fallback"
+assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in capture_request, "shared request must capture eligibility on game thread"
+courier_begin = extract.declaration(source, "internal CourierPreprocessRequest BeginCourierRulePreprocess(")
+assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in courier_begin, "courier request must capture eligibility on game thread"
+native_schedule = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
+courier_schedule = (ROOT / "CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
+assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
+assert "ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility)" in courier_schedule and "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in courier_schedule, "Courier workers must publish detached eligibility"
+for label, body in (("Native", native_schedule), ("Courier", courier_schedule)):
+    for live_call in ("Hero.Find(", "Mission.Current", "CanInjectVassalageRuleForExternal(", "CanInjectDiplomacyRuleForExternal(", "CanDiscussWorldDiplomacyForExternal("):
+        assert live_call not in body, label + " worker schedule must not resolve live eligibility: " + live_call
 
 assert not game_services.search(orchestrator), "orchestrator must not read game services directly: " + game_services.search(orchestrator).group(0)
 assert game_services.search(capture_sections), "section capture is the game-reading phase"

@@ -103,8 +103,12 @@ internal static class Program
         Check(store.Read().Value == "later", "scope restores live configuration");
         PromptRetrievalContextOwner.Hero.Value = "parent";
         PromptRetrievalContextOwner.Semantic.Value = "parent context";
+        object parentEligibility = new object();
+        PromptRetrievalContextOwner.Eligibility.Value = parentEligibility;
         using (PromptRetrievalContextOwner.BeginScope())
         {
+            object childEligibility = new object();
+            PromptRetrievalContextOwner.Eligibility.Value = childEligibility;
             PromptRetrievalContextOwner.Hero.Value = "child";
             PromptRetrievalContextOwner.Semantic.Value = "child context";
             Check(PromptRetrievalContextOwner.Hero.Value == "child", "child target set");
@@ -114,9 +118,10 @@ internal static class Program
                 Check(PromptRetrievalContextOwner.Hero.Value == "grandchild", "nested target set");
             }
             Check(PromptRetrievalContextOwner.Hero.Value == "child", "nested target restored");
-            Task.Run(async () => { await Task.Yield(); Check(PromptRetrievalContextOwner.Semantic.Value == "child context", "context crosses async yield"); }).GetAwaiter().GetResult();
+            Check(ReferenceEquals(PromptRetrievalContextOwner.Eligibility.Value, childEligibility), "nested eligibility restored");
+            Task.Run(async () => { await Task.Yield(); Check(PromptRetrievalContextOwner.Semantic.Value == "child context" && ReferenceEquals(PromptRetrievalContextOwner.Eligibility.Value, childEligibility), "context and eligibility cross async yield"); }).GetAwaiter().GetResult();
         }
-        Check(PromptRetrievalContextOwner.Hero.Value == "parent" && PromptRetrievalContextOwner.Semantic.Value == "parent context", "outer scope restored");
+        Check(PromptRetrievalContextOwner.Hero.Value == "parent" && PromptRetrievalContextOwner.Semantic.Value == "parent context" && ReferenceEquals(PromptRetrievalContextOwner.Eligibility.Value, parentEligibility), "outer scope restored");
         try
         {
             using (PromptRetrievalContextOwner.BeginScope())
@@ -126,7 +131,21 @@ internal static class Program
             }
         }
         catch (InvalidOperationException) { }
-        Check(PromptRetrievalContextOwner.Hero.Value == "parent", "exception restores parent");
+        Check(PromptRetrievalContextOwner.Hero.Value == "parent" && ReferenceEquals(PromptRetrievalContextOwner.Eligibility.Value, parentEligibility), "exception restores parent eligibility");
+        var concurrentEligibility = Task.WhenAll(Enumerable.Range(0, 12).Select(i => Task.Run(async () =>
+        {
+            using (PromptRetrievalContextOwner.BeginScope())
+            {
+                object own = new object();
+                PromptRetrievalContextOwner.Eligibility.Value = own;
+                await Task.Yield();
+                Check(ReferenceEquals(PromptRetrievalContextOwner.Eligibility.Value, own), "concurrent eligibility isolated " + i);
+            }
+        })));
+        concurrentEligibility.GetAwaiter().GetResult();
+        Check(ReferenceEquals(PromptRetrievalContextOwner.Eligibility.Value, parentEligibility), "concurrent children do not alter caller eligibility");
+        PromptRetrievalContextOwner.Eligibility.Value = null;
+        Check(PromptRetrievalContextOwner.Eligibility.Value == null && PromptRetrievalContextOwner.Hero.Value == "parent", "clear removes eligibility without changing legacy setter-only target");
         var latest = PromptRetrievalContextOwner.CreateSlot<object>(context => context.LatestEntities, (context, value) => context.LatestEntities = value);
         latest.Value = "parent mention";
         using (PromptRetrievalContextOwner.BeginScope((parent, child) => parent + "," + child))

@@ -26,6 +26,7 @@ internal static class Program
         PreprocessIdAssembler();
         ExtrasComposer();
         RuntimeTargetBinding();
+        RuleEligibility();
         RuleBlockText();
         RoutingStage();
         ExclusionSets();
@@ -273,6 +274,49 @@ internal static class Program
         hero.Apply(v => order.Add("k=" + v), v => order.Add("h=" + v), v => order.Add("c=" + v), v => order.Add("t=" + v), v => order.Add("r=" + v), v => order.Add("a=" + v));
         Check(order.SequenceEqual(new[] { "k=K", "h=hero_1", "c=char_1", "t=char_1", "r=", "a=7" }), "apply order kingdom,hero,character,troop,rank,agent");
         Check(PromptRuntimeTargetBinding.Cleared.AgentIndex == -1 && PromptRuntimeTargetBinding.Cleared.KingdomId == "" && PromptRuntimeTargetBinding.Cleared.HeroId == "", "cleared binding is legacy reset values");
+    }
+
+    private static void RuleEligibility()
+    {
+        var facts = new PromptRuleEligibility();
+        var ragGates = new (string Id, Action Enable)[]
+        {
+            ("siege_intervention_aftermath", () => facts.GcczSiegeAftermathActive = true),
+            ("kingdom_vassalage", () => facts.VassalageEligible = true),
+            ("diplomacy", () => facts.DiplomacyEligible = true),
+            ("world_diplomacy_discussion", () => facts.WorldDiplomacyEligible = true),
+            ("kingdom_agenda", () => facts.KingdomAgendaEligible = true),
+            ("vanilla_issue", () => facts.HasAnyTargetIdentity = true)
+        };
+        foreach (var gate in ragGates)
+        {
+            Check(!facts.IsRuleEligibleForRag(gate.Id), "RAG gate off: " + gate.Id);
+            gate.Enable();
+            Check(facts.IsRuleEligibleForRag(gate.Id.ToUpperInvariant()), "RAG gate on: " + gate.Id);
+        }
+        var preprocessGates = new (string Id, Action Enable)[]
+        {
+            ("marriage", () => facts.MarriageEligible = true),
+            ("npc_major_actions", () => facts.NpcMajorActionsEligible = true),
+            ("lords_hall_access", () => facts.LordsHallAccessEligible = true)
+        };
+        foreach (var gate in preprocessGates)
+        {
+            Check(!facts.CanInjectRuleTopicIntoPreprocess(gate.Id), "preprocess gate off: " + gate.Id);
+            gate.Enable();
+            Check(facts.CanInjectRuleTopicIntoPreprocess(gate.Id), "preprocess gate on: " + gate.Id);
+        }
+        facts.TargetIsPlayerPartyTradeLimited = true;
+        foreach (string id in new[] { "loan", "kingdom_agenda", "diplomacy", "party_transfer" })
+            Check(!facts.IsRuleEligibleForRag(id), "target exclusion precedes gate: " + id);
+        Check(facts.CanInjectRuleTopicIntoPreprocess("diplomacy"), "target exclusion applies to RAG, not preprocess topic gate");
+        facts.SceneMoveRuleExcludedForMission = true;
+        Check(!facts.IsRuleEligibleForRag("scene_mechanism_actions") && facts.CanInjectRuleTopicIntoPreprocess("scene_mechanism_actions"), "mission exclusion applies only to RAG");
+        Check(!facts.IsRuleEligibleForRag("scene_auto_group_relay") && facts.CanInjectRuleTopicIntoPreprocess("scene_auto_group_relay"), "relay excluded from RAG only");
+        Check(!facts.IsRuleEligibleForRag("noble_deference") && !facts.CanInjectRuleTopicIntoPreprocess("noble_deference"), "deference excluded from both");
+        Check(facts.CanInjectRuleTopicIntoPreprocess("kingdom_service") && facts.IsRuleEligibleForRag("kingdom_service"), "kingdom service unconditional");
+        Check(!facts.IsRuleEligibleForRag(" ") && !facts.CanInjectRuleTopicIntoPreprocess(null), "blank rule id rejected");
+        Check(facts.IsRuleEligibleForRag("custom_topic") && facts.CanInjectRuleTopicIntoPreprocess("custom_topic"), "unknown rule retains legacy permissive default");
     }
 
     private static void ExtrasComposer()
