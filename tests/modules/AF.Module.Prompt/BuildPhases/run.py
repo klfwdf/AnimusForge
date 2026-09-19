@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -80,6 +80,10 @@ if args.mutate == "drop-worker-eligibility":
     native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
 if args.mutate == "drop-knowledge-worker":
     native_schedule = native_schedule.replace("owner.RunSharedKnowledgeRetrieval(phases);", "", 1)
+if args.mutate == "drop-native-knowledge-guard":
+    native_schedule = native_schedule.replace('SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")', "false", 1)
+if args.mutate == "drop-courier-knowledge-guard":
+    courier_schedule = courier_schedule.replace("if (!ReferenceEquals(prepared, phases)) return null;", "", 1)
 if args.mutate == "drop-entity-worker":
     knowledge_worker = knowledge_worker.replace("WorldEntityRetrievalService.MatchDetachedCandidates(", "WorldEntityRetrievalService.X(", 1)
 assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
@@ -89,10 +93,14 @@ assert native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_b
 assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"') < courier_schedule.index('Task.Run(() =>') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"'), "Courier owner/worker thread order"
 assert native_schedule.index('"prompt_build_knowledge_capture"') < native_schedule.index('owner.RunSharedKnowledgeRetrieval(phases);') < native_schedule.index('"prompt_build_complete"'), "Native knowledge capture/worker/complete order"
 assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedule.index('owner.RunSharedKnowledgeRetrieval(phases)') < courier_schedule.index('source + "_prompt_complete"'), "Courier knowledge capture/worker/complete order"
+assert 'SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")' in native_schedule and native_schedule.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "Native must reject stale or replaced knowledge results"
+assert 'if (!ReferenceEquals(prepared, phases)) return null;' in courier_schedule and courier_schedule.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "Courier must reject stale owner/source after knowledge capture and before final use"
 assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
 entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 entity_capture = extract.declaration(entity, "internal static EntityCapture CaptureEntityCandidates(")
 entity_worker = extract.declaration(entity, "internal static DetachedEntityMatches MatchDetachedCandidates(")
+if args.mutate == "entity-worker-live-read":
+    entity_worker += "\nHero.MainHero"
 entity_final = extract.declaration(entity, "internal static WorldEntityPromptContext BuildPromptContext(")
 assert "CaptureEntityCandidates(" in knowledge_capture and "MatchDetachedCandidates(" in knowledge_worker, "entity capture/matching must cross game/worker boundary"
 assert "BuildVisiblePartyCandidates(contextHero)" in entity_capture and "GetHeroCandidates()" in entity_capture and "GetKingdomCandidates()" in entity_capture, "entity game capture must reuse existing enumerations"
@@ -103,6 +111,10 @@ assert "capture?.VisibleParties ?? BuildVisiblePartyCandidates(contextHero)" in 
 for forbidden_live in ("Hero.", "Kingdom.", "Settlement.", "Clan.", "MobileParty.", "Campaign.Current", "GetHeroCandidates(", "GetKingdomCandidates(", "BuildVisiblePartyCandidates("):
     assert forbidden_live not in entity_worker, "entity worker must not read live game object: " + forbidden_live
 assert "FindRulerTitleMatches(" in entity_worker and "FindRawRulerTitleMatches(" in entity_worker and "FindDetachedMatches(" in entity_worker, "ruler/direct matching must run on worker"
+for marker in ("private static List<EntityMatch<DetachedEntityCandidate>> FindRulerTitleMatches(", "private static RawRulerTitleMatchResult FindRawRulerTitleMatches(", "private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches(", "private static List<EntityMatch<T>> FindMatches<T>("):
+    body = extract.declaration(entity, marker)
+    assert not re.search(r"\b(?:Hero|Kingdom|Settlement|Clan|MobileParty|Campaign|Mission)\s*\.", body), "entity scorer reads game state: " + marker
+assert "FindMatches(category, mentions, priority, candidates, x => x.Aliases, x => x.Id, x => x.Name" in extract.declaration(entity, "private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches("), "worker must call the shared scorer with DTO fields only"
 extra_instructions = extract.declaration(source, "private string BuildExtraRuleInstructions(")
 assert "AIConfigHandler.FormatMatchedExtraRuleInstructions(" in extra_instructions and extra_instructions.index("fallbackHits != null") < extra_instructions.index("AIConfigHandler.BuildMatchedExtraRuleInstructions("), "captured fallback hits must format without a second retrieval"
 assert "GuardrailStickyTargetKey = AIConfigHandler.CaptureGuardrailStickyTargetKey(runtimeTarget)" in capture_request, "sticky identity must be captured on game thread"

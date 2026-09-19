@@ -57,22 +57,24 @@ native = method("ShoutBehavior.cs", "private async Task<string> SubmitNativeConv
 ordered(native, "BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex", "BeginGuardrailRuntimeScope()", "TryRunSceneUnifiedActionPostprocess(")
 assert "SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex)" in native
 scheduled = method("ShoutBehavior.NativePromptBuild.cs", "private async Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsync(")
-# J04f: step 1 and 3 run through the main-thread scheduler with admission re-validation; step 2 through the background slot.
+# J06: begin/capture/complete run on the main thread; routing/retrieval use the guarded background slot.
 ordered(scheduled, "RunNativeConversationMainThreadFuncAsync(\"prompt_build_begin\"", "IsNativeConversationAdmissionCurrent(admission, out _)", "owner.BeginSharedPromptBuild(",
         "RunNativeConversationBackgroundPreprocessAsync(", "owner.RunSharedPromptRouting(phases)", "AwaitNativeConversationBackgroundPreprocessAsync(",
+		"prompt_build_knowledge_capture", "owner.CaptureSharedKnowledgeSnapshot(phases,", "owner.RunSharedKnowledgeRetrieval(phases)",
         "RunNativeConversationMainThreadFuncAsync(\"prompt_build_complete\"", "owner.CompleteSharedPromptBuild(phases")
-assert scheduled.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 2, "admission must be re-validated on both game-thread steps"
-assert scheduled.count("SaveRuntimeGuard.IsStale(runtimeGeneration") == 2, "generation checked after each hop"
+assert scheduled.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "admission must be re-validated on all three game-thread steps"
+assert scheduled.count("SaveRuntimeGuard.IsStale(runtimeGeneration") == 4, "generation checked after each hop"
 
 courier_sched = method("CourierDeliveryBehavior.PromptSchedule.cs", "private async Task<CourierPreparedPrompt> BuildCourierPreparedPromptScheduledAsync(")
-# J04f: Courier owner phases (game thread) bracket two thread-pool retrieval steps; each owner phase re-checks run + source.
+# J06: four Courier owner phases bracket preprocess, routing and knowledge retrieval workers.
 ordered(courier_sched,
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"', "owner.BeginCourierRulePreprocess(",
         "await Task.Run(", "owner.RunCourierRulePreprocessRetrieval(",
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"', "owner.BeginSharedPromptBuild(",
         "owner.RunSharedPromptRouting(phases)",
+		'source + "_knowledge_capture"', "owner.CaptureSharedKnowledgeSnapshot(phases,", "owner.RunSharedKnowledgeRetrieval(phases)",
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"', "owner.CompleteSharedPromptBuild(phases")
-assert courier_sched.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 3, "all three Courier owner phases re-validate run and source"
+assert courier_sched.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "all four Courier owner phases re-validate run and source"
 courier_prep = method("CourierDeliveryBehavior.PromptPreparation.cs", "private async Task<T> PrepareCourierPromptRequestAsync<T>(")
 assert "BuildCourierPreparedPromptScheduledAsync(input, promptRun, generation, source)" in courier_prep and "Task.Run(() => BuildCourierPreparedPrompt(input))" not in courier_prep, "Courier no longer runs the whole builder in one Task.Run"
 
