@@ -5,6 +5,7 @@ import base64
 import argparse
 import importlib.util
 import os
+import json
 import subprocess
 from pathlib import Path
 
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-hero-main", "drop-hero-post", "drop-capture-fallback"])
+parser.add_argument("--emit-json", action="store_true")
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
@@ -158,3 +160,5 @@ for name in ("old", "current"):
     outputs[name] = {line.split("=", 1)[0]: base64.b64decode(line.split("=", 1)[1], validate=True) for line in result.stdout.splitlines() if line.startswith("RESULT_")}
 assert outputs["old"] == outputs["current"] and set(outputs["old"]) == {"RESULT_direct_main", "RESULT_direct_post", "RESULT_direct_meta", "RESULT_title_main", "RESULT_title_post", "RESULT_title_meta"}, "entity Hero facts differ"
 print("PASS production Hero direct/title capture, matching, fallback and full entity context old/current byte parity")
+if args.emit_json:
+    print("EXPORT_JSON=" + json.dumps({side: {key: base64.b64encode(value).decode("ascii") for key, value in rows.items()} for side, rows in outputs.items()}, sort_keys=True))

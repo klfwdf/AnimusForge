@@ -5,6 +5,7 @@ import argparse
 import base64
 import importlib.util
 import os
+import json
 import subprocess
 from pathlib import Path
 
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-rule-output", "skip-lexical"])
+parser.add_argument("--emit-json", action="store_true")
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
@@ -82,3 +84,5 @@ assert set(outputs["current"]) == {"RESULT_semantic", "RESULT_lexical"}, "one ru
 for value in outputs["current"].values():
     assert value and b"RULE_TEXT" in value, "extra-rule branch did not render content"
 print("PASS production extra-rule semantic/preselected and lexical/fallback text byte parity")
+if args.emit_json:
+    print("EXPORT_JSON=" + json.dumps({side: {key: base64.b64encode(value).decode("ascii") for key, value in rows.items()} for side, rows in outputs.items()}, sort_keys=True))

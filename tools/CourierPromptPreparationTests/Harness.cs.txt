@@ -78,6 +78,12 @@ namespace AnimusForge {
   internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly){
    Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;
    if(Probe.NullContext)return null;
+   if(Probe.KnowledgeVariant=="knowledge_text_production"){
+    string encoded=Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")??throw new Exception("missing production context");
+    var context=JsonSerializer.Deserialize<ShoutPromptContext>(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded)),new JsonSerializerOptions{IncludeFields=true});
+    if(context==null||string.IsNullOrWhiteSpace(context.Extras)||string.IsNullOrWhiteSpace(context.EntityPostprocessContext))throw new Exception("empty production context");
+    return context;
+   }
    if(Probe.KnowledgeVariant!=null){
     bool loreHit=Probe.KnowledgeVariant.Contains("lore_hit");
     bool entityHit=Probe.KnowledgeVariant.Contains("entity_hit");
@@ -175,7 +181,7 @@ internal static class Program {
  static void PumpUntil(Func<bool> done,bool pump=true){var watch=Stopwatch.StartNew();while(!done()){if(pump)while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>5000)throw new Exception("fixture wait timeout");Thread.Sleep(1);}}
  static void Case(bool inbound,string scenario){
   cases++;AnimusForge.Probe.Reset();while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out _)){}
-  var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};AnimusForge.CourierDeliveryBehavior.Instance=owner;owner.ReserveTestRun();
+  var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};if(scenario=="knowledge_text_production"){session.Participant.Id="npc_1";session.Participant.RawName="Alda";session.LetterText="Tell me about Praven, Alda the King; can we barter this item?";session.InboundIntentText=session.LetterText;}var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};AnimusForge.CourierDeliveryBehavior.Instance=owner;owner.ReserveTestRun();
   AnimusForge.Probe.NullContext=scenario=="null_context";AnimusForge.Probe.NullHits=scenario=="null_hits";AnimusForge.Probe.Command=scenario=="commands";AnimusForge.Probe.EmptyExtras=scenario=="empty_extras";AnimusForge.Probe.EmptyHistory=scenario=="empty_history";AnimusForge.Probe.ThrowRouting=scenario=="routing_error";AnimusForge.Probe.ThrowAssembly=scenario=="assembly_error";AnimusForge.Probe.KnowledgeVariant=scenario.StartsWith("knowledge_text_")?scenario:null;
   if(scenario=="letter_seed")session.InboundIntentText=" ";if(scenario=="fallback_seed"){session.InboundIntentText=null;session.LetterText=null;}
   if(scenario=="null_input")session.LetterText=null;
@@ -210,9 +216,17 @@ internal static class Program {
   }
   if(AnimusForge.Probe.KnowledgeVariant!=null){
    using var json=JsonDocument.Parse(result);string fullText=string.Join("\n",Strings(json.RootElement));
+   if(scenario=="knowledge_text_production"){
+    string raw=System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")));
+    using var ctx=JsonDocument.Parse(raw);
+    string extras=ctx.RootElement.GetProperty("Extras").GetString();
+    Check(fullText.Contains(extras.Trim()),scenario+" production Extras in full request");
+    Console.WriteLine("REQUEST_"+(inbound?"inbound":"outbound")+"="+Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(result)));
+   }else{
    Check(fullText.Contains("固定前缀")&&fullText.Contains("【Lore】")&&fullText.Contains("【附加规则:trade】"),scenario+" full request retains composed knowledge text");
    Check(fullText.Contains("【实体】完整事实块")==scenario.Contains("entity_hit"),scenario+" entity text presence");
    Check(fullText.Contains("预选正文")==scenario.Contains("rule_preselected"),scenario+" selected/fallback rule text");
+   }
   }
   string seed=string.IsNullOrWhiteSpace(session.InboundIntentText)?(string.IsNullOrWhiteSpace(session.LetterText)?"fallback":session.LetterText.Trim()):session.InboundIntentText.Trim();
   Check(AnimusForge.Probe.Input==(inbound?"[NPC主动写信意图] "+seed:session.LetterText),scenario+" original direction/seed");Check(AnimusForge.Probe.Culture=="culture"&&ReferenceEquals(AnimusForge.Probe.Character,session.Participant.Character)&&AnimusForge.Probe.Facts=="fact","captured routing input");
@@ -221,6 +235,7 @@ internal static class Program {
   string reason=scenario.Split('_')[0];switch(reason){case "owner":AnimusForge.CourierDeliveryBehavior.Instance=new();break;case "generation":AnimusForge.SaveRuntimeGuard.Generation++;break;case "session":owner.Session=new(){Inbound=s.Inbound};break;case "participant":s.Participant=new();break;case "terminal":s.Terminal=true;break;case "direction":s.Inbound=!s.Inbound;break;case "dead":s.Participant.Dead=true;break;case "letter":s.LetterText="edited";break;case "intent":s.InboundIntentText="edited";break;case "fallback":s.InboundFallbackLetter="edited";break;}
  }
  static int Main(){TWParallel.MainThread=Environment.CurrentManagedThreadId;try{
+  if(Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")!=null){Case(false,"knowledge_text_production");Case(true,"knowledge_text_production");Console.WriteLine($"PASS production-context Courier request checks={checks}");return 0;}
   foreach(bool inbound in new[]{false,true}){
    foreach(string s in new[]{"normal","main_caller","null_context","null_hits","commands","empty_extras","empty_history","letter_seed","fallback_seed","null_input","routing_error","assembly_error","timeout","owner_before","generation_before","session_before","terminal_before","participant_before","dead_before","direction_before","owner_after","generation_after","session_after","terminal_after","participant_after","direction_after","dead_after","letter_after"})Case(inbound,s);
    foreach(string s in new[]{"knowledge_text_lore_hit","knowledge_text_lore_fallback","knowledge_text_entity_hit","knowledge_text_entity_fallback","knowledge_text_rule_preselected","knowledge_text_rule_fallback"})Case(inbound,s);

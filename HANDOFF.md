@@ -1,7 +1,7 @@
 # 当前接续：J06 已暂停，最终 Prompt 对照仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
-- 本轮暂停点：已在未提交的测试工作树中新增 `SharedCompletionDifferential`、`NativeFinalRequestDifferential`，并修改 Lore／实体／额外规则差分 runner 与 Courier harness；一次集成回放曾报告 12 组共享上下文及 Native／Courier 请求一致，三类仅新侧文本丢失变异均被拒收。但随后为统一请求身份和输入所做的修改尚未复验，实体回放的非空输入目前在生产 `BuildPromptContext` 对照处失败（主文/后处理变空）；原因待核实，不能沿用此前 PASS 宣称最终验收。上述改动和 `.dotnet-cli-home/` 均保留在工作树，不纳入本次文档提交或推送。
-- 本次交接前最新已提交切片为 `9e228e3f`；J06 维持 **`VERIFY / NOT_ACCEPTED`**，不标 `J06_OFFLINE_VERIFIED`。恢复时先修正实体假端口与共同输入的差分，重跑最终请求全文、负向变异及相关回归，再更新主台账/代码地图。既有原脚本 Debug／Release 六项构建对应未变产品源码；实机、旧档、真实 provider 仍分别 `NOT-RUN`。本次交付只更新本 HANDOFF；不 Stage、部署或清理生成目录。
+- 本轮暂停点：新增 `SharedCompletionDifferential`、`NativeFinalRequestDifferential`，并修改 Lore／实体／额外规则差分 runner 与 Courier harness；一次集成回放曾报告 12 组共享上下文及 Native／Courier 请求一致，三类仅新侧文本丢失变异均被拒收。但随后为统一请求身份和输入所做的修改尚未复验，实体回放的非空输入目前在生产 `BuildPromptContext` 对照处失败（主文/后处理变空）；原因待核实，不能沿用此前 PASS 宣称最终验收。本轮将这些测试源码作为 **WIP 接续点**提交推送；`.dotnet-cli-home/` 仍保留本地，不上传。
+- 交接前最近已验证切片为 `9e228e3f`；J06 维持 **`VERIFY / NOT_ACCEPTED`**，不标 `J06_OFFLINE_VERIFIED`。接手者先修正实体假端口与共同输入的差分，重跑最终请求全文、负向变异及相关回归；`Harness.cs.txt` 已变更，Courier `source_review.py` 固定摘要也须重新核对，再更新主台账/代码地图。既有原脚本 Debug／Release 六项构建对应未变产品源码；实机、旧档、真实 provider 仍分别 `NOT-RUN`。本次 WIP 交付不 Stage、部署或清理生成目录。
 
 - 本地测试提交 `49441aa1`、`3aaece30`：实体旧/新生产 `BuildPromptContext` Hero 直接/称谓及当前空 capture 回退逐字节一致（三项变异拒收）；Courier 旧/新生产最终消息构建器也已执行，76 场景/550 项、三项全文文本丢失变异拒收。共享 `CompleteSharedPromptBuild` 未用同一输入接三类真实检索结果，Native 最终请求也未完成，故 **J06 仍 `VERIFY / NOT_ACCEPTED`**；产品源码未变，先前六项原脚本构建证据适用。后续 runner 兼容修复使 `run_liveness.py --old` 编译执行并在旧行为 `wait timeout` 失败，当前 liveness 59 项通过。
 

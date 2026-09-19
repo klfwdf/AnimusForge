@@ -124,7 +124,7 @@ namespace AnimusForge
         {
             Hero.MainHero = null;
             Kingdom.All.Clear();
-            var hero = new Hero { Name = new TextObject { Value = "Alda" }, StringId = "hero_alda", Age = 31, IsLord = true };
+            var hero = new Hero { Name = new TextObject { Value = "Alda" }, StringId = "npc_1", Age = 31, IsLord = true };
             Hero.AllAliveHeroes = new List<Hero> { hero };
             Hero.DeadOrDisabledHeroes = new List<Hero>();
             string[] mentions = title ? new[] { "King" } : new[] { "Alda" };
@@ -135,7 +135,7 @@ namespace AnimusForge
             List<EntityMatch<Hero>> heroes;
 #if CURRENT
             var mentioned = new MentionedWorldEntities { Entities = mentions.ToList() };
-            var capture = CaptureEntityCandidates(mentioned, "", null);
+            var capture = CaptureEntityCandidates(mentioned, "Tell me about Praven, Alda the King; can we barter this item?", null);
             if (capture.Candidates.Heroes.Count != 1 || capture.Candidates.Rulers.Count != (title ? 1 : 0)) throw new Exception("production candidate capture mismatch");
             var selected = MatchDetachedCandidates(capture.Candidates, mentioned, "", capture.MaxInjectedEntities);
             heroes = RestoreMatches(selected.Heroes, capture.Heroes);
@@ -159,13 +159,13 @@ namespace AnimusForge
             string expectedPost = BuildPostprocessPromptBlock(heroes, settlements, clans, kingdoms, visible);
             var mentionInput = new MentionedWorldEntities { Entities = mentions.ToList() };
 #if CURRENT
-            var context = BuildPromptContext(mentionInput, "Player", null, false, null, "", false, capture, selected);
-            var fallback = BuildPromptContext(mentionInput, "Player", null, false, null, "", false, null, null);
+            var context = BuildPromptContext(mentionInput, "Player", null, false, null, "Tell me about Praven, Alda the King; can we barter this item?", false, capture, selected);
+            var fallback = BuildPromptContext(mentionInput, "Player", null, false, null, "Tell me about Praven, Alda the King; can we barter this item?", false, null, null);
             if (fallback.MainPromptBlock != context.MainPromptBlock || fallback.PostprocessPromptBlock != context.PostprocessPromptBlock
                 || fallback.MatchCount != context.MatchCount || !fallback.ExplicitMentionedKingdomIds.SequenceEqual(context.ExplicitMentionedKingdomIds))
                 throw new Exception("production detached/fallback entity text differs, title=" + title);
 #else
-            var context = BuildPromptContext(mentionInput, "Player", null, false, null, "", false);
+            var context = BuildPromptContext(mentionInput, "Player", null, false, null, "Tell me about Praven, Alda the King; can we barter this item?", false);
 #endif
             if (context.MatchCount != 1 || context.MainPromptBlock != expectedMain || context.PostprocessPromptBlock != expectedPost)
                 throw new Exception("production BuildPromptContext differs, title=" + title + " count=" + context.MatchCount + " main=" + context.MainPromptBlock.Length + "/" + expectedMain.Length + " post=" + context.PostprocessPromptBlock.Length + "/" + expectedPost.Length);
@@ -181,7 +181,7 @@ internal static class Program
         foreach (bool title in new[] { false, true })
         {
             var (main, post, meta) = AnimusForge.WorldEntityRetrievalService.Render(title);
-            if (!main.Contains("Alda") || !main.Contains("【人物】") || !post.Contains("hero_alda")) throw new Exception("entity facts missing, title=" + title);
+            if (!main.Contains("Alda") || !main.Contains("【人物】") || !post.Contains("npc_1")) throw new Exception("entity facts missing, title=" + title);
             string prefix = title ? "RESULT_title_" : "RESULT_direct_";
             Console.WriteLine(prefix + "main=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(main)));
             Console.WriteLine(prefix + "post=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(post)));

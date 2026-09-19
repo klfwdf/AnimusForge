@@ -2,15 +2,17 @@
 from __future__ import annotations
 
 import importlib.util
-import argparse
 import base64
 import os
+import json
+import argparse
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
+parser.add_argument("--emit-json", action="store_true")
 parser.add_argument("--mutate", choices=["ignore-stale-version", "drop-lore-output"])
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
@@ -79,3 +81,5 @@ for name in ("old", "current"):
         raise RuntimeError(name + " did not produce a Lore result")
 assert outputs["old"]["RESULT"] == outputs["current"]["RESULT"] == outputs["current"]["FALLBACK"], "old/current/stale Lore bytes differ"
 print("PASS production Lore candidate retrieval and text formatting: old/current/stale byte parity; nonempty rule and branch counts asserted")
+if args.emit_json:
+    print("EXPORT_JSON=" + json.dumps({side: {key: base64.b64encode(value).decode("ascii") for key, value in rows.items()} for side, rows in outputs.items()}, sort_keys=True))
