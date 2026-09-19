@@ -2,9 +2,11 @@
 
 ## J06 检索线程收口进度：VERIFY / NOT_ACCEPTED（2026-09-19）
 
-**本次 Courier 最终消息生产方法补强 `3aaece30`**：从 `77a3d234` 与当前 `CourierDeliveryBehavior.cs` 分别提取两种信件的最终消息构建器及历史消息转换 helpers，断言双方源码一致并编译执行；旧同步/新调度的完整序列化请求 76 场景、550 检查通过，system、上下文/历史、当前信件消息顺序有实际断言；仅新侧删除 Lore/实体/规则 fixture 文本三项变异分别失败。`source_review.py` 的固定依赖摘要按已核对的 J06 schedule 变更与 runner 补强更新，严格全文逆变换及三项反例通过；当前 Courier liveness 59 检查通过。`run_liveness.py --old` 因旧 partial 与当前 J06 schedule 的 `CourierPromptRun` 类型不兼容而编译失败，未计入通过。知识上下文仍由 fixture 制造，Native 最终请求全文与共享 `CompleteSharedPromptBuild` 同输入真实检索结果仍缺，故继续 `VERIFY / NOT_ACCEPTED`。
+**本次 Courier 最终消息生产方法补强 `3aaece30`**：从 `77a3d234` 与当前 `CourierDeliveryBehavior.cs` 分别提取两种信件的最终消息构建器及历史消息转换 helpers，断言双方源码一致并编译执行；旧同步/新调度的完整序列化请求 76 场景、550 检查通过，system、上下文/历史、当前信件消息顺序有实际断言；仅新侧删除 Lore/实体/规则 fixture 文本三项变异分别失败。`source_review.py` 的固定依赖摘要按已核对的 J06 schedule 变更与 runner 补强更新，严格全文逆变换及三项反例通过；当前 Courier liveness 59 检查通过。后续 runner 兼容修复使 `run_liveness.py --old` 只编译旧 partial 所需文件，旧行为运行时 `wait timeout` 失败（预期旧红，非编译故障）。知识上下文仍由 fixture 制造，Native 最终请求全文与共享 `CompleteSharedPromptBuild` 同输入真实检索结果仍缺，故继续 `VERIFY / NOT_ACCEPTED`。
 
 **实体生产上下文差分新增 `49441aa1`**：`tests/modules/AF.Module.Knowledge/EntityTextDifferential` 从 `77a3d234` 与当前源码分别编译 Hero 直接/称谓匹配、`BuildPromptContext` 主文和后处理事实块；当前侧还实际执行 `CaptureEntityCandidates` → `MatchDetachedCandidates` → `BuildPromptContext`，并对空 capture 的生产同步回退逐字段比较。相同假 Hero/王国输入下两例主文、后处理正文、匹配计数、显式王国 ID 逐字节一致；仅新侧丢主文、丢后处理标题、丢 capture 回退三项变异均拒收。样例仅覆盖中性 Hero（称谓 `King`）且定居点/家族/王国正文、可见队伍和常驻实体为不执行的假端口；不能代替所有实体类型、真实 TaleWorlds 字段成本或 Native/Courier 最终请求全文。J06 仍 `VERIFY / NOT_ACCEPTED`。
+
+**本次聚焦复跑**：Prompt Composition、BuildPhases、KnowledgePhases、NativeKnowledgeSchedule、EntityAllocationParity、LoreTextDifferential、ExtraRuleTextDifferential、ProductionEntry、ProductionConsumers、Native Admission、Native Completion、Scene Postprocess 71 均退出码 0；Scene runner 首次未指定本地 `--dotnet` 时 `WinError 2`，按原 runner 选项指定 `local/dotnet/8.0.425/dotnet.exe` 后通过。代码地图 recorded/working-tree 各 291 锚点通过，绑定未变生产源码 `70db6ec2`。未新增产品源码，因此先前原脚本 Debug/Release 六项构建证据继续适用，未执行 Stage/Deploy 或清理 `.dotnet-cli-home/`。
 
 **额外规则生产方法差分新增 `5e21115c`**：`tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential` 各自从 `77a3d234` 与当前源码提取 `AIConfigHandler` 的语义/词法选择、sticky 合并与规则正文组装，并编译各自的生产 `PromptRuleRanking`、`PromptStickyRuleStore` 和规则模型。在同一假配置/语义结果下，预选语义命中、无预选词法回退两分支的规则 ID 与非空正文逐字节相同；仅新侧删正文、跳过词法回退两项变异均失败。游戏资格/运行时规则补文端口为确定性中性值，尚未与 Lore/实体结果接入最终 Native/Courier 请求，故不改变 J06 状态。
 

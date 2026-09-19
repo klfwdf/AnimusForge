@@ -1,6 +1,6 @@
 # 当前接续：J06 原构建通过，最终 Prompt 对照仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
-- 本地测试提交 `49441aa1`、`3aaece30`：实体旧/新生产 `BuildPromptContext` Hero 直接/称谓及当前空 capture 回退逐字节一致（三项变异拒收）；Courier 旧/新生产最终消息构建器也已执行，76 场景/550 项、三项全文文本丢失变异拒收。共享 `CompleteSharedPromptBuild` 未用同一输入接三类真实检索结果，Native 最终请求也未完成，故 **J06 仍 `VERIFY / NOT_ACCEPTED`**；产品源码未变，先前六项原脚本构建证据适用。`run_liveness.py --old` 当前因旧 partial 与新 J06 schedule 类型不兼容而编译失败，不能算旧红回归结果；当前 liveness 59 项通过。
+- 本地测试提交 `49441aa1`、`3aaece30`：实体旧/新生产 `BuildPromptContext` Hero 直接/称谓及当前空 capture 回退逐字节一致（三项变异拒收）；Courier 旧/新生产最终消息构建器也已执行，76 场景/550 项、三项全文文本丢失变异拒收。共享 `CompleteSharedPromptBuild` 未用同一输入接三类真实检索结果，Native 最终请求也未完成，故 **J06 仍 `VERIFY / NOT_ACCEPTED`**；产品源码未变，先前六项原脚本构建证据适用。后续 runner 兼容修复使 `run_liveness.py --old` 编译执行并在旧行为 `wait timeout` 失败，当前 liveness 59 项通过。
 
 - 新增 `tests/modules/AF.Module.Knowledge/EntityTextDifferential`：旧同步和当前 capture→detached match→生产 `BuildPromptContext` 的 Hero 直接/称谓命中，主文/后处理/计数/显式王国 ID 逐字节一致；当前空 capture 同步回退一致，三项仅新侧文本/回退变异失败。其他实体类别和 TaleWorlds 实机属性未测；Native/Courier 最终模型请求尚未接真实三类文本，**J06 仍 `VERIFY / NOT_ACCEPTED`**。产品源码未变，原六项构建证据仍适用。
 
