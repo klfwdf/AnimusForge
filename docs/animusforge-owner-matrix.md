@@ -10,7 +10,18 @@
 - 生产程序集暂时仍为单一 `AnimusForge.dll`；物理 DLL 拆分延后。
 - 任何涉及 `SyncData`、Harmony、Mission、UI、Tick 或 LLM 动作的切片，都要在这里补充影响和验收记录。
 
-## J03 当前责任边界（PARTIAL / NOT_ACCEPTED）
+## J06 当前责任边界（VERIFY / NOT_ACCEPTED）
+
+| 责任 | 当前 owner 与真实消费者 | 保留责任 / 验收缺口 |
+| --- | --- | --- |
+| 知识规则索引、Lore 候选 | `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs`、`Lore/LoreCandidateRetriever.cs`；`KnowledgeLibraryBehavior.Index`/`Retriever` 接入 | `KnowledgeLibraryBehavior` 仍负责 Campaign/ONNX 生命周期、知识存档与 Hero 事实；索引 512 项缓存、Lore 32 mention term/12 entity query 边界已离线测，实机耗时未测 |
+| 世界实体纯算法 | `Entities/{EntityNameMatcher,EntityMentionList,EntityInjectionAllocator}.cs`；`WorldEntityRetrievalService` 消费匹配、mention 排序与分配 | 游戏候选枚举、位置/距离、称谓及最终 Prompt 块留 host；不把整个旧类标为已迁 |
+| Prompt 检索资格 | `AIConfigHandler.CapturePromptRuleEligibility` 在游戏线程读 11 事实，`PromptRuleEligibility` 提供 worker 纯判断；Native/Courier 请求 DTO/ambient 消费 | 旧 setter-only 同步消费仍用 live fallback；Scene 调度属于 J10；捕获异常/提前计算的生产对照不足，J06d 未验收 |
+| Knowledge 导入 | `MyBehavior` 仍有关键词/When 纯校验、文件读取、Campaign/KnowledgeLibrary 导出/错误文案混合静态簇 | 先按纯规则、文件 I/O、游戏 owner 三类分离并做坏文件/覆盖对照；不能只移文件或留转发壳后标 J06 完成 |
+
+精确路径/一基坐标在[代码范围图与地图](architecture/af-framework-code-scope.md)，证据和状态见[主台账 J06d 当前节](animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)。
+
+## J03 历史责任边界（PARTIAL / NOT_ACCEPTED）
 
 | 当前生产路径 | 唯一责任 / 调用频率 | 旧入口与残留 | 离线证据及风险 |
 | --- | --- | --- | --- |
