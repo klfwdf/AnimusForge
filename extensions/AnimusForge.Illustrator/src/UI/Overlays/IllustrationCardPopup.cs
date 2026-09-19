@@ -33,11 +33,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
 
-        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate)
+        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate, Action onSceneProbe = null)
         {
             _screen = screen;
             _category = category;
-            _dataSource = new IllustrationCardVM(Close, onRegenerate);
+            _dataSource = new IllustrationCardVM(Close, onRegenerate, onSceneProbe);
             var layer = new MovableGauntletLayer("IllustrationCardOverlay", 4015, false);
             _layer = layer;
             try
@@ -117,6 +117,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 AddEmblemSpec(emblemSpecs, interlocutor, "对话对方");
                 AddEmblemSpec(emblemSpecs, Hero.MainHero, "玩家");
 
+                // 试采只绑定弹窗打开时的真实 Mission owner，不在点击时接受另一个场景。
+                ScreenCaptureHelper.ConversationSceneCaptureSource probeSource = null;
+                if (topScreen is TaleWorlds.MountAndBlade.View.Screens.MissionScreen)
+                {
+                    try { probeSource = ScreenCaptureHelper.GetConversationSceneCaptureSource(); }
+                    catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
+                }
                 _activeInstance?.Close();
                 popup = new IllustrationCardPopup(topScreen, "ConversationIllustrationOverlay", "conversation", () =>
                 {
@@ -127,7 +134,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     AddEmblemSpec(redrawEmblems, current.InterlocutorHero, "对话对方");
                     AddEmblemSpec(redrawEmblems, current.MainHero, "玩家");
                     _activeInstance?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems);
-                });
+                }, probeSource == null ? (Action)null : () => popup?.ExecuteSharedSceneProbe(probeSource));
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                     ? convContext.InterlocutorHero.Name.ToString()
@@ -337,6 +344,48 @@ namespace AnimusForge.Illustrator.UI.Overlays
             catch (Exception ex) { _dataSource.SetReady("生成准备失败：" + ex.Message); }
         }
 
+        private void ExecuteSharedSceneProbe(ScreenCaptureHelper.ConversationSceneCaptureSource source)
+        {
+            try
+            {
+                if (_closed || _dataSource.IsLoading || source == null || source.IsMapConversation) return;
+                source.EnsureCurrent(System.Threading.CancellationToken.None);
+                _dataSource.SetLoading("正在试采当前场景的单个离屏镜头...");
+                _scope.Run(async token =>
+                {
+                    await source.EnsureCurrentAsync(token).ConfigureAwait(false);
+                    var imageBytes = await ScreenCaptureHelper.CaptureSharedSceneProbeAsync(source, token).ConfigureAwait(false);
+                    await source.EnsureCurrentAsync(token).ConfigureAwait(false);
+                    return imageBytes;
+                }, imageBytes =>
+                {
+                    try
+                    {
+                        source.EnsureCurrent(System.Threading.CancellationToken.None);
+                        const string probeNote = "【单镜头试采预览】直接借用当前 Mission 场景，由独立离屏相机导出单张参考；不是正式插画，也不是前后拼图。未调用导演或生图模型，未写入图库或设为默认图。";
+                        if (imageBytes == null || imageBytes.Length == 0 || !PublishImage(null, imageBytes, probeNote))
+                        {
+                            SetSceneProbeFailure("未能显示导出的预览");
+                            return;
+                        }
+                        _dataSource.TitleText = "【单镜头试采预览】";
+                        _dataSource.SetReady("试采完成：仅预览，未调用模型");
+                    }
+                    catch (Exception ex) { SetSceneProbeFailure(ex.Message); }
+                }, SetSceneProbeFailure);
+            }
+            catch (Exception ex) { SetSceneProbeFailure(ex.Message); }
+        }
+
+        private void SetSceneProbeFailure(string error)
+        {
+            try
+            {
+                if (!_closed) _dataSource.SetReady("试采失败：" + error);
+            }
+            catch (Exception ex) { Debug.Print("[Illustrator] Scene probe status failed: " + ex.Message); }
+        }
+
         private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null)
         {
             _dataSource.SetLoading("AI画师正在分析现场交谈与肢体姿势...");
@@ -470,9 +519,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 ? item.Key + "_" + _instanceId
                 : "Illustration_" + Guid.NewGuid().ToString("N");
 
-            ReleaseActiveSprite();
+            // 无缓存条目的试采使用唯一纹理名；注册失败时保留原来的正式插画。
+            if (item != null) ReleaseActiveSprite();
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes);
             if (sprite == null) return false;
+            if (item == null) ReleaseActiveSprite();
             _activeSpriteName = spriteName;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = item.Title;
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);

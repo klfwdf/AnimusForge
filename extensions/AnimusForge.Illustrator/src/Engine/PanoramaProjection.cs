@@ -179,6 +179,29 @@ namespace AnimusForge.Illustrator.Engine
             return new[] { directions[0], directions[2] };
         }
 
+        // The experimental single-view probe uses the same native PNG producer as
+        // the existing scene exporter. Adapt only those bytes, never UI/provider images.
+        internal static byte[] ConvertSingleNativeView(byte[] nativePng)
+        {
+            int size = ReadSquarePngDimension(nativePng);
+            byte[] pixels = DecodeNativeFace(nativePng, size);
+            using (var bitmap = new Bitmap(size, size, PixelFormat.Format32bppArgb))
+            {
+                var data = bitmap.LockBits(new Rectangle(0, 0, size, size), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+                try
+                {
+                    for (int y = 0; y < size; y++)
+                        Marshal.Copy(pixels, y * size * 4, IntPtr.Add(data.Scan0, y * data.Stride), size * 4);
+                }
+                finally { bitmap.UnlockBits(data); }
+                using (var output = new MemoryStream())
+                {
+                    bitmap.Save(output, ImageFormat.Png);
+                    return output.ToArray();
+                }
+            }
+        }
+
         // Two opposite perspective views are a reference sheet, not a fabricated 360 panorama.
         // Reuse only the verified native-producer color adapter, without spherical reprojection.
         internal static byte[] ComposeFrontBack(IReadOnlyList<byte[]> nativeViews)
