@@ -2,6 +2,8 @@
 
 ## J06 检索线程收口进度：VERIFY / NOT_ACCEPTED（2026-09-19）
 
+`da677af3` 在同一个生产捕获方法测试中增加硬预算停止契约：stub budget 于首次 64 项检查后标记超限，生产 `CaptureCandidates` 恰好返回 64 项、只检查一次；原两项负向变异继续失败。2,000 项耗时为不同运行间会波动的离线方法观察值，不作为实机帧预算证明。
+
 **后续 Courier 全请求增量 `1fa1a4e1`**：现有生产请求体回放使用生产 `PromptExtrasComposer` 将六类 Lore/实体/额外规则 fixture 文本带入旧同步和新调度路径，对两方向的完整序列化请求逐字节比较；76 场景、390 检查通过。只在新请求体删去 Lore 文本的变异于 `knowledge_text_lore_hit` 被拒收。它覆盖 Courier 最终请求体的组装/调度回归，但游戏读取与知识检索结果仍是 fixture；Native 最终请求全文、真实生产 Lore/实体结果的旧新同输入文本对照仍未完成，故 J06 继续 `VERIFY / NOT_ACCEPTED`。
 
 **2026-09-19 接续增量（测试 `ae2cb4f4`、`7dd969d9`、`db9a899e`；产品源码仍 `70db6ec2`）**：获准并安全预检后，原 `build_single_module.ps1` 无 Stage/Deploy 的 Debug、Release 各 1.3/1.4/Bootstrap 均 `Build Result : success`、每项 0 警告/0 错误；四个被重置目录均在工作区且无 reparse/非构建文件。`CapturePerformance` 提取真实 `CaptureCandidates`/`CaptureDetachedMetadata` 方法，用假 Hero 2,000 个、9 轮测得无元数据 0.397 ms、含范围/距离元数据 1.436 ms、增量 1.039 ms（单机单次均值），每轮 31 次 64 项预算检查、2,000 项范围/距离捕获；去元数据/预算检查两项变异均按预期失败。这不是 TaleWorlds 实机帧耗时。`PromptAssemblyStage` 生产文件的完整 `Extras` 八组合逐字节期望及丢 Lore/实体/规则三项变异通过，但没有覆盖整个最终模型请求 Prompt，也没有让旧同步和新捕获路径的真实 Lore/实体/规则结果在相同输入上逐字节比较。当前 **仍 `VERIFY / NOT_ACCEPTED`**；仅剩的离线文本对照缺口不得用 formatter hash 或本次 `Extras` 契约替代。实机/旧档/provider `NOT-RUN` 不作为离线门槛。
