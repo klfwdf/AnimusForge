@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace TaleWorlds.CampaignSystem {
  public sealed class CultureObject { internal string StringId="culture"; }
  public sealed class CharacterObject { }
  public sealed class Hero {
+  internal static Hero MainHero;
   internal string Id="hero", RawName="NPC"; internal bool Dead;
   internal CharacterObject CharacterObject {get {AnimusForge.Probe.MainOnly();return Character;}}
   internal CharacterObject Character=new();
@@ -26,7 +28,7 @@ namespace TaleWorlds.CampaignSystem {
 namespace AnimusForge {
  internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long gen)=>gen==Generation; }
  internal sealed class PreprocessFormatException : Exception { }
- public sealed class ConversationMessage { public string Role="assistant",Content="memory"; }
+ public sealed class ConversationMessage { public string Role="assistant",Content="memory",SpeakerName="NPC",GameDate="",Scene=""; public int GameDayIndex,GameHour; }
  internal static class Probe {
   internal static int WrongThread, Routing, Contexts, Assemblies, Reads, KnowledgeApplies;internal static bool SyncAllowed, ThrowRouting, ThrowAssembly, NullContext, NullHits, Command, EmptyExtras, EmptyHistory, BlockKnowledge;
   internal static string Input, Culture, Facts, PreviousFacts, KnowledgeVariant;
@@ -39,6 +41,14 @@ namespace AnimusForge {
   public partial class MyBehavior {
   public sealed class ShoutPromptContext { public string Extras="extras",EntityPostprocessContext="entities",PreprocessExcludedRuleBlock="excluded";public List<string> PreprocessRuleIds=new(){"ctx"}; }
   internal static MyBehavior Instance=new();
+  internal static string BuildPlayerPublicDisplayNameForExternal(Hero hero)=>"Player";
+  internal static string BuildHistoryContextForExternal(Hero hero,int limit,string letter,string fact)=>"history";
+  internal static string BuildRecentNpcFactContextForExternal(Hero hero,int limit)=>"";
+  internal static string BuildPlayerCourierSenderIdentityForExternal(Hero hero)=>"sender";
+  internal static string BuildPlayerCourierRecipientIdentityForExternal(Hero hero)=>"recipient";
+  internal static string BuildNpcPlayerKinshipPromptLineForExternal(Hero hero)=>"";
+  internal static string BuildCurrentDateFactForExternal()=>"date";
+  internal static string AppendPlayerCustomPromptRuleToSystemPromptForExternal(string text)=>text;
   internal static ShoutPromptContext CreateEmptyShoutPromptContext()=>new(){Extras="",PreprocessRuleIds=new()};
   internal sealed class CourierPreprocessRequest { internal string Input,ExtraFact; internal CharacterObject Character; internal AnimusForge.PromptRuntimeTargetBinding Target; internal PromptRuleEligibility Eligibility=new(); }
   // Step 1 (game thread): the legacy synchronous facade and the scheduled Begin both capture here.
@@ -98,6 +108,8 @@ namespace AnimusForge {
   internal static void SetGuardrailSemanticContext(string s){}
  }
  internal static class Logger { internal static void Log(string c,string m){} }
+ internal static class DuelSettings { internal static int GetDailyConversationHistoryLineLimitForExternal()=>8; internal static DuelSettingsValue GetSettings()=>new(); }
+ internal sealed class DuelSettingsValue { internal int NpcInitiatedLetterTargetChars=220; }
  public partial class ShoutBehavior {
   internal static bool HasInjectedRuleBlockForExternal(string extras,string rule)=>false;
   internal static string BuildHeroStableRoleContextForExternal(Hero hero){Probe.MainOnly();return "role:"+hero.Id;}
@@ -112,7 +124,7 @@ namespace AnimusForge {
   internal CourierSession Session;
   private CourierPromptRun TestRun;
   internal void ReserveTestRun()=>TestRun=BeginCourierPromptRun(Session,1);
-  internal sealed class CourierSession {internal Hero Participant=new();internal bool Inbound,Terminal,ReplyGenerated,ReplyGenerationStarted=true,PostprocessConsumed;internal string ReplyText="",ReplyPostprocessedText="";internal string Id="session",LetterText=" letter ",InboundIntentText=" intent ",InboundFallbackLetter="stored";}
+  internal sealed class CourierSession {internal Hero Participant=new();internal bool Inbound,Terminal,ReplyGenerated,ReplyGenerationStarted=true,PostprocessConsumed;internal string ReplyText="",ReplyPostprocessedText="";internal string Id="session",LetterText=" letter ",InboundIntentText=" intent ",InboundFallbackLetter="stored",DeliveryFactText="",SenderName="NPC",InboundLetterKind="";}
   internal static readonly string[] CourierExcludedRuleIds={"ban"};
   private CourierSession GetSessionById(string id){Probe.MainOnly();return Session;}
   private static bool IsTerminalStage(CourierSession s){Probe.MainOnly();return s.Terminal;}
@@ -129,9 +141,12 @@ namespace AnimusForge {
   private static List<string> ExcludeCourierSelectedRuleIds(IEnumerable<string> hits,IEnumerable<string> excluded)=>(hits??Array.Empty<string>()).Except(excluded).ToList();
   private static bool HasPreprocessRuleHit(IEnumerable<string> hits,string rule)=>hits.Contains(rule);
   private static string AppendCourierPlayerRecentActions(string text,Hero hero){Probe.MainOnly();return text+"\nrecent";}
-  private static List<object> BuildCourierReplyMessages(Hero hero,CourierSession session,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){return Messages(hero,session.LetterText,extras,fact,history,memory,role,excluded);}
-  private static List<object> BuildInboundNpcLetterMessages(Hero hero,CourierSession session,string seed,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){return Messages(hero,seed,extras,fact,history,memory,role,excluded);}
-  private static List<object> Messages(Hero hero,string text,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){Probe.MainOnly();Probe.Assemblies++;if(Probe.ThrowAssembly)throw new InvalidOperationException("assembly failed");return new(){hero.Id,text,extras,fact,history,memory.ToArray(),role,excluded};}
+  private static List<object> BuildCourierReplyMessages(Hero hero,CourierSession session,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){Probe.MainOnly();Probe.Assemblies++;if(Probe.ThrowAssembly)throw new InvalidOperationException("assembly failed");return BuildCourierReplyMessagesProduction(hero,session,extras,fact,history,memory,role,excluded);}
+  private static List<object> BuildInboundNpcLetterMessages(Hero hero,CourierSession session,string seed,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){Probe.MainOnly();Probe.Assemblies++;if(Probe.ThrowAssembly)throw new InvalidOperationException("assembly failed");return BuildInboundNpcLetterMessagesProduction(hero,session,seed,extras,fact,history,memory,role,excluded);}
+  private static string BuildCourierCurrentLocationLine(Hero hero)=>"location";
+  private static int ClampInt(int value,int min,int max)=>Math.Max(min,Math.Min(max,value));
+  private static string GetInboundLetterKindDisplayText(CourierSession session)=>"来信";
+  @@MESSAGE_BUILDERS@@
   private static void LogCourierContextAlignment(string direction,string session,Hero hero,string role,string extras,string entities,string history,IEnumerable<ConversationMessage> memory){Probe.MainOnly();}
   internal async Task<string> Start(CourierSession session,bool inbound,bool directly=false){
    var history=new CourierPreparedHistory("fact",Probe.EmptyHistory?"":"history");
@@ -185,6 +200,14 @@ internal static class Program {
   string result=task.GetAwaiter().GetResult();Check((result==null)==(after||before),scenario+" acceptance "+inbound);Check(AnimusForge.Probe.WrongThread==0,scenario+" no wrong physical thread");
   if(after||before){Check(AnimusForge.Probe.Assemblies==0&&AnimusForge.Probe.Contexts==0&&AnimusForge.Probe.KnowledgeApplies==0,scenario+" no stale context or knowledge publication");return;}
   Check(result==old,scenario+" actual async result equals old request");Check(AnimusForge.Probe.Routing==1&&AnimusForge.Probe.Contexts==1&&AnimusForge.Probe.Assemblies==1,scenario+" exactly once each stage");
+  using(var full=JsonDocument.Parse(result)){
+   var messages=full.RootElement.GetProperty("Messages");
+   Check(messages.ValueKind==JsonValueKind.Array&&messages.GetArrayLength()>=3,scenario+" production message list");
+   Check(messages[0].GetProperty("role").GetString()=="system"&&messages[0].GetProperty("content").GetString().Contains("Mount & Blade II"),scenario+" production system message");
+   Check(messages[1].GetProperty("role").GetString()=="user"&&messages[1].GetProperty("content").GetString().Contains(inbound?"recipient":"sender"),scenario+" production context message");
+   Check(messages[1].GetProperty("content").GetString().Contains("history")==!AnimusForge.Probe.EmptyHistory,scenario+" production history placement");
+   Check(messages[messages.GetArrayLength()-1].GetProperty("role").GetString()=="user",scenario+" production current-letter message order");
+  }
   if(AnimusForge.Probe.KnowledgeVariant!=null){
    using var json=JsonDocument.Parse(result);string fullText=string.Join("\n",Strings(json.RootElement));
    Check(fullText.Contains("固定前缀")&&fullText.Contains("【Lore】")&&fullText.Contains("【附加规则:trade】"),scenario+" full request retains composed knowledge text");
@@ -204,6 +227,6 @@ internal static class Program {
    if(inbound){Case(inbound,"intent_after");Case(inbound,"fallback_after");}
    foreach(string s in new[]{"owner_knowledge_after","generation_knowledge_after","participant_knowledge_after"})Case(inbound,s);
   }
-  Console.WriteLine($"PASS {checks} Courier prompt checks / {cases} scenarios; actual new partial and owner phase, actual old request bodies; game/context/message seams are fixtures.");return 0;
+  Console.WriteLine($"PASS {checks} Courier prompt checks / {cases} scenarios; actual old/new request bodies and production final message builders; game/context inputs remain fixtures.");return 0;
  }catch(Exception ex){Console.Error.WriteLine("FAIL CourierPrompt "+ex);return 1;}finally{AnimusForge.Probe.Release.Set();AnimusForge.Probe.KnowledgeRelease.Set();}}
 }

@@ -10,10 +10,21 @@ def source(path):return inverse.old_source(path) if a.old else (ROOT/path).read_
 courier=source('CourierDeliveryBehavior.cs');partial=source('CourierDeliveryBehavior.PromptPreparation.cs')
 phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 base=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').split('internal static class Program {')[0]
+message_markers=['private static List<object> BuildCourierReplyMessages(','private static List<object> BuildInboundNpcLetterMessages(',
+ 'private static object CreateCourierChatMessage(','private static void AppendCourierRawUserSection(',
+ 'private static void AppendCourierUserSection(','private static void AppendCourierPersistentMemoryRoleMessages(',
+ 'private static bool TryConvertCourierMemoryMessageToChatMessage(','private static bool IsCourierMemorySpeakerRecipient(',
+ 'private static string BuildCourierMemoryMetadataPrefix(','private static string StripCourierPromptScopeLabel(',
+ 'private static string StripCourierSpeakerPrefix(']
+message_source=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig')
+message_builders='\n'.join(ex.declaration(message_source,marker) for marker in message_markers)
+for name in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
+ message_builders=message_builders.replace('private static List<object> '+name+'(', 'private static List<object> '+name+'Production(',1)
+base=base.replace('@@MESSAGE_BUILDERS@@',message_builders)
 base=base.replace('  private CourierPromptRun TestRun;\n  internal void ReserveTestRun()=>TestRun=BeginCourierPromptRun(Session,1);','')
 base=base.replace(ex.declaration(base,'internal async Task<string> Start('),'')
 base=base.replace('internal static long Generation=1;','internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsStale(long g,string s)=>!IsCurrentGeneration(g);')
-base=base.replace('ReplyGenerationStarted=true,PostprocessConsumed;internal string ReplyText="",ReplyPostprocessedText="";','ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied=true,ReplyWaitPopupShown=true;internal string Stage="GeneratingReply",ReplyText="",ReplyPostprocessedText="",SenderName="sender",RecipientWaitReason="";')
+base=base.replace('ReplyGenerationStarted=true,PostprocessConsumed;internal string ReplyText="",ReplyPostprocessedText="";','ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied=true,ReplyWaitPopupShown=true;internal string Stage="GeneratingReply",ReplyText="",ReplyPostprocessedText="",RecipientWaitReason="";')
 base=base.replace('static ManualResetEventSlim Entered=new(),Release=new(true);','static ManualResetEventSlim Entered=new(),Release=new(true);')
 # The held provider snapshots its release event before a replacement Start can install the new test request.
 base=base.replace('Probe.Entered.Set();\n   if(!Probe.Release.Wait(5000))','var release=Probe.Release;Probe.Entered.Set();\n   if(!release.Wait(5000))')
@@ -41,6 +52,6 @@ out=HERE/'.generated'/('liveness-old' if a.old else 'liveness-'+(a.mutate or 'cu
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
 (out/'Program.cs').write_text((HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
-project=util.project(out,'CourierPromptLiveness',[out/'Prompt.cs',out/'Schedule.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'],executable=True)
+project=util.project(out,'CourierPromptLiveness',[out/'Prompt.cs',out/'Schedule.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs'],executable=True)
 dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')
 code,log=util.run_dotnet(dotnet,['run','--project',str(project),'-c','Release'],out);(out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

@@ -50,11 +50,31 @@ methods='\n'.join(
  for typ,wrapper,final in baseline_specs
 )
 old_host=subprocess.check_output(['git','show','77a3d234:CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+message_markers=[
+ 'private static List<object> BuildCourierReplyMessages(',
+ 'private static List<object> BuildInboundNpcLetterMessages(',
+ 'private static object CreateCourierChatMessage(',
+ 'private static void AppendCourierRawUserSection(',
+ 'private static void AppendCourierUserSection(',
+ 'private static void AppendCourierPersistentMemoryRoleMessages(',
+ 'private static bool TryConvertCourierMemoryMessageToChatMessage(',
+ 'private static bool IsCourierMemorySpeakerRecipient(',
+ 'private static string BuildCourierMemoryMetadataPrefix(',
+ 'private static string StripCourierPromptScopeLabel(',
+ 'private static string StripCourierSpeakerPrefix(',
+]
+current_host=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig').replace('\r\n','\n')
+old_messages=[ex.declaration(old_host,marker) for marker in message_markers]
+new_messages=[ex.declaration(current_host,marker) for marker in message_markers]
+assert old_messages==new_messages, 'Courier final message builders changed since 77a3d234; extract both independently before comparing'
+message_builders='\n'.join(new_messages)
+for method in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
+ message_builders=message_builders.replace('private static List<object> '+method+'(', 'private static List<object> '+method+'Production(',1)
 reqs='\n'.join(ex.declaration(old_host,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
 history=(ROOT/'CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig')
 owner=ex.declaration(history,'private bool IsCourierHistoryOwnerCurrent(')
 historytype=ex.declaration(history,'private sealed class CourierPreparedHistory')
-harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@OWNER_PHASE@@',phase).replace('@@BASELINE@@',methods).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historytype+'\n'+owner)
+harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@OWNER_PHASE@@',phase).replace('@@BASELINE@@',methods).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historytype+'\n'+owner).replace('@@MESSAGE_BUILDERS@@',message_builders)
 if args.old_worker:harness='#define OLD_WORKER\n'+harness
 out=HERE/'.generated'/('old-worker' if args.old_worker else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
