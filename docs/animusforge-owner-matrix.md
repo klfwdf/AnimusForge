@@ -1,6 +1,6 @@
 # AnimusForge 逐文件 Owner Matrix（第一版）
 
-> 用于重构前导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。初版基线为历史 `d4cb1467`；当前 J03 源码修订为 `e4f94429`，以本表增量及唯一台账为准。
+> 用于重构导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。初版基线为历史 `d4cb1467`；当前 J06 状态以本表增量及唯一台账为准。
 
 ## 使用规则
 
@@ -14,12 +14,14 @@
 
 | 责任 | 当前 owner 与真实消费者 | 保留责任 / 验收缺口 |
 | --- | --- | --- |
-| 知识规则索引、Lore 候选 | `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs`、`Lore/LoreCandidateRetriever.cs`；`KnowledgeLibraryBehavior.Index`/`Retriever` 接入 | `KnowledgeLibraryBehavior` 仍负责 Campaign/ONNX 生命周期、知识存档与 Hero 事实；索引 512 项缓存、Lore 32 mention term/12 entity query 边界已离线测，实机耗时未测 |
-| 世界实体纯算法 | `Entities/{EntityNameMatcher,EntityMentionList,EntityInjectionAllocator}.cs`；`WorldEntityRetrievalService` 消费匹配、mention 排序与分配 | 游戏候选枚举、位置/距离、称谓及最终 Prompt 块留 host；不把整个旧类标为已迁 |
+| 知识规则索引、Lore 候选 | `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs`、`Lore/LoreCandidateRetriever.cs`；`KnowledgeLibraryBehavior.Index`/`Retriever` 接入；`MyBehavior.CaptureSharedKnowledgeSnapshot` 游戏每版本一次发布脱离原对象的规则快照、准备索引及 MCM 数值快照、`RunSharedKnowledgeRetrieval` 后台召回 | `KnowledgeLibraryBehavior` 仍负责 Campaign/ONNX 生命周期、知识存档与 Hero 事实；冷索引仍在游戏线程；版本/缓存/文本生产阶段对照未齐。索引缓存上限 512 |
+| 世界实体候选与匹配 | `WorldEntityRetrievalService.CaptureEntityCandidates` 游戏线程复用原枚举抓取名称、别名、称谓/领袖、可见队伍；`MatchDetachedCandidates` 后台复用原 `FindMatches`/称谓算法；`Entities/{EntityNameMatcher,EntityMentionList,EntityInjectionAllocator}.cs` 提供纯算法 | 成功路径不重复全量枚举或直接/称谓评分；但实时范围/距离 `ApplyGlobalInjectionLimit` 与事实块仍留最终游戏线程，关系快照/完整纯排名未收口；同步 API 与异常回退保留 |
+| 额外规则例外路径 | `AIConfigHandler.GetMatchedExtraRuleHitsForWorker` 在无预选 ID 时后台选择；`FormatMatchedExtraRuleInstructions` 保留游戏线程运行时补文；正常预选沿既有路由 | 优先级/排除/失败/迟到及文本对照的生产回放未齐；不删除同步入口 |
+| 共享阶段与渠道 | `MyBehavior` 五步顺序组合；Native 游戏捕获→后台检索→游戏完成；Courier owner→worker→owner，同步 Scene 不变 | Native/Courier 新阶段可执行迟到/异常回放需补；Scene 异步调度归 J10，不扩 J06 |
 | Prompt 检索资格 | `AIConfigHandler.CapturePromptRuleEligibility` 在游戏线程读 11 事实，正向门控独立失效、排除事实异常默认拒绝；`PromptRuleEligibility` 提供 worker 纯判断；Native/Courier 请求 DTO/ambient 消费 | 旧 setter-only 同步消费仍用 live fallback；Scene 调度属于 J10；仅生产方法提取 + fake 游戏端口异常契约，真实游戏异常/提前计算副作用未实测，J06d 未验收 |
 | Knowledge 导入 | `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs` 拥有 8 个关键词/When 纯规则与来源文件读取方法；`MyBehavior` 12 个调用点直接接 owner、旧方法删除 | `ValidateKnowledgeKeywordsForSingleRuleImport`/`ValidateKnowledgeKeywordsForImport`/`BuildKnowledgeRuleImportFailureMessage` 仍依赖当前 Campaign/KnowledgeLibrary 导出和原中文错误语义，保留游戏线程 host 适配；真实玩家文件/旧档未测 |
 
-精确路径/一基坐标在[代码范围图与地图](architecture/af-framework-code-scope.md)，证据和状态见[主台账 J06d 当前节](animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)。
+精确路径/一基坐标在[代码范围图与地图](architecture/af-framework-code-scope.md)，证据和状态见[主台账 J06 当前节](animusforge-refactoring-and-repository-reorganization-plan.md#j06-retrieval-cutover-20260919)。当前 `eae59e63` 的非删除性直接构建六项通过；原一键脚本重置被自动审核拒绝，不标离线验收完成。实机/旧档/provider `NOT-RUN` 不作为此离线阻塞理由。
 
 ## J03 历史责任边界（PARTIAL / NOT_ACCEPTED）
 

@@ -1,4 +1,19 @@
-# 当前范围：J06d 验证中 / J06 未验收（2026-09-19）
+# 当前范围：J06 检索收口仍 VERIFY / NOT_ACCEPTED（2026-09-19）
+
+当前源码 `eae59e63`；[287 锚点代码地图](af-framework-code-map.json) recorded/working-tree 均通过。最新状态与离线阻塞以[主台账 J06 检索收口节](../animusforge-refactoring-and-repository-reorganization-plan.md#j06-retrieval-cutover-20260919)为准，下方 J06d/J05/J04 表是历史切片，不应继续读作当前完成度。
+
+| 责任 / 一基坐标 | 本轮实际接线 | 尚未宣称完成 |
+| --- | --- | --- |
+| `KnowledgeLibraryBehavior.cs:508-635,711,1535`、`MyBehavior.cs:30285-30343` | Lore 每版本一次的规则快照、索引准备及 MCM 数值快照在游戏线程、候选召回在后台；Hero 文本补文留最终阶段 | 冷索引及版本/缓存/文本生产契约需补 |
+| `WorldEntityRetrievalService.cs:262-415,438-562`、`MyBehavior.cs:30325,30656` | 世界候选和可见队伍一次捕获（每 64 项检查原 3 秒预算）；DTO 名称/称谓匹配在后台，同步入口保留 | 实时关系/距离排名及最终事实格式仍在游戏线程，尚未满足完整收窄目标 |
+| `AIConfigHandler.cs:5414-5432`、`MyBehavior.cs:30335` | 无预选 ID 的额外规则检索后台化，游戏线程按旧顺序补运行时规则正文 | 失败/迟到的生产回放与文本对照需补 |
+| `ShoutBehavior.NativePromptBuild.cs:82-118`、`CourierDeliveryBehavior.PromptSchedule.cs:97-116` | Native/Courier 新捕获→检索跳转与重验；Scene 顺序组合 | Scene 完整异步化归 J10；新阶段可执行迟到/异常回放未齐 |
+
+当前 `eae59e63` 的非删除性 Debug/Release 双 API + Bootstrap 直接构建六项通过；原一键脚本在固定目录递归重置处被自动审核拒绝，**当前源码未完成官方构建验收**。无 push、Stage 或部署。实机、旧档、真实 provider `NOT-RUN`，不当作本次离线阻塞原因。
+
+## 以下为 J06d 历史范围
+
+# J06d 验证记录 / J06 当时未验收（2026-09-19）
 
 生产修正 `61ff0875`、导入归属 `66abbdbd`、捕获异常隔离 `dc9c49fb`（契约 `d93bb1e9`）；[代码地图](af-framework-code-map.json) 276 锚点 recorded/working-tree 通过。状态与验证信号集中在[主台账 J06d 当前节](../animusforge-refactoring-and-repository-reorganization-plan.md#j06d-current-verification-20260919)，下方 J05/J04 为历史完成范围。
 

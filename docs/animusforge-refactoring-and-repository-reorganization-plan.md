@@ -1,3 +1,22 @@
+<a id="j06-retrieval-cutover-20260919"></a>
+
+## J06 检索线程收口进度：VERIFY / NOT_ACCEPTED（2026-09-19）
+
+本节取代下方 J06d“当前状态”，不改写其历史测试记录。当前工作树 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`；本轮本地检查点 `b383cadd`，产品切片 `34b033de`（Lore）、`8ca6c27e`（额外规则失败回退）、`0bf579f8`（实体）、`5bcb518d`（Lore 设置快照）、`0a0f7e54`（实体捕获预算）、`eae59e63`（每版本 Lore 规则快照）。没有 push、Stage、Deploy、游戏写入、J07/J10 扩展或公开 API/存档/配置格式修改。**实机、旧档、真实 provider 均 `NOT-RUN`，但不是 J06 离线门槛。**
+
+| 源码责任与一基坐标 | 已接线 | 保留边界/未闭合 |
+| --- | --- | --- |
+| `KnowledgeLibraryBehavior.cs:508-635,711,1535,4065,4468`；`MyBehavior.cs:30285-30343` | 游戏线程每版本一次发布脱离原可编辑对象的 Lore 规则快照、预备索引并冻结 MCM 检索开关/TopK/MinScore；后台通过请求 scope 只读快照、复用已发布索引召回候选；最终线程补 Hero/Character 运行时事实。预选候选过期时走原兼容入口。 | 冷索引初始化和一次性规则复制仍在游戏线程；需补命中/未命中及版本竞争的生产阶段文本对照。 |
+| `WorldEntityRetrievalService.cs:262-415,438-562`；`MyBehavior.cs:30297,30325,30656` | 游戏线程沿原枚举捕获 Hero/Settlement/Clan/Kingdom 名称、别名、称谓及可见队伍，每 64 项检查 3 秒预算；后台 DTO 执行原 `FindMatches`/称谓算法；最终只恢复已捕获 live 引用，成功路径不重复全量枚举或模糊评分。同步 API 保留，同一算法无第二份评分实现。 | `ApplyGlobalInjectionLimit` 的实时范围/距离元数据与实体事实块格式化仍在最终游戏线程；计划要求的关系快照/完整排名及最终阶段进一步收窄尚未实现。失败回退会在游戏线程执行原检索，须有可执行异常/文本对照。 |
+| `AIConfigHandler.cs:5414-5432`；`MyBehavior.cs:28298,30335` | 正常规则预选沿原后台路由；无预选 ID 的语义/词法/sticky 回退也移到后台，游戏线程只按原格式补运行时指令；旧同步调用者不强迁。 | 需要生产失败/迟到结果回放证明优先级、资格、排除和原回退不变。 |
+| `ShoutBehavior.NativePromptBuild.cs:82-118`；`CourierDeliveryBehavior.PromptSchedule.cs:97-116` | Native/Courier 在路由与完成之间新增游戏捕获、后台检索并逐跳重验；Scene 仍顺序执行，完整调度归 J10。 | Native/Courier 的新检索阶段需要可执行迟到/异常回放；现有源码守卫和旧生命周期夹具不能替代该项。 |
+
+**本轮已运行**：J03 Configuration 36、ProductionModels 18、Retrieval 150（含 cache/perf 样本）、ProductionEntry 7、ProductionEvaluation 22、My 4、Reward 11、Scene/Native 3、Consumers PASS；J04 Composition 184、BuildPhases PASS，11 项边界/快照变异按预期拒收；Knowledge Index/Lore/Import 70、Entities 32（2,000 候选 × 4 mention，8,000 次评分 22 ms，本机一次观察值）；Courier Prompt 252/58、liveness 59/16、OwnerPhase 16；Native Admission 44、Completion 184；Scene Postprocess 71、deferred queue 37。七个实体文本 formatter 方法体与 `8ca6c27e` 逐字节规范化相同，仅证明 formatter 未改，不是端到端 Prompt 文本等价。`NativePreparationBoundaryTests` 的旧 `GameLifetimeTests/source_parity.py` 在未改动的 `ShoutBehavior.cs` 上因 J04 精确逆变换断言失败，本轮不以该项报 PASS。
+
+当前 `eae59e63` 的非删除性 **Debug/Release × BannerlordApi 1.3/1.4/Bootstrap 六个直接构建**均 0 警告/0 错误（1.3 `_deps_auto`，1.4 `local/bannerlord-refs/1.4.7.117484`，Bootstrap 1.3 引用），但它们**不等于当前源码的原一键脚本验证**。已预检脚本将重置的四个精确目录均在工作区、无 reparse 且只含构建产物；执行原 `build_single_module.ps1 -Configuration Debug`（无 Stage/Deploy）仍被自动审核拒绝，原因是本次递归重置缺少被审核认可的明确逐目录授权；没有绕过，Release 原脚本也未执行。此前 `77a3d234` 的原脚本六项 PASS 只属于旧源码，不能充当前源码验收。
+
+**离线验收阻塞，不标 `J06_OFFLINE_VERIFIED`**：① 完成实体关系/距离快照与最终纯排名责任，或以生产契约证明保留的实时计算是计划允许的最小部分；② 补新五阶段的缓存 hit/miss、版本失效、异常/迟到及实际 Prompt 文本对照（含回退）可执行契约；③ 当前源码原一键脚本 Debug/Release 六项需获准重置固定生成目录后运行。任一失败都必须列为具体阻塞，不以 LIVE/SAVE/provider `NOT-RUN` 代替。287 锚点[代码地图](architecture/af-framework-code-map.json)以 `eae59e63` recorded/working-tree 通过，仅为源码导航；当前责任详见[范围图](architecture/af-framework-code-scope.md)。未跟踪 `.dotnet-cli-home/` 保留。
+
 <a id="j06d-current-verification-20260919"></a>
 
 ## 当前状态：J06d 验证中，J06 父包未验收（2026-09-19）
