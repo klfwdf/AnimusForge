@@ -24,6 +24,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptPreprocessRuleIdAssembler.cs" Link="PromptPreprocessRuleIdAssembler.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs" Link="PromptExtrasComposer.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs" Link="PromptRuntimeTargetBinding.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs" Link="PromptRuleEligibility.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptRuleBlockText.cs" Link="PromptRuleBlockText.cs" />
   </ItemGroup>
 </Project>

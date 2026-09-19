@@ -19668,6 +19668,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return PromptRuntimeTargetBinding.Create(kingdomId, targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId, targetHero != null, targetCharacter != null && targetCharacter.IsSoldier, targetAgentIndex);
 	}
 
+	/// <summary>Game thread: binding + eligibility facts, so worker-side retrieval never resolves Hero/Mission live.</summary>
+	internal static PromptRuleEligibility CapturePromptRuleEligibility(Hero targetHero, CharacterObject targetCharacter, PromptRuntimeTargetBinding binding)
+	{
+		return AIConfigHandler.CapturePromptRuleEligibility(targetHero, targetCharacter, binding);
+	}
+
 	private static string ResolveBuiltInRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
 	{
 		return BuiltInRuleStickyCarry.ResolveTargetKey(targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId);
@@ -28282,7 +28288,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.ApplyGuardrailRuntimeTarget(CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
+		PromptRuntimeTargetBinding runtimeTargetBinding = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding, CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding));
 		try
 		{
 			text = preselectedRuleIds == null
@@ -30002,7 +30009,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return new List<string>();
 		}
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.ApplyGuardrailRuntimeTarget(request.Target);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(request.Target, request.Eligibility);
 		try
 		{
 			return RunCourierRulePreprocessRetrieval(request, out mentionedEntities);
@@ -30021,6 +30028,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		internal string TargetHeroId;
 		internal string TargetCharacterId;
 		internal PromptRuntimeTargetBinding Target;
+		internal PromptRuleEligibility Eligibility;
 		internal HashSet<string> ExcludedRuleIds;
 		internal string GuardrailSemanticContext;
 		internal string NpcLastUtterance;
@@ -30040,12 +30048,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return null;
 		}
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		PromptRuntimeTargetBinding runtimeTarget = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
 		return new CourierPreprocessRequest
 		{
 			Input = input,
 			TargetHeroId = targetHero?.StringId,
 			TargetCharacterId = targetCharacter?.StringId,
-			Target = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex),
+			Target = runtimeTarget,
+			Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget),
 			ExcludedRuleIds = excludedRuleIdSet,
 			GuardrailSemanticContext = BuildGuardrailSemanticContext(targetHero, extraFact),
 			NpcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex)
@@ -30167,7 +30177,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return CreateEmptyShoutPromptContext();
 		}
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
-		AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 		try
 		{
 			RunSharedPromptRouting(phases);
@@ -30322,6 +30332,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			out HashSet<string> explicitExcludedRuleIdSet, out HashSet<string> excludedRuleIdSet, out HashSet<string> preprocessExcludedRuleIdSet, out bool completeRuntimeExcludedRuleIds);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex);
+		PromptRuntimeTargetBinding runtimeTarget = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
 		return new PromptBuildRequest
 		{
 			Input = input,
@@ -30329,7 +30340,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CultureId = cultureIdOverride,
 			KingdomIdOverride = kingdomIdOverride,
 			TargetKingdomId = targetKingdomId,
-			Target = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex),
+			Target = runtimeTarget,
+			Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget),
 			TargetHeroId = targetHero?.StringId,
 			TargetCharacterId = targetCharacter?.StringId,
 			TargetDisplayName = targetHero?.Name?.ToString() ?? "某人",

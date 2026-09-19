@@ -19955,7 +19955,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
 		try
 		{
-			AIConfigHandler.ApplyGuardrailRuntimeTarget(MyBehavior.CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));
+			PromptRuntimeTargetBinding runtimeTargetBinding = MyBehavior.CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
+			AIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding, MyBehavior.CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding));
 			foreach (string ruleId in allRuleIds)
 			{
 				string id = (ruleId ?? "").Trim();
