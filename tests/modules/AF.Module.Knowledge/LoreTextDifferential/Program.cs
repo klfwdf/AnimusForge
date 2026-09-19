@@ -125,11 +125,11 @@ internal static class Program
         var rule = new LoreRule { Id = "lore_city", Keywords = new List<string> { "Praven" }, Variants = new List<KnowledgeLibraryBehavior.LoreVariant> { new KnowledgeLibraryBehavior.LoreVariant { Content = "Praven is a port city." } } };
         var behavior = new KnowledgeLibraryBehavior(new List<LoreRule> { rule });
         var hero = new Hero { StringId = "npc_1", Name = new FakeName { Value = "Alda" }, Culture = new FakeCulture { StringId = "vlandia" } };
-        var result = behavior.Render("Tell me about Praven", hero, new MentionedWorldEntities { Entities = new List<string> { "Praven" } }, stale: false);
+        var result = behavior.Render("Tell me about Praven, Alda the King; can we barter this item?", hero, new MentionedWorldEntities { Entities = new List<string> { "Praven" } }, stale: false);
         if (!result.Contains("Praven is a port city.")) throw new Exception("real Lore text missing: " + result);
         Console.WriteLine("RESULT=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(result)));
 #if CURRENT
-        var fallback = behavior.Render("Tell me about Praven", hero, new MentionedWorldEntities { Entities = new List<string> { "Praven" } }, stale: true);
+        var fallback = behavior.Render("Tell me about Praven, Alda the King; can we barter this item?", hero, new MentionedWorldEntities { Entities = new List<string> { "Praven" } }, stale: true);
         if (fallback != result) throw new Exception("stale candidate fallback changed Lore text");
         Console.WriteLine("FALLBACK=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(fallback)));
 #endif

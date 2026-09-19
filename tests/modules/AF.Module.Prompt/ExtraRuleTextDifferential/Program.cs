@@ -74,7 +74,7 @@ namespace AnimusForge
         {
             SemanticScenario = semantic;
             _stickyGuardrailRuleStore = new PromptStickyRuleStore();
-            string input = "Can we barter this item?";
+            string input = "Tell me about Praven, Alda the King; can we barter this item?";
 #if CURRENT
             List<GuardrailRuleHit> hits = semantic
                 ? GetGuardrailSemanticRuleHits(input, "", 3, false, null)
