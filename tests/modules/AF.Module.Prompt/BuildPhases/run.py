@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-extra-worker"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -31,6 +31,8 @@ begin = extract.declaration(source, "internal PromptBuildPhases BeginSharedPromp
 routing = extract.declaration(source, "internal void RunSharedPromptRouting(")
 knowledge_capture = extract.declaration(source, "internal void CaptureSharedKnowledgeSnapshot(")
 knowledge_worker = extract.declaration(source, "internal void RunSharedKnowledgeRetrieval(")
+if args.mutate == "drop-extra-worker":
+    knowledge_worker = knowledge_worker.replace("AIConfigHandler.GetMatchedExtraRuleHitsForWorker(", "AIConfigHandler.X(", 1)
 complete = extract.declaration(source, "internal ShoutPromptContext CompleteSharedPromptBuild(")
 if args.mutate == "routing-before-request":
     orchestrator = orchestrator.replace("BeginSharedPromptBuild(", "X(", 1).replace("RunSharedPromptRouting(phases)", "BeginSharedPromptBuild(", 1).replace("X(", "RunSharedPromptRouting(", 1)
@@ -49,6 +51,7 @@ ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "Ap
 assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
 assert "PreparePromptLoreRetrieval(" in knowledge_capture and "CollectPromptLoreCandidates(" in knowledge_worker
 assert "PreparePromptLoreRetrieval(" not in knowledge_worker and not game_services.search(knowledge_worker), "knowledge worker must not prepare indexes or read game services"
+assert "GetMatchedExtraRuleHitsForWorker(" in knowledge_worker and "phases.Routing?.AuxiliaryRuleHitIds == null" in knowledge_worker, "legacy no-preselection rule retrieval must run on worker"
 
 # J06d: only game-thread capture may call the live eligibility functions. Both
 # worker entries must publish their request's detached facts before retrieval.
@@ -84,6 +87,10 @@ assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_
 assert native_schedule.index('"prompt_build_knowledge_capture"') < native_schedule.index('owner.RunSharedKnowledgeRetrieval(phases);') < native_schedule.index('"prompt_build_complete"'), "Native knowledge capture/worker/complete order"
 assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedule.index('owner.RunSharedKnowledgeRetrieval(phases)') < courier_schedule.index('source + "_prompt_complete"'), "Courier knowledge capture/worker/complete order"
 assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
+extra_instructions = extract.declaration(source, "private string BuildExtraRuleInstructions(")
+assert "AIConfigHandler.FormatMatchedExtraRuleInstructions(" in extra_instructions and extra_instructions.index("fallbackHits != null") < extra_instructions.index("AIConfigHandler.BuildMatchedExtraRuleInstructions("), "captured fallback hits must format without a second retrieval"
+assert "GuardrailStickyTargetKey = AIConfigHandler.CaptureGuardrailStickyTargetKey(runtimeTarget)" in capture_request, "sticky identity must be captured on game thread"
+assert "GetMatchedExtraRuleHitsForWorker(" in ai and "capturedStickyTargetKey ?? \"\"" in ai, "worker fallback must not resolve target identity live"
 for label, body in (("Native", native_schedule), ("Courier", courier_schedule)):
     for live_call in ("Hero.Find(", "Mission.Current", "CanInjectVassalageRuleForExternal(", "CanInjectDiplomacyRuleForExternal(", "CanDiscussWorldDiplomacyForExternal("):
         assert live_call not in body, label + " worker schedule must not resolve live eligibility: " + live_call

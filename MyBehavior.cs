@@ -28274,7 +28274,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildExtraRuleInstructions(string input, string npcLastUtterance, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null)
+	private string BuildExtraRuleInstructions(string input, string npcLastUtterance, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, List<GuardrailRuleHit> fallbackHits = null)
 	{
 		string text = "";
 		string text2 = "";
@@ -28292,9 +28292,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		AIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding, CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding));
 		try
 		{
-			text = preselectedRuleIds == null
-				? AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet)
-				: BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
+			text = preselectedRuleIds != null
+				? BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex)
+				: fallbackHits != null
+					? AIConfigHandler.FormatMatchedExtraRuleInstructions(input, npcLastUtterance, hasAnyHero, excludedRuleIdSet, fallbackHits)
+					: AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet);
 			encounterReleaseRuleSelected = PromptRuleBlockText.Has(text, "encounter_release_player");
 			if (PromptRuleBlockText.Has(text, "party_transfer"))
 			{
@@ -28612,11 +28614,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return baseInstruction;
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, bool suppressForcedMeetingTaunt = false)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, bool suppressForcedMeetingTaunt = false, List<GuardrailRuleHit> fallbackHits = null)
 	{
 		try
 		{
-			return PromptRuleInstructionComposer.Compose(CaptureRuleInstructionSections(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuel, worldMapPartyCommandContext, excludedRuleIds, preselectedRuleIds, suppressForcedMeetingTaunt));
+			return PromptRuleInstructionComposer.Compose(CaptureRuleInstructionSections(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuel, worldMapPartyCommandContext, excludedRuleIds, preselectedRuleIds, suppressForcedMeetingTaunt, fallbackHits));
 		}
 		catch
 		{
@@ -28627,10 +28629,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 	/// <summary>
 	/// Game-thread capture of every runtime rule body the triggered-rule block can contain. Bodies are
 	/// resolved only when their topic applies (legacy laziness), so no extra Reward/Duel reads happen.
-	/// Matched extra rules (semantic retrieval when no preselection) are captured here too; moving that
-	/// retrieval to the background step is J06 scope because BuildExtraRuleInstructions reads Hero state.
+	/// Scheduled builds format worker-selected fallback hits here; synchronous compatibility callers
+	/// may still select their own hits before the same game-thread runtime instruction capture.
 	/// </summary>
-	private PromptRuleInstructionSections CaptureRuleInstructionSections(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, string npcLastUtterance, bool includeDuelStakeContext, bool playerWonLastDuel, bool worldMapPartyCommandContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preselectedRuleIds, bool suppressForcedMeetingTaunt)
+	private PromptRuleInstructionSections CaptureRuleInstructionSections(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, string npcLastUtterance, bool includeDuelStakeContext, bool playerWonLastDuel, bool worldMapPartyCommandContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preselectedRuleIds, bool suppressForcedMeetingTaunt, List<GuardrailRuleHit> fallbackHits)
 	{
 		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
@@ -28674,7 +28676,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			s.SurroundingsInstruction = AIConfigHandler.SurroundingsInstruction;
 		}
-		s.ExtraRuleInstructions = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds);
+		s.ExtraRuleInstructions = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds, fallbackHits);
 		if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command"))
 		{
 			string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
@@ -30292,12 +30294,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 	/// <summary>Worker: select Lore candidates without resolving Hero, Mission or Campaign objects.</summary>
 	internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases)
 	{
-		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore || phases.Request.HasPrefetchedLore)
+		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)
 		{
 			return;
 		}
-		phases.Retrieval.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(
-			phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion);
+		if (!phases.Request.HasPrefetchedLore)
+		{
+			phases.Retrieval.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(
+				phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion);
+		}
+		if (phases.Request.AllowRulePreprocess && phases.Routing?.AuxiliaryRuleHitIds == null)
+		{
+			phases.Retrieval.FallbackExtraRuleHits = AIConfigHandler.GetMatchedExtraRuleHitsForWorker(
+				phases.Request.Input, phases.Request.NpcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap,
+				phases.Request.ExcludedRuleIds, phases.Request.GuardrailStickyTargetKey);
+		}
 	}
 
 	/// <summary>
@@ -30386,7 +30397,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet,
 			CompleteRuntimeExcludedRuleIds = completeRuntimeExcludedRuleIds,
 			ForcedPreprocessRuleIds = forcedPreprocessRuleIds,
-			StickyTargetKey = ResolveBuiltInRuleStickyTargetKey(targetHero, targetCharacter)
+			StickyTargetKey = ResolveBuiltInRuleStickyTargetKey(targetHero, targetCharacter),
+			GuardrailStickyTargetKey = AIConfigHandler.CaptureGuardrailStickyTargetKey(runtimeTarget)
 		};
 	}
 
@@ -30589,7 +30601,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
-		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, request.PlayerClanTier, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, request.ExcludedRuleIds, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds, "meeting_taunt")) : "";
+		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, request.PlayerClanTier, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, request.ExcludedRuleIds, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds, "meeting_taunt"), retrieval?.FallbackExtraRuleHits) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
