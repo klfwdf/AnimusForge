@@ -4,6 +4,8 @@
 
 追加 `1fa1a4e1`：Courier 旧同步/新调度生产请求体已在生产 `PromptExtrasComposer` 的六类知识文本 fixture 下比较完整序列化请求（两方向 76 场景 / 390 检查，Lore 丢失变异拒收）。这不覆盖游戏端知识结果或 Native 最终模型请求全文；产品源码与 291 锚点地图未变。
 
+本次加固把 Courier 请求旧侧提取范围扩至 `77a3d234` 的两套最终请求方法，使旧新方法不再共用当前最终组装体；Lore/实体/规则三个仅改新侧的丢正文变异均在请求全文比较处拒收。检索输出与底层消息仍是 fixture，不能替代 J06 要求的生产知识结果及 Native 全文对照；产品源码和地图坐标未变。
+
 本次测试 `ae2cb4f4` 从生产 `WorldEntityRetrievalService.CaptureCandidates`/`CaptureDetachedMetadata` 提取方法做 2,000 假 Hero 捕获耗时、64 项预算次数和两项负向变异；`db9a899e` 从生产 `PromptAssemblyStage` 验证完整 `Extras` 八组合与三项文本丢失变异。产品源码与 291 点地图仍绑定 `70db6ec2`。原脚本 Debug/Release 双 API + Bootstrap 六项已按四目录授权通过，取代下方旧构建阻塞；**最终模型请求 Prompt 的旧同步/新捕获全文对照未完成**，不得将 `Extras` 测试当成 J06 离线验收。性能样本只含 fake 游戏端口，非实机帧耗时。
 
 当前源码 `70db6ec2`；[291 锚点代码地图](af-framework-code-map.json) recorded/working-tree 均通过。最新状态与离线阻塞以[主台账 J06 检索收口节](../animusforge-refactoring-and-repository-reorganization-plan.md#j06-retrieval-cutover-20260919)为准，下方 J06d/J05/J04 表是历史切片，不应继续读作当前完成度。
