@@ -30307,36 +30307,84 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	/// <summary>Worker: select Lore, entity and fallback rule candidates without resolving game objects.</summary>
-	internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases)
+	/// <summary>Game thread: detach only the fields needed by the Knowledge worker.</summary>
+	internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(PromptBuildPhases phases)
 	{
 		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)
 		{
-			return;
+			return null;
 		}
-		if (!phases.Request.HasPrefetchedLore)
+		bool needsFallbackExtraRules = phases.Request.AllowRulePreprocess && phases.Routing?.AuxiliaryRuleHitIds == null;
+		return new PromptKnowledgeWorkInput
 		{
-			phases.Retrieval.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(
-				phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion, phases.Retrieval.LoreSettings);
+			Mentions = phases.Retrieval.AuxiliaryMentions?.Clone(),
+			Target = phases.Request.Target,
+			Eligibility = phases.Request.Eligibility,
+			LoreRuleVersion = phases.Retrieval.LoreRuleVersion,
+			LoreSettings = phases.Retrieval.LoreSettings,
+			HasPrefetchedLore = phases.Request.HasPrefetchedLore,
+			EntityCandidates = phases.Retrieval.EntityCandidates,
+			EntityMaxInjectedEntities = phases.Retrieval.EntityMaxInjectedEntities,
+			Input = phases.Request.Input,
+			NpcLastUtterance = phases.Request.NpcLastUtterance,
+			NeedsFallbackExtraRules = needsFallbackExtraRules,
+			ExtraRuleReturnCap = needsFallbackExtraRules ? AIConfigHandler.GuardrailRuleReturnCap : 0,
+			ExcludedRuleIds = phases.Request.ExcludedRuleIds == null ? null : new HashSet<string>(phases.Request.ExcludedRuleIds, StringComparer.OrdinalIgnoreCase),
+			GuardrailStickyTargetKey = phases.Request.GuardrailStickyTargetKey
+		};
+	}
+
+	/// <summary>Worker: select candidates from a detached input, never from the mixed game capture.</summary>
+	internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input)
+	{
+		PromptKnowledgeWorkResult result = new PromptKnowledgeWorkResult();
+		if (input == null) return result;
+		using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(input.Target, input.Eligibility);
+		try
+		{
+		if (!input.HasPrefetchedLore)
+		{
+			result.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(input.Mentions, input.LoreRuleVersion, input.LoreSettings);
 		}
-		if (phases.Retrieval.EntityCandidates != null)
+		if (input.EntityCandidates != null)
 		{
 			try
 			{
-				phases.Retrieval.EntityMatches = WorldEntityRetrievalService.MatchDetachedCandidates(
-					phases.Retrieval.EntityCandidates, phases.Retrieval.AuxiliaryMentions, phases.Request.Input, phases.Retrieval.EntityMaxInjectedEntities);
+				result.EntityMatches = WorldEntityRetrievalService.MatchDetachedCandidates(
+					input.EntityCandidates, input.Mentions, input.Input, input.EntityMaxInjectedEntities);
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("WorldEntityRetrieval", "candidate_match_failed: " + ex.Message);
 			}
 		}
-		if (phases.Request.AllowRulePreprocess && phases.Routing?.AuxiliaryRuleHitIds == null)
+		if (input.NeedsFallbackExtraRules)
 		{
-			phases.Retrieval.FallbackExtraRuleHits = AIConfigHandler.GetMatchedExtraRuleHitsForWorker(
-				phases.Request.Input, phases.Request.NpcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap,
-				phases.Request.ExcludedRuleIds, phases.Request.GuardrailStickyTargetKey);
+			result.FallbackExtraRuleHits = AIConfigHandler.GetMatchedExtraRuleHitsForWorker(
+				input.Input, input.NpcLastUtterance, input.ExtraRuleReturnCap,
+				input.ExcludedRuleIds, input.GuardrailStickyTargetKey);
 		}
+		return result;
+		}
+		finally
+		{
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
+		}
+	}
+
+	internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases phases, PromptKnowledgeWorkResult result)
+	{
+		if (phases?.Retrieval == null || result == null) return;
+		phases.Retrieval.LoreCandidates = result.LoreCandidates;
+		phases.Retrieval.EntityMatches = result.EntityMatches;
+		phases.Retrieval.FallbackExtraRuleHits = result.FallbackExtraRuleHits;
+	}
+
+	// Compatibility for synchronous Scene and setter-only callers; scheduled channels use the detached overload.
+	internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases)
+	{
+		ApplySharedKnowledgeRetrieval(phases, RunSharedKnowledgeRetrieval(CreateSharedKnowledgeWorkInput(phases)));
 	}
 
 	/// <summary>

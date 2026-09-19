@@ -79,24 +79,25 @@ public partial class ShoutBehavior
 		}
 
 		// Step 3: game thread. Prepare Lore and capture entity candidates after routing discovered mentions.
-		PromptBuildPhases prepared = await RunNativeConversationMainThreadFuncAsync("prompt_build_knowledge_capture", target, targetAgentIndex,
+		PromptKnowledgeWorkInput knowledgeInput = await RunNativeConversationMainThreadFuncAsync("prompt_build_knowledge_capture", target, targetAgentIndex,
 			() =>
 			{
 				if (!IsNativeConversationAdmissionCurrent(admission, out _)) return null;
 				owner.CaptureSharedKnowledgeSnapshot(phases, targetHero ?? targetCharacter?.HeroObject);
-				return phases;
+				return MyBehavior.CreateSharedKnowledgeWorkInput(phases);
 			},
-			(PromptBuildPhases)null).ConfigureAwait(false);
-		if (!ReferenceEquals(prepared, phases) || SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_capture"))
+			(PromptKnowledgeWorkInput)null).ConfigureAwait(false);
+		if (knowledgeInput == null || SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_capture"))
 		{
 			return null;
 		}
 
 		// Step 4: background Lore/entity/rule retrieval, with the same slot/timeout guard as routing.
 		MyBehavior.ShoutPromptContext knowledgeMarker = new MyBehavior.ShoutPromptContext();
+		PromptKnowledgeWorkResult knowledgeResult = null;
 		Task<MyBehavior.ShoutPromptContext> knowledgeTask = RunNativeConversationBackgroundPreprocessAsync(target, targetAgentIndex, runtimeGeneration, () =>
 		{
-			owner.RunSharedKnowledgeRetrieval(phases);
+			knowledgeResult = MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);
 			return knowledgeMarker;
 		});
 		if (!ReferenceEquals(await AwaitNativeConversationBackgroundPreprocessAsync(knowledgeTask, target, targetAgentIndex, runtimeGeneration).ConfigureAwait(false), knowledgeMarker)
@@ -117,6 +118,7 @@ public partial class ShoutBehavior
 				AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 				try
 				{
+					MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowledgeResult);
 					return owner.CompleteSharedPromptBuild(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
 				}
 				finally

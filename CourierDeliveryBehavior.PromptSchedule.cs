@@ -94,16 +94,16 @@ public partial class CourierDeliveryBehavior
 		}).ConfigureAwait(false);
 
 		// Step 5 (game thread): prepare Lore and capture entity candidates after routing supplied all mentions.
-		PromptBuildPhases prepared = await RunCourierOwnerPhaseAsync(generation, source + "_knowledge_capture", () =>
+		PromptKnowledgeWorkInput knowledgeInput = await RunCourierOwnerPhaseAsync(generation, source + "_knowledge_capture", () =>
 		{
 			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
 			owner.CaptureSharedKnowledgeSnapshot(phases, input.Participant);
-			return phases;
+			return MyBehavior.CreateSharedKnowledgeWorkInput(phases);
 		}, CancellationToken.None).ConfigureAwait(false);
-		if (!ReferenceEquals(prepared, phases)) return null;
+		if (knowledgeInput == null) return null;
 
 		// Step 6 (thread pool): Lore/entity/rule candidate retrieval from detached inputs.
-		await Task.Run(() => owner.RunSharedKnowledgeRetrieval(phases)).ConfigureAwait(false);
+		PromptKnowledgeWorkResult knowledgeResult = await Task.Run(() => MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput)).ConfigureAwait(false);
 
 		// Step 7 (game thread): sections, assembly, appendices. A declined owner phase aborts (null);
 		// a null context from the builder itself is a legacy-tolerated result and still assembles.
@@ -112,7 +112,11 @@ public partial class CourierDeliveryBehavior
 			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
 			using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
 			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
-			try { return new CourierPreparedPrompt(preprocessRuleHits, owner.CompleteSharedPromptBuild(phases, input.Participant, input.Character, null)); }
+			try
+			{
+				MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowledgeResult);
+				return new CourierPreparedPrompt(preprocessRuleHits, owner.CompleteSharedPromptBuild(phases, input.Participant, input.Character, null));
+			}
 			finally { AIConfigHandler.ClearGuardrailRuntimeTarget(); }
 		}, CancellationToken.None).ConfigureAwait(false);
 		return completed;
