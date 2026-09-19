@@ -19955,7 +19955,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string moduleRootPath = GetModuleRootPath();
+			string moduleRootPath = PlayerExportsStore.GetModuleRootPath();
 			if (string.IsNullOrWhiteSpace(moduleRootPath))
 			{
 				return false;
@@ -36808,14 +36808,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (File.Exists(path))
 			{
 				payload.HasWorldSummaryFile = true;
-				EventWorldOpeningSummaryJson eventWorldOpeningSummaryJson = ReadJson<EventWorldOpeningSummaryJson>(path);
+				EventWorldOpeningSummaryJson eventWorldOpeningSummaryJson = PlayerExportsStore.ReadJson<EventWorldOpeningSummaryJson>(path);
 				payload.WorldSummary = (eventWorldOpeningSummaryJson?.Summary ?? "").Trim();
 			}
 			string path2 = Path.Combine(text2, "KingdomOpeningSummaries.json");
 			if (File.Exists(path2))
 			{
 				payload.HasKingdomSummariesFile = true;
-				Dictionary<string, string> dictionary = ReadJson<Dictionary<string, string>>(path2) ?? new Dictionary<string, string>();
+				Dictionary<string, string> dictionary = PlayerExportsStore.ReadJson<Dictionary<string, string>>(path2) ?? new Dictionary<string, string>();
 				foreach (KeyValuePair<string, string> item in dictionary)
 				{
 					string text3 = (item.Key ?? "").Trim();
@@ -36829,7 +36829,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (File.Exists(path3))
 			{
 				payload.HasEventRecordsFile = true;
-				List<EventRecordEntry> source = ReadJson<List<EventRecordEntry>>(path3) ?? new List<EventRecordEntry>();
+				List<EventRecordEntry> source = PlayerExportsStore.ReadJson<List<EventRecordEntry>>(path3) ?? new List<EventRecordEntry>();
 				payload.EventRecords = SanitizeEventRecordEntries(source);
 			}
 			if (!payload.HasWorldSummaryFile && !payload.HasKingdomSummariesFile && !payload.HasEventRecordsFile)
@@ -51330,7 +51330,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (string.IsNullOrEmpty(text2))
 		{
-			text2 = ResolveImportFolderPath(folderName);
+			text2 = PlayerExportsStore.ResolveImportFolderPath(folderName);
 		}
 		if (string.IsNullOrEmpty(text2) || !Directory.Exists(text2))
 		{
@@ -51356,7 +51356,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] files = Directory.GetFiles(item, "*.json", SearchOption.TopDirectoryOnly);
 				foreach (string text3 in files)
 				{
-					string text4 = TryParseHeroIdFromNpcFileName(text3);
+					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (string.IsNullOrWhiteSpace(text4))
 					{
 						continue;
@@ -51914,7 +51914,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
+		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 		Directory.CreateDirectory(playerExportsRootPath);
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
@@ -51984,7 +51984,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			List<InquiryElement> list = new List<InquiryElement>
 			{
 				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null),
@@ -52098,7 +52098,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		error = "";
 		try
 		{
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
 			{
 				error = "找不到资料包文件夹。";
@@ -52996,7 +52996,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
+		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 		Directory.CreateDirectory(playerExportsRootPath);
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", "手动输入文件夹名…", null));
@@ -53122,12 +53122,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 					ExportVoiceMappingData(folderName);
 				}
 			};
-			string value = SanitizeFolderName(folderName);
+			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = GetPlayerExportsRootPath();
+				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 				Directory.CreateDirectory(playerExportsRootPath);
-				string path = ResolveExportFolderName(folderName);
+				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
 				{
@@ -53207,12 +53207,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 					ExportSingleNpcDebtData(folderName, id);
 				}
 			};
-			string value = SanitizeFolderName(folderName);
+			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = GetPlayerExportsRootPath();
+				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 				Directory.CreateDirectory(playerExportsRootPath);
-				string path = ResolveExportFolderName(folderName);
+				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
 				{
@@ -53248,9 +53248,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
@@ -53269,8 +53269,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				value = new NpcPersonaProfile();
 				StampNpcPersonaProfile(heroId, value);
 			}
-			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-			WriteJson(path2, value);
+			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+			PlayerExportsStore.WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -53283,16 +53283,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
 			CompressedMemoryExportBundle value = BuildCompressedMemoryExportBundle(heroId);
-			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-			WriteJson(path2, value);
+			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+			PlayerExportsStore.WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -53443,9 +53443,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "debt");
@@ -53456,8 +53456,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				value = new RewardSystemBehavior.DebtExportEntry();
 			}
-			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-			WriteJson(path2, value);
+			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+			PlayerExportsStore.WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -53494,7 +53494,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					importDir = ResolveImportFolderPath(folderName);
+					importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
@@ -53540,7 +53540,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 				return;
 			}
-			RewardSystemBehavior.DebtExportEntry entry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text3);
+			RewardSystemBehavior.DebtExportEntry entry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text3);
 			bool flag = entry != null;
 			bool flag2 = all.ContainsKey(heroId);
 			Action action = delegate
@@ -53605,7 +53605,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					importDir = ResolveImportFolderPath(folderName);
+					importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
@@ -53645,7 +53645,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				Logger.Log("NpcPersona", "[WARN] Skipped single persona import file " + Path.GetFileName(text3) + " for hero=" + heroId + ": " + (warning ?? ("resolvedHeroId=" + resolvedHeroId)));
 				return;
 			}
-			NpcPersonaProfile prof = ReadJson<NpcPersonaProfile>(text3);
+			NpcPersonaProfile prof = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text3);
 			if (_npcPersonaProfiles == null)
 			{
 				_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
@@ -53724,7 +53724,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					importDir = ResolveImportFolderPath(folderName);
+					importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
@@ -53758,7 +53758,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
 				return;
 			}
-			CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text3);
+			CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
 			bool flag = bundle != null;
 			bool flag2 = false;
 			try
@@ -53804,28 +53804,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
 					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
-						WriteJson(path2, npcPersonaProfile.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(npcPersonaProfile.Key, ResolveHeroNameForNpcDataFile(npcPersonaProfile.Key)));
+						PlayerExportsStore.WriteJson(path2, npcPersonaProfile.Value);
 					}
 				}
 			}
 			string text3 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text3);
-			ClearJsonFiles(text3);
+			PlayerExportsStore.ClearJsonFiles(text3);
 			HashSet<string> memoryHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -53864,12 +53864,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (string memoryHeroId in memoryHeroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)))
 			{
-				string path3 = Path.Combine(text3, BuildNpcDataFileName(memoryHeroId));
-				WriteJson(path3, BuildCompressedMemoryExportBundle(memoryHeroId));
+				string path3 = Path.Combine(text3, NpcDataFileName.Build(memoryHeroId, ResolveHeroNameForNpcDataFile(memoryHeroId)));
+				PlayerExportsStore.WriteJson(path3, BuildCompressedMemoryExportBundle(memoryHeroId));
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			ClearJsonFiles(text4);
+			PlayerExportsStore.ClearJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -53878,8 +53878,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
 					{
-						string path4 = Path.Combine(text4, BuildNpcDataFileName(item2.Key));
-						WriteJson(path4, item2.Value);
+						string path4 = Path.Combine(text4, NpcDataFileName.Build(item2.Key, ResolveHeroNameForNpcDataFile(item2.Key)));
+						PlayerExportsStore.WriteJson(path4, item2.Value);
 					}
 				}
 			}
@@ -53897,7 +53897,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -53927,7 +53927,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
-						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
+						NpcPersonaProfile npcPersonaProfile = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
 							StampNpcPersonaProfile(text2, npcPersonaProfile);
@@ -53959,10 +53959,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array2 = files2;
 				foreach (string text3 in array2)
 				{
-					string text4 = TryParseHeroIdFromNpcFileName(text3);
+					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (!string.IsNullOrEmpty(text4))
 					{
-						CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text3);
+						CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
 						if (bundle != null)
 						{
 							dhNew[NormalizeMemoryHeroId(text4)] = bundle;
@@ -53989,10 +53989,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array3 = files3;
 				foreach (string text5 in array3)
 				{
-					string text6 = TryParseHeroIdFromNpcFileName(text5);
+					string text6 = NpcDataFileName.TryParseHeroId(text5);
 					if (!string.IsNullOrEmpty(text6))
 					{
-						RewardSystemBehavior.DebtExportEntry debtExportEntry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
+						RewardSystemBehavior.DebtExportEntry debtExportEntry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
 						if (debtExportEntry != null)
 						{
 							debtNew[text6] = debtExportEntry;
@@ -54133,42 +54133,42 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
 					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
-						WriteJson(path2, npcPersonaProfile.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(npcPersonaProfile.Key, ResolveHeroNameForNpcDataFile(npcPersonaProfile.Key)));
+						PlayerExportsStore.WriteJson(path2, npcPersonaProfile.Value);
 					}
 				}
 			}
 			string text3 = Path.Combine(text, "dialogue_history");
 			Directory.CreateDirectory(text3);
-			ClearJsonFiles(text3);
+			PlayerExportsStore.ClearJsonFiles(text3);
 			if (_dialogueHistory != null)
 			{
 				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
 					{
-						string path3 = Path.Combine(text3, BuildNpcDataFileName(item.Key));
-						WriteJson(path3, item.Value);
+						string path3 = Path.Combine(text3, NpcDataFileName.Build(item.Key, ResolveHeroNameForNpcDataFile(item.Key)));
+						PlayerExportsStore.WriteJson(path3, item.Value);
 					}
 				}
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			ClearJsonFiles(text4);
+			PlayerExportsStore.ClearJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -54177,8 +54177,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
 					{
-						string path4 = Path.Combine(text4, BuildNpcDataFileName(item2.Key));
-						WriteJson(path4, item2.Value);
+						string path4 = Path.Combine(text4, NpcDataFileName.Build(item2.Key, ResolveHeroNameForNpcDataFile(item2.Key)));
+						PlayerExportsStore.WriteJson(path4, item2.Value);
 					}
 				}
 			}
@@ -54193,7 +54193,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
 			string text5 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text5);
-			ClearJsonFiles(text5);
+			PlayerExportsStore.ClearJsonFiles(text5);
 			string path5 = Path.Combine(text5, "VoiceMapping.json");
 			string text6 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text6))
@@ -54219,9 +54219,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
@@ -54237,22 +54237,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
 					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
-						WriteJson(path2, npcPersonaProfile.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(npcPersonaProfile.Key, ResolveHeroNameForNpcDataFile(npcPersonaProfile.Key)));
+						PlayerExportsStore.WriteJson(path2, npcPersonaProfile.Value);
 					}
 				}
 			}
@@ -54268,14 +54268,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			HashSet<string> heroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -54314,8 +54314,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (string heroId in heroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)))
 			{
-				string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-				WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
+				string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+				PlayerExportsStore.WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
 			}
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
@@ -54329,14 +54329,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -54345,8 +54345,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(item.Key));
-						WriteJson(path2, item.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(item.Key, ResolveHeroNameForNpcDataFile(item.Key)));
+						PlayerExportsStore.WriteJson(path2, item.Value);
 					}
 				}
 			}
@@ -54362,9 +54362,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			if (!TryExportKnowledgeToDir(text, out var exportedCount, out var error))
@@ -54386,9 +54386,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			ExportEventDataToDir(text);
@@ -54404,13 +54404,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		string text = Path.Combine(exportDir, "event_data");
 		Directory.CreateDirectory(text);
-		ClearJsonFiles(text);
-		WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
+		PlayerExportsStore.ClearJsonFiles(text);
+		PlayerExportsStore.WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
 		{
 			Summary = (_eventWorldOpeningSummary ?? "").Trim()
 		});
-		WriteJson(Path.Combine(text, "KingdomOpeningSummaries.json"), BuildEventKingdomSummaryExportMap());
-		WriteJson(Path.Combine(text, "EventRecords.json"), SanitizeEventRecordEntries(_eventRecordEntries));
+		PlayerExportsStore.WriteJson(Path.Combine(text, "KingdomOpeningSummaries.json"), BuildEventKingdomSummaryExportMap());
+		PlayerExportsStore.WriteJson(Path.Combine(text, "EventRecords.json"), SanitizeEventRecordEntries(_eventRecordEntries));
 	}
 
 	private Dictionary<string, string> BuildEventKingdomSummaryExportMap()
@@ -54462,7 +54462,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text = Path.Combine(exportDir, "knowledge", "rules");
 			Directory.CreateDirectory(text);
-			ClearJsonFiles(text);
+			PlayerExportsStore.ClearJsonFiles(text);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
 			{
@@ -54570,9 +54570,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：找不到该知识条目：" + text));
 				return;
 			}
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text3 = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text3);
 			string text4 = Path.Combine(text3, "knowledge", "rules");
@@ -54646,7 +54646,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：RuleId 为空。"));
 				return;
 			}
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55227,7 +55227,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		string text = null;
 		try
 		{
-			text = (ReadJson<UnnamedPersonaSingleJson>(file)?.Key ?? "").Trim().ToLower();
+			text = (PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(file)?.Key ?? "").Trim().ToLower();
 		}
 		catch
 		{
@@ -55342,9 +55342,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：找不到该未命名NPC条目：" + text));
 				return;
 			}
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text2 = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text2);
 			string text3 = Path.Combine(text2, "unnamed_persona");
@@ -55370,7 +55370,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				text4 = "unnamed";
 			}
 			string path2 = Path.Combine(text3, text4 + ".json");
-			WriteJson(path2, new UnnamedPersonaSingleJson
+			PlayerExportsStore.WriteJson(path2, new UnnamedPersonaSingleJson
 			{
 				Key = text,
 				Personality = (personality ?? "").Trim(),
@@ -55394,7 +55394,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：Key 为空。"));
 				return;
 			}
-			string text2 = ResolveImportFolderPath(folderName);
+			string text2 = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text2) || !Directory.Exists(text2))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55412,7 +55412,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到该未命名NPC条目的导出文件：" + text));
 				return;
 			}
-			UnnamedPersonaSingleJson unnamedPersonaSingleJson = ReadJson<UnnamedPersonaSingleJson>(text3);
+			UnnamedPersonaSingleJson unnamedPersonaSingleJson = PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(text3);
 			if (unnamedPersonaSingleJson == null)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：JSON 解析失败。"));
@@ -55533,7 +55533,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				maxCount = 200;
 			}
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
 				return list;
@@ -55620,7 +55620,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				maxCount = 200;
 			}
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
 				return list;
@@ -55701,7 +55701,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55720,7 +55720,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 				{
-					NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
+					NpcPersonaProfile npcPersonaProfile = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text);
 					if (npcPersonaProfile != null)
 					{
 						StampNpcPersonaProfile(text2, npcPersonaProfile);
@@ -55805,7 +55805,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55822,10 +55822,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text in array)
 			{
-				string text2 = TryParseHeroIdFromNpcFileName(text);
+				string text2 = NpcDataFileName.TryParseHeroId(text);
 				if (!string.IsNullOrEmpty(text2))
 				{
-					CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text);
+					CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text);
 					if (bundle != null)
 					{
 						dict[NormalizeMemoryHeroId(text2)] = bundle;
@@ -55895,7 +55895,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55918,10 +55918,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text in array)
 			{
-				string text2 = TryParseHeroIdFromNpcFileName(text);
+				string text2 = NpcDataFileName.TryParseHeroId(text);
 				if (!string.IsNullOrEmpty(text2))
 				{
-					RewardSystemBehavior.DebtExportEntry debtExportEntry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text);
+					RewardSystemBehavior.DebtExportEntry debtExportEntry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text);
 					if (debtExportEntry != null)
 					{
 						dict[text2] = debtExportEntry;
@@ -55993,7 +55993,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -56085,7 +56085,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -56109,7 +56109,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -56227,14 +56227,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			string path2 = Path.Combine(text2, "VoiceMapping.json");
 			string text3 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -56255,7 +56255,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -56333,7 +56333,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -56378,7 +56378,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
-						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
+						NpcPersonaProfile npcPersonaProfile = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
 							StampNpcPersonaProfile(text2, npcPersonaProfile);
@@ -56410,10 +56410,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array2 = files2;
 				foreach (string text3 in array2)
 				{
-					string text4 = TryParseHeroIdFromNpcFileName(text3);
+					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (!string.IsNullOrEmpty(text4))
 					{
-						List<DialogueDay> list = ReadJson<List<DialogueDay>>(text3);
+						List<DialogueDay> list = PlayerExportsStore.ReadJson<List<DialogueDay>>(text3);
 						if (list != null)
 						{
 							dhNew[text4] = list;
@@ -56442,10 +56442,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array3 = files3;
 				foreach (string text5 in array3)
 				{
-					string text6 = TryParseHeroIdFromNpcFileName(text5);
+					string text6 = NpcDataFileName.TryParseHeroId(text5);
 					if (!string.IsNullOrEmpty(text6))
 					{
-						RewardSystemBehavior.DebtExportEntry debtExportEntry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
+						RewardSystemBehavior.DebtExportEntry debtExportEntry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
 						if (debtExportEntry != null)
 						{
 							debtNew[text6] = debtExportEntry;
@@ -56497,7 +56497,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 						string text7 = null;
 						try
 						{
-							text7 = (ReadJson<UnnamedPersonaSingleJson>(path4)?.Key ?? "").Trim().ToLower();
+							text7 = (PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(path4)?.Key ?? "").Trim().ToLower();
 						}
 						catch
 						{
@@ -56887,7 +56887,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string text = Path.Combine(importDir, "knowledge", "AIConfig.json");
 			if (File.Exists(text))
 			{
-				string moduleRootPath = GetModuleRootPath();
+				string moduleRootPath = PlayerExportsStore.GetModuleRootPath();
 				string text2 = Path.Combine(moduleRootPath, "ModuleData", "AIConfig.json");
 				string text3 = Path.Combine(moduleRootPath, "AIConfig.json");
 				try
@@ -57204,13 +57204,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text2 in array)
 			{
-				if (!TryParseNpcFileNameParts(text2, out var text3, out var fileDisplayName))
+				if (!NpcDataFileName.TryParseParts(text2, out var text3, out var fileDisplayName))
 				{
 					continue;
 				}
 				if (!(text3 != text))
 				{
-					if (targetHero != null && !IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, IsAutoGeneratedNpcHeroId(text)))
+					if (targetHero != null && !NpcDataFileName.IsDisplayNameCompatible(fileDisplayName, targetHero?.Name?.ToString(), targetHero != null, NpcDataFileName.IsAutoGeneratedHeroId(text)))
 					{
 						continue;
 					}
@@ -57221,7 +57221,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 						dateTime = lastWriteTimeUtc;
 					}
 				}
-				else if (targetHero != null && IsNpcFileDisplayNameSpecified(fileDisplayName) && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, strictWhenNameMissing: true))
+				else if (targetHero != null && NpcDataFileName.IsDisplayNameSpecified(fileDisplayName) && NpcDataFileName.IsDisplayNameCompatible(fileDisplayName, targetHero?.Name?.ToString(), targetHero != null, strictWhenNameMissing: true))
 				{
 					DateTime lastWriteTimeUtc2 = File.GetLastWriteTimeUtc(text2);
 					if (lastWriteTimeUtc2 > nameMatchedDateTime)
@@ -57236,6 +57236,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static string ResolveHeroNameForNpcDataFile(string heroId)
+	{
+		string id = (heroId ?? "").Trim();
+		if (string.IsNullOrEmpty(id))
+		{
+			return "";
+		}
+		try
+		{
+			return Hero.FindFirst((Hero x) => x != null && x.StringId == id)?.Name?.ToString() ?? "";
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -57256,94 +57273,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsAutoGeneratedNpcHeroId(string heroId)
-	{
-		string text = (heroId ?? "").Trim();
-		return text.StartsWith("CharacterObject_", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool TryParseNpcFileNameParts(string filePath, out string heroId, out string displayName)
-	{
-		heroId = "";
-		displayName = "";
-		try
-		{
-			string text = Path.GetFileNameWithoutExtension(filePath) ?? "";
-			int num = text.IndexOf("__", StringComparison.Ordinal);
-			if (num <= 0)
-			{
-				return false;
-			}
-			heroId = (text.Substring(0, num) ?? "").Trim();
-			displayName = ((num + 2 < text.Length) ? text.Substring(num + 2) : "").Trim();
-			return !string.IsNullOrEmpty(heroId);
-		}
-		catch
-		{
-			heroId = "";
-			displayName = "";
-			return false;
-		}
-	}
-
-	private static string NormalizeNpcFileDisplayName(string value)
-	{
-		string text = (value ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		try
-		{
-			foreach (char oldChar in Path.GetInvalidFileNameChars())
-			{
-				text = text.Replace(oldChar, '_');
-			}
-		}
-		catch
-		{
-		}
-		while (text.Contains("  "))
-		{
-			text = text.Replace("  ", " ");
-		}
-		return text.Trim();
-	}
-
-	private static bool IsNpcFileDisplayNameSpecified(string displayName)
-	{
-		string text = NormalizeNpcFileDisplayName(displayName);
-		return !string.IsNullOrWhiteSpace(text)
-			&& !string.Equals(text, "NPC", StringComparison.OrdinalIgnoreCase)
-			&& !string.Equals(text, "unknown", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsNpcFileDisplayNameCompatibleWithHero(string fileDisplayName, Hero hero, bool strictWhenNameMissing)
-	{
-		if (hero == null)
-		{
-			return !strictWhenNameMissing;
-		}
-		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
-		{
-			return !strictWhenNameMissing;
-		}
-		string text = NormalizeNpcFileDisplayName(fileDisplayName);
-		string text2 = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
-		return !string.IsNullOrWhiteSpace(text2) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase);
-	}
-
 	private static Hero ResolveUniqueHeroByNpcFileDisplayName(string fileDisplayName)
 	{
-		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
+		if (!NpcDataFileName.IsDisplayNameSpecified(fileDisplayName))
 		{
 			return null;
 		}
-		string text = NormalizeNpcFileDisplayName(fileDisplayName);
+		string text = NpcDataFileName.NormalizeDisplayName(fileDisplayName);
 		try
 		{
 			List<Hero> list = ((IEnumerable<Hero>)Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>())
-				.Where((Hero x) => x != null && string.Equals(NormalizeNpcFileDisplayName(x.Name?.ToString() ?? ""), text, StringComparison.OrdinalIgnoreCase))
+				.Where((Hero x) => x != null && string.Equals(NpcDataFileName.NormalizeDisplayName(x.Name?.ToString() ?? ""), text, StringComparison.OrdinalIgnoreCase))
 				.Take(2)
 				.ToList();
 			return list.Count == 1 ? list[0] : null;
@@ -57358,14 +57298,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		resolvedHeroId = "";
 		warning = "";
-		if (!TryParseNpcFileNameParts(filePath, out var parsedHeroId, out var fileDisplayName))
+		if (!NpcDataFileName.TryParseParts(filePath, out var parsedHeroId, out var fileDisplayName))
 		{
 			warning = "文件名缺少 heroId__名字 格式。";
 			return false;
 		}
 		Hero currentHeroById = ResolveHeroByIdForNpcData(parsedHeroId);
-		bool autoGeneratedId = IsAutoGeneratedNpcHeroId(parsedHeroId);
-		if (currentHeroById != null && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, currentHeroById, autoGeneratedId))
+		bool autoGeneratedId = NpcDataFileName.IsAutoGeneratedHeroId(parsedHeroId);
+		if (currentHeroById != null && NpcDataFileName.IsDisplayNameCompatible(fileDisplayName, currentHeroById?.Name?.ToString(), currentHeroById != null, autoGeneratedId))
 		{
 			resolvedHeroId = (currentHeroById.StringId ?? parsedHeroId).Trim();
 			return !string.IsNullOrWhiteSpace(resolvedHeroId);
@@ -57382,7 +57322,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (currentHeroById != null)
 		{
-			warning = "文件名人物名“" + NormalizeNpcFileDisplayName(fileDisplayName) + "”与当前同 ID 人物“" + (currentHeroById.Name?.ToString() ?? "") + "”不一致。";
+			warning = "文件名人物名“" + NpcDataFileName.NormalizeDisplayName(fileDisplayName) + "”与当前同 ID 人物“" + (currentHeroById.Name?.ToString() ?? "") + "”不一致。";
 			return false;
 		}
 		if (autoGeneratedId)
@@ -57420,210 +57360,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		StampNpcPersonaProfile(heroId, profile);
 		return true;
-	}
-
-	private static string BuildNpcDataFileName(string heroId)
-	{
-		string id = (heroId ?? "").Trim();
-		if (string.IsNullOrEmpty(id))
-		{
-			id = "unknown";
-		}
-		string text = "";
-		try
-		{
-			text = Hero.FindFirst((Hero x) => x != null && x.StringId == id)?.Name?.ToString() ?? "";
-		}
-		catch
-		{
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = "NPC";
-		}
-		string text2 = id + "__" + text;
-		char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-		foreach (char oldChar in invalidFileNameChars)
-		{
-			text2 = text2.Replace(oldChar, '_');
-		}
-		return text2 + ".json";
-	}
-
-	private static string TryParseHeroIdFromNpcFileName(string filePath)
-	{
-		return TryParseNpcFileNameParts(filePath, out var heroId, out var _) ? heroId : null;
-	}
-
-	private static string GetPlayerExportsRootPath()
-	{
-		string moduleRootPath = GetModuleRootPath();
-		return Path.Combine(moduleRootPath, "PlayerExports");
-	}
-
-	private static string GetModuleRootPath()
-	{
-		try
-		{
-			string location = typeof(SubModule).Assembly.Location;
-			string text = (string.IsNullOrEmpty(location) ? "" : Path.GetDirectoryName(Path.GetFullPath(location)));
-			DirectoryInfo directoryInfo = (string.IsNullOrEmpty(text) ? null : new DirectoryInfo(text));
-			while (directoryInfo != null && directoryInfo.Exists)
-			{
-				if (File.Exists(Path.Combine(directoryInfo.FullName, "SubModule.xml")))
-				{
-					return directoryInfo.FullName;
-				}
-				directoryInfo = directoryInfo.Parent;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			return Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static string SanitizeFolderName(string input)
-	{
-		string text = (input ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
-		{
-			return "";
-		}
-		char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-		foreach (char oldChar in invalidFileNameChars)
-		{
-			text = text.Replace(oldChar, '_');
-		}
-		return text.Trim().TrimEnd('.');
-	}
-
-	private static void WriteJson(string path, object obj)
-	{
-		Directory.CreateDirectory(Path.GetDirectoryName(path));
-		try
-		{
-			if (File.Exists(path))
-			{
-				File.Delete(path);
-			}
-		}
-		catch
-		{
-		}
-		string contents = JsonConvert.SerializeObject(obj, Formatting.Indented);
-		File.WriteAllText(path, contents, Encoding.UTF8);
-	}
-
-	private static T ReadJson<T>(string path) where T : class
-	{
-		try
-		{
-			if (!File.Exists(path))
-			{
-				return null;
-			}
-			string value = File.ReadAllText(path, Encoding.UTF8);
-			if (string.IsNullOrWhiteSpace(value))
-			{
-				return null;
-			}
-			return JsonConvert.DeserializeObject<T>(value);
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static string FindLatestExportFolder(string root)
-	{
-		try
-		{
-			if (!Directory.Exists(root))
-			{
-				return null;
-			}
-			DirectoryInfo directoryInfo = new DirectoryInfo(root);
-			return (from d in directoryInfo.GetDirectories()
-				orderby d.LastWriteTimeUtc descending
-				select d).FirstOrDefault()?.FullName;
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static void ClearJsonFiles(string dir)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
-			{
-				return;
-			}
-			string[] files = Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly);
-			foreach (string path in files)
-			{
-				try
-				{
-					File.Delete(path);
-				}
-				catch
-				{
-				}
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private string ResolveExportFolderName(string folderName)
-	{
-		string text = SanitizeFolderName(folderName);
-		if (string.IsNullOrEmpty(text))
-		{
-			text = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-		}
-		return text;
-	}
-
-	private string ResolveImportFolderPath(string folderName)
-	{
-		string text = (folderName ?? "").Trim();
-		if (!string.IsNullOrEmpty(text))
-		{
-			try
-			{
-				if (Path.IsPathRooted(text))
-				{
-					string fullPath = Path.GetFullPath(text);
-					if (Directory.Exists(fullPath))
-					{
-						return fullPath;
-					}
-				}
-			}
-			catch
-			{
-			}
-		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
-		string text2 = SanitizeFolderName(folderName);
-		if (string.IsNullOrEmpty(text2))
-		{
-			return FindLatestExportFolder(playerExportsRootPath);
-		}
-		return Path.Combine(playerExportsRootPath, text2);
 	}
 
 }

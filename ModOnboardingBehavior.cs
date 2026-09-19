@@ -3691,7 +3691,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				{
 				};
 			}
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			if (!Directory.Exists(playerExportsRootPath))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("找不到导出目录：" + playerExportsRootPath));
@@ -3940,46 +3940,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string GetModuleRootPath()
-	{
-		try
-		{
-			string location = typeof(SubModule).Assembly.Location;
-			string text = (string.IsNullOrEmpty(location) ? "" : Path.GetDirectoryName(Path.GetFullPath(location)));
-			DirectoryInfo directoryInfo = (string.IsNullOrEmpty(text) ? null : new DirectoryInfo(text));
-			while (directoryInfo != null && directoryInfo.Exists)
-			{
-				if (File.Exists(Path.Combine(directoryInfo.FullName, "SubModule.xml")))
-				{
-					return directoryInfo.FullName;
-				}
-				directoryInfo = directoryInfo.Parent;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			return Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static string GetPlayerExportsRootPath()
-	{
-		string moduleRootPath = GetModuleRootPath();
-		return Path.Combine(moduleRootPath, "PlayerExports");
-	}
-
 	private static string GetModuleVersionText()
 	{
 		try
 		{
-			string path = Path.Combine(GetModuleRootPath(), "SubModule.xml");
+			string path = Path.Combine(PlayerExportsStore.GetModuleRootPath(), "SubModule.xml");
 			if (!File.Exists(path))
 			{
 				return "未知版本";
@@ -3997,25 +3962,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return "未知版本";
 	}
 
-	private static string SanitizeFolderName(string input)
-	{
-		string text = (input ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
-		{
-			return "";
-		}
-		char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-		foreach (char oldChar in invalidFileNameChars)
-		{
-			text = text.Replace(oldChar, '_');
-		}
-		return text.Trim().TrimEnd('.');
-	}
-
 	private static string ResolveImportFolderPath(string folderName)
 	{
-		string playerExportsRootPath = GetPlayerExportsRootPath();
-		string text = SanitizeFolderName(folderName);
+		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
+		string text = PlayerExportsStore.SanitizeFolderName(folderName);
 		if (string.IsNullOrEmpty(text))
 		{
 			return null;
