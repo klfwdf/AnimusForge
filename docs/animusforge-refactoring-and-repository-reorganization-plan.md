@@ -2,6 +2,8 @@
 
 ## J06 检索线程收口进度：VERIFY / NOT_ACCEPTED（2026-09-19）
 
+**额外规则生产方法差分新增 `5e21115c`**：`tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential` 各自从 `77a3d234` 与当前源码提取 `AIConfigHandler` 的语义/词法选择、sticky 合并与规则正文组装，并编译各自的生产 `PromptRuleRanking`、`PromptStickyRuleStore` 和规则模型。在同一假配置/语义结果下，预选语义命中、无预选词法回退两分支的规则 ID 与非空正文逐字节相同；仅新侧删正文、跳过词法回退两项变异均失败。游戏资格/运行时规则补文端口为确定性中性值，尚未与 Lore/实体结果接入最终 Native/Courier 请求，故不改变 J06 状态。
+
 **Lore 生产方法差分新增 `1cd0b9df`**：`tests/modules/AF.Module.Knowledge/LoreTextDifferential` 从 `77a3d234` 与当前源码各自提取 `KnowledgeRuleIndex`、`LoreCandidateRetriever`、`KnowledgeLibraryBehavior` 的 Hero 命中/正文格式化方法及 `AIConfigHandler` 入口；相同假 Hero、同一条 Praven 规则、相同 mention 下，旧同步、当前预选、当前版本过期回退的非空 Lore 正文逐字节相同。检索调用次数验证预选与过期回退分支；仅新路径忽略版本检查、删除 Lore 正文两项变异均失败。假游戏端口不覆盖玩家外观、技能、文本映射或真实 TaleWorlds 读取；尚未接实体、额外规则和 Native/Courier 最终请求，故保持 `VERIFY / NOT_ACCEPTED`。
 
 `da677af3` 在同一个生产捕获方法测试中增加硬预算停止契约：stub budget 于首次 64 项检查后标记超限，生产 `CaptureCandidates` 恰好返回 64 项、只检查一次；原两项负向变异继续失败。2,000 项耗时为不同运行间会波动的离线方法观察值，不作为实机帧预算证明。
