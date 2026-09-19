@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>AnimusForge.Coup</AssemblyName>
+    <RootNamespace>AnimusForge.CoupSystem</RootNamespace>
+    <Version>0.1.0</Version>
+    <Deterministic>true</Deterministic>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <BannerlordApi Condition="'$(BannerlordApi)' == ''">1.4</BannerlordApi>
+    <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
+    <ReferenceVersion>1.3.15.110062</ReferenceVersion>
+    <GameBin>$(BannerlordRoot)\bin\Win64_Shipping_Client</GameBin>
+    <GameSandbox>$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</GameSandbox>
+    <CoreRefs Condition="'$(BannerlordApi)' == '1.3'">$(NuGetPackageRoot)bannerlord.referenceassemblies.core\$(ReferenceVersion)\ref\net472</CoreRefs>
+    <SandboxRefs Condition="'$(BannerlordApi)' == '1.3'">$(NuGetPackageRoot)bannerlord.referenceassemblies.sandbox\$(ReferenceVersion)\ref\net472</SandboxRefs>
+    <CoreRefs Condition="'$(BannerlordApi)' == '1.4'">$(GameBin)</CoreRefs>
+    <SandboxRefs Condition="'$(BannerlordApi)' == '1.4'">$(GameSandbox)</SandboxRefs>
+    <AfReferencePath>$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client\versions\$(BannerlordApi)\AnimusForge.dll</AfReferencePath>
+    <OutputPath>..\artifacts\$(BannerlordApi)\</OutputPath>
+    <DefineConstants Condition="'$(BannerlordApi)' == '1.4'">$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Bannerlord.ReferenceAssemblies" Version="$(ReferenceVersion)" PrivateAssets="all" Condition="'$(BannerlordApi)' == '1.3'" />
+    <Reference Include="AnimusForge"><HintPath>$(AfReferencePath)</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.CampaignSystem"><HintPath>$(CoreRefs)\TaleWorlds.CampaignSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Core"><HintPath>$(CoreRefs)\TaleWorlds.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Library"><HintPath>$(CoreRefs)\TaleWorlds.Library.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.ObjectSystem"><HintPath>$(CoreRefs)\TaleWorlds.ObjectSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Localization"><HintPath>$(CoreRefs)\TaleWorlds.Localization.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.MountAndBlade"><HintPath>$(CoreRefs)\TaleWorlds.MountAndBlade.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Engine"><HintPath>$(CoreRefs)\TaleWorlds.Engine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.InputSystem"><HintPath>$(CoreRefs)\TaleWorlds.InputSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.DotNet"><HintPath>$(CoreRefs)\TaleWorlds.DotNet.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SandBox"><HintPath>$(SandboxRefs)\SandBox.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(GameBin)\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MCMv5"><HintPath>$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <ItemGroup><AssemblyMetadata Include="AnimusForge.Coup.BannerlordApi" Value="$(BannerlordApi)" /></ItemGroup>
+  <Target Name="ValidateCoupReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(BannerlordApi)' != '1.3' and '$(BannerlordApi)' != '1.4'" Text="Unsupported BannerlordApi." />
+    <Error Condition="!Exists('$(AfReferencePath)')" Text="The installed matching AF implementation is required; this project never rebuilds or deploys AF." />
+    <Error Condition="!Exists('$(CoreRefs)\TaleWorlds.CampaignSystem.dll') or !Exists('$(SandboxRefs)\SandBox.dll')" Text="Complete game-line references are required." />
+  </Target>
+</Project>
