@@ -17884,58 +17884,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_shownRecordStorage, "_shownRecords_v1", "TradeShown");
 				dataStore.SyncData("_shownRecords_v1", ref dictionary);
-				_dialogueHistoryStorage.Clear();
-				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
-				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						try
-						{
-							string value = JsonConvert.SerializeObject(item.Value);
-							_dialogueHistoryStorage[item.Key] = value;
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("DialogueHistory", "[ERROR] Serialize history for " + item.Key + ": " + ex.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_dialogueHistory, _dialogueHistoryStorage, skipWhitespaceKeys: false, skipEmptyLists: false, null, (key, ex) => Logger.Log("DialogueHistory", "[ERROR] Serialize history for " + key + ": " + ex.Message));
 				LogNonHeroMemoryTrace("stage=sync_save_dialogue_storage owners=" + _dialogueHistoryStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dialogueHistoryStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
 				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage, "_dialogueHistory_v2", "DialogueHistory");
 				dataStore.SyncData("_dialogueHistory_v2", ref dictionary2);
-				_dailyMemoryDraftStorage.Clear();
-				foreach (KeyValuePair<string, List<DailyMemoryDraft>> itemMemoryDraft in _dailyMemoryDrafts)
-				{
-					if (!string.IsNullOrWhiteSpace(itemMemoryDraft.Key) && itemMemoryDraft.Value != null && itemMemoryDraft.Value.Count > 0)
-					{
-						try
-						{
-							_dailyMemoryDraftStorage[itemMemoryDraft.Key] = JsonConvert.SerializeObject(SanitizeDailyMemoryDrafts(itemMemoryDraft.Value));
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("CompressedMemory", "[ERROR] Serialize daily memory drafts for " + itemMemoryDraft.Key + ": " + ex.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_dailyMemoryDrafts, _dailyMemoryDraftStorage, skipWhitespaceKeys: true, skipEmptyLists: true, list => SanitizeDailyMemoryDrafts(list) ?? new List<DailyMemoryDraft>(), (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Serialize daily memory drafts for " + key + ": " + ex.Message));
 				LogNonHeroMemoryTrace("stage=sync_save_daily_storage owners=" + _dailyMemoryDraftStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dailyMemoryDraftStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
 				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage, "_af_dailyMemoryDrafts_v1", "CompressedMemory");
 				dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDrafts);
-				_compressedMemoryBlockStorage.Clear();
-				foreach (KeyValuePair<string, List<CompressedMemoryBlock>> itemMemoryBlock in _compressedMemoryBlocks)
-				{
-					if (!string.IsNullOrWhiteSpace(itemMemoryBlock.Key) && itemMemoryBlock.Value != null && itemMemoryBlock.Value.Count > 0)
-					{
-						try
-						{
-							_compressedMemoryBlockStorage[itemMemoryBlock.Key] = JsonConvert.SerializeObject(SanitizeCompressedMemoryBlocks(itemMemoryBlock.Value));
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("CompressedMemory", "[ERROR] Serialize memory blocks for " + itemMemoryBlock.Key + ": " + ex.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_compressedMemoryBlocks, _compressedMemoryBlockStorage, skipWhitespaceKeys: true, skipEmptyLists: true, list => SanitizeCompressedMemoryBlocks(list) ?? new List<CompressedMemoryBlock>(), (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Serialize memory blocks for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionaryMemoryBlocks = CampaignSaveChunkHelper.FlattenStringDictionary(_compressedMemoryBlockStorage, "_af_compressedMemoryBlocks_v1", "CompressedMemory");
 				dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocks);
 				try
@@ -18010,44 +17967,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 					Logger.Log("NpcMajorSummary", "[ERROR] Serialize major action summary queue failed: " + ex.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_npcMajorActionSummaryQueue_v1", _npcMajorActionSummaryQueueJsonStorage ?? "[]", "NpcMajorSummary");
-				_npcMajorActionStorage.Clear();
-				foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions)
-				{
-					if (!string.IsNullOrEmpty(npcMajorAction.Key) && npcMajorAction.Value != null && npcMajorAction.Value.Count > 0)
-					{
-						try
-						{
-							List<NpcActionEntry> list2 = SanitizeNpcActionEntries(npcMajorAction.Value, keepOnlyRecentWindow: false);
-							if (list2.Count > 0)
-							{
-								string value2 = JsonConvert.SerializeObject(list2);
-								_npcMajorActionStorage[npcMajorAction.Key] = value2;
-							}
-						}
-						catch (Exception ex2)
-						{
-							Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + npcMajorAction.Key + ": " + ex2.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_npcMajorActions, _npcMajorActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, list => SanitizeNpcActionEntries(list, keepOnlyRecentWindow: false), (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionary3 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionStorage, "_npcMajorActions_v1", "NpcAction");
 				dataStore.SyncData("_npcMajorActions_v1", ref dictionary3);
-				_npcRecentActionStorage.Clear();
-				foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions)
-				{
-					if (!string.IsNullOrEmpty(npcRecentAction.Key) && npcRecentAction.Value != null && npcRecentAction.Value.Count > 0)
-					{
-						try
-						{
-							string value3 = JsonConvert.SerializeObject(npcRecentAction.Value);
-							_npcRecentActionStorage[npcRecentAction.Key] = value3;
-						}
-						catch (Exception ex3)
-						{
-							Logger.Log("NpcAction", "[ERROR] Serialize recent actions for " + npcRecentAction.Key + ": " + ex3.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_npcRecentActions, _npcRecentActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, null, (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize recent actions for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionary4 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcRecentActionStorage, "_npcRecentActions_v1", "NpcAction");
 				dataStore.SyncData("_npcRecentActions_v1", ref dictionary4);
 				dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
@@ -18248,57 +18171,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Dictionary<string, string> dictionary8 = new Dictionary<string, string>();
 			dataStore.SyncData("_dialogueHistory_v2", ref dictionary8);
 			_dialogueHistoryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary8, "DialogueHistory");
-			if (_dialogueHistoryStorage != null)
-			{
-				foreach (KeyValuePair<string, string> item2 in _dialogueHistoryStorage)
-				{
-					if (string.IsNullOrEmpty(item2.Key) || string.IsNullOrEmpty(item2.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<DialogueDay> list = JsonConvert.DeserializeObject<List<DialogueDay>>(item2.Value);
-						if (list != null)
-						{
-							_dialogueHistory[item2.Key] = list;
-						}
-					}
-					catch (Exception ex3)
-					{
-						Logger.Log("DialogueHistory", "[ERROR] Deserialize history for " + item2.Key + ": " + ex3.Message);
-					}
-				}
-			}
+			OwnerJsonStorageCodec.Deserialize(_dialogueHistoryStorage, _dialogueHistory, null, null, skipWhitespaceKeys: false, (key, ex) => Logger.Log("DialogueHistory", "[ERROR] Deserialize history for " + key + ": " + ex.Message));
 			LogNonHeroMemoryTrace("stage=sync_load_dialogue_restored owners=" + CountNonHeroDialogueHistoryOwners() + " lines=" + CountNonHeroDialogueHistoryLines() + " storageOwners=" + (_dialogueHistoryStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
 			_dailyMemoryDrafts.Clear();
 			_dailyMemoryDraftStorage.Clear();
 			Dictionary<string, string> dictionaryMemoryDraftsLoad = new Dictionary<string, string>();
 			dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDraftsLoad);
 			_dailyMemoryDraftStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryDraftsLoad, "CompressedMemory");
-			if (_dailyMemoryDraftStorage != null)
-			{
-				foreach (KeyValuePair<string, string> memoryDraftEntry in _dailyMemoryDraftStorage)
-				{
-					if (string.IsNullOrWhiteSpace(memoryDraftEntry.Key) || string.IsNullOrWhiteSpace(memoryDraftEntry.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<DailyMemoryDraft> listMemoryDrafts = JsonConvert.DeserializeObject<List<DailyMemoryDraft>>(memoryDraftEntry.Value) ?? new List<DailyMemoryDraft>();
-						listMemoryDrafts = SanitizeDailyMemoryDrafts(listMemoryDrafts);
-						if (listMemoryDrafts.Count > 0)
-						{
-							_dailyMemoryDrafts[NormalizeMemoryHeroId(memoryDraftEntry.Key)] = listMemoryDrafts;
-						}
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("CompressedMemory", "[ERROR] Deserialize daily memory drafts for " + memoryDraftEntry.Key + ": " + ex.Message);
-					}
-				}
-			}
+			OwnerJsonStorageCodec.Deserialize(_dailyMemoryDraftStorage, _dailyMemoryDrafts, NormalizeMemoryHeroId, SanitizeDailyMemoryDrafts, skipWhitespaceKeys: true, (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Deserialize daily memory drafts for " + key + ": " + ex.Message));
 			LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
 			_compressedMemoryBlocks.Clear();
 			_compressedMemoryBlockStorage.Clear();
