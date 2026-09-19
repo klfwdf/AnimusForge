@@ -7755,6 +7755,11 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
+		return GetLoreContextWithCandidates(inputText, npcHero, secondaryInput, mentionedEntities, null, 0L);
+	}
+
+	internal static string GetLoreContextWithCandidates(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules candidates, long candidateVersion)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
 			try
@@ -7774,7 +7779,9 @@ public static class AIConfigHandler
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcHero, secondaryInput, mentionedEntities);
+				string text = candidates != null && instance.GetRuleDataVersionForExternal() == candidateVersion
+					? instance.BuildLoreContextWithCandidates(inputText, npcHero, secondaryInput, mentionedEntities, candidates)
+					: instance.BuildLoreContext(inputText, npcHero, secondaryInput, mentionedEntities);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;
@@ -7799,6 +7806,11 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
+		return GetLoreContextWithCandidates(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities, null, 0L);
+	}
+
+	internal static string GetLoreContextWithCandidates(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules candidates, long candidateVersion)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
 			try
@@ -7818,7 +7830,9 @@ public static class AIConfigHandler
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities);
+				string text = candidates != null && instance.GetRuleDataVersionForExternal() == candidateVersion
+					? instance.BuildLoreContextWithCandidates(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities, candidates)
+					: instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;

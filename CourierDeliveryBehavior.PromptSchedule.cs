@@ -11,7 +11,7 @@ public partial class CourierDeliveryBehavior
 	/// <summary>
 	/// J04f: Courier prepares its prompt as scheduled steps instead of one Task.Run over the whole
 	/// mixed builder. Owner phases run on the game thread with generation/owner checks; the two
-	/// retrieval steps (Courier preprocess retrieval, shared routing) run on the thread pool over
+	/// retrieval steps (Courier preprocess retrieval, shared routing, Knowledge candidates) run on the thread pool over
 	/// detached requests. Null means the request was retired or the source changed (legacy semantics).
 	/// </summary>
 	private async Task<CourierPreparedPrompt> BuildCourierPreparedPromptScheduledAsync(CourierPromptInput input, CourierPromptRun promptRun, long generation, string source)
@@ -93,7 +93,19 @@ public partial class CourierDeliveryBehavior
 			finally { AIConfigHandler.ClearGuardrailRuntimeTarget(); }
 		}).ConfigureAwait(false);
 
-		// Step 5 (game thread): sections, assembly, appendices. A declined owner phase aborts (null);
+		// Step 5 (game thread): prepare the Lore index after routing supplied all mentions.
+		PromptBuildPhases prepared = await RunCourierOwnerPhaseAsync(generation, source + "_knowledge_capture", () =>
+		{
+			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
+			owner.CaptureSharedKnowledgeSnapshot(phases);
+			return phases;
+		}, CancellationToken.None).ConfigureAwait(false);
+		if (!ReferenceEquals(prepared, phases)) return null;
+
+		// Step 6 (thread pool): candidate retrieval from the prepared, versioned index.
+		await Task.Run(() => owner.RunSharedKnowledgeRetrieval(phases)).ConfigureAwait(false);
+
+		// Step 7 (game thread): sections, assembly, appendices. A declined owner phase aborts (null);
 		// a null context from the builder itself is a legacy-tolerated result and still assembles.
 		CourierPreparedPrompt completed = await RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete", () =>
 		{

@@ -30166,8 +30166,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
-	// The build is three schedulable steps: Begin (game thread) -> Routing (any thread) -> Complete
-	// (game thread). Channels with their own schedulers (Native, Courier) call the steps directly and
+	// The build is five schedulable steps: Begin (game thread) -> Routing (any thread) ->
+	// Knowledge snapshot (game thread) -> Knowledge retrieval (any thread) -> Complete (game thread).
+	// Channels with their own schedulers (Native, Courier) call the steps directly and
 	// re-validate ownership between them; this method is the sequential composition for the rest.
 	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
@@ -30181,6 +30182,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			RunSharedPromptRouting(phases);
+			CaptureSharedKnowledgeSnapshot(phases);
+			RunSharedKnowledgeRetrieval(phases);
 			return CompleteSharedPromptBuild(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
 		}
 		finally
@@ -30274,6 +30277,27 @@ public partial class MyBehavior : CampaignBehaviorBase
 			retrieval.AuxiliaryMentions = mentions;
 		}
 		phases.Retrieval = retrieval;
+	}
+
+	/// <summary>Game thread: prepare the versioned rule index after routing has supplied all mentions.</summary>
+	internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases)
+	{
+		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore || phases.Request.HasPrefetchedLore)
+		{
+			return;
+		}
+		phases.Retrieval.LoreRuleVersion = KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(phases.Retrieval.AuxiliaryMentions);
+	}
+
+	/// <summary>Worker: select Lore candidates without resolving Hero, Mission or Campaign objects.</summary>
+	internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases)
+	{
+		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore || phases.Request.HasPrefetchedLore)
+		{
+			return;
+		}
+		phases.Retrieval.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(
+			phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion);
 	}
 
 	/// <summary>
@@ -30476,10 +30500,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			loreContext = request.PrefetchedLoreContext ?? "";
 			break;
 		case PromptLoreSource.Hero:
-			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance, mentionedEntities);
+			loreContext = AIConfigHandler.GetLoreContextWithCandidates(input, targetHero, npcLastUtterance, mentionedEntities, retrieval?.LoreCandidates, retrieval?.LoreRuleVersion ?? 0L);
 			break;
 		case PromptLoreSource.Character:
-			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance, mentionedEntities);
+			loreContext = AIConfigHandler.GetLoreContextWithCandidates(input, targetCharacter, kingdomIdOverride, npcLastUtterance, mentionedEntities, retrieval?.LoreCandidates, retrieval?.LoreRuleVersion ?? 0L);
 			break;
 		}
 		try
