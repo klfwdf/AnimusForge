@@ -14,12 +14,20 @@ internal sealed class PromptRetrievalCapture
 	/// <summary>Complete mention set for the build: caller-supplied + router-discovered + mention store + latest.</summary>
 	internal MentionedWorldEntities AuxiliaryMentions;
 	internal long LoreRuleVersion;
+	internal PromptLoreSettings LoreSettings;
 	internal LoreCandidateRules LoreCandidates;
 	internal List<GuardrailRuleHit> FallbackExtraRuleHits;
 	internal WorldEntityRetrievalService.EntityCapture EntityCapture;
 	internal WorldEntityRetrievalService.DetachedEntityCandidates EntityCandidates;
 	internal int EntityMaxInjectedEntities;
 	internal WorldEntityRetrievalService.DetachedEntityMatches EntityMatches;
+}
+
+internal sealed class PromptLoreSettings
+{
+	internal bool Enabled;
+	internal int SemanticTopK;
+	internal float SemanticMinScore;
 }
 
 /// <summary>

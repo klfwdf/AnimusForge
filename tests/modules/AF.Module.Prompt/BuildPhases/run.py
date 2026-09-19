@@ -50,6 +50,7 @@ ordered(routing, "SetGuardrailSemanticContext(", "PromptTopicRoutingStage.Run(",
 ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "ApplyPromptRuntimeAppendices(")
 assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
 assert "PreparePromptLoreRetrieval(" in knowledge_capture and "CollectPromptLoreCandidates(" in knowledge_worker
+assert "CapturePromptLoreSettings(" in knowledge_capture and "phases.Retrieval.LoreSettings" in knowledge_worker, "Lore MCM settings must be detached on game thread"
 assert "PreparePromptLoreRetrieval(" not in knowledge_worker and not re.search(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.|Clan\.|Hero\.|RomanceSystemBehavior\.)", knowledge_worker), "knowledge worker must not prepare indexes or read game services"
 assert "GetMatchedExtraRuleHitsForWorker(" in knowledge_worker and "phases.Routing?.AuxiliaryRuleHitIds == null" in knowledge_worker, "legacy no-preselection rule retrieval must run on worker"
 
@@ -97,6 +98,9 @@ assert 'SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowled
 assert 'if (!ReferenceEquals(prepared, phases)) return null;' in courier_schedule and courier_schedule.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "Courier must reject stale owner/source after knowledge capture and before final use"
 assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
 entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
+knowledge_host = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+lore_worker = extract.declaration(knowledge_host, "internal static LoreCandidateRules CollectPromptLoreCandidates(")
+assert "settings.Enabled" in lore_worker and "PromptLoreSettingsScope.Value = settings" in lore_worker and "KnowledgeRetrievalEnabledSafe()" not in lore_worker, "Lore worker must not read live MCM settings"
 entity_capture = extract.declaration(entity, "internal static EntityCapture CaptureEntityCandidates(")
 entity_worker = extract.declaration(entity, "internal static DetachedEntityMatches MatchDetachedCandidates(")
 if args.mutate == "entity-worker-live-read":

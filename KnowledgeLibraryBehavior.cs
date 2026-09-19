@@ -499,13 +499,31 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			scores = null;
 			return reranker != null && reranker.TryScoreBatch(query, documents, out scores);
 		}
-		public int SemanticTopK => AIConfigHandler.KnowledgeSemanticTopK;
-		public float SemanticMinScore => AIConfigHandler.KnowledgeSemanticMinScore;
+		public int SemanticTopK => PromptLoreSettingsScope.Value?.SemanticTopK ?? AIConfigHandler.KnowledgeSemanticTopK;
+		public float SemanticMinScore => PromptLoreSettingsScope.Value?.SemanticMinScore ?? AIConfigHandler.KnowledgeSemanticMinScore;
 		public void Log(string channel, string message) => Logger.Log(channel, message);
 	}
 
 	// Single retrieval index (sparse + ONNX + ranked cache). Static like the legacy caches: one rule library per process.
 	private static readonly KnowledgeRuleIndex Index = new KnowledgeRuleIndex(new IndexPorts(), () => Instance?._file?.Rules);
+	private static readonly AsyncLocal<PromptLoreSettings> PromptLoreSettingsScope = new AsyncLocal<PromptLoreSettings>();
+
+	internal static PromptLoreSettings CapturePromptLoreSettings()
+	{
+		try
+		{
+			return new PromptLoreSettings
+			{
+				Enabled = KnowledgeRetrievalEnabledSafe(),
+				SemanticTopK = AIConfigHandler.KnowledgeSemanticTopK,
+				SemanticMinScore = AIConfigHandler.KnowledgeSemanticMinScore
+			};
+		}
+		catch
+		{
+			return null;
+		}
+	}
 	private static bool KnowledgeRetrievalEnabledSafe()
 	{
 		try
@@ -540,14 +558,23 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	}
 
 	/// <summary>Worker: select candidates from the prepared index without reading a Hero or Campaign.</summary>
-	internal static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions, long preparedVersion)
+	internal static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions, long preparedVersion, PromptLoreSettings settings)
 	{
-		if (Instance == null || preparedVersion <= 0L || Index.Version != preparedVersion)
+		if (Instance == null || settings == null || preparedVersion <= 0L || Index.Version != preparedVersion)
 		{
 			return null;
 		}
-		LoreCandidateRules candidates = Retriever.CollectCandidateRules(mentions?.Entities, KnowledgeRetrievalEnabledSafe());
-		return Index.Version == preparedVersion ? candidates : null;
+		PromptLoreSettings previous = PromptLoreSettingsScope.Value;
+		try
+		{
+			PromptLoreSettingsScope.Value = settings;
+			LoreCandidateRules candidates = Retriever.CollectCandidateRules(mentions?.Entities, settings.Enabled);
+			return Index.Version == preparedVersion ? candidates : null;
+		}
+		finally
+		{
+			PromptLoreSettingsScope.Value = previous;
+		}
 	}
 
 	public static KnowledgeLibraryBehavior Instance { get; private set; }

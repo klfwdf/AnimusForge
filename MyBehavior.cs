@@ -30290,6 +30290,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (!phases.Request.HasPrefetchedLore)
 		{
+			phases.Retrieval.LoreSettings = KnowledgeLibraryBehavior.CapturePromptLoreSettings();
 			phases.Retrieval.LoreRuleVersion = KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(phases.Retrieval.AuxiliaryMentions);
 		}
 		try
@@ -30316,7 +30317,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!phases.Request.HasPrefetchedLore)
 		{
 			phases.Retrieval.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(
-				phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion);
+				phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion, phases.Retrieval.LoreSettings);
 		}
 		if (phases.Retrieval.EntityCandidates != null)
 		{
