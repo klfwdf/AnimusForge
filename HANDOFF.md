@@ -1,3 +1,14 @@
+# 当前接续：Claude Code断线，J06d WIP已封存（2026-09-19）
+
+- 工作区 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，分支 `codex/af-modularize-j04-20260918`；基线25a89cea后30个提交。Claude最后正常提交157dc7f2（J06c），断开时9文件已原样保存为`bd2582aa` WIP checkpoint。
+- [中断详细HANDOFF](docs/handoffs/2026-09-19-claude-code-interrupted-modularization-handoff.md) / [checkpoint审计](docs/audits/2026-09-19-claude-code-interrupted-checkpoint.json)。本地人工转发版：`G:/AFMOD/AF-REFACTOR/.tmp/claude-code-direct-handoff-20260919.md`，不上传。
+- J04、J05为限定范围OFFLINE_VERIFIED；J06a/b/c源码已提交，J06父包未完成。J06d仅可编译WIP：Composition现有155项和Debug/Release双API+Bootstrap通过，但无新增资格行为/线程隔离/三渠道完整回归。
+- 262点地图只对d903df67 recorded PASS；当前working-tree因J06变化stale FAIL，不能刷新hash冒充验收。LIVE、旧档、真实provider均NOT-RUN。
+- 下一步只完成J06d旧新行为、live-read禁用、ambient隔离及实际消费者矩阵，再更新地图/范围图并评估J06_OFFLINE_VERIFIED；之后按J07–J17继续。用户要求最终Native/Scene/Courier三渠道public API，政策/宴会/GCCZ玩法不重写。
+- 本轮获准推送到新专用分支；不推main/旧重构分支、不强推。未Stage/部署/打包/动存档/改默认/恢复自动化。
+
+## 以下为此前已提交回执与历史；当前状态以上方为准
+
 # 当前接续：J05_OFFLINE_VERIFIED；下一包 J06 Knowledge（2026-09-19）
 
 分支 `codex/af-modularize-j04-20260918`，生产终点 `d903df67`，262 锚点地图绑定同提交，基线 `25a89cea` 起 25 个本地提交。J05 四切片全部落地：J05a `NpcActionLedger`/`DialogueHistoryLedger`（34 项契约 + 2 变异）、J05b 九个既有 memory owner 纯 rename 到 `src/modules/AF.Module.Memory/{Summary,Records,Recovery}`、J05c `OwnerJsonStorageCodec` 收敛 SyncData 七处循环（8 项 + 1 变异；binding catalog 168 条身份不变只刷行号）、J05d `PlayerExportsStore`/`NpcDataFileName` 取代三 host 的重复副本（25 项 + 2 变异）。`MyBehavior.cs` 58,033 → 57,378。每切片后 Debug/Release × 1.3/1.4/Bootstrap 退出码 0；Persistence 四 runner、Memory 五 runner、Prompt 两契约、Courier/Native 边界 runner 复跑 PASS。**仅离线验收**：实机/旧档/provider `NOT-RUN`。明确保留：记忆记录类型与 `Sanitize*` 仍为 host 私有嵌套存档类型（Saveable 身份不可随路径改，归 J16/J17）；Import/Export/OpenDev 方法体未重写；Knowledge 导入校验归 J06。预先存在失败（`PersistenceIdentityAudit.py`、`MemoryFailureUiBoundaryTests`）在未改动 `25a89cea` 快照同样失败，未修改。未推送、未部署、未动存档。详见[J05 回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j05-offline-verified-20260919)。下一包 **J06 Knowledge**：`AF.Module.Knowledge`，lore/实体/extra-rule 检索从 `CapturePromptSections` 与 `BuildExtraRuleInstructions` 离开游戏线程，Knowledge 导入校验 8 静态方法归位。

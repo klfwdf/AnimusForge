@@ -1,3 +1,20 @@
+<a id="j06d-interrupted-handoff-20260919"></a>
+
+## 当前状态：J06d_WIP_CHECKPOINT / CLAUDE_DISCONNECTED（2026-09-19）
+
+用户要求在Claude Code断开后整理实际改动，按三份仓库Skill写正在进行/未完成内容、详细及本地直发HANDOFF，并推送GitHub。本节是当前唯一入口；不把checkpoint写成验收完成。
+
+- **工作区/分支/基线**：`G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；`codex/af-modularize-j04-20260918`；基线25a89cea。Claude最后已提交切片157dc7f2（J06c）；中断留下9文件，未继续实现，原样checkpoint为bd2582aa。
+- **已完成父包**：J04_OFFLINE_VERIFIED、J05_OFFLINE_VERIFIED。J06a 8337f0b7、J06b e66ba0d7、J06c 157dc7f2分别已提交纯Index/Lore/Entities owner，但尚未写J06父包最终回执或新地图。
+- **正在做**：J06d将RAG/预处理资格从worker live解析改成游戏线程捕获的`PromptRuleEligibility`，通过`PromptBuildRequest`/`CourierPreprocessRequest`和ambient retrieval context传递。9文件及精确坐标见[详细HANDOFF](handoffs/2026-09-19-claude-code-interrupted-modularization-handoff.md)。
+- **验证边界**：现有Prompt Composition 155项PASS，但无J06d专项行为断言；本机原脚本Debug/Release各1.3/1.4/Bootstrap 0警告/0错误，无Stage/Deploy。262点map recorded(d903df67) PASS，working-tree在ShoutBehavior stale FAIL；LIVE、旧SAVE、真实provider、完整三渠道/Knowledge矩阵NOT-RUN。
+- **未完成/验收**：为11项资格事实补旧live oracle与旧红/新绿；证明worker无Hero.Find/Mission/live资格；检查捕获函数只读且无提前消费；验证ambient嵌套/异常/yield/并发/Clear；跑J03/J04/Knowledge/Native/Courier/Scene及双版本；清理替代旧体、更新owner matrix/范围图/代码地图。此前不得标J06_OFFLINE_VERIFIED。
+- **三Skill约束**：维护Skill0.2.0要求双版本/存档/主线程与风险证据；框架Skill要求主体/internal/public分层且复用唯一权威；Policy Skill只允许未来检索MCM控制及模块隔离，J06不能吞Policy运行/存档/调度。全局clean guard继续清被替代路径，必要兼容壳写明理由。
+- **后续**：完成J06后按J07 Conversation/Native、J08 LLM、J09 Actions、J10 Scene/Courier、J11 bridges、J12/J13 domains、J14三渠道public API、J15 content、J16 tests/tools/Bootstrap、J17结项。当前master plan的J14三渠道授权优先于下方历史默认NotSupported描述。
+- **操作边界**：推新专用分支，不覆盖main或旧远端；本地直发文件不入Git。未部署/打包/写存档/切默认/安装全局Skill/恢复自动化。
+
+## 以下为中断前已提交状态与历史
+
 <a id="j05-offline-verified-20260919"></a>
 
 ## J05 离线回执：J05_OFFLINE_VERIFIED（2026-09-19）
