@@ -116,7 +116,7 @@ public static class WorldEntityRetrievalService
 
 	private const int EntityRetrievalBudgetCheckInterval = 64;
 
-	private sealed class EntityMatch<T>
+	internal sealed class EntityMatch<T>
 	{
 		public T Value;
 
@@ -133,10 +133,8 @@ public static class WorldEntityRetrievalService
 		public string RulerTitleKey;
 	}
 
-	private sealed class VisiblePartyCandidate
+	internal sealed class VisiblePartyCandidate
 	{
-		public MobileParty Party;
-
 		public string Id;
 
 		public string Name;
@@ -223,11 +221,163 @@ public static class WorldEntityRetrievalService
 		public List<FuzzyTextProfile> Aliases;
 	}
 
-	private sealed class RulerTitleCandidate
+	// Only this detached half may cross to the retrieval worker. Live references remain
+	// on the game-thread half and are never dereferenced by the scorer.
+	internal sealed class DetachedEntityCandidates
 	{
-		public Kingdom Kingdom;
+		internal List<DetachedEntityCandidate> Heroes = new List<DetachedEntityCandidate>();
+		internal List<DetachedEntityCandidate> Settlements = new List<DetachedEntityCandidate>();
+		internal List<DetachedEntityCandidate> Clans = new List<DetachedEntityCandidate>();
+		internal List<DetachedEntityCandidate> Kingdoms = new List<DetachedEntityCandidate>();
+		internal List<RulerTitleCandidate> Rulers = new List<RulerTitleCandidate>();
+	}
 
-		public Hero Leader;
+	internal sealed class DetachedEntityCandidate
+	{
+		internal string Id;
+		internal string Name;
+		internal List<string> Aliases;
+	}
+
+	internal sealed class EntityCapture
+	{
+		internal DetachedEntityCandidates Candidates = new DetachedEntityCandidates();
+		internal int MaxInjectedEntities;
+		internal List<VisiblePartyCandidate> VisibleParties;
+		internal Dictionary<DetachedEntityCandidate, Hero> Heroes = new Dictionary<DetachedEntityCandidate, Hero>();
+		internal Dictionary<DetachedEntityCandidate, Settlement> Settlements = new Dictionary<DetachedEntityCandidate, Settlement>();
+		internal Dictionary<DetachedEntityCandidate, Clan> Clans = new Dictionary<DetachedEntityCandidate, Clan>();
+		internal Dictionary<DetachedEntityCandidate, Kingdom> Kingdoms = new Dictionary<DetachedEntityCandidate, Kingdom>();
+	}
+
+	internal sealed class DetachedEntityMatches
+	{
+		internal List<EntityMatch<DetachedEntityCandidate>> Rulers;
+		internal List<EntityMatch<DetachedEntityCandidate>> Heroes;
+		internal List<EntityMatch<DetachedEntityCandidate>> Settlements;
+		internal List<EntityMatch<DetachedEntityCandidate>> Clans;
+		internal List<EntityMatch<DetachedEntityCandidate>> Kingdoms;
+	}
+
+	internal static EntityCapture CaptureEntityCandidates(MentionedWorldEntities mentions, string latestInput, Hero contextHero)
+	{
+		EntityCapture capture = new EntityCapture { MaxInjectedEntities = GetMaxInjectedEntitiesFromSettings() };
+		if (Campaign.Current == null)
+		{
+			return capture;
+		}
+		capture.VisibleParties = BuildVisiblePartyCandidates(contextHero);
+		bool hasMentions = EntityMentionList.BuildUnified(mentions?.Entities).Count > 0;
+		if (hasMentions)
+		{
+			CaptureCandidates(GetHeroCandidates(), capture.Candidates.Heroes, capture.Heroes,
+				GetHeroAliases, x => "hero:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Hero"));
+			CaptureCandidates(GetSettlementCandidates(), capture.Candidates.Settlements, capture.Settlements,
+				GetSettlementAliases, x => "settlement:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Settlement"));
+			CaptureCandidates(GetClanCandidates(), capture.Candidates.Clans, capture.Clans,
+				GetClanAliases, x => "clan:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Clan"));
+		}
+		if (hasMentions || !string.IsNullOrWhiteSpace(latestInput))
+		{
+			CaptureCandidates(GetKingdomCandidates(), capture.Candidates.Kingdoms, capture.Kingdoms,
+				GetKingdomAliases, x => "kingdom:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Kingdom"));
+			capture.Candidates.Rulers = BuildRulerTitleCandidates(RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms), capture.Heroes);
+		}
+		return capture;
+	}
+
+	private static void CaptureCandidates<T>(IEnumerable<T> source, List<DetachedEntityCandidate> detached,
+		Dictionary<DetachedEntityCandidate, T> live, Func<T, IEnumerable<string>> aliases, Func<T, string> id, Func<T, string> name) where T : class
+	{
+		foreach (T value in source ?? Enumerable.Empty<T>())
+		{
+			if (value == null)
+			{
+				continue;
+			}
+			DetachedEntityCandidate candidate = new DetachedEntityCandidate
+			{
+				Id = SafeSelectorValue(id, value),
+				Name = SafeSelectorValue(name, value),
+				Aliases = SafeAliases(aliases, value).ToList()
+			};
+			detached.Add(candidate);
+			live.Add(candidate, value);
+		}
+	}
+
+	internal static DetachedEntityMatches MatchDetachedCandidates(DetachedEntityCandidates candidates, MentionedWorldEntities mentions, string latestInput, int maxInjectedEntities)
+	{
+		if (candidates == null)
+		{
+			return null;
+		}
+		List<string> allMentions = EntityMentionList.BuildUnified(mentions?.Entities);
+		Dictionary<string, int> priority = EntityMentionList.BuildPriority(allMentions);
+		WorldEntityRetrievalBudget budget = new WorldEntityRetrievalBudget(Stopwatch.StartNew());
+		List<EntityMatch<DetachedEntityCandidate>> rulers = allMentions.Count > 0
+			? FindRulerTitleMatches(allMentions, priority, candidates.Rulers, "preprocess", budget)
+			: new List<EntityMatch<DetachedEntityCandidate>>();
+		if (!string.IsNullOrWhiteSpace(latestInput) && CanContinueWorldEntityMatch("ruler_title_raw", budget))
+		{
+			RawRulerTitleMatchResult raw = FindRawRulerTitleMatches(latestInput, candidates.Rulers, budget);
+			if (raw.OverrideTitleKeys.Count > 0)
+			{
+				rulers = rulers.Where(x => x == null || string.IsNullOrWhiteSpace(x.RulerTitleKey) || !raw.OverrideTitleKeys.Contains(x.RulerTitleKey)).ToList();
+			}
+			rulers = MergeEntityMatches(rulers, raw.Matches);
+		}
+		return new DetachedEntityMatches
+		{
+			Rulers = rulers,
+			Heroes = FindDetachedMatches("hero", allMentions, priority, candidates.Heroes, maxInjectedEntities, budget),
+			Settlements = FindDetachedMatches("settlement", allMentions, priority, candidates.Settlements, maxInjectedEntities, budget),
+			Clans = FindDetachedMatches("clan", allMentions, priority, candidates.Clans, maxInjectedEntities, budget),
+			Kingdoms = FindDetachedMatches("kingdom", allMentions, priority, candidates.Kingdoms, maxInjectedEntities, budget)
+		};
+	}
+
+	private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches(string category, List<string> mentions,
+		Dictionary<string, int> priority, List<DetachedEntityCandidate> candidates, int maxInjectedEntities, WorldEntityRetrievalBudget budget)
+	{
+		return mentions.Count == 0 || candidates.Count == 0 || !CanContinueWorldEntityMatch(category, budget)
+			? new List<EntityMatch<DetachedEntityCandidate>>()
+			: FindMatches(category, mentions, priority, candidates, x => x.Aliases, x => x.Id, x => x.Name, maxInjectedEntities, budget);
+	}
+
+	private static List<T> RestoreCandidates<T>(IEnumerable<DetachedEntityCandidate> candidates, Dictionary<DetachedEntityCandidate, T> live) where T : class
+	{
+		List<T> result = new List<T>();
+		foreach (DetachedEntityCandidate candidate in candidates ?? Enumerable.Empty<DetachedEntityCandidate>())
+		{
+			if (candidate != null && live.TryGetValue(candidate, out T value))
+			{
+				result.Add(value);
+			}
+		}
+		return result;
+	}
+
+	private static List<EntityMatch<T>> RestoreMatches<T>(IEnumerable<EntityMatch<DetachedEntityCandidate>> matches, Dictionary<DetachedEntityCandidate, T> live) where T : class
+	{
+		List<EntityMatch<T>> result = new List<EntityMatch<T>>();
+		foreach (EntityMatch<DetachedEntityCandidate> match in matches ?? Enumerable.Empty<EntityMatch<DetachedEntityCandidate>>())
+		{
+			if (match?.Value != null && live.TryGetValue(match.Value, out T value))
+			{
+				result.Add(new EntityMatch<T>
+				{
+					Value = value, Id = match.Id, Name = match.Name, Mention = match.Mention,
+					Score = match.Score, MentionPriority = match.MentionPriority, RulerTitleKey = match.RulerTitleKey
+				});
+			}
+		}
+		return result;
+	}
+
+	internal sealed class RulerTitleCandidate
+	{
+		public DetachedEntityCandidate Leader;
 
 		public string KingdomId;
 
@@ -253,7 +403,7 @@ public static class WorldEntityRetrievalService
 
 	private sealed class RawRulerTitleMatchResult
 	{
-		public List<EntityMatch<Hero>> Matches = new List<EntityMatch<Hero>>();
+		public List<EntityMatch<DetachedEntityCandidate>> Matches = new List<EntityMatch<DetachedEntityCandidate>>();
 
 		public HashSet<string> OverrideTitleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	}
@@ -265,6 +415,11 @@ public static class WorldEntityRetrievalService
 
 	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities = false)
 	{
+		return BuildPromptContext(mentions, playerDisplayName, contextHero, includeResidentKingdoms, activeRuleIds, latestInput, includeResidentPlayerEntities, null, null);
+	}
+
+	internal static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities, EntityCapture capture, DetachedEntityMatches detachedMatches)
+	{
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
 		Stopwatch totalSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.BuildPromptContext");
@@ -275,7 +430,7 @@ public static class WorldEntityRetrievalService
 			{
 				return result;
 			}
-			List<VisiblePartyCandidate> visibleParties = BuildVisiblePartyCandidates(contextHero);
+			List<VisiblePartyCandidate> visibleParties = capture?.VisibleParties ?? BuildVisiblePartyCandidates(contextHero);
 			List<string> allMentions = EntityMentionList.BuildUnified(mentions?.Entities);
 			HashSet<string> activeRuleIdSet = EntityMentionList.BuildActiveRuleIdSet(activeRuleIds);
 			string rawInput = (latestInput ?? "").Trim();
@@ -290,53 +445,62 @@ public static class WorldEntityRetrievalService
 			if (allMentions.Count > 0 || hasRawInput)
 			{
 				Stopwatch stageSw = Stopwatch.StartNew();
-				int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
+				int maxInjectedEntities = capture?.MaxInjectedEntities ?? GetMaxInjectedEntitiesFromSettings();
 				List<Hero> heroCandidates = new List<Hero>();
 				List<Settlement> settlementCandidates = new List<Settlement>();
 				List<Clan> clanCandidates = new List<Clan>();
 				List<Kingdom> kingdomCandidates = new List<Kingdom>();
 				if (allMentions.Count > 0)
 				{
-					heroCandidates = GetHeroCandidates().ToList();
-					settlementCandidates = GetSettlementCandidates().ToList();
-					clanCandidates = GetClanCandidates().ToList();
+					heroCandidates = capture == null ? GetHeroCandidates().ToList() : RestoreCandidates(capture.Candidates.Heroes, capture.Heroes);
+					settlementCandidates = capture == null ? GetSettlementCandidates().ToList() : RestoreCandidates(capture.Candidates.Settlements, capture.Settlements);
+					clanCandidates = capture == null ? GetClanCandidates().ToList() : RestoreCandidates(capture.Candidates.Clans, capture.Clans);
 				}
 				if (allMentions.Count > 0 || hasRawInput)
 				{
-					kingdomCandidates = GetKingdomCandidates().ToList();
+					kingdomCandidates = capture == null ? GetKingdomCandidates().ToList() : RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms);
 				}
 				Logger.Log("WorldEntityRetrieval", "entities total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " names=" + EntityMentionList.FormatForLog(allMentions));
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] candidates_ready ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 				Dictionary<string, int> mentionPriority = EntityMentionList.BuildPriority(allMentions);
-				List<EntityMatch<Hero>> rulerTitleMatches = allMentions.Count > 0 ? FindRulerTitleMatches(allMentions, mentionPriority, kingdomCandidates, "preprocess", budget) : new List<EntityMatch<Hero>>();
-				if (hasRawInput && CanContinueWorldEntityMatch("ruler_title_raw", budget))
+				Dictionary<DetachedEntityCandidate, Hero> rulerLiveHeroes = capture?.Heroes ?? new Dictionary<DetachedEntityCandidate, Hero>();
+				List<RulerTitleCandidate> rulerCandidates = capture?.Candidates.Rulers ?? BuildRulerTitleCandidates(kingdomCandidates, rulerLiveHeroes);
+				List<EntityMatch<DetachedEntityCandidate>> detachedRulers = detachedMatches?.Rulers;
+				if (detachedRulers == null)
 				{
-					RawRulerTitleMatchResult rawRulerTitleMatches = FindRawRulerTitleMatches(rawInput, kingdomCandidates, budget);
-					if (rawRulerTitleMatches.OverrideTitleKeys.Count > 0)
+					detachedRulers = allMentions.Count > 0 ? FindRulerTitleMatches(allMentions, mentionPriority, rulerCandidates, "preprocess", budget) : new List<EntityMatch<DetachedEntityCandidate>>();
+					if (hasRawInput && CanContinueWorldEntityMatch("ruler_title_raw", budget))
 					{
-						rulerTitleMatches = rulerTitleMatches.Where((EntityMatch<Hero> x) => x == null || string.IsNullOrWhiteSpace(x.RulerTitleKey) || !rawRulerTitleMatches.OverrideTitleKeys.Contains(x.RulerTitleKey)).ToList();
+						RawRulerTitleMatchResult rawRulerTitleMatches = FindRawRulerTitleMatches(rawInput, rulerCandidates, budget);
+						if (rawRulerTitleMatches.OverrideTitleKeys.Count > 0)
+						{
+							detachedRulers = detachedRulers.Where(x => x == null || string.IsNullOrWhiteSpace(x.RulerTitleKey) || !rawRulerTitleMatches.OverrideTitleKeys.Contains(x.RulerTitleKey)).ToList();
+						}
+						detachedRulers = MergeEntityMatches(detachedRulers, rawRulerTitleMatches.Matches);
 					}
-					rulerTitleMatches = MergeEntityMatches(rulerTitleMatches, rawRulerTitleMatches.Matches);
 				}
+				List<EntityMatch<Hero>> rulerTitleMatches = RestoreMatches(detachedRulers, rulerLiveHeroes);
 				heroes = MergeEntityMatches(heroes, rulerTitleMatches);
 				if (allMentions.Count > 0)
 				{
 					if (CanContinueWorldEntityMatch("hero", budget))
 					{
-						List<EntityMatch<Hero>> directHeroMatches = FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"), maxInjectedEntities, budget);
+						List<EntityMatch<Hero>> directHeroMatches = detachedMatches == null
+							? FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"), maxInjectedEntities, budget)
+							: RestoreMatches(detachedMatches.Heroes, capture.Heroes);
 						heroes = ConcatEntityMatchCandidates(heroes, directHeroMatches);
 					}
 					if (CanContinueWorldEntityMatch("settlement", budget))
 					{
-						settlements = FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"), maxInjectedEntities, budget);
+						settlements = detachedMatches == null ? FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"), maxInjectedEntities, budget) : RestoreMatches(detachedMatches.Settlements, capture.Settlements);
 					}
 					if (CanContinueWorldEntityMatch("clan", budget))
 					{
-						clans = FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"), maxInjectedEntities, budget);
+						clans = detachedMatches == null ? FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"), maxInjectedEntities, budget) : RestoreMatches(detachedMatches.Clans, capture.Clans);
 					}
 					if (CanContinueWorldEntityMatch("kingdom", budget))
 					{
-						kingdoms = FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"), maxInjectedEntities, budget);
+						kingdoms = detachedMatches == null ? FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"), maxInjectedEntities, budget) : RestoreMatches(detachedMatches.Kingdoms, capture.Kingdoms);
 					}
 				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
@@ -645,12 +809,11 @@ public static class WorldEntityRetrievalService
 		existing.Mention = mergedMention;
 	}
 
-	private static List<EntityMatch<Hero>> FindRulerTitleMatches(IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, IEnumerable<Kingdom> kingdoms, string source, WorldEntityRetrievalBudget budget)
+	private static List<EntityMatch<DetachedEntityCandidate>> FindRulerTitleMatches(IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, List<RulerTitleCandidate> candidates, string source, WorldEntityRetrievalBudget budget)
 	{
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.FindRulerTitleMatches");
 		Stopwatch sw = Stopwatch.StartNew();
-		List<RulerTitleCandidate> candidates = BuildRulerTitleCandidates(kingdoms);
-		List<EntityMatch<Hero>> result = new List<EntityMatch<Hero>>();
+		List<EntityMatch<DetachedEntityCandidate>> result = new List<EntityMatch<DetachedEntityCandidate>>();
 		List<string> mentionList = (mentions ?? Enumerable.Empty<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
 		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] ruler_title_start source=" + (source ?? "") + " mentions=" + mentionList.Count + " candidates=" + candidates.Count + " " + FormatBudgetForLog(budget));
 		foreach (string mention in mentionList)
@@ -707,22 +870,22 @@ public static class WorldEntityRetrievalService
 			foreach (RulerTitleScoredMatch selectedMatch in selected)
 			{
 				RulerTitleCandidate candidate = selectedMatch.Candidate;
-				Hero leader = candidate?.Leader;
+				DetachedEntityCandidate leader = candidate?.Leader;
 				if (leader == null)
 				{
 					continue;
 				}
-				AddOrUpdateEntityMatch(result, new EntityMatch<Hero>
+				AddOrUpdateEntityMatch(result, new EntityMatch<DetachedEntityCandidate>
 				{
 					Value = leader,
-					Id = "hero:" + SafeStringId(leader.StringId),
-					Name = SafeName(leader.Name, leader.StringId ?? "Hero"),
+					Id = leader.Id,
+					Name = leader.Name,
 					Mention = mention,
 					Score = selectedMatch.Score,
 					MentionPriority = EntityMentionList.GetPriority(mentionPriority, mention),
 					RulerTitleKey = EntityNameMatcher.Normalize(candidate.Title)
 				});
-				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=" + (source ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 100) + " title=" + EntityInjectionAllocator.PreviewLogValue(candidate.Title, 60) + " matchedAlias=" + EntityInjectionAllocator.PreviewLogValue(selectedMatch.MatchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + (leader.StringId ?? "") + " score=" + selectedMatch.Score.ToString("0.###", CultureInfo.InvariantCulture) + " ambiguity=" + ambiguityCount);
+				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=" + (source ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 100) + " title=" + EntityInjectionAllocator.PreviewLogValue(candidate.Title, 60) + " matchedAlias=" + EntityInjectionAllocator.PreviewLogValue(selectedMatch.MatchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + leader.Id + " score=" + selectedMatch.Score.ToString("0.###", CultureInfo.InvariantCulture) + " ambiguity=" + ambiguityCount);
 			}
 		}
 		SortEntityMatches(result);
@@ -730,7 +893,7 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string rawInput, IEnumerable<Kingdom> kingdoms, WorldEntityRetrievalBudget budget)
+	private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string rawInput, List<RulerTitleCandidate> candidates, WorldEntityRetrievalBudget budget)
 	{
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.FindRawRulerTitleMatches");
 		Stopwatch sw = Stopwatch.StartNew();
@@ -740,7 +903,6 @@ public static class WorldEntityRetrievalService
 		{
 			return result;
 		}
-		List<RulerTitleCandidate> candidates = BuildRulerTitleCandidates(kingdoms);
 		Dictionary<string, List<RulerTitleCandidate>> titleGroups = candidates.Where((RulerTitleCandidate x) => x != null && !string.IsNullOrWhiteSpace(x.Title)).GroupBy((RulerTitleCandidate x) => EntityNameMatcher.Normalize(x.Title), StringComparer.OrdinalIgnoreCase).Where((IGrouping<string, RulerTitleCandidate> x) => !string.IsNullOrWhiteSpace(x.Key)).ToDictionary((IGrouping<string, RulerTitleCandidate> x) => x.Key, (IGrouping<string, RulerTitleCandidate> x) => x.ToList(), StringComparer.OrdinalIgnoreCase);
 		HashSet<string> matchedTitleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (KeyValuePair<string, List<RulerTitleCandidate>> pair in titleGroups)
@@ -784,23 +946,23 @@ public static class WorldEntityRetrievalService
 			int ambiguityCount = selected.Count;
 			foreach (RulerTitleCandidate candidate in selected)
 			{
-				Hero leader = candidate?.Leader;
+				DetachedEntityCandidate leader = candidate?.Leader;
 				if (leader == null)
 				{
 					continue;
 				}
 				string matchedAlias = hasQualifiedCandidates && qualifiedAliases.TryGetValue(candidate, out var alias) ? alias : candidate.Title;
-				AddOrUpdateEntityMatch(result.Matches, new EntityMatch<Hero>
+				AddOrUpdateEntityMatch(result.Matches, new EntityMatch<DetachedEntityCandidate>
 				{
 					Value = leader,
-					Id = "hero:" + SafeStringId(leader.StringId),
-					Name = SafeName(leader.Name, leader.StringId ?? "Hero"),
+					Id = leader.Id,
+					Name = leader.Name,
 					Mention = matchedAlias,
 					Score = 1f,
 					MentionPriority = 0,
 					RulerTitleKey = titleKey
 				});
-				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=raw_input mention=" + EntityInjectionAllocator.PreviewLogValue(matchedAlias, 100) + " title=" + EntityInjectionAllocator.PreviewLogValue(candidate.Title, 60) + " matchedAlias=" + EntityInjectionAllocator.PreviewLogValue(matchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + (leader.StringId ?? "") + " score=1 ambiguity=" + ambiguityCount);
+				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=raw_input mention=" + EntityInjectionAllocator.PreviewLogValue(matchedAlias, 100) + " title=" + EntityInjectionAllocator.PreviewLogValue(candidate.Title, 60) + " matchedAlias=" + EntityInjectionAllocator.PreviewLogValue(matchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + leader.Id + " score=1 ambiguity=" + ambiguityCount);
 			}
 		}
 		SortEntityMatches(result.Matches);
@@ -911,7 +1073,7 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static List<RulerTitleCandidate> BuildRulerTitleCandidates(IEnumerable<Kingdom> kingdoms)
+	private static List<RulerTitleCandidate> BuildRulerTitleCandidates(IEnumerable<Kingdom> kingdoms, Dictionary<DetachedEntityCandidate, Hero> liveHeroes)
 	{
 		List<RulerTitleCandidate> result = new List<RulerTitleCandidate>();
 		foreach (Kingdom kingdom in kingdoms ?? Enumerable.Empty<Kingdom>())
@@ -947,16 +1109,24 @@ public static class WorldEntityRetrievalService
 					AddAlias(aliases, title + " " + qualifier);
 					AddAlias(aliases, title + " of " + qualifier);
 				}
+				DetachedEntityCandidate detachedLeader = new DetachedEntityCandidate
+				{
+					Id = "hero:" + SafeStringId(leader.StringId),
+					Name = SafeName(leader.Name, leader.StringId ?? "Hero")
+				};
 				result.Add(new RulerTitleCandidate
 				{
-					Kingdom = kingdom,
-					Leader = leader,
+					Leader = detachedLeader,
 					KingdomId = (kingdom.StringId ?? "").Trim(),
 					KingdomName = SafeTextOrEmpty(kingdom.Name),
 					Title = title,
 					Qualifiers = qualifiers,
 					Aliases = aliases
 				});
+				if (liveHeroes != null)
+				{
+					liveHeroes.Add(detachedLeader, leader);
+				}
 			}
 			catch
 			{
@@ -3040,7 +3210,6 @@ public static class WorldEntityRetrievalService
 					}
 					VisiblePartyCandidate candidate = new VisiblePartyCandidate
 					{
-						Party = party,
 						Id = id,
 						Name = SafeName(party.Name, id),
 						Count = GetPartyMemberCount(party),

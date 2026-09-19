@@ -83,7 +83,7 @@ public partial class ShoutBehavior
 			() =>
 			{
 				if (!IsNativeConversationAdmissionCurrent(admission, out _)) return null;
-				owner.CaptureSharedKnowledgeSnapshot(phases);
+				owner.CaptureSharedKnowledgeSnapshot(phases, targetHero ?? targetCharacter?.HeroObject);
 				return phases;
 			},
 			(PromptBuildPhases)null).ConfigureAwait(false);
