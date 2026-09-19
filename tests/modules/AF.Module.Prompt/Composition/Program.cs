@@ -32,6 +32,7 @@ internal static class Program
         ExclusionSets();
         ContextDecisions();
         AssemblyStage();
+        KnowledgeExtrasText();
         RuleInstructionComposer();
         Console.WriteLine("PASS prompt-composition checks=" + _checks);
     }
@@ -274,6 +275,38 @@ internal static class Program
         hero.Apply(v => order.Add("k=" + v), v => order.Add("h=" + v), v => order.Add("c=" + v), v => order.Add("t=" + v), v => order.Add("r=" + v), v => order.Add("a=" + v));
         Check(order.SequenceEqual(new[] { "k=K", "h=hero_1", "c=char_1", "t=char_1", "r=", "a=7" }), "apply order kingdom,hero,character,troop,rank,agent");
         Check(PromptRuntimeTargetBinding.Cleared.AgentIndex == -1 && PromptRuntimeTargetBinding.Cleared.KingdomId == "" && PromptRuntimeTargetBinding.Cleared.HeroId == "", "cleared binding is legacy reset values");
+    }
+
+    private static void KnowledgeExtrasText()
+    {
+        var routing = new PromptRoutingResult { AuxiliaryRuleHitIds = new List<string>() };
+        foreach (bool loreHit in new[] { true, false })
+        foreach (bool entityHit in new[] { true, false })
+        foreach (bool preselectedRule in new[] { true, false })
+        {
+            string rule = preselectedRule ? "【附加规则:trade】预选正文" : "【附加规则:trade】回退正文";
+            string lore = loreHit ? "【Lore】命中正文" : "【Lore】兼容回退正文";
+            var sections = new PromptExtrasSections
+            {
+                TrustPrompt = "固定前缀",
+                TriggeredRuleInstructions = rule,
+                LoreContext = lore
+            };
+            var entity = new PromptEntityCapture
+            {
+                HasContent = entityHit,
+                MainPromptBlock = "【实体】完整事实块",
+                PostprocessPromptBlock = "【实体后处理】完整事实块"
+            };
+            var assembled = PromptAssemblyStage.Assemble(sections, entity, routing, default(PromptContextFlags),
+                true, false, null);
+            string expected = "固定前缀\n" + rule + "\n" + lore + "\n"
+                + (entityHit ? "【实体】完整事实块\n" : "");
+            Check(assembled.Extras.Replace("\r\n", "\n") == expected,
+                "complete Extras text loreHit=" + loreHit + " entityHit=" + entityHit + " preselected=" + preselectedRule);
+            Check(assembled.EntityPostprocessContext == (entityHit ? "【实体后处理】完整事实块" : ""),
+                "entity postprocess text follows selection");
+        }
     }
 
     private static void RuleEligibility()

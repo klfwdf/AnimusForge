@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["sticky-limit", "router-excluded"], help="apply a source mutation that must fail")
+parser.add_argument("--mutate", choices=["sticky-limit", "router-excluded", "drop-lore-text", "drop-entity-text", "drop-rule-text"], help="apply a source mutation that must fail")
 args = parser.parse_args()
 
 
@@ -50,6 +50,17 @@ if args.mutate:
         assert text.count(needle) == 1
         (src_dir / "PromptBuiltInTopicRouter.cs").write_text(text.replace(needle, "if (!allowRulePreprocess || !topicEnabled)"), encoding="utf-8")
         project = project.replace(str(ROOT).replace("\\", "/") + "/src/modules/AF.Module.Prompt/Composition/PromptBuiltInTopicRouter.cs", str(src_dir / "PromptBuiltInTopicRouter.cs").replace("\\", "/"))
+    else:
+        rel = "src/modules/AF.Module.Prompt/Composition/PromptAssemblyStage.cs"
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        old, new = {
+            "drop-lore-text": ("result.Extras = PromptExtrasComposer.Compose(sections);", "sections.LoreContext = null; result.Extras = PromptExtrasComposer.Compose(sections);"),
+            "drop-entity-text": ("sections.EntityMainPromptBlock = entity.MainPromptBlock;", "sections.EntityMainPromptBlock = null;"),
+            "drop-rule-text": ("result.Extras = PromptExtrasComposer.Compose(sections);", "sections.TriggeredRuleInstructions = null; result.Extras = PromptExtrasComposer.Compose(sections);"),
+        }[args.mutate]
+        assert text.count(old) == 1, old
+        (src_dir / "PromptAssemblyStage.cs").write_text(text.replace(old, new, 1), encoding="utf-8")
+        project = project.replace(str(ROOT).replace("\\", "/") + "/" + rel, str(src_dir / "PromptAssemblyStage.cs").replace("\\", "/"))
 (output / "PromptCompositionTests.csproj").write_text(project, encoding="utf-8")
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
 env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", DOTNET_MULTILEVEL_LOOKUP="0")
