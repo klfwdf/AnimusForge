@@ -520,6 +520,36 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static readonly LoreCandidateRetriever Retriever = new LoreCandidateRetriever(Index, Logger.Log);
 
+	/// <summary>Game thread: finish a cold index build before a prompt worker can query it.</summary>
+	internal static long PreparePromptLoreRetrieval(MentionedWorldEntities mentions)
+	{
+		if (Instance == null || mentions == null || mentions.IsEmpty)
+		{
+			return Index.Version;
+		}
+		try
+		{
+			if (!Index.SparseReady) Index.EnsureVectorIndex();
+			if (!Index.OnnxReady && OnnxEmbeddingEngine.Instance?.IsAvailable == true) Index.EnsureOnnxIndex();
+			return Index.SparseReady ? Index.Version : 0L;
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	/// <summary>Worker: select candidates from the prepared index without reading a Hero or Campaign.</summary>
+	internal static LoreCandidateRules CollectPromptLoreCandidates(MentionedWorldEntities mentions, long preparedVersion)
+	{
+		if (Instance == null || preparedVersion <= 0L || Index.Version != preparedVersion)
+		{
+			return null;
+		}
+		LoreCandidateRules candidates = Retriever.CollectCandidateRules(mentions?.Entities, KnowledgeRetrievalEnabledSafe());
+		return Index.Version == preparedVersion ? candidates : null;
+	}
+
 	public static KnowledgeLibraryBehavior Instance { get; private set; }
 
 	private static string TrimPreview(string s, int maxChars)
@@ -3942,12 +3972,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public string BuildLoreContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
-		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: true);
+		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: true, null);
+	}
+
+	internal string BuildLoreContextWithCandidates(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules candidates)
+	{
+		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: true, candidates);
 	}
 
 	public string BuildLoreContextWithoutPlayerContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities = null)
 	{
-		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: false);
+		return BuildLoreContextInternal(inputText, npcHero, secondaryInput, mentionedEntities, includePlayerContext: false, null);
 	}
 
 	public long GetRuleDataVersionForExternal()
@@ -3955,7 +3990,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return Index.Version;
 	}
 
-	private string BuildLoreContextInternal(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, bool includePlayerContext)
+	private string BuildLoreContextInternal(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, bool includePlayerContext, LoreCandidateRules preselectedCandidates)
 	{
 		string text = (inputText ?? "").Trim();
 		MentionedWorldEntities loreMentionedEntities = mentionedEntities?.Clone() ?? new MentionedWorldEntities();
@@ -4079,7 +4114,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
-		LoreCandidateRules candidateRules = Retriever.CollectCandidateRules(loreMentionedEntities.Entities, KnowledgeRetrievalEnabledSafe());
+		LoreCandidateRules candidateRules = preselectedCandidates ?? Retriever.CollectCandidateRules(loreMentionedEntities.Entities, KnowledgeRetrievalEnabledSafe());
 		int loreInjectLimit = candidateRules?.InjectLimit ?? 0;
 		if (loreInjectLimit <= 0)
 		{
@@ -4340,6 +4375,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public string BuildLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
+		return BuildLoreContextWithCandidates(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities, null);
+	}
+
+	internal string BuildLoreContextWithCandidates(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules preselectedCandidates)
+	{
 		string text = (inputText ?? "").Trim();
 		MentionedWorldEntities loreMentionedEntities = mentionedEntities?.Clone() ?? new MentionedWorldEntities();
 		if (string.IsNullOrEmpty(text) && loreMentionedEntities.IsEmpty)
@@ -4512,7 +4552,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
-		LoreCandidateRules candidateRules = Retriever.CollectCandidateRules(loreMentionedEntities.Entities, KnowledgeRetrievalEnabledSafe());
+		LoreCandidateRules candidateRules = preselectedCandidates ?? Retriever.CollectCandidateRules(loreMentionedEntities.Entities, KnowledgeRetrievalEnabledSafe());
 		int loreInjectLimit = candidateRules?.InjectLimit ?? KnowledgeRuleIndex.GetLoreInjectLimit(Index.GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;

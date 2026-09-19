@@ -10,10 +10,10 @@ namespace AnimusForge;
 public partial class ShoutBehavior
 {
 	/// <summary>
-	/// J04f: Native runs the shared prompt build as three scheduled steps.
+	/// Native runs the shared prompt build as five scheduled steps.
 	/// Step 1 (game thread, admission re-validated): capture the detached request.
 	/// Step 2 (background, below-normal priority, timeout-guarded): topic routing + mention retrieval.
-	/// Step 3 (game thread, admission re-validated): section capture, pure assembly, runtime appendices.
+	/// Steps 3/4 prepare and retrieve Knowledge candidates; step 5 captures sections on the game thread.
 	/// Returns null when the request was aborted (admission lost, retired, timed out) so the caller
 	/// keeps its legacy "preprocess aborted" path; PreprocessFormatException propagates.
 	/// </summary>
@@ -78,7 +78,34 @@ public partial class ShoutBehavior
 			return null;
 		}
 
-		// Step 3: game thread, ownership re-validated after the hop.
+		// Step 3: game thread. Prepare the versioned Lore index after routing discovered mentions.
+		PromptBuildPhases prepared = await RunNativeConversationMainThreadFuncAsync("prompt_build_knowledge_capture", target, targetAgentIndex,
+			() =>
+			{
+				if (!IsNativeConversationAdmissionCurrent(admission, out _)) return null;
+				owner.CaptureSharedKnowledgeSnapshot(phases);
+				return phases;
+			},
+			(PromptBuildPhases)null).ConfigureAwait(false);
+		if (!ReferenceEquals(prepared, phases) || SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_capture"))
+		{
+			return null;
+		}
+
+		// Step 4: background candidate retrieval, with the same slot/timeout guard as routing.
+		MyBehavior.ShoutPromptContext knowledgeMarker = new MyBehavior.ShoutPromptContext();
+		Task<MyBehavior.ShoutPromptContext> knowledgeTask = RunNativeConversationBackgroundPreprocessAsync(target, targetAgentIndex, runtimeGeneration, () =>
+		{
+			owner.RunSharedKnowledgeRetrieval(phases);
+			return knowledgeMarker;
+		});
+		if (!ReferenceEquals(await AwaitNativeConversationBackgroundPreprocessAsync(knowledgeTask, target, targetAgentIndex, runtimeGeneration).ConfigureAwait(false), knowledgeMarker)
+			|| SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval"))
+		{
+			return null;
+		}
+
+		// Step 5: game thread, ownership re-validated after the hop.
 		MyBehavior.ShoutPromptContext ctx = await RunNativeConversationMainThreadFuncAsync("prompt_build_complete", target, targetAgentIndex,
 			() =>
 			{

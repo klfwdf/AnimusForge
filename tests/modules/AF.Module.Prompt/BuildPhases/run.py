@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility"])
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker"])
 args = parser.parse_args()
 
 source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
@@ -29,6 +29,8 @@ def ordered(body, *fragments):
 
 begin = extract.declaration(source, "internal PromptBuildPhases BeginSharedPromptBuild(")
 routing = extract.declaration(source, "internal void RunSharedPromptRouting(")
+knowledge_capture = extract.declaration(source, "internal void CaptureSharedKnowledgeSnapshot(")
+knowledge_worker = extract.declaration(source, "internal void RunSharedKnowledgeRetrieval(")
 complete = extract.declaration(source, "internal ShoutPromptContext CompleteSharedPromptBuild(")
 if args.mutate == "routing-before-request":
     orchestrator = orchestrator.replace("BeginSharedPromptBuild(", "X(", 1).replace("RunSharedPromptRouting(phases)", "BeginSharedPromptBuild(", 1).replace("X(", "RunSharedPromptRouting(", 1)
@@ -37,12 +39,16 @@ ordered(orchestrator,
         "AIConfigHandler.BeginGuardrailRuntimeScope()",
         "AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)",
         "RunSharedPromptRouting(phases)",
+        "CaptureSharedKnowledgeSnapshot(phases)",
+        "RunSharedKnowledgeRetrieval(phases)",
         "CompleteSharedPromptBuild(phases",
         "AIConfigHandler.ClearGuardrailRuntimeTarget()")
 ordered(begin, "CapturePromptBuildRequest(", "PromptExclusionSets.AddUnavailableConfiguredRules(", "BuildPreprocessExcludedRuleBlockForExternal(")
 ordered(routing, "SetGuardrailSemanticContext(", "PromptTopicRoutingStage.Run(", "GetAuxiliaryMentionedEntitiesForExternal(")
 ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "ApplyPromptRuntimeAppendices(")
 assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
+assert "PreparePromptLoreRetrieval(" in knowledge_capture and "CollectPromptLoreCandidates(" in knowledge_worker
+assert "PreparePromptLoreRetrieval(" not in knowledge_worker and not game_services.search(knowledge_worker), "knowledge worker must not prepare indexes or read game services"
 
 # J06d: only game-thread capture may call the live eligibility functions. Both
 # worker entries must publish their request's detached facts before retrieval.
@@ -69,10 +75,15 @@ native_schedule = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encodi
 courier_schedule = (ROOT / "CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
 if args.mutate == "drop-worker-eligibility":
     native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
+if args.mutate == "drop-knowledge-worker":
+    native_schedule = native_schedule.replace("owner.RunSharedKnowledgeRetrieval(phases);", "", 1)
 assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
 assert "ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility)" in courier_schedule and "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in courier_schedule, "Courier workers must publish detached eligibility"
 assert native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_begin"') < native_schedule.index('RunNativeConversationBackgroundPreprocessAsync(') < native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_complete"'), "Native capture/routing/complete thread order"
 assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"') < courier_schedule.index('Task.Run(() =>') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"'), "Courier owner/worker thread order"
+assert native_schedule.index('"prompt_build_knowledge_capture"') < native_schedule.index('owner.RunSharedKnowledgeRetrieval(phases);') < native_schedule.index('"prompt_build_complete"'), "Native knowledge capture/worker/complete order"
+assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedule.index('owner.RunSharedKnowledgeRetrieval(phases)') < courier_schedule.index('source + "_prompt_complete"'), "Courier knowledge capture/worker/complete order"
+assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
 for label, body in (("Native", native_schedule), ("Courier", courier_schedule)):
     for live_call in ("Hero.Find(", "Mission.Current", "CanInjectVassalageRuleForExternal(", "CanInjectDiplomacyRuleForExternal(", "CanDiscussWorldDiplomacyForExternal("):
         assert live_call not in body, label + " worker schedule must not resolve live eligibility: " + live_call
@@ -90,4 +101,4 @@ forbidden = re.compile(r"\busing TaleWorlds\.|\bHero\b\s+\w+\s*[=;,)]|\bCampaign
 m = forbidden.search(composition)
 assert not m, "Composition owners must stay detached from game/config/log: " + m.group(0)
 
-print("PASS prompt-build-phases orchestrator=5-phase captureRequest=game sections=game assembly=pure appendices=game LIVE=NOT_RUN")
+print("PASS prompt-build-phases orchestrator=5-phase knowledge=worker captureRequest=game sections=game assembly=pure appendices=game LIVE=NOT_RUN")

@@ -5,12 +5,15 @@ namespace AnimusForge;
 /// <summary>
 /// Retrieval results that may be computed off the game thread (network/ONNX/cache) once the
 /// request and routing are known, so the game-thread section capture only reads game state.
-/// Lore and entity retrieval stay in the game-thread step because their owners read Hero state (J06).
+/// Lore candidate selection runs on the worker after the game thread prepares the versioned index;
+/// runtime Lore text and entity context still read game state during final section capture.
 /// </summary>
 internal sealed class PromptRetrievalCapture
 {
 	/// <summary>Complete mention set for the build: caller-supplied + router-discovered + mention store + latest.</summary>
 	internal MentionedWorldEntities AuxiliaryMentions;
+	internal long LoreRuleVersion;
+	internal LoreCandidateRules LoreCandidates;
 }
 
 /// <summary>
