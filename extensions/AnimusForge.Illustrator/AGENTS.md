@@ -124,3 +124,4 @@
 - 清理只允许自有view.AddClearTask(clearOnlySceneview:true)，绝不清空/退休源Scene。禁止ReleaseImmediately；ReadyToRender、帧等待和清理提交都不能声称是GPU完成屏障。共享渲染状态仍可能有副作用，实机未验收前不能宣称无闪烁/稳定。
 - 实验保留view的普通阴影/postfx通路，不主动建立focused-shadow区域，也不写源Scene光照/曝光。原版SceneTableau正常绘制可关闭focused shadow，但这不是本次PNG导出已验收的证据；不得声称移除focus已修复旧破面。
 - 试采沿已有串行锁/取消和会话owner校验，8秒预算，保存原生图与一次既有SceneView生产者R/B适配后的预览；不修改普通图片/UI颜色。仅试采入口可调用这段代码，错误不退回桌面截图或付费生成。用户仍要求不运行离线测试。
+- 用户实机确认单镜头能够取得完整环境，但主画面人物在试采期间消失、结束后恢复；三次约0.47–0.56秒完成且无清理异常。后续实验显式把自有副视图renderOrder设为-2001（原版1.4活动屏幕视图从-2000起），让主场景随后绘制；不能声称顺序调整已确证修复native人物缓存，也不能用强制Agent可见或重建源场景renderer controller掩盖副作用。仍只开放单镜头手动验证。
