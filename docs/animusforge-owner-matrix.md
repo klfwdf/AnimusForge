@@ -12,6 +12,8 @@
 
 ## J06 当前责任边界（VERIFY / NOT_ACCEPTED）
 
+接续验证：产品 owner/源码未变；`ae2cb4f4` 的生产候选/元数据捕获方法样本（fake Hero 2,000，9 轮）与两项变异通过，`db9a899e` 的生产 `PromptAssemblyStage` 完整 `Extras` 八组合及三项变异通过。原脚本 Debug/Release 六项已获授权执行并成功；尚缺旧同步与新捕获路径的**最终模型请求 Prompt 全文**对照，故本矩阵仍为 `VERIFY / NOT_ACCEPTED`。旧下方“原脚本拒绝”仅是先前历史状态。
+
 | 责任 | 当前 owner 与真实消费者 | 保留责任 / 验收缺口 |
 | --- | --- | --- |
 | 知识规则索引、Lore 候选 | `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs`、`Lore/LoreCandidateRetriever.cs`；`KnowledgeLibraryBehavior.Index`/`Retriever` 接入；`MyBehavior.CaptureSharedKnowledgeSnapshot` 游戏每版本一次发布脱离原对象的规则快照、准备索引及 MCM 数值快照、`RunSharedKnowledgeRetrieval` 后台召回 | `KnowledgeLibraryBehavior` 仍负责 Campaign/ONNX 生命周期、知识存档与 Hero 事实；冷索引仍在游戏线程；版本/缓存与每版本规则发布已有可执行契约；最终文本对照未齐。索引缓存上限 512 |
