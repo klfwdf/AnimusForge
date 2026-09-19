@@ -71,7 +71,12 @@ internal static class Program
 {
     private static int _checks;
     internal static void Check(bool value, string reason) { _checks++; if (!value) throw new Exception("FAIL " + reason); }
-    private static void Main()
+    private static int Main()
+    {
+        try { Run(); return 0; }
+        catch (Exception ex) { Console.Error.WriteLine(ex.Message); return 1; }
+    }
+    private static void Run()
     {
         var phase = new PromptBuildPhases
         {
