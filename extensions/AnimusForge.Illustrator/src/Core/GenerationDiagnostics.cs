@@ -17,12 +17,14 @@ using Newtonsoft.Json.Linq;
 namespace AnimusForge.Illustrator.Core
 {
     // Opt-in by generation scope, not global HTTP logging. Headers/credentials are never serialized.
-    // At most 12 request directories, 15 MiB references + 512 KiB metadata (and atomic temp) each.
+    // At most 12 request directories, 15 MiB references + 512 KiB metadata + 2 MiB
+    // optional scene inventory (and atomic temp files) each.
     internal sealed class GenerationDiagnostics : IDisposable
     {
         internal const int MaxRecords = 12;
         internal const int MaxReferenceBytes = 15 * 1024 * 1024;
         internal const int MaxMetadataBytes = 512 * 1024;
+        private const int MaxSceneInventoryBytes = 2 * 1024 * 1024;
         private static readonly AsyncLocal<GenerationDiagnostics> Ambient = new AsyncLocal<GenerationDiagnostics>();
         private static readonly object StorageLock = new object();
         private static readonly HashSet<string> Active = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -96,6 +98,43 @@ namespace AnimusForge.Illustrator.Core
                 _captureEvidenceBytes += nativePng.Length;
                 AddEvent("panorama_native_evidence", new JObject { ["face"] = face, ["reference"] = evidence,
                     ["purpose"] = "Raw native export before producer-specific RGB correction; not a model reference." });
+            });
+        }
+
+        internal void RecordSceneInventory(PanoramaSnapshotInventory inventory, PanoramaSceneSnapshot snapshot, bool complete)
+        {
+            if (inventory == null || snapshot == null) return;
+            Safe(() =>
+            {
+                var document = (JObject)Sanitize(inventory.ToDocument(snapshot, complete), false);
+                var entries = (JArray)document["entries"];
+                int droppedForBytes = 0;
+                byte[] bytes;
+                while (true)
+                {
+                    document["omittedForByteBudget"] = droppedForBytes;
+                    bytes = Encoding.UTF8.GetBytes(document.ToString(Formatting.None));
+                    if (bytes.Length <= MaxSceneInventoryBytes) break;
+                    if (entries.Count == 0) throw new IOException("Scene inventory exceeds metadata budget.");
+                    int remove = Math.Max(1, entries.Count / 4);
+                    for (int i = 0; i < remove; i++) entries.RemoveAt(entries.Count - 1);
+                    droppedForBytes += remove;
+                }
+                string path = Path.Combine(_directory, "scene-inventory.json");
+                string temporary = path + ".tmp";
+                try
+                {
+                    File.WriteAllBytes(temporary, bytes);
+                    if (File.Exists(path)) File.Replace(temporary, path, null);
+                    else File.Move(temporary, path);
+                }
+                finally { if (File.Exists(temporary)) File.Delete(temporary); }
+                AddEvent("scene_inventory", new JObject
+                {
+                    ["file"] = "scene-inventory.json", ["bytes"] = bytes.Length, ["complete"] = complete,
+                    ["recordedEntries"] = entries.Count, ["omittedEntries"] = document["omittedEntries"],
+                    ["omittedForByteBudget"] = droppedForBytes
+                });
             });
         }
 

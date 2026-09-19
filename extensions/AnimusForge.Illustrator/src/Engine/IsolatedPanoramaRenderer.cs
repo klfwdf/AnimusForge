@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
+using Newtonsoft.Json.Linq;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using Path = System.IO.Path;
@@ -81,6 +82,7 @@ namespace AnimusForge.Illustrator.Engine
 
         // This acknowledges submission of native retirement, not a GPU completion fence.
         internal Task Retired => _retired.Task;
+        internal JObject ObservationLightingDiagnostics { get; private set; }
         internal bool IsReady
         {
             get
@@ -113,6 +115,7 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 Directory.CreateDirectory(renderer._directory);
+                renderer.ObservationLightingDiagnostics = PanoramaObservationLighting.AddToSnapshot(snapshot, frames);
                 TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Creating private cameras and vanilla tableau render target.");
                 for (int i = 0; i < frames.Length; i++)
                 {
