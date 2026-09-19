@@ -5722,28 +5722,38 @@ public static class AIConfigHandler
 	/// <summary>Game thread: resolve every live fact the RAG eligibility decisions need for the bound target.</summary>
 	internal static PromptRuleEligibility CapturePromptRuleEligibility(Hero targetHero, CharacterObject targetCharacter, PromptRuntimeTargetBinding binding)
 	{
-		PromptRuleEligibility result = new PromptRuleEligibility();
+		// Failed exclusion checks must not make a restricted rule eligible.
+		PromptRuleEligibility result = new PromptRuleEligibility
+		{
+			TargetIsPlayerPartyTradeLimited = true,
+			SceneMoveRuleExcludedForMission = true
+		};
 		// Lords-hall eligibility reads the ambient target. Bind this request only for the
 		// capture, then restore the caller's target (including its eligibility facts).
 		using IDisposable scope = BeginGuardrailRuntimeScope();
 		try
 		{
 			ApplyGuardrailRuntimeTarget(binding);
-			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			Hero hero = targetHero;
+			if (hero == null)
+			{
+				try { hero = targetCharacter?.HeroObject; } catch { }
+			}
 			if (hero == null && !string.IsNullOrWhiteSpace(binding.HeroId))
 			{
-				hero = Hero.Find(binding.HeroId.Trim());
+				try { hero = Hero.Find(binding.HeroId.Trim()); } catch { }
 			}
-			result.TargetIsPlayerPartyTradeLimited = IsPlayerPartyTradeLimitedTarget(hero);
-			result.SceneMoveRuleExcludedForMission = ShouldExcludeSceneMoveRuleForCurrentMission();
-			result.GcczSiegeAftermathActive = AfGcczShoutBridge.IsActive();
-			result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForPromptCapture(hero, targetCharacter);
-			result.DiplomacyEligible = DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(hero, targetCharacter);
-			result.WorldDiplomacyEligible = WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(hero);
-			result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter);
-			result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero));
-			result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero));
-			result.LordsHallAccessEligible = !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal());
+			// Gates fail independently: positive grants stay false, exclusions stay true.
+			try { result.TargetIsPlayerPartyTradeLimited = IsPlayerPartyTradeLimitedTarget(hero); } catch { }
+			try { result.SceneMoveRuleExcludedForMission = ShouldExcludeSceneMoveRuleForCurrentMission(); } catch { }
+			try { result.GcczSiegeAftermathActive = AfGcczShoutBridge.IsActive(); } catch { }
+			try { result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForPromptCapture(hero, targetCharacter); } catch { }
+			try { result.DiplomacyEligible = DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(hero, targetCharacter); } catch { }
+			try { result.WorldDiplomacyEligible = WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(hero); } catch { }
+			try { result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter); } catch { }
+			try { result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero)); } catch { }
+			try { result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero)); } catch { }
+			try { result.LordsHallAccessEligible = !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal()); } catch { }
 			result.HasAnyTargetIdentity = hero != null || targetCharacter != null || !string.IsNullOrWhiteSpace(binding.TroopId) || !string.IsNullOrWhiteSpace(binding.UnnamedRank);
 		}
 		catch
