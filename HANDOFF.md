@@ -1,5 +1,11 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 最新试采人物短暂消失：渲染顺序试验（2026-09-20 06:57:37）
+
+用户确认人物仅在试采期间消失，结束后恢复。前三次原场景单镜头成功导出，耗时475/466/556ms，7/13/16个应用帧，无退休报错；因此不是已证明的清理删除或持久隐藏问题。检查点 `9bca4d7`，源码 `8dc8053e` 只给自有副视图设置 `SetRenderOrder(-2001)`，排在原版活动屏幕视图（从-2000起）之前，并写入诊断。未修改真实Agent、原Scene、主Camera或全局人物显示开关；仍仅手动单镜头实验。
+
+排序有原版依据，但尚未证明能够消除原生人物渲染冲突。双API Release均0警告/0错误，未跑离线测试，已按原脚本部署，8文件哈希一致。SHA256 `A37F0EA0A388A02DAFD5C3C7FF66D5B2DA8081CDF5733E97B59749DBC6EEC99E`，MVID `0341c278-a944-4269-99fc-7b3176ccdbbe`；备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-065737`。待完整启动新版，在同场景再点“单镜头试采”，确认采集期间主画面人物是否保持可见，不能以成功导出替代此验收。证据与回滚见 [顺序试验报告](docs/audits/2026-09-20-illustrator-probe-render-order.md)。
+
 ## 最新原场景单镜头手动试采（2026-09-20 06:36:17）
 
 用户在获知旧共享Scene副视图有重复角度/人物破面后明确“试试”，批准先验证单镜头。检查点 `12b9c9c`，源码 `03cb39ce`。已在Mission会话插画卡片增加“单镜头试采”：固定当前朝向、512×512、自有Camera/RT/SceneView借用原Mission.Scene，导出后立即停用，仅预览和诊断、不发模型、不写画廊/默认图。每次实验Tick及导出前向自有view重新SetCamera；不建Scene/SceneLayer、不修改玩家Camera/源Scene参数、不主动设置focused-shadow区域，清理仅AddClearTask(true)。8秒预算、原串行锁、owner检查与取消/退场接线保留。
