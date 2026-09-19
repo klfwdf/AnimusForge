@@ -1,5 +1,9 @@
 # 当前接续：J06 原构建通过，最终 Prompt 对照仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
+- 本地测试提交 `49441aa1`、`3aaece30`：实体旧/新生产 `BuildPromptContext` Hero 直接/称谓及当前空 capture 回退逐字节一致（三项变异拒收）；Courier 旧/新生产最终消息构建器也已执行，76 场景/550 项、三项全文文本丢失变异拒收。共享 `CompleteSharedPromptBuild` 未用同一输入接三类真实检索结果，Native 最终请求也未完成，故 **J06 仍 `VERIFY / NOT_ACCEPTED`**；产品源码未变，先前六项原脚本构建证据适用。`run_liveness.py --old` 当前因旧 partial 与新 J06 schedule 类型不兼容而编译失败，不能算旧红回归结果；当前 liveness 59 项通过。
+
+- 新增 `tests/modules/AF.Module.Knowledge/EntityTextDifferential`：旧同步和当前 capture→detached match→生产 `BuildPromptContext` 的 Hero 直接/称谓命中，主文/后处理/计数/显式王国 ID 逐字节一致；当前空 capture 同步回退一致，三项仅新侧文本/回退变异失败。其他实体类别和 TaleWorlds 实机属性未测；Native/Courier 最终模型请求尚未接真实三类文本，**J06 仍 `VERIFY / NOT_ACCEPTED`**。产品源码未变，原六项构建证据仍适用。
+
 - 额外规则生产方法差分新增：`tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential` 提取 `77a3d234`/当前选择、sticky 与格式化方法，语义预选和词法回退的规则 ID/正文逐字节一致；删正文与漏回退变异失败。假配置与中性运行时端口不是实机；实体事实及 Native/Courier 最终请求生产检索全文对照尚缺，**J06 仍 `VERIFY / NOT_ACCEPTED`**。产品源码无变化，先前六项原脚本构建仍适用。
 
 - 新增 `tests/modules/AF.Module.Knowledge/LoreTextDifferential`：独立编译 `77a3d234` 与当前生产 Lore 检索、Hero 正文格式化及 AI 入口；同输入旧同步／新预选／新过期回退非空正文逐字节相同，版本检查与 Lore 正文丢失变异均拒收。游戏属性为假端口，尚未完成实体、规则与 Native/Courier 最终请求真实检索全文差分，**J06 仍 `VERIFY / NOT_ACCEPTED`**。产品源码未变，不重跑已通过的原脚本六项构建；未推送、Stage 或部署。
