@@ -11,5 +11,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Stubs.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs" Link="KnowledgeRuleIndex.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs" Link="LoreCandidateRetriever.cs" />
   </ItemGroup>
 </Project>

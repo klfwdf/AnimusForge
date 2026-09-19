@@ -37,7 +37,8 @@ internal static class Program
         CollapseAndSelect();
         RerankAndCache();
         Budgets();
-        Console.WriteLine("PASS knowledge-index checks=" + _checks);
+        Retriever();
+        Console.WriteLine("PASS knowledge-index+lore-retriever checks=" + _checks);
     }
 
     private static void Tokens()
@@ -176,5 +177,57 @@ internal static class Program
         Check(KnowledgeRuleIndex.GetKnowledgePerEntityRerank(12, 5) == 4 && KnowledgeRuleIndex.GetKnowledgePerEntityRerank(36, 1) == 12 && KnowledgeRuleIndex.GetKnowledgePerEntityRerank(10, 4) == 4, "per-entity rerank round-away clamped 4..12");
         Check(KnowledgeRuleIndex.GetKnowledgePerEntityRecall(4) == 10 && KnowledgeRuleIndex.GetKnowledgePerEntityRecall(12) == 30 && KnowledgeRuleIndex.GetKnowledgePerEntityRecall(6) == 15, "per-entity recall 2.5x clamped 10..30");
         Check(KnowledgeRuleIndex.GetLoreInjectLimit(0) == 1 && KnowledgeRuleIndex.GetLoreInjectLimit(50) == 12 && KnowledgeRuleIndex.GetSemanticResultHardCap(0) == 20 && KnowledgeRuleIndex.GetSemanticResultHardCap(5) == 5, "inject limit and hard cap");
+    }
+
+    private static void Retriever()
+    {
+        Check(LoreCandidateRetriever.NormalizeKeywordForCompare(" a \r\n  b\tc ") == "a b c" && LoreCandidateRetriever.NormalizeKeywordForCompare(null) == "", "keyword normalization collapses whitespace");
+        var terms = LoreCandidateRetriever.BuildMentionTerms(new[] { " Vlandia ", "vlandia", "", null, "Battania", new string('z', 100) });
+        Check(terms.SequenceEqual(new[] { "Vlandia", "Battania", new string('z', 80) }), "mention terms: dedupe ci, skip blank, cap 80: " + string.Join(",", terms));
+        Check(LoreCandidateRetriever.BuildMentionTerms(Enumerable.Range(0, 50).Select(i => "e" + i)).Count == LoreCandidateRetriever.MentionTermHardCap, "hard cap 32 terms");
+        Check(LoreCandidateRetriever.BuildMentionSignature(new string[0], 4) == "mentions=empty" && LoreCandidateRetriever.BuildMentionSignature(new[] { "A", "b" }, 4) == "mentions=" + KnowledgeRuleIndex.Hash8("a|b") + ":2:cap4", "mention signature");
+        Check(LoreCandidateRetriever.FormatMentionCounts(null) == "entities=0" && LoreCandidateRetriever.FormatMentionCounts(new[] { "x", "" }) == "entities=2", "mention counts (raw list size)");
+        var q = LoreCandidateRetriever.BuildQueryInputsFromMentions(Enumerable.Range(0, 20).Select(i => "n" + i), 5, out int termCount);
+        Check(q.Count == 5 && termCount == 20 && q.All(x => x.Weight == 1f) && q[0].Text == "n0", "query inputs limited by inject limit, term count reports all");
+        Check(LoreCandidateRetriever.BuildQueryInputsFromMentions(new[] { "a" }, 99, out _).Count == 1 && LoreCandidateRetriever.BuildQueryInputsFromMentions(new[] { "a", "b" }, 0, out _).Count == 1, "query limit clamps 1..12");
+        Check(LoreCandidateRetriever.QuoteJson("a\"b\\c\n") == "\"a\\\"b\\\\c\\n\"" && LoreCandidateRetriever.QuoteJson("汉") == "\"汉\"", "json quoting for logs");
+
+        // per-entity allocation over a fake index: apple/berry/cherry rules; two entities mention apple and berry.
+        var rules = new List<LoreRule> { Rule("apple", "apple"), Rule("berry", "berry"), Rule("cherry", "cherry"), Rule("apple2", "apple") };
+        var ports = new FakePorts { Embed = Vec, SemanticMinScore = 0f, SemanticTopK = 4 };
+        var index = new KnowledgeRuleIndex(ports, () => rules);
+        index.EnsureOnnxIndex();
+        var logs = new List<string>();
+        var retriever = new LoreCandidateRetriever(index, (c, m) => logs.Add(c + ":" + m));
+        var pool = retriever.CollectCandidateRules(new[] { "apple", "berry" }, retrievalEnabled: true);
+        Check(pool.MatchMode == "mentions_semantic_per_entity" && pool.InjectLimit == 4 && pool.EntityQueryCount == 2 && pool.RerankPerEntity == 6 && pool.RecallPerEntity == 15, "pool budgets from return cap 4 / 2 entities: " + pool.MatchMode + " " + pool.RerankPerEntity + " " + pool.RecallPerEntity);
+        Check(pool.OrderedRules.Count >= 2 && pool.OrderedRules[0].Id.StartsWith("apple") && pool.OrderedRules[1].Id == "berry", "primary pass: best rule per entity in mention order: " + string.Join(",", pool.OrderedRules.Select(r => r.Id)));
+        Check(pool.OrderedRules.Select(r => r.Id).Distinct().Count() == pool.OrderedRules.Count, "no duplicate rules across entities");
+        Check(logs.Any(l => l.StartsWith("LoreMatch:knowledge_mentions terms=2")) && logs.Any(l => l.StartsWith("KnowledgeRetrieval:entity_allocation")) && logs.Any(l => l.StartsWith("LoreMatch:candidate_pool mode=mentions_semantic_per_entity")), "legacy log lines emitted");
+        var disabled = retriever.CollectCandidateRules(new[] { "apple" }, retrievalEnabled: false);
+        Check(disabled.MatchMode == "none" && disabled.OrderedRules.Count == 0 && disabled.InjectLimit == 2, "retrieval disabled → default pool");
+        logs.Clear();
+        var none = retriever.CollectCandidateRules(new string[0], true);
+        Check(none.OrderedRules.Count == 0 && logs.Any(l => l.Contains("skip reason=no_mentions entities=0")), "no mentions → skip log");
+
+        // collision: both entities' best is the same rule → second entity falls back to its rank-2 candidate.
+        // (fake embedding: "berry" scores both rules 1.0; id tie-break puts only-berry first, so shared is taken by apple and berry keeps its own best)
+        var rules2 = new List<LoreRule> { Rule("shared", "apple berry"), Rule("only-berry", "berry") };
+        var idx2 = new KnowledgeRuleIndex(new FakePorts { Embed = Vec, SemanticMinScore = 0f, SemanticTopK = 2 }, () => rules2);
+        idx2.EnsureOnnxIndex();
+        var r2 = new LoreCandidateRetriever(idx2, (c, m) => logs.Add(m));
+        var sel = r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "apple" }, new WeightedKnowledgeInput { Text = "berry" } }, 2, 10, 4, 2, out string mode);
+        Check(mode == "semantic_per_entity" && sel.Select(x => x.Id).SequenceEqual(new[] { "shared", "only-berry" }) && logs.Last(l => l.StartsWith("entity_allocation")).Contains("primary=2"), "unique rule per entity in mention order: " + string.Join(",", sel.Select(x => x.Id)));
+        var rules3 = new List<LoreRule> { Rule("both", "apple berry") };
+        var idx3 = new KnowledgeRuleIndex(new FakePorts { Embed = Vec, SemanticMinScore = 0f, SemanticTopK = 2 }, () => rules3);
+        idx3.EnsureOnnxIndex();
+        var r3 = new LoreCandidateRetriever(idx3, (c, m) => logs.Add(m));
+        var sel3 = r3.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "apple" }, new WeightedKnowledgeInput { Text = "berry" } }, 2, 10, 4, 4, out mode);
+        Check(sel3.Count == 1 && sel3[0].Id == "both" && logs.Last(l => l.StartsWith("entity_allocation")).Contains("2:berry->(none)"), "same rule for two entities is injected once");
+        var capped = r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "berry" } }, 1, 10, 4, 1, out mode);
+        Check(capped.Count == 1, "inject limit 1 stops after first entity");
+        var lower = r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = "berry" } }, 1, 10, 4, 3, out mode);
+        Check(lower.Count == 2 && logs.Last(l => l.StartsWith("entity_allocation")).Contains("allowLowerRanks=True") && logs.Last(l => l.StartsWith("entity_allocation")).Contains("secondary=1"), "limit > entity count allows rank-2 sweep");
+        Check(r2.SelectVectorRulesPerEntity(new List<WeightedKnowledgeInput> { new WeightedKnowledgeInput { Text = " ", Weight = 1f }, new WeightedKnowledgeInput { Text = "x", Weight = 0f } }, 2, 10, 4, 3, out mode).Count == 0 && mode == "none", "blank/zero-weight inputs ignored");
     }
 }

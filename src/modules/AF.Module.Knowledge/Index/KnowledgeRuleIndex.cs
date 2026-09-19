@@ -68,6 +68,7 @@ internal sealed class KnowledgeRuleIndex
 	}
 
 	internal long Version => _ruleDataVersion;
+	internal bool RerankerAvailable => _ports.RerankerAvailable;
 	internal bool SparseReady => _vectorRuleEntries != null && _vectorIndexVersion == _ruleDataVersion;
 	internal int SparseEntryCount => _vectorRuleEntries?.Count ?? 0;
 	internal bool OnnxReady => _onnxRuleEntries != null && _onnxIndexVersion == _ruleDataVersion;
