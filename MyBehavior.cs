@@ -30184,7 +30184,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			RunSharedPromptRouting(phases);
-			CaptureSharedKnowledgeSnapshot(phases);
+			CaptureSharedKnowledgeSnapshot(phases, targetHero ?? targetCharacter?.HeroObject);
 			RunSharedKnowledgeRetrieval(phases);
 			return CompleteSharedPromptBuild(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
 		}
@@ -30282,13 +30282,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 	}
 
 	/// <summary>Game thread: prepare the versioned rule index after routing has supplied all mentions.</summary>
-	internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases)
+	internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases, Hero targetHero)
 	{
-		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore || phases.Request.HasPrefetchedLore)
+		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)
 		{
 			return;
 		}
-		phases.Retrieval.LoreRuleVersion = KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(phases.Retrieval.AuxiliaryMentions);
+		if (!phases.Request.HasPrefetchedLore)
+		{
+			phases.Retrieval.LoreRuleVersion = KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(phases.Retrieval.AuxiliaryMentions);
+		}
+		try
+		{
+			phases.Retrieval.EntityCapture = WorldEntityRetrievalService.CaptureEntityCandidates(phases.Retrieval.AuxiliaryMentions, phases.Request.Input, targetHero);
+			phases.Retrieval.EntityCandidates = phases.Retrieval.EntityCapture.Candidates;
+			phases.Retrieval.EntityMaxInjectedEntities = phases.Retrieval.EntityCapture.MaxInjectedEntities;
+		}
+		catch (Exception ex)
+		{
+			phases.Retrieval.EntityCapture = null;
+			phases.Retrieval.EntityCandidates = null;
+			Logger.Log("WorldEntityRetrieval", "candidate_capture_failed: " + ex.Message);
+		}
 	}
 
 	/// <summary>Worker: select Lore candidates without resolving Hero, Mission or Campaign objects.</summary>
@@ -30302,6 +30317,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			phases.Retrieval.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(
 				phases.Retrieval.AuxiliaryMentions, phases.Retrieval.LoreRuleVersion);
+		}
+		if (phases.Retrieval.EntityCandidates != null)
+		{
+			try
+			{
+				phases.Retrieval.EntityMatches = WorldEntityRetrievalService.MatchDetachedCandidates(
+					phases.Retrieval.EntityCandidates, phases.Retrieval.AuxiliaryMentions, phases.Request.Input, phases.Retrieval.EntityMaxInjectedEntities);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("WorldEntityRetrieval", "candidate_match_failed: " + ex.Message);
+			}
 		}
 		if (phases.Request.AllowRulePreprocess && phases.Routing?.AuxiliaryRuleHitIds == null)
 		{
@@ -30626,7 +30653,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			bool includeResidentPlayerEntities = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
 			HashSet<string> entityRetrievalRuleIds = PromptExtrasComposer.BuildEntityRetrievalRuleIds(auxiliaryRuleHitIds, flag7, flag8, partyTransferHit, worldMapPartyCommandHit);
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities);
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities, retrieval?.EntityCapture, retrieval?.EntityMatches);
 			entityCapture = new PromptEntityCapture
 			{
 				MainPromptBlock = entityPromptContext?.MainPromptBlock,

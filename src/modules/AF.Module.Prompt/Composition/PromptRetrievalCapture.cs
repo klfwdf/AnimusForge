@@ -6,7 +6,8 @@ namespace AnimusForge;
 /// Retrieval results that may be computed off the game thread (network/ONNX/cache) once the
 /// request and routing are known, so the game-thread section capture only reads game state.
 /// Lore candidate selection runs on the worker after the game thread prepares the versioned index;
-/// runtime Lore text and entity context still read game state during final section capture.
+/// runtime Lore text and entity fact formatting still read game state during final section capture;
+/// direct/ruler entity scoring consumes only detached candidates on the worker.
 /// </summary>
 internal sealed class PromptRetrievalCapture
 {
@@ -15,6 +16,10 @@ internal sealed class PromptRetrievalCapture
 	internal long LoreRuleVersion;
 	internal LoreCandidateRules LoreCandidates;
 	internal List<GuardrailRuleHit> FallbackExtraRuleHits;
+	internal WorldEntityRetrievalService.EntityCapture EntityCapture;
+	internal WorldEntityRetrievalService.DetachedEntityCandidates EntityCandidates;
+	internal int EntityMaxInjectedEntities;
+	internal WorldEntityRetrievalService.DetachedEntityMatches EntityMatches;
 }
 
 /// <summary>

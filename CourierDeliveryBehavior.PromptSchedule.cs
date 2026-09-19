@@ -97,7 +97,7 @@ public partial class CourierDeliveryBehavior
 		PromptBuildPhases prepared = await RunCourierOwnerPhaseAsync(generation, source + "_knowledge_capture", () =>
 		{
 			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
-			owner.CaptureSharedKnowledgeSnapshot(phases);
+			owner.CaptureSharedKnowledgeSnapshot(phases, input.Participant);
 			return phases;
 		}, CancellationToken.None).ConfigureAwait(false);
 		if (!ReferenceEquals(prepared, phases)) return null;
