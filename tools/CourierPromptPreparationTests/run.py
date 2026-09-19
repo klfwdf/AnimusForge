@@ -6,12 +6,20 @@ def load(name,path):
  spec=importlib.util.spec_from_file_location(name,path);result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 ex=load('decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
 util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
 source=(ROOT/'CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='drop-knowledge-text':
  needle='string extras = (ctx?.Extras ?? "").Trim();'
  assert source.count(needle)==2
  source=source.replace(needle,'string extras = (ctx?.Extras ?? "").Trim().Replace("【Lore】命中正文", "").Replace("【Lore】兼容回退正文", "");')
+if args.mutate=='drop-entity-text':
+ needle='string extras = (ctx?.Extras ?? "").Trim();'
+ assert source.count(needle)==2
+ source=source.replace(needle,'string extras = (ctx?.Extras ?? "").Trim().Replace("【实体】完整事实块", "");')
+if args.mutate=='drop-rule-text':
+ needle='string extras = (ctx?.Extras ?? "").Trim();'
+ assert source.count(needle)==2
+ source=source.replace(needle,'string extras = (ctx?.Extras ?? "").Trim().Replace("【附加规则:trade】预选正文", "");')
 phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 if args.mutate=='worker_assembly':
  source=source.replace('return await RunCourierOwnerPhaseAsync(generation, source + "_assemble", () =>','return await Task.Run(() =>').replace('                return assemble(input, prepared);\n            }, CancellationToken.None).ConfigureAwait(false);','                return assemble(input, prepared);\n            }).ConfigureAwait(false);')
@@ -31,9 +39,18 @@ if args.mutate=='main_preprocess':
 if args.mutate=='skip_accept':source=source.replace('if (!IsCourierPromptInputCurrent(input))','if (false)')
 if args.mutate=='wrong_direction':source=source.replace('inbound ? "[NPC主动写信意图] " + Seed : LetterText','inbound ? LetterText : "[NPC主动写信意图] " + Seed')
 if args.mutate=='skip_source':source=source.replace('return string.Equals(input.Session.LetterText, input.LetterText, StringComparison.Ordinal)','return true || string.Equals(input.Session.LetterText, input.LetterText, StringComparison.Ordinal)')
-old=subprocess.check_output(['git','show','154f7206:CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
-methods='\n'.join(ex.declaration(old,'private '+typ+' '+name+'(').replace(name,name+'Baseline',1) for typ,name in [('CourierReplyGenerationRequest','BuildCourierReplyGenerationRequestOnMainThread'),('InboundLetterGenerationRequest','BuildInboundLetterGenerationRequestOnMainThread')])
-reqs='\n'.join(ex.declaration(old,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
+old=subprocess.check_output(['git','show','77a3d234:CourierDeliveryBehavior.PromptPreparation.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+baseline_specs=[
+ ('CourierReplyGenerationRequest','BuildCourierReplyGenerationRequestOnMainThread','BuildReplyRequestFromPreparedPrompt'),
+ ('InboundLetterGenerationRequest','BuildInboundLetterGenerationRequestOnMainThread','BuildInboundRequestFromPreparedPrompt'),
+]
+methods='\n'.join(
+ ex.declaration(old,'private '+typ+' '+wrapper+'(').replace(wrapper,wrapper+'Baseline',1).replace(final+'(input,',final+'Baseline(input,')
+ + '\n' + ex.declaration(old,'private '+typ+' '+final+'(').replace(final,final+'Baseline',1)
+ for typ,wrapper,final in baseline_specs
+)
+old_host=subprocess.check_output(['git','show','77a3d234:CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+reqs='\n'.join(ex.declaration(old_host,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
 history=(ROOT/'CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig')
 owner=ex.declaration(history,'private bool IsCourierHistoryOwnerCurrent(')
 historytype=ex.declaration(history,'private sealed class CourierPreparedHistory')
