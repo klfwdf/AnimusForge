@@ -30272,7 +30272,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!request.SuppressDynamicRuleAndLore)
 		{
 			// Full mention set for this build: caller-supplied + router-discovered + mention store + latest.
-			// Step 3 consumes it as-is; lore retrieval (J06 owner) still runs in step 3 because it reads Hero state.
+			// The capture phase uses this same detached mention set for Lore and entity candidates.
 			MentionedWorldEntities mentions = phases.DirectPreprocessMentions.Clone();
 			mentions.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(request.Input, request.NpcLastUtterance, request.GuardrailSemanticContext));
 			mentions.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
@@ -30281,7 +30281,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		phases.Retrieval = retrieval;
 	}
 
-	/// <summary>Game thread: prepare the versioned rule index after routing has supplied all mentions.</summary>
+	/// <summary>Game thread: prepare the Lore index and capture entity candidates after routing supplied all mentions.</summary>
 	internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases, Hero targetHero)
 	{
 		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)
@@ -30306,7 +30306,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	/// <summary>Worker: select Lore candidates without resolving Hero, Mission or Campaign objects.</summary>
+	/// <summary>Worker: select Lore, entity and fallback rule candidates without resolving game objects.</summary>
 	internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases)
 	{
 		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)

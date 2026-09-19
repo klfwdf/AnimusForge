@@ -93,7 +93,7 @@ public partial class CourierDeliveryBehavior
 			finally { AIConfigHandler.ClearGuardrailRuntimeTarget(); }
 		}).ConfigureAwait(false);
 
-		// Step 5 (game thread): prepare the Lore index after routing supplied all mentions.
+		// Step 5 (game thread): prepare Lore and capture entity candidates after routing supplied all mentions.
 		PromptBuildPhases prepared = await RunCourierOwnerPhaseAsync(generation, source + "_knowledge_capture", () =>
 		{
 			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
@@ -102,7 +102,7 @@ public partial class CourierDeliveryBehavior
 		}, CancellationToken.None).ConfigureAwait(false);
 		if (!ReferenceEquals(prepared, phases)) return null;
 
-		// Step 6 (thread pool): candidate retrieval from the prepared, versioned index.
+		// Step 6 (thread pool): Lore/entity/rule candidate retrieval from detached inputs.
 		await Task.Run(() => owner.RunSharedKnowledgeRetrieval(phases)).ConfigureAwait(false);
 
 		// Step 7 (game thread): sections, assembly, appendices. A declined owner phase aborts (null);
