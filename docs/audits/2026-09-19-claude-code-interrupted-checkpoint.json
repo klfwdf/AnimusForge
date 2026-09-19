@@ -1,0 +1,241 @@
+{
+  "date": "2026-09-19",
+  "branch": "codex/af-modularize-j04-20260918",
+  "baseRemoteCommit": "25a89cea9e1a45d5108f5f6680ad159ae54ff080",
+  "lastClaudeCommittedSlice": "157dc7f21ec98f3cddff96d5548c470a526aacfb",
+  "checkpointCommit": "bd2582aa776d9763002c85d75509ed9ccdb7b424",
+  "checkpointMeaning": "WIP only; preserve interrupted J06d eligibility capture, not accepted completion",
+  "commitsSinceBase": [
+    {
+      "commit": "23b5861d7ed42f1d2427babac133b9841f54dee7",
+      "subject": "docs(prompt): record J04 intent, verified entry points and three-channel target mapping"
+    },
+    {
+      "commit": "e0aa8142c767efcd5b44cf899afe7e79633e344d",
+      "subject": "refactor(prompt): extract rule-id policy, built-in topic routing and sticky carry into Composition owners"
+    },
+    {
+      "commit": "be91c0475606d496ffd53e8ee11c6bdd3e66c09f",
+      "subject": "refactor(prompt): move preprocess rule-id convergence into PromptPreprocessRuleIdAssembler"
+    },
+    {
+      "commit": "27ec5e2642635041be316cdaaf8aebfbd01cdbe2",
+      "subject": "refactor(prompt): compose shared Extras from captured sections via PromptExtrasComposer"
+    },
+    {
+      "commit": "2a191526bf148babf5c6d91531db80c6e5ccbf6c",
+      "subject": "refactor(prompt): publish retrieval target identity through PromptRuntimeTargetBinding"
+    },
+    {
+      "commit": "11f90fec758dec3507b17952684febc18eef5ebf",
+      "subject": "test(prompt): teach lifetime parity and postprocess harnesses the J04 target binding"
+    },
+    {
+      "commit": "96d9f8f562b8d301c92f9fd4996231b7cc229c61",
+      "subject": "docs(prompt): record J04 first-slice offline receipt, 231-anchor map and scope"
+    },
+    {
+      "commit": "6315fd268a518e104e9d75c07a3a5ee59bd7376f",
+      "subject": "refactor(prompt): own the injected rule block text format in PromptRuleBlockText"
+    },
+    {
+      "commit": "7176ebe88cca0c63552e153aee282f73c480fdf8",
+      "subject": "refactor(prompt): run built-in topic routing through PromptTopicRoutingStage"
+    },
+    {
+      "commit": "05f4ef1db522e215aedb1fa53403be5af70a7ae6",
+      "subject": "refactor(prompt): own exclusion-set assembly in PromptExclusionSets; add PromptBuildRequest DTO"
+    },
+    {
+      "commit": "6e7b531d70cb695ecf9fadf595d00057b5a3c050",
+      "subject": "refactor(prompt): decide context flags, clarification gate and lore source in PromptContextDecisions"
+    },
+    {
+      "commit": "7d0772be9e35cf8ccecb103454b2bb88b9dd291a",
+      "subject": "refactor(prompt): assemble final prompt context in PromptAssemblyStage from captured inputs"
+    },
+    {
+      "commit": "d6824d9dc889907352300fca0f20acee1beef8f2",
+      "subject": "refactor(prompt): split shared prompt build into capture/route/capture/assemble/append phases"
+    },
+    {
+      "commit": "e9f6ecb6485412a3c876171ad7690d3c4f20d46a",
+      "subject": "docs(prompt): record J04 second-slice receipt, 241-anchor map and explicit phase boundary"
+    },
+    {
+      "commit": "249dd1ae6f28a4eee24e17d4ecb38f509a90bfa8",
+      "subject": "docs: master modularization plan J04f–J17 with verified entry points and acceptance runners"
+    },
+    {
+      "commit": "72f8d3426810446559ae7168912a55a9e61f0a46",
+      "subject": "refactor(prompt): schedule the Native prompt build as three steps on the correct threads"
+    },
+    {
+      "commit": "52247a51d03a54b80dae4d468268e55992e4d2a9",
+      "subject": "refactor(prompt): schedule the Courier prompt build as owner phases and thread-pool retrieval steps"
+    },
+    {
+      "commit": "00d82601996c63bb30da359219b5a8cde57090f3",
+      "subject": "docs(prompt): record J04f receipt (Native/Courier scheduled build), 250-anchor map and scope"
+    },
+    {
+      "commit": "8faf5fbe7aba13b74e180037b7dfc8a3e325d079",
+      "subject": "refactor(prompt): resolve mentions in the routing step; compose triggered rule block from captured sections"
+    },
+    {
+      "commit": "d73b1215a0c954595c95f632a0ead7efa647aa46",
+      "subject": "docs(prompt): record J04_OFFLINE_VERIFIED, 253-anchor map, retained scope and pre-existing persistence runner failure"
+    },
+    {
+      "commit": "416da0856cd858369b9f8894d5f2286ce7be9cea",
+      "subject": "test(persistence): make source exclusion worktree-relative; refresh drifted MyBehavior binding lines"
+    },
+    {
+      "commit": "3cc6f0d748c30f251124c59beace85ddd186ee3a",
+      "subject": "refactor(memory): own NPC action and dialogue history record rules in AF.Module.Memory/Records"
+    },
+    {
+      "commit": "8b712247bfe550f17f199240cd984fedb70f14e3",
+      "subject": "refactor(memory): relocate existing memory owners from Refactor/ to src/modules/AF.Module.Memory"
+    },
+    {
+      "commit": "321c7318859c75ed2f7dfd5066b7e4f0fc16da5d",
+      "subject": "refactor(persistence): own per-owner JSON storage codec in AF.Persistence (J05c)"
+    },
+    {
+      "commit": "d903df671994e8f8903268b5b9dcb25da187f94f",
+      "subject": "refactor(persistence): own PlayerExports store and NPC data file naming (J05d)"
+    },
+    {
+      "commit": "c91bd2a90293649d7f01fb7ad46078c10e4746cb",
+      "subject": "docs(memory): record J05_OFFLINE_VERIFIED, 262-anchor map rebound to moved owners, retained scope and pre-existing failures"
+    },
+    {
+      "commit": "8337f0b7a9d58fb54354333a7f3330454cabc172",
+      "subject": "refactor(knowledge): own rule retrieval index in AF.Module.Knowledge/Index (J06a)"
+    },
+    {
+      "commit": "e66ba0d7722686b5e7c5e50bce1b17e963b23b3c",
+      "subject": "refactor(knowledge): own lore candidate retrieval in AF.Module.Knowledge/Lore (J06b)"
+    },
+    {
+      "commit": "157dc7f21ec98f3cddff96d5548c470a526aacfb",
+      "subject": "refactor(knowledge): own entity name matching, mention list and injection allocation (J06c)"
+    },
+    {
+      "commit": "bd2582aa776d9763002c85d75509ed9ccdb7b424",
+      "subject": "wip(prompt): checkpoint interrupted J06d eligibility capture"
+    }
+  ],
+  "changedPathsSinceBase": 109,
+  "checkpointFiles": {
+    "AIConfigHandler.cs": "f4edfd85f961df234e25fb9d12c901962290f0d4d1d6e62789e295b693315598",
+    "CourierDeliveryBehavior.PromptSchedule.cs": "9c0936ac86104bcbf705554e577c75f3979d105df5e3699c6ff776c63dbab56f",
+    "MyBehavior.cs": "8710252d09e540836687c04d37eaf52938ba10c19273fd6202dcb6dfd76912ce",
+    "ShoutBehavior.NativePromptBuild.cs": "72ccab17752ee62135012f7b5003105ffb1e5678dc6e9a69396746eec3323c2d",
+    "ShoutBehavior.cs": "14272aca05c9eaabf1b03edb938e0e09efe8d5e14270b10d7a9221c040a708a0",
+    "src/modules/AF.Module.Prompt/Composition/PromptBuildRequest.cs": "d0b8682397eb10eb8adf61008385e5b8fa8821555c6ab71717823e60966f1fc3",
+    "src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs": "a6971ab3edcce9d3f7fa29fe03cde720425b38ea04192ad86b0f9466d13f7aa8",
+    "src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs": "5f1d47242d5a16c73e4cebc26a4b172f20a7aaf3fec313da09e54977bac7c385",
+    "tests/modules/AF.Module.Prompt/Composition/PromptCompositionTests.csproj": "8df4d68fdd39ed7fa64f00f683082251ec2ec45fd5cd65e1c6cd4d1da565dd93"
+  },
+  "coordinates": [
+    {
+      "path": "AIConfigHandler.cs",
+      "line": 5711,
+      "symbol": "internal static PromptRuleEligibility CapturePromptRuleEligibility("
+    },
+    {
+      "path": "AIConfigHandler.cs",
+      "line": 5683,
+      "symbol": "internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding, PromptRuleEligibility eligibility)"
+    },
+    {
+      "path": "AIConfigHandler.cs",
+      "line": 1734,
+      "symbol": "private static bool IsRuleCurrentlyEligibleForRag("
+    },
+    {
+      "path": "MyBehavior.cs",
+      "line": 19672,
+      "symbol": "internal static PromptRuleEligibility CapturePromptRuleEligibility("
+    },
+    {
+      "path": "MyBehavior.cs",
+      "line": 30319,
+      "symbol": "private PromptBuildRequest CapturePromptBuildRequest("
+    },
+    {
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs",
+      "line": 12,
+      "symbol": "internal sealed class PromptRuleEligibility"
+    },
+    {
+      "path": "src/modules/AF.Module.Prompt/Composition/PromptBuildRequest.cs",
+      "line": 12,
+      "symbol": "internal sealed class PromptBuildRequest"
+    },
+    {
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs",
+      "line": 25,
+      "symbol": "internal static class PromptRetrievalContextOwner"
+    },
+    {
+      "path": "src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs",
+      "line": 39,
+      "symbol": "internal sealed class KnowledgeRuleIndex"
+    },
+    {
+      "path": "src/modules/AF.Module.Knowledge/Entities/EntityNameMatcher.cs",
+      "line": 21,
+      "symbol": "internal static class EntityNameMatcher"
+    }
+  ],
+  "skills": {
+    ".claude/skills/animusforge-maintainer/SKILL.md": "0c670cd5a9eb323bff20d43f37fea4cf30c1a1a4eb6481a5a1264926fee34ac8",
+    ".agents/skills/af-core-framework/SKILL.md": "910e90314f5618baf525c0909f2737c8667b5e401f0c89aa38d170fa063ad494",
+    ".agents/skills/animusforge-policy-effect-module/SKILL.md": "06d6bdf58b1b0af0afb07a44a486d5d0d3e9df296e26adf8dc3510e577d5694b"
+  },
+  "verification": {
+    "promptComposition": "PASS checks=155; existing suite compiles new DTO but adds no J06d behavior assertions",
+    "debugBuild": "PASS 1.3/1.4/Bootstrap; 0 warnings/0 errors; no Stage/Deploy",
+    "releaseBuild": "PASS 1.3/1.4/Bootstrap; 0 warnings/0 errors; no Stage/Deploy",
+    "codeMapRecorded": "PASS 262 anchors at d903df67",
+    "codeMapWorkingTree": "FAIL expected: stale ShoutBehavior.cs; J06a-d not mapped",
+    "liveGame": "NOT-RUN",
+    "oldSave": "NOT-RUN",
+    "realProvider": "NOT-RUN"
+  },
+  "logs": {
+    "handoff-prompt-composition.log": {
+      "sha256": "e4448b9d6f2b38acac64abb0f9178398d01bef6f11e6c459068d2f9fe4bd1631",
+      "size": 16029
+    },
+    "handoff-build-debug-final.log": {
+      "sha256": "15543c53e6a7da574c158e31d81c27f207a4909b22273d9c6d7807ebb701adf9",
+      "size": 2391
+    },
+    "handoff-build-release-final.log": {
+      "sha256": "30017b8f70573b35f74783de3f8d5da0aae3d604fbd2f9843554695fb6ec015e",
+      "size": 2409
+    },
+    "handoff-map-recorded.log": {
+      "sha256": "38d680e30bc75670937c95a36cce64649885674fbf1520e024527eba5e2bd3a7",
+      "size": 125
+    },
+    "handoff-map-working.log": {
+      "sha256": "9f2af4f59b891f36798bc92bcedde57e7da5e37a0c7a55a9938d6985f3655ac7",
+      "size": 55
+    }
+  },
+  "remoteTarget": "origin/codex/af-modularize-j04-20260918",
+  "actionsNotTaken": [
+    "game deployment",
+    "Stage",
+    "package",
+    "save mutation",
+    "default entry switch",
+    "automation resume",
+    "global skill install"
+  ]
+}
