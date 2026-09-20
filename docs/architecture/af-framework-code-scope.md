@@ -1,3 +1,11 @@
+# 当前 J09 Actions / 事实提交范围（2026-09-21）
+
+J09 已完成必要离线验收：共享 owner 位于 `src/modules/AF.Module.Actions/{Tags,Plan,Execute,Receipts}`；默认 Native、Scene、Courier 只通过 action-only compatibility boundary 调回各自 live domain core，历史/AFEF 仍由原渠道或 detached `InteractionResultCommitter` 唯一提交。精确符号和一基行号见同目录 `af-framework-code-map.json` 的 `actions.*` 12 个新增锚点；当前地图共 334 锚点。完整结果、回滚和 NOT-RUN 边界见[主台账 J09 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j09-offline-verified-20260921)。
+
+保留边界：`InteractionContracts.cs` 的 Action DTO/port 为稳定契约；Economy/Duel 已有 typed port，其他领域继续走受审 legacy adapter，后续 J12/J13 才按领域归位。Scene group/relay/passive/reaction 与 Courier transport/retry/session 属 J10；Policy/Gathering/GCCZ 玩法不在 J09 搬迁。真实游戏、旧档、live Economy/外交/provider/音频/帧成本仍 `NOT-RUN`。
+
+## 以下历史范围以上方更新为准
+
 # 当前范围：J08 LLM 离线责任包完成（2026-09-21）
 
 源码包 5dc17947 / 4776b691 / 1e1fdfad / 5a2df9d6，322 锚点图绑定最终产品提交。非流与 SSE attempt/lifetime 已由 AF.Module.Llm 唯一 owner 承担，Primary/Configured/Policy/WorldDiplomacy 使用真实消费者；ModelCatalog/TTS transport 已归模块目录。策略 retry、UI/Prompt、领域 profile 和游戏音频生命周期保持原 owner。

@@ -1,6 +1,6 @@
 # J09 Actions / 事实提交实施计划
 
-> 状态：`IN_PROGRESS`（J09a–J09c 已闭合；J09d 三渠道默认/兼容接线进行中）
+> 状态：`J09_OFFLINE_VERIFIED`（2026-09-21；LIVE/SAVE/provider 仍独立 NOT-RUN）
 > 依赖：J07、J08 已完成必要离线验收。
 > 启动基线：`5a2df9d64485cea03f4a069afda55c2f348968bc`；当前产品提交以 Git/HANDOFF 为准。
 > 本文只授权 J09 的标签、ActionPlan、执行接缝和回执重构；不授权 J10 渠道状态机、J11 制作组玩法、J12/J13 领域玩法、J14 新公开提交能力、部署或默认切换。
@@ -13,10 +13,10 @@
 | J09b | DONE | `fd01974b`：`ActionPlanIntegrityPolicy` 成为 raw/plan 有序一致性唯一 owner，executor 归位 `Execute`；Economy/Duel typed seam 保留 |
 | J09c | DONE | `dbe87c4`：committer/cache 归位 `Receipts`；`65a14421` 提取动作终态 owner，成功/拒绝/partial/unknown 与历史提交解耦 |
 | J09d shared core | DONE | `bb223aec`、`f61ec13e`：新增 `LegacyChannelActionCommitter`，三渠道 detached 生产提交均经同一 canonical request/action identity 与终态回执边界；无动作不调用 owner，disallowed/overflow fail closed |
-| J09d default/compat | IN_PROGRESS | 默认 Native/Scene/Courier 的旧直接动作尾仍需按渠道逐一改接，且必须保留 Native completion、Scene relay/speech/GCCZ 相对顺序、Courier 到达时点；不能为追求统一而重复历史/AFEF或偷改 J10 状态机 |
-| J09e | NOT_STARTED | 默认接线完成后再做重复执行路径清理、有效变异、Release/公共 API/存档/代码地图整包验收 |
+| J09d default/compat | DONE | `f4f022a3` request-bound compatibility executor；`449227a9` 默认 Native/Scene/Courier 动作尾接线；`beb7dd38` minimal action identity capture，不重复分配 Prompt history；`2a1fc124` 修复 queued Scene action 未完成前过早发布 relay |
+| J09e | DONE | `53071dca` 三渠道单执行/时序/无 memory 双写 guard；`d609e3f2` 334 锚点地图；重复 owner/旧路径清理、正常与有效变异、六构建、API/存档/Phase8 门禁通过 |
 
-本轮已通过：ActionProtocol 14 项及 5 个有效变异；InteractionPipeline、Economy、Duel、CourierCommitOutcome 34/0、ChannelCutover 132/0 + extraction 14/14；最新 shared-core 候选 Debug 1.3/1.4/Bootstrap 均 0 warning / 0 error。真实 Campaign/Mission、旧档、live Economy/外交/provider 仍为 `NOT-RUN`。
+最终候选已通过：ActionProtocol 14 项及 5 个有效变异；InteractionPipeline、Economy、Duel；Scene 71/37 与 7 个可编译 Queue 变异；Courier 39/34 与 8 个可编译 owner 变异；Native action 91、admission 44、completion 184；默认三渠道 wiring 25；Debug/Release × 1.3/1.4/Bootstrap 六构建均 0 warning / 0 error；实际四 DLL API/metadata 1060；Persistence/Profile 142/168/13/44；Phase8、Bridge 及 334 锚点双模式通过。真实 Campaign/Mission、旧档、live Economy/外交/provider 仍为 `NOT-RUN`。
 
 ## 1. 目标与完成定义
 
