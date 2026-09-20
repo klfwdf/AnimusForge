@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "5a2df9d64485cea03f4a069afda55c2f348968bc",
+  "sourceRevision": "2a1fc124c5cbfb12dee4b298818d160ab72ca7f7",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
+      "fileSha256": "f3cd3914138ca56d83a016d3aa524f352bb2b4fe2bc5818c4b4a8e93f22edc3d"
     },
     {
       "id": "native.history.dispatch",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
+      "fileSha256": "f3cd3914138ca56d83a016d3aa524f352bb2b4fe2bc5818c4b4a8e93f22edc3d"
     },
     {
       "id": "memory.acceptance",
@@ -282,13 +282,13 @@
     {
       "id": "scene.postprocess",
       "path": "ShoutBehavior.ScenePostprocess.cs",
-      "start": 25,
-      "end": 28,
+      "start": 26,
+      "end": 29,
       "symbol": "private sealed class SceneActionPostprocessWorkItem",
       "match": "exact",
       "status": "mixed-host",
       "note": "已有完整后处理；非本次重写 Scene 业务",
-      "fileSha256": "e0a9d31288cc29c9754e3b2b54b0061d58806085b8fa57b773a5f5bca386a2c5"
+      "fileSha256": "a74385eedc3e4c4eaa6109ea619405f673227d7ed207d08d3799c266ba24e504"
     },
     {
       "id": "courier.prepare.reply",
@@ -1360,24 +1360,24 @@
     {
       "id": "lifetime.courier.commit",
       "path": "CourierDeliveryBehavior.CommitDispatch.cs",
-      "start": 22,
-      "end": 101,
+      "start": 138,
+      "end": 217,
       "symbol": "private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "最终提交原子 claim/待办退役/真实回执",
-      "fileSha256": "37a246ab6a4c2840c1c03f5c35b3128d3f5946ba9adbaa90b58f8f9a6add9652"
+      "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
     },
     {
       "id": "courier.commit.unconfirmed",
       "path": "CourierDeliveryBehavior.CommitDispatch.cs",
-      "start": 16,
-      "end": 20,
+      "start": 132,
+      "end": 136,
       "symbol": "private static InteractionCommitResult CreateUnconfirmedCourierCommit(string errorCode)",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "真实commit后异常/空回执保留不确定性和非重试状态，不用于未开始拒绝",
-      "fileSha256": "37a246ab6a4c2840c1c03f5c35b3128d3f5946ba9adbaa90b58f8f9a6add9652"
+      "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
     },
     {
       "id": "memory.run.owner",
@@ -3280,7 +3280,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
+      "fileSha256": "f3cd3914138ca56d83a016d3aa524f352bb2b4fe2bc5818c4b4a8e93f22edc3d"
     },
     {
       "id": "native.turn.entry",
@@ -3291,7 +3291,7 @@
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
+      "fileSha256": "f3cd3914138ca56d83a016d3aa524f352bb2b4fe2bc5818c4b4a8e93f22edc3d"
     },
     {
       "id": "native.turn.coordinator",
@@ -3545,6 +3545,138 @@
       "status": "wired-offline-verified",
       "note": "世界外交保留 thinking fallback/重试/解析；单次 POST、认证、读取和资源释放归共享 transport",
       "fileSha256": "7d3276e318276386323a0cb8e0b5d765de449d460825aef01bfb5826af969ee6"
+    },
+    {
+      "id": "actions.tags.catalog",
+      "path": "src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs",
+      "start": 14,
+      "end": 14,
+      "symbol": "public static class LegacyActionTagCatalog",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "finite action allow-list; ACTION:* forbidden",
+      "fileSha256": "206551ab2d8821db1ada9642fa6c7257d9cd1a7c4b198896c4a66f55c8c8fba8"
+    },
+    {
+      "id": "actions.tags.parser",
+      "path": "src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs",
+      "start": 14,
+      "end": 14,
+      "symbol": "public sealed class LegacyActionTagParser : IActionPostprocessor",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "three-channel detached protocol parser and bounded scanner",
+      "fileSha256": "11e57f5c2e1eb876378c83693bc46ab73c816335ee4503fcf467d49b7af34cbc"
+    },
+    {
+      "id": "actions.plan.integrity",
+      "path": "src/modules/AF.Module.Actions/Plan/ActionPlanIntegrityPolicy.cs",
+      "start": 13,
+      "end": 13,
+      "symbol": "internal sealed class ActionPlanIntegrityPolicy",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "ordered raw/plan parity and disallowed/overflow fail-closed",
+      "fileSha256": "31bb80b15d72492f59fc3cf9d1a8334f9812e8dfa3e310b7dd1e2e3642a67cc1"
+    },
+    {
+      "id": "actions.execute.native",
+      "path": "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
+      "start": 27,
+      "end": 27,
+      "symbol": "public sealed class LegacyNativeActionPlanExecutor : IActionPlanExecutor, IRequestBoundActionPlanExecutor,",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "Economy/Duel typed ports plus audited legacy domain adapter",
+      "fileSha256": "2171a7b7bb6aa17816471f5cfea662d8c4902cc6d2d5946a9a65b5d5f401f7b5"
+    },
+    {
+      "id": "actions.execute.channel-commit",
+      "path": "src/modules/AF.Module.Actions/Execute/LegacyChannelActionCommitter.cs",
+      "start": 15,
+      "end": 15,
+      "symbol": "internal sealed class LegacyChannelActionCommitter",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "shared parse, canonical identity and terminal action-only commit boundary",
+      "fileSha256": "08e938dc4e2038c9d2cc49c5b803584e5de50581419e024b69eb16b00787e6ac"
+    },
+    {
+      "id": "actions.execute.compat",
+      "path": "src/modules/AF.Module.Actions/Execute/LegacyChannelActionPlanExecutor.cs",
+      "start": 14,
+      "end": 14,
+      "symbol": "internal sealed class LegacyChannelActionPlanExecutor :",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "request-bound default-channel compatibility executor; no live objects",
+      "fileSha256": "ff711138c55caeba202471fc4de31df4f642afe996d737f0f10aa6d37135bec1"
+    },
+    {
+      "id": "actions.receipt.execution",
+      "path": "src/modules/AF.Module.Actions/Receipts/ActionExecutionCommitter.cs",
+      "start": 13,
+      "end": 13,
+      "symbol": "internal static class ActionExecutionCommitter",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "success/reject/partial/unknown terminal action receipt owner",
+      "fileSha256": "eece34392dee91b8dbb7f11350f0dba9fefc62173e34e94f1d604ebdab47c6b0"
+    },
+    {
+      "id": "actions.receipt.interaction",
+      "path": "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
+      "start": 16,
+      "end": 16,
+      "symbol": "public sealed class InteractionResultCommitter",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "visible history and confirmed facts after terminal action receipt",
+      "fileSha256": "1c171d9bb5e38c5e8152126e6449dd53d503aa5bfefa03c4cb99f41edc908d14"
+    },
+    {
+      "id": "actions.receipt.cache",
+      "path": "src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs",
+      "start": 13,
+      "end": 13,
+      "symbol": "internal static class InteractionCommitReceiptCache",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "owner-only reservation and bounded terminal cache",
+      "fileSha256": "378820f00a726de786dc65ee2048be3c1dcbf3c848a44b334fabb6627832a898"
+    },
+    {
+      "id": "actions.default.native",
+      "path": "ShoutBehavior.NativeActionCommit.cs",
+      "start": 20,
+      "end": 20,
+      "symbol": "private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "default Native action-only wrapper; completion/TTS/history stay channel-owned",
+      "fileSha256": "52ed7de154e3160ce7af4e9c87867c0958dc1ca072e96a34444e6a172a9af7cf"
+    },
+    {
+      "id": "actions.default.scene",
+      "path": "ShoutBehavior.ScenePostprocess.cs",
+      "start": 482,
+      "end": 482,
+      "symbol": "private bool CommitDeferredSceneActionPlan(",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "default Scene action wrapper preserving mood/GCCZ/direct/speech/relay order",
+      "fileSha256": "a74385eedc3e4c4eaa6109ea619405f673227d7ed207d08d3799c266ba24e504"
+    },
+    {
+      "id": "actions.default.courier",
+      "path": "CourierDeliveryBehavior.CommitDispatch.cs",
+      "start": 22,
+      "end": 22,
+      "symbol": "private void CommitGeneratedReplyAtRecipient(",
+      "match": "exact",
+      "status": "wired-j09-candidate",
+      "note": "default Courier wrapper; effects remain delivery-time only",
+      "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
     }
   ]
 }
