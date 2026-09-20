@@ -12,7 +12,7 @@ MOVED_DEPENDENCIES={
 RUNNER_PATH_EDITS={
  'Refactor/Runtime/MemorySummaryDispatcher.cs':'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',
  'Refactor/Contracts/IMemorySummaryDispatchHost.cs':'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs',
- 'Refactor/Runtime/InteractionResultCommitter.cs':'src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs',
+ 'Refactor/Runtime/InteractionResultCommitter.cs':'src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs',
  'Refactor/Runtime/PendingOperationRegistry.cs':'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
  'Refactor/Runtime/GameLifetimeCoordinator.cs':'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs',
  'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',

@@ -337,8 +337,8 @@
       "entryPaths": [
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",
-        "src/modules/AF.Module.Conversation/Internal/InteractionCommitReceiptCache.cs",
-        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -727,7 +727,7 @@
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
         "ShoutBehavior.ScenePostprocess.cs",
         "ShoutBehavior.cs",
-        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -1228,7 +1228,7 @@
       "implementationState": "OPT_IN",
       "entryPaths": [
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
-        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1255,7 +1255,7 @@
       "owner": "Action.Memory",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
         "MyBehavior.MemoryRecovery.cs"
       ],
       "requiredCases": [
