@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import unittest
 
-from run import SCENE_LIFECYCLE_DISPATCHES, declaration, extract, source
+from run import SCENE_LIFECYCLE_DISPATCHES, declaration, extract, scene_source, source
 
 
 class ExtractionTests(unittest.TestCase):
@@ -32,7 +32,7 @@ class ExtractionTests(unittest.TestCase):
 
     def test_blocks_are_contiguous_unmodified_production_substrings(self):
         blocks = extract(None)
-        scene = source("ShoutBehavior.cs", None)
+        scene = scene_source(None)
         courier = source("CourierDeliveryBehavior.cs", None)
         self.assertIn(blocks["SCENE_BLOCK"], scene)
         self.assertIn(blocks["COURIER_BLOCK"], courier)
@@ -45,7 +45,7 @@ class ExtractionTests(unittest.TestCase):
 
     def test_prompt_factory_and_anonymous_message_adapter_are_production_declarations(self):
         blocks = extract(None)
-        scene = source("ShoutBehavior.cs", None)
+        scene = scene_source(None)
         for key in ("PUBLIC_SCENE_FACTORY", "MAIN_REPLY_FACTORY", "MAIN_REPLY_METHOD", "CREATE_MESSAGE"):
             self.assertTrue(blocks[key], key)
             self.assertIn(blocks[key], scene)
@@ -63,12 +63,12 @@ class ExtractionTests(unittest.TestCase):
         self.assertNotIn(".Commit(", blocks["MAIN_REPLY_METHOD"])
         self.assertNotIn("MemoryFacade", blocks["MAIN_REPLY_METHOD"])
         self.assertNotIn("ActionPlanExecutor", blocks["MAIN_REPLY_METHOD"])
-        scene = source("ShoutBehavior.cs", None)
+        scene = scene_source(None)
         self.assertTrue(declaration(scene, "public static Task<DetachedInteractionHostResult> SubmitSceneShoutRefactorOptInForExternalAsync("))
         self.assertIn("postprocessComposer.Compose", blocks["PUBLIC_SCENE_FACTORY"])
 
     def test_scene_tail_keeps_one_history_and_one_authoritative_queue(self):
-        scene = source("ShoutBehavior.cs", None)
+        scene = scene_source(None)
         method = declaration(scene, "private async Task HandleGroupResponsePerHeroIndependent(")
         self.assertEqual(1, method.count("RecordSceneReplyHistoryOnMainThreadAsync("))
         self.assertEqual(1, method.count("QueueDeferredScenePostprocessActions("))
@@ -92,14 +92,14 @@ class ExtractionTests(unittest.TestCase):
 
     def test_tail_fixture_executes_unmodified_production_decisions(self):
         blocks = extract(None)
-        scene = source("ShoutBehavior.cs", None)
+        scene = scene_source(None)
         self.assertIn(blocks["SCENE_TAIL_DECISIONS"], scene)
         self.assertIn(blocks["SCENE_DIRECT_REPLY_ASSIGNMENT"], scene)
         self.assertIn(blocks["BATTLE_QUEUE_METHOD"], source("extensions/AnimusForge.XihaiAction/src/CoreProject/BattleSpeechFrameworkV2.cs", None))
 
     def test_main_speech_fixture_extracts_real_sanitization_and_asset_codec(self):
         blocks = extract(None)
-        scene = source("ShoutBehavior.cs", None)
+        scene = scene_source(None)
         for name in ("SCENE_MAIN_SPEECH_SANITIZER", "SCENE_MAIN_SPEECH_QUEUE", "SCENE_SPEECH_SANITIZATION_BLOCK"):
             self.assertTrue(blocks[name], name)
             self.assertIn(blocks[name], scene)
@@ -111,7 +111,7 @@ class ExtractionTests(unittest.TestCase):
         self.assertIn(declaration(codec, "internal static class GiveAssetTagCodec"), blocks["GIVE_ASSET_CODEC"])
 
     def test_main_speech_has_no_unvalidated_direct_enqueue_in_default_tail(self):
-        method = declaration(source("ShoutBehavior.cs", None), "private async Task HandleGroupResponsePerHeroIndependent(")
+        method = declaration(scene_source(None), "private async Task HandleGroupResponsePerHeroIndependent(")
         self.assertEqual(1, method.count("QueueSceneMainReplyOnMainThreadAsync("))
         self.assertNotIn("EnqueueSpeechLineWithOptions(", method)
         self.assertIn("cleaned = PrepareSceneMainReplySpeechText(cleaned, flag9, flag10);", method)
@@ -133,7 +133,7 @@ class ExtractionTests(unittest.TestCase):
 
     def test_lifecycle_delegates_are_complete_production_blocks_using_initial_capture(self):
         blocks = extract(None)
-        method = declaration(source("ShoutBehavior.cs", None), "private async Task HandleGroupResponsePerHeroIndependent(")
+        method = declaration(scene_source(None), "private async Task HandleGroupResponsePerHeroIndependent(")
         generation_capture = method.index("long sceneReplyGeneration = SaveRuntimeGuard.CaptureGeneration();")
         session_capture = method.index("int sceneReplySessionId = Volatile.Read(ref _sceneHistorySessionId);")
         for name, operation in SCENE_LIFECYCLE_DISPATCHES.items():
