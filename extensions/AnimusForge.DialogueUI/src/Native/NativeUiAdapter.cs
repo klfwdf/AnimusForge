@@ -428,9 +428,6 @@ public static class NativeUiAdapter
             }
         }
         private void Remember(Widget widget) { if (widget != null && _captured.Add(widget)) _changes.Add(new WidgetSnapshot(widget)); }
-        private void Move(Widget widget, Widget parent)
-        { Remember(widget); widget.ParentWidget = parent; ResetBox(widget); }
-
         private void Build(Widget dialogue, Widget options, Widget name, Widget next)
         {
             _panel = Box(Root, "AFDialogueNativePanel");
@@ -451,12 +448,6 @@ public static class NativeUiAdapter
             right.HorizontalAlignment = HorizontalAlignment.Right;
             right.MarginRight = 20; right.MarginTop = 18; right.MarginBottom = 18;
             right.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
-            Widget speechContent = Box(center, "AFDialogueSpeechContent");
-            speechContent.MarginLeft = speechContent.MarginRight = 22;
-            speechContent.MarginTop = 112; speechContent.MarginBottom = 20;
-            Widget optionsContent = Box(right, "AFDialogueOptionsContent");
-            optionsContent.MarginLeft = optionsContent.MarginRight = 22;
-            optionsContent.MarginTop = 64; optionsContent.MarginBottom = 20;
 
             _portrait = new ImageIdentifierWidget(Root.Context)
             {
@@ -465,63 +456,151 @@ public static class NativeUiAdapter
                 VerticalAlignment = VerticalAlignment.Top, MarginTop = 16, HideWhenNull = true, DoNotAcceptEvents = true
             };
             left.AddChild(_portrait);
-            Move(name, left); name.HeightSizePolicy = SizePolicy.CoverChildren; name.VerticalAlignment = VerticalAlignment.Bottom;
-            name.MarginBottom = 48; name.Sprite = null;
+
+            // Left column: Character name & banner (positioned in-place without reparenting)
+            Widget nameSync = name.ParentWidget?.ParentWidget;
+            if (nameSync != null)
+            {
+                Remember(nameSync);
+                nameSync.HorizontalAlignment = HorizontalAlignment.Left;
+                nameSync.VerticalAlignment = VerticalAlignment.Bottom;
+                nameSync.MarginLeft = 80;
+                nameSync.MarginRight = 0;
+                nameSync.MarginBottom = 42;
+                nameSync.WidthSizePolicy = SizePolicy.Fixed;
+                nameSync.SuggestedWidth = 225;
+                nameSync.HeightSizePolicy = SizePolicy.Fixed;
+                nameSync.SuggestedHeight = 304;
+                if (nameSync is DimensionSyncWidget dimSync)
+                {
+                    dimSync.DimensionToSync = DimensionSyncWidget.Dimensions.None;
+                }
+            }
+            if (name.ParentWidget != null)
+            {
+                Remember(name.ParentWidget);
+                name.ParentWidget.HorizontalAlignment = HorizontalAlignment.Center;
+                name.ParentWidget.VerticalAlignment = VerticalAlignment.Bottom;
+                name.ParentWidget.MarginBottom = 14;
+            }
+            Remember(name);
+            name.Sprite = null;
             StyleTree(name, 23, true);
             foreach (Widget item in Descendants(name))
             {
                 Remember(item);
-                item.MarginLeft = 0; item.MarginRight = 0;
+                item.MarginLeft = item.MarginRight = 0;
                 item.WidthSizePolicy = SizePolicy.StretchToParent;
-                if (item is TextWidget text) { text.HeightSizePolicy = SizePolicy.CoverChildren; text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; }
+                if (item is TextWidget text)
+                {
+                    text.HeightSizePolicy = SizePolicy.CoverChildren;
+                    if (text.Brush != null) text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
+                }
             }
             Widget banner = Root.FindChild("ConversedHeroBanner", true)?.ParentWidget;
             if (banner != null)
             {
-                Move(banner, left); banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
+                Remember(banner);
+                banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
                 banner.SuggestedWidth = 46; banner.SuggestedHeight = 46;
                 banner.HorizontalAlignment = HorizontalAlignment.Center; banner.VerticalAlignment = VerticalAlignment.Bottom;
                 banner.MarginBottom = 4;
             }
 
-            Widget speechInner = AddScroll(speechContent, "AFDialogueSpeechScroll");
-            Move(dialogue, speechInner); dialogue.HeightSizePolicy = SizePolicy.CoverChildren; dialogue.Sprite = null;
+            // Center & Right columns: DialogueContainer and AnswerListContainer (in-place without reparenting)
+            Widget bottomPanels = dialogue.ParentWidget;
+            Widget vertical = bottomPanels?.ParentWidget ?? Root.FindChild("VerticalContainer", true);
+            if (vertical != null)
+            {
+                Remember(vertical);
+                vertical.HorizontalAlignment = HorizontalAlignment.Left;
+                vertical.VerticalAlignment = VerticalAlignment.Bottom;
+                vertical.MarginLeft = 320;
+                vertical.MarginRight = 80;
+                vertical.MarginBottom = 42;
+                vertical.HeightSizePolicy = SizePolicy.Fixed;
+                vertical.SuggestedHeight = 304;
+                vertical.WidthSizePolicy = SizePolicy.StretchToParent;
+            }
+            if (bottomPanels != null)
+            {
+                Remember(bottomPanels);
+                bottomPanels.WidthSizePolicy = SizePolicy.StretchToParent;
+                bottomPanels.HeightSizePolicy = SizePolicy.StretchToParent;
+                bottomPanels.MarginBottom = 0;
+            }
+
+            // Center: Dialogue speech
+            Remember(dialogue);
+            dialogue.WidthSizePolicy = SizePolicy.StretchToParent;
+            dialogue.HeightSizePolicy = SizePolicy.StretchToParent;
+            dialogue.MarginRight = 35;
+            dialogue.MarginLeft = dialogue.MarginTop = dialogue.MarginBottom = 0;
+            dialogue.Sprite = null;
             foreach (Widget item in Descendants(dialogue))
             {
                 Remember(item);
-                if (item is DimensionSyncWidget) { _changes[_changes.Count - 1].RestoreVisibility = true; item.IsVisible = false; continue; }
-                item.WidthSizePolicy = SizePolicy.StretchToParent; item.HeightSizePolicy = SizePolicy.CoverChildren;
-                item.HorizontalAlignment = HorizontalAlignment.Left; item.VerticalAlignment = VerticalAlignment.Top;
-                item.MarginLeft = item.MarginRight = 0; item.MarginTop = item.MarginBottom = 0;
-                item.MinHeight = 0; item.AlphaFactor = 1; item.Sprite = null;
+                if (item is DimensionSyncWidget dim)
+                {
+                    _changes[_changes.Count - 1].RestoreVisibility = true;
+                    item.IsVisible = false;
+                    dim.DimensionToSync = DimensionSyncWidget.Dimensions.None;
+                    continue;
+                }
+                item.Sprite = null;
+                item.AlphaFactor = 1;
+                item.MinHeight = 0;
+            }
+            Widget dialogueSpeechText = dialogue.FindChild("Text", true)
+                ?? (dialogue.ChildCount > 0 && dialogue.GetChild(0).ChildCount > 0 ? dialogue.GetChild(0).GetChild(0) : null);
+            if (dialogueSpeechText != null)
+            {
+                Remember(dialogueSpeechText);
+                dialogueSpeechText.MarginTop = 112;
+                dialogueSpeechText.MarginLeft = 22;
+                dialogueSpeechText.MarginRight = 22;
+                dialogueSpeechText.MarginBottom = 20;
             }
             StyleTree(dialogue, 25, true);
 
-            Widget optionsInner = AddScroll(optionsContent, "AFDialogueOptionsScroll");
-            Move(options, optionsInner); options.HeightSizePolicy = SizePolicy.CoverChildren; options.Sprite = null;
-            Remember(_answers); _answers.VerticalAlignment = VerticalAlignment.Top;
+            // Right: Options
+            Remember(options);
+            options.WidthSizePolicy = SizePolicy.Fixed;
+            options.SuggestedWidth = 550;
+            options.HeightSizePolicy = SizePolicy.StretchToParent;
+            options.HorizontalAlignment = HorizontalAlignment.Right;
+            options.MarginTop = 64;
+            options.MarginBottom = 20;
+            options.MarginLeft = 20;
+            options.MarginRight = 20;
+            options.Sprite = null;
+
+            Remember(_answers);
+            _answers.VerticalAlignment = VerticalAlignment.Top;
             _answers.ItemAddEventHandlers.Add(OptionAdded);
             _answers.ItemRemoveEventHandlers.Add(OptionRemoved);
             for (int i = 0; i < _answers.ChildCount; i++) StyleOption(_answers.GetChild(i));
 
-            Move(next, optionsContent); next.WidthSizePolicy = SizePolicy.StretchToParent; next.HeightSizePolicy = SizePolicy.Fixed;
-            next.SuggestedHeight = 80; next.VerticalAlignment = VerticalAlignment.Center;
-            foreach (Widget item in Descendants(next))
+            // ContinueButton
+            Remember(next);
+            Widget nextContent = next.ChildCount > 0 ? next.GetChild(0) : null;
+            if (nextContent != null)
             {
-                Remember(item); ResetBox(item);
-                item.WidthSizePolicy = SizePolicy.StretchToParent; item.HeightSizePolicy = SizePolicy.StretchToParent;
-                item.Sprite = null;
+                Remember(nextContent);
+                nextContent.HorizontalAlignment = HorizontalAlignment.Right;
+                nextContent.VerticalAlignment = VerticalAlignment.Bottom;
+                nextContent.MarginRight = 100;
+                nextContent.MarginBottom = 62;
+                nextContent.WidthSizePolicy = SizePolicy.Fixed;
+                nextContent.SuggestedWidth = 550;
+                nextContent.HeightSizePolicy = SizePolicy.Fixed;
+                nextContent.SuggestedHeight = 80;
+                nextContent.Sprite = null;
             }
             StyleTree(next, 26, true);
-            Widget persuasion = Root.FindChild("PersuationExtensionListPanel", true);
-            if (persuasion != null)
-            {
-                Move(persuasion, Root); persuasion.WidthSizePolicy = SizePolicy.StretchToParent;
-                persuasion.HeightSizePolicy = SizePolicy.CoverChildren; persuasion.VerticalAlignment = VerticalAlignment.Bottom;
-                persuasion.MarginLeft = 320; persuasion.MarginRight = 680; persuasion.MarginBottom = 372;
-            }
+
             RefreshPortrait();
-            DialogueUiRuntime.Log("Mission SPConversation restyled; original answer, persuasion and continue owners retained.");
+            DialogueUiRuntime.Log("Mission SPConversation restyled in-place; all navigation scopes and parents retained.");
         }
         private void OptionAdded(Widget parent, Widget child)
         {
@@ -695,6 +774,8 @@ public static class NativeUiAdapter
         private readonly bool _visible;
         private readonly Sprite _sprite;
         private readonly Brush _brush;
+        private readonly DimensionSyncWidget.Dimensions _dimensionToSync;
+        private readonly bool _isDimSync;
         internal WidgetSnapshot(Widget w)
         {
             _w = w; _parent = w.ParentWidget; _index = _parent?.GetChildIndex(w) ?? 0;
@@ -702,6 +783,7 @@ public static class NativeUiAdapter
             _sw = w.SuggestedWidth; _sh = w.SuggestedHeight; _ml = w.MarginLeft; _mr = w.MarginRight; _mt = w.MarginTop; _mb = w.MarginBottom;
             _x = w.PositionXOffset; _y = w.PositionYOffset; _min = w.MinHeight; _alpha = w.AlphaFactor;
             _sprite = w.Sprite; _visible = w.IsVisible; _brush = (w as BrushWidget)?.Brush;
+            if (w is DimensionSyncWidget dim) { _isDimSync = true; _dimensionToSync = dim.DimensionToSync; }
         }
         internal void Restore()
         {
@@ -712,6 +794,7 @@ public static class NativeUiAdapter
             _w.PositionXOffset = _x; _w.PositionYOffset = _y; _w.MinHeight = _min; _w.AlphaFactor = _alpha; _w.Sprite = _sprite;
             if (RestoreVisibility) _w.IsVisible = _visible;
             if (_w is BrushWidget brush) brush.Brush = _brush;
+            if (_isDimSync && _w is DimensionSyncWidget dim) dim.DimensionToSync = _dimensionToSync;
         }
     }
 }
