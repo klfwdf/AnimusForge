@@ -32,7 +32,7 @@ def main():
           'ignore-generation':('QUEUE','&& SaveRuntimeGuard.IsCurrentGeneration(queuedRuntimeGeneration)','&& true'),
           'skip-dispatch-guard':('QUEUE','if (!ValidateCurrentTarget("before_dispatch"))','if (false)'),
           'lose-execution-context':('QUEUE','scope = requestExecutionContext?.CreateCopy();','scope = null;'),
-          'unguarded-speech':('QUEUE','canStillPublish: CanStillPublish','canStillPublish: () => true'),
+          'unguarded-speech':('QUEUE','CanStillPublish,\n\t\t\t\t\t\t\tout speechCompletion','() => true,\n\t\t\t\t\t\t\tout speechCompletion'),
           'off-thread-game-read':('REQUEST','return AIConfigHandler.TryCallAuxiliaryActionPostprocess','_ = Mission.Current; return AIConfigHandler.TryCallAuxiliaryActionPostprocess'),
         }
         key,a,b=changes[args.mutate]
