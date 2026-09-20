@@ -1,6 +1,6 @@
 {
   "baseline": "29448d1b7ec7bc7a92820c8b510aaad56c21ff37",
-  "path": "CourierDeliveryBehavior.CommitDispatch.cs",
+  "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
   "edits": [
     [
       "new InteractionCommitResult(\n\t\t\t\t\t\tInteractionStatus.RejectedByValidation,\n\t\t\t\t\t\tfalse,\n\t\t\t\t\t\tfalse,\n\t\t\t\t\t\t\"main_thread_commit_exception\")",

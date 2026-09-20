@@ -5,7 +5,7 @@ spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkAp
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['false_no_effect','retryable_failure','lose_inbound_effect','unguarded_diagnostic']);a=p.parse_args()
 name='original' if a.original else a.mutate or 'current';out=HERE/'.generated'/name;out.mkdir(parents=True,exist_ok=True)
-source=subprocess.check_output(['git','show','29448d1b:CourierDeliveryBehavior.CommitDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')
+source=subprocess.check_output(['git','show','29448d1b:CourierDeliveryBehavior.CommitDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')
 dispatch_methods='\n\n'.join(ex.declaration(source,signature) for signature in [
  'private static InteractionCommitResult CreateUnconfirmedCourierCommit(',
  'private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(',
