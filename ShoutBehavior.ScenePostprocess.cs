@@ -507,11 +507,33 @@ public partial class ShoutBehavior
 		InteractionEnvelope envelope;
 		try
 		{
-			envelope = LegacyInteractionSnapshotAdapters.CaptureSceneShout(
-				playerText ?? string.Empty,
+			string subjectId = ResolveDetachedInteractionSubjectId(
+				speakingHero,
+				npcCharacter,
 				targetAgentIndex,
-				null,
-				null);
+				speakerSnapshot);
+			envelope = LegacyInteractionSnapshotAdapters.CaptureActionCommit(
+				InteractionChannel.SceneShout,
+				"scene-action:" + GetCurrentSceneHistorySessionIdForExternal()
+					+ ":" + conversationEpoch + ":" + targetAgentIndex,
+				subjectId,
+				playerText ?? string.Empty,
+				new[]
+				{
+					new InteractionCandidate(
+						subjectId,
+						speakingHero?.Name?.ToString()
+							?? npcCharacter?.Name?.ToString()
+							?? speakerSnapshot?.Name
+							?? string.Empty,
+						targetAgentIndex,
+						true)
+				},
+				new Dictionary<string, string>(StringComparer.Ordinal)
+				{
+					["scene_session_id"] = GetCurrentSceneHistorySessionIdForExternal().ToString(),
+					["target_agent_index"] = targetAgentIndex.ToString()
+				});
 		}
 		catch (Exception ex)
 		{

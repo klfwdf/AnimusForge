@@ -51,11 +51,16 @@ public partial class CourierDeliveryBehavior
         InteractionEnvelope envelope;
         try
         {
-            envelope = LegacyInteractionSnapshotAdapters.CaptureCourier(
-                recipient,
-                session.LetterText ?? string.Empty,
+            envelope = LegacyInteractionSnapshotAdapters.CaptureActionCommit(
+                InteractionChannel.Courier,
                 session.Id,
-                string.Empty);
+                SafeHeroId(recipient),
+                session.LetterText ?? string.Empty,
+                detachedFacts: new System.Collections.Generic.Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["delivery_applied"] = "true",
+                    ["recipient_id"] = SafeHeroId(recipient)
+                });
         }
         catch (Exception ex)
         {
