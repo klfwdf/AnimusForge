@@ -51,6 +51,7 @@ namespace AnimusForge.Illustrator.Engine
 
         internal string ResolvedSceneFile { get; }
         internal uint ActiveMask { get; }
+        internal uint ImplicitBaseMask { get; }
         internal IReadOnlyList<Entry> Entries { get; }
         internal int InspectedNodes { get; }
         internal int XmlElementCount { get; }
@@ -66,6 +67,7 @@ namespace AnimusForge.Illustrator.Engine
             _fileLength = length;
             _fileWriteTimeUtc = writeTime;
             ActiveMask = activeMask;
+            ImplicitBaseMask = reader.BaseMask;
             Entries = new ReadOnlyCollection<Entry>(reader.Entries.ToArray());
             InspectedNodes = reader.EntityIds.Count;
             XmlElementCount = reader.ElementCount;
@@ -137,6 +139,7 @@ namespace AnimusForge.Illustrator.Engine
             internal int SkippedByLevel;
             internal int SkippedUnsupported;
             internal int SkippedInvisible;
+            internal uint BaseMask;
             private readonly uint _activeMask;
             private readonly CancellationToken _token;
             private readonly Dictionary<string, uint> _levels = new Dictionary<string, uint>(StringComparer.Ordinal);
@@ -217,6 +220,7 @@ namespace AnimusForge.Illustrator.Engine
                         NumberStyles.None, CultureInfo.InvariantCulture, out uint mask) || mask == 0 || _levels.ContainsKey(name))
                         throw new InvalidDataException("场景升级层级名称或mask定义无效。");
                     _levels.Add(name, mask);
+                    if (string.Equals(name, "base", StringComparison.OrdinalIgnoreCase)) BaseMask = mask;
                 }
             }
 
@@ -259,7 +263,13 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 if (!TryLevelMask(entity, parentMask, parentHasLevels, out uint mask, out bool hasLevels))
                 { Unsupported(id, sourceName, "unknown_or_invalid_levels"); return; }
-                if ((_activeMask == 0 && hasLevels) || (_activeMask != 0 && (mask & _activeMask) != _activeMask))
+                // Mission masks include the implicit base layer (observed 21=1|4|16),
+                // while visible authored civilian furniture declares 30=2|4|8|16.
+                // Match the selected variant bits, not a mandatory explicit base tag.
+                uint requiredVariants = _activeMask & ~BaseMask;
+                if ((_activeMask == 0 && hasLevels) ||
+                    (hasLevels && mask != uint.MaxValue &&
+                     (requiredVariants == 0 || (mask & requiredVariants) != requiredVariants)))
                 { SkippedByLevel++; return; }
                 if (!TryFrame(entity, parentFrame, out MatrixFrame world))
                 { Unsupported(id, sourceName, "invalid_or_unsupported_transform"); return; }
@@ -322,6 +332,9 @@ namespace AnimusForge.Illustrator.Engine
                     own |= bit;
                 }
                 if (own == 0) return false;
+                // An explicitly base-only container is common to all variants;
+                // its children may still select their own civilian/siege/level bits.
+                if (BaseMask != 0 && own == BaseMask) own = uint.MaxValue;
                 mask &= own;
                 return true;
             }

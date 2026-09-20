@@ -16,6 +16,7 @@ namespace AnimusForge.Illustrator.Engine
     {
         private static IsolatedPanoramaRenderer _activeIsolatedPanorama;
         private static PanoramaFrameStats _activePanoramaFrameStats;
+        private static readonly string[] PanoramaDirections = { "front", "right", "back", "left", "up", "down" };
         private sealed class PanoramaFrameStats
         {
             internal int Count;
@@ -48,16 +49,16 @@ namespace AnimusForge.Illustrator.Engine
             if (source == null) throw new ArgumentNullException(nameof(source));
             await source.EnsureCurrentAsync(token).ConfigureAwait(false);
             GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
-            { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-front-back-30m" });
+            { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-panorama-30m" });
             if (source.IsMapConversation)
                 return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
             var references = await CaptureMissionSceneReferencesAsync(source, token).ConfigureAwait(false);
             return new ConversationSceneReferenceCapture(references,
-                "本次依据已加载Mission的玩家附近30米静态网格前后双镜头参考；这是局部环境参考，不是完整360度全景。真实当前画面如有附加，用于校验光照与人物关系。",
-                "任务场景：附近30米前后双镜头参考");
+                "本次依据玩家附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；真实当前画面如有附加，用于校验光照与人物关系。",
+                "任务场景：附近30米全景参考");
         }
 
-        // Front/back cameras render a private nearby environment copy, never Mission.Scene.
+        // Six cubemap directions render one private copy, never Mission.Scene.
         // Presented pixels are an additional lighting/person-position check.
         private static async Task<IReadOnlyList<IllustrationReferenceImage>> CaptureMissionSceneReferencesAsync(
             ConversationSceneCaptureSource source, CancellationToken token)
@@ -71,7 +72,7 @@ namespace AnimusForge.Illustrator.Engine
             PanoramaSceneSnapshot snapshot = null;
             IsolatedPanoramaRenderer renderer = null;
             var exportedPaths = new List<string>();
-            var rawFaces = new List<byte[]>(PanoramaProjection.FrontBackViewCount);
+            var rawFaces = new List<byte[]>(PanoramaProjection.FaceCount);
             bool composed = false;
             PanoramaFrameStats frameStats = null;
             try
@@ -87,7 +88,7 @@ namespace AnimusForge.Illustrator.Engine
                         throw new InvalidOperationException("当前任务场景尚未完成渲染，暂时无法采集附近环境，请稍后重试。");
                     frameStats = new PanoramaFrameStats();
                     _activePanoramaFrameStats = frameStats;
-                    return Tuple.Create(mission, PanoramaProjection.BuildFrontBackCameraFrames(screen.CombatCamera.Frame), CaptureUnobstructedConversationSceneBase64());
+                    return Tuple.Create(mission, PanoramaProjection.BuildCameraFrames(screen.CombatCamera.Frame), CaptureUnobstructedConversationSceneBase64());
                 }, captureToken).ConfigureAwait(false);
                 if (context == null) throw new InvalidOperationException("无法调度全景采集。");
                 snapshot = await CreatePanoramaSnapshotAsync(context.Item1, captureToken).ConfigureAwait(false);
@@ -96,7 +97,7 @@ namespace AnimusForge.Illustrator.Engine
                     ["nodes"] = snapshot.InspectedNodes, ["omittedNonGeometry"] = snapshot.SkippedNonGeometry, ["elapsedMs"] = watch.ElapsedMilliseconds });
                 renderer = await RunOnGameThreadAsync(() =>
                 {
-                    var created = IsolatedPanoramaRenderer.Create(snapshot, context.Item2, 512, (float)Math.PI * 2f / 3f);
+                    var created = IsolatedPanoramaRenderer.Create(snapshot, context.Item2, 512, (float)Math.PI / 2f);
                     _activeIsolatedPanorama = created;
                     _pendingPanoramaSnapshot = null;
                     return created;
@@ -104,10 +105,10 @@ namespace AnimusForge.Illustrator.Engine
                 if (renderer == null) throw new InvalidOperationException("全景渲染器未建立。");
                 GenerationDiagnostics.Current?.RecordStage("panorama_observation_lighting", renderer.ObservationLightingDiagnostics);
                 GenerationDiagnostics.Current?.RecordStage("panorama_renderer_ready");
-                for (int face = 0; face < PanoramaProjection.FrontBackViewCount; face++)
+                for (int face = 0; face < PanoramaProjection.FaceCount; face++)
                 {
                     var faceWatch = Stopwatch.StartNew();
-                    GenerationDiagnostics.Current?.RecordStage("panorama_face_start", new JObject { ["face"] = face, ["direction"] = face == 0 ? "front" : "back" });
+                    GenerationDiagnostics.Current?.RecordStage("panorama_face_start", new JObject { ["face"] = face, ["direction"] = PanoramaDirections[face] });
                     bool selected = await RunOnGameThreadAsync(() => renderer.SelectFace(face), captureToken).ConfigureAwait(false);
                     if (!selected) throw new InvalidOperationException("全景镜头切换被未完成的导出阻止。");
                     bool ready = false;
@@ -131,18 +132,19 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 // Rendering is stopped by StopExport. Projection and encoding run on this background worker.
                 captureToken.ThrowIfCancellationRequested();
-                byte[] panorama = PanoramaProjection.ComposeFrontBack(rawFaces);
-                token.ThrowIfCancellationRequested();
+                byte[] panorama = PanoramaProjection.ComposeWithCancellation(rawFaces, 2048, 1024, captureToken);
+                captureToken.ThrowIfCancellationRequested();
                 var references = new List<IllustrationReferenceImage>
                 {
                     new IllustrationReferenceImage(Convert.ToBase64String(panorama),
-                        "当前场景实际预制体的前后双视角参考：左图FRONT是采集起始前方，右图BACK是同一点转180度后的后方，每张水平视野120度。" +
-                        "两张属于同一空间但并不相邻，不把中间接缝拼成真实墙面；侧面及其他未入镜区域保持未知，不是完整360度全景。" +
-                        "用于辨认建筑网格、门窗楼梯、装饰图案和陈设摆放。方向栏不进入作品，最终只画导演指定的单幅自然机位。" + snapshot.Notes, IllustrationReferenceKind.SceneViews)
+                        "当前场景独立静态副本的360×180度环境全景：同一点前后左右上下六个90度镜头，经球面映射合成一张展开图，不是六个房间或六张拼贴。" +
+                        "中央是采集起始前方，左右边缘在后方相接，顶部为上方、底部为下方；展开边缘与两极的拉伸不是建筑变形。" +
+                        "用于辨认建筑、家具、门窗楼梯、材质与摆放。最终依导演选定机位绘制单幅正常透视作品，不照搬全景展开布局。" + snapshot.Notes, IllustrationReferenceKind.ScenePanorama)
                 };
                 references.AddRange(CreateCapturedSceneReferences(context.Item3));
                 composed = true;
-                GenerationDiagnostics.Current?.RecordStage("panorama_composed", new JObject { ["faces"] = 2, ["layout"] = "front-back-sheet", ["width"] = 1024, ["height"] = 544,
+                GenerationDiagnostics.Current?.RecordStage("panorama_composed", new JObject { ["faces"] = PanoramaProjection.FaceCount,
+                    ["layout"] = "equirectangular", ["width"] = 2048, ["height"] = 1024, ["horizontalDegrees"] = 360, ["verticalDegrees"] = 180,
                     ["radiusMeters"] = PanoramaCaptureRadius, ["centerFromPlayer"] = snapshot.CenterFromPlayer,
                     ["excludedByRadius"] = snapshot.SkippedByRadius, ["invalidBounds"] = snapshot.SkippedInvalidBounds,
                     ["copiedRoots"] = snapshot.CopiedRoots, ["resourceMeshes"] = snapshot.ResourceCopiedComponents,
@@ -150,7 +152,7 @@ namespace AnimusForge.Illustrator.Engine
                     ["notes"] = snapshot.Notes, ["totalMs"] = watch.ElapsedMilliseconds, ["sourceRoots"] = snapshot.SourceRoots,
                     ["inspectedNodes"] = snapshot.InspectedNodes, ["copyBatches"] = snapshot.Batches,
                     ["copyTotalMs"] = snapshot.TotalMilliseconds, ["copyMaxBatchMs"] = snapshot.MaxBatchMilliseconds });
-                TaleWorlds.Library.Debug.Print($"[Illustrator] Nearby prefab front/back reference composed: views=2, radius=30m, meshes={snapshot.CopiedRoots}, calibration={references.Count > 1}, sourceMissionViews=0");
+                TaleWorlds.Library.Debug.Print($"[Illustrator] Nearby prefab panorama composed: views=6, coverage=360x180, radius=30m, meshes={snapshot.CopiedRoots}, calibration={references.Count > 1}, sourceMissionViews=0");
                 return references;
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)
@@ -187,8 +189,8 @@ namespace AnimusForge.Illustrator.Engine
                     if (stageHeld) _stageLock.Release();
                     SceneCaptureLock.Release();
                     if (ReferenceEquals(_activePanoramaFrameStats, frameStats)) _activePanoramaFrameStats = null;
-                    GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject { ["route"] = "mission-front-back-30m", ["faces"] = rawFaces.Count,
-                        ["totalMs"] = watch.ElapsedMilliseconds, ["sourceMissionViews"] = 0, ["referenceSheet"] = composed, ["panorama"] = false,
+                    GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject { ["route"] = "mission-panorama-30m", ["faces"] = rawFaces.Count,
+                        ["totalMs"] = watch.ElapsedMilliseconds, ["sourceMissionViews"] = 0, ["referenceSheet"] = false, ["panorama"] = composed,
                         ["sampledFrames"] = frameStats?.Count ?? 0, ["maxApplicationFrameMs"] = frameStats?.MaxMs ?? 0,
                         ["meanApplicationFrameMs"] = frameStats == null || frameStats.Count == 0 ? 0 : frameStats.TotalMs / frameStats.Count });
                 }

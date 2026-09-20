@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using TaleWorlds.Library;
 
 namespace AnimusForge.Illustrator.Engine
@@ -109,7 +110,11 @@ namespace AnimusForge.Illustrator.Engine
         /// persistent cache, and all temporary buffers have bounded dimensions.
         /// </summary>
         internal static byte[] Compose(IReadOnlyList<byte[]> nativeFacePngs, int width = 2048, int height = 1024)
+            => ComposeWithCancellation(nativeFacePngs, width, height, CancellationToken.None);
+
+        internal static byte[] ComposeWithCancellation(IReadOnlyList<byte[]> nativeFacePngs, int width, int height, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (nativeFacePngs == null || nativeFacePngs.Count != FaceCount)
                 throw new ArgumentException("A panorama requires exactly six native faces.", nameof(nativeFacePngs));
             if (width < 4 || height < 2 || width > 4096 || height > 2048 || width != height * 2)
@@ -132,7 +137,11 @@ namespace AnimusForge.Illustrator.Engine
                     throw new InvalidDataException("Panorama faces must have identical square dimensions.");
             }
             byte[][] faces = new byte[FaceCount][];
-            for (int i = 0; i < FaceCount; i++) faces[i] = DecodeNativeFace(nativeFacePngs[i], size);
+            for (int i = 0; i < FaceCount; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                faces[i] = DecodeNativeFace(nativeFacePngs[i], size);
+            }
             RejectRepeatedFaces(faces);
 
             byte[] output = new byte[checked(width * height * 4)];
@@ -147,6 +156,7 @@ namespace AnimusForge.Illustrator.Engine
             }
             for (int y = 0; y < height; y++)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 double latitude = (0.5 - (y + 0.5) / height) * Math.PI;
                 double horizontal = Math.Cos(latitude), vertical = Math.Sin(latitude);
                 for (int x = 0; x < width; x++)
@@ -167,6 +177,7 @@ namespace AnimusForge.Illustrator.Engine
                 finally { bitmap.UnlockBits(data); }
                 using (var stream = new MemoryStream())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     bitmap.Save(stream, ImageFormat.Png);
                     return stream.ToArray();
                 }

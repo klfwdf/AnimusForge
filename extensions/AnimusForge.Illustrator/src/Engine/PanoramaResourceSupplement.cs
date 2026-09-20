@@ -221,6 +221,7 @@ namespace AnimusForge.Illustrator.Engine
         internal JObject Describe() => new JObject
         {
             ["sourceFile"] = _plan.ResolvedSceneFile, ["activeMask"] = _plan.ActiveMask,
+            ["implicitBaseMask"] = _plan.ImplicitBaseMask, ["requiredVariantMask"] = _plan.ActiveMask & ~_plan.ImplicitBaseMask,
             ["complete"] = _complete, ["planEntries"] = _plan.Entries.Count, ["processedEntries"] = _entryIndex,
             ["planSkippedLevels"] = _plan.SkippedByLevel, ["planSkippedUnsupported"] = _plan.SkippedUnsupported,
             ["planUnsupportedReasons"] = JObject.FromObject(_plan.UnsupportedReasons),
