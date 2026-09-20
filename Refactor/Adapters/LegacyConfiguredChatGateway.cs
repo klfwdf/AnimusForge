@@ -224,7 +224,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
             streamResponse,
             out string controlMode);
         string body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
-        using (CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken))
+        using (CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(provider.TimeoutMilliseconds, cancellationToken))
         {
             try
             {
@@ -383,7 +383,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         }
 
         string body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
-        using CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
+        using CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
         try
         {
             GatewayExchange exchange = await SendOnceAsync(endpoint, apiKey, body, timeout.Token).ConfigureAwait(false);
@@ -443,7 +443,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         }
 
         string body = string.IsNullOrWhiteSpace(preparedJson) ? "{}" : preparedJson;
-        using CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
+        using CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
         try
         {
             GatewayExchange exchange = await SendOnceAsync(endpoint, apiKey, body, timeout.Token).ConfigureAwait(false);
@@ -502,13 +502,29 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         Action<string> onDelta,
         CancellationToken cancellationToken)
     {
+        if (!streamResponse)
+        {
+            LlmNonStreamingResponse response = await LlmNonStreamingTransport.SendAsync(
+                endpoint, apiKey, body,
+                (request, token) => DuelSettings.GlobalClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, token),
+                cancellationToken).ConfigureAwait(false);
+            int status = (int)response.StatusCode;
+            string rawText = response.IsSuccessStatusCode ? ExtractAssistantText(response.Body) : string.Empty;
+            return new GatewayExchange
+            {
+                StatusCode = status,
+                ResponseBody = response.Body ?? string.Empty,
+                Result = !response.IsSuccessStatusCode ? CreateHttpFailureResult(status, response.RetryAfterSeconds)
+                    : string.IsNullOrWhiteSpace(rawText)
+                        ? new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response", new LlmGenerateMetadata(statusCode: status))
+                        : new LlmGenerateResult(LlmResultStatus.Succeeded, rawText, 0, 0, string.Empty, new LlmGenerateMetadata(statusCode: status))
+            };
+        }
         using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint))
         {
             LlmApiCompat.ApplyAuthenticationHeaders(request, endpoint, apiKey);
             request.Content = new StringContent(body, Encoding.UTF8, "application/json");
-            HttpCompletionOption completion = streamResponse
-                ? HttpCompletionOption.ResponseHeadersRead
-                : HttpCompletionOption.ResponseContentRead;
+            HttpCompletionOption completion = HttpCompletionOption.ResponseHeadersRead;
             using (HttpResponseMessage response = await DuelSettings.GlobalClient
                 .SendAsync(request, completion, cancellationToken).ConfigureAwait(false))
             {
@@ -520,38 +536,11 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
                     {
                         StatusCode = statusCode,
                         ResponseBody = responseBody ?? string.Empty,
-                        Result = new LlmGenerateResult(
-                            statusCode == 401 || statusCode == 403
-                                ? LlmResultStatus.NonRetryableFailure
-                                : statusCode == 429 || statusCode >= 500
-                                    ? LlmResultStatus.RetryableFailure
-                                    : LlmResultStatus.NonRetryableFailure,
-                            string.Empty,
-                            0,
-                            0,
-                            "http_" + statusCode,
-                            new LlmGenerateMetadata(
-                                statusCode: statusCode,
-                                isRateLimit: statusCode == 429,
-                                isAuthFailure: statusCode == 401 || statusCode == 403,
-                                isTimeout: statusCode == 408,
-                                retryAfterSeconds: TryGetRetryAfterSeconds(response)))
+                        Result = CreateHttpFailureResult(statusCode, LlmNonStreamingTransport.GetRetryAfterSeconds(response))
                     };
                 }
 
-                if (!streamResponse)
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    string rawText = ExtractAssistantText(responseBody);
-                    return new GatewayExchange
-                    {
-                        StatusCode = statusCode,
-                        ResponseBody = responseBody ?? string.Empty,
-                        Result = string.IsNullOrWhiteSpace(rawText)
-                            ? new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response", new LlmGenerateMetadata(statusCode: statusCode))
-                            : new LlmGenerateResult(LlmResultStatus.Succeeded, rawText, 0, 0, string.Empty, new LlmGenerateMetadata(statusCode: statusCode))
-                    };
-                }
+
 
                 StringBuilder fullContent = new StringBuilder();
                 StringBuilder rawStreamSample = new StringBuilder();
@@ -655,29 +644,24 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         builder.AppendLine();
     }
 
-    private static int? TryGetRetryAfterSeconds(HttpResponseMessage response)
+    private static LlmGenerateResult CreateHttpFailureResult(int statusCode, int? retryAfterSeconds)
     {
-        try
-        {
-            if (response?.Headers?.RetryAfter?.Delta != null)
-            {
-                return Math.Max(0, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));
-            }
-            if (response?.Headers != null && response.Headers.TryGetValues("Retry-After", out IEnumerable<string> values))
-            {
-                foreach (string value in values)
-                {
-                    if (int.TryParse((value ?? string.Empty).Trim(), out int seconds))
-                    {
-                        return Math.Max(0, seconds);
-                    }
-                }
-            }
-        }
-        catch
-        {
-        }
-        return null;
+        return new LlmGenerateResult(
+                            statusCode == 401 || statusCode == 403
+                                ? LlmResultStatus.NonRetryableFailure
+                                : statusCode == 429 || statusCode >= 500
+                                    ? LlmResultStatus.RetryableFailure
+                                    : LlmResultStatus.NonRetryableFailure,
+                            string.Empty,
+                            0,
+                            0,
+                            "http_" + statusCode,
+                            new LlmGenerateMetadata(
+                                statusCode: statusCode,
+                                isRateLimit: statusCode == 429,
+                                isAuthFailure: statusCode == 401 || statusCode == 403,
+                                isTimeout: statusCode == 408,
+                                retryAfterSeconds: retryAfterSeconds));
     }
 
     private static IReadOnlyList<object> ToJsonMessages(PromptPackage prompt)
@@ -713,13 +697,4 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
             string.IsNullOrWhiteSpace(model) ? "configured-chat" : model);
     }
 
-    private static CancellationTokenSource CreateTimeout(int timeoutMilliseconds, CancellationToken callerToken)
-    {
-        CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(callerToken);
-        if (timeoutMilliseconds > 0)
-        {
-            linked.CancelAfter(timeoutMilliseconds);
-        }
-        return linked;
-    }
 }

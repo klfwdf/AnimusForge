@@ -1,0 +1,158 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+namespace AnimusForge;
+static class Check {internal static int Count;internal static void That(bool yes,string name){Count++;if(!yes)throw new Exception("ASSERT "+name);}}
+static class Logger
+{
+    internal static void Log(string category,string text){}
+    internal static void Obs(string a,string b,Dictionary<string,object> c){}
+    internal static void Metric(string a,bool ok,double elapsed){}
+    internal static int EstimateTokensFromMessages(List<object> m)=>m.Count;
+    internal static int EstimateTokens(string s)=>s.Length;
+    internal static void RecordTokenStats(int a,int b,List<object> c,string d,string e,string body) {Check.That(!body.Contains("fixture-key"),"credentials-not-in-body");}
+}
+static class FreezeWatchdog {internal static void Mark(string a,string b,bool immediate=false){}}
+static class SaveRuntimeGuard
+{
+    internal static string StaleAt;internal static List<string> Checks=new();
+    internal static long CaptureGeneration()=>4;
+    internal static bool IsStale(long generation,string phase){Checks.Add(phase);return StaleAt==phase;}
+    internal static string BuildStaleRequestErrorText()=>"stale";
+}
+static class LlmRetryPrompt
+{
+    internal static int UserRetries;
+    internal static void CaptureMainThreadContext(){}
+    internal static string BuildFailureDetail(string text,string detail,string raw=null)=>text+(raw??"");
+    internal static Task<bool> PromptRetryAsync(string caption,string detail)=>Task.FromResult(UserRetries-->0);
+}
+sealed class DuelSettings
+{
+    internal const int DefaultGeneralApiMaxTokens=512;
+    internal const string ReasoningEffortHigh="high",ReasoningEffortLow="low";
+    internal static DuelSettings Current=new(); internal static HttpClient GlobalClient;
+    internal string ApiKey="fixture-key",ApiUrl="https://fixture.invalid/v1/chat/completions",ModelName="model";
+    internal bool MainApiThinkingEnabled=true;
+    internal static DuelSettings GetSettings()=>Current;
+    internal int GetMainApiMaxTokens()=>512;
+    internal float GetMainApiTemperature()=>0.8f;
+    internal string GetMainApiReasoningEffort()=>"high";
+    internal string GetMainSelectedModelOption()=>"*手动填写*";
+    internal string GetEffectiveMainModelName()=>ModelName;
+    internal int GetAuxiliaryApiMaxTokens()=>256;
+    internal float GetAuxiliaryApiTemperature()=>0.2f;
+    internal static int ClampApiMaxTokens(int value,int fallback)=>Math.Max(16,value);
+    internal static float ClampApiTemperature(float value)=>Math.Max(0,Math.Min(1.5f,value));
+    internal static string GetEffectiveApiUrl(string value)=>value;
+    internal static string ResolveThinkingControlFormat(string a,string b)=>"structured";
+    internal static bool ApplyThinkingControls(JObject payload,string endpoint,string model,bool thinkingEnabled,string reasoningEffort,out string mode){mode=thinkingEnabled?"structured":"disabled";payload["thinking"]=new JObject{["enabled"]=thinkingEnabled};return true;}
+    internal static void RemoveThinkingControls(JObject payload)=>payload.Remove("thinking");
+}
+public static class AIConfigHandler {public static bool LooksLikeAuxiliaryThinkingControlErrorForExternal(string text)=>text.Contains("thinking")&&text.Contains("unsupported");}
+sealed class TrackedContent : StringContent
+{
+    internal bool Disposed;
+    internal TrackedContent(string body):base(body,Encoding.UTF8,"application/json"){}
+    protected override void Dispose(bool disposing){Disposed=true;base.Dispose(disposing);}
+}
+sealed class Handler : HttpMessageHandler
+{
+    internal CancellationToken ObservedToken;
+    internal string Scenario;internal int Calls;internal List<string> Bodies=new();internal List<TrackedContent> Contents=new();
+    internal readonly TaskCompletionSource<bool> Entered=new(TaskCreationOptions.RunContinuationsAsynchronously);
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken token)
+    {
+        await Task.Yield();ObservedToken=token;Calls++;Bodies.Add(await request.Content.ReadAsStringAsync());
+        Check.That(request.Headers.Authorization?.Parameter=="fixture-key","auth-header");
+        Check.That(request.Method==HttpMethod.Post&&request.Content.Headers.ContentType.MediaType=="application/json","request-shape");
+        Entered.TrySetResult(true);
+        if(Scenario=="wait") {await Task.Delay(Timeout.Infinite,token);throw new Exception("unreachable");}
+        if(Scenario=="transport-failure")throw new HttpRequestException("offline-fixture");
+        bool retry=Scenario=="thinking"||Scenario=="manual-retry"||Scenario=="stale-retry-header"||Scenario=="stale-retry-body";
+        int status=retry&&Calls==1?400:Scenario=="401"?401:Scenario=="429"?429:Scenario=="500"?500:Scenario=="400"?400:200;
+        string body=status==400&&retry?"thinking unsupported":status!=200?"fixture-error":Scenario=="empty-always"||Scenario=="empty-once"&&Calls==1?"{\"choices\":[{\"message\":{\"content\":\"\"}}]}":Scenario=="bad-json"?"{broken":"{\"choices\":[{\"message\":{\"content\":\"PLAYER_PLACEHOLDER 回答\",\"reasoning_content\":\"reason\"}}]}";
+        if(Scenario=="manual-retry"&&Calls==1){status=500;body="retry";}
+        var content=new TrackedContent(body);Contents.Add(content);var response=new HttpResponseMessage((HttpStatusCode)status){Content=content};if(status==429)response.Headers.RetryAfter=new RetryConditionHeaderValue(TimeSpan.FromSeconds(7));return response;
+    }
+}
+@@PRIMARY@@
+static class Program
+{
+    static List<object> Messages()=>new(){new {role="system",content="system"},new {role="assistant",content="prior"}};
+    static async Task<(string result,string bodies,string checks,int calls,bool disposed)> Primary(string scenario,bool old)
+    {
+        var handler=new Handler{Scenario=scenario};using var client=new HttpClient(handler);DuelSettings.GlobalClient=client;DuelSettings.Current=new();
+        if(scenario=="missing-key")DuelSettings.Current.ApiKey="";if(scenario=="missing-model")DuelSettings.Current.ModelName="";
+        SaveRuntimeGuard.StaleAt=scenario=="stale-header"?"primary_chat_non_stream_response":scenario=="stale-body"?"primary_chat_non_stream_body":scenario=="stale-retry-header"?"primary_chat_non_stream_retry_response":scenario=="stale-retry-body"?"primary_chat_non_stream_retry_body":null;
+        SaveRuntimeGuard.Checks=new();LlmRetryPrompt.UserRetries=scenario=="manual-retry"?1:0;
+        string result=old?await Before.CallApiWithMessages(Messages(),96,true,128,false,scenario=="manual-retry",default,0.4f):await After.CallApiWithMessages(Messages(),96,true,128,false,scenario=="manual-retry",default,0.4f);
+        return(result,string.Join("\n",handler.Bodies),string.Join(";",SaveRuntimeGuard.Checks),handler.Calls,handler.Contents.All(c=>c.Disposed));
+    }
+    static LlmGenerateRequest Request(int timeout=5000)=>new(new TraceContext("test",1,1,"test","1.4"),new LlmProviderSnapshot("test","https://fixture.invalid/v1/chat/completions","model",timeout,96),new PromptPackage(new[]{new PromptMessage("user","hello")},96,"model"));
+    static async Task Main()
+    {
+        foreach(string scenario in new[]{"success","thinking","400","500","empty-once","empty-always","bad-json","transport-failure","missing-key","missing-model","stale-header","stale-body","stale-retry-header","stale-retry-body","manual-retry"})
+        {
+            var before=await Primary(scenario,true);var after=await Primary(scenario,false);
+            Check.That(before.result==after.result,"primary-text-"+scenario);
+            Check.That(before.bodies==after.bodies,"primary-payload-"+scenario);
+            Check.That(before.checks==after.checks,"primary-generation-order-"+scenario);
+            Check.That(before.calls==after.calls,"primary-retries-"+scenario);
+            Check.That(after.disposed,"primary-response-disposed-"+scenario);
+            if(scenario=="success")Check.That(!before.disposed,"baseline-response-leak-reproduced");
+            Console.WriteLine("PASS primary differential "+scenario+" requests="+after.calls);
+        }
+        foreach(string scenario in new[]{"success","thinking","401","429","500","empty-always","bad-json"})
+        {
+            var handler=new Handler{Scenario=scenario};using var client=new HttpClient(handler);DuelSettings.GlobalClient=client;
+            var gateway=new LegacyConfiguredChatGateway(_=>"fixture-key",disableThinking:false,retryWithoutThinkingOnBadRequest:true,thinkingEnabled:true);
+            var result=await gateway.GenerateAsync(Request(),default);
+            var originalHandler=new Handler{Scenario=scenario};using var originalClient=new HttpClient(originalHandler);DuelSettings.GlobalClient=originalClient;
+            var originalGateway=new OriginalConfiguredChatGateway(_=>"fixture-key",disableThinking:false,retryWithoutThinkingOnBadRequest:true,thinkingEnabled:true);
+            var originalResult=await originalGateway.GenerateAsync(Request(),default);
+            Check.That(result.Status==originalResult.Status&&result.RawText==originalResult.RawText&&result.ErrorCode==originalResult.ErrorCode,"configured-status-text-"+scenario);
+            Check.That(string.Join(";",handler.Bodies)==string.Join(";",originalHandler.Bodies),"configured-request-parity-"+scenario);
+            if(scenario=="429")Check.That(result.Metadata.RetryAfterSeconds==7,"retry-after-preserved");
+            Check.That(handler.Contents.All(c=>c.Disposed),"configured-response-disposed-"+scenario);
+        }
+        foreach(bool caller in new[]{true,false})
+        {
+            var handler=new Handler{Scenario="wait"};using var client=new HttpClient(handler);DuelSettings.GlobalClient=client;using var cancel=new CancellationTokenSource();
+            var gateway=new LegacyConfiguredChatGateway(_=>"fixture-key");var pending=gateway.GenerateAsync(Request(caller?5000:25),cancel.Token);
+            await handler.Entered.Task;if(caller){cancel.Cancel();Check.That(handler.ObservedToken.IsCancellationRequested,"caller-cancellation-reaches-send");}var result=await pending;
+            Check.That(result.Status==LlmResultStatus.Cancelled,"configured-cancel-"+caller);
+            Check.That(handler.Calls==1,"cancellation-no-retry");Check.That(cancel.IsCancellationRequested==caller,"caller-token-not-owned");
+        }
+        foreach(bool old in new[]{true,false})
+        {
+            var handler=new Handler{Scenario="wait"};using var client=new HttpClient(handler);DuelSettings.GlobalClient=client;DuelSettings.Current=new();SaveRuntimeGuard.StaleAt=null;using var cancel=new CancellationTokenSource();
+            Task<string> pending=old?Before.CallApiWithMessages(Messages(),96,cancellationToken:cancel.Token):After.CallApiWithMessages(Messages(),96,cancellationToken:cancel.Token);
+            await handler.Entered.Task;cancel.Cancel();bool cancelled=false;try{await pending;}catch(OperationCanceledException){cancelled=true;}
+            Check.That(cancelled&&handler.Calls==1,"primary-caller-cancellation-propagates-"+old);
+        }
+        // The Debug replay sender may return unbuffered content. The shared owner must
+        // still release it when acceptance fails or an acceptance observer throws.
+        foreach(string mode in new[]{"reject-headers","reject-body","throw-headers"})
+        {
+            var content=new TrackedContent("body");var response=new HttpResponseMessage(HttpStatusCode.OK){Content=content};int bodyChecks=0;Exception failure=new InvalidOperationException("fixture-observer");Exception got=null;LlmNonStreamingResponse result=null;
+            try{result=await LlmNonStreamingTransport.SendAsync("https://fixture.invalid/v1/chat/completions","fixture-key","{}",(request,token)=>Task.FromResult(response),default,
+                status=>mode=="throw-headers"?throw failure:mode!="reject-headers",()=>{bodyChecks++;return false;});}catch(Exception e){got=e;}
+            Check.That(content.Disposed,"acceptance-path-disposes-"+mode);
+            Check.That(mode=="throw-headers"?ReferenceEquals(got,failure):result.Discarded,"acceptance-result-"+mode);
+            Check.That(bodyChecks==(mode=="reject-body"?1:0),"acceptance-order-"+mode);
+        }
+        Console.WriteLine("PASS NonStreamingTransport checks="+Check.Count+" primaryCases=15 configuredCases=9 realHttpHandler=true provider=FAKE game=NOT_RUN");
+    }
+}

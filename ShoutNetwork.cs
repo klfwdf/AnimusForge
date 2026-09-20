@@ -728,30 +728,21 @@ public static class ShoutNetwork
 			}
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			string requestBodyForTokenStats = jsonBody;
-			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-			try
-			{
-				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
-				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
-				FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
-				HttpResponseMessage response = await SendPrimaryNonStreamingRequestAsync(request, cancellationToken);
-				FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
-				{
-					response.Dispose();
-					return SaveRuntimeGuard.BuildStaleRequestErrorText();
-				}
-				string str = await response.Content.ReadAsStringAsync();
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_body"))
-				{
-					response.Dispose();
-					return SaveRuntimeGuard.BuildStaleRequestErrorText();
-				}
+            {
+                FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
+                LlmNonStreamingResponse response = await LlmNonStreamingTransport.SendAsync(
+                    effectiveApiUrl, settings.ApiKey, jsonBody, SendPrimaryNonStreamingRequestAsync, cancellationToken,
+                    status =>
+                    {
+                        FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)status + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+                        return !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response");
+                    }, () => !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_body"));
+                if (response.Discarded) return SaveRuntimeGuard.BuildStaleRequestErrorText();
+                string str = response.Body;
 				LogPrimaryRawResponse("non_stream_status_" + (int)response.StatusCode, str);
 				if (!response.IsSuccessStatusCode && response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && PrimaryChatMessagePolicy.LooksLikeThinkingControlError(str))
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] thinking payload rejected; retrying without thinking controls.");
-					response.Dispose();
 					JObject payload2 = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var _);
 					if (overrideTemperature.HasValue)
 					{
@@ -760,23 +751,16 @@ public static class ShoutNetwork
 					DuelSettings.RemoveThinkingControls(payload2);
 					string jsonBody2 = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload2);
 					requestBodyForTokenStats = jsonBody2;
-					using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, effectiveApiUrl, settings.ApiKey);
-					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
-					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
-					response = await SendPrimaryNonStreamingRequestAsync(httpRequestMessage, cancellationToken);
-					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
-					{
-						response.Dispose();
-						return SaveRuntimeGuard.BuildStaleRequestErrorText();
-					}
-					str = await response.Content.ReadAsStringAsync();
-					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_body"))
-					{
-						response.Dispose();
-						return SaveRuntimeGuard.BuildStaleRequestErrorText();
-					}
+                    FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
+                    response = await LlmNonStreamingTransport.SendAsync(
+                        effectiveApiUrl, settings.ApiKey, jsonBody2, SendPrimaryNonStreamingRequestAsync, cancellationToken,
+                        status =>
+                        {
+                            FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)status + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+                            return !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response");
+                        }, () => !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_body"));
+                    if (response.Discarded) return SaveRuntimeGuard.BuildStaleRequestErrorText();
+                    str = response.Body;
 					LogPrimaryRawResponse("non_stream_retry_status_" + (int)response.StatusCode, str);
 					thinkingMode = "thinking_retry_plain";
 				}
@@ -872,10 +856,6 @@ public static class ShoutNetwork
 					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
 				return httpError;
-			}
-			finally
-			{
-				((IDisposable)request)?.Dispose();
 			}
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
