@@ -5,20 +5,27 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def generate(source_ref=None):
  s=ex.source('ShoutBehavior.cs',source_ref);a=ex.source('extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs',source_ref);u=ex.source('ShoutUtils.cs',source_ref)
+ try:o=ex.source('src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs',source_ref)
+ except (FileNotFoundError,subprocess.CalledProcessError):o=''
  gates=['private void RegisterScenePostprocessGateTask(','private Task GetScenePostprocessGateTask(','private void ForceClearScenePostprocessGate(','private async Task WaitForScenePostprocessGateAsync(']
  gm='\n'.join(ex.declaration(s,x) for x in gates)
  fields=[]
  names=set(re.findall(r'\b(_[A-Za-z]\w*)\b',gm))
- current='private sealed class ScenePlayerShoutRequest' in s
- if current:names.add('_scenePlayerInputSequence')
+ current='private sealed class ScenePlayerShoutRequest' in s or 'internal sealed class ScenePlayerShoutRequest' in o
+ if o:fields.append('private readonly ScenePlayerShoutRequestOwner _scenePlayerShoutRequestOwner=new();')
+ elif current:names.add('_scenePlayerInputSequence')
  for name in sorted(names):
   m=re.search(r'^\s*private (?:readonly |volatile )?[^\n;{}]+\b'+name+r'\b[^\n;{}]*;',s,re.M)
   if not m:raise ValueError(name)
   fields.append(m.group().strip())
  methods='\n'.join(ex.declaration(s,x) for x in ['private void BeginShoutProcessing(','private void EndShoutProcessing(','private void ResumeGame(','private List<Agent> GetAgentsForShoutTargetingContext(','private static Agent ResolvePrimaryAgentForShoutTargetingContext(','private async void OnShoutConfirmedWithContext(','private int BeginNewPlayerDrivenSceneConversationEpoch(','private void ResetSceneShoutRuntimeOnMissionEnd('])
- request=''
+ request='';scene_request_types='public class ShoutTargetingContext{public List<int> CandidateAgentIndices;public List<Agent> PreviewCandidateAgents;public int PrimaryAgentIndex;}'
  if current:
-  request='\n'.join(ex.declaration(s,x) for x in ['private sealed class ScenePlayerShoutRequest','internal object CaptureScenePlayerShoutRequestForReplay(','private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(','private bool IsScenePlayerShoutRequestCurrent(','internal bool TryReplayCapturedScenePlayerShout(','private async Task ProcessShoutConfirmedInternal(','private async Task ProcessCapturedScenePlayerShoutAsync('])
+  signatures=['internal object CaptureScenePlayerShoutRequestForReplay(','private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(','private bool IsScenePlayerShoutRequestCurrent(','internal bool TryReplayCapturedScenePlayerShout(','private async Task ProcessShoutConfirmedInternal(','private async Task ProcessCapturedScenePlayerShoutAsync(']
+  if o:
+   scene_request_types='\n'.join(ex.declaration(o,x) for x in ['internal sealed class ShoutTargetingContext','internal sealed class ScenePlayerShoutRequest','internal sealed class ScenePlayerShoutRequestOwner'])
+   request='\n'.join(ex.declaration(s,x) for x in signatures)
+  else:request='\n'.join(ex.declaration(s,x) for x in ['private sealed class ScenePlayerShoutRequest']+signatures)
  sig='private void ProcessCurrentScenePlayerShout(' if current else 'private async Task ProcessShoutConfirmedInternal('
  full=ex.declaration(s,sig);marker='\t\tif (!TryBuildSceneShoutConversationScope('
  assert full.count(marker)==1
@@ -27,7 +34,7 @@ def generate(source_ref=None):
  observer=ex.declaration(a,'private static bool ObserveAcceptedPlayerShout(');record=ex.declaration(a,'private static void ObserveRecordedPlayerMessage(')
  utils='\n'.join(ex.declaration(u,x) for x in ['public static List<Agent> GetNearbyNPCAgents()','private static List<Agent> GetNearbyNPCAgentsLegacy('])
  pre=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
- for k,v in [('FIELDS','\n'.join(fields)),('GATES',gm),('METHODS',methods),('REQUEST',request),('PREFIX',prefix),('REPLAY',replay),('RESUME',resume),('OBSERVER',observer),('RECORD',record),('UTILS',utils)]:pre=pre.replace('@@'+k+'@@',v)
+ for k,v in [('FIELDS','\n'.join(fields)),('GATES',gm),('METHODS',methods),('REQUEST',request),('SCENE_REQUEST_TYPES',scene_request_types),('PREFIX',prefix),('REPLAY',replay),('RESUME',resume),('OBSERVER',observer),('RECORD',record),('UTILS',utils)]:pre=pre.replace('@@'+k+'@@',v)
  assert '@@' not in pre
  return pre
 
@@ -37,7 +44,7 @@ MUTATIONS = {
  'borrowed-flag': ('&& _scenePostprocessWaitBorrowedProcessingFlag', '&& false', 'same-gate-waiters'),
  'busy-lifetime': ('restoreProcessingFlag && processingSequence == Interlocked.Read(ref _sceneShoutProcessingSequence)', 'restoreProcessingFlag', 'resume-ui-no-stale-busy'),
  'observer-scope': ('if (!observeForBattleSpeech)', 'if (false)', 'deferred-ordinary-observation'),
- 'replay-consumption': ('Interlocked.CompareExchange(ref request.Started, 1, 0) != 0', 'false', 'replay-pending-one-shot'),
+ 'replay-consumption': ('return request != null && Interlocked.CompareExchange(ref request.Started, 1, 0) == 0;', 'return request != null;', 'replay-pending-one-shot'),
  'old-host-fallthrough': ('if (capturedRequest != null && BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(', 'if (capturedRequest == null) return true; if (BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(', 'old-host-observer-fallthrough'),
 }
 

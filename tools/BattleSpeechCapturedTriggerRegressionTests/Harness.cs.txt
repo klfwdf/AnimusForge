@@ -2,13 +2,13 @@ using System.Collections.Concurrent;using System.Reflection;
 public sealed class Agent{public static Agent Main=new();public int Index;}
 public sealed class Mission{public static Mission Current=new();public Agent MainAgent=>Agent.Main;}
 public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}
-public class ShoutTargetingContext{public int PrimaryAgentIndex;public List<int> CandidateAgentIndices;public List<Agent> PreviewCandidateAgents;}
+@@SCENE_TYPES@@
 public sealed class ShoutBehavior {
- int _sceneHistorySessionId=1,_sceneConversationEpoch=1;long _scenePlayerInputSequence;public bool MainThread=true;
+ int _sceneHistorySessionId=1,_sceneConversationEpoch=1;readonly ScenePlayerShoutRequestOwner _scenePlayerShoutRequestOwner=new();public bool MainThread=true;
  bool IsBannerlordMainThreadForNativeActions()=>MainThread;
  @@HOST@@
  public object Capture(Agent target)=>CaptureScenePlayerShoutRequestForReplay(new[]{target},target);
- public void OpenNewUi()=>_scenePlayerInputSequence++;
+ public void OpenNewUi()=>_scenePlayerShoutRequestOwner.InvalidateCurrent();
  public void NextEpoch()=>_sceneConversationEpoch++;
  public void NextSession()=>_sceneHistorySessionId++;
  public int ReplayCalls;

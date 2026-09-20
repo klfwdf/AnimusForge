@@ -69,7 +69,7 @@ public static void Reset(){NaturalCalls=ForcedCalls=RecordedCalls=0;NaturalHandl
 }
 public static class SceneActionsRuntimeHost{public static int Calls;public static void SubmitPlayerSceneShout(Guid id,Mission mission,string text,Agent player,Agent primary,List<Agent> framed,double now){Calls++;}}
 public class BattleSpeechCapturedInputV1 { public string RawText,OriginalExtraFact;public object OriginalAfBehavior;public object OriginalScenePlayerShoutRequest; public int? OriginalForcedPrimaryAgentIndex;public Agent[] FramedTargets;public Agent PrimaryTarget; }
-public class ShoutTargetingContext{public List<int> CandidateAgentIndices;public List<Agent> PreviewCandidateAgents;public int PrimaryAgentIndex;}
+@@SCENE_REQUEST_TYPES@@
 public static class AIConfigHandler{public static string DuelTriggerKeywords="duel";}
 public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long x)=>x==Generation;}
 public sealed class InformationMessage{public string Text;public InformationMessage(string text,Color c){Text=text;}}

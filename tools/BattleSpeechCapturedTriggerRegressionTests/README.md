@@ -23,7 +23,7 @@ The suite also covers epoch/session/save generation/player identity, consumed re
 
 ## Actual code and test boundaries
 
-- Real source: complete `RunTriggerClassificationAsync`, the trigger-completion loop through its decisive branch, complete `ApplyClassifiedTrigger`, optional reflection binding/current validation, and the actual Shout capture/current-check methods including its new read-only wrapper.
+- Real source: complete `RunTriggerClassificationAsync`, the trigger-completion loop through its decisive branch, complete `ApplyClassifiedTrigger`, optional reflection binding/current validation, the actual Shout capture/current-check methods, and the real `ScenePlayerShoutRequestOwner` types including its read-only current check.
 - Only the unrelated plan-completion loop is excluded from the trigger consumer. `StartSession`, `PrepareSpeech`, ordinary replay, classifier result parser, Mission/Agent, phase lookup and the Bannerlord main-thread signal are controlled test boundaries.
 - This proves the reviewed control-flow bug and its request identity fix, **not real game acceptance, parser behavior, movement, morale or audio effects**. The full extension and host still require the normal dual-version build and gameplay regression.
 - `--source-ref` switches only the trigger source so the old control-flow defect remains independently observable with the same current checker. It does not claim the entire old host was built.

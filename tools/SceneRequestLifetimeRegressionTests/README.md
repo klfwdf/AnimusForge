@@ -1,6 +1,6 @@
 # Scene input lifetime / BattleSpeech frozen replay regression
 
-This suite executes extracted production methods from `ShoutBehavior.cs` and the AF compatibility bridge. It covers audit F4 (stale input after an await), F5 (BattleSpeech ordinary fallback loses the framed target), and overlapping gate waiter ownership.
+This suite executes extracted production methods from `ShoutBehavior.cs`, `Channels/Scene/ScenePlayerShoutRequestOwner.cs`, and the AF compatibility bridge. It covers audit F4 (stale input after an await), F5 (BattleSpeech ordinary fallback loses the framed target), and overlapping gate waiter ownership.
 
 ## Run
 
@@ -29,4 +29,4 @@ The red baseline command intentionally exits 1. Output stays in this tool's igno
 
 Bannerlord objects and the main-thread queue are stubs; the gate uses real task continuations with controlled synchronization contexts. Source is copied verbatim through the decisive target/current-request branch; the expensive game-owner tail after `TryBuildSceneShoutConversationScope` is replaced by an acceptance counter plus a call to the extracted accepted-message observer. This is **not** a live Campaign/Mission run, complete Scene-domain verification, or proof of save/economy side effects.
 
-The opaque request is transient and single-use; it is not serialized and never replaces `_activeShoutTargetingContext`. On older hosts without the optional capture/replay API, natural pre-routing falls through to AF and the normal scene observer rather than inventing a nearby audience. Existing reflection support for NPC reply replay remains in use and is not removed.
+The opaque request is transient and single-use; its sequence/claim owner is process memory only, it is not serialized, and it never replaces `_activeShoutTargetingContext`. On older hosts without the optional capture/replay API, natural pre-routing falls through to AF and the normal scene observer rather than inventing a nearby audience. Existing reflection support for NPC reply replay remains in use and is not removed.
