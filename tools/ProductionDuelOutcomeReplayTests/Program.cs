@@ -438,7 +438,7 @@ internal static class Program
         string contracts = File.ReadAllText(Path.Combine(
             projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"));
         string committer = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Runtime", "InteractionResultCommitter.cs"));
+            projectRoot, "src", "modules", "AF.Module.Conversation", "Internal", "InteractionResultCommitter.cs"));
         string executor = File.ReadAllText(Path.Combine(
             projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs"));
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
@@ -753,7 +753,7 @@ internal static class Program
             Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"),
             Path.Combine(projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"),
             Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
-            Path.Combine(projectRoot, "Refactor", "Runtime", "InteractionResultCommitter.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Internal", "InteractionResultCommitter.cs"),
             Path.Combine(projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs")
         };
         DateTimeOffset markerTime = marker.CreatedUtc.ToUniversalTime();

@@ -188,7 +188,7 @@ Lore 生产方法差分新增一条确定性假 Hero/Praven 规则回放：旧�
 ## 2026-08-31 Conversation Host commit boundary
 
 - Owner: Conversation lifecycle / GameAdapter dispatch contract, not Economy gameplay or GCCZ rules.
-- `Refactor/Runtime/DetachedInteractionHost.cs`: each submitted commit callback is consumed once and closed before pre-commit fallback; failures after callback entry are terminal, retaining any observed receipt. `afterCommit` requires successful history. Queued cancellation is checked on callback entry.
+- `src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs`: each submitted commit callback is consumed once and closed before pre-commit fallback; failures after callback entry are terminal, retaining any observed receipt. `afterCommit` requires successful history. Queued cancellation is checked on callback entry.
 - Entry points: Native opt-in runner and Shout/Courier detached hosts. Default channel entries, public signatures, save identity/key/type and resources are unchanged; no new Harmony, tick, queue or scan work.
 - Validation: `InteractionPipelineContractTests` fault matrix and `ProductionConfiguredHostReplayTests`; actual results/rollback/NOT-RUN scope are recorded in the execution ledger and `docs/handoffs/2026-08-31-local-refactor-commit-boundary.md`.
 

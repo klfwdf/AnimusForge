@@ -17,7 +17,7 @@ class Guards(unittest.TestCase):
   s=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig').replace('if (admission == null) return;','',1)
   with self.assertRaises(AssertionError):inverse.restore('CourierDeliveryBehavior.cs',s)
  def test_new_dependency_drift_rejected(self):
-  old=Path.read_text;target=ROOT/'Refactor/Runtime/PersonaGenerationWaiter.cs'
+  old=Path.read_text;target=ROOT/'src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs'
   def changed(p,*args,**kwargs):return old(p,*args,**kwargs)+ ('\n// drift' if p==target else '')
   with patch.object(Path,'read_text',changed):
    with self.assertRaisesRegex(AssertionError,'dependency'):inverse.restore('ShoutBehavior.cs',(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
