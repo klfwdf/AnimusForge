@@ -1,3 +1,21 @@
+<a id="j09-shared-action-boundary-20260921"></a>
+# 当前接续：J09 shared action boundary 已闭合，默认三渠道接线进行中（2026-09-21）
+
+**状态：J07/J08_OFFLINE_VERIFIED；J09_IN_PROGRESS。** J09a–J09c 与 J09d shared core 已闭合，不能再写成“尚未开工”；但默认/兼容 Native、Scene、Courier 尚未全部改接，故不能标记 `J09_OFFLINE_VERIFIED`。自动化 `af-7-8` 保持 PAUSED，当前线程按用户要求继续。
+
+| 责任 | 当前 owner | 产品提交 / 真实结果 |
+| --- | --- | --- |
+| 标签与授权 | `src/modules/AF.Module.Actions/Tags` | `20ba9527` 原样归位；`21206ec6` 阻断第 65 个 raw 动作绕过；Prompt/parser/domain/channel 矩阵见 `docs/architecture/af-action-protocol-owner-matrix.md` |
+| 计划完整性与执行 adapter | `src/modules/AF.Module.Actions/{Plan,Execute}` | `fd01974b` 分离 strict ordered raw/plan policy；Economy/Duel typed owner 和 legacy adapter 边界保留 |
+| 终态与事实提交 | `src/modules/AF.Module.Actions/Receipts` | `dbe87c4` 归位；`65a14421` 将动作 success/reject/partial/unknown 从历史/AFEF transaction 剥离，owner 抛异常继续是不可重试 unknown |
+| 三渠道共享动作边界 | `LegacyChannelActionCommitter` → `ActionExecutionCommitter` | `bb223aec`、`f61ec13e`；detached Native/Scene/Courier 生产提交经同一 canonical request/action identity 与终态 receipt，无动作不调用 owner，disallowed/overflow fail closed |
+
+**已验**：ActionProtocol 正常 14 项和 5 个可编译有效变异；InteractionPipeline、Economy、Duel 16/16、Courier/Channel 相关回归；最新 shared-core 产品候选 Debug 1.3/1.4/Bootstrap 0 warning/0 error。没有访问 provider、Stage/Deploy/Package、游戏或存档。
+
+**下一有限包 J09d**：逐渠道把默认/兼容动作尾改接 action-only boundary。Native 保留 captured completion、TTS、WorldMap exit 与 pending history rollback；Scene 保留 target/session/epoch、mood、GCCZ、direct、speech/relay 相对顺序；Courier 保留 DeliveryApplied 后才 commit。每个渠道只能有一个权威执行点，不能新增 memory 写入，也不能把 J10 的 group/relay/transport 状态机偷渡到 J09。三者接完后才进入 J09e Release/API/存档/代码地图与清理门禁。
+
+真实 Campaign/Mission、旧 SAVE、live Economy/外交、真实 provider/音频/性能仍 `NOT-RUN`。回滚按 `f61ec13e` → `bb223aec` → `65a14421` → `21206ec6` → `dbe87c4` → `fd01974b` → `20ba9527` 定向 revert；不 reset/rebase。以下 J08 闭合节保留为历史依据。
+
 <a id="j08-offline-closeout-20260921"></a>
 # 当前接续：J08 离线责任包闭合，自动化保持暂停（2026-09-21）
 

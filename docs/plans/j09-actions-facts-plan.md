@@ -1,9 +1,22 @@
 # J09 Actions / 事实提交实施计划
 
-> 状态：`PLANNED / NOT_STARTED`  
+> 状态：`IN_PROGRESS`（J09a–J09c 已闭合；J09d 三渠道默认/兼容接线进行中）  
 > 依赖：J07、J08 已完成必要离线验收。  
-> 规划基线：产品提交 `5a2df9d64485cea03f4a069afda55c2f348968bc`。  
+> 启动基线：`5a2df9d64485cea03f4a069afda55c2f348968bc`；当前产品提交以 Git/HANDOFF 为准。  
 > 本文只授权 J09 的标签、ActionPlan、执行接缝和回执重构；不授权 J10 渠道状态机、J11 制作组玩法、J12/J13 领域玩法、J14 新公开提交能力、部署或默认切换。
+
+## 0. 当前施工回执（2026-09-21）
+
+| 包 | 状态 | 产品提交 / 证据 |
+| --- | --- | --- |
+| G0 / J09a | DONE | `20ba9527`：catalog/parser 原样归位 `AF.Module.Actions/Tags`；`21206ec6` 修复第 65 个 raw 动作绕过；`docs/architecture/af-action-protocol-owner-matrix.md` 完成 Prompt/parser/owner/渠道矩阵 |
+| J09b | DONE | `fd01974b`：`ActionPlanIntegrityPolicy` 成为 raw/plan 有序一致性唯一 owner，executor 归位 `Execute`；Economy/Duel typed seam 保留 |
+| J09c | DONE | `dbe87c4`：committer/cache 归位 `Receipts`；`65a14421` 提取动作终态 owner，成功/拒绝/partial/unknown 与历史提交解耦 |
+| J09d shared core | DONE | `bb223aec`、`f61ec13e`：新增 `LegacyChannelActionCommitter`，三渠道 detached 生产提交均经同一 canonical request/action identity 与终态回执边界；无动作不调用 owner，disallowed/overflow fail closed |
+| J09d default/compat | IN_PROGRESS | 默认 Native/Scene/Courier 的旧直接动作尾仍需按渠道逐一改接，且必须保留 Native completion、Scene relay/speech/GCCZ 相对顺序、Courier 到达时点；不能为追求统一而重复历史/AFEF或偷改 J10 状态机 |
+| J09e | NOT_STARTED | 默认接线完成后再做重复执行路径清理、有效变异、Release/公共 API/存档/代码地图整包验收 |
+
+本轮已通过：ActionProtocol 14 项及 5 个有效变异；InteractionPipeline、Economy、Duel、Courier/Channel 边界相关回归；最新 shared-core 候选 Debug 1.3/1.4/Bootstrap 均 0 warning / 0 error。真实 Campaign/Mission、旧档、live Economy/外交/provider 仍为 `NOT-RUN`。
 
 ## 1. 目标与完成定义
 
@@ -40,12 +53,12 @@ J09 要把三渠道共用的动作协议收敛为一条清晰责任链：
 
 | 责任 | 当前生产位置 | 当前状态 / J09 动作 |
 | --- | --- | --- |
-| 运行期允许目录 | `Refactor/Adapters/LegacyActionTagCatalog.cs:14` | 有限 family/template 列表；先与 Prompt `tag_rules`、领域 owner 和 UI 目录对账，再原样迁入 `AF.Module.Actions/Tags` |
-| 标签扫描和解析 | `Refactor/Adapters/LegacyActionTagParser.cs:14-400` | 已 detached；保留 balanced bracket、嵌套 RichText、坏标签恢复、顺序、重复、64 上限和显式 wildcard 规则 |
+| 运行期允许目录 | `src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs` | 有限 family/template 列表已归位并完成 Prompt/owner/UI 对账矩阵 |
+| 标签扫描和解析 | `src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs` | 唯一 detached parser；保留 balanced bracket、嵌套 RichText、坏标签恢复、顺序、重复、64 上限和显式 wildcard 规则 |
 | 动作 DTO / 端口 | `Refactor/Contracts/InteractionContracts.cs:277-553` | `PostprocessContext`、`ActionRequest`、`ActionPlan`、执行/回执接口；属于稳定内部契约，不因整理物理目录改变签名 |
-| 通用执行适配 | `Refactor/Adapters/LegacyNativeActionPlanExecutor.cs:27-821` | 混合 raw/plan 一致性、request fingerprint、Economy、Duel 和渠道委托；J09 拆通用验证/回执，不把领域业务搬入通用 Actions |
-| 唯一提交边界 | `src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs:16-718` | 已区分 reject/partial/unknown、历史和 confirmed facts；迁入 Actions/Receipts 前先锁行为，再改消费者 |
-| 幂等票据 | `src/modules/AF.Module.Conversation/Internal/InteractionCommitReceiptCache.cs:13-102` | reservation 只能由自己完成；冲突 fingerprint fail closed；终态缓存有界 |
+| 通用执行适配 | `src/modules/AF.Module.Actions/{Plan,Execute}` | raw/plan integrity、channel commit 与 Native/Economy/Duel adapter 已分层；领域玩法没有搬入通用 Actions |
+| 唯一提交边界 | `src/modules/AF.Module.Actions/Receipts/{ActionExecutionCommitter,InteractionResultCommitter}.cs` | 动作终态和可见历史/confirmed facts 已分开；owner-started 异常为 unknown 且不可重试 |
+| 幂等票据 | `src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs` | reservation 只能由自己完成；冲突 fingerprint fail closed；终态缓存有界 |
 | Native 接缝 | `ShoutBehavior.CreateNativeConversationActionPlanExecutorForExternal`、`ShoutBehavior.NativeActionDispatch.cs` | 保留主线程、当前目标复核、异常 owner-started 语义 |
 | Scene 接缝 | `ShoutBehavior.ScenePostprocess.cs`、`CreateSceneShoutActionPlanExecutorForExternal` | 保留统一后处理 work item、先正文后动作、直接场景/GCCZ 特例和会话代际；J10 的接力/旁听/距离不在本包改写 |
 | Courier 接缝 | `CourierDeliveryBehavior.DetachedPostprocess.cs`、`CreateCourierReplyActionPlanExecutorForExternal` | 已使用 detached parser；提交仍必须发生在正确到达/回复阶段，不能提前到预生成；完整运输状态机留 J10 |
@@ -247,4 +260,3 @@ src/modules/AF.Module.Actions/
 6. `docs: accept J09 offline package and hand off to J10`
 
 每个产品提交都可定向 revert；不用 reset/rebase/force push。J09 完成前不删除领域 receipt 或旧执行入口；若某渠道未接通，状态必须写 `J09_IN_PROGRESS`，不得因标签 parser 已搬迁而提前标 DONE。
-
