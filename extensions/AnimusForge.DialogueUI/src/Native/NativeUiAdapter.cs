@@ -167,8 +167,9 @@ public static class NativeUiAdapter
     }
     private static bool IsCurrentNativeOwner(Mission mission, MissionConversationVM source, ConversationManager manager)
     {
+        var activeSource = source ?? _native?.Source;
         return _installed && mission != null && ReferenceEquals(Mission.Current, mission) &&
-            _native != null && ReferenceEquals(_native.Mission, mission) && ReferenceEquals(_native.Source, source) &&
+            _native != null && ReferenceEquals(_native.Mission, mission) && (activeSource == null || ReferenceEquals(_native.Source, activeSource)) &&
             Attached(_native.Root) && ReferenceEquals(Campaign.Current?.ConversationManager, manager) &&
             manager != null && manager.IsConversationInProgress;
     }
@@ -224,6 +225,8 @@ public static class NativeUiAdapter
         private readonly long _initializeAfterTick;
         private readonly List<Widget> _buttons = new();
         private readonly Widget _paintSlot;
+        private readonly Widget _inputSlot;
+        private readonly Widget _moreMenu;
         private Widget _paint;
         internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original)
         {
@@ -241,11 +244,11 @@ public static class NativeUiAdapter
                     {
                         if (id == "AFDialogueSubmit" && button is ButtonWidget submit)
                         {
-                            StyleSubmitSeal(submit);
+                            DialogueUiButtons.StyleWaxSeal(submit, 15);
                         }
                         else if (button is ButtonWidget btn)
                         {
-                            DialogueUiButtons.Style(btn, 16);
+                            DialogueUiButtons.Style(btn, 15);
                         }
                     }
                     catch (Exception ex)
@@ -256,6 +259,8 @@ public static class NativeUiAdapter
             }
             // Illustrator's existing command is retained; adopted into left column paint slot.
             _paintSlot = root.FindChild("AFDialoguePaintSlot", true);
+            _inputSlot = root.FindChild("AFDialogueInput", true);
+            _moreMenu = root.FindChild("AFDialogueMoreMenu", true);
             TryAdoptIllustratorButton();
         }
 
@@ -271,13 +276,13 @@ public static class NativeUiAdapter
                 paint.ParentWidget = _paintSlot;
                 ResetBox(paint);
                 paint.WidthSizePolicy = SizePolicy.Fixed; paint.SuggestedWidth = 110;
-                paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 30;
+                paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 28;
                 paint.HorizontalAlignment = HorizontalAlignment.Center;
                 paint.VerticalAlignment = VerticalAlignment.Bottom;
-                paint.MarginBottom = 4;
+                paint.MarginBottom = 0;
                 if (paint is ButtonWidget button)
                 {
-                    DialogueUiButtons.Style(button, 16);
+                    DialogueUiButtons.Style(button, 15);
                     button.DoNotPassEventsToChildren = true;
                 }
                 foreach (Widget item in Descendants(paint))
@@ -285,7 +290,7 @@ public static class NativeUiAdapter
                     {
                         text.Brush = text.Brush?.Clone();
                         text.Text = "场景绘图";
-                        if (text.Brush != null) { text.Brush.FontSize = 16; text.Brush.FontColor = Color.FromUint(0xFF382919); text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center; }
+                        if (text.Brush != null) { text.Brush.FontSize = 15; text.Brush.FontColor = Color.FromUint(0xFF382919); text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center; }
                         text.WidthSizePolicy = SizePolicy.StretchToParent;
                         text.HeightSizePolicy = SizePolicy.StretchToParent;
                     }
@@ -294,64 +299,6 @@ public static class NativeUiAdapter
             catch (Exception ex)
             {
                 DialogueUiRuntime.Log("Failed to adapt Illustrator button: " + ex.Message);
-            }
-        }
-
-        private static void StyleRoundLabel(ButtonWidget button)
-        {
-            foreach (Widget child in Descendants(button))
-                if (child is TextWidget text && text.Brush != null)
-                {
-                    text.Brush = text.Brush.Clone();
-                    text.Brush.FontColor = Color.FromUint(0xFFFFF4DB);
-                }
-        }
-        private static void StyleSubmitSeal(ButtonWidget button)
-        {
-            if (button == null) return;
-            try
-            {
-                var seal = DialogueUiSprites.Get("afdui_wax_seal");
-                if (seal != null)
-                {
-                    Brush brush = button.Brush?.Clone()
-                        ?? button.Context.GetBrush("Popup.Done.Button.NineGrid")?.Clone()
-                        ?? button.Context.GetBrush("ButtonBrush2")?.Clone();
-                    if (brush != null)
-                    {
-                        brush.Name = "AFDialogue.SubmitSeal";
-                        brush.TransitionDuration = 0.08f;
-                        SetBrushStateSprite(brush, "Default", seal, 1f);
-                        SetBrushStateSprite(brush, "Hovered", seal, 1f);
-                        SetBrushStateSprite(brush, "Pressed", seal, 0.78f);
-                        SetBrushStateSprite(brush, "Selected", seal, 1f);
-                        SetBrushStateSprite(brush, "Disabled", seal, 0.40f);
-                        button.Brush = brush;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                DialogueUiRuntime.Log("Failed to style submit seal: " + ex.Message);
-            }
-            button.DoNotPassEventsToChildren = true;
-            button.UpdateChildrenStates = true;
-            StyleRoundLabel(button);
-        }
-
-        private static void SetBrushStateSprite(Brush brush, string stateName, Sprite sprite, float alpha)
-        {
-            if (brush == null || sprite == null) return;
-            Style style = brush.GetStyle(stateName);
-            if (style?.DefaultLayer != null)
-            {
-                style.DefaultLayer.Sprite = sprite;
-                style.DefaultLayer.AlphaFactor = alpha;
-            }
-            else if (stateName == "Default" && brush.DefaultStyleLayer != null)
-            {
-                brush.DefaultStyleLayer.Sprite = sprite;
-                brush.DefaultStyleLayer.AlphaFactor = alpha;
             }
         }
 
@@ -378,6 +325,16 @@ public static class NativeUiAdapter
                 Widget w = _buttons[i];
                 if (!w.IsEnabled || !w.IsRecursivelyVisible()) continue;
                 var p = w.GlobalPosition; var s = w.Size;
+                if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
+            }
+            if (_inputSlot != null && _inputSlot.IsRecursivelyVisible())
+            {
+                var p = _inputSlot.GlobalPosition; var s = _inputSlot.Size;
+                if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
+            }
+            if (_moreMenu != null && _moreMenu.IsRecursivelyVisible())
+            {
+                var p = _moreMenu.GlobalPosition; var s = _moreMenu.Size;
                 if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
             }
             return false;
@@ -464,22 +421,22 @@ public static class NativeUiAdapter
             // Left Section: Medieval Tapestry Backdrop + Portrait + Gothic Arch Frame + Nameplate
             Widget archBg = Box(_panel, "AFDialoguePortraitBg");
             archBg.WidthSizePolicy = SizePolicy.Fixed; archBg.SuggestedWidth = 170;
-            archBg.HeightSizePolicy = SizePolicy.Fixed; archBg.SuggestedHeight = 195;
+            archBg.HeightSizePolicy = SizePolicy.Fixed; archBg.SuggestedHeight = 165;
             archBg.HorizontalAlignment = HorizontalAlignment.Left; archBg.VerticalAlignment = VerticalAlignment.Top;
-            archBg.MarginLeft = 125; archBg.MarginTop = 22;
+            archBg.MarginLeft = 125; archBg.MarginTop = 20;
             archBg.Sprite = DialogueUiSprites.Get("afdui_portrait_bg");
 
             _portrait = new ImageIdentifierWidget(Root.Context)
             {
                 Id = "AFDialoguePortrait", WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
-                SuggestedWidth = 156, SuggestedHeight = 168, HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top, MarginLeft = 132, MarginTop = 36, HideWhenNull = true, DoNotAcceptEvents = true
+                SuggestedWidth = 156, SuggestedHeight = 145, HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top, MarginLeft = 132, MarginTop = 32, HideWhenNull = true, DoNotAcceptEvents = true
             };
             _panel.AddChild(_portrait);
 
             Widget arch = Box(_panel, "AFDialogueArchFrame");
             arch.WidthSizePolicy = SizePolicy.Fixed; arch.SuggestedWidth = 190;
-            arch.HeightSizePolicy = SizePolicy.Fixed; arch.SuggestedHeight = 225;
+            arch.HeightSizePolicy = SizePolicy.Fixed; arch.SuggestedHeight = 188;
             arch.HorizontalAlignment = HorizontalAlignment.Left;
             arch.VerticalAlignment = VerticalAlignment.Top;
             arch.MarginLeft = 115; arch.MarginTop = 8;
@@ -487,9 +444,9 @@ public static class NativeUiAdapter
 
             Widget namePlate = Box(_panel, "AFDialogueNamePlate");
             namePlate.WidthSizePolicy = SizePolicy.Fixed; namePlate.SuggestedWidth = 190;
-            namePlate.HeightSizePolicy = SizePolicy.Fixed; namePlate.SuggestedHeight = 34;
+            namePlate.HeightSizePolicy = SizePolicy.Fixed; namePlate.SuggestedHeight = 32;
             namePlate.HorizontalAlignment = HorizontalAlignment.Left; namePlate.VerticalAlignment = VerticalAlignment.Bottom;
-            namePlate.MarginLeft = 115; namePlate.MarginBottom = 12;
+            namePlate.MarginLeft = 115; namePlate.MarginBottom = 40;
             namePlate.Sprite = DialogueUiSprites.Get("afdui_name_plate");
 
             // Left column: Character name & banner (positioned in-place without reparenting)
@@ -501,11 +458,11 @@ public static class NativeUiAdapter
                 nameSync.VerticalAlignment = VerticalAlignment.Bottom;
                 nameSync.MarginLeft = 115;
                 nameSync.MarginRight = 0;
-                nameSync.MarginBottom = 12;
+                nameSync.MarginBottom = 40;
                 nameSync.WidthSizePolicy = SizePolicy.Fixed;
                 nameSync.SuggestedWidth = 190;
                 nameSync.HeightSizePolicy = SizePolicy.Fixed;
-                nameSync.SuggestedHeight = 237;
+                nameSync.SuggestedHeight = 32;
                 if (nameSync is DimensionSyncWidget dimSync)
                 {
                     dimSync.DimensionToSync = DimensionSyncWidget.Dimensions.None;
@@ -516,7 +473,7 @@ public static class NativeUiAdapter
                 Remember(name.ParentWidget);
                 name.ParentWidget.HorizontalAlignment = HorizontalAlignment.Center;
                 name.ParentWidget.VerticalAlignment = VerticalAlignment.Bottom;
-                name.ParentWidget.MarginBottom = 14;
+                name.ParentWidget.MarginBottom = 2;
             }
             Remember(name);
             name.Sprite = null;
@@ -539,8 +496,8 @@ public static class NativeUiAdapter
                 banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
                 banner.SuggestedWidth = 26; banner.SuggestedHeight = 26;
                 banner.HorizontalAlignment = HorizontalAlignment.Left; banner.VerticalAlignment = VerticalAlignment.Bottom;
-                banner.MarginLeft = 122;
-                banner.MarginBottom = 16;
+                banner.MarginLeft = 120;
+                banner.MarginBottom = 44;
             }
 
             // Center & Right columns: DialogueContainer and AnswerListContainer (in-place without reparenting)
@@ -570,9 +527,22 @@ public static class NativeUiAdapter
             Remember(dialogue);
             dialogue.WidthSizePolicy = SizePolicy.StretchToParent;
             dialogue.HeightSizePolicy = SizePolicy.StretchToParent;
-            dialogue.MarginRight = 600; // Leave wide space for right writing & options area
+            dialogue.MarginRight = 35;
             dialogue.MarginLeft = dialogue.MarginTop = dialogue.MarginBottom = 0;
             dialogue.Sprite = null;
+
+            Widget dialogueBox = dialogue.ChildCount > 0 ? dialogue.GetChild(0) : null;
+            if (dialogueBox != null)
+            {
+                Remember(dialogueBox);
+                dialogueBox.WidthSizePolicy = SizePolicy.StretchToParent;
+                dialogueBox.HeightSizePolicy = SizePolicy.StretchToParent;
+                dialogueBox.HorizontalAlignment = HorizontalAlignment.Left;
+                dialogueBox.VerticalAlignment = VerticalAlignment.Top;
+                dialogueBox.SuggestedWidth = 0;
+                dialogueBox.MarginLeft = dialogueBox.MarginRight = dialogueBox.MarginTop = dialogueBox.MarginBottom = 0;
+            }
+
             foreach (Widget item in Descendants(dialogue))
             {
                 Remember(item);
@@ -588,14 +558,18 @@ public static class NativeUiAdapter
                 item.MinHeight = 0;
             }
             Widget dialogueSpeechText = dialogue.FindChild("Text", true)
-                ?? (dialogue.ChildCount > 0 && dialogue.GetChild(0).ChildCount > 0 ? dialogue.GetChild(0).GetChild(0) : null);
+                ?? (dialogueBox != null && dialogueBox.ChildCount > 0 ? dialogueBox.GetChild(0) : null);
             if (dialogueSpeechText != null)
             {
                 Remember(dialogueSpeechText);
-                dialogueSpeechText.MarginTop = 32;
-                dialogueSpeechText.MarginLeft = 12;
-                dialogueSpeechText.MarginRight = 12;
-                dialogueSpeechText.MarginBottom = 10;
+                dialogueSpeechText.WidthSizePolicy = SizePolicy.StretchToParent;
+                dialogueSpeechText.HeightSizePolicy = SizePolicy.CoverChildren;
+                dialogueSpeechText.HorizontalAlignment = HorizontalAlignment.Left;
+                dialogueSpeechText.VerticalAlignment = VerticalAlignment.Top;
+                dialogueSpeechText.MarginTop = 24;
+                dialogueSpeechText.MarginLeft = 20;
+                dialogueSpeechText.MarginRight = 20;
+                dialogueSpeechText.MarginBottom = 16;
             }
             StyleTree(dialogue, 24, true);
 
@@ -688,7 +662,18 @@ public static class NativeUiAdapter
                     if (text.Brush != null)
                     {
                         text.Brush.FontSize = fontSize;
-                        if (dark) text.Brush.FontColor = Color.FromUint(0xFF382919);
+                        if (dark)
+                        {
+                            text.Brush.FontColor = Color.FromUint(0xFF382919);
+                            foreach (var s in text.Brush.Styles)
+                            {
+                                s.FontColor = Color.FromUint(0xFF382919);
+                                if (s.DefaultLayer != null) s.DefaultLayer.Color = Color.FromUint(0xFF382919);
+                                s.TextOutlineColor = new Color(0f, 0f, 0f, 0f);
+                                s.TextOutlineAmount = 0f;
+                                s.TextGlowRadius = 0f;
+                            }
+                        }
                     }
                 }
                 else if (item is RichTextWidget rich)
@@ -697,7 +682,18 @@ public static class NativeUiAdapter
                     if (rich.Brush != null)
                     {
                         rich.Brush.FontSize = fontSize;
-                        if (dark) rich.Brush.FontColor = Color.FromUint(0xFF382919);
+                        if (dark)
+                        {
+                            rich.Brush.FontColor = Color.FromUint(0xFF382919);
+                            foreach (var s in rich.Brush.Styles)
+                            {
+                                s.FontColor = Color.FromUint(0xFF382919);
+                                if (s.DefaultLayer != null) s.DefaultLayer.Color = Color.FromUint(0xFF382919);
+                                s.TextOutlineColor = new Color(0f, 0f, 0f, 0f);
+                                s.TextOutlineAmount = 0f;
+                                s.TextGlowRadius = 0f;
+                            }
+                        }
                     }
                 }
             }
