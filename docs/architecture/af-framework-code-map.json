@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "bdf58283c1d2276388da6a4ab82040876b7c33dc",
+  "sourceRevision": "5cb7dc6e11045dbb906663994644cd0676bb6195",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1150,7 +1150,7 @@
     },
     {
       "id": "courier.history.result",
-      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
       "start": 12,
       "end": 21,
       "symbol": "private sealed class CourierPreparedHistory",
@@ -1161,7 +1161,7 @@
     },
     {
       "id": "courier.history.compat",
-      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
       "start": 36,
       "end": 46,
       "symbol": "private static CourierPreparedHistory CaptureCourierHistoryForLegacyEnvelope(",
@@ -1172,7 +1172,7 @@
     },
     {
       "id": "courier.history.scope",
-      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
       "start": 48,
       "end": 57,
       "symbol": "private bool IsCourierHistoryOwnerCurrent(",
@@ -1183,7 +1183,7 @@
     },
     {
       "id": "courier.history.prepare",
-      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
       "start": 59,
       "end": 116,
       "symbol": "private async Task<CourierPreparedHistory> PrepareCourierHistoryAsync(",
@@ -1293,7 +1293,7 @@
     },
     {
       "id": "courier.admission",
-      "path": "CourierDeliveryBehavior.PreparationAdmission.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
       "start": 20,
       "end": 44,
       "symbol": "private CourierPreparationAdmission CaptureCourierPreparationAdmission(",
@@ -1304,7 +1304,7 @@
     },
     {
       "id": "courier.persona.consumer",
-      "path": "CourierDeliveryBehavior.PreparationAdmission.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
       "start": 46,
       "end": 87,
       "symbol": "private async Task<bool> EnsureCourierPersonaContextReadyAsync(",
@@ -1315,7 +1315,7 @@
     },
     {
       "id": "courier.phase.receipt",
-      "path": "CourierDeliveryBehavior.DetachedPostprocess.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs",
       "start": 117,
       "end": 157,
       "symbol": "private async Task<T> RunCourierOwnerPhaseAsync<T>(",
@@ -1436,7 +1436,7 @@
     },
     {
       "id": "lifetime.courier.retire",
-      "path": "CourierDeliveryBehavior.CampaignLifetime.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
       "start": 19,
       "end": 31,
       "symbol": "internal void RetireCampaignRuntime(string reason)",

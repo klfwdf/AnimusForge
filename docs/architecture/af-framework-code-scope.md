@@ -288,7 +288,7 @@ Courier最终commit调度从大类迁入CourierDeliveryBehavior.CommitDispatch.c
 
 # 当前增量：Courier 双向历史捕获（2026-09-15）
 
-生产 `af754ab6`，100 点地图。`CourierDeliveryBehavior.HistoryPreparation.cs` 提供历史捕获/检索/接受和旧同步兼容；真实两向 Prepare 已接线。两个 request builder 的旧 live 历史块删除，其余人设/规则/lore/消息构造仍混合运行，不能整文件标 DONE。
+生产 `af754ab6`，100 点地图；当前文件已于 J10 归位 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs`。该 owner 提供历史捕获/检索/接受和旧同步兼容；真实两向 Prepare 已接线。两个 request builder 的旧 live 历史块删除，其余人设/规则/lore/消息构造仍混合运行，不能整文件标 DONE。
 
 [最新 HANDOFF](../handoffs/2026-09-15-courier-history-capture-handoff.md)记录核实范围、兼容消费者与性能缺口；公开 V1 仍只读，全部三渠道提交仍必交。
 
