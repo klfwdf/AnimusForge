@@ -6,6 +6,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\Refactor\Adapters\LegacyModelCatalogGateway.cs" Link="Adapters\LegacyModelCatalogGateway.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Llm\ModelCatalog\LegacyModelCatalogGateway.cs" Link="Adapters\LegacyModelCatalogGateway.cs" />
   </ItemGroup>
 </Project>
