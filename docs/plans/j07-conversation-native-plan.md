@@ -1,8 +1,8 @@
 # J07 Conversation 核心 / Native —— 实施计划与注意事项
 
 > 基线：分支 `codex/af-main-refactor-continuation-20260831`，产品源码 `70db6ec2`，测试终点 `08699b4f`，文档 `63e74e7d`。
-> 本文件是 J07 开工前的可执行计划，**不改任何源码**。总计划条目见[主台账 J07 节](../animusforge-refactoring-and-repository-reorganization-plan.md)。
-> 状态：`PLAN_READY / NOT_STARTED`。2026-09-20 复核修订：先补 J06 离线证据，再实施 J07；不是本轮开工或部署授权。
+> 本文件是 J07 可执行计划；各切片实施与验证由主台账当前节记录。总计划条目见[主台账 J07 节](../animusforge-refactoring-and-repository-reorganization-plan.md)。
+> 状态：`ACTIVE / J07a_RELOCATED`。G1/G2 补强和 J07a 已实施；下一步 J07b Native 职责拆分。见[当前回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j07a-relocation-20260920)。J07a 的限定完成不代表 J07 父包验收。
 > GitHub 指定交付分支已核对并补推至 `b9b2215b`（原远端 `2946bf3d`，3 个提交普通快进）。本地施工分支仍为 `codex/af-modularize-j04-20260918`；不要用本地分支名替代发布目标。
 > 本轮当前证据入口：[2026-09-20 推送与接续计划](../animusforge-refactoring-and-repository-reorganization-plan.md#j07-plan-review-20260920)。旧版“J06 只剩实机”的判断由该节纠正。
 
@@ -45,6 +45,8 @@ J04–J06 主要抽取检索、组合算法，同时已经调整捕获与后台�
 - G1/G2 仅允许补测试、必要的测试路径适配和证据；如暴露生产回归，单独记录旧/新行为、修复点和回归范围后再做最小修复，不顺带重写政策/宴会/GCCZ。
 
 ## 1. 现状盘点（基线源码一基行号，2026-09-20 复核）
+
+本节保留开工基线 `70db6ec2` 的定位；J07a 迁移后当前路径见上方回执，不能再次从已移除旧路径重复搬家。
 
 ### 1.1 已经成型的 owner（在 `Refactor/`，只需归位，不需重写）
 
@@ -242,7 +244,7 @@ src/modules/AF.Module.Conversation/
 
 ## 6. 交付物
 
-- 产品源码（下一实施任务）：`src/modules/AF.Module.Conversation/{Internal,Channels/Native}`；宿主保留薄游戏线程适配。建议压薄入口但不以行数替代真实职责拆分。本轮尚未创建这些 owner。
+- 产品源码（下一实施任务）：`src/modules/AF.Module.Conversation/{Internal,Channels/Native}`；宿主保留薄游戏线程适配。建议压薄入口但不以行数替代真实职责拆分。当前 Internal 已原样归位；Channels/Native 的拟议新 owner 仍待 J07b 实现。
 - 测试：`tests/modules/AF.Module.Conversation/{Lifecycle,NativeTicket,NativeStageSequence,NativeRollback}` 四套 + 各自变异。
 - 文档：主台账 J07 回执（含保留项与未闭合项）、代码地图刷新绑定、`af-framework-code-scope.md` 更新、HANDOFF 置顶。
 
@@ -255,12 +257,12 @@ src/modules/AF.Module.Conversation/
 - 使用强制异步 yield 和可控调度推进 busy、owner 替换、load、epoch 变更、presentation 重开、排队前超时、已领取后超时、抛异常、重复回执。禁止靠睡眠碰运气或只 grep 守卫字符串证明时序安全。
 - 不删除当前仍服务 Scene/同步消费者的旧入口；对被替代路径做调用搜索，记录保留原因。迁移后的旧路径引用应仅剩明确历史文档，不保留第二套活动编排。
 - 当前机器可用 SDK 为 `G:/AFMOD/.dotnet-sdk/dotnet.exe`（8.0.422），Newtonsoft 为同 SDK `sdk/8.0.422/Newtonsoft.Json.dll`；项目默认 `local/dotnet/8.0.425` 在本工作树不存在。通过 runner 已支持的 `AF_DOTNET`/`AF_NEWTONSOFT`、`--dotnet` 等显式选择，记录实际版本；不要改生产引用、全局 PATH 或为了 PASS 暗中下载 SDK。缺少配置入口时单独列出最小 runner 可移植性修复。
-- 本轮只改计划和交接，未重跑整套构建。2026-09-20 审查复跑的证据是：291 锚点两模式、共享最终请求 12 场景、Native Knowledge 8 项/4 场景、Courier liveness 59 项/16 场景 PASS；后两 harness 有 CS0649 警告，不冒称全仓零警告或完整功能验收。
+- 2026-09-20 较早的计划修订轮只改文档、未重跑整套构建；后续 J07a 的六构建与验证见当前主台账。较早审查复跑的证据是：291 锚点两模式、共享最终请求 12 场景、Native Knowledge 8 项/4 场景、Courier liveness 59 项/16 场景 PASS；后两 harness 有 CS0649 警告，不冒称全仓零警告或完整功能验收。
 
 ## 8. 交接、回滚与 J07 之后
 
-- 本轮起点 `b9b2215b` 已发布；生产源码边界仍 `70db6ec2`。后续每个完整职责切片独立提交，提交前保留其他作者更改；原样搬迁与算法/状态调整分别提交，便于 focused revert。
+- 计划修订起点 `b9b2215b` 已发布，当时产品源码为 `70db6ec2`；当前 J07a 源码已为 `fb5dc1ca`，后续仍以实际 Git/台账为准。后续每个完整职责切片独立提交，提交前保留其他作者更改；原样搬迁与算法/状态调整分别提交，便于 focused revert。
 - 无论本地分支叫什么，获准发布目标均为 `origin/codex/af-main-refactor-continuation-20260831`。每次推送前 fetch/祖先核验，分叉即停止汇报；不强推、不动 main、辅助分支不擅自删除。
-- `.dotnet-cli-home/`、`.tmp/`、构建产物、玩家数据及人工转发版不纳入提交；本轮不是恢复自动化或游戏部署授权。
+- `.dotnet-cli-home/`、`.tmp/`、构建产物、玩家数据及人工转发版不纳入提交；本计划本身不授予游戏部署权限；自动化状态按最新用户授权及 HANDOFF。
 - 后续主线依主台账：J08 LLM 传输 → J09 Actions → J10 Scene/Courier → J11 制作组薄桥 → J12/J13 主体领域 → J14 版本化三渠道 public API → J15 内容归属 → J16 工具/Bootstrap/兼容 → J17 全仓交付验收。这里只记录依赖方向，不把计划当成已实施。
 - 主体、同 DLL 制作组 internal 接口、独立子 MOD public API 三层不变；政策/宴会/GCCZ 业务规则不重写。全项目“收尾”必须单独核对行为复现、保留旧入口、API、双版本、旧存档和所需实机证据，不随 J07 局部完成自动 DONE。

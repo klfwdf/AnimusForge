@@ -1,3 +1,11 @@
+# 当前范围：J07a 原样归位已完成，Native 真拆待 J07b（2026-09-20）
+
+生产源码 `fb5dc1ca`：10 个已有生命周期 owner 原字节迁入 `src/modules/AF.Module.Conversation/Internal`（Pipeline 两实现位于其子目录）；命名空间/类型/API/存档身份不变，旧活动路径不再存在。此包不减少 Native 主类职责，不能称 Native 状态机重构完成。291 锚点地图仅调整对应路径并绑定该源码，原 hash/行号不变。
+
+G2 的非 Hero/常驻/可见队伍与最终请求补强、J07a 路径消费者/双版本/接口/存档证据、严格旧逆变换修复及下一步，以[当前主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j07a-relocation-20260920)为准；下方旧“尚未执行”的文本验证说明已被该节的具名场景结果取代，不代表实机通过。
+
+## 以下保留旧范围与历史，具体当前责任以上方台账为准
+
 # 当前范围：J06 检索收口仍 VERIFY / NOT_ACCEPTED（2026-09-19）
 
 测试增量 `49441aa1` 验证旧/新实体生产上下文 Hero 直接/称谓和当前空 capture 回退，`3aaece30` 验证 Courier 旧/新最终消息构建器的完整 request JSON（76 场景/550 检查、三项丢正文变异）。共享 `CompleteSharedPromptBuild` 同输入三类生产检索、Native 完整请求仍未执行；这两份测试不迁移任何产品 owner，也不改变公开 API 或代码地图坐标。J06 保持 `VERIFY / NOT_ACCEPTED`。

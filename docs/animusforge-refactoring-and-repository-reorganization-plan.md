@@ -1,3 +1,53 @@
+<a id="j07a-relocation-20260920"></a>
+
+## 2026-09-20：G2 实体/请求补强与 J07a 归位已落地，继续 J07b
+
+**提交与范围**：G2 测试 `059006a4`；J07a 产品路径/消费者 `fb5dc1ca756153889c0eb25a59419cafb5dfc08e`；严格历史逆变换修复 `30b90716`。本轮全部本地提交，未 push。J07a 是原样归位，不是 Native 编排已经拆薄；J07b/c/d、J08–J10 尚未完成。自动化保持 ACTIVE，截止仍为 `2026-09-20T17:48:36Z`，不能将这次输出当成暂停。
+
+### G2 已验证范围（源码仍为原 J06 实现）
+
+- `tests/modules/AF.Module.Knowledge/EntityTextDifferential/{Program.cs,WorldCases.cs,run.py}`：从两个源码版本提取实际非 Hero formatter、常驻添加、可见队伍筛选/排序、ID 投影与捕获/匹配/恢复方法，替换原空列表/throw 桩。19 场景、57 个主文/后处理/计数字段对照通过；覆盖定居点、家族、王国、混合对象、玩家/对话者常驻、主文禁王国但后处理保留、附近可见/过远可见及拒绝类别、capture-null 与 worker-null 回退。
+- 10 项变异均编译后因具名断言拒收：原 4 项，另加删除定居点/家族/王国正文、常驻后处理、捕获可见队伍和显式王国 ID。日志 `.tmp/j06-g2-20260920/mutations.json`；测试源码固定在 `059006a4`。
+- `SharedCompletionDifferential` 增加 `world_shared` 家族和 `--world-only`：同一问题、名词列表及 npc_1/Alda 身份投影用于 Lore/规则、生产派生世界实体正文、共享 completion、Native 最终消息、Courier 来信/回信请求。总计 16 场景 PASS；新非 Hero 家族单独执行 drop-lore/entity/rule 三个负向变异，两渠道完整请求均按预期变化。ID 集合和实体计数也进入共享结果，不能只验证非空字符串。
+- 仍是生产方法提取＋可控游戏替身/文本端口组合，不是完整 Bannerlord Host 或真实 provider。位置、外交/舰船外部端口为受控数据；实机耗时、实际旧档及未枚举语义变体不由这些用例覆盖。J06 父包不因测试数增长就宣称全功能完美。
+- 修复此前 `2946bf3d` 引入的 Courier production-context 测试分支未更新固定摘要：先追溯 stored hash 到 `3aaece30`，审阅新增 fixture 分支；保留全部普通断言与全源码 inverse，叠加本轮可选共同输入后仅更新 Harness 摘要。`source_review.py` 的完整逆变换与 3 项未审改动拒收通过，不是刷新产品 hash 凑 PASS。
+
+### J07a：10 个文件 100% rename，职责和身份不变
+
+命名空间、类型、可见性、方法体、接口/存档身份全部原字节不变；没有第二份活动实现。旧 `Refactor/Contracts/InteractionContracts.cs` 和领域回执仍在原位。迁移映射、逐文件 SHA-256 与前后成员集原始证据在 `.tmp/j07a-20260920/`；Git commit 显示全部 10 个 rename 为 100%。下列行号属于 `fb5dc1ca`：
+
+| 当前源码与类声明行 | 原位置 |
+| --- | --- |
+| `src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs:15` | `Refactor/Runtime/InteractionRequestCoordinator.cs` |
+| `src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs:12` | `Refactor/Runtime/InteractionRequestLease.cs` |
+| `src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs:16` | `Refactor/Runtime/DetachedInteractionHost.cs` |
+| `src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs:16` | `Refactor/Runtime/InteractionResultCommitter.cs` |
+| `src/modules/AF.Module.Conversation/Internal/InteractionCommitReceiptCache.cs:13` | `Refactor/Runtime/InteractionCommitReceiptCache.cs` |
+| `src/modules/AF.Module.Conversation/Internal/NpcPersonaGenerationOwner.cs:10` | `Refactor/Runtime/NpcPersonaGenerationOwner.cs` |
+| `src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs:9` | `Refactor/Runtime/PersonaGenerationWaiter.cs` |
+| `src/modules/AF.Module.Conversation/Internal/RuntimeConfigSnapshotStore.cs:13` | `Refactor/Runtime/RuntimeConfigSnapshotStore.cs` |
+| `src/modules/AF.Module.Conversation/Internal/Pipeline/InteractionPipeline.cs:12` | `Refactor/Contracts/InteractionPipeline.cs` |
+| `src/modules/AF.Module.Conversation/Internal/Pipeline/FullInteractionPipeline.cs:14` | `Refactor/Contracts/FullInteractionPipeline.cs` |
+
+- 同步真实项目/提取 runner/当前地图/Bridge manifest 路径。旧 pinned Git replay 仍读取旧提交的历史路径；这两个历史查找是明确保留的测试兼容，不是产品旧实现。源码 Compile 前后严格路径映射：1.3/1.4 各 **816 Compile / 7 EmbeddedResource**，无重复或遗漏；全部 10 个文件字节 SHA 不变。
+- 原构建脚本经 `.tmp/build-local.ps1` 只传本机参数，Debug/Release × 1.3/1.4/Bootstrap 六项成功，均 0 警告/0 错误。实际引用：1.3 **1.3.15.110062**，1.4 **1.4.6.115628**（`G:/AFMOD/AF-REFACTOR/.tmp/build_check/1.4`），不要误写为验证了 1.4.7。预检四个固定 bin/obj 生成目录在本工作树、无 reparse、无 tracked 文件/非构建内容；无 Stage/Deploy。首次选用 Windows PowerShell 5.1 遇脚本策略阻止后，改用本来已启用 RemoteSigned 的当前 PowerShell 7.6.5 正常调用；未设置 Bypass 或修改执行策略。
+- 生命周期 51 项、已按旧 main 编译且不重编的客户端替换运行、Pipeline 40、提交边界 69、回执 39、async owner 18、匿名提示 13 通过；DuelDispatch 16、Courier inbound completion、Notoriety 14、EconomyAware 执行契约通过。
+- 实际消费者：Hero persona 125、Channel persona 169、Courier commit outcome 34、GameLifetime commit 19、Courier postprocess 39 通过。测试替身有 CS0649 警告，与产品六构建零警告分开。
+- 实际四实现 DLL 的 API 元数据 **1060 项**、公开快照 5 个反例和 internal 不可访问编译拒收通过；Native 外部提交 41 项通过，未开放新的 Scene/Courier public 能力。PersistenceProfileConfig：142 literal keys / 168 typed bindings / 13 chunked keys / 44 flattened keys，状态/幂等与未知数据检查通过；IdentityAudit 工具自身 5 项通过，不将其当真实旧档验收。
+- `entry_inventory.py` 原来把所有含 modules 的路径当部署目录，误排新 `src/modules`；现只允许该生产前缀，嵌套 bin/obj/部署 Modules 仍排除，新反例已覆盖。顺便发现既有 Courier 6 个入口未入清单，按工具既有规则补录并将其 entryCoverage 从 COMPLETE 降为 REPRESENTATIVE、owner 保持 ASSIGNED，留待 J10 重审；11 项 inventory 测试和 Bridge binding 16/12 wired/4 declared 检查通过，不假报域完成。
+
+### G0 旧红根因及严格修复
+
+Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completion 184 PASS，Preparation 因 `Unreviewed J04 Shout target apply` 失败。`ShoutBehavior.cs` 字节 SHA 仍为 `973ac6d0ef172ce140de39b1306c93df4af07bfe63483c2aaca47e09a47c83e4`，本轮没有修改此主类。
+
+`30b90716` 在 `tools/GameLifetimeTests/source_parity.py` 增加 **bd2582aa 已提交的两行 J06 capture/publication 的精确逆变换**，以及 J05 两条已核实 Memory 路径、J07a 一条 committer 路径的严格逆映射；固定旧摘要和最终全源码相等断言保持。新增 `test_source_parity.py` 的 5 项覆盖正常全文件还原、错误 target、删除 capture、无关源码追加、runner 非路径修改拒收。五份 lifecycle 全文件 inverse 全部 PASS；CaptureEligibility 12 项 PASS；NativePreparation 重跑 **589 项 PASS**。因此初跑旧红已解决，不再把它留成环境/实机阻塞。其 5 项既有生产方法变异全部编译执行并因预期具名断言拒收，记录在 `.tmp/j07a-20260920/preparation-mutations.json`；后台 capture 变异被现有主线程守卫拒绝为无快照，对应 healthy capture result 失败，不能把它误记成发生了后台游戏读取。
+
+### 下一步 / 未覆盖
+
+- **直接进入 J07b1**：按现有计划拆 Native 准入/票据身份，随后逐个抽 484 行方法的真实阶段；每个阶段编译＋Native 五组，保持先统一后处理后权威动作的主链、早期副作用特例、票据只释放自己与 unknown 不重试。不要再次把 G1/G2 或 J07a 当未做工作重新开盘点。
+- J07a 只完成目录/消费者路径归位；Native 状态机未迁出、主类行数未减，J07 父包仍未验收。J08/J09/J10 按主台账继续；公开 Scene/Courier 提交仍归 J14，不扩大本轮开放范围。
+- 源码地图绑定 `fb5dc1ca`，291 锚点 recorded/working-tree PASS。代码与离线证据不代替真实游戏、旧存档、provider、音频或外部 MOD 实际加载。自动化 ACTIVE；未 push、Stage、部署、操作存档或其他工作树。
+
 <a id="j06-j10-automation-20260920"></a>
 
 ## 2026-09-20 自动接续：G1 专项通过，G2 待执行，目标 J10 离线验收

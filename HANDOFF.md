@@ -1,9 +1,10 @@
-# 当前接续：J06→J10 自动接续中，G1 原文专项通过，下一步 G2（2026-09-20）
+# 当前接续：G2 补强与 J07a 归位已完成，下一步 J07b Native 真拆（2026-09-20）
 
-- 用户最新授权实施到 J10；复用自动化 `af-7-8`，每 30 分钟接续，工作窗截止 `2026-09-20T17:48:36Z`（北京时间 9 月 21 日 01:48:36）。到 J10 必要离线验收通过或工作窗结束后暂停，交付技术 HANDOFF 与仅本地简明版。
-- 当前任务从 `b9a52c8f` 开始；本轮不会自动推送、部署、操作存档或恢复其他自动化。旧段落“不开始生产重构”仅属于上一轮计划任务，已由本次明确实施授权替代。
-- G1 测试提交 `9f9faea4`：8 场景/24 字段旧新实体全文对照 PASS，4 项变异按预期拒收，共享最终请求 12 场景回归 PASS。下一步 G2 非 Hero/常驻/可见队伍与共同输入请求接线，并补 G0 必要基线；J06 仍 VERIFY，J07–J10 尚未实施。不将 test-only 进展计作主体已拆分。
-- 按[修订计划](docs/plans/j07-conversation-native-plan.md)与[主台账自动接续节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06-j10-automation-20260920)继续，保护未跟踪 `.dotnet-cli-home/`。
+- 自动化 `af-7-8` 继续 ACTIVE（30 分钟接续），本轮截止北京时间 9 月 21 日 01:48:36；不因当前输出结束暂停。未 push、Stage、部署、动存档或操作其他工作树。
+- G2 测试 `059006a4`：19 场景/57 字段实体正文对照，16 组最终请求，10 项实体反例及新共同输入 3 项文本丢失反例通过；仍是受控游戏替身，不冒充实机。
+- J07a 源码 `fb5dc1ca`：10 文件 100% 原字节迁移到 Conversation/Internal，类型/命名空间/接口/存档身份不变，旧活动文件已移除。两 API 各 816 Compile/7 资源；Debug/Release × 1.3/1.4/Bootstrap 六构建通过，实际 DLL API 1060 项与旧客户端兼容通过。
+- `30b90716` 精确修复 J06/J05 变更后未更新的旧源码逆变换，不放宽全文件断言。Native 五组正常项最终全部通过（44/589/111/91/184），历史 Preparation 旧红已消除。生产主类未改；**J07a 仅归位，不等于 Native 484 行编排已拆薄，J07–J10 尚未完成**。
+- [当前详细台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j07a-relocation-20260920) / [后续计划与 25 条约束](docs/plans/j07-conversation-native-plan.md)。下一步 J07b1 准入/票据身份，再逐阶段编排；不重复已完成 G1/G2/J07a。291 锚点地图已绑定新源码。未跟踪 `.dotnet-cli-home/` 保留。
 
 ## 以下为历史交接
 
