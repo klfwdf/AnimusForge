@@ -2,12 +2,12 @@
   <Window>
     <Widget Id="AFDialogueNativeOverlay" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
-        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="265" VerticalAlignment="Bottom" MarginLeft="60" MarginRight="60" MarginBottom="18" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="270" VerticalAlignment="Bottom" MarginLeft="40" MarginRight="40" MarginBottom="16" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
           <Children>
-            <!-- Left Column Overlay (width 290) -->
-            <Widget WidthSizePolicy="Fixed" SuggestedWidth="290" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" MarginLeft="20" MarginTop="14" MarginBottom="14" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+            <!-- Left Column Overlay (width 200, MarginLeft 150) -->
+            <Widget WidthSizePolicy="Fixed" SuggestedWidth="200" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" MarginLeft="150" MarginTop="14" MarginBottom="14" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
-                <Widget Id="AFDialoguePaintSlot" WidthSizePolicy="Fixed" SuggestedWidth="110" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="4" IsVisible="false" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+                <Widget Id="AFDialoguePaintSlot" WidthSizePolicy="Fixed" SuggestedWidth="110" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="2" IsVisible="false" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
                   <Children>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="场景绘图" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
@@ -16,7 +16,7 @@
             </Widget>
 
             <!-- Center Column Toolbar -->
-            <Widget Id="AFDialogueToolbar" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginLeft="330" MarginRight="630" MarginTop="10" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+            <Widget Id="AFDialogueToolbar" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36" MarginLeft="380" MarginRight="680" MarginTop="8" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
                 <Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
                   <Children>
@@ -48,19 +48,20 @@
               </Children>
             </Widget>
 
-            <!-- Right Column -->
-            <Widget WidthSizePolicy="Fixed" SuggestedWidth="590" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="20" MarginTop="14" MarginBottom="14" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+            <!-- Right Column (width 540, MarginRight 140) -->
+            <Widget WidthSizePolicy="Fixed" SuggestedWidth="540" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="140" MarginTop="8" MarginBottom="14" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
-                <ButtonWidget Id="AFDialogueLeave" WidthSizePolicy="Fixed" SuggestedWidth="90" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Left" MarginTop="8" MarginLeft="15" Command.Click="LeaveConversation" IsEnabled="@CanLeave" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                <Widget WidthSizePolicy="Fixed" SuggestedWidth="45" HeightSizePolicy="Fixed" SuggestedHeight="110" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="35" Sprite="afdui_quill_inkpot" DoNotAcceptEvents="true" />
+                <ButtonWidget Id="AFDialogueLeave" WidthSizePolicy="Fixed" SuggestedWidth="90" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Left" MarginTop="8" MarginLeft="50" Command.Click="LeaveConversation" IsEnabled="@CanLeave" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                   <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="离开" Brush="Popup.Button.Text" Brush.FontSize="18" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                 </ButtonWidget>
-                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="140" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Right" MarginTop="8" MarginRight="15" Command.Click="SwitchTalk" IsEnabled="@IsInteractionEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="140" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Right" MarginTop="8" MarginRight="10" Command.Click="SwitchTalk" IsEnabled="@IsInteractionEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                   <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SwitchTitle" Brush="Popup.Button.Text" Brush.FontSize="18" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                 </ButtonWidget>
-                <Widget Id="AFDialogueInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="15" MarginRight="15" MarginTop="46" MarginBottom="10" IsVisible="@IsCustomAnswerVisible" Sprite="afdui_input_panel" DoNotPassEventsToChildren="false">
+                <Widget Id="AFDialogueInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="50" MarginRight="10" MarginTop="42" MarginBottom="10" IsVisible="@IsCustomAnswerVisible" Sprite="afdui_input_panel" DoNotPassEventsToChildren="false">
                   <Children>
                     <AnimusForgeNativeConversationEditableTextWidget MarginLeft="14" MarginRight="64" MarginTop="10" MarginBottom="10" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" Brush="ConversationItem.Text" Brush.FontSize="21" Brush.FontColor="#382919FF" Brush.TextVerticalAlignment="Top" RealText="@InputText" AutoFocus="true" FocusRequestId="@InputFocusVersion" MaxLength="6000" IsEnabled="@IsInputEnabled" />
-                    <ButtonWidget Id="AFDialogueSubmit" WidthSizePolicy="Fixed" SuggestedWidth="50" HeightSizePolicy="Fixed" SuggestedHeight="50" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="8" MarginBottom="8" Command.Click="ExecuteSubmit" IsEnabled="@IsInputEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                    <ButtonWidget Id="AFDialogueSubmit" WidthSizePolicy="Fixed" SuggestedWidth="52" HeightSizePolicy="Fixed" SuggestedHeight="52" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="6" MarginBottom="6" Command.Click="ExecuteSubmit" IsEnabled="@IsInputEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                       <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="发送" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#FFF4DBFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                     </ButtonWidget>
                   </Children>

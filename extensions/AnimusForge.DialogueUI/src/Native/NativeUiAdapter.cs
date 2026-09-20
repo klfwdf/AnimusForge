@@ -437,31 +437,46 @@ public static class NativeUiAdapter
         private void Build(Widget dialogue, Widget options, Widget name, Widget next)
         {
             _panel = Box(Root, "AFDialogueNativePanel");
-            _panel.HeightSizePolicy = SizePolicy.Fixed; _panel.SuggestedHeight = 265;
+            _panel.HeightSizePolicy = SizePolicy.Fixed; _panel.SuggestedHeight = 270;
             _panel.VerticalAlignment = VerticalAlignment.Bottom;
-            _panel.MarginLeft = 60; _panel.MarginRight = 60; _panel.MarginBottom = 18;
+            _panel.MarginLeft = 40; _panel.MarginRight = 40; _panel.MarginBottom = 16;
             _panel.SetSiblingIndex(0);
 
-            Widget left = Box(_panel, "AFDialogueIdentity");
-            left.WidthSizePolicy = SizePolicy.Fixed; left.SuggestedWidth = 290;
-            left.MarginLeft = 20; left.MarginTop = 14; left.MarginBottom = 14;
-            left.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
-            Widget center = Box(_panel, "AFDialogueSpeech");
-            center.MarginLeft = 330; center.MarginRight = 630; center.MarginTop = 14; center.MarginBottom = 14;
-            center.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
-            Widget right = Box(_panel, "AFDialogueOptions");
-            right.WidthSizePolicy = SizePolicy.Fixed; right.SuggestedWidth = 590;
-            right.HorizontalAlignment = HorizontalAlignment.Right;
-            right.MarginRight = 20; right.MarginTop = 14; right.MarginBottom = 14;
-            right.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
+            // Scroll Spindles & Continuous Body:
+            Widget scrollLeft = Box(_panel, "AFDialogueScrollLeft");
+            scrollLeft.WidthSizePolicy = SizePolicy.Fixed; scrollLeft.SuggestedWidth = 140;
+            scrollLeft.HeightSizePolicy = SizePolicy.StretchToParent;
+            scrollLeft.HorizontalAlignment = HorizontalAlignment.Left;
+            scrollLeft.Sprite = DialogueUiSprites.Get("afdui_scroll_left");
+
+            Widget scrollBody = Box(_panel, "AFDialogueScrollBody");
+            scrollBody.WidthSizePolicy = SizePolicy.StretchToParent;
+            scrollBody.HeightSizePolicy = SizePolicy.StretchToParent;
+            scrollBody.MarginLeft = 140; scrollBody.MarginRight = 140;
+            scrollBody.Sprite = DialogueUiSprites.Get("afdui_scroll_body");
+
+            Widget scrollRight = Box(_panel, "AFDialogueScrollRight");
+            scrollRight.WidthSizePolicy = SizePolicy.Fixed; scrollRight.SuggestedWidth = 140;
+            scrollRight.HeightSizePolicy = SizePolicy.StretchToParent;
+            scrollRight.HorizontalAlignment = HorizontalAlignment.Right;
+            scrollRight.Sprite = DialogueUiSprites.Get("afdui_scroll_right");
+
+            // Left Section: Gothic Arch Frame + Portrait
+            Widget arch = Box(_panel, "AFDialogueArchFrame");
+            arch.WidthSizePolicy = SizePolicy.Fixed; arch.SuggestedWidth = 180;
+            arch.HeightSizePolicy = SizePolicy.Fixed; arch.SuggestedHeight = 220;
+            arch.HorizontalAlignment = HorizontalAlignment.Left;
+            arch.VerticalAlignment = VerticalAlignment.Top;
+            arch.MarginLeft = 150; arch.MarginTop = 14;
+            arch.Sprite = DialogueUiSprites.Get("afdui_arch_frame");
 
             _portrait = new ImageIdentifierWidget(Root.Context)
             {
                 Id = "AFDialoguePortrait", WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
-                SuggestedWidth = 200, SuggestedHeight = 160, HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top, MarginTop = 12, HideWhenNull = true, DoNotAcceptEvents = true
+                SuggestedWidth = 136, SuggestedHeight = 148, HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top, MarginLeft = 172, MarginTop = 46, HideWhenNull = true, DoNotAcceptEvents = true
             };
-            left.AddChild(_portrait);
+            _panel.AddChild(_portrait);
 
             // Left column: Character name & banner (positioned in-place without reparenting)
             Widget nameSync = name.ParentWidget?.ParentWidget;
@@ -470,11 +485,11 @@ public static class NativeUiAdapter
                 Remember(nameSync);
                 nameSync.HorizontalAlignment = HorizontalAlignment.Left;
                 nameSync.VerticalAlignment = VerticalAlignment.Bottom;
-                nameSync.MarginLeft = 80;
+                nameSync.MarginLeft = 140;
                 nameSync.MarginRight = 0;
-                nameSync.MarginBottom = 32;
+                nameSync.MarginBottom = 20;
                 nameSync.WidthSizePolicy = SizePolicy.Fixed;
-                nameSync.SuggestedWidth = 290;
+                nameSync.SuggestedWidth = 200;
                 nameSync.HeightSizePolicy = SizePolicy.Fixed;
                 nameSync.SuggestedHeight = 237;
                 if (nameSync is DimensionSyncWidget dimSync)
@@ -487,7 +502,7 @@ public static class NativeUiAdapter
                 Remember(name.ParentWidget);
                 name.ParentWidget.HorizontalAlignment = HorizontalAlignment.Center;
                 name.ParentWidget.VerticalAlignment = VerticalAlignment.Bottom;
-                name.ParentWidget.MarginBottom = 34;
+                name.ParentWidget.MarginBottom = 22;
             }
             Remember(name);
             name.Sprite = null;
@@ -508,9 +523,9 @@ public static class NativeUiAdapter
             {
                 Remember(banner);
                 banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
-                banner.SuggestedWidth = 36; banner.SuggestedHeight = 36;
+                banner.SuggestedWidth = 32; banner.SuggestedHeight = 32;
                 banner.HorizontalAlignment = HorizontalAlignment.Center; banner.VerticalAlignment = VerticalAlignment.Bottom;
-                banner.MarginBottom = 34;
+                banner.MarginBottom = 22;
             }
 
             // Center & Right columns: DialogueContainer and AnswerListContainer (in-place without reparenting)
@@ -521,9 +536,9 @@ public static class NativeUiAdapter
                 Remember(vertical);
                 vertical.HorizontalAlignment = HorizontalAlignment.Left;
                 vertical.VerticalAlignment = VerticalAlignment.Bottom;
-                vertical.MarginLeft = 330;
-                vertical.MarginRight = 80;
-                vertical.MarginBottom = 32;
+                vertical.MarginLeft = 360;
+                vertical.MarginRight = 140;
+                vertical.MarginBottom = 20;
                 vertical.HeightSizePolicy = SizePolicy.Fixed;
                 vertical.SuggestedHeight = 237;
                 vertical.WidthSizePolicy = SizePolicy.StretchToParent;
@@ -562,23 +577,23 @@ public static class NativeUiAdapter
             if (dialogueSpeechText != null)
             {
                 Remember(dialogueSpeechText);
-                dialogueSpeechText.MarginTop = 46;
-                dialogueSpeechText.MarginLeft = 20;
-                dialogueSpeechText.MarginRight = 20;
-                dialogueSpeechText.MarginBottom = 14;
+                dialogueSpeechText.MarginTop = 42;
+                dialogueSpeechText.MarginLeft = 16;
+                dialogueSpeechText.MarginRight = 16;
+                dialogueSpeechText.MarginBottom = 10;
             }
             StyleTree(dialogue, 24, true);
 
             // Right: Options
             Remember(options);
             options.WidthSizePolicy = SizePolicy.Fixed;
-            options.SuggestedWidth = 550;
+            options.SuggestedWidth = 530;
             options.HeightSizePolicy = SizePolicy.StretchToParent;
             options.HorizontalAlignment = HorizontalAlignment.Right;
-            options.MarginTop = 46;
-            options.MarginBottom = 14;
-            options.MarginLeft = 20;
-            options.MarginRight = 20;
+            options.MarginTop = 42;
+            options.MarginBottom = 10;
+            options.MarginLeft = 16;
+            options.MarginRight = 16;
             options.Sprite = null;
 
             Remember(_answers);
@@ -595,18 +610,18 @@ public static class NativeUiAdapter
                 Remember(nextContent);
                 nextContent.HorizontalAlignment = HorizontalAlignment.Right;
                 nextContent.VerticalAlignment = VerticalAlignment.Bottom;
-                nextContent.MarginRight = 100;
-                nextContent.MarginBottom = 46;
+                nextContent.MarginRight = 140;
+                nextContent.MarginBottom = 36;
                 nextContent.WidthSizePolicy = SizePolicy.Fixed;
-                nextContent.SuggestedWidth = 550;
+                nextContent.SuggestedWidth = 530;
                 nextContent.HeightSizePolicy = SizePolicy.Fixed;
-                nextContent.SuggestedHeight = 60;
+                nextContent.SuggestedHeight = 50;
                 nextContent.Sprite = null;
             }
             StyleTree(next, 24, true);
 
             RefreshPortrait();
-            DialogueUiRuntime.Log("Mission SPConversation restyled in-place; all navigation scopes and parents retained.");
+            DialogueUiRuntime.Log("Mission SPConversation restyled in-place as scroll; all navigation scopes and parents retained.");
         }
         private void OptionAdded(Widget parent, Widget child)
         {
