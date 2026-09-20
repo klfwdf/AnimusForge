@@ -92,8 +92,8 @@ namespace AnimusForge.Illustrator.Core
         {
             Safe(() =>
             {
-                if (nativePng == null || _captureEvidenceBytes + (long)nativePng.Length > 4 * 1024 * 1024)
-                { AddEvent("panorama_native_evidence", new JObject { ["face"] = face, ["omitted"] = "4 MiB capture evidence budget" }); return; }
+                if (nativePng == null || _captureEvidenceBytes + (long)nativePng.Length > 8 * 1024 * 1024)
+                { AddEvent("panorama_native_evidence", new JObject { ["face"] = face, ["omitted"] = "8 MiB capture evidence budget" }); return; }
                 var evidence = StoreReference(nativePng, "native_face_" + face + "_before_rgb_conversion.png");
                 _captureEvidenceBytes += nativePng.Length;
                 AddEvent("panorama_native_evidence", new JObject { ["face"] = face, ["reference"] = evidence,
@@ -142,9 +142,9 @@ namespace AnimusForge.Illustrator.Core
         {
             Safe(() => AddEvent("isolated_scene_probe_image", new JObject
             {
-                ["preview"] = StoreReference(previewPng, "isolated_front_back_preview.png"),
-                ["views"] = 2, ["sentToModels"] = false,
-                ["purpose"] = "Manual private-scene front/back preview; no view renders the live mission scene."
+                ["preview"] = StoreReference(previewPng, "isolated_panorama_preview.png"),
+                ["views"] = 6, ["horizontalDegrees"] = 360, ["verticalDegrees"] = 180, ["sentToModels"] = false,
+                ["purpose"] = "Manual private-scene spherical panorama preview; no view renders the live mission scene."
             }));
         }
 

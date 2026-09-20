@@ -31,7 +31,7 @@ namespace AnimusForge.Illustrator
                 ConversationIllustrationPatch.EnsurePatched(_harmony);
 
                 Debug.Print("[AnimusForge.Illustrator] SubModule and all illustration patches loaded successfully. implementationMvid=" +
-                    typeof(SubModule).Module.ModuleVersionId + ", sceneCapture=mission-front-back-30m+map-presented, characterReferences=full-body+head-detail-no-screen-draw");
+                    typeof(SubModule).Module.ModuleVersionId + ", sceneCapture=isolated-panorama-30m+map-presented, characterReferences=full-body+head-detail-no-screen-draw");
             }
             catch (Exception ex)
             {

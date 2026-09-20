@@ -351,7 +351,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             {
                 if (_closed || _dataSource.IsLoading || source == null || source.IsMapConversation) return;
                 source.EnsureCurrent(System.Threading.CancellationToken.None);
-                _dataSource.SetLoading("正在重建附近环境并采集前后两个镜头...");
+                _dataSource.SetLoading("正在重建附近环境并采集完整全景...");
                 _scope.Run(async token =>
                 {
                     await source.EnsureCurrentAsync(token).ConfigureAwait(false);
@@ -359,7 +359,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     diagnostics?.SetSubject("isolated-scene-probe");
                     diagnostics?.RecordStage("isolated_scene_probe_start", new JObject
                     {
-                        ["views"] = 2, ["faceSize"] = 512, ["radiusMeters"] = 30,
+                        ["views"] = 6, ["faceSize"] = 512, ["radiusMeters"] = 30, ["coverage"] = "360x180",
                         ["providerRequests"] = 0, ["sceneCopy"] = true, ["sourceMissionViews"] = 0
                     });
                     var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -370,9 +370,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         // The optional presented-frame reference is not the probe preview.
                         var capture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
                         await source.EnsureCurrentAsync(token).ConfigureAwait(false);
-                        var reference = capture?.References?.FirstOrDefault(image => image?.Kind == IllustrationReferenceKind.SceneViews);
+                        var reference = capture?.References?.FirstOrDefault(image => image?.Kind == IllustrationReferenceKind.ScenePanorama);
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image))
-                            throw new InvalidOperationException("独立场景未返回完整的前后参考拼图。");
+                            throw new InvalidOperationException("独立场景未返回完整的全景参考图。");
                         byte[] imageBytes = Convert.FromBase64String(reference.Base64Image);
                         token.ThrowIfCancellationRequested();
                         if (imageBytes.Length == 0) throw new InvalidOperationException("独立场景返回了空的参考拼图。");
@@ -384,7 +384,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     {
                         diagnostics?.RecordStage("isolated_scene_probe_end", new JObject
                         {
-                            ["totalMs"] = watch.ElapsedMilliseconds, ["referenceSheet"] = captured,
+                            ["totalMs"] = watch.ElapsedMilliseconds, ["panorama"] = captured,
                             ["providerRequests"] = 0, ["sourceMissionViews"] = 0
                         });
                     }
@@ -393,14 +393,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     try
                     {
                         source.EnsureCurrent(System.Threading.CancellationToken.None);
-                        const string probeNote = "【独立场景试采预览】在独立场景中重建玩家附近约30米的静态环境，左图为前方，右图为后方；不是完整360度全景。人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。";
+                        const string probeNote = "【独立场景试采预览】从附近30米的静态副本采集前后左右上下六个90度方向，投影为360×180度全景。中央为前方，左右边缘在后方相接，顶部/底部是上方/下方。展开拉伸不是建筑变形；人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。";
                         if (imageBytes == null || imageBytes.Length == 0 || !PublishImage(null, imageBytes, probeNote))
                         {
                             SetSceneProbeFailure("未能显示导出的预览");
                             return;
                         }
-                        _dataSource.TitleText = "【独立场景 · 前后试采】";
-                        _dataSource.SetReady("前后试采完成：仅预览，未调用模型");
+                        _dataSource.TitleText = "【独立场景 · 全景试采】";
+                        _dataSource.SetReady("全景试采完成：仅预览，未调用模型");
                     }
                     catch (Exception ex) { SetSceneProbeFailure(ex.Message); }
                 }, SetSceneProbeFailure);
@@ -459,7 +459,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
-                // 按实际owner分流：Mission用附近30米双镜头，地图对话只读当前展示画面。
+                // 按实际owner分流：Mission用附近30米全景，地图对话只读当前展示画面。
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
