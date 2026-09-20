@@ -10,6 +10,9 @@ MOVED_DEPENDENCIES={
  'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
 }
 RUNNER_PATH_EDITS={
+ 'Refactor/Runtime/MemorySummaryDispatcher.cs':'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',
+ 'Refactor/Contracts/IMemorySummaryDispatchHost.cs':'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs',
+ 'Refactor/Runtime/InteractionResultCommitter.cs':'src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs',
  'Refactor/Runtime/PendingOperationRegistry.cs':'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
  'Refactor/Runtime/GameLifetimeCoordinator.cs':'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs',
  'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
@@ -97,7 +100,7 @@ def check_dependencies():
  for p,h in data['dependencies'].items():
   source=(ROOT/MOVED_DEPENDENCIES.get(p,p)).read_text(encoding='utf-8-sig')
   if p=='CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
-  if p in ('tools/GameLifetimeTests/run.py','tools/GameLifetimeTests/run_bindings.py','tools/GameLifetimeTests/run_commit.py'):
+  if p in ('tools/GameLifetimeTests/run.py','tools/GameLifetimeTests/run_bindings.py','tools/GameLifetimeTests/run_commit.py','tools/GameLifetimeTests/run_memory.py'):
    for historical,current in RUNNER_PATH_EDITS.items():
     source=source.replace(current,historical)
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
@@ -117,6 +120,12 @@ def restore(path,source):
   # J04 exact inverse: 2a191526 collapsed one six-setter publish and four six-setter clears
   # into PromptRuntimeTargetBinding apply/clear. Only these exact blocks may differ.
   j04_apply_new='\t\t\tAIConfigHandler.ApplyGuardrailRuntimeTarget(MyBehavior.CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex));\n'
+  # bd2582aa introduced this exact capture/publication pair. Qualification behavior
+  # is covered by CaptureEligibility; this inverse permits no other call-site drift.
+  j06_apply_new=('\t\t\tPromptRuntimeTargetBinding runtimeTargetBinding = MyBehavior.CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);\n'
+   '\t\t\tAIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding, MyBehavior.CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding));\n')
+  assert source.count(j06_apply_new)==1,'Unreviewed J06 Shout eligibility capture'
+  source=source.replace(j06_apply_new,j04_apply_new,1)
   j04_apply_old=('\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);\n'
    '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetHero(targetHeroId);\n'
    '\t\t\tAIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacterId);\n'
