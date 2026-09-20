@@ -4,6 +4,7 @@
 
 - Primary 15 组旧/新对照：成功、thinking 400、不可自动重试的 400/500、空回复一次补救/持续空回复、坏 JSON、网络异常、缺配置、首次/重试的 header/body 代际变化、用户确认后重试。比较最终文本、完整请求 JSON、请求次数和代际检查顺序。
 - Configured 7 组旧/新对照 + 调用方取消/超时，保留状态/正文/错误码、完整请求、Retry-After、调用方 token 所有权。坏 JSON 按真实旧协议兼容逻辑对照，不凭测试作者想象改成新错误策略。
+- Policy / WorldDiplomacy 两个领域 consumer 由源码门禁约束为各自恰好一次调用共享 attempt owner，并禁止重新持有 `HttpRequestMessage` / `ReadAsStringAsync`；领域 Prompt、兼容降级、重试和结果解析仍留原 owner。
 - 额外验证 Primary 调用方取消传播、拒收/异常时释放 response、headers 拒收不继续处理 body。
 - 复现旧 Primary 成功响应未 Dispose，验证新 owner 所有已获取 response 都被释放。该资源生命周期修复是有意差异；文本/重试策略不变。
 - 五个变异必须编译成功并命中预定失败断言；路径错误或编译失败不算红例。

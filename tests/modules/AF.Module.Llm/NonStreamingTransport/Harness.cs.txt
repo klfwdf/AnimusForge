@@ -153,6 +153,6 @@ static class Program
             Check.That(mode=="throw-headers"?ReferenceEquals(got,failure):result.Discarded,"acceptance-result-"+mode);
             Check.That(bodyChecks==(mode=="reject-body"?1:0),"acceptance-order-"+mode);
         }
-        Console.WriteLine("PASS NonStreamingTransport checks="+Check.Count+" primaryCases=15 configuredCases=9 realHttpHandler=true provider=FAKE game=NOT_RUN");
+        Console.WriteLine("PASS NonStreamingTransport checks="+Check.Count+" primaryCases=15 configuredCases=9 domainConsumers=2 realHttpHandler=true provider=FAKE game=NOT_RUN");
     }
 }
