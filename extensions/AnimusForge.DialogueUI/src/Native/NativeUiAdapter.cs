@@ -239,12 +239,14 @@ public static class NativeUiAdapter
                     _buttons.Add(button);
                     try
                     {
-                        if ((id == "AFDialogueHistory" || id == "AFDialogueGift" || id == "AFDialogueMore") && button is ButtonWidget round)
+                        if (id == "AFDialogueSubmit" && button is ButtonWidget submit)
                         {
-                            DialogueUiButtons.Style(round);
-                            StyleRoundLabel(round);
+                            StyleSubmitSeal(submit);
                         }
-                        if (id == "AFDialogueSubmit" && button is ButtonWidget submit) StyleSubmitSeal(submit);
+                        else if (button is ButtonWidget btn)
+                        {
+                            DialogueUiButtons.Style(btn, 16);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -252,7 +254,7 @@ public static class NativeUiAdapter
                     }
                 }
             }
-            // Illustrator's existing command is retained; never call an alternative generation path.
+            // Illustrator's existing command is retained; adopted into left column paint slot.
             _paintSlot = root.FindChild("AFDialoguePaintSlot", true);
             TryAdoptIllustratorButton();
         }
@@ -268,20 +270,22 @@ public static class NativeUiAdapter
             {
                 paint.ParentWidget = _paintSlot;
                 ResetBox(paint);
-                paint.WidthSizePolicy = SizePolicy.Fixed; paint.SuggestedWidth = 64;
-                paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 64;
+                paint.WidthSizePolicy = SizePolicy.Fixed; paint.SuggestedWidth = 110;
+                paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 30;
                 paint.HorizontalAlignment = HorizontalAlignment.Center;
+                paint.VerticalAlignment = VerticalAlignment.Bottom;
+                paint.MarginBottom = 4;
                 if (paint is ButtonWidget button)
                 {
-                    DialogueUiButtons.Style(button);
+                    DialogueUiButtons.Style(button, 16);
                     button.DoNotPassEventsToChildren = true;
                 }
                 foreach (Widget item in Descendants(paint))
                     if (item is TextWidget text)
                     {
                         text.Brush = text.Brush?.Clone();
-                        text.Text = "绘图";
-                        if (text.Brush != null) { text.Brush.FontSize = 18; text.Brush.FontColor = Color.FromUint(0xFFFFF4DB); text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center; }
+                        text.Text = "场景绘图";
+                        if (text.Brush != null) { text.Brush.FontSize = 16; text.Brush.FontColor = Color.FromUint(0xFF382919); text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center; }
                         text.WidthSizePolicy = SizePolicy.StretchToParent;
                         text.HeightSizePolicy = SizePolicy.StretchToParent;
                     }
@@ -428,32 +432,34 @@ public static class NativeUiAdapter
             }
         }
         private void Remember(Widget widget) { if (widget != null && _captured.Add(widget)) _changes.Add(new WidgetSnapshot(widget)); }
+        private string _displayedIllustrationKey;
+
         private void Build(Widget dialogue, Widget options, Widget name, Widget next)
         {
             _panel = Box(Root, "AFDialogueNativePanel");
-            _panel.HeightSizePolicy = SizePolicy.Fixed; _panel.SuggestedHeight = 340;
+            _panel.HeightSizePolicy = SizePolicy.Fixed; _panel.SuggestedHeight = 265;
             _panel.VerticalAlignment = VerticalAlignment.Bottom;
-            _panel.MarginLeft = 60; _panel.MarginRight = 60; _panel.MarginBottom = 24;
+            _panel.MarginLeft = 60; _panel.MarginRight = 60; _panel.MarginBottom = 18;
             _panel.SetSiblingIndex(0);
 
             Widget left = Box(_panel, "AFDialogueIdentity");
-            left.WidthSizePolicy = SizePolicy.Fixed; left.SuggestedWidth = 225;
-            left.MarginLeft = 20; left.MarginTop = 18; left.MarginBottom = 18;
+            left.WidthSizePolicy = SizePolicy.Fixed; left.SuggestedWidth = 290;
+            left.MarginLeft = 20; left.MarginTop = 14; left.MarginBottom = 14;
             left.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
             Widget center = Box(_panel, "AFDialogueSpeech");
-            center.MarginLeft = 260; center.MarginRight = 625; center.MarginTop = 18; center.MarginBottom = 18;
+            center.MarginLeft = 330; center.MarginRight = 630; center.MarginTop = 14; center.MarginBottom = 14;
             center.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
             Widget right = Box(_panel, "AFDialogueOptions");
             right.WidthSizePolicy = SizePolicy.Fixed; right.SuggestedWidth = 590;
             right.HorizontalAlignment = HorizontalAlignment.Right;
-            right.MarginRight = 20; right.MarginTop = 18; right.MarginBottom = 18;
+            right.MarginRight = 20; right.MarginTop = 14; right.MarginBottom = 14;
             right.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
 
             _portrait = new ImageIdentifierWidget(Root.Context)
             {
                 Id = "AFDialoguePortrait", WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
-                SuggestedWidth = 142, SuggestedHeight = 176, HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top, MarginTop = 16, HideWhenNull = true, DoNotAcceptEvents = true
+                SuggestedWidth = 200, SuggestedHeight = 160, HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top, MarginTop = 12, HideWhenNull = true, DoNotAcceptEvents = true
             };
             left.AddChild(_portrait);
 
@@ -466,11 +472,11 @@ public static class NativeUiAdapter
                 nameSync.VerticalAlignment = VerticalAlignment.Bottom;
                 nameSync.MarginLeft = 80;
                 nameSync.MarginRight = 0;
-                nameSync.MarginBottom = 42;
+                nameSync.MarginBottom = 32;
                 nameSync.WidthSizePolicy = SizePolicy.Fixed;
-                nameSync.SuggestedWidth = 225;
+                nameSync.SuggestedWidth = 290;
                 nameSync.HeightSizePolicy = SizePolicy.Fixed;
-                nameSync.SuggestedHeight = 304;
+                nameSync.SuggestedHeight = 237;
                 if (nameSync is DimensionSyncWidget dimSync)
                 {
                     dimSync.DimensionToSync = DimensionSyncWidget.Dimensions.None;
@@ -481,11 +487,11 @@ public static class NativeUiAdapter
                 Remember(name.ParentWidget);
                 name.ParentWidget.HorizontalAlignment = HorizontalAlignment.Center;
                 name.ParentWidget.VerticalAlignment = VerticalAlignment.Bottom;
-                name.ParentWidget.MarginBottom = 14;
+                name.ParentWidget.MarginBottom = 34;
             }
             Remember(name);
             name.Sprite = null;
-            StyleTree(name, 23, true);
+            StyleTree(name, 22, true);
             foreach (Widget item in Descendants(name))
             {
                 Remember(item);
@@ -502,9 +508,9 @@ public static class NativeUiAdapter
             {
                 Remember(banner);
                 banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
-                banner.SuggestedWidth = 46; banner.SuggestedHeight = 46;
+                banner.SuggestedWidth = 36; banner.SuggestedHeight = 36;
                 banner.HorizontalAlignment = HorizontalAlignment.Center; banner.VerticalAlignment = VerticalAlignment.Bottom;
-                banner.MarginBottom = 4;
+                banner.MarginBottom = 34;
             }
 
             // Center & Right columns: DialogueContainer and AnswerListContainer (in-place without reparenting)
@@ -515,11 +521,11 @@ public static class NativeUiAdapter
                 Remember(vertical);
                 vertical.HorizontalAlignment = HorizontalAlignment.Left;
                 vertical.VerticalAlignment = VerticalAlignment.Bottom;
-                vertical.MarginLeft = 320;
+                vertical.MarginLeft = 330;
                 vertical.MarginRight = 80;
-                vertical.MarginBottom = 42;
+                vertical.MarginBottom = 32;
                 vertical.HeightSizePolicy = SizePolicy.Fixed;
-                vertical.SuggestedHeight = 304;
+                vertical.SuggestedHeight = 237;
                 vertical.WidthSizePolicy = SizePolicy.StretchToParent;
             }
             if (bottomPanels != null)
@@ -556,12 +562,12 @@ public static class NativeUiAdapter
             if (dialogueSpeechText != null)
             {
                 Remember(dialogueSpeechText);
-                dialogueSpeechText.MarginTop = 112;
-                dialogueSpeechText.MarginLeft = 22;
-                dialogueSpeechText.MarginRight = 22;
-                dialogueSpeechText.MarginBottom = 20;
+                dialogueSpeechText.MarginTop = 46;
+                dialogueSpeechText.MarginLeft = 20;
+                dialogueSpeechText.MarginRight = 20;
+                dialogueSpeechText.MarginBottom = 14;
             }
-            StyleTree(dialogue, 25, true);
+            StyleTree(dialogue, 24, true);
 
             // Right: Options
             Remember(options);
@@ -569,8 +575,8 @@ public static class NativeUiAdapter
             options.SuggestedWidth = 550;
             options.HeightSizePolicy = SizePolicy.StretchToParent;
             options.HorizontalAlignment = HorizontalAlignment.Right;
-            options.MarginTop = 64;
-            options.MarginBottom = 20;
+            options.MarginTop = 46;
+            options.MarginBottom = 14;
             options.MarginLeft = 20;
             options.MarginRight = 20;
             options.Sprite = null;
@@ -590,14 +596,14 @@ public static class NativeUiAdapter
                 nextContent.HorizontalAlignment = HorizontalAlignment.Right;
                 nextContent.VerticalAlignment = VerticalAlignment.Bottom;
                 nextContent.MarginRight = 100;
-                nextContent.MarginBottom = 62;
+                nextContent.MarginBottom = 46;
                 nextContent.WidthSizePolicy = SizePolicy.Fixed;
                 nextContent.SuggestedWidth = 550;
                 nextContent.HeightSizePolicy = SizePolicy.Fixed;
-                nextContent.SuggestedHeight = 80;
+                nextContent.SuggestedHeight = 60;
                 nextContent.Sprite = null;
             }
-            StyleTree(next, 26, true);
+            StyleTree(next, 24, true);
 
             RefreshPortrait();
             DialogueUiRuntime.Log("Mission SPConversation restyled in-place; all navigation scopes and parents retained.");
@@ -666,6 +672,49 @@ public static class NativeUiAdapter
                 }
             }
         }
+
+        private static byte[] TryGetIllustrationBytes(string characterId)
+        {
+            if (string.IsNullOrEmpty(characterId)) return null;
+            string key = "Conv_" + characterId;
+            string campaignKey = Campaign.Current?.UniqueGameId ?? "default";
+            try
+            {
+                Type cacheType = Type.GetType("AnimusForge.Illustrator.Engine.DiskImageCacheManager, AnimusForge.Illustrator");
+                if (cacheType != null)
+                {
+                    var method = cacheType.GetMethod("LoadImage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null, new[] { typeof(string), typeof(string), typeof(string) }, null);
+                    if (method != null)
+                    {
+                        object item = method.Invoke(null, new object[] { key, campaignKey, "conversation" });
+                        if (item != null)
+                        {
+                            var prop = item.GetType().GetProperty("ImageData");
+                            byte[] data = prop?.GetValue(item) as byte[];
+                            if (data != null && data.Length > 0) return data;
+                        }
+                    }
+                }
+            }
+            catch { }
+            try
+            {
+                string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                string dir = System.IO.Path.Combine(docs, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
+                if (System.IO.Directory.Exists(dir))
+                {
+                    var files = System.IO.Directory.GetFiles(dir, key + "_*.png", System.IO.SearchOption.AllDirectories);
+                    if (files.Length > 0)
+                    {
+                        Array.Sort(files, (a, b) => System.IO.File.GetLastWriteTimeUtc(b).CompareTo(System.IO.File.GetLastWriteTimeUtc(a)));
+                        return System.IO.File.ReadAllBytes(files[0]);
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
         internal void RefreshPortrait()
         {
             if (_portrait == null) return;
@@ -673,9 +722,41 @@ public static class NativeUiAdapter
             Agent speaker = conversation?.SpeakerAgent as Agent;
             CharacterObject character = conversation?.SpeakerAgent?.Character as CharacterObject
                 ?? conversation?.OneToOneConversationCharacter;
-            if (ReferenceEquals(character, _character) && ReferenceEquals(speaker, _speakerAgent)) return;
+            string characterId = character?.StringId ?? speaker?.Character?.StringId;
+
+            // Check if an AI illustration exists or was just generated
+            byte[] illuBytes = TryGetIllustrationBytes(characterId);
+            if (illuBytes != null && illuBytes.Length > 0)
+            {
+                string spriteName = "AFConvIllu_" + characterId;
+                if (!ReferenceEquals(character, _character) || _displayedIllustrationKey != characterId || _portrait.Sprite == null)
+                {
+                    _character = character;
+                    _speakerAgent = speaker;
+                    _displayedIllustrationKey = characterId;
+                    _portraitVm?.OnFinalize(); _portraitVm = null;
+                    try { _portrait.OnClearTextureProvider(); } catch { }
+                    _portrait.ImageId = string.Empty;
+                    var sprite = DialogueUiSprites.RegisterDynamicPng(spriteName, illuBytes);
+                    if (sprite != null)
+                    {
+                        _portrait.TextureProviderName = string.Empty;
+                        _portrait.Sprite = sprite;
+                        DialogueUiRuntime.Log("AI illustration replaced portrait for " + characterId);
+                        return;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            if (ReferenceEquals(character, _character) && ReferenceEquals(speaker, _speakerAgent) && _displayedIllustrationKey == null) return;
             _character = character;
             _speakerAgent = speaker;
+            _displayedIllustrationKey = null;
+            _portrait.Sprite = null;
             _portraitVm?.OnFinalize(); _portraitVm = null;
             _portrait.ImageId = string.Empty;
             if (character == null) return;

@@ -47,7 +47,10 @@ namespace AnimusForge.DialogueUI
                         int width = texture.Width > 0 ? texture.Width : (pngWidth > 0 ? pngWidth : 512);
                         int height = texture.Height > 0 ? texture.Height : (pngHeight > 0 ? pngHeight : 512);
 
-                        int border = name == "afdui_parchment_panel" ? 40 : name == "afdui_input_panel" ? 16 : 0;
+                        int border = name == "afdui_parchment_panel" ? 72
+                                   : name == "afdui_input_panel" ? 32
+                                   : (name == "afdui_button_normal" || name == "afdui_button_hover" || name == "afdui_button_pressed") ? 40
+                                   : 0;
                         var nine = border == 0 ? SpriteNinePatchParameters.Empty : new SpriteNinePatchParameters(border, border, border, border);
                         sprite = new RuntimeSprite(name, texture, width, height, nine);
                         Sprites.Add(name, sprite);
@@ -128,6 +131,35 @@ namespace AnimusForge.DialogueUI
         internal static Sprite Get(string name)
         {
             return Sprites.TryGetValue(name, out RuntimeSprite sprite) ? sprite : null;
+        }
+
+        internal static Sprite RegisterDynamicPng(string name, byte[] pngBytes)
+        {
+            if (pngBytes == null || pngBytes.Length == 0 || UIResourceManager.SpriteData == null) return null;
+            try
+            {
+                if (Sprites.TryGetValue(name, out RuntimeSprite existing))
+                {
+                    existing.Dispose();
+                    Sprites.Remove(name);
+                }
+                var texture = EngineTextureType.CreateFromMemory(pngBytes);
+                if (texture == null) return null;
+                texture.Name = name;
+                texture.SetTextureAsAlwaysValid();
+                texture.PreloadTexture(true);
+                int w = texture.Width > 0 ? texture.Width : 512;
+                int h = texture.Height > 0 ? texture.Height : 512;
+                var sprite = new RuntimeSprite(name, texture, w, h, SpriteNinePatchParameters.Empty);
+                Sprites[name] = sprite;
+                UIResourceManager.SpriteData.Sprites[name] = sprite;
+                return sprite;
+            }
+            catch (Exception ex)
+            {
+                DialogueUiRuntime.Log("Failed to register dynamic PNG sprite: " + ex.Message);
+                return null;
+            }
         }
 
         internal static void Shutdown()
