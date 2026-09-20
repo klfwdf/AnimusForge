@@ -1,12 +1,23 @@
 <a id="j06-j10-automation-20260920"></a>
 
-## 2026-09-20 自动接续：G1 ACTIVE，目标 J10 离线验收
+## 2026-09-20 自动接续：G1 专项通过，G2 待执行，目标 J10 离线验收
 
 - 用户授权本地实施到 J10，并要求自动接续；已更新既有 `af-7-8`（30 分钟，ACTIVE），工作窗 `2026-09-20T11:48:36Z` 至 `2026-09-20T17:48:36Z`。到期或达到 J10 必要离线门槛后暂停并写两份交接；不是承诺六小时内全功能完美。
 - 起点 `b9a52c8f` 与指定远端一致；唯一施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，本地 `codex/af-modularize-j04-20260918`。只有原未跟踪 `.dotnet-cli-home/`，没有同 owner 的外来 tracked 改动。单代理工作，禁自动 push/部署/Stage/打包/存档/其他工作树写入；Claude 同文件并发或远端分叉时暂停相关写入。
 - 本切片意图：只改 `tests/modules/AF.Module.Knowledge/EntityTextDifferential/{Program.cs,run.py}`，统一 capture/worker/complete 的原文，补原文独立命中、王国限定、同称谓多国、长短称谓遮蔽和 worker 原文分支删除变异。旧侧仍从 `77a3d234` 提取真实方法，新側读取当前源码；保持其他行为断言，保留供共享最终请求 runner 使用的导出字段。
 - 完成条件：正常原/新正文、ID/计数、顺序对照通过；仅新侧删除 raw 分支能编译并在对应具名案例失败，原有 3 项变异仍拒收；共享 12 场景请求回归不破坏。产品源码本轮不动。G2 非 Hero/常驻/可见队伍仍独立未完成，G0 全量基线审查不因 Git 已同步而算通过。
 - 续作及结果补在本节；J07–J10 未开始，详细顺序沿现有 J07 计划和本台账 J08–J10 总计划。代码地图/源码未变时复用绑定证据，记录本次实际 runner，不无限重复全构建。
+
+### G1 结果（测试源码 `9f9faea44878eac598ac2806638e7889c11f7f33`）
+
+- 修改 `tests/modules/AF.Module.Knowledge/EntityTextDifferential/Program.cs:119-265`：旧 direct/title 统一共同 input 进入 capture、worker、complete；新增 `RenderRaw` 六场景（raw_only、raw_qualified、raw_ambiguous、raw_long_title、raw_distinct_titles、raw_overrides_mentions），用两国 King 与一国 High King 验证身份/计数、非空文本、候选覆盖和长短称谓遮蔽。旧生产同步与新 detached 及同步回退正文/后处理/计数/显式王国集合逐字段比较，原导出字段保留。
+- 修改同目录 `run.py:15,148-151,171-178`：增加仅新侧生产 worker 的 `skip-worker-raw` 变异；完整导出必须有 8 场景 × 3 字段，逐键对照而非只比较数量。
+- **先确认漏检，再补覆盖**：只增加该变异、还未扩展 fixture 时，删除新侧 worker raw 分支依旧 PASS（exit 0），证实旧测试盲区；补用例后它编译执行并在 `raw-title coverage failed scenario=raw_only` 失败。没有修改生产实现或放宽旧断言。
+- 正常 `python -B tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py`：8 场景、24 字段 PASS；原 `drop-hero-main`、`drop-hero-post`、`drop-capture-fallback` 和新增 `skip-worker-raw` 四项均 exit 非零且命中预期业务断言，没有以 CS/NU 编译或依赖错误计作拒收。
+- `python -B tests/modules/AF.Module.Prompt/SharedCompletionDifferential/run.py`：12 场景 PASS，旧/新共享完成体与 Native/Courier 最终请求兼容；本次没有重跑该套的三项变异，不冒称扩大了其中非 Hero/真实 Host 覆盖。
+- 环境显式指定 `AF_DOTNET=G:/AFMOD/.dotnet-sdk/dotnet.exe`（8.0.422）、`AF_NEWTONSOFT=G:/AFMOD/.dotnet-sdk/sdk/8.0.422/Newtonsoft.Json.dll`，禁写 Python bytecode。本地日志 `.tmp/j06-g1-20260920/{mutation-results.json,*.log}` 不上传；Python AST、diff --check、冲突标记检查通过。产品源码/公开 API/存档/主类行尾未改，因此未执行产品双版本构建。
+- 下一步 **G2**：扩大实际非 Hero 和常驻/可见队伍方法覆盖、共同输入的请求级接线；目前测试的中性 Hero/假游戏字段不证明真实游戏帧性能或全部实体等价。G0 仍要按 J07 实际改动核实必要五组/API/存档基线。自动化继续 ACTIVE，不暂停、不推送；回滚仅针对 `9f9faea4` 的测试差异，禁止回退生产版本。
+
 
 <a id="j07-plan-review-20260920"></a>
 
