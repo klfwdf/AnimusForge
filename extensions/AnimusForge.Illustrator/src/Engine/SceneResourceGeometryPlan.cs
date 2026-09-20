@@ -16,9 +16,11 @@ namespace AnimusForge.Illustrator.Engine
     internal sealed class SceneResourceGeometryPlan
     {
         internal const int MaximumFileBytes = 8 * 1024 * 1024;
-        internal const int MaximumXmlElements = 32768;
+        // File work, live DOM memory and compact geometry plans are different budgets.
+        internal const int MaximumXmlElements = 524288;
+        internal const int MaximumSubtreeElements = 32768;
         internal const int MaximumDepth = 64;
-        internal const int MaximumEntries = 4096;
+        internal const int MaximumEntries = 32768;
         private const int MaximumSamples = 24;
         private const int MaximumAssetNameLength = 512;
         private static readonly object CacheLock = new object();
@@ -55,6 +57,7 @@ namespace AnimusForge.Illustrator.Engine
         internal IReadOnlyList<Entry> Entries { get; }
         internal int InspectedNodes { get; }
         internal int XmlElementCount { get; }
+        internal int PeakSubtreeElements { get; }
         internal int SkippedByLevel { get; }
         internal int SkippedUnsupported { get; }
         internal int SkippedInvisible { get; }
@@ -69,8 +72,9 @@ namespace AnimusForge.Illustrator.Engine
             ActiveMask = activeMask;
             ImplicitBaseMask = reader.BaseMask;
             Entries = new ReadOnlyCollection<Entry>(reader.Entries.ToArray());
-            InspectedNodes = reader.EntityIds.Count;
+            InspectedNodes = reader.EntityCount;
             XmlElementCount = reader.ElementCount;
+            PeakSubtreeElements = reader.PeakSubtreeElements;
             SkippedByLevel = reader.SkippedByLevel;
             SkippedUnsupported = reader.SkippedUnsupported;
             SkippedInvisible = reader.SkippedInvisible;
@@ -136,6 +140,8 @@ namespace AnimusForge.Illustrator.Engine
             internal readonly Dictionary<string, int> Reasons = new Dictionary<string, int>(StringComparer.Ordinal);
             internal readonly List<string> Samples = new List<string>();
             internal int ElementCount;
+            internal int EntityCount;
+            internal int PeakSubtreeElements;
             internal int SkippedByLevel;
             internal int SkippedUnsupported;
             internal int SkippedInvisible;
@@ -157,53 +163,113 @@ namespace AnimusForge.Illustrator.Engine
                     MaxCharactersInDocument = MaximumFileBytes,
                     CloseInput = false
                 };
-                var document = new XmlDocument { XmlResolver = null };
-                XmlElement current = null;
+                // First pass stores only the global level definitions. They may occur
+                // after entities in third-party files; never assume XML section order.
+                bool sawScene = false, sawEntities = false, sawLevels = false;
                 using (XmlReader xml = XmlReader.Create(stream, settings))
                 {
-                    // Build a bounded tree explicitly so depth and element budgets are checked
-                    // before allocating descendants, not after XmlDocument.Load completes.
-                    while (xml.Read())
+                    while (ReadNext(xml))
                     {
-                        _token.ThrowIfCancellationRequested();
-                        if (xml.Depth > MaximumDepth) throw new InvalidDataException("场景XML层级超过64层预算。");
-                        if (xml.NodeType == XmlNodeType.Element)
+                        if (xml.NodeType != XmlNodeType.Element) continue;
+                        if (xml.Depth == 0)
                         {
-                            if (++ElementCount > MaximumXmlElements)
-                                throw new InvalidDataException("场景XML节点超过32768个读取预算。");
-                            if (!string.IsNullOrEmpty(xml.NamespaceURI))
-                                throw new InvalidDataException("场景XML使用了不支持的命名空间。");
-                            var element = document.CreateElement(xml.Name);
-                            if (xml.HasAttributes)
-                            {
-                                while (xml.MoveToNextAttribute()) element.SetAttribute(xml.Name, xml.Value);
-                                xml.MoveToElement();
-                            }
-                            if (current == null) document.AppendChild(element);
-                            else current.AppendChild(element);
-                            if (element.Name == "game_entity")
-                                EntityIds.Add(element, "xml:" + ElementCount.ToString(CultureInfo.InvariantCulture));
-                            if (!xml.IsEmptyElement) current = element;
+                            if (xml.Name != "scene") throw new InvalidDataException("当前资源不是有效的scene XML。");
+                            sawScene = true;
                         }
-                        else if (xml.NodeType == XmlNodeType.EndElement) current = current?.ParentNode as XmlElement;
-                        else if (xml.NodeType == XmlNodeType.Text || xml.NodeType == XmlNodeType.CDATA)
+                        if (xml.Depth == 1 && xml.Name == "entities")
                         {
-                            if (current != null) current.AppendChild(document.CreateTextNode(xml.Value));
+                            if (sawEntities) throw new InvalidDataException("场景资源包含重复的entities节点。");
+                            sawEntities = true;
+                        }
+                        if (xml.Depth == 1 && xml.Name == "levels")
+                        {
+                            if (sawLevels) throw new InvalidDataException("场景资源包含重复的levels节点。");
+                            sawLevels = true;
+                            XmlElement levels = ReadSubtree(xml);
+                            var root = levels.OwnerDocument.CreateElement("scene");
+                            levels.OwnerDocument.RemoveChild(levels);
+                            root.AppendChild(levels);
+                            ReadLevels(root);
+                            EntityIds.Clear();
                         }
                     }
                 }
-                XmlElement root = document.DocumentElement;
-                if (root == null || root.Name != "scene") throw new InvalidDataException("当前资源不是有效的scene XML。");
-                ReadLevels(root);
-                XmlElement entities = SingleChild(root, "entities");
-                if (entities == null) throw new InvalidDataException("当前场景资源缺少entities节点。");
-                foreach (XmlNode child in entities.ChildNodes)
+                if (!sawScene || !sawEntities) throw new InvalidDataException("当前场景资源缺少scene或entities节点。");
+
+                // Rewind this same read-locked file. Each root subtree is validated by
+                // the existing hierarchy/override rules, then released immediately.
+                // No whole-scene XmlDocument or dictionary of all XmlElements survives.
+                stream.Position = 0;
+                ElementCount = 0;
+                EntityCount = 0;
+                bool inEntities = false;
+                using (XmlReader xml = XmlReader.Create(stream, settings))
                 {
-                    _token.ThrowIfCancellationRequested();
-                    if (child is XmlElement entity && entity.Name == "game_entity")
+                    while (ReadNext(xml))
+                    {
+                        if (xml.Depth == 1 && xml.Name == "entities")
+                            inEntities = xml.NodeType == XmlNodeType.Element && !xml.IsEmptyElement;
+                        if (!inEntities || xml.Depth != 2 || xml.NodeType != XmlNodeType.Element) continue;
+                        if (xml.Name != "game_entity")
+                        { Unsupported("entities", string.Empty, "unsupported_root_entity_node"); continue; }
+                        XmlElement entity = ReadSubtree(xml);
                         Visit(entity, MatrixFrame.Identity, uint.MaxValue, false, string.Empty);
-                    else if (child is XmlElement) Unsupported("entities", string.Empty, "unsupported_root_entity_node");
+                        EntityIds.Clear();
+                    }
                 }
+            }
+
+            private bool ReadNext(XmlReader xml)
+            {
+                _token.ThrowIfCancellationRequested();
+                if (!xml.Read()) return false;
+                if (xml.Depth > MaximumDepth) throw new InvalidDataException("场景XML层级超过64层预算。");
+                if (xml.NodeType == XmlNodeType.Element)
+                {
+                    if (++ElementCount > MaximumXmlElements)
+                        throw new InvalidDataException("场景XML流式扫描超过524288个元素预算。");
+                    if (!string.IsNullOrEmpty(xml.NamespaceURI))
+                        throw new InvalidDataException("场景XML使用了不支持的命名空间。");
+                    if (xml.Name == "game_entity") EntityCount++;
+                }
+                return true;
+            }
+
+            // Leaves xml on the subtree's end element (or its empty start element).
+            private XmlElement ReadSubtree(XmlReader xml)
+            {
+                int startDepth = xml.Depth, elements = 0;
+                var document = new XmlDocument { XmlResolver = null };
+                XmlElement current = null;
+                do
+                {
+                    if (xml.NodeType == XmlNodeType.Element)
+                    {
+                        if (++elements > MaximumSubtreeElements)
+                            throw new InvalidDataException("单个场景实体子树超过32768个元素内存预算。");
+                        PeakSubtreeElements = Math.Max(PeakSubtreeElements, elements);
+                        var element = document.CreateElement(xml.Name);
+                        if (xml.HasAttributes)
+                        {
+                            while (xml.MoveToNextAttribute()) element.SetAttribute(xml.Name, xml.Value);
+                            xml.MoveToElement();
+                        }
+                        if (current == null) document.AppendChild(element);
+                        else current.AppendChild(element);
+                        if (element.Name == "game_entity")
+                            EntityIds.Add(element, "xml:" + ElementCount.ToString(CultureInfo.InvariantCulture));
+                        if (!xml.IsEmptyElement) current = element;
+                        else if (xml.Depth == startDepth) return document.DocumentElement;
+                    }
+                    else if (xml.NodeType == XmlNodeType.EndElement)
+                    {
+                        if (xml.Depth == startDepth) return document.DocumentElement;
+                        current = current?.ParentNode as XmlElement;
+                    }
+                    else if (xml.NodeType == XmlNodeType.Text || xml.NodeType == XmlNodeType.CDATA)
+                        current?.AppendChild(document.CreateTextNode(xml.Value));
+                } while (ReadNext(xml));
+                throw new InvalidDataException("场景实体子树意外结束。");
             }
 
             private void ReadLevels(XmlElement root)
@@ -371,7 +437,7 @@ namespace AnimusForge.Illustrator.Engine
 
             private void Add(Entry entry)
             {
-                if (Entries.Count >= MaximumEntries) throw new InvalidDataException("场景静态几何候选超过4096项预算。");
+                if (Entries.Count >= MaximumEntries) throw new InvalidDataException("场景静态几何计划超过32768项预算。");
                 Entries.Add(entry);
             }
 
