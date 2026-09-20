@@ -36,6 +36,7 @@ Skill version: `0.2.0`
 | 目录整理、资源归属、数据或产物清理 | [仓库结构](references/repository-structure.md) |
 | TaleWorlds / Harmony / 双版本 / Bootstrap | [兼容性](references/bannerlord-compatibility.md) |
 | 信使、自由对话、喊话、Prompt、标签 | [交互链路](references/interaction-pipeline.md) |
+| LLM HTTP、SSE、取消/超时、模型目录、TTS 传输 | [LLM 传输边界](references/llm-transport.md) |
 | 存档、玩家数据、配置持久化 | [持久化](references/persistence-and-user-data.md) |
 | Tick、异步、线程、生命周期、诊断 | [运行安全](references/runtime-safety.md) |
 | 测试与验收 | [风险与证据](references/validation.md) |
