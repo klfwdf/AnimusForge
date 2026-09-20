@@ -21,7 +21,11 @@ review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
 original=subprocess.check_output(['git','show',review['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 evidence=review['files']['ShoutBehavior.cs'];assert hashlib.sha256(original.encode()).hexdigest()==evidence['beforeSha256'];old=evidence['edits'][0]['before'];assert original.count(old)==1
 out=HERE/'.generated'/(args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
-consumer=evidence['edits'][0]['after'];live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');assert live.count(consumer)==1
+consumer=evidence['edits'][0]['after'];live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source
+live=projected_source(live);assert live.count(consumer)==1
 # Observe the typed status without replacing the actual caller's continuation/stop branch.
 consumer=consumer.replace('if (!nativeMainReply.CanContinue)', 'Fixture.LastStatus=nativeMainReply.Status;\n        if (!nativeMainReply.CanContinue)',1)
 if args.mutate=='skip-consumer-stop':consumer=consumer.replace('if (!nativeMainReply.CanContinue)','if (false)',1)

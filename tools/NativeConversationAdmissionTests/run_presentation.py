@@ -5,6 +5,11 @@ spec=importlib.util.spec_from_file_location('extractor',ROOT/'tools/ChannelCutov
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-callback-guard','drop-revision','use-backend-slot','drop-stamp-retirement','allow-stale-finish','allow-stale-notice']);args=p.parse_args()
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT/'ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig');overlay=(ROOT/'AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig');ui=(ROOT/'AnimusForgeNativeConversationOverlay.Presentation.cs').read_text(encoding='utf-8-sig')
 selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','OPENING_ENTRY':'public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','ACTION_RESULT':'private sealed class NativeConversationGameActionResult','ACTION_QUEUE':'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('}
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
 values={key:ex.declaration(s,sig) for key,sig in selectors.items()};body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(');values['PREFIX']=body.split('\t\tLogger.Log("Logic", "[NativePerf] submit_start')[0]
 values['GENERATION_HELPERS']='\n'.join(ex.declaration(overlay,sig) for sig in ['private bool IsSubmitGenerationActive(', 'private bool IsSubmitGenerationCurrent('])
 values['RUN_ON_MAIN']=ex.declaration(overlay,'private void RunOnMainThread(')

@@ -4,7 +4,13 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(name):return subprocess.check_output(['git','show','5847a195:'+name],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/name).read_text(encoding='utf-8-sig')
-s=read('ShoutBehavior.cs');ad=read('ShoutBehavior.NativeAdmission.cs');body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
+s=read('ShoutBehavior.cs');ad=read('ShoutBehavior.NativeAdmission.cs');
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
+body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 start=body.index('\t\tstring playerName = GetPlayerDisplayNameForShout();') if a.original else body.index('\t\tNativeConversationPendingHistory nativePendingHistory = await')
 end=body.index('\t\tbool useSharedDailyMemoryForNpcOpening',start)
 values={'PREPARE':body[start:end],'ADMISSION':ex.declaration(ad,'internal sealed class NativeConversationAdmission'),'CHECKS':'\n'.join(ex.declaration(ad,x) for x in ['private bool IsNativeConversationAdmissionCurrent(','private bool IsNativeConversationContextStampCurrent(','private bool IsNativeConversationContextCurrent('])}

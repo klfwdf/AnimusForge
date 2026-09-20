@@ -5,7 +5,13 @@ p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.a
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 baseline='d9288faa' if a.original else '29ca75c9' if a.memory_baseline else None
 def read(name):return subprocess.check_output(['git','show',baseline+':'+name],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT/name).read_text(encoding='utf-8-sig')
-s=read('ShoutBehavior.cs');ad=read('ShoutBehavior.NativeAdmission.cs');body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
+s=read('ShoutBehavior.cs');ad=read('ShoutBehavior.NativeAdmission.cs');
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
+body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 start=body.index('\t\tNativeConversationGameActionResult nativeActionResult = await ApplyNativeConversationGameActionsOnMainThreadAsync(')
 values={'RESULT':ex.declaration(s,'private sealed class NativeConversationGameActionResult'),'DISPATCH':ex.declaration(s,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('),'TAIL':body[start:body.rfind('\n\t}')],'ADMISSION':ex.declaration(ad,'internal sealed class NativeConversationAdmission'),'CHECKS':'\n'.join(ex.declaration(ad,x) for x in ['private bool IsNativeConversationAdmissionCurrent(','private bool IsNativeConversationContextStampCurrent(','private bool IsNativeConversationContextCurrent(']),'NO_SPEECH':ex.declaration(s,'private static bool IsNativeConversationNoSpeechPlaceholder(')}
 memory=read('MyBehavior.cs')

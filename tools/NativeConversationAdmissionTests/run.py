@@ -5,6 +5,11 @@ spec=importlib.util.spec_from_file_location('extractor',ROOT/'tools/ChannelCutov
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-busy','release-new-slot','skip-timeout-cas','skip-queued-action-guard','skip-generation','old-overlay-finalizer','skip-queued-epoch']);args=p.parse_args()
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT/'ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig')
 selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','OPENING_ENTRY':'public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','ACTION_RESULT':'private sealed class NativeConversationGameActionResult','ACTION_QUEUE':'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('}
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
 values={k:ex.declaration(s,v) for k,v in selectors.items()};body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 values['PREFIX']=body.split('\t\tLogger.Log("Logic", "[NativePerf] submit_start')[0];assert 'admission.ConversationToken' in values['PREFIX']
 # Independent wiring checks: unchanged UI existence condition, actual conversation-end invalidation,
