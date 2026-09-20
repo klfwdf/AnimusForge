@@ -225,6 +225,7 @@ namespace AnimusForge.Illustrator.Engine
         internal static void CancelIsolatedPanorama()
         {
             IllustratorRuntime.AssertMainThread();
+            PanoramaBatchPump.CancelActive();
             try { _activeIsolatedPanorama?.Restore(); }
             finally { _activeIsolatedPanorama = null; _activePanoramaFrameStats = null; _pendingPanoramaSnapshot?.DisposeUnrendered(); _pendingPanoramaSnapshot = null; }
         }

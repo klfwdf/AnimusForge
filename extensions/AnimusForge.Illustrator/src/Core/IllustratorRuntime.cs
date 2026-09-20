@@ -175,6 +175,9 @@ namespace AnimusForge.Illustrator.Core
                 try { action(); }
                 catch (Exception ex) { Debug.Print("[Illustrator] Main-thread completion failed: " + ex.GetType().Name); }
             }
+            // Snapshot work has its own bounded batch. Avoid the worker -> queued
+            // frame wait -> worker -> queued batch round trip between every slice.
+            PanoramaBatchPump.Tick();
         }
 
         private static void TickScopes()
