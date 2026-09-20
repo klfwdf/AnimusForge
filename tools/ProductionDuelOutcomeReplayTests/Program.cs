@@ -441,6 +441,8 @@ internal static class Program
             projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"));
         string actionCommitter = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"));
+        string channelCommitter = File.ReadAllText(Path.Combine(
+            projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"));
         string executor = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs"));
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
@@ -456,7 +458,9 @@ internal static class Program
 
         Require(contracts.Contains("internal interface IRequestBoundActionPlanExecutor", StringComparison.Ordinal)
                 && committer.Contains("BuildCanonicalRequestId(envelope)", StringComparison.Ordinal)
-                && committer.Contains("BuildCanonicalActionPlanFingerprint(result.ActionPlan)", StringComparison.Ordinal)
+                && committer.Contains("ChannelActionCommitter.Commit(", StringComparison.Ordinal)
+                && channelCommitter.Contains("BuildCanonicalRequestId(snapshot)", StringComparison.Ordinal)
+                && channelCommitter.Contains("BuildCanonicalActionPlanFingerprint(authorizedPlan)", StringComparison.Ordinal)
                 && actionCommitter.Contains("requestBound.ValidateAndExecute(", StringComparison.Ordinal),
             "Commit reservation does not hand its canonical request/action identity to the internal executor seam.");
 
@@ -757,6 +761,7 @@ internal static class Program
             Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs")
         };
         DateTimeOffset markerTime = marker.CreatedUtc.ToUniversalTime();

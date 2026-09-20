@@ -66,15 +66,45 @@ internal sealed class LegacyChannelActionCommitter
                     "missing_action_execution_boundary"));
         }
 
+        return Commit(plan, snapshot, actionExecutor);
+    }
+
+    /// <summary>
+    /// Commits a plan already produced by the request-scoped parser. The
+    /// executor still performs the authoritative raw/plan parity check; this
+    /// overload exists so the detached pipeline and legacy channels share the
+    /// same exact-identity and terminal-receipt boundary without reparsing or
+    /// widening the request's narrower allow-list.
+    /// </summary>
+    internal LegacyChannelActionCommitResult Commit(
+        ActionPlan authorizedPlan,
+        GameInteractionSnapshot snapshot,
+        IActionPlanExecutor actionExecutor)
+    {
+        if (authorizedPlan == null || authorizedPlan.Actions.Count == 0)
+        {
+            return new LegacyChannelActionCommitResult(
+                authorizedPlan,
+                ActionExecutionCommitResult.NoActions());
+        }
+        if (snapshot == null || actionExecutor == null)
+        {
+            return new LegacyChannelActionCommitResult(
+                authorizedPlan,
+                ActionExecutionCommitResult.Rejected(
+                    InteractionStatus.RejectedByValidation,
+                    "missing_action_execution_boundary"));
+        }
+
         try
         {
             string requestId = InteractionResultCommitter.BuildCanonicalRequestId(snapshot);
             string actionFingerprint =
-                InteractionResultCommitter.BuildCanonicalActionPlanFingerprint(plan);
+                InteractionResultCommitter.BuildCanonicalActionPlanFingerprint(authorizedPlan);
             return new LegacyChannelActionCommitResult(
-                plan,
+                authorizedPlan,
                 ActionExecutionCommitter.Execute(
-                    plan,
+                    authorizedPlan,
                     snapshot,
                     actionExecutor,
                     requestId,
@@ -83,7 +113,7 @@ internal sealed class LegacyChannelActionCommitter
         catch
         {
             return new LegacyChannelActionCommitResult(
-                plan,
+                authorizedPlan,
                 ActionExecutionCommitResult.Rejected(
                     InteractionStatus.RejectedByValidation,
                     "invalid_action_commit_identity"));
