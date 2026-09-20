@@ -338,7 +338,7 @@ internal static class WeeklyActionOutcomeProductionReplay
             "MyBehavior.WeeklyActionOutcomeReceipts.cs",
             "Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs",
             "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
-            "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
+            "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
             "Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs",
             "Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs"
         };
