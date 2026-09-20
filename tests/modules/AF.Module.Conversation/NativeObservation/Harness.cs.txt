@@ -1,0 +1,102 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.MountAndBlade;
+namespace TaleWorlds.MountAndBlade
+{
+    public class Agent { public int Index=7; }
+    public class Mission
+    {
+        private static Mission _current;
+        public static Mission Current { get { AnimusForge.Fixture.Game();return _current; } set { _current=value; } }
+        public List<Agent> Agents {get {AnimusForge.Fixture.Game();return _agents;}}
+        private List<Agent> _agents=new List<Agent>{new Agent()};
+        public float CurrentTime {get {AnimusForge.Fixture.Game();return 1;}}
+        internal void RemoveAgents()=>_agents.Clear();
+    }
+}
+namespace AnimusForge
+{
+    internal static class Fixture
+    {
+        internal static int MainThread,WrongThread,Submits,Warnings,Taunts,Rollbacks;
+        internal static bool Valid,ThrowParser,ClearSpeech;
+        internal static string Text;
+        internal static readonly BlockingCollection<Action> Queue=new BlockingCollection<Action>();
+        internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread){WrongThread++;throw new InvalidOperationException("fixture_off_thread_game_read");}}
+        internal static void Reset(){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Submits=Warnings=Taunts=Rollbacks=0;Valid=true;ThrowParser=ClearSpeech=false;Text=null;while(Queue.TryTake(out _)){};SceneActionsRuntimeHost.Settings.NpcSceneShoutReplyEnabled=true;Mission.Current=new Mission();}
+    }
+    internal static class SceneActionsRuntimeHost
+    {
+        internal sealed class Options {public bool NpcSceneShoutReplyEnabled=true;}
+        internal static bool IsInitialized=true;
+        internal static Options Settings=new Options();
+        internal static bool SubmitNpcReply(Guid id,Mission mission,Agent agent,string text,float time)
+        {Fixture.Game();if(Fixture.ThrowParser)throw new InvalidOperationException("fixture_parser_failure");Fixture.Submits++;Fixture.Text=text;return true;}
+    }
+    internal static class SceneActionsLog {internal static void Info(string category,string text){}internal static void Warning(string category,string text){Fixture.Warnings++;}}
+    internal static class Logger {internal static void Log(string category,string text){}}
+    public partial class ShoutBehavior
+    {
+        private class Hero{} private class CharacterObject{} private class NativeConversationAdmission{}
+        private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int agent,Func<T> work,T fallback)
+        {var done=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);Fixture.Queue.Add(()=>{try{done.TrySetResult(work());}catch(Exception ex){done.TrySetException(ex);}});return done.Task;}
+        private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission ticket,out string reason){Fixture.Game();reason="fixture.invalid";return Fixture.Valid;}
+        private bool TryProcessNativeConversationRawMeetingTauntTags(Hero hero,CharacterObject character,int agent,ref string text,out bool escalated)
+        {Fixture.Game();Fixture.Taunts++;escalated=false;text=text.Replace("[meeting]","");return true;}
+        private bool TryProcessNativeConversationSceneTauntTags(Hero hero,CharacterObject character,int agent,ref string text,out bool escalated)
+        {Fixture.Game();Fixture.Taunts++;escalated=true;if(Fixture.ClearSpeech)text="";return true;}
+        private string BuildFallbackSceneTauntSpeech(bool escalated)=>"fallback taunt";
+        private Task RollbackNativeConversationPendingPlayerHistoryAsync(NativeConversationAdmission ticket,string key,long sequence,string reason){Fixture.Rollbacks++;return Task.CompletedTask;}
+        internal async Task<string> RunAsync(string postprocessReply,int nativeTargetAgentIndex)
+        {
+            var admission=new NativeConversationAdmission();var targetHero=new Hero();var targetCharacter=new CharacterObject();
+            string nativeTargetLog="npc",nativePendingAfefKey="captured-key";long nativePendingPlayerHistoryEventSequence=81;
+@@SLICE@@
+            return postprocessReply;
+        }
+@@OBSERVER@@
+    }
+    internal static class Program
+    {
+        private static int _checks;
+        private static void Check(bool good,string name){if(!good)throw new Exception("FAIL "+name);_checks++;Console.WriteLine("PASS "+name);}
+        private static string Run(string scenario,int index=7)
+        {
+            Fixture.Reset();var owner=new ShoutBehavior();
+            if(scenario=="disabled")SceneActionsRuntimeHost.Settings.NpcSceneShoutReplyEnabled=false;
+            if(scenario=="no-mission")Mission.Current=null;
+            if(scenario=="missing-agent")Mission.Current.RemoveAgents();
+            if(scenario=="parser-failure")Fixture.ThrowParser=true;
+            if(scenario=="fallback")Fixture.ClearSpeech=true;
+            Task<string> task=Task.Run(()=>owner.RunAsync("[meeting]action prose",index));
+            Check(Fixture.Queue.TryTake(out var work,5000),"phase-published:"+scenario);
+            Check(!task.IsCompleted,"real-yield:"+scenario);
+            if(scenario=="late-target")Fixture.Valid=false;
+            work();
+            Check(task.Wait(5000),"phase-settled:"+scenario);
+            return task.GetAwaiter().GetResult();
+        }
+        private static void Main()
+        {
+            string result=Run("healthy");
+#if BASELINE
+            Check(Fixture.WrongThread==1 && Fixture.Submits==0 && Fixture.Warnings==1 && result=="action prose","REPRODUCED_worker_game_read_and_silently_lost_observation");
+            Console.WriteLine("BASELINE reproduced: actual old call site + actual observer, refusing game port; NOT LIVE");
+#else
+            Check(Fixture.WrongThread==0 && Fixture.Submits==1,"healthy_observation_on_owner_thread_once");
+            Check(result=="action prose" && Fixture.Text==result && Fixture.Taunts==2,"taunts_before_observation_same_prose");
+            result=Run("fallback");Check(result=="fallback taunt" && Fixture.Text==result && Fixture.Submits==1,"fallback_text_observed_once");
+            result=Run("late-target");Check(result=="" && Fixture.Taunts==0 && Fixture.Submits==0 && Fixture.Rollbacks==1,"stale_target_never_observed");
+            foreach(string scenario in new[]{"disabled","no-mission","missing-agent"}){result=Run(scenario);Check(result=="action prose" && Fixture.Submits==0 && Fixture.WrongThread==0,"optional_observer_noop:"+scenario);}
+            result=Run("tableau",-1);Check(result=="action prose" && Fixture.Submits==0 && Fixture.WrongThread==0,"tableau_does_not_scan_mission");
+            result=Run("parser-failure");Check(result=="action prose" && Fixture.Warnings==1 && Fixture.Submits==0 && Fixture.WrongThread==0,"observer_failure_preserves_reply");
+            Console.WriteLine($"NativeObservation PASS={_checks} FAIL=0 actualCallSite=true actualObserver=true refusingGamePort=true LIVE=NOT_RUN");
+#endif
+        }
+    }
+}
