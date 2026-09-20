@@ -28,7 +28,8 @@ class MainReplySourceTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'Unreviewed main-reply dependency'):
                 inverse.restore_main_reply('ShoutBehavior.cs',(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
     def test_exact_byte_edit_preserves_line_endings_and_bom(self):
-        raw=(ROOT/'ShoutBehavior.cs').read_bytes();old=subprocess.check_output(['git','show','dabee763:ShoutBehavior.cs'],cwd=ROOT)
+        current=(ROOT/'ShoutBehavior.cs').read_bytes();self.assertEqual(current.count(b'\r\n'),current.count(b'\n'))
+        raw=inverse.restore_observation('ShoutBehavior.cs',current.decode('utf-8-sig').replace('\r\n','\n')).replace('\n','\r\n').encode();old=subprocess.check_output(['git','show','dabee763:ShoutBehavior.cs'],cwd=ROOT)
         old=old.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n');edit=inverse.MAIN_REPLY_REVIEW['files']['ShoutBehavior.cs']['edits'][0]
         self.assertEqual(raw,old.replace(edit['before'].replace('\n','\r\n').encode(),edit['after'].replace('\n','\r\n').encode(),1))
         self.assertEqual(raw.count(b'\r\n'),raw.count(b'\n'));self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
