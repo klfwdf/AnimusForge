@@ -153,6 +153,7 @@ namespace AnimusForge.Illustrator.Engine
         {
             PanoramaSnapshotBuilder builder = null;
             PanoramaResourceSupplement supplement = null;
+            PanoramaBatchPump runtimeBatches = null, resourceBatches = null;
             bool handedToCaller = false;
             var diagnostics = GenerationDiagnostics.Current;
             var inventory = diagnostics == null ? null : new PanoramaSnapshotInventory();
@@ -186,12 +187,10 @@ namespace AnimusForge.Illustrator.Engine
                     return PanoramaSnapshotBuilder.Begin(mission, token, inventory);
                 }, token).ConfigureAwait(false);
                 if (builder == null) throw new InvalidOperationException("无法在游戏线程创建环境快照。");
-                while (!await RunOnGameThreadAsync(() => builder.CopyBatch(token), token).ConfigureAwait(false))
-                {
-                    Task nextFrame = await RunOnGameThreadAsync(() => IllustratorRuntime.AfterFramesAsync(1, token), token).ConfigureAwait(false);
-                    if (nextFrame == null) throw new InvalidOperationException("环境快照分帧调度已停止。");
-                    await nextFrame.ConfigureAwait(false);
-                }
+                runtimeBatches = await RunOnGameThreadAsync(() =>
+                    PanoramaBatchPump.Start(() => builder.CopyBatch(token), token), token).ConfigureAwait(false);
+                if (runtimeBatches == null) throw new InvalidOperationException("环境快照分帧调度已停止。");
+                await runtimeBatches.Completion.ConfigureAwait(false);
                 supplement = await RunOnGameThreadAsync(() =>
                 {
                     builder.ValidateCurrent(token);
@@ -205,12 +204,13 @@ namespace AnimusForge.Illustrator.Engine
                     return created;
                 }, token).ConfigureAwait(false);
                 if (supplement == null) throw new InvalidOperationException("场景资源补齐调度已停止。");
-                while (!await RunOnGameThreadAsync(() => { builder.ValidateCurrent(token); return supplement.CopyBatch(token); }, token).ConfigureAwait(false))
+                resourceBatches = await RunOnGameThreadAsync(() => PanoramaBatchPump.Start(() =>
                 {
-                    var nextFrame = await RunOnGameThreadAsync(() => IllustratorRuntime.AfterFramesAsync(1, token), token).ConfigureAwait(false);
-                    if (nextFrame == null) throw new InvalidOperationException("场景资源补齐分帧调度已停止。");
-                    await nextFrame.ConfigureAwait(false);
-                }
+                    builder.ValidateCurrent(token);
+                    return supplement.CopyBatch(token);
+                }, token), token).ConfigureAwait(false);
+                if (resourceBatches == null) throw new InvalidOperationException("场景资源补齐分帧调度已停止。");
+                await resourceBatches.Completion.ConfigureAwait(false);
                 bool templatesRetired = await RunOnGameThreadAsync(() => { supplement.DisposeTemplates(); return true; }, token).ConfigureAwait(false);
                 if (!templatesRetired) throw new InvalidOperationException("场景模板清理调度已停止。");
                 if (builder.Snapshot.CopiedRoots == 0)
@@ -223,6 +223,8 @@ namespace AnimusForge.Illustrator.Engine
             {
                 // All game-thread batches have returned. Persist managed records once, on
                 // this worker, including partial/cancelled copies and before native rendering.
+                if (runtimeBatches != null) diagnostics?.RecordStage("scene_snapshot_batches", runtimeBatches.Describe("runtime"));
+                if (resourceBatches != null) diagnostics?.RecordStage("scene_snapshot_batches", resourceBatches.Describe("resources"));
                 if (builder != null) diagnostics?.RecordSceneInventory(inventory, builder.Snapshot, handedToCaller);
                 try { if (supplement != null) diagnostics?.RecordSceneResourceSupplement(supplement.Describe()); }
                 catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Resource diagnostic skipped: " + ex.GetType().Name); }
