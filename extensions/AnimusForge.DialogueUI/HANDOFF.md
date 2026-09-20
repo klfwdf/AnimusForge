@@ -46,6 +46,32 @@
 
 运行频率：纹理首次需要时加载并缓存；资源刷新只重新注册缓存；历史每输入实例首开记录时读取一次；目标校验为已有引用/代际比较；人物变化才重建肖像；选项按新增队列更新。没有新增逐帧Agent全扫描、重复反射查找、后台轮询或业务存档。
 
+## 崩溃排查与修复（2026-09-20）
+
+在进入场景对话（如城镇室内与学者哈拉忒奥斯对话）时发生游戏进程崩溃，Windows 事件日志为 `KERNELBASE.dll` / DirectX 原生渲染器 `0xc0000005`（Access Violation），Mod_Logic 记录 `[DialogueUI] Native UI adaptation failed: ArgumentNullException: Value cannot be null. Parameter name: key`。
+
+### 根因分析
+1. **Brush 伪造导致字典键为空异常**：`DialogueUiButtons.Style` 与 `NativeUiAdapter.StyleSubmitSeal` 使用 `new Brush()` 与 `new Style(brush.Layers)` 并在 `FillFrom(brush.DefaultStyle)` 中访问底层未初始化的 `_layers` / `Font`，触发 `ArgumentNullException: Value cannot be null. Parameter name: key`，导致 `_overlay` 初始化中断为 null。
+2. **Gauntlet 原生 9-patch 除以 0 导致 0xc0000005 访问冲突**：
+   - `DialogueUiSprites.cs` 原先直接将 `texture.Width` 与 `texture.Height` 传入 `base(name, texture.Width, texture.Height, nine)`。
+   - `EngineTexture.CreateFromMemory(png)` 创建时，原生引擎纹理的宽高为异步/延迟上报（创建瞬间为 0）。
+   - 导致 `afdui_parchment_panel`（40px 边框）与 `afdui_input_panel`（16px 边框）在渲染时 `Sprite.Width = 0`、`Sprite.Height = 0`，且 `material.Texture.Width = 0`。
+   - 原生 DirectX 9-patch 顶点计算时出现 `40 / 0` / `16 / 0` 产生 NaN / 内存越界，直接在 DirectX 渲染线程触发 `0xc0000005` 崩溃。
+3. **插画按钮异步注入时机**：Illustrator 的“场景插画”按钮在对话界面载入约 1 秒后注入；原逻辑仅在构造函数查找一次，若构造因异常中断或注入晚于构造，则无法接管进 `AFDialoguePaintSlot`。
+
+### 修复措施
+1. **安全克隆 Brush**：`DialogueUiButtons.Style` 与 `NativeUiAdapter.StyleSubmitSeal` 改为克隆已有合法 Brush（优先 `button.Brush?.Clone()`，回退 `Popup.Done.Button.NineGrid` / `ButtonBrush2`），仅修改既有图层的 `Sprite` 与 `AlphaFactor`，严禁裸调 `new Brush()` / `new Style()`。
+2. **PNG 头尺寸解析与 FallbackEngineTexture**：
+   - 实现 `TryReadPngSize`，同步读取 PNG 文件头 `IHDR` 块获得真实宽高（如 512×512、512×192、1024×320 等）。
+   - 实现 `FallbackEngineTexture : EngineTexture, ITexture`，安全继承原生类同时兜底接口宽高，保证 `material.Texture.Width > 0`。
+   - `RuntimeSprite` 传入真实宽高作为基类尺寸，彻底杜绝 9-patch 除零。
+   - 纹理载入增加 `LoadTextureFromPath` 优先与 `CreateFromMemory` 回退。
+3. **动态接管插画按钮与异常防护**：`OverlayLayout` 按钮样式循环加入 try/catch，并在 `Tick()` 中动态检测/接管晚于初始帧注入的 Illustrator 按钮。
+
+### 验证记录
+- 双 API 编译（1.3 与 1.4）均通过（0 警告，0 错误）。
+- 通过 `deploy.ps1` 重新部署至 `F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge_DialogueUI`，16 个文件哈希一致，AF 主体 DLL 未改动。
+
 ## 后续整合
 
 保留 `GUI`、包装显示和布局代码。由主模块原owner直接加载展示层，去掉独立Gauntlet重定向与私有反射调用标记；提交、取消、暂停、历史、赠礼及后处理继续由原owner持有。公开API无需在本次扩展。
