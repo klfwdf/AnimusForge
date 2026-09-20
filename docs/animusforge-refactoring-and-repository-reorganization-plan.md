@@ -1,3 +1,44 @@
+<a id="j07b-native-ownership-20260920"></a>
+# 当前接续：J07b 准入身份与排队领取已抽取，完整阶段编排仍未完成（2026-09-20）
+
+**当前状态：J07b_IN_PROGRESS；不是 J07/J10 DONE。** G1/G2 与 J07a 复用上一节已绑定证据，不重新调查。检查点 `a893fea`；票据 owner `42ac364d1e53d28ebd6d422c9e29236ac439c3ad`；排队 claim `2835d1a56ab6e447a31473a802101e8a33efac5d`。全部本地提交；未 push、Stage、Deploy、打包、切默认或写游戏/存档。自动化 `af-7-8` 保持 ACTIVE，截止 UTC `2026-09-20T17:48:36Z`（北京时间 9 月 21 日 01:48:36）。
+
+## 实际迁移、消费者与仍保留的职责
+
+| 当前源码坐标（一基） | 已接线责任 | 未迁移 / 保留原因 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs:11-43` | 唯一后端票据槽、会话 epoch、展示 revision；引用身份、只释放自己、ConversationEnded 失效；替换宿主原三字段 | 不读取游戏对象，不持有 SaveRuntimeGuard generation；这些检查仍由宿主所属线程负责，不制造第二份带 Hero 的 DTO |
+| `ShoutBehavior.NativeAdmission.cs:14-15,96-155,182-234` | 普通 / 主动开场 / Overlay 准入与 scope 使用同一 owner；busy 仍先于 opening 消费，异常与 finally 只释放本请求 | 实体快照及当前 Mission / Manager / Target 检查保留 adapter；不能删仍被 UI / API 调用的宿主入口 |
+| `ShoutBehavior.ModuleNativeSubmission.cs:9-47` | 子 MOD 排队提交读取同一 epoch/revision，领取前原样重验；外部签名、结果语义未变 | Scene/Courier 新公开提交仍不开放，归 J14，不借本轮改 NotSupported |
+| `ShoutBehavior.NativeCompletion.cs:68-72,123-137`；`ShoutBehavior.cs:15530-15534` | completion/晚关窗与 pending 撤销共用 revision 判定；仍按捕获上下文，不依赖已释放的 busy 槽 | 历史、AFEF 与动作副作用仍在原权威 owner；没有新增 SyncData key / 类型 |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs:5-30`；`ShoutBehavior.NativeAdmission.cs:102-120`；`ShoutBehavior.cs:19576-19619` | 原 0/1/2 CAS 收为显式 Queued/Started/ExpiredBeforeStart；真实 admission capture 与 action dispatch 共用；超时、retirement、队列异常都只能争抢尚未开始项 | 已领取项等待真实结果，unknown-after-start 不改为可重试；pending-history / 通用调度自身的其他 claim 暂未迁移，不为统一名字扩大改动 |
+| `ShoutBehavior.cs:20081-20564` | 本次未移动 484 行真实主编排，先稳定其会话身份与终态基础 | 人物就绪、准备、历史 fork/join、五步 Prompt、正文、提前特例、后处理、动作/完成阶段仍待逐段抽取；不可用新增 owner 数量冒充“拆薄完成” |
+
+**性能与清理**：票据 owner 每个 ShoutBehavior 一次分配，各次读写仍 O(1) / 原 Interlocked 与 Volatile 语义；没有新增每帧扫描、反射或锁。dispatch claim 是原共享闭包内 int 的值类型替代，不增加独立 heap 对象；发布后不得复制该值。宿主旧三字段、两处裸 dispatchState 及 completion 未用 using 已删除。未测真实帧成本，不声称全链路无 worker 游戏读取：后续主编排拆分仍须沿真实 Task.Run/await 逐段审查。
+
+## 真实验证（离线分层，不冒充游戏）
+
+- **最新候选 `2835d1a5`**：Native Admission **44**、Preparation **589**、Pending **111**、ActionDispatch **91**、Completion **184**；Presentation **46**；NativeModuleSubmission **41** + 外部消费者访问 internal 的 CS0122 拒收，全部 PASS。
+- **新增 owner 行为**：NativeTicket **21**（真实异步 gate、同值不同引用、late finally、独立 owner）；NativeDispatchClaim **13**（真实 yield、已领取后过期尝试、共享闭包并发领取）。各 **7 / 4** 项变异均编译成功并因指定具名断言失败，不能把编译/路径错误算红例。
+- **相关既有负例**：最新 claim 候选 Admission **7**、ActionDispatch **9** 项全部行为拒收。前一票据候选 `42ac364d` 的 Presentation **6**、Pending **12**、Completion **15** 以及 API generation/epoch/revision **3** 项行为拒收；后续 claim 切片对这些 runner 的正常项重新验证，上述负例不混写成最新候选全量再跑。
+- **严格源码证明**：两个独立 review packet 分别绑定 `d2b167cc` / `42ac364d`，可将 4 个宿主文件精确恢复到前一切片；当前三项 claim 接线/字节检查、四项票据源检查、五项历史 inverse 反例通过，旧 API / game lifetime 完整源码断言仍保留，没有直接刷新旧 hash 消红。
+- **fixture 修正**：改用真实 EndConversation 后会清槽，Pending 旧 fixture 在 Reject 时重读槽会空指针；现保留 Prepare 时捕获的 ticket 再拒绝，保持原断言，历史 original 模式不改。旧 Admission 并发/晚捕获与 Pending 越线程/错 key 缺陷仍可重现。不是修生产断言来凑 PASS。
+- **构建**：两切片均执行现有 `.tmp/build-local.ps1`，仅传环境/引用参数，无 Stage/Deploy；最终 Debug/Release × 1.3/1.4/Bootstrap **六构建 0 warning / 0 error**。实际引用：1.3.15.110062 `_deps_auto`；1.4.6.115628 本机 build_check，不能写成 1.4.7 实测。SDK 8.0.422 / 同 SDK Newtonsoft；未安装新 SDK。四个生成根每次重置前已核实工作树内、无重解析点、无 tracked 或非产物文件。
+- **实际产物 / 存档契约**：最终四个实现 DLL **1060** 项元数据断言通过；公开 V1/旧 memory 签名不变，internal 隔离保持。Persistence **142 literal keys / 168 typed bindings / 13 chunked / 44 flattened keys** PASS。不是 CLR/真实外部 MOD/旧档加载证据。
+- **源码格式 / 地图**：ShoutBehavior 仍 **39,669 行，全 CRLF、无 BOM**，只是具名行替换；地图 **294 锚点**绑定 `2835d1a5`，recorded / working-tree 检查。地图 hash 使用和 verifier 相同的 CRLF 规范化，不抹平其他文件既有的裸 CR；没有修改那些生产文件。
+- 日志仅本地 `.tmp/j07b-20260920/`：`*-claim.log`、`build-*-claim.log`、`api-claim.log`、各 `*-mut.log` / `api-mutations.json`；新套件 `.generated/*/run.log` 与 `mutations.json` 均忽略 Git。实机、旧档、真实 provider/TTS/帧耗时全部 **NOT-RUN**。
+
+## 下一步、回滚与工作窗
+
+1. **继续 J07b 真实阶段编排**：先选一个完整具名阶段，从 `SubmitNativeConversationTextInternalAsync:20081` 开始逐段抽取；每次两 API 编译 + Native 五组，不一次重排整段。当前 9 个主线程往返与所有重验点仍在真实入口；不得为满足结构断言放宽测试。
+2. 票据三字段与 dispatch claim 已有唯一 owner，不再造重复 Ticket 或名义 AdmissionPolicy 转发壳。游戏对象仍在 host adapter，纯阶段 owner 只收冻结数据/明确的 typed 端口；Prompt 文本构造属于 J04，不搬成 Conversation 的新文本工厂。
+3. 保持 busy→opening、ConversationEnded→epoch、历史 fork/join→重验，以及统一后处理→动作派发的顺序；原文挑衅/场景观察/提前 TTS 特例保持。后续可以组合目前两个严格 inverse packet，再给真实阶段迁移独立证据，不反复重开 J06/G2。
+4. J07c/d、J08 LLM、J09 Actions、J10 Scene/Courier **未完成**；新增 Lifecycle/完整 StageSequence/Rollback 证据仍待落地。不能用本页状态代替最终全范围收尾，J17 不在本工作窗目标内。
+5. 回滚按后进先出的 focused inverse/revert：claim `2835d1a5` → admission `42ac364d`；切片前检查点 `a893fea`。不得 hard-reset / 改写历史；若当前又有后续改动先检查依赖。
+6. 唯一施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`、本地 `codex/af-modularize-j04-20260918`；未来交付仍 `origin/codex/af-main-refactor-continuation-20260831`，本轮不推送。保留 `.dotnet-cli-home/`。期限未到保持自动化 ACTIVE；到 J10 离线门槛全过、截止或用户停止，再写详细/本地制作组两份交接并暂停。
+
+## 以下为已完成 J07a 及更早回执
+
 <a id="j07a-relocation-20260920"></a>
 
 ## 2026-09-20：G2 实体/请求补强与 J07a 归位已落地，继续 J07b

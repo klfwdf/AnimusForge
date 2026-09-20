@@ -1,3 +1,11 @@
+# 当前范围：J07b Native 身份/领取 owner 已接线，主编排仍待拆（2026-09-20）
+
+当前源码 `2835d1a5`；294 锚点地图绑定该提交。`NativeConversationAdmissionOwner` 持有唯一票据槽、epoch、revision；`NativeConversationDispatchClaim` 持有 admission/action 排队操作的原子领取与开始前过期。普通/主动开场/Overlay/Native public 提交及 completion/pending 消费同一 owner；外部签名、存档身份、默认路径不变。
+
+宿主仍负责游戏对象捕获/目标检查；`SubmitNativeConversationTextInternalAsync` 484 行未拆，J07b/c/d 与 J08–J10 未完成。精确源码坐标、两切片行为/负例/双版本/API/存档证据与保留项见[当前主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j07b-native-ownership-20260920)。未做实机、真实旧档或 provider 验收。
+
+## 以下为历史范围，当前状态以上方台账为准
+
 # 当前范围：J07a 原样归位已完成，Native 真拆待 J07b（2026-09-20）
 
 生产源码 `fb5dc1ca`：10 个已有生命周期 owner 原字节迁入 `src/modules/AF.Module.Conversation/Internal`（Pipeline 两实现位于其子目录）；命名空间/类型/API/存档身份不变，旧活动路径不再存在。此包不减少 Native 主类职责，不能称 Native 状态机重构完成。291 锚点地图仅调整对应路径并绑定该源码，原 hash/行号不变。

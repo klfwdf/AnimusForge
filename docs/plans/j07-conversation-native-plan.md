@@ -1,10 +1,10 @@
 # J07 Conversation 核心 / Native —— 实施计划与注意事项
 
-> 基线：分支 `codex/af-main-refactor-continuation-20260831`，产品源码 `70db6ec2`，测试终点 `08699b4f`，文档 `63e74e7d`。
+> 制定时历史基线（不是回退目标）：分支 `codex/af-main-refactor-continuation-20260831`，产品源码 `70db6ec2`，测试终点 `08699b4f`，文档 `63e74e7d`。
 > 本文件是 J07 可执行计划；各切片实施与验证由主台账当前节记录。总计划条目见[主台账 J07 节](../animusforge-refactoring-and-repository-reorganization-plan.md)。
-> 状态：`ACTIVE / J07a_RELOCATED`。G1/G2 补强和 J07a 已实施；下一步 J07b Native 职责拆分。见[当前回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j07a-relocation-20260920)。J07a 的限定完成不代表 J07 父包验收。
-> GitHub 指定交付分支已核对并补推至 `b9b2215b`（原远端 `2946bf3d`，3 个提交普通快进）。本地施工分支仍为 `codex/af-modularize-j04-20260918`；不要用本地分支名替代发布目标。
-> 本轮当前证据入口：[2026-09-20 推送与接续计划](../animusforge-refactoring-and-repository-reorganization-plan.md#j07-plan-review-20260920)。旧版“J06 只剩实机”的判断由该节纠正。
+> 状态：`ACTIVE / J07b_IN_PROGRESS`。G1/G2 与 J07a 已实施；`42ac364d` / `2835d1a5` 完成 Native 票据身份和排队领取 owner，484 行主编排仍待逐阶段拆分。见[当前回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j07b-native-ownership-20260920)。不代表 J07 父包或 J10 验收。
+> 历史推送：GitHub 指定交付分支曾核对并补推至 `b9b2215b`（原远端 `2946bf3d`，3 个提交普通快进）。本地施工分支仍为 `codex/af-modularize-j04-20260918`；不要用本地分支名替代发布目标。
+> 历史计划审查入口：[2026-09-20 推送与接续计划](../animusforge-refactoring-and-repository-reorganization-plan.md#j07-plan-review-20260920)。旧版“J06 只剩实机”的判断由该节纠正。
 
 ---
 
@@ -127,7 +127,9 @@ src/modules/AF.Module.Conversation/
 │   ├── RuntimeConfigSnapshotStore.cs
 │   └── Pipeline/{InteractionPipeline,FullInteractionPipeline}.cs
 └── Channels/Native/               # Native 渠道的会话状态机（J07b/c，真拆）
-    ├── NativeConversationTicket.cs        # 票据 DTO + 三重身份比较（纯）
+    ├── NativeConversationAdmissionOwner.cs # 已实现：唯一票据槽 / epoch / revision
+    ├── NativeConversationDispatchClaim.cs  # 已实现：排队领取 / 开始前过期
+    ├── NativeConversationTicket.cs        # 拟议；现有带游戏引用票据仍在宿主，不为凑目录复制
     ├── NativeConversationAdmissionPolicy.cs  # 准入判定（纯，不含 Campaign 读）
     ├── NativeConversationStageSequencer.cs   # 一回合阶段顺序 + 每阶段重验点（纯）
     └── NativeConversationRollbackPolicy.cs   # 失败原因 → 回滚/不回滚（纯）
@@ -244,7 +246,7 @@ src/modules/AF.Module.Conversation/
 
 ## 6. 交付物
 
-- 产品源码（下一实施任务）：`src/modules/AF.Module.Conversation/{Internal,Channels/Native}`；宿主保留薄游戏线程适配。建议压薄入口但不以行数替代真实职责拆分。当前 Internal 已原样归位；Channels/Native 的拟议新 owner 仍待 J07b 实现。
+- 产品源码（下一实施任务）：`src/modules/AF.Module.Conversation/{Internal,Channels/Native}`；宿主保留薄游戏线程适配。建议压薄入口但不以行数替代真实职责拆分。当前 Internal 已原样归位；Channels/Native 的票据槽与排队 claim 已有真实消费者，完整阶段序列及 rollback owner 仍待 J07b。不得为填满上方拟议文件名单制造无消费者接口。
 - 测试：`tests/modules/AF.Module.Conversation/{Lifecycle,NativeTicket,NativeStageSequence,NativeRollback}` 四套 + 各自变异。
 - 文档：主台账 J07 回执（含保留项与未闭合项）、代码地图刷新绑定、`af-framework-code-scope.md` 更新、HANDOFF 置顶。
 
@@ -261,7 +263,7 @@ src/modules/AF.Module.Conversation/
 
 ## 8. 交接、回滚与 J07 之后
 
-- 计划修订起点 `b9b2215b` 已发布，当时产品源码为 `70db6ec2`；当前 J07a 源码已为 `fb5dc1ca`，后续仍以实际 Git/台账为准。后续每个完整职责切片独立提交，提交前保留其他作者更改；原样搬迁与算法/状态调整分别提交，便于 focused revert。
+- 计划修订起点 `b9b2215b` 已发布，当时产品源码为 `70db6ec2`；J07a 源码 `fb5dc1ca` 已继续到 J07b `2835d1a5`，后续仍以实际 Git/台账为准。后续每个完整职责切片独立提交，提交前保留其他作者更改；原样搬迁与算法/状态调整分别提交，便于 focused revert。
 - 无论本地分支叫什么，获准发布目标均为 `origin/codex/af-main-refactor-continuation-20260831`。每次推送前 fetch/祖先核验，分叉即停止汇报；不强推、不动 main、辅助分支不擅自删除。
 - `.dotnet-cli-home/`、`.tmp/`、构建产物、玩家数据及人工转发版不纳入提交；本计划本身不授予游戏部署权限；自动化状态按最新用户授权及 HANDOFF。
 - 后续主线依主台账：J08 LLM 传输 → J09 Actions → J10 Scene/Courier → J11 制作组薄桥 → J12/J13 主体领域 → J14 版本化三渠道 public API → J15 内容归属 → J16 工具/Bootstrap/兼容 → J17 全仓交付验收。这里只记录依赖方向，不把计划当成已实施。

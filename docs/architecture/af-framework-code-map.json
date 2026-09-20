@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "fb5dc1ca756153889c0eb25a59419cafb5dfc08e",
+  "sourceRevision": "2835d1a56ab6e447a31473a802101e8a33efac5d",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -128,13 +128,13 @@
     {
       "id": "native.admission",
       "path": "ShoutBehavior.NativeAdmission.cs",
-      "start": 18,
-      "end": 21,
+      "start": 17,
+      "end": 20,
       "symbol": "internal sealed class NativeConversationAdmission",
       "match": "exact",
       "status": "wired-boundary",
-      "note": "准入/忙碌/会话绑定，不是完整公共提交服务",
-      "fileSha256": "2994455bd73c352e3ea542ff8209fd54a5a81d59118fb7b2f6eefdc8c4e0a5d6"
+      "note": "游戏主线程捕获和目标检查适配；票据槽及 epoch/revision 由 NativeConversationAdmissionOwner 持有",
+      "fileSha256": "d86a644980c75e30868599abd96f921552011f6cfcad18489d7ebda3a39ba12a"
     },
     {
       "id": "native.preparation",
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "14272aca05c9eaabf1b03edb938e0e09efe8d5e14270b10d7a9221c040a708a0"
+      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
     },
     {
       "id": "native.history.dispatch",
@@ -178,7 +178,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "14272aca05c9eaabf1b03edb938e0e09efe8d5e14270b10d7a9221c040a708a0"
+      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
     },
     {
       "id": "native.history.accept",
@@ -189,7 +189,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "14272aca05c9eaabf1b03edb938e0e09efe8d5e14270b10d7a9221c040a708a0"
+      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
     },
     {
       "id": "native.dispatch.shared",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "14272aca05c9eaabf1b03edb938e0e09efe8d5e14270b10d7a9221c040a708a0"
+      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
     },
     {
       "id": "memory.acceptance",
@@ -1540,9 +1540,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "绑定owner/gen/epoch/revision；原主线程准入和实际唯一完成回执",
-      "start": 10,
-      "end": 12,
-      "fileSha256": "26538e78762ca3f8aba96abfc6cb9bc5c1a43c5c452de9cdbcb8b6f7046fe9ca"
+      "start": 9,
+      "end": 11,
+      "fileSha256": "9e404bc3ce62ef71ae7f202c44a04bd72bb0cc45032c0bbd090b0f3f765ca620"
     },
     {
       "id": "courier.prompt.run",
@@ -3204,6 +3204,39 @@
       "status": "wired-boundary",
       "note": "后台 Lore/实体/额外规则候选；最终 owner 阶段才发布结果",
       "fileSha256": "bc552477b450efac43a96c8d028d395de1861fc4737d31b1b6c15396d08feee3"
+    },
+    {
+      "id": "native.admission.owner",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs",
+      "start": 11,
+      "end": 14,
+      "symbol": "internal sealed class NativeConversationAdmissionOwner<TTicket> where TTicket : class",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "唯一进程内票据槽/会话 epoch/展示 revision；无游戏读写、无存档键",
+      "fileSha256": "71d5d94a3bb4bd120eb99be86223823ac09ca1145770ba9b00117d8f80407488"
+    },
+    {
+      "id": "native.dispatch.claim",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs",
+      "start": 17,
+      "end": 20,
+      "symbol": "internal struct NativeConversationDispatchClaim",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "准入捕获和动作派发共用的原子领取/开始前过期策略；不替代执行回执",
+      "fileSha256": "8707e91fbc6b7366d7da374a9421512e0490866f20a149add62c265a94a51ebf"
+    },
+    {
+      "id": "native.completion.context",
+      "path": "ShoutBehavior.NativeCompletion.cs",
+      "start": 68,
+      "end": 71,
+      "symbol": "private bool IsNativeConversationCompletionContextCurrent(NativeConversationCompletionScope scope)",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "完成与关窗仍检查捕获上下文/revision，不依赖已释放的后端票据槽",
+      "fileSha256": "48a175fbda1354d76ff08bfa2a420f0266012db8f66f0ec2c96fcad03b9e968e"
     }
   ]
 }
