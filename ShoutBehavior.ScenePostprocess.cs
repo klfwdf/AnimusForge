@@ -411,6 +411,13 @@ public partial class ShoutBehavior
 						{
 							return false;
 						}
+						if (speechCompletion != null)
+						{
+							// The queued speech/action callback owns the terminal result.
+							// Do not publish the relay before that callback revalidates
+							// generation/session/epoch/target and reports completion.
+							return true;
+						}
 						if (!ValidateCurrentTarget("before_relay_publish"))
 						{
 							return false;
