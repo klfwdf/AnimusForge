@@ -107,6 +107,25 @@ public sealed class LegacyActionTagParser : IActionPostprocessor
     }
 
     /// <summary>
+    /// Rejects an over-limit raw trace at the execution boundary. Parse keeps
+    /// its historical bounded result, but silently executing the original raw
+    /// text after truncation could otherwise expose an unvalidated later tag.
+    /// </summary>
+    internal bool ExceedsActionLimit(string rawText)
+    {
+        int count = 0;
+        foreach (string _ in ExtractCandidates(rawText))
+        {
+            count++;
+            if (count > _maxActions)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Removes only recognized protocol candidates selected by the caller.
     /// Balanced scanning is shared with Parse so RichText such as [ROT] inside
     /// a GIVE_ASSET token is preserved and duplicate tags remain ordered.

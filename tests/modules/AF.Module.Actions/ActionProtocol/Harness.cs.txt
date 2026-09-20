@@ -1,0 +1,71 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AnimusForge.Refactor.Contracts;
+
+namespace AnimusForge.Refactor.Adapters;
+
+internal static class Program
+{
+    private static int _checks;
+    private static void Check(bool condition, string name)
+    {
+        _checks++;
+        if (!condition) throw new InvalidOperationException("ASSERT " + name);
+    }
+
+    private static PostprocessContext Context(params string[] allowed)
+        => new PostprocessContext(Array.Empty<string>(), allowed, new CapabilitySet(new[] { "action.parse" }));
+
+    private static void Main()
+    {
+        var parser = new LegacyActionTagParser(64);
+        string raw = "[ACTION:GIVE_ASSET:[ROT]佛雷甲:2][ADP:debt-1]";
+        var allowed = new[] { "ACTION:GIVE_ASSET", "ADP" };
+        ActionPlan parsed = parser.Parse(raw, Context(allowed));
+        Check(parsed.Actions.Count == 2, "shared-plan-count");
+        Check(parsed.Actions[0].TargetId == "[ROT]佛雷甲" && parsed.Actions[0].Parameters["quantity"] == "2", "balanced-richtext-asset");
+        Check(parsed.Actions[1].Tag == "ADP" && parsed.Actions[1].TargetId == "debt-1", "debt-target");
+
+        foreach (InteractionChannel channel in new[]
+        {
+            InteractionChannel.NativeConversation,
+            InteractionChannel.SceneShout,
+            InteractionChannel.Courier
+        })
+        {
+            var policy = new ActionPlanIntegrityPolicy(64, allowed);
+            Check(policy.MatchesAuthorizedPlan(parsed), "channel-exact-" + channel);
+        }
+
+        ActionPlan unauthorizedProjection = parser.Parse(
+            raw + "[ACTION:SECRET:hidden]",
+            Context(allowed));
+        Check(unauthorizedProjection.Actions.Count == 2, "parser-bounds-unauthorized");
+        Check(!new ActionPlanIntegrityPolicy(64, allowed).MatchesAuthorizedPlan(unauthorizedProjection), "raw-disallowed-rejected");
+
+        ActionPlan reversed = new ActionPlan(parsed.Actions.Reverse(), raw);
+        Check(!new ActionPlanIntegrityPolicy(64, allowed).MatchesAuthorizedPlan(reversed), "ordered-plan-required");
+        var wrongParameters = new Dictionary<string, string>(parsed.Actions[0].Parameters, StringComparer.OrdinalIgnoreCase)
+        {
+            ["quantity"] = "3"
+        };
+        ActionPlan changed = new ActionPlan(new[]
+        {
+            new ActionRequest(parsed.Actions[0].Tag, parsed.Actions[0].TargetId, wrongParameters),
+            parsed.Actions[1]
+        }, raw);
+        Check(!new ActionPlanIntegrityPolicy(64, allowed).MatchesAuthorizedPlan(changed), "parameter-plan-required");
+
+        string overflowRaw = string.Concat(Enumerable.Repeat("[ACTION:DUEL]", 65));
+        ActionPlan truncated = parser.Parse(overflowRaw, Context("ACTION:DUEL"));
+        Check(truncated.Actions.Count == 64, "parser-remains-bounded");
+        Check(!new ActionPlanIntegrityPolicy(64, new[] { "ACTION:DUEL" }).MatchesAuthorizedPlan(truncated), "overflow-rejected-before-owner");
+
+        ActionPlan markers = parser.Parse("[AFEF NPC行为补充][CONTENT]", Context(LegacyActionTagCatalog.DefaultAllowedTagFamilies.ToArray()));
+        Check(markers.Actions.Count == 0, "facts-and-content-not-actions");
+        Check(!LegacyActionTagCatalog.DefaultAllowedTagFamilies.Any(item => string.Equals(item, "ACTION:*", StringComparison.OrdinalIgnoreCase)), "no-unbounded-action-family");
+
+        Console.WriteLine("PASS actionProtocolOwner checks=" + _checks + " channels=3 maxActions=64 game=NOT_RUN");
+    }
+}
