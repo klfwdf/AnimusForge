@@ -7,3 +7,14 @@
 - **下一步**：严格按 `docs/plans/j09-actions-facts-plan.md` 的 J09d：Native 保留 completion/TTS/WorldMap exit；Scene 保留 mood→GCCZ→direct→speech/relay 顺序；Courier 只在到达/回复 commit 执行动作。逐渠道接入同一 action-only boundary，禁止“新执行 + 旧直接执行”双写，也不把 J10 会话状态机提前搬入。
 - **边界**：真实 provider、Campaign/Mission、旧 SAVE、live Economy/外交、真实音频和帧/网络性能均 NOT-RUN；未推送、未 Stage/Deploy/Package、未操作游戏/存档。
 - **位置**：唯一施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`。未推送，`.dotnet-cli-home/` 保留。
+
+代码定位（一基行号，后续改动后以符号搜索为准）：
+
+- `src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs:14`
+- `src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs:14`
+- `src/modules/AF.Module.Actions/Plan/ActionPlanIntegrityPolicy.cs:13`
+- `src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs:27`
+- `src/modules/AF.Module.Actions/Execute/LegacyChannelActionCommitter.cs:15`
+- `src/modules/AF.Module.Actions/Receipts/ActionExecutionCommitter.cs:13`
+- `src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs:16`
+- `src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs:13`
