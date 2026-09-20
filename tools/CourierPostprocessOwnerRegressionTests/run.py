@@ -33,7 +33,7 @@ LINKS = [
     'Refactor/Contracts/ProfileConfigContracts.cs', 'src/modules/AF.Module.Conversation/Internal/Pipeline/InteractionPipeline.cs',
     'src/modules/AF.Module.Conversation/Internal/Pipeline/FullInteractionPipeline.cs', 'src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs',
     'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs',
-    'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'Refactor/Adapters/LegacyActionTagParser.cs',
+    'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs',
     'Refactor/Adapters/LegacyDetachedPromptComposer.cs', 'Refactor/Adapters/LegacyPromptPackageAdapter.cs',
     'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs',
 ]

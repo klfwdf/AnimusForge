@@ -18,8 +18,8 @@
     <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
     <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
     <Compile Include="..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
-    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
-    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" Link="Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />

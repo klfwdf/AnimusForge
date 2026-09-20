@@ -24,11 +24,15 @@ SCENE_LIFECYCLE_DISPATCHES = {
 
 def source(path: str, ref: str | None) -> str:
     if ref:
-        # Historical cutover references predate the byte-identical J07a move.
+        # Historical cutover references predate the byte-identical J07a/J09a moves.
         if path == "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs":
             exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
             if not exists:
                 path = "Refactor/Runtime/DetachedInteractionHost.cs"
+        if path == "src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs":
+            exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+            if not exists:
+                path = "Refactor/Adapters/LegacyActionTagParser.cs"
         return subprocess.check_output(
             ["git", "show", f"{ref}:{path}"], cwd=ROOT
         ).decode("utf-8-sig").replace("\r\n", "\n")
@@ -101,7 +105,7 @@ def extract(ref: str | None) -> dict[str, str]:
         "MAIN_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", ref), "public sealed class LegacyDetachedPromptComposer"),
         "POSTPROCESS_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", ref), "public sealed class LegacyDetachedPostprocessPromptComposer"),
         "LEGACY_PROMPT_ADAPTER": declaration(source("Refactor/Adapters/LegacyPromptPackageAdapter.cs", ref), "public static class LegacyPromptPackageAdapter"),
-        "ACTION_PARSER": declaration(source("Refactor/Adapters/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
+        "ACTION_PARSER": declaration(source("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
         "BUILD_PROMPT": declaration(source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
         "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),
         "PUBLIC_SCENE_FACTORY": declaration(scene, "public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal("),
