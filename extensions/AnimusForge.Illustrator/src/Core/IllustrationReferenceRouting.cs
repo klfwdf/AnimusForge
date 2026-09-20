@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using AnimusForge.Illustrator.Engine;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Illustrator.Core
 {
@@ -36,12 +40,45 @@ namespace AnimusForge.Illustrator.Core
                 "依导演选择的机位和画风重新绘制，参考图不作为必须保留的像素底图，不复制UI或截图渲染质感。", scene.Kind);
         }
 
-        internal static void AddSceneReferences(List<IllustrationReferenceImage> image, IReadOnlyList<IllustrationReferenceImage> scenes)
+        internal static void AddSceneReferences(List<IllustrationReferenceImage> image, IReadOnlyList<IllustrationReferenceImage> scenes,
+            IllustrationDirection direction, CancellationToken token)
         {
-            var panorama = scenes?.FirstOrDefault(x => x != null && (x.Kind == IllustrationReferenceKind.SceneViews || x.Kind == IllustrationReferenceKind.ScenePanorama) && !string.IsNullOrWhiteSpace(x.Base64Image));
-            if (panorama != null) image.Add(panorama);
+            token.ThrowIfCancellationRequested();
             var current = SelectSceneAnchor(scenes);
-            if (current != null) image.Add(current);
+            bool sendCurrent = current != null && (current.Kind == IllustrationReferenceKind.MapConversationScene || direction?.UsedLocalFallback == true);
+            var panorama = scenes?.FirstOrDefault(x => x != null && x.Kind == IllustrationReferenceKind.ScenePanorama && !string.IsNullOrWhiteSpace(x.Base64Image));
+            if (panorama != null)
+            {
+                var watch = Stopwatch.StartNew();
+                bool selected = direction?.UsedLocalFallback == false && direction.SceneYawDegrees.HasValue &&
+                    direction.ScenePitchDegrees.HasValue && direction.SceneHorizontalFovDegrees.HasValue;
+                double yaw = selected ? direction.SceneYawDegrees.Value : 0;
+                double pitch = selected ? direction.ScenePitchDegrees.Value : 0;
+                double fov = selected ? direction.SceneHorizontalFovDegrees.Value : 75;
+                // Internally produced base64 only. Bound allocation before decode and do
+                // not retry with the distorted panorama if projection fails.
+                if (panorama.Base64Image.Length > 24 * 1024 * 1024)
+                    throw new InvalidOperationException("场景全景超过投影预算，已停止生图。");
+                byte[] perspective = ScenePerspectiveProjection.Project(Convert.FromBase64String(panorama.Base64Image), yaw, pitch, fov, token);
+                image.Insert(0, new IllustrationReferenceImage(Convert.ToBase64String(perspective),
+                    "同一现场独立静态副本的普通透视环境参考：" +
+                    (selected ? "依据导演选择的方向从完整全景重新投影。" : "从完整全景取默认前向，仅补充可见环境资料，最终取景由正文决定。") +
+                    "保留可见建筑、家具、门窗与材质的空间关系，按正文统一绘制人物和环境；不把参考取景作为必须复制的画面。" +
+                    "这是中性观察补光，不代表现场光源；光源方向、时段与氛围按正文，人物位置按本次事实。缺失区域不作为开放天空或新增物体的证据。",
+                    IllustrationReferenceKind.ScenePerspective));
+                GenerationDiagnostics.Current?.RecordStage("scene_perspective_reference", new JObject
+                {
+                    ["selection"] = selected ? "director" : "default_front", ["yawDegrees"] = yaw,
+                    ["pitchDegrees"] = pitch, ["horizontalFovDegrees"] = fov, ["width"] = 768, ["height"] = 768,
+                    ["elapsedMs"] = watch.ElapsedMilliseconds, ["panoramaSentToImage"] = false,
+                    ["currentScreenshotSentToImage"] = sendCurrent
+                });
+            }
+            // MapConversation has no panorama: its only environment reference remains
+            // the passive tabletop view. Mission screenshots calibrate the director;
+            // only local composition needs that calibration on the image side too.
+            if (sendCurrent)
+                image.Insert(panorama != null ? 1 : 0, current);
         }
     }
 }

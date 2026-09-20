@@ -464,7 +464,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
                 directorRefs.AddRange(sceneCapture.References);
-                IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture.References);
                 var scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts, promptPlan.ArtDirection,
                     promptPlan.DirectorOnlyFacts + "\n【本次环境参考覆盖】" + sceneCapture.DirectorNote);
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "，正在整理人物参考..."; });
@@ -510,6 +509,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(scenePromptPlan, directorRefs, options, token).ConfigureAwait(false);
                 string detailedPrompt = direction.Prompt;
+                if (options?.EnableReferenceImageForGeneration != false)
+                    IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture.References, direction, token);
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "；" + direction.StatusText + "，正在绘制画卷..."; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
                 await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);

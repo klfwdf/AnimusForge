@@ -104,6 +104,7 @@ namespace AnimusForge.Illustrator.Engine
                 }, captureToken).ConfigureAwait(false);
                 if (renderer == null) throw new InvalidOperationException("全景渲染器未建立。");
                 GenerationDiagnostics.Current?.RecordStage("panorama_observation_lighting", renderer.ObservationLightingDiagnostics);
+                GenerationDiagnostics.Current?.RecordStage("panorama_camera_coverage", renderer.CameraDiagnostics);
                 GenerationDiagnostics.Current?.RecordStage("panorama_renderer_ready");
                 for (int face = 0; face < PanoramaProjection.FaceCount; face++)
                 {

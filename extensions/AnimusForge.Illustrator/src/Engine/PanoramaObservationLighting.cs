@@ -65,6 +65,7 @@ namespace AnimusForge.Illustrator.Engine
                 ["shadows"] = false,
                 ["volumetric"] = false,
                 ["sourceLightsCopied"] = false,
+                ["directionalSunColor"] = new JArray(0f, 0f, 0f),
                 ["lights"] = lights
             };
         }

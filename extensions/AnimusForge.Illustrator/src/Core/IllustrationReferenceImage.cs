@@ -11,7 +11,8 @@ namespace AnimusForge.Illustrator.Core
         SceneViews,
         MapConversationScene,
         EventCharacter,
-        EventEmblem
+        EventEmblem,
+        ScenePerspective
     }
 
     /// <summary>
