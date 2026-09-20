@@ -7,7 +7,7 @@ def load(name,path):
 ex=load('decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
 util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
-source=(ROOT/'CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
+source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='drop-knowledge-text':
  needle='string extras = (ctx?.Extras ?? "").Trim();'
  assert source.count(needle)==2
@@ -23,7 +23,7 @@ if args.mutate=='drop-rule-text':
 phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 if args.mutate=='worker_assembly':
  source=source.replace('return await RunCourierOwnerPhaseAsync(generation, source + "_assemble", () =>','return await Task.Run(() =>').replace('                return assemble(input, prepared);\n            }, CancellationToken.None).ConfigureAwait(false);','                return assemble(input, prepared);\n            }).ConfigureAwait(false);')
-schedule=(ROOT/'CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig')
+schedule=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='skip_knowledge_final_guard':
  needle='if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;'
  start=schedule.rfind(needle)

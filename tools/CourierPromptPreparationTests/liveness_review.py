@@ -16,5 +16,5 @@ def old_source(path):
  return before
 
 if __name__=='__main__':
- for path in ['CourierDeliveryBehavior.cs','CourierDeliveryBehavior.PromptPreparation.cs']:
+ for path in ['CourierDeliveryBehavior.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs']:
   old_source(path);print('PASS portable exact old intermediate reconstruction: '+path)

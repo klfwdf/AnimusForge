@@ -13,7 +13,11 @@ RULES = {
     "policy-political": ("PolicySystem/Core/CustomPolicyBehavior*.cs",),
     "settlement-siege-gccz-sets": ("SiegeAiInterventionBehavior*.cs",),
     "duel": ("DuelBehavior*.cs",),
-    "courier-proactive-issue": ("CourierDeliveryBehavior*.cs", "Refactor/Runtime/CourierInboundCompletion*.cs"),
+    "courier-proactive-issue": (
+        "CourierDeliveryBehavior*.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior*.cs",
+        "Refactor/Runtime/CourierInboundCompletion*.cs",
+    ),
     "social-progression-reports": (
         "PlayerNotorietyBehavior*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "AnimusForgeWeeklyReportMapNotification.cs", "WeeklyReportSchedulePolicy.cs",

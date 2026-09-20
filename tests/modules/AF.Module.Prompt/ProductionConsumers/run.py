@@ -67,7 +67,7 @@ assert scheduled.index("MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowled
 assert scheduled.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "admission must be re-validated on all three game-thread steps"
 assert scheduled.count("SaveRuntimeGuard.IsStale(runtimeGeneration") == 4, "generation checked after each hop"
 
-courier_sched = method("CourierDeliveryBehavior.PromptSchedule.cs", "private async Task<CourierPreparedPrompt> BuildCourierPreparedPromptScheduledAsync(")
+courier_sched = method("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs", "private async Task<CourierPreparedPrompt> BuildCourierPreparedPromptScheduledAsync(")
 # J06: four Courier owner phases bracket preprocess, routing and knowledge retrieval workers.
 ordered(courier_sched,
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"', "owner.BeginCourierRulePreprocess(",
@@ -78,7 +78,7 @@ ordered(courier_sched,
         'RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"', "owner.CompleteSharedPromptBuild(phases")
 assert courier_sched.index("MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowledgeResult)") < courier_sched.index("owner.CompleteSharedPromptBuild(phases"), "Courier publishes Knowledge only in final owner phase"
 assert courier_sched.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "all four Courier owner phases re-validate run and source"
-courier_prep = method("CourierDeliveryBehavior.PromptPreparation.cs", "private async Task<T> PrepareCourierPromptRequestAsync<T>(")
+courier_prep = method("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs", "private async Task<T> PrepareCourierPromptRequestAsync<T>(")
 assert "BuildCourierPreparedPromptScheduledAsync(input, promptRun, generation, source)" in courier_prep and "Task.Run(() => BuildCourierPreparedPrompt(input))" not in courier_prep, "Courier no longer runs the whole builder in one Task.Run"
 
 policy = method("PolicySystem/History/PolicyHistoryRetrievalService.cs", "internal static bool TryRetrieveDialogueByMentions(")

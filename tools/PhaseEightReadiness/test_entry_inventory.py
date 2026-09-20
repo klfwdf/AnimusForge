@@ -19,7 +19,8 @@ EXPANDED_ENTRIES = {
     "courier-proactive-issue": (
         "CourierDeliveryBehavior.CampaignLifetime.cs", "CourierDeliveryBehavior.CommitDispatch.cs",
         "CourierDeliveryBehavior.HistoryPreparation.cs", "CourierDeliveryBehavior.PreparationAdmission.cs",
-        "CourierDeliveryBehavior.PromptPreparation.cs", "CourierDeliveryBehavior.PromptSchedule.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
     ),
     "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
     "social-progression-reports": (
