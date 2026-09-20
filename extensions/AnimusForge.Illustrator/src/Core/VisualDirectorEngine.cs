@@ -157,12 +157,14 @@ namespace AnimusForge.Illustrator.Core
             TaleWorlds.Library.Debug.Print($"[VisualDirector] Starting prompt expansion (MultimodalVision={(options?.EnableMultimodalVision == true ? "ON" : "OFF")}, RefImages={imgCount})...");
 
             IllustrationDirection direction;
-            string fallbackReason = "导演未启用或接口未配置";
+            string fallbackReason = options?.EnableLlmPromptExpansion == false ? "导演已关闭" : "导演接口未配置";
             DirectorResponse reply = null;
+            bool requestedDirector = false;
             try
             {
                 if (options != null && options.EnableLlmPromptExpansion && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))
                 {
+                    requestedDirector = true;
                     reply = await CallLlmDirectorResponseAsync(plan, options, referenceImages, client, cancellationToken).ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(reply.FailureReason))
                     {
@@ -189,6 +191,15 @@ namespace AnimusForge.Illustrator.Core
             {
                 // Raw provider errors may contain request text or credentials; diagnostics handle the raw response.
                 fallbackReason = "导演请求失败（" + ex.GetType().Name + "）";
+            }
+
+            if (requestedDirector)
+            {
+                direction = new IllustrationDirection { FallbackReason = fallbackReason };
+                ApplyResponseMetadata(direction, reply);
+                direction.DirectionStatus = "failed";
+                RecordDirection(direction);
+                throw new InvalidOperationException(direction.StatusText);
             }
 
             string rulePrompt = SynthesizeRuleBasedPrompt(plan, options);
@@ -262,6 +273,9 @@ namespace AnimusForge.Illustrator.Core
                 direction.Title = string.Empty;
                 direction.Theme = "人物与情境";
                 direction.ActionSummary = string.Empty;
+                direction.SceneYawDegrees = null;
+                direction.ScenePitchDegrees = null;
+                direction.SceneHorizontalFovDegrees = null;
             }
             if (string.IsNullOrWhiteSpace(direction.ActionSummary))
                 direction.ActionSummary = IllustrationDirection.ExtractActionSummary(direction.Prompt);
@@ -295,7 +309,7 @@ namespace AnimusForge.Illustrator.Core
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
-                        "\n构图方向：" + plan.ArtDirection + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+                        "\n构图方向：" + IllustrationDirection.RemoveActionHistory(plan.ArtDirection) + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
@@ -563,6 +577,7 @@ namespace AnimusForge.Illustrator.Core
             };
             string reason = reply.FinishReason.ToLowerInvariant();
             reply.Truncated = reason == "length" || reason == "max_tokens" || reason == "max_output_tokens";
+            // An incomplete/absent response terminates generation; only usable text reaches contract fallback.
             if (reply.Truncated) reply.FailureReason = "导演输出达到令牌上限而截断，未采用残缺正文";
             else if (reason == "content_filter" || !string.IsNullOrWhiteSpace(message?["refusal"]?.ToString()))
                 reply.FailureReason = "导演拒绝或过滤了本次输出";
@@ -597,6 +612,17 @@ namespace AnimusForge.Illustrator.Core
                 (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext();
             if (textFallback)
                 requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
+            if (referenceImages != null)
+            {
+                foreach (var reference in referenceImages)
+                {
+                    if (reference?.Kind != IllustrationReferenceKind.ScenePanorama || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
+                    requestText += "\n【环境参考取景元数据】本次提供了360×180度全景。请按正文所选环境方向，在标题、主题、行动字段之后、四段正文之前，另输出一行【环境取景】yaw=0;pitch=0;hfov=75，并将示例数值改成你选定的数值。" +
+                        "yaw范围-180至180度，0为全景中央前方，90为右方，180或-180为后方，-90为左方；pitch范围-60至60度，正值向上、负值向下；hfov范围45至100度。" +
+                        "该字段仅用于从全景投影一张正常透视环境参考，与正文选景保持一致；不限制人物姿态，也不要求最终画面固定在全景采集机位。只输出这一行数值，不在生图正文复述参数，不照搬展开畸变。";
+                    break;
+                }
+            }
 
             JObject userMessage;
             if (referenceImages != null && referenceImages.Count > 0)
@@ -686,24 +712,24 @@ namespace AnimusForge.Illustrator.Core
                                 string responseBody = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 1048576, deadline.Token).ConfigureAwait(false));
                                 if (!response.IsSuccessStatusCode)
                                 {
-                                    GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty);
+                                    GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty, (int)response.StatusCode);
                                     if (hasImages && attempt == 0 && ShouldRetryDirectorWithoutImages((int)response.StatusCode, responseBody))
                                     {
                                         reply.VisionUnsupported = true;
                                         referenceImages = null;
                                         continue;
                                     }
-                                    reply.FailureReason = "导演接口返回 HTTP " + (int)response.StatusCode;
+                                    reply.FailureReason = DescribeDirectorHttpFailure((int)response.StatusCode, responseBody);
                                     return reply;
                                 }
                                 DirectorResponse parsed;
                                 try { parsed = ParseDirectorResponse(responseBody); }
                                 catch
                                 {
-                                    GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty);
+                                    GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty, (int)response.StatusCode);
                                     throw;
                                 }
-                                GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, parsed.FinishReason);
+                                GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, parsed.FinishReason, (int)response.StatusCode);
                                 parsed.VisionUnsupported = reply.VisionUnsupported;
                                 return parsed;
                             }
@@ -715,6 +741,21 @@ namespace AnimusForge.Illustrator.Core
                 catch (Exception ex) { reply.FailureReason = "导演请求或响应解析失败（" + ex.GetType().Name + "）"; }
                 return reply;
             }
+        }
+
+        private static string DescribeDirectorHttpFailure(int statusCode, string responseBody)
+        {
+            // Classify known provider failures; raw messages can include credentials or request text.
+            string providerMessage = string.Empty;
+            try { providerMessage = JObject.Parse(responseBody)?["error"]?["message"]?.Value<string>() ?? string.Empty; }
+            catch { }
+            if (providerMessage.IndexOf("location is not supported", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                providerMessage.IndexOf("unsupported_country_region", StringComparison.OrdinalIgnoreCase) >= 0)
+                return "导演服务拒绝当前区域访问（HTTP " + statusCode + "）";
+            if (statusCode == 401 || statusCode == 403) return "导演接口认证或访问权限失败（HTTP " + statusCode + "）";
+            if (statusCode == 429) return "导演接口限流或额度不足（HTTP 429）";
+            if (statusCode >= 500) return "导演上游服务暂不可用（HTTP " + statusCode + "）";
+            return "导演接口返回 HTTP " + statusCode;
         }
 
         internal static bool ShouldRetryDirectorWithoutImages(int statusCode, string responseBody)
@@ -766,9 +807,10 @@ namespace AnimusForge.Illustrator.Core
             var sb = new StringBuilder();
             string style = BuildImageStylePreference(options);
             sb.Append(BuildLocalSceneDirection(plan));
-            if (!string.IsNullOrWhiteSpace(plan?.ArtDirection))
+            string localArtDirection = IllustrationDirection.RemoveActionHistory(plan?.ArtDirection);
+            if (!string.IsNullOrWhiteSpace(localArtDirection))
             {
-                sb.AppendLine().Append("可参考但不必逐项照搬的构图方向：").Append(plan.ArtDirection.Trim());
+                sb.AppendLine().Append("可参考但不必逐项照搬的构图方向：").Append(localArtDirection);
             }
             if (!string.IsNullOrWhiteSpace(style))
             {

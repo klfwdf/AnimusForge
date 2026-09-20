@@ -175,14 +175,27 @@ namespace AnimusForge.Illustrator.Engine
                     ["sourceMin"] = new JArray(PanoramaSnapshotInventory.Vector(bounds.min)),
                     ["sourceMax"] = new JArray(PanoramaSnapshotInventory.Vector(bounds.max))
                 };
+                bool targetBoundsRecorded = false;
                 try
                 {
                     var targetBounds = target.GetGlobalBoundingBox();
+                    if (!ScreenCaptureHelper.HasUsablePanoramaBounds(targetBounds.min, targetBounds.max))
+                        throw new InvalidOperationException("资源副本网格边界无效。");
+                    _snapshot.IncludeCopiedBounds(targetBounds.min, targetBounds.max);
+                    targetBoundsRecorded = true;
                     detail["targetFrame"] = new JArray(PanoramaSnapshotInventory.Frame(target.GetGlobalFrame()));
                     detail["targetMin"] = new JArray(PanoramaSnapshotInventory.Vector(targetBounds.min));
                     detail["targetMax"] = new JArray(PanoramaSnapshotInventory.Vector(targetBounds.max));
                 }
-                catch (Exception ex) { detail["targetMetadataError"] = ex.GetType().Name; }
+                catch (Exception ex)
+                {
+                    if (!targetBoundsRecorded)
+                    {
+                        _snapshot.IncludeCopiedBounds(bounds.min, bounds.max);
+                        _snapshot.CopiedBoundsFallbacks++;
+                    }
+                    detail["targetMetadataError"] = ex.GetType().Name;
+                }
                 Record("copied", name, detail);
             }
             finally

@@ -32,6 +32,9 @@ namespace AnimusForge.Illustrator.Engine
         internal int SkippedInvalidBounds { get; set; }
         internal Vec3 CaptureCenter { get; set; }
         internal bool CenterFromPlayer { get; set; }
+        internal double CopiedGeometryRadius { get; private set; }
+        internal int CopiedBoundsFallbacks { get; set; }
+        internal bool RenderDistanceLimited { get; set; }
         internal int InspectedNodes { get; set; }
         internal int SourceRoots { get; set; }
         internal int Batches { get; set; }
@@ -44,8 +47,9 @@ namespace AnimusForge.Illustrator.Engine
             "多镜头来自当前现场可见静态网格的独立冻结副本；保留建筑、门窗、陈设和实体材质的空间关系。" +
             "缺少的静态建筑几何可由当前场景实际资源文件补齐，按文件中的资产与摆放还原；这部分不代表已确认的实时破坏状态，脚本或动态变体不作补造。均匀中灰底色代表没有覆盖的区域，不是墙面或地面。" +
             "环境快照主动省略人物、坐骑及含骨骼或布料模拟的动态实体，不能据此推断现场人数；人物位置以现场事实与当前画面为准。" +
-            "环境参考用于识别家具、建筑、布局和材质图案；采用中性观察光、三盏无阴影补光与固定曝光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
+            "环境参考用于识别家具、建筑、布局和材质图案；采用三盏中性无阴影补光与固定曝光，关闭副本的默认太阳光，不复制原场景灯光、阴影缓存、粒子或物理组件，不代表现场采光。" +
             "完整天空、环境光、烘焙间接光和曝光无法从引擎公开接口精确回读；现场昼夜、光照及颜色以附加的真实当前画面为准。" +
+            (RenderDistanceLimited ? "部分已复制几何所需的渲染距离超过200米上限，远端可能被裁切；这些截面或空缺不是实际建筑开口。" : string.Empty) +
             (SkippedNonGeometry > 0 ? "没有普通静态网格的特殊组件已省略，不以空缺推断现场没有装饰。" : string.Empty) +
             (SkippedInvalidBounds > 0 ? "部分网格边界无法确认，已省略，不能据此断言现场不存在该物体。" : string.Empty) +
             (TerrainOmitted ? "本现场含原生地形，副本没有复制地形高度场、地形混合材质和水面；这些空缺不是悬空、平地或室内的证据。" : string.Empty);
@@ -56,6 +60,17 @@ namespace AnimusForge.Illustrator.Engine
             _sourcePointer = sourcePointer;
             TerrainOmitted = terrainOmitted;
             AssertPrivateScene();
+        }
+
+        // Reuse bounds already obtained during bounded copy batches. Selection stays
+        // within 30 m, but an intersecting wall/roof remains one complete mesh.
+        internal void IncludeCopiedBounds(Vec3 minimum, Vec3 maximum)
+        {
+            if (!ScreenCaptureHelper.HasUsablePanoramaBounds(minimum, maximum)) return;
+            double dx = Math.Max(Math.Abs((double)minimum.x - CaptureCenter.x), Math.Abs((double)maximum.x - CaptureCenter.x));
+            double dy = Math.Max(Math.Abs((double)minimum.y - CaptureCenter.y), Math.Abs((double)maximum.y - CaptureCenter.y));
+            double dz = Math.Max(Math.Abs((double)minimum.z - CaptureCenter.z), Math.Abs((double)maximum.z - CaptureCenter.z));
+            CopiedGeometryRadius = Math.Max(CopiedGeometryRadius, Math.Sqrt(dx * dx + dy * dy + dz * dz));
         }
 
         private void AssertPrivateScene()
@@ -253,6 +268,7 @@ namespace AnimusForge.Illustrator.Engine
             private int _nodeIndex;
             private int _meshIndex;
             private MatrixFrame _nodeFrame;
+            private BoundingBox _nodeBounds;
             private readonly Stopwatch _totalWatch = Stopwatch.StartNew();
             internal PanoramaSceneSnapshot Snapshot { get; }
             internal Dictionary<string, List<MatrixFrame>> CopiedGeometry { get; } = new Dictionary<string, List<MatrixFrame>>(StringComparer.Ordinal);
@@ -334,12 +350,15 @@ namespace AnimusForge.Illustrator.Engine
                     owned.SetAtmosphereWithName("character_menu_a");
                     // Only the private copy gets neutral inspection lighting. This is deliberately
                     // labelled in Notes rather than misrepresented as the mission's real exposure.
-                    owned.SetDefaultLighting();
+                    // SetDefaultLighting introduces a strong directional sun. It is not
+                    // neutral observation light and can turn roof seams into false daylight
+                    // bands. Keep the render/shadow infrastructure; supply no solar energy.
+                    Vec3 sunColor = new Vec3(0f, 0f, 0f);
+                    Vec3 sunDirection = source.GetSunDirection();
+                    owned.SetSunLight(ref sunColor, ref sunDirection);
                     owned.SetMinExposure(0f);
                     owned.SetMaxExposure(0f);
                     owned.SetTargetExposure(0f);
-                    Vec3 sunDirection = source.GetSunDirection();
-                    owned.SetSunDirection(ref sunDirection);
                     // Visibility was resolved against the source already. New mesh carriers
                     // use their default upgrade level; do not hide them with a copied level mask.
                     // Do not create weather/particle simulation in a geometry reference scene.
@@ -424,6 +443,7 @@ namespace AnimusForge.Illustrator.Engine
                                 Snapshot.SkippedByRadius++; _nodeIndex++; continue;
                             }
                             _nodeFrame = source.GetGlobalFrame();
+                            _nodeBounds = bounds;
                             if (entry != null) entry.FrozenFrame = PanoramaSnapshotInventory.Frame(_nodeFrame);
                         }
                         if (entry != null) entry.CopyState = "copy_in_progress";
@@ -546,16 +566,31 @@ namespace AnimusForge.Illustrator.Engine
                     entity.UpdateVisibilityMask();
                     PanoramaResourceSupplement.RegisterGeometry(CopiedGeometry, original.GetName(), frame.TransformToParent(original.Frame));
                     if (detail != null) detail.Result = "copied";
-                    if (detail != null)
+                    bool targetBoundsRecorded = false;
+                    try
                     {
-                        try
+                        // This is the existing per-copy metadata read, not another scene
+                        // traversal. Actual target bounds also cover retained local frames.
+                        var targetBounds = entity.GetGlobalBoundingBox();
+                        if (!HasUsablePanoramaBounds(targetBounds.min, targetBounds.max))
+                            throw new InvalidOperationException("静态副本网格边界无效。");
+                        Snapshot.IncludeCopiedBounds(targetBounds.min, targetBounds.max);
+                        targetBoundsRecorded = true;
+                        if (detail != null)
                         {
-                            var targetBounds = entity.GetGlobalBoundingBox();
                             detail.TargetFrame = PanoramaSnapshotInventory.Frame(entity.GetGlobalFrame());
                             detail.TargetBoundsMin = PanoramaSnapshotInventory.Vector(targetBounds.min);
                             detail.TargetBoundsMax = PanoramaSnapshotInventory.Vector(targetBounds.max);
                         }
-                        catch (Exception ex) { detail.MetadataError = ex.GetType().Name; }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (!targetBoundsRecorded)
+                        {
+                            Snapshot.IncludeCopiedBounds(_nodeBounds.min, _nodeBounds.max);
+                            Snapshot.CopiedBoundsFallbacks++;
+                        }
+                        if (detail != null) detail.MetadataError = ex.GetType().Name;
                     }
                     return true;
                 }

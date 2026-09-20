@@ -184,13 +184,15 @@ namespace AnimusForge.Illustrator.Core
             });
         }
 
-        internal void RecordDirectorResponse(string rawResponse, string finishReason)
-        { RecordResponse("director_response", rawResponse, null, finishReason); }
+        internal void RecordDirectorResponse(string rawResponse, string finishReason, int? httpStatus = null)
+        { RecordResponse("director_response", rawResponse, httpStatus, finishReason); }
 
         internal void RecordDirection(IllustrationDirection direction)
         {
             Safe(() => AddEvent("direction", new JObject { ["status"] = CleanText(direction.DirectionStatus), ["message"] = CleanText(direction.StatusText),
-                ["reason"] = CleanText(direction.FallbackReason), ["finishReason"] = CleanText(direction.FinishReason), ["prompt"] = CleanText(direction.Prompt) }));
+                ["reason"] = CleanText(direction.FallbackReason), ["finishReason"] = CleanText(direction.FinishReason), ["prompt"] = CleanText(direction.Prompt),
+                ["sceneYawDegrees"] = direction.SceneYawDegrees, ["scenePitchDegrees"] = direction.ScenePitchDegrees,
+                ["sceneHorizontalFovDegrees"] = direction.SceneHorizontalFovDegrees }));
         }
 
         internal async Task RecordImageRequestAsync(HttpRequestMessage request, string protocol)

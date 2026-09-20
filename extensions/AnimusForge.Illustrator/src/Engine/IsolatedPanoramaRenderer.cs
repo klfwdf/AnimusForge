@@ -15,6 +15,7 @@ namespace AnimusForge.Illustrator.Engine
     internal sealed class IsolatedPanoramaRenderer
     {
         private static int _nextRendererId;
+        private const float MaximumFarClipMeters = 200f;
         // Kept independent of native objects so cancellation/face/export ordering
         // can be exercised offline. The renderer serializes access with _gate.
         internal sealed class FaceSequence
@@ -83,6 +84,7 @@ namespace AnimusForge.Illustrator.Engine
         // This acknowledges submission of native retirement, not a GPU completion fence.
         internal Task Retired => _retired.Task;
         internal JObject ObservationLightingDiagnostics { get; private set; }
+        internal JObject CameraDiagnostics { get; private set; }
         internal bool IsReady
         {
             get
@@ -117,15 +119,32 @@ namespace AnimusForge.Illustrator.Engine
                 Directory.CreateDirectory(renderer._directory);
                 renderer.ObservationLightingDiagnostics = PanoramaObservationLighting.AddToSnapshot(snapshot, frames);
                 TaleWorlds.Library.Debug.Print("[IllustratorPanorama] Creating private cameras and vanilla tableau render target.");
+                var cameraDetails = new JArray();
                 for (int i = 0; i < frames.Length; i++)
                 {
                     var camera = Camera.CreateCamera();
                     renderer._cameras[i] = camera;
                     float offset = (float)Math.Sqrt(frames[i].origin.DistanceSquared(snapshot.CaptureCenter));
-                    float far = Math.Max(1f, ScreenCaptureHelper.PanoramaCaptureRadius + offset + 2f);
+                    // The selection sphere is not a geometry clipping sphere. Include
+                    // the farthest copied AABB corner, with a cap for oversized assets.
+                    double requiredFar = Math.Max(ScreenCaptureHelper.PanoramaCaptureRadius, snapshot.CopiedGeometryRadius) + offset + 2d;
+                    float far = (float)Math.Min(MaximumFarClipMeters, requiredFar);
+                    bool limited = requiredFar > MaximumFarClipMeters;
+                    snapshot.RenderDistanceLimited |= limited;
                     camera.SetFovHorizontal(horizontalFov, 1f, 0.05f, far);
                     camera.Frame = frames[i];
+                    cameraDetails.Add(new JObject { ["face"] = i, ["farClipMeters"] = far,
+                        ["requiredFarClipMeters"] = requiredFar, ["limited"] = limited });
                 }
+                renderer.CameraDiagnostics = new JObject
+                {
+                    ["selectionRadiusMeters"] = ScreenCaptureHelper.PanoramaCaptureRadius,
+                    ["copiedGeometryRadiusMeters"] = snapshot.CopiedGeometryRadius,
+                    ["sourceBoundsFallbacks"] = snapshot.CopiedBoundsFallbacks,
+                    ["farClipLimitMeters"] = MaximumFarClipMeters,
+                    ["limited"] = snapshot.RenderDistanceLimited,
+                    ["cameras"] = cameraDetails
+                };
                 // Initialize the snapshot's postfx/shadow context before requesting
                 // native final-pass dumps. Never change the live scene's settings.
                 Scene scene = snapshot.Scene;
