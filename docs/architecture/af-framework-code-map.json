@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "70db6ec2",
+  "sourceRevision": "fb5dc1ca756153889c0eb25a59419cafb5dfc08e",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1007,7 +1007,7 @@
     },
     {
       "id": "request.execute",
-      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs",
       "start": 30,
       "end": 107,
       "symbol": "public async Task<InteractionResult> ExecuteAsync(",
@@ -1018,7 +1018,7 @@
     },
     {
       "id": "request.cancel",
-      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs",
       "start": 109,
       "end": 124,
       "symbol": "public void Cancel(",
@@ -1029,7 +1029,7 @@
     },
     {
       "id": "request.dispose",
-      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs",
       "start": 126,
       "end": 143,
       "symbol": "public void Dispose()",
@@ -1040,7 +1040,7 @@
     },
     {
       "id": "request.lease",
-      "path": "Refactor/Runtime/InteractionRequestLease.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs",
       "start": 12,
       "end": 81,
       "symbol": "internal sealed class InteractionRequestLease",
@@ -1106,7 +1106,7 @@
     },
     {
       "id": "persona.generation.owner",
-      "path": "Refactor/Runtime/NpcPersonaGenerationOwner.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/NpcPersonaGenerationOwner.cs",
       "start": 10,
       "end": 76,
       "symbol": "internal sealed class NpcPersonaGenerationOwner",
@@ -1172,7 +1172,7 @@
     },
     {
       "id": "persona.waiter",
-      "path": "Refactor/Runtime/PersonaGenerationWaiter.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs",
       "start": 11,
       "end": 32,
       "symbol": "internal static async Task<bool> WaitAsync(",
