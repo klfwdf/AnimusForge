@@ -1,8 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
@@ -11,6 +13,115 @@ namespace AnimusForge;
 // only schedules it, tracks retirement, and preserves the receipt of an already claimed commit.
 public partial class CourierDeliveryBehavior
 {
+    /// <summary>
+    /// Default Courier compatibility boundary. Generation may prepare text,
+    /// but this method is still called only by the delivery/session owner at
+    /// the recipient. The shared action boundary therefore cannot move game
+    /// effects into pre-generation or make an old retry affect a new session.
+    /// </summary>
+    private void CommitGeneratedReplyAtRecipient(
+        CourierSession session,
+        Hero recipient,
+        bool persistHistory = true)
+    {
+        if (session == null || session.PostprocessConsumed || !session.DeliveryApplied)
+        {
+            return;
+        }
+        string raw = session.ReplyPostprocessedText ?? session.ReplyText ?? string.Empty;
+        if (recipient == null || recipient.IsDead)
+        {
+            CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);
+            return;
+        }
+
+        var actionCommitter = new LegacyChannelActionCommitter();
+        LegacyChannelActionCommitResult prepared = actionCommitter.Prepare(raw);
+        if (!prepared.HasActions)
+        {
+            if (prepared.Execution.Status == InteractionStatus.Succeeded)
+            {
+                CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);
+                return;
+            }
+            RejectCourierActionPlan(session, recipient, raw, persistHistory, prepared.Execution.ErrorCode);
+            return;
+        }
+
+        InteractionEnvelope envelope;
+        try
+        {
+            envelope = LegacyInteractionSnapshotAdapters.CaptureCourier(
+                recipient,
+                session.LetterText ?? string.Empty,
+                session.Id,
+                string.Empty);
+        }
+        catch (Exception ex)
+        {
+            Log("courier action snapshot rejected session=" + session.Id + " error=" + ex.GetType().Name);
+            RejectCourierActionPlan(session, recipient, raw, persistHistory, "courier.action_snapshot_invalid");
+            return;
+        }
+        if (envelope?.Snapshot?.Identity == null)
+        {
+            RejectCourierActionPlan(session, recipient, raw, persistHistory, "courier.action_snapshot_missing");
+            return;
+        }
+
+        bool ownerInvoked = false;
+        var executor = new LegacyChannelActionPlanExecutor(
+            envelope.Snapshot.Identity.Channel,
+            envelope.Snapshot.Identity.SessionId,
+            envelope.Snapshot.Identity.SubjectId,
+            (plan, snapshot) =>
+            {
+                ownerInvoked = true;
+                session.ReplyPostprocessedText = plan.RawPostprocessId;
+                CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);
+                if (!session.PostprocessConsumed)
+                {
+                    return InteractionStatus.RejectedByValidation;
+                }
+                LegacyChannelActionCommitResult remaining = actionCommitter.Prepare(
+                    session.ReplyPostprocessedText);
+                return remaining.HasActions
+                    || remaining.Execution.Status != InteractionStatus.Succeeded
+                    ? InteractionStatus.NonRetryableFailure
+                    : InteractionStatus.Executed;
+            });
+        LegacyChannelActionCommitResult committed = actionCommitter.Commit(
+            prepared.ActionPlan,
+            envelope.Snapshot,
+            executor);
+        if (!ownerInvoked)
+        {
+            RejectCourierActionPlan(session, recipient, raw, persistHistory, committed.Execution.ErrorCode);
+            return;
+        }
+        Log("courier action commit session=" + session.Id
+            + " status=" + committed.Execution.Status
+            + " effect=" + committed.Execution.EffectState);
+    }
+
+    private void RejectCourierActionPlan(
+        CourierSession session,
+        Hero recipient,
+        string raw,
+        bool persistHistory,
+        string errorCode)
+    {
+        string visible = LegacyActionTagParser.RemoveProtocolTags(raw ?? string.Empty, _ => true).Trim();
+        session.ReplyPostprocessedText = visible;
+        session.PostprocessConsumed = true;
+        if (persistHistory && recipient != null && !recipient.IsDead)
+        {
+            PersistCourierReplyToHistories(session, recipient, visible);
+        }
+        Log("courier action plan rejected without retry session=" + session.Id
+            + " error=" + (errorCode ?? "action_not_executed"));
+    }
+
     // Entering a commit is not proof of either full success or full rollback. Preserve
     // uncertainty on an exception/missing receipt; callers must not replay the whole turn.
     private static InteractionCommitResult CreateUnconfirmedCourierCommit(string errorCode)

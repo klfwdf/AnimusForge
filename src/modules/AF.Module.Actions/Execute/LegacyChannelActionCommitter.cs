@@ -40,6 +40,14 @@ internal sealed class LegacyChannelActionCommitter
         GameInteractionSnapshot snapshot,
         IActionPlanExecutor actionExecutor)
     {
+        LegacyChannelActionCommitResult prepared = Prepare(rawPostprocessText);
+        return prepared.HasActions
+            ? Commit(prepared.ActionPlan, snapshot, actionExecutor)
+            : prepared;
+    }
+
+    internal LegacyChannelActionCommitResult Prepare(string rawPostprocessText)
+    {
         string raw = rawPostprocessText ?? string.Empty;
         if (_parser.ExceedsActionLimit(raw))
         {
@@ -57,16 +65,11 @@ internal sealed class LegacyChannelActionCommitter
                 plan,
                 ActionExecutionCommitResult.NoActions());
         }
-        if (snapshot == null || actionExecutor == null)
-        {
-            return new LegacyChannelActionCommitResult(
-                plan,
-                ActionExecutionCommitResult.Rejected(
-                    InteractionStatus.RejectedByValidation,
-                    "missing_action_execution_boundary"));
-        }
-
-        return Commit(plan, snapshot, actionExecutor);
+        return new LegacyChannelActionCommitResult(
+            plan,
+            ActionExecutionCommitResult.Rejected(
+                InteractionStatus.RejectedByValidation,
+                "action_not_committed"));
     }
 
     /// <summary>

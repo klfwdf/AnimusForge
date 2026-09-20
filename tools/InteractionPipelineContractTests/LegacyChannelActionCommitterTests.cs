@@ -105,8 +105,24 @@ internal static class LegacyChannelActionCommitterTests
             && compatibilityCalls == 1,
             "The request-bound compatibility executor did not publish an exact terminal receipt.");
 
+        var startedOwner = new LegacyChannelActionPlanExecutor(
+            boundSnapshot.Identity.Channel,
+            boundSnapshot.Identity.SessionId,
+            boundSnapshot.Identity.SubjectId,
+            (plan, current) => InteractionStatus.NonRetryableFailure,
+            allowedTagFamilies: new[] { "ACTION:MOOD" });
+        LegacyChannelActionCommitResult started = new LegacyChannelActionCommitter(
+            new[] { "ACTION:MOOD" }).Commit(
+                "[ACTION:MOOD:happy]",
+                boundSnapshot,
+                startedOwner);
+        Require(started.Execution.Status == InteractionStatus.NonRetryableFailure
+            && started.Execution.EffectState == ActionExecutionEffectState.UnknownAfterStart
+            && !started.Execution.ActionsExecuted,
+            "An accepted asynchronous compatibility owner became retryable or falsely confirmed.");
+
         Console.WriteLine(
-            "PASS legacyChannelActionCommitter cases=9 channels=3 canonicalPlan=1 exactBinding=1 compatibilityOwner=1 disallowed=1 overflow=1 unknown=1 noAction=1");
+            "PASS legacyChannelActionCommitter cases=10 channels=3 canonicalPlan=1 exactBinding=1 compatibilityOwner=2 disallowed=1 overflow=1 unknown=2 noAction=1");
     }
 
     private static GameInteractionSnapshot Snapshot(InteractionChannel channel)

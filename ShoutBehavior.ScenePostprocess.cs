@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Modules;
+using AnimusForge.Refactor.Runtime;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -389,45 +390,26 @@ public partial class ShoutBehavior
 						}
 						string deferredTags = text2;
 						string text3 = ExtractDeferredSceneActionTags(deferredTags);
-						if (TryApplyDeferredSceneMoodTag(speakerSnapshot, text3))
+						if (!CommitDeferredSceneActionPlan(
+							text3,
+							speakerSnapshot,
+							contextSnapshot,
+							speakingHero,
+							npcCharacter,
+							runtimeTargetAgentIndex,
+							playerText,
+							replySnapshot,
+							scenePostprocessChainName,
+							replyIsDirectPlayerResponse,
+							siegeInterventionRuleInjected,
+							capturedConversationEpoch,
+							summonSnapshot,
+							guideSnapshot,
+							() => ValidateCurrentTarget("before_speech_enqueue"),
+							CanStillPublish,
+							out speechCompletion))
 						{
-							text3 = StripDeferredSceneMoodTags(text3);
-						}
-						if (siegeInterventionRuleInjected)
-						{
-							string beforeSiegeTags = text3;
-							bool siegeActionHandled;
-							TeamModuleServices.Siege.TryProcessActionTags(
-								speakingHero,
-								npcCharacter,
-								runtimeTargetAgentIndex,
-								ref text3,
-								out siegeActionHandled,
-								replyIsDirectPlayerResponse,
-								replyIsDirectPlayerResponse ? playerText : string.Empty,
-								replySnapshot);
-							if (siegeActionHandled || !string.Equals(beforeSiegeTags, text3, StringComparison.Ordinal))
-							{
-								Logger.Log("ShoutBehavior", "[DeferredPostprocess] siege_intervention handled=" + siegeActionHandled + " npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
-								text3 = ExtractDeferredSceneActionTags(text3);
-							}
-						}
-						if (TryApplyDeferredScenePostprocessActionTagsDirectly(speakingHero, npcCharacter, runtimeTargetAgentIndex, ref text3, replyIsDirectPlayerResponse ? playerText : string.Empty, replySnapshot, scenePostprocessChainName, replyIsDirectPlayerResponse))
-						{
-							text3 = ExtractDeferredSceneActionTags(text3);
-						}
-						if (HasNonMoodDeferredSceneActionTag(text3))
-						{
-							if (!TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot, text3))
-							{
-								if (!ValidateCurrentTarget("before_speech_enqueue"))
-								{
-									return false;
-								}
-								speechCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-								EnqueueSpeechLineWithOptions(speakerSnapshot, text3, contextSnapshot, commitHistory: false, suppressStare: true, allowPlayerDirectedActions: true, requiredConversationEpoch: capturedConversationEpoch, summonSnapshot, guideSnapshot, null, speechCompletion, canStillPublish: CanStillPublish, playerDirectedActionText: replyIsDirectPlayerResponse ? playerText : string.Empty, playerDirectedNpcReplyText: replySnapshot);
-								return true;
-							}
+							return false;
 						}
 						if (!ValidateCurrentTarget("before_relay_publish"))
 						{
@@ -488,6 +470,165 @@ public partial class ShoutBehavior
 			}
 		});
 		return task;
+	}
+
+	private bool CommitDeferredSceneActionPlan(
+		string rawTags,
+		NpcDataPacket speakerSnapshot,
+		List<NpcDataPacket> contextSnapshot,
+		Hero speakingHero,
+		CharacterObject npcCharacter,
+		int targetAgentIndex,
+		string playerText,
+		string replyText,
+		string chainName,
+		bool replyIsDirectPlayerResponse,
+		bool siegeInterventionRuleInjected,
+		int conversationEpoch,
+		List<SceneSummonPromptTarget> summonTargets,
+		List<SceneGuidePromptTarget> guideTargets,
+		Func<bool> validateCurrentTarget,
+		Func<bool> canStillPublish,
+		out TaskCompletionSource<bool> speechCompletion)
+	{
+		speechCompletion = null;
+		var actionCommitter = new LegacyChannelActionCommitter();
+		LegacyChannelActionCommitResult prepared = actionCommitter.Prepare(rawTags);
+		if (!prepared.HasActions)
+		{
+			if (prepared.Execution.Status != InteractionStatus.Succeeded)
+			{
+				Logger.Log("ShoutBehavior", "[DeferredPostprocess] action protocol rejected error="
+					+ prepared.Execution.ErrorCode);
+			}
+			return true;
+		}
+
+		InteractionEnvelope envelope;
+		try
+		{
+			envelope = LegacyInteractionSnapshotAdapters.CaptureSceneShout(
+				playerText ?? string.Empty,
+				targetAgentIndex,
+				null,
+				null);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[DeferredPostprocess] action snapshot rejected error="
+				+ ex.GetType().Name);
+			return false;
+		}
+		if (envelope?.Snapshot?.Identity == null)
+		{
+			return false;
+		}
+
+		bool targetRejected = false;
+		TaskCompletionSource<bool> pendingSpeech = null;
+		var executor = new LegacyChannelActionPlanExecutor(
+			envelope.Snapshot.Identity.Channel,
+			envelope.Snapshot.Identity.SessionId,
+			envelope.Snapshot.Identity.SubjectId,
+			(plan, snapshot) =>
+			{
+				if (validateCurrentTarget == null || !validateCurrentTarget())
+				{
+					targetRejected = true;
+					return InteractionStatus.RejectedByValidation;
+				}
+
+				string remaining = plan.RawPostprocessId;
+				bool consumed = false;
+				if (TryApplyDeferredSceneMoodTag(speakerSnapshot, remaining))
+				{
+					consumed = true;
+					remaining = StripDeferredSceneMoodTags(remaining);
+				}
+				if (siegeInterventionRuleInjected)
+				{
+					string beforeSiegeTags = remaining;
+					TeamModuleServices.Siege.TryProcessActionTags(
+						speakingHero,
+						npcCharacter,
+						targetAgentIndex,
+						ref remaining,
+						out bool siegeActionHandled,
+						replyIsDirectPlayerResponse,
+						replyIsDirectPlayerResponse ? playerText : string.Empty,
+						replyText);
+					if (siegeActionHandled
+						|| !string.Equals(beforeSiegeTags, remaining, StringComparison.Ordinal))
+					{
+						consumed = true;
+						Logger.Log("ShoutBehavior", "[DeferredPostprocess] siege_intervention handled="
+							+ siegeActionHandled + " npc="
+							+ (speakingHero?.StringId ?? speakerSnapshot?.Name ?? "unknown"));
+						remaining = ExtractDeferredSceneActionTags(remaining);
+					}
+				}
+				if (TryApplyDeferredScenePostprocessActionTagsDirectly(
+					speakingHero,
+					npcCharacter,
+					targetAgentIndex,
+					ref remaining,
+					replyIsDirectPlayerResponse ? playerText : string.Empty,
+					replyText,
+					chainName,
+					replyIsDirectPlayerResponse))
+				{
+					consumed = true;
+					remaining = ExtractDeferredSceneActionTags(remaining);
+				}
+				if (HasNonMoodDeferredSceneActionTag(remaining))
+				{
+					if (TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot, remaining))
+					{
+						consumed = true;
+					}
+					else
+					{
+						if (validateCurrentTarget == null || !validateCurrentTarget())
+						{
+							targetRejected = true;
+							return InteractionStatus.RejectedByValidation;
+						}
+						pendingSpeech = new TaskCompletionSource<bool>(
+							TaskCreationOptions.RunContinuationsAsynchronously);
+						EnqueueSpeechLineWithOptions(
+							speakerSnapshot,
+							remaining,
+							contextSnapshot,
+							commitHistory: false,
+							suppressStare: true,
+							allowPlayerDirectedActions: true,
+							requiredConversationEpoch: conversationEpoch,
+							summonTargets,
+							guideTargets,
+							null,
+							pendingSpeech,
+							canStillPublish: canStillPublish,
+							playerDirectedActionText: replyIsDirectPlayerResponse ? playerText : string.Empty,
+							playerDirectedNpcReplyText: replyText);
+						consumed = true;
+					}
+				}
+				return pendingSpeech != null
+					? InteractionStatus.NonRetryableFailure
+					: consumed
+						? InteractionStatus.Executed
+						: InteractionStatus.RejectedByValidation;
+			});
+
+		LegacyChannelActionCommitResult committed = actionCommitter.Commit(
+			prepared.ActionPlan,
+			envelope.Snapshot,
+			executor);
+		speechCompletion = pendingSpeech;
+		Logger.Log("ShoutBehavior", "[DeferredPostprocess] action commit status="
+			+ committed.Execution.Status + " effect=" + committed.Execution.EffectState
+			+ " error=" + committed.Execution.ErrorCode);
+		return !targetRejected;
 	}
 
 

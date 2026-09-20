@@ -21,6 +21,13 @@ def tokens(text):
 def projected_source(source):
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     if source == original: return source
+    # J09 keeps the default call name stable for the J07 projection, but moves
+    # the old live-object implementation behind an action-only commit wrapper.
+    # Project only those two reviewed symbol references back before checking
+    # that no unrelated monolith code drifted.
+    legacy_name = 'ApplyNativeConversationGameActionsLegacyCore'
+    assert source.count(legacy_name) == 2, 'Unreviewed J09 Native action owner drift'
+    source = source.replace(legacy_name, 'ApplyNativeConversationGameActionsCore')
     for file,digest in REVIEW['addedFiles'].items():
         assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest, 'Unreviewed J07b source drift: turn dependency '+file
     old = ex.declaration(original, OLD_SIGNATURE)
