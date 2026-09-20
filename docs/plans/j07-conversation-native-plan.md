@@ -2,7 +2,7 @@
 
 > 制定时历史基线（不是回退目标）：分支 `codex/af-main-refactor-continuation-20260831`，产品源码 `70db6ec2`，测试终点 `08699b4f`，文档 `63e74e7d`。
 > 本文件是 J07 可执行计划；各切片实施与验证由主台账当前节记录。总计划条目见[主台账 J07 节](../animusforge-refactoring-and-repository-reorganization-plan.md)。
-> 状态：`ACTIVE / J07b_IN_PROGRESS`。G1/G2、J07a、票据/claim owner 与正文接收阶段已落地；`d9e9aae1` 修复观察/提前 TTS 的 worker 游戏访问。主编排 484→454 行，其他阶段仍待拆。见[当前回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j07b-mainreply-thread-boundary-20260920)，不是 J07/J10 验收。
+> 状态：`J07_CLOSEOUT_IN_PROGRESS`。执行第 0.2 节 C1–C3 有限收尾清单，完成后连续进入 J08/J09。产品仍为 `d9e9aae1`，不能把本次工作流纠偏当成 J07 已完成。
 > 历史推送：GitHub 指定交付分支曾核对并补推至 `b9b2215b`（原远端 `2946bf3d`，3 个提交普通快进）。本地施工分支仍为 `codex/af-modularize-j04-20260918`；不要用本地分支名替代发布目标。
 > 历史计划审查入口：[2026-09-20 推送与接续计划](../animusforge-refactoring-and-repository-reorganization-plan.md#j07-plan-review-20260920)。旧版“J06 只剩实机”的判断由该节纠正。
 
@@ -43,6 +43,41 @@ J04–J06 主要抽取检索、组合算法，同时已经调整捕获与后台�
 - 同文件 `:99-113` 把定居点/家族候选置空，多类 formatter 和常驻实体仍为假端口。可以提取实际生产方法、用可控游戏替身扩大离线验证；真实 TaleWorlds 属性成本另列实机，不能称全部“离线不可闭合”。
 - `tests/modules/AF.Module.Prompt/SharedCompletionDifferential/run.py:90-145` 当前把组件差分产生的文本输送给共享 completion 和最终请求构造器，证明的是已选 fixture 的文本传递。G2 应统一各组件的共同 input/mentions/目标，验证 DTO→实际消费者与失败回退；不能以把字符串塞入环境变量冒充完整真实 Host 链路。
 - G1/G2 仅允许补测试、必要的测试路径适配和证据；如暴露生产回归，单独记录旧/新行为、修复点和回归范围后再做最小修复，不顺带重写政策/宴会/GCCZ。
+
+<a id="j07-finite-closeout-20260920"></a>
+
+### 0.2 用户最新收口：停止微切片循环，完成 J07 后接 J08/J09（2026-09-20）
+
+本节依用户最新要求调整**执行方式和自动化优先级**，不降低功能、线程、存档或接口要求。当前产品仍为 `d9e9aae1`，J07 尚未闭合。本节取代旧“每个小阶段都重复整套门禁”的流程；第 5 节第 18–19 条同步调整，其他时序/授权约束保留。
+
+**复核结论**：J07b 的实际修复有价值，但工作组织过度细分。自 `a893feab` 至 `4b2d734c`，测试/工具累计新增 1213 行、涉及 40 文件，产品新增 281/删除 86 行，而 Native 主编排只从 484 变为 454 行。这不是以代码比例判断质量，而是结合多次为同一调用链维护逆变换、因非行为改动重复全构建，确认验证维护正在挤占主体拆分。停止以测试数量、文件数量、注释或行数作为继续滞留 J07 的理由。
+
+#### 有限收尾清单（只有以下三项是 J07 退出门）
+
+| 项 | 要完成的真实责任 | 可执行退出条件 | 当前状态 |
+| --- | --- | --- | --- |
+| C1 整回合编排 | 从实际 Native 入口接到唯一阶段协调 owner；按准备/历史与 Prompt、正文、raw 与展示、后处理/权威完成等真实责任分解；输入/结果强类型，停止/异常传播明确 | 入口不再独自混合整回合控制；当前阶段的状态和算法由真实消费者调用；无第二条缩水管线、重复实现或只搬家的大方法。允许必要 Prompt/游戏 adapter 保留，不规定 120 行 | 未完成 |
+| C2 Native 安全收口 | 核完这条真实责任链的 owner/generation/会话/来源、游戏线程捕获/资格/写入、pending 撤销和 terminal/unknown | 修复具名实际风险；开场/失败提示/TTS/关窗及内部/外部接口不退化；五步 Prompt、历史 fork/join、后处理→动作和早期特例顺序不变。不得将同步 LLM 塞进主线程 | 部分完成；已完成票据/claim/正文接收和 raw 线程修复，剩余链路待合并审查 |
+| C3 整包验收与交接 | 使用现有真实 owner/渠道证据，针对 C1/C2 新变化补必要用例，集中跑当前候选 | Native 五组、相关生命周期/pipeline/历史/TTS/Native API、双 API+Bootstrap、API/存档和受影响三渠道接缝通过；记录真实未测项/保留责任/回滚，更新入口和地图 | 待 C1/C2 候选稳定后执行；已有不变证据复用 |
+
+三项全部闭合后记 **J07_OFFLINE_VERIFIED**，随即进入 J08，再进入 J09；不是 LIVE/SAVE 验收或全项目 J17 DONE。不得把尚未完成的 C1/C2 改名“移交”来提前盖章。实机/旧档/真实音频等与 J08 无关的事项独立列出，不再反复拿它们阻塞下一包。
+
+#### 工作节奏与停止追加规则
+
+- 以一个完整责任包为工作单位。允许在同一包内连续改多个相关方法/文件，保留可审阅 diff、修改前检查点和随时可回滚的工作状态；不再每减少几行就收一次工。
+- 每次实际新行为/时序风险选择针对性验证；收敛的整包候选统一执行完整门禁。测试失败后仅复跑受影响项；纯 MD、注释、报告变化不触发六构建。
+- 已通过且源码/依赖/输入未变的证据直接引用。现有测试不可无故删掉或改弱；新保护只补能命中该风险的用例，不为“NativeStageSequence 必须四个新目录”等形式再造重复 harness。
+- 历史源码逆变换仅是既有校验兼容工具，不再成为新功能；确实因产品变化失效时精确适配并提供对应行为证据，不以刷新 hash 消红。观察到的真实 bug 优先修，未证实猜想登记而不无限扩大收尾范围。
+- 单代理，无新任务/子代理；不自动推送/部署/Stage/打包/切默认，不改政策/宴会/GCCZ 业务，不动其他工作树、游戏和存档。
+
+#### 后续与自动化
+
+- J08：原 LLM 非流/流传输、取消/超时/重试、模型目录与 TTS owner，保留 400 thinking fallback、空回复补救、SSE/Unicode/可见回复过滤；确定性 HttpMessageHandler 验证，不访问付费 provider。
+- J09：三渠道共享标签/解析/计划、领域 typed 执行端口与回执；资格→tag_rules→解析→唯一执行→历史/AFEF；区分成功、失败、部分成功和 unknown，正文成功不能冒充动作成功。
+- 既有自动化 `af-7-8` 已改为 **J07 整包收尾 → J08 → J09**，仍每 30 分钟接续，非每轮只做小改动。当前自动化目标不再包含 J10 的立即实施，J10/J14 留在后续总计划。
+- 保留原截止 UTC `2026-09-20T17:48:36Z`，未擅自延长。届时未完成如实交接，不按时限硬标完成；最终技术 HANDOFF 入仓库，本地简明版 `.tmp/af-j07-j09-team-handoff-20260920.md` 不纳入 Git，并暂停自动化。截止前不能因为一次回复结束自行暂停。
+
+---
 
 ## 1. 现状盘点（基线源码一基行号，2026-09-20 复核）
 
@@ -182,7 +217,7 @@ src/modules/AF.Module.Conversation/
 
 ## 4. 验收标准（每条都要可执行、可变异）
 
-### 4.1 新建 `tests/modules/AF.Module.Conversation/`
+### 4.1 验证责任（复用现有 runner，不为目录完整重复造套件）
 
 | 套件 | 断言 | 必须被拒收的变异 |
 | --- | --- | --- |
@@ -191,7 +226,7 @@ src/modules/AF.Module.Conversation/
 | `NativeStageSequence` | 9 个跳跃点的重验项完整；顺序不可交换；pending opening 在 busy 拒绝之后消费 | 删任一重验点；把 opening 消费提到 busy 检查之前 |
 | `NativeRollback` | 5 个当前回滚调用点按真实阶段逐个映射；区分仅排队、已领取/执行、成功/unknown；只撤销本请求 pending，不撤销已执行动作 | 将 unknown 当可重试；旧请求撤销新请求的 pending；已领取后超时再次派发 |
 
-### 4.2 既有 runner 全绿（J07 每个切片后复跑）
+### 4.2 既有 runner 集合（按第 0.2 节责任包集中验收）
 
 `NativeConversationAdmission`（6 个入口）、`NativePreparationBoundary`、`NativePendingHistoryBoundary`（+mut）、`NativeActionDispatchOutcome`（+mut）、`NativeCompletionBoundary`（+mut）、`NativeHistorySnapshot`（+parity）、`NativeModuleSubmission`（+source_boundary）、`NativeTtsFallbackBoundary`、`InteractionRequestLifetime`（+compat）、`InteractionPipelineContract`。
 
@@ -232,8 +267,8 @@ src/modules/AF.Module.Conversation/
 
 16. **先 J07a 再 J07b**：纯 rename 单独成提交、单独验证，避免"搬家 + 重写"混在一个 diff 里无法二分。
 17. 所有宿主改写继续用 **Python 字节级脚本**（精确字节锚点或保留 `CRLF` 的正则，保留原 BOM 状态）；`ShoutBehavior.cs` 是 CRLF + 39,669 行，**禁止用 Edit 工具**（会规范化行尾，制造假 diff）。
-18. 每个切片后必须跑**受影响的 runner**，不是只跑新契约；Native 五组互相耦合。
-19. **484 行方法一次只拆一个阶段**，每拆一段就编译 + 跑 Native 五组，不要一次性重排。
+18. 完整责任包收敛后跑 **Native 五组与受影响 runner**；包内按实际风险做针对性验证，失败修复只复跑受影响项。不能只跑新契约；已有有效证据可复用，不为注释/文档重复六构建。
+19. **按第 0.2 节完整责任包完成剩余编排**，可连续处理相关阶段而非几行一停；保留可审阅差异与检查点，阶段顺序不变量不得改变，最终候选执行整包编译和回归。此流程由用户最新收口要求取代原微切片门禁。
 20. 变异测试必须**真的会红**：J06 有过 `secondary-unbounded` 变异因为场景不触发而假绿的教训，新增每条变异都要先确认它在修复前失败。
 21. 环境：`AF_DOTNET` / `AF_NEWTONSOFT` 环境变量；Scene runner 需显式 `--dotnet`；`ChannelCutoverBoundaryTests` 需 `--newtonsoft`。硬编码本机路径的 csproj 一律改占位符（J06 已修过 Index 一例）。
 22. **不推送、不部署、不写游戏目录、不动存档**，除非明确授权。
@@ -249,13 +284,13 @@ src/modules/AF.Module.Conversation/
 ## 6. 交付物
 
 - 产品源码（下一实施任务）：`src/modules/AF.Module.Conversation/{Internal,Channels/Native}`；宿主保留薄游戏线程适配。建议压薄入口但不以行数替代真实职责拆分。第一正文接收阶段已抽取，当前主编排 454 行；以下原 484 行坐标保留为规划基线，最新坐标见台账。当前 Internal 已原样归位；Channels/Native 的票据槽与排队 claim 已有真实消费者，完整阶段序列及 rollback owner 仍待 J07b。不得为填满上方拟议文件名单制造无消费者接口。
-- 测试：`tests/modules/AF.Module.Conversation/{Lifecycle,NativeTicket,NativeStageSequence,NativeRollback}` 四套 + 各自变异。
+- 测试：覆盖 Lifecycle / NativeTicket / NativeStageSequence / NativeRollback 的真实责任；优先复用现有 runner，只给缺失风险补必要用例/反例，不强制为了四个目录再造四套重复框架。
 - 文档：主台账 J07 回执（含保留项与未闭合项）、代码地图刷新绑定、`af-framework-code-scope.md` 更新、HANDOFF 置顶。
 
 ## 7. 验证执行与停点
 
 - 第 5 节 **25 条编号保留**。其中 6–15、24–25 是源码时序/归属约束；16–22 是工程约定而不是凭空编造的源码注释。开工绑定当前源码 revision 与 symbol，旧行号仅导航。
-- “Native 五组”明确为 `tools/NativeConversationAdmissionTests`、`NativePreparationBoundaryTests`、`NativePendingHistoryBoundaryTests`、`NativeActionDispatchOutcomeTests`、`NativeCompletionBoundaryTests`。每个实际阶段抽取后编译两 API 并复跑这五组正常入口；相关守卫变异随切片执行，完整生命周期/历史/API/共享渠道矩阵在 J07d 集成验收。
+- “Native 五组”明确为 `tools/NativeConversationAdmissionTests`、`NativePreparationBoundaryTests`、`NativePendingHistoryBoundaryTests`、`NativeActionDispatchOutcomeTests`、`NativeCompletionBoundaryTests`。按第 0.2 节以完整责任包集中编译两 API 并复跑五组；包内新风险做针对性验证，失败修复定向复跑，不以机械阶段数量重复全门禁。完整生命周期/历史/API/共享渠道矩阵在最终 J07d 集成验收。
 - G0 先查清 `NativePreparationBoundaryTests` 所关联 `GameLifetimeTests/source_parity.py` 已记录的旧基线断言失败：旧源码同样红与新回归分开，不删除断言或刷新 hash。更新定位需要独立的行为等价证据。
 - 每条负向变异记录：编译成功、命中指定用例、得到预期失败原因。编译失败、路径缺失、任意非零退出都不算守卫拒收；全部变异跑完也不能替代正常用例 PASS。
 - 使用强制异步 yield 和可控调度推进 busy、owner 替换、load、epoch 变更、presentation 重开、排队前超时、已领取后超时、抛异常、重复回执。禁止靠睡眠碰运气或只 grep 守卫字符串证明时序安全。
