@@ -17061,7 +17061,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return InteractionStatus.RejectedByValidation;
 			}
 			string content = actionPlan?.RawPostprocessId ?? "";
-			NativeConversationGameActionResult actionResult = instance.ApplyNativeConversationGameActionsCore(
+			NativeConversationGameActionResult actionResult = instance.ApplyNativeConversationGameActionsLegacyCore(
 				targetHero,
 				targetCharacter,
 				targetNpc,
@@ -19629,7 +19629,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(
+	private NativeConversationGameActionResult ApplyNativeConversationGameActionsLegacyCore(
 		Hero targetHero,
 		CharacterObject targetCharacter,
 		NpcDataPacket npc,

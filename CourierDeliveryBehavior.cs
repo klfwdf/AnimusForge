@@ -5040,7 +5040,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true)
+	private void CommitGeneratedReplyActionsAtRecipientCore(CourierSession session, Hero recipient, bool persistHistory = true)
 	{
 		if (session == null || session.PostprocessConsumed)
 		{
@@ -5168,7 +5168,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	/// <summary>
 	/// Main-thread bridge for the detached Courier reply path. Domain handlers
-	/// remain in <see cref="CommitGeneratedReplyAtRecipient"/>; the optional
+	/// remain in <see cref="CommitGeneratedReplyActionsAtRecipientCore"/>; the optional
 	/// history write is disabled here because InteractionResultCommitter owns
 	/// the single shared user/assistant memory commit.
 	/// </summary>
@@ -5208,7 +5208,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				return InteractionStatus.RejectedByValidation;
 			}
 			session.ReplyPostprocessedText = actionPlan.RawPostprocessId;
-			CommitGeneratedReplyAtRecipient(session, recipient, persistHistory: false);
+			CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory: false);
 			return session.PostprocessConsumed
 				? InteractionStatus.Executed
 				: InteractionStatus.RejectedByValidation;

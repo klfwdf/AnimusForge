@@ -109,10 +109,18 @@ internal sealed class LegacyChannelActionPlanExecutor :
                 _effectState = ActionExecutionEffectState.ConfirmedEffect;
                 return status;
             }
+            if (status == InteractionStatus.NonRetryableFailure)
+            {
+                // The compatibility owner uses this state only after it has
+                // accepted/started work but cannot synchronously prove the
+                // final effect (for example a Scene speech queue). Never turn
+                // that uncertainty into a retryable rejection.
+                _effectState = ActionExecutionEffectState.UnknownAfterStart;
+                _executionErrorCode = "channel.action_unknown_after_start";
+                return status;
+            }
             _executionErrorCode = "channel.action_not_executed";
-            return status == InteractionStatus.NonRetryableFailure
-                ? status
-                : InteractionStatus.RejectedByValidation;
+            return InteractionStatus.RejectedByValidation;
         }
         catch
         {

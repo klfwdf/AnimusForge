@@ -46,7 +46,8 @@ if a.mutate=='ignore-run':partial=partial.replace('&& _courierPromptRuns.TryGetV
 if a.mutate=='keep-stale-tags':
  partial=partial.replace('input.Session.ReplyText = string.Empty;','').replace('input.Session.ReplyPostprocessedText = string.Empty;','').replace('input.Session.PostprocessConsumed = true;','')
 if a.mutate=='old-fallback':partial=partial.replace('input.Session.InboundFallbackLetter, "inbound_prompt_source_changed"','input.FallbackLetter, "inbound_prompt_source_changed"')
-commit=ex.declaration(courier,'private void CommitGeneratedReplyAtRecipient(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n\t}\n'
+commit=ex.declaration(courier,'private void CommitGeneratedReplyActionsAtRecipientCore(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n\t}\n'
+commit+='\n\tprivate void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true) => CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);\n'
 hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit)
 out=HERE/'.generated'/('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')

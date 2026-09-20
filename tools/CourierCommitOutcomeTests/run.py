@@ -6,6 +6,12 @@ spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBound
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['false_no_effect','retryable_failure','lose_inbound_effect','unguarded_diagnostic']);a=p.parse_args()
 name='original' if a.original else a.mutate or 'current';out=HERE/'.generated'/name;out.mkdir(parents=True,exist_ok=True)
 source=subprocess.check_output(['git','show','29448d1b:CourierDeliveryBehavior.CommitDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')
+dispatch_methods='\n\n'.join(ex.declaration(source,signature) for signature in [
+ 'private static InteractionCommitResult CreateUnconfirmedCourierCommit(',
+ 'private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(',
+ 'private InteractionCommitResult InvokeCourierRefactorCommit(',
+ 'private static async Task<InteractionCommitResult> AwaitCourierRefactorCommitAsync('])
+source='using System;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing AnimusForge.Refactor.Contracts;\nusing AnimusForge.Refactor.Runtime;\nusing TaleWorlds.Library;\nnamespace AnimusForge;\npublic partial class CourierDeliveryBehavior\n{\n'+dispatch_methods+'\n}\n'
 if a.mutate=='false_no_effect':source=source.replace('errorCode, ActionExecutionEffectState.UnknownAfterStart','errorCode, ActionExecutionEffectState.NoConfirmedEffect',1)
 if a.mutate=='retryable_failure':source=source.replace('new InteractionCommitResult(InteractionStatus.NonRetryableFailure, false, false,','new InteractionCommitResult(InteractionStatus.RejectedByValidation, false, false,',1)
 if a.mutate=='lose_inbound_effect':source=source.replace('result.EffectState);','ActionExecutionEffectState.NoConfirmedEffect);',1)

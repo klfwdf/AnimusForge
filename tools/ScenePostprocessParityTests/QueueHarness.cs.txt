@@ -66,6 +66,20 @@ public sealed class QueueHost
     }
     private static bool HasNonMoodDeferredSceneActionTag(string text)=>!string.IsNullOrWhiteSpace(text);
     private static bool TryExecuteDeferredSceneFollowTagsDirectly(NpcDataPacket speaker,string text){Q.AssertMain("follow");return false;}
+    private bool CommitDeferredSceneActionPlan(string rawTags,NpcDataPacket speakerSnapshot,List<NpcDataPacket> contextSnapshot,Hero speakingHero,CharacterObject npcCharacter,int targetAgentIndex,string playerText,string replyText,string chainName,bool replyIsDirectPlayerResponse,bool siegeInterventionRuleInjected,int conversationEpoch,List<SceneSummonPromptTarget> summonTargets,List<SceneGuidePromptTarget> guideTargets,Func<bool> validateCurrentTarget,Func<bool> canStillPublish,out TaskCompletionSource<bool> speechCompletion)
+    {
+        string remaining=rawTags;speechCompletion=null;
+        if(TryApplyDeferredSceneMoodTag(speakerSnapshot,remaining))remaining=StripDeferredSceneMoodTags(remaining);
+        TryApplyDeferredScenePostprocessActionTagsDirectly(speakingHero,npcCharacter,targetAgentIndex,ref remaining,replyIsDirectPlayerResponse?playerText:string.Empty,replyText,chainName,replyIsDirectPlayerResponse);
+        remaining=ExtractDeferredSceneActionTags(remaining);
+        if(HasNonMoodDeferredSceneActionTag(remaining)&&!TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot,remaining))
+        {
+            if(validateCurrentTarget==null||!validateCurrentTarget())return false;
+            speechCompletion=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            EnqueueSpeechLineWithOptions(speakerSnapshot,remaining,contextSnapshot,false,true,true,conversationEpoch,summonTargets,guideTargets,null,speechCompletion,canStillPublish,replyIsDirectPlayerResponse?playerText:string.Empty,replyText);
+        }
+        return true;
+    }
     private static void EnqueueSpeechLineWithOptions(NpcDataPacket speaker,string text,List<NpcDataPacket> context,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,object extra,TaskCompletionSource<bool> completion,Func<bool> canStillPublish,string playerDirectedActionText,string playerDirectedNpcReplyText)
     {
         Q.AssertMain("enqueue");Q.AssertRequestScope();Q.SpeechEnqueues++;
