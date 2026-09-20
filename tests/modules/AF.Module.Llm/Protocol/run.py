@@ -111,6 +111,14 @@ def inverse_check(actual_shout: str, actual_policy: str) -> dict[str, str]:
         if hashlib.sha256(current.encode()).hexdigest() != transport_review["currentMethodSha256"]:
             raise ValueError("Unreviewed J08 non-stream consumer change")
         actual_shout = actual_shout.replace(current, prior, 1)
+    stream_review = json.loads((ROOT / "tests/modules/AF.Module.Llm/StreamingTransport/primary-source-review.json").read_text(encoding="utf-8-sig"))
+    stream_signature = "public static async Task CallApiWithMessagesStream("
+    current_stream = one_declaration(actual_shout, stream_signature)
+    prior_stream = one_declaration(source("ShoutNetwork.cs", stream_review["baseline"]), stream_signature)
+    if current_stream != prior_stream:
+        if hashlib.sha256(current_stream.encode()).hexdigest() != stream_review["currentMethodSha256"]:
+            raise ValueError("Unreviewed J08 streaming consumer change")
+        actual_shout = actual_shout.replace(current_stream, prior_stream, 1)
     baseline = source("ShoutNetwork.cs", BASE_REVISION)
     baseline_blocks = {name: one_constant(baseline, name) for name in CONSTANTS}
     baseline_blocks.update({name: one_declaration(baseline, signature) for name, signature in METHODS.items()})
