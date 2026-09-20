@@ -5,7 +5,7 @@ using System.Linq;
 namespace AnimusForge
 {
     public sealed class TextObject { public string Value; public override string ToString() => Value; }
-    public interface IFaction { TextObject Name { get; } bool IsAtWarWith(IFaction other); }
+    public interface IFaction { TextObject Name { get; } string StringId { get; } bool IsAtWarWith(IFaction other); }
     public sealed class TraitObject { }
     public static class DefaultTraits
     {
@@ -16,25 +16,66 @@ namespace AnimusForge
         public static List<Kingdom> All = new List<Kingdom>();
         public TextObject Name { get; set; }
         public TextObject InformalName;
-        public string StringId;
+        public string StringId { get; set; }
         public Hero Leader;
-        public bool IsEliminated;
+        public bool IsEliminated, ModCreated;
+        public float CurrentTotalStrength;
+        public CultureObject Culture;
+        public List<Clan> Clans = new List<Clan>();
+        public TextObject EncyclopediaText;
+        public bool IsAllyWith(Kingdom other) => false;
         public TextObject EncyclopediaRulerTitle;
         public bool IsAtWarWith(IFaction other) => false;
     }
-    public sealed class Clan
+    public sealed class Clan : IFaction
     {
-        public TextObject Name;
+        public static List<Clan> All = new List<Clan>();
+        public static Clan PlayerClan;
+        public TextObject Name { get; set; }
         public TextObject InformalName;
-        public string StringId;
+        public string StringId { get; set; }
         public Hero Leader;
         public Kingdom Kingdom;
         public bool IsEliminated;
+        public float Influence;
+        public int Gold, Tier;
+        public CultureObject Culture;
+        public List<Hero> Heroes = new List<Hero>();
+        public List<Town> Fiefs = new List<Town>();
+        public bool IsAtWarWith(IFaction other) => false;
     }
-    public sealed class Settlement { public TextObject Name; public string StringId; }
+    public sealed class CultureObject { public TextObject Name; public string StringId; }
+    public sealed class Settlement
+    {
+        public static List<Settlement> All = new List<Settlement>();
+        public TextObject Name; public string StringId;
+        public Clan OwnerClan; public IFaction MapFaction; public CultureObject Culture;
+        public bool IsVillage, IsTown, IsCastle, IsHideout, IsFortification, IsUnderSiege;
+        public float Militia; public PartyBase Party; public Town Town; public Village Village;
+        public List<Village> BoundVillages = new List<Village>();
+    }
+    public sealed class Town
+    {
+        public Settlement Settlement; public MobileParty GarrisonParty;
+        public float Prosperity, Loyalty, Security;
+    }
+    public sealed class Village
+    {
+        public enum VillageStates { Normal, BeingRaided }
+        public Settlement Settlement; public float Hearth; public VillageStates VillageState;
+    }
+    public sealed class Roster { public int TotalManCount; }
+    public sealed class MapEvent { public bool IsFinalized; }
     public sealed class Army { public TextObject Name; }
     public sealed class MobileParty
     {
+        public static MobileParty MainParty;
+        public static List<MobileParty> All = new List<MobileParty>();
+        public bool IsActive = true, IsVisible, IsMainParty, IsGarrison, IsMilitia;
+        public MapEvent MapEvent; public PartyBase Party; public Roster MemberRoster;
+        public Hero LeaderHero, Owner; public IFaction MapFaction; public Clan ActualClan;
+        public Settlement HomeSettlement; public float SeeingRange; public CampaignVec2 Position;
+        public string ShipInfo;
         public TextObject Name;
         public string StringId;
         public Settlement CurrentSettlement, TargetSettlement;
@@ -43,6 +84,7 @@ namespace AnimusForge
     }
     public sealed class PartyBase
     {
+        public int NumberOfAllMembers;
         public bool IsSettlement, IsMobile;
         public Settlement Settlement;
         public MobileParty MobileParty;
@@ -69,13 +111,19 @@ namespace AnimusForge
     }
     public sealed class CharacterObject { public TextObject Name; public string StringId; }
     public static class RomanceSystemBehavior { public static bool TryGetPrivateLoveAsPlayerRelation(Hero hero, out int relation) { relation = 0; return false; } }
-    public static class MyBehavior { public static string BuildPlayerPublicDisplayNameForExternal() => "Player"; }
-    public sealed class Campaign { public static Campaign Current = new Campaign(); }
+    public static class MyBehavior { public static string BuildPlayerPublicDisplayNameForExternal() => "Player"; public static bool IsModCreatedRebelKingdomForExternal(Kingdom kingdom) => kingdom.ModCreated; }
+    public sealed class Campaign { public static Campaign Current = new Campaign(); public T GetCampaignBehavior<T>() where T : class => null; }
+    public interface ITradeAgreementsCampaignBehavior { }
+    public static class BannerlordApiCompat { public static bool HasTradeAgreement(ITradeAgreementsCampaignBehavior behavior, Kingdom first, Kingdom second) => false; }
+    // External ship-layout provider remains a fixture; production selection/formatting is extracted.
+    public static class MapSeaContextGuard { public static string BuildMobilePartyShipPromptText(MobileParty party) => party.ShipInfo; }
     public readonly struct CampaignVec2
     {
+        public readonly float X, Y; private readonly bool valid;
+        public CampaignVec2(float x, float y) { X = x; Y = y; valid = true; }
         public static CampaignVec2 Invalid => new CampaignVec2();
-        public bool IsValid() => false;
-        public float Distance(CampaignVec2 other) => 0f;
+        public bool IsValid() => valid;
+        public float Distance(CampaignVec2 other) => (float)Math.Sqrt((X-other.X)*(X-other.X)+(Y-other.Y)*(Y-other.Y));
     }
     public static class Logger { public static void Log(string category, string message) { } }
     public static class FreezeWatchdog
@@ -86,6 +134,9 @@ namespace AnimusForge
     }
     public static partial class WorldEntityRetrievalService
     {
+        private const int MainPromptClanMemberCap = 8, MainPromptClanFiefCap = 8, MainPromptKingdomClanCap = 6, MainPromptKingdomEncyclopediaTextCap = 600;
+        private const int MaxVisiblePartyCandidates = 10;
+        private const float VisiblePartyMinRange = 18f, VisiblePartyRangeMultiplier = 1.5f;
         private const float MatchThreshold = 0.72f;
         private const float NearTopDelta = 0.07f;
         private const int MaxCandidatesPerMention = EntityInjectionAllocator.MaxInjectedEntitiesHardCap;
@@ -94,32 +145,18 @@ namespace AnimusForge
         private const int EntityRetrievalSoftBudgetMs = 1500;
         private const int EntityRetrievalHardBudgetMs = 3000;
         private static int GetMaxInjectedEntitiesFromSettings() => 3;
-        private static List<VisiblePartyCandidate> BuildVisiblePartyCandidates(Hero hero) => new List<VisiblePartyCandidate>();
         private static bool TryResolveHeroCampaignPosition(Hero hero, out CampaignVec2 position) { position = CampaignVec2.Invalid; return false; }
-        private static IEnumerable<Settlement> GetSettlementCandidates() => Array.Empty<Settlement>();
-        private static IEnumerable<Clan> GetClanCandidates() => Array.Empty<Clan>();
-        private static IEnumerable<Kingdom> GetKingdomCandidates() => Kingdom.All;
         private static bool CanContinueWorldEntityMatch(string category, WorldEntityRetrievalBudget budget) => !budget.IsHardExceeded;
         // FindRawRulerTitleMatches and its helpers are production methods (raw input carries "Alda the King").
-        private static void AddResidentEntityMatches(Hero contextHero, bool includeResidentKingdoms, bool includeResidentPlayerEntities, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
-        { if (contextHero != null || includeResidentKingdoms || includeResidentPlayerEntities) throw new Exception("resident fixture not neutral"); }
-        private static void AddPostprocessResidentEntityMatches(Hero contextHero, bool includeResidentPlayerEntities, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
-        { if (contextHero != null || includeResidentPlayerEntities) throw new Exception("resident fixture not neutral"); }
-        // Unused categories are game-port seams in this Hero-only fixture; the Hero formatters are production methods.
-        private static void AppendSettlementMainFacts(System.Text.StringBuilder sb, List<EntityMatch<Settlement>> matches) { if (matches?.Count > 0) throw new Exception("unexpected settlement"); }
-        private static void AppendClanMainFacts(System.Text.StringBuilder sb, List<EntityMatch<Clan>> matches) { if (matches?.Count > 0) throw new Exception("unexpected clan"); }
-        private static void AppendKingdomMainFacts(System.Text.StringBuilder sb, List<EntityMatch<Kingdom>> matches) { if (matches?.Count > 0) throw new Exception("unexpected kingdom"); }
-        private static void AppendVisiblePartyFacts(System.Text.StringBuilder sb, List<VisiblePartyCandidate> parties) { if (parties?.Count > 0) throw new Exception("unexpected party"); }
-        private static string BuildVisiblePartyPromptLine(int index, VisiblePartyCandidate party) => throw new Exception("unexpected party");
+        // Game-only navigation helpers not reached by these controlled stationary fixtures.
         private static string FormatMobilePartyMapLocation(MobileParty party) => throw new Exception("unexpected party");
         private static string FormatPrisonerHolder(Hero hero) => throw new Exception("unexpected prisoner");
         private static string FormatNearestSettlementForParty(MobileParty party) => throw new Exception("unexpected party");
         private static string FormatMobilePartyMapTerrainSuffix(MobileParty party) => throw new Exception("unexpected party");
-        private static string FormatSettlementNameWithType(Settlement settlement, float distance = -1f) => throw new Exception("unexpected settlement");
         public static (string Main, string Post, string Meta) Render(bool title)
         {
             const string input = "Tell me about Praven, Alda the King; can we barter this item?";
-            Hero.MainHero = null;
+            ResetWorld();
             Kingdom.All.Clear();
             var hero = new Hero { Name = new TextObject { Value = "Alda" }, StringId = "npc_1", Age = 31, IsLord = true };
             Hero.AllAliveHeroes = new List<Hero> { hero };
@@ -169,10 +206,10 @@ namespace AnimusForge
             return (context.MainPromptBlock, context.PostprocessPromptBlock, context.MatchCount + "|" + string.Join(",", context.ExplicitMentionedKingdomIds));
         }
 
-        // Only Hero facts are modeled here. Other entity categories stay in the separate G2 gate.
+        // Raw-title scenarios keep the original neutral Hero fixtures independent of world cases.
         public static (string Main, string Post, string Meta) RenderRaw(string scenario)
         {
-            Hero.MainHero = null;
+            ResetWorld();
             var alda = new Hero { Name = new TextObject { Value = "Alda" }, StringId = "npc_1", IsLord = true };
             var borin = new Hero { Name = new TextObject { Value = "Borin" }, StringId = "npc_2", IsLord = true };
             var cara = new Hero { Name = new TextObject { Value = "Cara" }, StringId = "npc_3", IsLord = true };
@@ -258,6 +295,13 @@ internal static class Program
         foreach (string scenario in new[] { "raw_only", "raw_qualified", "raw_ambiguous", "raw_long_title", "raw_distinct_titles", "raw_overrides_mentions" })
         {
             var (main, post, meta) = AnimusForge.WorldEntityRetrievalService.RenderRaw(scenario);
+            Console.WriteLine("RESULT_" + scenario + "_main=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(main)));
+            Console.WriteLine("RESULT_" + scenario + "_post=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(post)));
+            Console.WriteLine("RESULT_" + scenario + "_meta=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(meta)));
+        }
+        foreach (string scenario in AnimusForge.WorldEntityRetrievalService.WorldCases)
+        {
+            var (main, post, meta) = AnimusForge.WorldEntityRetrievalService.RenderWorld(scenario);
             Console.WriteLine("RESULT_" + scenario + "_main=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(main)));
             Console.WriteLine("RESULT_" + scenario + "_post=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(post)));
             Console.WriteLine("RESULT_" + scenario + "_meta=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(meta)));

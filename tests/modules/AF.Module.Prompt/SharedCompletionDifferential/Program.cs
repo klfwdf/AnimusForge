@@ -37,14 +37,15 @@ namespace AnimusForge
     }
     internal static class TextPorts
     {
-        internal static string Lore, Rule, EntityMain, EntityPost;
+        internal static string Lore, Rule, EntityMain, EntityPost, EntityMeta;
         internal static int LoreCalls, RuleCalls, EntityCalls;
         internal static bool SawPreselected, SawCapturedEntity, SawFallbackHits;
         internal static WorldEntityPromptContext Entity()
         {
             EntityCalls++;
             return new WorldEntityPromptContext { MainPromptBlock = EntityMain, PostprocessPromptBlock = EntityPost,
-                HasContent = !string.IsNullOrWhiteSpace(EntityMain), MatchCount = 1 };
+                HasContent = !string.IsNullOrWhiteSpace(EntityMain), MatchCount = int.Parse(EntityMeta.Split('|')[0]),
+                ExplicitMentionedKingdomIds = EntityMeta.Split('|')[1].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() };
         }
     }
     internal static class Logger { internal static void Log(string category, string value) { } }
@@ -136,10 +137,12 @@ namespace AnimusForge
         internal ShoutPromptContext Replay(bool preselected, bool captureFailed)
         {
             var hero = new Hero { StringId = "npc_1", Name = "Alda" };
-            var mentions = new MentionedWorldEntities { Entities = new List<string> { "Praven", "Alda", "barter" } };
+            string input = Environment.GetEnvironmentVariable("AF_J06_COMMON_INPUT") ?? "Tell me about Praven, Alda the King; can we barter this item?";
+            string mentionsJson = Environment.GetEnvironmentVariable("AF_J06_COMMON_MENTIONS");
+            var mentions = new MentionedWorldEntities { Entities = mentionsJson == null ? new List<string> { "Praven", "Alda", "barter" } : JsonSerializer.Deserialize<List<string>>(mentionsJson) };
             var phases = new PromptBuildPhases
             {
-                Request = new PromptBuildRequest { Input = "Tell me about Praven, Alda the King; can we barter this item?", TargetAgentIndex = 7,
+                Request = new PromptBuildRequest { Input = input, TargetAgentIndex = 7,
                     HasAnyHero = true, HasTargetHero = true, PlayerClanTier = 2, MinimumClanTier = 1,
                     ExplicitExcludedRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
                     ExcludedRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase),
@@ -171,6 +174,7 @@ internal static class Program
             AnimusForge.TextPorts.Rule = Decode("AF_J06_RULE");
             AnimusForge.TextPorts.EntityMain = Decode("AF_J06_ENTITY_MAIN");
             AnimusForge.TextPorts.EntityPost = Decode("AF_J06_ENTITY_POST");
+            AnimusForge.TextPorts.EntityMeta = Decode("AF_J06_ENTITY_META");
             if (new[] { AnimusForge.TextPorts.Lore, AnimusForge.TextPorts.Rule, AnimusForge.TextPorts.EntityMain, AnimusForge.TextPorts.EntityPost }.Any(string.IsNullOrWhiteSpace)) throw new Exception("empty retrieved text");
             bool preselected = Environment.GetEnvironmentVariable("AF_J06_PRESELECTED") == "1";
             bool captureFailed = Environment.GetEnvironmentVariable("AF_J06_CAPTURE_FAIL") == "1";

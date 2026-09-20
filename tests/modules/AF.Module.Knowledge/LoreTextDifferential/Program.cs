@@ -125,11 +125,14 @@ internal static class Program
         var rule = new LoreRule { Id = "lore_city", Keywords = new List<string> { "Praven" }, Variants = new List<KnowledgeLibraryBehavior.LoreVariant> { new KnowledgeLibraryBehavior.LoreVariant { Content = "Praven is a port city." } } };
         var behavior = new KnowledgeLibraryBehavior(new List<LoreRule> { rule });
         var hero = new Hero { StringId = "npc_1", Name = new FakeName { Value = "Alda" }, Culture = new FakeCulture { StringId = "vlandia" } };
-        var result = behavior.Render("Tell me about Praven, Alda the King; can we barter this item?", hero, new MentionedWorldEntities { Entities = new List<string> { "Praven" } }, stale: false);
+        string input = Environment.GetEnvironmentVariable("AF_J06_COMMON_INPUT") ?? "Tell me about Praven, Alda the King; can we barter this item?";
+        string mentionsJson = Environment.GetEnvironmentVariable("AF_J06_COMMON_MENTIONS");
+        var mentions = new MentionedWorldEntities { Entities = mentionsJson == null ? new List<string> { "Praven" } : System.Text.Json.JsonSerializer.Deserialize<List<string>>(mentionsJson) };
+        var result = behavior.Render(input, hero, mentions, stale: false);
         if (!result.Contains("Praven is a port city.")) throw new Exception("real Lore text missing: " + result);
         Console.WriteLine("RESULT=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(result)));
 #if CURRENT
-        var fallback = behavior.Render("Tell me about Praven, Alda the King; can we barter this item?", hero, new MentionedWorldEntities { Entities = new List<string> { "Praven" } }, stale: true);
+        var fallback = behavior.Render(input, hero, mentions, stale: true);
         if (fallback != result) throw new Exception("stale candidate fallback changed Lore text");
         Console.WriteLine("FALLBACK=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(fallback)));
 #endif
