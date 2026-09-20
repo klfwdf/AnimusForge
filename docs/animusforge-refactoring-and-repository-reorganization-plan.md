@@ -1,3 +1,74 @@
+<a id="j07-offline-closeout-20260921"></a>
+# 当前接续：J07 离线整包验收闭合，下一包 J08（2026-09-21 北京时间）
+
+**状态：J07_OFFLINE_VERIFIED；J08 尚未实施，接下来交给自动化。** 本节取代下方历史“J07b 进行中 / C1 未完成 / 继续拆第一阶段”的接续指令，但保留历史缺陷证据。不是全项目 J17 收尾，也不是实机、旧档或真实 provider 通过。
+
+- 修改前检查点 `e110d562`；实现/测试提交 `e5c14b8a3cb471a30a07783d7fe3700ac8d9cbe3`。代码图 310 锚点绑定该实现，记录提交/工作树两种模式通过。
+- 唯一施工目录 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`；GitHub `https://github.com/klfwdf/AnimusForge.git`，比较/未来交付分支 `origin/codex/af-main-refactor-continuation-20260831`。本轮 fetch 后远端仍 `b9a52c8f`，无远端新增分叉；没有推送。
+- 原计划 C1/C2/C3 已按本节限定离线范围闭合；G1/G2/J07a 的不变证据沿用，不再重开调查。当前用户要求“直接完成，再接自动化做 J08”，因此下一轮从 J08a 开始，不再把文档/源码投影维护当成 J07 产品进度。
+
+## 1. 本次真正改变了什么
+
+| 责任 | 当前代码位置（一基行号；完整坐标以代码图为准） | 实现 / 保留边界 |
+| --- | --- | --- |
+| 唯一入口与四阶段编排 | `ShoutBehavior.cs:20081-20085`；`src/modules/AF.Module.Conversation/Channels/Native/NativeConversationTurnCoordinator.cs:10-21` | 454 行混合回合体被替换为实际协调器；顺序为准备→Prompt/历史→正文/展示→后处理/提交。每个阶段的停止结果阻止下游，默认结果拒收；异常原样向原 admission/UI owner 传播，禁止重试提交 |
+| 请求身份与游戏捕获 | `ShoutBehavior.NativeTurn.cs:69-105,107-178` | 每个已准入回合独立 host；原 admission/Hero/Character/manager/token 不重新从槽取得。共享捕获边界在主线程先验身份，再执行；携带/恢复 ExecutionContext，捕获异常不被通用调度 fallback 吞掉 |
+| Prompt/历史阶段 | `ShoutBehavior.NativeTurnPrompt.cs:66-130,132-190,192-233` | 保留唯一历史 Task.Run fork/join、join 后再验身份、原五步 Prompt、pending 输入与 AFEF 消费。真实领域资格、物资/队伍上下文、消息装配回主线程。非 Hero 显示名在组消息时捕获，展示 worker 不再触发冷 Culture/NameGenerator 缓存读取 |
+| 正文/raw/可见输出 | `ShoutBehavior.NativeTurnPresentation.cs:23-109` | 继续调用已验 MainReplyStage；保留 raw meeting taunt→scene taunt→观察→清理→提前 TTS 顺序与原条件；后处理前先发布主文，失败提示/开场/无语音情况不改 |
+| 后处理及权威完成 | `ShoutBehavior.NativeTurnCommit.cs:48-160,162-233` | 领域规则资格、直接 GCCZ 桥调用、决斗筹码、目标 metadata 在校验后捕获；复用原 Scene 的 Prepare/Request/Complete，不造第二条管线。Prepare 与 Complete/Normalize 在游戏线程，只有 detached prompt strings 进入后台网络；再走原唯一 action dispatch/completion |
+| 类型与兼容 | `NativeConversationTurnCoordinator.cs:25-44` | internal 同 DLL 端口/值类型阶段结果，不是外部 API；未新增 SyncData key/持久类型、未切入口开关。UI、public V1、存档与各业务 owner 未改 |
+
+**不是只换文件名**：模块协调器实际决定阶段推进/停止/终态，宿主只保留请求作用域的游戏适配和既有 Prompt/领域 helper 接线；原主入口不再拥有整回合控制。各职责方法为 9–113 行（参考值，不是验收目标）。主文件现在 39,190 行，仍有其他渠道/领域职责；不能称整个 Shout 大类或全项目“拆干净”。
+
+**C2 安全修正**：此前后处理同步 wrapper 把 Prepare 与 Normalize 也放在 worker。新 Native 路径使用它已有的三阶段真实实现，准备/完成分别重验原身份，不把同步 LLM 放主线程。已有 busy 后消费 opening、只释放自己的票据、ConversationEnded epoch、已领取等待真实结果、提交 unknown 不重试、捕获上下文/revision 的迟到关窗保护不改。所有动作、历史和 AFEF 仍由原权威 owner 负责；没有把政策/宴会/GCCZ 玩法搬入 Conversation。
+
+## 2. 验收清单与证据等级
+
+本地日志目录 `.tmp/j07-closeout-20260921/`（不进 Git），可执行测试入口留仓库。所有数字只是对应 fixture/构建范围，不能相加当玩家功能覆盖率。
+
+| 类别 | 本轮结果 | 限定 |
+| --- | --- | --- |
+| Native 五组 | Admission 44、Preparation 589、Pending 111、Dispatch 91、Completion 184：PASS | 原真实 owner/动作队列/回执边界；领域与游戏端口有明确替身 |
+| 新回合与线程 | NativeTurn 98 检查；6 个变异编译成功并命中指定失败断言；4 个来源/接线测试：PASS | 实际协调器、实际 Capture helper、实际后处理调用片段；物理独立队列线程与 fake provider，不是 Bannerlord Host |
+| 既有 Native 交互 | MainReply 19 场景/179；raw 37；presentation 46；TTS fallback 14：PASS | raw 的 TTS 仍是线程 spy；不是声音实际播放 |
+| 历史 / 生命周期 | HistorySnapshot 852 + Native 27；InteractionRequestLifetime 51；GameLifetime 36；主线程队列 132：PASS | 保留原 fork/join 与 started/timeout 行为，不以新增 callback 取消已领取工作 |
+| Pipeline / 共同接缝 | Pipeline 40、native commit failure 4、commit boundary 69、receipt 39、async owner 18、anonymous prompt 13；Scene postprocess 71；ChannelCutover 132：PASS | 旧领域 helper 替身明确；Scene/Courier 业务源码未改，未开放新公开提交能力 |
+| Prompt 接线 | ProductionConsumers、Scene/Native wrapper 3：PASS | 直接读取新 host 方法的调用顺序/参数；原五步 Native 与 Courier schedule 断言保留 |
+| 子 MOD / 内部隔离 | NativeModuleSubmission 41 + 外部 internal 访问 CS0122 拒收；实际 4 个 DLL metadata 1060：PASS | 不等于真实子 MOD 加载或 CLR/Bootstrap 实机时序 |
+| 构建 | Debug/Release × 1.3/1.4/Bootstrap：6 项均 0 warning / 0 error | 原构建脚本，仅环境 wrapper；SDK 8.0.422，真实引用 1.3.15.110062 / 1.4.6.115628 |
+| 存档 / 地图 | 142 literal keys、168 typed bindings、13 chunked、44 flattened：PASS；310 锚点双模式 + Phase8 inventory：PASS | 存档契约不是加载旧存档的实测 |
+
+**测试来源透明**：`tools/NativeConversationAdmissionTests/turn_extraction.py` 从当前阶段体还原算法，比较完整 token 顺序/参数及主文件周围内容，允许的差异只有已验证的调度边界、typed 返回、请求局部变量存储和显示名捕获。既有夹具通过该算法投影适配搬迁，继续验证原 owner；它们不承担新增阶段调度证明。新增 `tests/modules/AF.Module.Conversation/NativeTurn/` 才执行新协调器/捕获/后处理片段。另有负例证明**即便刷新新增文件摘要，删改 TTS 传参仍会被算法对照拒收**；没有只刷 hash 消红。
+
+**本轮定向修正记录**：集中门禁发现 ProductionConsumers 仍寻找旧单方法中的 wrapper 调用，已改为读取实际 BuildPromptAsync 与 PostprocessAndCommitAsync，并断言 Prepare→Request→Complete；没有删掉顺序断言。一次手工运行 HistorySnapshot 漏传已有 `DOTNET_EXE`，默认机器 dotnet 无 SDK；仅补环境变量后 852 通过，未安装 SDK或改生产引用。
+
+**性能边界**：每次 Native 提交增加一个短生命周期 host/阶段状态和最多 7 个串行、有身份校验的 capture callback；没有每 Tick 扫描或新无界队列。物资/历史/资格 work 本来就存在，现在回到正确线程；游戏帧成本未量测，不能宣称“零成本”。已有 NativePerf 记录各 callback ms，可供真实 Campaign/Mission 后续采样。
+
+## 3. 删除与保留、回滚
+
+- 删除旧 454 行单体编排；只有一个 Native 协调入口，没有保留并行旧回合实现或新 feature flag。
+- 保留原通用 `TryRunSceneUnifiedActionPostprocess`：Scene 仍有真实同步消费者；不能因为 Native 已改三阶段就删除。
+- 保留 NativeAdmission/PendingHistory/ActionDispatch/Completion/MainReply 游戏适配、原公开 facade、UI/Harmony/存档身份。它们有真实调用与兼容责任，不用删除活路径冒充清理。
+- 仅暂存本轮文件；新测试 `.generated` 已显式忽略，未纳入提交。`.dotnet-cli-home/` 是原有本地未跟踪目录，保留。没有写旧 AF-REFACTOR、NEW-10、GCCZ、游戏或存档，没有推送/部署/Stage/打包/默认切换。
+- 回滚点 `e110d562`；需要回滚时对 `e5c14b8a` 做有针对性的 inverse/revert，并同步还原依赖本次文件位置的测试/地图/文档。不要 hard-reset、强推或覆盖其他作者。
+
+## 4. J08 接棒的有限清单
+
+J08 执行沿用[原 J08 总计划](#j08-llm-传输--模型目录)。**只在出现新的具体复现或实际源码变更时重开 J07 的相关测试，不再重跑无关历史调查。**
+
+| 包 | 真实责任与入口 | 退出门 |
+| --- | --- | --- |
+| J08a | `ShoutNetwork.cs` 非流请求与真实 Gateway 消费者→`src/modules/AF.Module.Llm/Transport` | 唯一发送/响应/取消/超时 owner；fake HttpMessageHandler 下同输入请求与回复、400 thinking fallback、空回复一次补救保持 |
+| J08b | 同文件流式请求→`Streaming`，复用既有 `LlmVisibleReplyNormalizer` | SSE 分片、Unicode、取消/关闭、过滤和回调次序覆盖；不能每字符拆坏 Unicode 或新开第二条流管线 |
+| J08c | 既有 ConfiguredChat/ModelCatalog/Policy/WorldDiplomacy Gateway 与配置适配 | 收拢真实 transport/model owner；领域 prompt 与业务不重写；内部 typed ports 与外部 public DTO 分离，所有真实消费者接通后才删旧实现 |
+| J08d | TTS gateway 与传输 owner | 保留 Native/Scene 的 voice capture 和播放 owner、回退/取消；只迁传输，不把游戏音频生命周期当网络实现删除 |
+
+J08 按完整责任包推进，最终跑相关 LLM/三渠道/Native 回归、双版本/Bootstrap、API/存档；小改动按风险定向验证，文档不触发六构建。真实 provider、Campaign/Mission、旧档、音频播放、帧成本仍 **NOT-RUN**。J09 标签/ActionPlan/领域回执与 J10/J14 留后续，当前自动化专注 J08，不顺带开放 Scene/Courier public 提交。
+
+自动化复用 `af-7-8`、每 30 分钟接续；原截止 UTC `2026-09-20T17:48:36Z`（北京时间 9 月 21 日 01:48:36）保留，不擅自延长。J08 必要离线验收通过或到期/用户停止时记录真实完成度、技术/本地简明交接并暂停；剩余未完不能标 DONE。自动化当前配置以工具成功回执为准，文档本身不启动任务。
+
+## 以下全部为历史回执，当前状态与接续以上方为准
+
 <a id="j07-closeout-course-correction-20260920"></a>
 # 当前执行要求：停止 J07b 微切片循环，整包收尾后进入 J08/J09（2026-09-20）
 

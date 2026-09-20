@@ -1,3 +1,11 @@
+# 当前范围：J07 整回合离线验收完成，下一包 J08（2026-09-21）
+
+生产提交 `e5c14b8a`，310 锚点绑定当前实现。Native 单体回合已替换为真实四阶段协调 owner；宿主按准备、Prompt/历史、展示、后处理/提交适配。后处理复用共享 Prepare/Request/Complete，游戏读写/资格/归一化回所属线程，网络留后台。内部/外部 API 和存档身份未改。
+
+状态 **J07_OFFLINE_VERIFIED**，不是全项目或实机完成；主 Shout 仍有 39,190 行，其余渠道/领域按后续包治理。源码坐标、已跑/复用证据、保留项、回滚和 J08 清单见[当前台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j07-offline-closeout-20260921)。
+
+## 以下历史范围已被当前回执取代
+
 # 当前范围：J07b 正文阶段 / raw 线程边界（2026-09-20）
 
 源码 `d9e9aae1`，298 锚点地图。新增已接线 `NativeConversationMainReplyStage` 与内部 typed 端口；private host 使用原 LLM 与主线程验证/撤销操作，不是第二条 LLM 管线。raw 观察与提前 TTS 保持原先后顺序，移到已有校验回调的游戏线程；helper 本体未改。
