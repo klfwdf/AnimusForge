@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 

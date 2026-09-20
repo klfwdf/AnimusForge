@@ -3,10 +3,11 @@ from pathlib import Path
 import hashlib,json,subprocess
 ROOT=Path(__file__).resolve().parents[2]
 REVIEW=json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeTicket/source-review.json').read_text(encoding='utf-8'))
-def restore(path, source):
-    evidence=REVIEW['files'].get(path)
+CLAIM_REVIEW=json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeDispatchClaim/source-review.json').read_text(encoding='utf-8'))
+def restore_packet(review,path,source):
+    evidence=review['files'].get(path)
     if evidence is None: return source
-    original=subprocess.check_output(['git','show',REVIEW['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    original=subprocess.check_output(['git','show',review['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     assert hashlib.sha256(original.encode()).hexdigest()==evidence['beforeSha256'], 'J07b original digest: '+path
     if source == original: return source
     expected=original
@@ -16,6 +17,10 @@ def restore(path, source):
     assert hashlib.sha256(expected.encode()).hexdigest()==evidence['afterSha256'], 'J07b candidate digest: '+path
     assert source==expected, 'Unreviewed J07b source drift: '+path
     return original
+def restore(path,source):
+    return restore_packet(REVIEW,path,restore_claim(path,source))
+def restore_claim(path,source):
+    return restore_packet(CLAIM_REVIEW,path,source)
 if __name__=='__main__':
     for path in REVIEW['files']:
         restore(path,(ROOT/path).read_text(encoding='utf-8-sig'))

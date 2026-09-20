@@ -28,7 +28,7 @@ assert 'ShoutBehavior.IsNativeConversationBackendBusy()' in ex.declaration(overl
 opening=ex.declaration(overlay,'private void TryStartPendingNpcOpening(');assert opening.index('IsNativeConversationBackendBusy')<opening.index('_npcOpeningAutoStarted = true')
 if args.mutate=='drop-busy':partial=partial.replace('if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))','if (false)',1)
 if args.mutate=='release-new-slot':partial=partial.replace('_nativeAdmissionOwner.Release(admission);','_nativeAdmissionOwner.Release(_nativeAdmissionOwner.Current);',1)
-if args.mutate=='skip-timeout-cas':partial=partial.replace('if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)','if (false)',1)
+if args.mutate=='skip-timeout-cas':partial=partial.replace('if (!dispatchClaim.TryStart())','if (false)',1)
 if args.mutate=='skip-generation':partial=partial.replace('|| !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)','|| false',1)
 if args.mutate=='skip-queued-epoch':partial=partial.replace('|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)', '|| false', 1)
 overlay_source = subprocess.check_output(['git','show','14dec2d7:AnimusForgeNativeConversationOverlay.cs'],cwd=ROOT).decode('utf-8-sig') if args.mutate=='old-overlay-finalizer' else overlay

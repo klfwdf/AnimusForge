@@ -99,10 +99,10 @@ public partial class ShoutBehavior
             return Task.FromResult(CaptureNativeConversationAdmissionOnMainThread(generation, conversationEpoch, npcInitiatedOpening));
 
         var completion = new TaskCompletionSource<NativeConversationAdmission>(TaskCreationOptions.RunContinuationsAsynchronously);
-        int dispatchState = 0; // 0 queued; 1 started; 2 expired before start.
+        var dispatchClaim = new NativeConversationDispatchClaim();
         _mainThreadActions.Enqueue(() =>
         {
-            if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)
+            if (!dispatchClaim.TryStart())
                 return;
             try { completion.TrySetResult(CaptureNativeConversationAdmissionOnMainThread(generation, conversationEpoch, npcInitiatedOpening)); }
             catch (Exception ex) { completion.TrySetException(ex); }
@@ -113,7 +113,7 @@ public partial class ShoutBehavior
         {
             Task winner = await Task.WhenAny(completion.Task,
                 Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs)).ConfigureAwait(false);
-            if (winner != completion.Task && Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+            if (winner != completion.Task && dispatchClaim.TryExpireBeforeStart())
                 throw new NativeConversationAdmissionException("native.admission_timeout", "对话请求尚未开始：主线程暂未处理，请稍后重试。");
             // 一旦捕获已开始，就必须接收它的结果；不放弃一个可能已占用后端票据的返回值。
             return await completion.Task.ConfigureAwait(false);

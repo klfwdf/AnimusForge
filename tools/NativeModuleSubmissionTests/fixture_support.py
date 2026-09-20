@@ -2,6 +2,7 @@
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 def include_operation_sources(out):
+    include_dispatch_claim(out)
     for name in ['CoreDialogueContracts.cs','CoreDialogueOperation.cs']:
         (out/name).write_text((ROOT/'Refactor/Modules'/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
     (out/'CoreDialogueUsing.cs').write_text('global using AnimusForge.Refactor.Modules;\n',encoding='utf-8')
@@ -30,3 +31,7 @@ def migrate_admission_fixture(code):
     code = code.replace('return new Captured{Key=', 'return new Captured{Admission=admission,Key=')
     code = code.replace('Reject(Captured captured,int stage=0){var admission=_nativeAdmissionOwner.Current;', 'Reject(Captured captured,int stage=0){var admission=captured.Admission;')
     return code
+
+DISPATCH_CLAIM = 'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs'
+def include_dispatch_claim(out):
+    (out/'NativeConversationDispatchClaim.cs').write_text((ROOT/DISPATCH_CLAIM).read_text(encoding='utf-8-sig'),encoding='utf-8')

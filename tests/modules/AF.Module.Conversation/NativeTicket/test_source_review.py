@@ -24,7 +24,10 @@ class SourceReviewTests(unittest.TestCase):
         self.assertEqual(s.count('_nativeAdmissionOwner.Release(admission);'),3)
         self.assertLess(s.index('throw new NativeConversationAdmissionException("native.busy"'),s.index('NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening'))
     def test_monolith_only_changes_one_reviewed_line_preserving_bytes(self):
-        p=ROOT/'ShoutBehavior.cs';raw=p.read_bytes()
+        p=ROOT/'ShoutBehavior.cs';actual=p.read_bytes()
+        raw=inverse.restore_claim('ShoutBehavior.cs',p.read_text(encoding='utf-8-sig')).replace('\n','\r\n').encode()
+        self.assertEqual(actual.count(b'\r\n'),actual.count(b'\n'))
+        self.assertFalse(actual.startswith(b'\xef\xbb\xbf'))
         old=subprocess.check_output(['git','show',inverse.REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT)
         # Git blob is LF; this worktree's pre-edit format is CRLF (no BOM).
         old=old.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n')
