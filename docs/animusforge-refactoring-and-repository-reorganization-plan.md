@@ -1,3 +1,16 @@
+<a id="j08-overnight-skill-automation-20260921"></a>
+# 当前执行：J08 通宵工作窗与双 SKILL 收敛（2026-09-21 01:37 北京时间）
+
+用户询问当前进度并要求睡前优化 SKILL 与自动化。本次不改产品源码、不将配置更新冒充 J08 新功能：当前产品仍为 `5dc17947`，J07 保持 `OFFLINE_VERIFIED`，J08 为 `IN_PROGRESS`；准确进度及下一包以下方 `j08-nonstream-transport-20260921` 回执为准。
+
+- `.claude/skills/animusforge-maintainer/references/llm-transport.md` 新增稳定、非提交绑定的方法：transport 一次调用只拥有一次 attempt；retry/错误文案/Prompt/显示留真实 policy owner；所有 request/response/content/reader/linked source 由创建边界释放；caller cancel、timeout、stale、provider failure 分开；非流与 SSE 状态不能假统一；TTS 网络和游戏音频生命周期分开；确定性 HttpMessageHandler 必须执行真实生产 transport/消费者。
+- 通用维护 Skill 增加按需路由，AF 核心框架 Skill 增加跨层约束；没有修改全局 Skill、AGENTS、政策玩法或外部 API，也没有把当前路径/提交写成永久架构。
+- 自动化 `af-7-8` 更新为 **AF J08 通宵收尾**、ACTIVE、每 30 分钟接续。新窗口截止 UTC `2026-09-21T01:00:00Z`（北京时间 09:00）；目标只到 J08 必要离线验收，不自动扩到 J09/J10/J17。
+- 自动化从当前 Git 继续 J08a 上层编排→J08b streaming→J08c model/Gateway→J08d TTS；按完整责任包集中验证，不重复已通过的 J07/非流 240 检查和六构建，除非相关源码/依赖改变。完成、截止、用户停止或仅剩外部输入时，准确交接并通过工具暂停。
+- 权限边界不变：单代理，无 push/merge/rebase/reset/stash/部署/Stage/打包/游戏或存档写入/全局安装；`.dotnet-cli-home/` 和本地 `.tmp` 资料保留，不提交制作组简版。
+
+## 以下为当前产品回执
+
 <a id="j08-nonstream-transport-20260921"></a>
 # 当前接续：J08a 共享非流 HTTP 责任包已验收，J08 仍在进行中（2026-09-21）
 
