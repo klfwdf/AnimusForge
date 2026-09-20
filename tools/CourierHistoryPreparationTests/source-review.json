@@ -3,7 +3,7 @@
   "baseline": "73774a94fc1d2fcbebc69ea221e9a906a4e70b8e",
   "meaning": "Exact reviewed inputs to physical-thread history tests and existing render parity; not game/full-Courier acceptance",
   "files": {
-    "CourierDeliveryBehavior.HistoryPreparation.cs": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877",
+    "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877",
     "MyBehavior.HistoryPromptSnapshot.cs": "bf01837f92bbc18c36d1c079e22467342b65d1c4f4f0d4a89fdcb9094922367f",
     "tools/CourierHistoryPreparationTests/run.py": "09ed638c0f1c71a146f30645b98d5e2451a694a69ebf09cc0ecca3e6f75e475d",
     "tools/CourierHistoryPreparationTests/Harness.cs.txt": "7d759c33ca74d43ddfbcf1ad5aefceb72afa4fc596d0e61f987aa83fd08d6e9a"

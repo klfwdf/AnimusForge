@@ -7,7 +7,7 @@ spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkAp
 def read(p):return (ROOT/p).read_text(encoding='utf-8-sig')
 def old(p):return subprocess.check_output(['git','show','4140bd04:'+p],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 code=read('tools/ChannelPersonaPreparationTests/Harness.cs.txt')
-code=code.replace('@@COURIER_SCOPE@@',ex.declaration(read('CourierDeliveryBehavior.HistoryPreparation.cs'),'private bool IsCourierHistoryOwnerCurrent('))
+code=code.replace('@@COURIER_SCOPE@@',ex.declaration(read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs'),'private bool IsCourierHistoryOwnerCurrent('))
 if a.original:
  s=old('ShoutBehavior.cs');c=old('CourierDeliveryBehavior.cs')
  code=code.replace('@@SHOUT_METHODS@@',ex.declaration(s,'private static async Task<bool> EnsureNativeConversationPersonaReadyAsync(')+'\n'+ex.declaration(s,'private async Task EnsurePersonaForCandidatesAsync('))
@@ -20,7 +20,7 @@ code=code.replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTime
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'Refactor/Contracts/NpcPersonaReadinessSnapshot.cs']
 if not a.original:
- for path in ['MyBehavior.PersonaReadiness.cs','ShoutBehavior.PersonaPreparation.cs','CourierDeliveryBehavior.PreparationAdmission.cs','src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs']:
+ for path in ['MyBehavior.PersonaReadiness.cs','ShoutBehavior.PersonaPreparation.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs','src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs']:
   text=read(path).replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
   if path=='ShoutBehavior.PersonaPreparation.cs':
    if a.mutate=='native_skip_admission':text=text.replace('if (!IsNativeConversationAdmissionCurrent(admission, out _)) return null;','if (false) return null;',1)
@@ -29,7 +29,7 @@ if not a.original:
    if a.mutate=='scene_skip_scope':
     old=ex.declaration(text,'private bool IsScenePersonaScopeCurrent(');text=text.replace(old,'private bool IsScenePersonaScopeCurrent(ScenePersonaPreparationScope scope) { return scope != null; }',1)
    if a.mutate=='scene_accept_replaced':text=text.replace('!ReferenceEquals(current, prepared.Hero)','false',1)
-  if path=='CourierDeliveryBehavior.PreparationAdmission.cs':
+  if path=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs':
    if a.mutate=='courier_drop_session':text=text.replace('!IsCourierHistoryOwnerCurrent(sessionId, session, hero, inbound) || hero.IsDead','hero.IsDead',1)
    if a.mutate=='courier_reject_fallback':text=text.replace('                    return true;','                    return false;',1)
    if a.mutate=='invalid_target_cleanup':text=text.replace('|| !ReferenceEquals(inbound ? ResolveSender(current) : ResolveRecipient(current), participant)','|| false',1)

@@ -1,6 +1,6 @@
 # Courier 双向历史捕获边界回归
 
-验证生产 `CourierDeliveryBehavior.HistoryPreparation.cs`，不是另写一份等价实现。运行器同时抽取真实 `RunCourierOwnerPhaseAsync<T>`，在独立物理主线程/后台线程上执行。引擎、Session、历史 provider 为替身；不代表真实 Campaign 验收。
+验证生产 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs`，不是另写一份等价实现。运行器同时抽取真实 `RunCourierOwnerPhaseAsync<T>`，在独立物理主线程/后台线程上执行。引擎、Session、历史 provider 为替身；不代表真实 Campaign 验收。
 
 ## 运行
 

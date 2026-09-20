@@ -4,7 +4,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['cancel_claimed','timeout_claimed','drop_claim']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
-path='CourierDeliveryBehavior.DetachedPostprocess.cs'
+path='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs'
 s=subprocess.check_output(['git','show','4140bd04:'+path],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/path).read_text(encoding='utf-8-sig')
 method=ex.declaration(s,'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(80)')
 if a.mutate=='cancel_claimed':method=method.replace('if (Interlocked.CompareExchange(ref state, 2, 0) == 0)\n                completion.TrySetCanceled();','Interlocked.CompareExchange(ref state, 2, 0);\n            completion.TrySetCanceled();',1)

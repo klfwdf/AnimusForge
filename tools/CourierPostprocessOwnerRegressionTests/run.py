@@ -43,7 +43,7 @@ def extract():
     shout = ex.source('ShoutBehavior.cs', None)
     return {
         'METHODS': '\n\n'.join(ex.declaration(courier, signature) for signature in SIGNATURES),
-        'PARTIAL': ex.source('CourierDeliveryBehavior.DetachedPostprocess.cs', None),
+        'PARTIAL': ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs', None),
         'WORK_ITEM': ex.declaration(shout, 'internal sealed class CourierActionPostprocessWorkItem'),
     }
 

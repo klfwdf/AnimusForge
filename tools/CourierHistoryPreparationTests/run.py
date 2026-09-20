@@ -4,8 +4,8 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_capture','main_resolve','skip_accept','wrong_input']);args=p.parse_args()
-source=(ROOT/'CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig')
-phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(')
+source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig')
+phase=ex.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(')
 phase=phase.replace('Task.Delay(30000)','Task.Delay(180)')
 if args.mutate=='worker_capture':phase=phase.replace('if (mainThread) Invoke(); else MainThreadActions.Enqueue(Invoke);','Invoke();')
 if args.mutate=='main_resolve':

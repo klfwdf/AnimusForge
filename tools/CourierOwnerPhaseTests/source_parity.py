@@ -1,7 +1,7 @@
 """Reviewed exact owner-phase lifetime fix; reject unrelated postprocess changes."""
 from pathlib import Path
 import subprocess,hashlib,json,importlib.util
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent;PATH='CourierDeliveryBehavior.DetachedPostprocess.cs'
+ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent;PATH='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs'
 spec=importlib.util.spec_from_file_location('owner_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
 def old():return subprocess.check_output(['git','show','4140bd04:'+PATH],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def verify():
