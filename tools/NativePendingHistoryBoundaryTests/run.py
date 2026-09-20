@@ -11,7 +11,16 @@ values={'PREPARE':body[start:end],'ADMISSION':ex.declaration(ad,'internal sealed
 selectors=['private static void AppendNativeConversationSessionHistory(','private static void RollbackNativeConversationPendingPlayerHistory(','private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(','private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(','private static AnimusForgeDialogueHistoryEntry CloneNativeConversationHistoryEntry(','private void RemoveNativeConversationSessionHistoryEventFromSceneHistory(','private List<ConversationMessage> ConsumePendingCurrentNativeAfefFactMessagesForPrompt(','private static long NextConversationEventSequence(']
 values['HISTORY_METHODS']='\n'.join(ex.declaration(s,x) for x in selectors)
 branches=['nativeMainReplyTargetAvailableBeforeDispatch','nativeMainReplyTargetAvailable','nativePostprocessStartTargetAvailable','nativeDirectCommandTargetAvailable','nativePostprocessTargetAvailable']
-values['REJECTIONS']='\n'.join('case '+str(i)+': { '+ex.declaration(body,'if (!'+name+')')+' break; }' for i,name in enumerate(branches))
+rejections=[]
+for i,name in enumerate(branches):
+ if i==0 and not a.original:
+  stage=read('src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs')
+  branch=ex.declaration(stage,'if (!validation.IsCurrent)')
+  # Execute the actual extracted rejection branch and actual captured rollback adapter.
+  # Only the test's string-return boundary projects the typed stage result to StopText.
+  rejections.append('case 0: { return (await RejectMainReply()).StopText; async Task<NativeConversationMainReplyResult> RejectMainReply() { var validation = new NativeConversationReplyTargetValidation(false, nativeMainReplyTargetUnavailableBeforeDispatchReason); var host = new NativeConversationMainReplyHost(this, admission, nativeTargetLog, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence); '+branch+' throw new Exception("fixture rejection must stop"); } }')
+ else: rejections.append('case '+str(i)+': { '+ex.declaration(body,'if (!'+name+')')+' break; }')
+values['REJECTIONS']='\n'.join(rejections)
 # The fixture returns a capture object instead of visible text; preserve the actual no-capture gate.
 if not a.original:
  assert 'if (nativePendingHistory == null) return "";' in values['PREPARE']
@@ -34,8 +43,16 @@ if not a.original:
  if a.mutate=='remove-user-filter':values['HISTORY_METHODS']=values['HISTORY_METHODS'].replace(' && string.Equals(message.Role, "user", StringComparison.OrdinalIgnoreCase)','')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for k,v in values.items():code=code.replace('@@'+k+'@@',v)
+if not a.original:
+ host_source=read('ShoutBehavior.NativeMainReply.cs')
+ host=ex.declaration(host_source,'private sealed class NativeConversationMainReplyHost')
+ prefix=host.split('public Task<string> GenerateAsync(',1)[0].replace(' : INativeConversationMainReplyHost','')
+ start=host_source.index('public Task RollbackPendingPlayerHistoryAsync(');end=host_source.index(';',start)+1;rollback=host_source[start:end]
+ # Use the exact expression-bodied production rollback port without unused provider members.
+ code=code.replace('public partial class ShoutBehavior{','public partial class ShoutBehavior{\n'+prefix+rollback+'\n}\n',1)
 assert '@@' not in code
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+if not a.original: (out/'MainReplyContracts.cs').write_text(read('src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyContracts.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8')
 for name in ['AnimusForgeDialogueHistoryEntry.cs','ConversationMessage.cs']:(out/name).write_text(read(name),encoding='utf-8')
 if not a.original:

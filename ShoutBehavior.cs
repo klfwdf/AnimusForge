@@ -20299,42 +20299,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " sharedDailyMemory=" + useSharedDailyMemoryForNpcOpening + " persistentMemoryMessages=" + persistentMemoryRoleMessages.Count + " nativeHistoryMessages=" + nativeHistoryMessages.Count + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
-		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
-		FreezeWatchdog.Mark("NativeConversation.main_reply_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " messages=" + messages.Count, immediate: true);
-		string output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);
-		output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
-		nativeMainApiSw.Stop();
-		Logger.Log("Logic", "[NativePerf] main_reply_done target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
-		FreezeWatchdog.Mark("NativeConversation.main_reply_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2), immediate: true);
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_reply"))
-		{
-			return SaveRuntimeGuard.BuildStaleRequestErrorText();
-		}
-		string nativeMainReplyTargetUnavailableBeforeDispatchReason = "";
-		bool nativeMainReplyTargetAvailableBeforeDispatch = await RunNativeConversationMainThreadFuncAsync(
-			"main_reply_target_validation",
-			nativeTargetLog,
-			nativeTargetAgentIndex,
-			() => IsNativeConversationAdmissionCurrent(admission, out nativeMainReplyTargetUnavailableBeforeDispatchReason),
-			false).ConfigureAwait(false);
-		if (!nativeMainReplyTargetAvailableBeforeDispatch)
-		{
-			string reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableBeforeDispatchReason) ? "main_thread_validation_failed" : nativeMainReplyTargetUnavailableBeforeDispatchReason;
-			await RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
-			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
-			return "";
-		}
-		if (string.IsNullOrWhiteSpace(output))
-		{
-			return "";
-		}
-		if (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误"))
-		{
-			LlmRetryPrompt.ShowFailurePopup("自由对话正文生成失败", output.Trim());
-			return output.Trim();
-		}
-		string postprocessReply = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
-		postprocessReply = StripLeakedPromptContentForShout(postprocessReply);
+		NativeConversationMainReplyResult nativeMainReply = await NativeConversationMainReplyStage.RunAsync(
+			new NativeConversationMainReplyHost(this, admission, nativeTargetLog,
+				nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
+			messages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
+		if (!nativeMainReply.CanContinue) return nativeMainReply.StopText;
+		string postprocessReply = nativeMainReply.PostprocessReply;
 		string nativeMainReplyTargetUnavailableReason = "";
 		bool nativeMainReplyTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
 			"main_reply_action_validation",
