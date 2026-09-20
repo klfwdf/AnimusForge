@@ -1,3 +1,9 @@
+# 当前范围：J08a 共享非流 HTTP owner 已接线（2026-09-21）
+
+源码 `5dc17947`，315 锚点图。Primary 和 Configured 的非流 attempt/auth/body/response lifetime 共用 `LlmNonStreamingTransport`；原上层 retry/UI/错误策略保留，经旧/新请求和输出差分验证。资源泄漏已复现并修复。J07 保持离线闭合；J08 上层编排、stream/model/TTS 未完。详见[当前主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j08-nonstream-transport-20260921)。
+
+## 以下历史范围以上方更新为准
+
 # 当前范围：J07 整回合离线验收完成，下一包 J08（2026-09-21）
 
 生产提交 `e5c14b8a`，310 锚点绑定当前实现。Native 单体回合已替换为真实四阶段协调 owner；宿主按准备、Prompt/历史、展示、后处理/提交适配。后处理复用共享 Prepare/Request/Complete，游戏读写/资格/归一化回所属线程，网络留后台。内部/外部 API 和存档身份未改。

@@ -1,3 +1,45 @@
+<a id="j08-nonstream-transport-20260921"></a>
+# 当前接续：J08a 共享非流 HTTP 责任包已验收，J08 仍在进行中（2026-09-21）
+
+**产品提交 `5dc17947`；检查点 `36de0b4`。J07_OFFLINE_VERIFIED 保持；J08_IN_PROGRESS，不是 J08 完成。** 本节取代上一节“J08 尚未实施”。唯一工作树/分支/交付远端、三 SKILL、禁止推送/部署/游戏/存档写入等边界不变；没有改自动化截止时间。
+
+## 本包交付与代码位置
+
+| 位置（一基行号） | 已接线责任 | 仍保留 / 后续 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs:29-51` | 一次请求的认证、POST JSON、sender 调用、响应/body 接受点、脱离 response 的结果、request/response 释放 | 每次调用只发一次；不隐藏自动重试、不持有 HttpClient 生命周期、不存凭据 DTO |
+| 同文件 `:55-78` | 原 Configured linked timeout 与 Retry-After 解析归同一 owner；流式错误路径复用后者 | 保持调用方 token 所有权、原超时语义、原 date/header 处理；未新增 provider 行为 |
+| `ShoutNetwork.cs:665-884`（调用 `:733,:755`） | 主请求与 thinking fallback 请求均改用新 owner；两个响应/body 代际接受点顺序和中文错误文案保持 | 上层设置/显示名/UI 重试/空回复补救/诊断编排仍在宿主，不把 220 行方法称为已全部模块化；stream 未迁 |
+| `Refactor/Adapters/LegacyConfiguredChatGateway.cs:497-550,647-665` | 非流 Generate/Validation/PreparedJson 共用同一真实 transport；HTTP 失败分类统一给非流与流式复用 | 公开 Gateway/result ABI 未改；流式读取/解析以及适配器策略仍保留真实消费者 |
+| `tests/modules/AF.Module.Llm/NonStreamingTransport/` | 当前/旧 Primary 与当前/旧 Configured 的 source-linked 差分 + 真 HttpMessageHandler 替身 | MCM/姓名/日志/UI/存档代际是明确替身，非实机/真实 provider |
+
+**实际修复**：旧 Primary 成功响应未 Dispose，离线 TrackedContent 复现原版本未释放；新 transport 在成功、HTTP 失败、代际拒收和接受回调异常时释放响应与请求。保留原正文、错误、thinking 400、空回复一次补救和用户确认后重试；这是资源生命周期修复，不是简化请求/取消功能。
+
+**清理**：删去两处 Primary 的重复 request/auth/read/dispose 代码、Configured 中已不可达的旧非流分支、原私有 timeout/Retry-After 实现。旧 SendPrimaryNonStreamingRequestAsync 保留为 Debug scoped replay sender/真实 GlobalClient 的有效接缝；stream 路径不是废代码，不删除。ShoutNetwork 原文件是混合行尾，本次从原字节按局部差分替换，未整文件统一行尾；未修改 ShoutBehavior.cs。
+
+## 本轮验证（限定离线范围）
+
+- 新 suite **240 检查**：Primary **15** 组旧/新最终文本、完整 payload、请求次数、代际检查顺序对照；Configured **7** 组旧/新状态/正文/错误码/request 对照 + caller cancel/timeout；Primary caller cancel 和 response 接受点清理。协议、认证与正文提取使用实际生产 LlmApiCompat，网络为确定性 HttpMessageHandler。
+- **5 项有效红测**：泄漏 response、跳 header 接受门、丢 caller token、thinking retry 没去 controls、丢 Retry-After，全部编译成功并命中具名断言；不是编译/路径失败。取消反例检查 caller cancel 是否真正到达 send token，不能等另一个 timeout 后也返回 Cancelled 而假绿。
+- ConfiguredChatGatewayReplay、ConfiguredChatValidationReplay、KnowledgeRagGatewayReplay **全部 PASS**（原 localhost replay，非真实 provider）；包含 streaming 既有行为、prepared JSON、桥开关独立性、超时/取消/credential 边界。
+- J01 协议正常 suite **13 用例 PASS**，协议实现/fixture 未改变，历史 7 变异不因本包重复运行。原完整 J01 源码逆向检查仅对已经单独执行差分的 J08 Primary 方法作精确投影，不删除周围源码/调用次数断言。
+- LegacyShoutGatewayResult **40**、NativeMainReply **179 / 19 场景** PASS。J07 其他 owner/UI/动作/历史源码和输入未变，复用 `e5c14b8a` 已绑定证据，不重开整包调查。
+- Debug/Release × 1.3/1.4/Bootstrap **6 构建通过，0 warning / 0 error**；SDK 8.0.422，引用 1.3.15.110062 / 1.4.6.115628；原构建脚本、无 Stage/Deploy。
+- 当前四个 DLL **1060** API/metadata 断言 PASS；存档契约 **142 literal keys / 168 typed bindings / 13 chunked / 44 flattened** PASS。315 锚点图绑定 `5dc17947`，记录提交/工作树两模式通过。
+- 日志：`.tmp/j08-nonstream-20260921/`，构建日志 `.tmp/j08-nonstream-build-debug.log` / `...-release.log`，全部仅本地。第一次 J01 调用漏传必填 CLI 参数，补齐原参数后 PASS，未改流程。fixture 初版假定坏 JSON 必为失败，实际旧 LlmApiCompat 会保留可读原文；已改用真实旧 adapter 对照，未改生产兼容策略。
+
+**未验证/不冒充**：真实 provider/游戏/旧档/音频/帧成本未测。旧 `PrimaryLlmGatewayReplayTests` 的 Stage/引用/日志路径仍未在本包处理，没有运行该真实 DLL Host 回放；新的 source-linked 差分不能冒充它。实际 DLL 检查是 metadata，不是 CLR/游戏加载。
+
+**性能与回滚**：每个 HTTP attempt 一个脱离响应的短生命周期结果；仍复用既有 HttpClient，不新建连接池、扫描、队列或隐含 retry。释放泄漏的 response 降低了滞留风险，未量测真实网络/内存成本。回滚用 `5dc17947` 的定向 inverse/revert，保留检查点 `36de0b4`；不 reset、不强推、不覆盖其他工作树。
+
+## 下一步：继续 J08，不回退 J07
+
+1. **J08a 剩余上层编排**：主对话与 Configured 仍有各自配置/重试/错误/诊断宿主责任。明确保留的 UI/姓名游戏适配与应迁入模块的协议策略/请求状态 owner，接真实消费者后删除旧实现；不能仅把整段 220 行搬进另一文件或把两套不同策略强行压平。本次只关闭共享 HTTP attempt/lifetime 责任包，不把它抬成 J08a 全部收尾。
+2. **J08b** 流式 request/SSE/可见输出/Unicode/取消；保留已输出内容后的失败与回退时序，不允许误重放或在游戏线程等网络。之后 **J08c** 模型目录/Gateway、**J08d** TTS 传输。J09/J10/J14 留后续，不顺手开放新的 public submit。
+3. 原窗口仍截止 UTC `2026-09-20T17:48:36Z`；本轮结束时尚未截止，自动化维持 ACTIVE。到期若未完成，写清本包已验、上层编排/stream/model/TTS 未完，更新两份交接并暂停，不能把时限用完记 J08 DONE。
+
+## 以下为历史回执，当前状态以上方为准
+
 <a id="j07-offline-closeout-20260921"></a>
 # 当前接续：J07 离线整包验收闭合，下一包 J08（2026-09-21 北京时间）
 
