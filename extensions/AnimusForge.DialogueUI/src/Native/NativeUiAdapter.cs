@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Conversation;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
@@ -22,6 +24,9 @@ public static class NativeUiAdapter
     private static NativeLayout _native;
     private static OverlayLayout _overlay;
     private static bool _installed;
+    private static readonly ConditionalWeakTable<AnimusForgeNativeConversationOverlayVM, OwnerPresentationState> OwnerStates = new();
+    private static long _uiTick;
+    private static ExitRequest _pendingExit;
 
     public static void Install(Harmony harmony)
     {
@@ -47,7 +52,8 @@ public static class NativeUiAdapter
             _native == null || !ReferenceEquals(_native.Mission, Mission.Current) || !Attached(_native.Root)) return false;
         if (!Wrappers.TryGetValue(af, out var presentation))
         {
-            presentation = new NativeOverlayVM(af);
+            OwnerPresentationState state = OwnerStates.GetValue(af, _ => new OwnerPresentationState());
+            presentation = new NativeOverlayVM(af, () => RequestLeave(af), () => state.DefaultAiHandled = true);
             Wrappers.Add(af, presentation);
         }
         wrapper = presentation;
@@ -81,6 +87,7 @@ public static class NativeUiAdapter
 
     public static void Tick()
     {
+        _uiTick++;
         if (_native != null)
         {
             if (!ReferenceEquals(Mission.Current, _native.Mission) || !Attached(_native.Root))
@@ -90,6 +97,7 @@ public static class NativeUiAdapter
         if (_overlay != null && (!ReferenceEquals(Mission.Current, _overlay.Mission) || !Attached(_overlay.Root)))
         { ReleaseOverlay(_overlay.Original); }
         else _overlay?.Tick();
+        ProcessPendingExit();
     }
 
     public static void OnMovieReleased(Widget root)
@@ -109,6 +117,7 @@ public static class NativeUiAdapter
     public static void Shutdown()
     {
         _installed = false;
+        _pendingExit = null;
         _native?.Dispose(); _native = null; _overlay = null;
         foreach (var wrapper in Wrappers.Values) wrapper.OnFinalize();
         Wrappers.Clear();
@@ -116,6 +125,7 @@ public static class NativeUiAdapter
 
     private static void ReleaseOverlay(AnimusForgeNativeConversationOverlayVM original)
     {
+        if (_pendingExit != null && ReferenceEquals(_pendingExit.Original, original)) _pendingExit = null;
         if (_overlay != null && ReferenceEquals(_overlay.Original, original)) _overlay = null;
         if (original != null && Wrappers.TryGetValue(original, out var wrapper))
         { wrapper.OnFinalize(); Wrappers.Remove(original); }
@@ -140,18 +150,88 @@ public static class NativeUiAdapter
         return false;
     }
 
+    private sealed class OwnerPresentationState { internal bool DefaultAiHandled; }
+
+    private sealed class ExitRequest
+    {
+        internal readonly AnimusForgeNativeConversationOverlayVM Original;
+        internal readonly MissionConversationVM NativeSource;
+        internal readonly Mission Mission;
+        internal readonly ConversationManager Manager;
+        internal readonly long AfterTick;
+        internal ExitRequest(OverlayLayout owner)
+        {
+            Original = owner.Original; NativeSource = owner.NativeSource; Mission = owner.Mission;
+            Manager = owner.Manager; AfterTick = _uiTick + 1;
+        }
+    }
+    private static bool IsCurrentNativeOwner(Mission mission, MissionConversationVM source, ConversationManager manager)
+    {
+        return _installed && mission != null && ReferenceEquals(Mission.Current, mission) &&
+            _native != null && ReferenceEquals(_native.Mission, mission) && ReferenceEquals(_native.Source, source) &&
+            Attached(_native.Root) && ReferenceEquals(Campaign.Current?.ConversationManager, manager) &&
+            manager != null && manager.IsConversationInProgress;
+    }
+    private static bool RequestLeave(AnimusForgeNativeConversationOverlayVM original)
+    {
+        OverlayLayout owner = _overlay;
+        if (_pendingExit != null || owner == null || !ReferenceEquals(owner.Original, original) ||
+            !Attached(owner.Root) || !IsCurrentNativeOwner(owner.Mission, owner.NativeSource, owner.Manager)) return false;
+        OwnerStates.GetValue(original, _ => new OwnerPresentationState()).DefaultAiHandled = true;
+        _pendingExit = new ExitRequest(owner);
+        return true;
+    }
+    private static void ProcessPendingExit()
+    {
+        ExitRequest request = _pendingExit;
+        if (request == null || _uiTick < request.AfterTick) return;
+        _pendingExit = null;
+        if (_overlay == null || !ReferenceEquals(_overlay.Original, request.Original) || !Attached(_overlay.Root) ||
+            !IsCurrentNativeOwner(request.Mission, request.NativeSource, request.Manager))
+        {
+            if (Wrappers.TryGetValue(request.Original, out var stale)) stale.ClearLeavePending();
+            return;
+        }
+        bool wasBusy = !request.Original.IsInputEnabled;
+        try
+        {
+            // This runs on the NEXT application/UI tick, never inside the widget click handler.
+            // Retire AF's existing presentation generation first so late replies cannot paint it.
+            AnimusForgeNativeConversationOverlay.CloseActive();
+            // Closing an owner can invoke lifecycle callbacks; never end a replacement session.
+            if (!IsCurrentNativeOwner(request.Mission, request.NativeSource, request.Manager)) return;
+            request.Manager.EndConversation();
+            DialogueUiRuntime.Log(wasBusy
+                ? "Left current mission conversation; AF presentation retired, in-flight network work was not cancelled."
+                : "Left current mission conversation through the native EndConversation lifecycle.");
+        }
+        catch (Exception ex)
+        {
+            // Do not retry EndConversation automatically: its one-shot callbacks may already have run.
+            DialogueUiRuntime.Log("Native conversation exit did not complete: " + ex.GetType().Name + ": " + ex.Message);
+            if (Wrappers.TryGetValue(request.Original, out var failed)) failed.ClearLeavePending();
+        }
+    }
+
     private sealed class OverlayLayout
     {
         internal readonly Widget Root;
         internal readonly Mission Mission;
         internal readonly AnimusForgeNativeConversationOverlayVM Original;
+        internal readonly MissionConversationVM NativeSource;
+        internal readonly ConversationManager Manager;
+        private readonly OwnerPresentationState _state;
+        private readonly long _initializeAfterTick;
         private readonly List<Widget> _buttons = new();
         private readonly Widget _paintSlot;
         private readonly Widget _paint;
         internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original)
         {
             Root = root; Original = original; Mission = Mission.Current;
-            foreach (string id in new[] { "AFDialogueSwitch", "AFDialogueHistory", "AFDialogueGift", "AFDialogueMore", "AFDialoguePersona", "AFDialogueTagTest", "AFDialogueSubmit" })
+            NativeSource = _native?.Source; Manager = Campaign.Current?.ConversationManager;
+            _state = OwnerStates.GetValue(original, _ => new OwnerPresentationState());
+            _initializeAfterTick = _uiTick + 1;
+            foreach (string id in new[] { "AFDialogueSwitch", "AFDialogueLeave", "AFDialogueHistory", "AFDialogueGift", "AFDialogueMore", "AFDialoguePersona", "AFDialogueTagTest", "AFDialogueSubmit" })
             {
                 Widget button = root.FindChild(id, true);
                 if (button != null)
@@ -223,6 +303,14 @@ public static class NativeUiAdapter
         }
         internal void Tick()
         {
+            if (!_state.DefaultAiHandled && _uiTick >= _initializeAfterTick && ReferenceEquals(_overlay, this) &&
+                Attached(Root) && Root.IsRecursivelyVisible() && IsCurrentNativeOwner(Mission, NativeSource, Manager))
+            {
+                // The stamp belongs to AF's owner VM, not this resource/wrapper. Refreshing a movie
+                // cannot overwrite a player's subsequent choice of the original answer list.
+                _state.DefaultAiHandled = true;
+                if (!Original.IsCustomAnswerVisible) Original.SwitchTalk();
+            }
             if (_paintSlot != null) _paintSlot.IsVisible = _paint != null && _paint.IsVisible;
         }
         internal bool HitTest()
@@ -261,6 +349,11 @@ public static class NativeUiAdapter
 
         internal static NativeLayout TryCreate(Widget root, MissionConversationVM source)
         {
+            if (root.Id == "AFDialogueNativePanel" || root.FindChild("AFDialogueNativePanel", true) != null)
+            {
+                DialogueUiRuntime.LogOnce("native-panel-already-owned", "Existing AFDialogueNativePanel retained; duplicate presentation adapter not installed.");
+                return null;
+            }
             var answers = root.FindChild("AnswerList", true) as ListPanel;
             Widget dialogue = root.FindChild("DialogueContainer", true);
             Widget options = root.FindChild("AnswerListContainer", true);

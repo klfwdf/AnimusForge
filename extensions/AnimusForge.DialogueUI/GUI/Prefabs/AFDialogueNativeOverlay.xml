@@ -51,7 +51,10 @@
             </Widget>
             <Widget WidthSizePolicy="Fixed" SuggestedWidth="590" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="20" MarginTop="18" MarginBottom="18" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
-                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="180" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Right" MarginTop="12" MarginRight="20" Command.Click="SwitchTalk" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueLeave" WidthSizePolicy="Fixed" SuggestedWidth="110" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Left" MarginTop="12" MarginLeft="20" Command.Click="LeaveConversation" IsEnabled="@CanLeave" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                  <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="离开" Brush="Popup.Button.Text" Brush.FontSize="20" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="180" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Right" MarginTop="12" MarginRight="20" Command.Click="SwitchTalk" IsEnabled="@IsInteractionEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                   <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SwitchTitle" Brush="Popup.Button.Text" Brush.FontSize="20" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                 </ButtonWidget>
                 <Widget Id="AFDialogueInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="20" MarginRight="20" MarginTop="62" MarginBottom="18" IsVisible="@IsCustomAnswerVisible" Sprite="afdui_input_panel" DoNotPassEventsToChildren="false">
