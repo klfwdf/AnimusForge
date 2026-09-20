@@ -1,3 +1,12 @@
+# 当前接续：Claude 三提交已补推；先补 J06 离线证据，再实施 J07（2026-09-20）
+
+- 已普通快进指定分支 `codex/af-main-refactor-continuation-20260831`：`2946bf3d` → `b9b2215b`；包括测试修复、J06 回执和 J07 初版计划。本地施工分支仍为 `codex/af-modularize-j04-20260918`，不是新的发布目标。
+- **J06：VERIFY / NOT_ACCEPTED；J07：PLAN_READY / NOT_STARTED。** 已纠正“J06 只剩实机”的验收口径：后台原文称谓、非 Hero/常驻实体等仍有可补的离线覆盖，具体源码位置和证据见[主台账当前节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j07-plan-review-20260920)。
+- [后续计划与 25 条注意事项](docs/plans/j07-conversation-native-plan.md)已修订：G0 基线→G1 原文分支→G2 类别/最终请求→J07a 10 文件归位→J07b 生命周期→J07c 玩家交互→J07d 包验收。保持先后处理、再动作派发的主链，保留早期特例及五步 Prompt。
+- 本轮只补推已有成果、修订计划/交接；未改生产代码或测试，不代表 J07 已开工。源码仍 `70db6ec2`；不改 SyncData/API/默认入口、不部署、不动存档、不恢复自动化。未跟踪 `.dotnet-cli-home/` 保留，不上传本地人工转发版。
+
+## 以下为历史交接；“仅实机剩余”的旧表述已由上方台账明确纠正
+
 # 当前接续：远端 J06 红测已修复，差分全绿；J06 仍 VERIFY / NOT_ACCEPTED，下一包 J07（2026-09-19）
 
 本地 `codex/af-modularize-j04-20260918` 已 `--ff-only` 快进到 GitHub `codex/af-main-refactor-continuation-20260831` 终点 `2946bf3d`，产品源码终点不变 `70db6ec2`（291 锚点地图有效）。远端 HANDOFF 记录的“实体差分非空输入下主文/后处理变空”根因是 harness 的 `FindRawRulerTitleMatches` 仍为 throw 桩、被生产 `BuildPromptContext` 外层 catch 吞成空上下文；`08699b4f` 改为两侧提取真实 raw 称谓匹配方法后，`EntityTextDifferential` 与依赖它的 `SharedCompletionDifferential`（12 场景，Courier + Native 最终请求含生产派生三类文本）全部 PASS，六项负向变异全部拒收。同提交修了 Index harness 的硬编码 Newtonsoft 路径和 2 条 SyncData 绑定行号（168 条身份不变）。本机 Debug/Release × 1.3/1.4/Bootstrap 六项 0 错误；Knowledge/Prompt 全部 22 套、Courier/Native/Scene/Cutover 渠道 runner、Memory/Persistence 全部 PASS。**未推送、未部署、未动存档、未改产品源码。** J06 剩余开放项只有实机帧耗时与非 Hero 类别真实文本（离线不可闭合），故不标 `J06_OFFLINE_VERIFIED`，按总计划进入 **J07 Conversation 核心 / Native**。详见[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06-differential-green-20260919)。

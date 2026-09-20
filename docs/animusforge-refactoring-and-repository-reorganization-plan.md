@@ -1,3 +1,25 @@
+<a id="j07-plan-review-20260920"></a>
+
+## 2026-09-20：补推 Claude 三提交，修订 J06→J07 接续计划（PLAN_READY / NOT_STARTED）
+
+本轮授权是核对/补推已有成果并制定后续计划，**不开始生产重构**。工作树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，本地分支 `codex/af-modularize-j04-20260918`；指定发布目标 `origin/codex/af-main-refactor-continuation-20260831`。fetch 后远端仍为 `2946bf3d`，本地领先 3、落后 0；已普通快进推送 `08699b4f`、`63e74e7d`、`b9b2215b`，并用 `ls-remote` 核实 `b9b2215b954d5f1c367fe66fd3d8092558a894fe`。无需开新代理、未修改网络代理配置；未强推、未动 main。
+
+### 当前结论与修订
+
+- **J06 仍 `VERIFY / NOT_ACCEPTED`，J07 仍 `PLAN_READY / NOT_STARTED`**。本节取代下方“J06 剩余仅实机”“最终生产文本对照全部闭合”的过宽解释，不否认已通过的限定 fixture 差分。
+- `EntityTextDifferential/Program.cs:136` 后台匹配收到空原文，而 capture/complete 为非空；`:99-113` 非 Hero 与常驻实体有置空/throw 假端口。前者需补共同输入和 raw-only/限定/歧义/遮蔽反例，后者可增加生产方法＋可控假游戏对象的离线正文差分。真实属性成本、实机/旧档/provider 分开，不全部归为离线不可闭合。
+- 后续唯一详细执行计划仍为 [J07 原计划文件](plans/j07-conversation-native-plan.md)：G0 基线→G1 原文分支→G2 非 Hero/最终请求→J07a 10 文件归位→J07b 准入/编排/终态→J07c 交互→J07d 包验收。安全纯 rename 可独立提前，相关证据缺口不在行为签收时豁免。
+- 修正 J07 流程图：`ShoutBehavior.cs:20504` 统一后处理在 `:20536` 主线程动作派发前；`:20349` 原文挑衅、`:20376` 提前 TTS 等既有特例保持。不重排为“先动作再后处理”。Prompt 已是 J04/J06 五步，不再写三步。
+- 搬迁清单为 8 Runtime＋2 Pipeline，共 10 文件；`InteractionContracts.cs` 保留原路径/类型身份。纯目录归位不改命名空间、可见性、API、程序集/存档身份。保留第 5 节 25 条约束；120 行为建议，不以压行数代替职责归属。
+
+### 已有验证与本轮边界
+
+同日审查复跑（产品源码 `70db6ec2` 未变）：291 锚点 recorded/working-tree PASS；SharedCompletionDifferential 12 场景、NativeKnowledgeSchedule 8 项/4 场景、Courier liveness 59 项/16 场景 PASS。后两 harness 存在 CS0649；未重跑全量构建、全部变异或游戏验收。本轮文档提交只验证差异/链接/源码字节不变，不冒用旧记录证明产品全部完成。
+
+核实 `ShoutBehavior.cs` 为 39,669 行、全部 CRLF、无 BOM，SHA-256 `973ac6d0ef172ce140de39b1306c93df4af07bfe63483c2aaca47e09a47c83e4`，本轮未修改。已跟踪文件在开工前无差异；未跟踪 `.dotnet-cli-home/` 原样保留。计划与根 HANDOFF 文档单独提交，推送结果最终以远端 ref 为准，不提交本地直发版/产物/玩家内容。后续回滚用 focused revert，不 reset/rebase/强推；不部署、不恢复自动化、不修改政策/宴会/GCCZ 业务。
+
+## 以下为历史回执；当前结论以上节为准
+
 <a id="j07-plan-ready-20260919"></a>
 
 ## J07 计划就绪：PLAN_READY / NOT_STARTED（2026-09-19）
