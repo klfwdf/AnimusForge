@@ -1,8 +1,8 @@
 # 当前 J10 Scene 渠道 owner 归位进行中（2026-09-21）
 
-J10 计划提交 `2c6530f8`；Scene audience scope `03c08ac9`、postprocess/queue/completion partial `76b5a429` 已归位 `src/modules/AF.Module.Conversation/Channels/Scene`；`64e438c6` 进一步让 `ScenePlayerShoutRequestOwner` 唯一持有 input sequence、冻结 request identity 与 one-shot claim。真实 `ShoutBehavior` 消费者仍唯一，无新增存档。scope 3 个变异、request lifetime 7 个变异和 BattleSpeech captured 2 个变异均有效；Scene parity/queue、默认 action wiring、NativeTurn、GiveAsset、Bridge 和 Debug 双 API+Bootstrap 通过。当前代码地图绑定 `64e438c6`，共 336 锚点。
+J10 计划提交 `2c6530f8`；Scene audience scope `03c08ac9`、postprocess/queue/completion partial `76b5a429` 已归位渠道目录；`64e438c6` 让 request owner 唯一持有 input sequence、冻结 identity 与 one-shot claim；`a4006d5c` 让 pending AFEF owner 唯一持有每 Agent 12 条进程内队列和 one-shot consume。真实消费者仍唯一，无新增存档。scope/request/BattleSpeech/pending AFEF 的有效变异、Scene parity/queue、默认 wiring、NativeTurn、GiveAsset、Bridge 和 Debug 双 API+Bootstrap 通过。当前代码地图绑定 `a4006d5c`，共 337 锚点。
 
-**尚未完成**：group/relay/passive/reaction 的下游会话状态、pending AFEF 和 speech queue 状态仍有混合责任；Courier 尚未开工；因此状态仍为 `J10_IN_PROGRESS`。真实 Campaign/Mission、旧档、provider、音频和帧成本 `NOT-RUN`。详细回执见[主台账 J10 节](../animusforge-refactoring-and-repository-reorganization-plan.md#j10-scene-owners-20260921)。
+**尚未完成**：group/relay/passive/reaction 的下游会话状态和 speech queue 状态仍有混合责任；Courier 尚未开工；因此状态仍为 `J10_IN_PROGRESS`。真实 Campaign/Mission、旧档、provider、音频和帧成本 `NOT-RUN`。详细回执见[主台账 J10 节](../animusforge-refactoring-and-repository-reorganization-plan.md#j10-scene-owners-20260921)。
 
 ## 以下历史范围以上方更新为准
 

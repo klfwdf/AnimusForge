@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "64e438c69bab802d25bda79815bc55edc0711e95",
+  "sourceRevision": "a4006d5c9f74b668c14fd2879bbeab8ab7f2a744",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "69d960c2230db2161e0b991cd4b18c2e003adf0778477f2ffd67e37b167216b2"
+      "fileSha256": "071e3f2a9526d5e8e018b8dc82f07da32f16d4084591b27470bc110b5dd68865"
     },
     {
       "id": "native.history.dispatch",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "69d960c2230db2161e0b991cd4b18c2e003adf0778477f2ffd67e37b167216b2"
+      "fileSha256": "071e3f2a9526d5e8e018b8dc82f07da32f16d4084591b27470bc110b5dd68865"
     },
     {
       "id": "memory.acceptance",
@@ -278,6 +278,17 @@
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
       "fileSha256": "bc552477b450efac43a96c8d028d395de1861fc4737d31b1b6c15396d08feee3"
+    },
+    {
+      "id": "scene.pending-afef.owner",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ScenePendingAfefFactsOwner.cs",
+      "start": 11,
+      "end": 11,
+      "symbol": "internal sealed class ScenePendingAfefFactsOwner",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "bounded per-agent process-local facts transferred once into the next Scene prompt",
+      "fileSha256": "a2c745c78186915714b696f8b1f3f0ff42655d1d179cb62088700181238f744f"
     },
     {
       "id": "scene.player-request.owner",
@@ -3302,7 +3313,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "69d960c2230db2161e0b991cd4b18c2e003adf0778477f2ffd67e37b167216b2"
+      "fileSha256": "071e3f2a9526d5e8e018b8dc82f07da32f16d4084591b27470bc110b5dd68865"
     },
     {
       "id": "native.turn.entry",
@@ -3313,7 +3324,7 @@
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "69d960c2230db2161e0b991cd4b18c2e003adf0778477f2ffd67e37b167216b2"
+      "fileSha256": "071e3f2a9526d5e8e018b8dc82f07da32f16d4084591b27470bc110b5dd68865"
     },
     {
       "id": "native.turn.coordinator",
