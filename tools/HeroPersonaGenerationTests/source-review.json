@@ -2,10 +2,10 @@
   "baseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "dependencies": {
     "MyBehavior.PersonaGeneration.cs": "98e162a04bb7c65b06763b4e8ba3823a54cd204c9750b5d3dec20ebbdd229b5b",
-    "Refactor/Runtime/NpcPersonaGenerationOwner.cs": "041cf88b5f053be54549080769ea38421c4a537a6733692380e50397950dd4e9",
+    "src/modules/AF.Module.Conversation/Internal/NpcPersonaGenerationOwner.cs": "041cf88b5f053be54549080769ea38421c4a537a6733692380e50397950dd4e9",
     "tools/HeroPersonaGenerationTests/Harness.cs.txt": "341cd2c2ea3f2e0978702ee505cf969adf1bc28eb2fc8d670858f9e905631411",
     "tools/HeroPersonaGenerationTests/Reservations.cs.txt": "b73c660c5a82f98cc033a944e543c6e10f0ab86457b159c438e9b0b63fc0ad8a",
-    "tools/HeroPersonaGenerationTests/run.py": "83587b6fb5572e7f519e3eccc6fdcfe625c90b28adef75823d1ab6db007029c7"
+    "tools/HeroPersonaGenerationTests/run.py": "0446b6bb150a4154f628021b08a359dac2ca0ad81986b1ace965c9e6b70475b1"
   },
   "replacementMethods": {
     "private bool IsNpcPersonaGenerationInFlight(": "818b6b74cb9d82c996880991fe77b66ed4235e1ca0a999e042203ddb333b27d0",

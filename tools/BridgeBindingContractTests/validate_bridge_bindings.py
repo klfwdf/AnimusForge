@@ -26,8 +26,8 @@ EXPECTED_CONTRACT_VERSION = 1
 EXPECTED_BRIDGE_COUNT = 16
 EXPECTED_WIRED = {
     "conversation-gateway": ("Refactor/Adapters/LegacyConfiguredChatGateway.cs", "GenerateExchangeAsync"),
-    "conversation-action": ("Refactor/Runtime/InteractionResultCommitter.cs", "Commit"),
-    "action-memory": ("Refactor/Runtime/InteractionResultCommitter.cs", "Commit"),
+    "conversation-action": ("src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs", "Commit"),
+    "action-memory": ("src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs", "Commit"),
     "action-economy": ("Refactor/Adapters/LegacyNativeActionPlanExecutor.cs", "ValidateAndExecuteCore"),
     "conversation-siege": ("AfGcczShoutBridge.cs", "IsActive"),
     "conversation-courier": ("CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),

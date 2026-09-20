@@ -288,7 +288,7 @@
       "owner": "Conversation.ActionCommit",
       "entryPaths": [
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
       ],
       "symbols": [
         {
@@ -297,7 +297,7 @@
           "kind": "type"
         },
         {
-          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "path": "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
           "symbol": "InteractionResultCommitter",
           "kind": "type"
         }
@@ -320,7 +320,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Runtime/InteractionResultCommitter.cs",
+        "entryPath": "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
         "symbol": "Commit",
         "frequency": "event",
         "notes": "The shared main-thread committer rejects ActionPlan execution when the explicit action bridge is disabled; default native callers are unchanged."
@@ -335,12 +335,12 @@
       "topology": "PAIR",
       "owner": "Action.Memory",
       "entryPaths": [
-        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
         "MyBehavior.MemoryRecovery.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "path": "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
           "symbol": "InteractionResultCommitter",
           "kind": "type"
         },
@@ -368,7 +368,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Runtime/InteractionResultCommitter.cs",
+        "entryPath": "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
         "symbol": "Commit",
         "frequency": "event",
         "notes": "The same main-thread commit boundary gates history/memory receipt publication before the existing committer; no new save key or coordinator is introduced."

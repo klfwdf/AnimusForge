@@ -31,16 +31,20 @@ RULES = {
         "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
     "game-adapter-compatibility": ("PlayerEncounterCompat.cs",),
-    "action-commit": ("Refactor/Runtime/DetachedInteractionHost.cs",),
+    "action-commit": ("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",),
 }
 CATALOG_PATH = Path("docs/phase8/full-domain-readiness-catalog.json")
 EXCLUDED_PARTS = {
-    ".tmp", "_deps_auto", "artifacts", "bin", "modules", "obj", "terminal", "tools",
+    ".tmp", "_deps_auto", "artifacts", "bin", "obj", "terminal", "tools",
 }
 
 
 def _excluded(path: Path) -> bool:
-    lowered = {part.lower() for part in path.parts}
+    parts = tuple(part.lower() for part in path.parts)
+    # src/modules is production source; deployment Modules trees remain excluded.
+    if any(part == "modules" and not (index == 1 and parts[0] == "src") for index, part in enumerate(parts)):
+        return True
+    lowered = set(parts)
     if lowered & EXCLUDED_PARTS:
         return True
     if any("原版游戏" in part for part in path.parts):

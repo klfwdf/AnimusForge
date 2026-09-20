@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 spec=importlib.util.spec_from_file_location('build',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
-SOURCES=['Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Contracts/ProfileConfigContracts.cs','Refactor/Runtime/InteractionRequestCoordinator.cs']
+SOURCES=['Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Contracts/ProfileConfigContracts.cs','src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs']
 MAIN='437925b856fae76b4e9ee207e96ba048f35d5a67'
 p=argparse.ArgumentParser();p.add_argument('--main',action='store_true');p.add_argument('--case',default='all',choices=['all','common','supersede','dispose','token','race','precancel','reentrant','surface']);p.add_argument('--mutate',choices=['dispose_early','propagate_callback','ignore_active_cancel']);args=p.parse_args()
 if args.main and args.mutate:p.error("--main and --mutate are mutually exclusive")
@@ -11,9 +11,9 @@ out=HERE/'.generated'/('main' if args.main else (args.mutate or 'current'));out.
 sources=[]
 for path in SOURCES:
  if args.main:
-  file=out/Path(path).name;file.write_bytes(subprocess.check_output(['git','show',MAIN+':'+path],cwd=ROOT));sources.append(file)
+  file=out/Path(path).name;file.write_bytes(subprocess.check_output(['git','show',MAIN+':'+('Refactor/Runtime/InteractionRequestCoordinator.cs' if path=='src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs' else path)],cwd=ROOT));sources.append(file)
  else:sources.append(ROOT/path)
-lease=ROOT/'Refactor/Runtime/InteractionRequestLease.cs'
+lease=ROOT/'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs'
 if not args.main and lease.exists():
  if args.mutate:
   faults={

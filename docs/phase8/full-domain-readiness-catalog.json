@@ -336,9 +336,9 @@
       ],
       "entryPaths": [
         "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
-        "Refactor/Runtime/DetachedInteractionHost.cs",
-        "Refactor/Runtime/InteractionCommitReceiptCache.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",
+        "src/modules/AF.Module.Conversation/Internal/InteractionCommitReceiptCache.cs",
+        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -725,9 +725,9 @@
         "FourberieDuelCompatibility.cs",
         "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs",
         "ShoutBehavior.ScenePostprocess.cs",
-        "ShoutBehavior.cs"
+        "ShoutBehavior.cs",
+        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -776,8 +776,14 @@
       ],
       "entryPaths": [
         "CompanionProactiveChatBehavior.cs",
+        "CourierDeliveryBehavior.CampaignLifetime.cs",
+        "CourierDeliveryBehavior.CommitDispatch.cs",
         "CourierDeliveryBehavior.DetachedPostprocess.cs",
+        "CourierDeliveryBehavior.HistoryPreparation.cs",
         "CourierDeliveryBehavior.InboundCompletion.cs",
+        "CourierDeliveryBehavior.PreparationAdmission.cs",
+        "CourierDeliveryBehavior.PromptPreparation.cs",
+        "CourierDeliveryBehavior.PromptSchedule.cs",
         "CourierDeliveryBehavior.cs",
         "ProactiveNpcRequestBehavior.cs",
         "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
@@ -821,7 +827,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 17,
@@ -1222,7 +1228,7 @@
       "implementationState": "OPT_IN",
       "entryPaths": [
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1249,7 +1255,7 @@
       "owner": "Action.Memory",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
         "MyBehavior.MemoryRecovery.cs"
       ],
       "requiredCases": [

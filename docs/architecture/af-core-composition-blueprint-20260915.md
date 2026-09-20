@@ -198,7 +198,7 @@ Native / Scene / Courier / 已开放API
 | `Refactor/Modules/ModuleFrameworkRuntime.cs:22–80` | 显式三组adapter目录装配与Stopped状态，不读取Campaign |
 | `Refactor/Modules/TeamModuleServices.cs:5–10` | 三个静态无状态typed桥 |
 | `Refactor/Adapters/LegacyInteractionPipelineComposition.cs:75–114` | 用原ports组合pipeline/coordinator，原owner仍运行 |
-| `Refactor/Runtime/InteractionRequestCoordinator.cs:15–31` | 请求协调器持有in-flight/代际依赖，不是全局模块Host |
+| `src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs:15–31` | 请求协调器持有in-flight/代际依赖，不是全局模块Host |
 | `MyBehavior.MemorySummaryMainThread.cs:18–44` | 已提取dispatcher的每owner惰性发布与游戏host |
 | `Api/V1/AfApi.cs:13–27` | 当前CatalogRead可用，提交/动作/写入/注册未开放 |
 

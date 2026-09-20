@@ -15,6 +15,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import entry_inventory  # noqa: E402
 
 EXPANDED_ENTRIES = {
+    # Newly inventoried existing Courier boundaries require renewed J10 coverage review.
+    "courier-proactive-issue": (
+        "CourierDeliveryBehavior.CampaignLifetime.cs", "CourierDeliveryBehavior.CommitDispatch.cs",
+        "CourierDeliveryBehavior.HistoryPreparation.cs", "CourierDeliveryBehavior.PreparationAdmission.cs",
+        "CourierDeliveryBehavior.PromptPreparation.cs", "CourierDeliveryBehavior.PromptSchedule.cs",
+    ),
     "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
     "social-progression-reports": (
         "AnimusForgeWeeklyReportMapNotification.cs",
@@ -63,7 +69,7 @@ class EntryInventoryTests(unittest.TestCase):
         self.assertIn("Refactor/Runtime/CourierInboundCompletionReceipt.cs", result["courier-proactive-issue"])
         self.assertIn("PlayerNotorietyBehavior.ConversationOutcomes.cs", result["social-progression-reports"])
         self.assertIn("PlayerEncounterCompat.cs", result["game-adapter-compatibility"])
-        self.assertIn("Refactor/Runtime/DetachedInteractionHost.cs", result["action-commit"])
+        self.assertIn("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs", result["action-commit"])
 
     def test_report_includes_stable_source_reasons(self) -> None:
         result = entry_inventory.build_explained_inventory(ROOT)
@@ -90,6 +96,16 @@ class EntryInventoryTests(unittest.TestCase):
             self.assertTrue(entry_inventory._excluded(value), str(value))
         for value in EXPANDED_ENTRIES["ui-tts-external-integration"]:
             self.assertFalse(entry_inventory._excluded(Path(value)), value)
+
+    def test_module_sources_do_not_unexclude_generated_or_deployed_files(self) -> None:
+        self.assertFalse(entry_inventory._excluded(Path("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs")))
+        for value in (
+            "Modules/AnimusForge/Foo.cs", "scratch/Modules/AnimusForge/Foo.cs",
+            "src/modules/AF.Module.Conversation/bin/Foo.cs",
+            "src/modules/AF.Module.Conversation/obj/Foo.cs",
+            "src/modules/AF.Module.Conversation/Modules/AnimusForge/Foo.cs",
+        ):
+            self.assertTrue(entry_inventory._excluded(Path(value)), value)
 
     def test_terminal_weekly_and_war_candidates_are_present(self) -> None:
         inventory = entry_inventory.build_inventory(ROOT)

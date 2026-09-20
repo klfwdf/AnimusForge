@@ -24,6 +24,11 @@ SCENE_LIFECYCLE_DISPATCHES = {
 
 def source(path: str, ref: str | None) -> str:
     if ref:
+        # Historical cutover references predate the byte-identical J07a move.
+        if path == "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs":
+            exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+            if not exists:
+                path = "Refactor/Runtime/DetachedInteractionHost.cs"
         return subprocess.check_output(
             ["git", "show", f"{ref}:{path}"], cwd=ROOT
         ).decode("utf-8-sig").replace("\r\n", "\n")
@@ -89,7 +94,7 @@ def extract(ref: str | None) -> dict[str, str]:
         "FINALIZE_METHOD": declaration(courier, "private void FinalizeCourierReplyGenerationOnMainThread("),
         "DETACHED_FAIL_METHOD": declaration(courier, "private void FailDetachedCourierReplyOnMainThread(", optional=True),
         "STATUS_ENUM": declaration(source("Refactor/Contracts/InteractionContracts.cs", ref), "public enum InteractionStatus"),
-        "RESULT_TYPE": declaration(source("Refactor/Runtime/DetachedInteractionHost.cs", ref), "public sealed class DetachedInteractionHostResult"),
+        "RESULT_TYPE": declaration(source("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs", ref), "public sealed class DetachedInteractionHostResult"),
         "PROMPT_CONTRACTS": "\n\n".join(declaration(contracts, item) for item in prompt_contracts),
         "POSTPROCESS_INTERFACE": declaration(source("Refactor/Contracts/LlmContracts.cs", ref), "public interface IPostprocessPromptComposer"),
         "PORTS_TYPE": declaration(source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", ref), "public sealed class LegacyInteractionPipelinePorts"),
