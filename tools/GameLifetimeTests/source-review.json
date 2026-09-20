@@ -6,7 +6,7 @@
     "AfCampaignRuntimeLifecycle.cs": "72619ceeac845b349f0bfba56a95e2116f53c7480fefa1f3b45196e6fbdfc5c6",
     "MyBehavior.CampaignLifetime.cs": "b72a4875d1ad13a07ec56fd56abc5e030125098c40ebb2259b2fd7c587a4895f",
     "ShoutBehavior.CampaignLifetime.cs": "09efc89fd83e38702b6034d9d51cd4edea3fe67728bc751fb81466921b80ad4f",
-    "CourierDeliveryBehavior.CampaignLifetime.cs": "29894b9d12d00bbf57729eeec3c1d31e3a0209084c509a32670980151136f28e",
+    "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs": "29894b9d12d00bbf57729eeec3c1d31e3a0209084c509a32670980151136f28e",
     "tools/GameLifetimeTests/Harness.cs.txt": "d444a2d16db3a7bce50a934151144b14ac3bc226a2bc2be070e5e265f78a59dd",
     "tools/GameLifetimeTests/Bindings.cs.txt": "9f3126f97f6afc1ffc0b0bc1f216d999f2fcc659dc8aba8214b7a8896a229b3c",
     "tools/GameLifetimeTests/run.py": "4e5448bf0e87c0c83d992b9bd0d0e7e24d433afd02b9f9c1b4692c6a79076199",

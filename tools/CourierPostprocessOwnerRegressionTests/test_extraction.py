@@ -11,7 +11,7 @@ class ExtractionTests(unittest.TestCase):
         cls.courier = run.ex.source("CourierDeliveryBehavior.cs", None)
 
     def test_complete_production_owner_partial(self):
-        self.assertEqual(run.ex.source("CourierDeliveryBehavior.DetachedPostprocess.cs", None), self.blocks["PARTIAL"])
+        self.assertEqual(run.ex.source("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs", None), self.blocks["PARTIAL"])
         self.assertEqual(1, self.blocks["PARTIAL"].count("Task.Delay(30000)"))
 
     def test_factory_capture_and_mapping_are_verbatim(self):

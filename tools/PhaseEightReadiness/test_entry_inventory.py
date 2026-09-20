@@ -17,8 +17,10 @@ import entry_inventory  # noqa: E402
 EXPANDED_ENTRIES = {
     # Newly inventoried existing Courier boundaries require renewed J10 coverage review.
     "courier-proactive-issue": (
-        "CourierDeliveryBehavior.CampaignLifetime.cs", "CourierDeliveryBehavior.CommitDispatch.cs",
-        "CourierDeliveryBehavior.HistoryPreparation.cs", "CourierDeliveryBehavior.PreparationAdmission.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
+        "CourierDeliveryBehavior.CommitDispatch.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
     ),

@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,importlib.util,json,re,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent;BASELINE='807bc5b9'
 spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
-PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
+PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
 MOVED_DEPENDENCIES={
  'Refactor/Runtime/PendingOperationRegistry.cs':'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
  'Refactor/Runtime/GameLifetimeCoordinator.cs':'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs',
@@ -59,7 +59,7 @@ def expected(path):
   for sig,(before,after) in zip(packet['signatures'],packet['edits']):
    assert e.declaration(s,sig)==before;s=s.replace('\t'+before+'\n\n','',1);moved.append('\t'+after)
   assert restore_commit((ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig'))==packet['header']+'\n\n'.join(moved)+'\n}\n','Unreviewed Courier commit extraction'
- elif path=='CourierDeliveryBehavior.DetachedPostprocess.cs':
+ elif path=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs':
   sig='private async Task<T> RunCourierOwnerPhaseAsync<T>(';before=e.declaration(s,sig);after=before.replace('cancellationToken.ThrowIfCancellationRequested();','long retirementVersion = _pendingOwnerPhases.Version;\n        cancellationToken.ThrowIfCancellationRequested();\n        if (!_pendingOwnerPhases.Accepting) throw new OperationCanceledException("Courier owner retired.");',1)
   after=after.replace('        bool mainThread = false;','''        using (IDisposable registration = _pendingOwnerPhases.Register(retirementVersion, () =>
         {
