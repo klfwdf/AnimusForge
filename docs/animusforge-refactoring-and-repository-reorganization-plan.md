@@ -1,7 +1,7 @@
 <a id="j10-scene-owners-20260921"></a>
 # 当前接续：J10 Scene 渠道 owner 归位进行中（2026-09-21）
 
-**状态：J07/J08/J09_OFFLINE_VERIFIED；J10_IN_PROGRESS。** `2c6530f8` 冻结有限计划；`03c08ac9` 归位 audience；`76b5a429` 归位 postprocess/relay partial；`64e438c6` 接通 request identity；`a4006d5c` 接通 pending AFEF；`2631f33c` 接通 speech FIFO/单 worker lease。没有改存档、公有 API、默认开关或玩法。
+**状态：J07/J08/J09/J10a(Scene)_OFFLINE_VERIFIED；J10_IN_PROGRESS。** `03c08ac9` 至 `2631f33c` 依次接通 audience、postprocess/relay、request identity、pending AFEF 与 speech FIFO；`c1f5aa6a`/`cbf7f453` 把 group Prompt、passive、group/relay 和 immediate reaction 的 21 个真实声明原实现归入 Scene 渠道 partial。没有改存档、公有 API、默认开关或玩法。
 
 | 当前责任 | 真实结果 | 未完成 / 边界 |
 | --- | --- | --- |
@@ -9,13 +9,14 @@
 | player request identity | `ScenePlayerShoutRequestOwner` 唯一持有 input sequence、冻结 Mission/player/runtime/session/epoch identity 和 one-shot claim；`ShoutTargetingContext`/request 退出主类嵌套定义 | 只覆盖玩家输入上游身份；下游 group/passive/reaction 状态尚未全部归位 |
 | pending AFEF | `ScenePendingAfefFactsOwner` 唯一持有每 Agent 进程内队列、12 条 oldest-first 上限与 one-shot consume；Native pending key 队列不混入 | 实际 Memory/AFEF 存储、事实构造和主线程提交仍由原 owner；LIVE/SAVE 未测 |
 | speech queue lifetime | `SceneSpeechQueueOwner<T>` 唯一持有 FIFO、单 worker-start lease、empty retirement、conversation clear/full reset 和 nonblocking snapshot；并发 64 enqueue 只产生一个 starter | payload/TTS/历史/动作/游戏线程派发仍在 host；真实音频/时序未测 |
+| group/relay/passive/reaction | `ShoutBehavior.SceneConversationChains.cs` 持 group Prompt、passive、两个 group handler、immediate reaction reservation/capture/background/completion；partial 仍由真实 host 调用，不是 facade | live participant interaction timeout、Agent/TTS/movement/History/Memory/动作副作用留游戏线程 host adapter |
 | postprocess/queue/completion | 真实 `Prepare→Request→Complete`、action-only commit、speech completion 后 relay publish 的 partial 已归位；Scene parity 71、Queue 37，5+7 个变异通过 | speech queue 状态字段及部分 group/relay/passive/reaction 编排仍在主类 |
 | request lifetime | 30 场景与 7 个有效变异保持；BattleSpeech captured 18 场景及 2 个有效变异；默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过 | pending AFEF 与四链下游 session owner 仍待继续收拢 |
 | 构建 | 归位后的 Debug Bannerlord 1.3、1.4、Bootstrap 各 0 warning/0 error，无 Stage/Deploy | Release 和 J10 最终 API/存档整包门禁留 J10c |
 
-`TeamModulePortParityTests` 在进入本次 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的 dependency hash 漂移阻断；本轮未修改该依赖，未刷新 hash 或降低断言，因此不把该项计 PASS。当前 338 锚点代码地图绑定 `2631f33c`；LIVE/SAVE/provider/音频/真实帧成本继续 `NOT-RUN`。
+ChannelCutover 132 行为 + 14 提取、ProductionConsumers 正常与 3 个有效变异、Scene parity 71、request lifetime 30、默认 wiring 25 和 Debug 双 API/Bootstrap 通过。`TeamModulePortParityTests` 仍被既有 MemorySummary dependency hash 漂移前置阻断，未刷新绕过。当前 342 锚点地图绑定 `cbf7f453`；LIVE/SAVE/provider/音频/真实帧成本继续 `NOT-RUN`。
 
-下一安全包是 Scene group/relay/passive/reaction 下游 participant/interaction 状态审计；没有新的具体 owner 缺口就立即进入 J10b Courier，不按行数继续拆。回滚按 `2631f33c` → `a4006d5c` → `64e438c6` → `76b5a429` → `03c08ac9` → `2c6530f8` 定向 revert；不 reset/rebase。
+下一安全包直接进入 J10b Courier prompt-run/transport/pregeneration/arrival/letter/retry；不重开 Scene，除非出现新复现。Scene 回滚按 `cbf7f453`/`c1f5aa6a` → `2631f33c` → `a4006d5c` → `64e438c6` → `76b5a429` → `03c08ac9` 定向 revert；不 reset/rebase。
 
 ## 以下为历史回执，当前状态以上方为准
 
