@@ -23,14 +23,14 @@
 | `CourierDeliveryBehavior.cs:4284-4300` | `两个 Start / Begin / Prepare 传递 run` | 同一 session 每次真实 Start 建立新的 runtime-only reservation；旧排队开始与旧错误回调不得改新run。 |
 | `CourierDeliveryBehavior.cs:4378-4505` | `PrepareAndGenerateCourierReplyOffMainThreadAsync` | 回信真实worker沿原准备与后续完整生成路径接线。 |
 | `CourierDeliveryBehavior.cs:4829-4877` | `PrepareAndGenerateInboundLetterOffMainThreadAsync` | 来信真实worker沿原准备与后续完整生成路径接线。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:26-34` | `BeginCourierPromptRun / IsCourierPromptRunCurrent` | 弱表按实际Start保留当前run身份；无保存字段，无新队列。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:46-67` | `CompleteCourierPromptSourceChanged` | 仅当前run+同live session/participant源失效时调用原失败owner；回信先封住旧tags，来信用当前fallback。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:72-111` | `CourierPromptInput` | 冻结请求级路由值；Hero/Character句柄仍由未迁移共享规则builder消费，不冒称纯快照。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:121-127` | `CaptureCourierPromptInput / IsCourierPromptInputCurrent` | 主线程捕获并验证源文字；区分源失效与owner/目标退休。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:139-154` | `BuildCourierPreparedPrompt` | 原两个同步规则/lore步骤保持顺序，正常async调用留后台。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:156-191` | `PrepareCourierPromptRequestAsync` | 原owner phase capture/accept，过期源有明确generation终结，旧run只丢弃。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:195-199` | `两个同步兼容 builder` | 原public envelope capture仍有真实消费者；保留其main-thread同步约定。 |
-| `CourierDeliveryBehavior.PromptPreparation.cs:207-243` | `两套 Build*RequestFromPreparedPrompt` | 原最终业务组装整体迁移，固定main业务尾部和完整Message builders保持。 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:26-34` | `BeginCourierPromptRun / IsCourierPromptRunCurrent` | 弱表按实际Start保留当前run身份；无保存字段，无新队列。 |
+| 同文件 `:46-67` | `CompleteCourierPromptSourceChanged` | 仅当前run+同live session/participant源失效时调用原失败owner；回信先封住旧tags，来信用当前fallback。 |
+| 同文件 `:72-111` | `CourierPromptInput` | 冻结请求级路由值；Hero/Character句柄仍由未迁移共享规则builder消费，不冒称纯快照。 |
+| 同文件 `:121-127` | `CaptureCourierPromptInput / IsCourierPromptInputCurrent` | 主线程捕获并验证源文字；区分源失效与owner/目标退休。 |
+| 同文件 `:139-154` | `BuildCourierPreparedPrompt` | 原两个同步规则/lore步骤保持顺序，正常async调用留后台。 |
+| 同文件 `:156-191` | `PrepareCourierPromptRequestAsync` | 原owner phase capture/accept，过期源有明确generation终结，旧run只丢弃。 |
+| 同文件 `:195-199` | `两个同步兼容 builder` | 原public envelope capture仍有真实消费者；保留其main-thread同步约定。 |
+| 同文件 `:207-243` | `两套 Build*RequestFromPreparedPrompt` | 原最终业务组装整体迁移，固定main业务尾部和完整Message builders保持。 |
 
 路径均相对仓库根。联合代码再次变动后需重新核实行号；符号及 source-review 固定差异是权威追踪点。
 

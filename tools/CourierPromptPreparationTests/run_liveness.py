@@ -7,7 +7,7 @@ def load(n,p):
 ex=load('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
 inverse=load('liveness_inverse',HERE/'liveness_review.py')
 def source(path):return inverse.old_source(path) if a.old else (ROOT/path).read_text(encoding='utf-8-sig')
-courier=source('CourierDeliveryBehavior.cs');partial=source('CourierDeliveryBehavior.PromptPreparation.cs')
+courier=source('CourierDeliveryBehavior.cs');partial=source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs')
 phase=ex.declaration((ROOT/'CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 base=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').split('internal static class Program {')[0]
 message_markers=['private static List<object> BuildCourierReplyMessages(','private static List<object> BuildInboundNpcLetterMessages(',
@@ -51,7 +51,7 @@ commit+='\n\tprivate void CommitGeneratedReplyAtRecipient(CourierSession session
 hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit)
 out=HERE/'.generated'/('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
-(out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
+(out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
 (out/'Program.cs').write_text((HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs']
 if not a.old:files.append(out/'Schedule.cs')

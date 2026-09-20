@@ -187,7 +187,7 @@
     }
    ]
   },
-  "CourierDeliveryBehavior.PromptPreparation.cs": {
+    "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs": {
    "beforeSha256": "5921a40fbe07c3d767b66ea4778d54904c3d1fafe7121c6925261b323a2c9ae9",
    "afterSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a",
    "hunks": [

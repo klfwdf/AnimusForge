@@ -30,7 +30,7 @@ def verify():
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8-sig'))
  main=subprocess.check_output(['git','show',review['main']+':CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
- partial=(ROOT/'CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
+ partial=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
  marker='\t\tList<string> selectedRuleHits = '
  for kind,oldname,newname in [('CourierReplyGenerationRequest','BuildCourierReplyGenerationRequestOnMainThread','BuildReplyRequestFromPreparedPrompt'),('InboundLetterGenerationRequest','BuildInboundLetterGenerationRequestOnMainThread','BuildInboundRequestFromPreparedPrompt')]:
   old=ex.declaration(main,'private '+kind+' '+oldname+'(');new=ex.declaration(partial,'private '+kind+' '+newname+'(')

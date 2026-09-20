@@ -87,7 +87,7 @@ assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, 
 courier_begin = extract.declaration(source, "internal CourierPreprocessRequest BeginCourierRulePreprocess(")
 assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in courier_begin, "courier request must capture eligibility on game thread"
 native_schedule = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
-courier_schedule = (ROOT / "CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
+courier_schedule = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
 if args.mutate == "drop-worker-eligibility":
     native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
 if args.mutate == "drop-knowledge-worker":
