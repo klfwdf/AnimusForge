@@ -50,7 +50,7 @@ for fragment in ("PartyTransferAllTroopsSnapshotScope", "PartyTransferTroopsSnap
 if args.mutate == "remove-agent-key":
     scene_post = scene_post.replace("targetAgentIndex, out partyTransferTroopOptions", "-1, out partyTransferTroopOptions")
 assert "targetHero, targetCharacter, targetAgentIndex, out partyTransferTroopOptions" in scene_post
-scene_group = method("ShoutBehavior.cs", "private async Task HandleGroupResponsePerHeroIndependent(")
+scene_group = method("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs", "private async Task HandleGroupResponsePerHeroIndependent(")
 assert "BeginGuardrailRuntimeScope()" in scene_group and "ctx?.MentionedEntities" in scene_group
 
 native = method("ShoutBehavior.NativeTurnPrompt.cs", "public async Task<NativeConversationTurnStep> BuildPromptAsync()")

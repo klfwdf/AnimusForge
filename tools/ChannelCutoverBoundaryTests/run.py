@@ -20,6 +20,7 @@ SCENE_LIFECYCLE_DISPATCHES = {
     "SCENE_IDLE_TIMEOUT_DELEGATE": "scene_relay_idle_timeout",
     "SCENE_FAILURE_RELEASE_DELEGATE": "scene_relay_failure_release",
 }
+SCENE_CHAINS_PATH = "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -37,6 +38,20 @@ def source(path: str, ref: str | None) -> str:
             ["git", "show", f"{ref}:{path}"], cwd=ROOT
         ).decode("utf-8-sig").replace("\r\n", "\n")
     return (ROOT / path).read_text(encoding="utf-8-sig")
+
+
+def scene_source(ref: str | None) -> str:
+    host = source("ShoutBehavior.cs", ref)
+    if ref:
+        exists = subprocess.run(
+            ["git", "cat-file", "-e", f"{ref}:{SCENE_CHAINS_PATH}"],
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if not exists:
+            return host
+    return host + "\n" + source(SCENE_CHAINS_PATH, ref)
 
 
 def declaration(text: str, signature: str, optional: bool = False) -> str:
@@ -61,7 +76,7 @@ def declaration(text: str, signature: str, optional: bool = False) -> str:
 
 
 def extract(ref: str | None) -> dict[str, str]:
-    scene = source("ShoutBehavior.cs", ref)
+    scene = scene_source(ref)
     anchor = scene.index('"[MemoryPerf] group_turn_prompt_ready')
     begin = scene.index('string output = "";', anchor)
     end = scene.index("apiSw.Stop();", begin)
