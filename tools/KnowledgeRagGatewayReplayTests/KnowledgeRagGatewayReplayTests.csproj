@@ -14,4 +14,7 @@
     <Compile Include="..\..\Refactor\Adapters\LegacyConfiguredChatGateway.cs" Link="Adapters\LegacyConfiguredChatGateway.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyKnowledgeRagGateway.cs" Link="Adapters\LegacyKnowledgeRagGateway.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\modules\AF.Module.Llm\Transport\LlmNonStreamingTransport.cs" Link="Transport\LlmNonStreamingTransport.cs" />
+  </ItemGroup>
 </Project>

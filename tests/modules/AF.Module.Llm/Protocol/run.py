@@ -101,6 +101,16 @@ def before_policy(shout: str) -> tuple[str, dict[str, str]]:
 
 
 def inverse_check(actual_shout: str, actual_policy: str) -> dict[str, str]:
+    # J08 transport changes have their own executable old/current HTTP differential.
+    # Keep this J01 check scoped to unchanged protocol extraction, not new HTTP I/O.
+    transport_review = json.loads((ROOT / "tests/modules/AF.Module.Llm/NonStreamingTransport/primary-source-review.json").read_text(encoding="utf-8-sig"))
+    primary_signature = "public static async Task<string> CallApiWithMessages("
+    current = one_declaration(actual_shout, primary_signature)
+    prior = one_declaration(source("ShoutNetwork.cs", transport_review["baseline"]), primary_signature)
+    if current != prior:
+        if hashlib.sha256(current.encode()).hexdigest() != transport_review["currentMethodSha256"]:
+            raise ValueError("Unreviewed J08 non-stream consumer change")
+        actual_shout = actual_shout.replace(current, prior, 1)
     baseline = source("ShoutNetwork.cs", BASE_REVISION)
     baseline_blocks = {name: one_constant(baseline, name) for name in CONSTANTS}
     baseline_blocks.update({name: one_declaration(baseline, signature) for name, signature in METHODS.items()})
