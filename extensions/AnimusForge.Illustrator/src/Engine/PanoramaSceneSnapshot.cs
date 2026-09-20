@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
+using Newtonsoft.Json.Linq;
 using TaleWorlds.DotNet;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -112,7 +113,9 @@ namespace AnimusForge.Illustrator.Engine
     {
         internal static PanoramaSceneSnapshot _pendingPanoramaSnapshot;
         private static int _nextPanoramaSceneId;
-        internal const int PanoramaSnapshotMaxRoots = 4096;
+        // Enumeration handles are not rendered copies. Large towns exceed 4096
+        // roots; total inspected nodes and per-frame work remain independently capped.
+        internal const int PanoramaSnapshotMaxRoots = 32768;
         internal const int PanoramaSnapshotBatchRoots = 8;
         internal const double PanoramaSnapshotBatchMilliseconds = 4;
         internal const int PanoramaSnapshotMaxNodes = 32768;
@@ -165,7 +168,17 @@ namespace AnimusForge.Illustrator.Engine
                     return Tuple.Create(sceneFile, mission.Scene.GetUpgradeLevelMask(), mission.Scene.Pointer);
                 }, token).ConfigureAwait(false);
                 if (resourceInput == null) throw new InvalidOperationException("场景资源读取调度已停止。");
+                diagnostics?.RecordStage("scene_resource_plan_start", new JObject
+                { ["sourceFile"] = resourceInput.Item1, ["activeMask"] = resourceInput.Item2, ["reader"] = "root-subtree-stream" });
+                var planWatch = Stopwatch.StartNew();
                 var resourcePlan = await Task.Run(() => SceneResourceGeometryPlan.Load(resourceInput.Item1, resourceInput.Item2, token), token).ConfigureAwait(false);
+                diagnostics?.RecordStage("scene_resource_plan_ready", new JObject
+                {
+                    ["xmlElements"] = resourcePlan.XmlElementCount, ["entities"] = resourcePlan.InspectedNodes,
+                    ["peakSubtreeElements"] = resourcePlan.PeakSubtreeElements, ["entries"] = resourcePlan.Entries.Count,
+                    ["planMs"] = planWatch.ElapsedMilliseconds, ["selectionRadiusMeters"] = PanoramaCaptureRadius,
+                    ["maxRenderedMeshes"] = PanoramaSnapshotMaxCopies
+                });
                 builder = await RunOnGameThreadAsync(() =>
                 {
                     if (mission.Scene?.Pointer != resourceInput.Item3 || mission.Scene.GetUpgradeLevelMask() != resourceInput.Item2)
@@ -381,7 +394,7 @@ namespace AnimusForge.Illustrator.Engine
             }
 
             private static void ThrowTooManyRoots() => throw new InvalidOperationException(
-                "当前场景根实体超过4096个，已停止环境快照，不能将截断副本标为完整全景。");
+                "当前场景根实体超过32768个遍历预算，已停止环境快照，不能将截断副本标为完整全景。");
 
             private static void ValidateMission(Mission mission, Scene source, CancellationToken token)
             {
