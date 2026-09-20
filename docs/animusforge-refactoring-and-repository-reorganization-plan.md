@@ -1,7 +1,7 @@
 <a id="j10-scene-owners-20260921"></a>
 # 当前接续：J10 Scene 渠道 owner 归位进行中（2026-09-21）
 
-**状态：J07/J08/J09/J10a(Scene)_OFFLINE_VERIFIED；J10b(Courier)_IN_PROGRESS。** Scene 责任见下表；`bdf58283` 将 Courier `PromptPreparation`/`PromptSchedule` 100% 原内容归位 `Channels/Courier`，`5cb7dc6e` 再将 Campaign 退役、准入/人设等待、双向历史和 detached 后处理/owner phase 四个真实 partial 原内容归位同一渠道目录。实际消费者仍是同一 `CourierDeliveryBehavior`，没有新增 facade、存档、公有 API、默认开关或玩法。
+**状态：J07/J08/J09/J10a(Scene)_OFFLINE_VERIFIED；J10b(Courier)_IN_PROGRESS。** Scene 责任见下表；Courier 已分三包把 prompt-run/schedule、Campaign 退役/准入/历史/detached owner phase、唯一到达 commit 与入站 completion receipt 归位 `Channels/Courier`（`bdf58283`、`5cb7dc6e`、`1882ea1c`）。实际消费者仍是同一 `CourierDeliveryBehavior`，没有新增 facade、存档、公有 API、默认开关或玩法。
 
 | 当前责任 | 真实结果 | 未完成 / 边界 |
 | --- | --- | --- |
@@ -11,14 +11,15 @@
 | speech queue lifetime | `SceneSpeechQueueOwner<T>` 唯一持有 FIFO、单 worker-start lease、empty retirement、conversation clear/full reset 和 nonblocking snapshot；并发 64 enqueue 只产生一个 starter | payload/TTS/历史/动作/游戏线程派发仍在 host；真实音频/时序未测 |
 | group/relay/passive/reaction | `ShoutBehavior.SceneConversationChains.cs` 持 group Prompt、passive、两个 group handler、immediate reaction reservation/capture/background/completion；partial 仍由真实 host 调用，不是 facade | live participant interaction timeout、Agent/TTS/movement/History/Memory/动作副作用留游戏线程 host adapter |
 | Courier prompt-run/session | `Channels/Courier/{PromptPreparation,PromptSchedule}` 持 `ConditionalWeakTable` run reservation、冻结输入、source-change failure 与四 owner phase；Prompt 550/76、liveness 59/16 通过 | transport/arrival/delivery/letter/inbound/retry 仍待 J10b2；真实运输/provider 未测 |
-| Courier 会话准备/lifetime | `Channels/Courier/{CampaignLifetime,PreparationAdmission,HistoryPreparation,DetachedPostprocess}` 持退役、准入、人设等待、双向历史、detached 后处理和 owner phase；History 122/30、Persona 169、owner phase 16、postprocess 39+8 变异、lifetime bindings 15 通过 | `CommitDispatch`/`InboundCompletion` 及主类 transport/pregeneration/arrival/delivery/letter/retry 仍待 J10b3 |
+| Courier 会话准备/lifetime | `Channels/Courier/{CampaignLifetime,PreparationAdmission,HistoryPreparation,DetachedPostprocess}` 持退役、准入、人设等待、双向历史、detached 后处理和 owner phase；History 122/30、Persona 169、owner phase 16、postprocess 39+8 变异、lifetime bindings 15 通过 | 主类 transport/pregeneration/arrival/delivery/letter/retry 仍待 J10b4 |
+| Courier commit/inbound | `Channels/Courier/{CommitDispatch,InboundCompletion}` 持 `DeliveryApplied` 后唯一 action-only commit、owner-started unknown、receipt arm/complete/apply/quarantine；commit outcome 34 与 4 个有效变异、默认 wiring 25 通过 | 实际运输、到达 UI/来信和 retry/session generation 仍待 J10b4；真实 Campaign/SAVE 未测 |
 | postprocess/queue/completion | 真实 `Prepare→Request→Complete`、action-only commit、speech completion 后 relay publish 的 partial 已归位；Scene parity 71、Queue 37，5+7 个变异通过 | speech queue 状态字段及部分 group/relay/passive/reaction 编排仍在主类 |
 | request lifetime | 30 场景与 7 个有效变异保持；BattleSpeech captured 18 场景及 2 个有效变异；默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过 | pending AFEF 与四链下游 session owner 仍待继续收拢 |
 | 构建 | 归位后的 Debug Bannerlord 1.3、1.4、Bootstrap 各 0 warning/0 error，无 Stage/Deploy | Release 和 J10 最终 API/存档整包门禁留 J10c |
 
 ChannelCutover 132 行为 + 14 提取、ProductionConsumers 正常与 3 个有效变异、Scene parity 71、request lifetime 30、默认 wiring 25 和 Debug 双 API/Bootstrap 通过。`TeamModulePortParityTests` 仍被既有 MemorySummary dependency hash 漂移前置阻断，未刷新绕过。当前 342 锚点地图绑定 `cbf7f453`；LIVE/SAVE/provider/音频/真实帧成本继续 `NOT-RUN`。
 
-Courier 正常回归外，prompt-run 四个变异及 detached postprocess 八个变异均编译运行并命中具名断言。既有 whole-file 逆变换在路径验证前会被 J07/J09 后 `ShoutBehavior.cs`/`CourierDeliveryBehavior.cs` 合法变化前置阻断，本轮未刷新历史基线冒充 PASS。`5cb7dc6e` 后 Debug 1.3/1.4/Bootstrap 均 0 warning/0 error；342 锚点地图绑定该产品提交并在 recorded/working-tree 两模式通过。下一包 J10b3 处理 commit/inbound 与 transport/pregeneration/arrival/delivery/letter/retry。回滚先定向 revert `5cb7dc6e`，再按需 revert `bdf58283`；Scene 回滚链保持，不 reset/rebase。
+Courier 正常回归外，prompt-run 四个、detached postprocess 八个、commit outcome 四个变异均编译运行并命中具名断言。既有 whole-file 逆变换在路径验证前会被 J07/J09 后 `ShoutBehavior.cs`/`CourierDeliveryBehavior.cs` 合法变化前置阻断；旧 commit `--original` 基线缺少后加方法，旧 `GameLifetimeTests/run_commit.py` 又整编扩展后的 partial 而缺新依赖，均未刷新/削弱来冒充 PASS，当前 34 项 commit outcome 是权威替代。`1882ea1c` 后 Debug 1.3/1.4/Bootstrap 均 0 warning/0 error；342 锚点地图绑定该产品提交并在 recorded/working-tree 两模式通过。下一包 J10b4 处理主类 transport/pregeneration/arrival/delivery/letter/retry。回滚按 `1882ea1c` → `5cb7dc6e` → `bdf58283` 定向 revert；Scene 回滚链保持，不 reset/rebase。
 
 ## 以下为历史回执，当前状态以上方为准
 
