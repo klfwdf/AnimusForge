@@ -335,7 +335,7 @@
         "action-owner"
       ],
       "entryPaths": [
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",
         "src/modules/AF.Module.Conversation/Internal/InteractionCommitReceiptCache.cs",
         "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs"
@@ -723,7 +723,7 @@
         "DuelBehavior.cs",
         "DuelSettings.cs",
         "FourberieDuelCompatibility.cs",
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
         "ShoutBehavior.ScenePostprocess.cs",
         "ShoutBehavior.cs",
@@ -1282,7 +1282,7 @@
       "owner": "Action.Economy",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "RewardSystemBehavior.EconomyReplay.cs"
       ],
       "requiredCases": [

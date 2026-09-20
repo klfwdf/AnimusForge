@@ -337,7 +337,7 @@ internal static class WeeklyActionOutcomeProductionReplay
             "PlayerNotorietyBehavior.ConversationOutcomes.cs",
             "MyBehavior.WeeklyActionOutcomeReceipts.cs",
             "Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs",
-            "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+            "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
             "src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs",
             "Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs",
             "Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs"

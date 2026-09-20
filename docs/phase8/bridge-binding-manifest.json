@@ -383,12 +383,12 @@
       "topology": "PAIR",
       "owner": "Action.Economy",
       "entryPaths": [
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "RewardSystemBehavior.EconomyReplay.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+          "path": "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
           "symbol": "LegacyNativeActionPlanExecutor",
           "kind": "type"
         },
@@ -416,7 +416,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "entryPath": "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "symbol": "ValidateAndExecuteCore",
         "frequency": "event",
         "notes": "Economy actions are checked after pure raw-plan validation and before any Economy owner or legacy callback side effect; whole-plan and unknown-after-start semantics remain unchanged."
