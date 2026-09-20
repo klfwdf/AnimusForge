@@ -11,7 +11,8 @@
 | G0 / 计划 | DONE | `2c6530f8`：有限责任矩阵、退出门和非目标已冻结，不再按主类行数或相似测试兜圈 |
 | J10a1 Scene audience scope | DONE | `03c08ac9`：`SceneShoutConversationScope` 100% 原内容归位 Scene 渠道；实时 `ShoutBehavior` group/relay 消费不变；5 个正常/失败场景与 epoch、Agent-reference、origin-merge 3 个有效变异通过 |
 | J10a3.1 Scene postprocess/relay completion 归位 | DONE | `76b5a429`：现有唯一 postprocess/queue/completion partial 100% 原内容归位 Scene 渠道；真实消费者、Phase8 manifest、路径型测试同步。Scene parity 71、Queue 37、5+7 个有效变异、request lifetime 30+7、默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过；Debug 1.3/1.4/Bootstrap 各 0 warning/0 error |
-| J10a2 / J10a3 剩余 | IN PROGRESS | group/relay/passive/reaction 会话身份、玩家输入去重、pending AFEF、speech queue 状态仍有部分字段/算法在 `ShoutBehavior.cs`，不能因 partial 已归位宣称 Scene 完成 |
+| J10a2.1 Scene 玩家请求身份 | DONE | `64e438c6`：`ScenePlayerShoutRequestOwner` 唯一持有 input sequence、冻结 Mission/player/runtime/session/epoch identity 与一次性 claim；`ShoutTargetingContext`/request 迁出主类。request lifetime 30 + 7 变异、BattleSpeech captured 18 + 2 有效变异、Debug 双 API/Bootstrap 通过；Shout CRLF/无 BOM 保持 |
+| J10a2 / J10a3 剩余 | IN PROGRESS | group/relay/passive/reaction 的下游会话状态、pending AFEF、speech queue 状态仍有部分字段/算法在 `ShoutBehavior.cs`，不能因 request owner/partial 已归位宣称 Scene 完成 |
 | J10b / J10c | NOT STARTED | Courier 会话 owner 与最终整包验收尚未施工 |
 
 `TeamModulePortParityTests` 本轮未计通过：运行在进入 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的依赖 hash 漂移阻断；相关文件本轮未修改，未刷新 hash 绕过。LIVE/SAVE/provider/音频/真实帧成本仍 `NOT-RUN`。

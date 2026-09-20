@@ -1,18 +1,19 @@
 <a id="j10-scene-owners-20260921"></a>
 # 当前接续：J10 Scene 渠道 owner 归位进行中（2026-09-21）
 
-**状态：J07/J08/J09_OFFLINE_VERIFIED；J10_IN_PROGRESS。** `2c6530f8` 冻结有限计划和责任矩阵；`03c08ac9` 将原有 `SceneShoutConversationScope` 100% 原内容归位 `src/modules/AF.Module.Conversation/Channels/Scene`，生产 group/relay 消费仍唯一；`76b5a429` 将唯一 Scene postprocess/queue/completion partial 100% 原内容归位同一渠道目录，并同步真实测试消费者和 Phase8 manifests。没有改 namespace、可见性、存档、公有 API、默认开关或玩法。
+**状态：J07/J08/J09_OFFLINE_VERIFIED；J10_IN_PROGRESS。** `2c6530f8` 冻结有限计划和责任矩阵；`03c08ac9` 将原有 `SceneShoutConversationScope` 100% 原内容归位 `src/modules/AF.Module.Conversation/Channels/Scene`，生产 group/relay 消费仍唯一；`76b5a429` 将唯一 Scene postprocess/queue/completion partial 100% 原内容归位同一渠道目录；`64e438c6` 提取并接通玩家输入 request identity/sequence/claim owner。没有改存档、公有 API、默认开关或玩法。
 
 | 当前责任 | 真实结果 | 未完成 / 边界 |
 | --- | --- | --- |
 | audience scope | 固定 Mission/epoch、Agent reference/index/character identity、来源 flags 与捕获距离；5 场景及 epoch/reference/origin-merge 3 个有效变异通过 | LOS/真实 Agent 生命周期/帧成本未实机验证 |
+| player request identity | `ScenePlayerShoutRequestOwner` 唯一持有 input sequence、冻结 Mission/player/runtime/session/epoch identity 和 one-shot claim；`ShoutTargetingContext`/request 退出主类嵌套定义 | 只覆盖玩家输入上游身份；下游 group/passive/reaction 状态尚未全部归位 |
 | postprocess/queue/completion | 真实 `Prepare→Request→Complete`、action-only commit、speech completion 后 relay publish 的 partial 已归位；Scene parity 71、Queue 37，5+7 个变异通过 | speech queue 状态字段及部分 group/relay/passive/reaction 编排仍在主类 |
-| request lifetime | 既有 30 场景与 7 个有效变异保持，默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过 | 玩家输入去重、pending AFEF 与四链 session owner 仍待继续收拢 |
+| request lifetime | 30 场景与 7 个有效变异保持；BattleSpeech captured 18 场景及 2 个有效变异；默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过 | pending AFEF 与四链下游 session owner 仍待继续收拢 |
 | 构建 | 归位后的 Debug Bannerlord 1.3、1.4、Bootstrap 各 0 warning/0 error，无 Stage/Deploy | Release 和 J10 最终 API/存档整包门禁留 J10c |
 
-`TeamModulePortParityTests` 在进入本次 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的 dependency hash 漂移阻断；本轮未修改该依赖，未刷新 hash 或降低断言，因此不把该项计 PASS。当前 335 锚点代码地图绑定 `76b5a429`；LIVE/SAVE/provider/音频/真实帧成本继续 `NOT-RUN`。
+`TeamModulePortParityTests` 在进入本次 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的 dependency hash 漂移阻断；本轮未修改该依赖，未刷新 hash 或降低断言，因此不把该项计 PASS。当前 336 锚点代码地图绑定 `64e438c6`；LIVE/SAVE/provider/音频/真实帧成本继续 `NOT-RUN`。
 
-下一安全包是 J10a2/a3 剩余：沿真实 group/relay/passive/reaction 输入到发布链收拢 session identity、玩家输入去重、pending AFEF 与 speech queue 状态；满足退出门立即进入 J10b Courier，不因还能继续抽 helper 或主类仍大而滞留。回滚按 `76b5a429` → `03c08ac9` → `2c6530f8` 定向 revert；不 reset/rebase。
+下一安全包是 J10a2/a3 剩余：沿真实 group/relay/passive/reaction 输入到发布链收拢下游 session identity、pending AFEF 与 speech queue 状态；满足退出门立即进入 J10b Courier，不因还能继续抽 helper 或主类仍大而滞留。回滚按 `64e438c6` → `76b5a429` → `03c08ac9` → `2c6530f8` 定向 revert；不 reset/rebase。
 
 ## 以下为历史回执，当前状态以上方为准
 
