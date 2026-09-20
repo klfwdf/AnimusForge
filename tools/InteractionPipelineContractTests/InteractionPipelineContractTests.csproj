@@ -17,6 +17,7 @@
     <Compile Include="..\..\src\modules\AF.Module.Conversation\Internal\InteractionRequestLease.cs" Link="Runtime\InteractionRequestLease.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\ActionExecutionCommitter.cs" Link="Runtime\ActionExecutionCommitter.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Execute\LegacyChannelActionCommitter.cs" Link="Runtime\LegacyChannelActionCommitter.cs" />
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
