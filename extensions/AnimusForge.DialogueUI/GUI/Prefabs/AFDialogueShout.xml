@@ -72,7 +72,7 @@
                           <Children>
                             <Widget Id="EditorContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128">
                               <Children>
-                                <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128" HorizontalAlignment="Left" VerticalAlignment="Top" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#F7ECD5FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                                <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128" HorizontalAlignment="Left" VerticalAlignment="Top" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
                               </Children>
                             </Widget>
                           </Children>

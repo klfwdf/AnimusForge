@@ -413,14 +413,19 @@ public static class NativeUiAdapter
             Widget next = root.FindChild("ContinueButton", true);
             if (root is not ConversationScreenButtonWidget || answers == null || dialogue == null || options == null || name == null || next == null)
             { DialogueUiRuntime.Log("SPConversation controls unavailable; original layout retained."); return null; }
-            // Keep the vanilla SPConversation widget tree intact. Its navigation scopes
-            // retain parent/target relationships that the gamepad navigation manager
-            // traverses outside this module. Reparenting those widgets at runtime can
-            // leave a stale scope node behind and crash the next navigation update.
-            // The AI overlay only needs the live MissionConversationVM identity for
-            // ownership/lifecycle checks, so capture it without touching the tree.
-            DialogueUiRuntime.Log("SPConversation captured; vanilla layout retained for navigation safety.");
-            return new NativeLayout(root, source, answers, captureOnly: true);
+
+            var layout = new NativeLayout(root, source, answers, captureOnly: false);
+            try
+            {
+                layout.Build(dialogue, options, name, next);
+                return layout;
+            }
+            catch (Exception ex)
+            {
+                DialogueUiRuntime.Log("NativeLayout build failed, falling back to captureOnly: " + ex);
+                layout.Dispose();
+                return new NativeLayout(root, source, answers, captureOnly: true);
+            }
         }
         private void Remember(Widget widget) { if (widget != null && _captured.Add(widget)) _changes.Add(new WidgetSnapshot(widget)); }
         private void Move(Widget widget, Widget parent)
@@ -480,7 +485,7 @@ public static class NativeUiAdapter
             }
 
             Widget speechInner = AddScroll(speechContent, "AFDialogueSpeechScroll");
-            Move(dialogue, speechInner); dialogue.HeightSizePolicy = SizePolicy.CoverChildren;
+            Move(dialogue, speechInner); dialogue.HeightSizePolicy = SizePolicy.CoverChildren; dialogue.Sprite = null;
             foreach (Widget item in Descendants(dialogue))
             {
                 Remember(item);
@@ -493,7 +498,7 @@ public static class NativeUiAdapter
             StyleTree(dialogue, 25, true);
 
             Widget optionsInner = AddScroll(optionsContent, "AFDialogueOptionsScroll");
-            Move(options, optionsInner); options.HeightSizePolicy = SizePolicy.CoverChildren;
+            Move(options, optionsInner); options.HeightSizePolicy = SizePolicy.CoverChildren; options.Sprite = null;
             Remember(_answers); _answers.VerticalAlignment = VerticalAlignment.Top;
             _answers.ItemAddEventHandlers.Add(OptionAdded);
             _answers.ItemRemoveEventHandlers.Add(OptionRemoved);
@@ -584,6 +589,7 @@ public static class NativeUiAdapter
         }
         internal void RefreshPortrait()
         {
+            if (_portrait == null) return;
             var conversation = Campaign.Current?.ConversationManager;
             Agent speaker = conversation?.SpeakerAgent as Agent;
             CharacterObject character = conversation?.SpeakerAgent?.Character as CharacterObject
