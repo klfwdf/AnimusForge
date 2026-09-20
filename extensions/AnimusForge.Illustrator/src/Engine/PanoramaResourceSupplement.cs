@@ -28,30 +28,10 @@ namespace AnimusForge.Illustrator.Engine
         private int _entryIndex, _meshIndex, _nodeCount, _omittedRecords;
         private int _copied, _duplicates, _outside, _unsupported, _missing, _observedSkipped;
         private bool _disposed, _complete;
-        private const int MaximumCachedBounds = 1024;
-        private readonly Dictionary<AssetBoundsKey, BoundingBox> _assetBounds = new Dictionary<AssetBoundsKey, BoundingBox>();
-        private AssetBoundsKey _boundsKey;
+        private string _boundsAsset;
         private Vec3 _boundsMin, _boundsMax;
-        private bool _boundsAny, _boundsValid;
-        private int _boundsRejected, _templatesLoaded, _cachedBoundsCount;
-
-        // Only identical assets AND identical rotation/scale reuse their translated
-        // world AABB. No origin-only distance guess and no native handles are cached.
-        private readonly struct AssetBoundsKey : IEquatable<AssetBoundsKey>
-        {
-            private readonly string _asset;
-            private readonly bool _prefab;
-            private readonly Mat3 _rotation;
-            internal AssetBoundsKey(SceneResourceGeometryPlan.Entry entry)
-            { _prefab = !string.IsNullOrEmpty(entry.PrefabName); _asset = _prefab ? entry.PrefabName : entry.MeshName; _rotation = entry.WorldFrame.rotation; }
-            public bool Equals(AssetBoundsKey other) => _prefab == other._prefab &&
-                string.Equals(_asset, other._asset, StringComparison.Ordinal) &&
-                Same(_rotation.s, other._rotation.s) && Same(_rotation.f, other._rotation.f) && Same(_rotation.u, other._rotation.u);
-            private static bool Same(Vec3 a, Vec3 b) => a.x == b.x && a.y == b.y && a.z == b.z;
-            public override bool Equals(object obj) => obj is AssetBoundsKey other && Equals(other);
-            public override int GetHashCode() => (_asset?.GetHashCode() ?? 0) ^ _prefab.GetHashCode() ^
-                _rotation.s.GetHashCode() ^ _rotation.f.GetHashCode() ^ _rotation.u.GetHashCode();
-        }
+        private bool _boundsAny, _boundsValid, _measuringBounds, _groupBoundsUsable;
+        private int _boundsRejected, _templatesLoaded, _cachedBoundsCount, _boundsProbes, _instanceLoads;
 
         internal PanoramaResourceSupplement(PanoramaSceneSnapshot snapshot, SceneResourceGeometryPlan plan,
             Dictionary<string, List<MatrixFrame>> existing, Dictionary<string, List<MatrixFrame>> observed)
@@ -120,10 +100,10 @@ namespace AnimusForge.Illustrator.Engine
                 if (_root != null)
                 {
                     // Only completed traversal yields a conservative bound for reuse.
-                    if (_boundsValid && _boundsAny && _assetBounds.Count < MaximumCachedBounds)
+                    if (_measuringBounds)
                     {
-                        _assetBounds[_boundsKey] = new BoundingBox { min = _boundsMin, max = _boundsMax };
-                        _cachedBoundsCount = _assetBounds.Count;
+                        _groupBoundsUsable = _boundsValid && _boundsAny;
+                        if (_groupBoundsUsable) _cachedBoundsCount++;
                     }
                     _root.Remove(0); _root.ManualInvalidate(); _root = null;
                     expensive++;
@@ -131,35 +111,46 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 if (_entryIndex >= _plan.Entries.Count) { _complete = true; return true; }
                 _entry = _plan.Entries[_entryIndex++];
+                _measuringBounds = false;
                 if ((!string.IsNullOrEmpty(_entry.PrefabName) && ContainsGeometry(_observed, "prefab:" + _entry.PrefabName, _entry.WorldFrame)) ||
                     (!string.IsNullOrEmpty(_entry.SourceName) && ContainsGeometry(_observed, "entity:" + _entry.SourceName, _entry.WorldFrame)))
                 { _observedSkipped++; Record("runtime_instance_authoritative", _entry.PrefabName ?? _entry.MeshName, null); continue; }
-                _boundsKey = new AssetBoundsKey(_entry);
-                _boundsAny = false; _boundsValid = true;
-                if (_assetBounds.TryGetValue(_boundsKey, out var knownBounds))
+                if (!string.Equals(_boundsAsset, _entry.AssetKey, StringComparison.Ordinal))
                 {
-                    // Conservative padding for native float transform/translation rounding.
-                    Vec3 padding = new Vec3(0.25f, 0.25f, 0.25f);
-                    Vec3 minimum = knownBounds.min + _entry.WorldFrame.origin - padding;
-                    Vec3 maximum = knownBounds.max + _entry.WorldFrame.origin + padding;
-                    if (ScreenCaptureHelper.HasUsablePanoramaBounds(minimum, maximum) &&
+                    _boundsAsset = _entry.AssetKey;
+                    _boundsAny = false; _boundsValid = true; _groupBoundsUsable = false;
+                    // Single-use assets cannot benefit from a separate bounds probe.
+                    _measuringBounds = _plan.HasRepeatedAsset(_entry.AssetKey);
+                }
+                if (_measuringBounds)
+                {
+                    // Identity root makes the complete measured bounds asset-local,
+                    // including child/mesh offsets. Revisit this entry after the probe.
+                    _boundsProbes++;
+                    _entryIndex--;
+                }
+                else if (_groupBoundsUsable)
+                {
+                    if (TryTransformBounds(_boundsMin, _boundsMax, _entry.WorldFrame, out var minimum, out var maximum) &&
                         !ScreenCaptureHelper.IntersectsPanoramaRadius(minimum, maximum, _snapshot.CaptureCenter))
                     { _boundsRejected++; Record("outside_radius_cached_bounds", _entry.PrefabName ?? _entry.MeshName, null); continue; }
                 }
+                // Failed native lookups also consume budget. No inverse or normalization
+                // of the authored scaled frame is used for range rejection.
+                expensive++;
+                MatrixFrame templateFrame = _measuringBounds ? MatrixFrame.Identity : _entry.WorldFrame;
                 if (!string.IsNullOrEmpty(_entry.PrefabName))
                 {
                     _root = GameEntity.Instantiate(_templates, _entry.PrefabName, callScriptCallbacks: false, createPhysics: false);
                     if (_root == null) { _missing++; Record("prefab_unavailable", _entry.PrefabName, null); continue; }
                     if (_root.Scene?.Pointer != _templates.Pointer)
                         throw new InvalidOperationException("资源模板不属于自有场景，拒绝设置其变换。");
-                    MatrixFrame frame = _entry.WorldFrame;
-                    _root.SetFrame(ref frame);
+                    _root.SetFrame(ref templateFrame);
                 }
                 else
                 {
                     MetaMesh mesh = MetaMesh.GetCopy(_entry.MeshName, showErrors: false, mayReturnNull: true);
                     if (mesh == null) { _missing++; Record("mesh_unavailable", _entry.MeshName, null); continue; }
-                    MatrixFrame frame = _entry.WorldFrame;
                     bool attached = false;
                     try
                     {
@@ -167,7 +158,7 @@ namespace AnimusForge.Illustrator.Engine
                         if (_root == null) throw new InvalidOperationException("无法创建静态资源模板。");
                         _root.AddMultiMesh(mesh);
                         attached = true;
-                        _root.SetFrame(ref frame);
+                        _root.SetFrame(ref templateFrame);
                         _root.RecomputeBoundingBox(); _root.UpdateGlobalBounds(); _root.UpdateVisibilityMask();
                     }
                     finally { if (attached) mesh.ManualInvalidate(); }
@@ -176,8 +167,8 @@ namespace AnimusForge.Illustrator.Engine
                     throw new InvalidOperationException("无法在独立模板场景加载资源几何。");
                 _root.EntityFlags |= EntityFlags.DoNotTick | EntityFlags.DontTickChildren;
                 _templatesLoaded++;
+                if (!_measuringBounds) _instanceLoads++;
                 _pending.Push(_root);
-                expensive++;
             }
             return false;
         }
@@ -192,7 +183,11 @@ namespace AnimusForge.Illustrator.Engine
             // The template carries the exact authored global transform, so its native
             // world bounds include parent scale/rotation without an origin-only guess.
             BoundingBox bounds = source.GetGlobalBoundingBox();
-            IncludeTemplateBounds(bounds);
+            if (_measuringBounds)
+            {
+                IncludeTemplateBounds(bounds);
+                return;
+            }
             if (ContainsGeometry(_existing, name, effective))
             { _duplicates++; Record("already_present", name, null); return; }
             if (!ScreenCaptureHelper.IntersectsPanoramaRadius(bounds.min, bounds.max, _snapshot.CaptureCenter))
@@ -252,11 +247,41 @@ namespace AnimusForge.Illustrator.Engine
         {
             if (!ScreenCaptureHelper.HasUsablePanoramaBounds(bounds.min, bounds.max))
             { _boundsValid = false; return; }
-            Vec3 minimum = bounds.min - _entry.WorldFrame.origin;
-            Vec3 maximum = bounds.max - _entry.WorldFrame.origin;
+            Vec3 minimum = bounds.min;
+            Vec3 maximum = bounds.max;
             if (!_boundsAny) { _boundsMin = minimum; _boundsMax = maximum; _boundsAny = true; return; }
             _boundsMin = new Vec3(Math.Min(_boundsMin.x, minimum.x), Math.Min(_boundsMin.y, minimum.y), Math.Min(_boundsMin.z, minimum.z));
             _boundsMax = new Vec3(Math.Max(_boundsMax.x, maximum.x), Math.Max(_boundsMax.y, maximum.y), Math.Max(_boundsMax.z, maximum.z));
+        }
+
+        // All eight corners are required for rotations, negative/nonuniform scale and
+        // affine parent transforms. Invalid bounds fall back to native instance checks.
+        private static bool TryTransformBounds(Vec3 minimum, Vec3 maximum, MatrixFrame frame,
+            out Vec3 worldMin, out Vec3 worldMax)
+        {
+            worldMin = new Vec3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+            worldMax = new Vec3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+            for (int i = 0; i < 8; i++)
+            {
+                double x = (i & 1) == 0 ? minimum.x : maximum.x;
+                double y = (i & 2) == 0 ? minimum.y : maximum.y;
+                double z = (i & 4) == 0 ? minimum.z : maximum.z;
+                var point = new Vec3(
+                    (float)(frame.origin.x + frame.rotation.s.x * x + frame.rotation.f.x * y + frame.rotation.u.x * z),
+                    (float)(frame.origin.y + frame.rotation.s.y * x + frame.rotation.f.y * y + frame.rotation.u.y * z),
+                    (float)(frame.origin.z + frame.rotation.s.z * x + frame.rotation.f.z * y + frame.rotation.u.z * z));
+                if (!ScreenCaptureHelper.HasUsablePanoramaBounds(point, point)) return false;
+                worldMin = new Vec3(Math.Min(worldMin.x, point.x), Math.Min(worldMin.y, point.y), Math.Min(worldMin.z, point.z));
+                worldMax = new Vec3(Math.Max(worldMax.x, point.x), Math.Max(worldMax.y, point.y), Math.Max(worldMax.z, point.z));
+            }
+            // Asset-space margin propagated through scale, plus world roundoff margin.
+            var r = frame.rotation;
+            var padding = new Vec3(
+                0.25f * (1 + Math.Abs(r.s.x) + Math.Abs(r.f.x) + Math.Abs(r.u.x)) + 0.00001f * Math.Max(Math.Abs(worldMin.x), Math.Abs(worldMax.x)),
+                0.25f * (1 + Math.Abs(r.s.y) + Math.Abs(r.f.y) + Math.Abs(r.u.y)) + 0.00001f * Math.Max(Math.Abs(worldMin.y), Math.Abs(worldMax.y)),
+                0.25f * (1 + Math.Abs(r.s.z) + Math.Abs(r.f.z) + Math.Abs(r.u.z)) + 0.00001f * Math.Max(Math.Abs(worldMin.z), Math.Abs(worldMax.z)));
+            worldMin -= padding; worldMax += padding;
+            return ScreenCaptureHelper.HasUsablePanoramaBounds(worldMin, worldMax);
         }
 
         internal static void RegisterGeometry(Dictionary<string, List<MatrixFrame>> map, string name, MatrixFrame frame)
@@ -282,6 +307,7 @@ namespace AnimusForge.Illustrator.Engine
             if (_records.Count >= 1024) { _omittedRecords++; return; }
             var row = detail ?? new JObject();
             row["sourceId"] = _entry?.SourceId; row["prefab"] = _entry?.PrefabName;
+            row["boundsProbe"] = _measuringBounds;
             row["mesh"] = mesh == null || mesh.Length <= 160 ? mesh : mesh.Substring(0, 160);
             row["result"] = result; _records.Add(row);
         }
@@ -291,6 +317,7 @@ namespace AnimusForge.Illustrator.Engine
             ["sourceFile"] = _plan.ResolvedSceneFile, ["activeMask"] = _plan.ActiveMask,
             ["implicitBaseMask"] = _plan.ImplicitBaseMask, ["requiredVariantMask"] = _plan.ActiveMask & ~_plan.ImplicitBaseMask,
             ["complete"] = _complete, ["planEntries"] = _plan.Entries.Count, ["processedEntries"] = _entryIndex,
+            ["assetGroups"] = _plan.AssetGroups, ["boundsMode"] = "grouped_identity_template",
             ["planXmlElements"] = _plan.XmlElementCount, ["planEntities"] = _plan.InspectedNodes,
             ["planPeakSubtreeElements"] = _plan.PeakSubtreeElements,
             ["planSkippedLevels"] = _plan.SkippedByLevel, ["planSkippedUnsupported"] = _plan.SkippedUnsupported,
@@ -299,6 +326,7 @@ namespace AnimusForge.Illustrator.Engine
             ["copied"] = _copied, ["duplicates"] = _duplicates, ["outsideRadius"] = _outside,
             ["runtimeObservedSkipped"] = _observedSkipped,
             ["templateLoads"] = _templatesLoaded, ["outsideRadiusBeforeLoad"] = _boundsRejected, ["cachedAssetBounds"] = _cachedBoundsCount,
+            ["boundsProbes"] = _boundsProbes, ["instanceLoads"] = _instanceLoads,
             ["omittedTemplateBranches"] = _unsupported, ["missingResources"] = _missing,
             ["elapsedMs"] = _watch.ElapsedMilliseconds, ["omittedRecords"] = _omittedRecords,
             ["coverage"] = "Authored static geometry supplements runtime meshes. Scripted/dynamic/unsupported overrides and native terrain are not reconstructed; this is not proof of the current destruction state.",
@@ -309,7 +337,8 @@ namespace AnimusForge.Illustrator.Engine
         {
             IllustratorRuntime.AssertMainThread();
             if (_disposed) return;
-            _disposed = true; _pending.Clear(); _current = null; _root = null; _assetBounds.Clear();
+            _disposed = true; _pending.Clear(); _current = null; _root = null;
+            _boundsAsset = null; _groupBoundsUsable = false;
             var scene = _templates; _templates = null;
             if (scene != null) { try { scene.ClearAll(); } finally { scene.ManualInvalidate(); } }
         }
