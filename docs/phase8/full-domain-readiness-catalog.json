@@ -237,7 +237,7 @@
       ],
       "entryPaths": [
         "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
         "LordEncounterBehavior.cs",
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
       ],
@@ -725,7 +725,7 @@
         "FourberieDuelCompatibility.cs",
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
-        "ShoutBehavior.ScenePostprocess.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
         "ShoutBehavior.cs",
         "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
@@ -1200,7 +1200,7 @@
       "entryPaths": [
         "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
         "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs"
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "requiredCases": [
         "A_ONLY",

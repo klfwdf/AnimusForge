@@ -239,7 +239,7 @@
       "entryPaths": [
         "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
         "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs"
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "symbols": [
         {

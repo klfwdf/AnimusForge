@@ -80,9 +80,12 @@ def extract_candidate(ref):
     scene=extractor.source('ShoutBehavior.cs',ref)
     try:
         if ref:
-            proc=subprocess.run(['git','show',f'{ref}:ShoutBehavior.ScenePostprocess.cs'],cwd=ROOT,capture_output=True)
+            scene_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
+            proc=subprocess.run(['git','show',f'{ref}:{scene_path}'],cwd=ROOT,capture_output=True)
+            if proc.returncode != 0:
+                proc=subprocess.run(['git','show',f'{ref}:ShoutBehavior.ScenePostprocess.cs'],cwd=ROOT,capture_output=True)
             phase=proc.stdout.decode('utf-8-sig').replace('\r\n','\n') if proc.returncode==0 else ''
-        else: phase=extractor.source('ShoutBehavior.ScenePostprocess.cs',ref)
+        else: phase=extractor.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs',ref)
     except (FileNotFoundError, subprocess.CalledProcessError): phase=''
     wrapper=extractor.declaration(scene,SIGNATURE,optional=True) or extractor.declaration(phase,SIGNATURE)
     if not phase: return wrapper, False

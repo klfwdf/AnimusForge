@@ -68,17 +68,23 @@ def owner_parity(baseline):
         for port, (owner, methods) in MAP.items() for method in methods}
     replacements["TeamModuleServices.Policy.BuildActivePolicyDialogueContextForExternal"] = "NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal"
     seen = {name: 0 for name in replacements}
-    for path in ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]:
-        current = read(path)
-        prior = subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
-        restored = restore_reviewed_nonport_deltas(path, current, prior).replace("using AnimusForge.Refactor.Modules;\n", "")
+    source_pairs = [
+        ("MyBehavior.cs", "MyBehavior.cs"),
+        ("ShoutBehavior.cs", "ShoutBehavior.cs"),
+        ("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs", "ShoutBehavior.ScenePostprocess.cs"),
+        ("CourierDeliveryBehavior.cs", "CourierDeliveryBehavior.cs"),
+    ]
+    for current_path, baseline_path in source_pairs:
+        current = read(current_path)
+        prior = subprocess.check_output(["git", "show", f"{baseline}:{baseline_path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        restored = restore_reviewed_nonport_deltas(baseline_path, current, prior).replace("using AnimusForge.Refactor.Modules;\n", "")
         for new, old in replacements.items():
             seen[new] += restored.count(new)
             restored = restored.replace(new, old)
-        prior = subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+        prior = subprocess.check_output(["git", "show", f"{baseline}:{baseline_path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         if restored != prior:
-            raise AssertionError(f"Owner parity failed: {path} differs beyond declared receiver/using changes")
-        print(f"PASS full-file reviewed-native/receiver inverse equals {baseline}: {path}")
+            raise AssertionError(f"Owner parity failed: {current_path} differs beyond declared receiver/using changes")
+        print(f"PASS full-file reviewed-native/receiver inverse equals {baseline}: {current_path}")
     if len(seen) != 13 or any(count == 0 for count in seen.values()):
         raise AssertionError("Every declared method must have a live owner call, not only a descriptor")
     sub = read("SubModule.cs")
