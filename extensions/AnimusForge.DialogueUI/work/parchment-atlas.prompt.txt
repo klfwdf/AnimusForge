@@ -1,0 +1,13 @@
+Create a production-quality medieval historical game UI MATERIAL ATLAS, orthographic flat FRONT VIEW, aspect 3:2, canvas 1536x1024 pixels. All elements strictly separated on a perfectly flat pure chroma-magenta background RGB 255,0,255 for easy removal. No environmental scene, no people, no portraits, NO TEXT, no letters, no digits, no logos, no heraldic symbols, no user interface mockup. Only empty decorative UI materials.
+
+TOP ROW, bounding region x32 y32 to x1504 y360: ONE long horizontal opened parchment scroll, ivory beige lambskin vellum with torn irregular upper and lower edges, rolled vertical ends at left and right, delicate faded antique gold medieval botanical illumination ONLY at left and right margins, broad quiet blank middle. Fine natural warm parchment grain with restrained shadows on the object itself. No center frame; the middle remains blank light parchment. Ends and flourishes fit inside this allocated region. Rich handcrafted medieval manuscript texture but legible modern game UI proportions.
+
+BOTTOM LEFT, region x32 y408 to x600 y976: ONE nearly square ivory beige parchment sheet panel, slightly curled thin irregular torn edges, a delicate continuous antique-gold inset ornamental border, very subtle faded flourishes in corners. Huge empty quiet light center for future dynamic text. NO symbols in the center. NO wax seals. NO wood. Same warm parchment as scroll. Flat frontal 2D UI sprite with crisp edges.
+
+BOTTOM RIGHT TOP, region x656 y408 to x1504 y704: ONE empty deep warm umber text-input inset panel, wide horizontal rectangle, antique narrow bronze-gold rim with two fine parallel highlights and dark shadow recess, dark brown leather-like quiet subtle grain in center. Rectangular corners, very restrained engraving. Blank inside. Flat frontal 2D.
+
+BOTTOM RIGHT BELOW, region x680 y776 to x904 y1000: ONE blank circular bronze button medallion, dull antique gold beveled rim, dark warm brown empty center, no icon, no symbol. Distinct crisp edge.
+
+BOTTOM RIGHT FINAL, region x1100 y776 to x1324 y1000: ONE blank red-brown wax seal disk with subtle uneven contour and shallow bevel, no stamped symbol, no ribbon.
+
+Everything laid out separately, facing camera square-on, no perspective, no ambient shadows outside objects, no checkered transparency. The magenta background remains uniformly exact and visible between all elements. Highly detailed painterly realistic medieval parchment, warm ivory, worn antique gold, dark umber, no neon color except the removable background.
