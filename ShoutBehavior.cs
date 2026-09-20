@@ -20305,6 +20305,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			messages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
 		if (!nativeMainReply.CanContinue) return nativeMainReply.StopText;
 		string postprocessReply = nativeMainReply.PostprocessReply;
+		string cleaned = "";
+		string nativeMainVisibleForTts = "";
+		bool nativeTtsDispatchedBeforePostprocess = false;
 		string nativeMainReplyTargetUnavailableReason = "";
 		bool nativeMainReplyTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
 			"main_reply_action_validation",
@@ -20321,6 +20324,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					postprocessReply = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);
 				}
+				// The observer reads Mission/Agents. Keep it with the validated raw actions on
+				// their owning thread, before this callback releases the worker continuation.
+				SubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);
+				cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
+				nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
+				if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
+				{
+					TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
+					nativeTtsDispatchedBeforePostprocess = true;
+					LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
+				}
 				return true;
 			},
 			false).ConfigureAwait(false);
@@ -20331,22 +20345,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply before postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
 			return "";
 		}
-		// Native AI conversation replies do not pass through AF's scene-shout
-		// publication hook. Feed the completed natural prose into the same
-		// SceneActions parser so descriptions such as “他慢慢跪下并指向旁边”
-		// work in the conversation input shown in the native dialogue screen.
-		SubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);
 		// Keep role-play action prose for the postprocessor; display/TTS retains the
-		// existing stage-direction cleanup below.
-		string cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
-		string nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
-		bool nativeTtsDispatchedBeforePostprocess = false;
-		if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
-		{
-			TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
-			nativeTtsDispatchedBeforePostprocess = true;
-			LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
-		}
+		// sanitized display/TTS variants captured in the validated phase above.
 		string nativePostprocessStartTargetUnavailableReason = "";
 		bool nativePostprocessStartTargetAvailable = await RunNativeConversationMainThreadFuncAsync(
 			"postprocess_start_target_validation",

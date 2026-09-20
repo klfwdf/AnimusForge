@@ -23,12 +23,12 @@ namespace AnimusForge
 {
     internal static class Fixture
     {
-        internal static int MainThread,WrongThread,Submits,Warnings,Taunts,Rollbacks;
-        internal static bool Valid,ThrowParser,ClearSpeech;
+        internal static int MainThread,WrongThread,Submits,Warnings,Taunts,Rollbacks,TtsCalls,TtsWarnings;
+        internal static bool Valid,ThrowParser,ClearSpeech,TtsFlag;
         internal static string Text;
         internal static readonly BlockingCollection<Action> Queue=new BlockingCollection<Action>();
         internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread){WrongThread++;throw new InvalidOperationException("fixture_off_thread_game_read");}}
-        internal static void Reset(){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Submits=Warnings=Taunts=Rollbacks=0;Valid=true;ThrowParser=ClearSpeech=false;Text=null;while(Queue.TryTake(out _)){};SceneActionsRuntimeHost.Settings.NpcSceneShoutReplyEnabled=true;Mission.Current=new Mission();}
+        internal static void Reset(){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Submits=Warnings=Taunts=Rollbacks=TtsCalls=TtsWarnings=0;TtsFlag=false;Valid=true;ThrowParser=ClearSpeech=false;Text=null;while(Queue.TryTake(out _)){};SceneActionsRuntimeHost.Settings.NpcSceneShoutReplyEnabled=true;Mission.Current=new Mission();}
     }
     internal static class SceneActionsRuntimeHost
     {
@@ -42,7 +42,7 @@ namespace AnimusForge
     internal static class Logger {internal static void Log(string category,string text){}}
     public partial class ShoutBehavior
     {
-        private class Hero{} private class CharacterObject{} private class NativeConversationAdmission{}
+        private class Hero{internal string StringId="hero";} private class CharacterObject{internal string StringId="char";} private class NativeConversationAdmission{} private class NpcDataPacket{internal string Name="npc";}
         private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int agent,Func<T> work,T fallback)
         {var done=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);Fixture.Queue.Add(()=>{try{done.TrySetResult(work());}catch(Exception ex){done.TrySetException(ex);}});return done.Task;}
         private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission ticket,out string reason){Fixture.Game();reason="fixture.invalid";return Fixture.Valid;}
@@ -52,11 +52,18 @@ namespace AnimusForge
         {Fixture.Game();Fixture.Taunts++;escalated=true;if(Fixture.ClearSpeech)text="";return true;}
         private string BuildFallbackSceneTauntSpeech(bool escalated)=>"fallback taunt";
         private Task RollbackNativeConversationPendingPlayerHistoryAsync(NativeConversationAdmission ticket,string key,long sequence,string reason){Fixture.Rollbacks++;return Task.CompletedTask;}
+        private static string StripStageDirectionsForPassiveShout(string text)=>text;
+        private static string SanitizeSceneSpeechText(string text)=>text.Trim();
+        private static bool IsNativeConversationNoSpeechPlaceholder(string text)=>text=="[silent]";
+        private void TrySpeakNativeConversationReplyWithTts(Hero hero,CharacterObject character,NpcDataPacket npc,int index,string text)
+        {try{Fixture.Game();Fixture.TtsCalls++;}catch(InvalidOperationException){Fixture.TtsWarnings++;}}
+        private static void LogTtsReport(string stage,int index,string detail){}
         internal async Task<string> RunAsync(string postprocessReply,int nativeTargetAgentIndex)
         {
-            var admission=new NativeConversationAdmission();var targetHero=new Hero();var targetCharacter=new CharacterObject();
+            var npc=new NpcDataPacket();var admission=new NativeConversationAdmission();var targetHero=new Hero();var targetCharacter=new CharacterObject();
             string nativeTargetLog="npc",nativePendingAfefKey="captured-key";long nativePendingPlayerHistoryEventSequence=81;
 @@SLICE@@
+            Fixture.TtsFlag=nativeTtsDispatchedBeforePostprocess;
             return postprocessReply;
         }
 @@OBSERVER@@
@@ -73,7 +80,7 @@ namespace AnimusForge
             if(scenario=="missing-agent")Mission.Current.RemoveAgents();
             if(scenario=="parser-failure")Fixture.ThrowParser=true;
             if(scenario=="fallback")Fixture.ClearSpeech=true;
-            Task<string> task=Task.Run(()=>owner.RunAsync("[meeting]action prose",index));
+            Task<string> task=Task.Run(()=>owner.RunAsync(scenario=="silent"?"[silent]":"[meeting]action prose",index));
             Check(Fixture.Queue.TryTake(out var work,5000),"phase-published:"+scenario);
             Check(!task.IsCompleted,"real-yield:"+scenario);
             if(scenario=="late-target")Fixture.Valid=false;
@@ -86,6 +93,7 @@ namespace AnimusForge
             string result=Run("healthy");
 #if BASELINE
             Check(Fixture.WrongThread==1 && Fixture.Submits==0 && Fixture.Warnings==1 && result=="action prose","REPRODUCED_worker_game_read_and_silently_lost_observation");
+            result=Run("tableau",-1);Check(Fixture.WrongThread==1 && Fixture.TtsCalls==0 && Fixture.TtsWarnings==1 && Fixture.TtsFlag,"REPRODUCED_worker_early_tts_capture_loss");
             Console.WriteLine("BASELINE reproduced: actual old call site + actual observer, refusing game port; NOT LIVE");
 #else
             Check(Fixture.WrongThread==0 && Fixture.Submits==1,"healthy_observation_on_owner_thread_once");
@@ -93,9 +101,10 @@ namespace AnimusForge
             result=Run("fallback");Check(result=="fallback taunt" && Fixture.Text==result && Fixture.Submits==1,"fallback_text_observed_once");
             result=Run("late-target");Check(result=="" && Fixture.Taunts==0 && Fixture.Submits==0 && Fixture.Rollbacks==1,"stale_target_never_observed");
             foreach(string scenario in new[]{"disabled","no-mission","missing-agent"}){result=Run(scenario);Check(result=="action prose" && Fixture.Submits==0 && Fixture.WrongThread==0,"optional_observer_noop:"+scenario);}
-            result=Run("tableau",-1);Check(result=="action prose" && Fixture.Submits==0 && Fixture.WrongThread==0,"tableau_does_not_scan_mission");
+            result=Run("tableau",-1);Check(result=="action prose" && Fixture.Submits==0 && Fixture.WrongThread==0 && Fixture.TtsCalls==1 && Fixture.TtsFlag,"tableau_early_tts_on_owner_thread_once");
+            result=Run("silent",-1);Check(Fixture.TtsCalls==0 && !Fixture.TtsFlag && Fixture.WrongThread==0,"silent_reply_not_spoken");
             result=Run("parser-failure");Check(result=="action prose" && Fixture.Warnings==1 && Fixture.Submits==0 && Fixture.WrongThread==0,"observer_failure_preserves_reply");
-            Console.WriteLine($"NativeObservation PASS={_checks} FAIL=0 actualCallSite=true actualObserver=true refusingGamePort=true LIVE=NOT_RUN");
+            Console.WriteLine($"NativeObservation PASS={_checks} FAIL=0 actualCallSite=true actualObserver=true ttsEntry=THREAD_SPY refusingGamePort=true LIVE=NOT_RUN");
 #endif
         }
     }
