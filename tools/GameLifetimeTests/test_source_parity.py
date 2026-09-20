@@ -21,18 +21,18 @@ class SourceInverseTests(unittest.TestCase):
         old = "MyBehavior.CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding)"
         self.assertEqual(self.source.count(old), 1)
         changed = self.source.replace(old, "MyBehavior.CapturePromptRuleEligibility(null, targetCharacter, runtimeTargetBinding)", 1)
-        with self.assertRaisesRegex(AssertionError, "Unreviewed J06 Shout eligibility capture"):
+        with self.assertRaisesRegex(AssertionError, "Unreviewed J07b source drift"):
             INVERSE.restore("ShoutBehavior.cs", changed)
 
     def test_removing_eligibility_capture_is_rejected(self):
         old = "AIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding, MyBehavior.CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding));"
         self.assertEqual(self.source.count(old), 1)
         changed = self.source.replace(old, "AIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding);", 1)
-        with self.assertRaisesRegex(AssertionError, "Unreviewed J06 Shout eligibility capture"):
+        with self.assertRaisesRegex(AssertionError, "Unreviewed J07b source drift"):
             INVERSE.restore("ShoutBehavior.cs", changed)
 
     def test_unrelated_source_drift_is_rejected(self):
-        with self.assertRaisesRegex(AssertionError, "Unreviewed game lifetime source change"):
+        with self.assertRaisesRegex(AssertionError, "Unreviewed J07b source drift"):
             INVERSE.restore("ShoutBehavior.cs", self.source + "\n// unrelated drift\n")
 
     def test_runner_edits_beyond_path_relocation_are_rejected(self):

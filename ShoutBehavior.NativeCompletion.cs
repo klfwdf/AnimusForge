@@ -68,7 +68,7 @@ public partial class ShoutBehavior
     // Unlike backend busy, this remains valid after Task completion, but not after a newer request.
     private bool IsNativeConversationCompletionContextCurrent(NativeConversationCompletionScope scope)
     {
-        return scope != null && scope.Admission.PresentationRevision == Interlocked.Read(ref _nativeConversationPresentationRevision)
+        return scope != null && _nativeAdmissionOwner.IsPresentationCurrent(scope.Admission.PresentationRevision)
             && IsNativeConversationContextCurrent(scope.Admission, out _);
     }
 

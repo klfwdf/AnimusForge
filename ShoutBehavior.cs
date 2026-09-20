@@ -15530,7 +15530,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
         // Event sequences reset on load. Never recompute the key or use a new CurrentInstance.
         if (owner == null || eventSequence <= 0 || string.IsNullOrWhiteSpace(historyKey)
             || !owner.IsNativeConversationContextStampCurrent(admission)
-            || admission.PresentationRevision != Interlocked.Read(ref owner._nativeConversationPresentationRevision))
+            || !owner._nativeAdmissionOwner.IsPresentationCurrent(admission.PresentationRevision))
             return;
         lock (_nativeConversationSessionHistoryLock)
         {

@@ -26,11 +26,11 @@ overlay=(ROOT/'AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf
 assert overlay.count('catch (ShoutBehavior.NativeConversationAdmissionException ex)')==2
 assert 'ShoutBehavior.IsNativeConversationBackendBusy()' in ex.declaration(overlay,'private void HandleSubmitRequested(')
 opening=ex.declaration(overlay,'private void TryStartPendingNpcOpening(');assert opening.index('IsNativeConversationBackendBusy')<opening.index('_npcOpeningAutoStarted = true')
-if args.mutate=='drop-busy':partial=partial.replace('if (IsNativeConversationAdmissionCurrent(Volatile.Read(ref _nativeConversationAdmission), out _))','if (false)',1)
-if args.mutate=='release-new-slot':partial=partial.replace('Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);','Interlocked.Exchange(ref _nativeConversationAdmission, null);',1)
+if args.mutate=='drop-busy':partial=partial.replace('if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))','if (false)',1)
+if args.mutate=='release-new-slot':partial=partial.replace('_nativeAdmissionOwner.Release(admission);','_nativeAdmissionOwner.Release(_nativeAdmissionOwner.Current);',1)
 if args.mutate=='skip-timeout-cas':partial=partial.replace('if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)','if (false)',1)
 if args.mutate=='skip-generation':partial=partial.replace('|| !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)','|| false',1)
-if args.mutate=='skip-queued-epoch':partial=partial.replace('|| conversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch)', '|| false', 1)
+if args.mutate=='skip-queued-epoch':partial=partial.replace('|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)', '|| false', 1)
 overlay_source = subprocess.check_output(['git','show','14dec2d7:AnimusForgeNativeConversationOverlay.cs'],cwd=ROOT).decode('utf-8-sig') if args.mutate=='old-overlay-finalizer' else overlay
 finalizers=[]
 for signature,name in [('private async Task SubmitAsync(string text)', 'CompletePlayer'),('private async Task SubmitNpcInitiatedOpeningAsync(', 'CompleteOpening')]:
@@ -54,7 +54,8 @@ if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNat
 (out/'ActionDispatch.cs').write_text(dispatch,encoding='utf-8')
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tools/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
-spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
+spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
+code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

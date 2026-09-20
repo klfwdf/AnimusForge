@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using System.Threading;
 using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
@@ -16,8 +15,8 @@ public partial class ShoutBehavior
             return;
         }
         long generation = SaveRuntimeGuard.CaptureGeneration();
-        long conversationEpoch = Interlocked.Read(ref owner._nativeConversationAdmissionEpoch);
-        long presentationRevision = Interlocked.Read(ref owner._nativeConversationPresentationRevision);
+        long conversationEpoch = owner._nativeAdmissionOwner.ConversationEpoch;
+        long presentationRevision = owner._nativeAdmissionOwner.PresentationRevision;
         _ = owner.RunModuleNativeDialogueAsync(operation, generation, conversationEpoch, presentationRevision);
     }
 
@@ -31,8 +30,8 @@ public partial class ShoutBehavior
                 "module_native_admission", "module", -1, () =>
                 {
                     if (!ReferenceEquals(CurrentInstance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation)
-                        || conversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch)
-                        || presentationRevision != Interlocked.Read(ref _nativeConversationPresentationRevision)
+                        || !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)
+                        || !_nativeAdmissionOwner.IsPresentationCurrent(presentationRevision)
                         || !_pendingMainThreadFunctions.Accepting || !operation.TryBegin())
                         return null;
                     return SubmitNativeConversationAdmittedAsync(operation.PlayerText, null, null, null,

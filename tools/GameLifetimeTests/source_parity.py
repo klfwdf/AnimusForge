@@ -105,7 +105,10 @@ def check_dependencies():
     source=source.replace(current,historical)
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
 
+spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tools/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
+
 def restore(path,source):
+ source=owner_inverse.restore(path,source)
  if path=='ShoutBehavior.cs':
   # J03 exact inverse: d11eb572 added five request scopes; 2aa4edb7 moved
   # mission warmup seed capture to this call site. No other source drift is allowed.

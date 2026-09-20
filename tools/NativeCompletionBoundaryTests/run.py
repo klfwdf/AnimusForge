@@ -40,16 +40,16 @@ if not a.original:
  if a.mutate=='drop-memory-acceptance':completion=completion.replace('if (memory?.HistoryWritten != true)','if (false)',1)
  if a.mutate=='lose-failed-exit':completion=completion.replace('QueueNativeConversationCompletionExit(scope, result);',';',1)
  if a.mutate=='drop-discard-context':
-  code=code.replace('|| !owner.IsNativeConversationContextStampCurrent(admission)\n            || admission.PresentationRevision != Interlocked.Read(ref owner._nativeConversationPresentationRevision)','|| false',1)
+  code=code.replace('|| !owner.IsNativeConversationContextStampCurrent(admission)\n            || !owner._nativeAdmissionOwner.IsPresentationCurrent(admission.PresentationRevision)','|| false',1)
   (out/'Program.cs').write_text(code,encoding='utf-8')
  if a.mutate=='drop-generation':completion=completion.replace('SaveRuntimeGuard.IsCurrentGeneration(scope.Admission.Generation)','true',1)
  if a.mutate=='current-scene':
   cut=completion.index('private string CompleteNativeConversationReplyOnMainThread(')
   completion=completion[:cut]+completion[cut:].replace('scope.SceneSessionId','TryGetCurrentSceneHistorySessionIdForHistoryPersistence()')
  if a.mutate=='late-nonhero':completion=completion.replace('Hero hero = scope.Admission.Hero;','Hero hero = scope.Admission.Hero; if (hero == null) scope.HasNonHeroMemory = TryResolveWildernessNonHeroMemory(scope.Npc, hero, scope.Admission.Character, scope.AgentIndex, out scope.NonHeroMemoryId, out scope.NonHeroMemoryName);',1)
- if a.mutate=='drop-context':completion=completion.replace('return scope != null && scope.Admission.PresentationRevision == Interlocked.Read(ref _nativeConversationPresentationRevision)\n            && IsNativeConversationContextCurrent(scope.Admission, out _);','return true;',1)
+ if a.mutate=='drop-context':completion=completion.replace('return scope != null && _nativeAdmissionOwner.IsPresentationCurrent(scope.Admission.PresentationRevision)\n            && IsNativeConversationContextCurrent(scope.Admission, out _);','return true;',1)
  if a.mutate=='drop-close-guard':completion=completion.replace('if (IsNativeConversationCompletionContextCurrent(scope))\n                    CloseNativeConversationForSceneMechanism','if (true)\n                    CloseNativeConversationForSceneMechanism',1)
- if a.mutate=='backend-close':completion=completion.replace('return scope != null && scope.Admission.PresentationRevision', 'return scope != null && ReferenceEquals(_nativeConversationAdmission, scope.Admission) && scope.Admission.PresentationRevision',1)
+ if a.mutate=='backend-close':completion=completion.replace('return scope != null && _nativeAdmissionOwner.IsPresentationCurrent', 'return scope != null && _nativeAdmissionOwner.Owns(scope.Admission) && _nativeAdmissionOwner.IsPresentationCurrent',1)
  if a.mutate=='drop-completion':
   code=code.replace('result.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);','result.FinalVisible = result.Content;',1)
   (out/'Program.cs').write_text(code,encoding='utf-8')
@@ -58,6 +58,8 @@ if not a.original:
   (out/'Dispatch.cs').write_text(dispatch,encoding='utf-8')
  (out/'Completion.cs').write_text(completion,encoding='utf-8')
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
+if not baseline:
+ core_fixture.include_admission_owner(out);code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '<DefineConstants>MEMORY_BASELINE</DefineConstants>' if a.memory_baseline else '')+'</PropertyGroup></Project>',encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
