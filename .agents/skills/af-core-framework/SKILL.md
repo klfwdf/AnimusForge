@@ -45,6 +45,7 @@ AnimusForge.dll
 - 沿一条真实输入到输出/提交的路径定位改动。游戏对象读取/写入在所属主线程；后台只运行明确可后台执行的网络/计算。检查 owner、会话和 generation，区分未开始取消、晚结果丢弃与真正的网络取消。
 - Native / Scene / Courier 同类行为需要核对，但不要因为一处改完就宣称三渠道都完成；Scene 的多人接力、旁听、玩家输入去重和唯一权威后处理不能被简化掉。
 - 涉及 LLM HTTP/SSE、取消/超时、provider/model catalog 或 TTS 网络时，另读维护 Skill 的 [LLM 传输边界](../../../.claude/skills/animusforge-maintainer/references/llm-transport.md)。传输 owner 只拥有其明确的一次 attempt/lifetime；重试、错误文案、显示、领域 Prompt 与游戏音频生命周期仍由各自真实 owner 决策，不能为“统一”吞并成第二条缩水管线。
+- 连续阶段重构按有限退出门推进：真实 owner 接通实际消费者、批准语义与关键失败路径有证据、最终兼容门禁通过后立即进入下一阶段。不要按每个 helper/partial 新建重复 fixture，不因主类仍大、历史待办仍多或可以继续细分就拒绝已满足条件的包；保留的真实兼容责任写进台账，不能用删除活路径换取“拆干净”。
 - 未迁移旧代码保留其当前运行责任；同一大文件混合新旧时按符号/调用点标界，不能把整文件标成已重写。仅在替代路径真实接线且无调用、兼容或存档责任时删除旧代码；不复制一整棵旧源码到新编译目录作“隔离”。
 - 当前坐标/已接线/未覆盖范围读 [仓库代码范围图](../../../docs/architecture/af-framework-code-scope.md)；这张图要随代码更新，不是固定白名单。详细内部和外部设计按需读根目录下的 `docs/architecture/af-internal-module-guide-v1.md`、`af-public-api-guide-v1.md`。
 
