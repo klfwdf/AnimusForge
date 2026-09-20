@@ -14,7 +14,8 @@
 | J10a2.1 Scene 玩家请求身份 | DONE | `64e438c6`：`ScenePlayerShoutRequestOwner` 唯一持有 input sequence、冻结 Mission/player/runtime/session/epoch identity 与一次性 claim；`ShoutTargetingContext`/request 迁出主类。request lifetime 30 + 7 变异、BattleSpeech captured 18 + 2 有效变异、Debug 双 API/Bootstrap 通过；Shout CRLF/无 BOM 保持 |
 | J10a2.2 Scene pending AFEF | DONE | `a4006d5c`：`ScenePendingAfefFactsOwner` 唯一持有每 Agent 的进程内待注入事实、12 条 oldest-first 上限与 one-shot consume；Native pending facts 仍在其原 owner。5 场景与 retain/unbounded/cross-agent 3 个有效变异、request lifetime、默认 wiring、Debug 双 API/Bootstrap 通过 |
 | J10a3.2 Scene speech queue lifetime | DONE | `2631f33c`：`SceneSpeechQueueOwner<T>` 唯一持有 FIFO、单 worker lease、clear/reset/空队列退休与无阻塞诊断快照；payload/TTS/历史/动作继续归 host。6 场景与 duplicate-worker/never-retire/reset 3 个有效变异、Scene Queue 37+7 变异、request lifetime、默认 wiring、Debug 双 API/Bootstrap 通过 |
-| J10a2 / J10a3 剩余 | IN PROGRESS | group/relay/passive/reaction 的下游 participant/interaction 状态仍有部分字段/算法在 `ShoutBehavior.cs`；不因 queue 状态归位宣称 Scene 全部完成 |
+| J10a4 Scene group/relay/passive/reaction | DONE | `c1f5aa6a`/`cbf7f453`：21 个真实声明（group Prompt、passive、两个 group handler、完整 immediate reaction reservation→completion）原实现迁入 `ShoutBehavior.SceneConversationChains.cs`；生产调用不变。ChannelCutover 132、源码提取 14、ProductionConsumers 正常与 3 个有效变异、Scene parity 71、request lifetime 30、Debug 双 API/Bootstrap 通过 |
+| J10a Scene 整包 | OFFLINE_VERIFIED | live Agent/interaction timeout、TTS/audio、movement、History/Memory/动作副作用保留 host adapter；这是有意的游戏线程边界，不再按主类行数继续拆。LIVE/音频/帧成本仍 NOT-RUN |
 | J10b / J10c | NOT STARTED | Courier 会话 owner 与最终整包验收尚未施工 |
 
 `TeamModulePortParityTests` 本轮未计通过：运行在进入 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的依赖 hash 漂移阻断；相关文件本轮未修改，未刷新 hash 绕过。LIVE/SAVE/provider/音频/真实帧成本仍 `NOT-RUN`。

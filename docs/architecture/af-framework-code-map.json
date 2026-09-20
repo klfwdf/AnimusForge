@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "2631f33c0270731c6c09714c3345e958c9cb4c24",
+  "sourceRevision": "cbf7f4533e92d3e7002e89eda41b7cff1e992ba8",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -161,13 +161,13 @@
     {
       "id": "native.history.bridge",
       "path": "ShoutBehavior.cs",
-      "start": 16128,
-      "end": 16131,
+      "start": 15991,
+      "end": 15994,
       "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "f23f07dbba3a52ac65327b805f44f08edc1593ee741d92845b286f1aa5d6d57c"
+      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
     },
     {
       "id": "native.history.dispatch",
@@ -194,13 +194,13 @@
     {
       "id": "native.dispatch.shared",
       "path": "ShoutBehavior.cs",
-      "start": 19385,
-      "end": 19388,
+      "start": 19248,
+      "end": 19251,
       "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "f23f07dbba3a52ac65327b805f44f08edc1593ee741d92845b286f1aa5d6d57c"
+      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
     },
     {
       "id": "memory.acceptance",
@@ -278,6 +278,50 @@
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
       "fileSha256": "bc552477b450efac43a96c8d028d395de1861fc4737d31b1b6c15396d08feee3"
+    },
+    {
+      "id": "scene.chain.group-prompt",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
+      "start": 85,
+      "end": 85,
+      "symbol": "private async Task<string> GenerateGroupConversationTurnLineAsync(",
+      "match": "contains",
+      "status": "wired-j10-candidate",
+      "note": "group-turn Prompt/request chain moved verbatim into the Scene channel partial",
+      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+    },
+    {
+      "id": "scene.chain.passive",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
+      "start": 185,
+      "end": 185,
+      "symbol": "private async Task<string> GetPassiveNpcResponse(",
+      "match": "contains",
+      "status": "wired-j10-candidate",
+      "note": "passive response chain remains a real ShoutBehavior consumer under the Scene channel path",
+      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+    },
+    {
+      "id": "scene.chain.group-relay",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
+      "start": 770,
+      "end": 770,
+      "symbol": "private async Task HandleGroupResponsePerHeroIndependent(",
+      "match": "contains",
+      "status": "wired-j10-candidate",
+      "note": "authoritative multi-speaker history/speech/postprocess/relay orchestration",
+      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+    },
+    {
+      "id": "scene.chain.reaction",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
+      "start": 1568,
+      "end": 1568,
+      "symbol": "private bool TriggerImmediateSceneBehaviorReaction(",
+      "match": "contains",
+      "status": "wired-j10-candidate",
+      "note": "immediate reaction reservation/capture/background/completion chain moved with its helpers",
+      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
     },
     {
       "id": "scene.speech-queue.owner",
@@ -3318,24 +3362,24 @@
     {
       "id": "native.raw.observation",
       "path": "ShoutBehavior.cs",
-      "start": 20042,
-      "end": 20045,
+      "start": 19905,
+      "end": 19908,
       "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "f23f07dbba3a52ac65327b805f44f08edc1593ee741d92845b286f1aa5d6d57c"
+      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
     },
     {
       "id": "native.turn.entry",
       "path": "ShoutBehavior.cs",
-      "start": 20036,
-      "end": 20040,
+      "start": 19899,
+      "end": 19903,
       "symbol": "private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)",
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "f23f07dbba3a52ac65327b805f44f08edc1593ee741d92845b286f1aa5d6d57c"
+      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
     },
     {
       "id": "native.turn.coordinator",
