@@ -2051,9 +2051,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private List<ConversationMessage> _publicConversationHistory = new List<ConversationMessage>();
 
-	private readonly object _pendingCurrentAfefFactsLock = new object();
-
-	private readonly Dictionary<int, List<ConversationMessage>> _pendingCurrentAfefFactsByAgent = new Dictionary<int, List<ConversationMessage>>();
+	private readonly ScenePendingAfefFactsOwner _scenePendingAfefFactsOwner = new ScenePendingAfefFactsOwner();
 
 	private readonly object _pendingCurrentNativeAfefFactsLock = new object();
 
@@ -28645,10 +28643,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ClearPendingCurrentAfefFacts()
 	{
-		lock (_pendingCurrentAfefFactsLock)
-		{
-			_pendingCurrentAfefFactsByAgent.Clear();
-		}
+		_scenePendingAfefFactsOwner.Clear();
 		lock (_pendingCurrentNativeAfefFactsLock)
 		{
 			_pendingCurrentNativeAfefFactsByKey.Clear();
@@ -28793,36 +28788,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			SpeakerAgentIndex = -1,
 			VisibleAgentIndices = new List<int> { targetAgentIndex }
 		});
-		lock (_pendingCurrentAfefFactsLock)
-		{
-			if (!_pendingCurrentAfefFactsByAgent.TryGetValue(targetAgentIndex, out var list) || list == null)
-			{
-				list = new List<ConversationMessage>();
-				_pendingCurrentAfefFactsByAgent[targetAgentIndex] = list;
-			}
-			list.Add(message);
-			while (list.Count > 12)
-			{
-				list.RemoveAt(0);
-			}
-		}
+		_scenePendingAfefFactsOwner.Queue(targetAgentIndex, message);
 	}
 
 	private List<ConversationMessage> ConsumePendingCurrentAfefFactMessagesForPrompt(int targetAgentIndex)
 	{
-		if (targetAgentIndex < 0)
-		{
-			return new List<ConversationMessage>();
-		}
-		lock (_pendingCurrentAfefFactsLock)
-		{
-			if (!_pendingCurrentAfefFactsByAgent.TryGetValue(targetAgentIndex, out var list) || list == null || list.Count == 0)
-			{
-				return new List<ConversationMessage>();
-			}
-			_pendingCurrentAfefFactsByAgent.Remove(targetAgentIndex);
-			return list.Where((ConversationMessage x) => x != null).ToList();
-		}
+		return _scenePendingAfefFactsOwner.Consume(targetAgentIndex);
 	}
 
 	private void QueuePendingCurrentNativeAfefFactForKey(string key, string fact)
