@@ -1,5 +1,11 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 宣权篡位选兵全选崩溃修复已覆盖（2026-09-20 08:10:22）
+
+用户实机“挑选突击队崩溃”：rgl与WER14300.dmp确认 `ExecuteTransferAllOtherTroops → PartyCharacterVM.InitializeUpgrades` 空引用。旧版RightOwnerParty=null，而原版先读其ItemRoster再检查禁升级。检查点 `8533df8`，修复 `63de4323`：独立子MOD选兵补主队/领袖UI上下文，继续保持dummy名册，并隔离取消时的物品快照；不修改AF主体。
+
+双API Release均0警告/0错误，部署DLL的29项选兵数据工厂fixture检查、44个Harmony注册目标通过。已覆盖游戏v1.4.8独立 `AnimusForge_Coup`，4文件哈希一致、AF原DLL不变；SHA256 `9141B301EC8481F45F38C4DE2999E26DCDB1900FE4BE3805E82CADAB997BA920`，MVID `e548649d-8d0b-4590-892e-e87c42afc682`。旧版备份 `artifacts/deploy-backups/AnimusForge_Coup/20260920-081022/module`。未启动游戏；实际转入/退回/确认/取消和大厅选兵仍需重启后复验。证据、核实源码坐标及边界见 [选兵崩溃修复报告](docs/audits/2026-09-20-coup-selection-crash.md)。
+
 ## 最新360×180全景与base层家具漏采纠正（2026-09-20 08:08:05）
 
 用户要求完整全景，提出两个180度镜头；已说明普通透视相机不能直接设180度，改为独立副本六个90度方向顺序共用512RT，后台合成2048×1024球面展开图。源码 `869166fe`，检查点 `f0b9139`。正式参考与不付费试采均改用ScenePanorama，注明中心前方、边缘后方相接和上下极拉伸，30米/一次副本/原预算保持。全方向不代表全部几何或实时状态覆盖。

@@ -20,3 +20,5 @@ dotnet build .\tools\Coup.RuntimeProbe\Coup.RuntimeProbe.csproj -c Release -p:Ga
 必须选择与实际游戏安装匹配的 AF 和子 MOD 实现。不要用 1.4 游戏依赖运行 1.3 实现并宣称验证了 1.3。输出目录必须位于游戏目录之外。退出码 `0` 表示注册通过，`1` 表示绑定或可用性失败，`2` 表示参数错误；详细记录在输出目录的 `registration.log`。
 
 本检查比成员存在性检查多验证了私有 delegate 创建、Harmony 绑定和拘押 transpiler 的实际 IL 匹配。它不启动游戏，不验证各补丁在真实 AF 全部其他补丁挂载后的组合行为，不验证原生场景、导航、指挥 UI、伤亡政治结算或存档兼容性。
+
+选兵回归另调用生产 `CreateInitializationData`，用真实managed类型的受限fixture验证owner/ItemRoster引用、四份临时名册隔离、人数上限与确认/取消回调。PartyBase真实构造需要Campaign，fixture明确用FormatterServices跳过构造；没有创建Game/Campaign/PartyVM，没有执行原版升级信息刷新、转移箭头或重置UI。日志会单列此验证边界，不能将29项数据工厂检查称作实机选兵通过。
