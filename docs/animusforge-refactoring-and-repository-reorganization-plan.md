@@ -1,3 +1,33 @@
+<a id="j09-offline-verified-20260921"></a>
+# 当前接续：J09 Actions / 事实提交离线整包闭合，下一阶段 J10（2026-09-21）
+
+**状态：J07/J08/J09_OFFLINE_VERIFIED。** J09 的唯一标签协议、ActionPlan 完整性、typed/legacy execution adapter、动作终态、历史/confirmed fact 提交和默认三渠道接线已完成必要离线验收。真实 Campaign/Mission、旧 SAVE、live Economy/外交、provider、音频及帧成本仍独立 `NOT-RUN`；这不是全项目 J17 完成。
+
+## 产品结果与缺陷修复
+
+| 责任 | 当前 owner / 接线 | 结果 |
+| --- | --- | --- |
+| Tags | `AF.Module.Actions/Tags` | 共享 finite catalog/parser；raw 第 65 项、未授权协议、`ACTION:*`、顺序/参数篡改均 fail closed |
+| Plan / Execute | `AF.Module.Actions/{Plan,Execute}` | strict raw/plan、request/action fingerprint；Economy/Duel typed port 保留，尚未归位领域走 request-bound compatibility adapter，不把玩法搬入通用层 |
+| Receipts | `AF.Module.Actions/Receipts` | 动作 success/reject/partial/unknown 与可见历史/confirmed facts 分离；owner-started 异常不可重试，reservation 仍只能由 owner 完成 |
+| Native 默认 | `ShoutBehavior.NativeActionCommit.cs:20` | action-only boundary 后复用原 live core；completion、TTS、WorldMap exit、pending player history 不变；detached factory直接调 legacy core，避免嵌套执行 |
+| Scene 默认 | `ShoutBehavior.ScenePostprocess.cs:482` | 保持 relay 先解析、mood→GCCZ→direct→follow/speech；最终验收发现 helper 返回后曾提前发布 relay，`2a1fc124` 修为 queued speech/action 完成并重验后才发布 |
+| Courier 默认 | `CourierDeliveryBehavior.CommitDispatch.cs:22` | `DeliveryApplied` 前立即拒绝；默认 wrapper 与 detached core 分离，预生成不执行、到达提交不提前、历史不双写 |
+| 性能 | `LegacyInteractionSnapshotAdapters.CaptureActionCommit:574` | action commit 只冻结身份/candidate/facts，不重读或分配整段 Prompt history；真实帧耗时仍 NOT-RUN |
+
+## 最终离线证据
+
+- 正常：ActionProtocol 14；InteractionPipeline/receipt/host；Economy；Duel dispatch 16/16 与 outcome 18/18；Weekly/Notoriety；Scene parity 71、Queue 37；Courier owner 39、commit 34；Native action 91、admission 44、completion 184；默认 wiring 25。
+- 负向：ActionProtocol 5 个可编译变异、Scene Queue 7 个可编译变异、Courier owner 8 个可编译变异均命中具名断言，不以编译/路径错误冒充红例。
+- 构建：最终源码 Debug/Release × Bannerlord 1.3/1.4 + Bootstrap 六项，均 0 warning / 0 error；引用版本仍为 1.3.15.110062 / 1.4.6.115628，没有 Stage/Deploy/Package。
+- API/存档：四个实际实现 DLL 1060 metadata/API；public V1/legacy memory 相同、internal 隔离；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened；Identity 5、Chunk replay 8 通过。
+- 结构：Bridge bindings 16（wired 12 / declared-only 4）及 23 单测、Phase8 inventory 11 单测；334 锚点代码地图 recorded/working-tree 通过。地图只证明导航。
+- 清理：旧 catalog/parser/executor/committer/cache 路径均不再 tracked；共享 Actions owner 无 TaleWorlds 依赖；默认渠道不存在新旧并行执行；历史文档中的旧路径只作为历史快照保留。
+
+回滚按完整包定向 revert：`2a1fc124`（Scene queued relay 修复）→ `beb7dd38`（minimal identity）→ `449227a9`（默认渠道接线）→ `f4f022a3`（compat executor）→ `f61ec13e`/`bb223aec`/`65a14421`/`21206ec6`/`dbe87c4`/`fd01974b`/`20ba9527`。不 reset/rebase。下一包从 J10 开始，不重开 J09，除非出现新的具体复现或相关源码改动。
+
+## 以下为历史回执，当前状态以上方为准
+
 <a id="j09-shared-action-boundary-20260921"></a>
 # 当前接续：J09 shared action boundary 已闭合，默认三渠道接线进行中（2026-09-21）
 
