@@ -86,7 +86,7 @@ namespace AnimusForge
             string[] prefix = { "【近期私有记录】固定", "【持久记录】固定", BuildSceneCompositeUserBlock("", "【角色运行时】Alda", trustBlock, misc), BuildSceneCompositeUserBlock("", knowledge, systemRules) };
             var persistent = new List<ConversationMessage> { new ConversationMessage { Role = "assistant", Content = "Alda previous answer", SpeakerName = "Alda", SpeakerAgentIndex = 7, EventSequence = 1 } };
             var injected = new List<ConversationMessage> { new ConversationMessage { Role = "user", Content = "Player earlier question", TargetAgentIndex = 7, EventSequence = 2 } };
-            var messages = BuildStrictSceneMessagesForNpc(7, "【系统任务】回答玩家", prefix, new[] { "【本轮输入】Tell me about Praven, Alda the King; can we barter this item?" },
+            var messages = BuildStrictSceneMessagesForNpc(7, "【系统任务】回答玩家", prefix, new[] { "【本轮输入】" + (Environment.GetEnvironmentVariable("AF_J06_COMMON_INPUT") ?? "Tell me about Praven, Alda the King; can we barter this item?") },
                 currentInputAlreadyRecorded: true, injectedHistoryMessages: injected, includeSceneHistory: false,
                 persistentHistoryMessages: persistent, pendingCurrentAfefFactMessages: new[] { new ConversationMessage { Role = "system", Content = "AFEF fact" } }, useSceneDistanceSpeechLabels: false);
             string result = await CallNativeConversationApiAsync(messages, null);

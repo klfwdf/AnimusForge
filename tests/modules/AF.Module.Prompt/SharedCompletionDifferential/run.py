@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-lore", "drop-entity", "drop-rule"])
+parser.add_argument("--world-only", action="store_true", help="Exercise the common-input non-Hero final-request family, including mutations")
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
@@ -64,8 +65,8 @@ for revision in ("old", "current"):
         raise SystemExit(result.returncode)
     print("BUILD", revision, "production CompleteSharedPromptBuild/CapturePromptSections")
 
-def component(path: str) -> dict:
-    result = subprocess.run(["python", str(ROOT / path), "--emit-json"], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+def component(path: str, extra_env: dict | None = None) -> dict:
+    result = subprocess.run(["python", str(ROOT / path), "--emit-json"], cwd=ROOT, env=dict(env, **(extra_env or {})), capture_output=True, text=True, encoding="utf-8", errors="replace")
     if result.returncode:
         print(result.stdout, result.stderr, sep="\n")
         raise SystemExit(result.returncode)
@@ -76,6 +77,12 @@ def component(path: str) -> dict:
 lore = component("tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py")
 entity = component("tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py")
 rule = component("tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential/run.py")
+common_world = {
+    "AF_J06_COMMON_INPUT": "Tell me about Praven, House Sunflare and DawnRealm; can we barter this item?",
+    "AF_J06_COMMON_MENTIONS": json.dumps(["Praven", "House Sunflare", "DawnRealm"]),
+}
+world_lore = component("tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py", common_world)
+world_rule = component("tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential/run.py", common_world)
 courier_build = subprocess.run(["python", str(ROOT / "tools/CourierPromptPreparationTests/run.py")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 if courier_build.returncode:
     print(courier_build.stdout, courier_build.stderr, sep="\n")
@@ -88,18 +95,24 @@ if native_build.returncode:
     raise SystemExit(native_build.returncode)
 checked = 0
 for lore_case in ("hit", "stale"):
-    for entity_case in ("direct", "title", "fallback"):
+    for entity_case in (("world_shared",) if args.world_only else ("direct", "title", "fallback", "world_shared")):
         for rule_case in ("semantic", "lexical"):
             outputs = {}
             requests = {}
             native_requests = {}
             for revision in ("old", "current"):
                 component_env = dict(env)
+                is_world = entity_case == "world_shared"
+                entity_label = "world_shared" if is_world else ("title" if entity_case == "title" else "direct")
+                lore_result, rule_result = (world_lore, world_rule) if is_world else (lore, rule)
+                if is_world:
+                    component_env.update(common_world)
                 component_env.update({
-                    "AF_J06_LORE": lore[revision]["FALLBACK" if revision == "current" and lore_case == "stale" else "RESULT"],
-                    "AF_J06_ENTITY_MAIN": entity[revision]["RESULT_" + ("title" if entity_case == "title" else "direct") + "_main"],
-                    "AF_J06_ENTITY_POST": entity[revision]["RESULT_" + ("title" if entity_case == "title" else "direct") + "_post"],
-                    "AF_J06_RULE": rule[revision]["RESULT_" + rule_case],
+                    "AF_J06_LORE": lore_result[revision]["FALLBACK" if revision == "current" and lore_case == "stale" else "RESULT"],
+                    "AF_J06_ENTITY_MAIN": entity[revision]["RESULT_" + entity_label + "_main"],
+                    "AF_J06_ENTITY_POST": entity[revision]["RESULT_" + entity_label + "_post"],
+                    "AF_J06_ENTITY_META": entity[revision]["RESULT_" + entity_label + "_meta"],
+                    "AF_J06_RULE": rule_result[revision]["RESULT_" + rule_case],
                     "AF_J06_PRESELECTED": "1" if rule_case == "semantic" else "0",
                     "AF_J06_CAPTURE_FAIL": "1" if entity_case == "fallback" else "0",
                 })
@@ -140,6 +153,12 @@ for lore_case in ("hit", "stale"):
             context = json.loads(outputs["current"])
             assert "Praven is a port city." in context["Extras"] and "RULE_TEXT" in context["Extras"] and "Alda" in context["Extras"]
             assert "npc_1" in context["EntityPostprocessContext"] and "trade_context" in context["Extras"]
+            if entity_case == "world_shared":
+                assert all(label in context["Extras"] for label in ("Praven", "House Sunflare", "DawnRealm", "5000", "1200", "900")), "world facts lost in shared completion"
+                assert all(identity in context["EntityPostprocessContext"] for identity in ("town_praven", "clan_sunflare", "kingdom_dawn")), "world postprocess identities lost"
+                assert context["ExplicitMentionedKingdomIds"] == ["kingdom_dawn"], "world explicit kingdom ids lost"
+                for payload in list(requests["current"].values()) + [native_requests["current"]]:
+                    assert all(value in payload for value in (b"House Sunflare", b"DawnRealm", b"5000", b"1200", b"900")), "world facts lost before request send"
             if rule_case == "semantic":
                 assert "trade_context" in context["PreprocessRuleIds"], "preselected rule id absent"
             checked += 1

@@ -1,4 +1,4 @@
-"""Execute old/current production entity Hero fact rendering over the same fake game object."""
+"""Replay production entity capture, matching, fact rendering and fallbacks over controlled fake game objects; not live-game evidence."""
 from __future__ import annotations
 
 import base64
@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["drop-hero-main", "drop-hero-post", "drop-capture-fallback", "skip-worker-raw"])
+parser.add_argument("--mutate", choices=["drop-hero-main", "drop-hero-post", "drop-capture-fallback", "skip-worker-raw", "drop-settlement", "drop-clan", "drop-kingdom", "drop-resident-post", "drop-captured-visible", "drop-explicit-kingdom"])
 parser.add_argument("--emit-json", action="store_true")
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
@@ -91,6 +91,66 @@ markers = (
     "private static float CalculateBestRulerTitleAliasScore(",
     "private static bool MentionContainsRulerTitleQualifier(",
 )
+markers += (
+    'private static IEnumerable<Settlement> GetSettlementCandidates(',
+    'private static IEnumerable<Clan> GetClanCandidates(',
+    'private static IEnumerable<Kingdom> GetKingdomCandidates(',
+    'private static void AddResidentEntityMatches(',
+    'private static void AddPostprocessResidentEntityMatches(',
+    'private static void AddResidentHeroMatch(',
+    'private static void AddResidentSettlementMatch(',
+    'private static void AddResidentClanMatch(',
+    'private static void AddResidentKingdomMatch(',
+    'private static void AddResidentMatch<T>(',
+    'private static void AppendSettlementMainFacts(',
+    'private static void AppendClanMainFacts(',
+    'private static void AppendKingdomMainFacts(',
+    'private static void AppendVisiblePartyFacts(',
+    'private static string BuildVisiblePartyPromptLine(',
+    'private static string BuildVisiblePartyRelationPromptSegment(',
+    'private static string FormatSettlementNameWithType(',
+    'private static string FormatSettlementType(',
+    'private static string FormatSettlementKingdom(',
+    'private static string FormatSettlementStrength(',
+    'private static string FormatSettlementProsperity(',
+    'private static string FormatSettlementPopulation(',
+    'private static string FormatSettlementLoyalty(',
+    'private static string FormatBoundVillages(',
+    'private static string FormatSettlementStatus(',
+    'private static string FormatClanFiefs(',
+    'private static string FormatKingdomClans(',
+    'private static string FormatKingdomEncyclopediaBackground(',
+    'private static string FormatKingdomSettlementSummary(',
+    'private static string FormatKingdomStatus(',
+    'private static bool IsAlly(',
+    'private static bool HasTradeAgreement(',
+    'private static string FormatHeroList(',
+    'private static List<VisiblePartyCandidate> BuildVisiblePartyCandidates(',
+    'private static void AddObserverParty(',
+    'private static bool IsVisiblePartyCandidate(',
+    'private static bool IsPartyUsableForVisibility(',
+    'private static bool IsPartyVisibleToPlayer(',
+    'private static string FormatVisiblePartyRelationToHero(',
+    'private static Hero GetVisiblePartyHero(',
+    'private static bool IsHeroParty(',
+    'private static string FormatPartyHeroPersonalRelationBand(',
+    'private static IFaction ResolveHeroPromptFaction(',
+    'private static IFaction ResolvePartyPromptFaction(',
+    'private static string FormatFactionRelationBand(',
+    'private static bool IsSameFaction(',
+    'private static bool AreFactionsAtWar(',
+    'private static bool AreFactionKingdomsAllied(',
+    'private static Kingdom ResolveFactionKingdom(',
+    'private static float GetObserverPartyRange(',
+    'private static float GetPartyDistance(',
+    'private static int GetPartyMemberCount(',
+    'private static string FormatPartyAffiliation(',
+    'private static string FormatDirection(',
+    'private static string FormatDistance(',
+    'private static string FormatEliminatedStatus(',
+    'private static string FormatFloat(',
+    'private static string FormatInt(',
+)
 dotnet = Path(os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
 env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_NOLOGO="1", DOTNET_CLI_TELEMETRY_OPTOUT="1")
 outputs = {}
@@ -149,6 +209,18 @@ for name in ("old", "current"):
         needle = 'if (!string.IsNullOrWhiteSpace(latestInput) && CanContinueWorldEntityMatch("ruler_title_raw", budget))'
         assert methods.count(needle) == 1, "worker raw branch anchor drift"
         methods = methods.replace(needle, "if (false)", 1)
+    world_mutations = {
+        "drop-settlement": ("AppendSettlementMainFacts(sb, settlements);", ""),
+        "drop-clan": ("AppendClanMainFacts(sb, clans);", ""),
+        "drop-kingdom": ("AppendKingdomMainFacts(sb, kingdoms);", ""),
+        "drop-resident-post": ("AddPostprocessResidentEntityMatches(contextHero, includeResidentPlayerEntities, ref postprocessHeroes, ref postprocessSettlements, ref postprocessClans, ref postprocessKingdoms);", ""),
+        "drop-captured-visible": ("capture.VisibleParties = BuildVisiblePartyCandidates(contextHero);", "capture.VisibleParties = new List<VisiblePartyCandidate>();"),
+        "drop-explicit-kingdom": ('candidate.SourceStringId = (kingdomScope.StringId ?? "").Trim();', 'candidate.SourceStringId = "";'),
+    }
+    if name == "current" and args.mutate in world_mutations:
+        before, after = world_mutations[args.mutate]
+        assert methods.count(before) == 1, "world mutation anchor drift: " + args.mutate
+        methods = methods.replace(before, after, 1)
     detached = extract.declaration(source, "internal sealed class DetachedEntityCandidate\n") if name == "current" else ""
     detached_classes = "\n".join(extract.declaration(source, marker) for marker in (
         "internal sealed class DetachedEntityCandidates\n", "internal sealed class EntityCapture\n", "internal sealed class DetachedEntityMatches\n", "private sealed class RawRulerTitleMatchResult\n"
@@ -161,7 +233,8 @@ for name in ("old", "current"):
         content = subprocess.check_output(["git", "show", "77a3d234:" + relative], cwd=ROOT).decode("utf-8-sig") if name == "old" else (ROOT / relative).read_text(encoding="utf-8-sig")
         (out / filename).write_text(content, encoding="utf-8")
     (out / "Program.cs").write_bytes((HERE / "Program.cs").read_bytes())
-    (out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>' + ('<DefineConstants>CURRENT</DefineConstants>' if name == "current" else '') + '</PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="Production.cs"/><Compile Include="Matcher.cs"/><Compile Include="Mentions.cs"/><Compile Include="Allocator.cs"/></ItemGroup></Project>', encoding="utf-8")
+    (out / "WorldCases.cs").write_bytes((HERE / "WorldCases.cs").read_bytes())
+    (out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>' + ('<DefineConstants>CURRENT</DefineConstants>' if name == "current" else '') + '</PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="WorldCases.cs"/><Compile Include="Production.cs"/><Compile Include="Matcher.cs"/><Compile Include="Mentions.cs"/><Compile Include="Allocator.cs"/></ItemGroup></Project>', encoding="utf-8")
     (out / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
     result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if result.returncode:
@@ -169,10 +242,11 @@ for name in ("old", "current"):
         raise SystemExit(result.returncode)
     outputs[name] = {line.split("=", 1)[0]: base64.b64decode(line.split("=", 1)[1], validate=True) for line in result.stdout.splitlines() if line.startswith("RESULT_")}
 cases = ("direct", "title", "raw_only", "raw_qualified", "raw_ambiguous", "raw_long_title", "raw_distinct_titles", "raw_overrides_mentions")
+cases += ('world_settlement', 'world_clan', 'world_kingdom', 'world_mixed', 'world_resident', 'world_player_resident', 'world_resident_no_kingdom_main', 'world_visible', 'world_capture_fallback', 'world_worker_fallback', 'world_shared')
 expected = {f"RESULT_{case}_{field}" for case in cases for field in ("main", "post", "meta")}
 assert set(outputs["old"]) == set(outputs["current"]) == expected, "entity differential scenarios missing"
 for key in sorted(expected):
     assert outputs["old"][key] == outputs["current"][key], "entity Hero facts differ: " + key
-print("PASS production Hero capture/worker/fallback full text old/current byte parity: scenarios=8, fields=24, including raw-only/qualified/ambiguous/shadowed/override")
+print("PASS production entity capture/worker/fallback full text old/current byte parity: scenarios=19, fields=57, including raw-title, world categories, residents, visible parties and fallback")
 if args.emit_json:
     print("EXPORT_JSON=" + json.dumps({side: {key: base64.b64encode(value).decode("ascii") for key, value in rows.items()} for side, rows in outputs.items()}, sort_keys=True))
