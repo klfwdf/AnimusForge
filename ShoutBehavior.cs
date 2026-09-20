@@ -1986,11 +1986,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly object _historyLock = new object();
 
-	private readonly object _speechQueueLock = new object();
-
-	private readonly Queue<SceneSpeechQueueItem> _speechQueue = new Queue<SceneSpeechQueueItem>();
-
-	private bool _speechWorkerRunning = false;
+	private readonly SceneSpeechQueueOwner<SceneSpeechQueueItem> _sceneSpeechQueueOwner = new SceneSpeechQueueOwner<SceneSpeechQueueItem>();
 
 	private bool _lastShoutDuelLiteralHit = false;
 
@@ -2565,11 +2561,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				_immediateSceneReactionActiveRequestIds.Clear();
 				_pendingImmediateSceneReactionRequests.Clear();
 			}
-			lock (_speechQueueLock)
-			{
-				_speechQueue.Clear();
-			}
-			_speechWorkerRunning = false;
+			_sceneSpeechQueueOwner.Reset();
 			ResetPendingMainThreadFunctions();
 			_sceneConversationEpoch = 0;
 			_isProcessingShout = false;
@@ -10963,11 +10955,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_immediateSceneReactionActiveRequestIds.Clear();
 			_pendingImmediateSceneReactionRequests.Clear();
 		}
-		lock (_speechQueueLock)
-		{
-			_speechQueue.Clear();
-		}
-		_speechWorkerRunning = false;
+		_sceneSpeechQueueOwner.Reset();
 		_sceneConversationEpoch = 0;
 		_nextProactiveSceneOpeningProbeMissionTime = 0f;
 		ResetPendingMainThreadFunctions();
@@ -11065,11 +11053,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_immediateSceneReactionActiveRequestIds.Clear();
 				_pendingImmediateSceneReactionRequests.Clear();
 			}
-			lock (_speechQueueLock)
-			{
-				_speechQueue.Clear();
-			}
-			_speechWorkerRunning = false;
+			_sceneSpeechQueueOwner.Reset();
 			_sceneConversationEpoch = 0;
 			_nextProactiveSceneOpeningProbeMissionTime = 0f;
 			ResetPendingMainThreadFunctions();
@@ -13997,26 +13981,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			sb.Append(" mainThreadActions=unavailable");
 		}
-		bool speechLockTaken = false;
-		try
+		if (_sceneSpeechQueueOwner.TryGetSnapshot(out int speechQueueCount, out bool speechWorkerRunning))
 		{
-			speechLockTaken = Monitor.TryEnter(_speechQueueLock);
-			if (speechLockTaken)
-			{
-				sb.Append(" sceneSpeechQueue=").Append(_speechQueue.Count)
-					.Append(" sceneSpeechWorker=").Append(_speechWorkerRunning ? 1 : 0);
-			}
-			else
-			{
-				sb.Append(" sceneSpeechQueue=busy");
-			}
+			sb.Append(" sceneSpeechQueue=").Append(speechQueueCount)
+				.Append(" sceneSpeechWorker=").Append(speechWorkerRunning ? 1 : 0);
 		}
-		finally
+		else
 		{
-			if (speechLockTaken)
-			{
-				Monitor.Exit(_speechQueueLock);
-			}
+			sb.Append(" sceneSpeechQueue=busy");
 		}
 	}
 
@@ -27938,32 +27910,28 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			value.PromptGivenName = npcDataPacket.PromptGivenName;
 			value.PromptDisplayName = npcDataPacket.PromptDisplayName;
 		}
-		lock (_speechQueueLock)
+		SceneSpeechQueueItem queuedItem = new SceneSpeechQueueItem
 		{
-			_speechQueue.Enqueue(new SceneSpeechQueueItem
-			{
-				Npc = value,
-				Content = content,
-				ContextSnapshot = value2,
-				SceneSummonTargets = CloneSceneSummonPromptTargets(sceneSummonTargets),
-				SceneGuideTargets = CloneSceneGuidePromptTargets(sceneGuideTargets),
-				CommitHistory = commitHistory,
-				SuppressStare = suppressStare,
-				AllowPlayerDirectedActions = allowPlayerDirectedActions,
-				PlayerDirectedActionText = playerDirectedActionText,
-				PlayerDirectedNpcReplyText = playerDirectedNpcReplyText,
-				RequiredConversationEpoch = requiredConversationEpoch,
-				AfterSpeechInfoMessage = afterSpeechInfoMessage,
-				CompletionSource = completionSource,
-				InteractionTimeoutSeconds = interactionTimeoutSeconds,
-				InteractionParticipantCount = Math.Max(1, interactionParticipantCount),
-				CanStillPublish = canStillPublish
-			});
-			if (_speechWorkerRunning)
-			{
-				return;
-			}
-			_speechWorkerRunning = true;
+			Npc = value,
+			Content = content,
+			ContextSnapshot = value2,
+			SceneSummonTargets = CloneSceneSummonPromptTargets(sceneSummonTargets),
+			SceneGuideTargets = CloneSceneGuidePromptTargets(sceneGuideTargets),
+			CommitHistory = commitHistory,
+			SuppressStare = suppressStare,
+			AllowPlayerDirectedActions = allowPlayerDirectedActions,
+			PlayerDirectedActionText = playerDirectedActionText,
+			PlayerDirectedNpcReplyText = playerDirectedNpcReplyText,
+			RequiredConversationEpoch = requiredConversationEpoch,
+			AfterSpeechInfoMessage = afterSpeechInfoMessage,
+			CompletionSource = completionSource,
+			InteractionTimeoutSeconds = interactionTimeoutSeconds,
+			InteractionParticipantCount = Math.Max(1, interactionParticipantCount),
+			CanStillPublish = canStillPublish
+		};
+		if (!_sceneSpeechQueueOwner.EnqueueAndTryStartWorker(queuedItem))
+		{
+			return;
 		}
 		_ = Task.Run(async delegate
 		{
@@ -27982,15 +27950,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					await Task.Delay(100);
 					continue;
 				}
-				SceneSpeechQueueItem item;
-				lock (_speechQueueLock)
+				if (!_sceneSpeechQueueOwner.TryDequeueOrStopWorker(out SceneSpeechQueueItem item))
 				{
-					if (_speechQueue.Count == 0)
-					{
-						_speechWorkerRunning = false;
-						break;
-					}
-					item = _speechQueue.Dequeue();
+					break;
 				}
 				NpcDataPacket matchedNpc = item.Npc;
 				string content = item.Content;
@@ -28447,10 +28409,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
-			lock (_speechQueueLock)
-			{
-				_speechWorkerRunning = false;
-			}
+			_sceneSpeechQueueOwner.StopWorker();
 		}
 	}
 
@@ -36268,20 +36227,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ClearQueuedSceneSpeech()
 	{
-		lock (_speechQueueLock)
-		{
-			_speechQueue.Clear();
-		}
+		_sceneSpeechQueueOwner.ClearQueued();
 	}
 
 	private bool IsSpeechPipelineBusy()
 	{
-		lock (_speechQueueLock)
+		if (_sceneSpeechQueueOwner.HasQueuedOrWorker())
 		{
-			if (_speechQueue.Count > 0 || _speechWorkerRunning)
-			{
-				return true;
-			}
+			return true;
 		}
 		lock (_speakingLock)
 		{
