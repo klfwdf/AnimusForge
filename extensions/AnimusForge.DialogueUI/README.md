@@ -16,6 +16,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\extensions\AnimusForge.Dia
 
 该命令只编译并暂存本模块，不运行离线测试、不部署。需要已安装1.4游戏和两份匹配的AF实现；1.3使用固定完整引用包 `Bannerlord.ReferenceAssemblies 1.3.15.110062`。两个目标顺序构建、分别保存，避免对象目录冲突。
 
+本次已按后续授权部署到游戏1.4.8的独立模块目录，未启动游戏。以后仅在授权覆盖后运行本目录 `deploy.ps1 -BannerlordRoot '<游戏目录>'`；脚本只写本子模块，保留回滚记录，不改变主模块或启动器勾选。
+
 - `artifacts/1.3/`、`artifacts/1.4/`：对应 DLL 与构建记录。
 - `artifacts/stage/<API>/AnimusForge_DialogueUI/`：可安装目录。只选与游戏版本匹配的一份，不能同时加载两份。
 - `artifacts/packages/`：本次独立模块 ZIP。包内不带 AF/TaleWorlds DLL、模型凭据、生成原图或测试工具。
