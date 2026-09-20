@@ -31,7 +31,7 @@
 | `Core/IllustrationDirection.cs:57–95`，`SplitMetadata/ReadSceneFraming` | 取景解析与剥离。 |
 | `Core/IllustrationDirection.cs:129–136`，`RemoveActionHistory` | 本地提示词排除旧行动块。 |
 | `Core/IllustrationReferenceRouting.cs:43–84`，`AddSceneReferences` | 透视参考、截图仅本地回退、地图独立路由。 |
-| `Engine/ScenePerspectiveProjection.cs:14–139`，`Project/Sample` | 有界普通透视采样与颜色保持。 |
+| `Engine/ScenePerspectiveProjection.cs:14–117`，`Project/Sample` | 有界普通透视采样与颜色保持。 |
 | `UI/Overlays/IllustrationCardPopup.cs:510–517`，会话生成scope | 导演完成后准备生图环境参考。 |
 | `Engine/PanoramaSceneSnapshot.cs:67–75,350–358,569–593` | 完整边界累计、零太阳及复制时复用边界。 |
 | `Engine/PanoramaResourceSupplement.cs:178–198` | 资源目标边界累计及失败记录。 |
