@@ -161,8 +161,8 @@
     {
       "id": "native.history.bridge",
       "path": "ShoutBehavior.cs",
-      "start": 16158,
-      "end": 16161,
+      "start": 16156,
+      "end": 16159,
       "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
       "match": "contains",
       "status": "mixed-host",
@@ -194,8 +194,8 @@
     {
       "id": "native.dispatch.shared",
       "path": "ShoutBehavior.cs",
-      "start": 19415,
-      "end": 19418,
+      "start": 19413,
+      "end": 19416,
       "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
       "match": "contains",
       "status": "mixed-host",
@@ -3307,8 +3307,8 @@
     {
       "id": "native.raw.observation",
       "path": "ShoutBehavior.cs",
-      "start": 20072,
-      "end": 20075,
+      "start": 20070,
+      "end": 20073,
       "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
       "match": "exact",
       "status": "wired-boundary",
@@ -3318,8 +3318,8 @@
     {
       "id": "native.turn.entry",
       "path": "ShoutBehavior.cs",
-      "start": 20066,
-      "end": 20070,
+      "start": 20064,
+      "end": 20068,
       "symbol": "private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)",
       "match": "exact",
       "status": "offline-verified",
