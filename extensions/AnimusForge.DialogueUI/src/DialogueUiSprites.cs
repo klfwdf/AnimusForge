@@ -13,7 +13,7 @@ namespace AnimusForge.DialogueUI
     internal static class DialogueUiSprites
     {
         private static readonly Dictionary<string, RuntimeSprite> Sprites = new Dictionary<string, RuntimeSprite>(StringComparer.Ordinal);
-        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal" };
+        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal", "afdui_arch_frame", "afdui_quill_inkpot" };
         private static bool _failed;
 
         internal static void Install(Harmony harmony)
@@ -47,11 +47,12 @@ namespace AnimusForge.DialogueUI
                         int width = texture.Width > 0 ? texture.Width : (pngWidth > 0 ? pngWidth : 512);
                         int height = texture.Height > 0 ? texture.Height : (pngHeight > 0 ? pngHeight : 512);
 
-                        int border = name == "afdui_parchment_panel" ? 72
-                                   : name == "afdui_input_panel" ? 32
-                                   : (name == "afdui_button_normal" || name == "afdui_button_hover" || name == "afdui_button_pressed") ? 40
+                        int border = name == "afdui_parchment_panel" ? 32
+                                   : name == "afdui_input_panel" ? 24
+                                   : (name == "afdui_button_normal" || name == "afdui_button_hover" || name == "afdui_button_pressed") ? 20
                                    : 0;
-                        var nine = border == 0 ? SpriteNinePatchParameters.Empty : new SpriteNinePatchParameters(border, border, border, border);
+                        var nine = name == "afdui_scroll_body" ? new SpriteNinePatchParameters(10, 10, 24, 24)
+                                 : border == 0 ? SpriteNinePatchParameters.Empty : new SpriteNinePatchParameters(border, border, border, border);
                         sprite = new RuntimeSprite(name, texture, width, height, nine);
                         Sprites.Add(name, sprite);
                     }
