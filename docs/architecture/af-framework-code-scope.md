@@ -1,8 +1,10 @@
-# 当前 J10a Scene 渠道离线闭合，下一包 Courier（2026-09-21）
+# 当前 J10a Scene 闭合，J10b Courier 进行中（2026-09-21）
 
 J10 Scene audience `03c08ac9`、postprocess `76b5a429`、request identity `64e438c6`、pending AFEF `a4006d5c`、speech queue `2631f33c` 已归位；`c1f5aa6a`/`cbf7f453` 将 group Prompt、passive、两个 group handler 与完整 immediate reaction 链的 21 个声明迁入 `ShoutBehavior.SceneConversationChains.cs`。真实消费者/算法不变，无第二管线或新存档。ChannelCutover 132+14、ProductionConsumers 正常+3 变异及既有 Scene/Debug 门禁通过。当前地图绑定 `cbf7f453`，共 342 锚点。
 
-J10a 状态 `OFFLINE_VERIFIED`。live Agent、interaction timeout、TTS/audio、movement、History/Memory/动作副作用仍在 host adapter，这是游戏线程/渠道副作用边界，不按行数继续拆。Courier 尚未开工，故 J10 总包仍 `IN_PROGRESS`；真实 Campaign/Mission、旧档、provider、音频和帧成本 `NOT-RUN`。详见[主台账 J10 节](../animusforge-refactoring-and-repository-reorganization-plan.md#j10-scene-owners-20260921)。
+J10a 状态 `OFFLINE_VERIFIED`。live Agent、interaction timeout、TTS/audio、movement、History/Memory/动作副作用仍在 host adapter，这是游戏线程/渠道副作用边界，不按行数继续拆。J10b 只完成 prompt-run 子包，故 J10 总包仍 `IN_PROGRESS`；真实 Campaign/Mission、旧档、provider、音频和帧成本 `NOT-RUN`。详见[主台账 J10 节](../animusforge-refactoring-and-repository-reorganization-plan.md#j10-scene-owners-20260921)。
+
+Courier `bdf58283` 已把 `PromptPreparation`/`PromptSchedule` 原内容归位 `src/modules/AF.Module.Conversation/Channels/Courier`：`ConditionalWeakTable` run reservation、source-change failure、四个 owner phase 和逐跳 generation/session/participant/source 复核保持。Prompt 550/76、liveness 59/16、4 变异、BuildPhases/ProductionConsumers/Phase8/Debug 构建通过。transport/arrival/letter/retry 尚未收口，J10b 仍 `IN_PROGRESS`。
 
 ## 以下历史范围以上方更新为准
 
